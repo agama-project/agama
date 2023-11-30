@@ -1,47 +1,48 @@
-
-<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
- "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
 <node>
-  <!--
-      org.opensuse.Agama1.Locale:
-
-      Implementation note about language identifiers:
-
-      Maybe use <ulink url="https://www.rubydoc.info/github/yast/yast-packager/master/LanguageTag">yast2-packager/LanguageTag</ulink>.
-      See <ulink url="https://lists.opensuse.org/archives/list/yast-devel&commat;lists.opensuse.org/message/D52PSZ7TRID2RVM6CE6K2C2RUNNGOS6Z/">its announcement on yast-devel</ulink>.
-      See also <ulink url="https://tools.ietf.org/html/rfc4647">RFC 4647 Matching of Language Tags</ulink>.
-  -->
   <interface name="org.opensuse.Agama1.Locale">
     <!--
-     Get labels for locales. The first pair is english language and territory
-     and second one is localized one to target language from locale.
+     Gets the supported locales information.
+
+     Each element of the list has these parts:
+
+     * The locale code (e.g., "es_ES.UTF-8").
+     * The name of the language according to the language defined by the
+       UILocale property.
+     * The name of the territory according to the language defined by the
+       UILocale property.
      -->
-    <method name="LabelsForLocales">
-      <arg type="a((ss)(ss))" direction="out"/>
+    <method name="ListLocales">
+      <arg type="a(sss)" direction="out"/>
     </method>
     <!--
-     Gets list of locales available on system.
+     Returns a list of the supported keymaps.
+
+     Each element of the list contains:
+
+     * The keymap identifier (e.g., "es" or "es(ast)").
+     * The name of the keyboard in language set by the UILocale property.
      -->
-    <method name="ListUILocales">
-      <arg type="as" direction="out"/>
-    </method>
-    <method name="ListVConsoleKeyboards">
-      <arg type="as" direction="out"/>
-    </method>
-    <method name="ListTimezones">
-      <arg name="locale" type="s" direction="in"/>
+    <method name="ListKeymaps">
       <arg type="a(ss)" direction="out"/>
+    </method>
+    <!--
+     Returns a list of the supported timezones.
+
+     Each element of the list contains:
+
+     * The timezone identifier (e.g., "Europe/Berlin").
+     * A list containing each part of the name in the language set by the
+       UILocale property.
+     -->
+    <method name="ListTimezones">
+      <arg type="a(sas)" direction="out"/>
     </method>
     <method name="Commit">
     </method>
+    <property name="Keymap" type="s" access="readwrite"/>
     <property name="Locales" type="as" access="readwrite"/>
-    <property name="SupportedLocales" type="as" access="readwrite"/>
     <property name="Timezone" type="s" access="readwrite"/>
-    <!--
-     Property that controls in which localization human string from backend will come.
-     -->
     <property name="UILocale" type="s" access="readwrite"/>
-    <property name="VConsoleKeyboard" type="s" access="readwrite"/>
   </interface>
 </node>
-

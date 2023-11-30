@@ -56,7 +56,7 @@ module Agama
       attr_accessor :base_product
 
       # @return [Array<String>] List of languages to install
-      attr_accessor :languages
+      attr_reader :languages
 
       # Constructor
       #
@@ -114,6 +114,13 @@ module Agama
         !(proposal.nil? || errors?)
       end
 
+      # Sets the languages to install
+      #
+      # @param [Array<String>] value Languages in xx_XX format (e.g., "en_US").
+      def languages=(value)
+        @languages = value.map { |l| l.split(".").first }.compact
+      end
+
     private
 
       # @return [Logger]
@@ -129,7 +136,11 @@ module Agama
         Yast::Pkg.TargetFinish # ensure that previous target is closed
         Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
         Yast::Pkg.TargetLoad
-        Yast::Pkg.SetAdditionalLocales(languages)
+
+        preferred, *additional = languages
+        Yast::Pkg.SetPackageLocale(preferred) if preferred
+        Yast::Pkg.SetAdditionalLocales(additional)
+
         Yast::Pkg.SetSolverFlags("ignoreAlreadyRecommended" => false, "onlyRequires" => false)
       end
 

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 29 14:15:16 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Allow selecting language, keymap and timezone for the target
+  system (gh#openSUSE/agama#881).
+
+-------------------------------------------------------------------
 Wed Nov 29 13:01:04 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: improve the look and feel by fine tunning the sections spacing,

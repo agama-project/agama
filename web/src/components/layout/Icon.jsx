@@ -38,11 +38,13 @@ import Error from "@icons/error.svg?component";
 import ExpandMore from "@icons/expand_more.svg?component";
 import Folder from "@icons/folder.svg?component";
 import FolderOff from "@icons/folder_off.svg?component";
+import Globe from "@icons/globe.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Help from "@icons/help.svg?component";
 import HomeStorage from "@icons/home_storage.svg?component";
 import Info from "@icons/info.svg?component";
 import Inventory from "@icons/inventory_2.svg?component";
+import Keyboard from "@icons/keyboard.svg?component";
 import Lan from "@icons/lan.svg?component";
 import ListAlt from "@icons/list_alt.svg?component";
 import Lock from "@icons/lock.svg?component";
@@ -53,6 +55,7 @@ import MoreVert from "@icons/more_vert.svg?component";
 import Person from "@icons/person.svg?component";
 import Problem from "@icons/problem.svg?component";
 import Refresh from "@icons/refresh.svg?component";
+import Schedule from "@icons/schedule.svg?component";
 import SettingsApplications from "@icons/settings_applications.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import SettingsFill from "@icons/settings-fill.svg?component";
@@ -92,11 +95,13 @@ const icons = {
   expand_more: ExpandMore,
   folder: Folder,
   folder_off: FolderOff,
+  globe: Globe,
   hard_drive: HardDrive,
   help: Help,
   home_storage: HomeStorage,
   info: Info,
   inventory_2: Inventory,
+  keyboard: Keyboard,
   lan: Lan,
   loading: Loading,
   list_alt: ListAlt,
@@ -108,6 +113,7 @@ const icons = {
   person: Person,
   problem: Problem,
   refresh: Refresh,
+  schedule: Schedule,
   settings: SettingsFill,
   settings_applications: SettingsApplications,
   settings_ethernet: SettingsEthernet,

@@ -58,8 +58,7 @@ module Agama
         # for some reason the the "export" method must be called before
         # registering the language change callback to work properly
         export
-        locale_client = Clients::Locale.new
-        @ui_locale = UILocale.new(locale_client) do |locale|
+        @ui_locale = UILocale.new(Clients::Locale.instance) do |locale|
           # set the locale in the Language module, when changing the repository
           # (product) it calls Pkg.SetTextLocale(Language.language) internally
           Yast::Language.Set(locale)

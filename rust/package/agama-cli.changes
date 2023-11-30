@@ -1,4 +1,20 @@
 -------------------------------------------------------------------
+Wed Nov 29 11:19:51 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Rework the org.opensuse.Agama1.Locale interface
+  (gh#openSUSE/agama#881):
+  * Replace LabelsForLocales function with ListLocales.
+  * Add a ListKeymaps function.
+  * Extend the ListTimezone function to include the translation of
+    each part.
+  * Drop ListUILocales and ListVConsoleKeyboards functions.
+  * Remove the SupportedLocales and VConsoleKeyboard properties.
+  * Do not read the lists of locales, keymaps and timezones on
+    each request.
+  * Peform some validation when trying to change the Locales,
+    Keymap and Timezone properties.
+
+-------------------------------------------------------------------
 Thu Nov 16 11:06:30 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update dependencies to compatible versions

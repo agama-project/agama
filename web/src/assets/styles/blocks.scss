@@ -272,7 +272,7 @@ span.notification-mark[data-variant="sidebar"] {
   }
 }
 
-.device-list {
+.item-list {
   [role="option"] {
     padding: var(--spacer-normal);
     border: 2px solid var(--color-gray-dark);
@@ -283,15 +283,58 @@ span.notification-mark[data-variant="sidebar"] {
     display: grid;
 
     gap: var(--spacer-small);
-    grid-template-columns: 1fr 2fr 2fr;
-    grid-template-areas:
-      "type-and-size drive-info drive-content"
-    ;
 
-    > :first-child {
-      align-self: center;
-      text-align: center;
-      justify-self: start;
+    grid-template-columns: 1fr;
+    grid-template-areas: "content";
+    text-align: start;
+
+    > [data-type="details"] {
+      font-size: 80%;
+    }
+
+    &:hover {
+      &:not([aria-selected]) {
+        background: var(--color-gray-dark);
+      }
+    }
+
+    &:is([data-type="locale"]) {
+      grid-template-columns: 1fr 2fr;
+      grid-template-areas:
+        "language territory"
+        "details details";
+
+      > [data-type="details"] {
+        grid-area: details;
+      }
+    }
+
+    &:is([data-type="timezone"]) {
+      grid-template-columns: 1fr 2fr 1fr;
+      grid-template-areas:
+        "part1 rest-parts time"
+        "details details .";
+
+      > [data-type="details"] {
+        grid-area: details;
+      }
+
+      > [data-type="time"] {
+        color: var(--color-gray-dimmed);
+        grid-area: time;
+        text-align: end;
+      }
+    }
+
+    &:is([data-type="storage-device"]) {
+      grid-template-columns: 1fr 2fr 2fr;
+      grid-template-areas: "type-and-size drive-info drive-content";
+
+      > [data-type="type-and-size"] {
+        align-self: center;
+        text-align: center;
+        justify-self: start;
+      }
     }
   }
 
@@ -304,6 +347,23 @@ span.notification-mark[data-variant="sidebar"] {
 
     svg {
       fill: white;
+    }
+  }
+}
+
+[role="dialog"] {
+  .sticky-top-0 {
+    position: sticky;
+    top: calc(-1 * var(--pf-v5-c-modal-box__body--PaddingTop));
+    margin-block-start: calc(-1 * var(--pf-v5-c-modal-box__body--PaddingTop));
+    padding-block-start: var(--pf-v5-c-modal-box__body--PaddingTop);
+    background-color: var(--pf-v5-c-modal-box--BackgroundColor);
+
+    [role="search"] {
+      width: 100%;
+      padding: var(--spacer-small);
+      border: 1px solid var(--color-primary);
+      border-radius: 5px;
     }
   }
 }

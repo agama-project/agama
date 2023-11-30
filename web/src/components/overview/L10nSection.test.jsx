@@ -27,49 +27,50 @@ import { createClient } from "~/client";
 
 jest.mock("~/client");
 
-const languages = [
-  { id: "en_US", name: "English" },
-  { id: "de_DE", name: "German" }
+const locales = [
+  { id: "en_US", name: "English", territory: "United States" },
+  { id: "de_DE", name: "German", territory: "Germany" }
 ];
 
-let onLanguageChangeFn = jest.fn();
-
-const languageMock = {
-  getLanguages: () => Promise.resolve(languages),
-  getSelectedLanguages: () => Promise.resolve(["en_US"]),
+const l10nClientMock = {
+  locales: jest.fn().mockResolvedValue(locales),
+  getLocales: jest.fn().mockResolvedValue(["en_US"]),
+  getUILocale: jest.fn().mockResolvedValue("en_US"),
+  keymaps: jest.fn().mockResolvedValue([]),
+  getKeymap: jest.fn().mockResolvedValue(undefined),
+  timezones: jest.fn().mockResolvedValue([]),
+  getTimezone: jest.fn().mockResolvedValue(undefined),
+  onLocalesChange: jest.fn(),
+  onKeymapChange: jest.fn(),
+  onTimezoneChange: jest.fn()
 };
 
 beforeEach(() => {
   // if defined outside, the mock is cleared automatically
   createClient.mockImplementation(() => {
     return {
-      language: {
-        ...languageMock,
-        onLanguageChange: onLanguageChangeFn
-      }
+      l10n: l10nClientMock
     };
   });
 });
 
-it("displays the selected language", async () => {
-  installerRender(<L10nSection />);
+it("displays the selected locale", async () => {
+  installerRender(<L10nSection />, { withL10n: true });
 
-  await screen.findByText("English (en_US)");
+  await screen.findByText("English (United States)");
 });
 
-describe("when the Language Selection changes", () => {
+describe("when the selected locales change", () => {
   it("updates the proposal", async () => {
     const [mockFunction, callbacks] = createCallbackMock();
-    onLanguageChangeFn = mockFunction;
+    l10nClientMock.onLocalesChange = mockFunction;
 
-    installerRender(<L10nSection />);
-    await screen.findByText("English (en_US)");
+    installerRender(<L10nSection />, { withL10n: true });
+    await screen.findByText("English (United States)");
 
     const [cb] = callbacks;
-    act(() => {
-      cb("de_DE");
-    });
+    act(() => cb(["de_DE"]));
 
-    await screen.findByText("German (de_DE)");
+    await screen.findByText("German (Germany)");
   });
 });

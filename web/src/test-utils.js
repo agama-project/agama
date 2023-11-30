@@ -36,6 +36,7 @@ import { NotificationProvider } from "~/context/notification";
 import { Layout } from "~/components/layout";
 import { noop } from "./utils";
 import cockpit from "./lib/cockpit";
+import { InstallerL10nProvider } from "./context/installerL10n";
 import { L10nProvider } from "./context/l10n";
 
 /**
@@ -84,9 +85,11 @@ const Providers = ({ children, withL10n }) => {
   if (withL10n) {
     return (
       <InstallerClientProvider client={client}>
-        <L10nProvider>
-          {children}
-        </L10nProvider>
+        <InstallerL10nProvider>
+          <L10nProvider>
+            {children}
+          </L10nProvider>
+        </InstallerL10nProvider>
       </InstallerClientProvider>
     );
   }

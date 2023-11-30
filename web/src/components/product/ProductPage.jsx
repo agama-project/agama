@@ -236,7 +236,7 @@ const RegisteredWarningPopup = ({ isOpen = false, onAccept = noop }) => {
       </p>
       <Popup.Actions>
         <Popup.Confirm onClick={onAccept}>
-          {_("Accept")}
+          {_("Close")}
         </Popup.Confirm>
       </Popup.Actions>
     </Popup>

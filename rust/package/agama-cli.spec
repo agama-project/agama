@@ -40,6 +40,8 @@ Requires:       lshw
 # required by "agama logs store"
 Requires:       bzip2
 Requires:       tar
+# required for translating the keyboards descriptions
+Requires:       xkeyboard-config-lang
 
 %description
 Command line program to interact with the agama service.
