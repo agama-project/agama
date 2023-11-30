@@ -176,27 +176,20 @@ const SpacePolicyDisksHint = ({ devices }) => {
   };
 
   const num = devices.length;
-  if (num > 1) {
-    return (
-      <Hint>
-        <HintBody>
-          <ExpandableSection
-            isExpanded={isExpanded}
-            onToggle={() => setIsExpanded(!isExpanded)}
-            toggleText={label(num)}
-          >
-            <DeviceList devices={devices} />
-          </ExpandableSection>
-        </HintBody>
-      </Hint>
-    );
-  } else {
-    return (
-      <Hint>
-        <HintBody>{label(num)}</HintBody>
-      </Hint>
-    );
-  }
+
+  return (
+    <Hint>
+      <HintBody>
+        <ExpandableSection
+          isExpanded={isExpanded}
+          onToggle={() => setIsExpanded(!isExpanded)}
+          toggleText={label(num)}
+        >
+          <DeviceList devices={devices} />
+        </ExpandableSection>
+      </HintBody>
+    </Hint>
+  );
 };
 
 export { SpacePolicyButton, SpacePolicySelector, SpacePolicyDisksHint };
