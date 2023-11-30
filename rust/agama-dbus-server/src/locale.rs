@@ -107,7 +107,7 @@ impl Locale {
 
         if !self.keymaps_db.exists(&keymap_id) {
             return Err(zbus::fdo::Error::Failed(
-                "Invalid keyboard value".to_string(),
+                "Invalid keymap value".to_string(),
             ));
         }
         self.keymap = keymap_id;
