@@ -38,7 +38,8 @@ const availableDevices = [
 const proposalResult = {
   settings: {
     bootDevice: "/dev/sda",
-    lvm: false
+    lvm: false,
+    spacePolicy: "delete"
   },
   actions: []
 };
@@ -87,6 +88,32 @@ describe("when there is a proposal", () => {
     await screen.findByText(/Install using device/);
     await screen.findByText(/\/dev\/sda, 500 GiB/);
     await screen.findByText(/and deleting all its content/);
+  });
+
+  describe("and the space policy is set to 'resize'", () => {
+    beforeEach(() => {
+      const result = { settings: { spacePolicy: "resize", bootDevice: "/dev/sda" } };
+      storage.proposal.getResult = jest.fn().mockResolvedValue(result);
+    });
+
+    it("indicates that partitions may be shrunk", async () => {
+      installerRender(<StorageSection />);
+
+      await screen.findByText(/shrinking existing partitions as needed/);
+    });
+  });
+
+  describe("and the space policy is set to 'keep'", () => {
+    beforeEach(() => {
+      const result = { settings: { spacePolicy: "keep", bootDevice: "/dev/sda" } };
+      storage.proposal.getResult = jest.fn().mockResolvedValue(result);
+    });
+
+    it("indicates that partitions will be kept", async () => {
+      installerRender(<StorageSection />);
+
+      await screen.findByText(/without modifying existing partitions/);
+    });
   });
 
   describe("and there is no boot device", () => {
