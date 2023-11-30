@@ -13,6 +13,8 @@ translations:
   description:
     cs: "[Experimentální projekt] openSUSE Leap 16 je postaven na budoucí generaci
       Adaptable Linux Platform (ALP) od SUSE."
+    sv: "[Experimentellt projekt] openSUSE Leap 16 är byggt ovanpå nästa generations
+      Anpassningsbara Linux Plattform (ALP) från SUSE."
 software:
   installation_repositories:
     - url: https://download.opensuse.org/repositories/openSUSE:/Leap:/16.0/images/repo/Leap-16.0-x86_64-Media1/
