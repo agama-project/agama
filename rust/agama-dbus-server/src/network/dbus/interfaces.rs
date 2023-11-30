@@ -355,7 +355,7 @@ impl Bond {
                 HashMap::from([("mode".to_string(), ControllerConfig::Mode(mode.clone()))]),
             )
             .await;
-        self.connection = Arc::new(Mutex::new(result.unwrap()));
+        self.connection = Arc::new(Mutex::new(result?));
         Ok(())
     }
 

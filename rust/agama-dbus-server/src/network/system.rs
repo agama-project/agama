@@ -75,10 +75,16 @@ impl<T: Adapter> NetworkSystem<T> {
             }
             Action::UpdateControllerConnection(conn, settings, tx) => {
                 let id = conn.id().to_owned();
-                self.state.update_controller_connection(conn, settings)?;
-                if let Some(conn) = self.state.get_connection(&id) {
-                    tx.send(Ok(conn.clone())).unwrap();
-                }
+                let result = self
+                    .state
+                    .update_controller_connection(conn, settings)
+                    .and_then(|_| {
+                        self.state.get_connection(&id).ok_or(
+                            super::error::NetworkStateError::UnknownConnection(id.to_string()),
+                        )
+                    });
+
+                tx.send(result.cloned()).unwrap();
             }
             Action::RemoveConnection(id) => {
                 self.tree.remove_connection(&id).await?;
