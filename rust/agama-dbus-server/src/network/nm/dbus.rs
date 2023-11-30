@@ -247,7 +247,10 @@ fn wireless_config_to_dbus(conn: &WirelessConnection) -> NestedHash {
 fn bond_config_to_dbus(conn: &BondConnection) -> HashMap<&str, zvariant::Value> {
     let config = &conn.bond;
 
-    HashMap::from([("options", Value::new(config.options.0.clone()))])
+    let mut options = config.options.0.clone();
+    options.insert("mode".to_string(), config.mode.to_string());
+
+    HashMap::from([("options", Value::new(options))])
 }
 
 /// Converts a MatchConfig struct into a HashMap that can be sent over D-Bus.
