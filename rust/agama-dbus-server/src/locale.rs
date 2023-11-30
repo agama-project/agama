@@ -212,13 +212,13 @@ impl Locale {
 }
 
 pub async fn export_dbus_objects(
-    connection: &Connection,
+    connection: &Connection, locale: &str
 ) -> Result<(), Box<dyn std::error::Error>> {
     const PATH: &str = "/org/opensuse/Agama1/Locale";
 
     // When serving, request the service name _after_ exposing the main object
-    let locale = Locale::new_with_locale("en")?;
-    connection.object_server().at(PATH, locale).await?;
+    let locale_iface = Locale::new_with_locale(locale)?;
+    connection.object_server().at(PATH, locale_iface).await?;
 
     Ok(())
 }
