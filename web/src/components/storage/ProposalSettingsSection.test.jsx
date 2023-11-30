@@ -533,7 +533,7 @@ describe("Space policy field", () => {
       plainRender(<ProposalSettingsSection {...props} />);
 
       screen.getByText("Find space");
-      screen.getByRole("button", { name: "deleting all content at the installation device" });
+      screen.getByRole("button", { name: "deleting all content of the installation device" });
     });
 
     describe("if there are more than one disk", () => {
@@ -545,7 +545,7 @@ describe("Space policy field", () => {
         plainRender(<ProposalSettingsSection {...props} />);
 
         screen.getByText("Find space");
-        screen.getByRole("button", { name: "deleting all content at the 3 selected disks" });
+        screen.getByRole("button", { name: "deleting all content of the 3 selected disks" });
       });
     });
   });
@@ -559,7 +559,7 @@ describe("Space policy field", () => {
       plainRender(<ProposalSettingsSection {...props} />);
 
       screen.getByText("Find space");
-      screen.getByRole("button", { name: "shrinking partitions at the installation device" });
+      screen.getByRole("button", { name: "shrinking partitions of the installation device" });
     });
 
     describe("if there are more than one disk", () => {
@@ -571,7 +571,7 @@ describe("Space policy field", () => {
         plainRender(<ProposalSettingsSection {...props} />);
 
         screen.getByText("Find space");
-        screen.getByRole("button", { name: "shrinking partitions at the 3 selected disks" });
+        screen.getByRole("button", { name: "shrinking partitions of the 3 selected disks" });
       });
     });
   });

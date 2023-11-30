@@ -82,7 +82,8 @@ const PolicyItem = ({ policy }) => {
         text = _("The data is kept, but the current partitions will be resized as needed to make enough space.");
         break;
       case "keep":
-        text = _("The data is kept and existing partitions will not be modified. Only the currently unpartitioned space will be used.");
+        text = _("The data is kept and existing partitions will not be modified. \
+Only the space that is not assigned to any partition will be used.");
         break;
     }
 
@@ -134,8 +135,8 @@ const SpacePolicyButton = ({ policy, devices, onClick = noop }) => {
           // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
           // would read as "Find space deleting all content[...]"
           n_(
-            "deleting all content at the installation device",
-            "deleting all content at the %d selected disks",
+            "deleting all content of the installation device",
+            "deleting all content of the %d selected disks",
             num),
           num
         );
@@ -144,8 +145,8 @@ const SpacePolicyButton = ({ policy, devices, onClick = noop }) => {
           // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
           // would read as "Find space shrinking partitions[...]"
           n_(
-            "shrinking partitions at the installation device",
-            "shrinking partitions at the %d selected disks",
+            "shrinking partitions of the installation device",
+            "shrinking partitions of the %d selected disks",
             num),
           num
         );
