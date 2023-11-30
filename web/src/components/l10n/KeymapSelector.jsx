@@ -74,10 +74,13 @@ const KeymapItem = ({ keymap }) => {
 export default function KeymapSelector({ value, keymaps = [], onChange = noop }) {
   const [filteredKeymaps, setFilteredKeymaps] = useState(keymaps);
 
+  // TRANSLATORS: placeholder text for search input in the keyboard selector.
+  const helpSearch = _("Filter by description or keymap code");
+
   return (
     <>
       <div className="sticky-top-0">
-        <ListSearch elements={keymaps} onChange={setFilteredKeymaps} />
+        <ListSearch placeholder={helpSearch} elements={keymaps} onChange={setFilteredKeymaps} />
       </div>
       <ListBox aria-label={_("Available keymaps")} className="stack item-list">
         { filteredKeymaps.map((keymap, index) => (

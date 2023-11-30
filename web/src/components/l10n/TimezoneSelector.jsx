@@ -94,10 +94,13 @@ export default function TimezoneSelector({ value, timezones = [], onChange = noo
   const [filteredTimezones, setFilteredTimezones] = useState(displayTimezones);
   const date = new Date();
 
+  // TRANSLATORS: placeholder text for search input in the timezone selector.
+  const helpSearch = _("Filter by territory, time zone code or UTC offset");
+
   return (
     <>
       <div className="sticky-top-0">
-        <ListSearch elements={displayTimezones} onChange={setFilteredTimezones} />
+        <ListSearch placeholder={helpSearch} elements={displayTimezones} onChange={setFilteredTimezones} />
       </div>
       <ListBox aria-label={_("Available time zones")} className="stack item-list">
         { filteredTimezones.map((timezone, index) => (

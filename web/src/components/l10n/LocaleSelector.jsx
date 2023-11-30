@@ -75,10 +75,12 @@ const LocaleItem = ({ locale }) => {
 export default function LocaleSelector({ value, locales = [], onChange = noop }) {
   const [filteredLocales, setFilteredLocales] = useState(locales);
 
+  const searchHelp = _("Filter by language, territory or locale code");
+
   return (
     <>
       <div className="sticky-top-0">
-        <ListSearch elements={locales} onChange={setFilteredLocales} />
+        <ListSearch placeholder={searchHelp} elements={locales} onChange={setFilteredLocales} />
       </div>
       <ListBox aria-label={_("Available locales")} className="stack item-list">
         { filteredLocales.map((locale, index) => (

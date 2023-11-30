@@ -40,15 +40,20 @@ const search = (elements, term) => {
  * @component
  *
  * @param {object} props
+ * @param {string} [props.placeholder]
  * @param {object[]} [props.elements] - List of element in which to search.
  * @param {(elements: object[]) => void} - Callback to be called with the filtered list of elements.
  */
-export default function ListSearch({ elements = [], onChange: onChangeProp = noop }) {
+export default function ListSearch({
+  placeholder = _("Search"),
+  elements = [],
+  onChange: onChangeProp = noop
+}) {
   const searchHandler = useDebounce(term => onChangeProp(search(elements, term)), 500);
 
   const onChange = (e) => searchHandler(e.target.value);
 
   return (
-    <input role="search" type="text" placeholder={_("Search")} onChange={onChange} />
+    <input role="search" type="text" placeholder={placeholder} onChange={onChange} />
   );
 }
