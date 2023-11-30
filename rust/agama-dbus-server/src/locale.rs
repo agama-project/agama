@@ -109,9 +109,7 @@ impl Locale {
             .map_err(|_e| zbus::fdo::Error::InvalidArgs("Invalid keymap".to_string()))?;
 
         if !self.keymaps_db.exists(&keymap_id) {
-            return Err(zbus::fdo::Error::Failed(
-                "Invalid keymap value".to_string(),
-            ));
+            return Err(zbus::fdo::Error::Failed("Invalid keymap value".to_string()));
         }
         self.keymap = keymap_id;
         Ok(())
