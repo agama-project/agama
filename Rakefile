@@ -170,5 +170,21 @@ if ENV["YUPDATE_FORCE"] == "1" || File.exist?("/.packages.initrd") || live_iso?
       FileUtils.mkdir_p(File.join(destdir, "/usr/share"))
       FileUtils.cp_r("playwright/.", File.join(destdir, "/usr/share/agama-playwright"))
     end
+
+    if ENV["YUPDATE_SKIP_PRODUCTS"] != "1"
+      files = Dir.glob("products.d/*.y{a}ml")
+      files.each do |f|
+        # the sources contain several products, update only the existing files
+        oldfile = File.join("/usr/share/agama/", f)
+        if File.exist?(oldfile)
+          target = File.join(destdir, "/usr/share/agama/", f)
+          FileUtils.mkdir_p(File.dirname(target))
+          FileUtils.cp(f, target)
+        else
+          # if there is a new product file it needs to be copied manually
+          puts "Skipping product file: #{f}"
+        end
+      end
+    end
   end
 end
