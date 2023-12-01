@@ -1,4 +1,14 @@
 #!/bin/bash
+# Run checked-out Agama in a podman container.
+# This is meant to be run from a working copy of the git repo.
+# It uses the systemsmanagement:Agama:Staging/agama-testing image as
+# a platform and runs /setup.sh
+#
+# Details:
+# - container name: agama
+# - port 9090 is exposed so that web UI works
+# - 'WITH_RUBY_DBUS=1 $0' will prefer ../ruby-dbus to any ruby-dbus.gem
+
 set -x
 set -eu
 
@@ -7,7 +17,7 @@ CIMAGE=registry.opensuse.org/systemsmanagement/agama/staging/containers/opensuse
 # rename this if you test multiple things
 CNAME=agama
 
-test -f service/agama.gemspec || echo "You should run this from a checkout of agama"
+test -f service/agama.gemspec || { echo "You should run this from a checkout of agama"; exit 1; }
 
 # destroy the previous instance, can fail if there is no previous instance
 podman stop ${CNAME?} || : no problem if there was nothing to stop
@@ -42,5 +52,5 @@ ${CEXEC?} "ln -sfv /checkout/./rust/target/debug/agama /usr/bin/agama"
 # Manually start cockpit as socket activation does not work with port forwarding
 ${CEXEC?} "systemctl start cockpit"
 
-# Optional: Interactive shell in the container
+# Interactive shell in the container
 podman exec --tty --interactive ${CNAME?} bash
