@@ -28,6 +28,8 @@ software:
     - alp-container_runtime
     - alp_defaults
   optional_patterns: null # no optional pattern shared
+  user_patterns:
+    - alp_selinux
   mandatory_packages: null
   optional_packages: null
   base_product: Leap16

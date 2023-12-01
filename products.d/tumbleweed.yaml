@@ -47,6 +47,15 @@ software:
   mandatory_patterns:
     - enhanced_base # only pattern that is shared among all roles on TW
   optional_patterns: null # no optional pattern shared
+  user_patterns:
+    - basic_desktop
+    - xfce
+    - kde
+    - gnome
+    - yast2_x11
+    - yast2_server
+    - multimedia
+    - office
   mandatory_packages:
     - NetworkManager
   optional_packages: null
