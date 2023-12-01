@@ -18,7 +18,6 @@
     %global rb_build_versions %{rb_default_ruby}
     BuildRequires:  dbus-1-common
     Requires:       dbus-1-common
-    Requires:       snapper
     Requires:       yast2-bootloader
     Requires:       yast2-country
     Requires:       yast2-hardware-detection
@@ -34,6 +33,10 @@
     Requires:       suseconnect-ruby-bindings
     # yast2 with ArchFilter
     Requires:       yast2 >= 4.5.20
+    # storage dependencies
+    Requires:       ntfs-3g
+    Requires:       ntfsprogs
+    Requires:       snapper
     %ifarch s390 s390x
     Requires:       yast2-s390 >= 4.6.4
     %endif
