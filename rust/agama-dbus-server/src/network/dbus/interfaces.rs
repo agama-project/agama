@@ -317,6 +317,19 @@ impl Bond {
         })
     }
 
+    /// Updates the connection data in the NetworkSystem.
+    ///
+    /// * `connection`: Updated connection.
+    async fn update_connection<'a>(
+        &self,
+        connection: MappedMutexGuard<'a, BondConnection>,
+    ) -> zbus::fdo::Result<()> {
+        let actions = self.actions.lock().await;
+        let connection = NetworkConnection::Bond(connection.clone());
+        actions.send(Action::UpdateConnection(connection)).unwrap();
+        Ok(())
+    }
+
     /// Updates the controller connection data in the NetworkSystem.
     ///
     /// * `connection`: Updated connection.
@@ -347,16 +360,11 @@ impl Bond {
     }
 
     #[dbus_interface(property)]
-    pub async fn set_mode(&mut self, mode: String) -> zbus::fdo::Result<()> {
-        let connection = self.get_bond().await;
-        let result = self
-            .update_controller_connection(
-                connection,
-                HashMap::from([("mode".to_string(), ControllerConfig::Mode(mode.clone()))]),
-            )
-            .await;
-        self.connection = Arc::new(Mutex::new(result?));
-        Ok(())
+    pub async fn set_mode(&mut self, mode: &str) -> zbus::fdo::Result<()> {
+        let mut connection = self.get_bond().await;
+        connection.set_mode(mode)?;
+
+        self.update_connection(connection).await
     }
 
     /// List of bond ports.
@@ -368,19 +376,11 @@ impl Bond {
     }
 
     #[dbus_interface(property)]
-    pub async fn set_options(&mut self, opts: String) -> zbus::fdo::Result<()> {
-        let connection = self.get_bond().await;
-        let result = self
-            .update_controller_connection(
-                connection,
-                HashMap::from([(
-                    "options".to_string(),
-                    ControllerConfig::Options(opts.clone()),
-                )]),
-            )
-            .await;
-        self.connection = Arc::new(Mutex::new(result.unwrap()));
-        Ok(())
+    pub async fn set_options(&mut self, opts: &str) -> zbus::fdo::Result<()> {
+        let mut connection = self.get_bond().await;
+        connection.set_options(opts)?;
+
+        self.update_connection(connection).await
     }
 
     /// List of bond ports.

@@ -94,13 +94,6 @@ impl NetworkState {
         let controller = conn.clone();
 
         if let Connection::Bond(ref mut bond) = conn {
-            if let Some(ControllerConfig::Mode(mode)) = settings.get("mode") {
-                bond.set_mode(mode)?;
-            }
-            if let Some(ControllerConfig::Options(opts)) = settings.get("options") {
-                bond.set_options(opts.as_str())?;
-            }
-
             if let Some(ControllerConfig::Ports(ports)) = settings.get("ports") {
                 let new_ports: Vec<_> = ports
                     .iter()
@@ -661,8 +654,6 @@ pub struct BondConfig {
 /// Controller config payload for updating a controller's connection (Bond, Bridge)
 #[derive(Debug, PartialEq, Clone)]
 pub enum ControllerConfig {
-    Mode(String),
-    Options(String),
     Ports(Vec<String>),
 }
 
