@@ -25,10 +25,10 @@ import { plainRender } from "~/test-utils";
 import { ListSearch } from "~/components/core";
 
 const fruits = [
-  { name: "apple", color: "red", size: "medium" },
-  { name: "banana", color: "yellow", size: "medium" },
-  { name: "grape", color: "green", size: "small" },
-  { name: "pear", color: "green", size: "medium" }
+  { name: "Apple", color: "Red", size: "medium" },
+  { name: "Banana", color: "Yellow", size: "medium" },
+  { name: "Grape", color: "Green", size: "small" },
+  { name: "Pear", color: "Green", size: "medium" }
 ];
 
 const FruitList = ({ fruits }) => {
@@ -50,51 +50,51 @@ it("searches for elements matching the given text", async () => {
   const searchInput = screen.getByRole("search");
 
   // Search for "medium" size fruit
-  await user.type(searchInput, "medium");
+  await user.type(searchInput, "mEdium");
   await waitFor(() => (
-    expect(screen.queryByRole("option", { name: /grape/ })).not.toBeInTheDocument())
+    expect(screen.queryByRole("option", { name: /Grape/ })).not.toBeInTheDocument())
   );
-  screen.getByRole("option", { name: /apple/ });
-  screen.getByRole("option", { name: /banana/ });
-  screen.getByRole("option", { name: /pear/ });
+  screen.getByRole("option", { name: /Apple/i });
+  screen.getByRole("option", { name: /Banana/ });
+  screen.getByRole("option", { name: /Pear/ });
 
   // Search for "green" fruit
   await user.clear(searchInput);
   await user.type(searchInput, "green");
   await waitFor(() => (
-    expect(screen.queryByRole("option", { name: /apple/ })).not.toBeInTheDocument())
+    expect(screen.queryByRole("option", { name: /Apple/ })).not.toBeInTheDocument())
   );
   await waitFor(() => (
-    expect(screen.queryByRole("option", { name: /banana/ })).not.toBeInTheDocument())
+    expect(screen.queryByRole("option", { name: /Banana/ })).not.toBeInTheDocument())
   );
-  screen.getByRole("option", { name: /grape/ });
-  screen.getByRole("option", { name: /pear/ });
+  screen.getByRole("option", { name: /Grape/ });
+  screen.getByRole("option", { name: /Pear/ });
 
   // Search for known fruit
   await user.clear(searchInput);
-  await user.type(searchInput, "ap");
+  await user.type(searchInput, "AP");
   await waitFor(() => (
-    expect(screen.queryByRole("option", { name: /banana/ })).not.toBeInTheDocument())
+    expect(screen.queryByRole("option", { name: /Banana/ })).not.toBeInTheDocument())
   );
   await waitFor(() => (
-    expect(screen.queryByRole("option", { name: /pear/ })).not.toBeInTheDocument())
+    expect(screen.queryByRole("option", { name: /Pear/ })).not.toBeInTheDocument())
   );
-  screen.getByRole("option", { name: /apple/ });
-  screen.getByRole("option", { name: /grape/ });
+  screen.getByRole("option", { name: /Apple/ });
+  screen.getByRole("option", { name: /Grape/ });
 
   // Search for unknown fruit
   await user.clear(searchInput);
   await user.type(searchInput, "tomato");
   await waitFor(() => (
-    expect(screen.queryByRole("option", { name: /apple/ })).not.toBeInTheDocument())
+    expect(screen.queryByRole("option", { name: /Apple/ })).not.toBeInTheDocument())
   );
   await waitFor(() => (
-    expect(screen.queryByRole("option", { name: /banana/ })).not.toBeInTheDocument())
+    expect(screen.queryByRole("option", { name: /Banana/ })).not.toBeInTheDocument())
   );
   await waitFor(() => (
-    expect(screen.queryByRole("option", { name: /grape/ })).not.toBeInTheDocument())
+    expect(screen.queryByRole("option", { name: /Grape/ })).not.toBeInTheDocument())
   );
   await waitFor(() => (
-    expect(screen.queryByRole("option", { name: /pear/ })).not.toBeInTheDocument())
+    expect(screen.queryByRole("option", { name: /Pear/ })).not.toBeInTheDocument())
   );
 });
