@@ -25,11 +25,13 @@ import { _ } from "~/i18n";
 import { noop, useDebounce } from "~/utils";
 
 const search = (elements, term) => {
+  const value = term.toLowerCase();
+
   const match = (element) => {
     return Object.values(element)
       .join('')
       .toLowerCase()
-      .includes(term);
+      .includes(value);
   };
 
   return elements.filter(match);
