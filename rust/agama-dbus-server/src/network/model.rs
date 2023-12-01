@@ -354,7 +354,7 @@ pub enum MacAddress {
     Random,
     Stable,
     #[default]
-    None,
+    Unset,
 }
 
 impl FromStr for MacAddress {
@@ -366,7 +366,7 @@ impl FromStr for MacAddress {
             "permanent" => Ok(Self::Permanent),
             "random" => Ok(Self::Random),
             "stable" => Ok(Self::Stable),
-            "" => Ok(Self::None),
+            "" => Ok(Self::Unset),
             _ => Ok(Self::MacAddress(match macaddr::MacAddr6::from_str(s) {
                 Ok(mac) => mac,
                 Err(e) => return Err(InvalidMacAddress(e.to_string())),
@@ -383,7 +383,7 @@ impl fmt::Display for MacAddress {
             Self::Permanent => "permanent".to_string(),
             Self::Random => "random".to_string(),
             Self::Stable => "stable".to_string(),
-            Self::None => "".to_string(),
+            Self::Unset => "".to_string(),
         };
         write!(f, "{}", output)
     }

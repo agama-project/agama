@@ -315,11 +315,11 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
                     Ok(mac) => mac,
                     Err(e) => {
                         log::warn!("Couldn't parse MAC: {}", e);
-                        MacAddress::None
+                        MacAddress::Unset
                     }
                 };
         } else {
-            base_connection.mac_address = MacAddress::None;
+            base_connection.mac_address = MacAddress::Unset;
         }
     } else if let Some(wireless_config) = conn.get(WIRELESS_KEY) {
         if let Some(mac_address) = wireless_config.get("assigned-mac-address") {
@@ -328,11 +328,11 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
                     Ok(mac) => mac,
                     Err(e) => {
                         log::warn!("Couldn't parse MAC: {}", e);
-                        MacAddress::None
+                        MacAddress::Unset
                     }
                 };
         } else {
-            base_connection.mac_address = MacAddress::None;
+            base_connection.mac_address = MacAddress::Unset;
         }
     }
 
