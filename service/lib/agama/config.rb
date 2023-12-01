@@ -170,10 +170,10 @@ module Agama
     # @param property [Symbol|String|nil] Property to retrieve of the elements.
     #
     # @return [Array]
-    def arch_elements_from(*keys, property: nil)
+    def arch_elements_from(*keys, property: nil, default: [])
       keys.map!(&:to_s)
       elements = products.dig(*keys)
-      return [] unless elements.is_a?(Array)
+      return default unless elements.is_a?(Array)
 
       elements.map do |element|
         if !element.is_a?(Hash)

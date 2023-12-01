@@ -47,6 +47,7 @@ module Agama
             product.optional_packages = data[:optional_packages]
             product.mandatory_patterns = data[:mandatory_patterns]
             product.optional_patterns = data[:optional_patterns]
+            product.user_patterns = data[:user_patterns]
             product.translations = attrs["translations"] || {}
           end
         end
@@ -79,6 +80,9 @@ module Agama
           ),
           optional_patterns:  config.arch_elements_from(
             id, "software", "optional_patterns", property: :pattern
+          ),
+          user_patterns:  config.arch_elements_from(
+            id, "software", "user_patterns", property: :pattern, default: nil
           )
         }
       end
