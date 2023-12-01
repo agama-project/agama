@@ -166,7 +166,13 @@ impl Locale {
             .status()
             .context("Failed to execute systemd-firstboot")?;
         Command::new("/usr/bin/systemd-firstboot")
-            .args(["--root", ROOT, "--timezone", self.timezone.as_str()])
+            .args([
+                "--root",
+                ROOT,
+                "--force",
+                "--timezone",
+                self.timezone.as_str(),
+            ])
             .status()
             .context("Failed to execute systemd-firstboot")?;
 
