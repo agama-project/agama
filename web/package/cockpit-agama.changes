@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sat Dec  2 18:06:02 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 6
+
+-------------------------------------------------------------------
 Thu Nov 30 22:39:57 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: make selectors more compact (gh#openSUSE/agama#898).
