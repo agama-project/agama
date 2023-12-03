@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Dec  3 15:53:34 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use a single call to systemd-firstboot to write the localization
+  settings (gh#openSUSE/agama#903).
+
+-------------------------------------------------------------------
 Sat Dec  2 18:05:54 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 6
