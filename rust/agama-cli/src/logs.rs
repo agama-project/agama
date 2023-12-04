@@ -112,7 +112,7 @@ const DEFAULT_PATHS: [&str; 14] = [
     "/linuxrc.config",
 ];
 
-const DEFAULT_RESULT: &str = "/tmp/agama_logs";
+const DEFAULT_RESULT: &str = "/tmp/agama-logs";
 // what compression is used by default:
 // (<compression as distinguished by tar>, <an extension for resulting archive>)
 const DEFAULT_COMPRESSION: (&str, &str) = ("bzip2", "tar.bz2");
