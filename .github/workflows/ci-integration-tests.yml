@@ -2,8 +2,8 @@ name: "CI - Integration Tests"
 
 on:
   schedule:
-    # at 9:50 UTC every day from Monday to Friday
-    - cron: "50 9 * * 1-5"
+    # at 9:45 UTC every day from Monday to Friday
+    - cron: "45 9 * * 1-5"
 
   # allow running manually
   workflow_dispatch:
@@ -12,6 +12,8 @@ jobs:
   integration-tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    # do not run scheduled jobs in forks, in forks only allow manual run ("workflow_dispatch")
+    if: github.repository_owner == 'openSUSE' || github.event_name == 'workflow_dispatch'
 
     steps:
 
@@ -89,7 +91,8 @@ jobs:
     - name: IRC notification
       # see https://github.com/marketplace/actions/irc-message-action
       uses: Gottox/irc-message-action@v2
-      if: failure()
+      # never run in forks
+      if: failure() && github.repository_owner == 'openSUSE'
       with:
         channel: "#yast"
         nickname: github-action
