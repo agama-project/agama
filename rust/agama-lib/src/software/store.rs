@@ -20,18 +20,18 @@ impl<'a> SoftwareStore<'a> {
     }
 
     pub async fn load(&self) -> Result<SoftwareSettings, ServiceError> {
-        let product = self.software_client.product().await?;
-
+        // TODO: real selected patterns
         Ok(SoftwareSettings {
-            product: Some(product),
+            patterns: vec![],
         })
     }
 
     pub async fn store(&self, settings: &SoftwareSettings) -> Result<(), ServiceError> {
-        if let Some(product) = &settings.product {
-            self.software_client.select_product(product).await?;
-            self.manager_client.probe().await?;
-        }
+        // TODO: handle selected patterns
+        //if let Some(product) = &settings.product {
+        //    self.software_client.select_product(product).await?;
+        //    self.manager_client.probe().await?;
+        //}
 
         Ok(())
     }

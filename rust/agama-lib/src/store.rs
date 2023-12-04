@@ -3,7 +3,7 @@
 use crate::error::ServiceError;
 use crate::install_settings::{InstallSettings, Scope};
 use crate::{
-    network::NetworkStore, software::SoftwareStore, storage::StorageStore, users::UsersStore,
+    network::NetworkStore, software::SoftwareStore, storage::StorageStore, users::UsersStore, product::ProductStore
 };
 use zbus::Connection;
 
@@ -16,6 +16,7 @@ use zbus::Connection;
 pub struct Store<'a> {
     users: UsersStore<'a>,
     network: NetworkStore<'a>,
+    product: ProductStore<'a>,
     software: SoftwareStore<'a>,
     storage: StorageStore<'a>,
 }
@@ -25,6 +26,7 @@ impl<'a> Store<'a> {
         Ok(Self {
             users: UsersStore::new(connection.clone()).await?,
             network: NetworkStore::new(connection.clone()).await?,
+            product: ProductStore::new(connection.clone()).await?,
             software: SoftwareStore::new(connection.clone()).await?,
             storage: StorageStore::new(connection).await?,
         })
