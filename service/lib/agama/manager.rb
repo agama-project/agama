@@ -209,7 +209,7 @@ module Agama
     #
     # @return [String] path to created archive
     def collect_logs(path: nil)
-      opt = "-d #{path}" if !path.nil? && !path.empty?
+      opt = "-d #{path}" unless path.nil? || path.empty?
 
       `agama logs store #{opt}`.strip
     end
