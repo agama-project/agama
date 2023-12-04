@@ -52,7 +52,7 @@ software:
     - xfce
     - kde
     - gnome
-    - yast2_x11
+    - yast2_desktop
     - yast2_server
     - multimedia
     - office
