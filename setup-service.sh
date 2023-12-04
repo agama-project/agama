@@ -44,6 +44,9 @@ $SUDO zypper --non-interactive --gpg-auto-import-keys install gcc gcc-c++ make o
 # only install cargo if it is not available (avoid conflicts with rustup)
 which cargo || $SUDO zypper --non-interactive install cargo
 
+# if agama is already running -> stop it
+$SUDO systemctl stop agama.service
+
 # - Install service rubygem dependencies
 (
   cd $MYDIR/service
@@ -70,7 +73,7 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
   # cleanup previous installation
   [[ -d $DBUSDIR ]] && $SUDO rm -r $DBUSDIR
 
-  # create services 
+  # create services
   $SUDO mkdir -p $DBUSDIR
   for SVC in org.opensuse.Agama*.service; do
     sudosed "s@\(Exec\)=/usr/bin/@\1=$MYDIR/service/bin/@" $SVC $DBUSDIR/$SVC
