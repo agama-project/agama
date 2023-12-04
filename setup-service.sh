@@ -88,8 +88,7 @@ snapper \
 udftools \
 xfsprogs || exit 1
 
-# - Install service rubygem dependencies
-# Install s390 pakcages (do not exit on failure).
+# Install s390 packages (do not exit on failure).
 $SUDO zypper --non-interactive --gpg-auto-import-keys install \
 yast2-s390 \
 yast2-reipl \
@@ -102,15 +101,24 @@ yast2-cio
   bundle install
 )
 
-# Rust service
+# Rust service, CLI and auto-installation.
+
+# Only install cargo if it is not available (avoid conflicts with rustup)
+which cargo || $SUDO zypper --non-interactive install cargo
 
 # This repo can be removed once python-language-data reaches Factory.
 test -f /etc/zypp/repos.d/d_l_python.repo || \
   $SUDO zypper --non-interactive \
     addrepo https://download.opensuse.org/repositories/devel:/languages:/python/openSUSE_Tumbleweed/ d_l_python
 
-# Only install cargo if it is not available (avoid conflicts with rustup)
-which cargo || $SUDO zypper --non-interactive install cargo
+# Packages required by Rust code (see ./rust/package/agama-cli.spec)
+$SUDO zypper --non-interactive install \
+bzip2 \
+jsonnet \
+lshw \
+python-langtable-data \
+tar \
+xkeyboard-config-lang || exit 1
 
 (
   cd $MYDIR/rust
