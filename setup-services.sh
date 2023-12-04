@@ -1,13 +1,11 @@
 #!/bin/sh -x
 
-# Using a git checkout in the current directory,
-# set up the service (backend) part of agama
-# so that it can be used by
-# - the web frontend (as set up by setup.sh)
+# Using a git checkout in the current directory and set up the services, so that it can be used by:
+# - the web frontend (as set up by setup-web.sh)
 # - the CLI
 # or both
 
-# Exit on error; unset variables are an error
+# Exit on error; unset variables are an error.
 set -eu
 
 MYDIR=$(realpath $(dirname $0))
