@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Dec  4 14:11:51 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Preliminary definitions of openSUSE MicroOS products
+
+-------------------------------------------------------------------
 Mon Oct 30 14:38:51 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Initial split of products (gh#openSUSE/agama#602,
