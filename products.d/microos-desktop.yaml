@@ -51,7 +51,7 @@ software:
   mandatory_packages:
     - NetworkManager
   optional_packages: null
-  base_product: openSUSE
+  base_product: MicroOS
 
 security:
   lsm: selinux
