@@ -55,6 +55,10 @@ impl<'a> Store<'a> {
             settings.user = Some(self.users.load().await?);
         }
 
+        if scopes.contains(&Scope::Product) {
+            settings.product = Some(self.product.load().await?);
+        }
+
         // TODO: use try_join here
         Ok(settings)
     }
@@ -63,6 +67,11 @@ impl<'a> Store<'a> {
     pub async fn store(&self, settings: &InstallSettings) -> Result<(), ServiceError> {
         if let Some(network) = &settings.network {
             self.network.store(network).await?;
+        }
+        // order is important here as network can be critical for connection
+        // to registration server and selecting product is important for rest
+        if let Some(product) = &settings.product {
+            self.product.store(product).await?;
         }
         if let Some(software) = &settings.software {
             self.software.store(software).await?;
