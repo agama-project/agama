@@ -216,8 +216,7 @@ module Agama
 
     # Whatever has to be done at the end of installation
     def finish_installation
-      # TODO: make it optional
-      logs = collect_logs
+      logs = collect_logs(path: "/tmp/var/logs/")
 
       logger.info("Installation logs stored in #{logs}")
 
