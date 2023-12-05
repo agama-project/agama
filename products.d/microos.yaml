@@ -10,6 +10,7 @@ description: 'A quick, small distribution designed to host container workloads
   transactional (atomic) updates upon a read-only btrfs root file system. 
   As rolling release distribution the software is always up-to-date.'
 # Do not manually change any translations! See README.md for more details.
+translations:
 software:
   installation_repositories:
     - url: https://download.opensuse.org/tumbleweed/repo/oss/

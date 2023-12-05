@@ -10,6 +10,7 @@ description: 'A distribution for the desktop offering automatic updates and
   Container Runtime and allows to manage software using Gnome Software or
   KDE Discover.'
 # Do not manually change any translations! See README.md for more details.
+translations:
 software:
   installation_repositories:
     - url: https://download.opensuse.org/tumbleweed/repo/oss/
