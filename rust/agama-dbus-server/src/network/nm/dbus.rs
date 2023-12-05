@@ -309,36 +309,28 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
     }
 
     if let Some(ethernet_config) = conn.get(ETHERNET_KEY) {
-        if let Some(mac_address) = ethernet_config.get("assigned-mac-address") {
-            base_connection.mac_address =
-                match MacAddress::from_str(mac_address.downcast_ref::<str>()?) {
-                    Ok(mac) => mac,
-                    Err(e) => {
-                        log::warn!("Couldn't parse MAC: {}", e);
-                        MacAddress::Unset
-                    }
-                };
-        } else {
-            base_connection.mac_address = MacAddress::Unset;
-        }
+        base_connection.mac_address = mac_address_from_dbus(ethernet_config)?;
     } else if let Some(wireless_config) = conn.get(WIRELESS_KEY) {
-        if let Some(mac_address) = wireless_config.get("assigned-mac-address") {
-            base_connection.mac_address =
-                match MacAddress::from_str(mac_address.downcast_ref::<str>()?) {
-                    Ok(mac) => mac,
-                    Err(e) => {
-                        log::warn!("Couldn't parse MAC: {}", e);
-                        MacAddress::Unset
-                    }
-                };
-        } else {
-            base_connection.mac_address = MacAddress::Unset;
-        }
+        base_connection.mac_address = mac_address_from_dbus(wireless_config)?;
     }
 
     base_connection.ip_config = ip_config_from_dbus(&conn)?;
 
     Some(base_connection)
+}
+
+fn mac_address_from_dbus(config: &HashMap<String, OwnedValue>) -> Option<MacAddress> {
+    if let Some(mac_address) = config.get("assigned-mac-address") {
+        match MacAddress::from_str(mac_address.downcast_ref::<str>()?) {
+            Ok(mac) => Some(mac),
+            Err(e) => {
+                log::warn!("Couldn't parse MAC: {}", e);
+                None
+            }
+        }
+    } else {
+        Some(MacAddress::Unset)
+    }
 }
 
 fn match_config_from_dbus(
