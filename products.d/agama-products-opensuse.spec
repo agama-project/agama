@@ -55,7 +55,6 @@ install -m 0644 *.yaml %{buildroot}%{_datadir}/agama/products.d
 %{_datadir}/agama/products.d/microos.yaml
 %{_datadir}/agama/products.d/microos-desktop.yaml
 %{_datadir}/agama/products.d/tumbleweed.yaml
-%{_datadir}/agama/products.d/leap16.yaml
 
 %files -n agama-products-ALP-Dolomite
 %dir %{_datadir}/agama
