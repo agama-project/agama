@@ -1,5 +1,4 @@
 use crate::network::{
-    error::NetworkStateError,
     model::{Connection, NetworkState},
     nm::NetworkManagerClient,
     Adapter,

@@ -294,19 +294,6 @@ fn match_config_to_dbus(match_config: &MatchConfig) -> HashMap<&str, zvariant::V
         ("interface-name", interfaces),
     ])
 }
-pub fn controller_from_dbus(conn: &OwnedNestedHash) -> Option<String> {
-    let Some(connection) = conn.get("connection") else {
-        return None;
-    };
-
-    let Some(controller) = connection.get("master") else {
-        return None;
-    };
-
-    let controller: &str = controller.downcast_ref()?;
-
-    Some(controller.to_string())
-}
 
 fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
     let Some(connection) = conn.get("connection") else {
