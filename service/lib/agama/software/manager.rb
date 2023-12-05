@@ -215,8 +215,8 @@ module Agama
         patterns = patterns.select(&:user_visible) if filtered
 
         # only display the configured patterns
-        if product.user_patterns
-          patterns.select! {|p| product.user_patterns.include?(p.name)}
+        if product.user_patterns && filtered
+          patterns.select! { |p| product.user_patterns.include?(p.name) }
         end
 
         patterns

@@ -81,7 +81,7 @@ module Agama
           optional_patterns:  config.arch_elements_from(
             id, "software", "optional_patterns", property: :pattern
           ),
-          user_patterns:  config.arch_elements_from(
+          user_patterns:      config.arch_elements_from(
             id, "software", "user_patterns", property: :pattern, default: nil
           )
         }
