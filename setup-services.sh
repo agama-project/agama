@@ -1,13 +1,11 @@
 #!/bin/sh -x
 
-# Using a git checkout in the current directory,
-# set up the service (backend) part of agama
-# so that it can be used by
-# - the web frontend (as set up by setup.sh)
+# Using a git checkout in the current directory and set up the services, so that it can be used by:
+# - the web frontend (as set up by setup-web.sh)
 # - the CLI
 # or both
 
-# Exit on error; unset variables are an error
+# Exit on error; unset variables are an error.
 set -eu
 
 MYDIR=$(realpath $(dirname $0))
@@ -32,29 +30,89 @@ sudosed() {
   sed -e "$1" "$2" | $SUDO tee "$3" > /dev/null
 }
 
-# - Install RPM dependencies
-
-# this repo can be removed once python-language-data reaches Factory
-test -f /etc/zypp/repos.d/d_l_python.repo || \
-  $SUDO zypper --non-interactive \
-    addrepo https://download.opensuse.org/repositories/devel:/languages:/python/openSUSE_Tumbleweed/ d_l_python
-$SUDO zypper --non-interactive --gpg-auto-import-keys install gcc gcc-c++ make openssl-devel ruby-devel \
-  python-langtable-data git augeas-devel jemalloc-devel awk suseconnect-ruby-bindings || exit 1
-
-# only install cargo if it is not available (avoid conflicts with rustup)
-which cargo || $SUDO zypper --non-interactive install cargo
-
 # if agama is already running -> stop it
 $SUDO systemctl list-unit-files agama.service &>/dev/null && $SUDO systemctl stop agama.service
 
-# - Install service rubygem dependencies
+# Ruby services
+
+# Packages required for Ruby development (i.e., bundle install).
+$SUDO zypper --non-interactive --gpg-auto-import-keys install \
+  gcc \
+  gcc-c++ \
+  make \
+  openssl-devel \
+  ruby-devel \
+  augeas-devel || exit 1
+
+# Packages required by Agama Ruby services (see ./service/package/gem2rpm.yml).
+# TODO extract list from gem2rpm.yml
+$SUDO zypper --non-interactive --gpg-auto-import-keys install \
+  dbus-1-common \
+  suseconnect-ruby-bindings \
+  autoyast2-installation \
+  yast2 \
+  yast2-bootloader \
+  yast2-country \
+  yast2-hardware-detection \
+  yast2-installation \
+  yast2-iscsi-client \
+  yast2-network \
+  yast2-proxy \
+  yast2-storage-ng \
+  yast2-users \
+  bcache-tools \
+  btrfsprogs \
+  cryptsetup \
+  dmraid \
+  dosfstools \
+  e2fsprogs \
+  exfat-utils \
+  f2fs-tools \
+  fcoe-utils \
+  fde-tools \
+  jfsutils \
+  libstorage-ng-lang \
+  lvm2 \
+  mdadm \
+  multipath-tools \
+  nilfs-utils \
+  nfs-client \
+  ntfs-3g \
+  ntfsprogs \
+  nvme-cli \
+  open-iscsi \
+  quota \
+  snapper \
+  udftools \
+  xfsprogs || exit 1
+
+# Install s390 packages (do not exit on failure).
+$SUDO zypper --non-interactive --gpg-auto-import-keys install \
+  yast2-s390 \
+  yast2-reipl \
+  yast2-cio
+
+# Rubygem dependencies
 (
   cd $MYDIR/service
   bundle config set --local path 'vendor/bundle'
   bundle install
 )
 
-# - build also rust service
+# Rust service, CLI and auto-installation.
+
+# Only install cargo if it is not available (avoid conflicts with rustup)
+which cargo || $SUDO zypper --non-interactive install cargo
+
+# Packages required by Rust code (see ./rust/package/agama-cli.spec)
+$SUDO zypper --non-interactive install \
+  bzip2 \
+  jsonnet \
+  lshw \
+  python-langtable-data \
+  tar \
+  xkeyboard-config-lang || exit 1
+
 (
   cd $MYDIR/rust
   cargo build

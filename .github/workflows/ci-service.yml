@@ -64,10 +64,28 @@ jobs:
       run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
 
     - name: Install Ruby development files
-      run: zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel npm augeas-devel
+      run: zypper --non-interactive install
+        gcc
+        gcc-c++
+        make
+        openssl-devel
+        ruby-devel
+        augeas-devel
 
     - name: Install required packages
-      run: zypper --non-interactive install yast2-iscsi-client
+      run: zypper --non-interactive install
+        suseconnect-ruby-bindings
+        autoyast2-installation
+        yast2
+        yast2-bootloader
+        yast2-country
+        yast2-hardware-detection
+        yast2-installation
+        yast2-iscsi-client
+        yast2-network
+        yast2-proxy
+        yast2-storage-ng
+        yast2-users
 
     - name: Install RubyGems dependencies
       run: bundle config set --local with 'development' && bundle install
