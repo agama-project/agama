@@ -75,6 +75,8 @@ trait Manager {
     ) -> zbus::Result<Vec<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>>;
 }
 
+// IT'S HERE (FIXME: remove this)
+
 #[dbus_proxy(
     interface = "org.opensuse.Agama1.Locale",
     default_service = "org.opensuse.Agama1",
