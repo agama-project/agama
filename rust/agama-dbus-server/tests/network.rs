@@ -3,11 +3,11 @@ mod common;
 use self::common::{async_retry, DBusServer};
 use agama_dbus_server::network::{
     self,
-    model::{self, BondConfig, Ipv4Method, Ipv6Method},
+    model::{self, Ipv4Method, Ipv6Method},
     Adapter, NetworkService, NetworkState,
 };
 use agama_lib::network::{
-    settings::{self, BondSettings},
+    settings::{self},
     types::DeviceType,
     NetworkClient,
 };

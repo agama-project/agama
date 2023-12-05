@@ -52,8 +52,10 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
                         if let Err(e) = self.client.remove_connection(conn.uuid()).await {
                             log::error!("Could not remove the connection {}: {}", conn.id(), e);
                         }
-                    } else if let Err(e) = self.client.add_or_update_connection(conn).await {
-                        log::error!("Could not add/update the connection {}: {}", conn.id(), e);
+                    } else if !conn.is_controlled() {
+                        if let Err(e) = self.client.add_or_update_connection(conn).await {
+                            log::error!("Could not add/update the connection {}: {}", conn.id(), e);
+                        }
                     }
                 }
             })

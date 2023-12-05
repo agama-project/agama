@@ -2,21 +2,20 @@
 //!
 //! This module contains the set of D-Bus interfaces that are exposed by [D-Bus network
 //! service](crate::NetworkService).
-use std::collections::HashMap;
 
 use super::ObjectsRegistry;
 use crate::network::{
     action::Action,
     error::NetworkStateError,
     model::{
-        BondConnection, Connection as NetworkConnection, ControllerConfig, Device as NetworkDevice,
+        BondConnection, Connection as NetworkConnection, Device as NetworkDevice,
         WirelessConnection,
     },
 };
 
 use agama_lib::network::types::SSID;
 use std::sync::Arc;
-use tokio::sync::{mpsc::UnboundedSender, oneshot};
+use tokio::sync::mpsc::UnboundedSender;
 use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
 use zbus::{
     dbus_interface,
@@ -329,24 +328,6 @@ impl Bond {
         actions.send(Action::UpdateConnection(connection)).unwrap();
         Ok(())
     }
-
-    /// Updates the controller connection data in the NetworkSystem.
-    ///
-    /// * `connection`: Updated connection.
-    async fn update_controller_connection<'a>(
-        &self,
-        connection: MappedMutexGuard<'a, BondConnection>,
-        settings: HashMap<String, ControllerConfig>,
-    ) -> Result<crate::network::model::Connection, NetworkStateError> {
-        let actions = self.actions.lock().await;
-        let connection = NetworkConnection::Bond(connection.clone());
-        let (tx, rx) = oneshot::channel();
-        actions
-            .send(Action::UpdateControllerConnection(connection, settings, tx))
-            .unwrap();
-
-        rx.await.unwrap()
-    }
 }
 
 #[dbus_interface(name = "org.opensuse.Agama1.Network.Connection.Bond")]
@@ -355,15 +336,13 @@ impl Bond {
     #[dbus_interface(property)]
     pub async fn mode(&self) -> String {
         let connection = self.get_bond().await;
-
         connection.bond.mode.to_string()
     }
 
     #[dbus_interface(property)]
     pub async fn set_mode(&mut self, mode: &str) -> zbus::fdo::Result<()> {
         let mut connection = self.get_bond().await;
-        connection.set_mode(mode)?;
-
+        connection.set_mode(mode.try_into()?);
         self.update_connection(connection).await
     }
 
@@ -371,15 +350,13 @@ impl Bond {
     #[dbus_interface(property)]
     pub async fn options(&self) -> String {
         let connection = self.get_bond().await;
-
         connection.bond.options.to_string()
     }
 
     #[dbus_interface(property)]
     pub async fn set_options(&mut self, opts: &str) -> zbus::fdo::Result<()> {
         let mut connection = self.get_bond().await;
-        connection.set_options(opts)?;
-
+        connection.set_options(opts.try_into()?);
         self.update_connection(connection).await
     }
 
@@ -387,25 +364,14 @@ impl Bond {
     #[dbus_interface(property)]
     pub async fn ports(&self) -> Vec<String> {
         let connection = self.get_bond().await;
-        connection
-            .bond
-            .ports
-            .iter()
-            .map(|port| port.base().id.to_string())
-            .collect()
+        connection.bond.ports.clone()
     }
 
     #[dbus_interface(property)]
     pub async fn set_ports(&mut self, ports: Vec<String>) -> zbus::fdo::Result<()> {
-        let connection = self.get_bond().await;
-        let result = self
-            .update_controller_connection(
-                connection,
-                HashMap::from([("ports".to_string(), ControllerConfig::Ports(ports.clone()))]),
-            )
-            .await;
-        self.connection = Arc::new(Mutex::new(result.unwrap()));
-        Ok(())
+        let mut connection = self.get_bond().await;
+        connection.set_ports(ports);
+        self.update_connection(connection).await
     }
 }
 

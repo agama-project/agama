@@ -1,9 +1,6 @@
 //! NetworkManager client.
-use std::collections::HashMap;
-
 use super::dbus::{
-    cleanup_dbus_connection, connection_from_dbus, connection_to_dbus, controller_from_dbus,
-    merge_dbus_connections,
+    cleanup_dbus_connection, connection_from_dbus, connection_to_dbus, merge_dbus_connections,
 };
 use super::model::NmDeviceType;
 use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
@@ -76,7 +73,6 @@ impl<'a> NetworkManagerClient<'a> {
         let proxy = SettingsProxy::new(&self.connection).await?;
         let paths = proxy.list_connections().await?;
         let mut connections: Vec<Connection> = Vec::with_capacity(paths.len());
-        let mut controllers: HashMap<String, Vec<Connection>> = HashMap::new();
         for path in paths {
             let proxy = ConnectionProxy::builder(&self.connection)
                 .path(path.as_str())?
@@ -84,16 +80,8 @@ impl<'a> NetworkManagerClient<'a> {
                 .await?;
             let settings = proxy.get_settings().await?;
             // TODO: log an error if a connection is not found
-
             if let Some(connection) = connection_from_dbus(settings.clone()) {
-                if let Some(controller) = controller_from_dbus(&settings) {
-                    controllers
-                        .entry(controller)
-                        .or_insert_with(Vec::new)
-                        .push(connection)
-                } else {
-                    connections.push(connection);
-                }
+                connections.push(connection);
             }
         }
 
@@ -117,53 +105,6 @@ impl<'a> NetworkManagerClient<'a> {
             proxy.add_connection(new_conn).await?
         };
 
-        if let Connection::Bond(bond) = conn {
-            for port in bond.bond.ports.clone() {
-                self.add_or_update_port_connection(
-                    &port,
-                    bond.base.interface.to_string(),
-                    "bond".to_string(),
-                )
-                .await?;
-            }
-        }
-
-        self.activate_connection(path).await?;
-        Ok(())
-    }
-
-    pub async fn add_or_update_port_connection(
-        &self,
-        conn: &Connection,
-        controller: String,
-        port_type: String,
-    ) -> Result<(), ServiceError> {
-        let mut dbus_conn = connection_to_dbus(conn);
-
-        if let Some(new_conn) = dbus_conn.get_mut("connection") {
-            new_conn.insert("slave-type", port_type.to_string().into());
-            new_conn.insert("master", controller.to_string().into());
-        }
-
-        let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid()).await {
-            let original = proxy.get_settings().await?;
-            let merged = merge_dbus_connections(&original, &dbus_conn);
-            proxy.update(merged).await?;
-            OwnedObjectPath::from(proxy.path().to_owned())
-        } else {
-            let proxy = SettingsProxy::new(&self.connection).await?;
-            proxy.add_connection(dbus_conn).await?
-        };
-
-        if let Connection::Bond(bond) = conn {
-            let _ = bond.bond.ports.iter().map(|port| {
-                self.add_or_update_port_connection(
-                    port,
-                    bond.base.interface.to_string(),
-                    "bond".to_string(),
-                )
-            });
-        }
         self.activate_connection(path).await?;
         Ok(())
     }

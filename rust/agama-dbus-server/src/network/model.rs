@@ -41,9 +41,9 @@ impl NetworkState {
         self.devices.iter().find(|d| d.name == name)
     }
 
-    /// Get connection by UUID
+    /// Get connection by ID
     ///
-    /// * `uuid`: connection UUID
+    /// * `id`: connection ID
     pub fn get_connection(&self, id: &str) -> Option<&Connection> {
         self.connections.iter().find(|c| c.id() == id)
     }
@@ -78,6 +78,16 @@ impl NetworkState {
         };
 
         *old_conn = conn;
+
+        match old_conn {
+            Connection::Bond(ref bond) => {
+                let id = old_conn.id().to_string();
+                let ports = bond.bond.ports.clone();
+                self.update_controller_ports(id, ports)?;
+            }
+            _ => {}
+        };
+
         Ok(())
     }
 
@@ -86,33 +96,17 @@ impl NetworkState {
     /// It uses the `id` to decide which connection to update.
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
-    pub fn update_controller_connection(
+    pub fn update_controller_ports(
         &mut self,
-        mut conn: Connection,
-        settings: HashMap<String, ControllerConfig>,
+        controller_id: String,
+        ports: Vec<String>,
     ) -> Result<(), NetworkStateError> {
-        let controller = conn.clone();
-
-        if let Connection::Bond(ref mut bond) = conn {
-            if let Some(ControllerConfig::Ports(ports)) = settings.get("ports") {
-                let new_ports: Vec<_> = ports
-                    .iter()
-                    .map(|port| {
-                        bond.find_port(port).cloned().unwrap_or_else(|| {
-                            ConnectionBuilder::new(port)
-                                .with_type(DeviceType::Ethernet)
-                                .with_interface(port)
-                                .with_controller(controller.id())
-                                .build()
-                        })
-                    })
-                    .collect();
-
-                bond.set_ports(new_ports);
+        for conn in self.connections.iter_mut() {
+            if ports.contains(&conn.id().to_string()) {
+                conn.set_controller(&controller_id);
             }
         }
-
-        self.update_connection(conn)
+        Ok(())
     }
 
     /// Removes a connection from the state.
@@ -361,15 +355,19 @@ impl Connection {
     }
 
     /// Ports controller name, e.g.: bond0, br0
-    pub fn controller(&self) -> &str {
-        self.base().controller.as_str()
+    pub fn is_controlled(&self) -> bool {
+        self.base().controller.is_some()
+    }
+    /// Ports controller name, e.g.: bond0, br0
+    pub fn controller(&self) -> Option<&String> {
+        self.base().controller.as_ref()
     }
 
     /// Sets the ports controller.
     ///
     /// `controller`: Name of the controller (Bridge, Bond, Team), e.g.: bond0.
     pub fn set_controller(&mut self, controller: &str) {
-        self.base_mut().controller = controller.to_string()
+        self.base_mut().controller = Some(controller.to_string());
     }
 
     pub fn uuid(&self) -> Uuid {
@@ -413,7 +411,7 @@ pub struct BaseConnection {
     pub ip_config: IpConfig,
     pub status: Status,
     pub interface: String,
-    pub controller: String,
+    pub controller: Option<String>,
     pub match_config: MatchConfig,
 }
 
@@ -585,29 +583,16 @@ pub struct BondConnection {
 }
 
 impl BondConnection {
-    pub fn find_port(&self, name: &str) -> Option<&Connection> {
-        self.bond.ports.iter().find(|c| c.interface() == name)
-    }
-
-    pub fn set_ports(&mut self, ports: Vec<Connection>) {
+    pub fn set_ports(&mut self, ports: Vec<String>) {
         self.bond.ports = ports;
     }
 
-    pub fn set_mode(&mut self, mode: &str) -> Result<(), NetworkStateError> {
-        self.bond.mode = BondMode::try_from(mode)
-            .map_err(|_e| NetworkStateError::InvalidBondMode(mode.to_string()))?;
-        Ok(())
+    pub fn set_mode(&mut self, mode: BondMode) {
+        self.bond.mode = mode;
     }
 
-    pub fn set_options<T>(&mut self, options: T) -> Result<(), NetworkStateError>
-    where
-        T: TryInto<BondOptions>,
-        <T as TryInto<BondOptions>>::Error: std::fmt::Debug,
-    {
-        self.bond.options = options
-            .try_into()
-            .map_err(|_e| NetworkStateError::InvalidBondOptions)?;
-        Ok(())
+    pub fn set_options(&mut self, options: BondOptions) {
+        self.bond.options = options;
     }
 }
 
@@ -647,7 +632,7 @@ impl fmt::Display for BondOptions {
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct BondConfig {
     pub mode: BondMode,
-    pub ports: Vec<Connection>,
+    pub ports: Vec<String>,
     pub options: BondOptions,
 }
 
