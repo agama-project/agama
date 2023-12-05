@@ -99,7 +99,7 @@ module Agama
         @optional_packages = []
         @mandatory_patterns = []
         @optional_patterns = []
-        # nil = display all patterns, [] = display none patterns
+        # nil = display all patterns, [] = display no patterns
         @user_patterns = nil
         @translations = {}
       end
