@@ -37,60 +37,60 @@ $SUDO systemctl list-unit-files agama.service &>/dev/null && $SUDO systemctl sto
 
 # Packages required for Ruby development (i.e., bundle install).
 $SUDO zypper --non-interactive --gpg-auto-import-keys install \
-gcc \
-gcc-c++ \
-make \
-openssl-devel \
-ruby-devel \
-augeas-devel || exit 1
+  gcc \
+  gcc-c++ \
+  make \
+  openssl-devel \
+  ruby-devel \
+  augeas-devel || exit 1
 
 # Packages required by Agama Ruby services (see ./service/package/gem2rpm.yml).
 # TODO extract list from gem2rpm.yml
 $SUDO zypper --non-interactive --gpg-auto-import-keys install \
-dbus-1-common \
-suseconnect-ruby-bindings \
-autoyast2-installation \
-yast2 \
-yast2-bootloader \
-yast2-country \
-yast2-hardware-detection \
-yast2-installation \
-yast2-iscsi-client \
-yast2-network \
-yast2-proxy \
-yast2-storage-ng \
-yast2-users \
-bcache-tools \
-btrfsprogs \
-cryptsetup \
-dmraid \
-dosfstools \
-e2fsprogs \
-exfat-utils \
-f2fs-tools \
-fcoe-utils \
-fde-tools \
-jfsutils \
-libstorage-ng-lang \
-lvm2 \
-mdadm \
-multipath-tools \
-nilfs-utils \
-nfs-client \
-ntfs-3g \
-ntfsprogs \
-nvme-cli \
-open-iscsi \
-quota \
-snapper \
-udftools \
-xfsprogs || exit 1
+  dbus-1-common \
+  suseconnect-ruby-bindings \
+  autoyast2-installation \
+  yast2 \
+  yast2-bootloader \
+  yast2-country \
+  yast2-hardware-detection \
+  yast2-installation \
+  yast2-iscsi-client \
+  yast2-network \
+  yast2-proxy \
+  yast2-storage-ng \
+  yast2-users \
+  bcache-tools \
+  btrfsprogs \
+  cryptsetup \
+  dmraid \
+  dosfstools \
+  e2fsprogs \
+  exfat-utils \
+  f2fs-tools \
+  fcoe-utils \
+  fde-tools \
+  jfsutils \
+  libstorage-ng-lang \
+  lvm2 \
+  mdadm \
+  multipath-tools \
+  nilfs-utils \
+  nfs-client \
+  ntfs-3g \
+  ntfsprogs \
+  nvme-cli \
+  open-iscsi \
+  quota \
+  snapper \
+  udftools \
+  xfsprogs || exit 1
 
 # Install s390 packages (do not exit on failure).
 $SUDO zypper --non-interactive --gpg-auto-import-keys install \
-yast2-s390 \
-yast2-reipl \
-yast2-cio
+  yast2-s390 \
+  yast2-reipl \
+  yast2-cio
 
 # Rubygem dependencies
 (
@@ -111,12 +111,12 @@ test -f /etc/zypp/repos.d/d_l_python.repo || \
 
 # Packages required by Rust code (see ./rust/package/agama-cli.spec)
 $SUDO zypper --non-interactive install \
-bzip2 \
-jsonnet \
-lshw \
-python-langtable-data \
-tar \
-xkeyboard-config-lang || exit 1
+  bzip2 \
+  jsonnet \
+  lshw \
+  python-langtable-data \
+  tar \
+  xkeyboard-config-lang || exit 1
 
 (
   cd $MYDIR/rust
