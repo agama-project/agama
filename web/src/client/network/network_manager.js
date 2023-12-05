@@ -173,8 +173,6 @@ const mergeConnectionSettings = (settings, connection) => {
 class NetworkManagerAdapter {
   constructor() {
     this.client = new DBusClient(SERVICE_NAME);
-    /** @type {{[k: string]: string}} */
-    this.connectionIds = {};
     this.proxies = {
       accessPoints: {},
       activeConnections: {},

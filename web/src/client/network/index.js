@@ -23,6 +23,7 @@
 
 import { NetworkManagerAdapter } from "./network_manager";
 import { ConnectionTypes, ConnectionState } from "./model";
+import { AgamaNetworkAdapter } from "./agama_network";
 
 /**
  * @typedef {import("./model").NetworkSettings} NetworkSettings
@@ -80,8 +81,8 @@ class NetworkClient {
    * @param {NetworkAdapter} [adapter] - Network adapter. By default, it is set to
 o  *   NetworkManagerAdapter.
    */
-  constructor(adapter) {
-    this.adapter = adapter || new NetworkManagerAdapter();
+  constructor({ adapter, address }) {
+    this.adapter = adapter || new AgamaNetworkAdapter(address);
     /** @type {!boolean} */
     this.subscribed = false;
     this.setUpDone = false;
@@ -221,5 +222,10 @@ o  *   NetworkManagerAdapter.
 }
 
 export {
-  ConnectionState, ConnectionTypes, NetworkClient, NetworkManagerAdapter, NetworkEventTypes
+  AgamaNetworkAdapter,
+  ConnectionState,
+  ConnectionTypes,
+  NetworkClient,
+  NetworkManagerAdapter,
+  NetworkEventTypes
 };

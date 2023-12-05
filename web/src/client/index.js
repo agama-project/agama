@@ -29,7 +29,7 @@ import { StorageClient } from "./storage";
 import { UsersClient } from "./users";
 import phase from "./phase";
 import { QuestionsClient } from "./questions";
-import { NetworkClient } from "./network";
+import { NetworkClient, AgamaNetworkAdapter } from "./network";
 import cockpit from "../lib/cockpit";
 
 const BUS_ADDRESS_FILE = "/run/agama/bus.address";
@@ -74,7 +74,7 @@ const createClient = (address = "unix:path=/run/agama/bus") => {
   const l10n = new L10nClient(address);
   const manager = new ManagerClient(address);
   const monitor = new Monitor(address, MANAGER_SERVICE);
-  const network = new NetworkClient();
+  const network = new NetworkClient(new AgamaNetworkAdapter(address));
   const software = new SoftwareClient(address);
   const storage = new StorageClient(address);
   const users = new UsersClient(address);
