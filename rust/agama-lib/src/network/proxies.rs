@@ -83,6 +83,10 @@ trait Connection {
     fn interface(&self) -> zbus::Result<String>;
     #[dbus_proxy(property)]
     fn set_interface(&self, interface: &str) -> zbus::Result<()>;
+    #[dbus_proxy(property)]
+    fn mac_address(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
+    fn set_mac_address(&self, mac_address: &str) -> zbus::Result<()>;
 }
 
 #[dbus_proxy(
