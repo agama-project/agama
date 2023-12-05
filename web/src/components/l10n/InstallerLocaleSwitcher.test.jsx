@@ -22,7 +22,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import LanguageSwitcher from "./LanguageSwitcher";
+import InstallerLocaleSwitcher from "./InstallerLocaleSwitcher";
 
 const mockLanguage = "es-es";
 let mockChangeLanguageFn;
@@ -52,8 +52,8 @@ beforeEach(() => {
   mockChangeLanguageFn = jest.fn();
 });
 
-it("LanguageSwitcher", async () => {
-  const { user } = plainRender(<LanguageSwitcher />);
+it("InstallerLocaleSwitcher", async () => {
+  const { user } = plainRender(<InstallerLocaleSwitcher />);
   expect(screen.getByRole("option", { name: "Español" }).selected).toBe(true);
   await user.selectOptions(
     screen.getByRole("combobox", { label: "Display Language" }),

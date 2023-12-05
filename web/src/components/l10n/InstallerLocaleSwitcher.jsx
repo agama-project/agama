@@ -26,7 +26,7 @@ import { _ } from "~/i18n";
 import { useInstallerL10n } from "~/context/installerL10n";
 import cockpit from "~/lib/cockpit";
 
-export default function LanguageSwitcher() {
+export default function InstallerLocaleSwitcher() {
   const { language, changeLanguage } = useInstallerL10n();
   const [selected, setSelected] = useState(null);
   const languages = cockpit.manifests.agama?.locales || [];
