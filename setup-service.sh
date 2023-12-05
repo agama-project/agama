@@ -45,7 +45,7 @@ $SUDO zypper --non-interactive --gpg-auto-import-keys install gcc gcc-c++ make o
 which cargo || $SUDO zypper --non-interactive install cargo
 
 # if agama is already running -> stop it
-$SUDO systemctl stop agama.service
+$SUDO systemctl list-unit-files agama.service &>/dev/null && $SUDO systemctl stop agama.service
 
 # - Install service rubygem dependencies
 (
