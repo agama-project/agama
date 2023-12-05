@@ -98,21 +98,25 @@ trait Locale {
     /// Keymap property
     #[dbus_proxy(property)]
     fn keymap(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
     fn set_keymap(&self, value: &str) -> zbus::Result<()>;
 
     /// Locales property
     #[dbus_proxy(property)]
     fn locales(&self) -> zbus::Result<Vec<String>>;
+    #[dbus_proxy(property)]
     fn set_locales(&self, value: &[&str]) -> zbus::Result<()>;
 
     /// Timezone property
     #[dbus_proxy(property)]
     fn timezone(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
     fn set_timezone(&self, value: &str) -> zbus::Result<()>;
 
     /// UILocale property
     #[dbus_proxy(property, name = "UILocale")]
     fn uilocale(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
     fn set_uilocale(&self, value: &str) -> zbus::Result<()>;
 }
 
