@@ -32,8 +32,17 @@ impl<'a> ProductStore<'a> {
     }
 
     pub async fn store(&self, settings: &ProductSettings) -> Result<(), ServiceError> {
+        let mut probe = false;
         if let Some(product) = &settings.product {
             self.product_client.select_product(product).await?;
+            probe = true;
+        }
+        if let Some(reg_code) = &settings.registration_code {
+            let email = settings.email.clone().unwrap_or_default();
+            self.product_client.register(reg_code, &email).await?;
+        }
+
+        if probe {
             self.manager_client.probe().await?;
         }
 

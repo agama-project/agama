@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::software::proxies::SoftwareProductProxy;
 use crate::error::ServiceError;
 use serde::Serialize;
@@ -81,5 +83,12 @@ impl<'a> ProductClient<'a> {
     /// email used to register product
     pub async fn email(&self) -> Result<String, ServiceError>{
         Ok(self.registration_proxy.email().await?)
+    }
+
+    /// register product
+    pub async fn register(&self, code :&str, _email: &str) -> Result<(), ServiceError> {
+        // TODO: handle email
+        self.registration_proxy.register(code, HashMap::new()).await?;
+        Ok(())
     }
 }
