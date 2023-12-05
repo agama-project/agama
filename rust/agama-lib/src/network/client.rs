@@ -194,11 +194,7 @@ impl<'a> NetworkClient<'a> {
         let interface = conn.interface.as_deref().unwrap_or("");
         proxy.set_interface(interface).await?;
 
-        let mac_address = if let Some(mac_address) = &conn.mac_address {
-            mac_address
-        } else {
-            ""
-        };
+        let mac_address = conn.mac_address.as_deref().unwrap_or("");
         proxy.set_mac_address(mac_address).await?;
 
         self.update_ip_settings(path, conn).await?;
