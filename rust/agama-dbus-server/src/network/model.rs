@@ -16,8 +16,9 @@ use thiserror::Error;
 use uuid::Uuid;
 use zbus::zvariant::Value;
 mod builder;
+pub use builder::ConnectionBuilder;
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct NetworkState {
     pub devices: Vec<Device>,
     pub connections: Vec<Connection>,
@@ -64,7 +65,21 @@ impl NetworkState {
             return Err(NetworkStateError::ConnectionExists(conn.uuid()));
         }
 
+        // FIXME: unify this code.
+        match &conn {
+            Connection::Bond(bond) => {
+                let id = conn.id().to_string();
+                // FIXME: We should implement a trait Controller
+                // so those that acts as a controller offer the same API
+                // and we do not need to access "bond.bond".
+                let ports = bond.bond.ports.clone();
+                self.update_controller_ports(id, ports)?;
+            }
+            _ => {}
+        };
+
         self.connections.push(conn);
+
         Ok(())
     }
 
@@ -80,8 +95,8 @@ impl NetworkState {
 
         *old_conn = conn;
 
-        match old_conn {
-            Connection::Bond(ref bond) => {
+        match &old_conn {
+            Connection::Bond(bond) => {
                 let id = old_conn.id().to_string();
                 let ports = bond.bond.ports.clone();
                 self.update_controller_ports(id, ports)?;
@@ -92,11 +107,12 @@ impl NetworkState {
         Ok(())
     }
 
-    /// Updates a controller connection with a new one.
+    /// Updates controller ports.
     ///
-    /// It uses the `id` to decide which connection to update.
+    /// It sets or unsets the controller of each connection according to the list of given ports.
     ///
-    /// Additionally, it registers the connection to be removed when the changes are applied.
+    /// * `controller_id`: controller to use.
+    /// * `ports`: devices that should belong to the given controller.
     pub fn update_controller_ports(
         &mut self,
         controller_id: String,
@@ -105,6 +121,8 @@ impl NetworkState {
         for conn in self.connections.iter_mut() {
             if ports.contains(&conn.id().to_string()) {
                 conn.set_controller(&controller_id);
+            } else if conn.controller() == Some(&controller_id) {
+                conn.unset_controller();
             }
         }
         Ok(())
@@ -127,6 +145,7 @@ impl NetworkState {
 mod tests {
     use uuid::Uuid;
 
+    use super::builder::ConnectionBuilder;
     use super::*;
     use crate::network::error::NetworkStateError;
 
@@ -235,6 +254,25 @@ mod tests {
         let conn = Connection::Loopback(LoopbackConnection { base });
         assert!(conn.is_loopback());
     }
+
+    #[test]
+    fn test_add_bonding() {
+        let mut state = NetworkState::default();
+        let eth0 = ConnectionBuilder::new("eth0")
+            .with_type(DeviceType::Ethernet)
+            .build();
+        state.add_connection(eth0).unwrap();
+
+        let bond0 = ConnectionBuilder::new("bond0")
+            .with_type(DeviceType::Bond)
+            .with_ports(vec!["eth0".to_string()])
+            .build();
+
+        state.add_connection(bond0).unwrap();
+
+        let eth0 = state.get_connection("eth0").unwrap();
+        assert_eq!(eth0.controller().unwrap(), "bond0");
+    }
 }
 
 /// Network device
@@ -324,6 +362,10 @@ impl Connection {
     /// `controller`: Name of the controller (Bridge, Bond, Team), e.g.: bond0.
     pub fn set_controller(&mut self, controller: &str) {
         self.base_mut().controller = Some(controller.to_string());
+    }
+
+    pub fn unset_controller(&mut self) {
+        self.base_mut().controller = None;
     }
 
     pub fn uuid(&self) -> Uuid {
