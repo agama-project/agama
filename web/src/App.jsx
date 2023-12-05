@@ -39,7 +39,7 @@ import {
   ShowTerminalButton,
   Sidebar
 } from "~/components/core";
-import { InstallerLocaleSwitcher } from "./components/l10n";
+import { InstallerKeymapSwitcher, InstallerLocaleSwitcher } from "./components/l10n";
 import { Layout, Loading, Title } from "./components/layout";
 import { useInstallerL10n } from "./context/installerL10n";
 
@@ -117,6 +117,7 @@ function App() {
         <div className="full-width highlighted">
           <div className="flex-stack">
             <InstallerLocaleSwitcher />
+            <InstallerKeymapSwitcher />
           </div>
         </div>
       </Sidebar>

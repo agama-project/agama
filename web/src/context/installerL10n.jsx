@@ -19,6 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
+// cspell:ignore localectl
 // @ts-check
 
 import React, { useCallback, useEffect, useState } from "react";
@@ -179,6 +180,18 @@ function reload(newLanguage) {
 }
 
 /**
+ * Extracts keymap from localectl output.
+ *
+ * @param {string} output
+ * @returns {string|undefined}
+ */
+function keymapFromLocalectl(output) {
+  const matcher = /X11 Layout: (.*)\n/;
+
+  return matcher.exec(output)?.at(1);
+}
+
+/**
  * This provider sets the installer locale. By default, it uses the URL "lang" query parameter or
  * the preferred locale from the browser and synchronizes the UI and the backend locales. To
  * activate a new locale it reloads the whole page.
@@ -196,6 +209,7 @@ function reload(newLanguage) {
 function InstallerL10nProvider({ children }) {
   const client = useInstallerClient();
   const [language, setLanguage] = useState(undefined);
+  const [keymap, setKeymap] = useState(undefined);
   const [backendPending, setBackendPending] = useState(false);
   const { cancellablePromise } = useCancellablePromise();
 
@@ -240,6 +254,11 @@ function InstallerL10nProvider({ children }) {
     }
   }, [storeInstallerLanguage, setLanguage]);
 
+  const changeKeymap = useCallback(async (id) => {
+    setKeymap(id);
+    await cockpit.spawn(["localectl", "set-x11-keymap", id]);
+  }, [setKeymap]);
+
   useEffect(() => {
     if (!language) changeLanguage();
   }, [changeLanguage, language]);
@@ -251,8 +270,14 @@ function InstallerL10nProvider({ children }) {
     setBackendPending(false);
   }, [client, language, backendPending, storeInstallerLanguage]);
 
+  useEffect(() => {
+    cockpit.spawn(["localectl", "status"]).then(output => setKeymap(keymapFromLocalectl(output)));
+  }, [setKeymap]);
+
+  const value = { language, changeLanguage, keymap, changeKeymap };
+
   return (
-    <L10nContext.Provider value={{ language, changeLanguage }}>{children}</L10nContext.Provider>
+    <L10nContext.Provider value={value}>{children}</L10nContext.Provider>
   );
 }
 
