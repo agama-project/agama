@@ -17,6 +17,7 @@ const ETHERNET_KEY: &str = "802-3-ethernet";
 const WIRELESS_KEY: &str = "802-11-wireless";
 const WIRELESS_SECURITY_KEY: &str = "802-11-wireless-security";
 const LOOPBACK_KEY: &str = "loopback";
+const DUMMY_KEY: &str = "dummy";
 
 /// Converts a connection struct into a HashMap that can be sent over D-Bus.
 ///
@@ -40,6 +41,10 @@ pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
         }
     }
 
+    if let Connection::Dummy(_) = conn {
+        connection_dbus.insert("type", DUMMY_KEY.into());
+    }
+
     result.insert("connection", connection_dbus);
     result
 }
@@ -56,6 +61,10 @@ pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
             wireless: wireless_config,
         }));
     }
+
+    if conn.get(DUMMY_KEY).is_some() {
+        return Some(Connection::Dummy(DummyConnection { base }));
+    };
 
     if conn.get(LOOPBACK_KEY).is_some() {
         return Some(Connection::Loopback(LoopbackConnection { base }));
