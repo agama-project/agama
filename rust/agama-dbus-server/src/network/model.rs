@@ -358,6 +358,7 @@ impl Connection {
     pub fn is_controlled(&self) -> bool {
         self.base().controller.is_some()
     }
+
     /// Ports controller name, e.g.: bond0, br0
     pub fn controller(&self) -> Option<&String> {
         self.base().controller.as_ref()

@@ -91,8 +91,12 @@ impl<'a> NetworkManagerClient<'a> {
     /// Adds or updates a connection if it already exists.
     ///
     /// * `conn`: connection to add or update.
-    pub async fn add_or_update_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
-        let mut new_conn = connection_to_dbus(conn);
+    pub async fn add_or_update_connection(
+        &self,
+        conn: &Connection,
+        controller: Option<&Connection>,
+    ) -> Result<(), ServiceError> {
+        let mut new_conn = connection_to_dbus(conn, controller);
 
         let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid()).await {
             let original = proxy.get_settings().await?;

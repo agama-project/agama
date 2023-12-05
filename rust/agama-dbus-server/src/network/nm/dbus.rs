@@ -22,13 +22,20 @@ const LOOPBACK_KEY: &str = "loopback";
 /// Converts a connection struct into a HashMap that can be sent over D-Bus.
 ///
 /// * `conn`: Connection to convert.
-pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
+pub fn connection_to_dbus<'a>(
+    conn: &'a Connection,
+    controller: Option<&'a Connection>,
+) -> NestedHash<'a> {
     let mut result = NestedHash::new();
     let mut connection_dbus = HashMap::from([
         ("id", conn.id().into()),
         ("type", ETHERNET_KEY.into()),
         ("interface-name", conn.interface().into()),
     ]);
+    if let Some(controller) = controller {
+        connection_dbus.insert("slave-type", "bond".into()); // TODO: only 'bond' is supported
+        connection_dbus.insert("master", controller.id().into());
+    }
 
     result.insert("ipv4", ip_config_to_ipv4_dbus(conn.ip_config()));
     result.insert("ipv6", ip_config_to_ipv6_dbus(conn.ip_config()));
@@ -761,7 +768,7 @@ mod test {
             ..Default::default()
         };
         let wireless = Connection::Wireless(wireless);
-        let wireless_dbus = connection_to_dbus(&wireless);
+        let wireless_dbus = connection_to_dbus(&wireless, None);
 
         let wireless = wireless_dbus.get(WIRELESS_KEY).unwrap();
         let mode: &str = wireless.get("mode").unwrap().downcast_ref().unwrap();
@@ -783,7 +790,7 @@ mod test {
     #[test]
     fn test_dbus_from_ethernet_connection() {
         let ethernet = build_ethernet_connection();
-        let ethernet_dbus = connection_to_dbus(&ethernet);
+        let ethernet_dbus = connection_to_dbus(&ethernet, None);
         check_dbus_base_connection(&ethernet_dbus);
     }
 
@@ -841,7 +848,7 @@ mod test {
             ..Default::default()
         };
         let updated = Connection::Ethernet(ethernet);
-        let updated = connection_to_dbus(&updated);
+        let updated = connection_to_dbus(&updated, None);
 
         let merged = merge_dbus_connections(&original, &updated);
         let connection = merged.get("connection").unwrap();
@@ -895,7 +902,7 @@ mod test {
 
         let mut updated = Connection::Ethernet(EthernetConnection::default());
         updated.set_interface("");
-        let updated = connection_to_dbus(&updated);
+        let updated = connection_to_dbus(&updated, None);
 
         let merged = merge_dbus_connections(&original, &updated);
         let connection = merged.get("connection").unwrap();

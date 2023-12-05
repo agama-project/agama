@@ -1,4 +1,5 @@
 use crate::network::{
+    error::NetworkStateError,
     model::{Connection, NetworkState},
     nm::NetworkManagerClient,
     Adapter,
@@ -25,6 +26,61 @@ impl<'a> NetworkManagerAdapter<'a> {
     fn is_writable(conn: &Connection) -> bool {
         !conn.is_loopback()
     }
+
+    /// Writes the connections to NetworkManager.
+    ///
+    /// Internally, it creates and order list of connections before processing them. The reason is
+    /// that using async recursive functions is giving us some troubles, so we decided to go with a
+    /// simpler approach.
+    ///
+    /// * `network`: network model.
+    async fn write_connections(&self, network: &NetworkState) {
+        let conns = self.ordered_connections(&network);
+        println!("Connections to write: {:?}", &conns);
+
+        for conn in &conns {
+            let result = if conn.is_removed() {
+                self.client.remove_connection(conn.uuid()).await
+            } else {
+                let ctrl = conn.controller().and_then(|id| network.get_connection(&id));
+                self.client.add_or_update_connection(&conn, ctrl).await
+            };
+
+            if let Err(e) = result {
+                log::error!("Could not process the connection {}: {}", conn.id(), e);
+            }
+        }
+    }
+
+    /// Returns the connections in the order they should be processed.
+    /// * `network`: network model.
+    ///
+    fn ordered_connections<'b>(&self, network: &'b NetworkState) -> Vec<&'b Connection> {
+        let mut conns: Vec<&Connection> = vec![];
+        for conn in &network.connections {
+            if !conn.is_controlled() {
+                self.add_ordered_connections(conn, network, &mut conns);
+            }
+        }
+        conns
+    }
+
+    fn add_ordered_connections<'b>(
+        &self,
+        conn: &'b Connection,
+        network: &'b NetworkState,
+        conns: &mut Vec<&'b Connection>,
+    ) {
+        conns.push(conn);
+
+        if let Connection::Bond(bond) = &conn {
+            for port in &bond.bond.ports {
+                if let Some(port_connection) = network.get_connection(port.as_str()) {
+                    self.add_ordered_connections(port_connection, network, conns);
+                }
+            }
+        }
+    }
 }
 
 impl<'a> Adapter for NetworkManagerAdapter<'a> {
@@ -48,15 +104,7 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
                     if !Self::is_writable(conn) {
                         continue;
                     }
-                    if conn.is_removed() {
-                        if let Err(e) = self.client.remove_connection(conn.uuid()).await {
-                            log::error!("Could not remove the connection {}: {}", conn.id(), e);
-                        }
-                    } else if !conn.is_controlled() {
-                        if let Err(e) = self.client.add_or_update_connection(conn).await {
-                            log::error!("Could not add/update the connection {}: {}", conn.id(), e);
-                        }
-                    }
+                    self.write_connections(network).await;
                 }
             })
         });
