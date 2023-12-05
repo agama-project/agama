@@ -78,11 +78,11 @@ const NetworkEventTypes = Object.freeze({
  */
 class NetworkClient {
   /**
-   * @param {NetworkAdapter} [adapter] - Network adapter. By default, it is set to
+   * @param {NetworkAdapter} adapter - Network adapter. By default, it is set to
 o  *   NetworkManagerAdapter.
    */
-  constructor({ adapter, address }) {
-    this.adapter = adapter || new AgamaNetworkAdapter(address);
+  constructor(adapter) {
+    this.adapter = adapter;
     /** @type {!boolean} */
     this.subscribed = false;
     this.setUpDone = false;
