@@ -6,11 +6,13 @@ use super::ObjectsRegistry;
 use crate::network::{
     action::Action,
     error::NetworkStateError,
-    model::{Connection as NetworkConnection, Device as NetworkDevice, WirelessConnection},
+    model::{
+        Connection as NetworkConnection, Device as NetworkDevice, MacAddress, WirelessConnection,
+    },
 };
 
 use agama_lib::network::types::SSID;
-use std::sync::Arc;
+use std::{str::FromStr, sync::Arc};
 use tokio::sync::mpsc::UnboundedSender;
 use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
 use zbus::{
@@ -248,7 +250,7 @@ impl Connection {
     #[dbus_interface(property)]
     pub async fn set_mac_address(&mut self, mac_address: &str) -> zbus::fdo::Result<()> {
         let mut connection = self.get_connection().await;
-        connection.set_mac_address(mac_address)?;
+        connection.set_mac_address(MacAddress::from_str(mac_address)?);
         self.update_connection(connection).await
     }
 }

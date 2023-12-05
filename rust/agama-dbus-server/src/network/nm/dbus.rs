@@ -863,7 +863,7 @@ mod test {
 
         let mut updated = Connection::Ethernet(EthernetConnection::default());
         updated.set_interface("");
-        assert!(updated.set_mac_address("").is_ok());
+        updated.set_mac_address(MacAddress::Unset);
         let updated = connection_to_dbus(&updated);
 
         let merged = merge_dbus_connections(&original, &updated);

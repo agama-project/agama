@@ -319,9 +319,8 @@ impl Connection {
         self.base().mac_address.to_string()
     }
 
-    pub fn set_mac_address(&mut self, mac_address: &str) -> Result<(), InvalidMacAddress> {
-        self.base_mut().mac_address = MacAddress::from_str(mac_address)?;
-        Ok(())
+    pub fn set_mac_address(&mut self, mac_address: MacAddress) {
+        self.base_mut().mac_address = mac_address;
     }
 }
 
