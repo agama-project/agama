@@ -25,7 +25,7 @@ impl<'a> ProductStore<'a> {
         let email = self.product_client.email().await?;
 
         Ok(ProductSettings {
-            product: Some(product),
+            id: Some(product),
             registration_code: Some(registration_code),
             email: Some(email)
         })
@@ -33,7 +33,7 @@ impl<'a> ProductStore<'a> {
 
     pub async fn store(&self, settings: &ProductSettings) -> Result<(), ServiceError> {
         let mut probe = false;
-        if let Some(product) = &settings.product {
+        if let Some(product) = &settings.id {
             self.product_client.select_product(product).await?;
             probe = true;
         }

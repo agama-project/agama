@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct ProductSettings {
     /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)
-    pub product: Option<String>,
+    pub id: Option<String>,
     pub registration_code: Option<String>,
     pub email: Option<String>
 }

@@ -244,7 +244,7 @@ module Agama
         user_patterns.each { |p| Yast::Pkg.ResolvableNeutral(p, :pattern, force = false) }
         Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :pattern, ids)
         ids.each { |p| Yast::Pkg.ResolvableInstall(p, :pattern) }
-        logger.info "Setting patterns to #{res.inspect}"
+        logger.info "Setting patterns to #{ids.inspect}"
 
         res = Yast::Pkg.PkgSolve(unused = true)
         logger.info "Solver run #{res.inspect}"
