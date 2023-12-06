@@ -4,7 +4,12 @@
     "language": "en_US"
   },
   "software": {
-    "product": "ALP-Dolomite"
+    "patterns": [
+      "gnome"
+    ]
+  },
+  "product": {
+    "id": "Tumbleweed"
   },
   "storage": {
     "bootDevice": "/dev/dm-1"
