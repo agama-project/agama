@@ -34,6 +34,7 @@ const initialState = {
   errors: [],
   errorsRead: false,
   size: "",
+  patterns: {},
   progress: { message: _("Reading software repositories"), current: 0, total: 0, finished: false }
 };
 
@@ -51,8 +52,8 @@ const reducer = (state, action) => {
     case "UPDATE_PROPOSAL": {
       if (state.busy) return state;
 
-      const { errors, size } = action.payload;
-      return { ...state, errors, size, errorsRead: true };
+      const { errors, size, patterns } = action.payload;
+      return { ...state, errors, size, patterns, errorsRead: true };
     }
 
     default: {
@@ -82,8 +83,9 @@ export default function SoftwareSection({ showErrors }) {
     const updateProposal = async () => {
       const errors = await cancellablePromise(client.getIssues());
       const size = await cancellablePromise(client.getUsedSpace());
+      const patterns = await cancellablePromise(client.patterns(true));
 
-      dispatch({ type: "UPDATE_PROPOSAL", payload: { errors, size } });
+      dispatch({ type: "UPDATE_PROPOSAL", payload: { errors, size, patterns } });
     };
 
     updateProposal();
@@ -142,7 +144,8 @@ export default function SoftwareSection({ showErrors }) {
       icon="apps"
       loading={state.busy}
       errors={errors.map(toValidationError)}
-      path="/software"
+      // do not display the pattern selector when there are no patterns to display
+      path={Object.keys(state.patterns).length > 0 ? "/software" : null}
     >
       <SectionContent />
     </Section>

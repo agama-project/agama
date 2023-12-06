@@ -229,12 +229,70 @@ describe Agama::Software::Manager do
   describe "#products" do
     it "returns the list of known products" do
       products = subject.products
-      expect(products.size).to eq(3)
+      expect(products.size).to eq(4)
       expect(products).to all(be_a(Agama::Software::Product))
       expect(products).to contain_exactly(
         an_object_having_attributes(id: "ALP-Dolomite"),
         an_object_having_attributes(id: "Tumbleweed"),
-        an_object_having_attributes(id: "Leap16")
+        an_object_having_attributes(id: "MicroOS"),
+        an_object_having_attributes(id: "MicroOS-Desktop")
+      )
+    end
+  end
+
+  describe "#patterns" do
+    it "returns only the specified patterns" do
+      expect(Y2Packager::Resolvable).to receive(:find).and_return(
+        [
+          double(
+            arch:         "x86_64",
+            category:     "Base Technologies",
+            description:  "YaST tools for installing your system.",
+            icon:         "./yast",
+            kind:         :pattern,
+            name:         "yast2_install_wf",
+            order:        "1240",
+            source:       0,
+            summary:      "YaST Installation Packages",
+            user_visible: false,
+            version:      "20220411-1.4"
+          ),
+          double(
+            arch:         "x86_64",
+            category:     "Base Technologies",
+            description:  "YaST tools for basic system administration.",
+            icon:         "./yast",
+            kind:         :pattern,
+            name:         "yast2_basis",
+            order:        "1220",
+            source:       0,
+            summary:      "YaST Base Utilities",
+            user_visible: true,
+            version:      "20220411-1.4"
+          ),
+          double(
+            arch:         "noarch",
+            category:     "Graphical Environments",
+            description:
+                          "Packages providing the Plasma desktop environment and " \
+                          "applications from KDE.",
+            icon:         "./pattern-kde",
+            kind:         :pattern,
+            name:         "kde",
+            order:        "1110",
+            source:       0,
+            summary:      "KDE Applications and Plasma 5 Desktop",
+            user_visible: true,
+            version:      "20230801-1.1"
+          )
+        ]
+      )
+
+      allow(subject.product).to receive(:user_patterns).and_return(["kde"])
+      patterns = subject.patterns(true)
+
+      expect(patterns).to contain_exactly(
+        an_object_having_attributes(name: "kde")
       )
     end
   end

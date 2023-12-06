@@ -24,3 +24,7 @@ Metrics/BlockLength:
 # assignment in method calls is used to document some params
 Lint/UselessAssignment:
   Enabled: false
+
+# be less strict
+Metrics/AbcSize:
+  Max: 32
