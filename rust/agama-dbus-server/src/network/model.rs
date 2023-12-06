@@ -65,19 +65,7 @@ impl NetworkState {
             return Err(NetworkStateError::ConnectionExists(conn.uuid()));
         }
 
-        // FIXME: unify this code.
-        match &conn {
-            Connection::Bond(bond) => {
-                let id = conn.id().to_string();
-                // FIXME: We should implement a trait Controller
-                // so those that acts as a controller offer the same API
-                // and we do not need to access "bond.bond".
-                let ports = bond.bond.ports.clone();
-                self.update_controller_ports(id, ports)?;
-            }
-            _ => {}
-        };
-
+        self.update_controller_ports(&conn);
         self.connections.push(conn);
 
         Ok(())
@@ -88,43 +76,14 @@ impl NetworkState {
     /// It uses the `id` to decide which connection to update.
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
-    pub fn update_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
+    pub fn update_connection(&mut self, mut conn: Connection) -> Result<(), NetworkStateError> {
         let Some(old_conn) = self.get_connection_mut(conn.id()) else {
             return Err(NetworkStateError::UnknownConnection(conn.id().to_string()));
         };
 
-        *old_conn = conn;
+        std::mem::swap(old_conn, &mut conn);
+        self.update_controller_ports(&conn);
 
-        match &old_conn {
-            Connection::Bond(bond) => {
-                let id = old_conn.id().to_string();
-                let ports = bond.bond.ports.clone();
-                self.update_controller_ports(id, ports)?;
-            }
-            _ => {}
-        };
-
-        Ok(())
-    }
-
-    /// Updates controller ports.
-    ///
-    /// It sets or unsets the controller of each connection according to the list of given ports.
-    ///
-    /// * `controller_id`: controller to use.
-    /// * `ports`: devices that should belong to the given controller.
-    pub fn update_controller_ports(
-        &mut self,
-        controller_id: String,
-        ports: Vec<String>,
-    ) -> Result<(), NetworkStateError> {
-        for conn in self.connections.iter_mut() {
-            if ports.contains(&conn.id().to_string()) {
-                conn.set_controller(&controller_id);
-            } else if conn.controller() == Some(&controller_id) {
-                conn.unset_controller();
-            }
-        }
         Ok(())
     }
 
@@ -138,6 +97,22 @@ impl NetworkState {
 
         conn.remove();
         Ok(())
+    }
+
+    /// It does not check whether the ports exist.
+    ///
+    /// TODO: check whether a port is missing.
+    fn update_controller_ports(&mut self, controller: &Connection) {
+        if let Connection::Bond(bond) = controller {
+            let controller_id = controller.id().to_string();
+            for conn in self.connections.iter_mut() {
+                if bond.bond.ports.contains(&conn.id().to_string()) {
+                    conn.set_controller(&controller_id);
+                } else if conn.controller() == Some(&controller_id) {
+                    conn.unset_controller();
+                }
+            }
+        }
     }
 }
 
