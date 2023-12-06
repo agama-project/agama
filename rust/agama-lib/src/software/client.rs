@@ -52,4 +52,29 @@ impl<'a> SoftwareClient<'a> {
             .collect();
         Ok(patterns)
     }
+
+    /// Returns the selected patterns by user
+    pub async fn user_selected_patterns(&self) -> Result<Vec<String>, ServiceError> {
+        const USER_SELECTED: u8 = 0;
+        let patterns: Vec<String> = self
+            .software_proxy
+            .selected_patterns()
+            .await?
+            .into_iter()
+            .filter(|(_id, reason)| {
+                *reason == USER_SELECTED
+            })
+            .map(|(id, _reason)| {
+                id
+            })
+            .collect();
+        Ok(patterns)
+    }
+
+    /// Selects patterns by user
+    pub async fn select_patterns(&self, patterns: &Vec<String>) -> Result<(), ServiceError> {
+        let patterns: Vec<&str> = patterns.iter().map(AsRef::as_ref).collect();
+        self.software_proxy.set_user_patterns(patterns.as_slice()).await?;
+        Ok(())
+    }
 }

@@ -40,6 +40,7 @@ impl<'a> ProductStore<'a> {
         if let Some(reg_code) = &settings.registration_code {
             let email = settings.email.clone().unwrap_or_default();
             self.product_client.register(reg_code, &email).await?;
+            probe = true;
         }
 
         if probe {
