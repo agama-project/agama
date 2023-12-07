@@ -41,7 +41,7 @@ import { ProposalPage as StoragePage, ISCSIPage, DASDPage, ZFCPPage } from "~/co
 import { UsersPage } from "~/components/users";
 import { L10nPage } from "~/components/l10n";
 import { NetworkPage } from "~/components/network";
-import { IssuesPage } from "~/components/core";
+import { IssuesDialog } from "~/components/core";
 
 /**
  * As JSX components might import CSS stylesheets, our styles must be imported
@@ -84,7 +84,7 @@ root.render(
               <Route path="/storage/zfcp" element={<ZFCPPage />} />
               <Route path="/network" element={<NetworkPage />} />
               <Route path="/users" element={<UsersPage />} />
-              <Route path="/issues" element={<IssuesPage />} />
+              <Route path="/issues" element={<IssuesDialog />} />
             </Route>
             <Route path="products" element={<ProductSelectionPage />} />
           </Route>

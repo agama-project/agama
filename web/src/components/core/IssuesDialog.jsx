@@ -204,7 +204,7 @@ const IssuesContent = ({ issues, sectionHighlight = "" }) => {
  * @param {function} props.close - A function to call when the close action is triggered.
  * @param {string} [props.sectionHighlight] - A string which indicites which issues section should be highlighted.
  */
-export default function IssuesPage({ close, sectionHighlight = "" }) {
+export default function IssuesDialog({ close, sectionHighlight = "" }) {
   const [isLoading, setIsLoading] = useState(true);
   const [issues, setIssues] = useState();
   const client = useInstallerClient();
