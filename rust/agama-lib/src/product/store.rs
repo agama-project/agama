@@ -27,7 +27,7 @@ impl<'a> ProductStore<'a> {
         Ok(ProductSettings {
             id: Some(product),
             registration_code: Some(registration_code),
-            email: Some(email),
+            registration_email: Some(email),
         })
     }
 
@@ -42,7 +42,7 @@ impl<'a> ProductStore<'a> {
             }
         }
         if let Some(reg_code) = &settings.registration_code {
-            let email = settings.email.clone().unwrap_or_default();
+            let email = settings.registration_email.clone().unwrap_or_default();
             self.product_client.register(reg_code, &email).await?;
             probe = true;
         }

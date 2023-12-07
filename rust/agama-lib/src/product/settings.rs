@@ -10,5 +10,5 @@ pub struct ProductSettings {
     /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)
     pub id: Option<String>,
     pub registration_code: Option<String>,
-    pub email: Option<String>,
+    pub registration_email: Option<String>,
 }
