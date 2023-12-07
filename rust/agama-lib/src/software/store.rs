@@ -18,13 +18,13 @@ impl<'a> SoftwareStore<'a> {
 
     pub async fn load(&self) -> Result<SoftwareSettings, ServiceError> {
         let patterns = self.software_client.user_selected_patterns().await?;
-        Ok(SoftwareSettings {
-            patterns,
-        })
+        Ok(SoftwareSettings { patterns })
     }
 
     pub async fn store(&self, settings: &SoftwareSettings) -> Result<(), ServiceError> {
-        self.software_client.select_patterns(&settings.patterns).await?;
+        self.software_client
+            .select_patterns(&settings.patterns)
+            .await?;
 
         Ok(())
     }

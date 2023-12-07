@@ -17,7 +17,7 @@ pub struct Pattern {
     /// Pattern summary
     pub summary: String,
     /// Pattern order
-    pub order: String
+    pub order: String,
 }
 
 /// D-Bus client for the software service
@@ -39,16 +39,16 @@ impl<'a> SoftwareClient<'a> {
             .list_patterns(filtered)
             .await?
             .into_iter()
-            .map(|(id, (category, description, icon, summary, order))| {
-                Pattern {
+            .map(
+                |(id, (category, description, icon, summary, order))| Pattern {
                     id,
                     category,
                     icon,
                     description,
                     summary,
-                    order
-                }
-            })
+                    order,
+                },
+            )
             .collect();
         Ok(patterns)
     }
@@ -61,12 +61,8 @@ impl<'a> SoftwareClient<'a> {
             .selected_patterns()
             .await?
             .into_iter()
-            .filter(|(_id, reason)| {
-                *reason == USER_SELECTED
-            })
-            .map(|(id, _reason)| {
-                id
-            })
+            .filter(|(_id, reason)| *reason == USER_SELECTED)
+            .map(|(id, _reason)| id)
             .collect();
         Ok(patterns)
     }
@@ -74,7 +70,9 @@ impl<'a> SoftwareClient<'a> {
     /// Selects patterns by user
     pub async fn select_patterns(&self, patterns: &Vec<String>) -> Result<(), ServiceError> {
         let patterns: Vec<&str> = patterns.iter().map(AsRef::as_ref).collect();
-        self.software_proxy.set_user_patterns(patterns.as_slice()).await?;
+        self.software_proxy
+            .set_user_patterns(patterns.as_slice())
+            .await?;
         Ok(())
     }
 }

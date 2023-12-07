@@ -2,8 +2,8 @@
 //!
 //! This module implements the mechanisms to load and store the installation settings.
 use crate::{
-    network::NetworkSettings, software::SoftwareSettings, storage::StorageSettings,
-    users::UserSettings, product::ProductSettings
+    network::NetworkSettings, product::ProductSettings, software::SoftwareSettings,
+    storage::StorageSettings, users::UserSettings,
 };
 use agama_settings::Settings;
 use serde::{Deserialize, Serialize};

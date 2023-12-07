@@ -27,7 +27,7 @@ impl<'a> ProductStore<'a> {
         Ok(ProductSettings {
             id: Some(product),
             registration_code: Some(registration_code),
-            email: Some(email)
+            email: Some(email),
         })
     }
 

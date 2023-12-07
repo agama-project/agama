@@ -3,7 +3,8 @@
 use crate::error::ServiceError;
 use crate::install_settings::{InstallSettings, Scope};
 use crate::{
-    network::NetworkStore, software::SoftwareStore, storage::StorageStore, users::UsersStore, product::ProductStore
+    network::NetworkStore, product::ProductStore, software::SoftwareStore, storage::StorageStore,
+    users::UsersStore,
 };
 use zbus::Connection;
 
