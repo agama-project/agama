@@ -167,7 +167,7 @@
 
 @keyframes fadeHighlight {
   from {
-      background-color: yellow;
+      background-color: var(--color-primary-lighter);
   }
 
   to {
@@ -177,4 +177,10 @@
 
 .highlighted {
   animation: fadeHighlight 2s ease forwards;
+}
+
+.warning-icon {
+  svg {
+    fill: var(--warning-icon-color);
+  }
 }
