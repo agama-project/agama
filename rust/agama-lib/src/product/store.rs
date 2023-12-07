@@ -42,8 +42,11 @@ impl<'a> ProductStore<'a> {
             }
         }
         if let Some(reg_code) = &settings.registration_code {
-            let email = settings.registration_email.clone().unwrap_or_default();
-            self.product_client.register(reg_code, &email).await?;
+            if let Some(email) = &settings.registration_email {
+                self.product_client.register(reg_code, email).await?;
+            } else {
+                self.product_client.register(reg_code, "").await?;
+            }
             probe = true;
         }
 
