@@ -204,7 +204,7 @@ msgstr "問題点の表示"
 msgid "There are new issues"
 msgstr "新しい問題点があります"
 
-#: src/components/core/IssuesPage.jsx:115
+#: src/components/core/IssuesDialog.jsx:115
 msgid "No issues found. Everything looks ok."
 msgstr ""
 "問題点は見つかりませんでした。インストールに支障はないものと思われます。"

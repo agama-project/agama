@@ -207,7 +207,7 @@ msgstr "Montrer les problèmes"
 msgid "There are new issues"
 msgstr "Il y a de nouveaux problèmes"
 
-#: src/components/core/IssuesPage.jsx:115
+#: src/components/core/IssuesDialog.jsx:115
 msgid "No issues found. Everything looks ok."
 msgstr "Aucun problème n'a été détecté. Tout semble correct."
 

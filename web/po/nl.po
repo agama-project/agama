@@ -203,7 +203,7 @@ msgstr "Toon issues"
 msgid "There are new issues"
 msgstr "Er zijn nieuwe issues"
 
-#: src/components/core/IssuesPage.jsx:115
+#: src/components/core/IssuesDialog.jsx:115
 msgid "No issues found. Everything looks ok."
 msgstr "Geen issues gevonden. Alles ziet er ok uit."
 
