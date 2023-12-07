@@ -135,7 +135,8 @@ export default function Sidebar ({ children }) {
           then={
             <Button
               aria-label={_("Show issues popup")}
-              variant="warning"
+              variant="link"
+              className="warning-icon"
               icon={<Icon name="warning" />}
               onClick={() => setShowWarningPopup(prev => !prev)}
             />
