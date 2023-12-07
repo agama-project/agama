@@ -34,8 +34,12 @@ impl<'a> ProductStore<'a> {
     pub async fn store(&self, settings: &ProductSettings) -> Result<(), ServiceError> {
         let mut probe = false;
         if let Some(product) = &settings.id {
-            self.product_client.select_product(product).await?;
-            probe = true;
+            let existing_product = self.product_client.product().await?;
+            if *product != existing_product {
+                // avoid selecting same product and unnecessary probe
+                self.product_client.select_product(product).await?;
+                probe = true;
+            }
         }
         if let Some(reg_code) = &settings.registration_code {
             let email = settings.email.clone().unwrap_or_default();
