@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import React from "react";
+import React, { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { Icon } from '~/components/layout';
 import { ValidationErrors } from "~/components/core";
@@ -58,8 +58,10 @@ import { ValidationErrors } from "~/components/core";
  * @property {string} [aria-label] - aria-label attribute, required if title if not given
  *
  * @param { SectionProps } props
+ *
+ * @type {React.FC<SectionProps>}
  */
-export default function Section({
+const Section = forwardRef(function({
   icon,
   title,
   name,
@@ -69,7 +71,7 @@ export default function Section({
   errors,
   children,
   "aria-label": ariaLabel
-}) {
+}, ref) {
   const headerId = `${name || crypto.randomUUID()}-section-header`;
 
   if (!title && !ariaLabel) {
@@ -91,6 +93,7 @@ export default function Section({
 
   return (
     <section
+      ref={ref}
       className={className}
       aria-live="polite"
       aria-busy={loading}
@@ -105,4 +108,6 @@ export default function Section({
       </div>
     </section>
   );
-}
+});
+
+export default Section;
