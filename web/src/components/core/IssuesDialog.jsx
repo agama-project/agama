@@ -83,76 +83,57 @@ const IssuesSections = ({ issues, sectionHighlight = "" }) => {
   const productIssues = issues.product || [];
   const storageIssues = issues.storage || [];
   const softwareIssues = issues.software || [];
-  const productSectionRef = useRef(null);
-  const storageSectionRef = useRef(null);
-  const softwareSectionRef = useRef(null);
+  const selectedRef = useRef(null);
+  const openBy = sectionHighlight;
 
   useEffect(() => {
-    let selectedRef;
-    switch (sectionHighlight) {
-      case 'Product':
-        selectedRef = productSectionRef;
-        break;
-      case 'Storage':
-        selectedRef = storageSectionRef;
-        break;
-      case 'Software':
-        selectedRef = softwareSectionRef;
-        break;
-      default:
-        selectedRef = null;
-    }
-
     if (selectedRef && selectedRef.current) {
       selectedRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [sectionHighlight]);
+  }, [issues]);
 
   return (
     <>
       <If
         condition={productIssues.length > 0}
         then={
-          <div ref={productSectionRef}>
-            <Section
-              key="product-issues"
-              title={_("Product")}
-              icon="inventory_2"
-              className={sectionHighlight === "Product" ? "highlighted" : ""}
-            >
-              <IssueItems issues={productIssues} />
-            </Section>
-          </div>
+          <Section
+            ref={openBy === "Product" ? selectedRef : null}
+            key="product-issues"
+            title={_("Product")}
+            icon="inventory_2"
+            className={sectionHighlight === "Product" ? "highlighted" : ""}
+          >
+            <IssueItems issues={productIssues} />
+          </Section>
         }
       />
       <If
         condition={storageIssues.length > 0}
         then={
-          <div ref={storageSectionRef}>
-            <Section
-              key="storage-issues"
-              title={_("Storage")}
-              icon="hard_drive"
-              className={sectionHighlight === "Storage" ? "highlighted" : ""}
-            >
-              <IssueItems issues={storageIssues} />
-            </Section>
-          </div>
+          <Section
+            ref={openBy === "Storage" ? selectedRef : null}
+            key="storage-issues"
+            title={_("Storage")}
+            icon="hard_drive"
+            className={sectionHighlight === "Storage" ? "highlighted" : ""}
+          >
+            <IssueItems issues={storageIssues} />
+          </Section>
         }
       />
       <If
         condition={softwareIssues.length > 0}
         then={
-          <div ref={softwareSectionRef}>
-            <Section
-              key="software-issues"
-              title={_("Software")}
-              icon="apps"
-              className={sectionHighlight === "Software" ? "highlighted" : ""}
-            >
-              <IssueItems issues={softwareIssues} />
-            </Section>
-          </div>
+          <Section
+            ref={openBy === "Software" ? selectedRef : null}
+            key="software-issues"
+            title={_("Software")}
+            icon="apps"
+            className={sectionHighlight === "Software" ? "highlighted" : ""}
+          >
+            <IssueItems issues={softwareIssues} />
+          </Section>
         }
       />
     </>
@@ -227,7 +208,7 @@ export default function IssuesDialog({ close, sectionHighlight = "" }) {
   }, [client, load, update]);
 
   return (
-    <Popup isOpen title={_("Issues")}>
+    <Popup isOpen title={_("Issues")} data-content="issues-summary">
       <If
         condition={isLoading}
         then={<SectionSkeleton numRows={4} />}
