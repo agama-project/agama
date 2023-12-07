@@ -68,7 +68,7 @@ impl<'a> SoftwareClient<'a> {
     }
 
     /// Selects patterns by user
-    pub async fn select_patterns(&self, patterns: &Vec<String>) -> Result<(), ServiceError> {
+    pub async fn select_patterns(&self, patterns: &[String]) -> Result<(), ServiceError> {
         let patterns: Vec<&str> = patterns.iter().map(AsRef::as_ref).collect();
         self.software_proxy
             .set_user_patterns(patterns.as_slice())
