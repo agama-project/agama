@@ -120,10 +120,7 @@ mod tests {
         db.read("de").unwrap();
         let found_locales = db.entries();
         let spanish: LocaleCode = "es_ES".try_into().unwrap();
-        let found = found_locales
-            .iter()
-            .find(|l| l.code == spanish)
-            .unwrap();
+        let found = found_locales.iter().find(|l| l.code == spanish).unwrap();
         assert_eq!(&found.language, "Spanisch");
         assert_eq!(&found.territory, "Spanien");
     }

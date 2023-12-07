@@ -258,7 +258,7 @@ impl LogItem for LogCmd {
         };
 
         file_name.retain(|c| c != ' ');
-        self.dst_path.as_path().join(format!("{}", file_name))
+        self.dst_path.as_path().join(&file_name)
     }
 
     fn store(&self) -> Result<(), io::Error> {
@@ -416,7 +416,7 @@ fn store(options: LogOptions) -> Result<(), io::Error> {
             Err(_e) => "[Failed]",
         };
 
-        showln(verbose, format!("{}", res).as_str());
+        showln(verbose, res.to_string().as_str());
     }
 
     compress_logs(&tmp_dir, &result)

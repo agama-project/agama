@@ -25,7 +25,6 @@ use std::{
     thread::sleep,
     time::Duration,
 };
-use tokio;
 
 #[derive(Parser)]
 #[command(name = "agama", version, about, long_about = None)]
