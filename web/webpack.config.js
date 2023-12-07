@@ -55,7 +55,7 @@ const plugins = [
   // the current value of the environment variable, that variable is set to
   // "true" when running the development server ("npm run server")
   // https://webpack.js.org/plugins/environment-plugin/
-  new webpack.EnvironmentPlugin({ WEBPACK_SERVE: null }),
+  new webpack.EnvironmentPlugin({ WEBPACK_SERVE: null, LOCAL_CONNECTION: null }),
   // similarly for a non-environment value
   // https://webpack.js.org/plugins/define-plugin/
   // but because ESlint runs *before* the DefinePlugin we need to

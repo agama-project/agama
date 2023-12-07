@@ -256,7 +256,11 @@ function InstallerL10nProvider({ children }) {
 
   const changeKeymap = useCallback(async (id) => {
     setKeymap(id);
+    // write the config to file (/etc/X11/xorg.conf.d/00-keyboard.conf),
+    // this also sets the console keyboard!
     await cockpit.spawn(["localectl", "set-x11-keymap", id]);
+    // set the current X11 keyboard
+    await cockpit.spawn(["setxkbmap", id], { environ: ["DISPLAY=:0"] });
   }, [setKeymap]);
 
   useEffect(() => {

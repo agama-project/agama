@@ -250,6 +250,39 @@ const setLocationSearch = (query) => {
 };
 
 /**
+ * Is the Agama server running locally?
+ *
+ * This function should be used only in special cases, the Agama behavior should
+ * be the same regardless of the user connection.
+ *
+ * The local connection can be forced by setting the `LOCAL_CONNECTION`
+ * environment variable to `1`. This can be useful for debugging or for
+ * development.
+ *
+ * @returns {boolean} `true` if the connection is local, `false` otherwise
+ */
+const localConnection = function (location = window.location) {
+  // forced local behavior
+  if (process.env.LOCAL_CONNECTION === "1") return true;
+
+  // when running in a development server use the COCKPIT_TARGET_URL value
+  // (a proxy is used) otherwise use the page URL from the browser
+  const hostname = process.env.WEBPACK_SERVE ? (new URL(COCKPIT_TARGET_URL)).hostname : location.hostname;
+
+  // using the loopback device? (hostname or IP address)
+  return hostname === "localhost" || hostname.startsWith("127.");
+};
+
+/**
+ * Is the Agama server running remotely?
+ *
+ * @see localConnection
+ *
+ * @returns {boolean} `true` if the connection is remote, `false` otherwise
+ */
+const remoteConnection = (location = window.location) => !localConnection(location);
+
+/**
  * Time for the given timezone.
  *
  * @param {string} timezone - E.g., "Atlantic/Canary".
@@ -310,6 +343,8 @@ export {
   toValidationError,
   locationReload,
   setLocationSearch,
+  localConnection,
+  remoteConnection,
   timezoneTime,
   timezoneUTCOffset
 };

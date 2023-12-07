@@ -42,6 +42,7 @@ import {
 import { InstallerKeymapSwitcher, InstallerLocaleSwitcher } from "./components/l10n";
 import { Layout, Loading, Title } from "./components/layout";
 import { useInstallerL10n } from "./context/installerL10n";
+import { localConnection } from "~/utils";
 
 // D-Bus connection attempts before displaying an error.
 const ATTEMPTS = 3;
@@ -117,7 +118,7 @@ function App() {
         <div className="full-width highlighted">
           <div className="flex-stack">
             <InstallerLocaleSwitcher />
-            <InstallerKeymapSwitcher />
+            {localConnection() ? <InstallerKeymapSwitcher /> : null }
           </div>
         </div>
       </Sidebar>
