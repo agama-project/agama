@@ -190,7 +190,7 @@ msgstr ""
 msgid "There are new issues"
 msgstr ""
 
-#: src/components/core/IssuesPage.jsx:115
+#: src/components/core/IssuesDialog.jsx:115
 msgid "No issues found. Everything looks ok."
 msgstr ""
 

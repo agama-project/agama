@@ -22,7 +22,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
 import { Icon, AppActions } from "~/components/layout";
-import { If, IssuesPage } from "~/components/core";
+import { If, IssuesDialog } from "~/components/core";
 import { useNotification } from "~/context/notification";
 import useNodeSiblings from "~/hooks/useNodeSiblings";
 import { _ } from "~/i18n";
@@ -152,7 +152,7 @@ export default function Sidebar ({ children }) {
         </button>
       </AppActions>
 
-      {showWarningPopup && <IssuesPage close={() => setShowWarningPopup(false)} />}
+      {showWarningPopup && <IssuesDialog close={() => setShowWarningPopup(false)} />}
 
       <aside
         id="global-options"

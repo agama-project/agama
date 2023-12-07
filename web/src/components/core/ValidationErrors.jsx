@@ -25,7 +25,7 @@ import React, { useState } from "react";
 import { sprintf } from "sprintf-js";
 
 import { Icon } from '~/components/layout';
-import { IssuesPage } from "~/components/core";
+import { IssuesDialog } from "~/components/core";
 import { n_ } from "~/i18n";
 
 /**
@@ -73,7 +73,7 @@ const ValidationErrors = ({ errors, sectionName = "" }) => {
           </button>
 
           {showIssuesPopUp &&
-            <IssuesPage
+            <IssuesDialog
               close={() => setshowIssuesPopUp(false)}
               sectionHighlight={sectionName}
             />}
