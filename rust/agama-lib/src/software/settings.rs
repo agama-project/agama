@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Default, Settings, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SoftwareSettings {
-    /// List of patterns to install. If not specified use default.
+    /// List of patterns to install. If empty use default.
     #[settings(collection)]
     pub patterns: Vec<String>,
 }

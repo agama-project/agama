@@ -53,7 +53,7 @@ impl<'a> SoftwareClient<'a> {
         Ok(patterns)
     }
 
-    /// Returns the selected patterns by user
+    /// Returns the ids of patterns selected by user
     pub async fn user_selected_patterns(&self) -> Result<Vec<String>, ServiceError> {
         const USER_SELECTED: u8 = 0;
         let patterns: Vec<String> = self
