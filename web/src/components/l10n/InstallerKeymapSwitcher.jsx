@@ -20,13 +20,20 @@
  */
 
 import React from "react";
-import { Icon } from "../layout";
 import { FormSelect, FormSelectOption } from "@patternfly/react-core";
+
+import cockpit from "../../lib/cockpit";
+
+import { Icon } from "../layout";
 import { _ } from "~/i18n";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { useL10n } from "~/context/l10n";
 
-const sort = (keymaps) => keymaps.sort((k1, k2) => k1.name > k2.name ? 1 : -1);
+const sort = (keymaps) => {
+  // sort the keymap names using the current locale
+  const lang = cockpit.language || "en";
+  return keymaps.sort((k1, k2) => k1.name.localeCompare(k2.name, lang));
+};
 
 export default function InstallerKeymapSwitcher() {
   const { keymap, changeKeymap } = useInstallerL10n();
