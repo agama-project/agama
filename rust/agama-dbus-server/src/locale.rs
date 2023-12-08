@@ -156,17 +156,14 @@ impl Locale {
             .args([
                 "--root",
                 ROOT,
+                "--force",
                 "--locale",
                 self.locales.first().context("missing locale")?.as_str(),
+                "--keymap",
+                &self.keymap.to_string(),
+                "--timezone",
+                &self.timezone,
             ])
-            .status()
-            .context("Failed to execute systemd-firstboot")?;
-        Command::new("/usr/bin/systemd-firstboot")
-            .args(["--root", ROOT, "--keymap", &self.keymap.to_string()])
-            .status()
-            .context("Failed to execute systemd-firstboot")?;
-        Command::new("/usr/bin/systemd-firstboot")
-            .args(["--root", ROOT, "--timezone", self.timezone.as_str()])
             .status()
             .context("Failed to execute systemd-firstboot")?;
 

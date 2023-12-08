@@ -73,6 +73,11 @@ module Agama
       # @return [Array<String>]
       attr_accessor :optional_patterns
 
+      # Optional user selectable patterns
+      #
+      # @return [Array<String>]
+      attr_accessor :user_patterns
+
       # Product translations.
       #
       # @example
@@ -94,6 +99,8 @@ module Agama
         @optional_packages = []
         @mandatory_patterns = []
         @optional_patterns = []
+        # nil = display all visible patterns, [] = display no patterns
+        @user_patterns = nil
         @translations = {}
       end
 

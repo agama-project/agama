@@ -1,4 +1,22 @@
 -------------------------------------------------------------------
+Tue Dec  5 09:49:10 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Explicitly add dependencies instead of relying on the live ISO
+  to provide the required packages (gh#openSUSE/agama/911).
+
+-------------------------------------------------------------------
+Sun Dec  3 15:45:22 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Redefine the InstFunctions module to avoid calling code that
+  causes unwanted side effects, like resetting the timezone
+  (gh#openSUSE/agama#903).
+
+-------------------------------------------------------------------
+Sat Dec  2 18:05:37 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 6
+
+-------------------------------------------------------------------
 Wed Nov 29 11:26:39 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update the software proposal when the locale changes

@@ -23,6 +23,8 @@ software:
     - alp_cockpit
     - alp_hardware
   optional_patterns: null # no optional pattern shared
+  # no user selectable patterns, do not display the pattern selector
+  user_patterns: []
   mandatory_packages:
     - package: ppc64-diag # Needed for hardware-based installations
       archs: ppc64

@@ -67,6 +67,10 @@ impl<'a> NetworkClient<'a> {
             "" => None,
             value => Some(value.to_string()),
         };
+        let mac_address = match connection_proxy.mac_address().await?.as_str() {
+            "" => None,
+            value => Some(value.to_string()),
+        };
 
         let ip_proxy = IPProxy::builder(&self.connection)
             .path(path)?
@@ -91,6 +95,7 @@ impl<'a> NetworkClient<'a> {
             addresses,
             nameservers,
             interface,
+            mac_address,
             ..Default::default()
         })
     }
@@ -188,6 +193,9 @@ impl<'a> NetworkClient<'a> {
 
         let interface = conn.interface.as_deref().unwrap_or("");
         proxy.set_interface(interface).await?;
+
+        let mac_address = conn.mac_address.as_deref().unwrap_or("");
+        proxy.set_mac_address(mac_address).await?;
 
         self.update_ip_settings(path, conn).await?;
 

@@ -1,4 +1,27 @@
 -------------------------------------------------------------------
+Tue Dec  5 11:18:41 UTC 2023 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add ability to assign a custom MAC address for network
+  connections (gh#openSUSE/agama#893)
+
+-------------------------------------------------------------------
+Tue Dec  5 09:46:48 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Explicitly add dependencies instead of relying on the live ISO
+  to provide the required packages (gh#openSUSE/agama/911).
+
+-------------------------------------------------------------------
+Sun Dec  3 15:53:34 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use a single call to systemd-firstboot to write the localization
+  settings (gh#openSUSE/agama#903).
+
+-------------------------------------------------------------------
+Sat Dec  2 18:05:54 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 6
+
+-------------------------------------------------------------------
 Wed Nov 29 11:19:51 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Rework the org.opensuse.Agama1.Locale interface
