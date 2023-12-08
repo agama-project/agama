@@ -1,4 +1,4 @@
-//! Implements support for handling the users settings
+//! Implements support for handling the product settings
 
 mod client;
 mod proxies;

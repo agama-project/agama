@@ -86,8 +86,11 @@ impl<'a> ProductClient<'a> {
     }
 
     /// register product
-    pub async fn register(&self, code: &str, _email: &str) -> Result<(), ServiceError> {
-        // TODO: handle email
+    pub async fn register(&self, code: &str, email: &str) -> Result<(), ServiceError> {
+        let mut options = HashMap::new();
+        if !email.is_empty() {
+            options.insert("Email", email);
+        }
         self.registration_proxy
             .register(code, HashMap::new())
             .await?;
