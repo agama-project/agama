@@ -4,8 +4,25 @@
   <node name="Proposal"/>
 
   <interface name="org.opensuse.Agama.Software1">
+    <!--
+      List available patterns.
+    -->
     <method name="ListPatterns">
+      <!--
+        Flag if all or filtered only patterns. Way how it is filtered
+        is internal details and basically it can change anytime.
+        Filtered patterns are the one to show users for selection.
+        For validation if patterns are valid, unfiltered should be used.
+      -->
       <arg name="Filtered" direction="in" type="b"/>
+      <!--
+        Result of search for patterns. It is Map with pattern id as key and those values
+        1. category of pattern. Useful for grouping patterns if needed
+        2. description of pattern
+        3. path to icon on local system
+        4. summary of pattern
+        5. order value for sorting patterns
+      -->
       <arg name="Result" direction="out" type="a{s(sssss)}"/>
     </method>
     <method name="AddPattern">
