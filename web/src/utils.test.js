@@ -19,8 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { classNames, partition, noop, toValidationError,
-  localConnection, remoteConnection } from "./utils";
+import {
+  classNames, partition, noop, toValidationError,
+  localConnection, remoteConnection
+} from "./utils";
 
 describe("noop", () => {
   it("returns undefined", () => {
