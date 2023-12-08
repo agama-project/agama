@@ -86,11 +86,13 @@ $SUDO zypper --non-interactive --gpg-auto-import-keys install \
   udftools \
   xfsprogs || exit 1
 
-# Install s390 packages (do not exit on failure).
-$SUDO zypper --non-interactive --gpg-auto-import-keys install \
-  yast2-s390 \
-  yast2-reipl \
-  yast2-cio
+# Install s390 packages
+if [ $(uname -m) == "s390x" ]; then
+  $SUDO zypper --non-interactive --gpg-auto-import-keys install \
+    yast2-s390 \
+    yast2-reipl \
+    yast2-cio
+fi
 
 # Rubygem dependencies
 (
