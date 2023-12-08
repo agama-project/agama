@@ -16,6 +16,8 @@ pub enum ServiceError {
     Anyhow(#[from] anyhow::Error),
     #[error("Wrong user parameters: '{0:?}'")]
     WrongUser(Vec<String>),
+    #[error("Registration failed: '{0}'")]
+    FailedRegistration(String),
     #[error("Error: {0}")]
     UnsuccessfulAction(String),
 }

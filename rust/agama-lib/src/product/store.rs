@@ -42,10 +42,14 @@ impl<'a> ProductStore<'a> {
             }
         }
         if let Some(reg_code) = &settings.registration_code {
+            let (result, message);
             if let Some(email) = &settings.registration_email {
-                self.product_client.register(reg_code, email).await?;
+                (result, message) = self.product_client.register(reg_code, email).await?;
             } else {
-                self.product_client.register(reg_code, "").await?;
+                (result, message) = self.product_client.register(reg_code, "").await?;
+            };
+            if result != 0 {
+                return Err(ServiceError::FailedRegistration(message));
             }
             probe = true;
         }
