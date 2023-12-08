@@ -1,4 +1,4 @@
-//! Representation of the software settings
+//! Representation of the product settings
 
 use agama_settings::Settings;
 use serde::{Deserialize, Serialize};

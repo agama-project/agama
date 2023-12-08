@@ -54,7 +54,7 @@ impl<'a> ProductClient<'a> {
         Ok(products)
     }
 
-    /// Returns the selected product to install
+    /// Returns the id of the selected product to install
     pub async fn product(&self) -> Result<String, ServiceError> {
         Ok(self.product_proxy.selected_product().await?)
     }

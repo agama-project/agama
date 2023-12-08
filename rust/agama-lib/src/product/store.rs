@@ -1,11 +1,11 @@
-//! Implements the store for the storage settings.
+//! Implements the store for the product settings.
 
 use super::{ProductClient, ProductSettings};
 use crate::error::ServiceError;
 use crate::manager::ManagerClient;
 use zbus::Connection;
 
-/// Loads and stores the software settings from/to the D-Bus service.
+/// Loads and stores the product settings from/to the D-Bus service.
 pub struct ProductStore<'a> {
     product_client: ProductClient<'a>,
     manager_client: ManagerClient<'a>,
