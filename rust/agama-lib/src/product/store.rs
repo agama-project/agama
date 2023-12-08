@@ -47,7 +47,7 @@ impl<'a> ProductStore<'a> {
                 (result, message) = self.product_client.register(reg_code, email).await?;
             } else {
                 (result, message) = self.product_client.register(reg_code, "").await?;
-            };
+            }
             if result != 0 {
                 return Err(ServiceError::FailedRegistration(message));
             }
