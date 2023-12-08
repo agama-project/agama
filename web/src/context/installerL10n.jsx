@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-// cspell:ignore localectl
+// cspell:ignore localectl setxkbmap xorg
 // @ts-check
 
 import React, { useCallback, useEffect, useState } from "react";
