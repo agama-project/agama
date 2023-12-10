@@ -45,7 +45,7 @@ impl NetworkState {
     ///
     /// * `id`: connection UUID
     pub fn get_connection_by_uuid(&self, uuid: Uuid) -> Option<&Connection> {
-        self.connections.iter().find(|c| c.uuid() == uuid)
+        self.connections.iter().find(|c| c.uuid == uuid)
     }
 
     /// Get connection by interface
@@ -53,28 +53,30 @@ impl NetworkState {
     /// * `name`: connection interface name
     pub fn get_connection_by_interface(&self, name: &str) -> Option<&Connection> {
         let interface = Some(name);
-        self.connections.iter().find(|c| c.interface() == interface)
+        self.connections
+            .iter()
+            .find(|c| c.interface.as_deref() == interface)
     }
 
     /// Get connection by ID
     ///
     /// * `id`: connection ID
     pub fn get_connection(&self, id: &str) -> Option<&Connection> {
-        self.connections.iter().find(|c| c.id() == id)
+        self.connections.iter().find(|c| c.id == id)
     }
 
     /// Get connection by ID as mutable
     ///
     /// * `id`: connection ID
     pub fn get_connection_mut(&mut self, id: &str) -> Option<&mut Connection> {
-        self.connections.iter_mut().find(|c| c.id() == id)
+        self.connections.iter_mut().find(|c| c.id == id)
     }
 
     pub fn get_controlled_by(&mut self, uuid: Uuid) -> Vec<&Connection> {
         let uuid = Some(uuid);
         self.connections
             .iter()
-            .filter(|c| c.controller() == uuid)
+            .filter(|c| c.controller == uuid)
             .collect()
     }
 
@@ -82,8 +84,8 @@ impl NetworkState {
     ///
     /// It uses the `id` to decide whether the connection already exists.
     pub fn add_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
-        if self.get_connection(conn.id()).is_some() {
-            return Err(NetworkStateError::ConnectionExists(conn.uuid()));
+        if self.get_connection(&conn.id).is_some() {
+            return Err(NetworkStateError::ConnectionExists(conn.uuid));
         }
         self.connections.push(conn);
 
@@ -96,8 +98,8 @@ impl NetworkState {
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
     pub fn update_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
-        let Some(old_conn) = self.get_connection_mut(conn.id()) else {
-            return Err(NetworkStateError::UnknownConnection(conn.id().to_string()));
+        let Some(old_conn) = self.get_connection_mut(&conn.id) else {
+            return Err(NetworkStateError::UnknownConnection(conn.id.clone()));
         };
         *old_conn = conn;
 
@@ -134,20 +136,20 @@ impl NetworkState {
                     .get_connection_by_interface(&port)
                     .or_else(|| self.get_connection(&port))
                     .ok_or(NetworkStateError::UnknownConnection(port))?;
-                controlled.push(connection.uuid());
+                controlled.push(connection.uuid);
             }
 
             for conn in self.connections.iter_mut() {
-                if controlled.contains(&conn.uuid()) {
-                    conn.set_controller(controller.uuid());
-                } else if conn.controller() == Some(controller.uuid()) {
-                    conn.unset_controller();
+                if controlled.contains(&conn.uuid) {
+                    conn.controller = Some(controller.uuid);
+                } else if conn.controller == Some(controller.uuid) {
+                    conn.controller = None;
                 }
             }
             Ok(())
         } else {
             Err(NetworkStateError::NotControllerConnection(
-                controller.id().to_owned(),
+                controller.id.to_owned(),
             ))
         }
     }
@@ -170,7 +172,7 @@ mod tests {
         };
         state.add_connection(conn0).unwrap();
         let found = state.get_connection("eth0").unwrap();
-        assert_eq!(found.uuid(), uuid);
+        assert_eq!(found.uuid, uuid);
     }
 
     #[test]
@@ -201,7 +203,7 @@ mod tests {
         };
         state.update_connection(conn1).unwrap();
         let found = state.get_connection("eth0").unwrap();
-        assert_eq!(found.uuid(), uuid);
+        assert_eq!(found.uuid, uuid);
     }
 
     #[test]
@@ -266,9 +268,9 @@ mod tests {
         state.set_ports(&bond0, vec!["eth1".to_string()]).unwrap();
 
         let eth1_found = state.get_connection("eth1").unwrap();
-        assert_eq!(eth1_found.controller(), Some(bond0.uuid()));
+        assert_eq!(eth1_found.controller, Some(bond0.uuid));
         let eth0_found = state.get_connection("eth0").unwrap();
-        assert_eq!(eth0_found.controller(), None);
+        assert_eq!(eth0_found.controller, None);
     }
 
     #[test]
@@ -315,8 +317,8 @@ pub struct Device {
     pub type_: DeviceType,
 }
 
-/// Represents an available network connection
-#[derive(Debug, Default, Clone)]
+/// Represents an availble network connection.
+#[derive(Debug, Clone)]
 pub struct Connection {
     pub id: String,
     pub uuid: Uuid,
@@ -351,59 +353,6 @@ impl Connection {
         }
     }
 
-    pub fn id(&self) -> &str {
-        self.id.as_str()
-    }
-
-    pub fn set_id(&mut self, id: &str) {
-        self.id = id.to_string()
-    }
-
-    pub fn interface(&self) -> Option<&str> {
-        self.interface.as_deref()
-    }
-
-    pub fn set_interface(&mut self, interface: &str) {
-        self.interface = Some(interface.to_string())
-    }
-
-    /// Ports controller name, e.g.: bond0, br0
-    pub fn controller(&self) -> Option<Uuid> {
-        self.controller
-    }
-
-    /// Sets the ports controller.
-    ///
-    /// `controller`: Name of the controller (Bridge, Bond, Team), e.g.: bond0.
-    pub fn set_controller(&mut self, controller: Uuid) {
-        self.controller = Some(controller)
-    }
-
-    pub fn unset_controller(&mut self) {
-        self.controller = None;
-    }
-
-    pub fn uuid(&self) -> Uuid {
-        self.uuid
-    }
-
-    /// FIXME: rename to ip_config
-    pub fn ip_config(&self) -> &IpConfig {
-        &self.ip_config
-    }
-
-    pub fn ip_config_mut(&mut self) -> &mut IpConfig {
-        &mut self.ip_config
-    }
-
-    pub fn match_config(&self) -> &MatchConfig {
-        &self.match_config
-    }
-
-    pub fn match_config_mut(&mut self) -> &mut MatchConfig {
-        &mut self.match_config
-    }
-
     pub fn remove(&mut self) {
         self.status = Status::Removed;
     }
@@ -435,13 +384,21 @@ impl Connection {
             || matches!(self.config, ConnectionConfig::Dummy)
             || matches!(self.config, ConnectionConfig::Bond(_))
     }
+}
 
-    pub fn mac_address(&self) -> String {
-        self.mac_address.to_string()
-    }
-
-    pub fn set_mac_address(&mut self, mac_address: MacAddress) {
-        self.mac_address = mac_address;
+impl Default for Connection {
+    fn default() -> Self {
+        Self {
+            id: Default::default(),
+            uuid: Uuid::new_v4(),
+            mac_address: Default::default(),
+            ip_config: Default::default(),
+            status: Default::default(),
+            interface: Default::default(),
+            controller: Default::default(),
+            match_config: Default::default(),
+            config: Default::default(),
+        }
     }
 }
 

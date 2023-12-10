@@ -28,29 +28,36 @@ pub fn connection_to_dbus<'a>(
     controller: Option<&'a Connection>,
 ) -> NestedHash<'a> {
     let mut result = NestedHash::new();
-    let mut connection_dbus =
-        HashMap::from([("id", conn.id().into()), ("type", ETHERNET_KEY.into())]);
+    let mut connection_dbus = HashMap::from([
+        ("id", conn.id.as_str().into()),
+        ("type", ETHERNET_KEY.into()),
+    ]);
 
-    if let Some(interface) = &conn.interface() {
+    if let Some(interface) = &conn.interface {
         connection_dbus.insert("interface-name", interface.to_owned().into());
     }
 
     if let Some(controller) = controller {
         connection_dbus.insert("slave-type", "bond".into()); // TODO: only 'bond' is supported
-        let master = controller.interface().unwrap_or(controller.id());
+        let master = controller
+            .interface
+            .as_deref()
+            .unwrap_or(controller.id.as_str());
         connection_dbus.insert("master", master.into());
     } else {
         connection_dbus.insert("slave-type", "".into()); // TODO: only 'bond' is supported
         connection_dbus.insert("master", "".into());
     }
 
-    result.insert("ipv4", ip_config_to_ipv4_dbus(conn.ip_config()));
-    result.insert("ipv6", ip_config_to_ipv6_dbus(conn.ip_config()));
-    result.insert("match", match_config_to_dbus(conn.match_config()));
+    result.insert("ipv4", ip_config_to_ipv4_dbus(&conn.ip_config));
+    result.insert("ipv6", ip_config_to_ipv6_dbus(&conn.ip_config));
+    result.insert("match", match_config_to_dbus(&conn.match_config));
 
     if conn.is_ethernet() {
-        let ethernet_config =
-            HashMap::from([("assigned-mac-address", Value::new(conn.mac_address()))]);
+        let ethernet_config = HashMap::from([(
+            "assigned-mac-address",
+            Value::new(conn.mac_address.to_string()),
+        )]);
         result.insert(ETHERNET_KEY, ethernet_config);
     }
 
@@ -63,7 +70,7 @@ pub fn connection_to_dbus<'a>(
         ConnectionConfig::Bond(bond) => {
             connection_dbus.insert("type", BOND_KEY.into());
             if !connection_dbus.contains_key("interface-name") {
-                connection_dbus.insert("interface-name", conn.id().into());
+                connection_dbus.insert("interface-name", conn.id.as_str().into());
             }
             result.insert("bond", bond_config_to_dbus(bond));
         }
@@ -673,12 +680,12 @@ mod test {
 
         let connection = connection_from_dbus(dbus_conn).unwrap();
 
-        assert_eq!(connection.id(), "eth0");
-        let ip_config = connection.ip_config();
-        let match_config = connection.match_config();
+        assert_eq!(connection.id, "eth0");
+        let ip_config = connection.ip_config;
+        let match_config = connection.match_config;
         assert_eq!(match_config.kernel, vec!["pci-0000:00:19.0"]);
 
-        assert_eq!(connection.mac_address(), "12:34:56:78:9A:BC");
+        assert_eq!(connection.mac_address.to_string(), "12:34:56:78:9A:BC");
 
         assert_eq!(
             ip_config.addresses,
@@ -751,7 +758,7 @@ mod test {
         ]);
 
         let connection = connection_from_dbus(dbus_conn).unwrap();
-        assert_eq!(connection.mac_address(), "13:45:67:89:AB:CD".to_string());
+        assert_eq!(connection.mac_address.to_string(), "13:45:67:89:AB:CD");
         assert!(matches!(connection.config, ConnectionConfig::Wireless(_)));
         if let ConnectionConfig::Wireless(wireless) = &connection.config {
             assert_eq!(wireless.ssid, SSID(vec![97, 103, 97, 109, 97]));
@@ -782,9 +789,8 @@ mod test {
         ]);
 
         let connection = connection_from_dbus(dbus_conn).unwrap();
-        assert!(matches!(connection, Connection::Bond(_)));
-        if let Connection::Bond(connection) = connection {
-            assert_eq!(connection.bond.mode, BondMode::ActiveBackup);
+        if let ConnectionConfig::Bond(config) = connection.config {
+            assert_eq!(config.mode, BondMode::ActiveBackup);
         }
     }
 
@@ -936,9 +942,11 @@ mod test {
         original.insert("connection".to_string(), connection);
         original.insert(ETHERNET_KEY.to_string(), ethernet);
 
-        let mut updated = Connection::default();
-        updated.set_interface("");
-        updated.set_mac_address(MacAddress::Unset);
+        let updated = Connection {
+            interface: Some("".to_string()),
+            mac_address: MacAddress::Unset,
+            ..Default::default()
+        };
         let updated = connection_to_dbus(&updated, None);
 
         let merged = merge_dbus_connections(&original, &updated);

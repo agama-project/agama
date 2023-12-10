@@ -130,7 +130,7 @@ impl<T: Adapter> NetworkSystem<T> {
             .state
             .get_controlled_by(uuid)
             .iter()
-            .map(|c| c.interface().unwrap_or(c.id()).to_string())
+            .map(|c| c.interface.as_deref().unwrap_or(&c.id).to_string())
             .collect::<Vec<_>>();
 
         Ok((conn, controlled))

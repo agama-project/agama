@@ -40,7 +40,7 @@ impl ConnectionBuilder {
         }
 
         if let Some(controller) = self.controller {
-            conn.set_controller(controller);
+            conn.controller = Some(controller)
         }
 
         conn

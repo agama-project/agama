@@ -87,11 +87,11 @@ impl Tree {
     ) -> Result<(), ServiceError> {
         let mut objects = self.objects.lock().await;
 
-        let orig_id = conn.id().to_owned();
-        let uuid = conn.uuid();
+        let orig_id = conn.id.to_owned();
+        let uuid = conn.uuid;
         let (id, path) = objects.register_connection(conn);
-        if id != conn.id() {
-            conn.set_id(&id)
+        if id != conn.id {
+            conn.id = id.clone();
         }
         log::info!("Publishing network connection '{}'", id);
 
@@ -252,7 +252,7 @@ impl ObjectsRegistry {
     pub fn register_connection(&mut self, conn: &Connection) -> (String, ObjectPath) {
         let path = format!("{}/{}", CONNECTIONS_PATH, self.connections.len());
         let path = ObjectPath::try_from(path).unwrap();
-        let mut id = conn.id().to_string();
+        let mut id = conn.id.clone();
         if self.connection_path(&id).is_some() {
             id = self.propose_id(&id);
         };
