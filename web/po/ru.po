@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 02:17+0000\n"
+"POT-Creation-Date: 2023-12-10 02:19+0000\n"
 "PO-Revision-Date: 2023-09-11 13:15+0000\n"
 "Last-Translator: Alex Minton <alex239@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -219,8 +219,8 @@ msgstr "Есть новые ошибки"
 msgid "Product"
 msgstr ""
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/core/IssuesPage.jsx:100
 #: src/components/overview/StorageSection.jsx:208
 #: src/components/storage/ProposalPage.jsx:218
@@ -230,7 +230,7 @@ msgstr ""
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section
 #: src/components/core/IssuesPage.jsx:108
-#: src/components/overview/SoftwareSection.jsx:141
+#: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
 msgstr "Программы"
@@ -801,12 +801,12 @@ msgstr "Установка завершена"
 msgid "%s (registered)"
 msgstr ""
 
-#: src/components/overview/SoftwareSection.jsx:37
+#: src/components/overview/SoftwareSection.jsx:38
 msgid "Reading software repositories"
 msgstr "Чтение репозиториев"
 
 #. TRANSLATORS: clickable link label
-#: src/components/overview/SoftwareSection.jsx:131
+#: src/components/overview/SoftwareSection.jsx:133
 msgid "Refresh the repositories"
 msgstr "Обновить репозитории"
 

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 02:17+0000\n"
-"PO-Revision-Date: 2023-11-23 09:02+0100\n"
+"POT-Creation-Date: 2023-12-10 02:19+0000\n"
+"PO-Revision-Date: 2023-12-06 12:01+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "sv/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 3.4.1\n"
+"X-Generator: Weblate 4.9.1\n"
 
 #: src/App.jsx:110
 msgid "Diagnostic tools"
@@ -218,8 +218,8 @@ msgstr "Det finns nya problem"
 msgid "Product"
 msgstr "Produkt"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/core/IssuesPage.jsx:100
 #: src/components/overview/StorageSection.jsx:208
 #: src/components/storage/ProposalPage.jsx:218
@@ -229,7 +229,7 @@ msgstr "Lagring"
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section
 #: src/components/core/IssuesPage.jsx:108
-#: src/components/overview/SoftwareSection.jsx:141
+#: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
 msgstr "Programvara"
@@ -369,83 +369,74 @@ msgstr "Enkel popover"
 #. TRANSLATORS: placeholder text for search input in the keyboard selector.
 #: src/components/l10n/KeymapSelector.jsx:82
 msgid "Filter by description or keymap code"
-msgstr ""
+msgstr "Filtrera efter beskrivning eller tangentbordskod"
 
 #: src/components/l10n/KeymapSelector.jsx:89
-#, fuzzy
 msgid "Available keymaps"
-msgstr "Tillgängliga enheter"
+msgstr "Tillgängliga tangentbordslayouter"
 
 #: src/components/l10n/L10nPage.jsx:66 src/components/l10n/L10nPage.jsx:140
 msgid "Select time zone"
-msgstr ""
+msgstr "Välj tidszon"
 
 #: src/components/l10n/L10nPage.jsx:67
 #, c-format
 msgid "%s will use the selected time zone."
-msgstr ""
+msgstr "%s kommer att använda den valda tidszonen."
 
 #: src/components/l10n/L10nPage.jsx:128
 msgid "Time zone"
-msgstr ""
+msgstr "Tidszon"
 
 #: src/components/l10n/L10nPage.jsx:134
 msgid "Change time zone"
-msgstr ""
+msgstr "Ändra tidszon"
 
 #: src/components/l10n/L10nPage.jsx:139
-#, fuzzy
 msgid "Time zone not selected yet"
-msgstr "inte vald"
+msgstr "Tidszon är inte vald ännu"
 
 #: src/components/l10n/L10nPage.jsx:182 src/components/l10n/L10nPage.jsx:258
-#, fuzzy
 msgid "Select language"
-msgstr "språk"
+msgstr "Välj språk"
 
 #: src/components/l10n/L10nPage.jsx:183
-#, fuzzy, c-format
+#, c-format
 msgid "%s will use the selected language."
-msgstr "Systemet kommer att använda %s som dess standardspråk."
+msgstr "%s kommer att använda det valda språket."
 
 #: src/components/l10n/L10nPage.jsx:246
-#, fuzzy
 msgid "Language"
-msgstr "språk"
+msgstr "Språk"
 
 #: src/components/l10n/L10nPage.jsx:252
-#, fuzzy
 msgid "Change language"
-msgstr "språk"
+msgstr "Ändra språk"
 
 #: src/components/l10n/L10nPage.jsx:257
-#, fuzzy
 msgid "Language not selected yet"
-msgstr "inte vald"
+msgstr "Språk inte valt ännu"
 
 #: src/components/l10n/L10nPage.jsx:295 src/components/l10n/L10nPage.jsx:369
-#, fuzzy
 msgid "Select keyboard"
-msgstr "vald"
+msgstr "Välj tangentbordslayout"
 
 #: src/components/l10n/L10nPage.jsx:296
 #, c-format
 msgid "%s will use the selected keyboard."
-msgstr ""
+msgstr "%s kommer att använda den valda tangentbordslayouten."
 
 #: src/components/l10n/L10nPage.jsx:357
 msgid "Keyboard"
-msgstr ""
+msgstr "Tangentbord"
 
 #: src/components/l10n/L10nPage.jsx:363
-#, fuzzy
 msgid "Change keyboard"
-msgstr "Ändra krypteringslösenord"
+msgstr "Ändra tangentbordslayout"
 
 #: src/components/l10n/L10nPage.jsx:368
-#, fuzzy
 msgid "Keyboard not selected yet"
-msgstr "inte vald"
+msgstr "Tangentbordslayout inte vald ännu"
 
 #. TRANSLATORS: page section
 #. TRANSLATORS: page title
@@ -475,22 +466,20 @@ msgstr "språk"
 
 #: src/components/l10n/LocaleSelector.jsx:82
 msgid "Filter by language, territory or locale code"
-msgstr ""
+msgstr "Filtrera efter språk, territorium eller lokalkod"
 
 #: src/components/l10n/LocaleSelector.jsx:89
-#, fuzzy
 msgid "Available locales"
-msgstr "Tillgängliga enheter"
+msgstr "Tillgängliga lokaler"
 
 #. TRANSLATORS: placeholder text for search input in the timezone selector.
 #: src/components/l10n/TimezoneSelector.jsx:102
 msgid "Filter by territory, time zone code or UTC offset"
-msgstr ""
+msgstr "Filtrera efter område, tidszonskod eller UTC-förskjutning"
 
 #: src/components/l10n/TimezoneSelector.jsx:109
-#, fuzzy
 msgid "Available time zones"
-msgstr "Tillgängliga enheter"
+msgstr "Tillgängliga tidszoner"
 
 #: src/components/layout/Loading.jsx:30
 msgid "Loading installation environment, please wait."
@@ -801,12 +790,12 @@ msgstr "Installationssammanfattning"
 msgid "%s (registered)"
 msgstr "%s (registrerad)"
 
-#: src/components/overview/SoftwareSection.jsx:37
+#: src/components/overview/SoftwareSection.jsx:38
 msgid "Reading software repositories"
 msgstr "Läser programvaruförråd"
 
 #. TRANSLATORS: clickable link label
-#: src/components/overview/SoftwareSection.jsx:131
+#: src/components/overview/SoftwareSection.jsx:133
 msgid "Refresh the repositories"
 msgstr "Uppdatera förråden"
 
@@ -818,16 +807,16 @@ msgstr "Ingen enhet vald ännu"
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
 #: src/components/overview/StorageSection.jsx:52
-#, fuzzy, c-format
+#, c-format
 msgid "Install using device %s shrinking existing partitions as needed"
-msgstr "Installerar på enhet %s och raderar allt innehåll"
+msgstr "Installera på enhet %s som krymper befintliga partitioner efter behov"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
 #: src/components/overview/StorageSection.jsx:56
-#, fuzzy, c-format
+#, c-format
 msgid "Install using device %s without modifying existing partitions"
-msgstr "Installerar på enhet %s och raderar allt innehåll"
+msgstr "Installera på enhet %s utan att ändra befintliga partitioner"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
@@ -839,9 +828,9 @@ msgstr "Installerar på enhet %s och raderar allt innehåll"
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
 #: src/components/overview/StorageSection.jsx:66
-#, fuzzy, c-format
+#, c-format
 msgid "Install using device %s"
-msgstr "Installationsenhet"
+msgstr "Installera på enhet %s"
 
 #: src/components/overview/StorageSection.jsx:83
 msgid "Probing storage devices"
@@ -1259,15 +1248,17 @@ msgid ""
 "Select how to make free space in the disks selected for allocating the     "
 "file systems."
 msgstr ""
+"Välj hur du gör ledigt utrymme på de diskar som valts för tilldelning av "
+"filsystemen."
 
 #. TRANSLATORS: To be completed with the rest of a sentence like "deleting all content"
 #: src/components/storage/ProposalSettingsSection.jsx:584
 msgid "Find space"
-msgstr ""
+msgstr "Hitta utrymme"
 
 #: src/components/storage/ProposalSettingsSection.jsx:588
 msgid "Space Policy"
-msgstr ""
+msgstr "Utrymmespolicy"
 
 #: src/components/storage/ProposalSettingsSection.jsx:662
 msgid "Settings"
@@ -1815,66 +1806,70 @@ msgstr "Mål"
 #. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
 #: src/components/storage/space-policy-utils.jsx:59
 msgid "Delete current content"
-msgstr ""
+msgstr "Radera nuvarande innehåll"
 
 #. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
 #: src/components/storage/space-policy-utils.jsx:63
 msgid "Shrink existing partitions"
-msgstr ""
+msgstr "Krymp existerande partitioner"
 
 #. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
 #: src/components/storage/space-policy-utils.jsx:67
-#, fuzzy
 msgid "Use available space"
-msgstr "Tillgängliga enheter"
+msgstr "Använd tillgängligt utrymme"
 
 #: src/components/storage/space-policy-utils.jsx:79
 msgid "All partitions will be removed and any data in the disks will be lost."
 msgstr ""
+"Alla partitioner kommer att tas bort och all data på diskarna kommer att gå "
+"förlorad."
 
 #: src/components/storage/space-policy-utils.jsx:82
 msgid ""
 "The data is kept, but the current partitions will be resized as needed to "
 "make enough space."
 msgstr ""
+"Data bevaras, men storleken på de aktuella partitionerna kommer att ändras "
+"efter behov för att göra tillräckligt med utrymme."
 
 #: src/components/storage/space-policy-utils.jsx:85
 msgid ""
 "The data is kept and existing partitions will not be modified. Only the "
 "space that is not assigned to any partition will be used."
 msgstr ""
+"Data bevaras och befintliga partitioner kommer inte att ändras. Endast det "
+"utrymme som inte är tilldelat någon partition kommer att användas."
 
 #: src/components/storage/space-policy-utils.jsx:112
 msgid "Select a mechanism to make space"
-msgstr ""
+msgstr "Välj en mekanism för att skapa utrymme"
 
 #: src/components/storage/space-policy-utils.jsx:137
 #, c-format
 msgid "deleting all content of the installation device"
 msgid_plural "deleting all content of the %d selected disks"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "radera allt innehåll på installationsenhet"
+msgstr[1] "tar bort allt innehåll på de %d valda diskarna"
 
 #: src/components/storage/space-policy-utils.jsx:147
 #, c-format
 msgid "shrinking partitions of the installation device"
 msgid_plural "shrinking partitions of the %d selected disks"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "krymper partitioner på installationsenhet"
+msgstr[1] "krymper partitioner på %d valda diskarna"
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space without modifying any partition".
 #: src/components/storage/space-policy-utils.jsx:155
-#, fuzzy
 msgid "without modifying any partition"
-msgstr "%s med %d partitioner"
+msgstr "utan att modifiera någon partition"
 
 #: src/components/storage/space-policy-utils.jsx:170
 #, c-format
 msgid "This will only affect the installation device"
 msgid_plural "This will affect the %d disks selected for installation"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Detta påverkar bara installationsenheten"
+msgstr[1] "Detta kommer att påverka %d diskarna som valts för installation"
 
 #: src/components/storage/utils.js:44
 msgid "KiB"
