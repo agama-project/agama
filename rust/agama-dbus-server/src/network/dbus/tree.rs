@@ -114,12 +114,12 @@ impl Tree {
         )
         .await?;
 
-        if let Connection::Bond(_) = conn {
+        if let ConnectionConfig::Bond(_) = conn.config {
             self.add_interface(&path, interfaces::Bond::new(self.actions.clone(), uuid))
                 .await?;
         }
 
-        if let Connection::Wireless(_) = conn {
+        if let ConnectionConfig::Wireless(_) = conn.config {
             self.add_interface(
                 &path,
                 interfaces::Wireless::new(self.actions.clone(), Arc::clone(&cloned)),
