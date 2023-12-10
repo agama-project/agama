@@ -7,10 +7,25 @@ name: openSUSE MicroOS Desktop
 # ------------------------------------------------------------------------------
 description: 'A distribution for the desktop offering automatic updates and
   rollback on top of the foundations of openSUSE MicroOS. Includes Podman
-  Container Runtime and allows to manage software using Gnome Software or
-  KDE Discover.'
+  Container Runtime and allows to manage software using Gnome Software or KDE
+  Discover.'
 # Do not manually change any translations! See README.md for more details.
 translations:
+  description:
+    fr: Une distribution pour le bureau offrant des mises à jour automatiques et un
+      rétablissement au dessus des fondations d'openSUSE MicroOS. Inclut Podman
+      Container Runtime et permet de gérer les logiciels en utilisant Gnome
+      Software ou KDE Discover.
+    id: Distribusi untuk desktop yang menawarkan pembaruan dan rollback otomatis di
+      atas fondasi openSUSE MicroOS. Termasuk Podman Container Runtime dan
+      memungkinkan untuk mengelola perangkat lunak menggunakan Gnome Software
+      atau KDE Discover.
+    ja: openSUSE MicroOS をベースにし、自動的な更新およびロールバックの機能を提供するデスクトップ向けディストリビューションです。 Podman
+      のコンテナランタイムを含むほか、 Gnome Software や KDE Discover を利用してソフトウエア管理を行うこともできます。
+    sv: En distribution för skrivbordet som erbjuder automatiska uppdateringar och
+      tillbaka rullning ovanpå grunden för openSUSE MicroOS. Inkluderar Podman
+      behållarkörtid och gör det möjligt att hantera programvara med Gnome
+      Programvara eller KDE Discover.
 software:
   installation_repositories:
     - url: https://download.opensuse.org/tumbleweed/repo/oss/

@@ -15,6 +15,29 @@ translations:
     cs: Tumbleweed je rolující verze distribuce openSUSE obsahující poslední
       "stabilní" verze veškerého software namísto pevných pravidelných vydání.
       Projekt je určen pro uživatele, kteří chtějí nejnovější stabilní software.
+    es: La distribución Tumbleweed es una versión pura de lanzamiento continuo de
+      openSUSE que contiene las últimas versiones "estables" de todo el software
+      en lugar de depender de ciclos de lanzamiento periódicos menos flexibles.
+      El proyecto hace esto para usuarios que desean el software estable más
+      nuevo.
+    fr: La distribution Tumbleweed est une pure "rolling release" (publication
+      continue) d'openSUSE contenant les dernières versions "stables" de tous
+      les logiciels au lieu de se baser sur des cycles de publication
+      périodiques et fixes. Le projet fait cela pour les utilisateurs qui
+      veulent les logiciels stables les plus récents.
+    id: Distribusi Tumbleweed merupakan versi rilis bergulir murni dari openSUSE
+      yang berisi versi "stabil" terbaru dari semua perangkat lunak dan tidak
+      bergantung pada siklus rilis berkala yang kaku. Proyek ini dibuat untuk
+      memenuhi kebutuhan pengguna yang menginginkan perangkat lunak stabil
+      terbaru.
+    ja: Tumbleweed ディストリビューションは openSUSE
+      の純粋なローリングリリース版で、特定のリリースサイクルによることなく全てのソフトウエアを最新の "安定"
+      バージョンに維持し続ける取り組みです。このプロジェクトは特に、最新の安定バージョンを使いたいユーザにお勧めです。
+    pt_BR: A distribuição Tumbleweed é uma versão de lançamento contínuo pura do
+      openSUSE contendo as versões "estáveis" mais recentes de todos os
+      softwares, em vez de depender de ciclos rígidos de lançamento periódicos.
+      O projeto faz isso para usuários que desejam o software estável mais
+      recente.
     sv: Tumbleweed-distributionen är en ren rullande version av openSUSE som
       innehåller de senaste "stabila" versionerna av all programvara istället
       för att förlita sig på stela periodiska utgivningscykler. Projektet gör
