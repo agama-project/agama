@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 02:17+0000\n"
-"PO-Revision-Date: 2023-10-27 13:15+0000\n"
+"POT-Creation-Date: 2023-12-10 02:19+0000\n"
+"PO-Revision-Date: 2023-12-05 21:01+0000\n"
 "Last-Translator: Victor hck <victorhck@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "es/>\n"
@@ -218,10 +218,10 @@ msgstr "Hay nuevos problemas"
 #: src/components/overview/ProductSection.jsx:71
 #: src/components/product/ProductPage.jsx:434
 msgid "Product"
-msgstr ""
+msgstr "Producto"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/core/IssuesPage.jsx:100
 #: src/components/overview/StorageSection.jsx:208
 #: src/components/storage/ProposalPage.jsx:218
@@ -231,7 +231,7 @@ msgstr "Almacenamiento"
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section
 #: src/components/core/IssuesPage.jsx:108
-#: src/components/overview/SoftwareSection.jsx:141
+#: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
 msgstr "Software"
@@ -371,83 +371,74 @@ msgstr "Popover básico"
 #. TRANSLATORS: placeholder text for search input in the keyboard selector.
 #: src/components/l10n/KeymapSelector.jsx:82
 msgid "Filter by description or keymap code"
-msgstr ""
+msgstr "Filtrar por descripción o código de mapa de teclas"
 
 #: src/components/l10n/KeymapSelector.jsx:89
-#, fuzzy
 msgid "Available keymaps"
-msgstr "Dispositivos disponibles"
+msgstr "Mapas de teclados disponibles"
 
 #: src/components/l10n/L10nPage.jsx:66 src/components/l10n/L10nPage.jsx:140
 msgid "Select time zone"
-msgstr ""
+msgstr "Selecciona la zona horaria"
 
 #: src/components/l10n/L10nPage.jsx:67
 #, c-format
 msgid "%s will use the selected time zone."
-msgstr ""
+msgstr "%s utilizará la zona horaria seleccionada."
 
 #: src/components/l10n/L10nPage.jsx:128
 msgid "Time zone"
-msgstr ""
+msgstr "Zona horaria"
 
 #: src/components/l10n/L10nPage.jsx:134
 msgid "Change time zone"
-msgstr ""
+msgstr "Cambiar la zona horaria"
 
 #: src/components/l10n/L10nPage.jsx:139
-#, fuzzy
 msgid "Time zone not selected yet"
-msgstr "no seleccionado"
+msgstr "Zona horaria aún no seleccionada"
 
 #: src/components/l10n/L10nPage.jsx:182 src/components/l10n/L10nPage.jsx:258
-#, fuzzy
 msgid "Select language"
-msgstr "Idioma"
+msgstr "Seleccionar el idioma"
 
 #: src/components/l10n/L10nPage.jsx:183
-#, fuzzy, c-format
+#, c-format
 msgid "%s will use the selected language."
-msgstr "El sistema utilizará %s como su idioma predeterminado."
+msgstr "%s utilizará el idioma seleccionado."
 
 #: src/components/l10n/L10nPage.jsx:246
-#, fuzzy
 msgid "Language"
 msgstr "Idioma"
 
 #: src/components/l10n/L10nPage.jsx:252
-#, fuzzy
 msgid "Change language"
-msgstr "Idioma"
+msgstr "Cambiar idioma"
 
 #: src/components/l10n/L10nPage.jsx:257
-#, fuzzy
 msgid "Language not selected yet"
-msgstr "no seleccionado"
+msgstr "Idioma aún no seleccionado"
 
 #: src/components/l10n/L10nPage.jsx:295 src/components/l10n/L10nPage.jsx:369
-#, fuzzy
 msgid "Select keyboard"
-msgstr "seleccionado"
+msgstr "Seleccionar teclado"
 
 #: src/components/l10n/L10nPage.jsx:296
 #, c-format
 msgid "%s will use the selected keyboard."
-msgstr ""
+msgstr "%s utilizará el teclado seleccionado."
 
 #: src/components/l10n/L10nPage.jsx:357
 msgid "Keyboard"
-msgstr ""
+msgstr "Teclado"
 
 #: src/components/l10n/L10nPage.jsx:363
-#, fuzzy
 msgid "Change keyboard"
-msgstr "Cambiar contraseña de cifrado"
+msgstr "Cambiar teclado"
 
 #: src/components/l10n/L10nPage.jsx:368
-#, fuzzy
 msgid "Keyboard not selected yet"
-msgstr "no seleccionado"
+msgstr "Teclado aún no seleccionado"
 
 #. TRANSLATORS: page section
 #. TRANSLATORS: page title
@@ -477,22 +468,20 @@ msgstr "Idioma"
 
 #: src/components/l10n/LocaleSelector.jsx:82
 msgid "Filter by language, territory or locale code"
-msgstr ""
+msgstr "Filtrar por idioma, territorio o código local"
 
 #: src/components/l10n/LocaleSelector.jsx:89
-#, fuzzy
 msgid "Available locales"
-msgstr "Dispositivos disponibles"
+msgstr "Idiomas disponibles"
 
 #. TRANSLATORS: placeholder text for search input in the timezone selector.
 #: src/components/l10n/TimezoneSelector.jsx:102
 msgid "Filter by territory, time zone code or UTC offset"
-msgstr ""
+msgstr "Filtrar por territorio, código de zona horaria o compensación UTC"
 
 #: src/components/l10n/TimezoneSelector.jsx:109
-#, fuzzy
 msgid "Available time zones"
-msgstr "Dispositivos disponibles"
+msgstr "Zonas horarias disponibles"
 
 #: src/components/layout/Loading.jsx:30
 msgid "Loading installation environment, please wait."
@@ -794,22 +783,21 @@ msgstr[1] "%d conexiones establecidas:"
 
 #. TRANSLATORS: page title
 #: src/components/overview/Overview.jsx:47
-#, fuzzy
 msgid "Installation Summary"
-msgstr "Dispositivo de instalación"
+msgstr "Resumen de la instalación"
 
 #. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
 #: src/components/overview/ProductSection.jsx:48
 #, c-format
 msgid "%s (registered)"
-msgstr ""
+msgstr "%s (registrado)"
 
-#: src/components/overview/SoftwareSection.jsx:37
+#: src/components/overview/SoftwareSection.jsx:38
 msgid "Reading software repositories"
 msgstr "Leer repositorios de software"
 
 #. TRANSLATORS: clickable link label
-#: src/components/overview/SoftwareSection.jsx:131
+#: src/components/overview/SoftwareSection.jsx:133
 msgid "Refresh the repositories"
 msgstr "Refrescar los repositorios"
 
@@ -821,16 +809,20 @@ msgstr "Ningún dispositivo seleccionado todavía"
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
 #: src/components/overview/StorageSection.jsx:52
-#, fuzzy, c-format
+#, c-format
 msgid "Install using device %s shrinking existing partitions as needed"
-msgstr "Instalar utilizando el dispositivo %s y eliminar todo su contenido"
+msgstr ""
+"Instalar utilizando el dispositivo %s reduciendo las particiones existentes "
+"según sea necesario"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
 #: src/components/overview/StorageSection.jsx:56
-#, fuzzy, c-format
+#, c-format
 msgid "Install using device %s without modifying existing partitions"
-msgstr "Instalar utilizando el dispositivo %s y eliminar todo su contenido"
+msgstr ""
+"Instalar utilizando el dispositivo %s sin modificar las particiones "
+"existentes"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
@@ -842,9 +834,9 @@ msgstr "Instalar utilizando el dispositivo %s y eliminar todo su contenido"
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
 #: src/components/overview/StorageSection.jsx:66
-#, fuzzy, c-format
+#, c-format
 msgid "Install using device %s"
-msgstr "Dispositivo de instalación"
+msgstr "Instalar usando el dispositivo %s"
 
 #: src/components/overview/StorageSection.jsx:83
 msgid "Probing storage devices"
@@ -892,28 +884,29 @@ msgstr "Escoger un producto"
 #: src/components/product/ProductPage.jsx:122
 #, c-format
 msgid "Register %s"
-msgstr ""
+msgstr "Registro %s"
 
 #: src/components/product/ProductPage.jsx:188
 #, c-format
 msgid "Deregister %s"
-msgstr ""
+msgstr "Darse de baja del registro %s"
 
 #. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
 #: src/components/product/ProductPage.jsx:202
 #, c-format
 msgid "Do you want to deregister %s?"
-msgstr ""
+msgstr "¿Quieres dar de baja a %s?"
 
 #: src/components/product/ProductPage.jsx:227
 msgid "Registered warning"
-msgstr ""
+msgstr "Advertencia registrada"
 
 #. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
 #: src/components/product/ProductPage.jsx:232
 #, c-format
 msgid "The product %s must be deregistered before selecting a new product."
 msgstr ""
+"El producto %s debe darse de baja antes de seleccionar un nuevo producto."
 
 #: src/components/product/ProductPage.jsx:263
 msgid "Change product"
@@ -921,42 +914,40 @@ msgstr "Cambiar de producto"
 
 #: src/components/product/ProductPage.jsx:305
 msgid "Register"
-msgstr ""
+msgstr "Registrar"
 
 #: src/components/product/ProductPage.jsx:337
-#, fuzzy
 msgid "Deregister product"
-msgstr "Cambiar de producto"
+msgstr "Dar de baja el producto"
 
 #: src/components/product/ProductPage.jsx:370
 msgid "Code:"
-msgstr ""
+msgstr "Código:"
 
 #: src/components/product/ProductPage.jsx:374
 msgid "Email:"
-msgstr ""
+msgstr "Correo electrónico:"
 
 #. TRANSLATORS: section title.
 #: src/components/product/ProductPage.jsx:390
-#, fuzzy
 msgid "Registration"
-msgstr "Pregunta"
+msgstr "Registro"
 
 #: src/components/product/ProductPage.jsx:399
 msgid "This product requires registration."
-msgstr ""
+msgstr "Este producto requiere registro."
 
 #: src/components/product/ProductPage.jsx:405
 msgid "This product does not require registration."
-msgstr ""
+msgstr "Este producto no requiere registro."
 
 #: src/components/product/ProductRegistrationForm.jsx:63
 msgid "Registration code"
-msgstr ""
+msgstr "Código de registro"
 
 #: src/components/product/ProductRegistrationForm.jsx:66
 msgid "Email"
-msgstr ""
+msgstr "Correo electrónico"
 
 #: src/components/product/ProductSelectionPage.jsx:58
 msgid "Loading available products, please wait..."
@@ -973,9 +964,8 @@ msgid "Select"
 msgstr "Seleccionar"
 
 #: src/components/product/ProductSelector.jsx:29
-#, fuzzy
 msgid "No products available for selection"
-msgstr "Selección de producto"
+msgstr "No hay productos disponibles para seleccionar"
 
 #: src/components/questions/GenericQuestion.jsx:35
 #: src/components/questions/LuksActivationQuestion.jsx:60
@@ -1020,7 +1010,7 @@ msgstr "%d errores"
 
 #: src/components/software/PatternSelector.jsx:215
 msgid "Software summary and filter options"
-msgstr ""
+msgstr "Resumen de software y opciones de filtro"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
@@ -1264,15 +1254,17 @@ msgid ""
 "Select how to make free space in the disks selected for allocating the     "
 "file systems."
 msgstr ""
+"Seleccione cómo liberar espacio en los discos seleccionados para asignar los "
+"sistemas de archivos."
 
 #. TRANSLATORS: To be completed with the rest of a sentence like "deleting all content"
 #: src/components/storage/ProposalSettingsSection.jsx:584
 msgid "Find space"
-msgstr ""
+msgstr "Encontrar espacio"
 
 #: src/components/storage/ProposalSettingsSection.jsx:588
 msgid "Space Policy"
-msgstr ""
+msgstr "Política de espacio"
 
 #: src/components/storage/ProposalSettingsSection.jsx:662
 msgid "Settings"
@@ -1822,66 +1814,71 @@ msgstr "Objetivos"
 #. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
 #: src/components/storage/space-policy-utils.jsx:59
 msgid "Delete current content"
-msgstr ""
+msgstr "Eliminar el contenido actual"
 
 #. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
 #: src/components/storage/space-policy-utils.jsx:63
 msgid "Shrink existing partitions"
-msgstr ""
+msgstr "Reducir las particiones existentes"
 
 #. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
 #: src/components/storage/space-policy-utils.jsx:67
-#, fuzzy
 msgid "Use available space"
-msgstr "Dispositivos disponibles"
+msgstr "Utilice el espacio disponible"
 
 #: src/components/storage/space-policy-utils.jsx:79
 msgid "All partitions will be removed and any data in the disks will be lost."
 msgstr ""
+"Se eliminarán todas las particiones y se perderán todos los datos de los "
+"discos."
 
 #: src/components/storage/space-policy-utils.jsx:82
 msgid ""
 "The data is kept, but the current partitions will be resized as needed to "
 "make enough space."
 msgstr ""
+"Los datos se conservan, pero las particiones actuales cambiarán de tamaño "
+"según sea necesario para crear espacio suficiente."
 
 #: src/components/storage/space-policy-utils.jsx:85
 msgid ""
 "The data is kept and existing partitions will not be modified. Only the "
 "space that is not assigned to any partition will be used."
 msgstr ""
+"Los datos se conservan y las particiones existentes no se modificarán. Sólo "
+"se utilizará el espacio que no esté asignado a ninguna partición."
 
 #: src/components/storage/space-policy-utils.jsx:112
 msgid "Select a mechanism to make space"
-msgstr ""
+msgstr "Seleccione un mecanismo para hacer espacio"
 
 #: src/components/storage/space-policy-utils.jsx:137
 #, c-format
 msgid "deleting all content of the installation device"
 msgid_plural "deleting all content of the %d selected disks"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "eliminar todo el contenido del dispositivo de instalación"
+msgstr[1] "eliminar todo el contenido de los %d discos seleccionados"
 
 #: src/components/storage/space-policy-utils.jsx:147
 #, c-format
 msgid "shrinking partitions of the installation device"
 msgid_plural "shrinking partitions of the %d selected disks"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Reduccir las particiones del dispositivo de instalación"
+msgstr[1] "Reduccir las particiones de los %d discos seleccionados"
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space without modifying any partition".
 #: src/components/storage/space-policy-utils.jsx:155
-#, fuzzy
 msgid "without modifying any partition"
-msgstr "%s con %d particiones"
+msgstr "sin modificar ninguna partición"
 
 #: src/components/storage/space-policy-utils.jsx:170
 #, c-format
 msgid "This will only affect the installation device"
 msgid_plural "This will affect the %d disks selected for installation"
-msgstr[0] ""
+msgstr[0] "Esto sólo afectará al dispositivo de instalación"
 msgstr[1] ""
+"Esto sólo afectará a los %d discos seleccionados para la instalación"
 
 #: src/components/storage/utils.js:44
 msgid "KiB"

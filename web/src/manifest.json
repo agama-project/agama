@@ -10,10 +10,10 @@
     },
     "locales": {
         "en-us": "English",
-        "fr-fr": "Français",
-        "ja-jp": "日本語",
-        "nl-nl": "Nederlands",
         "es-es": "Español",
-        "sv-se": "Svenska"
+        "nl-nl": "Nederlands",
+        "fr-fr": "Français",
+        "sv-se": "Svenska",
+        "ja-jp": "日本語"
     }
 }
