@@ -98,6 +98,8 @@ pub struct NetworkConnection {
     pub parent: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bond: Option<BondSettings>,
+    #[serde(rename = "mac-address", skip_serializing_if = "Option::is_none")]
+    pub mac_address: Option<String>,
 }
 
 impl NetworkConnection {

@@ -1,0 +1,126 @@
+id: MicroOS
+name: openSUSE MicroOS
+# ------------------------------------------------------------------------------
+# WARNING: When changing the product description delete the translations located
+# at the at translations/description key below to avoid using obsolete
+# translations!!
+# ------------------------------------------------------------------------------
+description: 'A quick, small distribution designed to host container workloads
+  with automated administration & patching. openSUSE MicroOS provides
+  transactional (atomic) updates upon a read-only btrfs root file system. 
+  As rolling release distribution the software is always up-to-date.'
+# Do not manually change any translations! See README.md for more details.
+translations:
+software:
+  installation_repositories:
+    - url: https://download.opensuse.org/tumbleweed/repo/oss/
+      archs: x86_64
+    - url: https://download.opensuse.org/ports/aarch64/tumbleweed/repo/oss/
+      archs: aarch64
+    - url: https://download.opensuse.org/ports/zsystems/tumbleweed/repo/oss/
+      archs: s390
+    - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/oss/
+      archs: ppc
+    - url: https://download.opensuse.org/tumbleweed/repo/non-oss/
+      archs: x86_64
+    # aarch64 does not have non-oss ports. Keep eye if it change
+    - url: https://download.opensuse.org/ports/zsystems/tumbleweed/repo/non-oss/
+      archs: s390
+    - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/non-oss/
+      archs: ppc
+    - url: https://download.opensuse.org/update/tumbleweed/
+      archs: x86_64
+    - url: https://download.opensuse.org/ports/aarch64/update/tumbleweed/
+      archs: aarch64
+    - url: https://download.opensuse.org/ports/zsystems/update/tumbleweed/
+      archs: s390
+    - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/oss/
+      archs: ppc
+  mandatory_patterns:
+    - microos_base
+    - microos_base_zypper
+    - microos_defaults
+    - microos_hardware
+    - pattern: 32bit
+      archs: x86_64
+  optional_patterns: null
+  user_patterns:
+    - container_runtime
+    - microos_ra_agent
+    - microos_ra_verifier
+  mandatory_packages:
+    - NetworkManager
+  optional_packages: null
+  base_product: MicroOS
+
+security:
+  lsm: selinux
+  available_lsms:
+    selinux:
+      patterns:
+        - microos_selinux
+      policy: enforcing
+    none:
+      patterns: null
+
+storage:
+  space_policy: delete
+  volumes:
+    - "/"
+    - "/var"
+  volume_templates:
+    - mount_path: "/"
+      filesystem: btrfs
+      btrfs:
+        snapshots: true
+        read_only: true
+        default_subvolume: "@"
+        subvolumes:
+          - path: home
+          - path: opt
+          - path: root
+          - path: srv
+          - path: usr/local
+          - path: boot/writable
+          # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
+          - path: var
+            copy_on_write: false
+          # Architecture specific subvolumes
+          - path: boot/grub2/arm64-efi
+            archs: aarch64
+          - path: boot/grub2/arm-efi
+            archs: arm
+          - path: boot/grub2/i386-pc
+            archs: x86_64
+          - path: boot/grub2/powerpc-ieee1275
+            archs: ppc,!board_powernv
+          - path: boot/grub2/s390x-emu
+            archs: s390
+          - path: boot/grub2/x86_64-efi
+            archs: x86_64
+          - path: boot/grub2/riscv64-efi
+            archs: riscv64
+      size:
+        auto: true
+      outline:
+        required: true
+        snapshots_configurable: false
+        filesystems:
+          - btrfs
+        auto_size:
+          base_min: 5 GiB
+          base_max: 25 GiB
+          max_fallback_for:
+            - "/var"
+    - mount_path: "/var"
+      filesystem: btrfs
+      mount_options:
+        - "x-initrd.mount"
+        - "nodatacow"
+      size:
+        auto: false
+        min: 5 GiB
+      outline:
+        required: false
+        filesystems:
+          - btrfs

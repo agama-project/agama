@@ -18,25 +18,52 @@
     %global rb_build_versions %{rb_default_ruby}
     BuildRequires:  dbus-1-common
     Requires:       dbus-1-common
-    Requires:       snapper
+    Requires:       suseconnect-ruby-bindings
+    # YaST dependencies
+    Requires:       autoyast2-installation
+    # ArchFilter
+    Requires:       yast2 >= 4.5.20
     Requires:       yast2-bootloader
     Requires:       yast2-country
     Requires:       yast2-hardware-detection
     Requires:       yast2-installation
+    Requires:       yast2-iscsi-client >= 4.5.7
     Requires:       yast2-network
     Requires:       yast2-proxy
     # ProposalSettings#swap_reuse
     Requires:       yast2-storage-ng >= 5.0.3
-    Requires:       open-iscsi
-    Requires:       yast2-iscsi-client >= 4.5.7
     Requires:       yast2-users
-    # required for registration
-    Requires:       suseconnect-ruby-bindings
-    # yast2 with ArchFilter
-    Requires:       yast2 >= 4.5.20
     %ifarch s390 s390x
     Requires:       yast2-s390 >= 4.6.4
+    Requires:       yast2-reipl
+    Requires:       yast2-cio
     %endif
+    # Storage dependencies
+    Requires:       bcache-tools
+    Requires:       btrfsprogs
+    Requires:       cryptsetup
+    Requires:       dmraid
+    Requires:       dosfstools
+    Requires:       e2fsprogs
+    Requires:       exfat-utils
+    Requires:       f2fs-tools
+    Requires:       fcoe-utils
+    Requires:       fde-tools
+    Requires:       jfsutils
+    Requires:       libstorage-ng-lang
+    Requires:       lvm2
+    Requires:       mdadm
+    Requires:       multipath-tools
+    Requires:       nilfs-utils
+    Requires:       nfs-client
+    Requires:       ntfs-3g
+    Requires:       ntfsprogs
+    Requires:       nvme-cli
+    Requires:       open-iscsi
+    Requires:       quota
+    Requires:       snapper
+    Requires:       udftools
+    Requires:       xfsprogs
   :filelist: "%{_datadir}/dbus-1/agama.conf\n
     %dir %{_datadir}/dbus-1/agama-services\n
     %{_datadir}/dbus-1/agama-services/org.opensuse.Agama*.service\n

@@ -19,5 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+export { default as KeymapSelector } from "./KeymapSelector";
 export { default as L10nPage } from "./L10nPage";
 export { default as LanguageSwitcher } from "./LanguageSwitcher";
+export { default as LocaleSelector } from "./LocaleSelector";
+export { default as TimezoneSelector } from "./TimezoneSelector";

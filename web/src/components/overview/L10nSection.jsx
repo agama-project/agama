@@ -19,73 +19,46 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Text } from "@patternfly/react-core";
-import { Em, Section, SectionSkeleton } from "~/components/core";
-import { useCancellablePromise } from "~/utils";
-import { useInstallerClient } from "~/context/installer";
+import { Em, If, Section, SectionSkeleton } from "~/components/core";
+import { useL10n } from "~/context/l10n";
 import { _ } from "~/i18n";
 
-const initialState = {
-  busy: true,
-  language: undefined,
-  errors: []
+const Content = ({ locales }) => {
+  // Only considering the first locale.
+  const locale = locales[0];
+
+  // TRANSLATORS: %s will be replaced by a language name and territory, example:
+  // "English (United States)".
+  const [msg1, msg2] = _("The system will use %s as its default language.").split("%s");
+
+  return (
+    <Text>
+      {msg1}<Em>{`${locale.name} (${locale.territory})`}</Em>{msg2}
+    </Text>
+  );
 };
 
-export default function L10nSection({ showErrors }) {
-  const [state, setState] = useState(initialState);
-  const { language: client } = useInstallerClient();
-  const { cancellablePromise } = useCancellablePromise();
+export default function L10nSection() {
+  const { selectedLocales } = useL10n();
 
-  const updateState = ({ ...payload }) => {
-    setState(previousState => ({ ...previousState, ...payload }));
-  };
-
-  useEffect(() => {
-    const loadLanguages = async () => {
-      const languages = await cancellablePromise(client.getLanguages());
-      const [language] = await cancellablePromise(client.getSelectedLanguages());
-      updateState({ languages, language, busy: false });
-    };
-
-    // TODO: use these errors?
-    loadLanguages().catch(console.error);
-
-    return client.onLanguageChange(language => {
-      updateState({ language });
-    });
-  }, [client, cancellablePromise]);
-
-  const errors = showErrors ? state.errors : [];
-
-  const SectionContent = () => {
-    const { busy, languages, language } = state;
-
-    if (busy) return <SectionSkeleton numRows={1} />;
-
-    const selected = languages.find(lang => lang.id === language);
-
-    // TRANSLATORS: %s will be replaced by a language name and code,
-    // example: "English (en_US.UTF-8)"
-    const [msg1, msg2] = _("The system will use %s as its default language.").split("%s");
-    return (
-      <Text>
-        {msg1}<Em>{`${selected.name} (${selected.id})`}</Em>{msg2}
-      </Text>
-    );
-  };
+  const isLoading = selectedLocales.length === 0;
 
   return (
     <Section
       key="l10n-section"
       // TRANSLATORS: page section
       title={_("Localization")}
-      loading={state.busy}
-      icon="translate"
+      loading={isLoading}
+      icon="globe"
       path="/l10n"
-      errors={errors}
     >
-      <SectionContent />
+      <If
+        condition={isLoading}
+        then={<SectionSkeleton numRows={1} />}
+        else={<Content locales={selectedLocales} />}
+      />
     </Section>
   );
 }

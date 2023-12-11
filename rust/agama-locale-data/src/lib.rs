@@ -1,7 +1,6 @@
 use anyhow::Context;
 use flate2::bufread::GzDecoder;
 use quick_xml::de::Deserializer;
-use regex::Regex;
 use serde::Deserialize;
 use std::fs::File;
 use std::io::BufRead;
@@ -9,12 +8,17 @@ use std::io::BufReader;
 use std::process::Command;
 
 pub mod deprecated_timezones;
+pub mod keyboard;
 pub mod language;
+mod locale;
 pub mod localization;
 pub mod ranked;
 pub mod territory;
 pub mod timezone_part;
-pub mod xkeyboard;
+
+use keyboard::xkeyboard;
+
+pub use locale::{InvalidLocaleCode, KeymapId, LocaleCode};
 
 fn file_reader(file_path: &str) -> anyhow::Result<impl BufRead> {
     let file = File::open(file_path)
@@ -39,10 +43,13 @@ pub fn get_xkeyboards() -> anyhow::Result<xkeyboard::XKeyboards> {
 /// Requires working localectl.
 ///
 /// ```no_run
-/// let key_maps = agama_locale_data::get_key_maps().unwrap();
-/// assert!(key_maps.contains(&"us".to_string()))
+/// use agama_locale_data::KeymapId;
+///
+/// let key_maps = agama_locale_data::get_localectl_keymaps().unwrap();
+/// let us: KeymapId = "us".parse().unwrap();
+/// assert!(key_maps.contains(&us));
 /// ```
-pub fn get_key_maps() -> anyhow::Result<Vec<String>> {
+pub fn get_localectl_keymaps() -> anyhow::Result<Vec<KeymapId>> {
     const BINARY: &str = "/usr/bin/localectl";
     let output = Command::new(BINARY)
         .arg("list-keymaps")
@@ -50,29 +57,9 @@ pub fn get_key_maps() -> anyhow::Result<Vec<String>> {
         .context("failed to execute localectl list-maps")?
         .stdout;
     let output = String::from_utf8(output).context("Strange localectl output formatting")?;
-    let ret = output.split('\n').map(|l| l.trim().to_string()).collect();
+    let ret: Vec<_> = output.lines().flat_map(|l| l.parse().ok()).collect();
 
     Ok(ret)
-}
-
-/// Parses given locale to language and territory part
-///
-/// /// ## Examples
-///
-/// ```
-/// let result = agama_locale_data::parse_locale("en_US.UTF-8").unwrap();
-/// assert_eq!(result.0, "en");
-/// assert_eq!(result.1, "US")
-/// ```
-pub fn parse_locale(locale: &str) -> anyhow::Result<(&str, &str)> {
-    let locale_regexp: Regex = Regex::new(r"^([[:alpha:]]+)_([[:alpha:]]+)").unwrap();
-    let captures = locale_regexp
-        .captures(locale)
-        .context("Failed to parse locale")?;
-    Ok((
-        captures.get(1).unwrap().as_str(),
-        captures.get(2).unwrap().as_str(),
-    ))
 }
 
 /// Returns struct which contain list of known languages

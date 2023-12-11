@@ -73,7 +73,7 @@ if ARGV.empty?
   puts "ERROR: Using 'agamactl' to start all services no longer works."
   puts "NOTE: It had race conditions all along and now there's a Rust service it can't reach too."
   puts "NOTE: Use `systemctl start agama.service` instead"
-  puts "NOTE: which is setup by a) RPMs b) ./setup-service.sh"
+  puts "NOTE: which is setup by a) RPMs b) ./setup-services.sh"
   exit 1
 elsif ["-h", "--help"].include?(ARGV[0])
   me = $PROGRAM_NAME

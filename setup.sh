@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# This script sets up the development environment without installing any
-# package. This script is supposed to run within a repository clone.
+# This script sets up the development environment without installing Agama packages. This script is
+# supposed to run within a repository clone.
 
-# Exit on error; unset variables are an error
+# Exit on error; unset variables are an error.
 set -eu
 
 MYDIR=$(realpath $(dirname $0))
@@ -21,24 +21,23 @@ else
   SUDO=""
 fi
 
-# Backend setup
+# Services setup
+if ! $MYDIR/setup-services.sh; then
+  echo "Services setup failed."
+  echo "Agama services are NOT running."
 
-$MYDIR/setup-service.sh
+  exit 2
+fi;
 
-# Install Frontend dependencies
+# Web setup
+if ! $MYDIR/setup-web.sh; then
+  echo "Web client setup failed."
+  echo "Agama web client is NOT running."
 
-$SUDO zypper --non-interactive --gpg-auto-import-keys install \
-  make git 'npm>=18' cockpit
+  exit 3
+fi;
 
-# Web Frontend
-
-$SUDO systemctl start cockpit
-
-# set up the web UI
-cd web; make devel-install; cd -
-$SUDO ln -snf `pwd`/web/dist /usr/share/cockpit/agama
-
-# Start the installer
+# Start the installer.
 echo
 echo "D-Bus will start the services, see journalctl for their logs."
 echo "To start the services manually, logging to the terminal:"

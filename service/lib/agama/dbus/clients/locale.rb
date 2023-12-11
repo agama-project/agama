@@ -20,12 +20,14 @@
 # find current contact information at www.suse.com.
 
 require "agama/dbus/clients/base"
+require "singleton"
 
 module Agama
   module DBus
     module Clients
       # D-Bus client for locale configuration
       class Locale < Base
+        include Singleton
         INTERFACE_NAME = "org.opensuse.Agama1.Locale"
 
         def initialize
@@ -39,23 +41,12 @@ module Agama
           @service_name ||= "org.opensuse.Agama1"
         end
 
-        # Sets the supported locales. It can differs per product.
-        #
-        # @param locales [Array<String>]
-        def supported_locales=(locales)
-          dbus_object.supported_locales = locales
-        end
-
         def ui_locale
           dbus_object[INTERFACE_NAME]["UILocale"]
         end
 
         def ui_locale=(locale)
           dbus_object[INTERFACE_NAME]["UILocale"] = locale
-        end
-
-        def available_ui_locales
-          dbus_object.ListUILocales
         end
 
         # Finishes the language installation

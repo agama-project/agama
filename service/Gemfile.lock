@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    agama (5)
+    agama (6)
       cfa (~> 1.0.2)
       cfa_grub2 (~> 2.0.0)
       cheetah (~> 1.0.0)
@@ -73,4 +73,4 @@ DEPENDENCIES
   yard (~> 0.9.0)
 
 BUNDLED WITH
-   2.3.26
+   2.4.22

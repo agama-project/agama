@@ -25,8 +25,8 @@ function restart_service() {
 
   if [ -n "$SERVICE_START" ]; then
     SERVICE_START_UNIX_TIME=$(date -d "$SERVICE_START" +"%s")
-    # find the date of the latest file in the gem
-    NEWEST_FILE_TIME=$(find /usr/lib*/ruby/gems/*/gems/$SERVICE_NAME-* -exec stat --format %Y "{}" \; | sort -nr | head -n 1)
+    # find the date of the latest file in the product configuration or in the gem
+    NEWEST_FILE_TIME=$(find /usr/share/agama/products.d /usr/lib*/ruby/gems/*/gems/$SERVICE_NAME-* -exec stat --format %Y "{}" \; | sort -nr | head -n 1)
 
     # when a file is newer than the start time then restart the service
     if [ -n "$NEWEST_FILE_TIME" ] && [ "$SERVICE_START_UNIX_TIME" -lt "$NEWEST_FILE_TIME" ]; then

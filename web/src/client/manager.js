@@ -86,7 +86,7 @@ class ManagerBaseClient {
    */
   async fetchLogs() {
     const proxy = await this.client.proxy(MANAGER_IFACE);
-    const path = await proxy.CollectLogs("root");
+    const path = await proxy.CollectLogs();
     const file = cockpit.file(path, { binary: true });
     return file.read();
   }

@@ -36,8 +36,10 @@ pub enum DeviceType {
     Loopback = 0,
     Ethernet = 1,
     Wireless = 2,
-    Bond = 3,
+    Dummy = 3,
+    Bond = 4,
 }
+
 /// Bond mode
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy)]
 pub enum BondMode {
@@ -135,7 +137,8 @@ impl TryFrom<u8> for DeviceType {
             0 => Ok(DeviceType::Loopback),
             1 => Ok(DeviceType::Ethernet),
             2 => Ok(DeviceType::Wireless),
-            3 => Ok(DeviceType::Bond),
+            3 => Ok(DeviceType::Dummy),
+            4 => Ok(DeviceType::Bond),
             _ => Err(InvalidDeviceType(value)),
         }
     }

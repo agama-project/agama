@@ -119,7 +119,7 @@ describe("LogsButton", () => {
         // And test what we're looking for
         expect(document.createElement).toHaveBeenCalledWith('a');
         expect(anchorMock).toHaveAttribute("href", "fake-blob-url");
-        expect(anchorMock).toHaveAttribute("download", expect.stringMatching(/y2logs/));
+        expect(anchorMock).toHaveAttribute("download", expect.stringMatching(/agama-installation-logs/));
         expect(anchorMock.click).toHaveBeenCalled();
 
         // Be polite and restore document.createElement function,

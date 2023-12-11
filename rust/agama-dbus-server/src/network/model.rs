@@ -263,6 +263,7 @@ pub enum Connection {
     Ethernet(EthernetConnection),
     Wireless(WirelessConnection),
     Loopback(LoopbackConnection),
+    Dummy(DummyConnection),
     Bond(BondConnection),
 }
 
@@ -279,6 +280,7 @@ impl Connection {
             }),
             DeviceType::Loopback => Connection::Loopback(LoopbackConnection { base }),
             DeviceType::Ethernet => Connection::Ethernet(EthernetConnection { base }),
+            DeviceType::Dummy => Connection::Dummy(DummyConnection { base }),
             DeviceType::Bond => Connection::Bond(BondConnection {
                 base,
                 ..Default::default()
@@ -293,6 +295,7 @@ impl Connection {
             Connection::Ethernet(conn) => &conn.base,
             Connection::Wireless(conn) => &conn.base,
             Connection::Loopback(conn) => &conn.base,
+            Connection::Dummy(conn) => &conn.base,
             Connection::Bond(conn) => &conn.base,
         }
     }
@@ -302,6 +305,7 @@ impl Connection {
             Connection::Ethernet(conn) => &mut conn.base,
             Connection::Wireless(conn) => &mut conn.base,
             Connection::Loopback(conn) => &mut conn.base,
+            Connection::Dummy(conn) => &mut conn.base,
             Connection::Bond(conn) => &mut conn.base,
         }
     }
@@ -375,12 +379,25 @@ impl Connection {
     pub fn is_loopback(&self) -> bool {
         matches!(self, Connection::Loopback(_))
     }
+
+    pub fn is_ethernet(&self) -> bool {
+        matches!(self, Connection::Loopback(_)) || matches!(self, Connection::Ethernet(_))
+    }
+
+    pub fn mac_address(&self) -> String {
+        self.base().mac_address.to_string()
+    }
+
+    pub fn set_mac_address(&mut self, mac_address: MacAddress) {
+        self.base_mut().mac_address = mac_address;
+    }
 }
 
 #[derive(Debug, Default, Clone)]
 pub struct BaseConnection {
     pub id: String,
     pub uuid: Uuid,
+    pub mac_address: MacAddress,
     pub ip_config: IpConfig,
     pub status: Status,
     pub interface: String,
@@ -391,6 +408,59 @@ pub struct BaseConnection {
 impl PartialEq for BaseConnection {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id && self.uuid == other.uuid && self.ip_config == other.ip_config
+    }
+}
+
+#[derive(Debug, Error)]
+#[error("Invalid MAC address: {0}")]
+pub struct InvalidMacAddress(String);
+
+#[derive(Debug, Default, Clone)]
+pub enum MacAddress {
+    MacAddress(macaddr::MacAddr6),
+    Preserve,
+    Permanent,
+    Random,
+    Stable,
+    #[default]
+    Unset,
+}
+
+impl FromStr for MacAddress {
+    type Err = InvalidMacAddress;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "preserve" => Ok(Self::Preserve),
+            "permanent" => Ok(Self::Permanent),
+            "random" => Ok(Self::Random),
+            "stable" => Ok(Self::Stable),
+            "" => Ok(Self::Unset),
+            _ => Ok(Self::MacAddress(match macaddr::MacAddr6::from_str(s) {
+                Ok(mac) => mac,
+                Err(e) => return Err(InvalidMacAddress(e.to_string())),
+            })),
+        }
+    }
+}
+
+impl fmt::Display for MacAddress {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let output = match &self {
+            Self::MacAddress(mac) => mac.to_string(),
+            Self::Preserve => "preserve".to_string(),
+            Self::Permanent => "permanent".to_string(),
+            Self::Random => "random".to_string(),
+            Self::Stable => "stable".to_string(),
+            Self::Unset => "".to_string(),
+        };
+        write!(f, "{}", output)
+    }
+}
+
+impl From<InvalidMacAddress> for zbus::fdo::Error {
+    fn from(value: InvalidMacAddress) -> Self {
+        zbus::fdo::Error::Failed(value.to_string())
     }
 }
 
@@ -550,6 +620,11 @@ pub struct LoopbackConnection {
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
+pub struct DummyConnection {
+    pub base: BaseConnection,
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
 pub struct BondConnection {
     pub base: BaseConnection,
     pub bond: BondConfig,
@@ -615,7 +690,7 @@ pub enum ControllerConfig {
     Ports(Vec<String>),
 }
 
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Debug, Default, PartialEq, Clone)]
 pub struct WirelessConfig {
     pub mode: WirelessMode,
     pub ssid: SSID,

@@ -168,12 +168,14 @@ module Agama
     #
     # @param keys [Array<Symbol|String>] Config data keys of the collection.
     # @param property [Symbol|String|nil] Property to retrieve of the elements.
+    # @param default [Object] The default value returned when the value is not
+    #   found or is not an array
     #
     # @return [Array]
-    def arch_elements_from(*keys, property: nil)
+    def arch_elements_from(*keys, property: nil, default: [])
       keys.map!(&:to_s)
       elements = products.dig(*keys)
-      return [] unless elements.is_a?(Array)
+      return default unless elements.is_a?(Array)
 
       elements.map do |element|
         if !element.is_a?(Hash)

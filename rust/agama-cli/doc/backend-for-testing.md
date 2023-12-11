@@ -63,7 +63,7 @@ podman run --name ${CNAME?} \
 # shortcut for the following
 CEXEC="podman exec ${CNAME?} bash -c"
 
-${CEXEC?} "cd /checkout && ./setup-service.sh"
+${CEXEC?} "cd /checkout && ./setup-services.sh"
 
 # Optional: explicit service start using a separate log file
 ${CEXEC?} "cd /checkout/service && (bundle exec bin/agamactl > service.log 2>&1 &)"

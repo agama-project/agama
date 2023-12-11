@@ -75,40 +75,43 @@ trait Manager {
     ) -> zbus::Result<Vec<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>>;
 }
 
-#[dbus_proxy(interface = "org.opensuse.Agama1.Locale", assume_defaults = true)]
+#[dbus_proxy(
+    interface = "org.opensuse.Agama1.Locale",
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Locale"
+)]
 trait Locale {
     /// Commit method
     fn commit(&self) -> zbus::Result<()>;
 
-    /// LabelsForLocales method
-    fn labels_for_locales(&self) -> zbus::Result<Vec<(String, String)>>;
+    /// ListKeymaps method
+    fn list_keymaps(&self) -> zbus::Result<Vec<(String, String)>>;
+
+    /// ListLocales method
+    fn list_locales(&self) -> zbus::Result<Vec<(String, String, String)>>;
 
     /// ListTimezones method
-    fn list_timezones(&self, locale: &str) -> zbus::Result<Vec<(String, String)>>;
+    fn list_timezones(&self) -> zbus::Result<Vec<(String, Vec<String>)>>;
 
-    /// ListVConsoleKeyboards method
-    #[dbus_proxy(name = "ListVConsoleKeyboards")]
-    fn list_vconsole_keyboards(&self) -> zbus::Result<Vec<String>>;
+    /// Keymap property
+    #[dbus_proxy(property)]
+    fn keymap(&self) -> zbus::Result<String>;
+    fn set_keymap(&self, value: &str) -> zbus::Result<()>;
 
     /// Locales property
     #[dbus_proxy(property)]
     fn locales(&self) -> zbus::Result<Vec<String>>;
     fn set_locales(&self, value: &[&str]) -> zbus::Result<()>;
 
-    /// SupportedLocales property
-    #[dbus_proxy(property)]
-    fn supported_locales(&self) -> zbus::Result<Vec<String>>;
-    fn set_supported_locales(&self, value: &[&str]) -> zbus::Result<()>;
-
     /// Timezone property
     #[dbus_proxy(property)]
     fn timezone(&self) -> zbus::Result<String>;
     fn set_timezone(&self, value: &str) -> zbus::Result<()>;
 
-    /// VConsoleKeyboard property
-    #[dbus_proxy(property, name = "VConsoleKeyboard")]
-    fn vconsole_keyboard(&self) -> zbus::Result<String>;
-    fn set_vconsole_keyboard(&self, value: &str) -> zbus::Result<()>;
+    /// UILocale property
+    #[dbus_proxy(property, name = "UILocale")]
+    fn uilocale(&self) -> zbus::Result<String>;
+    fn set_uilocale(&self, value: &str) -> zbus::Result<()>;
 }
 
 #[dbus_proxy(

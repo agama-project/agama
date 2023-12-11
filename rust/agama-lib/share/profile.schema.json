@@ -36,6 +36,10 @@
                 "description": "The name of the network interface bound to this connection",
                 "type": "string"
               },
+              "mac-address": {
+                "description": "Custom mac-address (can also be 'preserve', 'permanent', 'random' or 'stable')",
+                "type": "string"
+              },
               "method4": {
                 "description": "IPv4 configuration method (e.g., 'auto')",
                 "type": "string",

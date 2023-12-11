@@ -25,6 +25,11 @@
   text-align: center;
 }
 
+.title {
+  font-size: var(--fs-large);
+  font-weight: var(--fw-bold);
+}
+
 .bold {
   font-weight: bold;
 }
@@ -57,6 +62,11 @@
 .icon-size-24 {
   width: 24px;
   height: 24px;
+}
+
+.icon-size-28 {
+  width: 28px;
+  height: 28px;
 }
 
 .icon-size-32 {
@@ -161,6 +171,6 @@
   max-inline-size: calc(var(--ui-max-inline-size) + var(--spacer-large))
 }
 
-.cursor-pointer {
-  cursor: pointer;
+.height-75 {
+  height: 75dvh;
 }

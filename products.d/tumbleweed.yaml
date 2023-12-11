@@ -15,6 +15,10 @@ translations:
     cs: Tumbleweed je rolující verze distribuce openSUSE obsahující poslední
       "stabilní" verze veškerého software namísto pevných pravidelných vydání.
       Projekt je určen pro uživatele, kteří chtějí nejnovější stabilní software.
+    sv: Tumbleweed-distributionen är en ren rullande version av openSUSE som
+      innehåller de senaste "stabila" versionerna av all programvara istället
+      för att förlita sig på stela periodiska utgivningscykler. Projektet gör
+      detta för användare som vill ha den senaste stabila programvaran.
 software:
   installation_repositories:
     - url: https://download.opensuse.org/tumbleweed/repo/oss/
@@ -43,6 +47,16 @@ software:
   mandatory_patterns:
     - enhanced_base # only pattern that is shared among all roles on TW
   optional_patterns: null # no optional pattern shared
+  user_patterns:
+    - basic_desktop
+    - xfce
+    - kde
+    - gnome
+    - yast2_basis
+    - yast2_desktop
+    - yast2_server
+    - multimedia
+    - office
   mandatory_packages:
     - NetworkManager
   optional_packages: null

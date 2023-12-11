@@ -190,3 +190,38 @@ table td > .pf-v5-c-empty-state {
   --pf-v5-c-toggle-group__button--m-selected--BackgroundColor: var(--color-primary);
   --pf-v5-c-toggle-group__button--Color: var(--color-gray-light);
 }
+
+// Reduce padding of PF/Hint because it looks like an option of current Agama
+// select
+.pf-v5-c-hint {
+  --pf-v5-c-hint--PaddingTop: var(--spacer-small);
+  --pf-v5-c-hint--PaddingRight: var(--spacer-small);
+  --pf-v5-c-hint--PaddingBottom: var(--spacer-small);
+  --pf-v5-c-hint--PaddingLeft: var(--spacer-small);
+}
+
+// Do not reserve space for PF/Hint actions when there are none
+.pf-v5-c-hint__actions:empty {
+  display: none;
+}
+
+// Make PF/ExpandableSection looks a bit different when wrapped in a PF/Hint
+.pf-v5-c-hint {
+  .pf-v5-c-expandable-section {
+    --pf-v5-c-expandable-section__toggle--Color: var(--color-primary);
+  }
+
+  .pf-v5-c-expandable-section__toggle,
+  .pf-v5-c-expandable-section__toggle:hover {
+    // NOTE. would be nice to being able to use darker variant of primary color
+    // when hovering the link, but we aren't ready yet. We should switch to hsla
+    // colors or so.
+    --pf-v5-c-expandable-section__toggle--Color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .pf-v5-c-expandable-section__content {
+    --pf-v5-c-expandable-section__content--PaddingRight: var(--spacer-normal);
+    --pf-v5-c-expandable-section__content--PaddingLeft: var(--spacer-normal);
+  }
+}

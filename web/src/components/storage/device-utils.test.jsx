@@ -231,11 +231,22 @@ const renderOptions = (Component) => {
 
 describe("DeviceList", renderOptions(DeviceList));
 describe("DeviceList", () => {
-  it("renders all options as selected", () => {
-    plainRender(<DeviceList devices={[vda, md0, raid]} />);
+  describe("with isSelected prop", () => {
+    it("renders all devices as selected", () => {
+      plainRender(<DeviceList isSelected devices={[vda, md0, raid]} />);
 
-    const selectedOptions = screen.queryAllByRole("option", { selected: true });
-    expect(selectedOptions.length).toEqual(3);
+      const devices = screen.queryAllByText(/\/dev\//, { selected: true });
+      expect(devices.length).toEqual(3);
+    });
+  });
+
+  describe("without isSelected prop", () => {
+    it("renders all devices as not selected", () => {
+      plainRender(<DeviceList devices={[vda, md0, raid]} />);
+
+      const devices = screen.queryAllByText(/\/dev\//, { selected: false });
+      expect(devices.length).toEqual(3);
+    });
   });
 });
 

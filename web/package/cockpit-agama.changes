@@ -1,4 +1,32 @@
 -------------------------------------------------------------------
+Sat Dec  2 18:06:02 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 6
+
+-------------------------------------------------------------------
+Thu Nov 30 22:39:57 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: make selectors more compact (gh#openSUSE/agama#898).
+
+-------------------------------------------------------------------
+Thu Nov 30 15:19:38 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Allow selecting the storage policy to make free space for the
+  installation (gh#openSUSE/agama#883).
+
+-------------------------------------------------------------------
+Wed Nov 29 14:15:16 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Allow selecting language, keymap and timezone for the target
+  system (gh#openSUSE/agama#881).
+
+-------------------------------------------------------------------
+Wed Nov 29 13:01:04 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: improve the look and feel by fine tunning the sections spacing,
+  alignment, and icon sizes (gh#openSUSE/agama#892).
+
+-------------------------------------------------------------------
 Tue Nov 21 15:21:06 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: Do not crash when clicking the install button. It started

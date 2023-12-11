@@ -1,0 +1,2015 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-12-10 02:19+0000\n"
+"PO-Revision-Date: 2023-12-07 11:01+0000\n"
+"Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
+"Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
+"web/id/>\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.9.1\n"
+
+#: src/App.jsx:110
+msgid "Diagnostic tools"
+msgstr "Alat bantu diagnostik"
+
+#. TRANSLATORS: error message, %s is replaced by the server URL
+#: src/DevServerWrapper.jsx:82
+#, c-format
+msgid "The server at %s is not reachable."
+msgstr "Server di %s tidak dapat dijangkau."
+
+#. TRANSLATORS: error message
+#: src/DevServerWrapper.jsx:88
+msgid "Cannot connect to the Cockpit server"
+msgstr "Tidak dapat tersambung ke server Cockpit"
+
+#. TRANSLATORS: button label
+#: src/DevServerWrapper.jsx:104
+msgid "Try Again"
+msgstr "Coba lagi"
+
+#: src/components/core/About.jsx:43 src/components/core/About.jsx:48
+msgid "About Agama"
+msgstr "Tentang Agama"
+
+#. TRANSLATORS: content of the "About" popup (1/2)
+#: src/components/core/About.jsx:53
+msgid ""
+"Agama is an experimental installer for (open)SUSE systems. It still under "
+"development so, please, do not use it in production environments. If you "
+"want to give it a try, we recommend to use a virtual machine to prevent any "
+"possible data loss."
+msgstr ""
+"Agama adalah installer eksperimental untuk sistem (open)SUSE. Saat ini masih "
+"dalam tahap pengembangan, jadi mohon untuk tidak menggunakannya di "
+"lingkungan produksi. Jika Anda ingin mencobanya, kami sarankan untuk "
+"menggunakan mesin virtual untuk mencegah kemungkinan kehilangan data."
+
+#. TRANSLATORS: content of the "About" popup (2/2)
+#. %s is replaced by the project URL
+#: src/components/core/About.jsx:65
+#, c-format
+msgid "For more information, please visit the project's repository at %s."
+msgstr ""
+"Untuk informasi lebih lanjut, silakan kunjungi repositori proyek di %s."
+
+#. TRANSLATORS: button label
+#: src/components/core/About.jsx:71 src/components/core/FileViewer.jsx:80
+#: src/components/core/Sidebar.jsx:177 src/components/core/Terminal.jsx:48
+#: src/components/network/WifiSelector.jsx:151
+#: src/components/product/ProductPage.jsx:239
+msgid "Close"
+msgstr "Tutup"
+
+#. TRANSLATORS: button label
+#: src/components/core/DBusError.jsx:41
+msgid "Reload"
+msgstr "Muat ulang"
+
+#. TRANSLATORS: page title
+#: src/components/core/DBusError.jsx:49
+msgid "D-Bus Error"
+msgstr "Kesalahan D-Bus"
+
+#: src/components/core/DBusError.jsx:55
+msgid "Cannot connect to D-Bus"
+msgstr "Tidak dapat tersambung ke D-Bus"
+
+#: src/components/core/DBusError.jsx:60
+msgid ""
+"Could not connect to the D-Bus service. Please, check whether it is running."
+msgstr ""
+"Tidak dapat tersambung ke layanan D-Bus. Silakan periksa apakah sudah "
+"berjalan."
+
+#: src/components/core/FileViewer.jsx:65
+msgid "Reading file..."
+msgstr "Membaca berkas..."
+
+#: src/components/core/FileViewer.jsx:71
+msgid "Cannot read the file"
+msgstr "Tidak dapat membaca berkas"
+
+#. TRANSLATORS: the installer reports some errors,
+#. the text in square brackets [] is a clickable link
+#: src/components/core/InstallButton.jsx:45
+msgid ""
+"There are some reported issues. Please, check [the list of issues] before "
+"proceeding with the installation."
+msgstr ""
+"Ada beberapa masalah yang dilaporkan. Silakan periksa [daftar masalah] "
+"sebelum melanjutkan penginstalan."
+
+#: src/components/core/InstallButton.jsx:60
+msgid "Confirm Installation"
+msgstr "Konfirmasi Instalasi"
+
+#: src/components/core/InstallButton.jsx:66
+msgid ""
+"If you continue, partitions on your hard disk will be modified according to "
+"the provided installation settings."
+msgstr ""
+"Jika Anda melanjutkan, partisi pada hard disk Anda akan dimodifikasi sesuai "
+"dengan pengaturan instalasi yang disediakan."
+
+#: src/components/core/InstallButton.jsx:70
+msgid "Please, cancel and check the settings if you are unsure."
+msgstr "Mohon batalkan dan periksa pengaturan jika Anda tidak yakin."
+
+#. TRANSLATORS: button label
+#: src/components/core/InstallButton.jsx:76
+msgid "Continue"
+msgstr "Lanjutkan"
+
+#: src/components/core/InstallButton.jsx:86
+msgid "Problems Found"
+msgstr "Masalah yang Ditemukan"
+
+#: src/components/core/InstallButton.jsx:90
+msgid ""
+"Some problems were found when trying to start the installation. Please, have "
+"a look to the reported errors and try again."
+msgstr ""
+"Beberapa masalah ditemukan ketika mencoba memulai instalasi. Silakan lihat "
+"kesalahan yang dilaporkan dan coba lagi."
+
+#. TRANSLATORS: button label
+#: src/components/core/InstallButton.jsx:97 src/components/l10n/L10nPage.jsx:75
+#: src/components/l10n/L10nPage.jsx:191 src/components/l10n/L10nPage.jsx:304
+#: src/components/product/ProductPage.jsx:71
+#: src/components/product/ProductPage.jsx:140
+#: src/components/product/ProductPage.jsx:207
+#: src/components/storage/ProposalSettingsSection.jsx:170
+#: src/components/storage/ProposalSettingsSection.jsx:363
+#: src/components/storage/ProposalSettingsSection.jsx:508
+#: src/components/storage/ProposalSettingsSection.jsx:604
+#: src/components/storage/ProposalVolumes.jsx:148
+#: src/components/storage/ProposalVolumes.jsx:283
+#: src/components/storage/ZFCPPage.jsx:513
+msgid "Accept"
+msgstr "Terima"
+
+#. TRANSLATORS: button label
+#: src/components/core/InstallButton.jsx:148
+msgid "Install"
+msgstr "Instal"
+
+#. TRANSLATORS: button label
+#: src/components/core/InstallationFinished.jsx:44
+msgid "Finish"
+msgstr "Selesai"
+
+#. TRANSLATORS: button label
+#: src/components/core/InstallationFinished.jsx:46
+msgid "Reboot"
+msgstr "Maut ulang"
+
+#: src/components/core/InstallationFinished.jsx:59
+msgid "Installation Finished"
+msgstr "Instalasi Selesai"
+
+#: src/components/core/InstallationFinished.jsx:69
+msgid "Congratulations!"
+msgstr "Selamat!"
+
+#: src/components/core/InstallationFinished.jsx:74
+msgid "The installation on your machine is complete."
+msgstr "Penginstalan pada mesin Anda sudah selesai."
+
+#: src/components/core/InstallationFinished.jsx:78
+msgid "At this point you can power off the machine."
+msgstr "Pada titik ini, Anda dapat mematikan mesin."
+
+#: src/components/core/InstallationFinished.jsx:79
+msgid "At this point you can reboot the machine to log in to the new system."
+msgstr ""
+"Pada titik ini, Anda dapat menyalakan ulang mesin untuk masuk ke sistem yang "
+"baru."
+
+#: src/components/core/InstallationFinished.jsx:82
+msgid "Have a lot of fun! Your openSUSE Development Team."
+msgstr "Selamat bersenang-senang! Tim Pengembangan openSUSE Anda."
+
+#: src/components/core/InstallationProgress.jsx:32
+msgid "Installing"
+msgstr "Menginstal"
+
+#: src/components/core/IssuesLink.jsx:40
+msgid "Show issues"
+msgstr "Tampilkan masalah"
+
+#: src/components/core/IssuesLink.jsx:43
+msgid "There are new issues"
+msgstr "Ada masalah baru"
+
+#. TRANSLATORS: page section
+#: src/components/core/IssuesPage.jsx:92
+#: src/components/overview/ProductSection.jsx:71
+#: src/components/product/ProductPage.jsx:434
+msgid "Product"
+msgstr "Produk"
+
+#. TRANSLATORS: page section title
+#. TRANSLATORS: page title
+#: src/components/core/IssuesPage.jsx:100
+#: src/components/overview/StorageSection.jsx:208
+#: src/components/storage/ProposalPage.jsx:218
+msgid "Storage"
+msgstr "Penyimpanan"
+
+#. TRANSLATORS: page title
+#. TRANSLATORS: page section
+#: src/components/core/IssuesPage.jsx:108
+#: src/components/overview/SoftwareSection.jsx:143
+#: src/components/software/SoftwarePage.jsx:81
+msgid "Software"
+msgstr "Perangkat lunak"
+
+#: src/components/core/IssuesPage.jsx:129
+msgid "No issues found. Everything looks ok."
+msgstr "Tidak ada masalah yang ditemukan. Semuanya terlihat baik-baik saja."
+
+#. TRANSLATORS: search field placeholder text
+#: src/components/core/ListSearch.jsx:50
+#: src/components/software/PatternSelector.jsx:220
+#: src/components/software/PatternSelector.jsx:221
+msgid "Search"
+msgstr "Cari"
+
+#: src/components/core/LogsButton.jsx:98
+msgid "Collecting logs..."
+msgstr "Mengumpulkan log..."
+
+#: src/components/core/LogsButton.jsx:98
+msgid "Download logs"
+msgstr "Unduh log"
+
+#: src/components/core/LogsButton.jsx:106
+msgid ""
+"The browser will run the logs download as soon as they are ready. Please, be "
+"patient."
+msgstr ""
+"Browser akan menjalankan pengunduhan log segera setelah siap. Mohon bersabar."
+
+#: src/components/core/LogsButton.jsx:114
+msgid "Something went wrong while collecting logs. Please, try again."
+msgstr "Terjadi kesalahan saat mengumpulkan log. Silakan coba lagi."
+
+#: src/components/core/PasswordAndConfirmationInput.jsx:35
+msgid "Passwords do not match"
+msgstr "Kata sandi tidak cocok"
+
+#: src/components/core/PasswordAndConfirmationInput.jsx:56
+#: src/components/network/WifiConnectionForm.jsx:125
+#: src/components/storage/iscsi/AuthFields.jsx:95
+#: src/components/storage/iscsi/AuthFields.jsx:100
+#: src/components/users/RootAuthMethods.jsx:159
+msgid "Password"
+msgstr "Kata sandi"
+
+#: src/components/core/PasswordAndConfirmationInput.jsx:60
+msgid "User password"
+msgstr "Kata sandi pengguna"
+
+#: src/components/core/PasswordAndConfirmationInput.jsx:69
+msgid "Password confirmation"
+msgstr "Konfirmasi kata sandi"
+
+#: src/components/core/PasswordAndConfirmationInput.jsx:74
+msgid "User password confirmation"
+msgstr "Konfirmasi kata sandi pengguna"
+
+#: src/components/core/PasswordInput.jsx:59
+msgid "Password visibility button"
+msgstr "Tombol visibilitas kata sandi"
+
+#: src/components/core/Popup.jsx:90
+msgid "Confirm"
+msgstr ""
+
+#. TRANSLATORS: button label
+#: src/components/core/Popup.jsx:128
+#: src/components/network/WifiConnectionForm.jsx:136
+msgid "Cancel"
+msgstr ""
+
+#. TRANSLATORS: dropdown label
+#: src/components/core/RowActions.jsx:66
+#: src/components/storage/ProposalVolumes.jsx:119
+#: src/components/storage/ProposalVolumes.jsx:310
+msgid "Actions"
+msgstr ""
+
+#: src/components/core/SectionSkeleton.jsx:29
+msgid "Waiting"
+msgstr ""
+
+#. TRANSLATORS: button label
+#: src/components/core/ShowLogButton.jsx:47
+msgid "Show Logs"
+msgstr ""
+
+#. TRANSLATORS: popup dialog title
+#: src/components/core/ShowLogButton.jsx:53
+msgid "YaST Logs"
+msgstr ""
+
+#. TRANSLATORS: button label
+#: src/components/core/ShowTerminalButton.jsx:48
+msgid "Open Terminal"
+msgstr ""
+
+#: src/components/core/Sidebar.jsx:135
+msgid "Show global options"
+msgstr ""
+
+#: src/components/core/Sidebar.jsx:141
+msgid "New issues found"
+msgstr ""
+
+#: src/components/core/Sidebar.jsx:151
+msgid "Global options"
+msgstr ""
+
+#. TRANSLATORS: sidebar header
+#: src/components/core/Sidebar.jsx:157
+msgid "Options"
+msgstr ""
+
+#: src/components/core/Sidebar.jsx:164
+msgid "Hide navigation and other options"
+msgstr ""
+
+#: src/components/core/ValidationErrors.jsx:62
+msgid "Errors"
+msgstr ""
+
+#. TRANSLATORS: %d is replaced with the number of errors found
+#: src/components/core/ValidationErrors.jsx:85
+#, c-format
+msgid "%d error found"
+msgid_plural "%d errors found"
+msgstr[0] ""
+
+#: src/components/core/ValidationErrors.jsx:95
+msgid "Basic popover"
+msgstr ""
+
+#. TRANSLATORS: placeholder text for search input in the keyboard selector.
+#: src/components/l10n/KeymapSelector.jsx:82
+msgid "Filter by description or keymap code"
+msgstr ""
+
+#: src/components/l10n/KeymapSelector.jsx:89
+msgid "Available keymaps"
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:66 src/components/l10n/L10nPage.jsx:140
+msgid "Select time zone"
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:67
+#, c-format
+msgid "%s will use the selected time zone."
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:128
+msgid "Time zone"
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:134
+msgid "Change time zone"
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:139
+msgid "Time zone not selected yet"
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:182 src/components/l10n/L10nPage.jsx:258
+msgid "Select language"
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:183
+#, c-format
+msgid "%s will use the selected language."
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:246
+msgid "Language"
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:252
+msgid "Change language"
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:257
+msgid "Language not selected yet"
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:295 src/components/l10n/L10nPage.jsx:369
+msgid "Select keyboard"
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:296
+#, c-format
+msgid "%s will use the selected keyboard."
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:357
+msgid "Keyboard"
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:363
+msgid "Change keyboard"
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:368
+msgid "Keyboard not selected yet"
+msgstr ""
+
+#. TRANSLATORS: page section
+#. TRANSLATORS: page title
+#: src/components/l10n/L10nPage.jsx:385
+#: src/components/overview/L10nSection.jsx:52
+msgid "Localization"
+msgstr ""
+
+#: src/components/l10n/L10nPage.jsx:387
+#: src/components/product/ProductPage.jsx:434
+#: src/components/software/SoftwarePage.jsx:81
+#: src/components/storage/DASDPage.jsx:187
+#: src/components/storage/ISCSIPage.jsx:39
+#: src/components/storage/ProposalPage.jsx:218
+#: src/components/storage/ZFCPPage.jsx:736
+#: src/components/users/UsersPage.jsx:30
+msgid "Back"
+msgstr ""
+
+#: src/components/l10n/LanguageSwitcher.jsx:46
+msgid "Display Language"
+msgstr ""
+
+#: src/components/l10n/LanguageSwitcher.jsx:50
+msgid "language"
+msgstr ""
+
+#: src/components/l10n/LocaleSelector.jsx:82
+msgid "Filter by language, territory or locale code"
+msgstr ""
+
+#: src/components/l10n/LocaleSelector.jsx:89
+msgid "Available locales"
+msgstr ""
+
+#. TRANSLATORS: placeholder text for search input in the timezone selector.
+#: src/components/l10n/TimezoneSelector.jsx:102
+msgid "Filter by territory, time zone code or UTC offset"
+msgstr ""
+
+#: src/components/l10n/TimezoneSelector.jsx:109
+msgid "Available time zones"
+msgstr ""
+
+#: src/components/layout/Loading.jsx:30
+msgid "Loading installation environment, please wait."
+msgstr ""
+
+#. TRANSLATORS: button label
+#: src/components/network/AddressesDataList.jsx:81
+#: src/components/network/DnsDataList.jsx:87
+msgid "Remove"
+msgstr ""
+
+#. TRANSLATORS: input field name
+#: src/components/network/AddressesDataList.jsx:93
+#: src/components/network/AddressesDataList.jsx:94
+#: src/components/network/IpAddressInput.jsx:33
+msgid "IP Address"
+msgstr ""
+
+#. TRANSLATORS: input field name
+#: src/components/network/AddressesDataList.jsx:102
+#: src/components/network/AddressesDataList.jsx:103
+msgid "Prefix length or netmask"
+msgstr ""
+
+#: src/components/network/AddressesDataList.jsx:119
+msgid "Add an address"
+msgstr ""
+
+#. TRANSLATORS: button label
+#: src/components/network/AddressesDataList.jsx:119
+msgid "Add another address"
+msgstr ""
+
+#: src/components/network/AddressesDataList.jsx:124
+msgid "Addresses"
+msgstr ""
+
+#: src/components/network/AddressesDataList.jsx:129
+msgid "Addresses data list"
+msgstr ""
+
+#. TRANSLATORS: input field for the iSCSI initiator name
+#. TRANSLATORS: table header
+#: src/components/network/ConnectionsTable.jsx:57
+#: src/components/network/ConnectionsTable.jsx:86
+#: src/components/storage/ZFCPPage.jsx:362
+#: src/components/storage/iscsi/InitiatorForm.jsx:52
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:68
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:85
+#: src/components/storage/iscsi/NodesPresenter.jsx:100
+#: src/components/storage/iscsi/NodesPresenter.jsx:121
+msgid "Name"
+msgstr ""
+
+#. TRANSLATORS: table header
+#: src/components/network/ConnectionsTable.jsx:59
+#: src/components/network/ConnectionsTable.jsx:87
+msgid "IP addresses"
+msgstr ""
+
+#: src/components/network/ConnectionsTable.jsx:67
+#: src/components/storage/ProposalVolumes.jsx:234
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
+#: src/components/storage/iscsi/NodesPresenter.jsx:73
+#: src/components/users/FirstUser.jsx:170
+msgid "Edit"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a network connection name
+#: src/components/network/ConnectionsTable.jsx:70
+#, c-format
+msgid "Edit connection %s"
+msgstr ""
+
+#: src/components/network/ConnectionsTable.jsx:74
+msgid "Forget"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a network connection name
+#: src/components/network/ConnectionsTable.jsx:77
+#, c-format
+msgid "Forget connection %s"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a network connection name
+#: src/components/network/ConnectionsTable.jsx:92
+#, c-format
+msgid "Actions for connection %s"
+msgstr ""
+
+#. TRANSLATORS: input field name
+#: src/components/network/DnsDataList.jsx:78
+#: src/components/network/DnsDataList.jsx:79
+msgid "Server IP"
+msgstr ""
+
+#: src/components/network/DnsDataList.jsx:96
+msgid "Add DNS"
+msgstr ""
+
+#. TRANSLATORS: button label
+#: src/components/network/DnsDataList.jsx:96
+msgid "Add another DNS"
+msgstr ""
+
+#: src/components/network/DnsDataList.jsx:101
+msgid "DNS"
+msgstr ""
+
+#. TRANSLATORS: input field name
+#: src/components/network/IpPrefixInput.jsx:33
+msgid "IP prefix or netmask"
+msgstr ""
+
+#. TRANSLATORS: error message
+#: src/components/network/IpSettingsForm.jsx:87
+msgid "At least one address must be provided for selected mode"
+msgstr ""
+
+#: src/components/network/IpSettingsForm.jsx:131
+#, c-format
+msgid "Edit %s connection"
+msgstr ""
+
+#. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
+#: src/components/network/IpSettingsForm.jsx:133
+#: src/components/network/IpSettingsForm.jsx:138
+#: src/components/network/IpSettingsForm.jsx:140
+msgid "Mode"
+msgstr ""
+
+#: src/components/network/IpSettingsForm.jsx:144
+msgid "Automatic (DHCP)"
+msgstr ""
+
+#. TRANSLATORS: manual network configuration mode with a static IP address
+#: src/components/network/IpSettingsForm.jsx:146
+#: src/components/storage/iscsi/NodeStartupOptions.js:25
+msgid "Manual"
+msgstr ""
+
+#. TRANSLATORS: network gateway configuration
+#: src/components/network/IpSettingsForm.jsx:161
+#: src/components/network/IpSettingsForm.jsx:164
+msgid "Gateway"
+msgstr ""
+
+#: src/components/network/NetworkPage.jsx:38
+msgid "No wired connections found"
+msgstr ""
+
+#: src/components/network/NetworkPage.jsx:53
+msgid ""
+"The system has not been configured for connecting to a WiFi network yet."
+msgstr ""
+
+#: src/components/network/NetworkPage.jsx:54
+msgid ""
+"The system does not support WiFi connections, probably because of missing or "
+"disabled hardware."
+msgstr ""
+
+#: src/components/network/NetworkPage.jsx:58
+msgid "No WiFi connections found"
+msgstr ""
+
+#. TRANSLATORS: button label
+#: src/components/network/NetworkPage.jsx:70
+#: src/components/network/NetworkPageOptions.jsx:46
+#: src/components/network/WifiSelector.jsx:134
+msgid "Connect to a Wi-Fi network"
+msgstr ""
+
+#. TRANSLATORS: page section title
+#. TRANSLATORS: page title
+#: src/components/network/NetworkPage.jsx:170
+#: src/components/overview/NetworkSection.jsx:102
+msgid "Network"
+msgstr ""
+
+#. TRANSLATORS: page section
+#: src/components/network/NetworkPage.jsx:172
+msgid "Wired networks"
+msgstr ""
+
+#. TRANSLATORS: page section
+#: src/components/network/NetworkPage.jsx:177
+msgid "WiFi networks"
+msgstr ""
+
+#. TRANSLATORS: WiFi authentication mode
+#: src/components/network/WifiConnectionForm.jsx:43
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
+msgid "None"
+msgstr ""
+
+#. TRANSLATORS: WiFi authentication mode
+#: src/components/network/WifiConnectionForm.jsx:45
+msgid "WPA & WPA2 Personal"
+msgstr ""
+
+#: src/components/network/WifiConnectionForm.jsx:91
+#: src/components/product/ProductPage.jsx:128
+#: src/components/product/ProductPage.jsx:194
+#: src/components/storage/ZFCPDiskForm.jsx:112
+#: src/components/storage/iscsi/DiscoverForm.jsx:108
+#: src/components/storage/iscsi/LoginForm.jsx:72
+#: src/components/users/FirstUser.jsx:194
+msgid "Something went wrong"
+msgstr ""
+
+#: src/components/network/WifiConnectionForm.jsx:92
+msgid "Please, review provided settings and try again."
+msgstr ""
+
+#. TRANSLATORS: SSID (Wifi network name) configuration
+#: src/components/network/WifiConnectionForm.jsx:97
+#: src/components/network/WifiConnectionForm.jsx:101
+msgid "SSID"
+msgstr ""
+
+#. TRANSLATORS: Wifi security configuration (password protected or not)
+#: src/components/network/WifiConnectionForm.jsx:109
+#: src/components/network/WifiConnectionForm.jsx:112
+msgid "Security"
+msgstr ""
+
+#. TRANSLATORS: WiFi password
+#: src/components/network/WifiConnectionForm.jsx:121
+msgid "WPA Password"
+msgstr ""
+
+#. TRANSLATORS: button label, connect to a WiFi network
+#: src/components/network/WifiConnectionForm.jsx:133
+msgid "Connect"
+msgstr ""
+
+#. TRANSLATORS: button label
+#: src/components/network/WifiHiddenNetworkForm.jsx:50
+msgid "Connect to hidden network"
+msgstr ""
+
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworkListItem.jsx:41
+#: src/components/network/WifiNetworkListItem.jsx:99
+msgid "Connecting"
+msgstr ""
+
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworkListItem.jsx:44
+msgid "Connected"
+msgstr ""
+
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworkListItem.jsx:47
+msgid "Disconnecting"
+msgstr ""
+
+#. TRANSLATORS: iSCSI connection status
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworkListItem.jsx:50
+#: src/components/storage/iscsi/NodesPresenter.jsx:63
+msgid "Disconnected"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a WiFi network name
+#: src/components/network/WifiNetworkListItem.jsx:97
+#, c-format
+msgid "%s connection is waiting for an state change"
+msgstr ""
+
+#. TRANSLATORS: menu label, remove the selected WiFi network settings
+#: src/components/network/WifiNetworkMenu.jsx:55
+msgid "Forget network"
+msgstr ""
+
+#. TRANSLATORS: %s will be replaced by a language name and territory, example:
+#. "English (United States)".
+#: src/components/overview/L10nSection.jsx:34
+#, c-format
+msgid "The system will use %s as its default language."
+msgstr ""
+
+#: src/components/overview/NetworkSection.jsx:78
+msgid "No network connections detected"
+msgstr ""
+
+#. TRANSLATORS: header for the list of active network connections,
+#. %d is replaced by the number of active connections
+#: src/components/overview/NetworkSection.jsx:87
+#, c-format
+msgid "%d connection set:"
+msgid_plural "%d connections set:"
+msgstr[0] ""
+
+#. TRANSLATORS: page title
+#: src/components/overview/Overview.jsx:47
+msgid "Installation Summary"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+#: src/components/overview/ProductSection.jsx:48
+#, c-format
+msgid "%s (registered)"
+msgstr ""
+
+#: src/components/overview/SoftwareSection.jsx:38
+msgid "Reading software repositories"
+msgstr ""
+
+#. TRANSLATORS: clickable link label
+#: src/components/overview/SoftwareSection.jsx:133
+msgid "Refresh the repositories"
+msgstr ""
+
+#: src/components/overview/StorageSection.jsx:42
+#: src/components/storage/ProposalSettingsSection.jsx:126
+msgid "No device selected yet"
+msgstr ""
+
+#. TRANSLATORS: %s will be replaced by the device name and its size,
+#. example: "/dev/sda, 20 GiB"
+#: src/components/overview/StorageSection.jsx:52
+#, c-format
+msgid "Install using device %s shrinking existing partitions as needed"
+msgstr ""
+
+#. TRANSLATORS: %s will be replaced by the device name and its size,
+#. example: "/dev/sda, 20 GiB"
+#: src/components/overview/StorageSection.jsx:56
+#, c-format
+msgid "Install using device %s without modifying existing partitions"
+msgstr ""
+
+#. TRANSLATORS: %s will be replaced by the device name and its size,
+#. example: "/dev/sda, 20 GiB"
+#: src/components/overview/StorageSection.jsx:60
+#, c-format
+msgid "Install using device %s and deleting all its content"
+msgstr ""
+
+#. TRANSLATORS: %s will be replaced by the device name and its size,
+#. example: "/dev/sda, 20 GiB"
+#: src/components/overview/StorageSection.jsx:66
+#, c-format
+msgid "Install using device %s"
+msgstr ""
+
+#: src/components/overview/StorageSection.jsx:83
+msgid "Probing storage devices"
+msgstr ""
+
+#. TRANSLATORS: %s will be replaced by the user name
+#: src/components/overview/UsersSection.jsx:80
+#, c-format
+msgid "User %s will be created"
+msgstr ""
+
+#: src/components/overview/UsersSection.jsx:87
+#: src/components/users/FirstUser.jsx:44
+msgid "No user defined yet"
+msgstr ""
+
+#: src/components/overview/UsersSection.jsx:101
+msgid "Root authentication set for using both, password and public SSH Key"
+msgstr ""
+
+#: src/components/overview/UsersSection.jsx:102
+msgid "No root authentication method defined"
+msgstr ""
+
+#: src/components/overview/UsersSection.jsx:103
+msgid "Root authentication set for using password"
+msgstr ""
+
+#: src/components/overview/UsersSection.jsx:104
+msgid "Root authentication set for using public SSH Key"
+msgstr ""
+
+#. TRANSLATORS: page section title
+#: src/components/overview/UsersSection.jsx:120
+#: src/components/users/UsersPage.jsx:30
+msgid "Users"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:63
+#: src/components/product/ProductSelectionPage.jsx:73
+msgid "Choose a product"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:122
+#, c-format
+msgid "Register %s"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:188
+#, c-format
+msgid "Deregister %s"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+#: src/components/product/ProductPage.jsx:202
+#, c-format
+msgid "Do you want to deregister %s?"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:227
+msgid "Registered warning"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+#: src/components/product/ProductPage.jsx:232
+#, c-format
+msgid "The product %s must be deregistered before selecting a new product."
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:263
+msgid "Change product"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:305
+msgid "Register"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:337
+msgid "Deregister product"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:370
+msgid "Code:"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:374
+msgid "Email:"
+msgstr ""
+
+#. TRANSLATORS: section title.
+#: src/components/product/ProductPage.jsx:390
+msgid "Registration"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:399
+msgid "This product requires registration."
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:405
+msgid "This product does not require registration."
+msgstr ""
+
+#: src/components/product/ProductRegistrationForm.jsx:63
+msgid "Registration code"
+msgstr ""
+
+#: src/components/product/ProductRegistrationForm.jsx:66
+msgid "Email"
+msgstr ""
+
+#: src/components/product/ProductSelectionPage.jsx:58
+msgid "Loading available products, please wait..."
+msgstr ""
+
+#. TRANSLATORS: page header
+#: src/components/product/ProductSelectionPage.jsx:64
+msgid "Product selection"
+msgstr ""
+
+#. TRANSLATORS: button label
+#: src/components/product/ProductSelectionPage.jsx:69
+msgid "Select"
+msgstr ""
+
+#: src/components/product/ProductSelector.jsx:29
+msgid "No products available for selection"
+msgstr ""
+
+#: src/components/questions/GenericQuestion.jsx:35
+#: src/components/questions/LuksActivationQuestion.jsx:60
+msgid "Question"
+msgstr ""
+
+#. TRANSLATORS: error message, user entered a wrong password
+#: src/components/questions/LuksActivationQuestion.jsx:34
+msgid "Given encryption password didn't work"
+msgstr ""
+
+#: src/components/questions/LuksActivationQuestion.jsx:59
+msgid "Encrypted Device"
+msgstr ""
+
+#. TRANSLATORS: field label
+#: src/components/questions/LuksActivationQuestion.jsx:69
+msgid "Encryption Password"
+msgstr ""
+
+#. TRANSLATORS: pattern status, selected to install (by user)
+#: src/components/software/PatternItem.jsx:63
+msgid "selected"
+msgstr ""
+
+#. TRANSLATORS: pattern status, selected to install (by dependencies)
+#: src/components/software/PatternItem.jsx:66
+msgid "automatically selected"
+msgstr ""
+
+#. TRANSLATORS: pattern status, not selected to install
+#: src/components/software/PatternItem.jsx:69
+msgid "not selected"
+msgstr ""
+
+#. TRANSLATORS: error summary, always plural, %d is replaced by number of errors (2 or more)
+#. if there is just a single error then the error is displayed directly instead of this summary
+#: src/components/software/PatternSelector.jsx:207
+#, c-format
+msgid "%d errors"
+msgstr ""
+
+#: src/components/software/PatternSelector.jsx:215
+msgid "Software summary and filter options"
+msgstr ""
+
+#. TRANSLATORS: %s will be replaced by the estimated installation size,
+#. example: "728.8 MiB"
+#: src/components/software/UsedSize.jsx:32
+#, c-format
+msgid "Installation will take %s"
+msgstr ""
+
+#: src/components/storage/DASDFormatProgress.jsx:61
+msgid "Waiting for progress report"
+msgstr ""
+
+#: src/components/storage/DASDFormatProgress.jsx:69
+msgid "Formatting DASD devices"
+msgstr ""
+
+#. TRANSLATORS: DASD = Direct Access Storage Device, IBM mainframe storage technology
+#: src/components/storage/DASDPage.jsx:185
+msgid "Storage DASD"
+msgstr ""
+
+#: src/components/storage/DASDTable.jsx:57
+#: src/components/storage/ZFCPPage.jsx:320
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
+#: src/components/storage/iscsi/NodesPresenter.jsx:103
+msgid "No"
+msgstr ""
+
+#: src/components/storage/DASDTable.jsx:57
+#: src/components/storage/ZFCPPage.jsx:320
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
+#: src/components/storage/iscsi/NodesPresenter.jsx:103
+msgid "Yes"
+msgstr ""
+
+#: src/components/storage/DASDTable.jsx:64
+#: src/components/storage/ZFCPDiskForm.jsx:118
+#: src/components/storage/ZFCPPage.jsx:303
+#: src/components/storage/ZFCPPage.jsx:363
+msgid "Channel ID"
+msgstr ""
+
+#. TRANSLATORS: table header
+#: src/components/storage/DASDTable.jsx:65
+#: src/components/storage/ZFCPPage.jsx:304
+#: src/components/storage/iscsi/NodesPresenter.jsx:104
+#: src/components/storage/iscsi/NodesPresenter.jsx:125
+#: src/components/users/RootAuthMethods.jsx:153
+msgid "Status"
+msgstr ""
+
+#: src/components/storage/DASDTable.jsx:66
+msgid "Device"
+msgstr ""
+
+#: src/components/storage/DASDTable.jsx:67
+msgid "Type"
+msgstr ""
+
+#: src/components/storage/DASDTable.jsx:68
+msgid "Diag"
+msgstr ""
+
+#: src/components/storage/DASDTable.jsx:69
+msgid "Formatted"
+msgstr ""
+
+#: src/components/storage/DASDTable.jsx:70
+msgid "Partition Info"
+msgstr ""
+
+#. TRANSLATORS: drop down menu label
+#: src/components/storage/DASDTable.jsx:105
+msgid "Perform an action"
+msgstr ""
+
+#. TRANSLATORS: drop down menu action, activate the device
+#: src/components/storage/DASDTable.jsx:111
+#: src/components/storage/ZFCPPage.jsx:334
+msgid "Activate"
+msgstr ""
+
+#. TRANSLATORS: drop down menu action, deactivate the device
+#: src/components/storage/DASDTable.jsx:113
+#: src/components/storage/ZFCPPage.jsx:376
+msgid "Deactivate"
+msgstr ""
+
+#. TRANSLATORS: drop down menu action, enable DIAG access method
+#: src/components/storage/DASDTable.jsx:116
+msgid "Set DIAG On"
+msgstr ""
+
+#. TRANSLATORS: drop down menu action, disable DIAG access method
+#: src/components/storage/DASDTable.jsx:118
+msgid "Set DIAG Off"
+msgstr ""
+
+#. TRANSLATORS: drop down menu action, format the disk
+#: src/components/storage/DASDTable.jsx:121
+msgid "Format"
+msgstr ""
+
+#: src/components/storage/DASDTable.jsx:198
+#: src/components/storage/DASDTable.jsx:199
+msgid "Filter by min channel"
+msgstr ""
+
+#: src/components/storage/DASDTable.jsx:206
+msgid "Remove min channel filter"
+msgstr ""
+
+#: src/components/storage/DASDTable.jsx:219
+#: src/components/storage/DASDTable.jsx:220
+msgid "Filter by max channel"
+msgstr ""
+
+#: src/components/storage/DASDTable.jsx:227
+msgid "Remove max channel filter"
+msgstr ""
+
+#. TRANSLATORS: page title for iSCSI configuration
+#: src/components/storage/ISCSIPage.jsx:36
+msgid "Storage iSCSI"
+msgstr ""
+
+#. TRANSLATORS: show/hide toggle action, this is a clickable link
+#: src/components/storage/ProposalActionsSection.jsx:71
+#, c-format
+msgid "Hide %d subvolume action"
+msgid_plural "Hide %d subvolume actions"
+msgstr[0] ""
+
+#. TRANSLATORS: show/hide toggle action, this is a clickable link
+#: src/components/storage/ProposalActionsSection.jsx:73
+#, c-format
+msgid "Show %d subvolume action"
+msgid_plural "Show %d subvolume actions"
+msgstr[0] ""
+
+#: src/components/storage/ProposalActionsSection.jsx:78
+msgid "Actions to create the file systems and to ensure the system boots."
+msgstr ""
+
+#. TRANSLATORS: section title, list of planned actions for the selected device,
+#. e.g. "delete partition A", "create partition B with filesystem C", ...
+#: src/components/storage/ProposalActionsSection.jsx:126
+msgid "Planned Actions"
+msgstr ""
+
+#: src/components/storage/ProposalPage.jsx:198
+msgid "Devices will not be modified until installation starts."
+msgstr ""
+
+#: src/components/storage/ProposalPageOptions.jsx:40
+msgid "Manage and format"
+msgstr ""
+
+#: src/components/storage/ProposalPageOptions.jsx:58
+msgid "Activate disks"
+msgstr ""
+
+#: src/components/storage/ProposalPageOptions.jsx:60
+msgid "zFCP"
+msgstr ""
+
+#: src/components/storage/ProposalPageOptions.jsx:76
+msgid "Connect to iSCSI targets"
+msgstr ""
+
+#: src/components/storage/ProposalPageOptions.jsx:78
+msgid "iSCSI"
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:139
+msgid "Select the device for installing the system."
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:144
+#: src/components/storage/ProposalSettingsSection.jsx:148
+#: src/components/storage/ProposalSettingsSection.jsx:244
+msgid "Installation device"
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:154
+msgid "No devices found"
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:241
+msgid "Devices for creating the volume group"
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:250
+msgid "Custom devices"
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:314
+msgid ""
+"Configuration of the system volume group. All the file systems will be "
+"created in a logical volume of the system volume group."
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:320
+msgid "Configure the LVM settings"
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:325
+#: src/components/storage/ProposalSettingsSection.jsx:345
+msgid "LVM settings"
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:338
+msgid "Use logical volume management (LVM)"
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:346
+msgid "System Volume Group"
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:474
+msgid "Change encryption password"
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:479
+#: src/components/storage/ProposalSettingsSection.jsx:500
+msgid "Encryption settings"
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:493
+msgid "Use encryption"
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:578
+msgid ""
+"Select how to make free space in the disks selected for allocating the     "
+"file systems."
+msgstr ""
+
+#. TRANSLATORS: To be completed with the rest of a sentence like "deleting all content"
+#: src/components/storage/ProposalSettingsSection.jsx:584
+msgid "Find space"
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:588
+msgid "Space Policy"
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:662
+msgid "Settings"
+msgstr ""
+
+#. TRANSLATORS: header for a list of items
+#: src/components/storage/ProposalVolumes.jsx:59
+msgid "These limits are affected by:"
+msgstr ""
+
+#. TRANSLATORS: list item, this affects the computed partition size limits
+#: src/components/storage/ProposalVolumes.jsx:63
+msgid "The configuration of snapshots"
+msgstr ""
+
+#. TRANSLATORS: list item, this affects the computed partition size limits
+#. %s is replaced by a list of the volumes (like "/home, /boot")
+#: src/components/storage/ProposalVolumes.jsx:67
+#, c-format
+msgid "Presence of other volumes (%s)"
+msgstr ""
+
+#. TRANSLATORS: dropdown menu label
+#: src/components/storage/ProposalVolumes.jsx:129
+msgid "Reset to defaults"
+msgstr ""
+
+#. TRANSLATORS: dropdown menu label
+#: src/components/storage/ProposalVolumes.jsx:137
+#: src/components/storage/ProposalVolumes.jsx:141
+msgid "Add file system"
+msgstr ""
+
+#. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/ProposalVolumes.jsx:191
+#, c-format
+msgid "At least %s"
+msgstr ""
+
+#. TRANSLATORS: device flag, the partition size is automatically computed
+#: src/components/storage/ProposalVolumes.jsx:197
+msgid "auto"
+msgstr ""
+
+#. TRANSLATORS: the filesystem uses a logical volume (LVM)
+#: src/components/storage/ProposalVolumes.jsx:207
+msgid "logical volume"
+msgstr ""
+
+#: src/components/storage/ProposalVolumes.jsx:207
+msgid "partition"
+msgstr ""
+
+#. TRANSLATORS: filesystem flag, it uses an encryption
+#: src/components/storage/ProposalVolumes.jsx:216
+msgid "encrypted"
+msgstr ""
+
+#. TRANSLATORS: filesystem flag, it allows creating snapshots
+#: src/components/storage/ProposalVolumes.jsx:218
+msgid "with snapshots"
+msgstr ""
+
+#. TRANSLATORS: flag for transactional file system
+#: src/components/storage/ProposalVolumes.jsx:220
+msgid "transactional"
+msgstr ""
+
+#: src/components/storage/ProposalVolumes.jsx:229
+#: src/components/storage/iscsi/NodesPresenter.jsx:77
+msgid "Delete"
+msgstr ""
+
+#: src/components/storage/ProposalVolumes.jsx:275
+msgid "Edit file system"
+msgstr ""
+
+#: src/components/storage/ProposalVolumes.jsx:307
+#: src/components/storage/VolumeForm.jsx:500
+msgid "Mount point"
+msgstr ""
+
+#: src/components/storage/ProposalVolumes.jsx:308
+msgid "Details"
+msgstr ""
+
+#: src/components/storage/ProposalVolumes.jsx:309
+#: src/components/storage/VolumeForm.jsx:517
+msgid "Size"
+msgstr ""
+
+#: src/components/storage/ProposalVolumes.jsx:345
+msgid "Table with mount points"
+msgstr ""
+
+#: src/components/storage/ProposalVolumes.jsx:408
+msgid "File systems to create in your system"
+msgstr ""
+
+#. TRANSLATORS: item which affects the final computed partition size
+#: src/components/storage/VolumeForm.jsx:97
+msgid "the configuration of snapshots"
+msgstr ""
+
+#. TRANSLATORS: item which affects the final computed partition size
+#. %s is replaced by a list of mount points like "/home, /boot"
+#: src/components/storage/VolumeForm.jsx:102
+#, c-format
+msgid "the presence of the file system for %s"
+msgstr ""
+
+#. TRANSLATORS: conjunction for merging two list items
+#: src/components/storage/VolumeForm.jsx:104
+msgid ", "
+msgstr ""
+
+#. TRANSLATORS: the %s is replaced by the items which affect the computed size
+#: src/components/storage/VolumeForm.jsx:107
+#, c-format
+msgid "The final size depends on %s."
+msgstr ""
+
+#. TRANSLATORS: conjunction for merging two texts
+#: src/components/storage/VolumeForm.jsx:109
+msgid " and "
+msgstr ""
+
+#. TRANSLATORS: the partition size is automatically computed
+#: src/components/storage/VolumeForm.jsx:114
+msgid "Automatically calculated size according to the selected product."
+msgstr ""
+
+#: src/components/storage/VolumeForm.jsx:134
+msgid "Exact size for the file system."
+msgstr ""
+
+#. TRANSLATORS: requested partition size
+#: src/components/storage/VolumeForm.jsx:146
+msgid "Exact size"
+msgstr ""
+
+#. TRANSLATORS: units selector (like KiB, MiB, GiB...)
+#: src/components/storage/VolumeForm.jsx:161
+msgid "Size unit"
+msgstr ""
+
+#: src/components/storage/VolumeForm.jsx:189
+msgid ""
+"Limits for the file system size. The final size will be a value between the "
+"given minimum and maximum. If no maximum is given then the file system will "
+"be as big as possible."
+msgstr ""
+
+#. TRANSLATORS: the minimal partition size
+#: src/components/storage/VolumeForm.jsx:196
+msgid "Minimum"
+msgstr ""
+
+#. TRANSLATORS: the minium partition size
+#: src/components/storage/VolumeForm.jsx:206
+msgid "Minimum desired size"
+msgstr ""
+
+#: src/components/storage/VolumeForm.jsx:215
+msgid "Unit for the minimum size"
+msgstr ""
+
+#. TRANSLATORS: the maximum partition size
+#: src/components/storage/VolumeForm.jsx:226
+msgid "Maximum"
+msgstr ""
+
+#. TRANSLATORS: the maximum partition size
+#: src/components/storage/VolumeForm.jsx:237
+msgid "Maximum desired size"
+msgstr ""
+
+#: src/components/storage/VolumeForm.jsx:245
+msgid "Unit for the maximum size"
+msgstr ""
+
+#. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
+#: src/components/storage/VolumeForm.jsx:262
+msgid "Auto"
+msgstr ""
+
+#. TRANSLATORS: radio button label, exact partition size requested by user
+#: src/components/storage/VolumeForm.jsx:264
+msgid "Fixed"
+msgstr ""
+
+#. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
+#: src/components/storage/VolumeForm.jsx:266
+msgid "Range"
+msgstr ""
+
+#: src/components/storage/VolumeForm.jsx:470
+msgid "A size value is required"
+msgstr ""
+
+#: src/components/storage/VolumeForm.jsx:475
+msgid "Minimum size is required"
+msgstr ""
+
+#: src/components/storage/VolumeForm.jsx:479
+msgid "Maximum must be greater than minimum"
+msgstr ""
+
+#: src/components/storage/VolumeForm.jsx:509
+msgid "File system type"
+msgstr ""
+
+#: src/components/storage/ZFCPDiskForm.jsx:113
+msgid "The zFCP disk was not activated."
+msgstr ""
+
+#. TRANSLATORS: abbrev. World Wide Port Name
+#: src/components/storage/ZFCPDiskForm.jsx:129
+#: src/components/storage/ZFCPPage.jsx:364
+msgid "WWPN"
+msgstr ""
+
+#. TRANSLATORS: abbrev. Logical Unit Number
+#: src/components/storage/ZFCPDiskForm.jsx:140
+#: src/components/storage/ZFCPPage.jsx:365
+msgid "LUN"
+msgstr ""
+
+#: src/components/storage/ZFCPPage.jsx:305
+msgid "Auto LUNs Scan"
+msgstr ""
+
+#: src/components/storage/ZFCPPage.jsx:316
+msgid "Activated"
+msgstr ""
+
+#: src/components/storage/ZFCPPage.jsx:316
+msgid "Deactivated"
+msgstr ""
+
+#: src/components/storage/ZFCPPage.jsx:419
+msgid "No zFCP controllers found"
+msgstr ""
+
+#: src/components/storage/ZFCPPage.jsx:420
+msgid "Please, try to read the zFCP devices again."
+msgstr ""
+
+#. TRANSLATORS: button label
+#: src/components/storage/ZFCPPage.jsx:422
+msgid "Read zFCP devices"
+msgstr ""
+
+#. TRANSLATORS: the text in the square brackets [] will be displayed in bold
+#: src/components/storage/ZFCPPage.jsx:431
+msgid ""
+"Automatic LUN scan is [enabled]. Activating a controller which is running in "
+"NPIV mode will automatically configures all its LUNs."
+msgstr ""
+
+#. TRANSLATORS: the text in the square brackets [] will be displayed in bold
+#: src/components/storage/ZFCPPage.jsx:434
+msgid ""
+"Automatic LUN scan is [disabled]. LUNs have to be manually configured after "
+"activating a controller."
+msgstr ""
+
+#: src/components/storage/ZFCPPage.jsx:500
+msgid "Activate a zFCP disk"
+msgstr ""
+
+#: src/components/storage/ZFCPPage.jsx:539
+msgid "Please, try to activate a zFCP controller."
+msgstr ""
+
+#: src/components/storage/ZFCPPage.jsx:546
+msgid "Please, try to activate a zFCP disk."
+msgstr ""
+
+#. TRANSLATORS: button label
+#: src/components/storage/ZFCPPage.jsx:548
+msgid "Activate zFCP disk"
+msgstr ""
+
+#: src/components/storage/ZFCPPage.jsx:555
+msgid "No zFCP disks found"
+msgstr ""
+
+#. TRANSLATORS: button label
+#: src/components/storage/ZFCPPage.jsx:574
+msgid "Activate new disk"
+msgstr ""
+
+#. TRANSLATORS: section title
+#: src/components/storage/ZFCPPage.jsx:586
+msgid "Disks"
+msgstr ""
+
+#. TRANSLATORS: page title
+#: src/components/storage/ZFCPPage.jsx:734
+msgid "Storage zFCP"
+msgstr ""
+
+#. TRANSLATORS: multipath device type
+#: src/components/storage/device-utils.jsx:97
+msgid "Multipath"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by the device bus ID
+#: src/components/storage/device-utils.jsx:102
+#, c-format
+msgid "DASD %s"
+msgstr ""
+
+#. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
+#: src/components/storage/device-utils.jsx:107
+#, c-format
+msgid "Software %s"
+msgstr ""
+
+#: src/components/storage/device-utils.jsx:112
+msgid "SD Card"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by the device transport name, e.g. USB, SATA, SCSI...
+#: src/components/storage/device-utils.jsx:114
+#, c-format
+msgid "Transport %s"
+msgstr ""
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/device-utils.jsx:133
+#, c-format
+msgid "Members: %s"
+msgstr ""
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/device-utils.jsx:142
+#, c-format
+msgid "Devices: %s"
+msgstr ""
+
+#. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
+#: src/components/storage/device-utils.jsx:151
+#, c-format
+msgid "Wires: %s"
+msgstr ""
+
+#. TRANSLATORS: disk partition info, %s is replaced by partition table
+#. type (MS-DOS or GPT), %d is the number of the partitions
+#: src/components/storage/device-utils.jsx:175
+#, c-format
+msgid "%s with %d partitions"
+msgstr ""
+
+#. TRANSLATORS: status message, no existing content was found on the disk,
+#. i.e. the disk is completely empty
+#: src/components/storage/device-utils.jsx:199
+msgid "No content found"
+msgstr ""
+
+#: src/components/storage/device-utils.jsx:270
+msgid "Available devices"
+msgstr ""
+
+#: src/components/storage/iscsi/AuthFields.jsx:70
+msgid "Only available if authentication by target is provided"
+msgstr ""
+
+#: src/components/storage/iscsi/AuthFields.jsx:77
+msgid "Authentication by target"
+msgstr ""
+
+#: src/components/storage/iscsi/AuthFields.jsx:80
+#: src/components/storage/iscsi/AuthFields.jsx:85
+#: src/components/storage/iscsi/AuthFields.jsx:87
+#: src/components/storage/iscsi/AuthFields.jsx:112
+#: src/components/storage/iscsi/AuthFields.jsx:117
+#: src/components/storage/iscsi/AuthFields.jsx:119
+msgid "User name"
+msgstr ""
+
+#: src/components/storage/iscsi/AuthFields.jsx:91
+#: src/components/storage/iscsi/AuthFields.jsx:124
+msgid "Incorrect user name"
+msgstr ""
+
+#: src/components/storage/iscsi/AuthFields.jsx:105
+#: src/components/storage/iscsi/AuthFields.jsx:139
+msgid "Incorrect password"
+msgstr ""
+
+#: src/components/storage/iscsi/AuthFields.jsx:108
+msgid "Authentication by initiator"
+msgstr ""
+
+#: src/components/storage/iscsi/AuthFields.jsx:133
+msgid "Target Password"
+msgstr ""
+
+#. TRANSLATORS: popup title
+#: src/components/storage/iscsi/DiscoverForm.jsx:101
+msgid "Discover iSCSI Targets"
+msgstr ""
+
+#: src/components/storage/iscsi/DiscoverForm.jsx:110
+#: src/components/storage/iscsi/LoginForm.jsx:73
+msgid "Make sure you provide the correct values"
+msgstr ""
+
+#: src/components/storage/iscsi/DiscoverForm.jsx:115
+msgid "IP address"
+msgstr ""
+
+#. TRANSLATORS: network address
+#: src/components/storage/iscsi/DiscoverForm.jsx:122
+#: src/components/storage/iscsi/DiscoverForm.jsx:124
+msgid "Address"
+msgstr ""
+
+#: src/components/storage/iscsi/DiscoverForm.jsx:129
+msgid "Incorrect IP address"
+msgstr ""
+
+#. TRANSLATORS: network port number
+#: src/components/storage/iscsi/DiscoverForm.jsx:133
+#: src/components/storage/iscsi/DiscoverForm.jsx:140
+#: src/components/storage/iscsi/DiscoverForm.jsx:142
+msgid "Port"
+msgstr ""
+
+#: src/components/storage/iscsi/DiscoverForm.jsx:147
+msgid "Incorrect port"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by the iSCSI target node name
+#: src/components/storage/iscsi/EditNodeForm.jsx:50
+#, c-format
+msgid "Edit %s"
+msgstr ""
+
+#: src/components/storage/iscsi/InitiatorForm.jsx:42
+msgid "Edit iSCSI Initiator"
+msgstr ""
+
+#. TRANSLATORS: iSCSI initiator name
+#: src/components/storage/iscsi/InitiatorForm.jsx:49
+msgid "Initiator name"
+msgstr ""
+
+#. TRANSLATORS: usually just keep the original text
+#. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:86
+#: src/components/storage/iscsi/NodesPresenter.jsx:103
+#: src/components/storage/iscsi/NodesPresenter.jsx:124
+msgid "iBFT"
+msgstr ""
+
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:87
+msgid "Offload card"
+msgstr ""
+
+#. TRANSLATORS: iSCSI initiator section name
+#: src/components/storage/iscsi/InitiatorSection.jsx:50
+msgid "Initiator"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by the iSCSI target name
+#: src/components/storage/iscsi/LoginForm.jsx:69
+#, c-format
+msgid "Login %s"
+msgstr ""
+
+#. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
+#: src/components/storage/iscsi/LoginForm.jsx:76
+#: src/components/storage/iscsi/LoginForm.jsx:79
+msgid "Startup"
+msgstr ""
+
+#: src/components/storage/iscsi/NodeStartupOptions.js:26
+msgid "On boot"
+msgstr ""
+
+#: src/components/storage/iscsi/NodeStartupOptions.js:27
+msgid "Automatic"
+msgstr ""
+
+#. TRANSLATORS: iSCSI connection status, %s is replaced by node label
+#: src/components/storage/iscsi/NodesPresenter.jsx:67
+#, c-format
+msgid "Connected (%s)"
+msgstr ""
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:82
+msgid "Login"
+msgstr ""
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:86
+msgid "Logout"
+msgstr ""
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:122
+msgid "Portal"
+msgstr ""
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+#: src/components/storage/iscsi/NodesPresenter.jsx:123
+msgid "Interface"
+msgstr ""
+
+#: src/components/storage/iscsi/TargetsSection.jsx:139
+msgid "No iSCSI targets found"
+msgstr ""
+
+#: src/components/storage/iscsi/TargetsSection.jsx:140
+msgid ""
+"Please, perform an iSCSI discovery in order to find available iSCSI targets."
+msgstr ""
+
+#. TRANSLATORS: button label, starts iSCSI discovery
+#: src/components/storage/iscsi/TargetsSection.jsx:142
+msgid "Discover iSCSI targets"
+msgstr ""
+
+#. TRANSLATORS: button label, starts iSCSI discovery
+#: src/components/storage/iscsi/TargetsSection.jsx:153
+msgid "Discover"
+msgstr ""
+
+#. TRANSLATORS: iSCSI targets section title
+#: src/components/storage/iscsi/TargetsSection.jsx:167
+msgid "Targets"
+msgstr ""
+
+#. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
+#: src/components/storage/space-policy-utils.jsx:59
+msgid "Delete current content"
+msgstr ""
+
+#. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
+#: src/components/storage/space-policy-utils.jsx:63
+msgid "Shrink existing partitions"
+msgstr ""
+
+#. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
+#: src/components/storage/space-policy-utils.jsx:67
+msgid "Use available space"
+msgstr ""
+
+#: src/components/storage/space-policy-utils.jsx:79
+msgid "All partitions will be removed and any data in the disks will be lost."
+msgstr ""
+
+#: src/components/storage/space-policy-utils.jsx:82
+msgid ""
+"The data is kept, but the current partitions will be resized as needed to "
+"make enough space."
+msgstr ""
+
+#: src/components/storage/space-policy-utils.jsx:85
+msgid ""
+"The data is kept and existing partitions will not be modified. Only the "
+"space that is not assigned to any partition will be used."
+msgstr ""
+
+#: src/components/storage/space-policy-utils.jsx:112
+msgid "Select a mechanism to make space"
+msgstr ""
+
+#: src/components/storage/space-policy-utils.jsx:137
+#, c-format
+msgid "deleting all content of the installation device"
+msgid_plural "deleting all content of the %d selected disks"
+msgstr[0] ""
+
+#: src/components/storage/space-policy-utils.jsx:147
+#, c-format
+msgid "shrinking partitions of the installation device"
+msgid_plural "shrinking partitions of the %d selected disks"
+msgstr[0] ""
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space without modifying any partition".
+#: src/components/storage/space-policy-utils.jsx:155
+msgid "without modifying any partition"
+msgstr ""
+
+#: src/components/storage/space-policy-utils.jsx:170
+#, c-format
+msgid "This will only affect the installation device"
+msgid_plural "This will affect the %d disks selected for installation"
+msgstr[0] ""
+
+#: src/components/storage/utils.js:44
+msgid "KiB"
+msgstr ""
+
+#: src/components/storage/utils.js:45
+msgid "MiB"
+msgstr ""
+
+#: src/components/storage/utils.js:46
+msgid "GiB"
+msgstr ""
+
+#: src/components/storage/utils.js:47
+msgid "TiB"
+msgstr ""
+
+#: src/components/storage/utils.js:48
+msgid "PiB"
+msgstr ""
+
+#: src/components/users/FirstUser.jsx:45
+msgid ""
+"Please, be aware that a user must be defined before installing the system to "
+"be able to log into it."
+msgstr ""
+
+#. TRANSLATORS: push button label
+#: src/components/users/FirstUser.jsx:47
+msgid "Define a user now"
+msgstr ""
+
+#: src/components/users/FirstUser.jsx:57 src/components/users/FirstUser.jsx:198
+msgid "Full name"
+msgstr ""
+
+#: src/components/users/FirstUser.jsx:58 src/components/users/FirstUser.jsx:209
+#: src/components/users/FirstUser.jsx:213
+#: src/components/users/FirstUser.jsx:215
+msgid "Username"
+msgstr ""
+
+#: src/components/users/FirstUser.jsx:174
+#: src/components/users/RootAuthMethods.jsx:95
+#: src/components/users/RootAuthMethods.jsx:107
+msgid "Discard"
+msgstr ""
+
+#: src/components/users/FirstUser.jsx:191
+msgid "Create user account"
+msgstr ""
+
+#: src/components/users/FirstUser.jsx:191
+msgid "Edit user account"
+msgstr ""
+
+#: src/components/users/FirstUser.jsx:202
+#: src/components/users/FirstUser.jsx:204
+msgid "User full name"
+msgstr ""
+
+#. TRANSLATORS: check box label
+#: src/components/users/FirstUser.jsx:223
+#: src/components/users/FirstUser.jsx:227
+msgid "Edit password too"
+msgstr ""
+
+#: src/components/users/FirstUser.jsx:240
+msgid "user autologin"
+msgstr ""
+
+#. TRANSLATORS: check box label
+#: src/components/users/FirstUser.jsx:244
+msgid "Auto-login"
+msgstr ""
+
+#: src/components/users/RootAuthMethods.jsx:35
+msgid "No root authentication method defined yet"
+msgstr ""
+
+#: src/components/users/RootAuthMethods.jsx:36
+msgid ""
+"Please, define at least one authentication method for logging into the "
+"system as root."
+msgstr ""
+
+#. TRANSLATORS: push button label
+#: src/components/users/RootAuthMethods.jsx:39
+msgid "Set a password"
+msgstr ""
+
+#. TRANSLATORS: push button label
+#: src/components/users/RootAuthMethods.jsx:41
+msgid "Upload a SSH Public Key"
+msgstr ""
+
+#: src/components/users/RootAuthMethods.jsx:90
+#: src/components/users/RootAuthMethods.jsx:103
+msgid "Change"
+msgstr ""
+
+#: src/components/users/RootAuthMethods.jsx:90
+#: src/components/users/RootAuthMethods.jsx:103
+msgid "Set"
+msgstr ""
+
+#: src/components/users/RootAuthMethods.jsx:125
+msgid "Already set"
+msgstr ""
+
+#: src/components/users/RootAuthMethods.jsx:126
+#: src/components/users/RootAuthMethods.jsx:130
+msgid "Not set"
+msgstr ""
+
+#. TRANSLATORS: table header, user authentication method
+#: src/components/users/RootAuthMethods.jsx:151
+msgid "Method"
+msgstr ""
+
+#: src/components/users/RootAuthMethods.jsx:166
+msgid "SSH Key"
+msgstr ""
+
+#: src/components/users/RootAuthMethods.jsx:183
+msgid "Change the root password"
+msgstr ""
+
+#: src/components/users/RootAuthMethods.jsx:183
+msgid "Set a root password"
+msgstr ""
+
+#: src/components/users/RootAuthMethods.jsx:190
+msgid "Add a SSH Public Key for root"
+msgstr ""
+
+#: src/components/users/RootAuthMethods.jsx:190
+msgid "Edit the SSH Public Key for root"
+msgstr ""
+
+#: src/components/users/RootPasswordPopup.jsx:42
+msgid "Root password"
+msgstr ""
+
+#: src/components/users/RootSSHKeyPopup.jsx:43
+msgid "Set root SSH public key"
+msgstr ""
+
+#: src/components/users/RootSSHKeyPopup.jsx:71
+msgid "Root SSH public key"
+msgstr ""
+
+#: src/components/users/RootSSHKeyPopup.jsx:76
+msgid "Upload, paste, or drop an SSH public key"
+msgstr ""
+
+#. TRANSLATORS: push button label
+#: src/components/users/RootSSHKeyPopup.jsx:78
+msgid "Upload"
+msgstr ""
+
+#. TRANSLATORS: push button label, clears the related input field
+#: src/components/users/RootSSHKeyPopup.jsx:80
+msgid "Clear"
+msgstr ""
+
+#: src/components/users/UsersPage.jsx:31
+msgid "User"
+msgstr ""
+
+#: src/components/users/UsersPage.jsx:34
+msgid "Root authentication"
+msgstr ""
