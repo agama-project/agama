@@ -28,6 +28,7 @@ import { Icon } from "../layout";
 import { _ } from "~/i18n";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { useL10n } from "~/context/l10n";
+import { localConnection } from "~/utils";
 
 const sort = (keymaps) => {
   // sort the keymap names using the current locale
@@ -47,16 +48,21 @@ export default function InstallerKeymapSwitcher() {
   return (
     <>
       <h3>
+        {/* TRANSLATORS: label for keyboard layout selection */}
         <Icon name="keyboard" size="24" />{_("Keyboard")}
       </h3>
+      {(localConnection() &&
       <FormSelect
         id="keyboard"
+        // TRANSLATORS: label for keyboard layout selection
         aria-label={_("keyboard")}
         value={keymap}
         onChange={onChange}
       >
         {options}
-      </FormSelect>
+      </FormSelect>) ||
+      // TRANSLATORS:
+      _("Local keyboard cannot be set in remote installation") }
     </>
   );
 }

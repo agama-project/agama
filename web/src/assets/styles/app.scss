@@ -165,3 +165,10 @@ button.kebab-toggler {
 .pattern-group-name {
   font-size: 120%;
 }
+
+.locale-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1em;
+  width: 100%;
+}
