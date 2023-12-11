@@ -185,9 +185,8 @@ function reload(newLanguage) {
  * @param {string} output
  * @returns {string|undefined}
  */
-function keymapFromLocalectl(output) {
-  const matcher = /X11 Layout: (.*)\n/;
-
+function keymapFromX(output) {
+  const matcher = /^layout:\s+(\S.*)$/m;
   return matcher.exec(output)?.at(1);
 }
 
@@ -275,7 +274,7 @@ function InstallerL10nProvider({ children }) {
   }, [client, language, backendPending, storeInstallerLanguage]);
 
   useEffect(() => {
-    cockpit.spawn(["localectl", "status"]).then(output => setKeymap(keymapFromLocalectl(output)));
+    cockpit.spawn(["setxkbmap", "-query"], { environ: ["DISPLAY=:0"] }).then(output => setKeymap(keymapFromX(output)));
   }, [setKeymap]);
 
   const value = { language, changeLanguage, keymap, changeKeymap };
