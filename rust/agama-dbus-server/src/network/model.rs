@@ -103,10 +103,10 @@ impl NetworkState {
     ///
     /// TODO: check whether a port is missing.
     fn update_controller_ports(&mut self, controller: &Connection) {
-        if let Connection::Bond(bond) = controller {
+        if let Connection::Bond(BondConnection { bond, .. }) = controller {
             let controller_id = controller.id().to_string();
             for conn in self.connections.iter_mut() {
-                if bond.bond.ports.contains(&conn.id().to_string()) {
+                if bond.ports.contains(&conn.id().to_string()) {
                     conn.set_controller(&controller_id);
                 } else if conn.controller() == Some(&controller_id) {
                     conn.unset_controller();
