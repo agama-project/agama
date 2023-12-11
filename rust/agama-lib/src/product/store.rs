@@ -48,7 +48,9 @@ impl<'a> ProductStore<'a> {
             } else {
                 (result, message) = self.product_client.register(reg_code, "").await?;
             }
-            if result != 0 {
+            // FIXME: name the magic numbers. 3 is Registration not required
+            // FIXME: well don't register when not required (no regcode in profile)
+            if result != 0 && result != 3 {
                 return Err(ServiceError::FailedRegistration(message));
             }
             probe = true;
