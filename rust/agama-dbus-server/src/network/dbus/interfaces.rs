@@ -8,7 +8,8 @@ use crate::network::{
     action::Action,
     error::NetworkStateError,
     model::{
-        BondConnection, Connection as NetworkConnection, Device as NetworkDevice, MacAddress, WirelessConnection,
+        BondConnection, Connection as NetworkConnection, Device as NetworkDevice, MacAddress,
+        WirelessConnection,
     },
 };
 

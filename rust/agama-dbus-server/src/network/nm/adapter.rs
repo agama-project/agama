@@ -1,5 +1,5 @@
 use crate::network::{
-    model::{Connection, NetworkState},
+    model::{BondConnection, Connection, NetworkState},
     nm::NetworkManagerClient,
     Adapter,
 };
@@ -52,8 +52,8 @@ impl<'a> NetworkManagerAdapter<'a> {
     }
 
     /// Returns the connections in the order they should be processed.
-    /// * `network`: network model.
     ///
+    /// * `network`: network model.
     fn ordered_connections<'b>(&self, network: &'b NetworkState) -> Vec<&'b Connection> {
         let mut conns: Vec<&Connection> = vec![];
         for conn in &network.connections {
@@ -72,8 +72,8 @@ impl<'a> NetworkManagerAdapter<'a> {
     ) {
         conns.push(conn);
 
-        if let Connection::Bond(bond) = &conn {
-            for port in &bond.bond.ports {
+        if let Connection::Bond(BondConnection { bond, .. }) = &conn {
+            for port in &bond.ports {
                 if let Some(port_connection) = network.get_connection(port.as_str()) {
                     self.add_ordered_connections(port_connection, network, conns);
                 }
