@@ -76,13 +76,15 @@ impl NetworkState {
     /// It uses the `id` to decide which connection to update.
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
-    pub fn update_connection(&mut self, mut conn: Connection) -> Result<(), NetworkStateError> {
+    pub fn update_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
         let Some(old_conn) = self.get_connection_mut(conn.id()) else {
             return Err(NetworkStateError::UnknownConnection(conn.id().to_string()));
         };
 
-        std::mem::swap(old_conn, &mut conn);
-        self.update_controller_ports(&conn);
+        // workaround the borrow checker
+        let clone = conn.clone();
+        *old_conn = conn;
+        self.update_controller_ports(&clone);
 
         Ok(())
     }
@@ -102,9 +104,9 @@ impl NetworkState {
     /// It does not check whether the ports exist.
     ///
     /// TODO: check whether a port is missing.
-    fn update_controller_ports(&mut self, controller: &Connection) {
-        if let Connection::Bond(BondConnection { bond, .. }) = controller {
-            let controller_id = controller.id().to_string();
+    fn update_controller_ports(&mut self, updated: &Connection) {
+        if let Connection::Bond(BondConnection { bond, .. }) = &updated {
+            let controller_id = updated.id().to_string();
             for conn in self.connections.iter_mut() {
                 if bond.ports.contains(&conn.id().to_string()) {
                     conn.set_controller(&controller_id);
@@ -118,11 +120,10 @@ impl NetworkState {
 
 #[cfg(test)]
 mod tests {
-    use uuid::Uuid;
-
     use super::builder::ConnectionBuilder;
     use super::*;
     use crate::network::error::NetworkStateError;
+    use uuid::Uuid;
 
     #[test]
     fn test_add_connection() {
@@ -247,6 +248,32 @@ mod tests {
 
         let eth0 = state.get_connection("eth0").unwrap();
         assert_eq!(eth0.controller().unwrap(), "bond0");
+    }
+
+    #[test]
+    fn test_update_bonding() {
+        let mut state = NetworkState::default();
+        let eth0 = ConnectionBuilder::new("eth0").build();
+        let eth1 = ConnectionBuilder::new("eth1").build();
+        state.add_connection(eth0).unwrap();
+        state.add_connection(eth1).unwrap();
+
+        let bond0 = ConnectionBuilder::new("bond0")
+            .with_type(DeviceType::Bond)
+            .with_ports(vec!["eth0".to_string()])
+            .build();
+        state.add_connection(bond0).unwrap();
+
+        let bond0 = ConnectionBuilder::new("bond0")
+            .with_type(DeviceType::Bond)
+            .with_ports(vec!["eth1".to_string()])
+            .build();
+        state.update_connection(bond0).unwrap();
+
+        let eth1_found = state.get_connection("eth1").unwrap();
+        assert_eq!(eth1_found.controller(), Some(&"bond0".to_string()));
+        let eth0_found = state.get_connection("eth0").unwrap();
+        assert_eq!(eth0_found.controller(), None);
     }
 }
 
