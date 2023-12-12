@@ -25,14 +25,47 @@
       -->
       <arg name="Result" direction="out" type="a{s(sssss)}"/>
     </method>
+    <!--
+      Adds pattern to explicitelly selected ones.
+    -->
     <method name="AddPattern">
+      <!--
+        Identifier of pattern.
+      -->
       <arg name="id" direction="in" type="s"/>
+      <!--
+        Returns false if pattern does not exist in current list of repositories.
+        Otherwise it returns true.
+      -->
+      <arg name="result" direction="out" type="b"/>
     </method>
+    <!--
+      Removes pattern from explicit selection. It can still be installed as dependency.
+    -->
     <method name="RemovePattern">
+      <!--
+        Identifier of pattern.
+      -->
       <arg name="id" direction="in" type="s"/>
+      <!--
+        Returns false if pattern does not exist in current list of repositories.
+        Otherwise it returns true including case when pattern was not previously selected.
+      -->
+      <arg name="result" direction="out" type="b"/>
     </method>
+    <!--
+      Sets explicitelly selected patterns.
+    -->
     <method name="SetUserPatterns">
+      <!--
+        List of pattern ids.
+      -->
       <arg name="ids" direction="in" type="as"/>
+      <!--
+        Return list of non existing patterns.
+        Operation was basically cancelled if result is not empty.
+      -->
+      <arg name="wrong" direction="out" type="as"/>
     </method>
     <method name="ProvisionsSelected">
       <arg name="Provisions" direction="in" type="as"/>
