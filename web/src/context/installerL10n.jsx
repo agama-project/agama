@@ -180,7 +180,7 @@ function reload(newLanguage) {
 }
 
 /**
- * Extracts keymap from localectl output.
+ * Extracts the keymap from the `setxkbmap -query` output.
  *
  * @param {string} output
  * @returns {string|undefined}

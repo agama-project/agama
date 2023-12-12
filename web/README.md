@@ -69,6 +69,18 @@ Where  `COCKPIT_TARGET` is the IP address or hostname of the running Agama
 instance. This is especially useful if you use the Live ISO which does not contain
 any development tools, you can develop the web frontend easily from your workstation.
 
+### Special Environment Variables
+
+`COCKPIT_TARGET` - When running the development server set up a proxy to the
+specified Cockpit server. See the [using a development
+server](#using-a-development-server) section above.
+
+`LOCAL_CONNECTION` - Force behaving as in a local connection, useful for
+development or testing some Agama features. For example the keyboard layout
+switcher is displayed only in local installation because it cannot work in
+remote connection. This option will force displaying it even in a remote
+connection.
+
 ## JSDoc Documentation
 
 This project uses [TypeDoc](https://typedoc.org/) to generate the API documentation. The `jsdoc`
