@@ -223,7 +223,8 @@ module Agama
       end
 
       def add_pattern(id)
-        # TODO: error handling
+        return false unless pattern_exist?(id)
+
         res = Yast::Pkg.ResolvableInstall(id, :pattern)
         logger.info "Adding pattern #{res.inspect}"
         Yast::PackagesProposal.AddResolvables(PROPOSAL_ID, :pattern, [id])
@@ -231,10 +232,13 @@ module Agama
         res = Yast::Pkg.PkgSolve(unused = true)
         logger.info "Solver run #{res.inspect}"
         selected_patterns_changed
+
+        true
       end
 
       def remove_pattern(id)
-        # TODO: error handling
+        return false unless pattern_exist?(id)
+
         res = Yast::Pkg.ResolvableNeutral(id, :pattern, force = false)
         logger.info "Removing pattern #{res.inspect}"
         Yast::PackagesProposal.RemoveResolvables(PROPOSAL_ID, :pattern, [id])
@@ -242,9 +246,14 @@ module Agama
         res = Yast::Pkg.PkgSolve(unused = true)
         logger.info "Solver run #{res.inspect}"
         selected_patterns_changed
+
+        true
       end
 
-      def user_patterns=(ids)
+      def assign_patterns(ids)
+        wrong_patterns = ids.reject { |p| pattern_exist?(id) }
+        return wrong_patterns unless wrong_patterns.empty?
+
         user_patterns = Yast::PackagesProposal.GetResolvables(PROPOSAL_ID, :pattern)
         user_patterns.each { |p| Yast::Pkg.ResolvableNeutral(p, :pattern, force = false) }
         Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :pattern, ids)
@@ -254,6 +263,8 @@ module Agama
         res = Yast::Pkg.PkgSolve(unused = true)
         logger.info "Solver run #{res.inspect}"
         selected_patterns_changed
+
+        []
       end
 
       # @return [Array<Array<String>,Array<String>] returns pair of arrays where the first one
@@ -478,6 +489,10 @@ module Agama
       def missing_registration?
         registration.reg_code.nil? &&
           registration.requirement == Agama::Registration::Requirement::MANDATORY
+      end
+
+      def pattern_exist?(pattern_name)
+        !Y2Packager::Resolvable.find(kind: :pattern, name: pattern_name).empty?
       end
     end
   end
