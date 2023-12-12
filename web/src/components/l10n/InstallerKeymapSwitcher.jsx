@@ -62,7 +62,7 @@ export default function InstallerKeymapSwitcher() {
         {options}
       </FormSelect>) ||
       // TRANSLATORS:
-      _("Local keyboard cannot be set in remote installation") }
+      _("Keyboard layout cannot be changed in remote installation") }
     </>
   );
 }
