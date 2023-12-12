@@ -445,6 +445,18 @@ impl Connection {
         self.base().status == Status::Removed
     }
 
+    pub fn is_up(&self) -> bool {
+        self.base().status == Status::Up
+    }
+
+    pub fn set_up(&mut self) {
+        self.base_mut().status = Status::Up
+    }
+
+    pub fn set_down(&mut self) {
+        self.base_mut().status = Status::Down
+    }
+
     /// Determines whether it is a loopback interface.
     pub fn is_loopback(&self) -> bool {
         matches!(self, Connection::Loopback(_))
@@ -540,7 +552,8 @@ impl From<InvalidMacAddress> for zbus::fdo::Error {
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub enum Status {
     #[default]
-    Present,
+    Up,
+    Down,
     Removed,
 }
 
