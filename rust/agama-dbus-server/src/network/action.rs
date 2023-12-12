@@ -1,5 +1,9 @@
 use crate::network::model::Connection;
 use agama_lib::network::types::DeviceType;
+use tokio::sync::oneshot;
+use uuid::Uuid;
+
+pub type Responder<T> = oneshot::Sender<T>;
 
 /// Networking actions, like adding, updating or removing connections.
 ///
@@ -9,6 +13,8 @@ use agama_lib::network::types::DeviceType;
 pub enum Action {
     /// Add a new connection with the given name and type.
     AddConnection(String, DeviceType),
+    /// Gets a connection
+    GetConnection(Uuid, Responder<Option<Connection>>),
     /// Update a connection (replacing the old one).
     UpdateConnection(Connection),
     /// Remove the connection with the given Uuid.

@@ -70,6 +70,10 @@ impl<T: Adapter> NetworkSystem<T> {
                 self.tree.add_connection(&mut conn, true).await?;
                 self.state.add_connection(conn)?;
             }
+            Action::GetConnection(uuid, rx) => {
+                let conn = self.state.get_connection_by_uuid(&uuid);
+                rx.send(conn.cloned()).unwrap();
+            }
             Action::UpdateConnection(conn) => {
                 self.state.update_connection(conn)?;
             }

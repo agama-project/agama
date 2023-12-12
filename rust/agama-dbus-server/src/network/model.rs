@@ -43,6 +43,13 @@ impl NetworkState {
         self.devices.iter().find(|d| d.name == name)
     }
 
+    /// Get connection by UUID
+    ///
+    /// * `id`: connection UUID
+    pub fn get_connection_by_uuid(&self, uuid: &Uuid) -> Option<&Connection> {
+        self.connections.iter().find(|c| c.uuid() == *uuid)
+    }
+
     /// Get connection by ID
     ///
     /// * `id`: connection ID
@@ -50,9 +57,9 @@ impl NetworkState {
         self.connections.iter().find(|c| c.id() == id)
     }
 
-    /// Get connection by UUID as mutable
+    /// Get connection by ID as mutable
     ///
-    /// * `uuid`: connection UUID
+    /// * `id`: connection ID
     pub fn get_connection_mut(&mut self, id: &str) -> Option<&mut Connection> {
         self.connections.iter_mut().find(|c| c.id() == id)
     }

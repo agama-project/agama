@@ -88,6 +88,7 @@ impl Tree {
         let mut objects = self.objects.lock().await;
 
         let orig_id = conn.id().to_owned();
+        let uuid = conn.uuid();
         let (id, path) = objects.register_connection(conn);
         if id != conn.id() {
             conn.set_id(&id)
@@ -116,7 +117,7 @@ impl Tree {
         if let Connection::Bond(_) = conn {
             self.add_interface(
                 &path,
-                interfaces::Bond::new(self.actions.clone(), Arc::clone(&cloned)),
+                interfaces::Bond::new(self.actions.clone(), &uuid),
             )
             .await?;
         }

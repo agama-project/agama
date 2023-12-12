@@ -14,8 +14,9 @@ use crate::network::{
 };
 
 use agama_lib::network::types::SSID;
+use uuid::Uuid;
 use std::{str::FromStr, sync::Arc};
-use tokio::sync::mpsc::UnboundedSender;
+use tokio::sync::{mpsc::UnboundedSender, oneshot};
 use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
 use zbus::{
     dbus_interface,
@@ -301,32 +302,37 @@ impl Match {
 /// D-Bus interface for Bond settings
 pub struct Bond {
     actions: Arc<Mutex<UnboundedSender<Action>>>,
-    connection: Arc<Mutex<NetworkConnection>>,
+    uuid: Uuid,
 }
 
 impl Bond {
     /// Creates a Match Settings interface object.
     ///
     /// * `actions`: sending-half of a channel to send actions.
-    /// * `connection`: connection to expose over D-Bus.
+    /// * `uuid`: connection UUID.
     pub fn new(
         actions: UnboundedSender<Action>,
-        connection: Arc<Mutex<NetworkConnection>>,
+        uuid: &Uuid,
     ) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
-            connection,
+            uuid: uuid.to_owned()
         }
     }
 
     /// Gets the bond connection.
     ///
     /// Beware that it crashes when it is not a bond connection.
-    async fn get_bond(&self) -> MappedMutexGuard<BondConnection> {
-        MutexGuard::map(self.connection.lock().await, |c| match c {
-            NetworkConnection::Bond(config) => config,
-            _ => panic!("Not a bond connection. This is most probably a bug."),
-        })
+    async fn get_bond(&self) -> BondConnection {
+        let actions = self.actions.lock().await;
+        let (tx, rx) = oneshot::channel();
+        actions.send(Action::GetConnection(self.uuid.clone(), tx)).unwrap();
+        let connection = rx.await.unwrap();
+
+        match connection {
+            Some(NetworkConnection::Bond(config)) => config,
+            _ => panic!("Not a bond connection. This is most probably a bug.")
+        }
     }
 
     /// Updates the connection data in the NetworkSystem.
@@ -334,7 +340,7 @@ impl Bond {
     /// * `connection`: Updated connection.
     async fn update_connection<'a>(
         &self,
-        connection: MappedMutexGuard<'a, BondConnection>,
+        connection: BondConnection,
     ) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock().await;
         let connection = NetworkConnection::Bond(connection.clone());
