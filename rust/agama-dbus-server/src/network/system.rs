@@ -71,8 +71,26 @@ impl<T: Adapter> NetworkSystem<T> {
                 self.state.add_connection(conn)?;
             }
             Action::GetConnection(uuid, rx) => {
-                let conn = self.state.get_connection_by_uuid(&uuid);
+                let conn = self.state.get_connection_by_uuid(uuid);
                 rx.send(conn.cloned()).unwrap();
+            }
+            Action::GetController(uuid, rx) => {
+                let conn = self.state.get_connection_by_uuid(uuid).unwrap();
+                let conn = conn.clone();
+
+                let controlled = self.state.get_controlled_by(uuid);
+                let controlled = controlled
+                    .iter()
+                    .map(|c| c.id().to_owned())
+                    .collect::<Vec<_>>();
+
+                let data = (conn, controlled);
+                rx.send(Ok(data)).unwrap()
+            }
+            Action::SetPorts(uuid, ports, rx) => {
+                let conn = self.state.get_connection_by_uuid(uuid).unwrap();
+                let result = self.state.set_ports(&conn.clone(), ports);
+                rx.send(result).unwrap();
             }
             Action::UpdateConnection(conn) => {
                 self.state.update_connection(conn)?;

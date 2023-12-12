@@ -46,8 +46,8 @@ impl NetworkState {
     /// Get connection by UUID
     ///
     /// * `id`: connection UUID
-    pub fn get_connection_by_uuid(&self, uuid: &Uuid) -> Option<&Connection> {
-        self.connections.iter().find(|c| c.uuid() == *uuid)
+    pub fn get_connection_by_uuid(&self, uuid: Uuid) -> Option<&Connection> {
+        self.connections.iter().find(|c| c.uuid() == uuid)
     }
 
     /// Get connection by ID
@@ -64,6 +64,14 @@ impl NetworkState {
         self.connections.iter_mut().find(|c| c.id() == id)
     }
 
+    pub fn get_controlled_by(&mut self, uuid: Uuid) -> Vec<&Connection> {
+        let uuid = Some(uuid);
+        self.connections
+            .iter()
+            .filter(|c| c.controller() == uuid)
+            .collect()
+    }
+
     /// Adds a new connection.
     ///
     /// It uses the `id` to decide whether the connection already exists.
@@ -71,8 +79,6 @@ impl NetworkState {
         if self.get_connection(conn.id()).is_some() {
             return Err(NetworkStateError::ConnectionExists(conn.uuid()));
         }
-
-        self.update_controller_ports(&conn);
         self.connections.push(conn);
 
         Ok(())
@@ -87,11 +93,7 @@ impl NetworkState {
         let Some(old_conn) = self.get_connection_mut(conn.id()) else {
             return Err(NetworkStateError::UnknownConnection(conn.id().to_string()));
         };
-
-        // workaround the borrow checker
-        let clone = conn.clone();
         *old_conn = conn;
-        self.update_controller_ports(&clone);
 
         Ok(())
     }
@@ -108,20 +110,27 @@ impl NetworkState {
         Ok(())
     }
 
-    /// It does not check whether the ports exist.
+    /// Sets a controller ports.
     ///
-    /// TODO: check whether a port is missing.
-    fn update_controller_ports(&mut self, updated: &Connection) {
-        if let Connection::Bond(BondConnection { bond, .. }) = &updated {
-            let controller_id = updated.id().to_string();
+    /// If the connection is not a controller, do nothing (TODO: return an error).
+    ///
+    /// * `uuid`: controller UUID.
+    /// * `ports`: list of port names. TODO: should we use the ID, the UUID or the interface name?
+    pub fn set_ports(
+        &mut self,
+        controller: &Connection,
+        ports: Vec<String>,
+    ) -> Result<(), NetworkStateError> {
+        if let Connection::Bond(_) = &controller {
             for conn in self.connections.iter_mut() {
-                if bond.ports.contains(&conn.id().to_string()) {
-                    conn.set_controller(&controller_id);
-                } else if conn.controller() == Some(&controller_id) {
+                if ports.contains(&conn.id().to_string()) {
+                    conn.set_controller(controller.uuid());
+                } else if conn.controller() == Some(controller.uuid()) {
                     conn.unset_controller();
                 }
             }
         }
+        Ok(())
     }
 }
 
@@ -239,46 +248,22 @@ mod tests {
     }
 
     #[test]
-    fn test_add_bonding() {
-        let mut state = NetworkState::default();
-        let eth0 = ConnectionBuilder::new("eth0")
-            .with_type(DeviceType::Ethernet)
-            .build();
-        state.add_connection(eth0).unwrap();
-
-        let bond0 = ConnectionBuilder::new("bond0")
-            .with_type(DeviceType::Bond)
-            .with_ports(vec!["eth0".to_string()])
-            .build();
-
-        state.add_connection(bond0).unwrap();
-
-        let eth0 = state.get_connection("eth0").unwrap();
-        assert_eq!(eth0.controller().unwrap(), "bond0");
-    }
-
-    #[test]
-    fn test_update_bonding() {
+    fn test_set_bonding_ports() {
         let mut state = NetworkState::default();
         let eth0 = ConnectionBuilder::new("eth0").build();
         let eth1 = ConnectionBuilder::new("eth1").build();
+        let bond0 = ConnectionBuilder::new("bond0")
+            .with_type(DeviceType::Bond)
+            .build();
+
         state.add_connection(eth0).unwrap();
         state.add_connection(eth1).unwrap();
+        state.add_connection(bond0.clone()).unwrap();
 
-        let bond0 = ConnectionBuilder::new("bond0")
-            .with_type(DeviceType::Bond)
-            .with_ports(vec!["eth0".to_string()])
-            .build();
-        state.add_connection(bond0).unwrap();
-
-        let bond0 = ConnectionBuilder::new("bond0")
-            .with_type(DeviceType::Bond)
-            .with_ports(vec!["eth1".to_string()])
-            .build();
-        state.update_connection(bond0).unwrap();
+        state.set_ports(&bond0, vec!["eth1".to_string()]).unwrap();
 
         let eth1_found = state.get_connection("eth1").unwrap();
-        assert_eq!(eth1_found.controller(), Some(&"bond0".to_string()));
+        assert_eq!(eth1_found.controller(), Some(bond0.uuid()));
         let eth0_found = state.get_connection("eth0").unwrap();
         assert_eq!(eth0_found.controller(), None);
     }
@@ -366,15 +351,15 @@ impl Connection {
     }
 
     /// Ports controller name, e.g.: bond0, br0
-    pub fn controller(&self) -> Option<&String> {
-        self.base().controller.as_ref()
+    pub fn controller(&self) -> Option<Uuid> {
+        self.base().controller
     }
 
     /// Sets the ports controller.
     ///
     /// `controller`: Name of the controller (Bridge, Bond, Team), e.g.: bond0.
-    pub fn set_controller(&mut self, controller: &str) {
-        self.base_mut().controller = Some(controller.to_string());
+    pub fn set_controller(&mut self, controller: Uuid) {
+        self.base_mut().controller = Some(controller)
     }
 
     pub fn unset_controller(&mut self) {
@@ -435,7 +420,7 @@ pub struct BaseConnection {
     pub ip_config: IpConfig,
     pub status: Status,
     pub interface: String,
-    pub controller: Option<String>,
+    pub controller: Option<Uuid>,
     pub match_config: MatchConfig,
 }
 
@@ -665,10 +650,6 @@ pub struct BondConnection {
 }
 
 impl BondConnection {
-    pub fn set_ports(&mut self, ports: Vec<String>) {
-        self.bond.ports = ports;
-    }
-
     pub fn set_mode(&mut self, mode: BondMode) {
         self.bond.mode = mode;
     }
@@ -714,7 +695,6 @@ impl fmt::Display for BondOptions {
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct BondConfig {
     pub mode: BondMode,
-    pub ports: Vec<String>,
     pub options: BondOptions,
 }
 

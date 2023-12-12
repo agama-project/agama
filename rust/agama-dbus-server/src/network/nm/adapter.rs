@@ -41,7 +41,9 @@ impl<'a> NetworkManagerAdapter<'a> {
             let result = if conn.is_removed() {
                 self.client.remove_connection(conn.uuid()).await
             } else {
-                let ctrl = conn.controller().and_then(|id| network.get_connection(&id));
+                let ctrl = conn
+                    .controller()
+                    .and_then(|uuid| network.get_connection_by_uuid(uuid));
                 self.client.add_or_update_connection(&conn, ctrl).await
             };
 
@@ -72,13 +74,13 @@ impl<'a> NetworkManagerAdapter<'a> {
     ) {
         conns.push(conn);
 
-        if let Connection::Bond(BondConnection { bond, .. }) = &conn {
-            for port in &bond.ports {
-                if let Some(port_connection) = network.get_connection(port.as_str()) {
-                    self.add_ordered_connections(port_connection, network, conns);
-                }
-            }
-        }
+        // if let Connection::Bond(BondConnection { bond, .. }) = &conn {
+        //     for port in &bond.ports {
+        //         if let Some(port_connection) = network.get_connection(port.as_str()) {
+        //             self.add_ordered_connections(port_connection, network, conns);
+        //         }
+        //     }
+        // }
     }
 }
 

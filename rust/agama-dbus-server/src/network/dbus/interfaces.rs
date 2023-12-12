@@ -14,10 +14,10 @@ use crate::network::{
 };
 
 use agama_lib::network::types::SSID;
-use uuid::Uuid;
 use std::{str::FromStr, sync::Arc};
 use tokio::sync::{mpsc::UnboundedSender, oneshot};
 use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
+use uuid::Uuid;
 use zbus::{
     dbus_interface,
     zvariant::{ObjectPath, OwnedObjectPath},
@@ -310,13 +310,10 @@ impl Bond {
     ///
     /// * `actions`: sending-half of a channel to send actions.
     /// * `uuid`: connection UUID.
-    pub fn new(
-        actions: UnboundedSender<Action>,
-        uuid: &Uuid,
-    ) -> Self {
+    pub fn new(actions: UnboundedSender<Action>, uuid: Uuid) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
-            uuid: uuid.to_owned()
+            uuid,
         }
     }
 
@@ -326,22 +323,19 @@ impl Bond {
     async fn get_bond(&self) -> BondConnection {
         let actions = self.actions.lock().await;
         let (tx, rx) = oneshot::channel();
-        actions.send(Action::GetConnection(self.uuid.clone(), tx)).unwrap();
+        actions.send(Action::GetConnection(self.uuid, tx)).unwrap();
         let connection = rx.await.unwrap();
 
         match connection {
             Some(NetworkConnection::Bond(config)) => config,
-            _ => panic!("Not a bond connection. This is most probably a bug.")
+            _ => panic!("Not a bond connection. This is most probably a bug."),
         }
     }
 
     /// Updates the connection data in the NetworkSystem.
     ///
     /// * `connection`: Updated connection.
-    async fn update_connection<'a>(
-        &self,
-        connection: BondConnection,
-    ) -> zbus::fdo::Result<()> {
+    async fn update_connection<'a>(&self, connection: BondConnection) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock().await;
         let connection = NetworkConnection::Bond(connection.clone());
         actions.send(Action::UpdateConnection(connection)).unwrap();
@@ -381,16 +375,24 @@ impl Bond {
 
     /// List of bond ports.
     #[dbus_interface(property)]
-    pub async fn ports(&self) -> Vec<String> {
-        let connection = self.get_bond().await;
-        connection.bond.ports.clone()
+    pub async fn ports(&self) -> zbus::fdo::Result<Vec<String>> {
+        let actions = self.actions.lock().await;
+        let (tx, rx) = oneshot::channel();
+        actions.send(Action::GetController(self.uuid, tx)).unwrap();
+
+        let (_, ports) = rx.await.unwrap()?;
+        Ok(ports)
     }
 
     #[dbus_interface(property)]
     pub async fn set_ports(&mut self, ports: Vec<String>) -> zbus::fdo::Result<()> {
-        let mut connection = self.get_bond().await;
-        connection.set_ports(ports);
-        self.update_connection(connection).await
+        let actions = self.actions.lock().await;
+        let (tx, rx) = oneshot::channel();
+        actions
+            .send(Action::SetPorts(self.uuid, ports, tx))
+            .unwrap();
+        let result = rx.await.unwrap();
+        Ok(result?)
     }
 }
 

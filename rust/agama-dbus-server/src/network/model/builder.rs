@@ -1,4 +1,5 @@
 use super::{Connection, DeviceType};
+use uuid::Uuid;
 
 // TODO: improve the implementation to allow calling methods only where it makes sense
 // depending on the type of the connection.
@@ -7,9 +8,8 @@ use super::{Connection, DeviceType};
 pub struct ConnectionBuilder {
     id: String,
     interface: Option<String>,
-    controller: Option<String>,
+    controller: Option<Uuid>,
     type_: Option<DeviceType>,
-    ports: Vec<String>,
 }
 
 impl ConnectionBuilder {
@@ -25,18 +25,13 @@ impl ConnectionBuilder {
         self
     }
 
-    pub fn with_controller(mut self, controller: &str) -> Self {
-        self.controller = Some(controller.to_string());
+    pub fn with_controller(mut self, controller: Uuid) -> Self {
+        self.controller = Some(controller);
         self
     }
 
     pub fn with_type(mut self, type_: DeviceType) -> Self {
         self.type_ = Some(type_);
-        self
-    }
-
-    pub fn with_ports(mut self, ports: Vec<String>) -> Self {
-        self.ports = ports;
         self
     }
 
@@ -48,14 +43,7 @@ impl ConnectionBuilder {
         }
 
         if let Some(controller) = self.controller {
-            conn.set_controller(&controller);
-        }
-
-        match &mut conn {
-            Connection::Bond(bond) => {
-                bond.set_ports(self.ports);
-            }
-            _ => {}
+            conn.set_controller(controller);
         }
 
         conn
