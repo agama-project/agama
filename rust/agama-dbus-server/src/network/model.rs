@@ -718,12 +718,6 @@ pub struct BondConfig {
     pub options: BondOptions,
 }
 
-/// Controller config payload for updating a controller's connection (Bond, Bridge)
-#[derive(Debug, PartialEq, Clone)]
-pub enum ControllerConfig {
-    Ports(Vec<String>),
-}
-
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct WirelessConfig {
     pub mode: WirelessMode,
