@@ -28,11 +28,13 @@ pub fn connection_to_dbus<'a>(
     controller: Option<&'a Connection>,
 ) -> NestedHash<'a> {
     let mut result = NestedHash::new();
-    let mut connection_dbus = HashMap::from([
-        ("id", conn.id().into()),
-        ("type", ETHERNET_KEY.into()),
-        ("interface-name", conn.interface().into()),
-    ]);
+    let mut connection_dbus =
+        HashMap::from([("id", conn.id().into()), ("type", ETHERNET_KEY.into())]);
+
+    if let Some(interface) = &conn.interface() {
+        connection_dbus.insert("interface-name", interface.to_owned().into());
+    }
+
     if let Some(controller) = controller {
         connection_dbus.insert("slave-type", "bond".into()); // TODO: only 'bond' is supported
         connection_dbus.insert("master", controller.id().into());
@@ -329,7 +331,7 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
 
     if let Some(interface) = connection.get("interface-name") {
         let interface: &str = interface.downcast_ref()?;
-        base_connection.interface = interface.to_string();
+        base_connection.interface = Some(interface.to_string());
     }
 
     if let Some(match_config) = conn.get("match") {
@@ -877,7 +879,7 @@ mod test {
 
         let base = BaseConnection {
             id: "agama".to_string(),
-            interface: "eth0".to_string(),
+            interface: Some("eth0".to_string()),
             ..Default::default()
         };
         let ethernet = EthernetConnection {

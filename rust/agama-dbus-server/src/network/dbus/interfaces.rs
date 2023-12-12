@@ -234,7 +234,11 @@ impl Connection {
 
     #[dbus_interface(property)]
     pub async fn interface(&self) -> String {
-        self.get_connection().await.interface().to_string()
+        self.get_connection()
+            .await
+            .interface()
+            .map(String::to_string)
+            .unwrap_or(String::from(""))
     }
 
     #[dbus_interface(property)]
@@ -299,7 +303,7 @@ impl Match {
     }
 }
 
-/// D-Bus interface for Bond settings
+/// D-Bus interface for Bond settings.
 pub struct Bond {
     actions: Arc<Mutex<UnboundedSender<Action>>>,
     uuid: Uuid,
@@ -345,7 +349,7 @@ impl Bond {
 
 #[dbus_interface(name = "org.opensuse.Agama1.Network.Connection.Bond")]
 impl Bond {
-    /// Bonding mode
+    /// Bonding mode.
     #[dbus_interface(property)]
     pub async fn mode(&self) -> String {
         let connection = self.get_bond().await;

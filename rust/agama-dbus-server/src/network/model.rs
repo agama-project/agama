@@ -337,12 +337,12 @@ impl Connection {
         self.base_mut().id = id.to_string()
     }
 
-    pub fn interface(&self) -> &str {
-        self.base().interface.as_str()
+    pub fn interface(&self) -> Option<&String> {
+        self.base().interface.as_ref()
     }
 
     pub fn set_interface(&mut self, interface: &str) {
-        self.base_mut().interface = interface.to_string()
+        self.base_mut().interface = Some(interface.to_string())
     }
 
     /// Ports controller name, e.g.: bond0, br0
@@ -419,7 +419,7 @@ pub struct BaseConnection {
     pub mac_address: MacAddress,
     pub ip_config: IpConfig,
     pub status: Status,
-    pub interface: String,
+    pub interface: Option<String>,
     pub controller: Option<Uuid>,
     pub match_config: MatchConfig,
 }
