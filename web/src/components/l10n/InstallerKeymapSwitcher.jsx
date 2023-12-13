@@ -24,11 +24,12 @@ import { FormSelect, FormSelectOption } from "@patternfly/react-core";
 
 import cockpit from "../../lib/cockpit";
 
-import { Icon } from "../layout";
+import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { useL10n } from "~/context/l10n";
 import { localConnection } from "~/utils";
+import { If } from "~/components/core";
 
 const sort = (keymaps) => {
   // sort the keymap names using the current locale
@@ -51,18 +52,24 @@ export default function InstallerKeymapSwitcher() {
         {/* TRANSLATORS: label for keyboard layout selection */}
         <Icon name="keyboard" size="24" />{_("Keyboard")}
       </h3>
-      {(localConnection() &&
-      <FormSelect
-        id="keyboard"
-        // TRANSLATORS: label for keyboard layout selection
-        aria-label={_("keyboard")}
-        value={keymap}
-        onChange={onChange}
-      >
-        {options}
-      </FormSelect>) ||
-      // TRANSLATORS:
-      _("Keyboard layout cannot be changed in remote installation") }
+      <If
+        condition={localConnection()}
+        then={
+          <FormSelect
+            id="keyboard"
+            // TRANSLATORS: label for keyboard layout selection
+            aria-label={_("keyboard")}
+            value={keymap}
+            onChange={onChange}
+          >
+            {options}
+          </FormSelect>
+        }
+        else={
+          // TRANSLATORS:
+          _("Keyboard layout cannot be changed in remote installation")
+        }
+      />
     </>
   );
 }

@@ -261,7 +261,7 @@ const setLocationSearch = (query) => {
  *
  * @returns {boolean} `true` if the connection is local, `false` otherwise
  */
-const localConnection = function (location = window.location) {
+const localConnection = (location = window.location) => {
   // forced local behavior
   if (process.env.LOCAL_CONNECTION === "1") return true;
 
@@ -280,7 +280,7 @@ const localConnection = function (location = window.location) {
  *
  * @returns {boolean} `true` if the connection is remote, `false` otherwise
  */
-const remoteConnection = (location = window.location) => !localConnection(location);
+const remoteConnection = (...args) => !localConnection(...args);
 
 /**
  * Time for the given timezone.
