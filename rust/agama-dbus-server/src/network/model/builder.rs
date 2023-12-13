@@ -1,9 +1,6 @@
 use super::{Connection, DeviceType};
 use uuid::Uuid;
 
-// TODO: improve the implementation to allow calling methods only where it makes sense
-// depending on the type of the connection.
-
 #[derive(Debug, Default)]
 pub struct ConnectionBuilder {
     id: String,

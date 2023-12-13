@@ -310,7 +310,7 @@ pub struct Bond {
 }
 
 impl Bond {
-    /// Creates a Match Settings interface object.
+    /// Creates a Bond interface object.
     ///
     /// * `actions`: sending-half of a channel to send actions.
     /// * `uuid`: connection UUID.
@@ -363,7 +363,7 @@ impl Bond {
         self.update_connection(connection).await
     }
 
-    /// List of bond ports.
+    /// List of bonding options.
     #[dbus_interface(property)]
     pub async fn options(&self) -> String {
         let connection = self.get_bond().await;
@@ -379,8 +379,8 @@ impl Bond {
 
     /// List of bond ports.
     ///
-    /// It uses the connection interfaces as port names. It means that you cannot
-    /// add a connection if it does not have a interface name.
+    /// For the port names, it uses the interface name (preferred) or, as a fallback,
+    /// the connection ID of the port.
     #[dbus_interface(property)]
     pub async fn ports(&self) -> zbus::fdo::Result<Vec<String>> {
         let actions = self.actions.lock().await;
