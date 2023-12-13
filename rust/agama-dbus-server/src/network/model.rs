@@ -271,8 +271,12 @@ mod tests {
     #[test]
     fn test_set_bonding_ports() {
         let mut state = NetworkState::default();
-        let eth0 = ConnectionBuilder::new("eth0").build();
-        let eth1 = ConnectionBuilder::new("eth1").build();
+        let eth0 = ConnectionBuilder::new("eth0")
+            .with_interface("eth0")
+            .build();
+        let eth1 = ConnectionBuilder::new("eth1")
+            .with_interface("eth1")
+            .build();
         let bond0 = ConnectionBuilder::new("bond0")
             .with_type(DeviceType::Bond)
             .build();
