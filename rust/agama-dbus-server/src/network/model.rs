@@ -50,6 +50,15 @@ impl NetworkState {
         self.connections.iter().find(|c| c.uuid() == uuid)
     }
 
+    /// Get connection by interface
+    ///
+    /// * `id`: connection interface name
+    pub fn get_connection_by_interface(&self, name: &str) -> Option<&Connection> {
+        let name = name.to_string();
+        let interface = Some(&name);
+        self.connections.iter().find(|c| c.interface() == interface)
+    }
+
     /// Get connection by ID
     ///
     /// * `id`: connection ID
@@ -112,25 +121,37 @@ impl NetworkState {
 
     /// Sets a controller ports.
     ///
-    /// If the connection is not a controller, do nothing (TODO: return an error).
+    /// If the connection is not a controller, returns an error.
     ///
     /// * `uuid`: controller UUID.
-    /// * `ports`: list of port names. TODO: should we use the ID, the UUID or the interface name?
+    /// * `ports`: list of port names (using the interface name).
     pub fn set_ports(
         &mut self,
         controller: &Connection,
         ports: Vec<String>,
     ) -> Result<(), NetworkStateError> {
         if let Connection::Bond(_) = &controller {
+            let mut controlled = vec![];
+            for port in ports {
+                let connection = self
+                    .get_connection_by_interface(&port)
+                    .ok_or(NetworkStateError::NoConnectionForInterface(port))?;
+                controlled.push(connection.uuid());
+            }
+
             for conn in self.connections.iter_mut() {
-                if ports.contains(&conn.id().to_string()) {
+                if controlled.contains(&conn.uuid()) {
                     conn.set_controller(controller.uuid());
                 } else if conn.controller() == Some(controller.uuid()) {
                     conn.unset_controller();
                 }
             }
+            Ok(())
+        } else {
+            Err(NetworkStateError::NotControllerConnection(
+                controller.id().to_owned(),
+            ))
         }
-        Ok(())
     }
 }
 
@@ -266,6 +287,35 @@ mod tests {
         assert_eq!(eth1_found.controller(), Some(bond0.uuid()));
         let eth0_found = state.get_connection("eth0").unwrap();
         assert_eq!(eth0_found.controller(), None);
+    }
+
+    #[test]
+    fn test_set_bonding_missing_port() {
+        let mut state = NetworkState::default();
+        let bond0 = ConnectionBuilder::new("bond0")
+            .with_type(DeviceType::Bond)
+            .build();
+        state.add_connection(bond0.clone()).unwrap();
+
+        let error = state
+            .set_ports(&bond0, vec!["eth0".to_string()])
+            .unwrap_err();
+        assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
+    }
+
+    #[test]
+    fn test_set_non_controller_ports() {
+        let mut state = NetworkState::default();
+        let eth0 = ConnectionBuilder::new("eth0").build();
+        state.add_connection(eth0.clone()).unwrap();
+
+        let error = state
+            .set_ports(&eth0, vec!["eth1".to_string()])
+            .unwrap_err();
+        assert!(matches!(
+            error,
+            NetworkStateError::NotControllerConnection(_),
+        ));
     }
 }
 

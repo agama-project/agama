@@ -27,6 +27,10 @@ pub enum NetworkStateError {
     InvalidBondMode(String),
     #[error("Invalid bond options")]
     InvalidBondOptions,
+    #[error("Not a controller connection: '{0}'")]
+    NotControllerConnection(String),
+    #[error("There is no connection associated to the interface '{0}'")]
+    NoConnectionForInterface(String),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {

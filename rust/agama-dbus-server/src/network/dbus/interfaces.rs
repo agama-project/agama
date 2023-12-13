@@ -378,6 +378,9 @@ impl Bond {
     }
 
     /// List of bond ports.
+    ///
+    /// It uses the connection interfaces as port names. It means that you cannot
+    /// add a connection if it does not have a interface name.
     #[dbus_interface(property)]
     pub async fn ports(&self) -> zbus::fdo::Result<Vec<String>> {
         let actions = self.actions.lock().await;
