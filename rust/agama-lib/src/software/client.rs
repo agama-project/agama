@@ -73,7 +73,7 @@ impl<'a> SoftwareClient<'a> {
         let wrong_patterns = self.software_proxy
             .set_user_patterns(patterns.as_slice())
             .await?;
-        if wrong_patterns.is_empty() {
+        if !wrong_patterns.is_empty() {
             Err(ServiceError::UnknownPatterns(wrong_patterns))
         } else {
             Ok(())
