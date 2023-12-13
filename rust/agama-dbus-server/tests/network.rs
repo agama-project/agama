@@ -106,6 +106,10 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
     server.request_name().await?;
 
     let client = NetworkClient::new(server.connection().clone()).await?;
+    let eth0 = settings::NetworkConnection {
+        id: "eth0".to_string(),
+        ..Default::default()
+    };
     let bond0 = settings::NetworkConnection {
         id: "bond0".to_string(),
         method4: Some("auto".to_string()),
@@ -113,15 +117,16 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
         interface: Some("bond0".to_string()),
         bond: Some(settings::BondSettings {
             mode: "active-backup".to_string(),
-            ports: vec!["eth0".to_string(), "eth1".to_string()],
+            ports: vec!["eth0".to_string()],
             options: Some("primary=eth1".to_string()),
         }),
         ..Default::default()
     };
 
+    client.add_or_update_connection(&eth0).await?;
     client.add_or_update_connection(&bond0).await?;
     let conns = async_retry(|| client.connections()).await?;
-    assert_eq!(conns.len(), 1);
+    assert_eq!(conns.len(), 2);
 
     let conn = conns.iter().find(|c| c.id == "bond0".to_string()).unwrap();
     assert_eq!(conn.id, "bond0");

@@ -29,8 +29,6 @@ pub enum NetworkStateError {
     InvalidBondOptions,
     #[error("Not a controller connection: '{0}'")]
     NotControllerConnection(String),
-    #[error("There is no connection associated to the interface '{0}'")]
-    NoConnectionForInterface(String),
     #[error("Missing connection with UUID '{0}'")]
     MissingConnection(Uuid),
 }
