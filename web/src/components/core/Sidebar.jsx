@@ -19,30 +19,30 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { Button, Text } from "@patternfly/react-core";
-import { Icon, AppActions } from "~/components/layout";
-import { If, NotificationMark } from "~/components/core";
-import { useNotification } from "~/context/notification";
-import useNodeSiblings from "~/hooks/useNodeSiblings";
+import { Icon } from "~/components/layout";
+import { noop } from "~/utils";
 import { _ } from "~/i18n";
+import useNodeSiblings from "~/hooks/useNodeSiblings";
 
 /**
- * Agama sidebar navigation
+ * The Agama sidebar.
  * @component
+ *
+ * A component intended to be the place where put things exclusively related to
+ * the Agama installer itself.
  *
  * @param {object} props
  * @param {React.ReactElement} props.children
  */
-export default function Sidebar ({ children }) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function Sidebar ({ children, isOpen, onClose = noop }) {
   const asideRef = useRef(null);
   const closeButtonRef = useRef(null);
-  const [notification] = useNotification();
   const [addAttribute, removeAttribute] = useNodeSiblings(asideRef.current);
 
   /**
-   * Set siblings as not interactive and not discoverable
+   * Set siblings as not interactive and not discoverable.
    */
   const makeSiblingsInert = useCallback(() => {
     addAttribute('inert', '');
@@ -50,24 +50,23 @@ export default function Sidebar ({ children }) {
   }, [addAttribute]);
 
   /**
-   * Set siblings as interactive and discoverable
+   * Set siblings as interactive and discoverable.
    */
   const makeSiblingsAlive = useCallback(() => {
     removeAttribute('inert');
     removeAttribute('aria-hidden');
   }, [removeAttribute]);
 
-  const open = () => {
-    setIsOpen(true);
-  };
-
+  /**
+   * Triggers the onClose callback.
+   */
   const close = () => {
-    setIsOpen(false);
+    onClose();
   };
 
   /**
-   * Handler for automatically closing the sidebar when a click bubbles from a
-   * children of its content.
+   * Handler for automatically triggering the close function when a click bubbles from a
+   * sidebar children.
    *
    * @param {MouseEvent} event
    */
@@ -82,6 +81,7 @@ export default function Sidebar ({ children }) {
   };
 
   useEffect(() => {
+    makeSiblingsInert();
     if (isOpen) {
       closeButtonRef.current.focus();
       makeSiblingsInert();
@@ -127,59 +127,41 @@ export default function Sidebar ({ children }) {
   }
 
   return (
-    <>
-      <AppActions>
+    <aside
+      id="global-options"
+      ref={asideRef}
+      className="wrapper sidebar"
+      aria-label={_("Global options")}
+      data-state={isOpen ? "visible" : "hidden"}
+    >
+      <header className="split justify-between">
+        <h2>
+          {/* TRANSLATORS: sidebar header */}
+          {_("Options")}
+        </h2>
+
         <button
-          onClick={open}
+          onClick={close}
+          ref={closeButtonRef}
           className="plain-control"
-          aria-label={_("Show global options")}
-          aria-controls="global-options"
-          aria-expanded={isOpen}
+          aria-label={_("Hide navigation and other options")}
         >
-          <If
-            condition={notification.issues}
-            then={<NotificationMark data-variant="sidebar" aria-label={_("New issues found")} />}
-          />
-          <Icon name="menu" />
+          <Icon name="menu_open" data-variant="flip-X" onClick={close} />
         </button>
-      </AppActions>
+      </header>
 
-      <aside
-        id="global-options"
-        ref={asideRef}
-        className="wrapper sidebar"
-        aria-label={_("Global options")}
-        data-state={isOpen ? "visible" : "hidden"}
-      >
-        <header className="split justify-between">
-          <h2>
-            {/* TRANSLATORS: sidebar header */}
-            {_("Options")}
-          </h2>
+      <div className="flex-stack justify-between" onClick={onClick}>
+        {children}
+      </div>
 
-          <button
-            onClick={close}
-            ref={closeButtonRef}
-            className="plain-control"
-            aria-label={_("Hide navigation and other options")}
-          >
-            <Icon name="menu_open" data-variant="flip-X" onClick={close} />
-          </button>
-        </header>
-
-        <div className="flex-stack justify-between" onClick={onClick}>
-          {children}
-        </div>
-
-        <footer className="split justify-between" data-state="reversed">
-          <a onClick={close}>
-            {/* TRANSLATORS: button label */}
-            {_("Close")}
-            <Icon size="16" name="menu_open" data-variant="flip-X" />
-          </a>
-          { targetInfo }
-        </footer>
-      </aside>
-    </>
+      <footer className="split justify-between" data-state="reversed">
+        <a onClick={close}>
+          {/* TRANSLATORS: button label */}
+          {_("Close")}
+          <Icon size="16" name="menu_open" data-variant="flip-X" />
+        </a>
+        { targetInfo }
+      </footer>
+    </aside>
   );
 }

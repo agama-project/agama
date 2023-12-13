@@ -21,198 +21,171 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, withNotificationProvider } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import { If, Sidebar } from "~/components/core";
-import { createClient } from "~/client";
 
-// Mock some components using contexts and not relevant for below tests
-jest.mock("~/components/core/LogsButton", () => () => <div>LogsButton Mock</div>);
+it("renders the sidebar hidden if isOpen prop is not given", () => {
+  plainRender(<Sidebar />);
 
-let mockIssues;
-
-jest.mock("~/client");
-
-beforeEach(() => {
-  mockIssues = [];
-
-  createClient.mockImplementation(() => {
-    return {
-      issues: jest.fn().mockResolvedValue(mockIssues),
-      onIssuesChange: jest.fn()
-    };
-  });
-});
-
-it("renders the sidebar initially hidden", async () => {
-  installerRender(withNotificationProvider(<Sidebar />));
-
-  const nav = await screen.findByRole("complementary", { name: /options/i });
+  const nav = screen.getByRole("complementary", { name: /options/i });
   expect(nav).toHaveAttribute("data-state", "hidden");
 });
 
-it("renders a link for displaying the sidebar", async () => {
-  const { user } = installerRender(withNotificationProvider(<Sidebar />));
+it("renders the sidebar hidden if isOpen prop is false", () => {
+  plainRender(<Sidebar isOpen={false} />);
 
-  const link = await screen.findByLabelText(/Show/i);
-  const sidebar = await screen.findByRole("complementary", { name: /options/i });
-
-  expect(sidebar).toHaveAttribute("data-state", "hidden");
-  await user.click(link);
-  expect(sidebar).toHaveAttribute("data-state", "visible");
+  const nav = screen.getByRole("complementary", { name: /options/i });
+  expect(nav).toHaveAttribute("data-state", "hidden");
 });
 
-it("renders a link for hiding the sidebar", async () => {
-  const { user } = installerRender(withNotificationProvider(<Sidebar />));
+describe("when isOpen prop is given", () => {
+  it("renders the sidebar visible", () => {
+    plainRender(<Sidebar isOpen />);
 
-  const openLink = await screen.findByLabelText(/Show/i);
-  const closeLink = await screen.findByLabelText(/Hide/i);
+    const nav = screen.getByRole("complementary", { name: /options/i });
+    expect(nav).toHaveAttribute("data-state", "visible");
+  });
 
-  const sidebar = await screen.findByRole("complementary", { name: /options/i });
+  it("moves the focus to the close action", () => {
+    plainRender(<Sidebar isOpen />);
+    const closeLink = screen.getByLabelText(/Hide/i);
+    expect(closeLink).toHaveFocus();
+  });
 
-  await user.click(openLink);
-  expect(sidebar).toHaveAttribute("data-state", "visible");
-  await user.click(closeLink);
-  expect(sidebar).toHaveAttribute("data-state", "hidden");
+  it("renders a link intended for closing it that triggers the onClose callback", async () => {
+    const onClose = jest.fn();
+    const { user } = plainRender(<Sidebar isOpen onClose={onClose} />);
+    const closeLink = screen.getByLabelText(/Hide/i);
+    await user.click(closeLink);
+    expect(onClose).toHaveBeenCalled();
+  });
 });
 
-it("moves the focus to the close action after opening it", async () => {
-  const { user } = installerRender(withNotificationProvider(<Sidebar />));
-
-  const openLink = await screen.findByLabelText(/Show/i);
-  const closeLink = await screen.findByLabelText(/Hide/i);
-
-  expect(closeLink).not.toHaveFocus();
-  await user.click(openLink);
-  expect(closeLink).toHaveFocus();
-});
-
+// NOTE: maybe it's time to kill this feature of keeping the sidebar open
 describe("onClick bubbling", () => {
-  it("hides the sidebar only if the user clicked on a link or button w/o keepSidebarOpen attribute", async () => {
-    const { user } = installerRender(
-      withNotificationProvider(
-        <Sidebar>
-          <a href="#">Goes somewhere</a>
-          <a href="#" data-keep-sidebar-open="true">Keep it open!</a>
-          <button>Do something</button>
-          <button data-keep-sidebar-open="true">Keep it open!</button>
-        </Sidebar>
-      )
+  it("triggers onClose callback only if the user clicked on a link or button w/o keepSidebarOpen attribute", async () => {
+    const onClose = jest.fn();
+    const { user } = plainRender(
+      <Sidebar isOpen onClose={onClose}>
+        <a href="#">Goes somewhere</a>
+        <a href="#" data-keep-sidebar-open="true">Keep it open!</a>
+        <button>Do something</button>
+        <button data-keep-sidebar-open="true">Keep it open!</button>
+      </Sidebar>
     );
 
-    const openLink = screen.getByLabelText(/Show/i);
-    await user.click(openLink);
     const sidebar = screen.getByRole("complementary", { name: /options/i });
-    expect(sidebar).toHaveAttribute("data-state", "visible");
 
     // user clicks in the sidebar body
     await user.click(sidebar);
-    expect(sidebar).toHaveAttribute("data-state", "visible");
-
-    // user clicks on a button set for keeping the sidebar open
-    const keepOpenButton = within(sidebar).getByRole("button", { name: "Keep it open!" });
-    await user.click(keepOpenButton);
-    expect(sidebar).toHaveAttribute("data-state", "visible");
+    expect(onClose).not.toHaveBeenCalled();
 
     // user clicks a button NOT set for keeping the sidebar open
     const button = within(sidebar).getByRole("button", { name: "Do something" });
     await user.click(button);
-    expect(sidebar).toHaveAttribute("data-state", "hidden");
+    expect(onClose).toHaveBeenCalled();
 
-    // open it again
-    await user.click(openLink);
-    expect(sidebar).toHaveAttribute("data-state", "visible");
+    onClose.mockClear();
 
-    // user clicks on link set for keeping the sidebar open
-    const keepOpenLink = within(sidebar).getByRole("link", { name: "Keep it open!" });
-    await user.click(keepOpenLink);
-    expect(sidebar).toHaveAttribute("data-state", "visible");
+    // user clicks on a button set for keeping the sidebar open
+    const keepOpenButton = within(sidebar).getByRole("button", { name: "Keep it open!" });
+    await user.click(keepOpenButton);
+    expect(onClose).not.toHaveBeenCalled();
+
+    onClose.mockClear();
 
     // user clicks on link NOT set for keeping the sidebar open
     const link = within(sidebar).getByRole("link", { name: "Goes somewhere" });
     await user.click(link);
-    expect(sidebar).toHaveAttribute("data-state", "hidden");
-  });
-});
+    expect(onClose).toHaveBeenCalled();
 
-describe("if there are issues", () => {
-  beforeEach(() => {
-    mockIssues = {
-      software: [
-        {
-          description: "software issue 1", details: "Details 1", source: "system", severity: "warn"
-        }
-      ]
-    };
-  });
+    onClose.mockClear();
 
-  it("includes a notification mark", async () => {
-    installerRender(withNotificationProvider(<Sidebar />));
-    const link = await screen.findByLabelText(/Show/i);
-    await within(link).findByRole("status", { name: /New issues/ });
-  });
-});
-
-describe("if there are not issues", () => {
-  beforeEach(() => {
-    mockIssues = [];
-  });
-
-  it("does not include a notification mark", async () => {
-    installerRender(withNotificationProvider(<Sidebar />));
-    const link = await screen.findByLabelText(/Show/i);
-    const mark = within(link).queryByRole("status", { name: /New issues/ });
-    expect(mark).toBeNull();
+    // user clicks on link set for keeping the sidebar open
+    const keepOpenLink = within(sidebar).getByRole("link", { name: "Keep it open!" });
+    await user.click(keepOpenLink);
+    expect(onClose).not.toHaveBeenCalled();
   });
 });
 
 describe("side effects on siblings", () => {
   const SidebarWithSiblings = () => {
-    const [isSidebarMount, setIsSidebarMount] = React.useState(true);
+    const [sidebarOpen, setSidebarOpen] = React.useState(false);
+    const [sidebarMount, setSidebarMount] = React.useState(true);
+
+    const openSidebar = () => setSidebarOpen(true);
+    const closeSidebar = () => setSidebarOpen(false);
 
     // NOTE: using the "data-keep-sidebar-open" to avoid triggering the #close
     // function before unmounting the component.
     const Content = () => (
-      <button data-keep-sidebar-open onClick={() => setIsSidebarMount(false)}>
+      <button data-keep-sidebar-open onClick={() => setSidebarMount(false)}>
         Unmount Sidebar
       </button>
     );
 
     return (
       <>
+        <button onClick={openSidebar}>open the sidebar</button>
         <article>A sidebar sibling</article>
-        <If condition={isSidebarMount} then={<Sidebar><Content /></Sidebar>} />
+        <If
+          condition={sidebarMount}
+          then={<Sidebar isOpen={sidebarOpen} onClose={closeSidebar}><Content /></Sidebar>}
+        />
       </>
     );
   };
 
   it("sets siblings as inert and aria-hidden while it's open", async () => {
-    const { user } = installerRender(withNotificationProvider(<SidebarWithSiblings />));
+    const { user } = plainRender(<SidebarWithSiblings />);
 
-    const openLink = await screen.findByLabelText(/Show/i);
-    const closeLink = await screen.findByLabelText(/Hide/i);
+    const openButton = screen.getByRole("button", { name: "open the sidebar" });
+    const closeLink = screen.getByLabelText(/Hide/i);
     const sidebarSibling = screen.getByText("A sidebar sibling");
+
+    expect(openButton).not.toHaveAttribute("aria-hidden");
+    expect(openButton).not.toHaveAttribute("inert");
     expect(sidebarSibling).not.toHaveAttribute("aria-hidden");
     expect(sidebarSibling).not.toHaveAttribute("inert");
-    await user.click(openLink);
+
+    await user.click(openButton);
+
+    expect(openButton).toHaveAttribute("aria-hidden");
+    expect(openButton).toHaveAttribute("inert");
     expect(sidebarSibling).toHaveAttribute("aria-hidden");
     expect(sidebarSibling).toHaveAttribute("inert");
+
     await user.click(closeLink);
+
+    expect(openButton).not.toHaveAttribute("aria-hidden");
+    expect(openButton).not.toHaveAttribute("inert");
     expect(sidebarSibling).not.toHaveAttribute("aria-hidden");
     expect(sidebarSibling).not.toHaveAttribute("inert");
   });
 
   it("removes inert and aria-hidden siblings attributes if it's unmounted", async () => {
-    const { user } = installerRender(withNotificationProvider(<SidebarWithSiblings />));
+    const { user } = plainRender(<SidebarWithSiblings />);
 
-    const openLink = await screen.findByLabelText(/Show/i);
-    const unmountButton = await screen.getByRole("button", { name: "Unmount Sidebar" });
+    const openButton = screen.getByRole("button", { name: "open the sidebar" });
     const sidebarSibling = screen.getByText("A sidebar sibling");
+
+    expect(openButton).not.toHaveAttribute("aria-hidden");
+    expect(openButton).not.toHaveAttribute("inert");
     expect(sidebarSibling).not.toHaveAttribute("aria-hidden");
     expect(sidebarSibling).not.toHaveAttribute("inert");
-    await user.click(openLink);
+
+    await user.click(openButton);
+
+    expect(openButton).toHaveAttribute("aria-hidden");
+    expect(openButton).toHaveAttribute("inert");
     expect(sidebarSibling).toHaveAttribute("aria-hidden");
     expect(sidebarSibling).toHaveAttribute("inert");
+
+    const unmountButton = screen.getByRole("button", { name: "Unmount Sidebar" });
     await user.click(unmountButton);
+
+    expect(openButton).not.toHaveAttribute("aria-hidden");
+    expect(openButton).not.toHaveAttribute("inert");
     expect(sidebarSibling).not.toHaveAttribute("aria-hidden");
     expect(sidebarSibling).not.toHaveAttribute("inert");
   });
