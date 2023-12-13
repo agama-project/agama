@@ -123,7 +123,7 @@ impl NetworkState {
     /// If the connection is not a controller, returns an error.
     ///
     /// * `uuid`: controller UUID.
-    /// * `ports`: list of port names (using the interface name).
+    /// * `ports`: list of port names (using the connection ID or the interface name).
     pub fn set_ports(
         &mut self,
         controller: &Connection,

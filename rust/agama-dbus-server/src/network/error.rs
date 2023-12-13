@@ -5,7 +5,7 @@ use uuid::Uuid;
 /// Errors that are related to the network configuration.
 #[derive(Error, Debug)]
 pub enum NetworkStateError {
-    #[error("Unknown connection with ID: '{0}'")]
+    #[error("Unknown connection '{0}'")]
     UnknownConnection(String),
     #[error("Invalid connection UUID: '{0}'")]
     InvalidUuid(String),
@@ -29,8 +29,6 @@ pub enum NetworkStateError {
     InvalidBondOptions,
     #[error("Not a controller connection: '{0}'")]
     NotControllerConnection(String),
-    #[error("Missing connection with UUID '{0}'")]
-    MissingConnection(Uuid),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {

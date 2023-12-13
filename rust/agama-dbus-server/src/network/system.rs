@@ -77,17 +77,8 @@ impl<T: Adapter> NetworkSystem<T> {
                 rx.send(conn.cloned()).unwrap();
             }
             Action::GetController(uuid, rx) => {
-                let conn = self.state.get_connection_by_uuid(uuid).unwrap();
-                let conn = conn.clone();
-
-                let controlled = self.state.get_controlled_by(uuid);
-                let controlled = controlled
-                    .iter()
-                    .filter_map(|c| c.interface().map(|c| c.to_string()))
-                    .collect::<Vec<_>>();
-
-                let data = (conn, controlled);
-                rx.send(Ok(data)).unwrap()
+                let result = self.get_controller_action(uuid);
+                rx.send(result).unwrap()
             }
             Action::SetPorts(uuid, ports, rx) => {
                 let result = self.set_ports_action(uuid, ports);
@@ -121,7 +112,27 @@ impl<T: Adapter> NetworkSystem<T> {
         let conn = self
             .state
             .get_connection_by_uuid(uuid)
-            .ok_or(NetworkStateError::MissingConnection(uuid))?;
+            .ok_or(NetworkStateError::UnknownConnection(uuid.to_string()))?;
         self.state.set_ports(&conn.clone(), ports)
+    }
+
+    fn get_controller_action(
+        &mut self,
+        uuid: Uuid,
+    ) -> Result<(Connection, Vec<String>), NetworkStateError> {
+        let conn = self
+            .state
+            .get_connection_by_uuid(uuid)
+            .ok_or(NetworkStateError::UnknownConnection(uuid.to_string()))?;
+        let conn = conn.clone();
+
+        let controlled = self
+            .state
+            .get_controlled_by(uuid)
+            .iter()
+            .map(|c| c.interface().unwrap_or(c.id()).to_string())
+            .collect::<Vec<_>>();
+
+        Ok((conn, controlled))
     }
 }
