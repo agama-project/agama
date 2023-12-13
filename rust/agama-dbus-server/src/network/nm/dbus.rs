@@ -45,25 +45,29 @@ pub fn connection_to_dbus<'a>(
     result.insert("ipv6", ip_config_to_ipv6_dbus(conn.ip_config()));
     result.insert("match", match_config_to_dbus(conn.match_config()));
 
-    if conn.is_ethernet() {
-        let ethernet_config =
-            HashMap::from([("assigned-mac-address", Value::new(conn.mac_address()))]);
-        result.insert(ETHERNET_KEY, ethernet_config);
-    } else if let Connection::Wireless(wireless) = conn {
-        connection_dbus.insert("type", WIRELESS_KEY.into());
-        let wireless_dbus = wireless_config_to_dbus(wireless);
-        for (k, v) in wireless_dbus {
-            result.insert(k, v);
+    match &conn {
+        Connection::Ethernet(_) | Connection::Loopback(_) => {
+            let ethernet_config =
+                HashMap::from([("assigned-mac-address", Value::new(conn.mac_address()))]);
+            result.insert(ETHERNET_KEY, ethernet_config);
         }
-    }
-
-    if let Connection::Bond(bond) = conn {
-        connection_dbus.insert("type", BOND_KEY.into());
-        result.insert("bond", bond_config_to_dbus(bond));
-    }
-
-    if let Connection::Dummy(_) = conn {
-        connection_dbus.insert("type", DUMMY_KEY.into());
+        Connection::Wireless(wireless) => {
+            connection_dbus.insert("type", WIRELESS_KEY.into());
+            let wireless_dbus = wireless_config_to_dbus(wireless);
+            for (k, v) in wireless_dbus {
+                result.insert(k, v);
+            }
+        }
+        Connection::Bond(bond) => {
+            connection_dbus.insert("type", BOND_KEY.into());
+            if !connection_dbus.contains_key("interface-name") {
+                connection_dbus.insert("interface-name", conn.id().into());
+            }
+            result.insert("bond", bond_config_to_dbus(bond));
+        }
+        Connection::Dummy(_) => {
+            connection_dbus.insert("type", DUMMY_KEY.into());
+        }
     }
 
     result.insert("connection", connection_dbus);
