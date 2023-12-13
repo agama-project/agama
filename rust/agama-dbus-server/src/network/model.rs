@@ -54,8 +54,7 @@ impl NetworkState {
     ///
     /// * `id`: connection interface name
     pub fn get_connection_by_interface(&self, name: &str) -> Option<&Connection> {
-        let name = name.to_string();
-        let interface = Some(&name);
+        let interface = Some(name);
         self.connections.iter().find(|c| c.interface() == interface)
     }
 
@@ -392,8 +391,8 @@ impl Connection {
         self.base_mut().id = id.to_string()
     }
 
-    pub fn interface(&self) -> Option<&String> {
-        self.base().interface.as_ref()
+    pub fn interface(&self) -> Option<&str> {
+        self.base().interface.as_deref()
     }
 
     pub fn set_interface(&mut self, interface: &str) {

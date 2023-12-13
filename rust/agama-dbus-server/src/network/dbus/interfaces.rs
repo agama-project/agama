@@ -237,8 +237,8 @@ impl Connection {
         self.get_connection()
             .await
             .interface()
-            .map(String::to_string)
-            .unwrap_or(String::from(""))
+            .unwrap_or("")
+            .to_string()
     }
 
     #[dbus_interface(property)]

@@ -1,5 +1,5 @@
 use crate::network::{
-    model::{BondConnection, Connection, NetworkState},
+    model::{Connection, NetworkState},
     nm::NetworkManagerClient,
     Adapter,
 };
@@ -25,32 +25,6 @@ impl<'a> NetworkManagerAdapter<'a> {
     fn is_writable(conn: &Connection) -> bool {
         !conn.is_loopback()
     }
-
-    /// Writes the connections to NetworkManager.
-    ///
-    /// Internally, it creates an ordered list of connections before processing them. The reason is
-    /// that using async recursive functions is giving us some troubles, so we decided to go with a
-    /// simpler approach.
-    ///
-    /// * `network`: network model.
-    async fn write_connections(&self, network: &NetworkState) {
-        let conns = ordered_connections(network);
-
-        for conn in &conns {
-            let result = if conn.is_removed() {
-                self.client.remove_connection(conn.uuid()).await
-            } else {
-                let ctrl = conn
-                    .controller()
-                    .and_then(|uuid| network.get_connection_by_uuid(uuid));
-                self.client.add_or_update_connection(conn, ctrl).await
-            };
-
-            if let Err(e) = result {
-                log::error!("Could not process the connection {}: {}", conn.id(), e);
-            }
-        }
-    }
 }
 
 impl<'a> Adapter for NetworkManagerAdapter<'a> {
@@ -65,16 +39,34 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
         })
     }
 
+    /// Writes the connections to NetworkManager.
+    ///
+    /// Internally, it creates an ordered list of connections before processing them. The reason is
+    /// that using async recursive functions is giving us some troubles, so we decided to go with a
+    /// simpler approach.
+    ///
+    /// * `network`: network model.
     fn write(&self, network: &NetworkState) -> Result<(), Box<dyn std::error::Error>> {
         // By now, traits do not support async functions. Using `task::block_on` allows
         // to use 'await'.
         task::block_in_place(|| {
             Handle::current().block_on(async {
-                for conn in &network.connections {
+                for conn in ordered_connections(network) {
                     if !Self::is_writable(conn) {
                         continue;
                     }
-                    self.write_connections(network).await;
+                    let result = if conn.is_removed() {
+                        self.client.remove_connection(conn.uuid()).await
+                    } else {
+                        let ctrl = conn
+                            .controller()
+                            .and_then(|uuid| network.get_connection_by_uuid(uuid));
+                        self.client.add_or_update_connection(conn, ctrl).await
+                    };
+
+                    if let Err(e) = result {
+                        log::error!("Could not process the connection {}: {}", conn.id(), e);
+                    }
                 }
             })
         });

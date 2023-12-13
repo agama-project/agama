@@ -37,7 +37,8 @@ pub fn connection_to_dbus<'a>(
 
     if let Some(controller) = controller {
         connection_dbus.insert("slave-type", "bond".into()); // TODO: only 'bond' is supported
-        connection_dbus.insert("master", controller.id().into());
+        let master = controller.interface().unwrap_or(controller.id());
+        connection_dbus.insert("master", master.into());
     }
 
     result.insert("ipv4", ip_config_to_ipv4_dbus(conn.ip_config()));

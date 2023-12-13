@@ -1,6 +1,8 @@
+use super::error::NetworkStateError;
 use crate::network::{dbus::Tree, model::Connection, Action, Adapter, NetworkState};
 use std::error::Error;
 use tokio::sync::mpsc::{self, UnboundedReceiver, UnboundedSender};
+use uuid::Uuid;
 
 /// Represents the network system using holding the state and setting up the D-Bus tree.
 pub struct NetworkSystem<T: Adapter> {
@@ -81,15 +83,14 @@ impl<T: Adapter> NetworkSystem<T> {
                 let controlled = self.state.get_controlled_by(uuid);
                 let controlled = controlled
                     .iter()
-                    .map(|c| c.id().to_owned())
+                    .filter_map(|c| c.interface().map(|c| c.to_string()))
                     .collect::<Vec<_>>();
 
                 let data = (conn, controlled);
                 rx.send(Ok(data)).unwrap()
             }
             Action::SetPorts(uuid, ports, rx) => {
-                let conn = self.state.get_connection_by_uuid(uuid).unwrap();
-                let result = self.state.set_ports(&conn.clone(), ports);
+                let result = self.set_ports_action(uuid, ports);
                 rx.send(result).unwrap();
             }
             Action::UpdateConnection(conn) => {
@@ -110,5 +111,17 @@ impl<T: Adapter> NetworkSystem<T> {
         }
 
         Ok(())
+    }
+
+    fn set_ports_action(
+        &mut self,
+        uuid: Uuid,
+        ports: Vec<String>,
+    ) -> Result<(), NetworkStateError> {
+        let conn = self
+            .state
+            .get_connection_by_uuid(uuid)
+            .ok_or(NetworkStateError::MissingConnection(uuid))?;
+        self.state.set_ports(&conn.clone(), ports)
     }
 }
