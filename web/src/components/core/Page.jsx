@@ -123,10 +123,12 @@ const BackAction = () => {
  *
  * @param {object} props
  * @param {string} [props.icon] - The icon for the page.
- * @param {string} [props.title="Agama"] - The title for the page.
+ * @param {string} [props.title="Agama"] - The title for the page. By default it
+ *   uses the name of the tool, do not mark it for translation.
  * @param {JSX.Element} [props.children] - The page content.
+ *
  */
-const Page = ({ icon, title = _("Agama"), children }) => {
+const Page = ({ icon, title = "Agama", children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // NOTE: hot reloading could make weird things when working with this
