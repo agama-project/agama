@@ -251,7 +251,7 @@ module Agama
       end
 
       def assign_patterns(ids)
-        wrong_patterns = ids.reject { |p| pattern_exist?(id) }
+        wrong_patterns = ids.reject { |p| pattern_exist?(p) }
         return wrong_patterns unless wrong_patterns.empty?
 
         user_patterns = Yast::PackagesProposal.GetResolvables(PROPOSAL_ID, :pattern)
