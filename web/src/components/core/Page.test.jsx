@@ -96,6 +96,15 @@ describe("Page", () => {
     installerRender(<Page />, { withL10n: true });
     screen.getByRole("button", { name: "Back" });
   });
+
+  it("renders the Agama sidebar", async () => {
+    const { user } = installerRender(<Page />, { withL10n: true });
+
+    const openSidebarButton = screen.getByRole("button", { name: "Show global options" });
+
+    await user.click(openSidebarButton);
+    screen.getByRole("complementary", { name: /options/i });
+  });
 });
 
 describe("Page.Actions", () => {

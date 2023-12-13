@@ -22,6 +22,7 @@
 import React from "react";
 import { act, screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
+
 import App from "./App";
 import { createClient } from "~/client";
 import { STARTUP, CONFIG, INSTALL } from "~/client/phase";
@@ -46,7 +47,6 @@ jest.mock("~/context/product", () => ({
 jest.mock("~/components/core/DBusError", () => <div>D-BusError Mock</div>);
 jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 jest.mock("~/components/core/Installation", () => () => <div>Installation Mock</div>);
-jest.mock("~/components/core/Sidebar", () => () => <div>Sidebar Mock</div>);
 
 // this object holds the mocked callbacks
 const callbacks = {};

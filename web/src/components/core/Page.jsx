@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@patternfly/react-core";
 
@@ -28,7 +28,17 @@ import logoUrl from "~/assets/suse-horizontal-logo.svg";
 import { _ } from "~/i18n";
 import { partition } from "~/utils";
 import { Icon } from "~/components/layout";
-import { If } from "~/components/core";
+import { LanguageSwitcher } from "~/components/l10n";
+import {
+  About,
+  Disclosure,
+  If,
+  IssuesLink,
+  LogsButton,
+  ShowLogButton,
+  ShowTerminalButton,
+  Sidebar
+} from "~/components/core";
 
 /**
  * Wrapper component for holding Page actions
@@ -89,6 +99,11 @@ const BackAction = () => {
  * Displays an installation page
  * @component
  *
+ * FIXME: Improve the note below
+ * @note Sidebar must be mounted as sibling of the page content to make it work
+ * as expected (allow it to be hidden, making inert siblings when open, etc).
+ * Remember that Sidebar is going to content only things related to Agama itself
+ *
  * @example <caption>Simple usage</caption>
  *   <Page icon="manage_accounts" title="Users settings">
  *     <UserSectionContent />
@@ -112,6 +127,8 @@ const BackAction = () => {
  * @param {JSX.Element} [props.children] - The page content.
  */
 const Page = ({ icon, title = _("Agama"), children }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   // NOTE: hot reloading could make weird things when working with this
   // component because the type check.
   //
@@ -122,6 +139,9 @@ const Page = ({ icon, title = _("Agama"), children }) => {
     actions.push(<BackAction key="back-action" />);
   }
 
+  const openSidebar = () => setSidebarOpen(true);
+  const closeSidebar = () => setSidebarOpen(false);
+
   return (
     <div data-type="agama/page-layout">
       <header>
@@ -129,6 +149,17 @@ const Page = ({ icon, title = _("Agama"), children }) => {
           <If condition={icon} then={<Icon name={icon} />} />
           <span>{title}</span>
         </h1>
+        <div data-type="agama/header-actions">
+          <button
+            onClick={openSidebar}
+            className="plain-control"
+            aria-label={_("Show global options")}
+            aria-controls="global-options"
+            aria-expanded={sidebarOpen}
+          >
+            <Icon name="menu" />
+          </button>
+        </div>
       </header>
 
       <main>
@@ -141,6 +172,23 @@ const Page = ({ icon, title = _("Agama"), children }) => {
         </div>
         <img src={logoUrl} alt="Logo of SUSE" />
       </footer>
+
+      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar}>
+        <div className="flex-stack">
+          <IssuesLink />
+          <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
+            <ShowLogButton />
+            <LogsButton data-keep-sidebar-open="true" />
+            <ShowTerminalButton />
+          </Disclosure>
+          <About />
+        </div>
+        <div className="full-width highlighted">
+          <div className="flex-stack">
+            <LanguageSwitcher />
+          </div>
+        </div>
+      </Sidebar>
     </div>
   );
 };
