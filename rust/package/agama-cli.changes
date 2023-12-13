@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Dec 13 22:41:34 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Add support for bonding connections (gh#openSUSE/agama#885).
+
+-------------------------------------------------------------------
 Tue Dec  5 11:18:41 UTC 2023 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Add ability to assign a custom MAC address for network
