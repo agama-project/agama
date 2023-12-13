@@ -451,7 +451,9 @@ impl Connection {
     }
 
     pub fn is_ethernet(&self) -> bool {
-        matches!(self, Connection::Loopback(_)) || matches!(self, Connection::Ethernet(_))
+        matches!(self, Connection::Loopback(_))
+            || matches!(self, Connection::Ethernet(_))
+            || matches!(self, Connection::Dummy(_))
     }
 
     pub fn mac_address(&self) -> String {

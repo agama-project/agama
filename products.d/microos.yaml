@@ -7,10 +7,29 @@ name: openSUSE MicroOS
 # ------------------------------------------------------------------------------
 description: 'A quick, small distribution designed to host container workloads
   with automated administration & patching. openSUSE MicroOS provides
-  transactional (atomic) updates upon a read-only btrfs root file system. 
-  As rolling release distribution the software is always up-to-date.'
+  transactional (atomic) updates upon a read-only btrfs root file system. As
+  rolling release distribution the software is always up-to-date.'
 # Do not manually change any translations! See README.md for more details.
 translations:
+  description:
+    fr: Une petite distribution rapide conçue pour héberger des charges de travail
+      de conteneurs avec une administration et des correctifs automatisés.
+      openSUSE MicroOS fournit des mises à jour transactionnelles (atomiques)
+      sur un système de fichiers racine btrfs en lecture seule. En tant que
+      distribution continue, le logiciel est toujours à jour.
+    id: Distribusi cepat dan ramping yang dirancang untuk menampung beban kerja
+      kontainer dengan administrasi & penambalan otomatis. openSUSE MicroOS
+      menyediakan pembaruan transaksional (atomik) pada sistem berkas root btrfs
+      yang hanya dapat dibaca. Sebagai distribusi rilis bergulir, perangkat
+      lunak didalamnya selalu diperbarui.
+    ja: 高速で小型のディストリビューションで、管理やパッチ適用の自動化のようなコンテナ処理を賄うのに最適な仕組みです。 openSUSE MicroOS
+      はトランザクション型の (不可分の) 更新機構が提供されており、 btrfs
+      のルートファイルシステムを読み込み専用にすることができます。こちらもローリングリリース型のディストリビューションであるため、常に最新を維持することができます。
+    sv: En snabb, liten distribution utformad för att vara värd för
+      behållar-arbetsbelastningar med automatiserad administration och
+      patchning. openSUSE MicroOS tillhandahåller transaktionella (atomära)
+      uppdateringar på ett skrivskyddat btrfs-rootfilsystem. Som rullande
+      releasedistribution är mjukvaran alltid uppdaterad.
 software:
   installation_repositories:
     - url: https://download.opensuse.org/tumbleweed/repo/oss/

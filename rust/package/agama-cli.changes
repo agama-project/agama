@@ -11,6 +11,12 @@ Tue Dec  5 09:46:48 UTC 2023 - José Iván López González <jlopez@suse.com>
   to provide the required packages (gh#openSUSE/agama/911).
 
 -------------------------------------------------------------------
+Tue Dec  5 08:56:13 UTC 2023 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add support for dummy network devices although they are not
+  exposed on D-Bus yet (gh#openSUSE/agama#913).
+
+-------------------------------------------------------------------
 Sun Dec  3 15:53:34 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use a single call to systemd-firstboot to write the localization
