@@ -340,6 +340,7 @@ impl Connection {
     pub fn new(id: String, device_type: DeviceType) -> Self {
         let base = BaseConnection {
             id,
+            uuid: Uuid::new_v4(),
             ..Default::default()
         };
         match device_type {
