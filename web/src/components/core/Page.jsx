@@ -23,78 +23,130 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@patternfly/react-core";
 
-import { noop } from "~/utils";
-import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
+import logoUrl from "~/assets/suse-horizontal-logo.svg";
+
+import { _ } from "~/i18n";
+import { partition } from "~/utils";
+import { Icon } from "~/components/layout";
+import { If } from "~/components/core";
+
+/**
+ * Wrapper component for holding Page actions
+ *
+ * Useful and required for placing the components to be used as Page actions, usually a
+ * Page.Action or PF/Button
+ *
+ * @see Page examples.
+ *
+ * @param {React.ReactNode} [props.children] - a collection of Action components
+ */
+const Actions = ({ children }) => <>{children}</>;
+
+/**
+ * A convenient component representing a Page action
+ *
+ * Built on top of {@link https://www.patternfly.org/components/button PF/Button}
+ *
+ * @see Page examples.
+ *
+ * @param {React.ReactNode} props.children - content of the action
+ * @param {object} [props] - PF/Button props, see {@link https://www.patternfly.org/components/button#props}
+ */
+const Action = ({ children, navigateTo, onClick, ...props }) => {
+  const navigate = useNavigate();
+
+  props.onClick = () => {
+    if (typeof onClick === "function") onClick();
+    if (navigateTo) navigate(navigateTo);
+  };
+
+  if (!props.size) props.size = "lg";
+
+  return <Button { ...props }>{children}</Button>;
+};
+
+/**
+ * Simple action for navigating back
+ *
+ * @note it will be used by default if a page is mounted without actions
+ *
+ * TODO: Explain below note better
+ * @note that we cannot use navigate("..") because our routes are all nested in
+ * the root.
+ *
+ * @param {React.ReactNode} props.children - content of the action
+ * @param {object} [props] - {@link Action} props
+ */
+const BackAction = () => {
+  return (
+    <Action variant="secondary" onClick={() => history.back()}>
+      {_("Back")}
+    </Action>
+  );
+};
 
 /**
  * Displays an installation page
  * @component
  *
  * @example <caption>Simple usage</caption>
- *   <Page
- *     title="Users settings"
- *     icon="manage_accounts"
- *   >
+ *   <Page icon="manage_accounts" title="Users settings">
  *     <UserSectionContent />
  *   </Page>
  *
- * @example <caption>Using custom action label and callback</caption>
- *   <Page
- *     title="Users settings"
- *     icon="manage_accounts"
- *     actionLabel="Do it!"
- *     actionCallback={() => console.log("Doing it...")}
- *   >
+ * @example <caption>Using a custom actions</caption>
+ *   <Page icon="manage_accounts" title="Users settings">
  *     <UserSectionContent />
- *   </Page>
  *
- * @example <caption>Using a component for the primary action</caption>
- *   <Page
- *     title="Users settings"
- *     icon="manage_accounts"
- *     action={<Button onClick={() => console.log("Doing it...")}>Do it!</Button>}
- *   >
- *     <UserSectionContent />
+ *     <Page.Actions>
+ *       <Page.Action onClick={() => alert("Are you sure?")}>
+ *         Reset to defaults
+ *       </Page.Action>
+ *       <Page.Action callToAction>Accept</Page.Action>
+ *     </Page.Actions>
  *   </Page>
  *
  * @param {object} props
- * @param {string} props.icon - The icon for the page
- * @param {string} props.title - The title for the page
- * @param {string} [props.navigateTo="/"] - The path where the page will go after when user clicks on accept
- * @param {JSX.Element} [props.action] - an element used as primary action. If present, actionLabel and actionCallback does not make effect
- * @param {string} [props.actionLabel="Accept"] - The label for the primary page action
- * @param {string} [props.actionVariant="primary"] - The PF/Button variant for the page action
- * @param {function} [props.actionCallback=noop] - A callback to be execute when triggering the primary action
- * @param {JSX.Element} [props.children] - the section content
+ * @param {string} [props.icon] - The icon for the page.
+ * @param {string} [props.title="Agama"] - The title for the page.
+ * @param {JSX.Element} [props.children] - The page content.
  */
-export default function Page({
-  icon,
-  title,
-  navigateTo = "/",
-  action,
-  actionLabel = "Accept",
-  actionVariant = "primary",
-  actionCallback = noop,
-  children
-}) {
-  const navigate = useNavigate();
+const Page = ({ icon, title = _("Agama"), children }) => {
+  // NOTE: hot reloading could make weird things when working with this
+  // component because the type check.
+  //
+  // @see https://stackoverflow.com/questions/55729582/check-type-of-react-component
+  const [actions, content] = partition(React.Children.toArray(children), child => child.type === Actions);
 
-  const pageAction = () => {
-    actionCallback();
-    navigate(navigateTo);
-  };
+  if (actions.length === 0) {
+    actions.push(<BackAction key="back-action" />);
+  }
 
   return (
-    <>
-      { title && <Title>{title}</Title> }
-      { icon && <PageIcon><Icon name={icon} size="32" /></PageIcon> }
-      <MainActions>
-        { action ||
-          <Button size="lg" variant={actionVariant} onClick={pageAction}>
-            {actionLabel}
-          </Button> }
-      </MainActions>
-      {children}
-    </>
+    <div data-type="agama/page-layout">
+      <header>
+        <h1>
+          <If condition={icon} then={<Icon name={icon} />} />
+          <span>{title}</span>
+        </h1>
+      </header>
+
+      <main>
+        { content }
+      </main>
+
+      <footer>
+        <div role="navigation" aria-label={_("Page Actions")}>
+          { actions }
+        </div>
+        <img src={logoUrl} alt="Logo of SUSE" />
+      </footer>
+    </div>
   );
-}
+};
+
+Page.Actions = Actions;
+Page.Action = Action;
+Page.BackAction = BackAction;
+
+export default Page;

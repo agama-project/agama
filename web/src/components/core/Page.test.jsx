@@ -21,79 +21,189 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, plainRender, mockNavigateFn } from "~/test-utils";
 import { Page } from "~/components/core";
 
 describe("Page", () => {
+  beforeAll(() => {
+    jest.spyOn(console, "error").mockImplementation();
+  });
+
+  afterAll(() => {
+    console.error.mockRestore();
+  });
+
   it("renders given title", () => {
-    installerRender(<Page title="The Title" />);
-    screen.getByText("The Title");
+    installerRender(<Page title="The Title" />, { withL10n: true });
+    screen.getByRole("heading", { name: "The Title" });
   });
 
-  it("renders an svg if icon is given", () => {
-    const { container } = installerRender(<Page icon="info" />);
-    const svgElement = container.querySelector('svg');
-    expect(svgElement).not.toBeNull();
+  it("renders 'Agama' as title if no title is given", () => {
+    installerRender(<Page />, { withL10n: true });
+    screen.getByRole("heading", { name: "Agama" });
   });
 
-  it("does not render an svg if icon is not given", () => {
-    const { container } = installerRender(<Page />);
-    const svgElement = container.querySelector('svg');
-    expect(svgElement).toBeNull();
+  it("renders an icon if valid icon name is given", () => {
+    installerRender(<Page icon="settings" />, { withL10n: true });
+    const heading = screen.getByRole("heading", { level: 1 });
+    const icon = heading.querySelector("svg");
+    expect(icon).toHaveAttribute("data-icon-name", "settings");
   });
 
-  describe("when action node is given", () => {
-    it("renders the given action", () => {
-      installerRender(<Page action={<span>Fake action</span>} />);
-      screen.getByText("Fake action");
+  it("does not render an icon if icon name not given", () => {
+    installerRender(<Page title="Settings" />, { withL10n: true });
+    const heading = screen.getByRole("heading", { level: 1 });
+    const icon = heading.querySelector("svg");
+    expect(icon).toBeNull();
+    // Check that <Icon /> component was not mounted with 'undefined'
+    expect(console.error).not.toHaveBeenCalled();
+  });
+
+  it("does not render an icon if not valid icon name is given", () => {
+    installerRender(<Page title="Settings" />, { withL10n: true });
+    const heading = screen.getByRole("heading", { level: 1 });
+    const icon = heading.querySelector("svg");
+    expect(icon).toBeNull();
+  });
+
+  it("renders given content", () => {
+    installerRender(
+      <Page>
+        <section>Page content</section>
+      </Page>,
+      { withL10n: true }
+    );
+
+    screen.getByText("Page content");
+  });
+
+  it("renders given actions", () => {
+    installerRender(
+      <Page>
+        <Page.Actions>
+          <Page.Action>Save</Page.Action>
+          <Page.Action>Discard</Page.Action>
+        </Page.Actions>
+      </Page>,
+      { withL10n: true }
+    );
+
+    screen.getByRole("button", { name: "Save" });
+    screen.getByRole("button", { name: "Discard" });
+  });
+
+  it("renders the default 'Back' action if no actions are given", () => {
+    installerRender(<Page />, { withL10n: true });
+    screen.getByRole("button", { name: "Back" });
+  });
+});
+
+describe("Page.Actions", () => {
+  it("renders its children", () => {
+    plainRender(
+      <Page.Actions>
+        <button>Plain action</button>
+      </Page.Actions>
+    );
+
+    screen.getByRole("button", { name: "Plain action" });
+  });
+});
+
+describe("Page.Action", () => {
+  it("renders a button with given content", () => {
+    plainRender(<Page.Action>Save</Page.Action>);
+    screen.getByRole("button", { name: "Save" });
+  });
+
+  it("renders an 'lg' button when size prop is not given", () => {
+    plainRender(<Page.Action>Cancel</Page.Action>);
+    const button = screen.getByRole("button", { name: "Cancel" });
+    expect(button.classList.contains("pf-m-display-lg")).toBe(true);
+  });
+
+  describe("when user clicks on it", () => {
+    it("triggers given onClick handler, if valid", async () => {
+      const onClick = jest.fn();
+      const { user } = plainRender(<Page.Action onClick={onClick}>Cancel</Page.Action>);
+      const button = screen.getByRole("button", { name: "Cancel" });
+      await user.click(button);
+      expect(onClick).toHaveBeenCalled();
     });
 
-    it("ignores action params", async () => {
-      const callbackFn = jest.fn();
-      const { user } = installerRender(
-        <Page
-          action={<span>Fake action</span>}
-          actionCallback={callbackFn}
-          actionLabel="Great action"
-        />
+    it("navigates to the path given through 'navigateTo' prop", async () => {
+      const { user } = plainRender(<Page.Action navigateTo="/somewhere">Cancel</Page.Action>);
+      const button = screen.getByRole("button", { name: "Cancel" });
+      await user.click(button);
+      expect(mockNavigateFn).toHaveBeenCalledWith("/somewhere");
+    });
+
+    it("triggers form submission if it's a submit action and has an associated form", async () => {
+      // NOTE: using preventDefault here to avoid a jsdom error
+      // Error: Not implemented: HTMLFormElement.prototype.requestSubmit
+      const onSubmit = jest.fn((e) => { e.preventDefault() });
+
+      const { user } = plainRender(
+        <>
+          <form onSubmit={onSubmit} id="fake-form" />
+          <Page.Action type="submit" form="fake-form">
+            Send
+          </Page.Action>
+        </>
       );
-      const action = await screen.queryByText("Fake action");
-      const defaultAction = await screen.queryByRole("button", { name: "Great action" });
-      expect(defaultAction).toBeNull();
-      await user.click(action);
-      expect(callbackFn).not.toHaveBeenCalled();
+      const button = screen.getByRole("button", { name: "Send" });
+      await user.click(button);
+      expect(onSubmit).toHaveBeenCalled();
+    });
+
+    it("triggers form submission even when onClick and navigateTo are given", async () => {
+      const onClick = jest.fn();
+      // NOTE: using preventDefault here to avoid a jsdom error
+      // Error: Not implemented: HTMLFormElement.prototype.requestSubmit
+      const onSubmit = jest.fn((e) => { e.preventDefault() });
+
+      const { user } = plainRender(
+        <>
+          <form onSubmit={onSubmit} id="fake-form" />
+          <Page.Action
+            type="submit"
+            form="fake-form"
+            onClick={onClick}
+            navigateTo="/somewhere"
+          >
+            Send
+          </Page.Action>
+        </>
+      );
+      const button = screen.getByRole("button", { name: "Send" });
+      await user.click(button);
+      expect(onSubmit).toHaveBeenCalled();
+      expect(onClick).toHaveBeenCalled();
+      expect(mockNavigateFn).toHaveBeenCalledWith("/somewhere");
     });
   });
+});
 
-  describe("when action node is not given", () => {
-    describe("and none action param is given", () => {
-      it("renders the 'default' action", () => {
-        installerRender(<Page />);
-        screen.getByRole("button", { name: "Accept" });
-      });
-    });
+describe("Page.BackAction", () => {
+  beforeAll(() => {
+    jest.spyOn(history, "back").mockImplementation();
+  });
 
-    describe("but action param are given", () => {
-      it("does not render the 'default' action", async () => {
-        installerRender(<Page actionLabel="Ok" actionVariant="plain" />);
-        const defaultAction = await screen.queryByRole("button", { name: "Accept" });
-        expect(defaultAction).toBeNull();
-      });
+  afterAll(() => {
+    history.back.mockRestore();
+  });
 
-      it("renders the action according to given params", async () => {
-        installerRender(<Page actionLabel="Ok" actionVariant="plain" />);
-        const defaultAction = await screen.findByRole("button", { name: "Ok" });
-        expect(defaultAction.classList.contains("pf-m-plain")).toBe(true);
-      });
+  it("renders a 'Back' button with large size and secondary style", () => {
+    plainRender(<Page.BackAction />);
+    const button = screen.getByRole("button", { name: "Back" });
+    expect(button.classList.contains("pf-m-display-lg")).toBe(true);
+    expect(button.classList.contains("pf-m-secondary")).toBe(true);
+  });
 
-      it("renders triggers given callback when user clicks the action", async () => {
-        const callbackFn = jest.fn();
-        const { user } = installerRender(<Page actionLabel="Ok" actionCallback={callbackFn} />);
-        const defaultAction = await screen.findByRole("button", { name: "Ok" });
-        await user.click(defaultAction);
-
-        expect(callbackFn).toHaveBeenCalled();
-      });
-    });
+  it("triggers history.back() when user clicks on it", async () => {
+    const { user } = plainRender(<Page.BackAction />);
+    const button = screen.getByRole("button", { name: "Back" });
+    await user.click(button);
+    expect(history.back).toHaveBeenCalled();
   });
 });

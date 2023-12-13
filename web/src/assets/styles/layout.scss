@@ -1,3 +1,78 @@
+@use "~/assets/styles/utilities.scss";
+
+[data-type="agama/page-layout"] {
+  @extend .shadow;
+  display: grid;
+  block-size: 100dvh;
+  background: white;
+  overflow: hidden;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header"
+    "body"
+    "footer"
+  ;
+
+  > * {
+    padding: var(--spacer-small);
+  }
+
+  header {
+    @extend .bottom-shadow;
+    grid-area: header;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--color-primary);
+    color: white;
+    fill: white;
+
+    h1 {
+      display: grid;
+      align-items: center;
+      gap: var(--spacer-small);
+      grid-template-columns: var(--header-icon-size) 1fr;
+      grid-template-areas:
+        "icon text"
+      ;
+
+      svg {
+        grid-area: icon;
+        block-size: var(--header-icon-size);
+        inline-size: var(--header-icon-size);
+      }
+
+      span {
+        grid-area: text;
+      }
+    }
+  }
+
+  main {
+    grid-area: body;
+    overflow: auto;
+  }
+
+  footer {
+    grid-area: footer;
+    @extend .top-shadow;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+
+    img {
+      inline-size: 30%;
+      max-inline-size: 150px;
+    }
+  }
+}
+
+[data-type="agama/header-actions"] {
+  display: flex;
+  gap: var(--spacer-small);
+}
+
 .wrapper {
   position: relative;
   display: grid;
