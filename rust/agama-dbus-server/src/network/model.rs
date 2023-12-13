@@ -132,11 +132,9 @@ impl NetworkState {
         if let Connection::Bond(_) = &controller {
             let mut controlled = vec![];
             for port in ports {
-                let by_interface = self.get_connection_by_interface(&port);
-                let by_id = self.get_connection(&port);
-
-                let connection = by_interface
-                    .or(by_id)
+                let connection = self
+                    .get_connection_by_interface(&port)
+                    .or_else(|| self.get_connection(&port))
                     .ok_or(NetworkStateError::UnknownConnection(port))?;
                 controlled.push(connection.uuid());
             }
