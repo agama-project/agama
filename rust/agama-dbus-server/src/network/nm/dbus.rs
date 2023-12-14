@@ -45,12 +45,13 @@ pub fn connection_to_dbus<'a>(
     result.insert("ipv6", ip_config_to_ipv6_dbus(conn.ip_config()));
     result.insert("match", match_config_to_dbus(conn.match_config()));
 
+    if conn.is_ethernet() {
+        let ethernet_config =
+            HashMap::from([("assigned-mac-address", Value::new(conn.mac_address()))]);
+        result.insert(ETHERNET_KEY, ethernet_config);
+    }
+
     match &conn {
-        Connection::Ethernet(_) | Connection::Loopback(_) => {
-            let ethernet_config =
-                HashMap::from([("assigned-mac-address", Value::new(conn.mac_address()))]);
-            result.insert(ETHERNET_KEY, ethernet_config);
-        }
         Connection::Wireless(wireless) => {
             connection_dbus.insert("type", WIRELESS_KEY.into());
             let wireless_dbus = wireless_config_to_dbus(wireless);
@@ -68,6 +69,7 @@ pub fn connection_to_dbus<'a>(
         Connection::Dummy(_) => {
             connection_dbus.insert("type", DUMMY_KEY.into());
         }
+        _ => {}
     }
 
     result.insert("connection", connection_dbus);

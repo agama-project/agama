@@ -454,6 +454,7 @@ impl Connection {
         matches!(self, Connection::Loopback(_))
             || matches!(self, Connection::Ethernet(_))
             || matches!(self, Connection::Dummy(_))
+            || matches!(self, Connection::Bond(_))
     }
 
     pub fn mac_address(&self) -> String {
