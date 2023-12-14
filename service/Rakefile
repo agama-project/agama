@@ -1,0 +1,4 @@
+# frozen_string_literal: true
+
+# just inherit the usual YaST rake tasks
+require "yast/rake"

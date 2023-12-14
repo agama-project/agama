@@ -51,6 +51,7 @@ module Agama
     #   proposal.issues #=> []
     class Proposal
       include WithIssues
+      include Yast::I18n
 
       # @return [String,nil] Base product
       attr_accessor :base_product
@@ -62,6 +63,8 @@ module Agama
       #
       # @param logger [Logger]
       def initialize(logger: nil)
+        textdomain "agama"
+
         @logger = logger || Logger.new($stdout)
         @base_product = nil
       end
@@ -222,7 +225,7 @@ module Agama
         last_error = Yast::Pkg.LastError
         res = []
         res << last_error unless last_error.empty?
-        res << "Found #{solve_errors} dependency issues." if solve_errors > 0
+        res << (_("Found %s dependency issues.") % solve_errors) if solve_errors > 0
         res
       end
     end
