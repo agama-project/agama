@@ -154,7 +154,7 @@ export default function Sidebar ({ children }) {
         <header className="split justify-between">
           <h2>
             {/* TRANSLATORS: sidebar header */}
-            {_("Options")}
+            {_("Installer Options")}
           </h2>
 
           <button
