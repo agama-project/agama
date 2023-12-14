@@ -163,6 +163,16 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
     }
 }
 
+/// Ancillary function to get the controller for a given interface.
+pub fn controller_from_dbus(conn: &OwnedNestedHash) -> Option<String> {
+    let Some(connection) = conn.get("connection") else {
+        return None;
+    };
+
+    let master: &str = connection.get("master")?.downcast_ref()?;
+    Some(master.to_string())
+}
+
 fn ip_config_to_ipv4_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value> {
     let addresses: Vec<HashMap<&str, Value>> = ip_config
         .addresses
