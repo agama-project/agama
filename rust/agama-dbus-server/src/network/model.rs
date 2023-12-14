@@ -52,7 +52,7 @@ impl NetworkState {
 
     /// Get connection by interface
     ///
-    /// * `id`: connection interface name
+    /// * `name`: connection interface name
     pub fn get_connection_by_interface(&self, name: &str) -> Option<&Connection> {
         let interface = Some(name);
         self.connections.iter().find(|c| c.interface() == interface)
@@ -118,11 +118,11 @@ impl NetworkState {
         Ok(())
     }
 
-    /// Sets a controller ports.
+    /// Sets a controller's ports.
     ///
     /// If the connection is not a controller, returns an error.
     ///
-    /// * `uuid`: controller UUID.
+    /// * `controller`: controller to set ports on.
     /// * `ports`: list of port names (using the connection ID or the interface name).
     pub fn set_ports(
         &mut self,
@@ -401,14 +401,14 @@ impl Connection {
         self.base_mut().interface = Some(interface.to_string())
     }
 
-    /// Ports controller name, e.g.: bond0, br0
+    /// A port's controller name, e.g.: bond0, br0
     pub fn controller(&self) -> Option<Uuid> {
         self.base().controller
     }
 
-    /// Sets the ports controller.
+    /// Sets the port's controller.
     ///
-    /// `controller`: Name of the controller (Bridge, Bond, Team), e.g.: bond0.
+    /// `controller`: Uuid of the controller (Bridge, Bond, Team), e.g.: bond0.
     pub fn set_controller(&mut self, controller: Uuid) {
         self.base_mut().controller = Some(controller)
     }

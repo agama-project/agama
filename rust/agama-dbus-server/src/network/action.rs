@@ -23,7 +23,7 @@ pub enum Action {
         Uuid,
         Responder<Result<ControllerConnection, NetworkStateError>>,
     ),
-    /// Sets a controller ports. It uses the Uuid of the controller and the IDs or interface names
+    /// Sets a controller's ports. It uses the Uuid of the controller and the IDs or interface names
     /// of the ports.
     SetPorts(Uuid, Vec<String>, Responder<Result<(), NetworkStateError>>),
     /// Update a connection (replacing the old one).

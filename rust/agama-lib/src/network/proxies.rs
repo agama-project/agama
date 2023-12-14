@@ -9,7 +9,7 @@ use zbus::dbus_proxy;
     default_path = "/org/opensuse/Agama1/Network/devices"
 )]
 trait Devices {
-    /// GetConnections method
+    /// GetDevices method
     fn get_devices(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 }
 
@@ -196,13 +196,13 @@ trait Bond {
     #[dbus_proxy(property)]
     fn set_mode(&self, value: &str) -> zbus::Result<()>;
 
-    /// ports property
+    /// Ports property
     #[dbus_proxy(property)]
     fn options(&self) -> zbus::Result<String>;
     #[dbus_proxy(property)]
     fn set_options(&self, value: &str) -> zbus::Result<()>;
 
-    /// ports property
+    /// Ports property
     #[dbus_proxy(property)]
     fn ports(&self) -> zbus::Result<Vec<String>>;
     #[dbus_proxy(property)]

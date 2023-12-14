@@ -141,7 +141,7 @@ impl<'a> NetworkClient<'a> {
 
     /// Returns the [bond settings][BondSettings] for the given connection
     ///
-    ///  * `path`: the connections path to get the wireless config from
+    ///  * `path`: the connection's path to get the wireless config from
     async fn bond_from(&self, path: &str) -> Result<BondSettings, ServiceError> {
         let bond_proxy = BondProxy::builder(&self.connection)
             .path(path)?
@@ -309,7 +309,7 @@ impl<'a> NetworkClient<'a> {
         Ok(())
     }
 
-    /// Updates the bond settings for network connection.
+    /// Updates the bond settings for a network connection.
     ///
     /// * `path`: connection D-Bus path.
     /// * `bond`: bond settings of the network connection.
