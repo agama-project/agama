@@ -78,7 +78,7 @@ function SoftwarePage() {
 
   return (
     // TRANSLATORS: page title
-    <Page title={_("Software")} icon="apps" actionLabel={_("Back")} actionVariant="secondary">
+    <Page icon="apps" title={_("Software")}>
       <Content status={status} />
     </Page>
   );

@@ -28,6 +28,10 @@ import { createClient } from "~/client";
 import InstallationFinished from "./InstallationFinished";
 
 jest.mock("~/client");
+// Since Agama sidebar is now rendered by the core/Page component, it's needed
+// to mock it when testing a Page with plainRender and/or not taking care about
+// sidebar's content.
+jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const finishInstallationFn = jest.fn();
 
@@ -38,30 +42,25 @@ describe("InstallationFinished", () => {
         manager: {
           finishInstallation: finishInstallationFn,
           useIguana: () => Promise.resolve(false)
-        },
-        network: {
-          config: () => Promise.resolve({ addresses: [], hostname: "example.net" })
         }
       };
     });
   });
 
-  it("shows the finished installation screen", async () => {
+  it("shows the finished installation screen", () => {
     installerRender(<InstallationFinished />);
-
-    await screen.findByText("Congratulations!");
+    screen.getByText("Congratulations!");
   });
 
-  it("shows a 'Reboot' button", async () => {
+  it("shows a 'Reboot' button", () => {
     installerRender(<InstallationFinished />);
-
-    await screen.findByRole("button", { name: /Reboot/i });
+    screen.getByRole("button", { name: /Reboot/i });
   });
 
   it("reboots the system if the user clicks on 'Reboot' button", async () => {
     const { user } = installerRender(<InstallationFinished />);
-    const button = await screen.findByRole("button", { name: /Reboot/i });
-    await user.click(button);
+    const rebootButton = screen.getByRole("button", { name: /Reboot/i });
+    await user.click(rebootButton);
     expect(finishInstallationFn).toHaveBeenCalled();
   });
 });

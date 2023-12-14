@@ -26,7 +26,6 @@ import { createClient } from "~/client";
 import { ZFCPPage } from "~/components/storage";
 
 jest.mock("~/client");
-
 jest.mock("@patternfly/react-core", () => {
   const original = jest.requireActual("@patternfly/react-core");
 
@@ -36,6 +35,10 @@ jest.mock("@patternfly/react-core", () => {
 
   };
 });
+// Since Agama sidebar is now rendered by the core/Page component, it's needed
+// to mock it when testing a Page with plainRender and/or not taking care about
+// sidebar's content.
+jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const controllers = [
   { id: "1", channel: "0.0.fa00", active: false, lunScan: false },
@@ -70,6 +73,13 @@ beforeEach(() => {
   createClient.mockImplementation(() => ({ storage: { zfcp: client } }));
 });
 
+it("renders two sections: Controllers and Disks", () => {
+  installerRender(<ZFCPPage />);
+
+  screen.findByRole("heading", { name: "Controllers" });
+  screen.findByRole("heading", { name: "Disks" });
+});
+
 it("loads the zFCP devices", async () => {
   client.getWWPNs = jest.fn().mockResolvedValue(["0x500507630703d3b3", "0x500507630704d3b3"]);
   installerRender(<ZFCPPage />);
@@ -82,13 +92,6 @@ it("loads the zFCP devices", async () => {
   await waitFor(() => expect(client.getLUNs).not.toHaveBeenCalledWith(controllers[0], "0x500507630703d3b3"));
   await waitFor(() => expect(client.getLUNs).not.toHaveBeenCalledWith(controllers[0], "0x500507630704d3b3"));
   expect(screen.getAllByRole("grid").length).toBe(2);
-});
-
-it("renders two sections: Controllers and Disks", async () => {
-  installerRender(<ZFCPPage />);
-
-  await screen.findByRole("heading", { name: "Controllers" });
-  await screen.findByRole("heading", { name: "Disks" });
 });
 
 describe("if allow-lun-scan is activated", () => {

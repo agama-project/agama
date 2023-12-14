@@ -21,12 +21,12 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Form, FormGroup } from "@patternfly/react-core";
+import { Form, FormGroup } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
-import { Icon, Loading } from "~/components/layout";
+import { Page } from "~/components/core";
+import { Loading } from "~/components/layout";
 import { ProductSelector } from "~/components/product";
-import { Title, PageIcon, MainActions } from "~/components/layout/Layout";
 import { useInstallerClient } from "~/context/installer";
 import { useProduct } from "~/context/product";
 
@@ -59,22 +59,20 @@ function ProductSelectionPage() {
   );
 
   return (
-    <>
-      {/* TRANSLATORS: page header */}
-      <Title>{_("Product selection")}</Title>
-      <PageIcon><Icon name="home_storage" /></PageIcon>
-      <MainActions>
-        <Button size="lg" variant="primary" form="productSelectionForm" type="submit">
-          {/* TRANSLATORS: button label */}
-          {_("Select")}
-        </Button>
-      </MainActions>
+    // TRANSLATORS: page title
+    <Page icon="home_storage" title={_("Product selection")}>
       <Form id="productSelectionForm" onSubmit={onSubmit}>
         <FormGroup isStack label={_("Choose a product")} role="radiogroup">
           <ProductSelector value={newProductId} products={products} onChange={setNewProductId} />
         </FormGroup>
       </Form>
-    </>
+
+      <Page.Actions>
+        <Page.Action type="submit" form="productSelectionForm">
+          { _("Select") }
+        </Page.Action>
+      </Page.Actions>
+    </Page>
   );
 }
 

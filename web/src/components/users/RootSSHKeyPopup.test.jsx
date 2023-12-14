@@ -44,10 +44,8 @@ beforeEach(() => {
 
 describe("when it is closed", () => {
   it("renders nothing", async () => {
-    installerRender(<RootSSHKeyPopup />);
-
-    const main = await screen.findByRole("main");
-    await waitFor(() => expect(main).toBeEmptyDOMElement());
+    const { container } = installerRender(<RootSSHKeyPopup />);
+    await waitFor(() => expect(container).toBeEmptyDOMElement());
   });
 });
 

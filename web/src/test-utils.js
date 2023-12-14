@@ -33,7 +33,6 @@ import { render } from "@testing-library/react";
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { NotificationProvider } from "~/context/notification";
-import { Layout } from "~/components/layout";
 import { noop } from "./utils";
 import cockpit from "./lib/cockpit";
 import { InstallerL10nProvider } from "./context/installerL10n";
@@ -105,7 +104,7 @@ const installerRender = (ui, options = {}) => {
   const Wrapper = ({ children }) => (
     <Providers withL10n={options.withL10n}>
       <MemoryRouter initialEntries={initialRoutes()}>
-        <Layout>{children}</Layout>
+        {children}
       </MemoryRouter>
     </Providers>
   );
@@ -118,16 +117,11 @@ const installerRender = (ui, options = {}) => {
   );
 };
 
-// Add an option to include or not the layout.
 const plainRender = (ui, options = {}) => {
-  const { layout, ...opts } = options;
-  if (layout) {
-    opts.wrapper = Layout;
-  }
   return (
     {
       user: userEvent.setup(),
-      ...render(ui, opts)
+      ...render(ui, options)
     }
   );
 };

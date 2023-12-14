@@ -172,13 +172,8 @@ export default function IssuesPage() {
   }, [client, load, update]);
 
   return (
-    <Page
-      title="Issues"
-      icon="problem"
-      actionLabel="Back"
-      actionVariant="secondary"
-      navigateTo={-1}
-    >
+    // TRANSLATORS: page title
+    <Page icon="problem" title="Issues">
       <If
         condition={isLoading}
         then={<SectionSkeleton numRows={4} />}

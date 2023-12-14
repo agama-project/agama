@@ -27,8 +27,8 @@ import { useProduct } from "./context/product";
 import { STARTUP, INSTALL } from "~/client/phase";
 import { BUSY } from "~/client/status";
 
-import { DBusError, Installation } from "~/components/core";
-import { Layout, Loading, Title } from "./components/layout";
+import { DBusError, If, Installation } from "~/components/core";
+import { Loading } from "./components/layout";
 import { useInstallerL10n } from "./context/installerL10n";
 
 // D-Bus connection attempts before displaying an error.
@@ -91,12 +91,7 @@ function App() {
   };
 
   return (
-    <Layout>
-      {/* this is the name of the tool, do not translate it */}
-      {/* eslint-disable-next-line i18next/no-literal-string */}
-      <Title>Agama</Title>
-      {language && <Content />}
-    </Layout>
+    <If condition={language} then={<Content />} />
   );
 }
 

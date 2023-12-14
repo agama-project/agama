@@ -25,7 +25,7 @@ import {
   MenuToggle
 } from '@patternfly/react-core';
 import { _ } from "~/i18n";
-import { Icon, PageOptions as PageOptionsSlot } from "~/components/layout";
+import { Icon } from "~/components/layout";
 
 /**
  * Internal component to build the {PageOptions} toggler
@@ -150,20 +150,18 @@ const PageOptions = ({ children }) => {
   const close = () => setIsOpen(false);
 
   return (
-    <PageOptionsSlot>
-      <Dropdown
-        isOpen={isOpen}
-        toggle={(toggleRef) => <Toggler toggleRef={toggleRef} onClick={toggle} />}
-        onSelect={close}
-        onOpenChange={close}
-        popperProps={{ minWidth: "150px", position: "right" }}
-        className="page-options"
-      >
-        <DropdownList>
-          {Array(children)}
-        </DropdownList>
-      </Dropdown>
-    </PageOptionsSlot>
+    <Dropdown
+      isOpen={isOpen}
+      toggle={(toggleRef) => <Toggler toggleRef={toggleRef} onClick={toggle} />}
+      onSelect={close}
+      onOpenChange={close}
+      popperProps={{ minWidth: "150px", position: "right" }}
+      className="page-options"
+    >
+      <DropdownList>
+        {Array(children)}
+      </DropdownList>
+    </Dropdown>
   );
 };
 

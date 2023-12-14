@@ -52,11 +52,14 @@ const selectedProduct = {
 };
 
 jest.mock("~/client");
-
 jest.mock("~/context/product", () => ({
   ...jest.requireActual("~/context/product"),
   useProduct: () => ({ products: mockProducts, selectedProduct, registration: mockRegistration })
 }));
+// Since Agama sidebar is now rendered by the core/Page component, it's needed
+// to mock it when testing a Page with plainRender and/or not taking care about
+// sidebar's content.
+jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 beforeEach(() => {
   mockManager = {

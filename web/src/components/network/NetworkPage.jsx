@@ -167,7 +167,7 @@ export default function NetworkPage() {
 
   return (
     // TRANSLATORS: page title
-    <Page title={_("Network")} icon="settings_ethernet" actionLabel="Back" actionVariant="secondary">
+    <Page icon="settings_ethernet" title={_("Network")}>
       { /* TRANSLATORS: page section */ }
       <Section title={_("Wired networks")} icon="lan">
         { ready ? <WiredConnections /> : <Skeleton /> }

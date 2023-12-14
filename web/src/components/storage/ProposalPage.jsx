@@ -215,7 +215,7 @@ export default function ProposalPage() {
 
   return (
     // TRANSLATORS: page title
-    <Page title={_("Storage")} icon="hard_drive" actionLabel={_("Back")} actionVariant="secondary">
+    <Page icon="hard_drive" title={_("Storage")}>
       <PageContent />
       <ProposalPageOptions />
     </Page>
