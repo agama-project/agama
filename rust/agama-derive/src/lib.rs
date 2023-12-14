@@ -293,7 +293,7 @@ fn parse_setting_fields(fields: Vec<&syn::Field>) -> SettingFieldsList {
     SettingFieldsList(settings)
 }
 
-fn quote_fields_aliases(nested_fields: &Vec<&SettingField>) -> Vec<TokenStream2> {
+fn quote_fields_aliases(nested_fields: &[&SettingField]) -> Vec<TokenStream2> {
     nested_fields
         .iter()
         .map(|f| {

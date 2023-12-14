@@ -35,12 +35,15 @@
     </method>
     <method name="AddPattern">
       <arg name="id" direction="in" type="s"/>
+      <arg name="result" direction="out" type="b"/>
     </method>
     <method name="RemovePattern">
       <arg name="id" direction="in" type="s"/>
+      <arg name="result" direction="out" type="b"/>
     </method>
     <method name="SetUserPatterns">
       <arg name="ids" direction="in" type="as"/>
+      <arg name="wrong" direction="out" type="as"/>
     </method>
     <method name="ProvisionsSelected">
       <arg name="Provisions" direction="in" type="as"/>

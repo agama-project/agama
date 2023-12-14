@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Default, Settings, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SoftwareSettings {
-    /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)
-    pub product: Option<String>,
+    /// List of patterns to install. If empty use default.
+    #[settings(collection)]
+    pub patterns: Vec<String>,
 }

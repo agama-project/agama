@@ -52,7 +52,7 @@ impl TimezonesDatabase {
         let ret = timezones
             .into_iter()
             .map(|tz| {
-                let parts = translate_parts(&tz, &ui_language, &tz_parts);
+                let parts = translate_parts(&tz, ui_language, &tz_parts);
                 TimezoneEntry { code: tz, parts }
             })
             .collect();
@@ -62,10 +62,10 @@ impl TimezonesDatabase {
 
 fn translate_parts(timezone: &str, ui_language: &str, tz_parts: &TimezoneIdParts) -> Vec<String> {
     timezone
-        .split("/")
+        .split('/')
         .map(|part| {
             tz_parts
-                .localize_part(part, &ui_language)
+                .localize_part(part, ui_language)
                 .unwrap_or(part.to_owned())
         })
         .collect()
@@ -82,7 +82,7 @@ mod tests {
         let found_timezones = db.entries();
         dbg!(&found_timezones);
         let found = found_timezones
-            .into_iter()
+            .iter()
             .find(|tz| tz.code == "Europe/Berlin")
             .unwrap();
         assert_eq!(&found.code, "Europe/Berlin");

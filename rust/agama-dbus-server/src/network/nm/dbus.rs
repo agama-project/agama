@@ -117,10 +117,7 @@ pub fn merge_dbus_connections<'a>(
 /// * `conn`: connection represented as a NestedHash.
 fn cleanup_dbus_connection(conn: &mut NestedHash) {
     if let Some(connection) = conn.get_mut("connection") {
-        if connection
-            .get("interface-name")
-            .is_some_and(|v| is_empty_value(&v))
-        {
+        if connection.get("interface-name").is_some_and(is_empty_value) {
             connection.remove("interface-name");
         }
     }
@@ -254,28 +251,13 @@ fn wireless_config_to_dbus(conn: &WirelessConnection) -> NestedHash {
 ///
 /// * `match_config`: MatchConfig to convert.
 fn match_config_to_dbus(match_config: &MatchConfig) -> HashMap<&str, zvariant::Value> {
-    let drivers: Value = match_config
-        .driver
-        .iter()
-        .cloned()
-        .collect::<Vec<_>>()
-        .into();
+    let drivers: Value = match_config.driver.to_vec().into();
 
-    let kernels: Value = match_config
-        .kernel
-        .iter()
-        .cloned()
-        .collect::<Vec<_>>()
-        .into();
+    let kernels: Value = match_config.kernel.to_vec().into();
 
-    let paths: Value = match_config.path.iter().cloned().collect::<Vec<_>>().into();
+    let paths: Value = match_config.path.to_vec().into();
 
-    let interfaces: Value = match_config
-        .interface
-        .iter()
-        .cloned()
-        .collect::<Vec<_>>()
-        .into();
+    let interfaces: Value = match_config.interface.to_vec().into();
 
     HashMap::from([
         ("driver", drivers),
@@ -314,7 +296,7 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
         base_connection.mac_address = mac_address_from_dbus(wireless_config)?;
     }
 
-    base_connection.ip_config = ip_config_from_dbus(&conn)?;
+    base_connection.ip_config = ip_config_from_dbus(conn)?;
 
     Some(base_connection)
 }
@@ -381,7 +363,7 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Option<IpConfig> {
         ip_config.method4 = NmMethod(method4.to_string()).try_into().ok()?;
 
         let address_data = ipv4.get("address-data")?;
-        let mut addresses = addresses_with_prefix_from_dbus(&address_data)?;
+        let mut addresses = addresses_with_prefix_from_dbus(address_data)?;
 
         ip_config.addresses.append(&mut addresses);
 
@@ -405,7 +387,7 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Option<IpConfig> {
         ip_config.method6 = NmMethod(method6.to_string()).try_into().ok()?;
 
         let address_data = ipv6.get("address-data")?;
-        let mut addresses = addresses_with_prefix_from_dbus(&address_data)?;
+        let mut addresses = addresses_with_prefix_from_dbus(address_data)?;
 
         ip_config.addresses.append(&mut addresses);
 

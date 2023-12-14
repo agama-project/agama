@@ -334,7 +334,7 @@ pub async fn export_dbus_objects(
     const PATH: &str = "/org/opensuse/Agama1/Questions";
 
     // When serving, request the service name _after_ exposing the main object
-    let questions = Questions::new(&connection);
+    let questions = Questions::new(connection);
     connection.object_server().at(PATH, questions).await?;
     connection.object_server().at(PATH, ObjectManager).await?;
 

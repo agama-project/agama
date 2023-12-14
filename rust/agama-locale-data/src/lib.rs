@@ -150,7 +150,6 @@ mod tests {
         let localized = get_timezone_parts()
             .unwrap()
             .localize_timezones("de", &timezones);
-        let _res: Vec<(String, String)> =
-            timezones.into_iter().zip(localized.into_iter()).collect();
+        let _res: Vec<(String, String)> = timezones.into_iter().zip(localized).collect();
     }
 }

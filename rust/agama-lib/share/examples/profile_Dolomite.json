@@ -3,8 +3,10 @@
     "keyboard": "en_US",
     "language": "en_US"
   },
-  "software": {
-    "product": "ALP-Dolomite"
+  "product": {
+    "id": "ALP-Dolomite",
+    "registrationCode": "FILL IT UP",
+    "registrationEmail": "jreidinger@suse.com"
   },
   "storage": {
     "bootDevice": "/dev/dm-1"

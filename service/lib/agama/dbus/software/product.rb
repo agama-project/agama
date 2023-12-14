@@ -283,7 +283,7 @@ module Agama
         def connect_result_from_error(error, error_code, details = nil)
           logger.error("Error connecting to registration server: #{error}")
 
-          description = "Connection to registration server failed"
+          description = "Connection to registration server failed: #{error}"
           description += " (#{details})" if details
 
           [error_code, description]

@@ -80,6 +80,23 @@ impl From<HashMap<String, String>> for SettingObject {
     }
 }
 
+impl From<String> for SettingObject {
+    fn from(value: String) -> SettingObject {
+        SettingObject(HashMap::from([("value".to_string(), SettingValue(value))]))
+    }
+}
+
+impl TryFrom<SettingObject> for String {
+    type Error = ConversionError;
+
+    fn try_from(value: SettingObject) -> Result<Self, Self::Error> {
+        if let Some(v) = value.get("value") {
+            return Ok(v.to_string());
+        }
+        Err(ConversionError::MissingKey("value".to_string()))
+    }
+}
+
 impl TryFrom<SettingValue> for bool {
     type Error = ConversionError;
 
