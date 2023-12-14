@@ -131,13 +131,13 @@ export default function Sidebar ({ children, isOpen, onClose = noop }) {
       id="global-options"
       ref={asideRef}
       className="wrapper sidebar"
-      aria-label={_("Global options")}
+      aria-label={_("Installer Options")}
       data-state={isOpen ? "visible" : "hidden"}
     >
       <header className="split justify-between">
         <h2>
           {/* TRANSLATORS: sidebar header */}
-          {_("Options")}
+          {_("Installer Options")}
         </h2>
 
         <button

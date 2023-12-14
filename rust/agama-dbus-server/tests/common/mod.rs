@@ -5,7 +5,7 @@ use std::{
     process::{Child, Command},
     time::Duration,
 };
-use tokio;
+
 use tokio_stream::StreamExt;
 use uuid::Uuid;
 use zbus::{MatchRule, MessageStream, MessageType};
@@ -101,7 +101,7 @@ impl NameOwnerChangedStream {
             .sender("org.freedesktop.DBus")?
             .member("NameOwnerChanged")?
             .build();
-        let stream = MessageStream::for_match_rule(rule, &connection, None).await?;
+        let stream = MessageStream::for_match_rule(rule, connection, None).await?;
         Ok(Self(stream))
     }
 
@@ -137,7 +137,7 @@ where
                 if retry > RETRIES {
                     return Err(error);
                 }
-                retry = retry + 1;
+                retry += 1;
                 let wait_time = Duration::from_millis(INTERVAL);
                 tokio::time::sleep(wait_time).await;
             }

@@ -23,7 +23,7 @@ pub fn init_locale() -> Result<LocaleCode, Box<dyn std::error::Error>> {
 ///
 pub fn set_service_locale(locale: &LocaleCode) {
     // Let's force the encoding to be 'UTF-8'.
-    let locale = format!("{}.UTF-8", locale.to_string());
+    let locale = format!("{}.UTF-8", locale);
     if setlocale(LocaleCategory::LcAll, locale).is_none() {
         log::warn!("Could not set the locale");
     }

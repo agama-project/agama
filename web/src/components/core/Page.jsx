@@ -28,7 +28,7 @@ import logoUrl from "~/assets/suse-horizontal-logo.svg";
 import { _ } from "~/i18n";
 import { partition } from "~/utils";
 import { Icon } from "~/components/layout";
-import { LanguageSwitcher } from "~/components/l10n";
+import { InstallerKeymapSwitcher, InstallerLocaleSwitcher } from "~/components/l10n";
 import {
   About,
   Disclosure,
@@ -192,7 +192,10 @@ const Page = ({ icon, title = "Agama", children }) => {
         </div>
         <div className="full-width highlighted">
           <div className="flex-stack">
-            <LanguageSwitcher />
+            <div className="locale-container">
+              <div><InstallerLocaleSwitcher /></div>
+              <div><InstallerKeymapSwitcher /></div>
+            </div>
           </div>
         </div>
       </Sidebar>

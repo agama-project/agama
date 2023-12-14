@@ -51,7 +51,8 @@ jest.mock("~/lib/cockpit", () => ({
         "es-es": "Español"
       }
     }
-  }
+  },
+  spawn: jest.fn().mockResolvedValue()
 }));
 
 // Helper component that displays a translated message depending on the

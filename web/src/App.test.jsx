@@ -47,6 +47,7 @@ jest.mock("~/context/product", () => ({
 jest.mock("~/components/core/DBusError", () => <div>D-BusError Mock</div>);
 jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 jest.mock("~/components/core/Installation", () => () => <div>Installation Mock</div>);
+jest.mock("~/components/layout/Loading", () => () => <div>Loading Mock</div>);
 
 // this object holds the mocked callbacks
 const callbacks = {};
@@ -73,6 +74,10 @@ describe("App", () => {
         l10n: {
           locales: jest.fn().mockResolvedValue([["en_us", "English", "United States"]]),
           getLocales: jest.fn().mockResolvedValue(["en_us"]),
+          timezones: jest.fn().mockResolvedValue([]),
+          getTimezone: jest.fn().mockResolvedValue("Europe/Berlin"),
+          keymaps: jest.fn().mockResolvedValue([]),
+          getKeymap: jest.fn().mockResolvedValue(undefined),
           getUILocale: jest.fn().mockResolvedValue("en_us"),
           setUILocale: jest.fn().mockResolvedValue("en_us"),
           onTimezoneChange: jest.fn(),
@@ -100,7 +105,7 @@ describe("App", () => {
 
     it("renders the Loading screen", async () => {
       installerRender(<App />, { withL10n: true });
-      await screen.findByText(/Loading installation environment/);
+      await screen.findByText("Loading Mock");
     });
   });
 
@@ -112,7 +117,7 @@ describe("App", () => {
 
     it("renders the Loading screen", async () => {
       installerRender(<App />, { withL10n: true });
-      await screen.findByText(/Loading installation environment/);
+      await screen.findByText("Loading Mock");
     });
   });
 
@@ -124,8 +129,7 @@ describe("App", () => {
 
     it("renders the Loading screen", async () => {
       installerRender(<App />, { withL10n: true });
-
-      await screen.findByText(/Loading installation environment/);
+      await screen.findByText("Loading Mock");
     });
   });
 

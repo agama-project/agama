@@ -10,8 +10,26 @@
       "description": "Software settings (e.g., product to install)",
       "type": "object",
       "properties": {
-        "product": {
+        "patterns": {
+          "description": "List of patterns to install",
+          "type": "array"
+        }
+      }
+    },
+    "product": {
+      "description": "Software settings (e.g., product to install)",
+      "type": "object",
+      "properties": {
+        "id": {
           "description": "Product identifier",
+          "type": "string"
+        },
+        "registrationCode": {
+          "description": "Product registration code",
+          "type": "string"
+        },
+        "registrationEmail": {
+          "description": "Product registration email",
           "type": "string"
         }
       }

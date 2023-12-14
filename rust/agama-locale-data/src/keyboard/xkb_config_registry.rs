@@ -6,7 +6,7 @@ use quick_xml::de::from_str;
 use serde::Deserialize;
 use std::{error::Error, fs};
 
-const DB_PATH: &'static str = "/usr/share/X11/xkb/rules/base.xml";
+const DB_PATH: &str = "/usr/share/X11/xkb/rules/base.xml";
 
 /// X Keyboard Configuration Database
 #[derive(Deserialize, Debug)]
@@ -20,7 +20,7 @@ impl XkbConfigRegistry {
     ///
     /// - `path`: database path.
     pub fn from(path: &str) -> Result<Self, Box<dyn Error>> {
-        let contents = fs::read_to_string(&path)?;
+        let contents = fs::read_to_string(path)?;
         Ok(from_str(&contents)?)
     }
 
