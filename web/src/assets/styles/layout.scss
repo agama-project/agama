@@ -1,13 +1,15 @@
 @use "~/assets/styles/utilities.scss";
 
-[data-type="agama/page-layout"] {
+[data-layout="agama/base"] {
+  --agama-header-bg: var(--color-primary);
+
   @extend .shadow;
   display: grid;
   block-size: 100dvh;
   background: white;
   overflow: hidden;
   grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 60px 1fr 70px;
   grid-template-areas:
     "header"
     "body"
@@ -24,7 +26,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: var(--color-primary);
+    background: var(--agama-header-bg);
     color: white;
     fill: white;
 
@@ -60,6 +62,7 @@
     display: flex;
     flex-direction: row-reverse;
     justify-content: space-between;
+    align-items: center;
 
     img {
       inline-size: 30%;
@@ -71,61 +74,6 @@
 [data-type="agama/header-actions"] {
   display: flex;
   gap: var(--spacer-small);
-}
-
-.wrapper {
-  position: relative;
-  display: grid;
-  grid-template-rows: var(--header-block-size) 1fr var(--footer-block-size);
-  grid-template-areas:
-    "header"
-    "content"
-    "footer";
-  overflow: hidden;
-  /** block-size fallbacks **/
-  height: 100vh;
-  height: 100dvb;
-  block-size: 100vh;
-  /** END of block-size fallbacks **/
-  block-size: 100dvb;
-
-  background: var(--wrapper-background);
-
-  svg {
-    fill: currentcolor;
-    vertical-align: middle;
-  }
-}
-
-.wrapper > * {
-  padding: var(--wrapper-padding);
-}
-
-.wrapper > header {
-  grid-area: header;
-  background: var(--color-background-primary);
-  color: var(--color-text-secondary);
-
-  svg {
-    color: white;
-    block-size: var(--header-icon-size);
-    inline-size: var(--header-icon-size);
-  }
-}
-
-.wrapper > main {
-  grid-area: content;
-  overflow-y: auto; // Sadly, only Firefox supports overflow-block at this moment (Jan 2023)
-  overflow-block: auto;
-  padding: var(--spacer-medium) var(--spacer-small);
-}
-
-.wrapper > footer {
-  grid-area: footer;
-}
-
-.wrapper > footer > img {
-  max-inline-size: 150px;
 }
 
 [data-variant="flip-X"] {

@@ -130,8 +130,9 @@ export default function Sidebar ({ children, isOpen, onClose = noop }) {
     <aside
       id="global-options"
       ref={asideRef}
-      className="wrapper sidebar"
       aria-label={_("Installer Options")}
+      data-type="agama/sidebar"
+      data-layout="agama/base"
       data-state={isOpen ? "visible" : "hidden"}
     >
       <header className="split justify-between">

@@ -81,9 +81,9 @@ section > .content {
   border: 0;
 }
 
-.sidebar {
-  --color-background-primary: var(--color-primary-lighter);
-  --wrapper-background: var(--color-gray-light);
+[data-type="agama/sidebar"] {
+  /** Override the header background, see styles/layout.scss */
+  --agama-header-bg: var(--color-primary-lighter);
 
   position: absolute;
   padding: 0;
@@ -92,68 +92,69 @@ section > .content {
   inline-size: 70%;
   min-inline-size: min-content;
   box-shadow: -10px 10px 20px 0 var(--color-primary);
-}
 
-.sidebar header {
-  --focus-color: var(--color-primary-darkest);
-}
+  header {
+    --focus-color: var(--color-primary-darkest);
+  }
 
-.sidebar footer {
-  border-top: 1px solid var(--color-gray);
-}
+  footer {
+    border-top: 1px solid var(--color-gray);
+  }
 
-.sidebar a, .sidebar button {
-  font-size: 16px;
-  font-weight: var(--fw-bold);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  padding-block: 0;
-
-  &:hover {
-    color: var(--color-link-hover);
+  a, button {
+    font-size: 16px;
+    font-weight: var(--fw-bold);
     text-decoration: underline;
+    text-underline-offset: 2px;
+    padding-block: 0;
+
+    &:hover {
+      color: var(--color-link-hover);
+      text-decoration: underline;
+
+      svg {
+        color: var(--color-link);
+      }
+    }
 
     svg {
       color: var(--color-link);
+      vertical-align: text-bottom;
+      margin-block-end: -2px;
     }
   }
 
-  svg {
-    color: var(--color-link);
-    vertical-align: text-bottom;
-    margin-block-end: -2px;
+  a {
+    margin-inline-start: var(--pf-v5-global--spacer--md);
+
+    // Keep links and buttons labels aligned by adding the same margin than
+    // .pf-v5-c-button__icon.pf-m-start
+    svg {
+      margin-inline-end: var(--pf-v5-global--spacer--xs);
+    }
+  }
+
+  // Remove not wanted PatternFly padding left on a loading link
+  button.pf-m-progress {
+    --pf-v5-c-button--m-progress--PaddingLeft: var(--pf-v5-global--spacer--md);
+  }
+
+  button.pf-m-progress + div {
+    padding-inline-start: calc(var(--pf-v5-global--spacer--md));
+  }
+
+  &[data-state="hidden"] {
+    transition: all 0.04s ease-in-out;
+    inline-size: 0;
+    min-inline-size: 0;
+    box-shadow: none;
+  }
+
+  &[data-state="visible"] {
+    transition: all 0.2s ease-in-out;
   }
 }
 
-.sidebar a {
-  margin-inline-start: var(--pf-v5-global--spacer--md);
-
-  // Keep links and buttons labels aligned by adding the same margin than
-  // .pf-v5-c-button__icon.pf-m-start
-  svg {
-    margin-inline-end: var(--pf-v5-global--spacer--xs);
-  }
-}
-
-// Remove not wanted PatternFly padding left on a loading link
-.sidebar button.pf-m-progress {
-  --pf-v5-c-button--m-progress--PaddingLeft: var(--pf-v5-global--spacer--md);
-}
-
-.sidebar button.pf-m-progress + div {
-  padding-inline-start: calc(var(--pf-v5-global--spacer--md));
-}
-
-.sidebar[data-state="hidden"] {
-  transition: all 0.04s ease-in-out;
-  inline-size: 0;
-  min-inline-size: 0;
-  box-shadow: none;
-}
-
-.sidebar[data-state="visible"] {
-  transition: all 0.2s ease-in-out;
-}
 
 .disclosure > button {
   margin-inline-start: var(--pf-v5-global--spacer--md);

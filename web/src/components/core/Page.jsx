@@ -149,7 +149,7 @@ const Page = ({ icon, title = "Agama", children }) => {
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
-    <div data-type="agama/page-layout">
+    <div data-type="agama/page" data-layout="agama/base">
       <header>
         <h1>
           <If condition={icon} then={<Icon name={icon} />} />

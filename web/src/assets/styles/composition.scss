@@ -30,7 +30,7 @@
 
 body > div[inert],
 body > div[aria-hidden="true"],
-div[data-type="agama/page-layout"] > [inert],
-div[data-type="agama/page-layout"] > [aria-hidden="true"] {
+div[data-type="agama/page"] > [inert],
+div[data-type="agama/page"] > [aria-hidden="true"] {
   filter: grayscale(1) blur(2px);
 }
