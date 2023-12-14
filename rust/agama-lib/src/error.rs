@@ -18,7 +18,7 @@ pub enum ServiceError {
     WrongUser(Vec<String>),
     #[error("Registration failed: '{0}'")]
     FailedRegistration(String),
-    #[error("Failed to find these patterns: '{0:?}'")]
+    #[error("Failed to find these patterns: {0:?}")]
     UnknownPatterns(Vec<String>),
     #[error("Error: {0}")]
     UnsuccessfulAction(String),

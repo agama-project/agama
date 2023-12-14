@@ -54,7 +54,7 @@
       <arg name="result" direction="out" type="b"/>
     </method>
     <!--
-      Sets explicitelly selected patterns.
+      Sets explicitly selected patterns.
     -->
     <method name="SetUserPatterns">
       <!--
