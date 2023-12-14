@@ -40,7 +40,7 @@ async fn test_read_connections() -> Result<(), Box<dyn Error>> {
     let state = NetworkState::new(vec![device], vec![eth0]);
     let adapter = NetworkTestAdapter(state);
 
-    let _service = NetworkService::start(&server.connection(), adapter).await?;
+    NetworkService::start(&server.connection(), adapter).await?;
     server.request_name().await?;
 
     let client = NetworkClient::new(server.connection()).await?;
@@ -58,7 +58,7 @@ async fn test_add_connection() -> Result<(), Box<dyn Error>> {
 
     let adapter = NetworkTestAdapter(NetworkState::default());
 
-    let _service = NetworkService::start(&server.connection(), adapter).await?;
+    NetworkService::start(&server.connection(), adapter).await?;
     server.request_name().await?;
 
     let client = NetworkClient::new(server.connection().clone()).await?;
@@ -149,7 +149,7 @@ async fn test_update_connection() -> Result<(), Box<dyn Error>> {
     let state = NetworkState::new(vec![device], vec![eth0]);
     let adapter = NetworkTestAdapter(state);
 
-    let _service = NetworkService::start(&server.connection(), adapter).await?;
+    NetworkService::start(&server.connection(), adapter).await?;
     server.request_name().await?;
 
     let client = NetworkClient::new(server.connection()).await?;

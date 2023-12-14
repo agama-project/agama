@@ -19,6 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
+// cspell:ignore localectl setxkbmap xorg
 // @ts-check
 
 import React, { useCallback, useEffect, useState } from "react";
@@ -179,6 +180,17 @@ function reload(newLanguage) {
 }
 
 /**
+ * Extracts the keymap from the `setxkbmap -query` output.
+ *
+ * @param {string} output
+ * @returns {string|undefined}
+ */
+function keymapFromX(output) {
+  const matcher = /^layout:\s+(\S.*)$/m;
+  return matcher.exec(output)?.at(1);
+}
+
+/**
  * This provider sets the installer locale. By default, it uses the URL "lang" query parameter or
  * the preferred locale from the browser and synchronizes the UI and the backend locales. To
  * activate a new locale it reloads the whole page.
@@ -196,6 +208,7 @@ function reload(newLanguage) {
 function InstallerL10nProvider({ children }) {
   const client = useInstallerClient();
   const [language, setLanguage] = useState(undefined);
+  const [keymap, setKeymap] = useState(undefined);
   const [backendPending, setBackendPending] = useState(false);
   const { cancellablePromise } = useCancellablePromise();
 
@@ -240,6 +253,15 @@ function InstallerL10nProvider({ children }) {
     }
   }, [storeInstallerLanguage, setLanguage]);
 
+  const changeKeymap = useCallback(async (id) => {
+    setKeymap(id);
+    // write the config to file (/etc/X11/xorg.conf.d/00-keyboard.conf),
+    // this also sets the console keyboard!
+    await cockpit.spawn(["localectl", "set-x11-keymap", id]);
+    // set the current X11 keyboard
+    await cockpit.spawn(["setxkbmap", id], { environ: ["DISPLAY=:0"] });
+  }, [setKeymap]);
+
   useEffect(() => {
     if (!language) changeLanguage();
   }, [changeLanguage, language]);
@@ -251,8 +273,14 @@ function InstallerL10nProvider({ children }) {
     setBackendPending(false);
   }, [client, language, backendPending, storeInstallerLanguage]);
 
+  useEffect(() => {
+    cockpit.spawn(["setxkbmap", "-query"], { environ: ["DISPLAY=:0"] }).then(output => setKeymap(keymapFromX(output)));
+  }, [setKeymap]);
+
+  const value = { language, changeLanguage, keymap, changeKeymap };
+
   return (
-    <L10nContext.Provider value={{ language, changeLanguage }}>{children}</L10nContext.Provider>
+    <L10nContext.Provider value={value}>{children}</L10nContext.Provider>
   );
 }
 

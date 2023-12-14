@@ -10,7 +10,7 @@ use zbus::dbus_proxy;
 )]
 trait Software1 {
     /// AddPattern method
-    fn add_pattern(&self, id: &str) -> zbus::Result<()>;
+    fn add_pattern(&self, id: &str) -> zbus::Result<bool>;
 
     /// Finish method
     fn finish(&self) -> zbus::Result<()>;
@@ -37,10 +37,10 @@ trait Software1 {
     fn provisions_selected(&self, provisions: &[&str]) -> zbus::Result<Vec<bool>>;
 
     /// RemovePattern method
-    fn remove_pattern(&self, id: &str) -> zbus::Result<()>;
+    fn remove_pattern(&self, id: &str) -> zbus::Result<bool>;
 
     /// SetUserPatterns method
-    fn set_user_patterns(&self, ids: &[&str]) -> zbus::Result<()>;
+    fn set_user_patterns(&self, ids: &[&str]) -> zbus::Result<Vec<String>>;
 
     /// UsedDiskSpace method
     fn used_disk_space(&self) -> zbus::Result<String>;

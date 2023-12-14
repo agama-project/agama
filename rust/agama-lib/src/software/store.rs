@@ -2,36 +2,29 @@
 
 use super::{SoftwareClient, SoftwareSettings};
 use crate::error::ServiceError;
-use crate::manager::ManagerClient;
 use zbus::Connection;
 
 /// Loads and stores the software settings from/to the D-Bus service.
 pub struct SoftwareStore<'a> {
     software_client: SoftwareClient<'a>,
-    manager_client: ManagerClient<'a>,
 }
 
 impl<'a> SoftwareStore<'a> {
     pub async fn new(connection: Connection) -> Result<SoftwareStore<'a>, ServiceError> {
         Ok(Self {
             software_client: SoftwareClient::new(connection.clone()).await?,
-            manager_client: ManagerClient::new(connection).await?,
         })
     }
 
     pub async fn load(&self) -> Result<SoftwareSettings, ServiceError> {
-        let product = self.software_client.product().await?;
-
-        Ok(SoftwareSettings {
-            product: Some(product),
-        })
+        let patterns = self.software_client.user_selected_patterns().await?;
+        Ok(SoftwareSettings { patterns })
     }
 
     pub async fn store(&self, settings: &SoftwareSettings) -> Result<(), ServiceError> {
-        if let Some(product) = &settings.product {
-            self.software_client.select_product(product).await?;
-            self.manager_client.probe().await?;
-        }
+        self.software_client
+            .select_patterns(&settings.patterns)
+            .await?;
 
         Ok(())
     }

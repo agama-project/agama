@@ -45,7 +45,7 @@ impl LocalesDatabase {
             .lines()
             .filter_map(|line| TryInto::<LocaleCode>::try_into(line).ok())
             .collect();
-        self.locales = self.get_locales(&ui_language)?;
+        self.locales = self.get_locales(ui_language)?;
         Ok(())
     }
 
@@ -82,7 +82,7 @@ impl LocalesDatabase {
 
             let names = &language.names;
             let language_label = names
-                .name_for(&ui_language)
+                .name_for(ui_language)
                 .or_else(|| names.name_for(DEFAULT_LANG))
                 .unwrap_or(language.id.to_string());
 
@@ -92,7 +92,7 @@ impl LocalesDatabase {
 
             let names = &territory.names;
             let territory_label = names
-                .name_for(&ui_language)
+                .name_for(ui_language)
                 .or_else(|| names.name_for(DEFAULT_LANG))
                 .unwrap_or(territory.id.to_string());
 
@@ -120,10 +120,7 @@ mod tests {
         db.read("de").unwrap();
         let found_locales = db.entries();
         let spanish: LocaleCode = "es_ES".try_into().unwrap();
-        let found = found_locales
-            .into_iter()
-            .find(|l| l.code == spanish)
-            .unwrap();
+        let found = found_locales.iter().find(|l| l.code == spanish).unwrap();
         assert_eq!(&found.language, "Spanisch");
         assert_eq!(&found.territory, "Spanien");
     }

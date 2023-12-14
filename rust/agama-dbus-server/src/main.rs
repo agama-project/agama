@@ -4,7 +4,6 @@ use agama_lib::connection_to;
 use anyhow::Context;
 use log::{self, LevelFilter};
 use std::future::pending;
-use tokio;
 
 const ADDRESS: &str = "unix:path=/run/agama/bus";
 const SERVICE_NAME: &str = "org.opensuse.Agama1";

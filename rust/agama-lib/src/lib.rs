@@ -27,6 +27,7 @@ pub mod error;
 pub mod install_settings;
 pub mod manager;
 pub mod network;
+pub mod product;
 pub mod profile;
 pub mod software;
 pub mod storage;

@@ -27,7 +27,7 @@ impl<'a> NetworkClient<'a> {
 
     pub async fn get_connection(&self, id: &str) -> Result<NetworkConnection, ServiceError> {
         let path = self.connections_proxy.get_connection(id).await?;
-        Ok(self.connection_from(path.as_str()).await?)
+        self.connection_from(path.as_str()).await
     }
 
     pub async fn available_devices(&self) -> Result<Vec<Device>, ServiceError> {
