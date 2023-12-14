@@ -24,6 +24,7 @@ import {
   Dropdown, DropdownGroup, DropdownItem, DropdownList,
   MenuToggle
 } from '@patternfly/react-core';
+import { _ } from "~/i18n";
 import { Icon, PageOptions as PageOptionsSlot } from "~/components/layout";
 
 /**
@@ -35,7 +36,13 @@ import { Icon, PageOptions as PageOptionsSlot } from "~/components/layout";
  */
 const Toggler = ({ toggleRef, onClick }) => {
   return (
-    <MenuToggle ref={toggleRef} onClick={onClick} variant="plain">
+    <MenuToggle
+      ref={toggleRef}
+      onClick={onClick}
+      aria-label={_("Show page options")}
+      variant="plain"
+      className="plain-button"
+    >
       <Icon name="expand_more" />
     </MenuToggle>
   );

@@ -135,7 +135,11 @@ const Page = ({ icon, title = "Agama", children }) => {
   // component because the type check.
   //
   // @see https://stackoverflow.com/questions/55729582/check-type-of-react-component
-  const [actions, content] = partition(React.Children.toArray(children), child => child.type === Actions);
+  const [actions, rest] = partition(React.Children.toArray(children), child => child.type === Actions);
+
+  // TODO: move PageOptions to an internal Page component
+  // TODO: Improve and document below line
+  const [options, content] = partition(rest, child => child.type.name?.endsWith("PageOptions"));
 
   if (actions.length === 0) {
     actions.push(<BackAction key="back-action" />);
@@ -152,6 +156,7 @@ const Page = ({ icon, title = "Agama", children }) => {
           <span>{title}</span>
         </h1>
         <div data-type="agama/header-actions">
+          { options }
           <button
             onClick={openSidebar}
             className="plain-control"

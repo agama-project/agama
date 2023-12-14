@@ -20,9 +20,9 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender, plainRender, mockNavigateFn } from "~/test-utils";
-import { Page } from "~/components/core";
+import { Page, PageOptions } from "~/components/core";
 
 describe("Page", () => {
   beforeAll(() => {
@@ -75,6 +75,25 @@ describe("Page", () => {
     );
 
     screen.getByText("Page content");
+  });
+
+  it("renders found page options in the header", async () => {
+    const { user } = installerRender(
+      <Page>
+        <div>A page with options</div>
+        <PageOptions>
+          <PageOptions.Option>
+            <button>Switch to advanced mode</button>
+          </PageOptions.Option>
+        </PageOptions>
+      </Page>,
+      { withL10n: true }
+    );
+
+    const [header,] = screen.getAllByRole("banner");
+    const optionsButton = within(header).getByRole("button", { name: "Show page options" });
+    await user.click(optionsButton);
+    screen.getByRole("menuitem", { name: "Switch to advanced mode" });
   });
 
   it("renders given actions", () => {
