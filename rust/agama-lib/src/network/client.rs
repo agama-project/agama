@@ -247,8 +247,9 @@ impl<'a> NetworkClient<'a> {
             .build()
             .await?;
 
-        let interface = conn.interface.as_deref().unwrap_or("");
-        proxy.set_interface(interface).await?;
+        if let Some(ref interface) = conn.interface {
+            proxy.set_interface(interface).await?;
+        }
 
         let mac_address = conn.mac_address.as_deref().unwrap_or("");
         proxy.set_mac_address(mac_address).await?;
