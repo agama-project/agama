@@ -90,13 +90,14 @@ describe("Page", () => {
       { withL10n: true }
     );
 
+    // Sidebar is rendering it's own header, let's ignore it
     const [header,] = screen.getAllByRole("banner");
     const optionsButton = within(header).getByRole("button", { name: "Show page options" });
     await user.click(optionsButton);
     screen.getByRole("menuitem", { name: "Switch to advanced mode" });
   });
 
-  it("renders given actions", () => {
+  it("renders found page actions in the footer", () => {
     installerRender(
       <Page>
         <Page.Actions>
@@ -107,8 +108,10 @@ describe("Page", () => {
       { withL10n: true }
     );
 
-    screen.getByRole("button", { name: "Save" });
-    screen.getByRole("button", { name: "Discard" });
+    // Sidebar is rendering it's own footer, let's ignore it
+    const [footer,] = screen.getAllByRole("contentinfo");
+    within(footer).getByRole("button", { name: "Save" });
+    within(footer).getByRole("button", { name: "Discard" });
   });
 
   it("renders the default 'Back' action if no actions are given", () => {
