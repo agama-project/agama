@@ -48,7 +48,7 @@ jobs:
 
     - name: Set a testing Agama configuration
       # use just one product, it skips the product selection at the beginning
-      run:  podman exec agama bash -c "rm /checkout/products.d/{leap16,ALP-Dolomite}.yaml"
+      run:  podman exec agama bash -c "rm /checkout/products.d/ALP-Dolomite.yaml"
 
     - name: Show NetworkManager log
       run:  podman exec agama journalctl -u NetworkManager
