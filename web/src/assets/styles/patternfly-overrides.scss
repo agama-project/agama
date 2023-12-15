@@ -225,3 +225,9 @@ table td > .pf-v5-c-empty-state {
     --pf-v5-c-expandable-section__content--PaddingLeft: var(--spacer-normal);
   }
 }
+
+.pf-v5-c-form__group-label-help {
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
+}
