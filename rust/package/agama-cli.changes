@@ -2,8 +2,7 @@
 Fri Dec 15 16:29:20 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update agama-cli dependencies including the zerocopy crate to
-  address a security alert
-  (see https://github.com/google/zerocopy/issues/716).
+  address a security alert (see gh#google/zerocopy#716).
 
 -------------------------------------------------------------------
 Wed Dec 13 22:41:34 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
