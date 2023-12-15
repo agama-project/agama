@@ -79,25 +79,28 @@ const MountPointFormSelect = ({ volumes, ...formSelectProps }) => {
 };
 
 /**
- * Btrfs file system type is offered with two flavors, with and without snapshots.
+ * Btrfs file system type can be offered with two flavors, with and without snapshots.
  */
-const BTRFS = Object.freeze({
-  WITH_SNAPSHOTS: "BtrfsWithSnapshots",
-  WITHOUT_SNAPSHOTS: "BtrfsWithoutSnapshots"
-});
+const BTRFS_WITH_SNAPSHOTS = "BtrfsWithSnapshots";
 
 /**
- * Possible file system type options generated from a list of file system types.
+ * Possible file system type options for a volume.
  * @function
  *
- * In some cases, a file system type is replaced by variants of such a file system, @see BTRFS.
- *
+ * @param {import(~/clients/storage).Volume} volume
  * @returns {string[]}
  */
-const fsOptions = (fsTypes) => {
-  return fsTypes.flatMap(fsType => (
-    fsType === "Btrfs" ? [BTRFS.WITH_SNAPSHOTS, BTRFS.WITHOUT_SNAPSHOTS] : fsType
-  ));
+const fsOptions = (volume) => {
+  const options = (volume, fsType) => {
+    if (fsType !== "Btrfs") return fsType;
+
+    const { snapshotsConfigurable } = volume.outline;
+    if (snapshotsConfigurable) return [BTRFS_WITH_SNAPSHOTS, fsType];
+
+    return (volume.snapshots ? BTRFS_WITH_SNAPSHOTS : fsType);
+  };
+
+  return volume.outline.fsTypes.flatMap(fsType => options(volume, fsType));
 };
 
 /**
@@ -110,25 +113,18 @@ const fsOptions = (fsTypes) => {
 const fsOption = ({ fsType, snapshots }) => {
   if (fsType !== "Btrfs") return fsType;
 
-  return (snapshots ? BTRFS.WITH_SNAPSHOTS : BTRFS.WITHOUT_SNAPSHOTS);
+  return (snapshots ? BTRFS_WITH_SNAPSHOTS : fsType);
 };
 
 /**
  * Label for a file system type option.
  * @function
  *
- * @param {*} fsOption
- * @returns
+ * @param {string} fsOption
+ * @returns {string}
  */
 const fsOptionLabel = (fsOption) => {
-  switch (fsOption) {
-    case BTRFS.WITH_SNAPSHOTS:
-      return "Btrfs with snapshots";
-    case BTRFS.WITHOUT_SNAPSHOTS:
-      return "Btrfs without snapshots";
-    default:
-      return fsOption;
-  }
+  return (fsOption === BTRFS_WITH_SNAPSHOTS ? sprintf("Btrfs %s", _("with snapshots")) : fsOption);
 };
 
 /**
@@ -139,14 +135,10 @@ const fsOptionLabel = (fsOption) => {
  * @returns {FsValue}
  */
 const fsValue = (fsOption) => {
-  switch (fsOption) {
-    case BTRFS.WITH_SNAPSHOTS:
-      return { fsType: "Btrfs", snapshots: true };
-    case BTRFS.WITHOUT_SNAPSHOTS:
-      return { fsType: "Btrfs", snapshots: false };
-    default:
-      return { fsType: fsOption, snapshots: false };
-  }
+  if (fsOption === BTRFS_WITH_SNAPSHOTS)
+    return { fsType: "Btrfs", snapshots: true };
+  else
+    return { fsType: fsOption, snapshots: false };
 };
 
 /**
@@ -154,62 +146,32 @@ const fsValue = (fsOption) => {
  * @component
  *
  * @param {object} props
- * @param {import(~/clients/storage).Volume} volume - The selected storage volume.
- * @param {string} props.fsOption - Option value.
+ * @param {string} props.fsOption - File system type option.
  *
  * @returns {ReactComponent}
  */
-const FsSelectOption = ({ volume, fsOption }) => {
-  const isDisabled = () => {
-    switch (fsOption) {
-      case BTRFS.WITH_SNAPSHOTS:
-        return !volume.snapshots && !volume.outline.snapshotsConfigurable;
-      case BTRFS.WITHOUT_SNAPSHOTS:
-        return volume.snapshots && !volume.outline.snapshotsConfigurable;
-      default:
-        return false;
-    }
+const FsSelectOption = ({ fsOption }) => {
+  const label = () => {
+    if (fsOption === BTRFS_WITH_SNAPSHOTS) return "Btrfs";
+    return fsOption;
+  };
+
+  const details = () => {
+    if (fsOption === BTRFS_WITH_SNAPSHOTS) return _("with snapshots");
+    return undefined;
   };
 
   const description = () => {
-    switch (fsOption) {
-      case BTRFS.WITH_SNAPSHOTS:
-        if (!isDisabled()) break;
-        return "This product does not allow Btrfs with snapshots for this mount point";
-      case BTRFS.WITHOUT_SNAPSHOTS:
-        if (!isDisabled()) break;
-        return "This product does not allow Btrfs without snapshots for this mount point";
-    }
+    if (fsOption === BTRFS_WITH_SNAPSHOTS)
+      // TRANSLATORS: description of Btrfs snapshots feature.
+      return _("Allows rolling back any change done to the system and restoring its previous state");
 
     return undefined;
   };
 
-  const label = () => {
-    switch (fsOption) {
-      case BTRFS.WITH_SNAPSHOTS:
-      case BTRFS.WITHOUT_SNAPSHOTS:
-        return "Btrfs";
-      default:
-        return fsOption;
-    }
-  };
-
-  const details = () => {
-    switch (fsOption) {
-      case BTRFS.WITH_SNAPSHOTS:
-        return "with snapshots";
-      case BTRFS.WITHOUT_SNAPSHOTS:
-        return "without snapshots";
-      default:
-        return undefined;
-    }
-  };
-
   return (
-    <SelectOption value={fsOption} isDisabled={isDisabled()} description={description()}>
-      <>
-        <span className="bold">{label()}</span> <If condition={details()} then={<span>{details()}</span>} />
-      </>
+    <SelectOption value={fsOption} description={description()}>
+      <span className="bold">{label()}</span> <If condition={details()} then={details()} />
     </SelectOption>
   );
 };
@@ -229,7 +191,7 @@ const FsSelectOption = ({ volume, fsOption }) => {
 const FsSelect = ({ id, value, volume, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const options = fsOptions(volume.outline.fsTypes);
+  const options = fsOptions(volume);
   const selected = fsOption(value);
 
   const onToggleClick = () => {
@@ -266,7 +228,7 @@ const FsSelect = ({ id, value, volume, onChange }) => {
     >
       <SelectList>
         {options.map((option, index) => (
-          <FsSelectOption key={index} volume={volume} fsOption={option} />
+          <FsSelectOption key={index} fsOption={option} />
         ))}
       </SelectList>
     </Select>

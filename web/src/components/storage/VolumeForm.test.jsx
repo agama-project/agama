@@ -105,8 +105,8 @@ it("renders a control for displaying/selecting the file system type", async () =
 
   const fsTypeButton = screen.getByRole("button", { name: "File system type" });
   await user.click(fsTypeButton);
-  screen.getByRole("option", { name: "Btrfs with snapshots" });
-  screen.getByRole("option", { name: "Btrfs without snapshots" });
+  screen.getByRole("option", { name: /Btrfs with snapshots/ });
+  screen.getByRole("option", { name: "Btrfs" });
   screen.getByRole("option", { name: "Ext4" });
 });
 
