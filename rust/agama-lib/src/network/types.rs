@@ -91,7 +91,7 @@ impl TryFrom<&str> for BondMode {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
-            "round-robin" => Ok(BondMode::RoundRobin),
+            "balance-rr" => Ok(BondMode::RoundRobin),
             "active-backup" => Ok(BondMode::ActiveBackup),
             "balance-xor" => Ok(BondMode::BalanceXOR),
             "broadcast" => Ok(BondMode::Broadcast),

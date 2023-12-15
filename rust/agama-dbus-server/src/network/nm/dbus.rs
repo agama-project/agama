@@ -39,6 +39,9 @@ pub fn connection_to_dbus<'a>(
         connection_dbus.insert("slave-type", "bond".into()); // TODO: only 'bond' is supported
         let master = controller.interface().unwrap_or(controller.id());
         connection_dbus.insert("master", master.into());
+    } else {
+        connection_dbus.insert("slave-type", "".into()); // TODO: only 'bond' is supported
+        connection_dbus.insert("master", "".into());
     }
 
     result.insert("ipv4", ip_config_to_ipv4_dbus(conn.ip_config()));
@@ -149,6 +152,14 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
     if let Some(connection) = conn.get_mut("connection") {
         if connection.get("interface-name").is_some_and(is_empty_value) {
             connection.remove("interface-name");
+        }
+
+        if connection.get("master").is_some_and(is_empty_value) {
+            connection.remove("master");
+        }
+
+        if connection.get("slave-type").is_some_and(is_empty_value) {
+            connection.remove("slave-type");
         }
     }
 

@@ -60,7 +60,7 @@ pub struct BondSettings {
 impl Default for BondSettings {
     fn default() -> Self {
         Self {
-            mode: "round-robin".to_string(),
+            mode: "balance-rr".to_string(),
             options: None,
             ports: vec![],
         }
@@ -170,7 +170,7 @@ mod tests {
     fn test_bonding_defaults() {
         let bond = BondSettings::default();
 
-        assert_eq!(bond.mode, "round-robin".to_string());
+        assert_eq!(bond.mode, "balance-rr".to_string());
         assert_eq!(bond.ports.len(), 0);
         assert_eq!(bond.options, None);
     }
