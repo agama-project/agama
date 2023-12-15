@@ -192,6 +192,7 @@ impl Tree {
     /// * `path`: connection D-Bus path.
     async fn remove_connection_on(&self, path: &str) -> Result<(), ServiceError> {
         let object_server = self.connection.object_server();
+        _ = object_server.remove::<interfaces::Bond, _>(path).await;
         _ = object_server.remove::<interfaces::Wireless, _>(path).await;
         object_server.remove::<interfaces::Ip, _>(path).await?;
         object_server
