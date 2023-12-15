@@ -24,7 +24,7 @@ jobs:
         run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
 
       - name: Install tools
-        run: zypper --non-interactive install --no-recommends diffutils git gettext-tools npm-default
+        run: zypper --non-interactive install --no-recommends diffutils git gettext-tools npm-default "rubygem(yast-rake)" "rubygem(gettext)" yast2-devtools
 
       - name: Checkout Agama sources
         uses: actions/checkout@v3
@@ -140,4 +140,52 @@ jobs:
           cd agama-weblate/products
           find . -name "*.po" -exec msgmerge -U '{}' products.pot \;
           git commit -a -m "Merge new POT file to product translations"$'\n\n'"Agama commit: $GITHUB_SHA"
+          git push
+
+      - name: Generate service POT file
+        run: |
+          cd agama/service
+          rake pot
+          msgfmt --statistics agama.pot
+
+      - name: Validate the generated service POT file
+        run:  msgfmt --check-format agama/service/agama.pot
+
+      - name: Update service POT file
+        run: |
+          mkdir -p agama-weblate/service
+          cp agama/service/agama.pot agama-weblate/service/agama.pot
+
+      # any change besides the timestamp in the POT file?
+      - name: Check service POT changes
+        id: check_service_changes
+        run: |
+          git -C agama-weblate diff --ignore-matching-lines="POT-Creation-Date:" service/agama.pot > pot.diff
+
+          if [ -s pot.diff ]; then
+            echo "POT file updated"
+            echo "pot_updated=true" >> $GITHUB_OUTPUT
+          else
+            echo "POT file unchanged"
+            echo "pot_updated=false" >> $GITHUB_OUTPUT
+            # reset any possible changes so they are not accidentally committed later
+            git -C agama-weblate reset --hard
+          fi
+
+      - name: Push updated service POT file
+        # run only when the POT file has been updated
+        if: steps.check_service_changes.outputs.pot_updated == 'true'
+        run: |
+          cd agama-weblate
+          git add service/agama.pot
+          git commit -m "Update service POT file"$'\n\n'"Agama commit: $GITHUB_SHA"
+          git push
+
+      - name: Merge service POT to service translations
+        # run only when the POT file has been updated
+        if: steps.check_service_changes.outputs.pot_updated == 'true'
+        run: |
+          cd agama-weblate/service
+          find . -name "*.po" -exec msgmerge -U "{}" agama.pot \;
+          git commit -a -m "Merge new POT file to service translations"$'\n\n'"Agama commit: $GITHUB_SHA"
           git push
