@@ -23,7 +23,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { createClient } from "~/client";
-import Overview from "./Overview";
+import { OverviewPage } from "~/components/overview";
 
 let mockProduct;
 const mockProducts = [
@@ -69,8 +69,8 @@ beforeEach(() => {
 });
 
 describe("when product is selected", () => {
-  it("renders the Overview and the Install button", () => {
-    plainRender(<Overview />);
+  it("renders the overview page content and the Install button", () => {
+    plainRender(<OverviewPage />);
     screen.getByRole("heading", { name: "Installation Summary", level: 1 });
     screen.getByText("Product Section");
     screen.getByText("Localization Section");
@@ -88,7 +88,7 @@ describe("when no product is selected", () => {
   });
 
   it("redirects to the product selection page", async () => {
-    plainRender(<Overview />);
+    plainRender(<OverviewPage />);
     // react-router-dom Navigate is mocked. See test-utils for more details.
     await screen.findByText("Navigating to /products");
   });

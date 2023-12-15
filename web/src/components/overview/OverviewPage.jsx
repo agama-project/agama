@@ -33,7 +33,7 @@ import {
 } from "~/components/overview";
 import { _ } from "~/i18n";
 
-function Overview() {
+export default function OverviewPage() {
   const { selectedProduct } = useProduct();
   const [showErrors, setShowErrors] = useState(false);
 
@@ -60,5 +60,3 @@ function Overview() {
     </Page>
   );
 }
-
-export default Overview;
