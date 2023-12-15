@@ -232,6 +232,24 @@ impl Connection {
         self.get_connection().await.id().to_string()
     }
 
+    /// Connection UUID.
+    ///
+    /// Unique identifier of the network connection. It may or not be the same that the used by the
+    /// backend.
+    #[dbus_interface(property)]
+    pub async fn uuid(&self) -> String {
+        self.get_connection().await.uuid().to_string()
+    }
+
+    #[dbus_interface(property)]
+    pub async fn controller(&self) -> String {
+        let connection = self.get_connection().await;
+        match connection.controller() {
+            Some(uuid) => uuid.to_string(),
+            None => "".to_string(),
+        }
+    }
+
     #[dbus_interface(property)]
     pub async fn interface(&self) -> String {
         self.get_connection()
