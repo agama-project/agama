@@ -20,8 +20,8 @@
  */
 
 import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
-import { Button, Text } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
+import { DevelopmentInfo } from "~/components/core";
 import { noop } from "~/utils";
 import { _ } from "~/i18n";
 import useNodeSiblings from "~/hooks/useNodeSiblings";
@@ -98,34 +98,6 @@ export default function Sidebar ({ children, isOpen, onClose = noop }) {
     return () => makeSiblingsAlive();
   }, [makeSiblingsAlive]);
 
-  // display additional info when running in a development server
-  let targetInfo = null;
-  if (process.env.WEBPACK_SERVE) {
-    let targetUrl = COCKPIT_TARGET_URL;
-
-    // change the localhost URL when connected remotely as it means another machine
-    if (COCKPIT_TARGET_URL.includes("localhost") && window.location.hostname !== "localhost") {
-      const urlTarget = new URL(COCKPIT_TARGET_URL);
-      const url = new URL(window.location);
-      url.port = urlTarget.port;
-      url.pathname = "/";
-      url.search = "";
-      url.hash = "";
-      targetUrl = url.toString();
-    }
-
-    targetInfo = (
-      /* this is only displayed in the development mode, not in production, do not translate it */
-      /* eslint-disable-next-line i18next/no-literal-string */
-      <Text>
-        Target server: { " " }
-        <Button isInline variant="link" component="a" href={ targetUrl } target="_blank">
-          { targetUrl }
-        </Button>
-      </Text>
-    );
-  }
-
   return (
     <aside
       id="global-options"
@@ -161,7 +133,7 @@ export default function Sidebar ({ children, isOpen, onClose = noop }) {
           {_("Close")}
           <Icon size="16" name="menu_open" data-variant="flip-X" />
         </a>
-        { targetInfo }
+        <DevelopmentInfo />
       </footer>
     </aside>
   );
