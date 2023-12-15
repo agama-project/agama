@@ -1,3 +1,4 @@
 .log/
 .yardoc/
 .vscode/tasks.json
+/*.pot
