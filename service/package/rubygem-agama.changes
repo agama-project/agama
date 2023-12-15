@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Dec 15 15:04:43 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Set snapshots as not configurable by default
+  (gh#openSUSE/agama#926).
+
+-------------------------------------------------------------------
 Tue Dec  5 09:49:10 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Explicitly add dependencies instead of relying on the live ISO
