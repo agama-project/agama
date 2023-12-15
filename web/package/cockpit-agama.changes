@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Dec 15 15:03:40 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Allow selecting file system type and configure snapshots
+  (gh#openSUSE/agama/926).
+
+-------------------------------------------------------------------
 Sat Dec  2 18:06:02 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 6
