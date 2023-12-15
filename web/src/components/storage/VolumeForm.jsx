@@ -29,7 +29,7 @@ import { sprintf } from "sprintf-js";
 import { _, N_ } from "~/i18n";
 import { FormValidationError, If, NumericTextInput } from '~/components/core';
 import { DEFAULT_SIZE_UNIT, SIZE_METHODS, SIZE_UNITS, parseToBytes, splitSize } from '~/components/storage/utils';
-import { Icon } from "../layout";
+import { Icon } from "~/components/layout";
 
 /**
  * Callback function for notifying a form input change
@@ -278,6 +278,7 @@ const FsField = ({ value, volume, onChange }) => {
     );
   };
 
+  // TRANSLATORS: label for the file system selector.
   const label = _("File system type");
 
   return (
