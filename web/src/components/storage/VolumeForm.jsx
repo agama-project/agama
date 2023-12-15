@@ -22,13 +22,14 @@
 import React, { useReducer, useState } from "react";
 import {
   InputGroup, InputGroupItem, Form, FormGroup, FormSelect, FormSelectOption, MenuToggle,
-  Radio, Select, SelectOption, SelectList
+  Popover, Radio, Select, SelectOption, SelectList
 } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
 import { _, N_ } from "~/i18n";
 import { FormValidationError, If, NumericTextInput } from '~/components/core';
 import { DEFAULT_SIZE_UNIT, SIZE_METHODS, SIZE_UNITS, parseToBytes, splitSize } from '~/components/storage/utils';
+import { Icon } from "../layout";
 
 /**
  * Callback function for notifying a form input change
@@ -259,18 +260,36 @@ const FsField = ({ value, volume, onChange }) => {
     return fsTypes.length === 1 && (fsTypes[0] !== "Btrfs" || !snapshotsConfigurable);
   };
 
+  const Info = () => {
+    // TRANSLATORS: info about possible file system types.
+    const text = _("The options for the file system type depends on the product and the mount point.");
+
+    return (
+      <Popover showClose={false} bodyContent={text} maxWidth="18em">
+        <button
+          type="button"
+          aria-label={_("More info for file system types")}
+          onClick={e => e.preventDefault()}
+          className="pf-v5-c-form__group-label-help"
+        >
+          <Icon name="info" size="16" />
+        </button>
+      </Popover>
+    );
+  };
+
   const label = _("File system type");
 
   return (
     <If
       condition={isSingleFs()}
       then={
-        <FormGroup label={label}>
-          <p>{fsOptionLabel(value.fsType)}</p>
+        <FormGroup label={label} labelIcon={<Info />}>
+          <p>{fsOptionLabel(fsOption(value))}</p>
         </FormGroup>
       }
       else={
-        <FormGroup isRequired label={label} fieldId="fsType">
+        <FormGroup isRequired label={label} labelIcon={<Info />} fieldId="fsType">
           <FsSelect id="fsType" value={value} volume={volume} onChange={onChange} />
         </FormGroup>
       }
