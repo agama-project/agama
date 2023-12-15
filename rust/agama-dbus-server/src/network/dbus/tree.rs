@@ -88,6 +88,7 @@ impl Tree {
         let mut objects = self.objects.lock().await;
 
         let orig_id = conn.id().to_owned();
+        let uuid = conn.uuid();
         let (id, path) = objects.register_connection(conn);
         if id != conn.id() {
             conn.set_id(&id)
@@ -112,6 +113,12 @@ impl Tree {
             interfaces::Match::new(self.actions.clone(), Arc::clone(&cloned)),
         )
         .await?;
+
+        if let Connection::Bond(_) = conn {
+            self.add_interface(&path, interfaces::Bond::new(self.actions.clone(), uuid))
+                .await?;
+        }
+
         if let Connection::Wireless(_) = conn {
             self.add_interface(
                 &path,
@@ -185,6 +192,7 @@ impl Tree {
     /// * `path`: connection D-Bus path.
     async fn remove_connection_on(&self, path: &str) -> Result<(), ServiceError> {
         let object_server = self.connection.object_server();
+        _ = object_server.remove::<interfaces::Bond, _>(path).await;
         _ = object_server.remove::<interfaces::Wireless, _>(path).await;
         object_server.remove::<interfaces::Ip, _>(path).await?;
         object_server

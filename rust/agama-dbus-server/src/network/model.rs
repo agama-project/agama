@@ -3,7 +3,7 @@
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //! agnostic from the real network service (e.g., NetworkManager).
 use crate::network::error::NetworkStateError;
-use agama_lib::network::types::{DeviceType, SSID};
+use agama_lib::network::types::{BondMode, DeviceType, SSID};
 use cidr::IpInet;
 use std::{
     collections::HashMap,
@@ -15,8 +15,10 @@ use std::{
 use thiserror::Error;
 use uuid::Uuid;
 use zbus::zvariant::Value;
+mod builder;
+pub use builder::ConnectionBuilder;
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct NetworkState {
     pub devices: Vec<Device>,
     pub connections: Vec<Connection>,
@@ -43,16 +45,39 @@ impl NetworkState {
 
     /// Get connection by UUID
     ///
-    /// * `uuid`: connection UUID
+    /// * `id`: connection UUID
+    pub fn get_connection_by_uuid(&self, uuid: Uuid) -> Option<&Connection> {
+        self.connections.iter().find(|c| c.uuid() == uuid)
+    }
+
+    /// Get connection by interface
+    ///
+    /// * `name`: connection interface name
+    pub fn get_connection_by_interface(&self, name: &str) -> Option<&Connection> {
+        let interface = Some(name);
+        self.connections.iter().find(|c| c.interface() == interface)
+    }
+
+    /// Get connection by ID
+    ///
+    /// * `id`: connection ID
     pub fn get_connection(&self, id: &str) -> Option<&Connection> {
         self.connections.iter().find(|c| c.id() == id)
     }
 
-    /// Get connection by UUID as mutable
+    /// Get connection by ID as mutable
     ///
-    /// * `uuid`: connection UUID
+    /// * `id`: connection ID
     pub fn get_connection_mut(&mut self, id: &str) -> Option<&mut Connection> {
         self.connections.iter_mut().find(|c| c.id() == id)
+    }
+
+    pub fn get_controlled_by(&mut self, uuid: Uuid) -> Vec<&Connection> {
+        let uuid = Some(uuid);
+        self.connections
+            .iter()
+            .filter(|c| c.controller() == uuid)
+            .collect()
     }
 
     /// Adds a new connection.
@@ -62,8 +87,8 @@ impl NetworkState {
         if self.get_connection(conn.id()).is_some() {
             return Err(NetworkStateError::ConnectionExists(conn.uuid()));
         }
-
         self.connections.push(conn);
+
         Ok(())
     }
 
@@ -76,8 +101,8 @@ impl NetworkState {
         let Some(old_conn) = self.get_connection_mut(conn.id()) else {
             return Err(NetworkStateError::UnknownConnection(conn.id().to_string()));
         };
-
         *old_conn = conn;
+
         Ok(())
     }
 
@@ -92,14 +117,50 @@ impl NetworkState {
         conn.remove();
         Ok(())
     }
+
+    /// Sets a controller's ports.
+    ///
+    /// If the connection is not a controller, returns an error.
+    ///
+    /// * `controller`: controller to set ports on.
+    /// * `ports`: list of port names (using the connection ID or the interface name).
+    pub fn set_ports(
+        &mut self,
+        controller: &Connection,
+        ports: Vec<String>,
+    ) -> Result<(), NetworkStateError> {
+        if let Connection::Bond(_) = &controller {
+            let mut controlled = vec![];
+            for port in ports {
+                let connection = self
+                    .get_connection_by_interface(&port)
+                    .or_else(|| self.get_connection(&port))
+                    .ok_or(NetworkStateError::UnknownConnection(port))?;
+                controlled.push(connection.uuid());
+            }
+
+            for conn in self.connections.iter_mut() {
+                if controlled.contains(&conn.uuid()) {
+                    conn.set_controller(controller.uuid());
+                } else if conn.controller() == Some(controller.uuid()) {
+                    conn.unset_controller();
+                }
+            }
+            Ok(())
+        } else {
+            Err(NetworkStateError::NotControllerConnection(
+                controller.id().to_owned(),
+            ))
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use uuid::Uuid;
-
+    use super::builder::ConnectionBuilder;
     use super::*;
     use crate::network::error::NetworkStateError;
+    use uuid::Uuid;
 
     #[test]
     fn test_add_connection() {
@@ -206,6 +267,61 @@ mod tests {
         let conn = Connection::Loopback(LoopbackConnection { base });
         assert!(conn.is_loopback());
     }
+
+    #[test]
+    fn test_set_bonding_ports() {
+        let mut state = NetworkState::default();
+        let eth0 = ConnectionBuilder::new("eth0")
+            .with_interface("eth0")
+            .build();
+        let eth1 = ConnectionBuilder::new("eth1")
+            .with_interface("eth1")
+            .build();
+        let bond0 = ConnectionBuilder::new("bond0")
+            .with_type(DeviceType::Bond)
+            .build();
+
+        state.add_connection(eth0).unwrap();
+        state.add_connection(eth1).unwrap();
+        state.add_connection(bond0.clone()).unwrap();
+
+        state.set_ports(&bond0, vec!["eth1".to_string()]).unwrap();
+
+        let eth1_found = state.get_connection("eth1").unwrap();
+        assert_eq!(eth1_found.controller(), Some(bond0.uuid()));
+        let eth0_found = state.get_connection("eth0").unwrap();
+        assert_eq!(eth0_found.controller(), None);
+    }
+
+    #[test]
+    fn test_set_bonding_missing_port() {
+        let mut state = NetworkState::default();
+        let bond0 = ConnectionBuilder::new("bond0")
+            .with_type(DeviceType::Bond)
+            .build();
+        state.add_connection(bond0.clone()).unwrap();
+
+        let error = state
+            .set_ports(&bond0, vec!["eth0".to_string()])
+            .unwrap_err();
+        dbg!(&error);
+        assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
+    }
+
+    #[test]
+    fn test_set_non_controller_ports() {
+        let mut state = NetworkState::default();
+        let eth0 = ConnectionBuilder::new("eth0").build();
+        state.add_connection(eth0.clone()).unwrap();
+
+        let error = state
+            .set_ports(&eth0, vec!["eth1".to_string()])
+            .unwrap_err();
+        assert!(matches!(
+            error,
+            NetworkStateError::NotControllerConnection(_),
+        ));
+    }
 }
 
 /// Network device
@@ -222,12 +338,14 @@ pub enum Connection {
     Wireless(WirelessConnection),
     Loopback(LoopbackConnection),
     Dummy(DummyConnection),
+    Bond(BondConnection),
 }
 
 impl Connection {
     pub fn new(id: String, device_type: DeviceType) -> Self {
         let base = BaseConnection {
             id,
+            uuid: Uuid::new_v4(),
             ..Default::default()
         };
         match device_type {
@@ -238,6 +356,10 @@ impl Connection {
             DeviceType::Loopback => Connection::Loopback(LoopbackConnection { base }),
             DeviceType::Ethernet => Connection::Ethernet(EthernetConnection { base }),
             DeviceType::Dummy => Connection::Dummy(DummyConnection { base }),
+            DeviceType::Bond => Connection::Bond(BondConnection {
+                base,
+                ..Default::default()
+            }),
         }
     }
 
@@ -249,6 +371,7 @@ impl Connection {
             Connection::Wireless(conn) => &conn.base,
             Connection::Loopback(conn) => &conn.base,
             Connection::Dummy(conn) => &conn.base,
+            Connection::Bond(conn) => &conn.base,
         }
     }
 
@@ -258,6 +381,7 @@ impl Connection {
             Connection::Wireless(conn) => &mut conn.base,
             Connection::Loopback(conn) => &mut conn.base,
             Connection::Dummy(conn) => &mut conn.base,
+            Connection::Bond(conn) => &mut conn.base,
         }
     }
 
@@ -269,19 +393,34 @@ impl Connection {
         self.base_mut().id = id.to_string()
     }
 
-    pub fn interface(&self) -> &str {
-        self.base().interface.as_str()
+    pub fn interface(&self) -> Option<&str> {
+        self.base().interface.as_deref()
     }
 
     pub fn set_interface(&mut self, interface: &str) {
-        self.base_mut().interface = interface.to_string()
+        self.base_mut().interface = Some(interface.to_string())
+    }
+
+    /// A port's controller name, e.g.: bond0, br0
+    pub fn controller(&self) -> Option<Uuid> {
+        self.base().controller
+    }
+
+    /// Sets the port's controller.
+    ///
+    /// `controller`: Uuid of the controller (Bridge, Bond, Team), e.g.: bond0.
+    pub fn set_controller(&mut self, controller: Uuid) {
+        self.base_mut().controller = Some(controller)
+    }
+
+    pub fn unset_controller(&mut self) {
+        self.base_mut().controller = None;
     }
 
     pub fn uuid(&self) -> Uuid {
         self.base().uuid
     }
 
-    /// FIXME: rename to ip_config
     pub fn ip_config(&self) -> &IpConfig {
         &self.base().ip_config
     }
@@ -315,6 +454,7 @@ impl Connection {
         matches!(self, Connection::Loopback(_))
             || matches!(self, Connection::Ethernet(_))
             || matches!(self, Connection::Dummy(_))
+            || matches!(self, Connection::Bond(_))
     }
 
     pub fn mac_address(&self) -> String {
@@ -333,7 +473,8 @@ pub struct BaseConnection {
     pub mac_address: MacAddress,
     pub ip_config: IpConfig,
     pub status: Status,
-    pub interface: String,
+    pub interface: Option<String>,
+    pub controller: Option<Uuid>,
     pub match_config: MatchConfig,
 }
 
@@ -554,6 +695,61 @@ pub struct LoopbackConnection {
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct DummyConnection {
     pub base: BaseConnection,
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct BondConnection {
+    pub base: BaseConnection,
+    pub bond: BondConfig,
+}
+
+impl BondConnection {
+    pub fn set_mode(&mut self, mode: BondMode) {
+        self.bond.mode = mode;
+    }
+
+    pub fn set_options(&mut self, options: BondOptions) {
+        self.bond.options = options;
+    }
+}
+
+#[derive(Debug, Default, Clone, PartialEq)]
+pub struct BondOptions(pub HashMap<String, String>);
+
+impl TryFrom<&str> for BondOptions {
+    type Error = NetworkStateError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let mut options = HashMap::new();
+
+        for opt in value.split_whitespace() {
+            let (key, value) = opt
+                .trim()
+                .split_once('=')
+                .ok_or(NetworkStateError::InvalidBondOptions)?;
+            options.insert(key.to_string(), value.to_string());
+        }
+
+        Ok(BondOptions(options))
+    }
+}
+
+impl fmt::Display for BondOptions {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let opts = &self
+            .0
+            .iter()
+            .map(|(key, value)| format!("{key}={value}"))
+            .collect::<Vec<_>>();
+
+        write!(f, "{}", opts.join(" "))
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct BondConfig {
+    pub mode: BondMode,
+    pub options: BondOptions,
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]

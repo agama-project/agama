@@ -56,6 +56,7 @@ module Agama
       include Helpers
       include WithIssues
       include WithProgress
+      include Yast::I18n
 
       GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
       private_constant :GPG_KEYS_GLOB
@@ -84,6 +85,8 @@ module Agama
       # @param config [Agama::Config]
       # @param logger [Logger]
       def initialize(config, logger)
+        textdomain "agama"
+
         @config = config
         @logger = logger
         @languages = DEFAULT_LANGUAGES
@@ -128,14 +131,14 @@ module Agama
           start_progress(4)
           store_original_repos
           Yast::PackageCallbacks.InitPackageCallbacks(logger)
-          progress.step("Initializing target repositories") { initialize_target_repos }
-          progress.step("Initializing sources") { add_base_repos }
+          progress.step(_("Initializing target repositories")) { initialize_target_repos }
+          progress.step(_("Initializing sources")) { add_base_repos }
         else
           start_progress(2)
         end
 
-        progress.step("Refreshing repositories metadata") { repositories.load }
-        progress.step("Calculating the software proposal") { propose }
+        progress.step(_("Refreshing repositories metadata")) { repositories.load }
+        progress.step(_("Calculating the software proposal")) { propose }
 
         Yast::Stage.Set("initial")
         update_issues
@@ -184,13 +187,13 @@ module Agama
       # Writes the repositories information to the installed system
       def finish
         start_progress(2)
-        progress.step("Writing repositories to the target system") do
+        progress.step(_("Writing repositories to the target system")) do
           Yast::Pkg.SourceSaveAll
           Yast::Pkg.TargetFinish
           Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
           registration.finish
         end
-        progress.step("Restoring original repositories") { restore_original_repos }
+        progress.step(_("Restoring original repositories")) { restore_original_repos }
       end
 
       # Determine whether the given tag is provided by the selected packages
@@ -459,7 +462,7 @@ module Agama
       # @return [Array<Agama::Issue>]
       def repos_issues
         repositories.disabled.map do |repo|
-          Issue.new("Could not read the repository #{repo.name}",
+          Issue.new(_("Could not read repository \"%s\"") % repo.name,
             source:   Issue::Source::SYSTEM,
             severity: Issue::Severity::ERROR)
         end
@@ -469,7 +472,7 @@ module Agama
       #
       # @return [Agama::Issue]
       def missing_product_issue
-        Issue.new("Product not selected yet",
+        Issue.new(_("Product not selected yet"),
           source:   Issue::Source::CONFIG,
           severity: Issue::Severity::ERROR)
       end
@@ -478,7 +481,7 @@ module Agama
       #
       # @return [Agama::Issue]
       def missing_registration_issue
-        Issue.new("Product must be registered",
+        Issue.new(_("Product must be registered"),
           source:   Issue::Source::SYSTEM,
           severity: Issue::Severity::ERROR)
       end

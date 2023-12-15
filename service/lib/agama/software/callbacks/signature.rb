@@ -29,11 +29,15 @@ module Agama
     module Callbacks
       # Callbacks related to signatures handling
       class Signature
+        include Yast::I18n
+
         # Constructor
         #
         # @param questions_client [Agama::DBus::Clients::Questions]
         # @param logger [Logger]
         def initialize(questions_client, logger)
+          textdomain "agama"
+
           @questions_client = questions_client
           @logger = logger
         end
@@ -56,16 +60,16 @@ module Agama
           repo = Yast::Pkg.SourceGeneralData(repo_id)
           source = if repo
             format(
-              "The file %{filename} from repository %{repo_name} (%{repo_url})",
+              _("The file %{filename} from repository %{repo_name} (%{repo_url})"),
               filename: filename, repo_name: repo["name"], repo_url: repo["url"]
             )
           else
-            format("The file %{filename}", filename: filename)
+            format(_("The file %{filename}"), filename: filename)
           end
 
           message = format(
-            "%{source} is not digitally signed. The origin and integrity of the file cannot be " \
-            "verified. Use it anyway?", source: source
+            _("%{source} is not digitally signed. The origin and integrity of the file cannot be " \
+              "verified. Use it anyway?"), source: source
           )
 
           question = Agama::Question.new(
@@ -87,8 +91,8 @@ module Agama
         def import_gpg_key(key, _repo_id)
           fingerprint = key["fingerprint"].scan(/.{4}/).join(" ")
           message = format(
-            "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. " \
-            "Do you want to trust this key?",
+            _("The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. " \
+              "Do you want to trust this key?"),
             id: key["id"], name: key["name"], fingerprint: fingerprint
           )
 

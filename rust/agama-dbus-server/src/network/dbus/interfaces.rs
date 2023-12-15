@@ -2,19 +2,22 @@
 //!
 //! This module contains the set of D-Bus interfaces that are exposed by [D-Bus network
 //! service](crate::NetworkService).
+
 use super::ObjectsRegistry;
 use crate::network::{
     action::Action,
     error::NetworkStateError,
     model::{
-        Connection as NetworkConnection, Device as NetworkDevice, MacAddress, WirelessConnection,
+        BondConnection, Connection as NetworkConnection, Device as NetworkDevice, MacAddress,
+        WirelessConnection,
     },
 };
 
 use agama_lib::network::types::SSID;
 use std::{str::FromStr, sync::Arc};
-use tokio::sync::mpsc::UnboundedSender;
+use tokio::sync::{mpsc::UnboundedSender, oneshot};
 use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
+use uuid::Uuid;
 use zbus::{
     dbus_interface,
     zvariant::{ObjectPath, OwnedObjectPath},
@@ -229,9 +232,31 @@ impl Connection {
         self.get_connection().await.id().to_string()
     }
 
+    /// Connection UUID.
+    ///
+    /// Unique identifier of the network connection. It may or not be the same that the used by the
+    /// backend.
+    #[dbus_interface(property)]
+    pub async fn uuid(&self) -> String {
+        self.get_connection().await.uuid().to_string()
+    }
+
+    #[dbus_interface(property)]
+    pub async fn controller(&self) -> String {
+        let connection = self.get_connection().await;
+        match connection.controller() {
+            Some(uuid) => uuid.to_string(),
+            None => "".to_string(),
+        }
+    }
+
     #[dbus_interface(property)]
     pub async fn interface(&self) -> String {
-        self.get_connection().await.interface().to_string()
+        self.get_connection()
+            .await
+            .interface()
+            .unwrap_or("")
+            .to_string()
     }
 
     #[dbus_interface(property)]
@@ -293,6 +318,106 @@ impl Match {
             .send(Action::UpdateConnection(connection.clone()))
             .unwrap();
         Ok(())
+    }
+}
+
+/// D-Bus interface for Bond settings.
+pub struct Bond {
+    actions: Arc<Mutex<UnboundedSender<Action>>>,
+    uuid: Uuid,
+}
+
+impl Bond {
+    /// Creates a Bond interface object.
+    ///
+    /// * `actions`: sending-half of a channel to send actions.
+    /// * `uuid`: connection UUID.
+    pub fn new(actions: UnboundedSender<Action>, uuid: Uuid) -> Self {
+        Self {
+            actions: Arc::new(Mutex::new(actions)),
+            uuid,
+        }
+    }
+
+    /// Gets the bond connection.
+    ///
+    /// Beware that it crashes when it is not a bond connection.
+    async fn get_bond(&self) -> BondConnection {
+        let actions = self.actions.lock().await;
+        let (tx, rx) = oneshot::channel();
+        actions.send(Action::GetConnection(self.uuid, tx)).unwrap();
+        let connection = rx.await.unwrap();
+
+        match connection {
+            Some(NetworkConnection::Bond(config)) => config,
+            _ => panic!("Not a bond connection. This is most probably a bug."),
+        }
+    }
+
+    /// Updates the connection data in the NetworkSystem.
+    ///
+    /// * `connection`: Updated connection.
+    async fn update_connection<'a>(&self, connection: BondConnection) -> zbus::fdo::Result<()> {
+        let actions = self.actions.lock().await;
+        let connection = NetworkConnection::Bond(connection.clone());
+        actions.send(Action::UpdateConnection(connection)).unwrap();
+        Ok(())
+    }
+}
+
+#[dbus_interface(name = "org.opensuse.Agama1.Network.Connection.Bond")]
+impl Bond {
+    /// Bonding mode.
+    #[dbus_interface(property)]
+    pub async fn mode(&self) -> String {
+        let connection = self.get_bond().await;
+        connection.bond.mode.to_string()
+    }
+
+    #[dbus_interface(property)]
+    pub async fn set_mode(&mut self, mode: &str) -> zbus::fdo::Result<()> {
+        let mut connection = self.get_bond().await;
+        connection.set_mode(mode.try_into()?);
+        self.update_connection(connection).await
+    }
+
+    /// List of bonding options.
+    #[dbus_interface(property)]
+    pub async fn options(&self) -> String {
+        let connection = self.get_bond().await;
+        connection.bond.options.to_string()
+    }
+
+    #[dbus_interface(property)]
+    pub async fn set_options(&mut self, opts: &str) -> zbus::fdo::Result<()> {
+        let mut connection = self.get_bond().await;
+        connection.set_options(opts.try_into()?);
+        self.update_connection(connection).await
+    }
+
+    /// List of bond ports.
+    ///
+    /// For the port names, it uses the interface name (preferred) or, as a fallback,
+    /// the connection ID of the port.
+    #[dbus_interface(property)]
+    pub async fn ports(&self) -> zbus::fdo::Result<Vec<String>> {
+        let actions = self.actions.lock().await;
+        let (tx, rx) = oneshot::channel();
+        actions.send(Action::GetController(self.uuid, tx)).unwrap();
+
+        let (_, ports) = rx.await.unwrap()?;
+        Ok(ports)
+    }
+
+    #[dbus_interface(property)]
+    pub async fn set_ports(&mut self, ports: Vec<String>) -> zbus::fdo::Result<()> {
+        let actions = self.actions.lock().await;
+        let (tx, rx) = oneshot::channel();
+        actions
+            .send(Action::SetPorts(self.uuid, ports, tx))
+            .unwrap();
+        let result = rx.await.unwrap();
+        Ok(result?)
     }
 }
 
@@ -477,7 +602,6 @@ impl Wireless {
         connection.wireless.security = security
             .try_into()
             .map_err(|_| NetworkStateError::InvalidSecurityProtocol(security.to_string()))?;
-        self.update_connection(connection).await?;
-        Ok(())
+        self.update_connection(connection).await
     }
 }

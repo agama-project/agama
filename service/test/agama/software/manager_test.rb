@@ -148,10 +148,10 @@ describe Agama::Software::Manager do
 
         expect(subject.issues).to include(
           an_object_having_attributes(
-            description: /could not read the repository Repo #1/i
+            description: /Could not read repository "Repo #1"/i
           ),
           an_object_having_attributes(
-            description: /could not read the repository Repo #2/i
+            description: /Could not read repository "Repo #2"/i
           )
         )
       end
