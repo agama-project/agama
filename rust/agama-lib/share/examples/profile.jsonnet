@@ -47,7 +47,8 @@ local findBiggestDisk(disks) =
         wireless: {
           password: 'agama.test',
           security: 'wpa-psk',
-          ssid: 'AgamaNetwork'
+          ssid: 'AgamaNetwork',
+          mode: 'infrastructure'
         }
       },
       {
@@ -63,6 +64,15 @@ local findBiggestDisk(disks) =
         match: {
             path: ["pci-0000:00:19.0"]
           }
+      },
+      {
+        id: 'bond0',
+        bond: {
+            ports: ['eth0', 'eth1'],
+            mode: 'active-backup',
+            options: "primary=eth1"
+
+        }
       }
     ]
   }

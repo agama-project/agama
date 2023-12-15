@@ -1,6 +1,8 @@
+use super::error::NetworkStateError;
 use crate::network::{dbus::Tree, model::Connection, Action, Adapter, NetworkState};
 use std::error::Error;
 use tokio::sync::mpsc::{self, UnboundedReceiver, UnboundedSender};
+use uuid::Uuid;
 
 /// Represents the network system using holding the state and setting up the D-Bus tree.
 pub struct NetworkSystem<T: Adapter> {
@@ -70,6 +72,18 @@ impl<T: Adapter> NetworkSystem<T> {
                 self.tree.add_connection(&mut conn, true).await?;
                 self.state.add_connection(conn)?;
             }
+            Action::GetConnection(uuid, rx) => {
+                let conn = self.state.get_connection_by_uuid(uuid);
+                rx.send(conn.cloned()).unwrap();
+            }
+            Action::GetController(uuid, rx) => {
+                let result = self.get_controller_action(uuid);
+                rx.send(result).unwrap()
+            }
+            Action::SetPorts(uuid, ports, rx) => {
+                let result = self.set_ports_action(uuid, ports);
+                rx.send(result).unwrap();
+            }
             Action::UpdateConnection(conn) => {
                 self.state.update_connection(conn)?;
             }
@@ -88,5 +102,37 @@ impl<T: Adapter> NetworkSystem<T> {
         }
 
         Ok(())
+    }
+
+    fn set_ports_action(
+        &mut self,
+        uuid: Uuid,
+        ports: Vec<String>,
+    ) -> Result<(), NetworkStateError> {
+        let conn = self
+            .state
+            .get_connection_by_uuid(uuid)
+            .ok_or(NetworkStateError::UnknownConnection(uuid.to_string()))?;
+        self.state.set_ports(&conn.clone(), ports)
+    }
+
+    fn get_controller_action(
+        &mut self,
+        uuid: Uuid,
+    ) -> Result<(Connection, Vec<String>), NetworkStateError> {
+        let conn = self
+            .state
+            .get_connection_by_uuid(uuid)
+            .ok_or(NetworkStateError::UnknownConnection(uuid.to_string()))?;
+        let conn = conn.clone();
+
+        let controlled = self
+            .state
+            .get_controlled_by(uuid)
+            .iter()
+            .map(|c| c.interface().unwrap_or(c.id()).to_string())
+            .collect::<Vec<_>>();
+
+        Ok((conn, controlled))
     }
 }

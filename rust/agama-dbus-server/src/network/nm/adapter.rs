@@ -39,26 +39,64 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
         })
     }
 
+    /// Writes the connections to NetworkManager.
+    ///
+    /// Internally, it creates an ordered list of connections before processing them. The reason is
+    /// that using async recursive functions is giving us some troubles, so we decided to go with a
+    /// simpler approach.
+    ///
+    /// * `network`: network model.
     fn write(&self, network: &NetworkState) -> Result<(), Box<dyn std::error::Error>> {
         // By now, traits do not support async functions. Using `task::block_on` allows
         // to use 'await'.
         task::block_in_place(|| {
             Handle::current().block_on(async {
-                for conn in &network.connections {
+                for conn in ordered_connections(network) {
                     if !Self::is_writable(conn) {
                         continue;
                     }
-                    if conn.is_removed() {
-                        if let Err(e) = self.client.remove_connection(conn.uuid()).await {
-                            log::error!("Could not remove the connection {}: {}", conn.id(), e);
-                        }
-                    } else if let Err(e) = self.client.add_or_update_connection(conn).await {
-                        log::error!("Could not add/update the connection {}: {}", conn.id(), e);
+                    let result = if conn.is_removed() {
+                        self.client.remove_connection(conn.uuid()).await
+                    } else {
+                        let ctrl = conn
+                            .controller()
+                            .and_then(|uuid| network.get_connection_by_uuid(uuid));
+                        self.client.add_or_update_connection(conn, ctrl).await
+                    };
+
+                    if let Err(e) = result {
+                        log::error!("Could not process the connection {}: {}", conn.id(), e);
                     }
                 }
             })
         });
         // FIXME: indicate which connections could not be written.
         Ok(())
+    }
+}
+
+/// Returns the connections in the order they should be processed.
+///
+/// * `network`: network model.
+fn ordered_connections(network: &NetworkState) -> Vec<&Connection> {
+    let mut conns: Vec<&Connection> = vec![];
+    for conn in &network.connections {
+        add_ordered_connections(conn, network, &mut conns);
+    }
+    conns
+}
+
+fn add_ordered_connections<'b>(
+    conn: &'b Connection,
+    network: &'b NetworkState,
+    conns: &mut Vec<&'b Connection>,
+) {
+    if let Some(uuid) = conn.controller() {
+        let controller = network.get_connection_by_uuid(uuid).unwrap();
+        add_ordered_connections(controller, network, conns);
+    }
+
+    if !conns.contains(&conn) {
+        conns.push(conn);
     }
 }

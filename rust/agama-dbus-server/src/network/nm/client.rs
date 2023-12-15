@@ -1,5 +1,10 @@
 //! NetworkManager client.
-use super::dbus::{connection_from_dbus, connection_to_dbus, merge_dbus_connections};
+use std::collections::HashMap;
+
+use super::dbus::{
+    cleanup_dbus_connection, connection_from_dbus, connection_to_dbus, controller_from_dbus,
+    merge_dbus_connections,
+};
 use super::model::NmDeviceType;
 use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
 use crate::network::model::{Connection, Device};
@@ -68,6 +73,9 @@ impl<'a> NetworkManagerClient<'a> {
 
     /// Returns the list of network connections.
     pub async fn connections(&self) -> Result<Vec<Connection>, ServiceError> {
+        let mut controlled_by: HashMap<Uuid, String> = HashMap::new();
+        let mut uuids_map: HashMap<String, Uuid> = HashMap::new();
+
         let proxy = SettingsProxy::new(&self.connection).await?;
         let paths = proxy.list_connections().await?;
         let mut connections: Vec<Connection> = Vec::with_capacity(paths.len());
@@ -77,19 +85,47 @@ impl<'a> NetworkManagerClient<'a> {
                 .build()
                 .await?;
             let settings = proxy.get_settings().await?;
-            // TODO: log an error if a connection is not found
-            if let Some(connection) = connection_from_dbus(settings) {
+
+            if let Some(connection) = connection_from_dbus(settings.clone()) {
+                if let Some(controller) = controller_from_dbus(&settings) {
+                    controlled_by.insert(connection.uuid(), controller.to_string());
+                }
+                if let Some(iname) = connection.interface() {
+                    uuids_map.insert(iname.to_string(), connection.uuid());
+                }
                 connections.push(connection);
             }
         }
+
+        for conn in connections.iter_mut() {
+            let Some(interface_name) = controlled_by.get(&conn.uuid()) else {
+                continue;
+            };
+
+            if let Some(uuid) = uuids_map.get(interface_name) {
+                conn.set_controller(*uuid);
+            } else {
+                log::warn!(
+                    "Could not found a connection for the interface '{}' (required by connection '{}')",
+                    interface_name,
+                    conn.id()
+                );
+            }
+        }
+
         Ok(connections)
     }
 
     /// Adds or updates a connection if it already exists.
     ///
     /// * `conn`: connection to add or update.
-    pub async fn add_or_update_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
-        let new_conn = connection_to_dbus(conn);
+    pub async fn add_or_update_connection(
+        &self,
+        conn: &Connection,
+        controller: Option<&Connection>,
+    ) -> Result<(), ServiceError> {
+        let mut new_conn = connection_to_dbus(conn, controller);
+
         let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid()).await {
             let original = proxy.get_settings().await?;
             let merged = merge_dbus_connections(&original, &new_conn);
@@ -97,8 +133,10 @@ impl<'a> NetworkManagerClient<'a> {
             OwnedObjectPath::from(proxy.path().to_owned())
         } else {
             let proxy = SettingsProxy::new(&self.connection).await?;
+            cleanup_dbus_connection(&mut new_conn);
             proxy.add_connection(new_conn).await?
         };
+
         self.activate_connection(path).await?;
         Ok(())
     }

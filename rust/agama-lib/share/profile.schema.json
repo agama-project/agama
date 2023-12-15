@@ -127,6 +127,27 @@
                   }
                 }
               },
+              "bond": {
+                "type": "object",
+                "description": "Bonding configuration",
+                "additionalProperties": false,
+                "properties": {
+                  "mode": {
+                    "type": "string"
+                  },
+                  "options": {
+                    "type": "string"
+                  },
+                  "ports": {
+                    "type": "array",
+                    "items": {
+                      "description": "A list of the interfaces or connections to be bonded",
+                      "type": "string",
+                      "additionalProperties": false
+                    }
+                  }
+                }
+              },
               "match": {
                 "type": "object",
                 "description": "Match settings",

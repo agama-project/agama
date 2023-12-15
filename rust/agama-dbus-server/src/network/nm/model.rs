@@ -84,6 +84,7 @@ impl TryFrom<NmDeviceType> for DeviceType {
             NmDeviceType(1) => Ok(DeviceType::Ethernet),
             NmDeviceType(2) => Ok(DeviceType::Wireless),
             NmDeviceType(3) => Ok(DeviceType::Dummy),
+            NmDeviceType(10) => Ok(DeviceType::Bond),
             NmDeviceType(_) => Err(NmError::UnsupportedDeviceType(value.into())),
         }
     }
