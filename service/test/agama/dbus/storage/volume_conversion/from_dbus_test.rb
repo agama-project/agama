@@ -55,7 +55,10 @@ describe Agama::DBus::Storage::VolumeConversion::FromDBus do
   end
 
   let(:outline) do
-    { "filesystems" => ["xfs", "ext3", "ext4"] }
+    {
+      "filesystems"            => ["xfs", "ext3", "ext4"],
+      "snapshots_configurable" => true
+    }
   end
 
   describe "#convert" do

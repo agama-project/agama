@@ -154,7 +154,7 @@ module Agama
           outline.required = fetch(outline_data, "required", false)
           outline.filesystems = fetch(outline_data, "filesystems", [])
           outline.filesystems.map! { |fs| fs_type(fs) }
-          outline.snapshots_configurable = fetch(outline_data, "snapshots_configurable", true)
+          outline.snapshots_configurable = fetch(outline_data, "snapshots_configurable", false)
 
           size = fetch(outline_data, "auto_size", {})
           min = parse_disksize(fetch(size, :base_min))
