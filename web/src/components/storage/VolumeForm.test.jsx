@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { DEFAULT_SIZE_UNIT, parseToBytes } from "~/components/storage/utils";
 import { VolumeForm } from "~/components/storage";
@@ -100,11 +100,26 @@ it("renders a control for displaying/selecting the mount point", () => {
   screen.getByRole("combobox", { name: "Mount point" });
 });
 
-it("renders a disabled control for displaying the file system type", () => {
-  plainRender(<VolumeForm {...props} />);
+it("renders a control for displaying/selecting the file system type", async () => {
+  const { user } = plainRender(<VolumeForm {...props} />);
 
-  const fsTypeInput = screen.getByRole("textbox", { name: "File system type" });
-  expect(fsTypeInput).toBeDisabled();
+  const fsTypeButton = screen.getByRole("button", { name: "File system type" });
+  await user.click(fsTypeButton);
+  screen.getByRole("option", { name: "Btrfs with snapshots" });
+  screen.getByRole("option", { name: "Btrfs without snapshots" });
+  screen.getByRole("option", { name: "Ext4" });
+});
+
+it("does not render the file system control if there is only one option", async () => {
+  const { user } = plainRender(<VolumeForm {...props} />);
+
+  const mountPointSelector = screen.getByRole("combobox", { name: "Mount point" });
+  const swap = within(mountPointSelector).getByRole("option", { name: "swap" });
+  await user.selectOptions(mountPointSelector, swap);
+  await screen.findByText("Swap");
+  await waitFor(() => (
+    expect(screen.queryByRole("button", { name: "File system type" })).not.toBeInTheDocument())
+  );
 });
 
 it("renders controls for setting the desired size", () => {
@@ -167,10 +182,20 @@ it("calls the onSubmit callback with resulting volume when the form is submitted
   await user.clear(maxSizeInput);
   await user.type(maxSizeInput, "25");
   await user.selectOptions(maxSizeUnitSelector, maxSizeGiBUnit);
+
+  const fsTypeButton = screen.getByRole("button", { name: "File system type" });
+  await user.click(fsTypeButton);
+  const ext4Button = screen.getByRole("option", { name: "Ext4" });
+  await user.click(ext4Button);
+
   await user.click(submitForm);
 
   expect(onSubmitFn).toHaveBeenCalledWith({
-    ...volumes.root, minSize: parseToBytes("10 GiB"), maxSize: parseToBytes("25 GiB")
+    ...volumes.root,
+    fsType: "Ext4",
+    snapshots: false,
+    minSize: parseToBytes("10 GiB"),
+    maxSize: parseToBytes("25 GiB")
   });
 });
 

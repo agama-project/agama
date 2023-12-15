@@ -19,13 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer } from "react";
-
+import React, { useReducer, useState } from "react";
 import {
-  InputGroup, InputGroupItem,
-  Form, FormGroup, FormSelect, FormSelectOption,
-  Radio,
-  TextInput,
+  InputGroup, InputGroupItem, Form, FormGroup, FormSelect, FormSelectOption, MenuToggle,
+  Radio, Select, SelectOption, SelectList
 } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
@@ -78,6 +75,244 @@ const MountPointFormSelect = ({ volumes, ...formSelectProps }) => {
     <FormSelect { ...formSelectProps }>
       { volumes.map(v => <FormSelectOption key={v.mountPath} value={v.mountPath} label={v.mountPath} />) }
     </FormSelect>
+  );
+};
+
+/**
+ * Btrfs file system type is offered with two flavors, with and without snapshots.
+ */
+const BTRFS = Object.freeze({
+  WITH_SNAPSHOTS: "BtrfsWithSnapshots",
+  WITHOUT_SNAPSHOTS: "BtrfsWithoutSnapshots"
+});
+
+/**
+ * Possible file system type options generated from a list of file system types.
+ * @function
+ *
+ * In some cases, a file system type is replaced by variants of such a file system, @see BTRFS.
+ *
+ * @returns {string[]}
+ */
+const fsOptions = (fsTypes) => {
+  return fsTypes.flatMap(fsType => (
+    fsType === "Btrfs" ? [BTRFS.WITH_SNAPSHOTS, BTRFS.WITHOUT_SNAPSHOTS] : fsType
+  ));
+};
+
+/**
+ * File system option according to the given type and the value of snapshots.
+ * @function
+ *
+ * @param {FsValue} value
+ * @returns {string}
+ */
+const fsOption = ({ fsType, snapshots }) => {
+  if (fsType !== "Btrfs") return fsType;
+
+  return (snapshots ? BTRFS.WITH_SNAPSHOTS : BTRFS.WITHOUT_SNAPSHOTS);
+};
+
+/**
+ * Label for a file system type option.
+ * @function
+ *
+ * @param {*} fsOption
+ * @returns
+ */
+const fsOptionLabel = (fsOption) => {
+  switch (fsOption) {
+    case BTRFS.WITH_SNAPSHOTS:
+      return "Btrfs with snapshots";
+    case BTRFS.WITHOUT_SNAPSHOTS:
+      return "Btrfs without snapshots";
+    default:
+      return fsOption;
+  }
+};
+
+/**
+ * File system properties from a file system type option.
+ * @function
+ *
+ * @param {string} fsOption
+ * @returns {FsValue}
+ */
+const fsValue = (fsOption) => {
+  switch (fsOption) {
+    case BTRFS.WITH_SNAPSHOTS:
+      return { fsType: "Btrfs", snapshots: true };
+    case BTRFS.WITHOUT_SNAPSHOTS:
+      return { fsType: "Btrfs", snapshots: false };
+    default:
+      return { fsType: fsOption, snapshots: false };
+  }
+};
+
+/**
+ * Option for selecting a file system type.
+ * @component
+ *
+ * @param {object} props
+ * @param {import(~/clients/storage).Volume} volume - The selected storage volume.
+ * @param {string} props.fsOption - Option value.
+ *
+ * @returns {ReactComponent}
+ */
+const FsSelectOption = ({ volume, fsOption }) => {
+  const isDisabled = () => {
+    switch (fsOption) {
+      case BTRFS.WITH_SNAPSHOTS:
+        return !volume.snapshots && !volume.outline.snapshotsConfigurable;
+      case BTRFS.WITHOUT_SNAPSHOTS:
+        return volume.snapshots && !volume.outline.snapshotsConfigurable;
+      default:
+        return false;
+    }
+  };
+
+  const description = () => {
+    switch (fsOption) {
+      case BTRFS.WITH_SNAPSHOTS:
+        if (!isDisabled()) break;
+        return "This product does not allow Btrfs with snapshots for this mount point";
+      case BTRFS.WITHOUT_SNAPSHOTS:
+        if (!isDisabled()) break;
+        return "This product does not allow Btrfs without snapshots for this mount point";
+    }
+
+    return undefined;
+  };
+
+  const label = () => {
+    switch (fsOption) {
+      case BTRFS.WITH_SNAPSHOTS:
+      case BTRFS.WITHOUT_SNAPSHOTS:
+        return "Btrfs";
+      default:
+        return fsOption;
+    }
+  };
+
+  const details = () => {
+    switch (fsOption) {
+      case BTRFS.WITH_SNAPSHOTS:
+        return "with snapshots";
+      case BTRFS.WITHOUT_SNAPSHOTS:
+        return "without snapshots";
+      default:
+        return undefined;
+    }
+  };
+
+  return (
+    <SelectOption value={fsOption} isDisabled={isDisabled()} description={description()}>
+      <>
+        <span className="bold">{label()}</span> <If condition={details()} then={<span>{details()}</span>} />
+      </>
+    </SelectOption>
+  );
+};
+
+/**
+ * Widget for selecting a file system type.
+ * @component
+ *
+ * @param {object} props
+ * @param {string} props.id - Widget id.
+ * @param {FsValue} props.value - Currently selected file system properties.
+ * @param {import(~/clients/storage).Volume} volume - The selected storage volume.
+ * @param {onChangeFn} props.onChange - Callback for notifying input changes.
+ *
+ * @returns {ReactComponent}
+ */
+const FsSelect = ({ id, value, volume, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const options = fsOptions(volume.outline.fsTypes);
+  const selected = fsOption(value);
+
+  const onToggleClick = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const onSelect = (_event, option) => {
+    setIsOpen(false);
+    onChange(fsValue(option));
+  };
+
+  const toggle = toggleRef => {
+    return (
+      <MenuToggle
+        id={id}
+        ref={toggleRef}
+        onClick={onToggleClick}
+        isExpanded={isOpen}
+        className="full-width"
+      >
+        {fsOptionLabel(selected)}
+      </MenuToggle>
+    );
+  };
+
+  return (
+    <Select
+      isOpen={isOpen}
+      selected={selected}
+      onSelect={onSelect}
+      onOpenChange={setIsOpen}
+      toggle={toggle}
+      shouldFocusToggleOnSelect
+    >
+      <SelectList>
+        {options.map((option, index) => (
+          <FsSelectOption key={index} volume={volume} fsOption={option} />
+        ))}
+      </SelectList>
+    </Select>
+  );
+};
+
+/**
+ * Widget for rendering the file system configuration.
+ *
+ * Allows selecting a file system type. If there is only one possible option, then it renders plain
+ * text with the unique option.
+ * @component
+ *
+ * @param {object} props
+ * @param {FsValue} props.value - Currently selected file system properties.
+ * @param {import(~/clients/storage).Volume} volume - The selected storage volume.
+ * @param {onChangeFn} props.onChange - Callback for notifying input changes.
+ *
+ * @typedef {object} FsValue
+ * @property {string} fsType
+ * @property {boolean} snapshots
+ *
+ * @returns {ReactComponent}
+ */
+const FsField = ({ value, volume, onChange }) => {
+  const isSingleFs = () => {
+    const { fsTypes, snapshotsConfigurable } = volume.outline;
+    return fsTypes.length === 1 && (fsTypes[0] !== "Btrfs" || !snapshotsConfigurable);
+  };
+
+  const label = _("File system type");
+
+  return (
+    <If
+      condition={isSingleFs()}
+      then={
+        <FormGroup label={label}>
+          <p>{fsOptionLabel(value.fsType)}</p>
+        </FormGroup>
+      }
+      else={
+        <FormGroup isRequired label={label} fieldId="fsType">
+          <FsSelect id="fsType" value={value} volume={volume} onChange={onChange} />
+        </FormGroup>
+      }
+    />
   );
 };
 
@@ -325,24 +560,26 @@ const SizeOptions = ({ errors, formData, volume, onChange }) => {
  * @returns {object} storage volume object
  */
 const createUpdatedVolume = (volume, formData) => {
-  let updatedAttrs = {};
+  let sizeAttrs = {};
   const size = parseToBytes(`${formData.size} ${formData.sizeUnit}`);
   const minSize = parseToBytes(`${formData.minSize} ${formData.minSizeUnit}`);
   const maxSize = parseToBytes(`${formData.maxSize} ${formData.maxSizeUnit}`);
 
   switch (formData.sizeMethod) {
     case SIZE_METHODS.AUTO:
-      updatedAttrs = { minSize: undefined, maxSize: undefined, autoSize: true };
+      sizeAttrs = { minSize: undefined, maxSize: undefined, autoSize: true };
       break;
     case SIZE_METHODS.MANUAL:
-      updatedAttrs = { minSize: size, maxSize: size, autoSize: false };
+      sizeAttrs = { minSize: size, maxSize: size, autoSize: false };
       break;
     case SIZE_METHODS.RANGE:
-      updatedAttrs = { minSize, maxSize: formData.maxSize ? maxSize : undefined, autoSize: false };
+      sizeAttrs = { minSize, maxSize: formData.maxSize ? maxSize : undefined, autoSize: false };
       break;
   }
 
-  return { ...volume, ...updatedAttrs };
+  const { fsType, snapshots } = formData;
+
+  return { ...volume, ...sizeAttrs, fsType, snapshots };
 };
 
 /**
@@ -381,7 +618,9 @@ const prepareFormData = (volume) => {
     maxSize,
     maxSizeUnit,
     sizeMethod: sizeMethodFor(volume),
-    mountPoint: volume.mountPath
+    mountPoint: volume.mountPath,
+    fsType: volume.fsType,
+    snapshots: volume.snapshots
   };
 };
 
@@ -495,6 +734,8 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
     if (!Object.keys(errors).length) onSubmit(volume);
   };
 
+  const { fsType, snapshots } = state.formData;
+
   return (
     <Form id={id} onSubmit={submitForm}>
       <FormGroup isRequired label={_("Mount point")} fieldId="mountPoint">
@@ -506,14 +747,11 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
           isDisabled={currentVolume !== undefined}
         />
       </FormGroup>
-      <FormGroup isRequired label={_("File system type")} fieldId="fsType">
-        <TextInput
-          id="fsType"
-          name="fsType"
-          value={state.volume.fsType}
-          isDisabled
-        />
-      </FormGroup>
+      <FsField
+        value={{ fsType, snapshots }}
+        volume={state.volume}
+        onChange={updateData}
+      />
       <FormGroup fieldId="size" label={_("Size")} isRequired>
         <SizeOptions { ...state } onChange={updateData} />
       </FormGroup>
