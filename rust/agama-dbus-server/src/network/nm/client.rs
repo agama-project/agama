@@ -137,7 +137,11 @@ impl<'a> NetworkManagerClient<'a> {
             proxy.add_connection(new_conn).await?
         };
 
-        self.activate_connection(path).await?;
+        if conn.is_up() {
+            self.activate_connection(path).await?;
+        } else {
+            self.deactivate_connection(path).await?;
+        }
         Ok(())
     }
 
@@ -158,6 +162,24 @@ impl<'a> NetworkManagerClient<'a> {
             .activate_connection(&path.as_ref(), &root, &root)
             .await?;
         Ok(())
+    }
+
+    /// Deactivates a NetworkManager connection.
+    ///
+    /// * `path`: D-Bus patch of the connection.
+    async fn deactivate_connection(&self, path: OwnedObjectPath) -> Result<(), ServiceError> {
+        let proxy = NetworkManagerProxy::new(&self.connection).await?;
+        match proxy.deactivate_connection(&path.as_ref()).await {
+            Err(e) => {
+                // Ignore ConnectionNotActive error since this just means the state is already correct
+                if e.to_string().contains("ConnectionNotActive") {
+                    Ok(())
+                } else {
+                    Err(ServiceError::DBus(e))
+                }
+            }
+            _ => Ok(()),
+        }
     }
 
     async fn get_connection_proxy(&self, uuid: Uuid) -> Result<ConnectionProxy, ServiceError> {

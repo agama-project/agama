@@ -144,17 +144,17 @@ jobs:
 
       - name: Generate service POT file
         run: |
-          cd agama/service
+          cd agama
           rake pot
           msgfmt --statistics agama.pot
 
       - name: Validate the generated service POT file
-        run:  msgfmt --check-format agama/service/agama.pot
+        run:  msgfmt --check-format agama/agama.pot
 
       - name: Update service POT file
         run: |
           mkdir -p agama-weblate/service
-          cp agama/service/agama.pot agama-weblate/service/agama.pot
+          cp agama/agama.pot agama-weblate/service/agama.pot
 
       # any change besides the timestamp in the POT file?
       - name: Check service POT changes

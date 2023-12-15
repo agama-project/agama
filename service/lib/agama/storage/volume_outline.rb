@@ -76,7 +76,7 @@ module Agama
 
       # Whether snapshots option can be configured
       #
-      # @return [Boolean]
+      # @return [Boolean] false by default
       attr_accessor :snapshots_configurable
       alias_method :snapshots_configurable?, :snapshots_configurable
 
@@ -93,7 +93,7 @@ module Agama
       def initialize
         @required = false
         @adjust_by_ram = false
-        @snapshots_configurable = true
+        @snapshots_configurable = false
         @filesystems = []
         @base_min_size = Y2Storage::DiskSize.zero
         @base_max_size = Y2Storage::DiskSize.unlimited
