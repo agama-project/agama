@@ -24,6 +24,16 @@ import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { If, Sidebar } from "~/components/core";
 
+// Mock some components
+jest.mock("~/components/core/About", () => () => <div>About link mock</div>);
+jest.mock("~/components/core/DevelopmentInfo", () => () => <div>DevelopmentInfo mock</div>);
+jest.mock("~/components/core/IssuesLink", () => () => <div>IssuesLink mock</div>);
+jest.mock("~/components/core/LogsButton", () => () => <div>LogsButton mock</div>);
+jest.mock("~/components/core/ShowLogButton", () => () => <div>ShowLogButton mock</div>);
+jest.mock("~/components/core/ShowTerminalButton", () => () => <div>ShowTerminalButton mock</div>);
+jest.mock("~/components/l10n/InstallerKeymapSwitcher", () => () => <div>Installer keymap switcher mock</div>);
+jest.mock("~/components/l10n/InstallerLocaleSwitcher", () => () => <div>Installer locale switcher mock</div>);
+
 it("renders the sidebar hidden if isOpen prop is not given", () => {
   plainRender(<Sidebar />);
 
@@ -36,6 +46,22 @@ it("renders the sidebar hidden if isOpen prop is false", () => {
 
   const nav = screen.getByRole("complementary", { name: /options/i });
   expect(nav).toHaveAttribute("data-state", "hidden");
+});
+
+it("renders expected options", () => {
+  plainRender(<Sidebar />);
+  screen.getByText("Installer keymap switcher mock");
+  screen.getByText("Installer locale switcher mock");
+  screen.getByText("LogsButton mock");
+  screen.getByText("ShowLogButton mock");
+  screen.getByText("ShowTerminalButton mock");
+  screen.getByText("About link mock");
+  screen.getByText("DevelopmentInfo mock");
+});
+
+it("renders given children", () => {
+  plainRender(<Sidebar><button>An extra button</button></Sidebar>);
+  screen.getByRole("button", { name: "An extra button" });
 });
 
 describe("when isOpen prop is given", () => {

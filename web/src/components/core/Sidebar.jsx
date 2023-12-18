@@ -21,7 +21,17 @@
 
 import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { Icon } from "~/components/layout";
-import { DevelopmentInfo } from "~/components/core";
+import { InstallerKeymapSwitcher, InstallerLocaleSwitcher } from "~/components/l10n";
+import {
+  About,
+  DevelopmentInfo,
+  Disclosure,
+  IssuesLink,
+  // FIXME: unify names here by renaming LogsButton -> LogButton or ShowLogButton -> ShowLogsButton
+  LogsButton,
+  ShowLogButton,
+  ShowTerminalButton,
+} from "~/components/core";
 import { noop } from "~/utils";
 import { _ } from "~/i18n";
 import useNodeSiblings from "~/hooks/useNodeSiblings";
@@ -117,14 +127,31 @@ export default function Sidebar ({ children, isOpen, onClose = noop }) {
           onClick={close}
           ref={closeButtonRef}
           className="plain-control"
-          aria-label={_("Hide navigation and other options")}
+          aria-label={_("Hide installer options")}
         >
           <Icon name="menu_open" data-variant="flip-X" onClick={close} />
         </button>
       </header>
 
       <div className="flex-stack justify-between" onClick={onClick}>
-        {children}
+        <div className="flex-stack">
+          <IssuesLink />
+          <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
+            <ShowLogButton />
+            <LogsButton data-keep-sidebar-open="true" />
+            <ShowTerminalButton />
+          </Disclosure>
+          {children}
+          <About />
+        </div>
+        <div className="full-width highlighted">
+          <div className="flex-stack">
+            <div className="locale-container">
+              <div><InstallerLocaleSwitcher /></div>
+              <div><InstallerKeymapSwitcher /></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <footer className="split justify-between" data-state="reversed">

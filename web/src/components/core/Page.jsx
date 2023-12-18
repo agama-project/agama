@@ -23,22 +23,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@patternfly/react-core";
 
-import logoUrl from "~/assets/suse-horizontal-logo.svg";
-
 import { _ } from "~/i18n";
 import { partition } from "~/utils";
 import { Icon } from "~/components/layout";
-import { InstallerKeymapSwitcher, InstallerLocaleSwitcher } from "~/components/l10n";
-import {
-  About,
-  Disclosure,
-  If,
-  IssuesLink,
-  LogsButton,
-  ShowLogButton,
-  ShowTerminalButton,
-  Sidebar
-} from "~/components/core";
+import { If, Sidebar } from "~/components/core";
+import logoUrl from "~/assets/suse-horizontal-logo.svg";
 
 /**
  * Wrapper component for holding Page actions
@@ -180,25 +169,7 @@ const Page = ({ icon, title = "Agama", children }) => {
         <img src={logoUrl} alt="Logo of SUSE" />
       </footer>
 
-      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar}>
-        <div className="flex-stack">
-          <IssuesLink />
-          <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
-            <ShowLogButton />
-            <LogsButton data-keep-sidebar-open="true" />
-            <ShowTerminalButton />
-          </Disclosure>
-          <About />
-        </div>
-        <div className="full-width highlighted">
-          <div className="flex-stack">
-            <div className="locale-container">
-              <div><InstallerLocaleSwitcher /></div>
-              <div><InstallerKeymapSwitcher /></div>
-            </div>
-          </div>
-        </div>
-      </Sidebar>
+      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
     </div>
   );
 };
