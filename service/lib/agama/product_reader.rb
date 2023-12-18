@@ -45,11 +45,10 @@ module Agama
 
     # Loads products definitions
     #
-    # It support a product per file or multiple products in a single file.
+    # It supports a product per file or multiple products in a single file.
     def load_products
       glob = File.join(default_path, "*.{yaml,yml}")
       Dir.glob(glob).each_with_object([]) do |path, result|
-        content = File.readlines(path)
         products = YAML.safe_load_file(path)
         products = [products] unless products.is_a?(Array)
         result.concat(products)
