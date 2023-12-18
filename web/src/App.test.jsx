@@ -44,7 +44,6 @@ jest.mock("~/context/product", () => ({
 
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
-jest.mock("~/components/core/DBusError", () => <div>D-BusError Mock</div>);
 jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 jest.mock("~/components/core/Installation", () => () => <div>Installation Mock</div>);
 jest.mock("~/components/layout/Loading", () => () => <div>Loading Mock</div>);
