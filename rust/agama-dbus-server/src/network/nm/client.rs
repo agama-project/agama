@@ -88,27 +88,27 @@ impl<'a> NetworkManagerClient<'a> {
 
             if let Some(connection) = connection_from_dbus(settings.clone()) {
                 if let Some(controller) = controller_from_dbus(&settings) {
-                    controlled_by.insert(connection.uuid(), controller.to_string());
+                    controlled_by.insert(connection.uuid, controller.to_string());
                 }
-                if let Some(iname) = connection.interface() {
-                    uuids_map.insert(iname.to_string(), connection.uuid());
+                if let Some(iname) = &connection.interface {
+                    uuids_map.insert(iname.to_string(), connection.uuid);
                 }
                 connections.push(connection);
             }
         }
 
         for conn in connections.iter_mut() {
-            let Some(interface_name) = controlled_by.get(&conn.uuid()) else {
+            let Some(interface_name) = controlled_by.get(&conn.uuid) else {
                 continue;
             };
 
             if let Some(uuid) = uuids_map.get(interface_name) {
-                conn.set_controller(*uuid);
+                conn.controller = Some(*uuid);
             } else {
                 log::warn!(
                     "Could not found a connection for the interface '{}' (required by connection '{}')",
                     interface_name,
-                    conn.id()
+                    conn.id
                 );
             }
         }
@@ -126,7 +126,7 @@ impl<'a> NetworkManagerClient<'a> {
     ) -> Result<(), ServiceError> {
         let mut new_conn = connection_to_dbus(conn, controller);
 
-        let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid()).await {
+        let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid).await {
             let original = proxy.get_settings().await?;
             let merged = merge_dbus_connections(&original, &new_conn);
             proxy.update(merged).await?;
