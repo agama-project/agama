@@ -1,54 +1,44 @@
-// Standard section
-// In the future we might need to use an specific CSS class for it if we start having different
-// section layouts.
-section:not([class^="pf-c"]) {
+// CSS rules used for the standard Agama section (core/Section.jsx)
+// In the future we might add different section layouts by using data-variant attribute
+// or similar strategy
+[data-type="agama/section"] {
   display: grid;
-  grid-template-columns: var(--section-icon-size) 1fr;
-  grid-template-areas:
-    "icon title"
-    ".... content";
+  grid-template-rows:
+    [header] auto
+    [content] auto
+  ;
+  grid-template-columns: [bleed] var(--section-icon-size) [content] 1fr;
   gap: var(--spacer-small);
-  padding-inline-start: calc(
+  margin-inline-start: calc(
     var(--header-icon-size) - var(--section-icon-size)
   );
-  padding-inline-end: var(--section-icon-size);
-}
+  margin-inline-end: var(--section-icon-size);
 
-section:not(:last-child, [class^="pf-c"]) {
-  margin-block-end: var(--spacer-large);
-}
-
-section > svg {
-  grid-area: icon;
-  block-size: var(--section-icon-size);
-  inline-size: var(--section-icon-size);
-}
-
-section > h2 {
-  grid-area: title;
-
-  button {
-    border: none;
-    background: none;
-    color: inherit;
-    font: inherit;
-    padding: 0;
+  &:not(:last-child) {
+    margin-block-end: var(--spacer-normal);
   }
 
-  a, button {
-    text-decoration: underline;
-    text-decoration-thickness: 0.1em;
-    text-underline-offset: 0.2em;
-    transition: all 0.15s ease-in-out;
+  > h2 {
+    display: grid;
+    grid-area: header;
+    grid-template-columns: subgrid;
+    grid-column: bleed / content-end;
 
-    &:hover {
-      color: var(--color-link-hover);
+    svg {
+      block-size: var(--section-icon-size);
+      inline-size: var(--section-icon-size);
+      grid-column: bleed / content;
+    }
+
+    :not(svg) {
+      grid-column: content
     }
   }
-}
 
-section > .content {
-  grid-area: content;
+  > :not(h2) {
+    grid-area: content;
+    grid-column: content;
+  }
 }
 
 // Custom selection list

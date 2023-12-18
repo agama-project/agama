@@ -82,10 +82,7 @@ export default function Section({
     const headerText = !path?.trim() ? title : <Link to={path}>{title}</Link>;
 
     return (
-      <>
-        {headerIcon}
-        <h2 id={headerId}>{headerText}</h2>
-      </>
+      <h2 id={headerId}>{headerIcon}<span>{headerText}</span></h2>
     );
   };
 
@@ -95,9 +92,10 @@ export default function Section({
       aria-busy={loading}
       aria-label={ariaLabel || undefined}
       aria-labelledby={ title && !ariaLabel ? headerId : undefined}
+      data-type="agama/section"
     >
       <Header />
-      <div className="stack content">
+      <div className="stack">
         {errors?.length > 0 &&
           <ValidationErrors errors={errors} title={`${title} errors`} />}
         {children}
