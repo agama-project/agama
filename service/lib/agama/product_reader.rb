@@ -43,11 +43,14 @@ module Agama
       @logger = logger || ::Logger.new($stdout)
     end
 
+    # Loads products definitions
+    #
+    # It support a product per file or multiple products in a single file.
     def load_products
       glob = File.join(default_path, "*.{yaml,yml}")
       Dir.glob(glob).each_with_object([]) do |path, result|
-        # support also single product file
-        products = load_file(path)
+        content = File.readlines(path)
+        products = YAML.safe_load_file(path)
         products = [products] unless products.is_a?(Array)
         result.concat(products)
       end
@@ -57,10 +60,6 @@ module Agama
 
     def default_path
       Dir.exist?(GIT_DIR) ? GIT_PATH : SYSTEM_PATH
-    end
-
-    def load_file(path)
-      YAML.safe_load(File.read(path.to_s))
     end
   end
 end
