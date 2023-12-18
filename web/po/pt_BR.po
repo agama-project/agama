@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-10 02:19+0000\n"
+"POT-Creation-Date: 2023-12-15 17:45+0000\n"
 "PO-Revision-Date: 2023-12-05 21:01+0000\n"
 "Last-Translator: Luiz Fernando Ranghetti <elchevive68@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://l10n.opensuse.org/projects/agama/"
@@ -341,8 +341,9 @@ msgstr "Opções globais"
 
 #. TRANSLATORS: sidebar header
 #: src/components/core/Sidebar.jsx:157
-msgid "Options"
-msgstr "Opções"
+#, fuzzy
+msgid "Installer Options"
+msgstr "Instalando"
 
 #: src/components/core/Sidebar.jsx:164
 msgid "Hide navigation and other options"
@@ -363,6 +364,49 @@ msgstr[1] "%d erros encontrados"
 #: src/components/core/ValidationErrors.jsx:95
 msgid "Basic popover"
 msgstr ""
+
+#. TRANSLATORS: label for keyboard layout selection
+#: src/components/l10n/InstallerKeymapSwitcher.jsx:53
+#: src/components/l10n/L10nPage.jsx:357
+msgid "Keyboard"
+msgstr "Teclado"
+
+#. TRANSLATORS: label for keyboard layout selection
+#: src/components/l10n/InstallerKeymapSwitcher.jsx:61
+#, fuzzy
+msgid "keyboard"
+msgstr "Teclado"
+
+#. TRANSLATORS:
+#: src/components/l10n/InstallerKeymapSwitcher.jsx:70
+msgid "Keyboard layout cannot be changed in remote installation"
+msgstr ""
+
+#. TRANSLATORS: help text for the language selector in the sidebar,
+#. %s will be replaced by the "Localization" page link
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:47
+#, c-format
+msgid ""
+"The language used by the installer. The language for the installed system "
+"can be set in the %s page."
+msgstr ""
+
+#. TRANSLATORS: page title
+#. TRANSLATORS: page section
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:56
+#: src/components/l10n/L10nPage.jsx:385
+#: src/components/overview/L10nSection.jsx:52
+msgid "Localization"
+msgstr "Localização"
+
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:66
+#: src/components/l10n/L10nPage.jsx:246
+msgid "Language"
+msgstr "Idioma"
+
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:74
+msgid "language"
+msgstr "idioma"
 
 #. TRANSLATORS: placeholder text for search input in the keyboard selector.
 #: src/components/l10n/KeymapSelector.jsx:82
@@ -403,10 +447,6 @@ msgstr "Selecionar idioma"
 msgid "%s will use the selected language."
 msgstr "%s irá usar o idioma selecionado."
 
-#: src/components/l10n/L10nPage.jsx:246
-msgid "Language"
-msgstr "Idioma"
-
 #: src/components/l10n/L10nPage.jsx:252
 msgid "Change language"
 msgstr "Alterar idioma"
@@ -424,10 +464,6 @@ msgstr "Selecionar teclado"
 msgid "%s will use the selected keyboard."
 msgstr "%s irá usar o teclado selecionado."
 
-#: src/components/l10n/L10nPage.jsx:357
-msgid "Keyboard"
-msgstr "Teclado"
-
 #: src/components/l10n/L10nPage.jsx:363
 msgid "Change keyboard"
 msgstr "Alterar teclado"
@@ -435,13 +471,6 @@ msgstr "Alterar teclado"
 #: src/components/l10n/L10nPage.jsx:368
 msgid "Keyboard not selected yet"
 msgstr "Teclado ainda não selecionado"
-
-#. TRANSLATORS: page section
-#. TRANSLATORS: page title
-#: src/components/l10n/L10nPage.jsx:385
-#: src/components/overview/L10nSection.jsx:52
-msgid "Localization"
-msgstr "Localização"
 
 #: src/components/l10n/L10nPage.jsx:387
 #: src/components/product/ProductPage.jsx:434
@@ -453,14 +482,6 @@ msgstr "Localização"
 #: src/components/users/UsersPage.jsx:30
 msgid "Back"
 msgstr "Voltar"
-
-#: src/components/l10n/LanguageSwitcher.jsx:46
-msgid "Display Language"
-msgstr "Mostrar idioma"
-
-#: src/components/l10n/LanguageSwitcher.jsx:50
-msgid "language"
-msgstr "idioma"
 
 #: src/components/l10n/LocaleSelector.jsx:82
 msgid "Filter by language, territory or locale code"
@@ -519,8 +540,8 @@ msgstr "Endereços"
 msgid "Addresses data list"
 msgstr "Lista de dados de endereços"
 
-#. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
+#. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/network/ConnectionsTable.jsx:57
 #: src/components/network/ConnectionsTable.jsx:86
 #: src/components/storage/ZFCPPage.jsx:362
@@ -653,8 +674,8 @@ msgstr "Nenhuma conexão WiFi encontrada"
 msgid "Connect to a Wi-Fi network"
 msgstr "Conectar-se à uma rede Wi-Fi"
 
-#. TRANSLATORS: page section title
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section title
 #: src/components/network/NetworkPage.jsx:170
 #: src/components/overview/NetworkSection.jsx:102
 msgid "Network"
@@ -738,8 +759,8 @@ msgstr "Conectado"
 msgid "Disconnecting"
 msgstr "Desconectando"
 
-#. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
+#. TRANSLATORS: iSCSI connection status
 #: src/components/network/WifiNetworkListItem.jsx:50
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -1309,6 +1330,9 @@ msgstr "criptografado"
 
 #. TRANSLATORS: filesystem flag, it allows creating snapshots
 #: src/components/storage/ProposalVolumes.jsx:218
+#: src/components/storage/VolumeForm.jsx:128
+#: src/components/storage/VolumeForm.jsx:161
+#, c-format
 msgid "with snapshots"
 msgstr "com instantâneos"
 
@@ -1327,7 +1351,7 @@ msgid "Edit file system"
 msgstr "Editar sistema de arquivos"
 
 #: src/components/storage/ProposalVolumes.jsx:307
-#: src/components/storage/VolumeForm.jsx:500
+#: src/components/storage/VolumeForm.jsx:723
 msgid "Mount point"
 msgstr "Ponto de montagem"
 
@@ -1336,7 +1360,7 @@ msgid "Details"
 msgstr "Detalhes"
 
 #: src/components/storage/ProposalVolumes.jsx:309
-#: src/components/storage/VolumeForm.jsx:517
+#: src/components/storage/VolumeForm.jsx:737
 msgid "Size"
 msgstr "Tamanho"
 
@@ -1348,54 +1372,78 @@ msgstr "Tabela com pontos de montagem"
 msgid "File systems to create in your system"
 msgstr "Sistemas de arquivos para criar em seu sistema"
 
+#. TRANSLATORS: description of Btrfs snapshots feature.
+#: src/components/storage/VolumeForm.jsx:168
+msgid ""
+"Allows rolling back any change done to the system and restoring its previous "
+"state"
+msgstr ""
+
+#. TRANSLATORS: info about possible file system types.
+#: src/components/storage/VolumeForm.jsx:265
+msgid ""
+"The options for the file system type depends on the product and the mount "
+"point."
+msgstr ""
+
+#: src/components/storage/VolumeForm.jsx:271
+#, fuzzy
+msgid "More info for file system types"
+msgstr "Tipo de sistema de arquivos"
+
+#. TRANSLATORS: label for the file system selector.
+#: src/components/storage/VolumeForm.jsx:282
+msgid "File system type"
+msgstr "Tipo de sistema de arquivos"
+
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeForm.jsx:97
+#: src/components/storage/VolumeForm.jsx:314
 msgid "the configuration of snapshots"
 msgstr "a configuração de instantâneos"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
-#: src/components/storage/VolumeForm.jsx:102
+#: src/components/storage/VolumeForm.jsx:319
 #, c-format
 msgid "the presence of the file system for %s"
 msgstr "a presença do sistema de arquivos para %s"
 
 #. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeForm.jsx:104
+#: src/components/storage/VolumeForm.jsx:321
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeForm.jsx:107
+#: src/components/storage/VolumeForm.jsx:324
 #, c-format
 msgid "The final size depends on %s."
 msgstr "O tamanho final depende de %s."
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeForm.jsx:109
+#: src/components/storage/VolumeForm.jsx:326
 msgid " and "
 msgstr " e "
 
 #. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeForm.jsx:114
+#: src/components/storage/VolumeForm.jsx:331
 msgid "Automatically calculated size according to the selected product."
 msgstr "Tamanho calculado automaticamente de acordo com o produto selecionado."
 
-#: src/components/storage/VolumeForm.jsx:134
+#: src/components/storage/VolumeForm.jsx:351
 msgid "Exact size for the file system."
 msgstr "Tamanho exato do sistema de arquivos."
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeForm.jsx:146
+#: src/components/storage/VolumeForm.jsx:363
 msgid "Exact size"
 msgstr ""
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeForm.jsx:161
+#: src/components/storage/VolumeForm.jsx:378
 msgid "Size unit"
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:189
+#: src/components/storage/VolumeForm.jsx:406
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1403,63 +1451,59 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeForm.jsx:196
+#: src/components/storage/VolumeForm.jsx:413
 msgid "Minimum"
 msgstr "Mínimo"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeForm.jsx:206
+#: src/components/storage/VolumeForm.jsx:423
 msgid "Minimum desired size"
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:215
+#: src/components/storage/VolumeForm.jsx:432
 msgid "Unit for the minimum size"
 msgstr ""
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:226
+#: src/components/storage/VolumeForm.jsx:443
 msgid "Maximum"
 msgstr "Máximo"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:237
+#: src/components/storage/VolumeForm.jsx:454
 msgid "Maximum desired size"
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:245
+#: src/components/storage/VolumeForm.jsx:462
 msgid "Unit for the maximum size"
 msgstr ""
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeForm.jsx:262
+#: src/components/storage/VolumeForm.jsx:479
 msgid "Auto"
 msgstr "Automático"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeForm.jsx:264
+#: src/components/storage/VolumeForm.jsx:481
 msgid "Fixed"
 msgstr "Fixo"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeForm.jsx:266
+#: src/components/storage/VolumeForm.jsx:483
 msgid "Range"
 msgstr "Intervalo"
 
-#: src/components/storage/VolumeForm.jsx:470
+#: src/components/storage/VolumeForm.jsx:691
 msgid "A size value is required"
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:475
+#: src/components/storage/VolumeForm.jsx:696
 msgid "Minimum size is required"
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:479
+#: src/components/storage/VolumeForm.jsx:700
 msgid "Maximum must be greater than minimum"
 msgstr ""
-
-#: src/components/storage/VolumeForm.jsx:509
-msgid "File system type"
-msgstr "Tipo de sistema de arquivos"
 
 #: src/components/storage/ZFCPDiskForm.jsx:113
 msgid "The zFCP disk was not activated."
@@ -2021,3 +2065,9 @@ msgstr "Usuário"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr ""
+
+#~ msgid "Options"
+#~ msgstr "Opções"
+
+#~ msgid "Display Language"
+#~ msgstr "Mostrar idioma"
