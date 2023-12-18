@@ -285,7 +285,7 @@ const FsField = ({ value, volume, onChange }) => {
     <If
       condition={isSingleFs()}
       then={
-        <FormGroup label={label} labelIcon={<Info />}>
+        <FormGroup label={label}>
           <p>{fsOptionLabel(fsOption(value))}</p>
         </FormGroup>
       }
