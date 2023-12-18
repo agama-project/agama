@@ -20,11 +20,42 @@
  */
 
 /**
- * Simple component for simplifying conditional rendering.
+ * Helper component for simplifying conditional interpolation in JSX blocks.
  * @component
  *
  * Borrowed from the old  Michael J. Ryan’s comment at https://github.com/facebook/jsx/issues/65#issuecomment-255484351
  * See more options at https://blog.logrocket.com/react-conditional-rendering-9-methods/
+ *
+ * Please, use it only when "conditionally interpolating" content in a
+ * "JSX block". For rendering a content or null it's better to go for an early
+ * return.
+ *
+ * @example <caption>Using an early return instead</caption>
+ *   ...
+ *   if (loaded) return <Ready />
+ *
+ *   return (
+ *     <Card>
+ *       <Title>Loading data</Title>
+ *       <Body>
+ *         <LoadingProgress />
+ *       </Body>
+ *     </Card>
+ *   );
+ *   ...
+ *
+ * @example <caption>Using `<If>` in a JSX block</caption>
+ *   ...
+ *   return (
+ *     <Card>
+ *       <Title>Loading data</Title>
+ *       <Body>
+ *         <If condition={loadingStorage} then={<LoadingStorageData />} else={<StorageLoaded} />
+ *         <If condition={loadingNetwork} then={<LoadingNetwork />} else={<NetworkLoaded} />
+ *       </Body>
+ *     </Card>
+ *   );
+ *   ...
  *
  * @param {object} props
  * @param {boolean} props.condition
