@@ -43,8 +43,8 @@
         "ipaddr",
         "iscsi",
         "jdoe",
-	"keymap",
-	"keymaps",
+        "keymap",
+        "keymaps",
         "libyui",
         "lldp",
         "localdomain",
@@ -68,6 +68,7 @@
         "subvol",
         "subvolume",
         "subvolumes",
+        "svgrrc",
         "teleporter",
         "testfile",
         "testsuite",
@@ -75,6 +76,7 @@
         "tkip",
         "udev",
         "wwpn",
+        "xxxs",
         "zfcp"
       ]
     }

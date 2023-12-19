@@ -62,7 +62,7 @@ export default function Disclosure({ label, children, ...otherProps }) {
         onClick={toggle}
         {...otherProps}
       >
-        <Icon name="chevron_right" size="24" {...otherProps} />
+        <Icon name="chevron_right" size="s" />
         {label}
       </button>
       <div className="flex-stack">

@@ -64,7 +64,7 @@ const ValidationErrors = ({ title = _("Errors"), errors }) => {
 
   if (!errors || errors.length === 0) return null;
 
-  const warningIcon = <Icon name="warning" size="16" />;
+  const warningIcon = <Icon name="warning" size="xxs" />;
 
   if (errors.length === 1) {
     return (

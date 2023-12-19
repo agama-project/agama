@@ -38,7 +38,7 @@ export default function Tip ({ description, children }) {
   if (description) {
     return (
       <Description description={description}>
-        <Label isCompact>{children}&nbsp;<Icon name="info" size="16" /></Label>
+        <Label isCompact>{children}&nbsp;<Icon name="info" size="xxs" /></Label>
       </Description>
     );
   }

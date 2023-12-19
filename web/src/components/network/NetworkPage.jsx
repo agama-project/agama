@@ -64,7 +64,7 @@ const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
             <Button
               variant="primary"
               onClick={openWifiSelector}
-              icon={<Icon name="wifi_find" size="24" />}
+              icon={<Icon name="wifi_find" size="s" />}
             >
               {/* TRANSLATORS: button label */}
               {_("Connect to a Wi-Fi network")}

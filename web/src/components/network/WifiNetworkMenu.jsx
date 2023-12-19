@@ -49,7 +49,7 @@ export default function WifiNetworkMenu({ settings, position = "right" }) {
           isDanger
           key="forget-network"
           onClick={() => client.network.deleteConnection(settings)}
-          icon={<Icon name="delete" size="24" />}
+          icon={<Icon name="delete" size="s" />}
         >
           {/* TRANSLATORS: menu label, remove the selected WiFi network settings */}
           {_("Forget network")}

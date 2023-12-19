@@ -92,7 +92,7 @@ const LogsButton = ({ ...props }) => {
         onClick={collectAndDownload}
         isLoading={isCollecting}
         isDisabled={isCollecting}
-        icon={isCollecting ? null : <Icon name="download" size="24" />}
+        icon={isCollecting ? null : <Icon name="download" size="s" />}
         {...props}
       >
         {isCollecting ? _("Collecting logs...") : _("Download logs")}

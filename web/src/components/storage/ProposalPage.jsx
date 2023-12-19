@@ -194,7 +194,7 @@ export default function ProposalPage() {
       <>
         <Alert
           isInline
-          customIcon={<Icon name="info" size="16" />}
+          customIcon={<Icon name="info" size="xxs" />}
           title={_("Devices will not be modified until installation starts.")}
         />
         <ProposalSettingsSection

@@ -62,11 +62,11 @@ for the installed system can be set in the %s page.").split("%s");
   return (
     <>
       <h3>
-        <Icon name="translate" size="24" />
+        <Icon name="translate" size="s" />
         {_("Language")}&nbsp;
         {/* smaller width of the popover so it does not overflow outside the sidebar */}
         <Popover showClose={false} bodyContent={description} maxWidth="15em">
-          <Icon name="info" size="16" />
+          <Icon name="info" size="xxs" />
         </Popover>
       </h3>
       <FormSelect

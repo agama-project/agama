@@ -34,49 +34,30 @@
   font-weight: bold;
 }
 
-.icon-size-10 {
-  width: 10px;
-  height: 10px;
+// Utility classes for sizing icons
+.icon-xxxs {
+  block-size: var(--icon-size-xxxs);
+  inline-size: var(--icon-size-xxxs);
 }
 
-.icon-size-12 {
-  width: 12px;
-  height: 12px;
+.icon-xxs {
+  block-size: var(--icon-size-xxs);
+  inline-size: var(--icon-size-xxs);
 }
 
-.icon-size-14 {
-  width: 14px;
-  height: 14px;
+.icon-xs {
+  block-size: var(--icon-size-xs);
+  inline-size: var(--icon-size-xs);
 }
 
-.icon-size-15 {
-  width: 15px;
-  height: 15px;
+.icon-s {
+  block-size: var(--icon-size-s);
+  inline-size: var(--icon-size-s);
 }
 
-.icon-size-16 {
-  width: 16px;
-  height: 16px;
-}
-
-.icon-size-24 {
-  width: 24px;
-  height: 24px;
-}
-
-.icon-size-28 {
-  width: 28px;
-  height: 28px;
-}
-
-.icon-size-32 {
-  width: 32px;
-  height: 32px;
-}
-
-.icon-big {
-  inline-size: 10rem;
-  block-size: 10rem;
+.icon-xxxl {
+  block-size: var(--icon-size-xxxl);
+  inline-size: var(--icon-size-xxxl);
 }
 
 .color-warn {

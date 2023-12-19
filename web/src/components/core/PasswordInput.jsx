@@ -59,7 +59,7 @@ export default function PasswordInput({ id, ...props }) {
         aria-label={_("Password visibility button")}
         variant="control"
         onClick={() => setShowPassword((prev) => !prev)}
-        icon={<Icon name={visibilityIconName} size="15" />}
+        icon={<Icon name={visibilityIconName} size="xxs" />}
         isDisabled={props.isDisabled}
       />
     </InputGroup>

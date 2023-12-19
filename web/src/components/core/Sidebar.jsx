@@ -158,7 +158,7 @@ export default function Sidebar ({ children, isOpen, onClose = noop }) {
         <a onClick={close}>
           {/* TRANSLATORS: button label */}
           {_("Close")}
-          <Icon size="16" name="menu_open" data-variant="flip-X" />
+          <Icon name="menu_open" size="xxs" data-variant="flip-X" />
         </a>
         <DevelopmentInfo />
       </footer>
