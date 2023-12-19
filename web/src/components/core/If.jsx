@@ -50,8 +50,9 @@
  *     <Card>
  *       <Title>Loading data</Title>
  *       <Body>
- *         <If condition={loadingStorage} then={<LoadingStorageData />} else={<StorageLoaded} />
- *         <If condition={loadingNetwork} then={<LoadingNetwork />} else={<NetworkLoaded} />
+ *         <If condition={loading} then={<Spinner />} />
+ *         <If condition={loadingStorage} then={<LoadingStorageData />} else={<StorageLoaded />} />
+ *         <If condition={loadingNetwork} then={<LoadingNetwork />} else={<NetworkLoaded />} />
  *       </Body>
  *     </Card>
  *   );
