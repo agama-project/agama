@@ -98,10 +98,8 @@ const BackAction = () => {
  * Displays an installation page
  * @component
  *
- * FIXME: Improve the note below
- * @note Sidebar must be mounted as sibling of the page content to make it work
- * as expected (allow it to be hidden, making inert siblings when open, etc).
- * Remember that Sidebar is going to content only things related to Agama itself
+ * @note Sidebar is mounted as sibling of the page content to make it work
+ * as expected (e.g., changing the inert attribute of its siblings according to its visibility).
  *
  * @example <caption>Simple usage</caption>
  *   <Page icon="manage_accounts" title="Users settings">

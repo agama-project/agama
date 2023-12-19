@@ -40,8 +40,7 @@ import useNodeSiblings from "~/hooks/useNodeSiblings";
  * The Agama sidebar.
  * @component
  *
- * A component intended to be the place where put things exclusively related to
- * the Agama installer itself.
+ * A component intended for placing things exclusively related to Agama.
  *
  * @param {object} props
  * @param {React.ReactElement} props.children
