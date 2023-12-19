@@ -65,6 +65,7 @@ jobs:
           find service/po -name '*.po' -exec git rm '{}' ';'
 
           # copy the new ones
+          mkdir -p service/po
           cp -a ../agama-weblate/service/*.po service/po
           git add service/po/*.po
 
