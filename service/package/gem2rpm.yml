@@ -1,8 +1,13 @@
 ---
 :sourceurl: "%{mod_full_name}.gem"
+:sources:
+  - po.tar.bz2
+  - install_translations.sh
 :preamble: |-
   %global rb_build_versions %{rb_default_ruby}
   BuildRequires:  dbus-1-common
+  # "msgfmt" tool
+  BuildRequires:  gettext-runtime
   Requires:       dbus-1-common
 :post_install: |-
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/dbus.conf %{buildroot}%{_datadir}/dbus-1/agama.conf
@@ -12,6 +17,8 @@
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/agama-proxy-setup.service %{buildroot}%{_unitdir}/agama-proxy-setup.service
   install --directory %{buildroot}/usr/share/agama/conf.d
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/conf.d/*.yaml %{buildroot}/usr/share/agama/conf.d/
+  # run a script for installing the translations
+  "%{SOURCE2}" "%{SOURCE1}"
 :main:
   :preamble: |-
     # Override build.rpm, see also https://github.com/openSUSE/obs-build/blob/master/configs/
@@ -71,4 +78,6 @@
     %{_unitdir}/agama-proxy-setup.service\n
     %dir %{_datadir}/agama\n
     %dir %{_datadir}/agama/conf.d\n
-    %{_datadir}/agama/conf.d\n"
+    %{_datadir}/agama/conf.d\n
+    %dir /usr/share/YaST2\n
+    /usr/share/YaST2/locale\n"
