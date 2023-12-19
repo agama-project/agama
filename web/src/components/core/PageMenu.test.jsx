@@ -22,26 +22,27 @@
 import React from "react";
 import { screen, waitForElementToBeRemoved } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { PageOptions } from "~/components/core";
+import { PageMenu } from "~/components/core";
 
 it("renders the component initially closed", async () => {
   plainRender(
-    <PageOptions>
-      <PageOptions.Option>A dummy action</PageOptions.Option>
-    </PageOptions>
+    <PageMenu togglerAriaLabel="Testing menu">
+      <PageMenu.Option>A dummy action</PageMenu.Option>
+    </PageMenu>
   );
 
+  screen.getByRole("button", { name: "Testing menu" });
   expect(screen.queryByRole("menuitem", { name: "A dummy action" })).toBeNull();
 });
 
 it("shows and hides the component content on user request", async () => {
   const { user } = plainRender(
-    <PageOptions>
-      <PageOptions.Option><>A dummy action</></PageOptions.Option>
-    </PageOptions>, { layout: true }
+    <PageMenu togglerAriaLabel="Menu toggler">
+      <PageMenu.Option><>A dummy action</></PageMenu.Option>
+    </PageMenu>
   );
 
-  const toggler = screen.getByRole("button");
+  const toggler = screen.getByRole("button", { name: "Menu toggler" });
 
   expect(screen.queryByRole("menuitem", { name: "A dummy action" })).toBeNull();
 
@@ -59,13 +60,13 @@ it("shows and hides the component content on user request", async () => {
 
 it("hides the component content when user clicks on one of its actions", async () => {
   const { user } = plainRender(
-    <PageOptions>
-      <PageOptions.Group label="Refresh">
-        <PageOptions.Option><>Section</></PageOptions.Option>
-        <PageOptions.Option><>Page</></PageOptions.Option>
-      </PageOptions.Group>
-      <PageOptions.Option><>Exit</></PageOptions.Option>
-    </PageOptions>, { layout: true }
+    <PageMenu>
+      <PageMenu.Group label="Refresh">
+        <PageMenu.Option><>Section</></PageMenu.Option>
+        <PageMenu.Option><>Page</></PageMenu.Option>
+      </PageMenu.Group>
+      <PageMenu.Option><>Exit</></PageMenu.Option>
+    </PageMenu>
   );
 
   const toggler = screen.getByRole("button");
@@ -80,11 +81,11 @@ it('closes the component  when user clicks outside', async () => {
   const { user } = plainRender(
     <>
       <div>Sibling</div>
-      <PageOptions>
-        <PageOptions.Option><>Option 1</></PageOptions.Option>
-        <PageOptions.Option><>Option 2</></PageOptions.Option>
-      </PageOptions>
-    </>, { layout: true }
+      <PageMenu>
+        <PageMenu.Option><>Option 1</></PageMenu.Option>
+        <PageMenu.Option><>Option 2</></PageMenu.Option>
+      </PageMenu>
+    </>
   );
 
   const toggler = screen.getByRole("button");

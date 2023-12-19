@@ -28,20 +28,20 @@ import { _ } from "~/i18n";
 import { Icon } from "~/components/layout";
 
 /**
- * Internal component to build the {PageOptions} toggler
+ * Internal component to build the {PageMenu} toggler
  * @component
  *
  * @param {object} props
+ * @param {string} [props.aria-label="Show page menu"]
  * @param {function} props.onClick
  */
-const Toggler = ({ toggleRef, onClick }) => {
+const Toggler = ({ toggleRef, onClick, "aria-label": ariaLabel = _(("Show page menu")) }) => {
   return (
     <MenuToggle
       ref={toggleRef}
       onClick={onClick}
-      aria-label={_("Show page options")}
+      aria-label={ariaLabel}
       variant="plain"
-      className="plain-button"
     >
       <Icon name="expand_more" />
     </MenuToggle>
@@ -49,12 +49,12 @@ const Toggler = ({ toggleRef, onClick }) => {
 };
 
 /**
- * A group of actions belonging to a {PageOptions} component
+ * A group of actions belonging to a {PageMenu} component
  * @component
  *
  * Built on top of {@link https://www.patternfly.org/components/menus/dropdown#dropdowngroup PF/DropdownGroup}
  *
- * @see {PageOptions } examples.
+ * @see {PageMenu } examples.
  *
  * @param {object} props - PF/DropdownGroup props, See {@link https://www.patternfly.org/components/menus/dropdown#dropdowngroup}
  */
@@ -67,12 +67,12 @@ const Group = ({ children, ...props }) => {
 };
 
 /**
- * An option belonging to a {PageOptions} component
+ * An option belonging to a {PageMenu} component
  * @component
  *
  * Built on top of {@link https://www.patternfly.org/components/menus/dropdown#dropdownitem PF/DropdownItem}
  *
- * @see {PageOptions } examples.
+ * @see {PageMenu} examples.
  *
  * @param {object} props - PF/DropdownItem props, See {@link https://www.patternfly.org/components/menus/dropdown#dropdownitem}
  */
@@ -85,12 +85,12 @@ const Option = ({ children, ...props }) => {
 };
 
 /**
- * A collection of {Option}s belonging to a {PageOptions} component
+ * A collection of {Option}s belonging to a {PageMenu} component
  * @component
  *
  * Built on top of {@link https://www.patternfly.org/components/menus/dropdown#dropdownlist PF/DropdownList}
  *
- * @see {PageOptions} examples.
+ * @see {PageMenu} examples.
  *
  * @param {object} props - PF/DropdownList props, See {@link https://www.patternfly.org/components/menus/dropdown#dropdownlist}
  */
@@ -103,47 +103,54 @@ const Options = ({ children, ...props }) => {
 };
 
 /**
- * Component for rendering actions related to the current page
+ * Component for rendering actions related to a page.
  * @component
  *
  * It consist in a {@link https://www.patternfly.org/components/menus/dropdown PF/Dropdown}
- * "teleported" to the header, close to the action for opening the Sidebar
+ * rendered in the header close to the action for opening the Sidebar.
+ *
+ * @note when wrapping it in another component intended to hold all the needed
+ * logic for building the page menu, it's name must includes the "PageMenu" suffix.
+ * This is needed to allow core/Page properly work with it. See core/Page component
+ * for a better understanding.
+ *
+ * @see core/Page component.
  *
  * @example <caption>Usage example</caption>
- *   <PageOptions>
- *     <PageOptions.Options>
- *       <PageOptions.Option
+ *   <PageMenu>
+ *     <PageMenu.Options>
+ *       <PageMenu.Option
  *         key="reprobe-link"
  *         description="Run a storage device detection"
  *       >
  *
  *         Reprobe
- *       </PageOptions.Option>
- *     </PageOptions.Options>
- *     <PageOptions.Group key="configuration-links" label="Configure">
- *       <PageOptions.Options>
- *         <PageOptions.Option
+ *       </PageMenu.Option>
+ *     </PageMenu.Options>
+ *     <PageMenu.Group key="configuration-links" label="Configure">
+ *       <PageMenu.Options>
+ *         <PageMenu.Option
  *           key="dasd-link"
  *           to={href}
  *           description="Manage and format"
  *         >
  *           DASD
- *         </PageOptions.Option>
- *         <PageOptions.Option
+ *         </PageMenu.Option>
+ *         <PageMenu.Option
  *           key="iscsi-link"
  *           to={href}
  *           description="Connect to iSCSI targets"
  *          >
  *           iSCSI
- *         </PageOptions.Option>
- *       <PageOptions.Options>
- *     </PageOptions.Group>
- *   </PageOptions>
+ *         </PageMenu.Option>
+ *       <PageMenu.Options>
+ *     </PageMenu.Group>
+ *   </PageMenu>
  *
  * @param {object} props
  * @param {Group|Item|Array<Group|Item>} props.children
  */
-const PageOptions = ({ children }) => {
+const PageMenu = ({ togglerAriaLabel, children }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggle = () => setIsOpen(!isOpen);
@@ -152,11 +159,11 @@ const PageOptions = ({ children }) => {
   return (
     <Dropdown
       isOpen={isOpen}
-      toggle={(toggleRef) => <Toggler toggleRef={toggleRef} onClick={toggle} />}
+      toggle={(toggleRef) => <Toggler toggleRef={toggleRef} onClick={toggle} aria-label={togglerAriaLabel} />}
       onSelect={close}
       onOpenChange={close}
       popperProps={{ minWidth: "150px", position: "right" }}
-      className="page-options"
+      data-type="agama/page-menu"
     >
       <DropdownList>
         {Array(children)}
@@ -165,8 +172,8 @@ const PageOptions = ({ children }) => {
   );
 };
 
-PageOptions.Group = Group;
-PageOptions.Options = Options;
-PageOptions.Option = Option;
+PageMenu.Group = Group;
+PageMenu.Options = Options;
+PageMenu.Option = Option;
 
-export default PageOptions;
+export default PageMenu;

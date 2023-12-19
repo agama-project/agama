@@ -22,7 +22,7 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, plainRender, mockNavigateFn } from "~/test-utils";
-import { Page, PageOptions } from "~/components/core";
+import { Page } from "~/components/core";
 
 describe("Page", () => {
   beforeAll(() => {
@@ -77,23 +77,24 @@ describe("Page", () => {
     screen.getByText("Page content");
   });
 
-  it("renders found page options in the header", async () => {
+  it("renders found page menu in the header", async () => {
     const { user } = installerRender(
       <Page>
-        <div>A page with options</div>
-        <PageOptions>
-          <PageOptions.Option>
+        <div>A page with menu</div>
+
+        <Page.Menu togglerAriaLabel="Testing menu">
+          <Page.Menu.Option>
             <button>Switch to advanced mode</button>
-          </PageOptions.Option>
-        </PageOptions>
+          </Page.Menu.Option>
+        </Page.Menu>
       </Page>,
       { withL10n: true }
     );
 
     // Sidebar is rendering it's own header, let's ignore it
     const [header,] = screen.getAllByRole("banner");
-    const optionsButton = within(header).getByRole("button", { name: "Show page options" });
-    await user.click(optionsButton);
+    const menuButton = within(header).getByRole("button", { name: "Testing menu" });
+    await user.click(menuButton);
     screen.getByRole("menuitem", { name: "Switch to advanced mode" });
   });
 
@@ -138,6 +139,24 @@ describe("Page.Actions", () => {
     );
 
     screen.getByRole("button", { name: "Plain action" });
+  });
+});
+
+describe("Page.Menu", () => {
+  // NOTE: just testing that the Page.Menu alias works.
+  // Full PageMenu testing is done in its own test file at core/PageMenu.test.jsx
+  it("renders a menu", () => {
+    plainRender(
+      <Page.Menu>
+        <Page.Menu.Options>
+          <Page.Menu.Option>
+            <>The menu entry</>
+          </Page.Menu.Option>
+        </Page.Menu.Options>
+      </Page.Menu>
+    );
+
+    screen.getByRole("button", { name: "Show page menu" });
   });
 });
 

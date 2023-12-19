@@ -27,7 +27,7 @@ import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
 import { Icon } from "~/components/layout";
 import { Page } from "~/components/core";
-import { ProposalActionsSection, ProposalPageOptions, ProposalSettingsSection } from "~/components/storage";
+import { ProposalActionsSection, ProposalPageMenu, ProposalSettingsSection } from "~/components/storage";
 import { IDLE } from "~/client/status";
 
 const initialState = {
@@ -217,7 +217,7 @@ export default function ProposalPage() {
     // TRANSLATORS: page title
     <Page icon="hard_drive" title={_("Storage")}>
       <PageContent />
-      <ProposalPageOptions />
+      <ProposalPageMenu />
     </Page>
   );
 }

@@ -20,7 +20,7 @@
  */
 
 export { default as About } from "./About";
-export { default as PageOptions } from "./PageOptions";
+export { default as PageMenu } from "./PageMenu";
 export { default as DBusError } from "./DBusError";
 export { default as Description } from "./Description";
 export { default as Disclosure } from "./Disclosure";

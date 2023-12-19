@@ -37,7 +37,7 @@ jest.mock("@patternfly/react-core", () => {
   };
 });
 jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
-jest.mock("~/components/storage/ProposalPageOptions", () => () => <div>ProposalPage Options</div>);
+jest.mock("~/components/storage/ProposalPageMenu", () => () => <div>ProposalPage Options</div>);
 
 const storageMock = {
   probe: jest.fn().mockResolvedValue(0),

@@ -192,29 +192,25 @@
   }
 }
 
-// temporary fix during migration
-.page-options > li {
-  min-inline-size: 150px;
-}
-
-.page-options > button {
-  --pf-v5-c-button--PaddingRight: 0
-}
-
-.page-options a {
-  font-size: 16px;
-  font-weight: var(--fw-bold);
-  text-decoration: none;
-
-  svg {
-    color: inherit;
+[data-type="agama/page-menu"] {
+  > button {
+    --pf-v5-c-button--PaddingRight: 0
   }
 
-  &:hover {
-    color: var(--color-link-hover);
+  a {
+    font-weight: var(--fw-bold);
+    text-decoration: none;
 
     svg {
-      color: var(--color-link);
+      color: inherit;
+    }
+
+    &:hover {
+      color: var(--color-link-hover);
+
+      svg {
+        color: var(--color-link);
+      }
     }
   }
 }

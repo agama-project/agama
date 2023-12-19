@@ -26,7 +26,7 @@ import { Button } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { partition } from "~/utils";
 import { Icon } from "~/components/layout";
-import { If, Sidebar } from "~/components/core";
+import { If, PageMenu, Sidebar } from "~/components/core";
 import logoUrl from "~/assets/suse-horizontal-logo.svg";
 
 /**
@@ -40,6 +40,16 @@ import logoUrl from "~/assets/suse-horizontal-logo.svg";
  * @param {React.ReactNode} [props.children] - a collection of Action components
  */
 const Actions = ({ children }) => <>{children}</>;
+
+/**
+ * Component for rendering options related to the page. I.e., a menu.
+ *
+ * @note it is defined in its own file and then included here under Page.Menu
+ * "alias".
+ *
+ * @see core/PageMenu to know more.
+ */
+const Menu = PageMenu;
 
 /**
  * A convenient component representing a Page action
@@ -98,7 +108,7 @@ const BackAction = () => {
  *     <UserSectionContent />
  *   </Page>
  *
- * @example <caption>Using a custom actions</caption>
+ * @example <caption>Using custom actions</caption>
  *   <Page icon="manage_accounts" title="Users settings">
  *     <UserSectionContent />
  *
@@ -108,6 +118,35 @@ const BackAction = () => {
  *       </Page.Action>
  *       <Page.Action callToAction>Accept</Page.Action>
  *     </Page.Actions>
+ *   </Page>
+ *
+ * @example <caption>Using custom actions and a page menu</caption>
+ *   <Page icon="manage_accounts" title="Users settings">
+ *     <UserSectionContent />
+ *
+ *     <Page.Menu>
+ *       <Page.Menu.Options>
+ *         <Page.Menu.Option>Expert mode</Page.Menu.Option>
+ *         <Page.Menu.Option>Help</Page.Menu.Option>
+ *       </Page.Menu.Options>
+ *     </Page.Menu>
+ *
+ *     <Page.Actions>
+ *       <Page.Action onClick={() => alert("Are you sure?")}>
+ *         Reset to defaults
+ *       </Page.Action>
+ *       <Page.Action callToAction>Accept</Page.Action>
+ *     </Page.Actions>
+ *   </Page>
+ *
+ * @example <caption>Using a page menu from external component</caption>
+ *   ...
+ *   import { UserPageMenu } from "somewhere";
+ *   ...
+ *   <Page icon="manage_accounts" title="Users settings">
+ *     <UserSectionContent />
+ *
+ *     <UserPageMenu />
  *   </Page>
  *
  * @param {object} props
@@ -120,15 +159,26 @@ const BackAction = () => {
 const Page = ({ icon, title = "Agama", children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // NOTE: hot reloading could make weird things when working with this
-  // component because the type check.
-  //
-  // @see https://stackoverflow.com/questions/55729582/check-type-of-react-component
+  /**
+   * To make possible placing everything in the right place, it's
+   * needed to work with given children to look for actions, menus, and or other
+   * kind of things can be added in the future.
+   *
+   * To do so, below lines will extract some children based on their type.
+   *
+   * As for actions, the check is straightforward since it is just a convenience
+   * component that consumers will use directly as <Page.Actions>...</Page.Actions>.
+   * However, <Page.Menu> could be wrapped by another component holding all the logic
+   * to build and render an specific menu. Hence, the only option for them at this
+   * moment is to look for children whose type ends in "PageMenu".
+   *
+   * @note: hot reloading could make weird things when working with this
+   * component because the type check.
+   *
+   * @see https://stackoverflow.com/questions/55729582/check-type-of-react-component
+   */
   const [actions, rest] = partition(React.Children.toArray(children), child => child.type === Actions);
-
-  // TODO: move PageOptions to an internal Page component
-  // TODO: Improve and document below line
-  const [options, content] = partition(rest, child => child.type.name?.endsWith("PageOptions"));
+  const [menu, content] = partition(rest, child => child.type.name?.endsWith("PageMenu"));
 
   if (actions.length === 0) {
     actions.push(<BackAction key="back-action" />);
@@ -145,7 +195,7 @@ const Page = ({ icon, title = "Agama", children }) => {
           <span>{title}</span>
         </h1>
         <div data-type="agama/header-actions">
-          { options }
+          { menu }
           <button
             onClick={openSidebar}
             className="plain-control"
@@ -176,6 +226,7 @@ const Page = ({ icon, title = "Agama", children }) => {
 
 Page.Actions = Actions;
 Page.Action = Action;
+Page.Menu = Menu;
 Page.BackAction = BackAction;
 
 export default Page;

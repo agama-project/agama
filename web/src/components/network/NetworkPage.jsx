@@ -25,7 +25,7 @@ import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
 import { If, Page, Section } from "~/components/core";
-import { ConnectionsTable, IpSettingsForm, NetworkPageOptions, WifiSelector } from "~/components/network";
+import { ConnectionsTable, IpSettingsForm, NetworkPageMenu, WifiSelector } from "~/components/network";
 import { _ } from "~/i18n";
 
 /**
@@ -178,7 +178,7 @@ export default function NetworkPage() {
         { ready ? <WifiConnections /> : <Skeleton /> }
       </Section>
 
-      <NetworkPageOptions wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
+      <NetworkPageMenu wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
 
       <If
         condition={wifiScanSupported}
