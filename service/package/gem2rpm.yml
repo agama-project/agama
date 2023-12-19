@@ -18,7 +18,7 @@
   install --directory %{buildroot}/usr/share/agama/conf.d
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/conf.d/*.yaml %{buildroot}/usr/share/agama/conf.d/
   # run a script for installing the translations
-  "%{SOURCE2}" "%{SOURCE1}"
+  sh "%{SOURCE2}" "%{SOURCE1}"
 :main:
   :preamble: |-
     # Override build.rpm, see also https://github.com/openSUSE/obs-build/blob/master/configs/
