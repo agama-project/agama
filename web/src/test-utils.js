@@ -100,6 +100,12 @@ const Providers = ({ children, withL10n }) => {
   );
 };
 
+/**
+ * Wrapper around react-testing-library#render for rendering components within
+ * installer providers.
+ *
+ * @see #plainRender for rendering without installer providers
+ */
 const installerRender = (ui, options = {}) => {
   const Wrapper = ({ children }) => (
     <Providers withL10n={options.withL10n}>
@@ -117,6 +123,18 @@ const installerRender = (ui, options = {}) => {
   );
 };
 
+/**
+ * Wrapper around react-testing-library#render for rendering components without
+ * installer providers.
+ *
+ * @see #installerRender for using installer providers
+ *
+ * @note Please, be aware that it's needed to mock the core/Sidebar component
+ * when testing a Page with #plainRender helper in order to avoid the test crashing
+ * because mounted without provides unless you take care of mocking core/sidebar
+ * content. The reason for this is that core/Page is always rendering
+ * core/Sidebar as part of the layout.
+ */
 const plainRender = (ui, options = {}) => {
   return (
     {

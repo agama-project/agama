@@ -49,9 +49,6 @@ jest.mock("~/components/overview/NetworkSection", () => () => <div>Network Secti
 jest.mock("~/components/overview/UsersSection", () => () => <div>Users Section</div>);
 jest.mock("~/components/overview/SoftwareSection", () => () => <div>Software Section</div>);
 jest.mock("~/components/core/InstallButton", () => () => <div>Install Button</div>);
-// Since Agama sidebar is now rendered by the core/Page component, it's needed
-// to mock it when testing a Page with plainRender and/or not taking care about
-// sidebar's content.
 jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 beforeEach(() => {

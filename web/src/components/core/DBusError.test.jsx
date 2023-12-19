@@ -26,9 +26,6 @@ import { plainRender } from "~/test-utils";
 import * as utils from "~/utils";
 import { DBusError } from "~/components/core";
 
-// Since Agama sidebar is now rendered by the core/Page component, it's needed
-// to mock it when testing a Page with plainRender and/or not taking care about
-// sidebar's content.
 jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 describe("DBusError", () => {
