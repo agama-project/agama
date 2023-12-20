@@ -187,7 +187,7 @@ impl Locale {
         };
 
         let mut timezones_db = TimezonesDatabase::new();
-        timezones_db.read(&locale)?;
+        timezones_db.read(&ui_locale.language)?;
         let mut default_timezone = DEFAULT_TIMEZONE.to_string();
         if !timezones_db.exists(&default_timezone) {
             default_timezone = timezones_db.entries().get(0).unwrap().code.to_string();
