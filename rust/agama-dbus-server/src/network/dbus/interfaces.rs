@@ -188,7 +188,7 @@ impl Connections {
 /// It offers an API to query a connection.
 pub struct Connection {
     actions: Arc<Mutex<UnboundedSender<Action>>>,
-    connection: Arc<Mutex<NetworkConnection>>,
+    uuid: Uuid,
 }
 
 impl Connection {
@@ -196,32 +196,34 @@ impl Connection {
     ///
     /// * `actions`: sending-half of a channel to send actions.
     /// * `connection`: connection to expose over D-Bus.
-    pub fn new(
-        actions: UnboundedSender<Action>,
-        connection: Arc<Mutex<NetworkConnection>>,
-    ) -> Self {
+    pub fn new(actions: UnboundedSender<Action>, uuid: Uuid) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
-            connection,
+            uuid,
         }
     }
 
     /// Returns the underlying connection.
-    async fn get_connection(&self) -> MutexGuard<NetworkConnection> {
-        self.connection.lock().await
+    async fn get_connection(&self) -> Result<NetworkConnection, NetworkStateError> {
+        let actions = self.actions.lock().await;
+        let (tx, rx) = oneshot::channel();
+        actions.send(Action::GetConnection(self.uuid, tx)).unwrap();
+        rx.await
+            .unwrap()
+            .ok_or(NetworkStateError::UnknownConnection(self.uuid.to_string()))
     }
 
     /// Updates the connection data in the NetworkSystem.
     ///
     /// * `connection`: Updated connection.
-    async fn update_connection<'a>(
-        &self,
-        connection: MutexGuard<'a, NetworkConnection>,
-    ) -> zbus::fdo::Result<()> {
+    pub async fn update_connection<F>(&self, func: F) -> Result<(), NetworkStateError>
+    where
+        F: FnOnce(&mut NetworkConnection),
+    {
+        let mut connection = self.get_connection().await?;
+        func(&mut connection);
         let actions = self.actions.lock().await;
-        actions
-            .send(Action::UpdateConnection(connection.clone()))
-            .unwrap();
+        actions.send(Action::UpdateConnection(connection)).unwrap();
         Ok(())
     }
 }
@@ -234,8 +236,9 @@ impl Connection {
     /// backend. For instance, when using NetworkManager (which is the only supported backend by
     /// now), it uses the original ID but appending a number in case the ID is duplicated.
     #[dbus_interface(property)]
-    pub async fn id(&self) -> String {
-        self.get_connection().await.id.to_string()
+    pub async fn id(&self) -> zbus::fdo::Result<String> {
+        let connection = self.get_connection().await?;
+        Ok(connection.id)
     }
 
     /// Connection UUID.
@@ -244,59 +247,65 @@ impl Connection {
     /// backend.
     #[dbus_interface(property)]
     pub async fn uuid(&self) -> String {
-        self.get_connection().await.uuid.to_string()
+        self.uuid.to_string()
     }
 
     #[dbus_interface(property)]
-    pub async fn controller(&self) -> String {
-        let connection = self.get_connection().await;
-        match connection.controller {
+    pub async fn controller(&self) -> zbus::fdo::Result<String> {
+        let connection = self.get_connection().await?;
+        let result = match connection.controller {
             Some(uuid) => uuid.to_string(),
             None => "".to_string(),
-        }
+        };
+        Ok(result)
     }
 
     #[dbus_interface(property)]
-    pub async fn interface(&self) -> String {
-        let connection = self.get_connection().await;
-        connection.interface.as_deref().unwrap_or("").to_string()
+    pub async fn interface(&self) -> zbus::fdo::Result<String> {
+        let connection = self.get_connection().await?;
+        Ok(connection.interface.unwrap_or_default())
     }
 
     #[dbus_interface(property)]
     pub async fn set_interface(&mut self, name: &str) -> zbus::fdo::Result<()> {
-        let mut connection = self.get_connection().await;
-        connection.interface = Some(name.to_string());
-        self.update_connection(connection).await
+        let interface = Some(name.to_string());
+        self.update_connection(|c| c.interface = interface).await?;
+        Ok(())
     }
 
     /// Custom mac-address
     #[dbus_interface(property)]
-    pub async fn mac_address(&self) -> String {
-        self.get_connection().await.mac_address.to_string()
+    pub async fn mac_address(&self) -> zbus::fdo::Result<String> {
+        let connection = self.get_connection().await?;
+        Ok(connection.mac_address.to_string())
     }
 
     #[dbus_interface(property)]
     pub async fn set_mac_address(&mut self, mac_address: &str) -> zbus::fdo::Result<()> {
-        let mut connection = self.get_connection().await;
-        connection.mac_address = MacAddress::from_str(mac_address)?;
-        self.update_connection(connection).await
+        let mac_address = MacAddress::from_str(mac_address)?;
+        self.update_connection(|c| c.mac_address = mac_address)
+            .await?;
+        Ok(())
     }
 
+    /// Whether the network interface should be active or not
     #[dbus_interface(property)]
-    pub async fn active(&self) -> bool {
-        let connection = self.get_connection().await;
-        connection.is_up()
+    pub async fn active(&self) -> zbus::fdo::Result<bool> {
+        let connection = self.get_connection().await?;
+        Ok(connection.is_up())
     }
 
     #[dbus_interface(property)]
     pub async fn set_active(&mut self, active: bool) -> zbus::fdo::Result<()> {
-        let mut connection = self.get_connection().await;
-        if active {
-            connection.set_up();
-        } else {
-            connection.set_down();
-        }
-        self.update_connection(connection).await
+        self.update_connection(|c| {
+            if active {
+                c.set_up();
+            } else {
+                c.set_down();
+            }
+        })
+        .await?;
+        Ok(())
     }
 }
 
