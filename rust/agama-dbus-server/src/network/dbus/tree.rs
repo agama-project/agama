@@ -76,7 +76,7 @@ impl Tree {
         Ok(())
     }
 
-    /// Adds a connection to the D-Bus tree.
+    /// Adds a connection to the D-Bus tree and returns the D-Bus path.
     ///
     /// * `connection`: connection to add.
     /// * `notify`: whether to notify the added connection
@@ -84,7 +84,7 @@ impl Tree {
         &self,
         conn: &mut Connection,
         notify: bool,
-    ) -> Result<(), ServiceError> {
+    ) -> Result<OwnedObjectPath, ServiceError> {
         let mut objects = self.objects.lock().await;
 
         let orig_id = conn.id.to_owned();
@@ -98,7 +98,7 @@ impl Tree {
         let cloned = Arc::new(Mutex::new(conn.clone()));
         self.add_interface(
             &path,
-            interfaces::Connection::new(self.actions.clone(), Arc::clone(&cloned)),
+            interfaces::Connection::new(self.actions.clone(), uuid),
         )
         .await?;
 
@@ -131,7 +131,7 @@ impl Tree {
             self.notify_connection_added(&orig_id, &path).await?;
         }
 
-        Ok(())
+        Ok(path.into())
     }
 
     /// Removes a connection from the tree

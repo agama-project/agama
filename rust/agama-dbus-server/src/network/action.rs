@@ -2,6 +2,7 @@ use crate::network::model::Connection;
 use agama_lib::network::types::DeviceType;
 use tokio::sync::oneshot;
 use uuid::Uuid;
+use zbus::zvariant::OwnedObjectPath;
 
 use super::error::NetworkStateError;
 
@@ -15,7 +16,11 @@ pub type ControllerConnection = (Connection, Vec<String>);
 #[derive(Debug)]
 pub enum Action {
     /// Add a new connection with the given name and type.
-    AddConnection(String, DeviceType),
+    AddConnection(
+        String,
+        DeviceType,
+        Responder<Result<OwnedObjectPath, NetworkStateError>>,
+    ),
     /// Gets a connection
     GetConnection(Uuid, Responder<Option<Connection>>),
     /// Gets a controller connection

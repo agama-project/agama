@@ -129,12 +129,18 @@ impl Connections {
     ///
     /// * `id`: connection name.
     /// * `ty`: connection type (see [agama_lib::network::types::DeviceType]).
-    pub async fn add_connection(&mut self, id: String, ty: u8) -> zbus::fdo::Result<()> {
+    pub async fn add_connection(
+        &mut self,
+        id: String,
+        ty: u8,
+    ) -> zbus::fdo::Result<OwnedObjectPath> {
         let actions = self.actions.lock().await;
+        let (tx, rx) = oneshot::channel();
         actions
-            .send(Action::AddConnection(id.clone(), ty.try_into()?))
+            .send(Action::AddConnection(id.clone(), ty.try_into()?, tx))
             .unwrap();
-        Ok(())
+        let result = rx.await.unwrap()?;
+        Ok(result)
     }
 
     /// Returns the D-Bus path of the network connection.
