@@ -77,6 +77,7 @@ const TimezoneItem = ({ timezone, date }) => {
     <>
       <div>{part1}</div>
       <div>{restParts.join('-')}</div>
+      <div>{timezone.country}</div>
       <div>{time || ""}</div>
       <div>{timezone.details}</div>
     </>
