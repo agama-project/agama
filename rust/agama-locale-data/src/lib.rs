@@ -115,21 +115,21 @@ mod tests {
     #[test]
     fn test_get_languages() {
         let result = get_languages().unwrap();
-        let first = result.language.first().expect("no keyboards");
+        let first = result.language.first().expect("no languages");
         assert_eq!(first.id, "aa")
     }
 
     #[test]
     fn test_get_territories() {
         let result = get_territories().unwrap();
-        let first = result.territory.first().expect("no keyboards");
+        let first = result.territory.first().expect("no territories");
         assert_eq!(first.id, "001") // looks strange, but it is meta id for whole world
     }
 
     #[test]
     fn test_get_timezone_parts() {
         let result = get_timezone_parts().unwrap();
-        let first = result.timezone_part.first().expect("no keyboards");
+        let first = result.timezone_part.first().expect("no timezone parts");
         assert_eq!(first.id, "Abidjan")
     }
 
