@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Dec 20 16:25:57 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Rework UI internals for improving core/Page component and changing
+  how layout is handled (gh#openSUSE/agama#925).
+- Drop layout/Layout and stop using react-teleporter.
+
+-------------------------------------------------------------------
 Fri Dec 15 15:03:40 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Allow selecting file system type and configure snapshots
