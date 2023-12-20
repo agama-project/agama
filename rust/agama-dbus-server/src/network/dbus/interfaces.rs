@@ -275,6 +275,23 @@ impl Connection {
         connection.mac_address = MacAddress::from_str(mac_address)?;
         self.update_connection(connection).await
     }
+
+    #[dbus_interface(property)]
+    pub async fn active(&self) -> bool {
+        let connection = self.get_connection().await;
+        connection.is_up()
+    }
+
+    #[dbus_interface(property)]
+    pub async fn set_active(&mut self, active: bool) -> zbus::fdo::Result<()> {
+        let mut connection = self.get_connection().await;
+        if active {
+            connection.set_up();
+        } else {
+            connection.set_down();
+        }
+        self.update_connection(connection).await
+    }
 }
 
 /// D-Bus interface for Match settings
