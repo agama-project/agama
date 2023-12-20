@@ -55,17 +55,18 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
                     if !Self::is_writable(conn) {
                         continue;
                     }
+
                     let result = if conn.is_removed() {
-                        self.client.remove_connection(conn.uuid()).await
+                        self.client.remove_connection(conn.uuid).await
                     } else {
                         let ctrl = conn
-                            .controller()
+                            .controller
                             .and_then(|uuid| network.get_connection_by_uuid(uuid));
                         self.client.add_or_update_connection(conn, ctrl).await
                     };
 
                     if let Err(e) = result {
-                        log::error!("Could not process the connection {}: {}", conn.id(), e);
+                        log::error!("Could not process the connection {}: {}", conn.id, e);
                     }
                 }
             })
@@ -91,7 +92,7 @@ fn add_ordered_connections<'b>(
     network: &'b NetworkState,
     conns: &mut Vec<&'b Connection>,
 ) {
-    if let Some(uuid) = conn.controller() {
+    if let Some(uuid) = conn.controller {
         let controller = network.get_connection_by_uuid(uuid).unwrap();
         add_ordered_connections(controller, network, conns);
     }

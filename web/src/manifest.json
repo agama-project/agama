@@ -10,10 +10,11 @@
     },
     "locales": {
         "en-us": "English",
-        "es-es": "Español",
         "nl-nl": "Nederlands",
+        "ja-jp": "日本語",
         "fr-fr": "Français",
         "sv-se": "Svenska",
-        "ja-jp": "日本語"
+        "id-id": "Indonesia",
+        "es-es": "Español"
     }
 }

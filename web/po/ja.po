@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-10 02:19+0000\n"
-"PO-Revision-Date: 2023-12-06 01:25+0000\n"
+"POT-Creation-Date: 2023-12-15 17:45+0000\n"
+"PO-Revision-Date: 2023-12-16 01:02+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -343,8 +343,8 @@ msgstr "グローバルオプション"
 
 #. TRANSLATORS: sidebar header
 #: src/components/core/Sidebar.jsx:157
-msgid "Options"
-msgstr "オプション"
+msgid "Installer Options"
+msgstr "インストーラのオプション"
 
 #: src/components/core/Sidebar.jsx:164
 msgid "Hide navigation and other options"
@@ -364,6 +364,48 @@ msgstr[0] "%d 個のエラーが見つかりました"
 #: src/components/core/ValidationErrors.jsx:95
 msgid "Basic popover"
 msgstr "基本ポップオーバー"
+
+#. TRANSLATORS: label for keyboard layout selection
+#: src/components/l10n/InstallerKeymapSwitcher.jsx:53
+#: src/components/l10n/L10nPage.jsx:357
+msgid "Keyboard"
+msgstr "キーボード"
+
+#. TRANSLATORS: label for keyboard layout selection
+#: src/components/l10n/InstallerKeymapSwitcher.jsx:61
+msgid "keyboard"
+msgstr "キーボード"
+
+#. TRANSLATORS:
+#: src/components/l10n/InstallerKeymapSwitcher.jsx:70
+msgid "Keyboard layout cannot be changed in remote installation"
+msgstr "リモートインストールの場合、キーボードレイアウトは変更できません"
+
+#. TRANSLATORS: help text for the language selector in the sidebar,
+#. %s will be replaced by the "Localization" page link
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:47
+#, c-format
+msgid ""
+"The language used by the installer. The language for the installed system "
+"can be set in the %s page."
+msgstr "インストーラで使用する言語です。インストール先のシステムで使用する言語は %s ページで設定します。"
+
+#. TRANSLATORS: page title
+#. TRANSLATORS: page section
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:56
+#: src/components/l10n/L10nPage.jsx:385
+#: src/components/overview/L10nSection.jsx:52
+msgid "Localization"
+msgstr "ローカライゼーション"
+
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:66
+#: src/components/l10n/L10nPage.jsx:246
+msgid "Language"
+msgstr "言語"
+
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:74
+msgid "language"
+msgstr "言語"
 
 #. TRANSLATORS: placeholder text for search input in the keyboard selector.
 #: src/components/l10n/KeymapSelector.jsx:82
@@ -404,10 +446,6 @@ msgstr "言語の選択"
 msgid "%s will use the selected language."
 msgstr "%s を選択した言語として使用します。"
 
-#: src/components/l10n/L10nPage.jsx:246
-msgid "Language"
-msgstr "言語"
-
 #: src/components/l10n/L10nPage.jsx:252
 msgid "Change language"
 msgstr "言語の変更"
@@ -425,10 +463,6 @@ msgstr "キーボードの選択"
 msgid "%s will use the selected keyboard."
 msgstr "%s を選択したキーボードとして使用します。"
 
-#: src/components/l10n/L10nPage.jsx:357
-msgid "Keyboard"
-msgstr "キーボード"
-
 #: src/components/l10n/L10nPage.jsx:363
 msgid "Change keyboard"
 msgstr "キーボードの変更"
@@ -436,13 +470,6 @@ msgstr "キーボードの変更"
 #: src/components/l10n/L10nPage.jsx:368
 msgid "Keyboard not selected yet"
 msgstr "キーボードを選択していません"
-
-#. TRANSLATORS: page section
-#. TRANSLATORS: page title
-#: src/components/l10n/L10nPage.jsx:385
-#: src/components/overview/L10nSection.jsx:52
-msgid "Localization"
-msgstr "ローカライゼーション"
 
 #: src/components/l10n/L10nPage.jsx:387
 #: src/components/product/ProductPage.jsx:434
@@ -454,14 +481,6 @@ msgstr "ローカライゼーション"
 #: src/components/users/UsersPage.jsx:30
 msgid "Back"
 msgstr "戻る"
-
-#: src/components/l10n/LanguageSwitcher.jsx:46
-msgid "Display Language"
-msgstr "表示言語"
-
-#: src/components/l10n/LanguageSwitcher.jsx:50
-msgid "language"
-msgstr "言語"
 
 #: src/components/l10n/LocaleSelector.jsx:82
 msgid "Filter by language, territory or locale code"
@@ -520,8 +539,8 @@ msgstr "アドレス"
 msgid "Addresses data list"
 msgstr "アドレスデータの一覧"
 
-#. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
+#. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/network/ConnectionsTable.jsx:57
 #: src/components/network/ConnectionsTable.jsx:86
 #: src/components/storage/ZFCPPage.jsx:362
@@ -656,8 +675,8 @@ msgstr "WiFi 接続が見つかりませんでした"
 msgid "Connect to a Wi-Fi network"
 msgstr "Wi-Fi ネットワークへの接続"
 
-#. TRANSLATORS: page section title
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section title
 #: src/components/network/NetworkPage.jsx:170
 #: src/components/overview/NetworkSection.jsx:102
 msgid "Network"
@@ -741,8 +760,8 @@ msgstr "接続済み"
 msgid "Disconnecting"
 msgstr "切断中"
 
-#. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
+#. TRANSLATORS: iSCSI connection status
 #: src/components/network/WifiNetworkListItem.jsx:50
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -1315,6 +1334,9 @@ msgstr "暗号化"
 
 #. TRANSLATORS: filesystem flag, it allows creating snapshots
 #: src/components/storage/ProposalVolumes.jsx:218
+#: src/components/storage/VolumeForm.jsx:128
+#: src/components/storage/VolumeForm.jsx:161
+#, c-format
 msgid "with snapshots"
 msgstr "スナップショット有り"
 
@@ -1333,7 +1355,7 @@ msgid "Edit file system"
 msgstr "ファイルシステムの編集"
 
 #: src/components/storage/ProposalVolumes.jsx:307
-#: src/components/storage/VolumeForm.jsx:500
+#: src/components/storage/VolumeForm.jsx:723
 msgid "Mount point"
 msgstr "マウントポイント"
 
@@ -1342,7 +1364,7 @@ msgid "Details"
 msgstr "詳細"
 
 #: src/components/storage/ProposalVolumes.jsx:309
-#: src/components/storage/VolumeForm.jsx:517
+#: src/components/storage/VolumeForm.jsx:737
 msgid "Size"
 msgstr "サイズ"
 
@@ -1354,54 +1376,77 @@ msgstr "マウントポイントの一覧"
 msgid "File systems to create in your system"
 msgstr "お使いのシステム内で作成するファイルシステム"
 
+#. TRANSLATORS: description of Btrfs snapshots feature.
+#: src/components/storage/VolumeForm.jsx:168
+msgid ""
+"Allows rolling back any change done to the system and restoring its previous "
+"state"
+msgstr "システムに実施された任意の変更を巻き戻し、以前の状態を復元できるようにします"
+
+#. TRANSLATORS: info about possible file system types.
+#: src/components/storage/VolumeForm.jsx:265
+msgid ""
+"The options for the file system type depends on the product and the mount "
+"point."
+msgstr "ファイルシステムに対する選択肢は、製品とマウントポイントごとに異なります。"
+
+#: src/components/storage/VolumeForm.jsx:271
+msgid "More info for file system types"
+msgstr "ファイルシステムの種類に関する詳細"
+
+#. TRANSLATORS: label for the file system selector.
+#: src/components/storage/VolumeForm.jsx:282
+msgid "File system type"
+msgstr "ファイルシステムの種類"
+
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeForm.jsx:97
+#: src/components/storage/VolumeForm.jsx:314
 msgid "the configuration of snapshots"
 msgstr "スナップショットの設定"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
-#: src/components/storage/VolumeForm.jsx:102
+#: src/components/storage/VolumeForm.jsx:319
 #, c-format
 msgid "the presence of the file system for %s"
 msgstr "%s に対するファイルシステムの存在"
 
 #. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeForm.jsx:104
+#: src/components/storage/VolumeForm.jsx:321
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeForm.jsx:107
+#: src/components/storage/VolumeForm.jsx:324
 #, c-format
 msgid "The final size depends on %s."
 msgstr "最終的なサイズは %s に依存します。"
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeForm.jsx:109
+#: src/components/storage/VolumeForm.jsx:326
 msgid " and "
 msgstr " および "
 
 #. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeForm.jsx:114
+#: src/components/storage/VolumeForm.jsx:331
 msgid "Automatically calculated size according to the selected product."
 msgstr "選択した製品から自動計算したサイズです。"
 
-#: src/components/storage/VolumeForm.jsx:134
+#: src/components/storage/VolumeForm.jsx:351
 msgid "Exact size for the file system."
 msgstr "ファイルシステムに対する正確なサイズです。"
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeForm.jsx:146
+#: src/components/storage/VolumeForm.jsx:363
 msgid "Exact size"
 msgstr "正確なサイズ"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeForm.jsx:161
+#: src/components/storage/VolumeForm.jsx:378
 msgid "Size unit"
 msgstr "サイズの単位"
 
-#: src/components/storage/VolumeForm.jsx:189
+#: src/components/storage/VolumeForm.jsx:406
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1412,63 +1457,59 @@ msgstr ""
 "に設定されます。"
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeForm.jsx:196
+#: src/components/storage/VolumeForm.jsx:413
 msgid "Minimum"
 msgstr "最小"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeForm.jsx:206
+#: src/components/storage/VolumeForm.jsx:423
 msgid "Minimum desired size"
 msgstr "最小必須サイズ"
 
-#: src/components/storage/VolumeForm.jsx:215
+#: src/components/storage/VolumeForm.jsx:432
 msgid "Unit for the minimum size"
 msgstr "最小サイズの単位"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:226
+#: src/components/storage/VolumeForm.jsx:443
 msgid "Maximum"
 msgstr "最大"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:237
+#: src/components/storage/VolumeForm.jsx:454
 msgid "Maximum desired size"
 msgstr "最大要求サイズ"
 
-#: src/components/storage/VolumeForm.jsx:245
+#: src/components/storage/VolumeForm.jsx:462
 msgid "Unit for the maximum size"
 msgstr "最大サイズの単位"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeForm.jsx:262
+#: src/components/storage/VolumeForm.jsx:479
 msgid "Auto"
 msgstr "自動"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeForm.jsx:264
+#: src/components/storage/VolumeForm.jsx:481
 msgid "Fixed"
 msgstr "固定値"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeForm.jsx:266
+#: src/components/storage/VolumeForm.jsx:483
 msgid "Range"
 msgstr "範囲"
 
-#: src/components/storage/VolumeForm.jsx:470
+#: src/components/storage/VolumeForm.jsx:691
 msgid "A size value is required"
 msgstr "サイズを指定する必要があります"
 
-#: src/components/storage/VolumeForm.jsx:475
+#: src/components/storage/VolumeForm.jsx:696
 msgid "Minimum size is required"
 msgstr "最小サイズを指定する必要があります"
 
-#: src/components/storage/VolumeForm.jsx:479
+#: src/components/storage/VolumeForm.jsx:700
 msgid "Maximum must be greater than minimum"
 msgstr "最大サイズは最小サイズより大きくなければなりません"
-
-#: src/components/storage/VolumeForm.jsx:509
-msgid "File system type"
-msgstr "ファイルシステムの種類"
 
 #: src/components/storage/ZFCPDiskForm.jsx:113
 msgid "The zFCP disk was not activated."
@@ -2039,6 +2080,12 @@ msgstr "ユーザ"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "root の認証"
+
+#~ msgid "Options"
+#~ msgstr "オプション"
+
+#~ msgid "Display Language"
+#~ msgstr "表示言語"
 
 #, c-format
 #~ msgid "Icon %s not found!"

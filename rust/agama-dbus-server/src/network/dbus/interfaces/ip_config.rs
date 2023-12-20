@@ -58,7 +58,7 @@ impl Ip {
 impl Ip {
     /// Returns the IpConfig struct.
     async fn get_ip_config(&self) -> MappedMutexGuard<IpConfig> {
-        MutexGuard::map(self.get_connection().await, |c| c.ip_config_mut())
+        MutexGuard::map(self.get_connection().await, |c| &mut c.ip_config)
     }
 
     /// Updates the IpConfig struct.
@@ -69,7 +69,7 @@ impl Ip {
         F: Fn(&mut IpConfig),
     {
         let mut connection = self.get_connection().await;
-        func(connection.ip_config_mut());
+        func(&mut connection.ip_config);
         self.update_connection(connection).await?;
         Ok(())
     }

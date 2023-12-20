@@ -6,6 +6,12 @@ Wed Dec 20 16:25:57 UTC 2023 - David Diaz <dgonzalez@suse.com>
 - Drop layout/Layout and stop using react-teleporter.
 
 -------------------------------------------------------------------
+Mon Dec 18 10:42:53 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Do not show info icon for the file system label if there is only
+  one option (gh#openSUSE/agama#938).
+
+-------------------------------------------------------------------
 Fri Dec 15 15:03:40 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Allow selecting file system type and configure snapshots
