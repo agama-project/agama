@@ -73,17 +73,17 @@ impl<T: Adapter> NetworkSystem<T> {
                 let result = self.add_connection_action(name, ty).await;
                 tx.send(result).unwrap();
             }
-            Action::GetConnection(uuid, rx) => {
+            Action::GetConnection(uuid, tx) => {
                 let conn = self.state.get_connection_by_uuid(uuid);
-                rx.send(conn.cloned()).unwrap();
+                tx.send(conn.cloned()).unwrap();
             }
-            Action::GetController(uuid, rx) => {
+            Action::GetController(uuid, tx) => {
                 let result = self.get_controller_action(uuid);
-                rx.send(result).unwrap()
+                tx.send(result).unwrap()
             }
-            Action::SetPorts(uuid, ports, rx) => {
+            Action::SetPorts(uuid, ports, tx) => {
                 let result = self.set_ports_action(uuid, ports);
-                rx.send(result).unwrap();
+                tx.send(result).unwrap();
             }
             Action::UpdateConnection(conn) => {
                 self.state.update_connection(conn)?;
