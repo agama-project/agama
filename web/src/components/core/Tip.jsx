@@ -38,7 +38,10 @@ export default function Tip ({ description, children }) {
   if (description) {
     return (
       <Description description={description}>
-        <Label isCompact>{children}&nbsp;<Icon name="info" size="xxs" /></Label>
+        <Label isCompact className="label-tip">
+          {children}
+          <Icon name="info" size="xxs" />
+        </Label>
       </Description>
     );
   }

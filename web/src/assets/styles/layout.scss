@@ -54,6 +54,7 @@
   main {
     grid-area: body;
     overflow: auto;
+    padding-block: var(--spacer-normal);
   }
 
   footer {

@@ -231,3 +231,14 @@ table td > .pf-v5-c-empty-state {
   padding: 0;
   vertical-align: top;
 }
+
+.pf-m-grid-md.pf-v5-c-table .pf-v5-c-menu-toggle {
+  padding-inline: 0;
+}
+
+@media screen and (width <= 768px) {
+  .pf-m-grid-md.pf-v5-c-table tr:where(.pf-v5-c-table__tr):not(.pf-v5-c-table__expandable-row) {
+    padding-inline: 0;
+  }
+
+}
