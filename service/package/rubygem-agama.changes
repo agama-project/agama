@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Dec 20 15:30:40 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Update software issues after calling to solver
+  (gh#openSUSE/agama#945).
+
+-------------------------------------------------------------------
 Fri Dec 15 15:04:43 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Set snapshots as not configurable by default

@@ -231,9 +231,7 @@ module Agama
         res = Yast::Pkg.ResolvableInstall(id, :pattern)
         logger.info "Adding pattern #{res.inspect}"
         Yast::PackagesProposal.AddResolvables(PROPOSAL_ID, :pattern, [id])
-
-        res = Yast::Pkg.PkgSolve(unused = true)
-        logger.info "Solver run #{res.inspect}"
+        proposal.solve_dependencies
         selected_patterns_changed
 
         true
@@ -245,9 +243,7 @@ module Agama
         res = Yast::Pkg.ResolvableNeutral(id, :pattern, force = false)
         logger.info "Removing pattern #{res.inspect}"
         Yast::PackagesProposal.RemoveResolvables(PROPOSAL_ID, :pattern, [id])
-
-        res = Yast::Pkg.PkgSolve(unused = true)
-        logger.info "Solver run #{res.inspect}"
+        proposal.solve_dependencies
         selected_patterns_changed
 
         true
@@ -262,9 +258,7 @@ module Agama
         Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :pattern, ids)
         ids.each { |p| Yast::Pkg.ResolvableInstall(p, :pattern) }
         logger.info "Setting patterns to #{ids.inspect}"
-
-        res = Yast::Pkg.PkgSolve(unused = true)
-        logger.info "Solver run #{res.inspect}"
+        proposal.solve_dependencies
         selected_patterns_changed
 
         []
@@ -383,7 +377,9 @@ module Agama
       end
 
       def proposal
-        @proposal ||= Proposal.new
+        @proposal ||= Proposal.new.tap do |proposal|
+          proposal.on_issues_change { update_issues }
+        end
       end
 
       def import_gpg_keys
