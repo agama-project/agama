@@ -2,6 +2,7 @@ use anyhow::Context;
 use flate2::bufread::GzDecoder;
 use quick_xml::de::Deserializer;
 use serde::Deserialize;
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
@@ -90,6 +91,27 @@ pub fn get_timezone_parts() -> anyhow::Result<timezone_part::TimezoneIdParts> {
     let ret = timezone_part::TimezoneIdParts::deserialize(&mut deserializer)
         .context("Failed to deserialize timezone part entry")?;
     Ok(ret)
+}
+
+/// Returns a hash mapping timezones to its main country (typically, the country of
+/// the city that is used to name the timezone). The information is read from the
+/// file /usr/share/zoneinfo/zone.tab.
+pub fn get_timezone_countries() -> anyhow::Result<HashMap<String, String>> {
+    const FILE_PATH: &str = "/usr/share/zoneinfo/zone.tab";
+    let content = std::fs::read_to_string(FILE_PATH)
+        .with_context(|| format!("Failed to read {}", FILE_PATH))?;
+
+    let countries = content
+        .lines()
+        .filter_map(|line| {
+            if line.starts_with('#') {
+                return None;
+            }
+            let fields: Vec<&str> = line.split('\t').collect();
+            Some((fields.get(2)?.to_string(), fields.first()?.to_string()))
+        })
+        .collect();
+    Ok(countries)
 }
 
 /// Gets list of non-deprecated timezones
