@@ -90,8 +90,25 @@ module Agama
         @proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
         solve_dependencies
 
-        update_issues
         valid?
+      end
+
+      # Runs the solver to satisfy the dependencies.
+      #
+      # Issues are updated once the solver finishes.
+      #
+      # @return [Boolean] whether the solver ran successfully
+      def solve_dependencies
+        res = Yast::Pkg.PkgSolve(unused = true)
+        logger.info "Solver run #{res.inspect}"
+        update_issues
+
+        return true if res
+
+        logger.error "Solver failed: #{Yast::Pkg.LastError}"
+        logger.error "Details: #{Yast::Pkg.LastErrorDetails}"
+        logger.error "Solver errors: #{Yast::Pkg.PkgSolveErrors}"
+        false
       end
 
       # Returns the count of packages to install
@@ -172,12 +189,10 @@ module Agama
       #
       # @return [Array<Agama::Issue>]
       def update_issues
-        self.issues = []
-        return unless proposal
-
         msgs = []
-        msgs.concat(warning_messages(proposal))
+        msgs.concat(warning_messages(proposal)) if proposal
         msgs.concat(solver_messages)
+
         issues = msgs.map do |msg|
           Issue.new(msg,
             source:   Issue::Source::CONFIG,
@@ -185,22 +200,6 @@ module Agama
         end
 
         self.issues = issues
-      end
-
-      # Runs the solver to satisfy the solve_dependencies
-      #
-      # If the solver failed, it logs the error.
-      #
-      # @return [Boolean] whether the solver ran successfully
-      def solve_dependencies
-        res = Yast::Pkg.PkgSolve(unused = true)
-        logger.info "Solver run #{res.inspect}"
-        return true if res
-
-        logger.error "Solver failed: #{Yast::Pkg.LastError}"
-        logger.error "Details: #{Yast::Pkg.LastErrorDetails}"
-        logger.error "Solver errors: #{Yast::Pkg.PkgSolveErrors}"
-        false
       end
 
       # Extracts the warning messages from the proposal result
