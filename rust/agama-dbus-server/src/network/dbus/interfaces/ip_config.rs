@@ -49,7 +49,7 @@ impl Ip {
     ) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock().await;
         actions
-            .send(Action::UpdateConnection(connection.clone()))
+            .send(Action::UpdateConnection(Box::new(connection.clone())))
             .unwrap();
         Ok(())
     }

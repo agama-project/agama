@@ -144,7 +144,9 @@ impl Connection {
         let mut connection = self.get_connection().await?;
         func(&mut connection);
         let actions = self.actions.lock().await;
-        actions.send(Action::UpdateConnection(connection)).unwrap();
+        actions
+            .send(Action::UpdateConnection(Box::new(connection)))
+            .unwrap();
         Ok(())
     }
 }
@@ -265,7 +267,7 @@ impl Match {
     ) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock().await;
         actions
-            .send(Action::UpdateConnection(connection.clone()))
+            .send(Action::UpdateConnection(Box::new(connection.clone())))
             .unwrap();
         Ok(())
     }

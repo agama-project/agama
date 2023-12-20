@@ -30,9 +30,13 @@ pub enum Action {
     ),
     /// Sets a controller's ports. It uses the Uuid of the controller and the IDs or interface names
     /// of the ports.
-    SetPorts(Uuid, Vec<String>, Responder<Result<(), NetworkStateError>>),
+    SetPorts(
+        Uuid,
+        Box<Vec<String>>,
+        Responder<Result<(), NetworkStateError>>,
+    ),
     /// Update a connection (replacing the old one).
-    UpdateConnection(Connection),
+    UpdateConnection(Box<Connection>),
     /// Remove the connection with the given Uuid.
     RemoveConnection(String),
     /// Apply the current configuration.

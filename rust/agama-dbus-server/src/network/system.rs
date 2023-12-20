@@ -81,12 +81,12 @@ impl<T: Adapter> NetworkSystem<T> {
                 let result = self.get_controller_action(uuid);
                 tx.send(result).unwrap()
             }
-            Action::SetPorts(uuid, ports, tx) => {
-                let result = self.set_ports_action(uuid, ports);
-                tx.send(result).unwrap();
+            Action::SetPorts(uuid, ports, rx) => {
+                let result = self.set_ports_action(uuid, *ports);
+                rx.send(result).unwrap();
             }
             Action::UpdateConnection(conn) => {
-                self.state.update_connection(conn)?;
+                self.state.update_connection(*conn)?;
             }
             Action::RemoveConnection(id) => {
                 self.tree.remove_connection(&id).await?;

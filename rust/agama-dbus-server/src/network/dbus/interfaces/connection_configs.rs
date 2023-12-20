@@ -64,7 +64,7 @@ impl Bond {
         }
         let actions = self.actions.lock().await;
         actions
-            .send(Action::UpdateConnection(connection.clone()))
+            .send(Action::UpdateConnection(Box::new(connection.clone())))
             .unwrap();
         Ok(())
     }
@@ -119,7 +119,7 @@ impl Bond {
         let actions = self.actions.lock().await;
         let (tx, rx) = oneshot::channel();
         actions
-            .send(Action::SetPorts(self.uuid, ports, tx))
+            .send(Action::SetPorts(self.uuid, Box::new(ports), tx))
             .unwrap();
         let result = rx.await.unwrap();
         Ok(result?)
@@ -177,7 +177,7 @@ impl Wireless {
         }
         let actions = self.actions.lock().await;
         actions
-            .send(Action::UpdateConnection(connection.clone()))
+            .send(Action::UpdateConnection(Box::new(connection.clone())))
             .unwrap();
         Ok(())
     }
