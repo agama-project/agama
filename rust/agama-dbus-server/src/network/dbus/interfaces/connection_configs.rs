@@ -1,6 +1,6 @@
 use agama_lib::network::types::SSID;
 use std::sync::Arc;
-use tokio::sync::{mpsc::UnboundedSender, oneshot, MappedMutexGuard, Mutex, MutexGuard};
+use tokio::sync::{mpsc::UnboundedSender, oneshot, Mutex};
 use uuid::Uuid;
 use zbus::dbus_interface;
 
@@ -129,32 +129,38 @@ impl Bond {
 /// D-Bus interface for wireless settings
 pub struct Wireless {
     actions: Arc<Mutex<UnboundedSender<Action>>>,
-    connection: Arc<Mutex<NetworkConnection>>,
+    uuid: Uuid,
 }
 
 impl Wireless {
     /// Creates a Wireless interface object.
     ///
     /// * `actions`: sending-half of a channel to send actions.
-    /// * `connection`: connection to expose over D-Bus.
-    pub fn new(
-        actions: UnboundedSender<Action>,
-        connection: Arc<Mutex<NetworkConnection>>,
-    ) -> Self {
+    /// * `uuid`: connection UUID.
+    pub fn new(actions: UnboundedSender<Action>, uuid: Uuid) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
-            connection,
+            uuid,
         }
     }
 
-    /// Gets the wireless connection.
-    ///
-    /// Beware that it crashes when it is not a wireless connection.
-    async fn get_wireless(&self) -> MappedMutexGuard<WirelessConfig> {
-        MutexGuard::map(self.connection.lock().await, |c| match &mut c.config {
-            ConnectionConfig::Wireless(config) => config,
-            _ => panic!("Not a wireless connection. This is most probably a bug."),
-        })
+    /// Gets the connection.
+    async fn get_connection(&self) -> Result<NetworkConnection, NetworkStateError> {
+        let actions = self.actions.lock().await;
+        let (tx, rx) = oneshot::channel();
+        actions.send(Action::GetConnection(self.uuid, tx)).unwrap();
+        rx.await
+            .unwrap()
+            .ok_or(NetworkStateError::UnknownConnection(self.uuid.to_string()))
+    }
+
+    /// Gets the wireless configuration.
+    pub async fn get_config(&self) -> Result<WirelessConfig, NetworkStateError> {
+        let connection = self.get_connection().await?;
+        match connection.config {
+            ConnectionConfig::Wireless(wireless) => Ok(wireless),
+            _ => panic!("Not a bond connection. This is most probably a bug."),
+        }
     }
 
     /// Updates the wireless configuration.
@@ -164,10 +170,10 @@ impl Wireless {
     where
         F: FnOnce(&mut WirelessConfig),
     {
-        let mut connection = self.connection.lock().await;
+        let mut connection = self.get_connection().await?;
         match &mut connection.config {
             ConnectionConfig::Wireless(wireless) => func(wireless),
-            _ => panic!("Not a wireless connection. This is most probably a bug."),
+            _ => panic!("Not a bond connection. This is most probably a bug."),
         }
         let actions = self.actions.lock().await;
         actions
@@ -181,9 +187,9 @@ impl Wireless {
 impl Wireless {
     /// Network SSID.
     #[dbus_interface(property, name = "SSID")]
-    pub async fn ssid(&self) -> Vec<u8> {
-        let wireless = self.get_wireless().await;
-        wireless.ssid.clone().into()
+    pub async fn ssid(&self) -> zbus::fdo::Result<Vec<u8>> {
+        let config = self.get_config().await?;
+        Ok(config.ssid.into())
     }
 
     #[dbus_interface(property, name = "SSID")]
@@ -198,9 +204,9 @@ impl Wireless {
     ///
     /// See [crate::network::model::WirelessMode].
     #[dbus_interface(property)]
-    pub async fn mode(&self) -> String {
-        let wireless = self.get_wireless().await;
-        wireless.mode.to_string()
+    pub async fn mode(&self) -> zbus::fdo::Result<String> {
+        let config = self.get_config().await?;
+        Ok(config.mode.to_string())
     }
 
     #[dbus_interface(property)]
@@ -212,9 +218,9 @@ impl Wireless {
 
     /// Password to connect to the wireless network.
     #[dbus_interface(property)]
-    pub async fn password(&self) -> String {
-        let wireless = self.get_wireless().await;
-        wireless.password.clone().unwrap_or("".to_string())
+    pub async fn password(&self) -> zbus::fdo::Result<String> {
+        let config = self.get_config().await?;
+        Ok(config.password.unwrap_or_default())
     }
 
     #[dbus_interface(property)]
@@ -237,9 +243,9 @@ impl Wireless {
     ///
     /// See [crate::network::model::SecurityProtocol].
     #[dbus_interface(property)]
-    pub async fn security(&self) -> String {
-        let wireless = self.get_wireless().await;
-        wireless.security.to_string()
+    pub async fn security(&self) -> zbus::fdo::Result<String> {
+        let config = self.get_config().await?;
+        Ok(config.security.to_string())
     }
 
     #[dbus_interface(property)]
