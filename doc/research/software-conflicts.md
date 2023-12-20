@@ -27,7 +27,7 @@ zypp::ProblemSolution
     #details
 ~~~
 
-A list of solutions can be passed to `#applySolutions` method in order to fix the reported problems. The list of solutions is built by selecting a solution from each problem. Then the solver (`#resolvePool`) can be called again.
+A list of solutions can be passed to `#applySolutions` method in order to fix the reported problems. The list of solutions is built by selecting a solution from the problems. Then the solver (`#resolvePool`) can be called again. Note that `applySolutions` does not require a solution for all the problems. Sometimes a problem is gone as consequence of solving another problem.
 
 ~~~
 zypp::ProblemSolutionList solutions;
@@ -40,7 +40,7 @@ bool success = zypp::getZYpp()->resolver()->resolvePool();
 
 From Agama point of view, the software proposal could be considered as a not finished task meanwhile there are dependency conflicts. Following that approach, the questions mechanism fits well as a strategy for requesting user intervesion.
 
-Therefore, when a software proposal is calculated, Agama could raise a question if needed in order to make possible to finish the proposal without conflicts. The user should be able to answer the question by selecting a solution for each conflict. Then, Agama would try to calculate the proposal again. If the user decides to cancel the question and finish without solving the problems, then Agama would generate an issue indicating the dependency problems. Note that the installation will not start if there is any issue with level error. Consequently, such a dependency issue would prevent the installation to start.
+Therefore, when a software proposal is calculated, Agama could raise a question if needed in order to make possible to finish the proposal without conflicts. The user should be able to answer the question by selecting a solution for any of the conflicts. Then, Agama would try to calculate the proposal again. If the user decides to cancel the question and finish without solving the problems, then Agama would generate an issue indicating the dependency problems. Note that the installation will not start if there is any issue with level error. Consequently, such a dependency issue would prevent the installation to start.
 
 ### Solver problems
 
