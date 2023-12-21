@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Dec 21 14:24:02 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 7
+
+-------------------------------------------------------------------
 Thu Dec 21 13:36:46 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Rework UI internals for improving core/Page component and changing

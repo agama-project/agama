@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Dec 21 14:23:33 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 7
+
+-------------------------------------------------------------------
 Thu Dec 21 11:12:45 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - The result of ListTimezones includes the localized country name
