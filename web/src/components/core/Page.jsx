@@ -171,7 +171,7 @@ const Page = ({ icon, title = "Agama", children }) => {
    * moment is to look for children whose type ends in "PageMenu".
    *
    * @note: hot reloading could make weird things when working with this
-   * component because the type check.
+   * component because of the type check.
    *
    * @see https://stackoverflow.com/questions/55729582/check-type-of-react-component
    */
