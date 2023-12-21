@@ -36,7 +36,7 @@ export default function IssuesLink() {
 
   return (
     <Link to="/issues">
-      <Icon name="problem" size="24" />
+      <Icon name="problem" size="s" />
       {_("Show issues")}
       <If
         condition={notification.issues}

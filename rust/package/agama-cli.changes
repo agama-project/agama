@@ -1,4 +1,81 @@
 -------------------------------------------------------------------
+Thu Dec 21 14:23:33 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 7
+
+-------------------------------------------------------------------
+Thu Dec 21 11:12:45 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- The result of ListTimezones includes the localized country name
+  for each timezone (gh#openSUSE/agama#946)
+
+-------------------------------------------------------------------
+Fri Dec 15 16:29:20 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update agama-cli dependencies including the zerocopy crate to
+  address a security alert (see gh#google/zerocopy#716).
+
+-------------------------------------------------------------------
+Wed Dec 13 22:41:34 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Add support for bonding connections (gh#openSUSE/agama#885).
+
+-------------------------------------------------------------------
+Fri Dec  8 09:23:09 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Change the config in a way that: (gh#openSUSE/agama#919)
+  1. product is moved to own section and is now under product.id
+  2. in product section is now also registrationCode and registrationEmail
+  3. in software section is now patterns to select patterns to install
+- adapt profile.schema according to above changes
+- org.opensuse.Agama.Software1 API changed to report missing patterns
+
+-------------------------------------------------------------------
+Tue Dec  5 11:18:41 UTC 2023 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add ability to assign a custom MAC address for network
+  connections (gh#openSUSE/agama#893)
+
+-------------------------------------------------------------------
+Tue Dec  5 09:46:48 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Explicitly add dependencies instead of relying on the live ISO
+  to provide the required packages (gh#openSUSE/agama/911).
+
+-------------------------------------------------------------------
+Tue Dec  5 08:56:13 UTC 2023 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add support for dummy network devices although they are not
+  exposed on D-Bus yet (gh#openSUSE/agama#913).
+
+-------------------------------------------------------------------
+Sun Dec  3 15:53:34 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use a single call to systemd-firstboot to write the localization
+  settings (gh#openSUSE/agama#903).
+
+-------------------------------------------------------------------
+Sat Dec  2 18:05:54 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 6
+
+-------------------------------------------------------------------
+Wed Nov 29 11:19:51 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Rework the org.opensuse.Agama1.Locale interface
+  (gh#openSUSE/agama#881):
+  * Replace LabelsForLocales function with ListLocales.
+  * Add a ListKeymaps function.
+  * Extend the ListTimezone function to include the translation of
+    each part.
+  * Drop ListUILocales and ListVConsoleKeyboards functions.
+  * Remove the SupportedLocales and VConsoleKeyboard properties.
+  * Do not read the lists of locales, keymaps and timezones on
+    each request.
+  * Peform some validation when trying to change the Locales,
+    Keymap and Timezone properties.
+
+-------------------------------------------------------------------
 Thu Nov 16 11:06:30 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update dependencies to compatible versions

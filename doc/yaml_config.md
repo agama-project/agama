@@ -38,6 +38,15 @@ Array of patterns that have to be selected.
 
 Array of patterns that should be selected but can be deselected or skipped if not available.
 
+#### user\_patterns
+
+Array of patterns that are displayed in the pattern selector UI and user can
+select them to install.
+
+If the list is empty then the pattern selector is not displayed. If the key is
+not defined or the value is missing or is `null` then all available user visible
+patterns are displayed.
+
 ### security
 
 Options related to security

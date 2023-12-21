@@ -39,17 +39,7 @@ describe Agama::DBus::Clients::Locale do
   let(:dbus_object) { instance_double(DBus::ProxyObject) }
   let(:lang_iface) { instance_double(DBus::ProxyObjectInterface) }
 
-  subject { described_class.new }
-
-  describe "#supported_locales=" do
-    # Using partial double because methods are dynamically added to the proxy object
-    let(:dbus_object) { double(DBus::ProxyObject) }
-
-    it "calls the D-Bus object" do
-      expect(dbus_object).to receive(:supported_locales=).with(["no", "se"])
-      subject.supported_locales = ["no", "se"]
-    end
-  end
+  subject { described_class.instance }
 
   describe "#finish" do
     let(:dbus_object) { double(DBus::ProxyObject) }

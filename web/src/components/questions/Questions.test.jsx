@@ -21,7 +21,7 @@
 
 import React from "react";
 
-import { act, screen, waitFor } from "@testing-library/react";
+import { act, waitFor, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { createClient } from "~/client";
 
@@ -63,24 +63,20 @@ describe("Questions", () => {
     });
 
     it("renders nothing", async () => {
-      installerRender(<Questions />);
-
-      const main = await screen.findByRole("main");
-      await waitFor(() => expect(main).toBeEmptyDOMElement());
+      const { container } = installerRender(<Questions />);
+      await waitFor(() => expect(container).toBeEmptyDOMElement());
     });
   });
 
   describe("when a new question is added", () => {
     it("push it into the pending queue", async () => {
-      installerRender(<Questions />);
-
-      const main = await screen.findByRole("main");
-      await waitFor(() => expect(main).toBeEmptyDOMElement());
+      const { container } = installerRender(<Questions />);
+      await waitFor(() => expect(container).toBeEmptyDOMElement());
 
       // Manually triggers the handler given for the onQuestionAdded signal
       act(() => handlers.onAdd(genericQuestion));
 
-      await screen.findByText("A Generic question mock");
+      await within(container).findByText("A Generic question mock");
     });
   });
 
@@ -90,13 +86,13 @@ describe("Questions", () => {
     });
 
     it("removes it from the queue", async () => {
-      installerRender(<Questions />);
-      await screen.findByText("A Generic question mock");
+      const { container } = installerRender(<Questions />);
+      await within(container).findByText("A Generic question mock");
 
       // Manually triggers the handler given for the onQuestionRemoved signal
       act(() => handlers.onRemove(genericQuestion.id));
 
-      const content = screen.queryByText("A Generic question mock");
+      const content = within(container).queryByText("A Generic question mock");
       expect(content).toBeNull();
     });
   });
@@ -107,9 +103,9 @@ describe("Questions", () => {
     });
 
     it("renders a GenericQuestion component", async () => {
-      installerRender(<Questions />);
+      const { container } = installerRender(<Questions />);
 
-      await screen.findByText("A Generic question mock");
+      await within(container).findByText("A Generic question mock");
     });
   });
 
@@ -119,9 +115,9 @@ describe("Questions", () => {
     });
 
     it("renders a LuksActivationQuestion component", async () => {
-      installerRender(<Questions />);
+      const { container } = installerRender(<Questions />);
 
-      await screen.findByText("A LUKS activation question mock");
+      await within(container).findByText("A LUKS activation question mock");
     });
   });
 });

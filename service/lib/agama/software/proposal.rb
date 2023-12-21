@@ -51,17 +51,20 @@ module Agama
     #   proposal.issues #=> []
     class Proposal
       include WithIssues
+      include Yast::I18n
 
       # @return [String,nil] Base product
       attr_accessor :base_product
 
       # @return [Array<String>] List of languages to install
-      attr_accessor :languages
+      attr_reader :languages
 
       # Constructor
       #
       # @param logger [Logger]
       def initialize(logger: nil)
+        textdomain "agama"
+
         @logger = logger || Logger.new($stdout)
         @base_product = nil
       end
@@ -87,8 +90,25 @@ module Agama
         @proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
         solve_dependencies
 
-        update_issues
         valid?
+      end
+
+      # Runs the solver to satisfy the dependencies.
+      #
+      # Issues are updated once the solver finishes.
+      #
+      # @return [Boolean] whether the solver ran successfully
+      def solve_dependencies
+        res = Yast::Pkg.PkgSolve(unused = true)
+        logger.info "Solver run #{res.inspect}"
+        update_issues
+
+        return true if res
+
+        logger.error "Solver failed: #{Yast::Pkg.LastError}"
+        logger.error "Details: #{Yast::Pkg.LastErrorDetails}"
+        logger.error "Solver errors: #{Yast::Pkg.PkgSolveErrors}"
+        false
       end
 
       # Returns the count of packages to install
@@ -114,6 +134,13 @@ module Agama
         !(proposal.nil? || errors?)
       end
 
+      # Sets the languages to install
+      #
+      # @param [Array<String>] value Languages in xx_XX format (e.g., "en_US").
+      def languages=(value)
+        @languages = value.map { |l| l.split(".").first }.compact
+      end
+
     private
 
       # @return [Logger]
@@ -129,8 +156,12 @@ module Agama
         Yast::Pkg.TargetFinish # ensure that previous target is closed
         Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
         Yast::Pkg.TargetLoad
-        Yast::Pkg.SetAdditionalLocales(languages)
-        Yast::Pkg.SetSolverFlags("ignoreAlreadyRecommended" => false, "onlyRequires" => true)
+
+        preferred, *additional = languages
+        Yast::Pkg.SetPackageLocale(preferred) if preferred
+        Yast::Pkg.SetAdditionalLocales(additional)
+
+        Yast::Pkg.SetSolverFlags("ignoreAlreadyRecommended" => false, "onlyRequires" => false)
       end
 
       # Selects the base product
@@ -158,12 +189,10 @@ module Agama
       #
       # @return [Array<Agama::Issue>]
       def update_issues
-        self.issues = []
-        return unless proposal
-
         msgs = []
-        msgs.concat(warning_messages(proposal))
+        msgs.concat(warning_messages(proposal)) if proposal
         msgs.concat(solver_messages)
+
         issues = msgs.map do |msg|
           Issue.new(msg,
             source:   Issue::Source::CONFIG,
@@ -171,22 +200,6 @@ module Agama
         end
 
         self.issues = issues
-      end
-
-      # Runs the solver to satisfy the solve_dependencies
-      #
-      # If the solver failed, it logs the error.
-      #
-      # @return [Boolean] whether the solver ran successfully
-      def solve_dependencies
-        res = Yast::Pkg.PkgSolve(unused = true)
-        logger.info "Solver run #{res.inspect}"
-        return true if res
-
-        logger.error "Solver failed: #{Yast::Pkg.LastError}"
-        logger.error "Details: #{Yast::Pkg.LastErrorDetails}"
-        logger.error "Solver errors: #{Yast::Pkg.PkgSolveErrors}"
-        false
       end
 
       # Extracts the warning messages from the proposal result
@@ -211,7 +224,7 @@ module Agama
         last_error = Yast::Pkg.LastError
         res = []
         res << last_error unless last_error.empty?
-        res << "Found #{solve_errors} dependency issues." if solve_errors > 0
+        res << (_("Found %s dependency issues.") % solve_errors) if solve_errors > 0
         res
       end
     end

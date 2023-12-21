@@ -52,7 +52,7 @@ impl<'a> StorageClient<'a> {
             .map(|path| self.storage_device(path))
             .collect();
 
-        return join_all(devices).await.into_iter().collect();
+        join_all(devices).await.into_iter().collect()
     }
 
     /// Returns the storage device for the given D-Bus path

@@ -1,6 +1,9 @@
-use super::proxies::{ConnectionProxy, ConnectionsProxy, IPProxy, MatchProxy, WirelessProxy};
-use super::settings::{MatchSettings, NetworkConnection, WirelessSettings};
-use super::types::SSID;
+use super::proxies::{
+    BondProxy, ConnectionProxy, ConnectionsProxy, DeviceProxy, DevicesProxy, IPProxy, MatchProxy,
+    WirelessProxy,
+};
+use super::settings::{BondSettings, MatchSettings, NetworkConnection, WirelessSettings};
+use super::types::{Device, DeviceType, SSID};
 use crate::error::ServiceError;
 use tokio_stream::StreamExt;
 use zbus::zvariant::OwnedObjectPath;
@@ -10,19 +13,34 @@ use zbus::Connection;
 pub struct NetworkClient<'a> {
     pub connection: Connection,
     connections_proxy: ConnectionsProxy<'a>,
+    devices_proxy: DevicesProxy<'a>,
 }
 
 impl<'a> NetworkClient<'a> {
     pub async fn new(connection: Connection) -> Result<NetworkClient<'a>, ServiceError> {
         Ok(Self {
             connections_proxy: ConnectionsProxy::new(&connection).await?,
+            devices_proxy: DevicesProxy::new(&connection).await?,
             connection,
         })
     }
 
     pub async fn get_connection(&self, id: &str) -> Result<NetworkConnection, ServiceError> {
         let path = self.connections_proxy.get_connection(id).await?;
-        Ok(self.connection_from(path.as_str()).await?)
+        self.connection_from(path.as_str()).await
+    }
+
+    pub async fn available_devices(&self) -> Result<Vec<Device>, ServiceError> {
+        let devices_paths = self.devices_proxy.get_devices().await?;
+        let mut devices = vec![];
+
+        for path in devices_paths {
+            let device = self.device_from(path.as_str()).await?;
+
+            devices.push(device);
+        }
+
+        Ok(devices)
     }
 
     /// Returns an array of network connections
@@ -32,6 +50,10 @@ impl<'a> NetworkClient<'a> {
 
         for path in connection_paths {
             let mut connection = self.connection_from(path.as_str()).await?;
+
+            if let Ok(bond) = self.bond_from(path.as_str()).await {
+                connection.bond = Some(bond);
+            }
 
             if let Ok(wireless) = self.wireless_from(path.as_str()).await {
                 connection.wireless = Some(wireless);
@@ -54,6 +76,23 @@ impl<'a> NetworkClient<'a> {
         Ok(())
     }
 
+    /// Returns the NetworkDevice for the given device path
+    ///
+    ///  * `path`: the connections path to get the config from
+    async fn device_from(&self, path: &str) -> Result<Device, ServiceError> {
+        let device_proxy = DeviceProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+        let name = device_proxy.name().await?;
+        let device_type = device_proxy.type_().await?;
+
+        Ok(Device {
+            name,
+            type_: DeviceType::try_from(device_type).unwrap(),
+        })
+    }
+
     /// Returns the NetworkConnection for the given connection path
     ///
     ///  * `path`: the connections path to get the config from
@@ -64,6 +103,10 @@ impl<'a> NetworkClient<'a> {
             .await?;
         let id = connection_proxy.id().await?;
         let interface = match connection_proxy.interface().await?.as_str() {
+            "" => None,
+            value => Some(value.to_string()),
+        };
+        let mac_address = match connection_proxy.mac_address().await?.as_str() {
             "" => None,
             value => Some(value.to_string()),
         };
@@ -91,10 +134,27 @@ impl<'a> NetworkClient<'a> {
             addresses,
             nameservers,
             interface,
+            mac_address,
             ..Default::default()
         })
     }
 
+    /// Returns the [bond settings][BondSettings] for the given connection
+    ///
+    ///  * `path`: the connection's path to get the wireless config from
+    async fn bond_from(&self, path: &str) -> Result<BondSettings, ServiceError> {
+        let bond_proxy = BondProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+        let bond = BondSettings {
+            mode: bond_proxy.mode().await?,
+            options: Some(bond_proxy.options().await?),
+            ports: bond_proxy.ports().await?,
+        };
+
+        Ok(bond)
+    }
     /// Returns the [wireless settings][WirelessSettings] for the given connection
     ///
     ///  * `path`: the connections path to get the wireless config from
@@ -144,6 +204,7 @@ impl<'a> NetworkClient<'a> {
             Ok(path) => path,
             Err(_) => self.add_connection(conn).await?,
         };
+
         self.update_connection(&path, conn).await?;
         Ok(())
     }
@@ -186,10 +247,18 @@ impl<'a> NetworkClient<'a> {
             .build()
             .await?;
 
-        let interface = conn.interface.as_deref().unwrap_or("");
-        proxy.set_interface(interface).await?;
+        if let Some(ref interface) = conn.interface {
+            proxy.set_interface(interface).await?;
+        }
+
+        let mac_address = conn.mac_address.as_deref().unwrap_or("");
+        proxy.set_mac_address(mac_address).await?;
 
         self.update_ip_settings(path, conn).await?;
+
+        if let Some(ref bond) = conn.bond {
+            self.update_bond_settings(path, bond).await?;
+        }
 
         if let Some(ref wireless) = conn.wireless {
             self.update_wireless_settings(path, wireless).await?;
@@ -241,6 +310,29 @@ impl<'a> NetworkClient<'a> {
         Ok(())
     }
 
+    /// Updates the bond settings for a network connection.
+    ///
+    /// * `path`: connection D-Bus path.
+    /// * `bond`: bond settings of the network connection.
+    async fn update_bond_settings(
+        &self,
+        path: &OwnedObjectPath,
+        bond: &BondSettings,
+    ) -> Result<(), ServiceError> {
+        let proxy = BondProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+
+        let ports: Vec<_> = bond.ports.iter().map(String::as_ref).collect();
+        proxy.set_ports(ports.as_slice()).await?;
+        if let Some(ref options) = bond.options {
+            proxy.set_options(options.to_string().as_str()).await?;
+        }
+        proxy.set_mode(bond.mode.as_str()).await?;
+
+        Ok(())
+    }
     /// Updates the wireless settings for network connection.
     ///
     /// * `path`: connection D-Bus path.

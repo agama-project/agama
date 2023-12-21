@@ -33,9 +33,9 @@ import { render } from "@testing-library/react";
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { NotificationProvider } from "~/context/notification";
-import { Layout } from "~/components/layout";
 import { noop } from "./utils";
 import cockpit from "./lib/cockpit";
+import { InstallerL10nProvider } from "./context/installerL10n";
 import { L10nProvider } from "./context/l10n";
 
 /**
@@ -84,9 +84,11 @@ const Providers = ({ children, withL10n }) => {
   if (withL10n) {
     return (
       <InstallerClientProvider client={client}>
-        <L10nProvider>
-          {children}
-        </L10nProvider>
+        <InstallerL10nProvider>
+          <L10nProvider>
+            {children}
+          </L10nProvider>
+        </InstallerL10nProvider>
       </InstallerClientProvider>
     );
   }
@@ -98,11 +100,17 @@ const Providers = ({ children, withL10n }) => {
   );
 };
 
+/**
+ * Wrapper around react-testing-library#render for rendering components within
+ * installer providers.
+ *
+ * @see #plainRender for rendering without installer providers
+ */
 const installerRender = (ui, options = {}) => {
   const Wrapper = ({ children }) => (
     <Providers withL10n={options.withL10n}>
       <MemoryRouter initialEntries={initialRoutes()}>
-        <Layout>{children}</Layout>
+        {children}
       </MemoryRouter>
     </Providers>
   );
@@ -115,16 +123,23 @@ const installerRender = (ui, options = {}) => {
   );
 };
 
-// Add an option to include or not the layout.
+/**
+ * Wrapper around react-testing-library#render for rendering components without
+ * installer providers.
+ *
+ * @see #installerRender for using installer providers
+ *
+ * @note Please, be aware that it's needed to mock the core/Sidebar component
+ * when testing a Page with #plainRender helper in order to avoid the test crashing
+ * because mounted without provides unless you take care of mocking core/sidebar
+ * content. The reason for this is that core/Page is always rendering
+ * core/Sidebar as part of the layout.
+ */
 const plainRender = (ui, options = {}) => {
-  const { layout, ...opts } = options;
-  if (layout) {
-    opts.wrapper = Layout;
-  }
   return (
     {
       user: userEvent.setup(),
-      ...render(ui, opts)
+      ...render(ui, options)
     }
   );
 };

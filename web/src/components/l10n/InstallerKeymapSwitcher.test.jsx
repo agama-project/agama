@@ -22,42 +22,50 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import LanguageSwitcher from "./LanguageSwitcher";
 
-const mockLanguage = "es-es";
-let mockChangeLanguageFn;
+import InstallerKeymapSwitcher from "./InstallerKeymapSwitcher";
+
+let mockChangeKeyboardFn;
 
 jest.mock("~/lib/cockpit", () => ({
   gettext: term => term,
-  manifests: {
-    agama: {
-      locales: {
-        "de-de": "Deutsch",
-        "en-us": "English (US)",
-        "es-es": "Español"
-      }
-    }
-  }
+}));
+
+jest.mock("~/context/installerL10n", () => ({
+  ...jest.requireActual("~/context/installerL10n"),
+  useInstallerL10n: () => ({
+    changeKeymap: mockChangeKeyboardFn,
+    keymap: "us"
+  })
 }));
 
 jest.mock("~/context/l10n", () => ({
   ...jest.requireActual("~/context/l10n"),
   useL10n: () => ({
-    language: mockLanguage,
-    changeLanguage: mockChangeLanguageFn
+    keymaps: [
+      { id: "cz", name: "Czech" },
+      { id: "cz(qwerty)", name: "Czech (QWERTY)" },
+      { id: "de", name: "German" },
+      { id: "us", name: "English (US)" },
+      { id: "us(dvorak)", name: "English (Dvorak)" }
+    ]
   })
 }));
 
 beforeEach(() => {
-  mockChangeLanguageFn = jest.fn();
+  mockChangeKeyboardFn = jest.fn();
 });
 
-it("LanguageSwitcher", async () => {
-  const { user } = plainRender(<LanguageSwitcher />);
-  expect(screen.getByRole("option", { name: "Español" }).selected).toBe(true);
+it("InstallerKeymapSwitcher", async () => {
+  const { user } = plainRender(<InstallerKeymapSwitcher />);
+
+  // the current keyboard is correctly selected
+  expect(screen.getByRole("option", { name: "English (US)" }).selected).toBe(true);
+
+  // change the keyboard
   await user.selectOptions(
-    screen.getByRole("combobox", { label: "Display Language" }),
-    screen.getByRole("option", { name: "English (US)" })
+    screen.getByRole("combobox", { label: "Keyboard" }),
+    screen.getByRole("option", { name: "Czech" })
   );
-  expect(mockChangeLanguageFn).toHaveBeenCalledWith("en-us");
+  expect(mockChangeKeyboardFn).toHaveBeenCalledWith("cz");
 });

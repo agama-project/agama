@@ -110,6 +110,21 @@ task package: [] do
     gem2rpm = File.join(package_dir, "gem2rpm.yml")
     sh "gem2rpm --local --config #{gem2rpm} --template opensuse #{gem} > package/#{package_name}.spec"
     FileUtils.mv(gem, package_dir)
+
+    # build the translations tarball
+    #
+    # NOTE: the following code was inspired by the
+    # packaging_rake_tasks/lib/tasks/tarball.rake file
+    #
+    # set the file time stamps according to the latest commit
+    mtime = `git show -s --format=%ci`.chomp
+    # For the reproducible output:
+    # - use the GNU format (the default POSIX format contains some time stamps)
+    # - sort the files (in a locale independent way)
+    # - set the owner and group to "root"
+    # - set the fixed modification time
+    sh("LC_ALL=C tar -c -j -f #{Shellwords.escape(package_dir)}/po.tar.bz2 --format=gnu --sort=name " \
+      "--owner=root --group=root --mtime=#{Shellwords.escape(mtime)} po/*.po")
   end
 end
 
@@ -169,6 +184,22 @@ if ENV["YUPDATE_FORCE"] == "1" || File.exist?("/.packages.initrd") || live_iso?
       # we are installing into an empty chroot, make sure the target exists
       FileUtils.mkdir_p(File.join(destdir, "/usr/share"))
       FileUtils.cp_r("playwright/.", File.join(destdir, "/usr/share/agama-playwright"))
+    end
+
+    if ENV["YUPDATE_SKIP_PRODUCTS"] != "1"
+      files = Dir.glob("products.d/*.y{a}ml")
+      files.each do |f|
+        # the sources contain several products, update only the existing files
+        oldfile = File.join("/usr/share/agama/", f)
+        if File.exist?(oldfile)
+          target = File.join(destdir, "/usr/share/agama/", f)
+          FileUtils.mkdir_p(File.dirname(target))
+          FileUtils.cp(f, target)
+        else
+          # if there is a new product file it needs to be copied manually
+          puts "Skipping product file: #{f}"
+        end
+      end
     end
   end
 end

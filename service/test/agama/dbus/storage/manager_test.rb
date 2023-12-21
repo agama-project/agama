@@ -338,6 +338,21 @@ describe Agama::DBus::Storage::Manager do
         }
       end
 
+      let(:config_data) do
+        { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
+      end
+
+      let(:cfg_templates) do
+        [
+          {
+            "mount_path" => "/",
+            "outline"    => {
+              "snapshots_configurable" => true
+            }
+          }
+        ]
+      end
+
       it "calculates a proposal with settings having a volume with values from D-Bus" do
         expect(proposal).to receive(:calculate) do |settings|
           volume = settings.volumes.first
@@ -354,10 +369,6 @@ describe Agama::DBus::Storage::Manager do
 
       context "and the D-Bus volume does not include some values" do
         let(:dbus_volume1) { { "MountPath" => "/" } }
-
-        let(:config_data) do
-          { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
-        end
 
         let(:cfg_templates) do
           [

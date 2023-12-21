@@ -20,47 +20,38 @@
  */
 
 import React from "react";
-import { Button, EmptyState, EmptyStateIcon, EmptyStateBody, EmptyStateHeader } from "@patternfly/react-core";
-import { locationReload } from "~/utils";
+import { EmptyState, EmptyStateIcon, EmptyStateBody, EmptyStateHeader } from "@patternfly/react-core";
+import { Center, Icon } from "~/components/layout";
+import { Page } from "~/components/core";
 import { _ } from "~/i18n";
-
-import {
-  Center,
-  Icon,
-  MainActions,
-  PageIcon,
-  Title as PageTitle,
-} from "~/components/layout";
+import { locationReload } from "~/utils";
 
 const ErrorIcon = () => <Icon name="error" className="icon-big" />;
 
-// TODO: an example
-const ReloadAction = () => (
-  <Button size="lg" variant="primary" onClick={() => locationReload()}>
-    {/* TRANSLATORS: button label */}
-    {_("Reload")}
-  </Button>
-);
-
 function DBusError() {
   return (
-    <Center>
-      {/* TRANSLATORS: page title */}
-      <PageTitle>{_("D-Bus Error")}</PageTitle>
-      <PageIcon><Icon name="problem" /></PageIcon>
-      <MainActions><ReloadAction /></MainActions>
+    // TRANSLATORS: page title
+    <Page icon="problem" title={_("D-Bus Error")}>
+      <Center>
+        <EmptyState variant="xl">
+          <EmptyStateHeader
+            titleText={_("Cannot connect to D-Bus")}
+            headingLevel="h2"
+            icon={<EmptyStateIcon icon={ErrorIcon} />}
+          />
+          <EmptyStateBody>
+            {_("Could not connect to the D-Bus service. Please, check whether it is running.")}
+          </EmptyStateBody>
+        </EmptyState>
+      </Center>
 
-      <EmptyState variant="xl">
-        <EmptyStateHeader
-          titleText={_("Cannot connect to D-Bus")}
-          headingLevel="h2"
-          icon={<EmptyStateIcon icon={ErrorIcon} />}
-        />
-        <EmptyStateBody>
-          {_("Could not connect to the D-Bus service. Please, check whether it is running.")}
-        </EmptyStateBody>
-      </EmptyState>
-    </Center>
+      <Page.Actions>
+        <Page.Action onClick={() => locationReload()}>
+          {/* TRANSLATORS: button label */}
+          {_("Reload")}
+        </Page.Action>
+      </Page.Actions>
+    </Page>
   );
 }
 

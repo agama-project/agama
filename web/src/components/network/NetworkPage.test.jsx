@@ -27,6 +27,7 @@ import { ConnectionTypes } from "~/client/network";
 import { createClient } from "~/client";
 
 jest.mock("~/client");
+jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const wiredConnection = {
   id: "wired-1",

@@ -10,8 +10,26 @@
       "description": "Software settings (e.g., product to install)",
       "type": "object",
       "properties": {
-        "product": {
+        "patterns": {
+          "description": "List of patterns to install",
+          "type": "array"
+        }
+      }
+    },
+    "product": {
+      "description": "Software settings (e.g., product to install)",
+      "type": "object",
+      "properties": {
+        "id": {
           "description": "Product identifier",
+          "type": "string"
+        },
+        "registrationCode": {
+          "description": "Product registration code",
+          "type": "string"
+        },
+        "registrationEmail": {
+          "description": "Product registration email",
           "type": "string"
         }
       }
@@ -34,6 +52,10 @@
               },
               "interface": {
                 "description": "The name of the network interface bound to this connection",
+                "type": "string"
+              },
+              "mac-address": {
+                "description": "Custom mac-address (can also be 'preserve', 'permanent', 'random' or 'stable')",
                 "type": "string"
               },
               "method4": {
@@ -102,6 +124,27 @@
                       "mesh",
                       "ap"
                     ]
+                  }
+                }
+              },
+              "bond": {
+                "type": "object",
+                "description": "Bonding configuration",
+                "additionalProperties": false,
+                "properties": {
+                  "mode": {
+                    "type": "string"
+                  },
+                  "options": {
+                    "type": "string"
+                  },
+                  "ports": {
+                    "type": "array",
+                    "items": {
+                      "description": "A list of the interfaces or connections to be bonded",
+                      "type": "string",
+                      "additionalProperties": false
+                    }
                   }
                 }
               },

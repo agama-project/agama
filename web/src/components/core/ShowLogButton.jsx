@@ -41,7 +41,7 @@ const ShowLogButton = () => {
         variant="link"
         onClick={onClick}
         isDisabled={isLogDisplayed}
-        icon={<Icon name="description" size="24" />}
+        icon={<Icon name="description" size="s" />}
       >
         {/* TRANSLATORS: button label */}
         {_("Show Logs")}

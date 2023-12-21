@@ -27,8 +27,6 @@ import { IDLE } from "~/client/status";
 import { ProposalPage } from "~/components/storage";
 
 jest.mock("~/client");
-jest.mock("~/components/storage/ProposalPageOptions", () => () => <div>ProposalPage Options</div>);
-
 jest.mock("@patternfly/react-core", () => {
   const original = jest.requireActual("@patternfly/react-core");
 
@@ -38,6 +36,8 @@ jest.mock("@patternfly/react-core", () => {
 
   };
 });
+jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
+jest.mock("~/components/storage/ProposalPageMenu", () => () => <div>ProposalPage Options</div>);
 
 const storageMock = {
   probe: jest.fn().mockResolvedValue(0),

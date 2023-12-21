@@ -81,13 +81,12 @@ const Section = forwardRef(function({
   const Header = () => {
     if (!title?.trim()) return;
 
-    const header = !path?.trim() ? <>{title}</> : <Link to={path}>{title}</Link>;
+    const iconName = loading ? "loading" : icon;
+    const headerIcon = iconName ? <Icon name={iconName} /> : null;
+    const headerText = !path?.trim() ? title : <Link to={path}>{title}</Link>;
 
     return (
-      <>
-        <Icon name={loading ? "loading" : icon} />
-        <h2 id={headerId}>{header}</h2>
-      </>
+      <h2 id={headerId}>{headerIcon}<span>{headerText}</span></h2>
     );
   };
 
@@ -99,9 +98,10 @@ const Section = forwardRef(function({
       aria-busy={loading}
       aria-label={ariaLabel || undefined}
       aria-labelledby={ title && !ariaLabel ? headerId : undefined}
+      data-type="agama/section"
     >
       <Header />
-      <div className="stack content">
+      <div className="stack">
         {errors?.length > 0 &&
           <ValidationErrors errors={errors} sectionName={title} />}
         {children}

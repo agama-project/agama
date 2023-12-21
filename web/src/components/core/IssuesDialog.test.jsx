@@ -26,13 +26,13 @@ import { createClient } from "~/client";
 import { IssuesDialog } from "~/components/core";
 
 jest.mock("~/client");
-
 jest.mock("@patternfly/react-core", () => {
   return {
     ...jest.requireActual("@patternfly/react-core"),
     Skeleton: () => <div>PFSkeleton</div>
   };
 });
+jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const issues = {
   product: [],

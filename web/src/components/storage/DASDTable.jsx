@@ -206,7 +206,7 @@ export default function DASDTable({ state, dispatch }) {
                       aria-label={_("Remove min channel filter")}
                       onClick={removeMinChannelFilter}
                     >
-                      <Icon name="backspace" size="24" />
+                      <Icon name="backspace" size="s" />
                     </Button>
                   </TextInputGroupUtilities> }
               </TextInputGroup>
@@ -227,7 +227,7 @@ export default function DASDTable({ state, dispatch }) {
                       aria-label={_("Remove max channel filter")}
                       onClick={removeMaxChannelFilter}
                     >
-                      <Icon name="backspace" size="24" />
+                      <Icon name="backspace" size="s" />
                     </Button>
                   </TextInputGroupUtilities> }
               </TextInputGroup>

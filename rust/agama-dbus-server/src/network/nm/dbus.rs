@@ -6,7 +6,7 @@ use super::model::*;
 use crate::network::model::*;
 use agama_lib::{
     dbus::{NestedHash, OwnedNestedHash},
-    network::types::SSID,
+    network::types::{BondMode, SSID},
 };
 use cidr::IpInet;
 use std::{collections::HashMap, net::IpAddr, str::FromStr};
@@ -14,30 +14,70 @@ use uuid::Uuid;
 use zbus::zvariant::{self, OwnedValue, Value};
 
 const ETHERNET_KEY: &str = "802-3-ethernet";
+const BOND_KEY: &str = "bond";
 const WIRELESS_KEY: &str = "802-11-wireless";
 const WIRELESS_SECURITY_KEY: &str = "802-11-wireless-security";
 const LOOPBACK_KEY: &str = "loopback";
+const DUMMY_KEY: &str = "dummy";
 
 /// Converts a connection struct into a HashMap that can be sent over D-Bus.
 ///
 /// * `conn`: Connection to convert.
-pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
+pub fn connection_to_dbus<'a>(
+    conn: &'a Connection,
+    controller: Option<&'a Connection>,
+) -> NestedHash<'a> {
     let mut result = NestedHash::new();
     let mut connection_dbus = HashMap::from([
-        ("id", conn.id().into()),
+        ("id", conn.id.as_str().into()),
         ("type", ETHERNET_KEY.into()),
-        ("interface-name", conn.interface().into()),
     ]);
-    result.insert("ipv4", ip_config_to_ipv4_dbus(conn.ip_config()));
-    result.insert("ipv6", ip_config_to_ipv6_dbus(conn.ip_config()));
-    result.insert("match", match_config_to_dbus(conn.match_config()));
 
-    if let Connection::Wireless(wireless) = conn {
-        connection_dbus.insert("type", "802-11-wireless".into());
-        let wireless_dbus = wireless_config_to_dbus(wireless);
-        for (k, v) in wireless_dbus {
-            result.insert(k, v);
+    if let Some(interface) = &conn.interface {
+        connection_dbus.insert("interface-name", interface.to_owned().into());
+    }
+
+    if let Some(controller) = controller {
+        connection_dbus.insert("slave-type", "bond".into()); // TODO: only 'bond' is supported
+        let master = controller
+            .interface
+            .as_deref()
+            .unwrap_or(controller.id.as_str());
+        connection_dbus.insert("master", master.into());
+    } else {
+        connection_dbus.insert("slave-type", "".into()); // TODO: only 'bond' is supported
+        connection_dbus.insert("master", "".into());
+    }
+
+    result.insert("ipv4", ip_config_to_ipv4_dbus(&conn.ip_config));
+    result.insert("ipv6", ip_config_to_ipv6_dbus(&conn.ip_config));
+    result.insert("match", match_config_to_dbus(&conn.match_config));
+
+    if conn.is_ethernet() {
+        let ethernet_config = HashMap::from([(
+            "assigned-mac-address",
+            Value::new(conn.mac_address.to_string()),
+        )]);
+        result.insert(ETHERNET_KEY, ethernet_config);
+    }
+
+    match &conn.config {
+        ConnectionConfig::Wireless(wireless) => {
+            connection_dbus.insert("type", WIRELESS_KEY.into());
+            let wireless_dbus = wireless_config_to_dbus(wireless, &conn.mac_address);
+            result.extend(wireless_dbus);
         }
+        ConnectionConfig::Bond(bond) => {
+            connection_dbus.insert("type", BOND_KEY.into());
+            if !connection_dbus.contains_key("interface-name") {
+                connection_dbus.insert("interface-name", conn.id.as_str().into());
+            }
+            result.insert("bond", bond_config_to_dbus(bond));
+        }
+        ConnectionConfig::Dummy => {
+            connection_dbus.insert("type", DUMMY_KEY.into());
+        }
+        _ => {}
     }
 
     result.insert("connection", connection_dbus);
@@ -48,21 +88,30 @@ pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
 ///
 /// This functions tries to turn a OwnedHashMap coming from D-Bus into a Connection.
 pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
-    let base = base_connection_from_dbus(&conn)?;
+    let mut connection = base_connection_from_dbus(&conn)?;
 
     if let Some(wireless_config) = wireless_config_from_dbus(&conn) {
-        return Some(Connection::Wireless(WirelessConnection {
-            base,
-            wireless: wireless_config,
-        }));
+        connection.config = ConnectionConfig::Wireless(wireless_config);
+        return Some(connection);
     }
 
+    if let Some(bond_config) = bond_config_from_dbus(&conn) {
+        connection.config = ConnectionConfig::Bond(bond_config);
+        return Some(connection);
+    }
+
+    if conn.get(DUMMY_KEY).is_some() {
+        connection.config = ConnectionConfig::Dummy;
+        return Some(connection);
+    };
+
     if conn.get(LOOPBACK_KEY).is_some() {
-        return Some(Connection::Loopback(LoopbackConnection { base }));
+        connection.config = ConnectionConfig::Loopback;
+        return Some(connection);
     };
 
     if conn.get(ETHERNET_KEY).is_some() {
-        return Some(Connection::Ethernet(EthernetConnection { base }));
+        return Some(connection);
     };
 
     None
@@ -102,13 +151,18 @@ pub fn merge_dbus_connections<'a>(
 /// replaced with "address-data". However, if "addresses" is present, it takes precedence.
 ///
 /// * `conn`: connection represented as a NestedHash.
-fn cleanup_dbus_connection(conn: &mut NestedHash) {
+pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
     if let Some(connection) = conn.get_mut("connection") {
-        if connection
-            .get("interface-name")
-            .is_some_and(|v| is_empty_value(&v))
-        {
+        if connection.get("interface-name").is_some_and(is_empty_value) {
             connection.remove("interface-name");
+        }
+
+        if connection.get("master").is_some_and(is_empty_value) {
+            connection.remove("master");
+        }
+
+        if connection.get("slave-type").is_some_and(is_empty_value) {
+            connection.remove("slave-type");
         }
     }
 
@@ -121,6 +175,16 @@ fn cleanup_dbus_connection(conn: &mut NestedHash) {
         ipv6.remove("addresses");
         ipv6.remove("dns");
     }
+}
+
+/// Ancillary function to get the controller for a given interface.
+pub fn controller_from_dbus(conn: &OwnedNestedHash) -> Option<String> {
+    let Some(connection) = conn.get("connection") else {
+        return None;
+    };
+
+    let master: &str = connection.get("master")?.downcast_ref()?;
+    Some(master.to_string())
 }
 
 fn ip_config_to_ipv4_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value> {
@@ -213,11 +277,14 @@ fn ip_config_to_ipv6_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
     ipv6_dbus
 }
 
-fn wireless_config_to_dbus(conn: &WirelessConnection) -> NestedHash {
-    let config = &conn.wireless;
+fn wireless_config_to_dbus<'a>(
+    config: &'a WirelessConfig,
+    mac_address: &MacAddress,
+) -> NestedHash<'a> {
     let wireless: HashMap<&str, zvariant::Value> = HashMap::from([
         ("mode", Value::new(config.mode.to_string())),
         ("ssid", Value::new(config.ssid.to_vec())),
+        ("assigned-mac-address", Value::new(mac_address.to_string())),
     ]);
 
     let mut security: HashMap<&str, zvariant::Value> =
@@ -227,38 +294,26 @@ fn wireless_config_to_dbus(conn: &WirelessConnection) -> NestedHash {
         security.insert("psk", password.to_string().into());
     }
 
-    NestedHash::from([
-        ("802-11-wireless", wireless),
-        ("802-11-wireless-security", security),
-    ])
+    NestedHash::from([(WIRELESS_KEY, wireless), (WIRELESS_SECURITY_KEY, security)])
+}
+
+fn bond_config_to_dbus(config: &BondConfig) -> HashMap<&str, zvariant::Value> {
+    let mut options = config.options.0.clone();
+    options.insert("mode".to_string(), config.mode.to_string());
+    HashMap::from([("options", Value::new(options))])
 }
 
 /// Converts a MatchConfig struct into a HashMap that can be sent over D-Bus.
 ///
 /// * `match_config`: MatchConfig to convert.
 fn match_config_to_dbus(match_config: &MatchConfig) -> HashMap<&str, zvariant::Value> {
-    let drivers: Value = match_config
-        .driver
-        .iter()
-        .cloned()
-        .collect::<Vec<_>>()
-        .into();
+    let drivers: Value = match_config.driver.to_vec().into();
 
-    let kernels: Value = match_config
-        .kernel
-        .iter()
-        .cloned()
-        .collect::<Vec<_>>()
-        .into();
+    let kernels: Value = match_config.kernel.to_vec().into();
 
-    let paths: Value = match_config.path.iter().cloned().collect::<Vec<_>>().into();
+    let paths: Value = match_config.path.to_vec().into();
 
-    let interfaces: Value = match_config
-        .interface
-        .iter()
-        .cloned()
-        .collect::<Vec<_>>()
-        .into();
+    let interfaces: Value = match_config.interface.to_vec().into();
 
     HashMap::from([
         ("driver", drivers),
@@ -268,7 +323,7 @@ fn match_config_to_dbus(match_config: &MatchConfig) -> HashMap<&str, zvariant::V
     ])
 }
 
-fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
+fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<Connection> {
     let Some(connection) = conn.get("connection") else {
         return None;
     };
@@ -276,7 +331,7 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
     let id: &str = connection.get("id")?.downcast_ref()?;
     let uuid: &str = connection.get("uuid")?.downcast_ref()?;
     let uuid: Uuid = uuid.try_into().ok()?;
-    let mut base_connection = BaseConnection {
+    let mut base_connection = Connection {
         id: id.to_string(),
         uuid,
         ..Default::default()
@@ -284,16 +339,36 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
 
     if let Some(interface) = connection.get("interface-name") {
         let interface: &str = interface.downcast_ref()?;
-        base_connection.interface = interface.to_string();
+        base_connection.interface = Some(interface.to_string());
     }
 
     if let Some(match_config) = conn.get("match") {
         base_connection.match_config = match_config_from_dbus(match_config)?;
     }
 
-    base_connection.ip_config = ip_config_from_dbus(&conn)?;
+    if let Some(ethernet_config) = conn.get(ETHERNET_KEY) {
+        base_connection.mac_address = mac_address_from_dbus(ethernet_config)?;
+    } else if let Some(wireless_config) = conn.get(WIRELESS_KEY) {
+        base_connection.mac_address = mac_address_from_dbus(wireless_config)?;
+    }
+
+    base_connection.ip_config = ip_config_from_dbus(conn)?;
 
     Some(base_connection)
+}
+
+fn mac_address_from_dbus(config: &HashMap<String, OwnedValue>) -> Option<MacAddress> {
+    if let Some(mac_address) = config.get("assigned-mac-address") {
+        match MacAddress::from_str(mac_address.downcast_ref::<str>()?) {
+            Ok(mac) => Some(mac),
+            Err(e) => {
+                log::warn!("Couldn't parse MAC: {}", e);
+                None
+            }
+        }
+    } else {
+        Some(MacAddress::Unset)
+    }
 }
 
 fn match_config_from_dbus(
@@ -344,7 +419,7 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Option<IpConfig> {
         ip_config.method4 = NmMethod(method4.to_string()).try_into().ok()?;
 
         let address_data = ipv4.get("address-data")?;
-        let mut addresses = addresses_with_prefix_from_dbus(&address_data)?;
+        let mut addresses = addresses_with_prefix_from_dbus(address_data)?;
 
         ip_config.addresses.append(&mut addresses);
 
@@ -368,7 +443,7 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Option<IpConfig> {
         ip_config.method6 = NmMethod(method6.to_string()).try_into().ok()?;
 
         let address_data = ipv6.get("address-data")?;
-        let mut addresses = addresses_with_prefix_from_dbus(&address_data)?;
+        let mut addresses = addresses_with_prefix_from_dbus(address_data)?;
 
         ip_config.addresses.append(&mut addresses);
 
@@ -470,6 +545,28 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
     Some(wireless_config)
 }
 
+fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Option<BondConfig> {
+    let Some(bond) = conn.get(BOND_KEY) else {
+        return None;
+    };
+
+    let dict: &zvariant::Dict = bond.get("options")?.downcast_ref()?;
+
+    let mut options = <HashMap<String, String>>::try_from(dict.clone()).unwrap();
+    let mode = options.remove("mode");
+
+    let mut bond = BondConfig {
+        options: BondOptions(options),
+        ..Default::default()
+    };
+
+    if let Some(mode) = mode {
+        bond.mode = BondMode::try_from(mode.as_str()).unwrap_or_default();
+    }
+
+    Some(bond)
+}
+
 /// Determines whether a value is empty.
 ///
 /// TODO: Generalize for other kind of values, like dicts or arrays.
@@ -489,8 +586,11 @@ mod test {
         connection_from_dbus, connection_to_dbus, merge_dbus_connections, NestedHash,
         OwnedNestedHash,
     };
-    use crate::network::{model::*, nm::dbus::ETHERNET_KEY};
-    use agama_lib::network::types::SSID;
+    use crate::network::{
+        model::*,
+        nm::dbus::{BOND_KEY, ETHERNET_KEY, WIRELESS_KEY, WIRELESS_SECURITY_KEY},
+    };
+    use agama_lib::network::types::{BondMode, SSID};
     use cidr::IpInet;
     use std::{collections::HashMap, net::IpAddr, str::FromStr};
     use uuid::Uuid;
@@ -580,10 +680,12 @@ mod test {
 
         let connection = connection_from_dbus(dbus_conn).unwrap();
 
-        assert_eq!(connection.id(), "eth0");
-        let ip_config = connection.ip_config();
-        let match_config = connection.match_config();
+        assert_eq!(connection.id, "eth0");
+        let ip_config = connection.ip_config;
+        let match_config = connection.match_config;
         assert_eq!(match_config.kernel, vec!["pci-0000:00:19.0"]);
+
+        assert_eq!(connection.mac_address.to_string(), "12:34:56:78:9A:BC");
 
         assert_eq!(
             ip_config.addresses,
@@ -640,6 +742,10 @@ mod test {
                 "ssid".to_string(),
                 Value::new("agama".as_bytes()).to_owned(),
             ),
+            (
+                "assigned-mac-address".to_string(),
+                Value::new("13:45:67:89:AB:CD").to_owned(),
+            ),
         ]);
 
         let security_section =
@@ -647,16 +753,44 @@ mod test {
 
         let dbus_conn = HashMap::from([
             ("connection".to_string(), connection_section),
-            ("802-11-wireless".to_string(), wireless_section),
-            ("802-11-wireless-security".to_string(), security_section),
+            (WIRELESS_KEY.to_string(), wireless_section),
+            (WIRELESS_SECURITY_KEY.to_string(), security_section),
         ]);
 
         let connection = connection_from_dbus(dbus_conn).unwrap();
-        assert!(matches!(connection, Connection::Wireless(_)));
-        if let Connection::Wireless(connection) = connection {
-            assert_eq!(connection.wireless.ssid, SSID(vec![97, 103, 97, 109, 97]));
-            assert_eq!(connection.wireless.mode, WirelessMode::Infra);
-            assert_eq!(connection.wireless.security, SecurityProtocol::WPA2)
+        assert_eq!(connection.mac_address.to_string(), "13:45:67:89:AB:CD");
+        assert!(matches!(connection.config, ConnectionConfig::Wireless(_)));
+        if let ConnectionConfig::Wireless(wireless) = &connection.config {
+            assert_eq!(wireless.ssid, SSID(vec![97, 103, 97, 109, 97]));
+            assert_eq!(wireless.mode, WirelessMode::Infra);
+            assert_eq!(wireless.security, SecurityProtocol::WPA2)
+        }
+    }
+
+    #[test]
+    fn test_connection_from_dbus_bonding() {
+        let uuid = Uuid::new_v4().to_string();
+        let connection_section = HashMap::from([
+            ("id".to_string(), Value::new("bond0").to_owned()),
+            ("uuid".to_string(), Value::new(uuid).to_owned()),
+        ]);
+
+        let bond_options = Value::new(HashMap::from([(
+            "options".to_string(),
+            HashMap::from([("mode".to_string(), Value::new("active-backup").to_owned())]),
+        )]));
+
+        let dbus_conn = HashMap::from([
+            (
+                "connection".to_string(),
+                connection_section.try_into().unwrap(),
+            ),
+            (BOND_KEY.to_string(), bond_options.try_into().unwrap()),
+        ]);
+
+        let connection = connection_from_dbus(dbus_conn).unwrap();
+        if let ConnectionConfig::Bond(config) = connection.config {
+            assert_eq!(config.mode, BondMode::ActiveBackup);
         }
     }
 
@@ -668,17 +802,19 @@ mod test {
             ssid: SSID(vec![97, 103, 97, 109, 97]),
             ..Default::default()
         };
-        let wireless = WirelessConnection {
-            base: build_base_connection(),
-            wireless: config,
-            ..Default::default()
-        };
-        let wireless = Connection::Wireless(wireless);
-        let wireless_dbus = connection_to_dbus(&wireless);
+        let mut wireless = build_base_connection();
+        wireless.config = ConnectionConfig::Wireless(config);
+        let wireless_dbus = connection_to_dbus(&wireless, None);
 
-        let wireless = wireless_dbus.get("802-11-wireless").unwrap();
+        let wireless = wireless_dbus.get(WIRELESS_KEY).unwrap();
         let mode: &str = wireless.get("mode").unwrap().downcast_ref().unwrap();
         assert_eq!(mode, "infrastructure");
+        let mac_address: &str = wireless
+            .get("assigned-mac-address")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(mac_address, "FD:CB:A9:87:65:43");
 
         let ssid: &zvariant::Array = wireless.get("ssid").unwrap().downcast_ref().unwrap();
         let ssid: Vec<u8> = ssid
@@ -688,15 +824,15 @@ mod test {
             .collect();
         assert_eq!(ssid, "agama".as_bytes());
 
-        let security = wireless_dbus.get("802-11-wireless-security").unwrap();
+        let security = wireless_dbus.get(WIRELESS_SECURITY_KEY).unwrap();
         let key_mgmt: &str = security.get("key-mgmt").unwrap().downcast_ref().unwrap();
         assert_eq!(key_mgmt, "wpa-psk");
     }
 
     #[test]
     fn test_dbus_from_ethernet_connection() {
-        let ethernet = build_ethernet_connection();
-        let ethernet_dbus = connection_to_dbus(&ethernet);
+        let ethernet = build_base_connection();
+        let ethernet_dbus = connection_to_dbus(&ethernet, None);
         check_dbus_base_connection(&ethernet_dbus);
     }
 
@@ -744,17 +880,12 @@ mod test {
         original.insert("ipv4".to_string(), ipv4);
         original.insert("ipv6".to_string(), ipv6);
 
-        let base = BaseConnection {
+        let ethernet = Connection {
             id: "agama".to_string(),
-            interface: "eth0".to_string(),
+            interface: Some("eth0".to_string()),
             ..Default::default()
         };
-        let ethernet = EthernetConnection {
-            base,
-            ..Default::default()
-        };
-        let updated = Connection::Ethernet(ethernet);
-        let updated = connection_to_dbus(&updated);
+        let updated = connection_to_dbus(&ethernet, None);
 
         let merged = merge_dbus_connections(&original, &updated);
         let connection = merged.get("connection").unwrap();
@@ -804,22 +935,38 @@ mod test {
                 Value::new("eth0".to_string()).to_owned(),
             ),
         ]);
+        let ethernet = HashMap::from([(
+            "assigned-mac-address".to_string(),
+            Value::new("12:34:56:78:9A:BC".to_string()).to_owned(),
+        )]);
         original.insert("connection".to_string(), connection);
+        original.insert(ETHERNET_KEY.to_string(), ethernet);
 
-        let mut updated = Connection::Ethernet(EthernetConnection::default());
-        updated.set_interface("");
-        let updated = connection_to_dbus(&updated);
+        let updated = Connection {
+            interface: Some("".to_string()),
+            mac_address: MacAddress::Unset,
+            ..Default::default()
+        };
+        let updated = connection_to_dbus(&updated, None);
 
         let merged = merge_dbus_connections(&original, &updated);
         let connection = merged.get("connection").unwrap();
         assert_eq!(connection.get("interface-name"), None);
+        let ethernet = merged.get(ETHERNET_KEY).unwrap();
+        assert_eq!(ethernet.get("assigned-mac-address"), Some(&Value::from("")));
     }
 
     fn build_ethernet_section_from_dbus() -> HashMap<String, OwnedValue> {
-        HashMap::from([("auto-negotiate".to_string(), true.into())])
+        HashMap::from([
+            ("auto-negotiate".to_string(), true.into()),
+            (
+                "assigned-mac-address".to_string(),
+                Value::new("12:34:56:78:9A:BC").to_owned(),
+            ),
+        ])
     }
 
-    fn build_base_connection() -> BaseConnection {
+    fn build_base_connection() -> Connection {
         let addresses = vec![
             "192.168.0.2/24".parse().unwrap(),
             "::ffff:c0a8:2".parse().unwrap(),
@@ -840,24 +987,27 @@ mod test {
             }]),
             ..Default::default()
         };
-        BaseConnection {
+        let mac_address = MacAddress::from_str("FD:CB:A9:87:65:43").unwrap();
+        Connection {
             id: "agama".to_string(),
             ip_config,
+            mac_address,
             ..Default::default()
         }
-    }
-
-    fn build_ethernet_connection() -> Connection {
-        let ethernet = EthernetConnection {
-            base: build_base_connection(),
-        };
-        Connection::Ethernet(ethernet)
     }
 
     fn check_dbus_base_connection(conn_dbus: &NestedHash) {
         let connection_dbus = conn_dbus.get("connection").unwrap();
         let id: &str = connection_dbus.get("id").unwrap().downcast_ref().unwrap();
         assert_eq!(id, "agama");
+
+        let ethernet_connection = conn_dbus.get(ETHERNET_KEY).unwrap();
+        let mac_address: &str = ethernet_connection
+            .get("assigned-mac-address")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(mac_address, "FD:CB:A9:87:65:43");
 
         let ipv4_dbus = conn_dbus.get("ipv4").unwrap();
         let gateway4: &str = ipv4_dbus.get("gateway").unwrap().downcast_ref().unwrap();

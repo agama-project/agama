@@ -1,0 +1,2091 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-12-15 17:45+0000\n"
+"PO-Revision-Date: 2023-12-16 04:01+0000\n"
+"Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
+"Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/"
+"agama-web/id/>\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.9.1\n"
+
+#: src/App.jsx:110
+msgid "Diagnostic tools"
+msgstr "Alat bantu diagnostik"
+
+#. TRANSLATORS: error message, %s is replaced by the server URL
+#: src/DevServerWrapper.jsx:82
+#, c-format
+msgid "The server at %s is not reachable."
+msgstr "Server di %s tidak dapat dijangkau."
+
+#. TRANSLATORS: error message
+#: src/DevServerWrapper.jsx:88
+msgid "Cannot connect to the Cockpit server"
+msgstr "Tidak dapat tersambung ke server Cockpit"
+
+#. TRANSLATORS: button label
+#: src/DevServerWrapper.jsx:104
+msgid "Try Again"
+msgstr "Coba lagi"
+
+#: src/components/core/About.jsx:43 src/components/core/About.jsx:48
+msgid "About Agama"
+msgstr "Tentang Agama"
+
+#. TRANSLATORS: content of the "About" popup (1/2)
+#: src/components/core/About.jsx:53
+msgid ""
+"Agama is an experimental installer for (open)SUSE systems. It still under "
+"development so, please, do not use it in production environments. If you "
+"want to give it a try, we recommend to use a virtual machine to prevent any "
+"possible data loss."
+msgstr ""
+"Agama adalah installer eksperimental untuk sistem (open)SUSE. Saat ini masih "
+"dalam tahap pengembangan, jadi mohon untuk tidak menggunakannya di "
+"lingkungan produksi. Jika Anda ingin mencobanya, kami sarankan untuk "
+"menggunakan mesin virtual untuk mencegah kemungkinan kehilangan data."
+
+#. TRANSLATORS: content of the "About" popup (2/2)
+#. %s is replaced by the project URL
+#: src/components/core/About.jsx:65
+#, c-format
+msgid "For more information, please visit the project's repository at %s."
+msgstr ""
+"Untuk informasi lebih lanjut, silakan kunjungi repositori proyek di %s."
+
+#. TRANSLATORS: button label
+#: src/components/core/About.jsx:71 src/components/core/FileViewer.jsx:80
+#: src/components/core/Sidebar.jsx:177 src/components/core/Terminal.jsx:48
+#: src/components/network/WifiSelector.jsx:151
+#: src/components/product/ProductPage.jsx:239
+msgid "Close"
+msgstr "Tutup"
+
+#. TRANSLATORS: button label
+#: src/components/core/DBusError.jsx:41
+msgid "Reload"
+msgstr "Muat ulang"
+
+#. TRANSLATORS: page title
+#: src/components/core/DBusError.jsx:49
+msgid "D-Bus Error"
+msgstr "Kesalahan D-Bus"
+
+#: src/components/core/DBusError.jsx:55
+msgid "Cannot connect to D-Bus"
+msgstr "Tidak dapat tersambung ke D-Bus"
+
+#: src/components/core/DBusError.jsx:60
+msgid ""
+"Could not connect to the D-Bus service. Please, check whether it is running."
+msgstr ""
+"Tidak dapat tersambung ke layanan D-Bus. Silakan periksa apakah sudah "
+"berjalan."
+
+#: src/components/core/FileViewer.jsx:65
+msgid "Reading file..."
+msgstr "Membaca berkas..."
+
+#: src/components/core/FileViewer.jsx:71
+msgid "Cannot read the file"
+msgstr "Tidak dapat membaca berkas"
+
+#. TRANSLATORS: the installer reports some errors,
+#. the text in square brackets [] is a clickable link
+#: src/components/core/InstallButton.jsx:45
+msgid ""
+"There are some reported issues. Please, check [the list of issues] before "
+"proceeding with the installation."
+msgstr ""
+"Ada beberapa masalah yang dilaporkan. Silakan periksa [daftar masalah] "
+"sebelum melanjutkan penginstalan."
+
+#: src/components/core/InstallButton.jsx:60
+msgid "Confirm Installation"
+msgstr "Konfirmasi Instalasi"
+
+#: src/components/core/InstallButton.jsx:66
+msgid ""
+"If you continue, partitions on your hard disk will be modified according to "
+"the provided installation settings."
+msgstr ""
+"Jika Anda melanjutkan, partisi pada hard disk Anda akan dimodifikasi sesuai "
+"dengan pengaturan instalasi yang disediakan."
+
+#: src/components/core/InstallButton.jsx:70
+msgid "Please, cancel and check the settings if you are unsure."
+msgstr "Mohon batalkan dan periksa pengaturan jika Anda tidak yakin."
+
+#. TRANSLATORS: button label
+#: src/components/core/InstallButton.jsx:76
+msgid "Continue"
+msgstr "Lanjutkan"
+
+#: src/components/core/InstallButton.jsx:86
+msgid "Problems Found"
+msgstr "Masalah yang Ditemukan"
+
+#: src/components/core/InstallButton.jsx:90
+msgid ""
+"Some problems were found when trying to start the installation. Please, have "
+"a look to the reported errors and try again."
+msgstr ""
+"Beberapa masalah ditemukan ketika mencoba memulai instalasi. Silakan lihat "
+"kesalahan yang dilaporkan dan coba lagi."
+
+#. TRANSLATORS: button label
+#: src/components/core/InstallButton.jsx:97 src/components/l10n/L10nPage.jsx:75
+#: src/components/l10n/L10nPage.jsx:191 src/components/l10n/L10nPage.jsx:304
+#: src/components/product/ProductPage.jsx:71
+#: src/components/product/ProductPage.jsx:140
+#: src/components/product/ProductPage.jsx:207
+#: src/components/storage/ProposalSettingsSection.jsx:170
+#: src/components/storage/ProposalSettingsSection.jsx:363
+#: src/components/storage/ProposalSettingsSection.jsx:508
+#: src/components/storage/ProposalSettingsSection.jsx:604
+#: src/components/storage/ProposalVolumes.jsx:148
+#: src/components/storage/ProposalVolumes.jsx:283
+#: src/components/storage/ZFCPPage.jsx:513
+msgid "Accept"
+msgstr "Terima"
+
+#. TRANSLATORS: button label
+#: src/components/core/InstallButton.jsx:148
+msgid "Install"
+msgstr "Instal"
+
+#. TRANSLATORS: button label
+#: src/components/core/InstallationFinished.jsx:44
+msgid "Finish"
+msgstr "Selesai"
+
+#. TRANSLATORS: button label
+#: src/components/core/InstallationFinished.jsx:46
+msgid "Reboot"
+msgstr "Maut ulang"
+
+#: src/components/core/InstallationFinished.jsx:59
+msgid "Installation Finished"
+msgstr "Instalasi Selesai"
+
+#: src/components/core/InstallationFinished.jsx:69
+msgid "Congratulations!"
+msgstr "Selamat!"
+
+#: src/components/core/InstallationFinished.jsx:74
+msgid "The installation on your machine is complete."
+msgstr "Penginstalan pada mesin Anda sudah selesai."
+
+#: src/components/core/InstallationFinished.jsx:78
+msgid "At this point you can power off the machine."
+msgstr "Pada titik ini, Anda dapat mematikan mesin."
+
+#: src/components/core/InstallationFinished.jsx:79
+msgid "At this point you can reboot the machine to log in to the new system."
+msgstr ""
+"Pada titik ini, Anda dapat menyalakan ulang mesin untuk masuk ke sistem yang "
+"baru."
+
+#: src/components/core/InstallationFinished.jsx:82
+msgid "Have a lot of fun! Your openSUSE Development Team."
+msgstr "Selamat bersenang-senang! Tim Pengembangan openSUSE Anda."
+
+#: src/components/core/InstallationProgress.jsx:32
+msgid "Installing"
+msgstr "Menginstal"
+
+#: src/components/core/IssuesLink.jsx:40
+msgid "Show issues"
+msgstr "Tampilkan masalah"
+
+#: src/components/core/IssuesLink.jsx:43
+msgid "There are new issues"
+msgstr "Ada masalah baru"
+
+#. TRANSLATORS: page section
+#: src/components/core/IssuesPage.jsx:92
+#: src/components/overview/ProductSection.jsx:71
+#: src/components/product/ProductPage.jsx:434
+msgid "Product"
+msgstr "Produk"
+
+#. TRANSLATORS: page section title
+#. TRANSLATORS: page title
+#: src/components/core/IssuesPage.jsx:100
+#: src/components/overview/StorageSection.jsx:208
+#: src/components/storage/ProposalPage.jsx:218
+msgid "Storage"
+msgstr "Penyimpanan"
+
+#. TRANSLATORS: page title
+#. TRANSLATORS: page section
+#: src/components/core/IssuesPage.jsx:108
+#: src/components/overview/SoftwareSection.jsx:143
+#: src/components/software/SoftwarePage.jsx:81
+msgid "Software"
+msgstr "Perangkat lunak"
+
+#: src/components/core/IssuesPage.jsx:129
+msgid "No issues found. Everything looks ok."
+msgstr "Tidak ada masalah yang ditemukan. Semuanya terlihat baik-baik saja."
+
+#. TRANSLATORS: search field placeholder text
+#: src/components/core/ListSearch.jsx:50
+#: src/components/software/PatternSelector.jsx:220
+#: src/components/software/PatternSelector.jsx:221
+msgid "Search"
+msgstr "Cari"
+
+#: src/components/core/LogsButton.jsx:98
+msgid "Collecting logs..."
+msgstr "Mengumpulkan log..."
+
+#: src/components/core/LogsButton.jsx:98
+msgid "Download logs"
+msgstr "Unduh log"
+
+#: src/components/core/LogsButton.jsx:106
+msgid ""
+"The browser will run the logs download as soon as they are ready. Please, be "
+"patient."
+msgstr ""
+"Browser akan menjalankan pengunduhan log segera setelah siap. Mohon bersabar."
+
+#: src/components/core/LogsButton.jsx:114
+msgid "Something went wrong while collecting logs. Please, try again."
+msgstr "Terjadi kesalahan saat mengumpulkan log. Silakan coba lagi."
+
+#: src/components/core/PasswordAndConfirmationInput.jsx:35
+msgid "Passwords do not match"
+msgstr "Kata sandi tidak cocok"
+
+#: src/components/core/PasswordAndConfirmationInput.jsx:56
+#: src/components/network/WifiConnectionForm.jsx:125
+#: src/components/storage/iscsi/AuthFields.jsx:95
+#: src/components/storage/iscsi/AuthFields.jsx:100
+#: src/components/users/RootAuthMethods.jsx:159
+msgid "Password"
+msgstr "Kata sandi"
+
+#: src/components/core/PasswordAndConfirmationInput.jsx:60
+msgid "User password"
+msgstr "Kata sandi pengguna"
+
+#: src/components/core/PasswordAndConfirmationInput.jsx:69
+msgid "Password confirmation"
+msgstr "Konfirmasi kata sandi"
+
+#: src/components/core/PasswordAndConfirmationInput.jsx:74
+msgid "User password confirmation"
+msgstr "Konfirmasi kata sandi pengguna"
+
+#: src/components/core/PasswordInput.jsx:59
+msgid "Password visibility button"
+msgstr "Tombol visibilitas kata sandi"
+
+#: src/components/core/Popup.jsx:90
+msgid "Confirm"
+msgstr "Konfirmasi"
+
+#. TRANSLATORS: button label
+#: src/components/core/Popup.jsx:128
+#: src/components/network/WifiConnectionForm.jsx:136
+msgid "Cancel"
+msgstr "Batal"
+
+#. TRANSLATORS: dropdown label
+#: src/components/core/RowActions.jsx:66
+#: src/components/storage/ProposalVolumes.jsx:119
+#: src/components/storage/ProposalVolumes.jsx:310
+msgid "Actions"
+msgstr "Tindakan"
+
+#: src/components/core/SectionSkeleton.jsx:29
+msgid "Waiting"
+msgstr "Menunggu"
+
+#. TRANSLATORS: button label
+#: src/components/core/ShowLogButton.jsx:47
+msgid "Show Logs"
+msgstr "Tampilkan Log"
+
+#. TRANSLATORS: popup dialog title
+#: src/components/core/ShowLogButton.jsx:53
+msgid "YaST Logs"
+msgstr "Log YaST"
+
+#. TRANSLATORS: button label
+#: src/components/core/ShowTerminalButton.jsx:48
+msgid "Open Terminal"
+msgstr "Buka Terminal"
+
+#: src/components/core/Sidebar.jsx:135
+msgid "Show global options"
+msgstr "Tampilkan opsi global"
+
+#: src/components/core/Sidebar.jsx:141
+msgid "New issues found"
+msgstr "Masalah baru ditemukan"
+
+#: src/components/core/Sidebar.jsx:151
+msgid "Global options"
+msgstr "Opsi global"
+
+#. TRANSLATORS: sidebar header
+#: src/components/core/Sidebar.jsx:157
+msgid "Installer Options"
+msgstr "Opsi Penginstal"
+
+#: src/components/core/Sidebar.jsx:164
+msgid "Hide navigation and other options"
+msgstr "Menyembunyikan navigasi dan opsi lainnya"
+
+#: src/components/core/ValidationErrors.jsx:62
+msgid "Errors"
+msgstr "Kesalahan"
+
+#. TRANSLATORS: %d is replaced with the number of errors found
+#: src/components/core/ValidationErrors.jsx:85
+#, c-format
+msgid "%d error found"
+msgid_plural "%d errors found"
+msgstr[0] "%d kesalahan ditemukan"
+
+#: src/components/core/ValidationErrors.jsx:95
+msgid "Basic popover"
+msgstr "Popover dasar"
+
+#. TRANSLATORS: label for keyboard layout selection
+#: src/components/l10n/InstallerKeymapSwitcher.jsx:53
+#: src/components/l10n/L10nPage.jsx:357
+msgid "Keyboard"
+msgstr "Papan ketik"
+
+#. TRANSLATORS: label for keyboard layout selection
+#: src/components/l10n/InstallerKeymapSwitcher.jsx:61
+msgid "keyboard"
+msgstr "papan ketik"
+
+#. TRANSLATORS:
+#: src/components/l10n/InstallerKeymapSwitcher.jsx:70
+msgid "Keyboard layout cannot be changed in remote installation"
+msgstr "Tata letak papan ketik tidak dapat diubah dalam instalasi jarak jauh"
+
+#. TRANSLATORS: help text for the language selector in the sidebar,
+#. %s will be replaced by the "Localization" page link
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:47
+#, c-format
+msgid ""
+"The language used by the installer. The language for the installed system "
+"can be set in the %s page."
+msgstr ""
+"Bahasa yang digunakan oleh penginstal. Bahasa untuk sistem yang diinstal "
+"dapat diatur di halaman %s."
+
+#. TRANSLATORS: page title
+#. TRANSLATORS: page section
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:56
+#: src/components/l10n/L10nPage.jsx:385
+#: src/components/overview/L10nSection.jsx:52
+msgid "Localization"
+msgstr "Pelokalan"
+
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:66
+#: src/components/l10n/L10nPage.jsx:246
+msgid "Language"
+msgstr "Bahasa"
+
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:74
+msgid "language"
+msgstr "bahasa"
+
+#. TRANSLATORS: placeholder text for search input in the keyboard selector.
+#: src/components/l10n/KeymapSelector.jsx:82
+msgid "Filter by description or keymap code"
+msgstr "Filter berdasarkan deskripsi atau kode peta kunci"
+
+#: src/components/l10n/KeymapSelector.jsx:89
+msgid "Available keymaps"
+msgstr "Peta kunci yang tersedia"
+
+#: src/components/l10n/L10nPage.jsx:66 src/components/l10n/L10nPage.jsx:140
+msgid "Select time zone"
+msgstr "Pilih zona waktu"
+
+#: src/components/l10n/L10nPage.jsx:67
+#, c-format
+msgid "%s will use the selected time zone."
+msgstr "%s akan menggunakan zona waktu yang dipilih."
+
+#: src/components/l10n/L10nPage.jsx:128
+msgid "Time zone"
+msgstr "Zona waktu"
+
+#: src/components/l10n/L10nPage.jsx:134
+msgid "Change time zone"
+msgstr "Mengubah zona waktu"
+
+#: src/components/l10n/L10nPage.jsx:139
+msgid "Time zone not selected yet"
+msgstr "Zona waktu belum dipilih"
+
+#: src/components/l10n/L10nPage.jsx:182 src/components/l10n/L10nPage.jsx:258
+msgid "Select language"
+msgstr "Pilih bahasa"
+
+#: src/components/l10n/L10nPage.jsx:183
+#, c-format
+msgid "%s will use the selected language."
+msgstr "%s akan menggunakan bahasa yang dipilih."
+
+#: src/components/l10n/L10nPage.jsx:252
+msgid "Change language"
+msgstr "Ubah bahasa"
+
+#: src/components/l10n/L10nPage.jsx:257
+msgid "Language not selected yet"
+msgstr "Bahasa belum dipilih"
+
+#: src/components/l10n/L10nPage.jsx:295 src/components/l10n/L10nPage.jsx:369
+msgid "Select keyboard"
+msgstr "Pilih papan ketik"
+
+#: src/components/l10n/L10nPage.jsx:296
+#, c-format
+msgid "%s will use the selected keyboard."
+msgstr "%s akan menggunakan papan ketik yang dipilih."
+
+#: src/components/l10n/L10nPage.jsx:363
+msgid "Change keyboard"
+msgstr "Ganti papan ketik"
+
+#: src/components/l10n/L10nPage.jsx:368
+msgid "Keyboard not selected yet"
+msgstr "Papan ketik belum dipilih"
+
+#: src/components/l10n/L10nPage.jsx:387
+#: src/components/product/ProductPage.jsx:434
+#: src/components/software/SoftwarePage.jsx:81
+#: src/components/storage/DASDPage.jsx:187
+#: src/components/storage/ISCSIPage.jsx:39
+#: src/components/storage/ProposalPage.jsx:218
+#: src/components/storage/ZFCPPage.jsx:736
+#: src/components/users/UsersPage.jsx:30
+msgid "Back"
+msgstr "Kembali"
+
+#: src/components/l10n/LocaleSelector.jsx:82
+msgid "Filter by language, territory or locale code"
+msgstr "Memfilter berdasarkan bahasa, wilayah, atau kode lokal"
+
+#: src/components/l10n/LocaleSelector.jsx:89
+msgid "Available locales"
+msgstr "Lokal yang tersedia"
+
+#. TRANSLATORS: placeholder text for search input in the timezone selector.
+#: src/components/l10n/TimezoneSelector.jsx:102
+msgid "Filter by territory, time zone code or UTC offset"
+msgstr "Memfilter berdasarkan wilayah, kode zona waktu, atau offset UTC"
+
+#: src/components/l10n/TimezoneSelector.jsx:109
+msgid "Available time zones"
+msgstr "Zona waktu yang tersedia"
+
+#: src/components/layout/Loading.jsx:30
+msgid "Loading installation environment, please wait."
+msgstr "Memuat lingkungan penginstalan, harap tunggu."
+
+#. TRANSLATORS: button label
+#: src/components/network/AddressesDataList.jsx:81
+#: src/components/network/DnsDataList.jsx:87
+msgid "Remove"
+msgstr "Menghapus"
+
+#. TRANSLATORS: input field name
+#: src/components/network/AddressesDataList.jsx:93
+#: src/components/network/AddressesDataList.jsx:94
+#: src/components/network/IpAddressInput.jsx:33
+msgid "IP Address"
+msgstr "Alamat IP"
+
+#. TRANSLATORS: input field name
+#: src/components/network/AddressesDataList.jsx:102
+#: src/components/network/AddressesDataList.jsx:103
+msgid "Prefix length or netmask"
+msgstr "Panjang awalan atau netmask"
+
+#: src/components/network/AddressesDataList.jsx:119
+msgid "Add an address"
+msgstr "Tambahkan alamat"
+
+#. TRANSLATORS: button label
+#: src/components/network/AddressesDataList.jsx:119
+msgid "Add another address"
+msgstr "Tambahkan alamat lain"
+
+#: src/components/network/AddressesDataList.jsx:124
+msgid "Addresses"
+msgstr "Alamat"
+
+#: src/components/network/AddressesDataList.jsx:129
+msgid "Addresses data list"
+msgstr "Daftar data alamat"
+
+#. TRANSLATORS: table header
+#. TRANSLATORS: input field for the iSCSI initiator name
+#: src/components/network/ConnectionsTable.jsx:57
+#: src/components/network/ConnectionsTable.jsx:86
+#: src/components/storage/ZFCPPage.jsx:362
+#: src/components/storage/iscsi/InitiatorForm.jsx:52
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:68
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:85
+#: src/components/storage/iscsi/NodesPresenter.jsx:100
+#: src/components/storage/iscsi/NodesPresenter.jsx:121
+msgid "Name"
+msgstr "Nama"
+
+#. TRANSLATORS: table header
+#: src/components/network/ConnectionsTable.jsx:59
+#: src/components/network/ConnectionsTable.jsx:87
+msgid "IP addresses"
+msgstr "Alamat IP"
+
+#: src/components/network/ConnectionsTable.jsx:67
+#: src/components/storage/ProposalVolumes.jsx:234
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:49
+#: src/components/storage/iscsi/NodesPresenter.jsx:73
+#: src/components/users/FirstUser.jsx:170
+msgid "Edit"
+msgstr "Edit"
+
+#. TRANSLATORS: %s is replaced by a network connection name
+#: src/components/network/ConnectionsTable.jsx:70
+#, c-format
+msgid "Edit connection %s"
+msgstr "Edit koneksi %s"
+
+#: src/components/network/ConnectionsTable.jsx:74
+msgid "Forget"
+msgstr "Lupakan"
+
+#. TRANSLATORS: %s is replaced by a network connection name
+#: src/components/network/ConnectionsTable.jsx:77
+#, c-format
+msgid "Forget connection %s"
+msgstr "Lupakan koneksi %s"
+
+#. TRANSLATORS: %s is replaced by a network connection name
+#: src/components/network/ConnectionsTable.jsx:92
+#, c-format
+msgid "Actions for connection %s"
+msgstr "Tindakan untuk koneksi %s"
+
+#. TRANSLATORS: input field name
+#: src/components/network/DnsDataList.jsx:78
+#: src/components/network/DnsDataList.jsx:79
+msgid "Server IP"
+msgstr "IP Server"
+
+#: src/components/network/DnsDataList.jsx:96
+msgid "Add DNS"
+msgstr "Tambahkan DNS"
+
+#. TRANSLATORS: button label
+#: src/components/network/DnsDataList.jsx:96
+msgid "Add another DNS"
+msgstr "Tambahkan DNS lain"
+
+#: src/components/network/DnsDataList.jsx:101
+msgid "DNS"
+msgstr "DNS"
+
+#. TRANSLATORS: input field name
+#: src/components/network/IpPrefixInput.jsx:33
+msgid "IP prefix or netmask"
+msgstr "Awalan IP atau netmask"
+
+#. TRANSLATORS: error message
+#: src/components/network/IpSettingsForm.jsx:87
+msgid "At least one address must be provided for selected mode"
+msgstr "Setidaknya satu alamat harus disediakan untuk mode yang dipilih"
+
+#: src/components/network/IpSettingsForm.jsx:131
+#, c-format
+msgid "Edit %s connection"
+msgstr "Mengedit koneksi %s"
+
+#. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
+#: src/components/network/IpSettingsForm.jsx:133
+#: src/components/network/IpSettingsForm.jsx:138
+#: src/components/network/IpSettingsForm.jsx:140
+msgid "Mode"
+msgstr "Mode"
+
+#: src/components/network/IpSettingsForm.jsx:144
+msgid "Automatic (DHCP)"
+msgstr "Otomatis (DHCP)"
+
+#. TRANSLATORS: manual network configuration mode with a static IP address
+#: src/components/network/IpSettingsForm.jsx:146
+#: src/components/storage/iscsi/NodeStartupOptions.js:25
+msgid "Manual"
+msgstr "Manual"
+
+#. TRANSLATORS: network gateway configuration
+#: src/components/network/IpSettingsForm.jsx:161
+#: src/components/network/IpSettingsForm.jsx:164
+msgid "Gateway"
+msgstr "Gateway"
+
+#: src/components/network/NetworkPage.jsx:38
+msgid "No wired connections found"
+msgstr "Tidak ditemukan koneksi kabel"
+
+#: src/components/network/NetworkPage.jsx:53
+msgid ""
+"The system has not been configured for connecting to a WiFi network yet."
+msgstr "Sistem belum dikonfigurasi untuk menyambung ke jaringan WiFi."
+
+#: src/components/network/NetworkPage.jsx:54
+msgid ""
+"The system does not support WiFi connections, probably because of missing or "
+"disabled hardware."
+msgstr ""
+"Sistem tidak mendukung sambungan WiFi, mungkin karena perangkat keras yang "
+"tidak ada atau dinonaktifkan."
+
+#: src/components/network/NetworkPage.jsx:58
+msgid "No WiFi connections found"
+msgstr "Tidak ditemukan koneksi WiFi"
+
+#. TRANSLATORS: button label
+#: src/components/network/NetworkPage.jsx:70
+#: src/components/network/NetworkPageOptions.jsx:46
+#: src/components/network/WifiSelector.jsx:134
+msgid "Connect to a Wi-Fi network"
+msgstr "Sambungkan ke jaringan Wi-Fi"
+
+#. TRANSLATORS: page title
+#. TRANSLATORS: page section title
+#: src/components/network/NetworkPage.jsx:170
+#: src/components/overview/NetworkSection.jsx:102
+msgid "Network"
+msgstr "Jaringan"
+
+#. TRANSLATORS: page section
+#: src/components/network/NetworkPage.jsx:172
+msgid "Wired networks"
+msgstr "Jaringan berkabel"
+
+#. TRANSLATORS: page section
+#: src/components/network/NetworkPage.jsx:177
+msgid "WiFi networks"
+msgstr "Jaringan WiFi"
+
+#. TRANSLATORS: WiFi authentication mode
+#: src/components/network/WifiConnectionForm.jsx:43
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
+msgid "None"
+msgstr "Tidak ada"
+
+#. TRANSLATORS: WiFi authentication mode
+#: src/components/network/WifiConnectionForm.jsx:45
+msgid "WPA & WPA2 Personal"
+msgstr "WPA & WPA2 Pribadi"
+
+#: src/components/network/WifiConnectionForm.jsx:91
+#: src/components/product/ProductPage.jsx:128
+#: src/components/product/ProductPage.jsx:194
+#: src/components/storage/ZFCPDiskForm.jsx:112
+#: src/components/storage/iscsi/DiscoverForm.jsx:108
+#: src/components/storage/iscsi/LoginForm.jsx:72
+#: src/components/users/FirstUser.jsx:194
+msgid "Something went wrong"
+msgstr "Ada yang tidak beres"
+
+#: src/components/network/WifiConnectionForm.jsx:92
+msgid "Please, review provided settings and try again."
+msgstr "Harap tinjau pengaturan yang tersedia dan coba lagi."
+
+#. TRANSLATORS: SSID (Wifi network name) configuration
+#: src/components/network/WifiConnectionForm.jsx:97
+#: src/components/network/WifiConnectionForm.jsx:101
+msgid "SSID"
+msgstr "SSID"
+
+#. TRANSLATORS: Wifi security configuration (password protected or not)
+#: src/components/network/WifiConnectionForm.jsx:109
+#: src/components/network/WifiConnectionForm.jsx:112
+msgid "Security"
+msgstr "Keamanan"
+
+#. TRANSLATORS: WiFi password
+#: src/components/network/WifiConnectionForm.jsx:121
+msgid "WPA Password"
+msgstr "Kata Sandi WPA"
+
+#. TRANSLATORS: button label, connect to a WiFi network
+#: src/components/network/WifiConnectionForm.jsx:133
+msgid "Connect"
+msgstr "Sambungkan"
+
+#. TRANSLATORS: button label
+#: src/components/network/WifiHiddenNetworkForm.jsx:50
+msgid "Connect to hidden network"
+msgstr "Sambungkan ke jaringan tersembunyi"
+
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworkListItem.jsx:41
+#: src/components/network/WifiNetworkListItem.jsx:99
+msgid "Connecting"
+msgstr "Menyambung"
+
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworkListItem.jsx:44
+msgid "Connected"
+msgstr "Tersambung"
+
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworkListItem.jsx:47
+msgid "Disconnecting"
+msgstr "Memutuskan sambungan"
+
+#. TRANSLATORS: Wifi network status
+#. TRANSLATORS: iSCSI connection status
+#: src/components/network/WifiNetworkListItem.jsx:50
+#: src/components/storage/iscsi/NodesPresenter.jsx:63
+msgid "Disconnected"
+msgstr "Terputus"
+
+#. TRANSLATORS: %s is replaced by a WiFi network name
+#: src/components/network/WifiNetworkListItem.jsx:97
+#, c-format
+msgid "%s connection is waiting for an state change"
+msgstr "%s koneksi sedang menunggu perubahan status"
+
+#. TRANSLATORS: menu label, remove the selected WiFi network settings
+#: src/components/network/WifiNetworkMenu.jsx:55
+msgid "Forget network"
+msgstr "Lupakan jaringan"
+
+#. TRANSLATORS: %s will be replaced by a language name and territory, example:
+#. "English (United States)".
+#: src/components/overview/L10nSection.jsx:34
+#, c-format
+msgid "The system will use %s as its default language."
+msgstr "Sistem akan menggunakan %s sebagai bahasa default."
+
+#: src/components/overview/NetworkSection.jsx:78
+msgid "No network connections detected"
+msgstr "Tidak ada koneksi jaringan yang terdeteksi"
+
+#. TRANSLATORS: header for the list of active network connections,
+#. %d is replaced by the number of active connections
+#: src/components/overview/NetworkSection.jsx:87
+#, c-format
+msgid "%d connection set:"
+msgid_plural "%d connections set:"
+msgstr[0] "Koneksi %d ditetapkan:"
+
+#. TRANSLATORS: page title
+#: src/components/overview/Overview.jsx:47
+msgid "Installation Summary"
+msgstr "Ringkasan Instalasi"
+
+#. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+#: src/components/overview/ProductSection.jsx:48
+#, c-format
+msgid "%s (registered)"
+msgstr "%s (terdaftar)"
+
+#: src/components/overview/SoftwareSection.jsx:38
+msgid "Reading software repositories"
+msgstr "Membaca repositori perangkat lunak"
+
+#. TRANSLATORS: clickable link label
+#: src/components/overview/SoftwareSection.jsx:133
+msgid "Refresh the repositories"
+msgstr "Menyegarkan repositori"
+
+#: src/components/overview/StorageSection.jsx:42
+#: src/components/storage/ProposalSettingsSection.jsx:126
+msgid "No device selected yet"
+msgstr "Belum ada perangkat yang dipilih"
+
+#. TRANSLATORS: %s will be replaced by the device name and its size,
+#. example: "/dev/sda, 20 GiB"
+#: src/components/overview/StorageSection.jsx:52
+#, c-format
+msgid "Install using device %s shrinking existing partitions as needed"
+msgstr ""
+"Instal menggunakan perangkat %s mengecilkan partisi yang ada sesuai kebutuhan"
+
+#. TRANSLATORS: %s will be replaced by the device name and its size,
+#. example: "/dev/sda, 20 GiB"
+#: src/components/overview/StorageSection.jsx:56
+#, c-format
+msgid "Install using device %s without modifying existing partitions"
+msgstr "Menginstal menggunakan perangkat %s tanpa mengubah partisi yang ada"
+
+#. TRANSLATORS: %s will be replaced by the device name and its size,
+#. example: "/dev/sda, 20 GiB"
+#: src/components/overview/StorageSection.jsx:60
+#, c-format
+msgid "Install using device %s and deleting all its content"
+msgstr "Menginstal menggunakan perangkat %s dan menghapus semua isinya"
+
+#. TRANSLATORS: %s will be replaced by the device name and its size,
+#. example: "/dev/sda, 20 GiB"
+#: src/components/overview/StorageSection.jsx:66
+#, c-format
+msgid "Install using device %s"
+msgstr "Menginstal menggunakan perangkat %s"
+
+#: src/components/overview/StorageSection.jsx:83
+msgid "Probing storage devices"
+msgstr "Memeriksa perangkat penyimpanan"
+
+#. TRANSLATORS: %s will be replaced by the user name
+#: src/components/overview/UsersSection.jsx:80
+#, c-format
+msgid "User %s will be created"
+msgstr "Pengguna %s akan dibuat"
+
+#: src/components/overview/UsersSection.jsx:87
+#: src/components/users/FirstUser.jsx:44
+msgid "No user defined yet"
+msgstr "Belum ada pengguna yang ditetapkan"
+
+#: src/components/overview/UsersSection.jsx:101
+msgid "Root authentication set for using both, password and public SSH Key"
+msgstr ""
+"Otentikasi root ditetapkan untuk menggunakan keduanya, kata sandi dan Kunci "
+"SSH publik"
+
+#: src/components/overview/UsersSection.jsx:102
+msgid "No root authentication method defined"
+msgstr "Tidak ada metode autentikasi root yang ditetapkan"
+
+#: src/components/overview/UsersSection.jsx:103
+msgid "Root authentication set for using password"
+msgstr "Otentikasi root ditetapkan untuk menggunakan kata sandi"
+
+#: src/components/overview/UsersSection.jsx:104
+msgid "Root authentication set for using public SSH Key"
+msgstr "Otentikasi root ditetapkan untuk menggunakan Kunci SSH publik"
+
+#. TRANSLATORS: page section title
+#: src/components/overview/UsersSection.jsx:120
+#: src/components/users/UsersPage.jsx:30
+msgid "Users"
+msgstr "Pengguna"
+
+#: src/components/product/ProductPage.jsx:63
+#: src/components/product/ProductSelectionPage.jsx:73
+msgid "Choose a product"
+msgstr "Pilih produk"
+
+#: src/components/product/ProductPage.jsx:122
+#, c-format
+msgid "Register %s"
+msgstr "Daftarkan %s"
+
+#: src/components/product/ProductPage.jsx:188
+#, c-format
+msgid "Deregister %s"
+msgstr "Batalkan pendaftaran %s"
+
+#. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+#: src/components/product/ProductPage.jsx:202
+#, c-format
+msgid "Do you want to deregister %s?"
+msgstr "Apakah Anda ingin membatalkan pendaftaran %s?"
+
+#: src/components/product/ProductPage.jsx:227
+msgid "Registered warning"
+msgstr "Peringatan terdaftar"
+
+#. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+#: src/components/product/ProductPage.jsx:232
+#, c-format
+msgid "The product %s must be deregistered before selecting a new product."
+msgstr "Produk %s harus dibatalkan pendaftarannya sebelum memilih produk baru."
+
+#: src/components/product/ProductPage.jsx:263
+msgid "Change product"
+msgstr "Mengubah produk"
+
+#: src/components/product/ProductPage.jsx:305
+msgid "Register"
+msgstr "Mendaftar"
+
+#: src/components/product/ProductPage.jsx:337
+msgid "Deregister product"
+msgstr "Membatalkan pendaftaran produk"
+
+#: src/components/product/ProductPage.jsx:370
+msgid "Code:"
+msgstr "Kode:"
+
+#: src/components/product/ProductPage.jsx:374
+msgid "Email:"
+msgstr "Email:"
+
+#. TRANSLATORS: section title.
+#: src/components/product/ProductPage.jsx:390
+msgid "Registration"
+msgstr "Pendaftaran"
+
+#: src/components/product/ProductPage.jsx:399
+msgid "This product requires registration."
+msgstr "Produk ini memerlukan pendaftaran."
+
+#: src/components/product/ProductPage.jsx:405
+msgid "This product does not require registration."
+msgstr "Produk ini tidak memerlukan pendaftaran."
+
+#: src/components/product/ProductRegistrationForm.jsx:63
+msgid "Registration code"
+msgstr "Kode pendaftaran"
+
+#: src/components/product/ProductRegistrationForm.jsx:66
+msgid "Email"
+msgstr "Email"
+
+#: src/components/product/ProductSelectionPage.jsx:58
+msgid "Loading available products, please wait..."
+msgstr "Memuat produk yang tersedia, mohon tunggu..."
+
+#. TRANSLATORS: page header
+#: src/components/product/ProductSelectionPage.jsx:64
+msgid "Product selection"
+msgstr "Pilihan produk"
+
+#. TRANSLATORS: button label
+#: src/components/product/ProductSelectionPage.jsx:69
+msgid "Select"
+msgstr "Pilih"
+
+#: src/components/product/ProductSelector.jsx:29
+msgid "No products available for selection"
+msgstr "Tidak ada produk yang tersedia untuk dipilih"
+
+#: src/components/questions/GenericQuestion.jsx:35
+#: src/components/questions/LuksActivationQuestion.jsx:60
+msgid "Question"
+msgstr "Pertanyaan"
+
+#. TRANSLATORS: error message, user entered a wrong password
+#: src/components/questions/LuksActivationQuestion.jsx:34
+msgid "Given encryption password didn't work"
+msgstr "Kata sandi enkripsi yang diberikan tidak berhasil"
+
+#: src/components/questions/LuksActivationQuestion.jsx:59
+msgid "Encrypted Device"
+msgstr "Perangkat Terenkripsi"
+
+#. TRANSLATORS: field label
+#: src/components/questions/LuksActivationQuestion.jsx:69
+msgid "Encryption Password"
+msgstr "Kata Sandi Enkripsi"
+
+#. TRANSLATORS: pattern status, selected to install (by user)
+#: src/components/software/PatternItem.jsx:63
+msgid "selected"
+msgstr "dipilih"
+
+#. TRANSLATORS: pattern status, selected to install (by dependencies)
+#: src/components/software/PatternItem.jsx:66
+msgid "automatically selected"
+msgstr "dipilih secara otomatis"
+
+#. TRANSLATORS: pattern status, not selected to install
+#: src/components/software/PatternItem.jsx:69
+msgid "not selected"
+msgstr "tidak dipilih"
+
+#. TRANSLATORS: error summary, always plural, %d is replaced by number of errors (2 or more)
+#. if there is just a single error then the error is displayed directly instead of this summary
+#: src/components/software/PatternSelector.jsx:207
+#, c-format
+msgid "%d errors"
+msgstr "%d kesalahan"
+
+#: src/components/software/PatternSelector.jsx:215
+msgid "Software summary and filter options"
+msgstr "Rangkuman perangkat lunak dan opsi filter"
+
+#. TRANSLATORS: %s will be replaced by the estimated installation size,
+#. example: "728.8 MiB"
+#: src/components/software/UsedSize.jsx:32
+#, c-format
+msgid "Installation will take %s"
+msgstr "Penginstalan akan memakan waktu %s"
+
+#: src/components/storage/DASDFormatProgress.jsx:61
+msgid "Waiting for progress report"
+msgstr "Menunggu laporan kemajuan"
+
+#: src/components/storage/DASDFormatProgress.jsx:69
+msgid "Formatting DASD devices"
+msgstr "Memformat perangkat DASD"
+
+#. TRANSLATORS: DASD = Direct Access Storage Device, IBM mainframe storage technology
+#: src/components/storage/DASDPage.jsx:185
+msgid "Storage DASD"
+msgstr "Penyimpanan DASD"
+
+#: src/components/storage/DASDTable.jsx:57
+#: src/components/storage/ZFCPPage.jsx:320
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
+#: src/components/storage/iscsi/NodesPresenter.jsx:103
+msgid "No"
+msgstr "Tidak"
+
+#: src/components/storage/DASDTable.jsx:57
+#: src/components/storage/ZFCPPage.jsx:320
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
+#: src/components/storage/iscsi/NodesPresenter.jsx:103
+msgid "Yes"
+msgstr "Ya"
+
+#: src/components/storage/DASDTable.jsx:64
+#: src/components/storage/ZFCPDiskForm.jsx:118
+#: src/components/storage/ZFCPPage.jsx:303
+#: src/components/storage/ZFCPPage.jsx:363
+msgid "Channel ID"
+msgstr "ID saluran"
+
+#. TRANSLATORS: table header
+#: src/components/storage/DASDTable.jsx:65
+#: src/components/storage/ZFCPPage.jsx:304
+#: src/components/storage/iscsi/NodesPresenter.jsx:104
+#: src/components/storage/iscsi/NodesPresenter.jsx:125
+#: src/components/users/RootAuthMethods.jsx:153
+msgid "Status"
+msgstr "Status"
+
+#: src/components/storage/DASDTable.jsx:66
+msgid "Device"
+msgstr "Perangkat"
+
+#: src/components/storage/DASDTable.jsx:67
+msgid "Type"
+msgstr "Jenis"
+
+#: src/components/storage/DASDTable.jsx:68
+msgid "Diag"
+msgstr "Diag"
+
+#: src/components/storage/DASDTable.jsx:69
+msgid "Formatted"
+msgstr "Diformat"
+
+#: src/components/storage/DASDTable.jsx:70
+msgid "Partition Info"
+msgstr "Info Partisi"
+
+#. TRANSLATORS: drop down menu label
+#: src/components/storage/DASDTable.jsx:105
+msgid "Perform an action"
+msgstr "Melakukan tindakan"
+
+#. TRANSLATORS: drop down menu action, activate the device
+#: src/components/storage/DASDTable.jsx:111
+#: src/components/storage/ZFCPPage.jsx:334
+msgid "Activate"
+msgstr "Mengaktifkan"
+
+#. TRANSLATORS: drop down menu action, deactivate the device
+#: src/components/storage/DASDTable.jsx:113
+#: src/components/storage/ZFCPPage.jsx:376
+msgid "Deactivate"
+msgstr "Nonaktifkan"
+
+#. TRANSLATORS: drop down menu action, enable DIAG access method
+#: src/components/storage/DASDTable.jsx:116
+msgid "Set DIAG On"
+msgstr "Mengatur DIAG Aktif"
+
+#. TRANSLATORS: drop down menu action, disable DIAG access method
+#: src/components/storage/DASDTable.jsx:118
+msgid "Set DIAG Off"
+msgstr "Mengatur DIAG Tidak Aktif"
+
+#. TRANSLATORS: drop down menu action, format the disk
+#: src/components/storage/DASDTable.jsx:121
+msgid "Format"
+msgstr "Format"
+
+#: src/components/storage/DASDTable.jsx:198
+#: src/components/storage/DASDTable.jsx:199
+msgid "Filter by min channel"
+msgstr "Memfilter menurut saluran min"
+
+#: src/components/storage/DASDTable.jsx:206
+msgid "Remove min channel filter"
+msgstr "Menghapus filter saluran min"
+
+#: src/components/storage/DASDTable.jsx:219
+#: src/components/storage/DASDTable.jsx:220
+msgid "Filter by max channel"
+msgstr "Memfilter menurut saluran maks"
+
+#: src/components/storage/DASDTable.jsx:227
+msgid "Remove max channel filter"
+msgstr "Menghapus filter saluran maks"
+
+#. TRANSLATORS: page title for iSCSI configuration
+#: src/components/storage/ISCSIPage.jsx:36
+msgid "Storage iSCSI"
+msgstr "Penyimpanan iSCSI"
+
+#. TRANSLATORS: show/hide toggle action, this is a clickable link
+#: src/components/storage/ProposalActionsSection.jsx:71
+#, c-format
+msgid "Hide %d subvolume action"
+msgid_plural "Hide %d subvolume actions"
+msgstr[0] "Menyembunyikan tindakan subvolume %d"
+
+#. TRANSLATORS: show/hide toggle action, this is a clickable link
+#: src/components/storage/ProposalActionsSection.jsx:73
+#, c-format
+msgid "Show %d subvolume action"
+msgid_plural "Show %d subvolume actions"
+msgstr[0] "Tampilkan tindakan subvolume %d"
+
+#: src/components/storage/ProposalActionsSection.jsx:78
+msgid "Actions to create the file systems and to ensure the system boots."
+msgstr ""
+"Tindakan untuk membuat sistem file dan memastikan sistem melakukan booting."
+
+#. TRANSLATORS: section title, list of planned actions for the selected device,
+#. e.g. "delete partition A", "create partition B with filesystem C", ...
+#: src/components/storage/ProposalActionsSection.jsx:126
+msgid "Planned Actions"
+msgstr "Tindakan yang Direncanakan"
+
+#: src/components/storage/ProposalPage.jsx:198
+msgid "Devices will not be modified until installation starts."
+msgstr "Perangkat tidak akan dimodifikasi hingga penginstalan dimulai."
+
+#: src/components/storage/ProposalPageOptions.jsx:40
+msgid "Manage and format"
+msgstr "Mengelola dan memformat"
+
+#: src/components/storage/ProposalPageOptions.jsx:58
+msgid "Activate disks"
+msgstr "Mengaktifkan disk"
+
+#: src/components/storage/ProposalPageOptions.jsx:60
+msgid "zFCP"
+msgstr "zFCP"
+
+#: src/components/storage/ProposalPageOptions.jsx:76
+msgid "Connect to iSCSI targets"
+msgstr "Menyambungkan ke target iSCSI"
+
+#: src/components/storage/ProposalPageOptions.jsx:78
+msgid "iSCSI"
+msgstr "iSCSI"
+
+#: src/components/storage/ProposalSettingsSection.jsx:139
+msgid "Select the device for installing the system."
+msgstr "Pilih perangkat untuk menginstal sistem."
+
+#: src/components/storage/ProposalSettingsSection.jsx:144
+#: src/components/storage/ProposalSettingsSection.jsx:148
+#: src/components/storage/ProposalSettingsSection.jsx:244
+msgid "Installation device"
+msgstr "Perangkat penginstalan"
+
+#: src/components/storage/ProposalSettingsSection.jsx:154
+msgid "No devices found"
+msgstr "Tidak ada perangkat yang ditemukan"
+
+#: src/components/storage/ProposalSettingsSection.jsx:241
+msgid "Devices for creating the volume group"
+msgstr "Perangkat untuk membuat grup volume"
+
+#: src/components/storage/ProposalSettingsSection.jsx:250
+msgid "Custom devices"
+msgstr "Perangkat khusus"
+
+#: src/components/storage/ProposalSettingsSection.jsx:314
+msgid ""
+"Configuration of the system volume group. All the file systems will be "
+"created in a logical volume of the system volume group."
+msgstr ""
+"Konfigurasi grup volume sistem. Semua sistem file akan dibuat dalam volume "
+"logis dari grup volume sistem."
+
+#: src/components/storage/ProposalSettingsSection.jsx:320
+msgid "Configure the LVM settings"
+msgstr "Mengkonfigurasi pengaturan LVM"
+
+#: src/components/storage/ProposalSettingsSection.jsx:325
+#: src/components/storage/ProposalSettingsSection.jsx:345
+msgid "LVM settings"
+msgstr "Pengaturan LVM"
+
+#: src/components/storage/ProposalSettingsSection.jsx:338
+msgid "Use logical volume management (LVM)"
+msgstr "Gunakan manajemen volume logis (LVM)"
+
+#: src/components/storage/ProposalSettingsSection.jsx:346
+msgid "System Volume Group"
+msgstr "Grup Volume Sistem"
+
+#: src/components/storage/ProposalSettingsSection.jsx:474
+msgid "Change encryption password"
+msgstr "Mengubah kata sandi enkripsi"
+
+#: src/components/storage/ProposalSettingsSection.jsx:479
+#: src/components/storage/ProposalSettingsSection.jsx:500
+msgid "Encryption settings"
+msgstr "Pengaturan enkripsi"
+
+#: src/components/storage/ProposalSettingsSection.jsx:493
+msgid "Use encryption"
+msgstr "Gunakan enkripsi"
+
+#: src/components/storage/ProposalSettingsSection.jsx:578
+msgid ""
+"Select how to make free space in the disks selected for allocating the     "
+"file systems."
+msgstr ""
+"Memilih cara mengosongkan ruang pada disk yang dipilih untuk mengalokasikan "
+"sistem file."
+
+#. TRANSLATORS: To be completed with the rest of a sentence like "deleting all content"
+#: src/components/storage/ProposalSettingsSection.jsx:584
+msgid "Find space"
+msgstr "Temukan ruang"
+
+#: src/components/storage/ProposalSettingsSection.jsx:588
+msgid "Space Policy"
+msgstr "Kebijakan Ruang"
+
+#: src/components/storage/ProposalSettingsSection.jsx:662
+msgid "Settings"
+msgstr "Pengaturan"
+
+#. TRANSLATORS: header for a list of items
+#: src/components/storage/ProposalVolumes.jsx:59
+msgid "These limits are affected by:"
+msgstr "Batasan ini dipengaruhi oleh:"
+
+#. TRANSLATORS: list item, this affects the computed partition size limits
+#: src/components/storage/ProposalVolumes.jsx:63
+msgid "The configuration of snapshots"
+msgstr "Konfigurasi snapshot"
+
+#. TRANSLATORS: list item, this affects the computed partition size limits
+#. %s is replaced by a list of the volumes (like "/home, /boot")
+#: src/components/storage/ProposalVolumes.jsx:67
+#, c-format
+msgid "Presence of other volumes (%s)"
+msgstr "Keberadaan volume lain (%s)"
+
+#. TRANSLATORS: dropdown menu label
+#: src/components/storage/ProposalVolumes.jsx:129
+msgid "Reset to defaults"
+msgstr "Mengatur ulang ke default"
+
+#. TRANSLATORS: dropdown menu label
+#: src/components/storage/ProposalVolumes.jsx:137
+#: src/components/storage/ProposalVolumes.jsx:141
+msgid "Add file system"
+msgstr "Tambahkan sistem file"
+
+#. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
+#: src/components/storage/ProposalVolumes.jsx:191
+#, c-format
+msgid "At least %s"
+msgstr "Setidaknya %s"
+
+#. TRANSLATORS: device flag, the partition size is automatically computed
+#: src/components/storage/ProposalVolumes.jsx:197
+msgid "auto"
+msgstr "otomatis"
+
+#. TRANSLATORS: the filesystem uses a logical volume (LVM)
+#: src/components/storage/ProposalVolumes.jsx:207
+msgid "logical volume"
+msgstr "volume logis"
+
+#: src/components/storage/ProposalVolumes.jsx:207
+msgid "partition"
+msgstr "partisi"
+
+#. TRANSLATORS: filesystem flag, it uses an encryption
+#: src/components/storage/ProposalVolumes.jsx:216
+msgid "encrypted"
+msgstr "dienkripsi"
+
+#. TRANSLATORS: filesystem flag, it allows creating snapshots
+#: src/components/storage/ProposalVolumes.jsx:218
+#: src/components/storage/VolumeForm.jsx:128
+#: src/components/storage/VolumeForm.jsx:161
+#, c-format
+msgid "with snapshots"
+msgstr "dengan snapshot"
+
+#. TRANSLATORS: flag for transactional file system
+#: src/components/storage/ProposalVolumes.jsx:220
+msgid "transactional"
+msgstr "transaksional"
+
+#: src/components/storage/ProposalVolumes.jsx:229
+#: src/components/storage/iscsi/NodesPresenter.jsx:77
+msgid "Delete"
+msgstr "Menghapus"
+
+#: src/components/storage/ProposalVolumes.jsx:275
+msgid "Edit file system"
+msgstr "Mengedit sistem file"
+
+#: src/components/storage/ProposalVolumes.jsx:307
+#: src/components/storage/VolumeForm.jsx:723
+msgid "Mount point"
+msgstr "Titik pemasangan"
+
+#: src/components/storage/ProposalVolumes.jsx:308
+msgid "Details"
+msgstr "Detail"
+
+#: src/components/storage/ProposalVolumes.jsx:309
+#: src/components/storage/VolumeForm.jsx:737
+msgid "Size"
+msgstr "Ukuran"
+
+#: src/components/storage/ProposalVolumes.jsx:345
+msgid "Table with mount points"
+msgstr "Tabel dengan titik pemasangan"
+
+#: src/components/storage/ProposalVolumes.jsx:408
+msgid "File systems to create in your system"
+msgstr "Sistem file yang akan dibuat di sistem Anda"
+
+#. TRANSLATORS: description of Btrfs snapshots feature.
+#: src/components/storage/VolumeForm.jsx:168
+msgid ""
+"Allows rolling back any change done to the system and restoring its previous "
+"state"
+msgstr ""
+"Memungkinkan untuk mengembalikan setiap perubahan yang dilakukan pada sistem "
+"dan memulihkan kondisi sebelumnya"
+
+#. TRANSLATORS: info about possible file system types.
+#: src/components/storage/VolumeForm.jsx:265
+msgid ""
+"The options for the file system type depends on the product and the mount "
+"point."
+msgstr "Opsi untuk jenis sistem berkas tergantung pada produk dan titik mount."
+
+#: src/components/storage/VolumeForm.jsx:271
+msgid "More info for file system types"
+msgstr "Info lebih lanjut untuk jenis sistem file"
+
+#. TRANSLATORS: label for the file system selector.
+#: src/components/storage/VolumeForm.jsx:282
+msgid "File system type"
+msgstr "Jenis sistem file"
+
+#. TRANSLATORS: item which affects the final computed partition size
+#: src/components/storage/VolumeForm.jsx:314
+msgid "the configuration of snapshots"
+msgstr "konfigurasi snapshot"
+
+#. TRANSLATORS: item which affects the final computed partition size
+#. %s is replaced by a list of mount points like "/home, /boot"
+#: src/components/storage/VolumeForm.jsx:319
+#, c-format
+msgid "the presence of the file system for %s"
+msgstr "keberadaan sistem file untuk %s"
+
+#. TRANSLATORS: conjunction for merging two list items
+#: src/components/storage/VolumeForm.jsx:321
+msgid ", "
+msgstr ", "
+
+#. TRANSLATORS: the %s is replaced by the items which affect the computed size
+#: src/components/storage/VolumeForm.jsx:324
+#, c-format
+msgid "The final size depends on %s."
+msgstr "Ukuran akhir tergantung pada %s."
+
+#. TRANSLATORS: conjunction for merging two texts
+#: src/components/storage/VolumeForm.jsx:326
+msgid " and "
+msgstr " dan "
+
+#. TRANSLATORS: the partition size is automatically computed
+#: src/components/storage/VolumeForm.jsx:331
+msgid "Automatically calculated size according to the selected product."
+msgstr "Ukuran yang dihitung secara otomatis menurut produk yang dipilih."
+
+#: src/components/storage/VolumeForm.jsx:351
+msgid "Exact size for the file system."
+msgstr "Ukuran yang tepat untuk sistem file."
+
+#. TRANSLATORS: requested partition size
+#: src/components/storage/VolumeForm.jsx:363
+msgid "Exact size"
+msgstr "Ukuran yang tepat"
+
+#. TRANSLATORS: units selector (like KiB, MiB, GiB...)
+#: src/components/storage/VolumeForm.jsx:378
+msgid "Size unit"
+msgstr "Satuan ukuran"
+
+#: src/components/storage/VolumeForm.jsx:406
+msgid ""
+"Limits for the file system size. The final size will be a value between the "
+"given minimum and maximum. If no maximum is given then the file system will "
+"be as big as possible."
+msgstr ""
+"Batas untuk ukuran sistem file. Ukuran akhir akan berupa nilai antara "
+"minimum dan maksimum yang diberikan. Jika tidak ada nilai maksimum yang "
+"diberikan, maka sistem file akan sebesar mungkin."
+
+#. TRANSLATORS: the minimal partition size
+#: src/components/storage/VolumeForm.jsx:413
+msgid "Minimum"
+msgstr "Minimum"
+
+#. TRANSLATORS: the minium partition size
+#: src/components/storage/VolumeForm.jsx:423
+msgid "Minimum desired size"
+msgstr "Ukuran minimum yang diinginkan"
+
+#: src/components/storage/VolumeForm.jsx:432
+msgid "Unit for the minimum size"
+msgstr "Satuan untuk ukuran minimum"
+
+#. TRANSLATORS: the maximum partition size
+#: src/components/storage/VolumeForm.jsx:443
+msgid "Maximum"
+msgstr "Maksimum"
+
+#. TRANSLATORS: the maximum partition size
+#: src/components/storage/VolumeForm.jsx:454
+msgid "Maximum desired size"
+msgstr "Ukuran maksimum yang diinginkan"
+
+#: src/components/storage/VolumeForm.jsx:462
+msgid "Unit for the maximum size"
+msgstr "Satuan untuk ukuran maksimum"
+
+#. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
+#: src/components/storage/VolumeForm.jsx:479
+msgid "Auto"
+msgstr "Otomatis"
+
+#. TRANSLATORS: radio button label, exact partition size requested by user
+#: src/components/storage/VolumeForm.jsx:481
+msgid "Fixed"
+msgstr "Tetap"
+
+#. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
+#: src/components/storage/VolumeForm.jsx:483
+msgid "Range"
+msgstr "Rentang"
+
+#: src/components/storage/VolumeForm.jsx:691
+msgid "A size value is required"
+msgstr "Diperlukan nilai ukuran"
+
+#: src/components/storage/VolumeForm.jsx:696
+msgid "Minimum size is required"
+msgstr "Diperlukan ukuran minimum"
+
+#: src/components/storage/VolumeForm.jsx:700
+msgid "Maximum must be greater than minimum"
+msgstr "Maksimum harus lebih besar dari minimum"
+
+#: src/components/storage/ZFCPDiskForm.jsx:113
+msgid "The zFCP disk was not activated."
+msgstr "Disk zFCP tidak diaktifkan."
+
+#. TRANSLATORS: abbrev. World Wide Port Name
+#: src/components/storage/ZFCPDiskForm.jsx:129
+#: src/components/storage/ZFCPPage.jsx:364
+msgid "WWPN"
+msgstr "WWPN"
+
+#. TRANSLATORS: abbrev. Logical Unit Number
+#: src/components/storage/ZFCPDiskForm.jsx:140
+#: src/components/storage/ZFCPPage.jsx:365
+msgid "LUN"
+msgstr "LUN"
+
+#: src/components/storage/ZFCPPage.jsx:305
+msgid "Auto LUNs Scan"
+msgstr "Pemindaian LUN Otomatis"
+
+#: src/components/storage/ZFCPPage.jsx:316
+msgid "Activated"
+msgstr "Diaktifkan"
+
+#: src/components/storage/ZFCPPage.jsx:316
+msgid "Deactivated"
+msgstr "Dinonaktifkan"
+
+#: src/components/storage/ZFCPPage.jsx:419
+msgid "No zFCP controllers found"
+msgstr "Tidak ditemukan pengontrol zFCP"
+
+#: src/components/storage/ZFCPPage.jsx:420
+msgid "Please, try to read the zFCP devices again."
+msgstr "Coba baca kembali perangkat zFCP."
+
+#. TRANSLATORS: button label
+#: src/components/storage/ZFCPPage.jsx:422
+msgid "Read zFCP devices"
+msgstr "Baca perangkat zFCP"
+
+#. TRANSLATORS: the text in the square brackets [] will be displayed in bold
+#: src/components/storage/ZFCPPage.jsx:431
+msgid ""
+"Automatic LUN scan is [enabled]. Activating a controller which is running in "
+"NPIV mode will automatically configures all its LUNs."
+msgstr ""
+"Pemindaian LUN otomatis [diaktifkan]. Mengaktifkan pengontrol yang berjalan "
+"dalam mode NPIV akan secara otomatis mengonfigurasi semua LUN-nya."
+
+#. TRANSLATORS: the text in the square brackets [] will be displayed in bold
+#: src/components/storage/ZFCPPage.jsx:434
+msgid ""
+"Automatic LUN scan is [disabled]. LUNs have to be manually configured after "
+"activating a controller."
+msgstr ""
+"Pemindaian LUN otomatis [dinonaktifkan]. LUN harus dikonfigurasi secara "
+"manual setelah mengaktifkan pengontrol."
+
+#: src/components/storage/ZFCPPage.jsx:500
+msgid "Activate a zFCP disk"
+msgstr "Mengaktifkan disk zFCP"
+
+#: src/components/storage/ZFCPPage.jsx:539
+msgid "Please, try to activate a zFCP controller."
+msgstr "Silakan coba aktifkan pengontrol zFCP."
+
+#: src/components/storage/ZFCPPage.jsx:546
+msgid "Please, try to activate a zFCP disk."
+msgstr "Silakan coba aktifkan disk zFCP."
+
+#. TRANSLATORS: button label
+#: src/components/storage/ZFCPPage.jsx:548
+msgid "Activate zFCP disk"
+msgstr "Mengaktifkan disk zFCP"
+
+#: src/components/storage/ZFCPPage.jsx:555
+msgid "No zFCP disks found"
+msgstr "Tidak ditemukan disk zFCP"
+
+#. TRANSLATORS: button label
+#: src/components/storage/ZFCPPage.jsx:574
+msgid "Activate new disk"
+msgstr "Aktifkan disk baru"
+
+#. TRANSLATORS: section title
+#: src/components/storage/ZFCPPage.jsx:586
+msgid "Disks"
+msgstr "Disk"
+
+#. TRANSLATORS: page title
+#: src/components/storage/ZFCPPage.jsx:734
+msgid "Storage zFCP"
+msgstr "Penyimpanan zFCP"
+
+#. TRANSLATORS: multipath device type
+#: src/components/storage/device-utils.jsx:97
+msgid "Multipath"
+msgstr "Multipath"
+
+#. TRANSLATORS: %s is replaced by the device bus ID
+#: src/components/storage/device-utils.jsx:102
+#, c-format
+msgid "DASD %s"
+msgstr "DASD %s"
+
+#. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
+#: src/components/storage/device-utils.jsx:107
+#, c-format
+msgid "Software %s"
+msgstr "Perangkat Lunak %s"
+
+#: src/components/storage/device-utils.jsx:112
+msgid "SD Card"
+msgstr "Kartu SD"
+
+#. TRANSLATORS: %s is replaced by the device transport name, e.g. USB, SATA, SCSI...
+#: src/components/storage/device-utils.jsx:114
+#, c-format
+msgid "Transport %s"
+msgstr "Transportasi %s"
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/device-utils.jsx:133
+#, c-format
+msgid "Members: %s"
+msgstr "Anggota: %s"
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/device-utils.jsx:142
+#, c-format
+msgid "Devices: %s"
+msgstr "Perangkat: %s"
+
+#. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
+#: src/components/storage/device-utils.jsx:151
+#, c-format
+msgid "Wires: %s"
+msgstr "Kabel: %s"
+
+#. TRANSLATORS: disk partition info, %s is replaced by partition table
+#. type (MS-DOS or GPT), %d is the number of the partitions
+#: src/components/storage/device-utils.jsx:175
+#, c-format
+msgid "%s with %d partitions"
+msgstr "%s dengan partisi %d"
+
+#. TRANSLATORS: status message, no existing content was found on the disk,
+#. i.e. the disk is completely empty
+#: src/components/storage/device-utils.jsx:199
+msgid "No content found"
+msgstr "Tidak ada konten yang ditemukan"
+
+#: src/components/storage/device-utils.jsx:270
+msgid "Available devices"
+msgstr "Perangkat yang tersedia"
+
+#: src/components/storage/iscsi/AuthFields.jsx:70
+msgid "Only available if authentication by target is provided"
+msgstr "Hanya tersedia jika autentikasi berdasarkan target disediakan"
+
+#: src/components/storage/iscsi/AuthFields.jsx:77
+msgid "Authentication by target"
+msgstr "Otentikasi berdasarkan target"
+
+#: src/components/storage/iscsi/AuthFields.jsx:80
+#: src/components/storage/iscsi/AuthFields.jsx:85
+#: src/components/storage/iscsi/AuthFields.jsx:87
+#: src/components/storage/iscsi/AuthFields.jsx:112
+#: src/components/storage/iscsi/AuthFields.jsx:117
+#: src/components/storage/iscsi/AuthFields.jsx:119
+msgid "User name"
+msgstr "Nama pengguna"
+
+#: src/components/storage/iscsi/AuthFields.jsx:91
+#: src/components/storage/iscsi/AuthFields.jsx:124
+msgid "Incorrect user name"
+msgstr "Nama pengguna salah"
+
+#: src/components/storage/iscsi/AuthFields.jsx:105
+#: src/components/storage/iscsi/AuthFields.jsx:139
+msgid "Incorrect password"
+msgstr "Kata sandi salah"
+
+#: src/components/storage/iscsi/AuthFields.jsx:108
+msgid "Authentication by initiator"
+msgstr "Otentikasi oleh inisiator"
+
+#: src/components/storage/iscsi/AuthFields.jsx:133
+msgid "Target Password"
+msgstr "Kata sandi target"
+
+#. TRANSLATORS: popup title
+#: src/components/storage/iscsi/DiscoverForm.jsx:101
+msgid "Discover iSCSI Targets"
+msgstr "Menemukan Target iSCSI"
+
+#: src/components/storage/iscsi/DiscoverForm.jsx:110
+#: src/components/storage/iscsi/LoginForm.jsx:73
+msgid "Make sure you provide the correct values"
+msgstr "Pastikan Anda memberikan nilai yang benar"
+
+#: src/components/storage/iscsi/DiscoverForm.jsx:115
+msgid "IP address"
+msgstr "Alamat IP"
+
+#. TRANSLATORS: network address
+#: src/components/storage/iscsi/DiscoverForm.jsx:122
+#: src/components/storage/iscsi/DiscoverForm.jsx:124
+msgid "Address"
+msgstr "Alamat"
+
+#: src/components/storage/iscsi/DiscoverForm.jsx:129
+msgid "Incorrect IP address"
+msgstr "Alamat IP salah"
+
+#. TRANSLATORS: network port number
+#: src/components/storage/iscsi/DiscoverForm.jsx:133
+#: src/components/storage/iscsi/DiscoverForm.jsx:140
+#: src/components/storage/iscsi/DiscoverForm.jsx:142
+msgid "Port"
+msgstr "Port"
+
+#: src/components/storage/iscsi/DiscoverForm.jsx:147
+msgid "Incorrect port"
+msgstr "Port salah"
+
+#. TRANSLATORS: %s is replaced by the iSCSI target node name
+#: src/components/storage/iscsi/EditNodeForm.jsx:50
+#, c-format
+msgid "Edit %s"
+msgstr "Edit %s"
+
+#: src/components/storage/iscsi/InitiatorForm.jsx:42
+msgid "Edit iSCSI Initiator"
+msgstr "Mengedit Inisiator iSCSI"
+
+#. TRANSLATORS: iSCSI initiator name
+#: src/components/storage/iscsi/InitiatorForm.jsx:49
+msgid "Initiator name"
+msgstr "Nama inisiator"
+
+#. TRANSLATORS: usually just keep the original text
+#. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:71
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:86
+#: src/components/storage/iscsi/NodesPresenter.jsx:103
+#: src/components/storage/iscsi/NodesPresenter.jsx:124
+msgid "iBFT"
+msgstr "iBFT"
+
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:72
+#: src/components/storage/iscsi/InitiatorPresenter.jsx:87
+msgid "Offload card"
+msgstr "Bongkar kartu"
+
+#. TRANSLATORS: iSCSI initiator section name
+#: src/components/storage/iscsi/InitiatorSection.jsx:50
+msgid "Initiator"
+msgstr "Inisiator"
+
+#. TRANSLATORS: %s is replaced by the iSCSI target name
+#: src/components/storage/iscsi/LoginForm.jsx:69
+#, c-format
+msgid "Login %s"
+msgstr "Login %s"
+
+#. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
+#: src/components/storage/iscsi/LoginForm.jsx:76
+#: src/components/storage/iscsi/LoginForm.jsx:79
+msgid "Startup"
+msgstr "Startup"
+
+#: src/components/storage/iscsi/NodeStartupOptions.js:26
+msgid "On boot"
+msgstr "Saat boot"
+
+#: src/components/storage/iscsi/NodeStartupOptions.js:27
+msgid "Automatic"
+msgstr "Otomatis"
+
+#. TRANSLATORS: iSCSI connection status, %s is replaced by node label
+#: src/components/storage/iscsi/NodesPresenter.jsx:67
+#, c-format
+msgid "Connected (%s)"
+msgstr "Tersambung (%s)"
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:82
+msgid "Login"
+msgstr "Masuk"
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:86
+msgid "Logout"
+msgstr "Keluar"
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:122
+msgid "Portal"
+msgstr "Portal"
+
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+#: src/components/storage/iscsi/NodesPresenter.jsx:123
+msgid "Interface"
+msgstr "Antarmuka"
+
+#: src/components/storage/iscsi/TargetsSection.jsx:139
+msgid "No iSCSI targets found"
+msgstr "Tidak ada target iSCSI yang ditemukan"
+
+#: src/components/storage/iscsi/TargetsSection.jsx:140
+msgid ""
+"Please, perform an iSCSI discovery in order to find available iSCSI targets."
+msgstr "Lakukan penemuan iSCSI untuk menemukan target iSCSI yang tersedia."
+
+#. TRANSLATORS: button label, starts iSCSI discovery
+#: src/components/storage/iscsi/TargetsSection.jsx:142
+msgid "Discover iSCSI targets"
+msgstr "Menemukan target iSCSI"
+
+#. TRANSLATORS: button label, starts iSCSI discovery
+#: src/components/storage/iscsi/TargetsSection.jsx:153
+msgid "Discover"
+msgstr "Temukan"
+
+#. TRANSLATORS: iSCSI targets section title
+#: src/components/storage/iscsi/TargetsSection.jsx:167
+msgid "Targets"
+msgstr "Target"
+
+#. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
+#: src/components/storage/space-policy-utils.jsx:59
+msgid "Delete current content"
+msgstr "Hapus konten saat ini"
+
+#. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
+#: src/components/storage/space-policy-utils.jsx:63
+msgid "Shrink existing partitions"
+msgstr "Perkecil partisi yang ada"
+
+#. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
+#: src/components/storage/space-policy-utils.jsx:67
+msgid "Use available space"
+msgstr "Gunakan ruang yang tersedia"
+
+#: src/components/storage/space-policy-utils.jsx:79
+msgid "All partitions will be removed and any data in the disks will be lost."
+msgstr "Semua partisi akan dihapus dan semua data dalam disk akan hilang."
+
+#: src/components/storage/space-policy-utils.jsx:82
+msgid ""
+"The data is kept, but the current partitions will be resized as needed to "
+"make enough space."
+msgstr ""
+"Data akan disimpan, namun partisi yang ada akan diubah ukurannya sesuai "
+"kebutuhan untuk menyediakan ruang yang cukup."
+
+#: src/components/storage/space-policy-utils.jsx:85
+msgid ""
+"The data is kept and existing partitions will not be modified. Only the "
+"space that is not assigned to any partition will be used."
+msgstr ""
+"Data akan disimpan dan partisi yang ada tidak akan diubah. Hanya ruang yang "
+"tidak ditetapkan ke partisi mana pun yang akan digunakan."
+
+#: src/components/storage/space-policy-utils.jsx:112
+msgid "Select a mechanism to make space"
+msgstr "Pilih mekanisme untuk menyediakan ruang"
+
+#: src/components/storage/space-policy-utils.jsx:137
+#, c-format
+msgid "deleting all content of the installation device"
+msgid_plural "deleting all content of the %d selected disks"
+msgstr[0] "menghapus semua konten dari %d disk yang dipilih"
+
+#: src/components/storage/space-policy-utils.jsx:147
+#, c-format
+msgid "shrinking partitions of the installation device"
+msgid_plural "shrinking partitions of the %d selected disks"
+msgstr[0] "mengecilkan partisi dari %d disk yang dipilih"
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space without modifying any partition".
+#: src/components/storage/space-policy-utils.jsx:155
+msgid "without modifying any partition"
+msgstr "tanpa memodifikasi partisi apa pun"
+
+#: src/components/storage/space-policy-utils.jsx:170
+#, c-format
+msgid "This will only affect the installation device"
+msgid_plural "This will affect the %d disks selected for installation"
+msgstr[0] "Ini akan mempengaruhi %d disk yang dipilih untuk instalasi"
+
+#: src/components/storage/utils.js:44
+msgid "KiB"
+msgstr "KiB"
+
+#: src/components/storage/utils.js:45
+msgid "MiB"
+msgstr "MiB"
+
+#: src/components/storage/utils.js:46
+msgid "GiB"
+msgstr "GiB"
+
+#: src/components/storage/utils.js:47
+msgid "TiB"
+msgstr "TiB"
+
+#: src/components/storage/utils.js:48
+msgid "PiB"
+msgstr "PiB"
+
+#: src/components/users/FirstUser.jsx:45
+msgid ""
+"Please, be aware that a user must be defined before installing the system to "
+"be able to log into it."
+msgstr ""
+"Perlu diketahui bahwa pengguna harus ditetapkan sebelum menginstal sistem "
+"agar dapat masuk ke dalamnya."
+
+#. TRANSLATORS: push button label
+#: src/components/users/FirstUser.jsx:47
+msgid "Define a user now"
+msgstr "Tentukan pengguna sekarang"
+
+#: src/components/users/FirstUser.jsx:57 src/components/users/FirstUser.jsx:198
+msgid "Full name"
+msgstr "Nama lengkap"
+
+#: src/components/users/FirstUser.jsx:58 src/components/users/FirstUser.jsx:209
+#: src/components/users/FirstUser.jsx:213
+#: src/components/users/FirstUser.jsx:215
+msgid "Username"
+msgstr "Nama pengguna"
+
+#: src/components/users/FirstUser.jsx:174
+#: src/components/users/RootAuthMethods.jsx:95
+#: src/components/users/RootAuthMethods.jsx:107
+msgid "Discard"
+msgstr "Buang"
+
+#: src/components/users/FirstUser.jsx:191
+msgid "Create user account"
+msgstr "Buat akun pengguna"
+
+#: src/components/users/FirstUser.jsx:191
+msgid "Edit user account"
+msgstr "Edit akun pengguna"
+
+#: src/components/users/FirstUser.jsx:202
+#: src/components/users/FirstUser.jsx:204
+msgid "User full name"
+msgstr "Nama lengkap pengguna"
+
+#. TRANSLATORS: check box label
+#: src/components/users/FirstUser.jsx:223
+#: src/components/users/FirstUser.jsx:227
+msgid "Edit password too"
+msgstr "Edit kata sandi juga"
+
+#: src/components/users/FirstUser.jsx:240
+msgid "user autologin"
+msgstr "autologin pengguna"
+
+#. TRANSLATORS: check box label
+#: src/components/users/FirstUser.jsx:244
+msgid "Auto-login"
+msgstr "Masuk otomatis"
+
+#: src/components/users/RootAuthMethods.jsx:35
+msgid "No root authentication method defined yet"
+msgstr "Belum ada metode autentikasi root yang ditetapkan"
+
+#: src/components/users/RootAuthMethods.jsx:36
+msgid ""
+"Please, define at least one authentication method for logging into the "
+"system as root."
+msgstr ""
+"Tentukan setidaknya satu metode autentikasi untuk masuk ke sistem sebagai "
+"root."
+
+#. TRANSLATORS: push button label
+#: src/components/users/RootAuthMethods.jsx:39
+msgid "Set a password"
+msgstr "Tetapkan kata sandi"
+
+#. TRANSLATORS: push button label
+#: src/components/users/RootAuthMethods.jsx:41
+msgid "Upload a SSH Public Key"
+msgstr "Unggah Kunci Publik SSH"
+
+#: src/components/users/RootAuthMethods.jsx:90
+#: src/components/users/RootAuthMethods.jsx:103
+msgid "Change"
+msgstr "Ubah"
+
+#: src/components/users/RootAuthMethods.jsx:90
+#: src/components/users/RootAuthMethods.jsx:103
+msgid "Set"
+msgstr "Tetapkan"
+
+#: src/components/users/RootAuthMethods.jsx:125
+msgid "Already set"
+msgstr "Sudah ditetapkan"
+
+#: src/components/users/RootAuthMethods.jsx:126
+#: src/components/users/RootAuthMethods.jsx:130
+msgid "Not set"
+msgstr "Belum ditetapkan"
+
+#. TRANSLATORS: table header, user authentication method
+#: src/components/users/RootAuthMethods.jsx:151
+msgid "Method"
+msgstr "Metode"
+
+#: src/components/users/RootAuthMethods.jsx:166
+msgid "SSH Key"
+msgstr "Kunci SSH"
+
+#: src/components/users/RootAuthMethods.jsx:183
+msgid "Change the root password"
+msgstr "Ubah kata sandi root"
+
+#: src/components/users/RootAuthMethods.jsx:183
+msgid "Set a root password"
+msgstr "Atur kata sandi root"
+
+#: src/components/users/RootAuthMethods.jsx:190
+msgid "Add a SSH Public Key for root"
+msgstr "Tambahkan Kunci Publik SSH untuk root"
+
+#: src/components/users/RootAuthMethods.jsx:190
+msgid "Edit the SSH Public Key for root"
+msgstr "Edit Kunci Publik SSH untuk root"
+
+#: src/components/users/RootPasswordPopup.jsx:42
+msgid "Root password"
+msgstr "Kata sandi root"
+
+#: src/components/users/RootSSHKeyPopup.jsx:43
+msgid "Set root SSH public key"
+msgstr "Atur kunci publik SSH root"
+
+#: src/components/users/RootSSHKeyPopup.jsx:71
+msgid "Root SSH public key"
+msgstr "Kunci publik SSH root"
+
+#: src/components/users/RootSSHKeyPopup.jsx:76
+msgid "Upload, paste, or drop an SSH public key"
+msgstr "Unggah, tempel, atau jatuhkan kunci publik SSH"
+
+#. TRANSLATORS: push button label
+#: src/components/users/RootSSHKeyPopup.jsx:78
+msgid "Upload"
+msgstr "Unggah"
+
+#. TRANSLATORS: push button label, clears the related input field
+#: src/components/users/RootSSHKeyPopup.jsx:80
+msgid "Clear"
+msgstr "Hapus"
+
+#: src/components/users/UsersPage.jsx:31
+msgid "User"
+msgstr "Pengguna"
+
+#: src/components/users/UsersPage.jsx:34
+msgid "Root authentication"
+msgstr "Autentikasi root"
+
+#~ msgid "Options"
+#~ msgstr "Opsi"
+
+#~ msgid "Display Language"
+#~ msgstr "Bahasa Tampilan"

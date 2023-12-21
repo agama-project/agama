@@ -1,8 +1,13 @@
 ---
 :sourceurl: "%{mod_full_name}.gem"
+:sources:
+  - po.tar.bz2
+  - install_translations.sh
 :preamble: |-
   %global rb_build_versions %{rb_default_ruby}
   BuildRequires:  dbus-1-common
+  # "msgfmt" tool
+  BuildRequires:  gettext-runtime
   Requires:       dbus-1-common
 :post_install: |-
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/dbus.conf %{buildroot}%{_datadir}/dbus-1/agama.conf
@@ -12,31 +17,60 @@
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/agama-proxy-setup.service %{buildroot}%{_unitdir}/agama-proxy-setup.service
   install --directory %{buildroot}/usr/share/agama/conf.d
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/conf.d/*.yaml %{buildroot}/usr/share/agama/conf.d/
+  # run a script for installing the translations
+  sh "%{SOURCE2}" "%{SOURCE1}"
 :main:
   :preamble: |-
     # Override build.rpm, see also https://github.com/openSUSE/obs-build/blob/master/configs/
     %global rb_build_versions %{rb_default_ruby}
     BuildRequires:  dbus-1-common
     Requires:       dbus-1-common
-    Requires:       snapper
+    Requires:       suseconnect-ruby-bindings
+    # YaST dependencies
+    Requires:       autoyast2-installation
+    # ArchFilter
+    Requires:       yast2 >= 4.5.20
     Requires:       yast2-bootloader
     Requires:       yast2-country
     Requires:       yast2-hardware-detection
     Requires:       yast2-installation
+    Requires:       yast2-iscsi-client >= 4.5.7
     Requires:       yast2-network
     Requires:       yast2-proxy
     # ProposalSettings#swap_reuse
     Requires:       yast2-storage-ng >= 5.0.3
-    Requires:       open-iscsi
-    Requires:       yast2-iscsi-client >= 4.5.7
     Requires:       yast2-users
-    # required for registration
-    Requires:       suseconnect-ruby-bindings
-    # yast2 with ArchFilter
-    Requires:       yast2 >= 4.5.20
     %ifarch s390 s390x
     Requires:       yast2-s390 >= 4.6.4
+    Requires:       yast2-reipl
+    Requires:       yast2-cio
     %endif
+    # Storage dependencies
+    Requires:       bcache-tools
+    Requires:       btrfsprogs
+    Requires:       cryptsetup
+    Requires:       dmraid
+    Requires:       dosfstools
+    Requires:       e2fsprogs
+    Requires:       exfat-utils
+    Requires:       f2fs-tools
+    Requires:       fcoe-utils
+    Requires:       fde-tools
+    Requires:       jfsutils
+    Requires:       libstorage-ng-lang
+    Requires:       lvm2
+    Requires:       mdadm
+    Requires:       multipath-tools
+    Requires:       nilfs-utils
+    Requires:       nfs-client
+    Requires:       ntfs-3g
+    Requires:       ntfsprogs
+    Requires:       nvme-cli
+    Requires:       open-iscsi
+    Requires:       quota
+    Requires:       snapper
+    Requires:       udftools
+    Requires:       xfsprogs
   :filelist: "%{_datadir}/dbus-1/agama.conf\n
     %dir %{_datadir}/dbus-1/agama-services\n
     %{_datadir}/dbus-1/agama-services/org.opensuse.Agama*.service\n
@@ -44,4 +78,6 @@
     %{_unitdir}/agama-proxy-setup.service\n
     %dir %{_datadir}/agama\n
     %dir %{_datadir}/agama/conf.d\n
-    %{_datadir}/agama/conf.d\n"
+    %{_datadir}/agama/conf.d\n
+    %dir /usr/share/YaST2\n
+    /usr/share/YaST2/locale\n"

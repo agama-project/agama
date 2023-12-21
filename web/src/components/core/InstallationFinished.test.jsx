@@ -28,6 +28,7 @@ import { createClient } from "~/client";
 import InstallationFinished from "./InstallationFinished";
 
 jest.mock("~/client");
+jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const finishInstallationFn = jest.fn();
 
@@ -38,30 +39,25 @@ describe("InstallationFinished", () => {
         manager: {
           finishInstallation: finishInstallationFn,
           useIguana: () => Promise.resolve(false)
-        },
-        network: {
-          config: () => Promise.resolve({ addresses: [], hostname: "example.net" })
         }
       };
     });
   });
 
-  it("shows the finished installation screen", async () => {
+  it("shows the finished installation screen", () => {
     installerRender(<InstallationFinished />);
-
-    await screen.findByText("Congratulations!");
+    screen.getByText("Congratulations!");
   });
 
-  it("shows a 'Reboot' button", async () => {
+  it("shows a 'Reboot' button", () => {
     installerRender(<InstallationFinished />);
-
-    await screen.findByRole("button", { name: /Reboot/i });
+    screen.getByRole("button", { name: /Reboot/i });
   });
 
   it("reboots the system if the user clicks on 'Reboot' button", async () => {
     const { user } = installerRender(<InstallationFinished />);
-    const button = await screen.findByRole("button", { name: /Reboot/i });
-    await user.click(button);
+    const rebootButton = screen.getByRole("button", { name: /Reboot/i });
+    await user.click(rebootButton);
     expect(finishInstallationFn).toHaveBeenCalled();
   });
 });

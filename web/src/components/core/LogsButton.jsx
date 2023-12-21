@@ -27,7 +27,7 @@ import { Alert, Button } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
-const FILENAME = "y2logs.tar.xz";
+const FILENAME = "agama-installation-logs.tar.bzip2";
 const FILETYPE = "application/x-xz";
 
 /**
@@ -92,7 +92,7 @@ const LogsButton = ({ ...props }) => {
         onClick={collectAndDownload}
         isLoading={isCollecting}
         isDisabled={isCollecting}
-        icon={isCollecting ? null : <Icon name="download" size="24" />}
+        icon={isCollecting ? null : <Icon name="download" size="s" />}
         {...props}
       >
         {isCollecting ? _("Collecting logs...") : _("Download logs")}

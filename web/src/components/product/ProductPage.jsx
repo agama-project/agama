@@ -236,7 +236,7 @@ const RegisteredWarningPopup = ({ isOpen = false, onAccept = noop }) => {
       </p>
       <Popup.Actions>
         <Popup.Confirm onClick={onAccept}>
-          {_("Accept")}
+          {_("Close")}
         </Popup.Confirm>
       </Popup.Actions>
     </Popup>
@@ -431,7 +431,8 @@ export default function ProductPage() {
   const isLoading = managerStatus === BUSY || softwareStatus === BUSY;
 
   return (
-    <Page title={_("Product")} icon="inventory_2" actionLabel={_("Back")} actionVariant="secondary">
+    // TRANSLATORS: page title
+    <Page icon="inventory_2" title={_("Product")}>
       <ProductSection isLoading={isLoading} />
       <RegistrationSection isLoading={isLoading} />
     </Page>

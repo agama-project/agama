@@ -38,39 +38,50 @@
   </interface>
   <interface name="org.opensuse.Agama1.Locale">
     <!--
-     Get labels for locales. The first pair is english language and territory
-     and second one is localized one to target language from locale.
+     Gets the supported locales information.
+
+     Each element of the list has these parts:
+
+     * The locale code (e.g., "es_ES.UTF-8").
+     * The name of the language according to the language defined by the
+       UILocale property.
+     * The name of the territory according to the language defined by the
+       UILocale property.
      -->
-    <method name="LabelsForLocales">
-      <arg type="a((ss)(ss))" direction="out"/>
+    <method name="ListLocales">
+      <arg type="a(sss)" direction="out"/>
     </method>
     <!--
-     Gets list of locales available on system.
+     Returns a list of the supported keymaps.
 
-     # Examples
+     Each element of the list contains:
 
-     ```
-       use agama_dbus_server::locale::Locale;
-       let locale = Locale::new();
-       assert!(locale.list_ui_locales().unwrap().len() > 0);
-     ```
+     * The keymap identifier (e.g., "es" or "es(ast)").
+     * The name of the keyboard in language set by the UILocale property.
      -->
-    <method name="ListUILocales">
-      <arg type="as" direction="out"/>
-    </method>
-    <method name="ListVConsoleKeyboards">
-      <arg type="as" direction="out"/>
-    </method>
-    <method name="ListTimezones">
-      <arg name="locale" type="s" direction="in"/>
+    <method name="ListKeymaps">
       <arg type="a(ss)" direction="out"/>
+    </method>
+    <!--
+     Returns a list of the supported timezones.
+
+     Each element of the list contains:
+
+     * The timezone identifier (e.g., "Europe/Berlin").
+     * A list containing each part of the name in the language set by the
+       UILocale property.
+     * The name, in the language set by UILocale, of the main country
+       associated to the timezone (typically, the name of the city that is
+       part of the identifier) or empty string if there is no country.
+     -->
+    <method name="ListTimezones">
+      <arg type="a(sass)" direction="out"/>
     </method>
     <method name="Commit">
     </method>
+    <property name="Keymap" type="s" access="readwrite"/>
     <property name="Locales" type="as" access="readwrite"/>
-    <property name="SupportedLocales" type="as" access="readwrite"/>
     <property name="Timezone" type="s" access="readwrite"/>
     <property name="UILocale" type="s" access="readwrite"/>
-    <property name="VConsoleKeyboard" type="s" access="readwrite"/>
   </interface>
 </node>

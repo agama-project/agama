@@ -162,6 +162,47 @@ const useLocalStorage = (storageKey, fallbackState) => {
   return [value, setValue];
 };
 
+/**
+ * Debounce hook.
+ * @function
+ *
+ * Source {@link https://designtechworld.medium.com/create-a-custom-debounce-hook-in-react-114f3f245260}
+ *
+ * @param {function} callback - Function to be called after some delay.
+ * @param {number} delay - Delay in milliseconds.
+ * @returns {function}
+ *
+ * @example
+ *
+ * const log = useDebounce(console.log, 1000);
+ * log("test ", 1) // The message will be logged after at least 1 second.
+ * log("test ", 2) // Subsequent calls cancels pending calls.
+ */
+const useDebounce = (callback, delay) => {
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    // Cleanup the previous timeout on re-render
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const debouncedCallback = (...args) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+
+  return debouncedCallback;
+};
+
 const hex = (value) => {
   const sanitizedValue = value.replaceAll(".", "");
   return parseInt(sanitizedValue, 16);
@@ -208,14 +249,102 @@ const setLocationSearch = (query) => {
   window.location.search = query;
 };
 
+/**
+ * Is the Agama server running locally?
+ *
+ * This function should be used only in special cases, the Agama behavior should
+ * be the same regardless of the user connection.
+ *
+ * The local connection can be forced by setting the `LOCAL_CONNECTION`
+ * environment variable to `1`. This can be useful for debugging or for
+ * development.
+ *
+ * @returns {boolean} `true` if the connection is local, `false` otherwise
+ */
+const localConnection = (location = window.location) => {
+  // forced local behavior
+  if (process.env.LOCAL_CONNECTION === "1") return true;
+
+  // when running in a development server use the COCKPIT_TARGET_URL value
+  // (a proxy is used) otherwise use the page URL from the browser
+  const hostname = process.env.WEBPACK_SERVE ? (new URL(COCKPIT_TARGET_URL)).hostname : location.hostname;
+
+  // using the loopback device? (hostname or IP address)
+  return hostname === "localhost" || hostname.startsWith("127.");
+};
+
+/**
+ * Is the Agama server running remotely?
+ *
+ * @see localConnection
+ *
+ * @returns {boolean} `true` if the connection is remote, `false` otherwise
+ */
+const remoteConnection = (...args) => !localConnection(...args);
+
+/**
+ * Time for the given timezone.
+ *
+ * @param {string} timezone - E.g., "Atlantic/Canary".
+ * @param {object} [options]
+ * @param {Date} options.date - Date to take the time from.
+ *
+ * @returns {string|undefined} - Time in 24 hours format (e.g., "23:56"). Undefined for an unknown
+ *  timezone.
+ */
+const timezoneTime = (timezone, { date = new Date() }) => {
+  try {
+    const formatter = new Intl.DateTimeFormat(
+      "en-US",
+      { timeZone: timezone, timeStyle: "short", hour12: false }
+    );
+
+    return formatter.format(date);
+  } catch (e) {
+    if (e instanceof RangeError) return undefined;
+
+    throw e;
+  }
+};
+
+/**
+ * UTC offset for the given timezone.
+ *
+ * @param {string} timezone - E.g., "Atlantic/Canary".
+ * @returns {number|undefined} - undefined for an unknown timezone.
+ */
+const timezoneUTCOffset = (timezone) => {
+  try {
+    const date = new Date();
+    const dateLocaleString = date.toLocaleString(
+      "en-US",
+      { timeZone: timezone, timeZoneName: "short" }
+    );
+    const [timezoneName] = dateLocaleString.split(' ').slice(-1);
+    const dateString = date.toString();
+    const offset = Date.parse(`${dateString} UTC`) - Date.parse(`${dateString} ${timezoneName}`);
+
+    return offset / 3600000;
+  } catch (e) {
+    if (e instanceof RangeError) return undefined;
+
+    throw e;
+  }
+};
+
 export {
   noop,
   partition,
   classNames,
   useCancellablePromise,
   useLocalStorage,
+  useDebounce,
   hex,
   toValidationError,
   locationReload,
-  setLocationSearch
+  setLocationSearch,
+  localConnection,
+  remoteConnection,
+  timezoneTime,
+  timezoneUTCOffset
 };

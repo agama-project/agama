@@ -131,9 +131,12 @@ const InstallButton = ({ onClick }) => {
   const open = async () => {
     if (onClick) onClick();
     const canInstall = await client.manager.canInstall();
-    if (canInstall) setHasIssues(await client.issues.any());
     setIsOpen(true);
     setError(!canInstall);
+    if (canInstall) {
+      const issues = await client.issues();
+      setHasIssues(Object.values(issues).some(n => n.length > 0));
+    }
   };
   const close = () => setIsOpen(false);
   const install = () => client.manager.startInstallation();

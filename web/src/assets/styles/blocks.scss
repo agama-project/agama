@@ -1,48 +1,44 @@
-// Standard section
-// In the future we might need to use an specific CSS class for it if we start having different
-// section layouts.
-section:not([class^="pf-c"]) {
+// CSS rules used for the standard Agama section (core/Section.jsx)
+// In the future we might add different section layouts by using data-variant attribute
+// or similar strategy
+[data-type="agama/section"] {
   display: grid;
-  grid-template-columns: min-content 1fr;
-  grid-template-areas:
-    "icon title"
-    ".... content";
+  grid-template-rows:
+    [header] auto
+    [content] auto
+  ;
+  grid-template-columns: [bleed] var(--section-icon-size) [content] 1fr;
   gap: var(--spacer-small);
-}
+  margin-inline-start: calc(
+    var(--header-icon-size) - var(--section-icon-size)
+  );
+  margin-inline-end: var(--section-icon-size);
 
-section:not(:last-child, [class^="pf-c"]) {
-  margin-block-end: var(--spacer-large);
-}
-
-section > svg {
-  grid-area: icon;
-}
-
-section > h2 {
-  grid-area: title;
-
-  button {
-    border: none;
-    background: none;
-    color: inherit;
-    font: inherit;
-    padding: 0;
+  &:not(:last-child) {
+    margin-block-end: var(--spacer-normal);
   }
 
-  a, button {
-    text-decoration: underline;
-    text-decoration-thickness: 0.1em;
-    text-underline-offset: 0.2em;
-    transition: all 0.15s ease-in-out;
+  > h2 {
+    display: grid;
+    grid-area: header;
+    grid-template-columns: subgrid;
+    grid-column: bleed / content-end;
 
-    &:hover {
-      color: var(--color-link-hover);
+    svg {
+      block-size: var(--section-icon-size);
+      inline-size: var(--section-icon-size);
+      grid-column: bleed / content;
+    }
+
+    :not(svg) {
+      grid-column: content
     }
   }
-}
 
-section > .content {
-  grid-area: content;
+  > :not(h2) {
+    grid-area: content;
+    grid-column: content;
+  }
 }
 
 // Custom selection list
@@ -75,77 +71,80 @@ section > .content {
   border: 0;
 }
 
-.sidebar {
-  --color-background-primary: var(--color-primary-lighter);
-  --wrapper-background: var(--color-gray-light);
+[data-type="agama/sidebar"] {
+  /** Override the header background, see styles/layout.scss */
+  --agama-header-bg: var(--color-primary-lighter);
 
   position: absolute;
   padding: 0;
   right: 0;
   z-index: 1000;
   inline-size: 70%;
+  min-inline-size: min-content;
   box-shadow: -10px 10px 20px 0 var(--color-primary);
-}
 
-.sidebar header {
-  --focus-color: var(--color-primary-darkest);
-}
+  header {
+    --focus-color: var(--color-primary-darkest);
+  }
 
-.sidebar footer {
-  border-top: 1px solid var(--color-gray);
-}
+  footer {
+    border-top: 1px solid var(--color-gray);
+  }
 
-.sidebar a, .sidebar button {
-  font-size: 16px;
-  font-weight: var(--fw-bold);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  padding-block: 0;
-
-  &:hover {
-    color: var(--color-link-hover);
+  a, button {
+    font-size: 16px;
+    font-weight: var(--fw-bold);
     text-decoration: underline;
+    text-underline-offset: 2px;
+    padding-block: 0;
+
+    &:hover {
+      color: var(--color-link-hover);
+      text-decoration: underline;
+
+      svg {
+        color: var(--color-link);
+      }
+    }
 
     svg {
       color: var(--color-link);
+      vertical-align: text-bottom;
+      margin-block-end: -2px;
     }
   }
 
-  svg {
-    color: var(--color-link);
-    vertical-align: text-bottom;
-    margin-block-end: -2px;
+  a {
+    margin-inline-start: var(--pf-v5-global--spacer--md);
+
+    // Keep links and buttons labels aligned by adding the same margin than
+    // .pf-v5-c-button__icon.pf-m-start
+    svg {
+      margin-inline-end: var(--pf-v5-global--spacer--xs);
+    }
+  }
+
+  // Remove not wanted PatternFly padding left on a loading link
+  button.pf-m-progress {
+    --pf-v5-c-button--m-progress--PaddingLeft: var(--pf-v5-global--spacer--md);
+  }
+
+  button.pf-m-progress + div {
+    padding-inline-start: calc(var(--pf-v5-global--spacer--md));
+  }
+
+  &[data-state="hidden"] {
+    transition: all 0.04s ease-in-out;
+    inline-size: 0;
+    min-inline-size: 0;
+    box-shadow: none;
+  }
+
+  &[data-state="visible"] {
+    transition: all 0.2s ease-in-out;
   }
 }
 
-.sidebar a {
-  margin-inline-start: var(--pf-v5-global--spacer--md);
-
-  // Keep links and buttons labels aligned by adding the same margin than
-  // .pf-v5-c-button__icon.pf-m-start
-  svg {
-    margin-inline-end: var(--pf-v5-global--spacer--xs);
-  }
-}
-
-// Remove not wanted PatternFly padding left on a loading link
-.sidebar button.pf-m-progress {
-  --pf-v5-c-button--m-progress--PaddingLeft: var(--pf-v5-global--spacer--md);
-}
-
-.sidebar button.pf-m-progress + div {
-  padding-inline-start: calc(var(--pf-v5-global--spacer--md));
-}
-
-.sidebar[data-state="hidden"] {
-  transition: all 0.04s ease-in-out;
-  inline-size: 0;
-  box-shadow: none;
-}
-
-.sidebar[data-state="visible"] {
-  transition: all 0.2s ease-in-out;
-}
 
 .disclosure > button {
   margin-inline-start: var(--pf-v5-global--spacer--md);
@@ -193,29 +192,25 @@ section > .content {
   }
 }
 
-// temporary fix during migration
-.page-options > li {
-  min-inline-size: 150px;
-}
-
-.page-options > button {
-  --pf-v5-c-button--PaddingRight: 0
-}
-
-.page-options a {
-  font-size: 16px;
-  font-weight: var(--fw-bold);
-  text-decoration: none;
-
-  svg {
-    color: inherit;
+[data-type="agama/page-menu"] {
+  > button {
+    --pf-v5-c-button--PaddingRight: 0
   }
 
-  &:hover {
-    color: var(--color-link-hover);
+  a {
+    font-weight: var(--fw-bold);
+    text-decoration: none;
 
     svg {
-      color: var(--color-link);
+      color: inherit;
+    }
+
+    &:hover {
+      color: var(--color-link-hover);
+
+      svg {
+        color: var(--color-link);
+      }
     }
   }
 }
@@ -264,31 +259,32 @@ span.notification-mark[data-variant="sidebar"] {
   }
 }
 
-.device-list {
-  [role="option"] {
-    padding: var(--spacer-normal);
+ul[data-type="agama/list"] {
+  li {
     border: 2px solid var(--color-gray-dark);
+    padding: var(--spacer-normal);
+    text-align: start;
     background: var(--color-gray-light);
 
-    border-radius: 5px;
-    transition: all 0.2s ease-in-out;
-    display: grid;
+    &:nth-child(n+2) {
+      border-top: 0;
+    }
 
-    gap: var(--spacer-small);
-    grid-template-columns: 1fr 2fr 2fr;
-    grid-template-areas:
-      "type-and-size drive-info drive-content"
-    ;
+    > div {
+      margin-block-end: var(--spacer-smaller);
+    }
 
-    > :first-child {
-      align-self: center;
-      text-align: center;
-      justify-self: start;
+    // Done in two rules instead of div:not(:last-child) to avoid specificity
+    // problems later; see the storage-devices selector
+    > div:last-child {
+      margin-block-end: 0;
     }
   }
 
-  [aria-selected] {
-    border: 2px solid var(--color-primary);
+  // FIXME: see if it's semantically correct to mark an li as aria-selected when
+  // not belongs to a listbox or grid list ul.
+  li[aria-selected] {
+    border-color: var(--color-primary);
     box-shadow: 0 2px 5px 0 var(--color-gray-dark);
     background: var(--color-primary);
     color: white;
@@ -296,6 +292,113 @@ span.notification-mark[data-variant="sidebar"] {
 
     svg {
       fill: white;
+    }
+  }
+}
+
+// These attributes together means that UI is rendering a selector
+ul[data-type="agama/list"][role="listbox"] {
+  li[role="option"] {
+    cursor: pointer;
+
+    &:first-child {
+      border-radius: 5px 5px 0 0;
+    }
+
+    &:last-child {
+      border-radius: 0 0 5px 5px;
+    }
+
+    &:only-child {
+      border-radius: 5px;
+    }
+
+    &:hover {
+      &:not([aria-selected]) {
+        background: var(--color-gray-dark);
+      }
+    }
+  }
+}
+
+// Each kind of list/selector has its way of laying out their items
+ul[data-of="agama/storage-devices"] {
+  li {
+    display: grid;
+    gap: var(--spacer-smaller);
+    grid-template-columns: 1fr 2fr 2fr;
+    grid-template-areas: "type-and-size drive-info drive-content";
+
+    svg {
+      vertical-align: inherit;
+    }
+
+    > div {
+      margin-block-end: 0;
+    }
+
+    > :first-child {
+      align-self: center;
+      text-align: center;
+      justify-self: start;
+    }
+  }
+}
+
+ul[data-of="agama/space-policies"] {
+  // It works with the default styling
+}
+
+ul[data-of="agama/locales"] {
+  li {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+
+    > :last-child {
+      grid-column: 1 / -1;
+      font-size: var(--fs-small);
+    }
+  }
+}
+
+ul[data-of="agama/keymaps"] {
+  li {
+    > :last-child {
+      font-size: var(--fs-small);
+    }
+  }
+}
+
+ul[data-of="agama/timezones"] {
+  li {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+
+    > :last-child {
+      grid-column: 1 / -1;
+      font-size: 80%;
+    }
+
+    > :nth-child(3) {
+      color: var(--color-gray-dimmed);
+      text-align: end;
+    }
+  }
+}
+
+[role="dialog"] {
+  .sticky-top-0 {
+    position: sticky;
+    top: calc(-1 * var(--pf-v5-c-modal-box__body--PaddingTop));
+    margin-block-start: calc(-1 * var(--pf-v5-c-modal-box__body--PaddingTop));
+    padding-block-start: var(--pf-v5-c-modal-box__body--PaddingTop);
+    background-color: var(--pf-v5-c-modal-box--BackgroundColor);
+
+    [role="search"] {
+      width: 100%;
+      padding: var(--spacer-small);
+      border: 1px solid var(--color-primary);
+      border-radius: 5px;
     }
   }
 }

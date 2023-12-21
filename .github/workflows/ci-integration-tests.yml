@@ -2,8 +2,8 @@ name: "CI - Integration Tests"
 
 on:
   schedule:
-    # at 9:50 UTC every day from Monday to Friday
-    - cron: "50 9 * * 1-5"
+    # at 9:45 UTC every day from Monday to Friday
+    - cron: "45 9 * * 1-5"
 
   # allow running manually
   workflow_dispatch:
@@ -12,6 +12,8 @@ jobs:
   integration-tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    # do not run scheduled jobs in forks, in forks only allow manual run ("workflow_dispatch")
+    if: github.repository_owner == 'openSUSE' || github.event_name == 'workflow_dispatch'
 
     steps:
 
@@ -36,17 +38,17 @@ jobs:
     - name: Install the frontend
       run:  podman exec agama bash -c "ln -snfv /checkout/web/dist /usr/share/cockpit/agama"
 
-    # ./setup-service.sh will try setting up cockpit.socket
+    # ./setup-services.sh will try setting up cockpit.socket
     # which has a login page, so this local-session needs to be first
     - name: Start Cockpit service
       run:  podman exec --detach agama /usr/libexec/cockpit-ws --local-session=/usr/bin/cockpit-bridge
 
     - name: Setup service
-      run:  podman exec agama bash -c "cd /checkout; ./setup-service.sh"
+      run:  podman exec agama bash -c "cd /checkout; ./setup-services.sh"
 
     - name: Set a testing Agama configuration
       # use just one product, it skips the product selection at the beginning
-      run:  podman exec agama bash -c "rm /checkout/products.d/{leap16,ALP-Dolomite}.yaml"
+      run:  podman exec agama bash -c "rm /checkout/products.d/ALP-Dolomite.yaml"
 
     - name: Show NetworkManager log
       run:  podman exec agama journalctl -u NetworkManager
@@ -89,7 +91,8 @@ jobs:
     - name: IRC notification
       # see https://github.com/marketplace/actions/irc-message-action
       uses: Gottox/irc-message-action@v2
-      if: failure()
+      # never run in forks
+      if: failure() && github.repository_owner == 'openSUSE'
       with:
         channel: "#yast"
         nickname: github-action

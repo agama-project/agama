@@ -8,7 +8,9 @@
   --fw-medium: 500;
   --fw-bold: 700;
 
+  --fs-small: 0.7rem;
   --fs-base: 14px;
+  --fs-large: 1rem;
   --fs-h1: 1.5rem;
   --fs-h2: 1.2rem;
 
@@ -18,15 +20,28 @@
 
   --ui-max-inline-size: 1024px;
 
+  // FIXME: this should be changed to --spacer-xs, --spacer-s, and so
+  --spacer-smaller: 0.3rem;
   --spacer-small: 0.5rem;
   --spacer-normal: 1rem;
   --spacer-medium: 1.5rem;
   --spacer-large: 2rem;
 
+  --icon-size-xxxs: 12px;
+  --icon-size-xxs: 16px;
+  --icon-size-xs: 20px;
+  --icon-size-s: 24px;
+  --icon-size: 28px;
+  --icon-size-m: 32px;
+  --icon-size-l: 36px;
+  --icon-size-xl: 40px;
+  --icon-size-xxl: 44px;
+  --icon-size-xxxl: 10rem;
+
   --stack-gutter: var(--spacer-normal);
   --split-gutter: var(--spacer-small);
 
-  --wrapper-padding: var(--spacer-normal);
+  --wrapper-padding: var(--spacer-small);
   --wrapper-background: white;
 
   --color-primary: #0c322c;
@@ -35,6 +50,7 @@
   --color-gray: #f2f2f2;
   --color-gray-dark: #efefef; // Fog
   --color-gray-darker: #999;
+  --color-gray-dimmed: #888;
 
   --color-link: #0c322c;
   --color-link-hover: #30ba78;
@@ -62,7 +78,8 @@
   --gradient-border-start-color: var(--color-gray);
   --gradient-border-end-color: transparent;
 
-  --icon-size-m: 32px;
+  --header-icon-size: var(--icon-size-m);
+  --section-icon-size: var(--icon-size);
 
   --header-block-size: auto;
   --footer-block-size: auto;

@@ -56,6 +56,7 @@ module Agama
       include Helpers
       include WithIssues
       include WithProgress
+      include Yast::I18n
 
       GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
       private_constant :GPG_KEYS_GLOB
@@ -84,6 +85,8 @@ module Agama
       # @param config [Agama::Config]
       # @param logger [Logger]
       def initialize(config, logger)
+        textdomain "agama"
+
         @config = config
         @logger = logger
         @languages = DEFAULT_LANGUAGES
@@ -128,14 +131,14 @@ module Agama
           start_progress(4)
           store_original_repos
           Yast::PackageCallbacks.InitPackageCallbacks(logger)
-          progress.step("Initializing target repositories") { initialize_target_repos }
-          progress.step("Initializing sources") { add_base_repos }
+          progress.step(_("Initializing target repositories")) { initialize_target_repos }
+          progress.step(_("Initializing sources")) { add_base_repos }
         else
           start_progress(2)
         end
 
-        progress.step("Refreshing repositories metadata") { repositories.load }
-        progress.step("Calculating the software proposal") { propose }
+        progress.step(_("Refreshing repositories metadata")) { repositories.load }
+        progress.step(_("Calculating the software proposal")) { propose }
 
         Yast::Stage.Set("initial")
         update_issues
@@ -184,13 +187,13 @@ module Agama
       # Writes the repositories information to the installed system
       def finish
         start_progress(2)
-        progress.step("Writing repositories to the target system") do
+        progress.step(_("Writing repositories to the target system")) do
           Yast::Pkg.SourceSaveAll
           Yast::Pkg.TargetFinish
           Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
           registration.finish
         end
-        progress.step("Restoring original repositories") { restore_original_repos }
+        progress.step(_("Restoring original repositories")) { restore_original_repos }
       end
 
       # Determine whether the given tag is provided by the selected packages
@@ -214,41 +217,51 @@ module Agama
         patterns = Y2Packager::Resolvable.find({ kind: :pattern }, preload)
         patterns = patterns.select(&:user_visible) if filtered
 
+        # only display the configured patterns
+        if product.user_patterns && filtered
+          patterns.select! { |p| product.user_patterns.include?(p.name) }
+        end
+
         patterns
       end
 
       def add_pattern(id)
-        # TODO: error handling
+        return false unless pattern_exist?(id)
+
         res = Yast::Pkg.ResolvableInstall(id, :pattern)
         logger.info "Adding pattern #{res.inspect}"
         Yast::PackagesProposal.AddResolvables(PROPOSAL_ID, :pattern, [id])
-
-        res = Yast::Pkg.PkgSolve(unused = true)
-        logger.info "Solver run #{res.inspect}"
+        proposal.solve_dependencies
         selected_patterns_changed
+
+        true
       end
 
       def remove_pattern(id)
-        # TODO: error handling
+        return false unless pattern_exist?(id)
+
         res = Yast::Pkg.ResolvableNeutral(id, :pattern, force = false)
         logger.info "Removing pattern #{res.inspect}"
         Yast::PackagesProposal.RemoveResolvables(PROPOSAL_ID, :pattern, [id])
-
-        res = Yast::Pkg.PkgSolve(unused = true)
-        logger.info "Solver run #{res.inspect}"
+        proposal.solve_dependencies
         selected_patterns_changed
+
+        true
       end
 
-      def user_patterns=(ids)
+      def assign_patterns(ids)
+        wrong_patterns = ids.reject { |p| pattern_exist?(p) }
+        return wrong_patterns unless wrong_patterns.empty?
+
         user_patterns = Yast::PackagesProposal.GetResolvables(PROPOSAL_ID, :pattern)
         user_patterns.each { |p| Yast::Pkg.ResolvableNeutral(p, :pattern, force = false) }
         Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :pattern, ids)
         ids.each { |p| Yast::Pkg.ResolvableInstall(p, :pattern) }
-        logger.info "Setting patterns to #{res.inspect}"
-
-        res = Yast::Pkg.PkgSolve(unused = true)
-        logger.info "Solver run #{res.inspect}"
+        logger.info "Setting patterns to #{ids.inspect}"
+        proposal.solve_dependencies
         selected_patterns_changed
+
+        []
       end
 
       # @return [Array<Array<String>,Array<String>] returns pair of arrays where the first one
@@ -364,7 +377,9 @@ module Agama
       end
 
       def proposal
-        @proposal ||= Proposal.new
+        @proposal ||= Proposal.new.tap do |proposal|
+          proposal.on_issues_change { update_issues }
+        end
       end
 
       def import_gpg_keys
@@ -443,7 +458,7 @@ module Agama
       # @return [Array<Agama::Issue>]
       def repos_issues
         repositories.disabled.map do |repo|
-          Issue.new("Could not read the repository #{repo.name}",
+          Issue.new(_("Could not read repository \"%s\"") % repo.name,
             source:   Issue::Source::SYSTEM,
             severity: Issue::Severity::ERROR)
         end
@@ -453,7 +468,7 @@ module Agama
       #
       # @return [Agama::Issue]
       def missing_product_issue
-        Issue.new("Product not selected yet",
+        Issue.new(_("Product not selected yet"),
           source:   Issue::Source::CONFIG,
           severity: Issue::Severity::ERROR)
       end
@@ -462,7 +477,7 @@ module Agama
       #
       # @return [Agama::Issue]
       def missing_registration_issue
-        Issue.new("Product must be registered",
+        Issue.new(_("Product must be registered"),
           source:   Issue::Source::SYSTEM,
           severity: Issue::Severity::ERROR)
       end
@@ -473,6 +488,10 @@ module Agama
       def missing_registration?
         registration.reg_code.nil? &&
           registration.requirement == Agama::Registration::Requirement::MANDATORY
+      end
+
+      def pattern_exist?(pattern_name)
+        !Y2Packager::Resolvable.find(kind: :pattern, name: pattern_name).empty?
       end
     end
   end

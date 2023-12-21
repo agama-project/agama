@@ -25,7 +25,7 @@ import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
 import { If, Page, Section } from "~/components/core";
-import { ConnectionsTable, IpSettingsForm, NetworkPageOptions, WifiSelector } from "~/components/network";
+import { ConnectionsTable, IpSettingsForm, NetworkPageMenu, WifiSelector } from "~/components/network";
 import { _ } from "~/i18n";
 
 /**
@@ -64,7 +64,7 @@ const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
             <Button
               variant="primary"
               onClick={openWifiSelector}
-              icon={<Icon name="wifi_find" size="24" />}
+              icon={<Icon name="wifi_find" size="s" />}
             >
               {/* TRANSLATORS: button label */}
               {_("Connect to a Wi-Fi network")}
@@ -167,7 +167,7 @@ export default function NetworkPage() {
 
   return (
     // TRANSLATORS: page title
-    <Page title={_("Network")} icon="settings_ethernet" actionLabel="Back" actionVariant="secondary">
+    <Page icon="settings_ethernet" title={_("Network")}>
       { /* TRANSLATORS: page section */ }
       <Section title={_("Wired networks")} icon="lan">
         { ready ? <WiredConnections /> : <Skeleton /> }
@@ -178,7 +178,7 @@ export default function NetworkPage() {
         { ready ? <WifiConnections /> : <Skeleton /> }
       </Section>
 
-      <NetworkPageOptions wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
+      <NetworkPageMenu wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
 
       <If
         condition={wifiScanSupported}

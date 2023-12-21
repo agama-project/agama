@@ -55,8 +55,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "cfa_grub2", "~> 2.0.0"
   spec.add_dependency "cheetah", "~> 1.0.0"
   spec.add_dependency "eventmachine", "~> 1.2.7"
-  spec.add_dependency "fast_gettext", "~> 2.2.0"
-  spec.add_dependency "nokogiri", "~> 1.13.1"
+  spec.add_dependency "fast_gettext", "~> 2.3.0"
+  spec.add_dependency "nokogiri", "~> 1.15.4"
   spec.add_dependency "rexml", "~> 3.2.5"
   spec.add_dependency "ruby-dbus", ">= 0.23.1", "< 1.0"
 end

@@ -1,16 +1,17 @@
-use agama_dbus_server::{locale, network, questions};
+use agama_dbus_server::{locale, locale::helpers, network, questions};
 
 use agama_lib::connection_to;
 use anyhow::Context;
-use log::LevelFilter;
+use log::{self, LevelFilter};
 use std::future::pending;
-use tokio;
 
 const ADDRESS: &str = "unix:path=/run/agama/bus";
 const SERVICE_NAME: &str = "org.opensuse.Agama1";
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let locale = helpers::init_locale()?;
+
     // be smart with logging and log directly to journal if connected to it
     if systemd_journal_logger::connected_to_journal() {
         // unwrap here is intentional as we are sure no other logger is active yet
@@ -35,7 +36,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // When adding more services here, the order might be important.
     questions::export_dbus_objects(&connection).await?;
     log::info!("Started questions interface");
-    locale::export_dbus_objects(&connection).await?;
+    locale::export_dbus_objects(&connection, &locale).await?;
     log::info!("Started locale interface");
     network::export_dbus_objects(&connection).await?;
     log::info!("Started network interface");

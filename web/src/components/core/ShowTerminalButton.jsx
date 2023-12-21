@@ -42,7 +42,7 @@ const ShowTerminalButton = () => {
         variant="link"
         onClick={onClick}
         isDisabled={isTermDisplayed}
-        icon={<Icon name="terminal" size="24" />}
+        icon={<Icon name="terminal" size="s" />}
       >
         {/* TRANSLATORS: button label */}
         {_("Open Terminal")}

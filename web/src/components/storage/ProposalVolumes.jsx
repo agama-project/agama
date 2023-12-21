@@ -205,8 +205,9 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
 
     // TRANSLATORS: the filesystem uses a logical volume (LVM)
     const text = `${volume.fsType} ${options.lvm ? _("logical volume") : _("partition")}`;
-    const lockIcon = <Icon name="lock" size={12} />;
-    const snapshotsIcon = <Icon name="add_a_photo" size={12} />;
+    const lockIcon = <Icon name="lock" size="xxxs" />;
+    const snapshotsIcon = <Icon name="add_a_photo" size="xxxs" />;
+    const transactionalIcon = <Icon name="sync" size="xxxs" />;
 
     return (
       <div className="split">
@@ -216,7 +217,7 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
         {/* TRANSLATORS: filesystem flag, it allows creating snapshots */}
         <If condition={hasSnapshots} then={<Em icon={snapshotsIcon}>{_("with snapshots")}</Em>} />
         {/* TRANSLATORS: flag for transactional file system  */}
-        <If condition={transactional} then={<Em>{_("transactional")}</Em>} />
+        <If condition={transactional} then={<Em icon={transactionalIcon}>{_("transactional")}</Em>} />
       </div>
     );
   };

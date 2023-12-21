@@ -228,8 +228,10 @@ class ProposalManager {
    * @property {string} bootDevice
    * @property {string} encryptionPassword
    * @property {boolean} lvm
+   * @property {string} spacePolicy
    * @property {string[]} systemVGDevices
    * @property {Volume[]} volumes
+   * @property {StorageDevice[]} installationDevices
    *
    * @typedef {object} Volume
    * @property {string} mountPath
@@ -311,6 +313,8 @@ class ProposalManager {
 
     if (!proxy) return undefined;
 
+    const systemDevices = await this.system.getDevices();
+
     const buildResult = (proxy) => {
       const buildAction = dbusAction => {
         return {
@@ -320,13 +324,33 @@ class ProposalManager {
         };
       };
 
+      const buildInstallationDevices = (proxy, devices) => {
+        const findDevice = (devices, name) => {
+          const device = devices.find(d => d.name === name);
+
+          if (device === undefined) console.log("D-Bus object not found: ", name);
+
+          return device;
+        };
+
+        const names = proxy.SystemVGDevices.filter(n => n !== proxy.BootDevice).concat([proxy.BootDevice]);
+        // #findDevice returns undefined if no device is found with the given name.
+        return names.map(dev => findDevice(devices, dev)).filter(dev => dev !== undefined);
+      };
+
       return {
         settings: {
           bootDevice: proxy.BootDevice,
           lvm: proxy.LVM,
+          spacePolicy: proxy.SpacePolicy,
           systemVGDevices: proxy.SystemVGDevices,
           encryptionPassword: proxy.EncryptionPassword,
           volumes: proxy.Volumes.map(this.buildVolume),
+          // NOTE: strictly speaking, installation devices does not belong to the settings. It
+          // should be a separate method instead of an attribute in the settings object.
+          // Nevertheless, it was added here for simplicity and to avoid passing more props in some
+          // react components. Please, do not use settings as a jumble.
+          installationDevices: buildInstallationDevices(proxy, systemDevices)
         },
         actions: proxy.Actions.map(buildAction)
       };
@@ -341,7 +365,7 @@ class ProposalManager {
    * @param {ProposalSettings} settings
    * @returns {Promise<number>} 0 on success, 1 on failure
    */
-  async calculate({ bootDevice, encryptionPassword, lvm, systemVGDevices, volumes }) {
+  async calculate({ bootDevice, encryptionPassword, lvm, spacePolicy, systemVGDevices, volumes }) {
     const dbusVolume = (volume) => {
       return removeUndefinedCockpitProperties({
         MountPath: { t: "s", v: volume.mountPath },
@@ -358,6 +382,7 @@ class ProposalManager {
       BootDevice: { t: "s", v: bootDevice },
       EncryptionPassword: { t: "s", v: encryptionPassword },
       LVM: { t: "b", v: lvm },
+      SpacePolicy: { t: "s", v: spacePolicy },
       SystemVGDevices: { t: "as", v: systemVGDevices },
       Volumes: { t: "aa{sv}", v: volumes?.map(dbusVolume) }
     });

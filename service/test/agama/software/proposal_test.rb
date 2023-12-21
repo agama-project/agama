@@ -26,7 +26,7 @@ require "agama/config"
 describe Agama::Software::Proposal do
   subject(:proposal) { described_class.new(logger: logger) }
 
-  let(:logger) { Logger.new($stdout) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
   let(:destdir) { "/mnt" }
   let(:result) { {} }
   let(:last_error) { "" }
@@ -59,8 +59,9 @@ describe Agama::Software::Proposal do
     end
 
     it "selects the language packages" do
+      expect(Yast::Pkg).to receive(:SetPackageLocale).with("cs_CZ")
       expect(Yast::Pkg).to receive(:SetAdditionalLocales).with(["de_DE"])
-      subject.languages = ["de_DE"]
+      subject.languages = ["cs_CZ", "de_DE"]
       subject.calculate
     end
 
@@ -105,6 +106,42 @@ describe Agama::Software::Proposal do
         expect(subject.issues).to contain_exactly(
           an_object_having_attributes(description: "Solving errors..."),
           an_object_having_attributes(description: "Found 5 dependency issues.")
+        )
+      end
+    end
+  end
+
+  describe "#solve_dependencies" do
+    it "calls the solver" do
+      expect(Yast::Pkg).to receive(:PkgSolve)
+      subject.solve_dependencies
+    end
+
+    context "if the solver successes" do
+      before do
+        allow(Yast::Pkg).to receive(:PkgSolve).and_return(true)
+      end
+
+      it "returns true" do
+        expect(subject.solve_dependencies).to eq(true)
+      end
+    end
+
+    context "if the solver fails" do
+      before do
+        allow(Yast::Pkg).to receive(:PkgSolve).and_return(false)
+      end
+
+      let(:solve_errors) { 2 }
+
+      it "returns false" do
+        expect(subject.solve_dependencies).to eq(false)
+      end
+
+      it "registers solver issue" do
+        subject.solve_dependencies
+        expect(subject.issues).to contain_exactly(
+          an_object_having_attributes(description: "Found 2 dependency issues.")
         )
       end
     end
@@ -160,6 +197,13 @@ describe Agama::Software::Proposal do
         subject.calculate
         expect(subject.valid?).to eq(false)
       end
+    end
+  end
+
+  describe "#languages" do
+    it "sets the languages to install removing the encoding" do
+      subject.languages = ["es_ES.UTF-8", "en_US"]
+      expect(subject.languages).to eq(["es_ES", "en_US"])
     end
   end
 end

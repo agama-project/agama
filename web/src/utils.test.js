@@ -19,7 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { classNames, partition, noop, toValidationError } from "./utils";
+import {
+  classNames, partition, noop, toValidationError,
+  localConnection, remoteConnection
+} from "./utils";
 
 describe("noop", () => {
   it("returns undefined", () => {
@@ -59,5 +62,49 @@ describe("toValidationError", () => {
       severity: "warn"
     };
     expect(toValidationError(issue)).toEqual({ message: "Issue 1" });
+  });
+});
+
+const localURL = new URL("http://127.0.0.90/");
+const localURL2 = new URL("http://localhost:9090/");
+const remoteURL = new URL("http://example.com");
+
+describe("localConnection", () => {
+  describe("when the page URL is " + localURL, () => {
+    it("returns true", () => {
+      expect(localConnection(localURL)).toEqual(true);
+    });
+  });
+
+  describe("when the page URL is " + localURL2, () => {
+    it("returns true", () => {
+      expect(localConnection(localURL2)).toEqual(true);
+    });
+  });
+
+  describe("when the page URL is " + remoteURL, () => {
+    it("returns false", () => {
+      expect(localConnection(remoteURL)).toEqual(false);
+    });
+  });
+});
+
+describe("remoteConnection", () => {
+  describe("when the page URL is " + localURL, () => {
+    it("returns true", () => {
+      expect(remoteConnection(localURL)).toEqual(false);
+    });
+  });
+
+  describe("when the page URL is " + localURL2, () => {
+    it("returns true", () => {
+      expect(remoteConnection(localURL2)).toEqual(false);
+    });
+  });
+
+  describe("when the page URL is " + remoteURL, () => {
+    it("returns false", () => {
+      expect(remoteConnection(remoteURL)).toEqual(true);
+    });
   });
 });

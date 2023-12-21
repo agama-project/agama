@@ -87,10 +87,11 @@ impl Tree {
     ) -> Result<(), ServiceError> {
         let mut objects = self.objects.lock().await;
 
-        let orig_id = conn.id().to_owned();
+        let orig_id = conn.id.to_owned();
+        let uuid = conn.uuid;
         let (id, path) = objects.register_connection(conn);
-        if id != conn.id() {
-            conn.set_id(&id)
+        if id != conn.id {
+            conn.id = id.clone();
         }
         log::info!("Publishing network connection '{}'", id);
 
@@ -112,7 +113,13 @@ impl Tree {
             interfaces::Match::new(self.actions.clone(), Arc::clone(&cloned)),
         )
         .await?;
-        if let Connection::Wireless(_) = conn {
+
+        if let ConnectionConfig::Bond(_) = conn.config {
+            self.add_interface(&path, interfaces::Bond::new(self.actions.clone(), uuid))
+                .await?;
+        }
+
+        if let ConnectionConfig::Wireless(_) = conn.config {
             self.add_interface(
                 &path,
                 interfaces::Wireless::new(self.actions.clone(), Arc::clone(&cloned)),
@@ -185,6 +192,7 @@ impl Tree {
     /// * `path`: connection D-Bus path.
     async fn remove_connection_on(&self, path: &str) -> Result<(), ServiceError> {
         let object_server = self.connection.object_server();
+        _ = object_server.remove::<interfaces::Bond, _>(path).await;
         _ = object_server.remove::<interfaces::Wireless, _>(path).await;
         object_server.remove::<interfaces::Ip, _>(path).await?;
         object_server
@@ -244,7 +252,7 @@ impl ObjectsRegistry {
     pub fn register_connection(&mut self, conn: &Connection) -> (String, ObjectPath) {
         let path = format!("{}/{}", CONNECTIONS_PATH, self.connections.len());
         let path = ObjectPath::try_from(path).unwrap();
-        let mut id = conn.id().to_string();
+        let mut id = conn.id.clone();
         if self.connection_path(&id).is_some() {
             id = self.propose_id(&id);
         };

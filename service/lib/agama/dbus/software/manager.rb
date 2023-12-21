@@ -87,9 +87,9 @@ module Agama
           # 1 for auto selected. Can be extended in future e.g. for mandatory patterns
           dbus_reader_attr_accessor :selected_patterns, "a{sy}"
 
-          dbus_method(:AddPattern, "in id:s") { |p| backend.add_pattern(p) }
-          dbus_method(:RemovePattern, "in id:s") { |p| backend.remove_pattern(p) }
-          dbus_method(:SetUserPatterns, "in ids:as") { |ids| backend.user_patterns = ids }
+          dbus_method(:AddPattern, "in id:s, out result:b") { |p| backend.add_pattern(p) }
+          dbus_method(:RemovePattern, "in id:s, out result:b") { |p| backend.remove_pattern(p) }
+          dbus_method(:SetUserPatterns, "in ids:as, out wrong:as") { |ids| [backend.assign_patterns(ids)] }
 
           dbus_method :ProvisionsSelected, "in Provisions:as, out Result:ab" do |provisions|
             [provisions.map { |p| backend.provision_selected?(p) }]
@@ -132,9 +132,9 @@ module Agama
 
         # Registers callback to be called
         def register_callbacks
-          lang_client = Agama::DBus::Clients::Locale.new
-          lang_client.on_language_selected do |language_ids|
+          Agama::DBus::Clients::Locale.instance.on_language_selected do |language_ids|
             backend.languages = language_ids
+            probe
           end
 
           nm_client = Agama::DBus::Clients::Network.new

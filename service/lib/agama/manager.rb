@@ -152,7 +152,7 @@ module Agama
     #
     # @return [DBus::Clients::Locale]
     def language
-      @language ||= DBus::Clients::Locale.new
+      DBus::Clients::Locale.instance
     end
 
     # Users client
@@ -205,18 +205,21 @@ module Agama
 
     # Collects the logs and stores them into an archive
     #
-    # @param user [String] local username who will own archive
+    # @param path [String] directory where to store logs
+    #
     # @return [String] path to created archive
-    def collect_logs(user)
-      output = Yast::Execute.locally!("save_y2logs", stderr: :capture)
-      path = output[/^.* (\/tmp\/y2log-\S*)/, 1]
-      Yast::Execute.locally!("chown", "#{user}:", path)
+    def collect_logs(path: nil)
+      opt = "-d #{path}" unless path.nil? || path.empty?
 
-      path
+      `agama logs store #{opt}`.strip
     end
 
     # Whatever has to be done at the end of installation
     def finish_installation
+      logs = collect_logs(path: "/tmp/var/logs/")
+
+      logger.info("Installation logs stored in #{logs}")
+
       cmd = if iguana?
         "/usr/bin/agamactl -k"
       else

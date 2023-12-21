@@ -20,11 +20,8 @@
  */
 
 import React, { useEffect, useReducer } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
-import { MainActions } from "~/components/layout";
 import { If, Page } from "~/components/core";
 import { DASDFormatProgress, DASDTable } from "~/components/storage";
 import { useCancellablePromise } from "~/utils";
@@ -133,7 +130,6 @@ const initialState = {
 
 export default function DASDPage() {
   const { storage: client } = useInstallerClient();
-  const navigate = useNavigate();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -183,9 +179,6 @@ export default function DASDPage() {
   return (
     // TRANSLATORS: DASD = Direct Access Storage Device, IBM mainframe storage technology
     <Page title={_("Storage DASD")} icon="hard_drive">
-      <MainActions>
-        <Button size="lg" variant="secondary" onClick={() => navigate("/storage")}>{_("Back")}</Button>
-      </MainActions>
 
       <DASDTable state={state} dispatch={dispatch} />
 

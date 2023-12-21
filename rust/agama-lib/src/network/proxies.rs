@@ -4,6 +4,30 @@
 use zbus::dbus_proxy;
 
 #[dbus_proxy(
+    interface = "org.opensuse.Agama1.Network.Devices",
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Network/devices"
+)]
+trait Devices {
+    /// GetDevices method
+    fn get_devices(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama1.Network.Device",
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Network/devices/1"
+)]
+trait Device {
+    /// Name property
+    #[dbus_proxy(property)]
+    fn name(&self) -> zbus::Result<String>;
+    /// Type property
+    #[dbus_proxy(property)]
+    fn type_(&self) -> zbus::Result<u8>;
+}
+
+#[dbus_proxy(
     interface = "org.opensuse.Agama1.Network.Connections",
     default_service = "org.opensuse.Agama1",
     default_path = "/org/opensuse/Agama1/Network/connections"
@@ -83,6 +107,10 @@ trait Connection {
     fn interface(&self) -> zbus::Result<String>;
     #[dbus_proxy(property)]
     fn set_interface(&self, interface: &str) -> zbus::Result<()>;
+    #[dbus_proxy(property)]
+    fn mac_address(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
+    fn set_mac_address(&self, mac_address: &str) -> zbus::Result<()>;
 }
 
 #[dbus_proxy(
@@ -137,10 +165,12 @@ trait Match {
     /// Driver property
     #[dbus_proxy(property)]
     fn driver(&self) -> zbus::Result<Vec<String>>;
+    fn set_driver(&self, value: &[&str]) -> zbus::Result<()>;
 
     /// Interface property
     #[dbus_proxy(property)]
     fn interface(&self) -> zbus::Result<Vec<String>>;
+    fn set_interface(&self, value: &[&str]) -> zbus::Result<()>;
 
     /// Path property
     #[dbus_proxy(property)]
@@ -151,4 +181,30 @@ trait Match {
     /// Path property
     #[dbus_proxy(property)]
     fn kernel(&self) -> zbus::Result<Vec<String>>;
+    fn set_kernel(&self, value: &[&str]) -> zbus::Result<()>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama1.Network.Connection.Bond",
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Network"
+)]
+trait Bond {
+    /// Mode property
+    #[dbus_proxy(property)]
+    fn mode(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
+    fn set_mode(&self, value: &str) -> zbus::Result<()>;
+
+    /// Ports property
+    #[dbus_proxy(property)]
+    fn options(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
+    fn set_options(&self, value: &str) -> zbus::Result<()>;
+
+    /// Ports property
+    #[dbus_proxy(property)]
+    fn ports(&self) -> zbus::Result<Vec<String>>;
+    #[dbus_proxy(property)]
+    fn set_ports(&self, value: &[&str]) -> zbus::Result<()>;
 }

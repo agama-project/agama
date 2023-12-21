@@ -22,25 +22,14 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
-import { _ } from "~/i18n";
 import { useInstallerClient, useInstallerClientStatus } from "~/context/installer";
 import { useProduct } from "./context/product";
 import { STARTUP, INSTALL } from "~/client/phase";
 import { BUSY } from "~/client/status";
 
-import {
-  About,
-  DBusError,
-  Disclosure,
-  Installation,
-  LogsButton,
-  ShowLogButton,
-  ShowTerminalButton,
-  Sidebar
-} from "~/components/core";
-import { LanguageSwitcher } from "./components/l10n";
-import { Layout, Loading, Title } from "./components/layout";
-import { useL10n } from "./context/l10n";
+import { DBusError, If, Installation } from "~/components/core";
+import { Loading } from "./components/layout";
+import { useInstallerL10n } from "./context/installerL10n";
 
 // D-Bus connection attempts before displaying an error.
 const ATTEMPTS = 3;
@@ -56,7 +45,7 @@ function App() {
   const client = useInstallerClient();
   const { attempt } = useInstallerClientStatus();
   const { products } = useProduct();
-  const { language } = useL10n();
+  const { language } = useInstallerL10n();
   const [status, setStatus] = useState(undefined);
   const [phase, setPhase] = useState(undefined);
 
@@ -102,30 +91,7 @@ function App() {
   };
 
   return (
-    <>
-      <Sidebar>
-        <div className="flex-stack">
-          <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
-            <ShowLogButton />
-            <LogsButton data-keep-sidebar-open="true" />
-            <ShowTerminalButton />
-          </Disclosure>
-          <About />
-        </div>
-        <div className="full-width highlighted">
-          <div className="flex-stack">
-            <LanguageSwitcher />
-          </div>
-        </div>
-      </Sidebar>
-
-      <Layout>
-        {/* this is the name of the tool, do not translate it */}
-        {/* eslint-disable-next-line i18next/no-literal-string */}
-        <Title>Agama</Title>
-        {language && <Content />}
-      </Layout>
-    </>
+    <If condition={language} then={<Content />} />
   );
 }
 

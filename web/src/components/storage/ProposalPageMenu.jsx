@@ -24,7 +24,7 @@ import { useHref } from "react-router-dom";
 
 import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
-import { If, PageOptions } from "~/components/core";
+import { If, Page } from "~/components/core";
 
 /**
  * Internal component for building the link to Storage/DASD page
@@ -34,13 +34,13 @@ const DASDLink = () => {
   const href = useHref("/storage/dasd");
 
   return (
-    <PageOptions.Option
+    <Page.Menu.Option
       key="dasd-link"
       to={href}
       description={_("Manage and format")}
     >
       DASD
-    </PageOptions.Option>
+    </Page.Menu.Option>
   );
 };
 
@@ -52,13 +52,13 @@ const ZFCPLink = () => {
   const href = useHref("/storage/zfcp");
 
   return (
-    <PageOptions.Option
+    <Page.Menu.Option
       key="zfcp-link"
       to={href}
       description={_("Activate disks")}
     >
       {_("zFCP")}
-    </PageOptions.Option>
+    </Page.Menu.Option>
   );
 };
 
@@ -70,13 +70,13 @@ const ISCSILink = () => {
   const href = useHref("/storage/iscsi");
 
   return (
-    <PageOptions.Option
+    <Page.Menu.Option
       key="iscsi-link"
       to={href}
       description={_("Connect to iSCSI targets")}
     >
       {_("iSCSI")}
-    </PageOptions.Option>
+    </Page.Menu.Option>
   );
 };
 
@@ -84,7 +84,7 @@ const ISCSILink = () => {
  * Component for rendering the options available from Storage/ProposalPage
  * @component
  */
-export default function ProposalPageOptions () {
+export default function ProposalPageMenu () {
   const [showDasdLink, setShowDasdLink] = useState(false);
   const [showZFCPLink, setShowZFCPLink] = useState(false);
   const { storage: client } = useInstallerClient();
@@ -95,12 +95,12 @@ export default function ProposalPageOptions () {
   }, [client.dasd, client.zfcp]);
 
   return (
-    <PageOptions>
-      <PageOptions.Options>
+    <Page.Menu>
+      <Page.Menu.Options>
         <If condition={showDasdLink} then={<DASDLink />} />
         <ISCSILink />
         <If condition={showZFCPLink} then={<ZFCPLink />} />
-      </PageOptions.Options>
-    </PageOptions>
+      </Page.Menu.Options>
+    </Page.Menu>
   );
 }

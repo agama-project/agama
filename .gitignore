@@ -1,2 +1,6 @@
 .log/
 .yardoc/
+.vscode/tasks.json
+/*.pot
+*.mo
+*.bz2

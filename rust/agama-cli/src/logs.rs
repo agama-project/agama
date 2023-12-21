@@ -112,7 +112,7 @@ const DEFAULT_PATHS: [&str; 14] = [
     "/linuxrc.config",
 ];
 
-const DEFAULT_RESULT: &str = "/tmp/agama_logs";
+const DEFAULT_RESULT: &str = "/tmp/agama-logs";
 // what compression is used by default:
 // (<compression as distinguished by tar>, <an extension for resulting archive>)
 const DEFAULT_COMPRESSION: (&str, &str) = ("bzip2", "tar.bz2");
@@ -258,7 +258,7 @@ impl LogItem for LogCmd {
         };
 
         file_name.retain(|c| c != ' ');
-        self.dst_path.as_path().join(format!("{}", file_name))
+        self.dst_path.as_path().join(&file_name)
     }
 
     fn store(&self) -> Result<(), io::Error> {
@@ -398,7 +398,11 @@ fn store(options: LogOptions) -> Result<(), io::Error> {
     showln(verbose, "\t- proceeding output of commands");
 
     // store it
-    showln(true, format!("Storing result in: \"{}\"", result).as_str());
+    if verbose {
+        showln(true, format!("Storing result in: \"{}\"", result).as_str());
+    } else {
+        showln(true, result.as_str());
+    }
 
     for log in log_sources.iter() {
         show(
@@ -416,7 +420,7 @@ fn store(options: LogOptions) -> Result<(), io::Error> {
             Err(_e) => "[Failed]",
         };
 
-        showln(verbose, format!("{}", res).as_str());
+        showln(verbose, res.to_string().as_str());
     }
 
     compress_logs(&tmp_dir, &result)

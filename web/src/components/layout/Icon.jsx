@@ -38,11 +38,13 @@ import Error from "@icons/error.svg?component";
 import ExpandMore from "@icons/expand_more.svg?component";
 import Folder from "@icons/folder.svg?component";
 import FolderOff from "@icons/folder_off.svg?component";
+import Globe from "@icons/globe.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Help from "@icons/help.svg?component";
 import HomeStorage from "@icons/home_storage.svg?component";
 import Info from "@icons/info.svg?component";
 import Inventory from "@icons/inventory_2.svg?component";
+import Keyboard from "@icons/keyboard.svg?component";
 import Lan from "@icons/lan.svg?component";
 import ListAlt from "@icons/list_alt.svg?component";
 import Lock from "@icons/lock.svg?component";
@@ -53,11 +55,13 @@ import MoreVert from "@icons/more_vert.svg?component";
 import Person from "@icons/person.svg?component";
 import Problem from "@icons/problem.svg?component";
 import Refresh from "@icons/refresh.svg?component";
+import Schedule from "@icons/schedule.svg?component";
 import SettingsApplications from "@icons/settings_applications.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import SettingsFill from "@icons/settings-fill.svg?component";
 import SignalCellularAlt from "@icons/signal_cellular_alt.svg?component";
 import Storage from "@icons/storage.svg?component";
+import Sync from "@icons/sync.svg?component";
 import TaskAlt from "@icons/task_alt.svg?component";
 import Terminal from "@icons/terminal.svg?component";
 import Translate from "@icons/translate.svg?component";
@@ -91,11 +95,13 @@ const icons = {
   expand_more: ExpandMore,
   folder: Folder,
   folder_off: FolderOff,
+  globe: Globe,
   hard_drive: HardDrive,
   help: Help,
   home_storage: HomeStorage,
   info: Info,
   inventory_2: Inventory,
+  keyboard: Keyboard,
   lan: Lan,
   loading: Loading,
   list_alt: ListAlt,
@@ -107,11 +113,13 @@ const icons = {
   person: Person,
   problem: Problem,
   refresh: Refresh,
+  schedule: Schedule,
   settings: SettingsFill,
   settings_applications: SettingsApplications,
   settings_ethernet: SettingsEthernet,
   signal_cellular_alt: SignalCellularAlt,
   storage: Storage,
+  sync: Sync,
   task_alt: TaskAlt,
   terminal: Terminal,
   translate: Translate,
@@ -126,13 +134,12 @@ const icons = {
   windows_logo: SiWindows
 };
 
+const PREDEFINED_SIZES = [
+  "xxxs", "xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl"
+];
+
 /**
  * Agama Icon component
- *
- * If exists, it renders requested icon with given size.
- *
- * @note: if either, name prop has a falsy value or requested icon is not found,
- * it will outputs a message to the console.error and renders nothing.
  *
  * @todo: import icons dynamically if the list grows too much. See
  *   - https://stackoverflow.com/a/61472427
@@ -144,11 +151,14 @@ const icons = {
  * @param {object} props - Component props
  * @param {string} props.name - Name of the desired icon.
  * @param {string} [props.className=""] - CSS classes.
- * @param {string|number} [props.size=32] - Size used for both, width and height.
- * @param {object} [props.otherProps] Other props sent to SVG icon.
+ * @param {string|number} [props.size] - Size used for both, width and height.
+ *   It can be a CSS unit or one of PREDEFINED_SIZES.
+ * @param {object} [props.otherProps] Other props sent to SVG icon. Please, note
+ *   that width and height will be overwritten by the size value if it was given.
  *
+ * @returns {JSX.Element|null} null if requested icon is not available or given a falsy value as name; JSX block otherwise.
  */
-export default function Icon({ name, className = "", size = 32, ...otherProps }) {
+export default function Icon({ name, size, ...otherProps }) {
   if (!name) {
     console.error(`Icon called without name. '${name}' given instead. Rendering nothing.`);
     return null;
@@ -159,13 +169,19 @@ export default function Icon({ name, className = "", size = 32, ...otherProps })
     return null;
   }
 
+  if (size && PREDEFINED_SIZES.includes(size)) {
+    otherProps.className = [otherProps.className, `icon-${size}`].join(" ").trim();
+  } else if (size) {
+    otherProps.width = size;
+    otherProps.height = size;
+  }
+
   const IconComponent = icons[name];
 
   return (
     <IconComponent
       aria-hidden="true"
       data-icon-name={name}
-      className={`${className} icon-size-${size}`.trim()}
       {...otherProps}
     />
   );

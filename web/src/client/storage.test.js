@@ -155,6 +155,7 @@ const contexts = {
       LVM: true,
       SystemVGDevices: ["/dev/sda", "/dev/sdb"],
       EncryptionPassword: "00000",
+      SpacePolicy: "delete",
       Volumes: [
         {
           MountPath: { t: "s", v: "/" },
@@ -811,6 +812,7 @@ describe("#proposal", () => {
 
     describe("if there is a proposal", () => {
       beforeEach(() => {
+        contexts.withSystemDevices();
         contexts.withProposal();
         client = new StorageClient();
       });
@@ -818,11 +820,12 @@ describe("#proposal", () => {
       it("returns the proposal settings and actions", async () => {
         const { settings, actions } = await client.proposal.getResult();
 
-        expect(settings).toStrictEqual({
+        expect(settings).toMatchObject({
           bootDevice: "/dev/sda",
           lvm: true,
           systemVGDevices: ["/dev/sda", "/dev/sdb"],
           encryptionPassword: "00000",
+          spacePolicy: "delete",
           volumes: [
             {
               mountPath: "/",
@@ -860,6 +863,10 @@ describe("#proposal", () => {
             }
           ]
         });
+
+        expect(settings.installationDevices.map(d => d.name).sort()).toStrictEqual(
+          ["/dev/sda", "/dev/sdb"].sort()
+        );
 
         expect(actions).toStrictEqual([
           { text: "Mount /dev/sdb1 as root", subvol: false, delete: false }

@@ -65,7 +65,7 @@ describe Agama::Manager do
   before do
     allow(Agama::Network).to receive(:new).and_return(network)
     allow(Agama::ProxySetup).to receive(:instance).and_return(proxy)
-    allow(Agama::DBus::Clients::Locale).to receive(:new).and_return(locale)
+    allow(Agama::DBus::Clients::Locale).to receive(:instance).and_return(locale)
     allow(Agama::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(Agama::DBus::Clients::Storage).to receive(:new).and_return(storage)
     allow(Agama::Users).to receive(:new).and_return(users)
@@ -214,13 +214,12 @@ describe Agama::Manager do
 
   describe "#collect_logs" do
     it "collects the logs and returns the path to the archive" do
-      expect(Yast::Execute).to receive(:locally!)
-        .with("save_y2logs", stderr: :capture)
-        .and_return("Saving YaST logs to /tmp/y2log-hWBn95.tar.xz")
-      expect(Yast::Execute).to receive(:locally!)
-        .with("chown", "ytm:", /y2log-hWBn95/)
+      # %x returns the command output including trailing \n
+      expect(subject).to receive(:`)
+        .with("agama logs store ")
+        .and_return("/tmp/y2log-hWBn95.tar.xz\n")
 
-      path = subject.collect_logs("ytm")
+      path = subject.collect_logs
       expect(path).to eq("/tmp/y2log-hWBn95.tar.xz")
     end
   end

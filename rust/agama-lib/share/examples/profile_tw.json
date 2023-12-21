@@ -4,7 +4,12 @@
     "language": "en_US"
   },
   "software": {
-    "product": "ALP-Dolomite"
+    "patterns": [
+      "gnome"
+    ]
+  },
+  "product": {
+    "id": "Tumbleweed"
   },
   "storage": {
     "bootDevice": "/dev/dm-1"
@@ -34,7 +39,7 @@
         "nameservers": [
           "192.168.122.1",
           "2001:4860:4860::8888"
-        ]
+        ],
       }
     ]
   }

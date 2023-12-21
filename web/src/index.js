@@ -34,7 +34,7 @@ import "@patternfly/patternfly/patternfly-base.scss";
 import App from "~/App";
 import Main from "~/Main";
 import DevServerWrapper from "~/DevServerWrapper";
-import { Overview } from "~/components/overview";
+import { OverviewPage } from "~/components/overview";
 import { ProductPage, ProductSelectionPage } from "~/components/product";
 import { SoftwarePage } from "~/components/software";
 import { ProposalPage as StoragePage, ISCSIPage, DASDPage, ZFCPPage } from "~/components/storage";
@@ -73,8 +73,8 @@ root.render(
         <Routes>
           <Route path="/" element={<App />}>
             <Route path="/" element={<Main />}>
-              <Route index element={<Overview />} />
-              <Route path="/overview" element={<Overview />} />
+              <Route index element={<OverviewPage />} />
+              <Route path="/overview" element={<OverviewPage />} />
               <Route path="/product" element={<ProductPage />} />
               <Route path="/l10n" element={<L10nPage />} />
               <Route path="/software" element={<SoftwarePage />} />

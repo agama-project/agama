@@ -32,7 +32,6 @@ button.pf-m-link {
 
   &:hover {
     color: var(--color-link-hover);
-    text-decoration: underline;
   }
 }
 
@@ -54,6 +53,16 @@ table {
 
 th {
   text-align: start;
+}
+
+svg {
+  vertical-align: middle;
+}
+
+li {
+  svg {
+    vertical-align: middle;
+  }
 }
 
 // Style focus making use of :focus-visible

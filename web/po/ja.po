@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-05 02:14+0000\n"
-"PO-Revision-Date: 2023-11-01 05:15+0000\n"
+"POT-Creation-Date: 2023-12-15 17:45+0000\n"
+"PO-Revision-Date: 2023-12-16 01:02+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 4.9.1\n"
 
-#: src/App.jsx:112
+#: src/App.jsx:110
 msgid "Diagnostic tools"
 msgstr "診断ツール"
 
@@ -66,6 +66,7 @@ msgstr "詳しくは %s にあるプロジェクトのリポジトリをご覧�
 #: src/components/core/About.jsx:71 src/components/core/FileViewer.jsx:80
 #: src/components/core/Sidebar.jsx:177 src/components/core/Terminal.jsx:48
 #: src/components/network/WifiSelector.jsx:151
+#: src/components/product/ProductPage.jsx:239
 msgid "Close"
 msgstr "閉じる"
 
@@ -143,18 +144,23 @@ msgstr ""
 "をご確認のうえ、やり直してください。"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:97
-#: src/components/storage/ProposalSettingsSection.jsx:166
-#: src/components/storage/ProposalSettingsSection.jsx:359
-#: src/components/storage/ProposalSettingsSection.jsx:504
+#: src/components/core/InstallButton.jsx:97 src/components/l10n/L10nPage.jsx:75
+#: src/components/l10n/L10nPage.jsx:191 src/components/l10n/L10nPage.jsx:304
+#: src/components/product/ProductPage.jsx:71
+#: src/components/product/ProductPage.jsx:140
+#: src/components/product/ProductPage.jsx:207
+#: src/components/storage/ProposalSettingsSection.jsx:170
+#: src/components/storage/ProposalSettingsSection.jsx:363
+#: src/components/storage/ProposalSettingsSection.jsx:508
+#: src/components/storage/ProposalSettingsSection.jsx:604
 #: src/components/storage/ProposalVolumes.jsx:148
-#: src/components/storage/ProposalVolumes.jsx:282
+#: src/components/storage/ProposalVolumes.jsx:283
 #: src/components/storage/ZFCPPage.jsx:513
 msgid "Accept"
 msgstr "受け入れる"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:145
+#: src/components/core/InstallButton.jsx:148
 msgid "Install"
 msgstr "インストール"
 
@@ -204,10 +210,40 @@ msgstr "問題点の表示"
 msgid "There are new issues"
 msgstr "新しい問題点があります"
 
-#: src/components/core/IssuesPage.jsx:115
+#. TRANSLATORS: page section
+#: src/components/core/IssuesPage.jsx:92
+#: src/components/overview/ProductSection.jsx:71
+#: src/components/product/ProductPage.jsx:434
+msgid "Product"
+msgstr "製品"
+
+#. TRANSLATORS: page section title
+#. TRANSLATORS: page title
+#: src/components/core/IssuesPage.jsx:100
+#: src/components/overview/StorageSection.jsx:208
+#: src/components/storage/ProposalPage.jsx:218
+msgid "Storage"
+msgstr "ストレージ"
+
+#. TRANSLATORS: page title
+#. TRANSLATORS: page section
+#: src/components/core/IssuesPage.jsx:108
+#: src/components/overview/SoftwareSection.jsx:143
+#: src/components/software/SoftwarePage.jsx:81
+msgid "Software"
+msgstr "ソフトウエア"
+
+#: src/components/core/IssuesPage.jsx:129
 msgid "No issues found. Everything looks ok."
 msgstr ""
 "問題点は見つかりませんでした。インストールに支障はないものと思われます。"
+
+#. TRANSLATORS: search field placeholder text
+#: src/components/core/ListSearch.jsx:50
+#: src/components/software/PatternSelector.jsx:220
+#: src/components/software/PatternSelector.jsx:221
+msgid "Search"
+msgstr "検索"
 
 #: src/components/core/LogsButton.jsx:98
 msgid "Collecting logs..."
@@ -270,12 +306,11 @@ msgstr "キャンセル"
 #. TRANSLATORS: dropdown label
 #: src/components/core/RowActions.jsx:66
 #: src/components/storage/ProposalVolumes.jsx:119
-#: src/components/storage/ProposalVolumes.jsx:309
+#: src/components/storage/ProposalVolumes.jsx:310
 msgid "Actions"
 msgstr "処理"
 
 #: src/components/core/SectionSkeleton.jsx:29
-#: src/components/core/SectionSkeleton.jsx:34
 msgid "Waiting"
 msgstr "お待ちください"
 
@@ -308,8 +343,8 @@ msgstr "グローバルオプション"
 
 #. TRANSLATORS: sidebar header
 #: src/components/core/Sidebar.jsx:157
-msgid "Options"
-msgstr "オプション"
+msgid "Installer Options"
+msgstr "インストーラのオプション"
 
 #: src/components/core/Sidebar.jsx:164
 msgid "Hide navigation and other options"
@@ -330,21 +365,139 @@ msgstr[0] "%d 個のエラーが見つかりました"
 msgid "Basic popover"
 msgstr "基本ポップオーバー"
 
-#: src/components/l10n/L10nPage.jsx:72
-#: src/components/l10n/LanguageSwitcher.jsx:50
-msgid "language"
-msgstr "言語"
+#. TRANSLATORS: label for keyboard layout selection
+#: src/components/l10n/InstallerKeymapSwitcher.jsx:53
+#: src/components/l10n/L10nPage.jsx:357
+msgid "Keyboard"
+msgstr "キーボード"
 
-#. TRANSLATORS: page header
+#. TRANSLATORS: label for keyboard layout selection
+#: src/components/l10n/InstallerKeymapSwitcher.jsx:61
+msgid "keyboard"
+msgstr "キーボード"
+
+#. TRANSLATORS:
+#: src/components/l10n/InstallerKeymapSwitcher.jsx:70
+msgid "Keyboard layout cannot be changed in remote installation"
+msgstr "リモートインストールの場合、キーボードレイアウトは変更できません"
+
+#. TRANSLATORS: help text for the language selector in the sidebar,
+#. %s will be replaced by the "Localization" page link
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:47
+#, c-format
+msgid ""
+"The language used by the installer. The language for the installed system "
+"can be set in the %s page."
+msgstr "インストーラで使用する言語です。インストール先のシステムで使用する言語は %s ページで設定します。"
+
+#. TRANSLATORS: page title
 #. TRANSLATORS: page section
-#: src/components/l10n/L10nPage.jsx:84
-#: src/components/overview/L10nSection.jsx:82
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:56
+#: src/components/l10n/L10nPage.jsx:385
+#: src/components/overview/L10nSection.jsx:52
 msgid "Localization"
 msgstr "ローカライゼーション"
 
-#: src/components/l10n/LanguageSwitcher.jsx:46
-msgid "Display Language"
-msgstr "表示言語"
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:66
+#: src/components/l10n/L10nPage.jsx:246
+msgid "Language"
+msgstr "言語"
+
+#: src/components/l10n/InstallerLocaleSwitcher.jsx:74
+msgid "language"
+msgstr "言語"
+
+#. TRANSLATORS: placeholder text for search input in the keyboard selector.
+#: src/components/l10n/KeymapSelector.jsx:82
+msgid "Filter by description or keymap code"
+msgstr "説明またはキーマップコードでフィルタ"
+
+#: src/components/l10n/KeymapSelector.jsx:89
+msgid "Available keymaps"
+msgstr "利用可能なキーマップ"
+
+#: src/components/l10n/L10nPage.jsx:66 src/components/l10n/L10nPage.jsx:140
+msgid "Select time zone"
+msgstr "タイムゾーンの選択"
+
+#: src/components/l10n/L10nPage.jsx:67
+#, c-format
+msgid "%s will use the selected time zone."
+msgstr "%s を選択したタイムゾーンとして使用します。"
+
+#: src/components/l10n/L10nPage.jsx:128
+msgid "Time zone"
+msgstr "タイムゾーン"
+
+#: src/components/l10n/L10nPage.jsx:134
+msgid "Change time zone"
+msgstr "タイムゾーンの変更"
+
+#: src/components/l10n/L10nPage.jsx:139
+msgid "Time zone not selected yet"
+msgstr "タイムゾーンを選択していません"
+
+#: src/components/l10n/L10nPage.jsx:182 src/components/l10n/L10nPage.jsx:258
+msgid "Select language"
+msgstr "言語の選択"
+
+#: src/components/l10n/L10nPage.jsx:183
+#, c-format
+msgid "%s will use the selected language."
+msgstr "%s を選択した言語として使用します。"
+
+#: src/components/l10n/L10nPage.jsx:252
+msgid "Change language"
+msgstr "言語の変更"
+
+#: src/components/l10n/L10nPage.jsx:257
+msgid "Language not selected yet"
+msgstr "言語を選択していません"
+
+#: src/components/l10n/L10nPage.jsx:295 src/components/l10n/L10nPage.jsx:369
+msgid "Select keyboard"
+msgstr "キーボードの選択"
+
+#: src/components/l10n/L10nPage.jsx:296
+#, c-format
+msgid "%s will use the selected keyboard."
+msgstr "%s を選択したキーボードとして使用します。"
+
+#: src/components/l10n/L10nPage.jsx:363
+msgid "Change keyboard"
+msgstr "キーボードの変更"
+
+#: src/components/l10n/L10nPage.jsx:368
+msgid "Keyboard not selected yet"
+msgstr "キーボードを選択していません"
+
+#: src/components/l10n/L10nPage.jsx:387
+#: src/components/product/ProductPage.jsx:434
+#: src/components/software/SoftwarePage.jsx:81
+#: src/components/storage/DASDPage.jsx:187
+#: src/components/storage/ISCSIPage.jsx:39
+#: src/components/storage/ProposalPage.jsx:218
+#: src/components/storage/ZFCPPage.jsx:736
+#: src/components/users/UsersPage.jsx:30
+msgid "Back"
+msgstr "戻る"
+
+#: src/components/l10n/LocaleSelector.jsx:82
+msgid "Filter by language, territory or locale code"
+msgstr "言語／地域／ロケールコードでフィルタ"
+
+#: src/components/l10n/LocaleSelector.jsx:89
+msgid "Available locales"
+msgstr "利用可能なロケール"
+
+#. TRANSLATORS: placeholder text for search input in the timezone selector.
+#: src/components/l10n/TimezoneSelector.jsx:102
+msgid "Filter by territory, time zone code or UTC offset"
+msgstr "地域／タイムゾーンコード／UTC オフセット値でフィルタ"
+
+#: src/components/l10n/TimezoneSelector.jsx:109
+msgid "Available time zones"
+msgstr "利用可能なタイムゾーン"
 
 #: src/components/layout/Loading.jsx:30
 msgid "Loading installation environment, please wait."
@@ -386,8 +539,8 @@ msgstr "アドレス"
 msgid "Addresses data list"
 msgstr "アドレスデータの一覧"
 
-#. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
+#. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/network/ConnectionsTable.jsx:57
 #: src/components/network/ConnectionsTable.jsx:86
 #: src/components/storage/ZFCPPage.jsx:362
@@ -406,7 +559,7 @@ msgid "IP addresses"
 msgstr "IP アドレス"
 
 #: src/components/network/ConnectionsTable.jsx:67
-#: src/components/storage/ProposalVolumes.jsx:233
+#: src/components/storage/ProposalVolumes.jsx:234
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
 #: src/components/users/FirstUser.jsx:170
@@ -522,8 +675,8 @@ msgstr "WiFi 接続が見つかりませんでした"
 msgid "Connect to a Wi-Fi network"
 msgstr "Wi-Fi ネットワークへの接続"
 
-#. TRANSLATORS: page section title
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section title
 #: src/components/network/NetworkPage.jsx:170
 #: src/components/overview/NetworkSection.jsx:102
 msgid "Network"
@@ -551,6 +704,8 @@ msgid "WPA & WPA2 Personal"
 msgstr "WPA および WPA2 Personal"
 
 #: src/components/network/WifiConnectionForm.jsx:91
+#: src/components/product/ProductPage.jsx:128
+#: src/components/product/ProductPage.jsx:194
 #: src/components/storage/ZFCPDiskForm.jsx:112
 #: src/components/storage/iscsi/DiscoverForm.jsx:108
 #: src/components/storage/iscsi/LoginForm.jsx:72
@@ -605,8 +760,8 @@ msgstr "接続済み"
 msgid "Disconnecting"
 msgstr "切断中"
 
-#. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
+#. TRANSLATORS: iSCSI connection status
 #: src/components/network/WifiNetworkListItem.jsx:50
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -623,9 +778,9 @@ msgstr "接続 %s は状態の変化を待っています"
 msgid "Forget network"
 msgstr "ネットワークの削除"
 
-#. TRANSLATORS: %s will be replaced by a language name and code,
-#. example: "English (en_US.UTF-8)"
-#: src/components/overview/L10nSection.jsx:70
+#. TRANSLATORS: %s will be replaced by a language name and territory, example:
+#. "English (United States)".
+#: src/components/overview/L10nSection.jsx:34
 #, c-format
 msgid "The system will use %s as its default language."
 msgstr "システムは %s を既定の言語として使用します。"
@@ -642,44 +797,63 @@ msgid "%d connection set:"
 msgid_plural "%d connections set:"
 msgstr[0] "%d 個の接続が設定されています:"
 
-#: src/components/overview/SoftwareSection.jsx:37
+#. TRANSLATORS: page title
+#: src/components/overview/Overview.jsx:47
+msgid "Installation Summary"
+msgstr "インストールの概要"
+
+#. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+#: src/components/overview/ProductSection.jsx:48
+#, c-format
+msgid "%s (registered)"
+msgstr "%s (登録済み)"
+
+#: src/components/overview/SoftwareSection.jsx:38
 msgid "Reading software repositories"
 msgstr "ソフトウエアリポジトリを読み込んでいます"
 
 #. TRANSLATORS: clickable link label
-#: src/components/overview/SoftwareSection.jsx:135
+#: src/components/overview/SoftwareSection.jsx:133
 msgid "Refresh the repositories"
 msgstr "リポジトリの更新"
 
-#. TRANSLATORS: page section
-#. TRANSLATORS: page title
-#: src/components/overview/SoftwareSection.jsx:145
-#: src/components/software/SoftwarePage.jsx:81
-msgid "Software"
-msgstr "ソフトウエア"
-
-#: src/components/overview/StorageSection.jsx:36
-#: src/components/storage/ProposalSettingsSection.jsx:122
+#: src/components/overview/StorageSection.jsx:42
+#: src/components/storage/ProposalSettingsSection.jsx:126
 msgid "No device selected yet"
 msgstr "まだ何もデバイスを選択していません"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:44
+#: src/components/overview/StorageSection.jsx:52
+#, c-format
+msgid "Install using device %s shrinking existing partitions as needed"
+msgstr ""
+"デバイス %s の既存パーティションを必要に応じて縮小してインストールします"
+
+#. TRANSLATORS: %s will be replaced by the device name and its size,
+#. example: "/dev/sda, 20 GiB"
+#: src/components/overview/StorageSection.jsx:56
+#, c-format
+msgid "Install using device %s without modifying existing partitions"
+msgstr "デバイス %s の既存パーティションを変更せずにインストールします"
+
+#. TRANSLATORS: %s will be replaced by the device name and its size,
+#. example: "/dev/sda, 20 GiB"
+#: src/components/overview/StorageSection.jsx:60
 #, c-format
 msgid "Install using device %s and deleting all its content"
 msgstr "デバイス %s の内容を全て削除してインストールします"
 
-#: src/components/overview/StorageSection.jsx:57
+#. TRANSLATORS: %s will be replaced by the device name and its size,
+#. example: "/dev/sda, 20 GiB"
+#: src/components/overview/StorageSection.jsx:66
+#, c-format
+msgid "Install using device %s"
+msgstr "デバイス %s を利用してインストールします"
+
+#: src/components/overview/StorageSection.jsx:83
 msgid "Probing storage devices"
 msgstr "ストレージデバイスを検出しています"
-
-#. TRANSLATORS: page title
-#. TRANSLATORS: page section title
-#: src/components/overview/StorageSection.jsx:182
-#: src/components/storage/ProposalPage.jsx:218
-msgid "Storage"
-msgstr "ストレージ"
 
 #. TRANSLATORS: %s will be replaced by the user name
 #: src/components/overview/UsersSection.jsx:80
@@ -714,6 +888,96 @@ msgstr "公開 SSH 鍵による root 認証を設定済み"
 msgid "Users"
 msgstr "ユーザ"
 
+#: src/components/product/ProductPage.jsx:63
+#: src/components/product/ProductSelectionPage.jsx:73
+msgid "Choose a product"
+msgstr "製品を選択してください"
+
+#: src/components/product/ProductPage.jsx:122
+#, c-format
+msgid "Register %s"
+msgstr "%s の登録"
+
+#: src/components/product/ProductPage.jsx:188
+#, c-format
+msgid "Deregister %s"
+msgstr "%s の登録解除"
+
+#. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+#: src/components/product/ProductPage.jsx:202
+#, c-format
+msgid "Do you want to deregister %s?"
+msgstr "%s を登録解除してよろしいですか？"
+
+#: src/components/product/ProductPage.jsx:227
+msgid "Registered warning"
+msgstr "登録済みによる警告"
+
+#. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+#: src/components/product/ProductPage.jsx:232
+#, c-format
+msgid "The product %s must be deregistered before selecting a new product."
+msgstr "新しい製品を選択する前に、製品 %s の登録を解除しなければなりません。"
+
+#: src/components/product/ProductPage.jsx:263
+msgid "Change product"
+msgstr "製品の変更"
+
+#: src/components/product/ProductPage.jsx:305
+msgid "Register"
+msgstr "登録"
+
+#: src/components/product/ProductPage.jsx:337
+msgid "Deregister product"
+msgstr "製品の登録解除"
+
+#: src/components/product/ProductPage.jsx:370
+msgid "Code:"
+msgstr "コード:"
+
+#: src/components/product/ProductPage.jsx:374
+msgid "Email:"
+msgstr "電子メール:"
+
+#. TRANSLATORS: section title.
+#: src/components/product/ProductPage.jsx:390
+msgid "Registration"
+msgstr "登録"
+
+#: src/components/product/ProductPage.jsx:399
+msgid "This product requires registration."
+msgstr "この製品には登録が必要です。"
+
+#: src/components/product/ProductPage.jsx:405
+msgid "This product does not require registration."
+msgstr "この製品には登録は不要です。"
+
+#: src/components/product/ProductRegistrationForm.jsx:63
+msgid "Registration code"
+msgstr "登録コード"
+
+#: src/components/product/ProductRegistrationForm.jsx:66
+msgid "Email"
+msgstr "電子メール"
+
+#: src/components/product/ProductSelectionPage.jsx:58
+msgid "Loading available products, please wait..."
+msgstr "利用可能な製品を読み込んでいます。しばらくお待ちください..."
+
+#. TRANSLATORS: page header
+#: src/components/product/ProductSelectionPage.jsx:64
+msgid "Product selection"
+msgstr "製品の選択"
+
+#. TRANSLATORS: button label
+#: src/components/product/ProductSelectionPage.jsx:69
+msgid "Select"
+msgstr "選択"
+
+#: src/components/product/ProductSelector.jsx:29
+msgid "No products available for selection"
+msgstr "選択できる製品がありません"
+
 #: src/components/questions/GenericQuestion.jsx:35
 #: src/components/questions/LuksActivationQuestion.jsx:60
 msgid "Question"
@@ -733,10 +997,6 @@ msgstr "暗号化されたデバイス"
 msgid "Encryption Password"
 msgstr "暗号化パスワード"
 
-#: src/components/software/ChangeProductLink.jsx:36
-msgid "Change product"
-msgstr "製品の変更"
-
 #. TRANSLATORS: pattern status, selected to install (by user)
 #: src/components/software/PatternItem.jsx:63
 msgid "selected"
@@ -754,47 +1014,14 @@ msgstr "未選択"
 
 #. TRANSLATORS: error summary, always plural, %d is replaced by number of errors (2 or more)
 #. if there is just a single error then the error is displayed directly instead of this summary
-#: src/components/software/PatternSelector.jsx:206
+#: src/components/software/PatternSelector.jsx:207
 #, c-format
 msgid "%d errors"
 msgstr "%d 個のエラー"
 
-#: src/components/software/PatternSelector.jsx:210
+#: src/components/software/PatternSelector.jsx:215
 msgid "Software summary and filter options"
 msgstr "ソフトウエアの概要とフィルタのオプション"
-
-#. TRANSLATORS: search field placeholder text
-#: src/components/software/PatternSelector.jsx:215
-#: src/components/software/PatternSelector.jsx:216
-msgid "Search"
-msgstr "検索"
-
-#: src/components/software/ProductSelectionPage.jsx:69
-msgid "Loading available products, please wait..."
-msgstr "利用可能な製品を読み込んでいます。しばらくお待ちください..."
-
-#. TRANSLATORS: page header
-#: src/components/software/ProductSelectionPage.jsx:94
-msgid "Product selection"
-msgstr "製品の選択"
-
-#. TRANSLATORS: button label
-#: src/components/software/ProductSelectionPage.jsx:99
-msgid "Select"
-msgstr "選択"
-
-#: src/components/software/ProductSelectionPage.jsx:104
-msgid "Choose a product"
-msgstr "製品を選択してください"
-
-#: src/components/software/SoftwarePage.jsx:81
-#: src/components/storage/DASDPage.jsx:187
-#: src/components/storage/ISCSIPage.jsx:39
-#: src/components/storage/ProposalPage.jsx:218
-#: src/components/storage/ZFCPPage.jsx:736
-#: src/components/users/UsersPage.jsx:30
-msgid "Back"
-msgstr "戻る"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
@@ -971,29 +1198,29 @@ msgstr "iSCSI ターゲットへの接続"
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/components/storage/ProposalSettingsSection.jsx:135
+#: src/components/storage/ProposalSettingsSection.jsx:139
 msgid "Select the device for installing the system."
 msgstr "システムのインストール先デバイスを選択してください。"
 
-#: src/components/storage/ProposalSettingsSection.jsx:140
 #: src/components/storage/ProposalSettingsSection.jsx:144
-#: src/components/storage/ProposalSettingsSection.jsx:240
+#: src/components/storage/ProposalSettingsSection.jsx:148
+#: src/components/storage/ProposalSettingsSection.jsx:244
 msgid "Installation device"
 msgstr "インストール先のデバイス"
 
-#: src/components/storage/ProposalSettingsSection.jsx:150
+#: src/components/storage/ProposalSettingsSection.jsx:154
 msgid "No devices found"
 msgstr "デバイスが見つかりませんでした"
 
-#: src/components/storage/ProposalSettingsSection.jsx:237
+#: src/components/storage/ProposalSettingsSection.jsx:241
 msgid "Devices for creating the volume group"
 msgstr "ボリュームグループを作成するデバイス"
 
-#: src/components/storage/ProposalSettingsSection.jsx:246
+#: src/components/storage/ProposalSettingsSection.jsx:250
 msgid "Custom devices"
 msgstr "独自のデバイス"
 
-#: src/components/storage/ProposalSettingsSection.jsx:310
+#: src/components/storage/ProposalSettingsSection.jsx:314
 msgid ""
 "Configuration of the system volume group. All the file systems will be "
 "created in a logical volume of the system volume group."
@@ -1001,37 +1228,54 @@ msgstr ""
 "システムのボリュームグループ向けの設定です。全てのファイルシステムは、システ"
 "ムのボリュームグループにある論理ボリューム内に作成されます。"
 
-#: src/components/storage/ProposalSettingsSection.jsx:316
+#: src/components/storage/ProposalSettingsSection.jsx:320
 msgid "Configure the LVM settings"
 msgstr "LVM 設定"
 
-#: src/components/storage/ProposalSettingsSection.jsx:321
-#: src/components/storage/ProposalSettingsSection.jsx:341
+#: src/components/storage/ProposalSettingsSection.jsx:325
+#: src/components/storage/ProposalSettingsSection.jsx:345
 msgid "LVM settings"
 msgstr "LVM 設定"
 
-#: src/components/storage/ProposalSettingsSection.jsx:334
+#: src/components/storage/ProposalSettingsSection.jsx:338
 msgid "Use logical volume management (LVM)"
 msgstr "論理ボリュームマネージャ (LVM) を使用する"
 
-#: src/components/storage/ProposalSettingsSection.jsx:342
+#: src/components/storage/ProposalSettingsSection.jsx:346
 msgid "System Volume Group"
 msgstr "システムのボリュームグループ"
 
-#: src/components/storage/ProposalSettingsSection.jsx:470
+#: src/components/storage/ProposalSettingsSection.jsx:474
 msgid "Change encryption password"
 msgstr "暗号化パスワードを変更する"
 
-#: src/components/storage/ProposalSettingsSection.jsx:475
-#: src/components/storage/ProposalSettingsSection.jsx:496
+#: src/components/storage/ProposalSettingsSection.jsx:479
+#: src/components/storage/ProposalSettingsSection.jsx:500
 msgid "Encryption settings"
 msgstr "暗号化の設定"
 
-#: src/components/storage/ProposalSettingsSection.jsx:489
+#: src/components/storage/ProposalSettingsSection.jsx:493
 msgid "Use encryption"
 msgstr "暗号化を使用する"
 
-#: src/components/storage/ProposalSettingsSection.jsx:557
+#: src/components/storage/ProposalSettingsSection.jsx:578
+msgid ""
+"Select how to make free space in the disks selected for allocating the     "
+"file systems."
+msgstr ""
+"選択したディスク内にファイルシステムを割り当てるための領域確保方法を選択して"
+"ください。"
+
+#. TRANSLATORS: To be completed with the rest of a sentence like "deleting all content"
+#: src/components/storage/ProposalSettingsSection.jsx:584
+msgid "Find space"
+msgstr "領域の検出"
+
+#: src/components/storage/ProposalSettingsSection.jsx:588
+msgid "Space Policy"
+msgstr "領域ポリシー"
+
+#: src/components/storage/ProposalSettingsSection.jsx:662
 msgid "Settings"
 msgstr "設定"
 
@@ -1084,99 +1328,125 @@ msgid "partition"
 msgstr "パーティション"
 
 #. TRANSLATORS: filesystem flag, it uses an encryption
-#: src/components/storage/ProposalVolumes.jsx:215
+#: src/components/storage/ProposalVolumes.jsx:216
 msgid "encrypted"
 msgstr "暗号化"
 
 #. TRANSLATORS: filesystem flag, it allows creating snapshots
-#: src/components/storage/ProposalVolumes.jsx:217
+#: src/components/storage/ProposalVolumes.jsx:218
+#: src/components/storage/VolumeForm.jsx:128
+#: src/components/storage/VolumeForm.jsx:161
+#, c-format
 msgid "with snapshots"
 msgstr "スナップショット有り"
 
 #. TRANSLATORS: flag for transactional file system
-#: src/components/storage/ProposalVolumes.jsx:219
+#: src/components/storage/ProposalVolumes.jsx:220
 msgid "transactional"
 msgstr "トランザクション型"
 
-#: src/components/storage/ProposalVolumes.jsx:228
+#: src/components/storage/ProposalVolumes.jsx:229
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
 msgid "Delete"
 msgstr "削除"
 
-#: src/components/storage/ProposalVolumes.jsx:274
+#: src/components/storage/ProposalVolumes.jsx:275
 msgid "Edit file system"
 msgstr "ファイルシステムの編集"
 
-#: src/components/storage/ProposalVolumes.jsx:306
-#: src/components/storage/VolumeForm.jsx:500
+#: src/components/storage/ProposalVolumes.jsx:307
+#: src/components/storage/VolumeForm.jsx:723
 msgid "Mount point"
 msgstr "マウントポイント"
 
-#: src/components/storage/ProposalVolumes.jsx:307
+#: src/components/storage/ProposalVolumes.jsx:308
 msgid "Details"
 msgstr "詳細"
 
-#: src/components/storage/ProposalVolumes.jsx:308
-#: src/components/storage/VolumeForm.jsx:517
+#: src/components/storage/ProposalVolumes.jsx:309
+#: src/components/storage/VolumeForm.jsx:737
 msgid "Size"
 msgstr "サイズ"
 
-#: src/components/storage/ProposalVolumes.jsx:344
+#: src/components/storage/ProposalVolumes.jsx:345
 msgid "Table with mount points"
 msgstr "マウントポイントの一覧"
 
-#: src/components/storage/ProposalVolumes.jsx:407
+#: src/components/storage/ProposalVolumes.jsx:408
 msgid "File systems to create in your system"
 msgstr "お使いのシステム内で作成するファイルシステム"
 
+#. TRANSLATORS: description of Btrfs snapshots feature.
+#: src/components/storage/VolumeForm.jsx:168
+msgid ""
+"Allows rolling back any change done to the system and restoring its previous "
+"state"
+msgstr "システムに実施された任意の変更を巻き戻し、以前の状態を復元できるようにします"
+
+#. TRANSLATORS: info about possible file system types.
+#: src/components/storage/VolumeForm.jsx:265
+msgid ""
+"The options for the file system type depends on the product and the mount "
+"point."
+msgstr "ファイルシステムに対する選択肢は、製品とマウントポイントごとに異なります。"
+
+#: src/components/storage/VolumeForm.jsx:271
+msgid "More info for file system types"
+msgstr "ファイルシステムの種類に関する詳細"
+
+#. TRANSLATORS: label for the file system selector.
+#: src/components/storage/VolumeForm.jsx:282
+msgid "File system type"
+msgstr "ファイルシステムの種類"
+
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeForm.jsx:97
+#: src/components/storage/VolumeForm.jsx:314
 msgid "the configuration of snapshots"
 msgstr "スナップショットの設定"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
-#: src/components/storage/VolumeForm.jsx:102
+#: src/components/storage/VolumeForm.jsx:319
 #, c-format
 msgid "the presence of the file system for %s"
 msgstr "%s に対するファイルシステムの存在"
 
 #. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeForm.jsx:104
+#: src/components/storage/VolumeForm.jsx:321
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeForm.jsx:107
+#: src/components/storage/VolumeForm.jsx:324
 #, c-format
 msgid "The final size depends on %s."
 msgstr "最終的なサイズは %s に依存します。"
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeForm.jsx:109
+#: src/components/storage/VolumeForm.jsx:326
 msgid " and "
 msgstr " および "
 
 #. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeForm.jsx:114
+#: src/components/storage/VolumeForm.jsx:331
 msgid "Automatically calculated size according to the selected product."
 msgstr "選択した製品から自動計算したサイズです。"
 
-#: src/components/storage/VolumeForm.jsx:134
+#: src/components/storage/VolumeForm.jsx:351
 msgid "Exact size for the file system."
 msgstr "ファイルシステムに対する正確なサイズです。"
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeForm.jsx:146
+#: src/components/storage/VolumeForm.jsx:363
 msgid "Exact size"
 msgstr "正確なサイズ"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeForm.jsx:161
+#: src/components/storage/VolumeForm.jsx:378
 msgid "Size unit"
 msgstr "サイズの単位"
 
-#: src/components/storage/VolumeForm.jsx:189
+#: src/components/storage/VolumeForm.jsx:406
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1187,63 +1457,59 @@ msgstr ""
 "に設定されます。"
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeForm.jsx:196
+#: src/components/storage/VolumeForm.jsx:413
 msgid "Minimum"
 msgstr "最小"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeForm.jsx:206
+#: src/components/storage/VolumeForm.jsx:423
 msgid "Minimum desired size"
 msgstr "最小必須サイズ"
 
-#: src/components/storage/VolumeForm.jsx:215
+#: src/components/storage/VolumeForm.jsx:432
 msgid "Unit for the minimum size"
 msgstr "最小サイズの単位"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:226
+#: src/components/storage/VolumeForm.jsx:443
 msgid "Maximum"
 msgstr "最大"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:237
+#: src/components/storage/VolumeForm.jsx:454
 msgid "Maximum desired size"
 msgstr "最大要求サイズ"
 
-#: src/components/storage/VolumeForm.jsx:245
+#: src/components/storage/VolumeForm.jsx:462
 msgid "Unit for the maximum size"
 msgstr "最大サイズの単位"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeForm.jsx:262
+#: src/components/storage/VolumeForm.jsx:479
 msgid "Auto"
 msgstr "自動"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeForm.jsx:264
+#: src/components/storage/VolumeForm.jsx:481
 msgid "Fixed"
 msgstr "固定値"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeForm.jsx:266
+#: src/components/storage/VolumeForm.jsx:483
 msgid "Range"
 msgstr "範囲"
 
-#: src/components/storage/VolumeForm.jsx:470
+#: src/components/storage/VolumeForm.jsx:691
 msgid "A size value is required"
 msgstr "サイズを指定する必要があります"
 
-#: src/components/storage/VolumeForm.jsx:475
+#: src/components/storage/VolumeForm.jsx:696
 msgid "Minimum size is required"
 msgstr "最小サイズを指定する必要があります"
 
-#: src/components/storage/VolumeForm.jsx:479
+#: src/components/storage/VolumeForm.jsx:700
 msgid "Maximum must be greater than minimum"
 msgstr "最大サイズは最小サイズより大きくなければなりません"
-
-#: src/components/storage/VolumeForm.jsx:509
-msgid "File system type"
-msgstr "ファイルシステムの種類"
 
 #: src/components/storage/ZFCPDiskForm.jsx:113
 msgid "The zFCP disk was not activated."
@@ -1341,64 +1607,64 @@ msgid "Storage zFCP"
 msgstr "ストレージ zFCP"
 
 #. TRANSLATORS: multipath device type
-#: src/components/storage/device-utils.jsx:98
+#: src/components/storage/device-utils.jsx:97
 msgid "Multipath"
 msgstr "マルチパス"
 
 #. TRANSLATORS: %s is replaced by the device bus ID
-#: src/components/storage/device-utils.jsx:103
+#: src/components/storage/device-utils.jsx:102
 #, c-format
 msgid "DASD %s"
 msgstr "DASD %s"
 
 #. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
-#: src/components/storage/device-utils.jsx:108
+#: src/components/storage/device-utils.jsx:107
 #, c-format
 msgid "Software %s"
 msgstr "ソフトウエア %s"
 
-#: src/components/storage/device-utils.jsx:113
+#: src/components/storage/device-utils.jsx:112
 msgid "SD Card"
 msgstr "SD カード"
 
 #. TRANSLATORS: %s is replaced by the device transport name, e.g. USB, SATA, SCSI...
-#: src/components/storage/device-utils.jsx:115
+#: src/components/storage/device-utils.jsx:114
 #, c-format
 msgid "Transport %s"
 msgstr "トランスポート %s"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/device-utils.jsx:134
+#: src/components/storage/device-utils.jsx:133
 #, c-format
 msgid "Members: %s"
 msgstr "メンバー: %s"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/device-utils.jsx:143
+#: src/components/storage/device-utils.jsx:142
 #, c-format
 msgid "Devices: %s"
 msgstr "デバイス: %s"
 
 #. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
-#: src/components/storage/device-utils.jsx:152
+#: src/components/storage/device-utils.jsx:151
 #, c-format
 msgid "Wires: %s"
 msgstr "接続: %s"
 
 #. TRANSLATORS: disk partition info, %s is replaced by partition table
 #. type (MS-DOS or GPT), %d is the number of the partitions
-#: src/components/storage/device-utils.jsx:176
+#: src/components/storage/device-utils.jsx:175
 #, c-format
 msgid "%s with %d partitions"
 msgstr "%s (%d 個のパーティション)"
 
 #. TRANSLATORS: status message, no existing content was found on the disk,
 #. i.e. the disk is completely empty
-#: src/components/storage/device-utils.jsx:200
+#: src/components/storage/device-utils.jsx:199
 msgid "No content found"
 msgstr "内容が見つかりませんでした"
 
-#: src/components/storage/device-utils.jsx:271
+#: src/components/storage/device-utils.jsx:270
 msgid "Available devices"
 msgstr "利用可能なデバイス"
 
@@ -1575,6 +1841,71 @@ msgstr "検索"
 msgid "Targets"
 msgstr "ターゲット"
 
+#. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
+#: src/components/storage/space-policy-utils.jsx:59
+msgid "Delete current content"
+msgstr "現在の内容を全て削除"
+
+#. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
+#: src/components/storage/space-policy-utils.jsx:63
+msgid "Shrink existing partitions"
+msgstr "既存のパーティションの縮小"
+
+#. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
+#: src/components/storage/space-policy-utils.jsx:67
+msgid "Use available space"
+msgstr "利用可能な領域を使用する"
+
+#: src/components/storage/space-policy-utils.jsx:79
+msgid "All partitions will be removed and any data in the disks will be lost."
+msgstr ""
+"ディスク内の全てのパーティションを削除します。これにより、ディスク内に存在す"
+"るデータは全て失われます。"
+
+#: src/components/storage/space-policy-utils.jsx:82
+msgid ""
+"The data is kept, but the current partitions will be resized as needed to "
+"make enough space."
+msgstr ""
+"ディスク内のデータは保持しますが、十分な領域を確保するために既存のパーティ"
+"ションのサイズ変更を行います。"
+
+#: src/components/storage/space-policy-utils.jsx:85
+msgid ""
+"The data is kept and existing partitions will not be modified. Only the "
+"space that is not assigned to any partition will be used."
+msgstr ""
+"ディスク内のデータは全て保持し、パーティションの変更も行いません。パーティ"
+"ションに割り当てられていない空き領域のみを使用します。"
+
+#: src/components/storage/space-policy-utils.jsx:112
+msgid "Select a mechanism to make space"
+msgstr "領域の確保方法を選択してください"
+
+#: src/components/storage/space-policy-utils.jsx:137
+#, c-format
+msgid "deleting all content of the installation device"
+msgid_plural "deleting all content of the %d selected disks"
+msgstr[0] "選択した %d 個のディスクの全内容を削除します"
+
+#: src/components/storage/space-policy-utils.jsx:147
+#, c-format
+msgid "shrinking partitions of the installation device"
+msgid_plural "shrinking partitions of the %d selected disks"
+msgstr[0] "選択した %d 個のディスクのパーティションを縮小します"
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space without modifying any partition".
+#: src/components/storage/space-policy-utils.jsx:155
+msgid "without modifying any partition"
+msgstr "パーティションの変更を行いません"
+
+#: src/components/storage/space-policy-utils.jsx:170
+#, c-format
+msgid "This will only affect the installation device"
+msgid_plural "This will affect the %d disks selected for installation"
+msgstr[0] "この処理は、選択した %d 個のディスクにのみ影響します"
+
 #: src/components/storage/utils.js:44
 msgid "KiB"
 msgstr "KiB"
@@ -1749,6 +2080,12 @@ msgstr "ユーザ"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "root の認証"
+
+#~ msgid "Options"
+#~ msgstr "オプション"
+
+#~ msgid "Display Language"
+#~ msgstr "表示言語"
 
 #, c-format
 #~ msgid "Icon %s not found!"

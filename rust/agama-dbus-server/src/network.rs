@@ -60,5 +60,5 @@ pub async fn export_dbus_objects(
     let adapter = NetworkManagerAdapter::from_system()
         .await
         .expect("Could not connect to NetworkManager to read the configuration.");
-    NetworkService::start(&connection, adapter).await
+    NetworkService::start(connection, adapter).await
 }

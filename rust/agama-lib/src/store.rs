@@ -3,7 +3,8 @@
 use crate::error::ServiceError;
 use crate::install_settings::{InstallSettings, Scope};
 use crate::{
-    network::NetworkStore, software::SoftwareStore, storage::StorageStore, users::UsersStore,
+    network::NetworkStore, product::ProductStore, software::SoftwareStore, storage::StorageStore,
+    users::UsersStore,
 };
 use zbus::Connection;
 
@@ -16,6 +17,7 @@ use zbus::Connection;
 pub struct Store<'a> {
     users: UsersStore<'a>,
     network: NetworkStore<'a>,
+    product: ProductStore<'a>,
     software: SoftwareStore<'a>,
     storage: StorageStore<'a>,
 }
@@ -25,6 +27,7 @@ impl<'a> Store<'a> {
         Ok(Self {
             users: UsersStore::new(connection.clone()).await?,
             network: NetworkStore::new(connection.clone()).await?,
+            product: ProductStore::new(connection.clone()).await?,
             software: SoftwareStore::new(connection.clone()).await?,
             storage: StorageStore::new(connection).await?,
         })
@@ -53,6 +56,10 @@ impl<'a> Store<'a> {
             settings.user = Some(self.users.load().await?);
         }
 
+        if scopes.contains(&Scope::Product) {
+            settings.product = Some(self.product.load().await?);
+        }
+
         // TODO: use try_join here
         Ok(settings)
     }
@@ -61,6 +68,11 @@ impl<'a> Store<'a> {
     pub async fn store(&self, settings: &InstallSettings) -> Result<(), ServiceError> {
         if let Some(network) = &settings.network {
             self.network.store(network).await?;
+        }
+        // order is important here as network can be critical for connection
+        // to registration server and selecting product is important for rest
+        if let Some(product) = &settings.product {
+            self.product.store(product).await?;
         }
         if let Some(software) = &settings.software {
             self.software.store(software).await?;

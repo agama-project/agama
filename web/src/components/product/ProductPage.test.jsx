@@ -52,11 +52,11 @@ const selectedProduct = {
 };
 
 jest.mock("~/client");
-
 jest.mock("~/context/product", () => ({
   ...jest.requireActual("~/context/product"),
   useProduct: () => ({ products: mockProducts, selectedProduct, registration: mockRegistration })
 }));
+jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 beforeEach(() => {
   mockManager = {
@@ -247,7 +247,7 @@ describe("when the button for changing the product is clicked", () => {
       const popup = await screen.findByRole("dialog");
       within(popup).getByText(/must be deregistered/);
 
-      const accept = within(popup).getByRole("button", { name: "Accept" });
+      const accept = within(popup).getByRole("button", { name: "Close" });
       await user.click(accept);
 
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

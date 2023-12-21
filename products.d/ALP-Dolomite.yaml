@@ -14,12 +14,33 @@ translations:
     cs: SUSE ALP Dolomite je minimální neměnitelný základní OS, zaměřený na
       bezpečnost pro poskytování úplného minima ke spuštění úloh a služeb v
       kontejnerech nebo virtuálních strojích.
+    es: SUSE ALP Dolomite es un núcleo de sistema operativo mínimo e inmutable,
+      centrado en la seguridad para proporcionar lo mínimo necesario para
+      ejecutar cargas de trabajo y servicios como contenedores o máquinas
+      virtuales.
+    fr: SUSE ALP Dolomite est un noyau de système d'exploitation minimaliste et
+      immuable, axé sur la sécurité afin de fournir le strict minimum pour
+      exécuter des charges de travail et des services en tant que conteneurs ou
+      machines virtuelles.
+    id: SUSE ALP Dolomite adalah inti OS minimum yang immutable, yang berfokus pada
+      keamanan untuk menyediakan beban kerja dan layanan minimum untuk
+      menjalankan kontainer atau mesin virtual.
+    ja: SUSE ALP Dolomite
+      は不可変な中枢部を持ち、主にコンテナや仮想マシンの処理やサービスを安全な形で動作させるのに必要となる、最小限の機能を備えた OS です。
+    pt_BR: SUSE ALP Dolomite é um núcleo de sistema operacional mínimo imutável,
+      focado na segurança para fornecer o mínimo necessário para executar cargas
+      de trabalho e serviços como contêineres ou máquinas virtuais.
+    sv: SUSE ALP Dolomite är en minimal oföränderlig OS-kärna, fokuserad på säkerhet
+      för att tillhandahålla det absoluta minimum för att köra
+      arbetsbelastningar och tjänster som behållare eller virtuella maskiner.
 software:
   mandatory_patterns:
     - alp_base_zypper
     - alp_cockpit
     - alp_hardware
   optional_patterns: null # no optional pattern shared
+  # no user selectable patterns, do not display the pattern selector
+  user_patterns: []
   mandatory_packages:
     - package: ppc64-diag # Needed for hardware-based installations
       archs: ppc64

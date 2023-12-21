@@ -185,7 +185,7 @@ const IssuesContent = ({ issues, sectionHighlight = "" }) => {
  * @param {function} props.close - A function to call when the close action is triggered.
  * @param {string} [props.sectionHighlight] - A string which indicites which issues section should be highlighted.
  */
-export default function IssuesDialog({ close, sectionHighlight = "" }) {
+export default function IssuesDialog({ onClose, sectionHighlight = "" }) {
   const [isLoading, setIsLoading] = useState(true);
   const [issues, setIssues] = useState();
   const client = useInstallerClient();
@@ -215,7 +215,7 @@ export default function IssuesDialog({ close, sectionHighlight = "" }) {
         else={<IssuesContent issues={issues} sectionHighlight={sectionHighlight} />}
       />
       <Popup.Actions>
-        <Popup.Confirm onClick={close} autoFocus>{_("Close")}</Popup.Confirm>
+        <Popup.Confirm onClick={onClose} autoFocus>{_("Close")}</Popup.Confirm>
       </Popup.Actions>
     </Popup>
   );

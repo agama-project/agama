@@ -20,28 +20,24 @@
  */
 
 import React from "react";
-
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import * as utils from "~/utils";
 
+import * as utils from "~/utils";
 import { DBusError } from "~/components/core";
+
+jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 describe("DBusError", () => {
   it("includes a generic D-Bus connection problem message", () => {
     plainRender(<DBusError />);
-
-    expect(screen.getByText(/Could not connect to the D-Bus service/i))
-      .toBeInTheDocument();
+    screen.getByText(/Could not connect to the D-Bus service/i);
   });
 
   it("calls location.reload when user clicks on 'Reload'", async () => {
     jest.spyOn(utils, "locationReload").mockImplementation(utils.noop);
-
-    const { user } = plainRender(<DBusError />, { layout: true });
-
+    const { user } = plainRender(<DBusError />);
     const reloadButton = await screen.findByRole("button", { name: /Reload/i });
-
     await user.click(reloadButton);
     expect(utils.locationReload).toHaveBeenCalled();
   });

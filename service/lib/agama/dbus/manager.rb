@@ -60,7 +60,7 @@ module Agama
         dbus_method(:Probe, "") { config_phase }
         dbus_method(:Commit, "") { install_phase }
         dbus_method(:CanInstall, "out result:b") { can_install? }
-        dbus_method(:CollectLogs, "out tarball_filesystem_path:s, in user:s") { |u| collect_logs(u) }
+        dbus_method(:CollectLogs, "out tarball_filesystem_path:s") { collect_logs }
         dbus_method(:Finish, "") { finish_phase }
         dbus_reader :installation_phases, "aa{sv}"
         dbus_reader :current_installation_phase, "u"
@@ -92,8 +92,8 @@ module Agama
       end
 
       # Collects the YaST logs
-      def collect_logs(user)
-        backend.collect_logs(user)
+      def collect_logs
+        backend.collect_logs
       end
 
       # Last action for the installer

@@ -28,18 +28,6 @@ import { createClient } from "~/client";
 
 import SoftwarePage from "./SoftwarePage";
 
-const SkeletonMock = "Skeleton mock";
-jest.mock("@patternfly/react-core", () => {
-  const original = jest.requireActual("@patternfly/react-core");
-
-  return {
-    ...original,
-    Skeleton: () => { return <span>{SkeletonMock}</span> }
-  };
-});
-
-const PatternSelectorMock = "PatternSelector mock";
-jest.mock("~/components/software/PatternSelector", () => () => { return PatternSelectorMock });
 jest.mock("~/client");
 const getStatusFn = jest.fn();
 const onStatusChangeFn = jest.fn();
@@ -53,17 +41,27 @@ beforeEach(() => {
     };
   });
 });
+jest.mock("@patternfly/react-core", () => {
+  const original = jest.requireActual("@patternfly/react-core");
+
+  return {
+    ...original,
+    Skeleton: () => <span>Skeleton Mock</span>
+  };
+});
+jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
+jest.mock("~/components/software/PatternSelector", () => () => "PatternSelector Mock");
 
 describe("SoftwarePage", () => {
   it("displays a progress when the backend in busy", async () => {
     getStatusFn.mockResolvedValue(BUSY);
     await act(async () => installerRender(<SoftwarePage />));
-    screen.getAllByText(SkeletonMock);
+    screen.getAllByText("Skeleton Mock");
   });
 
   it("displays the PatternSelector when the backend in ready", async () => {
     getStatusFn.mockResolvedValue(IDLE);
     await act(async () => installerRender(<SoftwarePage />));
-    screen.getByText(PatternSelectorMock);
+    screen.getByText("PatternSelector Mock");
   });
 });

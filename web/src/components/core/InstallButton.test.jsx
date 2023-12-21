@@ -31,19 +31,18 @@ jest.mock("~/client", () => ({
   createClient: jest.fn()
 }));
 
-describe("when the button is clicked and there are not errors", () => {
-  let hasIssues = false;
+let issues;
 
+describe("when the button is clicked and there are not errors", () => {
   beforeEach(() => {
+    issues = {};
     createClient.mockImplementation(() => {
       return {
         manager: {
           startInstallation: startInstallationFn,
           canInstall: () => Promise.resolve(true),
         },
-        issues: {
-          any: () => Promise.resolve(hasIssues)
-        }
+        issues: jest.fn().mockResolvedValue({ ...issues })
       };
     });
   });
@@ -74,7 +73,16 @@ describe("when the button is clicked and there are not errors", () => {
 
   describe("if there are issues", () => {
     beforeEach(() => {
-      hasIssues = true;
+      issues = {
+        product: [],
+        storage: [
+          { description: "storage issue 1", details: "Details 1", source: "system", severity: "warn" },
+          { description: "storage issue 2", details: "Details 2", source: "config", severity: "error" }
+        ],
+        software: [
+          { description: "software issue 1", details: "Details 1", source: "system", severity: "warn" }
+        ]
+      };
     });
 
     it("shows a link to go to the issues page", async () => {
@@ -87,10 +95,6 @@ describe("when the button is clicked and there are not errors", () => {
   });
 
   describe("if there are not issues", () => {
-    beforeEach(() => {
-      hasIssues = false;
-    });
-
     it("does not show a link to go to the issues page", async () => {
       const { user } = installerRender(<InstallButton />);
       const button = await screen.findByRole("button", { name: "Install" });

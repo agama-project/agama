@@ -2,8 +2,8 @@
 //!
 //! This module implements the mechanisms to load and store the installation settings.
 use crate::{
-    network::NetworkSettings, software::SoftwareSettings, storage::StorageSettings,
-    users::UserSettings,
+    network::NetworkSettings, product::ProductSettings, software::SoftwareSettings,
+    storage::StorageSettings, users::UserSettings,
 };
 use agama_settings::Settings;
 use serde::{Deserialize, Serialize};
@@ -24,15 +24,18 @@ pub enum Scope {
     Storage,
     /// Network settings
     Network,
+    /// Product settings
+    Product,
 }
 
 impl Scope {
     /// Returns known scopes
     ///
     // TODO: we can rely on strum so we do not forget to add them
-    pub fn all() -> [Scope; 4] {
+    pub fn all() -> [Scope; 5] {
         [
             Scope::Network,
+            Scope::Product,
             Scope::Software,
             Scope::Storage,
             Scope::Users,
@@ -49,6 +52,7 @@ impl FromStr for Scope {
             "software" => Ok(Self::Software),
             "storage" => Ok(Self::Storage),
             "network" => Ok(Self::Network),
+            "product" => Ok(Self::Product),
             _ => Err("Unknown section"),
         }
     }
@@ -67,6 +71,9 @@ pub struct InstallSettings {
     #[serde(default)]
     #[settings(nested)]
     pub software: Option<SoftwareSettings>,
+    #[serde(default)]
+    #[settings(nested)]
+    pub product: Option<ProductSettings>,
     #[serde(default)]
     #[settings(nested)]
     pub storage: Option<StorageSettings>,
@@ -91,6 +98,9 @@ impl InstallSettings {
         }
         if self.network.is_some() {
             scopes.push(Scope::Network);
+        }
+        if self.product.is_some() {
+            scopes.push(Scope::Product);
         }
         scopes
     }

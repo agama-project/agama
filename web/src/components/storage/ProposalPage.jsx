@@ -27,7 +27,7 @@ import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
 import { Icon } from "~/components/layout";
 import { Page } from "~/components/core";
-import { ProposalActionsSection, ProposalPageOptions, ProposalSettingsSection } from "~/components/storage";
+import { ProposalActionsSection, ProposalPageMenu, ProposalSettingsSection } from "~/components/storage";
 import { IDLE } from "~/client/status";
 
 const initialState = {
@@ -194,7 +194,7 @@ export default function ProposalPage() {
       <>
         <Alert
           isInline
-          customIcon={<Icon name="info" size="16" />}
+          customIcon={<Icon name="info" size="xxs" />}
           title={_("Devices will not be modified until installation starts.")}
         />
         <ProposalSettingsSection
@@ -215,9 +215,9 @@ export default function ProposalPage() {
 
   return (
     // TRANSLATORS: page title
-    <Page title={_("Storage")} icon="hard_drive" actionLabel={_("Back")} actionVariant="secondary">
+    <Page icon="hard_drive" title={_("Storage")}>
       <PageContent />
-      <ProposalPageOptions />
+      <ProposalPageMenu />
     </Page>
   );
 }

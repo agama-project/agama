@@ -3,7 +3,7 @@
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //! agnostic from the real network service (e.g., NetworkManager).
 use crate::network::error::NetworkStateError;
-use agama_lib::network::types::{DeviceType, SSID};
+use agama_lib::network::types::{BondMode, DeviceType, SSID};
 use cidr::IpInet;
 use std::{
     collections::HashMap,
@@ -16,7 +16,7 @@ use thiserror::Error;
 use uuid::Uuid;
 use zbus::zvariant::Value;
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct NetworkState {
     pub devices: Vec<Device>,
     pub connections: Vec<Connection>,
@@ -43,27 +43,52 @@ impl NetworkState {
 
     /// Get connection by UUID
     ///
-    /// * `uuid`: connection UUID
-    pub fn get_connection(&self, id: &str) -> Option<&Connection> {
-        self.connections.iter().find(|c| c.id() == id)
+    /// * `id`: connection UUID
+    pub fn get_connection_by_uuid(&self, uuid: Uuid) -> Option<&Connection> {
+        self.connections.iter().find(|c| c.uuid == uuid)
     }
 
-    /// Get connection by UUID as mutable
+    /// Get connection by interface
     ///
-    /// * `uuid`: connection UUID
+    /// * `name`: connection interface name
+    pub fn get_connection_by_interface(&self, name: &str) -> Option<&Connection> {
+        let interface = Some(name);
+        self.connections
+            .iter()
+            .find(|c| c.interface.as_deref() == interface)
+    }
+
+    /// Get connection by ID
+    ///
+    /// * `id`: connection ID
+    pub fn get_connection(&self, id: &str) -> Option<&Connection> {
+        self.connections.iter().find(|c| c.id == id)
+    }
+
+    /// Get connection by ID as mutable
+    ///
+    /// * `id`: connection ID
     pub fn get_connection_mut(&mut self, id: &str) -> Option<&mut Connection> {
-        self.connections.iter_mut().find(|c| c.id() == id)
+        self.connections.iter_mut().find(|c| c.id == id)
+    }
+
+    pub fn get_controlled_by(&mut self, uuid: Uuid) -> Vec<&Connection> {
+        let uuid = Some(uuid);
+        self.connections
+            .iter()
+            .filter(|c| c.controller == uuid)
+            .collect()
     }
 
     /// Adds a new connection.
     ///
     /// It uses the `id` to decide whether the connection already exists.
     pub fn add_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
-        if self.get_connection(conn.id()).is_some() {
-            return Err(NetworkStateError::ConnectionExists(conn.uuid()));
+        if self.get_connection(&conn.id).is_some() {
+            return Err(NetworkStateError::ConnectionExists(conn.uuid));
         }
-
         self.connections.push(conn);
+
         Ok(())
     }
 
@@ -73,11 +98,11 @@ impl NetworkState {
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
     pub fn update_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
-        let Some(old_conn) = self.get_connection_mut(conn.id()) else {
-            return Err(NetworkStateError::UnknownConnection(conn.id().to_string()));
+        let Some(old_conn) = self.get_connection_mut(&conn.id) else {
+            return Err(NetworkStateError::UnknownConnection(conn.id.clone()));
         };
-
         *old_conn = conn;
+
         Ok(())
     }
 
@@ -92,39 +117,69 @@ impl NetworkState {
         conn.remove();
         Ok(())
     }
+
+    /// Sets a controller's ports.
+    ///
+    /// If the connection is not a controller, returns an error.
+    ///
+    /// * `controller`: controller to set ports on.
+    /// * `ports`: list of port names (using the connection ID or the interface name).
+    pub fn set_ports(
+        &mut self,
+        controller: &Connection,
+        ports: Vec<String>,
+    ) -> Result<(), NetworkStateError> {
+        if let ConnectionConfig::Bond(_) = &controller.config {
+            let mut controlled = vec![];
+            for port in ports {
+                let connection = self
+                    .get_connection_by_interface(&port)
+                    .or_else(|| self.get_connection(&port))
+                    .ok_or(NetworkStateError::UnknownConnection(port))?;
+                controlled.push(connection.uuid);
+            }
+
+            for conn in self.connections.iter_mut() {
+                if controlled.contains(&conn.uuid) {
+                    conn.controller = Some(controller.uuid);
+                } else if conn.controller == Some(controller.uuid) {
+                    conn.controller = None;
+                }
+            }
+            Ok(())
+        } else {
+            Err(NetworkStateError::NotControllerConnection(
+                controller.id.to_owned(),
+            ))
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use uuid::Uuid;
-
     use super::*;
     use crate::network::error::NetworkStateError;
+    use uuid::Uuid;
 
     #[test]
     fn test_add_connection() {
         let mut state = NetworkState::default();
         let uuid = Uuid::new_v4();
-        let base = BaseConnection {
+        let conn0 = Connection {
             id: "eth0".to_string(),
             uuid,
             ..Default::default()
         };
-        let conn0 = Connection::Ethernet(EthernetConnection { base });
         state.add_connection(conn0).unwrap();
         let found = state.get_connection("eth0").unwrap();
-        assert_eq!(found.uuid(), uuid);
+        assert_eq!(found.uuid, uuid);
     }
 
     #[test]
     fn test_add_duplicated_connection() {
         let mut state = NetworkState::default();
-        let uuid = Uuid::new_v4();
-        let base = BaseConnection {
-            uuid,
-            ..Default::default()
-        };
-        let conn0 = Connection::Ethernet(EthernetConnection { base });
+        let mut conn0 = Connection::new("eth0".to_string(), DeviceType::Ethernet);
+        conn0.uuid = Uuid::new_v4();
         state.add_connection(conn0.clone()).unwrap();
         let error = state.add_connection(conn0).unwrap_err();
         assert!(matches!(error, NetworkStateError::ConnectionExists(_)));
@@ -133,35 +188,28 @@ mod tests {
     #[test]
     fn test_update_connection() {
         let mut state = NetworkState::default();
-        let base0 = BaseConnection {
+        let conn0 = Connection {
             id: "eth0".to_string(),
             uuid: Uuid::new_v4(),
             ..Default::default()
         };
-        let conn0 = Connection::Ethernet(EthernetConnection { base: base0 });
         state.add_connection(conn0).unwrap();
 
         let uuid = Uuid::new_v4();
-        let base1 = BaseConnection {
+        let conn1 = Connection {
             id: "eth0".to_string(),
             uuid,
             ..Default::default()
         };
-        let conn2 = Connection::Ethernet(EthernetConnection { base: base1 });
-        state.update_connection(conn2).unwrap();
+        state.update_connection(conn1).unwrap();
         let found = state.get_connection("eth0").unwrap();
-        assert_eq!(found.uuid(), uuid);
+        assert_eq!(found.uuid, uuid);
     }
 
     #[test]
     fn test_update_unknown_connection() {
         let mut state = NetworkState::default();
-        let uuid = Uuid::new_v4();
-        let base = BaseConnection {
-            uuid,
-            ..Default::default()
-        };
-        let conn0 = Connection::Ethernet(EthernetConnection { base });
+        let conn0 = Connection::new("eth0".to_string(), DeviceType::Ethernet);
         let error = state.update_connection(conn0).unwrap_err();
         assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
     }
@@ -170,13 +218,7 @@ mod tests {
     fn test_remove_connection() {
         let mut state = NetworkState::default();
         let id = "eth0".to_string();
-        let uuid = Uuid::new_v4();
-        let base0 = BaseConnection {
-            id,
-            uuid,
-            ..Default::default()
-        };
-        let conn0 = Connection::Ethernet(EthernetConnection { base: base0 });
+        let conn0 = Connection::new(id, DeviceType::Ethernet);
         state.add_connection(conn0).unwrap();
         state.remove_connection("eth0").unwrap();
         let found = state.get_connection("eth0").unwrap();
@@ -192,19 +234,79 @@ mod tests {
 
     #[test]
     fn test_is_loopback() {
-        let base = BaseConnection {
+        let conn = Connection::new("eth0".to_string(), DeviceType::Ethernet);
+        assert!(!conn.is_loopback());
+
+        let conn = Connection::new("eth0".to_string(), DeviceType::Loopback);
+        assert!(conn.is_loopback());
+    }
+
+    #[test]
+    fn test_set_bonding_ports() {
+        let mut state = NetworkState::default();
+        let eth0 = Connection {
+            id: "eth0".to_string(),
+            interface: Some("eth0".to_string()),
+            ..Default::default()
+        };
+        let eth1 = Connection {
+            id: "eth1".to_string(),
+            interface: Some("eth1".to_string()),
+            ..Default::default()
+        };
+        let bond0 = Connection {
+            id: "bond0".to_string(),
+            interface: Some("bond0".to_string()),
+            config: ConnectionConfig::Bond(Default::default()),
+            ..Default::default()
+        };
+
+        state.add_connection(eth0).unwrap();
+        state.add_connection(eth1).unwrap();
+        state.add_connection(bond0.clone()).unwrap();
+
+        state.set_ports(&bond0, vec!["eth1".to_string()]).unwrap();
+
+        let eth1_found = state.get_connection("eth1").unwrap();
+        assert_eq!(eth1_found.controller, Some(bond0.uuid));
+        let eth0_found = state.get_connection("eth0").unwrap();
+        assert_eq!(eth0_found.controller, None);
+    }
+
+    #[test]
+    fn test_set_bonding_missing_port() {
+        let mut state = NetworkState::default();
+        let bond0 = Connection {
+            id: "bond0".to_string(),
+            interface: Some("bond0".to_string()),
+            config: ConnectionConfig::Bond(Default::default()),
+            ..Default::default()
+        };
+        state.add_connection(bond0.clone()).unwrap();
+
+        let error = state
+            .set_ports(&bond0, vec!["eth0".to_string()])
+            .unwrap_err();
+        dbg!(&error);
+        assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
+    }
+
+    #[test]
+    fn test_set_non_controller_ports() {
+        let mut state = NetworkState::default();
+        let eth0 = Connection {
             id: "eth0".to_string(),
             ..Default::default()
         };
-        let conn = Connection::Ethernet(EthernetConnection { base });
-        assert!(!conn.is_loopback());
+        state.add_connection(eth0.clone()).unwrap();
 
-        let base = BaseConnection {
-            id: "lo".to_string(),
-            ..Default::default()
-        };
-        let conn = Connection::Loopback(LoopbackConnection { base });
-        assert!(conn.is_loopback());
+        let error = state
+            .set_ports(&eth0, vec!["eth1".to_string()])
+            .unwrap_err();
+        assert!(matches!(
+            error,
+            NetworkStateError::NotControllerConnection(_),
+        ));
     }
 }
 
@@ -215,119 +317,159 @@ pub struct Device {
     pub type_: DeviceType,
 }
 
-/// Represents an available network connection
-#[derive(Debug, PartialEq, Clone)]
-pub enum Connection {
-    Ethernet(EthernetConnection),
-    Wireless(WirelessConnection),
-    Loopback(LoopbackConnection),
+/// Represents an availble network connection.
+#[derive(Debug, Clone)]
+pub struct Connection {
+    pub id: String,
+    pub uuid: Uuid,
+    pub mac_address: MacAddress,
+    pub ip_config: IpConfig,
+    pub status: Status,
+    pub interface: Option<String>,
+    pub controller: Option<Uuid>,
+    pub match_config: MatchConfig,
+    pub config: ConnectionConfig,
+}
+
+impl PartialEq for Connection {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id && self.uuid == other.uuid && self.ip_config == other.ip_config
+    }
 }
 
 impl Connection {
     pub fn new(id: String, device_type: DeviceType) -> Self {
-        let base = BaseConnection {
-            id,
-            ..Default::default()
+        let config = match device_type {
+            DeviceType::Ethernet => ConnectionConfig::Ethernet,
+            DeviceType::Wireless => ConnectionConfig::Wireless(Default::default()),
+            DeviceType::Loopback => ConnectionConfig::Loopback,
+            DeviceType::Dummy => ConnectionConfig::Dummy,
+            DeviceType::Bond => ConnectionConfig::Bond(Default::default()),
         };
-        match device_type {
-            DeviceType::Wireless => Connection::Wireless(WirelessConnection {
-                base,
-                ..Default::default()
-            }),
-            DeviceType::Loopback => Connection::Loopback(LoopbackConnection { base }),
-            DeviceType::Ethernet => Connection::Ethernet(EthernetConnection { base }),
+        Self {
+            id,
+            config,
+            ..Default::default()
         }
-    }
-
-    /// TODO: implement a macro to reduce the amount of repetitive code. The same applies to
-    /// the base_mut function.
-    pub fn base(&self) -> &BaseConnection {
-        match &self {
-            Connection::Ethernet(conn) => &conn.base,
-            Connection::Wireless(conn) => &conn.base,
-            Connection::Loopback(conn) => &conn.base,
-        }
-    }
-
-    pub fn base_mut(&mut self) -> &mut BaseConnection {
-        match self {
-            Connection::Ethernet(conn) => &mut conn.base,
-            Connection::Wireless(conn) => &mut conn.base,
-            Connection::Loopback(conn) => &mut conn.base,
-        }
-    }
-
-    pub fn id(&self) -> &str {
-        self.base().id.as_str()
-    }
-
-    pub fn set_id(&mut self, id: &str) {
-        self.base_mut().id = id.to_string()
-    }
-
-    pub fn interface(&self) -> &str {
-        self.base().interface.as_str()
-    }
-
-    pub fn set_interface(&mut self, interface: &str) {
-        self.base_mut().interface = interface.to_string()
-    }
-
-    pub fn uuid(&self) -> Uuid {
-        self.base().uuid
-    }
-
-    /// FIXME: rename to ip_config
-    pub fn ip_config(&self) -> &IpConfig {
-        &self.base().ip_config
-    }
-
-    pub fn ip_config_mut(&mut self) -> &mut IpConfig {
-        &mut self.base_mut().ip_config
-    }
-
-    pub fn match_config(&self) -> &MatchConfig {
-        &self.base().match_config
-    }
-
-    pub fn match_config_mut(&mut self) -> &mut MatchConfig {
-        &mut self.base_mut().match_config
     }
 
     pub fn remove(&mut self) {
-        self.base_mut().status = Status::Removed;
+        self.status = Status::Removed;
     }
 
     pub fn is_removed(&self) -> bool {
-        self.base().status == Status::Removed
+        self.status == Status::Removed
+    }
+
+    pub fn is_up(&self) -> bool {
+        self.status == Status::Up
+    }
+
+    pub fn set_up(&mut self) {
+        self.status = Status::Up
+    }
+
+    pub fn set_down(&mut self) {
+        self.status = Status::Down
     }
 
     /// Determines whether it is a loopback interface.
     pub fn is_loopback(&self) -> bool {
-        matches!(self, Connection::Loopback(_))
+        matches!(self.config, ConnectionConfig::Loopback)
+    }
+
+    pub fn is_ethernet(&self) -> bool {
+        matches!(self.config, ConnectionConfig::Loopback)
+            || matches!(self.config, ConnectionConfig::Ethernet)
+            || matches!(self.config, ConnectionConfig::Dummy)
+            || matches!(self.config, ConnectionConfig::Bond(_))
     }
 }
 
-#[derive(Debug, Default, Clone)]
-pub struct BaseConnection {
-    pub id: String,
-    pub uuid: Uuid,
-    pub ip_config: IpConfig,
-    pub status: Status,
-    pub interface: String,
-    pub match_config: MatchConfig,
+impl Default for Connection {
+    fn default() -> Self {
+        Self {
+            id: Default::default(),
+            uuid: Uuid::new_v4(),
+            mac_address: Default::default(),
+            ip_config: Default::default(),
+            status: Default::default(),
+            interface: Default::default(),
+            controller: Default::default(),
+            match_config: Default::default(),
+            config: Default::default(),
+        }
+    }
 }
 
-impl PartialEq for BaseConnection {
-    fn eq(&self, other: &Self) -> bool {
-        self.id == other.id && self.uuid == other.uuid && self.ip_config == other.ip_config
+#[derive(Default, Debug, PartialEq, Clone)]
+pub enum ConnectionConfig {
+    #[default]
+    Ethernet,
+    Wireless(WirelessConfig),
+    Loopback,
+    Dummy,
+    Bond(BondConfig),
+}
+
+#[derive(Debug, Error)]
+#[error("Invalid MAC address: {0}")]
+pub struct InvalidMacAddress(String);
+
+#[derive(Debug, Default, Clone)]
+pub enum MacAddress {
+    MacAddress(macaddr::MacAddr6),
+    Preserve,
+    Permanent,
+    Random,
+    Stable,
+    #[default]
+    Unset,
+}
+
+impl FromStr for MacAddress {
+    type Err = InvalidMacAddress;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "preserve" => Ok(Self::Preserve),
+            "permanent" => Ok(Self::Permanent),
+            "random" => Ok(Self::Random),
+            "stable" => Ok(Self::Stable),
+            "" => Ok(Self::Unset),
+            _ => Ok(Self::MacAddress(match macaddr::MacAddr6::from_str(s) {
+                Ok(mac) => mac,
+                Err(e) => return Err(InvalidMacAddress(e.to_string())),
+            })),
+        }
+    }
+}
+
+impl fmt::Display for MacAddress {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let output = match &self {
+            Self::MacAddress(mac) => mac.to_string(),
+            Self::Preserve => "preserve".to_string(),
+            Self::Permanent => "permanent".to_string(),
+            Self::Random => "random".to_string(),
+            Self::Stable => "stable".to_string(),
+            Self::Unset => "".to_string(),
+        };
+        write!(f, "{}", output)
+    }
+}
+
+impl From<InvalidMacAddress> for zbus::fdo::Error {
+    fn from(value: InvalidMacAddress) -> Self {
+        zbus::fdo::Error::Failed(value.to_string())
     }
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub enum Status {
     #[default]
-    Present,
+    Up,
+    Down,
     Removed,
 }
 
@@ -464,22 +606,6 @@ impl From<&IpRoute> for HashMap<&str, Value<'_>> {
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
-pub struct EthernetConnection {
-    pub base: BaseConnection,
-}
-
-#[derive(Debug, Default, PartialEq, Clone)]
-pub struct WirelessConnection {
-    pub base: BaseConnection,
-    pub wireless: WirelessConfig,
-}
-
-#[derive(Debug, Default, PartialEq, Clone)]
-pub struct LoopbackConnection {
-    pub base: BaseConnection,
-}
-
-#[derive(Debug, Default, PartialEq, Clone)]
 pub struct WirelessConfig {
     pub mode: WirelessMode,
     pub ssid: SSID,
@@ -569,4 +695,43 @@ impl TryFrom<&str> for SecurityProtocol {
             )),
         }
     }
+}
+
+#[derive(Debug, Default, Clone, PartialEq)]
+pub struct BondOptions(pub HashMap<String, String>);
+
+impl TryFrom<&str> for BondOptions {
+    type Error = NetworkStateError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let mut options = HashMap::new();
+
+        for opt in value.split_whitespace() {
+            let (key, value) = opt
+                .trim()
+                .split_once('=')
+                .ok_or(NetworkStateError::InvalidBondOptions)?;
+            options.insert(key.to_string(), value.to_string());
+        }
+
+        Ok(BondOptions(options))
+    }
+}
+
+impl fmt::Display for BondOptions {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let opts = &self
+            .0
+            .iter()
+            .map(|(key, value)| format!("{key}={value}"))
+            .collect::<Vec<_>>();
+
+        write!(f, "{}", opts.join(" "))
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct BondConfig {
+    pub mode: BondMode,
+    pub options: BondOptions,
 }

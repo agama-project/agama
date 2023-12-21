@@ -1,0 +1,114 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-12-15 17:45+0000\n"
+"PO-Revision-Date: 2023-12-15 16:52+0000\n"
+"Last-Translator: Ladislav Slezák <lslezak@suse.com>\n"
+"Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-service-"
+"master/cs/>\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Weblate 4.9.1\n"
+
+#. Callback to handle unsigned files
+#.
+#. @param filename [String] File name
+#. @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
+#: service/lib/agama/software/callbacks/signature.rb:63
+#, perl-brace-format
+msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
+msgstr "Soubor %{filename} z repozitáře %{repo_name} (%{repo_url})"
+
+#: service/lib/agama/software/callbacks/signature.rb:67
+#, perl-brace-format
+msgid "The file %{filename}"
+msgstr "Soubor %{filename}"
+
+#: service/lib/agama/software/callbacks/signature.rb:71
+#, perl-brace-format
+msgid ""
+"%{source} is not digitally signed. The origin and integrity of the file "
+"cannot be verified. Use it anyway?"
+msgstr ""
+"%{source} není digitálně podepsán. Původ a integrita souboru nemůže být "
+"ověřena. Přesto jej použít?"
+
+#. Callback to handle signature verification failures
+#.
+#. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
+#. @param _repo_id [Integer] Repository ID
+#: service/lib/agama/software/callbacks/signature.rb:94
+#, perl-brace-format
+msgid ""
+"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
+"want to trust this key?"
+msgstr ""
+"Klíč %{id} (%{name}) s otiskem %{fingerprint} není známý. Důvěřujete tomuto "
+"klíči?"
+
+#. as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
+#: service/lib/agama/software/manager.rb:134
+msgid "Initializing target repositories"
+msgstr "Inicializuji cílové repozitáře"
+
+#: service/lib/agama/software/manager.rb:135
+msgid "Initializing sources"
+msgstr "Inicializuji zdroje"
+
+#: service/lib/agama/software/manager.rb:140
+msgid "Refreshing repositories metadata"
+msgstr "Obnovování metadat repozitáře"
+
+#: service/lib/agama/software/manager.rb:141
+msgid "Calculating the software proposal"
+msgstr "Probíhá návrh softwaru"
+
+#. Writes the repositories information to the installed system
+#: service/lib/agama/software/manager.rb:190
+msgid "Writing repositories to the target system"
+msgstr "Repozitáře se zapisují do cílového systému"
+
+#: service/lib/agama/software/manager.rb:196
+msgid "Restoring original repositories"
+msgstr "Obnovují se původní repozitáře"
+
+#. Issues related to the software proposal.
+#.
+#. Repositories that could not be probed are reported as errors.
+#.
+#. @return [Array<Agama::Issue>]
+#: service/lib/agama/software/manager.rb:465
+#, c-format
+msgid "Could not read repository \"%s\""
+msgstr "Nelze načíst repozitář \"%s\""
+
+#. Issue when a product is missing
+#.
+#. @return [Agama::Issue]
+#: service/lib/agama/software/manager.rb:475
+msgid "Product not selected yet"
+msgstr "Není vybrán žádný produkt"
+
+#. Issue when a product requires registration but it is not registered yet.
+#.
+#. @return [Agama::Issue]
+#: service/lib/agama/software/manager.rb:484
+msgid "Product must be registered"
+msgstr "Produkt musí být zaregistrován"
+
+#. Returns solver error messages from the last attempt
+#.
+#. @return [Array<String>] Error messages
+#: service/lib/agama/software/proposal.rb:228
+#, c-format
+msgid "Found %s dependency issues."
+msgstr "Nalezeno %s problémů v závislostech."

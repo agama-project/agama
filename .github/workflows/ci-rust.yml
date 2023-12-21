@@ -68,7 +68,7 @@ jobs:
       run: zypper --non-interactive install rustup
 
     - name: Install required packages
-      run: zypper --non-interactive install  python-langtable-data openssl-3 libopenssl-3-devel jq
+      run: zypper --non-interactive install python-langtable-data openssl-3 libopenssl-3-devel jq
 
     - name: Install Rust toolchains
       run: rustup toolchain install stable

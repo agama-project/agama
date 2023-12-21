@@ -75,7 +75,7 @@ export default function ConnectionsTable ({
               "aria-label":
                 // TRANSLATORS: %s is replaced by a network connection name
                 sprintf(_("Forget connection %s"), connection.name),
-              icon: <Icon name="delete" size="24" />,
+              icon: <Icon name="delete" size="s" />,
               onClick: () => onForget(connection),
               isDanger: true
             },

@@ -37,8 +37,8 @@ const products = [
     description: "MicroOS description"
   }
 ];
-jest.mock("~/client");
 
+jest.mock("~/client");
 jest.mock("~/context/product", () => ({
   ...jest.requireActual("~/context/product"),
   useProduct: () => {
@@ -48,6 +48,7 @@ jest.mock("~/context/product", () => ({
     };
   }
 }));
+jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const managerMock = {
   startProbing: jest.fn()
@@ -74,10 +75,10 @@ beforeEach(() => {
 describe("when the user chooses a product", () => {
   it("selects the product and redirects to the main page", async () => {
     const { user } = installerRender(<ProductSelectionPage />);
-    const radio = await screen.findByRole("radio", { name: "openSUSE MicroOS" });
-    await user.click(radio);
-    const button = await screen.findByRole("button", { name: "Select" });
-    await user.click(button);
+    const productOption = screen.getByRole("radio", { name: "openSUSE MicroOS" });
+    const selectButton = screen.getByRole("button", { name: "Select" });
+    await user.click(productOption);
+    await user.click(selectButton);
     expect(softwareMock.product.select).toHaveBeenCalledWith("MicroOS");
     expect(managerMock.startProbing).toHaveBeenCalled();
     expect(mockNavigateFn).toHaveBeenCalledWith("/");
@@ -87,9 +88,9 @@ describe("when the user chooses a product", () => {
 describe("when the user chooses does not change the product", () => {
   it("redirects to the main page", async () => {
     const { user } = installerRender(<ProductSelectionPage />);
-    await screen.findByText("openSUSE Tumbleweed");
-    const button = await screen.findByRole("button", { name: "Select" });
-    await user.click(button);
+    screen.getByText("openSUSE Tumbleweed");
+    const selectButton = await screen.findByRole("button", { name: "Select" });
+    await user.click(selectButton);
     expect(softwareMock.product.select).not.toHaveBeenCalled();
     expect(managerMock.startProbing).not.toHaveBeenCalled();
     expect(mockNavigateFn).toHaveBeenCalledWith("/");
