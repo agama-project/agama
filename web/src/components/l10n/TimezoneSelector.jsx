@@ -70,13 +70,11 @@ const timezoneDetails = (timezone) => {
  * @param {Date} props.date - Date to show a time.
  */
 const TimezoneItem = ({ timezone, date }) => {
-  const [part1, ...restParts] = timezone.parts;
   const time = timezoneTime(timezone.id, { date }) || "";
 
   return (
     <>
-      <div>{part1}</div>
-      <div>{restParts.join('-')}</div>
+      <div>{timezone.parts.join('-')}</div>
       <div>{timezone.country}</div>
       <div>{time || ""}</div>
       <div>{timezone.details}</div>
