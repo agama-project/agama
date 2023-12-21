@@ -27,17 +27,16 @@ import { installerRender } from "~/test-utils";
 import InstallationProgress from "./InstallationProgress";
 
 jest.mock("~/components/core/ProgressReport", () => () => <div>ProgressReport Mock</div>);
+jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 describe("InstallationProgress", () => {
-  it("uses 'Installing' as title", async () => {
+  it("uses 'Installing' as title", () => {
     installerRender(<InstallationProgress />);
-
-    await screen.findByText("Installing");
+    screen.getByText("Installing");
   });
 
-  it("renders progress report", async () => {
+  it("renders progress report", () => {
     installerRender(<InstallationProgress />);
-
-    await screen.findByText("ProgressReport Mock");
+    screen.getByText("ProgressReport Mock");
   });
 });

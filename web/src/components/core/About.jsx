@@ -37,7 +37,7 @@ export default function About() {
     <>
       <Button
         variant="link"
-        icon={<Icon name="help" size="24" />}
+        icon={<Icon name="help" size="s" />}
         onClick={open}
       >
         {_("About Agama")}

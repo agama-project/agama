@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Dec 21 13:36:46 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Rework UI internals for improving core/Page component and changing
+  how layout is handled (gh#openSUSE/agama#925).
+- Drop layout/Layout and stop using react-teleporter.
+
+-------------------------------------------------------------------
 Thu Dec 21 11:18:37 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Display countries at timezone selector (gh#openSUSE/agama#946).

@@ -380,13 +380,8 @@ const KeymapSection = () => {
  */
 export default function L10nPage() {
   return (
-    <Page
-      // TRANSLATORS: page title
-      title={_("Localization")}
-      icon="globe"
-      actionLabel={_("Back")}
-      actionVariant="secondary"
-    >
+    // TRANSLATORS: page title
+    <Page icon="globe" title={_("Localization")}>
       <LocaleSection />
       <KeymapSection />
       <TimezoneSection />

@@ -23,7 +23,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { createClient } from "~/client";
-import { ProposalPageOptions } from "~/components/storage";
+import { ProposalPageMenu } from "~/components/storage";
 
 jest.mock("~/client");
 
@@ -51,7 +51,7 @@ beforeEach(() => {
 });
 
 it("contains an entry for configuring iSCSI", async () => {
-  const { user } = installerRender(<ProposalPageOptions />);
+  const { user } = installerRender(<ProposalPageMenu />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
   const link = screen.getByRole("menuitem", { name: /iSCSI/ });
@@ -60,7 +60,7 @@ it("contains an entry for configuring iSCSI", async () => {
 
 it("contains an entry for configuring DASD when is supported", async () => {
   isDASDSupportedFn.mockResolvedValue(true);
-  const { user } = installerRender(<ProposalPageOptions />);
+  const { user } = installerRender(<ProposalPageMenu />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
   const link = screen.getByRole("menuitem", { name: /DASD/ });
@@ -69,7 +69,7 @@ it("contains an entry for configuring DASD when is supported", async () => {
 
 it("does not contain an entry for configuring DASD when is NOT supported", async () => {
   isDASDSupportedFn.mockResolvedValue(false);
-  const { user } = installerRender(<ProposalPageOptions />);
+  const { user } = installerRender(<ProposalPageMenu />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
   expect(screen.queryByRole("menuitem", { name: /DASD/ })).toBeNull();
@@ -77,7 +77,7 @@ it("does not contain an entry for configuring DASD when is NOT supported", async
 
 it("contains an entry for configuring zFCP when is supported", async () => {
   isZFCPSupportedFn.mockResolvedValue(true);
-  const { user } = installerRender(<ProposalPageOptions />);
+  const { user } = installerRender(<ProposalPageMenu />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
   const link = screen.getByRole("menuitem", { name: /zFCP/ });
@@ -86,7 +86,7 @@ it("contains an entry for configuring zFCP when is supported", async () => {
 
 it("does not contain an entry for configuring zFCP when is NOT supported", async () => {
   isZFCPSupportedFn.mockResolvedValue(false);
-  const { user } = installerRender(<ProposalPageOptions />);
+  const { user } = installerRender(<ProposalPageMenu />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
   expect(screen.queryByRole("menuitem", { name: /DASD/ })).toBeNull();

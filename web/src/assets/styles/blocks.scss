@@ -1,54 +1,44 @@
-// Standard section
-// In the future we might need to use an specific CSS class for it if we start having different
-// section layouts.
-section:not([class^="pf-c"]) {
+// CSS rules used for the standard Agama section (core/Section.jsx)
+// In the future we might add different section layouts by using data-variant attribute
+// or similar strategy
+[data-type="agama/section"] {
   display: grid;
-  grid-template-columns: var(--section-icon-size) 1fr;
-  grid-template-areas:
-    "icon title"
-    ".... content";
+  grid-template-rows:
+    [header] auto
+    [content] auto
+  ;
+  grid-template-columns: [bleed] var(--section-icon-size) [content] 1fr;
   gap: var(--spacer-small);
-  padding-inline-start: calc(
+  margin-inline-start: calc(
     var(--header-icon-size) - var(--section-icon-size)
   );
-  padding-inline-end: var(--section-icon-size);
-}
+  margin-inline-end: var(--section-icon-size);
 
-section:not(:last-child, [class^="pf-c"]) {
-  margin-block-end: var(--spacer-large);
-}
-
-section > svg {
-  grid-area: icon;
-  block-size: var(--section-icon-size);
-  inline-size: var(--section-icon-size);
-}
-
-section > h2 {
-  grid-area: title;
-
-  button {
-    border: none;
-    background: none;
-    color: inherit;
-    font: inherit;
-    padding: 0;
+  &:not(:last-child) {
+    margin-block-end: var(--spacer-normal);
   }
 
-  a, button {
-    text-decoration: underline;
-    text-decoration-thickness: 0.1em;
-    text-underline-offset: 0.2em;
-    transition: all 0.15s ease-in-out;
+  > h2 {
+    display: grid;
+    grid-area: header;
+    grid-template-columns: subgrid;
+    grid-column: bleed / content-end;
 
-    &:hover {
-      color: var(--color-link-hover);
+    svg {
+      block-size: var(--section-icon-size);
+      inline-size: var(--section-icon-size);
+      grid-column: bleed / content;
+    }
+
+    :not(svg) {
+      grid-column: content
     }
   }
-}
 
-section > .content {
-  grid-area: content;
+  > :not(h2) {
+    grid-area: content;
+    grid-column: content;
+  }
 }
 
 // Custom selection list
@@ -81,9 +71,9 @@ section > .content {
   border: 0;
 }
 
-.sidebar {
-  --color-background-primary: var(--color-primary-lighter);
-  --wrapper-background: var(--color-gray-light);
+[data-type="agama/sidebar"] {
+  /** Override the header background, see styles/layout.scss */
+  --agama-header-bg: var(--color-primary-lighter);
 
   position: absolute;
   padding: 0;
@@ -92,68 +82,69 @@ section > .content {
   inline-size: 70%;
   min-inline-size: min-content;
   box-shadow: -10px 10px 20px 0 var(--color-primary);
-}
 
-.sidebar header {
-  --focus-color: var(--color-primary-darkest);
-}
+  header {
+    --focus-color: var(--color-primary-darkest);
+  }
 
-.sidebar footer {
-  border-top: 1px solid var(--color-gray);
-}
+  footer {
+    border-top: 1px solid var(--color-gray);
+  }
 
-.sidebar a, .sidebar button {
-  font-size: 16px;
-  font-weight: var(--fw-bold);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  padding-block: 0;
-
-  &:hover {
-    color: var(--color-link-hover);
+  a, button {
+    font-size: 16px;
+    font-weight: var(--fw-bold);
     text-decoration: underline;
+    text-underline-offset: 2px;
+    padding-block: 0;
+
+    &:hover {
+      color: var(--color-link-hover);
+      text-decoration: underline;
+
+      svg {
+        color: var(--color-link);
+      }
+    }
 
     svg {
       color: var(--color-link);
+      vertical-align: text-bottom;
+      margin-block-end: -2px;
     }
   }
 
-  svg {
-    color: var(--color-link);
-    vertical-align: text-bottom;
-    margin-block-end: -2px;
+  a {
+    margin-inline-start: var(--pf-v5-global--spacer--md);
+
+    // Keep links and buttons labels aligned by adding the same margin than
+    // .pf-v5-c-button__icon.pf-m-start
+    svg {
+      margin-inline-end: var(--pf-v5-global--spacer--xs);
+    }
+  }
+
+  // Remove not wanted PatternFly padding left on a loading link
+  button.pf-m-progress {
+    --pf-v5-c-button--m-progress--PaddingLeft: var(--pf-v5-global--spacer--md);
+  }
+
+  button.pf-m-progress + div {
+    padding-inline-start: calc(var(--pf-v5-global--spacer--md));
+  }
+
+  &[data-state="hidden"] {
+    transition: all 0.04s ease-in-out;
+    inline-size: 0;
+    min-inline-size: 0;
+    box-shadow: none;
+  }
+
+  &[data-state="visible"] {
+    transition: all 0.2s ease-in-out;
   }
 }
 
-.sidebar a {
-  margin-inline-start: var(--pf-v5-global--spacer--md);
-
-  // Keep links and buttons labels aligned by adding the same margin than
-  // .pf-v5-c-button__icon.pf-m-start
-  svg {
-    margin-inline-end: var(--pf-v5-global--spacer--xs);
-  }
-}
-
-// Remove not wanted PatternFly padding left on a loading link
-.sidebar button.pf-m-progress {
-  --pf-v5-c-button--m-progress--PaddingLeft: var(--pf-v5-global--spacer--md);
-}
-
-.sidebar button.pf-m-progress + div {
-  padding-inline-start: calc(var(--pf-v5-global--spacer--md));
-}
-
-.sidebar[data-state="hidden"] {
-  transition: all 0.04s ease-in-out;
-  inline-size: 0;
-  min-inline-size: 0;
-  box-shadow: none;
-}
-
-.sidebar[data-state="visible"] {
-  transition: all 0.2s ease-in-out;
-}
 
 .disclosure > button {
   margin-inline-start: var(--pf-v5-global--spacer--md);
@@ -201,29 +192,25 @@ section > .content {
   }
 }
 
-// temporary fix during migration
-.page-options > li {
-  min-inline-size: 150px;
-}
-
-.page-options > button {
-  --pf-v5-c-button--PaddingRight: 0
-}
-
-.page-options a {
-  font-size: 16px;
-  font-weight: var(--fw-bold);
-  text-decoration: none;
-
-  svg {
-    color: inherit;
+[data-type="agama/page-menu"] {
+  > button {
+    --pf-v5-c-button--PaddingRight: 0
   }
 
-  &:hover {
-    color: var(--color-link-hover);
+  a {
+    font-weight: var(--fw-bold);
+    text-decoration: none;
 
     svg {
-      color: var(--color-link);
+      color: inherit;
+    }
+
+    &:hover {
+      color: var(--color-link-hover);
+
+      svg {
+        color: var(--color-link);
+      }
     }
   }
 }

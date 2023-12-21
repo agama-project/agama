@@ -126,7 +126,7 @@ export default function SoftwareSection({ showErrors }) {
           <Button
             isInline
             variant="link"
-            icon={<Icon name="refresh" size="16" />}
+            icon={<Icon name="refresh" size="xxs" />}
             onClick={probe}
           >
             {/* TRANSLATORS: clickable link label */}

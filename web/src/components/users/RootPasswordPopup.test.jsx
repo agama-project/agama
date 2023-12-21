@@ -45,10 +45,8 @@ beforeEach(() => {
 
 describe("when it is closed", () => {
   it("renders nothing", async () => {
-    installerRender(<RootPasswordPopup />);
-
-    const main = await screen.findByRole("main");
-    await waitFor(() => expect(main).toBeEmptyDOMElement());
+    const { container } = installerRender(<RootPasswordPopup />);
+    await waitFor(() => expect(container).toBeEmptyDOMElement());
   });
 });
 

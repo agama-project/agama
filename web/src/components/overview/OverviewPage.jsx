@@ -33,7 +33,7 @@ import {
 } from "~/components/overview";
 import { _ } from "~/i18n";
 
-function Overview() {
+export default function OverviewPage() {
   const { selectedProduct } = useProduct();
   const [showErrors, setShowErrors] = useState(false);
 
@@ -43,10 +43,9 @@ function Overview() {
 
   return (
     <Page
+      icon="list_alt"
       // TRANSLATORS: page title
       title={_("Installation Summary")}
-      icon="list_alt"
-      action={<InstallButton onClick={() => setShowErrors(true)} />}
     >
       <ProductSection />
       <L10nSection />
@@ -54,8 +53,10 @@ function Overview() {
       <StorageSection showErrors />
       <SoftwareSection showErrors />
       <UsersSection showErrors={showErrors} />
+
+      <Page.Actions>
+        <InstallButton onClick={() => setShowErrors(true)} />
+      </Page.Actions>
     </Page>
   );
 }
-
-export default Overview;

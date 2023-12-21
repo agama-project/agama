@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { PageOptions } from "~/components/core";
+import { Page } from "~/components/core";
 import { _ } from "~/i18n";
 
 /**
@@ -28,10 +28,10 @@ import { _ } from "~/i18n";
  * @component
  *
  * @param {object} props
- * @param {boolean} [props.wifiScanSupported=false] - wether the scan of WiFi networks is supported
+ * @param {boolean} [props.wifiScanSupported=false] - whether the scan of WiFi networks is supported
  * @param {function} props.openWifiSelector - the function for opening the WiFi network selector
  */
-export default function NetworkPageOptions ({
+export default function NetworkPageMenu ({
   wifiScanSupported = false,
   openWifiSelector,
 }) {
@@ -40,12 +40,12 @@ export default function NetworkPageOptions ({
   if (!wifiScanSupported) return null;
 
   return (
-    <PageOptions>
-      <PageOptions.Options>
-        <PageOptions.Option key="open-wifi-selector" onClick={openWifiSelector}>
+    <Page.Menu>
+      <Page.Menu.Options>
+        <Page.Menu.Option key="open-wifi-selector" onClick={openWifiSelector}>
           <>{_("Connect to a Wi-Fi network")}</>
-        </PageOptions.Option>
-      </PageOptions.Options>
-    </PageOptions>
+        </Page.Menu.Option>
+      </Page.Menu.Options>
+    </Page.Menu>
   );
 }

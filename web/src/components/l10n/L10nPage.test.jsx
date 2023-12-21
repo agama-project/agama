@@ -22,7 +22,7 @@
 import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
 
-import { installerRender } from "~/test-utils";
+import { installerRender, plainRender } from "~/test-utils";
 import { L10nPage } from "~/components/l10n";
 import { createClient } from "~/client";
 
@@ -76,6 +76,8 @@ createClient.mockImplementation(() => (
   }
 ));
 
+jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
+
 beforeEach(() => {
   mockL10nClient = {
     setLocales: jest.fn().mockResolvedValue(),
@@ -89,7 +91,7 @@ beforeEach(() => {
 });
 
 it("renders a section for configuring the language", () => {
-  installerRender(<L10nPage />);
+  plainRender(<L10nPage />);
   screen.getByText("Language");
 });
 
@@ -99,7 +101,7 @@ describe("if there is no selected language", () => {
   });
 
   it("renders a button for selecting a language", () => {
-    installerRender(<L10nPage />);
+    plainRender(<L10nPage />);
     screen.getByText("Language not selected yet");
     screen.getByRole("button", { name: "Select language" });
   });
@@ -111,7 +113,7 @@ describe("if there is a selected language", () => {
   });
 
   it("renders a button for changing the language", () => {
-    installerRender(<L10nPage />);
+    plainRender(<L10nPage />);
     screen.getByText("Spanish - Spain");
     screen.getByRole("button", { name: "Change language" });
   });
@@ -193,7 +195,7 @@ describe("when the button for changing the language is clicked", () => {
 });
 
 it("renders a section for configuring the keyboard", () => {
-  installerRender(<L10nPage />);
+  plainRender(<L10nPage />);
   screen.getByText("Keyboard");
 });
 
@@ -203,7 +205,7 @@ describe("if there is no selected keyboard", () => {
   });
 
   it("renders a button for selecting a keyboard", () => {
-    installerRender(<L10nPage />);
+    plainRender(<L10nPage />);
     screen.getByText("Keyboard not selected yet");
     screen.getByRole("button", { name: "Select keyboard" });
   });
@@ -215,7 +217,7 @@ describe("if there is a selected keyboard", () => {
   });
 
   it("renders a button for changing the keyboard", () => {
-    installerRender(<L10nPage />);
+    plainRender(<L10nPage />);
     screen.getByText("Spanish");
     screen.getByRole("button", { name: "Change keyboard" });
   });
@@ -297,7 +299,7 @@ describe("when the button for changing the keyboard is clicked", () => {
 });
 
 it("renders a section for configuring the time zone", () => {
-  installerRender(<L10nPage />);
+  plainRender(<L10nPage />);
   screen.getByText("Time zone");
 });
 
@@ -307,7 +309,7 @@ describe("if there is no selected time zone", () => {
   });
 
   it("renders a button for selecting a time zone", () => {
-    installerRender(<L10nPage />);
+    plainRender(<L10nPage />);
     screen.getByText("Time zone not selected yet");
     screen.getByRole("button", { name: "Select time zone" });
   });
@@ -319,7 +321,7 @@ describe("if there is a selected time zone", () => {
   });
 
   it("renders a button for changing the time zone", () => {
-    installerRender(<L10nPage />);
+    plainRender(<L10nPage />);
     screen.getByText("Atlantic - Canary");
     screen.getByRole("button", { name: "Change time zone" });
   });

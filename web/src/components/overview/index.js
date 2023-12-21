@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as Overview } from "./Overview";
+export { default as OverviewPage } from "./OverviewPage";
 export { default as L10nSection } from "./L10nSection";
 export { default as NetworkSection } from "./NetworkSection";
 export { default as ProductSection } from "./ProductSection";

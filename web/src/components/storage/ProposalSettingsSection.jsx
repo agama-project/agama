@@ -323,7 +323,7 @@ created in a logical volume of the system volume group.");
         position="right"
       >
         <button aria-label={_("LVM settings")} className="plain-control" onClick={openForm}>
-          <Icon name="tune" size={24} />
+          <Icon name="tune" size="s" />
         </button>
       </Tooltip>
     );
@@ -477,7 +477,7 @@ const EncryptionPasswordField = ({
         position="right"
       >
         <button aria-label={_("Encryption settings")} className="plain-control" onClick={openForm}>
-          <Icon name="tune" size={24} />
+          <Icon name="tune" size="s" />
         </button>
       </Tooltip>
     );

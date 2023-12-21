@@ -19,30 +19,39 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Button, Text } from "@patternfly/react-core";
-import { Icon, AppActions } from "~/components/layout";
-import { If, NotificationMark } from "~/components/core";
-import { useNotification } from "~/context/notification";
-import useNodeSiblings from "~/hooks/useNodeSiblings";
+import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import { Icon } from "~/components/layout";
+import { InstallerKeymapSwitcher, InstallerLocaleSwitcher } from "~/components/l10n";
+import {
+  About,
+  DevelopmentInfo,
+  Disclosure,
+  IssuesLink,
+  // FIXME: unify names here by renaming LogsButton -> LogButton or ShowLogButton -> ShowLogsButton
+  LogsButton,
+  ShowLogButton,
+  ShowTerminalButton,
+} from "~/components/core";
+import { noop } from "~/utils";
 import { _ } from "~/i18n";
+import useNodeSiblings from "~/hooks/useNodeSiblings";
 
 /**
- * Agama sidebar navigation
+ * The Agama sidebar.
  * @component
+ *
+ * A component intended for placing things exclusively related to Agama.
  *
  * @param {object} props
  * @param {React.ReactElement} props.children
  */
-export default function Sidebar ({ children }) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function Sidebar ({ children, isOpen, onClose = noop }) {
   const asideRef = useRef(null);
   const closeButtonRef = useRef(null);
-  const [notification] = useNotification();
   const [addAttribute, removeAttribute] = useNodeSiblings(asideRef.current);
 
   /**
-   * Set siblings as not interactive and not discoverable
+   * Set siblings as not interactive and not discoverable.
    */
   const makeSiblingsInert = useCallback(() => {
     addAttribute('inert', '');
@@ -50,24 +59,23 @@ export default function Sidebar ({ children }) {
   }, [addAttribute]);
 
   /**
-   * Set siblings as interactive and discoverable
+   * Set siblings as interactive and discoverable.
    */
   const makeSiblingsAlive = useCallback(() => {
     removeAttribute('inert');
     removeAttribute('aria-hidden');
   }, [removeAttribute]);
 
-  const open = () => {
-    setIsOpen(true);
-  };
-
+  /**
+   * Triggers the onClose callback.
+   */
   const close = () => {
-    setIsOpen(false);
+    onClose();
   };
 
   /**
-   * Handler for automatically closing the sidebar when a click bubbles from a
-   * children of its content.
+   * Handler for automatically triggering the close function when a click bubbles from a
+   * sidebar children.
    *
    * @param {MouseEvent} event
    */
@@ -82,6 +90,7 @@ export default function Sidebar ({ children }) {
   };
 
   useEffect(() => {
+    makeSiblingsInert();
     if (isOpen) {
       closeButtonRef.current.focus();
       makeSiblingsInert();
@@ -98,88 +107,60 @@ export default function Sidebar ({ children }) {
     return () => makeSiblingsAlive();
   }, [makeSiblingsAlive]);
 
-  // display additional info when running in a development server
-  let targetInfo = null;
-  if (process.env.WEBPACK_SERVE) {
-    let targetUrl = COCKPIT_TARGET_URL;
-
-    // change the localhost URL when connected remotely as it means another machine
-    if (COCKPIT_TARGET_URL.includes("localhost") && window.location.hostname !== "localhost") {
-      const urlTarget = new URL(COCKPIT_TARGET_URL);
-      const url = new URL(window.location);
-      url.port = urlTarget.port;
-      url.pathname = "/";
-      url.search = "";
-      url.hash = "";
-      targetUrl = url.toString();
-    }
-
-    targetInfo = (
-      /* this is only displayed in the development mode, not in production, do not translate it */
-      /* eslint-disable-next-line i18next/no-literal-string */
-      <Text>
-        Target server: { " " }
-        <Button isInline variant="link" component="a" href={ targetUrl } target="_blank">
-          { targetUrl }
-        </Button>
-      </Text>
-    );
-  }
-
   return (
-    <>
-      <AppActions>
+    <aside
+      id="global-options"
+      ref={asideRef}
+      aria-label={_("Installer Options")}
+      data-type="agama/sidebar"
+      data-layout="agama/base"
+      data-state={isOpen ? "visible" : "hidden"}
+    >
+      <header className="split justify-between">
+        <h2>
+          {/* TRANSLATORS: sidebar header */}
+          {_("Installer Options")}
+        </h2>
+
         <button
-          onClick={open}
+          onClick={close}
+          ref={closeButtonRef}
           className="plain-control"
-          aria-label={_("Show global options")}
-          aria-controls="global-options"
-          aria-expanded={isOpen}
+          aria-label={_("Hide installer options")}
         >
-          <If
-            condition={notification.issues}
-            then={<NotificationMark data-variant="sidebar" aria-label={_("New issues found")} />}
-          />
-          <Icon name="menu" />
+          <Icon name="menu_open" data-variant="flip-X" onClick={close} />
         </button>
-      </AppActions>
+      </header>
 
-      <aside
-        id="global-options"
-        ref={asideRef}
-        className="wrapper sidebar"
-        aria-label={_("Global options")}
-        data-state={isOpen ? "visible" : "hidden"}
-      >
-        <header className="split justify-between">
-          <h2>
-            {/* TRANSLATORS: sidebar header */}
-            {_("Installer Options")}
-          </h2>
-
-          <button
-            onClick={close}
-            ref={closeButtonRef}
-            className="plain-control"
-            aria-label={_("Hide navigation and other options")}
-          >
-            <Icon name="menu_open" data-variant="flip-X" onClick={close} />
-          </button>
-        </header>
-
-        <div className="flex-stack justify-between" onClick={onClick}>
+      <div className="flex-stack justify-between" onClick={onClick}>
+        <div className="flex-stack">
+          <IssuesLink />
+          <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
+            <ShowLogButton />
+            <LogsButton data-keep-sidebar-open="true" />
+            <ShowTerminalButton />
+          </Disclosure>
           {children}
+          <About />
         </div>
+        <div className="full-width highlighted">
+          <div className="flex-stack">
+            <div className="locale-container">
+              <div><InstallerLocaleSwitcher /></div>
+              <div><InstallerKeymapSwitcher /></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <footer className="split justify-between" data-state="reversed">
-          <a onClick={close}>
-            {/* TRANSLATORS: button label */}
-            {_("Close")}
-            <Icon size="16" name="menu_open" data-variant="flip-X" />
-          </a>
-          { targetInfo }
-        </footer>
-      </aside>
-    </>
+      <footer className="split justify-between" data-state="reversed">
+        <a onClick={close}>
+          {/* TRANSLATORS: button label */}
+          {_("Close")}
+          <Icon name="menu_open" size="xxs" data-variant="flip-X" />
+        </a>
+        <DevelopmentInfo />
+      </footer>
+    </aside>
   );
 }

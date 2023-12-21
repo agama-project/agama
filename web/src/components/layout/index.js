@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-export * from "./Layout";
-export { default as Layout } from "./Layout";
 export { default as Icon } from "./Icon";
 export { default as Center } from "./Center";
 export { default as Loading } from "./Loading";

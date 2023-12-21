@@ -134,13 +134,12 @@ const icons = {
   windows_logo: SiWindows
 };
 
+const PREDEFINED_SIZES = [
+  "xxxs", "xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl"
+];
+
 /**
  * Agama Icon component
- *
- * If exists, it renders requested icon with given size.
- *
- * @note: if either, name prop has a falsy value or requested icon is not found,
- * it will outputs a message to the console.error and renders nothing.
  *
  * @todo: import icons dynamically if the list grows too much. See
  *   - https://stackoverflow.com/a/61472427
@@ -152,11 +151,14 @@ const icons = {
  * @param {object} props - Component props
  * @param {string} props.name - Name of the desired icon.
  * @param {string} [props.className=""] - CSS classes.
- * @param {string|number} [props.size=32] - Size used for both, width and height.
- * @param {object} [props.otherProps] Other props sent to SVG icon.
+ * @param {string|number} [props.size] - Size used for both, width and height.
+ *   It can be a CSS unit or one of PREDEFINED_SIZES.
+ * @param {object} [props.otherProps] Other props sent to SVG icon. Please, note
+ *   that width and height will be overwritten by the size value if it was given.
  *
+ * @returns {JSX.Element|null} null if requested icon is not available or given a falsy value as name; JSX block otherwise.
  */
-export default function Icon({ name, className = "", size = 28, ...otherProps }) {
+export default function Icon({ name, size, ...otherProps }) {
   if (!name) {
     console.error(`Icon called without name. '${name}' given instead. Rendering nothing.`);
     return null;
@@ -167,13 +169,19 @@ export default function Icon({ name, className = "", size = 28, ...otherProps })
     return null;
   }
 
+  if (size && PREDEFINED_SIZES.includes(size)) {
+    otherProps.className = [otherProps.className, `icon-${size}`].join(" ").trim();
+  } else if (size) {
+    otherProps.width = size;
+    otherProps.height = size;
+  }
+
   const IconComponent = icons[name];
 
   return (
     <IconComponent
       aria-hidden="true"
       data-icon-name={name}
-      className={`${className} icon-size-${size}`.trim()}
       {...otherProps}
     />
   );
