@@ -70,9 +70,12 @@
      * The timezone identifier (e.g., "Europe/Berlin").
      * A list containing each part of the name in the language set by the
        UILocale property.
+     * The name, in the language set by UILocale, of the main country
+       associated to the timezone (typically, the name of the city that is
+       part of the identifier) or empty string if there is no country.
      -->
     <method name="ListTimezones">
-      <arg type="a(sas)" direction="out"/>
+      <arg type="a(sass)" direction="out"/>
     </method>
     <method name="Commit">
     </method>
