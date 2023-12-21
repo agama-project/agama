@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Dec 21 11:18:37 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Display countries at timezone selector (gh#openSUSE/agama#946).
+
+-------------------------------------------------------------------
 Mon Dec 18 10:42:53 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Do not show info icon for the file system label if there is only
