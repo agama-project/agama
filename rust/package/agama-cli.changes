@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Dec 21 11:12:45 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- The result of ListTimezones includes the localized country name
+  for each timezone (gh#openSUSE/agama#946)
+
+-------------------------------------------------------------------
 Fri Dec 15 16:29:20 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update agama-cli dependencies including the zerocopy crate to

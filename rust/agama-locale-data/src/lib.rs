@@ -2,6 +2,7 @@ use anyhow::Context;
 use flate2::bufread::GzDecoder;
 use quick_xml::de::Deserializer;
 use serde::Deserialize;
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
@@ -92,6 +93,27 @@ pub fn get_timezone_parts() -> anyhow::Result<timezone_part::TimezoneIdParts> {
     Ok(ret)
 }
 
+/// Returns a hash mapping timezones to its main country (typically, the country of
+/// the city that is used to name the timezone). The information is read from the
+/// file /usr/share/zoneinfo/zone.tab.
+pub fn get_timezone_countries() -> anyhow::Result<HashMap<String, String>> {
+    const FILE_PATH: &str = "/usr/share/zoneinfo/zone.tab";
+    let content = std::fs::read_to_string(FILE_PATH)
+        .with_context(|| format!("Failed to read {}", FILE_PATH))?;
+
+    let countries = content
+        .lines()
+        .filter_map(|line| {
+            if line.starts_with('#') {
+                return None;
+            }
+            let fields: Vec<&str> = line.split('\t').collect();
+            Some((fields.get(2)?.to_string(), fields.first()?.to_string()))
+        })
+        .collect();
+    Ok(countries)
+}
+
 /// Gets list of non-deprecated timezones
 pub fn get_timezones() -> Vec<String> {
     chrono_tz::TZ_VARIANTS
@@ -115,21 +137,21 @@ mod tests {
     #[test]
     fn test_get_languages() {
         let result = get_languages().unwrap();
-        let first = result.language.first().expect("no keyboards");
+        let first = result.language.first().expect("no languages");
         assert_eq!(first.id, "aa")
     }
 
     #[test]
     fn test_get_territories() {
         let result = get_territories().unwrap();
-        let first = result.territory.first().expect("no keyboards");
+        let first = result.territory.first().expect("no territories");
         assert_eq!(first.id, "001") // looks strange, but it is meta id for whole world
     }
 
     #[test]
     fn test_get_timezone_parts() {
         let result = get_timezone_parts().unwrap();
-        let first = result.timezone_part.first().expect("no keyboards");
+        let first = result.timezone_part.first().expect("no timezone parts");
         assert_eq!(first.id, "Abidjan")
     }
 

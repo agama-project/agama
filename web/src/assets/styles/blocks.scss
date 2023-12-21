@@ -385,7 +385,7 @@ ul[data-of="agama/keymaps"] {
 ul[data-of="agama/timezones"] {
   li {
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr;
 
     > :last-child {
       grid-column: 1 / -1;
