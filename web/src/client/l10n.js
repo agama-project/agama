@@ -31,6 +31,7 @@ const LOCALE_PATH = "/org/opensuse/Agama1/Locale";
  * @typedef {object} Timezone
  * @property {string} id - Timezone id (e.g., "Atlantic/Canary").
  * @property {Array<string>} parts - Name of the timezone parts (e.g., ["Atlantic", "Canary"]).
+ * @property {string} country - Name of the country associated to the zone or empty string (e.g., "Spain").
  * @property {number} utcOffset - UTC offset.
  */
 
@@ -230,13 +231,13 @@ class L10nClient {
   /**
    * @private
    *
-   * @param {[string, Array<string>]} dbusTimezone
+   * @param {[string, Array<string>, string]} dbusTimezone
    * @returns {Timezone}
    */
-  buildTimezone([id, parts]) {
+  buildTimezone([id, parts, country]) {
     const utcOffset = timezoneUTCOffset(id);
 
-    return ({ id, parts, utcOffset });
+    return ({ id, parts, country, utcOffset });
   }
 
   /**

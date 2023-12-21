@@ -122,12 +122,21 @@ impl Locale {
     /// * The timezone identifier (e.g., "Europe/Berlin").
     /// * A list containing each part of the name in the language set by the
     ///   UILocale property.
-    fn list_timezones(&self) -> Result<Vec<(String, Vec<String>)>, Error> {
+    /// * The name, in the language set by UILocale, of the main country
+    ///   associated to the timezone (typically, the name of the city that is
+    ///   part of the identifier) or empty string if there is no country.
+    fn list_timezones(&self) -> Result<Vec<(String, Vec<String>, String)>, Error> {
         let timezones: Vec<_> = self
             .timezones_db
             .entries()
             .iter()
-            .map(|tz| (tz.code.to_string(), tz.parts.clone()))
+            .map(|tz| {
+                (
+                    tz.code.to_string(),
+                    tz.parts.clone(),
+                    tz.country.clone().unwrap_or_default(),
+                )
+            })
             .collect();
         Ok(timezones)
     }
@@ -187,7 +196,7 @@ impl Locale {
         };
 
         let mut timezones_db = TimezonesDatabase::new();
-        timezones_db.read(&locale)?;
+        timezones_db.read(&ui_locale.language)?;
         let mut default_timezone = DEFAULT_TIMEZONE.to_string();
         if !timezones_db.exists(&default_timezone) {
             default_timezone = timezones_db.entries().get(0).unwrap().code.to_string();
