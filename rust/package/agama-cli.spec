@@ -32,7 +32,6 @@ BuildRequires:  cargo-packaging
 BuildRequires:  pkgconfig(openssl)
 # used in tests for dbus service
 BuildRequires:  python-langtable-data
-BuildRequires:  timezone
 BuildRequires:  dbus-1-common
 # required by agama-dbus-server integration tests
 BuildRequires:  dbus-1-daemon
@@ -43,8 +42,6 @@ Requires:       bzip2
 Requires:       tar
 # required for translating the keyboards descriptions
 Requires:       xkeyboard-config-lang
-# required for getting the list of timezones
-Requires:       timezone
 
 %description
 Command line program to interact with the agama service.
@@ -57,7 +54,10 @@ Summary:        Agama Rust D-Bus service
 License:        GPL-2.0-only
 Url:            https://github.com/opensuse/agama
 Requires:       python-langtable-data
+# required to get the list of timezones
+Requires:       timezone
 Requires:       dbus-1-common
+BuildRequires:  timezone
 
 %description -n agama-dbus-server
 DBus service for agama project. It provides so far localization service.
