@@ -113,6 +113,7 @@ $SUDO zypper --non-interactive install \
   lshw \
   python-langtable-data \
   tar \
+  timezone \
   xkeyboard-config-lang || exit 1
 
 (
