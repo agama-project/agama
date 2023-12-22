@@ -144,6 +144,12 @@ module.exports = {
     minimize: production,
     minimizer: [
       new TerserJSPlugin({
+        // src/components/core/Page.jsx is using a type?.name.endsWith("PageMenu") for extracting page menus.
+        // Thus, it's needed not mangling function names ending in PageMenu to keep it working in production
+        // until adopting a better solution, if any.
+        terserOptions: {
+          keep_fnames: /PageMenu$/,
+        },
         extractComments: {
           condition: true,
           filename: `[file].LICENSE.txt?query=[query]&filebase=[base]`,
