@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Dec 22 09:29:59 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: Fix page menus placement in production mode,
+   rendering them in the page header (gh#openSUSE/agama#925,
+   gh#openSUSE/agama#950).
+
+-------------------------------------------------------------------
 Thu Dec 21 14:24:02 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 7
