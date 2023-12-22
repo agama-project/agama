@@ -33,7 +33,7 @@ const loginPath = "/cockpit/@localhost/system/terminal.html";
 // id of the password field in the login dialog
 const loginId = "login-password-input";
 
-const ErrorIcon = () => <Icon name="error" className="icon-big" />;
+const ErrorIcon = () => <Icon name="error" className="icon-xxxl" />;
 
 /**
  * This is a helper wrapper used in the development server only. It displays

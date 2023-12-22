@@ -26,7 +26,7 @@ import { Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { locationReload } from "~/utils";
 
-const ErrorIcon = () => <Icon name="error" className="icon-big" />;
+const ErrorIcon = () => <Icon name="error" className="icon-xxxl" />;
 
 function DBusError() {
   return (
