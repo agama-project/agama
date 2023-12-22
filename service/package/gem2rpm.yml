@@ -55,7 +55,9 @@
     Requires:       exfat-utils
     Requires:       f2fs-tools
     Requires:       fcoe-utils
+    %ifarch x86_64 aarch64
     Requires:       fde-tools
+    %endif
     Requires:       jfsutils
     Requires:       libstorage-ng-lang
     Requires:       lvm2
