@@ -69,7 +69,6 @@ $SUDO zypper --non-interactive --gpg-auto-import-keys install \
   exfat-utils \
   f2fs-tools \
   fcoe-utils \
-  fde-tools \
   jfsutils \
   libstorage-ng-lang \
   lvm2 \
@@ -85,6 +84,12 @@ $SUDO zypper --non-interactive --gpg-auto-import-keys install \
   snapper \
   udftools \
   xfsprogs || exit 1
+
+# Install x86_64 packages
+if [ $(uname -m) == "x86_64" ]; then
+  $SUDO zypper --non-interactive --gpg-auto-import-keys install \
+    fde-tools
+fi
 
 # Install s390 packages
 if [ $(uname -m) == "s390x" ]; then
