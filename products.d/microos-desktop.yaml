@@ -23,9 +23,9 @@ translations:
     ja: openSUSE MicroOS をベースにし、自動的な更新およびロールバックの機能を提供するデスクトップ向けディストリビューションです。 Podman
       のコンテナランタイムを含むほか、 Gnome Software や KDE Discover を利用してソフトウエア管理を行うこともできます。
     sv: En distribution för skrivbordet som erbjuder automatiska uppdateringar och
-      tillbaka rullning ovanpå grunden för openSUSE MicroOS. Inkluderar Podman
-      behållarkörtid och gör det möjligt att hantera programvara med Gnome
-      Programvara eller KDE Discover.
+      möjligheten att rulla tillbaka byggt ovanpå grunden av openSUSE MicroOS.
+      Inkluderar Podman behållarkörtid och gör det möjligt att hantera
+      programvara med Gnome Programvara eller KDE Discover.
 software:
   installation_repositories:
     - url: https://download.opensuse.org/tumbleweed/repo/oss/
