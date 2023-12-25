@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-21 02:17+0000\n"
-"PO-Revision-Date: 2023-12-15 16:52+0000\n"
-"Last-Translator: Ladislav Slezák <lslezak@suse.com>\n"
-"Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-service-"
-"master/cs/>\n"
-"Language: cs\n"
+"PO-Revision-Date: 2023-12-22 15:02+0000\n"
+"Last-Translator: faila fail <yassadmi@proton.me>\n"
+"Language-Team: French <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/fr/>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 4.9.1\n"
 
 #. Callback to handle unsigned files
@@ -26,21 +26,21 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:63
 #, perl-brace-format
 msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
-msgstr "Soubor %{filename} z repozitáře %{repo_name} (%{repo_url})"
+msgstr "Le fichier %{filename} du dépôt %{repo_name} (%{repo_url})"
 
 #: service/lib/agama/software/callbacks/signature.rb:67
 #, perl-brace-format
 msgid "The file %{filename}"
-msgstr "Soubor %{filename}"
+msgstr "Le fichier %{filename}"
 
 #: service/lib/agama/software/callbacks/signature.rb:71
 #, perl-brace-format
 msgid ""
-"%{source} is not digitally signed. The origin and integrity of the file "
-"cannot be verified. Use it anyway?"
+"%{source} is not digitally signed. The origin and integrity of the file cannot"
+" be verified. Use it anyway?"
 msgstr ""
-"%{source} není digitálně podepsán. Původ a integrita souboru nemůže být "
-"ověřena. Přesto jej použít?"
+"%{source} n'est pas signé numériquement. L'origine et l'intégrité du fichier "
+"ne peuvent être vérifiées. L'utiliser quand même ?"
 
 #. Callback to handle signature verification failures
 #.
@@ -49,37 +49,37 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:94
 #, perl-brace-format
 msgid ""
-"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
-"want to trust this key?"
+"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you wan"
+"t to trust this key?"
 msgstr ""
-"Klíč %{id} (%{name}) s otiskem %{fingerprint} není známý. Důvěřujete tomuto "
-"klíči?"
+"La clé %{id} (%{name}) avec l'empreinte digitale %{fingerprint} est "
+"inconnue. Voulez-vous faire confiance à cette clé ?"
 
 #. as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
 #: service/lib/agama/software/manager.rb:134
 msgid "Initializing target repositories"
-msgstr "Inicializuji cílové repozitáře"
+msgstr "Initialisation des dépôts cibles"
 
 #: service/lib/agama/software/manager.rb:135
 msgid "Initializing sources"
-msgstr "Inicializuji zdroje"
+msgstr "Initialisation des sources"
 
 #: service/lib/agama/software/manager.rb:140
 msgid "Refreshing repositories metadata"
-msgstr "Obnovování metadat repozitáře"
+msgstr "Actualisation des métadonnées des dépôts"
 
 #: service/lib/agama/software/manager.rb:141
 msgid "Calculating the software proposal"
-msgstr "Probíhá návrh softwaru"
+msgstr "Calcul de l'offre de logiciel"
 
 #. Writes the repositories information to the installed system
 #: service/lib/agama/software/manager.rb:190
 msgid "Writing repositories to the target system"
-msgstr "Repozitáře se zapisují do cílového systému"
+msgstr "Écriture des dépôts sur le système cible"
 
 #: service/lib/agama/software/manager.rb:196
 msgid "Restoring original repositories"
-msgstr "Obnovují se původní repozitáře"
+msgstr "Restauration des dépôts d'origine"
 
 #. Issues related to the software proposal.
 #.
@@ -89,21 +89,21 @@ msgstr "Obnovují se původní repozitáře"
 #: service/lib/agama/software/manager.rb:461
 #, c-format
 msgid "Could not read repository \"%s\""
-msgstr "Nelze načíst repozitář \"%s\""
+msgstr "Impossible de lire le dépôt \"%s\""
 
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:471
 msgid "Product not selected yet"
-msgstr "Není vybrán žádný produkt"
+msgstr "Le produit n'est pas encore sélectionné"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:480
 msgid "Product must be registered"
-msgstr "Produkt musí být zaregistrován"
+msgstr ""
 
 #. Returns solver error messages from the last attempt
 #.
@@ -111,4 +111,4 @@ msgstr "Produkt musí být zaregistrován"
 #: service/lib/agama/software/proposal.rb:227
 #, c-format
 msgid "Found %s dependency issues."
-msgstr "Nalezeno %s problémů v závislostech."
+msgstr "%s problèmes de dépendance  trouvé(s) (Need a plural option)"
