@@ -248,7 +248,7 @@ const Page = ({ icon, title = "Agama", children }) => {
       </footer>
 
       <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
-      <If condition={issuesDialogOpen} then={<IssuesDialog onClose={closeIssuesDialog} />} />
+      <IssuesDialog isOpen={issuesDialogOpen} onClose={closeIssuesDialog} />
     </div>
   );
 };
