@@ -185,7 +185,7 @@ const IssuesContent = ({ issues, openFrom = "" }) => {
  * @param {function} props.close - A function to call when the close action is triggered.
  * @param {string} [props.openFrom] - A string which indicites which issues section should be highlighted.
  */
-export default function IssuesDialog({ onClose, openFrom = "" }) {
+export default function IssuesDialog({ isOpen = false, onClose, openFrom = "" }) {
   const [isLoading, setIsLoading] = useState(true);
   const [issues, setIssues] = useState();
   const client = useInstallerClient();
@@ -208,7 +208,7 @@ export default function IssuesDialog({ onClose, openFrom = "" }) {
   }, [client, load, update]);
 
   return (
-    <Popup isOpen title={_("Issues")} data-content="issues-summary">
+    <Popup isOpen={isOpen} title={_("Issues")} data-content="issues-summary">
       <If
         condition={isLoading}
         then={<Icon name="loading" className="icon-big" />}
