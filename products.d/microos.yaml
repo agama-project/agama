@@ -26,7 +26,7 @@ translations:
       はトランザクション型の (不可分の) 更新機構が提供されており、 btrfs
       のルートファイルシステムを読み込み専用にすることができます。こちらもローリングリリース型のディストリビューションであるため、常に最新を維持することができます。
     sv: En snabb, liten distribution utformad för att vara värd för
-      behållar-arbetsbelastningar med automatiserad administration och
+      arbetsbelastningar i behållare med automatiserad administration och
       patchning. openSUSE MicroOS tillhandahåller transaktionella (atomära)
       uppdateringar på ett skrivskyddat btrfs-rootfilsystem. Som rullande
       releasedistribution är mjukvaran alltid uppdaterad.
