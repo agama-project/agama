@@ -29,15 +29,14 @@ import { IssuesDialog } from "~/components/core";
 import { n_ } from "~/i18n";
 
 /**
- * Displays a list of validation errors
+ * Displays validation errors
  *
  * When there is only one error, it displays its message. Otherwise, it displays a generic message
- * and the details in an Popover component.
+ * which can be clicked and more error details will be shown in a popup dialog.
  *
  * @component
  *
  * @todo This component might be more generic.
- * @todo Improve the contents of the Popover (e.g., using a list)
  *
  * @param {object} props
  * @param {string} [props.sectionName] - Name of the section which is displaying errors. (product, software, storage, ...)
@@ -75,7 +74,7 @@ const ValidationErrors = ({ errors, sectionName = "" }) => {
           {showIssuesPopUp &&
             <IssuesDialog
               close={() => setshowIssuesPopUp(false)}
-              sectionHighlight={sectionName}
+              openFrom={sectionName}
             />}
         </div>
       </>
