@@ -24,7 +24,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { HelperText, HelperTextItem } from "@patternfly/react-core";
 
 import { partition, useCancellablePromise } from "~/utils";
-import { If, Section, SectionSkeleton, Popup } from "~/components/core";
+import { If, Section, Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
@@ -77,14 +77,14 @@ const IssueItems = ({ issues = [] }) => {
  *
  * @param {object} props
  * @param {import ("~/client/issues").ClientsIssues} props.issues
- * @param {string} [props.sectionHighlight] - A string which indicites which issues section should be highlighted.
+ * @param {string} [props.openFrom] - A string which indicites which issues section should be highlighted.
  */
-const IssuesSections = ({ issues, sectionHighlight = "" }) => {
+const IssuesSections = ({ issues, openFrom = "" }) => {
   const productIssues = issues.product || [];
   const storageIssues = issues.storage || [];
   const softwareIssues = issues.software || [];
   const selectedRef = useRef(null);
-  const openBy = sectionHighlight;
+  const openBy = openFrom;
 
   useEffect(() => {
     if (selectedRef && selectedRef.current) {
@@ -93,7 +93,7 @@ const IssuesSections = ({ issues, sectionHighlight = "" }) => {
   }, [issues]);
 
   return (
-    <>
+    <div className="stack">
       <If
         condition={productIssues.length > 0}
         then={
@@ -102,7 +102,7 @@ const IssuesSections = ({ issues, sectionHighlight = "" }) => {
             key="product-issues"
             title={_("Product")}
             icon="inventory_2"
-            className={sectionHighlight === "Product" ? "highlighted" : ""}
+            className={openFrom === "Product" ? "highlighted" : ""}
           >
             <IssueItems issues={productIssues} />
           </Section>
@@ -116,7 +116,7 @@ const IssuesSections = ({ issues, sectionHighlight = "" }) => {
             key="storage-issues"
             title={_("Storage")}
             icon="hard_drive"
-            className={sectionHighlight === "Storage" ? "highlighted" : ""}
+            className={openFrom === "Storage" ? "highlighted" : ""}
           >
             <IssueItems issues={storageIssues} />
           </Section>
@@ -130,13 +130,13 @@ const IssuesSections = ({ issues, sectionHighlight = "" }) => {
             key="software-issues"
             title={_("Software")}
             icon="apps"
-            className={sectionHighlight === "Software" ? "highlighted" : ""}
+            className={openFrom === "Software" ? "highlighted" : ""}
           >
             <IssueItems issues={softwareIssues} />
           </Section>
         }
       />
-    </>
+    </div>
   );
 };
 
@@ -146,9 +146,9 @@ const IssuesSections = ({ issues, sectionHighlight = "" }) => {
  *
  * @param {object} props
  * @param {import ("~/client").Issues} props.issues
- * @param {string} [props.sectionHighlight] - A string which indicites which issues section should be highlighted.
+ * @param {string} [props.openFrom] - A string which indicites which issues section should be highlighted.
  */
-const IssuesContent = ({ issues, sectionHighlight = "" }) => {
+const IssuesContent = ({ issues, openFrom = "" }) => {
   const NoIssues = () => {
     return (
       <HelperText className="issue">
@@ -165,7 +165,7 @@ const IssuesContent = ({ issues, sectionHighlight = "" }) => {
     <If
       condition={allIssues.length === 0}
       then={<NoIssues />}
-      else={<IssuesSections issues={issues} sectionHighlight={sectionHighlight} />}
+      else={<IssuesSections issues={issues} openFrom={openFrom} />}
     />
   );
 };
@@ -183,9 +183,9 @@ const IssuesContent = ({ issues, sectionHighlight = "" }) => {
  *
  * @param {object} props
  * @param {function} props.close - A function to call when the close action is triggered.
- * @param {string} [props.sectionHighlight] - A string which indicites which issues section should be highlighted.
+ * @param {string} [props.openFrom] - A string which indicites which issues section should be highlighted.
  */
-export default function IssuesDialog({ onClose, sectionHighlight = "" }) {
+export default function IssuesDialog({ onClose, openFrom = "" }) {
   const [isLoading, setIsLoading] = useState(true);
   const [issues, setIssues] = useState();
   const client = useInstallerClient();
@@ -211,8 +211,8 @@ export default function IssuesDialog({ onClose, sectionHighlight = "" }) {
     <Popup isOpen title={_("Issues")} data-content="issues-summary">
       <If
         condition={isLoading}
-        then={<SectionSkeleton numRows={4} />}
-        else={<IssuesContent issues={issues} sectionHighlight={sectionHighlight} />}
+        then={<Icon name="loading" className="icon-big" />}
+        else={<IssuesContent issues={issues} openFrom={openFrom} />}
       />
       <Popup.Actions>
         <Popup.Confirm onClick={onClose} autoFocus>{_("Close")}</Popup.Confirm>
