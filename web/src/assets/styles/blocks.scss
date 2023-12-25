@@ -442,3 +442,16 @@ ul[data-of="agama/timezones"] {
     text-align: end;
   }
 }
+
+[role="dialog"] {
+  section:not([class^="pf-c"]) {
+    > svg:first-child {
+    block-size: 24px;
+    inline-size: 24px;
+    }
+
+    h2 {
+      font-size: var(--fs-h3);
+    }
+  }
+}
