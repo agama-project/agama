@@ -86,7 +86,6 @@ impl Tree {
     ) -> Result<OwnedObjectPath, ServiceError> {
         let mut objects = self.objects.lock().await;
 
-        let orig_id = conn.id.to_owned();
         let uuid = conn.uuid;
         let (id, path) = objects.register_connection(conn);
         if id != conn.id {
