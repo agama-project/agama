@@ -25,9 +25,8 @@ import { Button } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
 import { partition } from "~/utils";
-import { useNotification } from "~/context/notification";
 import { Icon } from "~/components/layout";
-import { IssuesDialog, If, PageMenu, Sidebar } from "~/components/core";
+import { If, PageMenu, Sidebar } from "~/components/core";
 import logoUrl from "~/assets/suse-horizontal-logo.svg";
 
 /**
@@ -96,30 +95,6 @@ const BackAction = () => {
 };
 
 /**
- * Internal component for displaying a button to show IssuesDialog when there
- * are issues
- *
- * FIXME: move to its own component and import it instead (?)
- *
- * @param {object} [props] - {@link Action} props
- * @param {boolean} props.issues - Whether there is a notification for pending to read issues
- * @param {function} props.onClick - callback to be triggered on user click
- */
-const IssuesDialogButton = ({ issues, onClick }) => {
-  if (!issues) return;
-
-  return (
-    <Button
-      aria-label={_("Show issues popup")}
-      variant="link"
-      className="warning-icon"
-      icon={<Icon name="warning" />}
-      onClick={onClick}
-    />
-  );
-};
-
-/**
  * Displays an installation page
  * @component
  *
@@ -180,9 +155,7 @@ const IssuesDialogButton = ({ issues, onClick }) => {
  *
  */
 const Page = ({ icon, title = "Agama", children }) => {
-  const [notification] = useNotification();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [issuesDialogOpen, setIssuesDialogOpen] = useState(false);
 
   /**
    * To make possible placing everything in the right place, it's
@@ -211,8 +184,6 @@ const Page = ({ icon, title = "Agama", children }) => {
 
   const openSidebar = () => setSidebarOpen(true);
   const closeSidebar = () => setSidebarOpen(false);
-  const openIssuesDialog = () => setIssuesDialogOpen(true);
-  const closeIssuesDialog = () => setIssuesDialogOpen(false);
 
   return (
     <div data-type="agama/page" data-layout="agama/base">
@@ -222,7 +193,6 @@ const Page = ({ icon, title = "Agama", children }) => {
           <span>{title}</span>
         </h1>
         <div data-type="agama/header-actions">
-          <IssuesDialogButton issues={notification.issues} onClick={openIssuesDialog} />
           { menu }
           <button
             onClick={openSidebar}
@@ -248,7 +218,6 @@ const Page = ({ icon, title = "Agama", children }) => {
       </footer>
 
       <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
-      <IssuesDialog isOpen={issuesDialogOpen} onClose={closeIssuesDialog} />
     </div>
   );
 };
