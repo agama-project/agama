@@ -44,6 +44,7 @@ module Agama
     class Manager
       include WithIssues
       include WithProgress
+      include Yast::I18n
 
       # @return [Config]
       attr_reader :config
@@ -53,6 +54,8 @@ module Agama
       # @param config [Config]
       # @param logger [Logger]
       def initialize(config, logger)
+        textdomain "agama"
+
         @config = config
         @logger = logger
         register_proposal_callbacks
@@ -105,10 +108,10 @@ module Agama
       def probe
         start_progress(4)
         config.pick_product(software.selected_product)
-        progress.step("Activating storage devices") { activate_devices }
-        progress.step("Probing storage devices") { probe_devices }
-        progress.step("Calculating the storage proposal") { calculate_proposal }
-        progress.step("Selecting Linux Security Modules") { security.probe }
+        progress.step(_("Activating storage devices")) { activate_devices }
+        progress.step(_("Probing storage devices")) { probe_devices }
+        progress.step(_("Calculating the storage proposal")) { calculate_proposal }
+        progress.step(_("Selecting Linux Security Modules")) { security.probe }
         update_issues
         @on_probe_callbacks&.each(&:call)
       end
@@ -116,14 +119,14 @@ module Agama
       # Prepares the partitioning to install the system
       def install
         start_progress(4)
-        progress.step("Preparing bootloader proposal") do
+        progress.step(_("Preparing bootloader proposal")) do
           # first make bootloader proposal to be sure that required packages are installed
           proposal = ::Bootloader::ProposalClient.new.make_proposal({})
           logger.debug "Bootloader proposal #{proposal.inspect}"
         end
-        progress.step("Adding storage-related packages") { add_packages }
-        progress.step("Preparing the storage devices") { perform_storage_actions }
-        progress.step("Writing bootloader sysconfig") do
+        progress.step(_("Adding storage-related packages")) { add_packages }
+        progress.step(_("Preparing the storage devices")) { perform_storage_actions }
+        progress.step(_("Writing bootloader sysconfig")) do
           # call inst bootloader to get properly initialized bootloader
           # sysconfig before package installation
           Yast::WFM.CallFunction("inst_bootloader", [])
