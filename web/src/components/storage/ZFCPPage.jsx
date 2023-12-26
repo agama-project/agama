@@ -414,7 +414,7 @@ const ControllersSection = ({ client, manager, load = noop, isLoading = false })
   const EmptyState = () => {
     return (
       <div className="stack">
-        <div>{_("No zFCP controllers found")}</div>
+        <div>{_("No zFCP controllers found.")}</div>
         <div>{_("Please, try to read the zFCP devices again.")}</div>
         {/* TRANSLATORS: button label */}
         <Button variant="primary" onClick={load}>{_("Read zFCP devices")}</Button>
@@ -550,7 +550,7 @@ const DisksSection = ({ client, manager, isLoading = false }) => {
 
     return (
       <div className="stack">
-        <div>{_("No zFCP disks found")}</div>
+        <div>{_("No zFCP disks found.")}</div>
         <If
           condition={manager.getActiveControllers().length === 0}
           then={<NoActiveControllers />}

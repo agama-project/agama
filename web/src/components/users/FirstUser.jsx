@@ -41,7 +41,7 @@ import { RowActions, PasswordAndConfirmationInput, Popup } from '~/components/co
 const UserNotDefined = ({ actionCb }) => {
   return (
     <div className="stack">
-      <div>{_("No user defined yet")}</div>
+      <div>{_("No user defined yet.")}</div>
       <div>
         <strong>
           {_("Please, be aware that a user must be defined before installing the system to be able to log into it.")}

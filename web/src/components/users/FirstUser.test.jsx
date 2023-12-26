@@ -57,7 +57,7 @@ beforeEach(() => {
 
 it("allows defining a new user", async () => {
   const { user } = installerRender(<FirstUser />);
-  await screen.findByText("No user defined yet");
+  await screen.findByText("No user defined yet.");
   const button = await screen.findByRole("button", { name: "Define a user now" });
   await user.click(button);
 
@@ -156,7 +156,7 @@ describe("when there is some issue with the user config provided", () => {
     await waitFor(() => {
       expect(screen.queryByText(/Something went wrong/i)).toBeInTheDocument();
       expect(screen.queryByText(/There is an error/i)).toBeInTheDocument();
-      expect(screen.queryByText(/No user defined yet/i)).toBeInTheDocument();
+      expect(screen.queryByText("No user defined yet.")).toBeInTheDocument();
     });
   });
 });
@@ -263,14 +263,14 @@ describe("when the user has been modified", () => {
     const [mockFunction, callbacks] = createCallbackMock();
     onUsersChangeFn = mockFunction;
     installerRender(<FirstUser />);
-    await screen.findByText("No user defined yet");
+    await screen.findByText("No user defined yet.");
 
     const [cb] = callbacks;
     act(() => {
       cb({ firstUser: { userName: "ytm", fullName: "YaST Team Member", autologin: false } });
     });
 
-    const noUserInfo = await screen.queryByText("No user defined yet");
+    const noUserInfo = await screen.queryByText("No user defined yet.");
     expect(noUserInfo).toBeNull();
     screen.getByText("YaST Team Member");
     screen.getByText("ytm");

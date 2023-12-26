@@ -74,7 +74,7 @@ describe("when ready", () => {
     it("renders a text inviting the user to define at least one", async () => {
       installerRender(<RootAuthMethods />);
 
-      await screen.findByText("No root authentication method defined yet");
+      await screen.findByText("No root authentication method defined yet.");
       screen.getByText(/at least one/);
     });
 

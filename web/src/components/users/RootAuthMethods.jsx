@@ -32,7 +32,7 @@ import { useInstallerClient } from "~/context/installer";
 const MethodsNotDefined = ({ setPassword, setSSHKey }) => {
   return (
     <div className="stack">
-      <div>{_("No root authentication method defined yet")}</div>
+      <div>{_("No root authentication method defined yet.")}</div>
       <div>
         <strong>
           {_("Please, define at least one authentication method for logging into the system as root.")}

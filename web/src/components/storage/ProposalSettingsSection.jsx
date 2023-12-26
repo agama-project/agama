@@ -151,7 +151,7 @@ const InstallationDeviceField = ({
       >
         <If
           condition={devices.length === 0}
-          then={_("No devices found")}
+          then={_("No devices found.")}
           else={
             <InstallationDeviceForm
               id="bootDeviceForm"
