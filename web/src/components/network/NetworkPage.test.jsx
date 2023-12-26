@@ -89,7 +89,7 @@ describe("NetworkPage", () => {
       installerRender(<NetworkPage />);
 
       const section = await screen.findByRole("region", { name: "Wired networks" });
-      await within(section).findByText("No wired connections found");
+      await within(section).findByText("No wired connections found.");
     });
   });
 
@@ -102,7 +102,7 @@ describe("NetworkPage", () => {
       installerRender(<NetworkPage />);
 
       const section = await screen.findByRole("region", { name: "WiFi networks" });
-      await within(section).findByText("No WiFi connections found");
+      await within(section).findByText("No WiFi connections found.");
     });
 
     describe("and WiFi scan is supported", () => {
