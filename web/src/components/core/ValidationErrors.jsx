@@ -62,7 +62,7 @@ const ValidationErrors = ({ errors, sectionName = "" }) => {
             className="plain-control color-warn"
             onClick={() => setshowIssuesPopUp(true)}
           >
-            { warningIcon } {
+            {
               sprintf(
                 // TRANSLATORS: %d is replaced with the number of errors found
                 n_("%d error found", "%d errors found", errors.length),
@@ -71,11 +71,11 @@ const ValidationErrors = ({ errors, sectionName = "" }) => {
             }
           </button>
 
-          {showIssuesPopUp &&
-            <IssuesDialog
-              close={() => setshowIssuesPopUp(false)}
-              openFrom={sectionName}
-            />}
+          <IssuesDialog
+            isOpen={showIssuesPopUp}
+            onClose={() => setshowIssuesPopUp(false)}
+            openFrom={sectionName}
+          />
         </div>
       </>
     );
