@@ -27,7 +27,6 @@ import { If, Sidebar } from "~/components/core";
 // Mock some components
 jest.mock("~/components/core/About", () => () => <div>About link mock</div>);
 jest.mock("~/components/core/DevelopmentInfo", () => () => <div>DevelopmentInfo mock</div>);
-jest.mock("~/components/core/IssuesLink", () => () => <div>IssuesLink mock</div>);
 jest.mock("~/components/core/LogsButton", () => () => <div>LogsButton mock</div>);
 jest.mock("~/components/core/ShowLogButton", () => () => <div>ShowLogButton mock</div>);
 jest.mock("~/components/core/ShowTerminalButton", () => () => <div>ShowTerminalButton mock</div>);
