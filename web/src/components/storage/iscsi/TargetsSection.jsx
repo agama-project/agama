@@ -136,7 +136,7 @@ export default function TargetsSection() {
     if (state.nodes.length === 0) {
       return (
         <div className="stack">
-          <div className="bold">{_("No iSCSI targets found")}</div>
+          <div>{_("No iSCSI targets found.")}</div>
           <div>{_("Please, perform an iSCSI discovery in order to find available iSCSI targets.")}</div>
           {/* TRANSLATORS: button label, starts iSCSI discovery */}
           <Button variant="primary" onClick={openDiscoverForm}>{_("Discover iSCSI targets")}</Button>

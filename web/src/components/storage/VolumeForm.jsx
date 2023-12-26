@@ -172,7 +172,7 @@ const FsSelectOption = ({ fsOption }) => {
 
   return (
     <SelectOption value={fsOption} description={description()}>
-      <span className="bold">{label()}</span> <If condition={details()} then={details()} />
+      <strong>{label()}</strong> <If condition={details()} then={details()} />
     </SelectOption>
   );
 };

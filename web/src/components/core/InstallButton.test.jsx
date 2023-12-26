@@ -90,7 +90,7 @@ describe("when the button is clicked and there are not errors", () => {
       const button = await screen.findByRole("button", { name: "Install" });
       await user.click(button);
 
-      await screen.findByRole("button", { name: /list of issues$/ });
+      await screen.findByRole("link", { name: /list of issues$/ });
     });
   });
 
@@ -100,7 +100,7 @@ describe("when the button is clicked and there are not errors", () => {
       const button = await screen.findByRole("button", { name: "Install" });
       await user.click(button);
       await waitFor(() => {
-        const link = screen.queryByRole("button", { name: /list of issues$/ });
+        const link = screen.queryByRole("link", { name: /list of issues$/ });
         expect(link).toBeNull();
       });
     });
