@@ -83,7 +83,6 @@ impl Tree {
     pub async fn add_connection(
         &self,
         conn: &mut Connection,
-        notify: bool,
     ) -> Result<OwnedObjectPath, ServiceError> {
         let mut objects = self.objects.lock().await;
 
@@ -121,10 +120,6 @@ impl Tree {
                 .await?;
         }
 
-        if notify {
-            self.notify_connection_added(&orig_id, &path).await?;
-        }
-
         Ok(path.into())
     }
 
@@ -146,7 +141,7 @@ impl Tree {
     /// * `connections`: list of connections.
     async fn add_connections(&self, connections: &mut [Connection]) -> Result<(), ServiceError> {
         for conn in connections.iter_mut() {
-            self.add_connection(conn, false).await?;
+            self.add_connection(conn).await?;
         }
 
         self.add_interface(
@@ -201,19 +196,6 @@ impl Tree {
     {
         let object_server = self.connection.object_server();
         Ok(object_server.at(path, iface).await?)
-    }
-
-    /// Notify that a new connection has been added
-    async fn notify_connection_added(
-        &self,
-        id: &str,
-        path: &ObjectPath<'_>,
-    ) -> Result<(), ServiceError> {
-        let object_server = self.connection.object_server();
-        let iface_ref = object_server
-            .interface::<_, interfaces::Connections>(CONNECTIONS_PATH)
-            .await?;
-        Ok(interfaces::Connections::connection_added(iface_ref.signal_context(), id, path).await?)
     }
 }
 

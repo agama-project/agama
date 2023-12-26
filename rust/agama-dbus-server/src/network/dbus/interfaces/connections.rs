@@ -54,14 +54,16 @@ impl Connections {
         &mut self,
         id: String,
         ty: u8,
+        #[zbus(signal_context)] ctxt: SignalContext<'_>,
     ) -> zbus::fdo::Result<OwnedObjectPath> {
         let actions = self.actions.lock().await;
         let (tx, rx) = oneshot::channel();
         actions
             .send(Action::AddConnection(id.clone(), ty.try_into()?, tx))
             .unwrap();
-        let result = rx.await.unwrap()?;
-        Ok(result)
+        let path = rx.await.unwrap()?;
+        Self::connection_added(&ctxt, &id, &path).await?;
+        Ok(path)
     }
 
     /// Returns the D-Bus path of the network connection.

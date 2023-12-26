@@ -114,7 +114,7 @@ impl<T: Adapter> NetworkSystem<T> {
         // TODO: handle tree handling problems
         let path = self
             .tree
-            .add_connection(&mut conn, true)
+            .add_connection(&mut conn)
             .await
             .expect("Could not update the D-Bus tree");
         self.state.add_connection(conn)?;
