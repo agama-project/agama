@@ -73,9 +73,9 @@ const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
  */
 const MountPointFormSelect = ({ volumes, ...formSelectProps }) => {
   return (
-    <FormSelect { ...formSelectProps }>
+    <Select { ...formSelectProps }>
       { volumes.map(v => <FormSelectOption key={v.mountPath} value={v.mountPath} label={v.mountPath} />) }
-    </FormSelect>
+    </Select>
   );
 };
 
