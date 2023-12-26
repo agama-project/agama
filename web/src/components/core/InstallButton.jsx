@@ -23,23 +23,13 @@ import React, { useState } from "react";
 import { useInstallerClient } from "~/context/installer";
 
 import { Button } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { If, Popup } from "~/components/core";
 import { _ } from "~/i18n";
 
 const InstallConfirmationPopup = ({ hasIssues, onAccept, onClose }) => {
-  const navigate = useNavigate();
-
   const IssuesWarning = () => {
-    const IssuesLink = ({ text }) => {
-      return (
-        <Button variant="link" isInline onClick={() => navigate("/issues")}>
-          {text}
-        </Button>
-      );
-    };
-
     // TRANSLATORS: the installer reports some errors,
     // the text in square brackets [] is a clickable link
     const [msgStart, msgLink, msgEnd] = _("There are some reported issues. \
@@ -47,10 +37,12 @@ Please, check [the list of issues] \
 before proceeding with the installation.").split(/[[\]]/);
 
     return (
-      <p className="bold">
-        {msgStart}
-        <IssuesLink text={msgLink} />
-        {msgEnd}
+      <p>
+        <strong>
+          {msgStart}
+          <Link to="/issues">{msgLink}</Link>
+          {msgEnd}
+        </strong>
       </p>
     );
   };
