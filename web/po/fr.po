@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-15 17:45+0000\n"
+"POT-Creation-Date: 2023-12-24 02:16+0000\n"
 "PO-Revision-Date: 2023-12-07 07:01+0000\n"
 "Last-Translator: faila fail <yassadmi@proton.me>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-web/fr/"
@@ -18,10 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 4.9.1\n"
-
-#: src/App.jsx:110
-msgid "Diagnostic tools"
-msgstr "Outils de diagnostic"
 
 #. TRANSLATORS: error message, %s is replaced by the server URL
 #: src/DevServerWrapper.jsx:82
@@ -66,32 +62,36 @@ msgstr "Pour plus d'informations, veuillez consulter le dépôt du projet à %s.
 
 #. TRANSLATORS: button label
 #: src/components/core/About.jsx:71 src/components/core/FileViewer.jsx:80
-#: src/components/core/Sidebar.jsx:177 src/components/core/Terminal.jsx:48
+#: src/components/core/Sidebar.jsx:159 src/components/core/Terminal.jsx:48
 #: src/components/network/WifiSelector.jsx:151
 #: src/components/product/ProductPage.jsx:239
 msgid "Close"
 msgstr "Fermer"
 
-#. TRANSLATORS: button label
-#: src/components/core/DBusError.jsx:41
-msgid "Reload"
-msgstr "Recharger"
-
 #. TRANSLATORS: page title
-#: src/components/core/DBusError.jsx:49
+#: src/components/core/DBusError.jsx:34
 msgid "D-Bus Error"
 msgstr "Erreur D-Bus"
 
-#: src/components/core/DBusError.jsx:55
+#: src/components/core/DBusError.jsx:38
 msgid "Cannot connect to D-Bus"
 msgstr "Connexion au D-Bus impossible"
 
-#: src/components/core/DBusError.jsx:60
+#: src/components/core/DBusError.jsx:43
 msgid ""
 "Could not connect to the D-Bus service. Please, check whether it is running."
 msgstr ""
 "Impossible de se connecter au service D-Bus. Veuillez vérifier s'il est en "
 "cours d'exécution."
+
+#. TRANSLATORS: button label
+#: src/components/core/DBusError.jsx:51
+msgid "Reload"
+msgstr "Recharger"
+
+#: src/components/core/DevelopmentInfo.jsx:55
+msgid "Cockpit server"
+msgstr ""
 
 #: src/components/core/FileViewer.jsx:65
 msgid "Reading file..."
@@ -156,7 +156,7 @@ msgstr ""
 #: src/components/storage/ProposalSettingsSection.jsx:604
 #: src/components/storage/ProposalVolumes.jsx:148
 #: src/components/storage/ProposalVolumes.jsx:283
-#: src/components/storage/ZFCPPage.jsx:513
+#: src/components/storage/ZFCPPage.jsx:511
 msgid "Accept"
 msgstr "Accepter"
 
@@ -175,29 +175,30 @@ msgstr "Terminer"
 msgid "Reboot"
 msgstr "Redémarrer"
 
+#. TRANSLATORS: page title
 #: src/components/core/InstallationFinished.jsx:59
 msgid "Installation Finished"
 msgstr "Installation terminée"
 
-#: src/components/core/InstallationFinished.jsx:69
+#: src/components/core/InstallationFinished.jsx:63
 msgid "Congratulations!"
 msgstr "Félicitations!"
 
-#: src/components/core/InstallationFinished.jsx:74
+#: src/components/core/InstallationFinished.jsx:68
 msgid "The installation on your machine is complete."
 msgstr "L'installation sur votre machine est terminée."
 
-#: src/components/core/InstallationFinished.jsx:78
+#: src/components/core/InstallationFinished.jsx:72
 msgid "At this point you can power off the machine."
 msgstr "Vous pouvez à présent éteindre la machine."
 
-#: src/components/core/InstallationFinished.jsx:79
+#: src/components/core/InstallationFinished.jsx:73
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr ""
 "Vous pouvez à présent redémarrer la machine pour vous connecter au nouveau "
 "système."
 
-#: src/components/core/InstallationFinished.jsx:82
+#: src/components/core/InstallationFinished.jsx:76
 msgid "Have a lot of fun! Your openSUSE Development Team."
 msgstr "Amusez-vous bien ! Votre équipe de développement openSUSE."
 
@@ -213,10 +214,11 @@ msgstr "Montrer les problèmes"
 msgid "There are new issues"
 msgstr "Il y a de nouveaux problèmes"
 
+#. TRANSLATORS: page title
 #. TRANSLATORS: page section
 #: src/components/core/IssuesPage.jsx:92
 #: src/components/overview/ProductSection.jsx:71
-#: src/components/product/ProductPage.jsx:434
+#: src/components/product/ProductPage.jsx:435
 msgid "Product"
 msgstr "Produit"
 
@@ -268,6 +270,19 @@ msgid "Something went wrong while collecting logs. Please, try again."
 msgstr ""
 "Un problème s'est produit lors de la collecte des journaux. Veuillez "
 "réessayer."
+
+#: src/components/core/Page.jsx:92 src/components/users/UsersPage.jsx:30
+msgid "Back"
+msgstr "Retour"
+
+#: src/components/core/Page.jsx:200
+msgid "Show global options"
+msgstr "Afficher les options générales"
+
+#: src/components/core/Page.jsx:214
+#, fuzzy
+msgid "Page Actions"
+msgstr "Actions planifiées"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:35
 msgid "Passwords do not match"
@@ -333,27 +348,20 @@ msgstr "Journaux YaST"
 msgid "Open Terminal"
 msgstr "Ouvrir le Terminal"
 
-#: src/components/core/Sidebar.jsx:135
-msgid "Show global options"
-msgstr "Afficher les options générales"
-
-#: src/components/core/Sidebar.jsx:141
-msgid "New issues found"
-msgstr "Nouveaux problèmes trouvés"
-
-#: src/components/core/Sidebar.jsx:151
-msgid "Global options"
-msgstr "Options générales"
-
 #. TRANSLATORS: sidebar header
-#: src/components/core/Sidebar.jsx:157
+#: src/components/core/Sidebar.jsx:114 src/components/core/Sidebar.jsx:122
 #, fuzzy
 msgid "Installer Options"
 msgstr "Installation"
 
-#: src/components/core/Sidebar.jsx:164
-msgid "Hide navigation and other options"
-msgstr "Masquer la navigation et les autres options"
+#: src/components/core/Sidebar.jsx:129
+#, fuzzy
+msgid "Hide installer options"
+msgstr "Installation"
+
+#: src/components/core/Sidebar.jsx:138
+msgid "Diagnostic tools"
+msgstr "Outils de diagnostic"
 
 #: src/components/core/ValidationErrors.jsx:62
 msgid "Errors"
@@ -400,7 +408,7 @@ msgstr ""
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:56
-#: src/components/l10n/L10nPage.jsx:385
+#: src/components/l10n/L10nPage.jsx:384
 #: src/components/overview/L10nSection.jsx:52
 msgid "Localization"
 msgstr "Localisation"
@@ -478,17 +486,6 @@ msgstr "Changer de clavier"
 msgid "Keyboard not selected yet"
 msgstr "Le clavier n'est pas encore sélectionné"
 
-#: src/components/l10n/L10nPage.jsx:387
-#: src/components/product/ProductPage.jsx:434
-#: src/components/software/SoftwarePage.jsx:81
-#: src/components/storage/DASDPage.jsx:187
-#: src/components/storage/ISCSIPage.jsx:39
-#: src/components/storage/ProposalPage.jsx:218
-#: src/components/storage/ZFCPPage.jsx:736
-#: src/components/users/UsersPage.jsx:30
-msgid "Back"
-msgstr "Retour"
-
 #: src/components/l10n/LocaleSelector.jsx:82
 msgid "Filter by language, territory or locale code"
 msgstr "Filtrer par langue, territoire ou code local"
@@ -498,11 +495,11 @@ msgid "Available locales"
 msgstr "Localités disponibles"
 
 #. TRANSLATORS: placeholder text for search input in the timezone selector.
-#: src/components/l10n/TimezoneSelector.jsx:102
+#: src/components/l10n/TimezoneSelector.jsx:101
 msgid "Filter by territory, time zone code or UTC offset"
 msgstr "Filtrer par territoire, code de fuseau horaire ou décalage UTC"
 
-#: src/components/l10n/TimezoneSelector.jsx:109
+#: src/components/l10n/TimezoneSelector.jsx:108
 msgid "Available time zones"
 msgstr "Fuseaux horaires disponibles"
 
@@ -550,7 +547,7 @@ msgstr "Liste des données d'adresses"
 #. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/network/ConnectionsTable.jsx:57
 #: src/components/network/ConnectionsTable.jsx:86
-#: src/components/storage/ZFCPPage.jsx:362
+#: src/components/storage/ZFCPPage.jsx:360
 #: src/components/storage/iscsi/InitiatorForm.jsx:52
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:68
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:85
@@ -676,7 +673,7 @@ msgstr "Aucune connexion WiFi trouvée"
 
 #. TRANSLATORS: button label
 #: src/components/network/NetworkPage.jsx:70
-#: src/components/network/NetworkPageOptions.jsx:46
+#: src/components/network/NetworkPageMenu.jsx:46
 #: src/components/network/WifiSelector.jsx:134
 msgid "Connect to a Wi-Fi network"
 msgstr "Se connecter à un réseau Wi-Fi"
@@ -805,7 +802,7 @@ msgstr[0] "Connexion %d établie:"
 msgstr[1] "Connexions %d établies:"
 
 #. TRANSLATORS: page title
-#: src/components/overview/Overview.jsx:47
+#: src/components/overview/OverviewPage.jsx:48
 msgid "Installation Summary"
 msgstr "Synthèse de l'installation"
 
@@ -902,7 +899,7 @@ msgid "Users"
 msgstr "Utilisateurs"
 
 #: src/components/product/ProductPage.jsx:63
-#: src/components/product/ProductSelectionPage.jsx:73
+#: src/components/product/ProductSelectionPage.jsx:65
 msgid "Choose a product"
 msgstr "Choisir un produit"
 
@@ -984,13 +981,12 @@ msgstr "E-mail"
 msgid "Loading available products, please wait..."
 msgstr "Chargement des produits disponibles, veuillez patienter..."
 
-#. TRANSLATORS: page header
-#: src/components/product/ProductSelectionPage.jsx:64
+#. TRANSLATORS: page title
+#: src/components/product/ProductSelectionPage.jsx:63
 msgid "Product selection"
 msgstr "Sélection des produits"
 
-#. TRANSLATORS: button label
-#: src/components/product/ProductSelectionPage.jsx:69
+#: src/components/product/ProductSelectionPage.jsx:72
 msgid "Select"
 msgstr "Sélectionner"
 
@@ -1059,19 +1055,19 @@ msgid "Formatting DASD devices"
 msgstr "Formatage des périphériques DASD"
 
 #. TRANSLATORS: DASD = Direct Access Storage Device, IBM mainframe storage technology
-#: src/components/storage/DASDPage.jsx:185
+#: src/components/storage/DASDPage.jsx:181
 msgid "Storage DASD"
 msgstr "Stockage DASD"
 
 #: src/components/storage/DASDTable.jsx:57
-#: src/components/storage/ZFCPPage.jsx:320
+#: src/components/storage/ZFCPPage.jsx:318
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 msgid "No"
 msgstr "Non"
 
 #: src/components/storage/DASDTable.jsx:57
-#: src/components/storage/ZFCPPage.jsx:320
+#: src/components/storage/ZFCPPage.jsx:318
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 msgid "Yes"
@@ -1079,14 +1075,14 @@ msgstr "Oui"
 
 #: src/components/storage/DASDTable.jsx:64
 #: src/components/storage/ZFCPDiskForm.jsx:118
-#: src/components/storage/ZFCPPage.jsx:303
-#: src/components/storage/ZFCPPage.jsx:363
+#: src/components/storage/ZFCPPage.jsx:301
+#: src/components/storage/ZFCPPage.jsx:361
 msgid "Channel ID"
 msgstr "ID du canal"
 
 #. TRANSLATORS: table header
 #: src/components/storage/DASDTable.jsx:65
-#: src/components/storage/ZFCPPage.jsx:304
+#: src/components/storage/ZFCPPage.jsx:302
 #: src/components/storage/iscsi/NodesPresenter.jsx:104
 #: src/components/storage/iscsi/NodesPresenter.jsx:125
 #: src/components/users/RootAuthMethods.jsx:153
@@ -1120,13 +1116,13 @@ msgstr "Effectuer une action"
 
 #. TRANSLATORS: drop down menu action, activate the device
 #: src/components/storage/DASDTable.jsx:111
-#: src/components/storage/ZFCPPage.jsx:334
+#: src/components/storage/ZFCPPage.jsx:332
 msgid "Activate"
 msgstr "Activer"
 
 #. TRANSLATORS: drop down menu action, deactivate the device
 #: src/components/storage/DASDTable.jsx:113
-#: src/components/storage/ZFCPPage.jsx:376
+#: src/components/storage/ZFCPPage.jsx:374
 msgid "Deactivate"
 msgstr "Désactiver"
 
@@ -1164,7 +1160,7 @@ msgid "Remove max channel filter"
 msgstr "Supprimer le filtre du canal maximal"
 
 #. TRANSLATORS: page title for iSCSI configuration
-#: src/components/storage/ISCSIPage.jsx:36
+#: src/components/storage/ISCSIPage.jsx:31
 msgid "Storage iSCSI"
 msgstr "Stockage iSCSI"
 
@@ -1202,23 +1198,23 @@ msgstr ""
 "Les périphériques ne seront pas modifiés tant que l'installation n'aura pas "
 "commencé."
 
-#: src/components/storage/ProposalPageOptions.jsx:40
+#: src/components/storage/ProposalPageMenu.jsx:40
 msgid "Manage and format"
 msgstr "Gérer et formater"
 
-#: src/components/storage/ProposalPageOptions.jsx:58
+#: src/components/storage/ProposalPageMenu.jsx:58
 msgid "Activate disks"
 msgstr "Activer les disques"
 
-#: src/components/storage/ProposalPageOptions.jsx:60
+#: src/components/storage/ProposalPageMenu.jsx:60
 msgid "zFCP"
 msgstr "zFCP"
 
-#: src/components/storage/ProposalPageOptions.jsx:76
+#: src/components/storage/ProposalPageMenu.jsx:76
 msgid "Connect to iSCSI targets"
 msgstr "Se connecter aux cibles iSCSI"
 
-#: src/components/storage/ProposalPageOptions.jsx:78
+#: src/components/storage/ProposalPageMenu.jsx:78
 msgid "iSCSI"
 msgstr "iSCSI"
 
@@ -1544,43 +1540,43 @@ msgstr "Le disque zFCP n'a pas été activé."
 
 #. TRANSLATORS: abbrev. World Wide Port Name
 #: src/components/storage/ZFCPDiskForm.jsx:129
-#: src/components/storage/ZFCPPage.jsx:364
+#: src/components/storage/ZFCPPage.jsx:362
 msgid "WWPN"
 msgstr "WWPN"
 
 #. TRANSLATORS: abbrev. Logical Unit Number
 #: src/components/storage/ZFCPDiskForm.jsx:140
-#: src/components/storage/ZFCPPage.jsx:365
+#: src/components/storage/ZFCPPage.jsx:363
 msgid "LUN"
 msgstr "LUN"
 
-#: src/components/storage/ZFCPPage.jsx:305
+#: src/components/storage/ZFCPPage.jsx:303
 msgid "Auto LUNs Scan"
 msgstr "Balayage LUN automatique"
 
-#: src/components/storage/ZFCPPage.jsx:316
+#: src/components/storage/ZFCPPage.jsx:314
 msgid "Activated"
 msgstr "Activé"
 
-#: src/components/storage/ZFCPPage.jsx:316
+#: src/components/storage/ZFCPPage.jsx:314
 msgid "Deactivated"
 msgstr "Désactivé"
 
-#: src/components/storage/ZFCPPage.jsx:419
+#: src/components/storage/ZFCPPage.jsx:417
 msgid "No zFCP controllers found"
 msgstr "Aucun contrôleur zFCP n'a été trouvé"
 
-#: src/components/storage/ZFCPPage.jsx:420
+#: src/components/storage/ZFCPPage.jsx:418
 msgid "Please, try to read the zFCP devices again."
 msgstr "Veuillez essayez de lire à nouveau périphériques zFCP."
 
 #. TRANSLATORS: button label
-#: src/components/storage/ZFCPPage.jsx:422
+#: src/components/storage/ZFCPPage.jsx:420
 msgid "Read zFCP devices"
 msgstr "Lire les périphériques zFCP"
 
 #. TRANSLATORS: the text in the square brackets [] will be displayed in bold
-#: src/components/storage/ZFCPPage.jsx:431
+#: src/components/storage/ZFCPPage.jsx:429
 msgid ""
 "Automatic LUN scan is [enabled]. Activating a controller which is running in "
 "NPIV mode will automatically configures all its LUNs."
@@ -1589,7 +1585,7 @@ msgstr ""
 "fonctionnant en mode NPIV configurera automatiquement toutes ses LUN."
 
 #. TRANSLATORS: the text in the square brackets [] will be displayed in bold
-#: src/components/storage/ZFCPPage.jsx:434
+#: src/components/storage/ZFCPPage.jsx:432
 msgid ""
 "Automatic LUN scan is [disabled]. LUNs have to be manually configured after "
 "activating a controller."
@@ -1597,39 +1593,39 @@ msgstr ""
 "Le balayage automatique des LUN est [désactivé]. Les LUN doivent être "
 "configurés manuellement après l'activation d'un contrôleur."
 
-#: src/components/storage/ZFCPPage.jsx:500
+#: src/components/storage/ZFCPPage.jsx:498
 msgid "Activate a zFCP disk"
 msgstr "Activer un disque zFCP"
 
-#: src/components/storage/ZFCPPage.jsx:539
+#: src/components/storage/ZFCPPage.jsx:537
 msgid "Please, try to activate a zFCP controller."
 msgstr "Veuillez essayer d'activer un contrôleur zFCP."
 
-#: src/components/storage/ZFCPPage.jsx:546
+#: src/components/storage/ZFCPPage.jsx:544
 msgid "Please, try to activate a zFCP disk."
 msgstr "Veuillez essayer d'activer un disque zFCP."
 
 #. TRANSLATORS: button label
-#: src/components/storage/ZFCPPage.jsx:548
+#: src/components/storage/ZFCPPage.jsx:546
 msgid "Activate zFCP disk"
 msgstr "Activer le disque zFCP"
 
-#: src/components/storage/ZFCPPage.jsx:555
+#: src/components/storage/ZFCPPage.jsx:553
 msgid "No zFCP disks found"
 msgstr "Aucun disque zFCP n'a été trouvé"
 
 #. TRANSLATORS: button label
-#: src/components/storage/ZFCPPage.jsx:574
+#: src/components/storage/ZFCPPage.jsx:572
 msgid "Activate new disk"
 msgstr "Activer un nouveau disque"
 
 #. TRANSLATORS: section title
-#: src/components/storage/ZFCPPage.jsx:586
+#: src/components/storage/ZFCPPage.jsx:584
 msgid "Disks"
 msgstr "Disques"
 
 #. TRANSLATORS: page title
-#: src/components/storage/ZFCPPage.jsx:734
+#: src/components/storage/ZFCPPage.jsx:731
 msgid "Storage zFCP"
 msgstr "Stockage zFCP"
 
@@ -2113,6 +2109,15 @@ msgstr "Utilisateur"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "Authentification root"
+
+#~ msgid "New issues found"
+#~ msgstr "Nouveaux problèmes trouvés"
+
+#~ msgid "Global options"
+#~ msgstr "Options générales"
+
+#~ msgid "Hide navigation and other options"
+#~ msgstr "Masquer la navigation et les autres options"
 
 #~ msgid "Options"
 #~ msgstr "Options"

@@ -44,6 +44,7 @@ module Agama
   class Manager
     include WithProgress
     include Helpers
+    include Yast::I18n
 
     # @return [Logger]
     attr_reader :logger
@@ -58,6 +59,8 @@ module Agama
     #
     # @param logger [Logger]
     def initialize(config, logger)
+      textdomain "agama"
+
       @config = config
       @logger = logger
       @installation_phase = InstallationPhase.new
@@ -82,8 +85,8 @@ module Agama
       installation_phase.config
 
       start_progress(2)
-      progress.step("Probing Storage") { storage.probe }
-      progress.step("Probing Software") { software.probe }
+      progress.step(_("Probing Storage")) { storage.probe }
+      progress.step(_("Probing Software")) { software.probe }
 
       logger.info("Config phase done")
     rescue StandardError => e
@@ -103,7 +106,7 @@ module Agama
 
       Yast::Installation.destdir = "/mnt"
 
-      progress.step("Partitioning") do
+      progress.step(_("Partitioning")) do
         storage.install
         proxy.propose
         # propose software after /mnt is already separated, so it uses proper
@@ -111,14 +114,14 @@ module Agama
         software.propose
       end
 
-      progress.step("Installing Software") { software.install }
+      progress.step(_("Installing Software")) { software.install }
 
       on_target do
-        progress.step("Writing Users") { users.write }
-        progress.step("Writing Network Configuration") { network.install }
-        progress.step("Saving Language Settings") { language.finish }
-        progress.step("Writing repositories information") { software.finish }
-        progress.step("Finishing storage configuration") { storage.finish }
+        progress.step(_("Writing Users")) { users.write }
+        progress.step(_("Writing Network Configuration")) { network.install }
+        progress.step(_("Saving Language Settings")) { language.finish }
+        progress.step(_("Writing repositories information")) { software.finish }
+        progress.step(_("Finishing storage configuration")) { storage.finish }
       end
 
       logger.info("Install phase done")

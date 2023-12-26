@@ -157,7 +157,7 @@ describe("if there are not controllers", () => {
   it("renders a button for reading zFCP devices", async () => {
     installerRender(<ZFCPPage />);
 
-    await screen.findByText(/No zFCP controllers found/);
+    await screen.findByText("No zFCP controllers found.");
     await screen.findByRole("button", { name: /Read zFCP devices/ });
   });
 
@@ -264,7 +264,7 @@ describe("if there are not disks", () => {
   it("renders a button for activating a disk", async () => {
     installerRender(<ZFCPPage />);
 
-    await screen.findByText("No zFCP disks found");
+    await screen.findByText("No zFCP disks found.");
     await screen.findByText(/try to activate a zFCP disk/);
     screen.findByRole("button", { name: "Activate zFCP disk" });
   });
@@ -277,7 +277,7 @@ describe("if there are not disks", () => {
     it("does not render a button for activating a disk", async () => {
       installerRender(<ZFCPPage />);
 
-      await screen.findByText("No zFCP disks found");
+      await screen.findByText("No zFCP disks found.");
       await screen.findByText(/try to activate a zFCP controller/);
       await waitFor(() => expect(screen.queryByRole("button", { name: "Activate zFCP disk" })).toBeNull());
     });

@@ -33,7 +33,7 @@ import { Center, Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
 
-const SuccessIcon = () => <Icon name="check_circle" className="icon-big color-success" />;
+const SuccessIcon = () => <Icon name="check_circle" className="icon-xxxl color-success" />;
 
 function InstallationFinished() {
   const client = useInstallerClient();
