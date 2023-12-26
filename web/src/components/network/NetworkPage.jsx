@@ -35,7 +35,7 @@ import { _ } from "~/i18n";
 const NoWiredConnections = () => {
   return (
     <div className="stack">
-      <div className="bold">{_("No wired connections found")}</div>
+      <div>{_("No wired connections found")}</div>
     </div>
   );
 };
@@ -55,7 +55,7 @@ const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
 
   return (
     <div className="stack">
-      <div className="bold">{_("No WiFi connections found")}</div>
+      <div>{_("No WiFi connections found")}</div>
       <div>{message}</div>
       <If
         condition={wifiScanSupported}
