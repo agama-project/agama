@@ -6,18 +6,20 @@
 //! to the `Ip<T>` struct.
 use crate::network::{
     action::Action,
+    error::NetworkStateError,
     model::{Connection as NetworkConnection, IpConfig, Ipv4Method, Ipv6Method},
 };
 use cidr::IpInet;
 use std::{net::IpAddr, sync::Arc};
-use tokio::sync::mpsc::UnboundedSender;
-use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
+use tokio::sync::Mutex;
+use tokio::sync::{mpsc::UnboundedSender, oneshot};
+use uuid::Uuid;
 use zbus::dbus_interface;
 
 /// D-Bus interface for IPv4 and IPv6 settings
 pub struct Ip {
     actions: Arc<Mutex<UnboundedSender<Action>>>,
-    connection: Arc<Mutex<NetworkConnection>>,
+    uuid: Uuid,
 }
 
 impl Ip {
@@ -25,40 +27,26 @@ impl Ip {
     ///
     /// * `actions`: sending-half of a channel to send actions.
     /// * `connection`: connection to expose over D-Bus.
-    pub fn new(
-        actions: UnboundedSender<Action>,
-        connection: Arc<Mutex<NetworkConnection>>,
-    ) -> Self {
+    pub fn new(actions: UnboundedSender<Action>, uuid: Uuid) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
-            connection,
+            uuid,
         }
     }
 
-    /// Returns the underlying connection.
-    async fn get_connection(&self) -> MutexGuard<NetworkConnection> {
-        self.connection.lock().await
-    }
-
-    /// Updates the connection data in the NetworkSystem.
-    ///
-    /// * `connection`: Updated connection.
-    async fn update_connection<'a>(
-        &self,
-        connection: MutexGuard<'a, NetworkConnection>,
-    ) -> zbus::fdo::Result<()> {
+    /// Gets the connection.
+    async fn get_connection(&self) -> Result<NetworkConnection, NetworkStateError> {
         let actions = self.actions.lock().await;
-        actions
-            .send(Action::UpdateConnection(Box::new(connection.clone())))
-            .unwrap();
-        Ok(())
+        let (tx, rx) = oneshot::channel();
+        actions.send(Action::GetConnection(self.uuid, tx)).unwrap();
+        rx.await
+            .unwrap()
+            .ok_or(NetworkStateError::UnknownConnection(self.uuid.to_string()))
     }
-}
 
-impl Ip {
     /// Returns the IpConfig struct.
-    async fn get_ip_config(&self) -> MappedMutexGuard<IpConfig> {
-        MutexGuard::map(self.get_connection().await, |c| &mut c.ip_config)
+    async fn get_ip_config(&self) -> Result<IpConfig, NetworkStateError> {
+        self.get_connection().await.map(|c| c.ip_config)
     }
 
     /// Updates the IpConfig struct.
@@ -68,9 +56,12 @@ impl Ip {
     where
         F: Fn(&mut IpConfig),
     {
-        let mut connection = self.get_connection().await;
+        let mut connection = self.get_connection().await?;
         func(&mut connection.ip_config);
-        self.update_connection(connection).await?;
+        let actions = self.actions.lock().await;
+        actions
+            .send(Action::UpdateConnection(Box::new(connection.clone())))
+            .unwrap();
         Ok(())
     }
 }
@@ -81,9 +72,10 @@ impl Ip {
     ///
     /// When the method is 'auto', these addresses are used as additional addresses.
     #[dbus_interface(property)]
-    pub async fn addresses(&self) -> Vec<String> {
-        let ip_config = self.get_ip_config().await;
-        ip_config.addresses.iter().map(|a| a.to_string()).collect()
+    pub async fn addresses(&self) -> zbus::fdo::Result<Vec<String>> {
+        let ip_config = self.get_ip_config().await?;
+        let addresses = ip_config.addresses.iter().map(|a| a.to_string()).collect();
+        Ok(addresses)
     }
 
     #[dbus_interface(property)]
@@ -99,9 +91,9 @@ impl Ip {
     ///
     /// See [crate::network::model::Ipv4Method].
     #[dbus_interface(property)]
-    pub async fn method4(&self) -> String {
-        let ip_config = self.get_ip_config().await;
-        ip_config.method4.to_string()
+    pub async fn method4(&self) -> zbus::fdo::Result<String> {
+        let ip_config = self.get_ip_config().await?;
+        Ok(ip_config.method4.to_string())
     }
 
     #[dbus_interface(property)]
@@ -116,9 +108,9 @@ impl Ip {
     ///
     /// See [crate::network::model::Ipv6Method].
     #[dbus_interface(property)]
-    pub async fn method6(&self) -> String {
-        let ip_config = self.get_ip_config().await;
-        ip_config.method6.to_string()
+    pub async fn method6(&self) -> zbus::fdo::Result<String> {
+        let ip_config = self.get_ip_config().await?;
+        Ok(ip_config.method6.to_string())
     }
 
     #[dbus_interface(property)]
@@ -129,13 +121,14 @@ impl Ip {
 
     /// Name server addresses.
     #[dbus_interface(property)]
-    pub async fn nameservers(&self) -> Vec<String> {
-        let ip_config = self.get_ip_config().await;
-        ip_config
+    pub async fn nameservers(&self) -> zbus::fdo::Result<Vec<String>> {
+        let ip_config = self.get_ip_config().await?;
+        let nameservers = ip_config
             .nameservers
             .iter()
             .map(IpAddr::to_string)
-            .collect()
+            .collect();
+        Ok(nameservers)
     }
 
     #[dbus_interface(property)]
@@ -149,12 +142,13 @@ impl Ip {
     ///
     /// An empty string removes the current value.
     #[dbus_interface(property)]
-    pub async fn gateway4(&self) -> String {
-        let ip_config = self.get_ip_config().await;
-        match ip_config.gateway4 {
+    pub async fn gateway4(&self) -> zbus::fdo::Result<String> {
+        let ip_config = self.get_ip_config().await?;
+        let gateway = match ip_config.gateway4 {
             Some(ref address) => address.to_string(),
             None => "".to_string(),
-        }
+        };
+        Ok(gateway)
     }
 
     #[dbus_interface(property)]
@@ -167,12 +161,13 @@ impl Ip {
     ///
     /// An empty string removes the current value.
     #[dbus_interface(property)]
-    pub async fn gateway6(&self) -> String {
-        let ip_config = self.get_ip_config().await;
-        match ip_config.gateway6 {
+    pub async fn gateway6(&self) -> zbus::fdo::Result<String> {
+        let ip_config = self.get_ip_config().await?;
+        let result = match ip_config.gateway6 {
             Some(ref address) => address.to_string(),
             None => "".to_string(),
-        }
+        };
+        Ok(result)
     }
 
     #[dbus_interface(property)]

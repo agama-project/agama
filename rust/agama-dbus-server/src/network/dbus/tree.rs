@@ -102,11 +102,8 @@ impl Tree {
         )
         .await?;
 
-        self.add_interface(
-            &path,
-            interfaces::Ip::new(self.actions.clone(), Arc::clone(&cloned)),
-        )
-        .await?;
+        self.add_interface(&path, interfaces::Ip::new(self.actions.clone(), uuid))
+            .await?;
 
         self.add_interface(
             &path,
