@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { HelperText, HelperTextItem } from "@patternfly/react-core";
 
@@ -83,54 +83,41 @@ const IssuesSections = ({ issues, openFrom = "" }) => {
   const productIssues = issues.product || [];
   const storageIssues = issues.storage || [];
   const softwareIssues = issues.software || [];
-  const selectedRef = useRef(null);
   const openBy = openFrom;
-
-  useEffect(() => {
-    if (selectedRef && selectedRef.current) {
-      selectedRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [issues]);
 
   return (
     <div className="stack">
       <If
-        condition={productIssues.length > 0}
+        condition={productIssues.length > 0 && openBy === "Product"}
         then={
           <Section
-            ref={openBy === "Product" ? selectedRef : null}
             key="product-issues"
             title={_("Product")}
             icon="inventory_2"
-            className={openFrom === "Product" ? "highlighted" : ""}
           >
             <IssueItems issues={productIssues} />
           </Section>
         }
       />
       <If
-        condition={storageIssues.length > 0}
+        condition={storageIssues.length > 0 && openBy === "Storage"}
         then={
           <Section
-            ref={openBy === "Storage" ? selectedRef : null}
             key="storage-issues"
             title={_("Storage")}
             icon="hard_drive"
-            className={openFrom === "Storage" ? "highlighted" : ""}
           >
             <IssueItems issues={storageIssues} />
           </Section>
         }
       />
       <If
-        condition={softwareIssues.length > 0}
+        condition={softwareIssues.length > 0 && openBy === "Software"}
         then={
           <Section
-            ref={openBy === "Software" ? selectedRef : null}
             key="software-issues"
             title={_("Software")}
             icon="apps"
-            className={openFrom === "Software" ? "highlighted" : ""}
           >
             <IssueItems issues={softwareIssues} />
           </Section>
@@ -182,7 +169,8 @@ const IssuesContent = ({ issues, openFrom = "" }) => {
  * @component
  *
  * @param {object} props
- * @param {function} props.close - A function to call when the close action is triggered.
+ * @param {boolean} [props.isOpen] - A boolean value used to determine wether to show the popup or not.
+ * @param {function} props.onClose - A function to call when the close action is triggered.
  * @param {string} [props.openFrom] - A string which indicites which issues section should be highlighted.
  */
 export default function IssuesDialog({ isOpen = false, onClose, openFrom = "" }) {
