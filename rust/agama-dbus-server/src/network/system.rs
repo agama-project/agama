@@ -1,8 +1,10 @@
 use super::error::NetworkStateError;
 use crate::network::{dbus::Tree, model::Connection, Action, Adapter, NetworkState};
+use agama_lib::network::types::DeviceType;
 use std::error::Error;
 use tokio::sync::mpsc::{self, UnboundedReceiver, UnboundedSender};
 use uuid::Uuid;
+use zbus::zvariant::OwnedObjectPath;
 
 /// Represents the network system using holding the state and setting up the D-Bus tree.
 pub struct NetworkSystem<T: Adapter> {
@@ -67,25 +69,24 @@ impl<T: Adapter> NetworkSystem<T> {
     /// Dispatch an action.
     pub async fn dispatch_action(&mut self, action: Action) -> Result<(), Box<dyn Error>> {
         match action {
-            Action::AddConnection(name, ty) => {
-                let mut conn = Connection::new(name, ty);
-                self.tree.add_connection(&mut conn, true).await?;
-                self.state.add_connection(conn)?;
+            Action::AddConnection(name, ty, tx) => {
+                let result = self.add_connection_action(name, ty).await;
+                tx.send(result).unwrap();
             }
-            Action::GetConnection(uuid, rx) => {
+            Action::GetConnection(uuid, tx) => {
                 let conn = self.state.get_connection_by_uuid(uuid);
-                rx.send(conn.cloned()).unwrap();
+                tx.send(conn.cloned()).unwrap();
             }
-            Action::GetController(uuid, rx) => {
+            Action::GetController(uuid, tx) => {
                 let result = self.get_controller_action(uuid);
-                rx.send(result).unwrap()
+                tx.send(result).unwrap()
             }
             Action::SetPorts(uuid, ports, rx) => {
-                let result = self.set_ports_action(uuid, ports);
+                let result = self.set_ports_action(uuid, *ports);
                 rx.send(result).unwrap();
             }
             Action::UpdateConnection(conn) => {
-                self.state.update_connection(conn)?;
+                self.state.update_connection(*conn)?;
             }
             Action::RemoveConnection(id) => {
                 self.tree.remove_connection(&id).await?;
@@ -102,6 +103,22 @@ impl<T: Adapter> NetworkSystem<T> {
         }
 
         Ok(())
+    }
+
+    async fn add_connection_action(
+        &mut self,
+        name: String,
+        ty: DeviceType,
+    ) -> Result<OwnedObjectPath, NetworkStateError> {
+        let mut conn = Connection::new(name, ty);
+        // TODO: handle tree handling problems
+        let path = self
+            .tree
+            .add_connection(&mut conn)
+            .await
+            .expect("Could not update the D-Bus tree");
+        self.state.add_connection(conn)?;
+        Ok(path)
     }
 
     fn set_ports_action(

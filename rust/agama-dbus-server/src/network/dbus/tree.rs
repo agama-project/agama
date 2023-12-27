@@ -76,18 +76,16 @@ impl Tree {
         Ok(())
     }
 
-    /// Adds a connection to the D-Bus tree.
+    /// Adds a connection to the D-Bus tree and returns the D-Bus path.
     ///
-    /// * `connection`: connection to add.
+    /// * `conn`: connection to add.
     /// * `notify`: whether to notify the added connection
     pub async fn add_connection(
         &self,
         conn: &mut Connection,
-        notify: bool,
-    ) -> Result<(), ServiceError> {
+    ) -> Result<OwnedObjectPath, ServiceError> {
         let mut objects = self.objects.lock().await;
 
-        let orig_id = conn.id.to_owned();
         let uuid = conn.uuid;
         let (id, path) = objects.register_connection(conn);
         if id != conn.id {
@@ -95,24 +93,17 @@ impl Tree {
         }
         log::info!("Publishing network connection '{}'", id);
 
-        let cloned = Arc::new(Mutex::new(conn.clone()));
         self.add_interface(
             &path,
-            interfaces::Connection::new(self.actions.clone(), Arc::clone(&cloned)),
+            interfaces::Connection::new(self.actions.clone(), uuid),
         )
         .await?;
 
-        self.add_interface(
-            &path,
-            interfaces::Ip::new(self.actions.clone(), Arc::clone(&cloned)),
-        )
-        .await?;
+        self.add_interface(&path, interfaces::Ip::new(self.actions.clone(), uuid))
+            .await?;
 
-        self.add_interface(
-            &path,
-            interfaces::Match::new(self.actions.clone(), Arc::clone(&cloned)),
-        )
-        .await?;
+        self.add_interface(&path, interfaces::Match::new(self.actions.clone(), uuid))
+            .await?;
 
         if let ConnectionConfig::Bond(_) = conn.config {
             self.add_interface(&path, interfaces::Bond::new(self.actions.clone(), uuid))
@@ -120,18 +111,11 @@ impl Tree {
         }
 
         if let ConnectionConfig::Wireless(_) = conn.config {
-            self.add_interface(
-                &path,
-                interfaces::Wireless::new(self.actions.clone(), Arc::clone(&cloned)),
-            )
-            .await?;
+            self.add_interface(&path, interfaces::Wireless::new(self.actions.clone(), uuid))
+                .await?;
         }
 
-        if notify {
-            self.notify_connection_added(&orig_id, &path).await?;
-        }
-
-        Ok(())
+        Ok(path.into())
     }
 
     /// Removes a connection from the tree
@@ -152,7 +136,7 @@ impl Tree {
     /// * `connections`: list of connections.
     async fn add_connections(&self, connections: &mut [Connection]) -> Result<(), ServiceError> {
         for conn in connections.iter_mut() {
-            self.add_connection(conn, false).await?;
+            self.add_connection(conn).await?;
         }
 
         self.add_interface(
@@ -207,19 +191,6 @@ impl Tree {
     {
         let object_server = self.connection.object_server();
         Ok(object_server.at(path, iface).await?)
-    }
-
-    /// Notify that a new connection has been added
-    async fn notify_connection_added(
-        &self,
-        id: &str,
-        path: &ObjectPath<'_>,
-    ) -> Result<(), ServiceError> {
-        let object_server = self.connection.object_server();
-        let iface_ref = object_server
-            .interface::<_, interfaces::Connections>(CONNECTIONS_PATH)
-            .await?;
-        Ok(interfaces::Connections::connection_added(iface_ref.signal_context(), id, path).await?)
     }
 }
 
