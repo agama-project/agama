@@ -25,3 +25,4 @@ gettext-rs = { version = "0.7.0", features = ["gettext-system"] }
 regex = "1.10.2"
 once_cell = "1.18.0"
 macaddr = "1.0"
+async-trait = "0.1.75"

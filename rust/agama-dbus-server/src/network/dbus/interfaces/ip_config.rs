@@ -7,14 +7,17 @@
 use crate::network::{
     action::Action,
     error::NetworkStateError,
-    model::{Connection as NetworkConnection, IpConfig, Ipv4Method, Ipv6Method},
+    model::{IpConfig, Ipv4Method, Ipv6Method},
 };
+use async_trait::async_trait;
 use cidr::IpInet;
 use std::{net::IpAddr, sync::Arc};
-use tokio::sync::Mutex;
-use tokio::sync::{mpsc::UnboundedSender, oneshot};
+use tokio::sync::mpsc::UnboundedSender;
+use tokio::sync::{Mutex, MutexGuard};
 use uuid::Uuid;
 use zbus::dbus_interface;
+
+use super::common::ConnectionInterface;
 
 /// D-Bus interface for IPv4 and IPv6 settings
 pub struct Ip {
@@ -34,16 +37,6 @@ impl Ip {
         }
     }
 
-    /// Gets the connection.
-    async fn get_connection(&self) -> Result<NetworkConnection, NetworkStateError> {
-        let actions = self.actions.lock().await;
-        let (tx, rx) = oneshot::channel();
-        actions.send(Action::GetConnection(self.uuid, tx)).unwrap();
-        rx.await
-            .unwrap()
-            .ok_or(NetworkStateError::UnknownConnection(self.uuid.to_string()))
-    }
-
     /// Returns the IpConfig struct.
     async fn get_ip_config(&self) -> Result<IpConfig, NetworkStateError> {
         self.get_connection().await.map(|c| c.ip_config)
@@ -52,16 +45,12 @@ impl Ip {
     /// Updates the IpConfig struct.
     ///
     /// * `func`: function to update the configuration.
-    async fn update_config<F>(&self, func: F) -> zbus::fdo::Result<()>
+    async fn update_ip_config<F>(&self, func: F) -> zbus::fdo::Result<()>
     where
-        F: Fn(&mut IpConfig),
+        F: Fn(&mut IpConfig) + std::marker::Send,
     {
-        let mut connection = self.get_connection().await?;
-        func(&mut connection.ip_config);
-        let actions = self.actions.lock().await;
-        actions
-            .send(Action::UpdateConnection(Box::new(connection.clone())))
-            .unwrap();
+        self.update_connection(move |c| func(&mut c.ip_config))
+            .await?;
         Ok(())
     }
 }
@@ -81,7 +70,7 @@ impl Ip {
     #[dbus_interface(property)]
     pub async fn set_addresses(&mut self, addresses: Vec<String>) -> zbus::fdo::Result<()> {
         let addresses = helpers::parse_addresses::<IpInet>(addresses);
-        self.update_config(|ip| ip.addresses = addresses.clone())
+        self.update_ip_config(|ip| ip.addresses = addresses.clone())
             .await
     }
 
@@ -99,7 +88,7 @@ impl Ip {
     #[dbus_interface(property)]
     pub async fn set_method4(&mut self, method: &str) -> zbus::fdo::Result<()> {
         let method: Ipv4Method = method.parse()?;
-        self.update_config(|ip| ip.method4 = method).await
+        self.update_ip_config(|ip| ip.method4 = method).await
     }
 
     /// IPv6 configuration method.
@@ -116,7 +105,7 @@ impl Ip {
     #[dbus_interface(property)]
     pub async fn set_method6(&mut self, method: &str) -> zbus::fdo::Result<()> {
         let method: Ipv6Method = method.parse()?;
-        self.update_config(|ip| ip.method6 = method).await
+        self.update_ip_config(|ip| ip.method6 = method).await
     }
 
     /// Name server addresses.
@@ -134,7 +123,7 @@ impl Ip {
     #[dbus_interface(property)]
     pub async fn set_nameservers(&mut self, addresses: Vec<String>) -> zbus::fdo::Result<()> {
         let addresses = helpers::parse_addresses::<IpAddr>(addresses);
-        self.update_config(|ip| ip.nameservers = addresses.clone())
+        self.update_ip_config(|ip| ip.nameservers = addresses.clone())
             .await
     }
 
@@ -154,7 +143,7 @@ impl Ip {
     #[dbus_interface(property)]
     pub async fn set_gateway4(&mut self, gateway: String) -> zbus::fdo::Result<()> {
         let gateway = helpers::parse_gateway(gateway)?;
-        self.update_config(|ip| ip.gateway4 = gateway).await
+        self.update_ip_config(|ip| ip.gateway4 = gateway).await
     }
 
     /// Network gateway for IPv6.
@@ -173,7 +162,7 @@ impl Ip {
     #[dbus_interface(property)]
     pub async fn set_gateway6(&mut self, gateway: String) -> zbus::fdo::Result<()> {
         let gateway = helpers::parse_gateway(gateway)?;
-        self.update_config(|ip| ip.gateway6 = gateway).await
+        self.update_ip_config(|ip| ip.gateway6 = gateway).await
     }
 }
 
@@ -222,5 +211,16 @@ mod helpers {
                 .map_err(|_| NetworkStateError::InvalidIpAddr(gateway))?;
             Ok(Some(parsed))
         }
+    }
+}
+
+#[async_trait]
+impl ConnectionInterface for Ip {
+    fn uuid(&self) -> Uuid {
+        self.uuid
+    }
+
+    async fn actions(&self) -> MutexGuard<UnboundedSender<Action>> {
+        self.actions.lock().await
     }
 }

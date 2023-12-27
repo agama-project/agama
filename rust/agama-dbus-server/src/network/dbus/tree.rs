@@ -93,7 +93,6 @@ impl Tree {
         }
         log::info!("Publishing network connection '{}'", id);
 
-        let cloned = Arc::new(Mutex::new(conn.clone()));
         self.add_interface(
             &path,
             interfaces::Connection::new(self.actions.clone(), uuid),
@@ -103,11 +102,8 @@ impl Tree {
         self.add_interface(&path, interfaces::Ip::new(self.actions.clone(), uuid))
             .await?;
 
-        self.add_interface(
-            &path,
-            interfaces::Match::new(self.actions.clone(), Arc::clone(&cloned)),
-        )
-        .await?;
+        self.add_interface(&path, interfaces::Match::new(self.actions.clone(), uuid))
+            .await?;
 
         if let ConnectionConfig::Bond(_) = conn.config {
             self.add_interface(&path, interfaces::Bond::new(self.actions.clone(), uuid))

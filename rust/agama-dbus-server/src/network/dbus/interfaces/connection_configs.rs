@@ -1,17 +1,17 @@
 use agama_lib::network::types::SSID;
+use async_trait::async_trait;
 use std::sync::Arc;
-use tokio::sync::{mpsc::UnboundedSender, oneshot, Mutex};
+use tokio::sync::{mpsc::UnboundedSender, oneshot, Mutex, MutexGuard};
 use uuid::Uuid;
 use zbus::dbus_interface;
 
 use crate::network::{
     action::Action,
     error::NetworkStateError,
-    model::{
-        BondConfig, Connection as NetworkConnection, ConnectionConfig, SecurityProtocol,
-        WirelessConfig, WirelessMode,
-    },
+    model::{BondConfig, SecurityProtocol, WirelessConfig, WirelessMode},
 };
+
+use super::common::{ConnectionConfigInterface, ConnectionInterface};
 
 /// D-Bus interface for Bond settings.
 pub struct Bond {
@@ -30,44 +30,6 @@ impl Bond {
             uuid,
         }
     }
-
-    /// Gets the connection.
-    async fn get_connection(&self) -> Result<NetworkConnection, NetworkStateError> {
-        let actions = self.actions.lock().await;
-        let (tx, rx) = oneshot::channel();
-        actions.send(Action::GetConnection(self.uuid, tx)).unwrap();
-        rx.await
-            .unwrap()
-            .ok_or(NetworkStateError::UnknownConnection(self.uuid.to_string()))
-    }
-
-    /// Gets the bonding configuration.
-    pub async fn get_config(&self) -> Result<BondConfig, NetworkStateError> {
-        let connection = self.get_connection().await?;
-        match connection.config {
-            ConnectionConfig::Bond(bond) => Ok(bond),
-            _ => panic!("Not a bond connection. This is most probably a bug."),
-        }
-    }
-
-    /// Updates the bond configuration.
-    ///
-    /// * `func`: function to update the configuration.
-    pub async fn update_config<F>(&self, func: F) -> Result<(), NetworkStateError>
-    where
-        F: FnOnce(&mut BondConfig),
-    {
-        let mut connection = self.get_connection().await?;
-        match &mut connection.config {
-            ConnectionConfig::Bond(bond) => func(bond),
-            _ => panic!("Not a bond connection. This is most probably a bug."),
-        }
-        let actions = self.actions.lock().await;
-        actions
-            .send(Action::UpdateConnection(Box::new(connection.clone())))
-            .unwrap();
-        Ok(())
-    }
 }
 
 #[dbus_interface(name = "org.opensuse.Agama1.Network.Connection.Bond")]
@@ -75,28 +37,30 @@ impl Bond {
     /// Bonding mode.
     #[dbus_interface(property)]
     pub async fn mode(&self) -> zbus::fdo::Result<String> {
-        let config = self.get_config().await?;
+        let config = self.get_config::<BondConfig>().await?;
         Ok(config.mode.to_string())
     }
 
     #[dbus_interface(property)]
     pub async fn set_mode(&mut self, mode: &str) -> zbus::fdo::Result<()> {
         let mode = mode.try_into()?;
-        self.update_config(|c| c.mode = mode).await?;
+        self.update_config::<BondConfig, _>(|c| c.mode = mode)
+            .await?;
         Ok(())
     }
 
     /// List of bonding options.
     #[dbus_interface(property)]
     pub async fn options(&self) -> zbus::fdo::Result<String> {
-        let config = self.get_config().await?;
+        let config = self.get_config::<BondConfig>().await?;
         Ok(config.options.to_string())
     }
 
     #[dbus_interface(property)]
     pub async fn set_options(&mut self, opts: &str) -> zbus::fdo::Result<()> {
         let opts = opts.try_into()?;
-        self.update_config(|c| c.options = opts).await?;
+        self.update_config::<BondConfig, _>(|c| c.options = opts)
+            .await?;
         Ok(())
     }
 
@@ -126,6 +90,19 @@ impl Bond {
     }
 }
 
+#[async_trait]
+impl ConnectionInterface for Bond {
+    fn uuid(&self) -> Uuid {
+        self.uuid
+    }
+
+    async fn actions(&self) -> MutexGuard<UnboundedSender<Action>> {
+        self.actions.lock().await
+    }
+}
+
+impl ConnectionConfigInterface for Bond {}
+
 /// D-Bus interface for wireless settings
 pub struct Wireless {
     actions: Arc<Mutex<UnboundedSender<Action>>>,
@@ -143,44 +120,6 @@ impl Wireless {
             uuid,
         }
     }
-
-    /// Gets the connection.
-    async fn get_connection(&self) -> Result<NetworkConnection, NetworkStateError> {
-        let actions = self.actions.lock().await;
-        let (tx, rx) = oneshot::channel();
-        actions.send(Action::GetConnection(self.uuid, tx)).unwrap();
-        rx.await
-            .unwrap()
-            .ok_or(NetworkStateError::UnknownConnection(self.uuid.to_string()))
-    }
-
-    /// Gets the wireless configuration.
-    pub async fn get_config(&self) -> Result<WirelessConfig, NetworkStateError> {
-        let connection = self.get_connection().await?;
-        match connection.config {
-            ConnectionConfig::Wireless(wireless) => Ok(wireless),
-            _ => panic!("Not a bond connection. This is most probably a bug."),
-        }
-    }
-
-    /// Updates the wireless configuration.
-    ///
-    /// * `func`: function to update the configuration.
-    pub async fn update_config<F>(&self, func: F) -> Result<(), NetworkStateError>
-    where
-        F: FnOnce(&mut WirelessConfig),
-    {
-        let mut connection = self.get_connection().await?;
-        match &mut connection.config {
-            ConnectionConfig::Wireless(wireless) => func(wireless),
-            _ => panic!("Not a bond connection. This is most probably a bug."),
-        }
-        let actions = self.actions.lock().await;
-        actions
-            .send(Action::UpdateConnection(Box::new(connection.clone())))
-            .unwrap();
-        Ok(())
-    }
 }
 
 #[dbus_interface(name = "org.opensuse.Agama1.Network.Connection.Wireless")]
@@ -188,13 +127,14 @@ impl Wireless {
     /// Network SSID.
     #[dbus_interface(property, name = "SSID")]
     pub async fn ssid(&self) -> zbus::fdo::Result<Vec<u8>> {
-        let config = self.get_config().await?;
+        let config = self.get_config::<WirelessConfig>().await?;
         Ok(config.ssid.into())
     }
 
     #[dbus_interface(property, name = "SSID")]
     pub async fn set_ssid(&mut self, ssid: Vec<u8>) -> zbus::fdo::Result<()> {
-        self.update_config(|c| c.ssid = SSID(ssid)).await?;
+        self.update_config::<WirelessConfig, _>(|c| c.ssid = SSID(ssid))
+            .await?;
         Ok(())
     }
 
@@ -205,27 +145,28 @@ impl Wireless {
     /// See [crate::network::model::WirelessMode].
     #[dbus_interface(property)]
     pub async fn mode(&self) -> zbus::fdo::Result<String> {
-        let config = self.get_config().await?;
+        let config = self.get_config::<WirelessConfig>().await?;
         Ok(config.mode.to_string())
     }
 
     #[dbus_interface(property)]
     pub async fn set_mode(&mut self, mode: &str) -> zbus::fdo::Result<()> {
         let mode: WirelessMode = mode.try_into()?;
-        self.update_config(|c| c.mode = mode).await?;
+        self.update_config::<WirelessConfig, _>(|c| c.mode = mode)
+            .await?;
         Ok(())
     }
 
     /// Password to connect to the wireless network.
     #[dbus_interface(property)]
     pub async fn password(&self) -> zbus::fdo::Result<String> {
-        let config = self.get_config().await?;
+        let config = self.get_config::<WirelessConfig>().await?;
         Ok(config.password.unwrap_or_default())
     }
 
     #[dbus_interface(property)]
     pub async fn set_password(&mut self, password: String) -> zbus::fdo::Result<()> {
-        self.update_config(|c| {
+        self.update_config::<WirelessConfig, _>(|c| {
             c.password = if password.is_empty() {
                 None
             } else {
@@ -244,7 +185,7 @@ impl Wireless {
     /// See [crate::network::model::SecurityProtocol].
     #[dbus_interface(property)]
     pub async fn security(&self) -> zbus::fdo::Result<String> {
-        let config = self.get_config().await?;
+        let config = self.get_config::<WirelessConfig>().await?;
         Ok(config.security.to_string())
     }
 
@@ -253,7 +194,21 @@ impl Wireless {
         let security: SecurityProtocol = security
             .try_into()
             .map_err(|_| NetworkStateError::InvalidSecurityProtocol(security.to_string()))?;
-        self.update_config(|c| c.security = security).await?;
+        self.update_config::<WirelessConfig, _>(|c| c.security = security)
+            .await?;
         Ok(())
     }
 }
+
+#[async_trait]
+impl ConnectionInterface for Wireless {
+    fn uuid(&self) -> Uuid {
+        self.uuid
+    }
+
+    async fn actions(&self) -> MutexGuard<UnboundedSender<Action>> {
+        self.actions.lock().await
+    }
+}
+
+impl ConnectionConfigInterface for Wireless {}

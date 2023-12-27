@@ -3,6 +3,7 @@
 //! This module contains the set of D-Bus interfaces that are exposed by [D-Bus network
 //! service](crate::NetworkService).
 
+mod common;
 mod connection_configs;
 mod connections;
 mod devices;

@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use std::{str::FromStr, sync::Arc};
 use tokio::sync::{mpsc::UnboundedSender, oneshot, Mutex, MutexGuard};
 use uuid::Uuid;
@@ -7,12 +8,8 @@ use zbus::{
     SignalContext,
 };
 
-use crate::network::{
-    dbus::ObjectsRegistry,
-    error::NetworkStateError,
-    model::{Connection as NetworkConnection, MacAddress},
-    Action,
-};
+use super::common::ConnectionInterface;
+use crate::network::{dbus::ObjectsRegistry, error::NetworkStateError, model::MacAddress, Action};
 
 /// D-Bus interface for the set of connections.
 ///
@@ -118,38 +115,12 @@ impl Connection {
     /// Creates a Connection interface object.
     ///
     /// * `actions`: sending-half of a channel to send actions.
-    /// * `connection`: connection to expose over D-Bus.
+    /// * `uuid`: network connection's UUID.
     pub fn new(actions: UnboundedSender<Action>, uuid: Uuid) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
             uuid,
         }
-    }
-
-    /// Returns the underlying connection.
-    async fn get_connection(&self) -> Result<NetworkConnection, NetworkStateError> {
-        let actions = self.actions.lock().await;
-        let (tx, rx) = oneshot::channel();
-        actions.send(Action::GetConnection(self.uuid, tx)).unwrap();
-        rx.await
-            .unwrap()
-            .ok_or(NetworkStateError::UnknownConnection(self.uuid.to_string()))
-    }
-
-    /// Updates the connection data in the NetworkSystem.
-    ///
-    /// * `connection`: Updated connection.
-    pub async fn update_connection<F>(&self, func: F) -> Result<(), NetworkStateError>
-    where
-        F: FnOnce(&mut NetworkConnection),
-    {
-        let mut connection = self.get_connection().await?;
-        func(&mut connection);
-        let actions = self.actions.lock().await;
-        actions
-            .send(Action::UpdateConnection(Box::new(connection)))
-            .unwrap();
-        Ok(())
     }
 }
 
@@ -234,44 +205,33 @@ impl Connection {
     }
 }
 
+#[async_trait]
+impl ConnectionInterface for Connection {
+    fn uuid(&self) -> Uuid {
+        self.uuid
+    }
+
+    async fn actions(&self) -> MutexGuard<UnboundedSender<Action>> {
+        self.actions.lock().await
+    }
+}
+
 /// D-Bus interface for Match settings
 pub struct Match {
     actions: Arc<Mutex<UnboundedSender<Action>>>,
-    connection: Arc<Mutex<NetworkConnection>>,
+    uuid: Uuid,
 }
 
 impl Match {
     /// Creates a Match Settings interface object.
     ///
     /// * `actions`: sending-half of a channel to send actions.
-    /// * `connection`: connection to expose over D-Bus.
-    pub fn new(
-        actions: UnboundedSender<Action>,
-        connection: Arc<Mutex<NetworkConnection>>,
-    ) -> Self {
+    /// * `uuid`: nework connection's UUID.
+    pub fn new(actions: UnboundedSender<Action>, uuid: Uuid) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
-            connection,
+            uuid,
         }
-    }
-
-    /// Returns the underlying connection.
-    async fn get_connection(&self) -> MutexGuard<NetworkConnection> {
-        self.connection.lock().await
-    }
-
-    /// Updates the connection data in the NetworkSystem.
-    ///
-    /// * `connection`: Updated connection.
-    async fn update_connection<'a>(
-        &self,
-        connection: MutexGuard<'a, NetworkConnection>,
-    ) -> zbus::fdo::Result<()> {
-        let actions = self.actions.lock().await;
-        actions
-            .send(Action::UpdateConnection(Box::new(connection.clone())))
-            .unwrap();
-        Ok(())
     }
 }
 
@@ -279,56 +239,67 @@ impl Match {
 impl Match {
     /// List of driver names to match.
     #[dbus_interface(property)]
-    pub async fn driver(&self) -> Vec<String> {
-        let connection = self.get_connection().await;
-        connection.match_config.driver.clone()
+    pub async fn driver(&self) -> zbus::fdo::Result<Vec<String>> {
+        let connection = self.get_connection().await?;
+        Ok(connection.match_config.driver)
     }
 
     #[dbus_interface(property)]
     pub async fn set_driver(&mut self, driver: Vec<String>) -> zbus::fdo::Result<()> {
-        let mut connection = self.get_connection().await;
-        connection.match_config.driver = driver;
-        self.update_connection(connection).await
+        self.update_connection(|c| c.match_config.driver = driver)
+            .await?;
+        Ok(())
     }
 
     /// List of paths to match agains the ID_PATH udev property of devices.
     #[dbus_interface(property)]
-    pub async fn path(&self) -> Vec<String> {
-        let connection = self.get_connection().await;
-        connection.match_config.path.clone()
+    pub async fn path(&self) -> zbus::fdo::Result<Vec<String>> {
+        let connection = self.get_connection().await?;
+        Ok(connection.match_config.path)
     }
 
     #[dbus_interface(property)]
     pub async fn set_path(&mut self, path: Vec<String>) -> zbus::fdo::Result<()> {
-        let mut connection = self.get_connection().await;
-        connection.match_config.path = path;
-        self.update_connection(connection).await
+        self.update_connection(|c| c.match_config.path = path)
+            .await?;
+        Ok(())
     }
     /// List of interface names to match.
     #[dbus_interface(property)]
-    pub async fn interface(&self) -> Vec<String> {
-        let connection = self.get_connection().await;
-        connection.match_config.interface.clone()
+    pub async fn interface(&self) -> zbus::fdo::Result<Vec<String>> {
+        let connection = self.get_connection().await?;
+        Ok(connection.match_config.interface)
     }
 
     #[dbus_interface(property)]
     pub async fn set_interface(&mut self, interface: Vec<String>) -> zbus::fdo::Result<()> {
-        let mut connection = self.get_connection().await;
-        connection.match_config.interface = interface;
-        self.update_connection(connection).await
+        self.update_connection(|c| c.match_config.interface = interface)
+            .await?;
+        Ok(())
     }
 
     /// List of kernel options to match.
     #[dbus_interface(property)]
-    pub async fn kernel(&self) -> Vec<String> {
-        let connection = self.get_connection().await;
-        connection.match_config.kernel.clone()
+    pub async fn kernel(&self) -> zbus::fdo::Result<Vec<String>> {
+        let connection = self.get_connection().await?;
+        Ok(connection.match_config.kernel)
     }
 
     #[dbus_interface(property)]
     pub async fn set_kernel(&mut self, kernel: Vec<String>) -> zbus::fdo::Result<()> {
-        let mut connection = self.get_connection().await;
-        connection.match_config.kernel = kernel;
-        self.update_connection(connection).await
+        self.update_connection(|c| c.match_config.kernel = kernel)
+            .await?;
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl ConnectionInterface for Match {
+    fn uuid(&self) -> Uuid {
+        self.uuid
+    }
+
+    async fn actions(&self) -> MutexGuard<UnboundedSender<Action>> {
+        self.actions.lock().await
     }
 }
