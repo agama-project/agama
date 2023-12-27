@@ -1,6 +1,6 @@
 //! Implements a client to access Agama's users service.
 
-use super::proxies::Users1Proxy;
+use super::proxies::{FirstUser as FirstUserFromDBus, Users1Proxy};
 use crate::error::ServiceError;
 use agama_settings::{settings::Settings, SettingValue, SettingsError};
 use serde::Serialize;
@@ -22,15 +22,7 @@ pub struct FirstUser {
 }
 
 impl FirstUser {
-    pub fn from_dbus(
-        dbus_data: zbus::Result<(
-            String,
-            String,
-            String,
-            bool,
-            std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
-        )>,
-    ) -> zbus::Result<Self> {
+    pub fn from_dbus(dbus_data: zbus::Result<FirstUserFromDBus>) -> zbus::Result<Self> {
         let data = dbus_data?;
         Ok(Self {
             full_name: data.0,
