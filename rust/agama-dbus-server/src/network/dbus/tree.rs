@@ -78,7 +78,7 @@ impl Tree {
 
     /// Adds a connection to the D-Bus tree and returns the D-Bus path.
     ///
-    /// * `connection`: connection to add.
+    /// * `conn`: connection to add.
     /// * `notify`: whether to notify the added connection
     pub async fn add_connection(
         &self,

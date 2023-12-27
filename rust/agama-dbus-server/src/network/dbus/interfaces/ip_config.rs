@@ -29,7 +29,7 @@ impl Ip {
     /// Creates an IP interface object.
     ///
     /// * `actions`: sending-half of a channel to send actions.
-    /// * `connection`: connection to expose over D-Bus.
+    /// * `uuid`: connection UUID..
     pub fn new(actions: UnboundedSender<Action>, uuid: Uuid) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),

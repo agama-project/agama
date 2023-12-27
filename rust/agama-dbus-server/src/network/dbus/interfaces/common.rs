@@ -36,7 +36,7 @@ pub trait ConnectionInterface {
 
     /// Updates the connection data in the NetworkSystem.
     ///
-    /// * `connection`: Updated connection.
+    /// * `func`: function to update the connection.
     async fn update_connection<F>(&self, func: F) -> Result<(), NetworkStateError>
     where
         F: FnOnce(&mut NetworkConnection) + std::marker::Send,
