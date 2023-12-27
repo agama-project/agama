@@ -102,7 +102,7 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
 
     let adapter = NetworkTestAdapter(NetworkState::default());
 
-    let _service = NetworkService::start(&server.connection(), adapter).await?;
+    NetworkService::start(&server.connection(), adapter).await?;
     server.request_name().await?;
 
     let client = NetworkClient::new(server.connection().clone()).await?;
@@ -128,7 +128,7 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
     let conns = async_retry(|| client.connections()).await?;
     assert_eq!(conns.len(), 2);
 
-    let conn = conns.iter().find(|c| c.id == "bond0".to_string()).unwrap();
+    let conn = conns.iter().find(|c| &c.id == "bond0").unwrap();
     assert_eq!(conn.id, "bond0");
     assert_eq!(conn.device_type(), DeviceType::Bond);
     let bond = conn.bond.clone().unwrap();

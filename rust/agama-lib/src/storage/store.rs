@@ -2,7 +2,6 @@
 
 use super::{StorageClient, StorageSettings};
 use crate::error::ServiceError;
-use std::default::Default;
 use zbus::Connection;
 
 /// Loads and stores the storage settings from/to the D-Bus service.
@@ -26,7 +25,6 @@ impl<'a> StorageStore<'a> {
             boot_device,
             lvm,
             encryption_password,
-            ..Default::default()
         })
     }
 
