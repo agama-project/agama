@@ -35,7 +35,7 @@ const InstallConfirmationPopup = ({ hasIssues, onAccept, onClose }) => {
       <p>
         <strong>
           { _("There are some reported issues. \
-          Please review any identified concerns in the previous steps before proceeding with the installation.") }
+          Please review them in the previous steps before proceeding with the installation.") }
         </strong>
       </p>
     );
