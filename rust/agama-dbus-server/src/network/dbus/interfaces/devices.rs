@@ -1,34 +1,35 @@
-use crate::network::{dbus::ObjectsRegistry, model::Device as NetworkDevice};
+use crate::network::{model::Device as NetworkDevice, Action};
 use std::sync::Arc;
-use tokio::sync::Mutex;
-use zbus::{dbus_interface, zvariant::ObjectPath};
+use tokio::sync::{mpsc::UnboundedSender, oneshot, Mutex};
+use zbus::{dbus_interface, zvariant::OwnedObjectPath};
 
 /// D-Bus interface for the network devices collection
 ///
 /// It offers an API to query the devices collection.
 pub struct Devices {
-    objects: Arc<Mutex<ObjectsRegistry>>,
+    actions: Arc<Mutex<UnboundedSender<Action>>>,
 }
 
 impl Devices {
     /// Creates a Devices interface object.
     ///
     /// * `objects`: Objects paths registry.
-    pub fn new(objects: Arc<Mutex<ObjectsRegistry>>) -> Self {
-        Self { objects }
+    pub fn new(actions: UnboundedSender<Action>) -> Self {
+        Self {
+            actions: Arc::new(Mutex::new(actions)),
+        }
     }
 }
 
 #[dbus_interface(name = "org.opensuse.Agama1.Network.Devices")]
 impl Devices {
     /// Returns the D-Bus paths of the network devices.
-    pub async fn get_devices(&self) -> Vec<ObjectPath> {
-        let objects = self.objects.lock().await;
-        objects
-            .devices_paths()
-            .iter()
-            .filter_map(|c| ObjectPath::try_from(c.clone()).ok())
-            .collect()
+    pub async fn get_devices(&self) -> zbus::fdo::Result<Vec<OwnedObjectPath>> {
+        let actions = self.actions.lock().await;
+        let (tx, rx) = oneshot::channel();
+        actions.send(Action::GetDevicesPaths(tx)).unwrap();
+        let result = rx.await.unwrap();
+        Ok(result)
     }
 }
 

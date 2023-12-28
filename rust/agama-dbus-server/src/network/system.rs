@@ -77,10 +77,16 @@ impl<T: Adapter> NetworkSystem<T> {
                 let conn = self.state.get_connection_by_uuid(uuid);
                 tx.send(conn.cloned()).unwrap();
             }
+            Action::GetConnectionPath(id, tx) => {
+                let path = self.tree.connection_path(&id);
+                tx.send(path).unwrap();
+            }
             Action::GetController(uuid, tx) => {
                 let result = self.get_controller_action(uuid);
                 tx.send(result).unwrap()
             }
+            Action::GetDevicesPaths(tx) => tx.send(self.tree.devices_paths()).unwrap(),
+            Action::GetConnectionsPaths(tx) => tx.send(self.tree.connections_paths()).unwrap(),
             Action::SetPorts(uuid, ports, rx) => {
                 let result = self.set_ports_action(uuid, *ports);
                 rx.send(result).unwrap();

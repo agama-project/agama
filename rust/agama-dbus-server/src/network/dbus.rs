@@ -8,4 +8,4 @@ pub mod service;
 mod tree;
 
 pub use service::NetworkService;
-pub(crate) use tree::{ObjectsRegistry, Tree};
+pub(crate) use tree::Tree;

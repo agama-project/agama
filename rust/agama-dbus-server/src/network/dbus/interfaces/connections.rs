@@ -9,23 +9,21 @@ use zbus::{
 };
 
 use super::common::ConnectionInterface;
-use crate::network::{dbus::ObjectsRegistry, error::NetworkStateError, model::MacAddress, Action};
+use crate::network::{error::NetworkStateError, model::MacAddress, Action};
 
 /// D-Bus interface for the set of connections.
 ///
 /// It offers an API to query the connections collection.
 pub struct Connections {
     actions: Arc<Mutex<UnboundedSender<Action>>>,
-    objects: Arc<Mutex<ObjectsRegistry>>,
 }
 
 impl Connections {
     /// Creates a Connections interface object.
     ///
     /// * `objects`: Objects paths registry.
-    pub fn new(objects: Arc<Mutex<ObjectsRegistry>>, actions: UnboundedSender<Action>) -> Self {
+    pub fn new(actions: UnboundedSender<Action>) -> Self {
         Self {
-            objects,
             actions: Arc::new(Mutex::new(actions)),
         }
     }
@@ -34,13 +32,12 @@ impl Connections {
 #[dbus_interface(name = "org.opensuse.Agama1.Network.Connections")]
 impl Connections {
     /// Returns the D-Bus paths of the network connections.
-    pub async fn get_connections(&self) -> Vec<ObjectPath> {
-        let objects = self.objects.lock().await;
-        objects
-            .connections_paths()
-            .iter()
-            .filter_map(|c| ObjectPath::try_from(c.clone()).ok())
-            .collect()
+    pub async fn get_connections(&self) -> zbus::fdo::Result<Vec<OwnedObjectPath>> {
+        let actions = self.actions.lock().await;
+        let (tx, rx) = oneshot::channel();
+        actions.send(Action::GetConnectionsPaths(tx)).unwrap();
+        let result = rx.await.unwrap();
+        Ok(result)
     }
 
     /// Adds a new network connection.
@@ -67,11 +64,16 @@ impl Connections {
     ///
     /// * `id`: connection ID.
     pub async fn get_connection(&self, id: &str) -> zbus::fdo::Result<OwnedObjectPath> {
-        let objects = self.objects.lock().await;
-        match objects.connection_path(id) {
-            Some(path) => Ok(path.into()),
-            None => Err(NetworkStateError::UnknownConnection(id.to_string()).into()),
-        }
+        let actions = self.actions.lock().await;
+        let (tx, rx) = oneshot::channel();
+        actions
+            .send(Action::GetConnectionPath(id.to_string(), tx))
+            .unwrap();
+        let path = rx
+            .await
+            .unwrap()
+            .ok_or(NetworkStateError::UnknownConnection(id.to_string()))?;
+        Ok(path)
     }
 
     /// Removes a network connection.
