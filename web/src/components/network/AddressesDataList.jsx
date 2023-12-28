@@ -88,7 +88,7 @@ export default function AddressesDataList({
       <DataListCell key={`address-${id}-address`}>
         <IpAddressInput
           defaultValue={address}
-          onChange={value => updateAddress(id, "address", value)}
+          onChange={(_, value) => updateAddress(id, "address", value)}
           // TRANSLATORS: input field name
           placeholder={_("IP Address")}
           aria-label={_("IP Address")}
@@ -97,7 +97,7 @@ export default function AddressesDataList({
       <DataListCell key={`address-${id}-prefix`}>
         <IpPrefixInput
           defaultValue={prefix}
-          onChange={value => updateAddress(id, "prefix", value)}
+          onChange={(_, value) => updateAddress(id, "prefix", value)}
           // TRANSLATORS: input field name
           placeholder={_("Prefix length or netmask")}
           aria-label={_("Prefix length or netmask")}
