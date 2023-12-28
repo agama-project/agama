@@ -208,6 +208,7 @@ class AgamaNetworkAdapter {
 
     const conn = {
       id: connection.Id,
+      uuid: connection.Uuid,
       name: connection.Interface,
       ipv4: {
         method: ip.Method4,
@@ -230,7 +231,7 @@ class AgamaNetworkAdapter {
       };
     }
 
-    return conn;
+    return createConnection(conn);
   }
 
 
