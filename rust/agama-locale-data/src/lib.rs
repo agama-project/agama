@@ -162,9 +162,9 @@ mod tests {
         let first = result.first().expect("no keyboards");
         assert_eq!(first, "Africa/Abidjan");
         // test that we filter out deprecates Asmera ( there is already recent Asmara)
-        let asmera = result.iter().find(|&t| *t == "Africa/Asmera".to_string());
+        let asmera = result.iter().find(|&t| t == "Africa/Asmera");
         assert_eq!(asmera, None);
-        let asmara = result.iter().find(|&t| *t == "Africa/Asmara".to_string());
+        let asmara = result.iter().find(|&t| t == "Africa/Asmara");
         assert_eq!(asmara, Some(&"Africa/Asmara".to_string()));
         // here test that timezones from timezones matches ones in langtable ( as timezones can contain deprecated ones)
         // so this test catch if there is new zone that is not translated or if a zone is become deprecated

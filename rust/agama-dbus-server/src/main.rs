@@ -1,4 +1,7 @@
-use agama_dbus_server::{locale, locale::helpers, network, questions};
+use agama_dbus_server::{
+    l10n::{self, helpers},
+    network, questions,
+};
 
 use agama_lib::connection_to;
 use anyhow::Context;
@@ -36,7 +39,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // When adding more services here, the order might be important.
     questions::export_dbus_objects(&connection).await?;
     log::info!("Started questions interface");
-    locale::export_dbus_objects(&connection, &locale).await?;
+    l10n::export_dbus_objects(&connection, &locale).await?;
     log::info!("Started locale interface");
     network::export_dbus_objects(&connection).await?;
     log::info!("Started network interface");

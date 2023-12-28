@@ -131,11 +131,7 @@ mod tests {
     fn test_read_timezone_without_country() {
         let mut db = TimezonesDatabase::new();
         db.read("es").unwrap();
-        let timezone = db
-            .entries()
-            .into_iter()
-            .find(|tz| tz.code == "UTC")
-            .unwrap();
+        let timezone = db.entries().iter().find(|tz| tz.code == "UTC").unwrap();
         assert_eq!(timezone.country, None);
     }
 
@@ -145,7 +141,7 @@ mod tests {
         db.read("en").unwrap();
         let timezone = db
             .entries()
-            .into_iter()
+            .iter()
             .find(|tz| tz.code == "Europe/Kiev")
             .unwrap();
         assert_eq!(timezone.country, Some("Ukraine".to_string()));
