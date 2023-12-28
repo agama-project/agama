@@ -78,6 +78,12 @@ jobs:
     - name: Install Rust toolchains
       run: rustup toolchain install stable
 
+    - name: Run clippy linter
+      run: cargo clippy
+
+    - name: Run rustfmt
+      run: cargo fmt --all -- --check
+
     - name: Install cargo-binstall
       uses: taiki-e/install-action@v2
       with:
@@ -88,9 +94,6 @@ jobs:
 
     - name: Run the tests
       run: cargo tarpaulin --out xml
-
-    - name: Lint formatting
-      run: cargo fmt --all -- --check
 
     # send the code coverage for the Rust part to the coveralls.io
     - name: Coveralls GitHub Action

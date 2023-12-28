@@ -37,7 +37,7 @@ trait Connections {
     ///
     /// `name`: connection name.
     /// `ty`: connection type.
-    fn add_connection(&self, name: &str, ty: u8) -> zbus::Result<()>;
+    fn add_connection(&self, name: &str, ty: u8) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Apply method
     fn apply(&self) -> zbus::Result<()>;

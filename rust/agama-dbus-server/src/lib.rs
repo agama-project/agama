@@ -1,4 +1,4 @@
 pub mod error;
-pub mod locale;
+pub mod l10n;
 pub mod network;
 pub mod questions;

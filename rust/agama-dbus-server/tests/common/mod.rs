@@ -109,7 +109,7 @@ impl NameOwnerChangedStream {
         loop {
             let signal = self.0.next().await.unwrap().unwrap();
             let (sname, _, _): (String, String, String) = signal.body().unwrap();
-            if &sname == name {
+            if sname == name {
                 return;
             }
         }

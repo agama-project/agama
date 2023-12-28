@@ -279,7 +279,7 @@ impl LogItem for LogCmd {
 
 /// Collect existing / requested paths which should already exist in the system.
 /// Turns them into list of log sources
-fn paths_to_log_sources(paths: &Vec<String>, tmp_dir: &TempDir) -> Vec<Box<dyn LogItem>> {
+fn paths_to_log_sources(paths: &[String], tmp_dir: &TempDir) -> Vec<Box<dyn LogItem>> {
     let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
 
     for path in paths.iter() {
@@ -293,10 +293,7 @@ fn paths_to_log_sources(paths: &Vec<String>, tmp_dir: &TempDir) -> Vec<Box<dyn L
 }
 
 /// Some info can be collected via particular commands only, turn it into log sources
-fn cmds_to_log_sources(
-    commands: &Vec<(String, String)>,
-    tmp_dir: &TempDir,
-) -> Vec<Box<dyn LogItem>> {
+fn cmds_to_log_sources(commands: &[(String, String)], tmp_dir: &TempDir) -> Vec<Box<dyn LogItem>> {
     let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
 
     for cmd in commands.iter() {
