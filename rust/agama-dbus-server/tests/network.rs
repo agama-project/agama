@@ -11,6 +11,7 @@ use agama_lib::network::{
     types::DeviceType,
     NetworkClient,
 };
+use async_trait::async_trait;
 use cidr::IpInet;
 use std::error::Error;
 use tokio::test;
@@ -18,12 +19,16 @@ use tokio::test;
 #[derive(Default)]
 pub struct NetworkTestAdapter(network::NetworkState);
 
+#[async_trait]
 impl Adapter for NetworkTestAdapter {
-    fn read(&self) -> Result<network::NetworkState, Box<dyn std::error::Error>> {
+    async fn read(&self) -> Result<network::NetworkState, Box<dyn std::error::Error>> {
         Ok(self.0.clone())
     }
 
-    fn write(&self, _network: &network::NetworkState) -> Result<(), Box<dyn std::error::Error>> {
+    async fn write(
+        &self,
+        _network: &network::NetworkState,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         unimplemented!("Not used in tests");
     }
 }

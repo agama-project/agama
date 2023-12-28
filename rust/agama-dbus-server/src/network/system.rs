@@ -33,8 +33,8 @@ impl<T: Adapter> NetworkSystem<T> {
 
     /// Writes the network configuration.
     pub async fn write(&mut self) -> Result<(), Box<dyn Error>> {
-        self.adapter.write(&self.state)?;
-        self.state = self.adapter.read()?;
+        self.adapter.write(&self.state).await?;
+        self.state = self.adapter.read().await?;
         Ok(())
     }
 
@@ -47,7 +47,7 @@ impl<T: Adapter> NetworkSystem<T> {
 
     /// Populates the D-Bus tree with the known devices and connections.
     pub async fn setup(&mut self) -> Result<(), Box<dyn Error>> {
-        self.state = self.adapter.read()?;
+        self.state = self.adapter.read().await?;
         self.tree
             .set_connections(&mut self.state.connections)
             .await?;
