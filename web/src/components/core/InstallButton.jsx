@@ -41,6 +41,9 @@ const InstallConfirmationPopup = ({ hasIssues, onAccept, onClose }) => {
     );
   };
 
+  const Cancel = hasIssues ? Popup.PrimaryAction : Popup.SecondaryAction;
+  const Continue = hasIssues ? Popup.SecondaryAction : Popup.PrimaryAction;
+
   return (
     <Popup
       title={_("Confirm Installation")}
@@ -57,14 +60,14 @@ according to the provided installation settings.") }
         </p>
       </div>
       <Popup.Actions>
-        <Popup.PrimaryAction key="cancel" onClick={onClose} autoFocus>
+        <Cancel key="cancel" onClick={onClose} autoFocus={hasIssues}>
           {/* TRANSLATORS: button label */}
           {_("Cancel")}
-        </Popup.PrimaryAction>
-        <Popup.SecondaryAction key="confirm" onClick={onAccept}>
+        </Cancel>
+        <Continue key="confirm" onClick={onAccept} autoFocus={!hasIssues}>
           {/* TRANSLATORS: button label */}
           {_("Continue")}
-        </Popup.SecondaryAction>
+        </Continue>
       </Popup.Actions>
     </Popup>
   );
