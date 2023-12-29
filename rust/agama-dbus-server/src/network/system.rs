@@ -1,8 +1,11 @@
 use super::error::NetworkStateError;
 use crate::network::{dbus::Tree, model::Connection, Action, Adapter, NetworkState};
 use agama_lib::network::types::DeviceType;
-use std::error::Error;
-use tokio::sync::mpsc::{self, UnboundedReceiver, UnboundedSender};
+use std::{error::Error, sync::Arc};
+use tokio::sync::{
+    mpsc::{self, UnboundedReceiver, UnboundedSender},
+    Mutex,
+};
 use uuid::Uuid;
 use zbus::zvariant::OwnedObjectPath;
 
@@ -13,7 +16,7 @@ pub struct NetworkSystem<T: Adapter> {
     /// Side of the channel to send actions.
     actions_tx: UnboundedSender<Action>,
     actions_rx: UnboundedReceiver<Action>,
-    tree: Tree,
+    tree: Arc<Mutex<Tree>>,
     /// Adapter to read/write the network state.
     adapter: T,
 }
@@ -26,7 +29,7 @@ impl<T: Adapter> NetworkSystem<T> {
             state: NetworkState::default(),
             actions_tx,
             actions_rx,
-            tree,
+            tree: Arc::new(Mutex::new(tree)),
             adapter,
         }
     }
@@ -48,10 +51,9 @@ impl<T: Adapter> NetworkSystem<T> {
     /// Populates the D-Bus tree with the known devices and connections.
     pub async fn setup(&mut self) -> Result<(), Box<dyn Error>> {
         self.state = self.adapter.read().await?;
-        self.tree
-            .set_connections(&mut self.state.connections)
-            .await?;
-        self.tree.set_devices(&self.state.devices).await?;
+        let mut tree = self.tree.lock().await;
+        tree.set_connections(&mut self.state.connections).await?;
+        tree.set_devices(&self.state.devices).await?;
         Ok(())
     }
 
@@ -78,15 +80,22 @@ impl<T: Adapter> NetworkSystem<T> {
                 tx.send(conn.cloned()).unwrap();
             }
             Action::GetConnectionPath(id, tx) => {
-                let path = self.tree.connection_path(&id);
+                let tree = self.tree.lock().await;
+                let path = tree.connection_path(&id);
                 tx.send(path).unwrap();
             }
             Action::GetController(uuid, tx) => {
                 let result = self.get_controller_action(uuid);
                 tx.send(result).unwrap()
             }
-            Action::GetDevicesPaths(tx) => tx.send(self.tree.devices_paths()).unwrap(),
-            Action::GetConnectionsPaths(tx) => tx.send(self.tree.connections_paths()).unwrap(),
+            Action::GetDevicesPaths(tx) => {
+                let tree = self.tree.lock().await;
+                tx.send(tree.devices_paths()).unwrap();
+            }
+            Action::GetConnectionsPaths(tx) => {
+                let tree = self.tree.lock().await;
+                tx.send(tree.connections_paths()).unwrap();
+            }
             Action::SetPorts(uuid, ports, rx) => {
                 let result = self.set_ports_action(uuid, *ports);
                 rx.send(result).unwrap();
@@ -95,16 +104,23 @@ impl<T: Adapter> NetworkSystem<T> {
                 self.state.update_connection(*conn)?;
             }
             Action::RemoveConnection(id) => {
-                self.tree.remove_connection(&id).await?;
+                let mut tree = self.tree.lock().await;
+                tree.remove_connection(&id).await?;
                 self.state.remove_connection(&id)?;
             }
             Action::Apply => {
                 self.write().await?;
                 // TODO: re-creating the tree is kind of brute-force and it sends signals about
                 // adding/removing interfaces. We should add/update/delete objects as needed.
-                self.tree
-                    .set_connections(&mut self.state.connections)
-                    .await?;
+                // NOTE updating the tree at the same time than dispatching actions can cause a
+                // deadlock. We might consider using message passing too but at this point
+                // is enough to use a separate task.
+                let mut connections = self.state.connections.clone();
+                let tree = Arc::clone(&self.tree);
+                tokio::spawn(async move {
+                    let mut tree = tree.lock().await;
+                    _ = tree.set_connections(&mut connections).await;
+                });
             }
         }
 
@@ -118,8 +134,8 @@ impl<T: Adapter> NetworkSystem<T> {
     ) -> Result<OwnedObjectPath, NetworkStateError> {
         let mut conn = Connection::new(name, ty);
         // TODO: handle tree handling problems
-        let path = self
-            .tree
+        let mut tree = self.tree.lock().await;
+        let path = tree
             .add_connection(&mut conn)
             .await
             .expect("Could not update the D-Bus tree");
