@@ -119,7 +119,9 @@ impl<T: Adapter> NetworkSystem<T> {
                 let tree = Arc::clone(&self.tree);
                 tokio::spawn(async move {
                     let mut tree = tree.lock().await;
-                    _ = tree.set_connections(&mut connections).await;
+                    if let Err(e) = tree.set_connections(&mut connections).await {
+                        log::error!("Could not update the D-Bus tree: {}", e);
+                    }
                 });
             }
         }
