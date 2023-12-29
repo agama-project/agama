@@ -1,0 +1,23 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "Agama Installer",
+  "entryPoints": [
+    "./src"
+  ],
+  "exclude": [
+    "./src/lib"
+  ],
+  "excludeNotDocumented": true,
+  "out": "jsdoc.out",
+  "plugin": [
+    "typedoc-plugin-missing-exports",
+  ],
+  "sort": [
+    "source-order"
+  ],
+  "categorizeByGroup": false,
+  "navigationLinks": {
+    "GitHub": "https://github.com/openSUSE/agama"
+  },
+  "skipErrorChecking": true,
+}
