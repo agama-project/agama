@@ -5,6 +5,10 @@ members = [
   "agama-derive",
   "agama-lib",
   "agama-locale-data",
-  "agama-settings"
+  "agama-settings",
 ]
+resolver = "2"
 
+[workspace.package]
+rust-version = "1.74"
+edition = "2021"
