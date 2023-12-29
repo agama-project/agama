@@ -86,7 +86,7 @@
     "terser-webpack-plugin": "^5.3.9",
     "ts-jest": "^29.0.3",
     "tsconfig-paths-webpack-plugin": "^4.0.0",
-    "typedoc": "^0.25.3",
+    "typedoc": "^0.25.4",
     "typedoc-plugin-missing-exports": "^2.1.0",
     "typescript": "^5.3.3",
     "webpack": "^5.89.0",
