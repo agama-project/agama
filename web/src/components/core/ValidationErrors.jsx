@@ -39,10 +39,10 @@ import { n_ } from "~/i18n";
  * @todo This component might be more generic.
  *
  * @param {object} props
- * @param {string} [props.sectionName] - Name of the section which is displaying errors. (product, software, storage, ...)
+ * @param {string} props.sectionId - Name of the section which is displaying errors. (product, software, storage, ...)
  * @param {import("~/client/mixins").ValidationError[]} props.errors - Validation errors
  */
-const ValidationErrors = ({ errors, sectionName = "" }) => {
+const ValidationErrors = ({ errors, sectionId }) => {
   const [showIssuesPopUp, setshowIssuesPopUp] = useState(false);
 
   if (!errors || errors.length === 0) return null;
@@ -74,7 +74,7 @@ const ValidationErrors = ({ errors, sectionName = "" }) => {
           <IssuesDialog
             isOpen={showIssuesPopUp}
             onClose={() => setshowIssuesPopUp(false)}
-            openFrom={sectionName}
+            sectionId={sectionId}
           />
         </div>
       </>
