@@ -71,13 +71,15 @@ const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
  * @param {object} props.formSelectProps - @see {@link https://www.patternfly.org/components/forms/form-select#props}
  * @returns {ReactComponent}
  */
-const MountPointFormSelect = ({ volumes, ...formSelectProps }) => {
+
+const MountPointFormSelect = ({ volumes, ...selectProps }) => {
   return (
-    <Select { ...formSelectProps }>
-      { volumes.map(v => <FormSelectOption key={v.mountPath} value={v.mountPath} label={v.mountPath} />) }
+    <Select { ...selectProps }>
+      { volumes.map(v => <SelectOption key={v.mountPath} value={v.mountPath}>{v.mountPath}</SelectOption>) }
     </Select>
   );
 };
+
 
 /**
  * Btrfs file system type can be offered with two flavors, with and without snapshots.
