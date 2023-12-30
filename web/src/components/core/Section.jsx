@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import React, { forwardRef } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { Icon } from '~/components/layout';
 import { ValidationErrors } from "~/components/core";
@@ -53,25 +53,25 @@ import { ValidationErrors } from "~/components/core";
  *  when user clicks on the title, used for opening a dialog.
  * @property {boolean} [loading] - Whether the section is busy loading its content or not.
  * @property {string} [className] - Class name for section html tag.
+ * @property {string} [sectionId] - Id of the type of the section, software, product, storage, ...
  * @property {import("~/client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title.
  * @property {React.ReactElement} [children] - The section content.
  * @property {string} [aria-label] - aria-label attribute, required if title if not given
  *
  * @param { SectionProps } props
- *
- * @type {React.FC<SectionProps>}
  */
-const Section = forwardRef(function({
+export default function Section({
   icon,
   title,
   name,
   path,
   loading,
   className,
+  sectionId,
   errors,
   children,
   "aria-label": ariaLabel
-}, ref) {
+}) {
   const headerId = `${name || crypto.randomUUID()}-section-header`;
 
   if (!title && !ariaLabel) {
@@ -92,22 +92,19 @@ const Section = forwardRef(function({
 
   return (
     <section
-      ref={ref}
       className={className}
       aria-live="polite"
       aria-busy={loading}
       aria-label={ariaLabel || undefined}
-      aria-labelledby={ title && !ariaLabel ? headerId : undefined}
+      aria-labelledby={title && !ariaLabel ? headerId : undefined}
       data-type="agama/section"
     >
       <Header />
       <div className="stack">
         {errors?.length > 0 &&
-          <ValidationErrors errors={errors} sectionName={title} />}
+          <ValidationErrors errors={errors} sectionId={sectionId} />}
         {children}
       </div>
     </section>
   );
-});
-
-export default Section;
+}
