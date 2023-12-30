@@ -77,53 +77,13 @@ const IssueItems = ({ issues = [] }) => {
  *
  * @param {object} props
  * @param {import ("~/client/issues").ClientsIssues} props.issues
- * @param {string} [props.openFrom] - A string which indicites which issues section should be highlighted.
+ * @param {string} props.sectionId - A string which indicites which issues section should be highlighted.
  */
-const IssuesSections = ({ issues, openFrom = "" }) => {
-  const productIssues = issues.product || [];
-  const storageIssues = issues.storage || [];
-  const softwareIssues = issues.software || [];
-  const openBy = openFrom;
-
+const IssuesSections = ({ issues }) => {
   return (
-    <div className="stack">
-      <If
-        condition={productIssues.length > 0 && openBy === "Product"}
-        then={
-          <Section
-            key="product-issues"
-            title={_("Product")}
-            icon="inventory_2"
-          >
-            <IssueItems issues={productIssues} />
-          </Section>
-        }
-      />
-      <If
-        condition={storageIssues.length > 0 && openBy === "Storage"}
-        then={
-          <Section
-            key="storage-issues"
-            title={_("Storage")}
-            icon="hard_drive"
-          >
-            <IssueItems issues={storageIssues} />
-          </Section>
-        }
-      />
-      <If
-        condition={softwareIssues.length > 0 && openBy === "Software"}
-        then={
-          <Section
-            key="software-issues"
-            title={_("Software")}
-            icon="apps"
-          >
-            <IssueItems issues={softwareIssues} />
-          </Section>
-        }
-      />
-    </div>
+    <Section aria-label="issues-section">
+      <IssueItems issues={issues} />
+    </Section>
   );
 };
 
@@ -133,9 +93,9 @@ const IssuesSections = ({ issues, openFrom = "" }) => {
  *
  * @param {object} props
  * @param {import ("~/client").Issues} props.issues
- * @param {string} [props.openFrom] - A string which indicites which issues section should be highlighted.
+ * @param {string} props.sectionId - A string which indicites which issues section should be highlighted.
  */
-const IssuesContent = ({ issues, openFrom = "" }) => {
+const IssuesContent = ({ issues }) => {
   const NoIssues = () => {
     return (
       <HelperText className="issue">
@@ -152,16 +112,16 @@ const IssuesContent = ({ issues, openFrom = "" }) => {
     <If
       condition={allIssues.length === 0}
       then={<NoIssues />}
-      else={<IssuesSections issues={issues} openFrom={openFrom} />}
+      else={<IssuesSections issues={issues} />}
     />
   );
 };
 
 /**
- * Page to show all issues.
+ * Popup to show more issues details from the installation overview page.
  *
  * It initially shows a loading state,
- * then fetches and displays a list of issues grouped by categories such as 'product', 'storage', and 'software'.
+ * then fetches and displays a list of issues of the selected category, either 'product' or 'storage' or 'software'.
  *
  * It uses a Popup component to display the issues, and an If component to toggle between
  * a loading state and the content state.
@@ -171,13 +131,27 @@ const IssuesContent = ({ issues, openFrom = "" }) => {
  * @param {object} props
  * @param {boolean} [props.isOpen] - A boolean value used to determine wether to show the popup or not.
  * @param {function} props.onClose - A function to call when the close action is triggered.
- * @param {string} [props.openFrom] - A string which indicites which issues section should be highlighted.
+ * @param {string} props.sectionId - A string which indicites which type of issues is going to be shown in the popup.
  */
-export default function IssuesDialog({ isOpen = false, onClose, openFrom = "" }) {
+export default function IssuesDialog({ isOpen = false, onClose, sectionId }) {
   const [isLoading, setIsLoading] = useState(true);
-  const [issues, setIssues] = useState();
+  const [issues, setIssues] = useState([]);
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
+  const titles = {
+    software: {
+      text: _("Software issues"),
+      icon: () => <Icon name="apps" />
+    },
+    product: {
+      text: _("Product issues"),
+      icon: () => <Icon name="inventory_2" />
+    },
+    storage: {
+      text: _("Storage issues"),
+      icon: () => <Icon name="hard_drive" />
+    }
+  };
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -187,8 +161,8 @@ export default function IssuesDialog({ isOpen = false, onClose, openFrom = "" })
   }, [client, cancellablePromise, setIsLoading]);
 
   const update = useCallback((issues) => {
-    setIssues(current => ({ ...current, ...issues }));
-  }, [setIssues]);
+    setIssues(current => ([...current, ...(issues[sectionId] || [])]));
+  }, [setIssues, sectionId]);
 
   useEffect(() => {
     load().then(update);
@@ -196,11 +170,16 @@ export default function IssuesDialog({ isOpen = false, onClose, openFrom = "" })
   }, [client, load, update]);
 
   return (
-    <Popup isOpen={isOpen} title={_("Issues")} data-content="issues-summary">
+    <Popup
+      isOpen={isOpen}
+      title={titles[sectionId].text}
+      titleIconVariant={titles[sectionId].icon}
+      data-content="issues-summary"
+    >
       <If
         condition={isLoading}
         then={<Icon name="loading" className="icon-big" />}
-        else={<IssuesContent issues={issues} openFrom={openFrom} />}
+        else={<IssuesContent issues={issues} />}
       />
       <Popup.Actions>
         <Popup.Confirm onClick={onClose} autoFocus>{_("Close")}</Popup.Confirm>
