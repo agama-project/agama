@@ -723,13 +723,14 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
   return (
     <Form id={id} onSubmit={submitForm}>
       <FormGroup isRequired label={_("Mount point")} fieldId="mountPoint">
-        <MountPointFormSelect
+        {currentVolume !== undefined} && <p> {state.formData.mountPoint} </p>
+        {/* <MountPointFormSelect
           id="mountPoint"
           value={state.formData.mountPoint}
           onChange={changeVolume}
           volumes={currentVolume ? [currentVolume] : templates}
           isDisabled={currentVolume !== undefined}
-        />
+        /> */}
       </FormGroup>
       <FsField
         value={{ fsType, snapshots }}
