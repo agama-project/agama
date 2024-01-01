@@ -7,17 +7,58 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-21 02:17+0000\n"
-"PO-Revision-Date: 2023-12-16 01:02+0000\n"
+"POT-Creation-Date: 2023-12-27 02:08+0000\n"
+"PO-Revision-Date: 2023-12-27 11:02+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
-"Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/ja/>\n"
+"Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 4.9.1\n"
+
+#. Runs the config phase
+#: service/lib/agama/manager.rb:88
+msgid "Probing Storage"
+msgstr "ストレージを検出しています"
+
+#: service/lib/agama/manager.rb:89
+msgid "Probing Software"
+msgstr "ソフトウエアを検出しています"
+
+#. Runs the install phase
+#. rubocop:disable Metrics/AbcSize
+#: service/lib/agama/manager.rb:109
+msgid "Partitioning"
+msgstr "パーティションを設定しています"
+
+#. propose software after /mnt is already separated, so it uses proper
+#. target
+#: service/lib/agama/manager.rb:117
+msgid "Installing Software"
+msgstr "ソフトウエアをインストールしています"
+
+#: service/lib/agama/manager.rb:120
+msgid "Writing Users"
+msgstr "ユーザを書き込んでいます"
+
+#: service/lib/agama/manager.rb:121
+msgid "Writing Network Configuration"
+msgstr "ネットワーク設定を書き込んでいます"
+
+#: service/lib/agama/manager.rb:122
+msgid "Saving Language Settings"
+msgstr "言語設定を保存しています"
+
+#: service/lib/agama/manager.rb:123
+msgid "Writing repositories information"
+msgstr "リポジトリ情報を書き込んでいます"
+
+#: service/lib/agama/manager.rb:124
+msgid "Finishing storage configuration"
+msgstr "ストレージ設定を完了しています"
 
 #. Callback to handle unsigned files
 #.
@@ -112,3 +153,38 @@ msgstr "製品を登録しなければなりません"
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "%s 個の依存関係の問題が見つかりました。"
+
+#. Probes storage devices and performs an initial proposal
+#: service/lib/agama/storage/manager.rb:111
+msgid "Activating storage devices"
+msgstr "ストレージデバイスを有効化しています"
+
+#: service/lib/agama/storage/manager.rb:112
+msgid "Probing storage devices"
+msgstr "ストレージデバイスを検出しています"
+
+#: service/lib/agama/storage/manager.rb:113
+msgid "Calculating the storage proposal"
+msgstr "ストレージの提案内容を作成しています"
+
+#: service/lib/agama/storage/manager.rb:114
+msgid "Selecting Linux Security Modules"
+msgstr "Linux セキュリティモジュールを選択しています"
+
+#. Prepares the partitioning to install the system
+#: service/lib/agama/storage/manager.rb:122
+msgid "Preparing bootloader proposal"
+msgstr "ブートローダの提案内容を準備しています"
+
+#. first make bootloader proposal to be sure that required packages are installed
+#: service/lib/agama/storage/manager.rb:127
+msgid "Adding storage-related packages"
+msgstr "ストレージ関連のパッケージを追加しています"
+
+#: service/lib/agama/storage/manager.rb:128
+msgid "Preparing the storage devices"
+msgstr "ストレージデバイスを準備しています"
+
+#: service/lib/agama/storage/manager.rb:129
+msgid "Writing bootloader sysconfig"
+msgstr "ブートローダの sysconfig を書き込んでいます"

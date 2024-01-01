@@ -17,7 +17,6 @@ impl NetworkService {
         connection: &Connection,
         adapter: T,
     ) -> Result<(), Box<dyn Error>> {
-        let connection = connection.clone();
         let mut network = NetworkSystem::new(connection.clone(), adapter);
 
         tokio::spawn(async move {

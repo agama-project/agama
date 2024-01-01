@@ -12,6 +12,7 @@
 //! …consequently `zbus-xmlgen` did not generate code for the above interfaces.
 //! Also some proxies can be used against multiple services when they share interface.
 
+use agama_lib::dbus::OwnedNestedHash;
 use zbus::dbus_proxy;
 
 #[dbus_proxy(
@@ -267,16 +268,7 @@ trait Device {
     fn disconnect(&self) -> zbus::Result<()>;
 
     /// GetAppliedConnection method
-    fn get_applied_connection(
-        &self,
-        flags: u32,
-    ) -> zbus::Result<(
-        std::collections::HashMap<
-            String,
-            std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
-        >,
-        u64,
-    )>;
+    fn get_applied_connection(&self, flags: u32) -> zbus::Result<(OwnedNestedHash, u64)>;
 
     /// Reapply method
     fn reapply(

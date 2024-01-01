@@ -11,6 +11,7 @@ use agama_lib::network::{
     types::DeviceType,
     NetworkClient,
 };
+use async_trait::async_trait;
 use cidr::IpInet;
 use std::error::Error;
 use tokio::test;
@@ -18,12 +19,16 @@ use tokio::test;
 #[derive(Default)]
 pub struct NetworkTestAdapter(network::NetworkState);
 
+#[async_trait]
 impl Adapter for NetworkTestAdapter {
-    fn read(&self) -> Result<network::NetworkState, Box<dyn std::error::Error>> {
+    async fn read(&self) -> Result<network::NetworkState, Box<dyn std::error::Error>> {
         Ok(self.0.clone())
     }
 
-    fn write(&self, _network: &network::NetworkState) -> Result<(), Box<dyn std::error::Error>> {
+    async fn write(
+        &self,
+        _network: &network::NetworkState,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         unimplemented!("Not used in tests");
     }
 }
@@ -102,7 +107,7 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
 
     let adapter = NetworkTestAdapter(NetworkState::default());
 
-    let _service = NetworkService::start(&server.connection(), adapter).await?;
+    NetworkService::start(&server.connection(), adapter).await?;
     server.request_name().await?;
 
     let client = NetworkClient::new(server.connection().clone()).await?;
@@ -128,7 +133,7 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
     let conns = async_retry(|| client.connections()).await?;
     assert_eq!(conns.len(), 2);
 
-    let conn = conns.iter().find(|c| c.id == "bond0".to_string()).unwrap();
+    let conn = conns.iter().find(|c| &c.id == "bond0").unwrap();
     assert_eq!(conn.id, "bond0");
     assert_eq!(conn.device_type(), DeviceType::Bond);
     let bond = conn.bond.clone().unwrap();

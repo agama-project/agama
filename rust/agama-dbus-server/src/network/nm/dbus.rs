@@ -781,10 +781,7 @@ mod test {
         )]));
 
         let dbus_conn = HashMap::from([
-            (
-                "connection".to_string(),
-                connection_section.try_into().unwrap(),
-            ),
+            ("connection".to_string(), connection_section),
             (BOND_KEY.to_string(), bond_options.try_into().unwrap()),
         ]);
 
