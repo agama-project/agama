@@ -35,7 +35,7 @@ import { noop } from "~/utils";
  * Helper component for having an input text limited to not signed numbers
  * @component
  *
- * Based on {@link PF/TextInput https://www.patternfly.org/components/forms/text-input}
+ * Based on {@link https://www.patternfly.org/components/forms/text-input PF/TextInput}
  *
  * @note It allows empty value too.
  *

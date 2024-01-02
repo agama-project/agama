@@ -29,7 +29,7 @@ import { If } from "~/components/core";
 import { deviceSize } from "~/components/storage/utils";
 
 /**
- * @typedef {import ("~/clients/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/client/storage").DeviceManager.StorageDevice} StorageDevice
  */
 
 const ListBox = ({ children, ...props }) => <ul data-type="agama/list" data-of="agama/storage-devices" {...props}>{children}</ul>;

@@ -26,7 +26,7 @@ import { ListSearch } from "~/components/core";
 import { noop } from "~/utils";
 
 /**
- * @typedef {import ("~/clients/l10n").Locale} Locale
+ * @typedef {import ("~/client/l10n").Locale} Locale
  */
 
 const ListBox = ({ children, ...props }) => {

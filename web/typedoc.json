@@ -6,6 +6,8 @@
     "./src/client/*",
     "./src/context/*",
     "./src/hooks/*",
+    "./src/components/**/*.js",
+    "./src/components/**/*.jsx",
   ],
   "exclude": [
     "./src/lib"
