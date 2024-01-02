@@ -3,7 +3,8 @@
   "name": "Agama Installer",
   "entryPoints": [
     "./src",
-    "./src/client"
+    "./src/client/*",
+    "./src/context/*",
   ],
   "exclude": [
     "./src/lib"
