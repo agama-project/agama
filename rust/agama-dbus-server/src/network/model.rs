@@ -412,6 +412,18 @@ pub enum ConnectionConfig {
     Bond(BondConfig),
 }
 
+impl From<BondConfig> for ConnectionConfig {
+    fn from(value: BondConfig) -> Self {
+        Self::Bond(value)
+    }
+}
+
+impl From<WirelessConfig> for ConnectionConfig {
+    fn from(value: WirelessConfig) -> Self {
+        Self::Wireless(value)
+    }
+}
+
 #[derive(Debug, Error)]
 #[error("Invalid MAC address: {0}")]
 pub struct InvalidMacAddress(String);
@@ -613,6 +625,17 @@ pub struct WirelessConfig {
     pub security: SecurityProtocol,
 }
 
+impl TryFrom<ConnectionConfig> for WirelessConfig {
+    type Error = NetworkStateError;
+
+    fn try_from(value: ConnectionConfig) -> Result<Self, Self::Error> {
+        match value {
+            ConnectionConfig::Wireless(config) => Ok(config),
+            _ => Err(NetworkStateError::UnexpectedConfiguration),
+        }
+    }
+}
+
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub enum WirelessMode {
     Unknown = 0,
@@ -734,4 +757,15 @@ impl fmt::Display for BondOptions {
 pub struct BondConfig {
     pub mode: BondMode,
     pub options: BondOptions,
+}
+
+impl TryFrom<ConnectionConfig> for BondConfig {
+    type Error = NetworkStateError;
+
+    fn try_from(value: ConnectionConfig) -> Result<Self, Self::Error> {
+        match value {
+            ConnectionConfig::Bond(config) => Ok(config),
+            _ => Err(NetworkStateError::UnexpectedConfiguration),
+        }
+    }
 }

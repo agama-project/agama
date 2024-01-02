@@ -6,71 +6,51 @@
 //! to the `Ip<T>` struct.
 use crate::network::{
     action::Action,
-    model::{Connection as NetworkConnection, IpConfig, Ipv4Method, Ipv6Method},
+    error::NetworkStateError,
+    model::{IpConfig, Ipv4Method, Ipv6Method},
 };
+use async_trait::async_trait;
 use cidr::IpInet;
 use std::{net::IpAddr, sync::Arc};
 use tokio::sync::mpsc::UnboundedSender;
-use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
+use tokio::sync::{Mutex, MutexGuard};
+use uuid::Uuid;
 use zbus::dbus_interface;
+
+use super::common::ConnectionInterface;
 
 /// D-Bus interface for IPv4 and IPv6 settings
 pub struct Ip {
     actions: Arc<Mutex<UnboundedSender<Action>>>,
-    connection: Arc<Mutex<NetworkConnection>>,
+    uuid: Uuid,
 }
 
 impl Ip {
     /// Creates an IP interface object.
     ///
     /// * `actions`: sending-half of a channel to send actions.
-    /// * `connection`: connection to expose over D-Bus.
-    pub fn new(
-        actions: UnboundedSender<Action>,
-        connection: Arc<Mutex<NetworkConnection>>,
-    ) -> Self {
+    /// * `uuid`: connection UUID..
+    pub fn new(actions: UnboundedSender<Action>, uuid: Uuid) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
-            connection,
+            uuid,
         }
     }
 
-    /// Returns the underlying connection.
-    async fn get_connection(&self) -> MutexGuard<NetworkConnection> {
-        self.connection.lock().await
-    }
-
-    /// Updates the connection data in the NetworkSystem.
-    ///
-    /// * `connection`: Updated connection.
-    async fn update_connection<'a>(
-        &self,
-        connection: MutexGuard<'a, NetworkConnection>,
-    ) -> zbus::fdo::Result<()> {
-        let actions = self.actions.lock().await;
-        actions
-            .send(Action::UpdateConnection(connection.clone()))
-            .unwrap();
-        Ok(())
-    }
-}
-
-impl Ip {
     /// Returns the IpConfig struct.
-    async fn get_ip_config(&self) -> MappedMutexGuard<IpConfig> {
-        MutexGuard::map(self.get_connection().await, |c| &mut c.ip_config)
+    async fn get_ip_config(&self) -> Result<IpConfig, NetworkStateError> {
+        self.get_connection().await.map(|c| c.ip_config)
     }
 
     /// Updates the IpConfig struct.
     ///
     /// * `func`: function to update the configuration.
-    async fn update_config<F>(&self, func: F) -> zbus::fdo::Result<()>
+    async fn update_ip_config<F>(&self, func: F) -> zbus::fdo::Result<()>
     where
-        F: Fn(&mut IpConfig),
+        F: Fn(&mut IpConfig) + std::marker::Send,
     {
-        let mut connection = self.get_connection().await;
-        func(&mut connection.ip_config);
-        self.update_connection(connection).await?;
+        self.update_connection(move |c| func(&mut c.ip_config))
+            .await?;
         Ok(())
     }
 }
@@ -81,15 +61,16 @@ impl Ip {
     ///
     /// When the method is 'auto', these addresses are used as additional addresses.
     #[dbus_interface(property)]
-    pub async fn addresses(&self) -> Vec<String> {
-        let ip_config = self.get_ip_config().await;
-        ip_config.addresses.iter().map(|a| a.to_string()).collect()
+    pub async fn addresses(&self) -> zbus::fdo::Result<Vec<String>> {
+        let ip_config = self.get_ip_config().await?;
+        let addresses = ip_config.addresses.iter().map(|a| a.to_string()).collect();
+        Ok(addresses)
     }
 
     #[dbus_interface(property)]
     pub async fn set_addresses(&mut self, addresses: Vec<String>) -> zbus::fdo::Result<()> {
         let addresses = helpers::parse_addresses::<IpInet>(addresses);
-        self.update_config(|ip| ip.addresses = addresses.clone())
+        self.update_ip_config(|ip| ip.addresses = addresses.clone())
             .await
     }
 
@@ -99,15 +80,15 @@ impl Ip {
     ///
     /// See [crate::network::model::Ipv4Method].
     #[dbus_interface(property)]
-    pub async fn method4(&self) -> String {
-        let ip_config = self.get_ip_config().await;
-        ip_config.method4.to_string()
+    pub async fn method4(&self) -> zbus::fdo::Result<String> {
+        let ip_config = self.get_ip_config().await?;
+        Ok(ip_config.method4.to_string())
     }
 
     #[dbus_interface(property)]
     pub async fn set_method4(&mut self, method: &str) -> zbus::fdo::Result<()> {
         let method: Ipv4Method = method.parse()?;
-        self.update_config(|ip| ip.method4 = method).await
+        self.update_ip_config(|ip| ip.method4 = method).await
     }
 
     /// IPv6 configuration method.
@@ -116,32 +97,33 @@ impl Ip {
     ///
     /// See [crate::network::model::Ipv6Method].
     #[dbus_interface(property)]
-    pub async fn method6(&self) -> String {
-        let ip_config = self.get_ip_config().await;
-        ip_config.method6.to_string()
+    pub async fn method6(&self) -> zbus::fdo::Result<String> {
+        let ip_config = self.get_ip_config().await?;
+        Ok(ip_config.method6.to_string())
     }
 
     #[dbus_interface(property)]
     pub async fn set_method6(&mut self, method: &str) -> zbus::fdo::Result<()> {
         let method: Ipv6Method = method.parse()?;
-        self.update_config(|ip| ip.method6 = method).await
+        self.update_ip_config(|ip| ip.method6 = method).await
     }
 
     /// Name server addresses.
     #[dbus_interface(property)]
-    pub async fn nameservers(&self) -> Vec<String> {
-        let ip_config = self.get_ip_config().await;
-        ip_config
+    pub async fn nameservers(&self) -> zbus::fdo::Result<Vec<String>> {
+        let ip_config = self.get_ip_config().await?;
+        let nameservers = ip_config
             .nameservers
             .iter()
             .map(IpAddr::to_string)
-            .collect()
+            .collect();
+        Ok(nameservers)
     }
 
     #[dbus_interface(property)]
     pub async fn set_nameservers(&mut self, addresses: Vec<String>) -> zbus::fdo::Result<()> {
         let addresses = helpers::parse_addresses::<IpAddr>(addresses);
-        self.update_config(|ip| ip.nameservers = addresses.clone())
+        self.update_ip_config(|ip| ip.nameservers = addresses.clone())
             .await
     }
 
@@ -149,36 +131,38 @@ impl Ip {
     ///
     /// An empty string removes the current value.
     #[dbus_interface(property)]
-    pub async fn gateway4(&self) -> String {
-        let ip_config = self.get_ip_config().await;
-        match ip_config.gateway4 {
+    pub async fn gateway4(&self) -> zbus::fdo::Result<String> {
+        let ip_config = self.get_ip_config().await?;
+        let gateway = match ip_config.gateway4 {
             Some(ref address) => address.to_string(),
             None => "".to_string(),
-        }
+        };
+        Ok(gateway)
     }
 
     #[dbus_interface(property)]
     pub async fn set_gateway4(&mut self, gateway: String) -> zbus::fdo::Result<()> {
         let gateway = helpers::parse_gateway(gateway)?;
-        self.update_config(|ip| ip.gateway4 = gateway).await
+        self.update_ip_config(|ip| ip.gateway4 = gateway).await
     }
 
     /// Network gateway for IPv6.
     ///
     /// An empty string removes the current value.
     #[dbus_interface(property)]
-    pub async fn gateway6(&self) -> String {
-        let ip_config = self.get_ip_config().await;
-        match ip_config.gateway6 {
+    pub async fn gateway6(&self) -> zbus::fdo::Result<String> {
+        let ip_config = self.get_ip_config().await?;
+        let result = match ip_config.gateway6 {
             Some(ref address) => address.to_string(),
             None => "".to_string(),
-        }
+        };
+        Ok(result)
     }
 
     #[dbus_interface(property)]
     pub async fn set_gateway6(&mut self, gateway: String) -> zbus::fdo::Result<()> {
         let gateway = helpers::parse_gateway(gateway)?;
-        self.update_config(|ip| ip.gateway6 = gateway).await
+        self.update_ip_config(|ip| ip.gateway6 = gateway).await
     }
 }
 
@@ -227,5 +211,16 @@ mod helpers {
                 .map_err(|_| NetworkStateError::InvalidIpAddr(gateway))?;
             Ok(Some(parsed))
         }
+    }
+}
+
+#[async_trait]
+impl ConnectionInterface for Ip {
+    fn uuid(&self) -> Uuid {
+        self.uuid
+    }
+
+    async fn actions(&self) -> MutexGuard<UnboundedSender<Action>> {
+        self.actions.lock().await
     }
 }

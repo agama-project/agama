@@ -2,6 +2,7 @@ use crate::network::model::Connection;
 use agama_lib::network::types::DeviceType;
 use tokio::sync::oneshot;
 use uuid::Uuid;
+use zbus::zvariant::OwnedObjectPath;
 
 use super::error::NetworkStateError;
 
@@ -15,19 +16,33 @@ pub type ControllerConnection = (Connection, Vec<String>);
 #[derive(Debug)]
 pub enum Action {
     /// Add a new connection with the given name and type.
-    AddConnection(String, DeviceType),
+    AddConnection(
+        String,
+        DeviceType,
+        Responder<Result<OwnedObjectPath, NetworkStateError>>,
+    ),
     /// Gets a connection
     GetConnection(Uuid, Responder<Option<Connection>>),
+    /// Gets a connection
+    GetConnectionPath(String, Responder<Option<OwnedObjectPath>>),
+    /// Get connections paths
+    GetConnectionsPaths(Responder<Vec<OwnedObjectPath>>),
     /// Gets a controller connection
     GetController(
         Uuid,
         Responder<Result<ControllerConnection, NetworkStateError>>,
     ),
+    /// Get devices paths
+    GetDevicesPaths(Responder<Vec<OwnedObjectPath>>),
     /// Sets a controller's ports. It uses the Uuid of the controller and the IDs or interface names
     /// of the ports.
-    SetPorts(Uuid, Vec<String>, Responder<Result<(), NetworkStateError>>),
+    SetPorts(
+        Uuid,
+        Box<Vec<String>>,
+        Responder<Result<(), NetworkStateError>>,
+    ),
     /// Update a connection (replacing the old one).
-    UpdateConnection(Connection),
+    UpdateConnection(Box<Connection>),
     /// Remove the connection with the given Uuid.
     RemoveConnection(String),
     /// Apply the current configuration.

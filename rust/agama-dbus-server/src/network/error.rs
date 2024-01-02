@@ -27,6 +27,8 @@ pub enum NetworkStateError {
     InvalidBondOptions,
     #[error("Not a controller connection: '{0}'")]
     NotControllerConnection(String),
+    #[error("Unexpected configuration")]
+    UnexpectedConfiguration,
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {
