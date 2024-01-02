@@ -2,7 +2,8 @@
   "$schema": "https://typedoc.org/schema.json",
   "name": "Agama Installer",
   "entryPoints": [
-    "./src"
+    "./src",
+    "./src/client"
   ],
   "exclude": [
     "./src/lib"
