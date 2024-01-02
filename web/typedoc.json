@@ -5,6 +5,7 @@
     "./src",
     "./src/client/*",
     "./src/context/*",
+    "./src/hooks/*",
   ],
   "exclude": [
     "./src/lib"
