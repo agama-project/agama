@@ -37,14 +37,12 @@ import { _ } from "~/i18n";
  * @param {import ("~/client/mixins").Issue} props.issue
  */
 const IssueItem = ({ issue }) => {
-  const variant = issue.severity === "warn" ? "warning" : "error";
-  const icon = issue.severity === "warn" ? "warning" : "error";
   const hasDetails = issue.details.length > 0;
 
   return (
     <div>
       <HelperText className="issue">
-        <HelperTextItem variant={variant} hasIcon icon={<Icon name={icon} />}>
+        <HelperTextItem>
           {issue.description}
         </HelperTextItem>
         <If
@@ -81,7 +79,8 @@ const IssueItems = ({ issues = [] }) => {
  */
 const IssuesSections = ({ issues }) => {
   return (
-    <Section aria-label="issues-section">
+    /* TRANSLATORS: Aria label */
+    <Section aria-label={_("List of issues")}>
       <IssueItems issues={issues} />
     </Section>
   );
