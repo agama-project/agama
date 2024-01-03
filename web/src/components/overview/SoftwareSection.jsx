@@ -146,7 +146,7 @@ export default function SoftwareSection({ showErrors }) {
       errors={errors.map(toValidationError)}
       // do not display the pattern selector when there are no patterns to display
       path={Object.keys(state.patterns).length > 0 ? "/software" : null}
-      sectionId="software"
+      id="software"
     >
       <SectionContent />
     </Section>
