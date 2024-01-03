@@ -70,53 +70,6 @@ const IssueItems = ({ issues = [] }) => {
 };
 
 /**
- * Generates the sections with issues.
- * @component
- *
- * @param {object} props
- * @param {import ("~/client/issues").ClientsIssues} props.issues
- * @param {string} props.sectionId - A string which indicites which issues section should be highlighted.
- */
-const IssuesSections = ({ issues }) => {
-  return (
-    /* TRANSLATORS: Aria label */
-    <Section aria-label={_("List of issues")}>
-      <IssueItems issues={issues} />
-    </Section>
-  );
-};
-
-/**
- * Generates sections with issues. If there are no issues, then a success message is shown.
- * @component
- *
- * @param {object} props
- * @param {import ("~/client").Issues} props.issues
- * @param {string} props.sectionId - A string which indicites which issues section should be highlighted.
- */
-const IssuesContent = ({ issues }) => {
-  const NoIssues = () => {
-    return (
-      <HelperText className="issue">
-        <HelperTextItem variant="success" hasIcon icon={<Icon name="task_alt" />}>
-          {_("No issues found. Everything looks ok.")}
-        </HelperTextItem>
-      </HelperText>
-    );
-  };
-
-  const allIssues = Object.values(issues).flat();
-
-  return (
-    <If
-      condition={allIssues.length === 0}
-      then={<NoIssues />}
-      else={<IssuesSections issues={issues} />}
-    />
-  );
-};
-
-/**
  * Popup to show more issues details from the installation overview page.
  *
  * It initially shows a loading state,
@@ -130,27 +83,14 @@ const IssuesContent = ({ issues }) => {
  * @param {object} props
  * @param {boolean} [props.isOpen] - A boolean value used to determine wether to show the popup or not.
  * @param {function} props.onClose - A function to call when the close action is triggered.
- * @param {string} props.sectionId - A string which indicites which type of issues is going to be shown in the popup.
+ * @param {string} props.sectionId - A string which indicates what type of issues are going to be shown in the popup.
+ * @param {string} props.title - Title of the popup.
  */
-export default function IssuesDialog({ isOpen = false, onClose, sectionId }) {
+export default function IssuesDialog({ isOpen = false, onClose, sectionId, title }) {
   const [isLoading, setIsLoading] = useState(true);
   const [issues, setIssues] = useState([]);
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
-  const titles = {
-    software: {
-      text: _("Software issues"),
-      icon: () => <Icon name="apps" />
-    },
-    product: {
-      text: _("Product issues"),
-      icon: () => <Icon name="inventory_2" />
-    },
-    storage: {
-      text: _("Storage issues"),
-      icon: () => <Icon name="hard_drive" />
-    }
-  };
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -171,15 +111,17 @@ export default function IssuesDialog({ isOpen = false, onClose, sectionId }) {
   return (
     <Popup
       isOpen={isOpen}
-      title={titles[sectionId].text}
-      titleIconVariant={titles[sectionId].icon}
+      title={title}
       data-content="issues-summary"
     >
-      <If
-        condition={isLoading}
-        then={<Icon name="loading" className="icon-big" />}
-        else={<IssuesContent issues={issues} />}
-      />
+      {/* TRANSLATORS: Aria label */}
+      <Section aria-label={_("List of issues")}>
+        <If
+          condition={isLoading}
+          then={<Icon name="loading" className="icon-big" />}
+          else={<IssueItems issues={issues} />}
+        />
+      </Section>
       <Popup.Actions>
         <Popup.Confirm onClick={onClose} autoFocus>{_("Close")}</Popup.Confirm>
       </Popup.Actions>
