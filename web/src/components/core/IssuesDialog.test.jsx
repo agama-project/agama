@@ -62,51 +62,15 @@ beforeEach(() => {
 });
 
 it("loads the issues", async () => {
-  installerRender(<IssuesDialog />);
+  installerRender(<IssuesDialog isOpen sectionId="storage" title="Storage issues" />);
 
-  screen.getAllByText(/PFSkeleton/);
   await screen.findByText(/storage issue 1/);
 });
 
-it("renders sections with issues", async () => {
-  installerRender(<IssuesDialog />);
-
-  await waitFor(() => expect(screen.queryByText("Product")).not.toBeInTheDocument());
-
-  const storageSection = await screen.findByText(/Storage/);
-  within(storageSection).findByText(/storage issue 1/);
-  within(storageSection).findByText(/storage issue 2/);
-
-  const softwareSection = await screen.findByText(/Software/);
-  within(softwareSection).findByText(/software issue 1/);
-});
-
-describe("if there are not issues", () => {
-  beforeEach(() => {
-    mockIssues = { product: [], storage: [], software: [] };
-  });
-
-  it("renders a success message", async () => {
-    installerRender(<IssuesDialog />);
-
-    await screen.findByText(/No issues found/);
-  });
-});
-
-describe("if the issues change", () => {
-  it("shows the new issues", async () => {
-    const [mockFunction, callbacks] = createCallbackMock();
-    mockOnIssuesChange = mockFunction;
-
-    installerRender(<IssuesDialog />);
-
-    await screen.findByText("Storage");
-
-    mockIssues.storage = [];
-    act(() => callbacks.forEach(c => c({ storage: mockIssues.storage })));
-
-    await waitFor(() => expect(screen.queryByText("Storage")).not.toBeInTheDocument());
-    const softwareSection = await screen.findByText(/Software/);
-    within(softwareSection).findByText(/software issue 1/);
-  });
+it('calls onClose callback when close button is clicked', async () => {
+  const mockOnClose = jest.fn();
+  const { user } = installerRender(<IssuesDialog isOpen onClose={mockOnClose} sectionId="software" title="Software issues" />);
+  
+  await user.click(screen.getByText("Close"));
+  expect(mockOnClose).toHaveBeenCalled();
 });
