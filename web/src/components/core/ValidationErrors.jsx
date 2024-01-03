@@ -26,7 +26,7 @@ import { sprintf } from "sprintf-js";
 
 import { Icon } from '~/components/layout';
 import { IssuesDialog } from "~/components/core";
-import { n_ } from "~/i18n";
+import { _, n_ } from "~/i18n";
 
 /**
  * Displays validation errors
@@ -43,7 +43,14 @@ import { n_ } from "~/i18n";
  * @param {import("~/client/mixins").ValidationError[]} props.errors - Validation errors
  */
 const ValidationErrors = ({ errors, sectionId }) => {
-  const [showIssuesPopUp, setshowIssuesPopUp] = useState(false);
+  const [showIssuesPopUp, setShowIssuesPopUp] = useState(false);
+  const dialogTitles = {
+    /* TRANSLATORS: Popup titles */
+    software: _("Software issues"),
+    product: _("Product issues"),
+    storage: _("Storage issues")
+  };
+  const dialogTitle = dialogTitles[sectionId] || "";
 
   if (!errors || errors.length === 0) return null;
 
@@ -53,33 +60,34 @@ const ValidationErrors = ({ errors, sectionId }) => {
     return (
       <div className="color-warn">{warningIcon} {errors[0].message}</div>
     );
-  } else {
-    return (
-      <>
-        <div className="color-warn">
-          <button
-            style={{ padding: "0", borderBottom: "1px solid" }}
-            className="plain-control color-warn"
-            onClick={() => setshowIssuesPopUp(true)}
-          >
-            {
-              sprintf(
-                // TRANSLATORS: %d is replaced with the number of errors found
-                n_("%d error found", "%d errors found", errors.length),
-                errors.length
-              )
-            }
-          </button>
-
-          <IssuesDialog
-            isOpen={showIssuesPopUp}
-            onClose={() => setshowIssuesPopUp(false)}
-            sectionId={sectionId}
-          />
-        </div>
-      </>
-    );
   }
+
+  return (
+    <>
+      <div className="color-warn">
+        <button
+          style={{ padding: "0", borderBottom: "1px solid" }}
+          className="plain-control color-warn"
+          onClick={() => setShowIssuesPopUp(true)}
+        >
+          {
+            sprintf(
+              // TRANSLATORS: %d is replaced with the number of errors found
+              n_("%d error found", "%d errors found", errors.length),
+              errors.length
+            )
+          }
+        </button>
+
+        <IssuesDialog
+          isOpen={showIssuesPopUp}
+          onClose={() => setShowIssuesPopUp(false)}
+          sectionId={sectionId}
+          title={dialogTitle}
+        />
+      </div>
+    </>
+  );
 };
 
 export default ValidationErrors;
