@@ -21,7 +21,7 @@
 
 import React from "react";
 import { act, screen, waitFor, within } from "@testing-library/react";
-import { installerRender, createCallbackMock, withNotificationProvider } from "~/test-utils";
+import { installerRender, createCallbackMock } from "~/test-utils";
 import { createClient } from "~/client";
 import { IssuesDialog } from "~/components/core";
 
@@ -62,14 +62,14 @@ beforeEach(() => {
 });
 
 it("loads the issues", async () => {
-  installerRender(withNotificationProvider(<IssuesDialog />));
+  installerRender(<IssuesDialog />);
 
   screen.getAllByText(/PFSkeleton/);
   await screen.findByText(/storage issue 1/);
 });
 
 it("renders sections with issues", async () => {
-  installerRender(withNotificationProvider(<IssuesDialog />));
+  installerRender(<IssuesDialog />);
 
   await waitFor(() => expect(screen.queryByText("Product")).not.toBeInTheDocument());
 
@@ -87,7 +87,7 @@ describe("if there are not issues", () => {
   });
 
   it("renders a success message", async () => {
-    installerRender(withNotificationProvider(<IssuesDialog />));
+    installerRender(<IssuesDialog />);
 
     await screen.findByText(/No issues found/);
   });
@@ -98,7 +98,7 @@ describe("if the issues change", () => {
     const [mockFunction, callbacks] = createCallbackMock();
     mockOnIssuesChange = mockFunction;
 
-    installerRender(withNotificationProvider(<IssuesDialog />));
+    installerRender(<IssuesDialog />);
 
     await screen.findByText("Storage");
 
