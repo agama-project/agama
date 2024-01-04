@@ -21,10 +21,8 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 
-import { HelperText, HelperTextItem } from "@patternfly/react-core";
-
 import { partition, useCancellablePromise } from "~/utils";
-import { If, Section, Popup } from "~/components/core";
+import { If, Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
@@ -40,17 +38,13 @@ const IssueItem = ({ issue }) => {
   const hasDetails = issue.details.length > 0;
 
   return (
-    <div>
-      <HelperText className="issue">
-        <HelperTextItem>
-          {issue.description}
-        </HelperTextItem>
-        <If
-          condition={hasDetails}
-          then={<HelperTextItem><pre>{issue.details}</pre></HelperTextItem>}
-        />
-      </HelperText>
-    </div>
+    <li>
+      {issue.description}
+      <If
+        condition={hasDetails}
+        then={<pre>{issue.details}</pre>}
+      />
+    </li>
   );
 };
 
@@ -64,9 +58,11 @@ const IssueItem = ({ issue }) => {
 const IssueItems = ({ issues = [] }) => {
   const sortedIssues = partition(issues, i => i.severity === "error").flat();
 
-  return sortedIssues.map((issue, index) => {
+  const items = sortedIssues.map((issue, index) => {
     return <IssueItem key={`issue-${index}`} issue={issue} />;
   });
+
+  return <ul>{items}</ul>;
 };
 
 /**
@@ -114,14 +110,11 @@ export default function IssuesDialog({ isOpen = false, onClose, sectionId, title
       title={title}
       data-content="issues-summary"
     >
-      {/* TRANSLATORS: Aria label */}
-      <Section aria-label={_("List of issues")}>
-        <If
-          condition={isLoading}
-          then={<Icon name="loading" className="icon-big" />}
-          else={<IssueItems issues={issues} />}
-        />
-      </Section>
+      <If
+        condition={isLoading}
+        then={<Icon name="loading" className="icon-big" />}
+        else={<IssueItems issues={issues} />}
+      />
       <Popup.Actions>
         <Popup.Confirm onClick={onClose} autoFocus>{_("Close")}</Popup.Confirm>
       </Popup.Actions>

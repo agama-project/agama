@@ -236,6 +236,15 @@ table td > .pf-v5-c-empty-state {
   padding-inline: 0;
 }
 
+ul {
+  list-style: initial;
+  margin-inline: var(--spacer-normal);
+
+  li {
+    padding-block-end: var(--spacer-small);
+  }
+}
+
 @media screen and (width <= 768px) {
   .pf-m-grid-md.pf-v5-c-table tr:where(.pf-v5-c-table__tr):not(.pf-v5-c-table__expandable-row) {
     padding-inline: 0;
