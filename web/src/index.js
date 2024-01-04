@@ -84,7 +84,6 @@ root.render(
               <Route path="/storage/zfcp" element={<ZFCPPage />} />
               <Route path="/network" element={<NetworkPage />} />
               <Route path="/users" element={<UsersPage />} />
-              <Route path="/issues" element={<IssuesDialog />} />
             </Route>
             <Route path="products" element={<ProductSelectionPage />} />
           </Route>
