@@ -209,7 +209,7 @@ function PatternSelector() {
     <>
       <Section aria-label={_("Software summary and filter options")}>
         <UsedSize size={used} />
-        <ValidationErrors errors={validationErrors} sectionName="Software" />
+        <ValidationErrors errors={validationErrors} sectionId="software" />
         <SearchInput
           // TRANSLATORS: search field placeholder text
           placeholder={_("Search")}
