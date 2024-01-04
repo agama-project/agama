@@ -240,8 +240,8 @@ ul {
   list-style: initial;
   margin-inline: var(--spacer-normal);
 
-  li {
-    padding-block-end: var(--spacer-small);
+  li:not(:last-child) {
+    margin-block-end: var(--spacer-small);
   }
 }
 
