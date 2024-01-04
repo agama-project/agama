@@ -4,8 +4,8 @@ use crate::network::{
     Adapter,
 };
 use agama_lib::error::ServiceError;
+use async_trait::async_trait;
 use log;
-use tokio::{runtime::Handle, task};
 
 /// An adapter for NetworkManager
 pub struct NetworkManagerAdapter<'a> {
@@ -27,16 +27,12 @@ impl<'a> NetworkManagerAdapter<'a> {
     }
 }
 
+#[async_trait]
 impl<'a> Adapter for NetworkManagerAdapter<'a> {
-    fn read(&self) -> Result<NetworkState, Box<dyn std::error::Error>> {
-        task::block_in_place(|| {
-            Handle::current().block_on(async {
-                let devices = self.client.devices().await?;
-                let connections = self.client.connections().await?;
-
-                Ok(NetworkState::new(devices, connections))
-            })
-        })
+    async fn read(&self) -> Result<NetworkState, Box<dyn std::error::Error>> {
+        let devices = self.client.devices().await?;
+        let connections = self.client.connections().await?;
+        Ok(NetworkState::new(devices, connections))
     }
 
     /// Writes the connections to NetworkManager.
@@ -46,31 +42,27 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
     /// simpler approach.
     ///
     /// * `network`: network model.
-    fn write(&self, network: &NetworkState) -> Result<(), Box<dyn std::error::Error>> {
+    async fn write(&self, network: &NetworkState) -> Result<(), Box<dyn std::error::Error>> {
         // By now, traits do not support async functions. Using `task::block_on` allows
         // to use 'await'.
-        task::block_in_place(|| {
-            Handle::current().block_on(async {
-                for conn in ordered_connections(network) {
-                    if !Self::is_writable(conn) {
-                        continue;
-                    }
+        for conn in ordered_connections(network) {
+            if !Self::is_writable(conn) {
+                continue;
+            }
 
-                    let result = if conn.is_removed() {
-                        self.client.remove_connection(conn.uuid).await
-                    } else {
-                        let ctrl = conn
-                            .controller
-                            .and_then(|uuid| network.get_connection_by_uuid(uuid));
-                        self.client.add_or_update_connection(conn, ctrl).await
-                    };
+            let result = if conn.is_removed() {
+                self.client.remove_connection(conn.uuid).await
+            } else {
+                let ctrl = conn
+                    .controller
+                    .and_then(|uuid| network.get_connection_by_uuid(uuid));
+                self.client.add_or_update_connection(conn, ctrl).await
+            };
 
-                    if let Err(e) = result {
-                        log::error!("Could not process the connection {}: {}", conn.id, e);
-                    }
-                }
-            })
-        });
+            if let Err(e) = result {
+                log::error!("Could not process the connection {}: {}", conn.id, e);
+            }
+        }
         // FIXME: indicate which connections could not be written.
         Ok(())
     }

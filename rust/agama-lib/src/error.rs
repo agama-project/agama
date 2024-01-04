@@ -6,9 +6,9 @@ use zbus;
 
 #[derive(Error, Debug)]
 pub enum ServiceError {
-    #[error("D-Bus service error")]
+    #[error("D-Bus service error: {0}")]
     DBus(#[from] zbus::Error),
-    #[error("Could not connect to Agama bus at '{0}'")]
+    #[error("Could not connect to Agama bus at '{0}': {1}")]
     DBusConnectionError(String, #[source] zbus::Error),
     // it's fine to say only "Error" because the original
     // specific error will be printed too
@@ -20,7 +20,7 @@ pub enum ServiceError {
     FailedRegistration(String),
     #[error("Failed to find these patterns: {0:?}")]
     UnknownPatterns(Vec<String>),
-    #[error("Error: {0}")]
+    #[error("Could not perform action '{0}'")]
     UnsuccessfulAction(String),
 }
 

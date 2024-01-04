@@ -1,10 +1,9 @@
 use agama_lib::error::ServiceError;
-use tokio::sync::Mutex;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
 use crate::network::{action::Action, dbus::interfaces, model::*};
 use log;
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
 use tokio::sync::mpsc::UnboundedSender;
 
 const CONNECTIONS_PATH: &str = "/org/opensuse/Agama1/Network/connections";
@@ -14,7 +13,7 @@ const DEVICES_PATH: &str = "/org/opensuse/Agama1/Network/devices";
 pub struct Tree {
     connection: zbus::Connection,
     actions: UnboundedSender<Action>,
-    objects: Arc<Mutex<ObjectsRegistry>>,
+    objects: ObjectsRegistry,
 }
 
 impl Tree {
@@ -37,7 +36,7 @@ impl Tree {
     ///
     /// * `connections`: list of connections.
     pub async fn set_connections(
-        &self,
+        &mut self,
         connections: &mut [Connection],
     ) -> Result<(), ServiceError> {
         self.remove_connections().await?;
@@ -63,15 +62,11 @@ impl Tree {
             let path = ObjectPath::try_from(path.as_str()).unwrap();
             self.add_interface(&path, interfaces::Device::new(dev.clone()))
                 .await?;
-            let mut objects = self.objects.lock().await;
-            objects.register_device(&dev.name, path);
+            self.objects.register_device(&dev.name, path);
         }
 
-        self.add_interface(
-            DEVICES_PATH,
-            interfaces::Devices::new(Arc::clone(&self.objects)),
-        )
-        .await?;
+        self.add_interface(DEVICES_PATH, interfaces::Devices::new(self.actions.clone()))
+            .await?;
 
         Ok(())
     }
@@ -81,17 +76,16 @@ impl Tree {
     /// * `conn`: connection to add.
     /// * `notify`: whether to notify the added connection
     pub async fn add_connection(
-        &self,
+        &mut self,
         conn: &mut Connection,
     ) -> Result<OwnedObjectPath, ServiceError> {
-        let mut objects = self.objects.lock().await;
-
         let uuid = conn.uuid;
-        let (id, path) = objects.register_connection(conn);
+        let (id, path) = self.objects.register_connection(conn);
         if id != conn.id {
             conn.id = id.clone();
         }
-        log::info!("Publishing network connection '{}'", id);
+        let path: OwnedObjectPath = path.into();
+        log::info!("Publishing network connection '{}' on '{}'", id, &path);
 
         self.add_interface(
             &path,
@@ -115,33 +109,49 @@ impl Tree {
                 .await?;
         }
 
-        Ok(path.into())
+        Ok(path)
     }
 
     /// Removes a connection from the tree
     ///
     /// * `id`: connection ID.
     pub async fn remove_connection(&mut self, id: &str) -> Result<(), ServiceError> {
-        let mut objects = self.objects.lock().await;
-        let Some(path) = objects.connection_path(id) else {
+        let Some(path) = self.objects.connection_path(id) else {
             return Ok(());
         };
         self.remove_connection_on(path.as_str()).await?;
-        objects.deregister_connection(id).unwrap();
+        self.objects.deregister_connection(id).unwrap();
         Ok(())
+    }
+
+    /// Returns all devices paths.
+    pub fn devices_paths(&self) -> Vec<OwnedObjectPath> {
+        self.objects.devices_paths()
+    }
+
+    /// Returns all connection paths.
+    pub fn connections_paths(&self) -> Vec<OwnedObjectPath> {
+        self.objects.connections_paths()
+    }
+
+    pub fn connection_path(&self, id: &str) -> Option<OwnedObjectPath> {
+        self.objects.connection_path(id).map(|o| o.into())
     }
 
     /// Adds connections to the D-Bus tree.
     ///
     /// * `connections`: list of connections.
-    async fn add_connections(&self, connections: &mut [Connection]) -> Result<(), ServiceError> {
+    async fn add_connections(
+        &mut self,
+        connections: &mut [Connection],
+    ) -> Result<(), ServiceError> {
         for conn in connections.iter_mut() {
             self.add_connection(conn).await?;
         }
 
         self.add_interface(
             CONNECTIONS_PATH,
-            interfaces::Connections::new(Arc::clone(&self.objects), self.actions.clone()),
+            interfaces::Connections::new(self.actions.clone()),
         )
         .await?;
 
@@ -149,25 +159,23 @@ impl Tree {
     }
 
     /// Clears all the connections from the tree.
-    async fn remove_connections(&self) -> Result<(), ServiceError> {
-        let mut objects = self.objects.lock().await;
-        for path in objects.connections.values() {
+    async fn remove_connections(&mut self) -> Result<(), ServiceError> {
+        for path in self.objects.connections.values() {
             self.remove_connection_on(path.as_str()).await?;
         }
-        objects.connections.clear();
+        self.objects.connections.clear();
         Ok(())
     }
 
     /// Clears all the devices from the tree.
     async fn remove_devices(&mut self) -> Result<(), ServiceError> {
         let object_server = self.connection.object_server();
-        let mut objects = self.objects.lock().await;
-        for path in objects.devices.values() {
+        for path in self.objects.devices.values() {
             object_server
                 .remove::<interfaces::Device, _>(path.as_str())
                 .await?;
         }
-        objects.devices.clear();
+        self.objects.devices.clear();
         Ok(())
     }
 
@@ -185,7 +193,7 @@ impl Tree {
         Ok(())
     }
 
-    async fn add_interface<T>(&self, path: &str, iface: T) -> Result<bool, ServiceError>
+    async fn add_interface<T>(&mut self, path: &str, iface: T) -> Result<bool, ServiceError>
     where
         T: zbus::Interface,
     {
@@ -198,7 +206,7 @@ impl Tree {
 ///
 /// Connections are indexed by its Id, which is expected to be unique.
 #[derive(Debug, Default)]
-pub struct ObjectsRegistry {
+struct ObjectsRegistry {
     /// device_name (eth0) -> object_path
     devices: HashMap<String, OwnedObjectPath>,
     /// id -> object_path
@@ -246,13 +254,13 @@ impl ObjectsRegistry {
     }
 
     /// Returns all devices paths.
-    pub fn devices_paths(&self) -> Vec<String> {
-        self.devices.values().map(|p| p.to_string()).collect()
+    pub fn devices_paths(&self) -> Vec<OwnedObjectPath> {
+        self.devices.values().cloned().collect()
     }
 
     /// Returns all connection paths.
-    pub fn connections_paths(&self) -> Vec<String> {
-        self.connections.values().map(|p| p.to_string()).collect()
+    pub fn connections_paths(&self) -> Vec<OwnedObjectPath> {
+        self.connections.values().cloned().collect()
     }
 
     /// Proposes a connection ID.

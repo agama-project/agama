@@ -23,11 +23,17 @@ pub enum Action {
     ),
     /// Gets a connection
     GetConnection(Uuid, Responder<Option<Connection>>),
+    /// Gets a connection
+    GetConnectionPath(String, Responder<Option<OwnedObjectPath>>),
+    /// Get connections paths
+    GetConnectionsPaths(Responder<Vec<OwnedObjectPath>>),
     /// Gets a controller connection
     GetController(
         Uuid,
         Responder<Result<ControllerConnection, NetworkStateError>>,
     ),
+    /// Get devices paths
+    GetDevicesPaths(Responder<Vec<OwnedObjectPath>>),
     /// Sets a controller's ports. It uses the Uuid of the controller and the IDs or interface names
     /// of the ports.
     SetPorts(
