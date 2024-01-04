@@ -112,7 +112,7 @@ export default function IssuesDialog({ isOpen = false, onClose, sectionId, title
     >
       <If
         condition={isLoading}
-        then={<Icon name="loading" className="icon-big" />}
+        then={<Icon name="loading" className="icon-xxxl" />}
         else={<IssueItems issues={issues} />}
       />
       <Popup.Actions>
