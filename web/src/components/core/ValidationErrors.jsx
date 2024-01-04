@@ -33,21 +33,28 @@ import { IssuesDialog } from "~/components/core";
  * When there is only one error, it displays its message. Otherwise, it displays a generic message
  * which can be clicked to see more details in a popup dialog.
  *
+ * @note It will retrieve issues for the area matching the first part of the
+ * given sectionId. I.e., given an `storage-actions` id it will retrieve and
+ * display issues for the `storage` area. If `software-patterns-conflicts` is
+ * given instead, it will retrieve and display errors for the `software` area.
+ *
  * @component
  *
  * @param {object} props
- * @param {string} props.sectionId - Id of the section which is displaying errors. (product, software, storage, ...)
+ * @param {string} props.sectionId - Id of the section which is displaying errors. ("product", "software", "storage", "storage-actions", ...)
  * @param {import("~/client/mixins").ValidationError[]} props.errors - Validation errors
  */
-const ValidationErrors = ({ errors, sectionId }) => {
+const ValidationErrors = ({ errors, sectionId: sectionKey }) => {
   const [showIssuesPopUp, setShowIssuesPopUp] = useState(false);
+
+  const [sectionId,] = sectionKey?.split("-") || "";
   const dialogTitles = {
     // TRANSLATORS: Titles used for the popup displaying found section issues
     software: _("Software issues"),
     product: _("Product issues"),
     storage: _("Storage issues")
   };
-  const dialogTitle = dialogTitles[sectionId] || "";
+  const dialogTitle = dialogTitles[sectionId] || _("Found Issues");
 
   if (!errors || errors.length === 0) return null;
 

@@ -53,7 +53,7 @@ import { ValidationErrors } from "~/components/core";
  *  when user clicks on the title, used for opening a dialog.
  * @property {boolean} [loading] - Whether the section is busy loading its content or not.
  * @property {string} [className] - Class name for section html tag.
- * @property {string} [id] - Id of the section ("software", "product", "storage", ...)
+ * @property {string} [id] - Id of the section ("software", "product", "storage", "storage-actions", ...)
  * @property {import("~/client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title.
  * @property {React.ReactElement} [children] - The section content.
  * @property {string} [aria-label] - aria-label attribute, required if title if not given
