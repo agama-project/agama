@@ -41,7 +41,6 @@ import { ProposalPage as StoragePage, ISCSIPage, DASDPage, ZFCPPage } from "~/co
 import { UsersPage } from "~/components/users";
 import { L10nPage } from "~/components/l10n";
 import { NetworkPage } from "~/components/network";
-import { IssuesDialog } from "~/components/core";
 
 /**
  * As JSX components might import CSS stylesheets, our styles must be imported
