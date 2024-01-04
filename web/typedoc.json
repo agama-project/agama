@@ -3,12 +3,8 @@
   "name": "Agama Installer",
   "entryPoints": [
     "./src",
-    "./src/client/*",
-    "./src/context/*",
-    "./src/hooks/*",
-    "./src/components/**/*.js",
-    "./src/components/**/*.jsx",
   ],
+  "entryPointStrategy": "expand",
   "exclude": [
     "./src/lib"
   ],
