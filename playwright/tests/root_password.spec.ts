@@ -27,7 +27,7 @@ test.describe('The user section', () => {
     await expect(page.locator('[role="dialog"]')).not.toBeVisible();
 
     // go back to the main page
-    await page.getByText('Back').click();
+    await page.getByRole('button', { name: 'Back', exact: true }).click();
 
     // check the summary text
     await expect(page.getByText("Root authentication set")).toBeVisible();
