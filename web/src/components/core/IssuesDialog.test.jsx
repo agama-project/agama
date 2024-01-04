@@ -20,8 +20,8 @@
  */
 
 import React from "react";
-import { act, screen, waitFor, within } from "@testing-library/react";
-import { installerRender, createCallbackMock } from "~/test-utils";
+import { screen } from "@testing-library/react";
+import { installerRender } from "~/test-utils";
 import { createClient } from "~/client";
 import { IssuesDialog } from "~/components/core";
 
@@ -70,7 +70,7 @@ it("loads the issues", async () => {
 it('calls onClose callback when close button is clicked', async () => {
   const mockOnClose = jest.fn();
   const { user } = installerRender(<IssuesDialog isOpen onClose={mockOnClose} sectionId="software" title="Software issues" />);
-  
+
   await user.click(screen.getByText("Close"));
   expect(mockOnClose).toHaveBeenCalled();
 });
