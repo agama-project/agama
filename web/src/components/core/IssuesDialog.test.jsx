@@ -47,16 +47,13 @@ const issues = {
 
 let mockIssues;
 
-let mockOnIssuesChange;
-
 beforeEach(() => {
   mockIssues = { ...issues };
-  mockOnIssuesChange = jest.fn();
 
   createClient.mockImplementation(() => {
     return {
       issues: jest.fn().mockResolvedValue(mockIssues),
-      onIssuesChange: mockOnIssuesChange
+      onIssuesChange: jest.fn()
     };
   });
 });

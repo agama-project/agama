@@ -24,28 +24,25 @@
 import React, { useState } from "react";
 import { sprintf } from "sprintf-js";
 
-import { Icon } from '~/components/layout';
-import { IssuesDialog } from "~/components/core";
 import { _, n_ } from "~/i18n";
+import { IssuesDialog } from "~/components/core";
 
 /**
- * Displays validation errors
+ * Displays validation errors for given section
  *
  * When there is only one error, it displays its message. Otherwise, it displays a generic message
- * which can be clicked and more error details will be shown in a popup dialog.
+ * which can be clicked to see more details in a popup dialog.
  *
  * @component
  *
- * @todo This component might be more generic.
- *
  * @param {object} props
- * @param {string} props.sectionId - Name of the section which is displaying errors. (product, software, storage, ...)
+ * @param {string} props.sectionId - Id of the section which is displaying errors. (product, software, storage, ...)
  * @param {import("~/client/mixins").ValidationError[]} props.errors - Validation errors
  */
 const ValidationErrors = ({ errors, sectionId }) => {
   const [showIssuesPopUp, setShowIssuesPopUp] = useState(false);
   const dialogTitles = {
-    /* TRANSLATORS: Popup titles */
+    // TRANSLATORS: Titles used for the popup displaying found section issues
     software: _("Software issues"),
     product: _("Product issues"),
     storage: _("Storage issues")
@@ -54,39 +51,35 @@ const ValidationErrors = ({ errors, sectionId }) => {
 
   if (!errors || errors.length === 0) return null;
 
-  const warningIcon = <Icon name="warning" size="xxs" />;
-
   if (errors.length === 1) {
     return (
-      <div className="color-warn">{warningIcon} {errors[0].message}</div>
+      <div className="color-warn">{errors[0].message}</div>
     );
   }
 
   return (
-    <>
-      <div className="color-warn">
-        <button
-          style={{ padding: "0", borderBottom: "1px solid" }}
-          className="plain-control color-warn"
-          onClick={() => setShowIssuesPopUp(true)}
-        >
-          {
-            sprintf(
-              // TRANSLATORS: %d is replaced with the number of errors found
-              n_("%d error found", "%d errors found", errors.length),
-              errors.length
-            )
-          }
-        </button>
+    <div className="color-warn">
+      <button
+        style={{ padding: "0", borderBottom: "1px solid" }}
+        className="plain-control color-warn"
+        onClick={() => setShowIssuesPopUp(true)}
+      >
+        {
+          sprintf(
+            // TRANSLATORS: %d is replaced with the number of errors found
+            n_("%d error found", "%d errors found", errors.length),
+            errors.length
+          )
+        }
+      </button>
 
-        <IssuesDialog
-          isOpen={showIssuesPopUp}
-          onClose={() => setShowIssuesPopUp(false)}
-          sectionId={sectionId}
-          title={dialogTitle}
-        />
-      </div>
-    </>
+      <IssuesDialog
+        isOpen={showIssuesPopUp}
+        onClose={() => setShowIssuesPopUp(false)}
+        sectionId={sectionId}
+        title={dialogTitle}
+      />
+    </div>
   );
 };
 
