@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-27 02:08+0000\n"
-"PO-Revision-Date: 2023-12-05 21:01+0000\n"
+"POT-Creation-Date: 2024-01-02 09:40+0000\n"
+"PO-Revision-Date: 2024-01-01 19:02+0000\n"
 "Last-Translator: Victor hck <victorhck@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "es/>\n"
@@ -348,14 +348,13 @@ msgstr "Abrir una terminal"
 
 #. TRANSLATORS: sidebar header
 #: src/components/core/Sidebar.jsx:114 src/components/core/Sidebar.jsx:122
-#, fuzzy
 msgid "Installer Options"
-msgstr "Instalando"
+msgstr "Opciones del instalador"
 
 #: src/components/core/Sidebar.jsx:129
 #, fuzzy
 msgid "Hide installer options"
-msgstr "Instalando"
+msgstr "Opciones del instalador"
 
 #: src/components/core/Sidebar.jsx:138
 msgid "Diagnostic tools"
@@ -385,14 +384,14 @@ msgstr "Teclado"
 
 #. TRANSLATORS: label for keyboard layout selection
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:61
-#, fuzzy
 msgid "keyboard"
-msgstr "Teclado"
+msgstr "teclado"
 
 #. TRANSLATORS:
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:70
 msgid "Keyboard layout cannot be changed in remote installation"
 msgstr ""
+"La distribución del teclado no se puede cambiar en la instalación remota"
 
 #. TRANSLATORS: help text for the language selector in the sidebar,
 #. %s will be replaced by the "Localization" page link
@@ -402,6 +401,8 @@ msgid ""
 "The language used by the installer. The language for the installed system "
 "can be set in the %s page."
 msgstr ""
+"El idioma utilizado por el instalador. El idioma del sistema instalado se "
+"puede configurar en la página %s."
 
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section
@@ -1392,6 +1393,8 @@ msgid ""
 "Allows rolling back any change done to the system and restoring its previous "
 "state"
 msgstr ""
+"Permite revertir cualquier cambio realizado en el sistema y restaurar su "
+"estado anterior"
 
 #. TRANSLATORS: info about possible file system types.
 #: src/components/storage/VolumeForm.jsx:265
@@ -1399,11 +1402,12 @@ msgid ""
 "The options for the file system type depends on the product and the mount "
 "point."
 msgstr ""
+"Las opciones para el tipo de sistema de archivos dependen del producto y del "
+"punto de montaje."
 
 #: src/components/storage/VolumeForm.jsx:271
-#, fuzzy
 msgid "More info for file system types"
-msgstr "Tipo de sistema de archivos"
+msgstr "Más información para los tipos de sistemas de archivos"
 
 #. TRANSLATORS: label for the file system selector.
 #: src/components/storage/VolumeForm.jsx:282

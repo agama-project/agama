@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-27 02:08+0000\n"
-"PO-Revision-Date: 2023-12-16 01:02+0000\n"
+"POT-Creation-Date: 2024-01-02 09:40+0000\n"
+"PO-Revision-Date: 2024-01-03 03:02+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -89,7 +89,7 @@ msgstr "再読み込み"
 
 #: src/components/core/DevelopmentInfo.jsx:55
 msgid "Cockpit server"
-msgstr ""
+msgstr "Cockpit サーバ"
 
 #: src/components/core/FileViewer.jsx:65
 msgid "Reading file..."
@@ -185,7 +185,7 @@ msgstr "おめでとうございます！"
 
 #: src/components/core/InstallationFinished.jsx:68
 msgid "The installation on your machine is complete."
-msgstr "お使いのマシンに対するインストールが完了しました。"
+msgstr "お使いのマシンへのインストールが完了しました。"
 
 #: src/components/core/InstallationFinished.jsx:72
 msgid "At this point you can power off the machine."
@@ -193,7 +193,7 @@ msgstr "マシンの電源を切って問題ありません。"
 
 #: src/components/core/InstallationFinished.jsx:73
 msgid "At this point you can reboot the machine to log in to the new system."
-msgstr "マシンを再起動することで、新しいシステムにログインすることができます。"
+msgstr "あとはマシンを再起動して新しいシステムにログインするだけです。"
 
 #: src/components/core/InstallationFinished.jsx:76
 msgid "Have a lot of fun! Your openSUSE Development Team."
@@ -276,9 +276,8 @@ msgid "Show global options"
 msgstr "グローバルオプションの表示"
 
 #: src/components/core/Page.jsx:214
-#, fuzzy
 msgid "Page Actions"
-msgstr "処理の計画"
+msgstr "ページアクション"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:35
 msgid "Passwords do not match"
@@ -350,9 +349,8 @@ msgid "Installer Options"
 msgstr "インストーラのオプション"
 
 #: src/components/core/Sidebar.jsx:129
-#, fuzzy
 msgid "Hide installer options"
-msgstr "インストーラのオプション"
+msgstr "インストーラのオプションを隠す"
 
 #: src/components/core/Sidebar.jsx:138
 msgid "Diagnostic tools"
@@ -646,9 +644,8 @@ msgid "Gateway"
 msgstr "ゲートウエイ"
 
 #: src/components/network/NetworkPage.jsx:38
-#, fuzzy
 msgid "No wired connections found."
-msgstr "有線接続が見つかりませんでした"
+msgstr "有線接続が見つかりませんでした。"
 
 #: src/components/network/NetworkPage.jsx:53
 msgid ""
@@ -665,9 +662,8 @@ msgstr ""
 "いか、無効化されているものと思われます。"
 
 #: src/components/network/NetworkPage.jsx:58
-#, fuzzy
 msgid "No WiFi connections found."
-msgstr "WiFi 接続が見つかりませんでした"
+msgstr "WiFi 接続が見つかりませんでした。"
 
 #. TRANSLATORS: button label
 #: src/components/network/NetworkPage.jsx:70
@@ -1208,9 +1204,8 @@ msgid "Installation device"
 msgstr "インストール先のデバイス"
 
 #: src/components/storage/ProposalSettingsSection.jsx:154
-#, fuzzy
 msgid "No devices found."
-msgstr "デバイスが見つかりませんでした"
+msgstr "デバイスが見つかりませんでした。"
 
 #: src/components/storage/ProposalSettingsSection.jsx:241
 msgid "Devices for creating the volume group"
@@ -1299,7 +1294,7 @@ msgstr "その他のボリューム (%s) の存在"
 #. TRANSLATORS: dropdown menu label
 #: src/components/storage/ProposalVolumes.jsx:129
 msgid "Reset to defaults"
-msgstr "規定値に戻す"
+msgstr "既定値に戻す"
 
 #. TRANSLATORS: dropdown menu label
 #: src/components/storage/ProposalVolumes.jsx:137
@@ -1432,11 +1427,11 @@ msgstr " および "
 #. TRANSLATORS: the partition size is automatically computed
 #: src/components/storage/VolumeForm.jsx:331
 msgid "Automatically calculated size according to the selected product."
-msgstr "選択した製品から自動計算したサイズです。"
+msgstr "選択した製品に合わせてサイズを自動計算します。"
 
 #: src/components/storage/VolumeForm.jsx:351
 msgid "Exact size for the file system."
-msgstr "ファイルシステムに対する正確なサイズです。"
+msgstr "ファイルシステムに対して正確なサイズを設定します。"
 
 #. TRANSLATORS: requested partition size
 #: src/components/storage/VolumeForm.jsx:363
@@ -1454,9 +1449,9 @@ msgid ""
 "given minimum and maximum. If no maximum is given then the file system will "
 "be as big as possible."
 msgstr ""
-"ファイルシステムに対するサイズ制限です。最終的なサイズは最小値と最大値の間に"
-"なります。最大値を指定しない場合、ファイルシステムはできる限り大きくなるよう"
-"に設定されます。"
+"ファイルシステムに対するサイズ制限を範囲指定します。最終的なサイズは最小値と"
+"最大値の間になります。最大値を指定しない場合、ファイルシステムはできる限り大"
+"きくなるように設定されます。"
 
 #. TRANSLATORS: the minimal partition size
 #: src/components/storage/VolumeForm.jsx:413
@@ -1542,9 +1537,8 @@ msgid "Deactivated"
 msgstr "無効"
 
 #: src/components/storage/ZFCPPage.jsx:417
-#, fuzzy
 msgid "No zFCP controllers found."
-msgstr "zFCP コントローラが見つかりませんでした"
+msgstr "zFCP コントローラが見つかりませんでした。"
 
 #: src/components/storage/ZFCPPage.jsx:418
 msgid "Please, try to read the zFCP devices again."
@@ -1591,9 +1585,8 @@ msgid "Activate zFCP disk"
 msgstr "zFCP ディスクの有効化"
 
 #: src/components/storage/ZFCPPage.jsx:553
-#, fuzzy
 msgid "No zFCP disks found."
-msgstr "zFCP ディスクが見つかりませんでした"
+msgstr "zFCP ディスクが見つかりませんでした。"
 
 #. TRANSLATORS: button label
 #: src/components/storage/ZFCPPage.jsx:572
@@ -1821,9 +1814,8 @@ msgid "Interface"
 msgstr "インターフェイス"
 
 #: src/components/storage/iscsi/TargetsSection.jsx:139
-#, fuzzy
 msgid "No iSCSI targets found."
-msgstr "iSCSI ターゲットが見つかりませんでした"
+msgstr "iSCSI ターゲットが見つかりませんでした。"
 
 #: src/components/storage/iscsi/TargetsSection.jsx:140
 msgid ""
@@ -1932,9 +1924,8 @@ msgid "PiB"
 msgstr "PiB"
 
 #: src/components/users/FirstUser.jsx:44
-#, fuzzy
 msgid "No user defined yet."
-msgstr "ユーザを設定していません"
+msgstr "ユーザを設定していません。"
 
 #: src/components/users/FirstUser.jsx:47
 msgid ""
@@ -1994,9 +1985,8 @@ msgid "Auto-login"
 msgstr "自動ログイン"
 
 #: src/components/users/RootAuthMethods.jsx:35
-#, fuzzy
 msgid "No root authentication method defined yet."
-msgstr "まだ root 認証方式を設定していません"
+msgstr "まだ root 認証方式を設定していません。"
 
 #: src/components/users/RootAuthMethods.jsx:38
 msgid ""
