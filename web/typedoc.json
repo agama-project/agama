@@ -5,6 +5,7 @@
   "exclude": [
     "./src/lib"
   ],
+  "excludeNotDocumented": true,
   "plugin": [
     "typedoc-plugin-external-module-map",
     "typedoc-plugin-merge-modules",
