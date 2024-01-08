@@ -19,8 +19,8 @@
     "stylelint:fix": "stylelint --fix 'src/**/*.{css,scss}'",
     "check-types": "tsc --skipLibCheck",
     "typedoc": "npm run typedoc:client && npm run typedoc:components",
-    "typedoc:client": "npx typedoc --entryPoints src/client --out jsdoc.out/client",
-    "typedoc:components": "npx typedoc --entryPoints src/components --out jsdoc.out/components",
+    "typedoc:client": "npx typedoc --entryPoints src/client --out typedoc.out/client",
+    "typedoc:components": "npx typedoc --entryPoints src/components --out typedoc.out/components",
     "test": "jest"
   },
   "engines": {
