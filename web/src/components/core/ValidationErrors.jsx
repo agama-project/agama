@@ -22,86 +22,72 @@
 // @ts-check
 
 import React, { useState } from "react";
-import {
-  Button,
-  List,
-  ListItem,
-  Popover
-} from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
-import { Icon } from '~/components/layout';
 import { _, n_ } from "~/i18n";
+import { IssuesDialog } from "~/components/core";
 
 /**
- * @param {import("~/client/mixins").ValidationError[]} errors - Validation errors
- * @return React.JSX
- */
-const popoverContent = (errors) => {
-  const items = errors.map((e, i) => <ListItem key={i}>{e.message}</ListItem>);
-  return (
-    <List>{items}</List>
-  );
-};
-
-/**
- * Displays a list of validation errors
+ * Displays validation errors for given section
  *
  * When there is only one error, it displays its message. Otherwise, it displays a generic message
- * and the details in an Popover component.
+ * which can be clicked to see more details in a popup dialog.
+ *
+ * @note It will retrieve issues for the area matching the first part of the
+ * given sectionId. I.e., given an `storage-actions` id it will retrieve and
+ * display issues for the `storage` area. If `software-patterns-conflicts` is
+ * given instead, it will retrieve and display errors for the `software` area.
  *
  * @component
  *
- * @todo This component might be more generic.
- * @todo Improve the contents of the Popover (e.g., using a list)
- *
  * @param {object} props
- * @param {string} props.title - A title for the Popover
+ * @param {string} props.sectionId - Id of the section which is displaying errors. ("product", "software", "storage", "storage-actions", ...)
  * @param {import("~/client/mixins").ValidationError[]} props.errors - Validation errors
  */
-const ValidationErrors = ({ title = _("Errors"), errors }) => {
-  const [popoverVisible, setPopoverVisible] = useState(false);
+const ValidationErrors = ({ errors, sectionId: sectionKey }) => {
+  const [showIssuesPopUp, setShowIssuesPopUp] = useState(false);
+
+  const [sectionId,] = sectionKey?.split("-") || "";
+  const dialogTitles = {
+    // TRANSLATORS: Titles used for the popup displaying found section issues
+    software: _("Software issues"),
+    product: _("Product issues"),
+    storage: _("Storage issues")
+  };
+  const dialogTitle = dialogTitles[sectionId] || _("Found Issues");
 
   if (!errors || errors.length === 0) return null;
 
-  const warningIcon = <Icon name="warning" size="xxs" />;
-
   if (errors.length === 1) {
     return (
-      <div className="color-warn">{warningIcon} {errors[0].message}</div>
-    );
-  } else {
-    return (
-      <>
-        <div className="color-warn">
-          <button
-            style={{ padding: "0", borderBottom: "1px solid" }}
-            className="plain-control color-warn"
-            onClick={() => setPopoverVisible(true)}
-          >
-            { warningIcon } {
-              sprintf(
-                // TRANSLATORS: %d is replaced with the number of errors found
-                n_("%d error found", "%d errors found", errors.length),
-                errors.length
-              )
-            }
-          </button>
-          <Popover
-            isVisible={popoverVisible}
-            position="right"
-            shouldClose={() => setPopoverVisible(false)}
-            shouldOpen={() => setPopoverVisible(true)}
-            aria-label={_("Basic popover")}
-            headerContent={title}
-            bodyContent={popoverContent(errors)}
-          >
-            <Button className="hidden-popover-button" variant="link" />
-          </Popover>
-        </div>
-      </>
+      <div className="color-warn">{errors[0].message}</div>
     );
   }
+
+  return (
+    <div className="color-warn">
+      <button
+        style={{ padding: "0", borderBottom: "1px solid" }}
+        className="plain-control color-warn"
+        onClick={() => setShowIssuesPopUp(true)}
+      >
+        {
+          sprintf(
+            // TRANSLATORS: %d is replaced with the number of errors found
+            n_("%d error found", "%d errors found", errors.length),
+            errors.length
+          )
+        }
+      </button>
+
+      <IssuesDialog
+        isOpen={showIssuesPopUp}
+        onClose={() => setShowIssuesPopUp(false)}
+        sectionId={sectionId}
+        title={dialogTitle}
+      />
+    </div>
+  );
 };
 
 export default ValidationErrors;

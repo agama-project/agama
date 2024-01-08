@@ -122,6 +122,7 @@ export default function UsersSection({ showErrors }) {
       loading={state.busy}
       errors={errors}
       path="/users"
+      id="users"
     >
       { state.busy ? <SectionSkeleton /> : <Summary /> }
     </Section>

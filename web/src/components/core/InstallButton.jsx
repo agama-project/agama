@@ -23,7 +23,6 @@ import React, { useState } from "react";
 import { useInstallerClient } from "~/context/installer";
 
 import { Button } from "@patternfly/react-core";
-import { Link } from "react-router-dom";
 
 import { If, Popup } from "~/components/core";
 import { _ } from "~/i18n";
@@ -31,21 +30,19 @@ import { _ } from "~/i18n";
 const InstallConfirmationPopup = ({ hasIssues, onAccept, onClose }) => {
   const IssuesWarning = () => {
     // TRANSLATORS: the installer reports some errors,
-    // the text in square brackets [] is a clickable link
-    const [msgStart, msgLink, msgEnd] = _("There are some reported issues. \
-Please, check [the list of issues] \
-before proceeding with the installation.").split(/[[\]]/);
 
     return (
       <p>
         <strong>
-          {msgStart}
-          <Link to="/issues">{msgLink}</Link>
-          {msgEnd}
+          { _("There are some reported issues. \
+Please review them in the previous steps before proceeding with the installation.") }
         </strong>
       </p>
     );
   };
+
+  const Cancel = hasIssues ? Popup.PrimaryAction : Popup.SecondaryAction;
+  const Continue = hasIssues ? Popup.SecondaryAction : Popup.PrimaryAction;
 
   return (
     <Popup
@@ -63,11 +60,14 @@ according to the provided installation settings.") }
         </p>
       </div>
       <Popup.Actions>
-        <Popup.Confirm onClick={onAccept}>
+        <Cancel key="cancel" onClick={onClose} autoFocus={hasIssues}>
+          {/* TRANSLATORS: button label */}
+          {_("Cancel")}
+        </Cancel>
+        <Continue key="confirm" onClick={onAccept} autoFocus={!hasIssues}>
           {/* TRANSLATORS: button label */}
           {_("Continue")}
-        </Popup.Confirm>
-        <Popup.Cancel onClick={onClose} autoFocus />
+        </Continue>
       </Popup.Actions>
     </Popup>
   );
