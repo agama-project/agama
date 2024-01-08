@@ -260,11 +260,15 @@ span.notification-mark[data-variant="sidebar"] {
 }
 
 ul[data-type="agama/list"] {
+  list-style: none;
+  margin-inline: 0;
+
   li {
     border: 2px solid var(--color-gray-dark);
     padding: var(--spacer-normal);
     text-align: start;
     background: var(--color-gray-light);
+    margin-block-end: 0;
 
     &:nth-child(n+2) {
       border-top: 0;
