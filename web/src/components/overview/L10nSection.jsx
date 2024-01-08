@@ -53,6 +53,7 @@ export default function L10nSection() {
       loading={isLoading}
       icon="globe"
       path="/l10n"
+      id="l10n"
     >
       <If
         condition={isLoading}

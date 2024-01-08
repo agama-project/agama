@@ -26,7 +26,6 @@ import { InstallerClientProvider } from "./installer";
 import { InstallerL10nProvider } from "./installerL10n";
 import { L10nProvider } from "./l10n";
 import { ProductProvider } from "./product";
-import { NotificationProvider } from "./notification";
 
 /**
  * Combines all application providers.
@@ -40,9 +39,7 @@ function AgamaProviders({ children }) {
       <InstallerL10nProvider>
         <L10nProvider>
           <ProductProvider>
-            <NotificationProvider>
-              {children}
-            </NotificationProvider>
+            {children}
           </ProductProvider>
         </L10nProvider>
       </InstallerL10nProvider>

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jan 04 21:44:32 UTC 2024 - Balsa Asanovic <balsaasanovic95@gmail.com>
+
+- Removing global issues page and using popup dialog instead.
+  It shows issues only from a specific category (software,
+  product, storage, ...) and not all at once. (gh#openSUSE/agama#886).
+
+-------------------------------------------------------------------
 Tue Dec 26 11:12:45 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: Use the HTML <strong> element instead of a CSS class for

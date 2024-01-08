@@ -21,7 +21,6 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { SearchInput } from "@patternfly/react-core";
-import { sprintf } from "sprintf-js";
 
 import { useInstallerClient } from "~/context/installer";
 import { Section, ValidationErrors } from "~/components/core";
@@ -202,10 +201,6 @@ function PatternSelector() {
     );
   });
 
-  // TRANSLATORS: error summary, always plural, %d is replaced by number of errors (2 or more)
-  // if there is just a single error then the error is displayed directly instead of this summary
-  const errorLabel = sprintf(_("%d errors"), errors.length);
-
   // FIXME: ValidationErrors should be replaced by an equivalent component to show issues.
   // Note that only the Users client uses the old Validation D-Bus interface.
   const validationErrors = errors.map(toValidationError);
@@ -214,7 +209,7 @@ function PatternSelector() {
     <>
       <Section aria-label={_("Software summary and filter options")}>
         <UsedSize size={used} />
-        <ValidationErrors errors={validationErrors} title={errorLabel} />
+        <ValidationErrors errors={validationErrors} sectionId="software" />
         <SearchInput
           // TRANSLATORS: search field placeholder text
           placeholder={_("Search")}

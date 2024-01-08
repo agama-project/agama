@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-27 02:08+0000\n"
-"PO-Revision-Date: 2023-12-22 15:02+0000\n"
+"PO-Revision-Date: 2023-12-29 02:02+0000\n"
 "Last-Translator: faila fail <yassadmi@proton.me>\n"
-"Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/fr/>\n"
+"Language-Team: French <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,45 +22,44 @@ msgstr ""
 #. Runs the config phase
 #: service/lib/agama/manager.rb:88
 msgid "Probing Storage"
-msgstr ""
+msgstr "Sonde le stockage"
 
 #: service/lib/agama/manager.rb:89
 msgid "Probing Software"
-msgstr ""
+msgstr "Sonde les logiciels"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
 #: service/lib/agama/manager.rb:109
 msgid "Partitioning"
-msgstr ""
+msgstr "Partitionnement"
 
 #. propose software after /mnt is already separated, so it uses proper
 #. target
 #: service/lib/agama/manager.rb:117
-#, fuzzy
 msgid "Installing Software"
-msgstr "Initialisation des sources"
+msgstr "Installation des logiciels"
 
 #: service/lib/agama/manager.rb:120
 msgid "Writing Users"
-msgstr ""
+msgstr "Création des utilisateurs"
 
 #: service/lib/agama/manager.rb:121
 msgid "Writing Network Configuration"
-msgstr ""
+msgstr "Écriture de la configuration du réseau"
 
 #: service/lib/agama/manager.rb:122
 msgid "Saving Language Settings"
-msgstr ""
+msgstr "Sauvegarde des paramètres de langue"
 
 #: service/lib/agama/manager.rb:123
 #, fuzzy
 msgid "Writing repositories information"
-msgstr "Écriture des dépôts sur le système cible"
+msgstr "Écriture des informations relatives aux dépôts"
 
 #: service/lib/agama/manager.rb:124
 msgid "Finishing storage configuration"
-msgstr ""
+msgstr "Finalisation de la configuration de stockage"
 
 #. Callback to handle unsigned files
 #.
@@ -145,8 +144,9 @@ msgstr "Le produit n'est pas encore sélectionné"
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:480
+#, fuzzy
 msgid "Product must be registered"
-msgstr ""
+msgstr "Le produit doit être enregistré"
 
 #. Returns solver error messages from the last attempt
 #.
@@ -158,36 +158,37 @@ msgstr "%s problèmes de dépendance  trouvé(s) (Need a plural option)"
 
 #. Probes storage devices and performs an initial proposal
 #: service/lib/agama/storage/manager.rb:111
+#, fuzzy
 msgid "Activating storage devices"
-msgstr ""
+msgstr "Activation des périphériques de stockage"
 
 #: service/lib/agama/storage/manager.rb:112
 msgid "Probing storage devices"
-msgstr ""
+msgstr "Sonde les périphériques de stockage"
 
 #: service/lib/agama/storage/manager.rb:113
 #, fuzzy
 msgid "Calculating the storage proposal"
-msgstr "Calcul de l'offre de logiciel"
+msgstr "Calcul de la capacité de stockage envisagée"
 
 #: service/lib/agama/storage/manager.rb:114
 msgid "Selecting Linux Security Modules"
-msgstr ""
+msgstr "Sélection des modules de sécurité Linux"
 
 #. Prepares the partitioning to install the system
 #: service/lib/agama/storage/manager.rb:122
 msgid "Preparing bootloader proposal"
-msgstr ""
+msgstr "Préparation du chargeur d'amorçage envisagé"
 
 #. first make bootloader proposal to be sure that required packages are installed
 #: service/lib/agama/storage/manager.rb:127
 msgid "Adding storage-related packages"
-msgstr ""
+msgstr "Ajout des paquets relatifs au stockage"
 
 #: service/lib/agama/storage/manager.rb:128
 msgid "Preparing the storage devices"
-msgstr ""
+msgstr "Préparation des périphériques de stockage"
 
 #: service/lib/agama/storage/manager.rb:129
 msgid "Writing bootloader sysconfig"
-msgstr ""
+msgstr "Écriture du sysconfig du chargeur d'amorçage"

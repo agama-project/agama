@@ -210,6 +210,7 @@ export default function StorageSection({ showErrors = false }) {
       icon="hard_drive"
       loading={busy}
       errors={errors}
+      id="storage"
     >
       <SectionContent />
     </Section>
