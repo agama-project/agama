@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-27 02:08+0000\n"
-"PO-Revision-Date: 2023-12-07 07:01+0000\n"
+"POT-Creation-Date: 2024-01-02 09:40+0000\n"
+"PO-Revision-Date: 2023-12-31 20:39+0000\n"
 "Last-Translator: faila fail <yassadmi@proton.me>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-web/fr/"
 ">\n"
@@ -350,14 +350,13 @@ msgstr "Ouvrir le Terminal"
 
 #. TRANSLATORS: sidebar header
 #: src/components/core/Sidebar.jsx:114 src/components/core/Sidebar.jsx:122
-#, fuzzy
 msgid "Installer Options"
-msgstr "Installation"
+msgstr "Options de l'installateur"
 
 #: src/components/core/Sidebar.jsx:129
 #, fuzzy
 msgid "Hide installer options"
-msgstr "Installation"
+msgstr "Options de l'installateur"
 
 #: src/components/core/Sidebar.jsx:138
 msgid "Diagnostic tools"
@@ -387,14 +386,15 @@ msgstr "Clavier"
 
 #. TRANSLATORS: label for keyboard layout selection
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:61
-#, fuzzy
 msgid "keyboard"
-msgstr "Clavier"
+msgstr "clavier"
 
 #. TRANSLATORS:
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:70
 msgid "Keyboard layout cannot be changed in remote installation"
 msgstr ""
+"La disposition du clavier ne peut pas être modifiée via l'installation à "
+"distance"
 
 #. TRANSLATORS: help text for the language selector in the sidebar,
 #. %s will be replaced by the "Localization" page link
@@ -404,6 +404,8 @@ msgid ""
 "The language used by the installer. The language for the installed system "
 "can be set in the %s page."
 msgstr ""
+"La langue utilisée par l'installateur. La langue du système installé peut "
+"être définie dans la page %s."
 
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section
@@ -863,7 +865,7 @@ msgstr "Installer en utilisant le périphérique %s"
 
 #: src/components/overview/StorageSection.jsx:83
 msgid "Probing storage devices"
-msgstr "Sonder les périphériques de stockage"
+msgstr "Sonde les périphériques de stockage"
 
 #. TRANSLATORS: %s will be replaced by the user name
 #: src/components/overview/UsersSection.jsx:80
@@ -1405,6 +1407,8 @@ msgid ""
 "Allows rolling back any change done to the system and restoring its previous "
 "state"
 msgstr ""
+"Permet la réinitialisation de toute modification apportée au système et le "
+"rétablissement de son état antérieur"
 
 #. TRANSLATORS: info about possible file system types.
 #: src/components/storage/VolumeForm.jsx:265
@@ -1412,11 +1416,12 @@ msgid ""
 "The options for the file system type depends on the product and the mount "
 "point."
 msgstr ""
+"Les options pour le type de système de fichiers varient en fonction du "
+"produit et du point de montage."
 
 #: src/components/storage/VolumeForm.jsx:271
-#, fuzzy
 msgid "More info for file system types"
-msgstr "Type de système de fichiers"
+msgstr "Plus d'informations sur les différents systèmes de fichiers"
 
 #. TRANSLATORS: label for the file system selector.
 #: src/components/storage/VolumeForm.jsx:282

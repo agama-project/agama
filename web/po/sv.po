@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-27 02:08+0000\n"
-"PO-Revision-Date: 2023-12-17 18:01+0000\n"
+"POT-Creation-Date: 2024-01-02 09:40+0000\n"
+"PO-Revision-Date: 2024-01-03 08:02+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "sv/>\n"
@@ -89,7 +89,7 @@ msgstr "Ladda om"
 
 #: src/components/core/DevelopmentInfo.jsx:55
 msgid "Cockpit server"
-msgstr ""
+msgstr "Cockpit server"
 
 #: src/components/core/FileViewer.jsx:65
 msgid "Reading file..."
@@ -276,9 +276,8 @@ msgid "Show global options"
 msgstr "Visa globala alternativ"
 
 #: src/components/core/Page.jsx:214
-#, fuzzy
 msgid "Page Actions"
-msgstr "Planerade åtgärder"
+msgstr "Sidåtgärder"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:35
 msgid "Passwords do not match"
@@ -350,9 +349,8 @@ msgid "Installer Options"
 msgstr "Installationsalternativ"
 
 #: src/components/core/Sidebar.jsx:129
-#, fuzzy
 msgid "Hide installer options"
-msgstr "Installationsalternativ"
+msgstr "Dölj installationsalternativ"
 
 #: src/components/core/Sidebar.jsx:138
 msgid "Diagnostic tools"
@@ -646,9 +644,8 @@ msgid "Gateway"
 msgstr "Gateway"
 
 #: src/components/network/NetworkPage.jsx:38
-#, fuzzy
 msgid "No wired connections found."
-msgstr "Hittade inga trådbundna anslutningar"
+msgstr "Inga trådbundna anslutningar hittades."
 
 #: src/components/network/NetworkPage.jsx:53
 msgid ""
@@ -665,9 +662,8 @@ msgstr ""
 "inaktiverad hårdvara."
 
 #: src/components/network/NetworkPage.jsx:58
-#, fuzzy
 msgid "No WiFi connections found."
-msgstr "Hittade inga WiFi-anslutningar"
+msgstr "Inga WiFi-anslutningar hittades."
 
 #. TRANSLATORS: button label
 #: src/components/network/NetworkPage.jsx:70
@@ -1212,9 +1208,8 @@ msgid "Installation device"
 msgstr "Installationsenhet"
 
 #: src/components/storage/ProposalSettingsSection.jsx:154
-#, fuzzy
 msgid "No devices found."
-msgstr "Inga enheter hittades"
+msgstr "Inga enheter hittades."
 
 #: src/components/storage/ProposalSettingsSection.jsx:241
 msgid "Devices for creating the volume group"
@@ -1547,9 +1542,8 @@ msgid "Deactivated"
 msgstr "Inaktiverad"
 
 #: src/components/storage/ZFCPPage.jsx:417
-#, fuzzy
 msgid "No zFCP controllers found."
-msgstr "Inga zFCP-kontroller hittades"
+msgstr "Inga zFCP-kontroller hittades."
 
 #: src/components/storage/ZFCPPage.jsx:418
 msgid "Please, try to read the zFCP devices again."
@@ -1596,9 +1590,8 @@ msgid "Activate zFCP disk"
 msgstr "Aktivera en zFCP-disk"
 
 #: src/components/storage/ZFCPPage.jsx:553
-#, fuzzy
 msgid "No zFCP disks found."
-msgstr "Inga zFCP-diskar hittades"
+msgstr "Inga zFCP-diskar hittades."
 
 #. TRANSLATORS: button label
 #: src/components/storage/ZFCPPage.jsx:572
@@ -1826,9 +1819,8 @@ msgid "Interface"
 msgstr "Gränssnitt"
 
 #: src/components/storage/iscsi/TargetsSection.jsx:139
-#, fuzzy
 msgid "No iSCSI targets found."
-msgstr "Inga iSCSI mål hittades"
+msgstr "Inga iSCSI mål hittades."
 
 #: src/components/storage/iscsi/TargetsSection.jsx:140
 msgid ""
@@ -1939,9 +1931,8 @@ msgid "PiB"
 msgstr "PiB"
 
 #: src/components/users/FirstUser.jsx:44
-#, fuzzy
 msgid "No user defined yet."
-msgstr "Ingen användare definierad ännu"
+msgstr "Ingen användare definierad ännu."
 
 #: src/components/users/FirstUser.jsx:47
 msgid ""
@@ -2001,9 +1992,8 @@ msgid "Auto-login"
 msgstr "Automatisk-inloggning"
 
 #: src/components/users/RootAuthMethods.jsx:35
-#, fuzzy
 msgid "No root authentication method defined yet."
-msgstr "Ingen rootautentiseringsmetod har definierats ännu"
+msgstr "Ingen rootautentiseringsmetod har definierats ännu."
 
 #: src/components/users/RootAuthMethods.jsx:38
 msgid ""
