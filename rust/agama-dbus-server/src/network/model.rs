@@ -162,6 +162,57 @@ mod tests {
     use uuid::Uuid;
 
     #[test]
+    fn test_macaddress() {
+        let mut val: Option<String> = None;
+        assert!(matches!(
+            MacAddress::try_from(&val).unwrap(),
+            MacAddress::Unset
+        ));
+
+        val = Some(String::from(""));
+        assert!(matches!(
+            MacAddress::try_from(&val).unwrap(),
+            MacAddress::Unset
+        ));
+
+        val = Some(String::from("preserve"));
+        assert!(matches!(
+            MacAddress::try_from(&val).unwrap(),
+            MacAddress::Preserve
+        ));
+
+        val = Some(String::from("permanent"));
+        assert!(matches!(
+            MacAddress::try_from(&val).unwrap(),
+            MacAddress::Permanent
+        ));
+
+        val = Some(String::from("random"));
+        assert!(matches!(
+            MacAddress::try_from(&val).unwrap(),
+            MacAddress::Random
+        ));
+
+        val = Some(String::from("stable"));
+        assert!(matches!(
+            MacAddress::try_from(&val).unwrap(),
+            MacAddress::Stable
+        ));
+
+        val = Some(String::from("This is not a MACAddr"));
+        assert!(matches!(
+            MacAddress::try_from(&val),
+            Err(InvalidMacAddress(_))
+        ));
+
+        val = Some(String::from("de:ad:be:ef:2b:ad"));
+        assert_eq!(
+            MacAddress::try_from(&val).unwrap().to_string(),
+            String::from("de:ad:be:ef:2b:ad").to_uppercase()
+        );
+    }
+
+    #[test]
     fn test_add_connection() {
         let mut state = NetworkState::default();
         let uuid = Uuid::new_v4();
@@ -453,6 +504,17 @@ impl FromStr for MacAddress {
                 Ok(mac) => mac,
                 Err(e) => return Err(InvalidMacAddress(e.to_string())),
             })),
+        }
+    }
+}
+
+impl TryFrom<&Option<String>> for MacAddress {
+    type Error = InvalidMacAddress;
+
+    fn try_from(value: &Option<String>) -> Result<Self, Self::Error> {
+        match &value {
+            Some(str) => MacAddress::from_str(str),
+            None => Ok(Self::Unset),
         }
     }
 }
