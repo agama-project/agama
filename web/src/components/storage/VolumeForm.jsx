@@ -22,7 +22,8 @@
 import React, { useReducer, useState } from "react";
 import {
   InputGroup, InputGroupItem, Form, FormGroup, FormSelect, FormSelectOption, MenuToggle,
-  Popover, Radio, Select, SelectOption, SelectList
+  Popover, Radio, Select, SelectOption, SelectList,
+  Button
 } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
@@ -73,9 +74,35 @@ const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
 */
 
 const MountPointFormSelect = ({ volumes, ...selectProps }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [chosen, setchosen] = useState(false);
+
+  const onSelect = () => {
+    setIsOpen(false);
+    setchosen(!chosen);
+  };
+
+  const onToggleClick = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const toggle = toggleRef => {
+    return (
+      <Button ref={toggleRef} onClick={onToggleClick}>
+        {chosen ? chosen.mountPath : 'choose atleast one volume'}
+      </Button>
+    );
+  };
   return (
-    <Select { ...selectProps }>
-      { volumes.map(v => <SelectOption key={v.mountPath} value={v.mountPath}>{v.mountPath}</SelectOption>) }
+    <Select
+      onOpenChange={setIsOpen}
+      onSelect={onSelect}
+      isOpen={isOpen}
+      toggle={toggle}
+      shouldFocusToggleOnSelect
+      { ...selectProps }
+    >
+      { volumes.map(v => <SelectOption isSelected={chosen === v} key={v.mountPath} value={v.mountPath}>{v.mountPath}</SelectOption>) }
     </Select>
   );
 };
