@@ -16,5 +16,5 @@ test/images/
 POTFILES*
 tmp/
 /po/LINGUAS
-/jsdoc.out/
+/typedoc.out/
 /docs/

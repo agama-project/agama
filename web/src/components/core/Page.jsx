@@ -37,7 +37,8 @@ import logoUrl from "~/assets/suse-horizontal-logo.svg";
  *
  * @see Page examples.
  *
- * @param {React.ReactNode} [props.children] - a collection of Action components
+ * @param {object} [props] - component props
+ * @param {React.ReactNode} [props.children] - components to be rendered as actions
  */
 const Actions = ({ children }) => <>{children}</>;
 
@@ -58,10 +59,13 @@ const Menu = PageMenu;
  *
  * @see Page examples.
  *
- * @param {React.ReactNode} props.children - content of the action
- * @param {object} [props] - PF/Button props, see {@link https://www.patternfly.org/components/button#props}
+ * @param {object} [props] - Component props.
+ * @param {function} [props.onClick] - Callback to be triggered when action is clicked.
+ * @param {string} [props.navigateTo] - Route to navigate after triggering the onClick callback, if given.
+ * @param {React.ReactNode} props.children - Content of the action.
+ * @param {object} [props.props] - other props passed down to the internal PF/Button. See {@link https://www.patternfly.org/components/button/#button}.
  */
-const Action = ({ children, navigateTo, onClick, ...props }) => {
+const Action = ({ navigateTo, onClick, children, ...props }) => {
   const navigate = useNavigate();
 
   props.onClick = () => {
@@ -82,9 +86,6 @@ const Action = ({ children, navigateTo, onClick, ...props }) => {
  * TODO: Explain below note better
  * @note that we cannot use navigate("..") because our routes are all nested in
  * the root.
- *
- * @param {React.ReactNode} props.children - content of the action
- * @param {object} [props] - {@link Action} props
  */
 const BackAction = () => {
   return (

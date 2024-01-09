@@ -39,9 +39,9 @@ import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
 
 /**
- * @typedef {import ("~/clients/storage").ProposalSettings} ProposalSettings
- * @typedef {import ("~/clients/storage").StorageDevice} StorageDevice
- * @typedef {import ("~/clients/storage").Volume} Volume
+ * @typedef {import ("~/client/storage").ProposalManager.ProposalSettings} ProposalSettings
+ * @typedef {import ("~/client/storage").DevicesManager.StorageDevice} StorageDevice
+ * @typedef {import ("~/client/storage").ProposalManager.Volume} Volume
  */
 
 /**

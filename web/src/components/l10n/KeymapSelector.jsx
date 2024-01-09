@@ -26,7 +26,7 @@ import { ListSearch } from "~/components/core";
 import { noop } from "~/utils";
 
 /**
- * @typedef {import ("~/clients/l10n").Keymap} Keymap
+ * @typedef {import ("~/client/l10n").Keymap} Keymap
  */
 
 const ListBox = ({ children, ...props }) => {

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jan  8 15:55:39 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Web documentation: improve the auto-generated documentation
+  output to have it ready for a future integration in a static
+  site generator (gh#openSUSE/agama#976).
+
+-------------------------------------------------------------------
 Thu Jan 04 21:44:32 UTC 2024 - Balsa Asanovic <balsaasanovic95@gmail.com>
 
 - Removing global issues page and using popup dialog instead.

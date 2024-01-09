@@ -18,7 +18,9 @@
     "stylelint": "stylelint 'src/**/*.{css,scss}'",
     "stylelint:fix": "stylelint --fix 'src/**/*.{css,scss}'",
     "check-types": "tsc --skipLibCheck",
-    "jsdoc": "npx typedoc --skipErrorChecking --plugin typedoc-plugin-missing-exports src/ src/client/ && echo Tip: && echo xdg-open jsdoc.out/index.html",
+    "typedoc": "npm run typedoc:client && npm run typedoc:components",
+    "typedoc:client": "npx typedoc --entryPoints src/client --out typedoc.out/client",
+    "typedoc:components": "npx typedoc --entryPoints src/components --out typedoc.out/components",
     "test": "jest"
   },
   "engines": {
@@ -86,9 +88,11 @@
     "terser-webpack-plugin": "^5.3.9",
     "ts-jest": "^29.0.3",
     "tsconfig-paths-webpack-plugin": "^4.0.0",
-    "typedoc": "^0.25.3",
+    "typedoc": "^0.25.4",
+    "typedoc-plugin-external-module-map": "^2.0.1",
+    "typedoc-plugin-merge-modules": "^5.1.0",
     "typedoc-plugin-missing-exports": "^2.1.0",
-    "typescript": "^5.2.2",
+    "typescript": "^5.3.3",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1"
