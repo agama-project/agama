@@ -70,12 +70,12 @@ const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
  * @param {Array<import(~/clients/storage).Volume>} props.volumes - a collection of storage volumes
  * @param {object} props.formSelectProps - @see {@link https://www.patternfly.org/components/forms/form-select#props}
  * @returns {ReactComponent}
- */
+*/
 
 const MountPointFormSelect = ({ volumes, ...selectProps }) => {
   return (
     <Select { ...selectProps }>
-      { volumes.map(v => <SelectOption key={v.mountPath} value={v.mountPath}>{v.mountPath}</SelectOption>) }
+      { volumes.map(v => <SelectOption key={v.mountPath} value={v.mountPath} label={v.mountPath} />) }
     </Select>
   );
 };
@@ -719,17 +719,26 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
 
   const { fsType, snapshots } = state.formData;
 
+  const ShowMountPointSelector = () => (
+    <MountPointFormSelect
+        id="mountPoint"
+        value={state.formData.mountPoint}
+        onChange={changeVolume}
+        volumes={currentVolume ? [currentVolume] : templates}
+        isDisabled={currentVolume !== undefined}
+    />
+  );
+
+  const ShowMountPoint = () => <p>{state.formData.mountPoint}</p>;
+
   return (
     <Form id={id} onSubmit={submitForm}>
       <FormGroup isRequired label={_("Mount point")} fieldId="mountPoint">
-        {currentVolume !== undefined} && <p> {state.formData.mountPoint} </p>
-        {/* <MountPointFormSelect
-          id="mountPoint"
-          value={state.formData.mountPoint}
-          onChange={changeVolume}
-          volumes={currentVolume ? [currentVolume] : templates}
-          isDisabled={currentVolume !== undefined}
-        /> */}
+        <If
+        condition={currentVolume !== undefined}
+        then={<ShowMountPoint />}
+        else={<ShowMountPointSelector />}
+        />
       </FormGroup>
       <FsField
         value={{ fsType, snapshots }}
