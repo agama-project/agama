@@ -151,26 +151,25 @@ class AgamaNetworkAdapter {
    * It uses the 'path' to match the connection in the backend.
    *
    * @param {Connection} connection - Connection to update
+   * @return {Promise<boolean>} - the promise resolves to true if the connection
+   *   was successfully updated and to false it it does not exist.
    */
   async updateConnection(connection) {
     const path = await this.getConnectionPath(connection.uuid);
     if (path === undefined) {
-      return;
+      return false;
     }
 
     const { ipv4, wireless } = connection;
-    const ipProxy = this.proxies.ipConfigs[path];
-    ipProxy.Method4 = ipv4.method;
-    ipProxy.Addresses = ipv4.addresses.map(addr => `${addr.address}/${addr.prefix}`);
-    ipProxy.Gateway4 = ipv4.gateway;
-    ipProxy.Nameservers = ipv4.nameServers;
+    await this.setProperty(path, IP_IFACE, "Method4", cockpit.variant("s", ipv4.method));
+    await this.setProperty(path, IP_IFACE, "Gateway4", cockpit.variant("s", ipv4.gateway));
+    const addresses = ipv4.addresses.map(a => `${a.address}/${a.prefix}`);
+    await this.setProperty(path, IP_IFACE, "Addresses", cockpit.variant("as", addresses));
+    await this.setProperty(path, IP_IFACE, "Nameservers", cockpit.variant("as", ipv4.nameServers));
 
     if (wireless) {
-      const wirelessProxy = this.proxies.wireless[path];
-      wirelessProxy.ssid = cockpit.byte_array(wireless.ssid);
-      // TODO: handle hidden
-      wirelessProxy.hidden = false;
-      wirelessProxy.mode = "infrastructure";
+      await this.setProperty(path, WIRELESS_IFACE, "SSID", cockpit.byte_array(wireless.ssid));
+      await this.setProperty(path, WIRELESS_IFACE, "Mode", cockpit.variant("s", "infrastructure"));
     }
 
     // TODO: apply the changes only in this connection
@@ -248,6 +247,19 @@ class AgamaNetworkAdapter {
         return path;
       }
     }
+  }
+
+  /**
+   * Sets a property for a given path
+   *
+   * @param {string} path - Object path.
+   * @param {string} iface - Interface name.
+   * @param {string} property - Property name.
+   * @param {object} value - Property value. The value should be created by
+   * using the cockpit.variant() function.
+   */
+  async setProperty(path, iface, property, value) {
+    return this.client.call(path, "org.freedesktop.DBus.Properties", "Set", [iface, property, value]);;;;
   }
 }
 
