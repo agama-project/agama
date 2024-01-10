@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-02 09:40+0000\n"
+"POT-Creation-Date: 2024-01-10 02:19+0000\n"
 "PO-Revision-Date: 2023-12-31 20:39+0000\n"
 "Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-web/nl/"
@@ -63,7 +63,8 @@ msgstr ""
 
 #. TRANSLATORS: button label
 #: src/components/core/About.jsx:71 src/components/core/FileViewer.jsx:80
-#: src/components/core/Sidebar.jsx:159 src/components/core/Terminal.jsx:48
+#: src/components/core/IssuesDialog.jsx:119 src/components/core/Sidebar.jsx:157
+#: src/components/core/Terminal.jsx:48
 #: src/components/network/WifiSelector.jsx:151
 #: src/components/product/ProductPage.jsx:239
 msgid "Close"
@@ -101,33 +102,38 @@ msgstr "Leest bestand..."
 msgid "Cannot read the file"
 msgstr "Kan het bestand niet lezen"
 
-#. TRANSLATORS: the installer reports some errors,
-#. the text in square brackets [] is a clickable link
-#: src/components/core/InstallButton.jsx:35
+#: src/components/core/InstallButton.jsx:37
+#, fuzzy
 msgid ""
-"There are some reported issues. Please, check [the list of issues] before "
-"proceeding with the installation."
+"There are some reported issues. Please review them in the previous steps "
+"before proceeding with the installation."
 msgstr ""
 "Er zijn enkele geraporteerde issues. Check alstublieft [de lijst met issues] "
 "voor het doorgaan met de installatie."
 
-#: src/components/core/InstallButton.jsx:52
+#: src/components/core/InstallButton.jsx:49
 msgid "Confirm Installation"
 msgstr "Bevestig installatie"
 
-#: src/components/core/InstallButton.jsx:58
+#: src/components/core/InstallButton.jsx:55
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
 msgstr ""
 
-#: src/components/core/InstallButton.jsx:62
+#: src/components/core/InstallButton.jsx:59
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr ""
 "Klik bij twijfel alstbulieft op annuleren en controleer de instellingen."
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:68
+#: src/components/core/InstallButton.jsx:65 src/components/core/Popup.jsx:128
+#: src/components/network/WifiConnectionForm.jsx:136
+msgid "Cancel"
+msgstr "Annuleren"
+
+#. TRANSLATORS: button label
+#: src/components/core/InstallButton.jsx:69
 msgid "Continue"
 msgstr "Doorgaan"
 
@@ -201,46 +207,10 @@ msgstr "Have a lot of fun! Uw openSUSE Development Team."
 msgid "Installing"
 msgstr "Installeren"
 
-#: src/components/core/IssuesLink.jsx:40
-msgid "Show issues"
-msgstr "Toon issues"
-
-#: src/components/core/IssuesLink.jsx:43
-msgid "There are new issues"
-msgstr "Er zijn nieuwe issues"
-
-#. TRANSLATORS: page title
-#. TRANSLATORS: page section
-#: src/components/core/IssuesPage.jsx:92
-#: src/components/overview/ProductSection.jsx:71
-#: src/components/product/ProductPage.jsx:435
-msgid "Product"
-msgstr ""
-
-#. TRANSLATORS: page section title
-#. TRANSLATORS: page title
-#: src/components/core/IssuesPage.jsx:100
-#: src/components/overview/StorageSection.jsx:208
-#: src/components/storage/ProposalPage.jsx:218
-msgid "Storage"
-msgstr "Opslag"
-
-#. TRANSLATORS: page title
-#. TRANSLATORS: page section
-#: src/components/core/IssuesPage.jsx:108
-#: src/components/overview/SoftwareSection.jsx:143
-#: src/components/software/SoftwarePage.jsx:81
-msgid "Software"
-msgstr "Software"
-
-#: src/components/core/IssuesPage.jsx:129
-msgid "No issues found. Everything looks ok."
-msgstr "Geen issues gevonden. Alles ziet er ok uit."
-
 #. TRANSLATORS: search field placeholder text
 #: src/components/core/ListSearch.jsx:50
-#: src/components/software/PatternSelector.jsx:220
-#: src/components/software/PatternSelector.jsx:221
+#: src/components/software/PatternSelector.jsx:215
+#: src/components/software/PatternSelector.jsx:216
 msgid "Search"
 msgstr ""
 
@@ -265,15 +235,15 @@ msgid "Something went wrong while collecting logs. Please, try again."
 msgstr ""
 "Iets is verkeerd gegaan bij het verzamelen van de logs. Probeer het opnieuw."
 
-#: src/components/core/Page.jsx:92 src/components/users/UsersPage.jsx:30
+#: src/components/core/Page.jsx:93 src/components/users/UsersPage.jsx:30
 msgid "Back"
 msgstr "Terug"
 
-#: src/components/core/Page.jsx:200
+#: src/components/core/Page.jsx:201
 msgid "Show global options"
 msgstr "Toon algemene opties"
 
-#: src/components/core/Page.jsx:214
+#: src/components/core/Page.jsx:215
 #, fuzzy
 msgid "Page Actions"
 msgstr "Geplande acties"
@@ -310,12 +280,6 @@ msgstr ""
 msgid "Confirm"
 msgstr "Bevestigen"
 
-#. TRANSLATORS: button label
-#: src/components/core/Popup.jsx:128
-#: src/components/network/WifiConnectionForm.jsx:136
-msgid "Cancel"
-msgstr "Annuleren"
-
 #. TRANSLATORS: dropdown label
 #: src/components/core/RowActions.jsx:66
 #: src/components/storage/ProposalVolumes.jsx:119
@@ -343,35 +307,48 @@ msgid "Open Terminal"
 msgstr "Open terminal"
 
 #. TRANSLATORS: sidebar header
-#: src/components/core/Sidebar.jsx:114 src/components/core/Sidebar.jsx:122
+#: src/components/core/Sidebar.jsx:113 src/components/core/Sidebar.jsx:121
 #, fuzzy
 msgid "Installer Options"
 msgstr "Installeren"
 
-#: src/components/core/Sidebar.jsx:129
+#: src/components/core/Sidebar.jsx:128
 #, fuzzy
 msgid "Hide installer options"
 msgstr "Installeren"
 
-#: src/components/core/Sidebar.jsx:138
+#: src/components/core/Sidebar.jsx:136
 msgid "Diagnostic tools"
 msgstr "Diagnostische hulpmiddelen"
 
-#: src/components/core/ValidationErrors.jsx:62
-msgid "Errors"
-msgstr "Fouten"
+#. TRANSLATORS: Titles used for the popup displaying found section issues
+#: src/components/core/ValidationErrors.jsx:53
+#, fuzzy
+msgid "Software issues"
+msgstr "Software %s"
+
+#: src/components/core/ValidationErrors.jsx:54
+#, fuzzy
+msgid "Product issues"
+msgstr "Product selectie"
+
+#: src/components/core/ValidationErrors.jsx:55
+#, fuzzy
+msgid "Storage issues"
+msgstr "Toon issues"
+
+#: src/components/core/ValidationErrors.jsx:57
+#, fuzzy
+msgid "Found Issues"
+msgstr "Toon issues"
 
 #. TRANSLATORS: %d is replaced with the number of errors found
-#: src/components/core/ValidationErrors.jsx:85
+#: src/components/core/ValidationErrors.jsx:77
 #, c-format
 msgid "%d error found"
 msgid_plural "%d errors found"
 msgstr[0] "%d fout gevonden"
 msgstr[1] "%d fouten gevonden"
-
-#: src/components/core/ValidationErrors.jsx:95
-msgid "Basic popover"
-msgstr "Algemene popover"
 
 #. TRANSLATORS: label for keyboard layout selection
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:53
@@ -821,6 +798,13 @@ msgstr "Installatie apparaat"
 msgid "%s (registered)"
 msgstr ""
 
+#. TRANSLATORS: page title
+#. TRANSLATORS: page section
+#: src/components/overview/ProductSection.jsx:71
+#: src/components/product/ProductPage.jsx:435
+msgid "Product"
+msgstr ""
+
 #: src/components/overview/SoftwareSection.jsx:38
 msgid "Reading software repositories"
 msgstr "Lezen van software opslagruimtes"
@@ -829,6 +813,13 @@ msgstr "Lezen van software opslagruimtes"
 #: src/components/overview/SoftwareSection.jsx:133
 msgid "Refresh the repositories"
 msgstr "Ververs de opslagruimtes"
+
+#. TRANSLATORS: page title
+#. TRANSLATORS: page section
+#: src/components/overview/SoftwareSection.jsx:143
+#: src/components/software/SoftwarePage.jsx:81
+msgid "Software"
+msgstr "Software"
 
 #: src/components/overview/StorageSection.jsx:42
 #: src/components/storage/ProposalSettingsSection.jsx:126
@@ -866,6 +857,13 @@ msgstr "Installatie apparaat"
 #: src/components/overview/StorageSection.jsx:83
 msgid "Probing storage devices"
 msgstr "Onderzoeken van opslagapparaten"
+
+#. TRANSLATORS: page section title
+#. TRANSLATORS: page title
+#: src/components/overview/StorageSection.jsx:208
+#: src/components/storage/ProposalPage.jsx:218
+msgid "Storage"
+msgstr "Opslag"
 
 #. TRANSLATORS: %s will be replaced by the user name
 #: src/components/overview/UsersSection.jsx:80
@@ -1028,14 +1026,7 @@ msgstr ""
 msgid "not selected"
 msgstr "Niet ingesteld"
 
-#. TRANSLATORS: error summary, always plural, %d is replaced by number of errors (2 or more)
-#. if there is just a single error then the error is displayed directly instead of this summary
-#: src/components/software/PatternSelector.jsx:207
-#, fuzzy, c-format
-msgid "%d errors"
-msgstr "%d fout gevonden"
-
-#: src/components/software/PatternSelector.jsx:215
+#: src/components/software/PatternSelector.jsx:210
 msgid "Software summary and filter options"
 msgstr ""
 
@@ -1351,8 +1342,8 @@ msgstr "versleuteld"
 
 #. TRANSLATORS: filesystem flag, it allows creating snapshots
 #: src/components/storage/ProposalVolumes.jsx:218
-#: src/components/storage/VolumeForm.jsx:128
-#: src/components/storage/VolumeForm.jsx:161
+#: src/components/storage/VolumeForm.jsx:132
+#: src/components/storage/VolumeForm.jsx:165
 #, c-format
 msgid "with snapshots"
 msgstr "met snapshots"
@@ -1373,7 +1364,7 @@ msgid "Edit file system"
 msgstr "Wijzig bestandssysteem"
 
 #: src/components/storage/ProposalVolumes.jsx:307
-#: src/components/storage/VolumeForm.jsx:723
+#: src/components/storage/VolumeForm.jsx:727
 msgid "Mount point"
 msgstr "Koppelpunt"
 
@@ -1382,7 +1373,7 @@ msgid "Details"
 msgstr "Details"
 
 #: src/components/storage/ProposalVolumes.jsx:309
-#: src/components/storage/VolumeForm.jsx:737
+#: src/components/storage/VolumeForm.jsx:741
 msgid "Size"
 msgstr "Grootte"
 
@@ -1395,77 +1386,77 @@ msgid "File systems to create in your system"
 msgstr "Bestandssystemen die worden gemaakt in uw systeem"
 
 #. TRANSLATORS: description of Btrfs snapshots feature.
-#: src/components/storage/VolumeForm.jsx:168
+#: src/components/storage/VolumeForm.jsx:172
 msgid ""
 "Allows rolling back any change done to the system and restoring its previous "
 "state"
 msgstr ""
 
 #. TRANSLATORS: info about possible file system types.
-#: src/components/storage/VolumeForm.jsx:265
+#: src/components/storage/VolumeForm.jsx:269
 msgid ""
 "The options for the file system type depends on the product and the mount "
 "point."
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:271
+#: src/components/storage/VolumeForm.jsx:275
 #, fuzzy
 msgid "More info for file system types"
 msgstr "Bestandssysteem type"
 
 #. TRANSLATORS: label for the file system selector.
-#: src/components/storage/VolumeForm.jsx:282
+#: src/components/storage/VolumeForm.jsx:286
 msgid "File system type"
 msgstr "Bestandssysteem type"
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeForm.jsx:314
+#: src/components/storage/VolumeForm.jsx:318
 msgid "the configuration of snapshots"
 msgstr "de configuratie van snapshots"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
-#: src/components/storage/VolumeForm.jsx:319
+#: src/components/storage/VolumeForm.jsx:323
 #, c-format
 msgid "the presence of the file system for %s"
 msgstr "de aanwezigheid van het bestandssysteem voor %s"
 
 #. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeForm.jsx:321
+#: src/components/storage/VolumeForm.jsx:325
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeForm.jsx:324
+#: src/components/storage/VolumeForm.jsx:328
 #, c-format
 msgid "The final size depends on %s."
 msgstr "De uiteindelijke grootte hangt af van %s."
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeForm.jsx:326
+#: src/components/storage/VolumeForm.jsx:330
 msgid " and "
 msgstr " en "
 
 #. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeForm.jsx:331
+#: src/components/storage/VolumeForm.jsx:335
 msgid "Automatically calculated size according to the selected product."
 msgstr "Automatisch berekend aan de hand van het geselecteerde product."
 
-#: src/components/storage/VolumeForm.jsx:351
+#: src/components/storage/VolumeForm.jsx:355
 msgid "Exact size for the file system."
 msgstr "Exacte grootte voor het bestandssysteem."
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeForm.jsx:363
+#: src/components/storage/VolumeForm.jsx:367
 msgid "Exact size"
 msgstr "Exacte grootte"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeForm.jsx:378
+#: src/components/storage/VolumeForm.jsx:382
 msgid "Size unit"
 msgstr "Grootte eenheid"
 
-#: src/components/storage/VolumeForm.jsx:406
+#: src/components/storage/VolumeForm.jsx:410
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1476,57 +1467,57 @@ msgstr ""
 "geen maximum is gegeven dan zal het bestandssysteem zo groot mogelijk zijn."
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeForm.jsx:413
+#: src/components/storage/VolumeForm.jsx:417
 msgid "Minimum"
 msgstr "Minimum"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeForm.jsx:423
+#: src/components/storage/VolumeForm.jsx:427
 msgid "Minimum desired size"
 msgstr "Minimum gewenste grootte"
 
-#: src/components/storage/VolumeForm.jsx:432
+#: src/components/storage/VolumeForm.jsx:436
 msgid "Unit for the minimum size"
 msgstr "Eenheid voor gewenste grootte"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:443
+#: src/components/storage/VolumeForm.jsx:447
 msgid "Maximum"
 msgstr "Maximum"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:454
+#: src/components/storage/VolumeForm.jsx:458
 msgid "Maximum desired size"
 msgstr "Maximaal gewenste grootte"
 
-#: src/components/storage/VolumeForm.jsx:462
+#: src/components/storage/VolumeForm.jsx:466
 msgid "Unit for the maximum size"
 msgstr "Eenheid voor maximale grootte"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeForm.jsx:479
+#: src/components/storage/VolumeForm.jsx:483
 msgid "Auto"
 msgstr "Auto"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeForm.jsx:481
+#: src/components/storage/VolumeForm.jsx:485
 msgid "Fixed"
 msgstr "Vast"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeForm.jsx:483
+#: src/components/storage/VolumeForm.jsx:487
 msgid "Range"
 msgstr "Reikwijdte"
 
-#: src/components/storage/VolumeForm.jsx:691
+#: src/components/storage/VolumeForm.jsx:695
 msgid "A size value is required"
 msgstr "Een grootheids waarde is nodig"
 
-#: src/components/storage/VolumeForm.jsx:696
+#: src/components/storage/VolumeForm.jsx:700
 msgid "Minimum size is required"
 msgstr "Minimum grootte is vereist"
 
-#: src/components/storage/VolumeForm.jsx:700
+#: src/components/storage/VolumeForm.jsx:704
 msgid "Maximum must be greater than minimum"
 msgstr "Maximum moet groter zijn dan het minimum"
 
@@ -2108,6 +2099,22 @@ msgstr "Gebruiker"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "Root authenticatie"
+
+#~ msgid "There are new issues"
+#~ msgstr "Er zijn nieuwe issues"
+
+#~ msgid "No issues found. Everything looks ok."
+#~ msgstr "Geen issues gevonden. Alles ziet er ok uit."
+
+#~ msgid "Errors"
+#~ msgstr "Fouten"
+
+#~ msgid "Basic popover"
+#~ msgstr "Algemene popover"
+
+#, fuzzy, c-format
+#~ msgid "%d errors"
+#~ msgstr "%d fout gevonden"
 
 #~ msgid "New issues found"
 #~ msgstr "Nieuwe issues gevonden"
