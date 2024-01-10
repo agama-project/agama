@@ -123,7 +123,7 @@ export default function ProposalActionsSection({ actions = [], errors = [], isLo
   return (
     // TRANSLATORS: section title, list of planned actions for the selected device,
     // e.g. "delete partition A", "create partition B with filesystem C", ...
-    <Section title={_("Planned Actions")} errors={errors}>
+    <Section title={_("Planned Actions")} id="storage-actions" errors={errors}>
       <If
         condition={isLoading}
         then={<ActionsSkeleton />}

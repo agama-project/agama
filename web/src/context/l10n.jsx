@@ -24,9 +24,9 @@ import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "./installer";
 
 /**
- * @typedef {import ("~/clients/l10n").Locale} Locale
- * @typedef {import ("~/clients/l10n").Keymap} Keymap
- * @typedef {import ("~/clients/l10n").Timezone} Timezone
+ * @typedef {import ("~/client/l10n").Locale} Locale
+ * @typedef {import ("~/client/l10n").Keymap} Keymap
+ * @typedef {import ("~/client/l10n").Timezone} Timezone
  */
 
 const L10nContext = React.createContext({});

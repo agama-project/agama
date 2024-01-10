@@ -1,3 +1,6 @@
+// PatternFly overrides
+@use "~/assets/styles/patternfly-overrides.scss";
+
 @use "~/assets/fonts.scss";
 @use "~/assets/styles/variables.scss";
 // TODO: merge app and global
@@ -8,5 +11,3 @@
 @use "~/assets/styles/composition.scss";
 @use "~/assets/styles/blocks.scss";
 
-// PatternFly overrides
-@use "~/assets/styles/patternfly-overrides.scss";

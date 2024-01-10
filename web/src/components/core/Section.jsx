@@ -52,6 +52,8 @@ import { ValidationErrors } from "~/components/core";
  * @property {string} [path] - Path where the section links to.
  *  when user clicks on the title, used for opening a dialog.
  * @property {boolean} [loading] - Whether the section is busy loading its content or not.
+ * @property {string} [className] - Class name for section html tag.
+ * @property {string} [id] - Id of the section ("software", "product", "storage", "storage-actions", ...)
  * @property {import("~/client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title.
  * @property {React.ReactElement} [children] - The section content.
  * @property {string} [aria-label] - aria-label attribute, required if title if not given
@@ -64,6 +66,8 @@ export default function Section({
   name,
   path,
   loading,
+  className,
+  id,
   errors,
   children,
   "aria-label": ariaLabel
@@ -88,16 +92,17 @@ export default function Section({
 
   return (
     <section
+      className={className}
       aria-live="polite"
       aria-busy={loading}
       aria-label={ariaLabel || undefined}
-      aria-labelledby={ title && !ariaLabel ? headerId : undefined}
+      aria-labelledby={title && !ariaLabel ? headerId : undefined}
       data-type="agama/section"
     >
       <Header />
       <div className="stack">
         {errors?.length > 0 &&
-          <ValidationErrors errors={errors} title={`${title} errors`} />}
+          <ValidationErrors errors={errors} sectionId={id} />}
         {children}
       </div>
     </section>

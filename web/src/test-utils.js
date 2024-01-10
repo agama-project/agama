@@ -32,7 +32,6 @@ import { render } from "@testing-library/react";
 
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
-import { NotificationProvider } from "~/context/notification";
 import { noop } from "./utils";
 import cockpit from "./lib/cockpit";
 import { InstallerL10nProvider } from "./context/installerL10n";
@@ -165,20 +164,6 @@ const createCallbackMock = () => {
 };
 
 /**
- * Wraps the content with a notification provider
- *
- * @param {React.ReactNode} content
- * @returns {React.ReactNode}
- */
-const withNotificationProvider = (content) => {
-  return (
-    <NotificationProvider>
-      {content}
-    </NotificationProvider>
-  );
-};
-
-/**
  * Mocks the cockpit.gettext() method with an identity function (returns
  * the original untranslated text)
  */
@@ -197,6 +182,5 @@ export {
   createCallbackMock,
   mockGettext,
   mockNavigateFn,
-  mockRoutes,
-  withNotificationProvider
+  mockRoutes
 };

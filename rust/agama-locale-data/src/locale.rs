@@ -100,7 +100,7 @@ impl FromStr for KeymapId {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let re = KEYMAP_ID_REGEX
-            .get_or_init(|| Regex::new(r"(\w+)((\((?<var1>\w+)\)|-(?<var2>\w+)))?").unwrap());
+            .get_or_init(|| Regex::new(r"([\w.]+)((\((?<var1>.+)\)|-(?<var2>.+)))?").unwrap());
 
         if let Some(parts) = re.captures(s) {
             let mut variant = None;
@@ -152,6 +152,24 @@ mod test {
                 variant: Some("ast".to_string())
             },
             keymap_id2
+        );
+
+        let keymap_id3 = KeymapId::from_str("pt-nativo-us").unwrap();
+        assert_eq!(
+            KeymapId {
+                layout: "pt".to_string(),
+                variant: Some("nativo-us".to_string())
+            },
+            keymap_id3
+        );
+
+        let keymap_id4 = KeymapId::from_str("lt.std").unwrap();
+        assert_eq!(
+            KeymapId {
+                layout: "lt.std".to_string(),
+                variant: None
+            },
+            keymap_id4
         );
     }
 }

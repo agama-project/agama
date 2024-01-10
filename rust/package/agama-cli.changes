@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan  8 17:02:40 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Fix the list of keymaps to avoid duplicated values
+  (gh#openSUSE/agama#981).
+
+-------------------------------------------------------------------
 Thu Dec 21 14:23:33 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 7

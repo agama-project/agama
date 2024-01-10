@@ -24,8 +24,8 @@ import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "./installer";
 
 /**
- * @typedef {import ("~/clients/software").Product} Product
- * @typedef {import ("~/clients/software").Registration} Registration
+ * @typedef {import ("~/client/software").Product} Product
+ * @typedef {import ("~/client/software").Registration} Registration
  */
 
 const ProductContext = React.createContext([]);

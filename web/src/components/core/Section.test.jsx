@@ -121,7 +121,7 @@ describe("Section", () => {
 
   it("renders given errors", () => {
     plainRender(
-      <Section title="Awesome settings" errors={[{ message: "Something went wrong" }]} />
+      <Section id="settings" title="Awesome settings" errors={[{ message: "Something went wrong" }]} />
     );
 
     screen.getByText("Something went wrong");

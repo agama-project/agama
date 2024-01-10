@@ -51,8 +51,8 @@ jobs:
       - name: Install NPM packages
         run: cd web && npm ci
 
-      - name: Build the JSDoc documentation
-        run: cd web && npm run jsdoc && mv jsdoc.out ../doc/dist/jsdoc
+      - name: Build Web UI documentation
+        run: cd web && npm run typedoc && mv typedoc.out/ ../doc/dist/web-ui
 
       - name: Setup Pages
         uses: actions/configure-pages@v3

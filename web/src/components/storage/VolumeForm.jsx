@@ -32,6 +32,10 @@ import { DEFAULT_SIZE_UNIT, SIZE_METHODS, SIZE_UNITS, parseToBytes, splitSize } 
 import { Icon } from "~/components/layout";
 
 /**
+ * @typedef {import ("~/client/storage").ProposalManager.Volume} Volume
+ */
+
+/**
  * Callback function for notifying a form input change
  *
  * @callback onChangeFn
@@ -67,7 +71,7 @@ const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
  * Based on {@link PF/FormSelect https://www.patternfly.org/components/forms/form-select}
  *
  * @param {object} props
- * @param {Array<import(~/clients/storage).Volume>} props.volumes - a collection of storage volumes
+ * @param {Array<Volume>} props.volumes - a collection of storage volumes
  * @param {object} props.formSelectProps - @see {@link https://www.patternfly.org/components/forms/form-select#props}
  * @returns {ReactComponent}
 */
@@ -128,7 +132,7 @@ const BTRFS_WITH_SNAPSHOTS = "BtrfsWithSnapshots";
  * Possible file system type options for a volume.
  * @function
  *
- * @param {import(~/clients/storage).Volume} volume
+ * @param {Volume} volume
  * @returns {string[]}
  */
 const fsOptions = (volume) => {
@@ -224,7 +228,7 @@ const FsSelectOption = ({ fsOption }) => {
  * @param {object} props
  * @param {string} props.id - Widget id.
  * @param {FsValue} props.value - Currently selected file system properties.
- * @param {import(~/clients/storage).Volume} volume - The selected storage volume.
+ * @param {Volume} volume - The selected storage volume.
  * @param {onChangeFn} props.onChange - Callback for notifying input changes.
  *
  * @returns {ReactComponent}
@@ -285,7 +289,7 @@ const FsSelect = ({ id, value, volume, onChange }) => {
  *
  * @param {object} props
  * @param {FsValue} props.value - Currently selected file system properties.
- * @param {import(~/clients/storage).Volume} volume - The selected storage volume.
+ * @param {Volume} volume - The selected storage volume.
  * @param {onChangeFn} props.onChange - Callback for notifying input changes.
  *
  * @typedef {object} FsValue
@@ -343,7 +347,7 @@ const FsField = ({ value, volume, onChange }) => {
  * @component
  *
  * @param {object} props
- * @param {import(~/clients/storage).Volume} volume - a storage volume object
+ * @param {Volume} volume - a storage volume object
  * @returns {ReactComponent}
  */
 const SizeAuto = ({ volume }) => {
@@ -530,7 +534,7 @@ const SIZE_OPTION_LABELS = Object.freeze({
  * @param {object} props
  * @param {object} props.errors - the form errors
  * @param {object} props.formData - the form data
- * @param {import(~/clients/storage).Volume} volume - the selected storage volume
+ * @param {Volume} volume - the selected storage volume
  * @param {onChangeFn} props.onChange - callback for notifying input changes
  *
  * @returns {ReactComponent}
@@ -577,7 +581,7 @@ const SizeOptions = ({ errors, formData, volume, onChange }) => {
 /**
  * Creates a new storage volume object based on given params
  *
- * @param {import(~/clients/storage).Volume} volume - a storage volume
+ * @param {Volume} volume - a storage volume
  * @param {object} formData - data used to calculate the volume updates
  * @returns {object} storage volume object
  */
@@ -607,7 +611,7 @@ const createUpdatedVolume = (volume, formData) => {
 /**
  * Form-related helper for guessing the size method for given volume
  *
- * @param {import(~/clients/storage).Volume} volume - a storage volume
+ * @param {Volume} volume - a storage volume
  * @return {string} corresponding size method
  */
 const sizeMethodFor = (volume) => {
@@ -625,7 +629,7 @@ const sizeMethodFor = (volume) => {
 /**
  * Form-related helper for preparing data based on given volume
  *
- * @param {import(~/clients/storage).Volume} volume - a storage volume object
+ * @param {Volume} volume - a storage volume object
  * @return {object} an object ready to be used as a "form state"
  */
 const prepareFormData = (volume) => {
@@ -649,7 +653,7 @@ const prepareFormData = (volume) => {
 /**
  * Initializer function for the React#useReducer used in the {@link VolumesForm}
  *
- * @param {import(~/clients/storage).Volume} volume - a storage volume object
+ * @param {Volume} volume - a storage volume object
  * @returns {object} a ready to use initial state
  */
 const createInitialState = (volume) => {
@@ -702,11 +706,11 @@ const reducer = (state, action) => {
  *
  * @param {object} props
  * @param {string} props.id - Form ID
- * @param {Array<import(~/clients/storage).Volume>} props.volumes - a collection of storage volumes
+ * @param {Array<Volume>} props.volumes - a collection of storage volumes
  * @param {onSubmitFn} props.onSubmit - Function to use for submitting a new volume
  *
  * @callback onSubmitFn
- * @param {import(~/clients/storage).Volume} volume - a storage volume object
+ * @param {Volume} volume - a storage volume object
  * @return {void}
  */
 export default function VolumeForm({ id, volume: currentVolume, templates = [], onSubmit }) {

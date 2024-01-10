@@ -26,7 +26,6 @@ import {
   About,
   DevelopmentInfo,
   Disclosure,
-  IssuesLink,
   // FIXME: unify names here by renaming LogsButton -> LogButton or ShowLogButton -> ShowLogsButton
   LogsButton,
   ShowLogButton,
@@ -134,7 +133,6 @@ export default function Sidebar ({ children, isOpen, onClose = noop }) {
 
       <div className="flex-stack justify-between" onClick={onClick}>
         <div className="flex-stack">
-          <IssuesLink />
           <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
             <ShowLogButton />
             <LogsButton data-keep-sidebar-open="true" />

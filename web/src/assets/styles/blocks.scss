@@ -215,35 +215,6 @@
   }
 }
 
-span.notification-mark {
-  --nm-border-width: 0;
-  --nm-border-color: transparent;
-  --nm-border: var(--nm-border-width) solid var(--nm-border-color);
-  --nm-size: 8px;
-  --nm-margin-inline: var(--nm-size, 5px);
-  --nm-display: inline-block;
-  --nm-color: #00BFFF; //deepskyblue
-
-  margin-inline: var(--nm-margin-inline);
-  display: var(--nm-display);
-  background: var(--nm-color);
-  border: var(--nm-border);
-  width: var(--nm-size);
-  height: var(--nm-size);
-  border-radius: 999px;
-}
-
-span.notification-mark[data-variant="sidebar"] {
-  --nm-size: calc(var(--fs-base) + var(--nm-border-width));
-  --nm-display: initial;
-  --nm-border-width: 2px;
-  --nm-border-color: var(--color-primary);
-  --nm-margin-inline: 0;
-
-  position: absolute;
-  right: 0;
-}
-
 .issue {
   --icon-size: 1rem;
 
@@ -260,11 +231,15 @@ span.notification-mark[data-variant="sidebar"] {
 }
 
 ul[data-type="agama/list"] {
+  list-style: none;
+  margin-inline: 0;
+
   li {
     border: 2px solid var(--color-gray-dark);
     padding: var(--spacer-normal);
     text-align: start;
     background: var(--color-gray-light);
+    margin-block-end: 0;
 
     &:nth-child(n+2) {
       border-top: 0;
@@ -440,5 +415,18 @@ ul[data-of="agama/timezones"] {
 
   input {
     text-align: end;
+  }
+}
+
+[role="dialog"] {
+  section:not([class^="pf-c"]) {
+    > svg:first-child {
+    block-size: 24px;
+    inline-size: 24px;
+    }
+
+    h2 {
+      font-size: var(--fs-h3);
+    }
   }
 }
