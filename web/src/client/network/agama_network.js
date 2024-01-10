@@ -20,7 +20,7 @@
  */
 
 // @ts-check
-//
+
 import DBusClient from "../dbus";
 import { NetworkManagerAdapter } from "./network_manager";
 import cockpit from "../../lib/cockpit";
@@ -33,6 +33,14 @@ const CONNECTION_IFACE = "org.opensuse.Agama1.Network.Connection";
 const CONNECTIONS_NAMESPACE = "/org/opensuse/Agama1/Network/connections";
 const IP_IFACE = "org.opensuse.Agama1.Network.Connection.IP";
 const WIRELESS_IFACE = "org.opensuse.Agama1.Network.Connection.Wireless";
+
+const DeviceType = Object.freeze({
+  LOOPBACK: 0,
+  ETHERNET: 1,
+  WIRELESS: 2,
+  DUMMY: 3,
+  BOND: 4
+});
 
 /**
  * @typedef {import("./index").NetworkEventFn} NetworkEventFn
@@ -120,16 +128,34 @@ class AgamaNetworkAdapter {
    * @param {object} options - connection options
    */
   async addAndConnectTo(ssid, options) {
-    return this.nm.addAndConnectTo(ssid, options);
+    // duplicated code (see network manager adapter)
+    const wireless = { ssid };
+    if (options.security) wireless.security = options.security;
+    if (options.password) wireless.password = options.password;
+    if (options.hidden) wireless.hidden = options.hidden;
+
+    const connection = createConnection({
+      name: ssid,
+      wireless
+    });
+
+    const added = await this.addConnection(connection);
+    return this.connectTo(added);
   }
 
   /**
    * Adds a new connection
    *
    * @param {Connection} connection - Connection to add
+   * @return {Promise<Connection>} the added connection
    */
   async addConnection(connection) {
-    return this.nm.addConnection(connection);
+    const { name } = connection;
+    const proxy = await this.client.proxy(CONNECTIONS_IFACE, CONNECTIONS_PATH);
+    const ctype = (connection.wireless) ? DeviceType.WIRELESS : DeviceType.ETHERNET;
+    const path = await proxy.AddConnection(name, ctype);
+    await this.updateConnectionAt(path, { ...connection, id: name });
+    return this.connectionFromPath(path);
   }
 
   /**
@@ -148,7 +174,7 @@ class AgamaNetworkAdapter {
   /**
    * Updates the connection
    *
-   * It uses the 'path' to match the connection in the backend.
+   * It uses the 'uuid' to match the connection in the backend.
    *
    * @param {Connection} connection - Connection to update
    * @return {Promise<boolean>} - the promise resolves to true if the connection
@@ -160,20 +186,7 @@ class AgamaNetworkAdapter {
       return false;
     }
 
-    const { ipv4, wireless } = connection;
-    await this.setProperty(path, IP_IFACE, "Method4", cockpit.variant("s", ipv4.method));
-    await this.setProperty(path, IP_IFACE, "Gateway4", cockpit.variant("s", ipv4.gateway));
-    const addresses = ipv4.addresses.map(a => `${a.address}/${a.prefix}`);
-    await this.setProperty(path, IP_IFACE, "Addresses", cockpit.variant("as", addresses));
-    await this.setProperty(path, IP_IFACE, "Nameservers", cockpit.variant("as", ipv4.nameServers));
-
-    if (wireless) {
-      await this.setProperty(path, WIRELESS_IFACE, "SSID", cockpit.byte_array(wireless.ssid));
-      await this.setProperty(path, WIRELESS_IFACE, "Mode", cockpit.variant("s", "infrastructure"));
-    }
-
-    // TODO: apply the changes only in this connection
-    this.proxies.connectionsRoot.Apply();
+    await this.updateConnectionAt(path, connection);
     return true;
   }
 
@@ -259,7 +272,34 @@ class AgamaNetworkAdapter {
    * using the cockpit.variant() function.
    */
   async setProperty(path, iface, property, value) {
-    return this.client.call(path, "org.freedesktop.DBus.Properties", "Set", [iface, property, value]);;;;
+    return this.client.call(path, "org.freedesktop.DBus.Properties", "Set", [iface, property, value]);
+  }
+
+  /**
+   * Updates the connection in the given path
+   *
+   *
+   * @param {string} path - D-Bus path of the connection to update.
+   * @param {Connection} connection - Connection to update.
+   */
+  async updateConnectionAt(path, connection) {
+    const { ipv4, wireless } = connection;
+    await this.setProperty(path, IP_IFACE, "Method4", cockpit.variant("s", ipv4.method));
+    await this.setProperty(path, IP_IFACE, "Gateway4", cockpit.variant("s", ipv4.gateway));
+    const addresses = ipv4.addresses.map(a => `${a.address}/${a.prefix}`);
+    await this.setProperty(path, IP_IFACE, "Addresses", cockpit.variant("as", addresses));
+    await this.setProperty(path, IP_IFACE, "Nameservers", cockpit.variant("as", ipv4.nameServers));
+
+    if (wireless) {
+      await this.setProperty(path, WIRELESS_IFACE, "Mode", cockpit.variant("s", "infrastructure"));
+      await this.setProperty(path, WIRELESS_IFACE, "Password", cockpit.variant("s", wireless.password));
+      await this.setProperty(path, WIRELESS_IFACE, "Security", cockpit.variant("s", wireless.security))
+      const ssid = cockpit.byte_array(wireless.ssid);
+      await this.setProperty(path, WIRELESS_IFACE, "SSID", cockpit.variant("ay", ssid));
+    }
+
+    // TODO: apply the changes only in this connection
+    return this.proxies.connectionsRoot.Apply();
   }
 }
 
