@@ -236,10 +236,10 @@ class AgamaNetworkAdapter {
     const wireless = await this.proxies.wireless[path];
     if (wireless) {
       conn.wireless = {
-        ssid: window.atob(wireless.ssid.v),
+        ssid: window.atob(wireless.SSID),
         hidden: false, // TODO implement the 'hidden' property
-        mode: wireless.mode,
-        security: wireless.security // see AgamaSecurityProtocols
+        mode: wireless.Mode,
+        security: wireless.Security // see AgamaSecurityProtocols
       };
     }
 
@@ -292,7 +292,9 @@ class AgamaNetworkAdapter {
 
     if (wireless) {
       await this.setProperty(path, WIRELESS_IFACE, "Mode", cockpit.variant("s", "infrastructure"));
-      await this.setProperty(path, WIRELESS_IFACE, "Password", cockpit.variant("s", wireless.password));
+      if (wireless.password) {
+        await this.setProperty(path, WIRELESS_IFACE, "Password", cockpit.variant("s", wireless.password));
+      }
       await this.setProperty(path, WIRELESS_IFACE, "Security", cockpit.variant("s", wireless.security))
       const ssid = cockpit.byte_array(wireless.ssid);
       await this.setProperty(path, WIRELESS_IFACE, "SSID", cockpit.variant("ay", ssid));
