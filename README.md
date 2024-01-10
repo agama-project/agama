@@ -125,6 +125,9 @@ There are two flavors of live ISO images:
 
 You can download them from the [openSUSE Build
 Service](https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/images/iso/).
+* Make sure to download the correct ISO file according to your system architecture(Example: You would need to choose {https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/images/iso/agama-live.x86_64-7.0.0-openSUSE-Build1.17.iso} if your processor is based on x64 architecture.
+* And do not forget to check out the ALP vs openSUSE difference mentioned above and download the correct file based on your requirements.
+* Inorder to launch Agama using virtual machine please refer https://github.com/openSUSE/agama/issues/932#issuecomment-1863007573.
 
 ### Manual Configuration
 
