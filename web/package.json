@@ -112,6 +112,7 @@
     "xbytes": "^1.8.0"
   },
   "overrides": {
-    "jsdom": "^22.1.0"
+    "jsdom": "^22.1.0",
+    "follow-redirects": "1.15.4"
   }
 }
