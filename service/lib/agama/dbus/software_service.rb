@@ -59,15 +59,8 @@ module Agama
         # registering the language change callback to work properly
         export
         @ui_locale = UILocale.new(Clients::Locale.instance) do |locale|
-          # set the locale in the Language module, when changing the repository
-          # (product) it calls Pkg.SetTextLocale(Language.language) internally
-          Yast::Language.Set(locale)
-          # set libzypp locale (for communication only, Pkg.SetPackageLocale
-          # call can be used for installing the language packages)
-          Yast::Pkg.SetTextLocale(locale)
-          # TODO: libzypp shows the pattern names and descriptions using the
-          # locale set at the repository refresh time, here we should refresh
-          # the repositories with the new locale
+          # call the language change handler
+          locale_handler(locale)
         end
       end
 
@@ -100,6 +93,39 @@ module Agama
           Agama::DBus::Software::Product.new(@backend, logger),
           Agama::DBus::Software::Proposal.new(logger)
         ]
+      end
+
+      # Language change callback handler, activate new locale in the libzypp backend
+      # @param locale [String] the new locale
+      def locale_handler(locale)
+        # set the locale in the Language module, when changing the repository
+        # (product) it calls Pkg.SetTextLocale(Language.language) internally
+        Yast::Language.Set(locale)
+
+        # set libzypp locale (for communication only, Pkg.SetPackageLocale
+        # call can be used for *installing* the language packages)
+        Yast::Pkg.SetTextLocale(locale)
+
+        # refresh all enabled repositories to download the missing translation files
+        Yast::Pkg.SourceGetCurrent(true).each do |src|
+          Yast::Pkg.SourceForceRefreshNow(src)
+        end
+
+        # remember the currently selected packages and patterns by YaST
+        # (ignore the automatic selections done by the solver)
+        #
+        # NOTE: we will need to handle also the tabooed and soft-locked objects
+        # when we allow to set them via UI or CLI
+        selected = Y2Packager::Resolvable.find(status: :selected, transact_by: :appl_high)
+
+        # save and reload all repositories to activate the new translations
+        Yast::Pkg.SourceSaveAll
+        Yast::Pkg.SourceFinishAll
+        Yast::Pkg.SourceRestore
+        Yast::Pkg.SourceLoad
+
+        # restore back the selected objects
+        selected.each { |s| Yast::Pkg.ResolvableInstall(s.name, s.kind) }
       end
     end
   end
