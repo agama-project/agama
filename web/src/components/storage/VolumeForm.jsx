@@ -763,11 +763,11 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
 
   const ShowMountPointSelector = () => (
     <MountPointFormSelect
-        id="mountPoint"
-        value={state.formData.mountPoint}
-        onChange={changeVolume}
-        volumes={currentVolume ? [currentVolume] : templates}
-        isDisabled={currentVolume !== undefined}
+      id="mountPoint"
+      value={state.formData.mountPoint}
+      onChange={changeVolume}
+      volumes={currentVolume ? [currentVolume] : templates}
+      isDisabled={currentVolume !== undefined}
     />
   );
 
@@ -777,9 +777,9 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
     <Form id={id} onSubmit={submitForm}>
       <FormGroup isRequired label={_("Mount point")} fieldId="mountPoint">
         <If
-        condition={currentVolume !== undefined}
-        then={<ShowMountPoint />}
-        else={<ShowMountPointSelector />}
+          condition={currentVolume !== undefined}
+          then={<ShowMountPoint />}
+          else={<ShowMountPointSelector />}
         />
       </FormGroup>
       <FsField
