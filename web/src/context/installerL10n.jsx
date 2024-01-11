@@ -109,11 +109,14 @@ function languageFromQuery() {
  * @see https://www.rfc-editor.org/info/bcp78
  */
 function languageFromLocale(locale) {
-  return locale.replace("_", "-").toLowerCase();
+  const [language] = locale.split(".");
+  return language.replace("_", "-").toLowerCase();
 }
 
 /**
  * Converts a RFC 5646 language tag to a locale.
+ *
+ * It forces the encoding to "UTF-8".
  *
  * @param {string} language
  * @return {string}
@@ -124,7 +127,8 @@ function languageFromLocale(locale) {
  */
 function languageToLocale(language) {
   const [lang, country] = language.split("-");
-  return (country) ? `${lang}_${country.toUpperCase()}` : lang;
+  const locale = (country) ? `${lang}_${country.toUpperCase()}` : lang;
+  return `${locale}.UTF-8`;
 }
 
 /**
