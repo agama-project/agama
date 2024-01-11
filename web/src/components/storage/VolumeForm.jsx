@@ -767,7 +767,6 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
       value={state.formData.mountPoint}
       onChange={changeVolume}
       volumes={currentVolume ? [currentVolume] : templates}
-      isDisabled={currentVolume !== undefined}
     />
   );
 
