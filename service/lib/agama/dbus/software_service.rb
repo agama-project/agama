@@ -98,13 +98,15 @@ module Agama
       # Language change callback handler, activate new locale in the libzypp backend
       # @param locale [String] the new locale
       def locale_handler(locale)
+        language, = locale.split(".")
+
         # set the locale in the Language module, when changing the repository
         # (product) it calls Pkg.SetTextLocale(Language.language) internally
-        Yast::Language.Set(locale)
+        Yast::Language.Set(language)
 
         # set libzypp locale (for communication only, Pkg.SetPackageLocale
         # call can be used for *installing* the language packages)
-        Yast::Pkg.SetTextLocale(locale)
+        Yast::Pkg.SetTextLocale(language)
 
         # refresh all enabled repositories to download the missing translation files
         Yast::Pkg.SourceGetCurrent(true).each do |src|
