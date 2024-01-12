@@ -22,7 +22,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
-  Form, Skeleton, Switch,
+  Form, Skeleton, Switch, Checkbox,
   ToggleGroup, ToggleGroupItem,
   Tooltip
 } from "@patternfly/react-core";
@@ -424,10 +424,12 @@ const EncryptionSettingsForm = ({
       <If
         condition={methods.includes(tpmId)}
         then={
-          <Switch
+          <Checkbox
             id="encryption_method"
             label={_("Use the TPM to decrypt automatically on each boot")}
-            isReversed
+            description={
+              _("If this option is enabled, make sure to boot directly the new system after installation. Remove this installation media if needed.")
+            }
             isChecked={method === tpmId}
             onChange={changeMethod}
           />
