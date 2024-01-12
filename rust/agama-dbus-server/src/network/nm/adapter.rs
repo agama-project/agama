@@ -43,6 +43,8 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
     ///
     /// * `network`: network model.
     async fn write(&self, network: &NetworkState) -> Result<(), Box<dyn std::error::Error>> {
+        let old_state = self.read().await?;
+
         // By now, traits do not support async functions. Using `task::block_on` allows
         // to use 'await'.
         for conn in ordered_connections(network) {
@@ -50,6 +52,13 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
                 continue;
             }
 
+            if let Some(old_conn) = old_state.get_connection_by_uuid(conn.uuid) {
+                if old_conn == conn {
+                    continue;
+                }
+            }
+
+            log::info!("Updating connection {} ({})", conn.id, conn.uuid);
             let result = if conn.is_removed() {
                 self.client.remove_connection(conn.uuid).await
             } else {

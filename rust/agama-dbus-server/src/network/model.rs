@@ -318,7 +318,7 @@ pub struct Device {
 }
 
 /// Represents an availble network connection.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Connection {
     pub id: String,
     pub uuid: Uuid,
@@ -329,12 +329,6 @@ pub struct Connection {
     pub controller: Option<Uuid>,
     pub match_config: MatchConfig,
     pub config: ConnectionConfig,
-}
-
-impl PartialEq for Connection {
-    fn eq(&self, other: &Self) -> bool {
-        self.id == other.id && self.uuid == other.uuid && self.ip_config == other.ip_config
-    }
 }
 
 impl Connection {
@@ -428,7 +422,7 @@ impl From<WirelessConfig> for ConnectionConfig {
 #[error("Invalid MAC address: {0}")]
 pub struct InvalidMacAddress(String);
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub enum MacAddress {
     MacAddress(macaddr::MacAddr6),
     Preserve,
