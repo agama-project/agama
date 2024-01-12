@@ -227,6 +227,7 @@ class ProposalManager {
    * @typedef {object} ProposalSettings
    * @property {string} bootDevice
    * @property {string} encryptionPassword
+   * @property {string} encryptionMethod
    * @property {boolean} lvm
    * @property {string} spacePolicy
    * @property {string[]} systemVGDevices
@@ -281,6 +282,16 @@ class ProposalManager {
   async getProductMountPoints() {
     const proxy = await this.proxies.proposalCalculator;
     return proxy.ProductMountPoints;
+  }
+
+  /**
+   * Gets the list of encryption methods accepted by the proposal
+   *
+   * @returns {Promise<string[]>}
+   */
+  async getEncryptionMethods() {
+    const proxy = await this.proxies.proposalCalculator;
+    return proxy.EncryptionMethods;
   }
 
   /**
@@ -345,6 +356,7 @@ class ProposalManager {
           spacePolicy: proxy.SpacePolicy,
           systemVGDevices: proxy.SystemVGDevices,
           encryptionPassword: proxy.EncryptionPassword,
+          encryptionMethod: proxy.EncryptionMethod,
           volumes: proxy.Volumes.map(this.buildVolume),
           // NOTE: strictly speaking, installation devices does not belong to the settings. It
           // should be a separate method instead of an attribute in the settings object.
@@ -365,7 +377,7 @@ class ProposalManager {
    * @param {ProposalSettings} settings
    * @returns {Promise<number>} 0 on success, 1 on failure
    */
-  async calculate({ bootDevice, encryptionPassword, lvm, spacePolicy, systemVGDevices, volumes }) {
+  async calculate({ bootDevice, encryptionPassword, encryptionMethod, lvm, spacePolicy, systemVGDevices, volumes }) {
     const dbusVolume = (volume) => {
       return removeUndefinedCockpitProperties({
         MountPath: { t: "s", v: volume.mountPath },
@@ -381,6 +393,7 @@ class ProposalManager {
     const settings = removeUndefinedCockpitProperties({
       BootDevice: { t: "s", v: bootDevice },
       EncryptionPassword: { t: "s", v: encryptionPassword },
+      EncryptionMethod: { t: "s", v: encryptionMethod },
       LVM: { t: "b", v: lvm },
       SpacePolicy: { t: "s", v: spacePolicy },
       SystemVGDevices: { t: "as", v: systemVGDevices },
