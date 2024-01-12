@@ -689,6 +689,32 @@ pub enum VlanProtocol {
     IEEE802_1ad,
 }
 
+#[derive(Debug, Error)]
+#[error("Invalid VlanProtocol: {0}")]
+pub struct InvalidVlanProtocol(String);
+
+impl std::str::FromStr for VlanProtocol {
+    type Err = InvalidVlanProtocol;
+
+    fn from_str(s: &str) -> Result<VlanProtocol, Self::Err> {
+        match s {
+            "802.1Q" => Ok(VlanProtocol::IEEE802_1Q),
+            "802.1ad" => Ok(VlanProtocol::IEEE802_1ad),
+            _ => Err(InvalidVlanProtocol(s.to_string())),
+        }
+    }
+}
+
+impl fmt::Display for VlanProtocol {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            VlanProtocol::IEEE802_1Q => "802.1Q",
+            VlanProtocol::IEEE802_1ad => "802.1ad",
+        };
+        write!(f, "{}", name)
+    }
+}
+
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct VlanConfig {
     pub parent: String,

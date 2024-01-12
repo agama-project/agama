@@ -581,13 +581,7 @@ fn vlan_config_to_dbus(cfg: &VlanConfig) -> NestedHash {
     let vlan: HashMap<&str, zvariant::Value> = HashMap::from([
         ("id", cfg.id.into()),
         ("parent", cfg.parent.clone().into()),
-        (
-            "protocol",
-            match cfg.protocol {
-                VlanProtocol::IEEE802_1Q => "802.1Q".into(),
-                VlanProtocol::IEEE802_1ad => "802.1ad".into(),
-            },
-        ),
+        ("protocol", cfg.protocol.to_string().into()),
     ]);
 
     NestedHash::from([("vlan", vlan)])
@@ -611,20 +605,15 @@ fn vlan_config_from_dbus(conn: &OwnedNestedHash) -> Option<VlanConfig> {
     let protocol = match vlan.get("protocol") {
         Some(x) => {
             let x: &str = x.downcast_ref()?;
-            if x == "802.1ad" {
-                VlanProtocol::IEEE802_1ad
-            } else {
-                VlanProtocol::IEEE802_1Q
-            }
+            VlanProtocol::from_str(x).unwrap_or_default()
         }
-        _ => VlanProtocol::IEEE802_1Q,
+        _ => Default::default(),
     };
 
     Some(VlanConfig {
         id: *id,
         parent: String::from(parent),
         protocol,
-        ..Default::default()
     })
 }
 
