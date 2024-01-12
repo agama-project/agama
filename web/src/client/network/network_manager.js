@@ -24,7 +24,7 @@
 import DBusClient from "../dbus";
 import cockpit from "../../lib/cockpit";
 import { NetworkEventTypes } from "./index";
-import { createAccessPoint, createConnection, SecurityProtocols } from "./model";
+import { createAccessPoint, SecurityProtocols } from "./model";
 import { ipPrefixFor } from "./utils";
 
 /**
@@ -257,6 +257,7 @@ class NetworkManagerAdapter {
     const { connection, ipv4, "802-11-wireless": wireless, path } = settings;
     const conn = {
       id: connection.uuid.v,
+      uuid: connection.uuid.v,
       name: connection.id.v,
       type: connection.type.v
     };
@@ -285,19 +286,6 @@ class NetworkManagerAdapter {
   }
 
   /**
-   * Returns the connection with the given ID
-   *
-   * @param {string} id - Connection ID
-   * @return {Promise<import("./index").Connection>}
-   */
-  async getConnection(id) {
-    const settingsProxy = await this.connectionSettingsObject(id);
-    const settings = await settingsProxy.GetSettings();
-
-    return this.connectionFromSettings(settings);
-  }
-
-  /**
    * Connects to given Wireless network
    *
    * @param {object} settings - connection options
@@ -305,38 +293,6 @@ class NetworkManagerAdapter {
   async connectTo(settings) {
     const settingsProxy = await this.connectionSettingsObject(settings.id);
     await this.activateConnection(settingsProxy.path);
-  }
-
-  /**
-   * Connects to given Wireless network
-   *
-   * @param {string} ssid - Network id
-   * @param {object} options - connection options
-   */
-  async addAndConnectTo(ssid, options = {}) {
-    const wireless = { ssid };
-    if (options.security) wireless.security = options.security;
-    if (options.password) wireless.password = options.password;
-    if (options.hidden) wireless.hidden = options.hidden;
-
-    const connection = createConnection({
-      name: ssid,
-      wireless
-    });
-
-    await this.addConnection(connection);
-  }
-
-  /**
-   * Adds a new connection
-   *
-   * @param {Connection} connection - Connection to add
-   */
-  async addConnection(connection) {
-    const proxy = await this.client.proxy(SETTINGS_IFACE);
-    const connCockpit = connectionToCockpit(connection);
-    const path = await proxy.AddConnection(connCockpit);
-    await this.activateConnection(path);
   }
 
   /**

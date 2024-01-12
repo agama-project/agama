@@ -61,15 +61,15 @@ const SecurityProtocols = Object.freeze({
 });
 
 // security protocols
-const AgamaSecurityProtocols = Object.freeze({
-  WEP: "none",
-  OWE: "owe",
-  DynamicWEP: "ieee8021x",
-  WPA2: "wpa-psk",
-  WPA3Personal: "sae",
-  WPA2Enterprise: "wpa-eap",
-  WPA3Only: "wpa-eap-suite-b-192"
-});
+// const AgamaSecurityProtocols = Object.freeze({
+//  WEP: "none",
+//  OWE: "owe",
+//  DynamicWEP: "ieee8021x",
+//  WPA2: "wpa-psk",
+//  WPA3Personal: "sae",
+//  WPA2Enterprise: "wpa-eap",
+//  WPA3Only: "wpa-eap-suite-b-192"
+// });
 
 /**
  * @typedef {object} IPAddress
