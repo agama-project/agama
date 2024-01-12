@@ -21,6 +21,7 @@
 
 import React, { useState } from "react";
 import { useProduct } from "~/context/product";
+import { useDracutNet } from "~/context/network";
 import { Navigate } from "react-router-dom";
 import { Page, InstallButton } from "~/components/core";
 import {
@@ -35,6 +36,9 @@ import { _ } from "~/i18n";
 
 function Overview() {
   const { selectedProduct } = useProduct();
+  // this should be probably turned into useState to invoke preconfigured network handling just for the
+  // first time (or not if we move the logic inside the component)
+  const { preconfiguredNet } = useDracutNet();
   const [showErrors, setShowErrors] = useState(false);
 
   if (selectedProduct === null) {
@@ -50,7 +54,7 @@ function Overview() {
     >
       <ProductSection />
       <L10nSection />
-      <NetworkSection />
+      <NetworkSection preconfiguredNet />
       <StorageSection showErrors />
       <SoftwareSection showErrors />
       <UsersSection showErrors={showErrors} />

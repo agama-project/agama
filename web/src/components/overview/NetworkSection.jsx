@@ -28,7 +28,12 @@ import { useInstallerClient } from "~/context/installer";
 import { formatIp } from "~/client/network/utils";
 import { _, n_ } from "~/i18n";
 
-export default function NetworkSection() {
+/*
+ * "preconfiguredNet" means that a network configuration was provided
+ * outside of Agama already and we should deal somehow with that as Agama
+ * is running on top of that configuration
+ */
+export default function NetworkSection({ preconfiguredNet }) {
   const { network: client } = useInstallerClient();
   const [initialized, setInitialized] = useState(false);
   const [connections, setConnections] = useState([]);
@@ -87,6 +92,13 @@ export default function NetworkSection() {
       n_("%d connection set:", "%d connections set:", activeConnections.length),
       activeConnections.length
     );
+
+    if (preconfiguredNet) {
+      const conns = activeConnections();
+      for(var i = 0; i < conns.length(); i++) {
+        updateConnection(conns[i]);
+      }
+    }
 
     return (
       <>
