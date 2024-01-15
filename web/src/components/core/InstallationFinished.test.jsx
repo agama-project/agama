@@ -31,18 +31,22 @@ jest.mock("~/client");
 jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const finishInstallationFn = jest.fn();
-
-const storageSettings = { encryptionMethod: "luks2" };
+let encryptionMethod;
 
 describe("InstallationFinished", () => {
   beforeEach(() => {
+    encryptionMethod = "luks2";
     createClient.mockImplementation(() => {
       return {
         manager: {
           finishInstallation: finishInstallationFn,
           useIguana: () => Promise.resolve(false)
         },
-        storage: { proposal: { getResult: jest.fn().mockResolvedValue({ settings: storageSettings }) } }
+        storage: {
+          proposal: {
+            getResult: jest.fn().mockResolvedValue({ settings: { encryptionMethod } })
+          },
+        }
       };
     });
   });
@@ -62,5 +66,23 @@ describe("InstallationFinished", () => {
     const rebootButton = screen.getByRole("button", { name: /Reboot/i });
     await user.click(rebootButton);
     expect(finishInstallationFn).toHaveBeenCalled();
+  });
+
+  describe("when TPM was set to decrypt automatically on each boot", () => {
+    beforeEach(() => {
+      encryptionMethod = "tpm_fde";
+    });
+
+    it("shows the TPM reminder", async () => {
+      installerRender(<InstallationFinished />);
+      await screen.findAllByText(/TPM/);
+    });
+  });
+
+  describe("when TPM was not set to decrypt automatically on each boot", () => {
+    it("does not show the TPM reminder", () => {
+      installerRender(<InstallationFinished />);
+      expect(screen.queryByText(/TPM/)).toBeNull();
+    });
   });
 });
