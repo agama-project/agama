@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,6 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { createClient } from "~/client";
+import { EncryptionMethods } from "~/client/storage";
 
 import InstallationFinished from "./InstallationFinished";
 
@@ -31,11 +32,13 @@ jest.mock("~/client");
 jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const finishInstallationFn = jest.fn();
+let encryptionPassword;
 let encryptionMethod;
 
 describe("InstallationFinished", () => {
   beforeEach(() => {
-    encryptionMethod = "luks2";
+    encryptionPassword = "n0tS3cr3t";
+    encryptionMethod = EncryptionMethods.LUKS2;
     createClient.mockImplementation(() => {
       return {
         manager: {
@@ -44,7 +47,9 @@ describe("InstallationFinished", () => {
         },
         storage: {
           proposal: {
-            getResult: jest.fn().mockResolvedValue({ settings: { encryptionMethod } })
+            getResult: jest.fn().mockResolvedValue({
+              settings: { encryptionMethod, encryptionPassword }
+            })
           },
         }
       };
@@ -68,21 +73,46 @@ describe("InstallationFinished", () => {
     expect(finishInstallationFn).toHaveBeenCalled();
   });
 
-  describe("when TPM was set to decrypt automatically on each boot", () => {
+  describe("when TPM is set as encryption method", () => {
     beforeEach(() => {
-      encryptionMethod = "tpm_fde";
+      encryptionMethod = EncryptionMethods.TPM;
     });
 
-    it("shows the TPM reminder", async () => {
-      installerRender(<InstallationFinished />);
-      await screen.findAllByText(/TPM/);
+    describe("and encryption was set", () => {
+      it("shows the TPM reminder", async () => {
+        installerRender(<InstallationFinished />);
+        await screen.findAllByText(/TPM/);
+      });
+    });
+
+    describe("but encryption was not set", () => {
+      beforeEach(() => {
+        encryptionPassword = "";
+      });
+
+      it("does not show the TPM reminder", async () => {
+        const { user } = installerRender(<InstallationFinished />);
+        // Forcing the test to slow down a bit with a fake user interaction
+        // because actually the reminder will be not rendered immediately
+        // making the queryAllByText to produce a false positive if triggered
+        // too early here.
+        const congratsText = screen.getByText("Congratulations!");
+        await user.click(congratsText);
+        expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
+      });
     });
   });
 
-  describe("when TPM was not set to decrypt automatically on each boot", () => {
-    it("does not show the TPM reminder", () => {
-      installerRender(<InstallationFinished />);
-      expect(screen.queryByText(/TPM/)).toBeNull();
+  describe("when TPM is not set as encryption method", () => {
+    it("does not show the TPM reminder", async () => {
+      const { user } = installerRender(<InstallationFinished />);
+      // Forcing the test to slow down a bit with a fake user interaction
+      // because actually the reminder will be not rendered immediately
+      // making the queryAllByText to produce a false positive if triggered
+      // too early here.
+      const congratsText = screen.getByText("Congratulations!");
+      await user.click(congratsText);
+      expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
     });
   });
 });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -31,16 +31,17 @@ import {
   HintBody,
 } from "@patternfly/react-core";
 
-import { Page, If } from "~/components/core";
-import { Center, Icon } from "~/components/layout";
+import { If, Page } from "~/components/core";
+import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
+import { EncryptionMethods } from "~/client/storage";
 import { _ } from "~/i18n";
 
 const TpmHint = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <Hint>
+    <Hint className="tpm-hint">
       <HintBody>
         <ExpandableSection
           isExpanded={isExpanded}
@@ -64,63 +65,53 @@ const SuccessIcon = () => <Icon name="check_circle" className="icon-xxxl color-s
 
 function InstallationFinished() {
   const client = useInstallerClient();
-  const [iguana, setIguana] = useState(false);
-  const [tpm, setTpm] = useState(false);
+  const [usingIguana, setUsingIguana] = useState(false);
+  const [usingTpm, setUsingTpm] = useState(false);
   const closingAction = () => client.manager.finishInstallation();
-  const buttonCaption = iguana
-    // TRANSLATORS: button label
-    ? _("Finish")
-    // TRANSLATORS: button label
-    : _("Reboot");
 
   useEffect(() => {
-    async function getIguana() {
-      const ret = await client.manager.useIguana();
-      setIguana(ret);
+    async function preparePage() {
+      const iguana = await client.manager.useIguana();
+      // FIXME: This logic should likely not be placed here, it's too coupled to storage internals.
+      // Something to fix when this whole page is refactored in a (hopefully near) future.
+      const { settings: { encryptionPassword, encryptionMethod } } = await client.storage.proposal.getResult();
+      setUsingIguana(iguana);
+      setUsingTpm(encryptionPassword?.length && encryptionMethod === EncryptionMethods.TPM);
     }
 
-    // FIXME: This logic should likely not be placed here, it's too complex and too coupled to storage internals.
-    // Something to fix when this whole page is refactored in a (hopefully near) future.
-    async function getTpm() {
-      const result = await client.storage.proposal.getResult();
-      const method = result.settings.encryptionMethod;
-      const tpmId = "tpm_fde";
-      setTpm(method === tpmId);
-    }
-
-    getIguana();
-    getTpm();
+    // TODO: display the page in a loading mode while needed data is being fetched.
+    preparePage();
   });
 
   return (
     // TRANSLATORS: page title
     <Page icon="task_alt" title={_("Installation Finished")}>
-      <Center>
-        <EmptyState variant="xl">
-          <EmptyStateHeader
-            titleText={_("Congratulations!")}
-            headingLevel="h2"
-            icon={<EmptyStateIcon icon={SuccessIcon} />}
-          />
-          <EmptyStateBody>
-            <Text>{_("The installation on your machine is complete.")}</Text>
-            <Text>
-              {
-                iguana
-                  ? _("At this point you can power off the machine.")
-                  : _("At this point you can reboot the machine to log in to the new system.")
-              }
-            </Text>
+      <EmptyState variant="xl">
+        <EmptyStateHeader
+          titleText={_("Congratulations!")}
+          headingLevel="h2"
+          icon={<EmptyStateIcon icon={SuccessIcon} />}
+        />
+        <EmptyStateBody>
+          <Text>{_("The installation on your machine is complete.")}</Text>
+          <Text>
             <If
-              condition={tpm}
-              then={<TpmHint />}
+              condition={usingIguana}
+              then={_("At this point you can power off the machine.")}
+              else={_("At this point you can reboot the machine to log in to the new system.")}
             />
-          </EmptyStateBody>
-        </EmptyState>
-      </Center>
+          </Text>
+          <If
+            condition={usingTpm}
+            then={<TpmHint />}
+          />
+        </EmptyStateBody>
+      </EmptyState>
 
       <Page.Actions>
-        <Page.Action onClick={closingAction}>{buttonCaption}</Page.Action>
+        <Page.Action onClick={closingAction}>
+          {usingIguana ? _("Finish") : _("Reboot")}
+        </Page.Action>
       </Page.Actions>
     </Page>
   );

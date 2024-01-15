@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -45,6 +45,17 @@ const ZFCP_CONTROLLERS_NAMESPACE = "/org/opensuse/Agama/Storage1/zfcp_controller
 const ZFCP_CONTROLLER_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Controller";
 const ZFCP_DISKS_NAMESPACE = "/org/opensuse/Agama/Storage1/zfcp_disks";
 const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
+
+/**
+ * Enum for the encryption method values
+ *
+ * @readonly
+ * @enum { string }
+ */
+const EncryptionMethods = Object.freeze({
+  LUKS2: "luks2",
+  TPM: "tpm_fde"
+});
 
 /**
  * Removes properties with undefined value
@@ -1433,4 +1444,4 @@ class StorageClient extends WithIssues(
   ), STORAGE_OBJECT
 ) { }
 
-export { StorageClient };
+export { StorageClient, EncryptionMethods };

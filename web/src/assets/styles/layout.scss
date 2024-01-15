@@ -55,6 +55,8 @@
     grid-area: body;
     overflow: auto;
     padding-block: var(--spacer-normal);
+    container-type: inline-size;
+    container-name: agama-page-content;
   }
 
   footer {
