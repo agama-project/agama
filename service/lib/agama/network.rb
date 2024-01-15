@@ -52,6 +52,7 @@ module Agama
     attr_reader :logger
 
     ETC_NM_DIR = "/etc/NetworkManager"
+    RUN_NM_DIR = "/run/NetworkManager"
     private_constant :ETC_NM_DIR
 
     def enable_service
@@ -67,6 +68,13 @@ module Agama
     # Copies NetworkManager configuration files
     def copy_files
       return unless Dir.exist?(ETC_NM_DIR)
+
+      # runtime configuration is copied first, so in case of later modification
+      # on same interface it gets overwriten.
+      copy_directory(
+        File.join(RUN_NM_DIR, "system-connections"),
+        File.join(Yast::Installation.destdir, ETC_NM_DIR, "system-connections")
+      )
 
       copy_directory(
         File.join(ETC_NM_DIR, "system-connections"),
