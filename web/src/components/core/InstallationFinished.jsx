@@ -26,18 +26,46 @@ import {
   EmptyStateBody,
   EmptyStateHeader,
   EmptyStateIcon,
+  ExpandableSection,
+  Hint,
+  HintBody,
 } from "@patternfly/react-core";
 
-import { Page } from "~/components/core";
+import { Page, If } from "~/components/core";
 import { Center, Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
+
+const TpmHint = () => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <Hint>
+      <HintBody>
+        <ExpandableSection
+          isExpanded={isExpanded}
+          onToggle={() => setIsExpanded(!isExpanded)}
+          toggleText={
+            <strong>
+              {_("Make sure to boot directly to the new system to finish the configuration of TPM-based decryption.")}
+            </strong>
+          }
+        >
+          <Text>
+            {_("The final step to configure the TPM to automatically open devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader. If a local media was used to run this installer, make sure is removed before next boot.")}
+          </Text>
+        </ExpandableSection>
+      </HintBody>
+    </Hint>
+  );
+};
 
 const SuccessIcon = () => <Icon name="check_circle" className="icon-xxxl color-success" />;
 
 function InstallationFinished() {
   const client = useInstallerClient();
   const [iguana, setIguana] = useState(false);
+  const [tpm, setTpm] = useState(false);
   const closingAction = () => client.manager.finishInstallation();
   const buttonCaption = iguana
     // TRANSLATORS: button label
@@ -51,7 +79,17 @@ function InstallationFinished() {
       setIguana(ret);
     }
 
+    // FIXME: This logic should likely not be placed here, it's too complex and too coupled to storage internals.
+    // Something to fix when this whole page is refactored in a (hopefully near) future.
+    async function getTpm() {
+      const result = await client.storage.proposal.getResult();
+      const method = result.settings.encryptionMethod;
+      const tpmId = "tpm_fde";
+      setTpm(method === tpmId);
+    }
+
     getIguana();
+    getTpm();
   });
 
   return (
@@ -73,7 +111,10 @@ function InstallationFinished() {
                   : _("At this point you can reboot the machine to log in to the new system.")
               }
             </Text>
-            <Text>{_("Have a lot of fun! Your openSUSE Development Team.")}</Text>
+            <If
+              condition={tpm}
+              then={<TpmHint />}
+            />
           </EmptyStateBody>
         </EmptyState>
       </Center>

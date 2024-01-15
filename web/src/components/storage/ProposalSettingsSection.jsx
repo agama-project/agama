@@ -428,6 +428,8 @@ const EncryptionSettingsForm = ({
             id="encryption_method"
             label={_("Use the TPM to decrypt automatically on each boot")}
             description={
+              // TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
+              // 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
               _("If this option is enabled, make sure to boot directly the new system after installation. Remove this installation media if needed.")
             }
             isChecked={method === tpmId}

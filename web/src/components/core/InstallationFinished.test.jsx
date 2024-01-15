@@ -32,6 +32,8 @@ jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const finishInstallationFn = jest.fn();
 
+const storageSettings = { encryptionMethod: "luks2" };
+
 describe("InstallationFinished", () => {
   beforeEach(() => {
     createClient.mockImplementation(() => {
@@ -39,7 +41,8 @@ describe("InstallationFinished", () => {
         manager: {
           finishInstallation: finishInstallationFn,
           useIguana: () => Promise.resolve(false)
-        }
+        },
+        storage: { proposal: { getResult: jest.fn().mockResolvedValue({ settings: storageSettings }) } }
       };
     });
   });
