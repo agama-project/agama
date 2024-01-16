@@ -22,6 +22,22 @@
 // @ts-check
 
 const ISSUES_IFACE = "org.opensuse.Agama1.Issues";
+const STATUS_IFACE = "org.opensuse.Agama1.ServiceStatus";
+const PROGRESS_IFACE = "org.opensuse.Agama1.Progress";
+const VALIDATION_IFACE = "org.opensuse.Agama1.Validation";
+
+/**
+ * @typedef {new(...args: any[]) => T} GConstructor
+ * @template {object} T
+ */
+
+/**
+ * @typedef {GConstructor<{ client: import("./dbus").default }>} WithDBusClient
+ */
+
+/**
+ * @typedef {GConstructor<{ client: import("./dbus").default, proxies: Object }>} WithDBusProxies
+ */
 
 /**
  * @typedef {[string, string, number, number]} DBusIssue
@@ -117,41 +133,6 @@ const WithIssues = (superclass, object_path) => class extends superclass {
   }
 };
 
-const STATUS_IFACE = "org.opensuse.Agama1.ServiceStatus";
-
-/**
- * @typedef {object} Progress
- * @property {number} total - number of steps
- * @property {number} current - current step
- * @property {string} message - message of the current step
- * @property {boolean} finished - whether the progress already finished
- */
-
-/**
- * @callback ProgressHandler
- * @param {Progress} progress - progress status
- * @return {void}
- */
-
-/**
- * @callback ValidationErrorsHandler
- * @param {ValidationError[]} errors - validation errors
- * @return {void}
- */
-
-/**
- * @typedef {new(...args: any[]) => T} GConstructor
- * @template {object} T
- */
-
-/**
- * @typedef {GConstructor<{ client: import("./dbus").default }>} WithDBusClient
- */
-
-/**
- * @typedef {GConstructor<{ client: import("./dbus").default, proxies: Object }>} WithDBusProxies
- */
-
 /**
  * Extends the given class with methods to get and track the progress over D-Bus
  *
@@ -185,7 +166,19 @@ const WithStatus = (superclass, object_path) => class extends superclass {
   }
 };
 
-const PROGRESS_IFACE = "org.opensuse.Agama1.Progress";
+/**
+ * @typedef {object} Progress
+ * @property {number} total - number of steps
+ * @property {number} current - current step
+ * @property {string} message - message of the current step
+ * @property {boolean} finished - whether the progress already finished
+ */
+
+/**
+ * @callback ProgressHandler
+ * @param {Progress} progress - progress status
+ * @return {void}
+ */
 
 /**
  * Extends the given class with methods to get and track the progress over D-Bus
@@ -234,14 +227,18 @@ const WithProgress = (superclass, object_path) => class extends superclass {
  */
 
 /**
+ * @callback ValidationErrorsHandler
+ * @param {ValidationError[]} errors - validation errors
+ * @return {void}
+ */
+
+/**
  *
  * @param {string} message - Error message
  */
 const createError = (message) => {
   return { message };
 };
-
-const VALIDATION_IFACE = "org.opensuse.Agama1.Validation";
 
 /**
  * Extends the given class with methods to get validation errors over D-Bus
