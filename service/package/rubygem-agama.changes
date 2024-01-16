@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jan 16 10:49:14 UTC 2024 - Michal Filka <mfilka@suse.com>
+
+- bsc#1210541, gh#openSUSE/agama#516
+  - copy NM's runtime config created on dracut's request to the target 
+-------------------------------------------------------------------
 Thu Jan 11 15:32:44 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Handle the encoding included in the UILocale D-Bus property
