@@ -102,6 +102,15 @@ fi
 # Rubygem dependencies
 (
   cd $MYDIR/service
+
+  if [ -d /checkout-ruby-dbus ]; then
+      # we are in a container, told to use that one
+      # instead of a released version
+      # edit +Gemfile and -gemspec
+      sed -e '/ruby-dbus/d' -i Gemfile agama.gemspec
+      sed -e '/gemspec/a gem "ruby-dbus", path: "/checkout-ruby-dbus"' -i Gemfile
+  fi
+
   bundle config set --local path 'vendor/bundle'
   bundle install
 )
