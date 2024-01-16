@@ -82,7 +82,12 @@ const WithIssues = (superclass, object_path) => class extends superclass {
    */
   async getIssues() {
     const proxy = await this.client.proxy(ISSUES_IFACE, object_path);
-    return proxy.All.map(buildIssue);
+    try {
+      return proxy.All.map(buildIssue);
+    } catch (e) {
+      console.log(`Could not get the list of issues: ${e}`);
+      return [];
+    }
   }
 
   /**
