@@ -70,7 +70,7 @@ module Agama
       return unless Dir.exist?(ETC_NM_DIR)
 
       # runtime configuration is copied first, so in case of later modification
-      # on same interface it gets overwriten.
+      # on same interface it gets overwriten (bsc#1210541).
       copy_directory(
         File.join(RUN_NM_DIR, "system-connections"),
         File.join(Yast::Installation.destdir, ETC_NM_DIR, "system-connections")
