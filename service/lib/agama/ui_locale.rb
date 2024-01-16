@@ -45,7 +45,6 @@ module Agama
   private
 
     def change_locale(locale)
-      # TODO: check if we can use UTF-8 everywhere including strange arch consoles
       language, encoding = locale.split(".")
       Yast::WFM.SetLanguage(language, encoding)
       # explicitly set ENV to get localization also from libraries like libstorage
