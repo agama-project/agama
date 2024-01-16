@@ -96,7 +96,7 @@ describe("InstallerL10nProvider", () => {
     describe("when the Cockpit language is already set", () => {
       beforeEach(() => {
         document.cookie = "CockpitLang=en-us; path=/;";
-        getUILocaleFn.mockResolvedValueOnce("en_US");
+        getUILocaleFn.mockResolvedValueOnce("en_US.UTF-8");
       });
 
       it("displays the children content and does not reload", async () => {
@@ -116,8 +116,8 @@ describe("InstallerL10nProvider", () => {
     describe("when the Cockpit language is set to an unsupported language", () => {
       beforeEach(() => {
         document.cookie = "CockpitLang=de-de; path=/;";
-        getUILocaleFn.mockResolvedValueOnce("de_DE");
-        getUILocaleFn.mockResolvedValueOnce("es_ES");
+        getUILocaleFn.mockResolvedValueOnce("de_DE.UTF-8");
+        getUILocaleFn.mockResolvedValueOnce("es_ES.UTF-8");
       });
 
       it("uses the first supported language from the browser", async () => {
@@ -137,7 +137,7 @@ describe("InstallerL10nProvider", () => {
         );
 
         await waitFor(() => screen.getByText("hola"));
-        expect(setUILocaleFn).toHaveBeenCalledWith("es_ES");
+        expect(setUILocaleFn).toHaveBeenCalledWith("es_ES.UTF-8");
       });
     });
 
@@ -146,7 +146,7 @@ describe("InstallerL10nProvider", () => {
         // Ensure both, UI and backend mock languages, are in sync since
         // client.setUILocale is mocked too.
         // See navigator.language in the beforeAll at the top of the file.
-        getUILocaleFn.mockResolvedValue("es_ES");
+        getUILocaleFn.mockResolvedValue("es_ES.UTF-8");
       });
 
       it("sets the preferred language from browser and reloads", async () => {
@@ -201,7 +201,7 @@ describe("InstallerL10nProvider", () => {
     describe("when the Cockpit language is already set to 'cs-cz'", () => {
       beforeEach(() => {
         document.cookie = "CockpitLang=cs-cz; path=/;";
-        getUILocaleFn.mockResolvedValueOnce("cs_CZ");
+        getUILocaleFn.mockResolvedValueOnce("cs_CZ.UTF-8");
       });
 
       it("displays the children content and does not reload", async () => {
@@ -246,14 +246,14 @@ describe("InstallerL10nProvider", () => {
         );
 
         await waitFor(() => screen.getByText("ahoj"));
-        expect(setUILocaleFn).toHaveBeenCalledWith("cs_CZ");
+        expect(setUILocaleFn).toHaveBeenCalledWith("cs_CZ.UTF-8");
       });
     });
 
     describe("when the Cockpit language is not set", () => {
       beforeEach(() => {
-        getUILocaleFn.mockResolvedValueOnce("en_US");
-        getUILocaleFn.mockResolvedValueOnce("cs_CZ");
+        getUILocaleFn.mockResolvedValueOnce("en_US.UTF-8");
+        getUILocaleFn.mockResolvedValueOnce("cs_CZ.UTF-8");
         setUILocaleFn.mockResolvedValue();
       });
 
@@ -274,7 +274,7 @@ describe("InstallerL10nProvider", () => {
         );
 
         await waitFor(() => screen.getByText("ahoj"));
-        expect(setUILocaleFn).toHaveBeenCalledWith("cs_CZ");
+        expect(setUILocaleFn).toHaveBeenCalledWith("cs_CZ.UTF-8");
       });
     });
   });
