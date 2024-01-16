@@ -37,7 +37,7 @@ const LOCALE_PATH = "/org/opensuse/Agama1/Locale";
 
 /**
  * @typedef {object} Locale
- * @property {string} id - Language id (e.g., "en_US").
+ * @property {string} id - Language id (e.g., "en_US.UTF-8").
  * @property {string} name - Language name (e.g., "English").
  * @property {string} territory - Territory name (e.g., "United States").
  */

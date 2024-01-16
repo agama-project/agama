@@ -39,7 +39,8 @@ describe Agama::DBus::ManagerService do
   let(:users_obj) { instance_double(Agama::DBus::Users, path: "/org/opensuse/Agama/Users1") }
 
   let(:locale_client) do
-    instance_double(Agama::DBus::Clients::Locale, ui_locale: "en_US", on_ui_locale_change: nil)
+    instance_double(Agama::DBus::Clients::Locale, ui_locale: "en_US.UTF-8",
+      on_ui_locale_change: nil)
   end
 
   before do

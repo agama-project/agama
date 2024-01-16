@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 11 15:32:44 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Handle the encoding included in the UILocale D-Bus property
+  (gh#openSUSE/agama#987).
+
+-------------------------------------------------------------------
 Thu Jan 11 12:08:29 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Translate the pattern descriptions (gh#openSUSE/agama#859)
