@@ -75,13 +75,19 @@ const buildIssue = (dbusIssue) => {
  * @template {!WithDBusClient} T
  */
 const WithIssues = (superclass, object_path) => class extends superclass {
+  constructor(...args) {
+    super(...args);
+    this.proxies ||= {};
+    this.proxies.issues = this.client.proxy(ISSUES_IFACE, object_path);
+  }
+
   /**
    * Returns the issues
    *
    * @return {Promise<Issue[]>}
    */
   async getIssues() {
-    const proxy = await this.client.proxy(ISSUES_IFACE, object_path);
+    const proxy = await this.proxies.issues;
     return proxy.All.map(buildIssue);
   }
 
@@ -140,7 +146,7 @@ const STATUS_IFACE = "org.opensuse.Agama1.ServiceStatus";
  */
 
 /**
- * @typedef {GConstructor<{ client: import("./dbus").default }>} WithDBusClient
+ * @typedef {GConstructor<{ client: import("./dbus").default, proxies: ?Object }>} WithDBusClient
  */
 
 /**
