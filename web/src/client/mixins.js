@@ -72,12 +72,11 @@ const buildIssue = (dbusIssue) => {
  * Extends the given class with methods to get the issues over D-Bus
  * @param {string} object_path - object_path
  * @param {T} superclass - superclass to extend
- * @template {!WithDBusClient} T
+ * @template {!WithDBusProxies} T
  */
 const WithIssues = (superclass, object_path) => class extends superclass {
   constructor(...args) {
     super(...args);
-    this.proxies ||= {};
     this.proxies.issues = this.client.proxy(ISSUES_IFACE, object_path);
   }
 
@@ -146,7 +145,11 @@ const STATUS_IFACE = "org.opensuse.Agama1.ServiceStatus";
  */
 
 /**
- * @typedef {GConstructor<{ client: import("./dbus").default, proxies: ?Object }>} WithDBusClient
+ * @typedef {GConstructor<{ client: import("./dbus").default }>} WithDBusClient
+ */
+
+/**
+ * @typedef {GConstructor<{ client: import("./dbus").default, proxies: Object }>} WithDBusProxies
  */
 
 /**
