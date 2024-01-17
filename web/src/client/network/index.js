@@ -352,7 +352,10 @@ class NetworkClient {
    * @param {Connection} connection - Connection to delete
    */
   async deleteConnection(connection) {
-    return this.nm.deleteConnection(connection);
+    const proxy = await this.client.proxy(CONNECTIONS_IFACE, CONNECTIONS_PATH);
+    const conn = await this.getConnection(connection.uuid);
+    await proxy.RemoveConnection(conn.id);
+    return this.proxies.connectionsRoot.Apply();
   }
 
   /*

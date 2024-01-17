@@ -203,6 +203,7 @@ class NetworkManagerAdapter {
       settings: await this.client.proxy(SETTINGS_IFACE),
       connections: await this.client.proxies(CONNECTION_IFACE, SETTINGS_NAMESPACE)
     };
+
     this.subscribeToEvents();
   }
 
@@ -345,7 +346,7 @@ class NetworkManagerAdapter {
       let connection;
 
       if (eventType === NetworkEventTypes.CONNECTION_REMOVED) {
-        connection = { id: proxy.id, path: proxy.path };
+        connection = { id: proxy.uuid, path: proxy.path };
       } else {
         connection = await this.connectionFromProxy(proxy);
       }
@@ -417,6 +418,7 @@ class NetworkManagerAdapter {
 
     return {
       id: proxy.Uuid,
+      uuid: proxy.Uuid,
       name: proxy.Id,
       addresses,
       type: proxy.Type,

@@ -141,7 +141,10 @@ export default function NetworkPage() {
 
   const forgetConnection = async ({ id }) => {
     const connection = await client.getConnection(id);
-    client.deleteConnection(connection);
+
+    if (connection) {
+      client.deleteConnection(connection);
+    }
   };
 
   const activeWiredConnections = connections.filter(c => c.type === ConnectionTypes.ETHERNET);
