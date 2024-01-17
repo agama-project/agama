@@ -23,7 +23,7 @@ import React, { useEffect, useState } from "react";
 import { sprintf } from "sprintf-js";
 
 import { Em, Section, SectionSkeleton } from "~/components/core";
-import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
+import { ConnectionTypes } from "~/client/network";
 import { useInstallerClient } from "~/context/installer";
 import { formatIp } from "~/client/network/utils";
 import { _, n_ } from "~/i18n";
