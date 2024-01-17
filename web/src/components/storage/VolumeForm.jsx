@@ -764,11 +764,9 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
 
   const ShowMountPointSelector = () => (
     <MountPointFormSelect
-        id="mountPoint"
         value={state.formData.mountPoint}
         onChange={changeVolume}
         volumes={currentVolume ? [currentVolume] : templates}
-        isDisabled={currentVolume !== undefined}
     />
   );
 
