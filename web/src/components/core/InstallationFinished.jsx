@@ -21,14 +21,13 @@
 
 import React, { useState, useEffect } from "react";
 import {
+  Alert,
   Text,
   EmptyState,
   EmptyStateBody,
   EmptyStateHeader,
   EmptyStateIcon,
   ExpandableSection,
-  Hint,
-  HintBody,
 } from "@patternfly/react-core";
 
 import { If, Page } from "~/components/core";
@@ -39,25 +38,26 @@ import { _ } from "~/i18n";
 
 const TpmHint = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const title = _("TPM sealing requires the new system to be booted directly.");
 
   return (
-    <Hint className="tpm-hint">
-      <HintBody>
+    <Alert isInline variant="info" className="tpm-hint" title={<strong>{title}</strong>}>
+      <div className="stack">
+        {_("If a local media was used to run this installer, remove it before the next boot.")}
         <ExpandableSection
           isExpanded={isExpanded}
           onToggle={() => setIsExpanded(!isExpanded)}
-          toggleText={
-            <strong>
-              {_("Make sure to boot directly to the new system to finish the configuration of TPM-based decryption.")}
-            </strong>
-          }
+          toggleText={isExpanded ? _("Hide details") : _("See more details")}
         >
-          <Text>
-            {_("The final step to configure the TPM to automatically open devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader. If a local media was used to run this installer, make sure is removed before next boot.")}
-          </Text>
+          <Text
+            dangerouslySetInnerHTML={{
+              // TRANSLATORS: Do not translate 'abbr' and 'title', they are part of the HTML markup
+              __html: _("The final step to configure the <abbr title='Trusted Platform Module'>TPM</abbr> to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.")
+            }}
+          />
         </ExpandableSection>
-      </HintBody>
-    </Hint>
+      </div>
+    </Alert>
   );
 };
 

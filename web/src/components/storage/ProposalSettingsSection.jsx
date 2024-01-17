@@ -413,6 +413,17 @@ const EncryptionSettingsForm = ({
     onSubmit(password, method);
   };
 
+  const Description = () => (
+    <span
+      dangerouslySetInnerHTML={{
+        // TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
+        // 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
+        // Do not translate 'abbr' and 'title', they are part of the HTML markup.
+        __html: _("The password will not be needed to boot and access the data if the <abbr title='Trusted Platform Module'>TPM</abbr> can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.")
+      }}
+    />
+  );
+
   return (
     <Form id={id} onSubmit={submitForm}>
       <PasswordAndConfirmationInput
@@ -427,11 +438,7 @@ const EncryptionSettingsForm = ({
           <Checkbox
             id="encryption_method"
             label={_("Use the TPM to decrypt automatically on each boot")}
-            description={
-              // TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
-              // 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
-              _("If this option is enabled, make sure to boot directly the new system after installation. Remove this installation media if needed.")
-            }
+            description={<Description />}
             isChecked={method === tpmId}
             onChange={changeMethod}
           />
