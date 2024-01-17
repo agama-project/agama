@@ -44,6 +44,8 @@ export default function NetworkSection() {
   }, [client, initialized]);
 
   useEffect(() => {
+    if (!initialized) return;
+
     return client.onNetworkEvent(({ type, payload }) => {
       switch (type) {
         case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
@@ -68,7 +70,7 @@ export default function NetworkSection() {
         }
       }
     });
-  });
+  }, [client, initialized]);
 
   const Content = () => {
     if (!initialized) return <SectionSkeleton />;
