@@ -34,6 +34,7 @@ const initialState = {
   loading: true,
   availableDevices: [],
   volumeTemplates: [],
+  encryptionMethods: [],
   settings: {},
   actions: [],
   errors: []
