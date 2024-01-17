@@ -46,35 +46,15 @@ export default function NetworkSection() {
   useEffect(() => {
     if (!initialized) return;
 
-    return client.onNetworkEvent(({ type, payload }) => {
-      switch (type) {
-        case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
-          setConnections(conns => {
-            const newConnections = conns.filter(c => c.id !== payload.id);
-            return [...newConnections, payload];
-          });
-          break;
-        }
-
-        case NetworkEventTypes.ACTIVE_CONNECTION_UPDATED: {
-          setConnections(conns => {
-            const newConnections = conns.filter(c => c.id !== payload.id);
-            return [...newConnections, payload];
-          });
-          break;
-        }
-
-        case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
-          setConnections(conns => conns.filter(c => c.id !== payload.id));
-          break;
-        }
-      }
+    return client.onNetworkEvent(() => {
+      setConnections(client.activeConnections());
     });
   }, [client, initialized]);
 
   const Content = () => {
     if (!initialized) return <SectionSkeleton />;
 
+    console.log("Connetions", connections);
     const activeConnections = connections.filter(c => [ConnectionTypes.WIFI, ConnectionTypes.ETHERNET].includes(c.type));
 
     if (activeConnections.length === 0) return _("No network connections detected");
