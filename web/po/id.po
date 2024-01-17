@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-01-10 02:19+0000\n"
-"PO-Revision-Date: 2023-12-31 20:39+0000\n"
+"PO-Revision-Date: 2024-01-12 18:59+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
-"Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
-"web/id/>\n"
+"Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/"
+"agama-web/id/>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -92,7 +92,7 @@ msgstr "Muat ulang"
 
 #: src/components/core/DevelopmentInfo.jsx:55
 msgid "Cockpit server"
-msgstr ""
+msgstr "Server Cockpit"
 
 #: src/components/core/FileViewer.jsx:65
 msgid "Reading file..."
@@ -103,13 +103,12 @@ msgid "Cannot read the file"
 msgstr "Tidak dapat membaca berkas"
 
 #: src/components/core/InstallButton.jsx:37
-#, fuzzy
 msgid ""
 "There are some reported issues. Please review them in the previous steps "
 "before proceeding with the installation."
 msgstr ""
-"Ada beberapa masalah yang dilaporkan. Silakan periksa [daftar masalah] "
-"sebelum melanjutkan penginstalan."
+"Ada beberapa masalah yang dilaporkan. Silakan periksa kembali pada langkah "
+"sebelumnya sebelum melanjutkan instalasi."
 
 #: src/components/core/InstallButton.jsx:49
 msgid "Confirm Installation"
@@ -247,9 +246,8 @@ msgid "Show global options"
 msgstr "Tampilkan opsi global"
 
 #: src/components/core/Page.jsx:215
-#, fuzzy
 msgid "Page Actions"
-msgstr "Tindakan yang Direncanakan"
+msgstr "Tindakan Halaman"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:35
 msgid "Passwords do not match"
@@ -315,9 +313,8 @@ msgid "Installer Options"
 msgstr "Opsi Penginstal"
 
 #: src/components/core/Sidebar.jsx:128
-#, fuzzy
 msgid "Hide installer options"
-msgstr "Opsi Penginstal"
+msgstr "Sembunyikan opsi penginstal"
 
 #: src/components/core/Sidebar.jsx:136
 msgid "Diagnostic tools"
@@ -325,24 +322,20 @@ msgstr "Alat bantu diagnostik"
 
 #. TRANSLATORS: Titles used for the popup displaying found section issues
 #: src/components/core/ValidationErrors.jsx:53
-#, fuzzy
 msgid "Software issues"
-msgstr "Perangkat Lunak %s"
+msgstr "Masalah perangkat lunak"
 
 #: src/components/core/ValidationErrors.jsx:54
-#, fuzzy
 msgid "Product issues"
-msgstr "Produk"
+msgstr "Masalah Produk"
 
 #: src/components/core/ValidationErrors.jsx:55
-#, fuzzy
 msgid "Storage issues"
-msgstr "Tampilkan masalah"
+msgstr "Masalah penyimpanan"
 
 #: src/components/core/ValidationErrors.jsx:57
-#, fuzzy
 msgid "Found Issues"
-msgstr "Tampilkan masalah"
+msgstr "Masalah yang Ditemukan"
 
 #. TRANSLATORS: %d is replaced with the number of errors found
 #: src/components/core/ValidationErrors.jsx:77
@@ -623,9 +616,8 @@ msgid "Gateway"
 msgstr "Gateway"
 
 #: src/components/network/NetworkPage.jsx:38
-#, fuzzy
 msgid "No wired connections found."
-msgstr "Tidak ditemukan koneksi kabel"
+msgstr "Tidak ditemukan koneksi kabel."
 
 #: src/components/network/NetworkPage.jsx:53
 msgid ""
@@ -641,9 +633,8 @@ msgstr ""
 "tidak ada atau dinonaktifkan."
 
 #: src/components/network/NetworkPage.jsx:58
-#, fuzzy
 msgid "No WiFi connections found."
-msgstr "Tidak ditemukan koneksi WiFi"
+msgstr "Tidak ditemukan koneksi WiFi."
 
 #. TRANSLATORS: button label
 #: src/components/network/NetworkPage.jsx:70
@@ -1156,7 +1147,7 @@ msgstr[0] "Tampilkan tindakan subvolume %d"
 #: src/components/storage/ProposalActionsSection.jsx:78
 msgid "Actions to create the file systems and to ensure the system boots."
 msgstr ""
-"Tindakan untuk membuat sistem file dan memastikan sistem melakukan booting."
+"Tindakan untuk membuat sistem berkas dan memastikan sistem melakukan booting."
 
 #. TRANSLATORS: section title, list of planned actions for the selected device,
 #. e.g. "delete partition A", "create partition B with filesystem C", ...
@@ -1199,9 +1190,8 @@ msgid "Installation device"
 msgstr "Perangkat penginstalan"
 
 #: src/components/storage/ProposalSettingsSection.jsx:154
-#, fuzzy
 msgid "No devices found."
-msgstr "Tidak ada perangkat yang ditemukan"
+msgstr "Tidak ada perangkat yang ditemukan."
 
 #: src/components/storage/ProposalSettingsSection.jsx:241
 msgid "Devices for creating the volume group"
@@ -1216,7 +1206,7 @@ msgid ""
 "Configuration of the system volume group. All the file systems will be "
 "created in a logical volume of the system volume group."
 msgstr ""
-"Konfigurasi grup volume sistem. Semua sistem file akan dibuat dalam volume "
+"Konfigurasi grup volume sistem. Semua sistem berkas akan dibuat dalam volume "
 "logis dari grup volume sistem."
 
 #: src/components/storage/ProposalSettingsSection.jsx:320
@@ -1255,7 +1245,7 @@ msgid ""
 "file systems."
 msgstr ""
 "Memilih cara mengosongkan ruang pada disk yang dipilih untuk mengalokasikan "
-"sistem file."
+"sistem berkas."
 
 #. TRANSLATORS: To be completed with the rest of a sentence like "deleting all content"
 #: src/components/storage/ProposalSettingsSection.jsx:584
@@ -1296,7 +1286,7 @@ msgstr "Mengatur ulang ke default"
 #: src/components/storage/ProposalVolumes.jsx:137
 #: src/components/storage/ProposalVolumes.jsx:141
 msgid "Add file system"
-msgstr "Tambahkan sistem file"
+msgstr "Tambahkan sistem berkas"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/ProposalVolumes.jsx:191
@@ -1343,7 +1333,7 @@ msgstr "Menghapus"
 
 #: src/components/storage/ProposalVolumes.jsx:275
 msgid "Edit file system"
-msgstr "Mengedit sistem file"
+msgstr "Edit sistem berkas"
 
 #: src/components/storage/ProposalVolumes.jsx:307
 #: src/components/storage/VolumeForm.jsx:727
@@ -1365,7 +1355,7 @@ msgstr "Tabel dengan titik pemasangan"
 
 #: src/components/storage/ProposalVolumes.jsx:408
 msgid "File systems to create in your system"
-msgstr "Sistem file yang akan dibuat di sistem Anda"
+msgstr "Sistem berkas yang akan dibuat di sistem Anda"
 
 #. TRANSLATORS: description of Btrfs snapshots feature.
 #: src/components/storage/VolumeForm.jsx:172
@@ -1385,12 +1375,12 @@ msgstr "Opsi untuk jenis sistem berkas tergantung pada produk dan titik mount."
 
 #: src/components/storage/VolumeForm.jsx:275
 msgid "More info for file system types"
-msgstr "Info lebih lanjut untuk jenis sistem file"
+msgstr "Info lebih lanjut untuk jenis sistem berkas"
 
 #. TRANSLATORS: label for the file system selector.
 #: src/components/storage/VolumeForm.jsx:286
 msgid "File system type"
-msgstr "Jenis sistem file"
+msgstr "Jenis sistem berkas"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #: src/components/storage/VolumeForm.jsx:318
@@ -1402,7 +1392,7 @@ msgstr "konfigurasi snapshot"
 #: src/components/storage/VolumeForm.jsx:323
 #, c-format
 msgid "the presence of the file system for %s"
-msgstr "keberadaan sistem file untuk %s"
+msgstr "keberadaan sistem berkas untuk %s"
 
 #. TRANSLATORS: conjunction for merging two list items
 #: src/components/storage/VolumeForm.jsx:325
@@ -1427,7 +1417,7 @@ msgstr "Ukuran yang dihitung secara otomatis menurut produk yang dipilih."
 
 #: src/components/storage/VolumeForm.jsx:355
 msgid "Exact size for the file system."
-msgstr "Ukuran yang tepat untuk sistem file."
+msgstr "Ukuran yang tepat untuk sistem berkas."
 
 #. TRANSLATORS: requested partition size
 #: src/components/storage/VolumeForm.jsx:367
@@ -1445,9 +1435,9 @@ msgid ""
 "given minimum and maximum. If no maximum is given then the file system will "
 "be as big as possible."
 msgstr ""
-"Batas untuk ukuran sistem file. Ukuran akhir akan berupa nilai antara "
+"Batas untuk ukuran sistem berkas. Ukuran akhir akan berupa nilai antara "
 "minimum dan maksimum yang diberikan. Jika tidak ada nilai maksimum yang "
-"diberikan, maka sistem file akan sebesar mungkin."
+"diberikan, maka sistem berkas akan sebesar mungkin."
 
 #. TRANSLATORS: the minimal partition size
 #: src/components/storage/VolumeForm.jsx:417
@@ -1533,9 +1523,8 @@ msgid "Deactivated"
 msgstr "Dinonaktifkan"
 
 #: src/components/storage/ZFCPPage.jsx:417
-#, fuzzy
 msgid "No zFCP controllers found."
-msgstr "Tidak ditemukan pengontrol zFCP"
+msgstr "Tidak ditemukan pengontrol zFCP."
 
 #: src/components/storage/ZFCPPage.jsx:418
 msgid "Please, try to read the zFCP devices again."
@@ -1582,9 +1571,8 @@ msgid "Activate zFCP disk"
 msgstr "Mengaktifkan disk zFCP"
 
 #: src/components/storage/ZFCPPage.jsx:553
-#, fuzzy
 msgid "No zFCP disks found."
-msgstr "Tidak ditemukan disk zFCP"
+msgstr "Tidak ditemukan disk zFCP."
 
 #. TRANSLATORS: button label
 #: src/components/storage/ZFCPPage.jsx:572
@@ -1812,9 +1800,8 @@ msgid "Interface"
 msgstr "Antarmuka"
 
 #: src/components/storage/iscsi/TargetsSection.jsx:139
-#, fuzzy
 msgid "No iSCSI targets found."
-msgstr "Tidak ada target iSCSI yang ditemukan"
+msgstr "Tidak ditemukan target iSCSI."
 
 #: src/components/storage/iscsi/TargetsSection.jsx:140
 msgid ""
@@ -1920,9 +1907,8 @@ msgid "PiB"
 msgstr "PiB"
 
 #: src/components/users/FirstUser.jsx:44
-#, fuzzy
 msgid "No user defined yet."
-msgstr "Belum ada pengguna yang ditetapkan"
+msgstr "Belum ada pengguna yang ditetapkan."
 
 #: src/components/users/FirstUser.jsx:47
 msgid ""
@@ -1982,9 +1968,8 @@ msgid "Auto-login"
 msgstr "Masuk otomatis"
 
 #: src/components/users/RootAuthMethods.jsx:35
-#, fuzzy
 msgid "No root authentication method defined yet."
-msgstr "Belum ada metode autentikasi root yang ditetapkan"
+msgstr "Belum ada metode autentikasi root yang ditetapkan."
 
 #: src/components/users/RootAuthMethods.jsx:38
 msgid ""

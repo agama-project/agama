@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-01-10 02:19+0000\n"
-"PO-Revision-Date: 2024-01-03 08:02+0000\n"
+"PO-Revision-Date: 2024-01-10 12:59+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "sv/>\n"
@@ -101,13 +101,12 @@ msgid "Cannot read the file"
 msgstr "Kan inte läsa fil"
 
 #: src/components/core/InstallButton.jsx:37
-#, fuzzy
 msgid ""
 "There are some reported issues. Please review them in the previous steps "
 "before proceeding with the installation."
 msgstr ""
-"Det finns några rapporterade problem. Vänligen kontrollera [listan över "
-"problem] innan du fortsätter med installationen."
+"Det finns några rapporterade problem. Vänligen granska dem i de föregående "
+"stegen innan du fortsätter med installationen."
 
 #: src/components/core/InstallButton.jsx:49
 msgid "Confirm Installation"
@@ -322,24 +321,20 @@ msgstr "Diagnostik verktyg"
 
 #. TRANSLATORS: Titles used for the popup displaying found section issues
 #: src/components/core/ValidationErrors.jsx:53
-#, fuzzy
 msgid "Software issues"
-msgstr "Programvara %s"
+msgstr "Programvaruproblem"
 
 #: src/components/core/ValidationErrors.jsx:54
-#, fuzzy
 msgid "Product issues"
-msgstr "Produkt"
+msgstr "Produktproblem"
 
 #: src/components/core/ValidationErrors.jsx:55
-#, fuzzy
 msgid "Storage issues"
-msgstr "Visa problem"
+msgstr "Lagringsproblem"
 
 #: src/components/core/ValidationErrors.jsx:57
-#, fuzzy
 msgid "Found Issues"
-msgstr "Visa problem"
+msgstr "Hittade problem"
 
 #. TRANSLATORS: %d is replaced with the number of errors found
 #: src/components/core/ValidationErrors.jsx:77

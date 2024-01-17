@@ -11,12 +11,16 @@ pub struct LocaleCode {
     pub language: String,
     // ISO-3166
     pub territory: String,
-    // encoding: String,
+    pub encoding: String,
 }
 
 impl Display for LocaleCode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}_{}", &self.language, &self.territory)
+        write!(
+            f,
+            "{}_{}.{}",
+            &self.language, &self.territory, &self.encoding
+        )
     }
 }
 
@@ -25,6 +29,7 @@ impl Default for LocaleCode {
         Self {
             language: "en".to_string(),
             territory: "US".to_string(),
+            encoding: "UTF-8".to_string(),
         }
     }
 }
@@ -37,14 +42,23 @@ impl TryFrom<&str> for LocaleCode {
     type Error = InvalidLocaleCode;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let locale_regexp: Regex = Regex::new(r"^([[:alpha:]]+)_([[:alpha:]]+)").unwrap();
+        let locale_regexp: Regex =
+            Regex::new(r"^([[:alpha:]]+)_([[:alpha:]]+)(?:\.(.+))?").unwrap();
+
         let captures = locale_regexp
             .captures(value)
             .ok_or_else(|| InvalidLocaleCode(value.to_string()))?;
 
+        let encoding = captures
+            .get(3)
+            .map(|e| e.as_str())
+            .unwrap_or("UTF-8")
+            .to_string();
+
         Ok(Self {
             language: captures.get(1).unwrap().as_str().to_string(),
             territory: captures.get(2).unwrap().as_str().to_string(),
+            encoding,
         })
     }
 }
