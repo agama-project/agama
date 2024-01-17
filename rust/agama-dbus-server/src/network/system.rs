@@ -79,9 +79,9 @@ impl<T: Adapter> NetworkSystem<T> {
                 let conn = self.state.get_connection_by_uuid(uuid);
                 tx.send(conn.cloned()).unwrap();
             }
-            Action::GetConnectionPath(id, tx) => {
+            Action::GetConnectionPath(uuid, tx) => {
                 let tree = self.tree.lock().await;
-                let path = tree.connection_path(&id);
+                let path = tree.connection_path(uuid);
                 tx.send(path).unwrap();
             }
             Action::GetController(uuid, tx) => {
@@ -103,10 +103,10 @@ impl<T: Adapter> NetworkSystem<T> {
             Action::UpdateConnection(conn) => {
                 self.state.update_connection(*conn)?;
             }
-            Action::RemoveConnection(id) => {
+            Action::RemoveConnection(uuid) => {
                 let mut tree = self.tree.lock().await;
-                tree.remove_connection(&id).await?;
-                self.state.remove_connection(&id)?;
+                tree.remove_connection(uuid).await?;
+                self.state.remove_connection(uuid)?;
             }
             Action::Apply => {
                 self.write().await?;

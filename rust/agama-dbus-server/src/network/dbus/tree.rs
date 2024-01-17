@@ -1,4 +1,5 @@
 use agama_lib::error::ServiceError;
+use uuid::Uuid;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
 use crate::network::{action::Action, dbus::interfaces, model::*};
@@ -80,12 +81,13 @@ impl Tree {
         conn: &mut Connection,
     ) -> Result<OwnedObjectPath, ServiceError> {
         let uuid = conn.uuid;
-        let (id, path) = self.objects.register_connection(conn);
-        if id != conn.id {
-            conn.id = id.clone();
-        }
+        let (_, path) = self.objects.register_connection(conn);
         let path: OwnedObjectPath = path.into();
-        log::info!("Publishing network connection '{}' on '{}'", id, &path);
+        log::info!(
+            "Publishing network connection '{}' on '{}'",
+            &conn.id,
+            &path
+        );
 
         self.add_interface(
             &path,
@@ -114,13 +116,13 @@ impl Tree {
 
     /// Removes a connection from the tree
     ///
-    /// * `id`: connection ID.
-    pub async fn remove_connection(&mut self, id: &str) -> Result<(), ServiceError> {
-        let Some(path) = self.objects.connection_path(id) else {
+    /// * `uuid`: connection UUID.
+    pub async fn remove_connection(&mut self, uuid: Uuid) -> Result<(), ServiceError> {
+        let Some(path) = self.objects.connection_path(uuid) else {
             return Ok(());
         };
         self.remove_connection_on(path.as_str()).await?;
-        self.objects.deregister_connection(id).unwrap();
+        self.objects.deregister_connection(uuid).unwrap();
         Ok(())
     }
 
@@ -134,8 +136,8 @@ impl Tree {
         self.objects.connections_paths()
     }
 
-    pub fn connection_path(&self, id: &str) -> Option<OwnedObjectPath> {
-        self.objects.connection_path(id).map(|o| o.into())
+    pub fn connection_path(&self, uuid: Uuid) -> Option<OwnedObjectPath> {
+        self.objects.connection_path(uuid).map(|o| o.into())
     }
 
     /// Adds connections to the D-Bus tree.
@@ -210,7 +212,7 @@ struct ObjectsRegistry {
     /// device_name (eth0) -> object_path
     devices: HashMap<String, OwnedObjectPath>,
     /// id -> object_path
-    connections: HashMap<String, OwnedObjectPath>,
+    connections: HashMap<Uuid, OwnedObjectPath>,
 }
 
 impl ObjectsRegistry {
@@ -228,29 +230,25 @@ impl ObjectsRegistry {
     /// in case the original one already existed.
     ///
     /// * `conn`: network connection.
-    pub fn register_connection(&mut self, conn: &Connection) -> (String, ObjectPath) {
+    pub fn register_connection(&mut self, conn: &Connection) -> (Uuid, ObjectPath) {
         let path = format!("{}/{}", CONNECTIONS_PATH, self.connections.len());
         let path = ObjectPath::try_from(path).unwrap();
-        let mut id = conn.id.clone();
-        if self.connection_path(&id).is_some() {
-            id = self.propose_id(&id);
-        };
-        self.connections.insert(id.clone(), path.clone().into());
-        (id, path)
+        self.connections.insert(conn.uuid, path.clone().into());
+        (conn.uuid, path)
     }
 
     /// Returns the path for a connection.
     ///
-    /// * `id`: connection ID.
-    pub fn connection_path(&self, id: &str) -> Option<ObjectPath> {
-        self.connections.get(id).map(|p| p.as_ref())
+    /// * `uuid`: connection ID.
+    pub fn connection_path(&self, uuid: Uuid) -> Option<ObjectPath> {
+        self.connections.get(&uuid).map(|p| p.as_ref())
     }
 
     /// Deregisters a network connection.
     ///
     /// * `id`: connection ID.
-    pub fn deregister_connection(&mut self, id: &str) -> Option<OwnedObjectPath> {
-        self.connections.remove(id)
+    pub fn deregister_connection(&mut self, uuid: Uuid) -> Option<OwnedObjectPath> {
+        self.connections.remove(&uuid)
     }
 
     /// Returns all devices paths.
@@ -261,19 +259,5 @@ impl ObjectsRegistry {
     /// Returns all connection paths.
     pub fn connections_paths(&self) -> Vec<OwnedObjectPath> {
         self.connections.values().cloned().collect()
-    }
-
-    /// Proposes a connection ID.
-    ///
-    /// * `id`: original connection ID.
-    fn propose_id(&self, id: &str) -> String {
-        let prefix = format!("{}-", id);
-        let filtered: Vec<_> = self
-            .connections
-            .keys()
-            .filter_map(|i| i.strip_prefix(&prefix).and_then(|n| n.parse::<u32>().ok()))
-            .collect();
-        let index = filtered.into_iter().max().unwrap_or(0);
-        format!("{}{}", prefix, index + 1)
     }
 }

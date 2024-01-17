@@ -24,7 +24,7 @@ pub enum Action {
     /// Gets a connection
     GetConnection(Uuid, Responder<Option<Connection>>),
     /// Gets a connection
-    GetConnectionPath(String, Responder<Option<OwnedObjectPath>>),
+    GetConnectionPath(Uuid, Responder<Option<OwnedObjectPath>>),
     /// Get connections paths
     GetConnectionsPaths(Responder<Vec<OwnedObjectPath>>),
     /// Gets a controller connection
@@ -44,7 +44,7 @@ pub enum Action {
     /// Update a connection (replacing the old one).
     UpdateConnection(Box<Connection>),
     /// Remove the connection with the given Uuid.
-    RemoveConnection(String),
+    RemoveConnection(Uuid),
     /// Apply the current configuration.
     Apply,
 }

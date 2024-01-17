@@ -63,27 +63,29 @@ impl Connections {
     /// Returns the D-Bus path of the network connection.
     ///
     /// * `id`: connection ID.
-    pub async fn get_connection(&self, id: &str) -> zbus::fdo::Result<OwnedObjectPath> {
+    pub async fn get_connection(&self, uuid: &str) -> zbus::fdo::Result<OwnedObjectPath> {
+        let uuid: Uuid = uuid
+            .parse()
+            .map_err(|_| NetworkStateError::InvalidUuid(uuid.to_string()))?;
         let actions = self.actions.lock().await;
         let (tx, rx) = oneshot::channel();
-        actions
-            .send(Action::GetConnectionPath(id.to_string(), tx))
-            .unwrap();
+        actions.send(Action::GetConnectionPath(uuid, tx)).unwrap();
         let path = rx
             .await
             .unwrap()
-            .ok_or(NetworkStateError::UnknownConnection(id.to_string()))?;
+            .ok_or(NetworkStateError::UnknownConnection(uuid.to_string()))?;
         Ok(path)
     }
 
     /// Removes a network connection.
     ///
     /// * `uuid`: connection UUID..
-    pub async fn remove_connection(&mut self, id: &str) -> zbus::fdo::Result<()> {
+    pub async fn remove_connection(&mut self, uuid: &str) -> zbus::fdo::Result<()> {
+        let uuid = uuid
+            .parse()
+            .map_err(|_| NetworkStateError::InvalidUuid(uuid.to_string()))?;
         let actions = self.actions.lock().await;
-        actions
-            .send(Action::RemoveConnection(id.to_string()))
-            .unwrap();
+        actions.send(Action::RemoveConnection(uuid)).unwrap();
         Ok(())
     }
 

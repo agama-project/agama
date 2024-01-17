@@ -43,9 +43,16 @@ impl NetworkState {
 
     /// Get connection by UUID
     ///
-    /// * `id`: connection UUID
+    /// * `uuid`: connection UUID
     pub fn get_connection_by_uuid(&self, uuid: Uuid) -> Option<&Connection> {
         self.connections.iter().find(|c| c.uuid == uuid)
+    }
+
+    /// Get connection by UUID as mutable
+    ///
+    /// * `uuid`: connection UUID
+    pub fn get_connection_by_uuid_mut(&mut self, uuid: Uuid) -> Option<&mut Connection> {
+        self.connections.iter_mut().find(|c| c.uuid == uuid)
     }
 
     /// Get connection by interface
@@ -109,9 +116,9 @@ impl NetworkState {
     /// Removes a connection from the state.
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
-    pub fn remove_connection(&mut self, id: &str) -> Result<(), NetworkStateError> {
-        let Some(conn) = self.get_connection_mut(id) else {
-            return Err(NetworkStateError::UnknownConnection(id.to_string()));
+    pub fn remove_connection(&mut self, uuid: Uuid) -> Result<(), NetworkStateError> {
+        let Some(conn) = self.get_connection_by_uuid_mut(uuid) else {
+            return Err(NetworkStateError::UnknownConnection(uuid.to_string()));
         };
 
         conn.remove();
@@ -217,10 +224,10 @@ mod tests {
     #[test]
     fn test_remove_connection() {
         let mut state = NetworkState::default();
-        let id = "eth0".to_string();
-        let conn0 = Connection::new(id, DeviceType::Ethernet);
+        let conn0 = Connection::new("eth0".to_string(), DeviceType::Ethernet);
+        let uuid = conn0.uuid;
         state.add_connection(conn0).unwrap();
-        state.remove_connection("eth0").unwrap();
+        state.remove_connection(uuid).unwrap();
         let found = state.get_connection("eth0").unwrap();
         assert!(found.is_removed());
     }
@@ -228,7 +235,7 @@ mod tests {
     #[test]
     fn test_remove_unknown_connection() {
         let mut state = NetworkState::default();
-        let error = state.remove_connection("eth0").unwrap_err();
+        let error = state.remove_connection(Uuid::new_v4()).unwrap_err();
         assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
     }
 
