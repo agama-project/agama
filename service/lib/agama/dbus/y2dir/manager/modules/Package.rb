@@ -1,4 +1,4 @@
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,36 +22,35 @@ require "agama/dbus/clients/software"
 
 # :nodoc:
 module Yast
-  # Replacement for the Yast::Package module
-  #
-  # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/packages/src/modules/Package.rb
+  # Replacement for the Yast::Package module.
   class PackageClass < Module
     def main
       puts "Loading mocked module #{__FILE__}"
       @client = Agama::DBus::Clients::Software.new
     end
 
-    # Determines whether the package is available
+    # Determines whether a package is available.
     #
-    # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/packages/src/modules/Package.rb#L72
-    # @todo Perform a real D-Bus call.
-    def Available(_package_name)
-      true
+    # @param name [String] Package name.
+    # @return [Boolean]
+    def Available(name)
+      client.package_available?(name)
     end
 
-    # Determines whether the package is available
+    # Determines whether a set of packages is available.
     #
-    # @todo Perform a real D-Bus call.
-    def AvailableAll(_package_names)
-      true
+    # @param names [Array<String>] Names of the packages.
+    # @return [Boolean]
+    def AvailableAll(names)
+      names.all? { |name| client.package_available?(name) }
     end
 
-    # Determines whether the package is available
+    # Determines whether a package is installed in the target system.
     #
-    # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/packages/src/modules/Package.rb#L121
-    # @todo Perform a real D-Bus call.
-    def Installed(package_name, target: nil)
-      client.package_installed?(package_name)
+    # @param name [String] Package name.
+    # @return [Boolean]
+    def Installed(name, target: nil)
+      client.package_installed?(name)
     end
 
   private
