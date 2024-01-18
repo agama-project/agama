@@ -211,8 +211,8 @@ class NetworkClient {
   async addConnection(connection) {
     const { id } = connection;
     const proxy = await this.client.proxy(CONNECTIONS_IFACE, CONNECTIONS_PATH);
-    const ctype = (connection.wireless) ? DeviceType.WIRELESS : DeviceType.ETHERNET;
-    const path = await proxy.AddConnection(id, ctype);
+    const deviceType = (connection.wireless) ? DeviceType.WIRELESS : DeviceType.ETHERNET;
+    const path = await proxy.AddConnection(id, deviceType);
     await this.updateConnectionAt(path, connection);
     return this.connectionFromPath(path);
   }

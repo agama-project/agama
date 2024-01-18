@@ -25,10 +25,13 @@ import { createConnection, createAccessPoint, connectionHumanState } from "./mod
 
 describe("createConnection", () => {
   it("creates a connection with the default values", () => {
-    const connection = createConnection({ name: "Wired connection" });
+    const connection = createConnection({
+      id: "Wired connection 1",
+    });
     expect(connection).toEqual({
-      id: undefined,
-      name: "Wired connection",
+      id: "Wired connection 1",
+      iface: undefined,
+      uuid: undefined,
       ipv4: {
         method: "auto",
         addresses: [],
@@ -52,7 +55,7 @@ describe("createConnection", () => {
 
   it("adds a wireless key when given", () => {
     const wireless = { ssid: "MY_WIRELESS" };
-    const connection = createConnection({ name: "Wireless 1", wireless });
+    const connection = createConnection({ id: "Wireless connection 1", wireless });
     expect(connection.wireless).toEqual(wireless);
   });
 });
