@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021-2023] SUSE LLC
+# Copyright (c) [2021-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -279,12 +279,21 @@ module Agama
         @selected_patterns_change_callbacks << block
       end
 
-      # Determines whether a package is installed
+      # Determines whether a package is installed in the target system.
       #
       # @param name [String] Package name
       # @return [Boolean] true if it is installed; false otherwise
       def package_installed?(name)
         on_target { Yast::Package.Installed(name, target: :system) }
+      end
+
+      # Determines whether a package is available.
+      #
+      # @param name [String] Package name
+      # @return [Boolean]
+      def package_available?(name)
+        # Beware: apart from true and false, Available can return nil if things go wrong.
+        on_local { !!Yast::Package.Available(name) }
       end
 
       # Counts how much disk space installation will use.

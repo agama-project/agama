@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -114,11 +114,20 @@ module Agama
           dbus_object.ProvisionsSelected(tags)
         end
 
-        # Determines whether a package with the given name is installed
+        # Determines whether a package is installed.
         #
-        # @param name [String] Package name
+        # @param name [String] Package name.
+        # @return [Boolean]
         def package_installed?(name)
           dbus_object.IsPackageInstalled(name)
+        end
+
+        # Determines whether a package is available.
+        #
+        # @param name [String] Package name.
+        # @return [Boolean]
+        def package_available?(name)
+          dbus_object.IsPackageAvailable(name)
         end
 
         # Add the given list of resolvables to the packages proposal

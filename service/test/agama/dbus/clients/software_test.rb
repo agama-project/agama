@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -160,6 +160,30 @@ describe Agama::DBus::Clients::Software do
 
       it "returns false" do
         expect(subject.package_installed?(package)).to eq(false)
+      end
+    end
+  end
+
+  describe "#package_available?" do
+    let(:dbus_object) do
+      double(::DBus::ProxyObject, introspect: nil, IsPackageAvailable: available)
+    end
+
+    let(:package) { "NetworkManager" }
+
+    context "when the package is available" do
+      let(:available) { true }
+
+      it "returns true" do
+        expect(subject.package_available?(package)).to eq(true)
+      end
+    end
+
+    context "when the package is available" do
+      let(:available) { false }
+
+      it "returns false" do
+        expect(subject.package_available?(package)).to eq(false)
       end
     end
   end

@@ -53,6 +53,10 @@
       <arg name="Name" direction="in" type="s"/>
       <arg name="Result" direction="out" type="b"/>
     </method>
+    <method name="IsPackageAvailable">
+      <arg name="name" direction="in" type="s"/>
+      <arg name="result" direction="out" type="b"/>
+    </method>
     <method name="UsedDiskSpace">
       <arg name="SpaceSize" direction="out" type="s"/>
     </method>
