@@ -34,6 +34,7 @@ require "agama/dbus/storage/volume_conversion"
 require "agama/dbus/storage/with_iscsi_auth"
 require "agama/dbus/with_service_status"
 require "agama/storage/volume_templates_builder"
+require "agama/storage/encryption_settings"
 
 Yast.import "Arch"
 
@@ -117,11 +118,18 @@ module Agama
           proposal.available_devices.map { |d| system_devices_tree.path_for(d) }
         end
 
-        # List of meaningful mount points for the the current product.
+        # List of meaningful mount points for the current product.
         #
         # @return [Array<String>]
         def product_mount_points
           volume_templates_builder.all.map(&:mount_path).reject(&:empty?)
+        end
+
+        # List of possible encryption methods for the current system and product
+        #
+        # @return [Array<String>]
+        def encryption_methods
+          Agama::Storage::EncryptionSettings.available_methods.map { |m| m.id.to_s }
         end
 
         # Path of the D-Bus object containing the calculated proposal
@@ -160,6 +168,8 @@ module Agama
           dbus_reader :available_devices, "ao"
 
           dbus_reader :product_mount_points, "as"
+
+          dbus_reader :encryption_methods, "as"
 
           dbus_reader :result, "o"
 

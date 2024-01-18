@@ -43,6 +43,7 @@ const storageMock = {
   probe: jest.fn().mockResolvedValue(0),
   proposal: {
     getAvailableDevices: jest.fn().mockResolvedValue([]),
+    getEncryptionMethods: jest.fn().mockResolvedValue([]),
     getProductMountPoints: jest.fn().mockResolvedValue([]),
     getResult: jest.fn().mockResolvedValue(undefined),
     defaultVolume: jest.fn(mountPath => Promise.resolve({ mountPath })),

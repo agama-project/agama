@@ -99,8 +99,8 @@ describe Agama::Storage::ProposalSettingsReader do
           ),
           encryption:  an_object_having_attributes(
             password:      nil,
-            method:        Y2Storage::EncryptionMethod::LUKS1,
-            pbkd_function: nil
+            method:        Y2Storage::EncryptionMethod::LUKS2,
+            pbkd_function: Y2Storage::PbkdFunction::PBKDF2
           ),
           space:       an_object_having_attributes(
             policy:  :keep,
@@ -127,13 +127,13 @@ describe Agama::Storage::ProposalSettingsReader do
 
         expect(settings).to have_attributes(
           encryption: an_object_having_attributes(
-            method: Y2Storage::EncryptionMethod::LUKS1
+            method: Y2Storage::EncryptionMethod::LUKS2
           )
         )
       end
     end
 
-    context "when the config contains an unknown encryption function" do
+    context "when the config contains an unknown password derivation function" do
       let(:config_data) do
         {
           "storage" => {
@@ -144,12 +144,12 @@ describe Agama::Storage::ProposalSettingsReader do
         }
       end
 
-      it "does not set a PBKD function" do
+      it "sets the default derivation function" do
         settings = subject.read
 
         expect(settings).to have_attributes(
           encryption: an_object_having_attributes(
-            pbkd_function: be_nil
+            pbkd_function: Y2Storage::PbkdFunction::PBKDF2
           )
         )
       end
