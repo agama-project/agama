@@ -22,8 +22,9 @@
 // @ts-check
 
 import { NetworkClient, ConnectionTypes, ConnectionState } from "./network";
+const ADDRESS = "unix:path=/run/agama/bus";
 
-const active_conn = {
+const mockActiveConnection = {
   id: "uuid-wired",
   name: "Wired connection 1",
   type: ConnectionTypes.ETHERNET,
@@ -31,7 +32,7 @@ const active_conn = {
   addresses: [{ address: "192.168.122.1", prefix: 24 }]
 };
 
-const conn = {
+const mockConnection = {
   id: "uuid-wired",
   name: "Wired connection 1",
   type: ConnectionTypes.ETHERNET,
@@ -43,40 +44,43 @@ const settings = {
   hostname: "localhost.localdomain"
 };
 
-const adapter = {
-  setUp: jest.fn(),
-  activeConnections: jest.fn().mockReturnValue([active_conn]),
-  connections: jest.fn().mockReturnValue([conn]),
-  subscribe: jest.fn(),
-  getConnection: jest.fn(),
-  addConnection: jest.fn(),
-  updateConnection: jest.fn(),
-  deleteConnection: jest.fn(),
-  accessPoints: jest.fn(),
-  connectTo: jest.fn(),
-  addAndConnectTo: jest.fn(),
-  settings: jest.fn().mockReturnValue(settings),
-};
+jest.mock("./network/network_manager", () => {
+  return {
+    NetworkManagerAdapter: jest.fn().mockImplementation(() => {
+      return {
+        setUp: jest.fn(),
+        activeConnections: jest.fn().mockReturnValue([mockActiveConnection]),
+        connections: jest.fn().mockReturnValue([mockConnection]),
+        subscribe: jest.fn(),
+        getConnection: jest.fn(),
+        accessPoints: jest.fn(),
+        connectTo: jest.fn(),
+        addAndConnectTo: jest.fn(),
+        settings: jest.fn().mockReturnValue(settings),
+      };
+    }),
+  };
+});
 
 describe("NetworkClient", () => {
   describe("#activeConnections", () => {
     it("returns the list of active connections from the adapter", () => {
-      const client = new NetworkClient(adapter);
+      const client = new NetworkClient(ADDRESS);
       const connections = client.activeConnections();
-      expect(connections).toEqual([active_conn]);
+      expect(connections).toEqual([mockActiveConnection]);
     });
   });
 
   describe("#addresses", () => {
     it("returns the list of addresses", () => {
-      const client = new NetworkClient(adapter);
+      const client = new NetworkClient(ADDRESS);
       expect(client.addresses()).toEqual([{ address: "192.168.122.1", prefix: 24 }]);
     });
   });
 
   describe("#settings", () => {
     it("returns network general settings", () => {
-      const client = new NetworkClient(adapter);
+      const client = new NetworkClient(ADDRESS);
       expect(client.settings().hostname).toEqual("localhost.localdomain");
       expect(client.settings().wifiScanSupported).toEqual(true);
     });
