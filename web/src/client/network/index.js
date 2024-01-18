@@ -194,7 +194,7 @@ class NetworkClient {
     if (options.hidden) wireless.hidden = options.hidden;
 
     const connection = createConnection({
-      name: ssid,
+      id: ssid,
       wireless
     });
 
@@ -209,11 +209,11 @@ class NetworkClient {
    * @return {Promise<Connection>} the added connection
    */
   async addConnection(connection) {
-    const { name } = connection;
+    const { id } = connection;
     const proxy = await this.client.proxy(CONNECTIONS_IFACE, CONNECTIONS_PATH);
     const ctype = (connection.wireless) ? DeviceType.WIRELESS : DeviceType.ETHERNET;
-    const path = await proxy.AddConnection(name, ctype);
-    await this.updateConnectionAt(path, { ...connection, id: name });
+    const path = await proxy.AddConnection(id, ctype);
+    await this.updateConnectionAt(path, connection);
     return this.connectionFromPath(path);
   }
 
@@ -243,7 +243,7 @@ class NetworkClient {
     const conn = {
       id: connection.Id,
       uuid: connection.Uuid,
-      name: connection.Interface,
+      iface: connection.Interface,
       ipv4: {
         method: ip.Method4,
         nameServers: ip.Nameservers,
@@ -349,12 +349,11 @@ class NetworkClient {
    *
    * It uses the 'path' to match the connection in the backend.
    *
-   * @param {Connection} connection - Connection to delete
+   * @param {String} uuid - Connection uuid
    */
-  async deleteConnection(connection) {
+  async deleteConnection(uuid) {
     const proxy = await this.client.proxy(CONNECTIONS_IFACE, CONNECTIONS_PATH);
-    const conn = await this.getConnection(connection.uuid);
-    await proxy.RemoveConnection(conn.id);
+    await proxy.RemoveConnection(uuid);
     return this.proxies.connectionsRoot.Apply();
   }
 

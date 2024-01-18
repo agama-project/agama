@@ -80,7 +80,7 @@ const SecurityProtocols = Object.freeze({
 /**
  * @typedef {object} ActiveConnection
  * @property {string} id
- * @property {string} name
+ * @property {string} uuid
  * @property {string} type
  * @property {number} state
  * @property {IPAddress[]} addresses
@@ -89,8 +89,8 @@ const SecurityProtocols = Object.freeze({
 /**
  * @typedef {object} Connection
  * @property {string} id
- * @property {string} name
  * @property {string} uuid
+ * @property {string} iface
  * @property {IPv4} [ipv4]
  * @property {Wireless} [wireless]
  */
@@ -154,16 +154,16 @@ const createIPv4 = ({ method, addresses, nameServers, gateway }) => {
  * @param {object} options
  * @param {string} [options.id] - Connection ID
  * @param {string} [options.uuid] - Connection UUID
- * @param {string} [options.name] - Connection name
+ * @param {string} [options.iface] - Connection interface
  * @param {object} [options.ipv4] IPv4 Settings
  * @param {object} [options.wireless] Wireless Settings
  * @return {Connection}
  */
-const createConnection = ({ id, uuid, name, ipv4, wireless }) => {
+const createConnection = ({ id, uuid, iface, ipv4, wireless }) => {
   const connection = {
     id,
-    name,
     uuid,
+    iface,
     ipv4: createIPv4(ipv4 || {}),
   };
 

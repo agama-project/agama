@@ -42,7 +42,7 @@ import { _ } from "~/i18n";
  * @param {function} props.onEdit - function to be called for editing a connection
  * @param {function} props.onForget - function to be called for forgetting a connection
  */
-export default function ConnectionsTable ({
+export default function ConnectionsTable({
   connections,
   onEdit,
   onForget
@@ -61,20 +61,20 @@ export default function ConnectionsTable ({
         </Tr>
       </Thead>
       <Tbody>
-        { connections.map(connection => {
+        {connections.map(connection => {
           const actions = [
             {
               title: _("Edit"),
               "aria-label":
                 // TRANSLATORS: %s is replaced by a network connection name
-                sprintf(_("Edit connection %s"), connection.name),
+                sprintf(_("Edit connection %s"), connection.id),
               onClick: () => onEdit(connection)
             },
             typeof onForget === 'function' && {
               title: _("Forget"),
               "aria-label":
                 // TRANSLATORS: %s is replaced by a network connection name
-                sprintf(_("Forget connection %s"), connection.name),
+                sprintf(_("Forget connection %s"), connection.id),
               icon: <Icon name="delete" size="s" />,
               onClick: () => onForget(connection),
               isDanger: true
@@ -82,14 +82,14 @@ export default function ConnectionsTable ({
           ].filter(Boolean);
 
           return (
-            <Tr key={connection.id}>
-              <Td dataLabel={_("Name")}>{connection.name}</Td>
+            <Tr key={connection.uuid}>
+              <Td dataLabel={_("Name")}>{connection.id}</Td>
               <Td dataLabel={_("IP addresses")}>{connection.addresses.map(formatIp).join(", ")}</Td>
               <Td isActionCell>
                 <RowActions
-                  id={`actions-for-connection-${connection.id}`}
+                  id={`actions-for-connection-${connection.uuid}`}
                   // TRANSLATORS: %s is replaced by a network connection name
-                  aria-label={sprintf(_("Actions for connection %s"), connection.name)}
+                  aria-label={sprintf(_("Actions for connection %s"), connection.id)}
                   actions={actions}
                 />
               </Td>

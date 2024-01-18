@@ -60,7 +60,7 @@ export default function NetworkSection() {
     if (activeConnections.length === 0) return _("No network connections detected");
 
     const summary = activeConnections.map(connection => (
-      <Em key={connection.id}>{connection.name} - {connection.addresses.map(formatIp)}</Em>
+      <Em key={connection.uuid}>{connection.id} - {connection.addresses.map(formatIp)}</Em>
     ));
 
     const msg = sprintf(

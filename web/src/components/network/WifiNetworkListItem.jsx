@@ -68,7 +68,7 @@ const isStateChanging = (network) => {
  * @param {function} props.onSelect - function to execute when the network is selected
  * @param {function} props.onCancel - function to execute when the selection is cancelled
  */
-function WifiNetworkListItem ({ network, isSelected, isActive, onSelect, onCancel }) {
+function WifiNetworkListItem({ network, isSelected, isActive, onSelect, onCancel }) {
   // Do not wait until receive the next D-Bus network event to have the connection object available
   // and display the spinner as soon as possible. I.e., renders it immediately when the user clicks
   // on an already configured network.
@@ -94,16 +94,16 @@ function WifiNetworkListItem ({ network, isSelected, isActive, onSelect, onCance
         />
         <div className="split">
           {/* TRANSLATORS: %s is replaced by a WiFi network name */}
-          {showSpinner && <Spinner size="md" aria-label={sprintf(_("%s connection is waiting for an state change"), network.ssid)} /> }
+          {showSpinner && <Spinner size="md" aria-label={sprintf(_("%s connection is waiting for an state change"), network.ssid)} />}
           <Text component="small" className="keep-words">
-            { showSpinner && !network.connection && _("Connecting") }
-            { networkState(network.connection?.state)}
+            {showSpinner && !network.connection && _("Connecting")}
+            {networkState(network.connection?.state)}
           </Text>
-          { network.settings &&
-            <WifiNetworkMenu settings={network.settings} /> }
+          {network.settings &&
+            <WifiNetworkMenu settings={network.settings} />}
         </div>
       </div>
-      { isSelected && (!network.settings || network.settings.error) &&
+      {isSelected && (!network.settings || network.settings.error) &&
         <div className="content">
           <WifiConnectionForm network={network} onCancel={onCancel} />
         </div>}

@@ -139,12 +139,8 @@ export default function NetworkPage() {
     client.getConnection(id).then(setSelectedConnection);
   };
 
-  const forgetConnection = async ({ id }) => {
-    const connection = await client.getConnection(id);
-
-    if (connection) {
-      client.deleteConnection(connection);
-    }
+  const forgetConnection = async ({ uuid }) => {
+    await client.deleteConnection(uuid);
   };
 
   const activeWiredConnections = connections.filter(c => c.type === ConnectionTypes.ETHERNET);
@@ -171,14 +167,14 @@ export default function NetworkPage() {
   return (
     // TRANSLATORS: page title
     <Page icon="settings_ethernet" title={_("Network")}>
-      { /* TRANSLATORS: page section */ }
+      { /* TRANSLATORS: page section */}
       <Section title={_("Wired networks")} icon="lan">
-        { ready ? <WiredConnections /> : <Skeleton /> }
+        {ready ? <WiredConnections /> : <Skeleton />}
       </Section>
 
-      { /* TRANSLATORS: page section */ }
+      { /* TRANSLATORS: page section */}
       <Section title={_("WiFi networks")} icon="wifi">
-        { ready ? <WifiConnections /> : <Skeleton /> }
+        {ready ? <WifiConnections /> : <Skeleton />}
       </Section>
 
       <NetworkPageMenu wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
@@ -188,7 +184,7 @@ export default function NetworkPage() {
         then={<WifiSelector isOpen={wifiSelectorOpen} onClose={closeWifiSelector} />}
       />
 
-      { /* TODO: improve the connections edition */ }
+      { /* TODO: improve the connections edition */}
       <If
         condition={selectedConnection}
         then={<IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} />}

@@ -102,7 +102,7 @@ const connectionToCockpit = (connection) => {
   const { ipv4, wireless } = connection;
   const settings = {
     connection: {
-      id: cockpit.variant("s", connection.name)
+      id: cockpit.variant("s", connection.id)
     },
     ipv4: {
       "address-data": cockpit.variant("aa{sv}", ipv4.addresses.map(addr => (
@@ -257,9 +257,9 @@ class NetworkManagerAdapter {
   connectionFromSettings(settings) {
     const { connection, ipv4, "802-11-wireless": wireless, path } = settings;
     const conn = {
-      id: connection.uuid.v,
+      id: connection.id.v,
       uuid: connection.uuid.v,
-      name: connection.id.v,
+      iface: connection.interface?.v,
       type: connection.type.v
     };
 
@@ -292,7 +292,7 @@ class NetworkManagerAdapter {
    * @param {object} settings - connection options
    */
   async connectTo(settings) {
-    const settingsProxy = await this.connectionSettingsObject(settings.id);
+    const settingsProxy = await this.connectionSettingsObject(settings.uuid);
     await this.activateConnection(settingsProxy.path);
   }
 
@@ -304,7 +304,7 @@ class NetworkManagerAdapter {
    * @param {import("./index").Connection} connection - Connection to update
    */
   async updateConnection(connection) {
-    const settingsProxy = await this.connectionSettingsObject(connection.id);
+    const settingsProxy = await this.connectionSettingsObject(connection.uuid);
     const settings = await settingsProxy.GetSettings();
     const newSettings = mergeConnectionSettings(settings, connection);
     await settingsProxy.Update(newSettings);
@@ -317,7 +317,7 @@ class NetworkManagerAdapter {
    * @param {import("./index").Connection} connection - Connection to delete
   */
   async deleteConnection(connection) {
-    const settingsProxy = await this.connectionSettingsObject(connection.id);
+    const settingsProxy = await this.connectionSettingsObject(connection.uuid);
     await settingsProxy.Delete();
   }
 
@@ -346,7 +346,7 @@ class NetworkManagerAdapter {
       let connection;
 
       if (eventType === NetworkEventTypes.CONNECTION_REMOVED) {
-        connection = { id: proxy.uuid, path: proxy.path };
+        connection = { id: proxy.id, path: proxy.path };
       } else {
         connection = await this.connectionFromProxy(proxy);
       }
@@ -417,9 +417,8 @@ class NetworkManagerAdapter {
     }
 
     return {
-      id: proxy.Uuid,
+      id: proxy.Id,
       uuid: proxy.Uuid,
-      name: proxy.Id,
       addresses,
       type: proxy.Type,
       state: proxy.State
@@ -431,12 +430,12 @@ class NetworkManagerAdapter {
    * Returns connection settings for the given connection
    *
    * @private
-   * @param {string} id - Connection ID
+   * @param {string} uuid - Connection ID
    * @return {Promise<any>}
    */
-  async connectionSettingsObject(id) {
+  async connectionSettingsObject(uuid) {
     const proxy = await this.client.proxy(SETTINGS_IFACE);
-    const path = await proxy.GetConnectionByUuid(id);
+    const path = await proxy.GetConnectionByUuid(uuid);
     return await this.client.proxy(CONNECTION_IFACE, path);
   }
 
