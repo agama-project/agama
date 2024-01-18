@@ -198,8 +198,8 @@ class NetworkClient {
       wireless
     });
 
-    const added = await this.addConnection(connection);
-    return this.connectTo(added);
+    // the connection is automatically activated when written
+    return this.addConnection(connection);
   }
 
   /**

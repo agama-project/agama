@@ -135,8 +135,8 @@ export default function NetworkPage() {
     });
   });
 
-  const selectConnection = ({ id }) => {
-    client.getConnection(id).then(setSelectedConnection);
+  const selectConnection = ({ uuid }) => {
+    client.getConnection(uuid).then(setSelectedConnection);
   };
 
   const forgetConnection = async ({ uuid }) => {
