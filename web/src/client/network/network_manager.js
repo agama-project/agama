@@ -297,31 +297,6 @@ class NetworkManagerAdapter {
   }
 
   /**
-   * Updates the connection
-   *
-   * @fixme improve it.
-   *
-   * @param {import("./index").Connection} connection - Connection to update
-   */
-  async updateConnection(connection) {
-    const settingsProxy = await this.connectionSettingsObject(connection.uuid);
-    const settings = await settingsProxy.GetSettings();
-    const newSettings = mergeConnectionSettings(settings, connection);
-    await settingsProxy.Update(newSettings);
-    await this.activateConnection(settingsProxy.path);
-  }
-
-  /**
-  * Deletes the given connection
-  *
-   * @param {import("./index").Connection} connection - Connection to delete
-  */
-  async deleteConnection(connection) {
-    const settingsProxy = await this.connectionSettingsObject(connection.uuid);
-    await settingsProxy.Delete();
-  }
-
-  /**
    * Subscribes to network events
    *
    * Registers a handler for changes in /org/freedesktop/NetworkManager/ActiveConnection/*.

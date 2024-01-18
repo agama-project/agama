@@ -81,7 +81,7 @@ const defaultDevices = {
 };
 
 const accessPoints = {
-  "/org/freedesktop/NetworkManager/AccessPoint/11" : {
+  "/org/freedesktop/NetworkManager/AccessPoint/11": {
     Flags: 3,
     WpaFlags: 0,
     RsnFlags: 392,
@@ -276,16 +276,16 @@ describe("NetworkManagerAdapter", () => {
       expect(availableConnections.length).toEqual(2);
       const [wireless, ethernet] = availableConnections;
       expect(wireless).toEqual({
-        name: "active-wifi-connection",
-        id: "uuid-wifi-1",
+        id: "active-wifi-connection",
+        uuid: "uuid-wifi-1",
         state: ConnectionState.ACTIVATED,
         type: ConnectionTypes.WIFI,
         addresses: [{ address: "10.0.0.2", prefix: 22 }]
       });
 
       expect(ethernet).toEqual({
-        name: "active-wired-connection",
-        id: "uuid-wired-1",
+        id: "active-wired-connection",
+        uuid: "uuid-wired-1",
         state: ConnectionState.ACTIVATED,
         type: ConnectionTypes.ETHERNET,
         addresses: [{ address: "10.0.0.1", prefix: 22 }]
@@ -302,73 +302,13 @@ describe("NetworkManagerAdapter", () => {
       const [wifi] = connections;
 
       expect(wifi).toEqual({
-        name: "Testing",
-        id: "1f40ddb0-e6e8-4af8-8b7a-0b3898f0f57a",
+        id: "Testing",
+        uuid: "1f40ddb0-e6e8-4af8-8b7a-0b3898f0f57a",
         path: "/org/freedesktop/NetworkManager/Settings/1",
         type: ConnectionTypes.WIFI,
         ipv4: { method: 'auto', addresses: [], nameServers: [] },
         wireless: { ssid: "Testing", hidden: true },
       });
-    });
-  });
-
-  describe("#getConnection", () => {
-    it("returns the connection with the given ID", async () => {
-      const client = new NetworkManagerAdapter();
-      const connection = await client.getConnection("uuid-wifi-1");
-      expect(connection).toEqual({
-        id: "uuid-wifi-1",
-        name: "active-wifi-connection",
-        type: "802-11-wireless",
-        ipv4: {
-          addresses: [{ address: "192.168.122.200", prefix: 24 }],
-          gateway: "192.168.122.1",
-          method: "auto",
-          nameServers: ["192.168.122.1", "1.1.1.1"]
-        }
-      });
-    });
-  });
-
-  describe("#addConnection", () => {
-    it("adds a connection and activates it", async () => {
-      const client = new NetworkManagerAdapter();
-      const connection = createConnection({ name: "Wired connection 1" });
-      await client.addConnection(connection);
-      expect(AddConnectionFn).toHaveBeenCalledWith(
-        expect.objectContaining({
-          connection: expect.objectContaining({ id: cockpit.variant("s", connection.name) })
-        })
-      );
-    });
-  });
-
-  describe("#updateConnection", () => {
-    it("updates the connection", async () => {
-      const client = new NetworkManagerAdapter();
-      const connection = await client.getConnection("uuid-wifi-1");
-      connection.ipv4 = {
-        ...connection.ipv4,
-        addresses: [{ address: "192.168.1.2", prefix: "255.255.255.0" }],
-        gateway: "192.168.1.1",
-        nameServers: ["1.2.3.4"]
-      };
-
-      await client.updateConnection(connection);
-      expect(connectionSettingsMock.Update).toHaveBeenCalledWith(expect.objectContaining(
-        {
-          connection: expect.objectContaining({
-            id: cockpit.variant("s", "active-wifi-connection")
-          }),
-          ipv4: expect.objectContaining({
-            "address-data": cockpit.variant("aa{sv}", [
-              { address: cockpit.variant("s", "192.168.1.2"), prefix: cockpit.variant("u", 24) }
-            ]),
-            gateway: cockpit.variant("s", "192.168.1.1")
-          })
-        }
-      ));
-      expect(ActivateConnectionFn).toHaveBeenCalled();
     });
   });
 
@@ -379,33 +319,6 @@ describe("NetworkManagerAdapter", () => {
       const [wifi] = await client.connections();
       await client.connectTo(wifi);
       expect(ActivateConnectionFn).toHaveBeenCalledWith(wifi.path, "/", "/");
-    });
-  });
-
-  describe("#addAndConnectTo", () => {
-    it("activates the given connection", async () => {
-      const client = new NetworkManagerAdapter();
-      await client.setUp();
-      client.addConnection = jest.fn();
-      await client.addAndConnectTo("Testing", { security: "wpa-psk", password: "testing.1234" });
-
-      expect(client.addConnection).toHaveBeenCalledWith(
-        createConnection({
-          name: "Testing",
-          wireless: { ssid: "Testing", security: "wpa-psk", password: "testing.1234" }
-        })
-      );
-    });
-  });
-
-  describe("#deleteConnection", () => {
-    it("deletes the given connection", async () => {
-      const client = new NetworkManagerAdapter();
-      await client.setUp();
-      const [wifi] = await client.connections();
-      await client.deleteConnection(wifi);
-
-      expect(connectionSettingsMock.Delete).toHaveBeenCalled();
     });
   });
 
@@ -459,7 +372,7 @@ describe("NetworkManagerAdapter", () => {
   });
 
   describe("#settings", () => {
-    it("returns the Network Manager settings", async() => {
+    it("returns the Network Manager settings", async () => {
       const client = new NetworkManagerAdapter();
       await client.setUp();
       expect(client.settings().hostname).toEqual("testing-machine");
