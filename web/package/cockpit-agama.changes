@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jan 18 08:33:52 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Make TPM-based encryption more explicit (gh#openSUSE/agama#995)
+
+-------------------------------------------------------------------
 Tue Jan 16 15:27:28 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Fix error with storage issues proxy by anticipating its creation
