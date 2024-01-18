@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 18 14:55:36 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Add support to check availability of a package
+  (gh#openSUSE/agama#1004).
+
+-------------------------------------------------------------------
 Thu Jan 18 08:35:01 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - New default encryption settings: LUKS2 with PBKDF2.
