@@ -54,7 +54,6 @@ export default function NetworkSection() {
   const Content = () => {
     if (!initialized) return <SectionSkeleton />;
 
-    console.log("Connetions", connections);
     const activeConnections = connections.filter(c => [ConnectionTypes.WIFI, ConnectionTypes.ETHERNET].includes(c.type));
 
     if (activeConnections.length === 0) return _("No network connections detected");
