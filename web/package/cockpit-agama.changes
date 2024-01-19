@@ -2,7 +2,7 @@
 Fri Jan 19 09:34:26 UTC 2024 -  Nagu <nagukalakuntla@gmail.com>
 
 - Storage UI: show mount point selector only when the user can change it.
-  (gh#openSUSE/agama#973)
+  (gh#openSUSE/agama#1007)
   
 -------------------------------------------------------------------
 Thu Jan 18 08:33:52 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
