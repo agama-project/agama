@@ -73,6 +73,10 @@ impl<'a> Store<'a> {
 
     /// Stores the given installation settings in the D-Bus service
     pub async fn store(&self, settings: &InstallSettings) -> Result<(), ServiceError> {
+        // ordering: localization before product
+        if let Some(localization) = &settings.localization {
+            self.localization.store(localization).await?;
+        }
         if let Some(network) = &settings.network {
             self.network.store(network).await?;
         }

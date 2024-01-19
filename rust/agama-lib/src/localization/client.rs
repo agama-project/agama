@@ -34,4 +34,17 @@ impl<'a> LocalizationClient<'a> {
     pub async fn timezone(&self) -> Result<String, ServiceError> {
         Ok(self.localization_proxy.timezone().await?)
     }
+
+    pub async fn set_language(&self, language: &str) -> zbus::Result<()> {
+        let locales = [language];
+        self.localization_proxy.set_locales(&locales).await
+    }
+
+    pub async fn set_keyboard(&self, keyboard: &str) -> zbus::Result<()> {
+        self.localization_proxy.set_keymap(keyboard).await
+    }
+
+    pub async fn set_timezone(&self, timezone: &str) -> zbus::Result<()> {
+        self.localization_proxy.set_timezone(timezone).await
+    }
 }

@@ -33,9 +33,19 @@ impl<'a> LocalizationStore<'a> {
         })
     }
 
-    pub async fn store(&self, _settings: &LocalizationSettings) -> Result<(), ServiceError> {
-        // FIXME: not so trivial to copy from Storage
-        //self.localization_client.calculate(settings).await?;
+    pub async fn store(&self, settings: &LocalizationSettings) -> Result<(), ServiceError> {
+        if let Some(language) = &settings.language {
+            self.localization_client.set_language(language).await?;
+        }
+
+        if let Some(keyboard) = &settings.keyboard {
+            self.localization_client.set_keyboard(keyboard).await?;
+        }
+
+        if let Some(timezone) = &settings.timezone {
+            self.localization_client.set_timezone(timezone).await?;
+        }
+
         Ok(())
     }
 }
