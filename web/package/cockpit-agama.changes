@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 19 09:34:26 UTC 2024 -  Nagu <nagukalakuntla@gmail.com>
+
+- Storage UI: show mount point selector only when the user can change it.
+  (gh#openSUSE/agama#973)
+  
+-------------------------------------------------------------------
 Thu Jan 11 15:34:26 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Ignore the encoding from the UILocale D-Bus property
