@@ -67,12 +67,13 @@ impl ProfileValidator {
         } else {
             Path::new("/usr/share/agama-cli/profile.schema.json")
         };
-        info!("Validation with path {}", path.to_str().unwrap());
+        info!("Validation with path {:?}", path);
         Self::new(path)
     }
 
     pub fn new(schema_path: &Path) -> Result<Self, ProfileError> {
-        let contents = fs::read_to_string(schema_path)?;
+        let contents = fs::read_to_string(schema_path)
+            .context(format!("Failed to read schema at {:?}", schema_path))?;
         let schema = serde_json::from_str(&contents)?;
         let schema = JSONSchema::compile(&schema).expect("A valid schema");
         Ok(Self { schema })
