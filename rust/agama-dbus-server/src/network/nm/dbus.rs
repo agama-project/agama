@@ -20,6 +20,8 @@ const WIRELESS_SECURITY_KEY: &str = "802-11-wireless-security";
 const LOOPBACK_KEY: &str = "loopback";
 const DUMMY_KEY: &str = "dummy";
 const VLAN_KEY: &str = "vlan";
+const BRIDGE_KEY: &str = "bridge";
+const BRIDGE_PORT_KEY: &str = "bridge-port";
 
 /// Converts a connection struct into a HashMap that can be sent over D-Bus.
 ///
@@ -39,14 +41,22 @@ pub fn connection_to_dbus<'a>(
     }
 
     if let Some(controller) = controller {
-        connection_dbus.insert("slave-type", "bond".into()); // TODO: only 'bond' is supported
+        let slave_type = match controller.config {
+            ConnectionConfig::Bond(_) => BOND_KEY,
+            ConnectionConfig::Bridge(_) => BRIDGE_KEY,
+            _ => {
+                log::error!("Controller {} has unhandled config type", controller.id);
+                ""
+            }
+        };
+        connection_dbus.insert("slave-type", slave_type.into());
         let master = controller
             .interface
             .as_deref()
             .unwrap_or(controller.id.as_str());
         connection_dbus.insert("master", master.into());
     } else {
-        connection_dbus.insert("slave-type", "".into()); // TODO: only 'bond' is supported
+        connection_dbus.insert("slave-type", "".into());
         connection_dbus.insert("master", "".into());
     }
 
@@ -73,7 +83,7 @@ pub fn connection_to_dbus<'a>(
             if !connection_dbus.contains_key("interface-name") {
                 connection_dbus.insert("interface-name", conn.id.as_str().into());
             }
-            result.insert("bond", bond_config_to_dbus(bond));
+            result.insert(BOND_KEY, bond_config_to_dbus(bond));
         }
         ConnectionConfig::Dummy => {
             connection_dbus.insert("type", DUMMY_KEY.into());
@@ -82,7 +92,18 @@ pub fn connection_to_dbus<'a>(
             connection_dbus.insert("type", VLAN_KEY.into());
             result.extend(vlan_config_to_dbus(vlan));
         }
+        ConnectionConfig::Bridge(bridge) => {
+            connection_dbus.insert("type", BRIDGE_KEY.into());
+            result.insert(BRIDGE_KEY, bridge_config_to_dbus(bridge));
+        }
         _ => {}
+    }
+
+    match &conn.port_config {
+        PortConfig::Bridge(bridge_port) => {
+            result.insert(BRIDGE_PORT_KEY, bridge_port_config_to_dbus(bridge_port));
+        }
+        PortConfig::None => {}
     }
 
     result.insert("connection", connection_dbus);
@@ -94,6 +115,10 @@ pub fn connection_to_dbus<'a>(
 /// This functions tries to turn a OwnedHashMap coming from D-Bus into a Connection.
 pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
     let mut connection = base_connection_from_dbus(&conn)?;
+
+    if let Some(bridge_port_config) = bridge_port_config_from_dbus(&conn) {
+        connection.port_config = PortConfig::Bridge(bridge_port_config);
+    }
 
     if let Some(wireless_config) = wireless_config_from_dbus(&conn) {
         connection.config = ConnectionConfig::Wireless(wireless_config);
@@ -107,6 +132,11 @@ pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
 
     if let Some(vlan_config) = vlan_config_from_dbus(&conn) {
         connection.config = ConnectionConfig::Vlan(vlan_config);
+        return Some(connection);
+    }
+
+    if let Some(bridge_config) = bridge_config_from_dbus(&conn) {
+        connection.config = ConnectionConfig::Bridge(bridge_config);
         return Some(connection);
     }
 
@@ -311,6 +341,97 @@ fn bond_config_to_dbus(config: &BondConfig) -> HashMap<&str, zvariant::Value> {
     let mut options = config.options.0.clone();
     options.insert("mode".to_string(), config.mode.to_string());
     HashMap::from([("options", Value::new(options))])
+}
+
+fn bridge_config_to_dbus(bridge: &BridgeConfig) -> HashMap<&str, zvariant::Value> {
+    let mut hash = HashMap::new();
+
+    hash.insert("stp", bridge.stp.into());
+    if let Some(prio) = bridge.priority {
+        hash.insert("priority", prio.into());
+    }
+    if let Some(fwd_delay) = bridge.forward_delay {
+        hash.insert("forward-delay", fwd_delay.into());
+    }
+    if let Some(hello_time) = bridge.hello_time {
+        hash.insert("hello-time", hello_time.into());
+    }
+    if let Some(max_age) = bridge.max_age {
+        hash.insert("max-age", max_age.into());
+    }
+    if let Some(ageing_time) = bridge.ageing_time {
+        hash.insert("ageing-time", ageing_time.into());
+    }
+
+    hash
+}
+
+fn bridge_config_from_dbus(conn: &OwnedNestedHash) -> Option<BridgeConfig> {
+    let Some(bridge) = conn.get(BRIDGE_KEY) else {
+        return None;
+    };
+
+    let Some(stp) = bridge.get("stp") else {
+        return None;
+    };
+
+    let mut bc = BridgeConfig {
+        stp: *stp.downcast_ref::<bool>()?,
+        ..Default::default()
+    };
+
+    if let Some(prio) = bridge.get("priority") {
+        bc.priority = Some(*prio.downcast_ref::<u32>()?);
+    }
+
+    if let Some(fwd_delay) = bridge.get("forward-delay") {
+        bc.forward_delay = Some(*fwd_delay.downcast_ref::<u32>()?);
+    }
+
+    if let Some(hello_time) = bridge.get("hello-time") {
+        bc.hello_time = Some(*hello_time.downcast_ref::<u32>()?);
+    }
+
+    if let Some(max_age) = bridge.get("max-age") {
+        bc.max_age = Some(*max_age.downcast_ref::<u32>()?);
+    }
+
+    if let Some(ageing_time) = bridge.get("ageing-time") {
+        bc.ageing_time = Some(*ageing_time.downcast_ref::<u32>()?);
+    }
+
+    Some(bc)
+}
+
+fn bridge_port_config_to_dbus(bridge_port: &BridgePortConfig) -> HashMap<&str, zvariant::Value> {
+    let mut hash = HashMap::new();
+
+    if let Some(prio) = bridge_port.priority {
+        hash.insert("priority", prio.into());
+    }
+    if let Some(pc) = bridge_port.path_cost {
+        hash.insert("path-cost", pc.into());
+    }
+
+    hash
+}
+
+fn bridge_port_config_from_dbus(conn: &OwnedNestedHash) -> Option<BridgePortConfig> {
+    let Some(bridge_port) = conn.get(BRIDGE_PORT_KEY) else {
+        return None;
+    };
+
+    let mut bpc = BridgePortConfig::default();
+
+    if let Some(prio) = bridge_port.get("priority") {
+        bpc.priority = Some(*prio.downcast_ref::<u32>()?);
+    }
+
+    if let Some(path_cost) = bridge_port.get("path_cost") {
+        bpc.path_cost = Some(*path_cost.downcast_ref::<u32>()?);
+    }
+
+    Some(bpc)
 }
 
 /// Converts a MatchConfig struct into a HashMap that can be sent over D-Bus.

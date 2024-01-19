@@ -378,6 +378,7 @@ pub struct Connection {
     pub status: Status,
     pub interface: Option<String>,
     pub controller: Option<Uuid>,
+    pub port_config: PortConfig,
     pub match_config: MatchConfig,
     pub config: ConnectionConfig,
 }
@@ -397,6 +398,7 @@ impl Connection {
             DeviceType::Dummy => ConnectionConfig::Dummy,
             DeviceType::Bond => ConnectionConfig::Bond(Default::default()),
             DeviceType::Vlan => ConnectionConfig::Vlan(Default::default()),
+            DeviceType::Bridge => ConnectionConfig::Bridge(Default::default()),
         };
         Self {
             id,
@@ -436,6 +438,7 @@ impl Connection {
             || matches!(self.config, ConnectionConfig::Dummy)
             || matches!(self.config, ConnectionConfig::Bond(_))
             || matches!(self.config, ConnectionConfig::Vlan(_))
+            || matches!(self.config, ConnectionConfig::Bridge(_))
     }
 }
 
@@ -449,6 +452,7 @@ impl Default for Connection {
             status: Default::default(),
             interface: Default::default(),
             controller: Default::default(),
+            port_config: Default::default(),
             match_config: Default::default(),
             config: Default::default(),
         }
@@ -464,6 +468,14 @@ pub enum ConnectionConfig {
     Dummy,
     Bond(BondConfig),
     Vlan(VlanConfig),
+    Bridge(BridgeConfig),
+}
+
+#[derive(Default, Debug, PartialEq, Clone)]
+pub enum PortConfig {
+    #[default]
+    None,
+    Bridge(BridgePortConfig),
 }
 
 impl From<BondConfig> for ConnectionConfig {
@@ -873,4 +885,20 @@ impl TryFrom<ConnectionConfig> for BondConfig {
             _ => Err(NetworkStateError::UnexpectedConfiguration),
         }
     }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct BridgeConfig {
+    pub stp: bool,
+    pub priority: Option<u32>,
+    pub forward_delay: Option<u32>,
+    pub hello_time: Option<u32>,
+    pub max_age: Option<u32>,
+    pub ageing_time: Option<u32>,
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct BridgePortConfig {
+    pub priority: Option<u32>,
+    pub path_cost: Option<u32>,
 }
