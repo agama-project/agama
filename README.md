@@ -126,7 +126,7 @@ There are two flavors of live ISO images:
 You can download them from the [openSUSE Build
 Service](https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/images/iso/).
 * Make sure to download the correct ISO file according to your system architecture (eg.
- you would need to choose an file including `x86_64` if you use an Intel or AMD 64-bit processor)
+ you would need to choose a file including `x86_64` if you use an Intel or AMD 64-bit processor)
  and according to the system you want to install (openSUSE vs ALP).
 ### Manual Configuration
 
