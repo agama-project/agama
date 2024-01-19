@@ -71,15 +71,55 @@ const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
  * Based on {@link PF/FormSelect https://www.patternfly.org/components/forms/form-select}
  *
  * @param {object} props
+ * @param {string} props.value - mountPath of current selected volume
  * @param {Array<Volume>} props.volumes - a collection of storage volumes
- * @param {object} props.formSelectProps - @see {@link https://www.patternfly.org/components/forms/form-select#props}
+ * @param {onChangeFn} props.onChange - callback for notifying input changes
+ * @param {object} props.selectProps - other props sent to {@link https://www.patternfly.org/components/menus/select#props PF/Select}
  * @returns {ReactComponent}
- */
-const MountPointFormSelect = ({ volumes, ...formSelectProps }) => {
+*/
+
+const MountPointFormSelect = ({ value, volumes, onChange, ...selectProps }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const onSelect = (_, mountPath) => {
+    setIsOpen(false);
+    onChange(mountPath);
+  };
+
+  const onToggleClick = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const toggle = toggleRef => {
+    return (
+      <MenuToggle
+       id="mountPoint"
+       ref={toggleRef}
+       onClick={onToggleClick}
+       isExpanded={isOpen}
+       className="full-width"
+      >
+        {value || _("Select a value")}
+      </MenuToggle>
+    );
+  };
   return (
-    <FormSelect { ...formSelectProps }>
-      { volumes.map(v => <FormSelectOption key={v.mountPath} value={v.mountPath} label={v.mountPath} />) }
-    </FormSelect>
+    <Select
+      onOpenChange={setIsOpen}
+      onSelect={onSelect}
+      isOpen={isOpen}
+      toggle={toggle}
+      shouldFocusToggleOnSelect
+      { ...selectProps }
+    >
+      <SelectList>
+        {volumes.map(v => (
+          <SelectOption isSelected={value === v.mountPath} key={v.mountPath} value={v.mountPath}>
+            {v.mountPath}
+          </SelectOption>
+        ))}
+      </SelectList>
+    </Select>
   );
 };
 
@@ -676,7 +716,7 @@ const reducer = (state, action) => {
 export default function VolumeForm({ id, volume: currentVolume, templates = [], onSubmit }) {
   const [state, dispatch] = useReducer(reducer, currentVolume || templates[0], createInitialState);
 
-  const changeVolume = (_, mountPath) => {
+  const changeVolume = (mountPath) => {
     const volume = templates.find(t => t.mountPath === mountPath);
     dispatch({ type: "CHANGE_VOLUME", payload: { volume } });
   };
@@ -722,17 +762,31 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
 
   const { fsType, snapshots } = state.formData;
 
+  const ShowMountPointSelector = () => (
+    <MountPointFormSelect
+        value={state.formData.mountPoint}
+        onChange={changeVolume}
+        volumes={currentVolume ? [currentVolume] : templates}
+    />
+  );
+
+  const ShowMountPoint = () => <p>{state.formData.mountPoint}</p>;
+
   return (
     <Form id={id} onSubmit={submitForm}>
-      <FormGroup isRequired label={_("Mount point")} fieldId="mountPoint">
-        <MountPointFormSelect
-          id="mountPoint"
-          value={state.formData.mountPoint}
-          onChange={changeVolume}
-          volumes={currentVolume ? [currentVolume] : templates}
-          isDisabled={currentVolume !== undefined}
-        />
-      </FormGroup>
+      <If
+        condition={currentVolume !== undefined}
+        then={
+          <FormGroup label={_("Mount point")}>
+            <ShowMountPoint />
+          </FormGroup>
+        }
+        else={
+          <FormGroup isRequired label={_("Mount point")} fieldId="mountPoint">
+            <ShowMountPointSelector />
+          </FormGroup>
+        }
+      />
       <FsField
         value={{ fsType, snapshots }}
         volume={state.volume}
