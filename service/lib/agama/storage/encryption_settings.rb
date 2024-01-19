@@ -28,6 +28,13 @@ module Agama
     class EncryptionSettings
       include Y2Storage::SecretAttributes
 
+      # @see .encryption_methods
+      METHODS = [
+        Y2Storage::EncryptionMethod::LUKS2,
+        Y2Storage::EncryptionMethod::TPM_FDE
+      ].freeze
+      private_constant :METHODS
+
       # @!attribute encryption_password
       #   Password to use when creating new encryption devices
       #   @return [String, nil] nil if undetermined
@@ -41,8 +48,30 @@ module Agama
       # @return [Y2Storage::PbkdFunction, nil] Can be nil if using LUKS1.
       attr_accessor :pbkd_function
 
+      # All known encryption methods
+      #
+      # This includes all the potentially accepted methods, no matter whether they are
+      # possible for the current system and product.
+      #
+      # @return [Array<Y2Storage::EncryptionMethod::Base>]
+      def self.encryption_methods
+        METHODS
+      end
+
+      # All methods that can be used to calculate a proposal for the current system and product
+      #
+      # @return [Array<Y2Storage::EncryptionMethod::Base>]
+      def self.available_methods
+        encryption_methods.reject { |m| m.respond_to?(:possible?) && !m.possible? }
+      end
+
+      # Constructor
       def initialize
-        @method = Y2Storage::EncryptionMethod::LUKS1
+        # LUKS2 with PBKDF2 is the most sensible option nowadays:
+        #  - LUKS2 offers additional features over LUKS1
+        #  - PBKDF2 keeps memory usage similar to LUKS1 and is supported by Grub2
+        @method = Y2Storage::EncryptionMethod::LUKS2
+        @pbkd_function = Y2Storage::PbkdFunction::PBKDF2
       end
 
       # Whether the proposal must create encrypted devices

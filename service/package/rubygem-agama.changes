@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 18 08:35:01 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- New default encryption settings: LUKS2 with PBKDF2.
+- Expose encryption methods at D-Bus API (gh#openSUSE/agama#995).
+
+-------------------------------------------------------------------
 Tue Jan 16 10:49:14 UTC 2024 - Michal Filka <mfilka@suse.com>
 
 - bsc#1210541, gh#openSUSE/agama#516

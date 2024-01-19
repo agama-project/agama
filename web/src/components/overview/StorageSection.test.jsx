@@ -35,6 +35,8 @@ const availableDevices = [
   { name: "/dev/sdb", size: 697932185600 }
 ];
 
+const encryptionMethods = ["luks2", "tpm_fde"];
+
 const proposalResult = {
   settings: {
     bootDevice: "/dev/sda",
@@ -48,6 +50,7 @@ const storageMock = {
   probe: jest.fn().mockResolvedValue(0),
   proposal: {
     getAvailableDevices: jest.fn().mockResolvedValue(availableDevices),
+    getEncryptionMethods: jest.fn().mockResolvedValue(encryptionMethods),
     getResult: jest.fn().mockResolvedValue(proposalResult),
     calculate: jest.fn().mockResolvedValue(0)
   },

@@ -430,3 +430,17 @@ ul[data-of="agama/timezones"] {
     }
   }
 }
+
+.tpm-hint {
+  container-type: inline-size;
+  container-name: tpm-info;
+  text-align: start;
+
+  .pf-v5-c-alert__title {
+    margin-block-end: var(--spacer-small);
+  }
+
+  .pf-v5-c-alert__description {
+    max-inline-size: 100%;
+  }
+}
