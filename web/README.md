@@ -81,15 +81,16 @@ switcher is displayed only in local installation because it cannot work in
 remote connection. This option will force displaying it even in a remote
 connection.
 
-## JSDoc Documentation
+## TypeDoc Documentation
 
-This project uses [TypeDoc](https://typedoc.org/) to generate the API documentation. The `jsdoc`
-task generates the documentation to the `jsout.out` directory. If you need to adjust any TypeDoc
-option, please check the `typedocOptions` key in the `tsconfig.js` file.
+This project uses [TypeDoc](https://typedoc.org/) to generate the API documentation. The `typedoc`
+task generates the documentation to the `typedoc.out` directory. If you need to adjust any TypeDoc
+option, please check the [`typedoc.json` file](./typedoc.json).
 
 ```
-npm run jsdoc
-xdg-open jsdoc.out/index.html
+npm run typedoc
+xdg-open typedoc.out/client/index.html
+xdg-open typedoc.out/components/index.html
 ```
 
 GitHub Actions will automatically publish the result to <https://agama-frontend.surge.sh/>.
