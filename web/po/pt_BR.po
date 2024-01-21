@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-10 02:19+0000\n"
+"POT-Creation-Date: 2024-01-21 02:22+0000\n"
 "PO-Revision-Date: 2023-12-31 20:39+0000\n"
 "Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Portuguese (Brazil) <https://l10n.opensuse.org/projects/agama/"
@@ -157,8 +157,8 @@ msgstr ""
 #: src/components/product/ProductPage.jsx:207
 #: src/components/storage/ProposalSettingsSection.jsx:170
 #: src/components/storage/ProposalSettingsSection.jsx:363
-#: src/components/storage/ProposalSettingsSection.jsx:508
-#: src/components/storage/ProposalSettingsSection.jsx:604
+#: src/components/storage/ProposalSettingsSection.jsx:547
+#: src/components/storage/ProposalSettingsSection.jsx:643
 #: src/components/storage/ProposalVolumes.jsx:148
 #: src/components/storage/ProposalVolumes.jsx:283
 #: src/components/storage/ZFCPPage.jsx:511
@@ -170,40 +170,62 @@ msgstr "Aceitar"
 msgid "Install"
 msgstr "Instalar"
 
-#. TRANSLATORS: button label
-#: src/components/core/InstallationFinished.jsx:44
-msgid "Finish"
-msgstr "Concluir"
+#: src/components/core/InstallationFinished.jsx:41
+msgid "TPM sealing requires the new system to be booted directly."
+msgstr ""
 
-#. TRANSLATORS: button label
 #: src/components/core/InstallationFinished.jsx:46
-msgid "Reboot"
-msgstr "Reiniciar"
+msgid ""
+"If a local media was used to run this installer, remove it before the next "
+"boot."
+msgstr ""
+
+#: src/components/core/InstallationFinished.jsx:50
+#, fuzzy
+msgid "Hide details"
+msgstr "Detalhes"
+
+#: src/components/core/InstallationFinished.jsx:50
+msgid "See more details"
+msgstr ""
+
+#. TRANSLATORS: Do not translate 'abbr' and 'title', they are part of the HTML markup
+#: src/components/core/InstallationFinished.jsx:55
+msgid ""
+"The final step to configure the <abbr title='Trusted Platform Module'>TPM</"
+"abbr> to automatically open encrypted devices will take place during the "
+"first boot of the new system. For that to work, the machine needs to boot "
+"directly to the new boot loader."
+msgstr ""
 
 #. TRANSLATORS: page title
-#: src/components/core/InstallationFinished.jsx:59
+#: src/components/core/InstallationFinished.jsx:88
 msgid "Installation Finished"
 msgstr "Instalação concluída"
 
-#: src/components/core/InstallationFinished.jsx:63
+#: src/components/core/InstallationFinished.jsx:91
 msgid "Congratulations!"
 msgstr "Parabéns!"
 
-#: src/components/core/InstallationFinished.jsx:68
+#: src/components/core/InstallationFinished.jsx:96
 msgid "The installation on your machine is complete."
 msgstr "A instalação em sua máquina está concluída."
 
-#: src/components/core/InstallationFinished.jsx:72
+#: src/components/core/InstallationFinished.jsx:100
 msgid "At this point you can power off the machine."
 msgstr "Neste ponto você pode desligar a máquina."
 
-#: src/components/core/InstallationFinished.jsx:73
+#: src/components/core/InstallationFinished.jsx:101
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr "Neste ponto você pode reiniciar a máquina para entrar no novo sistema."
 
-#: src/components/core/InstallationFinished.jsx:76
-msgid "Have a lot of fun! Your openSUSE Development Team."
-msgstr "Divirta-se! Sua equipe de desenvolvimento do openSUSE."
+#: src/components/core/InstallationFinished.jsx:113
+msgid "Finish"
+msgstr "Concluir"
+
+#: src/components/core/InstallationFinished.jsx:113
+msgid "Reboot"
+msgstr "Reiniciar"
 
 #: src/components/core/InstallationProgress.jsx:32
 msgid "Installing"
@@ -847,7 +869,7 @@ msgstr ""
 #. TRANSLATORS: page section title
 #. TRANSLATORS: page title
 #: src/components/overview/StorageSection.jsx:208
-#: src/components/storage/ProposalPage.jsx:218
+#: src/components/storage/ProposalPage.jsx:232
 msgid "Storage"
 msgstr "Armazenamento"
 
@@ -1162,7 +1184,7 @@ msgstr ""
 msgid "Planned Actions"
 msgstr ""
 
-#: src/components/storage/ProposalPage.jsx:198
+#: src/components/storage/ProposalPage.jsx:211
 msgid "Devices will not be modified until installation starts."
 msgstr ""
 
@@ -1232,35 +1254,51 @@ msgstr ""
 msgid "System Volume Group"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:474
-msgid "Change encryption password"
+#. TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
+#. 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
+#. Do not translate 'abbr' and 'title', they are part of the HTML markup.
+#: src/components/storage/ProposalSettingsSection.jsx:422
+msgid ""
+"The password will not be needed to boot and access the data if the <abbr "
+"title='Trusted Platform Module'>TPM</abbr> can verify the integrity of the "
+"system. TPM sealing requires the new system to be booted directly on its "
+"first run."
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:479
-#: src/components/storage/ProposalSettingsSection.jsx:500
+#: src/components/storage/ProposalSettingsSection.jsx:440
+msgid "Use the TPM to decrypt automatically on each boot"
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:511
+#, fuzzy
+msgid "Change encryption settings"
+msgstr "Usar criptografia"
+
+#: src/components/storage/ProposalSettingsSection.jsx:516
+#: src/components/storage/ProposalSettingsSection.jsx:537
 msgid "Encryption settings"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:493
+#: src/components/storage/ProposalSettingsSection.jsx:530
 msgid "Use encryption"
 msgstr "Usar criptografia"
 
-#: src/components/storage/ProposalSettingsSection.jsx:578
+#: src/components/storage/ProposalSettingsSection.jsx:617
 msgid ""
 "Select how to make free space in the disks selected for allocating the     "
 "file systems."
 msgstr ""
 
 #. TRANSLATORS: To be completed with the rest of a sentence like "deleting all content"
-#: src/components/storage/ProposalSettingsSection.jsx:584
+#: src/components/storage/ProposalSettingsSection.jsx:623
 msgid "Find space"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:588
+#: src/components/storage/ProposalSettingsSection.jsx:627
 msgid "Space Policy"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:662
+#: src/components/storage/ProposalSettingsSection.jsx:703
 msgid "Settings"
 msgstr "Configurações"
 
@@ -1319,8 +1357,8 @@ msgstr "criptografado"
 
 #. TRANSLATORS: filesystem flag, it allows creating snapshots
 #: src/components/storage/ProposalVolumes.jsx:218
-#: src/components/storage/VolumeForm.jsx:132
-#: src/components/storage/VolumeForm.jsx:165
+#: src/components/storage/VolumeForm.jsx:172
+#: src/components/storage/VolumeForm.jsx:205
 #, c-format
 msgid "with snapshots"
 msgstr "com instantâneos"
@@ -1340,7 +1378,8 @@ msgid "Edit file system"
 msgstr "Editar sistema de arquivos"
 
 #: src/components/storage/ProposalVolumes.jsx:307
-#: src/components/storage/VolumeForm.jsx:727
+#: src/components/storage/VolumeForm.jsx:780
+#: src/components/storage/VolumeForm.jsx:785
 msgid "Mount point"
 msgstr "Ponto de montagem"
 
@@ -1349,7 +1388,7 @@ msgid "Details"
 msgstr "Detalhes"
 
 #: src/components/storage/ProposalVolumes.jsx:309
-#: src/components/storage/VolumeForm.jsx:741
+#: src/components/storage/VolumeForm.jsx:795
 msgid "Size"
 msgstr "Tamanho"
 
@@ -1361,78 +1400,83 @@ msgstr "Tabela com pontos de montagem"
 msgid "File systems to create in your system"
 msgstr "Sistemas de arquivos para criar em seu sistema"
 
+#: src/components/storage/VolumeForm.jsx:102
+#, fuzzy
+msgid "Select a value"
+msgstr "Selecionar idioma"
+
 #. TRANSLATORS: description of Btrfs snapshots feature.
-#: src/components/storage/VolumeForm.jsx:172
+#: src/components/storage/VolumeForm.jsx:212
 msgid ""
 "Allows rolling back any change done to the system and restoring its previous "
 "state"
 msgstr ""
 
 #. TRANSLATORS: info about possible file system types.
-#: src/components/storage/VolumeForm.jsx:269
+#: src/components/storage/VolumeForm.jsx:309
 msgid ""
 "The options for the file system type depends on the product and the mount "
 "point."
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:275
+#: src/components/storage/VolumeForm.jsx:315
 #, fuzzy
 msgid "More info for file system types"
 msgstr "Tipo de sistema de arquivos"
 
 #. TRANSLATORS: label for the file system selector.
-#: src/components/storage/VolumeForm.jsx:286
+#: src/components/storage/VolumeForm.jsx:326
 msgid "File system type"
 msgstr "Tipo de sistema de arquivos"
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeForm.jsx:318
+#: src/components/storage/VolumeForm.jsx:358
 msgid "the configuration of snapshots"
 msgstr "a configuração de instantâneos"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
-#: src/components/storage/VolumeForm.jsx:323
+#: src/components/storage/VolumeForm.jsx:363
 #, c-format
 msgid "the presence of the file system for %s"
 msgstr "a presença do sistema de arquivos para %s"
 
 #. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeForm.jsx:325
+#: src/components/storage/VolumeForm.jsx:365
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeForm.jsx:328
+#: src/components/storage/VolumeForm.jsx:368
 #, c-format
 msgid "The final size depends on %s."
 msgstr "O tamanho final depende de %s."
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeForm.jsx:330
+#: src/components/storage/VolumeForm.jsx:370
 msgid " and "
 msgstr " e "
 
 #. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeForm.jsx:335
+#: src/components/storage/VolumeForm.jsx:375
 msgid "Automatically calculated size according to the selected product."
 msgstr "Tamanho calculado automaticamente de acordo com o produto selecionado."
 
-#: src/components/storage/VolumeForm.jsx:355
+#: src/components/storage/VolumeForm.jsx:395
 msgid "Exact size for the file system."
 msgstr "Tamanho exato do sistema de arquivos."
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeForm.jsx:367
+#: src/components/storage/VolumeForm.jsx:407
 msgid "Exact size"
 msgstr ""
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeForm.jsx:382
+#: src/components/storage/VolumeForm.jsx:422
 msgid "Size unit"
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:410
+#: src/components/storage/VolumeForm.jsx:450
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1440,57 +1484,57 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeForm.jsx:417
+#: src/components/storage/VolumeForm.jsx:457
 msgid "Minimum"
 msgstr "Mínimo"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeForm.jsx:427
+#: src/components/storage/VolumeForm.jsx:467
 msgid "Minimum desired size"
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:436
+#: src/components/storage/VolumeForm.jsx:476
 msgid "Unit for the minimum size"
 msgstr ""
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:447
+#: src/components/storage/VolumeForm.jsx:487
 msgid "Maximum"
 msgstr "Máximo"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:458
+#: src/components/storage/VolumeForm.jsx:498
 msgid "Maximum desired size"
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:466
+#: src/components/storage/VolumeForm.jsx:506
 msgid "Unit for the maximum size"
 msgstr ""
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeForm.jsx:483
+#: src/components/storage/VolumeForm.jsx:523
 msgid "Auto"
 msgstr "Automático"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeForm.jsx:485
+#: src/components/storage/VolumeForm.jsx:525
 msgid "Fixed"
 msgstr "Fixo"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeForm.jsx:487
+#: src/components/storage/VolumeForm.jsx:527
 msgid "Range"
 msgstr "Intervalo"
 
-#: src/components/storage/VolumeForm.jsx:695
+#: src/components/storage/VolumeForm.jsx:735
 msgid "A size value is required"
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:700
+#: src/components/storage/VolumeForm.jsx:740
 msgid "Minimum size is required"
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:704
+#: src/components/storage/VolumeForm.jsx:744
 msgid "Maximum must be greater than minimum"
 msgstr ""
 
@@ -2062,6 +2106,9 @@ msgstr "Usuário"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr ""
+
+#~ msgid "Have a lot of fun! Your openSUSE Development Team."
+#~ msgstr "Divirta-se! Sua equipe de desenvolvimento do openSUSE."
 
 #~ msgid "There are new issues"
 #~ msgstr "Existem novos problemas"
