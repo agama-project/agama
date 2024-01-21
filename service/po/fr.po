@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-27 02:08+0000\n"
+"POT-Creation-Date: 2024-01-21 02:22+0000\n"
 "PO-Revision-Date: 2023-12-29 02:02+0000\n"
 "Last-Translator: faila fail <yassadmi@proton.me>\n"
-"Language-Team: French <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/fr/>\n"
+"Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-"
+"service-master/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -128,7 +128,7 @@ msgstr "Restauration des dépôts d'origine"
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:461
+#: service/lib/agama/software/manager.rb:470
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "Impossible de lire le dépôt \"%s\""
@@ -136,14 +136,14 @@ msgstr "Impossible de lire le dépôt \"%s\""
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:471
+#: service/lib/agama/software/manager.rb:480
 msgid "Product not selected yet"
 msgstr "Le produit n'est pas encore sélectionné"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:480
+#: service/lib/agama/software/manager.rb:489
 #, fuzzy
 msgid "Product must be registered"
 msgstr "Le produit doit être enregistré"
