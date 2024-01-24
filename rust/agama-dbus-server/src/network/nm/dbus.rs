@@ -1008,10 +1008,23 @@ mod test {
                 "assigned-mac-address".to_string(),
                 Value::new("13:45:67:89:AB:CD").to_owned(),
             ),
+            ("band".to_string(), Value::new("a").to_owned()),
+            ("channel".to_string(), Value::new(32_u32).to_owned()),
+            (
+                "bssid".to_string(),
+                Value::new(vec![18_u8, 52_u8, 86_u8, 120_u8, 154_u8, 188_u8]).to_owned(),
+            ),
         ]);
 
-        let security_section =
-            HashMap::from([("key-mgmt".to_string(), Value::new("wpa-psk").to_owned())]);
+        let security_section = HashMap::from([
+            ("key-mgmt".to_string(), Value::new("wpa-psk").to_owned()),
+            (
+                "wep-key-type".to_string(),
+                Value::new(WepKeyType::Key as u32).to_owned(),
+            ),
+            ("auth-alg".to_string(), Value::new("open").to_owned()),
+            ("wep-tx-keyidx".to_string(), Value::new(1_u32).to_owned()),
+        ]);
 
         let dbus_conn = HashMap::from([
             ("connection".to_string(), connection_section),
@@ -1025,7 +1038,17 @@ mod test {
         if let ConnectionConfig::Wireless(wireless) = &connection.config {
             assert_eq!(wireless.ssid, SSID(vec![97, 103, 97, 109, 97]));
             assert_eq!(wireless.mode, WirelessMode::Infra);
-            assert_eq!(wireless.security, SecurityProtocol::WPA2)
+            assert_eq!(wireless.security, SecurityProtocol::WPA2);
+            assert_eq!(wireless.band, Some(WirelessBand::A));
+            assert_eq!(wireless.channel, Some(32_u32));
+            assert_eq!(
+                wireless.bssid,
+                Some(macaddr::MacAddr6::from_str("12:34:56:78:9A:BC").unwrap())
+            );
+            let wep_security = wireless.wep_security.as_ref().unwrap();
+            assert_eq!(wep_security.wep_key_type, WepKeyType::Key);
+            assert_eq!(wep_security.auth_alg, WepAuthAlg::Open);
+            assert_eq!(wep_security.wep_key_index, 1);
         }
     }
 
@@ -1058,7 +1081,20 @@ mod test {
         let config = WirelessConfig {
             mode: WirelessMode::Infra,
             security: SecurityProtocol::WPA2,
+            password: Some("wpa-password".to_string()),
             ssid: SSID(vec![97, 103, 97, 109, 97]),
+            band: Some(WirelessBand::BG),
+            channel: Some(10),
+            bssid: Some(macaddr::MacAddr6::from_str("12:34:56:78:9A:BC").unwrap()),
+            wep_security: Some(WepSecurity {
+                auth_alg: WepAuthAlg::Open,
+                wep_key_type: WepKeyType::Key,
+                wep_key_index: 1,
+                keys: vec![
+                    "5b73215e232f4c577c5073455d".to_string(),
+                    "hello".to_string(),
+                ],
+            }),
             ..Default::default()
         };
         let mut wireless = build_base_connection();
@@ -1083,9 +1119,54 @@ mod test {
             .collect();
         assert_eq!(ssid, "agama".as_bytes());
 
+        let band: &str = wireless.get("band").unwrap().downcast_ref().unwrap();
+        assert_eq!(band, "bg");
+
+        let channel: u32 = *wireless.get("channel").unwrap().downcast_ref().unwrap();
+        assert_eq!(channel, 10);
+
+        let bssid: &zvariant::Array = wireless.get("bssid").unwrap().downcast_ref().unwrap();
+        let bssid: Vec<u8> = bssid
+            .get()
+            .iter()
+            .map(|u| *u.downcast_ref::<u8>().unwrap())
+            .collect();
+        assert_eq!(bssid, vec![18, 52, 86, 120, 154, 188]);
+
         let security = wireless_dbus.get(WIRELESS_SECURITY_KEY).unwrap();
         let key_mgmt: &str = security.get("key-mgmt").unwrap().downcast_ref().unwrap();
         assert_eq!(key_mgmt, "wpa-psk");
+
+        let password: &str = security.get("psk").unwrap().downcast_ref().unwrap();
+        assert_eq!(password, "wpa-password");
+
+        let auth_alg: WepAuthAlg = security
+            .get("auth-alg")
+            .unwrap()
+            .downcast_ref::<str>()
+            .unwrap()
+            .try_into()
+            .unwrap();
+        assert_eq!(auth_alg, WepAuthAlg::Open);
+
+        let wep_key_type: u32 = *security
+            .get("wep-key-type")
+            .unwrap()
+            .downcast_ref::<u32>()
+            .unwrap();
+        assert_eq!(wep_key_type, WepKeyType::Key as u32);
+
+        let wep_key_index: u32 = *security
+            .get("wep-tx-keyidx")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(wep_key_index, 1);
+
+        let wep_key0: &str = security.get("wep-key0").unwrap().downcast_ref().unwrap();
+        assert_eq!(wep_key0, "5b73215e232f4c577c5073455d");
+        let wep_key1: &str = security.get("wep-key1").unwrap().downcast_ref().unwrap();
+        assert_eq!(wep_key1, "hello");
     }
 
     #[test]
