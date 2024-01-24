@@ -154,6 +154,131 @@ set -ex
 You might want to have a look to [Agama's default script for inspiration](./scripts/auto.sh). Such a
 script comes into action when you provide a profile.
 
+### Support for Custom Scripts
+
+The goal of this section is to document examples and use cases for additional scripting support in agama autoinstall.
+
+#### Changes Before Installation
+
+##### Hardware Activation
+
+In some cases it is necessary to activate tricky devices manually before starting the installation. An example is two network cards, one for the external network and one for the internal network.
+
+```sh
+set -ex
+
+/usr/bin/agama profile download ftp://my.server/tricky_hardware_setup.sh
+sh tricky_hardware_setup.sh
+/usr/bin/agama config set software.product=Tumbleweed
+/usr/bin/agama config set user.userName=joe user.password=doe
+/usr/bin/agama install
+```
+
+##### Modifying the Installation Profile
+
+
+For various reasons, jsonnet may not be able to handle all of the profile changes that users may wish to make.
+
+
+```
+set -ex
+
+
+/usr/bin/agama profile download ftp://my.server/profile.json
+
+# modify profile.json here
+
+/usr/bin/agama profile validate profile.json
+/usr/bin/agama config load profile.json
+
+/usr/bin/agama install
+
+```
+
+#### After Partitioning
+
+Note: currently not supported ( params to install is not implemented yet )
+
+##### Partitioning Changes
+
+Sometimes there is a tricky partitioning that needs to be modified after partitioning and before installing RPMs, such as changing the fstab and mount an extra partition.
+
+
+```sh
+set -ex
+
+/usr/bin/agama config set software.product=Tumbleweed
+
+/usr/bin/agama config set user.userName=joe user.password=doe
+
+/usr/bin/agama install --until partitioning # install till the partitioning step
+
+# Place for specific changes to /dev
+
+/usr/bin/agama install # do the rest of the installation
+```
+
+#### After Deployment
+
+Note: not supported now ( params to install is not implemented yet )
+
+##### Setup Security
+
+
+If there is a need to modify the system before rebooting, e.g. to install mandatory security software for internal network, then it must be modified before umount.
+
+
+``` sh
+
+set -ex
+
+/usr/bin/agama profile download ftp://my.server/velociraptor.config
+
+/usr/bin/agama config set software.product=Tumbleweed
+
+/usr/bin/agama config set user.userName=joe user.password=doe
+
+/usr/bin/agama install --until deploy # do partitioning, rpm installation and configuration step
+
+# Example of enabling velociraptor
+
+zypper --root /mnt install velociraptor-client
+
+mkdir -p /mnt/etc/velociraptor
+cp velociraptor.config /mnt/etc/velociraptor/client.config
+
+systemctl --root /mnt enable velociraptor-client
+
+/usr/bin/agama install # do the rest of the installation - basically unmount and copy logs
+
+```
+
+##### Tuning the Kernel
+
+Another type of change is changes that are necessary for a successful reboot, such as some kernel tuning or adding some remote storage that need to be mounted during boot.
+
+``` sh
+
+set -ex
+
+
+/usr/bin/agama config set software.product=Tumbleweed
+
+/usr/bin/agama config set user.userName=joe user.password=doe
+
+/usr/bin/agama install --until deploy # do partitioning, rpm installation and configuration step
+
+# Do custom modification of /mnt including call to dracut
+
+/usr/bin/agama install # do the rest of the installation - basically unmount and copy logs
+
+```
+
+#### After Reboot
+
+Users usually do a lot of things with post install scripts in autoyast e.g. calling zypper to install additional software, modify configuration files or manipulate with systemd services. This is done after the first reboot.
+If this is the case, Agama will simply delegate it to any other tool the user prefers for initial configuration, such as ignition/combustion.
+
 ## Starting the auto-installation
 
 The auto-installation is started by passing `agama.auto=<url>` on the kernel's command line. If you
