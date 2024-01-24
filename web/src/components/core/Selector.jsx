@@ -112,18 +112,22 @@ const Selector = ({
 
   return (
     <ul { ...props } data-type="agama/list" role="grid">
-      { React.Children.map(children, ({ props: { id, key, children } }) => {
-        return (
-          <Item
-            id={id}
-            key={key || id}
-            type={selectionWidget}
-            isSelected={selectedIds.includes(id)}
-            onClick={onItemClick}
-          >
-            {children}
-          </Item>
-        );
+      { React.Children.map(children, (child) => {
+        if (React.isValidElement(child)) {
+          const { id, key, children } = child.props;
+
+          return (
+            <Item
+              id={id}
+              key={key || id}
+              type={selectionWidget}
+              isSelected={selectedIds.includes(id)}
+              onClick={onItemClick}
+            >
+              {children}
+            </Item>
+          );
+        }
       })}
     </ul>
   );
