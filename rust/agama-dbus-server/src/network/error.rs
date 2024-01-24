@@ -29,6 +29,8 @@ pub enum NetworkStateError {
     NotControllerConnection(String),
     #[error("Unexpected configuration")]
     UnexpectedConfiguration,
+    #[error("Invalid WEP authentication algorithm: '{0}'")]
+    InvalidWepAuthAlg(String),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {

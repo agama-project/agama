@@ -743,6 +743,7 @@ pub struct WirelessConfig {
     pub band: Option<WirelessBand>,
     pub channel: Option<u32>,
     pub bssid: Option<macaddr::MacAddr6>,
+    pub wep_security: Option<WepSecurity>,
 }
 
 impl TryFrom<ConnectionConfig> for WirelessConfig {
@@ -837,6 +838,57 @@ impl TryFrom<&str> for SecurityProtocol {
                 value.to_string(),
             )),
         }
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct WepSecurity {
+    pub auth_alg: WepAuthAlg,
+    pub wep_key_type: WepKeyType,
+    pub keys: Vec<String>,
+    pub wep_key_index: u32,
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub enum WepKeyType {
+    #[default]
+    Unknown = 0,
+    Key = 1,
+    Passphrase = 2,
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub enum WepAuthAlg {
+    #[default]
+    Unset,
+    Open,
+    Shared,
+    Leap,
+}
+
+impl TryFrom<&str> for WepAuthAlg {
+    type Error = NetworkStateError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "open" => Ok(WepAuthAlg::Open),
+            "shared" => Ok(WepAuthAlg::Shared),
+            "leap" => Ok(WepAuthAlg::Leap),
+            "" => Ok(WepAuthAlg::Unset),
+            _ => Err(NetworkStateError::InvalidWepAuthAlg(value.to_string())),
+        }
+    }
+}
+
+impl fmt::Display for WepAuthAlg {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            WepAuthAlg::Open => "open",
+            WepAuthAlg::Shared => "shared",
+            WepAuthAlg::Leap => "shared",
+            WepAuthAlg::Unset => "",
+        };
+        write!(f, "{}", name)
     }
 }
 

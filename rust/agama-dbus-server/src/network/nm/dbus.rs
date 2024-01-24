@@ -344,6 +344,31 @@ fn wireless_config_to_dbus<'a>(
     if let Some(password) = &config.password {
         security.insert("psk", password.to_string().into());
     }
+    if let Some(wep_security) = &config.wep_security {
+        security.insert(
+            "wep-key-type",
+            (wep_security.wep_key_type.clone() as u32).into(),
+        );
+        security.insert("auth-alg", wep_security.auth_alg.to_string().into());
+        for (i, wep_key) in wep_security.keys.clone().into_iter().enumerate() {
+            security.insert(
+                // FIXME: lifetimes are fun
+                if i == 0 {
+                    "wep-key0"
+                } else if i == 1 {
+                    "wep-key1"
+                } else if i == 2 {
+                    "wep-key2"
+                } else if i == 3 {
+                    "wep-key3"
+                } else {
+                    break;
+                },
+                wep_key.into(),
+            );
+        }
+        security.insert("wep-tx-keyidx", wep_security.wep_key_index.into());
+    }
 
     NestedHash::from([(WIRELESS_KEY, wireless), (WIRELESS_SECURITY_KEY, security)])
 }
@@ -705,6 +730,38 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
     if let Some(security) = conn.get(WIRELESS_SECURITY_KEY) {
         let key_mgmt: &str = security.get("key-mgmt")?.downcast_ref()?;
         wireless_config.security = NmKeyManagement(key_mgmt.to_string()).try_into().ok()?;
+
+        let wep_key_type = if let Some(wep_key_type) = security.get("wep-key-type") {
+            let wep_key_type: u32 = *wep_key_type.downcast_ref()?;
+            match wep_key_type {
+                // 0 shouldn't appear because it is treated as empty but just in case
+                0 => WepKeyType::Unknown,
+                1 => WepKeyType::Key,
+                2 => WepKeyType::Passphrase,
+                _ => {
+                    log::error!("\"wep-key-type\" from NetworkManager not valid");
+                    WepKeyType::default()
+                }
+            }
+        } else {
+            WepKeyType::default()
+        };
+        let auth_alg = if let Some(auth_alg) = security.get("auth-alg") {
+            WepAuthAlg::try_from(auth_alg.downcast_ref()?).ok()?
+        } else {
+            WepAuthAlg::default()
+        };
+        let wep_key_index: u32 = if let Some(wep_key_index) = security.get("wep-tx-keyidx") {
+            *wep_key_index.downcast_ref()?
+        } else {
+            0
+        };
+        wireless_config.wep_security = Some(WepSecurity {
+            wep_key_type,
+            auth_alg,
+            wep_key_index,
+            ..Default::default()
+        });
     }
 
     Some(wireless_config)
