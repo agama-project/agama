@@ -9,6 +9,7 @@ use agama_lib::{
     network::types::{BondMode, SSID},
 };
 use cidr::IpInet;
+use macaddr::MacAddr6;
 use std::{collections::HashMap, net::IpAddr, str::FromStr};
 use uuid::Uuid;
 use zbus::zvariant::{self, OwnedValue, Value};
@@ -321,11 +322,21 @@ fn wireless_config_to_dbus<'a>(
     config: &'a WirelessConfig,
     mac_address: &MacAddress,
 ) -> NestedHash<'a> {
-    let wireless: HashMap<&str, zvariant::Value> = HashMap::from([
+    let mut wireless: HashMap<&str, zvariant::Value> = HashMap::from([
         ("mode", Value::new(config.mode.to_string())),
         ("ssid", Value::new(config.ssid.to_vec())),
         ("assigned-mac-address", Value::new(mac_address.to_string())),
     ]);
+
+    if let Some(band) = &config.band {
+        wireless.insert("band", band.to_string().into());
+        if let Some(channel) = config.channel {
+            wireless.insert("channel", channel.into());
+        }
+    }
+    if let Some(bssid) = &config.bssid {
+        wireless.insert("bssid", bssid.as_bytes().into());
+    }
 
     let mut security: HashMap<&str, zvariant::Value> =
         HashMap::from([("key-mgmt", config.security.to_string().into())]);
@@ -667,6 +678,29 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
         ssid: SSID(ssid),
         ..Default::default()
     };
+
+    if let Some(band) = wireless.get("band") {
+        wireless_config.band = Some(band.downcast_ref::<str>()?.try_into().ok()?)
+    }
+    if let Some(channel) = wireless.get("channel") {
+        wireless_config.channel = Some(*channel.downcast_ref()?);
+    }
+    if let Some(bssid) = wireless.get("bssid") {
+        let bssid: &zvariant::Array = bssid.downcast_ref()?;
+        let bssid: Vec<u8> = bssid
+            .get()
+            .iter()
+            .map(|u| *u.downcast_ref::<u8>().unwrap())
+            .collect();
+        wireless_config.bssid = Some(MacAddr6::new(
+            *bssid.first()?,
+            *bssid.get(1)?,
+            *bssid.get(2)?,
+            *bssid.get(3)?,
+            *bssid.get(4)?,
+            *bssid.get(5)?,
+        ));
+    }
 
     if let Some(security) = conn.get(WIRELESS_SECURITY_KEY) {
         let key_mgmt: &str = security.get("key-mgmt")?.downcast_ref()?;

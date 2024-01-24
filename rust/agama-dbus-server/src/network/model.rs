@@ -740,6 +740,9 @@ pub struct WirelessConfig {
     pub ssid: SSID,
     pub password: Option<String>,
     pub security: SecurityProtocol,
+    pub band: Option<WirelessBand>,
+    pub channel: Option<u32>,
+    pub bssid: Option<macaddr::MacAddr6>,
 }
 
 impl TryFrom<ConnectionConfig> for WirelessConfig {
@@ -833,6 +836,34 @@ impl TryFrom<&str> for SecurityProtocol {
             _ => Err(NetworkStateError::InvalidSecurityProtocol(
                 value.to_string(),
             )),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum WirelessBand {
+    A,  // 5GHz
+    BG, // 2.4GHz
+}
+
+impl fmt::Display for WirelessBand {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let value = match &self {
+            WirelessBand::A => "a",
+            WirelessBand::BG => "bg",
+        };
+        write!(f, "{}", value)
+    }
+}
+
+impl TryFrom<&str> for WirelessBand {
+    type Error = anyhow::Error;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "a" => Ok(WirelessBand::A),
+            "bg" => Ok(WirelessBand::BG),
+            _ => Err(anyhow::anyhow!("Invalid band: {}", value)),
         }
     }
 }
