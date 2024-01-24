@@ -114,12 +114,12 @@ const Selector = ({
     <ul { ...props } data-type="agama/list" role="grid">
       { React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
-          const { id, key, children } = child.props;
+          const { id, children } = child.props;
 
           return (
             <Item
               id={id}
-              key={key || id}
+              key={id}
               type={selectionWidget}
               isSelected={selectedIds.includes(id)}
               onClick={onItemClick}
