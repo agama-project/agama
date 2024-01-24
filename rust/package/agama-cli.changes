@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Thu Jan 23 18:00:00 UTC 2024 - Clemens Famulla-Conrad <cfamullaconrad@suse.de>
+
+- Add Bridge model (gh#openSUSE/agama#1008)
+
+-------------------------------------------------------------------
+Thu Jan 23 17:38:23 UTC 2024 - Clemens Famulla-Conrad <cfamullaconrad@suse.de>
+
+- Add VLAN model (gh#openSUSE/agama#918)
+
+-------------------------------------------------------------------
 Thu Jan 11 15:34:15 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Include the encoding as part of the locales (gh#openSUSE/agama#987).

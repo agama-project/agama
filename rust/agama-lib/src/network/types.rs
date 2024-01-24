@@ -39,6 +39,7 @@ pub enum DeviceType {
     Dummy = 3,
     Bond = 4,
     Vlan = 5,
+    Bridge = 6,
 }
 
 /// Bond mode
@@ -141,6 +142,7 @@ impl TryFrom<u8> for DeviceType {
             3 => Ok(DeviceType::Dummy),
             4 => Ok(DeviceType::Bond),
             5 => Ok(DeviceType::Vlan),
+            6 => Ok(DeviceType::Bridge),
             _ => Err(InvalidDeviceType(value)),
         }
     }
