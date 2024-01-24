@@ -82,7 +82,7 @@ const Item = ({ id, type, isSelected = false, onClick, children }) => {
  * @param {object} props - component props
  * @param {Array<*>} [props.selectedIds=[]] - Identifiers for selected options.
  * @param {boolean} [props.isMultiple=false] - Whether the selector should allow multiple selection.
- * @param {function} [props.onSelectionChange] - Callback to be called when the selection changes.
+ * @param {(Array<string>) => void } [props.onSelectionChange] - Callback to be called when the selection changes.
  * @param {React.ReactNode} props.children - Selector options
  * @param {object} [props.props] - Other props sent to the internal selector <ul> component
  */

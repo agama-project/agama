@@ -259,10 +259,7 @@ ul[data-type="agama/list"] {
   // FIXME: see if it's semantically correct to mark an li as aria-selected when
   // not belongs to a listbox or grid list ul.
   li[aria-selected] {
-    border-color: var(--color-primary);
-    box-shadow: 0 2px 5px 0 var(--color-gray-dark);
-    background: var(--color-primary);
-    color: white;
+    background: var(--color-gray-dark);
     font-weight: 700;
 
     svg {
@@ -272,8 +269,8 @@ ul[data-type="agama/list"] {
 }
 
 // These attributes together means that UI is rendering a selector
-ul[data-type="agama/list"][role="listbox"] {
-  li[role="option"] {
+ul[data-type="agama/list"][role="grid"] {
+  li[role="row"] {
     cursor: pointer;
 
     &:first-child {
@@ -291,6 +288,22 @@ ul[data-type="agama/list"][role="listbox"] {
     &:hover {
       &:not([aria-selected]) {
         background: var(--color-gray-dark);
+      }
+    }
+
+    div[role="gridcell"] {
+      display: flex;
+      align-items: center;
+      gap: var(--spacer-normal);
+
+      & > input {
+        --size: var(--fs-h2);
+        block-size: var(--size);
+        inline-size: var(--size);
+      }
+
+      & > div {
+        flex: 1;
       }
     }
   }
@@ -320,44 +333,38 @@ ul[data-of="agama/storage-devices"] {
   }
 }
 
-ul[data-of="agama/space-policies"] {
+[data-items-type="agama/space-policies"] {
   // It works with the default styling
 }
 
-ul[data-of="agama/locales"] {
-  li {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
+[data-items-type="agama/locales"] {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
 
-    > :last-child {
-      grid-column: 1 / -1;
-      font-size: var(--fs-small);
-    }
+  > :last-child {
+    grid-column: 1 / -1;
+    font-size: var(--fs-small);
   }
 }
 
-ul[data-of="agama/keymaps"] {
-  li {
-    > :last-child {
-      font-size: var(--fs-small);
-    }
+[data-items-type="agama/keymaps"] {
+  > :last-child {
+    font-size: var(--fs-small);
   }
 }
 
-ul[data-of="agama/timezones"] {
-  li {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+[data-items-type="agama/timezones"] {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
 
-    > :last-child {
-      grid-column: 1 / -1;
-      font-size: 80%;
-    }
+  > :last-child {
+    grid-column: 1 / -1;
+    font-size: 80%;
+  }
 
-    > :nth-child(3) {
-      color: var(--color-gray-dimmed);
-      text-align: end;
-    }
+  > :nth-child(3) {
+    color: var(--color-gray-dimmed);
+    text-align: end;
   }
 }
 
