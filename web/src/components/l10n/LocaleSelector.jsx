@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,32 +22,12 @@
 import React, { useState } from "react";
 
 import { _ } from "~/i18n";
-import { ListSearch } from "~/components/core";
+import { ListSearch, Selector } from "~/components/core";
 import { noop } from "~/utils";
 
 /**
  * @typedef {import ("~/client/l10n").Locale} Locale
  */
-
-const ListBox = ({ children, ...props }) => {
-  return (
-    <ul data-type="agama/list" data-of="agama/locales" {...props}>{children}</ul>
-  );
-};
-
-const ListBoxItem = ({ isSelected, children, onClick, ...props }) => {
-  if (isSelected) props['aria-selected'] = true;
-
-  return (
-    <li
-      role="option"
-      onClick={onClick}
-      { ...props }
-    >
-      {children}
-    </li>
-  );
-};
 
 /**
  * Content for a locale item.
@@ -58,11 +38,11 @@ const ListBoxItem = ({ isSelected, children, onClick, ...props }) => {
  */
 const LocaleItem = ({ locale }) => {
   return (
-    <>
+    <div data-items-type="agama/locales">
       <div>{locale.name}</div>
       <div>{locale.territory}</div>
       <div>{locale.id}</div>
-    </>
+    </div>
   );
 };
 
@@ -80,23 +60,26 @@ export default function LocaleSelector({ value, locales = [], onChange = noop })
   const [filteredLocales, setFilteredLocales] = useState(locales);
 
   const searchHelp = _("Filter by language, territory or locale code");
+  const onSelectionChange = (selection) => onChange(selection[0]);
 
   return (
     <>
       <div className="sticky-top-0">
         <ListSearch placeholder={searchHelp} elements={locales} onChange={setFilteredLocales} />
       </div>
-      <ListBox aria-label={_("Available locales")} role="listbox">
-        { filteredLocales.map((locale, index) => (
-          <ListBoxItem
-            key={`locale-${index}`}
-            onClick={() => onChange(locale.id)}
-            isSelected={locale.id === value}
-          >
+      <Selector
+        // FIXME: when filtering, these are not the available locales but the
+        // filtered ones.
+        aria-label={_("Available locales")}
+        selectedIds={value}
+        onSelectionChange={onSelectionChange}
+      >
+        { filteredLocales.map((locale) => (
+          <Selector.Option id={locale.id} key={locale.id}>
             <LocaleItem locale={locale} />
-          </ListBoxItem>
+          </Selector.Option>
         ))}
-      </ListBox>
+      </Selector>
     </>
   );
 }
