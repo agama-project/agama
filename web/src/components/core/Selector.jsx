@@ -21,6 +21,7 @@
 
 // @ts-check
 import React from 'react';
+import { noop } from '~/utils';
 
 /**
  * Convenient component for letting the consumer build the selector options
@@ -58,6 +59,11 @@ const Item = ({ id, type, isSelected = false, onClick, children }) => {
 };
 
 /**
+ * @callback onSelectionChangeCallback
+ * @param {Array<string>} selection - ids of selected options
+ */
+
+/**
  * Agama component for building a selector
  *
  * @example <caption>Usage example</caption>
@@ -76,20 +82,20 @@ const Item = ({ id, type, isSelected = false, onClick, children }) => {
  *   NOTE: using Children API to allow sending "rich content" as option children
  *   directly with JSX. But most probably this will be changed to use a
  *   item / renderItem props combination or similar to avoid both, using the
- *   Children API and iterating collections twice (one in the component mounted
+ *   Children API and iterating collections twice (one in the component mounting
  *   the selector and another here)
  *
  * @param {object} props - component props
  * @param {Array<*>} [props.selectedIds=[]] - Identifiers for selected options.
  * @param {boolean} [props.isMultiple=false] - Whether the selector should allow multiple selection.
- * @param {(Array<string>) => void } [props.onSelectionChange] - Callback to be called when the selection changes.
+ * @param {onSelectionChangeCallback} [props.onSelectionChange=noop] - Callback to be called when the selection changes.
  * @param {React.ReactNode} props.children - Selector options
  * @param {object} [props.props] - Other props sent to the internal selector <ul> component
  */
 const Selector = ({
   selectedIds = [],
   isMultiple = false,
-  onSelectionChange = () => {},
+  onSelectionChange = noop,
   children,
   ...props
 }) => {
