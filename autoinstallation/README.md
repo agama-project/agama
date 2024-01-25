@@ -156,13 +156,13 @@ script comes into action when you provide a profile.
 
 ### Support for Custom Scripts
 
-The goal of this section is to document examples and use cases for additional scripting support in agama autoinstall.
+The goal of this section is to document examples and use cases for additional scripting support in Agama auto-installation.
 
 #### Changes Before Installation
 
 ##### Hardware Activation
 
-In some cases it is necessary to activate tricky devices manually before starting the installation. An example is two network cards, one for the external network and one for the internal network.
+In some cases it is necessary to activate tricky devices manually before starting the installation. An example is when you have two network cards, one for the external network and the other for the internal network.
 
 ```sh
 set -ex
@@ -177,7 +177,7 @@ sh tricky_hardware_setup.sh
 ##### Modifying the Installation Profile
 
 
-For various reasons, jsonnet may not be able to handle all of the profile changes that users may wish to make.
+Jsonnet may be unable to handle all of the profile changes that users wish to make.
 
 
 ```
@@ -197,7 +197,7 @@ set -ex
 
 #### After Partitioning
 
-Note: currently not supported ( params to install is not implemented yet )
+Note: currently not supported (params to install is not implemented yet).
 
 ##### Partitioning Changes
 
@@ -220,7 +220,7 @@ set -ex
 
 #### After Deployment
 
-Note: not supported now ( params to install is not implemented yet )
+Note: not supported now (params to install is not implemented yet).
 
 ##### Setup Security
 
@@ -255,7 +255,7 @@ systemctl --root /mnt enable velociraptor-client
 
 ##### Tuning the Kernel
 
-Another type of change is changes that are necessary for a successful reboot, such as some kernel tuning or adding some remote storage that need to be mounted during boot.
+Another scenario is when you need to make some changes required for a successful reboot, such as some kernel tuning or adding some remote storage that needs to be mounted during boot.
 
 ``` sh
 
@@ -276,7 +276,7 @@ set -ex
 
 #### After Reboot
 
-Users usually do a lot of things with post install scripts in autoyast e.g. calling zypper to install additional software, modify configuration files or manipulate with systemd services. This is done after the first reboot.
+Users usually do a lot of things with post installation scripts in AutoYaST e.g. calling zypper to install additional software, modify configuration files or manipulate with systemd services. This is done after the first reboot.
 If this is the case, Agama will simply delegate it to any other tool the user prefers for initial configuration, such as ignition/combustion.
 
 ## Starting the auto-installation
