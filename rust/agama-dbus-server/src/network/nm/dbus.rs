@@ -735,28 +735,28 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
             let wep_key_type: u32 = *wep_key_type.downcast_ref()?;
             match wep_key_type {
                 // 0 shouldn't appear because it is treated as empty but just in case
-                0 => WepKeyType::Unknown,
-                1 => WepKeyType::Key,
-                2 => WepKeyType::Passphrase,
+                0 => WEPKeyType::Unknown,
+                1 => WEPKeyType::Key,
+                2 => WEPKeyType::Passphrase,
                 _ => {
                     log::error!("\"wep-key-type\" from NetworkManager not valid");
-                    WepKeyType::default()
+                    WEPKeyType::default()
                 }
             }
         } else {
-            WepKeyType::default()
+            WEPKeyType::default()
         };
         let auth_alg = if let Some(auth_alg) = security.get("auth-alg") {
-            WepAuthAlg::try_from(auth_alg.downcast_ref()?).ok()?
+            WEPAuthAlg::try_from(auth_alg.downcast_ref()?).ok()?
         } else {
-            WepAuthAlg::default()
+            WEPAuthAlg::default()
         };
         let wep_key_index: u32 = if let Some(wep_key_index) = security.get("wep-tx-keyidx") {
             *wep_key_index.downcast_ref()?
         } else {
             0
         };
-        wireless_config.wep_security = Some(WepSecurity {
+        wireless_config.wep_security = Some(WEPSecurity {
             wep_key_type,
             auth_alg,
             wep_key_index,
@@ -1020,7 +1020,7 @@ mod test {
             ("key-mgmt".to_string(), Value::new("wpa-psk").to_owned()),
             (
                 "wep-key-type".to_string(),
-                Value::new(WepKeyType::Key as u32).to_owned(),
+                Value::new(WEPKeyType::Key as u32).to_owned(),
             ),
             ("auth-alg".to_string(), Value::new("open").to_owned()),
             ("wep-tx-keyidx".to_string(), Value::new(1_u32).to_owned()),
@@ -1046,8 +1046,8 @@ mod test {
                 Some(macaddr::MacAddr6::from_str("12:34:56:78:9A:BC").unwrap())
             );
             let wep_security = wireless.wep_security.as_ref().unwrap();
-            assert_eq!(wep_security.wep_key_type, WepKeyType::Key);
-            assert_eq!(wep_security.auth_alg, WepAuthAlg::Open);
+            assert_eq!(wep_security.wep_key_type, WEPKeyType::Key);
+            assert_eq!(wep_security.auth_alg, WEPAuthAlg::Open);
             assert_eq!(wep_security.wep_key_index, 1);
         }
     }
@@ -1086,9 +1086,9 @@ mod test {
             band: Some(WirelessBand::BG),
             channel: Some(10),
             bssid: Some(macaddr::MacAddr6::from_str("12:34:56:78:9A:BC").unwrap()),
-            wep_security: Some(WepSecurity {
-                auth_alg: WepAuthAlg::Open,
-                wep_key_type: WepKeyType::Key,
+            wep_security: Some(WEPSecurity {
+                auth_alg: WEPAuthAlg::Open,
+                wep_key_type: WEPKeyType::Key,
                 wep_key_index: 1,
                 keys: vec![
                     "5b73215e232f4c577c5073455d".to_string(),
@@ -1140,21 +1140,21 @@ mod test {
         let password: &str = security.get("psk").unwrap().downcast_ref().unwrap();
         assert_eq!(password, "wpa-password");
 
-        let auth_alg: WepAuthAlg = security
+        let auth_alg: WEPAuthAlg = security
             .get("auth-alg")
             .unwrap()
             .downcast_ref::<str>()
             .unwrap()
             .try_into()
             .unwrap();
-        assert_eq!(auth_alg, WepAuthAlg::Open);
+        assert_eq!(auth_alg, WEPAuthAlg::Open);
 
         let wep_key_type: u32 = *security
             .get("wep-key-type")
             .unwrap()
             .downcast_ref::<u32>()
             .unwrap();
-        assert_eq!(wep_key_type, WepKeyType::Key as u32);
+        assert_eq!(wep_key_type, WEPKeyType::Key as u32);
 
         let wep_key_index: u32 = *security
             .get("wep-tx-keyidx")

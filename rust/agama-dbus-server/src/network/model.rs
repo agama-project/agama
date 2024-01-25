@@ -743,7 +743,7 @@ pub struct WirelessConfig {
     pub band: Option<WirelessBand>,
     pub channel: Option<u32>,
     pub bssid: Option<macaddr::MacAddr6>,
-    pub wep_security: Option<WepSecurity>,
+    pub wep_security: Option<WEPSecurity>,
 }
 
 impl TryFrom<ConnectionConfig> for WirelessConfig {
@@ -842,15 +842,15 @@ impl TryFrom<&str> for SecurityProtocol {
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
-pub struct WepSecurity {
-    pub auth_alg: WepAuthAlg,
-    pub wep_key_type: WepKeyType,
+pub struct WEPSecurity {
+    pub auth_alg: WEPAuthAlg,
+    pub wep_key_type: WEPKeyType,
     pub keys: Vec<String>,
     pub wep_key_index: u32,
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
-pub enum WepKeyType {
+pub enum WEPKeyType {
     #[default]
     Unknown = 0,
     Key = 1,
@@ -858,7 +858,7 @@ pub enum WepKeyType {
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
-pub enum WepAuthAlg {
+pub enum WEPAuthAlg {
     #[default]
     Unset,
     Open,
@@ -866,27 +866,27 @@ pub enum WepAuthAlg {
     Leap,
 }
 
-impl TryFrom<&str> for WepAuthAlg {
+impl TryFrom<&str> for WEPAuthAlg {
     type Error = NetworkStateError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
-            "open" => Ok(WepAuthAlg::Open),
-            "shared" => Ok(WepAuthAlg::Shared),
-            "leap" => Ok(WepAuthAlg::Leap),
-            "" => Ok(WepAuthAlg::Unset),
-            _ => Err(NetworkStateError::InvalidWepAuthAlg(value.to_string())),
+            "open" => Ok(WEPAuthAlg::Open),
+            "shared" => Ok(WEPAuthAlg::Shared),
+            "leap" => Ok(WEPAuthAlg::Leap),
+            "" => Ok(WEPAuthAlg::Unset),
+            _ => Err(NetworkStateError::InvalidWEPAuthAlg(value.to_string())),
         }
     }
 }
 
-impl fmt::Display for WepAuthAlg {
+impl fmt::Display for WEPAuthAlg {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let name = match &self {
-            WepAuthAlg::Open => "open",
-            WepAuthAlg::Shared => "shared",
-            WepAuthAlg::Leap => "shared",
-            WepAuthAlg::Unset => "",
+            WEPAuthAlg::Open => "open",
+            WEPAuthAlg::Shared => "shared",
+            WEPAuthAlg::Leap => "shared",
+            WEPAuthAlg::Unset => "",
         };
         write!(f, "{}", name)
     }
