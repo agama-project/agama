@@ -132,9 +132,9 @@ describe("when the button for changing the language is clicked", () => {
 
     const popup = await screen.findByRole("dialog");
     within(popup).getByText("Select language");
-    within(popup).getByRole("option", { name: /German/ });
-    within(popup).getByRole("option", { name: /English/ });
-    within(popup).getByRole("option", { name: /Spanish/, selected: true });
+    within(popup).getByRole("row", { name: /German/ });
+    within(popup).getByRole("row", { name: /English/ });
+    within(popup).getByRole("row", { name: /Spanish/, selected: true });
   });
 
   it("allows filtering languages", async () => {
@@ -149,10 +149,10 @@ describe("when the button for changing the language is clicked", () => {
     await user.type(searchInput, "ish");
 
     await waitFor(() => (
-      expect(within(popup).queryByRole("option", { name: /German/ })).not.toBeInTheDocument())
+      expect(within(popup).queryByRole("row", { name: /German/ })).not.toBeInTheDocument())
     );
-    within(popup).getByRole("option", { name: /English/ });
-    within(popup).getByRole("option", { name: /Spanish/ });
+    within(popup).getByRole("row", { name: /English/ });
+    within(popup).getByRole("row", { name: /Spanish/ });
   });
 
   describe("if the popup is canceled", () => {
@@ -163,7 +163,7 @@ describe("when the button for changing the language is clicked", () => {
       await user.click(button);
 
       const popup = await screen.findByRole("dialog");
-      const option = within(popup).getByRole("option", { name: /English/ });
+      const option = within(popup).getByRole("row", { name: /English/ });
 
       await user.click(option);
       const cancel = within(popup).getByRole("button", { name: "Cancel" });
@@ -182,7 +182,7 @@ describe("when the button for changing the language is clicked", () => {
       await user.click(button);
 
       const popup = await screen.findByRole("dialog");
-      const option = within(popup).getByRole("option", { name: /English/ });
+      const option = within(popup).getByRole("row", { name: /English/ });
 
       await user.click(option);
       const accept = within(popup).getByRole("button", { name: "Accept" });
@@ -236,9 +236,9 @@ describe("when the button for changing the keyboard is clicked", () => {
 
     const popup = await screen.findByRole("dialog");
     within(popup).getByText("Select keyboard");
-    within(popup).getByRole("option", { name: /German/ });
-    within(popup).getByRole("option", { name: /English/ });
-    within(popup).getByRole("option", { name: /Spanish/, selected: true });
+    within(popup).getByRole("row", { name: /German/ });
+    within(popup).getByRole("row", { name: /English/ });
+    within(popup).getByRole("row", { name: /Spanish/, selected: true });
   });
 
   it("allows filtering keyboards", async () => {
@@ -253,10 +253,10 @@ describe("when the button for changing the keyboard is clicked", () => {
     await user.type(searchInput, "ish");
 
     await waitFor(() => (
-      expect(within(popup).queryByRole("option", { name: /German/ })).not.toBeInTheDocument())
+      expect(within(popup).queryByRole("row", { name: /German/ })).not.toBeInTheDocument())
     );
-    within(popup).getByRole("option", { name: /English/ });
-    within(popup).getByRole("option", { name: /Spanish/ });
+    within(popup).getByRole("row", { name: /English/ });
+    within(popup).getByRole("row", { name: /Spanish/ });
   });
 
   describe("if the popup is canceled", () => {
@@ -267,7 +267,7 @@ describe("when the button for changing the keyboard is clicked", () => {
       await user.click(button);
 
       const popup = await screen.findByRole("dialog");
-      const option = within(popup).getByRole("option", { name: /English/ });
+      const option = within(popup).getByRole("row", { name: /English/ });
 
       await user.click(option);
       const cancel = within(popup).getByRole("button", { name: "Cancel" });
@@ -286,7 +286,7 @@ describe("when the button for changing the keyboard is clicked", () => {
       await user.click(button);
 
       const popup = await screen.findByRole("dialog");
-      const option = within(popup).getByRole("option", { name: /English/ });
+      const option = within(popup).getByRole("row", { name: /English/ });
 
       await user.click(option);
       const accept = within(popup).getByRole("button", { name: "Accept" });
@@ -340,9 +340,9 @@ describe("when the button for changing the time zone is clicked", () => {
 
     const popup = await screen.findByRole("dialog");
     within(popup).getByText("Select time zone");
-    within(popup).getByRole("option", { name: /Bangkok/ });
-    within(popup).getByRole("option", { name: /Canary/, selected: true });
-    within(popup).getByRole("option", { name: /New York/ });
+    within(popup).getByRole("row", { name: /Bangkok/ });
+    within(popup).getByRole("row", { name: /Canary/, selected: true });
+    within(popup).getByRole("row", { name: /New York/ });
   });
 
   it("allows filtering time zones", async () => {
@@ -357,12 +357,12 @@ describe("when the button for changing the time zone is clicked", () => {
     await user.type(searchInput, "new");
 
     await waitFor(() => (
-      expect(within(popup).queryByRole("option", { name: /Bangkok/ })).not.toBeInTheDocument())
+      expect(within(popup).queryByRole("row", { name: /Bangkok/ })).not.toBeInTheDocument())
     );
     await waitFor(() => (
-      expect(within(popup).queryByRole("option", { name: /Canary/ })).not.toBeInTheDocument())
+      expect(within(popup).queryByRole("row", { name: /Canary/ })).not.toBeInTheDocument())
     );
-    within(popup).getByRole("option", { name: /New York/ });
+    within(popup).getByRole("row", { name: /New York/ });
   });
 
   describe("if the popup is canceled", () => {
@@ -373,7 +373,7 @@ describe("when the button for changing the time zone is clicked", () => {
       await user.click(button);
 
       const popup = await screen.findByRole("dialog");
-      const option = within(popup).getByRole("option", { name: /New York/ });
+      const option = within(popup).getByRole("row", { name: /New York/ });
 
       await user.click(option);
       const cancel = within(popup).getByRole("button", { name: "Cancel" });
@@ -392,7 +392,7 @@ describe("when the button for changing the time zone is clicked", () => {
       await user.click(button);
 
       const popup = await screen.findByRole("dialog");
-      const option = within(popup).getByRole("option", { name: /Bangkok/ });
+      const option = within(popup).getByRole("row", { name: /Bangkok/ });
 
       await user.click(option);
       const accept = within(popup).getByRole("button", { name: "Accept" });
