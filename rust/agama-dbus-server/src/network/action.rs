@@ -4,7 +4,7 @@ use tokio::sync::oneshot;
 use uuid::Uuid;
 use zbus::zvariant::OwnedObjectPath;
 
-use super::error::NetworkStateError;
+use super::{error::NetworkStateError, NetworkAdapterError};
 
 pub type Responder<T> = oneshot::Sender<T>;
 pub type ControllerConnection = (Connection, Vec<String>);
@@ -46,5 +46,5 @@ pub enum Action {
     /// Remove the connection with the given Uuid.
     RemoveConnection(Uuid),
     /// Apply the current configuration.
-    Apply,
+    Apply(Responder<Result<(), NetworkAdapterError>>),
 }

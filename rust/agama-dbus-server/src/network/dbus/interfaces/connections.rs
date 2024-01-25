@@ -94,7 +94,9 @@ impl Connections {
     /// It includes adding, updating and removing connections as needed.
     pub async fn apply(&self) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock().await;
-        actions.send(Action::Apply).unwrap();
+        let (tx, rx) = oneshot::channel();
+        actions.send(Action::Apply(tx)).unwrap();
+        rx.await.unwrap()?;
         Ok(())
     }
 

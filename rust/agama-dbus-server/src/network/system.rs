@@ -1,4 +1,4 @@
-use super::error::NetworkStateError;
+use super::{error::NetworkStateError, NetworkAdapterError};
 use crate::network::{dbus::Tree, model::Connection, Action, Adapter, NetworkState};
 use agama_lib::network::types::DeviceType;
 use std::{error::Error, sync::Arc};
@@ -35,7 +35,7 @@ impl<T: Adapter> NetworkSystem<T> {
     }
 
     /// Writes the network configuration.
-    pub async fn write(&mut self) -> Result<(), Box<dyn Error>> {
+    pub async fn write(&mut self) -> Result<(), NetworkAdapterError> {
         self.adapter.write(&self.state).await?;
         self.state = self.adapter.read().await?;
         Ok(())
@@ -108,8 +108,14 @@ impl<T: Adapter> NetworkSystem<T> {
                 tree.remove_connection(uuid).await?;
                 self.state.remove_connection(uuid)?;
             }
-            Action::Apply => {
-                self.write().await?;
+            Action::Apply(tx) => {
+                let result = self.write().await;
+                let failed = result.is_err();
+                tx.send(result).unwrap();
+                if failed {
+                    return Ok(());
+                }
+
                 // TODO: re-creating the tree is kind of brute-force and it sends signals about
                 // adding/removing interfaces. We should add/update/delete objects as needed.
                 // NOTE updating the tree at the same time than dispatching actions can cause a
