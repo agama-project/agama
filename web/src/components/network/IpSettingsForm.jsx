@@ -111,8 +111,10 @@ export default function IpSettingsForm({ connection, onClose }) {
       }
     };
 
-    client.network.updateConnection(updatedConnection);
-    onClose();
+    client.network.updateConnection(updatedConnection)
+      .then(onClose)
+      // TODO: better error reporting. By now, it sets an error for the whole connection.
+      .catch(({ message }) => setErrors({ object: message }));
   };
 
   const renderError = (field) => {
@@ -129,6 +131,7 @@ export default function IpSettingsForm({ connection, onClose }) {
   // %s is replaced by the connection name
   return (
     <Popup isOpen title={sprintf(_("Edit %s connection"), connection.name)}>
+      {renderError("object")}
       <Form id="edit-connection" onSubmit={onSubmit}>
         <FormGroup fieldId="method" label={_("Mode")} isRequired>
           <FormSelect
