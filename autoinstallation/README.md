@@ -183,7 +183,6 @@ Jsonnet may be unable to handle all of the profile changes that users wish to ma
 ```
 set -ex
 
-
 /usr/bin/agama profile download ftp://my.server/profile.json
 
 # modify profile.json here
@@ -201,14 +200,13 @@ Note: currently not supported (params to install is not implemented yet).
 
 ##### Partitioning Changes
 
-Sometimes there is a tricky partitioning that needs to be modified after partitioning and before installing RPMs, such as changing the fstab and mount an extra partition.
+Sometimes there is a more complex partitioning that needs to be modified after partitioning done by Agama and before installing RPMs, such as changing the fstab and mount an extra partition.
 
 
 ```sh
 set -ex
 
 /usr/bin/agama config set software.product=Tumbleweed
-
 /usr/bin/agama config set user.userName=joe user.password=doe
 
 /usr/bin/agama install --until partitioning # install till the partitioning step
@@ -235,7 +233,6 @@ set -ex
 /usr/bin/agama profile download ftp://my.server/velociraptor.config
 
 /usr/bin/agama config set software.product=Tumbleweed
-
 /usr/bin/agama config set user.userName=joe user.password=doe
 
 /usr/bin/agama install --until deploy # do partitioning, rpm installation and configuration step
@@ -258,12 +255,9 @@ systemctl --root /mnt enable velociraptor-client
 Another scenario is when you need to make some changes required for a successful reboot, such as some kernel tuning or adding some remote storage that needs to be mounted during boot.
 
 ``` sh
-
 set -ex
 
-
 /usr/bin/agama config set software.product=Tumbleweed
-
 /usr/bin/agama config set user.userName=joe user.password=doe
 
 /usr/bin/agama install --until deploy # do partitioning, rpm installation and configuration step
@@ -271,7 +265,6 @@ set -ex
 # Do custom modification of /mnt including call to dracut
 
 /usr/bin/agama install # do the rest of the installation - basically unmount and copy logs
-
 ```
 
 #### After Reboot
