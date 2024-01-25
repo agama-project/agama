@@ -169,11 +169,17 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
     if let Some(ipv4) = conn.get_mut("ipv4") {
         ipv4.remove("addresses");
         ipv4.remove("dns");
+        if ipv4.get("address-data").is_some_and(is_empty_value) {
+            ipv4.remove("gateway");
+        }
     }
 
     if let Some(ipv6) = conn.get_mut("ipv6") {
         ipv6.remove("addresses");
         ipv6.remove("dns");
+        if ipv6.get("address-data").is_some_and(is_empty_value) {
+            ipv6.remove("gateway");
+        }
     }
 }
 
@@ -574,6 +580,10 @@ fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Option<BondConfig> {
 /// * `value`: value to analyze
 fn is_empty_value(value: &zvariant::Value) -> bool {
     if let Some(value) = value.downcast_ref::<zvariant::Str>() {
+        return value.is_empty();
+    }
+
+    if let Some(value) = value.downcast_ref::<zvariant::Array>() {
         return value.is_empty();
     }
 
