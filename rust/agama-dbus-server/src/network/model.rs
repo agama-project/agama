@@ -857,6 +857,19 @@ pub enum WEPKeyType {
     Passphrase = 2,
 }
 
+impl TryFrom<u32> for WEPKeyType {
+    type Error = NetworkStateError;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(WEPKeyType::Unknown),
+            1 => Ok(WEPKeyType::Key),
+            2 => Ok(WEPKeyType::Passphrase),
+            _ => Err(NetworkStateError::InvalidWEPKeyType(value)),
+        }
+    }
+}
+
 #[derive(Debug, Default, PartialEq, Clone)]
 pub enum WEPAuthAlg {
     #[default]

@@ -731,31 +731,18 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
         let key_mgmt: &str = security.get("key-mgmt")?.downcast_ref()?;
         wireless_config.security = NmKeyManagement(key_mgmt.to_string()).try_into().ok()?;
 
-        let wep_key_type = if let Some(wep_key_type) = security.get("wep-key-type") {
-            let wep_key_type: u32 = *wep_key_type.downcast_ref()?;
-            match wep_key_type {
-                // 0 shouldn't appear because it is treated as empty but just in case
-                0 => WEPKeyType::Unknown,
-                1 => WEPKeyType::Key,
-                2 => WEPKeyType::Passphrase,
-                _ => {
-                    log::error!("\"wep-key-type\" from NetworkManager not valid");
-                    WEPKeyType::default()
-                }
-            }
-        } else {
-            WEPKeyType::default()
-        };
-        let auth_alg = if let Some(auth_alg) = security.get("auth-alg") {
-            WEPAuthAlg::try_from(auth_alg.downcast_ref()?).ok()?
-        } else {
-            WEPAuthAlg::default()
-        };
-        let wep_key_index: u32 = if let Some(wep_key_index) = security.get("wep-tx-keyidx") {
-            *wep_key_index.downcast_ref()?
-        } else {
-            0
-        };
+        let wep_key_type = security
+            .get("wep-key-type")
+            .and_then(|alg| WEPKeyType::try_from(*alg.downcast_ref::<u32>()?).ok())
+            .unwrap_or_default();
+        let auth_alg = security
+            .get("auth-alg")
+            .and_then(|alg| WEPAuthAlg::try_from(alg.downcast_ref()?).ok())
+            .unwrap_or_default();
+        let wep_key_index = security
+            .get("wep-tx-keyidx")
+            .and_then(|idx| idx.downcast_ref::<u32>().cloned())
+            .unwrap_or_default();
         wireless_config.wep_security = Some(WEPSecurity {
             wep_key_type,
             auth_alg,

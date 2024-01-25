@@ -31,6 +31,8 @@ pub enum NetworkStateError {
     UnexpectedConfiguration,
     #[error("Invalid WEP authentication algorithm: '{0}'")]
     InvalidWEPAuthAlg(String),
+    #[error("Invalid WEP key type: '{0}'")]
+    InvalidWEPKeyType(u32),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {
