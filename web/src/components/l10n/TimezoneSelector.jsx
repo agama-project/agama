@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,32 +22,12 @@
 import React, { useState } from "react";
 
 import { _ } from "~/i18n";
-import { ListSearch } from "~/components/core";
+import { ListSearch, Selector } from "~/components/core";
 import { noop, timezoneTime } from "~/utils";
 
 /**
  * @typedef {import ("~/client/l10n").Timezone} Timezone
  */
-
-const ListBox = ({ children, ...props }) => {
-  return (
-    <ul data-type="agama/list" data-of="agama/timezones" {...props}>{children}</ul>
-  );
-};
-
-const ListBoxItem = ({ isSelected, children, onClick, ...props }) => {
-  if (isSelected) props['aria-selected'] = true;
-
-  return (
-    <li
-      role="option"
-      onClick={onClick}
-      { ...props }
-    >
-      {children}
-    </li>
-  );
-};
 
 const timezoneDetails = (timezone) => {
   const offset = timezone.utcOffset;
@@ -73,12 +53,12 @@ const TimezoneItem = ({ timezone, date }) => {
   const time = timezoneTime(timezone.id, { date }) || "";
 
   return (
-    <>
+    <div data-items-type="agama/timezones">
       <div>{timezone.parts.join('-')}</div>
       <div>{timezone.country}</div>
       <div>{time || ""}</div>
       <div>{timezone.details}</div>
-    </>
+    </div>
   );
 };
 
@@ -99,23 +79,26 @@ export default function TimezoneSelector({ value, timezones = [], onChange = noo
 
   // TRANSLATORS: placeholder text for search input in the timezone selector.
   const helpSearch = _("Filter by territory, time zone code or UTC offset");
+  const onSelectionChange = (selection) => onChange(selection[0]);
 
   return (
     <>
       <div className="sticky-top-0">
         <ListSearch placeholder={helpSearch} elements={displayTimezones} onChange={setFilteredTimezones} />
       </div>
-      <ListBox aria-label={_("Available time zones")} role="listbox">
+      <Selector
+        // FIXME: when filtering, these are not the available time zones but the
+        // filtered ones.
+        aria-label={_("Available time zones")}
+        selectedIds={[value]}
+        onSelectionChange={onSelectionChange}
+      >
         { filteredTimezones.map((timezone, index) => (
-          <ListBoxItem
-            key={`timezone-${index}`}
-            onClick={() => onChange(timezone.id)}
-            isSelected={timezone.id === value}
-          >
+          <Selector.Option id={timezone.id} key={`timezone-${index}`}>
             <TimezoneItem timezone={timezone} date={date} />
-          </ListBoxItem>
+          </Selector.Option>
         ))}
-      </ListBox>
+      </Selector>
     </>
   );
 }
