@@ -164,7 +164,7 @@ running instance simply type `https://agama.local` in your browser. In most
 browsers the HTTPS is the default protocol so usually it is enough to just type
 `agama.local`.
 
-If you run more Agama instances then each will you a different name. The server
+If you run multiple Agama instances, each one will have a different name. The server
 appends a number to make it unique. So the second Agama instance gets the
 `agama-2.local` hostname.
 
