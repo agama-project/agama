@@ -19,25 +19,15 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "dbus/object_path"
+require "agama/dbus/base_tree"
 require "agama/dbus/storage/device"
+require "dbus/object_path"
 
 module Agama
   module DBus
     module Storage
       # Class representing a storage devices tree exported on D-Bus
-      class DevicesTree
-        # Constructor
-        #
-        # @param service [::DBus::ObjectServer]
-        # @param root_path [::DBus::ObjectPath]
-        # @param logger [Logger, nil]
-        def initialize(service, root_path, logger: nil)
-          @service = service
-          @root_path = root_path
-          @logger = logger
-        end
-
+      class DevicesTree < BaseTree
         # Object path for the D-Bus object representing the given device
         #
         # @param device [Y2Storage::Device]
@@ -48,62 +38,45 @@ module Agama
 
         # Updates the D-Bus tree according to the given devicegraph
         #
-        # The current D-Bus nodes are all unexported.
-        #
         # @param devicegraph [Y2Storage::Devicegraph]
         def update(devicegraph)
-          unexport_devices
-          export_devices(devicegraph)
+          self.objects = devices(devicegraph)
         end
 
       private
 
-        # @return [::DBus::ObjectServer]
-        attr_reader :service
+        # @see BaseTree
+        # @param device [Y2Storage::Device]
+        def create_dbus_object(device)
+          Device.new(device, path_for(device), self, logger: logger)
+        end
 
-        # @return [::DBus::ObjectPath]
-        attr_reader :root_path
+        # @see BaseTree
+        # @param dbus_object [Device]
+        # @param device [Y2Storage::Device]
+        def update_dbus_object(dbus_object, device)
+          dbus_object.storage_device = device
+        end
 
-        # @return [Logger]
-        attr_reader :logger
+        # @see BaseTree
+        # @param dbus_object [Device]
+        # @param device [Y2Storage::Device]
+        def dbus_object?(dbus_object, device)
+          dbus_object.storage_device.sid == device.sid
+        end
 
-        # Exports a D-Bus object for each storage device.
+        # Devices to be exported.
         #
         # Right now, only the required information for calculating a proposal is exported, that is:
-        # * Information about the potential candidate devices (i.e., disk devices, MDs).
-        # * Information about the partitions of the candidate devices in order to indicate how to
-        #   find free space.
+        # * Potential candidate devices (i.e., disk devices, MDs).
+        # * Partitions of the candidate devices in order to indicate how to find free space.
         #
         # TODO: export LVM VGs and file systems of directly formatted devices.
         #
         # @param devicegraph [Y2Storage::Devicegraph]
-        def export_devices(devicegraph)
+        def devices(devicegraph)
           devices = devicegraph.disk_devices + devicegraph.software_raids
-
-          (devices + partitions_from(devices)).each { |d| export_device(d) }
-        end
-
-        # Exports a D-Bus object for the given device
-        #
-        # @param device [Y2Storage::Device]
-        def export_device(device)
-          dbus_node = Device.new(device, path_for(device), self, logger: logger)
-          service.export(dbus_node)
-        end
-
-        # Unexports the currently exported D-Bus objects
-        def unexport_devices
-          dbus_objects.each { |n| service.unexport(n) }
-        end
-
-        # All exported D-Bus objects
-        #
-        # @return [Array<Device>]
-        def dbus_objects
-          root = service.get_node(root_path, create: false)
-          return [] unless root
-
-          root.descendant_objects
+          devices + partitions_from(devices)
         end
 
         # All partitions of the given devices.

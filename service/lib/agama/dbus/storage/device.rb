@@ -35,6 +35,9 @@ module Agama
       #
       # The D-Bus object includes the required interfaces for the storage object that it represents.
       class Device < BaseObject
+        # @return [Y2Storage::Device]
+        attr_reader :storage_device
+
         # Constructor
         #
         # @param storage_device [Y2Storage::Device] Storage device
@@ -49,10 +52,26 @@ module Agama
           add_interfaces
         end
 
-      private
+        # Sets the represented storage device.
+        #
+        # @note A properties changed signal is emitted for each interface.
+        # @raise [RuntimeError] If the given device has a different sid.
+        #
+        # @param value [Y2Storage::Device]
+        def storage_device=(value)
+          if value.sid != storage_device.sid
+            raise "Cannot update the D-Bus object because the given device has a different sid: " \
+                  "#{value} instead of #{storage_device.sid}"
+          end
 
-        # @return [Y2Storage::Device]
-        attr_reader :storage_device
+          @storage_device = value
+
+          interfaces_and_properties.each do |interface, properties|
+            dbus_properties_changed(interface, properties, [])
+          end
+        end
+
+      private
 
         # @return [DevicesTree]
         attr_reader :tree
