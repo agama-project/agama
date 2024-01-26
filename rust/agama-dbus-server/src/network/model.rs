@@ -92,7 +92,7 @@ impl NetworkState {
     /// It uses the `id` to decide whether the connection already exists.
     pub fn add_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
         if self.get_connection(&conn.id).is_some() {
-            return Err(NetworkStateError::ConnectionExists(conn.uuid));
+            return Err(NetworkStateError::ConnectionExists(conn.id.to_string()));
         }
         self.connections.push(conn);
 
