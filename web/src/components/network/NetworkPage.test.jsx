@@ -30,14 +30,14 @@ jest.mock("~/client");
 jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const wiredConnection = {
-  id: "wired-1",
-  name: "Wired 1",
+  id: "Wired 1",
+  uuid: "e1ce3e83-f57c-4649-97d5-ecc468b74f97",
   type: ConnectionTypes.ETHERNET,
   addresses: [{ address: "192.168.122.20", prefix: 24 }]
 };
 const wiFiConnection = {
-  id: "wifi-1",
-  name: "WiFi 1",
+  id: "WiFi 1",
+  uuid: "a4cf03c5-cb87-469d-824e-26b855a6bcfc",
   type: ConnectionTypes.WIFI,
   addresses: [{ address: "192.168.69.200", prefix: 24 }]
 };
