@@ -144,14 +144,14 @@ impl<T: Adapter> NetworkSystem<T> {
         name: String,
         ty: DeviceType,
     ) -> Result<OwnedObjectPath, NetworkStateError> {
-        let mut conn = Connection::new(name, ty);
+        let conn = Connection::new(name, ty);
         // TODO: handle tree handling problems
+        self.state.add_connection(conn.clone())?;
         let mut tree = self.tree.lock().await;
         let path = tree
-            .add_connection(&mut conn)
+            .add_connection(&conn)
             .await
             .expect("Could not update the D-Bus tree");
-        self.state.add_connection(conn)?;
         Ok(path)
     }
 

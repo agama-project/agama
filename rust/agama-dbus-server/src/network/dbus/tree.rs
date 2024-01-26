@@ -78,11 +78,10 @@ impl Tree {
     /// * `notify`: whether to notify the added connection
     pub async fn add_connection(
         &mut self,
-        conn: &mut Connection,
+        conn: &Connection,
     ) -> Result<OwnedObjectPath, ServiceError> {
         let uuid = conn.uuid;
-        let (_, path) = self.objects.register_connection(conn);
-        let path: OwnedObjectPath = path.into();
+        let path: OwnedObjectPath = self.objects.register_connection(conn.uuid).into();
         log::info!(
             "Publishing network connection '{}' on '{}'",
             &conn.id,
@@ -229,12 +228,12 @@ impl ObjectsRegistry {
     /// It returns the connection Id and the D-Bus path. Bear in mind that the Id can be different
     /// in case the original one already existed.
     ///
-    /// * `conn`: network connection.
-    pub fn register_connection(&mut self, conn: &Connection) -> (Uuid, ObjectPath) {
+    /// * `uuid`: network connection's UUID.
+    pub fn register_connection(&mut self, uuid: Uuid) -> ObjectPath {
         let path = format!("{}/{}", CONNECTIONS_PATH, self.connections.len());
         let path = ObjectPath::try_from(path).unwrap();
-        self.connections.insert(conn.uuid, path.clone().into());
-        (conn.uuid, path)
+        self.connections.insert(uuid, path.clone().into());
+        path
     }
 
     /// Returns the path for a connection.
