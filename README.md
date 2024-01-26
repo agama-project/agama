@@ -217,7 +217,7 @@ The command will print the found servers and their hostnames and IP addresses.
   or separate network segments.
 - mDNS might not be supported in all systems or it might be blocked by firewall.
 - On mobile phones with Android OS mDNS is supported since Android version 12.
-  (But this might be vendor dependent...)
+  (but this might be vendor dependent...).
 
 ### Manual Configuration
 
