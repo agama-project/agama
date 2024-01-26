@@ -110,7 +110,7 @@ Once ready boot the installation running the **sles.exec** REXX file
 sles
 ```
 
-Once the installation system finish the booting process just connect to the machine with the web browser (e.g. https://s390vsl111.suse.de:9090) or by SSH with (root / linux) user.
+Once the installation system finish the booting process just connect to the machine with the web browser (e.g. https://s390vsl111.suse.de) or by SSH with (root / linux) user.
 
 ## Screenshots of the complete installation Z/VM installation workflow
 
