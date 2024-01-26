@@ -853,6 +853,7 @@ mod test {
                 Value::new(ETHERNET_KEY.to_string()).to_owned(),
             ),
         ]);
+
         let ipv4 = HashMap::from([
             (
                 "method".to_string(),
@@ -911,10 +912,8 @@ mod test {
             *ipv4.get("method").unwrap(),
             Value::new("disabled".to_string())
         );
-        assert_eq!(
-            *ipv4.get("gateway").unwrap(),
-            Value::new("192.168.1.1".to_string())
-        );
+        // there are not addresses ("address-data"), so no gateway is allowed
+        assert!(ipv4.get("gateway").is_none());
         assert!(ipv4.get("addresses").is_none());
 
         let ipv6 = merged.get("ipv6").unwrap();
@@ -922,10 +921,8 @@ mod test {
             *ipv6.get("method").unwrap(),
             Value::new("disabled".to_string())
         );
-        assert_eq!(
-            *ipv6.get("gateway").unwrap(),
-            Value::new("::ffff:c0a8:101".to_string())
-        );
+        // there are not addresses ("address-data"), so no gateway is allowed
+        assert!(ipv6.get("gateway").is_none());
     }
 
     #[test]
