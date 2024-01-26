@@ -25,6 +25,8 @@ pub enum Action {
     GetConnection(Uuid, Responder<Option<Connection>>),
     /// Gets a connection
     GetConnectionPath(Uuid, Responder<Option<OwnedObjectPath>>),
+    /// Gets a connection
+    GetConnectionPathById(String, Responder<Option<OwnedObjectPath>>),
     /// Get connections paths
     GetConnectionsPaths(Responder<Vec<OwnedObjectPath>>),
     /// Gets a controller connection

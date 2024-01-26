@@ -60,9 +60,9 @@ impl Connections {
         Ok(path)
     }
 
-    /// Returns the D-Bus path of the network connection.
+    /// Returns the D-Bus path of the network connection by its UUID.
     ///
-    /// * `id`: connection ID.
+    /// * `uuid`: connection UUID.
     pub async fn get_connection(&self, uuid: &str) -> zbus::fdo::Result<OwnedObjectPath> {
         let uuid: Uuid = uuid
             .parse()
@@ -74,6 +74,22 @@ impl Connections {
             .await
             .unwrap()
             .ok_or(NetworkStateError::UnknownConnection(uuid.to_string()))?;
+        Ok(path)
+    }
+
+    /// Returns the D-Bus path of the network connection by its ID.
+    ///
+    /// * `id`: connection ID.
+    pub async fn get_connection_by_id(&self, id: &str) -> zbus::fdo::Result<OwnedObjectPath> {
+        let actions = self.actions.lock().await;
+        let (tx, rx) = oneshot::channel();
+        actions
+            .send(Action::GetConnectionPathById(id.to_string(), tx))
+            .unwrap();
+        let path = rx
+            .await
+            .unwrap()
+            .ok_or(NetworkStateError::UnknownConnection(id.to_string()))?;
         Ok(path)
     }
 

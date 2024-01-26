@@ -84,6 +84,10 @@ impl<T: Adapter> NetworkSystem<T> {
                 let path = tree.connection_path(uuid);
                 tx.send(path).unwrap();
             }
+            Action::GetConnectionPathById(id, tx) => {
+                let path = self.get_connection_path_by_id_action(&id).await;
+                tx.send(path).unwrap();
+            }
             Action::GetController(uuid, tx) => {
                 let result = self.get_controller_action(uuid);
                 tx.send(result).unwrap()
@@ -181,5 +185,11 @@ impl<T: Adapter> NetworkSystem<T> {
             .collect::<Vec<_>>();
 
         Ok((conn, controlled))
+    }
+
+    async fn get_connection_path_by_id_action(&mut self, id: &str) -> Option<OwnedObjectPath> {
+        let conn = self.state.get_connection(id)?;
+        let tree = self.tree.lock().await;
+        tree.connection_path(conn.uuid)
     }
 }
