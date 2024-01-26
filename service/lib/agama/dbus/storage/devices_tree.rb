@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -67,23 +67,27 @@ module Agama
         # @return [Logger]
         attr_reader :logger
 
-        # Exports a D-Bus object for each storage device
+        # Exports a D-Bus object for each storage device.
+        #
+        # Right now, only the required information for calculating a proposal is exported, that is:
+        # * Information about the potential candidate devices (i.e., disk devices, MDs).
+        # * Information about the partitions of the candidate devices in order to indicate how to
+        #   find free space.
+        #
+        # TODO: export LVM VGs and file systems of directly formatted devices.
         #
         # @param devicegraph [Y2Storage::Devicegraph]
         def export_devices(devicegraph)
-          # TODO: Right now, the goal of exporting the storage devices on D-Bus is to provide the
-          #   required information of the available devices for calculating a proposal. For that
-          #   reason, only the potential candidate diks are exported (i.e., disk devices and MDs).
-          #   Note that partitons, LVM, etc are not exported yet.
           devices = devicegraph.disk_devices + devicegraph.software_raids
-          devices.each { |d| export_device(d) }
+
+          (devices + partitions_from(devices)).each { |d| export_device(d) }
         end
 
         # Exports a D-Bus object for the given device
         #
         # @param device [Y2Storage::Device]
         def export_device(device)
-          dbus_node = Device.new(device, path_for(device), logger: logger)
+          dbus_node = Device.new(device, path_for(device), self, logger: logger)
           service.export(dbus_node)
         end
 
@@ -100,6 +104,15 @@ module Agama
           return [] unless root
 
           root.descendant_objects
+        end
+
+        # All partitions of the given devices.
+        #
+        # @param devices [Array<Y2Storage::Device>]
+        # @return [Array<Y2Storage::Partition>]
+        def partitions_from(devices)
+          devices.select { |d| d.is?(:blk_device) && d.respond_to?(:partitions) }
+            .flat_map(&:partitions)
         end
       end
     end

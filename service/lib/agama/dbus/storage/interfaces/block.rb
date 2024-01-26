@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -67,6 +67,13 @@ module Agama
             storage_device.size.to_i
           end
 
+          # Size of the space that could be theoretically reclaimed by shrinking the device.
+          #
+          # @return [Integer]
+          def block_recoverable_size
+            storage_device.recoverable_size.to_i
+          end
+
           # Name of the currently installed systems
           #
           # @return [Array<String>]
@@ -85,6 +92,7 @@ module Agama
                 dbus_reader :block_udev_ids, "as", dbus_name: "UdevIds"
                 dbus_reader :block_udev_paths, "as", dbus_name: "UdevPaths"
                 dbus_reader :block_size, "t", dbus_name: "Size"
+                dbus_reader :block_recoverable_size, "t", dbus_name: "RecoverableSize"
                 dbus_reader :block_systems, "as", dbus_name: "Systems"
               end
             end

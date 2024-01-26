@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -39,20 +39,18 @@ module Agama
             storage_device.partition_table.type.to_s
           end
 
-          # Name of the partitions
+          # Paths of the D-Bus objects representing the partitions.
           #
-          # TODO: return the path of the partition objects once the partitions are exported.
-          #
-          # @return [Array<String>]
+          # @return [Array<::DBus::ObjectPath>]
           def partition_table_partitions
-            storage_device.partition_table.partitions.map(&:name)
+            storage_device.partition_table.partitions.map { |p| tree.path_for(p) }
           end
 
           def self.included(base)
             base.class_eval do
               dbus_interface PARTITION_TABLE_INTERFACE do
                 dbus_reader :partition_table_type, "s", dbus_name: "Type"
-                dbus_reader :partition_table_partitions, "as", dbus_name: "Partitions"
+                dbus_reader :partition_table_partitions, "ao", dbus_name: "Partitions"
               end
             end
           end

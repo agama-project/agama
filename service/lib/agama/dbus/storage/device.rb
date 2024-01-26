@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -39,11 +39,13 @@ module Agama
         #
         # @param storage_device [Y2Storage::Device] Storage device
         # @param path [::DBus::ObjectPath] Path for the D-Bus object
+        # @param tree [DevicesTree] D-Bus tree in which the device is exported
         # @param logger [Logger, nil]
-        def initialize(storage_device, path, logger: nil)
+        def initialize(storage_device, path, tree, logger: nil)
           super(path, logger: logger)
 
           @storage_device = storage_device
+          @tree = tree
           add_interfaces
         end
 
@@ -51,6 +53,9 @@ module Agama
 
         # @return [Y2Storage::Device]
         attr_reader :storage_device
+
+        # @return [DevicesTree]
+        attr_reader :tree
 
         # Adds the required interfaces according to the storage object
         def add_interfaces # rubocop:disable Metrics/CyclomaticComplexity
@@ -82,7 +87,9 @@ module Agama
         #
         # @return [Boolean]
         def partition_table?
-          storage_device.is?(:blk_device) && storage_device.partition_table?
+          storage_device.is?(:blk_device) &&
+            storage_device.respond_to?(:partition_table?) &&
+            storage_device.partition_table?
         end
       end
     end
