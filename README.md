@@ -159,7 +159,7 @@ firewall-cmd --permanent --zone=public --add-service=mdns
 
 ##### Using mDNS
 
-The Live ISO by default uses the `agama.local` host name. To connect to the
+The Live ISO by default uses the `agama.local` hostname. To connect to the
 running instance simply type `https://agama.local` in your browser. In most
 browsers the HTTPS is the default protocol so usually it is enough to just type
 `agama.local`.
