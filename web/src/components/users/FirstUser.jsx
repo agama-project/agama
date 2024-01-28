@@ -32,6 +32,10 @@ import {
   FormGroup,
   TextInput,
   Skeleton,
+  Menu,
+  MenuContent,
+  MenuList,
+  MenuItem
 } from "@patternfly/react-core";
 
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
@@ -97,6 +101,8 @@ export default function FirstUser() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [isSettingPassword, setIsSettingPassword] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [insideDropDown, setInsideDropDown] = useState(false);
 
   useEffect(() => {
     cancellablePromise(client.users.getUser()).then(userValues => {
@@ -166,6 +172,26 @@ export default function FirstUser() {
     setFormValues({ ...formValues, [name]: value });
   };
 
+  const suggestUsernames = (fullName) => {
+    const cleanedName = fullName.replace(/[^\p{L}\p{N} ]/gu, "").toLowerCase();
+    const nameParts = cleanedName.split(/\s+/);
+    const suggestions = [];
+
+    nameParts.forEach((namePart, index) => {
+      if (index === 0) {
+        suggestions.push(namePart);
+        suggestions.push(namePart[0]);
+        nameParts.length > 1 && suggestions.push(namePart);
+      } else {
+        suggestions[0] += namePart;
+        suggestions[1] += namePart;
+        suggestions[2] += namePart[0];
+      }
+    });
+
+    return suggestions;
+  };
+
   const isUserDefined = user?.userName && user?.userName !== "";
   const showErrors = () => ((errors || []).length > 0);
 
@@ -210,7 +236,14 @@ export default function FirstUser() {
               />
             </FormGroup>
 
-            <FormGroup fieldId="userName" label={_("Username")} isRequired>
+            <FormGroup
+              className="first-username-wrapper"
+              fieldId="userName"
+              label={_("Username")}
+              isRequired
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => !insideDropDown && setShowSuggestions(false)}
+            >
               <TextInput
                 id="userName"
                 name="userName"
@@ -220,6 +253,29 @@ export default function FirstUser() {
                 isRequired
                 onChange={handleInputChange}
               />
+              { showSuggestions && formValues.fullName && !formValues.userName &&
+                <Menu
+                  aria-label={_("Username suggestion dropdown")}
+                  className="first-username-dropdown"
+                  onMouseEnter={() => setInsideDropDown(true)}
+                  onMouseLeave={() => setInsideDropDown(false)}
+                >
+                  <MenuContent>
+                    <MenuList>
+                      { suggestUsernames(formValues.fullName).map((suggestion, index) => (
+                        <MenuItem
+                          key={index}
+                          itemId={index}
+                          onClick={() => { setInsideDropDown(false); setFormValues({ ...formValues, userName: suggestion }) }}
+                        >
+                          { /* TRANSLATORS: dropdown username suggestions */ }
+                          { _("Use suggested username ") }
+                          <strong>{suggestion}</strong>
+                        </MenuItem>
+                      )) }
+                    </MenuList>
+                  </MenuContent>
+                </Menu> }
             </FormGroup>
 
             { isEditing &&
