@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-21 02:22+0000\n"
+"POT-Creation-Date: 2024-01-28 02:07+0000\n"
 "PO-Revision-Date: 2023-12-27 11:02+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-"
@@ -65,17 +65,14 @@ msgstr "ストレージ設定を完了しています"
 #. @param filename [String] File name
 #. @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
 #: service/lib/agama/software/callbacks/signature.rb:63
-#, perl-brace-format
 msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
 msgstr "リポジトリ %{repo_name} (%{repo_url}) からのファイル %{filename}"
 
 #: service/lib/agama/software/callbacks/signature.rb:67
-#, perl-brace-format
 msgid "The file %{filename}"
 msgstr "ファイル %{filename}"
 
 #: service/lib/agama/software/callbacks/signature.rb:71
-#, perl-brace-format
 msgid ""
 "%{source} is not digitally signed. The origin and integrity of the file "
 "cannot be verified. Use it anyway?"
@@ -88,7 +85,6 @@ msgstr ""
 #. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
 #. @param _repo_id [Integer] Repository ID
 #: service/lib/agama/software/callbacks/signature.rb:94
-#, perl-brace-format
 msgid ""
 "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
 "want to trust this key?"
@@ -128,7 +124,6 @@ msgstr "元のリポジトリを復元しています"
 #.
 #. @return [Array<Agama::Issue>]
 #: service/lib/agama/software/manager.rb:470
-#, c-format
 msgid "Could not read repository \"%s\""
 msgstr "リポジトリ\"%s\" を読み込むことができませんでした"
 
@@ -150,7 +145,6 @@ msgstr "製品を登録しなければなりません"
 #.
 #. @return [Array<String>] Error messages
 #: service/lib/agama/software/proposal.rb:227
-#, c-format
 msgid "Found %s dependency issues."
 msgstr "%s 個の依存関係の問題が見つかりました。"
 
