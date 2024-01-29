@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 29 14:34:37 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Partly replacing the NetworkManager client by the agama one 
+  (gh#openSUSE/agama#1006).
+
+-------------------------------------------------------------------
 Fri Jan 19 09:34:26 UTC 2024 -  Nagu <nagukalakuntla@gmail.com>
 
 - Storage UI: show mount point selector only when the user can change it.
