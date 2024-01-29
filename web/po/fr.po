@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-21 02:22+0000\n"
-"PO-Revision-Date: 2023-12-31 20:39+0000\n"
+"POT-Creation-Date: 2024-01-28 02:07+0000\n"
+"PO-Revision-Date: 2024-01-23 12:59+0000\n"
 "Last-Translator: faila fail <yassadmi@proton.me>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-web/fr/"
 ">\n"
@@ -92,7 +92,7 @@ msgstr "Recharger"
 
 #: src/components/core/DevelopmentInfo.jsx:55
 msgid "Cockpit server"
-msgstr ""
+msgstr "Serveur Cockpit"
 
 #: src/components/core/FileViewer.jsx:65
 msgid "Reading file..."
@@ -103,13 +103,12 @@ msgid "Cannot read the file"
 msgstr "Lecture du fichier impossible"
 
 #: src/components/core/InstallButton.jsx:37
-#, fuzzy
 msgid ""
 "There are some reported issues. Please review them in the previous steps "
 "before proceeding with the installation."
 msgstr ""
-"Des problèmes ont été signalés. Veuillez vérifier [la liste des problèmes] "
-"avant de procéder à l'installation."
+"Certains problèmes ont été signalés. Veuillez les consulter dans les étapes "
+"précédentes avant de procéder à l'installation."
 
 #: src/components/core/InstallButton.jsx:49
 msgid "Confirm Installation"
@@ -174,21 +173,23 @@ msgstr "Installer"
 #: src/components/core/InstallationFinished.jsx:41
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr ""
+"Le scellement via TPM impose que le nouveau système soit démarré directement."
 
 #: src/components/core/InstallationFinished.jsx:46
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
 msgstr ""
+"Si un périphérique local a été utilisé pour exécuter ce programme "
+"d'installation, retirez-le avant le prochain démarrage."
 
 #: src/components/core/InstallationFinished.jsx:50
-#, fuzzy
 msgid "Hide details"
-msgstr "Détails"
+msgstr "Masquer les détails"
 
 #: src/components/core/InstallationFinished.jsx:50
 msgid "See more details"
-msgstr ""
+msgstr "Plus de détails"
 
 #. TRANSLATORS: Do not translate 'abbr' and 'title', they are part of the HTML markup
 #: src/components/core/InstallationFinished.jsx:55
@@ -198,6 +199,11 @@ msgid ""
 "first boot of the new system. For that to work, the machine needs to boot "
 "directly to the new boot loader."
 msgstr ""
+"La dernière étape pour configurer le <abbr title='Trusted Platform "
+"Module'>TPM</abbr> pour ouvrir automatiquement les périphériques chiffrés "
+"aura lieu lors du premier démarrage du nouveau système. Pour que cela "
+"fonctionne, la machine doit démarrer directement avec le nouveau chargeur de "
+"démarrage."
 
 #. TRANSLATORS: page title
 #: src/components/core/InstallationFinished.jsx:88
@@ -272,9 +278,8 @@ msgid "Show global options"
 msgstr "Afficher les options générales"
 
 #: src/components/core/Page.jsx:215
-#, fuzzy
 msgid "Page Actions"
-msgstr "Actions planifiées"
+msgstr "Page Actions"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:35
 msgid "Passwords do not match"
@@ -340,9 +345,8 @@ msgid "Installer Options"
 msgstr "Options de l'installateur"
 
 #: src/components/core/Sidebar.jsx:128
-#, fuzzy
 msgid "Hide installer options"
-msgstr "Options de l'installateur"
+msgstr "Masquer les options d'installation"
 
 #: src/components/core/Sidebar.jsx:136
 msgid "Diagnostic tools"
@@ -350,24 +354,20 @@ msgstr "Outils de diagnostic"
 
 #. TRANSLATORS: Titles used for the popup displaying found section issues
 #: src/components/core/ValidationErrors.jsx:53
-#, fuzzy
 msgid "Software issues"
-msgstr "Logiciel %s"
+msgstr "Problèmes liés aux logiciels"
 
 #: src/components/core/ValidationErrors.jsx:54
-#, fuzzy
 msgid "Product issues"
-msgstr "Produit"
+msgstr "Problèmes liés aux produits"
 
 #: src/components/core/ValidationErrors.jsx:55
-#, fuzzy
 msgid "Storage issues"
-msgstr "Montrer les problèmes"
+msgstr "Problèmes liés au stockage"
 
 #: src/components/core/ValidationErrors.jsx:57
-#, fuzzy
 msgid "Found Issues"
-msgstr "Montrer les problèmes"
+msgstr "Problèmes rencontrés"
 
 #. TRANSLATORS: %d is replaced with the number of errors found
 #: src/components/core/ValidationErrors.jsx:77
@@ -544,8 +544,8 @@ msgstr "Adresses"
 msgid "Addresses data list"
 msgstr "Liste des données d'adresses"
 
-#. TRANSLATORS: table header
 #. TRANSLATORS: input field for the iSCSI initiator name
+#. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:57
 #: src/components/network/ConnectionsTable.jsx:86
 #: src/components/storage/ZFCPPage.jsx:360
@@ -651,9 +651,8 @@ msgid "Gateway"
 msgstr "Passerelle"
 
 #: src/components/network/NetworkPage.jsx:38
-#, fuzzy
 msgid "No wired connections found."
-msgstr "Aucune connexion filaire n'a été trouvée"
+msgstr "Aucune connexion filaire n'a été trouvée."
 
 #: src/components/network/NetworkPage.jsx:53
 msgid ""
@@ -670,9 +669,8 @@ msgstr ""
 "raison d'un matériel manquant ou désactivé."
 
 #: src/components/network/NetworkPage.jsx:58
-#, fuzzy
 msgid "No WiFi connections found."
-msgstr "Aucune connexion WiFi trouvée"
+msgstr "Aucune connexion WiFi trouvée."
 
 #. TRANSLATORS: button label
 #: src/components/network/NetworkPage.jsx:70
@@ -681,8 +679,8 @@ msgstr "Aucune connexion WiFi trouvée"
 msgid "Connect to a Wi-Fi network"
 msgstr "Se connecter à un réseau Wi-Fi"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/network/NetworkPage.jsx:170
 #: src/components/overview/NetworkSection.jsx:102
 msgid "Network"
@@ -766,8 +764,8 @@ msgstr "Connecté"
 msgid "Disconnecting"
 msgstr "Déconnexion"
 
-#. TRANSLATORS: Wifi network status
 #. TRANSLATORS: iSCSI connection status
+#. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:50
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -815,8 +813,8 @@ msgstr "Synthèse de l'installation"
 msgid "%s (registered)"
 msgstr "%s (inscrit)"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/overview/ProductSection.jsx:71
 #: src/components/product/ProductPage.jsx:435
 msgid "Product"
@@ -1245,9 +1243,8 @@ msgid "Installation device"
 msgstr "Périphérique d'installation"
 
 #: src/components/storage/ProposalSettingsSection.jsx:154
-#, fuzzy
 msgid "No devices found."
-msgstr "Aucun périphérique n'a été trouvé"
+msgstr "Aucun périphérique n'a été trouvé."
 
 #: src/components/storage/ProposalSettingsSection.jsx:241
 msgid "Devices for creating the volume group"
@@ -1292,15 +1289,18 @@ msgid ""
 "system. TPM sealing requires the new system to be booted directly on its "
 "first run."
 msgstr ""
+"Le mot de passe ne sera pas nécessaire pour démarrer et accéder aux données "
+"si le <abbr title='Trusted Platform Module'>TPM</abbr> peut vérifier "
+"l'intégrité du système. Le scellement par TPM exige que le nouveau système "
+"soit démarré directement lors de sa première exécution."
 
 #: src/components/storage/ProposalSettingsSection.jsx:440
 msgid "Use the TPM to decrypt automatically on each boot"
-msgstr ""
+msgstr "Utiliser le TPM pour décrypter automatiquement à chaque démarrage"
 
 #: src/components/storage/ProposalSettingsSection.jsx:511
-#, fuzzy
 msgid "Change encryption settings"
-msgstr "Paramètres de chiffrement"
+msgstr "Modifier les paramètres de chiffrement"
 
 #: src/components/storage/ProposalSettingsSection.jsx:516
 #: src/components/storage/ProposalSettingsSection.jsx:537
@@ -1432,9 +1432,8 @@ msgid "File systems to create in your system"
 msgstr "Systèmes de fichiers à créer dans votre système"
 
 #: src/components/storage/VolumeForm.jsx:102
-#, fuzzy
 msgid "Select a value"
-msgstr "Choisir la langue"
+msgstr "Sélectionner une valeur"
 
 #. TRANSLATORS: description of Btrfs snapshots feature.
 #: src/components/storage/VolumeForm.jsx:212
@@ -1605,9 +1604,8 @@ msgid "Deactivated"
 msgstr "Désactivé"
 
 #: src/components/storage/ZFCPPage.jsx:417
-#, fuzzy
 msgid "No zFCP controllers found."
-msgstr "Aucun contrôleur zFCP n'a été trouvé"
+msgstr "Aucun contrôleur zFCP n'a été trouvé."
 
 #: src/components/storage/ZFCPPage.jsx:418
 msgid "Please, try to read the zFCP devices again."
@@ -1654,9 +1652,8 @@ msgid "Activate zFCP disk"
 msgstr "Activer le disque zFCP"
 
 #: src/components/storage/ZFCPPage.jsx:553
-#, fuzzy
 msgid "No zFCP disks found."
-msgstr "Aucun disque zFCP n'a été trouvé"
+msgstr "Aucun disque zFCP n'a été trouvé."
 
 #. TRANSLATORS: button label
 #: src/components/storage/ZFCPPage.jsx:572
@@ -1884,9 +1881,8 @@ msgid "Interface"
 msgstr "Interface"
 
 #: src/components/storage/iscsi/TargetsSection.jsx:139
-#, fuzzy
 msgid "No iSCSI targets found."
-msgstr "Aucune cible iSCSI n'a été trouvée"
+msgstr "Aucune cible iSCSI n'a été trouvée."
 
 #: src/components/storage/iscsi/TargetsSection.jsx:140
 msgid ""
@@ -1999,9 +1995,8 @@ msgid "PiB"
 msgstr "PiB"
 
 #: src/components/users/FirstUser.jsx:44
-#, fuzzy
 msgid "No user defined yet."
-msgstr "Aucun utilisateur n'a encore été défini"
+msgstr "Aucun utilisateur n'a été défini."
 
 #: src/components/users/FirstUser.jsx:47
 msgid ""
@@ -2061,9 +2056,8 @@ msgid "Auto-login"
 msgstr "connexion automatique"
 
 #: src/components/users/RootAuthMethods.jsx:35
-#, fuzzy
 msgid "No root authentication method defined yet."
-msgstr "Aucune méthode d'authentification Root n'a encore été définie"
+msgstr "Aucune méthode d'authentification Root n'a été définie."
 
 #: src/components/users/RootAuthMethods.jsx:38
 msgid ""

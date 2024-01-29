@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-21 02:22+0000\n"
-"PO-Revision-Date: 2024-01-10 12:59+0000\n"
+"POT-Creation-Date: 2024-01-28 02:07+0000\n"
+"PO-Revision-Date: 2024-01-21 14:59+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "sv/>\n"
@@ -170,22 +170,23 @@ msgstr "Installera"
 
 #: src/components/core/InstallationFinished.jsx:41
 msgid "TPM sealing requires the new system to be booted directly."
-msgstr ""
+msgstr "TPM-försegling kräver att det nya systemet startas upp direkt."
 
 #: src/components/core/InstallationFinished.jsx:46
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
 msgstr ""
+"Om ett lokalt media användes för att köra det här installationsprogrammet, "
+"ta bort det före nästa uppstart."
 
 #: src/components/core/InstallationFinished.jsx:50
-#, fuzzy
 msgid "Hide details"
-msgstr "Detaljer"
+msgstr "Dölj detaljer"
 
 #: src/components/core/InstallationFinished.jsx:50
 msgid "See more details"
-msgstr ""
+msgstr "Se mer detaljer"
 
 #. TRANSLATORS: Do not translate 'abbr' and 'title', they are part of the HTML markup
 #: src/components/core/InstallationFinished.jsx:55
@@ -195,6 +196,10 @@ msgid ""
 "first boot of the new system. For that to work, the machine needs to boot "
 "directly to the new boot loader."
 msgstr ""
+"Det sista steget för att konfigurera <abbr title='Trusted Platform "
+"Module'>TPM</abbr> för att automatiskt öppna krypterade enheter kommer att "
+"ske under den första uppstarten av det nya systemet. För att det ska fungera "
+"måste maskinen startas direkt till den nya uppstartshanteraren."
 
 #. TRANSLATORS: page title
 #: src/components/core/InstallationFinished.jsx:88
@@ -531,8 +536,8 @@ msgstr "Adresser"
 msgid "Addresses data list"
 msgstr "Adresser data lista"
 
-#. TRANSLATORS: table header
 #. TRANSLATORS: input field for the iSCSI initiator name
+#. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:57
 #: src/components/network/ConnectionsTable.jsx:86
 #: src/components/storage/ZFCPPage.jsx:360
@@ -666,8 +671,8 @@ msgstr "Inga WiFi-anslutningar hittades."
 msgid "Connect to a Wi-Fi network"
 msgstr "Anslut till ett Wi-Fi nätverk"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/network/NetworkPage.jsx:170
 #: src/components/overview/NetworkSection.jsx:102
 msgid "Network"
@@ -751,8 +756,8 @@ msgstr "Ansluten"
 msgid "Disconnecting"
 msgstr "Kopplar från"
 
-#. TRANSLATORS: Wifi network status
 #. TRANSLATORS: iSCSI connection status
+#. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:50
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -800,8 +805,8 @@ msgstr "Installationssammanfattning"
 msgid "%s (registered)"
 msgstr "%s (registrerad)"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/overview/ProductSection.jsx:71
 #: src/components/product/ProductPage.jsx:435
 msgid "Product"
@@ -1262,15 +1267,18 @@ msgid ""
 "system. TPM sealing requires the new system to be booted directly on its "
 "first run."
 msgstr ""
+"Lösenordet kommer inte att behövas för att starta och komma åt data om <abbr "
+"title='Trusted Platform Module'>TPM</abbr> kan verifiera systemets "
+"integritet. TPM-försegling kräver att det nya systemet startas upp direkt "
+"vid första körningen."
 
 #: src/components/storage/ProposalSettingsSection.jsx:440
 msgid "Use the TPM to decrypt automatically on each boot"
-msgstr ""
+msgstr "Använd TPM för att dekryptera automatiskt vid varje uppstart"
 
 #: src/components/storage/ProposalSettingsSection.jsx:511
-#, fuzzy
 msgid "Change encryption settings"
-msgstr "Krypteringsinställningar"
+msgstr "Ändra krypteringsinställningar"
 
 #: src/components/storage/ProposalSettingsSection.jsx:516
 #: src/components/storage/ProposalSettingsSection.jsx:537
@@ -1401,9 +1409,8 @@ msgid "File systems to create in your system"
 msgstr "Filsystem att skapa i ditt system"
 
 #: src/components/storage/VolumeForm.jsx:102
-#, fuzzy
 msgid "Select a value"
-msgstr "Välj språk"
+msgstr "Välj ett värde"
 
 #. TRANSLATORS: description of Btrfs snapshots feature.
 #: src/components/storage/VolumeForm.jsx:212

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-21 02:22+0000\n"
-"PO-Revision-Date: 2024-01-09 07:59+0000\n"
+"POT-Creation-Date: 2024-01-28 02:07+0000\n"
+"PO-Revision-Date: 2024-01-22 06:59+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -172,21 +172,23 @@ msgstr "インストール"
 #: src/components/core/InstallationFinished.jsx:41
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr ""
+"TPM シーリングを使用するには、新しいシステムを直接起動する必要があります。"
 
 #: src/components/core/InstallationFinished.jsx:46
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
 msgstr ""
+"このインストーラの起動に際してローカルメディアを使用している場合は、次回の再"
+"起動までの間にメディアを取り出しておいてください。"
 
 #: src/components/core/InstallationFinished.jsx:50
-#, fuzzy
 msgid "Hide details"
-msgstr "詳細"
+msgstr "詳細を隠す"
 
 #: src/components/core/InstallationFinished.jsx:50
 msgid "See more details"
-msgstr ""
+msgstr "さらに詳細を表示する"
 
 #. TRANSLATORS: Do not translate 'abbr' and 'title', they are part of the HTML markup
 #: src/components/core/InstallationFinished.jsx:55
@@ -196,6 +198,10 @@ msgid ""
 "first boot of the new system. For that to work, the machine needs to boot "
 "directly to the new boot loader."
 msgstr ""
+"<abbr title='Trusted Platform Module'>TPM</abbr> の設定の最後では、新しいシス"
+"テムの初回起動時に暗号化されたデバイスを自動で解除するよう設定します。これを"
+"動作させるためには、マシンが新しいブートローダを直接起動するように設定してお"
+"く必要があります。"
 
 #. TRANSLATORS: page title
 #: src/components/core/InstallationFinished.jsx:88
@@ -529,8 +535,8 @@ msgstr "アドレス"
 msgid "Addresses data list"
 msgstr "アドレスデータの一覧"
 
-#. TRANSLATORS: table header
 #. TRANSLATORS: input field for the iSCSI initiator name
+#. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:57
 #: src/components/network/ConnectionsTable.jsx:86
 #: src/components/storage/ZFCPPage.jsx:360
@@ -665,8 +671,8 @@ msgstr "WiFi 接続が見つかりませんでした。"
 msgid "Connect to a Wi-Fi network"
 msgstr "Wi-Fi ネットワークへの接続"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/network/NetworkPage.jsx:170
 #: src/components/overview/NetworkSection.jsx:102
 msgid "Network"
@@ -750,8 +756,8 @@ msgstr "接続済み"
 msgid "Disconnecting"
 msgstr "切断中"
 
-#. TRANSLATORS: Wifi network status
 #. TRANSLATORS: iSCSI connection status
+#. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:50
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -798,8 +804,8 @@ msgstr "インストールの概要"
 msgid "%s (registered)"
 msgstr "%s (登録済み)"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/overview/ProductSection.jsx:71
 #: src/components/product/ProductPage.jsx:435
 msgid "Product"
@@ -1257,15 +1263,18 @@ msgid ""
 "system. TPM sealing requires the new system to be booted directly on its "
 "first run."
 msgstr ""
+"<abbr title='Trusted Platform Module'>TPM</abbr> 側でシステムの一貫性検証が成"
+"功すると、起動とデータへのアクセスに際してパスワードが不要になります。 TPM "
+"シーリングを使用するには、新しいシステムの初回起動時に直接起動を行う必要があ"
+"ります。"
 
 #: src/components/storage/ProposalSettingsSection.jsx:440
 msgid "Use the TPM to decrypt automatically on each boot"
-msgstr ""
+msgstr "毎回の起動時に TPM を利用して自動的に暗号化解除する"
 
 #: src/components/storage/ProposalSettingsSection.jsx:511
-#, fuzzy
 msgid "Change encryption settings"
-msgstr "暗号化の設定"
+msgstr "暗号化設定の変更"
 
 #: src/components/storage/ProposalSettingsSection.jsx:516
 #: src/components/storage/ProposalSettingsSection.jsx:537
@@ -1396,9 +1405,8 @@ msgid "File systems to create in your system"
 msgstr "お使いのシステム内で作成するファイルシステム"
 
 #: src/components/storage/VolumeForm.jsx:102
-#, fuzzy
 msgid "Select a value"
-msgstr "言語の選択"
+msgstr "値の選択"
 
 #. TRANSLATORS: description of Btrfs snapshots feature.
 #: src/components/storage/VolumeForm.jsx:212
