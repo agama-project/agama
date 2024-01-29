@@ -259,7 +259,7 @@ class NetworkClient {
     if (wireless) {
       conn.wireless = {
         ssid: window.atob(wireless.SSID),
-        hidden: false, // TODO implement the 'hidden' property
+        hidden: wireless.Hidden,
         mode: wireless.Mode,
         security: wireless.Security // see AgamaSecurityProtocols
       };
@@ -351,7 +351,8 @@ class NetworkClient {
       const wireless_props = {
         Mode: cockpit.variant("s", "infrastructure"),
         Security: cockpit.variant("s", wireless.security),
-        SSID: cockpit.variant("ay", cockpit.byte_array(wireless.ssid))
+        SSID: cockpit.variant("ay", cockpit.byte_array(wireless.ssid)),
+        Hidden: cockpit.variant("b", wireless.hidden)
       };
 
       if (wireless.password) {

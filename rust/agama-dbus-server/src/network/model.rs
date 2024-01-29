@@ -739,6 +739,7 @@ pub struct VlanConfig {
 pub struct WirelessConfig {
     pub mode: WirelessMode,
     pub ssid: SSID,
+    pub hidden: bool,
     pub password: Option<String>,
     pub security: SecurityProtocol,
     pub band: Option<WirelessBand>,

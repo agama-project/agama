@@ -332,6 +332,7 @@ fn wireless_config_to_dbus<'a>(
         ("mode", Value::new(config.mode.to_string())),
         ("ssid", Value::new(config.ssid.to_vec())),
         ("assigned-mac-address", Value::new(mac_address.to_string())),
+        ("hidden", Value::new(config.hidden)),
     ]);
 
     if let Some(band) = &config.band {
@@ -710,6 +711,10 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
         ..Default::default()
     };
 
+    if let Some(hidden) = wireless.get("hidden") {
+        wireless_config.hidden = hidden.downcast_ref::<bool>().cloned().unwrap_or(false);
+    }
+
     if let Some(band) = wireless.get("band") {
         wireless_config.band = Some(band.downcast_ref::<str>()?.try_into().ok()?)
     }
@@ -1011,6 +1016,7 @@ mod test {
                 "bssid".to_string(),
                 Value::new(vec![18_u8, 52_u8, 86_u8, 120_u8, 154_u8, 188_u8]).to_owned(),
             ),
+            ("hidden".to_string(), Value::new(true).to_owned()),
         ]);
 
         let security_section = HashMap::from([
@@ -1046,6 +1052,7 @@ mod test {
             assert_eq!(wep_security.wep_key_type, WEPKeyType::Key);
             assert_eq!(wep_security.auth_alg, WEPAuthAlg::Open);
             assert_eq!(wep_security.wep_key_index, 1);
+            assert!(wireless.hidden);
         }
     }
 
