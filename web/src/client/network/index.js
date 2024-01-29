@@ -205,6 +205,9 @@ class NetworkClient {
   /**
    * Adds a new connection
    *
+   * If a connection with the given ID already exists, it updates such a
+   * connection.
+   *
    * @param {Connection} connection - Connection to add
    * @return {Promise<Connection>} the added connection
    */
@@ -212,7 +215,12 @@ class NetworkClient {
     const { id } = connection;
     const proxy = await this.client.proxy(CONNECTIONS_IFACE, CONNECTIONS_PATH);
     const deviceType = (connection.wireless) ? DeviceType.WIRELESS : DeviceType.ETHERNET;
-    const path = await proxy.AddConnection(id, deviceType);
+    let path;
+    try {
+      path = await proxy.GetConnectionById(id);
+    } catch {
+      path = await proxy.AddConnection(id, deviceType);
+    }
     await this.updateConnectionAt(path, connection);
     return this.connectionFromPath(path);
   }
