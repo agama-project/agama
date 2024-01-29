@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,6 +28,7 @@ require_relative "./interfaces/block_examples"
 require_relative "./interfaces/md_examples"
 require_relative "./interfaces/partition_table_examples"
 require "agama/dbus/storage/device"
+require "agama/dbus/storage/devices_tree"
 require "dbus"
 
 describe Agama::DBus::Storage::Device do
@@ -44,7 +45,11 @@ describe Agama::DBus::Storage::Device do
     end
   end
 
-  subject { described_class.new(device, "/test") }
+  subject { described_class.new(device, "/test", tree) }
+
+  let(:tree) { Agama::DBus::Storage::DevicesTree.new(service, "/agama/devices") }
+
+  let(:service) { instance_double(::DBus::ObjectServer) }
 
   before do
     mock_storage(devicegraph: scenario)
@@ -136,4 +141,40 @@ describe Agama::DBus::Storage::Device do
   include_examples "Block interface"
 
   include_examples "PartitionTable interface"
+
+  describe "#storage_device=" do
+    before do
+      allow(subject).to receive(:dbus_properties_changed)
+    end
+
+    let(:scenario) { "partitioned_md.yml" }
+    let(:device) { devicegraph.find_by_name("/dev/sda") }
+
+    context "if the given device has a different sid" do
+      let(:new_device) { devicegraph.find_by_name("/dev/sdb") }
+
+      it "raises an error" do
+        expect { subject.storage_device = new_device }
+          .to raise_error(RuntimeError, /Cannot update the D-Bus object/)
+      end
+    end
+
+    context "if the given device has the same sid" do
+      let(:new_device) { devicegraph.find_by_name("/dev/sda") }
+
+      it "sets the new device" do
+        subject.storage_device = new_device
+
+        expect(subject.storage_device).to equal(new_device)
+      end
+
+      it "emits a properties changed signal for each interface" do
+        subject.interfaces_and_properties.each_key do |interface|
+          expect(subject).to receive(:dbus_properties_changed).with(interface, anything, anything)
+        end
+
+        subject.storage_device = new_device
+      end
+    end
+  end
 end
