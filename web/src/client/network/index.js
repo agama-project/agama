@@ -273,9 +273,23 @@ class NetworkClient {
    *
    * @param {string} path - Object path.
    * @param {string} iface - Interface name.
+   * @param {object} values - Properties values (indexed by names). The value
+   *   should be created by using the cockpit.variant() function.
+   */
+  async setProperties(path, iface, values) {
+    for (const [prop, value] of Object.entries(values)) {
+      await this.setProperty(path, iface, prop, value);
+    }
+  }
+
+  /**
+   * Sets a property for a given path
+   *
+   * @param {string} path - Object path.
+   * @param {string} iface - Interface name.
    * @param {string} property - Property name.
    * @param {object} value - Property value. The value should be created by
-   * using the cockpit.variant() function.
+   *   using the cockpit.variant() function.
    */
   async setProperty(path, iface, property, value) {
     return this.client.call(path, "org.freedesktop.DBus.Properties", "Set", [iface, property, value]);
@@ -324,20 +338,27 @@ class NetworkClient {
    */
   async updateConnectionAt(path, connection) {
     const { ipv4, wireless } = connection;
-    await this.setProperty(path, IP_IFACE, "Method4", cockpit.variant("s", ipv4.method));
-    await this.setProperty(path, IP_IFACE, "Gateway4", cockpit.variant("s", ipv4.gateway));
     const addresses = ipv4.addresses.map(a => `${a.address}/${a.prefix}`);
-    await this.setProperty(path, IP_IFACE, "Addresses", cockpit.variant("as", addresses));
-    await this.setProperty(path, IP_IFACE, "Nameservers", cockpit.variant("as", ipv4.nameServers));
+    const ipv4_props = {
+      Method4: cockpit.variant("s", ipv4.method),
+      Gateway4: cockpit.variant("s", ipv4.gateway),
+      Addresses: cockpit.variant("as", addresses),
+      Nameservers: cockpit.variant("as", ipv4.nameServers)
+    };
+    await this.setProperties(path, IP_IFACE, ipv4_props);
 
     if (wireless) {
-      await this.setProperty(path, WIRELESS_IFACE, "Mode", cockpit.variant("s", "infrastructure"));
+      const wireless_props = {
+        Mode: cockpit.variant("s", "infrastructure"),
+        Security: cockpit.variant("s", wireless.security),
+        SSID: cockpit.variant("ay", cockpit.byte_array(wireless.ssid))
+      };
+
       if (wireless.password) {
-        await this.setProperty(path, WIRELESS_IFACE, "Password", cockpit.variant("s", wireless.password));
+        wireless_props.Password = cockpit.variant("s", wireless.password);
       }
-      await this.setProperty(path, WIRELESS_IFACE, "Security", cockpit.variant("s", wireless.security));
-      const ssid = cockpit.byte_array(wireless.ssid);
-      await this.setProperty(path, WIRELESS_IFACE, "SSID", cockpit.variant("ay", ssid));
+
+      await this.setProperties(path, WIRELESS_IFACE, wireless_props);
     }
 
     // TODO: apply the changes only in this connection
