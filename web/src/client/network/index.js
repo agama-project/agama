@@ -352,7 +352,7 @@ class NetworkClient {
         Mode: cockpit.variant("s", "infrastructure"),
         Security: cockpit.variant("s", wireless.security),
         SSID: cockpit.variant("ay", cockpit.byte_array(wireless.ssid)),
-        Hidden: cockpit.variant("b", wireless.hidden)
+        Hidden: cockpit.variant("b", !!wireless.hidden)
       };
 
       if (wireless.password) {
