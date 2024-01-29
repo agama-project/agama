@@ -740,6 +740,10 @@ pub struct WirelessConfig {
     pub ssid: SSID,
     pub password: Option<String>,
     pub security: SecurityProtocol,
+    pub band: Option<WirelessBand>,
+    pub channel: Option<u32>,
+    pub bssid: Option<macaddr::MacAddr6>,
+    pub wep_security: Option<WEPSecurity>,
 }
 
 impl TryFrom<ConnectionConfig> for WirelessConfig {
@@ -833,6 +837,98 @@ impl TryFrom<&str> for SecurityProtocol {
             _ => Err(NetworkStateError::InvalidSecurityProtocol(
                 value.to_string(),
             )),
+        }
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct WEPSecurity {
+    pub auth_alg: WEPAuthAlg,
+    pub wep_key_type: WEPKeyType,
+    pub keys: Vec<String>,
+    pub wep_key_index: u32,
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub enum WEPKeyType {
+    #[default]
+    Unknown = 0,
+    Key = 1,
+    Passphrase = 2,
+}
+
+impl TryFrom<u32> for WEPKeyType {
+    type Error = NetworkStateError;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(WEPKeyType::Unknown),
+            1 => Ok(WEPKeyType::Key),
+            2 => Ok(WEPKeyType::Passphrase),
+            _ => Err(NetworkStateError::InvalidWEPKeyType(value)),
+        }
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub enum WEPAuthAlg {
+    #[default]
+    Unset,
+    Open,
+    Shared,
+    Leap,
+}
+
+impl TryFrom<&str> for WEPAuthAlg {
+    type Error = NetworkStateError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "open" => Ok(WEPAuthAlg::Open),
+            "shared" => Ok(WEPAuthAlg::Shared),
+            "leap" => Ok(WEPAuthAlg::Leap),
+            "" => Ok(WEPAuthAlg::Unset),
+            _ => Err(NetworkStateError::InvalidWEPAuthAlg(value.to_string())),
+        }
+    }
+}
+
+impl fmt::Display for WEPAuthAlg {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            WEPAuthAlg::Open => "open",
+            WEPAuthAlg::Shared => "shared",
+            WEPAuthAlg::Leap => "shared",
+            WEPAuthAlg::Unset => "",
+        };
+        write!(f, "{}", name)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum WirelessBand {
+    A,  // 5GHz
+    BG, // 2.4GHz
+}
+
+impl fmt::Display for WirelessBand {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let value = match &self {
+            WirelessBand::A => "a",
+            WirelessBand::BG => "bg",
+        };
+        write!(f, "{}", value)
+    }
+}
+
+impl TryFrom<&str> for WirelessBand {
+    type Error = anyhow::Error;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "a" => Ok(WirelessBand::A),
+            "bg" => Ok(WirelessBand::BG),
+            _ => Err(anyhow::anyhow!("Invalid band: {}", value)),
         }
     }
 }
