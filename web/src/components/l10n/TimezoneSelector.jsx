@@ -26,7 +26,7 @@ import { ListSearch } from "~/components/core";
 import { noop, timezoneTime } from "~/utils";
 
 /**
- * @typedef {import ("~/clients/l10n").Timezone} Timezone
+ * @typedef {import ("~/client/l10n").Timezone} Timezone
  */
 
 const ListBox = ({ children, ...props }) => {

@@ -169,6 +169,57 @@ mod tests {
     use uuid::Uuid;
 
     #[test]
+    fn test_macaddress() {
+        let mut val: Option<String> = None;
+        assert!(matches!(
+            MacAddress::try_from(&val).unwrap(),
+            MacAddress::Unset
+        ));
+
+        val = Some(String::from(""));
+        assert!(matches!(
+            MacAddress::try_from(&val).unwrap(),
+            MacAddress::Unset
+        ));
+
+        val = Some(String::from("preserve"));
+        assert!(matches!(
+            MacAddress::try_from(&val).unwrap(),
+            MacAddress::Preserve
+        ));
+
+        val = Some(String::from("permanent"));
+        assert!(matches!(
+            MacAddress::try_from(&val).unwrap(),
+            MacAddress::Permanent
+        ));
+
+        val = Some(String::from("random"));
+        assert!(matches!(
+            MacAddress::try_from(&val).unwrap(),
+            MacAddress::Random
+        ));
+
+        val = Some(String::from("stable"));
+        assert!(matches!(
+            MacAddress::try_from(&val).unwrap(),
+            MacAddress::Stable
+        ));
+
+        val = Some(String::from("This is not a MACAddr"));
+        assert!(matches!(
+            MacAddress::try_from(&val),
+            Err(InvalidMacAddress(_))
+        ));
+
+        val = Some(String::from("de:ad:be:ef:2b:ad"));
+        assert_eq!(
+            MacAddress::try_from(&val).unwrap().to_string(),
+            String::from("de:ad:be:ef:2b:ad").to_uppercase()
+        );
+    }
+
+    #[test]
     fn test_add_connection() {
         let mut state = NetworkState::default();
         let uuid = Uuid::new_v4();
@@ -334,6 +385,7 @@ pub struct Connection {
     pub status: Status,
     pub interface: Option<String>,
     pub controller: Option<Uuid>,
+    pub port_config: PortConfig,
     pub match_config: MatchConfig,
     pub config: ConnectionConfig,
 }
@@ -346,6 +398,8 @@ impl Connection {
             DeviceType::Loopback => ConnectionConfig::Loopback,
             DeviceType::Dummy => ConnectionConfig::Dummy,
             DeviceType::Bond => ConnectionConfig::Bond(Default::default()),
+            DeviceType::Vlan => ConnectionConfig::Vlan(Default::default()),
+            DeviceType::Bridge => ConnectionConfig::Bridge(Default::default()),
         };
         Self {
             id,
@@ -384,6 +438,8 @@ impl Connection {
             || matches!(self.config, ConnectionConfig::Ethernet)
             || matches!(self.config, ConnectionConfig::Dummy)
             || matches!(self.config, ConnectionConfig::Bond(_))
+            || matches!(self.config, ConnectionConfig::Vlan(_))
+            || matches!(self.config, ConnectionConfig::Bridge(_))
     }
 }
 
@@ -397,6 +453,7 @@ impl Default for Connection {
             status: Default::default(),
             interface: Default::default(),
             controller: Default::default(),
+            port_config: Default::default(),
             match_config: Default::default(),
             config: Default::default(),
         }
@@ -411,6 +468,15 @@ pub enum ConnectionConfig {
     Loopback,
     Dummy,
     Bond(BondConfig),
+    Vlan(VlanConfig),
+    Bridge(BridgeConfig),
+}
+
+#[derive(Default, Debug, PartialEq, Clone)]
+pub enum PortConfig {
+    #[default]
+    None,
+    Bridge(BridgePortConfig),
 }
 
 impl From<BondConfig> for ConnectionConfig {
@@ -454,6 +520,17 @@ impl FromStr for MacAddress {
                 Ok(mac) => mac,
                 Err(e) => return Err(InvalidMacAddress(e.to_string())),
             })),
+        }
+    }
+}
+
+impl TryFrom<&Option<String>> for MacAddress {
+    type Error = InvalidMacAddress;
+
+    fn try_from(value: &Option<String>) -> Result<Self, Self::Error> {
+        match &value {
+            Some(str) => MacAddress::from_str(str),
+            None => Ok(Self::Unset),
         }
     }
 }
@@ -619,11 +696,55 @@ impl From<&IpRoute> for HashMap<&str, Value<'_>> {
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
+pub enum VlanProtocol {
+    #[default]
+    IEEE802_1Q,
+    IEEE802_1ad,
+}
+
+#[derive(Debug, Error)]
+#[error("Invalid VlanProtocol: {0}")]
+pub struct InvalidVlanProtocol(String);
+
+impl std::str::FromStr for VlanProtocol {
+    type Err = InvalidVlanProtocol;
+
+    fn from_str(s: &str) -> Result<VlanProtocol, Self::Err> {
+        match s {
+            "802.1Q" => Ok(VlanProtocol::IEEE802_1Q),
+            "802.1ad" => Ok(VlanProtocol::IEEE802_1ad),
+            _ => Err(InvalidVlanProtocol(s.to_string())),
+        }
+    }
+}
+
+impl fmt::Display for VlanProtocol {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            VlanProtocol::IEEE802_1Q => "802.1Q",
+            VlanProtocol::IEEE802_1ad => "802.1ad",
+        };
+        write!(f, "{}", name)
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct VlanConfig {
+    pub parent: String,
+    pub id: u32,
+    pub protocol: VlanProtocol,
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
 pub struct WirelessConfig {
     pub mode: WirelessMode,
     pub ssid: SSID,
     pub password: Option<String>,
     pub security: SecurityProtocol,
+    pub band: Option<WirelessBand>,
+    pub channel: Option<u32>,
+    pub bssid: Option<macaddr::MacAddr6>,
+    pub wep_security: Option<WEPSecurity>,
 }
 
 impl TryFrom<ConnectionConfig> for WirelessConfig {
@@ -721,6 +842,98 @@ impl TryFrom<&str> for SecurityProtocol {
     }
 }
 
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct WEPSecurity {
+    pub auth_alg: WEPAuthAlg,
+    pub wep_key_type: WEPKeyType,
+    pub keys: Vec<String>,
+    pub wep_key_index: u32,
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub enum WEPKeyType {
+    #[default]
+    Unknown = 0,
+    Key = 1,
+    Passphrase = 2,
+}
+
+impl TryFrom<u32> for WEPKeyType {
+    type Error = NetworkStateError;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(WEPKeyType::Unknown),
+            1 => Ok(WEPKeyType::Key),
+            2 => Ok(WEPKeyType::Passphrase),
+            _ => Err(NetworkStateError::InvalidWEPKeyType(value)),
+        }
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub enum WEPAuthAlg {
+    #[default]
+    Unset,
+    Open,
+    Shared,
+    Leap,
+}
+
+impl TryFrom<&str> for WEPAuthAlg {
+    type Error = NetworkStateError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "open" => Ok(WEPAuthAlg::Open),
+            "shared" => Ok(WEPAuthAlg::Shared),
+            "leap" => Ok(WEPAuthAlg::Leap),
+            "" => Ok(WEPAuthAlg::Unset),
+            _ => Err(NetworkStateError::InvalidWEPAuthAlg(value.to_string())),
+        }
+    }
+}
+
+impl fmt::Display for WEPAuthAlg {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            WEPAuthAlg::Open => "open",
+            WEPAuthAlg::Shared => "shared",
+            WEPAuthAlg::Leap => "shared",
+            WEPAuthAlg::Unset => "",
+        };
+        write!(f, "{}", name)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum WirelessBand {
+    A,  // 5GHz
+    BG, // 2.4GHz
+}
+
+impl fmt::Display for WirelessBand {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let value = match &self {
+            WirelessBand::A => "a",
+            WirelessBand::BG => "bg",
+        };
+        write!(f, "{}", value)
+    }
+}
+
+impl TryFrom<&str> for WirelessBand {
+    type Error = anyhow::Error;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "a" => Ok(WirelessBand::A),
+            "bg" => Ok(WirelessBand::BG),
+            _ => Err(anyhow::anyhow!("Invalid band: {}", value)),
+        }
+    }
+}
+
 #[derive(Debug, Default, Clone, PartialEq)]
 pub struct BondOptions(pub HashMap<String, String>);
 
@@ -769,4 +982,20 @@ impl TryFrom<ConnectionConfig> for BondConfig {
             _ => Err(NetworkStateError::UnexpectedConfiguration),
         }
     }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct BridgeConfig {
+    pub stp: bool,
+    pub priority: Option<u32>,
+    pub forward_delay: Option<u32>,
+    pub hello_time: Option<u32>,
+    pub max_age: Option<u32>,
+    pub ageing_time: Option<u32>,
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct BridgePortConfig {
+    pub priority: Option<u32>,
+    pub path_cost: Option<u32>,
 }

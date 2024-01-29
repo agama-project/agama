@@ -180,6 +180,9 @@ class UsersBaseClient {
   }
 }
 
+/**
+ * Client to interact with the Agama users service
+ */
 class UsersClient extends WithValidation(UsersBaseClient, USERS_PATH) { }
 
 export { UsersClient };

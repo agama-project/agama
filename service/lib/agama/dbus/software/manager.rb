@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -97,6 +97,10 @@ module Agama
 
           dbus_method :IsPackageInstalled, "in Name:s, out Result:b" do |name|
             backend.package_installed?(name)
+          end
+
+          dbus_method :IsPackageAvailable, "in name:s, out result:b" do |name|
+            backend.package_available?(name)
           end
 
           dbus_method(:UsedDiskSpace, "out SpaceSize:s") { backend.used_disk_space }

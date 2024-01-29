@@ -73,6 +73,7 @@ export default function ProductSection() {
       errors={errors}
       loading={isLoading}
       path="/product"
+      id="product"
     >
       <Content isLoading={isLoading} />
     </Section>

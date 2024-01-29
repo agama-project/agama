@@ -1,0 +1,32 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "Agama Installer",
+  "entryPointStrategy": "expand",
+  "exclude": [
+    "./src/lib"
+  ],
+  "excludeNotDocumented": true,
+  "plugin": [
+    "typedoc-plugin-external-module-map",
+    "typedoc-plugin-merge-modules",
+  ],
+  "excludeReferences": true,
+  "mergeModulesMergeMode": "module-category",
+  "external-modulemap": [
+    ".*\/src\/(client)\/",
+    ".*\/src\/components\/([\\w\\-_]+)\/",
+  ],
+  "sort": [
+    "alphabetical",
+    "visibility"
+  ],
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true
+  },
+  "categorizeByGroup": true,
+  "navigationLinks": {
+    "GitHub": "https://github.com/openSUSE/agama"
+  },
+  "skipErrorChecking": true,
+}

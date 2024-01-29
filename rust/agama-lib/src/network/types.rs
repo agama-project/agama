@@ -38,6 +38,8 @@ pub enum DeviceType {
     Wireless = 2,
     Dummy = 3,
     Bond = 4,
+    Vlan = 5,
+    Bridge = 6,
 }
 
 /// Bond mode
@@ -139,6 +141,8 @@ impl TryFrom<u8> for DeviceType {
             2 => Ok(DeviceType::Wireless),
             3 => Ok(DeviceType::Dummy),
             4 => Ok(DeviceType::Bond),
+            5 => Ok(DeviceType::Vlan),
+            6 => Ok(DeviceType::Bridge),
             _ => Err(InvalidDeviceType(value)),
         }
     }

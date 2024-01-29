@@ -50,8 +50,8 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
         "LVM"                    => false,
         "SystemVGDevices"        => [],
         "EncryptionPassword"     => "",
-        "EncryptionMethod"       => "luks1",
-        "EncryptionPBKDFunction" => "",
+        "EncryptionMethod"       => "luks2",
+        "EncryptionPBKDFunction" => "pbkdf2",
         "SpacePolicy"            => "keep",
         "SpaceActions"           => {},
         "Volumes"                => []

@@ -62,6 +62,7 @@ class BaseProductManager {
    */
   constructor(client) {
     this.client = client;
+    this.proxies = {};
   }
 
   /**
@@ -219,6 +220,7 @@ class SoftwareBaseClient {
   constructor(address = undefined) {
     this.client = new DBusClient(SOFTWARE_SERVICE, address);
     this.product = new ProductManager(this.client);
+    this.proxies = {};
   }
 
   /**

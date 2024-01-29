@@ -11,12 +11,16 @@ pub struct LocaleCode {
     pub language: String,
     // ISO-3166
     pub territory: String,
-    // encoding: String,
+    pub encoding: String,
 }
 
 impl Display for LocaleCode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}_{}", &self.language, &self.territory)
+        write!(
+            f,
+            "{}_{}.{}",
+            &self.language, &self.territory, &self.encoding
+        )
     }
 }
 
@@ -25,6 +29,7 @@ impl Default for LocaleCode {
         Self {
             language: "en".to_string(),
             territory: "US".to_string(),
+            encoding: "UTF-8".to_string(),
         }
     }
 }
@@ -37,14 +42,23 @@ impl TryFrom<&str> for LocaleCode {
     type Error = InvalidLocaleCode;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let locale_regexp: Regex = Regex::new(r"^([[:alpha:]]+)_([[:alpha:]]+)").unwrap();
+        let locale_regexp: Regex =
+            Regex::new(r"^([[:alpha:]]+)_([[:alpha:]]+)(?:\.(.+))?").unwrap();
+
         let captures = locale_regexp
             .captures(value)
             .ok_or_else(|| InvalidLocaleCode(value.to_string()))?;
 
+        let encoding = captures
+            .get(3)
+            .map(|e| e.as_str())
+            .unwrap_or("UTF-8")
+            .to_string();
+
         Ok(Self {
             language: captures.get(1).unwrap().as_str().to_string(),
             territory: captures.get(2).unwrap().as_str().to_string(),
+            encoding,
         })
     }
 }
@@ -100,7 +114,7 @@ impl FromStr for KeymapId {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let re = KEYMAP_ID_REGEX
-            .get_or_init(|| Regex::new(r"(\w+)((\((?<var1>\w+)\)|-(?<var2>\w+)))?").unwrap());
+            .get_or_init(|| Regex::new(r"([\w.]+)((\((?<var1>.+)\)|-(?<var2>.+)))?").unwrap());
 
         if let Some(parts) = re.captures(s) {
             let mut variant = None;
@@ -152,6 +166,24 @@ mod test {
                 variant: Some("ast".to_string())
             },
             keymap_id2
+        );
+
+        let keymap_id3 = KeymapId::from_str("pt-nativo-us").unwrap();
+        assert_eq!(
+            KeymapId {
+                layout: "pt".to_string(),
+                variant: Some("nativo-us".to_string())
+            },
+            keymap_id3
+        );
+
+        let keymap_id4 = KeymapId::from_str("lt.std").unwrap();
+        assert_eq!(
+            KeymapId {
+                layout: "lt.std".to_string(),
+                variant: None
+            },
+            keymap_id4
         );
     }
 }

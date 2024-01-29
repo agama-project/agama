@@ -22,7 +22,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
-  Form, Skeleton, Switch,
+  Form, Skeleton, Switch, Checkbox,
   ToggleGroup, ToggleGroupItem,
   Tooltip
 } from "@patternfly/react-core";
@@ -39,9 +39,9 @@ import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
 
 /**
- * @typedef {import ("~/clients/storage").ProposalSettings} ProposalSettings
- * @typedef {import ("~/clients/storage").StorageDevice} StorageDevice
- * @typedef {import ("~/clients/storage").Volume} Volume
+ * @typedef {import ("~/client/storage").ProposalManager.ProposalSettings} ProposalSettings
+ * @typedef {import ("~/client/storage").DevicesManager.StorageDevice} StorageDevice
+ * @typedef {import ("~/client/storage").ProposalManager.Volume} Volume
  */
 
 /**
@@ -385,13 +385,18 @@ created in a logical volume of the system volume group.");
  * @callback onValidateFn
  * @param {boolean} valid
  */
-const EncryptionPasswordForm = ({
+const EncryptionSettingsForm = ({
   id,
   password: passwordProp,
+  method: methodProp,
+  methods,
   onSubmit = noop,
   onValidate = noop
 }) => {
   const [password, setPassword] = useState(passwordProp || "");
+  const [method, setMethod] = useState(methodProp);
+  const tpmId = "tpm_fde";
+  const luks2Id = "luks2";
 
   useEffect(() => {
     if (password.length === 0) onValidate(false);
@@ -399,10 +404,25 @@ const EncryptionPasswordForm = ({
 
   const changePassword = (_, v) => setPassword(v);
 
+  const changeMethod = (_, value) => {
+    value ? setMethod(tpmId) : setMethod(luks2Id);
+  };
+
   const submitForm = (e) => {
     e.preventDefault();
-    onSubmit(password);
+    onSubmit(password, method);
   };
+
+  const Description = () => (
+    <span
+      dangerouslySetInnerHTML={{
+        // TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
+        // 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
+        // Do not translate 'abbr' and 'title', they are part of the HTML markup.
+        __html: _("The password will not be needed to boot and access the data if the <abbr title='Trusted Platform Module'>TPM</abbr> can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.")
+      }}
+    />
+  );
 
   return (
     <Form id={id} onSubmit={submitForm}>
@@ -412,16 +432,29 @@ const EncryptionPasswordForm = ({
         onChange={changePassword}
         onValidation={onValidate}
       />
+      <If
+        condition={methods.includes(tpmId)}
+        then={
+          <Checkbox
+            id="encryption_method"
+            label={_("Use the TPM to decrypt automatically on each boot")}
+            description={<Description />}
+            isChecked={method === tpmId}
+            onChange={changeMethod}
+          />
+        }
+      />
     </Form>
   );
 };
 
 /**
- * Allows to selected encryption
+ * Allows to define encryption
  * @component
  *
  * @param {object} props
  * @param {string} [props.password=""] - Password for encryption
+ * @param {string} [props.method=""] - Encryption method
  * @param {boolean} [props.isChecked=false] - Whether encryption is selected
  * @param {boolean} [props.isLoading=false] - Whether to show the selector as loading
  * @param {onChangeFn} [props.onChange=noop] - On change callback
@@ -429,14 +462,17 @@ const EncryptionPasswordForm = ({
  * @callback onChangeFn
  * @param {object} settings
  */
-const EncryptionPasswordField = ({
+const EncryptionField = ({
   password: passwordProp = "",
+  method: methodProp = "",
+  methods,
   isChecked: isCheckedProp = false,
   isLoading = false,
   onChange = noop
 }) => {
   const [isChecked, setIsChecked] = useState(isCheckedProp);
   const [password, setPassword] = useState(passwordProp);
+  const [method, setMethod] = useState(methodProp);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isFormValid, setIsFormValid] = useState(true);
 
@@ -444,10 +480,11 @@ const EncryptionPasswordField = ({
 
   const closeForm = () => setIsFormOpen(false);
 
-  const acceptForm = (newPassword) => {
+  const acceptForm = (newPassword, newMethod) => {
     closeForm();
     setPassword(newPassword);
-    onChange({ isChecked, password: newPassword });
+    setMethod(newMethod);
+    onChange({ isChecked, password: newPassword, method: newMethod });
   };
 
   const cancelForm = () => {
@@ -468,10 +505,10 @@ const EncryptionPasswordField = ({
     }
   };
 
-  const ChangePasswordButton = () => {
+  const ChangeSettingsButton = () => {
     return (
       <Tooltip
-        content={_("Change encryption password")}
+        content={_("Change encryption settings")}
         entryDelay={400}
         exitDelay={50}
         position="right"
@@ -495,17 +532,19 @@ const EncryptionPasswordField = ({
           isChecked={isChecked}
           onChange={changeSelected}
         />
-        { isChecked && <ChangePasswordButton /> }
+        { isChecked && <ChangeSettingsButton /> }
       </div>
       <Popup aria-label={_("Encryption settings")} title={_("Encryption settings")} isOpen={isFormOpen}>
-        <EncryptionPasswordForm
-          id="encryptionPasswordForm"
+        <EncryptionSettingsForm
+          id="encryptionSettingsForm"
           password={password}
+          method={method}
+          methods={methods}
           onSubmit={acceptForm}
           onValidate={validateForm}
         />
         <Popup.Actions>
-          <Popup.Confirm form="encryptionPasswordForm" type="submit" isDisabled={!isFormValid}>{_("Accept")}</Popup.Confirm>
+          <Popup.Confirm form="encryptionSettingsForm" type="submit" isDisabled={!isFormValid}>{_("Accept")}</Popup.Confirm>
           <Popup.Cancel onClick={cancelForm} />
         </Popup.Actions>
       </Popup>
@@ -618,6 +657,7 @@ const SpacePolicyField = ({
  * @param {ProposalSettings} props.settings
  * @param {StorageDevice[]} [props.availableDevices=[]]
  * @param {Volume[]} [props.volumeTemplates=[]]
+ * @param {String[]} [props.encryptionMethods=[]]
  * @param {boolean} [isLoading=false]
  * @param {onChangeFn} [props.onChange=noop]
  *
@@ -628,6 +668,7 @@ export default function ProposalSettingsSection({
   settings,
   availableDevices = [],
   volumeTemplates = [],
+  encryptionMethods = [],
   isLoading = false,
   onChange = noop
 }) {
@@ -643,8 +684,8 @@ export default function ProposalSettingsSection({
     onChange(settings);
   };
 
-  const changeEncryption = ({ password }) => {
-    onChange({ encryptionPassword: password });
+  const changeEncryption = ({ password, method }) => {
+    onChange({ encryptionPassword: password, encryptionMethod: method });
   };
 
   const changeSpacePolicy = (policy) => {
@@ -673,8 +714,10 @@ export default function ProposalSettingsSection({
         isLoading={settings.lvm === undefined}
         onChange={changeLVM}
       />
-      <EncryptionPasswordField
+      <EncryptionField
         password={settings.encryptionPassword || ""}
+        method={settings.encryptionMethod}
+        methods={encryptionMethods}
         isChecked={encryption}
         isLoading={settings.encryptionPassword === undefined}
         onChange={changeEncryption}

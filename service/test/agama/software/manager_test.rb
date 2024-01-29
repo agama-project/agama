@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -402,6 +402,38 @@ describe Agama::Software::Manager do
 
       it "returns false" do
         expect(subject.package_installed?(package)).to eq(false)
+      end
+    end
+  end
+
+  describe "#package_available?" do
+    before do
+      allow(Yast::Package).to receive(:Available).with(package).and_return(available)
+    end
+
+    let(:package) { "NetworkManager" }
+
+    context "when the package is available" do
+      let(:available) { true }
+
+      it "returns true" do
+        expect(subject.package_available?(package)).to eq(true)
+      end
+    end
+
+    context "when the package is not available" do
+      let(:available) { false }
+
+      it "returns false" do
+        expect(subject.package_available?(package)).to eq(false)
+      end
+    end
+
+    context "when there is an error checking its availability" do
+      let(:available) { nil }
+
+      it "returns false" do
+        expect(subject.package_available?(package)).to eq(false)
       end
     end
   end

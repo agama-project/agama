@@ -84,6 +84,7 @@ export default function NetworkSection() {
       icon="settings_ethernet"
       loading={!initialized}
       path="/network"
+      id="network"
     >
       <Content />
     </Section>

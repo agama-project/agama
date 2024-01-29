@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,65 +21,97 @@
 
 import React, { useState, useEffect } from "react";
 import {
+  Alert,
   Text,
   EmptyState,
   EmptyStateBody,
   EmptyStateHeader,
   EmptyStateIcon,
+  ExpandableSection,
 } from "@patternfly/react-core";
 
-import { Page } from "~/components/core";
-import { Center, Icon } from "~/components/layout";
+import { If, Page } from "~/components/core";
+import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
+import { EncryptionMethods } from "~/client/storage";
 import { _ } from "~/i18n";
+
+const TpmHint = () => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const title = _("TPM sealing requires the new system to be booted directly.");
+
+  return (
+    <Alert isInline variant="info" className="tpm-hint" title={<strong>{title}</strong>}>
+      <div className="stack">
+        {_("If a local media was used to run this installer, remove it before the next boot.")}
+        <ExpandableSection
+          isExpanded={isExpanded}
+          onToggle={() => setIsExpanded(!isExpanded)}
+          toggleText={isExpanded ? _("Hide details") : _("See more details")}
+        >
+          <Text
+            dangerouslySetInnerHTML={{
+              // TRANSLATORS: Do not translate 'abbr' and 'title', they are part of the HTML markup
+              __html: _("The final step to configure the <abbr title='Trusted Platform Module'>TPM</abbr> to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.")
+            }}
+          />
+        </ExpandableSection>
+      </div>
+    </Alert>
+  );
+};
 
 const SuccessIcon = () => <Icon name="check_circle" className="icon-xxxl color-success" />;
 
 function InstallationFinished() {
   const client = useInstallerClient();
-  const [iguana, setIguana] = useState(false);
+  const [usingIguana, setUsingIguana] = useState(false);
+  const [usingTpm, setUsingTpm] = useState(false);
   const closingAction = () => client.manager.finishInstallation();
-  const buttonCaption = iguana
-    // TRANSLATORS: button label
-    ? _("Finish")
-    // TRANSLATORS: button label
-    : _("Reboot");
 
   useEffect(() => {
-    async function getIguana() {
-      const ret = await client.manager.useIguana();
-      setIguana(ret);
+    async function preparePage() {
+      const iguana = await client.manager.useIguana();
+      // FIXME: This logic should likely not be placed here, it's too coupled to storage internals.
+      // Something to fix when this whole page is refactored in a (hopefully near) future.
+      const { settings: { encryptionPassword, encryptionMethod } } = await client.storage.proposal.getResult();
+      setUsingIguana(iguana);
+      setUsingTpm(encryptionPassword?.length && encryptionMethod === EncryptionMethods.TPM);
     }
 
-    getIguana();
+    // TODO: display the page in a loading mode while needed data is being fetched.
+    preparePage();
   });
 
   return (
     // TRANSLATORS: page title
     <Page icon="task_alt" title={_("Installation Finished")}>
-      <Center>
-        <EmptyState variant="xl">
-          <EmptyStateHeader
-            titleText={_("Congratulations!")}
-            headingLevel="h2"
-            icon={<EmptyStateIcon icon={SuccessIcon} />}
+      <EmptyState variant="xl">
+        <EmptyStateHeader
+          titleText={_("Congratulations!")}
+          headingLevel="h2"
+          icon={<EmptyStateIcon icon={SuccessIcon} />}
+        />
+        <EmptyStateBody>
+          <Text>{_("The installation on your machine is complete.")}</Text>
+          <Text>
+            <If
+              condition={usingIguana}
+              then={_("At this point you can power off the machine.")}
+              else={_("At this point you can reboot the machine to log in to the new system.")}
+            />
+          </Text>
+          <If
+            condition={usingTpm}
+            then={<TpmHint />}
           />
-          <EmptyStateBody>
-            <Text>{_("The installation on your machine is complete.")}</Text>
-            <Text>
-              {
-                iguana
-                  ? _("At this point you can power off the machine.")
-                  : _("At this point you can reboot the machine to log in to the new system.")
-              }
-            </Text>
-            <Text>{_("Have a lot of fun! Your openSUSE Development Team.")}</Text>
-          </EmptyStateBody>
-        </EmptyState>
-      </Center>
+        </EmptyStateBody>
+      </EmptyState>
 
       <Page.Actions>
-        <Page.Action onClick={closingAction}>{buttonCaption}</Page.Action>
+        <Page.Action onClick={closingAction}>
+          {usingIguana ? _("Finish") : _("Reboot")}
+        </Page.Action>
       </Page.Actions>
     </Page>
   );

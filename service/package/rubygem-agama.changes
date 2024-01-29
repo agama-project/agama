@@ -1,4 +1,32 @@
 -------------------------------------------------------------------
+Thu Jan 18 14:55:36 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Add support to check availability of a package
+  (gh#openSUSE/agama#1004).
+
+-------------------------------------------------------------------
+Thu Jan 18 08:35:01 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- New default encryption settings: LUKS2 with PBKDF2.
+- Expose encryption methods at D-Bus API (gh#openSUSE/agama#995).
+
+-------------------------------------------------------------------
+Tue Jan 16 10:49:14 UTC 2024 - Michal Filka <mfilka@suse.com>
+
+- bsc#1210541, gh#openSUSE/agama#516
+  - copy NM's runtime config created on dracut's request to the target 
+-------------------------------------------------------------------
+Thu Jan 11 15:32:44 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Handle the encoding included in the UILocale D-Bus property
+  (gh#openSUSE/agama#987).
+
+-------------------------------------------------------------------
+Thu Jan 11 12:08:29 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Translate the pattern descriptions (gh#openSUSE/agama#859)
+
+-------------------------------------------------------------------
 Thu Dec 21 14:23:48 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 7

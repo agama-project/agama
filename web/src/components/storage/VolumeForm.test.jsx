@@ -94,12 +94,6 @@ beforeEach(() => {
   props = { templates: [volumes.root, volumes.home, volumes.swap] };
 });
 
-it("renders a control for displaying/selecting the mount point", () => {
-  plainRender(<VolumeForm {...props} />);
-
-  screen.getByRole("combobox", { name: "Mount point" });
-});
-
 it("renders a control for displaying/selecting the file system type", async () => {
   const { user } = plainRender(<VolumeForm {...props} />);
 
@@ -113,9 +107,10 @@ it("renders a control for displaying/selecting the file system type", async () =
 it("does not render the file system control if there is only one option", async () => {
   const { user } = plainRender(<VolumeForm {...props} />);
 
-  const mountPointSelector = screen.getByRole("combobox", { name: "Mount point" });
-  const swap = within(mountPointSelector).getByRole("option", { name: "swap" });
-  await user.selectOptions(mountPointSelector, swap);
+  const mountPointButton = screen.getByRole("button", { name: "Mount point" });
+  await user.click(mountPointButton);
+  const swap = screen.getByRole("option", { name: "swap" });
+  await user.click(swap);
   await screen.findByText("Swap");
   await waitFor(() => (
     expect(screen.queryByRole("button", { name: "File system type" })).not.toBeInTheDocument())
@@ -151,12 +146,13 @@ it("renders the 'Auto' size option only when a volume with 'adaptive sizes' is s
   // that it's configured for allowing adaptive sizes too.
   screen.getByRole("radio", { name: "Auto" });
 
-  const mountPointSelector = screen.getByRole("combobox", { name: "Mount point" });
-  const homeVolumeOption = screen.getByRole("option", { name: "/home" });
+  const mountPointButton = screen.getByRole("button", { name: "Mount point" });
+  await user.click(mountPointButton);
 
   // And we know that /home volume is not set to allow adaptive sizes. Thus,
   // let's select it.
-  await user.selectOptions(mountPointSelector, homeVolumeOption);
+  const homeVolumeOption = screen.getByRole("option", { name: "/home" });
+  await user.click(homeVolumeOption);
 
   const autoSizeOption = screen.queryByRole("radio", { name: "Auto" });
   expect(autoSizeOption).toBeNull();
@@ -296,19 +292,31 @@ describe("size validations", () => {
 describe("when editing a new volume", () => {
   beforeEach(() => { props.volume = volumes.root });
 
-  it("renders the mount point selector as disabled", () => {
+  it("renders the mount point", () => {
     plainRender(<VolumeForm {...props} />);
 
-    const mountPointSelector = screen.getByRole("combobox", { name: "Mount point" });
-    expect(mountPointSelector).toBeDisabled();
+    screen.getByText("/");
+  });
+
+  it("does not render a control for changing the mount point", async () => {
+    plainRender(<VolumeForm {...props} />);
+    await waitFor(() => (
+      expect(screen.queryByRole("button", { name: "Mount point" })).not.toBeInTheDocument()
+    ));
   });
 });
 
 describe("when adding a new volume", () => {
-  it("renders the mount point selector as enabled", () => {
-    plainRender(<VolumeForm {...props} />);
+  it("renders a control for setting the mount point", async () => {
+    const { user } = plainRender(<VolumeForm {...props} />);
 
-    const mountPointSelector = screen.getByRole("combobox", { name: "Mount point" });
-    expect(mountPointSelector).toBeEnabled();
+    let mountPointButton = screen.getByRole("button", { name: "Mount point" });
+    await user.click(mountPointButton);
+    screen.getByRole("option", { name: "/" });
+    screen.getByRole("option", { name: "swap" });
+    const homeMountPoint = screen.getByRole("option", { name: "/home" });
+    await user.click(homeMountPoint);
+    mountPointButton = screen.getByRole("button", { name: "Mount point" });
+    await within(mountPointButton).findByText("/home");
   });
 });

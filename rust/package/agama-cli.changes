@@ -1,4 +1,31 @@
 -------------------------------------------------------------------
+Mon Jan 29 10:22:49 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add more wireless options to network model
+  (gh#openSUSE/agama#1014).
+
+-------------------------------------------------------------------
+Thu Jan 23 18:00:00 UTC 2024 - Clemens Famulla-Conrad <cfamullaconrad@suse.de>
+
+- Add Bridge model (gh#openSUSE/agama#1008)
+
+-------------------------------------------------------------------
+Thu Jan 23 17:38:23 UTC 2024 - Clemens Famulla-Conrad <cfamullaconrad@suse.de>
+
+- Add VLAN model (gh#openSUSE/agama#918)
+
+-------------------------------------------------------------------
+Thu Jan 11 15:34:15 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Include the encoding as part of the locales (gh#openSUSE/agama#987).
+
+-------------------------------------------------------------------
+Mon Jan  8 17:02:40 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Fix the list of keymaps to avoid duplicated values
+  (gh#openSUSE/agama#981).
+
+-------------------------------------------------------------------
 Thu Dec 21 14:23:33 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 7

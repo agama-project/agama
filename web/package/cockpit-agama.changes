@@ -1,4 +1,41 @@
 -------------------------------------------------------------------
+Fri Jan 19 09:34:26 UTC 2024 -  Nagu <nagukalakuntla@gmail.com>
+
+- Storage UI: show mount point selector only when the user can change it.
+  (gh#openSUSE/agama#1007)
+  
+-------------------------------------------------------------------
+Thu Jan 18 08:33:52 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Make TPM-based encryption more explicit (gh#openSUSE/agama#995)
+
+-------------------------------------------------------------------
+Tue Jan 16 15:27:28 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Fix error with storage issues proxy by anticipating its creation
+  (gh#openSUSE/agama#1003).
+
+-------------------------------------------------------------------
+Thu Jan 11 15:34:26 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Ignore the encoding from the UILocale D-Bus property
+  (gh#openSUSE/agama#987).
+
+-------------------------------------------------------------------
+Mon Jan  8 15:55:39 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Web documentation: improve the auto-generated documentation
+  output to have it ready for a future integration in a static
+  site generator (gh#openSUSE/agama#976).
+
+-------------------------------------------------------------------
+Thu Jan 04 21:44:32 UTC 2024 - Balsa Asanovic <balsaasanovic95@gmail.com>
+
+- Removing global issues page and using popup dialog instead.
+  It shows issues only from a specific category (software,
+  product, storage, ...) and not all at once. (gh#openSUSE/agama#886).
+
+-------------------------------------------------------------------
 Tue Dec 26 11:12:45 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: Use the HTML <strong> element instead of a CSS class for

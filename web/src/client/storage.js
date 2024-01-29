@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -45,6 +45,17 @@ const ZFCP_CONTROLLERS_NAMESPACE = "/org/opensuse/Agama/Storage1/zfcp_controller
 const ZFCP_CONTROLLER_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Controller";
 const ZFCP_DISKS_NAMESPACE = "/org/opensuse/Agama/Storage1/zfcp_disks";
 const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
+
+/**
+ * Enum for the encryption method values
+ *
+ * @readonly
+ * @enum { string }
+ */
+const EncryptionMethods = Object.freeze({
+  LUKS2: "luks2",
+  TPM: "tpm_fde"
+});
 
 /**
  * Removes properties with undefined value
@@ -227,6 +238,7 @@ class ProposalManager {
    * @typedef {object} ProposalSettings
    * @property {string} bootDevice
    * @property {string} encryptionPassword
+   * @property {string} encryptionMethod
    * @property {boolean} lvm
    * @property {string} spacePolicy
    * @property {string[]} systemVGDevices
@@ -281,6 +293,16 @@ class ProposalManager {
   async getProductMountPoints() {
     const proxy = await this.proxies.proposalCalculator;
     return proxy.ProductMountPoints;
+  }
+
+  /**
+   * Gets the list of encryption methods accepted by the proposal
+   *
+   * @returns {Promise<string[]>}
+   */
+  async getEncryptionMethods() {
+    const proxy = await this.proxies.proposalCalculator;
+    return proxy.EncryptionMethods;
   }
 
   /**
@@ -345,6 +367,7 @@ class ProposalManager {
           spacePolicy: proxy.SpacePolicy,
           systemVGDevices: proxy.SystemVGDevices,
           encryptionPassword: proxy.EncryptionPassword,
+          encryptionMethod: proxy.EncryptionMethod,
           volumes: proxy.Volumes.map(this.buildVolume),
           // NOTE: strictly speaking, installation devices does not belong to the settings. It
           // should be a separate method instead of an attribute in the settings object.
@@ -365,7 +388,7 @@ class ProposalManager {
    * @param {ProposalSettings} settings
    * @returns {Promise<number>} 0 on success, 1 on failure
    */
-  async calculate({ bootDevice, encryptionPassword, lvm, spacePolicy, systemVGDevices, volumes }) {
+  async calculate({ bootDevice, encryptionPassword, encryptionMethod, lvm, spacePolicy, systemVGDevices, volumes }) {
     const dbusVolume = (volume) => {
       return removeUndefinedCockpitProperties({
         MountPath: { t: "s", v: volume.mountPath },
@@ -381,6 +404,7 @@ class ProposalManager {
     const settings = removeUndefinedCockpitProperties({
       BootDevice: { t: "s", v: bootDevice },
       EncryptionPassword: { t: "s", v: encryptionPassword },
+      EncryptionMethod: { t: "s", v: encryptionMethod },
       LVM: { t: "b", v: lvm },
       SpacePolicy: { t: "s", v: spacePolicy },
       SystemVGDevices: { t: "as", v: systemVGDevices },
@@ -1420,4 +1444,4 @@ class StorageClient extends WithIssues(
   ), STORAGE_OBJECT
 ) { }
 
-export { StorageClient };
+export { StorageClient, EncryptionMethods };

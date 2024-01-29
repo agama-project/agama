@@ -4,7 +4,7 @@ import { mainPagePath } from "../lib/installer";
 // This test was designed for collecting the screenshots for the main
 // README.md file. To take screenshots of the installation process run this:
 // 
-//   RUN_INSTALLATION=1 BASE_URL=https://<host>:9090 npx playwright test --headed take_screenshots
+//   RUN_INSTALLATION=1 BASE_URL=https://<host> npx playwright test --headed take_screenshots
 // 
 // The "--headed" option shows the browser window so you can see the progress.
 // You can use the "--debug" option to run the test step-by-step.

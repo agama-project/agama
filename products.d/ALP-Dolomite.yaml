@@ -63,9 +63,7 @@ security:
 storage:
   space_policy: delete
   encryption:
-    method: luks2
-    pbkd_function: pbkdf2
-    tpm_luks_open: true
+    method: tpm_fde
   volumes:
     - "/"
   volume_templates:

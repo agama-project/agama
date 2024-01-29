@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -133,6 +133,16 @@ describe Agama::DBus::Software::Manager do
         "org.opensuse.Agama.Software1%%IsPackageInstalled", "NetworkManager"
       )
       expect(installed).to eq(true)
+    end
+  end
+
+  describe "D-Bus IsPackageAvailable" do
+    it "returns whether the package is available or not" do
+      expect(backend).to receive(:package_available?).with("NetworkManager").and_return(true)
+      available = subject.public_send(
+        "org.opensuse.Agama.Software1%%IsPackageAvailable", "NetworkManager"
+      )
+      expect(available).to eq(true)
     end
   end
 end

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-27 02:08+0000\n"
-"PO-Revision-Date: 2023-12-16 21:02+0000\n"
+"POT-Creation-Date: 2024-01-21 02:22+0000\n"
+"PO-Revision-Date: 2023-12-28 21:02+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/id/>\n"
@@ -22,45 +22,43 @@ msgstr ""
 #. Runs the config phase
 #: service/lib/agama/manager.rb:88
 msgid "Probing Storage"
-msgstr ""
+msgstr "Memeriksa Penyimpanan"
 
 #: service/lib/agama/manager.rb:89
 msgid "Probing Software"
-msgstr ""
+msgstr "Memeriksa Perangkat Lunak"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
 #: service/lib/agama/manager.rb:109
 msgid "Partitioning"
-msgstr ""
+msgstr "Mempartisi"
 
 #. propose software after /mnt is already separated, so it uses proper
 #. target
 #: service/lib/agama/manager.rb:117
-#, fuzzy
 msgid "Installing Software"
-msgstr "Menginisialisasi sumber"
+msgstr "Menginstal Perangkat Lunak"
 
 #: service/lib/agama/manager.rb:120
 msgid "Writing Users"
-msgstr ""
+msgstr "Menulis Pengguna"
 
 #: service/lib/agama/manager.rb:121
 msgid "Writing Network Configuration"
-msgstr ""
+msgstr "Menulis Konfigurasi Jaringan"
 
 #: service/lib/agama/manager.rb:122
 msgid "Saving Language Settings"
-msgstr ""
+msgstr "Menyimpan Pengaturan Bahasa"
 
 #: service/lib/agama/manager.rb:123
-#, fuzzy
 msgid "Writing repositories information"
-msgstr "Menulis repositori ke sistem target"
+msgstr "Menulis informasi repositori"
 
 #: service/lib/agama/manager.rb:124
 msgid "Finishing storage configuration"
-msgstr ""
+msgstr "Menyelesaikan konfigurasi penyimpanan"
 
 #. Callback to handle unsigned files
 #.
@@ -129,7 +127,7 @@ msgstr "Mengembalikan repositori asli"
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:461
+#: service/lib/agama/software/manager.rb:470
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "Tidak dapat membaca repositori \"%s\""
@@ -137,14 +135,14 @@ msgstr "Tidak dapat membaca repositori \"%s\""
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:471
+#: service/lib/agama/software/manager.rb:480
 msgid "Product not selected yet"
 msgstr "Produk belum dipilih"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:480
+#: service/lib/agama/software/manager.rb:489
 msgid "Product must be registered"
 msgstr "Produk harus didaftarkan"
 
@@ -159,35 +157,34 @@ msgstr "Ditemukan %s masalah ketergantungan."
 #. Probes storage devices and performs an initial proposal
 #: service/lib/agama/storage/manager.rb:111
 msgid "Activating storage devices"
-msgstr ""
+msgstr "Mengaktifkan perangkat penyimpanan"
 
 #: service/lib/agama/storage/manager.rb:112
 msgid "Probing storage devices"
-msgstr ""
+msgstr "Memeriksa perangkat penyimpanan"
 
 #: service/lib/agama/storage/manager.rb:113
-#, fuzzy
 msgid "Calculating the storage proposal"
-msgstr "Menghitung proposal perangkat lunak"
+msgstr "Menghitung proposal penyimpanan"
 
 #: service/lib/agama/storage/manager.rb:114
 msgid "Selecting Linux Security Modules"
-msgstr ""
+msgstr "Memilih Modul Keamanan Linux"
 
 #. Prepares the partitioning to install the system
 #: service/lib/agama/storage/manager.rb:122
 msgid "Preparing bootloader proposal"
-msgstr ""
+msgstr "Mempersiapkan proposal bootloader"
 
 #. first make bootloader proposal to be sure that required packages are installed
 #: service/lib/agama/storage/manager.rb:127
 msgid "Adding storage-related packages"
-msgstr ""
+msgstr "Menambahkan paket terkait penyimpanan"
 
 #: service/lib/agama/storage/manager.rb:128
 msgid "Preparing the storage devices"
-msgstr ""
+msgstr "Mempersiapkan perangkat penyimpanan"
 
 #: service/lib/agama/storage/manager.rb:129
 msgid "Writing bootloader sysconfig"
-msgstr ""
+msgstr "Menulis sysconfig bootloader"

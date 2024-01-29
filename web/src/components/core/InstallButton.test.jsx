@@ -85,23 +85,22 @@ describe("when the button is clicked and there are not errors", () => {
       };
     });
 
-    it("shows a link to go to the issues page", async () => {
+    it("shows a message encouraging the user to review them", async () => {
       const { user } = installerRender(<InstallButton />);
       const button = await screen.findByRole("button", { name: "Install" });
       await user.click(button);
-
-      await screen.findByRole("link", { name: /list of issues$/ });
+      await screen.findByText(/There are some reported issues/);
     });
   });
 
   describe("if there are not issues", () => {
-    it("does not show a link to go to the issues page", async () => {
+    it("doest not show the message encouraging the user to review them", async () => {
       const { user } = installerRender(<InstallButton />);
       const button = await screen.findByRole("button", { name: "Install" });
       await user.click(button);
       await waitFor(() => {
-        const link = screen.queryByRole("link", { name: /list of issues$/ });
-        expect(link).toBeNull();
+        const text = screen.queryByText(/There are some reported issues/);
+        expect(text).toBeNull();
       });
     });
   });
