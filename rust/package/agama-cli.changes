@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Mon Jan 29 14:27:32 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Better network configuration handling (gh#openSUSE/agama#1006):
+  * Write only changed connections.
+  * Roll back when updating the NetworkManager configuration
+    failed.
+  * Improved error handling when reading or writing the changes.
+  * Add support for hidden wireless networks.
+  * Properly remove deleted connections from the D-Bus tree.
+  * Do not support multiple connections with the same ID.
+
+-------------------------------------------------------------------
 Mon Jan 29 10:22:49 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Add more wireless options to network model
