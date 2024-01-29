@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Mon Jan 29 14:27:32 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Mon Jan 29 15:53:56 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Better network configuration handling (gh#openSUSE/agama#1006):
   * Write only changed connections.
@@ -7,9 +7,14 @@ Mon Jan 29 14:27:32 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
     failed.
   * Improved error handling when reading or writing the changes.
   * Properly remove deleted connections from the D-Bus tree.
-  * Add support for hidden wireless networks.
   * Use the UUID to identify connections.
   * Do not support multiple connections with the same ID.
+
+-------------------------------------------------------------------
+Mon Jan 29 15:37:56 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add hidden property for wireless in network model
+  (gh#openSUSE/agama#1024).
 
 -------------------------------------------------------------------
 Mon Jan 29 10:22:49 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>

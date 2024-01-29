@@ -23,8 +23,13 @@ jobs:
         # disable unused repositories to have a faster refresh
         run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
 
+      - name: Install Default Ruby
+        run: zypper --non-interactive install --no-recommends ruby
+
       - name: Install tools
-        run: zypper --non-interactive install --no-recommends diffutils git gettext-tools npm-default "rubygem(yast-rake)" "rubygem(gettext)" yast2-devtools
+        run: |
+          RUBY_VERSION=$(ruby -e "puts RbConfig::CONFIG['ruby_version']")
+          zypper --non-interactive install --no-recommends diffutils git gettext-tools npm-default "rubygem(ruby:$RUBY_VERSION:yast-rake)" "rubygem(ruby:$RUBY_VERSION:gettext)" yast2-devtools
 
       - name: Checkout Agama sources
         uses: actions/checkout@v3
