@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 29 15:37:56 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add hidden property for wireless in network model
+  (gh#openSUSE/agama#1024).
+
+-------------------------------------------------------------------
 Mon Jan 29 10:22:49 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Add more wireless options to network model
