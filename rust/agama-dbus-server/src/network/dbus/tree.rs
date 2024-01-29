@@ -188,6 +188,7 @@ impl Tree {
         _ = object_server.remove::<interfaces::Bond, _>(path).await;
         _ = object_server.remove::<interfaces::Wireless, _>(path).await;
         object_server.remove::<interfaces::Ip, _>(path).await?;
+        object_server.remove::<interfaces::Match, _>(path).await?;
         object_server
             .remove::<interfaces::Connection, _>(path)
             .await?;
