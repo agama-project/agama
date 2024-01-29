@@ -6,8 +6,9 @@ Mon Jan 29 14:27:32 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   * Roll back when updating the NetworkManager configuration
     failed.
   * Improved error handling when reading or writing the changes.
-  * Add support for hidden wireless networks.
   * Properly remove deleted connections from the D-Bus tree.
+  * Add support for hidden wireless networks.
+  * Use the UUID to identify connections.
   * Do not support multiple connections with the same ID.
 
 -------------------------------------------------------------------
