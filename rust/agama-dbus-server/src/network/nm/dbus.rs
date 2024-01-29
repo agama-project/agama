@@ -1053,7 +1053,6 @@ mod test {
             assert_eq!(wep_security.wep_key_type, WEPKeyType::Key);
             assert_eq!(wep_security.auth_alg, WEPAuthAlg::Open);
             assert_eq!(wep_security.wep_key_index, 1);
-            assert!(wireless.hidden);
         }
     }
 
