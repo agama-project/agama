@@ -744,6 +744,7 @@ pub struct WirelessConfig {
     pub channel: Option<u32>,
     pub bssid: Option<macaddr::MacAddr6>,
     pub wep_security: Option<WEPSecurity>,
+    pub hidden: bool,
 }
 
 impl TryFrom<ConnectionConfig> for WirelessConfig {

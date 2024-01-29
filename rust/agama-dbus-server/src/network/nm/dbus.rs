@@ -326,6 +326,7 @@ fn wireless_config_to_dbus<'a>(
         ("mode", Value::new(config.mode.to_string())),
         ("ssid", Value::new(config.ssid.to_vec())),
         ("assigned-mac-address", Value::new(mac_address.to_string())),
+        ("hidden", Value::new(config.hidden)),
     ]);
 
     if let Some(band) = &config.band {
@@ -726,6 +727,9 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
             *bssid.get(5)?,
         ));
     }
+    if let Some(hidden) = wireless.get("hidden") {
+        wireless_config.hidden = *hidden.downcast_ref::<bool>()?;
+    }
 
     if let Some(security) = conn.get(WIRELESS_SECURITY_KEY) {
         let key_mgmt: &str = security.get("key-mgmt")?.downcast_ref()?;
@@ -1001,6 +1005,7 @@ mod test {
                 "bssid".to_string(),
                 Value::new(vec![18_u8, 52_u8, 86_u8, 120_u8, 154_u8, 188_u8]).to_owned(),
             ),
+            ("hidden".to_string(), Value::new(false).to_owned()),
         ]);
 
         let security_section = HashMap::from([
@@ -1032,6 +1037,7 @@ mod test {
                 wireless.bssid,
                 Some(macaddr::MacAddr6::from_str("12:34:56:78:9A:BC").unwrap())
             );
+            assert!(!wireless.hidden);
             let wep_security = wireless.wep_security.as_ref().unwrap();
             assert_eq!(wep_security.wep_key_type, WEPKeyType::Key);
             assert_eq!(wep_security.auth_alg, WEPAuthAlg::Open);
@@ -1082,6 +1088,7 @@ mod test {
                     "hello".to_string(),
                 ],
             }),
+            hidden: true,
             ..Default::default()
         };
         let mut wireless = build_base_connection();
@@ -1119,6 +1126,9 @@ mod test {
             .map(|u| *u.downcast_ref::<u8>().unwrap())
             .collect();
         assert_eq!(bssid, vec![18, 52, 86, 120, 154, 188]);
+
+        let hidden: bool = *wireless.get("hidden").unwrap().downcast_ref().unwrap();
+        assert!(hidden);
 
         let security = wireless_dbus.get(WIRELESS_SECURITY_KEY).unwrap();
         let key_mgmt: &str = security.get("key-mgmt").unwrap().downcast_ref().unwrap();
