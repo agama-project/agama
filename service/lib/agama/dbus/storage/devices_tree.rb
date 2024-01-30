@@ -74,6 +74,7 @@ module Agama
         # TODO: export LVM VGs and file systems of directly formatted devices.
         #
         # @param devicegraph [Y2Storage::Devicegraph]
+        # @return [Array<Y2Storage::Device>]
         def devices(devicegraph)
           devices = devicegraph.disk_devices + devicegraph.software_raids
           devices + partitions_from(devices)
