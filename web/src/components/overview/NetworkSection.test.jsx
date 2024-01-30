@@ -31,14 +31,14 @@ jest.mock("~/client");
 jest.mock('~/components/core/SectionSkeleton', () => () => <div>Section Skeleton</div>);
 
 const wiredConnection = {
-  id: "wired-1",
-  name: "Wired 1",
+  id: "Wired 1",
+  uuid: "d59200d4-838d-4051-99a0-fde8121a242c",
   type: ConnectionTypes.ETHERNET,
   addresses: [{ address: "192.168.122.20", prefix: 24 }]
 };
 const wifiConnection = {
-  id: "wifi-1",
-  name: "WiFi 1",
+  id: "WiFi 1",
+  uuid: "0c00dccb-a6ae-40b2-8495-0de721006bc0",
   type: ConnectionTypes.WIFI,
   addresses: [{ address: "192.168.69.200", prefix: 24 }]
 };
@@ -110,16 +110,20 @@ describe("when connection is added", () => {
     await screen.findByText(/Wired 1/);
     await screen.findByText(/WiFi 1/);
 
+    // add a new connection
+    const addedConnection = {
+      id: "New Wired Network",
+      uuid: "b143c0a6-ee61-49dc-94aa-e62230afc199",
+      type: ConnectionTypes.ETHERNET,
+      addresses: [{ address: "192.168.168.192", prefix: 24 }]
+    };
+    activeConnectionsFn.mockReturnValue([wiredConnection, wifiConnection, addedConnection]);
+
     const [cb] = callbacks;
     act(() => {
       cb({
         type: NetworkEventTypes.ACTIVE_CONNECTION_ADDED,
-        payload: {
-          id: "wired-2",
-          name: "New Wired Network",
-          type: ConnectionTypes.ETHERNET,
-          addresses: [{ address: "192.168.168.192", prefix: 24 }]
-        }
+        payload: addedConnection
       });
     });
 
@@ -138,6 +142,8 @@ describe("when connection is removed", () => {
     await screen.findByText(/Wired 1/);
     await screen.findByText(/WiFi 1/);
 
+    // remove a connection
+    activeConnectionsFn.mockReturnValue([wifiConnection]);
     const [cb] = callbacks;
     act(() => {
       cb({
@@ -147,7 +153,7 @@ describe("when connection is removed", () => {
     });
 
     await screen.findByText(/WiFi 1/);
-    const removedNetwork = await screen.queryByText(/Wired 1/);
+    const removedNetwork = screen.queryByText(/Wired 1/);
     expect(removedNetwork).toBeNull();
   });
 });
@@ -160,18 +166,21 @@ describe("when connection is updated", () => {
     await screen.findByText(/Wired 1/);
     await screen.findByText(/WiFi 1/);
 
+    // update a connection
+    const updatedConnection = { ...wiredConnection, id: "My Wired Connection" };
+    activeConnectionsFn.mockReturnValue([updatedConnection, wifiConnection]);
     const [cb] = callbacks;
     act(() => {
       cb({
         type: NetworkEventTypes.ACTIVE_CONNECTION_UPDATED,
-        payload: { ...wiredConnection, name: "My Wired Connection" }
+        payload: { ...wiredConnection, id: "My Wired Connection" }
       });
     });
 
     await screen.findByText(/My Wired Connection/);
     await screen.findByText(/WiFi 1/);
 
-    const formerWiredName = await screen.queryByText(/Wired 1/);
+    const formerWiredName = screen.queryByText(/Wired 1/);
     expect(formerWiredName).toBeNull();
   });
 });

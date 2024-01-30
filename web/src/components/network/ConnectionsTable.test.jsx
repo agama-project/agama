@@ -29,15 +29,15 @@ import ConnectionsTable from "~/components/network/ConnectionsTable";
 jest.mock("~/client");
 
 const firstConnection = {
-  id: "wifi-1",
-  name: "WiFi 1",
+  id: "WiFi 1",
+  uuid: "89e7d438-8143-4318-9e35-cdedfdf6c98a",
   type: ConnectionTypes.WIFI,
   addresses: [{ address: "192.168.69.200", prefix: 24 }]
 };
 
 const secondConnection = {
-  id: "wifi-2",
-  name: "WiFi 2",
+  id: "WiFi 2",
+  uuid: "ddc46599-db7f-4306-aee4-2ab0938fd7d6",
   type: ConnectionTypes.WIFI,
   addresses: [{ address: "192.168.69.201", prefix: 24 }]
 };
@@ -71,7 +71,7 @@ describe("ConnectionsTable", () => {
         const { user } = plainRender(<ConnectionsTable connections={conns} />);
         const connectionActions = screen.getByRole("button", { name: "Actions for connection WiFi 1" });
         const actionsColumn = connectionActions.parentNode;
-        const menu = await within(actionsColumn).queryByRole("menu");
+        const menu = within(actionsColumn).queryByRole("menu");
         expect(menu).toBeNull();
         await user.click(connectionActions);
         await screen.findByRole("menu");

@@ -26,7 +26,7 @@ impl<'a> NetworkClient<'a> {
     }
 
     pub async fn get_connection(&self, id: &str) -> Result<NetworkConnection, ServiceError> {
-        let path = self.connections_proxy.get_connection(id).await?;
+        let path = self.connections_proxy.get_connection_by_id(id).await?;
         self.connection_from(path.as_str()).await
     }
 
@@ -200,7 +200,7 @@ impl<'a> NetworkClient<'a> {
         &self,
         conn: &NetworkConnection,
     ) -> Result<(), ServiceError> {
-        let path = match self.connections_proxy.get_connection(&conn.id).await {
+        let path = match self.connections_proxy.get_connection_by_id(&conn.id).await {
             Ok(path) => path,
             Err(_) => self.add_connection(conn).await?,
         };
@@ -230,7 +230,10 @@ impl<'a> NetworkClient<'a> {
             };
         }
 
-        Ok(self.connections_proxy.get_connection(&conn.id).await?)
+        Ok(self
+            .connections_proxy
+            .get_connection_by_id(&conn.id)
+            .await?)
     }
 
     /// Updates a network connection.

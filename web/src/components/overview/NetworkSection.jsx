@@ -23,7 +23,7 @@ import React, { useEffect, useState } from "react";
 import { sprintf } from "sprintf-js";
 
 import { Em, Section, SectionSkeleton } from "~/components/core";
-import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
+import { ConnectionTypes } from "~/client/network";
 import { useInstallerClient } from "~/context/installer";
 import { formatIp } from "~/client/network/utils";
 import { _, n_ } from "~/i18n";
@@ -44,31 +44,12 @@ export default function NetworkSection() {
   }, [client, initialized]);
 
   useEffect(() => {
-    return client.onNetworkEvent(({ type, payload }) => {
-      switch (type) {
-        case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
-          setConnections(conns => {
-            const newConnections = conns.filter(c => c.id !== payload.id);
-            return [...newConnections, payload];
-          });
-          break;
-        }
+    if (!initialized) return;
 
-        case NetworkEventTypes.ACTIVE_CONNECTION_UPDATED: {
-          setConnections(conns => {
-            const newConnections = conns.filter(c => c.id !== payload.id);
-            return [...newConnections, payload];
-          });
-          break;
-        }
-
-        case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
-          setConnections(conns => conns.filter(c => c.id !== payload.id));
-          break;
-        }
-      }
+    return client.onNetworkEvent(() => {
+      setConnections(client.activeConnections());
     });
-  });
+  }, [client, initialized]);
 
   const Content = () => {
     if (!initialized) return <SectionSkeleton />;
@@ -78,7 +59,7 @@ export default function NetworkSection() {
     if (activeConnections.length === 0) return _("No network connections detected");
 
     const summary = activeConnections.map(connection => (
-      <Em key={connection.id}>{connection.name} - {connection.addresses.map(formatIp)}</Em>
+      <Em key={connection.uuid}>{connection.id} - {connection.addresses.map(formatIp)}</Em>
     ));
 
     const msg = sprintf(

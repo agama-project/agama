@@ -210,11 +210,17 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
     if let Some(ipv4) = conn.get_mut("ipv4") {
         ipv4.remove("addresses");
         ipv4.remove("dns");
+        if ipv4.get("address-data").is_some_and(is_empty_value) {
+            ipv4.remove("gateway");
+        }
     }
 
     if let Some(ipv6) = conn.get_mut("ipv6") {
         ipv6.remove("addresses");
         ipv6.remove("dns");
+        if ipv6.get("address-data").is_some_and(is_empty_value) {
+            ipv6.remove("gateway");
+        }
     }
 }
 
@@ -727,6 +733,7 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
             *bssid.get(5)?,
         ));
     }
+
     if let Some(hidden) = wireless.get("hidden") {
         wireless_config.hidden = *hidden.downcast_ref::<bool>()?;
     }
@@ -827,6 +834,10 @@ fn vlan_config_from_dbus(conn: &OwnedNestedHash) -> Option<VlanConfig> {
 /// * `value`: value to analyze
 fn is_empty_value(value: &zvariant::Value) -> bool {
     if let Some(value) = value.downcast_ref::<zvariant::Str>() {
+        return value.is_empty();
+    }
+
+    if let Some(value) = value.downcast_ref::<zvariant::Array>() {
         return value.is_empty();
     }
 
@@ -1183,6 +1194,7 @@ mod test {
                 Value::new(ETHERNET_KEY.to_string()).to_owned(),
             ),
         ]);
+
         let ipv4 = HashMap::from([
             (
                 "method".to_string(),
@@ -1241,10 +1253,8 @@ mod test {
             *ipv4.get("method").unwrap(),
             Value::new("disabled".to_string())
         );
-        assert_eq!(
-            *ipv4.get("gateway").unwrap(),
-            Value::new("192.168.1.1".to_string())
-        );
+        // there are not addresses ("address-data"), so no gateway is allowed
+        assert!(ipv4.get("gateway").is_none());
         assert!(ipv4.get("addresses").is_none());
 
         let ipv6 = merged.get("ipv6").unwrap();
@@ -1252,10 +1262,8 @@ mod test {
             *ipv6.get("method").unwrap(),
             Value::new("disabled".to_string())
         );
-        assert_eq!(
-            *ipv6.get("gateway").unwrap(),
-            Value::new("::ffff:c0a8:101".to_string())
-        );
+        // there are not addresses ("address-data"), so no gateway is allowed
+        assert!(ipv6.get("gateway").is_none());
     }
 
     #[test]

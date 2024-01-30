@@ -24,7 +24,7 @@
 import DBusClient from "../dbus";
 import cockpit from "../../lib/cockpit";
 import { NetworkEventTypes } from "./index";
-import { createAccessPoint, createConnection, SecurityProtocols } from "./model";
+import { createAccessPoint, SecurityProtocols } from "./model";
 import { ipPrefixFor } from "./utils";
 
 /**
@@ -102,7 +102,7 @@ const connectionToCockpit = (connection) => {
   const { ipv4, wireless } = connection;
   const settings = {
     connection: {
-      id: cockpit.variant("s", connection.name)
+      id: cockpit.variant("s", connection.id)
     },
     ipv4: {
       "address-data": cockpit.variant("aa{sv}", ipv4.addresses.map(addr => (
@@ -173,8 +173,6 @@ const mergeConnectionSettings = (settings, connection) => {
 class NetworkManagerAdapter {
   constructor() {
     this.client = new DBusClient(SERVICE_NAME);
-    /** @type {{[k: string]: string}} */
-    this.connectionIds = {};
     this.proxies = {
       accessPoints: {},
       activeConnections: {},
@@ -205,6 +203,7 @@ class NetworkManagerAdapter {
       settings: await this.client.proxy(SETTINGS_IFACE),
       connections: await this.client.proxies(CONNECTION_IFACE, SETTINGS_NAMESPACE)
     };
+
     this.subscribeToEvents();
   }
 
@@ -258,8 +257,9 @@ class NetworkManagerAdapter {
   connectionFromSettings(settings) {
     const { connection, ipv4, "802-11-wireless": wireless, path } = settings;
     const conn = {
-      id: connection.uuid.v,
-      name: connection.id.v,
+      id: connection.id.v,
+      uuid: connection.uuid.v,
+      iface: connection.interface?.v,
       type: connection.type.v
     };
 
@@ -287,83 +287,13 @@ class NetworkManagerAdapter {
   }
 
   /**
-   * Returns the connection with the given ID
-   *
-   * @param {string} id - Connection ID
-   * @return {Promise<import("./index").Connection>}
-   */
-  async getConnection(id) {
-    const settingsProxy = await this.connectionSettingsObject(id);
-    const settings = await settingsProxy.GetSettings();
-
-    return this.connectionFromSettings(settings);
-  }
-
-  /**
    * Connects to given Wireless network
    *
    * @param {object} settings - connection options
    */
   async connectTo(settings) {
-    const settingsProxy = await this.connectionSettingsObject(settings.id);
+    const settingsProxy = await this.connectionSettingsObject(settings.uuid);
     await this.activateConnection(settingsProxy.path);
-  }
-
-  /**
-   * Connects to given Wireless network
-   *
-   * @param {string} ssid - Network id
-   * @param {object} options - connection options
-   */
-  async addAndConnectTo(ssid, options = {}) {
-    const wireless = { ssid };
-    if (options.security) wireless.security = options.security;
-    if (options.password) wireless.password = options.password;
-    if (options.hidden) wireless.hidden = options.hidden;
-
-    const connection = createConnection({
-      name: ssid,
-      wireless
-    });
-
-    await this.addConnection(connection);
-  }
-
-  /**
-   * Adds a new connection
-   *
-   * @param {Connection} connection - Connection to add
-   */
-  async addConnection(connection) {
-    const proxy = await this.client.proxy(SETTINGS_IFACE);
-    const connCockpit = connectionToCockpit(connection);
-    const path = await proxy.AddConnection(connCockpit);
-    await this.activateConnection(path);
-  }
-
-  /**
-   * Updates the connection
-   *
-   * @fixme improve it.
-   *
-   * @param {import("./index").Connection} connection - Connection to update
-   */
-  async updateConnection(connection) {
-    const settingsProxy = await this.connectionSettingsObject(connection.id);
-    const settings = await settingsProxy.GetSettings();
-    const newSettings = mergeConnectionSettings(settings, connection);
-    await settingsProxy.Update(newSettings);
-    await this.activateConnection(settingsProxy.path);
-  }
-
-  /**
-  * Deletes the given connection
-  *
-   * @param {import("./index").Connection} connection - Connection to delete
-  */
-  async deleteConnection(connection) {
-    const settingsProxy = await this.connectionSettingsObject(connection.id);
-    await settingsProxy.Delete();
   }
 
   /**
@@ -462,8 +392,8 @@ class NetworkManagerAdapter {
     }
 
     return {
-      id: proxy.Uuid,
-      name: proxy.Id,
+      id: proxy.Id,
+      uuid: proxy.Uuid,
       addresses,
       type: proxy.Type,
       state: proxy.State
@@ -475,12 +405,12 @@ class NetworkManagerAdapter {
    * Returns connection settings for the given connection
    *
    * @private
-   * @param {string} id - Connection ID
+   * @param {string} uuid - Connection ID
    * @return {Promise<any>}
    */
-  async connectionSettingsObject(id) {
+  async connectionSettingsObject(uuid) {
     const proxy = await this.client.proxy(SETTINGS_IFACE);
-    const path = await proxy.GetConnectionByUuid(id);
+    const path = await proxy.GetConnectionByUuid(uuid);
     return await this.client.proxy(CONNECTION_IFACE, path);
   }
 

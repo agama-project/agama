@@ -4,7 +4,7 @@ use self::common::{async_retry, DBusServer};
 use agama_dbus_server::network::{
     self,
     model::{self, Ipv4Method, Ipv6Method},
-    Adapter, NetworkService, NetworkState,
+    Adapter, NetworkAdapterError, NetworkService, NetworkState,
 };
 use agama_lib::network::{
     settings::{self},
@@ -21,14 +21,11 @@ pub struct NetworkTestAdapter(network::NetworkState);
 
 #[async_trait]
 impl Adapter for NetworkTestAdapter {
-    async fn read(&self) -> Result<network::NetworkState, Box<dyn std::error::Error>> {
+    async fn read(&self) -> Result<network::NetworkState, NetworkAdapterError> {
         Ok(self.0.clone())
     }
 
-    async fn write(
-        &self,
-        _network: &network::NetworkState,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    async fn write(&self, _network: &network::NetworkState) -> Result<(), NetworkAdapterError> {
         unimplemented!("Not used in tests");
     }
 }

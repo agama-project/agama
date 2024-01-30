@@ -73,7 +73,7 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
             <DataListCell key={`dns-${id}-address`}>
               <IpAddressInput
                 defaultValue={address}
-                onChange={value => updateServer(id, "address", value)}
+                onChange={(_, value) => updateServer(id, "address", value)}
                 // TRANSLATORS: input field name
                 placeholder={_("Server IP")}
                 aria-label={_("Server IP")}
