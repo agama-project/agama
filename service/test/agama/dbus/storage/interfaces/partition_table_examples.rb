@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -34,8 +34,9 @@ shared_examples "PartitionTable interface" do
     end
 
     describe "#partition_table_partitions" do
-      it "returns the name of the partitions" do
-        expect(subject.partition_table_partitions).to contain_exactly("/dev/md0p1")
+      it "returns the path of the partitions" do
+        md0p1 = devicegraph.find_by_name("/dev/md0p1")
+        expect(subject.partition_table_partitions).to contain_exactly(tree.path_for(md0p1))
       end
     end
   end

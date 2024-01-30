@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jan 29 13:51:30 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Export partitions on D-Bus (gh#openSUSE/agama#1016).
+
+-------------------------------------------------------------------
 Thu Jan 18 14:55:36 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Add support to check availability of a package
