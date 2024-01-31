@@ -1,4 +1,4 @@
-use agama_lib::profile::{download, ProfileEvaluator, ProfileValidator, ValidationResult};
+use agama_lib::profile::{ProfileEvaluator, ProfileReader, ProfileValidator, ValidationResult};
 use anyhow::Context;
 use clap::Subcommand;
 use std::path::Path;
@@ -13,6 +13,13 @@ pub enum ProfileCommands {
 
     /// Evaluate a profile, injecting the hardware information from D-Bus
     Evaluate { path: String },
+}
+
+fn download(url: &str) -> anyhow::Result<()> {
+    let reader = ProfileReader::new(url)?;
+    let contents = reader.read()?;
+    print!("{}", contents);
+    Ok(())
 }
 
 fn validate(path: String) -> anyhow::Result<()> {
@@ -45,7 +52,7 @@ fn evaluate(path: String) -> anyhow::Result<()> {
 
 pub fn run(subcommand: ProfileCommands) -> anyhow::Result<()> {
     match subcommand {
-        ProfileCommands::Download { url } => Ok(download(&url)?),
+        ProfileCommands::Download { url } => download(&url),
         ProfileCommands::Validate { path } => validate(path),
         ProfileCommands::Evaluate { path } => evaluate(path),
     }
