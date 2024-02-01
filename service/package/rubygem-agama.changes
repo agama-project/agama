@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb  1 13:08:39 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Log if multipath probing is misconfigured (bsc#1215598) 
+
+-------------------------------------------------------------------
 Mon Jan 29 13:51:30 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Export partitions on D-Bus (gh#openSUSE/agama#1016).
