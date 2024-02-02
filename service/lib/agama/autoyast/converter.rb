@@ -21,6 +21,8 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "autoinstall/script_runner"
+require "autoinstall/script"
 require "json"
 require "fileutils"
 require "pathname"
@@ -51,7 +53,7 @@ module Agama
         path = Pathname(dir)
         FileUtils.mkdir_p(path)
         import_yast
-        profile = find_profile
+        profile = read_profile
         File.write(path.join("autoinst.json"), export_profile(profile).to_json)
       end
 
@@ -59,11 +61,51 @@ module Agama
 
       attr_reader :profile_url
 
-      def find_profile
+      def copy_profile; end
+
+      # @return [Hash] AutoYaST profile
+      def read_profile
+        FileUtils.mkdir_p(Yast::AutoinstConfig.profile_dir)
+
+        # fetch the profile
         Yast::AutoinstConfig.ParseCmdLine(profile_url)
         Yast::ProfileLocation.Process
-        Yast::Profile.ReadXML(Yast::AutoinstConfig.xml_tmpfile)
+
+        # put the profile in the tmp directory
+        FileUtils.cp(
+          Yast::AutoinstConfig.xml_tmpfile,
+          tmp_profile_path
+        )
+
+        loop do
+          Yast::Profile.ReadXML(tmp_profile_path)
+          run_pre_scripts
+          break unless File.exist?(Yast::AutoinstConfig.modified_profile)
+
+          FileUtils.cp(Yast::AutoinstConfig.modified_profile, tmp_profile_path)
+          FileUtils.rm(Yast::AutoinstConfig.modified_profile)
+        end
+
         Yast::Profile.current
+      end
+
+      def run_pre_scripts
+        pre_scripts = Yast::Profile.current.fetch_as_hash("scripts")
+          .fetch_as_array("pre-scripts")
+          .map { |h| Y2Autoinstallation::PreScript.new(h) }
+        script_runner = Y2Autoinstall::ScriptRunner.new
+
+        pre_scripts.each do |script|
+          script.create_script_file
+          script_runner.run(script)
+        end
+      end
+
+      def tmp_profile_path
+        @tmp_profile_path ||= File.join(
+          Yast::AutoinstConfig.profile_dir,
+          "autoinst.xml"
+        )
       end
 
       # @param profile [ProfileHash]
@@ -97,8 +139,9 @@ module Agama
 
       def import_yast
         Yast.import "AutoinstConfig"
-        Yast.import "ProfileLocation"
+        Yast.import "AutoinstScripts"
         Yast.import "Profile"
+        Yast.import "ProfileLocation"
       end
     end
   end

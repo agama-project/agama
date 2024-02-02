@@ -49,6 +49,20 @@ describe Agama::AutoYaST::Converter do
   end
 
   describe "#to_agama" do
+    context "when some pre-script is defined" do
+      let(:profile_name) { "pre-scripts.xml" }
+
+      before do
+        expect(Yast::AutoinstConfig).to receive(:scripts_dir)
+          .and_return(File.join(tmpdir, "scripts"))
+      end
+
+      it "runs the script" do
+        subject.to_agama(workdir)
+        expect(result["software"]).to include("product" => "Tumbleweed")
+      end
+    end
+
     context "when a product is selected" do
       it "exports the selected product" do
         subject.to_agama(workdir)
@@ -61,6 +75,14 @@ describe Agama::AutoYaST::Converter do
         subject.to_agama(workdir)
         expect(result["storage"]).to include("bootDevice" => "/dev/vda")
       end
+    end
+  end
+
+  context "when an invalid profile is given" do
+    let(:profile_name) { "invalid.xml" }
+
+    xit "reports the problem" do
+      subject.to_agama(workdir)
     end
   end
 end
