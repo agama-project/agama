@@ -58,6 +58,7 @@ $SUDO zypper --non-interactive --gpg-auto-import-keys install \
   yast2-iscsi-client \
   yast2-network \
   yast2-proxy \
+  yast2-schema \
   yast2-storage-ng \
   yast2-users \
   bcache-tools \
