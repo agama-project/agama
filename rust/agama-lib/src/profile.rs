@@ -5,7 +5,7 @@ use jsonschema::JSONSchema;
 use log::info;
 use serde_json;
 use std::{fs, io, io::Write, path::Path, process::Command};
-use tempfile::tempdir;
+use tempfile::{tempdir, TempDir};
 use url::Url;
 
 /// Downloads a profile for a given location.
@@ -20,6 +20,15 @@ impl ProfileReader {
     }
 
     pub fn read(&self) -> anyhow::Result<String> {
+        let path = self.url.path();
+        if path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/') {
+            self.read_from_autoyast()
+        } else {
+            self.read_from_url()
+        }
+    }
+
+    fn read_from_url(&self) -> anyhow::Result<String> {
         let mut buf = Vec::new();
         {
             let mut handle = Easy::new();
@@ -33,6 +42,19 @@ impl ProfileReader {
             transfer.perform().unwrap();
         }
         Ok(String::from_utf8(buf)?)
+    }
+
+    fn read_from_autoyast(&self) -> anyhow::Result<String> {
+        const TMP_DIR_PREFIX: &str = "autoyast";
+        const AUTOINST_JSON: &str = "autoinst.json";
+
+        let tmp_dir = TempDir::with_prefix(TMP_DIR_PREFIX)?;
+        Command::new("agama-autoyast")
+            .args([self.url.as_str(), &tmp_dir.path().to_string_lossy()])
+            .status()?;
+
+        let autoinst_json = tmp_dir.path().join(AUTOINST_JSON);
+        Ok(fs::read_to_string(autoinst_json)?)
     }
 }
 
