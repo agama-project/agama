@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-21 02:22+0000\n"
+"POT-Creation-Date: 2024-02-04 02:09+0000\n"
 "PO-Revision-Date: 2023-12-28 11:02+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-"
@@ -155,36 +155,36 @@ msgid "Found %s dependency issues."
 msgstr "Hittade %s beroendeproblem."
 
 #. Probes storage devices and performs an initial proposal
-#: service/lib/agama/storage/manager.rb:111
+#: service/lib/agama/storage/manager.rb:112
 msgid "Activating storage devices"
 msgstr "Aktiverar lagringsenheter"
 
-#: service/lib/agama/storage/manager.rb:112
+#: service/lib/agama/storage/manager.rb:113
 msgid "Probing storage devices"
 msgstr "Undersöker lagringsenheter"
 
-#: service/lib/agama/storage/manager.rb:113
+#: service/lib/agama/storage/manager.rb:114
 msgid "Calculating the storage proposal"
 msgstr "Beräknar lagringsförslag"
 
-#: service/lib/agama/storage/manager.rb:114
+#: service/lib/agama/storage/manager.rb:115
 msgid "Selecting Linux Security Modules"
 msgstr "Väljer Linux säkerhetsmoduler"
 
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:122
+#: service/lib/agama/storage/manager.rb:123
 msgid "Preparing bootloader proposal"
 msgstr "Förbereder starthanterare förslag"
 
 #. first make bootloader proposal to be sure that required packages are installed
-#: service/lib/agama/storage/manager.rb:127
+#: service/lib/agama/storage/manager.rb:128
 msgid "Adding storage-related packages"
 msgstr "Lägger till lagrings-relaterade paket"
 
-#: service/lib/agama/storage/manager.rb:128
+#: service/lib/agama/storage/manager.rb:129
 msgid "Preparing the storage devices"
 msgstr "Förbereder lagringsenheter"
 
-#: service/lib/agama/storage/manager.rb:129
+#: service/lib/agama/storage/manager.rb:130
 msgid "Writing bootloader sysconfig"
 msgstr "Skriver starthanterarens sysconfig"
