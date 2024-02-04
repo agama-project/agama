@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-28 02:07+0000\n"
+"POT-Creation-Date: 2024-01-31 02:05+0000\n"
 "PO-Revision-Date: 2024-01-01 19:02+0000\n"
 "Last-Translator: Victor hck <victorhck@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -403,8 +403,8 @@ msgstr ""
 "El idioma utilizado por el instalador. El idioma del sistema instalado se "
 "puede configurar en la página %s."
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:56
 #: src/components/l10n/L10nPage.jsx:384
 #: src/components/overview/L10nSection.jsx:52
@@ -619,31 +619,33 @@ msgstr "Prefijo IP o máscara de red"
 msgid "At least one address must be provided for selected mode"
 msgstr "Se debe proporcionar al menos una dirección para el modo seleccionado"
 
-#: src/components/network/IpSettingsForm.jsx:131
+#. TRANSLATORS: %s is replaced by the iSCSI target node name
+#: src/components/network/IpSettingsForm.jsx:133
+#: src/components/storage/iscsi/EditNodeForm.jsx:50
 #, c-format
-msgid "Edit %s connection"
-msgstr "Editar %s conexión"
+msgid "Edit %s"
+msgstr "Editar %s"
 
 #. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
-#: src/components/network/IpSettingsForm.jsx:133
-#: src/components/network/IpSettingsForm.jsx:138
-#: src/components/network/IpSettingsForm.jsx:140
+#: src/components/network/IpSettingsForm.jsx:136
+#: src/components/network/IpSettingsForm.jsx:141
+#: src/components/network/IpSettingsForm.jsx:143
 msgid "Mode"
 msgstr "Modo"
 
-#: src/components/network/IpSettingsForm.jsx:144
+#: src/components/network/IpSettingsForm.jsx:147
 msgid "Automatic (DHCP)"
 msgstr "Automático (DHCP)"
 
 #. TRANSLATORS: manual network configuration mode with a static IP address
-#: src/components/network/IpSettingsForm.jsx:146
+#: src/components/network/IpSettingsForm.jsx:149
 #: src/components/storage/iscsi/NodeStartupOptions.js:25
 msgid "Manual"
 msgstr "Manual"
 
 #. TRANSLATORS: network gateway configuration
-#: src/components/network/IpSettingsForm.jsx:161
 #: src/components/network/IpSettingsForm.jsx:164
+#: src/components/network/IpSettingsForm.jsx:167
 msgid "Gateway"
 msgstr "Puerta de enlace"
 
@@ -677,20 +679,20 @@ msgstr "No se encontraron conexiones WiFi"
 msgid "Connect to a Wi-Fi network"
 msgstr "Conectado a una red WIFI"
 
-#. TRANSLATORS: page section title
 #. TRANSLATORS: page title
-#: src/components/network/NetworkPage.jsx:170
-#: src/components/overview/NetworkSection.jsx:102
+#. TRANSLATORS: page section title
+#: src/components/network/NetworkPage.jsx:169
+#: src/components/overview/NetworkSection.jsx:83
 msgid "Network"
 msgstr "Red"
 
 #. TRANSLATORS: page section
-#: src/components/network/NetworkPage.jsx:172
+#: src/components/network/NetworkPage.jsx:171
 msgid "Wired networks"
 msgstr "Redes cableadas"
 
 #. TRANSLATORS: page section
-#: src/components/network/NetworkPage.jsx:177
+#: src/components/network/NetworkPage.jsx:176
 msgid "WiFi networks"
 msgstr "Redes WIFI"
 
@@ -788,13 +790,13 @@ msgstr "Olvidar red"
 msgid "The system will use %s as its default language."
 msgstr "El sistema utilizará %s como su idioma predeterminado."
 
-#: src/components/overview/NetworkSection.jsx:78
+#: src/components/overview/NetworkSection.jsx:59
 msgid "No network connections detected"
 msgstr "No se detectaron conexiones de red"
 
 #. TRANSLATORS: header for the list of active network connections,
 #. %d is replaced by the number of active connections
-#: src/components/overview/NetworkSection.jsx:87
+#: src/components/overview/NetworkSection.jsx:68
 #, c-format
 msgid "%d connection set:"
 msgid_plural "%d connections set:"
@@ -828,8 +830,8 @@ msgstr "Leer repositorios de software"
 msgid "Refresh the repositories"
 msgstr "Refrescar los repositorios"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
@@ -876,8 +878,8 @@ msgstr "Instalar usando el dispositivo %s"
 msgid "Probing storage devices"
 msgstr "Explorando dispositivos de almacenamiento"
 
-#. TRANSLATORS: page section title
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section title
 #: src/components/overview/StorageSection.jsx:208
 #: src/components/storage/ProposalPage.jsx:232
 msgid "Storage"
@@ -1791,12 +1793,6 @@ msgstr "Puerto"
 msgid "Incorrect port"
 msgstr "Puerto incorrecto"
 
-#. TRANSLATORS: %s is replaced by the iSCSI target node name
-#: src/components/storage/iscsi/EditNodeForm.jsx:50
-#, c-format
-msgid "Edit %s"
-msgstr "Editar %s"
-
 #: src/components/storage/iscsi/InitiatorForm.jsx:42
 msgid "Edit iSCSI Initiator"
 msgstr "Editar iniciador iSCSI"
@@ -2146,6 +2142,10 @@ msgstr "Usuario"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "Autenticación de root"
+
+#, c-format
+#~ msgid "Edit %s connection"
+#~ msgstr "Editar %s conexión"
 
 #~ msgid "Have a lot of fun! Your openSUSE Development Team."
 #~ msgstr "Have a lot of fun! El equipo de desarrollo de openSUSE."
