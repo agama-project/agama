@@ -1,6 +1,5 @@
 //! Error types.
 use thiserror::Error;
-use uuid::Uuid;
 
 /// Errors that are related to the network configuration.
 #[derive(Error, Debug)]
@@ -16,7 +15,7 @@ pub enum NetworkStateError {
     #[error("Invalid wireless mode: '{0}'")]
     InvalidWirelessMode(String),
     #[error("Connection '{0}' already exists")]
-    ConnectionExists(Uuid),
+    ConnectionExists(String),
     #[error("Invalid security wireless protocol: '{0}'")]
     InvalidSecurityProtocol(String),
     #[error("Adapter error: '{0}'")]
@@ -29,6 +28,10 @@ pub enum NetworkStateError {
     NotControllerConnection(String),
     #[error("Unexpected configuration")]
     UnexpectedConfiguration,
+    #[error("Invalid WEP authentication algorithm: '{0}'")]
+    InvalidWEPAuthAlg(String),
+    #[error("Invalid WEP key type: '{0}'")]
+    InvalidWEPKeyType(u32),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {

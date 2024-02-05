@@ -198,6 +198,20 @@ impl Wireless {
             .await?;
         Ok(())
     }
+
+    /// Whether the network is hidden or not.
+    #[dbus_interface(property)]
+    pub async fn hidden(&self) -> zbus::fdo::Result<bool> {
+        let config = self.get_config::<WirelessConfig>().await?;
+        Ok(config.hidden)
+    }
+
+    #[dbus_interface(property)]
+    pub async fn set_hidden(&mut self, hidden: bool) -> zbus::fdo::Result<()> {
+        self.update_config::<WirelessConfig, _>(|c| c.hidden = hidden)
+            .await?;
+        Ok(())
+    }
 }
 
 #[async_trait]

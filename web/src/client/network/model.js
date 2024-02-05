@@ -60,6 +60,17 @@ const SecurityProtocols = Object.freeze({
   _8021X: "802.1X"
 });
 
+// security protocols
+// const AgamaSecurityProtocols = Object.freeze({
+//  WEP: "none",
+//  OWE: "owe",
+//  DynamicWEP: "ieee8021x",
+//  WPA2: "wpa-psk",
+//  WPA3Personal: "sae",
+//  WPA2Enterprise: "wpa-eap",
+//  WPA3Only: "wpa-eap-suite-b-192"
+// });
+
 /**
  * @typedef {object} IPAddress
  * @property {string} address - like "129.168.1.2"
@@ -69,7 +80,7 @@ const SecurityProtocols = Object.freeze({
 /**
  * @typedef {object} ActiveConnection
  * @property {string} id
- * @property {string} name
+ * @property {string} uuid
  * @property {string} type
  * @property {number} state
  * @property {IPAddress[]} addresses
@@ -78,7 +89,8 @@ const SecurityProtocols = Object.freeze({
 /**
  * @typedef {object} Connection
  * @property {string} id
- * @property {string} name
+ * @property {string} uuid
+ * @property {string} iface
  * @property {IPv4} [ipv4]
  * @property {Wireless} [wireless]
  */
@@ -141,15 +153,17 @@ const createIPv4 = ({ method, addresses, nameServers, gateway }) => {
  *
  * @param {object} options
  * @param {string} [options.id] - Connection ID
- * @param {string} [options.name] - Connection name
+ * @param {string} [options.uuid] - Connection UUID
+ * @param {string} [options.iface] - Connection interface
  * @param {object} [options.ipv4] IPv4 Settings
  * @param {object} [options.wireless] Wireless Settings
  * @return {Connection}
  */
-const createConnection = ({ id, name, ipv4, wireless }) => {
+const createConnection = ({ id, uuid, iface, ipv4, wireless }) => {
   const connection = {
     id,
-    name,
+    uuid,
+    iface,
     ipv4: createIPv4(ipv4 || {}),
   };
 

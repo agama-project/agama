@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-21 02:22+0000\n"
+"POT-Creation-Date: 2024-01-28 02:07+0000\n"
 "PO-Revision-Date: 2024-01-01 19:02+0000\n"
 "Last-Translator: Victor hck <victorhck@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -541,8 +541,8 @@ msgstr "Direcciones"
 msgid "Addresses data list"
 msgstr "Lista de datos de direcciones"
 
-#. TRANSLATORS: table header
 #. TRANSLATORS: input field for the iSCSI initiator name
+#. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:57
 #: src/components/network/ConnectionsTable.jsx:86
 #: src/components/storage/ZFCPPage.jsx:360
@@ -677,8 +677,8 @@ msgstr "No se encontraron conexiones WiFi"
 msgid "Connect to a Wi-Fi network"
 msgstr "Conectado a una red WIFI"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/network/NetworkPage.jsx:170
 #: src/components/overview/NetworkSection.jsx:102
 msgid "Network"
@@ -763,8 +763,8 @@ msgstr "Conectado"
 msgid "Disconnecting"
 msgstr "Desconectando"
 
-#. TRANSLATORS: Wifi network status
 #. TRANSLATORS: iSCSI connection status
+#. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:50
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -812,8 +812,8 @@ msgstr "Resumen de la instalación"
 msgid "%s (registered)"
 msgstr "%s (registrado)"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/overview/ProductSection.jsx:71
 #: src/components/product/ProductPage.jsx:435
 msgid "Product"

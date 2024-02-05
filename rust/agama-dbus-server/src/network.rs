@@ -47,7 +47,7 @@ mod nm;
 pub mod system;
 
 pub use action::Action;
-pub use adapter::Adapter;
+pub use adapter::{Adapter, NetworkAdapterError};
 pub use dbus::NetworkService;
 pub use model::NetworkState;
 pub use nm::NetworkManagerAdapter;

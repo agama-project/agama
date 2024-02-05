@@ -152,6 +152,34 @@ impl<'a> NetworkManagerClient<'a> {
         Ok(())
     }
 
+    /// Creates a checkpoint.
+    pub async fn create_checkpoint(&self) -> Result<OwnedObjectPath, ServiceError> {
+        let path = self.nm_proxy.checkpoint_create(&[], 0, 0).await?;
+        Ok(path)
+    }
+
+    /// Destroys a checkpoint.
+    ///
+    /// * `checkpoint`: checkpoint's D-Bus path.
+    pub async fn destroy_checkpoint(
+        &self,
+        checkpoint: &ObjectPath<'_>,
+    ) -> Result<(), ServiceError> {
+        self.nm_proxy.checkpoint_destroy(checkpoint).await?;
+        Ok(())
+    }
+
+    /// Rolls the configuration back to the given checkpoint.
+    ///
+    /// * `checkpoint`: checkpoint's D-Bus path.
+    pub async fn rollback_checkpoint(
+        &self,
+        checkpoint: &ObjectPath<'_>,
+    ) -> Result<(), ServiceError> {
+        self.nm_proxy.checkpoint_rollback(checkpoint).await?;
+        Ok(())
+    }
+
     /// Activates a NetworkManager connection.
     ///
     /// * `path`: D-Bus patch of the connection.

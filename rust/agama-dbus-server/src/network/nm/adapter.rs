@@ -1,7 +1,7 @@
 use crate::network::{
     model::{Connection, NetworkState},
     nm::NetworkManagerClient,
-    Adapter,
+    Adapter, NetworkAdapterError,
 };
 use agama_lib::error::ServiceError;
 use async_trait::async_trait;
@@ -29,9 +29,17 @@ impl<'a> NetworkManagerAdapter<'a> {
 
 #[async_trait]
 impl<'a> Adapter for NetworkManagerAdapter<'a> {
-    async fn read(&self) -> Result<NetworkState, Box<dyn std::error::Error>> {
-        let devices = self.client.devices().await?;
-        let connections = self.client.connections().await?;
+    async fn read(&self) -> Result<NetworkState, NetworkAdapterError> {
+        let devices = self
+            .client
+            .devices()
+            .await
+            .map_err(NetworkAdapterError::Read)?;
+        let connections = self
+            .client
+            .connections()
+            .await
+            .map_err(NetworkAdapterError::Read)?;
         Ok(NetworkState::new(devices, connections))
     }
 
@@ -42,14 +50,26 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
     /// simpler approach.
     ///
     /// * `network`: network model.
-    async fn write(&self, network: &NetworkState) -> Result<(), Box<dyn std::error::Error>> {
-        // By now, traits do not support async functions. Using `task::block_on` allows
-        // to use 'await'.
+    async fn write(&self, network: &NetworkState) -> Result<(), NetworkAdapterError> {
+        let old_state = self.read().await?;
+        let checkpoint = self
+            .client
+            .create_checkpoint()
+            .await
+            .map_err(NetworkAdapterError::Checkpoint)?;
+
         for conn in ordered_connections(network) {
             if !Self::is_writable(conn) {
                 continue;
             }
 
+            if let Some(old_conn) = old_state.get_connection_by_uuid(conn.uuid) {
+                if old_conn == conn {
+                    continue;
+                }
+            }
+
+            log::info!("Updating connection {} ({})", conn.id, conn.uuid);
             let result = if conn.is_removed() {
                 self.client.remove_connection(conn.uuid).await
             } else {
@@ -60,10 +80,18 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
             };
 
             if let Err(e) = result {
-                log::error!("Could not process the connection {}: {}", conn.id, e);
+                self.client
+                    .rollback_checkpoint(&checkpoint.as_ref())
+                    .await
+                    .map_err(NetworkAdapterError::Checkpoint)?;
+                log::error!("Could not process the connection {}: {}", conn.id, &e);
+                return Err(NetworkAdapterError::Write(e));
             }
         }
-        // FIXME: indicate which connections could not be written.
+        self.client
+            .destroy_checkpoint(&checkpoint.as_ref())
+            .await
+            .map_err(NetworkAdapterError::Checkpoint)?;
         Ok(())
     }
 }

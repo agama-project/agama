@@ -9,6 +9,7 @@ use agama_lib::{
     network::types::{BondMode, SSID},
 };
 use cidr::IpInet;
+use macaddr::MacAddr6;
 use std::{collections::HashMap, net::IpAddr, str::FromStr};
 use uuid::Uuid;
 use zbus::zvariant::{self, OwnedValue, Value};
@@ -209,11 +210,17 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
     if let Some(ipv4) = conn.get_mut("ipv4") {
         ipv4.remove("addresses");
         ipv4.remove("dns");
+        if ipv4.get("address-data").is_some_and(is_empty_value) {
+            ipv4.remove("gateway");
+        }
     }
 
     if let Some(ipv6) = conn.get_mut("ipv6") {
         ipv6.remove("addresses");
         ipv6.remove("dns");
+        if ipv6.get("address-data").is_some_and(is_empty_value) {
+            ipv6.remove("gateway");
+        }
     }
 }
 
@@ -321,17 +328,53 @@ fn wireless_config_to_dbus<'a>(
     config: &'a WirelessConfig,
     mac_address: &MacAddress,
 ) -> NestedHash<'a> {
-    let wireless: HashMap<&str, zvariant::Value> = HashMap::from([
+    let mut wireless: HashMap<&str, zvariant::Value> = HashMap::from([
         ("mode", Value::new(config.mode.to_string())),
         ("ssid", Value::new(config.ssid.to_vec())),
         ("assigned-mac-address", Value::new(mac_address.to_string())),
+        ("hidden", Value::new(config.hidden)),
     ]);
+
+    if let Some(band) = &config.band {
+        wireless.insert("band", band.to_string().into());
+        if let Some(channel) = config.channel {
+            wireless.insert("channel", channel.into());
+        }
+    }
+    if let Some(bssid) = &config.bssid {
+        wireless.insert("bssid", bssid.as_bytes().into());
+    }
 
     let mut security: HashMap<&str, zvariant::Value> =
         HashMap::from([("key-mgmt", config.security.to_string().into())]);
 
     if let Some(password) = &config.password {
         security.insert("psk", password.to_string().into());
+    }
+    if let Some(wep_security) = &config.wep_security {
+        security.insert(
+            "wep-key-type",
+            (wep_security.wep_key_type.clone() as u32).into(),
+        );
+        security.insert("auth-alg", wep_security.auth_alg.to_string().into());
+        for (i, wep_key) in wep_security.keys.clone().into_iter().enumerate() {
+            security.insert(
+                // FIXME: lifetimes are fun
+                if i == 0 {
+                    "wep-key0"
+                } else if i == 1 {
+                    "wep-key1"
+                } else if i == 2 {
+                    "wep-key2"
+                } else if i == 3 {
+                    "wep-key3"
+                } else {
+                    break;
+                },
+                wep_key.into(),
+            );
+        }
+        security.insert("wep-tx-keyidx", wep_security.wep_key_index.into());
     }
 
     NestedHash::from([(WIRELESS_KEY, wireless), (WIRELESS_SECURITY_KEY, security)])
@@ -668,9 +711,55 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
         ..Default::default()
     };
 
+    if let Some(band) = wireless.get("band") {
+        wireless_config.band = Some(band.downcast_ref::<str>()?.try_into().ok()?)
+    }
+    if let Some(channel) = wireless.get("channel") {
+        wireless_config.channel = Some(*channel.downcast_ref()?);
+    }
+    if let Some(bssid) = wireless.get("bssid") {
+        let bssid: &zvariant::Array = bssid.downcast_ref()?;
+        let bssid: Vec<u8> = bssid
+            .get()
+            .iter()
+            .map(|u| *u.downcast_ref::<u8>().unwrap())
+            .collect();
+        wireless_config.bssid = Some(MacAddr6::new(
+            *bssid.first()?,
+            *bssid.get(1)?,
+            *bssid.get(2)?,
+            *bssid.get(3)?,
+            *bssid.get(4)?,
+            *bssid.get(5)?,
+        ));
+    }
+
+    if let Some(hidden) = wireless.get("hidden") {
+        wireless_config.hidden = *hidden.downcast_ref::<bool>()?;
+    }
+
     if let Some(security) = conn.get(WIRELESS_SECURITY_KEY) {
         let key_mgmt: &str = security.get("key-mgmt")?.downcast_ref()?;
         wireless_config.security = NmKeyManagement(key_mgmt.to_string()).try_into().ok()?;
+
+        let wep_key_type = security
+            .get("wep-key-type")
+            .and_then(|alg| WEPKeyType::try_from(*alg.downcast_ref::<u32>()?).ok())
+            .unwrap_or_default();
+        let auth_alg = security
+            .get("auth-alg")
+            .and_then(|alg| WEPAuthAlg::try_from(alg.downcast_ref()?).ok())
+            .unwrap_or_default();
+        let wep_key_index = security
+            .get("wep-tx-keyidx")
+            .and_then(|idx| idx.downcast_ref::<u32>().cloned())
+            .unwrap_or_default();
+        wireless_config.wep_security = Some(WEPSecurity {
+            wep_key_type,
+            auth_alg,
+            wep_key_index,
+            ..Default::default()
+        });
     }
 
     Some(wireless_config)
@@ -745,6 +834,10 @@ fn vlan_config_from_dbus(conn: &OwnedNestedHash) -> Option<VlanConfig> {
 /// * `value`: value to analyze
 fn is_empty_value(value: &zvariant::Value) -> bool {
     if let Some(value) = value.downcast_ref::<zvariant::Str>() {
+        return value.is_empty();
+    }
+
+    if let Some(value) = value.downcast_ref::<zvariant::Array>() {
         return value.is_empty();
     }
 
@@ -917,10 +1010,24 @@ mod test {
                 "assigned-mac-address".to_string(),
                 Value::new("13:45:67:89:AB:CD").to_owned(),
             ),
+            ("band".to_string(), Value::new("a").to_owned()),
+            ("channel".to_string(), Value::new(32_u32).to_owned()),
+            (
+                "bssid".to_string(),
+                Value::new(vec![18_u8, 52_u8, 86_u8, 120_u8, 154_u8, 188_u8]).to_owned(),
+            ),
+            ("hidden".to_string(), Value::new(false).to_owned()),
         ]);
 
-        let security_section =
-            HashMap::from([("key-mgmt".to_string(), Value::new("wpa-psk").to_owned())]);
+        let security_section = HashMap::from([
+            ("key-mgmt".to_string(), Value::new("wpa-psk").to_owned()),
+            (
+                "wep-key-type".to_string(),
+                Value::new(WEPKeyType::Key as u32).to_owned(),
+            ),
+            ("auth-alg".to_string(), Value::new("open").to_owned()),
+            ("wep-tx-keyidx".to_string(), Value::new(1_u32).to_owned()),
+        ]);
 
         let dbus_conn = HashMap::from([
             ("connection".to_string(), connection_section),
@@ -934,7 +1041,18 @@ mod test {
         if let ConnectionConfig::Wireless(wireless) = &connection.config {
             assert_eq!(wireless.ssid, SSID(vec![97, 103, 97, 109, 97]));
             assert_eq!(wireless.mode, WirelessMode::Infra);
-            assert_eq!(wireless.security, SecurityProtocol::WPA2)
+            assert_eq!(wireless.security, SecurityProtocol::WPA2);
+            assert_eq!(wireless.band, Some(WirelessBand::A));
+            assert_eq!(wireless.channel, Some(32_u32));
+            assert_eq!(
+                wireless.bssid,
+                Some(macaddr::MacAddr6::from_str("12:34:56:78:9A:BC").unwrap())
+            );
+            assert!(!wireless.hidden);
+            let wep_security = wireless.wep_security.as_ref().unwrap();
+            assert_eq!(wep_security.wep_key_type, WEPKeyType::Key);
+            assert_eq!(wep_security.auth_alg, WEPAuthAlg::Open);
+            assert_eq!(wep_security.wep_key_index, 1);
         }
     }
 
@@ -967,7 +1085,21 @@ mod test {
         let config = WirelessConfig {
             mode: WirelessMode::Infra,
             security: SecurityProtocol::WPA2,
+            password: Some("wpa-password".to_string()),
             ssid: SSID(vec![97, 103, 97, 109, 97]),
+            band: Some(WirelessBand::BG),
+            channel: Some(10),
+            bssid: Some(macaddr::MacAddr6::from_str("12:34:56:78:9A:BC").unwrap()),
+            wep_security: Some(WEPSecurity {
+                auth_alg: WEPAuthAlg::Open,
+                wep_key_type: WEPKeyType::Key,
+                wep_key_index: 1,
+                keys: vec![
+                    "5b73215e232f4c577c5073455d".to_string(),
+                    "hello".to_string(),
+                ],
+            }),
+            hidden: true,
             ..Default::default()
         };
         let mut wireless = build_base_connection();
@@ -992,9 +1124,57 @@ mod test {
             .collect();
         assert_eq!(ssid, "agama".as_bytes());
 
+        let band: &str = wireless.get("band").unwrap().downcast_ref().unwrap();
+        assert_eq!(band, "bg");
+
+        let channel: u32 = *wireless.get("channel").unwrap().downcast_ref().unwrap();
+        assert_eq!(channel, 10);
+
+        let bssid: &zvariant::Array = wireless.get("bssid").unwrap().downcast_ref().unwrap();
+        let bssid: Vec<u8> = bssid
+            .get()
+            .iter()
+            .map(|u| *u.downcast_ref::<u8>().unwrap())
+            .collect();
+        assert_eq!(bssid, vec![18, 52, 86, 120, 154, 188]);
+
+        let hidden: bool = *wireless.get("hidden").unwrap().downcast_ref().unwrap();
+        assert!(hidden);
+
         let security = wireless_dbus.get(WIRELESS_SECURITY_KEY).unwrap();
         let key_mgmt: &str = security.get("key-mgmt").unwrap().downcast_ref().unwrap();
         assert_eq!(key_mgmt, "wpa-psk");
+
+        let password: &str = security.get("psk").unwrap().downcast_ref().unwrap();
+        assert_eq!(password, "wpa-password");
+
+        let auth_alg: WEPAuthAlg = security
+            .get("auth-alg")
+            .unwrap()
+            .downcast_ref::<str>()
+            .unwrap()
+            .try_into()
+            .unwrap();
+        assert_eq!(auth_alg, WEPAuthAlg::Open);
+
+        let wep_key_type: u32 = *security
+            .get("wep-key-type")
+            .unwrap()
+            .downcast_ref::<u32>()
+            .unwrap();
+        assert_eq!(wep_key_type, WEPKeyType::Key as u32);
+
+        let wep_key_index: u32 = *security
+            .get("wep-tx-keyidx")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(wep_key_index, 1);
+
+        let wep_key0: &str = security.get("wep-key0").unwrap().downcast_ref().unwrap();
+        assert_eq!(wep_key0, "5b73215e232f4c577c5073455d");
+        let wep_key1: &str = security.get("wep-key1").unwrap().downcast_ref().unwrap();
+        assert_eq!(wep_key1, "hello");
     }
 
     #[test]
@@ -1014,6 +1194,7 @@ mod test {
                 Value::new(ETHERNET_KEY.to_string()).to_owned(),
             ),
         ]);
+
         let ipv4 = HashMap::from([
             (
                 "method".to_string(),
@@ -1072,10 +1253,8 @@ mod test {
             *ipv4.get("method").unwrap(),
             Value::new("disabled".to_string())
         );
-        assert_eq!(
-            *ipv4.get("gateway").unwrap(),
-            Value::new("192.168.1.1".to_string())
-        );
+        // there are not addresses ("address-data"), so no gateway is allowed
+        assert!(ipv4.get("gateway").is_none());
         assert!(ipv4.get("addresses").is_none());
 
         let ipv6 = merged.get("ipv6").unwrap();
@@ -1083,10 +1262,8 @@ mod test {
             *ipv6.get("method").unwrap(),
             Value::new("disabled".to_string())
         );
-        assert_eq!(
-            *ipv6.get("gateway").unwrap(),
-            Value::new("::ffff:c0a8:101".to_string())
-        );
+        // there are not addresses ("address-data"), so no gateway is allowed
+        assert!(ipv6.get("gateway").is_none());
     }
 
     #[test]

@@ -33,19 +33,17 @@ trait Device {
     default_path = "/org/opensuse/Agama1/Network/connections"
 )]
 trait Connections {
-    /// Add a new network connection.
-    ///
-    /// `name`: connection name.
-    /// `ty`: connection type.
-    fn add_connection(&self, name: &str, ty: u8) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+    /// AddConnection method
+    fn add_connection(&self, id: &str, ty: u8) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Apply method
     fn apply(&self) -> zbus::Result<()>;
 
-    /// Gets a connection D-Bus path by its ID
-    ///
-    /// * `id`: connection ID.
-    fn get_connection(&self, id: &str) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+    /// GetConnection method
+    fn get_connection(&self, uuid: &str) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+
+    /// GetConnectionById method
+    fn get_connection_by_id(&self, id: &str) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// GetConnections method
     fn get_connections(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
@@ -55,7 +53,7 @@ trait Connections {
 
     /// ConnectionAdded signal
     #[dbus_proxy(signal)]
-    fn connection_added(&self, id: &str, path: &str) -> zbus::Result<()>;
+    fn connection_added(&self, id: &str, path: zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()>;
 }
 
 #[dbus_proxy(

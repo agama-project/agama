@@ -43,9 +43,16 @@ impl NetworkState {
 
     /// Get connection by UUID
     ///
-    /// * `id`: connection UUID
+    /// * `uuid`: connection UUID
     pub fn get_connection_by_uuid(&self, uuid: Uuid) -> Option<&Connection> {
         self.connections.iter().find(|c| c.uuid == uuid)
+    }
+
+    /// Get connection by UUID as mutable
+    ///
+    /// * `uuid`: connection UUID
+    pub fn get_connection_by_uuid_mut(&mut self, uuid: Uuid) -> Option<&mut Connection> {
+        self.connections.iter_mut().find(|c| c.uuid == uuid)
     }
 
     /// Get connection by interface
@@ -85,7 +92,7 @@ impl NetworkState {
     /// It uses the `id` to decide whether the connection already exists.
     pub fn add_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
         if self.get_connection(&conn.id).is_some() {
-            return Err(NetworkStateError::ConnectionExists(conn.uuid));
+            return Err(NetworkStateError::ConnectionExists(conn.id));
         }
         self.connections.push(conn);
 
@@ -109,9 +116,9 @@ impl NetworkState {
     /// Removes a connection from the state.
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
-    pub fn remove_connection(&mut self, id: &str) -> Result<(), NetworkStateError> {
-        let Some(conn) = self.get_connection_mut(id) else {
-            return Err(NetworkStateError::UnknownConnection(id.to_string()));
+    pub fn remove_connection(&mut self, uuid: Uuid) -> Result<(), NetworkStateError> {
+        let Some(conn) = self.get_connection_by_uuid_mut(uuid) else {
+            return Err(NetworkStateError::UnknownConnection(uuid.to_string()));
         };
 
         conn.remove();
@@ -268,10 +275,10 @@ mod tests {
     #[test]
     fn test_remove_connection() {
         let mut state = NetworkState::default();
-        let id = "eth0".to_string();
-        let conn0 = Connection::new(id, DeviceType::Ethernet);
+        let conn0 = Connection::new("eth0".to_string(), DeviceType::Ethernet);
+        let uuid = conn0.uuid;
         state.add_connection(conn0).unwrap();
-        state.remove_connection("eth0").unwrap();
+        state.remove_connection(uuid).unwrap();
         let found = state.get_connection("eth0").unwrap();
         assert!(found.is_removed());
     }
@@ -279,7 +286,7 @@ mod tests {
     #[test]
     fn test_remove_unknown_connection() {
         let mut state = NetworkState::default();
-        let error = state.remove_connection("eth0").unwrap_err();
+        let error = state.remove_connection(Uuid::new_v4()).unwrap_err();
         assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
     }
 
@@ -369,7 +376,7 @@ pub struct Device {
 }
 
 /// Represents an availble network connection.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Connection {
     pub id: String,
     pub uuid: Uuid,
@@ -381,12 +388,6 @@ pub struct Connection {
     pub port_config: PortConfig,
     pub match_config: MatchConfig,
     pub config: ConnectionConfig,
-}
-
-impl PartialEq for Connection {
-    fn eq(&self, other: &Self) -> bool {
-        self.id == other.id && self.uuid == other.uuid && self.ip_config == other.ip_config
-    }
 }
 
 impl Connection {
@@ -494,7 +495,7 @@ impl From<WirelessConfig> for ConnectionConfig {
 #[error("Invalid MAC address: {0}")]
 pub struct InvalidMacAddress(String);
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub enum MacAddress {
     MacAddress(macaddr::MacAddr6),
     Preserve,
@@ -740,6 +741,11 @@ pub struct WirelessConfig {
     pub ssid: SSID,
     pub password: Option<String>,
     pub security: SecurityProtocol,
+    pub band: Option<WirelessBand>,
+    pub channel: Option<u32>,
+    pub bssid: Option<macaddr::MacAddr6>,
+    pub wep_security: Option<WEPSecurity>,
+    pub hidden: bool,
 }
 
 impl TryFrom<ConnectionConfig> for WirelessConfig {
@@ -833,6 +839,98 @@ impl TryFrom<&str> for SecurityProtocol {
             _ => Err(NetworkStateError::InvalidSecurityProtocol(
                 value.to_string(),
             )),
+        }
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct WEPSecurity {
+    pub auth_alg: WEPAuthAlg,
+    pub wep_key_type: WEPKeyType,
+    pub keys: Vec<String>,
+    pub wep_key_index: u32,
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub enum WEPKeyType {
+    #[default]
+    Unknown = 0,
+    Key = 1,
+    Passphrase = 2,
+}
+
+impl TryFrom<u32> for WEPKeyType {
+    type Error = NetworkStateError;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(WEPKeyType::Unknown),
+            1 => Ok(WEPKeyType::Key),
+            2 => Ok(WEPKeyType::Passphrase),
+            _ => Err(NetworkStateError::InvalidWEPKeyType(value)),
+        }
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub enum WEPAuthAlg {
+    #[default]
+    Unset,
+    Open,
+    Shared,
+    Leap,
+}
+
+impl TryFrom<&str> for WEPAuthAlg {
+    type Error = NetworkStateError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "open" => Ok(WEPAuthAlg::Open),
+            "shared" => Ok(WEPAuthAlg::Shared),
+            "leap" => Ok(WEPAuthAlg::Leap),
+            "" => Ok(WEPAuthAlg::Unset),
+            _ => Err(NetworkStateError::InvalidWEPAuthAlg(value.to_string())),
+        }
+    }
+}
+
+impl fmt::Display for WEPAuthAlg {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            WEPAuthAlg::Open => "open",
+            WEPAuthAlg::Shared => "shared",
+            WEPAuthAlg::Leap => "shared",
+            WEPAuthAlg::Unset => "",
+        };
+        write!(f, "{}", name)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum WirelessBand {
+    A,  // 5GHz
+    BG, // 2.4GHz
+}
+
+impl fmt::Display for WirelessBand {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let value = match &self {
+            WirelessBand::A => "a",
+            WirelessBand::BG => "bg",
+        };
+        write!(f, "{}", value)
+    }
+}
+
+impl TryFrom<&str> for WirelessBand {
+    type Error = anyhow::Error;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "a" => Ok(WirelessBand::A),
+            "bg" => Ok(WirelessBand::BG),
+            _ => Err(anyhow::anyhow!("Invalid band: {}", value)),
         }
     }
 }

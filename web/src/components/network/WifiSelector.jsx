@@ -63,7 +63,7 @@ function WifiSelector({ isOpen = false, onClose }) {
           const network = {
             ...ap,
             settings: connections.find(c => c.wireless?.ssid === ap.ssid),
-            connection: activeConnections.find(c => c.name === ap.ssid)
+            connection: activeConnections.find(c => c.id === ap.ssid)
           };
 
           // Group networks
@@ -145,7 +145,7 @@ function WifiSelector({ isOpen = false, onClose }) {
             client.network.connectTo(network.settings);
           }
         }}
-        onCancelSelectionCallback={() => switchSelectedNetwork(activeNetwork) }
+        onCancelSelectionCallback={() => switchSelectedNetwork(activeNetwork)}
       />
       <Popup.Actions>
         <Popup.SecondaryAction onClick={onClose}>{_("Close")}</Popup.SecondaryAction>

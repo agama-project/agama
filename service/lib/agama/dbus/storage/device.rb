@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -35,22 +35,46 @@ module Agama
       #
       # The D-Bus object includes the required interfaces for the storage object that it represents.
       class Device < BaseObject
+        # @return [Y2Storage::Device]
+        attr_reader :storage_device
+
         # Constructor
         #
         # @param storage_device [Y2Storage::Device] Storage device
         # @param path [::DBus::ObjectPath] Path for the D-Bus object
+        # @param tree [DevicesTree] D-Bus tree in which the device is exported
         # @param logger [Logger, nil]
-        def initialize(storage_device, path, logger: nil)
+        def initialize(storage_device, path, tree, logger: nil)
           super(path, logger: logger)
 
           @storage_device = storage_device
+          @tree = tree
           add_interfaces
+        end
+
+        # Sets the represented storage device.
+        #
+        # @note A properties changed signal is emitted for each interface.
+        # @raise [RuntimeError] If the given device has a different sid.
+        #
+        # @param value [Y2Storage::Device]
+        def storage_device=(value)
+          if value.sid != storage_device.sid
+            raise "Cannot update the D-Bus object because the given device has a different sid: " \
+                  "#{value} instead of #{storage_device.sid}"
+          end
+
+          @storage_device = value
+
+          interfaces_and_properties.each do |interface, properties|
+            dbus_properties_changed(interface, properties, [])
+          end
         end
 
       private
 
-        # @return [Y2Storage::Device]
-        attr_reader :storage_device
+        # @return [DevicesTree]
+        attr_reader :tree
 
         # Adds the required interfaces according to the storage object
         def add_interfaces # rubocop:disable Metrics/CyclomaticComplexity
@@ -82,7 +106,9 @@ module Agama
         #
         # @return [Boolean]
         def partition_table?
-          storage_device.is?(:blk_device) && storage_device.partition_table?
+          storage_device.is?(:blk_device) &&
+            storage_device.respond_to?(:partition_table?) &&
+            storage_device.partition_table?
         end
       end
     end
