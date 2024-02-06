@@ -131,7 +131,7 @@ module Agama
 
       # @param profile [Hash] Software section from the AutoYaST profile
       def export_software(profile)
-        product = profile.fetch("products", []).first
+        product = profile.fetch_as_array("products").first
         return {} unless product
 
         { "product" => product }
