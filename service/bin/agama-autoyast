@@ -22,6 +22,7 @@
 # find current contact information at www.suse.com.
 
 # TEMPORARY overwrite of Y2DIR to use DBus for communication with dependent yast modules
+require "yast"
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
 # Set the PATH to a known value

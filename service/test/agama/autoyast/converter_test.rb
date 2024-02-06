@@ -23,6 +23,7 @@ require_relative "../../test_helper"
 require "agama/autoyast/converter"
 require "json"
 require "tmpdir"
+require "autoinstall/xml_checks"
 
 describe Agama::AutoYaST::Converter do
   let(:profile) { File.join(FIXTURES_PATH, "profiles", profile_name) }
@@ -35,6 +36,7 @@ describe Agama::AutoYaST::Converter do
   end
 
   before do
+    stub_const("Y2Autoinstallation::XmlChecks::ERRORS_PATH", File.join(tmpdir, "errors"))
     Yast.import "Installation"
     allow(Yast::Installation).to receive(:sourcedir).and_return(File.join(tmpdir, "mount"))
   end
@@ -53,7 +55,7 @@ describe Agama::AutoYaST::Converter do
       let(:profile_name) { "pre-scripts.xml" }
 
       before do
-        expect(Yast::AutoinstConfig).to receive(:scripts_dir)
+        allow(Yast::AutoinstConfig).to receive(:scripts_dir)
           .and_return(File.join(tmpdir, "scripts"))
       end
 
@@ -81,7 +83,8 @@ describe Agama::AutoYaST::Converter do
   context "when an invalid profile is given" do
     let(:profile_name) { "invalid.xml" }
 
-    xit "reports the problem" do
+    it "reports the problem" do
+      expect(Yast2::Popup).to receive(:show)
       subject.to_agama(workdir)
     end
   end
