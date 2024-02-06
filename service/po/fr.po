@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-21 02:22+0000\n"
-"PO-Revision-Date: 2023-12-29 02:02+0000\n"
+"POT-Creation-Date: 2024-02-04 02:09+0000\n"
+"PO-Revision-Date: 2024-02-01 14:42+0000\n"
 "Last-Translator: faila fail <yassadmi@proton.me>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/fr/>\n"
@@ -53,7 +53,6 @@ msgid "Saving Language Settings"
 msgstr "Sauvegarde des paramètres de langue"
 
 #: service/lib/agama/manager.rb:123
-#, fuzzy
 msgid "Writing repositories information"
 msgstr "Écriture des informations relatives aux dépôts"
 
@@ -157,38 +156,37 @@ msgid "Found %s dependency issues."
 msgstr "%s problèmes de dépendance  trouvé(s) (Need a plural option)"
 
 #. Probes storage devices and performs an initial proposal
-#: service/lib/agama/storage/manager.rb:111
-#, fuzzy
+#: service/lib/agama/storage/manager.rb:112
 msgid "Activating storage devices"
 msgstr "Activation des périphériques de stockage"
 
-#: service/lib/agama/storage/manager.rb:112
+#: service/lib/agama/storage/manager.rb:113
 msgid "Probing storage devices"
 msgstr "Sonde les périphériques de stockage"
 
-#: service/lib/agama/storage/manager.rb:113
+#: service/lib/agama/storage/manager.rb:114
 #, fuzzy
 msgid "Calculating the storage proposal"
 msgstr "Calcul de la capacité de stockage envisagée"
 
-#: service/lib/agama/storage/manager.rb:114
+#: service/lib/agama/storage/manager.rb:115
 msgid "Selecting Linux Security Modules"
 msgstr "Sélection des modules de sécurité Linux"
 
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:122
+#: service/lib/agama/storage/manager.rb:123
 msgid "Preparing bootloader proposal"
 msgstr "Préparation du chargeur d'amorçage envisagé"
 
 #. first make bootloader proposal to be sure that required packages are installed
-#: service/lib/agama/storage/manager.rb:127
+#: service/lib/agama/storage/manager.rb:128
 msgid "Adding storage-related packages"
 msgstr "Ajout des paquets relatifs au stockage"
 
-#: service/lib/agama/storage/manager.rb:128
+#: service/lib/agama/storage/manager.rb:129
 msgid "Preparing the storage devices"
 msgstr "Préparation des périphériques de stockage"
 
-#: service/lib/agama/storage/manager.rb:129
+#: service/lib/agama/storage/manager.rb:130
 msgid "Writing bootloader sysconfig"
 msgstr "Écriture du sysconfig du chargeur d'amorçage"

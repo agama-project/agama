@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-21 02:22+0000\n"
+"POT-Creation-Date: 2024-02-04 02:09+0000\n"
 "PO-Revision-Date: 2023-12-28 21:02+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -155,36 +155,36 @@ msgid "Found %s dependency issues."
 msgstr "Ditemukan %s masalah ketergantungan."
 
 #. Probes storage devices and performs an initial proposal
-#: service/lib/agama/storage/manager.rb:111
+#: service/lib/agama/storage/manager.rb:112
 msgid "Activating storage devices"
 msgstr "Mengaktifkan perangkat penyimpanan"
 
-#: service/lib/agama/storage/manager.rb:112
+#: service/lib/agama/storage/manager.rb:113
 msgid "Probing storage devices"
 msgstr "Memeriksa perangkat penyimpanan"
 
-#: service/lib/agama/storage/manager.rb:113
+#: service/lib/agama/storage/manager.rb:114
 msgid "Calculating the storage proposal"
 msgstr "Menghitung proposal penyimpanan"
 
-#: service/lib/agama/storage/manager.rb:114
+#: service/lib/agama/storage/manager.rb:115
 msgid "Selecting Linux Security Modules"
 msgstr "Memilih Modul Keamanan Linux"
 
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:122
+#: service/lib/agama/storage/manager.rb:123
 msgid "Preparing bootloader proposal"
 msgstr "Mempersiapkan proposal bootloader"
 
 #. first make bootloader proposal to be sure that required packages are installed
-#: service/lib/agama/storage/manager.rb:127
+#: service/lib/agama/storage/manager.rb:128
 msgid "Adding storage-related packages"
 msgstr "Menambahkan paket terkait penyimpanan"
 
-#: service/lib/agama/storage/manager.rb:128
+#: service/lib/agama/storage/manager.rb:129
 msgid "Preparing the storage devices"
 msgstr "Mempersiapkan perangkat penyimpanan"
 
-#: service/lib/agama/storage/manager.rb:129
+#: service/lib/agama/storage/manager.rb:130
 msgid "Writing bootloader sysconfig"
 msgstr "Menulis sysconfig bootloader"
