@@ -23,6 +23,8 @@
 require "yast"
 require "autoinstall/script_runner"
 require "autoinstall/script"
+require "y2users/config"
+require "y2users/autoinst/reader"
 require "json"
 require "fileutils"
 require "pathname"
@@ -112,8 +114,9 @@ module Agama
       # @return [Hash] D-Installer profile
       def export_profile(profile)
         {
-          "software" => export_software(profile["software"] || {}),
-          "storage"  => export_storage(profile["partitioning"] || [])
+          "software" => export_software(profile.fetch_as_hash("software")),
+          "storage"  => export_storage(profile.fetch_as_array("partitioning")),
+          "root"     => export_root("users" => profile.fetch_as_array("users"))
         }
       end
 
@@ -135,6 +138,21 @@ module Agama
         return {} unless product
 
         { "product" => product }
+      end
+
+      # @param profile [Hash] Users section from the AutoYaST profile
+      def export_root(profile)
+        reader = Y2Users::Autoinst::Reader.new(profile)
+        result = reader.read
+        return {} unless result.issues.empty?
+
+        root = result.config.users.find { |u| u.name == "root" }
+        return {} unless root
+
+        hsh = { "password" => root.password.value.to_s }
+        public_key = root.authorized_keys.first
+        hsh["sshPublicKey"] = public_key if public_key
+        hsh
       end
 
       def import_yast

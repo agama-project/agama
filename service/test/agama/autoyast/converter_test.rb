@@ -92,6 +92,15 @@ describe Agama::AutoYaST::Converter do
         expect(result["storage"]).to include("bootDevice" => "/dev/vda")
       end
     end
+
+    context "when the root password and/or public SSH key are set" do
+      it "exports the root password and/or public SSH key" do
+        expect(Yast2::Popup).to_not receive(:show)
+        subject.to_agama(workdir)
+        expect(result["root"]).to include("password" => "nots3cr3t",
+          "sshPublicKey" => "ssh-rsa ...")
+      end
+    end
   end
 
   context "when an invalid profile is given" do
