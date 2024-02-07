@@ -1,6 +1,7 @@
 //! Implements support for handling the localization settings
 
 mod client;
+mod proxies;
 mod settings;
 mod store;
 

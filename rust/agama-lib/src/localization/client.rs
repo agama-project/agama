@@ -1,5 +1,5 @@
+use super::proxies::LocaleProxy;
 use crate::error::ServiceError;
-use crate::proxies::LocaleProxy;
 use zbus::Connection;
 
 /// D-Bus client for the software service
