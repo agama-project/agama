@@ -33,6 +33,7 @@ jobs:
 
       - name: Install tools
         run: zypper --non-interactive install --no-recommends
+             bzip2
              git
              obs-service-format_spec_file
              osc
