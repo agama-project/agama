@@ -162,7 +162,7 @@ module Agama
 
         # All block devices affected by the space policy.
         #
-        # This includes the partitions from the root device, the candidate devices and from the
+        # This includes the partitions from the boot device, the candidate devices and from the
         # devices directly assigned to a volume as target device. If a device is not partitioned,
         # then the device itself is included.
         #

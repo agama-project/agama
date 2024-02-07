@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -38,7 +38,7 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
       settings.encryption.method = Y2Storage::EncryptionMethod::LUKS2
       settings.encryption.pbkd_function = Y2Storage::PbkdFunction::ARGON2ID
       settings.space.policy = :custom
-      settings.space.actions = { "/dev/sda" => :force_delete }
+      settings.space.actions = { "/dev/sda" => :force_delete, "/dev/sdb1" => "resize" }
       settings.volumes = [Agama::Storage::Volume.new("/test")]
     end
   end
@@ -53,7 +53,7 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
         "EncryptionMethod"       => "luks2",
         "EncryptionPBKDFunction" => "pbkdf2",
         "SpacePolicy"            => "keep",
-        "SpaceActions"           => {},
+        "SpaceActions"           => [],
         "Volumes"                => []
       )
 
@@ -65,7 +65,16 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
         "EncryptionMethod"       => "luks2",
         "EncryptionPBKDFunction" => "argon2id",
         "SpacePolicy"            => "custom",
-        "SpaceActions"           => { "/dev/sda" => :force_delete },
+        "SpaceActions"           => [
+          {
+            "Device" => "/dev/sda",
+            "Action" => "force_delete"
+          },
+          {
+            "Device" => "/dev/sdb1",
+            "Action" => "resize"
+          }
+        ],
         "Volumes"                => [
           {
             "MountPath"     => "/test",

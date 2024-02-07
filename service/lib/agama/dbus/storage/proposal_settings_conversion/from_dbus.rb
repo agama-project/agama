@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -130,9 +130,11 @@ module Agama
           end
 
           # @param target [Agama::Storage::ProposalSettings]
-          # @param value [Hash]
+          # @param value [Array<Hash>]
           def space_actions_conversion(target, value)
-            target.space.actions = value
+            target.space.actions = value.each_with_object({}) do |v, result|
+              result[v["Device"]] = v["Action"].to_sym
+            end
           end
 
           # @param target [Agama::Storage::ProposalSettings]
