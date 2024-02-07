@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+#
 # Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
@@ -24,6 +27,8 @@ module Yast2
   # Replacement to the Yast2::Popup class to work with Agama.
   class Popup
     class << self
+      # rubocop:disable Metrics/ParameterLists
+      # rubocop:disable Lint/UnusedMethodArgument
       def show(message, details: "", headline: "", timeout: 0, focus: nil, buttons: :ok,
         richtext: false, style: :notice)
 
@@ -65,3 +70,5 @@ module Yast2
     end
   end
 end
+# rubocop:enable Metrics/ParameterLists
+# rubocop:enable Lint/UnusedMethodArgument
