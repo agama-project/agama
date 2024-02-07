@@ -63,7 +63,6 @@ module Agama
         dbus_method(:CanInstall, "out result:b") { can_install? }
         dbus_method(:CollectLogs, "out tarball_filesystem_path:s") { collect_logs }
         dbus_method(:Finish, "") { finish_phase }
-        dbus_method(:ConvertProfile, "in url:s, in dir:s") { |url, dir| convert_profile(url, dir) }
         dbus_reader :installation_phases, "aa{sv}"
         dbus_reader :current_installation_phase, "u"
         dbus_reader :iguana_backend, "b"
@@ -101,16 +100,6 @@ module Agama
       # Last action for the installer
       def finish_phase
         backend.finish_installation
-      end
-
-      # Converts an AutoYaST profile into an Agama one.
-      #
-      # @param url [String] URL to download the profile from.
-      # @param directory [String] Directory to write the profile and its associated files (e.g.,
-      #   scripts).
-      def convert_profile(url, directory)
-        converter = AutoYaST::Converter.new(url)
-        converter.to_agama(directory)
       end
 
       # Description of all possible installation phase values
