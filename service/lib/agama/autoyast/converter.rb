@@ -122,6 +122,7 @@ module Agama
 
       # @param drives [Array<Hash>] Array of drives in the AutoYaST partitioning section
       def export_storage(drives)
+        # TODO: rely on AutoinstProfile classes
         devices = drives.each_with_object([]) do |d, all|
           next unless d["device"]
 
