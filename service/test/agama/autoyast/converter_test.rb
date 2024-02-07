@@ -39,6 +39,12 @@ describe Agama::AutoYaST::Converter do
     stub_const("Y2Autoinstallation::XmlChecks::ERRORS_PATH", File.join(tmpdir, "errors"))
     Yast.import "Installation"
     allow(Yast::Installation).to receive(:sourcedir).and_return(File.join(tmpdir, "mount"))
+    allow(Yast::AutoinstConfig).to receive(:scripts_dir)
+      .and_return(File.join(tmpdir, "scripts"))
+    allow(Yast::AutoinstConfig).to receive(:profile_dir)
+      .and_return(File.join(tmpdir, "profile"))
+    allow(Yast::AutoinstConfig).to receive(:modified_profile)
+      .and_return(File.join(tmpdir, "profile", "modified.xml"))
   end
 
   after do
@@ -53,10 +59,18 @@ describe Agama::AutoYaST::Converter do
   describe "#to_agama" do
     context "when some pre-script is defined" do
       let(:profile_name) { "pre-scripts.xml" }
+      let(:profile) { File.join(tmpdir, profile_name) }
 
       before do
         allow(Yast::AutoinstConfig).to receive(:scripts_dir)
           .and_return(File.join(tmpdir, "scripts"))
+        allow(Yast::AutoinstConfig).to receive(:profile_dir)
+          .and_return(File.join(tmpdir, "profile"))
+
+        # Adapt the script to use the new tmp directory
+        profile_content = File.read(File.join(FIXTURES_PATH, "profiles", profile_name))
+        profile_content.gsub!("/tmp/profile/", "#{tmpdir}/profile/")
+        File.write(profile, profile_content)
       end
 
       it "runs the script" do
