@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb  7 11:49:02 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add preliminary support to import AutoYaST profiles
+  (gh#openSUSE/agama#1029).
+
+-------------------------------------------------------------------
 Mon Jan 29 15:53:56 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Better network configuration handling (gh#openSUSE/agama#1006):

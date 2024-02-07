@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb  7 11:49:02 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add preliminary support to import AutoYaST profiles
+  (gh#openSUSE/agama#1029).
+
+-------------------------------------------------------------------
 Thu Feb  1 13:08:39 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Log if multipath probing is misconfigured (bsc#1215598) 
