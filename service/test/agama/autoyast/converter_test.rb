@@ -30,6 +30,15 @@ describe Agama::AutoYaST::Converter do
   let(:profile_name) { "simple.xml" }
   let(:workdir) { Dir.mktmpdir }
   let(:tmpdir) { Dir.mktmpdir }
+  let(:xml_validator) do
+    instance_double(
+      Y2Autoinstallation::XmlValidator,
+      valid?: xml_valid?,
+      errors: xml_errors
+    )
+  end
+  let(:xml_valid?) { true }
+  let(:xml_errors) { [] }
   let(:result) do
     content = File.read(File.join(workdir, "autoinst.json"))
     JSON.parse(content)
@@ -45,6 +54,7 @@ describe Agama::AutoYaST::Converter do
       .and_return(File.join(tmpdir, "profile"))
     allow(Yast::AutoinstConfig).to receive(:modified_profile)
       .and_return(File.join(tmpdir, "profile", "modified.xml"))
+    allow(Y2Autoinstallation::XmlValidator).to receive(:new).and_return(xml_validator)
   end
 
   after do
@@ -111,6 +121,8 @@ describe Agama::AutoYaST::Converter do
   end
 
   context "when an invalid profile is given" do
+    let(:xml_valid?) { false }
+    let(:xml_errors) { ["Some validation error"] }
     let(:profile_name) { "invalid.xml" }
 
     it "reports the problem" do
