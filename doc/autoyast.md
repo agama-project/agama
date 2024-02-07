@@ -95,8 +95,9 @@ Regarding users, Agama only allows defining the first user and setting the root 
 mechanism (password and/or SSH public key). However, AutoYaST allows to specify a list of users and
 groups plus some authentication settings. We have at least two options here:
 
-* Import these sections as given because they are handled by the YaST code in Agama.
 * Extract the root authentication data from the profile and try to infer which is the first user.
+This behavior is already implemented.
+* Import these sections as given because they are handled by the YaST code in Agama.
 
 ### `keyboard`, `language` and `timezone`
 
