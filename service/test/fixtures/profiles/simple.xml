@@ -5,6 +5,9 @@
     <products config:type="list">
       <product>Tumbleweed</product>
     </products>
+    <patterns config:type="list">
+      <pattern>enhanced_base</pattern>
+    </patterns>
   </software>
 
   <language>
