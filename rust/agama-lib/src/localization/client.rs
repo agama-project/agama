@@ -14,17 +14,12 @@ impl<'a> LocalizationClient<'a> {
         })
     }
 
-    pub async fn language(&self) -> Result<String, ServiceError> {
+    pub async fn language(&self) -> Result<Option<String>, ServiceError> {
         let locales = self.localization_proxy.locales().await?;
-        if locales.is_empty() {
-            // FIXME is this right?
-            Ok("".to_owned())
-        } else {
-            // without clone:
-            // error[E0507]: cannot move out of index of `Vec<std::string::String>`
-            // but why, it's a Vec<String> I should be able to move it?!
-            Ok(locales[0].clone())
-        }
+        let mut iter = locales.into_iter();
+        let first = iter.next();
+        // may be None
+        Ok(first)
     }
 
     pub async fn keyboard(&self) -> Result<String, ServiceError> {

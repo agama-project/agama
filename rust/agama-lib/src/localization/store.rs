@@ -22,12 +22,12 @@ impl<'a> LocalizationStore<'a> {
         // but LocaleProxy does not have it, only get_property for individual methods
         // and properties_proxy is private
 
-        let language = self.localization_client.language().await?;
+        let opt_language = self.localization_client.language().await?;
         let keyboard = self.localization_client.keyboard().await?;
         let timezone = self.localization_client.timezone().await?;
 
         Ok(LocalizationSettings {
-            language: Some(language),
+            language: opt_language,
             keyboard: Some(keyboard),
             timezone: Some(timezone),
         })
