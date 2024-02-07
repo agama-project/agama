@@ -119,7 +119,7 @@ things simple.
 ### `partitioning`
 
 By far, the most complex part of an AutoYaST profile. We can import the AutoYaST `partitioning`
-section as is because the partitioning is handled by the same code in Agama and AutoyaST.
+section as it is because the partitioning is handled by the same code in Agama and AutoyaST.
 
 However, we must implement a mechanism to convert to/from both profile types.
 

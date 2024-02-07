@@ -109,7 +109,7 @@ module Agama
         )
       end
 
-      # @return [Hash] D-Installer profile
+      # @return [Hash] Agama profile
       def export_profile(profile)
         users = Agama::AutoYaST::UsersConverter.new(profile)
         {
