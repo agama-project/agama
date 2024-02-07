@@ -101,6 +101,14 @@ describe Agama::AutoYaST::Converter do
           "sshPublicKey" => "ssh-rsa ...")
       end
     end
+
+    context "when a non-system user is defined" do
+      it "exports the user information" do
+        subject.to_agama(workdir)
+        expect(result["user"]).to include("userName" => "jane",
+          "password" => "12345678", "fullName" => "Jane Doe")
+      end
+    end
   end
 
   context "when an invalid profile is given" do
