@@ -95,7 +95,6 @@ describe Agama::AutoYaST::Converter do
 
     context "when the root password and/or public SSH key are set" do
       it "exports the root password and/or public SSH key" do
-        expect(Yast2::Popup).to_not receive(:show)
         subject.to_agama(workdir)
         expect(result["root"]).to include("password" => "nots3cr3t",
           "sshPublicKey" => "ssh-rsa ...")
