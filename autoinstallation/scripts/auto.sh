@@ -1,6 +1,9 @@
 #!/usr/bin/sh
 set -ex
 
+# Temporarily skip the AutoYaST XML validation
+export YAST_SKIP_XML_VALIDATION=1
+
 if [ -z "$1" ]
 then
   url=$(awk -F 'agama.auto=' '{sub(/ .*$/, "", $2); print $2}' < /proc/cmdline)
