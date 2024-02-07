@@ -20,7 +20,7 @@ fn validate(path: String) -> anyhow::Result<()> {
     let path = Path::new(&path);
     let result = validator
         .validate_file(path)
-        .context("Could not validate the profile")?;
+        .context(format!("Could not validate the profile {:?}", path))?;
     match result {
         ValidationResult::Valid => {
             println!("The profile is valid")
