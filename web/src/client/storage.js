@@ -241,9 +241,14 @@ class ProposalManager {
    * @property {string} encryptionMethod
    * @property {boolean} lvm
    * @property {string} spacePolicy
+   * @property {SpaceAction[]} spaceActions
    * @property {string[]} systemVGDevices
    * @property {Volume[]} volumes
    * @property {StorageDevice[]} installationDevices
+   *
+   * @typedef {object} SpaceAction
+   * @property {string} device
+   * @property {string} action
    *
    * @typedef {object} Volume
    * @property {string} mountPath
@@ -338,6 +343,13 @@ class ProposalManager {
     const systemDevices = await this.system.getDevices();
 
     const buildResult = (proxy) => {
+      const buildSpaceAction = dbusSpaceAction => {
+        return {
+          device: dbusSpaceAction.Device.v,
+          action: dbusSpaceAction.Action.v
+        };
+      };
+
       const buildAction = dbusAction => {
         return {
           text: dbusAction.Text.v,
@@ -365,6 +377,7 @@ class ProposalManager {
           bootDevice: proxy.BootDevice,
           lvm: proxy.LVM,
           spacePolicy: proxy.SpacePolicy,
+          spaceActions: proxy.SpaceActions.map(buildSpaceAction),
           systemVGDevices: proxy.SystemVGDevices,
           encryptionPassword: proxy.EncryptionPassword,
           encryptionMethod: proxy.EncryptionMethod,
@@ -388,7 +401,31 @@ class ProposalManager {
    * @param {ProposalSettings} settings
    * @returns {Promise<number>} 0 on success, 1 on failure
    */
-  async calculate({ bootDevice, encryptionPassword, encryptionMethod, lvm, spacePolicy, systemVGDevices, volumes }) {
+  async calculate(settings) {
+    const {
+      bootDevice,
+      encryptionPassword,
+      encryptionMethod,
+      lvm,
+      spacePolicy,
+      spaceActions,
+      systemVGDevices,
+      volumes
+    } = settings;
+
+    const dbusSpaceActions = () => {
+      const dbusSpaceAction = (spaceAction) => {
+        return {
+          Device: { t: "s", v: spaceAction.device },
+          Action: { t: "s", v: spaceAction.action }
+        };
+      };
+
+      if (spacePolicy !== "custom") return;
+
+      return spaceActions?.map(dbusSpaceAction);
+    };
+
     const dbusVolume = (volume) => {
       return removeUndefinedCockpitProperties({
         MountPath: { t: "s", v: volume.mountPath },
@@ -401,18 +438,19 @@ class ProposalManager {
       });
     };
 
-    const settings = removeUndefinedCockpitProperties({
+    const dbusSettings = removeUndefinedCockpitProperties({
       BootDevice: { t: "s", v: bootDevice },
       EncryptionPassword: { t: "s", v: encryptionPassword },
       EncryptionMethod: { t: "s", v: encryptionMethod },
       LVM: { t: "b", v: lvm },
       SpacePolicy: { t: "s", v: spacePolicy },
+      SpaceActions: { t: "aa{sv}", v: dbusSpaceActions() },
       SystemVGDevices: { t: "as", v: systemVGDevices },
       Volumes: { t: "aa{sv}", v: volumes?.map(dbusVolume) }
     });
 
     const proxy = await this.proxies.proposalCalculator;
-    return proxy.Calculate(settings);
+    return proxy.Calculate(dbusSettings);
   }
 
   /**

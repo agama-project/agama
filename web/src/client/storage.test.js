@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -155,7 +155,17 @@ const contexts = {
       LVM: true,
       SystemVGDevices: ["/dev/sda", "/dev/sdb"],
       EncryptionPassword: "00000",
-      SpacePolicy: "delete",
+      SpacePolicy: "custom",
+      SpaceActions: [
+        {
+          Device: { t: "s", v: "/dev/sda" },
+          Action: { t: "s", v: "force_delete" }
+        },
+        {
+          Device: { t: "s", v: "/dev/sdb" },
+          Action: { t: "s", v: "resize" }
+        }
+      ],
       Volumes: [
         {
           MountPath: { t: "s", v: "/" },
@@ -825,7 +835,11 @@ describe("#proposal", () => {
           lvm: true,
           systemVGDevices: ["/dev/sda", "/dev/sdb"],
           encryptionPassword: "00000",
-          spacePolicy: "delete",
+          spacePolicy: "custom",
+          spaceActions: [
+            { device: "/dev/sda", action: "force_delete" },
+            { device: "/dev/sdb", action: "resize" }
+          ],
           volumes: [
             {
               mountPath: "/",
@@ -895,6 +909,8 @@ describe("#proposal", () => {
         encryptionPassword: "12345",
         lvm: true,
         systemVGDevices: ["/dev/sdc"],
+        spacePolicy: "custom",
+        spaceActions: [{ device: "/dev/sda", action: "resize" }],
         volumes: [
           {
             mountPath: "/test1",
@@ -916,6 +932,16 @@ describe("#proposal", () => {
         EncryptionPassword: { t: "s", v: "12345" },
         LVM: { t: "b", v: true },
         SystemVGDevices: { t: "as", v: ["/dev/sdc"] },
+        SpacePolicy: { t: "s", v: "custom" },
+        SpaceActions: {
+          t: "aa{sv}",
+          v: [
+            {
+              Device: { t: "s", v: "/dev/sda" },
+              Action: { t: "s", v: "resize" }
+            }
+          ]
+        },
         Volumes: {
           t: "aa{sv}",
           v: [
@@ -933,6 +959,17 @@ describe("#proposal", () => {
             }
           ]
         }
+      });
+    });
+
+    it("calculates a proposal without space actions if the policy is not custom", async () => {
+      await client.proposal.calculate({
+        spacePolicy: "delete",
+        spaceActions: [{ device: "/dev/sda", action: "resize" }],
+      });
+
+      expect(cockpitProxies.proposalCalculator.Calculate).toHaveBeenCalledWith({
+        SpacePolicy: { t: "s", v: "delete" }
       });
     });
   });
