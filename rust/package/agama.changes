@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar  13 12:42:58 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add infiniband to network model (gh#openSUSE/agama#1032).
+
+-------------------------------------------------------------------
 Thu Mar  7 10:52:58 UTC 2024 - Michal Filka <mfilka@suse.com>
 
 - CLI: added auth command with login / logout / show subcommands
