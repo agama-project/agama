@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,6 +22,7 @@
 export { default as ProposalPage } from "./ProposalPage";
 export { default as ProposalPageMenu } from "./ProposalPageMenu";
 export { default as ProposalSettingsSection } from "./ProposalSettingsSection";
+export { default as ProposalSpacePolicySection } from "./ProposalSpacePolicySection";
 export { default as ProposalActionsSection } from "./ProposalActionsSection";
 export { default as ProposalVolumes } from "./ProposalVolumes";
 export { default as DASDPage } from "./DASDPage";
