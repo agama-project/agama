@@ -10,6 +10,17 @@ and how they will interact. Something that is represented as a sentence in the s
 become a tool-tip, a given icon can become a label, actions grouped in a drop-down can end up
 being represented as separate buttons, etc.
 
+### Transactional Systems
+
+Agama is able to install transactional distributions like openSUSE MicroOS. There will be no option
+in the Agama storage user interface to set whether the root file system of the installed system
+should be transactional (also known as "immutable") or not. Since the implications go beyond the
+file system settings, the nature of the system (transactional vs read-write) will be determined by
+the selection of the operating system to install, "product" in Agama jargon.
+
+This document describes the Agama interface for a traditional (non-transactional) system. See the
+section "interface changes for transactional systems" for the alternative.
+
 ### Representation of the Actions to Perform
 
 Another important point to consider is that currently the list of (libstorage-ng) actions is the
@@ -230,6 +241,17 @@ If, on top of that, the user also disables snapshots the new resulting list woul
 Of course, at any point in time the user could modify the root volume and switch to fixed (ie. not
 auto-calculated) limits. In that case, the entered values would be observed and would not be
 automatically recalculated anymore, despite any configuration for the default volumes.
+
+### Interface Changes for Transactional Systems
+
+As explained at the beginning of this document, Agama can install some transactional distributions.
+In those systems, it makes no sense to disable Btrfs snapshots, which are required to provide the
+functionality. Is not only that snapshots are mandatory in transactional systems, they are actually
+used with a different purpose when compared to read-write systems.
+
+Thus, if the system being installed is transactional, that will be clearly stated at the "settings"
+section of the storage proposal page. The setting to use btrfs snapshots will not be there and the
+root file system will be labeled as "transactional" in the corresponding table.
 
 ## Advanced Preparations
 
