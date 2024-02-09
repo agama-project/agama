@@ -245,6 +245,10 @@ ul[data-type="agama/list"] {
       border-top: 0;
     }
 
+    &:not(:last-child) {
+      border-bottom-width: 1px;
+    }
+
     > div {
       margin-block-end: var(--spacer-smaller);
     }
@@ -262,8 +266,8 @@ ul[data-type="agama/list"] {
     background: var(--color-gray-dark);
     font-weight: 700;
 
-    svg {
-      fill: white;
+    &:not(:last-child) {
+      border-bottom-color: white;
     }
   }
 }
@@ -289,6 +293,10 @@ ul[data-type="agama/list"][role="grid"] {
       &:not([aria-selected]) {
         background: var(--color-gray-dark);
       }
+
+      &:not(:last-child) {
+        border-bottom-color: white;
+      }
     }
 
     div[role="gridcell"] {
@@ -310,26 +318,24 @@ ul[data-type="agama/list"][role="grid"] {
 }
 
 // Each kind of list/selector has its way of laying out their items
-ul[data-of="agama/storage-devices"] {
-  li {
-    display: grid;
-    gap: var(--spacer-smaller);
-    grid-template-columns: 1fr 2fr 2fr;
-    grid-template-areas: "type-and-size drive-info drive-content";
+[data-items-type="agama/storage-devices"] {
+  display: grid;
+  gap: var(--spacer-smaller);
+  grid-template-columns: 1fr 2fr 2fr;
+  grid-template-areas: "type-and-size drive-info drive-content";
 
-    svg {
-      vertical-align: inherit;
-    }
+  svg {
+    vertical-align: inherit;
+  }
 
-    > div {
-      margin-block-end: 0;
-    }
+  > div {
+    margin-block-end: 0;
+  }
 
-    > :first-child {
-      align-self: center;
-      text-align: center;
-      justify-self: start;
-    }
+  > :first-child {
+    align-self: center;
+    text-align: center;
+    justify-self: start;
   }
 }
 

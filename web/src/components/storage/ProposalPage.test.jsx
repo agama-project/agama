@@ -39,10 +39,40 @@ jest.mock("@patternfly/react-core", () => {
 jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 jest.mock("~/components/storage/ProposalPageMenu", () => () => <div>ProposalPage Options</div>);
 
+const vda = {
+  sid: "59",
+  type: "disk",
+  vendor: "Micron",
+  model: "Micron 1100 SATA",
+  driver: ["ahci", "mmcblk"],
+  bus: "IDE",
+  transport: "usb",
+  dellBOSS: false,
+  sdCard: true,
+  active: true,
+  name: "/dev/vda",
+  size: 1e+12,
+  systems : ["Windows 11", "openSUSE Leap 15.2"],
+  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
+  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+  partitionTable: { type: "gpt", partitions: ["/dev/vda1", "/dev/vda2"] }
+};
+
+const vdb = {
+  sid: "60",
+  type: "disk",
+  vendor: "Seagate",
+  model: "Unknown",
+  driver: ["ahci", "mmcblk"],
+  bus: "IDE",
+  name: "/dev/vdb",
+  size: 1e+6
+};
+
 const storageMock = {
   probe: jest.fn().mockResolvedValue(0),
   proposal: {
-    getAvailableDevices: jest.fn().mockResolvedValue([]),
+    getAvailableDevices: jest.fn().mockResolvedValue([vda, vdb]),
     getEncryptionMethods: jest.fn().mockResolvedValue([]),
     getProductMountPoints: jest.fn().mockResolvedValue([]),
     getResult: jest.fn().mockResolvedValue(undefined),
@@ -75,7 +105,7 @@ it("does not probe storage if the storage devices are not deprecated", async () 
 
 it("loads the proposal data", async () => {
   storage.proposal.getResult = jest.fn().mockResolvedValue(
-    { settings: { bootDevice: "/dev/vda" } }
+    { settings: { bootDevice: vda.name } }
   );
 
   installerRender(<ProposalPage />);
@@ -83,7 +113,7 @@ it("loads the proposal data", async () => {
   screen.getAllByText(/PFSkeleton/);
   expect(screen.queryByText(/Installation device/)).toBeNull();
   await screen.findByText(/Installation device/);
-  screen.getByText("/dev/vda");
+  await screen.findByText(/\/dev\/vda/);
 });
 
 it("renders a warning about modified devices", async () => {
@@ -114,7 +144,7 @@ describe("when the storage devices become deprecated", () => {
   });
 
   it("loads the proposal data", async () => {
-    const result = { settings: { bootDevice: "/dev/vda" } };
+    const result = { settings: { bootDevice: vda.name } };
     storage.proposal.getResult = jest.fn().mockResolvedValue(result);
 
     const [mockFunction, callbacks] = createCallbackMock();
@@ -122,14 +152,14 @@ describe("when the storage devices become deprecated", () => {
 
     installerRender(<ProposalPage />);
 
-    await screen.findByText("/dev/vda");
+    await screen.findByText(/\/dev\/vda/);
 
-    result.settings.bootDevice = "/dev/vdb";
+    result.settings.bootDevice = vdb.name;
 
     const [onDeprecateCb] = callbacks;
     await act(() => onDeprecateCb());
 
-    await screen.findByText("/dev/vdb");
+    await screen.findByText(/\/dev\/vdb/);
   });
 });
 
@@ -154,19 +184,19 @@ describe("when there is no proposal yet", () => {
     screen.getAllByText(/PFSkeleton/);
 
     storage.proposal.getResult = jest.fn().mockResolvedValue(
-      { settings: { bootDevice: "/dev/vda" } }
+      { settings: { bootDevice: vda.name } }
     );
 
     const [onStatusChangeCb] = callbacks;
     await act(() => onStatusChangeCb(IDLE));
-    await screen.findByText("/dev/vda");
+    await screen.findByText(/\/dev\/vda/);
   });
 });
 
 describe("when there is a proposal", () => {
   beforeEach(() => {
     storage.proposal.getResult = jest.fn().mockResolvedValue(
-      { settings: { bootDevice: "/dev/vda" } }
+      { settings: { bootDevice: vda.name } }
     );
   });
 
@@ -176,7 +206,7 @@ describe("when there is a proposal", () => {
 
     installerRender(<ProposalPage />);
 
-    await screen.findByText("/dev/vda");
+    await screen.findByText(/\/dev\/vda/);
 
     const [onStatusChangeCb] = callbacks;
     expect(onStatusChangeCb).toBeUndefined();

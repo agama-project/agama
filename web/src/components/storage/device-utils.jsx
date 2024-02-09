@@ -25,27 +25,12 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { noop } from "~/utils";
 import { Icon } from "~/components/layout";
-import { If } from "~/components/core";
+import { If, Selector } from "~/components/core";
 import { deviceSize } from "~/components/storage/utils";
 
 /**
  * @typedef {import ("~/client/storage").DeviceManager.StorageDevice} StorageDevice
  */
-
-const ListBox = ({ children, ...props }) => <ul data-type="agama/list" data-of="agama/storage-devices" {...props}>{children}</ul>;
-
-const ListBoxItem = ({ isSelected, children, onClick, ...props }) => {
-  if (isSelected) props['aria-selected'] = true;
-
-  return (
-    <li
-      onClick={onClick}
-      { ...props }
-    >
-      {children}
-    </li>
-  );
-};
 
 /**
  * Content for a device item
@@ -213,11 +198,11 @@ const DeviceItem = ({ device }) => {
   };
 
   return (
-    <>
+    <div data-items-type="agama/storage-devices">
       <BasicInfo data-type="type-and-size" />
       <ExtendedInfo />
       <ContentInfo />
-    </>
+    </div>
   );
 };
 
@@ -225,18 +210,22 @@ const DeviceItem = ({ device }) => {
  * Component for listing storage devices.
  * @component
  *
+ * TODO: re-evaluate the need of this component when addressing
+ * https://github.com/openSUSE/agama/pull/1031
+ *
  * @param {Object} props
  * @param {StorageDevice[]} props.devices - Devices to show.
+ * @param {Object} props.itemProps - common props, if any, for list items.
  */
-const DeviceList = ({ devices, ...props }) => {
+const DeviceList = ({ devices, ...itemProps }) => {
   return (
-    <ListBox>
+    <ul data-type="agama/list">
       { devices.map(device => (
-        <ListBoxItem key={device.sid} {...props} data-type="storage-device">
+        <li aria-label={device.name} key={device.sid} {...itemProps}>
           <DeviceItem device={device} />
-        </ListBoxItem>
+        </li>
       ))}
-    </ListBox>
+    </ul>
   );
 };
 
@@ -256,30 +245,25 @@ const DeviceList = ({ devices, ...props }) => {
  *  in case of multi selection.
  */
 const DeviceSelector = ({ devices, selected, isMultiple = false, onChange = noop }) => {
-  const selectedDevices = () => [selected].flat().filter(Boolean);
+  const selectedDevices = [selected].flat().filter(Boolean);
 
-  const isSelected = (device) => selectedDevices().includes(device);
-
-  const onOptionClick = (device) => {
-    if (!isMultiple && !isSelected(device)) onChange(device);
-    if (isMultiple && !isSelected(device)) onChange([...selectedDevices(), device]);
-    if (isMultiple && isSelected(device)) onChange(selectedDevices().filter(d => d !== device));
+  const onSelectionChange = (selection) => {
+    isMultiple ? onChange(selection) : onChange(selection[0]);
   };
 
   return (
-    <ListBox aria-label={_("Available devices")} role="listbox">
+    <Selector
+      aria-label={_("Available devices")}
+      isMultiple={isMultiple}
+      selectedIds={selectedDevices.map(d => d.sid)}
+      onSelectionChange={onSelectionChange}
+    >
       { devices.map(device => (
-        <ListBoxItem
-          key={device.sid}
-          role="option"
-          onClick={() => onOptionClick(device.name)}
-          isSelected={isSelected(device.name)}
-          data-type="storage-device"
-        >
+        <Selector.Option id={device.sid} key={device.sid}>
           <DeviceItem device={device} />
-        </ListBoxItem>
+        </Selector.Option>
       ))}
-    </ListBox>
+    </Selector>
   );
 };
 

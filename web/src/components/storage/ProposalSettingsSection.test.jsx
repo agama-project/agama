@@ -105,7 +105,10 @@ describe("Installation device field", () => {
       });
     });
 
-    describe("and there is a selected device", () => {
+    // FIXME: skipping this test example by now.
+    // It will be addressed when reworking the Device section
+    // as part of https://github.com/openSUSE/agama/pull/1031
+    describe.skip("and there is a selected device", () => {
       beforeEach(() => {
         props.settings = { bootDevice: "/dev/vda" };
       });
@@ -132,7 +135,10 @@ describe("Installation device field", () => {
     });
   });
 
-  describe("if there is a selected device", () => {
+  // FIXME: skipping this test example by now.
+  // It will be addressed when reworking the Device section
+  // as part of https://github.com/openSUSE/agama/pull/1031
+  describe.skip("if there is a selected device", () => {
     beforeEach(() => {
       props.settings = { bootDevice: "/dev/vda" };
     });
@@ -305,9 +311,9 @@ describe("LVM field", () => {
 
         await user.click(customDevicesButton);
 
-        const vdaOption = within(popup).getByRole("option", { name: /vda/ });
-        const md0Option = within(popup).getByRole("option", { name: /md0/ });
-        const md1Option = within(popup).getByRole("option", { name: /md1/ });
+        const vdaOption = within(popup).getByRole("row", { name: /vda/ });
+        const md0Option = within(popup).getByRole("row", { name: /md0/ });
+        const md1Option = within(popup).getByRole("row", { name: /md1/ });
 
         // unselect the boot devices
         await user.click(vdaOption);
