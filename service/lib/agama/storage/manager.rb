@@ -293,13 +293,8 @@ module Agama
         mods = `lsmod`.lines.grep(/dm_multipath/)
         logger.warn("dm_multipath modules is not loaded") if mods.empty?
 
-        conf_file = File.exist?(MULTIPATH_CONFIG)
-        if conf_file
-          finder = File.readlines(MULTIPATH_CONFIG).grep(/find_multipaths\s+smart/)
-          logger.warn("find_multipaths is not set to smart value") if finder.empty?
-        else
-          logger.warn("#{MULTIPATH_CONFIG} does not exist")
-        end
+        conf = `multipath -t`.lines.grep(/find_multipaths "smart"/)
+        logger.warn("multipath: find_multipaths is not set to 'smart'") if conf.empty?
       end
     end
   end
