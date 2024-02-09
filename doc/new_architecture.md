@@ -152,17 +152,6 @@ user/password. For that reason, there must be a mechanism to skip the authentica
 Live could run a special service that generates a valid token and injects such a token into the
 server, the CLI and the web browser.
 
-## The (optimistic) plan
-
-1. Build an HTTP API to access the stuff in `agama-dbus-server`.
-2. Rename `agama-dbus-server` to `agama-core`.
-3. Move the manager to `agama-core`.
-4. Drop `agama-core` D-Bus interface, except the bits required by `rubygem-agama`.
-5. Build an HTTP API to access `rubygem-agama`.
-6. Adapt the CLI to use the HTTP API.
-7. Update `agama-live` to skip the authentication when not needed.
-8. Adapt the Web UI to use the HTTP API.
-
 ## Links
 
 * https://bugzilla.suse.com/show_bug.cgi?id=1219688
