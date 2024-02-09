@@ -33,6 +33,30 @@ const cockpitCallbacks = {};
 
 let managedObjects = {};
 
+const sda1 = {
+  sid: "66",
+  type: "",
+  active: true,
+  name: "/dev/sda1",
+  size: 512,
+  recoverableSize: 128,
+  systems : ["Windows"],
+  udevIds: [],
+  udevPaths: []
+};
+
+const sda2 = {
+  sid: "67",
+  type: "",
+  active: true,
+  name: "/dev/sda2",
+  size: 512,
+  recoverableSize: 0,
+  systems : ["openSUSE Leap 15.2"],
+  udevIds: [],
+  udevPaths: []
+};
+
 const systemDevices = {
   sda: {
     sid: "59",
@@ -48,12 +72,13 @@ const systemDevices = {
     active: true,
     name: "/dev/sda",
     size: 1024,
+    recoverableSize: 0,
     systems : ["Windows", "openSUSE Leap 15.2"],
     udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
     udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
     partitionTable: {
       type: "gpt",
-      partitions: ["/dev/sda1", "/dev/sda2"]
+      partitions: [sda1, sda2]
     }
   },
   sdb: {
@@ -70,6 +95,7 @@ const systemDevices = {
     active: true,
     name: "/dev/sdb",
     size: 2048,
+    recoverableSize: 0,
     systems : [],
     udevIds: [],
     udevPaths: ["pci-0000:00-19"]
@@ -83,6 +109,7 @@ const systemDevices = {
     active: true,
     name: "/dev/md0",
     size: 2048,
+    recoverableSize: 0,
     systems : [],
     udevIds: [],
     udevPaths: []
@@ -102,6 +129,7 @@ const systemDevices = {
     active: true,
     name: "/dev/mapper/isw_ddgdcbibhd_244",
     size: 2048,
+    recoverableSize: 0,
     systems : [],
     udevIds: [],
     udevPaths: []
@@ -121,6 +149,7 @@ const systemDevices = {
     active: true,
     name: "/dev/mapper/36005076305ffc73a00000000000013b4",
     size: 2048,
+    recoverableSize: 0,
     systems : [],
     udevIds: [],
     udevPaths: []
@@ -139,10 +168,12 @@ const systemDevices = {
     active: true,
     name: "/dev/dasda",
     size: 2048,
+    recoverableSize: 0,
     systems : [],
     udevIds: [],
     udevPaths: []
-  }
+  },
+  sda1, sda2
 };
 
 const contexts = {
@@ -345,13 +376,17 @@ const contexts = {
         Active: { t: "b", v: true },
         Name: { t: "s", v: "/dev/sda" },
         Size: { t: "x", v: 1024 },
+        RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: ["Windows", "openSUSE Leap 15.2"] },
         UdevIds: { t: "as", v: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"] },
         UdevPaths: { t: "as", v: ["pci-0000:00-12", "pci-0000:00-12-ata"] }
       },
       "org.opensuse.Agama.Storage1.PartitionTable": {
         Type: { t: "s", v: "gpt" },
-        Partitions: { t: "as", v: ["/dev/sda1", "/dev/sda2"] }
+        Partitions: {
+          t: "as",
+          v: ["/org/opensuse/Agama/Storage1/system/66", "/org/opensuse/Agama/Storage1/system/67"]
+        }
       }
     };
     managedObjects["/org/opensuse/Agama/Storage1/system/60"] = {
@@ -369,6 +404,7 @@ const contexts = {
         Active: { t: "b", v: true },
         Name: { t: "s", v: "/dev/sdb" },
         Size: { t: "x", v: 2048 },
+        RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: [] },
         UdevIds: { t: "as", v: [] },
         UdevPaths: { t: "as", v: ["pci-0000:00-19"] }
@@ -384,6 +420,7 @@ const contexts = {
         Active: { t: "b", v: true },
         Name: { t: "s", v: "/dev/md0" },
         Size: { t: "x", v: 2048 },
+        RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: [] },
         UdevIds: { t: "as", v: [] },
         UdevPaths: { t: "as", v: [] }
@@ -407,6 +444,7 @@ const contexts = {
         Active: { t: "b", v: true },
         Name: { t: "s", v: "/dev/mapper/isw_ddgdcbibhd_244" },
         Size: { t: "x", v: 2048 },
+        RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: [] },
         UdevIds: { t: "as", v: [] },
         UdevPaths: { t: "as", v: [] }
@@ -430,6 +468,7 @@ const contexts = {
         Active: { t: "b", v: true },
         Name: { t: "s", v: "/dev/mapper/36005076305ffc73a00000000000013b4" },
         Size: { t: "x", v: 2048 },
+        RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: [] },
         UdevIds: { t: "as", v: [] },
         UdevPaths: { t: "as", v: [] }
@@ -450,7 +489,30 @@ const contexts = {
         Active: { t: "b", v: true },
         Name: { t: "s", v: "/dev/dasda" },
         Size: { t: "x", v: 2048 },
+        RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: [] },
+        UdevIds: { t: "as", v: [] },
+        UdevPaths: { t: "as", v: [] }
+      }
+    };
+    managedObjects["/org/opensuse/Agama/Storage1/system/66"] = {
+      "org.opensuse.Agama.Storage1.Block": {
+        Active: { t: "b", v: true },
+        Name: { t: "s", v: "/dev/sda1" },
+        Size: { t: "x", v: 512 },
+        RecoverableSize: { t: "x", v: 128 },
+        Systems: { t: "as", v: ["Windows"] },
+        UdevIds: { t: "as", v: [] },
+        UdevPaths: { t: "as", v: [] }
+      }
+    };
+    managedObjects["/org/opensuse/Agama/Storage1/system/67"] = {
+      "org.opensuse.Agama.Storage1.Block": {
+        Active: { t: "b", v: true },
+        Name: { t: "s", v: "/dev/sda2" },
+        Size: { t: "x", v: 512 },
+        RecoverableSize: { t: "x", v: 0 },
+        Systems: { t: "as", v: ["openSUSE Leap 15.2"] },
         UdevIds: { t: "as", v: [] },
         UdevPaths: { t: "as", v: [] }
       }

@@ -125,6 +125,7 @@ class DevicesManager {
    * @property {boolean} [active]
    * @property {string} [name] - Block device name
    * @property {number} [size]
+   * @property {number} [recoverableSize]
    * @property {string[]} [systems] - Name of the installed systems
    * @property {string[]} [udevIds]
    * @property {string[]} [udevPaths]
@@ -134,7 +135,7 @@ class DevicesManager {
    * @property {string} type
    */
   async getDevices() {
-    const buildDevice = (path, dbusDevice) => {
+    const buildDevice = (path, dbusDevices) => {
       const addDriveProperties = (device, dbusProperties) => {
         device.type = dbusProperties.Type.v;
         device.vendor = dbusProperties.Vendor.v;
@@ -166,6 +167,7 @@ class DevicesManager {
         device.active = blockProperties.Active.v;
         device.name = blockProperties.Name.v;
         device.size = blockProperties.Size.v;
+        device.recoverableSize = blockProperties.RecoverableSize.v;
         device.systems = blockProperties.Systems.v;
         device.udevIds = blockProperties.UdevIds.v;
         device.udevPaths = blockProperties.UdevPaths.v;
@@ -174,7 +176,7 @@ class DevicesManager {
       const addPtableProperties = (device, ptableProperties) => {
         device.partitionTable = {
           type: ptableProperties.Type.v,
-          partitions: ptableProperties.Partitions.v
+          partitions: ptableProperties.Partitions.v.map(p => buildDevice(p, dbusDevices))
         };
       };
 
@@ -183,22 +185,22 @@ class DevicesManager {
         type: ""
       };
 
-      const driveProperties = dbusDevice["org.opensuse.Agama.Storage1.Drive"];
+      const driveProperties = dbusDevices[path]["org.opensuse.Agama.Storage1.Drive"];
       if (driveProperties !== undefined) addDriveProperties(device, driveProperties);
 
-      const raidProperties = dbusDevice["org.opensuse.Agama.Storage1.RAID"];
+      const raidProperties = dbusDevices[path]["org.opensuse.Agama.Storage1.RAID"];
       if (raidProperties !== undefined) addRAIDProperties(device, raidProperties);
 
-      const multipathProperties = dbusDevice["org.opensuse.Agama.Storage1.Multipath"];
+      const multipathProperties = dbusDevices[path]["org.opensuse.Agama.Storage1.Multipath"];
       if (multipathProperties !== undefined) addMultipathProperties(device, multipathProperties);
 
-      const mdProperties = dbusDevice["org.opensuse.Agama.Storage1.MD"];
+      const mdProperties = dbusDevices[path]["org.opensuse.Agama.Storage1.MD"];
       if (mdProperties !== undefined) addMDProperties(device, mdProperties);
 
-      const blockProperties = dbusDevice["org.opensuse.Agama.Storage1.Block"];
+      const blockProperties = dbusDevices[path]["org.opensuse.Agama.Storage1.Block"];
       if (blockProperties !== undefined) addBlockProperties(device, blockProperties);
 
-      const ptableProperties = dbusDevice["org.opensuse.Agama.Storage1.PartitionTable"];
+      const ptableProperties = dbusDevices[path]["org.opensuse.Agama.Storage1.PartitionTable"];
       if (ptableProperties !== undefined) addPtableProperties(device, ptableProperties);
 
       return device;
@@ -214,7 +216,7 @@ class DevicesManager {
     const dbusObjects = managedObjects.shift();
     const systemPaths = Object.keys(dbusObjects).filter(k => k.startsWith(this.rootPath));
 
-    return systemPaths.map(p => buildDevice(p, dbusObjects[p]));
+    return systemPaths.map(p => buildDevice(p, dbusObjects));
   }
 }
 
