@@ -610,9 +610,9 @@ describe("Space policy field", () => {
 
       const popup = await screen.findByRole("dialog");
       within(popup).getByText("Space Policy");
-      within(popup).getByRole("option", { name: /Delete current content/ });
-      within(popup).getByRole("option", { name: /Shrink existing partitions/ });
-      within(popup).getByRole("option", { name: /Use available space/, selected: true });
+      within(popup).getByRole("row", { name: /Delete current content/ });
+      within(popup).getByRole("row", { name: /Shrink existing partitions/ });
+      within(popup).getByRole("row", { name: /Use available space/, selected: true });
     });
 
     it("allows to show the installation devices", async () => {
@@ -642,7 +642,7 @@ describe("Space policy field", () => {
         await user.click(button);
 
         const popup = await screen.findByRole("dialog");
-        const option = within(popup).getByRole("option", { name: /Shrink/ });
+        const option = within(popup).getByRole("row", { name: /Shrink/ });
 
         await user.click(option);
         const cancel = within(popup).getByRole("button", { name: "Cancel" });
@@ -661,7 +661,7 @@ describe("Space policy field", () => {
         await user.click(button);
 
         const popup = await screen.findByRole("dialog");
-        const option = within(popup).getByRole("option", { name: /Shrink/ });
+        const option = within(popup).getByRole("row", { name: /Shrink/ });
 
         await user.click(option);
         const accept = within(popup).getByRole("button", { name: "Accept" });
