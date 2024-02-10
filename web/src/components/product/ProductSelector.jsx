@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { Card, CardBody, Radio } from "@patternfly/react-core";
+import { Selector } from "~/components/core";
 
 import { _ } from "~/i18n";
 import { noop } from "~/utils";
@@ -28,22 +28,22 @@ import { noop } from "~/utils";
 export default function ProductSelector({ value, products = [], onChange = noop }) {
   if (products.length === 0) return <p>{_("No products available for selection")}</p>;
 
-  const isSelected = (product) => product.id === value;
+  const onSelectionChange = (selection) => onChange(selection[0]);
 
   return (
-    products.map((p) => (
-      <Card key={p.id} className={isSelected(p) && "selected-product"}>
-        <CardBody>
-          <Radio
-            id={p.id}
-            name="product"
-            label={p.name}
-            description={p.description}
-            isChecked={isSelected(p)}
-            onClick={() => onChange(p.id)}
-          />
-        </CardBody>
-      </Card>
-    ))
+    <Selector
+      aria-label={_("Available products")}
+      selectedIds={[value]}
+      onSelectionChange={onSelectionChange}
+    >
+      { products.map(p => (
+        <Selector.Option id={p.id} key={p.id}>
+          <div className="stack">
+            <h3>{p.name}</h3>
+            <p>{p.description}</p>
+          </div>
+        </Selector.Option>
+      ))}
+    </Selector>
   );
 }

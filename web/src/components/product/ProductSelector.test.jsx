@@ -51,21 +51,23 @@ beforeEach(() => {
 
 it("shows an option for each product", async () => {
   installerRender(<ProductSelector products={products} />);
-  await screen.findByRole("radio", { name: "ALP Dolomite" });
-  await screen.findByRole("radio", { name: "openSUSE Tumbleweed" });
-  await screen.findByRole("radio", { name: "openSUSE MicroOS" });
+
+  await screen.findByRole("grid", { name: "Available products" });
+  screen.getByRole("row", { name: /ALP Dolomite/ });
+  screen.getByRole("row", { name: /openSUSE Tumbleweed/ });
+  screen.getByRole("row", { name: /openSUSE MicroOS/ });
 });
 
 it("selects the given value", async () => {
   installerRender(<ProductSelector value="Tumbleweed" products={products} />);
-  await screen.findByRole("radio", { name: "openSUSE Tumbleweed", clicked: true });
+  await screen.findByRole("row", { name: /openSUSE Tumbleweed/, selected: true });
 });
 
 it("calls onChange if a new option is clicked", async () => {
   const onChangeFn = jest.fn();
   const { user } = installerRender(<ProductSelector products={products} onChange={onChangeFn} />);
-  const radio = await screen.findByRole("radio", { name: "openSUSE Tumbleweed" });
-  await user.click(radio);
+  const productOption = await screen.findByRole("row", { name: /openSUSE Tumbleweed/ });
+  await user.click(productOption);
   expect(onChangeFn).toHaveBeenCalledWith("Tumbleweed");
 });
 

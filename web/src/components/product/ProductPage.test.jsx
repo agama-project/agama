@@ -201,10 +201,10 @@ describe("when the button for changing the product is clicked", () => {
 
       const popup = await screen.findByRole("dialog");
       within(popup).getByText("Choose a product");
-      within(popup).getByRole("radio", { name: "Test Product1" });
-      const radio = within(popup).getByRole("radio", { name: "Test Product2" });
+      within(popup).getByRole("row", { name: /Test Product1/ });
+      const productOption = within(popup).getByRole("row", { name: /Test Product2/ });
 
-      await user.click(radio);
+      await user.click(productOption);
       const accept = within(popup).getByRole("button", { name: "Accept" });
       await user.click(accept);
 
@@ -220,9 +220,9 @@ describe("when the button for changing the product is clicked", () => {
         await user.click(button);
 
         const popup = await screen.findByRole("dialog");
-        const radio = within(popup).getByRole("radio", { name: "Test Product2" });
+        const productOption = within(popup).getByRole("row", { name: /Test Product2/ });
 
-        await user.click(radio);
+        await user.click(productOption);
         const cancel = within(popup).getByRole("button", { name: "Cancel" });
         await user.click(cancel);
 
