@@ -243,6 +243,10 @@
         "keyboard": {
           "description": "Keyboard layout ID",
           "type": "string"
+        },
+        "timezone": {
+          "description": "Time zone identifier such as 'Europe/Berlin'",
+          "type": "string"
         }
       }
     },

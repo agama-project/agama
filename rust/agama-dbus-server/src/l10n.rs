@@ -106,10 +106,12 @@ impl Locale {
     fn set_keymap(&mut self, keymap_id: &str) -> Result<(), zbus::fdo::Error> {
         let keymap_id: KeymapId = keymap_id
             .parse()
-            .map_err(|_e| zbus::fdo::Error::InvalidArgs("Invalid keymap".to_string()))?;
+            .map_err(|_e| zbus::fdo::Error::InvalidArgs("Cannot parse keymap ID".to_string()))?;
 
         if !self.keymaps_db.exists(&keymap_id) {
-            return Err(zbus::fdo::Error::Failed("Invalid keymap value".to_string()));
+            return Err(zbus::fdo::Error::Failed(
+                "Cannot find this keymap".to_string(),
+            ));
         }
         self.keymap = keymap_id;
         Ok(())
