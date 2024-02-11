@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-28 02:07+0000\n"
-"PO-Revision-Date: 2024-01-01 19:02+0000\n"
+"POT-Creation-Date: 2024-02-07 02:04+0000\n"
+"PO-Revision-Date: 2024-02-09 13:42+0000\n"
 "Last-Translator: Victor hck <victorhck@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "es/>\n"
@@ -92,7 +92,7 @@ msgstr "Recargar"
 
 #: src/components/core/DevelopmentInfo.jsx:55
 msgid "Cockpit server"
-msgstr ""
+msgstr "Servidor Cockpit"
 
 #: src/components/core/FileViewer.jsx:65
 msgid "Reading file..."
@@ -103,13 +103,12 @@ msgid "Cannot read the file"
 msgstr "No se puede leer el archivo"
 
 #: src/components/core/InstallButton.jsx:37
-#, fuzzy
 msgid ""
 "There are some reported issues. Please review them in the previous steps "
 "before proceeding with the installation."
 msgstr ""
-"Hay algunos problemas reportados. Por favor, consulte [la lista de "
-"problemas] antes de continuar con la instalación."
+"Hay algunos problemas reportados. Por favor, revíselos en los pasos "
+"anteriores antes de continuar con la instalación."
 
 #: src/components/core/InstallButton.jsx:49
 msgid "Confirm Installation"
@@ -173,22 +172,23 @@ msgstr "Instalar"
 
 #: src/components/core/InstallationFinished.jsx:41
 msgid "TPM sealing requires the new system to be booted directly."
-msgstr ""
+msgstr "El sellado TPM requiere que el nuevo sistema se inicie directamente."
 
 #: src/components/core/InstallationFinished.jsx:46
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
 msgstr ""
+"Si se utilizó un medio local para ejecutar este instalador, expúlselo antes "
+"del próximo inicio."
 
 #: src/components/core/InstallationFinished.jsx:50
-#, fuzzy
 msgid "Hide details"
-msgstr "Detalles"
+msgstr "Ocultar detalles"
 
 #: src/components/core/InstallationFinished.jsx:50
 msgid "See more details"
-msgstr ""
+msgstr "Ver más detalles"
 
 #. TRANSLATORS: Do not translate 'abbr' and 'title', they are part of the HTML markup
 #: src/components/core/InstallationFinished.jsx:55
@@ -198,6 +198,10 @@ msgid ""
 "first boot of the new system. For that to work, the machine needs to boot "
 "directly to the new boot loader."
 msgstr ""
+"El último paso para configurar el <abbr title='Trusted Platform Module'>TPM</"
+"abbr> para abrir automáticamente dispositivos cifrados se llevará a cabo "
+"durante el primer inicio del nuevo sistema. Para que eso funcione, la "
+"máquina debe iniciarse directamente en el nuevo gestor de arranque."
 
 #. TRANSLATORS: page title
 #: src/components/core/InstallationFinished.jsx:88
@@ -270,9 +274,8 @@ msgid "Show global options"
 msgstr "Mostrar opciones globales"
 
 #: src/components/core/Page.jsx:215
-#, fuzzy
 msgid "Page Actions"
-msgstr "Acciones planeadas"
+msgstr "Acciones de página"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:35
 msgid "Passwords do not match"
@@ -338,9 +341,8 @@ msgid "Installer Options"
 msgstr "Opciones del instalador"
 
 #: src/components/core/Sidebar.jsx:128
-#, fuzzy
 msgid "Hide installer options"
-msgstr "Opciones del instalador"
+msgstr "Ocultar las opciones del instalador"
 
 #: src/components/core/Sidebar.jsx:136
 msgid "Diagnostic tools"
@@ -348,24 +350,20 @@ msgstr "Herramientas de diagnóstico"
 
 #. TRANSLATORS: Titles used for the popup displaying found section issues
 #: src/components/core/ValidationErrors.jsx:53
-#, fuzzy
 msgid "Software issues"
-msgstr "Software %s"
+msgstr "Problemas de software"
 
 #: src/components/core/ValidationErrors.jsx:54
-#, fuzzy
 msgid "Product issues"
-msgstr "Producto"
+msgstr "Problemas del producto"
 
 #: src/components/core/ValidationErrors.jsx:55
-#, fuzzy
 msgid "Storage issues"
-msgstr "Mostrar los problemas"
+msgstr "Problemas de almacenamiento"
 
 #: src/components/core/ValidationErrors.jsx:57
-#, fuzzy
 msgid "Found Issues"
-msgstr "Mostrar los problemas"
+msgstr "Problemas encontrados"
 
 #. TRANSLATORS: %d is replaced with the number of errors found
 #: src/components/core/ValidationErrors.jsx:77
@@ -403,8 +401,8 @@ msgstr ""
 "El idioma utilizado por el instalador. El idioma del sistema instalado se "
 "puede configurar en la página %s."
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:56
 #: src/components/l10n/L10nPage.jsx:384
 #: src/components/overview/L10nSection.jsx:52
@@ -619,38 +617,39 @@ msgstr "Prefijo IP o máscara de red"
 msgid "At least one address must be provided for selected mode"
 msgstr "Se debe proporcionar al menos una dirección para el modo seleccionado"
 
-#: src/components/network/IpSettingsForm.jsx:131
+#. TRANSLATORS: %s is replaced by the iSCSI target node name
+#: src/components/network/IpSettingsForm.jsx:133
+#: src/components/storage/iscsi/EditNodeForm.jsx:50
 #, c-format
-msgid "Edit %s connection"
-msgstr "Editar %s conexión"
+msgid "Edit %s"
+msgstr "Editar %s"
 
 #. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
-#: src/components/network/IpSettingsForm.jsx:133
-#: src/components/network/IpSettingsForm.jsx:138
-#: src/components/network/IpSettingsForm.jsx:140
+#: src/components/network/IpSettingsForm.jsx:136
+#: src/components/network/IpSettingsForm.jsx:141
+#: src/components/network/IpSettingsForm.jsx:143
 msgid "Mode"
 msgstr "Modo"
 
-#: src/components/network/IpSettingsForm.jsx:144
+#: src/components/network/IpSettingsForm.jsx:147
 msgid "Automatic (DHCP)"
 msgstr "Automático (DHCP)"
 
 #. TRANSLATORS: manual network configuration mode with a static IP address
-#: src/components/network/IpSettingsForm.jsx:146
+#: src/components/network/IpSettingsForm.jsx:149
 #: src/components/storage/iscsi/NodeStartupOptions.js:25
 msgid "Manual"
 msgstr "Manual"
 
 #. TRANSLATORS: network gateway configuration
-#: src/components/network/IpSettingsForm.jsx:161
 #: src/components/network/IpSettingsForm.jsx:164
+#: src/components/network/IpSettingsForm.jsx:167
 msgid "Gateway"
 msgstr "Puerta de enlace"
 
 #: src/components/network/NetworkPage.jsx:38
-#, fuzzy
 msgid "No wired connections found."
-msgstr "No se encontraron conexiones por cable"
+msgstr "No se encontraron conexiones por cable."
 
 #: src/components/network/NetworkPage.jsx:53
 msgid ""
@@ -666,9 +665,8 @@ msgstr ""
 "hardware o está deshabilitado."
 
 #: src/components/network/NetworkPage.jsx:58
-#, fuzzy
 msgid "No WiFi connections found."
-msgstr "No se encontraron conexiones WiFi"
+msgstr "No se encontraron conexiones WiFi."
 
 #. TRANSLATORS: button label
 #: src/components/network/NetworkPage.jsx:70
@@ -679,18 +677,18 @@ msgstr "Conectado a una red WIFI"
 
 #. TRANSLATORS: page section title
 #. TRANSLATORS: page title
-#: src/components/network/NetworkPage.jsx:170
-#: src/components/overview/NetworkSection.jsx:102
+#: src/components/network/NetworkPage.jsx:169
+#: src/components/overview/NetworkSection.jsx:83
 msgid "Network"
 msgstr "Red"
 
 #. TRANSLATORS: page section
-#: src/components/network/NetworkPage.jsx:172
+#: src/components/network/NetworkPage.jsx:171
 msgid "Wired networks"
 msgstr "Redes cableadas"
 
 #. TRANSLATORS: page section
-#: src/components/network/NetworkPage.jsx:177
+#: src/components/network/NetworkPage.jsx:176
 msgid "WiFi networks"
 msgstr "Redes WIFI"
 
@@ -788,13 +786,13 @@ msgstr "Olvidar red"
 msgid "The system will use %s as its default language."
 msgstr "El sistema utilizará %s como su idioma predeterminado."
 
-#: src/components/overview/NetworkSection.jsx:78
+#: src/components/overview/NetworkSection.jsx:59
 msgid "No network connections detected"
 msgstr "No se detectaron conexiones de red"
 
 #. TRANSLATORS: header for the list of active network connections,
 #. %d is replaced by the number of active connections
-#: src/components/overview/NetworkSection.jsx:87
+#: src/components/overview/NetworkSection.jsx:68
 #, c-format
 msgid "%d connection set:"
 msgid_plural "%d connections set:"
@@ -812,8 +810,8 @@ msgstr "Resumen de la instalación"
 msgid "%s (registered)"
 msgstr "%s (registrado)"
 
-#. TRANSLATORS: page section
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section
 #: src/components/overview/ProductSection.jsx:71
 #: src/components/product/ProductPage.jsx:435
 msgid "Product"
@@ -828,8 +826,8 @@ msgstr "Leer repositorios de software"
 msgid "Refresh the repositories"
 msgstr "Refrescar los repositorios"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
@@ -1232,9 +1230,8 @@ msgid "Installation device"
 msgstr "Dispositivo de instalación"
 
 #: src/components/storage/ProposalSettingsSection.jsx:154
-#, fuzzy
 msgid "No devices found."
-msgstr "No se encontraron dispositivos"
+msgstr "No se encontraron dispositivos."
 
 #: src/components/storage/ProposalSettingsSection.jsx:241
 msgid "Devices for creating the volume group"
@@ -1279,15 +1276,18 @@ msgid ""
 "system. TPM sealing requires the new system to be booted directly on its "
 "first run."
 msgstr ""
+"La contraseña no será necesaria para iniciar y acceder a los datos si el "
+"<abbr title='Trusted Platform Module'>TPM</abbr> puede verificar la "
+"integridad del sistema. El sellado TPM requiere que el nuevo sistema se "
+"inicie directamente en su primera ejecución."
 
 #: src/components/storage/ProposalSettingsSection.jsx:440
 msgid "Use the TPM to decrypt automatically on each boot"
-msgstr ""
+msgstr "Utilice el TPM para descifrar automáticamente en cada arranque"
 
 #: src/components/storage/ProposalSettingsSection.jsx:511
-#, fuzzy
 msgid "Change encryption settings"
-msgstr "Configuraciones del cifrado"
+msgstr "Cambiar las configuraciones de cifrado"
 
 #: src/components/storage/ProposalSettingsSection.jsx:516
 #: src/components/storage/ProposalSettingsSection.jsx:537
@@ -1418,9 +1418,8 @@ msgid "File systems to create in your system"
 msgstr "Sistemas de archivos para crear en su sistema"
 
 #: src/components/storage/VolumeForm.jsx:102
-#, fuzzy
 msgid "Select a value"
-msgstr "Seleccionar el idioma"
+msgstr "Seleccionar un valor"
 
 #. TRANSLATORS: description of Btrfs snapshots feature.
 #: src/components/storage/VolumeForm.jsx:212
@@ -1590,9 +1589,8 @@ msgid "Deactivated"
 msgstr "Desactivado"
 
 #: src/components/storage/ZFCPPage.jsx:417
-#, fuzzy
 msgid "No zFCP controllers found."
-msgstr "No se encontraron controladores zFCP"
+msgstr "No se encontraron controladores zFCP."
 
 #: src/components/storage/ZFCPPage.jsx:418
 msgid "Please, try to read the zFCP devices again."
@@ -1640,9 +1638,8 @@ msgid "Activate zFCP disk"
 msgstr "Activar disco zFCP"
 
 #: src/components/storage/ZFCPPage.jsx:553
-#, fuzzy
 msgid "No zFCP disks found."
-msgstr "No se encontraron discos zFCP"
+msgstr "No se encontraron discos zFCP."
 
 #. TRANSLATORS: button label
 #: src/components/storage/ZFCPPage.jsx:572
@@ -1791,12 +1788,6 @@ msgstr "Puerto"
 msgid "Incorrect port"
 msgstr "Puerto incorrecto"
 
-#. TRANSLATORS: %s is replaced by the iSCSI target node name
-#: src/components/storage/iscsi/EditNodeForm.jsx:50
-#, c-format
-msgid "Edit %s"
-msgstr "Editar %s"
-
 #: src/components/storage/iscsi/InitiatorForm.jsx:42
 msgid "Edit iSCSI Initiator"
 msgstr "Editar iniciador iSCSI"
@@ -1870,9 +1861,8 @@ msgid "Interface"
 msgstr "Interfaz"
 
 #: src/components/storage/iscsi/TargetsSection.jsx:139
-#, fuzzy
 msgid "No iSCSI targets found."
-msgstr "No se encontraron objetivos iSCSI"
+msgstr "No se encontraron objetivos iSCSI."
 
 #: src/components/storage/iscsi/TargetsSection.jsx:140
 msgid ""
@@ -1985,9 +1975,8 @@ msgid "PiB"
 msgstr "PB"
 
 #: src/components/users/FirstUser.jsx:44
-#, fuzzy
 msgid "No user defined yet."
-msgstr "Ningún usuario definido todavía"
+msgstr "Ningún usuario definido todavía."
 
 #: src/components/users/FirstUser.jsx:47
 msgid ""
@@ -2047,9 +2036,8 @@ msgid "Auto-login"
 msgstr "Inicio de sesión automático"
 
 #: src/components/users/RootAuthMethods.jsx:35
-#, fuzzy
 msgid "No root authentication method defined yet."
-msgstr "Aún no se ha definido ningún método de autenticación de root"
+msgstr "Aún no se ha definido ningún método de autenticación de root."
 
 #: src/components/users/RootAuthMethods.jsx:38
 msgid ""
@@ -2146,6 +2134,10 @@ msgstr "Usuario"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "Autenticación de root"
+
+#, c-format
+#~ msgid "Edit %s connection"
+#~ msgstr "Editar %s conexión"
 
 #~ msgid "Have a lot of fun! Your openSUSE Development Team."
 #~ msgstr "Have a lot of fun! El equipo de desarrollo de openSUSE."

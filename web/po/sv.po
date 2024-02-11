@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-28 02:07+0000\n"
+"POT-Creation-Date: 2024-02-07 02:04+0000\n"
 "PO-Revision-Date: 2024-01-21 14:59+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -398,8 +398,8 @@ msgstr ""
 "Språket som används av installationsprogrammet. Språket för det installerade "
 "systemet kan ställas in på sidan %s."
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:56
 #: src/components/l10n/L10nPage.jsx:384
 #: src/components/overview/L10nSection.jsx:52
@@ -614,31 +614,33 @@ msgstr "IP prefix eller nätmask"
 msgid "At least one address must be provided for selected mode"
 msgstr "Minst en adress måste tillhandahållas för valt läge"
 
-#: src/components/network/IpSettingsForm.jsx:131
+#. TRANSLATORS: %s is replaced by the iSCSI target node name
+#: src/components/network/IpSettingsForm.jsx:133
+#: src/components/storage/iscsi/EditNodeForm.jsx:50
 #, c-format
-msgid "Edit %s connection"
-msgstr "Redigera %s anslutning"
+msgid "Edit %s"
+msgstr "Redigera %s"
 
 #. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
-#: src/components/network/IpSettingsForm.jsx:133
-#: src/components/network/IpSettingsForm.jsx:138
-#: src/components/network/IpSettingsForm.jsx:140
+#: src/components/network/IpSettingsForm.jsx:136
+#: src/components/network/IpSettingsForm.jsx:141
+#: src/components/network/IpSettingsForm.jsx:143
 msgid "Mode"
 msgstr "Läge"
 
-#: src/components/network/IpSettingsForm.jsx:144
+#: src/components/network/IpSettingsForm.jsx:147
 msgid "Automatic (DHCP)"
 msgstr "Automatisk (DHCP)"
 
 #. TRANSLATORS: manual network configuration mode with a static IP address
-#: src/components/network/IpSettingsForm.jsx:146
+#: src/components/network/IpSettingsForm.jsx:149
 #: src/components/storage/iscsi/NodeStartupOptions.js:25
 msgid "Manual"
 msgstr "Manuell"
 
 #. TRANSLATORS: network gateway configuration
-#: src/components/network/IpSettingsForm.jsx:161
 #: src/components/network/IpSettingsForm.jsx:164
+#: src/components/network/IpSettingsForm.jsx:167
 msgid "Gateway"
 msgstr "Gateway"
 
@@ -673,18 +675,18 @@ msgstr "Anslut till ett Wi-Fi nätverk"
 
 #. TRANSLATORS: page section title
 #. TRANSLATORS: page title
-#: src/components/network/NetworkPage.jsx:170
-#: src/components/overview/NetworkSection.jsx:102
+#: src/components/network/NetworkPage.jsx:169
+#: src/components/overview/NetworkSection.jsx:83
 msgid "Network"
 msgstr "Nätverk"
 
 #. TRANSLATORS: page section
-#: src/components/network/NetworkPage.jsx:172
+#: src/components/network/NetworkPage.jsx:171
 msgid "Wired networks"
 msgstr "Trådbundna nätverk"
 
 #. TRANSLATORS: page section
-#: src/components/network/NetworkPage.jsx:177
+#: src/components/network/NetworkPage.jsx:176
 msgid "WiFi networks"
 msgstr "WiFi nätverk"
 
@@ -781,13 +783,13 @@ msgstr "Glöm nätverk"
 msgid "The system will use %s as its default language."
 msgstr "Systemet kommer att använda %s som dess standardspråk."
 
-#: src/components/overview/NetworkSection.jsx:78
+#: src/components/overview/NetworkSection.jsx:59
 msgid "No network connections detected"
 msgstr "Inga nätverksanslutningar upptäcktes"
 
 #. TRANSLATORS: header for the list of active network connections,
 #. %d is replaced by the number of active connections
-#: src/components/overview/NetworkSection.jsx:87
+#: src/components/overview/NetworkSection.jsx:68
 #, c-format
 msgid "%d connection set:"
 msgid_plural "%d connections set:"
@@ -805,8 +807,8 @@ msgstr "Installationssammanfattning"
 msgid "%s (registered)"
 msgstr "%s (registrerad)"
 
-#. TRANSLATORS: page section
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section
 #: src/components/overview/ProductSection.jsx:71
 #: src/components/product/ProductPage.jsx:435
 msgid "Product"
@@ -821,8 +823,8 @@ msgstr "Läser programvaruförråd"
 msgid "Refresh the repositories"
 msgstr "Uppdatera förråden"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
@@ -1777,12 +1779,6 @@ msgstr "Port"
 msgid "Incorrect port"
 msgstr "Felaktig port"
 
-#. TRANSLATORS: %s is replaced by the iSCSI target node name
-#: src/components/storage/iscsi/EditNodeForm.jsx:50
-#, c-format
-msgid "Edit %s"
-msgstr "Redigera %s"
-
 #: src/components/storage/iscsi/InitiatorForm.jsx:42
 msgid "Edit iSCSI Initiator"
 msgstr "Redigera iSCSI initiativtagare"
@@ -2127,6 +2123,10 @@ msgstr "Användare"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "Rootautentisering"
+
+#, c-format
+#~ msgid "Edit %s connection"
+#~ msgstr "Redigera %s anslutning"
 
 #~ msgid "Have a lot of fun! Your openSUSE Development Team."
 #~ msgstr "Ha mycket kul! Ditt openSUSE-utvecklingsteam."
