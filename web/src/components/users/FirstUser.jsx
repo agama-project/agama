@@ -269,8 +269,7 @@ export default function FirstUser() {
                           onClick={() => { setInsideDropDown(false); setFormValues({ ...formValues, userName: suggestion }) }}
                         >
                           { /* TRANSLATORS: dropdown username suggestions */ }
-                          { _("Use suggested username ") }
-                          <strong>{suggestion}</strong>
+                          { _("Use suggested username") } <b>{suggestion}</b>
                         </MenuItem>
                       )) }
                     </MenuList>
