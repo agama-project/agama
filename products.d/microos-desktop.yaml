@@ -12,6 +12,10 @@ description: 'A distribution for the desktop offering automatic updates and
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
+    es: Una distribución para escritorio que ofrece actualizaciones automáticas y
+      reversión sobre los fundamentos de openSUSE MicroOS. Incluye Podman
+      Container Runtime y permite administrar software usando Gnome Software o
+      KDE Discover.
     fr: Une distribution pour le bureau offrant des mises à jour automatiques et un
       rétablissement au dessus des fondations d'openSUSE MicroOS. Inclut Podman
       Container Runtime et permet de gérer les logiciels en utilisant Gnome
