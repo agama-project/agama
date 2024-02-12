@@ -142,7 +142,7 @@ NOTE: under discussion.
 
 The HTTP interface should allow authentication specifying a user and password that will be checked
 against PAM. It is not clear yet, but we might need to check whether the logged user has permissions
-(most probably through Polkit).
+(making sure it is `root` or through Polkit).
 
 On successful authentication, the server generates a [JSON Web Token][jwt] that the client will
 include in the subsequent requests. The web client stores the token in an HTTP-only
