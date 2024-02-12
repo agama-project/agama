@@ -22,7 +22,7 @@ using Agama live.
 auto-installation process.
 
 * **Auto-installation (`autoinstallation`)**: it is composed by a Systemd service (`agama-auto`) and
-an script that relies in `agama-cli`.
+a script that relies on `agama-cli`.
 
 In addition to those components, we need to consider Cockpit, which plays a vital role:
 
@@ -36,6 +36,7 @@ flowchart LR
   subgraph Clients
     Browser
     CLI
+    auto
   end
 
   subgraph Cockpit
@@ -53,6 +54,7 @@ flowchart LR
   CLI <--D-Bus-->  Rust
   CLI <--D-Bus--> Ruby
   Rust <--D-Bus---> Ruby
+  auto --> CLI
 ```
 
 ## The new architecture
@@ -84,6 +86,9 @@ makes this React application available to the browsers.
 auto-installation process. With the new architecture, connecting through the network might be
 possible without SSH.
 
+* **Auto-installation (`autoinstallation`)**: as in the current architecture, it is composed by
+a Systemd service (`agama-auto`) and a script that relies on `agama-cli`.
+
 The following diagram could be better, but it represents the main components and their interactions.
 
 ```mermaid
@@ -91,6 +96,7 @@ flowchart LR
   subgraph Clients
     Browser
     CLI
+    auto
   end
 
   subgraph Agama Core
@@ -101,7 +107,7 @@ flowchart LR
       WS["WebSocket"]
     end
 
-    Web <--"Channel?" --> Rust
+    Web <--"Channel" --> Rust
   end
   Rust <-- "D-Bus" --> YaST["Agama YaST"]
 
@@ -110,6 +116,7 @@ flowchart LR
   Browser <---> WS
   CLI --> API
   CLI <---> WS
+  auto --> CLI
 ```
 
 ### The web-based API
