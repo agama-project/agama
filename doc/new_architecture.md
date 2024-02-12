@@ -9,7 +9,7 @@ But before describing how the architecture should look, let's quickly look at th
 
 ## The current architecture
 
-At this point, Agama is composed of three high-level components:
+At this point, Agama is composed of four high-level components:
 
 * **Agama service**: implements the logic to perform the installation. It is the core component of
 Agama and it offers a D-Bus interface. Actually, it is composed of two services: `rubygem-agama` and
@@ -20,6 +20,9 @@ using Agama live.
 
 * **Command Line Interface (`agama-cli`)**: it allows to interact with Agama core and drives the
 auto-installation process.
+
+* **Auto-installation (`autoinstallation`)**: it is composed by a Systemd service (`agama-auto`) and
+an script that relies in `agama-cli`.
 
 In addition to those components, we need to consider Cockpit, which plays a vital role:
 
@@ -58,7 +61,8 @@ The proposed architecture is not that different from the current one, but it tri
 goals:
 
 * Drop our dependency on Cockpit.
-* Implement a higher-level API to be consumed by the clients, partially replacing the D-Bus.
+* Implement a higher-level API to be consumed by the clients, replacing D-Bus for client-server
+communication. Agama will still use D-Bus for IPC between the Rust and Ruby components.
 
 ### Components
 
@@ -71,11 +75,12 @@ the Agama YaST service.
 libraries. Complex parts, like storage and software handling, are implemented in this component.
 
 * **HTTP and WebSocket API**: implements the API the clients should use to communicate with Agama.
+Under the hood, it still uses D-Bus for communication between Agama core and Agama YaST.
 
 * **Web user interface (old `cockpit-agama`)**: Agama's graphical user interface. The web server
 makes this React application available to the browsers.
 
-* **Command Line Interface (`agama-cli`)**: it allows interaction with Agama core and drives the
+* **Command Line Interface (`agama-cli`)**: it allows interaction with Agama and drives the
 auto-installation process. With the new architecture, connecting through the network might be
 possible without SSH.
 
@@ -137,7 +142,7 @@ NOTE: under discussion.
 
 The HTTP interface should allow authentication specifying a user and password that will be checked
 against PAM. It is not clear yet, but we might need to check whether the logged user has permissions
-(most probably through Policy Kit).
+(most probably through Polkit).
 
 On successful authentication, the server generates a [JSON Web Token][jwt] that the client will
 include in the subsequent requests. The web client stores the token in an HTTP-only
