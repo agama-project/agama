@@ -293,8 +293,13 @@ module Agama
         mods = `lsmod`.lines.grep(/dm_multipath/)
         logger.warn("dm_multipath modules is not loaded") if mods.empty?
 
-        conf = `multipath -t`.lines.grep(/find_multipaths "smart"/)
-        logger.warn("multipath: find_multipaths is not set to 'smart'") if conf.empty?
+        binary = system("which multipath")
+        if binary
+          conf = `multipath -t`.lines.grep(/find_multipaths "smart"/)
+          logger.warn("multipath: find_multipaths is not set to 'smart'") if conf.empty?
+        else
+          logger.warn("multipath is not installed.")
+        end
       end
     end
   end
