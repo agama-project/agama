@@ -1,15 +1,20 @@
 -------------------------------------------------------------------
+Mon Feb 12 09:28:45 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 8
+
+-------------------------------------------------------------------
 Mon Jan 29 14:34:37 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
-- Partly replacing the NetworkManager client by the agama one 
+- Partly replacing the NetworkManager client by the Agama one
   (gh#openSUSE/agama#1006).
 
 -------------------------------------------------------------------
 Fri Jan 19 09:34:26 UTC 2024 -  Nagu <nagukalakuntla@gmail.com>
 
 - Storage UI: show mount point selector only when the user can change it.
-  (gh#openSUSE/agama#1007)
-  
+  (gh#openSUSE/agama#1007).
+
 -------------------------------------------------------------------
 Thu Jan 18 08:33:52 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
 
@@ -45,14 +50,14 @@ Thu Jan 04 21:44:32 UTC 2024 - Balsa Asanovic <balsaasanovic95@gmail.com>
 Tue Dec 26 11:12:45 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: Use the HTML <strong> element instead of a CSS class for
-   emphasizing content (gh#openSUSE/agama#960).
+  emphasizing content (gh#openSUSE/agama#960).
 
 -------------------------------------------------------------------
 Fri Dec 22 09:29:59 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: Fix page menus placement in production mode,
-   rendering them in the page header (gh#openSUSE/agama#925,
-   gh#openSUSE/agama#950).
+  rendering them in the page header (gh#openSUSE/agama#925,
+  gh#openSUSE/agama#950).
 
 -------------------------------------------------------------------
 Thu Dec 21 14:24:02 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
