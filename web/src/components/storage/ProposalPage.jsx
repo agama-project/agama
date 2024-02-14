@@ -221,11 +221,12 @@ export default function ProposalPage() {
           encryptionMethods={state.encryptionMethods}
           settings={state.settings}
           onChange={changeSettings}
-          isLoading={state.loading}
+          isLoading={!state.settings}
         />
         <ProposalSpacePolicySection
           settings={state.settings}
           onChange={changeSettings}
+          isLoading={!state.settings}
         />
         <ProposalActionsSection
           actions={state.actions}
