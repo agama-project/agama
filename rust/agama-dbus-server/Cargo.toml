@@ -28,3 +28,7 @@ once_cell = "1.18.0"
 macaddr = "1.0"
 async-trait = "0.1.75"
 axum = { version = "0.7.4", features = ["ws"] }
+
+[[bin]]
+name = "agama-dbus-server"
+path = "src/agama-dbus-server.rs"
