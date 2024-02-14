@@ -129,10 +129,16 @@ class DevicesManager {
    * @property {string[]} [systems] - Name of the installed systems
    * @property {string[]} [udevIds]
    * @property {string[]} [udevPaths]
-   * @property {PartitionTableData} [partitionTable]
+   * @property {PartitionTable} [partitionTable]
+   * @property {Filesystem} [filesystem]
    *
-   * @typedef {object} PartitionTableData
+   * @typedef {object} PartitionTable
    * @property {string} type
+   * @property {StorageDevice[]} partitions
+   *
+   * @typedef {object} Filesystem
+   * @property {string} type
+   * @property {boolean} isEFI
    */
   async getDevices() {
     const buildDevice = (path, dbusDevices) => {
@@ -180,6 +186,13 @@ class DevicesManager {
         };
       };
 
+      const addFilesystemProperties = (device, filesystemProperties) => {
+        device.filesystem = {
+          type: filesystemProperties.Type.v,
+          isEFI: filesystemProperties.EFI.v
+        };
+      };
+
       const device = {
         sid: path.split("/").pop(),
         type: ""
@@ -202,6 +215,9 @@ class DevicesManager {
 
       const ptableProperties = dbusDevices[path]["org.opensuse.Agama.Storage1.PartitionTable"];
       if (ptableProperties !== undefined) addPtableProperties(device, ptableProperties);
+
+      const filesystemProperties = dbusDevices[path]["org.opensuse.Agama.Storage1.Filesystem"];
+      if (filesystemProperties !== undefined) addFilesystemProperties(device, filesystemProperties);
 
       return device;
     };

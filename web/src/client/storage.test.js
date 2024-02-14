@@ -42,7 +42,11 @@ const sda1 = {
   recoverableSize: 128,
   systems : ["Windows"],
   udevIds: [],
-  udevPaths: []
+  udevPaths: [],
+  filesystem: {
+    type: "ntfs",
+    isEFI: false
+  }
 };
 
 const sda2 = {
@@ -173,7 +177,8 @@ const systemDevices = {
     udevIds: [],
     udevPaths: []
   },
-  sda1, sda2
+  sda1,
+  sda2
 };
 
 const contexts = {
@@ -504,6 +509,10 @@ const contexts = {
         Systems: { t: "as", v: ["Windows"] },
         UdevIds: { t: "as", v: [] },
         UdevPaths: { t: "as", v: [] }
+      },
+      "org.opensuse.Agama.Storage1.Filesystem": {
+        Type: { t: "s", v: "ntfs" },
+        EFI: { t: "b", v: false }
       }
     };
     managedObjects["/org/opensuse/Agama/Storage1/system/67"] = {
