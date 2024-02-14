@@ -449,6 +449,50 @@ const EncryptionSettingsForm = ({
 };
 
 /**
+ * Allows to define snapshots enablement
+ * @component
+ *
+ * @param {object} props
+ * @param {boolean} [props.isChecked=false] - Whether system snapshots are selected
+ * @param {boolean} [props.isLoading=false] - Whether to show the selector as loading
+ * @param {onChangeFn} [props.onChange=noop] - On change callback
+ *
+ * @callback onChangeFn
+ * @param {object} settings
+ */
+const SnapshotsField = ({
+  isChecked: isCheckedProp = false,
+  isLoading = false,
+  onChange = noop
+}) => {
+  const [isChecked, setIsChecked] = useState(isCheckedProp);
+
+  const switchState = (checked) => {
+    setIsChecked(checked);
+    onChange(checked);
+  };
+
+  if (isLoading) return <Skeleton width="25%" />;
+
+  const explanation = _("Btrfs snapshots for root partition enforce root volume to use btrfs with snapshots enabled. It is useful for returning to previous snapshot of system e.g. after software upgrade.");
+
+  return (
+    <>
+      <div className="split">
+        <Switch
+          id="snapshots"
+          label={_("Use Btrfs Snapshots")}
+          isReversed
+          isChecked={isChecked}
+          onChange={switchState}
+        />
+        {explanation}
+      </div>
+    </>
+  );
+};
+
+/**
  * Allows to define encryption
  * @component
  *
@@ -713,6 +757,12 @@ export default function ProposalSettingsSection({
         isChecked={settings.lvm === true}
         isLoading={settings.lvm === undefined}
         onChange={changeLVM}
+      />
+      <SnapshotsField
+        settings={settings}
+        isChecked={false} // TODO
+        isLoading={false} // TODO
+        onChange={noop} // TODO
       />
       <EncryptionField
         password={settings.encryptionPassword || ""}
