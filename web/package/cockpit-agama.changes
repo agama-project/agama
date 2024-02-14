@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 14 12:42:32 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- UI: change look&feel and internals of Agama selectors
+  (gh#openSUSE/agama#1012).
+
+-------------------------------------------------------------------
 Mon Feb 12 11:53:29 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update cockpit.js to version 309 (gh#openSUSE/agama#1038).
