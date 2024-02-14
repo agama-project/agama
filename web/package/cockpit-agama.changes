@@ -1,7 +1,12 @@
 -------------------------------------------------------------------
+Mon Feb 12 11:53:29 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update cockpit.js to version 309 (gh#openSUSE/agama#1038).
+
+-------------------------------------------------------------------
 Mon Jan 29 14:34:37 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
-- Partly replacing the NetworkManager client by the agama one 
+- Partly replacing the NetworkManager client by the Agama one
   (gh#openSUSE/agama#1006).
 
 -------------------------------------------------------------------
@@ -9,7 +14,7 @@ Fri Jan 19 09:34:26 UTC 2024 -  Nagu <nagukalakuntla@gmail.com>
 
 - Storage UI: show mount point selector only when the user can change it.
   (gh#openSUSE/agama#1007)
-  
+
 -------------------------------------------------------------------
 Thu Jan 18 08:33:52 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
 

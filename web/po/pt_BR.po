@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-28 02:07+0000\n"
+"POT-Creation-Date: 2024-02-07 02:04+0000\n"
 "PO-Revision-Date: 2023-12-31 20:39+0000\n"
 "Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Portuguese (Brazil) <https://l10n.opensuse.org/projects/agama/"
@@ -398,8 +398,8 @@ msgid ""
 "can be set in the %s page."
 msgstr ""
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:56
 #: src/components/l10n/L10nPage.jsx:384
 #: src/components/overview/L10nSection.jsx:52
@@ -614,31 +614,33 @@ msgstr "Prefixo do IP ou máscara de rede"
 msgid "At least one address must be provided for selected mode"
 msgstr "Pelo menos um endereço deve ser fornecido para o modo selecionado"
 
-#: src/components/network/IpSettingsForm.jsx:131
+#. TRANSLATORS: %s is replaced by the iSCSI target node name
+#: src/components/network/IpSettingsForm.jsx:133
+#: src/components/storage/iscsi/EditNodeForm.jsx:50
 #, c-format
-msgid "Edit %s connection"
-msgstr "Editar conexão %s"
+msgid "Edit %s"
+msgstr "Editar %s"
 
 #. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
-#: src/components/network/IpSettingsForm.jsx:133
-#: src/components/network/IpSettingsForm.jsx:138
-#: src/components/network/IpSettingsForm.jsx:140
+#: src/components/network/IpSettingsForm.jsx:136
+#: src/components/network/IpSettingsForm.jsx:141
+#: src/components/network/IpSettingsForm.jsx:143
 msgid "Mode"
 msgstr "Modo"
 
-#: src/components/network/IpSettingsForm.jsx:144
+#: src/components/network/IpSettingsForm.jsx:147
 msgid "Automatic (DHCP)"
 msgstr "Automático (DHCP)"
 
 #. TRANSLATORS: manual network configuration mode with a static IP address
-#: src/components/network/IpSettingsForm.jsx:146
+#: src/components/network/IpSettingsForm.jsx:149
 #: src/components/storage/iscsi/NodeStartupOptions.js:25
 msgid "Manual"
 msgstr "Manual"
 
 #. TRANSLATORS: network gateway configuration
-#: src/components/network/IpSettingsForm.jsx:161
 #: src/components/network/IpSettingsForm.jsx:164
+#: src/components/network/IpSettingsForm.jsx:167
 msgid "Gateway"
 msgstr "Gateway"
 
@@ -674,18 +676,18 @@ msgstr "Conectar-se à uma rede Wi-Fi"
 
 #. TRANSLATORS: page section title
 #. TRANSLATORS: page title
-#: src/components/network/NetworkPage.jsx:170
-#: src/components/overview/NetworkSection.jsx:102
+#: src/components/network/NetworkPage.jsx:169
+#: src/components/overview/NetworkSection.jsx:83
 msgid "Network"
 msgstr "Rede"
 
 #. TRANSLATORS: page section
-#: src/components/network/NetworkPage.jsx:172
+#: src/components/network/NetworkPage.jsx:171
 msgid "Wired networks"
 msgstr "Redes com fio"
 
 #. TRANSLATORS: page section
-#: src/components/network/NetworkPage.jsx:177
+#: src/components/network/NetworkPage.jsx:176
 msgid "WiFi networks"
 msgstr "Redes WiFi"
 
@@ -782,13 +784,13 @@ msgstr "Esquecer rede"
 msgid "The system will use %s as its default language."
 msgstr "O sistema usará %s como idioma padrão."
 
-#: src/components/overview/NetworkSection.jsx:78
+#: src/components/overview/NetworkSection.jsx:59
 msgid "No network connections detected"
 msgstr "Nenhuma conexão de rede detectada"
 
 #. TRANSLATORS: header for the list of active network connections,
 #. %d is replaced by the number of active connections
-#: src/components/overview/NetworkSection.jsx:87
+#: src/components/overview/NetworkSection.jsx:68
 #, c-format
 msgid "%d connection set:"
 msgid_plural "%d connections set:"
@@ -806,8 +808,8 @@ msgstr "Resumo da instalação"
 msgid "%s (registered)"
 msgstr "%s (registrado)"
 
-#. TRANSLATORS: page section
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section
 #: src/components/overview/ProductSection.jsx:71
 #: src/components/product/ProductPage.jsx:435
 msgid "Product"
@@ -822,8 +824,8 @@ msgstr "Lendo repositórios de software"
 msgid "Refresh the repositories"
 msgstr "Atualizar os repositórios"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
@@ -1763,12 +1765,6 @@ msgstr "Porta"
 msgid "Incorrect port"
 msgstr "Porta incorreta"
 
-#. TRANSLATORS: %s is replaced by the iSCSI target node name
-#: src/components/storage/iscsi/EditNodeForm.jsx:50
-#, c-format
-msgid "Edit %s"
-msgstr "Editar %s"
-
 #: src/components/storage/iscsi/InitiatorForm.jsx:42
 msgid "Edit iSCSI Initiator"
 msgstr ""
@@ -2106,6 +2102,10 @@ msgstr "Usuário"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr ""
+
+#, c-format
+#~ msgid "Edit %s connection"
+#~ msgstr "Editar conexão %s"
 
 #~ msgid "Have a lot of fun! Your openSUSE Development Team."
 #~ msgstr "Divirta-se! Sua equipe de desenvolvimento do openSUSE."
