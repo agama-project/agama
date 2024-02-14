@@ -55,13 +55,13 @@ import { noop } from '~/utils';
  *   );
  *
  * @param {object} props - component props
+ * @param {string} [props.id] - Id attribute for selector.
  * @param {boolean} [props.isMultiple=false] - Whether the selector should allow multiple selection.
- * @param {Array<object>} [props.options=[]] - Item objects to build options.
- * @param {function} [props.renderOption=noop] - Function used for rendering options.
+ * @param {Array<object>} props.options=[] - Item objects to build options.
+ * @param {function} props.renderOption=noop - Function used for rendering options.
  * @param {string} [props.optionIdKey="id"] - Key used for retrieve options id.
  * @param {Array<*>} [props.selectedIds=[]] - Identifiers for selected options.
  * @param {onSelectionChangeCallback} [props.onSelectionChange=noop] - Callback to be called when the selection changes.
- * @param {React.ReactNode} props.children - Selector options
  * @param {object} [props.props] - Other props sent to the internal selector <ul> component
  */
 const Selector = ({
@@ -72,7 +72,6 @@ const Selector = ({
   optionIdKey = "id",
   selectedIds = [],
   onSelectionChange = noop,
-  children,
   ...props
 }) => {
   const onOptionClick = (optionId) => {
@@ -91,7 +90,7 @@ const Selector = ({
   };
 
   return (
-    <ul { ...props } data-type="agama/list" role="grid">
+    <ul { ...props } id={id} data-type="agama/list" role="grid">
       { options.map(option => {
         const optionId = option[optionIdKey];
         const optionHtmlId = `${id}-option-${optionId}`;
