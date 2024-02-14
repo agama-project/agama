@@ -129,11 +129,28 @@ const DeviceContentColumn = ({ device }) => {
 
   const BlockContent = () => {
     const systems = device.systems;
+    const filesystem = device.filesystem;
 
-    if (systems.length > 0)
-      return <span>{systems.join(", ")}</span>;
-    else
-      return <span>{_("Not identified")}</span>;
+    const content = () => {
+      if (systems.length > 0) return systems.join(", ");
+      if (device.filesystem?.isEFI) return _("EFI");
+
+      return _("Not identified");
+    };
+
+    return (
+      <>
+        <div>{content()}</div>
+        <If
+          condition={filesystem}
+          then={
+            <div className="fs-small">
+              {sprintf(_("%s file system"), filesystem?.type)}
+            </div>
+          }
+        />
+      </>
+    );
   };
 
   return (device.partitionTable ? <PartitionTableContent /> : <BlockContent />);
