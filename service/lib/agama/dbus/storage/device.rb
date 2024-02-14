@@ -27,6 +27,7 @@ require "agama/dbus/storage/interfaces/multipath"
 require "agama/dbus/storage/interfaces/md"
 require "agama/dbus/storage/interfaces/block"
 require "agama/dbus/storage/interfaces/partition_table"
+require "agama/dbus/storage/interfaces/filesystem"
 
 module Agama
   module DBus
@@ -77,7 +78,7 @@ module Agama
         attr_reader :tree
 
         # Adds the required interfaces according to the storage object
-        def add_interfaces # rubocop:disable Metrics/CyclomaticComplexity
+        def add_interfaces # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           interfaces = []
           interfaces << Interfaces::Drive if drive?
           interfaces << Interfaces::Raid if storage_device.is?(:dm_raid)
@@ -85,6 +86,7 @@ module Agama
           interfaces << Interfaces::Multipath if storage_device.is?(:multipath)
           interfaces << Interfaces::Block if storage_device.is?(:blk_device)
           interfaces << Interfaces::PartitionTable if partition_table?
+          interfaces << Interfaces::Filesystem if filesystem?
 
           interfaces.each { |i| singleton_class.include(i) }
         end
@@ -109,6 +111,13 @@ module Agama
           storage_device.is?(:blk_device) &&
             storage_device.respond_to?(:partition_table?) &&
             storage_device.partition_table?
+        end
+
+        # Whether the storage device is formatted.
+        #
+        # @return [Boolean]
+        def filesystem?
+          !storage_device.filesystem.nil?
         end
       end
     end

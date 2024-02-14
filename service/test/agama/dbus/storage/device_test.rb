@@ -27,6 +27,7 @@ require_relative "./interfaces/multipath_examples"
 require_relative "./interfaces/block_examples"
 require_relative "./interfaces/md_examples"
 require_relative "./interfaces/partition_table_examples"
+require_relative "./interfaces/filesystem_examples"
 require "agama/dbus/storage/device"
 require "agama/dbus/storage/devices_tree"
 require "dbus"
@@ -141,6 +142,8 @@ describe Agama::DBus::Storage::Device do
   include_examples "Block interface"
 
   include_examples "PartitionTable interface"
+
+  include_examples "Filesystem interface"
 
   describe "#storage_device=" do
     before do

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2024] SUSE LLC
+# Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,21 +19,24 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module Agama
-  module DBus
-    module Storage
-      # Module for storage specific D-Bus interfaces
-      module Interfaces
+require_relative "../../../../test_helper"
+
+shared_examples "Filesystem interface" do
+  describe "Filesystem D-Bus interface" do
+    let(:scenario) { "multipath-formatted.xml" }
+
+    let(:device) { devicegraph.find_by_name("/dev/mapper/0QEMU_QEMU_HARDDISK_mpath1") }
+
+    describe "#filesystem_type" do
+      it "returns the file system type" do
+        expect(subject.filesystem_type).to eq("ext4")
+      end
+    end
+
+    describe "#filesystem_efi?" do
+      it "returns whether the file system is an EFI" do
+        expect(subject.filesystem_efi?).to eq(false)
       end
     end
   end
 end
-
-require "agama/dbus/storage/interfaces/drive"
-require "agama/dbus/storage/interfaces/raid"
-require "agama/dbus/storage/interfaces/multipath"
-require "agama/dbus/storage/interfaces/md"
-require "agama/dbus/storage/interfaces/block"
-require "agama/dbus/storage/interfaces/partition_table"
-require "agama/dbus/storage/interfaces/filesystem"
-require "agama/dbus/storage/interfaces/dasd_manager"
