@@ -26,20 +26,15 @@ import { ListSearch, Selector } from "~/components/core";
 import { noop } from "~/utils";
 
 /**
- * Content for a keymap item
- * @component
- *
- * @param {Object} props
- * @param {Keymap} props.keymap
+ * @typedef {import ("~/client/l10n").Keymap} Keymap
  */
-const KeymapItem = ({ keymap }) => {
-  return (
-    <div data-items-type="agama/keymaps">
-      <div>{keymap.name}</div>
-      <div>{keymap.id}</div>
-    </div>
-  );
-};
+
+const renderKeymapOption = (keymap) => (
+  <div data-items-type="agama/keymaps">
+    <div>{keymap.name}</div>
+    <div>{keymap.id}</div>
+  </div>
+);
 
 /**
  * Component for selecting a keymap.
@@ -67,15 +62,11 @@ export default function KeymapSelector({ value, keymaps = [], onChange = noop })
         // FIXME: when filtering, these are not the available keymaps but the
         // filtered ones.
         aria-label={_("Available keymaps")}
+        options={filteredKeymaps}
+        renderOption={renderKeymapOption}
         selectedIds={[value]}
         onSelectionChange={onSelectionChange}
-      >
-        { filteredKeymaps.map((keymap) => (
-          <Selector.Option id={keymap.id} key={keymap.id}>
-            <KeymapItem keymap={keymap} />
-          </Selector.Option>
-        ))}
-      </Selector>
+      />
     </>
   );
 }

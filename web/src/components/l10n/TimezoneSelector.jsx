@@ -29,6 +29,8 @@ import { noop, timezoneTime } from "~/utils";
  * @typedef {import ("~/client/l10n").Timezone} Timezone
  */
 
+let date;
+
 const timezoneDetails = (timezone) => {
   const offset = timezone.utcOffset;
 
@@ -41,15 +43,7 @@ const timezoneDetails = (timezone) => {
   return `${timezone.id} ${utc}`;
 };
 
-/**
- * Content for a timezone item
- * @component
- *
- * @param {Object} props
- * @param {Timezone} props.timezone
- * @param {Date} props.date - Date to show a time.
- */
-const TimezoneItem = ({ timezone, date }) => {
+const renderTimezoneOption = (timezone) => {
   const time = timezoneTime(timezone.id, { date }) || "";
 
   return (
@@ -75,7 +69,7 @@ const TimezoneItem = ({ timezone, date }) => {
 export default function TimezoneSelector({ value, timezones = [], onChange = noop }) {
   const displayTimezones = timezones.map(t => ({ ...t, details: timezoneDetails(t) }));
   const [filteredTimezones, setFilteredTimezones] = useState(displayTimezones);
-  const date = new Date();
+  date = new Date();
 
   // TRANSLATORS: placeholder text for search input in the timezone selector.
   const helpSearch = _("Filter by territory, time zone code or UTC offset");
@@ -90,15 +84,11 @@ export default function TimezoneSelector({ value, timezones = [], onChange = noo
         // FIXME: when filtering, these are not the available time zones but the
         // filtered ones.
         aria-label={_("Available time zones")}
+        options={filteredTimezones}
+        renderOption={renderTimezoneOption}
         selectedIds={[value]}
         onSelectionChange={onSelectionChange}
-      >
-        { filteredTimezones.map((timezone, index) => (
-          <Selector.Option id={timezone.id} key={`timezone-${index}`}>
-            <TimezoneItem timezone={timezone} date={date} />
-          </Selector.Option>
-        ))}
-      </Selector>
+      />
     </>
   );
 }

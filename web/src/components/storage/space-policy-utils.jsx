@@ -84,6 +84,8 @@ Only the space that is not assigned to any partition will be used.");
   );
 };
 
+const renderPolicyOption = ({ id }) => <PolicyItem policy={id} />;
+
 /**
  * Component for selecting a policy to make space.
  * @component
@@ -95,19 +97,20 @@ Only the space that is not assigned to any partition will be used.");
  */
 const SpacePolicySelector = ({ value, onChange = noop }) => {
   const onSelectionChange = (selection) => onChange(selection[0]);
+  const options = [
+    { id: "delete" },
+    { id: "resize" },
+    { id: "keep" }
+  ];
 
   return (
     <Selector
       aria-label={_("Select a mechanism to make space")}
+      options={options}
+      renderOption={renderPolicyOption}
       selectedIds={[value]}
       onSelectionChange={onSelectionChange}
-    >
-      { ["delete", "resize", "keep"].map(policy => (
-        <Selector.Option id={policy} key={policy}>
-          <PolicyItem policy={policy} />
-        </Selector.Option>
-      ))}
-    </Selector>
+    />
   );
 };
 

@@ -229,6 +229,8 @@ const DeviceList = ({ devices, ...itemProps }) => {
   );
 };
 
+const renderDeviceOption = (device) => <DeviceItem device={device} />;
+
 /**
  * Component for selecting storage devices.
  * @component
@@ -255,15 +257,12 @@ const DeviceSelector = ({ devices, selected, isMultiple = false, onChange = noop
     <Selector
       aria-label={_("Available devices")}
       isMultiple={isMultiple}
+      options={devices}
+      optionIdKey="sid"
+      renderOption={renderDeviceOption}
       selectedIds={selectedDevices.map(d => d.sid)}
       onSelectionChange={onSelectionChange}
-    >
-      { devices.map(device => (
-        <Selector.Option id={device.sid} key={device.sid}>
-          <DeviceItem device={device} />
-        </Selector.Option>
-      ))}
-    </Selector>
+    />
   );
 };
 

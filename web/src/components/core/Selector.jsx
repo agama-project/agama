@@ -24,41 +24,6 @@ import React from 'react';
 import { noop } from '~/utils';
 
 /**
- * Convenient component for letting the consumer build the selector options
- */
-const Option = ({ children }) => children;
-
-/**
- * Internal component for building the selector options
- *
- * FIXME: check if the used aria-labelledby is the way to go for making the
- * <input /> component accessible.
- */
-const Item = ({ id, type, isSelected = false, onClick, children }) => {
-  const whenClicked = () => onClick(id);
-  const rowId = `item-${id}`;
-
-  return (
-    <li
-      id={rowId}
-      role="row"
-      onClick={whenClicked}
-      aria-selected={isSelected || undefined}
-    >
-      <div role="gridcell">
-        <input
-          type={type}
-          checked={isSelected}
-          onChange={whenClicked}
-          aria-labelledby={rowId}
-        />
-        { children }
-      </div>
-    </li>
-  );
-};
-
-/**
  * @callback onSelectionChangeCallback
  * @param {Array<string>} selection - ids of selected options
  */
@@ -67,78 +32,94 @@ const Item = ({ id, type, isSelected = false, onClick, children }) => {
  * Agama component for building a selector
  *
  * @example <caption>Usage example</caption>
- *   <Selector
- *     isMultiple
- *     aria-label="Available locales"
- *     selectedIds={["es_ES", "en_GB"]}
- *     onSelectionChange={(selection) => changePreferredLocales(selection)}
- *   >
- *     <Selector.Option id={"es_ES"}>Spanish - Spain</Selector.Option>
- *     <Selector.Option id={"cs_CZ"}>Czech - Czechia</Selector.Option>
- *     <Selector.Option id={"de_DE"}>German - Germany</Selector.Option>
- *     <Selector.Option id={"en_GB"}>English - United Kingdom</Selector.Option>
- *   </Selector>
+ *   const options = [
+ *     { id: "es_ES", country: "Spain", label: "Spanish" },
+ *     { id: "cs_CZ", country: "Czechia", label: "Czech" },
+ *     { id: "de_DE", country: "Germany", label: "German" },
+ *     { id: "en_GB", country: "United Kingdom", label: "English" }
+ *   ];
  *
- *   NOTE: using Children API to allow sending "rich content" as option children
- *   directly with JSX. But most probably this will be changed to use a
- *   item / renderItem props combination or similar to avoid both, using the
- *   Children API and iterating collections twice (one in the component mounting
- *   the selector and another here)
+ *   const selectedIds = ["es_ES", "en_GB"];
+ *
+ *   const renderFn = ({ label, country }) => <div>{label} - {country}</div>;
+ *
+ *   return (
+ *     <Selector
+ *       isMultiple
+ *       aria-label="Available locales"
+ *       selectedIds={selectedIds}
+ *       options={options}
+ *       renderOption={renderFn}
+ *       onSelectionChange={(selection) => changePreferredLocales(selection)}
+ *     />
+ *   );
  *
  * @param {object} props - component props
- * @param {Array<*>} [props.selectedIds=[]] - Identifiers for selected options.
  * @param {boolean} [props.isMultiple=false] - Whether the selector should allow multiple selection.
+ * @param {Array<object>} [props.options=[]] - Item objects to build options.
+ * @param {function} [props.renderOption=noop] - Function used for rendering options.
+ * @param {string} [props.optionIdKey="id"] - Key used for retrieve options id.
+ * @param {Array<*>} [props.selectedIds=[]] - Identifiers for selected options.
  * @param {onSelectionChangeCallback} [props.onSelectionChange=noop] - Callback to be called when the selection changes.
  * @param {React.ReactNode} props.children - Selector options
  * @param {object} [props.props] - Other props sent to the internal selector <ul> component
  */
 const Selector = ({
-  selectedIds = [],
+  id = crypto.randomUUID(),
   isMultiple = false,
+  options = [],
+  renderOption = noop,
+  optionIdKey = "id",
+  selectedIds = [],
   onSelectionChange = noop,
   children,
   ...props
 }) => {
-  const selectionWidget = isMultiple ? "checkbox" : "radio";
-
-  const onItemClick = (itemId) => {
-    const alreadySelected = selectedIds.includes(itemId);
+  const onOptionClick = (optionId) => {
+    const alreadySelected = selectedIds.includes(optionId);
 
     if (!isMultiple) {
-      !alreadySelected && onSelectionChange([itemId]);
+      !alreadySelected && onSelectionChange([optionId]);
       return;
     }
 
     if (alreadySelected) {
-      onSelectionChange(selectedIds.filter((id) => id !== itemId));
+      onSelectionChange(selectedIds.filter((id) => id !== optionId));
     } else {
-      onSelectionChange([...selectedIds, itemId]);
+      onSelectionChange([...selectedIds, optionId]);
     }
   };
 
   return (
     <ul { ...props } data-type="agama/list" role="grid">
-      { React.Children.map(children, (child) => {
-        if (React.isValidElement(child)) {
-          const { id, children } = child.props;
+      { options.map(option => {
+        const optionId = option[optionIdKey];
+        const optionHtmlId = `${id}-option-${optionId}`;
+        const isSelected = selectedIds.includes(optionId);
+        const onClick = () => onOptionClick(optionId);
 
-          return (
-            <Item
-              id={id}
-              key={id}
-              type={selectionWidget}
-              isSelected={selectedIds.includes(id)}
-              onClick={onItemClick}
-            >
-              {children}
-            </Item>
-          );
-        }
+        return (
+          <li
+            key={optionId}
+            id={optionHtmlId}
+            role="row"
+            onClick={onClick}
+            aria-selected={isSelected || undefined}
+          >
+            <div role="gridcell">
+              <input
+                type={isMultiple ? "checkbox" : "radio"}
+                checked={isSelected}
+                onChange={onClick}
+                aria-labelledby={optionHtmlId}
+              />
+              { renderOption(option) }
+            </div>
+          </li>
+        );
       })}
     </ul>
   );
 };
-
-Selector.Option = Option;
 
 export default Selector;

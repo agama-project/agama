@@ -25,6 +25,13 @@ import { Selector } from "~/components/core";
 import { _ } from "~/i18n";
 import { noop } from "~/utils";
 
+const renderProductOption = (product) => (
+  <div className="stack">
+    <h3>{product.name}</h3>
+    <p>{product.description}</p>
+  </div>
+);
+
 export default function ProductSelector({ value, products = [], onChange = noop }) {
   if (products.length === 0) return <p>{_("No products available for selection")}</p>;
 
@@ -33,17 +40,10 @@ export default function ProductSelector({ value, products = [], onChange = noop 
   return (
     <Selector
       aria-label={_("Available products")}
+      options={products}
+      renderOption={renderProductOption}
       selectedIds={[value]}
       onSelectionChange={onSelectionChange}
-    >
-      { products.map(p => (
-        <Selector.Option id={p.id} key={p.id}>
-          <div className="stack">
-            <h3>{p.name}</h3>
-            <p>{p.description}</p>
-          </div>
-        </Selector.Option>
-      ))}
-    </Selector>
+    />
   );
 }

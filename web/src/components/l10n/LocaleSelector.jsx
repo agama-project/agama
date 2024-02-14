@@ -29,22 +29,13 @@ import { noop } from "~/utils";
  * @typedef {import ("~/client/l10n").Locale} Locale
  */
 
-/**
- * Content for a locale item.
- * @component
- *
- * @param {Object} props
- * @param {Locale} props.locale
- */
-const LocaleItem = ({ locale }) => {
-  return (
-    <div data-items-type="agama/locales">
-      <div>{locale.name}</div>
-      <div>{locale.territory}</div>
-      <div>{locale.id}</div>
-    </div>
-  );
-};
+const renderLocaleOption = (locale) => (
+  <div data-items-type="agama/locales">
+    <div>{locale.name}</div>
+    <div>{locale.territory}</div>
+    <div>{locale.id}</div>
+  </div>
+);
 
 /**
  * Component for selecting a locale.
@@ -72,14 +63,10 @@ export default function LocaleSelector({ value, locales = [], onChange = noop })
         // filtered ones.
         aria-label={_("Available locales")}
         selectedIds={value}
+        options={filteredLocales}
+        renderOption={renderLocaleOption}
         onSelectionChange={onSelectionChange}
-      >
-        { filteredLocales.map((locale) => (
-          <Selector.Option id={locale.id} key={locale.id}>
-            <LocaleItem locale={locale} />
-          </Selector.Option>
-        ))}
-      </Selector>
+      />
     </>
   );
 }
