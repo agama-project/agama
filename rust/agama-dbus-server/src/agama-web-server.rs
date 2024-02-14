@@ -1,10 +1,19 @@
+use agama_lib::connection;
 use axum::{routing::get, Router};
 use tokio;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::prelude::*;
+use zbus;
 
 mod http;
+mod ws;
 use http::ping;
+use ws::ws_handler;
+
+#[derive(Clone)]
+struct AppState {
+    pub connection: zbus::Connection
+}
 
 #[tokio::main]
 async fn main() {
@@ -13,9 +22,15 @@ async fn main() {
         .with(journald)
         .init();
 
+    let app_state = AppState {
+        connection: connection().await.expect("could not connect to the D-Bus server")
+    };
+
     let app = Router::new()
         .route("/ping", get(ping))
-        .layer(TraceLayer::new_for_http());
+        .route("/ws", get(ws_handler))
+        .layer(TraceLayer::new_for_http())
+        .with_state(app_state);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
