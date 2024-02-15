@@ -58,7 +58,19 @@ Requires:       python-langtable-data
 Requires:       dbus-1-common
 
 %description -n agama-dbus-server
-DBus service for agama project. It provides so far localization service.
+D-Bus service for agama project. It provides localization, networking and questions services.
+
+%package -n agama-web-server
+#               This will be set by osc services, that will run after this.
+Version:        0
+Release:        0
+Summary:        Agama web server
+License:        GPL-2.0-only
+Url:            https://github.com/opensuse/agama
+Requires:       agama-dbus-server
+
+%description -n agama-web-server
+Agama project web server. It provides a web-based API to Agama.
 
 %prep
 %autosetup -a1 -n agama
@@ -93,5 +105,8 @@ install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services
 %files -n agama-dbus-server
 %{_bindir}/agama-dbus-server
 %{_datadir}/dbus-1/agama-services
+
+%files -n agama-web-server
+%{_bindir}/agama-web-server
 
 %changelog
