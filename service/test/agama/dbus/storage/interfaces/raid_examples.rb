@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,8 +28,12 @@ shared_examples "RAID interface" do
     let(:device) { devicegraph.dm_raids.first }
 
     describe "#raid_devices" do
-      it "returns the name of the RAID devices" do
-        expect(subject.raid_devices).to contain_exactly("/dev/sdb", "/dev/sdc")
+      it "returns the D-Bus path of the RAID devices" do
+        sdb = devicegraph.find_by_name("/dev/sdb")
+        sdc = devicegraph.find_by_name("/dev/sdc")
+
+        expect(subject.raid_devices)
+          .to contain_exactly(tree.path_for(sdb), tree.path_for(sdc))
       end
     end
   end

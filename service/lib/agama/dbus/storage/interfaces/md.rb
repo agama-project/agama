@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -46,14 +46,11 @@ module Agama
             storage_device.md_level.to_s
           end
 
-          # Member devices of the MD RAID
-          #
-          # TODO: return object paths once all possible members (e.g., partitions) are exported
-          #   on D-Bus.
+          # Paths of the D-Bus objects representing the member devices of the MD RAID.
           #
           # @return [Array<String>]
           def md_members
-            storage_device.plain_devices.map(&:name)
+            storage_device.plain_devices.map { |p| tree.path_for(p) }
           end
 
           def self.included(base)
@@ -61,7 +58,7 @@ module Agama
               dbus_interface MD_INTERFACE  do
                 dbus_reader :md_uuid, "s", dbus_name: "UUID"
                 dbus_reader :md_level, "s", dbus_name: "Level"
-                dbus_reader :md_members, "as", dbus_name: "Members"
+                dbus_reader :md_members, "ao", dbus_name: "Members"
               end
             end
           end

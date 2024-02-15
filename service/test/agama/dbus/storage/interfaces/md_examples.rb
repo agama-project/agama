@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -46,8 +46,12 @@ shared_examples "MD interface" do
     end
 
     describe "#md_members" do
-      it "returns the name of the MD members" do
-        expect(subject.md_members).to contain_exactly("/dev/sda1", "/dev/sda2")
+      it "returns the D-Bus path of the MD members" do
+        sda1 = devicegraph.find_by_name("/dev/sda1")
+        sda2 = devicegraph.find_by_name("/dev/sda2")
+
+        expect(subject.md_members)
+          .to contain_exactly(tree.path_for(sda1), tree.path_for(sda2))
       end
     end
   end

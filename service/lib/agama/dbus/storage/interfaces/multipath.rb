@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -32,19 +32,17 @@ module Agama
           MULTIPATH_INTERFACE = "org.opensuse.Agama.Storage1.Multipath"
           private_constant :MULTIPATH_INTERFACE
 
-          # Multipath wires
-          #
-          # TODO: return object paths
+          # Paths of the D-Bus objects representing the multipath wires.
           #
           # @return [Array<String>]
           def multipath_wires
-            storage_device.parents.map(&:name)
+            storage_device.parents.map { |p| tree.path_for(p) }
           end
 
           def self.included(base)
             base.class_eval do
               dbus_interface MULTIPATH_INTERFACE do
-                dbus_reader :multipath_wires, "as", dbus_name: "Wires"
+                dbus_reader :multipath_wires, "ao", dbus_name: "Wires"
               end
             end
           end
