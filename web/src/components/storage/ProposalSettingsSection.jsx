@@ -622,7 +622,7 @@ export default function ProposalSettingsSection({
           volumes={settings.volumes || []}
           templates={volumeTemplates}
           options={{ lvm: settings.lvm, encryption }}
-          isLoading={isLoading}
+          isLoading={isLoading && settings.volumes === undefined}
           onChange={changeVolumes}
         />
       </Section>

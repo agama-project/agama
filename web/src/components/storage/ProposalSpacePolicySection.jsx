@@ -20,7 +20,7 @@
  */
 
 import React, { useEffect } from "react";
-import { Radio } from "@patternfly/react-core";
+import { FormSelect, FormSelectOption, Radio } from "@patternfly/react-core";
 
 import { _, n_, N_ } from "~/i18n";
 import { deviceSize } from '~/components/storage/utils';
@@ -64,7 +64,7 @@ Only the space that is not assigned to any partition will be used.")
   {
     name: "custom",
     label: N_("Custom"),
-    description: N_("Indicate what to do with each partition.")
+    description: N_("Select what to do with each partition.")
   }
 ];
 
@@ -208,14 +208,19 @@ const DeviceSizeColumn = ({ device }) => {
  * @param {(action: SpaceAction) => void} [props.onChange]
  */
 const DeviceActionColumn = ({ device, action, isDisabled = false, onChange = noop }) => {
-  const changeAction = (action) => onChange({ device: device.name, action });
+  const changeAction = (_, action) => onChange({ device: device.name, action });
 
   return (
-    <select disabled={isDisabled} value={action} onChange={e => changeAction(e.target.value)}>
-      <option value="force_delete">{_("Delete")}</option>
-      <option value="resize">{_("Allow resize")}</option>
-      <option value="keep">{_("Do not modify")}</option>
-    </select>
+    <FormSelect
+      value={action}
+      isDisabled={isDisabled}
+      onChange={changeAction}
+      aria-label="Space action selector"
+    >
+      <FormSelectOption value="force_delete" label={_("Delete")} />
+      <FormSelectOption value="resize" label={_("Allow resize")} />
+      <FormSelectOption value="keep" label={_("Do not modify")} />
+    </FormSelect>
   );
 };
 
@@ -389,30 +394,34 @@ const SpacePolicySelector = ({ currentPolicy, onChange = noop }) => {
   return (
     <>
       <p>
-        {_("Select how to make free space in the selected disks for allocating the file systems.")}
+        {_("Indicate how to make free space in the selected disks for allocating the file systems:")}
       </p>
 
-      <div className="split radio-group">
-        {SPACE_POLICIES.map((policy) => {
-          const isChecked = policy.name === currentPolicy.name;
+      <div>
+        <div className="split radio-group">
+          {SPACE_POLICIES.map((policy) => {
+            const isChecked = policy.name === currentPolicy.name;
 
-          return (
-            <Radio
-              id={`space-policy-option-${policy.name}`}
-              key={`space-policy-${policy.name}`}
-              // eslint-disable-next-line agama-i18n/string-literals
-              label={_(policy.label)}
-              value={policy.name}
-              name="space-policies"
-              className={isChecked && "selected"}
-              isChecked={isChecked}
-              onChange={() => onChange(policy.name)}
-            />
-          );
-        })}
+            return (
+              <Radio
+                id={`space-policy-option-${policy.name}`}
+                key={`space-policy-${policy.name}`}
+                // eslint-disable-next-line agama-i18n/string-literals
+                label={_(policy.label)}
+                value={policy.name}
+                name="space-policies"
+                className={isChecked && "selected"}
+                isChecked={isChecked}
+                onChange={() => onChange(policy.name)}
+              />
+            );
+          })}
+        </div>
+
+        <div aria-live="polite" className="highlighted-live-region">
+          {currentPolicy.description}
+        </div>
       </div>
-
-      <p>{currentPolicy.description}</p>
     </>
   );
 };
@@ -446,7 +455,7 @@ export default function ProposalSpacePolicySection({
   return (
     <Section title={_("Find Space")} className="flex-stack">
       <If
-        condition={isLoading}
+        condition={isLoading && settings.spacePolicy === undefined}
         then={<SectionSkeleton numRows={4} />}
         else={
           <>
