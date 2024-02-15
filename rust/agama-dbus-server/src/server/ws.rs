@@ -1,3 +1,5 @@
+//! Implements the websocket handling.
+
 use super::service::ServiceState;
 use agama_lib::progress::{Progress, ProgressMonitor, ProgressPresenter};
 use async_trait::async_trait;
@@ -22,6 +24,7 @@ async fn handle_socket(socket: WebSocket, connection: zbus::Connection) {
     _ = monitor.run(presenter).await;
 }
 
+/// Experimental ProgressPresenter to emit progress events over a WebSocket.
 struct WebSocketProgressPresenter(WebSocket);
 
 impl WebSocketProgressPresenter {

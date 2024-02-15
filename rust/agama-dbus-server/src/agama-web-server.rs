@@ -5,7 +5,10 @@ use agama_dbus_server::server;
 use tracing_subscriber::prelude::*;
 
 #[derive(Parser)]
-#[command(version, about, long_about = None)]
+#[command(
+    version,
+    about = "Starts the Agama web-based API.",
+    long_about = None)]
 struct Cli {
     /// Address to listen on (default: "0.0.0.0:3000")
     #[arg(long, default_value = "0.0.0.0:3000")]
