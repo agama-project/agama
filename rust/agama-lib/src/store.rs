@@ -1,10 +1,11 @@
 //! Load/store the settings from/to the D-Bus services.
+// TODO: quickly explain difference between FooSettings and FooStore, with an example
 
 use crate::error::ServiceError;
 use crate::install_settings::{InstallSettings, Scope};
 use crate::{
-    network::NetworkStore, product::ProductStore, software::SoftwareStore, storage::StorageStore,
-    users::UsersStore,
+    localization::LocalizationStore, network::NetworkStore, product::ProductStore,
+    software::SoftwareStore, storage::StorageStore, users::UsersStore,
 };
 use zbus::Connection;
 
@@ -20,11 +21,13 @@ pub struct Store<'a> {
     product: ProductStore<'a>,
     software: SoftwareStore<'a>,
     storage: StorageStore<'a>,
+    localization: LocalizationStore<'a>,
 }
 
 impl<'a> Store<'a> {
     pub async fn new(connection: Connection) -> Result<Store<'a>, ServiceError> {
         Ok(Self {
+            localization: LocalizationStore::new(connection.clone()).await?,
             users: UsersStore::new(connection.clone()).await?,
             network: NetworkStore::new(connection.clone()).await?,
             product: ProductStore::new(connection.clone()).await?,
@@ -60,6 +63,10 @@ impl<'a> Store<'a> {
             settings.product = Some(self.product.load().await?);
         }
 
+        if scopes.contains(&Scope::Localization) {
+            settings.localization = Some(self.localization.load().await?);
+        }
+
         // TODO: use try_join here
         Ok(settings)
     }
@@ -73,6 +80,10 @@ impl<'a> Store<'a> {
         // to registration server and selecting product is important for rest
         if let Some(product) = &settings.product {
             self.product.store(product).await?;
+        }
+        // ordering: localization after product as some product may miss some locales
+        if let Some(localization) = &settings.localization {
+            self.localization.store(localization).await?;
         }
         if let Some(software) = &settings.software {
             self.software.store(software).await?;

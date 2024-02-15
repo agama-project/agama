@@ -46,7 +46,7 @@ import { noop } from "~/utils";
  *
  * @param {object} props
  * @param {string} props.id - Form ID.
- * @param {string|undefined} [props.current] - Device name, if any.
+ * @param {StorageDevice|undefined} [props.current] - Currently selected device, if any.
  * @param {StorageDevice[]} [props.devices=[]] - Available devices for the selection.
  * @param {onSubmitFn} [props.onSubmit=noop] - On submit callback.
  *
@@ -59,15 +59,11 @@ const InstallationDeviceForm = ({
   devices = [],
   onSubmit = noop
 }) => {
-  const [device, setDevice] = useState(current);
+  const [device, setDevice] = useState(current || devices[0]);
 
-  useEffect(() => {
-    const isCurrentValid = () => {
-      return devices.find(d => d.name === current) !== undefined;
-    };
-
-    if (!isCurrentValid()) setDevice(devices[0]?.name);
-  }, [current, devices]);
+  const changeSelected = (deviceId) => {
+    setDevice(devices.find(d => d.sid === deviceId));
+  };
 
   const submitForm = (e) => {
     e.preventDefault();
@@ -79,7 +75,7 @@ const InstallationDeviceForm = ({
       <DeviceSelector
         selected={device}
         devices={devices}
-        onChange={setDevice}
+        onChange={changeSelected}
       />
     </Form>
   );
@@ -104,28 +100,34 @@ const InstallationDeviceField = ({
   isLoading = false,
   onChange = noop
 }) => {
-  const [device, setDevice] = useState(current);
+  const [device, setDevice] = useState(devices.find(d => d.name === current));
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const openForm = () => setIsFormOpen(true);
 
   const closeForm = () => setIsFormOpen(false);
 
-  const acceptForm = (newDevice) => {
+  const acceptForm = (selectedDevice) => {
     closeForm();
-    setDevice(newDevice);
-    onChange(newDevice);
+    setDevice(selectedDevice);
+    onChange(selectedDevice);
   };
 
+  /**
+   * Renders a button that allows changing selected device
+   *
+   * NOTE: if a device is already selected, its name and size will be used for
+   * the button text. Otherwise, a "No device selected" text will be shown.
+   *
+   * @param {object} props
+   * @param {StorageDevice|undefined} [props.current] - Currently selected device, if any.
+   */
   const DeviceContent = ({ device }) => {
-    const text = (deviceName) => {
-      if (!deviceName || deviceName.length === 0) return _("No device selected yet");
-
-      const device = devices.find(d => d.name === deviceName);
-      return device ? deviceLabel(device) : deviceName;
-    };
-
-    return <Button variant="link" isInline onClick={openForm}>{text(device)}</Button>;
+    return (
+      <Button variant="link" isInline onClick={openForm}>
+        {device ? deviceLabel(device) : _("No device selected yet")}
+      </Button>
+    );
   };
 
   if (isLoading) {
@@ -213,8 +215,9 @@ const LVMSettingsForm = ({
     onValidate(customDevices.length > 0);
   };
 
-  const onChangeDevices = (devices) => {
-    setVgDevices(devices);
+  const onChangeDevices = (selection) => {
+    const selectedDevices = devices.filter(d => selection.includes(d.sid)).map(d => d.name);
+    setVgDevices(selectedDevices);
     setEditedDevices(true);
     onValidate(devices.length > 0);
   };
@@ -228,7 +231,8 @@ const LVMSettingsForm = ({
   const BootDevice = () => {
     const bootDevice = devices.find(d => d.name === settings.bootDevice);
 
-    return <DeviceList devices={[bootDevice]} isSelected />;
+    // FIXME: In this case, should be a "readOnly" selector.
+    return <DeviceList devices={[bootDevice]} />;
   };
 
   return (
@@ -256,7 +260,7 @@ const LVMSettingsForm = ({
         else={
           <DeviceSelector
             isMultiple
-            selected={vgDevices}
+            selected={devices.filter(d => vgDevices?.includes(d.name))}
             devices={devices}
             onChange={onChangeDevices}
           />
@@ -571,8 +575,9 @@ export default function ProposalSettingsSection({
   isLoading = false,
   onChange = noop
 }) {
+  // FIXME: we should work with devices objects ASAP
   const changeBootDevice = (device) => {
-    onChange({ bootDevice: device });
+    onChange({ bootDevice: device.name });
   };
 
   const changeLVM = ({ lvm, vgDevices }) => {

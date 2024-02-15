@@ -10,6 +10,17 @@ and how they will interact. Something that is represented as a sentence in the s
 become a tool-tip, a given icon can become a label, actions grouped in a drop-down can end up
 being represented as separate buttons, etc.
 
+### Transactional Systems
+
+Agama is able to install transactional distributions like openSUSE MicroOS. There will be no option
+in the Agama storage user interface to set whether the root file system of the installed system
+should be transactional (also known as "immutable") or not. Since the implications go beyond the
+file system settings, the nature of the system (transactional vs read-write) will be determined by
+the selection of the operating system to install, "product" in Agama jargon.
+
+This document describes the Agama interface for a traditional (non-transactional) system. See the
+section "interface changes for transactional systems" for the alternative.
+
 ### Representation of the Actions to Perform
 
 Another important point to consider is that currently the list of (libstorage-ng) actions is the
@@ -33,23 +44,25 @@ message about the failed initial calculation) and a link to modify that layout. 
 to the page that allows to (re)configure and (re)calculate the storage proposal and that is
 described at *The Proposal Page*.
 
-The Agama storage proposal will be the only mechanism to define the file systems of the new operating
-system (including their mount points, subvolumes and options for formatting or mounting). This
-proposal is similar to the `GuidedProposal` implemented by YaST. As such, the wanted file systems
-will actually be defined as a set of so-called volumes very similar to the YaST ones (although we
-may need to find a better name). See *Volumes in the YaST Proposal* for more information.
+The Agama storage proposal will be the only mechanism to define the file systems of the new
+operating system, including their mount points, subvolumes and options for formatting or mounting.
+This proposal is based on the `GuidedProposal` implemented by the YaST libraries and presented as
+"Guided Setup" in the YaST user interface. As such, the wanted file systems will actually be defined
+as a set of so-called volumes very similar to the YaST ones (see *Volumes in the YaST Proposal* for
+more information). The term "volume" is intentionally avoided in the user interface, using the term
+"file system" instead. Nevertheless this document uses both terms indistinctly.
 
 Sometimes a previous setup may be needed in order to prepare the devices used by that proposal
 mechanism. That includes actions like connecting to some iSCSI disks, activating and formating
 DASDs, creating a software-defined RAID or setting an advanced LVM layout potentially including
 several volume groups or thin-provisioned volumes. Those actions will in general modify the system
 right away, instead of just planning actions to be performed during installation. Access to those
-preliminary actions will be available from the Agama advanced menu in the side bar and their general
-functionality is briefly described at *Advanced Preparations*.
+preliminary actions will be available from the Agama storage page. The general functionality is
+briefly described at *Advanced Preparations*.
 
 ## The Proposal Page
 
-### General Description of the Proposal
+### Overall Description of the Proposal
 
 The following interface will allow to configure the Agama storage setup for installation. Note the
 mock-ups do not display an initial proposal, but the status after some manual changes done by the
@@ -57,36 +70,117 @@ user.
 
 ![Initial storage screen](images/storage_ui/agama_guided.png)
 
+Every change to any of the configuration options will result in an immediate re-calculation of the
+"planned actions" section which represents the result. Changes in the configuration of encryption,
+btrfs snapshots or the target devices can also imply refreshing the description of the file systems.
+In a similar way, changes in those volumes or the target device may result in some disk being
+included or excluded in the section "find space".
+
 The table with the file systems actually represents the volumes used as input for the Agama variant
 of the `GuidedProposal`. Compared to YaST, Agama turns the volumes into a much more visible concept.
 The users will be able to see and adjust most of their attributes. Users could even define new
 volumes that are not initially part of the configuration of the selected product.
 
-Every change to any of the aspects in the "settings" section will result in an immediate
-re-calculation of the "result" section. Changes in the configuration of LVM and encryption can also
-imply refreshing the description of the volumes.
+Pop-up dialogs will be used to modify the target device(s), the encryption configuration or the
+booting setup, as well as to add or edit a given volume.
 
-Pop-ups will be used to modify the advanced LVM settings (if any), the encryption configuration and
-to add or edit a given volume.
-
-The size of each volume is specified as a couple of lower and upper limits (the upper one is
-optional in all cases). With the current approach of the YaST `GuidedProposal` there are some
-volumes that may need to recalculate those limits based on its configuration or its relationship
-with others volumes. Their limits will be set as "auto-calculated" by default. For more details,
-see the corresponding section below.
-
-By default, all volumes will be created in the boot disk (for partitions) or in the default LVM
-volume group (for logical volumes). But the user will be able to manually overwrite that for a
-particular volume. In the screenshot above that has been done for the volume at `/home`.
-
-Similarly, it will be possible to specify that a given volume will re-use an existing partition or
-logical volume, either re-formatting it in the process or not. In any case, size limits cannot be
-adjusted for re-used devices. The size of the re-used device will be displayed.
+All file systems will be created by default at the chosen target disk or at the default LVM volume
+group (in the case of LVM-based proposal). The user will be able to manually overwrite the location
+of any particular volume. That has been done in the mock-up about both for the swap volume, which
+will be created in an alternative disk, and for the `/home` one, that will reuse the existing file
+system at the `vdb1` partition. Continue reading to understand all the possible options.
 
 Defining the settings and the list of volumes also defines, as a direct consequence, the disks
-affected by the installation process. It may be needed to make some space in those disks. Clicking
-on the current "policy to make space" will open a pop-up to define how to do it, described in the
-corresponding section below.
+affected by the installation process. It may be needed to make some space in those disks. That
+deserves a dedicated section in the proposal page that is described below.
+
+### Device Selection and General Settings
+
+As seen on the image above, the main device to install the system can be chosen at the very top of
+the storage proposal page. Although a Linux installation can extend over several disks, the storage
+proposal algorithm and its configuration is better understood if one device is chosen as the main
+target one. That device can be a single disk (or equivalent device) or an LVM volume group.
+
+![Dialog to select installation device](images/storage_ui/default_device_popup.png)
+
+When the main target device is a disk, the volumes will be created by default as new partitions
+there. If a new LVM volume group is chosen as installation device, the selection of disks indicates
+which devices will be partitioned in order to allocate the physical volumes of the new volume group.
+In that case, the file systems will be created by default as new LVM logical volumes at that new
+volume group.
+
+The device selection is followed by some global settings that define how the installation is going
+to look and what are the possibilities in terms of booting and structuring the file systems. Those
+settings include the usage of btrfs snapshots, which in YaST is presented relatively hidden as one
+of the configuration options for the root file system.
+
+One of the main features of the `GuidedProposal` is its ability to automatically determine any extra
+partition that may be needed for booting the new system, like PReP, EFI, Zipl or any other described
+at the [corresponding YaST
+document](https://github.com/yast/yast-storage-ng/blob/master/doc/boot-requirements.md). The
+algorithm can create those partitions or reuse existing ones that are already in the system if the
+user wants to keep them (see the section about finding space). The behavior of that feature can be
+also be tweaked in the "settings" section of the page.
+
+![Dialog to configure booting](images/storage_ui/boot_config_popup.png)
+
+### File Systems
+
+The next section contains the table that displays the file systems to be created, volumes in YaST
+jargon. The size of each volume is specified as a couple of lower and upper limits (the upper one is
+optional in all cases). With the current approach of the YaST `GuidedProposal` there are some
+volumes that may need to recalculate those limits based on the proposal configuration (eg. whether
+Btrfs snapshots are enabled) or its relationship with others volumes. Their limits will be set as
+"auto-calculated" by default. For more details, see the corresponding section below.
+
+If btrfs is used for the root file system, it will be possible to define subvolumes for it. Those
+subvolumes are represented in the same table, nested on the entry of the root file system. They can
+be removed and added. The subvolume entries are collapsed by default.
+
+If a subvolume becomes irrelevant due to the creation of another file system (let's say a `/var/lib`
+subvolume exists but a new `/var` file system is added to the table), then it will not be created by
+the proposal. That's known as "subvolume masking" in the YaST internals. It's still not clear how
+that will be represented in the table.
+
+Although btrfs subvolumes don't have sizes. We might consider to add support for defining btrfs
+quotas. In that case, the quota could be specified for each entry taking advantage of the already
+existing column "size limits", although those quotas don't really affect the size calculations
+performed by the proposal.
+
+All file systems will be created on the installation device by default. But it will be possible to
+specify an an alternative location using the following form that offers several options.
+
+![Dialog to change a volume location](images/storage_ui/change_location_popup.png)
+
+When the option to reuse an existing device is chosen, size limits cannot be adjusted. The size of
+the reused device will be displayed in the table of file systems in the corresponding column.
+
+### Finding Space for the Volumes
+
+Similar to YaST, Agama will offer by default the option to automatically make space for the new
+operating system. But the algorithm will be different and less configurable, offering basically
+three automatic modes.
+
+As an alternative, the Agama proposal will offer a custom mode in which the user will explicitly
+select which partitions to keep, delete or resize.
+
+That will result in up to four possibilities presented in the corresponding section.
+
+- Delete everything in the disk(s). Obviously, all previous data is removed.
+- Shrink existing partition(s). The information is kept, but partitions are resized as needed to make
+  enough space.
+- Do not modify existing partition(s). The installation will only succeed if the disk(s) already
+  contains suitable free spaces.
+- Custom. The user interface will allow the user to specify what to do with every individual partition
+  in the affected disks: delete it, keep it as it is or allow the algorithm to shrink it based on
+  the needs determined by the sizes of the volumes to allocate.
+
+![Section to find space](images/storage_ui/find_space.png)
+
+If the device chosen for installation is an already existing LVM volume group (see "device selection
+and general settings"), that volume group will be displayed in a very similar way to any affected
+disk, making it possible to specify what to do with the pre-existing logical volumes in a way that
+is analogous to partitions in a disk.
 
 ### Automatic Size Limits
 
@@ -148,29 +242,16 @@ Of course, at any point in time the user could modify the root volume and switch
 auto-calculated) limits. In that case, the entered values would be observed and would not be
 automatically recalculated anymore, despite any configuration for the default volumes.
 
-### Making Space for the Volumes
+### Interface Changes for Transactional Systems
 
-Similar to YaST, Agama will offer by default the option to automatically make space for the new
-operating system. But the algorithm will be different and less configurable.
+As explained at the beginning of this document, Agama can install some transactional distributions.
+In those systems, it makes no sense to disable Btrfs snapshots, which are required to provide the
+functionality. Is not only that snapshots are mandatory in transactional systems, they are actually
+used with a different purpose when compared to read-write systems.
 
-As an alternative, the Agama proposal will offer a manual mode in which the user will explicitly
-select which partitions to keep, delete or resize.
-
-That will result in up to four possibilities presented in the corresponding pop-up dialog (it's
-still undecided what will be the exact wording used to describe them in the user interface):
-
-- Delete everything in the disk(s). Obviously, all previous data is removed.
-- Resize existing partition(s). The information is kept, but partitions are resized as needed to make
-  enough space.
-- Do not modify existing partition(s). The installation will only succeed if the disk(s) already
-  contains suitable free spaces.
-- Custom. A user interface will allow the user to specify what to do with every individual partition
-  in the affected disks: resize it, delete it or keep it as it is.
-
-In general, the interface of this pop-up should put the focus in the operating systems found in the
-affected disks. Even if the custom mode allows to indicate individual actions per partition, the
-relationship between every one of those partitions and the installed operating system they belong to
-should be as visible as possible.
+Thus, if the system being installed is transactional, that will be clearly stated at the "settings"
+section of the storage proposal page. The setting to use btrfs snapshots will not be there and the
+root file system will be labeled as "transactional" in the corresponding table.
 
 ## Advanced Preparations
 
@@ -181,8 +262,8 @@ the installed system. Instead, they will operate right away in the system to con
 to be used by the proposal.
 
 Some of those interfaces already exist, like the one that allows to connect and disconnect to iSCSI
-targets or the one to manage DASDs. Currently they can be reached through the advanced options menu
-at Agama's side bar.
+targets or the one to manage DASDs. Currently they can be reached through a special menu at the
+Agama header. We may consider other mechanisms to make them more discoverable in the future.
 
 There will also be interfaces to:
 
@@ -196,14 +277,8 @@ into a RAID that is then used as an LVM physical volume), the final user interfa
 resemble the traditional YaST Expert Partitioner. But, since the scope of such a tool will be
 limited to preparing the disk for the proposal, it will not allow to format devices or to define
 mount points for the target system. After defining all the actions to be performed, the changes will
-be committed to the system before returning to the proposal page.
-
-## Other Use-Cases
-
-The proposed workflow and interfaces should cover most of the known installation use-cases.
-Nevertheless further improvements may be needed to accommodate scenarios like re-installing the
-system in a similar way to the option "Import Mount Points" from the YaST Partitioner, which can
-effectively be done by tweaking the proposal options to reuse the appropriate devices.
+be committed to the system before returning to the proposal page to define the location and settings
+of each file system.
 
 ## Comparison with the YaST Proposal
 
@@ -233,6 +308,9 @@ Volumes at Agama will only have a minimum size and (optionally) a maximum one. N
 For historical reasons, YaST tries to reuse existing LVM volume groups when making a proposal. That
 behavior can be very confusing in many situations. To avoid the associated problems, the Agama
 storage proposal will not automatically reuse existing LVM structures.
+
+To reuse existing volume groups the user must explicitly specify that. See the section "future
+features".
 
 ### About the Initial Proposal
 
@@ -275,4 +353,3 @@ If that execution of the `GuidedProposal` fails, then Agama could simply show a 
 
 The interface proposed in this document will work equally whatever approach is decided for the
 initial storage proposal of Agama.
-

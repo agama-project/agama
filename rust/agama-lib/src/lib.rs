@@ -25,6 +25,7 @@
 
 pub mod error;
 pub mod install_settings;
+pub mod localization;
 pub mod manager;
 pub mod network;
 pub mod product;

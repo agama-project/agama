@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE profile>
+<profile xmlns="http://www.suse.com/1.0/yast2ns"
+  xmlns:config="http://www.suse.com/1.0/configns">
+
+  <software>
+    <products config:type="list">
+      <product>__PRODUCT__</product>
+    </products>
+  </software>
+
+  <users config:type="list">
+    <user>
+      <encrypted config:type="boolean">false</encrypted>
+      <user_password>linux</user_password>
+      <username>root</username>
+    </user>
+  </users>
+
+  <scripts>
+    <pre-scripts config:type="list">
+      <script>
+        <filename>set-product.sh</filename>
+        <interpreter>shell</interpreter>
+        <source><![CDATA[#!/bin/sh
+if [ $(grep -c __PRODUCT__ /tmp/profile/autoinst.xml) -gt 1 ]
+then
+          sed -e 's/__PRODUCT__/Tumbleweed/' /tmp/profile/autoinst.xml > /tmp/profile/modified.xml
+fi
+]]>
+        </source>
+      </script>
+    </pre-scripts> 
+  </scripts>
+</profile>

@@ -92,6 +92,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "tokio-stream",
+ "url",
  "zbus",
 ]
 

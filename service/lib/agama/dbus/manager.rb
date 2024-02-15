@@ -25,6 +25,7 @@ require "agama/dbus/base_object"
 require "agama/dbus/with_service_status"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
+require "agama/autoyast/converter"
 
 module Agama
   module DBus

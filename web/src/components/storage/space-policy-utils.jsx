@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,22 +25,8 @@ import { _, n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { noop } from "~/utils";
 import { Button, ExpandableSection, Hint, HintBody } from "@patternfly/react-core";
+import { Selector } from "~/components/core";
 import { DeviceList } from "~/components/storage";
-
-const ListBox = ({ children, ...props }) => <ul data-type="agama/list" data-of="agama/space-policies" {...props}>{children}</ul>;
-
-const ListBoxItem = ({ isSelected, children, onClick, ...props }) => {
-  if (isSelected) props['aria-selected'] = true;
-
-  return (
-    <li
-      onClick={onClick}
-      { ...props }
-    >
-      {children}
-    </li>
-  );
-};
 
 /**
  * Content for a space policy item
@@ -91,12 +77,14 @@ Only the space that is not assigned to any partition will be used.");
   };
 
   return (
-    <>
+    <div data-items-type="agama/space-policies">
       <Title />
       <Description />
-    </>
+    </div>
   );
 };
+
+const renderPolicyOption = ({ id }) => <PolicyItem policy={id} />;
 
 /**
  * Component for selecting a policy to make space.
@@ -108,19 +96,21 @@ Only the space that is not assigned to any partition will be used.");
  *  changes.
  */
 const SpacePolicySelector = ({ value, onChange = noop }) => {
+  const onSelectionChange = (selection) => onChange(selection[0]);
+  const options = [
+    { id: "delete" },
+    { id: "resize" },
+    { id: "keep" }
+  ];
+
   return (
-    <ListBox aria-label={_("Select a mechanism to make space")} role="listbox">
-      { ["delete", "resize", "keep"].map(policy => (
-        <ListBoxItem
-          key={policy}
-          role="option"
-          onClick={() => onChange(policy)}
-          isSelected={policy === value}
-        >
-          <PolicyItem policy={policy} />
-        </ListBoxItem>
-      ))}
-    </ListBox>
+    <Selector
+      aria-label={_("Select a mechanism to make space")}
+      options={options}
+      renderOption={renderPolicyOption}
+      selectedIds={[value]}
+      onSelectionChange={onSelectionChange}
+    />
   );
 };
 

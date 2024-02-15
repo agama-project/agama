@@ -73,6 +73,7 @@
     Requires:       snapper
     Requires:       udftools
     Requires:       xfsprogs
+    Requires:       yast2-schema
   :filelist: "%{_datadir}/dbus-1/agama.conf\n
     %dir %{_datadir}/dbus-1/agama-services\n
     %{_datadir}/dbus-1/agama-services/org.opensuse.Agama*.service\n

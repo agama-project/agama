@@ -72,8 +72,8 @@ static KEYMAP_ID_REGEX: OnceLock<Regex> = OnceLock::new();
 /// use std::str::FromStr;
 ///
 /// let id: KeymapId = "es(ast)".parse().unwrap();
-/// assert_eq!(&id.layout, "es");
-/// assert_eq!(id.variant.clone(), Some("ast".to_string()));
+/// assert_eq!(id.layout, "es");
+/// assert_eq!(id.variant, Some("ast".to_string()));
 /// assert_eq!(id.dashed(), "es-ast".to_string());
 ///
 /// let id_with_dashes: KeymapId = "es-ast".parse().unwrap();
@@ -85,7 +85,7 @@ pub struct KeymapId {
     pub variant: Option<String>,
 }
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, PartialEq)]
 #[error("Invalid keymap ID: {0}")]
 pub struct InvalidKeymap(String);
 
@@ -114,7 +114,22 @@ impl FromStr for KeymapId {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let re = KEYMAP_ID_REGEX
-            .get_or_init(|| Regex::new(r"([\w.]+)((\((?<var1>.+)\)|-(?<var2>.+)))?").unwrap());
+            // https://docs.rs/regex/latest/regex/#example-verbose-mode
+            .get_or_init(|| {
+                Regex::new(
+                    r"(?x)
+                    ^
+                    ([\w.]+)               # layout part
+                    (                      # optional variant:
+                        \( (?<var1>.+) \)  # in parentheses, X11 style
+                        |
+                        -  (?<var2>.+)     # or after a minus, console style
+                    )?
+                    $                      # must match whole input, no substring allowed
+                    ",
+                )
+                .unwrap()
+            });
 
         if let Some(parts) = re.captures(s) {
             let mut variant = None;
@@ -185,5 +200,20 @@ mod test {
             },
             keymap_id4
         );
+    }
+
+    #[test]
+    fn test_parse_keymap_id_err() {
+        // no word characters for layout
+        let result = KeymapId::from_str("$%&");
+        assert!(result.is_err());
+
+        // layout is there but with trailing garbage
+        let result = KeymapId::from_str("cz@");
+        assert!(result.is_err());
+
+        // variant but then another variant
+        let result = KeymapId::from_str("cz(qwerty)-yeah");
+        assert!(result.is_err());
     }
 }
