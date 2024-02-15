@@ -149,7 +149,7 @@ describe Agama::DBus::Storage::DevicesTree do
     context "if an exported D-Bus object does not represent any of the current devices" do
       let(:dbus_objects) { [dbus_object1] }
       let(:dbus_object1) { Agama::DBus::Storage::Device.new(sdd, subject.path_for(sdd), subject) }
-      let(:sdd) { instance_double(Y2Storage::Disk, sid: 1, is?: false) }
+      let(:sdd) { instance_double(Y2Storage::Disk, sid: 1, is?: false, filesystem: false) }
 
       it "unexports the D-Bus object" do
         expect(service).to unexport_object("#{root_path}/1")
