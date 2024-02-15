@@ -1,11 +1,19 @@
+use crate::server::ServerState;
 use agama_lib::progress::{Progress, ProgressMonitor, ProgressPresenter};
 use async_trait::async_trait;
-use axum::{extract::{ws::{Message, WebSocket}, State, WebSocketUpgrade}, response::IntoResponse};
+use axum::{
+    extract::{
+        ws::{Message, WebSocket},
+        State, WebSocketUpgrade,
+    },
+    response::IntoResponse,
+};
 
-use crate::AppState;
-
-pub async fn ws_handler(State(state): State<AppState>, ws: WebSocketUpgrade) -> impl IntoResponse {
-    ws.on_upgrade(move |socket| handle_socket(socket, state.connection))
+pub async fn ws_handler(
+    State(state): State<ServerState>,
+    ws: WebSocketUpgrade,
+) -> impl IntoResponse {
+    ws.on_upgrade(move |socket| handle_socket(socket, state.dbus_connection))
 }
 
 async fn handle_socket(socket: WebSocket, connection: zbus::Connection) {

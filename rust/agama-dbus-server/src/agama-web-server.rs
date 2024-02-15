@@ -1,39 +1,24 @@
 use agama_lib::connection;
-use axum::{routing::get, Router};
-use tokio;
-use tower_http::trace::TraceLayer;
-use tracing_subscriber::prelude::*;
-use zbus;
+use clap::Parser;
 
 mod http;
+mod server;
 mod ws;
-use http::ping;
-use ws::ws_handler;
+use server::AgamaServer;
 
-#[derive(Clone)]
-struct AppState {
-    pub connection: zbus::Connection
+#[derive(Parser)]
+#[command(version, about, long_about = None)]
+struct Cli {
+    /// Address to listen on (default: "0.0.0.0:3000")
+    #[arg(long, default_value = "0.0.0.0:3000")]
+    address: String,
 }
 
 #[tokio::main]
 async fn main() {
-    let journald = tracing_journald::layer().expect("could not connect to journald");
-    tracing_subscriber::registry()
-        .with(journald)
-        .init();
+    let cli = Cli::parse();
 
-    let app_state = AppState {
-        connection: connection().await.expect("could not connect to the D-Bus server")
-    };
-
-    let app = Router::new()
-        .route("/ping", get(ping))
-        .route("/ws", get(ws_handler))
-        .layer(TraceLayer::new_for_http())
-        .with_state(app_state);
-
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
-        .await
-        .expect("could not listen on port 3000");
-    axum::serve(listener, app).await.expect("could not mount app on listener");
+    let connection = connection().await.unwrap();
+    let server = AgamaServer::new(&cli.address, connection);
+    server.run().await;
 }
