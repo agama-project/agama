@@ -34,6 +34,7 @@ tracing-subscriber = "0.3.18"
 tracing-journald = "0.3.0"
 tracing = "0.1.40"
 clap = { version = "4.5.0", features = ["derive", "wrap_help"] }
+tower = "0.4.13"
 
 [[bin]]
 name = "agama-dbus-server"
@@ -42,3 +43,6 @@ path = "src/agama-dbus-server.rs"
 [[bin]]
 name = "agama-web-server"
 path = "src/agama-web-server.rs"
+
+[dev-dependencies]
+http-body-util = "0.1.0"
