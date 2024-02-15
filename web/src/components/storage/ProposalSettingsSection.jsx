@@ -474,11 +474,11 @@ const SnapshotsField = ({
 
   if (isLoading) return <Skeleton width="25%" />;
 
-  const explanation = _("Btrfs snapshots for root partition enforce root volume to use btrfs with snapshots enabled. It is useful for returning to previous snapshot of system e.g. after software upgrade.");
+  const explanation = _("Allows to restore a previous version of the system after configuration changes or software upgrades.");
 
   return (
     <>
-      <div className="split">
+      <div>
         <Switch
           id="snapshots"
           label={_("Use Btrfs Snapshots")}
@@ -486,7 +486,9 @@ const SnapshotsField = ({
           isChecked={isChecked}
           onChange={switchState}
         />
-        {explanation}
+        <div>
+          {explanation}
+        </div>
       </div>
     </>
   );
