@@ -1,7 +1,6 @@
+use agama_dbus_server::web;
 use agama_lib::connection;
 use clap::Parser;
-
-use agama_dbus_server::server;
 use tracing_subscriber::prelude::*;
 
 #[derive(Parser)]
@@ -27,7 +26,7 @@ async fn main() {
         .unwrap_or_else(|_| panic!("could not listen on {}", &cli.address));
 
     let dbus_connection = connection().await.unwrap();
-    axum::serve(listener, server::service(dbus_connection))
+    axum::serve(listener, web::service(dbus_connection))
         .await
         .expect("could not mount app on listener");
 }
