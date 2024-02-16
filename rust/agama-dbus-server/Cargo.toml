@@ -36,6 +36,8 @@ tracing = "0.1.40"
 clap = { version = "4.5.0", features = ["derive", "wrap_help"] }
 tower = "0.4.13"
 utoipa = { version = "4.2.0", features = ["axum_extras"] }
+config = "0.14.0"
+rand = "0.8.5"
 
 [[bin]]
 name = "agama-dbus-server"
