@@ -27,3 +27,23 @@ regex = "1.10.2"
 once_cell = "1.18.0"
 macaddr = "1.0"
 async-trait = "0.1.75"
+axum = { version = "0.7.4", features = ["ws"] }
+serde_json = "1.0.113"
+tower-http = { version = "0.5.1", features = ["trace"] }
+tracing-subscriber = "0.3.18"
+tracing-journald = "0.3.0"
+tracing = "0.1.40"
+clap = { version = "4.5.0", features = ["derive", "wrap_help"] }
+tower = "0.4.13"
+utoipa = { version = "4.2.0", features = ["axum_extras"] }
+
+[[bin]]
+name = "agama-dbus-server"
+path = "src/agama-dbus-server.rs"
+
+[[bin]]
+name = "agama-web-server"
+path = "src/agama-web-server.rs"
+
+[dev-dependencies]
+http-body-util = "0.1.0"
