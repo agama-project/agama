@@ -20,11 +20,11 @@
  */
 
 import React, { useEffect } from "react";
-import { FormSelect, FormSelectOption, Radio } from "@patternfly/react-core";
+import { FormSelect, FormSelectOption } from "@patternfly/react-core";
 
 import { _, n_, N_ } from "~/i18n";
 import { deviceSize } from '~/components/storage/utils';
-import { If, Section, SectionSkeleton } from "~/components/core";
+import { If, OptionsPicker, Section, SectionSkeleton } from "~/components/core";
 import { noop, useLocalStorage } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { Table, Thead, Tr, Th, Tbody, Td, TreeRowWrapper } from '@patternfly/react-table';
@@ -382,46 +382,28 @@ const SpaceActionsTable = ({ settings, onChange = noop }) => {
 };
 
 /**
- * Space policy selector.
+ * Widget to allow user picking desired policy to make space
  * @component
  *
  * @param {object} props
  * @param {SpacePolicy} props.currentPolicy
  * @param {(policy: string) => void} [props.onChange]
  */
-const SpacePolicySelector = ({ currentPolicy, onChange = noop }) => {
+const SpacePolicyPicker = ({ currentPolicy, onChange = noop }) => {
   return (
-    <>
-      <p>
-        {_("Indicate how to make free space in the selected disks for allocating the file systems:")}
-      </p>
-
-      <div>
-        <div className="split radio-group">
-          {SPACE_POLICIES.map((policy) => {
-            const isChecked = policy.name === currentPolicy.name;
-
-            return (
-              <Radio
-                id={`space-policy-option-${policy.name}`}
-                key={`space-policy-${policy.name}`}
-                // eslint-disable-next-line agama-i18n/string-literals
-                label={_(policy.label)}
-                value={policy.name}
-                name="space-policies"
-                className={isChecked && "selected"}
-                isChecked={isChecked}
-                onChange={() => onChange(policy.name)}
-              />
-            );
-          })}
-        </div>
-
-        <div aria-live="polite" className="highlighted-live-region">
-          {currentPolicy.description}
-        </div>
-      </div>
-    </>
+    <OptionsPicker>
+      {SPACE_POLICIES.map((policy) => {
+        return (
+          <OptionsPicker.Option
+            key={policy.name}
+            title={policy.label}
+            body={policy.description}
+            onClick={() => onChange(policy.name)}
+            isSelected={currentPolicy?.name === policy.name}
+          />
+        );
+      })}
+    </OptionsPicker>
   );
 };
 
@@ -453,12 +435,16 @@ export default function ProposalSpacePolicySection({
 
   return (
     <Section title={_("Find Space")} className="flex-stack">
+
       <If
         condition={isLoading && settings.spacePolicy === undefined}
         then={<SectionSkeleton numRows={4} />}
         else={
           <>
-            <SpacePolicySelector currentPolicy={currentPolicy} onChange={changeSpacePolicy} />
+            <p>
+              {_("Indicate how to make free space in the selected disks for allocating the file systems:")}
+            </p>
+            <SpacePolicyPicker currentPolicy={currentPolicy} onChange={changeSpacePolicy} />
             <If
               condition={settings.installationDevices?.length > 0}
               then={<SpaceActionsTable settings={settings} onChange={changeSpaceActions} />}
