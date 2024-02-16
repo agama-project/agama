@@ -53,13 +53,12 @@ const SPACE_POLICIES = [
   {
     name: "resize",
     label: N_("Shrink existing partitions"),
-    description: N_("The data is kept, but the current partitions will be resized as needed to make enough space.")
+    description: N_("The data is kept, but the current partitions will be resized as needed.")
   },
   {
     name: "keep",
     label: N_("Use available space"),
-    description: N_("The data is kept and existing partitions will not be modified. \
-Only the space that is not assigned to any partition will be used.")
+    description: N_("Existing partitions and data will not be modified. Only the space not assigned to any partition will be used.")
   },
   {
     name: "custom",
