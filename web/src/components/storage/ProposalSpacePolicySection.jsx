@@ -22,7 +22,7 @@
 import React, { useEffect } from "react";
 import { FormSelect, FormSelectOption } from "@patternfly/react-core";
 
-import { _, n_, N_ } from "~/i18n";
+import { _, N_ } from "~/i18n";
 import { deviceSize } from '~/components/storage/utils';
 import { If, OptionsPicker, Section, SectionSkeleton } from "~/components/core";
 import { noop, useLocalStorage } from "~/utils";
@@ -72,6 +72,7 @@ const columnNames = {
   device: N_("Used device"),
   content: N_("Current content"),
   size: N_("Size"),
+  details: N_("Details"),
   action: N_("Action")
 };
 
@@ -112,44 +113,34 @@ const DeviceDescriptionColumn = ({ device }) => {
  */
 const DeviceContentColumn = ({ device }) => {
   const PartitionTableContent = () => {
-    const numPartitions = device.partitionTable.partitions.length;
-
     return (
-      <>
-        <div>
-          {sprintf(n_("%d partition", "%d partitions", numPartitions), numPartitions)}
-        </div>
-        <div className="fs-small">
-          {sprintf(_("%s partition table"), device.partitionTable.type.toUpperCase())}
-        </div>
-      </>
+      <div>
+        {sprintf(_("%s partition table"), device.partitionTable.type.toUpperCase())}
+      </div>
     );
   };
 
   const BlockContent = () => {
-    const systems = device.systems;
-    const filesystem = device.filesystem;
-
     const content = () => {
+      const systems = device.systems;
       if (systems.length > 0) return systems.join(", ");
-      if (device.filesystem?.isEFI) return _("EFI");
 
-      return _("Not identified");
+      const filesystem = device.filesystem;
+      if (filesystem?.isEFI) return _("EFI");
+      if (filesystem) return sprintf(_("%s file system"), filesystem?.type);
+
+      const component = device.component;
+      switch (component?.type) {
+        case "physical_volume":
+          return sprintf(_("LVM physical volume of %s"), component.deviceNames[0]);
+        case "md_device":
+          return sprintf(_("Member of RAID %s"), component.deviceNames[0]);
+        default:
+          return _("Not identified");
+      }
     };
 
-    return (
-      <>
-        <div>{content()}</div>
-        <If
-          condition={filesystem}
-          then={
-            <div className="fs-small">
-              {sprintf(_("%s file system"), filesystem?.type)}
-            </div>
-          }
-        />
-      </>
-    );
+    return <div>{content()}</div>;
   };
 
   return (device.partitionTable ? <PartitionTableContent /> : <BlockContent />);
@@ -163,14 +154,19 @@ const DeviceContentColumn = ({ device }) => {
  * @param {StorageDevice} props.device
  */
 const DeviceSizeColumn = ({ device }) => {
-  const UnusedSize = () => {
-    const used = device.partitionTable?.partitions.reduce((s, p) => s + p.size, 0) || 0;
-    const unused = device.size - used;
+  return <div>{deviceSize(device.size)}</div>;
+};
 
-    if (unused === 0) return null;
+const DeviceDetailsColumn = ({ device }) => {
+  const UnusedSize = () => {
+    const partitioned = device.partitionTable?.partitions.reduce((s, p) => s + p.size, 0) || 0;
+
+    if (device.filesystem) return null;
+
+    const unused = device.size - partitioned;
 
     return (
-      <div className="fs-small">
+      <div>
         {sprintf(_("%s unused"), deviceSize(unused))}
       </div>
     );
@@ -178,21 +174,18 @@ const DeviceSizeColumn = ({ device }) => {
 
   const RecoverableSize = () => {
     const size = device.recoverableSize;
-    let text;
 
-    if (size === 0)
-      text = _("No recoverable space");
-    else
-      text = sprintf(_("%s recoverable"), deviceSize(device.recoverableSize));
+    if (size === 0) return null;
 
-    return <div className="fs-small">{text}</div>;
+    return (
+      <div>
+        {sprintf(_("Shrinkable by %s"), deviceSize(device.recoverableSize))}
+      </div>
+    );
   };
 
   return (
-    <>
-      <div>{deviceSize(device.size)}</div>
-      <If condition={isDrive(device)} then={<UnusedSize />} else={<RecoverableSize /> } />
-    </>
+    <If condition={isDrive(device)} then={<UnusedSize />} else={<RecoverableSize /> } />
   );
 };
 
@@ -209,15 +202,20 @@ const DeviceSizeColumn = ({ device }) => {
 const DeviceActionColumn = ({ device, action, isDisabled = false, onChange = noop }) => {
   const changeAction = (_, action) => onChange({ device: device.name, action });
 
+  const value = (isDrive(device) && action === "resize") ? "keep" : action;
+
   return (
     <FormSelect
-      value={action}
+      value={value}
       isDisabled={isDisabled}
       onChange={changeAction}
       aria-label="Space action selector"
     >
       <FormSelectOption value="force_delete" label={_("Delete")} />
-      <FormSelectOption value="resize" label={_("Allow resize")} />
+      <If
+        condition={!isDrive(device)}
+        then={<FormSelectOption value="resize" label={_("Allow resize")} />}
+      />
       <FormSelectOption value="keep" label={_("Do not modify")} />
     </FormSelect>
   );
@@ -265,17 +263,19 @@ const DeviceRow = ({
 
   const spaceAction = settings.spaceActions.find(a => a.device === device.name);
   const isDisabled = settings.spacePolicy !== "custom";
+  const showAction = !device.partitionTable;
 
   return (
     <TreeRowWrapper row={{ props: treeRow.props }}>
       <Td dataLabel={columnNames.device} treeRow={treeRow}>
         <DeviceDescriptionColumn device={device} />
       </Td>
-      <Td dataLabel={columnNames.content} textCenter><DeviceContentColumn device={device} /></Td>
-      <Td dataLabel={columnNames.size} textCenter><DeviceSizeColumn device={device} /></Td>
+      <Td dataLabel={columnNames.content}><DeviceContentColumn device={device} /></Td>
+      <Td dataLabel={columnNames.size}><DeviceSizeColumn device={device} /></Td>
+      <Td dataLabel={columnNames.details}><DeviceDetailsColumn device={device} /></Td>
       <Td dataLabel={columnNames.action} textCenter>
         <If
-          condition={!isDrive(device)}
+          condition={showAction}
           then={
             <DeviceActionColumn
               device={device}
@@ -371,8 +371,9 @@ const SpaceActionsTable = ({ settings, onChange = noop }) => {
       <Thead>
         <Tr>
           <Th>{columnNames.device}</Th>
-          <Th textCenter>{columnNames.content}</Th>
-          <Th textCenter>{columnNames.size}</Th>
+          <Th>{columnNames.content}</Th>
+          <Th>{columnNames.size}</Th>
+          <Th>{columnNames.details}</Th>
           <Th textCenter>{columnNames.action}</Th>
         </Tr>
       </Thead>
