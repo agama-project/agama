@@ -28,6 +28,7 @@ require "agama/dbus/storage/interfaces/md"
 require "agama/dbus/storage/interfaces/block"
 require "agama/dbus/storage/interfaces/partition_table"
 require "agama/dbus/storage/interfaces/filesystem"
+require "agama/dbus/storage/interfaces/component"
 
 module Agama
   module DBus
@@ -87,6 +88,7 @@ module Agama
           interfaces << Interfaces::Block if storage_device.is?(:blk_device)
           interfaces << Interfaces::PartitionTable if partition_table?
           interfaces << Interfaces::Filesystem if filesystem?
+          interfaces << Interfaces::Component if component?
 
           interfaces.each { |i| singleton_class.include(i) }
         end
@@ -117,7 +119,14 @@ module Agama
         #
         # @return [Boolean]
         def filesystem?
-          !storage_device.filesystem.nil?
+          storage_device.is?(:blk_device) && !storage_device.filesystem.nil?
+        end
+
+        # Whether the storage device is component of other devices.
+        #
+        # @return [Boolean]
+        def component?
+          storage_device.is?(:blk_device) && storage_device.component_of.any?
         end
       end
     end

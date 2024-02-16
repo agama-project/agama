@@ -45,12 +45,12 @@ shared_examples "MD interface" do
       end
     end
 
-    describe "#md_members" do
-      it "returns the D-Bus path of the MD members" do
+    describe "#md_devices" do
+      it "returns the D-Bus path of the MD components" do
         sda1 = devicegraph.find_by_name("/dev/sda1")
         sda2 = devicegraph.find_by_name("/dev/sda2")
 
-        expect(subject.md_members)
+        expect(subject.md_devices)
           .to contain_exactly(tree.path_for(sda1), tree.path_for(sda2))
       end
     end

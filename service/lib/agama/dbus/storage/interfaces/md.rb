@@ -46,10 +46,10 @@ module Agama
             storage_device.md_level.to_s
           end
 
-          # Paths of the D-Bus objects representing the member devices of the MD RAID.
+          # Paths of the D-Bus objects representing the devices of the MD RAID.
           #
           # @return [Array<String>]
-          def md_members
+          def md_devices
             storage_device.plain_devices.map { |p| tree.path_for(p) }
           end
 
@@ -58,7 +58,7 @@ module Agama
               dbus_interface MD_INTERFACE  do
                 dbus_reader :md_uuid, "s", dbus_name: "UUID"
                 dbus_reader :md_level, "s", dbus_name: "Level"
-                dbus_reader :md_members, "ao", dbus_name: "Members"
+                dbus_reader :md_devices, "ao", dbus_name: "Devices"
               end
             end
           end
