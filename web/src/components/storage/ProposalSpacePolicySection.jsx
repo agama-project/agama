@@ -254,6 +254,7 @@ const DeviceRow = ({
     rowIndex,
     props: {
       isExpanded,
+      isDetailsExpanded: true,
       isHidden,
       'aria-level': level,
       'aria-posinset': posInSet,
@@ -273,7 +274,7 @@ const DeviceRow = ({
       <Td dataLabel={columnNames.content}><DeviceContentColumn device={device} /></Td>
       <Td dataLabel={columnNames.size}><DeviceSizeColumn device={device} /></Td>
       <Td dataLabel={columnNames.details}><DeviceDetailsColumn device={device} /></Td>
-      <Td dataLabel={columnNames.action} textCenter>
+      <Td dataLabel={columnNames.action}>
         <If
           condition={showAction}
           then={
@@ -374,7 +375,7 @@ const SpaceActionsTable = ({ settings, onChange = noop }) => {
           <Th>{columnNames.content}</Th>
           <Th>{columnNames.size}</Th>
           <Th>{columnNames.details}</Th>
-          <Th textCenter>{columnNames.action}</Th>
+          <Th>{columnNames.action}</Th>
         </Tr>
       </Thead>
       <Tbody>{renderRows()}</Tbody>

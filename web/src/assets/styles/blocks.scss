@@ -444,7 +444,7 @@ ul[data-type="agama/list"][role="grid"] {
 
     &[aria-selected="true"] {
       background: var(--color-gray-light);
-      border-block-end-color: var(--color-primary);
+      border-color: var(--color-primary);
     }
 
     >:first-child {
