@@ -453,31 +453,34 @@ const EncryptionSettingsForm = ({
  * @component
  *
  * @param {object} props
- * @param {boolean} [props.isChecked=false] - Whether system snapshots are selected
- * @param {boolean} [props.isLoading=false] - Whether to show the selector as loading
+ * @param {ProposalSettings} props.settings - Settings used for calculating a proposal.
  * @param {onChangeFn} [props.onChange=noop] - On change callback
  *
  * @callback onChangeFn
  * @param {object} settings
  */
 const SnapshotsField = ({
-  isChecked: isCheckedProp = false,
-  isLoading = false,
+  settings,
   onChange = noop
 }) => {
-  const [isChecked, setIsChecked] = useState(isCheckedProp);
+  const rootVolume = (settings.volumes || []).find((i) => i.mountPath === "/");
 
-  const switchState = (checked) => {
+  const initialChecked = rootVolume !== undefined && rootVolume.fsType === "Btrfs" && rootVolume.snapshots;
+  const [isChecked, setIsChecked] = useState(initialChecked);
+
+  // no root volume is probably some error or still loading
+  if (rootVolume === undefined) {
+    return <Skeleton width="25%" />;
+  }
+
+  const switchState = (_, checked) => {
     setIsChecked(checked);
-    onChange(checked);
+    onChange({ value: checked, settings });
   };
 
-  if (isLoading) return <Skeleton width="25%" />;
-
-  const explanation = _("Allows to restore a previous version of the system after configuration changes or software upgrades.");
-
-  return (
-    <>
+  if (rootVolume.outline.snapshotsConfigurable) {
+    const explanation = _("Uses btrfs for the root file system allowing to boot to a previous version of the system after configuration changes or software upgrades.");
+    return (
       <div>
         <Switch
           id="snapshots"
@@ -490,8 +493,16 @@ const SnapshotsField = ({
           {explanation}
         </div>
       </div>
-    </>
-  );
+    );
+  } else if (rootVolume.fsType === "Btrfs" && rootVolume.snapshots) {
+    return (
+      <div>
+        {_("Btrfs snapshots required by product.")}
+      </div>
+    );
+  } else { // strange situation, should not happen
+    return undefined;
+  }
 };
 
 /**
@@ -742,6 +753,19 @@ export default function ProposalSettingsSection({
     onChange({ volumes });
   };
 
+  const changeBtrfsSnapshots = ({ value, settings }) => {
+    const rootVolume = settings.volumes.find((i) => i.mountPath === "/");
+
+    if (value) {
+      rootVolume.fsType = "Btrfs";
+      rootVolume.snapshots = true;
+    } else {
+      rootVolume.snapshots = false;
+    }
+
+    changeVolumes(settings.volumes);
+  };
+
   const { bootDevice } = settings;
   const encryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
 
@@ -762,9 +786,7 @@ export default function ProposalSettingsSection({
       />
       <SnapshotsField
         settings={settings}
-        isChecked={false} // TODO
-        isLoading={false} // TODO
-        onChange={noop} // TODO
+        onChange={changeBtrfsSnapshots}
       />
       <EncryptionField
         password={settings.encryptionPassword || ""}
