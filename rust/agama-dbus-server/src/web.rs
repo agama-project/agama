@@ -4,8 +4,10 @@
 //! * Emit relevant events via websocket.
 //! * Serve the code for the web user interface (not implemented yet).
 
+mod docs;
 mod http;
 mod service;
 mod ws;
 
+pub use docs::ApiDoc;
 pub use service::service;
