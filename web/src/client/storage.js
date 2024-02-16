@@ -117,11 +117,10 @@ class DevicesManager {
    * @property {string} [transport]
    * @property {boolean} [sdCard]
    * @property {boolean} [dellBOOS]
-   * @property {string[]} [devices] - RAID devices (only for "raid" type)
+   * @property {string[]} [devices] - RAID devices (only for "raid" and "md" types)
    * @property {string[]} [wires] - Multipath wires (only for "multipath" type)
    * @property {string} [level] - MD RAID level (only for "md" type)
    * @property {string} [uuid]
-   * @property {string[]} [members] - Member devices for a MD RAID (only for "md" type)
    * @property {boolean} [active]
    * @property {string} [name] - Block device name
    * @property {number} [size]
@@ -155,18 +154,18 @@ class DevicesManager {
       };
 
       const addRAIDProperties = (device, raidProperties) => {
-        device.devices = raidProperties.Devices.v;
+        device.devices = raidProperties.Devices.v.map(d => buildDevice(d, dbusDevices));
       };
 
       const addMultipathProperties = (device, multipathProperties) => {
-        device.wires = multipathProperties.Wires.v;
+        device.wires = multipathProperties.Wires.v.map(d => buildDevice(d, dbusDevices));
       };
 
       const addMDProperties = (device, mdProperties) => {
         device.type = "md";
         device.level = mdProperties.Level.v;
         device.uuid = mdProperties.UUID.v;
-        device.members = mdProperties.Members.v;
+        device.devices = mdProperties.Devices.v.map(d => buildDevice(d, dbusDevices));
       };
 
       const addBlockProperties = (device, blockProperties) => {
@@ -193,31 +192,44 @@ class DevicesManager {
         };
       };
 
+      const addComponentProperties = (device, componentProperties) => {
+        device.component = {
+          type: componentProperties.Type.v,
+          deviceNames: componentProperties.DeviceNames.v
+        };
+      };
+
       const device = {
         sid: path.split("/").pop(),
         type: ""
       };
 
-      const driveProperties = dbusDevices[path]["org.opensuse.Agama.Storage1.Drive"];
+      const dbusDevice = dbusDevices[path];
+      if (!dbusDevice) return device;
+
+      const driveProperties = dbusDevice["org.opensuse.Agama.Storage1.Drive"];
       if (driveProperties !== undefined) addDriveProperties(device, driveProperties);
 
-      const raidProperties = dbusDevices[path]["org.opensuse.Agama.Storage1.RAID"];
+      const raidProperties = dbusDevice["org.opensuse.Agama.Storage1.RAID"];
       if (raidProperties !== undefined) addRAIDProperties(device, raidProperties);
 
-      const multipathProperties = dbusDevices[path]["org.opensuse.Agama.Storage1.Multipath"];
+      const multipathProperties = dbusDevice["org.opensuse.Agama.Storage1.Multipath"];
       if (multipathProperties !== undefined) addMultipathProperties(device, multipathProperties);
 
-      const mdProperties = dbusDevices[path]["org.opensuse.Agama.Storage1.MD"];
+      const mdProperties = dbusDevice["org.opensuse.Agama.Storage1.MD"];
       if (mdProperties !== undefined) addMDProperties(device, mdProperties);
 
-      const blockProperties = dbusDevices[path]["org.opensuse.Agama.Storage1.Block"];
+      const blockProperties = dbusDevice["org.opensuse.Agama.Storage1.Block"];
       if (blockProperties !== undefined) addBlockProperties(device, blockProperties);
 
-      const ptableProperties = dbusDevices[path]["org.opensuse.Agama.Storage1.PartitionTable"];
+      const ptableProperties = dbusDevice["org.opensuse.Agama.Storage1.PartitionTable"];
       if (ptableProperties !== undefined) addPtableProperties(device, ptableProperties);
 
-      const filesystemProperties = dbusDevices[path]["org.opensuse.Agama.Storage1.Filesystem"];
+      const filesystemProperties = dbusDevice["org.opensuse.Agama.Storage1.Filesystem"];
       if (filesystemProperties !== undefined) addFilesystemProperties(device, filesystemProperties);
+
+      const componentProperties = dbusDevice["org.opensuse.Agama.Storage1.Component"];
+      if (componentProperties !== undefined) addComponentProperties(device, componentProperties);
 
       return device;
     };
