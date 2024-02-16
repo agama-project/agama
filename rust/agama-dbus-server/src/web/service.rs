@@ -1,4 +1,7 @@
-use axum::{routing::get, Router};
+use axum::{
+    routing::{get, post},
+    Router,
+};
 use config::{Config, ConfigError, File};
 use rand::distributions::{Alphanumeric, DistString};
 use serde::Deserialize;
@@ -14,6 +17,7 @@ pub fn service(dbus_connection: zbus::Connection) -> Router {
     Router::new()
         .route("/ping", get(super::http::ping))
         .route("/ws", get(super::ws::ws_handler))
+        .route("/authenticate", post(super::http::authenticate))
         .layer(TraceLayer::new_for_http())
         .with_state(state)
 }

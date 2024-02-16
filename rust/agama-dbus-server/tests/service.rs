@@ -4,7 +4,7 @@ use self::common::DBusServer;
 use agama_dbus_server::service;
 use axum::{
     body::Body,
-    http::{Request, StatusCode},
+    http::{Method, Request, StatusCode},
 };
 use http_body_util::BodyExt;
 use std::error::Error;
@@ -27,5 +27,23 @@ async fn test_ping() -> Result<(), Box<dyn Error>> {
 
     let body = body_to_string(response.into_body()).await;
     assert_eq!(&body, "{\"status\":\"success\"}");
+    Ok(())
+}
+
+#[test]
+async fn test_authenticate() -> Result<(), Box<dyn Error>> {
+    let dbus_server = DBusServer::new().start().await?;
+    let web_server = service(dbus_server.connection());
+    let request = Request::builder()
+        .uri("/authenticate")
+        .method(Method::POST)
+        .body(Body::empty())
+        .unwrap();
+
+    let response = web_server.oneshot(request).await.unwrap();
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let body = body_to_string(response.into_body()).await;
+    assert!(body.starts_with("{\"token\":"));
     Ok(())
 }
