@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalSettingsSection } from "~/components/storage";
 

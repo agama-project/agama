@@ -209,7 +209,7 @@ const DeviceActionColumn = ({ device, action, isDisabled = false, onChange = noo
       value={value}
       isDisabled={isDisabled}
       onChange={changeAction}
-      aria-label="Space action selector"
+      aria-label={sprintf(_("Space action selector for %s"), device.name)}
     >
       <FormSelectOption value="force_delete" label={_("Delete")} />
       <If
@@ -436,8 +436,7 @@ export default function ProposalSpacePolicySection({
   const currentPolicy = SPACE_POLICIES.find(p => p.name === settings.spacePolicy) || SPACE_POLICIES[0];
 
   return (
-    <Section title={_("Find Space")} className="flex-stack">
-
+    <Section title={_("Find Space")}>
       <If
         condition={isLoading && settings.spacePolicy === undefined}
         then={<SectionSkeleton numRows={4} />}
