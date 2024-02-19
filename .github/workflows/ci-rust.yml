@@ -69,6 +69,7 @@ jobs:
 
     - name: Install required packages
       run: zypper --non-interactive install
+        clang-devel
         jq
         libopenssl-3-devel
         openssl-3
