@@ -59,7 +59,7 @@ module Agama
             types.find { |k, _v| device.is?(k) }&.last || ""
           end
 
-          # Name of the devices for which this devices is component of.
+          # Name of the devices for which this device is component of.
           #
           # @return [Array<String>]
           def component_device_names
