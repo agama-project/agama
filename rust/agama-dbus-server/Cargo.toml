@@ -39,6 +39,7 @@ utoipa = { version = "4.2.0", features = ["axum_extras"] }
 config = "0.14.0"
 rand = "0.8.5"
 jsonwebtoken = "9.2.0"
+pam = "0.8.0"
 
 [[bin]]
 name = "agama-dbus-server"

@@ -2,6 +2,7 @@
 
 use axum::{extract::State, Json};
 use jsonwebtoken::{EncodingKey, Header};
+use pam::Client;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
@@ -32,7 +33,14 @@ pub struct Auth {
     token: String,
 }
 
-pub async fn authenticate(State(state): State<ServiceState>) -> Json<Auth> {
+pub async fn authenticate(
+    State(state): State<ServiceState>,
+    Json(password): Json<String>,
+) -> Json<Auth> {
+    let mut client = Client::with_password("cockpit").expect("failed to open PAM!");
+    client.conversation_mut().set_credentials("root", password);
+    client.authenticate().expect("failed authentication!");
+
     let claims = Claims { exp: 3600 };
 
     let secret = &state.config.jwt_key;
