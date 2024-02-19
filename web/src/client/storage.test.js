@@ -37,6 +37,7 @@ let managedObjects = {};
 
 const sda = {
   sid: "59",
+  isDrive: true,
   type: "disk",
   vendor: "Micron",
   model: "Micron 1100 SATA",
@@ -57,6 +58,7 @@ const sda = {
 
 const sda1 = {
   sid: "60",
+  isDrive: false,
   type: "",
   active: true,
   name: "/dev/sda1",
@@ -69,10 +71,11 @@ const sda1 = {
 
 const sda2 = {
   sid: "61",
+  isDrive: false,
   type: "",
   active: true,
   name: "/dev/sda2",
-  size: 512,
+  size: 256,
   recoverableSize: 0,
   systems : [],
   udevIds: [],
@@ -81,6 +84,7 @@ const sda2 = {
 
 const sdb = {
   sid: "62",
+  isDrive: true,
   type: "disk",
   vendor: "Samsung",
   model: "Samsung Evo 8 Pro",
@@ -101,6 +105,7 @@ const sdb = {
 
 const sdc = {
   sid: "63",
+  isDrive: true,
   type: "disk",
   vendor: "Disk",
   model: "",
@@ -121,6 +126,7 @@ const sdc = {
 
 const sdd = {
   sid: "64",
+  isDrive: true,
   type: "disk",
   vendor: "Disk",
   model: "",
@@ -141,6 +147,7 @@ const sdd = {
 
 const sde = {
   sid: "65",
+  isDrive: true,
   type: "disk",
   vendor: "Disk",
   model: "",
@@ -161,6 +168,7 @@ const sde = {
 
 const md0 = {
   sid: "66",
+  isDrive: false,
   type: "md",
   level: "raid0",
   uuid: "12345:abcde",
@@ -176,6 +184,7 @@ const md0 = {
 
 const raid = {
   sid: "67",
+  isDrive: true,
   type: "raid",
   vendor: "Dell",
   model: "Dell BOSS-N1 Modular",
@@ -196,6 +205,7 @@ const raid = {
 
 const multipath = {
   sid: "68",
+  isDrive: true,
   type: "multipath",
   vendor: "",
   model: "",
@@ -216,6 +226,7 @@ const multipath = {
 
 const dasd = {
   sid: "69",
+  isDrive: true,
   type: "dasd",
   vendor: "IBM",
   model: "IBM",
@@ -238,7 +249,8 @@ const dasd = {
 
 sda.partitionTable = {
   type: "gpt",
-  partitions: [sda1, sda2]
+  partitions: [sda1, sda2],
+  unpartitionedSize: 256
 };
 
 sda1.component = {
@@ -512,7 +524,7 @@ const contexts = {
       "org.opensuse.Agama.Storage1.Block": {
         Active: { t: "b", v: true },
         Name: { t: "s", v: "/dev/sda2" },
-        Size: { t: "x", v: 512 },
+        Size: { t: "x", v: 256 },
         RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: [] },
         UdevIds: { t: "as", v: [] },

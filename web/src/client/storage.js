@@ -108,6 +108,7 @@ class DevicesManager {
    *
    * @typedef {object} StorageDevice
    * @property {string} sid - Internal id that is used as D-Bus object basename
+   * @property {boolean} isDrive - Whether the device is a drive
    * @property {string} type - Type of device ("disk", "raid", "multipath", "dasd", "md")
    * @property {string} [vendor]
    * @property {string} [model]
@@ -134,6 +135,7 @@ class DevicesManager {
    * @typedef {object} PartitionTable
    * @property {string} type
    * @property {StorageDevice[]} partitions
+   * @property {number} unpartitionedSize - Total size not assigned to any partition
    *
    * @typedef {object} Filesystem
    * @property {string} type
@@ -142,6 +144,7 @@ class DevicesManager {
   async getDevices() {
     const buildDevice = (path, dbusDevices) => {
       const addDriveProperties = (device, dbusProperties) => {
+        device.isDrive = true;
         device.type = dbusProperties.Type.v;
         device.vendor = dbusProperties.Vendor.v;
         device.model = dbusProperties.Model.v;
@@ -179,9 +182,11 @@ class DevicesManager {
       };
 
       const addPtableProperties = (device, ptableProperties) => {
+        const partitions = ptableProperties.Partitions.v.map(p => buildDevice(p, dbusDevices));
         device.partitionTable = {
           type: ptableProperties.Type.v,
-          partitions: ptableProperties.Partitions.v.map(p => buildDevice(p, dbusDevices))
+          partitions,
+          unpartitionedSize: device.size - partitions.reduce((s, p) => s + p.size, 0)
         };
       };
 
@@ -201,6 +206,7 @@ class DevicesManager {
 
       const device = {
         sid: path.split("/").pop(),
+        isDrive: false,
         type: ""
       };
 
