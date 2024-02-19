@@ -26,6 +26,7 @@ import { ProposalSpacePolicySection } from "~/components/storage";
 
 const sda = {
   sid: "59",
+  isDrive: true,
   type: "disk",
   vendor: "Micron",
   model: "Micron 1100 SATA",
@@ -46,6 +47,7 @@ const sda = {
 
 const sda1 = {
   sid: "60",
+  isDrive: false,
   type: "",
   active: true,
   name: "/dev/sda1",
@@ -58,6 +60,7 @@ const sda1 = {
 
 const sda2 = {
   sid: "61",
+  isDrive: false,
   type: "",
   active: true,
   name: "/dev/sda2",
@@ -70,11 +73,13 @@ const sda2 = {
 
 sda.partitionTable = {
   type: "gpt",
-  partitions: [sda1, sda2]
+  partitions: [sda1, sda2],
+  unpartitionedSize: 512
 };
 
 const sdb = {
   sid: "62",
+  isDrive: true,
   type: "disk",
   vendor: "Samsung",
   model: "Samsung Evo 8 Pro",

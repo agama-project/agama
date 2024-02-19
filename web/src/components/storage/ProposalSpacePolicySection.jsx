@@ -77,15 +77,6 @@ const columnNames = {
 };
 
 /**
- * Indicates whether a device is a drive (disk, RAID).
- * @function
- *
- * @param {StorageDevice} device
- * @returns {boolean}
- */
-const isDrive = (device) => Object.keys(device).includes("vendor");
-
-/**
  * Column content with the description of a device.
  * @component
  *
@@ -97,7 +88,7 @@ const DeviceDescriptionColumn = ({ device }) => {
     <>
       <div>{device.name}</div>
       <If
-        condition={isDrive(device)}
+        condition={device.isDrive}
         then={<div className="fs-small">{`${device.vendor} ${device.model}`}</div>}
       />
     </>
@@ -159,11 +150,9 @@ const DeviceSizeColumn = ({ device }) => {
 
 const DeviceDetailsColumn = ({ device }) => {
   const UnusedSize = () => {
-    const partitioned = device.partitionTable?.partitions.reduce((s, p) => s + p.size, 0) || 0;
-
     if (device.filesystem) return null;
 
-    const unused = device.size - partitioned;
+    const unused = device.partitionTable?.unpartitionedSize || 0;
 
     return (
       <div>
@@ -185,7 +174,7 @@ const DeviceDetailsColumn = ({ device }) => {
   };
 
   return (
-    <If condition={isDrive(device)} then={<UnusedSize />} else={<RecoverableSize /> } />
+    <If condition={device.isDrive} then={<UnusedSize />} else={<RecoverableSize /> } />
   );
 };
 
@@ -202,7 +191,7 @@ const DeviceDetailsColumn = ({ device }) => {
 const DeviceActionColumn = ({ device, action, isDisabled = false, onChange = noop }) => {
   const changeAction = (_, action) => onChange({ device: device.name, action });
 
-  const value = (isDrive(device) && action === "resize") ? "keep" : action;
+  const value = (device.isDrive && action === "resize") ? "keep" : action;
 
   return (
     <FormSelect
@@ -213,7 +202,7 @@ const DeviceActionColumn = ({ device, action, isDisabled = false, onChange = noo
     >
       <FormSelectOption value="force_delete" label={_("Delete")} />
       <If
-        condition={!isDrive(device)}
+        condition={!device.isDrive}
         then={<FormSelectOption value="resize" label={_("Allow resize")} />}
       />
       <FormSelectOption value="keep" label={_("Do not modify")} />
