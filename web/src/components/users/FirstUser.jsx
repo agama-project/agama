@@ -42,6 +42,8 @@ import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 
 import { RowActions, PasswordAndConfirmationInput, Popup } from '~/components/core';
 
+import { suggestUsernames } from '~/components/users/utils';
+
 const UserNotDefined = ({ actionCb }) => {
   return (
     <div className="stack">
@@ -170,26 +172,6 @@ export default function FirstUser() {
   const handleInputChange = ({ target }, value) => {
     const { name } = target;
     setFormValues({ ...formValues, [name]: value });
-  };
-
-  const suggestUsernames = (fullName) => {
-    const cleanedName = fullName.replace(/[^\p{L}\p{N} ]/gu, "").toLowerCase();
-    const nameParts = cleanedName.split(/\s+/);
-    const suggestions = [];
-
-    nameParts.forEach((namePart, index) => {
-      if (index === 0) {
-        suggestions.push(namePart);
-        suggestions.push(namePart[0]);
-        nameParts.length > 1 && suggestions.push(namePart);
-      } else {
-        suggestions[0] += namePart;
-        suggestions[1] += namePart;
-        suggestions[2] += namePart[0];
-      }
-    });
-
-    return suggestions;
   };
 
   const isUserDefined = user?.userName && user?.userName !== "";
