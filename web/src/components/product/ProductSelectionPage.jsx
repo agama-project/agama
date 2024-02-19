@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -62,7 +62,7 @@ function ProductSelectionPage() {
     // TRANSLATORS: page title
     <Page icon="home_storage" title={_("Product selection")}>
       <Form id="productSelectionForm" onSubmit={onSubmit}>
-        <FormGroup isStack label={_("Choose a product")} role="radiogroup">
+        <FormGroup isStack label={_("Choose a product")}>
           <ProductSelector value={newProductId} products={products} onChange={setNewProductId} />
         </FormGroup>
       </Form>

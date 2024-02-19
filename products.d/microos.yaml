@@ -12,6 +12,11 @@ description: 'A quick, small distribution designed to host container workloads
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
+    es: Una distribución pequeña y rápida diseñada para alojar cargas de trabajo de
+      contenedores con administración y parches automatizados. openSUSE MicroOS
+      proporciona actualizaciones transaccionales (atómicas) en un sistema de
+      archivos raíz btrfs de solo lectura. Como distribución de lanzamiento
+      continuo, el software siempre está actualizado.
     fr: Une petite distribution rapide conçue pour héberger des charges de travail
       de conteneurs avec une administration et des correctifs automatisés.
       openSUSE MicroOS fournit des mises à jour transactionnelles (atomiques)

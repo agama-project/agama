@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-28 02:07+0000\n"
+"POT-Creation-Date: 2024-02-07 02:04+0000\n"
 "PO-Revision-Date: 2023-12-31 20:39+0000\n"
 "Last-Translator: Kristijan Fremen Velkovski <me@krisfremen.com>\n"
 "Language-Team: Macedonian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -380,8 +380,8 @@ msgid ""
 "can be set in the %s page."
 msgstr ""
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:56
 #: src/components/l10n/L10nPage.jsx:384
 #: src/components/overview/L10nSection.jsx:52
@@ -596,31 +596,33 @@ msgstr ""
 msgid "At least one address must be provided for selected mode"
 msgstr ""
 
-#: src/components/network/IpSettingsForm.jsx:131
+#. TRANSLATORS: %s is replaced by the iSCSI target node name
+#: src/components/network/IpSettingsForm.jsx:133
+#: src/components/storage/iscsi/EditNodeForm.jsx:50
 #, c-format
-msgid "Edit %s connection"
+msgid "Edit %s"
 msgstr ""
 
 #. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
-#: src/components/network/IpSettingsForm.jsx:133
-#: src/components/network/IpSettingsForm.jsx:138
-#: src/components/network/IpSettingsForm.jsx:140
+#: src/components/network/IpSettingsForm.jsx:136
+#: src/components/network/IpSettingsForm.jsx:141
+#: src/components/network/IpSettingsForm.jsx:143
 msgid "Mode"
 msgstr ""
 
-#: src/components/network/IpSettingsForm.jsx:144
+#: src/components/network/IpSettingsForm.jsx:147
 msgid "Automatic (DHCP)"
 msgstr ""
 
 #. TRANSLATORS: manual network configuration mode with a static IP address
-#: src/components/network/IpSettingsForm.jsx:146
+#: src/components/network/IpSettingsForm.jsx:149
 #: src/components/storage/iscsi/NodeStartupOptions.js:25
 msgid "Manual"
 msgstr ""
 
 #. TRANSLATORS: network gateway configuration
-#: src/components/network/IpSettingsForm.jsx:161
 #: src/components/network/IpSettingsForm.jsx:164
+#: src/components/network/IpSettingsForm.jsx:167
 msgid "Gateway"
 msgstr ""
 
@@ -652,18 +654,18 @@ msgstr ""
 
 #. TRANSLATORS: page section title
 #. TRANSLATORS: page title
-#: src/components/network/NetworkPage.jsx:170
-#: src/components/overview/NetworkSection.jsx:102
+#: src/components/network/NetworkPage.jsx:169
+#: src/components/overview/NetworkSection.jsx:83
 msgid "Network"
 msgstr ""
 
 #. TRANSLATORS: page section
-#: src/components/network/NetworkPage.jsx:172
+#: src/components/network/NetworkPage.jsx:171
 msgid "Wired networks"
 msgstr ""
 
 #. TRANSLATORS: page section
-#: src/components/network/NetworkPage.jsx:177
+#: src/components/network/NetworkPage.jsx:176
 msgid "WiFi networks"
 msgstr ""
 
@@ -760,13 +762,13 @@ msgstr ""
 msgid "The system will use %s as its default language."
 msgstr ""
 
-#: src/components/overview/NetworkSection.jsx:78
+#: src/components/overview/NetworkSection.jsx:59
 msgid "No network connections detected"
 msgstr ""
 
 #. TRANSLATORS: header for the list of active network connections,
 #. %d is replaced by the number of active connections
-#: src/components/overview/NetworkSection.jsx:87
+#: src/components/overview/NetworkSection.jsx:68
 #, c-format
 msgid "%d connection set:"
 msgid_plural "%d connections set:"
@@ -784,8 +786,8 @@ msgstr ""
 msgid "%s (registered)"
 msgstr ""
 
-#. TRANSLATORS: page section
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section
 #: src/components/overview/ProductSection.jsx:71
 #: src/components/product/ProductPage.jsx:435
 msgid "Product"
@@ -800,8 +802,8 @@ msgstr ""
 msgid "Refresh the repositories"
 msgstr ""
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
@@ -1732,12 +1734,6 @@ msgstr ""
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:147
 msgid "Incorrect port"
-msgstr ""
-
-#. TRANSLATORS: %s is replaced by the iSCSI target node name
-#: src/components/storage/iscsi/EditNodeForm.jsx:50
-#, c-format
-msgid "Edit %s"
 msgstr ""
 
 #: src/components/storage/iscsi/InitiatorForm.jsx:42
