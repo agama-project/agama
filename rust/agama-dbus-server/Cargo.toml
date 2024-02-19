@@ -39,6 +39,13 @@ utoipa = { version = "4.2.0", features = ["axum_extras"] }
 config = "0.14.0"
 rand = "0.8.5"
 jsonwebtoken = "9.2.0"
+axum-extra = { version = "0.9.2", features = ["typed-header"] }
+chrono = { version = "0.4.34", default-features = false, features = [
+  "now",
+  "std",
+  "alloc",
+  "clock",
+] }
 pam = "0.8.0"
 
 [[bin]]

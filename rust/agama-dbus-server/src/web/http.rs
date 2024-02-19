@@ -1,12 +1,10 @@
 //! Implements the handlers for the HTTP-based API.
 
+use super::{auth::generate_token, state::ServiceState};
 use axum::{extract::State, Json};
-use jsonwebtoken::{EncodingKey, Header};
 use pam::Client;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use utoipa::ToSchema;
-
-use super::service::ServiceState;
 
 #[derive(Serialize, ToSchema)]
 pub struct PingResponse {
@@ -23,32 +21,30 @@ pub async fn ping() -> Json<PingResponse> {
     })
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
-struct Claims {
-    exp: usize,
+// TODO: remove this route (as it is just for teting) as soon as we have a legit protected one
+pub async fn protected() -> String {
+    "OK".to_string()
 }
 
 #[derive(Serialize)]
-pub struct Auth {
+pub struct AuthResponse {
+    /// Bearer token to use on subsequent calls
     token: String,
 }
 
+#[utoipa::path(get, path = "/authenticate", responses(
+    (status = 200, description = "The user have been successfully authenticated", body = AuthResponse)
+))]
 pub async fn authenticate(
     State(state): State<ServiceState>,
     Json(password): Json<String>,
-) -> Json<Auth> {
-    let mut client = Client::with_password("cockpit").expect("failed to open PAM!");
-    client.conversation_mut().set_credentials("root", password);
-    client.authenticate().expect("failed authentication!");
+) -> Json<AuthResponse> {
+    let mut pam_client = Client::with_password("cockpit").expect("failed to open PAM!");
+    pam_client
+        .conversation_mut()
+        .set_credentials("root", password);
+    pam_client.authenticate().expect("failed authentication!");
 
-    let claims = Claims { exp: 3600 };
-
-    let secret = &state.config.jwt_key;
-    let token = jsonwebtoken::encode(
-        &Header::default(),
-        &claims,
-        &EncodingKey::from_secret(secret.as_ref()),
-    )
-    .unwrap();
-    Json(Auth { token })
+    let token = generate_token(&state.config.jwt_secret);
+    Json(AuthResponse { token })
 }
