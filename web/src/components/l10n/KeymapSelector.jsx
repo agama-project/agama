@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,48 +22,19 @@
 import React, { useState } from "react";
 
 import { _ } from "~/i18n";
-import { ListSearch } from "~/components/core";
+import { ListSearch, Selector } from "~/components/core";
 import { noop } from "~/utils";
 
 /**
  * @typedef {import ("~/client/l10n").Keymap} Keymap
  */
 
-const ListBox = ({ children, ...props }) => {
-  return (
-    <ul data-type="agama/list" data-of="agama/keymaps" {...props}>{children}</ul>
-  );
-};
-
-const ListBoxItem = ({ isSelected, children, onClick, ...props }) => {
-  if (isSelected) props['aria-selected'] = true;
-
-  return (
-    <li
-      role="option"
-      onClick={onClick}
-      { ...props }
-    >
-      {children}
-    </li>
-  );
-};
-
-/**
- * Content for a keymap item
- * @component
- *
- * @param {Object} props
- * @param {Keymap} props.keymap
- */
-const KeymapItem = ({ keymap }) => {
-  return (
-    <>
-      <div>{keymap.name}</div>
-      <div>{keymap.id}</div>
-    </>
-  );
-};
+const renderKeymapOption = (keymap) => (
+  <div data-items-type="agama/keymaps">
+    <div>{keymap.name}</div>
+    <div>{keymap.id}</div>
+  </div>
+);
 
 /**
  * Component for selecting a keymap.
@@ -80,23 +51,22 @@ export default function KeymapSelector({ value, keymaps = [], onChange = noop })
 
   // TRANSLATORS: placeholder text for search input in the keyboard selector.
   const helpSearch = _("Filter by description or keymap code");
+  const onSelectionChange = (selection) => onChange(selection[0]);
 
   return (
     <>
       <div className="sticky-top-0">
         <ListSearch placeholder={helpSearch} elements={keymaps} onChange={setFilteredKeymaps} />
       </div>
-      <ListBox aria-label={_("Available keymaps")} role="listbox">
-        { filteredKeymaps.map((keymap, index) => (
-          <ListBoxItem
-            key={`keymap-${index}`}
-            onClick={() => onChange(keymap.id)}
-            isSelected={keymap.id === value}
-          >
-            <KeymapItem keymap={keymap} />
-          </ListBoxItem>
-        ))}
-      </ListBox>
+      <Selector
+        // FIXME: when filtering, these are not the available keymaps but the
+        // filtered ones.
+        aria-label={_("Available keymaps")}
+        options={filteredKeymaps}
+        renderOption={renderKeymapOption}
+        selectedIds={[value]}
+        onSelectionChange={onSelectionChange}
+      />
     </>
   );
 }

@@ -6,6 +6,7 @@
 //!
 //! ```no_run
 //! # use agama_lib::progress::{Progress, ProgressMonitor, ProgressPresenter};
+//! # use async_trait::async_trait;
 //! # use tokio::{runtime::Handle, task};
 //! # use zbus;
 //!
@@ -18,21 +19,22 @@
 //!   }
 //! }
 //!
+//! #[async_trait]
 //! impl ProgressPresenter for SimplePresenter {
-//!     fn start(&mut self, progress: &Progress) {
+//!     async fn start(&mut self, progress: &Progress) {
 //!        println!("Starting...");
 //!        self.report_progress(progress);
 //!     }
 //!
-//!     fn update_main(&mut self, progress: &Progress) {
+//!     async fn update_main(&mut self, progress: &Progress) {
 //!        self.report_progress(progress);
 //!     }
 //!
-//!     fn update_detail(&mut self, progress: &Progress) {
+//!     async fn update_detail(&mut self, progress: &Progress) {
 //!        self.report_progress(progress);
 //!     }
 //!
-//!     fn finish(&mut self) {
+//!     async fn finish(&mut self) {
 //!         println!("Done");
 //!     }
 //! }
@@ -40,17 +42,18 @@
 //! async fn run_monitor() {
 //!   let connection = zbus::Connection::system().await.unwrap();
 //!   let mut monitor = ProgressMonitor::new(connection).await.unwrap();
-//!   monitor.run(SimplePresenter {});
+//!   monitor.run(SimplePresenter {}).await;
 //!}
 //! ```
 
-use crate::error::ServiceError;
-use crate::proxies::ProgressProxy;
+use crate::{error::ServiceError, proxies::ProgressProxy};
+use async_trait::async_trait;
+use serde::Serialize;
 use tokio_stream::{StreamExt, StreamMap};
 use zbus::Connection;
 
 /// Represents the progress for an Agama service.
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Serialize)]
 pub struct Progress {
     /// Current step
     pub current_step: u32,
@@ -109,7 +112,7 @@ impl<'a> ProgressMonitor<'a> {
 
     /// Runs the monitor until the current operation finishes.
     pub async fn run(&mut self, mut presenter: impl ProgressPresenter) -> Result<(), ServiceError> {
-        presenter.start(&self.main_progress().await);
+        presenter.start(&self.main_progress().await).await;
         let mut changes = self.build_stream().await;
 
         while let Some(stream) = changes.next().await {
@@ -117,14 +120,15 @@ impl<'a> ProgressMonitor<'a> {
                 ("/org/opensuse/Agama/Manager1", _) => {
                     let progress = self.main_progress().await;
                     if progress.finished {
-                        presenter.finish();
+                        presenter.finish().await;
                         return Ok(());
                     } else {
-                        presenter.update_main(&progress);
+                        presenter.update_main(&progress).await;
                     }
                 }
                 ("/org/opensuse/Agama/Software1", _) => {
-                    presenter.update_detail(&self.detail_progress().await)
+                    let progress = &self.detail_progress().await;
+                    presenter.update_detail(progress).await;
                 }
                 _ => eprintln!("Unknown"),
             };
@@ -161,22 +165,23 @@ impl<'a> ProgressMonitor<'a> {
 }
 
 /// Presents the progress to the user.
+#[async_trait]
 pub trait ProgressPresenter {
     /// Starts the progress reporting.
     ///
     /// * `progress`: current main progress.
-    fn start(&mut self, progress: &Progress);
+    async fn start(&mut self, progress: &Progress);
 
     /// Updates the progress.
     ///
     /// * `progress`: current progress.
-    fn update_main(&mut self, progress: &Progress);
+    async fn update_main(&mut self, progress: &Progress);
 
     /// Updates the progress detail.
     ///
     /// * `progress`: current progress detail.
-    fn update_detail(&mut self, progress: &Progress);
+    async fn update_detail(&mut self, progress: &Progress);
 
     /// Finishes the progress reporting.
-    fn finish(&mut self);
+    async fn finish(&mut self);
 }

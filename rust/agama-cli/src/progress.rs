@@ -1,4 +1,5 @@
 use agama_lib::progress::{Progress, ProgressPresenter};
+use async_trait::async_trait;
 use console::style;
 use indicatif::{ProgressBar, ProgressStyle};
 use std::time::Duration;
@@ -26,14 +27,15 @@ impl InstallerProgress {
     }
 }
 
+#[async_trait]
 impl ProgressPresenter for InstallerProgress {
-    fn start(&mut self, progress: &Progress) {
+    async fn start(&mut self, progress: &Progress) {
         if !progress.finished {
-            self.update_main(progress);
+            self.update_main(progress).await;
         }
     }
 
-    fn update_main(&mut self, progress: &Progress) {
+    async fn update_main(&mut self, progress: &Progress) {
         let counter = format!("[{}/{}]", &progress.current_step, &progress.max_steps);
 
         println!(
@@ -43,7 +45,7 @@ impl ProgressPresenter for InstallerProgress {
         );
     }
 
-    fn update_detail(&mut self, progress: &Progress) {
+    async fn update_detail(&mut self, progress: &Progress) {
         if progress.finished {
             if let Some(bar) = self.bar.take() {
                 bar.finish_and_clear();
@@ -53,7 +55,7 @@ impl ProgressPresenter for InstallerProgress {
         }
     }
 
-    fn finish(&mut self) {
+    async fn finish(&mut self) {
         if let Some(bar) = self.bar.take() {
             bar.finish_and_clear();
         }

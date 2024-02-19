@@ -21,10 +21,16 @@
 
 let url_root;
 
-try {
-    // Sometimes this throws a SecurityError such as during testing
-    url_root = window.localStorage.getItem('url-root');
-} catch (e) { }
+const meta_url_root = document.head.querySelector("meta[name='url-root']");
+if (meta_url_root) {
+    url_root = meta_url_root.content.replace(/^\/+|\/+$/g, '');
+} else {
+    // fallback for cockpit-ws < 272
+    try {
+        // Sometimes this throws a SecurityError such as during testing
+        url_root = window.localStorage.getItem('url-root');
+    } catch (e) { }
+}
 
 /* injected by tests */
 var mock = mock || { }; // eslint-disable-line no-use-before-define, no-var
@@ -78,7 +84,7 @@ function is_negative(n) {
 }
 
 function invoke_functions(functions, self, args) {
-    const length = functions ? functions.length : 0;
+    const length = functions?.length ?? 0;
     for (let i = 0; i < length; i++) {
         if (functions[i])
             functions[i].apply(self, args);
@@ -220,7 +226,7 @@ window.addEventListener('beforeunload', function() {
 }, false);
 
 function transport_debug() {
-    if (window.debugging == "all" || window.debugging == "channel")
+    if (window.debugging == "all" || window.debugging?.includes("channel"))
         console.debug.apply(console, arguments);
 }
 
@@ -269,7 +275,7 @@ function event_mixin(obj, handlers) {
                     event = new CustomEvent(type, {
                         bubbles: false,
                         cancelable: false,
-                        detail: detail
+                        detail
                     });
 
                     args.unshift(event);
@@ -288,9 +294,9 @@ function event_mixin(obj, handlers) {
 function calculate_application() {
     let path = window.location.pathname || "/";
     let _url_root = url_root;
-    if (window.mock && window.mock.pathname)
+    if (window.mock?.pathname)
         path = window.mock.pathname;
-    if (window.mock && window.mock.url_root)
+    if (window.mock?.url_root)
         _url_root = window.mock.url_root;
 
     if (_url_root && path.indexOf('/' + _url_root) === 0)
@@ -312,9 +318,9 @@ function calculate_url(suffix) {
     const window_loc = window.location.toString();
     let _url_root = url_root;
 
-    if (window.mock && window.mock.url)
+    if (window.mock?.url)
         return window.mock.url;
-    if (window.mock && window.mock.url_root)
+    if (window.mock?.url_root)
         _url_root = window.mock.url_root;
 
     let prefix = calculate_application();
@@ -461,17 +467,6 @@ function Transport() {
 
     let check_health_timer;
 
-    /* HACK: Compatibility if we're hosted by older Cockpit versions */
-    try {
-           /* See if we should communicate via parent */
-           if (!ws && window.parent !== window && window.parent.options &&
-                window.parent.options.protocol == "cockpit1") {
-               ws = new ParentWebSocket(window.parent);
-            }
-    } catch (ex) {
-       /* permission access errors */
-    }
-
     if (!ws) {
         const ws_loc = calculate_url();
         transport_debug("connecting to " + ws_loc);
@@ -479,8 +474,6 @@ function Transport() {
         if (ws_loc) {
             if ("WebSocket" in window) {
                 ws = new window.WebSocket(ws_loc, "cockpit1");
-            } else if ("MozWebSocket" in window) { // Firefox 6
-                ws = new window.MozWebSocket(ws_loc);
             } else {
                 console.error("WebSocket not supported, application will not work!");
             }
@@ -926,7 +919,7 @@ function Channel(options) {
         if (!options)
             options = { };
         else if (typeof options == "string")
-            options = { problem : options };
+            options = { problem: options };
         options.command = "close";
         options.channel = id;
 
@@ -1042,7 +1035,7 @@ function factory() {
         self.encoding = "utf-8";
 
         self.decode = function decode(data, options) {
-            const stream = options && options.stream;
+            const stream = options?.stream;
 
             if (data === null || data === undefined)
                 data = "";
@@ -1160,7 +1153,7 @@ function factory() {
         },
         close: function close(problem) {
             if (default_transport)
-                default_transport.close(problem ? { problem: problem } : undefined);
+                default_transport.close(problem ? { problem } : undefined);
             default_transport = null;
             this.options = { };
         },
@@ -1321,7 +1314,7 @@ function factory() {
         let then;
         let done = false;
         if (is_object(values[0]) || is_function(values[0]))
-            then = values[0] && values[0].then;
+            then = values[0]?.then;
         if (is_function(then)) {
             state.status = -1;
             then.call(values[0], function(/* ... */) {
@@ -1352,7 +1345,7 @@ function factory() {
 
     function deferred_notify(state, values) {
         const callbacks = state.pending;
-        if ((state.status <= 0) && callbacks && callbacks.length) {
+        if ((state.status <= 0) && callbacks?.length) {
             later_invoke(function() {
                 for (let i = 0, ii = callbacks.length; i < ii; i++) {
                     const result = callbacks[i][0];
@@ -1743,7 +1736,7 @@ function factory() {
         };
 
         function unclaim() {
-            if (source && source.close)
+            if (source?.close)
                 source.close();
             source = null;
 
@@ -1986,7 +1979,7 @@ function factory() {
             }
 
             /* Insert our item into the array */
-            const entry = { beg: beg, items: items, mapping: mapping };
+            const entry = { beg, items, mapping };
             if (!head)
                 head = entry;
             if (tail)
@@ -2036,7 +2029,7 @@ function factory() {
                 throw Error("mismatched metric interval between grid and sink");
             let gdata = registered[id];
             if (!gdata) {
-                gdata = registered[id] = { grid: grid, links: [] };
+                gdata = registered[id] = { grid, links: [] };
                 gdata.links.remove = function remove() {
                     delete registered[id];
                 };
@@ -2107,7 +2100,7 @@ function factory() {
         self.close = function () {
             for (const id in registered) {
                 const grid = registered[id];
-                if (grid && grid.grid)
+                if (grid?.grid)
                     grid.grid.remove_sink(self);
             }
         };
@@ -2182,7 +2175,7 @@ function factory() {
 
                 const links = sink._register(self, id);
                 if (!links.length)
-                    sinks.push({ sink: sink, links: links });
+                    sinks.push({ sink, links });
                 links.push([path, row]);
 
             /* Called as add(callback) */
@@ -2452,6 +2445,10 @@ function factory() {
         const self = this;
         const application = cockpit.transport.application();
         self.url_root = url_root || "";
+
+        if (window.mock?.url_root)
+            self.url_root = window.mock.url_root;
+
         if (application.indexOf("cockpit+=") === 0) {
             if (self.url_root)
                 self.url_root += '/';
@@ -2494,13 +2491,14 @@ function factory() {
                 path = decode_path(path);
 
             let href = "/" + path.map(encodeURIComponent).join("/");
-            if (with_root && self.url_root && href.indexOf("/" + self.url_root + "/" !== 0))
+            if (with_root && self.url_root && href.indexOf("/" + self.url_root + "/") !== 0)
                 href = "/" + self.url_root + href;
 
             /* Undo unnecessary encoding of these */
-            href = href.replace("%40", "@");
-            href = href.replace("%3D", "=");
-            href = href.replace(/%2B/g, "+");
+            href = href.replaceAll("%40", "@");
+            href = href.replaceAll("%3D", "=");
+            href = href.replaceAll("%2B", "+");
+            href = href.replaceAll("%23", "#");
 
             let opt;
             const query = [];
@@ -2526,11 +2524,7 @@ function factory() {
                 href = href.substr(1);
 
             const pos = href.indexOf('?');
-            let first = href;
-            if (pos === -1)
-                first = href;
-            else
-                first = href.substr(0, pos);
+            const first = (pos === -1) ? href : href.substr(0, pos);
             const path = decode_path(first);
             if (pos !== -1 && options) {
                 href.substring(pos + 1).split("&")
@@ -2619,7 +2613,7 @@ function factory() {
         let hash = window.location.hash;
         if (hash.indexOf("#") === 0)
             hash = hash.substring(1);
-        cockpit.hint("location", { hash: hash });
+        cockpit.hint("location", { hash });
         cockpit.dispatchEvent("locationchanged");
     });
 
@@ -2630,9 +2624,9 @@ function factory() {
     cockpit.jump = function jump(path, host) {
         if (Array.isArray(path))
             path = "/" + path.map(encodeURIComponent).join("/")
-.replace("%40", "@")
-.replace("%3D", "=")
-.replace(/%2B/g, "+");
+.replaceAll("%40", "@")
+.replaceAll("%3D", "=")
+.replaceAll("%2B", "+");
         else
             path = "" + path;
 
@@ -2642,7 +2636,7 @@ function factory() {
         if (host === undefined)
             host = cockpit.transport.host;
 
-        const options = { command: "jump", location: path, host: host };
+        const options = { command: "jump", location: path, host };
         cockpit.transport.inject("\n" + JSON.stringify(options));
     };
 
@@ -2729,7 +2723,7 @@ function factory() {
     }
 
     function spawn_debug() {
-        if (window.debugging == "all" || window.debugging == "spawn")
+        if (window.debugging == "all" || window.debugging?.includes("spawn"))
             console.debug.apply(console, arguments);
     }
 
@@ -2746,6 +2740,8 @@ function factory() {
         }
         if (options !== undefined)
             Object.assign(args, options);
+
+        spawn_debug("process spawn:", JSON.stringify(args.spawn));
 
         const name = args.spawn[0] || "process";
         const channel = cockpit.channel(args);
@@ -2811,7 +2807,7 @@ function factory() {
     };
 
     function dbus_debug() {
-        if (window.debugging == "all" || window.debugging == "dbus")
+        if (window.debugging == "all" || window.debugging?.includes("dbus"))
             console.debug.apply(console, arguments);
     }
 
@@ -2926,7 +2922,8 @@ function factory() {
             iface: { value: iface, enumerable: false, writable: false },
             valid: { get: function() { return valid }, enumerable: false },
             wait: {
- enumerable: false, writable: false,
+                enumerable: false,
+                writable: false,
                 value: function(func) {
                     if (func)
                         waits.promise.always(func);
@@ -2934,17 +2931,12 @@ function factory() {
                 }
             },
             call: {
- value: function(name, args, options) { return client.call(path, iface, name, args, options) },
-                      enumerable: false, writable: false
-},
+                value: function(name, args, options) { return client.call(path, iface, name, args, options) },
+                enumerable: false,
+                writable: false
+            },
             data: { value: { }, enumerable: false }
         });
-
-        if (typeof window.$ === "function") {
-            Object.defineProperty(self, window.$.expando, {
-                value: { }, writable: true, enumerable: false
-            });
-        }
 
         if (!options)
             options = { };
@@ -3024,7 +3016,7 @@ function factory() {
             }
         }
 
-        client.subscribe({ path: path, interface: iface }, signal, options.subscribe !== false);
+        client.subscribe({ path, interface: iface }, signal, options.subscribe !== false);
 
         function waited(ex) {
             if (valid)
@@ -3035,7 +3027,7 @@ function factory() {
 
         /* If watching then do a proper watch, otherwise object is done */
         if (options.watch !== false)
-            client.watch({ path: path, interface: iface }).always(waited);
+            client.watch({ path, interface: iface }).always(waited);
         else
             waited();
     }
@@ -3051,7 +3043,8 @@ function factory() {
             iface: { value: iface, enumerable: false, writable: false },
             path_namespace: { value: path_namespace, enumerable: false, writable: false },
             wait: {
- enumerable: false, writable: false,
+                enumerable: false,
+                writable: false,
                 value: function(func) {
                     if (func)
                         waits.always(func);
@@ -3060,14 +3053,8 @@ function factory() {
             }
         });
 
-        if (typeof window.$ === "function") {
-            Object.defineProperty(self, window.$.expando, {
-                value: { }, writable: true, enumerable: false
-            });
-        }
-
         /* Subscribe to signals once for all proxies */
-        const match = { interface: iface, path_namespace: path_namespace };
+        const match = { interface: iface, path_namespace };
 
         /* Callbacks added by proxies */
         client.subscribe(match);
@@ -3127,7 +3114,6 @@ function factory() {
 
         let channel = cockpit.channel(args);
         const subscribers = { };
-        const published = { };
         let calls = { };
         let cache;
 
@@ -3145,7 +3131,7 @@ function factory() {
         }
 
         function send(payload) {
-            if (channel && channel.valid) {
+            if (channel?.valid) {
                 dbus_debug("dbus:", payload);
                 channel.send(payload);
                 return true;
@@ -3213,8 +3199,6 @@ function factory() {
                                 subscription.callback.apply(self, msg.signal);
                         }
                     }
-                } else if (msg.call) {
-                    handle(msg.call, msg.id);
                 } else if (msg.notify) {
                     notify(msg.notify);
                 } else if (msg.meta) {
@@ -3242,15 +3226,6 @@ function factory() {
             Object.assign(cache.meta, data);
             self.dispatchEvent("meta", data);
         }
-
-        self.meta = function(data, options) {
-            if (!channel || !channel.valid)
-                return;
-
-            const message = { ...options, meta: data };
-            send(JSON.stringify(message));
-            meta(data);
-        };
 
         function notify(data) {
             ensure_cache();
@@ -3340,7 +3315,7 @@ function factory() {
         this.subscribe = function subscribe(match, callback, rule) {
             const subscription = {
                 match: { ...match },
-                callback: callback
+                callback
             };
 
             if (rule !== false)
@@ -3374,7 +3349,7 @@ function factory() {
             last_cookie++;
             const dfd = cockpit.defer();
 
-            const msg = JSON.stringify({ watch: match, id: id });
+            const msg = JSON.stringify({ watch: match, id });
             if (send(msg))
                 calls[id] = dfd;
             else
@@ -3391,91 +3366,12 @@ function factory() {
             return ret;
         };
 
-        function unknown_interface(path, iface) {
-            const message = "DBus interface " + iface + " not available at " + path;
-            return cockpit.reject(new DBusError(["org.freedesktop.DBus.Error.UnknownInterface", [message]]));
-        }
-
-        function unknown_method(path, iface, method) {
-            const message = "DBus method " + iface + " " + method + " not available at " + path;
-            return cockpit.reject(new DBusError(["org.freedesktop.DBus.Error.UnknownMethod", [message]]));
-        }
-
-        function not_implemented(path, iface, method) {
-            console.warn("method is not implemented properly: ", path, iface, method);
-            return unknown_method(path, iface, method);
-        }
-
-        function invoke(call) {
-            const path = call[0];
-            const iface = call[1];
-            const method = call[2];
-            const object = published[path + "\n" + iface];
-            const info = cache.meta[iface];
-            if (!object || !info)
-                return unknown_interface(path, iface);
-            if (!info.methods || !(method in info.methods))
-                return unknown_method(path, iface, method);
-            if (typeof object[method] != "function")
-                return not_implemented(path, iface, method);
-            return object[method].apply(object, call[3]);
-        }
-
-        function handle(call, cookie) {
-            const result = invoke(call);
-            if (!cookie)
-                return; /* Discard result */
-            cockpit.when(result).then(function() {
-                let out = Array.prototype.slice.call(arguments, 0);
-                if (out.length == 1 && typeof out[0] == "undefined")
-                    out = [];
-                send(JSON.stringify({ reply: [out], id: cookie }));
-            }, function(ex) {
-                const error = [];
-                error[0] = ex.name || " org.freedesktop.DBus.Error.Failed";
-                error[1] = [cockpit.message(ex) || error[0]];
-                send(JSON.stringify({ error: error, id: cookie }));
-            });
-        }
-
-        self.publish = function(path, iface, object, options) {
-            const publish = [path, iface];
-
-            const id = String(last_cookie);
-            last_cookie++;
-            const dfd = calls[id] = cockpit.defer();
-
-            const payload = JSON.stringify({ ...options, publish, id });
-
-            if (send(payload))
-                calls[id] = dfd;
-            else
-                dfd.reject(new DBusError(closed));
-
-            const key = path + "\n" + iface;
-            dfd.promise.then(function() {
-                published[key] = object;
-            });
-
-            /* Return a way to remove this object */
-            const ret = dfd.promise;
-            ret.remove = function remove() {
-                if (id in calls) {
-                    dfd.reject(new DBusError("cancelled"));
-                    delete calls[id];
-                }
-                delete published[key];
-                send(JSON.stringify({ unpublish: publish }));
-            };
-            return ret;
-        };
-
         self.proxy = function proxy(iface, path, options) {
             if (!iface)
                 iface = name;
             iface = String(iface);
             if (!path)
-                path = "/" + iface.replace(/\./g, "/");
+                path = "/" + iface.replaceAll(".", "/");
             let Constructor = self.constructors[iface];
             if (!Constructor)
                 Constructor = self.constructors["*"];
@@ -3561,28 +3457,28 @@ function factory() {
         const binary = options.binary;
 
         const self = {
-            path: path,
-            read: read,
-            replace: replace,
-            modify: modify,
+            path,
+            read,
+            replace,
+            modify,
 
-            watch: watch,
+            watch,
 
-            close: close
+            close
         };
 
         const base_channel_options = { ...options };
         delete base_channel_options.syntax;
 
         function parse(str) {
-            if (options.syntax && options.syntax.parse)
+            if (options.syntax?.parse)
                 return options.syntax.parse(str);
             else
                 return str;
         }
 
         function stringify(obj) {
-            if (options.syntax && options.syntax.stringify)
+            if (options.syntax?.stringify)
                 return options.syntax.stringify(obj);
             else
                 return obj;
@@ -3599,7 +3495,7 @@ function factory() {
             const opts = {
                 ...base_channel_options,
                 payload: "fsread1",
-                path: path
+                path
             };
 
             function try_read() {
@@ -3668,7 +3564,7 @@ function factory() {
             const opts = {
                 ...base_channel_options,
                 payload: "fsreplace1",
-                path: path,
+                path,
                 tag: expected_tag
             };
             replace_channel = cockpit.channel(opts);
@@ -3739,7 +3635,7 @@ function factory() {
 
                 const opts = {
                     payload: "fswatch1",
-                    path: path,
+                    path,
                     superuser: base_channel_options.superuser,
                 };
                 watch_channel = cockpit.channel(opts);
@@ -3812,9 +3708,12 @@ function factory() {
     let po_plural;
 
     cockpit.language = "en";
+    cockpit.language_direction = "ltr";
+    const test_l10n = window.localStorage.test_l10n;
 
     cockpit.locale = function locale(po) {
         let lang = cockpit.language;
+        let lang_dir = cockpit.language_direction;
         let header;
 
         if (po) {
@@ -3829,9 +3728,12 @@ function factory() {
                 po_plural = header["plural-forms"];
             if (header.language)
                 lang = header.language;
+            if (header["language-direction"])
+                lang_dir = header["language-direction"];
         }
 
         cockpit.language = lang;
+        cockpit.language_direction = lang_dir;
     };
 
     cockpit.translate = function translate(/* ... */) {
@@ -3894,9 +3796,13 @@ function factory() {
         const key = context ? context + '\u0004' + string : string;
         if (po_data) {
             const translated = po_data[key];
-            if (translated && translated[1])
-                return translated[1];
+            if (translated?.[1])
+                string = translated[1];
         }
+
+        if (test_l10n === 'true')
+            return "»" + string + "«";
+
         return string;
     };
 
@@ -3994,7 +3900,7 @@ function factory() {
     }
 
     function http_debug() {
-        if (window.debugging == "all" || window.debugging == "http")
+        if (window.debugging == "all" || window.debugging?.includes("http"))
             console.debug.apply(console, arguments);
     }
 
@@ -4186,10 +4092,10 @@ function factory() {
         self.get = function get(path, params, headers) {
             return self.request({
                 method: "GET",
-                params: params,
-                path: path,
+                params,
+                path,
                 body: "",
-                headers: headers
+                headers
             });
         };
 
@@ -4208,9 +4114,9 @@ function factory() {
 
             return self.request({
                 method: "POST",
-                path: path,
-                body: body,
-                headers: headers
+                path,
+                body,
+                headers
             });
         };
 
@@ -4268,7 +4174,7 @@ function factory() {
         if (options)
             group = options.group;
 
-        if (options && options.admin)
+        if (options?.admin)
             admin = true;
 
         function decide(user) {
@@ -4350,7 +4256,7 @@ function factory() {
 
             const options = {
                 payload: "metrics1",
-                interval: interval,
+                interval,
                 source: "internal",
                 ...options_list[0]
             };
@@ -4450,7 +4356,7 @@ function factory() {
                 mapping = { };
                 meta.metrics.forEach(function(metric, i) {
                     const map = { "": i };
-                    const name = options.metrics_path_names ? options.metrics_path_names[i] : metric.name;
+                    const name = options.metrics_path_names?.[i] ?? metric.name;
                     mapping[name] = map;
                     if (metric.instances) {
                         metric.instances.forEach(function(instance, i) {
@@ -4477,8 +4383,8 @@ function factory() {
                     archive_options_list.push({
                                                    ...options_list[i],
                                                    source: options_list[i].archive_source,
-                                                   timestamp: timestamp,
-                                                   limit: limit
+                                                   timestamp,
+                                                   limit
                                               });
                 }
             }
@@ -4519,7 +4425,10 @@ function factory() {
 
     const old_onerror = window.onerror;
     window.onerror = function(msg, url, line) {
-        cockpit.oops();
+        // Errors with url == "" are not logged apparently, so let's
+        // not show the "Oops" for them either.
+        if (url != "")
+            cockpit.oops();
         if (old_onerror)
             return old_onerror(msg, url, line);
         return false;
