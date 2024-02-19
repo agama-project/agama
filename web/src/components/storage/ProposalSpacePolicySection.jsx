@@ -38,7 +38,7 @@ import { Table, Thead, Tr, Th, Tbody, Td, TreeRowWrapper } from '@patternfly/rea
 /**
  * @typedef SpacePolicy
  * @type {object}
- * @property {string} name
+ * @property {string} id
  * @property {string} label
  * @property {string} description
  */
@@ -46,22 +46,22 @@ import { Table, Thead, Tr, Th, Tbody, Td, TreeRowWrapper } from '@patternfly/rea
 /** @type {SpacePolicy[]} */
 const SPACE_POLICIES = [
   {
-    name: "delete",
+    id: "delete",
     label: N_("Delete current content"),
     description: N_("All partitions will be removed and any data in the disks will be lost.")
   },
   {
-    name: "resize",
+    id: "resize",
     label: N_("Shrink existing partitions"),
     description: N_("The data is kept, but the current partitions will be resized as needed.")
   },
   {
-    name: "keep",
+    id: "keep",
     label: N_("Use available space"),
     description: N_("The data is kept. Only the space not assigned to any partition will be used.")
   },
   {
-    name: "custom",
+    id: "custom",
     label: N_("Custom"),
     description: N_("Select what to do with each partition.")
   }
@@ -112,7 +112,7 @@ const DeviceContentColumn = ({ device }) => {
   };
 
   const BlockContent = () => {
-    const content = () => {
+    const renderContent = () => {
       const systems = device.systems;
       if (systems.length > 0) return systems.join(", ");
 
@@ -131,7 +131,7 @@ const DeviceContentColumn = ({ device }) => {
       }
     };
 
-    return <div>{content()}</div>;
+    return <div>{renderContent()}</div>;
   };
 
   return (device.partitionTable ? <PartitionTableContent /> : <BlockContent />);
@@ -386,11 +386,11 @@ const SpacePolicyPicker = ({ currentPolicy, onChange = noop }) => {
       {SPACE_POLICIES.map((policy) => {
         return (
           <OptionsPicker.Option
-            key={policy.name}
+            key={policy.id}
             title={policy.label}
             body={policy.description}
-            onClick={() => onChange(policy.name)}
-            isSelected={currentPolicy?.name === policy.name}
+            onClick={() => onChange(policy.id)}
+            isSelected={currentPolicy?.id === policy.id}
           />
         );
       })}
@@ -422,7 +422,7 @@ export default function ProposalSpacePolicySection({
     onChange({ spaceActions });
   };
 
-  const currentPolicy = SPACE_POLICIES.find(p => p.name === settings.spacePolicy) || SPACE_POLICIES[0];
+  const currentPolicy = SPACE_POLICIES.find(p => p.id === settings.spacePolicy) || SPACE_POLICIES[0];
 
   return (
     <Section title={_("Find Space")}>
