@@ -6,7 +6,7 @@ use axum::{
     extract::FromRequestParts,
     http::{request, StatusCode},
     response::{IntoResponse, Response},
-    RequestPartsExt,
+    Json, RequestPartsExt,
 };
 use axum_extra::{
     headers::{authorization::Bearer, Authorization},
@@ -14,7 +14,9 @@ use axum_extra::{
 };
 use chrono::{Duration, Utc};
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation};
+use pam::PamError;
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use thiserror::Error;
 
 /// Represents an authentication error.
@@ -26,11 +28,17 @@ pub enum AuthError {
     /// The authentication error is invalid.
     #[error("Invalid authentication token: {0}")]
     InvalidToken(#[from] jsonwebtoken::errors::Error),
+    /// The authentication failed (most probably the password is wrong)
+    #[error("Authentication via PAM failed: {0}")]
+    Failed(#[from] PamError),
 }
 
 impl IntoResponse for AuthError {
     fn into_response(self) -> Response {
-        (StatusCode::BAD_REQUEST, self.to_string()).into_response()
+        let body = json!({
+            "error": self.to_string()
+        });
+        (StatusCode::BAD_REQUEST, Json(body)).into_response()
     }
 }
 
