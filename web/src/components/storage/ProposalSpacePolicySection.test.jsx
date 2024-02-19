@@ -153,7 +153,7 @@ describe("ProposalSpacePolicySection", () => {
   describe.each([
     { id: 'delete', nameRegexp: /delete/i },
     { id: 'resize', nameRegexp: /shrink/i },
-    { id: 'keep', nameRegexp: /not be modified/i }
+    { id: 'keep', nameRegexp: /the space not assigned/i }
   ])("when space policy is '$id'", ({ id, nameRegexp }) => {
     beforeEach(() => {
       settings.spacePolicy = id;

@@ -58,7 +58,7 @@ const SPACE_POLICIES = [
   {
     name: "keep",
     label: N_("Use available space"),
-    description: N_("Existing partitions and data will not be modified. Only the space not assigned to any partition will be used.")
+    description: N_("The data is kept. Only the space not assigned to any partition will be used.")
   },
   {
     name: "custom",
@@ -442,9 +442,6 @@ export default function ProposalSpacePolicySection({
         then={<SectionSkeleton numRows={4} />}
         else={
           <>
-            <p>
-              {_("Indicate how to make free space in the selected disks for allocating the file systems:")}
-            </p>
             <SpacePolicyPicker currentPolicy={currentPolicy} onChange={changeSpacePolicy} />
             <If
               condition={settings.installationDevices?.length > 0}
