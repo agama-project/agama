@@ -21,14 +21,7 @@
 
 require "dbus"
 require "agama/dbus/base_object"
-require "agama/dbus/storage/interfaces/drive"
-require "agama/dbus/storage/interfaces/raid"
-require "agama/dbus/storage/interfaces/multipath"
-require "agama/dbus/storage/interfaces/md"
-require "agama/dbus/storage/interfaces/block"
-require "agama/dbus/storage/interfaces/partition_table"
-require "agama/dbus/storage/interfaces/filesystem"
-require "agama/dbus/storage/interfaces/component"
+require "agama/dbus/storage/interfaces/device"
 
 module Agama
   module DBus
@@ -78,55 +71,13 @@ module Agama
         # @return [DevicesTree]
         attr_reader :tree
 
-        # Adds the required interfaces according to the storage object
-        def add_interfaces # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-          interfaces = []
-          interfaces << Interfaces::Drive if drive?
-          interfaces << Interfaces::Raid if storage_device.is?(:dm_raid)
-          interfaces << Interfaces::Md if storage_device.is?(:md)
-          interfaces << Interfaces::Multipath if storage_device.is?(:multipath)
-          interfaces << Interfaces::Block if storage_device.is?(:blk_device)
-          interfaces << Interfaces::PartitionTable if partition_table?
-          interfaces << Interfaces::Filesystem if filesystem?
-          interfaces << Interfaces::Component if component?
+        # Adds the required interfaces according to the storage object.
+        def add_interfaces
+          interfaces = Interfaces::Device.constants
+            .map { |c| Interfaces::Device.const_get(c) }
+            .select { |c| c.is_a?(Module) && c.respond_to?(:apply?) && c.apply?(storage_device) }
 
           interfaces.each { |i| singleton_class.include(i) }
-        end
-
-        # Whether the storage device is a drive
-        #
-        # Drive and disk device are very close concepts, but there are subtle differences. For
-        # example, a MD RAID is never considered as a drive.
-        #
-        # TODO: Revisit the defintion of drive. Maybe some MD devices could implement the drive
-        #   interface if hwinfo provides useful information for them.
-        #
-        # @return [Boolean]
-        def drive?
-          storage_device.is?(:disk, :dm_raid, :multipath, :dasd) && storage_device.is?(:disk_device)
-        end
-
-        # Whether the storage device has a partition table
-        #
-        # @return [Boolean]
-        def partition_table?
-          storage_device.is?(:blk_device) &&
-            storage_device.respond_to?(:partition_table?) &&
-            storage_device.partition_table?
-        end
-
-        # Whether the storage device is formatted.
-        #
-        # @return [Boolean]
-        def filesystem?
-          storage_device.is?(:blk_device) && !storage_device.filesystem.nil?
-        end
-
-        # Whether the storage device is component of other devices.
-        #
-        # @return [Boolean]
-        def component?
-          storage_device.is?(:blk_device) && storage_device.component_of.any?
         end
       end
     end

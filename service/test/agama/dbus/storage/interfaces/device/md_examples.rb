@@ -19,24 +19,39 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../../../test_helper"
+require_relative "../../../../../test_helper"
 
-shared_examples "PartitionTable interface" do
-  describe "PartitionTable D-Bus interface" do
+shared_examples "MD interface" do
+  describe "MD D-Bus interface" do
     let(:scenario) { "partitioned_md.yml" }
 
-    let(:device) { devicegraph.find_by_name("/dev/md0") }
+    let(:device) { devicegraph.md_raids.first }
 
-    describe "#partition_table_type" do
-      it "returns the partition table type" do
-        expect(subject.partition_table_type).to eq("msdos")
+    describe "#md_uuid" do
+      before do
+        allow(device).to receive(:uuid).and_return(uuid)
+      end
+
+      let(:uuid) { "12345-abcde" }
+
+      it "returns the UUID of the MD" do
+        expect(subject.md_uuid).to eq(uuid)
       end
     end
 
-    describe "#partition_table_partitions" do
-      it "returns the path of the partitions" do
-        md0p1 = devicegraph.find_by_name("/dev/md0p1")
-        expect(subject.partition_table_partitions).to contain_exactly(tree.path_for(md0p1))
+    describe "#md_level" do
+      it "returns the RAID level" do
+        expect(subject.md_level).to eq("raid0")
+      end
+    end
+
+    describe "#md_devices" do
+      it "returns the D-Bus path of the MD components" do
+        sda1 = devicegraph.find_by_name("/dev/sda1")
+        sda2 = devicegraph.find_by_name("/dev/sda2")
+
+        expect(subject.md_devices)
+          .to contain_exactly(tree.path_for(sda1), tree.path_for(sda2))
       end
     end
   end

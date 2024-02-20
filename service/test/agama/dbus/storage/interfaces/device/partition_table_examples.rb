@@ -19,21 +19,24 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../../../test_helper"
+require_relative "../../../../../test_helper"
 
-shared_examples "RAID interface" do
-  describe "RAID D-Bus interface" do
-    let(:scenario) { "empty-dm_raids.xml" }
+shared_examples "PartitionTable interface" do
+  describe "PartitionTable D-Bus interface" do
+    let(:scenario) { "partitioned_md.yml" }
 
-    let(:device) { devicegraph.dm_raids.first }
+    let(:device) { devicegraph.find_by_name("/dev/md0") }
 
-    describe "#raid_devices" do
-      it "returns the D-Bus path of the RAID devices" do
-        sdb = devicegraph.find_by_name("/dev/sdb")
-        sdc = devicegraph.find_by_name("/dev/sdc")
+    describe "#partition_table_type" do
+      it "returns the partition table type" do
+        expect(subject.partition_table_type).to eq("msdos")
+      end
+    end
 
-        expect(subject.raid_devices)
-          .to contain_exactly(tree.path_for(sdb), tree.path_for(sdc))
+    describe "#partition_table_partitions" do
+      it "returns the path of the partitions" do
+        md0p1 = devicegraph.find_by_name("/dev/md0p1")
+        expect(subject.partition_table_partitions).to contain_exactly(tree.path_for(md0p1))
       end
     end
   end

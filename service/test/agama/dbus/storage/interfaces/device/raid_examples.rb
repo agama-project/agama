@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,27 +19,21 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../../../test_helper"
+require_relative "../../../../../test_helper"
 
-shared_examples "Component interface" do
-  describe "Component D-Bus interface" do
+shared_examples "RAID interface" do
+  describe "RAID D-Bus interface" do
     let(:scenario) { "empty-dm_raids.xml" }
 
-    let(:device) { devicegraph.find_by_name("/dev/sdb") }
+    let(:device) { devicegraph.dm_raids.first }
 
-    describe "#component_type" do
-      it "returns the type of component" do
-        expect(subject.component_type).to eq("raid_device")
-      end
-    end
+    describe "#raid_devices" do
+      it "returns the D-Bus path of the RAID devices" do
+        sdb = devicegraph.find_by_name("/dev/sdb")
+        sdc = devicegraph.find_by_name("/dev/sdc")
 
-    describe "#component_devices" do
-      it "returns the D-Bus path of the devices for which the device is component" do
-        raid1 = devicegraph.find_by_name("/dev/mapper/isw_ddgdcbibhd_test1")
-        raid2 = devicegraph.find_by_name("/dev/mapper/isw_ddgdcbibhd_test2")
-
-        expect(subject.component_devices)
-          .to contain_exactly(tree.path_for(raid1), tree.path_for(raid2))
+        expect(subject.raid_devices)
+          .to contain_exactly(tree.path_for(sdb), tree.path_for(sdc))
       end
     end
   end

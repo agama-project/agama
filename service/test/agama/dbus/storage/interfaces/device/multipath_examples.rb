@@ -19,16 +19,22 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module Agama
-  module DBus
-    module Storage
-      # Module for D-Bus interfaces of storage.
-      module Interfaces
+require_relative "../../../../../test_helper"
+
+shared_examples "Multipath interface" do
+  describe "Multipath D-Bus interface" do
+    let(:scenario) { "multipath-formatted.xml" }
+
+    let(:device) { devicegraph.multipaths.first }
+
+    describe "#multipath_wires" do
+      it "returns the D-Bus path of the Multipath wires" do
+        sda = devicegraph.find_by_name("/dev/sda")
+        sdb = devicegraph.find_by_name("/dev/sdb")
+
+        expect(subject.multipath_wires)
+          .to contain_exactly(tree.path_for(sda), tree.path_for(sdb))
       end
     end
   end
 end
-
-require "agama/dbus/storage/interfaces/dasd_manager"
-require "agama/dbus/storage/interfaces/device"
-require "agama/dbus/storage/interfaces/zfcp_manager"

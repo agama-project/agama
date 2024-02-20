@@ -19,23 +19,27 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../../../test_helper"
+require_relative "../../../../../test_helper"
 
-shared_examples "Filesystem interface" do
-  describe "Filesystem D-Bus interface" do
-    let(:scenario) { "multipath-formatted.xml" }
+shared_examples "Component interface" do
+  describe "Component D-Bus interface" do
+    let(:scenario) { "empty-dm_raids.xml" }
 
-    let(:device) { devicegraph.find_by_name("/dev/mapper/0QEMU_QEMU_HARDDISK_mpath1") }
+    let(:device) { devicegraph.find_by_name("/dev/sdb") }
 
-    describe "#filesystem_type" do
-      it "returns the file system type" do
-        expect(subject.filesystem_type).to eq("ext4")
+    describe "#component_type" do
+      it "returns the type of component" do
+        expect(subject.component_type).to eq("raid_device")
       end
     end
 
-    describe "#filesystem_efi?" do
-      it "returns whether the file system is an EFI" do
-        expect(subject.filesystem_efi?).to eq(false)
+    describe "#component_devices" do
+      it "returns the D-Bus path of the devices for which the device is component" do
+        raid1 = devicegraph.find_by_name("/dev/mapper/isw_ddgdcbibhd_test1")
+        raid2 = devicegraph.find_by_name("/dev/mapper/isw_ddgdcbibhd_test2")
+
+        expect(subject.component_devices)
+          .to contain_exactly(tree.path_for(raid1), tree.path_for(raid2))
       end
     end
   end

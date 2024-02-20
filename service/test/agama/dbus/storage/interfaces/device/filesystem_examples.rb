@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2024] SUSE LLC
+# Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,21 +19,23 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../../../test_helper"
+require_relative "../../../../../test_helper"
 
-shared_examples "Multipath interface" do
-  describe "Multipath D-Bus interface" do
+shared_examples "Filesystem interface" do
+  describe "Filesystem D-Bus interface" do
     let(:scenario) { "multipath-formatted.xml" }
 
-    let(:device) { devicegraph.multipaths.first }
+    let(:device) { devicegraph.find_by_name("/dev/mapper/0QEMU_QEMU_HARDDISK_mpath1") }
 
-    describe "#multipath_wires" do
-      it "returns the D-Bus path of the Multipath wires" do
-        sda = devicegraph.find_by_name("/dev/sda")
-        sdb = devicegraph.find_by_name("/dev/sdb")
+    describe "#filesystem_type" do
+      it "returns the file system type" do
+        expect(subject.filesystem_type).to eq("ext4")
+      end
+    end
 
-        expect(subject.multipath_wires)
-          .to contain_exactly(tree.path_for(sda), tree.path_for(sdb))
+    describe "#filesystem_efi?" do
+      it "returns whether the file system is an EFI" do
+        expect(subject.filesystem_efi?).to eq(false)
       end
     end
   end
