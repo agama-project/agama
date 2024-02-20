@@ -118,7 +118,7 @@ const DeviceContentColumn = ({ device }) => {
       if (systems.length > 0) return systems.join(", ");
 
       const filesystem = device.filesystem;
-      if (filesystem?.isEFI) return _("EFI");
+      if (filesystem?.isEFI) return _("EFI system partition");
       if (filesystem) {
         // TRANSLATORS: %s is replaced by a file system type (e.g., btrfs).
         return sprintf(_("%s file system"), filesystem?.type);
