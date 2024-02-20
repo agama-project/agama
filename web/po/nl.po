@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-07 02:04+0000\n"
+"POT-Creation-Date: 2024-02-18 02:07+0000\n"
 "PO-Revision-Date: 2023-12-31 20:39+0000\n"
 "Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-web/nl/"
@@ -153,10 +153,10 @@ msgstr ""
 #: src/components/product/ProductPage.jsx:71
 #: src/components/product/ProductPage.jsx:140
 #: src/components/product/ProductPage.jsx:207
-#: src/components/storage/ProposalSettingsSection.jsx:170
-#: src/components/storage/ProposalSettingsSection.jsx:363
-#: src/components/storage/ProposalSettingsSection.jsx:547
-#: src/components/storage/ProposalSettingsSection.jsx:643
+#: src/components/storage/ProposalSettingsSection.jsx:172
+#: src/components/storage/ProposalSettingsSection.jsx:367
+#: src/components/storage/ProposalSettingsSection.jsx:551
+#: src/components/storage/ProposalSettingsSection.jsx:647
 #: src/components/storage/ProposalVolumes.jsx:148
 #: src/components/storage/ProposalVolumes.jsx:283
 #: src/components/storage/ZFCPPage.jsx:511
@@ -417,11 +417,11 @@ msgid "language"
 msgstr "taal"
 
 #. TRANSLATORS: placeholder text for search input in the keyboard selector.
-#: src/components/l10n/KeymapSelector.jsx:82
+#: src/components/l10n/KeymapSelector.jsx:53
 msgid "Filter by description or keymap code"
 msgstr ""
 
-#: src/components/l10n/KeymapSelector.jsx:89
+#: src/components/l10n/KeymapSelector.jsx:64
 #, fuzzy
 msgid "Available keymaps"
 msgstr "Beschikbare apparaten"
@@ -488,21 +488,21 @@ msgstr "Wijzig encryptie wachtwoord"
 msgid "Keyboard not selected yet"
 msgstr "Niet ingesteld"
 
-#: src/components/l10n/LocaleSelector.jsx:82
+#: src/components/l10n/LocaleSelector.jsx:53
 msgid "Filter by language, territory or locale code"
 msgstr ""
 
-#: src/components/l10n/LocaleSelector.jsx:89
+#: src/components/l10n/LocaleSelector.jsx:64
 #, fuzzy
 msgid "Available locales"
 msgstr "Beschikbare apparaten"
 
 #. TRANSLATORS: placeholder text for search input in the timezone selector.
-#: src/components/l10n/TimezoneSelector.jsx:101
+#: src/components/l10n/TimezoneSelector.jsx:75
 msgid "Filter by territory, time zone code or UTC offset"
 msgstr ""
 
-#: src/components/l10n/TimezoneSelector.jsx:108
+#: src/components/l10n/TimezoneSelector.jsx:86
 #, fuzzy
 msgid "Available time zones"
 msgstr "Beschikbare apparaten"
@@ -687,8 +687,8 @@ msgstr "Geen WiFi verbindingen gevonden"
 msgid "Connect to a Wi-Fi network"
 msgstr "Verbind met een WiFi netwerk"
 
-#. TRANSLATORS: page section title
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section title
 #: src/components/network/NetworkPage.jsx:169
 #: src/components/overview/NetworkSection.jsx:83
 msgid "Network"
@@ -838,15 +838,15 @@ msgstr "Lezen van software opslagruimtes"
 msgid "Refresh the repositories"
 msgstr "Ververs de opslagruimtes"
 
-#. TRANSLATORS: page section
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section
 #: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
 msgstr "Software"
 
 #: src/components/overview/StorageSection.jsx:42
-#: src/components/storage/ProposalSettingsSection.jsx:126
+#: src/components/storage/ProposalSettingsSection.jsx:132
 msgid "No device selected yet"
 msgstr "Nog geen apparaat geselecteerd"
 
@@ -882,8 +882,8 @@ msgstr "Installatie apparaat"
 msgid "Probing storage devices"
 msgstr "Onderzoeken van opslagapparaten"
 
-#. TRANSLATORS: page section title
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section title
 #: src/components/overview/StorageSection.jsx:208
 #: src/components/storage/ProposalPage.jsx:232
 msgid "Storage"
@@ -1009,10 +1009,15 @@ msgstr "Product selectie"
 msgid "Select"
 msgstr "Selecteer"
 
-#: src/components/product/ProductSelector.jsx:29
+#: src/components/product/ProductSelector.jsx:36
 #, fuzzy
 msgid "No products available for selection"
 msgstr "Product selectie"
+
+#: src/components/product/ProductSelector.jsx:42
+#, fuzzy
+msgid "Available products"
+msgstr "Beschikbare apparaten"
 
 #: src/components/questions/GenericQuestion.jsx:35
 #: src/components/questions/LuksActivationQuestion.jsx:60
@@ -1231,58 +1236,58 @@ msgstr "Verbind met iSCSI doelen"
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/components/storage/ProposalSettingsSection.jsx:139
+#: src/components/storage/ProposalSettingsSection.jsx:141
 msgid "Select the device for installing the system."
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:144
-#: src/components/storage/ProposalSettingsSection.jsx:148
-#: src/components/storage/ProposalSettingsSection.jsx:244
+#: src/components/storage/ProposalSettingsSection.jsx:146
+#: src/components/storage/ProposalSettingsSection.jsx:150
+#: src/components/storage/ProposalSettingsSection.jsx:248
 msgid "Installation device"
 msgstr "Installatie apparaat"
 
-#: src/components/storage/ProposalSettingsSection.jsx:154
+#: src/components/storage/ProposalSettingsSection.jsx:156
 #, fuzzy
 msgid "No devices found."
 msgstr "Geen apparaten gevonden"
 
-#: src/components/storage/ProposalSettingsSection.jsx:241
+#: src/components/storage/ProposalSettingsSection.jsx:245
 msgid "Devices for creating the volume group"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:250
+#: src/components/storage/ProposalSettingsSection.jsx:254
 #, fuzzy
 msgid "Custom devices"
 msgstr "Installatie apparaat"
 
-#: src/components/storage/ProposalSettingsSection.jsx:314
+#: src/components/storage/ProposalSettingsSection.jsx:318
 msgid ""
 "Configuration of the system volume group. All the file systems will be "
 "created in a logical volume of the system volume group."
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:320
+#: src/components/storage/ProposalSettingsSection.jsx:324
 msgid "Configure the LVM settings"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:325
-#: src/components/storage/ProposalSettingsSection.jsx:345
+#: src/components/storage/ProposalSettingsSection.jsx:329
+#: src/components/storage/ProposalSettingsSection.jsx:349
 #, fuzzy
 msgid "LVM settings"
 msgstr "Instellingen"
 
-#: src/components/storage/ProposalSettingsSection.jsx:338
+#: src/components/storage/ProposalSettingsSection.jsx:342
 msgid "Use logical volume management (LVM)"
 msgstr "Gebuik logische volume beheer (LVM)"
 
-#: src/components/storage/ProposalSettingsSection.jsx:346
+#: src/components/storage/ProposalSettingsSection.jsx:350
 msgid "System Volume Group"
 msgstr ""
 
 #. TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
 #. 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
 #. Do not translate 'abbr' and 'title', they are part of the HTML markup.
-#: src/components/storage/ProposalSettingsSection.jsx:422
+#: src/components/storage/ProposalSettingsSection.jsx:426
 msgid ""
 "The password will not be needed to boot and access the data if the <abbr "
 "title='Trusted Platform Module'>TPM</abbr> can verify the integrity of the "
@@ -1290,40 +1295,40 @@ msgid ""
 "first run."
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:440
+#: src/components/storage/ProposalSettingsSection.jsx:444
 msgid "Use the TPM to decrypt automatically on each boot"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:511
+#: src/components/storage/ProposalSettingsSection.jsx:515
 #, fuzzy
 msgid "Change encryption settings"
 msgstr "Encryptie instellingen"
 
-#: src/components/storage/ProposalSettingsSection.jsx:516
-#: src/components/storage/ProposalSettingsSection.jsx:537
+#: src/components/storage/ProposalSettingsSection.jsx:520
+#: src/components/storage/ProposalSettingsSection.jsx:541
 msgid "Encryption settings"
 msgstr "Encryptie instellingen"
 
-#: src/components/storage/ProposalSettingsSection.jsx:530
+#: src/components/storage/ProposalSettingsSection.jsx:534
 msgid "Use encryption"
 msgstr "Gebruik encryptie"
 
-#: src/components/storage/ProposalSettingsSection.jsx:617
+#: src/components/storage/ProposalSettingsSection.jsx:621
 msgid ""
 "Select how to make free space in the disks selected for allocating the     "
 "file systems."
 msgstr ""
 
 #. TRANSLATORS: To be completed with the rest of a sentence like "deleting all content"
-#: src/components/storage/ProposalSettingsSection.jsx:623
+#: src/components/storage/ProposalSettingsSection.jsx:627
 msgid "Find space"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:627
+#: src/components/storage/ProposalSettingsSection.jsx:631
 msgid "Space Policy"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:703
+#: src/components/storage/ProposalSettingsSection.jsx:708
 msgid "Settings"
 msgstr "Instellingen"
 
@@ -1665,64 +1670,64 @@ msgid "Storage zFCP"
 msgstr "Opslag zFCP"
 
 #. TRANSLATORS: multipath device type
-#: src/components/storage/device-utils.jsx:97
+#: src/components/storage/device-utils.jsx:82
 msgid "Multipath"
 msgstr "Multipath"
 
 #. TRANSLATORS: %s is replaced by the device bus ID
-#: src/components/storage/device-utils.jsx:102
+#: src/components/storage/device-utils.jsx:87
 #, c-format
 msgid "DASD %s"
 msgstr "DASD %s"
 
 #. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
-#: src/components/storage/device-utils.jsx:107
+#: src/components/storage/device-utils.jsx:92
 #, c-format
 msgid "Software %s"
 msgstr "Software %s"
 
-#: src/components/storage/device-utils.jsx:112
+#: src/components/storage/device-utils.jsx:97
 msgid "SD Card"
 msgstr "SD kaart"
 
 #. TRANSLATORS: %s is replaced by the device transport name, e.g. USB, SATA, SCSI...
-#: src/components/storage/device-utils.jsx:114
+#: src/components/storage/device-utils.jsx:99
 #, c-format
 msgid "Transport %s"
 msgstr "Transport %s"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/device-utils.jsx:133
+#: src/components/storage/device-utils.jsx:118
 #, c-format
 msgid "Members: %s"
 msgstr "Leden: %s"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/device-utils.jsx:142
+#: src/components/storage/device-utils.jsx:127
 #, c-format
 msgid "Devices: %s"
 msgstr "Apparaten: %s"
 
 #. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
-#: src/components/storage/device-utils.jsx:151
+#: src/components/storage/device-utils.jsx:136
 #, c-format
 msgid "Wires: %s"
 msgstr "Draden: %s"
 
 #. TRANSLATORS: disk partition info, %s is replaced by partition table
 #. type (MS-DOS or GPT), %d is the number of the partitions
-#: src/components/storage/device-utils.jsx:175
+#: src/components/storage/device-utils.jsx:160
 #, c-format
 msgid "%s with %d partitions"
 msgstr "%s met %d partities"
 
 #. TRANSLATORS: status message, no existing content was found on the disk,
 #. i.e. the disk is completely empty
-#: src/components/storage/device-utils.jsx:199
+#: src/components/storage/device-utils.jsx:184
 msgid "No content found"
 msgstr "Geen inhoud gevonden"
 
-#: src/components/storage/device-utils.jsx:270
+#: src/components/storage/device-utils.jsx:258
 msgid "Available devices"
 msgstr "Beschikbare apparaten"
 
@@ -1894,49 +1899,49 @@ msgid "Targets"
 msgstr "Doelen"
 
 #. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
-#: src/components/storage/space-policy-utils.jsx:59
+#: src/components/storage/space-policy-utils.jsx:45
 msgid "Delete current content"
 msgstr ""
 
 #. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
-#: src/components/storage/space-policy-utils.jsx:63
+#: src/components/storage/space-policy-utils.jsx:49
 msgid "Shrink existing partitions"
 msgstr ""
 
 #. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
-#: src/components/storage/space-policy-utils.jsx:67
+#: src/components/storage/space-policy-utils.jsx:53
 #, fuzzy
 msgid "Use available space"
 msgstr "Beschikbare apparaten"
 
-#: src/components/storage/space-policy-utils.jsx:79
+#: src/components/storage/space-policy-utils.jsx:65
 msgid "All partitions will be removed and any data in the disks will be lost."
 msgstr ""
 
-#: src/components/storage/space-policy-utils.jsx:82
+#: src/components/storage/space-policy-utils.jsx:68
 msgid ""
 "The data is kept, but the current partitions will be resized as needed to "
 "make enough space."
 msgstr ""
 
-#: src/components/storage/space-policy-utils.jsx:85
+#: src/components/storage/space-policy-utils.jsx:71
 msgid ""
 "The data is kept and existing partitions will not be modified. Only the "
 "space that is not assigned to any partition will be used."
 msgstr ""
 
-#: src/components/storage/space-policy-utils.jsx:112
+#: src/components/storage/space-policy-utils.jsx:108
 msgid "Select a mechanism to make space"
 msgstr ""
 
-#: src/components/storage/space-policy-utils.jsx:137
+#: src/components/storage/space-policy-utils.jsx:127
 #, c-format
 msgid "deleting all content of the installation device"
 msgid_plural "deleting all content of the %d selected disks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/components/storage/space-policy-utils.jsx:147
+#: src/components/storage/space-policy-utils.jsx:137
 #, c-format
 msgid "shrinking partitions of the installation device"
 msgid_plural "shrinking partitions of the %d selected disks"
@@ -1945,12 +1950,12 @@ msgstr[1] ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space without modifying any partition".
-#: src/components/storage/space-policy-utils.jsx:155
+#: src/components/storage/space-policy-utils.jsx:145
 #, fuzzy
 msgid "without modifying any partition"
 msgstr "%s met %d partities"
 
-#: src/components/storage/space-policy-utils.jsx:170
+#: src/components/storage/space-policy-utils.jsx:160
 #, c-format
 msgid "This will only affect the installation device"
 msgid_plural "This will affect the %d disks selected for installation"

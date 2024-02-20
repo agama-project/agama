@@ -8,36 +8,36 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-18 02:07+0000\n"
-"PO-Revision-Date: 2023-12-31 20:39+0000\n"
-"Last-Translator: Kristijan Fremen Velkovski <me@krisfremen.com>\n"
-"Language-Team: Macedonian <https://l10n.opensuse.org/projects/agama/agama-"
-"web/mk/>\n"
-"Language: mk\n"
+"PO-Revision-Date: 2024-02-17 05:42+0000\n"
+"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
+"Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-web/"
+"ka/>\n"
+"Language: ka\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n==1 || n%10==1 ? 0 : 1;\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.9.1\n"
 
 #. TRANSLATORS: error message, %s is replaced by the server URL
 #: src/DevServerWrapper.jsx:82
 #, c-format
 msgid "The server at %s is not reachable."
-msgstr "Серверот на %s не е достапен."
+msgstr ""
 
 #. TRANSLATORS: error message
 #: src/DevServerWrapper.jsx:88
 msgid "Cannot connect to the Cockpit server"
-msgstr "Неможе да се конектира до Cockpit серверот"
+msgstr ""
 
 #. TRANSLATORS: button label
 #: src/DevServerWrapper.jsx:104
 msgid "Try Again"
-msgstr "Пробај повторно"
+msgstr "კიდევ სცადეთ"
 
 #: src/components/core/About.jsx:43 src/components/core/About.jsx:48
 msgid "About Agama"
-msgstr "За Agama"
+msgstr "Agama-ის შესახებ"
 
 #. TRANSLATORS: content of the "About" popup (1/2)
 #: src/components/core/About.jsx:53
@@ -47,10 +47,6 @@ msgid ""
 "want to give it a try, we recommend to use a virtual machine to prevent any "
 "possible data loss."
 msgstr ""
-"Agama е експериментален инсталер за (open)SUSE системи. Сè уште е во развој, "
-"затоа, ве молиме, не го користете во производствени средини. Ако сакате да "
-"го испробате, препорачуваме да користите виртуелна машина за да се спречи "
-"можноста на губење на податоци."
 
 #. TRANSLATORS: content of the "About" popup (2/2)
 #. %s is replaced by the project URL
@@ -58,7 +54,6 @@ msgstr ""
 #, c-format
 msgid "For more information, please visit the project's repository at %s."
 msgstr ""
-"За повеќе информации, ве молиме посетете го складиштето за проектот на %s."
 
 #. TRANSLATORS: button label
 #: src/components/core/About.jsx:71 src/components/core/FileViewer.jsx:80
@@ -67,12 +62,12 @@ msgstr ""
 #: src/components/network/WifiSelector.jsx:151
 #: src/components/product/ProductPage.jsx:239
 msgid "Close"
-msgstr "Затвори"
+msgstr "დახურვა"
 
 #. TRANSLATORS: page title
 #: src/components/core/DBusError.jsx:34
 msgid "D-Bus Error"
-msgstr ""
+msgstr "D-Bus-ის შეცდომა"
 
 #: src/components/core/DBusError.jsx:38
 msgid "Cannot connect to D-Bus"
@@ -86,15 +81,15 @@ msgstr ""
 #. TRANSLATORS: button label
 #: src/components/core/DBusError.jsx:51
 msgid "Reload"
-msgstr "Oбнови"
+msgstr "თავიდან ჩატვირთვა"
 
 #: src/components/core/DevelopmentInfo.jsx:55
 msgid "Cockpit server"
-msgstr ""
+msgstr "Cockpit-ის სერვერი"
 
 #: src/components/core/FileViewer.jsx:65
 msgid "Reading file..."
-msgstr ""
+msgstr "ფაილის წაკითხვა..."
 
 #: src/components/core/FileViewer.jsx:71
 msgid "Cannot read the file"
@@ -108,7 +103,7 @@ msgstr ""
 
 #: src/components/core/InstallButton.jsx:49
 msgid "Confirm Installation"
-msgstr ""
+msgstr "დაყენების დადასტურება"
 
 #: src/components/core/InstallButton.jsx:55
 msgid ""
@@ -124,16 +119,16 @@ msgstr ""
 #: src/components/core/InstallButton.jsx:65 src/components/core/Popup.jsx:128
 #: src/components/network/WifiConnectionForm.jsx:136
 msgid "Cancel"
-msgstr ""
+msgstr "გაუქმება"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:69
 msgid "Continue"
-msgstr ""
+msgstr "გაგრძელება"
 
 #: src/components/core/InstallButton.jsx:78
 msgid "Problems Found"
-msgstr ""
+msgstr "აღმოჩენილია პრობლემები"
 
 #: src/components/core/InstallButton.jsx:82
 msgid ""
@@ -155,12 +150,12 @@ msgstr ""
 #: src/components/storage/ProposalVolumes.jsx:283
 #: src/components/storage/ZFCPPage.jsx:511
 msgid "Accept"
-msgstr ""
+msgstr "დასტური"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:140
 msgid "Install"
-msgstr ""
+msgstr "დაყენება"
 
 #: src/components/core/InstallationFinished.jsx:41
 msgid "TPM sealing requires the new system to be booted directly."
@@ -174,11 +169,11 @@ msgstr ""
 
 #: src/components/core/InstallationFinished.jsx:50
 msgid "Hide details"
-msgstr ""
+msgstr "დეტალების დამალვა"
 
 #: src/components/core/InstallationFinished.jsx:50
 msgid "See more details"
-msgstr ""
+msgstr "მეტი დეტალების ნახვა"
 
 #. TRANSLATORS: Do not translate 'abbr' and 'title', they are part of the HTML markup
 #: src/components/core/InstallationFinished.jsx:55
@@ -192,11 +187,11 @@ msgstr ""
 #. TRANSLATORS: page title
 #: src/components/core/InstallationFinished.jsx:88
 msgid "Installation Finished"
-msgstr ""
+msgstr "დაყენება დასრულდა"
 
 #: src/components/core/InstallationFinished.jsx:91
 msgid "Congratulations!"
-msgstr ""
+msgstr "გილოცავთ!"
 
 #: src/components/core/InstallationFinished.jsx:96
 msgid "The installation on your machine is complete."
@@ -212,30 +207,30 @@ msgstr ""
 
 #: src/components/core/InstallationFinished.jsx:113
 msgid "Finish"
-msgstr ""
+msgstr "დასრულება"
 
 #: src/components/core/InstallationFinished.jsx:113
 msgid "Reboot"
-msgstr ""
+msgstr "გადატვირთვა"
 
 #: src/components/core/InstallationProgress.jsx:32
 msgid "Installing"
-msgstr ""
+msgstr "დაყენება"
 
 #. TRANSLATORS: search field placeholder text
 #: src/components/core/ListSearch.jsx:50
 #: src/components/software/PatternSelector.jsx:215
 #: src/components/software/PatternSelector.jsx:216
 msgid "Search"
-msgstr ""
+msgstr "ძებნა"
 
 #: src/components/core/LogsButton.jsx:98
 msgid "Collecting logs..."
-msgstr ""
+msgstr "ჟურნალის შეგროვება..."
 
 #: src/components/core/LogsButton.jsx:98
 msgid "Download logs"
-msgstr ""
+msgstr "ჟურნალის გადმოწერა"
 
 #: src/components/core/LogsButton.jsx:106
 msgid ""
@@ -249,19 +244,19 @@ msgstr ""
 
 #: src/components/core/Page.jsx:93 src/components/users/UsersPage.jsx:30
 msgid "Back"
-msgstr ""
+msgstr "უკან"
 
 #: src/components/core/Page.jsx:201
 msgid "Show global options"
-msgstr ""
+msgstr "გლობალური პარამეტრების ჩვენება"
 
 #: src/components/core/Page.jsx:215
 msgid "Page Actions"
-msgstr ""
+msgstr "გვერდის ქმედებები"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:35
 msgid "Passwords do not match"
-msgstr ""
+msgstr "პაროლები არ ემთხვევა"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:56
 #: src/components/network/WifiConnectionForm.jsx:125
@@ -269,102 +264,102 @@ msgstr ""
 #: src/components/storage/iscsi/AuthFields.jsx:100
 #: src/components/users/RootAuthMethods.jsx:163
 msgid "Password"
-msgstr ""
+msgstr "პაროლი"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:60
 msgid "User password"
-msgstr ""
+msgstr "მომხმარებლის პაროლი"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:69
 msgid "Password confirmation"
-msgstr ""
+msgstr "პაროლის დადასტურება"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:74
 msgid "User password confirmation"
-msgstr ""
+msgstr "მომხმარებლის პაროლის დადასტურება"
 
 #: src/components/core/PasswordInput.jsx:59
 msgid "Password visibility button"
-msgstr ""
+msgstr "პაროლის ხილვადობის ღილაკი"
 
 #: src/components/core/Popup.jsx:90
 msgid "Confirm"
-msgstr ""
+msgstr "დადასტურება"
 
 #. TRANSLATORS: dropdown label
 #: src/components/core/RowActions.jsx:66
 #: src/components/storage/ProposalVolumes.jsx:119
 #: src/components/storage/ProposalVolumes.jsx:310
 msgid "Actions"
-msgstr ""
+msgstr "ქმედებები"
 
 #: src/components/core/SectionSkeleton.jsx:29
 msgid "Waiting"
-msgstr ""
+msgstr "მოლოდინი"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
 msgid "Show Logs"
-msgstr ""
+msgstr "ჟურნალის ჩვენება"
 
 #. TRANSLATORS: popup dialog title
 #: src/components/core/ShowLogButton.jsx:53
 msgid "YaST Logs"
-msgstr ""
+msgstr "YaST-ის ჟურნალი"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowTerminalButton.jsx:48
 msgid "Open Terminal"
-msgstr ""
+msgstr "ტერმინალის გახსნა"
 
 #. TRANSLATORS: sidebar header
 #: src/components/core/Sidebar.jsx:113 src/components/core/Sidebar.jsx:121
 msgid "Installer Options"
-msgstr ""
+msgstr "დაყენების პროგრამის მორგება"
 
 #: src/components/core/Sidebar.jsx:128
 msgid "Hide installer options"
-msgstr ""
+msgstr "დაყენების პროგრამის პარამეტრების დამალვა"
 
 #: src/components/core/Sidebar.jsx:136
 msgid "Diagnostic tools"
-msgstr "Дијагностички алатки"
+msgstr "დიაგნოსტიკის პროგრამები"
 
 #. TRANSLATORS: Titles used for the popup displaying found section issues
 #: src/components/core/ValidationErrors.jsx:53
 msgid "Software issues"
-msgstr ""
+msgstr "პროგრამული პრობლემები"
 
 #: src/components/core/ValidationErrors.jsx:54
 msgid "Product issues"
-msgstr ""
+msgstr "პროდუქტის პრობლემები"
 
 #: src/components/core/ValidationErrors.jsx:55
 msgid "Storage issues"
-msgstr ""
+msgstr "საცავის პრობლემები"
 
 #: src/components/core/ValidationErrors.jsx:57
 msgid "Found Issues"
-msgstr ""
+msgstr "აღმოჩენილი პრობლემები"
 
 #. TRANSLATORS: %d is replaced with the number of errors found
 #: src/components/core/ValidationErrors.jsx:77
 #, c-format
 msgid "%d error found"
 msgid_plural "%d errors found"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "აღმოჩენილია %d შეცდომა"
+msgstr[1] "აღმოჩენილია %d შეცდომა"
 
 #. TRANSLATORS: label for keyboard layout selection
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:53
 #: src/components/l10n/L10nPage.jsx:357
 msgid "Keyboard"
-msgstr ""
+msgstr "კლავიატურა"
 
 #. TRANSLATORS: label for keyboard layout selection
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:61
 msgid "keyboard"
-msgstr ""
+msgstr "კლავიატურა"
 
 #. TRANSLATORS:
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:70
@@ -386,16 +381,16 @@ msgstr ""
 #: src/components/l10n/L10nPage.jsx:384
 #: src/components/overview/L10nSection.jsx:52
 msgid "Localization"
-msgstr ""
+msgstr "ლოკალიზაცია"
 
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:66
 #: src/components/l10n/L10nPage.jsx:246
 msgid "Language"
-msgstr ""
+msgstr "ენა"
 
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:74
 msgid "language"
-msgstr ""
+msgstr "ენა"
 
 #. TRANSLATORS: placeholder text for search input in the keyboard selector.
 #: src/components/l10n/KeymapSelector.jsx:53
@@ -404,11 +399,11 @@ msgstr ""
 
 #: src/components/l10n/KeymapSelector.jsx:64
 msgid "Available keymaps"
-msgstr ""
+msgstr "ხელმისაწვდომი ღილაკის ასახვები"
 
 #: src/components/l10n/L10nPage.jsx:66 src/components/l10n/L10nPage.jsx:140
 msgid "Select time zone"
-msgstr ""
+msgstr "აირჩიეთ დროის სარტყელი"
 
 #: src/components/l10n/L10nPage.jsx:67
 #, c-format
@@ -417,11 +412,11 @@ msgstr ""
 
 #: src/components/l10n/L10nPage.jsx:128
 msgid "Time zone"
-msgstr ""
+msgstr "დროის სარტყელი"
 
 #: src/components/l10n/L10nPage.jsx:134
 msgid "Change time zone"
-msgstr ""
+msgstr "დროის სარტყელის შეცვლა"
 
 #: src/components/l10n/L10nPage.jsx:139
 msgid "Time zone not selected yet"
@@ -429,7 +424,7 @@ msgstr ""
 
 #: src/components/l10n/L10nPage.jsx:182 src/components/l10n/L10nPage.jsx:258
 msgid "Select language"
-msgstr ""
+msgstr "ენის არჩევა"
 
 #: src/components/l10n/L10nPage.jsx:183
 #, c-format
@@ -438,7 +433,7 @@ msgstr ""
 
 #: src/components/l10n/L10nPage.jsx:252
 msgid "Change language"
-msgstr ""
+msgstr "ენის შეცვლა"
 
 #: src/components/l10n/L10nPage.jsx:257
 msgid "Language not selected yet"
@@ -446,7 +441,7 @@ msgstr ""
 
 #: src/components/l10n/L10nPage.jsx:295 src/components/l10n/L10nPage.jsx:369
 msgid "Select keyboard"
-msgstr ""
+msgstr "აირჩიეთ კლავიატურა"
 
 #: src/components/l10n/L10nPage.jsx:296
 #, c-format
@@ -455,7 +450,7 @@ msgstr ""
 
 #: src/components/l10n/L10nPage.jsx:363
 msgid "Change keyboard"
-msgstr ""
+msgstr "კლავიატურის შეცვლა"
 
 #: src/components/l10n/L10nPage.jsx:368
 msgid "Keyboard not selected yet"
@@ -467,7 +462,7 @@ msgstr ""
 
 #: src/components/l10n/LocaleSelector.jsx:64
 msgid "Available locales"
-msgstr ""
+msgstr "ხელმისაწვდომი ლოკალიზაციები"
 
 #. TRANSLATORS: placeholder text for search input in the timezone selector.
 #: src/components/l10n/TimezoneSelector.jsx:75
@@ -476,7 +471,7 @@ msgstr ""
 
 #: src/components/l10n/TimezoneSelector.jsx:86
 msgid "Available time zones"
-msgstr ""
+msgstr "ხელმისაწვდომი დროის სარტყლები"
 
 #: src/components/layout/Loading.jsx:30
 msgid "Loading installation environment, please wait."
@@ -486,37 +481,37 @@ msgstr ""
 #: src/components/network/AddressesDataList.jsx:81
 #: src/components/network/DnsDataList.jsx:87
 msgid "Remove"
-msgstr ""
+msgstr "წაშლა"
 
 #. TRANSLATORS: input field name
 #: src/components/network/AddressesDataList.jsx:93
 #: src/components/network/AddressesDataList.jsx:94
 #: src/components/network/IpAddressInput.jsx:33
 msgid "IP Address"
-msgstr ""
+msgstr "IP მისამართი"
 
 #. TRANSLATORS: input field name
 #: src/components/network/AddressesDataList.jsx:102
 #: src/components/network/AddressesDataList.jsx:103
 msgid "Prefix length or netmask"
-msgstr ""
+msgstr "პრეფიქსის სიგრძე ან ნეტმასკა"
 
 #: src/components/network/AddressesDataList.jsx:119
 msgid "Add an address"
-msgstr ""
+msgstr "მისამართის დამატება"
 
 #. TRANSLATORS: button label
 #: src/components/network/AddressesDataList.jsx:119
 msgid "Add another address"
-msgstr ""
+msgstr "სხვა მისამართის დამატება"
 
 #: src/components/network/AddressesDataList.jsx:124
 msgid "Addresses"
-msgstr ""
+msgstr "მისამართები"
 
 #: src/components/network/AddressesDataList.jsx:129
 msgid "Addresses data list"
-msgstr ""
+msgstr "მისამართის მონაცემების სია"
 
 #. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
@@ -529,13 +524,13 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:100
 #: src/components/storage/iscsi/NodesPresenter.jsx:121
 msgid "Name"
-msgstr ""
+msgstr "სახელი"
 
 #. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:59
 #: src/components/network/ConnectionsTable.jsx:87
 msgid "IP addresses"
-msgstr ""
+msgstr "IP მისამართები"
 
 #: src/components/network/ConnectionsTable.jsx:67
 #: src/components/storage/ProposalVolumes.jsx:234
@@ -543,23 +538,23 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
 #: src/components/users/FirstUser.jsx:174
 msgid "Edit"
-msgstr ""
+msgstr "ჩასწორება"
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:70
 #, c-format
 msgid "Edit connection %s"
-msgstr ""
+msgstr "%s მიერთების ჩასწორება"
 
 #: src/components/network/ConnectionsTable.jsx:74
 msgid "Forget"
-msgstr ""
+msgstr "დავიწყება"
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:77
 #, c-format
 msgid "Forget connection %s"
-msgstr ""
+msgstr "%s მიერთების დავიწყება"
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:92
@@ -571,20 +566,20 @@ msgstr ""
 #: src/components/network/DnsDataList.jsx:78
 #: src/components/network/DnsDataList.jsx:79
 msgid "Server IP"
-msgstr ""
+msgstr "სერვერის IP"
 
 #: src/components/network/DnsDataList.jsx:96
 msgid "Add DNS"
-msgstr ""
+msgstr "DNS-ის დამატება"
 
 #. TRANSLATORS: button label
 #: src/components/network/DnsDataList.jsx:96
 msgid "Add another DNS"
-msgstr ""
+msgstr "კიდევ ერთი DNS-ის დამატება"
 
 #: src/components/network/DnsDataList.jsx:101
 msgid "DNS"
-msgstr ""
+msgstr "DNS"
 
 #. TRANSLATORS: input field name
 #: src/components/network/IpPrefixInput.jsx:33
@@ -601,30 +596,30 @@ msgstr ""
 #: src/components/storage/iscsi/EditNodeForm.jsx:50
 #, c-format
 msgid "Edit %s"
-msgstr ""
+msgstr "%s-ის ჩასწორება"
 
 #. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
 #: src/components/network/IpSettingsForm.jsx:136
 #: src/components/network/IpSettingsForm.jsx:141
 #: src/components/network/IpSettingsForm.jsx:143
 msgid "Mode"
-msgstr ""
+msgstr "რეჟიმი"
 
 #: src/components/network/IpSettingsForm.jsx:147
 msgid "Automatic (DHCP)"
-msgstr ""
+msgstr "ავტომატური (მხოლოდ DHCP)"
 
 #. TRANSLATORS: manual network configuration mode with a static IP address
 #: src/components/network/IpSettingsForm.jsx:149
 #: src/components/storage/iscsi/NodeStartupOptions.js:25
 msgid "Manual"
-msgstr ""
+msgstr "ხელით"
 
 #. TRANSLATORS: network gateway configuration
 #: src/components/network/IpSettingsForm.jsx:164
 #: src/components/network/IpSettingsForm.jsx:167
 msgid "Gateway"
-msgstr ""
+msgstr "ნაგულისხმევი რაუტერი"
 
 #: src/components/network/NetworkPage.jsx:38
 msgid "No wired connections found."
@@ -657,28 +652,28 @@ msgstr ""
 #: src/components/network/NetworkPage.jsx:169
 #: src/components/overview/NetworkSection.jsx:83
 msgid "Network"
-msgstr ""
+msgstr "ქსელი"
 
 #. TRANSLATORS: page section
 #: src/components/network/NetworkPage.jsx:171
 msgid "Wired networks"
-msgstr ""
+msgstr "მავთულიანი ქსელები"
 
 #. TRANSLATORS: page section
 #: src/components/network/NetworkPage.jsx:176
 msgid "WiFi networks"
-msgstr ""
+msgstr "WiFi ქსელები"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:43
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 msgid "None"
-msgstr ""
+msgstr "არაფერი"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:45
 msgid "WPA & WPA2 Personal"
-msgstr ""
+msgstr "WPA & WPA2 პერსონალური"
 
 #: src/components/network/WifiConnectionForm.jsx:91
 #: src/components/product/ProductPage.jsx:128
@@ -688,7 +683,7 @@ msgstr ""
 #: src/components/storage/iscsi/LoginForm.jsx:72
 #: src/components/users/FirstUser.jsx:198
 msgid "Something went wrong"
-msgstr ""
+msgstr "რაღაც არასწორია"
 
 #: src/components/network/WifiConnectionForm.jsx:92
 msgid "Please, review provided settings and try again."
@@ -698,51 +693,51 @@ msgstr ""
 #: src/components/network/WifiConnectionForm.jsx:97
 #: src/components/network/WifiConnectionForm.jsx:101
 msgid "SSID"
-msgstr ""
+msgstr "SSID"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
 #: src/components/network/WifiConnectionForm.jsx:109
 #: src/components/network/WifiConnectionForm.jsx:112
 msgid "Security"
-msgstr ""
+msgstr "უსაფრთხოება"
 
 #. TRANSLATORS: WiFi password
 #: src/components/network/WifiConnectionForm.jsx:121
 msgid "WPA Password"
-msgstr ""
+msgstr "WPA პაროლი"
 
 #. TRANSLATORS: button label, connect to a WiFi network
 #: src/components/network/WifiConnectionForm.jsx:133
 msgid "Connect"
-msgstr ""
+msgstr "დაკავშირება"
 
 #. TRANSLATORS: button label
 #: src/components/network/WifiHiddenNetworkForm.jsx:50
 msgid "Connect to hidden network"
-msgstr ""
+msgstr "დამალულ ქსელთან მიერთება"
 
 #. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:41
 #: src/components/network/WifiNetworkListItem.jsx:99
 msgid "Connecting"
-msgstr ""
+msgstr "დაკავშირება"
 
 #. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:44
 msgid "Connected"
-msgstr ""
+msgstr "დაკავშირებულია"
 
 #. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:47
 msgid "Disconnecting"
-msgstr ""
+msgstr "გათიშვა"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:50
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
-msgstr ""
+msgstr "გამოერთებული"
 
 #. TRANSLATORS: %s is replaced by a WiFi network name
 #: src/components/network/WifiNetworkListItem.jsx:97
@@ -753,7 +748,7 @@ msgstr ""
 #. TRANSLATORS: menu label, remove the selected WiFi network settings
 #: src/components/network/WifiNetworkMenu.jsx:55
 msgid "Forget network"
-msgstr ""
+msgstr "ქსელის დავიწყება"
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
@@ -772,42 +767,42 @@ msgstr ""
 #, c-format
 msgid "%d connection set:"
 msgid_plural "%d connections set:"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d მიერთება დაყენებულია:"
+msgstr[1] "%d მიერთება დაყენებულია:"
 
 #. TRANSLATORS: page title
 #: src/components/overview/OverviewPage.jsx:48
 msgid "Installation Summary"
-msgstr ""
+msgstr "ჩადგმის შეჯამება"
 
 #. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
 #: src/components/overview/ProductSection.jsx:48
 #, c-format
 msgid "%s (registered)"
-msgstr ""
+msgstr "%s (რეგისტრირებულია)"
 
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section
 #: src/components/overview/ProductSection.jsx:71
 #: src/components/product/ProductPage.jsx:435
 msgid "Product"
-msgstr ""
+msgstr "პროდუქტი"
 
 #: src/components/overview/SoftwareSection.jsx:38
 msgid "Reading software repositories"
-msgstr ""
+msgstr "პროგრამის რეპოზიტორიების წაკითხვა"
 
 #. TRANSLATORS: clickable link label
 #: src/components/overview/SoftwareSection.jsx:133
 msgid "Refresh the repositories"
-msgstr ""
+msgstr "რეპოზიტორიების განახლება"
 
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section
 #: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
-msgstr ""
+msgstr "პროგრამები"
 
 #: src/components/overview/StorageSection.jsx:42
 #: src/components/storage/ProposalSettingsSection.jsx:132
@@ -844,20 +839,20 @@ msgstr ""
 
 #: src/components/overview/StorageSection.jsx:83
 msgid "Probing storage devices"
-msgstr ""
+msgstr "საცავის მოწყობილობების ზონდირება"
 
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section title
 #: src/components/overview/StorageSection.jsx:208
 #: src/components/storage/ProposalPage.jsx:232
 msgid "Storage"
-msgstr ""
+msgstr "საცავი"
 
 #. TRANSLATORS: %s will be replaced by the user name
 #: src/components/overview/UsersSection.jsx:80
 #, c-format
 msgid "User %s will be created"
-msgstr ""
+msgstr "შეიქმნება მომხმარებელი %s"
 
 #: src/components/overview/UsersSection.jsx:87
 msgid "No user defined yet"
@@ -883,22 +878,22 @@ msgstr ""
 #: src/components/overview/UsersSection.jsx:120
 #: src/components/users/UsersPage.jsx:30
 msgid "Users"
-msgstr ""
+msgstr "მომხმარებლები"
 
 #: src/components/product/ProductPage.jsx:63
 #: src/components/product/ProductSelectionPage.jsx:65
 msgid "Choose a product"
-msgstr ""
+msgstr "არჩიეთ პროდუქტი"
 
 #: src/components/product/ProductPage.jsx:122
 #, c-format
 msgid "Register %s"
-msgstr ""
+msgstr "%s-ის რეგისტრაცია"
 
 #: src/components/product/ProductPage.jsx:188
 #, c-format
 msgid "Deregister %s"
-msgstr ""
+msgstr "%s-ის რეგისტრაციის გაუქმება"
 
 #. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
 #: src/components/product/ProductPage.jsx:202
@@ -908,7 +903,7 @@ msgstr ""
 
 #: src/components/product/ProductPage.jsx:227
 msgid "Registered warning"
-msgstr ""
+msgstr "რეგისტრაციის გაფრთხილება"
 
 #. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
 #: src/components/product/ProductPage.jsx:232
@@ -918,28 +913,28 @@ msgstr ""
 
 #: src/components/product/ProductPage.jsx:263
 msgid "Change product"
-msgstr ""
+msgstr "პროდუქტის შეცვლა"
 
 #: src/components/product/ProductPage.jsx:305
 msgid "Register"
-msgstr ""
+msgstr "რესგისტრაცია"
 
 #: src/components/product/ProductPage.jsx:337
 msgid "Deregister product"
-msgstr ""
+msgstr "პროდუქტის რეგისტრაციის გაუქმება"
 
 #: src/components/product/ProductPage.jsx:370
 msgid "Code:"
-msgstr ""
+msgstr "კოდი:"
 
 #: src/components/product/ProductPage.jsx:374
 msgid "Email:"
-msgstr ""
+msgstr "ელფოსტა:"
 
 #. TRANSLATORS: section title.
 #: src/components/product/ProductPage.jsx:390
 msgid "Registration"
-msgstr ""
+msgstr "რეგისტრაცია"
 
 #: src/components/product/ProductPage.jsx:399
 msgid "This product requires registration."
@@ -951,11 +946,11 @@ msgstr ""
 
 #: src/components/product/ProductRegistrationForm.jsx:63
 msgid "Registration code"
-msgstr ""
+msgstr "რეგისტრაციის კოდი"
 
 #: src/components/product/ProductRegistrationForm.jsx:66
 msgid "Email"
-msgstr ""
+msgstr "ელფოსტა"
 
 #: src/components/product/ProductSelectionPage.jsx:58
 msgid "Loading available products, please wait..."
@@ -964,24 +959,25 @@ msgstr ""
 #. TRANSLATORS: page title
 #: src/components/product/ProductSelectionPage.jsx:63
 msgid "Product selection"
-msgstr ""
+msgstr "პროდუქტის არჩევანი"
 
 #: src/components/product/ProductSelectionPage.jsx:72
 msgid "Select"
-msgstr ""
+msgstr "აირჩიეთ"
 
 #: src/components/product/ProductSelector.jsx:36
 msgid "No products available for selection"
 msgstr ""
 
 #: src/components/product/ProductSelector.jsx:42
+#, fuzzy
 msgid "Available products"
-msgstr ""
+msgstr "ხელმისაწვდომი ლოკალიზაციები"
 
 #: src/components/questions/GenericQuestion.jsx:35
 #: src/components/questions/LuksActivationQuestion.jsx:60
 msgid "Question"
-msgstr ""
+msgstr "კითხვა"
 
 #. TRANSLATORS: error message, user entered a wrong password
 #: src/components/questions/LuksActivationQuestion.jsx:34
@@ -990,27 +986,27 @@ msgstr ""
 
 #: src/components/questions/LuksActivationQuestion.jsx:59
 msgid "Encrypted Device"
-msgstr ""
+msgstr "დაშიფრული მოწყობილობა"
 
 #. TRANSLATORS: field label
 #: src/components/questions/LuksActivationQuestion.jsx:69
 msgid "Encryption Password"
-msgstr ""
+msgstr "დაშიფვრის პაროლი"
 
 #. TRANSLATORS: pattern status, selected to install (by user)
 #: src/components/software/PatternItem.jsx:63
 msgid "selected"
-msgstr ""
+msgstr "არჩეულია"
 
 #. TRANSLATORS: pattern status, selected to install (by dependencies)
 #: src/components/software/PatternItem.jsx:66
 msgid "automatically selected"
-msgstr ""
+msgstr "ავტომატურად მონიშნული"
 
 #. TRANSLATORS: pattern status, not selected to install
 #: src/components/software/PatternItem.jsx:69
 msgid "not selected"
-msgstr ""
+msgstr "არჩეული არაა"
 
 #: src/components/software/PatternSelector.jsx:210
 msgid "Software summary and filter options"
@@ -1029,33 +1025,33 @@ msgstr ""
 
 #: src/components/storage/DASDFormatProgress.jsx:69
 msgid "Formatting DASD devices"
-msgstr ""
+msgstr "DASD მოწყობილობების დაფორმატება"
 
 #. TRANSLATORS: DASD = Direct Access Storage Device, IBM mainframe storage technology
 #: src/components/storage/DASDPage.jsx:181
 msgid "Storage DASD"
-msgstr ""
+msgstr "DASD საცავი"
 
 #: src/components/storage/DASDTable.jsx:57
 #: src/components/storage/ZFCPPage.jsx:318
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 msgid "No"
-msgstr ""
+msgstr "არა"
 
 #: src/components/storage/DASDTable.jsx:57
 #: src/components/storage/ZFCPPage.jsx:318
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 msgid "Yes"
-msgstr ""
+msgstr "დიახ"
 
 #: src/components/storage/DASDTable.jsx:64
 #: src/components/storage/ZFCPDiskForm.jsx:118
 #: src/components/storage/ZFCPPage.jsx:301
 #: src/components/storage/ZFCPPage.jsx:361
 msgid "Channel ID"
-msgstr ""
+msgstr "არხის ID"
 
 #. TRANSLATORS: table header
 #: src/components/storage/DASDTable.jsx:65
@@ -1064,59 +1060,59 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:125
 #: src/components/users/RootAuthMethods.jsx:157
 msgid "Status"
-msgstr ""
+msgstr "სტატუსი"
 
 #: src/components/storage/DASDTable.jsx:66
 msgid "Device"
-msgstr ""
+msgstr "მოწყობილობა"
 
 #: src/components/storage/DASDTable.jsx:67
 msgid "Type"
-msgstr ""
+msgstr "ტიპი"
 
 #: src/components/storage/DASDTable.jsx:68
 msgid "Diag"
-msgstr ""
+msgstr "დიაგნოსტიკა"
 
 #: src/components/storage/DASDTable.jsx:69
 msgid "Formatted"
-msgstr ""
+msgstr "დაფორმატებული"
 
 #: src/components/storage/DASDTable.jsx:70
 msgid "Partition Info"
-msgstr ""
+msgstr "დანაყოფის ინფორმაცია"
 
 #. TRANSLATORS: drop down menu label
 #: src/components/storage/DASDTable.jsx:105
 msgid "Perform an action"
-msgstr ""
+msgstr "ქმედების შესრულება"
 
 #. TRANSLATORS: drop down menu action, activate the device
 #: src/components/storage/DASDTable.jsx:111
 #: src/components/storage/ZFCPPage.jsx:332
 msgid "Activate"
-msgstr ""
+msgstr "აქტივაცია"
 
 #. TRANSLATORS: drop down menu action, deactivate the device
 #: src/components/storage/DASDTable.jsx:113
 #: src/components/storage/ZFCPPage.jsx:374
 msgid "Deactivate"
-msgstr ""
+msgstr "დეაქტივაცია"
 
 #. TRANSLATORS: drop down menu action, enable DIAG access method
 #: src/components/storage/DASDTable.jsx:116
 msgid "Set DIAG On"
-msgstr ""
+msgstr "დიაგნოსტიკის ჩართვა"
 
 #. TRANSLATORS: drop down menu action, disable DIAG access method
 #: src/components/storage/DASDTable.jsx:118
 msgid "Set DIAG Off"
-msgstr ""
+msgstr "დიაგნოსტიკის გამორთვა"
 
 #. TRANSLATORS: drop down menu action, format the disk
 #: src/components/storage/DASDTable.jsx:121
 msgid "Format"
-msgstr ""
+msgstr "დაფორმატება"
 
 #: src/components/storage/DASDTable.jsx:198
 #: src/components/storage/DASDTable.jsx:199
@@ -1139,7 +1135,7 @@ msgstr ""
 #. TRANSLATORS: page title for iSCSI configuration
 #: src/components/storage/ISCSIPage.jsx:31
 msgid "Storage iSCSI"
-msgstr ""
+msgstr "საცავი iSCSI"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsSection.jsx:71
@@ -1165,7 +1161,7 @@ msgstr ""
 #. e.g. "delete partition A", "create partition B with filesystem C", ...
 #: src/components/storage/ProposalActionsSection.jsx:126
 msgid "Planned Actions"
-msgstr ""
+msgstr "დაგეგმილი ქმედებები"
 
 #: src/components/storage/ProposalPage.jsx:211
 msgid "Devices will not be modified until installation starts."
@@ -1173,15 +1169,15 @@ msgstr ""
 
 #: src/components/storage/ProposalPageMenu.jsx:40
 msgid "Manage and format"
-msgstr ""
+msgstr "მართვა და დაფორმატება"
 
 #: src/components/storage/ProposalPageMenu.jsx:58
 msgid "Activate disks"
-msgstr ""
+msgstr "დისკების გააქტიურება"
 
 #: src/components/storage/ProposalPageMenu.jsx:60
 msgid "zFCP"
-msgstr ""
+msgstr "zFCP"
 
 #: src/components/storage/ProposalPageMenu.jsx:76
 msgid "Connect to iSCSI targets"
@@ -1189,7 +1185,7 @@ msgstr ""
 
 #: src/components/storage/ProposalPageMenu.jsx:78
 msgid "iSCSI"
-msgstr ""
+msgstr "iSCSI"
 
 #: src/components/storage/ProposalSettingsSection.jsx:141
 msgid "Select the device for installing the system."
@@ -1199,11 +1195,11 @@ msgstr ""
 #: src/components/storage/ProposalSettingsSection.jsx:150
 #: src/components/storage/ProposalSettingsSection.jsx:248
 msgid "Installation device"
-msgstr ""
+msgstr "დაყენების მოწყობილობა"
 
 #: src/components/storage/ProposalSettingsSection.jsx:156
 msgid "No devices found."
-msgstr ""
+msgstr "მოწყობილობები ვერ ვიპოვე."
 
 #: src/components/storage/ProposalSettingsSection.jsx:245
 msgid "Devices for creating the volume group"
@@ -1211,7 +1207,7 @@ msgstr ""
 
 #: src/components/storage/ProposalSettingsSection.jsx:254
 msgid "Custom devices"
-msgstr ""
+msgstr "მომხმარებლის მოწყობილობები"
 
 #: src/components/storage/ProposalSettingsSection.jsx:318
 msgid ""
@@ -1226,7 +1222,7 @@ msgstr ""
 #: src/components/storage/ProposalSettingsSection.jsx:329
 #: src/components/storage/ProposalSettingsSection.jsx:349
 msgid "LVM settings"
-msgstr ""
+msgstr "LVM-ის მორგება"
 
 #: src/components/storage/ProposalSettingsSection.jsx:342
 msgid "Use logical volume management (LVM)"
@@ -1258,11 +1254,11 @@ msgstr ""
 #: src/components/storage/ProposalSettingsSection.jsx:520
 #: src/components/storage/ProposalSettingsSection.jsx:541
 msgid "Encryption settings"
-msgstr ""
+msgstr "დაშიფვრის პარამეტრები"
 
 #: src/components/storage/ProposalSettingsSection.jsx:534
 msgid "Use encryption"
-msgstr ""
+msgstr "დაშიფვრის გამოყენება"
 
 #: src/components/storage/ProposalSettingsSection.jsx:621
 msgid ""
@@ -1273,15 +1269,15 @@ msgstr ""
 #. TRANSLATORS: To be completed with the rest of a sentence like "deleting all content"
 #: src/components/storage/ProposalSettingsSection.jsx:627
 msgid "Find space"
-msgstr ""
+msgstr "ადგილის პოვნა"
 
 #: src/components/storage/ProposalSettingsSection.jsx:631
 msgid "Space Policy"
-msgstr ""
+msgstr "ადგილის პოლიტიკა"
 
 #: src/components/storage/ProposalSettingsSection.jsx:708
 msgid "Settings"
-msgstr ""
+msgstr "მორგება"
 
 #. TRANSLATORS: header for a list of items
 #: src/components/storage/ProposalVolumes.jsx:59
@@ -1303,7 +1299,7 @@ msgstr ""
 #. TRANSLATORS: dropdown menu label
 #: src/components/storage/ProposalVolumes.jsx:129
 msgid "Reset to defaults"
-msgstr ""
+msgstr "ნაგულისხმები პარამეტრების დაყენება"
 
 #. TRANSLATORS: dropdown menu label
 #: src/components/storage/ProposalVolumes.jsx:137
@@ -1315,26 +1311,26 @@ msgstr ""
 #: src/components/storage/ProposalVolumes.jsx:191
 #, c-format
 msgid "At least %s"
-msgstr ""
+msgstr "%s მაინც"
 
 #. TRANSLATORS: device flag, the partition size is automatically computed
 #: src/components/storage/ProposalVolumes.jsx:197
 msgid "auto"
-msgstr ""
+msgstr "ავტომატური"
 
 #. TRANSLATORS: the filesystem uses a logical volume (LVM)
 #: src/components/storage/ProposalVolumes.jsx:207
 msgid "logical volume"
-msgstr ""
+msgstr "ლოგიკური ტომი"
 
 #: src/components/storage/ProposalVolumes.jsx:207
 msgid "partition"
-msgstr ""
+msgstr "დანაყოფი"
 
 #. TRANSLATORS: filesystem flag, it uses an encryption
 #: src/components/storage/ProposalVolumes.jsx:216
 msgid "encrypted"
-msgstr ""
+msgstr "დაშიფრულია"
 
 #. TRANSLATORS: filesystem flag, it allows creating snapshots
 #: src/components/storage/ProposalVolumes.jsx:218
@@ -1342,17 +1338,17 @@ msgstr ""
 #: src/components/storage/VolumeForm.jsx:205
 #, c-format
 msgid "with snapshots"
-msgstr ""
+msgstr "სწრაფი ასლებით"
 
 #. TRANSLATORS: flag for transactional file system
 #: src/components/storage/ProposalVolumes.jsx:220
 msgid "transactional"
-msgstr ""
+msgstr "ტრანზაქციული"
 
 #: src/components/storage/ProposalVolumes.jsx:229
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
 msgid "Delete"
-msgstr ""
+msgstr "წაშლა"
 
 #: src/components/storage/ProposalVolumes.jsx:275
 msgid "Edit file system"
@@ -1362,16 +1358,16 @@ msgstr ""
 #: src/components/storage/VolumeForm.jsx:780
 #: src/components/storage/VolumeForm.jsx:785
 msgid "Mount point"
-msgstr ""
+msgstr "მიმაგრების წერტილი"
 
 #: src/components/storage/ProposalVolumes.jsx:308
 msgid "Details"
-msgstr ""
+msgstr "დეტალები"
 
 #: src/components/storage/ProposalVolumes.jsx:309
 #: src/components/storage/VolumeForm.jsx:795
 msgid "Size"
-msgstr ""
+msgstr "ზომა"
 
 #: src/components/storage/ProposalVolumes.jsx:345
 msgid "Table with mount points"
@@ -1423,7 +1419,7 @@ msgstr ""
 #. TRANSLATORS: conjunction for merging two list items
 #: src/components/storage/VolumeForm.jsx:365
 msgid ", "
-msgstr ""
+msgstr ", "
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
 #: src/components/storage/VolumeForm.jsx:368
@@ -1434,7 +1430,7 @@ msgstr ""
 #. TRANSLATORS: conjunction for merging two texts
 #: src/components/storage/VolumeForm.jsx:370
 msgid " and "
-msgstr ""
+msgstr " და "
 
 #. TRANSLATORS: the partition size is automatically computed
 #: src/components/storage/VolumeForm.jsx:375
@@ -1448,12 +1444,12 @@ msgstr ""
 #. TRANSLATORS: requested partition size
 #: src/components/storage/VolumeForm.jsx:407
 msgid "Exact size"
-msgstr ""
+msgstr "ზუსტი ზომა"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
 #: src/components/storage/VolumeForm.jsx:422
 msgid "Size unit"
-msgstr ""
+msgstr "ზომის ერთეული"
 
 #: src/components/storage/VolumeForm.jsx:450
 msgid ""
@@ -1465,7 +1461,7 @@ msgstr ""
 #. TRANSLATORS: the minimal partition size
 #: src/components/storage/VolumeForm.jsx:457
 msgid "Minimum"
-msgstr ""
+msgstr "მინიმუმი"
 
 #. TRANSLATORS: the minium partition size
 #: src/components/storage/VolumeForm.jsx:467
@@ -1479,7 +1475,7 @@ msgstr ""
 #. TRANSLATORS: the maximum partition size
 #: src/components/storage/VolumeForm.jsx:487
 msgid "Maximum"
-msgstr ""
+msgstr "მაქსიმუმი"
 
 #. TRANSLATORS: the maximum partition size
 #: src/components/storage/VolumeForm.jsx:498
@@ -1493,17 +1489,17 @@ msgstr ""
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
 #: src/components/storage/VolumeForm.jsx:523
 msgid "Auto"
-msgstr ""
+msgstr "ავტო"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
 #: src/components/storage/VolumeForm.jsx:525
 msgid "Fixed"
-msgstr ""
+msgstr "ფიქსირებული"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
 #: src/components/storage/VolumeForm.jsx:527
 msgid "Range"
-msgstr ""
+msgstr "დიაპაზონი"
 
 #: src/components/storage/VolumeForm.jsx:735
 msgid "A size value is required"
@@ -1525,13 +1521,13 @@ msgstr ""
 #: src/components/storage/ZFCPDiskForm.jsx:129
 #: src/components/storage/ZFCPPage.jsx:362
 msgid "WWPN"
-msgstr ""
+msgstr "WWPN"
 
 #. TRANSLATORS: abbrev. Logical Unit Number
 #: src/components/storage/ZFCPDiskForm.jsx:140
 #: src/components/storage/ZFCPPage.jsx:363
 msgid "LUN"
-msgstr ""
+msgstr "LUN"
 
 #: src/components/storage/ZFCPPage.jsx:303
 msgid "Auto LUNs Scan"
@@ -1539,11 +1535,11 @@ msgstr ""
 
 #: src/components/storage/ZFCPPage.jsx:314
 msgid "Activated"
-msgstr ""
+msgstr "აქტივირებულია"
 
 #: src/components/storage/ZFCPPage.jsx:314
 msgid "Deactivated"
-msgstr ""
+msgstr "დეაქტივირებულია"
 
 #: src/components/storage/ZFCPPage.jsx:417
 msgid "No zFCP controllers found."
@@ -1601,57 +1597,57 @@ msgstr ""
 #. TRANSLATORS: section title
 #: src/components/storage/ZFCPPage.jsx:584
 msgid "Disks"
-msgstr ""
+msgstr "დისკები"
 
 #. TRANSLATORS: page title
 #: src/components/storage/ZFCPPage.jsx:731
 msgid "Storage zFCP"
-msgstr ""
+msgstr "საცავი zFCP"
 
 #. TRANSLATORS: multipath device type
 #: src/components/storage/device-utils.jsx:82
 msgid "Multipath"
-msgstr ""
+msgstr "Multipath"
 
 #. TRANSLATORS: %s is replaced by the device bus ID
 #: src/components/storage/device-utils.jsx:87
 #, c-format
 msgid "DASD %s"
-msgstr ""
+msgstr "DASD %s"
 
 #. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
 #: src/components/storage/device-utils.jsx:92
 #, c-format
 msgid "Software %s"
-msgstr ""
+msgstr "პროგრამული %s"
 
 #: src/components/storage/device-utils.jsx:97
 msgid "SD Card"
-msgstr ""
+msgstr "SD ბარათი"
 
 #. TRANSLATORS: %s is replaced by the device transport name, e.g. USB, SATA, SCSI...
 #: src/components/storage/device-utils.jsx:99
 #, c-format
 msgid "Transport %s"
-msgstr ""
+msgstr "ტრანსპორტი %s"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
 #: src/components/storage/device-utils.jsx:118
 #, c-format
 msgid "Members: %s"
-msgstr ""
+msgstr "წევრები: %s"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
 #: src/components/storage/device-utils.jsx:127
 #, c-format
 msgid "Devices: %s"
-msgstr ""
+msgstr "მოწყობილობები: %s"
 
 #. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
 #: src/components/storage/device-utils.jsx:136
 #, c-format
 msgid "Wires: %s"
-msgstr ""
+msgstr "მავთულები: %s"
 
 #. TRANSLATORS: disk partition info, %s is replaced by partition table
 #. type (MS-DOS or GPT), %d is the number of the partitions
@@ -1668,7 +1664,7 @@ msgstr ""
 
 #: src/components/storage/device-utils.jsx:258
 msgid "Available devices"
-msgstr ""
+msgstr "ხელმისაწვდომი მოწყობილობები"
 
 #: src/components/storage/iscsi/AuthFields.jsx:70
 msgid "Only available if authentication by target is provided"
@@ -1685,7 +1681,7 @@ msgstr ""
 #: src/components/storage/iscsi/AuthFields.jsx:117
 #: src/components/storage/iscsi/AuthFields.jsx:119
 msgid "User name"
-msgstr ""
+msgstr "მომხმარებლის სახელი"
 
 #: src/components/storage/iscsi/AuthFields.jsx:91
 #: src/components/storage/iscsi/AuthFields.jsx:124
@@ -1695,7 +1691,7 @@ msgstr ""
 #: src/components/storage/iscsi/AuthFields.jsx:105
 #: src/components/storage/iscsi/AuthFields.jsx:139
 msgid "Incorrect password"
-msgstr ""
+msgstr "არასწორი პაროლი"
 
 #: src/components/storage/iscsi/AuthFields.jsx:108
 msgid "Authentication by initiator"
@@ -1703,7 +1699,7 @@ msgstr ""
 
 #: src/components/storage/iscsi/AuthFields.jsx:133
 msgid "Target Password"
-msgstr ""
+msgstr "სამიზნე პაროლი"
 
 #. TRANSLATORS: popup title
 #: src/components/storage/iscsi/DiscoverForm.jsx:101
@@ -1717,13 +1713,13 @@ msgstr ""
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:115
 msgid "IP address"
-msgstr ""
+msgstr "IP-მისამართი"
 
 #. TRANSLATORS: network address
 #: src/components/storage/iscsi/DiscoverForm.jsx:122
 #: src/components/storage/iscsi/DiscoverForm.jsx:124
 msgid "Address"
-msgstr ""
+msgstr "მისამართი"
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:129
 msgid "Incorrect IP address"
@@ -1734,11 +1730,11 @@ msgstr ""
 #: src/components/storage/iscsi/DiscoverForm.jsx:140
 #: src/components/storage/iscsi/DiscoverForm.jsx:142
 msgid "Port"
-msgstr ""
+msgstr "პორტი"
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:147
 msgid "Incorrect port"
-msgstr ""
+msgstr "არასწორი პორტი"
 
 #: src/components/storage/iscsi/InitiatorForm.jsx:42
 msgid "Edit iSCSI Initiator"
@@ -1747,7 +1743,7 @@ msgstr ""
 #. TRANSLATORS: iSCSI initiator name
 #: src/components/storage/iscsi/InitiatorForm.jsx:49
 msgid "Initiator name"
-msgstr ""
+msgstr "ინიციატორის სახელი"
 
 #. TRANSLATORS: usually just keep the original text
 #. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
@@ -1756,61 +1752,61 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 #: src/components/storage/iscsi/NodesPresenter.jsx:124
 msgid "iBFT"
-msgstr ""
+msgstr "iBFT"
 
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:87
 msgid "Offload card"
-msgstr ""
+msgstr "განტვირთვის ბარათი"
 
 #. TRANSLATORS: iSCSI initiator section name
 #: src/components/storage/iscsi/InitiatorSection.jsx:50
 msgid "Initiator"
-msgstr ""
+msgstr "ინიციატორი"
 
 #. TRANSLATORS: %s is replaced by the iSCSI target name
 #: src/components/storage/iscsi/LoginForm.jsx:69
 #, c-format
 msgid "Login %s"
-msgstr ""
+msgstr "%s-ზე შესვლა"
 
 #. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
 #: src/components/storage/iscsi/LoginForm.jsx:76
 #: src/components/storage/iscsi/LoginForm.jsx:79
 msgid "Startup"
-msgstr ""
+msgstr "გაშვება"
 
 #: src/components/storage/iscsi/NodeStartupOptions.js:26
 msgid "On boot"
-msgstr ""
+msgstr "ჩატვირთვისას"
 
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
-msgstr ""
+msgstr "ავტომატური"
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
 #: src/components/storage/iscsi/NodesPresenter.jsx:67
 #, c-format
 msgid "Connected (%s)"
-msgstr ""
+msgstr "მიერთებულია (%s)"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:82
 msgid "Login"
-msgstr ""
+msgstr "შესვლა"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:86
 msgid "Logout"
-msgstr ""
+msgstr "გასვლა"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:101
 #: src/components/storage/iscsi/NodesPresenter.jsx:122
 msgid "Portal"
-msgstr ""
+msgstr "პორტალი"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:102
 #: src/components/storage/iscsi/NodesPresenter.jsx:123
 msgid "Interface"
-msgstr ""
+msgstr "ინტერფეისი"
 
 #: src/components/storage/iscsi/TargetsSection.jsx:139
 msgid "No iSCSI targets found."
@@ -1829,12 +1825,12 @@ msgstr ""
 #. TRANSLATORS: button label, starts iSCSI discovery
 #: src/components/storage/iscsi/TargetsSection.jsx:153
 msgid "Discover"
-msgstr ""
+msgstr "აღმოაჩინეთ"
 
 #. TRANSLATORS: iSCSI targets section title
 #: src/components/storage/iscsi/TargetsSection.jsx:167
 msgid "Targets"
-msgstr ""
+msgstr "სამიზნეები"
 
 #. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
 #: src/components/storage/space-policy-utils.jsx:45
@@ -1900,23 +1896,23 @@ msgstr[1] ""
 
 #: src/components/storage/utils.js:44
 msgid "KiB"
-msgstr ""
+msgstr "კიბ"
 
 #: src/components/storage/utils.js:45
 msgid "MiB"
-msgstr ""
+msgstr "მიბ"
 
 #: src/components/storage/utils.js:46
 msgid "GiB"
-msgstr ""
+msgstr "გიბ"
 
 #: src/components/storage/utils.js:47
 msgid "TiB"
-msgstr ""
+msgstr "ტიბ"
 
 #: src/components/storage/utils.js:48
 msgid "PiB"
-msgstr ""
+msgstr "პიბ"
 
 #: src/components/users/FirstUser.jsx:44
 msgid "No user defined yet."
@@ -1935,27 +1931,27 @@ msgstr ""
 
 #: src/components/users/FirstUser.jsx:61 src/components/users/FirstUser.jsx:202
 msgid "Full name"
-msgstr ""
+msgstr "სრული სახელი"
 
 #: src/components/users/FirstUser.jsx:62 src/components/users/FirstUser.jsx:213
 #: src/components/users/FirstUser.jsx:217
 #: src/components/users/FirstUser.jsx:219
 msgid "Username"
-msgstr ""
+msgstr "მომხმარებლის სახელი"
 
 #: src/components/users/FirstUser.jsx:178
 #: src/components/users/RootAuthMethods.jsx:99
 #: src/components/users/RootAuthMethods.jsx:111
 msgid "Discard"
-msgstr ""
+msgstr "გაუქმება"
 
 #: src/components/users/FirstUser.jsx:195
 msgid "Create user account"
-msgstr ""
+msgstr "მომხმარებლის ანგარიშის შექმნა"
 
 #: src/components/users/FirstUser.jsx:195
 msgid "Edit user account"
-msgstr ""
+msgstr "მომხმარებლის ანგარიშის ჩასწორება"
 
 #: src/components/users/FirstUser.jsx:206
 #: src/components/users/FirstUser.jsx:208
@@ -1970,12 +1966,12 @@ msgstr ""
 
 #: src/components/users/FirstUser.jsx:244
 msgid "user autologin"
-msgstr ""
+msgstr "მომხმარებლის ავტოშესვლა"
 
 #. TRANSLATORS: check box label
 #: src/components/users/FirstUser.jsx:248
 msgid "Auto-login"
-msgstr ""
+msgstr "ავტომატური შესვლა"
 
 #: src/components/users/RootAuthMethods.jsx:35
 msgid "No root authentication method defined yet."
@@ -2000,30 +1996,30 @@ msgstr ""
 #: src/components/users/RootAuthMethods.jsx:94
 #: src/components/users/RootAuthMethods.jsx:107
 msgid "Change"
-msgstr ""
+msgstr "შეცვლა"
 
 #: src/components/users/RootAuthMethods.jsx:94
 #: src/components/users/RootAuthMethods.jsx:107
 msgid "Set"
-msgstr ""
+msgstr "დაყენება"
 
 #: src/components/users/RootAuthMethods.jsx:129
 msgid "Already set"
-msgstr ""
+msgstr "უკვე დაყენებულია"
 
 #: src/components/users/RootAuthMethods.jsx:130
 #: src/components/users/RootAuthMethods.jsx:134
 msgid "Not set"
-msgstr ""
+msgstr "დაყენებული არაა"
 
 #. TRANSLATORS: table header, user authentication method
 #: src/components/users/RootAuthMethods.jsx:155
 msgid "Method"
-msgstr ""
+msgstr "მეთოდი"
 
 #: src/components/users/RootAuthMethods.jsx:170
 msgid "SSH Key"
-msgstr ""
+msgstr "SSH გასაღები"
 
 #: src/components/users/RootAuthMethods.jsx:187
 msgid "Change the root password"
@@ -2043,7 +2039,7 @@ msgstr ""
 
 #: src/components/users/RootPasswordPopup.jsx:42
 msgid "Root password"
-msgstr ""
+msgstr "Root-ის პაროლი"
 
 #: src/components/users/RootSSHKeyPopup.jsx:43
 msgid "Set root SSH public key"
@@ -2060,17 +2056,17 @@ msgstr ""
 #. TRANSLATORS: push button label
 #: src/components/users/RootSSHKeyPopup.jsx:78
 msgid "Upload"
-msgstr ""
+msgstr "ატვირთვა"
 
 #. TRANSLATORS: push button label, clears the related input field
 #: src/components/users/RootSSHKeyPopup.jsx:80
 msgid "Clear"
-msgstr ""
+msgstr "გაწმენდა"
 
 #: src/components/users/UsersPage.jsx:31
 msgid "User"
-msgstr ""
+msgstr "მომხმარებელი"
 
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
-msgstr ""
+msgstr "Root-ით ავთენტიკაცია"
