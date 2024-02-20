@@ -125,7 +125,7 @@ mod tests {
     #[test]
     async fn test_extract_claims_failed() {
         let token = generate_token("nots3cr3t");
-        let claims = try_extract_claims(&token, "nots3cr3t").await;
+        let claims = try_extract_claims(&token, "wrong").await;
         assert!(claims.is_err());
     }
 }
