@@ -34,6 +34,7 @@ BuildRequires:  timezone
 BuildRequires:  dbus-1-common
 # required by agama-dbus-server integration tests
 BuildRequires:  dbus-1-daemon
+BuildRequires:  clang-devel
 BuildRequires:  pkgconfig(pam)
 Requires:       jsonnet
 Requires:       lshw
