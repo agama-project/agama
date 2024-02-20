@@ -34,6 +34,8 @@ would not know how to authenticate the service:
 cp share/agama.pam /usr/lib/pam.d/agama
 ```
 
+For further information, see [Authenticating with PAM](https://doc.opensuse.org/documentation/leap/security/single-html/book-security/index.html#cha-pam).
+
 ## Running the server
 
 > [!NOTE]
