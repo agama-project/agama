@@ -106,6 +106,7 @@ const DeviceContentColumn = ({ device }) => {
   const PartitionTableContent = () => {
     return (
       <div>
+        {/* TRANSLATORS: %s is replaced by partition table type (e.g., GPT) */}
         {sprintf(_("%s partition table"), device.partitionTable.type.toUpperCase())}
       </div>
     );
@@ -118,13 +119,18 @@ const DeviceContentColumn = ({ device }) => {
 
       const filesystem = device.filesystem;
       if (filesystem?.isEFI) return _("EFI");
-      if (filesystem) return sprintf(_("%s file system"), filesystem?.type);
+      if (filesystem) {
+        // TRANSLATORS: %s is replaced by a file system type (e.g., btrfs).
+        return sprintf(_("%s file system"), filesystem?.type);
+      }
 
       const component = device.component;
       switch (component?.type) {
         case "physical_volume":
+          // TRANSLATORS: %s is replaced by a LVM volume group name (e.g., /dev/vg0).
           return sprintf(_("LVM physical volume of %s"), component.deviceNames[0]);
         case "md_device":
+          // TRANSLATORS: %s is replaced by a RAID name (e.g., /dev/md0).
           return sprintf(_("Member of RAID %s"), component.deviceNames[0]);
         default:
           return _("Not identified");
@@ -156,6 +162,7 @@ const DeviceDetailsColumn = ({ device }) => {
 
     return (
       <div>
+        {/* TRANSLATORS: %s is replaced by a disk size (e.g., 20 GiB) */}
         {sprintf(_("%s unused"), deviceSize(unused))}
       </div>
     );
@@ -168,13 +175,14 @@ const DeviceDetailsColumn = ({ device }) => {
 
     return (
       <div>
+        {/* TRANSLATORS: %s is replaced by a disk size (e.g., 2 GiB) */}
         {sprintf(_("Shrinkable by %s"), deviceSize(device.recoverableSize))}
       </div>
     );
   };
 
   return (
-    <If condition={device.isDrive} then={<UnusedSize />} else={<RecoverableSize /> } />
+    <If condition={device.isDrive} then={<UnusedSize />} else={<RecoverableSize />} />
   );
 };
 
@@ -198,7 +206,10 @@ const DeviceActionColumn = ({ device, action, isDisabled = false, onChange = noo
       value={value}
       isDisabled={isDisabled}
       onChange={changeAction}
-      aria-label={sprintf(_("Space action selector for %s"), device.name)}
+      aria-label={
+        /* TRANSLATORS: %s is replaced by a device name (e.g., /dev/sda) */
+        sprintf(_("Space action selector for %s"), device.name)
+      }
     >
       <FormSelectOption value="force_delete" label={_("Delete")} />
       <If
