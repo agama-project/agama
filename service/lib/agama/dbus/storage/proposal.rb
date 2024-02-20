@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -58,6 +58,8 @@ module Agama
 
           dbus_reader :space_policy, "s"
 
+          dbus_reader :space_actions, "aa{sv}"
+
           dbus_reader :volumes, "aa{sv}"
 
           dbus_reader :actions, "aa{sv}"
@@ -107,6 +109,13 @@ module Agama
         # @return [String] For the possible values, check Agama::Storage::SpaceSettings
         def space_policy
           dbus_settings.fetch("SpacePolicy", "")
+        end
+
+        # Space actions
+        #
+        # @return [Array<Hash>]
+        def space_actions
+          dbus_settings.fetch("SpaceActions", [])
         end
 
         # Volumes used to calculate the storage proposal

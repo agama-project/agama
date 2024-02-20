@@ -245,9 +245,27 @@ ul {
   }
 }
 
+// Styles for tree table used by storage page.
+
+.pf-v5-c-table tbody {
+  border-block-end: var(--pf-v5-c-table--border-width--base) solid var(--pf-v5-c-table--BorderColor);
+}
+
+.pf-v5-c-table td > .pf-v5-c-form-control {
+  inline-size: max-content;
+}
+
+.pf-v5-c-table tr[aria-level="1"] {
+  border-block-end: 0;
+  border-block-start: var(--pf-v5-c-table--border-width--base) solid var(--pf-v5-c-table--BorderColor);
+}
+
+.pf-v5-c-table tr[aria-level="2"] {
+  border-block-end: 0;
+}
+
 @media screen and (width <= 768px) {
   .pf-m-grid-md.pf-v5-c-table tr:where(.pf-v5-c-table__tr):not(.pf-v5-c-table__expandable-row) {
     padding-inline: 0;
   }
-
 }

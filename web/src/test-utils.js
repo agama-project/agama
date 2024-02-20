@@ -32,7 +32,7 @@ import { render } from "@testing-library/react";
 
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
-import { noop } from "./utils";
+import { noop, isObject } from "./utils";
 import cockpit from "./lib/cockpit";
 import { InstallerL10nProvider } from "./context/installerL10n";
 import { L10nProvider } from "./context/l10n";
@@ -176,11 +176,28 @@ const mockGettext = () => {
   cockpit.gettext.mockImplementation(gettextFn);
 };
 
+/**
+ * Helper for clearing window.localStorage and setting an initial state if needed.
+ *
+ * @param {Object.<string, string>} [initialState] - a collection of keys/values as
+ *   expected by {@link https://developer.mozilla.org/en-US/docs/Web/API/Storage/setItem Web Storage API setItem method}
+ */
+const resetLocalStorage = (initialState) => {
+  window.localStorage.clear();
+
+  if (!isObject(initialState)) return;
+
+  Object.entries(initialState).forEach(([key, value]) => {
+    window.localStorage.setItem(key, value);
+  });
+};
+
 export {
   plainRender,
   installerRender,
   createCallbackMock,
   mockGettext,
   mockNavigateFn,
-  mockRoutes
+  mockRoutes,
+  resetLocalStorage
 };

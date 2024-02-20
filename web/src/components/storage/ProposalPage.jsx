@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -27,7 +27,12 @@ import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
 import { Icon } from "~/components/layout";
 import { Page } from "~/components/core";
-import { ProposalActionsSection, ProposalPageMenu, ProposalSettingsSection } from "~/components/storage";
+import {
+  ProposalActionsSection,
+  ProposalPageMenu,
+  ProposalSettingsSection,
+  ProposalSpacePolicySection,
+} from "~/components/storage";
 import { IDLE } from "~/client/status";
 
 const initialState = {
@@ -214,6 +219,11 @@ export default function ProposalPage() {
           availableDevices={state.availableDevices}
           volumeTemplates={usefulTemplates()}
           encryptionMethods={state.encryptionMethods}
+          settings={state.settings}
+          onChange={changeSettings}
+          isLoading={state.loading}
+        />
+        <ProposalSpacePolicySection
           settings={state.settings}
           onChange={changeSettings}
           isLoading={state.loading}

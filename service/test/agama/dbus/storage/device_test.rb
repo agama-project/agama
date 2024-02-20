@@ -19,17 +19,19 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../../test_helper"
-require_relative "../../storage/storage_helpers"
-require_relative "./interfaces/drive_examples"
-require_relative "./interfaces/raid_examples"
-require_relative "./interfaces/multipath_examples"
-require_relative "./interfaces/block_examples"
-require_relative "./interfaces/md_examples"
-require_relative "./interfaces/partition_table_examples"
 require "agama/dbus/storage/device"
 require "agama/dbus/storage/devices_tree"
 require "dbus"
+require_relative "../../../test_helper"
+require_relative "../../storage/storage_helpers"
+require_relative "./interfaces/device/block_examples"
+require_relative "./interfaces/device/component_examples"
+require_relative "./interfaces/device/drive_examples"
+require_relative "./interfaces/device/filesystem_examples"
+require_relative "./interfaces/device/md_examples"
+require_relative "./interfaces/device/multipath_examples"
+require_relative "./interfaces/device/partition_table_examples"
+require_relative "./interfaces/device/raid_examples"
 
 describe Agama::DBus::Storage::Device do
   include Agama::RSpec::StorageHelpers
@@ -99,7 +101,7 @@ describe Agama::DBus::Storage::Device do
         expect(subject).to_not include_dbus_interface("org.opensuse.Agama.Storage1.Drive")
       end
 
-      it "defines the RAID interface" do
+      it "defines the MD interface" do
         expect(subject).to include_dbus_interface("org.opensuse.Agama.Storage1.MD")
       end
 
@@ -141,6 +143,10 @@ describe Agama::DBus::Storage::Device do
   include_examples "Block interface"
 
   include_examples "PartitionTable interface"
+
+  include_examples "Filesystem interface"
+
+  include_examples "Component interface"
 
   describe "#storage_device=" do
     before do

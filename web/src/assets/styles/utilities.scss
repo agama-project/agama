@@ -34,6 +34,10 @@
   font-weight: bold;
 }
 
+.fs-small {
+  font-size: var(--fs-small);
+}
+
 // Utility classes for sizing icons
 .icon-xxxs {
   block-size: var(--icon-size-xxxs);

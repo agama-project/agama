@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -69,7 +69,16 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::FromDBus do
         "EncryptionMethod"       => "luks1",
         "EncryptionPBKDFunction" => "pbkdf2",
         "SpacePolicy"            => "custom",
-        "SpaceActions"           => { "/dev/sda" => "force_delete" },
+        "SpaceActions"           => [
+          {
+            "Device" => "/dev/sda",
+            "Action" => "force_delete"
+          },
+          {
+            "Device" => "/dev/sdb1",
+            "Action" => "resize"
+          }
+        ],
         "Volumes"                => [
           { "MountPath" => "/" },
           { "MountPath" => "/test" }
@@ -87,7 +96,9 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::FromDBus do
       expect(settings.encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS1)
       expect(settings.encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::PBKDF2)
       expect(settings.space.policy).to eq(:custom)
-      expect(settings.space.actions).to eq({ "/dev/sda" => "force_delete" })
+      expect(settings.space.actions).to eq({
+        "/dev/sda" => :force_delete, "/dev/sdb1" => :resize
+      })
       expect(settings.volumes.map(&:mount_path)).to contain_exactly("/", "/test")
     end
 

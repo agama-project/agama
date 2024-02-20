@@ -22,6 +22,25 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 
 /**
+ * Returns true when given value is an
+ * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object Object}
+ *
+ * Borrowed from https://dev.to/alesm0101/how-to-check-if-a-value-is-an-object-in-javascript-3pin
+ *
+ * @param {any} value - the value to be checked
+ * @return {boolean} true when given value is an object; false otherwise
+ */
+const isObject = (value) => (
+  typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    !(value instanceof RegExp) &&
+    !(value instanceof Date) &&
+    !(value instanceof Set) &&
+    !(value instanceof Map)
+);
+
+/**
  * Returns an empty function useful to be used as a default callback.
  *
  * @return {function} empty function
@@ -334,6 +353,7 @@ const timezoneUTCOffset = (timezone) => {
 
 export {
   noop,
+  isObject,
   partition,
   classNames,
   useCancellablePromise,
