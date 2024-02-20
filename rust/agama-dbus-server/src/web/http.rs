@@ -48,7 +48,7 @@ pub async fn authenticate(
     State(state): State<ServiceState>,
     Json(login): Json<LoginRequest>,
 ) -> Result<Json<AuthResponse>, AuthError> {
-    let mut pam_client = Client::with_password("cockpit")?;
+    let mut pam_client = Client::with_password("agama")?;
     pam_client
         .conversation_mut()
         .set_credentials("root", login.password);
