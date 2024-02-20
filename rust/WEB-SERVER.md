@@ -34,9 +34,9 @@ cp share/agama.pam /usr/lib/pam.d/agama
 
 ## Running the server
 
-NOTE: in order to run the server, you need to start Agama's D-Bus daemon. So you can either start
-the Agama service or just start the D-Bus daemon (`sudo bundle exec bin/agamactl -f` from the
-`service/` directory).
+> [!NOTE]
+> The web server needs to connect to Agama's D-Bus daemon. So you can either start the Agama service
+> or just start the D-Bus daemon (`sudo bundle exec bin/agamactl -f` from the `service/` directory).
 
 You need to run the server as `root`, so you cannot use `cargo run` directly. Instead, just do:
 
@@ -89,7 +89,7 @@ You can use `websocat` to connect to the websocket. To install the tool, just ru
 $ cargo binstall websocat
 ```
 
-If you did not install `binstall`, you can do:
+If you did not install `cargo-binstall`, you can do:
 
 ```
 $ cargo install websocat
