@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 20 13:13:51 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Add section for space policy to the storage page
+  (gh#openSUSE/agama#1028).
+
+-------------------------------------------------------------------
 Wed Feb 14 12:42:32 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - UI: change look&feel and internals of Agama selectors
