@@ -73,6 +73,7 @@ jobs:
         jq
         libopenssl-3-devel
         openssl-3
+        pam-devel
         python-langtable-data
         timezone
 
