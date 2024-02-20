@@ -77,8 +77,8 @@ Now you can access protected routes by including the token in the header:
 
 ```
 $ curl -X GET http://localhost:3000/protected \
-      -H "Accept: application/json" \
-      -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MDg1MTA5MzB9.3HmKAC5u4H_FigMqEa9e74OFAq40UldjlaExrOGqE0U"
+    -H "Accept: application/json" \
+    -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MDg1MTA5MzB9.3HmKAC5u4H_FigMqEa9e74OFAq40UldjlaExrOGqE0U"
 ```
 
 ### Connecting to the websocket
@@ -99,4 +99,5 @@ Now, you can use the following command to connect:
 
 ```
 $ websocat ws://localhost:3000/ws
+    -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MDg1MTA5MzB9.3HmKAC5u4H_FigMqEa9e74OFAq40UldjlaExrOGqE0U"
 ```
