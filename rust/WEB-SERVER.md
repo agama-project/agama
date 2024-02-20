@@ -25,8 +25,10 @@ cargo install cargo-binstall
 
 ## Setting up PAM
 
-The web sever will use PAM for authentication. For some reason, you might want to
-copy the `share/agama.pam` file to `/usr/lib/pam.d/agama`
+The web sever will use [Pluggable Authentication Modules
+(PAM)](https://github.com/linux-pam/linux-pam) for authentication. For that
+reason, you need to copy the `agama` service definition for PAM to `/usr/lib/pam.d`. Otherwise, PAM
+would not know how to authenticate the service:
 
 ```
 cp share/agama.pam /usr/lib/pam.d/agama
