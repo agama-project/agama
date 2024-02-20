@@ -77,9 +77,6 @@ jobs:
         python-langtable-data
         timezone
 
-    - name: Copy the PAM configuration
-      run: cp share/agama.pam /usr/lib/pam.d/agama
-
     - name: Install Rust toolchains
       run: rustup toolchain install stable
 
