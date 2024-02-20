@@ -154,6 +154,13 @@ const DeviceSizeColumn = ({ device }) => {
   return <div>{deviceSize(device.size)}</div>;
 };
 
+/**
+ * Column content with details about the device.
+ * @component
+ *
+ * @param {object} props
+ * @param {StorageDevice} props.device
+ */
 const DeviceDetailsColumn = ({ device }) => {
   const UnusedSize = () => {
     if (device.filesystem) return null;
