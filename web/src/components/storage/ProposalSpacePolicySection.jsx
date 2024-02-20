@@ -206,6 +206,9 @@ const DeviceDetailsColumn = ({ device }) => {
 const DeviceActionColumn = ({ device, action, isDisabled = false, onChange = noop }) => {
   const changeAction = (_, action) => onChange({ device: device.name, action });
 
+  // For a drive device (e.g., Disk, RAID) it does not make sense to offer the resize action.
+  // At this moment, the Agama backend generates a resize action for drives if the policy is set to
+  // 'resize'. In that cases, the action is converted here to 'keep'.
   const value = (device.isDrive && action === "resize") ? "keep" : action;
 
   return (
@@ -219,6 +222,7 @@ const DeviceActionColumn = ({ device, action, isDisabled = false, onChange = noo
       }
     >
       <FormSelectOption value="force_delete" label={_("Delete")} />
+      {/* Resize action does not make sense for drives, so it is filtered out. */}
       <If
         condition={!device.isDrive}
         then={<FormSelectOption value="resize" label={_("Allow resize")} />}
