@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { plainRender, resetLocalStorage } from "~/test-utils";
 import { ProposalSpacePolicySection } from "~/components/storage";
 
 const sda = {
@@ -110,9 +110,7 @@ beforeEach(() => {
     ],
   };
 
-  // Reset localStorage to avoid keeping the SpaceActionsTable state between
-  // examples.
-  window.localStorage.clear();
+  resetLocalStorage();
 });
 
 describe("ProposalSpacePolicySection", () => {
