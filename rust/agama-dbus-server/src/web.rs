@@ -12,5 +12,7 @@ mod service;
 mod state;
 mod ws;
 
+pub use auth::generate_token;
+pub use config::ServiceConfig;
 pub use docs::ApiDoc;
 pub use service::service;

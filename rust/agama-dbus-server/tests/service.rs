@@ -1,7 +1,7 @@
 mod common;
 
 use self::common::DBusServer;
-use agama_dbus_server::service;
+use agama_dbus_server::{service, web::generate_token, web::ServiceConfig};
 use axum::{
     body::Body,
     http::{Method, Request, StatusCode},
@@ -19,7 +19,7 @@ async fn body_to_string(body: Body) -> String {
 #[test]
 async fn test_ping() -> Result<(), Box<dyn Error>> {
     let dbus_server = DBusServer::new().start().await?;
-    let web_server = service(dbus_server.connection());
+    let web_server = service(ServiceConfig::default(), dbus_server.connection());
     let request = Request::builder().uri("/ping").body(Body::empty()).unwrap();
 
     let response = web_server.oneshot(request).await.unwrap();
@@ -33,10 +33,15 @@ async fn test_ping() -> Result<(), Box<dyn Error>> {
 #[test]
 async fn test_authenticate() -> Result<(), Box<dyn Error>> {
     let dbus_server = DBusServer::new().start().await?;
-    let web_server = service(dbus_server.connection());
+    let config = ServiceConfig {
+        jwt_secret: "nots3cr3t".to_string(),
+    };
+    let web_server = service(config, dbus_server.connection());
+    let token = generate_token("nots3cr3t");
     let request = Request::builder()
-        .uri("/authenticate")
-        .method(Method::POST)
+        .uri("/protected")
+        .method(Method::GET)
+        .header("Authorization", format!("Bearer {}", token))
         .body(Body::empty())
         .unwrap();
 
@@ -44,6 +49,6 @@ async fn test_authenticate() -> Result<(), Box<dyn Error>> {
     assert_eq!(response.status(), StatusCode::OK);
 
     let body = body_to_string(response.into_body()).await;
-    assert!(body.starts_with("{\"token\":"));
+    assert_eq!(body, "OK");
     Ok(())
 }

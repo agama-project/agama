@@ -36,3 +36,11 @@ impl ServiceConfig {
         config.try_deserialize()
     }
 }
+
+impl Default for ServiceConfig {
+    fn default() -> Self {
+        Self {
+            jwt_secret: "".to_string(),
+        }
+    }
+}

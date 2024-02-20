@@ -36,7 +36,9 @@ async fn serve_command(address: &str) {
         .unwrap_or_else(|_| panic!("could not listen on {}", address));
 
     let dbus_connection = connection().await.unwrap();
-    axum::serve(listener, web::service(dbus_connection))
+    let config = web::ServiceConfig::load().unwrap();
+    let service = web::service(config, dbus_connection);
+    axum::serve(listener, service)
         .await
         .expect("could not mount app on listener");
 }

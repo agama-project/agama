@@ -7,8 +7,7 @@ use axum::{
 use tower_http::trace::TraceLayer;
 
 /// Returns a service that implements the web-based Agama API.
-pub fn service(dbus_connection: zbus::Connection) -> Router {
-    let config = ServiceConfig::load().unwrap();
+pub fn service(config: ServiceConfig, dbus_connection: zbus::Connection) -> Router {
     let state = ServiceState {
         config,
         dbus_connection,
