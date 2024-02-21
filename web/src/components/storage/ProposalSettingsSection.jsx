@@ -28,7 +28,7 @@ import {
 
 import { _ } from "~/i18n";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
-import { DeviceList, DeviceSelector, ProposalVolumes } from "~/components/storage";
+import { DeviceList, DeviceSelector } from "~/components/storage";
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
 
@@ -423,9 +423,7 @@ const EncryptionField = ({
  * @param {object} props
  * @param {ProposalSettings} props.settings
  * @param {StorageDevice[]} [props.availableDevices=[]]
- * @param {Volume[]} [props.volumeTemplates=[]]
  * @param {String[]} [props.encryptionMethods=[]]
- * @param {boolean} [isLoading=false]
  * @param {onChangeFn} [props.onChange=noop]
  *
  * @callback onChangeFn
@@ -434,9 +432,7 @@ const EncryptionField = ({
 export default function ProposalSettingsSection({
   settings,
   availableDevices = [],
-  volumeTemplates = [],
   encryptionMethods = [],
-  isLoading = false,
   onChange = noop
 }) {
   const changeLVM = ({ lvm, vgDevices }) => {
@@ -449,10 +445,6 @@ export default function ProposalSettingsSection({
 
   const changeEncryption = ({ password, method }) => {
     onChange({ encryptionPassword: password, encryptionMethod: method });
-  };
-
-  const changeVolumes = (volumes) => {
-    onChange({ volumes });
   };
 
   const encryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
@@ -474,13 +466,6 @@ export default function ProposalSettingsSection({
           isChecked={encryption}
           isLoading={settings.encryptionPassword === undefined}
           onChange={changeEncryption}
-        />
-        <ProposalVolumes
-          volumes={settings.volumes || []}
-          templates={volumeTemplates}
-          options={{ lvm: settings.lvm, encryption }}
-          isLoading={isLoading && settings.volumes === undefined}
-          onChange={changeVolumes}
         />
       </Section>
     </>
