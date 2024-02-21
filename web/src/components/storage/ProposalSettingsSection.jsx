@@ -21,7 +21,6 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Button,
   Form, Skeleton, Switch, Checkbox,
   ToggleGroup, ToggleGroupItem,
   Tooltip
@@ -30,7 +29,6 @@ import {
 import { _ } from "~/i18n";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { DeviceList, DeviceSelector, ProposalVolumes } from "~/components/storage";
-import { deviceLabel } from '~/components/storage/utils';
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
 
@@ -39,140 +37,6 @@ import { noop } from "~/utils";
  * @typedef {import ("~/client/storage").DevicesManager.StorageDevice} StorageDevice
  * @typedef {import ("~/client/storage").ProposalManager.Volume} Volume
  */
-
-/**
- * Form for selecting the installation device.
- * @component
- *
- * @param {object} props
- * @param {string} props.id - Form ID.
- * @param {StorageDevice|undefined} [props.current] - Currently selected device, if any.
- * @param {StorageDevice[]} [props.devices=[]] - Available devices for the selection.
- * @param {onSubmitFn} [props.onSubmit=noop] - On submit callback.
- *
- * @callback onSubmitFn
- * @param {string} device - Name of the selected device.
- */
-const InstallationDeviceForm = ({
-  id,
-  current,
-  devices = [],
-  onSubmit = noop
-}) => {
-  const [device, setDevice] = useState(current || devices[0]);
-
-  const changeSelected = (deviceId) => {
-    setDevice(devices.find(d => d.sid === deviceId));
-  };
-
-  const submitForm = (e) => {
-    e.preventDefault();
-    if (device !== undefined) onSubmit(device);
-  };
-
-  return (
-    <Form id={id} onSubmit={submitForm}>
-      <DeviceSelector
-        selected={device}
-        devices={devices}
-        onChange={changeSelected}
-      />
-    </Form>
-  );
-};
-
-/**
- * Allows to select the installation device.
- * @component
- *
- * @param {object} props
- * @param {string} [props.current] - Device name, if any.
- * @param {StorageDevice[]} [props.devices=[]] - Available devices for the selection.
- * @param {boolean} [props.isLoading=false] - Whether to show the selector as loading.
- * @param {onChangeFn} [props.onChange=noop] - On change callback.
- *
- * @callback onChangeFn
- * @param {string} device - Name of the selected device.
- */
-const InstallationDeviceField = ({
-  current,
-  devices = [],
-  isLoading = false,
-  onChange = noop
-}) => {
-  const [device, setDevice] = useState(devices.find(d => d.name === current));
-  const [isFormOpen, setIsFormOpen] = useState(false);
-
-  const openForm = () => setIsFormOpen(true);
-
-  const closeForm = () => setIsFormOpen(false);
-
-  const acceptForm = (selectedDevice) => {
-    closeForm();
-    setDevice(selectedDevice);
-    onChange(selectedDevice);
-  };
-
-  /**
-   * Renders a button that allows changing selected device
-   *
-   * NOTE: if a device is already selected, its name and size will be used for
-   * the button text. Otherwise, a "No device selected" text will be shown.
-   *
-   * @param {object} props
-   * @param {StorageDevice|undefined} [props.current] - Currently selected device, if any.
-   */
-  const DeviceContent = ({ device }) => {
-    return (
-      <Button variant="link" isInline onClick={openForm}>
-        {device ? deviceLabel(device) : _("No device selected yet")}
-      </Button>
-    );
-  };
-
-  if (isLoading) {
-    return <Skeleton width="25%" />;
-  }
-
-  const description = _("Select the device for installing the system.");
-
-  return (
-    <>
-      <div className="split">
-        <span>{_("Installation device")}</span>
-        <DeviceContent device={device} />
-      </div>
-      <Popup
-        title={_("Installation device")}
-        description={description}
-        isOpen={isFormOpen}
-      >
-        <If
-          condition={devices.length === 0}
-          then={_("No devices found.")}
-          else={
-            <InstallationDeviceForm
-              id="bootDeviceForm"
-              current={device}
-              devices={devices}
-              onSubmit={acceptForm}
-            />
-          }
-        />
-        <Popup.Actions>
-          <Popup.Confirm
-            form="bootDeviceForm"
-            type="submit"
-            isDisabled={devices.length === 0}
-          >
-            {_("Accept")}
-          </Popup.Confirm>
-          <Popup.Cancel onClick={closeForm} />
-        </Popup.Actions>
-      </Popup>
-    </>
-  );
-};
 
 /**
  * Form for configuring the system volume group.
@@ -575,11 +439,6 @@ export default function ProposalSettingsSection({
   isLoading = false,
   onChange = noop
 }) {
-  // FIXME: we should work with devices objects ASAP
-  const changeBootDevice = (device) => {
-    onChange({ bootDevice: device.name });
-  };
-
   const changeLVM = ({ lvm, vgDevices }) => {
     const settings = {};
     if (lvm !== undefined) settings.lvm = lvm;
@@ -596,18 +455,11 @@ export default function ProposalSettingsSection({
     onChange({ volumes });
   };
 
-  const { bootDevice } = settings;
   const encryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
 
   return (
     <>
       <Section title={_("Settings")} className="flex-stack">
-        <InstallationDeviceField
-          current={bootDevice}
-          devices={availableDevices}
-          isLoading={isLoading && bootDevice === undefined}
-          onChange={changeBootDevice}
-        />
         <LVMField
           settings={settings}
           devices={availableDevices}

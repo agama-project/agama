@@ -32,6 +32,7 @@ import {
   ProposalPageMenu,
   ProposalSettingsSection,
   ProposalSpacePolicySection,
+  ProposalDeviceSection,
 } from "~/components/storage";
 import { IDLE } from "~/client/status";
 
@@ -214,6 +215,12 @@ export default function ProposalPage() {
           isInline
           customIcon={<Icon name="info" size="xxs" />}
           title={_("Devices will not be modified until installation starts.")}
+        />
+        <ProposalDeviceSection
+          settings={state.settings}
+          availableDevices={state.availableDevices}
+          isLoading={state.loading}
+          onChange={changeSettings}
         />
         <ProposalSettingsSection
           availableDevices={state.availableDevices}
