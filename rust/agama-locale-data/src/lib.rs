@@ -19,7 +19,7 @@ pub mod timezone_part;
 
 use keyboard::xkeyboard;
 
-pub use locale::{InvalidLocaleCode, KeymapId, LocaleCode};
+pub use locale::{InvalidKeymap, InvalidLocaleCode, KeymapId, LocaleCode};
 
 fn file_reader(file_path: &str) -> anyhow::Result<impl BufRead> {
     let file = File::open(file_path)

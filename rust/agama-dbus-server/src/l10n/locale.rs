@@ -3,10 +3,11 @@
 use crate::error::Error;
 use agama_locale_data::{InvalidLocaleCode, LocaleCode};
 use anyhow::Context;
+use serde::Serialize;
 use std::process::Command;
 
 /// Represents a locale, including the localized language and territory.
-#[derive(Debug)]
+#[derive(Debug, Serialize, Clone, utoipa::ToSchema)]
 pub struct LocaleEntry {
     /// The locale code (e.g., "es_ES.UTF-8").
     pub code: LocaleCode,

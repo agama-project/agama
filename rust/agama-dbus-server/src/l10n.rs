@@ -2,11 +2,13 @@ pub mod helpers;
 mod keyboard;
 mod locale;
 mod timezone;
+pub mod web;
 
 use crate::error::Error;
 use agama_locale_data::{KeymapId, LocaleCode};
 use anyhow::Context;
 use keyboard::KeymapsDatabase;
+pub use locale::LocaleEntry;
 use locale::LocalesDatabase;
 use std::process::Command;
 use timezone::TimezonesDatabase;
@@ -16,7 +18,7 @@ pub struct Locale {
     timezone: String,
     timezones_db: TimezonesDatabase,
     locales: Vec<String>,
-    locales_db: LocalesDatabase,
+    pub locales_db: LocalesDatabase,
     keymap: KeymapId,
     keymaps_db: KeymapsDatabase,
     ui_locale: LocaleCode,

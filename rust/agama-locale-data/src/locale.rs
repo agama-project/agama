@@ -1,11 +1,12 @@
 //! Defines useful types to deal with localization values
 
 use regex::Regex;
+use serde::Serialize;
 use std::sync::OnceLock;
 use std::{fmt::Display, str::FromStr};
 use thiserror::Error;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct LocaleCode {
     // ISO-639
     pub language: String,

@@ -1,4 +1,5 @@
 use super::{auth::TokenClaims, config::ServiceConfig, state::ServiceState};
+use crate::l10n::web::l10n_service;
 use axum::{
     middleware,
     routing::{get, post},
@@ -12,9 +13,11 @@ pub fn service(config: ServiceConfig, dbus_connection: zbus::Connection) -> Rout
         config,
         dbus_connection,
     };
+
     Router::new()
         .route("/protected", get(super::http::protected))
         .route("/ws", get(super::ws::ws_handler))
+        .nest_service("/l10n", l10n_service())
         .route_layer(middleware::from_extractor_with_state::<TokenClaims, _>(
             state.clone(),
         ))
