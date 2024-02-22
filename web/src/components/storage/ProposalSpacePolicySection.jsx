@@ -447,7 +447,13 @@ export default function ProposalSpacePolicySection({
   const currentPolicy = SPACE_POLICIES.find(p => p.id === settings.spacePolicy) || SPACE_POLICIES[0];
 
   return (
-    <Section title={_("Find Space")}>
+    <Section
+      // TRANSLATORS: The storage "Find Space" section's title
+      title={_("Find Space")}
+      // TRANSLATORS: The storage "Find space" sections's description
+      description={_("Allocating the file systems might need to find free space \
+in the devices listed below. Choose how to do it.")}
+    >
       <If
         condition={isLoading && settings.spacePolicy === undefined}
         then={<SectionSkeleton numRows={4} />}

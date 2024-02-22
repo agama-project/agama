@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 22 14:05:56 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Break storage settings in multiple sections to improve the UX
+  (gh#openSUSE/agama#1045).
+
+-------------------------------------------------------------------
 Wed Feb 21 17:40:01 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Stop rendering a warning at the top of storage page

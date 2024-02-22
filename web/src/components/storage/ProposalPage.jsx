@@ -30,6 +30,8 @@ import {
   ProposalPageMenu,
   ProposalSettingsSection,
   ProposalSpacePolicySection,
+  ProposalDeviceSection,
+  ProposalFileSystemsSection
 } from "~/components/storage";
 import { IDLE } from "~/client/status";
 
@@ -197,22 +199,24 @@ export default function ProposalPage() {
   };
 
   const PageContent = () => {
-    // Templates for already existing mount points are filtered out
-    const usefulTemplates = () => {
-      const volumes = state.settings.volumes || [];
-      const mountPaths = volumes.map(v => v.mountPath);
-      return state.volumeTemplates.filter(t => (
-        t.mountPath.length > 0 && !mountPaths.includes(t.mountPath)
-      ));
-    };
-
     return (
       <>
+        <ProposalDeviceSection
+          settings={state.settings}
+          availableDevices={state.availableDevices}
+          isLoading={state.loading}
+          onChange={changeSettings}
+        />
         <ProposalSettingsSection
           availableDevices={state.availableDevices}
-          volumeTemplates={usefulTemplates()}
           encryptionMethods={state.encryptionMethods}
           settings={state.settings}
+          onChange={changeSettings}
+          isLoading={state.loading}
+        />
+        <ProposalFileSystemsSection
+          settings={state.settings}
+          volumeTemplates={state.volumeTemplates}
           onChange={changeSettings}
           isLoading={state.loading}
         />
