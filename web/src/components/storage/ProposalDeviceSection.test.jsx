@@ -136,7 +136,7 @@ describe("ProposalDeviceSection", () => {
 
         it("renders a loading hint", () => {
           plainRender(<ProposalDeviceSection {...props} />);
-          screen.getByText("Loading selected device");
+          screen.getByText("Waiting for information about selected device");
         });
       });
     });

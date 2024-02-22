@@ -132,7 +132,7 @@ const InstallationDeviceField = ({
   };
 
   if (isLoading) {
-    return <Skeleton screenreaderText={_("Loading selected device")} width="25%" />;
+    return <Skeleton screenreaderText={_("Waiting for information about selected device")} width="25%" />;
   }
 
   const description = _("Select the device for installing the system.");
@@ -330,7 +330,7 @@ created in a logical volume of the system volume group.");
     );
   };
 
-  if (isLoading) return <Skeleton width="25%" />;
+  if (isLoading) return <Skeleton screenreaderText={_("Waiting for information about LVM")} width="25%" />;
 
   return (
     <div className="split">
