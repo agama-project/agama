@@ -1,6 +1,8 @@
 //! This module implements the web API for the localization module.
 
 use super::{keyboard::Keymap, locale::LocaleEntry, timezone::TimezoneEntry, Locale};
+use crate::error::Error;
+use crate::l10n::helpers;
 use agama_locale_data::{InvalidKeymap, LocaleCode};
 use axum::{
     extract::State,
@@ -22,6 +24,8 @@ pub enum LocaleError {
     UnknownTimezone(String),
     #[error("Invalid keymap: {0}")]
     InvalidKeymap(#[from] InvalidKeymap),
+    #[error("Cannot translate: {0}")]
+    CannotTranslate(#[from] Error),
 }
 
 impl IntoResponse for LocaleError {
@@ -68,6 +72,7 @@ struct LocaleConfig {
     locales: Option<Vec<String>>,
     keymap: Option<String>,
     timezone: Option<String>,
+    ui_locale: Option<String>,
 }
 
 #[derive(Debug, Serialize, utoipa::ToSchema)]
@@ -124,6 +129,16 @@ async fn set_config(
         data.keymap = keymap_id.parse()?;
     }
 
+    if let Some(ui_locale) = &value.ui_locale {
+        let locale: LocaleCode = ui_locale
+            .as_str()
+            .try_into()
+            .map_err(|_e| LocaleError::UnknownLocale(ui_locale.to_string()))?;
+
+        helpers::set_service_locale(&locale);
+        data.translate(&locale)?;
+    }
+
     Ok(Json(()))
 }
 
@@ -133,5 +148,6 @@ async fn get_config(State(state): State<LocaleState>) -> Json<LocaleConfig> {
         locales: Some(data.locales.clone()),
         keymap: Some(data.keymap()),
         timezone: Some(data.timezone().to_string()),
+        ui_locale: Some(data.ui_locale().to_string()),
     })
 }
