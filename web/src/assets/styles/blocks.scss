@@ -43,6 +43,7 @@
     p {
       grid-column: content;
       color: var(--color-gray-dimmest);
+      margin-block-end: var(--spacer-smaller);
     }
   }
 

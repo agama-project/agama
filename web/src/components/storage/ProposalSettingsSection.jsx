@@ -451,7 +451,7 @@ export default function ProposalSettingsSection({
 
   return (
     <>
-      <Section title={_("Settings")} className="flex-stack">
+      <Section title={_("Settings")}>
         <LVMField
           settings={settings}
           devices={availableDevices}
