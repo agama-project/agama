@@ -123,7 +123,7 @@ export default function ProposalActionsSection({ actions = [], errors = [], isLo
       // "delete partition A", "create partition B with filesystem C", ...
       title={_("Planned Actions")}
       // TRANSLATORS: The storage "Planned Actions" section's description
-      description={_("Actions to create the file systems and to ensure the new system boots")}
+      description={_("Actions to create the file systems and to ensure the new system boots.")}
       id="storage-actions"
       errors={errors}
     >

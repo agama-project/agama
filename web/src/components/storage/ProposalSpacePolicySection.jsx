@@ -451,7 +451,8 @@ export default function ProposalSpacePolicySection({
       // TRANSLATORS: The storage "Find Space" section's title
       title={_("Find Space")}
       // TRANSLATORS: The storage "Find space" sections's description
-      description={_("Allocating the file systems might need to find free space in the devices listed below. Choose how to do it")}
+      description={_("Allocating the file systems might need to find free space \
+in the devices listed below. Choose how to do it.")}
     >
       <If
         condition={isLoading && settings.spacePolicy === undefined}

@@ -47,7 +47,7 @@ import { noop } from "~/utils";
  *
  * @param {object} props
  * @param {string} props.id - Form ID.
- * @param {StorageDevice|undefined} [props.current] - Currently selected device, if any.
+ * @param {StorageDevice} [props.current] - Currently selected device, if any.
  * @param {StorageDevice[]} [props.devices=[]] - Available devices for the selection.
  * @param {onSubmitFn} [props.onSubmit=noop] - On submit callback.
  *
@@ -411,7 +411,8 @@ export default function ProposalDeviceSection({
       dangerouslySetInnerHTML={{
         // TRANSLATORS: The storage "Device" sections's description. Do not
         // translate 'abbr' and 'title', they are part of the HTML markup.
-        __html: _("Select the main disk or <abbr title='Logical Volume Manager'>LVM</abbr> Volume Group for installation")
+        __html: _("Select the main disk or <abbr title='Logical Volume Manager'>LVM</abbr> \
+Volume Group for installation.")
       }}
     />
   );
