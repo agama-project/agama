@@ -34,6 +34,8 @@ BuildRequires:  timezone
 BuildRequires:  dbus-1-common
 # required by agama-dbus-server integration tests
 BuildRequires:  dbus-1-daemon
+BuildRequires:  clang-devel
+BuildRequires:  pkgconfig(pam)
 Requires:       jsonnet
 Requires:       lshw
 # required by "agama logs store"
@@ -85,6 +87,7 @@ install -D -d -m 0755 %{buildroot}%{_bindir}
 install -m 0755 %{_builddir}/agama/target/release/agama %{buildroot}%{_bindir}/agama
 install -m 0755 %{_builddir}/agama/target/release/agama-dbus-server %{buildroot}%{_bindir}/agama-dbus-server
 install -m 0755 %{_builddir}/agama/target/release/agama-web-server %{buildroot}%{_bindir}/agama-web-server
+install -D -p -m 644 %{_builddir}/agama/share/agama.pam $RPM_BUILD_ROOT%{_pam_vendordir}/agama
 install -D -d -m 0755 %{buildroot}%{_datadir}/agama-cli
 install -m 0644 %{_builddir}/agama/agama-lib/share/profile.schema.json %{buildroot}%{_datadir}/agama-cli
 install --directory %{buildroot}%{_datadir}/dbus-1/agama-services
@@ -106,6 +109,7 @@ install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services
 %files -n agama-dbus-server
 %{_bindir}/agama-dbus-server
 %{_datadir}/dbus-1/agama-services
+%{_pam_vendordir}/agama
 
 %files -n agama-web-server
 %{_bindir}/agama-web-server

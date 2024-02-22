@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 21 17:40:01 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Stop rendering a warning at the top of storage page
+  (gh#openSUSE/agama#1048).
+
+-------------------------------------------------------------------
 Tue Feb 20 13:13:51 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Add section for space policy to the storage page

@@ -124,8 +124,10 @@ which cargo || $SUDO zypper --non-interactive install cargo
 # Packages required by Rust code (see ./rust/package/agama-cli.spec)
 $SUDO zypper --non-interactive install \
   bzip2 \
+  clang-devel \
   jsonnet \
   lshw \
+  pam-devel \
   python-langtable-data \
   tar \
   timezone \

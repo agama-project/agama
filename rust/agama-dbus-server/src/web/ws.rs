@@ -1,6 +1,6 @@
 //! Implements the websocket handling.
 
-use super::service::ServiceState;
+use super::state::ServiceState;
 use agama_lib::progress::{Progress, ProgressMonitor, ProgressPresenter};
 use async_trait::async_trait;
 use axum::{
