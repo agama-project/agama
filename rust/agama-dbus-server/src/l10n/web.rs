@@ -1,6 +1,6 @@
 //! This module implements the web API for the localization module.
 
-use super::{locale::LocaleEntry, Locale};
+use super::{keyboard::Keymap, locale::LocaleEntry, timezone::TimezoneEntry, Locale};
 use agama_locale_data::{InvalidKeymap, LocaleCode};
 use axum::{
     extract::State,
@@ -42,7 +42,9 @@ pub fn l10n_service() -> Router {
     let locale = Locale::new_with_locale(&code).unwrap();
     let state = Arc::new(RwLock::new(locale));
     Router::new()
+        .route("/keymaps", get(keymaps))
         .route("/locales", get(locales))
+        .route("/timezones", get(timezones))
         .route("/config", put(set_config).get(get_config))
         .with_state(state)
 }
@@ -66,6 +68,34 @@ struct LocaleConfig {
     locales: Option<Vec<String>>,
     keymap: Option<String>,
     timezone: Option<String>,
+}
+
+#[derive(Debug, Serialize, utoipa::ToSchema)]
+pub struct TimezonesResponse {
+    timezones: Vec<TimezoneEntry>,
+}
+
+#[utoipa::path(get, path = "/timezones", responses(
+    (status = 200, description = "List of known timezones", body = TimezonesResponse)
+))]
+pub async fn timezones(State(state): State<LocaleState>) -> Json<TimezonesResponse> {
+    let data = state.read().expect("could not access to locale data");
+    let timezones = data.timezones_db.entries().to_vec();
+    Json(TimezonesResponse { timezones })
+}
+
+#[derive(Debug, Serialize, utoipa::ToSchema)]
+pub struct KeymapsResponse {
+    keymaps: Vec<Keymap>,
+}
+
+#[utoipa::path(get, path = "/keymaps", responses(
+    (status = 200, description = "List of known keymaps", body = KeymapsResponse)
+))]
+pub async fn keymaps(State(state): State<LocaleState>) -> Json<KeymapsResponse> {
+    let data = state.read().expect("could not access to locale data");
+    let keymaps = data.keymaps_db.entries().to_vec();
+    Json(KeymapsResponse { keymaps })
 }
 
 async fn set_config(

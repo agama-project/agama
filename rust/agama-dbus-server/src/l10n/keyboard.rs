@@ -1,8 +1,10 @@
 use agama_locale_data::{get_localectl_keymaps, keyboard::XkbConfigRegistry, KeymapId};
 use gettextrs::*;
+use serde::Serialize;
 use std::collections::HashMap;
 
 // Minimal representation of a keymap
+#[derive(Clone, Debug, Serialize)]
 pub struct Keymap {
     pub id: KeymapId,
     description: String,
