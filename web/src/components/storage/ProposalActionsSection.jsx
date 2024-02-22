@@ -25,7 +25,6 @@ import {
   ListItem,
   ExpandableSection,
   Skeleton,
-  Text
 } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
@@ -74,9 +73,6 @@ const ProposalActions = ({ actions = [] }) => {
 
   return (
     <>
-      <Text>
-        {_("Actions to create the file systems and to ensure the system boots.")}
-      </Text>
       <ActionsList actions={generalActions} />
       {subvolActions.length > 0 && (
         <ExpandableSection
@@ -121,9 +117,16 @@ export default function ProposalActionsSection({ actions = [], errors = [], isLo
   if (isLoading) errors = [];
 
   return (
-    // TRANSLATORS: section title, list of planned actions for the selected device,
-    // e.g. "delete partition A", "create partition B with filesystem C", ...
-    <Section title={_("Planned Actions")} id="storage-actions" errors={errors}>
+    <Section
+      // TRANSLATORS: The storage "Planned Actions" section's title. The
+      // section shows a list of planned actions for the selected device, e.g.
+      // "delete partition A", "create partition B with filesystem C", ...
+      title={_("Planned Actions")}
+      // TRANSLATORS: The storage "Planned Actions" section's description
+      description={_("Actions to create the file systems and to ensure the new system boots")}
+      id="storage-actions"
+      errors={errors}
+    >
       <If
         condition={isLoading}
         then={<ActionsSkeleton />}

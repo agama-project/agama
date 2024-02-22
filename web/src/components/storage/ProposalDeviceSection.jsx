@@ -195,8 +195,22 @@ export default function ProposalDeviceSection({
     }
   };
 
+  const Description = () => (
+    <span
+      dangerouslySetInnerHTML={{
+        // TRANSLATORS: The storage "Device" sections's description. Do not
+        // translate 'abbr' and 'title', they are part of the HTML markup.
+        __html: _("Select the main disk or <abbr title='Logical Volume Manager'>LVM</abbr> Volume Group for installation")
+      }}
+    />
+  );
+
   return (
-    <Section title={_("Device")}>
+    <Section
+      // TRANSLATORS: The storage "Device" section's title
+      title={_("Device")}
+      description={<Description />}
+    >
       <InstallationDeviceField
         current={bootDevice}
         devices={availableDevices}
