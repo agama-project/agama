@@ -24,7 +24,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Icon } from '~/components/layout';
-import { ValidationErrors } from "~/components/core";
+import { If, ValidationErrors } from "~/components/core";
 
 /**
  * Renders children into an HTML section
@@ -48,7 +48,7 @@ import { ValidationErrors } from "~/components/core";
  * @typedef { Object } SectionProps
  * @property {string} [icon] - Name of the section icon. Not rendered if title is not provided.
  * @property {string} [title] - The section title. If not given, aria-label must be provided.
- * @property {string} [description] - A section description. Use only if really needed.
+ * @property {string|React.ReactElement} [description] - A section description. Use only if really needed.
  * @property {string} [name] - The section name. Used to build the header id.
  * @property {string} [path] - Path where the section links to.
  *  when user clicks on the title, used for opening a dialog.
@@ -86,13 +86,13 @@ export default function Section({
     const iconName = loading ? "loading" : icon;
     const headerIcon = iconName ? <Icon name={iconName} /> : null;
     const headerText = !path?.trim() ? title : <Link to={path}>{title}</Link>;
+    const renderDescription = React.isValidElement(description) || description?.length > 0;
 
     return (
       <header>
         <h2 id={headerId}>{headerIcon}<span>{headerText}</span></h2>
-        <p>{description}</p>
+        <If condition={renderDescription} then={<p>{description}</p>} />
       </header>
-
     );
   };
 
