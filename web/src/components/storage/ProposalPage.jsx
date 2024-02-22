@@ -20,12 +20,10 @@
  */
 
 import React, { useCallback, useReducer, useEffect } from "react";
-import { Alert } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
-import { Icon } from "~/components/layout";
 import { Page } from "~/components/core";
 import {
   ProposalActionsSection,
@@ -210,11 +208,6 @@ export default function ProposalPage() {
 
     return (
       <>
-        <Alert
-          isInline
-          customIcon={<Icon name="info" size="xxs" />}
-          title={_("Devices will not be modified until installation starts.")}
-        />
         <ProposalSettingsSection
           availableDevices={state.availableDevices}
           volumeTemplates={usefulTemplates()}
