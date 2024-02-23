@@ -7,7 +7,9 @@
 mod auth;
 mod config;
 mod docs;
+mod event;
 mod http;
+mod progress;
 mod service;
 mod state;
 mod ws;
@@ -15,4 +17,5 @@ mod ws;
 pub use auth::generate_token;
 pub use config::ServiceConfig;
 pub use docs::ApiDoc;
+pub use event::{Event, EventsReceiver, EventsSender};
 pub use service::service;

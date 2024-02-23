@@ -1,8 +1,6 @@
 //! Implements the websocket handling.
 
-use super::state::ServiceState;
-use agama_lib::progress::{Progress, ProgressMonitor, ProgressPresenter};
-use async_trait::async_trait;
+use super::{state::ServiceState, EventsSender};
 use axum::{
     extract::{
         ws::{Message, WebSocket},
@@ -15,42 +13,14 @@ pub async fn ws_handler(
     State(state): State<ServiceState>,
     ws: WebSocketUpgrade,
 ) -> impl IntoResponse {
-    ws.on_upgrade(move |socket| handle_socket(socket, state.dbus_connection))
+    ws.on_upgrade(move |socket| handle_socket(socket, state.dbus_connection, state.events))
 }
 
-async fn handle_socket(socket: WebSocket, connection: zbus::Connection) {
-    let presenter = WebSocketProgressPresenter::new(socket);
-    let mut monitor = ProgressMonitor::new(connection).await.unwrap();
-    _ = monitor.run(presenter).await;
-}
-
-/// Experimental ProgressPresenter to emit progress events over a WebSocket.
-struct WebSocketProgressPresenter(WebSocket);
-
-impl WebSocketProgressPresenter {
-    pub fn new(socket: WebSocket) -> Self {
-        Self(socket)
+async fn handle_socket(mut socket: WebSocket, _connection: zbus::Connection, events: EventsSender) {
+    let mut rx = events.subscribe();
+    while let Ok(msg) = rx.recv().await {
+        if let Ok(json) = serde_json::to_string(&msg) {
+            _ = socket.send(Message::Text(json)).await;
+        }
     }
-
-    pub async fn report_progress(&mut self, progress: &Progress) {
-        let payload = serde_json::to_string(&progress).unwrap();
-        _ = self.0.send(Message::Text(payload)).await;
-    }
-}
-
-#[async_trait]
-impl ProgressPresenter for WebSocketProgressPresenter {
-    async fn start(&mut self, progress: &Progress) {
-        self.report_progress(progress).await;
-    }
-
-    async fn update_main(&mut self, progress: &Progress) {
-        self.report_progress(progress).await;
-    }
-
-    async fn update_detail(&mut self, progress: &Progress) {
-        self.report_progress(progress).await;
-    }
-
-    async fn finish(&mut self) {}
 }

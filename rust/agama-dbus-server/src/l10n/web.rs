@@ -1,8 +1,11 @@
 //! This module implements the web API for the localization module.
 
 use super::{keyboard::Keymap, locale::LocaleEntry, timezone::TimezoneEntry, Locale};
-use crate::error::Error;
-use crate::l10n::helpers;
+use crate::{
+    error::Error,
+    l10n::helpers,
+    web::{Event, EventsSender},
+};
 use agama_locale_data::{InvalidKeymap, LocaleCode};
 use axum::{
     extract::State,
@@ -37,14 +40,23 @@ impl IntoResponse for LocaleError {
     }
 }
 
-// Locale service state.
-type LocaleState = Arc<RwLock<Locale>>;
+#[derive(Clone)]
+struct LocaleState {
+    locale: Arc<RwLock<Locale>>,
+    events: EventsSender,
+}
 
 /// Sets up and returns the axum service for the localization module.
-pub fn l10n_service() -> Router {
+///
+/// * `events`: channel to send the events to the main service.
+pub fn l10n_service(events: EventsSender) -> Router {
     let code = LocaleCode::default();
     let locale = Locale::new_with_locale(&code).unwrap();
-    let state = Arc::new(RwLock::new(locale));
+    let state = LocaleState {
+        locale: Arc::new(RwLock::new(locale)),
+        events,
+    };
+
     Router::new()
         .route("/keymaps", get(keymaps))
         .route("/locales", get(locales))
@@ -61,8 +73,11 @@ pub struct LocalesResponse {
 #[utoipa::path(get, path = "/locales", responses(
   (status = 200, description = "List of known locales", body = LocalesResponse)
 ))]
-pub async fn locales(State(state): State<LocaleState>) -> Json<LocalesResponse> {
-    let data = state.read().expect("could not access to locale data");
+async fn locales(State(state): State<LocaleState>) -> Json<LocalesResponse> {
+    let data = state
+        .locale
+        .read()
+        .expect("could not access to locale data");
     let locales = data.locales_db.entries().to_vec();
     Json(LocalesResponse { locales })
 }
@@ -83,8 +98,11 @@ pub struct TimezonesResponse {
 #[utoipa::path(get, path = "/timezones", responses(
     (status = 200, description = "List of known timezones", body = TimezonesResponse)
 ))]
-pub async fn timezones(State(state): State<LocaleState>) -> Json<TimezonesResponse> {
-    let data = state.read().expect("could not access to locale data");
+async fn timezones(State(state): State<LocaleState>) -> Json<TimezonesResponse> {
+    let data = state
+        .locale
+        .read()
+        .expect("could not access to locale data");
     let timezones = data.timezones_db.entries().to_vec();
     Json(TimezonesResponse { timezones })
 }
@@ -97,8 +115,11 @@ pub struct KeymapsResponse {
 #[utoipa::path(get, path = "/keymaps", responses(
     (status = 200, description = "List of known keymaps", body = KeymapsResponse)
 ))]
-pub async fn keymaps(State(state): State<LocaleState>) -> Json<KeymapsResponse> {
-    let data = state.read().expect("could not access to locale data");
+async fn keymaps(State(state): State<LocaleState>) -> Json<KeymapsResponse> {
+    let data = state
+        .locale
+        .read()
+        .expect("could not access to locale data");
     let keymaps = data.keymaps_db.entries().to_vec();
     Json(KeymapsResponse { keymaps })
 }
@@ -107,7 +128,7 @@ async fn set_config(
     State(state): State<LocaleState>,
     Json(value): Json<LocaleConfig>,
 ) -> Result<Json<()>, LocaleError> {
-    let mut data = state.write().unwrap();
+    let mut data = state.locale.write().unwrap();
 
     if let Some(locales) = &value.locales {
         for loc in locales {
@@ -137,13 +158,16 @@ async fn set_config(
 
         helpers::set_service_locale(&locale);
         data.translate(&locale)?;
+        _ = state.events.send(Event::LocaleChanged {
+            locale: locale.to_string(),
+        });
     }
 
     Ok(Json(()))
 }
 
 async fn get_config(State(state): State<LocaleState>) -> Json<LocaleConfig> {
-    let data = state.read().unwrap();
+    let data = state.locale.read().unwrap();
     Json(LocaleConfig {
         locales: Some(data.locales.clone()),
         keymap: Some(data.keymap()),

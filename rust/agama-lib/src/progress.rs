@@ -53,7 +53,7 @@ use tokio_stream::{StreamExt, StreamMap};
 use zbus::Connection;
 
 /// Represents the progress for an Agama service.
-#[derive(Default, Debug, Serialize)]
+#[derive(Clone, Default, Debug, Serialize)]
 pub struct Progress {
     /// Current step
     pub current_step: u32,
