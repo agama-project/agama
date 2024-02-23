@@ -8,7 +8,7 @@ use axum::{
 };
 use std::convert::Infallible;
 use tower::Service;
-use tower_http::trace::TraceLayer;
+use tower_http::{compression::CompressionLayer, trace::TraceLayer};
 
 pub struct MainServiceBuilder {
     config: ServiceConfig,
@@ -56,6 +56,7 @@ impl MainServiceBuilder {
             .route("/ping", get(super::http::ping))
             .route("/authenticate", post(super::http::authenticate))
             .layer(TraceLayer::new_for_http())
+            .layer(CompressionLayer::new().br(true))
             .with_state(state)
     }
 }
