@@ -22,7 +22,7 @@ pub use event::{Event, EventsReceiver, EventsSender};
 
 use crate::l10n::web::l10n_service;
 use axum::Router;
-use service::MainServiceBuilder;
+pub use service::MainServiceBuilder;
 
 use self::progress::EventsProgressPresenter;
 

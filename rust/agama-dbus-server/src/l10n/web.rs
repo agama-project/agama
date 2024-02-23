@@ -175,3 +175,50 @@ async fn get_config(State(state): State<LocaleState>) -> Json<LocaleConfig> {
         ui_locale: Some(data.ui_locale().to_string()),
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::l10n::{web::LocaleState, Locale};
+    use agama_locale_data::{KeymapId, LocaleCode};
+    use std::sync::{Arc, RwLock};
+    use tokio::{sync::broadcast::channel, test};
+
+    fn build_state() -> LocaleState {
+        let (tx, _) = channel(16);
+        let default_code = LocaleCode::default();
+        let locale = Locale::new_with_locale(&default_code).unwrap();
+        LocaleState {
+            locale: Arc::new(RwLock::new(locale)),
+            events: tx,
+        }
+    }
+
+    #[test]
+    async fn test_locales() {
+        let state = build_state();
+        let response = super::locales(axum::extract::State(state)).await;
+        let default = LocaleCode::default();
+        let found = response.locales.iter().find(|l| l.code == default);
+        assert!(found.is_some());
+    }
+
+    #[test]
+    async fn test_keymaps() {
+        let state = build_state();
+        let response = super::keymaps(axum::extract::State(state)).await;
+        let english: KeymapId = "us".parse().unwrap();
+        let found = response.keymaps.iter().find(|k| k.id == english);
+        assert!(found.is_some());
+    }
+
+    #[test]
+    async fn test_timezones() {
+        let state = build_state();
+        let response = super::timezones(axum::extract::State(state)).await;
+        let found = response
+            .timezones
+            .iter()
+            .find(|t| t.code == "Atlantic/Canary");
+        assert!(found.is_some());
+    }
+}
