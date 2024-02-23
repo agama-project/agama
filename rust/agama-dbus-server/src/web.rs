@@ -18,4 +18,20 @@ pub use auth::generate_token;
 pub use config::ServiceConfig;
 pub use docs::ApiDoc;
 pub use event::{Event, EventsReceiver, EventsSender};
-pub use service::service;
+
+use crate::l10n::web::l10n_service;
+use axum::Router;
+use service::MainServiceBuilder;
+use tokio::sync::broadcast::channel;
+
+/// Returns a service that implements the web-based Agama API.
+///
+/// * `config`: service configuration.
+/// * `dbus`: D-Bus connection.
+pub fn service(config: ServiceConfig, _dbus: zbus::Connection) -> Router {
+    let (tx, _) = channel(16);
+    MainServiceBuilder::new(tx.clone())
+        .add_service("/l10n", l10n_service(tx.clone()))
+        .with_config(config)
+        .build()
+}

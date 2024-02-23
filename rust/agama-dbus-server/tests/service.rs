@@ -36,7 +36,7 @@ async fn access_protected_route(token: &str, jwt_secret: &str) -> Response {
     let config = ServiceConfig {
         jwt_secret: jwt_secret.to_string(),
     };
-    let web_server = service(config, dbus_server.connection());
+    let web_server = service(config);
     let request = Request::builder()
         .uri("/protected")
         .method(Method::GET)

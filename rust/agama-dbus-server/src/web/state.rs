@@ -8,6 +8,5 @@ use super::{config::ServiceConfig, EventsSender};
 #[derive(Clone)]
 pub struct ServiceState {
     pub config: ServiceConfig,
-    pub dbus_connection: zbus::Connection,
     pub events: EventsSender,
 }
