@@ -14,6 +14,7 @@ mod service;
 mod state;
 mod ws;
 
+use agama_lib::{connection, progress::ProgressMonitor};
 pub use auth::generate_token;
 pub use config::ServiceConfig;
 pub use docs::ApiDoc;
@@ -22,16 +23,25 @@ pub use event::{Event, EventsReceiver, EventsSender};
 use crate::l10n::web::l10n_service;
 use axum::Router;
 use service::MainServiceBuilder;
-use tokio::sync::broadcast::channel;
+
+use self::progress::EventsProgressPresenter;
 
 /// Returns a service that implements the web-based Agama API.
 ///
 /// * `config`: service configuration.
 /// * `dbus`: D-Bus connection.
-pub fn service(config: ServiceConfig, _dbus: zbus::Connection) -> Router {
-    let (tx, _) = channel(16);
-    MainServiceBuilder::new(tx.clone())
-        .add_service("/l10n", l10n_service(tx.clone()))
+pub fn service(config: ServiceConfig, events: EventsSender) -> Router {
+    MainServiceBuilder::new(events.clone())
+        .add_service("/l10n", l10n_service(events))
         .with_config(config)
         .build()
+}
+
+pub async fn run_monitor(events: EventsSender) {
+    let presenter = EventsProgressPresenter::new(events);
+    let connection = connection().await.unwrap();
+    let mut monitor = ProgressMonitor::new(connection).await.unwrap();
+    tokio::spawn(async move {
+        _ = monitor.run(presenter).await;
+    });
 }

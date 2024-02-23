@@ -1,6 +1,6 @@
-use agama_dbus_server::web;
-use agama_lib::connection;
+use agama_dbus_server::web::{self, run_monitor};
 use clap::{Parser, Subcommand};
+use tokio::sync::broadcast::channel;
 use tracing_subscriber::prelude::*;
 use utoipa::OpenApi;
 
@@ -35,9 +35,11 @@ async fn serve_command(address: &str) {
         .await
         .unwrap_or_else(|_| panic!("could not listen on {}", address));
 
-    let dbus_connection = connection().await.unwrap();
+    let (tx, _) = channel(16);
+    run_monitor(tx.clone()).await;
+
     let config = web::ServiceConfig::load().unwrap();
-    let service = web::service(config, dbus_connection);
+    let service = web::service(config, tx);
     axum::serve(listener, service)
         .await
         .expect("could not mount app on listener");
