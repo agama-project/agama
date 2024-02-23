@@ -53,7 +53,7 @@ export default function About() {
             _("Agama is an experimental installer for (open)SUSE systems. It \
 is still under development so, please, do not use it in \
 production environments. If you want to give it a try, we \
-recommend using a virtual machine to prevent from any possible \
+recommend using a virtual machine to prevent any possible \
 data loss.")
           }
         </Text>
