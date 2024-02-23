@@ -24,11 +24,6 @@ pub async fn ping() -> Json<PingResponse> {
     })
 }
 
-// TODO: remove this route (as it is just for teting) as soon as we have a legit protected one
-pub async fn protected() -> String {
-    "OK".to_string()
-}
-
 #[derive(Serialize)]
 pub struct AuthResponse {
     /// Bearer token to use on subsequent calls

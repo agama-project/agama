@@ -115,7 +115,6 @@ mod tests {
         let mut db = TimezonesDatabase::new();
         db.read("es").unwrap();
         let found_timezones = db.entries();
-        dbg!(&found_timezones);
         let found = found_timezones
             .iter()
             .find(|tz| tz.code == "Europe/Berlin")

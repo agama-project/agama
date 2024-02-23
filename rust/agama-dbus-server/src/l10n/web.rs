@@ -73,11 +73,8 @@ pub struct LocalesResponse {
 #[utoipa::path(get, path = "/locales", responses(
   (status = 200, description = "List of known locales", body = LocalesResponse)
 ))]
-async fn locales(State(state): State<LocaleState>) -> Json<LocalesResponse> {
-    let data = state
-        .locale
-        .read()
-        .expect("could not access to locale data");
+async fn locales(State(state): State<LocaleState>) -> Result<Json<LocalesResponse>, Error> {
+    let data = state.locale.read().unwrap();
     let locales = data.locales_db.entries().to_vec();
     Json(LocalesResponse { locales })
 }
@@ -99,10 +96,7 @@ pub struct TimezonesResponse {
     (status = 200, description = "List of known timezones", body = TimezonesResponse)
 ))]
 async fn timezones(State(state): State<LocaleState>) -> Json<TimezonesResponse> {
-    let data = state
-        .locale
-        .read()
-        .expect("could not access to locale data");
+    let data = state.locale.read().unwrap();
     let timezones = data.timezones_db.entries().to_vec();
     Json(TimezonesResponse { timezones })
 }
@@ -116,10 +110,7 @@ pub struct KeymapsResponse {
     (status = 200, description = "List of known keymaps", body = KeymapsResponse)
 ))]
 async fn keymaps(State(state): State<LocaleState>) -> Json<KeymapsResponse> {
-    let data = state
-        .locale
-        .read()
-        .expect("could not access to locale data");
+    let data = state.locale.read().unwrap();
     let keymaps = data.keymaps_db.entries().to_vec();
     Json(KeymapsResponse { keymaps })
 }
