@@ -1,5 +1,6 @@
 use crate::config::ConfigCommands;
 use crate::logs::LogsCommands;
+use crate::server::ServerCommands;
 use crate::profile::ProfileCommands;
 use crate::questions::QuestionsCommands;
 use clap::Subcommand;
@@ -35,4 +36,7 @@ pub enum Commands {
     /// Collects logs
     #[command(subcommand)]
     Logs(LogsCommands),
+    /// Request login with the web server
+    #[command(subcommand)]
+    Server(ServerCommands),
 }

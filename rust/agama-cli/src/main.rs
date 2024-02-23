@@ -8,6 +8,7 @@ mod printers;
 mod profile;
 mod progress;
 mod questions;
+mod server;
 
 use crate::error::CliError;
 use agama_lib::error::ServiceError;
@@ -20,6 +21,7 @@ use printers::Format;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
 use questions::run as run_questions_cmd;
+use server::run as run_server_cmd;
 use std::{
     process::{ExitCode, Termination},
     thread::sleep,
@@ -135,6 +137,7 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
         }
         Commands::Questions(subcommand) => run_questions_cmd(subcommand).await,
         Commands::Logs(subcommand) => run_logs_cmd(subcommand).await,
+        Commands::Server(subcommand) => run_server_cmd(subcommand).await,
         _ => unimplemented!(),
     }
 }
