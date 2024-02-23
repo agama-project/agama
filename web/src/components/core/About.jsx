@@ -51,9 +51,9 @@ export default function About() {
           {
             // TRANSLATORS: content of the "About" popup (1/2)
             _("Agama is an experimental installer for (open)SUSE systems. It \
-still under development so, please, do not use it in \
+is still under development so, please, do not use it in \
 production environments. If you want to give it a try, we \
-recommend to use a virtual machine to prevent any possible \
+recommend using a virtual machine to prevent from any possible \
 data loss.")
           }
         </Text>
