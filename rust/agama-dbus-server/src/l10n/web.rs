@@ -73,7 +73,7 @@ pub struct LocalesResponse {
 #[utoipa::path(get, path = "/locales", responses(
   (status = 200, description = "List of known locales", body = LocalesResponse)
 ))]
-async fn locales(State(state): State<LocaleState>) -> Result<Json<LocalesResponse>, Error> {
+async fn locales(State(state): State<LocaleState>) -> Json<LocalesResponse> {
     let data = state.locale.read().unwrap();
     let locales = data.locales_db.entries().to_vec();
     Json(LocalesResponse { locales })
