@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -29,10 +29,18 @@ module Agama
       attr_accessor :enabled
       alias_method :enabled?, :enabled
 
-      # Devices to use for the system LVM volume group
+      # Devices to use for creating the physical volumes of the system LVM volume group.
+      #
+      # If a VG is reused (see {#reused_vg}), then the devices are used for extending the VG if
+      # needed.
       #
       # @return [Array<String>]
       attr_accessor :system_vg_devices
+
+      # Name of reused VG for allocating the new LVs.
+      #
+      # @return [String, nil]
+      attr_accessor :reused_vg
 
       def initialize
         @enabled = false

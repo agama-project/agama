@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -30,10 +30,11 @@ module Agama
       #
       # @param settings [Y2Storage::ProposalSettings]
       # @param config [Agama::Config]
+      # @param backup [Agama::Storage::ProposalSettings]
       #
       # @return [Agama::Storage::ProposalSettings]
-      def self.from_y2storage(settings, config:)
-        FromY2Storage.new(settings, config: config).convert
+      def self.from_y2storage(settings, config:, backup: nil)
+        FromY2Storage.new(settings, config: config, backup: backup).convert
       end
 
       # Performs conversion to Y2Storage format.

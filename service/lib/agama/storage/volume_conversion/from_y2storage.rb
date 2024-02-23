@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -29,9 +29,12 @@ module Agama
       class FromY2Storage
         # @param spec [Y2Storage::VolumeSpecification]
         # @param config [Agama::Config]
-        def initialize(spec, config:)
+        # @param backup [Agama::Storage::ProposalSettings] Settings used as backup to restore some
+        #   values.
+        def initialize(spec, config:, backup: nil)
           @spec = spec
           @config = config
+          @backup = backup
         end
 
         # Performs the conversion from Y2Storage format.
@@ -41,11 +44,11 @@ module Agama
           volume = VolumeTemplatesBuilder.new_from_config(config).for(spec.mount_point || "")
 
           volume.tap do |target|
-            target.device = spec.device
             target.separate_vg_name = spec.separate_vg_name
             target.mount_options = spec.mount_options
             target.fs_type = spec.fs_type
 
+            device_conversion(target)
             sizes_conversion(target)
             btrfs_conversion(target)
           end
@@ -58,6 +61,24 @@ module Agama
 
         # @return [Agama::Config]
         attr_reader :config
+
+        # @return [Agama::Storage::ProposalSettings]
+        attr_reader :backup
+
+        # Configures the device, restoring it from the backup settings if needed.
+        #
+        # @note The device from the Y2Storage volume specification cannot always be directly
+        #   assigned to the volume. It is not possible to know whether a specific device was set to
+        #   the volume or whether the default volume was used. The target volume is set as device
+        #   to the volume if the volume does not speficy any device and LVM is not used.
+        #
+        # @param target [Agama::Storage::Volume]
+        def device_conversion(target)
+          target.device = spec.device
+          return unless backup
+
+          target.device = backup.device unless backup.use_lvm?
+        end
 
         # @param target [Agama::Storage::Volume]
         def sizes_conversion(target)
