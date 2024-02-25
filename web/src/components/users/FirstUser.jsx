@@ -40,7 +40,7 @@ import {
 
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 
-import { RowActions, PasswordAndConfirmationInput, Popup } from '~/components/core';
+import { RowActions, PasswordAndConfirmationInput, Popup, If } from '~/components/core';
 
 import { suggestUsernames } from '~/components/users/utils';
 
@@ -79,6 +79,32 @@ const UserData = ({ user, actions }) => {
         </Tr>
       </Tbody>
     </Table>
+  );
+};
+
+const UsernameSuggestions = ({ entries, onSelect, setInsideDropDown }) => {
+  return (
+    <Menu
+      aria-label={_("Username suggestion dropdown")}
+      className="first-username-dropdown"
+      onMouseEnter={() => setInsideDropDown(true)}
+      onMouseLeave={() => setInsideDropDown(false)}
+    >
+      <MenuContent>
+        <MenuList>
+          {entries.map((suggestion, index) => (
+            <MenuItem
+              key={index}
+              itemId={index}
+              onClick={() => onSelect(suggestion)}
+            >
+              { /* TRANSLATORS: dropdown username suggestions */}
+              {_("Use suggested username")} <b>{suggestion}</b>
+            </MenuItem>
+          ))}
+        </MenuList>
+      </MenuContent>
+    </Menu>
   );
 };
 
@@ -193,6 +219,12 @@ export default function FirstUser() {
   const usingValidPassword = formValues.password && formValues.password !== "" && isValidPassword;
   const submitDisable = formValues.userName === "" || (isSettingPassword && !usingValidPassword);
 
+  const displaySuggestions = !formValues.userName && formValues.fullName && showSuggestions;
+  const onSuggestionSelected = (suggestion) => {
+    setInsideDropDown(false);
+    setFormValues({ ...formValues, userName: suggestion });
+  };
+
   if (isLoading) return <Skeleton />;
 
   return (
@@ -235,28 +267,16 @@ export default function FirstUser() {
                 isRequired
                 onChange={handleInputChange}
               />
-              { showSuggestions && formValues.fullName && !formValues.userName &&
-                <Menu
-                  aria-label={_("Username suggestion dropdown")}
-                  className="first-username-dropdown"
-                  onMouseEnter={() => setInsideDropDown(true)}
-                  onMouseLeave={() => setInsideDropDown(false)}
-                >
-                  <MenuContent>
-                    <MenuList>
-                      { suggestUsernames(formValues.fullName).map((suggestion, index) => (
-                        <MenuItem
-                          key={index}
-                          itemId={index}
-                          onClick={() => { setInsideDropDown(false); setFormValues({ ...formValues, userName: suggestion }) }}
-                        >
-                          { /* TRANSLATORS: dropdown username suggestions */ }
-                          { _("Use suggested username") } <b>{suggestion}</b>
-                        </MenuItem>
-                      )) }
-                    </MenuList>
-                  </MenuContent>
-                </Menu> }
+              <If
+                condition={displaySuggestions}
+                then={
+                  <UsernameSuggestions
+                    entries={suggestUsernames(formValues.fullName)}
+                    onSelect={onSuggestionSelected}
+                    setInsideDropDown={setInsideDropDown}
+                  />
+                }
+              />
             </FormGroup>
 
             { isEditing &&
