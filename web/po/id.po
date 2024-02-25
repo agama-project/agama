@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-18 02:07+0000\n"
-"PO-Revision-Date: 2024-01-12 18:59+0000\n"
+"POT-Creation-Date: 2024-02-25 02:07+0000\n"
+"PO-Revision-Date: 2024-02-21 04:42+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
 "web/id/>\n"
@@ -155,10 +155,9 @@ msgstr ""
 #: src/components/product/ProductPage.jsx:71
 #: src/components/product/ProductPage.jsx:140
 #: src/components/product/ProductPage.jsx:207
-#: src/components/storage/ProposalSettingsSection.jsx:172
-#: src/components/storage/ProposalSettingsSection.jsx:367
-#: src/components/storage/ProposalSettingsSection.jsx:551
-#: src/components/storage/ProposalSettingsSection.jsx:647
+#: src/components/storage/ProposalDeviceSection.jsx:169
+#: src/components/storage/ProposalDeviceSection.jsx:364
+#: src/components/storage/ProposalSettingsSection.jsx:211
 #: src/components/storage/ProposalVolumes.jsx:148
 #: src/components/storage/ProposalVolumes.jsx:283
 #: src/components/storage/ZFCPPage.jsx:511
@@ -172,22 +171,23 @@ msgstr "Instal"
 
 #: src/components/core/InstallationFinished.jsx:41
 msgid "TPM sealing requires the new system to be booted directly."
-msgstr ""
+msgstr "Penyegelan TPM mengharuskan sistem baru untuk di-boot secara langsung."
 
 #: src/components/core/InstallationFinished.jsx:46
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
 msgstr ""
+"Jika media lokal digunakan untuk menjalankan penginstalasi ini, hapus media "
+"tersebut sebelum boot berikutnya."
 
 #: src/components/core/InstallationFinished.jsx:50
-#, fuzzy
 msgid "Hide details"
-msgstr "Detail"
+msgstr "Sembunyikan detail"
 
 #: src/components/core/InstallationFinished.jsx:50
 msgid "See more details"
-msgstr ""
+msgstr "Lihat detail lebih lanjut"
 
 #. TRANSLATORS: Do not translate 'abbr' and 'title', they are part of the HTML markup
 #: src/components/core/InstallationFinished.jsx:55
@@ -197,6 +197,10 @@ msgid ""
 "first boot of the new system. For that to work, the machine needs to boot "
 "directly to the new boot loader."
 msgstr ""
+"Langkah terakhir untuk mengonfigurasi <abbr title='Trusted Platform "
+"Module'>TPM</abbr> agar secara otomatis membuka perangkat yang dienkripsi "
+"akan dilakukan pada saat booting pertama dari sistem yang baru. Agar dapat "
+"berfungsi, mesin harus melakukan booting langsung ke boot loader yang baru."
 
 #. TRANSLATORS: page title
 #: src/components/core/InstallationFinished.jsx:88
@@ -824,7 +828,7 @@ msgid "Software"
 msgstr "Perangkat lunak"
 
 #: src/components/overview/StorageSection.jsx:42
-#: src/components/storage/ProposalSettingsSection.jsx:132
+#: src/components/storage/ProposalDeviceSection.jsx:129
 msgid "No device selected yet"
 msgstr "Belum ada perangkat yang dipilih"
 
@@ -864,7 +868,7 @@ msgstr "Memeriksa perangkat penyimpanan"
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section title
 #: src/components/overview/StorageSection.jsx:208
-#: src/components/storage/ProposalPage.jsx:232
+#: src/components/storage/ProposalPage.jsx:239
 msgid "Storage"
 msgstr "Penyimpanan"
 
@@ -992,9 +996,8 @@ msgid "No products available for selection"
 msgstr "Tidak ada produk yang tersedia untuk dipilih"
 
 #: src/components/product/ProductSelector.jsx:42
-#, fuzzy
 msgid "Available products"
-msgstr "Lokal yang tersedia"
+msgstr "Produk yang tersedia"
 
 #: src/components/questions/GenericQuestion.jsx:35
 #: src/components/questions/LuksActivationQuestion.jsx:60
@@ -1084,7 +1087,9 @@ msgstr "ID saluran"
 msgid "Status"
 msgstr "Status"
 
+#. TRANSLATORS: The storage "Device" section's title
 #: src/components/storage/DASDTable.jsx:66
+#: src/components/storage/ProposalDeviceSection.jsx:423
 msgid "Device"
 msgstr "Perangkat"
 
@@ -1160,33 +1165,100 @@ msgid "Storage iSCSI"
 msgstr "Penyimpanan iSCSI"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
-#: src/components/storage/ProposalActionsSection.jsx:71
+#: src/components/storage/ProposalActionsSection.jsx:70
 #, c-format
 msgid "Hide %d subvolume action"
 msgid_plural "Hide %d subvolume actions"
 msgstr[0] "Menyembunyikan tindakan subvolume %d"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
-#: src/components/storage/ProposalActionsSection.jsx:73
+#: src/components/storage/ProposalActionsSection.jsx:72
 #, c-format
 msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
 msgstr[0] "Tampilkan tindakan subvolume %d"
 
-#: src/components/storage/ProposalActionsSection.jsx:78
-msgid "Actions to create the file systems and to ensure the system boots."
-msgstr ""
-"Tindakan untuk membuat sistem berkas dan memastikan sistem melakukan booting."
-
-#. TRANSLATORS: section title, list of planned actions for the selected device,
-#. e.g. "delete partition A", "create partition B with filesystem C", ...
-#: src/components/storage/ProposalActionsSection.jsx:126
+#. TRANSLATORS: The storage "Planned Actions" section's title. The
+#. section shows a list of planned actions for the selected device, e.g.
+#. "delete partition A", "create partition B with filesystem C", ...
+#: src/components/storage/ProposalActionsSection.jsx:124
 msgid "Planned Actions"
 msgstr "Tindakan yang Direncanakan"
 
-#: src/components/storage/ProposalPage.jsx:211
-msgid "Devices will not be modified until installation starts."
-msgstr "Perangkat tidak akan dimodifikasi hingga penginstalan dimulai."
+#. TRANSLATORS: The storage "Planned Actions" section's description
+#: src/components/storage/ProposalActionsSection.jsx:126
+#, fuzzy
+msgid "Actions to create the file systems and to ensure the new system boots."
+msgstr ""
+"Tindakan untuk membuat sistem berkas dan memastikan sistem melakukan booting."
+
+#: src/components/storage/ProposalDeviceSection.jsx:135
+msgid "Waiting for information about selected device"
+msgstr ""
+
+#: src/components/storage/ProposalDeviceSection.jsx:138
+msgid "Select the device for installing the system."
+msgstr "Pilih perangkat untuk menginstal sistem."
+
+#: src/components/storage/ProposalDeviceSection.jsx:143
+#: src/components/storage/ProposalDeviceSection.jsx:147
+#: src/components/storage/ProposalDeviceSection.jsx:245
+msgid "Installation device"
+msgstr "Perangkat penginstalan"
+
+#: src/components/storage/ProposalDeviceSection.jsx:153
+msgid "No devices found."
+msgstr "Tidak ada perangkat yang ditemukan."
+
+#: src/components/storage/ProposalDeviceSection.jsx:242
+msgid "Devices for creating the volume group"
+msgstr "Perangkat untuk membuat grup volume"
+
+#: src/components/storage/ProposalDeviceSection.jsx:251
+msgid "Custom devices"
+msgstr "Perangkat khusus"
+
+#: src/components/storage/ProposalDeviceSection.jsx:315
+msgid ""
+"Configuration of the system volume group. All the file systems will be "
+"created in a logical volume of the system volume group."
+msgstr ""
+"Konfigurasi grup volume sistem. Semua sistem berkas akan dibuat dalam volume "
+"logis dari grup volume sistem."
+
+#: src/components/storage/ProposalDeviceSection.jsx:321
+msgid "Configure the LVM settings"
+msgstr "Mengkonfigurasi pengaturan LVM"
+
+#: src/components/storage/ProposalDeviceSection.jsx:326
+#: src/components/storage/ProposalDeviceSection.jsx:346
+msgid "LVM settings"
+msgstr "Pengaturan LVM"
+
+#: src/components/storage/ProposalDeviceSection.jsx:333
+msgid "Waiting for information about LVM"
+msgstr ""
+
+#: src/components/storage/ProposalDeviceSection.jsx:339
+msgid "Use logical volume management (LVM)"
+msgstr "Gunakan manajemen volume logis (LVM)"
+
+#: src/components/storage/ProposalDeviceSection.jsx:347
+msgid "System Volume Group"
+msgstr "Grup Volume Sistem"
+
+#. TRANSLATORS: The storage "Device" sections's description. Do not
+#. translate 'abbr' and 'title', they are part of the HTML markup.
+#: src/components/storage/ProposalDeviceSection.jsx:414
+msgid ""
+"Select the main disk or <abbr title='Logical Volume Manager'>LVM</abbr> "
+"Volume Group for installation."
+msgstr ""
+
+#: src/components/storage/ProposalFileSystemsSection.jsx:70
+#, fuzzy
+msgid "File systems"
+msgstr "Jenis sistem berkas"
 
 #: src/components/storage/ProposalPageMenu.jsx:40
 msgid "Manage and format"
@@ -1208,57 +1280,10 @@ msgstr "Menyambungkan ke target iSCSI"
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/components/storage/ProposalSettingsSection.jsx:141
-msgid "Select the device for installing the system."
-msgstr "Pilih perangkat untuk menginstal sistem."
-
-#: src/components/storage/ProposalSettingsSection.jsx:146
-#: src/components/storage/ProposalSettingsSection.jsx:150
-#: src/components/storage/ProposalSettingsSection.jsx:248
-msgid "Installation device"
-msgstr "Perangkat penginstalan"
-
-#: src/components/storage/ProposalSettingsSection.jsx:156
-msgid "No devices found."
-msgstr "Tidak ada perangkat yang ditemukan."
-
-#: src/components/storage/ProposalSettingsSection.jsx:245
-msgid "Devices for creating the volume group"
-msgstr "Perangkat untuk membuat grup volume"
-
-#: src/components/storage/ProposalSettingsSection.jsx:254
-msgid "Custom devices"
-msgstr "Perangkat khusus"
-
-#: src/components/storage/ProposalSettingsSection.jsx:318
-msgid ""
-"Configuration of the system volume group. All the file systems will be "
-"created in a logical volume of the system volume group."
-msgstr ""
-"Konfigurasi grup volume sistem. Semua sistem berkas akan dibuat dalam volume "
-"logis dari grup volume sistem."
-
-#: src/components/storage/ProposalSettingsSection.jsx:324
-msgid "Configure the LVM settings"
-msgstr "Mengkonfigurasi pengaturan LVM"
-
-#: src/components/storage/ProposalSettingsSection.jsx:329
-#: src/components/storage/ProposalSettingsSection.jsx:349
-msgid "LVM settings"
-msgstr "Pengaturan LVM"
-
-#: src/components/storage/ProposalSettingsSection.jsx:342
-msgid "Use logical volume management (LVM)"
-msgstr "Gunakan manajemen volume logis (LVM)"
-
-#: src/components/storage/ProposalSettingsSection.jsx:350
-msgid "System Volume Group"
-msgstr "Grup Volume Sistem"
-
 #. TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
 #. 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
 #. Do not translate 'abbr' and 'title', they are part of the HTML markup.
-#: src/components/storage/ProposalSettingsSection.jsx:426
+#: src/components/storage/ProposalSettingsSection.jsx:86
 msgid ""
 "The password will not be needed to boot and access the data if the <abbr "
 "title='Trusted Platform Module'>TPM</abbr> can verify the integrity of the "
@@ -1266,44 +1291,176 @@ msgid ""
 "first run."
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:444
+#: src/components/storage/ProposalSettingsSection.jsx:104
 msgid "Use the TPM to decrypt automatically on each boot"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:515
+#: src/components/storage/ProposalSettingsSection.jsx:175
 #, fuzzy
 msgid "Change encryption settings"
 msgstr "Pengaturan enkripsi"
 
-#: src/components/storage/ProposalSettingsSection.jsx:520
-#: src/components/storage/ProposalSettingsSection.jsx:541
+#: src/components/storage/ProposalSettingsSection.jsx:180
+#: src/components/storage/ProposalSettingsSection.jsx:201
 msgid "Encryption settings"
 msgstr "Pengaturan enkripsi"
 
-#: src/components/storage/ProposalSettingsSection.jsx:534
+#: src/components/storage/ProposalSettingsSection.jsx:194
 msgid "Use encryption"
 msgstr "Gunakan enkripsi"
 
-#: src/components/storage/ProposalSettingsSection.jsx:621
-msgid ""
-"Select how to make free space in the disks selected for allocating the     "
-"file systems."
-msgstr ""
-"Memilih cara mengosongkan ruang pada disk yang dipilih untuk mengalokasikan "
-"sistem berkas."
-
-#. TRANSLATORS: To be completed with the rest of a sentence like "deleting all content"
-#: src/components/storage/ProposalSettingsSection.jsx:627
-msgid "Find space"
-msgstr "Temukan ruang"
-
-#: src/components/storage/ProposalSettingsSection.jsx:631
-msgid "Space Policy"
-msgstr "Kebijakan Ruang"
-
-#: src/components/storage/ProposalSettingsSection.jsx:708
+#: src/components/storage/ProposalSettingsSection.jsx:244
 msgid "Settings"
 msgstr "Pengaturan"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:50
+msgid "Delete current content"
+msgstr "Hapus konten saat ini"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:51
+msgid "All partitions will be removed and any data in the disks will be lost."
+msgstr "Semua partisi akan dihapus dan semua data dalam disk akan hilang."
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:55
+msgid "Shrink existing partitions"
+msgstr "Perkecil partisi yang ada"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:56
+#, fuzzy
+msgid "The data is kept, but the current partitions will be resized as needed."
+msgstr ""
+"Data akan disimpan, namun partisi yang ada akan diubah ukurannya sesuai "
+"kebutuhan untuk menyediakan ruang yang cukup."
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:60
+msgid "Use available space"
+msgstr "Gunakan ruang yang tersedia"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:61
+#, fuzzy
+msgid ""
+"The data is kept. Only the space not assigned to any partition will be used."
+msgstr ""
+"Data akan disimpan dan partisi yang ada tidak akan diubah. Hanya ruang yang "
+"tidak ditetapkan ke partisi mana pun yang akan digunakan."
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:65
+#, fuzzy
+msgid "Custom"
+msgstr "Perangkat khusus"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:66
+msgid "Select what to do with each partition."
+msgstr ""
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:72
+#, fuzzy
+msgid "Used device"
+msgstr "Baca perangkat zFCP"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:73
+#, fuzzy
+msgid "Current content"
+msgstr "Hapus konten saat ini"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:74
+#: src/components/storage/ProposalVolumes.jsx:309
+#: src/components/storage/VolumeForm.jsx:795
+msgid "Size"
+msgstr "Ukuran"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:75
+#: src/components/storage/ProposalVolumes.jsx:308
+msgid "Details"
+msgstr "Detail"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:76
+#, fuzzy
+msgid "Action"
+msgstr "Tindakan"
+
+#. TRANSLATORS: %s is replaced by partition table type (e.g., GPT)
+#: src/components/storage/ProposalSpacePolicySection.jsx:110
+#, fuzzy, c-format
+msgid "%s partition table"
+msgstr "partisi"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:121
+#, fuzzy
+msgid "EFI system partition"
+msgstr "partisi"
+
+#. TRANSLATORS: %s is replaced by a file system type (e.g., btrfs).
+#: src/components/storage/ProposalSpacePolicySection.jsx:124
+#, fuzzy, c-format
+msgid "%s file system"
+msgstr "Tambahkan sistem berkas"
+
+#. TRANSLATORS: %s is replaced by a LVM volume group name (e.g., /dev/vg0).
+#: src/components/storage/ProposalSpacePolicySection.jsx:131
+#, c-format
+msgid "LVM physical volume of %s"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a RAID name (e.g., /dev/md0).
+#: src/components/storage/ProposalSpacePolicySection.jsx:134
+#, fuzzy, c-format
+msgid "Member of RAID %s"
+msgstr "Anggota: %s"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:136
+msgid "Not identified"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a disk size (e.g., 20 GiB)
+#: src/components/storage/ProposalSpacePolicySection.jsx:173
+#, c-format
+msgid "%s unused"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a disk size (e.g., 2 GiB)
+#: src/components/storage/ProposalSpacePolicySection.jsx:186
+#, c-format
+msgid "Shrinkable by %s"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a device name (e.g., /dev/sda)
+#: src/components/storage/ProposalSpacePolicySection.jsx:221
+#, c-format
+msgid "Space action selector for %s"
+msgstr ""
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:224
+#: src/components/storage/ProposalVolumes.jsx:229
+#: src/components/storage/iscsi/NodesPresenter.jsx:77
+msgid "Delete"
+msgstr "Menghapus"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:228
+msgid "Allow resize"
+msgstr ""
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:230
+msgid "Do not modify"
+msgstr ""
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:382
+#, fuzzy
+msgid "Actions to find space"
+msgstr "Tindakan untuk koneksi %s"
+
+#. TRANSLATORS: The storage "Find Space" section's title
+#: src/components/storage/ProposalSpacePolicySection.jsx:452
+#, fuzzy
+msgid "Find Space"
+msgstr "Temukan ruang"
+
+#. TRANSLATORS: The storage "Find space" sections's description
+#: src/components/storage/ProposalSpacePolicySection.jsx:454
+msgid ""
+"Allocating the file systems might need to find free space in the devices "
+"listed below. Choose how to do it."
+msgstr ""
 
 #. TRANSLATORS: header for a list of items
 #: src/components/storage/ProposalVolumes.jsx:59
@@ -1371,11 +1528,6 @@ msgstr "dengan snapshot"
 msgid "transactional"
 msgstr "transaksional"
 
-#: src/components/storage/ProposalVolumes.jsx:229
-#: src/components/storage/iscsi/NodesPresenter.jsx:77
-msgid "Delete"
-msgstr "Menghapus"
-
 #: src/components/storage/ProposalVolumes.jsx:275
 msgid "Edit file system"
 msgstr "Edit sistem berkas"
@@ -1386,22 +1538,9 @@ msgstr "Edit sistem berkas"
 msgid "Mount point"
 msgstr "Titik pemasangan"
 
-#: src/components/storage/ProposalVolumes.jsx:308
-msgid "Details"
-msgstr "Detail"
-
-#: src/components/storage/ProposalVolumes.jsx:309
-#: src/components/storage/VolumeForm.jsx:795
-msgid "Size"
-msgstr "Ukuran"
-
 #: src/components/storage/ProposalVolumes.jsx:345
 msgid "Table with mount points"
 msgstr "Tabel dengan titik pemasangan"
-
-#: src/components/storage/ProposalVolumes.jsx:408
-msgid "File systems to create in your system"
-msgstr "Sistem berkas yang akan dibuat di sistem Anda"
 
 #: src/components/storage/VolumeForm.jsx:102
 #, fuzzy
@@ -1868,69 +2007,6 @@ msgstr "Temukan"
 msgid "Targets"
 msgstr "Target"
 
-#. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
-#: src/components/storage/space-policy-utils.jsx:45
-msgid "Delete current content"
-msgstr "Hapus konten saat ini"
-
-#. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
-#: src/components/storage/space-policy-utils.jsx:49
-msgid "Shrink existing partitions"
-msgstr "Perkecil partisi yang ada"
-
-#. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
-#: src/components/storage/space-policy-utils.jsx:53
-msgid "Use available space"
-msgstr "Gunakan ruang yang tersedia"
-
-#: src/components/storage/space-policy-utils.jsx:65
-msgid "All partitions will be removed and any data in the disks will be lost."
-msgstr "Semua partisi akan dihapus dan semua data dalam disk akan hilang."
-
-#: src/components/storage/space-policy-utils.jsx:68
-msgid ""
-"The data is kept, but the current partitions will be resized as needed to "
-"make enough space."
-msgstr ""
-"Data akan disimpan, namun partisi yang ada akan diubah ukurannya sesuai "
-"kebutuhan untuk menyediakan ruang yang cukup."
-
-#: src/components/storage/space-policy-utils.jsx:71
-msgid ""
-"The data is kept and existing partitions will not be modified. Only the "
-"space that is not assigned to any partition will be used."
-msgstr ""
-"Data akan disimpan dan partisi yang ada tidak akan diubah. Hanya ruang yang "
-"tidak ditetapkan ke partisi mana pun yang akan digunakan."
-
-#: src/components/storage/space-policy-utils.jsx:108
-msgid "Select a mechanism to make space"
-msgstr "Pilih mekanisme untuk menyediakan ruang"
-
-#: src/components/storage/space-policy-utils.jsx:127
-#, c-format
-msgid "deleting all content of the installation device"
-msgid_plural "deleting all content of the %d selected disks"
-msgstr[0] "menghapus semua konten dari %d disk yang dipilih"
-
-#: src/components/storage/space-policy-utils.jsx:137
-#, c-format
-msgid "shrinking partitions of the installation device"
-msgid_plural "shrinking partitions of the %d selected disks"
-msgstr[0] "mengecilkan partisi dari %d disk yang dipilih"
-
-#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-#. would read as "Find space without modifying any partition".
-#: src/components/storage/space-policy-utils.jsx:145
-msgid "without modifying any partition"
-msgstr "tanpa memodifikasi partisi apa pun"
-
-#: src/components/storage/space-policy-utils.jsx:160
-#, c-format
-msgid "This will only affect the installation device"
-msgid_plural "This will affect the %d disks selected for installation"
-msgstr[0] "Ini akan mempengaruhi %d disk yang dipilih untuk instalasi"
-
 #: src/components/storage/utils.js:44
 msgid "KiB"
 msgstr "KiB"
@@ -2111,6 +2187,43 @@ msgstr "Pengguna"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "Autentikasi root"
+
+#~ msgid "Devices will not be modified until installation starts."
+#~ msgstr "Perangkat tidak akan dimodifikasi hingga penginstalan dimulai."
+
+#~ msgid "File systems to create in your system"
+#~ msgstr "Sistem berkas yang akan dibuat di sistem Anda"
+
+#~ msgid ""
+#~ "Select how to make free space in the disks selected for allocating "
+#~ "the     file systems."
+#~ msgstr ""
+#~ "Memilih cara mengosongkan ruang pada disk yang dipilih untuk "
+#~ "mengalokasikan sistem berkas."
+
+#~ msgid "Space Policy"
+#~ msgstr "Kebijakan Ruang"
+
+#~ msgid "Select a mechanism to make space"
+#~ msgstr "Pilih mekanisme untuk menyediakan ruang"
+
+#, c-format
+#~ msgid "deleting all content of the installation device"
+#~ msgid_plural "deleting all content of the %d selected disks"
+#~ msgstr[0] "menghapus semua konten dari %d disk yang dipilih"
+
+#, c-format
+#~ msgid "shrinking partitions of the installation device"
+#~ msgid_plural "shrinking partitions of the %d selected disks"
+#~ msgstr[0] "mengecilkan partisi dari %d disk yang dipilih"
+
+#~ msgid "without modifying any partition"
+#~ msgstr "tanpa memodifikasi partisi apa pun"
+
+#, c-format
+#~ msgid "This will only affect the installation device"
+#~ msgid_plural "This will affect the %d disks selected for installation"
+#~ msgstr[0] "Ini akan mempengaruhi %d disk yang dipilih untuk instalasi"
 
 #, c-format
 #~ msgid "Edit %s connection"

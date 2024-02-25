@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-18 02:07+0000\n"
-"PO-Revision-Date: 2024-01-22 06:59+0000\n"
+"POT-Creation-Date: 2024-02-25 02:07+0000\n"
+"PO-Revision-Date: 2024-02-22 01:00+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -154,10 +154,9 @@ msgstr ""
 #: src/components/product/ProductPage.jsx:71
 #: src/components/product/ProductPage.jsx:140
 #: src/components/product/ProductPage.jsx:207
-#: src/components/storage/ProposalSettingsSection.jsx:172
-#: src/components/storage/ProposalSettingsSection.jsx:367
-#: src/components/storage/ProposalSettingsSection.jsx:551
-#: src/components/storage/ProposalSettingsSection.jsx:647
+#: src/components/storage/ProposalDeviceSection.jsx:169
+#: src/components/storage/ProposalDeviceSection.jsx:364
+#: src/components/storage/ProposalSettingsSection.jsx:211
 #: src/components/storage/ProposalVolumes.jsx:148
 #: src/components/storage/ProposalVolumes.jsx:283
 #: src/components/storage/ZFCPPage.jsx:511
@@ -830,7 +829,7 @@ msgid "Software"
 msgstr "ソフトウエア"
 
 #: src/components/overview/StorageSection.jsx:42
-#: src/components/storage/ProposalSettingsSection.jsx:132
+#: src/components/storage/ProposalDeviceSection.jsx:129
 msgid "No device selected yet"
 msgstr "まだ何もデバイスを選択していません"
 
@@ -870,7 +869,7 @@ msgstr "ストレージデバイスを検出しています"
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section title
 #: src/components/overview/StorageSection.jsx:208
-#: src/components/storage/ProposalPage.jsx:232
+#: src/components/storage/ProposalPage.jsx:239
 msgid "Storage"
 msgstr "ストレージ"
 
@@ -996,9 +995,8 @@ msgid "No products available for selection"
 msgstr "選択できる製品がありません"
 
 #: src/components/product/ProductSelector.jsx:42
-#, fuzzy
 msgid "Available products"
-msgstr "利用可能なロケール"
+msgstr "利用可能な製品"
 
 #: src/components/questions/GenericQuestion.jsx:35
 #: src/components/questions/LuksActivationQuestion.jsx:60
@@ -1088,7 +1086,9 @@ msgstr "チャネル ID"
 msgid "Status"
 msgstr "状態"
 
+#. TRANSLATORS: The storage "Device" section's title
 #: src/components/storage/DASDTable.jsx:66
+#: src/components/storage/ProposalDeviceSection.jsx:423
 msgid "Device"
 msgstr "デバイス"
 
@@ -1164,34 +1164,101 @@ msgid "Storage iSCSI"
 msgstr "ストレージ iSCSI"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
-#: src/components/storage/ProposalActionsSection.jsx:71
+#: src/components/storage/ProposalActionsSection.jsx:70
 #, c-format
 msgid "Hide %d subvolume action"
 msgid_plural "Hide %d subvolume actions"
 msgstr[0] "%d 個のサブボリューム処理を隠す"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
-#: src/components/storage/ProposalActionsSection.jsx:73
+#: src/components/storage/ProposalActionsSection.jsx:72
 #, c-format
 msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
 msgstr[0] "%d 個のサブボリューム処理を表示"
 
-#: src/components/storage/ProposalActionsSection.jsx:78
-msgid "Actions to create the file systems and to ensure the system boots."
+#. TRANSLATORS: The storage "Planned Actions" section's title. The
+#. section shows a list of planned actions for the selected device, e.g.
+#. "delete partition A", "create partition B with filesystem C", ...
+#: src/components/storage/ProposalActionsSection.jsx:124
+msgid "Planned Actions"
+msgstr "処理の計画"
+
+#. TRANSLATORS: The storage "Planned Actions" section's description
+#: src/components/storage/ProposalActionsSection.jsx:126
+#, fuzzy
+msgid "Actions to create the file systems and to ensure the new system boots."
 msgstr ""
 "ファイルシステムを作成するための処理とシステムが起動できるようにするための処"
 "理です。"
 
-#. TRANSLATORS: section title, list of planned actions for the selected device,
-#. e.g. "delete partition A", "create partition B with filesystem C", ...
-#: src/components/storage/ProposalActionsSection.jsx:126
-msgid "Planned Actions"
-msgstr "処理の計画"
+#: src/components/storage/ProposalDeviceSection.jsx:135
+msgid "Waiting for information about selected device"
+msgstr ""
 
-#: src/components/storage/ProposalPage.jsx:211
-msgid "Devices will not be modified until installation starts."
-msgstr "インストールを開始するまではデバイスへの書き込みは行われません。"
+#: src/components/storage/ProposalDeviceSection.jsx:138
+msgid "Select the device for installing the system."
+msgstr "システムのインストール先デバイスを選択してください。"
+
+#: src/components/storage/ProposalDeviceSection.jsx:143
+#: src/components/storage/ProposalDeviceSection.jsx:147
+#: src/components/storage/ProposalDeviceSection.jsx:245
+msgid "Installation device"
+msgstr "インストール先のデバイス"
+
+#: src/components/storage/ProposalDeviceSection.jsx:153
+msgid "No devices found."
+msgstr "デバイスが見つかりませんでした。"
+
+#: src/components/storage/ProposalDeviceSection.jsx:242
+msgid "Devices for creating the volume group"
+msgstr "ボリュームグループを作成するデバイス"
+
+#: src/components/storage/ProposalDeviceSection.jsx:251
+msgid "Custom devices"
+msgstr "独自のデバイス"
+
+#: src/components/storage/ProposalDeviceSection.jsx:315
+msgid ""
+"Configuration of the system volume group. All the file systems will be "
+"created in a logical volume of the system volume group."
+msgstr ""
+"システムのボリュームグループ向けの設定です。全てのファイルシステムは、システ"
+"ムのボリュームグループにある論理ボリューム内に作成されます。"
+
+#: src/components/storage/ProposalDeviceSection.jsx:321
+msgid "Configure the LVM settings"
+msgstr "LVM 設定"
+
+#: src/components/storage/ProposalDeviceSection.jsx:326
+#: src/components/storage/ProposalDeviceSection.jsx:346
+msgid "LVM settings"
+msgstr "LVM 設定"
+
+#: src/components/storage/ProposalDeviceSection.jsx:333
+msgid "Waiting for information about LVM"
+msgstr ""
+
+#: src/components/storage/ProposalDeviceSection.jsx:339
+msgid "Use logical volume management (LVM)"
+msgstr "論理ボリュームマネージャ (LVM) を使用する"
+
+#: src/components/storage/ProposalDeviceSection.jsx:347
+msgid "System Volume Group"
+msgstr "システムのボリュームグループ"
+
+#. TRANSLATORS: The storage "Device" sections's description. Do not
+#. translate 'abbr' and 'title', they are part of the HTML markup.
+#: src/components/storage/ProposalDeviceSection.jsx:414
+msgid ""
+"Select the main disk or <abbr title='Logical Volume Manager'>LVM</abbr> "
+"Volume Group for installation."
+msgstr ""
+
+#: src/components/storage/ProposalFileSystemsSection.jsx:70
+#, fuzzy
+msgid "File systems"
+msgstr "ファイルシステムの種類"
 
 #: src/components/storage/ProposalPageMenu.jsx:40
 msgid "Manage and format"
@@ -1213,57 +1280,10 @@ msgstr "iSCSI ターゲットへの接続"
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/components/storage/ProposalSettingsSection.jsx:141
-msgid "Select the device for installing the system."
-msgstr "システムのインストール先デバイスを選択してください。"
-
-#: src/components/storage/ProposalSettingsSection.jsx:146
-#: src/components/storage/ProposalSettingsSection.jsx:150
-#: src/components/storage/ProposalSettingsSection.jsx:248
-msgid "Installation device"
-msgstr "インストール先のデバイス"
-
-#: src/components/storage/ProposalSettingsSection.jsx:156
-msgid "No devices found."
-msgstr "デバイスが見つかりませんでした。"
-
-#: src/components/storage/ProposalSettingsSection.jsx:245
-msgid "Devices for creating the volume group"
-msgstr "ボリュームグループを作成するデバイス"
-
-#: src/components/storage/ProposalSettingsSection.jsx:254
-msgid "Custom devices"
-msgstr "独自のデバイス"
-
-#: src/components/storage/ProposalSettingsSection.jsx:318
-msgid ""
-"Configuration of the system volume group. All the file systems will be "
-"created in a logical volume of the system volume group."
-msgstr ""
-"システムのボリュームグループ向けの設定です。全てのファイルシステムは、システ"
-"ムのボリュームグループにある論理ボリューム内に作成されます。"
-
-#: src/components/storage/ProposalSettingsSection.jsx:324
-msgid "Configure the LVM settings"
-msgstr "LVM 設定"
-
-#: src/components/storage/ProposalSettingsSection.jsx:329
-#: src/components/storage/ProposalSettingsSection.jsx:349
-msgid "LVM settings"
-msgstr "LVM 設定"
-
-#: src/components/storage/ProposalSettingsSection.jsx:342
-msgid "Use logical volume management (LVM)"
-msgstr "論理ボリュームマネージャ (LVM) を使用する"
-
-#: src/components/storage/ProposalSettingsSection.jsx:350
-msgid "System Volume Group"
-msgstr "システムのボリュームグループ"
-
 #. TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
 #. 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
 #. Do not translate 'abbr' and 'title', they are part of the HTML markup.
-#: src/components/storage/ProposalSettingsSection.jsx:426
+#: src/components/storage/ProposalSettingsSection.jsx:86
 msgid ""
 "The password will not be needed to boot and access the data if the <abbr "
 "title='Trusted Platform Module'>TPM</abbr> can verify the integrity of the "
@@ -1275,43 +1295,168 @@ msgstr ""
 "シーリングを使用するには、新しいシステムの初回起動時に直接起動を行う必要があ"
 "ります。"
 
-#: src/components/storage/ProposalSettingsSection.jsx:444
+#: src/components/storage/ProposalSettingsSection.jsx:104
 msgid "Use the TPM to decrypt automatically on each boot"
 msgstr "毎回の起動時に TPM を利用して自動的に暗号化解除する"
 
-#: src/components/storage/ProposalSettingsSection.jsx:515
+#: src/components/storage/ProposalSettingsSection.jsx:175
 msgid "Change encryption settings"
 msgstr "暗号化設定の変更"
 
-#: src/components/storage/ProposalSettingsSection.jsx:520
-#: src/components/storage/ProposalSettingsSection.jsx:541
+#: src/components/storage/ProposalSettingsSection.jsx:180
+#: src/components/storage/ProposalSettingsSection.jsx:201
 msgid "Encryption settings"
 msgstr "暗号化の設定"
 
-#: src/components/storage/ProposalSettingsSection.jsx:534
+#: src/components/storage/ProposalSettingsSection.jsx:194
 msgid "Use encryption"
 msgstr "暗号化を使用する"
 
-#: src/components/storage/ProposalSettingsSection.jsx:621
-msgid ""
-"Select how to make free space in the disks selected for allocating the     "
-"file systems."
-msgstr ""
-"選択したディスク内にファイルシステムを割り当てるための領域確保方法を選択して"
-"ください。"
-
-#. TRANSLATORS: To be completed with the rest of a sentence like "deleting all content"
-#: src/components/storage/ProposalSettingsSection.jsx:627
-msgid "Find space"
-msgstr "領域の検出"
-
-#: src/components/storage/ProposalSettingsSection.jsx:631
-msgid "Space Policy"
-msgstr "領域ポリシー"
-
-#: src/components/storage/ProposalSettingsSection.jsx:708
+#: src/components/storage/ProposalSettingsSection.jsx:244
 msgid "Settings"
 msgstr "設定"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:50
+msgid "Delete current content"
+msgstr "現在の内容を全て削除"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:51
+msgid "All partitions will be removed and any data in the disks will be lost."
+msgstr ""
+"ディスク内の全てのパーティションを削除します。これにより、ディスク内に存在す"
+"るデータは全て失われます。"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:55
+msgid "Shrink existing partitions"
+msgstr "既存のパーティションの縮小"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:56
+msgid "The data is kept, but the current partitions will be resized as needed."
+msgstr ""
+"既存のデータは保持しますが、十分な領域を確保するために既存のパーティションの"
+"サイズ変更を行います。"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:60
+msgid "Use available space"
+msgstr "利用可能な領域を使用する"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:61
+msgid ""
+"The data is kept. Only the space not assigned to any partition will be used."
+msgstr ""
+"既存のデータを全て保持します。パーティションに割り当てられていない空き領域の"
+"みを使用します。"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:65
+msgid "Custom"
+msgstr "独自設定"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:66
+msgid "Select what to do with each partition."
+msgstr "パーティションの設定作業を独自に実施します。"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:72
+msgid "Used device"
+msgstr "使用済みデバイス"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:73
+msgid "Current content"
+msgstr "現在の内容"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:74
+#: src/components/storage/ProposalVolumes.jsx:309
+#: src/components/storage/VolumeForm.jsx:795
+msgid "Size"
+msgstr "サイズ"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:75
+#: src/components/storage/ProposalVolumes.jsx:308
+msgid "Details"
+msgstr "詳細"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:76
+msgid "Action"
+msgstr "処理"
+
+#. TRANSLATORS: %s is replaced by partition table type (e.g., GPT)
+#: src/components/storage/ProposalSpacePolicySection.jsx:110
+#, c-format
+msgid "%s partition table"
+msgstr "%s パーティションテーブル"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:121
+msgid "EFI system partition"
+msgstr "EFI システムパーティション"
+
+#. TRANSLATORS: %s is replaced by a file system type (e.g., btrfs).
+#: src/components/storage/ProposalSpacePolicySection.jsx:124
+#, c-format
+msgid "%s file system"
+msgstr "%s ファイルシステム"
+
+#. TRANSLATORS: %s is replaced by a LVM volume group name (e.g., /dev/vg0).
+#: src/components/storage/ProposalSpacePolicySection.jsx:131
+#, c-format
+msgid "LVM physical volume of %s"
+msgstr "%s の LVM 物理ボリューム"
+
+#. TRANSLATORS: %s is replaced by a RAID name (e.g., /dev/md0).
+#: src/components/storage/ProposalSpacePolicySection.jsx:134
+#, c-format
+msgid "Member of RAID %s"
+msgstr "RAID %s のメンバー"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:136
+msgid "Not identified"
+msgstr "不明"
+
+#. TRANSLATORS: %s is replaced by a disk size (e.g., 20 GiB)
+#: src/components/storage/ProposalSpacePolicySection.jsx:173
+#, c-format
+msgid "%s unused"
+msgstr "%s の未使用"
+
+#. TRANSLATORS: %s is replaced by a disk size (e.g., 2 GiB)
+#: src/components/storage/ProposalSpacePolicySection.jsx:186
+#, c-format
+msgid "Shrinkable by %s"
+msgstr "%s 単位で縮小可能"
+
+#. TRANSLATORS: %s is replaced by a device name (e.g., /dev/sda)
+#: src/components/storage/ProposalSpacePolicySection.jsx:221
+#, c-format
+msgid "Space action selector for %s"
+msgstr "%s に対する領域処理の選択"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:224
+#: src/components/storage/ProposalVolumes.jsx:229
+#: src/components/storage/iscsi/NodesPresenter.jsx:77
+msgid "Delete"
+msgstr "削除"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:228
+msgid "Allow resize"
+msgstr "サイズ変更の許可"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:230
+msgid "Do not modify"
+msgstr "変更しない"
+
+#: src/components/storage/ProposalSpacePolicySection.jsx:382
+msgid "Actions to find space"
+msgstr "領域の検出処理"
+
+#. TRANSLATORS: The storage "Find Space" section's title
+#: src/components/storage/ProposalSpacePolicySection.jsx:452
+msgid "Find Space"
+msgstr "領域の検出"
+
+#. TRANSLATORS: The storage "Find space" sections's description
+#: src/components/storage/ProposalSpacePolicySection.jsx:454
+msgid ""
+"Allocating the file systems might need to find free space in the devices "
+"listed below. Choose how to do it."
+msgstr ""
 
 #. TRANSLATORS: header for a list of items
 #: src/components/storage/ProposalVolumes.jsx:59
@@ -1379,11 +1524,6 @@ msgstr "スナップショット有り"
 msgid "transactional"
 msgstr "トランザクション型"
 
-#: src/components/storage/ProposalVolumes.jsx:229
-#: src/components/storage/iscsi/NodesPresenter.jsx:77
-msgid "Delete"
-msgstr "削除"
-
 #: src/components/storage/ProposalVolumes.jsx:275
 msgid "Edit file system"
 msgstr "ファイルシステムの編集"
@@ -1394,22 +1534,9 @@ msgstr "ファイルシステムの編集"
 msgid "Mount point"
 msgstr "マウントポイント"
 
-#: src/components/storage/ProposalVolumes.jsx:308
-msgid "Details"
-msgstr "詳細"
-
-#: src/components/storage/ProposalVolumes.jsx:309
-#: src/components/storage/VolumeForm.jsx:795
-msgid "Size"
-msgstr "サイズ"
-
 #: src/components/storage/ProposalVolumes.jsx:345
 msgid "Table with mount points"
 msgstr "マウントポイントの一覧"
-
-#: src/components/storage/ProposalVolumes.jsx:408
-msgid "File systems to create in your system"
-msgstr "お使いのシステム内で作成するファイルシステム"
 
 #: src/components/storage/VolumeForm.jsx:102
 msgid "Select a value"
@@ -1876,71 +2003,6 @@ msgstr "検索"
 msgid "Targets"
 msgstr "ターゲット"
 
-#. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
-#: src/components/storage/space-policy-utils.jsx:45
-msgid "Delete current content"
-msgstr "現在の内容を全て削除"
-
-#. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
-#: src/components/storage/space-policy-utils.jsx:49
-msgid "Shrink existing partitions"
-msgstr "既存のパーティションの縮小"
-
-#. TRANSLATORS: automatic actions to find space for installation in the target disk(s)
-#: src/components/storage/space-policy-utils.jsx:53
-msgid "Use available space"
-msgstr "利用可能な領域を使用する"
-
-#: src/components/storage/space-policy-utils.jsx:65
-msgid "All partitions will be removed and any data in the disks will be lost."
-msgstr ""
-"ディスク内の全てのパーティションを削除します。これにより、ディスク内に存在す"
-"るデータは全て失われます。"
-
-#: src/components/storage/space-policy-utils.jsx:68
-msgid ""
-"The data is kept, but the current partitions will be resized as needed to "
-"make enough space."
-msgstr ""
-"ディスク内のデータは保持しますが、十分な領域を確保するために既存のパーティ"
-"ションのサイズ変更を行います。"
-
-#: src/components/storage/space-policy-utils.jsx:71
-msgid ""
-"The data is kept and existing partitions will not be modified. Only the "
-"space that is not assigned to any partition will be used."
-msgstr ""
-"ディスク内のデータは全て保持し、パーティションの変更も行いません。パーティ"
-"ションに割り当てられていない空き領域のみを使用します。"
-
-#: src/components/storage/space-policy-utils.jsx:108
-msgid "Select a mechanism to make space"
-msgstr "領域の確保方法を選択してください"
-
-#: src/components/storage/space-policy-utils.jsx:127
-#, c-format
-msgid "deleting all content of the installation device"
-msgid_plural "deleting all content of the %d selected disks"
-msgstr[0] "選択した %d 個のディスクの全内容を削除します"
-
-#: src/components/storage/space-policy-utils.jsx:137
-#, c-format
-msgid "shrinking partitions of the installation device"
-msgid_plural "shrinking partitions of the %d selected disks"
-msgstr[0] "選択した %d 個のディスクのパーティションを縮小します"
-
-#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-#. would read as "Find space without modifying any partition".
-#: src/components/storage/space-policy-utils.jsx:145
-msgid "without modifying any partition"
-msgstr "パーティションの変更を行いません"
-
-#: src/components/storage/space-policy-utils.jsx:160
-#, c-format
-msgid "This will only affect the installation device"
-msgid_plural "This will affect the %d disks selected for installation"
-msgstr[0] "この処理は、選択した %d 個のディスクにのみ影響します"
-
 #: src/components/storage/utils.js:44
 msgid "KiB"
 msgstr "KiB"
@@ -2119,6 +2181,43 @@ msgstr "ユーザ"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "root の認証"
+
+#~ msgid "Devices will not be modified until installation starts."
+#~ msgstr "インストールを開始するまではデバイスへの書き込みは行われません。"
+
+#~ msgid "File systems to create in your system"
+#~ msgstr "お使いのシステム内で作成するファイルシステム"
+
+#~ msgid ""
+#~ "Select how to make free space in the disks selected for allocating "
+#~ "the     file systems."
+#~ msgstr ""
+#~ "選択したディスク内にファイルシステムを割り当てるための領域確保方法を選択し"
+#~ "てください。"
+
+#~ msgid "Space Policy"
+#~ msgstr "領域ポリシー"
+
+#~ msgid "Select a mechanism to make space"
+#~ msgstr "領域の確保方法を選択してください"
+
+#, c-format
+#~ msgid "deleting all content of the installation device"
+#~ msgid_plural "deleting all content of the %d selected disks"
+#~ msgstr[0] "選択した %d 個のディスクの全内容を削除します"
+
+#, c-format
+#~ msgid "shrinking partitions of the installation device"
+#~ msgid_plural "shrinking partitions of the %d selected disks"
+#~ msgstr[0] "選択した %d 個のディスクのパーティションを縮小します"
+
+#~ msgid "without modifying any partition"
+#~ msgstr "パーティションの変更を行いません"
+
+#, c-format
+#~ msgid "This will only affect the installation device"
+#~ msgid_plural "This will affect the %d disks selected for installation"
+#~ msgstr[0] "この処理は、選択した %d 個のディスクにのみ影響します"
 
 #, c-format
 #~ msgid "Edit %s connection"
