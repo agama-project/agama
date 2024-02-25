@@ -95,7 +95,7 @@ jobs:
       run: cargo-binstall --no-confirm cargo-tarpaulin
 
     - name: Run the tests
-      run: cargo tarpaulin --out xml
+      run: cargo tarpaulin --out xml -- --nocapture
 
     # send the code coverage for the Rust part to the coveralls.io
     - name: Coveralls GitHub Action
