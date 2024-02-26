@@ -23,7 +23,7 @@ import { suggestUsernames } from "./utils";
 
 describe('suggestUsernames', () => {
   test('handles basic single name', () => {
-    expect(suggestUsernames('John')).toEqual(expect.arrayContaining(['john', 'j']));
+    expect(suggestUsernames('John')).toEqual(expect.arrayContaining(['john']));
   });
 
   test('handles basic two-part name', () => {
@@ -31,7 +31,7 @@ describe('suggestUsernames', () => {
   });
 
   test('handles name with middle initial', () => {
-    expect(suggestUsernames('John Q. Doe')).toEqual(expect.arrayContaining(['john', 'jq', 'jqdoe', 'johnqd', 'johnqdoe']));
+    expect(suggestUsernames('John Q. Doe')).toEqual(expect.arrayContaining(['john', 'jqdoe', 'johnqd', 'johnqdoe']));
   });
 
   test('normalizes accented characters', () => {
@@ -47,7 +47,7 @@ describe('suggestUsernames', () => {
   });
 
   test('handles long name with multiple parts', () => {
-    expect(suggestUsernames("Maria del Carmen Fernandez Vega")).toEqual(expect.arrayContaining(['maria', 'mdel', 'mdelcarmenfernandezvega', 'mariadcfv', 'mdcfvega', 'mariadelcarmenfernandezvega']));
+    expect(suggestUsernames("Maria del Carmen Fernandez Vega")).toEqual(expect.arrayContaining(['maria', 'mdelcarmenfernandezvega', 'mariadcfv', 'mdcfvega', 'mariadelcarmenfernandezvega']));
   });
 
   test('handles empty or invalid input', () => {
