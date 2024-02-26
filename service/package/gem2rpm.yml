@@ -23,6 +23,7 @@
   :preamble: |-
     # Override build.rpm, see also https://github.com/openSUSE/obs-build/blob/master/configs/
     %global rb_build_versions %{rb_default_ruby}
+    Provides:       agama-yast
     BuildRequires:  dbus-1-common
     Requires:       dbus-1-common
     Requires:       suseconnect-ruby-bindings
