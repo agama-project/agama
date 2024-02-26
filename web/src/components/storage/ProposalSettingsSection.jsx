@@ -139,14 +139,14 @@ const SnapshotsField = ({
 
   const switchState = (_, checked) => {
     setIsChecked(checked);
-    onChange({ value: checked, settings });
+    onChange({ active: checked, settings });
   };
 
   const configurableSnapshots = rootVolume.outline.snapshotsConfigurable;
   const forcedSnapshots = !configurableSnapshots && rootVolume.fsType === "Btrfs" && rootVolume.snapshots;
 
   const SnapshotsToggle = () => {
-    const explanation = _("Uses btrfs for the root file system allowing to boot to a previous version of the system after configuration changes or software upgrades.");
+    const explanation = _("Uses Btrfs for the root file system allowing to boot to a previous version of the system after configuration changes or software upgrades.");
     return (
       <>
         <Switch
@@ -296,10 +296,10 @@ export default function ProposalSettingsSection({
     onChange({ encryptionPassword: password, encryptionMethod: method });
   };
 
-  const changeBtrfsSnapshots = ({ value, settings }) => {
+  const changeBtrfsSnapshots = ({ active, settings }) => {
     const rootVolume = settings.volumes.find((i) => i.mountPath === "/");
 
-    if (value) {
+    if (active) {
       rootVolume.fsType = "Btrfs";
       rootVolume.snapshots = true;
     } else {
