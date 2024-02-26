@@ -1,6 +1,9 @@
 use std::process::{ExitCode, Termination};
 
-use agama_dbus_server::web::{self, run_monitor};
+use agama_dbus_server::{
+    l10n::helpers,
+    web::{self, run_monitor},
+};
 use clap::{Parser, Subcommand};
 use tokio::sync::broadcast::channel;
 use tracing_subscriber::prelude::*;
@@ -78,6 +81,7 @@ impl Termination for CliResult {
 #[tokio::main]
 async fn main() -> CliResult {
     let cli = Cli::parse();
+    _ = helpers::init_locale();
 
     if let Err(error) = run_command(cli).await {
         eprintln!("{:?}", error);
