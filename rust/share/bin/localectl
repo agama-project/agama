@@ -5,7 +5,7 @@ case "$1" in
 	echo "en_US.UTF-8"
 	;;
 "list-keymaps")
-	echo "en"
+	echo "us"
 	;;
 *)
 	echo "unknown action"

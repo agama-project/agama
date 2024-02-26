@@ -76,6 +76,7 @@ jobs:
         pam-devel
         python-langtable-data
         timezone
+        xkeyboard-config
 
     - name: Install Rust toolchains
       run: rustup toolchain install stable
@@ -93,7 +94,7 @@ jobs:
 
     - name: Install Tarpaulin (for code coverage)
       run: |
-        echo "share/bin" >> $GITHUB_PATH
+        echo "$PWD/share/bin" >> $GITHUB_PATH
         cargo-binstall --no-confirm cargo-tarpaulin
 
     - name: Run the tests
