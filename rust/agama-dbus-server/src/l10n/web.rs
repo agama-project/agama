@@ -70,7 +70,7 @@ pub struct LocalesResponse {
     locales: Vec<LocaleEntry>,
 }
 
-#[utoipa::path(get, path = "/locales", responses(
+#[utoipa::path(get, path = "/l10n/locales", responses(
   (status = 200, description = "List of known locales", body = LocalesResponse)
 ))]
 async fn locales(State(state): State<LocaleState>) -> Json<LocalesResponse> {
@@ -79,11 +79,15 @@ async fn locales(State(state): State<LocaleState>) -> Json<LocalesResponse> {
     Json(LocalesResponse { locales })
 }
 
-#[derive(Serialize, Deserialize)]
-struct LocaleConfig {
+#[derive(Serialize, Deserialize, utoipa::ToSchema)]
+pub struct LocaleConfig {
+    /// Locales to install in the target system
     locales: Option<Vec<String>>,
+    /// Keymap for the target system
     keymap: Option<String>,
+    /// Timezone for the target system
     timezone: Option<String>,
+    /// User-interface locale. It is actually not related to the `locales` property.
     ui_locale: Option<String>,
 }
 
@@ -92,7 +96,7 @@ pub struct TimezonesResponse {
     timezones: Vec<TimezoneEntry>,
 }
 
-#[utoipa::path(get, path = "/timezones", responses(
+#[utoipa::path(get, path = "/l10n/timezones", responses(
     (status = 200, description = "List of known timezones", body = TimezonesResponse)
 ))]
 async fn timezones(State(state): State<LocaleState>) -> Json<TimezonesResponse> {
@@ -106,7 +110,7 @@ pub struct KeymapsResponse {
     keymaps: Vec<Keymap>,
 }
 
-#[utoipa::path(get, path = "/keymaps", responses(
+#[utoipa::path(get, path = "/l10n/keymaps", responses(
     (status = 200, description = "List of known keymaps", body = KeymapsResponse)
 ))]
 async fn keymaps(State(state): State<LocaleState>) -> Json<KeymapsResponse> {
@@ -115,6 +119,9 @@ async fn keymaps(State(state): State<LocaleState>) -> Json<KeymapsResponse> {
     Json(KeymapsResponse { keymaps })
 }
 
+#[utoipa::path(put, path = "/l10n/config", responses(
+    (status = 200, description = "Set the locale configuration", body = LocaleConfig)
+))]
 async fn set_config(
     State(state): State<LocaleState>,
     Json(value): Json<LocaleConfig>,
@@ -157,6 +164,9 @@ async fn set_config(
     Ok(Json(()))
 }
 
+#[utoipa::path(get, path = "/l10n/config", responses(
+    (status = 200, description = "Localization configuration", body = LocaleConfig)
+))]
 async fn get_config(State(state): State<LocaleState>) -> Json<LocaleConfig> {
     let data = state.locale.read().unwrap();
     Json(LocaleConfig {

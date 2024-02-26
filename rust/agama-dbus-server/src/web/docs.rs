@@ -7,7 +7,9 @@ use utoipa::OpenApi;
     components(
         schemas(super::http::PingResponse),
         schemas(crate::l10n::web::LocalesResponse),
-        schemas(crate::l10n::LocaleEntry)
+        schemas(crate::l10n::LocaleEntry),
+        schemas(crate::l10n::web::LocaleConfig),
+        schemas(crate::l10n::Keymap)
     )
 )]
 pub struct ApiDoc;

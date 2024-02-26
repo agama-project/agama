@@ -4,9 +4,11 @@ use serde::Serialize;
 use std::collections::HashMap;
 
 // Minimal representation of a keymap
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 pub struct Keymap {
+    /// Keymap identifier (e.g., "us")
     pub id: KeymapId,
+    /// Keymap description
     description: String,
 }
 
