@@ -65,8 +65,9 @@ it("renders skeleton while loading", () => {
 it("renders nothing when there is no actions", () => {
   plainRender(<ProposalActionsSection actions={[]} />);
 
-  expect(screen.queryByText(/Actions to create/)).toBeNull();
+  expect(screen.queryAllByText(/Delete/)).toEqual([]);
   expect(screen.queryAllByText(/Create/)).toEqual([]);
+  expect(screen.queryAllByText(/Show/)).toEqual([]);
 });
 
 describe("when there are actions", () => {

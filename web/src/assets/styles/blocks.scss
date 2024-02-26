@@ -15,27 +15,39 @@
   margin-inline-end: var(--section-icon-size);
 
   &:not(:last-child) {
-    margin-block-end: var(--spacer-normal);
+    margin-block-end: var(--spacer-medium);
   }
 
-  > h2 {
+  > header {
     display: grid;
     grid-area: header;
     grid-template-columns: subgrid;
     grid-column: bleed / content-end;
 
-    svg {
-      block-size: var(--section-icon-size);
-      inline-size: var(--section-icon-size);
-      grid-column: bleed / content;
+    h2 {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: bleed / content-end;
+
+      svg {
+        block-size: var(--section-icon-size);
+        inline-size: var(--section-icon-size);
+        grid-column: bleed / content;
+      }
+
+      :not(svg) {
+        grid-column: content
+      }
     }
 
-    :not(svg) {
-      grid-column: content
+    p {
+      grid-column: content;
+      color: var(--color-gray-dimmest);
+      margin-block-end: var(--spacer-smaller);
     }
   }
 
-  > :not(h2) {
+  > :not(header) {
     grid-area: content;
     grid-column: content;
   }
@@ -245,6 +257,10 @@ ul[data-type="agama/list"] {
       border-top: 0;
     }
 
+    &:not(:last-child) {
+      border-bottom-width: 1px;
+    }
+
     > div {
       margin-block-end: var(--spacer-smaller);
     }
@@ -259,21 +275,18 @@ ul[data-type="agama/list"] {
   // FIXME: see if it's semantically correct to mark an li as aria-selected when
   // not belongs to a listbox or grid list ul.
   li[aria-selected] {
-    border-color: var(--color-primary);
-    box-shadow: 0 2px 5px 0 var(--color-gray-dark);
-    background: var(--color-primary);
-    color: white;
+    background: var(--color-gray-dark);
     font-weight: 700;
 
-    svg {
-      fill: white;
+    &:not(:last-child) {
+      border-bottom-color: white;
     }
   }
 }
 
 // These attributes together means that UI is rendering a selector
-ul[data-type="agama/list"][role="listbox"] {
-  li[role="option"] {
+ul[data-type="agama/list"][role="grid"] {
+  li[role="row"] {
     cursor: pointer;
 
     &:first-child {
@@ -292,72 +305,84 @@ ul[data-type="agama/list"][role="listbox"] {
       &:not([aria-selected]) {
         background: var(--color-gray-dark);
       }
+
+      &:not(:last-child) {
+        border-bottom-color: white;
+      }
+    }
+
+    div[role="gridcell"] {
+      display: flex;
+      align-items: center;
+      gap: var(--spacer-normal);
+
+      & > input {
+        --size: var(--fs-h2);
+        block-size: var(--size);
+        inline-size: var(--size);
+      }
+
+      & > div {
+        flex: 1;
+      }
     }
   }
 }
 
 // Each kind of list/selector has its way of laying out their items
-ul[data-of="agama/storage-devices"] {
-  li {
-    display: grid;
-    gap: var(--spacer-smaller);
-    grid-template-columns: 1fr 2fr 2fr;
-    grid-template-areas: "type-and-size drive-info drive-content";
+[data-items-type="agama/storage-devices"] {
+  display: grid;
+  gap: var(--spacer-smaller);
+  grid-template-columns: 1fr 2fr 2fr;
+  grid-template-areas: "type-and-size drive-info drive-content";
 
-    svg {
-      vertical-align: inherit;
-    }
+  svg {
+    vertical-align: inherit;
+  }
 
-    > div {
-      margin-block-end: 0;
-    }
+  > div {
+    margin-block-end: 0;
+  }
 
-    > :first-child {
-      align-self: center;
-      text-align: center;
-      justify-self: start;
-    }
+  > :first-child {
+    align-self: center;
+    text-align: center;
+    justify-self: start;
   }
 }
 
-ul[data-of="agama/space-policies"] {
+[data-items-type="agama/space-policies"] {
   // It works with the default styling
 }
 
-ul[data-of="agama/locales"] {
-  li {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
+[data-items-type="agama/locales"] {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
 
-    > :last-child {
-      grid-column: 1 / -1;
-      font-size: var(--fs-small);
-    }
+  > :last-child {
+    grid-column: 1 / -1;
+    font-size: var(--fs-small);
   }
 }
 
-ul[data-of="agama/keymaps"] {
-  li {
-    > :last-child {
-      font-size: var(--fs-small);
-    }
+[data-items-type="agama/keymaps"] {
+  > :last-child {
+    font-size: var(--fs-small);
   }
 }
 
-ul[data-of="agama/timezones"] {
-  li {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+[data-items-type="agama/timezones"] {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
 
-    > :last-child {
-      grid-column: 1 / -1;
-      font-size: 80%;
-    }
+  > :last-child {
+    grid-column: 1 / -1;
+    font-size: 80%;
+  }
 
-    > :nth-child(3) {
-      color: var(--color-gray-dimmed);
-      text-align: end;
-    }
+  > :nth-child(3) {
+    color: var(--color-gray-dimmed);
+    text-align: end;
   }
 }
 
@@ -415,6 +440,32 @@ ul[data-of="agama/timezones"] {
 
   input {
     text-align: end;
+  }
+}
+
+[data-type="agama/options-picker"] {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacer-smaller);
+
+  [role="option"] {
+    cursor: pointer;
+    border: 1px solid var(--color-gray);
+    padding: var(--spacer-small);
+    border-block-end-width: 4px;
+
+    &[aria-selected="true"] {
+      background: var(--color-gray-light);
+      border-color: var(--color-primary);
+    }
+
+    >:first-child {
+      margin-block-end: var(--spacer-small);
+    }
+
+    >:last-child {
+      font-size: var(--fs-small);
+    }
   }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -118,112 +118,99 @@ const dasd = {
   udevPaths: []
 };
 
+const availableDevices = [
+  vda,
+  md0,
+  raid,
+  multipath,
+  dasd
+];
+
 const renderOptions = (Component) => {
-  return () => describe("content", () => {
-    describe("when no devices are given", () => {
-      it("renders an empty listbox", () => {
-        plainRender(<DeviceSelector devices={[]} />);
+  return () => describe("DeviceContent", () => {
+    it("renders the device size", () => {
+      plainRender(<Component devices={[vda]} />);
+      screen.getByText("1 KiB");
+    });
 
-        const listbox = screen.queryByRole("listbox");
+    it("renders the device name", () => {
+      plainRender(<Component devices={[vda]} />);
+      screen.getByText("/dev/vda");
+    });
 
-        expect(listbox).toBeEmptyDOMElement();
+    it("renders the device model", () => {
+      plainRender(<Component devices={[vda]} />);
+      screen.getByText("Micron 1100 SATA");
+    });
+
+    describe("when device is a SDCard", () => {
+      it("renders 'SD Card'", () => {
+        const sdCard = { ...vda, sdCard: true };
+        plainRender(<Component devices={[sdCard]} />);
+        screen.getByText("SD Card");
       });
     });
 
-    describe("when devices are given", () => {
-      it("renders a listbox with an option per device", () => {
-        plainRender(<DeviceSelector devices={[vda, md0]} />);
-
-        const listbox = screen.queryByRole("listbox");
-
-        within(listbox).getByRole("option", { name: /vda/ });
-        within(listbox).getByRole("option", { name: /md0/ });
-      });
-
-      it("renders the device size", () => {
+    describe("when content is given", () => {
+      it("renders the partition table info", () => {
         plainRender(<Component devices={[vda]} />);
-        screen.getByText("1 KiB");
+        screen.getByText("GPT with 2 partitions");
       });
 
-      it("renders the device name", () => {
+      it("renders systems info", () => {
         plainRender(<Component devices={[vda]} />);
-        screen.getByText("/dev/vda");
+        screen.getByText("Windows 11");
+        screen.getByText("openSUSE Leap 15.2");
+      });
+    });
+
+    describe("when content is not given", () => {
+      it("renders 'No content found'", () => {
+        plainRender(<Component devices={[multipath]} />);
+        screen.getByText("No content found");
+      });
+    });
+
+    describe("when device is software RAID", () => {
+      it("renders its level", () => {
+        plainRender(<Component devices={[md0]} />);
+        screen.getByText("Software RAID0");
       });
 
-      it("renders the device model", () => {
-        plainRender(<Component devices={[vda]} />);
-        screen.getByText("Micron 1100 SATA");
+      it("renders its members", () => {
+        plainRender(<Component devices={[md0]} />);
+        screen.getByText(/Members/);
+        screen.getByText(/vdb/);
+      });
+    });
+
+    describe("when device is RAID", () => {
+      it("renders its devices", () => {
+        plainRender(<Component devices={[raid]} />);
+        screen.getByText(/Devices/);
+        screen.getByText(/sda/);
+        screen.getByText(/sdb/);
+      });
+    });
+
+    describe("when device is a multipath", () => {
+      it("renders 'Multipath'", () => {
+        plainRender(<Component devices={[multipath]} />);
+        screen.getByText("Multipath");
       });
 
-      describe("when device is a SDCard", () => {
-        it("renders 'SD Card'", () => {
-          const sdCard = { ...vda, sdCard: true };
-          plainRender(<Component devices={[sdCard]} />);
-          screen.getByText("SD Card");
-        });
+      it("renders its wires", () => {
+        plainRender(<Component devices={[multipath]} />);
+        screen.getByText(/Wires/);
+        screen.getByText(/sdc/);
+        screen.getByText(/sdd/);
       });
+    });
 
-      describe("when content is given", () => {
-        it("renders the partition table info", () => {
-          plainRender(<Component devices={[vda]} />);
-          screen.getByText("GPT with 2 partitions");
-        });
-
-        it("renders systems info", () => {
-          plainRender(<Component devices={[vda]} />);
-          screen.getByText("Windows 11");
-          screen.getByText("openSUSE Leap 15.2");
-        });
-      });
-
-      describe("when content is not given", () => {
-        it("renders 'No content found'", () => {
-          plainRender(<Component devices={[multipath]} />);
-          screen.getByText("No content found");
-        });
-      });
-
-      describe("when device is software RAID", () => {
-        it("renders its level", () => {
-          plainRender(<Component devices={[md0]} />);
-          screen.getByText("Software RAID0");
-        });
-
-        it("renders its members", () => {
-          plainRender(<Component devices={[md0]} />);
-          screen.getByText(/Members/);
-          screen.getByText(/vdb/);
-        });
-      });
-
-      describe("when device is RAID", () => {
-        it("renders its devices", () => {
-          plainRender(<Component devices={[raid]} />);
-          screen.getByText(/Devices/);
-          screen.getByText(/sda/);
-          screen.getByText(/sdb/);
-        });
-      });
-
-      describe("when device is a multipath", () => {
-        it("renders 'Multipath'", () => {
-          plainRender(<Component devices={[multipath]} />);
-          screen.getByText("Multipath");
-        });
-
-        it("renders its wires", () => {
-          plainRender(<Component devices={[multipath]} />);
-          screen.getByText(/Wires/);
-          screen.getByText(/sdc/);
-          screen.getByText(/sdd/);
-        });
-      });
-
-      describe("when device is DASD", () => {
-        it("renders its bus id", () => {
-          plainRender(<Component devices={[dasd]} />);
-          screen.getByText("DASD 0.0.0150");
-        });
+    describe("when device is DASD", () => {
+      it("renders its bus id", () => {
+        plainRender(<Component devices={[dasd]} />);
+        screen.getByText("DASD 0.0.0150");
       });
     });
   });
@@ -231,38 +218,57 @@ const renderOptions = (Component) => {
 
 describe("DeviceList", renderOptions(DeviceList));
 describe("DeviceList", () => {
-  describe("with isSelected prop", () => {
-    it("renders all devices as selected", () => {
-      plainRender(<DeviceList isSelected devices={[vda, md0, raid]} />);
+  describe("when no devices are given", () => {
+    it("renders an empty list", () => {
+      plainRender(<DeviceList devices={[]} />);
 
-      const devices = screen.queryAllByText(/\/dev\//, { selected: true });
-      expect(devices.length).toEqual(3);
+      const list = screen.queryByRole("list");
+      expect(list).toBeEmptyDOMElement();
     });
   });
 
-  describe("without isSelected prop", () => {
-    it("renders all devices as not selected", () => {
-      plainRender(<DeviceList devices={[vda, md0, raid]} />);
+  describe("when devices are given", () => {
+    it("renders a list with an option per device", () => {
+      plainRender(<DeviceList devices={[vda, md0]} />);
 
-      const devices = screen.queryAllByText(/\/dev\//, { selected: false });
-      expect(devices.length).toEqual(3);
+      const list = screen.getByRole("list");
+
+      within(list).getByRole("listitem", { name: /vda/ });
+      within(list).getByRole("listitem", { name: /md0/ });
     });
   });
 });
 
 describe("DeviceSelector", renderOptions(DeviceSelector));
 describe("DeviceSelector", () => {
+  describe("when no devices are given", () => {
+    it("renders an empty grid", () => {
+      plainRender(<DeviceSelector devices={[]} />);
+
+      const selector = screen.queryByRole("grid");
+      expect(selector).toBeEmptyDOMElement();
+    });
+  });
+
+  it("renders a grid with an option per device", () => {
+    plainRender(<DeviceSelector devices={[vda, md0]} />);
+
+    const selector = screen.getByRole("grid");
+    within(selector).getByRole("row", { name: /vda/ });
+    within(selector).getByRole("row", { name: /md0/ });
+  });
+
   it("renders as selected options matching selected device(s)", () => {
     plainRender(
       <DeviceSelector
         devices={[vda, md0, raid, dasd]}
-        selected={["/dev/vda", "/dev/dasda"]}
+        selected={[vda, dasd]}
       />
     );
 
-    const selectedOptions = screen.queryAllByRole("option", { selected: true });
-    const vdaOption = screen.getByRole("option", { name: /vda/ });
-    const dasdOption = screen.getByRole("option", { name: /dasda/ });
+    const selectedOptions = screen.queryAllByRole("row", { selected: true });
+    const vdaOption = screen.getByRole("row", { name: /vda/ });
+    const dasdOption = screen.getByRole("row", { name: /dasda/ });
     expect(selectedOptions).toEqual([vdaOption, dasdOption]);
   });
 
@@ -271,7 +277,7 @@ describe("DeviceSelector", () => {
       const onChangeFn = jest.fn();
 
       const TestSingleDeviceSelection = () => {
-        const [selected, setSelected] = useState("/dev/vda");
+        const [selected, setSelected] = useState(vda);
 
         onChangeFn.mockImplementation(device => setSelected(device));
 
@@ -287,18 +293,18 @@ describe("DeviceSelector", () => {
       it("notifies selected device if it has changed", async () => {
         const { user } = plainRender(<TestSingleDeviceSelection />);
 
-        const vdaOption = screen.getByRole("option", { name: /vda/ });
-        const md0Option = screen.getByRole("option", { name: /md0/ });
+        const vdaOption = screen.getByRole("row", { name: /vda/ });
+        const md0Option = screen.getByRole("row", { name: /md0/ });
 
         // click on selected device to check nothing is notified
         await user.click(vdaOption);
         expect(onChangeFn).not.toHaveBeenCalled();
 
         await user.click(md0Option);
-        expect(onChangeFn).toHaveBeenCalledWith("/dev/md0");
+        expect(onChangeFn).toHaveBeenCalledWith(md0.sid);
 
         await user.click(vdaOption);
-        expect(onChangeFn).toHaveBeenCalledWith("/dev/vda");
+        expect(onChangeFn).toHaveBeenCalledWith(vda.sid);
       });
     });
 
@@ -306,9 +312,11 @@ describe("DeviceSelector", () => {
       const onChangeFn = jest.fn();
 
       const TestMultipleDeviceSelection = () => {
-        const [selected, setSelected] = useState("/dev/vda");
+        const [selected, setSelected] = useState(vda);
 
-        onChangeFn.mockImplementation(devices => setSelected(devices));
+        onChangeFn.mockImplementation(selection => setSelected(
+          availableDevices.filter(d => selection.includes(d.sid)))
+        );
 
         return (
           <DeviceSelector
@@ -323,19 +331,19 @@ describe("DeviceSelector", () => {
       it("notifies selected devices", async () => {
         const { user } = plainRender(<TestMultipleDeviceSelection />);
 
-        const vdaOption = screen.getByRole("option", { name: /vda/ });
-        const md0Option = screen.getByRole("option", { name: /md0/ });
-        const dasdOption = screen.getByRole("option", { name: /dasda/ });
+        const vdaOption = screen.getByRole("row", { name: /vda/ });
+        const md0Option = screen.getByRole("row", { name: /md0/ });
+        const dasdOption = screen.getByRole("row", { name: /dasda/ });
 
         await user.click(md0Option);
-        expect(onChangeFn).toHaveBeenCalledWith(["/dev/vda", "/dev/md0"]);
+        expect(onChangeFn).toHaveBeenCalledWith([vda.sid, md0.sid]);
 
         await user.click(dasdOption);
-        expect(onChangeFn).toHaveBeenCalledWith(["/dev/vda", "/dev/md0", "/dev/dasda"]);
+        expect(onChangeFn).toHaveBeenCalledWith([vda.sid, md0.sid, dasd.sid]);
 
         // click on selected device to check it is notified as not selected
         await user.click(vdaOption);
-        expect(onChangeFn).toHaveBeenCalledWith(["/dev/md0", "/dev/dasda"]);
+        expect(onChangeFn).toHaveBeenCalledWith([md0.sid, dasd.sid]);
       });
     });
   });

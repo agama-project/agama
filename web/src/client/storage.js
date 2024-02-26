@@ -108,6 +108,7 @@ class DevicesManager {
    *
    * @typedef {object} StorageDevice
    * @property {string} sid - Internal id that is used as D-Bus object basename
+   * @property {boolean} isDrive - Whether the device is a drive
    * @property {string} type - Type of device ("disk", "raid", "multipath", "dasd", "md")
    * @property {string} [vendor]
    * @property {string} [model]
@@ -117,25 +118,33 @@ class DevicesManager {
    * @property {string} [transport]
    * @property {boolean} [sdCard]
    * @property {boolean} [dellBOOS]
-   * @property {string[]} [devices] - RAID devices (only for "raid" type)
+   * @property {string[]} [devices] - RAID devices (only for "raid" and "md" types)
    * @property {string[]} [wires] - Multipath wires (only for "multipath" type)
    * @property {string} [level] - MD RAID level (only for "md" type)
    * @property {string} [uuid]
-   * @property {string[]} [members] - Member devices for a MD RAID (only for "md" type)
    * @property {boolean} [active]
    * @property {string} [name] - Block device name
    * @property {number} [size]
+   * @property {number} [recoverableSize]
    * @property {string[]} [systems] - Name of the installed systems
    * @property {string[]} [udevIds]
    * @property {string[]} [udevPaths]
-   * @property {PartitionTableData} [partitionTable]
+   * @property {PartitionTable} [partitionTable]
+   * @property {Filesystem} [filesystem]
    *
-   * @typedef {object} PartitionTableData
+   * @typedef {object} PartitionTable
    * @property {string} type
+   * @property {StorageDevice[]} partitions
+   * @property {number} unpartitionedSize - Total size not assigned to any partition
+   *
+   * @typedef {object} Filesystem
+   * @property {string} type
+   * @property {boolean} isEFI
    */
   async getDevices() {
-    const buildDevice = (path, dbusDevice) => {
+    const buildDevice = (path, dbusDevices) => {
       const addDriveProperties = (device, dbusProperties) => {
+        device.isDrive = true;
         device.type = dbusProperties.Type.v;
         device.vendor = dbusProperties.Vendor.v;
         device.model = dbusProperties.Model.v;
@@ -148,40 +157,61 @@ class DevicesManager {
       };
 
       const addRAIDProperties = (device, raidProperties) => {
-        device.devices = raidProperties.Devices.v;
+        device.devices = raidProperties.Devices.v.map(d => buildDevice(d, dbusDevices));
       };
 
       const addMultipathProperties = (device, multipathProperties) => {
-        device.wires = multipathProperties.Wires.v;
+        device.wires = multipathProperties.Wires.v.map(d => buildDevice(d, dbusDevices));
       };
 
       const addMDProperties = (device, mdProperties) => {
         device.type = "md";
         device.level = mdProperties.Level.v;
         device.uuid = mdProperties.UUID.v;
-        device.members = mdProperties.Members.v;
+        device.devices = mdProperties.Devices.v.map(d => buildDevice(d, dbusDevices));
       };
 
       const addBlockProperties = (device, blockProperties) => {
         device.active = blockProperties.Active.v;
         device.name = blockProperties.Name.v;
         device.size = blockProperties.Size.v;
+        device.recoverableSize = blockProperties.RecoverableSize.v;
         device.systems = blockProperties.Systems.v;
         device.udevIds = blockProperties.UdevIds.v;
         device.udevPaths = blockProperties.UdevPaths.v;
       };
 
       const addPtableProperties = (device, ptableProperties) => {
+        const partitions = ptableProperties.Partitions.v.map(p => buildDevice(p, dbusDevices));
         device.partitionTable = {
           type: ptableProperties.Type.v,
-          partitions: ptableProperties.Partitions.v
+          partitions,
+          unpartitionedSize: device.size - partitions.reduce((s, p) => s + p.size, 0)
+        };
+      };
+
+      const addFilesystemProperties = (device, filesystemProperties) => {
+        device.filesystem = {
+          type: filesystemProperties.Type.v,
+          isEFI: filesystemProperties.EFI.v
+        };
+      };
+
+      const addComponentProperties = (device, componentProperties) => {
+        device.component = {
+          type: componentProperties.Type.v,
+          deviceNames: componentProperties.DeviceNames.v
         };
       };
 
       const device = {
         sid: path.split("/").pop(),
+        isDrive: false,
         type: ""
       };
+
+      const dbusDevice = dbusDevices[path];
+      if (!dbusDevice) return device;
 
       const driveProperties = dbusDevice["org.opensuse.Agama.Storage1.Drive"];
       if (driveProperties !== undefined) addDriveProperties(device, driveProperties);
@@ -201,6 +231,12 @@ class DevicesManager {
       const ptableProperties = dbusDevice["org.opensuse.Agama.Storage1.PartitionTable"];
       if (ptableProperties !== undefined) addPtableProperties(device, ptableProperties);
 
+      const filesystemProperties = dbusDevice["org.opensuse.Agama.Storage1.Filesystem"];
+      if (filesystemProperties !== undefined) addFilesystemProperties(device, filesystemProperties);
+
+      const componentProperties = dbusDevice["org.opensuse.Agama.Storage1.Component"];
+      if (componentProperties !== undefined) addComponentProperties(device, componentProperties);
+
       return device;
     };
 
@@ -214,7 +250,7 @@ class DevicesManager {
     const dbusObjects = managedObjects.shift();
     const systemPaths = Object.keys(dbusObjects).filter(k => k.startsWith(this.rootPath));
 
-    return systemPaths.map(p => buildDevice(p, dbusObjects[p]));
+    return systemPaths.map(p => buildDevice(p, dbusObjects));
   }
 }
 
@@ -241,9 +277,14 @@ class ProposalManager {
    * @property {string} encryptionMethod
    * @property {boolean} lvm
    * @property {string} spacePolicy
+   * @property {SpaceAction[]} spaceActions
    * @property {string[]} systemVGDevices
    * @property {Volume[]} volumes
    * @property {StorageDevice[]} installationDevices
+   *
+   * @typedef {object} SpaceAction
+   * @property {string} device
+   * @property {string} action
    *
    * @typedef {object} Volume
    * @property {string} mountPath
@@ -338,6 +379,13 @@ class ProposalManager {
     const systemDevices = await this.system.getDevices();
 
     const buildResult = (proxy) => {
+      const buildSpaceAction = dbusSpaceAction => {
+        return {
+          device: dbusSpaceAction.Device.v,
+          action: dbusSpaceAction.Action.v
+        };
+      };
+
       const buildAction = dbusAction => {
         return {
           text: dbusAction.Text.v,
@@ -365,6 +413,7 @@ class ProposalManager {
           bootDevice: proxy.BootDevice,
           lvm: proxy.LVM,
           spacePolicy: proxy.SpacePolicy,
+          spaceActions: proxy.SpaceActions.map(buildSpaceAction),
           systemVGDevices: proxy.SystemVGDevices,
           encryptionPassword: proxy.EncryptionPassword,
           encryptionMethod: proxy.EncryptionMethod,
@@ -388,7 +437,31 @@ class ProposalManager {
    * @param {ProposalSettings} settings
    * @returns {Promise<number>} 0 on success, 1 on failure
    */
-  async calculate({ bootDevice, encryptionPassword, encryptionMethod, lvm, spacePolicy, systemVGDevices, volumes }) {
+  async calculate(settings) {
+    const {
+      bootDevice,
+      encryptionPassword,
+      encryptionMethod,
+      lvm,
+      spacePolicy,
+      spaceActions,
+      systemVGDevices,
+      volumes
+    } = settings;
+
+    const dbusSpaceActions = () => {
+      const dbusSpaceAction = (spaceAction) => {
+        return {
+          Device: { t: "s", v: spaceAction.device },
+          Action: { t: "s", v: spaceAction.action }
+        };
+      };
+
+      if (spacePolicy !== "custom") return;
+
+      return spaceActions?.map(dbusSpaceAction);
+    };
+
     const dbusVolume = (volume) => {
       return removeUndefinedCockpitProperties({
         MountPath: { t: "s", v: volume.mountPath },
@@ -401,18 +474,19 @@ class ProposalManager {
       });
     };
 
-    const settings = removeUndefinedCockpitProperties({
+    const dbusSettings = removeUndefinedCockpitProperties({
       BootDevice: { t: "s", v: bootDevice },
       EncryptionPassword: { t: "s", v: encryptionPassword },
       EncryptionMethod: { t: "s", v: encryptionMethod },
       LVM: { t: "b", v: lvm },
       SpacePolicy: { t: "s", v: spacePolicy },
+      SpaceActions: { t: "aa{sv}", v: dbusSpaceActions() },
       SystemVGDevices: { t: "as", v: systemVGDevices },
       Volumes: { t: "aa{sv}", v: volumes?.map(dbusVolume) }
     });
 
     const proxy = await this.proxies.proposalCalculator;
-    return proxy.Calculate(settings);
+    return proxy.Calculate(dbusSettings);
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -75,7 +75,7 @@ beforeEach(() => {
 describe("when the user chooses a product", () => {
   it("selects the product and redirects to the main page", async () => {
     const { user } = installerRender(<ProductSelectionPage />);
-    const productOption = screen.getByRole("radio", { name: "openSUSE MicroOS" });
+    const productOption = screen.getByRole("row", { name: /openSUSE MicroOS/ });
     const selectButton = screen.getByRole("button", { name: "Select" });
     await user.click(productOption);
     await user.click(selectButton);

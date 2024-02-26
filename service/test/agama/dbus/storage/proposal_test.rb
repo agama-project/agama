@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -177,6 +177,34 @@ describe Agama::DBus::Storage::Proposal do
 
       it "return the space policy used by the proposal" do
         expect(subject.space_policy).to eq("delete")
+      end
+    end
+  end
+
+  describe "#space_actions" do
+    context "if a proposal has not been calculated yet" do
+      let(:settings) { nil }
+
+      it "returns an empty list" do
+        expect(subject.space_actions).to eq([])
+      end
+    end
+
+    context "if a proposal has been calculated" do
+      let(:settings) do
+        Agama::Storage::ProposalSettings.new.tap do |settings|
+          settings.space.actions = {
+            "/dev/vda1" => :force_delete,
+            "/dev/vda2" => :resize
+          }
+        end
+      end
+
+      it "return a list with a hash for each action" do
+        expect(subject.space_actions).to contain_exactly(
+          { "Device" => "/dev/vda1", "Action" => "force_delete" },
+          { "Device" => "/dev/vda2", "Action" => "resize" }
+        )
       end
     end
   end

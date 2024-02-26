@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -55,3 +55,5 @@ export { default as ShowTerminalButton } from "./ShowTerminalButton";
 export { default as NumericTextInput } from "./NumericTextInput";
 export { default as PasswordInput } from "./PasswordInput";
 export { default as DevelopmentInfo } from "./DevelopmentInfo";
+export { default as Selector } from "./Selector";
+export { default as OptionsPicker } from "./OptionsPicker";

@@ -1,4 +1,28 @@
 -------------------------------------------------------------------
+Thu Feb 22 14:05:56 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Break storage settings in multiple sections to improve the UX
+  (gh#openSUSE/agama#1045).
+
+-------------------------------------------------------------------
+Wed Feb 21 17:40:01 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Stop rendering a warning at the top of storage page
+  (gh#openSUSE/agama#1048).
+
+-------------------------------------------------------------------
+Tue Feb 20 13:13:51 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Add section for space policy to the storage page
+  (gh#openSUSE/agama#1028).
+
+-------------------------------------------------------------------
+Wed Feb 14 12:42:32 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- UI: change look&feel and internals of Agama selectors
+  (gh#openSUSE/agama#1012).
+
+-------------------------------------------------------------------
 Mon Feb 12 11:53:29 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update cockpit.js to version 309 (gh#openSUSE/agama#1038).

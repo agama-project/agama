@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 20 13:15:15 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Add Filesystem and Component D-Bus interfaces
+  (gh#openSUSE/agama#1028).
+
+-------------------------------------------------------------------
 Wed Feb  7 11:49:02 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add preliminary support to import AutoYaST profiles
