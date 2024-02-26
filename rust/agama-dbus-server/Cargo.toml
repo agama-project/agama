@@ -47,6 +47,7 @@ chrono = { version = "0.4.34", default-features = false, features = [
   "clock",
 ] }
 pam = "0.8.0"
+serde_with = "3.6.1"
 
 [[bin]]
 name = "agama-dbus-server"
