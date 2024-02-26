@@ -184,7 +184,7 @@ mod tests {
         let state = build_state();
         let response = super::locales(axum::extract::State(state)).await;
         let default = LocaleCode::default();
-        let found = response.locales.iter().find(|l| l.code == default);
+        let found = response.iter().find(|l| l.code == default);
         assert!(found.is_some());
     }
 
@@ -193,7 +193,7 @@ mod tests {
         let state = build_state();
         let response = super::keymaps(axum::extract::State(state)).await;
         let english: KeymapId = "us".parse().unwrap();
-        let found = response.keymaps.iter().find(|k| k.id == english);
+        let found = response.iter().find(|k| k.id == english);
         assert!(found.is_some());
     }
 
@@ -201,10 +201,7 @@ mod tests {
     async fn test_timezones() {
         let state = build_state();
         let response = super::timezones(axum::extract::State(state)).await;
-        let found = response
-            .timezones
-            .iter()
-            .find(|t| t.code == "Atlantic/Canary");
+        let found = response.iter().find(|t| t.code == "Atlantic/Canary");
         assert!(found.is_some());
     }
 }
