@@ -65,18 +65,13 @@ pub fn l10n_service(events: EventsSender) -> Router {
         .with_state(state)
 }
 
-#[derive(Debug, Serialize, utoipa::ToSchema)]
-pub struct LocalesResponse {
-    locales: Vec<LocaleEntry>,
-}
-
 #[utoipa::path(get, path = "/l10n/locales", responses(
-  (status = 200, description = "List of known locales", body = LocalesResponse)
+  (status = 200, description = "List of known locales", body = Vec<LocaleEntry>)
 ))]
-async fn locales(State(state): State<LocaleState>) -> Json<LocalesResponse> {
+async fn locales(State(state): State<LocaleState>) -> Json<Vec<LocaleEntry>> {
     let data = state.locale.read().unwrap();
     let locales = data.locales_db.entries().to_vec();
-    Json(LocalesResponse { locales })
+    Json(locales)
 }
 
 #[derive(Serialize, Deserialize, utoipa::ToSchema)]
@@ -91,32 +86,22 @@ pub struct LocaleConfig {
     ui_locale: Option<String>,
 }
 
-#[derive(Debug, Serialize, utoipa::ToSchema)]
-pub struct TimezonesResponse {
-    timezones: Vec<TimezoneEntry>,
-}
-
 #[utoipa::path(get, path = "/l10n/timezones", responses(
-    (status = 200, description = "List of known timezones", body = TimezonesResponse)
+    (status = 200, description = "List of known timezones")
 ))]
-async fn timezones(State(state): State<LocaleState>) -> Json<TimezonesResponse> {
+async fn timezones(State(state): State<LocaleState>) -> Json<Vec<TimezoneEntry>> {
     let data = state.locale.read().unwrap();
     let timezones = data.timezones_db.entries().to_vec();
-    Json(TimezonesResponse { timezones })
-}
-
-#[derive(Debug, Serialize, utoipa::ToSchema)]
-pub struct KeymapsResponse {
-    keymaps: Vec<Keymap>,
+    Json(timezones)
 }
 
 #[utoipa::path(get, path = "/l10n/keymaps", responses(
-    (status = 200, description = "List of known keymaps", body = KeymapsResponse)
+    (status = 200, description = "List of known keymaps", body = Vec<Keymap>)
 ))]
-async fn keymaps(State(state): State<LocaleState>) -> Json<KeymapsResponse> {
+async fn keymaps(State(state): State<LocaleState>) -> Json<Vec<Keymap>> {
     let data = state.locale.read().unwrap();
     let keymaps = data.keymaps_db.entries().to_vec();
-    Json(KeymapsResponse { keymaps })
+    Json(keymaps)
 }
 
 #[utoipa::path(put, path = "/l10n/config", responses(

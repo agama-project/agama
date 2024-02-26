@@ -12,6 +12,7 @@ use keyboard::KeymapsDatabase;
 pub use locale::LocaleEntry;
 use locale::LocalesDatabase;
 use std::process::Command;
+pub use timezone::TimezoneEntry;
 use timezone::TimezonesDatabase;
 use zbus::{dbus_interface, Connection};
 

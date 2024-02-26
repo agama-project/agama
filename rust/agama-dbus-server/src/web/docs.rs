@@ -6,10 +6,10 @@ use utoipa::OpenApi;
     paths(super::http::ping, crate::l10n::web::locales),
     components(
         schemas(super::http::PingResponse),
-        schemas(crate::l10n::web::LocalesResponse),
         schemas(crate::l10n::LocaleEntry),
         schemas(crate::l10n::web::LocaleConfig),
-        schemas(crate::l10n::Keymap)
+        schemas(crate::l10n::Keymap),
+        schemas(crate::l10n::TimezoneEntry)
     )
 )]
 pub struct ApiDoc;

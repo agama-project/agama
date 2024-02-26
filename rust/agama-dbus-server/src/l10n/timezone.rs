@@ -7,7 +7,7 @@ use serde::Serialize;
 use std::collections::HashMap;
 
 /// Represents a timezone, including each part as localized.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 pub struct TimezoneEntry {
     /// Timezone identifier (e.g. "Atlantic/Canary").
     pub code: String,
