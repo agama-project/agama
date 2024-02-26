@@ -95,12 +95,12 @@ beforeEach(() => {
 });
 
 it("renders a control for displaying/selecting the file system type", async () => {
-  const { user } = plainRender(<VolumeForm {...props} />);
+  // use home which is not snapshotted
+  const { user } = plainRender(<VolumeForm volume={{ ...volumes.home }} />);
 
   const fsTypeButton = screen.getByRole("button", { name: "File system type" });
   await user.click(fsTypeButton);
-  screen.getByRole("option", { name: /Btrfs with snapshots/ });
-  screen.getByRole("option", { name: "Btrfs" });
+  screen.getByRole("option", { name: "XFS" });
   screen.getByRole("option", { name: "Ext4" });
 });
 
@@ -112,6 +112,24 @@ it("does not render the file system control if there is only one option", async 
   const swap = screen.getByRole("option", { name: "swap" });
   await user.click(swap);
   await screen.findByText("Swap");
+  await waitFor(() => (
+    expect(screen.queryByRole("button", { name: "File system type" })).not.toBeInTheDocument())
+  );
+});
+
+it("renders the file system control for root mount point without snapshots", async () => {
+  const { user } = plainRender(<VolumeForm volume={{ ...volumes.root, snapshots: false }} />);
+
+  const fsTypeButton = screen.getByRole("button", { name: "File system type" });
+  await user.click(fsTypeButton);
+  screen.getByRole("option", { name: "Btrfs" });
+  screen.getByRole("option", { name: "Ext4" });
+});
+
+it("does not render the file system control for root mount point with btrfs with snapshots", async () => {
+  plainRender(<VolumeForm {...props} />);
+
+  await screen.findByText("Btrfs");
   await waitFor(() => (
     expect(screen.queryByRole("button", { name: "File system type" })).not.toBeInTheDocument())
   );
@@ -179,17 +197,16 @@ it("calls the onSubmit callback with resulting volume when the form is submitted
   await user.type(maxSizeInput, "25");
   await user.selectOptions(maxSizeUnitSelector, maxSizeGiBUnit);
 
-  const fsTypeButton = screen.getByRole("button", { name: "File system type" });
-  await user.click(fsTypeButton);
-  const ext4Button = screen.getByRole("option", { name: "Ext4" });
-  await user.click(ext4Button);
+  // root is with btrfs and snapshots, so it is not possible to select it
+  await screen.findByText("Btrfs");
+  await waitFor(() => (
+    expect(screen.queryByRole("button", { name: "File system type" })).not.toBeInTheDocument())
+  );
 
   await user.click(submitForm);
 
   expect(onSubmitFn).toHaveBeenCalledWith({
     ...volumes.root,
-    fsType: "Ext4",
-    snapshots: false,
     minSize: parseToBytes("10 GiB"),
     maxSize: parseToBytes("25 GiB")
   });
