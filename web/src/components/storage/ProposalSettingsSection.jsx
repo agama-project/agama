@@ -478,10 +478,13 @@ const SnapshotsField = ({
     onChange({ value: checked, settings });
   };
 
-  if (rootVolume.outline.snapshotsConfigurable) {
+  const configurableSnapshots = rootVolume.outline.snapshotsConfigurable;
+  const forcedSnapshots = !configurableSnapshots && rootVolume.fsType === "Btrfs" && rootVolume.snapshots;
+
+  const SnapshotsToggle = () => {
     const explanation = _("Uses btrfs for the root file system allowing to boot to a previous version of the system after configuration changes or software upgrades.");
     return (
-      <div>
+      <>
         <Switch
           id="snapshots"
           label={_("Use Btrfs Snapshots")}
@@ -492,17 +495,16 @@ const SnapshotsField = ({
         <div>
           {explanation}
         </div>
-      </div>
+      </>
     );
-  } else if (rootVolume.fsType === "Btrfs" && rootVolume.snapshots) {
-    return (
-      <div>
-        {_("Btrfs snapshots required by product.")}
-      </div>
-    );
-  } else { // strange situation, should not happen
-    return undefined;
-  }
+  };
+
+  return (
+    <div>
+      <If condition={forcedSnapshots} then={_("Btrfs snapshots required by product.")} />
+      <If condition={configurableSnapshots} then={<SnapshotsToggle />} />
+    </div>
+  );
 };
 
 /**
