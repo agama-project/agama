@@ -20,7 +20,7 @@
  */
 
 /**
- * Method which generates username suggestions based on first and last name.
+ * Method which generates username suggestions based on given full name.
  * The method cleans the input name by removing non-alphanumeric characters (except spaces),
  * splits the name into parts, and then generates suggestions based on these parts.
  *
@@ -37,33 +37,34 @@ const suggestUsernames = (fullName) => {
     .toLowerCase();
 
   // Split the cleaned name into parts.
-  const nameParts = cleanedName.split(/\s+/);
+  const parts = cleanedName.split(/\s+/);
+  const suggestions = new Set();
 
-  const suggestions = [];
+  const firstLetters = parts.map(p => p[0]).join('');
+  const lastPosition = parts.length - 1;
 
-  nameParts.forEach((namePart, index) => {
-    if (index === 0) {
-      suggestions.push(namePart);
-      suggestions.push(namePart[0]);
-      suggestions.push(namePart[0]);
-      suggestions.push(namePart);
-      suggestions.push(namePart[0]);
-      suggestions.push(namePart);
-    } else {
-      if (index === 1)
-        suggestions[1] += namePart;
-      suggestions[2] += namePart;
-      suggestions[3] += namePart[0];
-      if (index === nameParts.length - 1)
-        suggestions[4] += namePart;
-      else
-        suggestions[4] += namePart[0];
-      suggestions[5] += namePart;
-    }
+  const [firstPart, ...allExceptFirst] = parts;
+  const [firstLetter, ...allExceptFirstLetter] = firstLetters;
+  const lastPart = parts[lastPosition];
+
+  // Just the first part of the name
+  suggestions.add(firstPart);
+  // The first letter of the first part plus all other parts
+  suggestions.add(firstLetter + allExceptFirst.join(''));
+  // The first part plus the first letters of all other parts
+  suggestions.add(firstPart + allExceptFirstLetter.join(''));
+  // The first letters except the last one plus the last part
+  suggestions.add(firstLetters.substring(0, lastPosition) + lastPart);
+  // All parts without spaces
+  suggestions.add(parts.join(''));
+
+  // let's drop suggestions with less than 3 characters
+  suggestions.forEach(s => {
+    if (s.length < 3) suggestions.delete(s);
   });
 
   // using Set object to remove duplicates, then converting back to array
-  return [...new Set(suggestions)];
+  return [...suggestions];
 };
 
 export {
