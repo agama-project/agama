@@ -95,7 +95,7 @@ beforeEach(() => {
 });
 
 it("renders a control for displaying/selecting the file system type", async () => {
-  // use home which is not snapshotted
+  // use home which is not using snapshots
   const { user } = plainRender(<VolumeForm volume={{ ...volumes.home }} />);
 
   const fsTypeButton = screen.getByRole("button", { name: "File system type" });
