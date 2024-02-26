@@ -1,0 +1,14 @@
+#!/usr/bin/sh
+
+case "$1" in
+"list-locales")
+	echo "en_US.UTF-8"
+	;;
+"list-keymaps")
+	echo "en"
+	;;
+*)
+	echo "unknown action"
+	exit 1
+	;;
+esac

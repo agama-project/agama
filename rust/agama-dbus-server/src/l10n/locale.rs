@@ -36,7 +36,7 @@ impl LocalesDatabase {
     ///
     /// * `ui_language`: language to translate the descriptions (e.g., "en").
     pub fn read(&mut self, ui_language: &str) -> Result<(), Error> {
-        let result = Command::new("/usr/bin/localectl")
+        let result = Command::new("localectl")
             .args(["list-locales"])
             .output()
             .context("Failed to get the list of locales")?;

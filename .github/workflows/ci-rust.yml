@@ -92,7 +92,9 @@ jobs:
         tool: cargo-binstall
 
     - name: Install Tarpaulin (for code coverage)
-      run: cargo-binstall --no-confirm cargo-tarpaulin
+      run: |
+        echo "share/bin" >> $GITHUB_PATH
+        cargo-binstall --no-confirm cargo-tarpaulin
 
     - name: Run the tests
       run: cargo tarpaulin --out xml -- --nocapture
