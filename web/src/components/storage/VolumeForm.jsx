@@ -706,7 +706,7 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
     if (!Object.keys(errors).length) onSubmit(volume);
   };
 
-  const { fsType, snapshots } = state.formData;
+  const { fsType } = state.formData;
 
   const ShowMountPointSelector = () => (
     <MountPointFormSelect
@@ -734,7 +734,7 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
         }
       />
       <FsField
-        value={{ fsType, snapshots }}
+        value={fsType}
         volume={state.volume}
         onChange={updateData}
       />
