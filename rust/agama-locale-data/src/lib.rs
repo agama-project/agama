@@ -51,8 +51,7 @@ pub fn get_xkeyboards() -> anyhow::Result<xkeyboard::XKeyboards> {
 /// assert!(key_maps.contains(&us));
 /// ```
 pub fn get_localectl_keymaps() -> anyhow::Result<Vec<KeymapId>> {
-    const BINARY: &str = "/usr/bin/localectl";
-    let output = Command::new(BINARY)
+    let output = Command::new("localectl")
         .arg("list-keymaps")
         .output()
         .context("failed to execute localectl list-maps")?
