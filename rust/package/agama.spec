@@ -26,6 +26,7 @@ License:        GPL-2.0-only
 Url:            https://github.com/opensuse/agama
 Source0:        agama.tar
 Source1:        vendor.tar.zst
+
 BuildRequires:  cargo-packaging
 BuildRequires:  pkgconfig(openssl)
 # used in tests for dbus service
@@ -50,6 +51,9 @@ Requires:       timezone
 BuildRequires:  timezone
 # dependency on the YaST part of Agama
 Requires:       agama-yast
+
+# conflicts with the old packages
+Conflicts:      agama-dbus-server
 
 %description
 Agama is a service-based Linux installer. It is composed of an HTTP-based API,
