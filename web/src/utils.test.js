@@ -21,7 +21,8 @@
 
 import {
   classNames, partition, noop, toValidationError,
-  localConnection, remoteConnection, isObject
+  localConnection, remoteConnection, isObject,
+  findContent
 } from "./utils";
 
 describe("noop", () => {
@@ -147,5 +148,45 @@ describe("isObject", () => {
       ["dummy", "map"]
     ]);
     expect(isObject(map)).toBe(false);
+  });
+});
+
+describe("findContent", () => {
+  const obj = {
+    example: "of an object",
+    to: { find: "something" },
+    deep: {
+      enough: "by using findContent method"
+    }
+  };
+
+  it("returns undefined is an object is not given", () => {
+    expect(findContent({ in: ["Dummy", "Array"], at: "something.deep" })).toBe(undefined);
+  });
+
+  it("returns undefined is path is not given", () => {
+    expect(findContent({ in: obj })).toBe(undefined);
+  });
+
+  it("returns undefined is path is not given", () => {
+    expect(findContent({ in: obj })).toBe(undefined);
+  });
+
+  it("returns undefined is given path does not exist", () => {
+    expect(findContent({ in: obj, at: "something.not.defined.yet" })).toBe(undefined);
+  });
+
+  it("returns found content at given path (string)", () => {
+    expect(findContent({ in: obj, at: "deep.enough" })).toBe("by using findContent method");
+  });
+
+  it("returns found content at given path (array)", () => {
+    expect(findContent({ in: obj, at: ["deep.enough"] })).toBe("by using findContent method");
+  });
+
+  it("returns first content found when more than one path are given", () => {
+    expect(
+      findContent({ in: obj, at: ["not.defined", "to", "example", "deep.enough"] })
+    ).toEqual({ find: "something" });
   });
 });

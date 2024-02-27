@@ -351,6 +351,34 @@ const timezoneUTCOffset = (timezone) => {
   }
 };
 
+/**
+* Path to data within an object. It can contain dots for indicating nested keys.
+* @typedef {string} ObjectPath
+*/
+
+/**
+ * Returns content found in given object at provided path(s)
+ *
+ * @note It accepts nested paths by using dots. If more than one path is given, the order matters: the method will
+ * iterate over them until data is found.
+ *
+ * @param {object} params - An object holding "named parameters"
+ * @param {object} params.in - The object on which the search will be done
+ * @return {ObjectPath|ObjectPath[]} params.at - A collection of object paths to look for.
+ */
+const findContent = ({ in: obj, at = "" }) => {
+  const paths = Array(at).flat();
+  if (!paths.length) return;
+
+  for (const path of paths) {
+    const value = path.split(".").reduce((value, key) => {
+      return value && value[key];
+    }, obj);
+
+    if (value) return value;
+  }
+};
+
 export {
   noop,
   isObject,
@@ -366,5 +394,6 @@ export {
   localConnection,
   remoteConnection,
   timezoneTime,
-  timezoneUTCOffset
+  timezoneUTCOffset,
+  findContent
 };
