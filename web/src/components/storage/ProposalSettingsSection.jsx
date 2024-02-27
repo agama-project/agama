@@ -26,6 +26,7 @@ import { _ } from "~/i18n";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
+import { hasFS } from "~/components/storage/utils";
 
 /**
  * @typedef {import ("~/client/storage").ProposalManager.ProposalSettings} ProposalSettings
@@ -129,7 +130,7 @@ const SnapshotsField = ({
 }) => {
   const rootVolume = (settings.volumes || []).find((i) => i.mountPath === "/");
 
-  const initialChecked = rootVolume !== undefined && rootVolume.fsType === "Btrfs" && rootVolume.snapshots;
+  const initialChecked = rootVolume !== undefined && hasFS(rootVolume, "Btrfs") && rootVolume.snapshots;
   const [isChecked, setIsChecked] = useState(initialChecked);
 
   // no root volume is probably some error or still loading
@@ -143,7 +144,7 @@ const SnapshotsField = ({
   };
 
   const configurableSnapshots = rootVolume.outline.snapshotsConfigurable;
-  const forcedSnapshots = !configurableSnapshots && rootVolume.fsType === "Btrfs" && rootVolume.snapshots;
+  const forcedSnapshots = !configurableSnapshots && hasFS(rootVolume, "Btrfs") && rootVolume.snapshots;
 
   const SnapshotsToggle = () => {
     const explanation = _("Uses Btrfs for the root file system allowing to boot to a previous version of the system after configuration changes or software upgrades.");

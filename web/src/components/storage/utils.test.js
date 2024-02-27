@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { deviceSize, deviceLabel, parseToBytes, splitSize } from "./utils";
+import { deviceSize, deviceLabel, parseToBytes, splitSize, hasFS } from "./utils";
 
 describe("deviceSize", () => {
   it("returns the size with units", () => {
@@ -84,5 +84,19 @@ describe("splitSize", () => {
 
   it("returns an 'empty' size object when empty string is given", () => {
     expect(splitSize("")).toEqual({ size: undefined, unit: undefined });
+  });
+});
+
+describe("hasFS", () => {
+  it("returns true if volume has given filesystem", () => {
+    expect(hasFS({ fsType: "Btrfs" }, "Btrfs")).toBe(true);
+  });
+
+  it("returns true if volume has given filesystem regarding different case", () => {
+    expect(hasFS({ fsType: "btrfs" }, "Btrfs")).toBe(true);
+  });
+
+  it("returns false  if volume has different filesystem", () => {
+    expect(hasFS({ fsType: "Btrfs" }, "EXT4")).toBe(false);
   });
 });

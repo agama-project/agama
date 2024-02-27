@@ -135,6 +135,20 @@ const deviceLabel = (device) => {
   return size ? `${name}, ${deviceSize(size)}` : name;
 };
 
+/**
+ * Checks if volume uses given fs. This method works same as in backend
+ * case insensitive.
+ *
+ * @param {import(~/clients/storage).Volume} volume
+ * @param {string} fs filesystem name to check
+ * @returns {boolean} true when volume uses given fs
+ */
+const hasFS = (volume, fs) => {
+  const volFS = volume.fsType;
+
+  return volFS.toLowerCase() === fs.toLocaleLowerCase();
+};
+
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
@@ -143,4 +157,5 @@ export {
   deviceSize,
   parseToBytes,
   splitSize,
+  hasFS
 };
