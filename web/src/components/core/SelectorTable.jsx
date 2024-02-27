@@ -21,7 +21,6 @@
 
 import React, { useState } from "react";
 import { Table, Thead, Tr, Th, Tbody, Td, ExpandableRowContent } from "@patternfly/react-table";
-import { findContent } from "~/utils";
 
 /**
  * An object for sharing data across nested maps
@@ -66,20 +65,20 @@ const TableHeader = ({ columns }) => (
  * @note It only accepts one nesting level.
  *
  * @param {object} props
- * @param {SelectorTableColumn[]} props.columns
- * @param {object[]} props.items
- * @param {string} [props.itemIdKey="name"] - The key for retrieving the item id
- * @param {string[]} [props.itemChildrenPaths=[]] - The paths to look for item children
- * @param {boolean} [props.isMultiple=false] - Whether multiple selection is allowed
- * @param {string[]} [props.selected=[]] - Ids of selected items
- * @param {string[]} [props.initialExpandedItems=[]] - Ids of initially expanded items
- * @param {object} [props.tableProps] - Props for {@link https://www.patternfly.org/components/table/#table PF/Table}
+ * @param {SelectorTableColumn[]} props.columns - Collection of objects defining columns.
+ * @param {object[]} props.items - Collection of items to be rendered.
+ * @param {string} [props.itemIdKey="name"] - The key for retrieving the item id.
+ * @param {(item: object) => Array<object>} [props.itemChildren=() =>[]] - Lookup method to retrieve children from given item.
+ * @param {boolean} [props.isMultiple=false] - Whether multiple selection is allowed.
+ * @param {string[]} [props.selected=[]] - Ids of selected items.
+ * @param {string[]} [props.initialExpandedItems=[]] - Ids of initially expanded items.
+ * @param {object} [props.tableProps] - Props for {@link https://www.patternfly.org/components/table/#table PF/Table}.
  */
 export default function SelectorTable({
   columns = [],
   items = [],
   itemIdKey = "id",
-  itemChildrenPaths = [],
+  itemChildren = () => [],
   isMultiple = false,
   initialExpandedItems = [],
   selected = [],
@@ -149,7 +148,7 @@ export default function SelectorTable({
   const renderItem = (item, sharedData) => {
     const itemKey = item[itemIdKey];
     const rowIndex = sharedData.rowIndex++;
-    const children = findContent({ in: item, at: itemChildrenPaths });
+    const children = itemChildren(item);
     const validChildren = Array.isArray(children) && children.length > 0;
     const expandProps = validChildren && {
       rowIndex,

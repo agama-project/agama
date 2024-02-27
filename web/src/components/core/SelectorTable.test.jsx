@@ -77,6 +77,27 @@ sda.partitionTable = {
   unpartitionedSize: 512
 };
 
+const sdb = {
+  sid: "62",
+  isDrive: true,
+  type: "disk",
+  vendor: "Samsung",
+  model: "Samsung Evo 8 Pro",
+  driver: ["ahci"],
+  bus: "IDE",
+  busId: "",
+  transport: "",
+  dellBOSS: false,
+  sdCard: false,
+  active: true,
+  name: "/dev/sdb",
+  size: 2048,
+  recoverableSize: 0,
+  systems : [],
+  udevIds: [],
+  udevPaths: ["pci-0000:00-19"]
+};
+
 const lv1 = {
   sid: "163",
   name: "/dev/custom/vg/lv1",
@@ -98,7 +119,7 @@ const columns = [
     name: "Content",
     value: (item) => {
       if (item.isDrive) return item.systems.map((s, i) => <p key={i}>{s}</p>);
-      if (item.type === "vg") return "";
+      if (item.type === "vg") return `${item.lvs.length} logical volume(s)`;
 
       return item.content;
     }
@@ -106,7 +127,11 @@ const columns = [
   { name: "Size", value: (item) => item.size },
 ];
 
-const devices = [sda, vg];
+const itemChildren = (item) => (
+  item.isDrive ? item.partitionTable?.partitions : item.lvs
+);
+
+const devices = [sda, sdb, vg];
 
 describe("SelectorTable", () => {
   it("renders a table with given name", () => {
@@ -122,62 +147,115 @@ describe("SelectorTable", () => {
     within(table).getByRole("columnheader", { name: "Size" });
   });
 
+  it.only("renders a rowgroup per parent item", () => {
+    plainRender(<SelectorTable columns={columns} items={devices} />);
+    const groups = screen.getAllByRole("rowgroup");
+    // NOTE: since <thead> has also the rowgroup role, we expect to found 4 in
+    // this example: 1 thead + 3 tbody (sda, sdb, vg)
+    expect(groups.length).toEqual(4);
+  });
+
   it("renders a row per given item", () => {
-    plainRender(
-      <SelectorTable columns={columns} items={devices} />
-    );
+    plainRender(<SelectorTable columns={columns} items={devices} />);
     const table = screen.getByRole("grid");
+
+    // NOTE: checking only "parent" rows here because the itemChildren param is
+    // not provided. Children are testes in another example.
     within(table).getByRole("row", { name: /dev\/sda 1024/ });
-    within(table).getByRole("row", { name: /dev\/custom\/vg/ });
+    within(table).getByRole("row", { name: /dev\/sdb 2048/ });
+    within(table).getByRole("row", { name: /dev\/custom\/vg 1 logical volume\(s\)/ });
   });
 
-  it("renders a radio per row when not mounted as multiple", () => {
-    plainRender(
-      <SelectorTable columns={columns} items={devices} />
+  it("renders a row per found children if `itemChildren` param is given", async () => {
+    const { user } = plainRender(
+      <SelectorTable
+        columns={columns}
+        items={devices}
+        itemChildren={itemChildren}
+      />
     );
     const table = screen.getByRole("grid");
-    const sda = within(table).getByRole("row", { name: /dev\/sda 1024/ });
-    const lv = within(table).getByRole("row", { name: /dev\/custom\/vg/ });
-    [sda, lv].forEach((row) => within(row).getByRole("radio"));
+    const sdaRow = within(table).getByRole("row", { name: /dev\/sda/ });
+    const sdbRow = within(table).getByRole("row", { name: /dev\/sdb/ });
+    const sdaChildrenToggler = within(sdaRow).getByRole("button", { name: "Details" });
+    const lvRow = within(table).getByRole("row", { name: /dev\/custom\/vg 1 logical/ });
+    const lvChildrenToggler = within(lvRow).getByRole("button", { name: "Details" });
+
+    // /dev/sdb does not have children
+    const sdbChildrenToggler = within(sdbRow).queryByRole("button", { name: "Details" });
+    expect(sdbChildrenToggler).toBeNull();
+
+    await user.click(sdaChildrenToggler);
+    await user.click(lvChildrenToggler);
+
+    within(table).getByRole("row", { name: /dev\/sda1 512/ });
+    within(table).getByRole("row", { name: /dev\/sda2 512/ });
+    within(table).getByRole("row", { name: /dev\/custom\/vg\/lv1/ });
   });
 
-  it("renders a checkbox selector per row when mounted as multiple", () => {
+  it("renders a radio per row if not mounted as multiple", () => {
+    plainRender(<SelectorTable columns={columns} items={devices} />
+    );
+    const table = screen.getByRole("grid");
+    const sda = within(table).getByRole("row", { name: /dev\/sda/ });
+    const sdb = within(table).getByRole("row", { name: /dev\/sdb/ });
+    const lv = within(table).getByRole("row", { name: /dev\/custom\/vg/ });
+    [sda, sdb, lv].forEach((row) => within(row).getByRole("radio"));
+  });
+
+  it("renders a radio per row when isMultiple=false", () => {
+    plainRender(
+      <SelectorTable columns={columns} items={devices} isMultiple={false} />
+    );
+    const table = screen.getByRole("grid");
+    const sda = within(table).getByRole("row", { name: /dev\/sda/ });
+    const sdb = within(table).getByRole("row", { name: /dev\/sdb/ });
+    const lv = within(table).getByRole("row", { name: /dev\/custom\/vg/ });
+    [sda, sdb, lv].forEach((row) => within(row).getByRole("radio"));
+  });
+
+  it("renders a checkbox per row when mounted as multiple", () => {
     plainRender(
       <SelectorTable columns={columns} items={devices} isMultiple />
     );
     const table = screen.getByRole("grid");
-    const sda = within(table).getByRole("row", { name: /dev\/sda 1024/ });
+    const sda = within(table).getByRole("row", { name: /dev\/sda/ });
+    const sdb = within(table).getByRole("row", { name: /dev\/sdb/ });
     const lv = within(table).getByRole("row", { name: /dev\/custom\/vg/ });
-    [sda, lv].forEach((row) => within(row).getByRole("checkbox"));
+    [sda, sdb, lv].forEach((row) => within(row).getByRole("checkbox"));
   });
 
-  it("uses id for checking if item is expanded when itemIdKey prop is not given", () => {
+  it("uses 'id' as key when `itemIdKey` prop is not given", () => {
     plainRender(
       <SelectorTable
         items={devices}
         columns={columns}
         initialExpandedItems={["/dev/sda"]}
-        itemChildrenPaths={["partitionTable.partitions", "lvs"]}
+        itemChildren={itemChildren}
       />
     );
 
     const table = screen.getByRole("grid");
+    // Since itemIdKey !== "name", "/dev/sda" is not mounted as expanded. Its
+    // children are not visible
     const sdaChild = within(table).queryByRole("row", { name: /dev\/sda1 512/ });
     expect(sdaChild).toBeNull();
   });
 
-  it("uses given itemIdKey prop for checking if is expanded", () => {
+  it("uses given `itemIdKey` as key", () => {
     plainRender(
       <SelectorTable
         items={devices}
         columns={columns}
         itemIdKey="name"
+        itemChildren={itemChildren}
         initialExpandedItems={["/dev/sda"]}
-        itemChildrenPaths={["partitionTable.partitions", "lvs"]}
       />
     );
 
     const table = screen.getByRole("grid");
+    // Since itemIdKey === "name", "/dev/sda" is properly mounted as expanded. Its
+    // children are visible
     const sdaChild = within(table).queryByRole("row", { name: /dev\/sda1 512/ });
     expect(sdaChild).not.toBeNull();
   });
@@ -185,15 +263,14 @@ describe("SelectorTable", () => {
   // TODO: make below unit test work. Even though in manual testing seems to
   // work, RTL complains about not being able to find an accessible checkbox
   // element
-  it.skip("renders as selected item(s) matching selected prop", async () => {
+  it.skip("renders initially selected items given via `selected` prop", async () => {
     plainRender(
       <SelectorTable
+        isMultiple
         columns={columns}
         items={devices}
-        itemChildrenPaths={["partitionTable.partitions", "lvs"]}
-        initialExpandedItems={["/dev/sda", "/dev/custom/vg"]}
+        itemChildren={itemChildren}
         selected={[sda1, lv1]}
-        isMultiple
       />
     );
     const table = screen.getByRole("grid");
@@ -204,97 +281,21 @@ describe("SelectorTable", () => {
     expect(selection.length).toEqual(2);
   });
 
-  describe("when initialExpandedItems is given", () => {
-    it("renders expanded items whose itemIdKey matches with one of given values", () => {
+  describe("when `initialExpandedItems` is given", () => {
+    it("renders as expanded those items which value for `itemIdKey` its included in given collection", () => {
       plainRender(
         <SelectorTable
           columns={columns}
           items={devices}
           itemIdKey="name"
+          itemChildren={itemChildren}
           initialExpandedItems={["/dev/sda"]}
-          itemChildrenPaths={["partitionTable.partitions", "lvs"]}
         />
       );
 
       const table = screen.getByRole("grid");
       within(table).getByRole("row", { name: /dev\/sda1 512/ });
       within(table).getByRole("row", { name: /dev\/sda2 512/ });
-    });
-  });
-
-  describe("when path to children is given", () => {
-    describe("but it is not valid", () => {
-      it("render items without toggler", () => {
-        plainRender(
-          <SelectorTable columns={columns} items={devices} itemChildrenPaths="wrong.path" />
-        );
-        const table = screen.getByRole("grid");
-        const sdaRow = within(table).getByRole("row", { name: /dev\/sda 1024/ });
-        const sdaChildrenToggler = within(sdaRow).queryByRole("button", { name: "Details" });
-        expect(sdaChildrenToggler).toBeNull();
-      });
-    });
-
-    describe("but it does not provide content", () => {
-      it("render items without toggler", () => {
-        plainRender(
-          <SelectorTable columns={columns} items={devices} itemChildrenPaths="systems" />
-        );
-        const table = screen.getByRole("grid");
-        const sdaRow = within(table).getByRole("row", { name: /dev\/sda 1024/ });
-        const sdaChildrenToggler = within(sdaRow).queryByRole("button", { name: "Details" });
-        expect(sdaChildrenToggler).toBeNull();
-      });
-    });
-
-    describe("but it does not provide an Array", () => {
-      it("render items without toggler", () => {
-        plainRender(
-          <SelectorTable columns={columns} items={devices} itemChildrenPaths="model" />
-        );
-        const table = screen.getByRole("grid");
-        const sdaRow = within(table).getByRole("row", { name: /dev\/sda 1024/ });
-        const sdaChildrenToggler = within(sdaRow).queryByRole("button", { name: "Details" });
-        expect(sdaChildrenToggler).toBeNull();
-      });
-    });
-
-    describe("and children are found", () => {
-      it("renders a toggler in parent", () => {
-        plainRender(
-          <SelectorTable columns={columns} items={devices} itemChildrenPaths="partitionTable.partitions" />
-        );
-        const table = screen.getByRole("grid");
-        const sdaRow = within(table).getByRole("row", { name: /dev\/sda 1024/ });
-        const lvRow = within(table).getByRole("row", { name: /dev\/custom\/vg/ });
-
-        within(sdaRow).getByRole("button", { name: "Details" });
-        // NOTE above that path for LV children was not given,
-        const lvChildrenToggler = within(lvRow).queryByRole("button", { name: "Details" });
-        expect(lvChildrenToggler).toBeNull();
-      });
-
-      it("renders children", async () => {
-        const { user } = plainRender(
-          <SelectorTable
-            columns={columns}
-            items={devices}
-            itemChildrenPaths={["partitionTable.partitions", "lvs"]}
-          />
-        );
-        const table = screen.getByRole("grid");
-        const sdaRow = within(table).getByRole("row", { name: /dev\/sda 1024/ });
-        const sdaChildrenToggler = within(sdaRow).getByRole("button", { name: "Details" });
-        const lvRow = within(table).getByRole("row", { name: /dev\/custom\/vg$/ });
-        const lvChildrenToggler = within(lvRow).getByRole("button", { name: "Details" });
-
-        await user.click(sdaChildrenToggler);
-        await user.click(lvChildrenToggler);
-
-        within(table).getByRole("row", { name: /dev\/sda1 512/ });
-        within(table).getByRole("row", { name: /dev\/sda2 512/ });
-        within(table).getByRole("row", { name: /dev\/custom\/vg\/lv1/ });
-      });
     });
   });
 });
