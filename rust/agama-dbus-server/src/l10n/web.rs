@@ -28,7 +28,7 @@ pub enum LocaleError {
     #[error("Invalid keymap: {0}")]
     InvalidKeymap(#[from] InvalidKeymap),
     #[error("Cannot translate: {0}")]
-    CannotTranslate(#[from] Error),
+    OtherError(#[from] Error),
 }
 
 impl IntoResponse for LocaleError {
