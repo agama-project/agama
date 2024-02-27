@@ -23,10 +23,11 @@ The Agama packages are available in two OBS projects:
 You can find more details the automatic OBS synchronization in the
 [obs_integration.md](doc/obs_integration.md) file.
 
-The process to build each package is slightly different depending on the technology we are using.
-While the Ruby-based one (`rubygem-agama`) is built as any other YaST package, the web UI
-(`cockpit-agama`) and the CLI (`agama-cli`) rely on [OBS source
-services](https://openbuildservice.org/help/manuals/obs-user-guide/cha.obs.source_service.html).
+The process to build each package is slightly different depending on the
+technology we are using. While the Ruby-based one (`rubygem-agama-yast`) is
+built as any other YaST package, Agama server (`agama`), the CLI (`agama-cli`),
+and the web UI (`cockpit-agama`) rely on
+[OBS source services](https://openbuildservice.org/help/manuals/obs-user-guide/cha.obs.source_service.html).
 
 ## Versioning Policy
 
@@ -71,8 +72,8 @@ for manual update.
 ### Service
 
 You can check the current package in
-[systemsmanagement:Agama:Staging/rubygem-agama](
-https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/rubygem-agama).
+[systemsmanagement:Agama:Staging/rubygem-agama-yast](
+https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/rubygem-agama-yast).
 
 Use `rake` to update the package in OBS as you would do with any other YaST package:
 
@@ -108,10 +109,11 @@ respect such a tag. (e.g. `2.1+42`).
 You can read more about the overall approach of this package in the following article: [Git work
 flows in the upcoming 2.7 release](https://openbuildservice.org/2016/04/08/new_git_in_27/).
 
-### Command-line Interface
+### Server and command-line Interface
 
-The current package is [systemsmanagement:Agama:Staging/agama-cli](
-https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-cli).
+The current package is [systemsmanagement:Agama:Staging/agama](
+https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama),
+which includes `agama` and `agama-cli` as a subpackage.
 
 To manually update the package in the build service, run the following commands:
 
