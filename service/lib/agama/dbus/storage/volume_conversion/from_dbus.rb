@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/dbus/hash_validator"
+require "agama/dbus/types"
 require "agama/storage/volume"
 require "agama/storage/volume_templates_builder"
 require "y2storage/disk_size"
@@ -32,26 +34,26 @@ module Agama
         class FromDBus
           # @param dbus_volume [Hash]
           # @param config [Agama::Config]
-          def initialize(dbus_volume, config:)
+          # @param logger [Logger, nil]
+          def initialize(dbus_volume, config:, logger: nil)
             @dbus_volume = dbus_volume
             @config = config
+            @logger = logger || Logger.new($stdout)
           end
 
           # Performs the conversion from D-Bus format.
           #
           # @return [Agama::Storage::Volume]
           def convert
+            logger.info("D-Bus volume: #{dbus_volume}")
+
+            scheme = DBUS_PROPERTIES.map { |p| [p[:name], p[:type]] }.to_h
+            validator = HashValidator.new(dbus_volume, scheme: scheme)
+            validator.issues.each { |i| logger.warn(i) }
+
             builder = Agama::Storage::VolumeTemplatesBuilder.new_from_config(config)
-            volume = builder.for(dbus_volume["MountPath"] || "")
-
-            volume.tap do |target|
-              dbus_volume.each do |dbus_property, dbus_value|
-                converter = CONVERSIONS[dbus_property]
-                # FIXME: likely ignoring the wrong attribute is not the best
-                next unless converter
-
-                send(converter, target, dbus_value)
-              end
+            builder.for(dbus_volume["MountPath"] || "").tap do |target|
+              validator.valid_keys.each { |k| conversion(target, k) }
             end
           end
 
@@ -63,19 +65,65 @@ module Agama
           # @return [Agama::Config]
           attr_reader :config
 
-          # D-Bus attributes and their converters.
-          CONVERSIONS = {
-            "MountPath"    => :mount_path_conversion,
-            "MountOptions" => :mount_options_conversion,
-            "TargetDevice" => :target_device_conversion,
-            "TargetVG"     => :target_vg_conversion,
-            "FsType"       => :fs_type_conversion,
-            "MinSize"      => :min_size_conversion,
-            "MaxSize"      => :max_size_conversion,
-            "AutoSize"     => :auto_size_conversion,
-            "Snapshots"    => :snapshots_conversion
-          }.freeze
-          private_constant :CONVERSIONS
+          # @return [Logger]
+          attr_reader :logger
+
+          DBUS_PROPERTIES = [
+            {
+              name:       "MountPath",
+              type:       String,
+              conversion: :mount_path_conversion
+            },
+            {
+              name:       "MountOptions",
+              type:       Types::Array.new(String),
+              conversion: :mount_options_conversion
+            },
+            {
+              name:       "TargetDevice",
+              type:       String,
+              conversion: :target_device_conversion
+            },
+            {
+              name:       "TargetVG",
+              type:       String,
+              conversion: :target_vg_conversion
+            },
+            {
+              name:       "FsType",
+              type:       String,
+              conversion: :fs_type_conversion
+            },
+            {
+              name:       "MinSize",
+              type:       Integer,
+              conversion: :min_size_conversion
+            },
+            {
+              name:       "MaxSize",
+              type:       Integer,
+              conversion: :max_size_conversion
+            },
+            {
+              name:       "AutoSize",
+              type:       Types::BOOL,
+              conversion: :auto_size_conversion
+            },
+            {
+              name:       "Snapshots",
+              type:       Types::BOOL,
+              conversion: :snapshots_conversion
+            }
+          ].freeze
+
+          private_constant :DBUS_PROPERTIES
+
+          # @param target [Agama::Storage::Volume]
+          # @param dbus_property_name [String]
+          def conversion(target, dbus_property_name)
+            dbus_property = DBUS_PROPERTIES.find { |d| d[:name] == dbus_property_name }
+            send(dbus_property[:conversion], target, dbus_volume[dbus_property_name])
+          end
 
           # @param target [Agama::Storage::Volume]
           # @param value [String]

@@ -31,6 +31,7 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
 
   let(:custom_settings) do
     Agama::Storage::ProposalSettings.new.tap do |settings|
+      settings.target_device = "/dev/sda"
       settings.boot_device = "/dev/sda"
       settings.lvm.enabled = true
       settings.lvm.system_vg_devices = ["/dev/sda", "/dev/sdb"]
@@ -46,6 +47,7 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
   describe "#convert" do
     it "converts the settings to a D-Bus hash" do
       expect(described_class.new(default_settings).convert).to eq(
+        "TargetDevice"           => "",
         "BootDevice"             => "",
         "LVM"                    => false,
         "SystemVGDevices"        => [],
@@ -58,6 +60,7 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
       )
 
       expect(described_class.new(custom_settings).convert).to eq(
+        "TargetDevice"           => "/dev/sda",
         "BootDevice"             => "/dev/sda",
         "LVM"                    => true,
         "SystemVGDevices"        => ["/dev/sda", "/dev/sdb"],

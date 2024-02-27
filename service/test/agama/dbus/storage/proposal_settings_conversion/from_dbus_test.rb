@@ -27,7 +27,7 @@ require "agama/storage/proposal_settings"
 require "agama/dbus/storage/proposal_settings_conversion/from_dbus"
 
 describe Agama::DBus::Storage::ProposalSettingsConversion::FromDBus do
-  subject { described_class.new(dbus_settings, config: config) }
+  subject { described_class.new(dbus_settings, config: config, logger: logger) }
 
   let(:config) { Agama::Config.new(config_data) }
 
@@ -59,9 +59,22 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::FromDBus do
     }
   end
 
+  let(:logger) { Logger.new($stdout, level: :warn) }
+
+  before do
+    allow(Agama::Storage::EncryptionSettings)
+      .to receive(:available_methods).and_return(
+        [
+          Y2Storage::EncryptionMethod::LUKS1,
+          Y2Storage::EncryptionMethod::LUKS2
+        ]
+      )
+  end
+
   describe "#convert" do
     let(:dbus_settings) do
       {
+        "TargetDevice"           => "/dev/sdb",
         "BootDevice"             => "/dev/sda",
         "LVM"                    => true,
         "SystemVGDevices"        => ["/dev/sda", "/dev/sdb"],
@@ -90,6 +103,7 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::FromDBus do
       settings = subject.convert
 
       expect(settings).to be_a(Agama::Storage::ProposalSettings)
+      expect(settings.target_device).to eq("/dev/sdb")
       expect(settings.boot_device).to eq("/dev/sda")
       expect(settings.lvm.enabled?).to eq(true)
       expect(settings.lvm.system_vg_devices).to contain_exactly("/dev/sda", "/dev/sdb")
@@ -109,12 +123,23 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::FromDBus do
         settings = subject.convert
 
         expect(settings).to be_a(Agama::Storage::ProposalSettings)
+        expect(settings.target_device).to be_nil
         expect(settings.boot_device).to be_nil
         expect(settings.lvm.enabled?).to eq(false)
         expect(settings.encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS2)
         expect(settings.encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::ARGON2ID)
         expect(settings.space.policy).to eq(:delete)
         expect(settings.volumes.map(&:mount_path)).to contain_exactly("/", "swap")
+      end
+    end
+
+    context "when an empty target device is provided from D-Bus" do
+      let(:dbus_settings) { { "TargetDevice" => "" } }
+
+      it "sets the target device to nil" do
+        settings = subject.convert
+
+        expect(settings.target_device).to be_nil
       end
     end
 
@@ -125,6 +150,26 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::FromDBus do
         settings = subject.convert
 
         expect(settings.boot_device).to be_nil
+      end
+    end
+
+    context "when some value provided from D-Bus has unexpected type" do
+      let(:dbus_settings) { { "TargetDevice" => 1 } }
+
+      it "ignores the value" do
+        settings = subject.convert
+
+        expect(settings.target_device).to be_nil
+      end
+    end
+
+    context "when some unexpected setting is provided from D-Bus" do
+      let(:dbus_settings) { { "Foo" => 1 } }
+
+      it "does not fail" do
+        settings = subject.convert
+
+        expect(settings).to be_a(Agama::Storage::ProposalSettings)
       end
     end
 

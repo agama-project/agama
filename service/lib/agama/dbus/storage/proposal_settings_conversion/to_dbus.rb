@@ -37,6 +37,7 @@ module Agama
           # @return [Hash]
           def convert
             {
+              "TargetDevice"           => settings.target_device.to_s,
               "BootDevice"             => settings.boot_device.to_s,
               "LVM"                    => settings.lvm.enabled?,
               "SystemVGDevices"        => settings.lvm.system_vg_devices,

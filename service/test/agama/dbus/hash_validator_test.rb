@@ -49,9 +49,7 @@ describe Agama::DBus::HashValidator do
         expect(subject.valid?).to eq(false)
       end
     end
-  end
 
-  describe "#valid?" do
     context "if there is no key with unexpected type" do
       let(:value) do
         {
