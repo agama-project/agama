@@ -77,7 +77,7 @@ module Agama
           target.device = spec.device
           return unless backup
 
-          target.device = backup.device unless backup.use_lvm?
+          target.device = backup.target_device unless backup.use_lvm?
         end
 
         # @param target [Agama::Storage::Volume]

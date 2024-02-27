@@ -42,11 +42,12 @@ module Agama
         # @return [Agama::Storage::ProposalSettings]
         def convert
           ProposalSettings.new.tap do |target|
-            restore_from_backup(target)
+            target_device_conversion(target)
             lvm_conversion(target)
             encryption_conversion(target)
-            space_actions_conversion(target)
+            space_settings_conversion(target)
             volumes_conversion(target)
+            restore_from_backup(target)
           end
         end
 
@@ -61,25 +62,9 @@ module Agama
         # @return [Agama::Storage::ProposalSettings, nil]
         attr_reader :backup
 
-        # Restores values from a backup.
-        #
-        # @note Some values cannot be inferred from Y2Storage settings:
-        #   * #target_device: if boot_device was set to a specific device, then the root_device
-        #   from Y2Storage does not represent the target device.
-        #   * #boot_device: it is not possible to know whether the Y2Storage root_device setting
-        #   comes from a specific boot device or the target device.
-        #   * #space.policy: Y2Storage does not manage a space policy, and it is impossible to infer
-        #   a policy from the list of space actions.
-        #
-        #   All these values have to be restored from a settings backup.
-        #
-        # @return [Y2Storage::ProposalSettings]
-        def restore_from_backup(target)
-          return unless backup
-
-          target.target_device = backup.target_device
-          target.boot_device = backup.boot_device
-          target.space.policy = backup.space.policy
+        # @param target [Agama::Storage::ProposalSettings]
+        def target_device_conversion(target)
+          target.target_device = settings.root_device
         end
 
         # @param target [Agama::Storage::ProposalSettings]
@@ -96,7 +81,9 @@ module Agama
         end
 
         # @param target [Agama::Storage::ProposalSettings]
-        def space_actions_conversion(target)
+        def space_settings_conversion(target)
+          # Y2Storage does not manage the space policy concept. Let's assume custom.
+          target.space.policy = :custom
           target.space.actions = settings.space_settings.actions
         end
 
@@ -138,6 +125,27 @@ module Agama
         # @return [Array<Y2Storage::VolumeSpecification>]
         def volumes
           settings.volumes || []
+        end
+
+        # Restores values from a backup.
+        #
+        # @note Some values cannot be inferred from Y2Storage settings:
+        #   * #target_device: if boot_device was set to a specific device, then the root_device
+        #   from Y2Storage does not represent the target device.
+        #   * #boot_device: it is not possible to know whether the Y2Storage root_device setting
+        #   comes from a specific boot device or the target device.
+        #   * #space.policy: Y2Storage does not manage a space policy, and it is impossible to infer
+        #   a policy from the list of space actions.
+        #
+        #   All these values have to be restored from a settings backup.
+        #
+        # @return [Y2Storage::ProposalSettings]
+        def restore_from_backup(target)
+          return unless backup
+
+          target.target_device = backup.target_device
+          target.boot_device = backup.boot_device
+          target.space.policy = backup.space.policy
         end
       end
     end

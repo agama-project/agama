@@ -36,18 +36,13 @@ module Agama
           #
           # @return [Hash]
           def convert
-            {
-              "TargetDevice"           => settings.target_device.to_s,
-              "BootDevice"             => settings.boot_device.to_s,
-              "LVM"                    => settings.lvm.enabled?,
-              "SystemVGDevices"        => settings.lvm.system_vg_devices,
-              "EncryptionPassword"     => settings.encryption.password.to_s,
-              "EncryptionMethod"       => settings.encryption.method.id.to_s,
-              "EncryptionPBKDFunction" => settings.encryption.pbkd_function&.value || "",
-              "SpacePolicy"            => settings.space.policy.to_s,
-              "SpaceActions"           => space_actions_conversion,
-              "Volumes"                => settings.volumes.map { |v| VolumeConversion.to_dbus(v) }
-            }
+            target = {}
+
+            DBUS_PROPERTIES.each do |dbus_property, conversion|
+              target[dbus_property] = send(conversion)
+            end
+
+            target
           end
 
         private
@@ -55,11 +50,71 @@ module Agama
           # @return [Agama::Storage::ProposalSettings]
           attr_reader :settings
 
+          DBUS_PROPERTIES = {
+            "TargetDevice"           => :target_device_conversion,
+            "BootDevice"             => :boot_device_conversion,
+            "LVM"                    => :lvm_conversion,
+            "SystemVGDevices"        => :system_vg_devices_conversion,
+            "EncryptionPassword"     => :encryption_password_conversion,
+            "EncryptionMethod"       => :encryption_method_conversion,
+            "EncryptionPBKDFunction" => :encryption_pbkd_function_conversion,
+            "SpacePolicy"            => :space_policy_conversion,
+            "SpaceActions"           => :space_actions_conversion,
+            "Volumes"                => :volumes_conversion
+          }.freeze
+
+          private_constant :DBUS_PROPERTIES
+
+          # @return [String]
+          def target_device_conversion
+            settings.target_device.to_s
+          end
+
+          # @return [String]
+          def boot_device_conversion
+            settings.boot_device.to_s
+          end
+
+          # @return [Boolean]
+          def lvm_conversion
+            settings.lvm.enabled?
+          end
+
+          # @return [Array<String>]
+          def system_vg_devices_conversion
+            settings.lvm.system_vg_devices
+          end
+
+          # @return [String]
+          def encryption_password_conversion
+            settings.encryption.password.to_s
+          end
+
+          # @return [String]
+          def encryption_method_conversion
+            settings.encryption.method.id.to_s
+          end
+
+          # @return [String]
+          def encryption_pbkd_function_conversion
+            settings.encryption.pbkd_function&.value || ""
+          end
+
+          # @return [String]
+          def space_policy_conversion
+            settings.space.policy.to_s
+          end
+
           # @return [Array<Hash>]
           def space_actions_conversion
             settings.space.actions.each_with_object([]) do |(device, action), actions|
               actions << { "Device" => device, "Action" => action.to_s }
             end
+          end
+
+          # @return [Array<Hash>]
+          def volumes_conversion
+            settings.volumes.map { |v| VolumeConversion.to_dbus(v) }
           end
         end
       end

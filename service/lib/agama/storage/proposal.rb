@@ -60,8 +60,8 @@ module Agama
       # @param settings [Agamal::Storage::ProposalSettings] settings to calculate the proposal.
       # @return [Boolean] whether the proposal was correctly calculated.
       def calculate(settings)
-        # Use the first available device if no default device is indicated.
-        settings.default_device ||= available_devices.first&.name
+        # Use the first available device if no target device is indicated.
+        settings.target_device ||= available_devices.first&.name
 
         @original_settings = settings
 
