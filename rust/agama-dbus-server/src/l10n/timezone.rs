@@ -3,10 +3,11 @@
 use crate::error::Error;
 use agama_locale_data::territory::Territories;
 use agama_locale_data::timezone_part::TimezoneIdParts;
+use serde::Serialize;
 use std::collections::HashMap;
 
 /// Represents a timezone, including each part as localized.
-#[derive(Debug)]
+#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 pub struct TimezoneEntry {
     /// Timezone identifier (e.g. "Atlantic/Canary").
     pub code: String,
@@ -114,7 +115,6 @@ mod tests {
         let mut db = TimezonesDatabase::new();
         db.read("es").unwrap();
         let found_timezones = db.entries();
-        dbg!(&found_timezones);
         let found = found_timezones
             .iter()
             .find(|tz| tz.code == "Europe/Berlin")

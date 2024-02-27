@@ -76,6 +76,7 @@ jobs:
         pam-devel
         python-langtable-data
         timezone
+        xkeyboard-config
 
     - name: Install Rust toolchains
       run: rustup toolchain install stable
@@ -92,10 +93,12 @@ jobs:
         tool: cargo-binstall
 
     - name: Install Tarpaulin (for code coverage)
-      run: cargo-binstall --no-confirm cargo-tarpaulin
+      run: |
+        echo "$PWD/share/bin" >> $GITHUB_PATH
+        cargo-binstall --no-confirm cargo-tarpaulin
 
     - name: Run the tests
-      run: cargo tarpaulin --out xml
+      run: cargo tarpaulin --out xml -- --nocapture
 
     # send the code coverage for the Rust part to the coveralls.io
     - name: Coveralls GitHub Action

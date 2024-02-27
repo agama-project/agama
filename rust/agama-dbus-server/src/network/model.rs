@@ -345,7 +345,6 @@ mod tests {
         let error = state
             .set_ports(&bond0, vec!["eth0".to_string()])
             .unwrap_err();
-        dbg!(&error);
         assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
     }
 

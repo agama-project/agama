@@ -2,13 +2,17 @@ pub mod helpers;
 mod keyboard;
 mod locale;
 mod timezone;
+pub mod web;
 
 use crate::error::Error;
 use agama_locale_data::{KeymapId, LocaleCode};
 use anyhow::Context;
+pub use keyboard::Keymap;
 use keyboard::KeymapsDatabase;
+pub use locale::LocaleEntry;
 use locale::LocalesDatabase;
 use std::process::Command;
+pub use timezone::TimezoneEntry;
 use timezone::TimezonesDatabase;
 use zbus::{dbus_interface, Connection};
 
@@ -16,7 +20,7 @@ pub struct Locale {
     timezone: String,
     timezones_db: TimezonesDatabase,
     locales: Vec<String>,
-    locales_db: LocalesDatabase,
+    pub locales_db: LocalesDatabase,
     keymap: KeymapId,
     keymaps_db: KeymapsDatabase,
     ui_locale: LocaleCode,
@@ -190,18 +194,18 @@ impl Locale {
         let mut locales_db = LocalesDatabase::new();
         locales_db.read(&locale)?;
 
-        let default_locale = if locales_db.exists(locale.as_str()) {
-            ui_locale.to_string()
-        } else {
+        let mut default_locale = ui_locale.to_string();
+        if !locales_db.exists(locale.as_str()) {
             // TODO: handle the case where the database is empty (not expected!)
-            locales_db.entries().get(0).unwrap().code.to_string()
+            default_locale = locales_db.entries().first().unwrap().code.to_string();
         };
 
         let mut timezones_db = TimezonesDatabase::new();
         timezones_db.read(&ui_locale.language)?;
+
         let mut default_timezone = DEFAULT_TIMEZONE.to_string();
         if !timezones_db.exists(&default_timezone) {
-            default_timezone = timezones_db.entries().get(0).unwrap().code.to_string();
+            default_timezone = timezones_db.entries().first().unwrap().code.to_string();
         };
 
         let mut keymaps_db = KeymapsDatabase::new();

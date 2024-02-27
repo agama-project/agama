@@ -1,29 +1,32 @@
 mod common;
 
-use self::common::DBusServer;
-use agama_dbus_server::{service, web::generate_token, web::ServiceConfig};
+use agama_dbus_server::{
+    service,
+    web::{generate_token, MainServiceBuilder, ServiceConfig},
+};
 use axum::{
     body::Body,
     http::{Method, Request, StatusCode},
     response::Response,
+    routing::get,
+    Router,
 };
-use http_body_util::BodyExt;
+use common::body_to_string;
 use std::error::Error;
-use tokio::test;
+use tokio::{sync::broadcast::channel, test};
 use tower::ServiceExt;
 
-async fn body_to_string(body: Body) -> String {
-    let bytes = body.collect().await.unwrap().to_bytes();
-    String::from_utf8(bytes.to_vec()).unwrap()
+fn build_service() -> Router {
+    let (tx, _) = channel(16);
+    service(ServiceConfig::default(), tx)
 }
 
 #[test]
 async fn test_ping() -> Result<(), Box<dyn Error>> {
-    let dbus_server = DBusServer::new().start().await?;
-    let web_server = service(ServiceConfig::default(), dbus_server.connection());
+    let web_service = build_service();
     let request = Request::builder().uri("/ping").body(Body::empty()).unwrap();
 
-    let response = web_server.oneshot(request).await.unwrap();
+    let response = web_service.oneshot(request).await.unwrap();
     assert_eq!(response.status(), StatusCode::OK);
 
     let body = body_to_string(response.into_body()).await;
@@ -31,12 +34,20 @@ async fn test_ping() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+async fn protected() -> String {
+    "OK".to_string()
+}
+
 async fn access_protected_route(token: &str, jwt_secret: &str) -> Response {
-    let dbus_server = DBusServer::new().start().await.unwrap();
     let config = ServiceConfig {
         jwt_secret: jwt_secret.to_string(),
     };
-    let web_server = service(config, dbus_server.connection());
+    let (tx, _) = channel(16);
+    let web_service = MainServiceBuilder::new(tx)
+        .add_service("/protected", get(protected))
+        .with_config(config)
+        .build();
+
     let request = Request::builder()
         .uri("/protected")
         .method(Method::GET)
@@ -44,12 +55,10 @@ async fn access_protected_route(token: &str, jwt_secret: &str) -> Response {
         .body(Body::empty())
         .unwrap();
 
-    web_server.oneshot(request).await.unwrap()
+    web_service.oneshot(request).await.unwrap()
 }
 
-// TODO: The following test should belong to `auth.rs`. However, we need a working
-// D-Bus connection which is not available on containers. Let's keep the test
-// here until by now.
+// TODO: The following test should belong to `auth.rs`
 #[test]
 async fn test_access_protected_route() -> Result<(), Box<dyn Error>> {
     let token = generate_token("nots3cr3t");
@@ -60,10 +69,8 @@ async fn test_access_protected_route() -> Result<(), Box<dyn Error>> {
     assert_eq!(body, "OK");
     Ok(())
 }
-
-// TODO: The following test should belong to `auth.rs`. However, we need a working
-// D-Bus connection which is not available on containers. Let's keep the test
-// here until by now.
+//
+// TODO: The following test should belong to `auth.rs`.
 #[test]
 async fn test_access_protected_route_failed() -> Result<(), Box<dyn Error>> {
     let token = generate_token("nots3cr3t");
