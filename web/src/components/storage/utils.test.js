@@ -96,7 +96,7 @@ describe("hasFS", () => {
     expect(hasFS({ fsType: "btrfs" }, "Btrfs")).toBe(true);
   });
 
-  it("returns false  if volume has different filesystem", () => {
+  it("returns false if volume has different filesystem", () => {
     expect(hasFS({ fsType: "Btrfs" }, "EXT4")).toBe(false);
   });
 });

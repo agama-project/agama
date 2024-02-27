@@ -140,7 +140,7 @@ const deviceLabel = (device) => {
  * case insensitive.
  *
  * @param {import(~/clients/storage).Volume} volume
- * @param {string} fs filesystem name to check
+ * @param {string} fs - Filesystem name to check.
  * @returns {boolean} true when volume uses given fs
  */
 const hasFS = (volume, fs) => {
