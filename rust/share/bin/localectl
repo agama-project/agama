@@ -1,14 +1,5 @@
-#!/usr/bin/sh
+#!/usr/bin/env sh
 
-case "$1" in
-"list-locales")
-	echo "en_US.UTF-8"
-	;;
-"list-keymaps")
-	echo "us"
-	;;
-*)
-	echo "unknown action"
-	exit 1
-	;;
-esac
+SCRIPT=$(readlink -f "$0")
+DATADIR=$(dirname "$SCRIPT")/..
+cat $DATADIR/localectl-$1.txt
