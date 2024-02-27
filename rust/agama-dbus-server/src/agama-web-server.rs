@@ -13,8 +13,9 @@ use utoipa::OpenApi;
 enum Commands {
     /// Start the API server.
     Serve {
-        /// Address to listen on (default: "0.0.0.0:3000")
-        #[arg(long, default_value = "0.0.0.0:3000")]
+        // Address to listen on (":::3000" listens for both IPv6 and IPv4
+        // connections unless manually disabled in /proc/sys/net/ipv6/bindv6only)
+        #[arg(long, default_value = ":::3000")]
         address: String,
     },
     /// Display the API documentation in OpenAPI format.
