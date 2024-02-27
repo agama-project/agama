@@ -1,4 +1,4 @@
-mod common;
+pub mod common;
 
 use self::common::{async_retry, DBusServer};
 use agama_dbus_server::network::{
