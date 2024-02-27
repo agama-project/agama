@@ -20,20 +20,23 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
-require "agama/storage/proposal_settings_conversion/from_y2storage"
 require "agama/config"
+require "agama/storage/proposal_settings"
+require "agama/storage/proposal_settings_conversion/from_y2storage"
 require "y2storage"
 
 describe Agama::Storage::ProposalSettingsConversion::FromY2Storage do
-  subject { described_class.new(y2storage_settings, config: config) }
+  subject { described_class.new(y2storage_settings, config: config, backup: backup) }
 
   let(:config) { Agama::Config.new }
+
+  let(:backup) { nil }
 
   describe "#convert" do
     let(:y2storage_settings) do
       Y2Storage::ProposalSettings.new.tap do |settings|
         settings.root_device = "/dev/sda"
-        settings.lvm = false
+        settings.lvm = true
         settings.candidate_devices = ["/dev/sda"]
         settings.encryption_password = "notsecret"
         settings.encryption_method = Y2Storage::EncryptionMethod::LUKS2
@@ -51,31 +54,30 @@ describe Agama::Storage::ProposalSettingsConversion::FromY2Storage do
 
       expect(settings).to be_a(Agama::Storage::ProposalSettings)
       expect(settings).to have_attributes(
-        boot_device: "/dev/sda",
-        lvm:         an_object_having_attributes(
-          enabled:           false,
-          system_vg_devices: []
+        target_device: "/dev/sda",
+        boot_device:   nil,
+        lvm:           an_object_having_attributes(
+          enabled:           true,
+          system_vg_devices: ["/dev/sda"]
         ),
-        encryption:  an_object_having_attributes(
+        encryption:    an_object_having_attributes(
           password:      "notsecret",
           method:        Y2Storage::EncryptionMethod::LUKS2,
           pbkd_function: Y2Storage::PbkdFunction::ARGON2ID
         ),
-        space:       an_object_having_attributes(
+        space:         an_object_having_attributes(
+          policy:  :custom,
           actions: { "/dev/sda" => :force_delete, "/dev/sdb1" => :resize }
         ),
-        volumes:     []
+        volumes:       []
       )
     end
 
     context "LVM settings conversion" do
-      before do
-        y2storage_settings.root_device = "/dev/sda"
-        y2storage_settings.candidate_devices = candidate_devices
-      end
-
-      context "when the candidate devices only includes the root device" do
-        let(:candidate_devices) { ["/dev/sda"] }
+      context "when LVM is not enabled" do
+        before do
+          y2storage_settings.lvm = false
+        end
 
         it "does not set system VG devices" do
           settings = subject.convert
@@ -88,38 +90,56 @@ describe Agama::Storage::ProposalSettingsConversion::FromY2Storage do
         end
       end
 
-      context "when the candidate devices includes the root device and other devices" do
-        let(:candidate_devices) { ["/dev/sda", "/dev/sdb"] }
+      context "when LVM is enabled" do
+        before do
+          y2storage_settings.lvm = true
+        end
 
         it "sets the candidate devices as system VG devices" do
           settings = subject.convert
 
           expect(settings).to have_attributes(
             lvm: an_object_having_attributes(
-              system_vg_devices: contain_exactly("/dev/sda", "/dev/sdb")
+              system_vg_devices: contain_exactly("/dev/sda")
             )
           )
         end
       end
+    end
 
-      context "when the candidate devices only includes other devices" do
-        let(:candidate_devices) { ["/dev/sdb", "/dev/sdc"] }
+    context "backup restore" do
+      let(:backup) do
+        Agama::Storage::ProposalSettings.new.tap do |settings|
+          settings.target_device = "/dev/sdc"
+          settings.boot_device = "/dev/sda"
+          settings.space.policy = :resize
+        end
+      end
 
-        it "sets the candidate devices as system VG devices" do
-          settings = subject.convert
+      it "restores the target device from the settings backup" do
+        settings = subject.convert
 
-          expect(settings).to have_attributes(
-            lvm: an_object_having_attributes(
-              system_vg_devices: contain_exactly("/dev/sdb", "/dev/sdc")
-            )
+        expect(settings).to have_attributes(
+          target_device: "/dev/sdc"
+        )
+      end
+
+      it "restores the boot device from the settings backup" do
+        settings = subject.convert
+
+        expect(settings).to have_attributes(
+          boot_device: "/dev/sda"
+        )
+      end
+
+      it "restores the space policy from the settings backup" do
+        settings = subject.convert
+
+        expect(settings).to have_attributes(
+          space: an_object_having_attributes(
+            policy: :resize
           )
-        end
-
-        it "does not set the root device as system VG device" do
-          settings = subject.convert
-
-          expect(settings.lvm.system_vg_devices).to_not include("/dev/sda")
-        end
+        )
       end
     end
 

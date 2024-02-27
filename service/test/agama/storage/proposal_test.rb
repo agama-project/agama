@@ -21,9 +21,9 @@
 
 require_relative "../../test_helper"
 require_relative "storage_helpers"
+require "agama/config"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
-require "agama/config"
 require "y2storage"
 
 describe Agama::Storage::Proposal do
@@ -160,55 +160,6 @@ describe Agama::Storage::Proposal do
           # the original settings passed to #calculate.
           space:       an_object_having_attributes(policy: :custom)
         )
-      end
-
-      # Checking system VG devices explicitly here because the settings converter cannot infer the
-      # system VG devices from the Y2Storage settings in all cases. The system VG devices are
-      # directly recovered from the original settings passed to #calculate.
-      context "system VG devices" do
-        let(:settings) do
-          achievable_settings.tap do |settings|
-            settings.lvm.system_vg_devices = system_vg_devices
-          end
-        end
-
-        context "if no devices were assigned as system VG devices" do
-          let(:system_vg_devices) { [] }
-
-          it "returns settings containing no system VG devices " do
-            expect(subject.settings).to have_attributes(
-              lvm: an_object_having_attributes(
-                system_vg_devices: be_empty
-              )
-            )
-          end
-        end
-
-        context "if only boot device was assigned as system VG device" do
-          let(:system_vg_devices) { ["/dev/sdb"] }
-
-          # This case cannot be inferred by conversion from Y2Storage, so the test does not pass if
-          # system VG devices are not copied from the settings passed to #calculate.
-          it "returns settings containing only boot device as system VG device" do
-            expect(subject.settings).to have_attributes(
-              lvm: an_object_having_attributes(
-                system_vg_devices: contain_exactly("/dev/sdb")
-              )
-            )
-          end
-        end
-
-        context "if several devices were assigned as system VG devices" do
-          let(:system_vg_devices) { ["/dev/sdb", "/dev/sdc"] }
-
-          it "returns settings containing the system VG devices" do
-            expect(subject.settings).to have_attributes(
-              lvm: an_object_having_attributes(
-                system_vg_devices: contain_exactly("/dev/sdb", "/dev/sdc")
-              )
-            )
-          end
-        end
       end
     end
   end

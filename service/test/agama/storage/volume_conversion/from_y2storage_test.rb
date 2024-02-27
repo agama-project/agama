@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,8 +22,9 @@
 require_relative "../../../test_helper"
 require_relative "../storage_helpers"
 require_relative "../../rspec/matchers/storage"
-require "agama/storage/volume_conversion/from_y2storage"
 require "agama/config"
+require "agama/storage/proposal_settings"
+require "agama/storage/volume_conversion/from_y2storage"
 require "y2storage"
 
 describe Agama::Storage::VolumeConversion::FromY2Storage do
@@ -31,9 +32,11 @@ describe Agama::Storage::VolumeConversion::FromY2Storage do
 
   before { mock_storage }
 
-  subject { described_class.new(spec, config: config) }
+  subject { described_class.new(spec, config: config, backup: backup) }
 
   let(:config) { Agama::Config.new }
+
+  let(:backup) { nil }
 
   describe "#convert" do
     let(:spec) do
@@ -74,6 +77,42 @@ describe Agama::Storage::VolumeConversion::FromY2Storage do
 
       outline = Agama::Storage::VolumeTemplatesBuilder.new_from_config(config).for("/").outline
       expect(volume.outline).to eq_outline(outline)
+    end
+
+    context "device conversion" do
+      let(:backup) do
+        Agama::Storage::ProposalSettings.new.tap do |settings|
+          settings.target_device = "/dev/sdb"
+        end
+      end
+
+      context "if LVM is enabled in the settings backup" do
+        before do
+          backup.lvm.enabled = true
+        end
+
+        it "sets the device indicated in the Y2Storage volume spec" do
+          volume = subject.convert
+
+          expect(volume).to have_attributes(
+            device: "/dev/sda"
+          )
+        end
+      end
+
+      context "if LVM is not enabled in the settings backup" do
+        before do
+          backup.lvm.enabled = false
+        end
+
+        it "sets the target device indicated in the settings backup" do
+          volume = subject.convert
+
+          expect(volume).to have_attributes(
+            device: "/dev/sdb"
+          )
+        end
+      end
     end
 
     context "auto size conversion" do

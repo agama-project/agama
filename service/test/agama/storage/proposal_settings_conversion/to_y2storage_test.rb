@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,9 +21,9 @@
 
 require_relative "../../../test_helper"
 require_relative "../storage_helpers"
-require "agama/storage/proposal_settings_conversion/to_y2storage"
-require "agama/storage/proposal_settings"
 require "agama/config"
+require "agama/storage/proposal_settings"
+require "agama/storage/proposal_settings_conversion/to_y2storage"
 require "y2storage"
 
 describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
@@ -36,15 +36,16 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
   describe "#convert" do
     let(:settings) do
       Agama::Storage::ProposalSettings.new.tap do |settings|
+        settings.target_device = "/dev/sdc"
         settings.boot_device = "/dev/sda"
-        settings.lvm.enabled = true
+        settings.lvm.enabled = false
         settings.lvm.system_vg_devices = ["/dev/sda", "/dev/sdb"]
         settings.encryption.password = "notsecret"
         settings.encryption.method = Y2Storage::EncryptionMethod::LUKS2
         settings.encryption.pbkd_function = Y2Storage::PbkdFunction::ARGON2ID
         settings.space.policy = :custom
         settings.space.actions = { "/dev/sda" => :force_delete }
-        volume = Agama::Storage::Volume.new("/test").tap { |v| v.device = "/dev/sdc" }
+        volume = Agama::Storage::Volume.new("/test").tap { |v| v.device = "/dev/sdb" }
         settings.volumes = [volume]
       end
     end
@@ -54,12 +55,13 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
 
       expect(y2storage_settings).to be_a(Y2Storage::ProposalSettings)
       expect(y2storage_settings).to have_attributes(
-        candidate_devices:   contain_exactly("/dev/sda", "/dev/sdb"),
         root_device:         "/dev/sda",
+        candidate_devices:   ["/dev/sda"],
         swap_reuse:          :none,
-        lvm:                 true,
-        separate_vgs:        true,
+        lvm:                 false,
+        separate_vgs:        false,
         lvm_vg_reuse:        false,
+        lvm_vg_strategy:     :use_needed,
         encryption_password: "notsecret",
         encryption_method:   Y2Storage::EncryptionMethod::LUKS2,
         encryption_pbkdf:    Y2Storage::PbkdFunction::ARGON2ID,
@@ -67,92 +69,222 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
           strategy: :bigger_resize,
           actions:  { "/dev/sda" => :force_delete }
         ),
-        volumes:             include(an_object_having_attributes(mount_point: "/test"))
+        volumes:             include(
+          an_object_having_attributes(
+            mount_point: "/test",
+            device:      "/dev/sdb"
+          )
+        )
       )
     end
 
-    context "candidate devices conversion" do
-      context "when LVM is not set" do
+    context "when LVM is not used" do
+      before do
+        settings.lvm.enabled = false
+      end
+
+      it "does not enable LVM" do
+        y2storage_settings = subject.convert
+
+        expect(y2storage_settings).to have_attributes(
+          lvm:          false,
+          separate_vgs: false
+        )
+      end
+
+      context "and a specific boot device is set" do
         before do
-          settings.lvm.enabled = false
-          settings.lvm.system_vg_devices = ["/dev/sdb"]
+          settings.boot_device = "/dev/sda"
+          settings.target_device = "/dev/sdb"
         end
 
-        context "and there is a boot device" do
-          before do
-            settings.boot_device = "/dev/sda"
-          end
+        it "sets the boot device as root device" do
+          y2storage_settings = subject.convert
 
-          it "uses the boot device as candidate device" do
-            y2storage_settings = subject.convert
-
-            expect(y2storage_settings).to have_attributes(
-              candidate_devices: contain_exactly("/dev/sda")
-            )
-          end
+          expect(y2storage_settings).to have_attributes(
+            root_device: "/dev/sda"
+          )
         end
 
-        context "and there is no boot device" do
-          before do
-            settings.boot_device = nil
-          end
+        it "sets the boot device as candidate device" do
+          y2storage_settings = subject.convert
 
-          it "does not set candidate devices" do
-            y2storage_settings = subject.convert
-
-            expect(y2storage_settings).to have_attributes(
-              candidate_devices: be_empty
-            )
-          end
+          expect(y2storage_settings).to have_attributes(
+            candidate_devices: contain_exactly("/dev/sda")
+          )
         end
       end
 
-      context "when LVM is set but no system VG devices are indicated" do
+      context "and no specific boot device is set" do
         before do
-          settings.lvm.enabled = true
-          settings.lvm.system_vg_devices = []
+          settings.boot_device = nil
+          settings.target_device = "/dev/sdb"
         end
 
-        context "and there is a boot device" do
-          before do
-            settings.boot_device = "/dev/sda"
-          end
+        it "sets the target device as root device" do
+          y2storage_settings = subject.convert
 
-          it "uses the boot device as candidate device" do
-            y2storage_settings = subject.convert
-
-            expect(y2storage_settings).to have_attributes(
-              candidate_devices: contain_exactly("/dev/sda")
-            )
-          end
+          expect(y2storage_settings).to have_attributes(
+            root_device: "/dev/sdb"
+          )
         end
 
-        context "and there is no boot device" do
-          before do
-            settings.boot_device = nil
-          end
+        it "sets the target device as candidate device" do
+          y2storage_settings = subject.convert
 
-          it "does not set candidate device" do
-            y2storage_settings = subject.convert
-
-            expect(y2storage_settings).to have_attributes(
-              candidate_devices: be_empty
-            )
-          end
+          expect(y2storage_settings).to have_attributes(
+            candidate_devices: contain_exactly("/dev/sdb")
+          )
         end
       end
 
-      context "when LVM is set and some system VG devices are indicated" do
+      context "and a volume indicates a device" do
         before do
+          volume = settings.volumes.find { |v| v.mount_path == "/test" }
+          volume.device = "/dev/sda"
+          settings.target_device = "/dev/sdb"
+        end
+
+        it "keeps the device of the volume" do
+          y2storage_settings = subject.convert
+          y2storage_volume = y2storage_settings.volumes.find { |v| v.mount_point == "/test" }
+
+          expect(y2storage_volume).to have_attributes(
+            device: "/dev/sda"
+          )
+        end
+      end
+
+      context "and a volume does not indicate a device" do
+        before do
+          volume = settings.volumes.find { |v| v.mount_path == "/test" }
+          volume.device = nil
+          settings.target_device = "/dev/sdb"
+        end
+
+        it "sets the target device as the device of the volume" do
+          y2storage_settings = subject.convert
+          y2storage_volume = y2storage_settings.volumes.find { |v| v.mount_point == "/test" }
+
+          expect(y2storage_volume).to have_attributes(
+            device: "/dev/sdb"
+          )
+        end
+      end
+    end
+
+    context "when LVM is used" do
+      before do
+        settings.lvm.enabled = true
+      end
+
+      it "enables LVM" do
+        y2storage_settings = subject.convert
+
+        expect(y2storage_settings).to have_attributes(
+          lvm:          true,
+          separate_vgs: true
+        )
+      end
+
+      context "and a specific boot device is set" do
+        before do
+          settings.boot_device = "/dev/sda"
+          settings.target_device = "/dev/sdb"
+          settings.lvm.system_vg_devices = ["/dev/sdc"]
+        end
+
+        it "sets the boot device as root device" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings).to have_attributes(
+            root_device: "/dev/sda"
+          )
+        end
+      end
+
+      context "and no specific boot device is set" do
+        before do
+          settings.boot_device = nil
+          settings.target_device = "/dev/sdb"
+          settings.lvm.system_vg_devices = ["/dev/sdc"]
+        end
+
+        it "does not set a root device" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings).to have_attributes(
+            root_device: be_nil
+          )
+        end
+      end
+
+      context "and system VG devices are indicated" do
+        before do
+          settings.target_device = "/dev/sda"
+          settings.boot_device = "/dev/sdd"
           settings.lvm.enabled = true
           settings.lvm.system_vg_devices = ["/dev/sdb", "/dev/sdc"]
         end
 
-        it "uses the system VG devices as candidate devices" do
+        it "sets the system VG devices as candidate devices" do
           y2storage_settings = subject.convert
 
           expect(y2storage_settings).to have_attributes(
             candidate_devices: contain_exactly("/dev/sdb", "/dev/sdc")
+          )
+        end
+      end
+
+      context "and no system VG devices are indicated" do
+        before do
+          settings.boot_device = "/dev/sda"
+          settings.target_device = "/dev/sdb"
+          settings.lvm.enabled = true
+          settings.lvm.system_vg_devices = []
+        end
+
+        it "does not set the candidate devices" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings).to have_attributes(
+            candidate_devices: []
+          )
+        end
+      end
+
+      context "and a volume indicates a device" do
+        before do
+          volume = settings.volumes.find { |v| v.mount_path == "/test" }
+          volume.device = "/dev/sda"
+          settings.target_device = "/dev/sdb"
+          settings.lvm.system_vg_devices = ["/dev/sdc"]
+        end
+
+        it "keeps the device of the volume" do
+          y2storage_settings = subject.convert
+          y2storage_volume = y2storage_settings.volumes.find { |v| v.mount_point == "/test" }
+
+          expect(y2storage_volume).to have_attributes(
+            device: "/dev/sda"
+          )
+        end
+      end
+
+      context "and a volume does not indicate a device" do
+        before do
+          volume = settings.volumes.find { |v| v.mount_path == "/test" }
+          volume.device = nil
+          settings.target_device = "/dev/sdb"
+          settings.lvm.system_vg_devices = ["/dev/sdc"]
+        end
+
+        it "does not set a device to the volume" do
+          y2storage_settings = subject.convert
+          y2storage_volume = y2storage_settings.volumes.find { |v| v.mount_point == "/test" }
+
+          expect(y2storage_volume).to have_attributes(
+            device: be_nil
           )
         end
       end
