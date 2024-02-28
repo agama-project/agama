@@ -19,9 +19,9 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "dbus"
 require "agama/dbus/base_object"
 require "agama/dbus/storage/proposal_settings_conversion"
+require "dbus"
 
 module Agama
   module DBus
@@ -44,6 +44,8 @@ module Agama
         private_constant :STORAGE_PROPOSAL_INTERFACE
 
         dbus_interface STORAGE_PROPOSAL_INTERFACE do
+          dbus_reader :target_device, "s"
+
           dbus_reader :boot_device, "s"
 
           dbus_reader :lvm, "b", dbus_name: "LVM"
@@ -63,6 +65,13 @@ module Agama
           dbus_reader :volumes, "aa{sv}"
 
           dbus_reader :actions, "aa{sv}"
+        end
+
+        # Device used as target device by the storage proposal
+        #
+        # @return [String] Empty string if no device has been selected yet.
+        def target_device
+          dbus_settings.fetch("TargetDevice", "")
         end
 
         # Device used as boot device by the storage proposal

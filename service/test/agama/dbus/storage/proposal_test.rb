@@ -37,6 +37,26 @@ describe Agama::DBus::Storage::Proposal do
 
   let(:settings) { nil }
 
+  describe "#target_device" do
+    context "if a proposal has not been calculated yet" do
+      let(:settings) { nil }
+
+      it "returns an empty string" do
+        expect(subject.target_device).to eq ""
+      end
+    end
+
+    context "if a proposal has been calculated" do
+      let(:settings) do
+        Agama::Storage::ProposalSettings.new.tap { |s| s.target_device = "/dev/vda" }
+      end
+
+      it "returns the target device used by the proposal" do
+        expect(subject.target_device).to eq "/dev/vda"
+      end
+    end
+  end
+
   describe "#boot_device" do
     context "if a proposal has not been calculated yet" do
       let(:settings) { nil }
@@ -51,7 +71,7 @@ describe Agama::DBus::Storage::Proposal do
         Agama::Storage::ProposalSettings.new.tap { |s| s.boot_device = "/dev/vda" }
       end
 
-      it "returns the candidate devices used by the proposal" do
+      it "returns the boot device used by the proposal" do
         expect(subject.boot_device).to eq "/dev/vda"
       end
     end
