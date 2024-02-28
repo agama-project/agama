@@ -39,14 +39,14 @@ describe Agama::Storage::Proposal do
 
   let(:achievable_settings) do
     Agama::Storage::ProposalSettings.new.tap do |settings|
-      settings.boot_device = "/dev/sdb"
+      settings.target_device = "/dev/sdb"
       settings.volumes = [Agama::Storage::Volume.new("/")]
     end
   end
 
   let(:impossible_settings) do
     Agama::Storage::ProposalSettings.new.tap do |settings|
-      settings.boot_device = "/dev/sdb"
+      settings.target_device = "/dev/sdb"
       settings.volumes = [
         # The boot disk size is 500 GiB, so it cannot accomodate a 1 TiB volume.
         Agama::Storage::Volume.new("/").tap { |v| v.min_size = Y2Storage::DiskSize.TiB(1) }
@@ -115,12 +115,12 @@ describe Agama::Storage::Proposal do
       expect(subject.calculate(impossible_settings)).to eq(false)
     end
 
-    context "if the given settings does not indicate a boot device" do
+    context "if the given settings does not indicate a target device" do
       let(:settings) do
-        achievable_settings.tap { |s| s.boot_device = nil }
+        achievable_settings.tap { |s| s.target_device = nil }
       end
 
-      it "calculates a new proposal using the first disk as boot device" do
+      it "calculates a new proposal using the first disk as target device" do
         subject.calculate(settings)
 
         expect(Y2Storage::StorageManager.instance.proposal.settings).to have_attributes(
@@ -137,28 +137,17 @@ describe Agama::Storage::Proposal do
 
     context "if the proposal was already calculated" do
       before do
-        subject.calculate(settings)
-      end
-
-      let(:settings) do
-        achievable_settings.tap do |settings|
-          settings.space.policy = :custom
-          settings.space.actions = { "/dev/sda" => :force_delete }
-        end
+        subject.calculate(achievable_settings)
       end
 
       it "returns the settings used for calculating the proposal" do
         expect(subject.settings).to be_a(Agama::Storage::ProposalSettings)
 
         expect(subject.settings).to have_attributes(
-          boot_device: "/dev/sdb",
-          volumes:     contain_exactly(
+          target_device: "/dev/sdb",
+          volumes:       contain_exactly(
             an_object_having_attributes(mount_path: "/")
-          ),
-          # Checking space policy explicitly here because the settings converter cannot infer the
-          # space policy from the Y2Storage settings. The space policy is directly recovered from
-          # the original settings passed to #calculate.
-          space:       an_object_having_attributes(policy: :custom)
+          )
         )
       end
     end
@@ -214,13 +203,13 @@ describe Agama::Storage::Proposal do
         )
       end
 
-      context "and the settings does not indicate a boot device" do
+      context "and the settings does not indicate a target device" do
         before do
           # Avoid to automatically set the first device
           allow(subject).to receive(:available_devices).and_return([])
         end
 
-        let(:settings) { impossible_settings.tap { |s| s.boot_device = nil } }
+        let(:settings) { impossible_settings.tap { |s| s.target_device = nil } }
 
         it "includes an error because a device is not selected" do
           subject.calculate(settings)
@@ -235,14 +224,14 @@ describe Agama::Storage::Proposal do
         end
       end
 
-      context "and the boot device is missing in the system" do
-        let(:settings) { impossible_settings.tap { |s| s.boot_device = "/dev/vdz" } }
+      context "and some installation device is missing in the system" do
+        let(:settings) { impossible_settings.tap { |s| s.target_device = "/dev/vdz" } }
 
         it "includes an error because the device is not found" do
           subject.calculate(settings)
 
           expect(subject.issues).to include(
-            an_object_having_attributes(description: /device is not found/)
+            an_object_having_attributes(description: /are not found/)
           )
         end
       end

@@ -19,18 +19,23 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2storage"
 require "agama/issue"
 require "agama/storage/actions"
 require "agama/storage/proposal_settings_conversion"
+require "yast"
+require "y2storage"
 
 module Agama
   module Storage
     # Backend class to calculate a storage proposal.
     class Proposal
+      include Yast::I18n
+
       # @param config [Config] Agama config
       # @param logger [Logger]
       def initialize(config, logger: nil)
+        textdomain "agama"
+
         @config = config
         @logger = logger || Logger.new($stdout)
         @on_calculate_callbacks = []
@@ -101,7 +106,7 @@ module Agama
         return [] if !calculated? || success?
 
         [
-          boot_device_issue,
+          target_device_issue,
           missing_devices_issue,
           proposal_issue
         ].compact
@@ -162,13 +167,13 @@ module Agama
         Y2Storage::StorageManager.instance
       end
 
-      # Returns an issue if there is no boot device.
+      # Returns an issue if there is no target device.
       #
       # @return [Issue, nil]
-      def boot_device_issue
-        return if settings.boot_device
+      def target_device_issue
+        return if settings.target_device
 
-        Issue.new("No device selected for installation",
+        Issue.new(_("No device selected for installation"),
           source:   Issue::Source::CONFIG,
           severity: Issue::Severity::ERROR)
       end
@@ -177,13 +182,15 @@ module Agama
       #
       # @return [Issue, nil]
       def missing_devices_issue
-        # At this moment, only the boot device is checked.
-        return unless settings.boot_device
-        return if available_devices.map(&:name).include?(settings.boot_device)
+        available = available_devices.map(&:name)
+        missing = settings.installation_devices.reject { |d| available.include?(d) }
 
-        Issue.new("Selected device is not found in the system",
+        Issue.new(
+          format(_("The following selected devices are not found in the system: %{devices}"),
+            devices: missing.join(", ")),
           source:   Issue::Source::CONFIG,
-          severity: Issue::Severity::ERROR)
+          severity: Issue::Severity::ERROR
+        )
       end
 
       # Returns an issue if the proposal is not valid.
@@ -192,7 +199,7 @@ module Agama
       def proposal_issue
         return if success?
 
-        Issue.new("Cannot accommodate the required file systems for installation",
+        Issue.new(_("Cannot accommodate the required file systems for installation"),
           source:   Issue::Source::CONFIG,
           severity: Issue::Severity::ERROR)
       end
