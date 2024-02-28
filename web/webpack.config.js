@@ -8,7 +8,6 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin');
-const CockpitPoPlugin = require("./src/lib/cockpit-po-plugin");
 const CockpitRsyncPlugin = require("./src/lib/cockpit-rsync-plugin");
 const StylelintPlugin = require('stylelint-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
@@ -45,7 +44,6 @@ const copy_files = [
 const plugins = [
   new Copy({ patterns: copy_files }),
   new Extract({ filename: "[name].css" }),
-  new CockpitPoPlugin(),
   new CockpitRsyncPlugin({ dest: packageJson.name }),
   development && new ReactRefreshWebpackPlugin({ overlay: false }),
   // replace the "process.env.WEBPACK_SERVE" text in the source code by
@@ -53,11 +51,6 @@ const plugins = [
   // "true" when running the development server ("npm run server")
   // https://webpack.js.org/plugins/environment-plugin/
   new webpack.EnvironmentPlugin({ WEBPACK_SERVE: null, LOCAL_CONNECTION: null }),
-  // similarly for a non-environment value
-  // https://webpack.js.org/plugins/define-plugin/
-  // but because ESlint runs *before* the DefinePlugin we need to
-  // add it as a global variable in .eslintrc.json config file
-  new webpack.DefinePlugin({ COCKPIT_TARGET_URL: JSON.stringify(cockpitTarget) }),
 ].filter(Boolean);
 
 if (eslint) {
