@@ -26,6 +26,7 @@ import { _ } from "~/i18n";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
+import { hasFS } from "~/components/storage/utils";
 
 /**
  * @typedef {import ("~/client/storage").ProposalManager.ProposalSettings} ProposalSettings
@@ -109,6 +110,65 @@ const EncryptionSettingsForm = ({
         }
       />
     </Form>
+  );
+};
+
+/**
+ * Allows to define snapshots enablement
+ * @component
+ *
+ * @param {object} props
+ * @param {ProposalSettings} props.settings - Settings used for calculating a proposal.
+ * @param {onChangeFn} [props.onChange=noop] - On change callback
+ *
+ * @callback onChangeFn
+ * @param {object} settings
+ */
+const SnapshotsField = ({
+  settings,
+  onChange = noop
+}) => {
+  const rootVolume = (settings.volumes || []).find((i) => i.mountPath === "/");
+
+  const initialChecked = rootVolume !== undefined && hasFS(rootVolume, "Btrfs") && rootVolume.snapshots;
+  const [isChecked, setIsChecked] = useState(initialChecked);
+
+  // no root volume is probably some error or still loading
+  if (rootVolume === undefined) {
+    return <Skeleton width="25%" />;
+  }
+
+  const switchState = (_, checked) => {
+    setIsChecked(checked);
+    onChange({ active: checked, settings });
+  };
+
+  const configurableSnapshots = rootVolume.outline.snapshotsConfigurable;
+  const forcedSnapshots = !configurableSnapshots && hasFS(rootVolume, "Btrfs") && rootVolume.snapshots;
+
+  const SnapshotsToggle = () => {
+    const explanation = _("Uses Btrfs for the root file system allowing to boot to a previous version of the system after configuration changes or software upgrades.");
+    return (
+      <>
+        <Switch
+          id="snapshots"
+          label={_("Use Btrfs Snapshots")}
+          isReversed
+          isChecked={isChecked}
+          onChange={switchState}
+        />
+        <div>
+          {explanation}
+        </div>
+      </>
+    );
+  };
+
+  return (
+    <div>
+      <If condition={forcedSnapshots} then={_("Btrfs snapshots required by product.")} />
+      <If condition={configurableSnapshots} then={<SnapshotsToggle />} />
+    </div>
   );
 };
 
@@ -237,11 +297,28 @@ export default function ProposalSettingsSection({
     onChange({ encryptionPassword: password, encryptionMethod: method });
   };
 
+  const changeBtrfsSnapshots = ({ active, settings }) => {
+    const rootVolume = settings.volumes.find((i) => i.mountPath === "/");
+
+    if (active) {
+      rootVolume.fsType = "Btrfs";
+      rootVolume.snapshots = true;
+    } else {
+      rootVolume.snapshots = false;
+    }
+
+    onChange({ volumes: settings.volumes });
+  };
+
   const encryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
 
   return (
     <>
       <Section title={_("Settings")}>
+        <SnapshotsField
+          settings={settings}
+          onChange={changeBtrfsSnapshots}
+        />
         <EncryptionField
           password={settings.encryptionPassword || ""}
           method={settings.encryptionMethod}

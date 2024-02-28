@@ -1,4 +1,5 @@
 use agama_lib::error::ServiceError;
+use axum::body::{to_bytes, Body};
 use std::{
     error::Error,
     future::Future,
@@ -143,4 +144,9 @@ where
             }
         }
     }
+}
+
+pub async fn body_to_string(body: Body) -> String {
+    let bytes = to_bytes(body, usize::MAX).await.unwrap();
+    String::from_utf8(bytes.to_vec()).unwrap()
 }

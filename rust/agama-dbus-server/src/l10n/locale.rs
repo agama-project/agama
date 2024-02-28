@@ -3,12 +3,16 @@
 use crate::error::Error;
 use agama_locale_data::{InvalidLocaleCode, LocaleCode};
 use anyhow::Context;
+use serde::Serialize;
+use serde_with::{serde_as, DisplayFromStr};
 use std::process::Command;
 
 /// Represents a locale, including the localized language and territory.
-#[derive(Debug)]
+#[serde_as]
+#[derive(Debug, Serialize, Clone, utoipa::ToSchema)]
 pub struct LocaleEntry {
     /// The locale code (e.g., "es_ES.UTF-8").
+    #[serde_as(as = "DisplayFromStr")]
     pub code: LocaleCode,
     /// Localized language name (e.g., "Spanish", "Español", etc.)
     pub language: String,
@@ -35,7 +39,7 @@ impl LocalesDatabase {
     ///
     /// * `ui_language`: language to translate the descriptions (e.g., "en").
     pub fn read(&mut self, ui_language: &str) -> Result<(), Error> {
-        let result = Command::new("/usr/bin/localectl")
+        let result = Command::new("localectl")
             .args(["list-locales"])
             .output()
             .context("Failed to get the list of locales")?;

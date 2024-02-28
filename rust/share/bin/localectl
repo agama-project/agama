@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+SCRIPT=$(readlink -f "$0")
+DATADIR=$(dirname "$SCRIPT")/..
+cat $DATADIR/localectl-$1.txt

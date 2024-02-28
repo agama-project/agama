@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 26 20:46:45 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Remove fs type option "Btrfs with snapshots" and create instead
+  global option that affects only root volume
+  (gh#openSUSE/agama#1039)
+
+-------------------------------------------------------------------
 Thu Feb 22 14:05:56 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Break storage settings in multiple sections to improve the UX
