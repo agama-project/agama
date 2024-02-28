@@ -185,6 +185,8 @@ module Agama
         available = available_devices.map(&:name)
         missing = settings.installation_devices.reject { |d| available.include?(d) }
 
+        return if missing.none?
+
         Issue.new(
           format(_("The following selected devices are not found in the system: %{devices}"),
             devices: missing.join(", ")),
