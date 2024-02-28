@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 28 22:26:23 UTC 2024 - Balsa Asanovic <balsaasanovic95@gmail.com>
+
+- Added auto suggestion of usernames during user creation based
+  on given full name. (gh#openSUSE/agama#1022).
+
+-------------------------------------------------------------------
 Mon Feb 26 20:46:45 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Remove fs type option "Btrfs with snapshots" and create instead
