@@ -62,7 +62,7 @@ jobs:
           OBS_USER:     ${{ secrets.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Commit the rubygem-agama package to ${{ inputs.project_name }}
+      - name: Commit the rubygem-agama-yast package to ${{ inputs.project_name }}
         run: rake osc:commit
         working-directory: ./service
         env:
@@ -71,7 +71,7 @@ jobs:
           SKIP_OSC_BUILD: 1
           OBS_PROJECT: ${{ inputs.project_name }}
 
-      - name: Submit the rubygem-agama package
+      - name: Submit the rubygem-agama-yast package
         # only when a tag has been pushed
         if: ${{ github.ref_type == 'tag' }}
         # the package has been comitted in the previous step, just submit it

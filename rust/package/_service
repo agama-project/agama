@@ -7,8 +7,8 @@
     <param name="revision">master</param>
     <param name="subdir">rust</param>
     <param name="without-version">enable</param>
-    <param name="extract">package/agama-cli.changes</param>
-    <param name="extract">package/agama-cli.spec</param>
+    <param name="extract">package/agama.changes</param>
+    <param name="extract">package/agama.spec</param>
   </service>
   <service name="cargo_vendor" mode="manual">
     <param name="srcdir">agama/rust</param>

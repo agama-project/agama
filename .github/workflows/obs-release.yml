@@ -20,7 +20,7 @@ jobs:
     with:
       install_packages: obs-service-cargo_audit obs-service-cargo_vendor
       project_name: systemsmanagement:Agama:Devel
-      package_name: agama-cli
+      package_name: agama
 
   update_web:
     uses: ./.github/workflows/obs-staging-shared.yml

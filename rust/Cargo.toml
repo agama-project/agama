@@ -1,7 +1,7 @@
 [workspace]
 members = [
   "agama-cli",
-  "agama-dbus-server",
+  "agama-server",
   "agama-derive",
   "agama-lib",
   "agama-locale-data",

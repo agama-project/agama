@@ -18,14 +18,14 @@
 
 **[OBS systemsmanagement:Agama:Staging](https://build.opensuse.org/project/show/systemsmanagement:Agama:Staging)**
 
-[![Submit agama-cli](https://github.com/openSUSE/agama/actions/workflows/obs-staging-rust.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-rust.yml)
+[![Submit agama](https://github.com/openSUSE/agama/actions/workflows/obs-staging-rust.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-rust.yml)
 [![Submit cockpit-agama](https://github.com/openSUSE/agama/actions/workflows/obs-staging-web.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-web.yml)
-[![Submit rubygem-agama](https://github.com/openSUSE/agama/actions/workflows/obs-staging-service.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-service.yml)
+[![Submit rubygem-agama-yast](https://github.com/openSUSE/agama/actions/workflows/obs-staging-service.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-service.yml)
 [![Submit cockpit-agama-playwright](https://github.com/openSUSE/agama/actions/workflows/obs-staging-playwright.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-playwright.yml)
 
-[![OBS Staging/agama-cli](https://img.shields.io/obs/systemsmanagement:Agama:Staging/agama-cli/openSUSE_Tumbleweed/x86_64?label=Package%20agama-cli)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-cli)
+[![OBS Staging/agama](https://img.shields.io/obs/systemsmanagement:Agama:Staging/agama/openSUSE_Tumbleweed/x86_64?label=Package%20agama)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama)
 [![OBS Staging/cockpit-agama](https://img.shields.io/obs/systemsmanagement:Agama:Staging/cockpit-agama/openSUSE_Tumbleweed/x86_64?label=Package%20cockpit-agama)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/cockpit-agama)
-[![OBS Staging/rubygem-agama](https://img.shields.io/obs/systemsmanagement:Agama:Staging/rubygem-agama/openSUSE_Tumbleweed/x86_64?label=Package%20rubygem-agama)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/rubygem-agama)
+[![OBS Staging/rubygem-agama-yast](https://img.shields.io/obs/systemsmanagement:Agama:Staging/rubygem-agama-yast/openSUSE_Tumbleweed/x86_64?label=Package%20rubygem-agama-yast)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/rubygem-agama-yast)
 [![OBS Staging/agama-products-opensuse](https://img.shields.io/obs/systemsmanagement%3AAgama%3AStaging/agama-products-opensuse/openSUSE_Tumbleweed/x86_64?label=Package%20agama-products-opensuse)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-products-opensuse)
 [![OBS Staging/cockpit-agama-playwright](https://img.shields.io/obs/systemsmanagement:Agama:Staging/cockpit-agama-playwright/openSUSE_Tumbleweed/x86_64?label=Package%20cockpit-agama-playwright)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/cockpit-agama-playwright)
 [![OBS Staging/agama-live](https://img.shields.io/obs/systemsmanagement:Agama:Staging/agama-live:openSUSE/images/x86_64?label=Live%20ISO)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-live)
@@ -35,9 +35,9 @@
 ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/openSUSE/agama?label=Version&sort=semver)
 [![Release](https://github.com/openSUSE/agama/actions/workflows/obs-release.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/obs-release.yml)
 
-[![OBS Devel/agama-cli](https://img.shields.io/obs/systemsmanagement:Agama:Devel/agama-cli/openSUSE_Tumbleweed/x86_64?label=Package%20agama-cli)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/agama-cli)
+[![OBS Devel/agama](https://img.shields.io/obs/systemsmanagement:Agama:Devel/agama/openSUSE_Tumbleweed/x86_64?label=Package%20agama)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/agama)
 [![OBS Devel/cockpit-agama](https://img.shields.io/obs/systemsmanagement:Agama:Devel/cockpit-agama/openSUSE_Tumbleweed/x86_64?label=Package%20cockpit-agama)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/cockpit-agama)
-[![OBS Devel/rubygem-agama](https://img.shields.io/obs/systemsmanagement:Agama:Devel/rubygem-agama/openSUSE_Tumbleweed/x86_64?label=Package%20rubygem-agama)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/rubygem-agama)
+[![OBS Devel/rubygem-agama-yast](https://img.shields.io/obs/systemsmanagement:Agama:Devel/rubygem-agama-yast/openSUSE_Tumbleweed/x86_64?label=Package%20rubygem-agama-yast)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/rubygem-agama-yast)
 [![OBS Devel/agama-live](https://img.shields.io/obs/systemsmanagement:Agama:Devel/agama-live:openSUSE/images/x86_64?label=Live%20ISO)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/agama-live)
 
 # Agama: A Service-based Linux Installer

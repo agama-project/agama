@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 #
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) 2022-2024 SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,7 +21,7 @@
 # find current contact information at www.suse.com.
 
 Gem::Specification.new do |spec|
-  spec.name = "agama"
+  spec.name = "agama-yast"
 
   # in a git checkout?
   if File.exist?(File.join(__dir__, "../.git"))
@@ -33,8 +33,8 @@ Gem::Specification.new do |spec|
     spec.version = "99.yupdate"
   end
 
-  spec.summary = "Agama Installer Service"
-  spec.description = "System service for Agama, an experimental YaST-based installer."
+  spec.summary = "YaST integration service for Agama"
+  spec.description = "D-Bus service exposing some YaST features that are useful for Agama."
   spec.author = "YaST Team"
   spec.email = "yast-devel@opensuse.org"
   spec.homepage = "https://github.com/openSUSE/agama"
