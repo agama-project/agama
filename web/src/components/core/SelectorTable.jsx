@@ -192,7 +192,7 @@ export default function SelectorTable({
   const TableBody = () => items?.map(item => renderItem(item, sharedData));
 
   return (
-    <Table {...tableProps}>
+    <Table data-type="agama/expandable-selector" {...tableProps}>
       <TableHeader columns={columns} />
       <TableBody />
     </Table>
