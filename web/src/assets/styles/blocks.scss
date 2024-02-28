@@ -495,3 +495,27 @@ ul[data-type="agama/list"][role="grid"] {
     max-inline-size: 100%;
   }
 }
+
+
+[data-type="agama/expandable-selector"] {
+  // The expandable selector is built on top of PF/Table#expandable
+  // Let's tweak some styles
+  tr {
+    td:first-child {
+      padding-inline-start: 0;
+    }
+
+    td:last-child {
+      padding-inline-end: 0;
+    }
+  }
+
+  tr.pf-v5-c-table__expandable-row.pf-m-expanded {
+    border-bottom: 0;
+
+    .pf-v5-c-table__expandable-row-content {
+      font-size: var(--fs-medium);
+      padding-block: var(--spacer-small);
+    }
+  }
+}
