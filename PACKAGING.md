@@ -109,7 +109,7 @@ respect such a tag. (e.g. `2.1+42`).
 You can read more about the overall approach of this package in the following article: [Git work
 flows in the upcoming 2.7 release](https://openbuildservice.org/2016/04/08/new_git_in_27/).
 
-### Server and command-line Interface
+### Server and Command-line Interface
 
 The current package is [systemsmanagement:Agama:Staging/agama](
 https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama),
