@@ -81,6 +81,20 @@ module Agama
       def use_lvm?
         lvm.enabled? || !lvm.reused_vg.nil?
       end
+
+      # All possible devices involved in the installation.
+      #
+      # @note Some devices might not be really involved. For example, system_vg_devices are not used
+      #   if LVM is not enabled. All these cases are properly managed when converting the settings
+      #   from Y2Storage settings, see {ProposalSettingsConversion#FromY2Storage}.
+      #
+      # @return [Array<String>]
+      def installation_devices
+        [target_device, boot_device, lvm.system_vg_devices, volumes.map(&:device)]
+          .flatten
+          .compact
+          .uniq
+      end
     end
   end
 end

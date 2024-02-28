@@ -21,6 +21,7 @@
 
 require_relative "../../test_helper"
 require "agama/storage/proposal_settings"
+require "agama/storage/volume"
 
 describe Agama::Storage::ProposalSettings do
   describe "#use_lvm?" do
@@ -58,6 +59,19 @@ describe Agama::Storage::ProposalSettings do
           expect(subject.use_lvm?).to eq(false)
         end
       end
+    end
+  end
+
+  describe "#installation_devices" do
+    it "returns all the devices involved in the installation" do
+      subject.target_device = "/dev/sda"
+      subject.boot_device = "/dev/sdb"
+      subject.lvm.system_vg_devices = ["/dev/sda", "/dev/sdc"]
+      subject.volumes = [Agama::Storage::Volume.new("/").tap { |v| v.device = "/dev/sdd" }]
+
+      expect(subject.installation_devices).to contain_exactly(
+        "/dev/sda", "/dev/sdb", "/dev/sdc", "/dev/sdd"
+      )
     end
   end
 end
