@@ -49,12 +49,10 @@ module Agama
           def convert
             logger.info("D-Bus settings: #{dbus_settings}")
 
-            scheme = DBUS_PROPERTIES.map { |p| [p[:name], p[:type]] }.to_h
-            validator = HashValidator.new(dbus_settings, scheme: scheme)
-            validator.issues.each { |i| logger.warn(i) }
+            dbus_settings_issues.each { |i| logger.warn(i) }
 
             Agama::Storage::ProposalSettingsReader.new(config).read.tap do |target|
-              validator.valid_keys.each { |k| conversion(target, k) }
+              valid_dbus_properties.each { |p| conversion(target, p) }
             end
           end
 
@@ -123,6 +121,30 @@ module Agama
           ].freeze
 
           private_constant :DBUS_PROPERTIES
+
+          # Issues detected in the D-Bus settings, see {HashValidator#issues}.
+          #
+          # @return [Array<String>]
+          def dbus_settings_issues
+            validator.issues
+          end
+
+          # D-Bus properties with valid type, see {HashValidator#valid_keys}.
+          #
+          # @return [Array<String>]
+          def valid_dbus_properties
+            validator.valid_keys
+          end
+
+          # Validator for D-Bus settings.
+          #
+          # @return [HashValidator]
+          def validator
+            return @validator if @validator
+
+            scheme = DBUS_PROPERTIES.map { |p| [p[:name], p[:type]] }.to_h
+            @validator = HashValidator.new(dbus_settings, scheme: scheme)
+          end
 
           # @param target [Agama::Storage::ProposalSettings]
           # @param dbus_property_name [String]

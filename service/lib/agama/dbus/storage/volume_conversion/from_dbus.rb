@@ -47,13 +47,11 @@ module Agama
           def convert
             logger.info("D-Bus volume: #{dbus_volume}")
 
-            scheme = DBUS_PROPERTIES.map { |p| [p[:name], p[:type]] }.to_h
-            validator = HashValidator.new(dbus_volume, scheme: scheme)
-            validator.issues.each { |i| logger.warn(i) }
+            dbus_volume_issues.each { |i| logger.warn(i) }
 
             builder = Agama::Storage::VolumeTemplatesBuilder.new_from_config(config)
             builder.for(dbus_volume["MountPath"] || "").tap do |target|
-              validator.valid_keys.each { |k| conversion(target, k) }
+              valid_dbus_properties.each { |p| conversion(target, p) }
             end
           end
 
@@ -117,6 +115,30 @@ module Agama
           ].freeze
 
           private_constant :DBUS_PROPERTIES
+
+          # Issues detected in the D-Bus volume, see {HashValidator#issues}.
+          #
+          # @return [Array<String>]
+          def dbus_volume_issues
+            validator.issues
+          end
+
+          # D-Bus properties with valid type, see {HashValidator#valid_keys}.
+          #
+          # @return [Array<String>]
+          def valid_dbus_properties
+            validator.valid_keys
+          end
+
+          # Validator for D-Bus volume.
+          #
+          # @return [HashValidator]
+          def validator
+            return @validator if @validator
+
+            scheme = DBUS_PROPERTIES.map { |p| [p[:name], p[:type]] }.to_h
+            @validator = HashValidator.new(dbus_volume, scheme: scheme)
+          end
 
           # @param target [Agama::Storage::Volume]
           # @param dbus_property_name [String]

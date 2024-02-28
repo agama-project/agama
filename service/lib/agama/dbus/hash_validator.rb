@@ -57,7 +57,7 @@ module Agama
     #   validator.issues.size     #=> 1
     class HashValidator
       # @param value [Hash{String => Object}] Hash to validate.
-      # @param scheme [Hash{String => Class, Module, Types::BOOL, Types::Array, Types::Hash}] Scheme
+      # @param scheme [Hash{String => Class, Types::BOOL, Types::Array, Types::Hash}] Scheme
       #   for validating the hash.
       def initialize(value, scheme:)
         @value = value
@@ -133,7 +133,7 @@ module Agama
       # @return [Hash{String => Object}]
       attr_reader :value
 
-      # @return [Hash{String => Class, Module, Types::BOOL, Types::Array, Types::Hash}]
+      # @return [Hash{String => Class, Types::BOOL, Types::Array, Types::Hash}]
       attr_reader :scheme
 
       def valid_key?(key)

@@ -55,11 +55,11 @@ module Agama
 
       # Type representing an array of values.
       class Array
-        # @return [Class, Module, BOOL, Array, Hash, nil]
+        # @return [Class, BOOL, Array, Hash, nil]
         attr_reader :elements_type
 
-        # @param elements_type [Class, Module, BOOL, Array, Hash, nil] The type of the elements in
-        #   the array. If nil, the type of the elements is not checked.
+        # @param elements_type [Class, BOOL, Array, Hash, nil] The type of the elements in the
+        #   array. If nil, the type of the elements is not checked.
         def initialize(elements_type = nil)
           @elements_type = elements_type
         end
@@ -67,16 +67,16 @@ module Agama
 
       # Type representing a hash.
       class Hash
-        # @return [Class, Module, BOOL, Array, Hash, nil]
+        # @return [Class, BOOL, Array, Hash, nil]
         attr_reader :keys_type
 
-        # @return [Class, Module, BOOL, Array, Hash, nil]
+        # @return [Class, BOOL, Array, Hash, nil]
         attr_reader :values_type
 
-        # @param key [Class, Module, BOOL, Array, Hash, nil] The type of keys. If nil, the type of
-        #   the keys is not checked.
-        # @param value [Class, Module, BOOL, Array, Hash, nil] The type of values. If nil, the type
-        #   of the values is not checked.
+        # @param key [Class, BOOL, Array, Hash, nil] The type of keys. If nil, the type of the keys
+        #   is not checked.
+        # @param value [Class, BOOL, Array, Hash, nil] The type of values. If nil, the type of the
+        #   values is not checked.
         def initialize(key: nil, value: nil)
           @keys_type = key
           @values_type = value
@@ -85,7 +85,7 @@ module Agama
 
       # Checks whether a value matches a type.
       class Checker
-        # @param type [Class, Module, BOOL, Array, Hash] The type to check.
+        # @param type [Class, BOOL, Array, Hash] The type to check.
         def initialize(type)
           @type = type
         end
@@ -111,7 +111,7 @@ module Agama
 
       private
 
-        # @return [Class, Module, BOOL, Array, Hash]
+        # @return [Class, BOOL, Array, Hash]
         attr_reader :type
 
         # Whether the value matches with {BOOL} type.
