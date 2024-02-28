@@ -244,11 +244,11 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
           settings.lvm.system_vg_devices = []
         end
 
-        it "does not set the candidate devices" do
+        it "sets the target device as cadidate device" do
           y2storage_settings = subject.convert
 
           expect(y2storage_settings).to have_attributes(
-            candidate_devices: []
+            candidate_devices: ["/dev/sdb"]
           )
         end
       end

@@ -183,7 +183,9 @@ module Agama
         def system_vg_devices
           return [] unless settings.use_lvm?
 
-          settings.lvm.system_vg_devices
+          vg_devices = settings.lvm.system_vg_devices
+          vg_devices = [settings.target_device] if vg_devices.none?
+          vg_devices.compact
         end
 
         # All block devices affected by the space policy.
