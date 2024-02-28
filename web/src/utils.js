@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -65,6 +65,28 @@ const partition = (collection, filter) => {
 
   return [pass, fail];
 };
+
+/**
+ * Generates a new array without null and undefined values.
+ * @function
+ *
+ * @param {Array} collection
+ * @returns {Array}
+ */
+function compact(collection) {
+  return collection.filter(e => e !== null && e !== undefined);
+}
+
+/**
+ * Generates a new array without duplicates.
+ * @function
+ *
+ * @param {Array} collection
+ * @returns {Array}
+ */
+function uniq(collection) {
+  return [...new Set(collection)];
+}
 
 /**
  * Simple utility function to help building className conditionally
@@ -360,6 +382,8 @@ export {
   noop,
   isObject,
   partition,
+  compact,
+  uniq,
   classNames,
   useCancellablePromise,
   useLocalStorage,
