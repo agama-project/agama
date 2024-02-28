@@ -23,8 +23,8 @@
 // cspell:ignore ptable
 
 import DBusClient from "./dbus";
+import { compact, hex, uniq } from "~/utils";
 import { WithIssues, WithStatus, WithProgress } from "./mixins";
-import { hex } from "~/utils";
 
 const STORAGE_OBJECT = "/org/opensuse/Agama/Storage1";
 const STORAGE_IFACE = "org.opensuse.Agama.Storage1";
@@ -272,6 +272,7 @@ class ProposalManager {
 
   /**
    * @typedef {object} ProposalSettings
+   * @property {string} targetDevice
    * @property {string} bootDevice
    * @property {string} encryptionPassword
    * @property {string} encryptionMethod
@@ -403,13 +404,16 @@ class ProposalManager {
           return device;
         };
 
-        const names = proxy.SystemVGDevices.filter(n => n !== proxy.BootDevice).concat([proxy.BootDevice]);
+        const names = uniq([proxy.TargetDevice, proxy.BootDevice, proxy.SystemVGDevices].flat())
+          .filter(d => d?.length > 0);
+
         // #findDevice returns undefined if no device is found with the given name.
-        return names.map(dev => findDevice(devices, dev)).filter(dev => dev !== undefined);
+        return compact(names.map(dev => findDevice(devices, dev)));
       };
 
       return {
         settings: {
+          targetDevice: proxy.TargetDevice,
           bootDevice: proxy.BootDevice,
           lvm: proxy.LVM,
           spacePolicy: proxy.SpacePolicy,
@@ -439,6 +443,7 @@ class ProposalManager {
    */
   async calculate(settings) {
     const {
+      targetDevice,
       bootDevice,
       encryptionPassword,
       encryptionMethod,
@@ -475,6 +480,7 @@ class ProposalManager {
     };
 
     const dbusSettings = removeUndefinedCockpitProperties({
+      TargetDevice: { t: "s", v: targetDevice },
       BootDevice: { t: "s", v: bootDevice },
       EncryptionPassword: { t: "s", v: encryptionPassword },
       EncryptionMethod: { t: "s", v: encryptionMethod },

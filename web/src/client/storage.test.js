@@ -297,6 +297,7 @@ const contexts = {
   },
   withProposal: () => {
     cockpitProxies.proposal = {
+      TargetDevice: "/dev/sdb",
       BootDevice: "/dev/sda",
       LVM: true,
       SystemVGDevices: ["/dev/sda", "/dev/sdb"],
@@ -1114,6 +1115,7 @@ describe("#proposal", () => {
         const { settings, actions } = await client.proposal.getResult();
 
         expect(settings).toMatchObject({
+          targetDevice: "/dev/sdb",
           bootDevice: "/dev/sda",
           lvm: true,
           systemVGDevices: ["/dev/sda", "/dev/sdb"],
@@ -1188,6 +1190,7 @@ describe("#proposal", () => {
 
     it("calculates a proposal with the given settings", async () => {
       await client.proposal.calculate({
+        targetDevice: "/dev/vdc",
         bootDevice: "/dev/vdb",
         encryptionPassword: "12345",
         lvm: true,
@@ -1211,6 +1214,7 @@ describe("#proposal", () => {
       });
 
       expect(cockpitProxies.proposalCalculator.Calculate).toHaveBeenCalledWith({
+        TargetDevice: { t: "s", v: "/dev/vdc" },
         BootDevice: { t: "s", v: "/dev/vdb" },
         EncryptionPassword: { t: "s", v: "12345" },
         LVM: { t: "b", v: true },
