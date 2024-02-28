@@ -30,7 +30,7 @@ module Agama
         # @param settings [Y2Storage::ProposalSettings]
         # @param config [Agama::Config]
         # @param backup [Agama::Storage::ProposalSettings] Settings used as backup to restore some
-        #   values, see {FromY2Storage#restore_from_backup}.
+        #   values that cannot be automatically inferred.
         def initialize(settings, config:, backup: nil)
           @settings = settings
           @config = config
@@ -43,11 +43,11 @@ module Agama
         def convert
           ProposalSettings.new.tap do |target|
             target_device_conversion(target)
+            boot_device_conversion(target)
             lvm_conversion(target)
             encryption_conversion(target)
             space_settings_conversion(target)
             volumes_conversion(target)
-            restore_from_backup(target)
           end
         end
 
@@ -62,9 +62,32 @@ module Agama
         # @return [Agama::Storage::ProposalSettings, nil]
         attr_reader :backup
 
+        # @note The Y2Storage root_device can point to:
+        #   * target_device if no specific boot device was set and LVM was not enabled.
+        #   * boot_device if a specific boot device was set.
+        #   * A device from system_vg_devices selected by Y2Storage if no specific boot device was
+        #     selected and LVM is enabled.
+        #
+        #   Only the last case can be safely inferred from Y2Storage. The other two cases have to be
+        #   restored from the settings backup.
+        #
         # @param target [Agama::Storage::ProposalSettings]
         def target_device_conversion(target)
           target.target_device = settings.root_device
+
+          return unless backup
+
+          target.target_device = backup.target_device unless backup.use_lvm?
+        end
+
+        # @note It is not possible to know whether the Y2Storage root_device comes from a directly
+        #   set boot device. It has to be restored from the settings backup.
+        #
+        # @param target [Agama::Storage::ProposalSettings]
+        def boot_device_conversion(target)
+          return unless backup
+
+          target.boot_device = backup.boot_device
         end
 
         # @param target [Agama::Storage::ProposalSettings]
@@ -80,10 +103,13 @@ module Agama
           target.encryption.pbkd_function = settings.encryption_pbkdf
         end
 
+        # @note Y2Storage does not manage a space policy, and it is impossible to infer a policy
+        #   from the list of space actions. It has to be restored from the settings backup.
+        #
         # @param target [Agama::Storage::ProposalSettings]
         def space_settings_conversion(target)
-          # Y2Storage does not manage the space policy concept. Let's assume custom.
-          target.space.policy = :custom
+          # Let's assume custom if there is no backup.
+          target.space.policy = backup ? backup.space.policy : :custom
           target.space.actions = settings.space_settings.actions
         end
 
@@ -125,27 +151,6 @@ module Agama
         # @return [Array<Y2Storage::VolumeSpecification>]
         def volumes
           settings.volumes || []
-        end
-
-        # Restores values from a backup.
-        #
-        # @note Some values cannot be inferred from Y2Storage settings:
-        #   * #target_device: if boot_device was set to a specific device, then the root_device
-        #   from Y2Storage does not represent the target device.
-        #   * #boot_device: it is not possible to know whether the Y2Storage root_device setting
-        #   comes from a specific boot device or the target device.
-        #   * #space.policy: Y2Storage does not manage a space policy, and it is impossible to infer
-        #   a policy from the list of space actions.
-        #
-        #   All these values have to be restored from a settings backup.
-        #
-        # @return [Y2Storage::ProposalSettings]
-        def restore_from_backup(target)
-          return unless backup
-
-          target.target_device = backup.target_device
-          target.boot_device = backup.boot_device
-          target.space.policy = backup.space.policy
         end
       end
     end

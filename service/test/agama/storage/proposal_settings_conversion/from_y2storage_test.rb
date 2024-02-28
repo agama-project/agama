@@ -73,6 +73,63 @@ describe Agama::Storage::ProposalSettingsConversion::FromY2Storage do
       )
     end
 
+    context "Target device conversion" do
+      let(:backup) do
+        Agama::Storage::ProposalSettings.new.tap do |backup|
+          backup.lvm.enabled = lvm
+          backup.target_device = "/dev/sdb"
+        end
+      end
+
+      before do
+        y2storage_settings.root_device = "/dev/sda"
+      end
+
+      context "if LVM was not enabled" do
+        let(:lvm) { false }
+
+        it "restores the target device from the settings backup" do
+          settings = subject.convert
+
+          expect(settings).to have_attributes(
+            target_device: "/dev/sdb"
+          )
+        end
+      end
+
+      context "if LVM was enabled" do
+        let(:lvm) { true }
+
+        it "sets the root device as the target device" do
+          settings = subject.convert
+
+          expect(settings).to have_attributes(
+            target_device: "/dev/sda"
+          )
+        end
+      end
+    end
+
+    context "Boot device conversion" do
+      let(:backup) do
+        Agama::Storage::ProposalSettings.new.tap do |backup|
+          backup.boot_device = "/dev/sdb"
+        end
+      end
+
+      before do
+        y2storage_settings.root_device = "/dev/sda"
+      end
+
+      it "restores the boot device from the settings backup" do
+        settings = subject.convert
+
+        expect(settings).to have_attributes(
+          boot_device: "/dev/sdb"
+        )
+      end
+    end
+
     context "LVM settings conversion" do
       context "when LVM is not enabled" do
         before do
@@ -107,29 +164,11 @@ describe Agama::Storage::ProposalSettingsConversion::FromY2Storage do
       end
     end
 
-    context "backup restore" do
+    context "Space policy conversion" do
       let(:backup) do
         Agama::Storage::ProposalSettings.new.tap do |settings|
-          settings.target_device = "/dev/sdc"
-          settings.boot_device = "/dev/sda"
           settings.space.policy = :resize
         end
-      end
-
-      it "restores the target device from the settings backup" do
-        settings = subject.convert
-
-        expect(settings).to have_attributes(
-          target_device: "/dev/sdc"
-        )
-      end
-
-      it "restores the boot device from the settings backup" do
-        settings = subject.convert
-
-        expect(settings).to have_attributes(
-          boot_device: "/dev/sda"
-        )
       end
 
       it "restores the space policy from the settings backup" do
