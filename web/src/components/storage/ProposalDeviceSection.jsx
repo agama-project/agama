@@ -210,8 +210,8 @@ const LVMSettingsForm = ({
 
   const selectCustomDevices = () => {
     setIsBootDeviceSelected(false);
-    const { bootDevice } = settings;
-    const customDevices = (vgDevices.length === 0 && !editedDevices) ? [bootDevice] : vgDevices;
+    const { targetDevice } = settings;
+    const customDevices = (vgDevices.length === 0 && !editedDevices) ? [targetDevice] : vgDevices;
     setVgDevices(customDevices);
     onValidate(customDevices.length > 0);
   };
@@ -230,10 +230,10 @@ const LVMSettingsForm = ({
   };
 
   const BootDevice = () => {
-    const bootDevice = devices.find(d => d.name === settings.bootDevice);
+    const targetDevice = devices.find(d => d.name === settings.targetDevice);
 
     // FIXME: In this case, should be a "readOnly" selector.
-    return <DeviceList devices={[bootDevice]} />;
+    return <DeviceList devices={[targetDevice]} />;
   };
 
   return (
@@ -390,11 +390,11 @@ export default function ProposalDeviceSection({
   onChange = noop
 }) {
   // FIXME: we should work with devices objects ASAP
-  const { bootDevice } = settings;
+  const { targetDevice } = settings;
 
   const changeBootDevice = (device) => {
-    if (device.name !== bootDevice) {
-      onChange({ bootDevice: device.name });
+    if (device.name !== targetDevice) {
+      onChange({ targetDevice: device.name });
     }
   };
 
@@ -424,9 +424,9 @@ Volume Group for installation.")
       description={<Description />}
     >
       <InstallationDeviceField
-        current={bootDevice}
+        current={targetDevice}
         devices={availableDevices}
-        isLoading={isLoading && bootDevice === undefined}
+        isLoading={isLoading && targetDevice === undefined}
         onChange={changeBootDevice}
       />
       <LVMField

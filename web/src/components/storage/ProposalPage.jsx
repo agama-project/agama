@@ -178,7 +178,7 @@ export default function ProposalPage() {
   }, [client, load]);
 
   useEffect(() => {
-    const proposalLoaded = () => state.settings.bootDevice !== undefined;
+    const proposalLoaded = () => state.settings.targetDevice !== undefined;
 
     const statusHandler = (serviceStatus) => {
       // Load the proposal if no proposal has been loaded yet. This can happen if the proposal
