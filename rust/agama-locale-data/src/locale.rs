@@ -1,11 +1,12 @@
 //! Defines useful types to deal with localization values
 
 use regex::Regex;
+use serde::Serialize;
 use std::sync::OnceLock;
 use std::{fmt::Display, str::FromStr};
 use thiserror::Error;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct LocaleCode {
     // ISO-639
     pub language: String,
@@ -79,7 +80,7 @@ static KEYMAP_ID_REGEX: OnceLock<Regex> = OnceLock::new();
 /// let id_with_dashes: KeymapId = "es-ast".parse().unwrap();
 /// assert_eq!(id, id_with_dashes);
 /// ```
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct KeymapId {
     pub layout: String,
     pub variant: Option<String>,

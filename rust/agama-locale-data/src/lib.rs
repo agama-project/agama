@@ -19,7 +19,7 @@ pub mod timezone_part;
 
 use keyboard::xkeyboard;
 
-pub use locale::{InvalidLocaleCode, KeymapId, LocaleCode};
+pub use locale::{InvalidKeymap, InvalidLocaleCode, KeymapId, LocaleCode};
 
 fn file_reader(file_path: &str) -> anyhow::Result<impl BufRead> {
     let file = File::open(file_path)
@@ -51,8 +51,7 @@ pub fn get_xkeyboards() -> anyhow::Result<xkeyboard::XKeyboards> {
 /// assert!(key_maps.contains(&us));
 /// ```
 pub fn get_localectl_keymaps() -> anyhow::Result<Vec<KeymapId>> {
-    const BINARY: &str = "/usr/bin/localectl";
-    let output = Command::new(BINARY)
+    let output = Command::new("localectl")
         .arg("list-keymaps")
         .output()
         .context("failed to execute localectl list-maps")?

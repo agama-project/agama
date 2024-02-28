@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -155,13 +155,10 @@ describe Agama::Storage::Proposal do
           volumes:     contain_exactly(
             an_object_having_attributes(mount_path: "/")
           ),
-          # Checking space settings explicitly here because the settings converter cannot infer the
-          # space settings from the Y2Storage settings. The space settings are directly recovered
-          # from the original settings passed to #calculate.
-          space:       an_object_having_attributes(
-            policy:  :custom,
-            actions: { "/dev/sda" => :force_delete }
-          )
+          # Checking space policy explicitly here because the settings converter cannot infer the
+          # space policy from the Y2Storage settings. The space policy is directly recovered from
+          # the original settings passed to #calculate.
+          space:       an_object_having_attributes(policy: :custom)
         )
       end
 

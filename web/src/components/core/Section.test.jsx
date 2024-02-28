@@ -36,7 +36,13 @@ describe("Section", () => {
   describe("when title is given", () => {
     it("renders the section header", () => {
       plainRender(<Section title="Settings" />);
-      screen.getByRole("heading", { name: "Settings" });
+      screen.getByRole("banner");
+    });
+
+    it("renders given title as section heading", () => {
+      plainRender(<Section title="Settings" />);
+      const header = screen.getByRole("banner");
+      within(header).getByRole("heading", { name: "Settings" });
     });
 
     it("renders an icon if valid icon name is given", () => {
@@ -58,13 +64,27 @@ describe("Section", () => {
       const icon = container.querySelector("svg");
       expect(icon).toBeNull();
     });
+
+    it("renders given description as part of the header", () => {
+      plainRender(
+        <Section title="Settings" description="Short explanation to help the user, if needed" />
+      );
+      const header = screen.getByRole("banner");
+      within(header).getByText(/Short explanation/);
+    });
   });
 
   describe("when title is not given", () => {
     it("does not render the section header", async () => {
-      plainRender(<Section />);
-      const header = await screen.queryByRole("heading");
+      plainRender(<Section description="Does not matter" />);
+      const header = await screen.queryByRole("banner");
       expect(header).not.toBeInTheDocument();
+    });
+
+    it("does not render a section heading", async () => {
+      plainRender(<Section description="Does not matter" />);
+      const heading = await screen.queryByRole("heading");
+      expect(heading).not.toBeInTheDocument();
     });
 
     it("does not render the section icon", () => {

@@ -53,7 +53,7 @@ use tokio_stream::{StreamExt, StreamMap};
 use zbus::Connection;
 
 /// Represents the progress for an Agama service.
-#[derive(Default, Debug, Serialize)]
+#[derive(Clone, Default, Debug, Serialize)]
 pub struct Progress {
     /// Current step
     pub current_step: u32,
@@ -112,22 +112,21 @@ impl<'a> ProgressMonitor<'a> {
 
     /// Runs the monitor until the current operation finishes.
     pub async fn run(&mut self, mut presenter: impl ProgressPresenter) -> Result<(), ServiceError> {
-        presenter.start(&self.main_progress().await).await;
+        presenter.start(&self.main_progress().await?).await;
         let mut changes = self.build_stream().await;
 
         while let Some(stream) = changes.next().await {
             match stream {
                 ("/org/opensuse/Agama/Manager1", _) => {
-                    let progress = self.main_progress().await;
+                    let progress = self.main_progress().await?;
                     if progress.finished {
                         presenter.finish().await;
                         return Ok(());
-                    } else {
-                        presenter.update_main(&progress).await;
                     }
+                    presenter.update_main(&progress).await;
                 }
                 ("/org/opensuse/Agama/Software1", _) => {
-                    let progress = &self.detail_progress().await;
+                    let progress = &self.detail_progress().await?;
                     presenter.update_detail(progress).await;
                 }
                 _ => eprintln!("Unknown"),
@@ -138,13 +137,13 @@ impl<'a> ProgressMonitor<'a> {
     }
 
     /// Proxy that reports the progress.
-    async fn main_progress(&self) -> Progress {
-        Progress::from_proxy(&self.manager_proxy).await.unwrap()
+    async fn main_progress(&self) -> Result<Progress, ServiceError> {
+        Ok(Progress::from_proxy(&self.manager_proxy).await?)
     }
 
     /// Proxy that reports the progress detail.
-    async fn detail_progress(&self) -> Progress {
-        Progress::from_proxy(&self.software_proxy).await.unwrap()
+    async fn detail_progress(&self) -> Result<Progress, ServiceError> {
+        Ok(Progress::from_proxy(&self.software_proxy).await?)
     }
 
     /// Builds an stream of progress changes.

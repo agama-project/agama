@@ -1,0 +1,373 @@
+-------------------------------------------------------------------
+Tue Feb 27 15:55:28 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Reorganize RPM packages (gh#openSUSE/agama#1056):
+  * agama is now the main package and it contains agama-dbus-server
+    and agama-web-server.
+  * agama-cli is a subpackage.
+
+-------------------------------------------------------------------
+Wed Feb  7 11:49:02 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add preliminary support to import AutoYaST profiles
+  (gh#openSUSE/agama#1029).
+
+-------------------------------------------------------------------
+Mon Jan 29 15:53:56 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Better network configuration handling (gh#openSUSE/agama#1006):
+  * Write only changed connections.
+  * Roll back when updating the NetworkManager configuration
+    failed.
+  * Improved error handling when reading or writing the changes.
+  * Properly remove deleted connections from the D-Bus tree.
+  * Use the UUID to identify connections.
+  * Do not support multiple connections with the same ID.
+
+-------------------------------------------------------------------
+Mon Jan 29 15:37:56 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add hidden property for wireless in network model
+  (gh#openSUSE/agama#1024).
+
+-------------------------------------------------------------------
+Mon Jan 29 10:22:49 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add more wireless options to network model
+  (gh#openSUSE/agama#1014).
+
+-------------------------------------------------------------------
+Thu Jan 23 18:00:00 UTC 2024 - Clemens Famulla-Conrad <cfamullaconrad@suse.de>
+
+- Add Bridge model (gh#openSUSE/agama#1008)
+
+-------------------------------------------------------------------
+Thu Jan 23 17:38:23 UTC 2024 - Clemens Famulla-Conrad <cfamullaconrad@suse.de>
+
+- Add VLAN model (gh#openSUSE/agama#918)
+
+-------------------------------------------------------------------
+Thu Jan 11 15:34:15 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Include the encoding as part of the locales (gh#openSUSE/agama#987).
+
+-------------------------------------------------------------------
+Mon Jan  8 17:02:40 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Fix the list of keymaps to avoid duplicated values
+  (gh#openSUSE/agama#981).
+
+-------------------------------------------------------------------
+Thu Dec 21 14:23:33 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 7
+
+-------------------------------------------------------------------
+Thu Dec 21 11:12:45 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- The result of ListTimezones includes the localized country name
+  for each timezone (gh#openSUSE/agama#946)
+
+-------------------------------------------------------------------
+Fri Dec 15 16:29:20 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update agama-cli dependencies including the zerocopy crate to
+  address a security alert (see gh#google/zerocopy#716).
+
+-------------------------------------------------------------------
+Wed Dec 13 22:41:34 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Add support for bonding connections (gh#openSUSE/agama#885).
+
+-------------------------------------------------------------------
+Fri Dec  8 09:23:09 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Change the config in a way that: (gh#openSUSE/agama#919)
+  1. product is moved to own section and is now under product.id
+  2. in product section is now also registrationCode and registrationEmail
+  3. in software section is now patterns to select patterns to install
+- adapt profile.schema according to above changes
+- org.opensuse.Agama.Software1 API changed to report missing patterns
+
+-------------------------------------------------------------------
+Tue Dec  5 11:18:41 UTC 2023 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add ability to assign a custom MAC address for network
+  connections (gh#openSUSE/agama#893)
+
+-------------------------------------------------------------------
+Tue Dec  5 09:46:48 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Explicitly add dependencies instead of relying on the live ISO
+  to provide the required packages (gh#openSUSE/agama/911).
+
+-------------------------------------------------------------------
+Tue Dec  5 08:56:13 UTC 2023 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add support for dummy network devices although they are not
+  exposed on D-Bus yet (gh#openSUSE/agama#913).
+
+-------------------------------------------------------------------
+Sun Dec  3 15:53:34 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use a single call to systemd-firstboot to write the localization
+  settings (gh#openSUSE/agama#903).
+
+-------------------------------------------------------------------
+Sat Dec  2 18:05:54 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 6
+
+-------------------------------------------------------------------
+Wed Nov 29 11:19:51 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Rework the org.opensuse.Agama1.Locale interface
+  (gh#openSUSE/agama#881):
+  * Replace LabelsForLocales function with ListLocales.
+  * Add a ListKeymaps function.
+  * Extend the ListTimezone function to include the translation of
+    each part.
+  * Drop ListUILocales and ListVConsoleKeyboards functions.
+  * Remove the SupportedLocales and VConsoleKeyboard properties.
+  * Do not read the lists of locales, keymaps and timezones on
+    each request.
+  * Peform some validation when trying to change the Locales,
+    Keymap and Timezone properties.
+
+-------------------------------------------------------------------
+Thu Nov 16 11:06:30 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update dependencies to compatible versions
+  (gh#openSUSE/agama#874).
+- Replace tempdir with tempfile to prevent RUSTSEC-2023-0018.
+
+-------------------------------------------------------------------
+Wed Nov 15 12:35:32 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Adapt to changes in software D-Bus API (gh#openSUSE/agama#869).
+
+-------------------------------------------------------------------
+
+Wed Nov 15 11:27:10 UTC 2023 - Michal Filka <mfilka@suse.com>
+
+- Improved "agama logs store" (gh#openSUSE/agama#823)
+  - added an option which allows to define the archive destination
+
+-------------------------------------------------------------------
+Tue Nov 14 15:44:15 UTC 2023 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add support for routing to the network model (gh#openSUSE/agama#824)
+
+-------------------------------------------------------------------
+Mon Oct 23 14:43:59 UTC 2023 - Michal Filka <mfilka@suse.com>
+
+- Improved "agama logs store" (gh#openSUSE/agama#812)
+  - the archive file owner is root:root
+  - the permissions is set to r/w for the owner
+
+-------------------------------------------------------------------
+Mon Oct 23 11:33:40 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 5
+
+-------------------------------------------------------------------
+Mon Oct 10 07:37:00 UTC 2023 - Michal Filka <mfilka@suse.com>
+
+- Improve file and directory names in "agama logs store".
+- Add an "agama logs list" subcommand.
+
+-------------------------------------------------------------------
+Tue Sep 26 15:57:14 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 4
+
+-------------------------------------------------------------------
+Tue Sep 26 12:05:52 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Wait until the manager is ready before probing
+  (gh#openSUSE/agama#771).
+
+-------------------------------------------------------------------
+Mon Sep 25 11:32:53 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for IPv6 network settings (gh#openSUSE/agama#761).
+
+-------------------------------------------------------------------
+Mon Sep 25 10:46:53 UTC 2023 - Michal Filka <mfilka@suse.com>
+
+- CLI: added (sub)commands for handling logs. "store" subcommand is
+  similar to what old save_y2logs did. (gh#openSUSE/agama#757)
+
+-------------------------------------------------------------------
+Tue Sep 19 11:16:16 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Adapt to new storage D-Bus API and explicitly call to probe after
+  selecting a new product (gh#openSUSE/agama#748).
+
+-------------------------------------------------------------------
+Thu Sep 14 19:44:57 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Improve questions CLI help text (gh#openSUSE/agama#754)
+
+-------------------------------------------------------------------
+Thu Sep 14 10:10:37 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use a single D-Bus service to connect to the manager and the
+  users API (gh#openSUSE/agama#753, follow-up of
+  gh#openSUSE/agama#729).
+
+-------------------------------------------------------------------
+Wed Sep 13 09:27:22 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to bind a connection to an specific interface through its
+  name or through a set of match settings (gh#opensSUSE/agama#723).
+
+-------------------------------------------------------------------
+Thu Aug 31 10:30:28 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use a single D-Bus service to expose locale, network and
+  questions settings (gh#openSUSE/agama#729).
+
+-------------------------------------------------------------------
+Wed Aug 30 12:57:59 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Locale service: add value for UI locale (gh#openSUSE/agama#725)
+
+-------------------------------------------------------------------
+Thu Aug  3 08:34:14 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Move the settings functionality to a separate package,
+  agama-settings (gh#openSUSE/agama#666).
+- Make the "Settings" derive macro reusable from other crates.
+- Extend the "Settings" derive macro to generate code for
+  InstallSettings and NetworkSettings.
+- Improve error reporting when working with the "config"
+  subcommand.
+
+-------------------------------------------------------------------
+Wed Aug  2 10:03:18 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 3
+
+-------------------------------------------------------------------
+Wed Jul 26 11:08:09 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI: add to "questions" command "answers" subcommand to set
+  file with predefined answers
+- dbus-server: add "AddAnswersFile" method to Questions service
+  (gh#openSUSE/agama#669)
+
+-------------------------------------------------------------------
+Tue Jul 18 13:32:04 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Add to CLI "questions" subcommand with mode option to set
+  interactive and non-interactive mode (gh#openSUSE/agama#668)
+
+-------------------------------------------------------------------
+Mon Jul 17 13:36:56 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the logic to decide which network connections to write
+  due to a bug introduced in gh#openSUSE/agama#662
+  (gh#openSUSE/agama#667).
+
+-------------------------------------------------------------------
+Mon Jul 17 09:16:38 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Adapt to new questions D-Bus API to allow automatic answering of
+  questions when requested (gh#openSUSE/agama#637, reverts
+  gh#openSUSE/agama#649 as now default option is mandatory)
+
+-------------------------------------------------------------------
+Thu Jul 13 10:22:36 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve error reporting in the command-line interface
+  (gh#openSUSE/agama#659 and gh#openSUSE/agama#660).
+
+-------------------------------------------------------------------
+Thu Jul 13 08:56:40 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Read the storage candidate devices and show them with
+  "agama config show" (gh#openSUSE/agama#658).
+
+-------------------------------------------------------------------
+Fri Jul  7 14:12:03 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve the progress reporting (gh#openSUSE/agama#653).
+
+-------------------------------------------------------------------
+Thu Jul  6 09:13:47 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve the waiting logic and implement a retry mechanism for the
+  "agama install" command (bsc#1213047).
+
+-------------------------------------------------------------------
+Wed Jul  5 11:11:20 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the questions service to handle questions with no default
+  option (gh#openSUSE/agama#649).
+
+-------------------------------------------------------------------
+Thu Jun  1 08:14:14 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a localization D-Bus service (gh#openSUSE/agama#533).
+- Add a network D-Bus service (gh#openSUSE/agama#571).
+
+-------------------------------------------------------------------
+Tue May 23 11:51:26 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Version 2.1
+
+-------------------------------------------------------------------
+Mon May 22 12:29:20 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Version 2
+
+-------------------------------------------------------------------
+Thu May 11 11:00:11 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Import root authentication settings when reading a Jsonnet file
+  (bsc#1211300, gh#openSUSE/agama#573).
+- Do not export the SSH public key as an empty string when it is
+  not defined.
+
+-------------------------------------------------------------------
+Fri Mar 24 14:36:36 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 0.2:
+  * Add validation for software and users settings
+    (gh#yast/agama-cli#48, gh#yast/agama-cli#51).
+  * Better error reporting when the bus is not found
+    (gh#yast/agama-cli#48).
+  * Improve the progress reporting mechanism, although it is still
+    a work in progress (gh#yast/agama-cli#50).
+
+-------------------------------------------------------------------
+Wed Mar 22 09:39:29 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for setting root authentication mechanisms
+  (gh#yast/agama-cli#47).
+
+-------------------------------------------------------------------
+Tue Mar 21 16:06:02 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Do not fall back to the system D-Bus (gh#yast/agama-cli#45).
+
+-------------------------------------------------------------------
+Wed Mar 21 13:28:01 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use JSON as the default format (gh#yast/agama-cli#46).
+
+-------------------------------------------------------------------
+Tue Mar 21 08:55:39 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix the path of the JSON schema (gh#yast/agama-cli#44).
+
+-------------------------------------------------------------------
+Thu Mar 16 11:56:42 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- First version of the package:
+  * Querying and setting simple values.
+  * Adding elements to collections
+  * Handling of auto-installation profiles.
+  * Basic error handling
+- 0.1

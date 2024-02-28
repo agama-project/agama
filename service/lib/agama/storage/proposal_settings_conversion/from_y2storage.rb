@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -82,9 +82,10 @@ module Agama
           target.encryption.pbkd_function = settings.encryption_pbkdf
         end
 
+        # @note The space policy cannot be inferred from Y2Storage settings.
         # @param target [Agama::Storage::ProposalSettings]
         def space_settings_conversion(target)
-          # FIXME: No way to infer space settings from Y2Storage.
+          target.space.actions = settings.space_settings.actions
         end
 
         # @param target [Agama::Storage::ProposalSettings]

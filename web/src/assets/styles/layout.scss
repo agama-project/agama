@@ -20,7 +20,7 @@
     padding: var(--spacer-small);
   }
 
-  header {
+  > header {
     @extend .bottom-shadow;
     grid-area: header;
     display: flex;

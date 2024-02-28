@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -35,7 +35,7 @@ module Agama
           # Performs the conversion to D-Bus format.
           #
           # @return [Hash]
-          def convert # rubocop:disable Metrics/AbcSize
+          def convert
             {
               "BootDevice"             => settings.boot_device.to_s,
               "LVM"                    => settings.lvm.enabled?,
@@ -44,7 +44,7 @@ module Agama
               "EncryptionMethod"       => settings.encryption.method.id.to_s,
               "EncryptionPBKDFunction" => settings.encryption.pbkd_function&.value || "",
               "SpacePolicy"            => settings.space.policy.to_s,
-              "SpaceActions"           => settings.space.actions,
+              "SpaceActions"           => space_actions_conversion,
               "Volumes"                => settings.volumes.map { |v| VolumeConversion.to_dbus(v) }
             }
           end
@@ -53,6 +53,13 @@ module Agama
 
           # @return [Agama::Storage::ProposalSettings]
           attr_reader :settings
+
+          # @return [Array<Hash>]
+          def space_actions_conversion
+            settings.space.actions.each_with_object([]) do |(device, action), actions|
+              actions << { "Device" => device, "Action" => action.to_s }
+            end
+          end
         end
       end
     end

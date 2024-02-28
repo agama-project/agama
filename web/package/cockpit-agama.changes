@@ -1,4 +1,29 @@
 -------------------------------------------------------------------
+Mon Feb 26 20:46:45 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Remove fs type option "Btrfs with snapshots" and create instead
+  global option that affects only root volume
+  (gh#openSUSE/agama#1039)
+
+-------------------------------------------------------------------
+Thu Feb 22 14:05:56 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Break storage settings in multiple sections to improve the UX
+  (gh#openSUSE/agama#1045).
+
+-------------------------------------------------------------------
+Wed Feb 21 17:40:01 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Stop rendering a warning at the top of storage page
+  (gh#openSUSE/agama#1048).
+
+-------------------------------------------------------------------
+Tue Feb 20 13:13:51 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Add section for space policy to the storage page
+  (gh#openSUSE/agama#1028).
+
+-------------------------------------------------------------------
 Wed Feb 14 12:42:32 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - UI: change look&feel and internals of Agama selectors

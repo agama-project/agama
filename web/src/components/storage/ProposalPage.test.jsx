@@ -116,16 +116,11 @@ it("loads the proposal data", async () => {
   await screen.findByText(/\/dev\/vda/);
 });
 
-it("renders a warning about modified devices", async () => {
-  installerRender(<ProposalPage />);
-
-  await screen.findByText(/Devices will not be modified/);
-});
-
-it("renders the settings and actions sections", async () => {
+it("renders the settings, find space and actions sections", async () => {
   installerRender(<ProposalPage />);
 
   await screen.findByText(/Settings/);
+  await screen.findByText(/Find Space/);
   await screen.findByText(/Planned Actions/);
 });
 

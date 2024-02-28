@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -85,10 +85,9 @@ module Agama
           proposal.settings,
           config: config
         ).tap do |settings|
-          # FIXME: The conversion from Y2Storage cannot infer the space policy. Copying space
-          #   settings from the original settings.
+          # The conversion from Y2Storage cannot infer the space policy. Copying space policy from
+          # the original settings.
           settings.space.policy = original_settings.space.policy
-          settings.space.actions = original_settings.space.actions
           # FIXME: The conversion from Y2Storage cannot reliably infer the system VG devices in all
           #   cases. Copying system VG devices from the original settings.
           settings.lvm.system_vg_devices = original_settings.lvm.system_vg_devices

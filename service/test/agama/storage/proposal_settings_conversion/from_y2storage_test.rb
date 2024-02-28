@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -38,6 +38,10 @@ describe Agama::Storage::ProposalSettingsConversion::FromY2Storage do
         settings.encryption_password = "notsecret"
         settings.encryption_method = Y2Storage::EncryptionMethod::LUKS2
         settings.encryption_pbkdf = Y2Storage::PbkdFunction::ARGON2ID
+        settings.space_settings.actions = {
+          "/dev/sda"  => :force_delete,
+          "/dev/sdb1" => :resize
+        }
         settings.volumes = []
       end
     end
@@ -56,6 +60,9 @@ describe Agama::Storage::ProposalSettingsConversion::FromY2Storage do
           password:      "notsecret",
           method:        Y2Storage::EncryptionMethod::LUKS2,
           pbkd_function: Y2Storage::PbkdFunction::ARGON2ID
+        ),
+        space:       an_object_having_attributes(
+          actions: { "/dev/sda" => :force_delete, "/dev/sdb1" => :resize }
         ),
         volumes:     []
       )

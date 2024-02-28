@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,14 +20,19 @@
  */
 
 import React, { useCallback, useReducer, useEffect } from "react";
-import { Alert } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
-import { Icon } from "~/components/layout";
 import { Page } from "~/components/core";
-import { ProposalActionsSection, ProposalPageMenu, ProposalSettingsSection } from "~/components/storage";
+import {
+  ProposalActionsSection,
+  ProposalPageMenu,
+  ProposalSettingsSection,
+  ProposalSpacePolicySection,
+  ProposalDeviceSection,
+  ProposalFileSystemsSection
+} from "~/components/storage";
 import { IDLE } from "~/client/status";
 
 const initialState = {
@@ -194,26 +199,28 @@ export default function ProposalPage() {
   };
 
   const PageContent = () => {
-    // Templates for already existing mount points are filtered out
-    const usefulTemplates = () => {
-      const volumes = state.settings.volumes || [];
-      const mountPaths = volumes.map(v => v.mountPath);
-      return state.volumeTemplates.filter(t => (
-        t.mountPath.length > 0 && !mountPaths.includes(t.mountPath)
-      ));
-    };
-
     return (
       <>
-        <Alert
-          isInline
-          customIcon={<Icon name="info" size="xxs" />}
-          title={_("Devices will not be modified until installation starts.")}
+        <ProposalDeviceSection
+          settings={state.settings}
+          availableDevices={state.availableDevices}
+          isLoading={state.loading}
+          onChange={changeSettings}
         />
         <ProposalSettingsSection
           availableDevices={state.availableDevices}
-          volumeTemplates={usefulTemplates()}
           encryptionMethods={state.encryptionMethods}
+          settings={state.settings}
+          onChange={changeSettings}
+          isLoading={state.loading}
+        />
+        <ProposalFileSystemsSection
+          settings={state.settings}
+          volumeTemplates={state.volumeTemplates}
+          onChange={changeSettings}
+          isLoading={state.loading}
+        />
+        <ProposalSpacePolicySection
           settings={state.settings}
           onChange={changeSettings}
           isLoading={state.loading}
