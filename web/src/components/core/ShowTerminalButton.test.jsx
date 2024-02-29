@@ -24,18 +24,16 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ShowTerminalButton } from "~/components/core";
 
-jest.mock("~/components/core/Terminal", () => () => <div>Terminal Mock</div>);
-
 describe("ShowTerminalButton", () => {
   it("renders a button that displays <Terminal> after clicking", async () => {
     const { user } = plainRender(<ShowTerminalButton />);
     const button = screen.getByRole("button", "Terminal");
 
     // no terminal displayed just after the render
-    expect(screen.queryByText(/Terminal Mock/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/TODO/)).not.toBeInTheDocument();
 
     await user.click(button);
     // it is displayed after clicking the button
-    screen.getByText(/Terminal Mock/);
+    screen.getByText(/TODO/);
   });
 });

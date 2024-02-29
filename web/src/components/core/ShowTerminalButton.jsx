@@ -22,7 +22,6 @@
 import React, { useState } from "react";
 import { Button } from "@patternfly/react-core";
 
-import { Terminal } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
@@ -34,7 +33,6 @@ const ShowTerminalButton = () => {
   const [isTermDisplayed, setIsTermDisplayed] = useState(false);
 
   const onClick = () => setIsTermDisplayed(true);
-  const onClose = () => setIsTermDisplayed(false);
 
   return (
     <>
@@ -48,8 +46,7 @@ const ShowTerminalButton = () => {
         {_("Open Terminal")}
       </Button>
 
-      { isTermDisplayed &&
-        <Terminal onCloseCallback={onClose} /> }
+      { isTermDisplayed && "TODO" }
     </>
   );
 };
