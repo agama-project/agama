@@ -142,12 +142,12 @@ fn https_redirect() -> Router {
         let request_host = req.headers().get("host");
         match request_host {
             // missing host in the request header, we cannot build the redirection URL, return error 400
-            None => return Ok(redirect_error()),
+            None => Ok(redirect_error()),
             Some(host) => {
                 let host_string = host.to_str();
                 match host_string {
                     // invalid host value in the request
-                    Err(_) => return Ok(redirect_error()),
+                    Err(_) => Ok(redirect_error()),
                     Ok(host_str) => return Ok(redirect_https(host_str, req.uri())),
                 }
             }
@@ -238,8 +238,8 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
 
 /// Start serving the API.
 async fn serve_command(
-    address: &String,
-    address2: &String,
+    address: &str,
+    address2: &str,
     cert: &String,
     key: &String,
 ) -> anyhow::Result<()> {
@@ -256,14 +256,14 @@ async fn serve_command(
     let mut servers = vec![];
     if !address.is_empty() {
         servers.push(tokio::spawn(start_server(
-            address.clone(),
+            address.to_owned(),
             service.clone(),
             ssl_acceptor.clone(),
         )));
     }
     if !address2.is_empty() {
         servers.push(tokio::spawn(start_server(
-            address2.clone(),
+            address2.to_owned(),
             service.clone(),
             ssl_acceptor.clone(),
         )));
