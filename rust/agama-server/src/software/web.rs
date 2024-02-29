@@ -5,10 +5,10 @@
 use crate::web::EventsSender;
 use agama_lib::{connection, product::Product, software::proxies::SoftwareProductProxy};
 use axum::{
-    extract::State,
+    extract::{Path, State},
     http::StatusCode,
     response::{IntoResponse, Response},
-    routing::get,
+    routing::{get, put},
     Json, Router,
 };
 use serde_json::json;
@@ -43,6 +43,7 @@ pub async fn software_service(_events: EventsSender) -> Router {
     let state = SoftwareState { software: proxy };
     Router::new()
         .route("/products", get(products))
+        .route("/products/:id/select", put(select_product))
         .with_state(state)
 }
 
@@ -53,6 +54,7 @@ async fn products<'a>(
     State(state): State<SoftwareState<'a>>,
 ) -> Result<Json<Vec<Product>>, SoftwareError> {
     let products = state.software.available_products().await?;
+    let selected_product = state.software.selected_product().await?;
     let products = products
         .into_iter()
         .map(|(id, name, data)| {
@@ -60,14 +62,28 @@ async fn products<'a>(
                 .get("description")
                 .and_then(|d| d.downcast_ref::<str>())
                 .unwrap_or("");
+            let selected = selected_product == id;
 
             Product {
                 id,
                 name,
                 description: description.to_string(),
+                selected,
             }
         })
         .collect();
 
     Ok(Json(products))
+}
+
+/// Selects a product.
+///
+/// * `state`: service state.
+/// * `id`: product ID.
+async fn select_product<'a>(
+    State(state): State<SoftwareState<'a>>,
+    Path(id): Path<String>,
+) -> Result<(), SoftwareError> {
+    state.software.select_product(&id).await?;
+    Ok(())
 }

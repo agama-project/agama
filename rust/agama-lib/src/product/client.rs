@@ -8,7 +8,7 @@ use zbus::Connection;
 use super::proxies::RegistrationProxy;
 
 /// Represents a software product
-#[derive(Debug, Serialize)]
+#[derive(Default, Debug, Serialize)]
 pub struct Product {
     /// Product ID (eg., "ALP", "Tumbleweed", etc.)
     pub id: String,
@@ -16,6 +16,8 @@ pub struct Product {
     pub name: String,
     /// Product description
     pub description: String,
+    /// Whether the product is selected
+    pub selected: bool,
 }
 
 /// D-Bus client for the software service
@@ -48,6 +50,7 @@ impl<'a> ProductClient<'a> {
                     id,
                     name,
                     description: description.to_string(),
+                    ..Default::default()
                 }
             })
             .collect();
