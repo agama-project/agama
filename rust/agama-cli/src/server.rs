@@ -1,4 +1,5 @@
 use clap::Subcommand;
+use std::io;
 use std::path::{PathBuf};
 
 #[derive(Subcommand, Debug)]
@@ -37,7 +38,7 @@ pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
             // little bit tricky way of error conversion to deal with
             // errors reported for anyhow::Error when using '?'
             let credentials = get_credentials(user, password, None)
-                .ok_or(Err(())).map_err(|_err: Result<(), ()>| anyhow::anyhow!("Missing credentials"))?;
+                .ok_or(Err(())).map_err(|_err: Result<(), ()>| anyhow::anyhow!("Wrong credentials"))?;
 
             login(credentials.user, credentials.password)
         },
@@ -54,9 +55,32 @@ fn get_credentials_from_file(_file: PathBuf) -> Option<Credentials> {
     None
 }
 
+fn read_credential(caption: String) -> Option<String> {
+    let mut cred = String::new();
+
+    println!("{}: ", caption);
+
+    if io::stdin().read_line(&mut cred).is_err() {
+        return None;
+    }
+    if cred.pop().is_none() || cred.is_empty() {
+        return None;
+    }
+
+    Some(cred)
+}
+
 /// Asks user to enter credentials interactively
 fn get_credentials_from_user() -> Option<Credentials> {
-    None
+    println!("Enter credentials needed for accessing installation server");
+
+    let user = read_credential("User".to_string())?;
+    let password = read_credential("Password".to_string())?;
+
+    Some(Credentials {
+        user: user,
+        password: password,
+    })
 }
 
 /// Handles various ways how to get user name / password from user or read it from a file
@@ -76,7 +100,12 @@ fn get_credentials(user: Option<String>, password: Option<String>, file: Option<
     }
 }
 
-fn login(_user: String, _password: String) -> anyhow::Result<()> {
+fn login(user: String, password: String) -> anyhow::Result<()> {
+    // 1) ask web server for JWT
+    // 2) if successful store the JWT for later use
+    println!("Loging with credentials:");
+    println!("({}, {})", user, password);
+
     Err(anyhow::anyhow!("Not implemented"))
 }
 
