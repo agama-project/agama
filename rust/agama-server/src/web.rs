@@ -21,6 +21,7 @@ pub use docs::ApiDoc;
 pub use event::{Event, EventsReceiver, EventsSender};
 
 use crate::l10n::web::l10n_service;
+use crate::software::web::software_service;
 use axum::Router;
 pub use service::MainServiceBuilder;
 
@@ -30,9 +31,10 @@ use self::progress::EventsProgressPresenter;
 ///
 /// * `config`: service configuration.
 /// * `events`: D-Bus connection.
-pub fn service(config: ServiceConfig, events: EventsSender) -> Router {
+pub async fn service(config: ServiceConfig, events: EventsSender) -> Router {
     MainServiceBuilder::new(events.clone())
-        .add_service("/l10n", l10n_service(events))
+        .add_service("/l10n", l10n_service(events.clone()))
+        .add_service("/software", software_service(events).await)
         .with_config(config)
         .build()
 }

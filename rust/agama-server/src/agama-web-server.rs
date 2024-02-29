@@ -45,7 +45,7 @@ async fn serve_command(address: &str) -> anyhow::Result<()> {
     run_monitor(tx.clone()).await?;
 
     let config = web::ServiceConfig::load().unwrap();
-    let service = web::service(config, tx);
+    let service = web::service(config, tx).await;
     axum::serve(listener, service)
         .await
         .expect("could not mount app on listener");
