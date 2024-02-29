@@ -1,5 +1,3 @@
-use std::{path::PathBuf, pin::Pin};
-// use agama_lib::connection;
 use agama_dbus_server::{
     l10n::helpers,
     web::{self, run_monitor},
@@ -14,6 +12,7 @@ use hyper::body::Incoming;
 use hyper_util::rt::{TokioExecutor, TokioIo};
 use openssl::ssl::{Ssl, SslAcceptor, SslFiletype, SslMethod};
 use std::process::{ExitCode, Termination};
+use std::{path::PathBuf, pin::Pin};
 use tokio::sync::broadcast::channel;
 use tokio_openssl::SslStream;
 use tower::Service;
@@ -24,14 +23,14 @@ use utoipa::OpenApi;
 enum Commands {
     /// Start the API server.
     Serve {
-        // Address to listen to (":::3000" listens for both IPv6 and IPv4
+        // Address/port to listen on (":::3000" listens for both IPv6 and IPv4
         // connections unless manually disabled in /proc/sys/net/ipv6/bindv6only)
         #[arg(long, default_value = ":::3000", help = "Primary address to listen on")]
         address: String,
         #[arg(
             long,
             default_value = "",
-            help = "Optional secondary address to listen to"
+            help = "Optional secondary address to listen on"
         )]
         address2: String,
         #[arg(
@@ -155,11 +154,8 @@ fn https_redirect() -> Router {
     });
 
     Router::new()
-        .route_service(
-            // the wildcard path below does not match an empty path, we need to match it explicitly
-            "/",
-            redirect_service,
-        )
+        // the wildcard path below does not match an empty path, we need to match it explicitly
+        .route_service("/", redirect_service)
         .route_service("/*path", redirect_service)
 }
 
@@ -254,13 +250,13 @@ async fn serve_command(
     let ssl_acceptor = create_ssl_acceptor(cert, key);
 
     let mut servers = vec![];
-    if !address.is_empty() {
-        servers.push(tokio::spawn(start_server(
-            address.to_owned(),
-            service.clone(),
-            ssl_acceptor.clone(),
-        )));
-    }
+    servers.push(tokio::spawn(start_server(
+        address.to_owned(),
+        service.clone(),
+        ssl_acceptor.clone(),
+    )));
+
+    // optionally listen on the secondary address/port
     if !address2.is_empty() {
         servers.push(tokio::spawn(start_server(
             address2.to_owned(),
