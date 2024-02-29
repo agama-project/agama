@@ -86,7 +86,7 @@ module Agama
       #
       # @note Some devices might not be really involved. For example, system_vg_devices are not used
       #   if LVM is not enabled. All these cases are properly managed when converting the settings
-      #   from Y2Storage settings, see {ProposalSettingsConversion#FromY2Storage}.
+      #   from Y2Storage settings, see {ProposalSettingsConversion::FromY2Storage}.
       #
       # @return [Array<String>]
       def installation_devices
