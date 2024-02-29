@@ -42,14 +42,14 @@ pub fn create_certificate() -> Result<(X509, PKey<Private>), ErrorStack> {
             .critical()
             .key_cert_sign()
             .crl_sign()
-            .build()?
+            .build()?,
     )?;
 
     builder.append_extension(
-      SubjectAlternativeName::new()
-        .dns("agama")
-        .dns("agama.local")
-        .build(&builder.x509v3_context(None, None))?
+        SubjectAlternativeName::new()
+            .dns("agama")
+            .dns("agama.local")
+            .build(&builder.x509v3_context(None, None))?,
     )?;
 
     let subject_key_identifier =
