@@ -2,7 +2,7 @@
 //!
 //! It is a wrapper around the YaST D-Bus API.
 
-use crate::web::EventsSender;
+use crate::web::{Event, EventsSender};
 use agama_lib::{connection, product::Product, software::proxies::SoftwareProductProxy};
 use axum::{
     extract::{Path, State},
@@ -13,6 +13,7 @@ use axum::{
 };
 use serde_json::json;
 use thiserror::Error;
+use tokio_stream::StreamExt;
 
 #[derive(Clone)]
 struct SoftwareState<'a> {
@@ -31,6 +32,17 @@ impl IntoResponse for SoftwareError {
             "error": self.to_string()
         });
         (StatusCode::BAD_REQUEST, Json(body)).into_response()
+    }
+}
+
+pub async fn software_monitor(events: EventsSender) {
+    let connection = connection().await.unwrap();
+    let proxy = SoftwareProductProxy::new(&connection).await.unwrap();
+    let mut stream = proxy.receive_selected_product_changed().await;
+    while let Some(change) = stream.next().await {
+        if let Ok(id) = change.get().await {
+            _ = events.send(Event::ProductChanged { id });
+        }
     }
 }
 

@@ -4,6 +4,11 @@
 //! * Emit relevant events via websocket.
 //! * Serve the code for the web user interface (not implemented yet).
 
+use self::progress::EventsProgressPresenter;
+use crate::l10n::web::l10n_service;
+use crate::software::web::{software_monitor, software_service};
+use axum::Router;
+
 mod auth;
 mod config;
 mod docs;
@@ -19,13 +24,7 @@ pub use auth::generate_token;
 pub use config::ServiceConfig;
 pub use docs::ApiDoc;
 pub use event::{Event, EventsReceiver, EventsSender};
-
-use crate::l10n::web::l10n_service;
-use crate::software::web::software_service;
-use axum::Router;
 pub use service::MainServiceBuilder;
-
-use self::progress::EventsProgressPresenter;
 
 /// Returns a service that implements the web-based Agama API.
 ///
@@ -45,7 +44,7 @@ pub async fn service(config: ServiceConfig, events: EventsSender) -> Router {
 ///
 /// * `events`: channel to send the events to.
 pub async fn run_monitor(events: EventsSender) -> Result<(), ServiceError> {
-    let presenter = EventsProgressPresenter::new(events);
+    let presenter = EventsProgressPresenter::new(events.clone());
     let connection = connection().await?;
     let mut monitor = ProgressMonitor::new(connection).await?;
     tokio::spawn(async move {
@@ -53,5 +52,6 @@ pub async fn run_monitor(events: EventsSender) -> Result<(), ServiceError> {
             eprintln!("Could not monitor the D-Bus server: {}", error);
         }
     });
+    tokio::spawn(async move { software_monitor(events.clone()).await });
     Ok(())
 }

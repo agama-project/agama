@@ -7,6 +7,7 @@ use tokio::sync::broadcast::{Receiver, Sender};
 pub enum Event {
     LocaleChanged { locale: String },
     Progress(Progress),
+    ProductChanged { id: String },
 }
 
 pub type EventsSender = Sender<Event>;
