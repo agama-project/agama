@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+/* cspell:disable */
+
 import { suggestUsernames } from "./utils";
 
 describe('suggestUsernames', () => {
