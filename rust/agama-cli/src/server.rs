@@ -17,8 +17,9 @@ pub enum ServerCommands {
     Logout,
 }
 
-struct Credentials {
-    password: String,
+struct LoginOptions {
+    password: Option<String>,
+    file: Option<PathBuf>,
 }
 
 /// Main entry point called from agama CLI main loop
@@ -36,12 +37,17 @@ pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
             // 3) receive JWT
             // 4) store the JWT in a well known location
 
+            let options = LoginOptions {
+                password: password,
+                file: file,
+            };
+
             // little bit tricky way of error conversion to deal with
             // errors reported for anyhow::Error when using '?'
-            let credentials = get_credentials(password, file)
+            let password = parse_login_options(options)
                 .ok_or(Err(())).map_err(|_err: Result<(), ()>| anyhow::anyhow!("Wrong credentials"))?;
 
-            login(credentials.password)
+            login(password)
         },
         ServerCommands::Logout => {
             // actions to do:
@@ -52,7 +58,7 @@ pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
 }
 
 /// Reads credentials from a given file (if exists)
-fn get_credentials_from_file(path: PathBuf) -> Option<Credentials> {
+fn get_credentials_from_file(path: PathBuf) -> Option<String> {
     if !path.as_path().exists() {
         return None;
     }
@@ -61,9 +67,7 @@ fn get_credentials_from_file(path: PathBuf) -> Option<Credentials> {
         let line = BufReader::new(file).lines().next()?;
 
         if let Ok(password) = line {
-            return Some(Credentials {
-                password: password,
-            })
+            return Some(password)
         }
     }
 
@@ -86,24 +90,20 @@ fn read_credential(caption: String) -> Option<String> {
 }
 
 /// Asks user to enter credentials interactively
-fn get_credentials_from_user() -> Option<Credentials> {
+fn get_credentials_from_user() -> Option<String> {
     println!("Enter credentials needed for accessing installation server");
 
     let password = read_credential("Password".to_string())?;
 
-    Some(Credentials {
-        password: password,
-    })
+    Some(password)
 }
 
 /// Handles various ways how to get user name / password from user or read it from a file
-fn get_credentials(password: Option<String>, file: Option<PathBuf>) -> Option<Credentials> {
-    match password {
+fn parse_login_options(options: LoginOptions) -> Option<String> {
+    match options.password {
         // explicitly provided user + password
-        Some(p) => Some(Credentials {
-                password: p,
-            }),
-        _ => match file {
+        Some(p) => Some(p),
+        _ => match options.file {
             // try to read user + password from a file
             Some(f) => get_credentials_from_file(f),
             // last instance - ask user to enter user + password interactively
