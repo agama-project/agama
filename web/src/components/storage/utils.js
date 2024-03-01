@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,6 +24,11 @@
 import xbytes from "xbytes";
 
 import { N_ } from "~/i18n";
+
+/**
+ * @typedef {import ("~/client/storage").Volume} Volume
+ * @typedef {import ("~/clients/storage").StorageDevice} StorageDevice
+ */
 
 /**
  * @typedef {Object} SizeObject
@@ -125,7 +130,7 @@ const parseToBytes = (size) => {
 /**
  * Generates the label for the given device
  *
- * @param {import(~/clients/storage).StorageDevice} device
+ * @param {StorageDevice} device
  * @returns {string}
  */
 const deviceLabel = (device) => {
@@ -139,7 +144,7 @@ const deviceLabel = (device) => {
  * Checks if volume uses given fs. This method works same as in backend
  * case insensitive.
  *
- * @param {import(~/clients/storage).Volume} volume
+ * @param {Volume} volume
  * @param {string} fs - Filesystem name to check.
  * @returns {boolean} true when volume uses given fs
  */
@@ -147,6 +152,36 @@ const hasFS = (volume, fs) => {
   const volFS = volume.fsType;
 
   return volFS.toLowerCase() === fs.toLocaleLowerCase();
+};
+
+/**
+ * Checks whether the given volume has snapshots.
+ *
+ * @param {Volume} volume
+ * @returns {boolean}
+ */
+const hasSnapshots = (volume) => {
+  return hasFS(volume, "btrfs") && volume.snapshots;
+};
+
+/**
+ * Checks whether the given volume defines a transactional root.
+ *
+ * @param {Volume} volume
+ * @returns {boolean}
+ */
+const isTransactionalRoot = (volume) => {
+  return volume.mountPath === "/" && volume.transactional;
+};
+
+/**
+ * Checks whether the given volumes defines a transactional system.
+ *
+ * @param {Volume[]} volumes
+ * @returns {boolean}
+ */
+const isTransactionalSystem = (volumes) => {
+  return volumes.find(v => isTransactionalRoot(v)) !== undefined;
 };
 
 export {
@@ -157,5 +192,8 @@ export {
   deviceSize,
   parseToBytes,
   splitSize,
-  hasFS
+  hasFS,
+  hasSnapshots,
+  isTransactionalRoot,
+  isTransactionalSystem
 };

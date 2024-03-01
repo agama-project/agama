@@ -39,6 +39,13 @@ jest.mock("@patternfly/react-core", () => {
 jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 jest.mock("~/components/storage/ProposalPageMenu", () => () => <div>ProposalPage Options</div>);
 
+jest.mock("~/context/product", () => ({
+  ...jest.requireActual("~/context/product"),
+  useProduct: () => ({
+    selectedProduct : { name: "Test" }
+  })
+}));
+
 const vda = {
   sid: "59",
   type: "disk",

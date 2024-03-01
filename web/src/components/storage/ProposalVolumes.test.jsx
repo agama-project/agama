@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -217,9 +217,9 @@ describe("if there are volumes", () => {
     within(popup).getByText("Edit file system");
   });
 
-  describe("and there is transactional Btrfs volume", () => {
+  describe("and there is transactional Btrfs root volume", () => {
     beforeEach(() => {
-      props.volumes = [{ ...volumes.root, transactional: true }];
+      props.volumes = [{ ...volumes.root, snapshots: true, transactional: true }];
     });
 
     it("renders 'transactional' legend as part of its information", async () => {
@@ -233,7 +233,7 @@ describe("if there are volumes", () => {
 
   describe("and there is Btrfs volume using snapshots", () => {
     beforeEach(() => {
-      props.volumes = [{ ...volumes.root, snapshots: true }];
+      props.volumes = [{ ...volumes.root, snapshots: true, transactional: false }];
     });
 
     it("renders 'with snapshots' legend as part of its information", async () => {
@@ -242,20 +242,6 @@ describe("if there are volumes", () => {
       const [, volumes] = await screen.findAllByRole("rowgroup");
 
       within(volumes).getByRole("row", { name: "/ Btrfs partition with snapshots 1 KiB - 2 KiB" });
-    });
-  });
-
-  describe("and there is a transactional Btrfs volume using snapshots", () => {
-    beforeEach(() => {
-      props.volumes = [{ ...volumes.root, transactional: true, snapshots: true }];
-    });
-
-    it("renders 'with snapshots' and 'transactional' legends as part of its information", async () => {
-      plainRender(<ProposalVolumes {...props} />);
-
-      const [, volumes] = await screen.findAllByRole("rowgroup");
-
-      within(volumes).getByRole("row", { name: "/ Btrfs partition with snapshots transactional 1 KiB - 2 KiB" });
     });
   });
 });
