@@ -7,7 +7,7 @@ use agama_lib::{
     connection,
     error::ServiceError,
     product::{Product, ProductClient},
-    software::proxies::SoftwareProductProxy,
+    software::{proxies::SoftwareProductProxy, Pattern, SelectionReason, SoftwareClient},
 };
 use axum::{
     extract::State,
@@ -23,7 +23,8 @@ use tokio_stream::StreamExt;
 
 #[derive(Clone)]
 struct SoftwareState<'a> {
-    client: ProductClient<'a>,
+    product: ProductClient<'a>,
+    software: SoftwareClient<'a>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -63,10 +64,12 @@ pub async fn software_monitor(events: EventsSender) {
 /// * `events`: channel to send the events to the main service.
 pub async fn software_service(_events: EventsSender) -> Router {
     let connection = connection().await.unwrap();
-    let client = ProductClient::new(connection).await.unwrap();
-    let state = SoftwareState { client };
+    let product = ProductClient::new(connection.clone()).await.unwrap();
+    let software = SoftwareClient::new(connection).await.unwrap();
+    let state = SoftwareState { product, software };
     Router::new()
         .route("/products", get(products))
+        .route("/patterns", get(patterns))
         .route("/config", put(set_config).get(get_config))
         .with_state(state)
 }
@@ -77,8 +80,54 @@ pub async fn software_service(_events: EventsSender) -> Router {
 async fn products<'a>(
     State(state): State<SoftwareState<'a>>,
 ) -> Result<Json<Vec<Product>>, SoftwareError> {
-    let products = state.client.products().await?;
+    let products = state.product.products().await?;
     Ok(Json(products))
+}
+
+/// Represents a pattern.
+///
+/// It augments the information coming from the D-Bus client.
+#[derive(Serialize)]
+pub struct PatternItem {
+    #[serde(flatten)]
+    pattern: Pattern,
+    status: PatternStatus,
+}
+
+/// Pattern status.
+#[derive(Serialize, Clone, Copy)]
+enum PatternStatus {
+    Available,
+    UserSelected,
+    AutoSelected,
+}
+
+impl From<SelectionReason> for PatternStatus {
+    fn from(value: SelectionReason) -> Self {
+        match value {
+            SelectionReason::User => Self::UserSelected,
+            SelectionReason::Auto => Self::AutoSelected,
+        }
+    }
+}
+
+async fn patterns<'a>(
+    State(state): State<SoftwareState<'a>>,
+) -> Result<Json<Vec<PatternItem>>, SoftwareError> {
+    let patterns = state.software.patterns(true).await?;
+    let selected = state.software.selected_patterns().await?;
+    let items = patterns
+        .into_iter()
+        .map(|pattern| {
+            let status: PatternStatus = selected
+                .get(&pattern.id)
+                .map(|r| (*r).into())
+                .unwrap_or(PatternStatus::Available);
+            PatternItem { pattern, status }
+        })
+        .collect();
+
+    Ok(Json(items))
 }
 
 /// Sets the software configuration.
@@ -90,8 +139,13 @@ async fn set_config<'a>(
     Json(config): Json<SoftwareConfig>,
 ) -> Result<(), SoftwareError> {
     if let Some(product) = config.product {
-        state.client.select_product(&product).await?;
+        state.product.select_product(&product).await?;
     }
+
+    if let Some(patterns) = config.patterns {
+        state.software.select_patterns(&patterns).await?;
+    }
+
     Ok(())
 }
 
@@ -101,9 +155,10 @@ async fn set_config<'a>(
 async fn get_config<'a>(
     State(state): State<SoftwareState<'a>>,
 ) -> Result<Json<SoftwareConfig>, SoftwareError> {
-    let product = state.client.product().await?;
+    let product = state.product.product().await?;
+    let patterns = state.software.user_selected_patterns().await?;
     let config = SoftwareConfig {
-        patterns: Some(vec![]),
+        patterns: Some(patterns),
         product: Some(product),
     };
     Ok(Json(config))

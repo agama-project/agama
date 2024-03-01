@@ -1,6 +1,7 @@
 use super::proxies::Software1Proxy;
 use crate::error::ServiceError;
 use serde::Serialize;
+use std::collections::HashMap;
 use zbus::Connection;
 
 /// Represents a software product
@@ -20,7 +21,26 @@ pub struct Pattern {
     pub order: String,
 }
 
+/// Represents the reason why a pattern is selected.
+#[derive(Clone, Copy)]
+pub enum SelectionReason {
+    /// The pattern was selected by the user.
+    User = 0,
+    /// The pattern was selected automatically.
+    Auto = 1,
+}
+
+impl From<u8> for SelectionReason {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::User,
+            _ => Self::Auto,
+        }
+    }
+}
+
 /// D-Bus client for the software service
+#[derive(Clone)]
 pub struct SoftwareClient<'a> {
     software_proxy: Software1Proxy<'a>,
 }
@@ -55,14 +75,25 @@ impl<'a> SoftwareClient<'a> {
 
     /// Returns the ids of patterns selected by user
     pub async fn user_selected_patterns(&self) -> Result<Vec<String>, ServiceError> {
-        const USER_SELECTED: u8 = 0;
         let patterns: Vec<String> = self
             .software_proxy
             .selected_patterns()
             .await?
             .into_iter()
-            .filter(|(_id, reason)| *reason == USER_SELECTED)
+            .filter(|(_id, reason)| *reason == SelectionReason::User as u8)
             .map(|(id, _reason)| id)
+            .collect();
+        Ok(patterns)
+    }
+
+    /// Returns the selected pattern and the reason each one selected.
+    pub async fn selected_patterns(
+        &self,
+    ) -> Result<HashMap<String, SelectionReason>, ServiceError> {
+        let patterns = self.software_proxy.selected_patterns().await?;
+        let patterns = patterns
+            .into_iter()
+            .map(|(id, reason)| (id, reason.into()))
             .collect();
         Ok(patterns)
     }
