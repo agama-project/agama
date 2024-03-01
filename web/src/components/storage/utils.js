@@ -26,6 +26,11 @@ import xbytes from "xbytes";
 import { N_ } from "~/i18n";
 
 /**
+ * @typedef {import ("~/client/storage").Volume} Volume
+ * @typedef {import ("~/clients/storage").StorageDevice} StorageDevice
+ */
+
+/**
  * @typedef {Object} SizeObject
  *
  * @note undefined for either property means unknown
@@ -125,7 +130,7 @@ const parseToBytes = (size) => {
 /**
  * Generates the label for the given device
  *
- * @param {import(~/clients/storage).StorageDevice} device
+ * @param {StorageDevice} device
  * @returns {string}
  */
 const deviceLabel = (device) => {
@@ -139,7 +144,7 @@ const deviceLabel = (device) => {
  * Checks if volume uses given fs. This method works same as in backend
  * case insensitive.
  *
- * @param {import(~/clients/storage).Volume} volume
+ * @param {Volume} volume
  * @param {string} fs - Filesystem name to check.
  * @returns {boolean} true when volume uses given fs
  */
@@ -152,7 +157,7 @@ const hasFS = (volume, fs) => {
 /**
  * Checks whether the given volume has snapshots.
  *
- * @param {import(~/clients/storage).Volume} volume
+ * @param {Volume} volume
  * @returns {boolean}
  */
 const hasSnapshots = (volume) => {
@@ -162,7 +167,7 @@ const hasSnapshots = (volume) => {
 /**
  * Checks whether the given volume defines a transactional root.
  *
- * @param {import(~/clients/storage).Volume} volume
+ * @param {Volume} volume
  * @returns {boolean}
  */
 const isTransactionalRoot = (volume) => {
@@ -172,7 +177,7 @@ const isTransactionalRoot = (volume) => {
 /**
  * Checks whether the given volumes defines a transactional system.
  *
- * @param {import(~/clients/storage).Volume[]} volumes
+ * @param {Volume[]} volumes
  * @returns {boolean}
  */
 const isTransactionalSystem = (volumes) => {
