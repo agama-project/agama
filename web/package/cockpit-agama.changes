@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar  1 10:56:35 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Indicate whether the system is transactional
+  (gh#openSUSE/agama/1063).
+
+-------------------------------------------------------------------
 Wed Feb 28 22:26:23 UTC 2024 - Balsa Asanovic <balsaasanovic95@gmail.com>
 
 - Added auto suggestion of usernames during user creation based
