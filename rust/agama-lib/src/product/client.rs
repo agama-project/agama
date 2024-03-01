@@ -16,8 +16,6 @@ pub struct Product {
     pub name: String,
     /// Product description
     pub description: String,
-    /// Whether the product is selected
-    pub selected: bool,
 }
 
 /// D-Bus client for the software service
@@ -50,7 +48,6 @@ impl<'a> ProductClient<'a> {
                     id,
                     name,
                     description: description.to_string(),
-                    ..Default::default()
                 }
             })
             .collect();

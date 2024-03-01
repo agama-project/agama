@@ -5,12 +5,13 @@
 use crate::web::{Event, EventsSender};
 use agama_lib::{connection, product::Product, software::proxies::SoftwareProductProxy};
 use axum::{
-    extract::{Path, State},
+    extract::State,
     http::StatusCode,
     response::{IntoResponse, Response},
     routing::{get, put},
     Json, Router,
 };
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use thiserror::Error;
 use tokio_stream::StreamExt;
@@ -18,6 +19,24 @@ use tokio_stream::StreamExt;
 #[derive(Clone)]
 struct SoftwareState<'a> {
     software: SoftwareProductProxy<'a>,
+    connection: zbus::Connection,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+struct SoftwareConfig {
+    patterns: Option<Vec<String>>,
+    product: Option<String>,
+}
+
+impl SoftwareConfig {
+    pub async fn from_dbus(connection: &zbus::Connection) -> Result<Self, SoftwareError> {
+        let software = SoftwareProductProxy::new(&connection).await?;
+        let product = software.selected_product().await?;
+        Ok(SoftwareConfig {
+            patterns: Some(vec![]),
+            product: Some(product),
+        })
+    }
 }
 
 #[derive(Error, Debug)]
@@ -52,10 +71,13 @@ pub async fn software_monitor(events: EventsSender) {
 pub async fn software_service(_events: EventsSender) -> Router {
     let connection = connection().await.unwrap();
     let proxy = SoftwareProductProxy::new(&connection).await.unwrap();
-    let state = SoftwareState { software: proxy };
+    let state = SoftwareState {
+        connection,
+        software: proxy,
+    };
     Router::new()
         .route("/products", get(products))
-        .route("/products/:id/select", put(select_product))
+        .route("/config", put(set_config).get(get_config))
         .with_state(state)
 }
 
@@ -66,7 +88,6 @@ async fn products<'a>(
     State(state): State<SoftwareState<'a>>,
 ) -> Result<Json<Vec<Product>>, SoftwareError> {
     let products = state.software.available_products().await?;
-    let selected_product = state.software.selected_product().await?;
     let products = products
         .into_iter()
         .map(|(id, name, data)| {
@@ -74,13 +95,11 @@ async fn products<'a>(
                 .get("description")
                 .and_then(|d| d.downcast_ref::<str>())
                 .unwrap_or("");
-            let selected = selected_product == id;
 
             Product {
                 id,
                 name,
                 description: description.to_string(),
-                selected,
             }
         })
         .collect();
@@ -88,14 +107,26 @@ async fn products<'a>(
     Ok(Json(products))
 }
 
-/// Selects a product.
+/// Sets the software configuration.
 ///
 /// * `state`: service state.
-/// * `id`: product ID.
-async fn select_product<'a>(
+/// * `config`: software configuration.
+async fn set_config<'a>(
     State(state): State<SoftwareState<'a>>,
-    Path(id): Path<String>,
+    Json(config): Json<SoftwareConfig>,
 ) -> Result<(), SoftwareError> {
-    state.software.select_product(&id).await?;
+    if let Some(product) = config.product {
+        state.software.select_product(&product).await?;
+    }
     Ok(())
+}
+
+/// Returns the software configuration
+///
+/// * `state` : service state.
+async fn get_config<'a>(
+    State(state): State<SoftwareState<'a>>,
+) -> Result<Json<SoftwareConfig>, SoftwareError> {
+    let config = SoftwareConfig::from_dbus(&state.connection).await?;
+    Ok(Json(config))
 }
