@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -149,6 +149,36 @@ const hasFS = (volume, fs) => {
   return volFS.toLowerCase() === fs.toLocaleLowerCase();
 };
 
+/**
+ * Checks whether the given volume has snapshots.
+ *
+ * @param {import(~/clients/storage).Volume} volume
+ * @returns {boolean}
+ */
+const hasSnapshots = (volume) => {
+  return hasFS(volume, "btrfs") && volume.snapshots;
+};
+
+/**
+ * Checks whether the given volume defines a transactional root.
+ *
+ * @param {import(~/clients/storage).Volume} volume
+ * @returns {boolean}
+ */
+const isTransactionalRoot = (volume) => {
+  return volume.mountPath === "/" && volume.transactional;
+};
+
+/**
+ * Checks whether the given volumes defines a transactional system.
+ *
+ * @param {import(~/clients/storage).Volume[]} volumes
+ * @returns {boolean}
+ */
+const isTransactionalSystem = (volumes) => {
+  return volumes.find(v => isTransactionalRoot(v)) !== undefined;
+};
+
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
@@ -157,5 +187,8 @@ export {
   deviceSize,
   parseToBytes,
   splitSize,
-  hasFS
+  hasFS,
+  hasSnapshots,
+  isTransactionalRoot,
+  isTransactionalSystem
 };

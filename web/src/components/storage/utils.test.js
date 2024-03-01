@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,7 +19,16 @@
  * find current contact information at www.suse.com.
  */
 
-import { deviceSize, deviceLabel, parseToBytes, splitSize, hasFS } from "./utils";
+import {
+  deviceSize,
+  deviceLabel,
+  parseToBytes,
+  splitSize,
+  hasFS,
+  hasSnapshots,
+  isTransactionalRoot,
+  isTransactionalSystem
+} from "./utils";
 
 describe("deviceSize", () => {
   it("returns the size with units", () => {
@@ -98,5 +107,53 @@ describe("hasFS", () => {
 
   it("returns false if volume has different filesystem", () => {
     expect(hasFS({ fsType: "Btrfs" }, "EXT4")).toBe(false);
+  });
+});
+
+describe("hasSnapshots", () => {
+  it("returns false if the volume has not Btrfs file system", () => {
+    expect(hasSnapshots({ fsType: "EXT4", snapshots: true })).toBe(false);
+  });
+
+  it("returns false if the volume has not snapshots enabled", () => {
+    expect(hasSnapshots({ fsType: "Btrfs", snapshots: false })).toBe(false);
+  });
+
+  it("returns true if the volume has Btrfs file system and snapshots enabled", () => {
+    expect(hasSnapshots({ fsType: "Btrfs", snapshots: true })).toBe(true);
+  });
+});
+
+describe("isTransactionalRoot", () => {
+  it("returns false if the volume is not root", () => {
+    expect(isTransactionalRoot({ mountPath: "/home", transactional: true })).toBe(false);
+  });
+
+  it("returns false if the volume has not transactional enabled", () => {
+    expect(isTransactionalRoot({ mountPath: "/", transactional: false })).toBe(false);
+  });
+
+  it("returns true if the volume is root and has transactional enabled", () => {
+    expect(isTransactionalRoot({ mountPath: "/", transactional: true })).toBe(true);
+  });
+});
+
+describe("isTransactionalSystem", () => {
+  it("returns false if volumes does not include a transactional root", () => {
+    expect(isTransactionalSystem([])).toBe(false);
+
+    const volumes = [
+      { mountPath: "/" },
+      { mountPath: "/home", transactional: true }
+    ];
+    expect(isTransactionalSystem(volumes)).toBe(false);
+  });
+
+  it("returns true if volumes includes a transactional root", () => {
+    const volumes = [
+      { mountPath: "EXT4" },
+      { mountPath: "/", transactional: true }
+    ];
+    expect(isTransactionalSystem(volumes)).toBe(true);
   });
 });
