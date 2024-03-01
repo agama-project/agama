@@ -18,25 +18,13 @@ use tokio_stream::StreamExt;
 
 #[derive(Clone)]
 struct SoftwareState<'a> {
-    software: SoftwareProductProxy<'a>,
-    connection: zbus::Connection,
+    product: SoftwareProductProxy<'a>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
 struct SoftwareConfig {
     patterns: Option<Vec<String>>,
     product: Option<String>,
-}
-
-impl SoftwareConfig {
-    pub async fn from_dbus(connection: &zbus::Connection) -> Result<Self, SoftwareError> {
-        let software = SoftwareProductProxy::new(&connection).await?;
-        let product = software.selected_product().await?;
-        Ok(SoftwareConfig {
-            patterns: Some(vec![]),
-            product: Some(product),
-        })
-    }
 }
 
 #[derive(Error, Debug)]
@@ -71,10 +59,7 @@ pub async fn software_monitor(events: EventsSender) {
 pub async fn software_service(_events: EventsSender) -> Router {
     let connection = connection().await.unwrap();
     let proxy = SoftwareProductProxy::new(&connection).await.unwrap();
-    let state = SoftwareState {
-        connection,
-        software: proxy,
-    };
+    let state = SoftwareState { product: proxy };
     Router::new()
         .route("/products", get(products))
         .route("/config", put(set_config).get(get_config))
@@ -87,7 +72,7 @@ pub async fn software_service(_events: EventsSender) -> Router {
 async fn products<'a>(
     State(state): State<SoftwareState<'a>>,
 ) -> Result<Json<Vec<Product>>, SoftwareError> {
-    let products = state.software.available_products().await?;
+    let products = state.product.available_products().await?;
     let products = products
         .into_iter()
         .map(|(id, name, data)| {
@@ -116,7 +101,7 @@ async fn set_config<'a>(
     Json(config): Json<SoftwareConfig>,
 ) -> Result<(), SoftwareError> {
     if let Some(product) = config.product {
-        state.software.select_product(&product).await?;
+        state.product.select_product(&product).await?;
     }
     Ok(())
 }
@@ -127,6 +112,10 @@ async fn set_config<'a>(
 async fn get_config<'a>(
     State(state): State<SoftwareState<'a>>,
 ) -> Result<Json<SoftwareConfig>, SoftwareError> {
-    let config = SoftwareConfig::from_dbus(&state.connection).await?;
+    let product = state.product.selected_product().await?;
+    let config = SoftwareConfig {
+        patterns: Some(vec![]),
+        product: Some(product),
+    };
     Ok(Json(config))
 }
