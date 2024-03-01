@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -34,7 +34,7 @@ import { _ } from "~/i18n";
 import { Em, If, Popup, RowActions, Tip } from '~/components/core';
 import { Icon } from '~/components/layout';
 import { VolumeForm } from '~/components/storage';
-import { deviceSize } from '~/components/storage/utils';
+import { deviceSize, hasSnapshots, isTransactionalRoot } from '~/components/storage/utils';
 import { noop } from "~/utils";
 
 /**
@@ -200,8 +200,8 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
   };
 
   const Details = ({ volume, options }) => {
-    const hasSnapshots = volume.fsType === "Btrfs" && volume.snapshots;
-    const transactional = volume.fsType === "Btrfs" && volume.transactional;
+    const snapshots = hasSnapshots(volume);
+    const transactional = isTransactionalRoot(volume);
 
     // TRANSLATORS: the filesystem uses a logical volume (LVM)
     const text = `${volume.fsType} ${options.lvm ? _("logical volume") : _("partition")}`;
@@ -215,7 +215,7 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
         {/* TRANSLATORS: filesystem flag, it uses an encryption */}
         <If condition={options.encryption} then={<Em icon={lockIcon}>{_("encrypted")}</Em>} />
         {/* TRANSLATORS: filesystem flag, it allows creating snapshots */}
-        <If condition={hasSnapshots} then={<Em icon={snapshotsIcon}>{_("with snapshots")}</Em>} />
+        <If condition={snapshots && !transactional} then={<Em icon={snapshotsIcon}>{_("with snapshots")}</Em>} />
         {/* TRANSLATORS: flag for transactional file system  */}
         <If condition={transactional} then={<Em icon={transactionalIcon}>{_("transactional")}</Em>} />
       </div>
