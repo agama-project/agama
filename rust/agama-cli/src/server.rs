@@ -8,8 +8,6 @@ use std::path::{PathBuf};
 pub enum ServerCommands {
     /// Login with defined server. Result is JWT stored and used in all subsequent commands
     Login {
-      #[clap(long, short = 'u')]
-      user: Option<String>,
       #[clap(long, short = 'p')]
       password: Option<String>,
       #[clap(long, short = 'f')]
@@ -20,7 +18,6 @@ pub enum ServerCommands {
 }
 
 struct Credentials {
-    user: String,
     password: String,
 }
 
@@ -28,7 +25,6 @@ struct Credentials {
 pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
     match subcommand {
         ServerCommands::Login {
-            user,
             password,
             file,
         }=> {
@@ -42,10 +38,10 @@ pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
 
             // little bit tricky way of error conversion to deal with
             // errors reported for anyhow::Error when using '?'
-            let credentials = get_credentials(user, password, file)
+            let credentials = get_credentials(password, file)
                 .ok_or(Err(())).map_err(|_err: Result<(), ()>| anyhow::anyhow!("Wrong credentials"))?;
 
-            login(credentials.user, credentials.password)
+            login(credentials.password)
         },
         ServerCommands::Logout => {
             // actions to do:
@@ -66,7 +62,6 @@ fn get_credentials_from_file(path: PathBuf) -> Option<Credentials> {
 
         if let Ok(password) = line {
             return Some(Credentials {
-                user: "not needed".to_string(),
                 password: password,
             })
         }
@@ -94,21 +89,18 @@ fn read_credential(caption: String) -> Option<String> {
 fn get_credentials_from_user() -> Option<Credentials> {
     println!("Enter credentials needed for accessing installation server");
 
-    let user = read_credential("User".to_string())?;
     let password = read_credential("Password".to_string())?;
 
     Some(Credentials {
-        user: user,
         password: password,
     })
 }
 
 /// Handles various ways how to get user name / password from user or read it from a file
-fn get_credentials(user: Option<String>, password: Option<String>, file: Option<PathBuf>) -> Option<Credentials> {
-    match (user, password) {
+fn get_credentials(password: Option<String>, file: Option<PathBuf>) -> Option<Credentials> {
+    match password {
         // explicitly provided user + password
-        (Some(u), Some(p)) => Some(Credentials {
-                user: u,
+        Some(p) => Some(Credentials {
                 password: p,
             }),
         _ => match file {
@@ -120,11 +112,11 @@ fn get_credentials(user: Option<String>, password: Option<String>, file: Option<
     }
 }
 
-fn login(user: String, password: String) -> anyhow::Result<()> {
+fn login(password: String) -> anyhow::Result<()> {
     // 1) ask web server for JWT
     // 2) if successful store the JWT for later use
     println!("Loging with credentials:");
-    println!("({}, {})", user, password);
+    println!("({})", password);
 
     Err(anyhow::anyhow!("Not implemented"))
 }
