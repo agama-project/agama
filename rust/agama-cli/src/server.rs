@@ -1,5 +1,7 @@
 use clap::Subcommand;
 use std::io;
+use std::io::{BufRead, BufReader};
+use std::fs::File;
 use std::path::{PathBuf};
 
 #[derive(Subcommand, Debug)]
@@ -10,6 +12,8 @@ pub enum ServerCommands {
       user: Option<String>,
       #[clap(long, short = 'p')]
       password: Option<String>,
+      #[clap(long, short = 'f')]
+      file: Option<PathBuf>,
     },
     /// Release currently stored JWT
     Logout,
@@ -26,6 +30,7 @@ pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
         ServerCommands::Login {
             user,
             password,
+            file,
         }=> {
             // actions to do:
             // 1) somehow obtain credentials (interactive, commandline, from a file)
@@ -37,7 +42,7 @@ pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
 
             // little bit tricky way of error conversion to deal with
             // errors reported for anyhow::Error when using '?'
-            let credentials = get_credentials(user, password, None)
+            let credentials = get_credentials(user, password, file)
                 .ok_or(Err(())).map_err(|_err: Result<(), ()>| anyhow::anyhow!("Wrong credentials"))?;
 
             login(credentials.user, credentials.password)
@@ -51,7 +56,22 @@ pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
 }
 
 /// Reads credentials from a given file (if exists)
-fn get_credentials_from_file(_file: PathBuf) -> Option<Credentials> {
+fn get_credentials_from_file(path: PathBuf) -> Option<Credentials> {
+    if !path.as_path().exists() {
+        return None;
+    }
+
+    if let Ok(file) = File::open(path) {
+        let line = BufReader::new(file).lines().next()?;
+
+        if let Ok(password) = line {
+            return Some(Credentials {
+                user: "not needed".to_string(),
+                password: password,
+            })
+        }
+    }
+
     None
 }
 
