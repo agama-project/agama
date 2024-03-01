@@ -36,9 +36,9 @@ import { Table, Thead, Tr, Th, Tbody, Td, ExpandableRowContent } from "@patternf
  */
 
 /**
- * @typedef {object} SelectorTableColumn
+ * @typedef {object} ExpandableSelectorColumn
  * @property {string} name - The column header text
- * @property {(object) => React.Element} value - A function receiving
+ * @property {(object) => JSX.Element} value - A function receiving
  *   the item to work with and returning the column value.
  */
 
@@ -46,7 +46,7 @@ import { Table, Thead, Tr, Th, Tbody, Td, ExpandableRowContent } from "@patternf
  * Internal component for building the table header
  *
  * @param {object} props
- * @param {SelectorTableColumn[]} props.columns
+ * @param {ExpandableSelectorColumn[]} props.columns
  */
 const TableHeader = ({ columns }) => (
   <Thead>
@@ -59,33 +59,34 @@ const TableHeader = ({ columns }) => (
 );
 
 /**
- * Helper function for ensuring a good value for SelectorTable#selected prop
+ * Helper function for ensuring a good value for ExpandableSelector#itemsSelected prop
  *
  * It logs information to console.error if given value does not match
  * expectations.
  *
- * @param {*} selected - The value to check.
+ * @param {*} selection - The value to check.
  * @param {boolean} allowMultiple - Whether the returned collection can have
  *   more than one item
- * @return {Array} The original collection if it match the expectations or a new
- *   one that might be based on it or simply be empty.
+ * @return {Array} Empty array if given value is not valid. The first element if
+ *   it is a collection with more than one but selector does not allow multiple.
+ *   The original value otherwise.
  */
-const sanitizeSelected = (selected, allowMultiple) => {
-  if (!Array.isArray(selected)) {
-    console.error("`selected` prop must be an array. Ignoring given value", selected);
+const sanitizeSelection = (selection, allowMultiple) => {
+  if (!Array.isArray(selection)) {
+    console.error("`itemSelected` prop must be an array. Ignoring given value", selection);
     return [];
   }
 
-  if (!allowMultiple && selected.length > 1) {
+  if (!allowMultiple && selection.length > 1) {
     console.error(
-      "`selected` prop can only have more than one item if selector `isMultiple`. " +
+      "`itemsSelected` prop can only have more than one item when selector `isMultiple`. " +
         "Using only the first element"
     );
 
-    return [selected[0]];
+    return [selection[0]];
   }
 
-  return selected;
+  return selection;
 };
 
 /**
@@ -95,36 +96,36 @@ const sanitizeSelected = (selected, allowMultiple) => {
  * @note It only accepts one nesting level.
  *
  * @param {object} props
- * @param {SelectorTableColumn[]} props.columns - Collection of objects defining columns.
- * @param {object[]} props.items - Collection of items to be rendered.
- * @param {string} [props.itemIdKey="name"] - The key for retrieving the item id.
- * @param {(item: object) => Array<object>} [props.itemChildren=() =>[]] - Lookup method to retrieve children from given item.
+ * @param {ExpandableSelectorColumn[]} props.columns - Collection of objects defining columns.
  * @param {boolean} [props.isMultiple=false] - Whether multiple selection is allowed.
- * @param {string[]} [props.initialExpandedItems=[]] - Ids of initially expanded items.
- * @param {string[]} [props.selected=[]] - Collection of selected items.
- * @param {(selection: Array<object>) => void} [props.onSelectionCallback=noop] - Callback to be triggered when selection changes.
+ * @param {object[]} props.items - Collection of items to be rendered.
+ * @param {string} [props.itemIdKey="id"] - The key for retrieving the item id.
+ * @param {(item: object) => Array<object>} [props.itemChildren=() =>[]] - Lookup method to retrieve children from given item.
+ * @param {object[]} [props.itemsSelected=[]] - Collection of selected items.
+ * @param {string[]} [props.initialExpandedKeys=[]] - Ids of initially expanded items.
+ * @param {(selection: Array<object>) => void} [props.onSelectionChange=noop] - Callback to be triggered when selection changes.
  * @param {object} [props.tableProps] - Props for {@link https://www.patternfly.org/components/table/#table PF/Table}.
  */
-export default function SelectorTable({
+export default function ExpandableSelector({
   columns = [],
+  isMultiple = false,
   items = [],
   itemIdKey = "id",
   itemChildren = () => [],
-  isMultiple = false,
-  initialExpandedItems = [],
-  selected = [],
+  itemsSelected = [],
+  initialExpandedKeys = [],
   onSelectionChange,
   ...tableProps
 }) {
-  const [expandedItems, setExpandedItems] = useState(initialExpandedItems);
-  const selectedItems = sanitizeSelected(selected, isMultiple);
-  const isItemExpanded = (itemKey) => expandedItems.includes(itemKey);
-  const isItemSelected = (item) => selectedItems.includes(item);
-  const toggleExpanded = (itemKey) => {
-    if (isItemExpanded(itemKey)) {
-      setExpandedItems(expandedItems.filter(key => key !== itemKey));
+  const [expandedItemsKeys, setExpandedItemsKeys] = useState(initialExpandedKeys);
+  const selection = sanitizeSelection(itemsSelected, isMultiple);
+  const isItemSelected = (item) => selection.includes(item);
+  const isItemExpanded = (key) => expandedItemsKeys.includes(key);
+  const toggleExpanded = (key) => {
+    if (isItemExpanded(key)) {
+      setExpandedItemsKeys(expandedItemsKeys.filter(k => k !== key));
     } else {
-      setExpandedItems([...expandedItems, itemKey]);
+      setExpandedItemsKeys([...expandedItemsKeys, key]);
     }
   };
 
@@ -135,9 +136,9 @@ export default function SelectorTable({
     }
 
     if (isItemSelected(item)) {
-      onSelectionChange(selectedItems.filter(i => i !== item));
+      onSelectionChange(selection.filter(i => i !== item));
     } else {
-      onSelectionChange([...selectedItems, item]);
+      onSelectionChange([...selection, item]);
     }
   };
 

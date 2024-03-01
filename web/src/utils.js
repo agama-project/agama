@@ -373,11 +373,6 @@ const timezoneUTCOffset = (timezone) => {
   }
 };
 
-/**
-* Path to data within an object. It can contain dots for indicating nested keys.
-* @typedef {string} ObjectPath
-*/
-
 export {
   noop,
   isObject,
