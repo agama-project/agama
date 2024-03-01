@@ -17,11 +17,6 @@ pub enum ServerCommands {
     Logout,
 }
 
-struct LoginOptions {
-    password: Option<String>,
-    file: Option<PathBuf>,
-}
-
 /// Main entry point called from agama CLI main loop
 pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
     match subcommand {
@@ -42,12 +37,7 @@ pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
                 file: file,
             };
 
-            // little bit tricky way of error conversion to deal with
-            // errors reported for anyhow::Error when using '?'
-            let password = parse_login_options(options)
-                .ok_or(Err(())).map_err(|_err: Result<(), ()>| anyhow::anyhow!("Wrong credentials"))?;
-
-            login(password)
+            login(LoginOptions::parse(options).password()?)
         },
         ServerCommands::Logout => {
             // actions to do:
@@ -57,59 +47,94 @@ pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
     }
 }
 
-/// Reads credentials from a given file (if exists)
-fn get_credentials_from_file(path: PathBuf) -> Option<String> {
-    if !path.as_path().exists() {
-        return None;
-    }
-
-    if let Ok(file) = File::open(path) {
-        let line = BufReader::new(file).lines().next()?;
-
-        if let Ok(password) = line {
-            return Some(password)
-        }
-    }
-
-    None
+struct LoginOptions {
+    password: Option<String>,
+    file: Option<PathBuf>,
 }
 
-fn read_credential(caption: String) -> Option<String> {
+impl LoginOptions {
+    fn parse(options: LoginOptions) -> Box<dyn Credentials> {
+        match options.password {
+            // explicitly provided user + password
+            Some(p) => Box::new(KnownCredentials { password: p }),
+            _ => match options.file {
+                // try to read user + password from a file
+                Some(f) => Box::new(FileCredentials { path: f }),
+                // last instance - ask user to enter user + password interactively
+                _ => Box::new(MissingCredentials {}),
+            },
+        }
+    }
+}
+
+struct MissingCredentials;
+
+struct FileCredentials {
+    path: PathBuf,
+}
+
+struct KnownCredentials {
+    password: String,
+}
+
+trait Credentials {
+    fn password(&self) -> io::Result<String>;
+}
+
+impl Credentials for KnownCredentials {
+    fn password(&self) -> io::Result<String> {
+        Ok(self.password.clone())
+    }
+}
+
+impl Credentials for FileCredentials {
+    fn password(&self) -> io::Result<String> {
+        if !&self.path.as_path().exists() {
+            return Err(io::Error::new(
+                io::ErrorKind::Other,
+                "Cannot find the file with credentials.",
+                ));
+        }
+
+        if let Ok(file) = File::open(&self.path) {
+            let line = BufReader::new(file).lines().next();
+
+            if let Some(password) = line {
+                return Ok(password?);
+            }
+        }
+
+        Err(io::Error::new(
+            io::ErrorKind::Other,
+            "Failed to open the file",
+            ))
+    }
+}
+
+impl Credentials for MissingCredentials {
+    fn password(&self) -> io::Result<String> {
+        println!("Enter credentials needed for accessing installation server");
+
+        let password = read_credential("Password".to_string())?;
+
+        Ok(password)
+    }
+}
+
+fn read_credential(caption: String) -> io::Result<String> {
     let mut cred = String::new();
 
     println!("{}: ", caption);
 
-    if io::stdin().read_line(&mut cred).is_err() {
-        return None;
-    }
+    io::stdin().read_line(&mut cred)?;
     if cred.pop().is_none() || cred.is_empty() {
-        return None;
+        return Err(io::Error::new(
+            io::ErrorKind::Other,
+            format!("Failed to read {}", caption),
+            ));
     }
 
-    Some(cred)
-}
-
-/// Asks user to enter credentials interactively
-fn get_credentials_from_user() -> Option<String> {
-    println!("Enter credentials needed for accessing installation server");
-
-    let password = read_credential("Password".to_string())?;
-
-    Some(password)
-}
-
-/// Handles various ways how to get user name / password from user or read it from a file
-fn parse_login_options(options: LoginOptions) -> Option<String> {
-    match options.password {
-        // explicitly provided user + password
-        Some(p) => Some(p),
-        _ => match options.file {
-            // try to read user + password from a file
-            Some(f) => get_credentials_from_file(f),
-            // last instance - ask user to enter user + password interactively
-            _ => get_credentials_from_user(),
-        },
-    }
+    Ok(cred)
 }
 
 fn login(password: String) -> anyhow::Result<()> {
