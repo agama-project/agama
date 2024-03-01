@@ -3,7 +3,12 @@
 //! It is a wrapper around the YaST D-Bus API.
 
 use crate::web::{Event, EventsSender};
-use agama_lib::{connection, product::Product, software::proxies::SoftwareProductProxy};
+use agama_lib::{
+    connection,
+    error::ServiceError,
+    product::{Product, ProductClient},
+    software::proxies::SoftwareProductProxy,
+};
 use axum::{
     extract::State,
     http::StatusCode,
@@ -18,7 +23,7 @@ use tokio_stream::StreamExt;
 
 #[derive(Clone)]
 struct SoftwareState<'a> {
-    product: SoftwareProductProxy<'a>,
+    client: ProductClient<'a>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -30,7 +35,7 @@ struct SoftwareConfig {
 #[derive(Error, Debug)]
 pub enum SoftwareError {
     #[error("Service error: {0}")]
-    Error(#[from] zbus::Error),
+    Error(#[from] ServiceError),
 }
 
 impl IntoResponse for SoftwareError {
@@ -58,8 +63,8 @@ pub async fn software_monitor(events: EventsSender) {
 /// * `events`: channel to send the events to the main service.
 pub async fn software_service(_events: EventsSender) -> Router {
     let connection = connection().await.unwrap();
-    let proxy = SoftwareProductProxy::new(&connection).await.unwrap();
-    let state = SoftwareState { product: proxy };
+    let client = ProductClient::new(connection).await.unwrap();
+    let state = SoftwareState { client };
     Router::new()
         .route("/products", get(products))
         .route("/config", put(set_config).get(get_config))
@@ -72,23 +77,7 @@ pub async fn software_service(_events: EventsSender) -> Router {
 async fn products<'a>(
     State(state): State<SoftwareState<'a>>,
 ) -> Result<Json<Vec<Product>>, SoftwareError> {
-    let products = state.product.available_products().await?;
-    let products = products
-        .into_iter()
-        .map(|(id, name, data)| {
-            let description = data
-                .get("description")
-                .and_then(|d| d.downcast_ref::<str>())
-                .unwrap_or("");
-
-            Product {
-                id,
-                name,
-                description: description.to_string(),
-            }
-        })
-        .collect();
-
+    let products = state.client.products().await?;
     Ok(Json(products))
 }
 
@@ -101,7 +90,7 @@ async fn set_config<'a>(
     Json(config): Json<SoftwareConfig>,
 ) -> Result<(), SoftwareError> {
     if let Some(product) = config.product {
-        state.product.select_product(&product).await?;
+        state.client.select_product(&product).await?;
     }
     Ok(())
 }
@@ -112,7 +101,7 @@ async fn set_config<'a>(
 async fn get_config<'a>(
     State(state): State<SoftwareState<'a>>,
 ) -> Result<Json<SoftwareConfig>, SoftwareError> {
-    let product = state.product.selected_product().await?;
+    let product = state.client.product().await?;
     let config = SoftwareConfig {
         patterns: Some(vec![]),
         product: Some(product),

@@ -19,6 +19,7 @@ pub struct Product {
 }
 
 /// D-Bus client for the software service
+#[derive(Clone)]
 pub struct ProductClient<'a> {
     product_proxy: SoftwareProductProxy<'a>,
     registration_proxy: RegistrationProxy<'a>,
