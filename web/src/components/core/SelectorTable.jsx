@@ -59,6 +59,36 @@ const TableHeader = ({ columns }) => (
 );
 
 /**
+ * Helper function for ensuring a good value for SelectorTable#selected prop
+ *
+ * It logs information to console.error if given value does not match
+ * expectations.
+ *
+ * @param {*} selected - The value to check.
+ * @param {boolean} allowMultiple - Whether the returned collection can have
+ *   more than one item
+ * @return {Array} The original collection if it match the expectations or a new
+ *   one that might be based on it or simply be empty.
+ */
+const sanitizeSelected = (selected, allowMultiple) => {
+  if (!Array.isArray(selected)) {
+    console.error("`selected` prop must be an array. Ignoring given value", selected);
+    return [];
+  }
+
+  if (!allowMultiple && selected.length > 1) {
+    console.error(
+      "`selected` prop can only have more than one item if selector `isMultiple`. " +
+        "Using only the first element"
+    );
+
+    return [selected[0]];
+  }
+
+  return selected;
+};
+
+/**
  * Build a expandable table with selectable items
  * @component
  *
@@ -70,8 +100,9 @@ const TableHeader = ({ columns }) => (
  * @param {string} [props.itemIdKey="name"] - The key for retrieving the item id.
  * @param {(item: object) => Array<object>} [props.itemChildren=() =>[]] - Lookup method to retrieve children from given item.
  * @param {boolean} [props.isMultiple=false] - Whether multiple selection is allowed.
- * @param {string[]} [props.selected=[]] - Ids of selected items.
  * @param {string[]} [props.initialExpandedItems=[]] - Ids of initially expanded items.
+ * @param {string[]} [props.selected=[]] - Collection of selected items.
+ * @param {(selection: Array<object>) => void} [props.onSelectionCallback=noop] - Callback to be triggered when selection changes.
  * @param {object} [props.tableProps] - Props for {@link https://www.patternfly.org/components/table/#table PF/Table}.
  */
 export default function SelectorTable({
@@ -82,31 +113,32 @@ export default function SelectorTable({
   isMultiple = false,
   initialExpandedItems = [],
   selected = [],
+  onSelectionChange,
   ...tableProps
 }) {
-  const [selectedItems, setSelectedItems] = useState(selected);
   const [expandedItems, setExpandedItems] = useState(initialExpandedItems);
-
+  const selectedItems = sanitizeSelected(selected, isMultiple);
   const isItemExpanded = (itemKey) => expandedItems.includes(itemKey);
   const isItemSelected = (item) => selectedItems.includes(item);
   const toggleExpanded = (itemKey) => {
-    const nextState = isItemExpanded(itemKey) ? expandedItems.filter(key => key !== itemKey) : [...expandedItems, itemKey];
-    setExpandedItems(nextState);
+    if (isItemExpanded(itemKey)) {
+      setExpandedItems(expandedItems.filter(key => key !== itemKey));
+    } else {
+      setExpandedItems([...expandedItems, itemKey]);
+    }
   };
 
   const updateSelection = (item) => {
     if (!isMultiple) {
-      setSelectedItems([item]);
+      onSelectionChange([item]);
       return;
     }
 
-    let nextSelection;
     if (isItemSelected(item)) {
-      nextSelection = selectedItems.filter(i => i !== item);
+      onSelectionChange(selectedItems.filter(i => i !== item));
     } else {
-      nextSelection = [...selectedItems, item];
+      onSelectionChange([...selectedItems, item]);
     }
-    setSelectedItems(nextSelection);
   };
 
   /**
