@@ -46,12 +46,12 @@ pub async fn service(config: ServiceConfig, events: EventsSender) -> Router {
 pub async fn run_monitor(events: EventsSender) -> Result<(), ServiceError> {
     let presenter = EventsProgressPresenter::new(events.clone());
     let connection = connection().await?;
-    let mut monitor = ProgressMonitor::new(connection).await?;
+    let mut monitor = ProgressMonitor::new(connection.clone()).await?;
     tokio::spawn(async move {
         if let Err(error) = monitor.run(presenter).await {
             eprintln!("Could not monitor the D-Bus server: {}", error);
         }
     });
-    tokio::spawn(async move { software_monitor(events.clone()).await });
+    software_monitor(connection, events.clone()).await;
     Ok(())
 }

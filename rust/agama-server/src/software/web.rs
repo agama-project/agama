@@ -7,7 +7,10 @@ use agama_lib::{
     connection,
     error::ServiceError,
     product::{Product, ProductClient},
-    software::{proxies::SoftwareProductProxy, Pattern, SelectionReason, SoftwareClient},
+    software::{
+        proxies::{Software1Proxy, SoftwareProductProxy},
+        Pattern, SelectionReason, SoftwareClient,
+    },
 };
 use axum::{
     extract::State,
@@ -48,13 +51,27 @@ impl IntoResponse for SoftwareError {
     }
 }
 
-pub async fn software_monitor(events: EventsSender) {
-    let connection = connection().await.unwrap();
+pub async fn software_monitor(connection: zbus::Connection, events: EventsSender) {
+    tokio::spawn(monitor_product_changed(connection.clone(), events.clone()));
+    tokio::spawn(monitor_patterns_changed(connection.clone(), events.clone()));
+}
+
+async fn monitor_product_changed(connection: zbus::Connection, events: EventsSender) {
     let proxy = SoftwareProductProxy::new(&connection).await.unwrap();
     let mut stream = proxy.receive_selected_product_changed().await;
     while let Some(change) = stream.next().await {
         if let Ok(id) = change.get().await {
             _ = events.send(Event::ProductChanged { id });
+        }
+    }
+}
+
+async fn monitor_patterns_changed(connection: zbus::Connection, events: EventsSender) {
+    let proxy = Software1Proxy::new(&connection).await.unwrap();
+    let mut stream = proxy.receive_selected_patterns_changed().await;
+    while let Some(change) = stream.next().await {
+        if let Ok(patterns) = change.get().await {
+            _ = events.send(Event::PatternsChanged);
         }
     }
 }

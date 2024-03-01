@@ -8,6 +8,7 @@ pub enum Event {
     LocaleChanged { locale: String },
     Progress(Progress),
     ProductChanged { id: String },
+    PatternsChanged,
 }
 
 pub type EventsSender = Sender<Event>;
