@@ -22,7 +22,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use thiserror::Error;
-use tokio_stream::StreamExt;
+use tokio_stream::{Stream, StreamExt};
 
 #[derive(Clone)]
 struct SoftwareState<'a> {
@@ -51,29 +51,39 @@ impl IntoResponse for SoftwareError {
     }
 }
 
-pub async fn software_monitor(connection: zbus::Connection, events: EventsSender) {
-    tokio::spawn(monitor_product_changed(connection.clone(), events.clone()));
-    tokio::spawn(monitor_patterns_changed(connection.clone(), events.clone()));
+pub async fn software_stream(connection: zbus::Connection) -> impl Stream<Item = Event> {
+    StreamExt::merge(
+        product_changed_stream(connection.clone()).await,
+        patterns_changed_stream(connection.clone()).await,
+    )
 }
 
-async fn monitor_product_changed(connection: zbus::Connection, events: EventsSender) {
+async fn product_changed_stream(connection: zbus::Connection) -> impl Stream<Item = Event> {
     let proxy = SoftwareProductProxy::new(&connection).await.unwrap();
-    let mut stream = proxy.receive_selected_product_changed().await;
-    while let Some(change) = stream.next().await {
-        if let Ok(id) = change.get().await {
-            _ = events.send(Event::ProductChanged { id });
-        }
-    }
+    proxy
+        .receive_selected_product_changed()
+        .await
+        .then(|change| async move {
+            if let Ok(id) = change.get().await {
+                return Some(Event::ProductChanged { id });
+            }
+            None
+        })
+        .filter_map(|e| e)
 }
 
-async fn monitor_patterns_changed(connection: zbus::Connection, events: EventsSender) {
+async fn patterns_changed_stream(connection: zbus::Connection) -> impl Stream<Item = Event> {
     let proxy = Software1Proxy::new(&connection).await.unwrap();
-    let mut stream = proxy.receive_selected_patterns_changed().await;
-    while let Some(change) = stream.next().await {
-        if let Ok(patterns) = change.get().await {
-            _ = events.send(Event::PatternsChanged);
-        }
-    }
+    proxy
+        .receive_selected_patterns_changed()
+        .await
+        .then(|change| async move {
+            if let Ok(_pattens) = change.get().await {
+                return Some(Event::PatternsChanged);
+            }
+            None
+        })
+        .filter_map(|e| e)
 }
 
 /// Sets up and returns the axum service for the software module.

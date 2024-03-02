@@ -6,7 +6,7 @@
 
 use self::progress::EventsProgressPresenter;
 use crate::l10n::web::l10n_service;
-use crate::software::web::{software_monitor, software_service};
+use crate::software::web::{software_service, software_stream};
 use axum::Router;
 
 mod auth;
@@ -25,6 +25,7 @@ pub use config::ServiceConfig;
 pub use docs::ApiDoc;
 pub use event::{Event, EventsReceiver, EventsSender};
 pub use service::MainServiceBuilder;
+use tokio_stream::StreamExt;
 
 /// Returns a service that implements the web-based Agama API.
 ///
@@ -52,6 +53,20 @@ pub async fn run_monitor(events: EventsSender) -> Result<(), ServiceError> {
             eprintln!("Could not monitor the D-Bus server: {}", error);
         }
     });
-    software_monitor(connection, events.clone()).await;
+    tokio::spawn(run_events_monitor(connection, events.clone()));
+
     Ok(())
+}
+
+/// Emits the events from the system streams through the events channel.
+///
+/// * `connection`: D-Bus connection.
+/// * `events`: channel to send the events to.
+pub async fn run_events_monitor(connection: zbus::Connection, events: EventsSender) {
+    let stream = software_stream(connection).await;
+    tokio::pin!(stream);
+    let e = events.clone();
+    while let Some(event) = stream.next().await {
+        _ = e.send(event);
+    }
 }
