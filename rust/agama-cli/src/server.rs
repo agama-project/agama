@@ -47,12 +47,15 @@ pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
     }
 }
 
+/// Stores user provided configuration for login command
 struct LoginOptions {
     password: Option<String>,
     file: Option<PathBuf>,
 }
 
 impl LoginOptions {
+    /// Transforms user provided options into internal representation
+    /// See Credentials trait
     fn parse(options: LoginOptions) -> Box<dyn Credentials> {
         match options.password {
             // explicitly provided user + password
@@ -67,16 +70,20 @@ impl LoginOptions {
     }
 }
 
+/// Placeholder for no configuration provided by user
 struct MissingCredentials;
 
+/// Stores whatever is needed for reading credentials from a file
 struct FileCredentials {
     path: PathBuf,
 }
 
+/// Stores credentials as provided by the user directly
 struct KnownCredentials {
     password: String,
 }
 
+/// Transforms credentials from user's input into format used internaly
 trait Credentials {
     fn password(&self) -> io::Result<String>;
 }
@@ -97,6 +104,8 @@ impl Credentials for FileCredentials {
         }
 
         if let Ok(file) = File::open(&self.path) {
+            // cares only of first line, take everything. No comments
+            // or something like that supported
             let line = BufReader::new(file).lines().next();
 
             if let Some(password) = line {
@@ -121,6 +130,7 @@ impl Credentials for MissingCredentials {
     }
 }
 
+/// Asks user to provide a line of input. Displays a prompt.
 fn read_credential(caption: String) -> io::Result<String> {
     let mut cred = String::new();
 
@@ -137,6 +147,7 @@ fn read_credential(caption: String) -> io::Result<String> {
     Ok(cred)
 }
 
+/// Logs into the installation web server and stores JWT for later use.
 fn login(password: String) -> anyhow::Result<()> {
     // 1) ask web server for JWT
     // 2) if successful store the JWT for later use
@@ -146,6 +157,7 @@ fn login(password: String) -> anyhow::Result<()> {
     Err(anyhow::anyhow!("Not implemented"))
 }
 
+/// Releases JWT
 fn logout() -> anyhow::Result<()> {
     Err(anyhow::anyhow!("Not implemented"))
 }
