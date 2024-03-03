@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-25 02:07+0000\n"
+"POT-Creation-Date: 2024-03-03 02:07+0000\n"
 "PO-Revision-Date: 2023-12-31 20:39+0000\n"
 "Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-web/nl/"
@@ -42,10 +42,11 @@ msgstr "Over Agama"
 
 #. TRANSLATORS: content of the "About" popup (1/2)
 #: src/components/core/About.jsx:53
+#, fuzzy
 msgid ""
-"Agama is an experimental installer for (open)SUSE systems. It still under "
+"Agama is an experimental installer for (open)SUSE systems. It is still under "
 "development so, please, do not use it in production environments. If you "
-"want to give it a try, we recommend to use a virtual machine to prevent any "
+"want to give it a try, we recommend using a virtual machine to prevent any "
 "possible data loss."
 msgstr ""
 "Agama is een experimentele installer voor (open)SUSE systemen. Het is nog in "
@@ -155,7 +156,7 @@ msgstr ""
 #: src/components/product/ProductPage.jsx:207
 #: src/components/storage/ProposalDeviceSection.jsx:169
 #: src/components/storage/ProposalDeviceSection.jsx:364
-#: src/components/storage/ProposalSettingsSection.jsx:211
+#: src/components/storage/ProposalSettingsSection.jsx:275
 #: src/components/storage/ProposalVolumes.jsx:148
 #: src/components/storage/ProposalVolumes.jsx:283
 #: src/components/storage/ZFCPPage.jsx:511
@@ -569,7 +570,7 @@ msgstr "IP adressen"
 #: src/components/storage/ProposalVolumes.jsx:234
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:174
+#: src/components/users/FirstUser.jsx:208
 msgid "Edit"
 msgstr "Wijzigen"
 
@@ -720,7 +721,7 @@ msgstr "WPA & WPA2 Personal"
 #: src/components/storage/ZFCPDiskForm.jsx:112
 #: src/components/storage/iscsi/DiscoverForm.jsx:108
 #: src/components/storage/iscsi/LoginForm.jsx:72
-#: src/components/users/FirstUser.jsx:198
+#: src/components/users/FirstUser.jsx:238
 msgid "Something went wrong"
 msgstr "Iets is er verkeerd gegaan"
 
@@ -1308,7 +1309,7 @@ msgstr "iSCSI"
 #. TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
 #. 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
 #. Do not translate 'abbr' and 'title', they are part of the HTML markup.
-#: src/components/storage/ProposalSettingsSection.jsx:86
+#: src/components/storage/ProposalSettingsSection.jsx:89
 msgid ""
 "The password will not be needed to boot and access the data if the <abbr "
 "title='Trusted Platform Module'>TPM</abbr> can verify the integrity of the "
@@ -1316,27 +1317,55 @@ msgid ""
 "first run."
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:104
+#: src/components/storage/ProposalSettingsSection.jsx:107
 msgid "Use the TPM to decrypt automatically on each boot"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:175
+#: src/components/storage/ProposalSettingsSection.jsx:152
+msgid ""
+"Uses Btrfs for the root file system allowing to boot to a previous version "
+"of the system after configuration changes or software upgrades."
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:159
+#, fuzzy
+msgid "Use Btrfs Snapshots"
+msgstr "met snapshots"
+
+#: src/components/storage/ProposalSettingsSection.jsx:173
+msgid "Btrfs snapshots required by product."
+msgstr ""
+
+#: src/components/storage/ProposalSettingsSection.jsx:239
 #, fuzzy
 msgid "Change encryption settings"
 msgstr "Encryptie instellingen"
 
-#: src/components/storage/ProposalSettingsSection.jsx:180
-#: src/components/storage/ProposalSettingsSection.jsx:201
+#: src/components/storage/ProposalSettingsSection.jsx:244
+#: src/components/storage/ProposalSettingsSection.jsx:265
 msgid "Encryption settings"
 msgstr "Encryptie instellingen"
 
-#: src/components/storage/ProposalSettingsSection.jsx:194
+#: src/components/storage/ProposalSettingsSection.jsx:258
 msgid "Use encryption"
 msgstr "Gebruik encryptie"
 
-#: src/components/storage/ProposalSettingsSection.jsx:244
+#: src/components/storage/ProposalSettingsSection.jsx:325
 msgid "Settings"
 msgstr "Instellingen"
+
+#: src/components/storage/ProposalSettingsSection.jsx:330
+#, fuzzy
+msgid "Transactional system"
+msgstr "Voer een actie uit"
+
+#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
+#: src/components/storage/ProposalSettingsSection.jsx:333
+#, c-format
+msgid ""
+"%s is an immutable system with atomic updates using a read-only Btrfs root "
+"file system."
+msgstr ""
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:50
 msgid "Delete current content"
@@ -1384,7 +1413,7 @@ msgstr ""
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:74
 #: src/components/storage/ProposalVolumes.jsx:309
-#: src/components/storage/VolumeForm.jsx:795
+#: src/components/storage/VolumeForm.jsx:741
 msgid "Size"
 msgstr "Grootte"
 
@@ -1535,9 +1564,6 @@ msgstr "versleuteld"
 
 #. TRANSLATORS: filesystem flag, it allows creating snapshots
 #: src/components/storage/ProposalVolumes.jsx:218
-#: src/components/storage/VolumeForm.jsx:172
-#: src/components/storage/VolumeForm.jsx:205
-#, c-format
 msgid "with snapshots"
 msgstr "met snapshots"
 
@@ -1552,8 +1578,8 @@ msgid "Edit file system"
 msgstr "Wijzig bestandssysteem"
 
 #: src/components/storage/ProposalVolumes.jsx:307
-#: src/components/storage/VolumeForm.jsx:780
-#: src/components/storage/VolumeForm.jsx:785
+#: src/components/storage/VolumeForm.jsx:726
+#: src/components/storage/VolumeForm.jsx:731
 msgid "Mount point"
 msgstr "Koppelpunt"
 
@@ -1566,78 +1592,71 @@ msgstr "Tabel met koppelpunten"
 msgid "Select a value"
 msgstr "taal"
 
-#. TRANSLATORS: description of Btrfs snapshots feature.
-#: src/components/storage/VolumeForm.jsx:212
-msgid ""
-"Allows rolling back any change done to the system and restoring its previous "
-"state"
-msgstr ""
-
 #. TRANSLATORS: info about possible file system types.
-#: src/components/storage/VolumeForm.jsx:309
+#: src/components/storage/VolumeForm.jsx:255
 msgid ""
 "The options for the file system type depends on the product and the mount "
 "point."
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:315
+#: src/components/storage/VolumeForm.jsx:261
 #, fuzzy
 msgid "More info for file system types"
 msgstr "Bestandssysteem type"
 
 #. TRANSLATORS: label for the file system selector.
-#: src/components/storage/VolumeForm.jsx:326
+#: src/components/storage/VolumeForm.jsx:272
 msgid "File system type"
 msgstr "Bestandssysteem type"
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeForm.jsx:358
+#: src/components/storage/VolumeForm.jsx:304
 msgid "the configuration of snapshots"
 msgstr "de configuratie van snapshots"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
-#: src/components/storage/VolumeForm.jsx:363
+#: src/components/storage/VolumeForm.jsx:309
 #, c-format
 msgid "the presence of the file system for %s"
 msgstr "de aanwezigheid van het bestandssysteem voor %s"
 
 #. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeForm.jsx:365
+#: src/components/storage/VolumeForm.jsx:311
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeForm.jsx:368
+#: src/components/storage/VolumeForm.jsx:314
 #, c-format
 msgid "The final size depends on %s."
 msgstr "De uiteindelijke grootte hangt af van %s."
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeForm.jsx:370
+#: src/components/storage/VolumeForm.jsx:316
 msgid " and "
 msgstr " en "
 
 #. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeForm.jsx:375
+#: src/components/storage/VolumeForm.jsx:321
 msgid "Automatically calculated size according to the selected product."
 msgstr "Automatisch berekend aan de hand van het geselecteerde product."
 
-#: src/components/storage/VolumeForm.jsx:395
+#: src/components/storage/VolumeForm.jsx:341
 msgid "Exact size for the file system."
 msgstr "Exacte grootte voor het bestandssysteem."
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeForm.jsx:407
+#: src/components/storage/VolumeForm.jsx:353
 msgid "Exact size"
 msgstr "Exacte grootte"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeForm.jsx:422
+#: src/components/storage/VolumeForm.jsx:368
 msgid "Size unit"
 msgstr "Grootte eenheid"
 
-#: src/components/storage/VolumeForm.jsx:450
+#: src/components/storage/VolumeForm.jsx:396
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1648,57 +1667,57 @@ msgstr ""
 "geen maximum is gegeven dan zal het bestandssysteem zo groot mogelijk zijn."
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeForm.jsx:457
+#: src/components/storage/VolumeForm.jsx:403
 msgid "Minimum"
 msgstr "Minimum"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeForm.jsx:467
+#: src/components/storage/VolumeForm.jsx:413
 msgid "Minimum desired size"
 msgstr "Minimum gewenste grootte"
 
-#: src/components/storage/VolumeForm.jsx:476
+#: src/components/storage/VolumeForm.jsx:422
 msgid "Unit for the minimum size"
 msgstr "Eenheid voor gewenste grootte"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:487
+#: src/components/storage/VolumeForm.jsx:433
 msgid "Maximum"
 msgstr "Maximum"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:498
+#: src/components/storage/VolumeForm.jsx:444
 msgid "Maximum desired size"
 msgstr "Maximaal gewenste grootte"
 
-#: src/components/storage/VolumeForm.jsx:506
+#: src/components/storage/VolumeForm.jsx:452
 msgid "Unit for the maximum size"
 msgstr "Eenheid voor maximale grootte"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeForm.jsx:523
+#: src/components/storage/VolumeForm.jsx:469
 msgid "Auto"
 msgstr "Auto"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeForm.jsx:525
+#: src/components/storage/VolumeForm.jsx:471
 msgid "Fixed"
 msgstr "Vast"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeForm.jsx:527
+#: src/components/storage/VolumeForm.jsx:473
 msgid "Range"
 msgstr "Reikwijdte"
 
-#: src/components/storage/VolumeForm.jsx:735
+#: src/components/storage/VolumeForm.jsx:681
 msgid "A size value is required"
 msgstr "Een grootheids waarde is nodig"
 
-#: src/components/storage/VolumeForm.jsx:740
+#: src/components/storage/VolumeForm.jsx:686
 msgid "Minimum size is required"
 msgstr "Minimum grootte is vereist"
 
-#: src/components/storage/VolumeForm.jsx:744
+#: src/components/storage/VolumeForm.jsx:690
 msgid "Maximum must be greater than minimum"
 msgstr "Maximum moet groter zijn dan het minimum"
 
@@ -2028,32 +2047,32 @@ msgstr "Detecteer"
 msgid "Targets"
 msgstr "Doelen"
 
-#: src/components/storage/utils.js:44
+#: src/components/storage/utils.js:49
 msgid "KiB"
 msgstr "KiB"
 
-#: src/components/storage/utils.js:45
+#: src/components/storage/utils.js:50
 msgid "MiB"
 msgstr "MiB"
 
-#: src/components/storage/utils.js:46
+#: src/components/storage/utils.js:51
 msgid "GiB"
 msgstr "GiB"
 
-#: src/components/storage/utils.js:47
+#: src/components/storage/utils.js:52
 msgid "TiB"
 msgstr "TiB"
 
-#: src/components/storage/utils.js:48
+#: src/components/storage/utils.js:53
 msgid "PiB"
 msgstr "PiB"
 
-#: src/components/users/FirstUser.jsx:44
+#: src/components/users/FirstUser.jsx:50
 #, fuzzy
 msgid "No user defined yet."
 msgstr "Nog geen gebruiker gedefinieerd"
 
-#: src/components/users/FirstUser.jsx:47
+#: src/components/users/FirstUser.jsx:53
 msgid ""
 "Please, be aware that a user must be defined before installing the system to "
 "be able to log into it."
@@ -2062,51 +2081,60 @@ msgstr ""
 "het systeem in te kunnen loggen."
 
 #. TRANSLATORS: push button label
-#: src/components/users/FirstUser.jsx:51
+#: src/components/users/FirstUser.jsx:57
 msgid "Define a user now"
 msgstr "Definieer nu een gebruiker"
 
-#: src/components/users/FirstUser.jsx:61 src/components/users/FirstUser.jsx:202
+#: src/components/users/FirstUser.jsx:67 src/components/users/FirstUser.jsx:242
 msgid "Full name"
 msgstr "Volledige naam"
 
-#: src/components/users/FirstUser.jsx:62 src/components/users/FirstUser.jsx:213
-#: src/components/users/FirstUser.jsx:217
-#: src/components/users/FirstUser.jsx:219
+#: src/components/users/FirstUser.jsx:68 src/components/users/FirstUser.jsx:256
+#: src/components/users/FirstUser.jsx:264
+#: src/components/users/FirstUser.jsx:266
 msgid "Username"
 msgstr "Gebruikersnaam"
 
-#: src/components/users/FirstUser.jsx:178
+#: src/components/users/FirstUser.jsx:88
+msgid "Username suggestion dropdown"
+msgstr ""
+
+#. TRANSLATORS: dropdown username suggestions
+#: src/components/users/FirstUser.jsx:102
+msgid "Use suggested username"
+msgstr ""
+
+#: src/components/users/FirstUser.jsx:212
 #: src/components/users/RootAuthMethods.jsx:99
 #: src/components/users/RootAuthMethods.jsx:111
 msgid "Discard"
 msgstr "Niet opslaan"
 
-#: src/components/users/FirstUser.jsx:195
+#: src/components/users/FirstUser.jsx:235
 msgid "Create user account"
 msgstr "Maak gebruikersaccount"
 
-#: src/components/users/FirstUser.jsx:195
+#: src/components/users/FirstUser.jsx:235
 msgid "Edit user account"
 msgstr "Wijziging gebruikersaccount"
 
-#: src/components/users/FirstUser.jsx:206
-#: src/components/users/FirstUser.jsx:208
+#: src/components/users/FirstUser.jsx:246
+#: src/components/users/FirstUser.jsx:248
 msgid "User full name"
 msgstr "Volledige naam gebruiker"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUser.jsx:227
-#: src/components/users/FirstUser.jsx:231
+#: src/components/users/FirstUser.jsx:284
+#: src/components/users/FirstUser.jsx:288
 msgid "Edit password too"
 msgstr "Wijzig ook het wachtwoord"
 
-#: src/components/users/FirstUser.jsx:244
+#: src/components/users/FirstUser.jsx:301
 msgid "user autologin"
 msgstr "gebruiker autologin"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUser.jsx:248
+#: src/components/users/FirstUser.jsx:305
 msgid "Auto-login"
 msgstr "Auto-login"
 
