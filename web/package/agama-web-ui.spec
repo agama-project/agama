@@ -16,10 +16,10 @@
 #
 
 
-Name:           cockpit-agama
+Name:           agama-web-ui
 Version:        0
 Release:        0
-Summary:        Cockpit module for Agama
+Summary:        Web UI for Agama installer
 License:        GPL-2.0-only
 URL:            https://github.com/openSUSE/agama
 # source_validator insists that if obscpio has no version then
@@ -30,14 +30,11 @@ Source11:       node_modules.spec.inc
 Source12:       node_modules.sums
 %include %_sourcedir/node_modules.spec.inc
 BuildArch:      noarch
-Requires:       cockpit
-BuildRequires:  cockpit
-BuildRequires:  cockpit-devel >= 243
 BuildRequires:  local-npm-registry
 BuildRequires:  appstream-glib
 
 %description
-Cockpit module for the experimental Agama installer.
+Agama web UI for the experimental Agama installer.
 
 %prep
 %autosetup -p1 -n agama
@@ -45,7 +42,6 @@ rm -f package-lock.json
 local-npm-registry %{_sourcedir} install --with=dev --legacy-peer-deps || ( find ~/.npm/_logs -name '*-debug.log' -print0 | xargs -0 cat; false)
 
 %build
-# cp -r %{_datadir}/cockpit/devel/lib src/lib
 NODE_ENV="production" npm run build
 
 %install
