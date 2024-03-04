@@ -109,8 +109,8 @@ pub async fn software_service(dbus: zbus::Connection) -> Router {
 #[utoipa::path(get, path = "/software/products", responses(
     (status = 200, description = "List of known products")
 ))]
-async fn products<'a>(
-    State(state): State<SoftwareState<'a>>,
+async fn products(
+    State(state): State<SoftwareState<'_>>,
 ) -> Result<Json<Vec<Product>>, SoftwareError> {
     let products = state.product.products().await?;
     Ok(Json(products))
@@ -149,8 +149,8 @@ impl From<SelectionReason> for PatternStatus {
 #[utoipa::path(get, path = "/software/patterns", responses(
     (status = 200, description = "List of known software patterns")
 ))]
-async fn patterns<'a>(
-    State(state): State<SoftwareState<'a>>,
+async fn patterns(
+    State(state): State<SoftwareState<'_>>,
 ) -> Result<Json<Vec<PatternEntry>>, SoftwareError> {
     let patterns = state.software.patterns(true).await?;
     let selected = state.software.selected_patterns().await?;
