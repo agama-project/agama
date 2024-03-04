@@ -103,8 +103,9 @@ pub async fn software_service(dbus: zbus::Connection) -> Router {
     let software = SoftwareClient::new(dbus).await.unwrap();
     let state = SoftwareState { product, software };
     Router::new()
-        .route("/products", get(products))
         .route("/patterns", get(patterns))
+        .route("/products", get(products))
+        .route("/proposal", get(proposal))
         .route("/config", put(set_config).get(get_config))
         .with_state(state)
 }
@@ -196,7 +197,7 @@ async fn set_config(
     Ok(())
 }
 
-/// Returns the software configuration
+/// Returns the software configuration.
 ///
 /// * `state` : service state.
 #[utoipa::path(get, path = "/software/config", responses(
@@ -212,4 +213,27 @@ async fn get_config(
         product: Some(product),
     };
     Ok(Json(config))
+}
+
+#[derive(Serialize, utoipa::ToSchema)]
+/// Software proposal information.
+struct SoftwareProposal {
+    /// Space required for installation. It is returned as a formatted string which includes
+    /// a number and a unit (e.g., "GiB").
+    size: String,
+}
+
+/// Returns the proposal information.
+///
+/// At this point, only the required space is reported.
+#[utoipa::path(
+    get, path = "/software/proposal", responses(
+        (status = 200, description = "Software proposal")
+))]
+async fn proposal(
+    State(state): State<SoftwareState<'_>>,
+) -> Result<Json<SoftwareProposal>, SoftwareError> {
+    let size = state.software.used_disk_space().await?;
+    let proposal = SoftwareProposal { size };
+    Ok(Json(proposal))
 }
