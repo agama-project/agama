@@ -18,10 +18,6 @@ impl<'a> SoftwareStore<'a> {
 
     pub async fn load(&self) -> Result<SoftwareSettings, ServiceError> {
         let patterns = self.software_client.user_selected_patterns().await?;
-        a = Some(Ok(1));
-if let Some(b) = a && let Ok(c) = b {
-    eprint!(c);
-}
         Ok(SoftwareSettings { patterns })
     }
 
