@@ -5,8 +5,11 @@
 //! * Serve the code for the web user interface (not implemented yet).
 
 use self::progress::EventsProgressPresenter;
-use crate::l10n::web::l10n_service;
-use crate::software::web::{software_service, software_stream};
+use crate::{
+    error::Error,
+    l10n::web::l10n_service,
+    software::web::{software_service, software_stream},
+};
 use axum::Router;
 
 mod auth;
@@ -66,11 +69,12 @@ pub async fn run_monitor(events: EventsSender) -> Result<(), ServiceError> {
 ///
 /// * `connection`: D-Bus connection.
 /// * `events`: channel to send the events to.
-pub async fn run_events_monitor(connection: zbus::Connection, events: EventsSender) {
-    let stream = software_stream(connection).await;
+pub async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Result<(), Error> {
+    let stream = software_stream(dbus).await?;
     tokio::pin!(stream);
     let e = events.clone();
     while let Some(event) = stream.next().await {
         _ = e.send(event);
     }
+    Ok(())
 }

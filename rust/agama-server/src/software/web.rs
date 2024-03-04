@@ -5,7 +5,7 @@
 //! * `software_service` which returns the Axum service.
 //! * `software_stream` which offers an stream that emits the software events coming from D-Bus.
 
-use crate::web::Event;
+use crate::{error::Error, web::Event};
 use agama_lib::{
     error::ServiceError,
     product::{Product, ProductClient},
@@ -56,16 +56,18 @@ impl IntoResponse for SoftwareError {
 /// Returns an stream that emits software related events coming from D-Bus.
 ///
 /// * `connection`: D-Bus connection to listen for events.
-pub async fn software_stream(dbus: zbus::Connection) -> impl Stream<Item = Event> {
-    StreamExt::merge(
-        product_changed_stream(dbus.clone()).await,
-        patterns_changed_stream(dbus.clone()).await,
-    )
+pub async fn software_stream(dbus: zbus::Connection) -> Result<impl Stream<Item = Event>, Error> {
+    Ok(StreamExt::merge(
+        product_changed_stream(dbus.clone()).await?,
+        patterns_changed_stream(dbus.clone()).await?,
+    ))
 }
 
-async fn product_changed_stream(dbus: zbus::Connection) -> impl Stream<Item = Event> {
-    let proxy = SoftwareProductProxy::new(&dbus).await.unwrap();
-    proxy
+async fn product_changed_stream(
+    dbus: zbus::Connection,
+) -> Result<impl Stream<Item = Event>, Error> {
+    let proxy = SoftwareProductProxy::new(&dbus).await?;
+    let stream = proxy
         .receive_selected_product_changed()
         .await
         .then(|change| async move {
@@ -74,12 +76,15 @@ async fn product_changed_stream(dbus: zbus::Connection) -> impl Stream<Item = Ev
             }
             None
         })
-        .filter_map(|e| e)
+        .filter_map(|e| e);
+    Ok(stream)
 }
 
-async fn patterns_changed_stream(dbus: zbus::Connection) -> impl Stream<Item = Event> {
-    let proxy = Software1Proxy::new(&dbus).await.unwrap();
-    proxy
+async fn patterns_changed_stream(
+    dbus: zbus::Connection,
+) -> Result<impl Stream<Item = Event>, Error> {
+    let proxy = Software1Proxy::new(&dbus).await?;
+    let stream = proxy
         .receive_selected_patterns_changed()
         .await
         .then(|change| async move {
@@ -88,7 +93,8 @@ async fn patterns_changed_stream(dbus: zbus::Connection) -> impl Stream<Item = E
             }
             None
         })
-        .filter_map(|e| e)
+        .filter_map(|e| e);
+    Ok(stream)
 }
 
 /// Sets up and returns the axum service for the software module.
