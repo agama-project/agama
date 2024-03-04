@@ -18,7 +18,7 @@ use axum::{
     extract::State,
     http::StatusCode,
     response::{IntoResponse, Response},
-    routing::{get, put},
+    routing::{get, post, put},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
@@ -107,6 +107,7 @@ pub async fn software_service(dbus: zbus::Connection) -> Router {
         .route("/products", get(products))
         .route("/proposal", get(proposal))
         .route("/config", put(set_config).get(get_config))
+        .route("/probe", post(probe))
         .with_state(state)
 }
 
@@ -236,4 +237,16 @@ async fn proposal(
     let size = state.software.used_disk_space().await?;
     let proposal = SoftwareProposal { size };
     Ok(Json(proposal))
+}
+
+/// Returns the proposal information.
+///
+/// At this point, only the required space is reported.
+#[utoipa::path(
+    post, path = "/software/probe", responses(
+        (status = 200, description = "Software proposal")
+))]
+async fn probe(State(state): State<SoftwareState<'_>>) -> Result<Json<()>, SoftwareError> {
+    state.software.probe().await?;
+    Ok(Json(()))
 }

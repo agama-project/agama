@@ -115,4 +115,9 @@ impl<'a> SoftwareClient<'a> {
     pub async fn used_disk_space(&self) -> Result<String, ServiceError> {
         Ok(self.software_proxy.used_disk_space().await?)
     }
+
+    /// Starts the process to read the repositories data.
+    pub async fn probe(&self) -> Result<(), ServiceError> {
+        Ok(self.software_proxy.probe().await?)
+    }
 }
