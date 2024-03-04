@@ -5,9 +5,8 @@
 //! * `software_service` which returns the Axum service.
 //! * `software_stream` which offers an stream that emits the software events coming from D-Bus.
 
-use crate::web::{Event, EventsSender};
+use crate::web::Event;
 use agama_lib::{
-    connection,
     error::ServiceError,
     product::{Product, ProductClient},
     software::{
@@ -57,15 +56,15 @@ impl IntoResponse for SoftwareError {
 /// Returns an stream that emits software related events coming from D-Bus.
 ///
 /// * `connection`: D-Bus connection to listen for events.
-pub async fn software_stream(connection: zbus::Connection) -> impl Stream<Item = Event> {
+pub async fn software_stream(dbus: zbus::Connection) -> impl Stream<Item = Event> {
     StreamExt::merge(
-        product_changed_stream(connection.clone()).await,
-        patterns_changed_stream(connection.clone()).await,
+        product_changed_stream(dbus.clone()).await,
+        patterns_changed_stream(dbus.clone()).await,
     )
 }
 
-async fn product_changed_stream(connection: zbus::Connection) -> impl Stream<Item = Event> {
-    let proxy = SoftwareProductProxy::new(&connection).await.unwrap();
+async fn product_changed_stream(dbus: zbus::Connection) -> impl Stream<Item = Event> {
+    let proxy = SoftwareProductProxy::new(&dbus).await.unwrap();
     proxy
         .receive_selected_product_changed()
         .await
@@ -78,8 +77,8 @@ async fn product_changed_stream(connection: zbus::Connection) -> impl Stream<Ite
         .filter_map(|e| e)
 }
 
-async fn patterns_changed_stream(connection: zbus::Connection) -> impl Stream<Item = Event> {
-    let proxy = Software1Proxy::new(&connection).await.unwrap();
+async fn patterns_changed_stream(dbus: zbus::Connection) -> impl Stream<Item = Event> {
+    let proxy = Software1Proxy::new(&dbus).await.unwrap();
     proxy
         .receive_selected_patterns_changed()
         .await
@@ -93,10 +92,9 @@ async fn patterns_changed_stream(connection: zbus::Connection) -> impl Stream<It
 }
 
 /// Sets up and returns the axum service for the software module.
-pub async fn software_service(_events: EventsSender) -> Router {
-    let connection = connection().await.unwrap();
-    let product = ProductClient::new(connection.clone()).await.unwrap();
-    let software = SoftwareClient::new(connection).await.unwrap();
+pub async fn software_service(dbus: zbus::Connection) -> Router {
+    let product = ProductClient::new(dbus.clone()).await.unwrap();
+    let software = SoftwareClient::new(dbus).await.unwrap();
     let state = SoftwareState { product, software };
     Router::new()
         .route("/products", get(products))

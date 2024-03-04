@@ -31,10 +31,14 @@ use tokio_stream::StreamExt;
 ///
 /// * `config`: service configuration.
 /// * `events`: D-Bus connection.
-pub async fn service(config: ServiceConfig, events: EventsSender) -> Router {
+pub async fn service(
+    config: ServiceConfig,
+    events: EventsSender,
+    dbus: zbus::Connection,
+) -> Router {
     MainServiceBuilder::new(events.clone())
         .add_service("/l10n", l10n_service(events.clone()))
-        .add_service("/software", software_service(events).await)
+        .add_service("/software", software_service(dbus).await)
         .with_config(config)
         .build()
 }
