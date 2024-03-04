@@ -112,6 +112,9 @@ impl<'a> SoftwareClient<'a> {
         }
     }
 
+    /// Returns the required space for installing the selected patterns.
+    ///
+    /// It returns a formatted string including the size and the unit.
     pub async fn used_disk_space(&self) -> Result<String, ServiceError> {
         Ok(self.software_proxy.used_disk_space().await?)
     }
