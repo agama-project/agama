@@ -1,6 +1,9 @@
 //! This module implements the web API for the software module.
 //!
-//! It is a wrapper around the YaST D-Bus API.
+//! The module offers two public functions:
+//!
+//! * `software_service` which returns the Axum service.
+//! * `software_stream` which offers an stream that emits the software events coming from D-Bus.
 
 use crate::web::{Event, EventsSender};
 use agama_lib::{
@@ -51,6 +54,9 @@ impl IntoResponse for SoftwareError {
     }
 }
 
+/// Returns an stream that emits software related events coming from D-Bus.
+///
+/// * `connection`: D-Bus connection to listen for events.
 pub async fn software_stream(connection: zbus::Connection) -> impl Stream<Item = Event> {
     StreamExt::merge(
         product_changed_stream(connection.clone()).await,
@@ -87,8 +93,6 @@ async fn patterns_changed_stream(connection: zbus::Connection) -> impl Stream<It
 }
 
 /// Sets up and returns the axum service for the software module.
-///
-/// * `events`: channel to send the events to the main service.
 pub async fn software_service(_events: EventsSender) -> Router {
     let connection = connection().await.unwrap();
     let product = ProductClient::new(connection.clone()).await.unwrap();
@@ -104,6 +108,9 @@ pub async fn software_service(_events: EventsSender) -> Router {
 /// Returns the list of available products.
 ///
 /// * `state`: service state.
+#[utoipa::path(get, path = "/software/products", responses(
+    (status = 200, description = "List of known products")
+))]
 async fn products<'a>(
     State(state): State<SoftwareState<'a>>,
 ) -> Result<Json<Vec<Product>>, SoftwareError> {
@@ -114,8 +121,8 @@ async fn products<'a>(
 /// Represents a pattern.
 ///
 /// It augments the information coming from the D-Bus client.
-#[derive(Serialize)]
-pub struct PatternItem {
+#[derive(Serialize, utoipa::ToSchema)]
+pub struct PatternEntry {
     #[serde(flatten)]
     pattern: Pattern,
     status: PatternStatus,
@@ -138,9 +145,15 @@ impl From<SelectionReason> for PatternStatus {
     }
 }
 
+/// Returns the list of software patterns.
+///
+/// * `state`: service state.
+#[utoipa::path(get, path = "/software/patterns", responses(
+    (status = 200, description = "List of known software patterns")
+))]
 async fn patterns<'a>(
     State(state): State<SoftwareState<'a>>,
-) -> Result<Json<Vec<PatternItem>>, SoftwareError> {
+) -> Result<Json<Vec<PatternEntry>>, SoftwareError> {
     let patterns = state.software.patterns(true).await?;
     let selected = state.software.selected_patterns().await?;
     let items = patterns
@@ -150,7 +163,7 @@ async fn patterns<'a>(
                 .get(&pattern.id)
                 .map(|r| (*r).into())
                 .unwrap_or(PatternStatus::Available);
-            PatternItem { pattern, status }
+            PatternEntry { pattern, status }
         })
         .collect();
 
@@ -161,8 +174,11 @@ async fn patterns<'a>(
 ///
 /// * `state`: service state.
 /// * `config`: software configuration.
-async fn set_config<'a>(
-    State(state): State<SoftwareState<'a>>,
+#[utoipa::path(put, path = "/software/config", responses(
+    (status = 200, description = "Set the software configuration")
+))]
+async fn set_config(
+    State(state): State<SoftwareState<'_>>,
     Json(config): Json<SoftwareConfig>,
 ) -> Result<(), SoftwareError> {
     if let Some(product) = config.product {
@@ -179,8 +195,11 @@ async fn set_config<'a>(
 /// Returns the software configuration
 ///
 /// * `state` : service state.
-async fn get_config<'a>(
-    State(state): State<SoftwareState<'a>>,
+#[utoipa::path(get, path = "/software/config", responses(
+    (status = 200, description = "Software configuration")
+))]
+async fn get_config(
+    State(state): State<SoftwareState<'_>>,
 ) -> Result<Json<SoftwareConfig>, SoftwareError> {
     let product = state.product.product().await?;
     let patterns = state.software.user_selected_patterns().await?;

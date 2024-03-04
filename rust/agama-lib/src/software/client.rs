@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use zbus::Connection;
 
 /// Represents a software product
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, utoipa::ToSchema)]
 pub struct Pattern {
     /// Pattern ID (eg., "aaa_base", "gnome")
     pub id: String,
