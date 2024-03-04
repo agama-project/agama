@@ -24,7 +24,6 @@ import { Icon } from "~/components/layout";
 import { InstallerKeymapSwitcher, InstallerLocaleSwitcher } from "~/components/l10n";
 import {
   About,
-  DevelopmentInfo,
   Disclosure,
   // FIXME: unify names here by renaming LogsButton -> LogButton or ShowLogButton -> ShowLogsButton
   LogsButton,
@@ -157,7 +156,6 @@ export default function Sidebar ({ children, isOpen, onClose = noop }) {
           {_("Close")}
           <Icon name="menu_open" size="xxs" data-variant="flip-X" />
         </a>
-        <DevelopmentInfo />
       </footer>
     </aside>
   );

@@ -6,6 +6,7 @@ This Cockpit modules offers a UI to the [Agama service](file:../service). The co
 
 ## Development
 
+TODO: update when new way is clear how to do
 There are basically two ways how to develop the Agama fronted. You can
 override the original Cockpit plugins with your own code in your `$HOME` directory
 or you can run a development server which works as a proxy and sends the Cockpit
@@ -16,33 +17,9 @@ The advantage of using the development server is that you can use the
 feature for automatically updating the code and stylesheet in the browser
 without reloading the page.
 
-### Overriding the Cockpit Plugin
-
-Cockpit searches for modules in the `$HOME/.local/share/cockpit` directory of the logged in user,
-which is really handy when working on a module. To make the module available to Cockpit, you can
-link your build folder (`dist`) or just rely on the `devel-install` task:
-
-```
-    make devel-install
-```
-
-Then you can visit the Agama module through the following URL:
-
-http://localhost:9090/cockpit/@localhost/agama/index.html.
-
-Bear in mind that if something goes wrong while building the application (e.g., the linter fails),
-the link will not be created.
-
-To automatically rebuild the sources after any change you can run
-
-```
-    npm run watch
-```
-
-*But do not forget that you have to reload the code in your browser manually after each change!*
-
 ### Using a development server
 
+TODO: update when new way is clear how to do
 To start the [webpack-dev-server](https://github.com/webpack/webpack-dev-server)
 use this command:
 

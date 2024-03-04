@@ -8,13 +8,10 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin');
-const CockpitPoPlugin = require("./src/lib/cockpit-po-plugin");
-const CockpitRsyncPlugin = require("./src/lib/cockpit-rsync-plugin");
 const StylelintPlugin = require('stylelint-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const webpack = require('webpack');
-const po_handler = require("./src/lib/webpack-po-handler");
 const manifests_handler = require("./src/lib/webpack-manifests-handler");
 
 /* A standard nodejs and webpack pattern */
@@ -46,19 +43,12 @@ const copy_files = [
 const plugins = [
   new Copy({ patterns: copy_files }),
   new Extract({ filename: "[name].css" }),
-  new CockpitPoPlugin(),
-  new CockpitRsyncPlugin({ dest: packageJson.name }),
   development && new ReactRefreshWebpackPlugin({ overlay: false }),
   // replace the "process.env.WEBPACK_SERVE" text in the source code by
   // the current value of the environment variable, that variable is set to
   // "true" when running the development server ("npm run server")
   // https://webpack.js.org/plugins/environment-plugin/
   new webpack.EnvironmentPlugin({ WEBPACK_SERVE: null, LOCAL_CONNECTION: null }),
-  // similarly for a non-environment value
-  // https://webpack.js.org/plugins/define-plugin/
-  // but because ESlint runs *before* the DefinePlugin we need to
-  // add it as a global variable in .eslintrc.json config file
-  new webpack.DefinePlugin({ COCKPIT_TARGET_URL: JSON.stringify(cockpitTarget) }),
 ].filter(Boolean);
 
 if (eslint) {
@@ -102,14 +92,7 @@ module.exports = {
     // additionally watch these files for changes
     watchFiles: ["./src/manifest.json", "./po/*.po"],
     proxy: {
-      // forward all cockpit connections to a real Cockpit instance
-      "/cockpit": {
-        target: cockpitTarget,
-        // redirect also the websocket connections
-        ws: true,
-        // ignore SSL problems (self-signed certificate)
-        secure: false,
-      },
+      // TODO: modify it to not depend on cockpit
       // forward the manifests.js request and patch the response with the
       // current Agama manifest from the ./src/manifest.json file
       "/manifests.js": {
@@ -126,12 +109,6 @@ module.exports = {
     // hot replacement does not support wss:// transport when running over https://,
     // as a workaround use sockjs (which uses standard https:// protocol)
     webSocketServer: "sockjs",
-
-    // Cockpit handles the "po.js" requests specially
-    setupMiddlewares: (middlewares, devServer) => {
-      devServer.app.get("/po.js", po_handler);
-      return middlewares;
-    }
   },
   devtool: "source-map",
   stats: "errors-warnings",
