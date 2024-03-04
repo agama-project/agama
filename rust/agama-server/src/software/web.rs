@@ -23,6 +23,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use std::collections::HashMap;
 use thiserror::Error;
 use tokio_stream::{Stream, StreamExt};
 
@@ -88,8 +89,10 @@ async fn patterns_changed_stream(
         .receive_selected_patterns_changed()
         .await
         .then(|change| async move {
-            if let Ok(_pattens) = change.get().await {
-                return Some(Event::PatternsChanged);
+            if let Ok(patterns) = change.get().await {
+                let patterns: HashMap<String, PatternStatus> =
+                    patterns.into_iter().map(|(k, v)| (k, v.into())).collect();
+                return Some(Event::PatternsChanged(patterns));
             }
             None
         })
@@ -136,10 +139,10 @@ pub struct PatternEntry {
 
 /// Pattern status.
 #[derive(Serialize, Clone, Copy)]
-enum PatternStatus {
+pub enum PatternStatus {
+    UserSelected = 0,
+    AutoSelected = 1,
     Available,
-    UserSelected,
-    AutoSelected,
 }
 
 impl From<SelectionReason> for PatternStatus {
@@ -147,6 +150,16 @@ impl From<SelectionReason> for PatternStatus {
         match value {
             SelectionReason::User => Self::UserSelected,
             SelectionReason::Auto => Self::AutoSelected,
+        }
+    }
+}
+
+impl From<u8> for PatternStatus {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => PatternStatus::UserSelected,
+            1 => PatternStatus::AutoSelected,
+            _ => PatternStatus::Available,
         }
     }
 }
