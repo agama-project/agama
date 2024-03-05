@@ -19,7 +19,9 @@ use tower::ServiceExt;
 async fn build_service() -> Router {
     let (tx, _) = channel(16);
     let server = DBusServer::new().start().await.unwrap();
-    service(ServiceConfig::default(), tx, server.connection()).await
+    service(ServiceConfig::default(), tx, server.connection())
+        .await
+        .unwrap()
 }
 
 #[test]
