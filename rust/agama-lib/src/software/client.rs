@@ -22,19 +22,22 @@ pub struct Pattern {
 }
 
 /// Represents the reason why a pattern is selected.
-#[derive(Clone, Copy)]
-pub enum SelectionReason {
+#[derive(Clone, Copy, Debug, Serialize)]
+pub enum SelectedBy {
     /// The pattern was selected by the user.
     User = 0,
     /// The pattern was selected automatically.
     Auto = 1,
+    /// The pattern has not be selected.
+    None = 2,
 }
 
-impl From<u8> for SelectionReason {
+impl From<u8> for SelectedBy {
     fn from(value: u8) -> Self {
         match value {
             0 => Self::User,
-            _ => Self::Auto,
+            1 => Self::Auto,
+            _ => Self::None,
         }
     }
 }
@@ -80,16 +83,14 @@ impl<'a> SoftwareClient<'a> {
             .selected_patterns()
             .await?
             .into_iter()
-            .filter(|(_id, reason)| *reason == SelectionReason::User as u8)
+            .filter(|(_id, reason)| *reason == SelectedBy::User as u8)
             .map(|(id, _reason)| id)
             .collect();
         Ok(patterns)
     }
 
     /// Returns the selected pattern and the reason each one selected.
-    pub async fn selected_patterns(
-        &self,
-    ) -> Result<HashMap<String, SelectionReason>, ServiceError> {
+    pub async fn selected_patterns(&self) -> Result<HashMap<String, SelectedBy>, ServiceError> {
         let patterns = self.software_proxy.selected_patterns().await?;
         let patterns = patterns
             .into_iter()

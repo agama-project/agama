@@ -11,7 +11,7 @@ use agama_lib::{
     product::{Product, ProductClient},
     software::{
         proxies::{Software1Proxy, SoftwareProductProxy},
-        Pattern, SelectionReason, SoftwareClient,
+        Pattern, SelectedBy, SoftwareClient,
     },
 };
 use axum::{
@@ -90,7 +90,7 @@ async fn patterns_changed_stream(
         .await
         .then(|change| async move {
             if let Ok(patterns) = change.get().await {
-                let patterns: HashMap<String, PatternStatus> =
+                let patterns: HashMap<String, SelectedBy> =
                     patterns.into_iter().map(|(k, v)| (k, v.into())).collect();
                 return Some(Event::PatternsChanged(patterns));
             }
@@ -134,34 +134,7 @@ async fn products(
 pub struct PatternEntry {
     #[serde(flatten)]
     pattern: Pattern,
-    status: PatternStatus,
-}
-
-/// Pattern status.
-#[derive(Serialize, Clone, Copy)]
-pub enum PatternStatus {
-    UserSelected = 0,
-    AutoSelected = 1,
-    Available,
-}
-
-impl From<SelectionReason> for PatternStatus {
-    fn from(value: SelectionReason) -> Self {
-        match value {
-            SelectionReason::User => Self::UserSelected,
-            SelectionReason::Auto => Self::AutoSelected,
-        }
-    }
-}
-
-impl From<u8> for PatternStatus {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => PatternStatus::UserSelected,
-            1 => PatternStatus::AutoSelected,
-            _ => PatternStatus::Available,
-        }
-    }
+    selected_by: SelectedBy,
 }
 
 /// Returns the list of software patterns.
@@ -178,11 +151,14 @@ async fn patterns(
     let items = patterns
         .into_iter()
         .map(|pattern| {
-            let status: PatternStatus = selected
+            let selected_by: SelectedBy = selected
                 .get(&pattern.id)
-                .map(|r| (*r).into())
-                .unwrap_or(PatternStatus::Available);
-            PatternEntry { pattern, status }
+                .copied()
+                .unwrap_or(SelectedBy::None);
+            PatternEntry {
+                pattern,
+                selected_by,
+            }
         })
         .collect();
 
