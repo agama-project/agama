@@ -11,19 +11,22 @@ use axum::{
     routing::get,
     Router,
 };
-use common::body_to_string;
+use common::{body_to_string, DBusServer};
 use std::error::Error;
 use tokio::{sync::broadcast::channel, test};
 use tower::ServiceExt;
 
-fn build_service() -> Router {
+async fn build_service() -> Router {
     let (tx, _) = channel(16);
-    service(ServiceConfig::default(), tx)
+    let server = DBusServer::new().start().await.unwrap();
+    service(ServiceConfig::default(), tx, server.connection())
+        .await
+        .unwrap()
 }
 
 #[test]
 async fn test_ping() -> Result<(), Box<dyn Error>> {
-    let web_service = build_service();
+    let web_service = build_service().await;
     let request = Request::builder().uri("/ping").body(Body::empty()).unwrap();
 
     let response = web_service.oneshot(request).await.unwrap();

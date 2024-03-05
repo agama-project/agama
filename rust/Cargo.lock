@@ -112,6 +112,7 @@ dependencies = [
  "tokio",
  "tokio-stream",
  "url",
+ "utoipa",
  "zbus",
 ]
 
