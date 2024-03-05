@@ -33,8 +33,8 @@ struct SoftwareState<'a> {
     software: SoftwareClient<'a>,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
-struct SoftwareConfig {
+#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct SoftwareConfig {
     patterns: Option<Vec<String>>,
     product: Option<String>,
 }
@@ -119,7 +119,8 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
 ///
 /// * `state`: service state.
 #[utoipa::path(get, path = "/software/products", responses(
-    (status = 200, description = "List of known products")
+    (status = 200, description = "List of known products", body = Vec<Product>),
+    (status = 400, description = "The D-Bus service could not perform the action")
 ))]
 async fn products(
     State(state): State<SoftwareState<'_>>,
@@ -142,7 +143,8 @@ pub struct PatternEntry {
 ///
 /// * `state`: service state.
 #[utoipa::path(get, path = "/software/patterns", responses(
-    (status = 200, description = "List of known software patterns")
+    (status = 200, description = "List of known software patterns", body = Vec<PatternEntry>),
+    (status = 400, description = "The D-Bus service could not perform the action")
 ))]
 async fn patterns(
     State(state): State<SoftwareState<'_>>,
@@ -171,7 +173,8 @@ async fn patterns(
 /// * `state`: service state.
 /// * `config`: software configuration.
 #[utoipa::path(put, path = "/software/config", responses(
-    (status = 200, description = "Set the software configuration")
+    (status = 200, description = "Set the software configuration"),
+    (status = 400, description = "The D-Bus service could not perform the action")
 ))]
 async fn set_config(
     State(state): State<SoftwareState<'_>>,
@@ -192,7 +195,8 @@ async fn set_config(
 ///
 /// * `state` : service state.
 #[utoipa::path(get, path = "/software/config", responses(
-    (status = 200, description = "Software configuration")
+    (status = 200, description = "Software configuration", body = SoftwareConfig),
+    (status = 400, description = "The D-Bus service could not perform the action")
 ))]
 async fn get_config(
     State(state): State<SoftwareState<'_>>,
@@ -208,7 +212,7 @@ async fn get_config(
 
 #[derive(Serialize, utoipa::ToSchema)]
 /// Software proposal information.
-struct SoftwareProposal {
+pub struct SoftwareProposal {
     /// Space required for installation. It is returned as a formatted string which includes
     /// a number and a unit (e.g., "GiB").
     size: String,
@@ -219,7 +223,7 @@ struct SoftwareProposal {
 /// At this point, only the required space is reported.
 #[utoipa::path(
     get, path = "/software/proposal", responses(
-        (status = 200, description = "Software proposal")
+        (status = 200, description = "Software proposal", body = SoftwareProposal)
 ))]
 async fn proposal(
     State(state): State<SoftwareState<'_>>,
@@ -234,7 +238,9 @@ async fn proposal(
 /// At this point, only the required space is reported.
 #[utoipa::path(
     post, path = "/software/probe", responses(
-        (status = 200, description = "Software proposal")
+        (status = 200, description = "Read repositories data"),
+        (status = 400, description = "The D-Bus service could not perform the action
+")
 ))]
 async fn probe(State(state): State<SoftwareState<'_>>) -> Result<Json<()>, SoftwareError> {
     state.software.probe().await?;
