@@ -1,4 +1,4 @@
-use crate::network::model::Connection;
+use crate::network::model::{Connection, Device};
 use agama_lib::network::types::DeviceType;
 use tokio::sync::oneshot;
 use uuid::Uuid;
@@ -24,8 +24,10 @@ pub enum Action {
     /// Gets a connection
     GetConnection(Uuid, Responder<Option<Connection>>),
     /// Gets a connection
+    GetConnections(Responder<Vec<Connection>>),
+    /// Gets a connection path
     GetConnectionPath(Uuid, Responder<Option<OwnedObjectPath>>),
-    /// Gets a connection
+    /// Gets a connection path by id
     GetConnectionPathById(String, Responder<Option<OwnedObjectPath>>),
     /// Get connections paths
     GetConnectionsPaths(Responder<Vec<OwnedObjectPath>>),
@@ -34,6 +36,11 @@ pub enum Action {
         Uuid,
         Responder<Result<ControllerConnection, NetworkStateError>>,
     ),
+    /// Gets a device
+    GetDevice(String, Responder<Option<Device>>),
+    GetDevices(Responder<Vec<Device>>),
+    /// Gets a device path
+    GetDevicePath(String, Responder<Option<OwnedObjectPath>>),
     /// Get devices paths
     GetDevicesPaths(Responder<Vec<OwnedObjectPath>>),
     /// Sets a controller's ports. It uses the Uuid of the controller and the IDs or interface names

@@ -5,6 +5,8 @@
 use crate::network::error::NetworkStateError;
 use agama_lib::network::types::{BondMode, DeviceType, SSID};
 use cidr::IpInet;
+use serde::Serialize;
+use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
 use std::{
     collections::HashMap,
     default::Default,
@@ -16,7 +18,7 @@ use thiserror::Error;
 use uuid::Uuid;
 use zbus::zvariant::Value;
 
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, utoipa::ToSchema)]
 pub struct NetworkState {
     pub devices: Vec<Device>,
     pub connections: Vec<Connection>,
@@ -368,17 +370,21 @@ mod tests {
 }
 
 /// Network device
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
 pub struct Device {
     pub name: String,
+    #[serde(rename = "type")]
     pub type_: DeviceType,
 }
 
-/// Represents an availble network connection.
-#[derive(Debug, Clone, PartialEq)]
+/// Represents a known network connection.
+#[serde_as]
+#[skip_serializing_none]
+#[derive(Debug, Clone, PartialEq, Serialize, utoipa::ToSchema)]
 pub struct Connection {
     pub id: String,
     pub uuid: Uuid,
+    #[serde_as(as = "DisplayFromStr")]
     pub mac_address: MacAddress,
     pub ip_config: IpConfig,
     pub status: Status,
@@ -459,7 +465,7 @@ impl Default for Connection {
     }
 }
 
-#[derive(Default, Debug, PartialEq, Clone)]
+#[derive(Default, Debug, PartialEq, Clone, Serialize)]
 pub enum ConnectionConfig {
     #[default]
     Ethernet,
@@ -471,7 +477,7 @@ pub enum ConnectionConfig {
     Bridge(BridgeConfig),
 }
 
-#[derive(Default, Debug, PartialEq, Clone)]
+#[derive(Default, Debug, PartialEq, Clone, Serialize)]
 pub enum PortConfig {
     #[default]
     None,
@@ -494,7 +500,7 @@ impl From<WirelessConfig> for ConnectionConfig {
 #[error("Invalid MAC address: {0}")]
 pub struct InvalidMacAddress(String);
 
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize)]
 pub enum MacAddress {
     MacAddress(macaddr::MacAddr6),
     Preserve,
@@ -554,7 +560,7 @@ impl From<InvalidMacAddress> for zbus::fdo::Error {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize)]
 pub enum Status {
     #[default]
     Up,
@@ -562,11 +568,14 @@ pub enum Status {
     Removed,
 }
 
-#[derive(Default, Debug, PartialEq, Clone)]
+#[skip_serializing_none]
+#[derive(Default, Debug, PartialEq, Clone, Serialize)]
 pub struct IpConfig {
     pub method4: Ipv4Method,
     pub method6: Ipv6Method,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub addresses: Vec<IpInet>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub nameservers: Vec<IpAddr>,
     pub gateway4: Option<IpAddr>,
     pub gateway6: Option<IpAddr>,
@@ -574,11 +583,16 @@ pub struct IpConfig {
     pub routes6: Option<Vec<IpRoute>>,
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[skip_serializing_none]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub struct MatchConfig {
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub driver: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub interface: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub path: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub kernel: Vec<String>,
 }
 
@@ -586,7 +600,7 @@ pub struct MatchConfig {
 #[error("Unknown IP configuration method name: {0}")]
 pub struct UnknownIpMethod(String);
 
-#[derive(Debug, Default, Copy, Clone, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Serialize)]
 pub enum Ipv4Method {
     #[default]
     Disabled = 0,
@@ -621,7 +635,7 @@ impl FromStr for Ipv4Method {
     }
 }
 
-#[derive(Debug, Default, Copy, Clone, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Serialize)]
 pub enum Ipv6Method {
     #[default]
     Disabled = 0,
@@ -668,10 +682,12 @@ impl From<UnknownIpMethod> for zbus::fdo::Error {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct IpRoute {
     pub destination: IpInet,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub next_hop: Option<IpAddr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub metric: Option<u32>,
 }
 
@@ -694,7 +710,7 @@ impl From<&IpRoute> for HashMap<&str, Value<'_>> {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub enum VlanProtocol {
     #[default]
     IEEE802_1Q,
@@ -727,22 +743,29 @@ impl fmt::Display for VlanProtocol {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub struct VlanConfig {
     pub parent: String,
     pub id: u32,
     pub protocol: VlanProtocol,
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[serde_as]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub struct WirelessConfig {
     pub mode: WirelessMode,
+    #[serde_as(as = "DisplayFromStr")]
     pub ssid: SSID,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
     pub security: SecurityProtocol,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub band: Option<WirelessBand>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub channel: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub bssid: Option<macaddr::MacAddr6>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub wep_security: Option<WEPSecurity>,
     pub hidden: bool,
 }
@@ -758,7 +781,7 @@ impl TryFrom<ConnectionConfig> for WirelessConfig {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize)]
 pub enum WirelessMode {
     Unknown = 0,
     AdHoc = 1,
@@ -796,7 +819,7 @@ impl fmt::Display for WirelessMode {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Serialize)]
 pub enum SecurityProtocol {
     #[default]
     WEP, // No encryption or WEP ("none")
@@ -842,15 +865,16 @@ impl TryFrom<&str> for SecurityProtocol {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub struct WEPSecurity {
     pub auth_alg: WEPAuthAlg,
     pub wep_key_type: WEPKeyType,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub keys: Vec<String>,
     pub wep_key_index: u32,
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub enum WEPKeyType {
     #[default]
     Unknown = 0,
@@ -871,7 +895,7 @@ impl TryFrom<u32> for WEPKeyType {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub enum WEPAuthAlg {
     #[default]
     Unset,
@@ -906,7 +930,7 @@ impl fmt::Display for WEPAuthAlg {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
 pub enum WirelessBand {
     A,  // 5GHz
     BG, // 2.4GHz
@@ -934,7 +958,7 @@ impl TryFrom<&str> for WirelessBand {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize)]
 pub struct BondOptions(pub HashMap<String, String>);
 
 impl TryFrom<&str> for BondOptions {
@@ -967,7 +991,7 @@ impl fmt::Display for BondOptions {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub struct BondConfig {
     pub mode: BondMode,
     pub options: BondOptions,
@@ -984,18 +1008,25 @@ impl TryFrom<ConnectionConfig> for BondConfig {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub struct BridgeConfig {
     pub stp: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub priority: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub forward_delay: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub hello_time: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub max_age: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ageing_time: Option<u32>,
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub struct BridgePortConfig {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub priority: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub path_cost: Option<u32>,
 }

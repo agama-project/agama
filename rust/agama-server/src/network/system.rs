@@ -79,6 +79,9 @@ impl<T: Adapter> NetworkSystem<T> {
                 let conn = self.state.get_connection_by_uuid(uuid);
                 tx.send(conn.cloned()).unwrap();
             }
+            Action::GetConnections(tx) => {
+                tx.send(self.state.connections.clone()).unwrap();
+            }
             Action::GetConnectionPath(uuid, tx) => {
                 let tree = self.tree.lock().await;
                 let path = tree.connection_path(uuid);
@@ -91,6 +94,18 @@ impl<T: Adapter> NetworkSystem<T> {
             Action::GetController(uuid, tx) => {
                 let result = self.get_controller_action(uuid);
                 tx.send(result).unwrap()
+            }
+            Action::GetDevice(name, tx) => {
+                let device = self.state.get_device(name.as_str());
+                tx.send(device.cloned()).unwrap();
+            }
+            Action::GetDevicePath(name, tx) => {
+                let tree = self.tree.lock().await;
+                let path = tree.device_path(name.as_str());
+                tx.send(path).unwrap();
+            }
+            Action::GetDevices(tx) => {
+                tx.send(self.state.devices.clone()).unwrap();
             }
             Action::GetDevicesPaths(tx) => {
                 let tree = self.tree.lock().await;
