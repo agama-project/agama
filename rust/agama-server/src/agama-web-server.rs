@@ -55,7 +55,7 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
 
     let config = web::ServiceConfig::load()?;
     let dbus = connection_to(&args.dbus_address).await?;
-    let service = web::service(config, tx, dbus).await;
+    let service = web::service(config, tx, dbus).await?;
     axum::serve(listener, service)
         .await
         .expect("could not mount app on listener");

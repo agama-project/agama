@@ -101,17 +101,18 @@ async fn patterns_changed_stream(
 }
 
 /// Sets up and returns the axum service for the software module.
-pub async fn software_service(dbus: zbus::Connection) -> Router {
-    let product = ProductClient::new(dbus.clone()).await.unwrap();
-    let software = SoftwareClient::new(dbus).await.unwrap();
+pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
+    let product = ProductClient::new(dbus.clone()).await?;
+    let software = SoftwareClient::new(dbus).await?;
     let state = SoftwareState { product, software };
-    Router::new()
+    let router = Router::new()
         .route("/patterns", get(patterns))
         .route("/products", get(products))
         .route("/proposal", get(proposal))
         .route("/config", put(set_config).get(get_config))
         .route("/probe", post(probe))
-        .with_state(state)
+        .with_state(state);
+    Ok(router)
 }
 
 /// Returns the list of available products.
