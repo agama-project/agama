@@ -1,10 +1,10 @@
 use std::process::{ExitCode, Termination};
 
-use agama_dbus_server::{
+use agama_lib::connection_to;
+use agama_server::{
     l10n::helpers,
     web::{self, run_monitor},
 };
-use agama_lib::connection_to;
 use clap::{Args, Parser, Subcommand};
 use tokio::sync::broadcast::channel;
 use tracing_subscriber::prelude::*;

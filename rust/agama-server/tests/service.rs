@@ -1,6 +1,6 @@
 pub mod common;
 
-use agama_dbus_server::{
+use agama_server::{
     service,
     web::{generate_token, MainServiceBuilder, ServiceConfig},
 };

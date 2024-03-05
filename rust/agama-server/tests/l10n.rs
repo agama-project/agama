@@ -1,6 +1,6 @@
 pub mod common;
 
-use agama_dbus_server::l10n::web::l10n_service;
+use agama_server::l10n::web::l10n_service;
 use axum::{
     body::Body,
     http::{Request, StatusCode},
