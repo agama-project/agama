@@ -1,9 +1,9 @@
 use clap::Subcommand;
-use reqwest::header::{HeaderMap, CONTENT_TYPE, HeaderValue};
+use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
+use std::fs::File;
 use std::io;
 use std::io::{BufRead, BufReader};
-use std::fs::File;
-use std::path::{PathBuf};
+use std::path::PathBuf;
 
 const DEFAULT_JWT_FILE: &str = "/tmp/agama-jwt";
 const DEFAULT_AUTH_URL: &str = "http://localhost:3000/authenticate";
@@ -12,10 +12,10 @@ const DEFAULT_AUTH_URL: &str = "http://localhost:3000/authenticate";
 pub enum ServerCommands {
     /// Login with defined server. Result is JWT stored and used in all subsequent commands
     Login {
-      #[clap(long, short = 'p')]
-      password: Option<String>,
-      #[clap(long, short = 'f')]
-      file: Option<PathBuf>,
+        #[clap(long, short = 'p')]
+        password: Option<String>,
+        #[clap(long, short = 'f')]
+        file: Option<PathBuf>,
     },
     /// Release currently stored JWT
     Logout,
@@ -24,10 +24,7 @@ pub enum ServerCommands {
 /// Main entry point called from agama CLI main loop
 pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
     match subcommand {
-        ServerCommands::Login {
-            password,
-            file,
-        }=> {
+        ServerCommands::Login { password, file } => {
             // actions to do:
             // 1) somehow obtain credentials (interactive, commandline, from a file)
             // credentials are handled in this way (in descending priority)
@@ -42,12 +39,12 @@ pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
             };
 
             login(LoginOptions::parse(options).password()?).await
-        },
+        }
         ServerCommands::Logout => {
             // actions to do:
             // 1) release JWT from the well known location if any
             logout()
-        },
+        }
     }
 }
 
@@ -104,7 +101,7 @@ impl Credentials for FileCredentials {
             return Err(io::Error::new(
                 io::ErrorKind::Other,
                 "Cannot find the file with credentials.",
-                ));
+            ));
         }
 
         if let Ok(file) = File::open(&self.path) {
@@ -120,7 +117,7 @@ impl Credentials for FileCredentials {
         Err(io::Error::new(
             io::ErrorKind::Other,
             "Failed to open the file",
-            ))
+        ))
     }
 }
 
@@ -145,7 +142,7 @@ fn read_credential(caption: String) -> io::Result<String> {
         return Err(io::Error::new(
             io::ErrorKind::Other,
             format!("Failed to read {}", caption),
-            ));
+        ));
     }
 
     Ok(cred)
@@ -169,12 +166,13 @@ async fn get_jwt(url: String, password: String) -> anyhow::Result<String> {
         .body(format!("{{\"password\": \"{}\"}}", password))
         .send()
         .await?;
-    let body = response.json::<std::collections::HashMap<String, String>>()
+    let body = response
+        .json::<std::collections::HashMap<String, String>>()
         .await?;
     let value = body.get(&"token".to_string());
 
     if let Some(token) = value {
-        return Ok(token.clone())
+        return Ok(token.clone());
     }
 
     Err(anyhow::anyhow!("Failed to get JWT token"))
