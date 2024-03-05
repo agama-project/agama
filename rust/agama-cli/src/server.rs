@@ -123,8 +123,6 @@ impl Credentials for FileCredentials {
 
 impl Credentials for MissingCredentials {
     fn password(&self) -> io::Result<String> {
-        println!("Enter credentials needed for accessing installation server");
-
         let password = read_credential("Password".to_string())?;
 
         Ok(password)
