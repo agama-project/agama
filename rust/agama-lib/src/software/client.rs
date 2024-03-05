@@ -22,7 +22,7 @@ pub struct Pattern {
 }
 
 /// Represents the reason why a pattern is selected.
-#[derive(Clone, Copy, Debug, Serialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize)]
 pub enum SelectedBy {
     /// The pattern was selected by the user.
     User = 0,
@@ -32,12 +32,18 @@ pub enum SelectedBy {
     None = 2,
 }
 
-impl From<u8> for SelectedBy {
-    fn from(value: u8) -> Self {
+#[derive(Debug, thiserror::Error)]
+#[error("Unknown selected by value: '{0}'")]
+pub struct UnknownSelectedBy(u8);
+
+impl TryFrom<u8> for SelectedBy {
+    type Error = UnknownSelectedBy;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
-            0 => Self::User,
-            1 => Self::Auto,
-            _ => Self::None,
+            0 => Ok(Self::User),
+            1 => Ok(Self::Auto),
+            _ => Err(UnknownSelectedBy(value)),
         }
     }
 }
@@ -83,8 +89,14 @@ impl<'a> SoftwareClient<'a> {
             .selected_patterns()
             .await?
             .into_iter()
-            .filter(|(_id, reason)| *reason == SelectedBy::User as u8)
-            .map(|(id, _reason)| id)
+            .filter_map(|(id, reason)| match SelectedBy::try_from(reason) {
+                Ok(reason) if reason == SelectedBy::User => Some(id),
+                Ok(_reason) => None,
+                Err(e) => {
+                    log::warn!("Ignoring pattern {}. Error: {}", &id, e);
+                    None
+                }
+            })
             .collect();
         Ok(patterns)
     }
@@ -94,7 +106,13 @@ impl<'a> SoftwareClient<'a> {
         let patterns = self.software_proxy.selected_patterns().await?;
         let patterns = patterns
             .into_iter()
-            .map(|(id, reason)| (id, reason.into()))
+            .filter_map(|(id, reason)| match SelectedBy::try_from(reason) {
+                Ok(reason) => Some((id, reason)),
+                Err(e) => {
+                    log::warn!("Ignoring pattern {}. Error: {}", &id, e);
+                    None
+                }
+            })
             .collect();
         Ok(patterns)
     }

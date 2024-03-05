@@ -11,7 +11,7 @@ use agama_lib::{
     product::{Product, ProductClient},
     software::{
         proxies::{Software1Proxy, SoftwareProductProxy},
-        Pattern, SelectedBy, SoftwareClient,
+        Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
     },
 };
 use axum::{
@@ -90,14 +90,32 @@ async fn patterns_changed_stream(
         .await
         .then(|change| async move {
             if let Ok(patterns) = change.get().await {
-                let patterns: HashMap<String, SelectedBy> =
-                    patterns.into_iter().map(|(k, v)| (k, v.into())).collect();
-                return Some(Event::PatternsChanged(patterns));
+                return match reason_to_selected_by(patterns) {
+                    Ok(patterns) => Some(patterns),
+                    Err(error) => {
+                        log::warn!("Ignoring the list of changed patterns. Error: {}", error);
+                        None
+                    }
+                };
             }
             None
         })
-        .filter_map(|e| e);
+        .filter_map(|e| e.map(Event::PatternsChanged));
     Ok(stream)
+}
+
+// Returns a hash replacing the selection "reason" from D-Bus with a SelectedBy variant.
+fn reason_to_selected_by(
+    patterns: HashMap<String, u8>,
+) -> Result<HashMap<String, SelectedBy>, UnknownSelectedBy> {
+    let mut selected: HashMap<String, SelectedBy> = HashMap::new();
+    for (id, reason) in patterns {
+        match SelectedBy::try_from(reason) {
+            Ok(selected_by) => selected.insert(id, selected_by),
+            Err(e) => return Err(e),
+        };
+    }
+    Ok(selected)
 }
 
 /// Sets up and returns the axum service for the software module.
