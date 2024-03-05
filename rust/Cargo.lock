@@ -42,49 +42,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "agama-dbus-server"
-version = "0.1.0"
-dependencies = [
- "agama-lib",
- "agama-locale-data",
- "anyhow",
- "async-trait",
- "axum",
- "axum-extra",
- "chrono",
- "cidr",
- "clap",
- "config",
- "gettext-rs",
- "http-body-util",
- "jsonwebtoken",
- "log",
- "macaddr",
- "once_cell",
- "pam",
- "rand",
- "regex",
- "serde",
- "serde_json",
- "serde_with",
- "serde_yaml",
- "simplelog",
- "systemd-journal-logger",
- "thiserror",
- "tokio",
- "tokio-stream",
- "tower",
- "tower-http",
- "tracing",
- "tracing-journald",
- "tracing-subscriber",
- "utoipa",
- "uuid",
- "zbus",
- "zbus_macros",
-]
-
-[[package]]
 name = "agama-derive"
 version = "1.0.0"
 dependencies = [
@@ -127,6 +84,49 @@ dependencies = [
  "regex",
  "serde",
  "thiserror",
+]
+
+[[package]]
+name = "agama-server"
+version = "0.1.0"
+dependencies = [
+ "agama-lib",
+ "agama-locale-data",
+ "anyhow",
+ "async-trait",
+ "axum",
+ "axum-extra",
+ "chrono",
+ "cidr",
+ "clap",
+ "config",
+ "gettext-rs",
+ "http-body-util",
+ "jsonwebtoken",
+ "log",
+ "macaddr",
+ "once_cell",
+ "pam",
+ "rand",
+ "regex",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "serde_yaml",
+ "simplelog",
+ "systemd-journal-logger",
+ "thiserror",
+ "tokio",
+ "tokio-stream",
+ "tower",
+ "tower-http",
+ "tracing",
+ "tracing-journald",
+ "tracing-subscriber",
+ "utoipa",
+ "uuid",
+ "zbus",
+ "zbus_macros",
 ]
 
 [[package]]
