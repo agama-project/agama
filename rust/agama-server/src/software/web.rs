@@ -41,7 +41,7 @@ pub struct SoftwareConfig {
 
 #[derive(Error, Debug)]
 pub enum SoftwareError {
-    #[error("Service error: {0}")]
+    #[error("Software service error: {0}")]
     Error(#[from] ServiceError),
 }
 
