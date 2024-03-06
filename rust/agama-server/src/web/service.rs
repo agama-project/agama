@@ -19,7 +19,7 @@ use tower_http::{compression::CompressionLayer, services::ServeDir, trace::Trace
 ///
 /// * A static assets directory (`public_dir`).
 /// * A websocket at the `/ws` path.
-/// * An authentication endpointg at `/authenticate`.
+/// * An authentication endpoint at `/authenticate`.
 /// * A 'ping' endpoint at '/ping'.
 /// * A number of authenticated services that are added using the `add_service` function.
 pub struct MainServiceBuilder {
