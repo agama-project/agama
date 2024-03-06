@@ -10,7 +10,9 @@ const DEFAULT_AUTH_URL: &str = "http://localhost:3000/authenticate";
 
 #[derive(Subcommand, Debug)]
 pub enum ServerCommands {
-    /// Login with defined server. Result is JWT stored and used in all subsequent commands
+    /// Login with defined server. Result is JWT stored locally and made available to
+    /// further use. Password can be provided by commandline option, from a file or it fallbacks
+    /// into an interactive prompt.
     Login {
         #[clap(long, short = 'p')]
         password: Option<String>,
@@ -25,20 +27,12 @@ pub enum ServerCommands {
 pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
     match subcommand {
         ServerCommands::Login { password, file } => {
-            // actions to do:
-            // 1) somehow obtain credentials (interactive, commandline, from a file)
-            // credentials are handled in this way (in descending priority)
-            // "command line options" -> "read from file" -> "ask to the user"
-            // 2) pass credentials to the web server
-            // 3) receive JWT
-            // 4) store the JWT in a well known location
-
             let options = LoginOptions {
                 password: password,
                 file: file,
             };
 
-            login(LoginOptions::parse(options).password()?).await
+            login(LoginOptions::proceed(options).password()?).await
         }
         ServerCommands::Logout => {
             // actions to do:
@@ -57,7 +51,7 @@ struct LoginOptions {
 impl LoginOptions {
     /// Transforms user provided options into internal representation
     /// See Credentials trait
-    fn parse(options: LoginOptions) -> Box<dyn Credentials> {
+    fn proceed(options: LoginOptions) -> Box<dyn Credentials> {
         match options.password {
             // explicitly provided user + password
             Some(p) => Box::new(KnownCredentials { password: p }),
@@ -100,7 +94,7 @@ impl Credentials for FileCredentials {
         if !&self.path.as_path().exists() {
             return Err(io::Error::new(
                 io::ErrorKind::Other,
-                "Cannot find the file with credentials.",
+                "Cannot find the file containing the credentials.",
             ));
         }
 
