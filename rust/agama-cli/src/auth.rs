@@ -24,12 +24,8 @@ pub enum AuthCommands {
 /// Main entry point called from agama CLI main loop
 pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
     match subcommand {
-        AuthCommands::Login(options) => {
-            login(LoginArgs::proceed(options).password()?).await
-        }
-        AuthCommands::Logout => {
-            logout()
-        }
+        AuthCommands::Login(options) => login(LoginArgs::proceed(options).password()?).await,
+        AuthCommands::Logout => logout(),
     }
 }
 
@@ -193,7 +189,7 @@ async fn login(password: String) -> anyhow::Result<()> {
 fn logout() -> anyhow::Result<()> {
     // mask if the file with the JWT doesn't exist (most probably no login before logout)
     if !Path::new(DEFAULT_JWT_FILE).exists() {
-        return Ok(())
+        return Ok(());
     }
 
     Ok(std::fs::remove_file(DEFAULT_JWT_FILE)?)
