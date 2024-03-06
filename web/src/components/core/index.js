@@ -57,3 +57,4 @@ export { default as PasswordInput } from "./PasswordInput";
 export { default as DevelopmentInfo } from "./DevelopmentInfo";
 export { default as Selector } from "./Selector";
 export { default as OptionsPicker } from "./OptionsPicker";
+export { default as TreeTable } from "./TreeTable";
