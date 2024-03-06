@@ -21,12 +21,14 @@
 
 import React, { useEffect, useState } from "react";
 import { Checkbox, Form, Skeleton, Switch, Tooltip } from "@patternfly/react-core";
+import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
-import { hasFS } from "~/components/storage/utils";
+import { hasFS, isTransactionalSystem } from "~/components/storage/utils";
+import { useProduct } from "~/context/product";
 
 /**
  * @typedef {import ("~/client/storage").ProposalManager.ProposalSettings} ProposalSettings
@@ -147,7 +149,9 @@ const SnapshotsField = ({
   const forcedSnapshots = !configurableSnapshots && hasFS(rootVolume, "Btrfs") && rootVolume.snapshots;
 
   const SnapshotsToggle = () => {
-    const explanation = _("Uses Btrfs for the root file system allowing to boot to a previous version of the system after configuration changes or software upgrades.");
+    const explanation = _("Uses Btrfs for the root file system allowing to boot to a previous \
+version of the system after configuration changes or software upgrades.");
+
     return (
       <>
         <Switch
@@ -293,6 +297,8 @@ export default function ProposalSettingsSection({
   encryptionMethods = [],
   onChange = noop
 }) {
+  const { selectedProduct } = useProduct();
+
   const changeEncryption = ({ password, method }) => {
     onChange({ encryptionPassword: password, encryptionMethod: method });
   };
@@ -312,12 +318,29 @@ export default function ProposalSettingsSection({
 
   const encryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
 
+  const transactional = isTransactionalSystem(settings?.volumes || []);
+
   return (
     <>
       <Section title={_("Settings")}>
-        <SnapshotsField
-          settings={settings}
-          onChange={changeBtrfsSnapshots}
+        <If
+          condition={transactional}
+          then={
+            <div>
+              <label>{_("Transactional system")}</label>
+              <div>
+                {/* TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed) */}
+                {sprintf(_("%s is an immutable system with atomic updates using a read-only Btrfs \
+root file system."), selectedProduct.name)}
+              </div>
+            </div>
+          }
+          else={
+            <SnapshotsField
+              settings={settings}
+              onChange={changeBtrfsSnapshots}
+            />
+          }
         />
         <EncryptionField
           password={settings.encryptionPassword || ""}

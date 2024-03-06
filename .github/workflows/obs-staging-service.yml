@@ -1,4 +1,4 @@
-name: Submit rubygem-agama
+name: Submit rubygem-agama-yast
 
 on:
   # runs on pushes targeting the default branch
