@@ -257,13 +257,17 @@ describe Agama::DBus::Storage::Proposal do
 
       let(:action1) do
         instance_double(Y2Storage::CompoundAction,
-          sentence: "test1", device_is?: false, delete?: false)
+          sentence: "test1", target_device: device1, device_is?: false, delete?: false)
       end
 
       let(:action2) do
         instance_double(Y2Storage::CompoundAction,
-          sentence: "test2", device_is?: true, delete?: true)
+          sentence: "test2", target_device: device2, device_is?: true, delete?: true)
       end
+
+      let(:device1) { instance_double(Y2Storage::Device, sid: 1) }
+
+      let(:device2) { instance_double(Y2Storage::Device, sid: 2) }
 
       it "returns a list with a hash for each action" do
         expect(subject.actions.size).to eq(2)
@@ -272,12 +276,14 @@ describe Agama::DBus::Storage::Proposal do
         action1, action2 = subject.actions
 
         expect(action1).to eq({
+          "Device" => 1,
           "Text"   => "test1",
           "Subvol" => false,
           "Delete" => false
         })
 
         expect(action2).to eq({
+          "Device" => 2,
           "Text"   => "test2",
           "Subvol" => true,
           "Delete" => true

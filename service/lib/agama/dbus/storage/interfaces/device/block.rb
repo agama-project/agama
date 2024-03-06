@@ -51,11 +51,25 @@ module Agama
               storage_device.name
             end
 
+            # Position of the first block of the region.
+            #
+            # @return [Integer]
+            def block_start
+              storage_device.start
+            end
+
             # Whether the block device is currently active
             #
             # @return [Boolean]
             def block_active
               storage_device.active?
+            end
+
+            # Whether the block device is encrypted.
+            #
+            # @return [Boolean]
+            def block_encrypted
+              storage_device.encrypted?
             end
 
             # Name of the udev by-id links
@@ -100,7 +114,9 @@ module Agama
               base.class_eval do
                 dbus_interface BLOCK_INTERFACE  do
                   dbus_reader :block_name, "s", dbus_name: "Name"
+                  dbus_reader :block_start, "t", dbus_name: "Start"
                   dbus_reader :block_active, "b", dbus_name: "Active"
+                  dbus_reader :block_encrypted, "b", dbus_name: "Encrypted"
                   dbus_reader :block_udev_ids, "as", dbus_name: "UdevIds"
                   dbus_reader :block_udev_paths, "as", dbus_name: "UdevPaths"
                   dbus_reader :block_size, "t", dbus_name: "Size"

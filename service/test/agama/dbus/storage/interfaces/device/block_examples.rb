@@ -33,6 +33,16 @@ shared_examples "Block interface" do
       end
     end
 
+    describe "#block_start" do
+      before do
+        allow(device).to receive(:start).and_return(345)
+      end
+
+      it "returns the first block of the region" do
+        expect(subject.block_start).to eq(345)
+      end
+    end
+
     describe "#block_active" do
       before do
         allow(device).to receive(:active?).and_return(true)
@@ -40,6 +50,12 @@ shared_examples "Block interface" do
 
       it "returns whether the device is active" do
         expect(subject.block_active).to eq(true)
+      end
+    end
+
+    describe "#block_encrypted" do
+      it "returns whether the device is encrypted" do
+        expect(subject.block_encrypted).to eq(false)
       end
     end
 
