@@ -19,19 +19,20 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/dbus/storage/device"
-require "agama/dbus/storage/devices_tree"
-require "dbus"
 require_relative "../../../test_helper"
 require_relative "../../storage/storage_helpers"
 require_relative "./interfaces/device/block_examples"
 require_relative "./interfaces/device/component_examples"
 require_relative "./interfaces/device/drive_examples"
 require_relative "./interfaces/device/filesystem_examples"
+require_relative "./interfaces/device/lvm_vg_examples"
 require_relative "./interfaces/device/md_examples"
 require_relative "./interfaces/device/multipath_examples"
 require_relative "./interfaces/device/partition_table_examples"
 require_relative "./interfaces/device/raid_examples"
+require "agama/dbus/storage/device"
+require "agama/dbus/storage/devices_tree"
+require "dbus"
 
 describe Agama::DBus::Storage::Device do
   include Agama::RSpec::StorageHelpers
@@ -110,6 +111,16 @@ describe Agama::DBus::Storage::Device do
       end
     end
 
+    context "when the given device is a LVM volume group" do
+      let(:scenario) { "trivial_lvm.yml" }
+
+      let(:device) { devicegraph.find_by_name("/dev/vg0") }
+
+      it "defines the LVM.VolumeGroup interface" do
+        expect(subject).to include_dbus_interface("org.opensuse.Agama.Storage1.LVM.VolumeGroup")
+      end
+    end
+
     context "when the given device has a partition table" do
       let(:scenario) { "partitioned_md.yml" }
 
@@ -141,6 +152,8 @@ describe Agama::DBus::Storage::Device do
   include_examples "MD interface"
 
   include_examples "Block interface"
+
+  include_examples "LVM.VolumeGroup interface"
 
   include_examples "PartitionTable interface"
 

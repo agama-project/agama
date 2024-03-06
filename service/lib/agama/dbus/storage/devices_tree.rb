@@ -70,13 +70,16 @@ module Agama
         # Right now, only the required information for calculating a proposal is exported, that is:
         # * Potential candidate devices (i.e., disk devices, MDs).
         # * Partitions of the candidate devices in order to indicate how to find free space.
-        #
-        # TODO: export LVM VGs and file systems of directly formatted devices.
+        # * LVM volume groups and logical volumes.
         #
         # @param devicegraph [Y2Storage::Devicegraph]
         # @return [Array<Y2Storage::Device>]
         def devices(devicegraph)
-          devices = devicegraph.disk_devices + devicegraph.software_raids
+          devices = devicegraph.disk_devices +
+            devicegraph.software_raids +
+            devicegraph.lvm_vgs +
+            devicegraph.lvm_lvs
+
           devices + partitions_from(devices)
         end
 
