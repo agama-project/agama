@@ -24,10 +24,11 @@ const eslint = process.env.ESLINT !== '0';
 /* Default to disable csslint for faster production builds */
 const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== '0') : development;
 
-// Cockpit target managed by the development server,
-// by default connect to a locally running Cockpit
-let cockpitTarget = process.env.COCKPIT_TARGET || "localhost:9090";
-cockpitTarget = "https://" + cockpitTarget;
+// Agama API server. By default it connects to a local development server.
+let agamaServer= process.env.AGAMA_SERVER || "localhost:3000";
+if (!agamaServer.startsWith("http")) {
+  agamaServer = "http://" + agamaServer;
+}
 
 // Obtain package name from package.json
 const packageJson = JSON.parse(fs.readFileSync('package.json'));
@@ -95,17 +96,20 @@ module.exports = {
       // TODO: modify it to not depend on cockpit
       // forward the manifests.js request and patch the response with the
       // current Agama manifest from the ./src/manifest.json file
-      "/manifests.js": {
-        target: cockpitTarget + "/cockpit/@localhost/",
-        // ignore SSL problems (self-signed certificate)
+      // "/manifests.js": {
+      //   target: cockpitTarget + "/cockpit/@localhost/",
+      //   // ignore SSL problems (self-signed certificate)
+      //   secure: false,
+      //   // the response is modified by the onProxyRes handler
+      //   selfHandleResponse : true,
+      //   onProxyRes: manifests_handler,
+      // },
+      "/api": {
+        target: agamaServer,
         secure: false,
-        // the response is modified by the onProxyRes handler
-        selfHandleResponse : true,
-        onProxyRes: manifests_handler,
-      },
+      }
     },
-    // use https so Cockpit uses wss:// when connecting to the backend
-    server: "https",
+    server: "http",
     // hot replacement does not support wss:// transport when running over https://,
     // as a workaround use sockjs (which uses standard https:// protocol)
     webSocketServer: "sockjs",
