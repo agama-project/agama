@@ -6,6 +6,7 @@ use std::fs::File;
 use std::path::{PathBuf};
 
 const DEFAULT_JWT_FILE: &str = "/tmp/agama-jwt";
+const DEFAULT_AUTH_URL: &str = "http://localhost:3000/authenticate";
 
 #[derive(Subcommand, Debug)]
 pub enum ServerCommands {
@@ -159,10 +160,11 @@ fn authenticate_headers() -> HeaderMap {
     headers
 }
 
-async fn get_jwt(password: String) -> anyhow::Result<String> {
+/// Query web server for JWT
+async fn get_jwt(url: String, password: String) -> anyhow::Result<String> {
     let client = reqwest::Client::new();
     let response = client
-        .post("http://localhost:3000/authenticate")
+        .post(url)
         .headers(authenticate_headers())
         .body(format!("{{\"password\": \"{}\"}}", password))
         .send()
@@ -181,7 +183,7 @@ async fn get_jwt(password: String) -> anyhow::Result<String> {
 /// Logs into the installation web server and stores JWT for later use.
 async fn login(password: String) -> anyhow::Result<()> {
     // 1) ask web server for JWT
-    let res = get_jwt(password).await?;
+    let res = get_jwt(DEFAULT_AUTH_URL.to_string(), password).await?;
 
     // 2) if successful store the JWT for later use
     std::fs::write(DEFAULT_JWT_FILE, res)?;
@@ -191,7 +193,5 @@ async fn login(password: String) -> anyhow::Result<()> {
 
 /// Releases JWT
 fn logout() -> anyhow::Result<()> {
-    std::fs::remove_file(DEFAULT_JWT_FILE)?;
-
-    Ok(())
+    Ok(std::fs::remove_file(DEFAULT_JWT_FILE)?)
 }
