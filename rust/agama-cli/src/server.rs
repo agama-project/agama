@@ -1,8 +1,11 @@
 use clap::Subcommand;
+use reqwest::header::{HeaderMap, CONTENT_TYPE, HeaderValue};
 use std::io;
 use std::io::{BufRead, BufReader};
 use std::fs::File;
 use std::path::{PathBuf};
+
+const DEFAULT_JWT_FILE: &str = "/tmp/agama-jwt";
 
 #[derive(Subcommand, Debug)]
 pub enum ServerCommands {
@@ -37,7 +40,7 @@ pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
                 file: file,
             };
 
-            login(LoginOptions::parse(options).password()?)
+            login(LoginOptions::parse(options).password()?).await
         },
         ServerCommands::Logout => {
             // actions to do:
@@ -147,17 +150,48 @@ fn read_credential(caption: String) -> io::Result<String> {
     Ok(cred)
 }
 
-/// Logs into the installation web server and stores JWT for later use.
-fn login(password: String) -> anyhow::Result<()> {
-    // 1) ask web server for JWT
-    // 2) if successful store the JWT for later use
-    println!("Loging with credentials:");
-    println!("({})", password);
+/// Necessary http request header for authenticate
+fn authenticate_headers() -> HeaderMap {
+    let mut headers = HeaderMap::new();
 
-    Err(anyhow::anyhow!("Not implemented"))
+    headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
+
+    headers
+}
+
+async fn get_jwt(password: String) -> anyhow::Result<String> {
+    let client = reqwest::Client::new();
+    let response = client
+        .post("http://localhost:3000/authenticate")
+        .headers(authenticate_headers())
+        .body(format!("{{\"password\": \"{}\"}}", password))
+        .send()
+        .await?;
+    let body = response.json::<std::collections::HashMap<String, String>>()
+        .await?;
+    let value = body.get(&"token".to_string());
+
+    if let Some(token) = value {
+        return Ok(token.clone())
+    }
+
+    Err(anyhow::anyhow!("Failed to get JWT token"))
+}
+
+/// Logs into the installation web server and stores JWT for later use.
+async fn login(password: String) -> anyhow::Result<()> {
+    // 1) ask web server for JWT
+    let res = get_jwt(password).await?;
+
+    // 2) if successful store the JWT for later use
+    std::fs::write(DEFAULT_JWT_FILE, res)?;
+
+    Ok(())
 }
 
 /// Releases JWT
 fn logout() -> anyhow::Result<()> {
-    Err(anyhow::anyhow!("Not implemented"))
+    std::fs::remove_file(DEFAULT_JWT_FILE)?;
+
+    Ok(())
 }
