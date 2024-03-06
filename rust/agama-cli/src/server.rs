@@ -1,4 +1,4 @@
-use clap::Subcommand;
+use clap::{arg, Args, Subcommand};
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
 use std::fs;
 use std::fs::File;
@@ -16,12 +16,7 @@ pub enum ServerCommands {
     /// Login with defined server. Result is JWT stored locally and made available to
     /// further use. Password can be provided by commandline option, from a file or it fallbacks
     /// into an interactive prompt.
-    Login {
-        #[clap(long, short = 'p')]
-        password: Option<String>,
-        #[clap(long, short = 'f')]
-        file: Option<PathBuf>,
-    },
+    Login(LoginOptions),
     /// Release currently stored JWT
     Logout,
 }
@@ -29,25 +24,21 @@ pub enum ServerCommands {
 /// Main entry point called from agama CLI main loop
 pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
     match subcommand {
-        ServerCommands::Login { password, file } => {
-            let options = LoginOptions {
-                password: password,
-                file: file,
-            };
-
+        ServerCommands::Login(options) => {
             login(LoginOptions::proceed(options).password()?).await
         }
         ServerCommands::Logout => {
-            // actions to do:
-            // 1) release JWT from the well known location if any
             logout()
         }
     }
 }
 
 /// Stores user provided configuration for login command
-struct LoginOptions {
+#[derive(Args, Debug)]
+pub struct LoginOptions {
+    #[arg(long, short = 'p')]
     password: Option<String>,
+    #[arg(long, short = 'f')]
     file: Option<PathBuf>,
 }
 
