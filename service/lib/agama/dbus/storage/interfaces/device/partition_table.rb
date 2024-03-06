@@ -60,11 +60,22 @@ module Agama
               storage_device.partition_table.partitions.map { |p| tree.path_for(p) }
             end
 
+            # Available slots within a partition table, that is, the spaces that can be used to
+            # create a new partition.
+            #
+            # @return [Array<Array(Integer, Integer)>] The first block and the size of each slot.
+            def partition_table_unused_slots
+              storage_device.partition_table.unused_partition_slots.map do |slot|
+                [slot.region.start, slot.region.size.to_i]
+              end
+            end
+
             def self.included(base)
               base.class_eval do
                 dbus_interface PARTITION_TABLE_INTERFACE do
                   dbus_reader :partition_table_type, "s", dbus_name: "Type"
                   dbus_reader :partition_table_partitions, "ao", dbus_name: "Partitions"
+                  dbus_reader :partition_table_unused_slots, "a(tt)", dbus_name: "UnusedSlots"
                 end
               end
             end
