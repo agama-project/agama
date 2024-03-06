@@ -17,4 +17,4 @@ jobs:
     with:
       install_packages: obs-service-cargo_audit obs-service-cargo_vendor
       project_name: systemsmanagement:Agama:Staging
-      package_name: agama-cli
+      package_name: agama

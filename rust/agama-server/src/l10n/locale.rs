@@ -117,7 +117,6 @@ mod tests {
     use super::LocalesDatabase;
     use agama_locale_data::LocaleCode;
 
-    #[ignore]
     #[test]
     fn test_read_locales() {
         let mut db = LocalesDatabase::new();
@@ -129,7 +128,6 @@ mod tests {
         assert_eq!(&found.territory, "Spanien");
     }
 
-    #[ignore]
     #[test]
     fn test_locale_exists() {
         let mut db = LocalesDatabase::new();

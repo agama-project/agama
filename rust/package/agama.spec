@@ -1,7 +1,7 @@
 #
-# spec file for package agama-cli
+# spec file for package agama
 #
-# Copyright (c) 2023 SUSE LINUX GmbH, Nuernberg, Germany.
+# Copyright (c) 2023-2024 SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -15,64 +15,63 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-Name:           agama-cli
+Name:           agama
 #               This will be set by osc services, that will run after this.
 Version:        0
 Release:        0
-Summary:        Agama command line interface
+Summary:        Agama Installer
 #               If you know the license, put it's SPDX string here.
 #               Alternately, you can use cargo lock2rpmprovides to help generate this.
 License:        GPL-2.0-only
 Url:            https://github.com/opensuse/agama
 Source0:        agama.tar
 Source1:        vendor.tar.zst
+
 BuildRequires:  cargo-packaging
 BuildRequires:  pkgconfig(openssl)
 # used in tests for dbus service
-BuildRequires:  python-langtable-data
-BuildRequires:  timezone
 BuildRequires:  dbus-1-common
+Requires:       dbus-1-common
 # required by agama-dbus-server integration tests
 BuildRequires:  dbus-1-daemon
 BuildRequires:  clang-devel
 BuildRequires:  pkgconfig(pam)
+# required by autoinstallation
 Requires:       jsonnet
 Requires:       lshw
 # required by "agama logs store"
 Requires:       bzip2
 Requires:       tar
 # required for translating the keyboards descriptions
+BuildRequires:  xkeyboard-config-lang
 Requires:       xkeyboard-config-lang
 # required for getting the list of timezones
 Requires:       timezone
+BuildRequires:  timezone
+# required for getting the languages information
+BuildRequires:  python-langtable-data
+Requires:       python-langtable-data
+# dependency on the YaST part of Agama
+Requires:       agama-yast
+
+# conflicts with the old packages
+Conflicts:      agama-dbus-server
 
 %description
-Command line program to interact with the agama service.
+Agama is a service-based Linux installer. It is composed of an HTTP-based API,
+a web user interface, a command-line interface and a D-Bus service which exposes
+part of the YaST libraries.
 
-%package -n agama-dbus-server
+%package -n agama-cli
 #               This will be set by osc services, that will run after this.
 Version:        0
 Release:        0
-Summary:        Agama Rust D-Bus service
+Summary:        Agama command-line interface
 License:        GPL-2.0-only
 Url:            https://github.com/opensuse/agama
-Requires:       python-langtable-data
-Requires:       dbus-1-common
 
-%description -n agama-dbus-server
-D-Bus service for agama project. It provides localization, networking and questions services.
-
-%package -n agama-web-server
-#               This will be set by osc services, that will run after this.
-Version:        0
-Release:        0
-Summary:        Agama web server
-License:        GPL-2.0-only
-Url:            https://github.com/opensuse/agama
-Requires:       agama-dbus-server
-
-%description -n agama-web-server
-Agama project web server. It provides a web-based API to Agama.
+%description -n agama-cli
+Command line program to interact with the Agama installer.
 
 %prep
 %autosetup -a1 -n agama
@@ -95,23 +94,23 @@ install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services
 
 
 %check
+PATH=$PWD/share/bin:$PATH
 %ifarch aarch64
 /usr/bin/cargo auditable test -j1 --offline --no-fail-fast
 %else
+echo $PATH
 %{cargo_test}
 %endif
 
 %files
-%{_bindir}/agama
-%dir %{_datadir}/agama-cli
-%{_datadir}/agama-cli/profile.schema.json
-
-%files -n agama-dbus-server
 %{_bindir}/agama-dbus-server
+%{_bindir}/agama-web-server
 %{_datadir}/dbus-1/agama-services
 %{_pam_vendordir}/agama
 
-%files -n agama-web-server
-%{_bindir}/agama-web-server
+%files -n agama-cli
+%{_bindir}/agama
+%dir %{_datadir}/agama-cli
+%{_datadir}/agama-cli/profile.schema.json
 
 %changelog

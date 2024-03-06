@@ -33,10 +33,43 @@ jest.mock("@patternfly/react-core", () => {
   };
 });
 
+jest.mock("~/context/product", () => ({
+  ...jest.requireActual("~/context/product"),
+  useProduct: () => ({
+    selectedProduct : { name: "Test" }
+  })
+}));
+
 let props;
 
 beforeEach(() => {
   props = {};
+});
+
+const rootVolume = { mountPath: "/", fsType: "Btrfs", outline: { snapshotsConfigurable: true } };
+
+describe("if the system is not transactional", () => {
+  beforeEach(() => {
+    props.settings = { volumes: [rootVolume] };
+  });
+
+  it("renders the snapshots switch", () => {
+    plainRender(<ProposalSettingsSection {...props} />);
+
+    screen.getByRole("checkbox", { name: "Use Btrfs Snapshots" });
+  });
+});
+
+describe("if the system is transactional", () => {
+  beforeEach(() => {
+    props.settings = { volumes: [{ ...rootVolume, transactional: true }] };
+  });
+
+  it("renders explanation about transactional system", () => {
+    plainRender(<ProposalSettingsSection {...props} />);
+
+    screen.getByText("Transactional system");
+  });
 });
 
 describe("Encryption field", () => {

@@ -42,7 +42,52 @@ dependencies = [
 ]
 
 [[package]]
-name = "agama-dbus-server"
+name = "agama-derive"
+version = "1.0.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.48",
+]
+
+[[package]]
+name = "agama-lib"
+version = "1.0.0"
+dependencies = [
+ "agama-settings",
+ "anyhow",
+ "async-trait",
+ "cidr",
+ "curl",
+ "futures-util",
+ "jsonschema",
+ "log",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "tokio-stream",
+ "url",
+ "utoipa",
+ "zbus",
+]
+
+[[package]]
+name = "agama-locale-data"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono-tz",
+ "flate2",
+ "quick-xml",
+ "regex",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
+name = "agama-server"
 version = "0.1.0"
 dependencies = [
  "agama-lib",
@@ -82,50 +127,6 @@ dependencies = [
  "uuid",
  "zbus",
  "zbus_macros",
-]
-
-[[package]]
-name = "agama-derive"
-version = "1.0.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.48",
-]
-
-[[package]]
-name = "agama-lib"
-version = "1.0.0"
-dependencies = [
- "agama-settings",
- "anyhow",
- "async-trait",
- "cidr",
- "curl",
- "futures-util",
- "jsonschema",
- "log",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "tokio",
- "tokio-stream",
- "url",
- "zbus",
-]
-
-[[package]]
-name = "agama-locale-data"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "chrono-tz",
- "flate2",
- "quick-xml",
- "regex",
- "serde",
- "thiserror",
 ]
 
 [[package]]

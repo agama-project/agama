@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Feb 27 15:55:28 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Reorganize RPM packages (gh#openSUSE/agama#1056):
+  * agama is now the main package and it contains agama-dbus-server
+    and agama-web-server.
+  * agama-cli is a subpackage.
+
+-------------------------------------------------------------------
 Wed Feb  7 11:49:02 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add preliminary support to import AutoYaST profiles

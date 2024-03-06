@@ -8,7 +8,7 @@ use zbus::Connection;
 use super::proxies::RegistrationProxy;
 
 /// Represents a software product
-#[derive(Debug, Serialize)]
+#[derive(Default, Debug, Serialize, utoipa::ToSchema)]
 pub struct Product {
     /// Product ID (eg., "ALP", "Tumbleweed", etc.)
     pub id: String,
@@ -19,6 +19,7 @@ pub struct Product {
 }
 
 /// D-Bus client for the software service
+#[derive(Clone)]
 pub struct ProductClient<'a> {
     product_proxy: SoftwareProductProxy<'a>,
     registration_proxy: RegistrationProxy<'a>,
