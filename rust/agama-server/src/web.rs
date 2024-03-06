@@ -28,18 +28,25 @@ pub use config::ServiceConfig;
 pub use docs::ApiDoc;
 pub use event::{Event, EventsReceiver, EventsSender};
 pub use service::MainServiceBuilder;
+use std::path::Path;
 use tokio_stream::StreamExt;
 
 /// Returns a service that implements the web-based Agama API.
 ///
 /// * `config`: service configuration.
-/// * `events`: D-Bus connection.
-pub async fn service(
+/// * `events`: channel to send the events through the WebSocket.
+/// * `dbus`: D-Bus connection.
+/// * `web_ui_dir`: public directory containing the web UI.
+pub async fn service<P>(
     config: ServiceConfig,
     events: EventsSender,
     dbus: zbus::Connection,
-) -> Result<Router, ServiceError> {
-    let router = MainServiceBuilder::new(events.clone())
+    web_ui_dir: P,
+) -> Result<Router, ServiceError>
+where
+    P: AsRef<Path>,
+{
+    let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/l10n", l10n_service(events.clone()))
         .add_service("/software", software_service(dbus).await?)
         .with_config(config)

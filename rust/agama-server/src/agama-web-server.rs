@@ -1,4 +1,7 @@
-use std::process::{ExitCode, Termination};
+use std::{
+    path::{Path, PathBuf},
+    process::{ExitCode, Termination},
+};
 
 use agama_lib::connection_to;
 use agama_server::{
@@ -9,6 +12,8 @@ use clap::{Args, Parser, Subcommand};
 use tokio::sync::broadcast::channel;
 use tracing_subscriber::prelude::*;
 use utoipa::OpenApi;
+
+const DEFAULT_WEB_UI_DIR: &'static str = "/usr/share/agama/web_ui";
 
 #[derive(Subcommand, Debug)]
 enum Commands {
@@ -27,6 +32,9 @@ pub struct ServeArgs {
     // Agama D-Bus address
     #[arg(long, default_value = "unix:path=/run/agama/bus")]
     dbus_address: String,
+    // Directory containing the web UI code.
+    #[arg(long)]
+    web_ui_dir: Option<PathBuf>,
 }
 
 #[derive(Parser, Debug)]
@@ -37,6 +45,17 @@ pub struct ServeArgs {
 struct Cli {
     #[command(subcommand)]
     pub command: Commands,
+}
+
+fn find_web_ui_dir() -> PathBuf {
+    if let Ok(home) = std::env::var("HOME") {
+        let path = Path::new(&home).join(".local/share/agama");
+        if path.exists() {
+            return path;
+        }
+    }
+
+    Path::new(DEFAULT_WEB_UI_DIR).into()
 }
 
 /// Start serving the API.
@@ -55,7 +74,8 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
 
     let config = web::ServiceConfig::load()?;
     let dbus = connection_to(&args.dbus_address).await?;
-    let service = web::service(config, tx, dbus).await?;
+    let web_ui_dir = args.web_ui_dir.unwrap_or(find_web_ui_dir());
+    let service = web::service(config, tx, dbus, web_ui_dir).await?;
     axum::serve(listener, service)
         .await
         .expect("could not mount app on listener");
