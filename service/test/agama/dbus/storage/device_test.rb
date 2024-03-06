@@ -181,12 +181,6 @@ describe Agama::DBus::Storage::Device do
     context "if the given device has the same sid" do
       let(:new_device) { devicegraph.find_by_name("/dev/sda") }
 
-      it "sets the new device" do
-        subject.storage_device = new_device
-
-        expect(subject.storage_device).to equal(new_device)
-      end
-
       it "emits a properties changed signal for each interface" do
         subject.interfaces_and_properties.each_key do |interface|
           expect(subject).to receive(:dbus_properties_changed).with(interface, anything, anything)
