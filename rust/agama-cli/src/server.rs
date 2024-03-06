@@ -1,12 +1,15 @@
 use clap::Subcommand;
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
+use std::fs;
 use std::fs::File;
 use std::io;
 use std::io::{BufRead, BufReader};
+use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 
 const DEFAULT_JWT_FILE: &str = "/tmp/agama-jwt";
 const DEFAULT_AUTH_URL: &str = "http://localhost:3000/authenticate";
+const DEFAULT_FILE_MODE: u32 = 0o600;
 
 #[derive(Subcommand, Debug)]
 pub enum ServerCommands {
@@ -140,6 +143,19 @@ fn read_credential(caption: String) -> io::Result<String> {
     Ok(cred)
 }
 
+/// Sets the archive owner to root:root. Also sets the file permissions to read/write for the
+/// owner only.
+fn set_file_permissions(file: &String) -> io::Result<()> {
+    let attr = fs::metadata(file)?;
+    let mut permissions = attr.permissions();
+
+    // set the file file permissions to -rw-------
+    permissions.set_mode(DEFAULT_FILE_MODE);
+    fs::set_permissions(file, permissions)?;
+
+    Ok(())
+}
+
 /// Necessary http request header for authenticate
 fn authenticate_headers() -> HeaderMap {
     let mut headers = HeaderMap::new();
@@ -177,6 +193,7 @@ async fn login(password: String) -> anyhow::Result<()> {
 
     // 2) if successful store the JWT for later use
     std::fs::write(DEFAULT_JWT_FILE, res)?;
+    set_file_permissions(&DEFAULT_JWT_FILE.to_string())?;
 
     Ok(())
 }
