@@ -1,4 +1,5 @@
 use clap::{arg, Args, Subcommand};
+use home;
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
 use std::fs;
 use std::fs::File;
@@ -7,7 +8,7 @@ use std::io::{BufRead, BufReader};
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 
-const DEFAULT_JWT_FILE: &str = "/tmp/agama-jwt";
+const DEFAULT_JWT_FILE: &str = ".agama/agama-jwt";
 const DEFAULT_AUTH_URL: &str = "http://localhost:3000/authenticate";
 const DEFAULT_FILE_MODE: u32 = 0o600;
 
@@ -33,13 +34,13 @@ pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
 }
 
 pub fn jwt() -> anyhow::Result<String> {
-    let jwt = read_line_from_file(&Path::new(DEFAULT_JWT_FILE));
-
-    if let Ok(token) = jwt {
-        return Ok(token);
-    } else {
-        return Err(anyhow::anyhow!("JWT not available"));
+    if let Some(file) = jwt_file() {
+        if let Ok(token) = read_line_from_file(&file.as_path()) {
+            return Ok(token);
+        }
     }
+
+    return Err(anyhow::anyhow!("JWT not available"));
 }
 
 /// Stores user provided configuration for login command
@@ -106,6 +107,11 @@ impl Credentials for MissingCredentials {
     }
 }
 
+/// Path to file where JWT is stored
+fn jwt_file() -> Option<PathBuf> {
+    Some(home::home_dir()?.join(DEFAULT_JWT_FILE))
+}
+
 /// Reads first line from given file
 fn read_line_from_file(path: &Path) -> io::Result<String> {
     if !&path.exists() {
@@ -150,7 +156,7 @@ fn read_credential(caption: String) -> io::Result<String> {
 
 /// Sets the archive owner to root:root. Also sets the file permissions to read/write for the
 /// owner only.
-fn set_file_permissions(file: &String) -> io::Result<()> {
+fn set_file_permissions(file: &Path) -> io::Result<()> {
     let attr = fs::metadata(file)?;
     let mut permissions = attr.permissions();
 
@@ -197,20 +203,33 @@ async fn login(password: String) -> anyhow::Result<()> {
     let res = get_jwt(DEFAULT_AUTH_URL.to_string(), password).await?;
 
     // 2) if successful store the JWT for later use
-    std::fs::write(DEFAULT_JWT_FILE, res)?;
-    set_file_permissions(&DEFAULT_JWT_FILE.to_string())?;
+    if let Some(path) = jwt_file() {
+        if let Some(dir) = path.parent() {
+            std::fs::create_dir_all(dir)?;
+        } else {
+            return Err(anyhow::anyhow!("Cannot store the JWT token"));
+        }
+
+        std::fs::write(path.as_path(), res)?;
+        set_file_permissions(path.as_path())?;
+    }
+
 
     Ok(())
 }
 
 /// Releases JWT
 fn logout() -> anyhow::Result<()> {
-    // mask if the file with the JWT doesn't exist (most probably no login before logout)
-    if !Path::new(DEFAULT_JWT_FILE).exists() {
+    let path = jwt_file();
+
+    if !&path.clone().is_some_and(|p| p.as_path().exists()) {
+        // mask if the file with the JWT doesn't exist (most probably no login before logout)
         return Ok(());
     }
 
-    Ok(std::fs::remove_file(DEFAULT_JWT_FILE)?)
+    let file = path.expect("Cannot locate stored JWT");
+
+    return Ok(std::fs::remove_file(file)?)
 }
 
 /// Shows stored JWT on stdout
