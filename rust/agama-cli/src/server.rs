@@ -5,7 +5,7 @@ use std::fs::File;
 use std::io;
 use std::io::{BufRead, BufReader};
 use std::os::unix::fs::PermissionsExt;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 const DEFAULT_JWT_FILE: &str = "/tmp/agama-jwt";
 const DEFAULT_AUTH_URL: &str = "http://localhost:3000/authenticate";
@@ -16,7 +16,7 @@ pub enum ServerCommands {
     /// Login with defined server. Result is JWT stored locally and made available to
     /// further use. Password can be provided by commandline option, from a file or it fallbacks
     /// into an interactive prompt.
-    Login(LoginOptions),
+    Login(LoginArgs),
     /// Release currently stored JWT
     Logout,
 }
@@ -25,7 +25,7 @@ pub enum ServerCommands {
 pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
     match subcommand {
         ServerCommands::Login(options) => {
-            login(LoginOptions::proceed(options).password()?).await
+            login(LoginArgs::proceed(options).password()?).await
         }
         ServerCommands::Logout => {
             logout()
@@ -35,17 +35,17 @@ pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
 
 /// Stores user provided configuration for login command
 #[derive(Args, Debug)]
-pub struct LoginOptions {
+pub struct LoginArgs {
     #[arg(long, short = 'p')]
     password: Option<String>,
     #[arg(long, short = 'f')]
     file: Option<PathBuf>,
 }
 
-impl LoginOptions {
+impl LoginArgs {
     /// Transforms user provided options into internal representation
     /// See Credentials trait
-    fn proceed(options: LoginOptions) -> Box<dyn Credentials> {
+    fn proceed(options: LoginArgs) -> Box<dyn Credentials> {
         match options.password {
             // explicitly provided user + password
             Some(p) => Box::new(KnownCredentials { password: p }),
@@ -191,5 +191,10 @@ async fn login(password: String) -> anyhow::Result<()> {
 
 /// Releases JWT
 fn logout() -> anyhow::Result<()> {
+    // mask if the file with the JWT doesn't exist (most probably no login before logout)
+    if !Path::new(DEFAULT_JWT_FILE).exists() {
+        return Ok(())
+    }
+
     Ok(std::fs::remove_file(DEFAULT_JWT_FILE)?)
 }
