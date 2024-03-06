@@ -41,7 +41,7 @@ module Agama
         # @note In the devices tree it is important to avoid updating D-Bus nodes. Note that an
         #   already exported D-Bus object could require to add or remove interfaces (e.g., an
         #   existing partition needs to add the Filesystem interface after formatting the
-        #   partition). Dynamically adding or removing intefaces is not possible with ruby-dbus
+        #   partition). Dynamically adding or removing interfaces is not possible with ruby-dbus
         #   once the object is exported on D-Bus.
         #
         #   Updating the currently exported D-Bus objects is avoided by calling to {#clean} first.
