@@ -5,11 +5,10 @@ interface to the [Agama service](file:../service).
 
 ## Development
 
-The easiest way to work on the Agama Web UI is to the development server to
-serve the code. The advantage is that you can use the [Hot Module Replacement]
-(https://webpack.js.org/concepts/hot-module-replacement/) feature for
-automatically updating the code and stylesheet in the browser without reloading
-the page.
+The easiest way to work on the Agama Web UI is to use the development server.
+The advantage is that you can use the [Hot Module Replacement] (https://
+webpack.js.org/concepts/hot-module-replacement/) feature for automatically
+updating the code and stylesheet in the browser without reloading the page.
 
 ### Using a development server
 
