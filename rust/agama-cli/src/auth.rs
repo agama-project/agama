@@ -33,6 +33,7 @@ pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
     }
 }
 
+/// Reads stored JWT token and returns it
 pub fn jwt() -> anyhow::Result<String> {
     if let Some(file) = jwt_file() {
         if let Ok(token) = read_line_from_file(&file.as_path()) {
@@ -205,15 +206,14 @@ async fn login(password: String) -> anyhow::Result<()> {
     // 2) if successful store the JWT for later use
     if let Some(path) = jwt_file() {
         if let Some(dir) = path.parent() {
-            std::fs::create_dir_all(dir)?;
+            fs::create_dir_all(dir)?;
         } else {
             return Err(anyhow::anyhow!("Cannot store the JWT token"));
         }
 
-        std::fs::write(path.as_path(), res)?;
+        fs::write(path.as_path(), res)?;
         set_file_permissions(path.as_path())?;
     }
-
 
     Ok(())
 }
@@ -222,19 +222,25 @@ async fn login(password: String) -> anyhow::Result<()> {
 fn logout() -> anyhow::Result<()> {
     let path = jwt_file();
 
-    if !&path.clone().is_some_and(|p| p.as_path().exists()) {
+    if !&path.clone().is_some_and(|p| p.exists()) {
         // mask if the file with the JWT doesn't exist (most probably no login before logout)
         return Ok(());
     }
 
+    // panicking is right thing to do if expect fails, becase it was already checked twice that
+    // the path exists
     let file = path.expect("Cannot locate stored JWT");
 
-    return Ok(std::fs::remove_file(file)?)
+    Ok(fs::remove_file(file)?)
 }
 
 /// Shows stored JWT on stdout
 fn show() -> anyhow::Result<()> {
-    println!("{}", jwt()?);
+    // we do not care if jwt() fails or not. If there is something to print, show it otherwise
+    // stay silent
+    if let Ok(token) = jwt() {
+        println!("{}", token);
+    }
 
     Ok(())
 }
