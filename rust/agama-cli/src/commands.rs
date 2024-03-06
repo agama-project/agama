@@ -1,8 +1,8 @@
+use crate::auth::AuthCommands;
 use crate::config::ConfigCommands;
 use crate::logs::LogsCommands;
 use crate::profile::ProfileCommands;
 use crate::questions::QuestionsCommands;
-use crate::server::ServerCommands;
 use clap::Subcommand;
 
 #[derive(Subcommand, Debug)]
@@ -38,5 +38,5 @@ pub enum Commands {
     Logs(LogsCommands),
     /// Request an action on the web server like Login / Logout
     #[command(subcommand)]
-    Server(ServerCommands),
+    Auth(AuthCommands),
 }

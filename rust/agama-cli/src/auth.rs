@@ -12,7 +12,7 @@ const DEFAULT_AUTH_URL: &str = "http://localhost:3000/authenticate";
 const DEFAULT_FILE_MODE: u32 = 0o600;
 
 #[derive(Subcommand, Debug)]
-pub enum ServerCommands {
+pub enum AuthCommands {
     /// Login with defined server. Result is JWT stored locally and made available to
     /// further use. Password can be provided by commandline option, from a file or it fallbacks
     /// into an interactive prompt.
@@ -22,12 +22,12 @@ pub enum ServerCommands {
 }
 
 /// Main entry point called from agama CLI main loop
-pub async fn run(subcommand: ServerCommands) -> anyhow::Result<()> {
+pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
     match subcommand {
-        ServerCommands::Login(options) => {
+        AuthCommands::Login(options) => {
             login(LoginArgs::proceed(options).password()?).await
         }
-        ServerCommands::Logout => {
+        AuthCommands::Logout => {
             logout()
         }
     }
