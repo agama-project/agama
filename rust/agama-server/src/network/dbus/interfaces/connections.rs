@@ -21,7 +21,7 @@ pub struct Connections {
 impl Connections {
     /// Creates a Connections interface object.
     ///
-    /// * `objects`: Objects paths registry.
+    /// * `actions`: sending-half of a channel to send actions.
     pub fn new(actions: UnboundedSender<Action>) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),

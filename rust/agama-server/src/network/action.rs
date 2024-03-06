@@ -21,7 +21,7 @@ pub enum Action {
         DeviceType,
         Responder<Result<OwnedObjectPath, NetworkStateError>>,
     ),
-    /// Gets a connection
+    /// Gets a connection by its Uuid
     GetConnection(Uuid, Responder<Option<Connection>>),
     /// Gets a connection
     GetConnections(Responder<Vec<Connection>>),
@@ -36,8 +36,9 @@ pub enum Action {
         Uuid,
         Responder<Result<ControllerConnection, NetworkStateError>>,
     ),
-    /// Gets a device
+    /// Gets a device by its name
     GetDevice(String, Responder<Option<Device>>),
+    /// Gets all the existent devices
     GetDevices(Responder<Vec<Device>>),
     /// Gets a device path
     GetDevicePath(String, Responder<Option<OwnedObjectPath>>),

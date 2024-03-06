@@ -51,8 +51,8 @@ where
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/l10n", l10n_service(events.clone()))
         .add_service("/manager", manager_service(dbus.clone()).await?)
-        .add_service("/software", software_service(dbus).await?)
-        .add_service("/network", network_service(events).await)
+        .add_service("/software", software_service(dbus.clone()).await?)
+        .add_service("/network", network_service(dbus).await?)
         .with_config(config)
         .build();
     Ok(router)

@@ -1,6 +1,6 @@
 //! This module implements the web API for the network module.
 
-use crate::{error::Error, web::EventsSender};
+use crate::error::Error;
 use axum::{
     extract::State,
     http::StatusCode,
@@ -12,7 +12,7 @@ use axum::{
 use super::Action;
 
 use crate::network::{model::Connection, model::Device, nm::NetworkManagerAdapter, NetworkSystem};
-use agama_lib::connection;
+use agama_lib::error::ServiceError;
 
 use serde_json::json;
 use thiserror::Error;
@@ -38,22 +38,19 @@ impl IntoResponse for NetworkError {
 #[derive(Clone)]
 struct NetworkState {
     actions: UnboundedSender<Action>,
-    events: EventsSender,
 }
 
 /// Sets up and returns the axum service for the network module.
 ///
-/// * `events`: channel to send the events to the main service.
-pub async fn network_service(events: EventsSender) -> Router {
+/// * `dbus`: zbus Connection.
+pub async fn network_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
     let adapter = NetworkManagerAdapter::from_system()
         .await
         .expect("Could not connect to NetworkManager to read the configuration.");
-    let connection = connection().await.unwrap();
-    let mut network = NetworkSystem::new(connection.clone(), adapter);
+    let mut network = NetworkSystem::new(dbus.clone(), adapter);
 
     let state = NetworkState {
         actions: network.actions_tx(),
-        events,
     };
 
     tokio::spawn(async move {
@@ -65,10 +62,10 @@ pub async fn network_service(events: EventsSender) -> Router {
         network.listen().await;
     });
 
-    Router::new()
+    Ok(Router::new()
         .route("/connections", get(connections))
         .route("/devices", get(devices))
-        .with_state(state)
+        .with_state(state))
 }
 
 #[utoipa::path(get, path = "/network/devices", responses(
@@ -77,14 +74,8 @@ pub async fn network_service(events: EventsSender) -> Router {
 async fn devices(State(state): State<NetworkState>) -> Json<Vec<Device>> {
     let (tx, rx) = oneshot::channel();
     state.actions.send(Action::GetDevices(tx)).unwrap();
-    let result = rx.await.unwrap();
-    let mut devices = vec![];
 
-    for device in result {
-        devices.push(device)
-    }
-
-    Json(devices)
+    Json(rx.await.unwrap())
 }
 
 #[utoipa::path(get, path = "/network/connections", responses(
@@ -93,12 +84,6 @@ async fn devices(State(state): State<NetworkState>) -> Json<Vec<Device>> {
 async fn connections(State(state): State<NetworkState>) -> Json<Vec<Connection>> {
     let (tx, rx) = oneshot::channel();
     state.actions.send(Action::GetConnections(tx)).unwrap();
-    let result = rx.await.unwrap();
-    let mut connections = vec![];
 
-    for connection in result {
-        connections.push(connection)
-    }
-
-    Json(connections)
+    Json(rx.await.unwrap())
 }
