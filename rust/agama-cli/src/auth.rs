@@ -19,6 +19,8 @@ pub enum AuthCommands {
     Login(LoginArgs),
     /// Release currently stored JWT
     Logout,
+    /// Prints currently stored JWT to stdout
+    Show,
 }
 
 /// Main entry point called from agama CLI main loop
@@ -26,6 +28,17 @@ pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
     match subcommand {
         AuthCommands::Login(options) => login(LoginArgs::proceed(options).password()?).await,
         AuthCommands::Logout => logout(),
+        AuthCommands::Show => show(),
+    }
+}
+
+pub fn jwt() -> anyhow::Result<String> {
+    let jwt = read_line_from_file(&Path::new(DEFAULT_JWT_FILE));
+
+    if let Ok(token) = jwt {
+        return Ok(token);
+    } else {
+        return Err(anyhow::anyhow!("JWT not available"));
     }
 }
 
@@ -81,27 +94,7 @@ impl Credentials for KnownCredentials {
 
 impl Credentials for FileCredentials {
     fn password(&self) -> io::Result<String> {
-        if !&self.path.as_path().exists() {
-            return Err(io::Error::new(
-                io::ErrorKind::Other,
-                "Cannot find the file containing the credentials.",
-            ));
-        }
-
-        if let Ok(file) = File::open(&self.path) {
-            // cares only of first line, take everything. No comments
-            // or something like that supported
-            let line = BufReader::new(file).lines().next();
-
-            if let Some(password) = line {
-                return Ok(password?);
-            }
-        }
-
-        Err(io::Error::new(
-            io::ErrorKind::Other,
-            "Failed to open the file",
-        ))
+        read_line_from_file(&self.path.as_path())
     }
 }
 
@@ -111,6 +104,31 @@ impl Credentials for MissingCredentials {
 
         Ok(password)
     }
+}
+
+/// Reads first line from given file
+fn read_line_from_file(path: &Path) -> io::Result<String> {
+    if !&path.exists() {
+        return Err(io::Error::new(
+            io::ErrorKind::Other,
+            "Cannot find the file containing the credentials.",
+        ));
+    }
+
+    if let Ok(file) = File::open(&path) {
+        // cares only of first line, take everything. No comments
+        // or something like that supported
+        let raw = BufReader::new(file).lines().next();
+
+        if let Some(line) = raw {
+            return Ok(line?);
+        }
+    }
+
+    Err(io::Error::new(
+        io::ErrorKind::Other,
+        "Failed to open the file",
+    ))
 }
 
 /// Asks user to provide a line of input. Displays a prompt.
@@ -193,4 +211,11 @@ fn logout() -> anyhow::Result<()> {
     }
 
     Ok(std::fs::remove_file(DEFAULT_JWT_FILE)?)
+}
+
+/// Shows stored JWT on stdout
+fn show() -> anyhow::Result<()> {
+    println!("{}", jwt()?);
+
+    Ok(())
 }
