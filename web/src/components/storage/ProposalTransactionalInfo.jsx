@@ -20,11 +20,10 @@
  */
 
 import React from "react";
-import { Alert } from "@patternfly/react-core";
-import { sprintf } from "sprintf-js";
 
+import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { If, Section } from "~/components/core";
+import { Reminder } from "~/components/core";
 import { isTransactionalSystem } from "~/components/storage/utils";
 import { useProduct } from "~/context/product";
 
@@ -40,26 +39,16 @@ import { useProduct } from "~/context/product";
  * @param {ProposalSettings} props.settings - Settings used for calculating a proposal.
  */
 export default function ProposalTransactionalInfo({ settings }) {
-  const transactional = isTransactionalSystem(settings?.volumes || []);
   const { selectedProduct } = useProduct();
 
+  if (!isTransactionalSystem(settings?.volumes)) return;
+
+  const title = _("Transactional root file system");
   /* TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed) */
   const description = sprintf(
     _("%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots."),
     selectedProduct.name
   );
-  const title = _("Transactional root file system");
 
-  return (
-    <If
-      condition={transactional}
-      then={
-        <Section>
-          <Alert isInline variant="info" title={title}>
-            {description}
-          </Alert>
-        </Section>
-      }
-    />
-  );
+  return <Reminder title={title}>{description}</Reminder>;
 }
