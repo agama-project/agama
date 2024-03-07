@@ -23,7 +23,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 
 import { HashRouter, Routes, Route } from "react-router-dom";
-import { AgamaProviders } from "~/context/agama";
+import { RootProviders } from "~/context/root";
 
 /**
  * Import PF base styles before any JSX since components coming from PF may
@@ -33,12 +33,14 @@ import "@patternfly/patternfly/patternfly-base.scss";
 
 import App from "~/App";
 import Main from "~/Main";
+import Protected from "~/Protected";
 import { OverviewPage } from "~/components/overview";
 import { ProductPage, ProductSelectionPage } from "~/components/product";
 import { SoftwarePage } from "~/components/software";
 import { ProposalPage as StoragePage, ISCSIPage, DASDPage, ZFCPPage } from "~/components/storage";
 import { UsersPage } from "~/components/users";
 import { L10nPage } from "~/components/l10n";
+import { LoginPage } from "./components/core";
 import { NetworkPage } from "~/components/network";
 
 /**
@@ -57,26 +59,29 @@ const container = document.getElementById("root");
 const root = createRoot(container);
 
 root.render(
-  <AgamaProviders>
+  <RootProviders>
     <HashRouter>
       <Routes>
-        <Route path="/" element={<App />}>
-          <Route path="/" element={<Main />}>
-            <Route index element={<OverviewPage />} />
-            <Route path="/overview" element={<OverviewPage />} />
-            <Route path="/product" element={<ProductPage />} />
-            <Route path="/l10n" element={<L10nPage />} />
-            <Route path="/software" element={<SoftwarePage />} />
-            <Route path="/storage" element={<StoragePage />} />
-            <Route path="/storage/iscsi" element={<ISCSIPage />} />
-            <Route path="/storage/dasd" element={<DASDPage />} />
-            <Route path="/storage/zfcp" element={<ZFCPPage />} />
-            <Route path="/network" element={<NetworkPage />} />
-            <Route path="/users" element={<UsersPage />} />
+        <Route path="/login" exact element={<LoginPage />} />
+        <Route path="/" element={<Protected />}>
+          <Route path="/" element={<App />}>
+            <Route path="/" element={<Main />}>
+              <Route index element={<OverviewPage />} />
+              <Route path="/overview" element={<OverviewPage />} />
+              <Route path="/product" element={<ProductPage />} />
+              <Route path="/l10n" element={<L10nPage />} />
+              <Route path="/software" element={<SoftwarePage />} />
+              <Route path="/storage" element={<StoragePage />} />
+              <Route path="/storage/iscsi" element={<ISCSIPage />} />
+              <Route path="/storage/dasd" element={<DASDPage />} />
+              <Route path="/storage/zfcp" element={<ZFCPPage />} />
+              <Route path="/network" element={<NetworkPage />} />
+              <Route path="/users" element={<UsersPage />} />
+            </Route>
+            <Route path="products" element={<ProductSelectionPage />} />
           </Route>
-          <Route path="products" element={<ProductSelectionPage />} />
         </Route>
       </Routes>
     </HashRouter>
-  </AgamaProviders>
+  </RootProviders>
 );
