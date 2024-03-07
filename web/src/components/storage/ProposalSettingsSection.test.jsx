@@ -58,7 +58,7 @@ describe("if snapshots are not configurable", () => {
     props.settings = { volumes: [{ ...rootVolume, outline: { ...rootVolume.outline, snapshotsConfigurable: false } }] };
   });
 
-  it("renders the snapshots switch", () => {
+  it("does not render the snapshots switch", () => {
     plainRender(<ProposalSettingsSection {...props} />);
 
     expect(screen.queryByRole("checkbox", { name: "Use Btrfs Snapshots" })).toBeNull();

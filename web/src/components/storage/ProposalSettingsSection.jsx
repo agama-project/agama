@@ -143,29 +143,24 @@ const SnapshotsField = ({
     onChange({ active: checked, settings });
   };
 
-  const configurableSnapshots = rootVolume.outline.snapshotsConfigurable;
+  if (!rootVolume.outline.snapshotsConfigurable) return;
 
   const explanation = _("Uses Btrfs for the root file system allowing to boot to a previous \
 version of the system after configuration changes or software upgrades.");
 
   return (
-    <If
-      condition={configurableSnapshots}
-      then={
-        <div>
-          <Switch
-            id="snapshots"
-            label={_("Use Btrfs Snapshots")}
-            isReversed
-            isChecked={isChecked}
-            onChange={switchState}
-          />
-          <div>
-            {explanation}
-          </div>
-        </div>
-      }
-    />
+    <div>
+      <Switch
+        id="snapshots"
+        label={_("Use Btrfs Snapshots")}
+        isReversed
+        isChecked={isChecked}
+        onChange={switchState}
+      />
+      <div>
+        {explanation}
+      </div>
+    </div>
   );
 };
 
