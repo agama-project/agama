@@ -34,7 +34,7 @@ pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
 }
 
 /// Reads stored token and returns it
-pub fn jwt() -> anyhow::Result<String> {
+fn jwt() -> anyhow::Result<String> {
     if let Some(file) = jwt_file() {
         if let Ok(token) = read_line_from_file(&file.as_path()) {
             return Ok(token);
@@ -125,7 +125,7 @@ fn read_line_from_file(path: &Path) -> io::Result<String> {
         let raw = BufReader::new(file).lines().next();
 
         if let Some(line) = raw {
-            return Ok(line?);
+            return line;
         }
     }
 
