@@ -20,18 +20,26 @@
  */
 
 import React, { useState } from "react";
+import { Navigate } from "react-router-dom";
 import {
   ActionGroup,
   Button,
   Form,
   FormGroup,
-  TextInput,
 } from "@patternfly/react-core";
-import { Navigate } from "react-router-dom";
-import PasswordInput from "./PasswordInput";
+import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { useAuth } from "~/context/auth";
+import { About, Page, PasswordInput, Section } from "~/components/core";
+import { Center } from "~/components/layout";
 
+// @ts-check
+
+/**
+ * Renders the UI that lets the user log into the system.
+ * @component
+ *
+ */
 export default function LoginPage() {
   const [password, setPassword] = useState("");
   const { isAuthenticated, login: loginFn } = useAuth();
@@ -45,30 +53,45 @@ export default function LoginPage() {
     return <Navigate to="/" />;
   }
 
+  // TRANSLATORS: Title for a form to provide the password for the root user. %s
+  // will be replaced by "root"
+  const sectionTitle = sprintf(_("Login as %s"), "root");
   return (
-    <Form id="login" onSubmit={login}>
-      <FormGroup fieldId="username">
-        <TextInput
-          id="username"
-          name="username"
-          label="Username"
-          value="root"
-          disabled
-        />
-      </FormGroup>
+    <Page mountSidebar={false} title="Agama">
+      <Center>
+        <Section title={sectionTitle}>
+          <p
+            dangerouslySetInnerHTML={{
+              __html: sprintf(
+                _("The installer requires %s user privileges. Please, provide its password to log into the system."),
+                "<b>root</b>"
+              )
+            }}
+          />
 
-      <FormGroup fieldId="password">
-        <PasswordInput
-          id="password"
-          name="password"
-          value={password}
-          onChange={(_, v) => setPassword(v)}
-        />
-      </FormGroup>
+          <Form id="login" onSubmit={login} aria-label={_("Login form")}>
+            <FormGroup fieldId="password">
+              <PasswordInput
+                id="password"
+                name="password"
+                value={password}
+                aria-label={_("Password input")}
+                onChange={(_, v) => setPassword(v)}
+              />
+            </FormGroup>
 
-      <ActionGroup>
-        <Button type="submit" variant="primary">{_("Log in")}</Button>
-      </ActionGroup>
-    </Form>
+            <ActionGroup>
+              <Button type="submit" variant="primary">
+                {_("Log in")}
+              </Button>
+            </ActionGroup>
+          </Form>
+        </Section>
+      </Center>
+
+      <Page.Actions>
+        <About showIcon={false} iconSize="xs" buttonText={_("What is this?")} buttonVariant="link" />
+      </Page.Actions>
+    </Page>
   );
 }
