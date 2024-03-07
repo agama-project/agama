@@ -9,7 +9,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 
 const DEFAULT_JWT_FILE: &str = ".agama/agama-jwt";
-const DEFAULT_AUTH_URL: &str = "http://localhost:3000/authenticate";
+const DEFAULT_AUTH_URL: &str = "http://localhost:3000/api/authenticate";
 const DEFAULT_FILE_MODE: u32 = 0o600;
 
 #[derive(Subcommand, Debug)]
@@ -33,7 +33,7 @@ pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
     }
 }
 
-/// Reads stored JWT token and returns it
+/// Reads stored token and returns it
 pub fn jwt() -> anyhow::Result<String> {
     if let Some(file) = jwt_file() {
         if let Ok(token) = read_line_from_file(&file.as_path()) {
@@ -41,7 +41,7 @@ pub fn jwt() -> anyhow::Result<String> {
         }
     }
 
-    return Err(anyhow::anyhow!("JWT not available"));
+    Err(anyhow::anyhow!("JWT not available"))
 }
 
 /// Stores user provided configuration for login command
@@ -57,15 +57,12 @@ impl LoginArgs {
     /// Transforms user provided options into internal representation
     /// See Credentials trait
     fn proceed(options: LoginArgs) -> Box<dyn Credentials> {
-        match options.password {
-            // explicitly provided user + password
-            Some(p) => Box::new(KnownCredentials { password: p }),
-            _ => match options.file {
-                // try to read user + password from a file
-                Some(f) => Box::new(FileCredentials { path: f }),
-                // last instance - ask user to enter user + password interactively
-                _ => Box::new(MissingCredentials {}),
-            },
+        if let Some(password) = options.password {
+            Box::new(KnownCredentials { password })
+        } else if let Some(path) = options.file {
+            Box::new(FileCredentials { path })
+        } else {
+            Box::new(MissingCredentials {})
         }
     }
 }
@@ -115,7 +112,7 @@ fn jwt_file() -> Option<PathBuf> {
 
 /// Reads first line from given file
 fn read_line_from_file(path: &Path) -> io::Result<String> {
-    if !&path.exists() {
+    if !path.exists() {
         return Err(io::Error::new(
             io::ErrorKind::Other,
             "Cannot find the file containing the credentials.",
@@ -195,7 +192,7 @@ async fn get_jwt(url: String, password: String) -> anyhow::Result<String> {
         return Ok(token.clone());
     }
 
-    Err(anyhow::anyhow!("Failed to get JWT token"))
+    Err(anyhow::anyhow!("Failed to get authentication token"))
 }
 
 /// Logs into the installation web server and stores JWT for later use.
@@ -208,7 +205,7 @@ async fn login(password: String) -> anyhow::Result<()> {
         if let Some(dir) = path.parent() {
             fs::create_dir_all(dir)?;
         } else {
-            return Err(anyhow::anyhow!("Cannot store the JWT token"));
+            return Err(anyhow::anyhow!("Cannot store the authentication token"));
         }
 
         fs::write(path.as_path(), res)?;
