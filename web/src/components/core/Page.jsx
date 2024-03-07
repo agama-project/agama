@@ -152,10 +152,16 @@ const BackAction = () => {
  * @param {string} [props.icon] - The icon for the page.
  * @param {string} [props.title="Agama"] - The title for the page. By default it
  *   uses the name of the tool, do not mark it for translation.
+ * @param {boolean} [props.mountSidebar=true] - Whether include the core/Sidebar component.
  * @param {JSX.Element} [props.children] - The page content.
  *
  */
-const Page = ({ icon, title = "Agama", children }) => {
+const Page = ({
+  icon,
+  title = "Agama",
+  mountSidebar = true,
+  children
+}) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   /**
@@ -195,15 +201,20 @@ const Page = ({ icon, title = "Agama", children }) => {
         </h1>
         <div data-type="agama/header-actions">
           { menu }
-          <button
-            onClick={openSidebar}
-            className="plain-control"
-            aria-label={_("Show global options")}
-            aria-controls="global-options"
-            aria-expanded={sidebarOpen}
-          >
-            <Icon name="menu" />
-          </button>
+          <If
+            condition={mountSidebar}
+            then={
+              <button
+                onClick={openSidebar}
+                className="plain-control"
+                aria-label={_("Show global options")}
+                aria-controls="global-options"
+                aria-expanded={sidebarOpen}
+              >
+                <Icon name="menu" />
+              </button>
+            }
+          />
         </div>
       </header>
 
@@ -218,7 +229,10 @@ const Page = ({ icon, title = "Agama", children }) => {
         <img src={logoUrl} alt="Logo of SUSE" />
       </footer>
 
-      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
+      <If
+        condition={mountSidebar}
+        then={<Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />}
+      />
     </div>
   );
 };
