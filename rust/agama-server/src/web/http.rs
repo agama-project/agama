@@ -4,7 +4,12 @@ use super::{
     auth::{generate_token, AuthError},
     state::ServiceState,
 };
-use axum::{extract::State, Json};
+use axum::{
+    extract::State,
+    http::{header::SET_COOKIE, HeaderMap},
+    response::IntoResponse,
+    Json,
+};
 use pam::Client;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -42,7 +47,7 @@ pub struct LoginRequest {
 pub async fn authenticate(
     State(state): State<ServiceState>,
     Json(login): Json<LoginRequest>,
-) -> Result<Json<AuthResponse>, AuthError> {
+) -> Result<impl IntoResponse, AuthError> {
     let mut pam_client = Client::with_password("agama")?;
     pam_client
         .conversation_mut()
@@ -50,5 +55,16 @@ pub async fn authenticate(
     pam_client.authenticate()?;
 
     let token = generate_token(&state.config.jwt_secret);
-    Ok(Json(AuthResponse { token }))
+    let content = Json(AuthResponse {
+        token: token.to_owned(),
+    });
+
+    let mut headers = HeaderMap::new();
+    let cookie = format!("token={}; HttpOnly", &token);
+    headers.insert(
+        SET_COOKIE,
+        cookie.parse().expect("could not build a valid cookie"),
+    );
+
+    Ok((headers, content))
 }
