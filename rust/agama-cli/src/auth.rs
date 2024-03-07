@@ -41,7 +41,7 @@ pub fn jwt() -> anyhow::Result<String> {
         }
     }
 
-    Err(anyhow::anyhow!("JWT not available"))
+    Err(anyhow::anyhow!("Authentication token not available"))
 }
 
 /// Stores user provided configuration for login command
