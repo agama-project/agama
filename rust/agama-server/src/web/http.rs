@@ -41,7 +41,7 @@ pub struct LoginRequest {
     pub password: String,
 }
 
-#[utoipa::path(get, path = "/authenticate", responses(
+#[utoipa::path(post, path = "/authenticate", responses(
     (status = 200, description = "The user have been successfully authenticated", body = AuthResponse)
 ))]
 pub async fn authenticate(
