@@ -27,7 +27,23 @@ import { Icon } from "~/components/layout";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
 
-export default function About() {
+/**
+ * Renders a button and a dialog to allow user read about what Agama is
+ * @component
+ *
+ * @param {object} props
+ * @param {boolean} [props.showIcon=true] - Whether render a "help" icon into the button.
+ * @param {string} [props.iconSize="s"] - The size for the button icon.
+ * @param {string} [props.buttonText="About Agama"] - The text for the button.
+ * @param {string} [props.buttonVariant="link"] - The button variant.
+ *   See {@link https://www.patternfly.org/components/button#variant-examples PF/Button}.
+ */
+export default function About({
+  showIcon = true,
+  iconSize = "s",
+  buttonText = _("About Agama"),
+  buttonVariant = "link"
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   const open = () => setIsOpen(true);
@@ -36,11 +52,11 @@ export default function About() {
   return (
     <>
       <Button
-        variant="link"
-        icon={<Icon name="help" size="s" />}
+        variant={buttonVariant}
+        icon={showIcon && <Icon name="help" size={iconSize} />}
         onClick={open}
       >
-        {_("About Agama")}
+        { buttonText }
       </Button>
 
       <Popup
