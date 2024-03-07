@@ -1,7 +1,7 @@
 //! Implements the handlers for the HTTP-based API.
 
 use super::{
-    auth::{generate_token, AuthError},
+    auth::{generate_token, AuthError, TokenClaims},
     state::ServiceState,
 };
 use axum::{
@@ -67,4 +67,11 @@ pub async fn authenticate(
     );
 
     Ok((headers, content))
+}
+
+#[utoipa::path(get, path = "/authenticate", responses(
+    (status = 200, description = "Check whether the user is authenticated")
+))]
+pub async fn show_authenticate(_claims: TokenClaims) -> Result<(), AuthError> {
+    Ok(())
 }

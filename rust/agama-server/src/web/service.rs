@@ -81,7 +81,10 @@ impl MainServiceBuilder {
                 state.clone(),
             ))
             .route("/ping", get(super::http::ping))
-            .route("/authenticate", post(super::http::authenticate));
+            .route(
+                "/authenticate",
+                post(super::http::authenticate).get(super::http::show_authenticate),
+            );
 
         let serve = ServeDir::new(self.public_dir);
         Router::new()
