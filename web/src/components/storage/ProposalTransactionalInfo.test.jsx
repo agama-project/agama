@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalTransactionalInfo } from "~/components/storage";
 
@@ -44,10 +44,9 @@ describe("if the system is not transactional", () => {
     props.settings = { volumes: [rootVolume] };
   });
 
-  it("does not render any explanation about transactional system", () => {
-    plainRender(<ProposalTransactionalInfo {...props} />);
-
-    expect(screen.queryByText("Transactional root file system")).toBeNull();
+  it("renders nothing", () => {
+    const { container } = plainRender(<ProposalTransactionalInfo {...props} />);
+    expect(container).toBeEmptyDOMElement();
   });
 });
 

@@ -38,7 +38,6 @@ import { useProduct } from "~/context/product";
  *
  * @param {object} props
  * @param {ProposalSettings} props.settings - Settings used for calculating a proposal.
- * @param {object} settings
  */
 export default function ProposalTransactionalInfo({ settings }) {
   const transactional = isTransactionalSystem(settings?.volumes || []);
