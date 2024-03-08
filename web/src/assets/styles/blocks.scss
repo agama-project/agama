@@ -482,6 +482,34 @@ ul[data-type="agama/list"][role="grid"] {
   }
 }
 
+table[data-type="agama/tree-table"] {
+  tr.dimmed-row {
+    background-color: #fff;
+    opacity: 0.8;
+    background: repeating-linear-gradient( -45deg, #fcfcff, #fcfcff 3px, #fff 3px, #fff 10px );
+
+    td {
+      color: var(--color-gray-dimmed);
+      padding-block: 0;
+    }
+  }
+
+  @media (width > 768px) {
+    th.text-end,
+    td.text-end {
+      text-align: end;
+      padding-inline-end: var(--spacer-large);
+    }
+  }
+
+  @media (width <= 768px) {
+    td:empty {
+      display: none;
+    }
+  }
+}
+
+
 .tpm-hint {
   container-type: inline-size;
   container-name: tpm-info;

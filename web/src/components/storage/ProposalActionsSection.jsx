@@ -30,7 +30,7 @@ import { sprintf } from "sprintf-js";
 
 import { _, n_ } from "~/i18n";
 import { deviceSize } from "~/components/storage/utils";
-import { If, Section } from "~/components/core";
+import { If, Section, TreeTable } from "~/components/core";
 import { partition } from "~/utils";
 
 // TODO: would be nice adding an aria-description to these lists, but aria-description still in
@@ -105,130 +105,93 @@ const ActionsSkeleton = () => {
   );
 };
 
-class DevicesManager {
-  constructor(system, staging) {
-    this.system = system;
-    this.staging = staging;
-  }
+const DeleteActions = ({ actions }) => {
+  const deleteActions = actions.filter(a => a.delete);
 
-  systemDevice(sid) {
-    return this.system.find(d => d.sid === sid);
-  }
-
-  device(sid) {
-    return this.staging.find(d => d.sid === sid);
-  }
-
-  lvmVgsWithMountPoints() {
-    const vgs = this.staging.filter(d => d.type === "lvmVg");
-    return vgs.filter(v => v.logicalVolumes.find(l => l.filesystem?.mountPath !== undefined));
-  }
-
-  children(device) {
-    if (device.partitionTable) return this.partitionTableChildren(device.partitionTable);
-    if (device.type === "lvmVg") return this.lvmVgChildren(device);
-    return [];
-  }
-
-  partitionTableChildren(partitionTable) {
-    const { partitions, unusedSlots } = partitionTable;
-    const children = partitions.concat(unusedSlots);
-
-    return children.sort((a, b) => a.start < b.start ? -1 : 1);
-  }
-
-  lvmVgChildren(lvmVg) {
-    return lvmVg.logicalVolumes.sort((a, b) => a.name < b.name ? -1 : 1);
-  }
-
-  isSlot(storageElement) {
-    return storageElement.sid === undefined;
-  }
-}
-
-class SlotPresenter {
-  constructor(slot) {
-    this.slot = slot;
-  }
-
-  name() {
-    return "";
-  }
-
-  details() {
-    return "Unused space";
-  }
-
-  size() {
-    return deviceSize(this.slot.size);
-  }
-
-  mountPoint() {
-    return "";
-  }
-}
-
-class DevicePresenter {
-  constructor(device, devicesManager) {
-    this.device = device;
-    this.devicesManager = devicesManager;
-  }
-
-  name() {
-    return this.device.name;
-  }
-
-  details() {
-    return this.device.description;
-  }
-
-  size() {
-    return deviceSize(this.device.size);
-  }
-
-  mountPoint() {
-    return this.device.filesystem?.mountPath || "";
-  }
-}
-
-const DeviceResult = ({ presenter }) => {
+  // TODO Add show the deleted system if any
   return (
     <ul>
-      <li>{presenter.name()}</li>
-      <ul>
-        <li>{presenter.details()}</li>
-        <li>{presenter.size()}</li>
-        <li>{presenter.mountPoint()}</li>
-      </ul>
+      {deleteActions.map((a, i) => <li key={i}>{a.text}</li>)}
     </ul>
   );
 };
 
 const DevicesResult = ({ settings, devices }) => {
   const { system = [], staging = [] } = devices;
-  const devicesManager = new DevicesManager(system, staging);
 
   const usedDevices = () => {
-    const diskDevices = settings.installationDevices.map(d => devicesManager.device(d.sid));
-    const lvmVgs = devicesManager.lvmVgsWithMountPoints();
+    const sids = settings.installationDevices.map(d => d.sid);
+    const instDevices = staging.filter(d => sids.includes(d.sid));
+    const lvmVgs = staging.filter(d => d.logicalVolumes?.find(l => l.filesystem?.mountPath !== undefined));
 
-    return diskDevices.concat(lvmVgs);
+    // FIXME This is only to avoid showing the existing VG of my VM. Remove and use lvmVgs.
+    const newLvmVgs = lvmVgs.filter(v => system.find(d => d.sid === v.sid) === undefined);
+
+    return instDevices.concat(newLvmVgs);
   };
 
-  const presenter = (storageElement) => {
-    if (devicesManager.isSlot(storageElement))
-      return new SlotPresenter(storageElement);
-    else
-      return new DevicePresenter(storageElement, devicesManager);
+  const children = (device) => {
+    const partitionTableChildren = (partitionTable) => {
+      const { partitions, unusedSlots } = partitionTable;
+      const children = partitions.concat(unusedSlots);
+
+      return children.sort((a, b) => a.start < b.start ? -1 : 1);
+    };
+
+    const lvmVgChildren = (lvmVg) => {
+      return lvmVg.logicalVolumes.sort((a, b) => a.name < b.name ? -1 : 1);
+    };
+
+    if (device.partitionTable) return partitionTableChildren(device.partitionTable);
+    if (device.type === "lvmVg") return lvmVgChildren(device);
+    return [];
   };
 
-  return usedDevices().map(device => {
-    const devices = [device].concat(devicesManager.children(device));
+  const renderDeviceName = (item) => {
+    const newLabel = (device) => {
+      const systemDevice = system.find(d => d.sid === device.sid);
+      if (!systemDevice) return _("(new)");
+    };
 
-    return devices.map((d, i) => {
-      return <DeviceResult key={i} presenter={presenter(d)} />;
-    });
-  });
+    return (
+      <div className="split">
+        <span>{item.sid && item.name}</span>
+        <span><em>{newLabel(item)}</em></span>
+      </div>
+    );
+  };
+
+  const renderDetails = (item) => {
+    if (!item.sid) return _("Unused space");
+
+    return (
+      <div className="split">
+        {/* <span><em>{newLabel(item)}</em></span> */}
+        <span>{item.description}</span>
+        <span><b>{item.filesystem?.label}</b></span>
+      </div>
+    );
+  };
+
+  const renderSize = (item) => deviceSize(item.size);
+
+  const renderMountPoint = (item) => item.sid && item.filesystem?.mountPath;
+
+  return (
+    <TreeTable
+      columns={[
+        { title: _("Device"), content: renderDeviceName },
+        { title: _("Details"), content: renderDetails },
+        { title: _("Size"), content: renderSize, classNames: "text-end" },
+        { title: _("Mount Point"), content: renderMountPoint }
+      ]}
+      items={usedDevices()}
+      itemChildren={children}
+      rowClassNames={(item) => {
+        if (!item.sid) return "dimmed-row";
+      }}
+    />
+  );
 };
 
 /**
@@ -267,6 +230,7 @@ export default function ProposalActionsSection({
         then={<ActionsSkeleton />}
         else={
           <>
+            <DeleteActions actions={actions} />
             <DevicesResult settings={settings} devices={devices} />
             <ProposalActions actions={actions} />
           </>

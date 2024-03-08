@@ -36,7 +36,10 @@ export default function TreeTable({
 }) {
   const renderColumns = (item, treeRow) => {
     return columns.map((c, cIdx) => {
-      const props = { dataLabel: c.title };
+      const props = {
+        dataLabel: c.title,
+        className: c.classNames
+      };
 
       if (cIdx === 0) props.treeRow = treeRow;
 
@@ -85,10 +88,10 @@ export default function TreeTable({
   };
 
   return (
-    <Table isTreeTable variant="compact">
+    <Table isTreeTable variant="compact" data-type="agama/tree-table">
       <Thead>
         <Tr>
-          { columns.map((c, i) => <Th key={i}>{c.title}</Th>) }
+          { columns.map((c, i) => <Th key={i} className={c.classNames}>{c.title}</Th>) }
         </Tr>
       </Thead>
       <Tbody>
