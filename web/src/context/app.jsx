@@ -22,6 +22,7 @@
 // @ts-check
 
 import React from "react";
+import { InstallerClientProvider } from "./installer";
 import { InstallerL10nProvider } from "./installerL10n";
 import { L10nProvider } from "./l10n";
 import { ProductProvider } from "./product";
@@ -34,16 +35,16 @@ import { ProductProvider } from "./product";
  */
 function AppProviders({ children }) {
   return (
-    <InstallerL10nProvider>
-      <L10nProvider>
-        <ProductProvider>
-          {children}
-        </ProductProvider>
-      </L10nProvider>
-    </InstallerL10nProvider>
+    <InstallerClientProvider>
+      <InstallerL10nProvider>
+        <L10nProvider>
+          <ProductProvider>
+            {children}
+          </ProductProvider>
+        </L10nProvider>
+      </InstallerL10nProvider>
+    </InstallerClientProvider>
   );
 }
 
-export {
-  AppProviders
-};
+export { AppProviders };

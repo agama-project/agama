@@ -22,7 +22,6 @@
 // @ts-check
 
 import React from "react";
-import { InstallerClientProvider } from "./installer";
 import { AuthProvider } from "./auth";
 
 /**
@@ -33,14 +32,10 @@ import { AuthProvider } from "./auth";
  */
 function RootProviders({ children }) {
   return (
-    <InstallerClientProvider>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
-    </InstallerClientProvider>
+    <AuthProvider>
+      {children}
+    </AuthProvider>
   );
 }
 
-export {
-  RootProviders
-};
+export { RootProviders };
