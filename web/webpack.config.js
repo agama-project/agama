@@ -104,10 +104,15 @@ module.exports = {
       //   selfHandleResponse : true,
       //   onProxyRes: manifests_handler,
       // },
+      "/api/ws": {
+        target: agamaServer.replace(/^http/, "ws"),
+        ws: true,
+        secure: false,
+      },
       "/api": {
         target: agamaServer,
         secure: false,
-      }
+      },
     },
     server: "http",
     // hot replacement does not support wss:// transport when running over https://,
