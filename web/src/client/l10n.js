@@ -20,12 +20,7 @@
  */
 
 // @ts-check
-import DBusClient from "./dbus";
 import { timezoneUTCOffset } from "~/utils";
-
-const LOCALE_SERVICE = "org.opensuse.Agama1";
-const LOCALE_IFACE = "org.opensuse.Agama1.Locale";
-const LOCALE_PATH = "/org/opensuse/Agama1/Locale";
 
 /**
  * @typedef {object} Timezone
@@ -53,10 +48,10 @@ const LOCALE_PATH = "/org/opensuse/Agama1/Locale";
  */
 class L10nClient {
   /**
-   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
+   * @param {import("./http").HTTPClient} client - HTTP client.
    */
-  constructor(address = undefined) {
-    this.client = new DBusClient(LOCALE_SERVICE, address);
+  constructor(client) {
+    this.client = client;
   }
 
   /**
@@ -65,8 +60,8 @@ class L10nClient {
    * @return {Promise<String>} Locale id.
    */
   async getUILocale() {
-    const proxy = await this.client.proxy(LOCALE_IFACE);
-    return proxy.UILocale;
+    const config = await this.client.get("/l10n/config");
+    return config.ui_locale;
   }
 
   /**
@@ -76,8 +71,7 @@ class L10nClient {
    * @return {Promise<void>}
    */
   async setUILocale(id) {
-    const proxy = await this.client.proxy(LOCALE_IFACE);
-    proxy.UILocale = id;
+    return this.client.put("/l10n/config", { ui_locale: id });
   }
 
   /**
@@ -86,9 +80,7 @@ class L10nClient {
    * @return {Promise<Array<Timezone>>}
    */
   async timezones() {
-    const proxy = await this.client.proxy(LOCALE_IFACE);
-    const timezones = await proxy.ListTimezones();
-
+    const timezones = await this.client.get("/l10n/timezones");
     return timezones.map(this.buildTimezone);
   }
 
@@ -98,8 +90,8 @@ class L10nClient {
    * @return {Promise<String>} Id of the timezone.
    */
   async getTimezone() {
-    const proxy = await this.client.proxy(LOCALE_IFACE);
-    return proxy.Timezone;
+    const config = await this.getConfig();
+    return config.timezone;
   }
 
   /**
@@ -109,19 +101,18 @@ class L10nClient {
    * @return {Promise<void>}
    */
   async setTimezone(id) {
-    const proxy = await this.client.proxy(LOCALE_IFACE);
-    proxy.Timezone = id;
+    this.setConfig({ timezone: id });
   }
 
   /**
    * Available locales to install in the target system.
    *
+   * TODO: find a better name because it is rather confusing (e.g., 'locales'  and 'getLocales').
+   *
    * @return {Promise<Array<Locale>>}
    */
   async locales() {
-    const proxy = await this.client.proxy(LOCALE_IFACE);
-    const locales = await proxy.ListLocales();
-
+    const locales = await this.client.get("/l10n/locales");
     return locales.map(this.buildLocale);
   }
 
@@ -131,8 +122,8 @@ class L10nClient {
    * @return {Promise<Array<String>>} Ids of the locales.
    */
   async getLocales() {
-    const proxy = await this.client.proxy(LOCALE_IFACE);
-    return proxy.Locales;
+    const config = await this.getConfig();
+    return config.locales;
   }
 
   /**
@@ -142,8 +133,7 @@ class L10nClient {
    * @return {Promise<void>}
    */
   async setLocales(ids) {
-    const proxy = await this.client.proxy(LOCALE_IFACE);
-    proxy.Locales = ids;
+    this.setConfig({ locales: ids });
   }
 
   /**
@@ -155,9 +145,7 @@ class L10nClient {
    * @return {Promise<Array<Keymap>>}
    */
   async keymaps() {
-    const proxy = await this.client.proxy(LOCALE_IFACE);
-    const keymaps = await proxy.ListKeymaps();
-
+    const keymaps = await this.client.get("/l10n/keymaps");
     return keymaps.map(this.buildKeymap);
   }
 
@@ -167,8 +155,8 @@ class L10nClient {
    * @return {Promise<String>} Id of the keymap.
    */
   async getKeymap() {
-    const proxy = await this.client.proxy(LOCALE_IFACE);
-    return proxy.Keymap;
+    const config = await this.getConfig();
+    return config.keymap;
   }
 
   /**
@@ -178,86 +166,112 @@ class L10nClient {
    * @return {Promise<void>}
    */
   async setKeymap(id) {
-    const proxy = await this.client.proxy(LOCALE_IFACE);
-
-    proxy.Keymap = id;
+    this.setConfig({ keymap: id });
   }
 
   /**
-   * Register a callback to run when Timezone D-Bus property changes.
+   * Register a callback to run when the timezone configuration changes.
    *
    * @param {(timezone: string) => void} handler - Function to call when Timezone changes.
-   * @return {import ("./dbus").RemoveFn} Function to disable the callback.
+   * @return {import ("./http").RemoveFn} Function to disable the callback.
    */
   onTimezoneChange(handler) {
-    return this.client.onObjectChanged(LOCALE_PATH, LOCALE_IFACE, changes => {
-      if ("Timezone" in changes) {
-        const id = changes.Timezone.v;
-        handler(id);
+    return this.client.onEvent("L10nConfigChanged", ({ timezone }) => {
+      if (timezone) {
+        handler(timezone);
       }
     });
   }
 
   /**
-   * Register a callback to run when Locales D-Bus property changes.
+   * Register a callback to run when the locales configuration changes.
    *
-   * @param {(language: string) => void} handler - Function to call when Locales changes.
-   * @return {import ("./dbus").RemoveFn} Function to disable the callback.
+   * @param {(locales: string[]) => void} handler - Function to call when Locales changes.
+   * @return {import ("./http").RemoveFn} Function to disable the callback.
    */
   onLocalesChange(handler) {
-    return this.client.onObjectChanged(LOCALE_PATH, LOCALE_IFACE, changes => {
-      if ("Locales" in changes) {
-        const selectedIds = changes.Locales.v;
-        handler(selectedIds);
+    return this.client.onEvent("L10nConfigChanged", ({ locales }) => {
+      if (locales) {
+        handler(locales);
       }
     });
   }
 
   /**
-   * Register a callback to run when Keymap D-Bus property changes.
+   * Register a callback to run when the keymap configuration changes.
    *
-   * @param {(language: string) => void} handler - Function to call when Keymap changes.
-   * @return {import ("./dbus").RemoveFn} Function to disable the callback.
+   * @param {(keymap: string) => void} handler - Function to call when Keymap changes.
+   * @return {import ("./http").RemoveFn} Function to disable the callback.
    */
   onKeymapChange(handler) {
-    return this.client.onObjectChanged(LOCALE_PATH, LOCALE_IFACE, changes => {
-      if ("Keymap" in changes) {
-        const id = changes.Keymap.v;
-        handler(id);
+    return this.client.onEvent("L10nConfigChanged", ({ keymap }) => {
+      if (keymap) {
+        handler(keymap);
       }
     });
   }
 
   /**
    * @private
+   * Convenience method to get l10n the configuration.
    *
-   * @param {[string, Array<string>, string]} dbusTimezone
-   * @returns {Timezone}
+   * @return {Promise<object>} Localization configuration.
    */
-  buildTimezone([id, parts, country]) {
-    const utcOffset = timezoneUTCOffset(id);
-
-    return ({ id, parts, country, utcOffset });
+  async getConfig() {
+    const config = await this.client.get("/l10n/config");
+    return config.json();
   }
 
   /**
    * @private
    *
-   * @param {[string, string, string]} dbusLocale
-   * @returns {Locale}
+   * Convenience method to set l10n the configuration.
+   *
+   * @param {object} data - Configuration to update. It can just part of the configuration.
+   * @return {Promise<object>}
    */
-  buildLocale([id, name, territory]) {
-    return ({ id, name, territory });
+  async setConfig(data) {
+    return this.client.put("/l10n/config", data);
   }
 
   /**
    * @private
    *
-   * @param {[string, string]} dbusKeymap
-   * @returns {Keymap}
+   * @param {object} timezone - Timezone data.
+   * @param {string} timezone.code - Timezone identifier.
+   * @param {Array<string>} timezone.parts - Localized parts of the timezone identifier.
+   * @param {string} timezone.country - Timezone country.
+   * @return {Timezone}
    */
-  buildKeymap([id, name]) {
-    return ({ id, name });
+  buildTimezone({ code, parts, country }) {
+    const utcOffset = timezoneUTCOffset(code);
+
+    return ({ id: code, parts, country, utcOffset });
+  }
+
+  /**
+   * @private
+   *
+   * @param {object} locale - Locale data.
+   * @param {string} locale.code - Identifier.
+   * @param {string} locale.name - Name.
+   * @param {string} locale.territory - Territory.
+   * @return {Locale}
+   */
+  buildLocale({ code, name, territory }) {
+    return ({ id: code, name, territory });
+  }
+
+  /**
+   * @private
+   *
+   * @param {object} keymap - Keymap data
+   * @param {string} keymap.id - Id (e.g., "us").
+   * @param {string} keymap.description - Keymap description (e.g., "English (US)").
+   * @return {Keymap}
+   */
+  buildKeymap({ id, description }) {
+    return ({ id, name: description });
   }
 }
 
