@@ -29,6 +29,7 @@ require_relative "./interfaces/device/filesystem_examples"
 require_relative "./interfaces/device/lvm_vg_examples"
 require_relative "./interfaces/device/md_examples"
 require_relative "./interfaces/device/multipath_examples"
+require_relative "./interfaces/device/partition_examples"
 require_relative "./interfaces/device/partition_table_examples"
 require_relative "./interfaces/device/raid_examples"
 require "agama/dbus/storage/device"
@@ -142,6 +143,28 @@ describe Agama::DBus::Storage::Device do
       end
     end
 
+    context "when the given device is a partition" do
+      let(:scenario) { "partitioned_md.yml" }
+
+      let(:device) { devicegraph.find_by_name("/dev/sda1") }
+
+      it "defines the Device interface" do
+        expect(subject).to include_dbus_interface("org.opensuse.Agama.Storage1.Device")
+      end
+
+      it "defines the Block interface" do
+        expect(subject).to include_dbus_interface("org.opensuse.Agama.Storage1.Block")
+      end
+
+      it "does not define the Drive interface" do
+        expect(subject).to_not include_dbus_interface("org.opensuse.Agama.Storage1.Drive")
+      end
+
+      it "defines the Partition interface" do
+        expect(subject).to include_dbus_interface("org.opensuse.Agama.Storage1.Partition")
+      end
+    end
+
     context "when the given device has a partition table" do
       let(:scenario) { "partitioned_md.yml" }
 
@@ -197,6 +220,8 @@ describe Agama::DBus::Storage::Device do
   include_examples "Block interface"
 
   include_examples "LVM.VolumeGroup interface"
+
+  include_examples "Partition interface"
 
   include_examples "PartitionTable interface"
 
