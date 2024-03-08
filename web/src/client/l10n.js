@@ -218,8 +218,7 @@ class L10nClient {
    * @return {Promise<object>} Localization configuration.
    */
   async getConfig() {
-    const config = await this.client.get("/l10n/config");
-    return config.json();
+    return await this.client.get("/l10n/config");
   }
 
   /**
