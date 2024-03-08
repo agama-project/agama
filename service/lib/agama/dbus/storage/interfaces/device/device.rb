@@ -20,57 +20,57 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "y2storage/device_description"
 
 module Agama
   module DBus
     module Storage
       module Interfaces
         module Device
-          # Interface for a LVM Volume Group.
+          # Interface for a device.
           #
-          # @note This interface is intended to be included by {Agama::DBus::Storage::Device} if
-          #   needed.
-          module LvmVg
+          # @note This interface is intended to be included by {Agama::DBus::Storage::Device}.
+          module Device
             # Whether this interface should be implemented for the given device.
             #
-            # @note LVM Volume Groups implement this interface.
+            # @note All devices implement this interface.
             #
-            # @param storage_device [Y2Storage::Device]
+            # @param _storage_device [Y2Storage::Device]
             # @return [Boolean]
-            def self.apply?(storage_device)
-              storage_device.is?(:lvm_vg)
+            def self.apply?(_storage_device)
+              true
             end
 
-            VOLUME_GROUP_INTERFACE = "org.opensuse.Agama.Storage1.LVM.VolumeGroup"
-            private_constant :VOLUME_GROUP_INTERFACE
+            DEVICE_INTERFACE = "org.opensuse.Agama.Storage1.Device"
+            private_constant :DEVICE_INTERFACE
 
-            # Size of the volume group in bytes
+            # sid of the device.
             #
             # @return [Integer]
-            def lvm_vg_size
-              storage_device.size.to_i
+            def device_sid
+              storage_device.sid
             end
 
-            # D-Bus paths of the objects representing the physical volumes.
+            # Name to represent the device.
             #
-            # @return [Array<String>]
-            def lvm_vg_pvs
-              storage_device.lvm_pvs.map { |p| tree.path_for(p.plain_blk_device) }
+            # @return [String] e.g., "/dev/sda".
+            def device_name
+              storage_device.display_name || ""
             end
 
-            # D-Bus paths of the objects representing the logical volumes.
+            # Description of the device.
             #
-            # @return [Array<String>]
-            def lvm_vg_lvs
-              storage_device.lvm_lvs.map { |l| tree.path_for(l) }
+            # @return [String] e.g., "EXT4 Partition".
+            def device_description
+              Y2Storage::DeviceDescription.new(storage_device).to_s
             end
 
             def self.included(base)
               base.class_eval do
-                dbus_interface VOLUME_GROUP_INTERFACE do
-                  dbus_reader :lvm_vg_size, "t", dbus_name: "Size"
-                  dbus_reader :lvm_vg_pvs, "ao", dbus_name: "PhysicalVolumes"
-                  dbus_reader :lvm_vg_lvs, "ao", dbus_name: "LogicalVolumes"
+                dbus_interface DEVICE_INTERFACE do
+                  dbus_reader :device_sid, "u", dbus_name: "SID"
+                  dbus_reader :device_name, "s", dbus_name: "Name"
+                  dbus_reader :device_description, "s", dbus_name: "Description"
                 end
               end
             end

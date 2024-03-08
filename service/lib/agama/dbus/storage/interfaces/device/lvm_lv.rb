@@ -26,51 +26,35 @@ module Agama
     module Storage
       module Interfaces
         module Device
-          # Interface for a LVM Volume Group.
+          # Interface for LVM logical volume.
           #
           # @note This interface is intended to be included by {Agama::DBus::Storage::Device} if
           #   needed.
-          module LvmVg
+          module LvmLv
             # Whether this interface should be implemented for the given device.
             #
-            # @note LVM Volume Groups implement this interface.
+            # @note LVM logical volumes implement this interface.
             #
             # @param storage_device [Y2Storage::Device]
             # @return [Boolean]
             def self.apply?(storage_device)
-              storage_device.is?(:lvm_vg)
+              storage_device.is?(:lvm_lv)
             end
 
-            VOLUME_GROUP_INTERFACE = "org.opensuse.Agama.Storage1.LVM.VolumeGroup"
-            private_constant :VOLUME_GROUP_INTERFACE
+            LOGICAL_VOLUME_INTERFACE = "org.opensuse.Agama.Storage1.LVM.LogicalVolume"
+            private_constant :LOGICAL_VOLUME_INTERFACE
 
-            # Size of the volume group in bytes
+            # LVM volume group hosting the this logical volume.
             #
-            # @return [Integer]
-            def lvm_vg_size
-              storage_device.size.to_i
-            end
-
-            # D-Bus paths of the objects representing the physical volumes.
-            #
-            # @return [Array<String>]
-            def lvm_vg_pvs
-              storage_device.lvm_pvs.map { |p| tree.path_for(p.plain_blk_device) }
-            end
-
-            # D-Bus paths of the objects representing the logical volumes.
-            #
-            # @return [Array<String>]
-            def lvm_vg_lvs
-              storage_device.lvm_lvs.map { |l| tree.path_for(l) }
+            # @return [Array<::DBus::ObjectPath>]
+            def lvm_lv_vg
+              tree.path_for(storage_device.lvm_vg)
             end
 
             def self.included(base)
               base.class_eval do
-                dbus_interface VOLUME_GROUP_INTERFACE do
-                  dbus_reader :lvm_vg_size, "t", dbus_name: "Size"
-                  dbus_reader :lvm_vg_pvs, "ao", dbus_name: "PhysicalVolumes"
-                  dbus_reader :lvm_vg_lvs, "ao", dbus_name: "LogicalVolumes"
+                dbus_interface LOGICAL_VOLUME_INTERFACE do
+                  dbus_reader :lvm_lv_vg, "o", dbus_name: "VolumeGroup"
                 end
               end
             end

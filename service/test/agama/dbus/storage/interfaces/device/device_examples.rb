@@ -20,38 +20,39 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../../../test_helper"
+require "y2storage/device_description"
 
-shared_examples "LVM.VolumeGroup interface" do
-  describe "LVM.VolumeGroup D-Bus interface" do
-    let(:scenario) { "trivial_lvm.yml" }
+shared_examples "Device interface" do
+  describe "Device D-Bus interface" do
+    let(:scenario) { "partitioned_md.yml" }
 
-    let(:device) { devicegraph.find_by_name("/dev/vg0") }
+    let(:device) { devicegraph.find_by_name("/dev/sda") }
 
-    describe "#lvm_vg_size" do
+    describe "#device_sid" do
       before do
-        allow(device).to receive(:size).and_return(size)
+        allow(device).to receive(:sid).and_return(123)
       end
 
-      let(:size) { Y2Storage::DiskSize.new(1024) }
-
-      it "returns the size in bytes" do
-        expect(subject.lvm_vg_size).to eq(1024)
+      it "returns the SID of the device" do
+        expect(subject.device_sid).to eq(123)
       end
     end
 
-    describe "#lvm_vg_pvs" do
-      it "returns the D-Bus path of the physical volumes" do
-        sda1 = devicegraph.find_by_name("/dev/sda1")
-
-        expect(subject.lvm_vg_pvs).to contain_exactly(tree.path_for(sda1))
+    describe "#device_name" do
+      it "returns the name of the device" do
+        expect(subject.device_name).to eq("/dev/sda")
       end
     end
 
-    describe "#lvm_vg_lvs" do
-      it "returns the D-Bus path of the logical volumes" do
-        lv1 = devicegraph.find_by_name("/dev/vg0/lv1")
+    describe "#device_description" do
+      before do
+        allow(Y2Storage::DeviceDescription).to receive(:new).with(device).and_return(description)
+      end
 
-        expect(subject.lvm_vg_lvs).to contain_exactly(tree.path_for(lv1))
+      let(:description) { instance_double(Y2Storage::DeviceDescription, to_s: "test") }
+
+      it "returns the description of the device" do
+        expect(subject.device_description).to eq("test")
       end
     end
   end

@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../../../test_helper"
+require "y2storage/filesystem_label"
 
 shared_examples "Filesystem interface" do
   describe "Filesystem D-Bus interface" do
@@ -33,9 +34,37 @@ shared_examples "Filesystem interface" do
       end
     end
 
-    describe "#filesystem_efi?" do
-      it "returns whether the file system is an EFI" do
-        expect(subject.filesystem_efi?).to eq(false)
+    describe "#filesystem_mount_path" do
+      context "if the file system is mounted" do
+        before do
+          device.filesystem.mount_path = "/test"
+        end
+
+        it "returns the mount path" do
+          expect(subject.filesystem_mount_path).to eq("/test")
+        end
+      end
+
+      context "if the file system is not mounted" do
+        before do
+          device.filesystem.mount_path = ""
+        end
+
+        it "returns empty string" do
+          expect(subject.filesystem_mount_path).to eq("")
+        end
+      end
+    end
+
+    describe "#filesystem_label" do
+      before do
+        allow(Y2Storage::FilesystemLabel).to receive(:new).with(device).and_return(label)
+      end
+
+      let(:label) { instance_double(Y2Storage::FilesystemLabel, to_s: "photos") }
+
+      it "returns the label of the file system" do
+        expect(subject.filesystem_label).to eq("photos")
       end
     end
   end

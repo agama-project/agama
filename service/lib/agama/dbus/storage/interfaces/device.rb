@@ -33,10 +33,13 @@ end
 
 require "agama/dbus/storage/interfaces/device/block"
 require "agama/dbus/storage/interfaces/device/component"
+require "agama/dbus/storage/interfaces/device/device"
 require "agama/dbus/storage/interfaces/device/drive"
 require "agama/dbus/storage/interfaces/device/filesystem"
+require "agama/dbus/storage/interfaces/device/lvm_lv"
 require "agama/dbus/storage/interfaces/device/lvm_vg"
 require "agama/dbus/storage/interfaces/device/md"
 require "agama/dbus/storage/interfaces/device/multipath"
+require "agama/dbus/storage/interfaces/device/partition"
 require "agama/dbus/storage/interfaces/device/partition_table"
 require "agama/dbus/storage/interfaces/device/raid"

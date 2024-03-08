@@ -21,37 +21,17 @@
 
 require_relative "../../../../../test_helper"
 
-shared_examples "LVM.VolumeGroup interface" do
-  describe "LVM.VolumeGroup D-Bus interface" do
+shared_examples "LVM.LogicalVolume interface" do
+  describe "LVM.LogicalVolume D-Bus interface" do
     let(:scenario) { "trivial_lvm.yml" }
 
-    let(:device) { devicegraph.find_by_name("/dev/vg0") }
+    let(:device) { devicegraph.find_by_name("/dev/vg0/lv1") }
 
-    describe "#lvm_vg_size" do
-      before do
-        allow(device).to receive(:size).and_return(size)
-      end
+    describe "#lvm_lv_vg" do
+      it "returns the path of the host volume group" do
+        vg0 = devicegraph.find_by_name("/dev/vg0")
 
-      let(:size) { Y2Storage::DiskSize.new(1024) }
-
-      it "returns the size in bytes" do
-        expect(subject.lvm_vg_size).to eq(1024)
-      end
-    end
-
-    describe "#lvm_vg_pvs" do
-      it "returns the D-Bus path of the physical volumes" do
-        sda1 = devicegraph.find_by_name("/dev/sda1")
-
-        expect(subject.lvm_vg_pvs).to contain_exactly(tree.path_for(sda1))
-      end
-    end
-
-    describe "#lvm_vg_lvs" do
-      it "returns the D-Bus path of the logical volumes" do
-        lv1 = devicegraph.find_by_name("/dev/vg0/lv1")
-
-        expect(subject.lvm_vg_lvs).to contain_exactly(tree.path_for(lv1))
+        expect(subject.lvm_lv_vg).to eq(tree.path_for(vg0))
       end
     end
   end

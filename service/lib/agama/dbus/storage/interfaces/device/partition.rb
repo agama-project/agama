@@ -26,51 +26,43 @@ module Agama
     module Storage
       module Interfaces
         module Device
-          # Interface for a LVM Volume Group.
+          # Interface for partition.
           #
           # @note This interface is intended to be included by {Agama::DBus::Storage::Device} if
           #   needed.
-          module LvmVg
+          module Partition
             # Whether this interface should be implemented for the given device.
             #
-            # @note LVM Volume Groups implement this interface.
+            # @note Partitions implement this interface.
             #
             # @param storage_device [Y2Storage::Device]
             # @return [Boolean]
             def self.apply?(storage_device)
-              storage_device.is?(:lvm_vg)
+              storage_device.is?(:partition)
             end
 
-            VOLUME_GROUP_INTERFACE = "org.opensuse.Agama.Storage1.LVM.VolumeGroup"
-            private_constant :VOLUME_GROUP_INTERFACE
+            PARTITION_INTERFACE = "org.opensuse.Agama.Storage1.Partition"
+            private_constant :PARTITION_INTERFACE
 
-            # Size of the volume group in bytes
+            # Device hosting the partition table of this partition.
             #
-            # @return [Integer]
-            def lvm_vg_size
-              storage_device.size.to_i
+            # @return [Array<::DBus::ObjectPath>]
+            def partition_device
+              tree.path_for(storage_device.partitionable)
             end
 
-            # D-Bus paths of the objects representing the physical volumes.
+            # Whether it is a (valid) EFI System partition
             #
-            # @return [Array<String>]
-            def lvm_vg_pvs
-              storage_device.lvm_pvs.map { |p| tree.path_for(p.plain_blk_device) }
-            end
-
-            # D-Bus paths of the objects representing the logical volumes.
-            #
-            # @return [Array<String>]
-            def lvm_vg_lvs
-              storage_device.lvm_lvs.map { |l| tree.path_for(l) }
+            # @return [Boolean]
+            def partition_efi
+              storage_device.efi_system?
             end
 
             def self.included(base)
               base.class_eval do
-                dbus_interface VOLUME_GROUP_INTERFACE do
-                  dbus_reader :lvm_vg_size, "t", dbus_name: "Size"
-                  dbus_reader :lvm_vg_pvs, "ao", dbus_name: "PhysicalVolumes"
-                  dbus_reader :lvm_vg_lvs, "ao", dbus_name: "LogicalVolumes"
+                dbus_interface PARTITION_INTERFACE do
+                  dbus_reader :partition_device, "o", dbus_name: "Device"
+                  dbus_reader :partition_efi, "b", dbus_name: "EFI"
                 end
               end
             end
