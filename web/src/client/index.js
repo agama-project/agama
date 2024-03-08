@@ -27,6 +27,7 @@ import { Monitor } from "./monitor";
 import { SoftwareClient } from "./software";
 import { StorageClient } from "./storage";
 import { UsersClient } from "./users";
+import { ProductClient } from "./software";
 import phase from "./phase";
 import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
@@ -39,6 +40,7 @@ import { HTTPClient } from "./http";
  * @property {ManagerClient} manager - manager client.
  * @property {Monitor} monitor - service monitor.
  * @property {NetworkClient} network - network client.
+ * @property {ProductClient} product - product client.
  * @property {SoftwareClient} software - software client.
  * @property {StorageClient} storage - storage client.
  * @property {UsersClient} users - users client.
@@ -71,8 +73,9 @@ import { HTTPClient } from "./http";
  */
 const createClient = (url) => {
   const client = new HTTPClient(url);
-  console.log("client", client);
   const l10n = new L10nClient(client);
+  // TODO: unify with the manager client
+  const product = new ProductClient(client);
   // const manager = new ManagerClient(address);
   // const monitor = new Monitor(address, MANAGER_SERVICE);
   // const network = new NetworkClient(address);
@@ -133,6 +136,7 @@ const createClient = (url) => {
 
   return {
     l10n,
+    product,
     // manager,
     // monitor,
     // network,
