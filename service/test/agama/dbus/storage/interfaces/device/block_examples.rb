@@ -27,12 +27,6 @@ shared_examples "Block interface" do
 
     let(:device) { devicegraph.find_by_name("/dev/sda") }
 
-    describe "#block_name" do
-      it "returns the name of the device" do
-        expect(subject.block_name).to eq("/dev/sda")
-      end
-    end
-
     describe "#block_start" do
       before do
         allow(device).to receive(:start).and_return(345)

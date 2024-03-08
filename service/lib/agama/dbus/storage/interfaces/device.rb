@@ -33,6 +33,7 @@ end
 
 require "agama/dbus/storage/interfaces/device/block"
 require "agama/dbus/storage/interfaces/device/component"
+require "agama/dbus/storage/interfaces/device/device"
 require "agama/dbus/storage/interfaces/device/drive"
 require "agama/dbus/storage/interfaces/device/filesystem"
 require "agama/dbus/storage/interfaces/device/lvm_vg"

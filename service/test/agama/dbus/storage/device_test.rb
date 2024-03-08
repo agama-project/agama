@@ -23,6 +23,7 @@ require_relative "../../../test_helper"
 require_relative "../../storage/storage_helpers"
 require_relative "./interfaces/device/block_examples"
 require_relative "./interfaces/device/component_examples"
+require_relative "./interfaces/device/device_examples"
 require_relative "./interfaces/device/drive_examples"
 require_relative "./interfaces/device/filesystem_examples"
 require_relative "./interfaces/device/lvm_vg_examples"
@@ -66,6 +67,10 @@ describe Agama::DBus::Storage::Device do
 
       let(:device) { devicegraph.find_by_name("/dev/sda") }
 
+      it "defines the Device interface" do
+        expect(subject).to include_dbus_interface("org.opensuse.Agama.Storage1.Device")
+      end
+
       it "defines the Drive interface" do
         expect(subject).to include_dbus_interface("org.opensuse.Agama.Storage1.Drive")
       end
@@ -79,6 +84,10 @@ describe Agama::DBus::Storage::Device do
       let(:scenario) { "empty-dm_raids.xml" }
 
       let(:device) { devicegraph.dm_raids.first }
+
+      it "defines the Device interface" do
+        expect(subject).to include_dbus_interface("org.opensuse.Agama.Storage1.Device")
+      end
 
       it "defines the Drive interface" do
         expect(subject).to include_dbus_interface("org.opensuse.Agama.Storage1.Drive")
@@ -98,6 +107,10 @@ describe Agama::DBus::Storage::Device do
 
       let(:device) { devicegraph.md_raids.first }
 
+      it "defines the Device interface" do
+        expect(subject).to include_dbus_interface("org.opensuse.Agama.Storage1.Device")
+      end
+
       it "does not define the Drive interface" do
         expect(subject).to_not include_dbus_interface("org.opensuse.Agama.Storage1.Drive")
       end
@@ -115,6 +128,14 @@ describe Agama::DBus::Storage::Device do
       let(:scenario) { "trivial_lvm.yml" }
 
       let(:device) { devicegraph.find_by_name("/dev/vg0") }
+
+      it "defines the Device interface" do
+        expect(subject).to include_dbus_interface("org.opensuse.Agama.Storage1.Device")
+      end
+
+      it "does not define the Drive interface" do
+        expect(subject).to_not include_dbus_interface("org.opensuse.Agama.Storage1.Drive")
+      end
 
       it "defines the LVM.VolumeGroup interface" do
         expect(subject).to include_dbus_interface("org.opensuse.Agama.Storage1.LVM.VolumeGroup")
@@ -141,7 +162,29 @@ describe Agama::DBus::Storage::Device do
           .to_not include_dbus_interface("org.opensuse.Agama.Storage1.PartitionTable")
       end
     end
+
+    context "when the device is formatted" do
+      let(:scenario) { "multipath-formatted.xml" }
+
+      let(:device) { devicegraph.find_by_name("/dev/mapper/0QEMU_QEMU_HARDDISK_mpath1") }
+
+      it "defines the Filesystem interface" do
+        expect(subject).to include_dbus_interface("org.opensuse.Agama.Storage1.Filesystem")
+      end
+    end
+
+    context "when the device is no formatted" do
+      let(:scenario) { "partitioned_md.yml" }
+
+      let(:device) { devicegraph.find_by_name("/dev/sda") }
+
+      it "does not define the Filesystem interface" do
+        expect(subject).to_not include_dbus_interface("org.opensuse.Agama.Storage1.Filesystem")
+      end
+    end
   end
+
+  include_examples "Device interface"
 
   include_examples "Drive interface"
 

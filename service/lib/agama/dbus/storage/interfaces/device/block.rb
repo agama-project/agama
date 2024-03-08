@@ -44,13 +44,6 @@ module Agama
             BLOCK_INTERFACE = "org.opensuse.Agama.Storage1.Block"
             private_constant :BLOCK_INTERFACE
 
-            # Name of the block device
-            #
-            # @return [String] e.g., "/dev/sda"
-            def block_name
-              storage_device.name
-            end
-
             # Position of the first block of the region.
             #
             # @return [Integer]
@@ -112,8 +105,7 @@ module Agama
 
             def self.included(base)
               base.class_eval do
-                dbus_interface BLOCK_INTERFACE  do
-                  dbus_reader :block_name, "s", dbus_name: "Name"
+                dbus_interface BLOCK_INTERFACE do
                   dbus_reader :block_start, "t", dbus_name: "Start"
                   dbus_reader :block_active, "b", dbus_name: "Active"
                   dbus_reader :block_encrypted, "b", dbus_name: "Encrypted"
