@@ -150,7 +150,7 @@ const DevicesResult = ({ settings, devices }) => {
   const renderDeviceName = (item) => {
     const newLabel = (device) => {
       const systemDevice = system.find(d => d.sid === device.sid);
-      if (!systemDevice) return _("(new)");
+      if (device.sid && !systemDevice) return _("(new)");
     };
 
     return (
