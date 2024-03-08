@@ -24,8 +24,8 @@ import { Outlet } from "react-router-dom";
 
 import { useInstallerClient, useInstallerClientStatus } from "~/context/installer";
 import { useProduct } from "./context/product";
-import { STARTUP, INSTALL } from "~/client/phase";
-import { BUSY } from "~/client/status";
+import { CONFIG, INSTALL, STARTUP } from "~/client/phase";
+import { BUSY, IDLE } from "~/client/status";
 
 import { DBusError, If, Installation } from "~/components/core";
 import { Loading } from "./components/layout";
@@ -51,22 +51,29 @@ function App() {
 
   useEffect(() => {
     if (client) {
-      return client.manager.onPhaseChange(setPhase);
+      // FIXME: adapt to the new API
+      // return client.manager.onPhaseChange(setPhase);
+      setPhase(CONFIG);
     }
   }, [client, setPhase]);
 
   useEffect(() => {
     if (client) {
-      return client.manager.onStatusChange(setStatus);
+      setStatus(IDLE);
+      // FIXME: adapt to the new API
+      // return client.manager.onStatusChange(setStatus);
     }
   }, [client, setStatus]);
 
   useEffect(() => {
     const loadPhase = async () => {
-      const phase = await client.manager.getPhase();
-      const status = await client.manager.getStatus();
-      setPhase(phase);
-      setStatus(status);
+      setPhase(CONFIG);
+      setStatus(IDLE);
+      // FIXME: adapt to the new API
+      // const phase = await client.manager.getPhase();
+      // const status = await client.manager.getStatus();
+      // setPhase(phase);
+      // setStatus(status);
     };
 
     if (client) {

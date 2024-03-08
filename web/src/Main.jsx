@@ -21,15 +21,17 @@
 
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { Questions } from "~/components/questions";
+// import { Questions } from "~/components/questions";
 
 function Main() {
-  return (
-    <>
-      <Questions />
-      <Outlet />
-    </>
-  );
+  // FIXME: adapt to the new API
+  // return (
+  //   <>
+  //     <Questions />
+  //     <Outlet />
+  //   </>
+  // );
+  return <Outlet />;
 }
 
 export default Main;

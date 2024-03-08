@@ -31,7 +31,7 @@ import { useInstallerClient } from "~/context/installer";
 import { useProduct } from "~/context/product";
 
 function ProductSelectionPage() {
-  const { manager, software } = useInstallerClient();
+  const { manager, product } = useInstallerClient();
   const navigate = useNavigate();
   const { products, selectedProduct } = useProduct();
   const [newProductId, setNewProductId] = useState(selectedProduct?.id);
@@ -39,16 +39,17 @@ function ProductSelectionPage() {
   useEffect(() => {
     // TODO: display a notification in the UI to emphasizes that
     // selected product has changed
-    return software.product.onChange(() => navigate("/"));
-  }, [software, navigate]);
+    return product.onChange(() => navigate("/"));
+  }, [product, navigate]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
 
     if (newProductId !== selectedProduct?.id) {
       // TODO: handle errors
-      await software.product.select(newProductId);
-      manager.startProbing();
+      await product.select(newProductId);
+      // FIXME: adapt to the new API
+      // manager.startProbing();
     }
 
     navigate("/");
