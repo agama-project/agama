@@ -51,11 +51,11 @@ module Agama
               storage_device.sid
             end
 
-            # Name of the device.
+            # Name to represent the device.
             #
             # @return [String] e.g., "/dev/sda".
             def device_name
-              storage_device.name
+              storage_device.display_name || ""
             end
 
             # Description of the device.
