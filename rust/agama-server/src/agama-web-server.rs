@@ -67,7 +67,8 @@ async fn is_ssl_stream(stream: &tokio::net::TcpStream) -> bool {
 
     // peek() receives the data without removing it from the stream,
     // the data is not consumed, it will be read from the stream again later
-    stream.peek(&mut buf)
+    stream
+        .peek(&mut buf)
         .await
         // SSL3.0/TLS1.x starts with byte 0x16
         // SSL2 starts with 0x80 (but should not be used as it is considered)
@@ -78,7 +79,10 @@ async fn is_ssl_stream(stream: &tokio::net::TcpStream) -> bool {
 }
 
 // build a SSL acceptor using a provided SSL certificate or generate a self-signed one
-fn create_ssl_acceptor(cert_file: &String, key_file: &String) -> Result<SslAcceptor, openssl::error::ErrorStack> {
+fn create_ssl_acceptor(
+    cert_file: &String,
+    key_file: &String
+) -> Result<SslAcceptor, openssl::error::ErrorStack> {
     let mut tls_builder = SslAcceptor::mozilla_modern_v5(SslMethod::tls_server())?;
 
     if cert_file.is_empty() && key_file.is_empty() {
@@ -95,12 +99,10 @@ fn create_ssl_acceptor(cert_file: &String, key_file: &String) -> Result<SslAccep
         // key_file.write_all(key.private_key_to_pem_pkcs8().unwrap().as_ref()).unwrap();
     } else {
         tracing::info!("Loading PEM certificate: {}", cert_file);
-        tls_builder
-            .set_certificate_file(PathBuf::from(cert_file), SslFiletype::PEM)?;
+        tls_builder.set_certificate_file(PathBuf::from(cert_file), SslFiletype::PEM)?;
 
         tracing::info!("Loading PEM key: {}", key_file);
-        tls_builder
-            .set_private_key_file(PathBuf::from(key_file), SslFiletype::PEM)?;
+        tls_builder.set_private_key_file(PathBuf::from(key_file), SslFiletype::PEM)?;
     }
 
     // check that the key belongs to the certificate
@@ -119,7 +121,9 @@ fn redirect_https(host: &str, uri: &hyper::Uri) -> Response<String> {
 
     // according to documentation this can fail only if builder was previosly fed with data
     // which failed to parse into an internal representation (e.g. invalid header)
-    builder.body(String::from("")).expect("Failed to create redirection request")
+    builder
+        .body(String::from(""))
+        .expect("Failed to create redirection request")
 }
 
 // build an error response for the HTTP -> HTTPS redirection when we cannot build
@@ -131,7 +135,9 @@ fn redirect_error() -> Response<String> {
     let msg = "HTTP protocol is not allowed for external requests, please use HTTPS.\n";
     // according to documentation this can fail only if builder was previosly fed with data
     // which failed to parse into an internal representation (e.g. invalid header)
-    builder.body(String::from(msg)).expect("Failed to create an error response")
+    builder
+        .body(String::from(msg))
+        .expect("Failed to create an error response")
 }
 
 // build a router for the HTTP -> HTTPS redirection
@@ -173,7 +179,10 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
         let tls_acceptor = ssl_acceptor.clone();
 
         // Wait for a new tcp connection; if it fails we cannot do much, so print an error and die
-        let (tcp_stream, addr) = listener.accept().await.expect("Failed to open port for listening");
+        let (tcp_stream, addr) = listener
+            .accept()
+            .await
+            .expect("Failed to open port for listening");
 
         tokio::spawn(async move {
             if is_ssl_stream(&tcp_stream).await {
@@ -242,7 +251,7 @@ async fn serve_command(
     let service = if let Ok(config) = web::ServiceConfig::load() {
         web::service(config, tx)
     } else {
-        return Err(anyhow::anyhow!("Failed to load the service configuration"))
+        return Err(anyhow::anyhow!("Failed to load the service configuration"));
     };
     let ssl_acceptor = if let Ok(ssl_acceptor) = create_ssl_acceptor(cert, key) {
         ssl_acceptor
