@@ -40,10 +40,14 @@ import useNodeSiblings from "~/hooks/useNodeSiblings";
  *
  * A component intended for placing things exclusively related to Agama.
  *
- * @param {object} props
- * @param {React.ReactElement} props.children
+ * @typedef {object} SidebarProps
+ * @property {boolean} [isOpen] - Whether the sidebar is open or not.
+ * @property {() => void} [onClose] - A callback to be called when sidebar is closed.
+ * @property {React.ReactNode} [props.children]
+ *
+ * @param {SidebarProps}
  */
-export default function Sidebar ({ children, isOpen, onClose = noop }) {
+export default function Sidebar ({ isOpen, onClose = noop, children }) {
   const asideRef = useRef(null);
   const closeButtonRef = useRef(null);
   const [addAttribute, removeAttribute] = useNodeSiblings(asideRef.current);

@@ -46,12 +46,12 @@ describe("About", () => {
   });
 
   it("allows setting its button text", () => {
-    plainRender(<About buttonText="What is this?"/>);
+    plainRender(<About buttonText="What is this?" />);
     screen.getByRole("button", { name: "What is this?" });
   });
 
   it("allows setting its button variant", () => {
-    plainRender(<About buttonVariant="tertiary"/>);
+    plainRender(<About buttonVariant="tertiary" />);
     const button = screen.getByRole("button", { name: "About Agama" });
     expect(button.classList.contains("pf-m-tertiary")).toBe(true);
   });

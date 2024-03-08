@@ -19,11 +19,18 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import { Button, Modal } from "@patternfly/react-core";
-
 import { _ } from "~/i18n";
 import { partition } from "~/utils";
+
+/**
+ * @typedef {import("@patternfly/react-core").ModalProps} ModalProps
+ * @typedef {import("@patternfly/react-core").ButtonProps} ButtonProps
+ * @typedef {Omit<ButtonProps, 'variant'>} ButtonWithoutVariantProps
+ */
 
 /**
  * Wrapper component for holding Popup actions
@@ -33,6 +40,7 @@ import { partition } from "~/utils";
  *
  * @see Popup examples.
  *
+ * @param {object} props
  * @param {React.ReactNode} [props.children] - a collection of Action components
  */
 const Actions = ({ children }) => <>{children}</>;
@@ -42,13 +50,10 @@ const Actions = ({ children }) => <>{children}</>;
  *
  * Built on top of {@link https://www.patternfly.org/components/button PF/Button}
  *
- * @see Popup examples.
- *
- * @param {React.ReactNode} props.children - content of the action
- * @param {object} [props] - PF/Button props, see {@link https://www.patternfly.org/components/button#props}
+ * @param {ButtonProps} props
  */
-const Action = ({ children, ...props }) => (
-  <Button { ...props }>
+const Action = ({ children, ...buttonProps }) => (
+  <Button { ...buttonProps }>
     {children}
   </Button>
 );
@@ -68,11 +73,10 @@ const Action = ({ children, ...props }) => (
  *     <Text>Upload</Text>
  *   </PrimaryAction>
  *
- * @param {React.ReactNode} props.children - content of the action
- * @param {object} [props] - {@link Action} props
+ * @param {ButtonWithoutVariantProps} props
  */
-const PrimaryAction = ({ children, ...props }) => (
-  <Action { ...props } variant="primary">{ children }</Action>
+const PrimaryAction = ({ children, ...actionProps }) => (
+  <Action { ...actionProps } variant="primary">{ children }</Action>
 );
 
 /**
@@ -84,11 +88,10 @@ const PrimaryAction = ({ children, ...props }) => (
  * @example <caption>Using it with a custom text</caption>
  *   <Confirm onClick={accept}>Accept</Confirm>
  *
- * @param {React.ReactNode} [props.children="confirm"] - content of the action
- * @param {object} [props] - {@link Action} props
+ * @param {ButtonWithoutVariantProps} props
  */
-const Confirm = ({ children = _("Confirm"), ...props }) => (
-  <PrimaryAction key="confirm" { ...props }>{ children }</PrimaryAction>
+const Confirm = ({ children = _("Confirm"), ...actionProps }) => (
+  <PrimaryAction key="confirm" { ...actionProps }>{ children }</PrimaryAction>
 );
 
 /**
@@ -106,11 +109,10 @@ const Confirm = ({ children = _("Confirm"), ...props }) => (
  *     <Text>Dismiss</Text>
  *   </SecondaryAction>
  *
- * @param {React.ReactNode} props.children - content of the action
- * @param {object} [props] - {@link Action} props
+ * @param {ButtonWithoutVariantProps} props
  */
-const SecondaryAction = ({ children, ...props }) => (
-  <Action { ...props } variant="secondary">{ children }</Action>
+const SecondaryAction = ({ children, ...actionProps }) => (
+  <Action { ...actionProps } variant="secondary">{ children }</Action>
 );
 
 /**
@@ -122,11 +124,10 @@ const SecondaryAction = ({ children, ...props }) => (
  * @example <caption>Using it with a custom text</caption>
  *   <Cancel onClick={dismiss}>Dismiss</Confirm>
  *
- * @param {React.ReactNode} [props.children="Cancel"] - content of the action
- * @param {object} [props] - {@link Action} props
+ * @param {ButtonWithoutVariantProps} props
  */
-const Cancel = ({ children = _("Cancel"), ...props }) => (
-  <SecondaryAction key="cancel" { ...props }>{ children }</SecondaryAction>
+const Cancel = ({ children = _("Cancel"), ...actionProps }) => (
+  <SecondaryAction key="cancel" { ...actionProps }>{ children }</SecondaryAction>
 );
 
 /**
@@ -144,11 +145,10 @@ const Cancel = ({ children = _("Cancel"), ...props }) => (
  *     <Text>Do not set</Text>
  *   </AncillaryAction>
  *
- * @param {React.ReactNode} props.children - content of the action
- * @param {object} [props] - {@link Action} props
+ * @param {ButtonWithoutVariantProps} props
  */
-const AncillaryAction = ({ children, ...props }) => (
-  <Action { ...props } variant="link">{ children }</Action>
+const AncillaryAction = ({ children, ...actionsProps }) => (
+  <Action { ...actionsProps } variant="link">{ children }</Action>
 );
 
 /**
@@ -187,13 +187,7 @@ const AncillaryAction = ({ children, ...props }) => (
  *     </Popup.Actions>
  *   </Popup>
  *
- * @param {object} props - component props
- * @param {boolean} [props.isOpen=false] - whether the popup is displayed or not
- * @param {boolean} [props.showClose=false] - whether the popup should include a "X" action for closing it
- * @param {string} [props.variant="small"] - the popup size, based on PF/Modal `variant` prop
- * @param {React.ReactNode} props.children - the popup content and actions
- * @param {object} [pfModalProps] - PF/Modal props, See {@link https://www.patternfly.org/components/modal#props}
- *
+ * @param {ModalProps} props
  */
 const Popup = ({
   isOpen = false,
@@ -205,6 +199,7 @@ const Popup = ({
   const [actions, content] = partition(React.Children.toArray(children), child => child.type === Actions);
 
   return (
+    /** @ts-ignore */
     <Modal
       { ...pfModalProps }
       isOpen={isOpen}

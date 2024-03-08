@@ -19,15 +19,21 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@patternfly/react-core";
-
 import { _ } from "~/i18n";
 import { partition } from "~/utils";
 import { Icon } from "~/components/layout";
 import { If, PageMenu, Sidebar } from "~/components/core";
+// @ts-ignore
 import logoUrl from "~/assets/suse-horizontal-logo.svg";
+
+/**
+ * @typedef {import("@patternfly/react-core").ButtonProps} ButtonProps
+ */
 
 /**
  * Wrapper component for holding Page actions
@@ -37,8 +43,8 @@ import logoUrl from "~/assets/suse-horizontal-logo.svg";
  *
  * @see Page examples.
  *
- * @param {object} [props] - component props
- * @param {React.ReactNode} [props.children] - components to be rendered as actions
+ * @param {object} props - Component props.
+ * @param {React.ReactNode} props.children - Components to be rendered as actions.
  */
 const Actions = ({ children }) => <>{children}</>;
 
@@ -59,17 +65,20 @@ const Menu = PageMenu;
  *
  * @see Page examples.
  *
- * @param {object} [props] - Component props.
- * @param {function} [props.onClick] - Callback to be triggered when action is clicked.
- * @param {string} [props.navigateTo] - Route to navigate after triggering the onClick callback, if given.
- * @param {React.ReactNode} props.children - Content of the action.
- * @param {object} [props.props] - other props passed down to the internal PF/Button. See {@link https://www.patternfly.org/components/button/#button}.
+ * @typedef {object} ActionProps
+ * @property {string} [navigateTo]
+ *
+ * @typedef {ActionProps & ButtonProps} PageActionProps
+ *
+ * @param {PageActionProps} props
  */
-const Action = ({ navigateTo, onClick, children, ...props }) => {
+const Action = ({ navigateTo, children, ...props }) => {
   const navigate = useNavigate();
 
-  props.onClick = () => {
-    if (typeof onClick === "function") onClick();
+  const onClickFn = props.onClick;
+
+  props.onClick = (e) => {
+    if (typeof onClickFn === "function") onClickFn(e);
     if (navigateTo) navigate(navigateTo);
   };
 
@@ -153,7 +162,7 @@ const BackAction = () => {
  * @param {string} [props.title="Agama"] - The title for the page. By default it
  *   uses the name of the tool, do not mark it for translation.
  * @param {boolean} [props.mountSidebar=true] - Whether include the core/Sidebar component.
- * @param {JSX.Element} [props.children] - The page content.
+ * @param {JSX.Element[]} [props.children] - The page content.
  *
  */
 const Page = ({
