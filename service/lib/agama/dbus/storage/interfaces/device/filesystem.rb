@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "y2storage/filesystem_label"
 
 module Agama
   module DBus
@@ -51,18 +52,26 @@ module Agama
               storage_device.filesystem.type.to_s
             end
 
-            # Whether the filesystem contains the directory layout of an ESP partition.
+            # Mount path of the file system.
             #
-            # @return [Boolean]
-            def filesystem_efi?
-              storage_device.filesystem.efi?
+            # @return [String] Empty if not mounted.
+            def filesystem_mount_path
+              storage_device.filesystem.mount_path || ""
+            end
+
+            # Label of the file system.
+            #
+            # @return [String] Empty if it has no label.
+            def filesystem_label
+              Y2Storage::FilesystemLabel.new(storage_device).to_s
             end
 
             def self.included(base)
               base.class_eval do
                 dbus_interface FILESYSTEM_INTERFACE  do
                   dbus_reader :filesystem_type, "s", dbus_name: "Type"
-                  dbus_reader :filesystem_efi?, "b", dbus_name: "EFI"
+                  dbus_reader :filesystem_mount_path, "s", dbus_name: "MountPath"
+                  dbus_reader :filesystem_label, "s", dbus_name: "Label"
                 end
               end
             end
