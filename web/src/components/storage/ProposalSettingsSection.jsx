@@ -21,14 +21,12 @@
 
 import React, { useEffect, useState } from "react";
 import { Checkbox, Form, Skeleton, Switch, Tooltip } from "@patternfly/react-core";
-import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
-import { hasFS, isTransactionalSystem } from "~/components/storage/utils";
-import { useProduct } from "~/context/product";
+import { hasFS } from "~/components/storage/utils";
 
 /**
  * @typedef {import ("~/client/storage").ProposalManager.ProposalSettings} ProposalSettings
@@ -145,33 +143,23 @@ const SnapshotsField = ({
     onChange({ active: checked, settings });
   };
 
-  const configurableSnapshots = rootVolume.outline.snapshotsConfigurable;
-  const forcedSnapshots = !configurableSnapshots && hasFS(rootVolume, "Btrfs") && rootVolume.snapshots;
+  if (!rootVolume.outline.snapshotsConfigurable) return;
 
-  const SnapshotsToggle = () => {
-    const explanation = _("Uses Btrfs for the root file system allowing to boot to a previous \
+  const explanation = _("Uses Btrfs for the root file system allowing to boot to a previous \
 version of the system after configuration changes or software upgrades.");
-
-    return (
-      <>
-        <Switch
-          id="snapshots"
-          label={_("Use Btrfs Snapshots")}
-          isReversed
-          isChecked={isChecked}
-          onChange={switchState}
-        />
-        <div>
-          {explanation}
-        </div>
-      </>
-    );
-  };
 
   return (
     <div>
-      <If condition={forcedSnapshots} then={_("Btrfs snapshots required by product.")} />
-      <If condition={configurableSnapshots} then={<SnapshotsToggle />} />
+      <Switch
+        id="snapshots"
+        label={_("Use Btrfs Snapshots")}
+        isReversed
+        isChecked={isChecked}
+        onChange={switchState}
+      />
+      <div>
+        {explanation}
+      </div>
     </div>
   );
 };
@@ -297,8 +285,6 @@ export default function ProposalSettingsSection({
   encryptionMethods = [],
   onChange = noop
 }) {
-  const { selectedProduct } = useProduct();
-
   const changeEncryption = ({ password, method }) => {
     onChange({ encryptionPassword: password, encryptionMethod: method });
   };
@@ -318,29 +304,12 @@ export default function ProposalSettingsSection({
 
   const encryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
 
-  const transactional = isTransactionalSystem(settings?.volumes || []);
-
   return (
     <>
       <Section title={_("Settings")}>
-        <If
-          condition={transactional}
-          then={
-            <div>
-              <label>{_("Transactional system")}</label>
-              <div>
-                {/* TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed) */}
-                {sprintf(_("%s is an immutable system with atomic updates using a read-only Btrfs \
-root file system."), selectedProduct.name)}
-              </div>
-            </div>
-          }
-          else={
-            <SnapshotsField
-              settings={settings}
-              onChange={changeBtrfsSnapshots}
-            />
-          }
+        <SnapshotsField
+          settings={settings}
+          onChange={changeBtrfsSnapshots}
         />
         <EncryptionField
           password={settings.encryptionPassword || ""}
