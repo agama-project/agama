@@ -70,7 +70,7 @@ const SPACE_POLICIES = [
 // Names of the columns for the policy actions.
 const columnNames = {
   device: N_("Used device"),
-  content: N_("Current content"),
+  content: N_("Description"),
   size: N_("Size"),
   details: N_("Details"),
   action: N_("Action")
@@ -84,15 +84,16 @@ const columnNames = {
  * @param {StorageDevice} props.device
  */
 const DeviceDescriptionColumn = ({ device }) => {
-  return (
-    <>
-      <div>{device.name}</div>
-      <If
-        condition={device.isDrive}
-        then={<div className="fs-small">{`${device.vendor} ${device.model}`}</div>}
-      />
-    </>
-  );
+  // return (
+  //   <>
+  //     <div>{device.name}</div>
+  //     <If
+  //       condition={device.isDrive}
+  //       then={<div className="fs-small">{`${device.vendor} ${device.model}`}</div>}
+  //     />
+  //   </>
+  // );
+  return <div>{device.name}</div>;
 };
 
 /**
@@ -103,44 +104,47 @@ const DeviceDescriptionColumn = ({ device }) => {
  * @param {StorageDevice} props.device
  */
 const DeviceContentColumn = ({ device }) => {
-  const PartitionTableContent = () => {
-    return (
-      <div>
-        {/* TRANSLATORS: %s is replaced by partition table type (e.g., GPT) */}
-        {sprintf(_("%s partition table"), device.partitionTable.type.toUpperCase())}
-      </div>
-    );
-  };
+  // const PartitionTableContent = () => {
+  //   return (
+  //     <div>
+  //       {/* TRANSLATORS: %s is replaced by partition table type (e.g., GPT) */}
+  //       {sprintf(_("%s partition table"), device.partitionTable.type.toUpperCase())}
+  //     </div>
+  //   );
+  // };
 
   const BlockContent = () => {
     const renderContent = () => {
       const systems = device.systems;
       if (systems.length > 0) return systems.join(", ");
 
-      const filesystem = device.filesystem;
-      if (filesystem?.isEFI) return _("EFI system partition");
-      if (filesystem) {
-        // TRANSLATORS: %s is replaced by a file system type (e.g., btrfs).
-        return sprintf(_("%s file system"), filesystem?.type);
-      }
+      return device.description;
 
-      const component = device.component;
-      switch (component?.type) {
-        case "physical_volume":
-          // TRANSLATORS: %s is replaced by a LVM volume group name (e.g., /dev/vg0).
-          return sprintf(_("LVM physical volume of %s"), component.deviceNames[0]);
-        case "md_device":
-          // TRANSLATORS: %s is replaced by a RAID name (e.g., /dev/md0).
-          return sprintf(_("Member of RAID %s"), component.deviceNames[0]);
-        default:
-          return _("Not identified");
-      }
+      // const filesystem = device.filesystem;
+      // if (filesystem?.isEFI) return _("EFI system partition");
+      // if (filesystem) {
+      //   // TRANSLATORS: %s is replaced by a file system type (e.g., btrfs).
+      //   return sprintf(_("%s file system"), filesystem?.type);
+      // }
+
+      // const component = device.component;
+      // switch (component?.type) {
+      //   case "physical_volume":
+      //     // TRANSLATORS: %s is replaced by a LVM volume group name (e.g., /dev/vg0).
+      //     return sprintf(_("LVM physical volume of %s"), component.deviceNames[0]);
+      //   case "md_device":
+      //     // TRANSLATORS: %s is replaced by a RAID name (e.g., /dev/md0).
+      //     return sprintf(_("Member of RAID %s"), component.deviceNames[0]);
+      //   default:
+      //     return _("Not identified");
+      // }
     };
 
     return <div>{renderContent()}</div>;
   };
 
-  return (device.partitionTable ? <PartitionTableContent /> : <BlockContent />);
+  // return (device.partitionTable ? <PartitionTableContent /> : <BlockContent />);
+  return (device.partitionTable ? device.description : <BlockContent />);
 };
 
 /**

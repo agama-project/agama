@@ -218,6 +218,8 @@ export default function ProposalPage() {
   };
 
   const PageContent = () => {
+    const devices = { system: state.system, staging: state.staging };
+
     return (
       <>
         <ProposalDeviceSection
@@ -246,6 +248,8 @@ export default function ProposalPage() {
         />
         <ProposalActionsSection
           actions={state.actions}
+          settings={state.settings}
+          devices={devices}
           errors={state.errors}
           isLoading={state.loading}
         />

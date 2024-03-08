@@ -29,6 +29,7 @@ import {
 import { sprintf } from "sprintf-js";
 
 import { _, n_ } from "~/i18n";
+import { deviceSize } from "~/components/storage/utils";
 import { If, Section } from "~/components/core";
 import { partition } from "~/utils";
 
@@ -104,6 +105,132 @@ const ActionsSkeleton = () => {
   );
 };
 
+class DevicesManager {
+  constructor(system, staging) {
+    this.system = system;
+    this.staging = staging;
+  }
+
+  systemDevice(sid) {
+    return this.system.find(d => d.sid === sid);
+  }
+
+  device(sid) {
+    return this.staging.find(d => d.sid === sid);
+  }
+
+  lvmVgsWithMountPoints() {
+    const vgs = this.staging.filter(d => d.type === "lvmVg");
+    return vgs.filter(v => v.logicalVolumes.find(l => l.filesystem?.mountPath !== undefined));
+  }
+
+  children(device) {
+    if (device.partitionTable) return this.partitionTableChildren(device.partitionTable);
+    if (device.type === "lvmVg") return this.lvmVgChildren(device);
+    return [];
+  }
+
+  partitionTableChildren(partitionTable) {
+    const { partitions, unusedSlots } = partitionTable;
+    const children = partitions.concat(unusedSlots);
+
+    return children.sort((a, b) => a.start < b.start ? -1 : 1);
+  }
+
+  lvmVgChildren(lvmVg) {
+    return lvmVg.logicalVolumes.sort((a, b) => a.name < b.name ? -1 : 1);
+  }
+
+  isSlot(storageElement) {
+    return storageElement.sid === undefined;
+  }
+}
+
+class SlotPresenter {
+  constructor(slot) {
+    this.slot = slot;
+  }
+
+  name() {
+    return "";
+  }
+
+  details() {
+    return "Unused space";
+  }
+
+  size() {
+    return deviceSize(this.slot.size);
+  }
+
+  mountPoint() {
+    return "";
+  }
+}
+
+class DevicePresenter {
+  constructor(device, devicesManager) {
+    this.device = device;
+    this.devicesManager = devicesManager;
+  }
+
+  name() {
+    return this.device.name;
+  }
+
+  details() {
+    return this.device.description;
+  }
+
+  size() {
+    return deviceSize(this.device.size);
+  }
+
+  mountPoint() {
+    return this.device.filesystem?.mountPath || "";
+  }
+}
+
+const DeviceResult = ({ presenter }) => {
+  return (
+    <ul>
+      <li>{presenter.name()}</li>
+      <ul>
+        <li>{presenter.details()}</li>
+        <li>{presenter.size()}</li>
+        <li>{presenter.mountPoint()}</li>
+      </ul>
+    </ul>
+  );
+};
+
+const DevicesResult = ({ settings, devices }) => {
+  const { system = [], staging = [] } = devices;
+  const devicesManager = new DevicesManager(system, staging);
+
+  const usedDevices = () => {
+    const diskDevices = settings.installationDevices.map(d => devicesManager.device(d.sid));
+    const lvmVgs = devicesManager.lvmVgsWithMountPoints();
+
+    return diskDevices.concat(lvmVgs);
+  };
+
+  const presenter = (storageElement) => {
+    if (devicesManager.isSlot(storageElement))
+      return new SlotPresenter(storageElement);
+    else
+      return new DevicePresenter(storageElement, devicesManager);
+  };
+
+  return usedDevices().map(device => {
+    const devices = [device].concat(devicesManager.children(device));
+
+    return devices.map((d, i) => {
+      return <DeviceResult key={i} presenter={presenter(d)} />;
+    });
+  });
+};
+
 /**
  * Section with the actions to perform in the system
  * @component
@@ -113,8 +240,16 @@ const ActionsSkeleton = () => {
  * @param {string[]} [props.errors=[]]
  * @param {boolean} [props.isLoading=false] - Whether the section content should be rendered as loading
  */
-export default function ProposalActionsSection({ actions = [], errors = [], isLoading = false }) {
+export default function ProposalActionsSection({
+  actions,
+  settings,
+  devices,
+  errors = [],
+  isLoading = false
+}) {
   if (isLoading) errors = [];
+
+  console.log("devices: ", devices);
 
   return (
     <Section
@@ -130,7 +265,12 @@ export default function ProposalActionsSection({ actions = [], errors = [], isLo
       <If
         condition={isLoading}
         then={<ActionsSkeleton />}
-        else={<ProposalActions actions={actions} />}
+        else={
+          <>
+            <DevicesResult settings={settings} devices={devices} />
+            <ProposalActions actions={actions} />
+          </>
+        }
       />
     </Section>
   );
