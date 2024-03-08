@@ -42,29 +42,36 @@ function useAuth() {
  * @param {React.ReactNode} [props.children] - content to display within the provider
  */
 function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const login = useCallback(async (password) => {
-    const response = await fetch("/api/authenticate", {
+    const response = await fetch("/api/auth", {
       method: "POST",
       body: JSON.stringify({ password }),
       headers: { "Content-Type": "application/json" },
     });
-    setIsAuthenticated(response.status === 200);
+    setIsLoggedIn(response.status === 200);
+  }, []);
+
+  const logout = useCallback(async () => {
+    await fetch("/api/auth", {
+      method: "DELETE",
+    });
+    setIsLoggedIn(false);
   }, []);
 
   useEffect(() => {
-    fetch("/api/authenticate", {
+    fetch("/api/auth", {
       headers: { "Content-Type": "application/json" },
     })
       .then((response) => {
-        setIsAuthenticated(response.status === 200);
+        setIsLoggedIn(response.status === 200);
       })
-      .catch(() => setIsAuthenticated(false));
+      .catch(() => setIsLoggedIn(false));
   }, []);
 
   return (
-    <AuthContext.Provider value={{ login, isAuthenticated }}>
+    <AuthContext.Provider value={{ login, logout, isLoggedIn }}>
       {children}
     </AuthContext.Provider>
   );

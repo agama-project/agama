@@ -41,10 +41,10 @@ pub struct LoginRequest {
     pub password: String,
 }
 
-#[utoipa::path(post, path = "/authenticate", responses(
+#[utoipa::path(post, path = "/auth", responses(
     (status = 200, description = "The user have been successfully authenticated", body = AuthResponse)
 ))]
-pub async fn authenticate(
+pub async fn login(
     State(state): State<ServiceState>,
     Json(login): Json<LoginRequest>,
 ) -> Result<impl IntoResponse, AuthError> {
@@ -69,9 +69,22 @@ pub async fn authenticate(
     Ok((headers, content))
 }
 
-#[utoipa::path(get, path = "/authenticate", responses(
+#[utoipa::path(delete, path = "/auth", responses(
+    (status = 204, description = "The user have been logged out")
+))]
+pub async fn logout(_claims: TokenClaims) -> Result<impl IntoResponse, AuthError> {
+    let mut headers = HeaderMap::new();
+    let cookie = "token=deleted; HttpOnly; Expires=Thu, 01 Jan 1970 00:00:00 GMT".to_string();
+    headers.insert(
+        SET_COOKIE,
+        cookie.parse().expect("could not build a valid cookie"),
+    );
+    Ok(headers)
+}
+
+#[utoipa::path(get, path = "/auth", responses(
     (status = 200, description = "Check whether the user is authenticated")
 ))]
-pub async fn show_authenticate(_claims: TokenClaims) -> Result<(), AuthError> {
+pub async fn session(_claims: TokenClaims) -> Result<(), AuthError> {
     Ok(())
 }

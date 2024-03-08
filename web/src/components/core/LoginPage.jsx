@@ -40,18 +40,17 @@ import { Center } from "~/components/layout";
 /**
  * Renders the UI that lets the user log into the system.
  * @component
- *
  */
 export default function LoginPage() {
   const [password, setPassword] = useState("");
-  const { isAuthenticated, login: loginFn } = useAuth();
+  const { isLoggedIn, login: loginFn } = useAuth();
 
   const login = async (e) => {
     e.preventDefault();
     await loginFn(password);
   };
 
-  if (isAuthenticated) {
+  if (isLoggedIn) {
     return <Navigate to="/" />;
   }
 

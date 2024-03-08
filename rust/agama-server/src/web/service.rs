@@ -1,3 +1,4 @@
+use super::http::{login, logout, session};
 use super::{auth::TokenClaims, config::ServiceConfig, state::ServiceState, EventsSender};
 use axum::{
     extract::Request,
@@ -19,7 +20,7 @@ use tower_http::{compression::CompressionLayer, services::ServeDir, trace::Trace
 ///
 /// * A static assets directory (`public_dir`).
 /// * A websocket at the `/ws` path.
-/// * An authentication endpointg at `/authenticate`.
+/// * An authentication endpoint at `/auth`.
 /// * A 'ping' endpoint at '/ping'.
 /// * A number of authenticated services that are added using the `add_service` function.
 pub struct MainServiceBuilder {
@@ -81,10 +82,7 @@ impl MainServiceBuilder {
                 state.clone(),
             ))
             .route("/ping", get(super::http::ping))
-            .route(
-                "/authenticate",
-                post(super::http::authenticate).get(super::http::show_authenticate),
-            );
+            .route("/auth", post(login).get(session).delete(logout));
 
         let serve = ServeDir::new(self.public_dir);
         Router::new()
