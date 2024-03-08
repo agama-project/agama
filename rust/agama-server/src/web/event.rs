@@ -1,3 +1,4 @@
+use crate::l10n::web::LocaleConfig;
 use agama_lib::{progress::Progress, software::SelectedBy};
 use serde::Serialize;
 use std::collections::HashMap;
@@ -6,6 +7,7 @@ use tokio::sync::broadcast::{Receiver, Sender};
 #[derive(Clone, Serialize)]
 #[serde(tag = "type")]
 pub enum Event {
+    L10nConfigChanged(LocaleConfig),
     LocaleChanged { locale: String },
     Progress(Progress),
     ProductChanged { id: String },

@@ -7,14 +7,16 @@ pub mod web;
 use crate::error::Error;
 use agama_locale_data::{KeymapId, LocaleCode};
 use anyhow::Context;
-pub use keyboard::Keymap;
 use keyboard::KeymapsDatabase;
-pub use locale::LocaleEntry;
 use locale::LocalesDatabase;
 use std::process::Command;
-pub use timezone::TimezoneEntry;
 use timezone::TimezonesDatabase;
 use zbus::{dbus_interface, Connection};
+
+pub use keyboard::Keymap;
+pub use locale::LocaleEntry;
+pub use timezone::TimezoneEntry;
+pub use web::LocaleConfig;
 
 pub struct Locale {
     timezone: String,

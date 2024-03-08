@@ -74,7 +74,7 @@ async fn locales(State(state): State<LocaleState>) -> Json<Vec<LocaleEntry>> {
     Json(locales)
 }
 
-#[derive(Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct LocaleConfig {
     /// Locales to install in the target system
     locales: Option<Vec<String>>,
@@ -104,6 +104,8 @@ async fn keymaps(State(state): State<LocaleState>) -> Json<Vec<Keymap>> {
     Json(keymaps)
 }
 
+// TODO: update all or nothing
+// TODO: send only the attributes that have changed
 #[utoipa::path(put, path = "/l10n/config", responses(
     (status = 200, description = "Set the locale configuration", body = LocaleConfig)
 ))]
@@ -112,6 +114,7 @@ async fn set_config(
     Json(value): Json<LocaleConfig>,
 ) -> Result<Json<()>, LocaleError> {
     let mut data = state.locale.write().unwrap();
+    let mut changes = LocaleConfig::default();
 
     if let Some(locales) = &value.locales {
         for loc in locales {
@@ -120,6 +123,7 @@ async fn set_config(
             }
         }
         data.locales = locales.clone();
+        changes.locales = Some(data.locales.clone());
     }
 
     if let Some(timezone) = &value.timezone {
@@ -127,10 +131,12 @@ async fn set_config(
             return Err(LocaleError::UnknownTimezone(timezone.to_string()));
         }
         data.timezone = timezone.to_owned();
+        changes.timezone = Some(data.timezone.clone());
     }
 
     if let Some(keymap_id) = &value.keymap {
         data.keymap = keymap_id.parse()?;
+        changes.keymap = Some(keymap_id.clone());
     }
 
     if let Some(ui_locale) = &value.ui_locale {
@@ -141,10 +147,13 @@ async fn set_config(
 
         helpers::set_service_locale(&locale);
         data.translate(&locale)?;
+        changes.ui_locale = Some(locale.to_string());
         _ = state.events.send(Event::LocaleChanged {
             locale: locale.to_string(),
         });
     }
+
+    _ = state.events.send(Event::L10nConfigChanged(changes));
 
     Ok(Json(()))
 }
