@@ -220,10 +220,15 @@ async fn get_config(
     State(state): State<SoftwareState<'_>>,
 ) -> Result<Json<SoftwareConfig>, SoftwareError> {
     let product = state.product.product().await?;
+    let product = if product.is_empty() {
+        None
+    } else {
+        Some(product)
+    };
     let patterns = state.software.user_selected_patterns().await?;
     let config = SoftwareConfig {
         patterns: Some(patterns),
-        product: Some(product),
+        product: product,
     };
     Ok(Json(config))
 }
