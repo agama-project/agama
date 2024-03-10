@@ -12,9 +12,18 @@ description: 'The Tumbleweed distribution is a pure rolling release version of
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
+    ca: La distribució Tumbleweed és una versió purament contínua d'openSUSE que
+      conté les últimes versions estables de tot el programari en lloc de
+      dependre de cicles de llançament periòdics rígids. El projecte fa això per
+      als usuaris que volen el programari estable més nou.
     cs: Tumbleweed je rolující verze distribuce openSUSE obsahující poslední
       "stabilní" verze veškerého software namísto pevných pravidelných vydání.
       Projekt je určen pro uživatele, kteří chtějí nejnovější stabilní software.
+    de: Die Tumbleweed-Distribution ist eine Version mit reinen rollierenden
+      Veröffentlichungen von openSUSE, die die neuesten „stabilen“ Versionen der
+      gesamten Software enthält, anstatt sich auf starre periodische
+      Veröffentlichungszyklen zu verlassen. Das Projekt tut dies für Benutzer,
+      die die neueste, stabile Software wünschen.
     es: La distribución Tumbleweed es una versión pura de lanzamiento continuo de
       openSUSE que contiene las últimas versiones "estables" de todo el software
       en lugar de depender de ciclos de lanzamiento periódicos menos flexibles.
@@ -42,6 +51,8 @@ translations:
       innehåller de senaste "stabila" versionerna av all programvara istället
       för att förlita sig på stela periodiska utgivningscykler. Projektet gör
       detta för användare som vill ha den senaste stabila programvaran.
+    zh_Hans: Tumbleweed 发行版是 openSUSE
+      的纯滚动发布版本，其并不依赖于严格的定时发布周期，而是持续包含所有最新“稳定”版本的软件。该项目为追求最新稳定软件的用户而生。
 software:
   installation_repositories:
     - url: https://download.opensuse.org/tumbleweed/repo/oss/
