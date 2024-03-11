@@ -56,7 +56,7 @@ it("renders nothing by default", () => {
 
 it("renders nothing when isOpen=false", () => {
   const { container } = plainRender(
-    <ProposalActionsDialog onClose={onCloseFn} isOpen={false} actions={actions}/>
+    <ProposalActionsDialog onClose={onCloseFn} isOpen={false} actions={actions} />
   );
   expect(container).toBeEmptyDOMElement();
 });
@@ -74,8 +74,8 @@ describe("when isOpen", () => {
     it("renders a dialog with the list of actions", () => {
       plainRender(<ProposalActionsDialog isOpen onClose={onCloseFn} actions={actions} />);
 
-      const dialog = screen.getByRole("dialog", { name: "Planned Actions"});
-      const actionsList = screen.getByRole("list");
+      const dialog = screen.getByRole("dialog", { name: "Planned Actions" });
+      const actionsList = within(dialog).getByRole("list");
       const actionsListItems = within(actionsList).getAllByRole("listitem");
       expect(actionsListItems.map(i => i.textContent)).toEqual(actions.map(a => a.text));
     });
@@ -92,7 +92,7 @@ describe("when isOpen", () => {
     describe("when there is a destructive action", () => {
       it("emphasizes the action", () => {
         plainRender(
-          <ProposalActionsDialog isOpen onClose={onCloseFn}actions={[destructiveAction, ...actions]} />
+          <ProposalActionsDialog isOpen onClose={onCloseFn} actions={[destructiveAction, ...actions]} />
         );
 
         // https://stackoverflow.com/a/63080940
