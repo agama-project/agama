@@ -46,18 +46,30 @@ const ResultSkeleton = () => {
  * Returns the delete actions from given list
  *
  * @param {object[]} actions
- * @returns {object[]}
+ * @param {object[]} devices
+ * @returns {string[]}
  */
-const deleteActions = (actions) => actions.filter(a => a.delete);
+const deleteActions = (actions, devices) => {
+  const actionText = (action) => {
+    const device = devices.find(d => d.sid === action.device);
+
+    if (device && device.systems.length > 0)
+      return sprintf(_("%s <strong>which contains %s</strong>"), action.text, device.systems.join(", "));
+
+    return action.text;
+  };
+
+  return actions.filter(a => a.delete).map(a => actionText(a));
+};
 
 /**
  * Renders a warning alert if there are delete actions
  *
  * @param {object} props
- * @param {object} props.deleteActions
+ * @param {string[]} props.content
  */
-const Warning = ({ deleteActions }) => {
-  const count = deleteActions.length;
+const Warning = ({ content }) => {
+  const count = content.length;
 
   if (count === 0) return;
 
@@ -66,7 +78,7 @@ const Warning = ({ deleteActions }) => {
   return (
     <Alert isInline variant="warning" title={title}>
       <ul>
-        { deleteActions.map(a => <li key={a.device}><strong>{a.text}</strong></li>)}
+        { content.map((action, i) => <li key={i} dangerouslySetInnerHTML={{ __html: action }} />) }
       </ul>
     </Alert>
   );
@@ -135,22 +147,37 @@ const DevicesTreeTable = ({ settings, devices }) => {
 
   const renderNewLabel = (device) => {
     if (!device.sid) return;
-    if (systemDevices.find(d => d.sid === device.sid)) return;
 
-    return (
-      <Tag variant="teal">{_("New")}</Tag>
-    );
+    const systemDevice = systemDevices.find(d => d.sid === device.sid);
+
+    if (!systemDevice || systemDevice.fileystem?.sid !== device.filesystem?.sid)
+      return <Tag variant="teal">{_("New")}</Tag>;
   };
 
   // FIXME: add the logic to render it conditionally
-  const renderShrankLabel = (item) => {
-    if (item) return <Tag variant="orange">{_("Shrank")}</Tag>;
+  const renderResizedLabel = (item) => {
+    const systemDevice = systemDevices.find(d => d.sid === item.sid);
+    const stagingDevice = stagingDevices.find(d => d.sid === item.sid);
+
+    if (!systemDevice || !stagingDevice) return;
+
+    const amount = systemDevice.size - stagingDevice.size;
+
+    if (amount > 0)
+      return <Tag variant="orange">{sprintf(_("Resized %s"), deviceSize(amount))}</Tag>;
   };
 
   const renderDeviceName = (item) => {
+    let name = item.sid && item.name;
+    // NOTE: returning a fragment here to avoid a weird React complaint when using a PF/Table + treeRow props.
+    if (!name) return <></>;
+
+    if (["partition", "lvmLv"].includes(item.type))
+      name = name.split("/").pop();
+
     return (
       <div className="split">
-        <span>{item.sid && item.name}</span>
+        <span>{name}</span>
       </div>
     );
   };
@@ -160,13 +187,26 @@ const DevicesTreeTable = ({ settings, devices }) => {
     if (label) return <Tag variant="gray-highlight"><b>{label}</b></Tag>;
   };
 
+  const renderPTableType = (item) => {
+    // TODO: Create a map for partition table types and use an <abbr/> here.
+    const pType = item.partitionTable?.type;
+    if (pType) return <Tag><b>{pType.toUpperCase()}</b></Tag>;
+  };
+
   const renderDetails = (item) => {
-    const description = item.sid ? item.description : _("Unused space");
+    const deviceDetails = (device) => {
+      if (!item.sid)
+        return _("Unused space");
+      if (!device.partitionTable && device.systems?.length > 0)
+        return device.systems.join(", ");
+
+      return device.description;
+    };
 
     return (
       <>
         <div>{ renderNewLabel(item) }</div>
-        <div>{description} {renderFilesystemLabel(item)}</div>
+        <div>{deviceDetails(item)} {renderFilesystemLabel(item)} {renderPTableType(item)}</div>
       </>
     );
   };
@@ -174,7 +214,7 @@ const DevicesTreeTable = ({ settings, devices }) => {
   const renderSize = (item) => {
     return (
       <div className="split">
-        { renderShrankLabel(item) }
+        { renderResizedLabel(item) }
         { deviceSize(item.size) }
       </div>
     );
@@ -227,7 +267,7 @@ export default function ProposalResultSection({
 
     return (
       <>
-        <Warning deleteActions={deleteActions(actions)} />
+        <Warning content={deleteActions(actions, devices.system)} />
         <DevicesTreeTable settings={settings} devices={devices} />
         <ActionsInfo actions={actions} />
       </>
