@@ -403,6 +403,27 @@ ul[data-type="agama/list"][role="grid"] {
   }
 }
 
+[data-type="agama/tag"] {
+  font-size: var(--fs-small);
+
+  &[data-variant="teal"] {
+    color: var(--color-teal);
+  }
+
+  &[data-variant="orange"] {
+    color: var(--color-orange);
+  }
+
+  &[data-variant="gray-highlight"] {
+    padding: var(--spacer-smaller);
+    color: var(--color-gray-darkest);
+    background: var(--color-gray);
+    border: 1px solid var(--color-gray-dark);
+    border-radius: 5px;
+    margin-inline-start: var(--spacer-smaller);
+  }
+}
+
 // compact lists in popover
 .pf-v5-c-popover li + li {
   margin: 0;
