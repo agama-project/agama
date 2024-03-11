@@ -88,12 +88,6 @@ const storageMock = {
     calculate: jest.fn().mockResolvedValue(0),
   },
   system: {
-    getDevices: jest.fn().mockResolvedValue([vda, vdb]),
-  },
-  staging: {
-    getDevices: jest.fn().mockResolvedValue([vda, vdb]),
-  },
-  system: {
     getDevices: jest.fn().mockResolvedValue([vda, vdb])
   },
   staging: {
@@ -112,18 +106,18 @@ beforeEach(() => {
   createClient.mockImplementation(() => ({ storage }));
 });
 
-it.skip("probes storage if the storage devices are deprecated", async () => {
+it("probes storage if the storage devices are deprecated", async () => {
   storage.isDeprecated = jest.fn().mockResolvedValue(true);
   installerRender(<ProposalPage />);
   await waitFor(() => expect(storage.probe).toHaveBeenCalled());
 });
 
-it.skip("does not probe storage if the storage devices are not deprecated", async () => {
+it("does not probe storage if the storage devices are not deprecated", async () => {
   installerRender(<ProposalPage />);
   await waitFor(() => expect(storage.probe).not.toHaveBeenCalled());
 });
 
-it.skip("loads the proposal data", async () => {
+it("loads the proposal data", async () => {
   storage.proposal.getResult = jest.fn().mockResolvedValue(
     { settings: { bootDevice: vda.name } }
   );
@@ -136,7 +130,7 @@ it.skip("loads the proposal data", async () => {
   await screen.findByText(/\/dev\/vda/);
 });
 
-it.skip("renders the device, settings, find space and result sections", async () => {
+it("renders the device, settings, find space and result sections", async () => {
   installerRender(<ProposalPage />);
 
   await screen.findByText(/Device/);
@@ -144,7 +138,7 @@ it.skip("renders the device, settings, find space and result sections", async ()
   await screen.findByText(/Result/);
 });
 
-describe.skip("when the storage devices become deprecated", () => {
+describe("when the storage devices become deprecated", () => {
   it("probes storage", async () => {
     const [mockFunction, callbacks] = createCallbackMock();
     storage.onDeprecate = mockFunction;
@@ -178,7 +172,7 @@ describe.skip("when the storage devices become deprecated", () => {
   });
 });
 
-describe.skip("when there is no proposal yet", () => {
+describe("when there is no proposal yet", () => {
   beforeEach(() => {
     storage.proposal.getResult = jest.fn().mockResolvedValue(undefined);
   });
@@ -208,7 +202,7 @@ describe.skip("when there is no proposal yet", () => {
   });
 });
 
-describe.skip("when there is a proposal", () => {
+describe("when there is a proposal", () => {
   beforeEach(() => {
     storage.proposal.getResult = jest.fn().mockResolvedValue(
       { settings: { bootDevice: vda.name } }
