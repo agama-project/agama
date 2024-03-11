@@ -26,6 +26,7 @@ export { default as ProposalSpacePolicyField } from "./ProposalSpacePolicyField"
 export { default as ProposalDeviceSection } from "./ProposalDeviceSection";
 export { default as ProposalActionsSection } from "./ProposalActionsSection";
 export { default as ProposalTransactionalInfo } from "./ProposalTransactionalInfo";
+export { default as ProposalResultSection } from "./ProposalResultSection";
 export { default as ProposalVolumes } from "./ProposalVolumes";
 export { default as DASDPage } from "./DASDPage";
 export { default as DASDTable } from "./DASDTable";
