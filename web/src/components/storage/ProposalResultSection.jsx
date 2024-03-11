@@ -32,14 +32,12 @@ import { ProposalActionsDialog } from "~/components/storage";
 /**
  * @todo Create a component for rendering a customized skeleton
  */
-const ActionsSkeleton = () => {
+const ResultSkeleton = () => {
   return (
     <>
       <Skeleton width="80%" />
       <Skeleton width="65%" />
       <Skeleton width="70%" />
-      <Skeleton width="65%" />
-      <Skeleton width="40%" />
     </>
   );
 };
@@ -71,6 +69,29 @@ const Warning = ({ deleteActions }) => {
         { deleteActions.map(a => <li key={a.device}><strong>{a.text}</strong></li>)}
       </ul>
     </Alert>
+  );
+};
+
+/**
+ * Renders needed UI elements to allow users check all planned actions
+ *
+ * @param {object} props
+ * @param {object[]} props.actions
+ */
+const ActionsInfo = ({ actions }) => {
+  const [showActions, setShowActions] = useState(false);
+
+  const onOpen = () => setShowActions(true);
+  const onClose = () => setShowActions(false);
+
+  return (
+    <>
+      <p className="split">
+        <Button onClick={onOpen} variant="link" className="plain-button">{_("Check all planned actions")}</Button>
+        {_("to create these file systems and to ensure the new system boots.")}
+      </p>
+      <ProposalActionsDialog actions={actions} isOpen={showActions} onClose={onClose} />
+    </>
   );
 };
 
@@ -199,25 +220,16 @@ export default function ProposalResultSection({
   errors = [],
   isLoading = false
 }) {
-  const [showActions, setShowActions] = useState(false);
-
   if (isLoading) errors = [];
 
-  const openActions = () => setShowActions(true);
-  const closeActions = () => setShowActions(false);
+  const SectionContent = () => {
+    if (errors.length) return;
 
-  const ActionsInfo = () => {
     return (
       <>
-        <p className="split">
-          <Button onClick={openActions} variant="link" className="plain-button">{_("Check all planned actions")}</Button>
-          {_("to create these file systems and to ensure the new system boots.")}
-        </p>
-        <ProposalActionsDialog
-          actions={actions}
-          isOpen={showActions}
-          onClose={closeActions}
-        />
+        <Warning deleteActions={deleteActions(actions)} />
+        <DevicesTreeTable settings={settings} devices={devices} />
+        <ActionsInfo actions={actions} />
       </>
     );
   };
@@ -231,17 +243,7 @@ export default function ProposalResultSection({
       id="storage-result"
       errors={errors}
     >
-      <If
-        condition={isLoading}
-        then={<ActionsSkeleton />}
-        else={
-          <>
-            <Warning deleteActions={deleteActions(actions)} />
-            <DevicesTreeTable settings={settings} devices={devices} />
-            <ActionsInfo />
-          </>
-        }
-      />
+      <If condition={isLoading} then={<ResultSkeleton />} else={<SectionContent />} />
     </Section>
   );
 }
