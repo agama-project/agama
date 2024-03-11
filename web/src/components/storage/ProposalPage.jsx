@@ -41,6 +41,8 @@ const initialState = {
   volumeTemplates: [],
   encryptionMethods: [],
   settings: {},
+  system: [],
+  staging: [],
   actions: [],
   errors: []
 };
@@ -78,6 +80,11 @@ const reducer = (state, action) => {
     case "UPDATE_SETTINGS": {
       const { settings } = action.payload;
       return { ...state, settings };
+    }
+
+    case "UPDATE_DEVICES": {
+      const { system, staging } = action.payload;
+      return { ...state, system, staging };
     }
 
     case "UPDATE_ERRORS": {
@@ -120,6 +127,12 @@ export default function ProposalPage() {
     return await cancellablePromise(client.proposal.getResult());
   }, [client, cancellablePromise]);
 
+  const loadDevices = useCallback(async () => {
+    const system = await cancellablePromise(client.system.getDevices()) || [];
+    const staging = await cancellablePromise(client.staging.getDevices()) || [];
+    return { system, staging };
+  }, [client, cancellablePromise]);
+
   const loadErrors = useCallback(async () => {
     const issues = await cancellablePromise(client.getErrors());
     return issues.map(toValidationError);
@@ -151,11 +164,14 @@ export default function ProposalPage() {
     const result = await loadProposalResult();
     if (result !== undefined) dispatch({ type: "UPDATE_RESULT", payload: { result } });
 
+    const devices = await loadDevices();
+    dispatch({ type: "UPDATE_DEVICES", payload: devices });
+
     const errors = await loadErrors();
     dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
 
     if (result !== undefined) dispatch({ type: "STOP_LOADING" });
-  }, [calculateProposal, cancellablePromise, client, loadAvailableDevices, loadEncryptionMethods, loadErrors, loadProposalResult, loadVolumeTemplates]);
+  }, [calculateProposal, cancellablePromise, client, loadAvailableDevices, loadDevices, loadEncryptionMethods, loadErrors, loadProposalResult, loadVolumeTemplates]);
 
   const calculate = useCallback(async (settings) => {
     dispatch({ type: "START_LOADING" });
@@ -165,11 +181,14 @@ export default function ProposalPage() {
     const result = await loadProposalResult();
     dispatch({ type: "UPDATE_RESULT", payload: { result } });
 
+    const devices = await loadDevices();
+    dispatch({ type: "UPDATE_DEVICES", payload: devices });
+
     const errors = await loadErrors();
     dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
 
     dispatch({ type: "STOP_LOADING" });
-  }, [calculateProposal, loadErrors, loadProposalResult]);
+  }, [calculateProposal, loadDevices, loadErrors, loadProposalResult]);
 
   useEffect(() => {
     load().catch(console.error);
