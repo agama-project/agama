@@ -24,10 +24,9 @@
 import { L10nClient } from "./l10n";
 import { ManagerClient } from "./manager";
 import { Monitor } from "./monitor";
-import { SoftwareClient } from "./software";
+import { ProductClient, SoftwareClient } from "./software";
 import { StorageClient } from "./storage";
 import { UsersClient } from "./users";
-import { ProductClient } from "./software";
 import phase from "./phase";
 import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
