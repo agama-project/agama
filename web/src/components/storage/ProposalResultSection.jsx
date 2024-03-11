@@ -21,12 +21,13 @@
 
 // @ts-check
 
-import React from "react";
-import { Alert, Skeleton } from "@patternfly/react-core";
+import React, { useState } from "react";
+import { Alert, Button, Skeleton } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { deviceSize } from "~/components/storage/utils";
 import { If, Section, Tag, TreeTable } from "~/components/core";
+import { ProposalActionsDialog } from "~/components/storage";
 
 /**
  * @todo Create a component for rendering a customized skeleton
@@ -198,7 +199,28 @@ export default function ProposalResultSection({
   errors = [],
   isLoading = false
 }) {
+  const [showActions, setShowActions] = useState(false);
+
   if (isLoading) errors = [];
+
+  const openActions = () => setShowActions(true);
+  const closeActions = () => setShowActions(false);
+
+  const ActionsInfo = () => {
+    return (
+      <>
+        <p className="split">
+          <Button onClick={openActions} variant="link" className="plain-button">{_("Check all planned actions")}</Button>
+          {_("to create these file systems and to ensure the new system boots.")}
+        </p>
+        <ProposalActionsDialog
+          actions={actions}
+          isOpen={showActions}
+          onClose={closeActions}
+        />
+      </>
+    );
+  };
 
   return (
     <Section
@@ -216,6 +238,7 @@ export default function ProposalResultSection({
           <>
             <Warning deleteActions={deleteActions(actions)} />
             <DevicesTreeTable settings={settings} devices={devices} />
+            <ActionsInfo />
           </>
         }
       />
