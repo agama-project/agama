@@ -55,7 +55,7 @@ const AutoCalculatedHint = (volume) => {
 
   return (
     <>
-      {/* TRANSLATORS: header for a list of items */}
+      {/* TRANSLATORS: header for a list of items referring to size limits for file systems */}
       {_("These limits are affected by:")}
       <List>
         {snapshotsAffectSizes &&
@@ -66,6 +66,8 @@ const AutoCalculatedHint = (volume) => {
           // %s is replaced by a list of the volumes (like "/home, /boot")
           <ListItem>{sprintf(_("Presence of other volumes (%s)"), sizeRelevantVolumes.join(", "))}</ListItem>}
         {adjustByRam &&
+          // TRANSLATORS: list item, describes a factor that affects the computed size of a
+          // file system; eg. adjusting the size of the swap
           <ListItem>{_("The amount of RAM in the system")}</ListItem>}
       </List>
     </>
