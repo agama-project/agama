@@ -71,13 +71,7 @@ export default function TreeTable({
       if (cIdx === 0) props.treeRow = treeRow;
 
       return (
-        // FIXME: using an array below because for some reason React is
-        // complaining about
-        // Objects are not valid as a React child (found: object with keys {title}). If you meant to render a collection of children, use an array instead.
-        // when rendering the first column using the treeRow prop
-        // Checking the PF/Table code might help to understand what is going on
-        // there
-        <Td key={cIdx} {...props}>{[c.content(item)]}</Td>
+        <Td key={cIdx} {...props}>{c.content(item)}</Td>
       );
     });
   };
