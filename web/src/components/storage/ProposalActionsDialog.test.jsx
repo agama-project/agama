@@ -47,38 +47,53 @@ const subvolumeActions = [
 
 const destructiveAction = { text: 'Delete ext4 on /dev/vdc', subvol: false, delete: true };
 
+const onCloseFn = jest.fn();
+
 it("renders nothing by default", () => {
-  const { container } = plainRender(<ProposalActionsDialog />);
+  const { container } = plainRender(<ProposalActionsDialog onClose={onCloseFn} />);
   expect(container).toBeEmptyDOMElement();
 });
 
 it("renders nothing when isOpen=false", () => {
-  const { container } = plainRender(<ProposalActionsDialog isOpen={false} actions={actions}/>);
+  const { container } = plainRender(
+    <ProposalActionsDialog onClose={onCloseFn} isOpen={false} actions={actions}/>
+  );
   expect(container).toBeEmptyDOMElement();
 });
 
 describe("when isOpen", () => {
   it("renders nothing if there are no actions", () => {
-    plainRender(<ProposalActionsDialog isOpen actions={[]} />);
+    plainRender(<ProposalActionsDialog isOpen onClose={onCloseFn} actions={[]} />);
 
     expect(screen.queryAllByText(/Delete/)).toEqual([]);
     expect(screen.queryAllByText(/Create/)).toEqual([]);
     expect(screen.queryAllByText(/Show/)).toEqual([]);
   });
 
-  describe.skip("and there are actions", () => {
+  describe("and there are actions", () => {
     it("renders a dialog with the list of actions", () => {
-      plainRender(<ProposalActionsDialog isOpen actions={actions} />);
+      plainRender(<ProposalActionsDialog isOpen onClose={onCloseFn} actions={actions} />);
 
-      const dialog = screen.getByRole("dialog", { name: "Proposal Actions"});
+      const dialog = screen.getByRole("dialog", { name: "Planned Actions"});
       const actionsList = screen.getByRole("list");
       const actionsListItems = within(actionsList).getAllByRole("listitem");
       expect(actionsListItems.map(i => i.textContent)).toEqual(actions.map(a => a.text));
     });
 
+    it("triggers the onClose callback when user clicks the Close button", async () => {
+      const { user } = plainRender(<ProposalActionsDialog isOpen onClose={onCloseFn} actions={actions} />);
+      const closeButton = screen.getByRole("button", { name: "Close" });
+
+      await user.click(closeButton);
+
+      expect(onCloseFn).toHaveBeenCalled();
+    });
+
     describe("when there is a destructive action", () => {
       it("emphasizes the action", () => {
-        plainRender(<ProposalActionsDialog actions={[destructiveAction, ...actions]} />);
+        plainRender(
+          <ProposalActionsDialog isOpen onClose={onCloseFn}actions={[destructiveAction, ...actions]} />
+        );
 
         // https://stackoverflow.com/a/63080940
         const actionItems = screen.getAllByRole("listitem");
@@ -90,7 +105,9 @@ describe("when isOpen", () => {
 
     describe("when there are subvolume actions", () => {
       it("does not render the subvolume actions", () => {
-        plainRender(<ProposalActionsDialog actions={[...actions, ...subvolumeActions]} />);
+        plainRender(
+          <ProposalActionsDialog isOpen onClose={onCloseFn} actions={[...actions, ...subvolumeActions]} />
+        );
 
         // For now, we know that there are two lists and the subvolume list is the second one.
         // The test could be simplified once we have aria-descriptions for the lists.
@@ -103,7 +120,7 @@ describe("when isOpen", () => {
 
       it("renders the subvolume actions after clicking on 'show subvolumes'", async () => {
         const { user } = plainRender(
-          <ProposalActionsDialog actions={[...actions, ...subvolumeActions]} />
+          <ProposalActionsDialog isOpen onClose={onCloseFn} actions={[...actions, ...subvolumeActions]} />
         );
 
         const link = screen.getByText(/Show.*subvolume actions/);
