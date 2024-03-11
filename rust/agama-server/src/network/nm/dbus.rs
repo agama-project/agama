@@ -119,6 +119,9 @@ pub fn connection_to_dbus<'a>(
             connection_dbus.insert("type", INFINIBAND_KEY.into());
             result.insert(INFINIBAND_KEY, infiniband_config_to_dbus(infiniband));
         }
+        ConnectionConfig::Loopback => {
+            connection_dbus.insert("type", LOOPBACK_KEY.into());
+        }
         _ => {}
     }
 
