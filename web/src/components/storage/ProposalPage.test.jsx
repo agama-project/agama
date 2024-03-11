@@ -86,6 +86,12 @@ const storageMock = {
     defaultVolume: jest.fn(mountPath => Promise.resolve({ mountPath })),
     calculate: jest.fn().mockResolvedValue(0)
   },
+  system: {
+    getDevices: jest.fn().mockResolvedValue([vda, vdb])
+  },
+  staging: {
+    getDevices: jest.fn().mockResolvedValue([vda])
+  },
   getErrors: jest.fn().mockResolvedValue([]),
   isDeprecated: jest.fn().mockResolvedValue(false),
   onDeprecate: jest.fn(),
