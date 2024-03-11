@@ -57,7 +57,7 @@ class L10nClient {
   /**
    * Selected locale to translate the installer UI.
    *
-   * @return {Promise<String>} Locale id.
+   * @return {Promise<String>} Locale ID.
    */
   async getUILocale() {
     const config = await this.client.get("/l10n/config");
@@ -67,11 +67,35 @@ class L10nClient {
   /**
    * Sets the locale to translate the installer UI.
    *
-   * @param {String} id - Locale id.
+   * @param {String} id - Locale ID.
    * @return {Promise<void>}
    */
   async setUILocale(id) {
     return this.client.put("/l10n/config", { ui_locale: id });
+  }
+
+  /**
+   * Selected keymap for the installer.
+   *
+   * This setting is only relevant in the local installation.
+   *
+   * @return {Promise<String>} Keymap ID.
+   */
+  async getUIKeymap() {
+    const config = await this.client.get("/l10n/config");
+    return config.ui_locale;
+  }
+
+  /**
+   * Sets the keymap to use in the installer.
+   *
+   * This setting is only relevant in the local installation.
+   *
+   * @param {String} id - Keymap ID.
+   * @return {Promise<void>}
+   */
+  async setUIKeymap(id) {
+    return this.client.put("/l10n/config", { ui_keymap: id });
   }
 
   /**
