@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Form,
@@ -101,7 +101,7 @@ const InstallationDeviceField = ({
   isLoading = false,
   onChange = noop
 }) => {
-  const [device, setDevice] = useState(devices.find(d => d.name === current));
+  const [device, setDevice] = useState();
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const openForm = () => setIsFormOpen(true);
@@ -113,6 +113,10 @@ const InstallationDeviceField = ({
     setDevice(selectedDevice);
     onChange(selectedDevice);
   };
+
+  useEffect(() => {
+    setDevice(devices.find(d => d.name === current));
+  }, [current, devices, setDevice]);
 
   /**
    * Renders a button that allows changing selected device
@@ -292,7 +296,7 @@ const LVMField = ({
   isLoading = false,
   onChange: onChangeProp = noop
 }) => {
-  const [isChecked, setIsChecked] = useState(isCheckedProp);
+  const [isChecked, setIsChecked] = useState();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isFormValid, setIsFormValid] = useState(true);
 
@@ -311,6 +315,10 @@ const LVMField = ({
     closeForm();
     onChangeProp({ vgDevices });
   };
+
+  useEffect(() => {
+    setIsChecked(isCheckedProp);
+  }, [isCheckedProp, setIsChecked]);
 
   const description = _("Configuration of the system volume group. All the file systems will be \
 created in a logical volume of the system volume group.");
