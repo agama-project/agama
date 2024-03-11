@@ -424,6 +424,20 @@ ul[data-type="agama/list"][role="grid"] {
   }
 }
 
+table[data-type="agama/tree-table"] {
+  th:first-child {
+    width: 1%;
+    padding-inline-end: var(--spacer-normal);
+  }
+
+  @media (width <= 768px) {
+    td:empty,
+    td div:empty {
+      display: none;
+    }
+  }
+}
+
 // compact lists in popover
 .pf-v5-c-popover li + li {
   margin: 0;
