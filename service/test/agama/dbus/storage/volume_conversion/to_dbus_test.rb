@@ -38,6 +38,7 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
       outline.snapshots_configurable = true
       outline.snapshots_size = Y2Storage::DiskSize.new(1000)
       outline.snapshots_percentage = 10
+      outline.adjust_by_ram = true
     end
 
     Agama::Storage::Volume.new("/test").tap do |volume|
@@ -70,6 +71,7 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
           "Required"              => false,
           "FsTypes"               => [],
           "SupportAutoSize"       => false,
+          "AdjustByRam"           => false,
           "SnapshotsConfigurable" => false,
           "SnapshotsAffectSizes"  => false,
           "SizeRelevantVolumes"   => []
@@ -90,6 +92,7 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
         "Outline"       => {
           "Required"              => true,
           "FsTypes"               => ["Ext3", "Ext4"],
+          "AdjustByRam"           => true,
           "SupportAutoSize"       => true,
           "SnapshotsConfigurable" => true,
           "SnapshotsAffectSizes"  => true,

@@ -70,6 +70,7 @@ module Agama
               "Required"              => outline.required?,
               "FsTypes"               => outline.filesystems.map(&:to_human_string),
               "SupportAutoSize"       => outline.adaptive_sizes?,
+              "AdjustByRam"           => outline.adjust_by_ram?,
               "SnapshotsConfigurable" => outline.snapshots_configurable?,
               "SnapshotsAffectSizes"  => outline.snapshots_affect_sizes?,
               "SizeRelevantVolumes"   => outline.size_relevant_volumes

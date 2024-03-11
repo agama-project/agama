@@ -8,7 +8,7 @@ AllCops:
   Exclude:
     - vendor/**/*
     - lib/agama/dbus/y2dir/**/*
-    - agama.gemspec
+    - agama-yast.gemspec
     - package/*.spec
 
 # a D-Bus method definition may take up more line lenght than usual

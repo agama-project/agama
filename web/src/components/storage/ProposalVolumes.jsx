@@ -46,16 +46,16 @@ import { noop } from "~/utils";
  * @returns {(ReactComponent|null)} component to display (can be `null`)
  */
 const AutoCalculatedHint = (volume) => {
-  // no hint, the size is not affected by snapshots or other volumes
-  const { snapshotsAffectSizes = false, sizeRelevantVolumes = [] } = volume.outline;
+  const { snapshotsAffectSizes = false, sizeRelevantVolumes = [], adjustByRam } = volume.outline;
 
-  if (!snapshotsAffectSizes && sizeRelevantVolumes.length === 0) {
+  // no hint, the size is not affected by known criteria
+  if (!snapshotsAffectSizes && !adjustByRam && sizeRelevantVolumes.length === 0) {
     return null;
   }
 
   return (
     <>
-      {/* TRANSLATORS: header for a list of items */}
+      {/* TRANSLATORS: header for a list of items referring to size limits for file systems */}
       {_("These limits are affected by:")}
       <List>
         {snapshotsAffectSizes &&
@@ -65,6 +65,10 @@ const AutoCalculatedHint = (volume) => {
           // TRANSLATORS: list item, this affects the computed partition size limits
           // %s is replaced by a list of the volumes (like "/home, /boot")
           <ListItem>{sprintf(_("Presence of other volumes (%s)"), sizeRelevantVolumes.join(", "))}</ListItem>}
+        {adjustByRam &&
+          // TRANSLATORS: list item, describes a factor that affects the computed size of a
+          // file system; eg. adjusting the size of the swap
+          <ListItem>{_("The amount of RAM in the system")}</ListItem>}
       </List>
     </>
   );
