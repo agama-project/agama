@@ -16,6 +16,10 @@
   gap: var(--split-gutter);
 }
 
+.justify-end {
+  justify-content: flex-end;
+}
+
 [data-items-alignment="start"] {
   align-items: start;
 }

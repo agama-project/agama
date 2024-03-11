@@ -19,20 +19,47 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import { Table, Thead, Tr, Th, Tbody, Td, TreeRowWrapper } from '@patternfly/react-table';
+
+/**
+ * @typedef {import("@patternfly/react-table").TableProps} TableProps
+ */
+
+/**
+ * @typedef {object} TreeTableColumn
+ * @property {string} title
+ * @property {(any) => React.ReactNode} content
+ * @property {string} [classNames]
+ */
+
+/**
+ * @typedef {object} TreeTableBaseProps
+ * @property {TreeTableColumn[]} columns=[]
+ * @property {object[]} items=[]
+ * @property {(any) => array} [itemChildren]
+ * @property {(any) => string} [rowClassNames]
+ */
 
 /**
  * Table built on top of PF/Table
  * @component
  *
- * @param {object} props
+ * FIXME: omitting `ref` here to avoid a TypeScript error but keep component as
+ * typed as possible. Further investigation is needed.
+ *
+ * @typedef {TreeTableBaseProps & Omit<TableProps,'ref'>} TreeTableProps
+ *
+ * @param {TreeTableProps} props
  */
 export default function TreeTable({
   columns = [],
   items = [],
   itemChildren = () => [],
-  rowClassNames = () => ""
+  rowClassNames = () => "",
+  ...tableProps
 }) {
   const renderColumns = (item, treeRow) => {
     return columns.map((c, cIdx) => {
@@ -44,7 +71,7 @@ export default function TreeTable({
       if (cIdx === 0) props.treeRow = treeRow;
 
       return (
-        // FIXME: using an array below becasue for some reason React is
+        // FIXME: using an array below because for some reason React is
         // complaining about
         // Objects are not valid as a React child (found: object with keys {title}). If you meant to render a collection of children, use an array instead.
         // when rendering the first column using the treeRow prop
@@ -56,7 +83,7 @@ export default function TreeTable({
   };
 
   const renderRows = (items, level) => {
-    if (!items?.length > 0) return;
+    if (items?.length <= 0) return;
 
     return (
       items.map((item, itemIdx) => {
@@ -88,7 +115,7 @@ export default function TreeTable({
   };
 
   return (
-    <Table isTreeTable variant="compact" data-type="agama/tree-table">
+    <Table isTreeTable variant="compact" {...tableProps} data-type="agama/tree-table">
       <Thead>
         <Tr>
           { columns.map((c, i) => <Th key={i} className={c.classNames}>{c.title}</Th>) }
