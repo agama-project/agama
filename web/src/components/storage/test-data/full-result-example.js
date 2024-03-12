@@ -1,6 +1,3 @@
-// eslint:ignore
-// cspell:ignore
-
 export const settings = {
   "bootDevice": "/dev/vdc",
   "lvm": false,
