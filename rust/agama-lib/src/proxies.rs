@@ -47,12 +47,12 @@ trait ServiceStatus {
     default_service = "org.opensuse.Agama.Manager1",
     default_path = "/org/opensuse/Agama/Manager1"
 )]
-trait Manager {
+trait Manager1 {
     /// CanInstall method
     fn can_install(&self) -> zbus::Result<bool>;
 
     /// CollectLogs method
-    fn collect_logs(&self, user: &str) -> zbus::Result<String>;
+    fn collect_logs(&self) -> zbus::Result<String>;
 
     /// Commit method
     fn commit(&self) -> zbus::Result<()>;
@@ -70,6 +70,10 @@ trait Manager {
     /// CurrentInstallationPhase property
     #[dbus_proxy(property)]
     fn current_installation_phase(&self) -> zbus::Result<u32>;
+
+    /// IguanaBackend property
+    #[dbus_proxy(property)]
+    fn iguana_backend(&self) -> zbus::Result<bool>;
 
     /// InstallationPhases property
     #[dbus_proxy(property)]

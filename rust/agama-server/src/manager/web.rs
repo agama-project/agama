@@ -8,7 +8,7 @@
 use agama_lib::{
     error::ServiceError,
     manager::{InstallationPhase, ManagerClient},
-    proxies::ManagerProxy,
+    proxies::Manager1Proxy,
 };
 use axum::{
     extract::State,
@@ -66,7 +66,7 @@ pub async fn manager_stream(dbus: zbus::Connection) -> Result<impl Stream<Item =
 pub async fn busy_services_changed_stream(
     dbus: zbus::Connection,
 ) -> Result<impl Stream<Item = Event>, Error> {
-    let proxy = ManagerProxy::new(&dbus).await?;
+    let proxy = Manager1Proxy::new(&dbus).await?;
     let stream = proxy
         .receive_busy_services_changed()
         .await
@@ -86,7 +86,7 @@ pub async fn busy_services_changed_stream(
 pub async fn installation_phase_changed_stream(
     dbus: zbus::Connection,
 ) -> Result<impl Stream<Item = Event>, Error> {
-    let proxy = ManagerProxy::new(&dbus).await?;
+    let proxy = Manager1Proxy::new(&dbus).await?;
     let stream = proxy
         .receive_current_installation_phase_changed()
         .await

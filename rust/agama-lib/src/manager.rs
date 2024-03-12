@@ -4,7 +4,7 @@ use crate::error::ServiceError;
 use crate::proxies::ServiceStatusProxy;
 use crate::{
     progress::Progress,
-    proxies::{ManagerProxy, ProgressProxy},
+    proxies::{Manager1Proxy, ProgressProxy},
 };
 use serde::Serialize;
 use tokio_stream::StreamExt;
@@ -13,7 +13,7 @@ use zbus::Connection;
 /// D-Bus client for the manager service
 #[derive(Clone)]
 pub struct ManagerClient<'a> {
-    manager_proxy: ManagerProxy<'a>,
+    manager_proxy: Manager1Proxy<'a>,
     progress_proxy: ProgressProxy<'a>,
     status_proxy: ServiceStatusProxy<'a>,
 }
@@ -45,7 +45,7 @@ impl TryFrom<u32> for InstallationPhase {
 impl<'a> ManagerClient<'a> {
     pub async fn new(connection: Connection) -> zbus::Result<ManagerClient<'a>> {
         Ok(Self {
-            manager_proxy: ManagerProxy::new(&connection).await?,
+            manager_proxy: Manager1Proxy::new(&connection).await?,
             progress_proxy: ProgressProxy::new(&connection).await?,
             status_proxy: ServiceStatusProxy::new(&connection).await?,
         })
