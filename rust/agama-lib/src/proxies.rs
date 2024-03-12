@@ -57,6 +57,9 @@ trait Manager {
     /// Commit method
     fn commit(&self) -> zbus::Result<()>;
 
+    /// Finish method
+    fn finish(&self) -> zbus::Result<()>;
+
     /// Probe method
     fn probe(&self) -> zbus::Result<()>;
 

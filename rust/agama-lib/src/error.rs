@@ -22,6 +22,8 @@ pub enum ServiceError {
     UnknownPatterns(Vec<String>),
     #[error("Could not perform action '{0}'")]
     UnsuccessfulAction(String),
+    #[error("Unknown installation phase: '{0}")]
+    UnknownInstallationPhase(u32),
 }
 
 #[derive(Error, Debug)]

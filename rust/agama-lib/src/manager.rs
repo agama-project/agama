@@ -4,14 +4,40 @@ use crate::{
     progress::Progress,
     proxies::{ManagerProxy, ProgressProxy},
 };
+use serde::Serialize;
 use tokio_stream::StreamExt;
 use zbus::Connection;
 
 /// D-Bus client for the manager service
+#[derive(Clone)]
 pub struct ManagerClient<'a> {
     manager_proxy: ManagerProxy<'a>,
     progress_proxy: ProgressProxy<'a>,
     status_proxy: ServiceStatusProxy<'a>,
+}
+
+/// Represents the installation phase.
+#[derive(Serialize)]
+pub enum InstallationPhase {
+    /// Start up phase.
+    Startup,
+    /// Configuration phase.
+    Config,
+    /// Installation phase.
+    Install,
+}
+
+impl TryFrom<u32> for InstallationPhase {
+    type Error = ServiceError;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(Self::Startup),
+            1 => Ok(Self::Config),
+            2 => Ok(Self::Install),
+            _ => Err(ServiceError::UnknownInstallationPhase(value)),
+        }
+    }
 }
 
 impl<'a> ManagerClient<'a> {
@@ -28,6 +54,12 @@ impl<'a> ManagerClient<'a> {
         Ok(self.manager_proxy.busy_services().await?)
     }
 
+    /// Returns the current installation phase.
+    pub async fn current_installation_phase(&self) -> Result<InstallationPhase, ServiceError> {
+        let phase = self.manager_proxy.current_installation_phase().await?;
+        Ok(phase.try_into()?)
+    }
+
     /// Starts the probing process.
     pub async fn probe(&self) -> Result<(), ServiceError> {
         self.wait().await?;
@@ -37,6 +69,11 @@ impl<'a> ManagerClient<'a> {
     /// Starts the installation.
     pub async fn install(&self) -> Result<(), ServiceError> {
         Ok(self.manager_proxy.commit().await?)
+    }
+
+    /// Executes the after installation tasks.
+    pub async fn finish(&self) -> Result<(), ServiceError> {
+        Ok(self.manager_proxy.finish().await?)
     }
 
     /// Determines whether it is possible to start the installation.
