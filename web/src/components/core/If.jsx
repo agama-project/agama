@@ -59,7 +59,7 @@
  *   ...
  *
  * @param {object} props
- * @param {truthy} props.condition
+ * @param {any} props.condition
  * @param {JSX.Element} [props.then=null] - the content to be rendered when the condition is true
  * @param {JSX.Element} [props.else=null] - the content to be rendered when the condition is false
  */
