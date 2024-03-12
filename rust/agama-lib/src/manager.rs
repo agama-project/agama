@@ -1,3 +1,5 @@
+//! This module implements the web API for the manager module.
+
 use crate::error::ServiceError;
 use crate::proxies::ServiceStatusProxy;
 use crate::{
@@ -17,7 +19,7 @@ pub struct ManagerClient<'a> {
 }
 
 /// Represents the installation phase.
-#[derive(Serialize)]
+#[derive(Serialize, utoipa::ToSchema)]
 pub enum InstallationPhase {
     /// Start up phase.
     Startup,

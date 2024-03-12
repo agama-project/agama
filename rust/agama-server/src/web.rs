@@ -8,6 +8,7 @@ use self::progress::EventsProgressPresenter;
 use crate::{
     error::Error,
     l10n::web::l10n_service,
+    manager::web::manager_service,
     software::web::{software_service, software_stream},
 };
 use axum::Router;
@@ -48,6 +49,7 @@ where
 {
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/l10n", l10n_service(events.clone()))
+        .add_service("/manager", manager_service(dbus.clone()).await?)
         .add_service("/software", software_service(dbus).await?)
         .with_config(config)
         .build();
