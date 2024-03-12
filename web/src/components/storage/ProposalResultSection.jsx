@@ -32,60 +32,19 @@ import { If, Section, Tag, TreeTable } from "~/components/core";
 import { ProposalActionsDialog } from "~/components/storage";
 
 /**
- * Returns the delete actions from given list
- *
- * @param {object[]} actions
- * @param {object} devicesManager
- * @returns {string[]}
- */
-const deleteActions = (actions, devicesManager) => {
-  const actionText = (action) => {
-    const device = devicesManager.systemDevice(action.device);
-
-    if (device && device.systems.length > 0)
-      return sprintf(_("%s <strong>which contains %s</strong>"), action.text, device.systems.join(", "));
-
-    return action.text;
-  };
-
-  return actions.filter(a => a.delete).map(actionText);
-};
-
-/**
- * Renders a warning alert if there are delete actions
- *
- * @param {object} props
- * @param {string[]} props.content
- */
-const Warning = ({ content }) => {
-  const count = content.length;
-
-  if (count === 0) return;
-
-  const title = sprintf(_("%s delete actions will be performed"), count);
-
-  return (
-    <Alert isInline variant="warning" title={title}>
-      <ul>
-        { content.map((action, i) => <li key={i} dangerouslySetInnerHTML={{ __html: action }} />) }
-      </ul>
-    </Alert>
-  );
-};
-
-/**
- * Renders needed UI elements to allow users check all planned actions
+ * Renders information about planned actions, allowing to check all of them and
+ * warning with a summary about the deletion ones, if any.
  *
  * @param {object} props
  * @param {object[]} props.actions
+ * @param {object} props.devicesManager
  */
-const ActionsInfo = ({ actions }) => {
+const ActionsInfo = ({ actions, devicesManager }) => {
   const [showActions, setShowActions] = useState(false);
-
   const onOpen = () => setShowActions(true);
   const onClose = () => setShowActions(false);
 
-  return (
+  const GeneralActionsInfo = () => (
     <>
       <p className="split">
         <Button onClick={onOpen} variant="link" className="plain-button">{_("Check all planned actions")}</Button>
@@ -93,6 +52,40 @@ const ActionsInfo = ({ actions }) => {
       </p>
       <ProposalActionsDialog actions={actions} isOpen={showActions} onClose={onClose} />
     </>
+  );
+
+  const deleteActions = actions.filter(a => a.delete);
+
+  // Borrowed from https://www.30secondsofcode.org/js/s/count-grouped-elements/
+  const frequencies = arr =>
+    arr.reduce((a, v) => {
+      a[v] = (a[v] ?? 0) + 1;
+      return a;
+    }, {});
+
+  if (deleteActions.length === 0) return <GeneralActionsInfo />;
+
+  const deletedSids = deleteActions.map(a => a.device);
+  const deletedDevices = deletedSids.map(sid => devicesManager.systemDevice(sid));
+  const deletedTypes = frequencies(deletedDevices.map(d => d.type));
+  const deletedSystems = deletedDevices.map(d => d.systems).flat();
+  const deletionTypeTexts = Object.entries(deletedTypes).map(([type, amount]) => `${amount} ${type}`)
+    .join(", ");
+
+  const warningTitle = sprintf(_("%s delete actions will be performed"), deleteActions.length);
+  const warningTexts = [deletionTypeTexts];
+
+  if (deletedSystems.length > 0) {
+    warningTexts.push(_("including"));
+    warningTexts.push(deletedSystems.join(", "));
+    warningTexts.push("systems");
+  }
+
+  return (
+    <Alert isInline variant="warning" title={warningTitle}>
+      <p><strong>{warningTexts.join(" ")}</strong></p>
+      <GeneralActionsInfo />
+    </Alert>
   );
 };
 
@@ -232,9 +225,8 @@ const SectionContent = ({ actions, devices, errors }) => {
 
   return (
     <>
-      <Warning content={deleteActions(actions, devicesManager)} />
       <DevicesTreeTable devices={usedDevices()} devicesManager={devicesManager} />
-      <ActionsInfo actions={actions} />
+      <ActionsInfo actions={actions} devicesManager={devicesManager} />
     </>
   );
 };
