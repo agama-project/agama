@@ -1,4 +1,4 @@
-//! This module implements the web API for the software module.
+//! This module implements the web API for the software service.
 //!
 //! The module offers two public functions:
 //!
@@ -55,6 +55,8 @@ impl IntoResponse for SoftwareError {
 }
 
 /// Returns an stream that emits software related events coming from D-Bus.
+///
+/// It emits the Event::ProductChanged and Event::PatternsChanged events.
 ///
 /// * `connection`: D-Bus connection to listen for events.
 pub async fn software_stream(dbus: zbus::Connection) -> Result<impl Stream<Item = Event>, Error> {
