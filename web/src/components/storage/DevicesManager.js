@@ -78,42 +78,18 @@ export default class DevicesManager {
   }
 
   /**
-   * LVM volume groups that are going to be created.
-   *
-   * @returns {StorageDevice[]}
-   */
-  newLvmVgs() {
-    return this.#stagingLvmVgs()
-      .filter(v => !this.existInSystem(v));
-  }
-
-  /**
-   * LVM volume groups that are going to be reused.
-   *
-   * @returns {StorageDevice[]}
-   */
-  reusedLvmVgs() {
-    return this.#stagingLvmVgs()
-      .filter(v => this.existInSystem(v))
-      .filter(v => v.logicalVolumes.find(l => this.hasNewFilesystem(l)));
-  }
-
-  /**
    * Whether the given device is going to be formatted.
    *
    * @param {StorageDevice} device
    * @returns {Boolean}
    */
   hasNewFilesystem(device) {
+    if (!device.filesystem) return false;
+
     const systemDevice = this.systemDevice(device.sid);
-    const stagingDevice = this.stagingDevice(device.sid);
+    const systemFilesystemSID = systemDevice?.filesystem?.sid;
 
-    if (!systemDevice || !stagingDevice) return false;
-
-    const systemFilesystemSID = systemDevice.filesystem?.sid;
-    const stagingFilesystemSID = stagingDevice.filesystem?.sid;
-
-    return systemFilesystemSID !== stagingFilesystemSID;
+    return device.filesystem.sid !== systemFilesystemSID;
   }
 
   /**
@@ -159,14 +135,6 @@ export default class DevicesManager {
 
   #exist(device, source) {
     return this.#device(device.sid, source) !== undefined;
-  }
-
-  #stagingLvmVgs() {
-    return this.#lvmVgs(this.staging);
-  }
-
-  #lvmVgs(source) {
-    return source.filter(d => d.type === "lvmVg");
   }
 
   #partitionTableChildren(partitionTable) {

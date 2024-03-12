@@ -25,6 +25,7 @@ import React, { useState } from "react";
 import { Alert, Button, Skeleton } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import { compact, uniq } from "~/utils";
 import { deviceSize } from "~/components/storage/utils";
 import DevicesManager from "~/components/storage/DevicesManager";
 import { If, Section, Tag, TreeTable } from "~/components/core";
@@ -101,22 +102,10 @@ const ActionsInfo = ({ actions }) => {
  * FIXME: add expected types
  *
  * @param {object} props
- * @param {object} props.settings
+ * @param {object[]} props.devices
  * @param {object} props.devicesManager
  */
-const DevicesTreeTable = ({ settings, devicesManager }) => {
-  const usedDevices = () => {
-    const selectedDiskDevices = () => {
-      return settings.installationDevices
-        .map(d => devicesManager.stagingDevice(d.sid))
-        .filter(Boolean);
-    };
-
-    return selectedDiskDevices()
-      .concat(devicesManager.newLvmVgs())
-      .concat(devicesManager.reusedLvmVgs());
-  };
-
+const DevicesTreeTable = ({ devices, devicesManager }) => {
   const renderDeviceName = (item) => {
     let name = item.sid && item.name;
     // NOTE: returning a fragment here to avoid a weird React complaint when using a PF/Table +
@@ -199,7 +188,7 @@ const DevicesTreeTable = ({ settings, devicesManager }) => {
         { title: _("Details"), content: renderDetails, classNames: "details-column" },
         { title: _("Size"), content: renderSize, classNames: "sizes-column" }
       ]}
-      items={usedDevices()}
+      items={devices}
       itemChildren={d => devicesManager.children(d)}
       rowClassNames={(item) => {
         if (!item.sid) return "dimmed-row";
@@ -222,16 +211,29 @@ const ResultSkeleton = () => {
   );
 };
 
-const SectionContent = ({ actions, settings, devices, errors }) => {
+const SectionContent = ({ actions, devices, errors }) => {
   if (errors.length) return;
 
   const { system = [], staging = [] } = devices;
   const devicesManager = new DevicesManager(system, staging);
 
+  const isUsed = (device) => {
+    const actionDevices = uniq(compact(actions.map(a => a.device)));
+
+    return actionDevices.includes(device.sid) ||
+      devicesManager.children(device).find(c => isUsed(c));
+  };
+
+  const usedDevices = () => {
+    return staging
+      .filter(d => d.isDrive || d.type === "lvmVg")
+      .filter(d => isUsed(d) || isUsed(devicesManager.systemDevice(d.sid)));
+  };
+
   return (
     <>
       <Warning content={deleteActions(actions, devicesManager)} />
-      <DevicesTreeTable settings={settings} devicesManager={devicesManager} />
+      <DevicesTreeTable devices={usedDevices()} devicesManager={devicesManager} />
       <ActionsInfo actions={actions} />
     </>
   );
