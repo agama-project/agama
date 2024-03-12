@@ -87,7 +87,7 @@ class HTTPClient {
     httpUrl.pathname = url.pathname.concat("api");
     this.baseUrl = httpUrl.toString();
 
-    const wsUrl = new URL(url);
+    const wsUrl = new URL(url.toString());
     wsUrl.pathname = wsUrl.pathname.concat("api/ws");
     wsUrl.protocol = (url.protocol === "http:") ? "ws" : "wss";
     this.ws = new WSClient(wsUrl);
