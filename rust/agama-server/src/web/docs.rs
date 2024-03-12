@@ -30,7 +30,7 @@ use utoipa::OpenApi;
         schemas(crate::software::web::PatternEntry),
         schemas(crate::software::web::SoftwareConfig),
         schemas(crate::software::web::SoftwareProposal),
-        schemas(crate::manager::web::ManagerStatus),
+        schemas(crate::manager::web::InstallerStatus),
         schemas(super::http::PingResponse),
     )
 )]

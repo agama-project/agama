@@ -44,11 +44,15 @@ impl IntoResponse for ManagerError {
 
 /// Holds information about the manager's status.
 #[derive(Clone, Serialize, utoipa::ToSchema)]
-pub struct ManagerStatus {
+pub struct InstallerStatus {
     /// Current installation phase.
     phase: InstallationPhase,
     /// List of busy services.
     busy: Vec<String>,
+    /// Whether Agama is running on Iguana.
+    iguana: bool,
+    /// Whether it is possible to start the installation.
+    can_install: bool,
 }
 
 /// Returns a stream that emits manager related events coming from D-Bus.
@@ -115,7 +119,7 @@ pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .route("/probe", post(probe_action))
         .route("/install", post(install_action))
         .route("/finish", post(finish_action))
-        .route("/status", get(status))
+        .route("/installer", get(installer_status))
         .with_state(state))
 }
 
@@ -147,15 +151,17 @@ async fn finish_action(State(state): State<ManagerState<'_>>) -> Result<(), Mana
 }
 
 /// Returns the manager status.
-#[utoipa::path(get, path = "/api/manager/status", responses(
-  (status = 200, description = "Manager status.", body = ManagerStatus)
+#[utoipa::path(get, path = "/api/manager/installer", responses(
+  (status = 200, description = "Installation status.", body = ManagerStatus)
 ))]
-async fn status(
+async fn installer_status(
     State(state): State<ManagerState<'_>>,
-) -> Result<Json<ManagerStatus>, ManagerError> {
-    let status = ManagerStatus {
+) -> Result<Json<InstallerStatus>, ManagerError> {
+    let status = InstallerStatus {
         phase: state.manager.current_installation_phase().await?,
         busy: state.manager.busy_services().await?,
+        can_install: state.manager.can_install().await?,
+        iguana: state.manager.use_iguana().await?,
     };
     Ok(Json(status))
 }

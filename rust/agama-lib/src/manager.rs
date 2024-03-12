@@ -83,6 +83,11 @@ impl<'a> ManagerClient<'a> {
         Ok(self.manager_proxy.can_install().await?)
     }
 
+    /// Determines whether the installer is running on Iguana.
+    pub async fn use_iguana(&self) -> Result<bool, ServiceError> {
+        Ok(self.manager_proxy.iguana_backend().await?)
+    }
+
     /// Returns the current progress.
     pub async fn progress(&self) -> zbus::Result<Progress> {
         Progress::from_proxy(&self.progress_proxy).await
