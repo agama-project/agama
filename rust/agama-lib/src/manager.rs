@@ -23,23 +23,28 @@ impl<'a> ManagerClient<'a> {
         })
     }
 
+    /// Returns the list of busy services.
     pub async fn busy_services(&self) -> Result<Vec<String>, ServiceError> {
         Ok(self.manager_proxy.busy_services().await?)
     }
 
+    /// Starts the probing process.
     pub async fn probe(&self) -> Result<(), ServiceError> {
         self.wait().await?;
         Ok(self.manager_proxy.probe().await?)
     }
 
+    /// Starts the installation.
     pub async fn install(&self) -> Result<(), ServiceError> {
         Ok(self.manager_proxy.commit().await?)
     }
 
+    /// Determines whether it is possible to start the installation.
     pub async fn can_install(&self) -> Result<bool, ServiceError> {
         Ok(self.manager_proxy.can_install().await?)
     }
 
+    /// Returns the current progress.
     pub async fn progress(&self) -> zbus::Result<Progress> {
         Progress::from_proxy(&self.progress_proxy).await
     }
