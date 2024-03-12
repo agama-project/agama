@@ -26,32 +26,20 @@ import { Alert, Button, Skeleton } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { deviceSize } from "~/components/storage/utils";
+import DevicesManager from "~/components/storage/DevicesManager";
 import { If, Section, Tag, TreeTable } from "~/components/core";
 import { ProposalActionsDialog } from "~/components/storage";
-
-/**
- * @todo Create a component for rendering a customized skeleton
- */
-const ResultSkeleton = () => {
-  return (
-    <>
-      <Skeleton width="80%" />
-      <Skeleton width="65%" />
-      <Skeleton width="70%" />
-    </>
-  );
-};
 
 /**
  * Returns the delete actions from given list
  *
  * @param {object[]} actions
- * @param {object[]} devices
+ * @param {object} devicesManager
  * @returns {string[]}
  */
-const deleteActions = (actions, devices) => {
+const deleteActions = (actions, devicesManager) => {
   const actionText = (action) => {
-    const device = devices.find(d => d.sid === action.device);
+    const device = devicesManager.systemDevice(action.device);
 
     if (device && device.systems.length > 0)
       return sprintf(_("%s <strong>which contains %s</strong>"), action.text, device.systems.join(", "));
@@ -59,7 +47,7 @@ const deleteActions = (actions, devices) => {
     return action.text;
   };
 
-  return actions.filter(a => a.delete).map(a => actionText(a));
+  return actions.filter(a => a.delete).map(actionText);
 };
 
 /**
@@ -114,62 +102,25 @@ const ActionsInfo = ({ actions }) => {
  *
  * @param {object} props
  * @param {object} props.settings
- * @param {object} props.devices
+ * @param {object} props.devicesManager
  */
-const DevicesTreeTable = ({ settings, devices }) => {
-  const { system: systemDevices = [], staging: stagingDevices = [] } = devices;
+const DevicesTreeTable = ({ settings, devicesManager }) => {
+  const usedDevices = () => {
+    const selectedDiskDevices = () => {
+      return settings.installationDevices
+        .map(d => devicesManager.stagingDevice(d.sid))
+        .filter(Boolean);
+    };
 
-  const sids = settings.installationDevices.map(d => d.sid);
-  const installationDevices = stagingDevices.filter(d => sids.includes(d.sid));
-  const lvmVgs = stagingDevices.filter(d => d.logicalVolumes?.find(l => l.filesystem?.mountPath !== undefined));
-
-  const items = installationDevices.concat(lvmVgs);
-
-  // FIXME: Move to a utils
-  const childrenFromPartitionTable = ({ partitionTable }) => {
-    const { partitions, unusedSlots } = partitionTable;
-    const children = partitions.concat(unusedSlots);
-
-    return children.sort((a, b) => a.start < b.start ? -1 : 1);
-  };
-
-  // FIXME: Move to a utils
-  const childrenFromLvmVg = (vg) => {
-    return vg.logicalVolumes.sort((a, b) => a.name < b.name ? -1 : 1);
-  };
-
-  // FIXME: Move to a utils
-  const childrenFor = (device) => {
-    if (device.partitionTable) return childrenFromPartitionTable(device);
-    if (device.type === "lvmVg") return childrenFromLvmVg(device);
-    return [];
-  };
-
-  const renderNewLabel = (device) => {
-    if (!device.sid) return;
-
-    const systemDevice = systemDevices.find(d => d.sid === device.sid);
-
-    if (!systemDevice || systemDevice.fileystem?.sid !== device.filesystem?.sid)
-      return <Tag variant="teal">{_("New")}</Tag>;
-  };
-
-  // FIXME: add the logic to render it conditionally
-  const renderResizedLabel = (item) => {
-    const systemDevice = systemDevices.find(d => d.sid === item.sid);
-    const stagingDevice = stagingDevices.find(d => d.sid === item.sid);
-
-    if (!systemDevice || !stagingDevice) return;
-
-    const amount = systemDevice.size - stagingDevice.size;
-
-    if (amount > 0)
-      return <Tag variant="orange">{sprintf(_("Resized %s"), deviceSize(amount))}</Tag>;
+    return selectedDiskDevices()
+      .concat(devicesManager.newLvmVgs())
+      .concat(devicesManager.reusedLvmVgs());
   };
 
   const renderDeviceName = (item) => {
     let name = item.sid && item.name;
-    // NOTE: returning a fragment here to avoid a weird React complaint when using a PF/Table + treeRow props.
+    // NOTE: returning a fragment here to avoid a weird React complaint when using a PF/Table +
+    // treeRow props.
     if (!name) return <></>;
 
     if (["partition", "lvmLv"].includes(item.type))
@@ -182,6 +133,23 @@ const DevicesTreeTable = ({ settings, devices }) => {
     );
   };
 
+  const renderNewLabel = (item) => {
+    if (!item.sid) return;
+
+    // FIXME New PVs over a disk is not detected as new.
+    if (!devicesManager.existInSystem(item) || devicesManager.hasNewFilesystem(item))
+      return <Tag variant="teal">{_("New")}</Tag>;
+  };
+
+  const renderContent = (item) => {
+    if (!item.sid)
+      return _("Unused space");
+    if (!item.partitionTable && item.systems?.length > 0)
+      return item.systems.join(", ");
+
+    return item.description;
+  };
+
   const renderFilesystemLabel = (item) => {
     const label = item.filesystem?.label;
     if (label) return <Tag variant="gray-highlight"><b>{label}</b></Tag>;
@@ -189,33 +157,34 @@ const DevicesTreeTable = ({ settings, devices }) => {
 
   const renderPTableType = (item) => {
     // TODO: Create a map for partition table types and use an <abbr/> here.
-    const pType = item.partitionTable?.type;
-    if (pType) return <Tag><b>{pType.toUpperCase()}</b></Tag>;
+    const type = item.partitionTable?.type;
+    if (type) return <Tag><b>{type.toUpperCase()}</b></Tag>;
   };
 
   const renderDetails = (item) => {
-    const deviceDetails = (device) => {
-      if (!item.sid)
-        return _("Unused space");
-      if (!device.partitionTable && device.systems?.length > 0)
-        return device.systems.join(", ");
-
-      return device.description;
-    };
-
     return (
       <>
-        <div>{ renderNewLabel(item) }</div>
-        <div>{deviceDetails(item)} {renderFilesystemLabel(item)} {renderPTableType(item)}</div>
+        <div>{renderNewLabel(item)}</div>
+        <div>{renderContent(item)} {renderFilesystemLabel(item)} {renderPTableType(item)}</div>
       </>
+    );
+  };
+
+  const renderResizedLabel = (item) => {
+    if (!item.sid || !devicesManager.isResized(item)) return;
+
+    return (
+      <Tag variant="orange">
+        {sprintf(_("Resized %s"), deviceSize(devicesManager.resizeSize(item)))}
+      </Tag>
     );
   };
 
   const renderSize = (item) => {
     return (
       <div className="split">
-        { renderResizedLabel(item) }
-        { deviceSize(item.size) }
+        {renderResizedLabel(item)}
+        {deviceSize(item.size)}
       </div>
     );
   };
@@ -230,13 +199,41 @@ const DevicesTreeTable = ({ settings, devices }) => {
         { title: _("Details"), content: renderDetails, classNames: "details-column" },
         { title: _("Size"), content: renderSize, classNames: "sizes-column" }
       ]}
-      items={items}
-      itemChildren={childrenFor}
+      items={usedDevices()}
+      itemChildren={d => devicesManager.children(d)}
       rowClassNames={(item) => {
         if (!item.sid) return "dimmed-row";
       }}
       className="proposal-result"
     />
+  );
+};
+
+/**
+ * @todo Create a component for rendering a customized skeleton
+ */
+const ResultSkeleton = () => {
+  return (
+    <>
+      <Skeleton width="80%" />
+      <Skeleton width="65%" />
+      <Skeleton width="70%" />
+    </>
+  );
+};
+
+const SectionContent = ({ actions, settings, devices, errors }) => {
+  if (errors.length) return;
+
+  const { system = [], staging = [] } = devices;
+  const devicesManager = new DevicesManager(system, staging);
+
+  return (
+    <>
+      <Warning content={deleteActions(actions, devicesManager)} />
+      <DevicesTreeTable settings={settings} devicesManager={devicesManager} />
+      <ActionsInfo actions={actions} />
+    </>
   );
 };
 
@@ -249,7 +246,7 @@ const DevicesTreeTable = ({ settings, devices }) => {
  * @param {object} props
  * @param {object[]} [props.actions=[]]
  * @param {object[]} [props.settings=[]]
- * @param {object[]} [props.devices=[]]
+ * @param {object} [props.devices={}]
  * @param {import("~/client/mixins").ValidationError[]} props.errors - Validation errors
  * @param {boolean} [props.isLoading=false] - Whether the section content should be rendered as loading
  */
@@ -262,18 +259,6 @@ export default function ProposalResultSection({
 }) {
   if (isLoading) errors = [];
 
-  const SectionContent = () => {
-    if (errors.length) return;
-
-    return (
-      <>
-        <Warning content={deleteActions(actions, devices.system)} />
-        <DevicesTreeTable settings={settings} devices={devices} />
-        <ActionsInfo actions={actions} />
-      </>
-    );
-  };
-
   return (
     <Section
       // TRANSLATORS: The storage "Result" section's title
@@ -283,7 +268,18 @@ export default function ProposalResultSection({
       id="storage-result"
       errors={errors}
     >
-      <If condition={isLoading} then={<ResultSkeleton />} else={<SectionContent />} />
+      <If
+        condition={isLoading}
+        then={<ResultSkeleton />}
+        else={
+          <SectionContent
+            actions={actions}
+            settings={settings}
+            devices={devices}
+            errors={errors}
+          />
+        }
+      />
     </Section>
   );
 }
