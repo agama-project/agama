@@ -79,7 +79,7 @@ async fn locales(State(state): State<LocaleState>) -> Json<Vec<LocaleEntry>> {
     Json(locales)
 }
 
-#[derive(Clone, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct LocaleConfig {
     /// Locales to install in the target system
     locales: Option<Vec<String>>,

@@ -19,7 +19,7 @@ pub struct ManagerClient<'a> {
 }
 
 /// Represents the installation phase.
-#[derive(Serialize, utoipa::ToSchema)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, utoipa::ToSchema)]
 pub enum InstallationPhase {
     /// Start up phase.
     Startup,

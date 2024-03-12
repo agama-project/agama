@@ -8,7 +8,7 @@ use self::progress::EventsProgressPresenter;
 use crate::{
     error::Error,
     l10n::web::l10n_service,
-    manager::web::manager_service,
+    manager::web::{manager_service, manager_stream},
     software::web::{software_service, software_stream},
 };
 use axum::Router;
@@ -80,7 +80,10 @@ pub async fn run_monitor(events: EventsSender) -> Result<(), ServiceError> {
 /// * `connection`: D-Bus connection.
 /// * `events`: channel to send the events to.
 pub async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Result<(), Error> {
-    let stream = software_stream(dbus).await?;
+    let stream = StreamExt::merge(
+        manager_stream(dbus.clone()).await?,
+        software_stream(dbus).await?,
+    );
     tokio::pin!(stream);
     let e = events.clone();
     while let Some(event) = stream.next().await {

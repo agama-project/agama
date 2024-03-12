@@ -1,6 +1,14 @@
+//! This module implements the web API for the manager service.
+//!
+//! The module offers two public functions:
+//!
+//! * `manager_service` which returns the Axum service.
+//! * `manager_stream` which offers an stream that emits the manager events coming from D-Bus.
+
 use agama_lib::{
     error::ServiceError,
     manager::{InstallationPhase, ManagerClient},
+    proxies::ManagerProxy,
 };
 use axum::{
     extract::State,
@@ -12,6 +20,9 @@ use axum::{
 use serde::Serialize;
 use serde_json::json;
 use thiserror::Error;
+use tokio_stream::{Stream, StreamExt};
+
+use crate::{error::Error, web::Event};
 
 #[derive(Clone)]
 pub struct ManagerState<'a> {
@@ -32,12 +43,68 @@ impl IntoResponse for ManagerError {
 }
 
 /// Holds information about the manager's status.
-#[derive(Serialize, utoipa::ToSchema)]
+#[derive(Clone, Serialize, utoipa::ToSchema)]
 pub struct ManagerStatus {
     /// Current installation phase.
     phase: InstallationPhase,
     /// List of busy services.
     busy: Vec<String>,
+}
+
+/// Returns a stream that emits manager related events coming from D-Bus.
+///
+/// It emits the Event::BusyServicesChanged and Event::InstallationPhaseChanged events.
+///
+/// * `connection`: D-Bus connection to listen for events.
+pub async fn manager_stream(dbus: zbus::Connection) -> Result<impl Stream<Item = Event>, Error> {
+    Ok(StreamExt::merge(
+        busy_services_changed_stream(dbus.clone()).await?,
+        installation_phase_changed_stream(dbus.clone()).await?,
+    ))
+}
+
+pub async fn busy_services_changed_stream(
+    dbus: zbus::Connection,
+) -> Result<impl Stream<Item = Event>, Error> {
+    let proxy = ManagerProxy::new(&dbus).await?;
+    let stream = proxy
+        .receive_busy_services_changed()
+        .await
+        .then(|change| async move {
+            if let Ok(busy_services) = change.get().await {
+                Some(Event::BusyServicesChanged {
+                    services: busy_services,
+                })
+            } else {
+                None
+            }
+        })
+        .filter_map(|e| e);
+    Ok(stream)
+}
+
+pub async fn installation_phase_changed_stream(
+    dbus: zbus::Connection,
+) -> Result<impl Stream<Item = Event>, Error> {
+    let proxy = ManagerProxy::new(&dbus).await?;
+    let stream = proxy
+        .receive_current_installation_phase_changed()
+        .await
+        .then(|change| async move {
+            if let Ok(phase) = change.get().await {
+                match InstallationPhase::try_from(phase) {
+                    Ok(phase) => Some(Event::InstallationPhaseChanged { phase }),
+                    Err(error) => {
+                        log::warn!("Ignoring the installation phase change. Error: {}", error);
+                        None
+                    }
+                }
+            } else {
+                None
+            }
+        })
+        .filter_map(|e| e);
+    Ok(stream)
 }
 
 /// Sets up and returns the axum service for the manager module
