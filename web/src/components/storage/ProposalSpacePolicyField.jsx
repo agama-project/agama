@@ -19,12 +19,12 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect } from "react";
-import { FormSelect, FormSelectOption } from "@patternfly/react-core";
+import React, { useEffect, useState } from "react";
+import { Button, Form, FormSelect, FormSelectOption, Skeleton } from "@patternfly/react-core";
 
-import { _, N_ } from "~/i18n";
+import { _, N_, n_ } from "~/i18n";
 import { deviceSize } from '~/components/storage/utils';
-import { If, OptionsPicker, Section, SectionSkeleton } from "~/components/core";
+import { If, OptionsPicker, Popup, SectionSkeleton } from "~/components/core";
 import { noop, useLocalStorage } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { Table, Thead, Tr, Th, Tbody, Td, TreeRowWrapper } from '@patternfly/react-table';
@@ -48,22 +48,48 @@ const SPACE_POLICIES = [
   {
     id: "delete",
     label: N_("Delete current content"),
-    description: N_("All partitions will be removed and any data in the disks will be lost.")
+    description: N_("All partitions will be removed and any data in the disks will be lost."),
+    summaryLabels: [
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space deleting all content[...]"
+      N_("deleting all content of the installation device"),
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space deleting all content[...]"
+      N_("deleting all content of the %d selected disks")
+    ]
   },
   {
     id: "resize",
     label: N_("Shrink existing partitions"),
-    description: N_("The data is kept, but the current partitions will be resized as needed.")
+    description: N_("The data is kept, but the current partitions will be resized as needed."),
+    summaryLabels: [
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space shrinking partitions[...]"
+      N_("shrinking partitions of the installation device"),
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space shrinking partitions[...]"
+      N_("shrinking partitions of the %d selected disks")
+    ]
   },
   {
     id: "keep",
     label: N_("Use available space"),
-    description: N_("The data is kept. Only the space not assigned to any partition will be used.")
+    description: N_("The data is kept. Only the space not assigned to any partition will be used."),
+    summaryLabels: [
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space without modifying any partition".
+      N_("without modifying any partition")
+    ]
   },
   {
     id: "custom",
     label: N_("Custom"),
-    description: N_("Select what to do with each partition.")
+    description: N_("Select what to do with each partition."),
+    summaryLabels: [
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space performing a custom set of actions".
+      N_("performing a custom set of actions")
+    ]
   }
 ];
 
@@ -250,7 +276,8 @@ const DeviceActionColumn = ({ device, action, isDisabled = false, onChange = noo
  */
 const DeviceRow = ({
   device,
-  settings,
+  policy,
+  actions,
   rowIndex,
   level = 1,
   setSize = 0,
@@ -273,19 +300,20 @@ const DeviceRow = ({
     }
   };
 
-  const spaceAction = settings.spaceActions.find(a => a.device === device.name);
-  const isDisabled = settings.spacePolicy !== "custom";
+  const spaceAction = actions.find(a => a.device === device.name);
+  const isDisabled = policy.id !== "custom";
   const showAction = !device.partitionTable;
 
   return (
     <TreeRowWrapper row={{ props: treeRow.props }}>
-      <Td dataLabel={columnNames.device} treeRow={treeRow}>
+      {/* eslint-disable agama-i18n/string-literals */}
+      <Td dataLabel={_(columnNames.device)} treeRow={treeRow}>
         <DeviceDescriptionColumn device={device} />
       </Td>
-      <Td dataLabel={columnNames.content}><DeviceContentColumn device={device} /></Td>
-      <Td dataLabel={columnNames.size}><DeviceSizeColumn device={device} /></Td>
-      <Td dataLabel={columnNames.details}><DeviceDetailsColumn device={device} /></Td>
-      <Td dataLabel={columnNames.action}>
+      <Td dataLabel={_(columnNames.content)}><DeviceContentColumn device={device} /></Td>
+      <Td dataLabel={_(columnNames.size)}><DeviceSizeColumn device={device} /></Td>
+      <Td dataLabel={_(columnNames.details)}><DeviceDetailsColumn device={device} /></Td>
+      <Td dataLabel={_(columnNames.action)}>
         <If
           condition={showAction}
           then={
@@ -298,6 +326,7 @@ const DeviceRow = ({
           }
         />
       </Td>
+      {/* eslint-enable agama-i18n/string-literals */}
     </TreeRowWrapper>
   );
 };
@@ -310,31 +339,30 @@ const DeviceRow = ({
  * @param {ProposalSettings} props.settings
  * @param {(action: SpaceAction) => void} [props.onChange]
  */
-const SpaceActionsTable = ({ settings, onChange = noop }) => {
+const SpaceActionsTable = ({ policy, actions, devices, onChange = noop }) => {
   const [expandedDevices, setExpandedDevices] = useLocalStorage("storage-space-actions-expanded", []);
   const [autoExpanded, setAutoExpanded] = useLocalStorage("storage-space-actions-auto-expanded", false);
 
   useEffect(() => {
-    const policy = settings.spacePolicy;
-    const devices = settings.installationDevices.map(d => d.name);
-    let currentExpanded = devices.filter(d => expandedDevices.includes(d));
+    const dev_names = devices.map(d => d.name);
+    let currentExpanded = dev_names.filter(d => expandedDevices.includes(d));
 
-    if (policy === "custom" && !autoExpanded) {
-      currentExpanded = [...devices];
+    if (policy.id === "custom" && !autoExpanded) {
+      currentExpanded = [...dev_names];
       setAutoExpanded(true);
-    } else if (policy !== "custom" && autoExpanded) {
+    } else if (policy.id !== "custom" && autoExpanded) {
       setAutoExpanded(false);
     }
 
     if (currentExpanded.sort().toString() !== expandedDevices.sort().toString()) {
       setExpandedDevices(currentExpanded);
     }
-  }, [autoExpanded, expandedDevices, setAutoExpanded, setExpandedDevices, settings]);
+  }, [autoExpanded, expandedDevices, setAutoExpanded, setExpandedDevices, policy, devices]);
 
   const renderRows = () => {
     const rows = [];
 
-    settings.installationDevices?.forEach((device, index) => {
+    devices?.forEach((device, index) => {
       const isExpanded = expandedDevices.includes(device.name);
       const children = device.partitionTable?.partitions;
 
@@ -348,7 +376,8 @@ const SpaceActionsTable = ({ settings, onChange = noop }) => {
         <DeviceRow
           key={device.name}
           device={device}
-          settings={settings}
+          policy={policy}
+          actions={actions}
           rowIndex={rows.length}
           setSize={children?.length || 0}
           posInSet={index}
@@ -363,7 +392,8 @@ const SpaceActionsTable = ({ settings, onChange = noop }) => {
           <DeviceRow
             key={child.name}
             device={child}
-            settings={settings}
+            policy={policy}
+            actions={actions}
             rowIndex={rows.length}
             level={2}
             posInSet={index}
@@ -405,17 +435,19 @@ const SpaceActionsTable = ({ settings, onChange = noop }) => {
 const SpacePolicyPicker = ({ currentPolicy, onChange = noop }) => {
   return (
     <OptionsPicker>
+      {/* eslint-disable agama-i18n/string-literals */}
       {SPACE_POLICIES.map((policy) => {
         return (
           <OptionsPicker.Option
             key={policy.id}
-            title={policy.label}
-            body={policy.description}
-            onClick={() => onChange(policy.id)}
+            title={_(policy.label)}
+            body={_(policy.description)}
+            onClick={() => onChange(policy)}
             isSelected={currentPolicy?.id === policy.id}
           />
         );
       })}
+      {/* eslint-enable agama-i18n/string-literals */}
     </OptionsPicker>
   );
 };
@@ -428,45 +460,115 @@ const SpacePolicyPicker = ({ currentPolicy, onChange = noop }) => {
  * @param {boolean} [isLoading=false]
  * @param {(settings: ProposalSettings) => void} [onChange]
  */
-export default function ProposalSpacePolicySection({
-  settings,
+const SpacePolicyForm = ({
+  id,
+  currentPolicy,
+  currentActions,
+  devices,
   isLoading = false,
-  onChange = noop
-}) {
-  const changeSpacePolicy = (policy) => {
-    onChange({ spacePolicy: policy });
-  };
+  onSubmit = noop
+}) => {
+  const [policy, setPolicy] = useState(currentPolicy);
+  const [actions, setActions] = useState(currentActions);
 
-  const changeSpaceActions = (spaceAction) => {
-    const spaceActions = settings.spaceActions.filter(a => a.device !== spaceAction.device);
+  const changeActions = (spaceAction) => {
+    const spaceActions = actions.filter(a => a.device !== spaceAction.device);
     if (spaceAction.action !== "keep") spaceActions.push(spaceAction);
 
-    onChange({ spaceActions });
+    setActions(spaceActions);
   };
 
-  const currentPolicy = SPACE_POLICIES.find(p => p.id === settings.spacePolicy) || SPACE_POLICIES[0];
+  const submitForm = (e) => {
+    e.preventDefault();
+    if (policy !== undefined) onSubmit(policy, actions);
+  };
 
   return (
-    <Section
-      // TRANSLATORS: The storage "Find Space" section's title
-      title={_("Find Space")}
-      // TRANSLATORS: The storage "Find space" sections's description
-      description={_("Allocating the file systems might need to find free space \
-in the devices listed below. Choose how to do it.")}
-    >
+    <Form id={id} onSubmit={submitForm}>
       <If
-        condition={isLoading && settings.spacePolicy === undefined}
+        condition={isLoading && policy === undefined}
         then={<SectionSkeleton numRows={4} />}
         else={
           <>
-            <SpacePolicyPicker currentPolicy={currentPolicy} onChange={changeSpacePolicy} />
+            <SpacePolicyPicker currentPolicy={policy} onChange={setPolicy} />
             <If
-              condition={settings.installationDevices?.length > 0}
-              then={<SpaceActionsTable settings={settings} onChange={changeSpaceActions} />}
+              condition={devices.length > 0}
+              then={<SpaceActionsTable policy={policy} actions={actions} devices={devices} onChange={changeActions} />}
             />
           </>
         }
       />
-    </Section>
+    </Form>
+  );
+};
+
+const SpacePolicyButton = ({ policy, devices, onClick = noop }) => {
+  const Text = () => {
+    // eslint-disable-next-line agama-i18n/string-literals
+    if (policy.summaryLabels.length === 1) return _(policy.summaryLabels[0]);
+
+    // eslint-disable-next-line agama-i18n/string-literals
+    return sprintf(n_(policy.summaryLabels[0], policy.summaryLabels[1], devices.length), devices.length);
+  };
+
+  return <Button variant="link" isInline onClick={onClick}><Text /></Button>;
+};
+
+export default function ProposalSpacePolicyField({
+  policy,
+  actions = [],
+  devices = [],
+  isLoading = false,
+  onChange = noop
+}) {
+  const spacePolicy = SPACE_POLICIES.find(p => p.id === policy) || SPACE_POLICIES[0];
+  const [isFormOpen, setIsFormOpen] = useState(false);
+
+  const openForm = () => setIsFormOpen(true);
+  const closeForm = () => setIsFormOpen(false);
+
+  const acceptForm = (spacePolicy, actions) => {
+    closeForm();
+    onChange(spacePolicy.id, actions);
+  };
+
+  if (isLoading) {
+    return <Skeleton screenreaderText={_("Waiting for information about how to find space")} width="25%" />;
+  }
+
+  const description = _("Allocating the file systems might need to find free space \
+in the devices listed below. Choose how to do it.");
+
+  return (
+    <div className="split">
+      {/* TRANSLATORS: To be completed with the rest of a sentence like "deleting all content" */}
+      <span>{_("Find space")}</span>
+      <SpacePolicyButton policy={spacePolicy} devices={devices} onClick={openForm} />
+      <Popup
+        variant="large"
+        description={description}
+        title={_("Find Space")}
+        isOpen={isFormOpen}
+      >
+        <div className="stack">
+          <SpacePolicyForm
+            id="spacePolicyForm"
+            currentPolicy={spacePolicy}
+            currentActions={actions}
+            devices={devices}
+            onSubmit={acceptForm}
+          />
+        </div>
+        <Popup.Actions>
+          <Popup.Confirm
+            form="spacePolicyForm"
+            type="submit"
+          >
+            {_("Accept")}
+          </Popup.Confirm>
+          <Popup.Cancel onClick={closeForm} />
+        </Popup.Actions>
+      </Popup>
+    </div>
   );
 }

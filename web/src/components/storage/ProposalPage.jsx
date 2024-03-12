@@ -29,9 +29,7 @@ import {
   ProposalActionsSection,
   ProposalPageMenu,
   ProposalSettingsSection,
-  ProposalSpacePolicySection,
   ProposalDeviceSection,
-  ProposalFileSystemsSection,
   ProposalTransactionalInfo
 } from "~/components/storage";
 import { IDLE } from "~/client/status";
@@ -233,17 +231,7 @@ export default function ProposalPage() {
         <ProposalSettingsSection
           availableDevices={state.availableDevices}
           encryptionMethods={state.encryptionMethods}
-          settings={state.settings}
-          onChange={changeSettings}
-          isLoading={state.loading}
-        />
-        <ProposalFileSystemsSection
-          settings={state.settings}
           volumeTemplates={state.volumeTemplates}
-          onChange={changeSettings}
-          isLoading={state.loading}
-        />
-        <ProposalSpacePolicySection
           settings={state.settings}
           onChange={changeSettings}
           isLoading={state.loading}

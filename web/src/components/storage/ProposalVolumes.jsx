@@ -408,6 +408,9 @@ export default function ProposalVolumes({
     <>
       <Toolbar>
         <ToolbarContent>
+          <ToolbarItem>
+            {_("File systems to create in your system")}
+          </ToolbarItem>
           <ToolbarItem align={{ default: "alignRight" }}>
             <GeneralActions
               templates={templates}
