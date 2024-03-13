@@ -10,6 +10,7 @@ pub enum Event {
     Progress(Progress),
     ProductChanged { id: String },
     PatternsChanged(HashMap<String, SelectedBy>),
+    QuestionsChanged
 }
 
 pub type EventsSender = Sender<Event>;

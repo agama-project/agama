@@ -9,6 +9,7 @@ use crate::{
     error::Error,
     l10n::web::l10n_service,
     software::web::{software_service, software_stream},
+    questions::web::{questions_service, questions_stream}
 };
 use axum::Router;
 

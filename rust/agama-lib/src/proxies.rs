@@ -89,7 +89,7 @@ trait Questions1 {
 
     /// New method
     #[dbus_proxy(name = "New")]
-    fn new_quetion(
+    fn new_question(
         &self,
         class: &str,
         text: &str,
