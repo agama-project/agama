@@ -28,6 +28,7 @@ import { N_ } from "~/i18n";
 /**
  * @typedef {import ("~/client/storage").Volume} Volume
  * @typedef {import ("~/clients/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/clients/storage").PartitionSlot} PartitionSlot
  */
 
 /**
@@ -141,6 +142,33 @@ const deviceLabel = (device) => {
 };
 
 /**
+ * Sorted list of children devices (i.e., partitions and unused slots or logical volumes).
+ * @function
+ *
+ * @note This method could be directly provided by the device object. For now, the method is kept
+ * here because the elements considered as children (e.g., partitions + unused slots) is not a
+ * semantic storage concept but a helper for UI components.
+ *
+ * @param {StorageDevice} device
+ * @returns {(StorageDevice|PartitionSlot)[]}
+ */
+const deviceChildren = (device) => {
+  const partitionTableChildren = (partitionTable) => {
+    const { partitions, unusedSlots } = partitionTable;
+    const children = partitions.concat(unusedSlots);
+    return children.sort((a, b) => a.start < b.start ? -1 : 1);
+  };
+
+  const lvmVgChildren = (lvmVg) => {
+    return lvmVg.logicalVolumes.sort((a, b) => a.name < b.name ? -1 : 1);
+  };
+
+  if (device.partitionTable) return partitionTableChildren(device.partitionTable);
+  if (device.type === "lvmVg") return lvmVgChildren(device);
+  return [];
+};
+
+/**
  * Checks if volume uses given fs. This method works same as in backend
  * case insensitive.
  *
@@ -193,6 +221,7 @@ export {
   SIZE_METHODS,
   SIZE_UNITS,
   deviceLabel,
+  deviceChildren,
   deviceSize,
   parseToBytes,
   splitSize,
