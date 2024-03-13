@@ -19,9 +19,11 @@
  * find current contact information at www.suse.com.
  */
 
+import { compact, uniq } from "~/utils";
+
 /**
  * @typedef {import ("~/clients/storage").StorageDevice} StorageDevice
- * @typedef {import ("~/clients/storage").PartitionSlot} PartitionSlot
+ * @typedef {import ("~/clients/storage").Action} Action
  */
 
 /**
@@ -31,10 +33,12 @@ export default class DevicesManager {
   /**
    * @param {StorageDevice[]} system - Devices representing the current state of the system.
    * @param {StorageDevice[]} staging - Devices representing the target state of the system.
+   * @param {Action[]} actions - Actions to perform from system to staging.
    */
-  constructor(system, staging) {
+  constructor(system, staging, actions) {
     this.system = system;
     this.staging = staging;
+    this.actions = actions;
   }
 
   /**
@@ -93,25 +97,13 @@ export default class DevicesManager {
   }
 
   /**
-   * Sorted list of children devices (i.e., partitions and unused slots or logical volumes).
-   *
-   * @param {StorageDevice} device
-   * @returns {(StorageDevice|PartitionSlot)[]}
-   */
-  children(device) {
-    if (device.partitionTable) return this.#partitionTableChildren(device.partitionTable);
-    if (device.type === "lvmVg") return this.#lvmVgChildren(device);
-    return [];
-  }
-
-  /**
    * Whether the given device is going to be shrunk.
    *
    * @param {StorageDevice} device
    * @returns {Boolean}
    */
-  isResized(device) {
-    return this.resizeSize(device) > 0;
+  isShrunk(device) {
+    return this.shrinkSize(device) > 0;
   }
 
   /**
@@ -120,13 +112,35 @@ export default class DevicesManager {
    * @param {StorageDevice} device
    * @returns {Number}
    */
-  resizeSize(device) {
+  shrinkSize(device) {
     const systemDevice = this.systemDevice(device.sid);
     const stagingDevice = this.stagingDevice(device.sid);
 
     if (!systemDevice || !stagingDevice) return 0;
 
-    return systemDevice.size - stagingDevice.size;
+    const amount = systemDevice.size - stagingDevice.size;
+    return amount > 0 ? amount : 0;
+  }
+
+  /**
+   * Disk devices and LVM volume groups used for the installation.
+   *
+   * @note The used devices are extracted from the actions.
+   *
+   * @returns {StorageDevice[]}
+   */
+  usedDevices() {
+    const isTarget = (device) => device.isDrive || device.type === "lvmVg";
+
+    // Check in system devices to detect removals.
+    const targetSystem = this.system.filter(isTarget);
+    const targetStaging = this.staging.filter(isTarget);
+
+    const sids = targetSystem.concat(targetStaging)
+      .filter(d => this.#isUsed(d))
+      .map(d => d.sid);
+
+    return compact(uniq(sids).map(sid => this.stagingDevice(sid)));
   }
 
   #device(sid, source) {
@@ -137,13 +151,14 @@ export default class DevicesManager {
     return this.#device(device.sid, source) !== undefined;
   }
 
-  #partitionTableChildren(partitionTable) {
-    const { partitions, unusedSlots } = partitionTable;
-    const children = partitions.concat(unusedSlots);
-    return children.sort((a, b) => a.start < b.start ? -1 : 1);
-  }
+  #isUsed(device) {
+    const sids = uniq(compact(this.actions.map(a => a.device)));
 
-  #lvmVgChildren(lvmVg) {
-    return lvmVg.logicalVolumes.sort((a, b) => a.name < b.name ? -1 : 1);
+    const partitions = device.partitionTable?.partitions || [];
+    const lvmLvs = device.logicalVolumes || [];
+
+    return sids.includes(device.sid) ||
+      partitions.find(p => this.#isUsed(p)) !== undefined ||
+      lvmLvs.find(l => this.#isUsed(l)) !== undefined;
   }
 }
