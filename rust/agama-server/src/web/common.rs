@@ -69,18 +69,25 @@ struct ServiceStatus {
 
 /// Builds a stream of the changes in the the `org.opensuse.Agama1.ServiceStatus`
 /// interface of the given D-Bus object.
+///
+/// * `dbus`: D-Bus connection.
+/// * `destination`: D-Bus service name.
+/// * `path`: D-Bus object path.
 pub async fn service_status_stream(
     dbus: zbus::Connection,
-    destination: &str,
-    path: &str,
+    destination: &'static str,
+    path: &'static str,
 ) -> Result<impl Stream<Item = Event>, Error> {
     let proxy = build_service_status_proxy(&dbus, destination, path).await?;
     let stream = proxy
         .receive_current_changed()
         .await
-        .then(|change| async move {
+        .then(move |change| async move {
             if let Ok(status) = change.get().await {
-                Some(Event::StatusChanged { status })
+                Some(Event::ServiceStatusChanged {
+                    service: destination.to_string(),
+                    status,
+                })
             } else {
                 None
             }

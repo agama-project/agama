@@ -22,7 +22,13 @@ use serde_json::json;
 use thiserror::Error;
 use tokio_stream::{Stream, StreamExt};
 
-use crate::{error::Error, web::Event};
+use crate::{
+    error::Error,
+    web::{
+        common::{service_status_router, service_status_stream},
+        Event,
+    },
+};
 
 #[derive(Clone)]
 pub struct ManagerState<'a> {
@@ -62,8 +68,16 @@ pub struct InstallerStatus {
 /// * `connection`: D-Bus connection to listen for events.
 pub async fn manager_stream(dbus: zbus::Connection) -> Result<impl Stream<Item = Event>, Error> {
     Ok(StreamExt::merge(
-        busy_services_changed_stream(dbus.clone()).await?,
-        installation_phase_changed_stream(dbus.clone()).await?,
+        StreamExt::merge(
+            busy_services_changed_stream(dbus.clone()).await?,
+            installation_phase_changed_stream(dbus.clone()).await?,
+        ),
+        service_status_stream(
+            dbus,
+            "org.opensuse.Agama.Manager1",
+            "/org/opensuse/Agama/Manager1",
+        )
+        .await?,
     ))
 }
 
@@ -113,6 +127,12 @@ pub async fn installation_phase_changed_stream(
 
 /// Sets up and returns the axum service for the manager module
 pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
+    let status_route = service_status_router(
+        &dbus,
+        "org.opensuse.Agama.Manager1",
+        "/org/opensuse/Agama/Manager1",
+    )
+    .await?;
     let manager = ManagerClient::new(dbus).await?;
     let state = ManagerState { manager };
     Ok(Router::new()
@@ -120,6 +140,7 @@ pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .route("/install", post(install_action))
         .route("/finish", post(finish_action))
         .route("/installer", get(installer_status))
+        .merge(status_route)
         .with_state(state))
 }
 

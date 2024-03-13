@@ -1,5 +1,4 @@
 use utoipa::OpenApi;
-
 #[derive(OpenApi)]
 #[openapi(
     info(description = "Agama web API description"),
