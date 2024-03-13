@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,19 +19,32 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Outlet } from "react-router-dom";
-// import { Questions } from "~/components/questions";
+// @ts-check
 
-function Main() {
-  // FIXME: adapt to the new API
-  // return (
-  //   <>
-  //     <Questions />
-  //     <Outlet />
-  //   </>
-  // );
-  return <Outlet />;
+import React from "react";
+import { InstallerClientProvider } from "./installer";
+import { InstallerL10nProvider } from "./installerL10n";
+import { L10nProvider } from "./l10n";
+import { ProductProvider } from "./product";
+
+/**
+ * Combines all application providers.
+ *
+ * @param {object} props
+ * @param {React.ReactNode} [props.children] - content to display within the provider.
+ */
+function AppProviders({ children }) {
+  return (
+    <InstallerClientProvider>
+      <InstallerL10nProvider>
+        <L10nProvider>
+          <ProductProvider>
+            {children}
+          </ProductProvider>
+        </L10nProvider>
+      </InstallerL10nProvider>
+    </InstallerClientProvider>
+  );
 }
 
-export default Main;
+export { AppProviders };

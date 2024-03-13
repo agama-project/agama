@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,19 +19,23 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Outlet } from "react-router-dom";
-// import { Questions } from "~/components/questions";
+// @ts-check
 
-function Main() {
-  // FIXME: adapt to the new API
-  // return (
-  //   <>
-  //     <Questions />
-  //     <Outlet />
-  //   </>
-  // );
-  return <Outlet />;
+import React from "react";
+import { AuthProvider } from "./auth";
+
+/**
+ * Combines all application providers.
+ *
+ * @param {object} props
+ * @param {React.ReactNode} [props.children] - content to display within the provider.
+ */
+function RootProviders({ children }) {
+  return (
+    <AuthProvider>
+      {children}
+    </AuthProvider>
+  );
 }
 
-export default Main;
+export { RootProviders };

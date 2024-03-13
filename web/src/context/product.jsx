@@ -39,13 +39,13 @@ function ProductProvider({ children }) {
 
   useEffect(() => {
     const load = async () => {
-      const productManager = client.software.product;
-      const available = await cancellablePromise(productManager.getAll());
-      const selected = await cancellablePromise(productManager.getSelected());
-      const registration = await cancellablePromise(productManager.getRegistration());
+      const productClient = client.product;
+      const available = await cancellablePromise(productClient.getAll());
+      const selected = await cancellablePromise(productClient.getSelected());
+      // const registration = await cancellablePromise(productManager.getRegistration());
       setProducts(available);
-      setSelectedId(selected?.id || null);
-      setRegistration(registration);
+      setSelectedId(selected);
+      // setRegistration(registration);
     };
 
     if (client) {
@@ -53,17 +53,17 @@ function ProductProvider({ children }) {
     }
   }, [client, setProducts, setSelectedId, setRegistration, cancellablePromise]);
 
-  useEffect(() => {
-    if (!client) return;
+  // useEffect(() => {
+  //   if (!client) return;
 
-    return client.software.product.onChange(setSelectedId);
-  }, [client, setSelectedId]);
+  //   return client.software.product.onChange(setSelectedId);
+  // }, [client, setSelectedId]);
 
-  useEffect(() => {
-    if (!client) return;
+  // useEffect(() => {
+  //   if (!client) return;
 
-    return client.software.product.onRegistrationChange(setRegistration);
-  }, [client, setRegistration]);
+  //   return client.software.product.onRegistrationChange(setRegistration);
+  // }, [client, setRegistration]);
 
   const value = { products, selectedId, registration };
   return <ProductContext.Provider value={value}>{children}</ProductContext.Provider>;

@@ -297,8 +297,62 @@ class SoftwareBaseClient {
  */
 class SoftwareClient extends WithIssues(
   WithProgress(
-    WithStatus(SoftwareBaseClient, SOFTWARE_PATH), SOFTWARE_PATH
-  ), SOFTWARE_PATH
-) { }
+    WithStatus(SoftwareBaseClient, SOFTWARE_PATH),
+    SOFTWARE_PATH,
+  ),
+  SOFTWARE_PATH,
+) {}
 
-export { SoftwareClient };
+class ProductClient {
+  /**
+   * @param {import("./http").HTTPClient} client - HTTP client.
+   */
+  constructor(client) {
+    this.client = client;
+  }
+
+  /**
+   * Returns the list of available products.
+   *
+   * @return {Promise<Array<Product>>}
+   */
+  async getAll() {
+    const products = await this.client.get("/software/products");
+    return products;
+  }
+
+  /**
+   * Returns the identifier of the selected product.
+   *
+   * @return {Promise<string>} Selected identifier.
+   */
+  async getSelected() {
+    const config = await this.client.get("/software/config");
+    return config.product;
+  }
+
+  /**
+   * Selects a product for installation.
+   *
+   * @param {string} id - Product ID.
+   */
+  async select(id) {
+    await this.client.put("/software/config", { product: id });
+  }
+
+  /**
+   * Registers a callback to run when the select product changes.
+   *
+   * @param {(id: string) => void} handler - Callback function.
+   * @return {import ("./http").RemoveFn} Function to remove the callback.
+   */
+  onChange(handler) {
+    return this.client.onEvent("ProductChanged", ({ id }) => {
+      if (id) {
+        handler(id);
+      }
+    });
+  }
+}
+
+export { ProductClient, SoftwareClient };

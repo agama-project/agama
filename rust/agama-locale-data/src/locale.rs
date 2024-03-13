@@ -86,6 +86,15 @@ pub struct KeymapId {
     pub variant: Option<String>,
 }
 
+impl Default for KeymapId {
+    fn default() -> Self {
+        Self {
+            layout: "us".to_string(),
+            variant: None,
+        }
+    }
+}
+
 #[derive(Error, Debug, PartialEq)]
 #[error("Invalid keymap ID: {0}")]
 pub struct InvalidKeymap(String);

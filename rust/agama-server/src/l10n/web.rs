@@ -16,7 +16,10 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::sync::{Arc, RwLock};
+use std::{
+    process::Command,
+    sync::{Arc, RwLock},
+};
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -29,6 +32,8 @@ pub enum LocaleError {
     InvalidKeymap(#[from] InvalidKeymap),
     #[error("Cannot translate: {0}")]
     OtherError(#[from] Error),
+    #[error("Cannot change the local keymap: {0}")]
+    CouldNotSetKeymap(#[from] std::io::Error),
 }
 
 impl IntoResponse for LocaleError {
@@ -74,7 +79,7 @@ async fn locales(State(state): State<LocaleState>) -> Json<Vec<LocaleEntry>> {
     Json(locales)
 }
 
-#[derive(Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct LocaleConfig {
     /// Locales to install in the target system
     locales: Option<Vec<String>>,
@@ -84,6 +89,8 @@ pub struct LocaleConfig {
     timezone: Option<String>,
     /// User-interface locale. It is actually not related to the `locales` property.
     ui_locale: Option<String>,
+    /// User-interface locale. It is relevant only on local installations.
+    ui_keymap: Option<String>,
 }
 
 #[utoipa::path(get, path = "/l10n/timezones", responses(
@@ -104,6 +111,8 @@ async fn keymaps(State(state): State<LocaleState>) -> Json<Vec<Keymap>> {
     Json(keymaps)
 }
 
+// TODO: update all or nothing
+// TODO: send only the attributes that have changed
 #[utoipa::path(put, path = "/l10n/config", responses(
     (status = 200, description = "Set the locale configuration", body = LocaleConfig)
 ))]
@@ -112,6 +121,7 @@ async fn set_config(
     Json(value): Json<LocaleConfig>,
 ) -> Result<Json<()>, LocaleError> {
     let mut data = state.locale.write().unwrap();
+    let mut changes = LocaleConfig::default();
 
     if let Some(locales) = &value.locales {
         for loc in locales {
@@ -120,6 +130,7 @@ async fn set_config(
             }
         }
         data.locales = locales.clone();
+        changes.locales = Some(data.locales.clone());
     }
 
     if let Some(timezone) = &value.timezone {
@@ -127,10 +138,12 @@ async fn set_config(
             return Err(LocaleError::UnknownTimezone(timezone.to_string()));
         }
         data.timezone = timezone.to_owned();
+        changes.timezone = Some(data.timezone.clone());
     }
 
     if let Some(keymap_id) = &value.keymap {
         data.keymap = keymap_id.parse()?;
+        changes.keymap = Some(keymap_id.clone());
     }
 
     if let Some(ui_locale) = &value.ui_locale {
@@ -141,10 +154,24 @@ async fn set_config(
 
         helpers::set_service_locale(&locale);
         data.translate(&locale)?;
+        changes.ui_locale = Some(locale.to_string());
         _ = state.events.send(Event::LocaleChanged {
             locale: locale.to_string(),
         });
     }
+
+    if let Some(ui_keymap) = &value.ui_keymap {
+        data.ui_keymap = ui_keymap.parse()?;
+        Command::new("/usr/bin/localectl")
+            .args(["set-x11-keymap", &ui_keymap])
+            .output()?;
+        Command::new("/usr/bin/setxkbmap")
+            .arg(&ui_keymap)
+            .env("DISPLAY", ":0")
+            .output()?;
+    }
+
+    _ = state.events.send(Event::L10nConfigChanged(changes));
 
     Ok(Json(()))
 }
@@ -159,6 +186,7 @@ async fn get_config(State(state): State<LocaleState>) -> Json<LocaleConfig> {
         keymap: Some(data.keymap()),
         timezone: Some(data.timezone().to_string()),
         ui_locale: Some(data.ui_locale().to_string()),
+        ui_keymap: Some(data.ui_keymap.to_string()),
     })
 }
 

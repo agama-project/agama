@@ -7,14 +7,17 @@ pub mod web;
 use crate::error::Error;
 use agama_locale_data::{KeymapId, LocaleCode};
 use anyhow::Context;
-pub use keyboard::Keymap;
 use keyboard::KeymapsDatabase;
-pub use locale::LocaleEntry;
 use locale::LocalesDatabase;
-use std::process::Command;
-pub use timezone::TimezoneEntry;
+use regex::Regex;
+use std::{io, process::Command};
 use timezone::TimezonesDatabase;
 use zbus::{dbus_interface, Connection};
+
+pub use keyboard::Keymap;
+pub use locale::LocaleEntry;
+pub use timezone::TimezoneEntry;
+pub use web::LocaleConfig;
 
 pub struct Locale {
     timezone: String,
@@ -24,6 +27,7 @@ pub struct Locale {
     keymap: KeymapId,
     keymaps_db: KeymapsDatabase,
     ui_locale: LocaleCode,
+    pub ui_keymap: KeymapId,
 }
 
 #[dbus_interface(name = "org.opensuse.Agama1.Locale")]
@@ -211,6 +215,8 @@ impl Locale {
         let mut keymaps_db = KeymapsDatabase::new();
         keymaps_db.read()?;
 
+        let ui_keymap = Self::x11_keymap().unwrap_or("us".to_string());
+
         let locale = Self {
             keymap: "us".parse().unwrap(),
             timezone: default_timezone,
@@ -219,6 +225,7 @@ impl Locale {
             timezones_db,
             keymaps_db,
             ui_locale: ui_locale.clone(),
+            ui_keymap: ui_keymap.parse().unwrap_or_default(),
         };
 
         Ok(locale)
@@ -229,6 +236,24 @@ impl Locale {
         self.locales_db.read(&locale.language)?;
         self.ui_locale = locale.clone();
         Ok(())
+    }
+
+    fn x11_keymap() -> Result<String, io::Error> {
+        let output = Command::new("setxkbmap")
+            .arg("-query")
+            .env("DISPLAY", ":0")
+            .output()?;
+        let output = String::from_utf8(output.stdout)
+            .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
+
+        let keymap_regexp = Regex::new(r"(?m)^layout: (.+)$").unwrap();
+        let captures = keymap_regexp.captures(&output);
+        let keymap = captures
+            .and_then(|c| c.get(1).map(|e| e.as_str()))
+            .unwrap_or("us")
+            .to_string();
+
+        Ok(keymap)
     }
 }
 
