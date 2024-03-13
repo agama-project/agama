@@ -42,23 +42,19 @@ import { ProposalActionsDialog } from "~/components/storage";
  * @component
  *
  * @param {object} props
- * @param {Action[]} props.actions
- * @param {DevicesManager} props.devicesManager
+ * @param {object[]} props.actions
+ * @param {string[]} props.systems
  */
-const DeletionsInfo = ({ actions, devicesManager }) => {
-  const deleteActions = actions.filter(a => a.delete && !a.subvol);
-  const deleteActionsSize = deleteActions.length;
+const DeletionsInfo = ({ actions, systems }) => {
+  const total = actions.length;
 
-  if (deleteActionsSize === 0) return;
+  if (total === 0) return;
 
-  const deletedSids = deleteActions.map(a => a.device);
-  const deletedDevices = deletedSids.map(sid => devicesManager.systemDevice(sid));
-  const deletedSystems = deletedDevices.map(d => d?.systems).flat();
   const warningTitle = sprintf(n_(
     "There are %d destructive planned action",
     "There are %d destructive planned actions",
-    deleteActionsSize
-  ), deleteActionsSize);
+    total
+  ), total);
 
   // FIXME: Use the Intl.ListFormat instead of the `join(", ")` used below.
   // Most probably, a `listFormat` or similar wrapper should live in src/i18n.js or so.
@@ -66,10 +62,10 @@ const DeletionsInfo = ({ actions, devicesManager }) => {
   return (
     <Reminder title={warningTitle} variant="subtle">
       <If
-        condition={deletedSystems.length > 0}
+        condition={systems.length > 0}
         then={
           <p>
-            {_("Including the deletion of")} <strong>{deletedSystems.join(", ")}</strong>
+            {_("Including the deletion of")} <strong>{systems.join(", ")}</strong>
           </p>
         }
       />
@@ -228,7 +224,10 @@ const SectionContent = ({ system, staging, actions, errors }) => {
   return (
     <>
       <DevicesTreeTable devicesManager={devicesManager} />
-      <DeletionsInfo actions={actions} devicesManager={devicesManager} />
+      <DeletionsInfo
+        actions={devicesManager.actions.filter(a => a.delete && !a.subvol)}
+        systems={devicesManager.deletedSystems()}
+      />
       <ActionsInfo actions={actions} />
     </>
   );
