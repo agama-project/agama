@@ -14,6 +14,7 @@ pub enum Event {
     PatternsChanged(HashMap<String, SelectedBy>),
     InstallationPhaseChanged { phase: InstallationPhase },
     BusyServicesChanged { services: Vec<String> },
+    StatusChanged { status: u32 },
 }
 
 pub type EventsSender = Sender<Event>;

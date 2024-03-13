@@ -14,6 +14,7 @@ use crate::{
 use axum::Router;
 
 mod auth;
+pub mod common;
 mod config;
 mod docs;
 mod event;

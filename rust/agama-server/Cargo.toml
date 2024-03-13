@@ -59,3 +59,4 @@ path = "src/agama-web-server.rs"
 
 [dev-dependencies]
 http-body-util = "0.1.0"
+tokio-test = "0.4.3"
