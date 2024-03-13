@@ -127,12 +127,11 @@ pub async fn installation_phase_changed_stream(
 
 /// Sets up and returns the axum service for the manager module
 pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
-    let status_route = service_status_router(
-        &dbus,
-        "org.opensuse.Agama.Manager1",
-        "/org/opensuse/Agama/Manager1",
-    )
-    .await?;
+    const DBUS_SERVICE: &'static str = "org.opensuse.Agama.Manager1";
+    const DBUS_PATH: &'static str = "/org/opensuse/Agama/Manager1";
+
+    let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
+    let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let manager = ManagerClient::new(dbus).await?;
     let state = ManagerState { manager };
     Ok(Router::new()
