@@ -559,7 +559,24 @@ table.proposal-result {
 
   h4 {
     color: var(--accent-color);
-    margin-block-end: var(--spacer-smaller);
+  }
+
+  h4 ~ * {
+    margin-block-start: var(--spacer-small);
+  }
+}
+
+section [data-type="agama/reminder"] {
+  margin-inline: 0;
+}
+
+[data-type="agama/reminder"][data-variant="subtle"] {
+  --accent-color: var(--color-primary);
+  padding-block: 0;
+  border-inline-start-width: 1px;
+
+  h4 {
+    font-size: var(--fs-normal);
   }
 }
 
