@@ -1,10 +1,10 @@
 use crate::l10n::web::LocaleConfig;
-use agama_lib::{progress::Progress, software::SelectedBy};
+use agama_lib::{manager::InstallationPhase, progress::Progress, software::SelectedBy};
 use serde::Serialize;
 use std::collections::HashMap;
 use tokio::sync::broadcast::{Receiver, Sender};
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 #[serde(tag = "type")]
 pub enum Event {
     L10nConfigChanged(LocaleConfig),
@@ -12,6 +12,9 @@ pub enum Event {
     Progress(Progress),
     ProductChanged { id: String },
     PatternsChanged(HashMap<String, SelectedBy>),
+    InstallationPhaseChanged { phase: InstallationPhase },
+    BusyServicesChanged { services: Vec<String> },
+    ServiceStatusChanged { service: String, status: u32 },
 }
 
 pub type EventsSender = Sender<Event>;

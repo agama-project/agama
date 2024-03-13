@@ -8,11 +8,13 @@ use self::progress::EventsProgressPresenter;
 use crate::{
     error::Error,
     l10n::web::l10n_service,
+    manager::web::{manager_service, manager_stream},
     software::web::{software_service, software_stream},
 };
 use axum::Router;
 
 mod auth;
+pub mod common;
 mod config;
 mod docs;
 mod event;
@@ -48,6 +50,7 @@ where
 {
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/l10n", l10n_service(events.clone()))
+        .add_service("/manager", manager_service(dbus.clone()).await?)
         .add_service("/software", software_service(dbus).await?)
         .with_config(config)
         .build();
@@ -78,7 +81,10 @@ pub async fn run_monitor(events: EventsSender) -> Result<(), ServiceError> {
 /// * `connection`: D-Bus connection.
 /// * `events`: channel to send the events to.
 pub async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Result<(), Error> {
-    let stream = software_stream(dbus).await?;
+    let stream = StreamExt::merge(
+        manager_stream(dbus.clone()).await?,
+        software_stream(dbus).await?,
+    );
     tokio::pin!(stream);
     let e = events.clone();
     while let Some(event) = stream.next().await {
