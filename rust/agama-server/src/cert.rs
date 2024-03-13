@@ -1,13 +1,11 @@
 use openssl::error::ErrorStack;
 use openssl::pkey::{PKey, Private};
 use openssl::rsa::Rsa;
-use openssl::x509::extension::{KeyUsage, SubjectAlternativeName};
 use openssl::x509::{X509NameBuilder, X509};
-
 use openssl::asn1::Asn1Time;
 use openssl::bn::{BigNum, MsbOption};
 use openssl::hash::MessageDigest;
-use openssl::x509::extension::{BasicConstraints, SubjectKeyIdentifier};
+use openssl::x509::extension::{BasicConstraints, SubjectKeyIdentifier, KeyUsage, SubjectAlternativeName};
 
 // Generate a self-signed SSL certificate
 // see https://github.com/sfackler/rust-openssl/blob/master/openssl/examples/mk_certs.rs

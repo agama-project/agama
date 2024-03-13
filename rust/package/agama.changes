@@ -2,8 +2,8 @@
 Thu Feb 29 09:49:18 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Web server:
-  - Accept also IPv6 connections
-  - Added SSL (HTTPS) support
+  - Accept also IPv6 connections (gh#openSUSE/agama#1057)
+  - Added SSL (HTTPS) support (gh#openSUSE/agama#1062)
     - Use either the cerfificate specified via command line
       arguments or generate a self-signed certificate
     - Redirect external HTTP requests to HTTPS
