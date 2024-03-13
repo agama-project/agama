@@ -124,7 +124,7 @@ describe("existInStaging", () => {
 describe("hasNewFilesystem", () => {
   describe("if the given device has no file system", () => {
     beforeEach(() => {
-      system = [{ sid: 60, name: "/dev/sda1", fileystem: { sid: 61 } }];
+      system = [{ sid: 60, name: "/dev/sda1", filesystem: { sid: 61 } }];
       staging = [{ sid: 60, name: "/dev/sda1" }];
     });
 
@@ -150,7 +150,7 @@ describe("hasNewFilesystem", () => {
 
   describe("if the given device has a new file system", () => {
     beforeEach(() => {
-      system = [{ sid: 60, name: "/dev/sda1", fileystem: { sid: 61 } }];
+      system = [{ sid: 60, name: "/dev/sda1", filesystem: { sid: 61 } }];
       staging = [{ sid: 60, name: "/dev/sda1", filesystem: { sid: 62 } }];
     });
 
