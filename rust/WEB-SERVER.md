@@ -71,7 +71,7 @@ The web server uses a bearer token for HTTP authentication. You can get the toke
 password to the `/auth` endpoint.
 
 ```
-$ curl http://localhost:3000/auth \
+$ curl http://localhost:3000/api/auth \
     -H "Content-Type: application/json" \
     -d '{"password": "your-password"}' 
 {"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MDg1MTA5MzB9.3HmKAC5u4H_FigMqEa9e74OFAq40UldjlaExrOGqE0U"}⏎

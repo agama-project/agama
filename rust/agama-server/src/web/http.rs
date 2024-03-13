@@ -70,7 +70,7 @@ pub async fn login(
 }
 
 #[utoipa::path(delete, path = "/auth", responses(
-    (status = 204, description = "The user have been logged out")
+    (status = 204, description = "The user has been logged out")
 ))]
 pub async fn logout(_claims: TokenClaims) -> Result<impl IntoResponse, AuthError> {
     let mut headers = HeaderMap::new();
