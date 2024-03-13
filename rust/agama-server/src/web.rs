@@ -4,7 +4,6 @@
 //! * Emit relevant events via websocket.
 //! * Serve the code for the web user interface (not implemented yet).
 
-use self::progress::EventsProgressPresenter;
 use crate::{
     error::Error,
     l10n::web::l10n_service,
@@ -19,12 +18,11 @@ mod config;
 mod docs;
 mod event;
 mod http;
-mod progress;
 mod service;
 mod state;
 mod ws;
 
-use agama_lib::{connection, error::ServiceError, progress::ProgressMonitor};
+use agama_lib::{connection, error::ServiceError};
 pub use auth::generate_token;
 pub use config::ServiceConfig;
 pub use docs::ApiDoc;
@@ -63,14 +61,7 @@ where
 ///
 /// * `events`: channel to send the events to.
 pub async fn run_monitor(events: EventsSender) -> Result<(), ServiceError> {
-    let presenter = EventsProgressPresenter::new(events.clone());
     let connection = connection().await?;
-    let mut monitor = ProgressMonitor::new(connection.clone()).await?;
-    tokio::spawn(async move {
-        if let Err(error) = monitor.run(presenter).await {
-            eprintln!("Could not monitor the D-Bus server: {}", error);
-        }
-    });
     tokio::spawn(run_events_monitor(connection, events.clone()));
 
     Ok(())
@@ -80,7 +71,7 @@ pub async fn run_monitor(events: EventsSender) -> Result<(), ServiceError> {
 ///
 /// * `connection`: D-Bus connection.
 /// * `events`: channel to send the events to.
-pub async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Result<(), Error> {
+async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Result<(), Error> {
     let stream = StreamExt::merge(
         manager_stream(dbus.clone()).await?,
         software_stream(dbus).await?,
