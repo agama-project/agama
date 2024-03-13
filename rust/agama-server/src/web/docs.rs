@@ -15,7 +15,7 @@ use utoipa::OpenApi;
         crate::manager::web::probe_action,
         crate::manager::web::install_action,
         crate::manager::web::finish_action,
-        crate::manager::web::status,
+        crate::manager::web::installer_status,
         super::http::ping,
     ),
     components(
