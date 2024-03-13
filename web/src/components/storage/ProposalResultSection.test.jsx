@@ -23,11 +23,11 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalResultSection } from "~/components/storage";
-import { settings, devices, actions } from "./test-data/full-result-example";
+import { devices, actions } from "./test-data/full-result-example";
 
 const errorMessage = "Something went wrong, proposal not possible";
 const errors = [{ severity: 0, message: errorMessage }];
-const defaultProps = { settings, actions, devices };
+const defaultProps = { system: devices.system, staging: devices.staging, actions };
 
 describe("ProposalResultSection", () => {
   describe("when there are errors (proposal was not possible)", () => {
@@ -36,7 +36,7 @@ describe("ProposalResultSection", () => {
       expect(screen.queryByText(errorMessage)).toBeInTheDocument();
     });
 
-    it("does not render an warning for delete actions", () => {
+    it("does not render a warning for delete actions", () => {
       plainRender(<ProposalResultSection {...defaultProps} errors={errors} />);
       expect(screen.queryByText(/Warning alert:/)).toBeNull();
     });
@@ -63,9 +63,25 @@ describe("ProposalResultSection", () => {
       expect(screen.queryByText(/Warning alert:/)).toBeNull();
     });
 
-    it("renders a warning when when there are delete", () => {
+    it("renders a warning when there are delete actions", () => {
       plainRender(<ProposalResultSection {...defaultProps} />);
-      screen.getByText(/Warning alert:/);
+      const warning = screen.getByText(/Warning alert:/).parentNode;
+      within(warning).getByText(/4 destructive/);
+    });
+
+    it("renders the affected systems in the deletion warning, if any", () => {
+      // NOTE: simulate the deletion of vdc2 (sid: 79) for checking that
+      // affected systems are rendered in the warning summary
+      const props = {
+        ...defaultProps,
+        actions: [{ device: 79, delete: true }]
+      };
+
+      plainRender(<ProposalResultSection {...props} />);
+      // FIXME: below line reveals that warning wrapper deserves a role or
+      // something
+      const warning = screen.getByText(/Warning alert:/).parentNode.parentNode;
+      within(warning).getByText(/openSUSE/);
     });
 
     it("renders a treegrid including all relevant information about final result", () => {

@@ -24,7 +24,7 @@
 import React, { useState } from "react";
 import { Alert, Button, Skeleton } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
+import { _, n_ } from "~/i18n";
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import DevicesManager from "~/components/storage/DevicesManager";
 import { If, Section, Tag, TreeTable } from "~/components/core";
@@ -61,35 +61,32 @@ const ActionsInfo = ({ actions, devicesManager }) => {
   );
 
   const deleteActions = actions.filter(a => a.delete && !a.subvol);
+  const deleteActionsSize = deleteActions.length;
 
-  // Borrowed from https://www.30secondsofcode.org/js/s/count-grouped-elements/
-  const frequencies = arr =>
-    arr.reduce((a, v) => {
-      a[v] = (a[v] ?? 0) + 1;
-      return a;
-    }, {});
-
-  if (deleteActions.length === 0) return <GeneralActionsInfo />;
+  if (deleteActionsSize === 0) return <GeneralActionsInfo />;
 
   const deletedSids = deleteActions.map(a => a.device);
   const deletedDevices = deletedSids.map(sid => devicesManager.systemDevice(sid));
-  const deletedTypes = frequencies(deletedDevices.map(d => d.type));
-  const deletedSystems = deletedDevices.map(d => d.systems).flat();
-  const deletionTypeTexts = Object.entries(deletedTypes).map(([type, amount]) => `${amount} ${type}`)
-    .join(", ");
+  const deletedSystems = deletedDevices.map(d => d?.systems).flat();
+  const warningTitle = sprintf(n_(
+    "That proposal will perform %d destructive action",
+    "That proposal will perform %d destructive actions",
+    deleteActionsSize
+  ), deleteActionsSize);
 
-  const warningTitle = sprintf(_("%s delete actions will be performed"), deleteActions.length);
-  const warningTexts = [deletionTypeTexts];
-
-  if (deletedSystems.length > 0) {
-    warningTexts.push(_("including"));
-    warningTexts.push(deletedSystems.join(", "));
-    warningTexts.push("systems");
-  }
-
+  // FIXME: Use the Intl.ListFormat instead of the `join(", ")` used below.
+  // Most probably, a `listFormat` or similar wrapper should live in src/i18n.js or so.
+  // Read https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat
   return (
     <Alert isInline variant="warning" title={warningTitle}>
-      <p><strong>{warningTexts.join(" ")}</strong></p>
+      <If
+        condition={deletedSystems.length > 0}
+        then={
+          <p>
+            {_("Including the deletion of")} <strong>{deletedSystems.join(", ")}</strong>
+          </p>
+        }
+      />
       <GeneralActionsInfo />
     </Alert>
   );
