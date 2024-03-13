@@ -41,8 +41,8 @@ pub struct LoginRequest {
     pub password: String,
 }
 
-#[utoipa::path(post, path = "/auth", responses(
-    (status = 200, description = "The user have been successfully authenticated", body = AuthResponse)
+#[utoipa::path(post, path = "/api/auth", responses(
+    (status = 200, description = "The user has been successfully authenticated.", body = AuthResponse)
 ))]
 pub async fn login(
     State(state): State<ServiceState>,
@@ -69,8 +69,8 @@ pub async fn login(
     Ok((headers, content))
 }
 
-#[utoipa::path(delete, path = "/auth", responses(
-    (status = 204, description = "The user has been logged out")
+#[utoipa::path(delete, path = "/api/auth", responses(
+    (status = 204, description = "The user has been logged out.")
 ))]
 pub async fn logout(_claims: TokenClaims) -> Result<impl IntoResponse, AuthError> {
     let mut headers = HeaderMap::new();
@@ -82,8 +82,10 @@ pub async fn logout(_claims: TokenClaims) -> Result<impl IntoResponse, AuthError
     Ok(headers)
 }
 
-#[utoipa::path(get, path = "/auth", responses(
-    (status = 200, description = "Check whether the user is authenticated")
+/// Check whether the user is authenticated.
+#[utoipa::path(get, path = "/api/auth", responses(
+    (status = 200, description = "The user is authenticated."),
+    (status = 400, description = "The user is not authenticated.")
 ))]
 pub async fn session(_claims: TokenClaims) -> Result<(), AuthError> {
     Ok(())

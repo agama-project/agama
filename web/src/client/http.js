@@ -48,7 +48,7 @@ class WSClient {
   /**
    * Registers a handler for events.
    *
-   * The handler is executer for all the events. It is up to the callback to
+   * The handler is executed for all the events. It is up to the callback to
    * filter the relevant events.
    *
    * @param {(object) => void} func - Handler function to register.
