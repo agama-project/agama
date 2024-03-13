@@ -53,7 +53,7 @@ const ActionsInfo = ({ actions, devicesManager }) => {
     </>
   );
 
-  const deleteActions = actions.filter(a => a.delete);
+  const deleteActions = actions.filter(a => a.delete && !a.subvol);
 
   // Borrowed from https://www.30secondsofcode.org/js/s/count-grouped-elements/
   const frequencies = arr =>
