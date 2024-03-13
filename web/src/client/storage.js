@@ -112,7 +112,7 @@ class DevicesManager {
    * @property {string} name - Device name
    * @property {string} description - Device description
    * @property {boolean} isDrive - Whether the device is a drive
-   * @property {string} type - Type of device ("disk", "raid", "multipath", "dasd", "md")
+   * @property {string} type - Type of device (e.g., "disk", "raid", "multipath", "dasd", "md")
    * @property {string} [vendor]
    * @property {string} [model]
    * @property {string[]} [driver]
@@ -236,6 +236,7 @@ class DevicesManager {
         const buildMountPath = path => path.length > 0 ? path : undefined;
         const buildLabel = label => label.length > 0 ? label : undefined;
         device.filesystem = {
+          sid: filesystemProperties.SID.v,
           type: filesystemProperties.Type.v,
           mountPath: buildMountPath(filesystemProperties.MountPath.v),
           label: buildLabel(filesystemProperties.Label.v)
@@ -427,6 +428,7 @@ class ProposalManager {
    * @property {Action[]} actions
    *
    * @typedef {object} Action
+   * @property {number} device
    * @property {string} text
    * @property {boolean} subvol
    * @property {boolean} delete
