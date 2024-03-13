@@ -25,8 +25,7 @@ import React, { useState } from "react";
 import { Alert, Button, Skeleton } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { compact, uniq } from "~/utils";
-import { deviceSize } from "~/components/storage/utils";
+import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import DevicesManager from "~/components/storage/DevicesManager";
 import { If, Section, Tag, TreeTable } from "~/components/core";
 import { ProposalActionsDialog } from "~/components/storage";
@@ -95,10 +94,9 @@ const ActionsInfo = ({ actions, devicesManager }) => {
  * FIXME: add expected types
  *
  * @param {object} props
- * @param {object[]} props.devices
  * @param {object} props.devicesManager
  */
-const DevicesTreeTable = ({ devices, devicesManager }) => {
+const DevicesTreeTable = ({ devicesManager }) => {
   const renderDeviceName = (item) => {
     let name = item.sid && item.name;
     // NOTE: returning a fragment here to avoid a weird React complaint when using a PF/Table +
@@ -153,11 +151,11 @@ const DevicesTreeTable = ({ devices, devicesManager }) => {
   };
 
   const renderResizedLabel = (item) => {
-    if (!item.sid || !devicesManager.isResized(item)) return;
+    if (!item.sid || !devicesManager.isShrunk(item)) return;
 
     return (
       <Tag variant="orange">
-        {sprintf(_("Resized %s"), deviceSize(devicesManager.resizeSize(item)))}
+        {sprintf(_("Resized %s"), deviceSize(devicesManager.shrinkSize(item)))}
       </Tag>
     );
   };
@@ -181,8 +179,8 @@ const DevicesTreeTable = ({ devices, devicesManager }) => {
         { title: _("Details"), content: renderDetails, classNames: "details-column" },
         { title: _("Size"), content: renderSize, classNames: "sizes-column" }
       ]}
-      items={devices}
-      itemChildren={d => devicesManager.children(d)}
+      items={devicesManager.usedDevices()}
+      itemChildren={d => deviceChildren(d)}
       rowClassNames={(item) => {
         if (!item.sid) return "dimmed-row";
       }}
@@ -204,28 +202,14 @@ const ResultSkeleton = () => {
   );
 };
 
-const SectionContent = ({ actions, devices, errors }) => {
+const SectionContent = ({ system, staging, actions, errors }) => {
   if (errors.length) return;
 
-  const { system = [], staging = [] } = devices;
-  const devicesManager = new DevicesManager(system, staging);
-
-  const isUsed = (device) => {
-    const actionDevices = uniq(compact(actions.map(a => a.device)));
-
-    return actionDevices.includes(device.sid) ||
-      devicesManager.children(device).find(c => isUsed(c));
-  };
-
-  const usedDevices = () => {
-    return staging
-      .filter(d => d.isDrive || d.type === "lvmVg")
-      .filter(d => isUsed(d) || isUsed(devicesManager.systemDevice(d.sid)));
-  };
+  const devicesManager = new DevicesManager(system, staging, actions);
 
   return (
     <>
-      <DevicesTreeTable devices={usedDevices()} devicesManager={devicesManager} />
+      <DevicesTreeTable devicesManager={devicesManager} />
       <ActionsInfo actions={actions} devicesManager={devicesManager} />
     </>
   );
@@ -239,14 +223,12 @@ const SectionContent = ({ actions, devices, errors }) => {
  *
  * @param {object} props
  * @param {object[]} [props.actions=[]]
- * @param {object[]} [props.settings=[]]
  * @param {object} [props.devices={}]
  * @param {import("~/client/mixins").ValidationError[]} props.errors - Validation errors
  * @param {boolean} [props.isLoading=false] - Whether the section content should be rendered as loading
  */
 export default function ProposalResultSection({
   actions,
-  settings,
   devices,
   errors = [],
   isLoading = false
@@ -267,9 +249,9 @@ export default function ProposalResultSection({
         then={<ResultSkeleton />}
         else={
           <SectionContent
+            system={devices.system}
+            staging={devices.staging}
             actions={actions}
-            settings={settings}
-            devices={devices}
             errors={errors}
           />
         }
