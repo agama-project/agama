@@ -25,7 +25,7 @@ use tokio_stream::{Stream, StreamExt};
 use crate::{
     error::Error,
     web::{
-        common::{service_status_router, service_status_stream},
+        common::{progress_router, progress_stream, service_status_router, service_status_stream},
         Event,
     },
 };
@@ -69,15 +69,23 @@ pub struct InstallerStatus {
 pub async fn manager_stream(dbus: zbus::Connection) -> Result<impl Stream<Item = Event>, Error> {
     Ok(StreamExt::merge(
         StreamExt::merge(
-            busy_services_changed_stream(dbus.clone()).await?,
-            installation_phase_changed_stream(dbus.clone()).await?,
+            StreamExt::merge(
+                busy_services_changed_stream(dbus.clone()).await?,
+                installation_phase_changed_stream(dbus.clone()).await?,
+            ),
+            service_status_stream(
+                dbus.clone(),
+                "org.opensuse.Agama.Manager1",
+                "/org/opensuse/Agama/Manager1",
+            )
+            .await?,
         ),
-        service_status_stream(
+        progress_stream(
             dbus,
             "org.opensuse.Agama.Manager1",
             "/org/opensuse/Agama/Manager1",
         )
-        .await?,
+        .await,
     ))
 }
 
@@ -139,7 +147,8 @@ pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .route("/install", post(install_action))
         .route("/finish", post(finish_action))
         .route("/installer", get(installer_status))
-        .merge(status_route)
+        .merge(status_router)
+        .merge(progress_router)
         .with_state(state))
 }
 
