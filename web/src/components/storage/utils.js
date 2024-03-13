@@ -19,6 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
 // cspell:ignore xbytes
 
 import xbytes from "xbytes";
@@ -27,8 +28,8 @@ import { N_ } from "~/i18n";
 
 /**
  * @typedef {import ("~/client/storage").Volume} Volume
- * @typedef {import ("~/clients/storage").StorageDevice} StorageDevice
- * @typedef {import ("~/clients/storage").PartitionSlot} PartitionSlot
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/client/storage").PartitionSlot} PartitionSlot
  */
 
 /**
@@ -122,7 +123,7 @@ const deviceSize = (size) => {
 const parseToBytes = (size) => {
   if (!size || size === undefined || size === "") return 0;
 
-  const value = xbytes.parseSize(size, { iec: true }) || parseInt(size);
+  const value = xbytes.parseSize(size.toString(), { iec: true }) || parseInt(size.toString());
 
   // Avoid decimals resulting from the conversion. D-Bus iface only accepts integer
   return Math.trunc(value);

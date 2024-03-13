@@ -19,11 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import { compact, uniq } from "~/utils";
 
 /**
- * @typedef {import ("~/clients/storage").StorageDevice} StorageDevice
- * @typedef {import ("~/clients/storage").Action} Action
+ * @typedef {import ("~/client/storage").Action} Action
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
 
 /**

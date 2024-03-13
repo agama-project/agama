@@ -237,8 +237,9 @@ export default function ProposalPage() {
         isLoading={state.loading}
       />
       <ProposalResultSection
+        system={state.system}
+        staging={state.staging}
         actions={state.actions}
-        devices={{ system: state.system, staging: state.staging }}
         errors={state.errors}
         isLoading={state.loading}
       />

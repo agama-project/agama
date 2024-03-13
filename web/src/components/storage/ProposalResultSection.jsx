@@ -31,12 +31,19 @@ import { If, Section, Tag, TreeTable } from "~/components/core";
 import { ProposalActionsDialog } from "~/components/storage";
 
 /**
- * Renders information about planned actions, allowing to check all of them and
- * warning with a summary about the deletion ones, if any.
+ * @typedef {import ("~/client/storage").Action} Action
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import("~/client/mixins").ValidationError} ValidationError
+ */
+
+/**
+ * Renders information about planned actions, allowing to check all of them and warning with a
+ * summary about the deletion ones, if any.
+ * @component
  *
  * @param {object} props
- * @param {object[]} props.actions
- * @param {object} props.devicesManager
+ * @param {Action[]} props.actions
+ * @param {DevicesManager} props.devicesManager
  */
 const ActionsInfo = ({ actions, devicesManager }) => {
   const [showActions, setShowActions] = useState(false);
@@ -89,12 +96,11 @@ const ActionsInfo = ({ actions, devicesManager }) => {
 };
 
 /**
- * Renders a TreeTable rendering the devices proposal result
- *
- * FIXME: add expected types
+ * Renders a TreeTable rendering the devices proposal result.
+ * @component
  *
  * @param {object} props
- * @param {object} props.devicesManager
+ * @param {DevicesManager} props.devicesManager
  */
 const DevicesTreeTable = ({ devicesManager }) => {
   const renderDeviceName = (item) => {
@@ -202,6 +208,16 @@ const ResultSkeleton = () => {
   );
 };
 
+/**
+ * Content of the section.
+ * @component
+ *
+ * @param {object} props
+ * @param {StorageDevice[]} props.system
+ * @param {StorageDevice[]} props.staging
+ * @param {Action[]} props.actions
+ * @param {ValidationError[]} props.errors
+ */
 const SectionContent = ({ system, staging, actions, errors }) => {
   if (errors.length) return;
 
@@ -219,17 +235,17 @@ const SectionContent = ({ system, staging, actions, errors }) => {
  * Section holding the proposal result and actions to perform in the system
  * @component
  *
- * FIXME: add expected types
- *
  * @param {object} props
- * @param {object[]} [props.actions=[]]
- * @param {object} [props.devices={}]
- * @param {import("~/client/mixins").ValidationError[]} props.errors - Validation errors
+ * @param {StorageDevice[]} [props.system=[]]
+ * @param {StorageDevice[]} [props.staging=[]]
+ * @param {Action[]} [props.actions=[]]
+ * @param {ValidationError[]} [props.errors=[]] - Validation errors
  * @param {boolean} [props.isLoading=false] - Whether the section content should be rendered as loading
  */
 export default function ProposalResultSection({
-  actions,
-  devices,
+  system = [],
+  staging = [],
+  actions = [],
   errors = [],
   isLoading = false
 }) {
@@ -249,8 +265,8 @@ export default function ProposalResultSection({
         then={<ResultSkeleton />}
         else={
           <SectionContent
-            system={devices.system}
-            staging={devices.staging}
+            system={system}
+            staging={staging}
             actions={actions}
             errors={errors}
           />
