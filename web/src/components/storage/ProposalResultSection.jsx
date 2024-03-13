@@ -22,12 +22,12 @@
 // @ts-check
 
 import React, { useState } from "react";
-import { Alert, Button, Skeleton } from "@patternfly/react-core";
+import { Button, Skeleton } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import DevicesManager from "~/components/storage/DevicesManager";
-import { If, Section, Tag, TreeTable } from "~/components/core";
+import { If, Section, Reminder, Tag, TreeTable } from "~/components/core";
 import { ProposalActionsDialog } from "~/components/storage";
 
 /**
@@ -45,32 +45,18 @@ import { ProposalActionsDialog } from "~/components/storage";
  * @param {Action[]} props.actions
  * @param {DevicesManager} props.devicesManager
  */
-const ActionsInfo = ({ actions, devicesManager }) => {
-  const [showActions, setShowActions] = useState(false);
-  const onOpen = () => setShowActions(true);
-  const onClose = () => setShowActions(false);
-
-  const GeneralActionsInfo = () => (
-    <>
-      <p className="split">
-        <Button onClick={onOpen} variant="link" className="plain-button">{_("Check all planned actions")}</Button>
-        {_("to create these file systems and to ensure the new system boots.")}
-      </p>
-      <ProposalActionsDialog actions={actions} isOpen={showActions} onClose={onClose} />
-    </>
-  );
-
+const DeletionsInfo = ({ actions, devicesManager }) => {
   const deleteActions = actions.filter(a => a.delete && !a.subvol);
   const deleteActionsSize = deleteActions.length;
 
-  if (deleteActionsSize === 0) return <GeneralActionsInfo />;
+  if (deleteActionsSize === 0) return;
 
   const deletedSids = deleteActions.map(a => a.device);
   const deletedDevices = deletedSids.map(sid => devicesManager.systemDevice(sid));
   const deletedSystems = deletedDevices.map(d => d?.systems).flat();
   const warningTitle = sprintf(n_(
-    "That proposal will perform %d destructive action",
-    "That proposal will perform %d destructive actions",
+    "There are %d destructive planned action",
+    "There are %d destructive planned actions",
     deleteActionsSize
   ), deleteActionsSize);
 
@@ -78,7 +64,7 @@ const ActionsInfo = ({ actions, devicesManager }) => {
   // Most probably, a `listFormat` or similar wrapper should live in src/i18n.js or so.
   // Read https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat
   return (
-    <Alert isInline variant="warning" title={warningTitle}>
+    <Reminder title={warningTitle} variant="subtle">
       <If
         condition={deletedSystems.length > 0}
         then={
@@ -87,8 +73,27 @@ const ActionsInfo = ({ actions, devicesManager }) => {
           </p>
         }
       />
-      <GeneralActionsInfo />
-    </Alert>
+    </Reminder>
+  );
+};
+
+/**
+ * Renders needed UI elements to allow user check the proposal planned actions
+ * @component
+ *
+ * @param {object} props
+ * @param {Action[]} props.actions
+ */
+const ActionsInfo = ({ actions }) => {
+  const [showActions, setShowActions] = useState(false);
+  const onOpen = () => setShowActions(true);
+  const onClose = () => setShowActions(false);
+
+  return (
+    <>
+      <Button onClick={onOpen} variant="link" isInline>{_("Check all planned actions")}</Button>
+      <ProposalActionsDialog actions={actions} isOpen={showActions} onClose={onClose} />
+    </>
   );
 };
 
@@ -223,7 +228,8 @@ const SectionContent = ({ system, staging, actions, errors }) => {
   return (
     <>
       <DevicesTreeTable devicesManager={devicesManager} />
-      <ActionsInfo actions={actions} devicesManager={devicesManager} />
+      <DeletionsInfo actions={actions} devicesManager={devicesManager} />
+      <ActionsInfo actions={actions} />
     </>
   );
 };

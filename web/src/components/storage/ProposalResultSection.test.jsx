@@ -63,13 +63,13 @@ describe("ProposalResultSection", () => {
       expect(screen.queryByText(/Warning alert:/)).toBeNull();
     });
 
-    it("renders a warning when there are delete actions", () => {
+    it("renders a reminder when there are delete actions", () => {
       plainRender(<ProposalResultSection {...defaultProps} />);
-      const warning = screen.getByText(/Warning alert:/).parentNode;
-      within(warning).getByText(/4 destructive/);
+      const reminder = screen.getByRole("status");
+      within(reminder).getByText(/4 destructive/);
     });
 
-    it("renders the affected systems in the deletion warning, if any", () => {
+    it("renders the affected systems in the deletion reminder, if any", () => {
       // NOTE: simulate the deletion of vdc2 (sid: 79) for checking that
       // affected systems are rendered in the warning summary
       const props = {
@@ -80,8 +80,8 @@ describe("ProposalResultSection", () => {
       plainRender(<ProposalResultSection {...props} />);
       // FIXME: below line reveals that warning wrapper deserves a role or
       // something
-      const warning = screen.getByText(/Warning alert:/).parentNode.parentNode;
-      within(warning).getByText(/openSUSE/);
+      const reminder = screen.getByRole("status");
+      within(reminder).getByText(/openSUSE/);
     });
 
     it("renders a treegrid including all relevant information about final result", () => {
