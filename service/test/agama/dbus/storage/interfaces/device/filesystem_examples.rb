@@ -28,6 +28,12 @@ shared_examples "Filesystem interface" do
 
     let(:device) { devicegraph.find_by_name("/dev/mapper/0QEMU_QEMU_HARDDISK_mpath1") }
 
+    describe "#filesystem_sid" do
+      it "returns the file system SID" do
+        expect(subject.filesystem_sid).to eq(45)
+      end
+    end
+
     describe "#filesystem_type" do
       it "returns the file system type" do
         expect(subject.filesystem_type).to eq("ext4")
