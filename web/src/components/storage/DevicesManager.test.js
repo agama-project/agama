@@ -367,3 +367,54 @@ describe("usedDevices", () => {
     });
   });
 });
+
+describe("deletedDevices", () => {
+  beforeEach(() => {
+    system = [
+      { sid: 60 },
+      { sid: 62 },
+      { sid: 63 },
+      { sid: 64 }
+    ];
+    actions = [
+      { device: 60, delete: true },
+      // This device does not exist in system.
+      { device: 61, delete: true },
+      { device: 62, delete: false },
+      { device: 63, delete: true }
+    ];
+  });
+
+  it("includes all deleted devices", () => {
+    const manager = new DevicesManager(system, staging, actions);
+    const sids = manager.deletedDevices().map(d => d.sid)
+      .sort();
+    expect(sids).toEqual([60, 63]);
+  });
+});
+
+describe("deletedSystems", () => {
+  beforeEach(() => {
+    system = [
+      { sid: 60, systems: ["Windows XP"] },
+      { sid: 62, systems: ["Ubuntu"] },
+      { sid: 63, systems: ["openSUSE Leap"] },
+      { sid: 64 }
+    ];
+    actions = [
+      { device: 60, delete: true },
+      // This device does not exist in system.
+      { device: 61, delete: true },
+      { device: 62, delete: false },
+      { device: 63, delete: true }
+    ];
+  });
+
+  it("includes all deleted systems", () => {
+    const manager = new DevicesManager(system, staging, actions);
+    const systems = manager.deletedSystems();
+    expect(systems.length).toEqual(2);
+    expect(systems).toContain("Windows XP");
+    expect(systems).toContain("openSUSE Leap");
+  });
+});

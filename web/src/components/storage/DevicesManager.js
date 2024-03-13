@@ -145,14 +145,55 @@ export default class DevicesManager {
     return compact(uniq(sids).map(sid => this.stagingDevice(sid)));
   }
 
+  /**
+   * Devices deleted.
+   *
+   * @note The devices are extracted from the actions.
+   *
+   * @returns {StorageDevice[]}
+   */
+  deletedDevices() {
+    const sids = this.actions
+      .filter(a => a.delete)
+      .map(a => a.device);
+    const devices = sids.map(sid => this.systemDevice(sid));
+    return compact(devices);
+  }
+
+  /**
+   * Systems deleted.
+   *
+   * @returns {string[]}
+   */
+  deletedSystems() {
+    const systems = this.deletedDevices()
+      .map(d => d.systems)
+      .flat();
+    return compact(systems);
+  }
+
+  /**
+   * @param {number} sid
+   * @param {StorageDevice[]} source
+   * @returns {StorageDevice|undefined}
+   */
   #device(sid, source) {
     return source.find(d => d.sid === sid);
   }
 
+  /**
+   * @param {StorageDevice} device
+   * @param {StorageDevice[]} source
+   * @returns {boolean}
+   */
   #exist(device, source) {
     return this.#device(device.sid, source) !== undefined;
   }
 
+  /**
+   * @param {StorageDevice} device
+   * @returns {boolean}
+   */
   #isUsed(device) {
     const sids = uniq(compact(this.actions.map(a => a.device)));
 
