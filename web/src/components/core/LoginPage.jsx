@@ -64,8 +64,8 @@ export default function LoginPage() {
           <p
             dangerouslySetInnerHTML={{
               __html: sprintf(
-               // TRANSLATORS: An explanation about required privileges for login into the installer. %s
-               // will be replaced by "root"
+                // TRANSLATORS: An explanation about required privileges for login into the installer. %s
+                // will be replaced by "root"
                 _("The installer requires %s user privileges. Please, provide its password to log into the system."),
                 "<b>root</b>"
               )
