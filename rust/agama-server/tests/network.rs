@@ -1,15 +1,15 @@
 pub mod common;
 
 use self::common::{async_retry, DBusServer};
-use agama_dbus_server::network::{
-    self,
-    model::{self, Ipv4Method, Ipv6Method},
-    Adapter, NetworkAdapterError, NetworkService, NetworkState,
-};
 use agama_lib::network::{
     settings::{self},
     types::DeviceType,
     NetworkClient,
+};
+use agama_server::network::{
+    self,
+    model::{self, Ipv4Method, Ipv6Method},
+    Adapter, NetworkAdapterError, NetworkService, NetworkState,
 };
 use async_trait::async_trait;
 use cidr::IpInet;

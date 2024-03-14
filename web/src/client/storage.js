@@ -359,6 +359,7 @@ class ProposalManager {
    * @property {boolean} required
    * @property {string[]} fsTypes
    * @property {boolean} supportAutoSize
+   * @property {boolean} adjustByRam
    * @property {boolean} snapshotsConfigurable
    * @property {boolean} snapshotsAffectSizes
    * @property {string[]} sizeRelevantVolumes
@@ -603,6 +604,7 @@ class ProposalManager {
         required: dbusOutline.Required.v,
         fsTypes: dbusOutline.FsTypes.v.map(val => val.v),
         supportAutoSize: dbusOutline.SupportAutoSize.v,
+        adjustByRam: dbusOutline.AdjustByRam.v,
         snapshotsConfigurable: dbusOutline.SnapshotsConfigurable.v,
         snapshotsAffectSizes: dbusOutline.SnapshotsAffectSizes.v,
         sizeRelevantVolumes: dbusOutline.SizeRelevantVolumes.v.map(val => val.v)

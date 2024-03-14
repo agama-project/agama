@@ -33,13 +33,6 @@ jest.mock("@patternfly/react-core", () => {
   };
 });
 
-jest.mock("~/context/product", () => ({
-  ...jest.requireActual("~/context/product"),
-  useProduct: () => ({
-    selectedProduct : { name: "Test" }
-  })
-}));
-
 let props;
 
 beforeEach(() => {
@@ -48,7 +41,7 @@ beforeEach(() => {
 
 const rootVolume = { mountPath: "/", fsType: "Btrfs", outline: { snapshotsConfigurable: true } };
 
-describe("if the system is not transactional", () => {
+describe("if snapshots are configurable", () => {
   beforeEach(() => {
     props.settings = { volumes: [rootVolume] };
   });
@@ -60,15 +53,15 @@ describe("if the system is not transactional", () => {
   });
 });
 
-describe("if the system is transactional", () => {
+describe("if snapshots are not configurable", () => {
   beforeEach(() => {
-    props.settings = { volumes: [{ ...rootVolume, transactional: true }] };
+    props.settings = { volumes: [{ ...rootVolume, outline: { ...rootVolume.outline, snapshotsConfigurable: false } }] };
   });
 
-  it("renders explanation about transactional system", () => {
+  it("does not render the snapshots switch", () => {
     plainRender(<ProposalSettingsSection {...props} />);
 
-    screen.getByText("Transactional system");
+    expect(screen.queryByRole("checkbox", { name: "Use Btrfs Snapshots" })).toBeNull();
   });
 });
 

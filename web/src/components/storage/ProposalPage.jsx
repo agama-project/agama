@@ -31,7 +31,8 @@ import {
   ProposalSettingsSection,
   ProposalSpacePolicySection,
   ProposalDeviceSection,
-  ProposalFileSystemsSection
+  ProposalFileSystemsSection,
+  ProposalTransactionalInfo
 } from "~/components/storage";
 import { IDLE } from "~/client/status";
 
@@ -220,6 +221,9 @@ export default function ProposalPage() {
   const PageContent = () => {
     return (
       <>
+        <ProposalTransactionalInfo
+          settings={state.settings}
+        />
         <ProposalDeviceSection
           settings={state.settings}
           availableDevices={state.availableDevices}

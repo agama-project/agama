@@ -478,6 +478,7 @@ const contexts = {
               SupportAutoSize: { t: "b", v: true },
               SnapshotsConfigurable: { t: "b", v: true },
               SnapshotsAffectSizes: { t: "b", v: true },
+              AdjustByRam: { t: "b", v: false },
               SizeRelevantVolumes: { t: "as", v: [{ t: "s", v: "/home" }] }
             }
           }
@@ -498,6 +499,7 @@ const contexts = {
               SupportAutoSize: { t: "b", v: false },
               SnapshotsConfigurable: { t: "b", v: false },
               SnapshotsAffectSizes: { t: "b", v: false },
+              AdjustByRam: { t: "b", v: false },
               SizeRelevantVolumes: { t: "as", v: [] }
             }
           }
@@ -1390,6 +1392,7 @@ describe("#proposal", () => {
                 SupportAutoSize: { t: "b", v: false },
                 SnapshotsConfigurable: { t: "b", v: false },
                 SnapshotsAffectSizes: { t: "b", v: false },
+                AdjustByRam: { t: "b", v: false },
                 SizeRelevantVolumes: { t: "as", v: [] }
               }
             }
@@ -1410,6 +1413,7 @@ describe("#proposal", () => {
                 SupportAutoSize: { t: "b", v: false },
                 SnapshotsConfigurable: { t: "b", v: false },
                 SnapshotsAffectSizes: { t: "b", v: false },
+                AdjustByRam: { t: "b", v: false },
                 SizeRelevantVolumes: { t: "as", v: [] }
               }
             }
@@ -1437,6 +1441,7 @@ describe("#proposal", () => {
           supportAutoSize: false,
           snapshotsConfigurable: false,
           snapshotsAffectSizes: false,
+          adjustByRam: false,
           sizeRelevantVolumes: []
         }
       });
@@ -1457,6 +1462,7 @@ describe("#proposal", () => {
           supportAutoSize: false,
           snapshotsConfigurable: false,
           snapshotsAffectSizes: false,
+          adjustByRam: false,
           sizeRelevantVolumes: []
         }
       });

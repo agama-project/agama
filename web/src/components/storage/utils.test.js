@@ -139,6 +139,14 @@ describe("isTransactionalRoot", () => {
 });
 
 describe("isTransactionalSystem", () => {
+  it("returns false when a list of volumes is not given", () => {
+    expect(isTransactionalSystem(false)).toBe(false);
+    expect(isTransactionalSystem(undefined)).toBe(false);
+    expect(isTransactionalSystem(null)).toBe(false);
+    expect(isTransactionalSystem([])).toBe(false);
+    expect(isTransactionalSystem("fake")).toBe(false);
+  });
+
   it("returns false if volumes does not include a transactional root", () => {
     expect(isTransactionalSystem([])).toBe(false);
 
