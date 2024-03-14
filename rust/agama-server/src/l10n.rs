@@ -5,7 +5,7 @@ mod timezone;
 pub mod web;
 
 use crate::error::Error;
-use agama_locale_data::{KeymapId, LocaleCode};
+use agama_locale_data::{KeymapId, LocaleId};
 use anyhow::Context;
 use keyboard::KeymapsDatabase;
 use locale::LocalesDatabase;
@@ -26,7 +26,7 @@ pub struct Locale {
     pub locales_db: LocalesDatabase,
     keymap: KeymapId,
     keymaps_db: KeymapsDatabase,
-    ui_locale: LocaleCode,
+    ui_locale: LocaleId,
     pub ui_keymap: KeymapId,
 }
 
@@ -48,7 +48,7 @@ impl Locale {
             .iter()
             .map(|l| {
                 (
-                    l.code.to_string(),
+                    l.id.to_string(),
                     l.language.to_string(),
                     l.territory.to_string(),
                 )
@@ -82,7 +82,7 @@ impl Locale {
 
     #[dbus_interface(property, name = "UILocale")]
     fn set_ui_locale(&mut self, locale: &str) -> zbus::fdo::Result<()> {
-        let locale: LocaleCode = locale
+        let locale: LocaleId = locale
             .try_into()
             .map_err(|_e| zbus::fdo::Error::Failed(format!("Invalid locale value '{locale}'")))?;
         helpers::set_service_locale(&locale);
@@ -191,7 +191,7 @@ impl Locale {
 }
 
 impl Locale {
-    pub fn new_with_locale(ui_locale: &LocaleCode) -> Result<Self, Error> {
+    pub fn new_with_locale(ui_locale: &LocaleId) -> Result<Self, Error> {
         const DEFAULT_TIMEZONE: &str = "Europe/Berlin";
 
         let locale = ui_locale.to_string();
@@ -201,7 +201,7 @@ impl Locale {
         let mut default_locale = ui_locale.to_string();
         if !locales_db.exists(locale.as_str()) {
             // TODO: handle the case where the database is empty (not expected!)
-            default_locale = locales_db.entries().first().unwrap().code.to_string();
+            default_locale = locales_db.entries().first().unwrap().id.to_string();
         };
 
         let mut timezones_db = TimezonesDatabase::new();
@@ -231,7 +231,7 @@ impl Locale {
         Ok(locale)
     }
 
-    pub fn translate(&mut self, locale: &LocaleCode) -> Result<(), Error> {
+    pub fn translate(&mut self, locale: &LocaleId) -> Result<(), Error> {
         self.timezones_db.read(&locale.language)?;
         self.locales_db.read(&locale.language)?;
         self.ui_locale = locale.clone();
@@ -259,7 +259,7 @@ impl Locale {
 
 pub async fn export_dbus_objects(
     connection: &Connection,
-    locale: &LocaleCode,
+    locale: &LocaleId,
 ) -> Result<(), Box<dyn std::error::Error>> {
     const PATH: &str = "/org/opensuse/Agama1/Locale";
 

@@ -6,7 +6,7 @@ use crate::{
     l10n::helpers,
     web::{Event, EventsSender},
 };
-use agama_locale_data::{InvalidKeymap, LocaleCode};
+use agama_locale_data::{InvalidKeymap, LocaleId};
 use axum::{
     extract::State,
     http::StatusCode,
@@ -55,8 +55,8 @@ struct LocaleState {
 ///
 /// * `events`: channel to send the events to the main service.
 pub fn l10n_service(events: EventsSender) -> Router {
-    let code = LocaleCode::default();
-    let locale = Locale::new_with_locale(&code).unwrap();
+    let id = LocaleId::default();
+    let locale = Locale::new_with_locale(&id).unwrap();
     let state = LocaleState {
         locale: Arc::new(RwLock::new(locale)),
         events,
@@ -147,7 +147,7 @@ async fn set_config(
     }
 
     if let Some(ui_locale) = &value.ui_locale {
-        let locale: LocaleCode = ui_locale
+        let locale: LocaleId = ui_locale
             .as_str()
             .try_into()
             .map_err(|_e| LocaleError::UnknownLocale(ui_locale.to_string()))?;
@@ -193,13 +193,13 @@ async fn get_config(State(state): State<LocaleState>) -> Json<LocaleConfig> {
 #[cfg(test)]
 mod tests {
     use crate::l10n::{web::LocaleState, Locale};
-    use agama_locale_data::{KeymapId, LocaleCode};
+    use agama_locale_data::{KeymapId, LocaleId};
     use std::sync::{Arc, RwLock};
     use tokio::{sync::broadcast::channel, test};
 
     fn build_state() -> LocaleState {
         let (tx, _) = channel(16);
-        let default_code = LocaleCode::default();
+        let default_code = LocaleId::default();
         let locale = Locale::new_with_locale(&default_code).unwrap();
         LocaleState {
             locale: Arc::new(RwLock::new(locale)),
@@ -211,8 +211,8 @@ mod tests {
     async fn test_locales() {
         let state = build_state();
         let response = super::locales(axum::extract::State(state)).await;
-        let default = LocaleCode::default();
-        let found = response.iter().find(|l| l.code == default);
+        let default = LocaleId::default();
+        let found = response.iter().find(|l| l.id == default);
         assert!(found.is_some());
     }
 
