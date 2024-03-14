@@ -25,7 +25,7 @@ import { Button, Form, FormSelect, FormSelectOption, Skeleton } from "@patternfl
 import { _, N_, n_ } from "~/i18n";
 import { deviceSize } from '~/components/storage/utils';
 import { If, OptionsPicker, Popup, SectionSkeleton } from "~/components/core";
-import { noop, useLocalStorage } from "~/utils";
+import { noop } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { Table, Thead, Tr, Th, Tbody, Td, TreeRowWrapper } from '@patternfly/react-table';
 
@@ -348,8 +348,8 @@ const DeviceRow = ({
  * @param {(action: SpaceAction) => void} [props.onChange]
  */
 const SpaceActionsTable = ({ policy, actions, devices, onChange = noop }) => {
-  const [expandedDevices, setExpandedDevices] = useLocalStorage("storage-space-actions-expanded", []);
-  const [autoExpanded, setAutoExpanded] = useLocalStorage("storage-space-actions-auto-expanded", false);
+  const [expandedDevices, setExpandedDevices] = useState([]);
+  const [autoExpanded, setAutoExpanded] = useState(false);
 
   useEffect(() => {
     const devNames = devices.map(d => d.name);
