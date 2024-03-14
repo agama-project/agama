@@ -53,17 +53,17 @@ function ProductProvider({ children }) {
     }
   }, [client, setProducts, setSelectedId, setRegistration, cancellablePromise]);
 
-  // useEffect(() => {
-  //   if (!client) return;
+  useEffect(() => {
+    if (!client) return;
 
-  //   return client.software.product.onChange(setSelectedId);
-  // }, [client, setSelectedId]);
+    return client.product.onChange(setSelectedId);
+  }, [client, setSelectedId]);
 
-  // useEffect(() => {
-  //   if (!client) return;
+  useEffect(() => {
+    if (!client) return;
 
-  //   return client.software.product.onRegistrationChange(setRegistration);
-  // }, [client, setRegistration]);
+    // return client.product.onRegistrationChange(setRegistration);
+  }, [client, setRegistration]);
 
   const value = { products, selectedId, registration };
   return <ProductContext.Provider value={value}>{children}</ProductContext.Provider>;
