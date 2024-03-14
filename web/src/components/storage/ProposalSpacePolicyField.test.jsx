@@ -112,6 +112,20 @@ const openPopup = async (props = {}) => {
   return { user, dialog };
 };
 
+const expandRow = async (user, dialog, name) => {
+  const row = within(dialog).getByRole("row", { name });
+  const toggler = within(row).getByRole("button", { name: /expand/i });
+  await user.click(toggler);
+};
+
+const checkSpaceActions = async (deviceActions) => {
+  deviceActions.forEach(({ name, action }) => {
+    const row = screen.getByRole("row", { name });
+    const selector = within(row).getByRole("combobox", { name });
+    within(selector).getByRole("option", { name: action, selected: true });
+  });
+};
+
 beforeEach(() => {
   devices = [sda, sdb];
   policy = "keep";
@@ -247,17 +261,63 @@ describe("ProposalSpacePolicyField", () => {
         within(spaceActionsSelector).getByRole("option", { name: /resize/ });
       });
 
-      it("renders as selected the option matching the given device space action", async () => {
-        const { user, dialog } = await openPopup();
-        const sdaRow = within(dialog).getByRole("row", { name: /sda/ });
-        const sdaToggler = within(sdaRow).getByRole("button", { name: /expand/i });
-        await user.click(sdaToggler);
-        const sda1Row = screen.getByRole("row", { name: /sda1/ });
-        const sda1SpaceActionsSelector = within(sda1Row).getByRole("combobox", { name: "Space action selector for /dev/sda1" });
-        within(sda1SpaceActionsSelector).getByRole("option", { name: /delete/i, selected: true });
-        const sda2Row = screen.getByRole("row", { name: /sda2/ });
-        const sda2SpaceActionsSelector = within(sda2Row).getByRole("combobox", { name: "Space action selector for /dev/sda2" });
-        within(sda2SpaceActionsSelector).getByRole("option", { name: /resize/i, selected: true });
+      describe("when space policy is 'delete'", () => {
+        beforeEach(() => {
+          policy = "delete";
+        });
+
+        it("renders as selected the delete option", async () => {
+          const { user, dialog } = await openPopup();
+          await expandRow(user, dialog, /sda/);
+          await checkSpaceActions([
+            { name: /sda1/, action: /delete/i },
+            { name: /sda2/, action: /delete/i }
+          ]);
+        });
+      });
+
+      describe("when space policy is 'resize'", () => {
+        beforeEach(() => {
+          policy = "resize";
+        });
+
+        it("renders as selected the resize option", async () => {
+          const { user, dialog } = await openPopup();
+          await expandRow(user, dialog, /sda/);
+          await checkSpaceActions([
+            { name: /sda1/, action: /resize/i },
+            { name: /sda2/, action: /resize/i }
+          ]);
+        });
+      });
+
+      describe("when space policy is 'keep'", () => {
+        beforeEach(() => {
+          policy = "keep";
+        });
+
+        it("renders as selected the keep option", async () => {
+          const { user, dialog } = await openPopup();
+          await expandRow(user, dialog, /sda/);
+          await checkSpaceActions([
+            { name: /sda1/, action: /not modify/i },
+            { name: /sda2/, action: /not modify/i }
+          ]);
+        });
+      });
+
+      describe("when space policy is 'custom'", () => {
+        beforeEach(() => {
+          policy = "custom";
+        });
+
+        it("renders as selected the option matching the given device space action", async () => {
+          await openPopup();
+          await checkSpaceActions([
+            { name: /sda1/, action: /delete/i },
+            { name: /sda2/, action: /resize/i }
+          ]);
+        });
       });
     });
   });

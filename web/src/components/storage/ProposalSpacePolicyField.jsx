@@ -287,6 +287,18 @@ const DeviceRow = ({
   onCollapse = noop,
   onChange = noop
 }) => {
+  // Generates the action value according to the policy.
+  const action = () => {
+    if (policy.id === "custom")
+      return actions.find(a => a.device === device.name)?.action || "keep";
+
+    const policyAction = { delete: "force_delete", resize: "resize", keep: "keep" };
+    return policyAction[policy.id];
+  };
+
+  const isDisabled = policy.id !== "custom";
+  const showAction = !device.partitionTable;
+
   const treeRow = {
     onCollapse,
     rowIndex,
@@ -299,10 +311,6 @@ const DeviceRow = ({
       'aria-setsize': setSize
     }
   };
-
-  const spaceAction = actions.find(a => a.device === device.name);
-  const isDisabled = policy.id !== "custom";
-  const showAction = !device.partitionTable;
 
   return (
     <TreeRowWrapper row={{ props: treeRow.props }}>
@@ -319,7 +327,7 @@ const DeviceRow = ({
           then={
             <DeviceActionColumn
               device={device}
-              action={spaceAction?.action || "keep"}
+              action={action()}
               isDisabled={isDisabled}
               onChange={onChange}
             />
@@ -344,11 +352,11 @@ const SpaceActionsTable = ({ policy, actions, devices, onChange = noop }) => {
   const [autoExpanded, setAutoExpanded] = useLocalStorage("storage-space-actions-auto-expanded", false);
 
   useEffect(() => {
-    const dev_names = devices.map(d => d.name);
-    let currentExpanded = dev_names.filter(d => expandedDevices.includes(d));
+    const devNames = devices.map(d => d.name);
+    let currentExpanded = devNames.filter(d => expandedDevices.includes(d));
 
     if (policy.id === "custom" && !autoExpanded) {
-      currentExpanded = [...dev_names];
+      currentExpanded = [...devNames];
       setAutoExpanded(true);
     } else if (policy.id !== "custom" && autoExpanded) {
       setAutoExpanded(false);
@@ -470,6 +478,21 @@ const SpacePolicyForm = ({
 }) => {
   const [policy, setPolicy] = useState(currentPolicy);
   const [actions, setActions] = useState(currentActions);
+  const [customUsed, setCustomUsed] = useState(false);
+
+  // The selectors for the space action have to be initialized always to the same value
+  // (e.g., "keep") when the custom policy is selected for first time. The following two useEffect
+  // ensures that.
+
+  // Stores whether the custom policy has been used.
+  useEffect(() => {
+    if (policy.id === "custom" && !customUsed) setCustomUsed(true);
+  }, [policy, customUsed, setCustomUsed]);
+
+  // Resets actions (i.e., sets everything to "keep") if the custom policy has not been used yet.
+  useEffect(() => {
+    if (policy.id !== "custom" && !customUsed) setActions([]);
+  }, [policy, customUsed, setActions]);
 
   const changeActions = (spaceAction) => {
     const spaceActions = actions.filter(a => a.device !== spaceAction.device);
@@ -493,7 +516,14 @@ const SpacePolicyForm = ({
             <SpacePolicyPicker currentPolicy={policy} onChange={setPolicy} />
             <If
               condition={devices.length > 0}
-              then={<SpaceActionsTable policy={policy} actions={actions} devices={devices} onChange={changeActions} />}
+              then={
+                <SpaceActionsTable
+                  policy={policy}
+                  actions={actions}
+                  devices={devices}
+                  onChange={changeActions}
+                />
+              }
             />
           </>
         }
