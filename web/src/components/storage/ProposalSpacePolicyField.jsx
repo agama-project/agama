@@ -96,9 +96,9 @@ const SPACE_POLICIES = [
 // Names of the columns for the policy actions.
 const columnNames = {
   device: N_("Used device"),
-  content: N_("Current content"),
+  content: N_("Details"),
   size: N_("Size"),
-  details: N_("Details"),
+  details: N_("Size details"),
   action: N_("Action")
 };
 
@@ -110,63 +110,23 @@ const columnNames = {
  * @param {StorageDevice} props.device
  */
 const DeviceDescriptionColumn = ({ device }) => {
-  return (
-    <>
-      <div>{device.name}</div>
-      <If
-        condition={device.isDrive}
-        then={<div className="fs-small">{`${device.vendor} ${device.model}`}</div>}
-      />
-    </>
-  );
+  if (device.isDrive || device.type === "lvmVg") return device.name;
+
+  return device.name.split("/").pop();
 };
 
 /**
- * Column content with information about the current content of the device.
+ * Column content with details about the device.
  * @component
  *
  * @param {object} props
  * @param {StorageDevice} props.device
  */
 const DeviceContentColumn = ({ device }) => {
-  const PartitionTableContent = () => {
-    return (
-      <div>
-        {/* TRANSLATORS: %s is replaced by partition table type (e.g., GPT) */}
-        {sprintf(_("%s partition table"), device.partitionTable.type.toUpperCase())}
-      </div>
-    );
-  };
+  const systems = device.systems;
+  if (systems.length > 0) return systems.join(", ");
 
-  const BlockContent = () => {
-    const renderContent = () => {
-      const systems = device.systems;
-      if (systems.length > 0) return systems.join(", ");
-
-      const filesystem = device.filesystem;
-      if (filesystem?.isEFI) return _("EFI system partition");
-      if (filesystem) {
-        // TRANSLATORS: %s is replaced by a file system type (e.g., btrfs).
-        return sprintf(_("%s file system"), filesystem?.type);
-      }
-
-      const component = device.component;
-      switch (component?.type) {
-        case "physical_volume":
-          // TRANSLATORS: %s is replaced by a LVM volume group name (e.g., /dev/vg0).
-          return sprintf(_("LVM physical volume of %s"), component.deviceNames[0]);
-        case "md_device":
-          // TRANSLATORS: %s is replaced by a RAID name (e.g., /dev/md0).
-          return sprintf(_("Member of RAID %s"), component.deviceNames[0]);
-        default:
-          return _("Not identified");
-      }
-    };
-
-    return <div>{renderContent()}</div>;
-  };
-
-  return (device.partitionTable ? <PartitionTableContent /> : <BlockContent />);
+  return device.description;
 };
 
 /**
@@ -177,7 +137,7 @@ const DeviceContentColumn = ({ device }) => {
  * @param {StorageDevice} props.device
  */
 const DeviceSizeColumn = ({ device }) => {
-  return <div>{deviceSize(device.size)}</div>;
+  return deviceSize(device.size);
 };
 
 /**
@@ -192,26 +152,16 @@ const DeviceDetailsColumn = ({ device }) => {
     if (device.filesystem) return null;
 
     const unused = device.partitionTable?.unpartitionedSize || 0;
-
-    return (
-      <div>
-        {/* TRANSLATORS: %s is replaced by a disk size (e.g., 20 GiB) */}
-        {sprintf(_("%s unused"), deviceSize(unused))}
-      </div>
-    );
+    // TRANSLATORS: %s is replaced by a disk size (e.g., 20 GiB)
+    return sprintf(_("%s unused"), deviceSize(unused));
   };
 
   const RecoverableSize = () => {
     const size = device.recoverableSize;
-
     if (size === 0) return null;
 
-    return (
-      <div>
-        {/* TRANSLATORS: %s is replaced by a disk size (e.g., 2 GiB) */}
-        {sprintf(_("Shrinkable by %s"), deviceSize(device.recoverableSize))}
-      </div>
-    );
+    // TRANSLATORS: %s is replaced by a disk size (e.g., 2 GiB)
+    return sprintf(_("Shrinkable by %s"), deviceSize(device.recoverableSize));
   };
 
   return (
