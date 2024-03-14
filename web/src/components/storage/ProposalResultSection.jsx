@@ -265,7 +265,7 @@ export default function ProposalResultSection({
       // TRANSLATORS: The storage "Result" section's title
       title={_("Result")}
       // TRANSLATORS: The storage "Result" section's description
-      description={errors.length === 0 && description}
+      description={!isLoading && errors.length === 0 && description}
       id="storage-result"
       errors={errors}
     >
