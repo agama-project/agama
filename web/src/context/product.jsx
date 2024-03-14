@@ -60,7 +60,7 @@ function ProductProvider({ children }) {
   }, [client, setSelectedId]);
 
   useEffect(() => {
-    if (!client) return;
+    // if (!client) return;
 
     // return client.product.onRegistrationChange(setRegistration);
   }, [client, setRegistration]);
