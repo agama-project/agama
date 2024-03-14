@@ -439,7 +439,7 @@ table[data-type="agama/tree-table"] {
 }
 
 table.proposal-result {
-    tr.dimmed-row {
+  tr.dimmed-row {
     background-color: #fff;
     opacity: 0.8;
     background: repeating-linear-gradient( -45deg, #fcfcff, #fcfcff 3px, #fff 3px, #fff 10px );
@@ -448,32 +448,47 @@ table.proposal-result {
       color: var(--color-gray-dimmed);
       padding-block: 0;
     }
+
   }
 
-  @media (width > 768px) {
-    th.details-column {
-      padding-inline-start: calc(60px + var(--spacer-smaller) * 2);
-    }
+  /** Temporary hack because the collapse/expand callback was not given to the
+   * tree table **/
+th button {
+  background: red;
+  display: none;
+}
 
-    td.details-column {
-      display: grid;
-      gap: var(--spacer-smaller);
-      grid-template-columns: 60px 1fr;
+tbody th .pf-v5-c-table__tree-view-main {
+  padding-inline-start: var(--spacer-normal);
+  flex-direction: row-reverse;
+  cursor: auto;
+}
+/** End of temporary hack */
 
-      :first-child {
-        text-align: end;
-      }
-    }
+@media (width > 768px) {
+  th.details-column {
+    padding-inline-start: calc(60px + var(--spacer-smaller) * 2);
+  }
 
-    th.sizes-column,
-    td.sizes-column {
+  td.details-column {
+    display: grid;
+    gap: var(--spacer-smaller);
+    grid-template-columns: 60px 1fr;
+
+    :first-child {
       text-align: end;
-
-      div.split {
-        justify-content: flex-end;
-      }
     }
   }
+
+  th.sizes-column,
+  td.sizes-column {
+    text-align: end;
+
+    div.split {
+      justify-content: flex-end;
+    }
+  }
+}
 }
 
 // compact lists in popover
