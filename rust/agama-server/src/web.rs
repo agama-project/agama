@@ -92,7 +92,7 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
             "org.opensuse.Agama.Manager1",
             "/org/opensuse/Agama/Manager1",
         )
-        .await,
+        .await?,
     );
 
     stream.insert("software", software_stream(dbus.clone()).await?);
@@ -112,7 +112,7 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
             "org.opensuse.Agama.Software1",
             "/org/opensuse/Agama/Software1",
         )
-        .await,
+        .await?,
     );
 
     tokio::pin!(stream);

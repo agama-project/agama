@@ -7,9 +7,17 @@ use agama_lib::{
     progress::Progress,
     proxies::{ProgressProxy, ServiceStatusProxy},
 };
-use axum::{extract::State, routing::get, Json, Router};
+use axum::{
+    extract::State,
+    http::StatusCode,
+    response::{IntoResponse, Response},
+    routing::get,
+    Json, Router,
+};
 use pin_project::pin_project;
 use serde::Serialize;
+use serde_json::json;
+use thiserror::Error;
 use tokio_stream::{Stream, StreamExt};
 use zbus::PropertyStream;
 
@@ -73,6 +81,21 @@ struct ServiceStatusState<'a> {
 struct ServiceStatus {
     /// Current service status.
     current: u32,
+}
+
+#[derive(Error, Debug)]
+pub enum ServiceStatusError {
+    #[error("Service status error: {0}")]
+    Error(#[from] ServiceError),
+}
+
+impl IntoResponse for ServiceStatusError {
+    fn into_response(self) -> Response {
+        let body = json!({
+            "error": self.to_string()
+        });
+        (StatusCode::BAD_REQUEST, Json(body)).into_response()
+    }
 }
 
 /// Builds a stream of the changes in the the `org.opensuse.Agama1.ServiceStatus`
@@ -163,10 +186,27 @@ struct ProgressState<'a> {
     proxy: ProgressProxy<'a>,
 }
 
-async fn progress(State(state): State<ProgressState<'_>>) -> Json<Progress> {
+#[derive(Error, Debug)]
+pub enum ProgressError {
+    #[error("Progress error: {0}")]
+    Error(#[from] ServiceError),
+    #[error("D-Bus error: {0}")]
+    DBusError(#[from] zbus::Error),
+}
+
+impl IntoResponse for ProgressError {
+    fn into_response(self) -> Response {
+        let body = json!({
+            "error": self.to_string()
+        });
+        (StatusCode::BAD_REQUEST, Json(body)).into_response()
+    }
+}
+
+async fn progress(State(state): State<ProgressState<'_>>) -> Result<Json<Progress>, ProgressError> {
     let proxy = state.proxy;
-    let progress = Progress::from_proxy(&proxy).await.unwrap();
-    Json(progress)
+    let progress = Progress::from_proxy(&proxy).await?;
+    Ok(Json(progress))
 }
 
 #[pin_project]
@@ -180,11 +220,9 @@ pub async fn progress_stream<'a>(
     dbus: zbus::Connection,
     destination: &'static str,
     path: &'static str,
-) -> Pin<Box<impl Stream<Item = Event> + Send>> {
-    let proxy = build_progress_proxy(&dbus, destination, path)
-        .await
-        .unwrap();
-    Box::pin(ProgressStream::new(proxy).await)
+) -> Result<Pin<Box<impl Stream<Item = Event> + Send>>, zbus::Error> {
+    let proxy = build_progress_proxy(&dbus, destination, path).await?;
+    Ok(Box::pin(ProgressStream::new(proxy).await))
 }
 
 impl<'a> ProgressStream<'a> {
