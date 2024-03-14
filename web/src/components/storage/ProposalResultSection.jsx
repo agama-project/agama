@@ -42,7 +42,7 @@ import { ProposalActionsDialog } from "~/components/storage";
  * @component
  *
  * @param {object} props
- * @param {object[]} props.actions
+ * @param {Action[]} props.actions
  * @param {string[]} props.systems
  */
 const DeletionsInfo = ({ actions, systems }) => {
