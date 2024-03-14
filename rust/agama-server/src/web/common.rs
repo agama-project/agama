@@ -1,6 +1,6 @@
 //! This module defines functions to be used accross all services.
 
-use std::task::Poll;
+use std::{pin::Pin, task::Poll};
 
 use agama_lib::{
     error::ServiceError,
@@ -85,7 +85,7 @@ pub async fn service_status_stream(
     dbus: zbus::Connection,
     destination: &'static str,
     path: &'static str,
-) -> Result<impl Stream<Item = Event>, Error> {
+) -> Result<Pin<Box<dyn Stream<Item = Event> + Send>>, Error> {
     let proxy = build_service_status_proxy(&dbus, destination, path).await?;
     let stream = proxy
         .receive_current_changed()
@@ -101,7 +101,7 @@ pub async fn service_status_stream(
             }
         })
         .filter_map(|e| e);
-    Ok(stream)
+    Ok(Box::pin(stream))
 }
 
 async fn build_service_status_proxy<'a>(
@@ -180,11 +180,11 @@ pub async fn progress_stream<'a>(
     dbus: zbus::Connection,
     destination: &'static str,
     path: &'static str,
-) -> ProgressStream<'a> {
+) -> Pin<Box<impl Stream<Item = Event> + Send>> {
     let proxy = build_progress_proxy(&dbus, destination, path)
         .await
         .unwrap();
-    ProgressStream::new(proxy).await
+    Box::pin(ProgressStream::new(proxy).await)
 }
 
 impl<'a> ProgressStream<'a> {

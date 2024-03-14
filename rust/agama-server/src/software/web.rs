@@ -8,7 +8,7 @@
 use crate::{
     error::Error,
     web::{
-        common::{progress_router, progress_stream, service_status_router, service_status_stream},
+        common::{progress_router, service_status_router},
         Event,
     },
 };
@@ -29,7 +29,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::collections::HashMap;
+use std::{collections::HashMap, pin::Pin};
 use thiserror::Error;
 use tokio_stream::{Stream, StreamExt};
 
@@ -65,27 +65,14 @@ impl IntoResponse for SoftwareError {
 /// It emits the Event::ProductChanged and Event::PatternsChanged events.
 ///
 /// * `connection`: D-Bus connection to listen for events.
-pub async fn software_stream(dbus: zbus::Connection) -> Result<impl Stream<Item = Event>, Error> {
-    Ok(StreamExt::merge(
-        StreamExt::merge(
-            StreamExt::merge(
-                product_changed_stream(dbus.clone()).await?,
-                patterns_changed_stream(dbus.clone()).await?,
-            ),
-            service_status_stream(
-                dbus.clone(),
-                "org.opensuse.Agama.Software1",
-                "/org/opensuse/Agama/Software1",
-            )
-            .await?,
-        ),
-        progress_stream(
-            dbus,
-            "org.opensuse.Agama.Software1",
-            "/org/opensuse/Agama/Software1",
-        )
-        .await,
-    ))
+pub async fn software_stream(
+    dbus: zbus::Connection,
+) -> Result<Pin<Box<dyn Stream<Item = Event> + Send>>, Error> {
+    let stream = StreamExt::merge(
+        product_changed_stream(dbus.clone()).await?,
+        patterns_changed_stream(dbus.clone()).await?,
+    );
+    Ok(Box::pin(stream))
 }
 
 async fn product_changed_stream(

@@ -9,6 +9,7 @@ use crate::{
     l10n::web::l10n_service,
     manager::web::{manager_service, manager_stream},
     software::web::{software_service, software_stream},
+    web::common::{progress_stream, service_status_stream},
 };
 use axum::Router;
 
@@ -29,7 +30,7 @@ pub use docs::ApiDoc;
 pub use event::{Event, EventsReceiver, EventsSender};
 pub use service::MainServiceBuilder;
 use std::path::Path;
-use tokio_stream::StreamExt;
+use tokio_stream::{StreamExt, StreamMap};
 
 /// Returns a service that implements the web-based Agama API.
 ///
@@ -72,13 +73,51 @@ pub async fn run_monitor(events: EventsSender) -> Result<(), ServiceError> {
 /// * `connection`: D-Bus connection.
 /// * `events`: channel to send the events to.
 async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Result<(), Error> {
-    let stream = StreamExt::merge(
-        manager_stream(dbus.clone()).await?,
-        software_stream(dbus).await?,
+    let mut stream = StreamMap::new();
+
+    stream.insert("manager", manager_stream(dbus.clone()).await?);
+    stream.insert(
+        "manager-status",
+        service_status_stream(
+            dbus.clone(),
+            "org.opensuse.Agama.Manager1",
+            "/org/opensuse/Agama/Manager1",
+        )
+        .await?,
     );
+    stream.insert(
+        "manager-progress",
+        progress_stream(
+            dbus.clone(),
+            "org.opensuse.Agama.Manager1",
+            "/org/opensuse/Agama/Manager1",
+        )
+        .await,
+    );
+
+    stream.insert("software", software_stream(dbus.clone()).await?);
+    stream.insert(
+        "software-status",
+        service_status_stream(
+            dbus.clone(),
+            "org.opensuse.Agama.Software1",
+            "/org/opensuse/Agama/Software1",
+        )
+        .await?,
+    );
+    stream.insert(
+        "software-progress",
+        progress_stream(
+            dbus.clone(),
+            "org.opensuse.Agama.Software1",
+            "/org/opensuse/Agama/Software1",
+        )
+        .await,
+    );
+
     tokio::pin!(stream);
     let e = events.clone();
-    while let Some(event) = stream.next().await {
+    while let Some((_, event)) = stream.next().await {
         _ = e.send(event);
     }
     Ok(())
