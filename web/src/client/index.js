@@ -75,7 +75,7 @@ const createClient = (url) => {
   const l10n = new L10nClient(client);
   // TODO: unify with the manager client
   const product = new ProductClient(client);
-  // const manager = new ManagerClient(address);
+  const manager = new ManagerClient(client);
   // const monitor = new Monitor(address, MANAGER_SERVICE);
   // const network = new NetworkClient(address);
   // const software = new SoftwareClient(address);
@@ -136,7 +136,7 @@ const createClient = (url) => {
   return {
     l10n,
     product,
-    // manager,
+    manager,
     // monitor,
     // network,
     // software,

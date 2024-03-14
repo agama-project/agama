@@ -22,7 +22,7 @@
 // @ts-check
 
 import DBusClient from "./dbus";
-import { WithStatus, WithProgress } from "./mixins";
+import { WithProgress, WithStatus } from "./mixins";
 import cockpit from "../lib/cockpit";
 
 const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
@@ -36,10 +36,10 @@ const MANAGER_PATH = "/org/opensuse/Agama/Manager1";
  */
 class ManagerBaseClient {
   /**
-   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
+   * @param {import("./http").HTTPClient} client - HTTP client.
    */
-  constructor(address = undefined) {
-    this.client = new DBusClient(MANAGER_SERVICE, address);
+  constructor(client) {
+    this.client = client;
   }
 
   /**
@@ -49,9 +49,8 @@ class ManagerBaseClient {
    *
    * @return {Promise<void>}
    */
-  async startProbing() {
-    const proxy = await this.client.proxy(MANAGER_IFACE);
-    return proxy.Probe();
+  startProbing() {
+    return this.client.post("/manager/probe");
   }
 
   /**
@@ -61,9 +60,8 @@ class ManagerBaseClient {
    *
    * @return {Promise}
    */
-  async startInstallation() {
-    const proxy = await this.client.proxy(MANAGER_IFACE);
-    return proxy.Commit();
+  startInstallation() {
+    return this.client.post("/manager/install");
   }
 
   /**
@@ -75,20 +73,18 @@ class ManagerBaseClient {
    * @return {Promise<boolean>}
    */
   async canInstall() {
-    const proxy = await this.client.proxy(MANAGER_IFACE);
-    return proxy.CanInstall();
+    const installer = await this.client.get("/manager/installer");
+    return installer.can_install;
   }
 
   /**
    * Returns the binary content of the YaST logs file
    *
-   * @return {Promise<Uint8Array>}
+   * @todo Implement a mechanism to get the logs.
+   * @return {Promise<void>}
    */
   async fetchLogs() {
-    const proxy = await this.client.proxy(MANAGER_IFACE);
-    const path = await proxy.CollectLogs();
-    const file = cockpit.file(path, { binary: true });
-    return file.read();
+    // TODO
   }
 
   /**
@@ -97,8 +93,8 @@ class ManagerBaseClient {
    * @return {Promise<number>}
    */
   async getPhase() {
-    const proxy = await this.client.proxy(MANAGER_IFACE);
-    return proxy.CurrentInstallationPhase;
+    const installer = await this.client.get("/manager/installer");
+    return installer.phase;
   }
 
   /**
@@ -108,9 +104,9 @@ class ManagerBaseClient {
    * @return {import ("./dbus").RemoveFn} function to disable the callback
    */
   onPhaseChange(handler) {
-    return this.client.onObjectChanged(MANAGER_PATH, MANAGER_IFACE, (changes) => {
-      if ("CurrentInstallationPhase" in changes) {
-        handler(changes.CurrentInstallationPhase.v);
+    return this.client.onEvent("InstallationPhaseChanged", ({ phase }) => {
+      if (phase) {
+        handler(phase);
       }
     });
   }
@@ -118,23 +114,27 @@ class ManagerBaseClient {
   /**
    * Runs cleanup when installation is done
    */
-  async finishInstallation() {
-    const proxy = await this.client.proxy(MANAGER_IFACE);
-    return proxy.Finish();
+  finishInstallation() {
+    return this.client.post("/manager/install");
   }
 
   /**
    * Returns whether Iguana is used on the system
+   *
+   * @return {Promise<boolean>}
    */
   async useIguana() {
-    const proxy = await this.client.proxy(MANAGER_IFACE);
-    return proxy.IguanaBackend;
+    const installer = await this.client.get("/manager/installer");
+    return installer.iguana;
   }
 }
 
 /**
-  * Client to interact with the Agama manager service
-  */
-class ManagerClient extends WithProgress(WithStatus(ManagerBaseClient, MANAGER_PATH), MANAGER_PATH) { }
+ * Client to interact with the Agama manager service
+ */
+class ManagerClient extends WithProgress(
+  WithStatus(ManagerBaseClient, "/manager/status", "org.opensuse.Agama.Manager1"),
+  MANAGER_PATH,
+) {}
 
 export { ManagerClient };
