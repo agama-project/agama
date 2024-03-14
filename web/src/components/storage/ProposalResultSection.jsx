@@ -50,9 +50,10 @@ const DeletionsInfo = ({ actions, systems }) => {
 
   if (total === 0) return;
 
+  // TRANSLATORS: %d will be replaced by the amount of destructive actions
   const warningTitle = sprintf(n_(
-    "There are %d destructive planned action",
-    "There are %d destructive planned actions",
+    "There is %d destructive action planned",
+    "There are %d destructive actions planned",
     total
   ), total);
 
@@ -223,12 +224,12 @@ const SectionContent = ({ system, staging, actions, errors }) => {
 
   return (
     <>
-      <DevicesTreeTable devicesManager={devicesManager} />
       <DeletionsInfo
         actions={devicesManager.actions.filter(a => a.delete && !a.subvol)}
         systems={devicesManager.deletedSystems()}
       />
       <ActionsInfo actions={actions} />
+      <DevicesTreeTable devicesManager={devicesManager} />
     </>
   );
 };
@@ -253,12 +254,18 @@ export default function ProposalResultSection({
 }) {
   if (isLoading) errors = [];
 
+  const description = sprintf(
+    // TRANSLATORS: %d will be replaced by the amount actions
+    _("During installation, %d actions will be performed to configure the system as displayed below"),
+    actions.length
+  );
+
   return (
     <Section
       // TRANSLATORS: The storage "Result" section's title
       title={_("Result")}
       // TRANSLATORS: The storage "Result" section's description
-      description={_("How the system will look after installing with current proposal.")}
+      description={errors.length === 0 && description}
       id="storage-result"
       errors={errors}
     >
