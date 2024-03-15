@@ -76,7 +76,6 @@ const vdb = {
   size: 1e+6
 };
 
-// FIXME: needed to be reviewed/adapted after latest changes
 const storageMock = {
   probe: jest.fn().mockResolvedValue(0),
   proposal: {

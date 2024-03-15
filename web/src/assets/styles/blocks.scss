@@ -426,14 +426,57 @@ ul[data-type="agama/list"][role="grid"] {
 
 table[data-type="agama/tree-table"] {
   th:first-child {
-    width: 1%;
+    block-size: fit-content;
     padding-inline-end: var(--spacer-normal);
   }
 
+  th.fit-content {
+    block-size: fit-content;
+    overflow: visible;
+    text-overflow: unset;
+  }
+
+  /**
+   * Temporary PF/Table overrides for small devices
+   **/
   @media (width <= 768px) {
-    td:empty,
-    td div:empty {
+    &.pf-m-tree-view-grid-md.pf-v5-c-table tr[aria-level="1"] td {
+      padding-inline-start: var(--spacer-medium);
+    }
+
+    &.pf-m-tree-view-grid-md.pf-v5-c-table tr[aria-level="2"] th {
+      padding-inline-start: calc(var(--spacer-large) * 1.1);
+    }
+
+    &.pf-m-tree-view-grid-md.pf-v5-c-table tr[aria-level="2"] td {
+      padding-inline-start: calc(var(--spacer-large) * 1.4);
+    }
+
+    &.pf-m-tree-view-grid-md.pf-v5-c-table tr:where(.pf-v5-c-table__tr).pf-m-tree-view-details-expanded {
+      padding-block-end: var(--spacer-smaller);
+    }
+
+    &.pf-m-tree-view-grid-md.pf-v5-c-table tr:where(.pf-v5-c-table__tr) td:empty,
+    &.pf-m-tree-view-grid-md.pf-v5-c-table tr:where(.pf-v5-c-table__tr) td *:empty,
+    &.pf-m-tree-view-grid-md.pf-v5-c-table tr:where(.pf-v5-c-table__tr) td:has(> *:empty) {
       display: none;
+    }
+
+    &.pf-m-tree-view-grid-md.pf-v5-c-table tr:where(.pf-v5-c-table__tr) td:has(> *:not(:empty)) {
+      display: inherit;
+    }
+
+    &.pf-m-tree-view-grid-md.pf-v5-c-table tbody:where(.pf-v5-c-table__tbody) tr:where(.pf-v5-c-table__tr)::before {
+      inset-inline-start: 0;
+    }
+
+    &.pf-v5-c-table.pf-m-compact tr:where(.pf-v5-c-table__tr):not(.pf-v5-c-table__expandable-row) > *:last-child {
+      padding-inline-end: 8px;
+    }
+
+    tbody th:first-child {
+      font-size: var(--fs-large);
+      padding-block-start: var(--spacer-small);
     }
   }
 }
@@ -451,44 +494,50 @@ table.proposal-result {
 
   }
 
-  /** Temporary hack because the collapse/expand callback was not given to the
-   * tree table **/
-th button {
-  background: red;
-  display: none;
-}
-
-tbody th .pf-v5-c-table__tree-view-main {
-  padding-inline-start: var(--spacer-normal);
-  flex-direction: row-reverse;
-  cursor: auto;
-}
-/** End of temporary hack */
-
-@media (width > 768px) {
-  th.details-column {
-    padding-inline-start: calc(60px + var(--spacer-smaller) * 2);
+  /**
+   * Temporary hack because the collapse/expand callback was not given to the
+   * tree table
+   **/
+  th button {
+    display: none;
   }
 
-  td.details-column {
-    display: grid;
-    gap: var(--spacer-smaller);
-    grid-template-columns: 60px 1fr;
+  tbody th .pf-v5-c-table__tree-view-main {
+    padding-inline-start: var(--pf-v5-c-table--m-compact--cell--first-last-child--PaddingLeft);
+    cursor: auto;
+  }
 
-    :first-child {
+  tbody tr[aria-level="2"] th .pf-v5-c-table__tree-view-main {
+    padding-inline-start: calc(
+       var(--pf-v5-c-table--m-compact--cell--first-last-child--PaddingLeft) + var(--spacer-large)
+    );
+  }
+  /** End of temporary hack */
+
+  @media (width > 768px) {
+    th.details-column {
+      padding-inline-start: calc(60px + var(--spacer-smaller) * 2);
+    }
+
+    td.details-column {
+      display: grid;
+      gap: var(--spacer-smaller);
+      grid-template-columns: 60px 1fr;
+
+      :first-child {
+        text-align: end;
+      }
+    }
+
+    th.sizes-column,
+    td.sizes-column {
       text-align: end;
+
+      div.split {
+        justify-content: flex-end;
+      }
     }
   }
-
-  th.sizes-column,
-  td.sizes-column {
-    text-align: end;
-
-    div.split {
-      justify-content: flex-end;
-    }
-  }
-}
 }
 
 // compact lists in popover

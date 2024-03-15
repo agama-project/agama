@@ -66,7 +66,7 @@ const DeletionsInfo = ({ actions, systems }) => {
         condition={systems.length > 0}
         then={
           <p>
-            {_("Including the deletion of")} <strong>{systems.join(", ")}</strong>
+            {_("Affecting %s")} <strong>{systems.join(", ")}</strong>
           </p>
         }
       />
@@ -160,7 +160,11 @@ const DevicesTreeTable = ({ devicesManager }) => {
 
     return (
       <Tag variant="orange">
-        {sprintf(_("Resized %s"), deviceSize(devicesManager.shrinkSize(item)))}
+        {
+          // TRANSLATORS: a label to show how much a device was resized. %s will be
+          // replaced with such a size, including the unit. E.g., 508 MiB
+          sprintf(_("Resized %s"), deviceSize(devicesManager.shrinkSize(item)))
+        }
       </Tag>
     );
   };
@@ -180,7 +184,7 @@ const DevicesTreeTable = ({ devicesManager }) => {
     <TreeTable
       columns={[
         { title: _("Device"), content: renderDeviceName },
-        { title: _("Mount Point"), content: renderMountPoint },
+        { title: _("Mount Point"), content: renderMountPoint, classNames: "fit-content" },
         { title: _("Details"), content: renderDetails, classNames: "details-column" },
         { title: _("Size"), content: renderSize, classNames: "sizes-column" }
       ]}
@@ -253,18 +257,20 @@ export default function ProposalResultSection({
   isLoading = false
 }) {
   if (isLoading) errors = [];
+  const totalActions = actions.length;
 
-  const description = sprintf(
-    // TRANSLATORS: %d will be replaced by the amount actions
-    _("During installation, %d actions will be performed to configure the system as displayed below"),
-    actions.length
-  );
+  // TRANSLATORS: The description for the Result section in storage proposal
+  // page. %d will be replaced by the number of proposal actions.
+  const description = sprintf(n_(
+    "During installation, %d action will be performed to configure the system as displayed below",
+    "During installation, %d actions will be performed to configure the system as displayed below",
+    totalActions
+  ), totalActions);
 
   return (
     <Section
       // TRANSLATORS: The storage "Result" section's title
       title={_("Result")}
-      // TRANSLATORS: The storage "Result" section's description
       description={!isLoading && errors.length === 0 && description}
       id="storage-result"
       errors={errors}
