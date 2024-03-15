@@ -6,7 +6,7 @@ pub mod web;
 
 use crate::error::Error;
 use agama_locale_data::{KeymapId, LocaleId};
-use anyhow::Context;
+
 use keyboard::KeymapsDatabase;
 use locale::LocalesDatabase;
 use regex::Regex;
@@ -32,31 +32,6 @@ pub struct Locale {
 
 #[dbus_interface(name = "org.opensuse.Agama1.Locale")]
 impl Locale {
-    /// Gets the supported locales information.
-    ///
-    /// Each element of the list has these parts:
-    ///
-    /// * The locale code (e.g., "es_ES.UTF-8").
-    /// * The name of the language according to the language defined by the
-    ///   UILocale property.
-    /// * The name of the territory according to the language defined by the
-    ///   UILocale property.
-    fn list_locales(&self) -> Result<Vec<(String, String, String)>, Error> {
-        let locales = self
-            .locales_db
-            .entries()
-            .iter()
-            .map(|l| {
-                (
-                    l.id.to_string(),
-                    l.language.to_string(),
-                    l.territory.to_string(),
-                )
-            })
-            .collect::<Vec<_>>();
-        Ok(locales)
-    }
-
     #[dbus_interface(property)]
     fn locales(&self) -> Vec<String> {
         self.locales.to_owned()
@@ -64,6 +39,11 @@ impl Locale {
 
     #[dbus_interface(property)]
     fn set_locales(&mut self, locales: Vec<String>) -> zbus::fdo::Result<()> {
+        if locales.is_empty() {
+            return Err(zbus::fdo::Error::Failed(format!(
+                "The locales list cannot be empty"
+            )));
+        }
         for loc in &locales {
             if !self.locales_db.exists(loc.as_str()) {
                 return Err(zbus::fdo::Error::Failed(format!(
@@ -89,22 +69,6 @@ impl Locale {
         Ok(self.translate(&locale)?)
     }
 
-    /// Returns a list of the supported keymaps.
-    ///
-    /// Each element of the list contains:
-    ///
-    /// * The keymap identifier (e.g., "es" or "es(ast)").
-    /// * The name of the keyboard in language set by the UILocale property.
-    fn list_keymaps(&self) -> Result<Vec<(String, String)>, Error> {
-        let keymaps = self
-            .keymaps_db
-            .entries()
-            .iter()
-            .map(|k| (k.id.to_string(), k.localized_description()))
-            .collect();
-        Ok(keymaps)
-    }
-
     #[dbus_interface(property)]
     fn keymap(&self) -> String {
         self.keymap.to_string()
@@ -125,32 +89,6 @@ impl Locale {
         Ok(())
     }
 
-    /// Returns a list of the supported timezones.
-    ///
-    /// Each element of the list contains:
-    ///
-    /// * The timezone identifier (e.g., "Europe/Berlin").
-    /// * A list containing each part of the name in the language set by the
-    ///   UILocale property.
-    /// * The name, in the language set by UILocale, of the main country
-    ///   associated to the timezone (typically, the name of the city that is
-    ///   part of the identifier) or empty string if there is no country.
-    fn list_timezones(&self) -> Result<Vec<(String, Vec<String>, String)>, Error> {
-        let timezones: Vec<_> = self
-            .timezones_db
-            .entries()
-            .iter()
-            .map(|tz| {
-                (
-                    tz.code.to_string(),
-                    tz.parts.clone(),
-                    tz.country.clone().unwrap_or_default(),
-                )
-            })
-            .collect();
-        Ok(timezones)
-    }
-
     #[dbus_interface(property)]
     fn timezone(&self) -> &str {
         self.timezone.as_str()
@@ -169,22 +107,25 @@ impl Locale {
     }
 
     // TODO: what should be returned value for commit?
-    fn commit(&mut self) -> Result<(), Error> {
+    fn commit(&mut self) -> zbus::fdo::Result<()> {
         const ROOT: &str = "/mnt";
+
         Command::new("/usr/bin/systemd-firstboot")
             .args([
                 "--root",
                 ROOT,
                 "--force",
                 "--locale",
-                self.locales.first().context("missing locale")?.as_str(),
+                self.locales.first().unwrap_or(&"en_US.UTF-8".to_string()),
                 "--keymap",
                 &self.keymap.to_string(),
                 "--timezone",
                 &self.timezone,
             ])
             .status()
-            .context("Failed to execute systemd-firstboot")?;
+            .map_err(|e| {
+                zbus::fdo::Error::Failed(format!("Could not apply the l10n configuration: {e}"))
+            })?;
 
         Ok(())
     }
