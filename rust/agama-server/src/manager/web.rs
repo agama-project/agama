@@ -14,18 +14,14 @@ use agama_lib::{
 };
 use axum::{
     extract::State,
-    http::StatusCode,
-    response::{IntoResponse, Response},
     routing::{get, post},
     Json, Router,
 };
 use serde::Serialize;
-use serde_json::json;
-use thiserror::Error;
 use tokio_stream::{Stream, StreamExt};
 
 use crate::{
-    error::Error,
+    error::{ApiError, Error},
     web::{
         common::{progress_router, service_status_router},
         Event,
@@ -35,19 +31,6 @@ use crate::{
 #[derive(Clone)]
 pub struct ManagerState<'a> {
     manager: ManagerClient<'a>,
-}
-
-#[derive(Error, Debug)]
-pub enum ManagerError {
-    #[error("Manager service error: {0}")]
-    Error(#[from] ServiceError),
-}
-
-impl IntoResponse for ManagerError {
-    fn into_response(self) -> Response {
-        let body = json!({});
-        (StatusCode::BAD_REQUEST, Json(body)).into_response()
-    }
 }
 
 /// Holds information about the manager's status.
@@ -115,7 +98,7 @@ pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
 #[utoipa::path(get, path = "/api/manager/probe", responses(
   (status = 200, description = "The probing process was started.")
 ))]
-async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), ManagerError> {
+async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), ApiError> {
     state.manager.probe().await?;
     Ok(())
 }
@@ -124,7 +107,7 @@ async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), Manag
 #[utoipa::path(get, path = "/api/manager/install", responses(
   (status = 200, description = "The installation process was started.")
 ))]
-async fn install_action(State(state): State<ManagerState<'_>>) -> Result<(), ManagerError> {
+async fn install_action(State(state): State<ManagerState<'_>>) -> Result<(), ApiError> {
     state.manager.install().await?;
     Ok(())
 }
@@ -133,7 +116,7 @@ async fn install_action(State(state): State<ManagerState<'_>>) -> Result<(), Man
 #[utoipa::path(get, path = "/api/manager/install", responses(
   (status = 200, description = "The installation tasks are executed.")
 ))]
-async fn finish_action(State(state): State<ManagerState<'_>>) -> Result<(), ManagerError> {
+async fn finish_action(State(state): State<ManagerState<'_>>) -> Result<(), ApiError> {
     state.manager.finish().await?;
     Ok(())
 }
@@ -144,7 +127,7 @@ async fn finish_action(State(state): State<ManagerState<'_>>) -> Result<(), Mana
 ))]
 async fn installer_status(
     State(state): State<ManagerState<'_>>,
-) -> Result<Json<InstallerStatus>, ManagerError> {
+) -> Result<Json<InstallerStatus>, ApiError> {
     let status = InstallerStatus {
         phase: state.manager.current_installation_phase().await?,
         busy: state.manager.busy_services().await?,
