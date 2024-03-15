@@ -119,7 +119,13 @@ class HTTPClient {
         "Content-Type": "application/json",
       },
     });
-    return await response.json();
+
+    try {
+      return await response.json();
+    } catch (e) {
+      console.warn("Expecting a JSON response", e);
+      return response.status === 200;
+    }
   }
 
   /**
@@ -135,7 +141,13 @@ class HTTPClient {
         "Content-Type": "application/json",
       },
     });
-    return await response.json();
+
+    try {
+      return await response.json();
+    } catch (e) {
+      console.warn("Expecting a JSON response", e);
+      return response.status === 200;
+    }
   }
 
   /**
