@@ -24,6 +24,7 @@
 import { WithProgress, WithStatus } from "./mixins";
 
 const MANAGER_PATH = "/org/opensuse/Agama/Manager1";
+const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
 
 /**
  * Manager base client
@@ -129,7 +130,7 @@ class ManagerBaseClient {
  * Client to interact with the Agama manager service
  */
 class ManagerClient extends WithProgress(
-  WithStatus(ManagerBaseClient, "/manager/status", "org.opensuse.Agama.Manager1"),
+  WithStatus(ManagerBaseClient, "/manager/status", MANAGER_SERVICE),
   MANAGER_PATH,
 ) {}
 
