@@ -7,58 +7,58 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-04 02:09+0000\n"
-"PO-Revision-Date: 2024-03-05 02:05+0000\n"
-"Last-Translator: faila fail <yassadmi@proton.me>\n"
-"Language-Team: French <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/fr/>\n"
-"Language: fr\n"
+"POT-Creation-Date: 2024-03-05 02:04+0000\n"
+"PO-Revision-Date: 2024-03-05 12:42+0000\n"
+"Last-Translator: David Medina <medipas@gmail.com>\n"
+"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/ca/>\n"
+"Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.9.1\n"
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:88
 msgid "Probing Storage"
-msgstr "Sonde le stockage"
+msgstr "Sondant l'emmagatzematge"
 
 #: service/lib/agama/manager.rb:89
 msgid "Probing Software"
-msgstr "Sonde les logiciels"
+msgstr "Sondant el programari"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
 #: service/lib/agama/manager.rb:109
 msgid "Partitioning"
-msgstr "Partitionnement"
+msgstr "Particions"
 
 #. propose software after /mnt is already separated, so it uses proper
 #. target
 #: service/lib/agama/manager.rb:117
 msgid "Installing Software"
-msgstr "Installation des logiciels"
+msgstr "Instal·lant programari"
 
 #: service/lib/agama/manager.rb:120
 msgid "Writing Users"
-msgstr "Création des utilisateurs"
+msgstr "Escrivint els usuaris"
 
 #: service/lib/agama/manager.rb:121
 msgid "Writing Network Configuration"
-msgstr "Écriture de la configuration du réseau"
+msgstr "Escrivint la configuració de la xarxa"
 
 #: service/lib/agama/manager.rb:122
 msgid "Saving Language Settings"
-msgstr "Sauvegarde des paramètres de langue"
+msgstr "Desant els paràmetres de llengua"
 
 #: service/lib/agama/manager.rb:123
 msgid "Writing repositories information"
-msgstr "Écriture des informations relatives aux dépôts"
+msgstr "Escrivint la informació dels repositoris"
 
 #: service/lib/agama/manager.rb:124
 msgid "Finishing storage configuration"
-msgstr "Finalisation de la configuration de stockage"
+msgstr "Acabant la configuració de l'emmagatzematge"
 
 #. Callback to handle unsigned files
 #.
@@ -67,21 +67,21 @@ msgstr "Finalisation de la configuration de stockage"
 #: service/lib/agama/software/callbacks/signature.rb:63
 #, perl-brace-format
 msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
-msgstr "Le fichier %{filename} du dépôt %{repo_name} (%{repo_url})"
+msgstr "El fitxer %{filename} del repositori %{repo_name} (%{repo_url})"
 
 #: service/lib/agama/software/callbacks/signature.rb:67
 #, perl-brace-format
 msgid "The file %{filename}"
-msgstr "Le fichier %{filename}"
+msgstr "El fitxer %{filename}"
 
 #: service/lib/agama/software/callbacks/signature.rb:71
 #, perl-brace-format
 msgid ""
-"%{source} is not digitally signed. The origin and integrity of the file "
-"cannot be verified. Use it anyway?"
+"%{source} is not digitally signed. The origin and integrity of the file cannot"
+" be verified. Use it anyway?"
 msgstr ""
-"%{source} n'est pas signé numériquement. L'origine et l'intégrité du fichier "
-"ne peuvent être vérifiées. L'utiliser quand même ?"
+"%{source} no està signat digitalment. L'origen i la integritat del fitxer no "
+"es poden verificar. Voleu usar-lo tanmateix?"
 
 #. Callback to handle signature verification failures
 #.
@@ -90,37 +90,37 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:94
 #, perl-brace-format
 msgid ""
-"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
-"want to trust this key?"
+"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you wan"
+"t to trust this key?"
 msgstr ""
-"La clé %{id} (%{name}) avec l'empreinte digitale %{fingerprint} est "
-"inconnue. Voulez-vous faire confiance à cette clé ?"
+"La clau %{id} (%{name}) amb l'empremta digital %{fingerprint} és "
+"desconeguda. Voleu confiar en aquesta clau?"
 
 #. as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
 #: service/lib/agama/software/manager.rb:134
 msgid "Initializing target repositories"
-msgstr "Initialisation des dépôts cibles"
+msgstr "Iniciant els repositoris de destinació"
 
 #: service/lib/agama/software/manager.rb:135
 msgid "Initializing sources"
-msgstr "Initialisation des sources"
+msgstr "Iniciant les fonts"
 
 #: service/lib/agama/software/manager.rb:140
 msgid "Refreshing repositories metadata"
-msgstr "Actualisation des métadonnées des dépôts"
+msgstr "Refrescant les metadades dels repositoris"
 
 #: service/lib/agama/software/manager.rb:141
 msgid "Calculating the software proposal"
-msgstr "Calcul de l'offre de logiciel"
+msgstr "Calculant la proposta de programari"
 
 #. Writes the repositories information to the installed system
 #: service/lib/agama/software/manager.rb:190
 msgid "Writing repositories to the target system"
-msgstr "Écriture des dépôts sur le système cible"
+msgstr "Escrivint els repositoris al sistema de destinació"
 
 #: service/lib/agama/software/manager.rb:196
 msgid "Restoring original repositories"
-msgstr "Restauration des dépôts d'origine"
+msgstr "Restaurant els repositoris originals"
 
 #. Issues related to the software proposal.
 #.
@@ -130,21 +130,21 @@ msgstr "Restauration des dépôts d'origine"
 #: service/lib/agama/software/manager.rb:470
 #, c-format
 msgid "Could not read repository \"%s\""
-msgstr "Impossible de lire le dépôt \"%s\""
+msgstr "No s'ha pogut llegir el repositori %s."
 
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:480
 msgid "Product not selected yet"
-msgstr "Le produit n'est pas encore sélectionné"
+msgstr "Encara no s'ha seleccionat el producte."
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:489
 msgid "Product must be registered"
-msgstr "Le produit doit être enregistré"
+msgstr "El producte ha d'estar registrat."
 
 #. Returns solver error messages from the last attempt
 #.
@@ -152,39 +152,39 @@ msgstr "Le produit doit être enregistré"
 #: service/lib/agama/software/proposal.rb:227
 #, c-format
 msgid "Found %s dependency issues."
-msgstr "%s problème(s) de dépendance trouvé(s)."
+msgstr "S'han trobat %s problemes de dependències."
 
 #. Probes storage devices and performs an initial proposal
 #: service/lib/agama/storage/manager.rb:112
 msgid "Activating storage devices"
-msgstr "Activation des périphériques de stockage"
+msgstr "Activant els dispositius d'emmagatzematge"
 
 #: service/lib/agama/storage/manager.rb:113
 msgid "Probing storage devices"
-msgstr "Sonde les périphériques de stockage"
+msgstr "Sondant els dispositius d'emmagatzematge"
 
 #: service/lib/agama/storage/manager.rb:114
 msgid "Calculating the storage proposal"
-msgstr "Calcul de la proposition de stockage"
+msgstr "Calculant la proposta d'emmagatzematge"
 
 #: service/lib/agama/storage/manager.rb:115
 msgid "Selecting Linux Security Modules"
-msgstr "Sélection des modules de sécurité Linux"
+msgstr "Seleccionant els mòduls de seguretat de Linux"
 
 #. Prepares the partitioning to install the system
 #: service/lib/agama/storage/manager.rb:123
 msgid "Preparing bootloader proposal"
-msgstr "Préparation du chargeur d'amorçage envisagé"
+msgstr "Preparant la proposta de carregador d'arrencada"
 
 #. first make bootloader proposal to be sure that required packages are installed
 #: service/lib/agama/storage/manager.rb:128
 msgid "Adding storage-related packages"
-msgstr "Ajout des paquets relatifs au stockage"
+msgstr "Afegint paquets relacionats amb l'emmagatzematge"
 
 #: service/lib/agama/storage/manager.rb:129
 msgid "Preparing the storage devices"
-msgstr "Préparation des périphériques de stockage"
+msgstr "Preparant els dispositius d'emmagatzematge"
 
 #: service/lib/agama/storage/manager.rb:130
 msgid "Writing bootloader sysconfig"
-msgstr "Écriture du sysconfig du chargeur d'amorçage"
+msgstr "Escrivint la configuració de sistema del carregador d'arrencada"
