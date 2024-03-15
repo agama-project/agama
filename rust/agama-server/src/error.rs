@@ -6,7 +6,7 @@ use axum::{
 };
 use serde_json::json;
 
-use crate::questions::QuestionsError;
+use crate::{l10n::web::LocaleError, questions::QuestionsError};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -16,8 +16,10 @@ pub enum Error {
     Anyhow(String),
     #[error("Agama service error: {0}")]
     Service(#[from] ServiceError),
-    #[error("Answers handling error: {0}")]
-    Answers(QuestionsError),
+    #[error("Questions service error: {0}")]
+    Questions(QuestionsError),
+    #[error("Software service error: {0}")]
+    Locale(#[from] LocaleError),
 }
 
 // This would be nice, but using it for a return type
