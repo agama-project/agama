@@ -95,7 +95,7 @@ trait AnswerStrategy {
     ///
     /// I gets as argument the question to answer. Returned value is pair
     /// of `answer` and `password` properties. If `None` is used in any
-    /// position it means thatpam-devel this object does not respond to given property.
+    /// position it means that this object does not respond to given property.
     ///
     /// It is object responsibility to provide correct pair. For example if
     /// possible answer can be "Ok" and "Cancel". Then for `Ok` password value

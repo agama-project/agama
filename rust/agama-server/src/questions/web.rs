@@ -1,4 +1,4 @@
-//! This module implements the web API for the software module.
+//! This module implements the web API for the questions module.
 //!
 //! The module offers two public functions:
 //!
@@ -10,6 +10,7 @@ use crate::{error::Error, web::Event};
 use agama_lib::{
     error::ServiceError, proxies::Questions1Proxy,
 };
+use anyhow::Context;
 use axum::{
     extract::{State, Path},
     http::StatusCode,
@@ -19,6 +20,8 @@ use axum::{
 };
 use tokio_stream::{Stream, StreamExt};
 use zbus::fdo::ObjectManagerProxy;
+use zbus::zvariant::OwnedObjectPath;
+use zbus::zvariant::ObjectPath;
 use thiserror::Error;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -43,6 +46,17 @@ impl<'a> QuestionsClient<'a> {
     pub async fn questions(self) -> Result<Vec<Question>, ServiceError> {
         // TODO: real call to dbus
         Ok(vec![])
+    }
+
+    pub async fn answer(self, id: u32, answer: Answer) -> Result<(), ServiceError> {
+        let objects = self.objects_proxy.get_managed_objects().await
+            .context("failed to get managed object with Object Manager")?;
+        let question_path = OwnedObjectPath::from(
+            ObjectPath::try_from(format!("/org/opensuse/Agama1/Questions/{}", id))
+                .context("Failed to create dbus path")?
+            );
+        let question = objects.get(&question_path);
+        Ok(())
     }
 }
 
