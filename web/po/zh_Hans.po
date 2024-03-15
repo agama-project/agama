@@ -1,43 +1,43 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
 # This file is distributed under the same license as the PACKAGE package.
-# Luna Jernberg <bittin@opensuse.org>, 2023.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-10 02:10+0000\n"
-"PO-Revision-Date: 2024-03-03 10:42+0000\n"
-"Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
-"Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-web/"
-"sv/>\n"
-"Language: sv\n"
+"PO-Revision-Date: 2024-03-04 15:43+0000\n"
+"Last-Translator: Monstorix <monstorix@outlook.com>\n"
+"Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
+"agama/agama-web/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 4.9.1\n"
 
 #. TRANSLATORS: error message, %s is replaced by the server URL
 #: src/DevServerWrapper.jsx:82
 #, c-format
 msgid "The server at %s is not reachable."
-msgstr "Servern på %s är inte tillgänglig."
+msgstr "无法访问位于 %s 上的服务器。"
 
 #. TRANSLATORS: error message
 #: src/DevServerWrapper.jsx:88
 msgid "Cannot connect to the Cockpit server"
-msgstr "Kan inte ansluta till Cockpit server"
+msgstr "无法连接到 Cockpit 服务器"
 
 #. TRANSLATORS: button label
 #: src/DevServerWrapper.jsx:104
 msgid "Try Again"
-msgstr "Försök igen"
+msgstr "再试一次"
 
 #: src/components/core/About.jsx:43 src/components/core/About.jsx:48
 msgid "About Agama"
-msgstr "Om Agama"
+msgstr "关于 Agama"
 
 #. TRANSLATORS: content of the "About" popup (1/2)
 #: src/components/core/About.jsx:53
@@ -47,17 +47,15 @@ msgid ""
 "want to give it a try, we recommend using a virtual machine to prevent any "
 "possible data loss."
 msgstr ""
-"Agama är en experimentellt installationsprogram för (open) SUSE-system. Det "
-"är fortfarande under utveckling, så använd det inte i produktionsmiljöer. Om "
-"du vill ge det ett försök rekommenderar vi att du använder en virtuell "
-"maskin för att förhindra eventuell dataförlust."
+"Agama 是（open）SUSE 系统的实验性安装程序。其仍处于开发阶段，因此请勿将其用于"
+"生产环境。如果您想试用，建议使用虚拟机以防止任何可能的数据丢失。"
 
 #. TRANSLATORS: content of the "About" popup (2/2)
 #. %s is replaced by the project URL
 #: src/components/core/About.jsx:65
 #, c-format
 msgid "For more information, please visit the project's repository at %s."
-msgstr "För mer information, var vänlig och besök projektets arkiv på %s."
+msgstr "若想了解更多信息，请从 %s 访问项目仓库。"
 
 #. TRANSLATORS: button label
 #: src/components/core/About.jsx:71 src/components/core/FileViewer.jsx:80
@@ -66,86 +64,79 @@ msgstr "För mer information, var vänlig och besök projektets arkiv på %s."
 #: src/components/network/WifiSelector.jsx:151
 #: src/components/product/ProductPage.jsx:239
 msgid "Close"
-msgstr "Stäng"
+msgstr "关闭"
 
 #. TRANSLATORS: page title
 #: src/components/core/DBusError.jsx:34
 msgid "D-Bus Error"
-msgstr "D-Bus fel"
+msgstr "D-Bus 错误"
 
 #: src/components/core/DBusError.jsx:38
 msgid "Cannot connect to D-Bus"
-msgstr "Kan inte ansluta till D-Bus"
+msgstr "无法连接到 D-Bus"
 
 #: src/components/core/DBusError.jsx:43
 msgid ""
 "Could not connect to the D-Bus service. Please, check whether it is running."
-msgstr ""
-"Kunde inte ansluta till D-Bus tjänsten. Vänligen kontrollera om den är igång."
+msgstr "无法连接到 D-Bus 服务，请检查它是否在运行。"
 
 #. TRANSLATORS: button label
 #: src/components/core/DBusError.jsx:51
 msgid "Reload"
-msgstr "Ladda om"
+msgstr "重载"
 
 #: src/components/core/DevelopmentInfo.jsx:55
 msgid "Cockpit server"
-msgstr "Cockpit server"
+msgstr "Cockpit 服务器"
 
 #: src/components/core/FileViewer.jsx:65
 msgid "Reading file..."
-msgstr "Läser fil..."
+msgstr "正在读取文件……"
 
 #: src/components/core/FileViewer.jsx:71
 msgid "Cannot read the file"
-msgstr "Kan inte läsa fil"
+msgstr "无法读取文件"
 
 #: src/components/core/InstallButton.jsx:37
 msgid ""
 "There are some reported issues. Please review them in the previous steps "
 "before proceeding with the installation."
-msgstr ""
-"Det finns några rapporterade problem. Vänligen granska dem i de föregående "
-"stegen innan du fortsätter med installationen."
+msgstr "此处存在一些已报告的错误。请在继续安装前回顾之前步骤中的内容。"
 
 #: src/components/core/InstallButton.jsx:49
 msgid "Confirm Installation"
-msgstr "Bekräfta Installation"
+msgstr "确认安装"
 
 #: src/components/core/InstallButton.jsx:55
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
-msgstr ""
-"Om du fortsätter kommer partitionerna på din hårddisk att modifieras enligt "
-"de medföljande installationsinställningarna."
+msgstr "如果继续，硬盘上的分区将会根据已提供的安装设置进行修改。"
 
 #: src/components/core/InstallButton.jsx:59
 msgid "Please, cancel and check the settings if you are unsure."
-msgstr "Vänligen, avbryt och kontrollera inställningarna om du är osäker."
+msgstr "如果不确定任何事项，请务必取消并检查已进行的设置。"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:65 src/components/core/Popup.jsx:128
 #: src/components/network/WifiConnectionForm.jsx:136
 msgid "Cancel"
-msgstr "Avbryt"
+msgstr "取消"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:69
 msgid "Continue"
-msgstr "Fortsätt"
+msgstr "继续"
 
 #: src/components/core/InstallButton.jsx:78
 msgid "Problems Found"
-msgstr "Problem hittades"
+msgstr "已发现问题"
 
 #: src/components/core/InstallButton.jsx:82
 msgid ""
 "Some problems were found when trying to start the installation. Please, have "
 "a look to the reported errors and try again."
-msgstr ""
-"Vissa problem hittades när du försökte starta installationen. Ta en titt på "
-"de rapporterade felen och försök igen."
+msgstr "尝试开始安装时发现问题。请查看已报告的错误后重试。"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:89 src/components/l10n/L10nPage.jsx:75
@@ -160,32 +151,30 @@ msgstr ""
 #: src/components/storage/ProposalVolumes.jsx:283
 #: src/components/storage/ZFCPPage.jsx:511
 msgid "Accept"
-msgstr "Acceptera"
+msgstr "接受"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:140
 msgid "Install"
-msgstr "Installera"
+msgstr "安装"
 
 #: src/components/core/InstallationFinished.jsx:41
 msgid "TPM sealing requires the new system to be booted directly."
-msgstr "TPM-försegling kräver att det nya systemet startas upp direkt."
+msgstr "TPM 密封过程要求新系统直接启动。"
 
 #: src/components/core/InstallationFinished.jsx:46
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
-msgstr ""
-"Om ett lokalt media användes för att köra det här installationsprogrammet, "
-"ta bort det före nästa uppstart."
+msgstr "如果运行此次安装时使用了本地介质，请在下次启动前移除。"
 
 #: src/components/core/InstallationFinished.jsx:50
 msgid "Hide details"
-msgstr "Dölj detaljer"
+msgstr "隐藏细节"
 
 #: src/components/core/InstallationFinished.jsx:50
 msgid "See more details"
-msgstr "Se mer detaljer"
+msgstr "查看更多细节"
 
 #. TRANSLATORS: Do not translate 'abbr' and 'title', they are part of the HTML markup
 #: src/components/core/InstallationFinished.jsx:55
@@ -195,88 +184,82 @@ msgid ""
 "first boot of the new system. For that to work, the machine needs to boot "
 "directly to the new boot loader."
 msgstr ""
-"Det sista steget för att konfigurera <abbr title='Trusted Platform "
-"Module'>TPM</abbr> för att automatiskt öppna krypterade enheter kommer att "
-"ske under den första uppstarten av det nya systemet. För att det ska fungera "
-"måste maskinen startas direkt till den nya uppstartshanteraren."
+"配置 <abbr title='Trusted Platform Module'>TPM</abbr> 自动开启加密设备的最后"
+"一步将在新系统首次启动时进行。为此，本机需要直接启动到新的引导加载程序。"
 
 #. TRANSLATORS: page title
 #: src/components/core/InstallationFinished.jsx:88
 msgid "Installation Finished"
-msgstr "Installation slutförd"
+msgstr "安装完毕"
 
 #: src/components/core/InstallationFinished.jsx:91
 msgid "Congratulations!"
-msgstr "Grattis!"
+msgstr "恭喜！"
 
 #: src/components/core/InstallationFinished.jsx:96
 msgid "The installation on your machine is complete."
-msgstr "Installationen på din maskin har slutförts."
+msgstr "在您机器上的安装过程已完成。"
 
 #: src/components/core/InstallationFinished.jsx:100
 msgid "At this point you can power off the machine."
-msgstr "Vid det här laget kan du stänga av maskinen."
+msgstr "现在您可以关闭机器电源了。"
 
 #: src/components/core/InstallationFinished.jsx:101
 msgid "At this point you can reboot the machine to log in to the new system."
-msgstr ""
-"Vid det här laget kan du starta om maskinen för att logga in till det nya "
-"systemet."
+msgstr "现在您可以重启机器并登录到新系统。"
 
 #: src/components/core/InstallationFinished.jsx:113
 msgid "Finish"
-msgstr "Slutför"
+msgstr "完成"
 
 #: src/components/core/InstallationFinished.jsx:113
 msgid "Reboot"
-msgstr "Starta om"
+msgstr "重启"
 
 #: src/components/core/InstallationProgress.jsx:32
 msgid "Installing"
-msgstr "Installerar"
+msgstr "正在安装"
 
 #. TRANSLATORS: search field placeholder text
 #: src/components/core/ListSearch.jsx:50
 #: src/components/software/PatternSelector.jsx:215
 #: src/components/software/PatternSelector.jsx:216
 msgid "Search"
-msgstr "Sök"
+msgstr "搜索"
 
 #: src/components/core/LogsButton.jsx:98
 msgid "Collecting logs..."
-msgstr "Samlar loggar..."
+msgstr "正在收集日志……"
 
 #: src/components/core/LogsButton.jsx:98
 msgid "Download logs"
-msgstr "Ladda ner loggar"
+msgstr "下载日志"
 
 #: src/components/core/LogsButton.jsx:106
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
-msgstr ""
-"Webbläsaren kommer att köra nedladdningen av loggarna så snart de är klara. "
-"ha tålamod."
+msgstr "浏览器将会在日志收集完毕后启动下载过程，请耐心等待。"
 
 #: src/components/core/LogsButton.jsx:114
 msgid "Something went wrong while collecting logs. Please, try again."
-msgstr "Något gick fel när loggar samlades in. Var god försök igen."
+msgstr "收集日志时出现问题，请重试。"
 
 #: src/components/core/Page.jsx:93 src/components/users/UsersPage.jsx:30
 msgid "Back"
-msgstr "Bakåt"
+msgstr "返回"
 
 #: src/components/core/Page.jsx:201
 msgid "Show global options"
-msgstr "Visa globala alternativ"
+msgstr "显示全局选项"
 
 #: src/components/core/Page.jsx:215
 msgid "Page Actions"
-msgstr "Sidåtgärder"
+msgstr "页面操作"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:35
 msgid "Passwords do not match"
-msgstr "Lösenorden matchar inte"
+msgstr "密码不匹配"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:56
 #: src/components/network/WifiConnectionForm.jsx:125
@@ -284,107 +267,106 @@ msgstr "Lösenorden matchar inte"
 #: src/components/storage/iscsi/AuthFields.jsx:100
 #: src/components/users/RootAuthMethods.jsx:163
 msgid "Password"
-msgstr "Lösenord"
+msgstr "密码"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:60
 msgid "User password"
-msgstr "Användarlösenord"
+msgstr "用户密码"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:69
 msgid "Password confirmation"
-msgstr "Lösenordsbekräftelse"
+msgstr "确认密码"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:74
 msgid "User password confirmation"
-msgstr "Användarlösenord bekräftelse"
+msgstr "用户确认密码"
 
 #: src/components/core/PasswordInput.jsx:59
 msgid "Password visibility button"
-msgstr "Knapp för lösenordssynlighet"
+msgstr "密码可见性按钮"
 
 #: src/components/core/Popup.jsx:90
 msgid "Confirm"
-msgstr "Bekräfta"
+msgstr "确认"
 
 #. TRANSLATORS: dropdown label
 #: src/components/core/RowActions.jsx:66
 #: src/components/storage/ProposalVolumes.jsx:119
 #: src/components/storage/ProposalVolumes.jsx:310
 msgid "Actions"
-msgstr "Åtgärder"
+msgstr "操作"
 
 #: src/components/core/SectionSkeleton.jsx:29
 msgid "Waiting"
-msgstr "Väntande"
+msgstr "正在等候"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
 msgid "Show Logs"
-msgstr "Visa loggar"
+msgstr "显示日志"
 
 #. TRANSLATORS: popup dialog title
 #: src/components/core/ShowLogButton.jsx:53
 msgid "YaST Logs"
-msgstr "YaST loggar"
+msgstr "YaST 日志"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowTerminalButton.jsx:48
 msgid "Open Terminal"
-msgstr "Öppna terminal"
+msgstr "打开终端"
 
 #. TRANSLATORS: sidebar header
 #: src/components/core/Sidebar.jsx:113 src/components/core/Sidebar.jsx:121
 msgid "Installer Options"
-msgstr "Installationsalternativ"
+msgstr "安装程序选项"
 
 #: src/components/core/Sidebar.jsx:128
 msgid "Hide installer options"
-msgstr "Dölj installationsalternativ"
+msgstr "隐藏安装程序选项"
 
 #: src/components/core/Sidebar.jsx:136
 msgid "Diagnostic tools"
-msgstr "Diagnostik verktyg"
+msgstr "诊断工具"
 
 #. TRANSLATORS: Titles used for the popup displaying found section issues
 #: src/components/core/ValidationErrors.jsx:53
 msgid "Software issues"
-msgstr "Programvaruproblem"
+msgstr "软件问题"
 
 #: src/components/core/ValidationErrors.jsx:54
 msgid "Product issues"
-msgstr "Produktproblem"
+msgstr "产品问题"
 
 #: src/components/core/ValidationErrors.jsx:55
 msgid "Storage issues"
-msgstr "Lagringsproblem"
+msgstr "存储问题"
 
 #: src/components/core/ValidationErrors.jsx:57
 msgid "Found Issues"
-msgstr "Hittade problem"
+msgstr "发现问题"
 
 #. TRANSLATORS: %d is replaced with the number of errors found
 #: src/components/core/ValidationErrors.jsx:77
 #, c-format
 msgid "%d error found"
 msgid_plural "%d errors found"
-msgstr[0] "%d fel upptäckta"
-msgstr[1] "%d fel upptäcktes"
+msgstr[0] "已发现 %d 个错误"
 
 #. TRANSLATORS: label for keyboard layout selection
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:53
 #: src/components/l10n/L10nPage.jsx:357
 msgid "Keyboard"
-msgstr "Tangentbord"
+msgstr "键盘"
 
 #. TRANSLATORS: label for keyboard layout selection
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:61
 msgid "keyboard"
-msgstr "tangentbord"
+msgstr "键盘"
 
 #. TRANSLATORS:
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:70
 msgid "Keyboard layout cannot be changed in remote installation"
-msgstr "Tangentbordslayout kan inte ändras vid fjärrinstallation"
+msgstr "无法在远程安装中更改键盘布局"
 
 #. TRANSLATORS: help text for the language selector in the sidebar,
 #. %s will be replaced by the "Localization" page link
@@ -393,9 +375,7 @@ msgstr "Tangentbordslayout kan inte ändras vid fjärrinstallation"
 msgid ""
 "The language used by the installer. The language for the installed system "
 "can be set in the %s page."
-msgstr ""
-"Språket som används av installationsprogrammet. Språket för det installerade "
-"systemet kan ställas in på sidan %s."
+msgstr "安装程序所使用的语言。可在 %s 页面设置已安装系统的语言。"
 
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section
@@ -403,137 +383,137 @@ msgstr ""
 #: src/components/l10n/L10nPage.jsx:384
 #: src/components/overview/L10nSection.jsx:52
 msgid "Localization"
-msgstr "Lokalisering"
+msgstr "本地化"
 
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:66
 #: src/components/l10n/L10nPage.jsx:246
 msgid "Language"
-msgstr "Språk"
+msgstr "语言"
 
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:74
 msgid "language"
-msgstr "språk"
+msgstr "语言"
 
 #. TRANSLATORS: placeholder text for search input in the keyboard selector.
 #: src/components/l10n/KeymapSelector.jsx:53
 msgid "Filter by description or keymap code"
-msgstr "Filtrera efter beskrivning eller tangentbordskod"
+msgstr "按描述或键盘映射代码过滤"
 
 #: src/components/l10n/KeymapSelector.jsx:64
 msgid "Available keymaps"
-msgstr "Tillgängliga tangentbordslayouter"
+msgstr "可用的键盘映射"
 
 #: src/components/l10n/L10nPage.jsx:66 src/components/l10n/L10nPage.jsx:140
 msgid "Select time zone"
-msgstr "Välj tidszon"
+msgstr "选择时区"
 
 #: src/components/l10n/L10nPage.jsx:67
 #, c-format
 msgid "%s will use the selected time zone."
-msgstr "%s kommer att använda den valda tidszonen."
+msgstr "%s 将使用已选择的时区。"
 
 #: src/components/l10n/L10nPage.jsx:128
 msgid "Time zone"
-msgstr "Tidszon"
+msgstr "时区"
 
 #: src/components/l10n/L10nPage.jsx:134
 msgid "Change time zone"
-msgstr "Ändra tidszon"
+msgstr "更改时区"
 
 #: src/components/l10n/L10nPage.jsx:139
 msgid "Time zone not selected yet"
-msgstr "Tidszon är inte vald ännu"
+msgstr "尚未选择时区"
 
 #: src/components/l10n/L10nPage.jsx:182 src/components/l10n/L10nPage.jsx:258
 msgid "Select language"
-msgstr "Välj språk"
+msgstr "选择语言"
 
 #: src/components/l10n/L10nPage.jsx:183
 #, c-format
 msgid "%s will use the selected language."
-msgstr "%s kommer att använda det valda språket."
+msgstr "%s 将会使用已选择的语言。"
 
 #: src/components/l10n/L10nPage.jsx:252
 msgid "Change language"
-msgstr "Ändra språk"
+msgstr "更改语言"
 
 #: src/components/l10n/L10nPage.jsx:257
 msgid "Language not selected yet"
-msgstr "Språk inte valt ännu"
+msgstr "尚未选择语言"
 
 #: src/components/l10n/L10nPage.jsx:295 src/components/l10n/L10nPage.jsx:369
 msgid "Select keyboard"
-msgstr "Välj tangentbordslayout"
+msgstr "选择键盘"
 
 #: src/components/l10n/L10nPage.jsx:296
 #, c-format
 msgid "%s will use the selected keyboard."
-msgstr "%s kommer att använda den valda tangentbordslayouten."
+msgstr "%s 将会使用已选择的键盘。"
 
 #: src/components/l10n/L10nPage.jsx:363
 msgid "Change keyboard"
-msgstr "Ändra tangentbordslayout"
+msgstr "更改键盘"
 
 #: src/components/l10n/L10nPage.jsx:368
 msgid "Keyboard not selected yet"
-msgstr "Tangentbordslayout inte vald ännu"
+msgstr "尚未选择键盘"
 
 #: src/components/l10n/LocaleSelector.jsx:53
 msgid "Filter by language, territory or locale code"
-msgstr "Filtrera efter språk, territorium eller lokalkod"
+msgstr "按语言、地区或区域设定代码过滤"
 
 #: src/components/l10n/LocaleSelector.jsx:64
 msgid "Available locales"
-msgstr "Tillgängliga lokaler"
+msgstr "可用区域设定"
 
 #. TRANSLATORS: placeholder text for search input in the timezone selector.
 #: src/components/l10n/TimezoneSelector.jsx:75
 msgid "Filter by territory, time zone code or UTC offset"
-msgstr "Filtrera efter område, tidszonskod eller UTC-förskjutning"
+msgstr "按地区、时区代码或 UTC 偏移量过滤"
 
 #: src/components/l10n/TimezoneSelector.jsx:86
 msgid "Available time zones"
-msgstr "Tillgängliga tidszoner"
+msgstr "可用时区"
 
 #: src/components/layout/Loading.jsx:30
 msgid "Loading installation environment, please wait."
-msgstr "Laddar installationsmiljö, vänligen vänta."
+msgstr "正在载入安装环境，请稍候。"
 
 #. TRANSLATORS: button label
 #: src/components/network/AddressesDataList.jsx:81
 #: src/components/network/DnsDataList.jsx:87
 msgid "Remove"
-msgstr "Ta bort"
+msgstr "移除"
 
 #. TRANSLATORS: input field name
 #: src/components/network/AddressesDataList.jsx:93
 #: src/components/network/AddressesDataList.jsx:94
 #: src/components/network/IpAddressInput.jsx:33
 msgid "IP Address"
-msgstr "IP address"
+msgstr "IP 地址"
 
 #. TRANSLATORS: input field name
 #: src/components/network/AddressesDataList.jsx:102
 #: src/components/network/AddressesDataList.jsx:103
 msgid "Prefix length or netmask"
-msgstr "Prefix längd eller nätmask"
+msgstr "前缀长度或掩码"
 
 #: src/components/network/AddressesDataList.jsx:119
 msgid "Add an address"
-msgstr "Lägg till en adress"
+msgstr "添加地址"
 
 #. TRANSLATORS: button label
 #: src/components/network/AddressesDataList.jsx:119
 msgid "Add another address"
-msgstr "Lägg till en annan adress"
+msgstr "添加另一个地址"
 
 #: src/components/network/AddressesDataList.jsx:124
 msgid "Addresses"
-msgstr "Adresser"
+msgstr "地址"
 
 #: src/components/network/AddressesDataList.jsx:129
 msgid "Addresses data list"
-msgstr "Adresser data lista"
+msgstr "地址数据列表"
 
 #. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
@@ -546,13 +526,13 @@ msgstr "Adresser data lista"
 #: src/components/storage/iscsi/NodesPresenter.jsx:100
 #: src/components/storage/iscsi/NodesPresenter.jsx:121
 msgid "Name"
-msgstr "Namn"
+msgstr "名称"
 
 #. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:59
 #: src/components/network/ConnectionsTable.jsx:87
 msgid "IP addresses"
-msgstr "IP adresser"
+msgstr "IP 地址"
 
 #: src/components/network/ConnectionsTable.jsx:67
 #: src/components/storage/ProposalVolumes.jsx:234
@@ -560,44 +540,44 @@ msgstr "IP adresser"
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
 #: src/components/users/FirstUser.jsx:208
 msgid "Edit"
-msgstr "Redigera"
+msgstr "编辑"
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:70
 #, c-format
 msgid "Edit connection %s"
-msgstr "Redigera anslutning %s"
+msgstr "编辑连接 %s"
 
 #: src/components/network/ConnectionsTable.jsx:74
 msgid "Forget"
-msgstr "Glöm"
+msgstr "忘掉"
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:77
 #, c-format
 msgid "Forget connection %s"
-msgstr "Glöm anslutning %s"
+msgstr "忘掉连接 %s"
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:92
 #, c-format
 msgid "Actions for connection %s"
-msgstr "Åtgärder för anslutning %s"
+msgstr "对连接 %s 的操作"
 
 #. TRANSLATORS: input field name
 #: src/components/network/DnsDataList.jsx:78
 #: src/components/network/DnsDataList.jsx:79
 msgid "Server IP"
-msgstr "Server IP"
+msgstr "服务器 IP"
 
 #: src/components/network/DnsDataList.jsx:96
 msgid "Add DNS"
-msgstr "Lägg till DNS"
+msgstr "添加 DNS"
 
 #. TRANSLATORS: button label
 #: src/components/network/DnsDataList.jsx:96
 msgid "Add another DNS"
-msgstr "Lägg till en annan DNS"
+msgstr "添加另一个 DNS"
 
 #: src/components/network/DnsDataList.jsx:101
 msgid "DNS"
@@ -606,99 +586,96 @@ msgstr "DNS"
 #. TRANSLATORS: input field name
 #: src/components/network/IpPrefixInput.jsx:33
 msgid "IP prefix or netmask"
-msgstr "IP prefix eller nätmask"
+msgstr "IP 前缀或掩码"
 
 #. TRANSLATORS: error message
 #: src/components/network/IpSettingsForm.jsx:87
 msgid "At least one address must be provided for selected mode"
-msgstr "Minst en adress måste tillhandahållas för valt läge"
+msgstr "所选模式要求至少提供一个地址"
 
 #. TRANSLATORS: %s is replaced by the iSCSI target node name
 #: src/components/network/IpSettingsForm.jsx:133
 #: src/components/storage/iscsi/EditNodeForm.jsx:50
 #, c-format
 msgid "Edit %s"
-msgstr "Redigera %s"
+msgstr "编辑 %s"
 
 #. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
 #: src/components/network/IpSettingsForm.jsx:136
 #: src/components/network/IpSettingsForm.jsx:141
 #: src/components/network/IpSettingsForm.jsx:143
 msgid "Mode"
-msgstr "Läge"
+msgstr "模式"
 
 #: src/components/network/IpSettingsForm.jsx:147
 msgid "Automatic (DHCP)"
-msgstr "Automatisk (DHCP)"
+msgstr "自动（DHCP）"
 
 #. TRANSLATORS: manual network configuration mode with a static IP address
 #: src/components/network/IpSettingsForm.jsx:149
 #: src/components/storage/iscsi/NodeStartupOptions.js:25
 msgid "Manual"
-msgstr "Manuell"
+msgstr "手动"
 
 #. TRANSLATORS: network gateway configuration
 #: src/components/network/IpSettingsForm.jsx:164
 #: src/components/network/IpSettingsForm.jsx:167
 msgid "Gateway"
-msgstr "Gateway"
+msgstr "网关"
 
 #: src/components/network/NetworkPage.jsx:38
 msgid "No wired connections found."
-msgstr "Inga trådbundna anslutningar hittades."
+msgstr "未找到有线连接。"
 
 #: src/components/network/NetworkPage.jsx:53
 msgid ""
 "The system has not been configured for connecting to a WiFi network yet."
-msgstr ""
-"Systemet har inte konfigurerats för att ansluta till ett WiFi-nätverk ännu."
+msgstr "系统尚未配置为连接到 WiFi 网络。"
 
 #: src/components/network/NetworkPage.jsx:54
 msgid ""
 "The system does not support WiFi connections, probably because of missing or "
 "disabled hardware."
-msgstr ""
-"Systemet stöder inte WiFi-anslutningar, förmodligen på grund av saknad eller "
-"inaktiverad hårdvara."
+msgstr "系统不支持 WiFi 连接，可能由于硬件缺失或已被禁用。"
 
 #: src/components/network/NetworkPage.jsx:58
 msgid "No WiFi connections found."
-msgstr "Inga WiFi-anslutningar hittades."
+msgstr "未找到 WiFi 连接。"
 
 #. TRANSLATORS: button label
 #: src/components/network/NetworkPage.jsx:70
 #: src/components/network/NetworkPageMenu.jsx:46
 #: src/components/network/WifiSelector.jsx:134
 msgid "Connect to a Wi-Fi network"
-msgstr "Anslut till ett Wi-Fi nätverk"
+msgstr "连接到 Wi-Fi 网络"
 
 #. TRANSLATORS: page section title
 #. TRANSLATORS: page title
 #: src/components/network/NetworkPage.jsx:169
 #: src/components/overview/NetworkSection.jsx:83
 msgid "Network"
-msgstr "Nätverk"
+msgstr "网络"
 
 #. TRANSLATORS: page section
 #: src/components/network/NetworkPage.jsx:171
 msgid "Wired networks"
-msgstr "Trådbundna nätverk"
+msgstr "有线网络"
 
 #. TRANSLATORS: page section
 #: src/components/network/NetworkPage.jsx:176
 msgid "WiFi networks"
-msgstr "WiFi nätverk"
+msgstr "WiFi 网络"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:43
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 msgid "None"
-msgstr "Ingen"
+msgstr "无"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:45
 msgid "WPA & WPA2 Personal"
-msgstr "WPA & WPA2 Personal"
+msgstr "WPA 与 WPA2 个人版"
 
 #: src/components/network/WifiConnectionForm.jsx:91
 #: src/components/product/ProductPage.jsx:128
@@ -708,11 +685,11 @@ msgstr "WPA & WPA2 Personal"
 #: src/components/storage/iscsi/LoginForm.jsx:72
 #: src/components/users/FirstUser.jsx:238
 msgid "Something went wrong"
-msgstr "Något gick fel"
+msgstr "出了点问题"
 
 #: src/components/network/WifiConnectionForm.jsx:92
 msgid "Please, review provided settings and try again."
-msgstr "Granska de angivna inställningarna och försök igen."
+msgstr "请回顾之前提供的设定后再试。"
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
 #: src/components/network/WifiConnectionForm.jsx:97
@@ -724,67 +701,67 @@ msgstr "SSID"
 #: src/components/network/WifiConnectionForm.jsx:109
 #: src/components/network/WifiConnectionForm.jsx:112
 msgid "Security"
-msgstr "Säkerhet"
+msgstr "安全性"
 
 #. TRANSLATORS: WiFi password
 #: src/components/network/WifiConnectionForm.jsx:121
 msgid "WPA Password"
-msgstr "WPA lösenord"
+msgstr "WPA 密码"
 
 #. TRANSLATORS: button label, connect to a WiFi network
 #: src/components/network/WifiConnectionForm.jsx:133
 msgid "Connect"
-msgstr "Anslut"
+msgstr "连接"
 
 #. TRANSLATORS: button label
 #: src/components/network/WifiHiddenNetworkForm.jsx:50
 msgid "Connect to hidden network"
-msgstr "Anslut till ett dolt nätverk"
+msgstr "连接到隐藏网络"
 
 #. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:41
 #: src/components/network/WifiNetworkListItem.jsx:99
 msgid "Connecting"
-msgstr "Ansluter"
+msgstr "正在连接"
 
 #. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:44
 msgid "Connected"
-msgstr "Ansluten"
+msgstr "已连接"
 
 #. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:47
 msgid "Disconnecting"
-msgstr "Kopplar från"
+msgstr "正在断开连接"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:50
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
-msgstr "Frånkopplad"
+msgstr "已断开连接"
 
 #. TRANSLATORS: %s is replaced by a WiFi network name
 #: src/components/network/WifiNetworkListItem.jsx:97
 #, c-format
 msgid "%s connection is waiting for an state change"
-msgstr "%s anslutningen väntar på en tillståndsändring"
+msgstr "连接 %s 正等待状态更改"
 
 #. TRANSLATORS: menu label, remove the selected WiFi network settings
 #: src/components/network/WifiNetworkMenu.jsx:55
 msgid "Forget network"
-msgstr "Glöm nätverk"
+msgstr "忘掉网络"
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
 #: src/components/overview/L10nSection.jsx:34
 #, c-format
 msgid "The system will use %s as its default language."
-msgstr "Systemet kommer att använda %s som dess standardspråk."
+msgstr "系统会使用 %s 作为默认语言。"
 
 #: src/components/overview/NetworkSection.jsx:59
 msgid "No network connections detected"
-msgstr "Inga nätverksanslutningar upptäcktes"
+msgstr "未检测到网络连接"
 
 #. TRANSLATORS: header for the list of active network connections,
 #. %d is replaced by the number of active connections
@@ -792,292 +769,289 @@ msgstr "Inga nätverksanslutningar upptäcktes"
 #, c-format
 msgid "%d connection set:"
 msgid_plural "%d connections set:"
-msgstr[0] "%d anslutning inställd:"
-msgstr[1] "%d anslutningar inställda:"
+msgstr[0] "已设定 %d 个连接："
 
 #. TRANSLATORS: page title
 #: src/components/overview/OverviewPage.jsx:48
 msgid "Installation Summary"
-msgstr "Installationssammanfattning"
+msgstr "安装概要"
 
 #. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
 #: src/components/overview/ProductSection.jsx:48
 #, c-format
 msgid "%s (registered)"
-msgstr "%s (registrerad)"
+msgstr "%s （已注册）"
 
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section
 #: src/components/overview/ProductSection.jsx:71
 #: src/components/product/ProductPage.jsx:435
 msgid "Product"
-msgstr "Produkt"
+msgstr "产品"
 
 #: src/components/overview/SoftwareSection.jsx:38
 msgid "Reading software repositories"
-msgstr "Läser programvaruförråd"
+msgstr "正在读取软件仓库"
 
 #. TRANSLATORS: clickable link label
 #: src/components/overview/SoftwareSection.jsx:133
 msgid "Refresh the repositories"
-msgstr "Uppdatera förråden"
+msgstr "刷新仓库"
 
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section
 #: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
-msgstr "Programvara"
+msgstr "软件"
 
 #: src/components/overview/StorageSection.jsx:42
 #: src/components/storage/ProposalDeviceSection.jsx:129
 msgid "No device selected yet"
-msgstr "Ingen enhet vald ännu"
+msgstr "尚未选择设备"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
 #: src/components/overview/StorageSection.jsx:52
 #, c-format
 msgid "Install using device %s shrinking existing partitions as needed"
-msgstr "Installera på enhet %s som krymper befintliga partitioner efter behov"
+msgstr "使用设备 %s 进行安装，并在需要时缩小现有的分区"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
 #: src/components/overview/StorageSection.jsx:56
 #, c-format
 msgid "Install using device %s without modifying existing partitions"
-msgstr "Installera på enhet %s utan att ändra befintliga partitioner"
+msgstr "使用设备 %s 进行安装且不修改已存在的分区"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
 #: src/components/overview/StorageSection.jsx:60
 #, c-format
 msgid "Install using device %s and deleting all its content"
-msgstr "Installerar på enhet %s och raderar allt innehåll"
+msgstr "使用设备 %s 进行安装并删除其上的现有内容"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
 #: src/components/overview/StorageSection.jsx:66
 #, c-format
 msgid "Install using device %s"
-msgstr "Installera på enhet %s"
+msgstr "使用设备 %s 安装"
 
 #: src/components/overview/StorageSection.jsx:83
 msgid "Probing storage devices"
-msgstr "Undersöker lagringsenheter"
+msgstr "正在探测存储设备"
 
 #. TRANSLATORS: page section title
 #. TRANSLATORS: page title
 #: src/components/overview/StorageSection.jsx:208
 #: src/components/storage/ProposalPage.jsx:243
 msgid "Storage"
-msgstr "Lagring"
+msgstr "存储"
 
 #. TRANSLATORS: %s will be replaced by the user name
 #: src/components/overview/UsersSection.jsx:80
 #, c-format
 msgid "User %s will be created"
-msgstr "Användare %s kommer att skapas"
+msgstr "用户 %s 将被创建"
 
 #: src/components/overview/UsersSection.jsx:87
 msgid "No user defined yet"
-msgstr "Ingen användare definierad ännu"
+msgstr "尚未设定用户"
 
 #: src/components/overview/UsersSection.jsx:101
 msgid "Root authentication set for using both, password and public SSH Key"
-msgstr ""
-"Rootautentiseringsuppsättning för att använda både lösenord och offentlig "
-"SSH nyckel"
+msgstr "Root 认证设定为同时使用密码与 SSH 公钥"
 
 #: src/components/overview/UsersSection.jsx:102
 msgid "No root authentication method defined"
-msgstr "Ingen rootautentiseringsmetod har definierats"
+msgstr "未设定 Root 认证方法"
 
 #: src/components/overview/UsersSection.jsx:103
 msgid "Root authentication set for using password"
-msgstr "Rootautentisering inställd för användning av lösenord"
+msgstr "Root 认证设定为使用密码"
 
 #: src/components/overview/UsersSection.jsx:104
 msgid "Root authentication set for using public SSH Key"
-msgstr "Rootautentiseringsuppsättning för användning av offentlig SSH nyckel"
+msgstr "Root 认证设定为使用 SSH 公钥"
 
 #. TRANSLATORS: page section title
 #: src/components/overview/UsersSection.jsx:120
 #: src/components/users/UsersPage.jsx:30
 msgid "Users"
-msgstr "Användare"
+msgstr "用户"
 
 #: src/components/product/ProductPage.jsx:63
 #: src/components/product/ProductSelectionPage.jsx:65
 msgid "Choose a product"
-msgstr "Välj en produkt"
+msgstr "选择产品"
 
 #: src/components/product/ProductPage.jsx:122
 #, c-format
 msgid "Register %s"
-msgstr "Registrera %s"
+msgstr "注册 %s"
 
 #: src/components/product/ProductPage.jsx:188
 #, c-format
 msgid "Deregister %s"
-msgstr "Avregistrera %s"
+msgstr "取消注册 %s"
 
 #. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
 #: src/components/product/ProductPage.jsx:202
 #, c-format
 msgid "Do you want to deregister %s?"
-msgstr "Vill du avregistrera %s?"
+msgstr "您想要取消注册 %s 吗？"
 
 #: src/components/product/ProductPage.jsx:227
 msgid "Registered warning"
-msgstr "Registrerad varning"
+msgstr "已注册警告"
 
 #. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
 #: src/components/product/ProductPage.jsx:232
 #, c-format
 msgid "The product %s must be deregistered before selecting a new product."
-msgstr "Produkten %s måste avregistreras innan du väljer en ny produkt."
+msgstr "选择新产品之前，必须先取消注册产品 %s 。"
 
 #: src/components/product/ProductPage.jsx:263
 msgid "Change product"
-msgstr "Ändra produkt"
+msgstr "更改产品"
 
 #: src/components/product/ProductPage.jsx:305
 msgid "Register"
-msgstr "Registrera"
+msgstr "注册"
 
 #: src/components/product/ProductPage.jsx:337
 msgid "Deregister product"
-msgstr "Avregistrera produkt"
+msgstr "取消注册产品"
 
 #: src/components/product/ProductPage.jsx:370
 msgid "Code:"
-msgstr "Kod:"
+msgstr "代码："
 
 #: src/components/product/ProductPage.jsx:374
 msgid "Email:"
-msgstr "E-post:"
+msgstr "电子邮件："
 
 #. TRANSLATORS: section title.
 #: src/components/product/ProductPage.jsx:390
 msgid "Registration"
-msgstr "Registrering"
+msgstr "注册"
 
 #: src/components/product/ProductPage.jsx:399
 msgid "This product requires registration."
-msgstr "Denna produkt kräver registrering."
+msgstr "此产品要求注册。"
 
 #: src/components/product/ProductPage.jsx:405
 msgid "This product does not require registration."
-msgstr "Denna produkt kräver ingen registrering."
+msgstr "此产品无需注册。"
 
 #: src/components/product/ProductRegistrationForm.jsx:63
 msgid "Registration code"
-msgstr "Registreringskod"
+msgstr "注册码"
 
 #: src/components/product/ProductRegistrationForm.jsx:66
 msgid "Email"
-msgstr "E-post"
+msgstr "电子邮件"
 
 #: src/components/product/ProductSelectionPage.jsx:58
 msgid "Loading available products, please wait..."
-msgstr "Laddar tillgängliga produkter, vänligen vänta..."
+msgstr "正在载入可用产品，请稍候……"
 
 #. TRANSLATORS: page title
 #: src/components/product/ProductSelectionPage.jsx:63
 msgid "Product selection"
-msgstr "Produktval"
+msgstr "选择产品"
 
 #: src/components/product/ProductSelectionPage.jsx:72
 msgid "Select"
-msgstr "Välj"
+msgstr "选择"
 
 #: src/components/product/ProductSelector.jsx:36
 msgid "No products available for selection"
-msgstr "Inga produkter tillgängliga för val"
+msgstr "没有可供选择的产品"
 
 #: src/components/product/ProductSelector.jsx:42
 msgid "Available products"
-msgstr "Tillgängliga produkter"
+msgstr "可用产品"
 
 #: src/components/questions/GenericQuestion.jsx:35
 #: src/components/questions/LuksActivationQuestion.jsx:60
 msgid "Question"
-msgstr "Fråga"
+msgstr "问题"
 
 #. TRANSLATORS: error message, user entered a wrong password
 #: src/components/questions/LuksActivationQuestion.jsx:34
 msgid "Given encryption password didn't work"
-msgstr "Givet krypteringslösenord fungerade inte"
+msgstr "输入的加密密码无效"
 
 #: src/components/questions/LuksActivationQuestion.jsx:59
 msgid "Encrypted Device"
-msgstr "Krypterad enhet"
+msgstr "已加密设备"
 
 #. TRANSLATORS: field label
 #: src/components/questions/LuksActivationQuestion.jsx:69
 msgid "Encryption Password"
-msgstr "Krypteringslösenord"
+msgstr "加密密码"
 
 #. TRANSLATORS: pattern status, selected to install (by user)
 #: src/components/software/PatternItem.jsx:63
 msgid "selected"
-msgstr "vald"
+msgstr "已选择"
 
 #. TRANSLATORS: pattern status, selected to install (by dependencies)
 #: src/components/software/PatternItem.jsx:66
 msgid "automatically selected"
-msgstr "automatisk vald"
+msgstr "已自动选择"
 
 #. TRANSLATORS: pattern status, not selected to install
 #: src/components/software/PatternItem.jsx:69
 msgid "not selected"
-msgstr "inte vald"
+msgstr "未选择"
 
 #: src/components/software/PatternSelector.jsx:210
 msgid "Software summary and filter options"
-msgstr "Programsammanfattning och filteralternativ"
+msgstr "软件概述与过滤选项"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
 #: src/components/software/UsedSize.jsx:32
 #, c-format
 msgid "Installation will take %s"
-msgstr "Installationen kommer att ta upp %s"
+msgstr "安装将会占用 %s"
 
 #: src/components/storage/DASDFormatProgress.jsx:61
 msgid "Waiting for progress report"
-msgstr "Väntar på lägesrapport"
+msgstr "正在等待进度报告"
 
 #: src/components/storage/DASDFormatProgress.jsx:69
 msgid "Formatting DASD devices"
-msgstr "Formaterar DASD-enheter"
+msgstr "正在格式化 DASD 设备"
 
 #. TRANSLATORS: DASD = Direct Access Storage Device, IBM mainframe storage technology
 #: src/components/storage/DASDPage.jsx:181
 msgid "Storage DASD"
-msgstr "Lagring DASD"
+msgstr "存储 DASD"
 
 #: src/components/storage/DASDTable.jsx:57
 #: src/components/storage/ZFCPPage.jsx:318
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 msgid "No"
-msgstr "Nej"
+msgstr "否"
 
 #: src/components/storage/DASDTable.jsx:57
 #: src/components/storage/ZFCPPage.jsx:318
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 msgid "Yes"
-msgstr "Ja"
+msgstr "是"
 
 #: src/components/storage/DASDTable.jsx:64
 #: src/components/storage/ZFCPDiskForm.jsx:118
 #: src/components/storage/ZFCPPage.jsx:301
 #: src/components/storage/ZFCPPage.jsx:361
 msgid "Channel ID"
-msgstr "Kanal-ID"
+msgstr "通道 ID"
 
 #. TRANSLATORS: table header
 #: src/components/storage/DASDTable.jsx:65
@@ -1086,168 +1060,163 @@ msgstr "Kanal-ID"
 #: src/components/storage/iscsi/NodesPresenter.jsx:125
 #: src/components/users/RootAuthMethods.jsx:157
 msgid "Status"
-msgstr "Status"
+msgstr "状态"
 
 #. TRANSLATORS: The storage "Device" section's title
 #: src/components/storage/DASDTable.jsx:66
 #: src/components/storage/ProposalDeviceSection.jsx:423
 msgid "Device"
-msgstr "Enhet"
+msgstr "设备"
 
 #: src/components/storage/DASDTable.jsx:67
 msgid "Type"
-msgstr "Typ"
+msgstr "类型"
 
 #: src/components/storage/DASDTable.jsx:68
 msgid "Diag"
-msgstr "Diagnos"
+msgstr "诊断"
 
 #: src/components/storage/DASDTable.jsx:69
 msgid "Formatted"
-msgstr "Formaterad"
+msgstr "已格式化"
 
 #: src/components/storage/DASDTable.jsx:70
 msgid "Partition Info"
-msgstr "Partitionsinformation"
+msgstr "分区信息"
 
 #. TRANSLATORS: drop down menu label
 #: src/components/storage/DASDTable.jsx:105
 msgid "Perform an action"
-msgstr "Utför en åtgärd"
+msgstr "执行操作"
 
 #. TRANSLATORS: drop down menu action, activate the device
 #: src/components/storage/DASDTable.jsx:111
 #: src/components/storage/ZFCPPage.jsx:332
 msgid "Activate"
-msgstr "Aktivera"
+msgstr "激活"
 
 #. TRANSLATORS: drop down menu action, deactivate the device
 #: src/components/storage/DASDTable.jsx:113
 #: src/components/storage/ZFCPPage.jsx:374
 msgid "Deactivate"
-msgstr "Inaktivera"
+msgstr "停用"
 
 #. TRANSLATORS: drop down menu action, enable DIAG access method
 #: src/components/storage/DASDTable.jsx:116
 msgid "Set DIAG On"
-msgstr "Sätt DIAGNOS till på"
+msgstr "开启 DIAG"
 
 #. TRANSLATORS: drop down menu action, disable DIAG access method
 #: src/components/storage/DASDTable.jsx:118
 msgid "Set DIAG Off"
-msgstr "Sätt DIAGNOS till av"
+msgstr "关闭 DIAG"
 
 #. TRANSLATORS: drop down menu action, format the disk
 #: src/components/storage/DASDTable.jsx:121
 msgid "Format"
-msgstr "Formatera"
+msgstr "格式化"
 
 #: src/components/storage/DASDTable.jsx:198
 #: src/components/storage/DASDTable.jsx:199
 msgid "Filter by min channel"
-msgstr "Filtrera efter minimum kanal"
+msgstr "按最小通道过滤"
 
 #: src/components/storage/DASDTable.jsx:206
 msgid "Remove min channel filter"
-msgstr "Ta bort minimum kanal filter"
+msgstr "移除最小通道过滤器"
 
 #: src/components/storage/DASDTable.jsx:219
 #: src/components/storage/DASDTable.jsx:220
 msgid "Filter by max channel"
-msgstr "Filtrera efter maximal kanal"
+msgstr "按最大通道过滤"
 
 #: src/components/storage/DASDTable.jsx:227
 msgid "Remove max channel filter"
-msgstr "Ta bort maximum kanal filter"
+msgstr "移除最大通道过滤器"
 
 #. TRANSLATORS: page title for iSCSI configuration
 #: src/components/storage/ISCSIPage.jsx:31
 msgid "Storage iSCSI"
-msgstr "Lagring iSCSI"
+msgstr "存储 iSCSI"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsSection.jsx:70
 #, c-format
 msgid "Hide %d subvolume action"
 msgid_plural "Hide %d subvolume actions"
-msgstr[0] "Dölj %d undervolym åtgärd"
-msgstr[1] "Dölj %d undervolymer åtgärder"
+msgstr[0] "隐藏 %d 个子卷操作"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsSection.jsx:72
 #, c-format
 msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
-msgstr[0] "Visa %d undervolym åtgärd"
-msgstr[1] "Visa %d undervolymer åtgärder"
+msgstr[0] "显示 %d 个子卷操作"
 
 #. TRANSLATORS: The storage "Planned Actions" section's title. The
 #. section shows a list of planned actions for the selected device, e.g.
 #. "delete partition A", "create partition B with filesystem C", ...
 #: src/components/storage/ProposalActionsSection.jsx:124
 msgid "Planned Actions"
-msgstr "Planerade åtgärder"
+msgstr "计划执行的操作"
 
 #. TRANSLATORS: The storage "Planned Actions" section's description
 #: src/components/storage/ProposalActionsSection.jsx:126
 msgid "Actions to create the file systems and to ensure the new system boots."
-msgstr ""
-"Åtgärder för att skapa filsystemen och se till att det nya systemet startar."
+msgstr "创建文件系统并确保新系统启动的操作。"
 
 #: src/components/storage/ProposalDeviceSection.jsx:135
 msgid "Waiting for information about selected device"
-msgstr "Väntar på information om den valda enheten"
+msgstr "正在等待已选择设备的信息"
 
 #: src/components/storage/ProposalDeviceSection.jsx:138
 msgid "Select the device for installing the system."
-msgstr "Välj enhet för installation av systemet."
+msgstr "选择要进行系统安装的设备。"
 
 #: src/components/storage/ProposalDeviceSection.jsx:143
 #: src/components/storage/ProposalDeviceSection.jsx:147
 #: src/components/storage/ProposalDeviceSection.jsx:245
 msgid "Installation device"
-msgstr "Installationsenhet"
+msgstr "安装设备"
 
 #: src/components/storage/ProposalDeviceSection.jsx:153
 msgid "No devices found."
-msgstr "Inga enheter hittades."
+msgstr "未找到设备。"
 
 #: src/components/storage/ProposalDeviceSection.jsx:242
 msgid "Devices for creating the volume group"
-msgstr "Enheter för att skapa volymgrupp"
+msgstr "用于创建卷组的设备"
 
 #: src/components/storage/ProposalDeviceSection.jsx:251
 msgid "Custom devices"
-msgstr "Anpassade enheter"
+msgstr "自定义设备"
 
 #: src/components/storage/ProposalDeviceSection.jsx:315
 msgid ""
 "Configuration of the system volume group. All the file systems will be "
 "created in a logical volume of the system volume group."
-msgstr ""
-"Konfiguration av systemvolymgruppen. Alla filsystem kommer att skapas i en "
-"logisk volym av systemvolymgruppen."
+msgstr "系统卷组的设置。所有文件系统将创建于系统卷组下的逻辑卷中。"
 
 #: src/components/storage/ProposalDeviceSection.jsx:321
 msgid "Configure the LVM settings"
-msgstr "Konfigurera LVM-inställningar"
+msgstr "配置 LVM 设定"
 
 #: src/components/storage/ProposalDeviceSection.jsx:326
 #: src/components/storage/ProposalDeviceSection.jsx:346
 msgid "LVM settings"
-msgstr "LVM-inställningar"
+msgstr "LVM 设定"
 
 #: src/components/storage/ProposalDeviceSection.jsx:333
 msgid "Waiting for information about LVM"
-msgstr "Väntar på information om LVM"
+msgstr "正在等待 LVM 信息"
 
 #: src/components/storage/ProposalDeviceSection.jsx:339
 msgid "Use logical volume management (LVM)"
-msgstr "Använd logisk volymhantering (LVM)"
+msgstr "使用逻辑卷管理（LVM）"
 
 #: src/components/storage/ProposalDeviceSection.jsx:347
 msgid "System Volume Group"
-msgstr "System volymgrupp"
+msgstr "系统卷组"
 
 #. TRANSLATORS: The storage "Device" sections's description. Do not
 #. translate 'abbr' and 'title', they are part of the HTML markup.
@@ -1256,20 +1225,19 @@ msgid ""
 "Select the main disk or <abbr title='Logical Volume Manager'>LVM</abbr> "
 "Volume Group for installation."
 msgstr ""
-"Välj huvuddisk eller <abbr title='Logical Volume Manager'>LVM</abbr> "
-"volymgrupp för installation."
+"选择主磁盘或 <abbr title='Logical Volume Manager'>LVM</abbr> 卷组进行安装。"
 
 #: src/components/storage/ProposalFileSystemsSection.jsx:70
 msgid "File systems"
-msgstr "Filsystem"
+msgstr "文件系统"
 
 #: src/components/storage/ProposalPageMenu.jsx:40
 msgid "Manage and format"
-msgstr "Hantera och formatera"
+msgstr "管理与格式化"
 
 #: src/components/storage/ProposalPageMenu.jsx:58
 msgid "Activate disks"
-msgstr "Aktivera diskar"
+msgstr "激活磁盘"
 
 #: src/components/storage/ProposalPageMenu.jsx:60
 msgid "zFCP"
@@ -1277,7 +1245,7 @@ msgstr "zFCP"
 
 #: src/components/storage/ProposalPageMenu.jsx:76
 msgid "Connect to iSCSI targets"
-msgstr "Anslut till iSCSI mål"
+msgstr "连接到 iSCSI 目标"
 
 #: src/components/storage/ProposalPageMenu.jsx:78
 msgid "iSCSI"
@@ -1293,312 +1261,298 @@ msgid ""
 "system. TPM sealing requires the new system to be booted directly on its "
 "first run."
 msgstr ""
-"Lösenordet kommer inte att behövas för att starta och komma åt data om <abbr "
-"title='Trusted Platform Module'>TPM</abbr> kan verifiera systemets "
-"integritet. TPM-försegling kräver att det nya systemet startas upp direkt "
-"vid första körningen."
+"若 <abbr title='Trusted Platform Module'>TPM</abbr> 可以验证系统的完整性，启"
+"动和访问数据的时候将无需密码。 TPM 密封要求新系统在首次运行时直接引导。"
 
 #: src/components/storage/ProposalSettingsSection.jsx:105
 msgid "Use the TPM to decrypt automatically on each boot"
-msgstr "Använd TPM för att dekryptera automatiskt vid varje uppstart"
+msgstr "使用 TPM 在每次启动时自动解密"
 
 #: src/components/storage/ProposalSettingsSection.jsx:148
 msgid ""
 "Uses Btrfs for the root file system allowing to boot to a previous version "
 "of the system after configuration changes or software upgrades."
 msgstr ""
-"Använder Btrfs för rootfilsystemet, vilket gör det möjligt att starta upp en "
-"tidigare version av systemet före konfigurationsändringar eller "
-"programvaruuppgraderingar."
+"使用 Btrfs 作为根文件系统，可以允许配置被改变或软件更新后回退启动到先前版本的"
+"系统。"
 
 #: src/components/storage/ProposalSettingsSection.jsx:155
 msgid "Use Btrfs Snapshots"
-msgstr "Använd Btrfs ögonblicksavbilder"
+msgstr "使用 Btrfs 快照"
 
 #: src/components/storage/ProposalSettingsSection.jsx:227
 msgid "Change encryption settings"
-msgstr "Ändra krypteringsinställningar"
+msgstr "更改加密设置"
 
 #: src/components/storage/ProposalSettingsSection.jsx:232
 #: src/components/storage/ProposalSettingsSection.jsx:253
 msgid "Encryption settings"
-msgstr "Krypteringsinställningar"
+msgstr "加密设置"
 
 #: src/components/storage/ProposalSettingsSection.jsx:246
 msgid "Use encryption"
-msgstr "Använd kryptering"
+msgstr "使用加密"
 
 #: src/components/storage/ProposalSettingsSection.jsx:309
 msgid "Settings"
-msgstr "Inställningar"
+msgstr "设置"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:50
 msgid "Delete current content"
-msgstr "Radera nuvarande innehåll"
+msgstr "删除当前内容"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:51
 msgid "All partitions will be removed and any data in the disks will be lost."
-msgstr ""
-"Alla partitioner kommer att tas bort och all data på diskarna kommer att gå "
-"förlorad."
+msgstr "所有分区将被移除，磁盘上的数据将丢失。"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:55
 msgid "Shrink existing partitions"
-msgstr "Krymp existerande partitioner"
+msgstr "缩小现有分区"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:56
 msgid "The data is kept, but the current partitions will be resized as needed."
-msgstr ""
-"Data bevaras, men storleken på de aktuella partitionerna kommer att ändras "
-"efter behov."
+msgstr "数据将被保留，但当前分区的大小将会按需调整。"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:60
 msgid "Use available space"
-msgstr "Använd tillgängligt utrymme"
+msgstr "使用可用空间"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:61
 msgid ""
 "The data is kept. Only the space not assigned to any partition will be used."
-msgstr ""
-"Data bevaras. Endast det utrymme som inte är tilldelat någon partition "
-"kommer att användas."
+msgstr "数据将被保留。仅使用未分配给任何分区的空间。"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:65
 msgid "Custom"
-msgstr "Anpassad"
+msgstr "自定义"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:66
 msgid "Select what to do with each partition."
-msgstr "Välj vad som ska göras med varje partition."
+msgstr "选择对每个分区执行的操作。"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:72
 msgid "Used device"
-msgstr "Använda enheter"
+msgstr "已使用的设备"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:73
 msgid "Current content"
-msgstr "Nuvarande innehåll"
+msgstr "当前内容"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:74
 #: src/components/storage/ProposalVolumes.jsx:309
 #: src/components/storage/VolumeForm.jsx:741
 msgid "Size"
-msgstr "Storlek"
+msgstr "大小"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:75
 #: src/components/storage/ProposalVolumes.jsx:308
 msgid "Details"
-msgstr "Detaljer"
+msgstr "细节"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:76
 msgid "Action"
-msgstr "Åtgärd"
+msgstr "操作"
 
 #. TRANSLATORS: %s is replaced by partition table type (e.g., GPT)
 #: src/components/storage/ProposalSpacePolicySection.jsx:110
 #, c-format
 msgid "%s partition table"
-msgstr "%s partitionstabell"
+msgstr "%s 分区表"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:121
 msgid "EFI system partition"
-msgstr "EFI-systempartition"
+msgstr "EFI 系统分区"
 
 #. TRANSLATORS: %s is replaced by a file system type (e.g., btrfs).
 #: src/components/storage/ProposalSpacePolicySection.jsx:124
 #, c-format
 msgid "%s file system"
-msgstr "%s filsystem"
+msgstr "%s 文件系统"
 
 #. TRANSLATORS: %s is replaced by a LVM volume group name (e.g., /dev/vg0).
 #: src/components/storage/ProposalSpacePolicySection.jsx:131
 #, c-format
 msgid "LVM physical volume of %s"
-msgstr "LVM fysisk volym av %s"
+msgstr "%s 中的 LVM 逻辑卷"
 
 #. TRANSLATORS: %s is replaced by a RAID name (e.g., /dev/md0).
 #: src/components/storage/ProposalSpacePolicySection.jsx:134
 #, c-format
 msgid "Member of RAID %s"
-msgstr "Medlem av RAID %s"
+msgstr "RAID %s 的成员"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:136
 msgid "Not identified"
-msgstr "Inte identifierad"
+msgstr "未识别"
 
 #. TRANSLATORS: %s is replaced by a disk size (e.g., 20 GiB)
 #: src/components/storage/ProposalSpacePolicySection.jsx:173
 #, c-format
 msgid "%s unused"
-msgstr "%s oanvänt"
+msgstr "%s 未使用空间"
 
 #. TRANSLATORS: %s is replaced by a disk size (e.g., 2 GiB)
 #: src/components/storage/ProposalSpacePolicySection.jsx:186
 #, c-format
 msgid "Shrinkable by %s"
-msgstr "Krympbar med %s"
+msgstr "可缩小 %s"
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., /dev/sda)
 #: src/components/storage/ProposalSpacePolicySection.jsx:221
 #, c-format
 msgid "Space action selector for %s"
-msgstr "Platsåtgärdsväljare för %s"
+msgstr "%s 的空间操作选择器"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:224
 #: src/components/storage/ProposalVolumes.jsx:229
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
 msgid "Delete"
-msgstr "Ta bort"
+msgstr "删除"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:228
 msgid "Allow resize"
-msgstr "Tillåt storleksändring"
+msgstr "允许调整大小"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:230
 msgid "Do not modify"
-msgstr "Modifiera inte"
+msgstr "不要修改"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:382
 msgid "Actions to find space"
-msgstr "Åtgärder för att hitta utrymme"
+msgstr "查找空间的操作"
 
 #. TRANSLATORS: The storage "Find Space" section's title
 #: src/components/storage/ProposalSpacePolicySection.jsx:452
 msgid "Find Space"
-msgstr "Hitta utrymme"
+msgstr "查找空间"
 
 #. TRANSLATORS: The storage "Find space" sections's description
 #: src/components/storage/ProposalSpacePolicySection.jsx:454
 msgid ""
 "Allocating the file systems might need to find free space in the devices "
 "listed below. Choose how to do it."
-msgstr ""
-"Att allokera filsystemen kan behöva hitta ledigt utrymme i enheterna som "
-"anges nedan. Välj hur du vill göra det."
+msgstr "若要分配文件系统，或许需要在下列设备中找到可用空间。选择如何操作。"
 
 #: src/components/storage/ProposalTransactionalInfo.jsx:46
 #, fuzzy
 msgid "Transactional root file system"
-msgstr "Transaktionellt system"
+msgstr "事务性系统"
 
 #: src/components/storage/ProposalTransactionalInfo.jsx:49
 #, fuzzy, c-format
 msgid ""
 "%s is an immutable system with atomic updates. It uses a read-only Btrfs "
 "file system updated via snapshots."
-msgstr ""
-"%s är ett oföränderligt system med atomära uppdateringar som använder ett "
-"skrivskyddat Btrfs-rootfilsystem."
+msgstr "%s 是使用只读 Btrfs 根文件系统和原子更新的不可变系统。"
 
 #. TRANSLATORS: header for a list of items
 #: src/components/storage/ProposalVolumes.jsx:59
 msgid "These limits are affected by:"
-msgstr "Dessa gränser påverkas av:"
+msgstr "这些限制受以下因素影响："
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
 #: src/components/storage/ProposalVolumes.jsx:63
 msgid "The configuration of snapshots"
-msgstr "Konfigurationen för ögonblicksavbilder"
+msgstr "快照配置"
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
 #. %s is replaced by a list of the volumes (like "/home, /boot")
 #: src/components/storage/ProposalVolumes.jsx:67
 #, c-format
 msgid "Presence of other volumes (%s)"
-msgstr "Närvaro av andra volymer (%s)"
+msgstr "有其他卷存在（%s）"
 
 #. TRANSLATORS: dropdown menu label
 #: src/components/storage/ProposalVolumes.jsx:129
 msgid "Reset to defaults"
-msgstr "Återställ till standard"
+msgstr "重设为默认"
 
 #. TRANSLATORS: dropdown menu label
 #: src/components/storage/ProposalVolumes.jsx:137
 #: src/components/storage/ProposalVolumes.jsx:141
 msgid "Add file system"
-msgstr "Lägg till filsystem"
+msgstr "添加文件系统"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/ProposalVolumes.jsx:191
 #, c-format
 msgid "At least %s"
-msgstr "Åtminstone %s"
+msgstr "至少 %s"
 
 #. TRANSLATORS: device flag, the partition size is automatically computed
 #: src/components/storage/ProposalVolumes.jsx:197
 msgid "auto"
-msgstr "auto"
+msgstr "自动"
 
 #. TRANSLATORS: the filesystem uses a logical volume (LVM)
 #: src/components/storage/ProposalVolumes.jsx:207
 msgid "logical volume"
-msgstr "logisk volym"
+msgstr "逻辑卷"
 
 #: src/components/storage/ProposalVolumes.jsx:207
 msgid "partition"
-msgstr "partition"
+msgstr "分区"
 
 #. TRANSLATORS: filesystem flag, it uses an encryption
 #: src/components/storage/ProposalVolumes.jsx:216
 msgid "encrypted"
-msgstr "krypterad"
+msgstr "已加密"
 
 #. TRANSLATORS: filesystem flag, it allows creating snapshots
 #: src/components/storage/ProposalVolumes.jsx:218
 msgid "with snapshots"
-msgstr "med ögonblicksavbilder"
+msgstr "带快照"
 
 #. TRANSLATORS: flag for transactional file system
 #: src/components/storage/ProposalVolumes.jsx:220
 msgid "transactional"
-msgstr "transaktionell"
+msgstr "事务性"
 
 #: src/components/storage/ProposalVolumes.jsx:275
 msgid "Edit file system"
-msgstr "Redigera filsystem"
+msgstr "编辑文件系统"
 
 #: src/components/storage/ProposalVolumes.jsx:307
 #: src/components/storage/VolumeForm.jsx:726
 #: src/components/storage/VolumeForm.jsx:731
 msgid "Mount point"
-msgstr "Monteringspunkt"
+msgstr "挂载点"
 
 #: src/components/storage/ProposalVolumes.jsx:345
 msgid "Table with mount points"
-msgstr "Tabell med monteringspunkter"
+msgstr "挂载点列表"
 
 #: src/components/storage/VolumeForm.jsx:102
 msgid "Select a value"
-msgstr "Välj ett värde"
+msgstr "选择一个值"
 
 #. TRANSLATORS: info about possible file system types.
 #: src/components/storage/VolumeForm.jsx:255
 msgid ""
 "The options for the file system type depends on the product and the mount "
 "point."
-msgstr ""
-"Alternativen för filsystemstypen beror på produkten och monteringspunkten."
+msgstr "文件系统类型的选项数量取决于产品和挂载点。"
 
 #: src/components/storage/VolumeForm.jsx:261
 msgid "More info for file system types"
-msgstr "Mer information om filsystemtyper"
+msgstr "关于文件系统类型的更多信息"
 
 #. TRANSLATORS: label for the file system selector.
 #: src/components/storage/VolumeForm.jsx:272
 msgid "File system type"
-msgstr "Filsystem typ"
+msgstr "文件系统类型"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #: src/components/storage/VolumeForm.jsx:304
 msgid "the configuration of snapshots"
-msgstr "konfigurationen av ögonblicksavbilder"
+msgstr "快照配置"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
 #: src/components/storage/VolumeForm.jsx:309
 #, c-format
 msgid "the presence of the file system for %s"
-msgstr "närvaron av filsystemet för %s"
+msgstr "在 %s 上存在文件系统"
 
 #. TRANSLATORS: conjunction for merging two list items
 #: src/components/storage/VolumeForm.jsx:311
@@ -1609,31 +1563,31 @@ msgstr ", "
 #: src/components/storage/VolumeForm.jsx:314
 #, c-format
 msgid "The final size depends on %s."
-msgstr "Den slutliga storleken beror på %s."
+msgstr "最终大小取决于 %s。"
 
 #. TRANSLATORS: conjunction for merging two texts
 #: src/components/storage/VolumeForm.jsx:316
 msgid " and "
-msgstr " och "
+msgstr " 以及 "
 
 #. TRANSLATORS: the partition size is automatically computed
 #: src/components/storage/VolumeForm.jsx:321
 msgid "Automatically calculated size according to the selected product."
-msgstr "Automatiskt beräknad storlek enligt vald produkt."
+msgstr "根据选定的产品自动计算大小。"
 
 #: src/components/storage/VolumeForm.jsx:341
 msgid "Exact size for the file system."
-msgstr "Exakt storlek för filsystemet."
+msgstr "文件系统的准确大小。"
 
 #. TRANSLATORS: requested partition size
 #: src/components/storage/VolumeForm.jsx:353
 msgid "Exact size"
-msgstr "Exakt storlek"
+msgstr "准确大小"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
 #: src/components/storage/VolumeForm.jsx:368
 msgid "Size unit"
-msgstr "Storleksenhet"
+msgstr "大小单位"
 
 #: src/components/storage/VolumeForm.jsx:396
 msgid ""
@@ -1641,68 +1595,67 @@ msgid ""
 "given minimum and maximum. If no maximum is given then the file system will "
 "be as big as possible."
 msgstr ""
-"Gränser för filsystemets storlek. Den slutliga storleken kommer att vara ett "
-"värde mellan angivet minsta och maximal. Om inget maximalt anges kommer "
-"filsystemet att vara så stort som möjligt."
+"文件系统大小的限度。最终大小将会介于此处给定的最小值和最大值之间。如未给定最"
+"大值，文件系统将尽可能扩大。"
 
 #. TRANSLATORS: the minimal partition size
 #: src/components/storage/VolumeForm.jsx:403
 msgid "Minimum"
-msgstr "Minst"
+msgstr "最小"
 
 #. TRANSLATORS: the minium partition size
 #: src/components/storage/VolumeForm.jsx:413
 msgid "Minimum desired size"
-msgstr "Minsta önskade storlek"
+msgstr "所需最小尺寸"
 
 #: src/components/storage/VolumeForm.jsx:422
 msgid "Unit for the minimum size"
-msgstr "Enhet för minsta storlek"
+msgstr "最小尺寸的单位"
 
 #. TRANSLATORS: the maximum partition size
 #: src/components/storage/VolumeForm.jsx:433
 msgid "Maximum"
-msgstr "Maximal"
+msgstr "最大"
 
 #. TRANSLATORS: the maximum partition size
 #: src/components/storage/VolumeForm.jsx:444
 msgid "Maximum desired size"
-msgstr "Maximal önskad storlek"
+msgstr "所需的最大尺寸"
 
 #: src/components/storage/VolumeForm.jsx:452
 msgid "Unit for the maximum size"
-msgstr "Enhet för maximal storlek"
+msgstr "最大尺寸的单位"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
 #: src/components/storage/VolumeForm.jsx:469
 msgid "Auto"
-msgstr "Auto"
+msgstr "自动"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
 #: src/components/storage/VolumeForm.jsx:471
 msgid "Fixed"
-msgstr "Fast"
+msgstr "固定尺寸"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
 #: src/components/storage/VolumeForm.jsx:473
 msgid "Range"
-msgstr "Räckvidd"
+msgstr "按范围计算"
 
 #: src/components/storage/VolumeForm.jsx:681
 msgid "A size value is required"
-msgstr "Ett storleksvärde krävs"
+msgstr "必须输入尺寸值"
 
 #: src/components/storage/VolumeForm.jsx:686
 msgid "Minimum size is required"
-msgstr "Minsta storlek krävs"
+msgstr "需要指定最小尺寸"
 
 #: src/components/storage/VolumeForm.jsx:690
 msgid "Maximum must be greater than minimum"
-msgstr "Maximalt måste vara större än minimalt"
+msgstr "最大值必须高于最小值"
 
 #: src/components/storage/ZFCPDiskForm.jsx:113
 msgid "The zFCP disk was not activated."
-msgstr "zFCP disken var inte aktiverad."
+msgstr "zFCP 磁盘未激活。"
 
 #. TRANSLATORS: abbrev. World Wide Port Name
 #: src/components/storage/ZFCPDiskForm.jsx:129
@@ -1718,28 +1671,28 @@ msgstr "LUN"
 
 #: src/components/storage/ZFCPPage.jsx:303
 msgid "Auto LUNs Scan"
-msgstr "Automatisk LUN-skanning"
+msgstr "自动扫描 LUN"
 
 #: src/components/storage/ZFCPPage.jsx:314
 msgid "Activated"
-msgstr "Aktiverad"
+msgstr "已激活"
 
 #: src/components/storage/ZFCPPage.jsx:314
 msgid "Deactivated"
-msgstr "Inaktiverad"
+msgstr "已停用"
 
 #: src/components/storage/ZFCPPage.jsx:417
 msgid "No zFCP controllers found."
-msgstr "Inga zFCP-kontroller hittades."
+msgstr "未找到 zFCP 控制器。"
 
 #: src/components/storage/ZFCPPage.jsx:418
 msgid "Please, try to read the zFCP devices again."
-msgstr "Försök att läsa zFCP-enheterna igen."
+msgstr "请尝试再次读取 zFCP 设备。"
 
 #. TRANSLATORS: button label
 #: src/components/storage/ZFCPPage.jsx:420
 msgid "Read zFCP devices"
-msgstr "Läs zFCP-enheter"
+msgstr "读取 zFCP 设备"
 
 #. TRANSLATORS: the text in the square brackets [] will be displayed in bold
 #: src/components/storage/ZFCPPage.jsx:429
@@ -1747,58 +1700,55 @@ msgid ""
 "Automatic LUN scan is [enabled]. Activating a controller which is running in "
 "NPIV mode will automatically configures all its LUNs."
 msgstr ""
-"Automatisk LUN-skanning är [aktiverad]. Aktivering av en styrenhet som körs "
-"i NPIV-läge kommer automatiskt att konfigurera alla dess LUN:er."
+"自动 LUN 扫描[已启用]。激活运行在 NPIV 模式下的控制器将自动配置其所有 LUN。"
 
 #. TRANSLATORS: the text in the square brackets [] will be displayed in bold
 #: src/components/storage/ZFCPPage.jsx:432
 msgid ""
 "Automatic LUN scan is [disabled]. LUNs have to be manually configured after "
 "activating a controller."
-msgstr ""
-"Automatisk LUN-skanning är [inaktiverat]. LUN:er måste konfigureras manuellt "
-"efter aktivering av en styrenhet."
+msgstr "自动 LUN 扫描[已停用]。激活控制器后须手动配置 LUN。"
 
 #: src/components/storage/ZFCPPage.jsx:498
 msgid "Activate a zFCP disk"
-msgstr "Aktivera en zFCP-disk"
+msgstr "激活 zFCP 磁盘"
 
 #: src/components/storage/ZFCPPage.jsx:537
 msgid "Please, try to activate a zFCP controller."
-msgstr "Snälla, försök att aktivera en zFCP-kontroller."
+msgstr "请尝试激活 zFCP 控制器。"
 
 #: src/components/storage/ZFCPPage.jsx:544
 msgid "Please, try to activate a zFCP disk."
-msgstr "Snälla, försök att aktivera en zFCP-disk."
+msgstr "请尝试激活 zFCP 磁盘。"
 
 #. TRANSLATORS: button label
 #: src/components/storage/ZFCPPage.jsx:546
 msgid "Activate zFCP disk"
-msgstr "Aktivera en zFCP-disk"
+msgstr "激活 zFCP 磁盘"
 
 #: src/components/storage/ZFCPPage.jsx:553
 msgid "No zFCP disks found."
-msgstr "Inga zFCP-diskar hittades."
+msgstr "未发现 zFCP 磁盘。"
 
 #. TRANSLATORS: button label
 #: src/components/storage/ZFCPPage.jsx:572
 msgid "Activate new disk"
-msgstr "Aktivera ny disk"
+msgstr "激活新磁盘"
 
 #. TRANSLATORS: section title
 #: src/components/storage/ZFCPPage.jsx:584
 msgid "Disks"
-msgstr "Diskar"
+msgstr "磁盘"
 
 #. TRANSLATORS: page title
 #: src/components/storage/ZFCPPage.jsx:731
 msgid "Storage zFCP"
-msgstr "Lagring zFCP"
+msgstr "存储 zFCP"
 
 #. TRANSLATORS: multipath device type
 #: src/components/storage/device-utils.jsx:82
 msgid "Multipath"
-msgstr "Flervägs"
+msgstr "多路径"
 
 #. TRANSLATORS: %s is replaced by the device bus ID
 #: src/components/storage/device-utils.jsx:87
@@ -1810,60 +1760,60 @@ msgstr "DASD %s"
 #: src/components/storage/device-utils.jsx:92
 #, c-format
 msgid "Software %s"
-msgstr "Programvara %s"
+msgstr "软件 %s"
 
 #: src/components/storage/device-utils.jsx:97
 msgid "SD Card"
-msgstr "SD-kort"
+msgstr "SD 卡"
 
 #. TRANSLATORS: %s is replaced by the device transport name, e.g. USB, SATA, SCSI...
 #: src/components/storage/device-utils.jsx:99
 #, c-format
 msgid "Transport %s"
-msgstr "Transport %s"
+msgstr "传输 %s"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
 #: src/components/storage/device-utils.jsx:118
 #, c-format
 msgid "Members: %s"
-msgstr "Medlemmar: %s"
+msgstr "成员：%s"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
 #: src/components/storage/device-utils.jsx:127
 #, c-format
 msgid "Devices: %s"
-msgstr "Enheter: %s"
+msgstr "设备：%s"
 
 #. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
 #: src/components/storage/device-utils.jsx:136
 #, c-format
 msgid "Wires: %s"
-msgstr "Kablar: %s"
+msgstr "连线：%s"
 
 #. TRANSLATORS: disk partition info, %s is replaced by partition table
 #. type (MS-DOS or GPT), %d is the number of the partitions
 #: src/components/storage/device-utils.jsx:160
 #, c-format
 msgid "%s with %d partitions"
-msgstr "%s med %d partitioner"
+msgstr "%s （包含 %d 个分区）"
 
 #. TRANSLATORS: status message, no existing content was found on the disk,
 #. i.e. the disk is completely empty
 #: src/components/storage/device-utils.jsx:184
 msgid "No content found"
-msgstr "Inget innehåll hittades"
+msgstr "未找到内容"
 
 #: src/components/storage/device-utils.jsx:258
 msgid "Available devices"
-msgstr "Tillgängliga enheter"
+msgstr "可用设备"
 
 #: src/components/storage/iscsi/AuthFields.jsx:70
 msgid "Only available if authentication by target is provided"
-msgstr "Endast tillgängligt om autentisering via mål tillhandahålls"
+msgstr "仅当目标提供身份认证时可用"
 
 #: src/components/storage/iscsi/AuthFields.jsx:77
 msgid "Authentication by target"
-msgstr "Autentisering av mål"
+msgstr "目标身份认证"
 
 #: src/components/storage/iscsi/AuthFields.jsx:80
 #: src/components/storage/iscsi/AuthFields.jsx:85
@@ -1872,69 +1822,69 @@ msgstr "Autentisering av mål"
 #: src/components/storage/iscsi/AuthFields.jsx:117
 #: src/components/storage/iscsi/AuthFields.jsx:119
 msgid "User name"
-msgstr "Användarnamn"
+msgstr "用户名"
 
 #: src/components/storage/iscsi/AuthFields.jsx:91
 #: src/components/storage/iscsi/AuthFields.jsx:124
 msgid "Incorrect user name"
-msgstr "Felaktigt användarnamn"
+msgstr "用户名不正确"
 
 #: src/components/storage/iscsi/AuthFields.jsx:105
 #: src/components/storage/iscsi/AuthFields.jsx:139
 msgid "Incorrect password"
-msgstr "Felaktigt lösenord"
+msgstr "密码不正确"
 
 #: src/components/storage/iscsi/AuthFields.jsx:108
 msgid "Authentication by initiator"
-msgstr "Autentisering av initiativtagare"
+msgstr "发起者身份认证"
 
 #: src/components/storage/iscsi/AuthFields.jsx:133
 msgid "Target Password"
-msgstr "Mål lösenord"
+msgstr "目标密码"
 
 #. TRANSLATORS: popup title
 #: src/components/storage/iscsi/DiscoverForm.jsx:101
 msgid "Discover iSCSI Targets"
-msgstr "Upptäck iSCSI mål"
+msgstr "发现 iSCSI 目标"
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:110
 #: src/components/storage/iscsi/LoginForm.jsx:73
 msgid "Make sure you provide the correct values"
-msgstr "Se till att du anger rätt värden"
+msgstr "确保提供了正确的值"
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:115
 msgid "IP address"
-msgstr "IP address"
+msgstr "IP 地址"
 
 #. TRANSLATORS: network address
 #: src/components/storage/iscsi/DiscoverForm.jsx:122
 #: src/components/storage/iscsi/DiscoverForm.jsx:124
 msgid "Address"
-msgstr "Adresser"
+msgstr "地址"
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:129
 msgid "Incorrect IP address"
-msgstr "Felaktig IP adress"
+msgstr "不正确的 IP 地址"
 
 #. TRANSLATORS: network port number
 #: src/components/storage/iscsi/DiscoverForm.jsx:133
 #: src/components/storage/iscsi/DiscoverForm.jsx:140
 #: src/components/storage/iscsi/DiscoverForm.jsx:142
 msgid "Port"
-msgstr "Port"
+msgstr "端口"
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:147
 msgid "Incorrect port"
-msgstr "Felaktig port"
+msgstr "不正确的端口"
 
 #: src/components/storage/iscsi/InitiatorForm.jsx:42
 msgid "Edit iSCSI Initiator"
-msgstr "Redigera iSCSI initiativtagare"
+msgstr "编辑 iSCSI 发起者"
 
 #. TRANSLATORS: iSCSI initiator name
 #: src/components/storage/iscsi/InitiatorForm.jsx:49
 msgid "Initiator name"
-msgstr "Initiativtagarens namn"
+msgstr "发起者名称"
 
 #. TRANSLATORS: usually just keep the original text
 #. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
@@ -1948,80 +1898,80 @@ msgstr "iBFT"
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:87
 msgid "Offload card"
-msgstr "Avlastningskort"
+msgstr "卸载卡"
 
 #. TRANSLATORS: iSCSI initiator section name
 #: src/components/storage/iscsi/InitiatorSection.jsx:50
 msgid "Initiator"
-msgstr "Initiativtagare"
+msgstr "发起者"
 
 #. TRANSLATORS: %s is replaced by the iSCSI target name
 #: src/components/storage/iscsi/LoginForm.jsx:69
 #, c-format
 msgid "Login %s"
-msgstr "Inloggning %s"
+msgstr "登录 %s"
 
 #. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
 #: src/components/storage/iscsi/LoginForm.jsx:76
 #: src/components/storage/iscsi/LoginForm.jsx:79
 msgid "Startup"
-msgstr "Uppstart"
+msgstr "启动"
 
 #: src/components/storage/iscsi/NodeStartupOptions.js:26
 msgid "On boot"
-msgstr "Vid uppstart"
+msgstr "开机时"
 
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
-msgstr "Automatisk"
+msgstr "自动"
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
 #: src/components/storage/iscsi/NodesPresenter.jsx:67
 #, c-format
 msgid "Connected (%s)"
-msgstr "Ansluten (%s)"
+msgstr "已连接（%s）"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:82
 msgid "Login"
-msgstr "Logga in"
+msgstr "登录"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:86
 msgid "Logout"
-msgstr "Logga ut"
+msgstr "登出"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:101
 #: src/components/storage/iscsi/NodesPresenter.jsx:122
 msgid "Portal"
-msgstr "Portal"
+msgstr "门户"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:102
 #: src/components/storage/iscsi/NodesPresenter.jsx:123
 msgid "Interface"
-msgstr "Gränssnitt"
+msgstr "界面"
 
 #: src/components/storage/iscsi/TargetsSection.jsx:139
 msgid "No iSCSI targets found."
-msgstr "Inga iSCSI mål hittades."
+msgstr "未找到 iSCSI 目标。"
 
 #: src/components/storage/iscsi/TargetsSection.jsx:140
 msgid ""
 "Please, perform an iSCSI discovery in order to find available iSCSI targets."
-msgstr "Vänligen utför en iSCSI-upptäckt för att hitta tillgängliga iSCSI-mål."
+msgstr "请执行 iSCSI 发现以查找可用的 iSCSI 目标。"
 
 #. TRANSLATORS: button label, starts iSCSI discovery
 #: src/components/storage/iscsi/TargetsSection.jsx:142
 msgid "Discover iSCSI targets"
-msgstr "Upptäck iSCSI-mål"
+msgstr "发现 iSCSI 目标"
 
 #. TRANSLATORS: button label, starts iSCSI discovery
 #: src/components/storage/iscsi/TargetsSection.jsx:153
 msgid "Discover"
-msgstr "Upptäck"
+msgstr "发现"
 
 #. TRANSLATORS: iSCSI targets section title
 #: src/components/storage/iscsi/TargetsSection.jsx:167
 msgid "Targets"
-msgstr "Mål"
+msgstr "目标"
 
 #: src/components/storage/utils.js:49
 msgid "KiB"
@@ -2045,272 +1995,169 @@ msgstr "PiB"
 
 #: src/components/users/FirstUser.jsx:50
 msgid "No user defined yet."
-msgstr "Ingen användare definierad ännu."
+msgstr "尚未设定用户。"
 
 #: src/components/users/FirstUser.jsx:53
 msgid ""
 "Please, be aware that a user must be defined before installing the system to "
 "be able to log into it."
-msgstr ""
-"Snälla, var medveten om att en användare måste definieras innan du "
-"installerar systemet för att kunna logga in till det."
+msgstr "请注意，在安装系统前必须设定用户才能登录。"
 
 #. TRANSLATORS: push button label
 #: src/components/users/FirstUser.jsx:57
 msgid "Define a user now"
-msgstr "Definera en användare nu"
+msgstr "现在设定用户"
 
 #: src/components/users/FirstUser.jsx:67 src/components/users/FirstUser.jsx:242
 msgid "Full name"
-msgstr "Fullständigt namn"
+msgstr "全名"
 
 #: src/components/users/FirstUser.jsx:68 src/components/users/FirstUser.jsx:256
 #: src/components/users/FirstUser.jsx:264
 #: src/components/users/FirstUser.jsx:266
 msgid "Username"
-msgstr "Användarnamn"
+msgstr "用户名"
 
 #: src/components/users/FirstUser.jsx:88
 msgid "Username suggestion dropdown"
-msgstr "Rullgardinsmeny för användarnamnsförslag"
+msgstr "建议用户名下拉列表"
 
 #. TRANSLATORS: dropdown username suggestions
 #: src/components/users/FirstUser.jsx:102
 msgid "Use suggested username"
-msgstr "Använd föreslaget användarnamn"
+msgstr "使用建议的用户名"
 
 #: src/components/users/FirstUser.jsx:212
 #: src/components/users/RootAuthMethods.jsx:99
 #: src/components/users/RootAuthMethods.jsx:111
 msgid "Discard"
-msgstr "Kasta bort"
+msgstr "丢弃"
 
 #: src/components/users/FirstUser.jsx:235
 msgid "Create user account"
-msgstr "Skapa anändarkonto"
+msgstr "创建用户账户"
 
 #: src/components/users/FirstUser.jsx:235
 msgid "Edit user account"
-msgstr "Redigera användarkonto"
+msgstr "编辑用户账户"
 
 #: src/components/users/FirstUser.jsx:246
 #: src/components/users/FirstUser.jsx:248
 msgid "User full name"
-msgstr "Användarens fullständiga namn"
+msgstr "用户全名"
 
 #. TRANSLATORS: check box label
 #: src/components/users/FirstUser.jsx:284
 #: src/components/users/FirstUser.jsx:288
 msgid "Edit password too"
-msgstr "Redigera lösenord också"
+msgstr "同时编辑密码"
 
 #: src/components/users/FirstUser.jsx:301
 msgid "user autologin"
-msgstr "användare automatisk inloggning"
+msgstr "用户自动登录"
 
 #. TRANSLATORS: check box label
 #: src/components/users/FirstUser.jsx:305
 msgid "Auto-login"
-msgstr "Automatisk-inloggning"
+msgstr "自动登录"
 
 #: src/components/users/RootAuthMethods.jsx:35
 msgid "No root authentication method defined yet."
-msgstr "Ingen rootautentiseringsmetod har definierats ännu."
+msgstr "尚未设定 Root 认证方法。"
 
 #: src/components/users/RootAuthMethods.jsx:38
 msgid ""
 "Please, define at least one authentication method for logging into the "
 "system as root."
-msgstr ""
-"Vänligen, definiera minst en autentiseringsmetod för att logga in i systemet "
-"som root."
+msgstr "请至少设定一个认证方法，以使用 Root 身份登录系统。"
 
 #. TRANSLATORS: push button label
 #: src/components/users/RootAuthMethods.jsx:43
 msgid "Set a password"
-msgstr "Ställ in ett lösenord"
+msgstr "设置密码"
 
 #. TRANSLATORS: push button label
 #: src/components/users/RootAuthMethods.jsx:45
 msgid "Upload a SSH Public Key"
-msgstr "Ladda upp en Publik SSH nyckel"
+msgstr "上传 SSH 公钥"
 
 #: src/components/users/RootAuthMethods.jsx:94
 #: src/components/users/RootAuthMethods.jsx:107
 msgid "Change"
-msgstr "Ändra"
+msgstr "更改"
 
 #: src/components/users/RootAuthMethods.jsx:94
 #: src/components/users/RootAuthMethods.jsx:107
 msgid "Set"
-msgstr "Ställ in"
+msgstr "设置"
 
 #: src/components/users/RootAuthMethods.jsx:129
 msgid "Already set"
-msgstr "Redan inställt"
+msgstr "已设定"
 
 #: src/components/users/RootAuthMethods.jsx:130
 #: src/components/users/RootAuthMethods.jsx:134
 msgid "Not set"
-msgstr "Inte inställt"
+msgstr "未设定"
 
 #. TRANSLATORS: table header, user authentication method
 #: src/components/users/RootAuthMethods.jsx:155
 msgid "Method"
-msgstr "Metod"
+msgstr "方法"
 
 #: src/components/users/RootAuthMethods.jsx:170
 msgid "SSH Key"
-msgstr "SSH nyckel"
+msgstr "SSH 密钥"
 
 #: src/components/users/RootAuthMethods.jsx:187
 msgid "Change the root password"
-msgstr "Ändra root lösenordet"
+msgstr "修改 Root 密码"
 
 #: src/components/users/RootAuthMethods.jsx:187
 msgid "Set a root password"
-msgstr "Ställ in ett root lösenord"
+msgstr "设定 Root 密码"
 
 #: src/components/users/RootAuthMethods.jsx:194
 msgid "Add a SSH Public Key for root"
-msgstr "Lägg till en publik SSH nyckel för root"
+msgstr "为 root 添加 SSH 公钥"
 
 #: src/components/users/RootAuthMethods.jsx:194
 msgid "Edit the SSH Public Key for root"
-msgstr "Redigera den publika SSH nyckeln för root"
+msgstr "编辑 root 的 SSH 公钥"
 
 #: src/components/users/RootPasswordPopup.jsx:42
 msgid "Root password"
-msgstr "Root lösenord"
+msgstr "Root 密码"
 
 #: src/components/users/RootSSHKeyPopup.jsx:43
 msgid "Set root SSH public key"
-msgstr "Ställ in publik SSH nyckel för root"
+msgstr "设定 root 的 SSH 公钥"
 
 #: src/components/users/RootSSHKeyPopup.jsx:71
 msgid "Root SSH public key"
-msgstr "Root SSH publik nyckel"
+msgstr "Root 的 SSH 公钥"
 
 #: src/components/users/RootSSHKeyPopup.jsx:76
 msgid "Upload, paste, or drop an SSH public key"
-msgstr "Ladda upp, klistra in eller dra in och släpp en SSH publik nyckel"
+msgstr "上传、粘贴或拖入 SSH 公钥"
 
 #. TRANSLATORS: push button label
 #: src/components/users/RootSSHKeyPopup.jsx:78
 msgid "Upload"
-msgstr "Ladda upp"
+msgstr "上传"
 
 #. TRANSLATORS: push button label, clears the related input field
 #: src/components/users/RootSSHKeyPopup.jsx:80
 msgid "Clear"
-msgstr "Rensa"
+msgstr "清除"
 
 #: src/components/users/UsersPage.jsx:31
 msgid "User"
-msgstr "Användare"
+msgstr "用户"
 
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
-msgstr "Rootautentisering"
+msgstr "Root 认证"
 
 #~ msgid "Btrfs snapshots required by product."
-#~ msgstr "Btrfs ögonblicksavbilder krävs för produkt."
-
-#~ msgid ""
-#~ "Allows rolling back any change done to the system and restoring its "
-#~ "previous state"
-#~ msgstr ""
-#~ "Tillåter att alla ändringar som gjorts i systemet rullas tillbaka och det "
-#~ "återställs till dess tidigare tillstånd"
-
-#~ msgid "Devices will not be modified until installation starts."
-#~ msgstr "Enheter kommer inte att modifieras förrän installationen startar."
-
-#~ msgid "File systems to create in your system"
-#~ msgstr "Filsystem att skapa i ditt system"
-
-#~ msgid ""
-#~ "Select how to make free space in the disks selected for allocating "
-#~ "the     file systems."
-#~ msgstr ""
-#~ "Välj hur du gör ledigt utrymme på de diskar som valts för tilldelning av "
-#~ "filsystemen."
-
-#~ msgid "Space Policy"
-#~ msgstr "Utrymmespolicy"
-
-#~ msgid "Select a mechanism to make space"
-#~ msgstr "Välj en mekanism för att skapa utrymme"
-
-#, c-format
-#~ msgid "deleting all content of the installation device"
-#~ msgid_plural "deleting all content of the %d selected disks"
-#~ msgstr[0] "radera allt innehåll på installationsenhet"
-#~ msgstr[1] "tar bort allt innehåll på de %d valda diskarna"
-
-#, c-format
-#~ msgid "shrinking partitions of the installation device"
-#~ msgid_plural "shrinking partitions of the %d selected disks"
-#~ msgstr[0] "krymper partitioner på installationsenhet"
-#~ msgstr[1] "krymper partitioner på %d valda diskarna"
-
-#~ msgid "without modifying any partition"
-#~ msgstr "utan att modifiera någon partition"
-
-#, c-format
-#~ msgid "This will only affect the installation device"
-#~ msgid_plural "This will affect the %d disks selected for installation"
-#~ msgstr[0] "Detta påverkar bara installationsenheten"
-#~ msgstr[1] "Detta kommer att påverka %d diskarna som valts för installation"
-
-#, c-format
-#~ msgid "Edit %s connection"
-#~ msgstr "Redigera %s anslutning"
-
-#~ msgid "Have a lot of fun! Your openSUSE Development Team."
-#~ msgstr "Ha mycket kul! Ditt openSUSE-utvecklingsteam."
-
-#~ msgid "Change encryption password"
-#~ msgstr "Ändra krypteringslösenord"
-
-#~ msgid "There are new issues"
-#~ msgstr "Det finns nya problem"
-
-#~ msgid "No issues found. Everything looks ok."
-#~ msgstr "Inga problem hittades. Allt ser ok ut."
-
-#~ msgid "Errors"
-#~ msgstr "Fel"
-
-#~ msgid "Basic popover"
-#~ msgstr "Enkel popover"
-
-#, c-format
-#~ msgid "%d errors"
-#~ msgstr "%d fel"
-
-#~ msgid "New issues found"
-#~ msgstr "Nya problem hittades"
-
-#~ msgid "Global options"
-#~ msgstr "Globala alternativ"
-
-#~ msgid "Hide navigation and other options"
-#~ msgstr "Dölj navigering och andra alternativ"
-
-#~ msgid "Options"
-#~ msgstr "Alternativ"
-
-#~ msgid "Display Language"
-#~ msgstr "Visningsspråk"
-
-#, c-format
-#~ msgid "Icon %s not found!"
-#~ msgstr "Ikon %s hittades inte!"
-
-#~ msgid ""
-#~ "Select the device for installing the system. All the file systems will be "
-#~ "created on the selected device."
-#~ msgstr ""
-#~ "Välj enhet för installation av systemet. Alla filsystem kommer att skapas "
-#~ "på den valda enheten."
+#~ msgstr "该产品要求启用 Btrfs 快照。"

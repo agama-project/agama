@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-03 02:07+0000\n"
-"PO-Revision-Date: 2024-02-29 04:42+0000\n"
+"POT-Creation-Date: 2024-03-10 02:10+0000\n"
+"PO-Revision-Date: 2024-03-04 01:11+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -156,7 +156,7 @@ msgstr ""
 #: src/components/product/ProductPage.jsx:207
 #: src/components/storage/ProposalDeviceSection.jsx:169
 #: src/components/storage/ProposalDeviceSection.jsx:364
-#: src/components/storage/ProposalSettingsSection.jsx:275
+#: src/components/storage/ProposalSettingsSection.jsx:263
 #: src/components/storage/ProposalVolumes.jsx:148
 #: src/components/storage/ProposalVolumes.jsx:283
 #: src/components/storage/ZFCPPage.jsx:511
@@ -396,8 +396,8 @@ msgstr ""
 "インストーラで使用する言語です。インストール先のシステムで使用する言語は %s "
 "ページで設定します。"
 
-#. TRANSLATORS: page section
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:56
 #: src/components/l10n/L10nPage.jsx:384
 #: src/components/overview/L10nSection.jsx:52
@@ -672,8 +672,8 @@ msgstr "WiFi 接続が見つかりませんでした。"
 msgid "Connect to a Wi-Fi network"
 msgstr "Wi-Fi ネットワークへの接続"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/network/NetworkPage.jsx:169
 #: src/components/overview/NetworkSection.jsx:83
 msgid "Network"
@@ -866,10 +866,10 @@ msgstr "デバイス %s を利用してインストールします"
 msgid "Probing storage devices"
 msgstr "ストレージデバイスを検出しています"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/overview/StorageSection.jsx:208
-#: src/components/storage/ProposalPage.jsx:239
+#: src/components/storage/ProposalPage.jsx:243
 msgid "Storage"
 msgstr "ストレージ"
 
@@ -1283,7 +1283,7 @@ msgstr "iSCSI"
 #. TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
 #. 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
 #. Do not translate 'abbr' and 'title', they are part of the HTML markup.
-#: src/components/storage/ProposalSettingsSection.jsx:89
+#: src/components/storage/ProposalSettingsSection.jsx:87
 msgid ""
 "The password will not be needed to boot and access the data if the <abbr "
 "title='Trusted Platform Module'>TPM</abbr> can verify the integrity of the "
@@ -1295,11 +1295,11 @@ msgstr ""
 "シーリングを使用するには、新しいシステムの初回起動時に直接起動を行う必要があ"
 "ります。"
 
-#: src/components/storage/ProposalSettingsSection.jsx:107
+#: src/components/storage/ProposalSettingsSection.jsx:105
 msgid "Use the TPM to decrypt automatically on each boot"
 msgstr "毎回の起動時に TPM を利用して自動的に暗号化解除する"
 
-#: src/components/storage/ProposalSettingsSection.jsx:152
+#: src/components/storage/ProposalSettingsSection.jsx:148
 msgid ""
 "Uses Btrfs for the root file system allowing to boot to a previous version "
 "of the system after configuration changes or software upgrades."
@@ -1307,43 +1307,26 @@ msgstr ""
 "ルートファイルシステムに btrfs を使用することで、設定変更前やソフトウエアの"
 "アップグレード前に戻して起動し直すことができるようになります。"
 
-#: src/components/storage/ProposalSettingsSection.jsx:159
+#: src/components/storage/ProposalSettingsSection.jsx:155
 msgid "Use Btrfs Snapshots"
 msgstr "btrfs スナップショットを使用する"
 
-#: src/components/storage/ProposalSettingsSection.jsx:173
-msgid "Btrfs snapshots required by product."
-msgstr "btrfs のスナップショットは製品側の要件で必須となっています。"
-
-#: src/components/storage/ProposalSettingsSection.jsx:239
+#: src/components/storage/ProposalSettingsSection.jsx:227
 msgid "Change encryption settings"
 msgstr "暗号化設定の変更"
 
-#: src/components/storage/ProposalSettingsSection.jsx:244
-#: src/components/storage/ProposalSettingsSection.jsx:265
+#: src/components/storage/ProposalSettingsSection.jsx:232
+#: src/components/storage/ProposalSettingsSection.jsx:253
 msgid "Encryption settings"
 msgstr "暗号化の設定"
 
-#: src/components/storage/ProposalSettingsSection.jsx:258
+#: src/components/storage/ProposalSettingsSection.jsx:246
 msgid "Use encryption"
 msgstr "暗号化を使用する"
 
-#: src/components/storage/ProposalSettingsSection.jsx:325
+#: src/components/storage/ProposalSettingsSection.jsx:309
 msgid "Settings"
 msgstr "設定"
-
-#: src/components/storage/ProposalSettingsSection.jsx:330
-#, fuzzy
-msgid "Transactional system"
-msgstr "トランザクション型"
-
-#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
-#: src/components/storage/ProposalSettingsSection.jsx:333
-#, c-format
-msgid ""
-"%s is an immutable system with atomic updates using a read-only Btrfs root "
-"file system."
-msgstr ""
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:50
 msgid "Delete current content"
@@ -1488,6 +1471,20 @@ msgid ""
 msgstr ""
 "ファイルシステムを割り当てるには、下記のデバイス内に空き領域を確保する必要が"
 "あるかもしれません。ここではその方法を選択します。"
+
+#: src/components/storage/ProposalTransactionalInfo.jsx:46
+#, fuzzy
+msgid "Transactional root file system"
+msgstr "トランザクション型システム"
+
+#: src/components/storage/ProposalTransactionalInfo.jsx:49
+#, fuzzy, c-format
+msgid ""
+"%s is an immutable system with atomic updates. It uses a read-only Btrfs "
+"file system updated via snapshots."
+msgstr ""
+"%s は、読み込み専用の btrfs ルートファイルシステムを利用して一括更新のできる"
+"不可変なシステムです。"
 
 #. TRANSLATORS: header for a list of items
 #: src/components/storage/ProposalVolumes.jsx:59
@@ -2072,12 +2069,12 @@ msgstr "ユーザ名"
 
 #: src/components/users/FirstUser.jsx:88
 msgid "Username suggestion dropdown"
-msgstr ""
+msgstr "ユーザ名の提案ドロップダウン"
 
 #. TRANSLATORS: dropdown username suggestions
 #: src/components/users/FirstUser.jsx:102
 msgid "Use suggested username"
-msgstr ""
+msgstr "提案されたユーザ名を使用する"
 
 #: src/components/users/FirstUser.jsx:212
 #: src/components/users/RootAuthMethods.jsx:99
@@ -2210,6 +2207,9 @@ msgstr "ユーザ"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "root の認証"
+
+#~ msgid "Btrfs snapshots required by product."
+#~ msgstr "btrfs のスナップショットは製品側の要件で必須となっています。"
 
 #~ msgid ""
 #~ "Allows rolling back any change done to the system and restoring its "

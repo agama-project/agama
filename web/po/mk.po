@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-03 02:07+0000\n"
-"PO-Revision-Date: 2023-12-31 20:39+0000\n"
+"POT-Creation-Date: 2024-03-10 02:10+0000\n"
+"PO-Revision-Date: 2024-03-05 08:42+0000\n"
 "Last-Translator: Kristijan Fremen Velkovski <me@krisfremen.com>\n"
 "Language-Team: Macedonian <https://l10n.opensuse.org/projects/agama/agama-"
 "web/mk/>\n"
@@ -73,16 +73,17 @@ msgstr "Затвори"
 #. TRANSLATORS: page title
 #: src/components/core/DBusError.jsx:34
 msgid "D-Bus Error"
-msgstr ""
+msgstr "Грешка во D-Bus"
 
 #: src/components/core/DBusError.jsx:38
 msgid "Cannot connect to D-Bus"
-msgstr ""
+msgstr "Не може да се поврзе со D-Bus"
 
 #: src/components/core/DBusError.jsx:43
 msgid ""
 "Could not connect to the D-Bus service. Please, check whether it is running."
 msgstr ""
+"Не може да се поврзе со услугата D-Bus. Ве молиме, проверете дали работи."
 
 #. TRANSLATORS: button label
 #: src/components/core/DBusError.jsx:51
@@ -150,7 +151,7 @@ msgstr ""
 #: src/components/product/ProductPage.jsx:207
 #: src/components/storage/ProposalDeviceSection.jsx:169
 #: src/components/storage/ProposalDeviceSection.jsx:364
-#: src/components/storage/ProposalSettingsSection.jsx:275
+#: src/components/storage/ProposalSettingsSection.jsx:263
 #: src/components/storage/ProposalVolumes.jsx:148
 #: src/components/storage/ProposalVolumes.jsx:283
 #: src/components/storage/ZFCPPage.jsx:511
@@ -380,8 +381,8 @@ msgid ""
 "can be set in the %s page."
 msgstr ""
 
-#. TRANSLATORS: page section
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:56
 #: src/components/l10n/L10nPage.jsx:384
 #: src/components/overview/L10nSection.jsx:52
@@ -652,8 +653,8 @@ msgstr ""
 msgid "Connect to a Wi-Fi network"
 msgstr ""
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/network/NetworkPage.jsx:169
 #: src/components/overview/NetworkSection.jsx:83
 msgid "Network"
@@ -846,10 +847,10 @@ msgstr ""
 msgid "Probing storage devices"
 msgstr ""
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/overview/StorageSection.jsx:208
-#: src/components/storage/ProposalPage.jsx:239
+#: src/components/storage/ProposalPage.jsx:243
 msgid "Storage"
 msgstr ""
 
@@ -1259,7 +1260,7 @@ msgstr ""
 #. TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
 #. 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
 #. Do not translate 'abbr' and 'title', they are part of the HTML markup.
-#: src/components/storage/ProposalSettingsSection.jsx:89
+#: src/components/storage/ProposalSettingsSection.jsx:87
 msgid ""
 "The password will not be needed to boot and access the data if the <abbr "
 "title='Trusted Platform Module'>TPM</abbr> can verify the integrity of the "
@@ -1267,51 +1268,35 @@ msgid ""
 "first run."
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:107
+#: src/components/storage/ProposalSettingsSection.jsx:105
 msgid "Use the TPM to decrypt automatically on each boot"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:152
+#: src/components/storage/ProposalSettingsSection.jsx:148
 msgid ""
 "Uses Btrfs for the root file system allowing to boot to a previous version "
 "of the system after configuration changes or software upgrades."
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:159
+#: src/components/storage/ProposalSettingsSection.jsx:155
 msgid "Use Btrfs Snapshots"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:173
-msgid "Btrfs snapshots required by product."
-msgstr ""
-
-#: src/components/storage/ProposalSettingsSection.jsx:239
+#: src/components/storage/ProposalSettingsSection.jsx:227
 msgid "Change encryption settings"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:244
-#: src/components/storage/ProposalSettingsSection.jsx:265
+#: src/components/storage/ProposalSettingsSection.jsx:232
+#: src/components/storage/ProposalSettingsSection.jsx:253
 msgid "Encryption settings"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:258
+#: src/components/storage/ProposalSettingsSection.jsx:246
 msgid "Use encryption"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:325
+#: src/components/storage/ProposalSettingsSection.jsx:309
 msgid "Settings"
-msgstr ""
-
-#: src/components/storage/ProposalSettingsSection.jsx:330
-msgid "Transactional system"
-msgstr ""
-
-#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
-#: src/components/storage/ProposalSettingsSection.jsx:333
-#, c-format
-msgid ""
-"%s is an immutable system with atomic updates using a read-only Btrfs root "
-"file system."
 msgstr ""
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:50
@@ -1448,6 +1433,17 @@ msgstr ""
 msgid ""
 "Allocating the file systems might need to find free space in the devices "
 "listed below. Choose how to do it."
+msgstr ""
+
+#: src/components/storage/ProposalTransactionalInfo.jsx:46
+msgid "Transactional root file system"
+msgstr ""
+
+#: src/components/storage/ProposalTransactionalInfo.jsx:49
+#, c-format
+msgid ""
+"%s is an immutable system with atomic updates. It uses a read-only Btrfs "
+"file system updated via snapshots."
 msgstr ""
 
 #. TRANSLATORS: header for a list of items
