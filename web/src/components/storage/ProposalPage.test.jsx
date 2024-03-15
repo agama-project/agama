@@ -129,11 +129,11 @@ it("loads the proposal data", async () => {
   await screen.findByText(/\/dev\/vda/);
 });
 
-it("renders the settings, find space and actions sections", async () => {
+it("renders the device, settings and actions sections", async () => {
   installerRender(<ProposalPage />);
 
+  await screen.findByText(/Device/);
   await screen.findByText(/Settings/);
-  await screen.findByText(/Find Space/);
   await screen.findByText(/Planned Actions/);
 });
 

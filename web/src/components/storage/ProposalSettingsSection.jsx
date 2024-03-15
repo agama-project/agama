@@ -24,6 +24,7 @@ import { Checkbox, Form, Skeleton, Switch, Tooltip } from "@patternfly/react-cor
 
 import { _ } from "~/i18n";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
+import { ProposalVolumes, ProposalSpacePolicyField } from "~/components/storage";
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
 import { hasFS } from "~/components/storage/utils";
@@ -283,6 +284,8 @@ const EncryptionField = ({
 export default function ProposalSettingsSection({
   settings,
   encryptionMethods = [],
+  volumeTemplates = [],
+  isLoading = false,
   onChange = noop
 }) {
   const changeEncryption = ({ password, method }) => {
@@ -302,7 +305,25 @@ export default function ProposalSettingsSection({
     onChange({ volumes: settings.volumes });
   };
 
+  const changeVolumes = (volumes) => {
+    onChange({ volumes });
+  };
+
+  const changeSpacePolicy = (policy, actions) => {
+    onChange({ spacePolicy: policy, spaceActions: actions });
+  };
+
   const encryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
+
+  const { volumes = [] } = settings;
+
+  // Templates for already existing mount points are filtered out
+  const usefulTemplates = () => {
+    const mountPaths = volumes.map(v => v.mountPath);
+    return volumeTemplates.filter(t => (
+      t.mountPath.length > 0 && !mountPaths.includes(t.mountPath)
+    ));
+  };
 
   return (
     <>
@@ -318,6 +339,20 @@ export default function ProposalSettingsSection({
           isChecked={encryption}
           isLoading={settings.encryptionPassword === undefined}
           onChange={changeEncryption}
+        />
+        <ProposalVolumes
+          volumes={volumes}
+          templates={usefulTemplates()}
+          options={{ lvm: settings.lvm, encryption }}
+          isLoading={isLoading && settings.volumes === undefined}
+          onChange={changeVolumes}
+        />
+        <ProposalSpacePolicyField
+          policy={settings.spacePolicy}
+          actions={settings.spaceActions}
+          devices={settings.installationDevices}
+          isLoading={isLoading}
+          onChange={changeSpacePolicy}
         />
       </Section>
     </>
