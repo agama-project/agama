@@ -6,7 +6,7 @@ use crate::{
     progress::Progress,
     proxies::{Manager1Proxy, ProgressProxy},
 };
-use serde::Serialize;
+use serde_repr::Serialize_repr;
 use tokio_stream::StreamExt;
 use zbus::Connection;
 
@@ -19,7 +19,9 @@ pub struct ManagerClient<'a> {
 }
 
 /// Represents the installation phase.
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, utoipa::ToSchema)]
+/// NOTE: does this conversion have any value?
+#[derive(Clone, Copy, Debug, PartialEq, Serialize_repr, utoipa::ToSchema)]
+#[repr(u32)]
 pub enum InstallationPhase {
     /// Start up phase.
     Startup,

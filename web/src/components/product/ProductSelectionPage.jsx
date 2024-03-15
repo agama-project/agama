@@ -48,8 +48,7 @@ function ProductSelectionPage() {
     if (newProductId !== selectedProduct?.id) {
       // TODO: handle errors
       await product.select(newProductId);
-      // FIXME: adapt to the new API
-      // manager.startProbing();
+      manager.startProbing();
     }
 
     navigate("/");

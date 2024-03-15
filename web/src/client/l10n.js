@@ -276,13 +276,13 @@ class L10nClient {
    * @private
    *
    * @param {object} locale - Locale data.
-   * @param {string} locale.code - Identifier.
-   * @param {string} locale.name - Name.
+   * @param {string} locale.id - Identifier.
+   * @param {string} locale.language - Name.
    * @param {string} locale.territory - Territory.
    * @return {Locale}
    */
-  buildLocale({ code, name, territory }) {
-    return ({ id: code, name, territory });
+  buildLocale({ id, language, territory }) {
+    return ({ id, name: language, territory });
   }
 
   /**

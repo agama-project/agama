@@ -1,12 +1,15 @@
 use agama_locale_data::{get_localectl_keymaps, keyboard::XkbConfigRegistry, KeymapId};
 use gettextrs::*;
 use serde::Serialize;
+use serde_with::{serde_as, DisplayFromStr};
 use std::collections::HashMap;
 
+#[serde_as]
 // Minimal representation of a keymap
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 pub struct Keymap {
     /// Keymap identifier (e.g., "us")
+    #[serde_as(as = "DisplayFromStr")]
     pub id: KeymapId,
     /// Keymap description
     description: String,
