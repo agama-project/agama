@@ -6,7 +6,7 @@
 //! * `software_stream` which offers an stream that emits the software events coming from D-Bus.
 
 use crate::{
-    error::{ApiError, Error},
+    error::Error,
     web::{
         common::{progress_router, service_status_router},
         Event,
@@ -140,7 +140,7 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
     (status = 200, description = "List of known products", body = Vec<Product>),
     (status = 400, description = "The D-Bus service could not perform the action")
 ))]
-async fn products(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Product>>, ApiError> {
+async fn products(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Product>>, Error> {
     let products = state.product.products().await?;
     Ok(Json(products))
 }
@@ -164,7 +164,7 @@ pub struct PatternEntry {
 ))]
 async fn patterns(
     State(state): State<SoftwareState<'_>>,
-) -> Result<Json<Vec<PatternEntry>>, ApiError> {
+) -> Result<Json<Vec<PatternEntry>>, Error> {
     let patterns = state.software.patterns(true).await?;
     let selected = state.software.selected_patterns().await?;
     let items = patterns
@@ -195,7 +195,7 @@ async fn patterns(
 async fn set_config(
     State(state): State<SoftwareState<'_>>,
     Json(config): Json<SoftwareConfig>,
-) -> Result<(), ApiError> {
+) -> Result<(), Error> {
     if let Some(product) = config.product {
         state.product.select_product(&product).await?;
     }
@@ -214,9 +214,7 @@ async fn set_config(
     (status = 200, description = "Software configuration", body = SoftwareConfig),
     (status = 400, description = "The D-Bus service could not perform the action")
 ))]
-async fn get_config(
-    State(state): State<SoftwareState<'_>>,
-) -> Result<Json<SoftwareConfig>, ApiError> {
+async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<SoftwareConfig>, Error> {
     let product = state.product.product().await?;
     let product = if product.is_empty() {
         None
@@ -246,9 +244,7 @@ pub struct SoftwareProposal {
     get, path = "/software/proposal", responses(
         (status = 200, description = "Software proposal", body = SoftwareProposal)
 ))]
-async fn proposal(
-    State(state): State<SoftwareState<'_>>,
-) -> Result<Json<SoftwareProposal>, ApiError> {
+async fn proposal(State(state): State<SoftwareState<'_>>) -> Result<Json<SoftwareProposal>, Error> {
     let size = state.software.used_disk_space().await?;
     let proposal = SoftwareProposal { size };
     Ok(Json(proposal))
@@ -263,7 +259,7 @@ async fn proposal(
         (status = 400, description = "The D-Bus service could not perform the action
 ")
 ))]
-async fn probe(State(state): State<SoftwareState<'_>>) -> Result<Json<()>, ApiError> {
+async fn probe(State(state): State<SoftwareState<'_>>) -> Result<Json<()>, Error> {
     state.software.probe().await?;
     Ok(Json(()))
 }

@@ -13,7 +13,7 @@ use serde::Serialize;
 use tokio_stream::{Stream, StreamExt};
 use zbus::PropertyStream;
 
-use crate::error::{ApiError, Error};
+use crate::error::Error;
 
 use super::Event;
 
@@ -163,7 +163,7 @@ struct ProgressState<'a> {
     proxy: ProgressProxy<'a>,
 }
 
-async fn progress(State(state): State<ProgressState<'_>>) -> Result<Json<Progress>, ApiError> {
+async fn progress(State(state): State<ProgressState<'_>>) -> Result<Json<Progress>, Error> {
     let proxy = state.proxy;
     let progress = Progress::from_proxy(&proxy).await?;
     Ok(Json(progress))

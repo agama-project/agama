@@ -14,6 +14,8 @@ pub enum Error {
     DBus(#[from] zbus::Error),
     #[error("Generic error: {0}")]
     Anyhow(String),
+    #[error("Agama service error: {0}")]
+    Service(#[from] ServiceError),
     #[error("Answers handling error: {0}")]
     Answers(QuestionsError),
 }
@@ -36,15 +38,7 @@ impl From<Error> for zbus::fdo::Error {
     }
 }
 
-#[derive(Debug, thiserror::Error)]
-pub enum ApiError {
-    #[error("Agama service error: {0}")]
-    Service(#[from] ServiceError),
-    #[error("D-Bus error: {0}")]
-    DBus(#[from] zbus::Error),
-}
-
-impl IntoResponse for ApiError {
+impl IntoResponse for Error {
     fn into_response(self) -> Response {
         let body = json!({
             "error": self.to_string()

@@ -21,7 +21,7 @@ use serde::Serialize;
 use tokio_stream::{Stream, StreamExt};
 
 use crate::{
-    error::{ApiError, Error},
+    error::Error,
     web::{
         common::{progress_router, service_status_router},
         Event,
@@ -98,7 +98,7 @@ pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
 #[utoipa::path(get, path = "/api/manager/probe", responses(
   (status = 200, description = "The probing process was started.")
 ))]
-async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), ApiError> {
+async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
     state.manager.probe().await?;
     Ok(())
 }
@@ -107,7 +107,7 @@ async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), ApiEr
 #[utoipa::path(get, path = "/api/manager/install", responses(
   (status = 200, description = "The installation process was started.")
 ))]
-async fn install_action(State(state): State<ManagerState<'_>>) -> Result<(), ApiError> {
+async fn install_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
     state.manager.install().await?;
     Ok(())
 }
@@ -116,7 +116,7 @@ async fn install_action(State(state): State<ManagerState<'_>>) -> Result<(), Api
 #[utoipa::path(get, path = "/api/manager/install", responses(
   (status = 200, description = "The installation tasks are executed.")
 ))]
-async fn finish_action(State(state): State<ManagerState<'_>>) -> Result<(), ApiError> {
+async fn finish_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
     state.manager.finish().await?;
     Ok(())
 }
@@ -127,7 +127,7 @@ async fn finish_action(State(state): State<ManagerState<'_>>) -> Result<(), ApiE
 ))]
 async fn installer_status(
     State(state): State<ManagerState<'_>>,
-) -> Result<Json<InstallerStatus>, ApiError> {
+) -> Result<Json<InstallerStatus>, Error> {
     let status = InstallerStatus {
         phase: state.manager.current_installation_phase().await?,
         busy: state.manager.busy_services().await?,
