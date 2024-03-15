@@ -5,14 +5,17 @@ use axum::{
     Json,
 };
 use serde_json::json;
-use zbus_macros::DBusError;
 
-#[derive(DBusError, Debug)]
-#[dbus_error(prefix = "org.opensuse.Agama1.Locale")]
+use crate::questions::QuestionsError;
+
+#[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[dbus_error(zbus_error)]
-    ZBus(zbus::Error),
+    #[error("D-Bus error: {0}")]
+    DBus(#[from] zbus::Error),
+    #[error("Generic error: {0}")]
     Anyhow(String),
+    #[error("Answers handling error: {0}")]
+    Answers(QuestionsError),
 }
 
 // This would be nice, but using it for a return type
@@ -29,7 +32,7 @@ impl From<anyhow::Error> for Error {
 
 impl From<Error> for zbus::fdo::Error {
     fn from(value: Error) -> zbus::fdo::Error {
-        zbus::fdo::Error::Failed(format!("Localization error: {value}"))
+        zbus::fdo::Error::Failed(format!("D-Bus error: {value}"))
     }
 }
 
