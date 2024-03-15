@@ -78,6 +78,19 @@ impl Progress {
             finished: finished?,
         })
     }
+
+    pub fn from_cached_proxy(proxy: &crate::proxies::ProgressProxy<'_>) -> Option<Progress> {
+        let (current_step, current_title) = proxy.cached_current_step().ok()??;
+        let max_steps = proxy.cached_total_steps().ok()??;
+        let finished = proxy.cached_finished().ok()??;
+
+        Some(Progress {
+            current_step,
+            current_title,
+            max_steps,
+            finished,
+        })
+    }
 }
 
 /// Monitorizes and reports the progress of Agama's current operation.

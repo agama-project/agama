@@ -5,7 +5,13 @@
 //! * `software_service` which returns the Axum service.
 //! * `software_stream` which offers an stream that emits the software events coming from D-Bus.
 
-use crate::{error::Error, web::Event};
+use crate::{
+    error::Error,
+    web::{
+        common::{progress_router, service_status_router},
+        Event,
+    },
+};
 use agama_lib::{
     error::ServiceError,
     product::{Product, ProductClient},
@@ -23,7 +29,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::collections::HashMap;
+use std::{collections::HashMap, pin::Pin};
 use thiserror::Error;
 use tokio_stream::{Stream, StreamExt};
 
@@ -59,11 +65,14 @@ impl IntoResponse for SoftwareError {
 /// It emits the Event::ProductChanged and Event::PatternsChanged events.
 ///
 /// * `connection`: D-Bus connection to listen for events.
-pub async fn software_stream(dbus: zbus::Connection) -> Result<impl Stream<Item = Event>, Error> {
-    Ok(StreamExt::merge(
+pub async fn software_stream(
+    dbus: zbus::Connection,
+) -> Result<Pin<Box<dyn Stream<Item = Event> + Send>>, Error> {
+    let stream = StreamExt::merge(
         product_changed_stream(dbus.clone()).await?,
         patterns_changed_stream(dbus.clone()).await?,
-    ))
+    );
+    Ok(Box::pin(stream))
 }
 
 async fn product_changed_stream(
@@ -122,6 +131,12 @@ fn reason_to_selected_by(
 
 /// Sets up and returns the axum service for the software module.
 pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
+    const DBUS_SERVICE: &'static str = "org.opensuse.Agama.Software1";
+    const DBUS_PATH: &'static str = "/org/opensuse/Agama/Software1";
+
+    let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
+    let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
+
     let product = ProductClient::new(dbus.clone()).await?;
     let software = SoftwareClient::new(dbus).await?;
     let state = SoftwareState { product, software };
@@ -131,6 +146,8 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
         .route("/proposal", get(proposal))
         .route("/config", put(set_config).get(get_config))
         .route("/probe", post(probe))
+        .merge(status_router)
+        .merge(progress_router)
         .with_state(state);
     Ok(router)
 }

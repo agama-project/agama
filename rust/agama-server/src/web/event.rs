@@ -8,13 +8,28 @@ use tokio::sync::broadcast::{Receiver, Sender};
 #[serde(tag = "type")]
 pub enum Event {
     L10nConfigChanged(LocaleConfig),
-    LocaleChanged { locale: String },
-    Progress(Progress),
-    ProductChanged { id: String },
+    LocaleChanged {
+        locale: String,
+    },
+    Progress {
+        service: String,
+        #[serde(flatten)]
+        progress: Progress,
+    },
+    ProductChanged {
+        id: String,
+    },
     PatternsChanged(HashMap<String, SelectedBy>),
-    InstallationPhaseChanged { phase: InstallationPhase },
-    BusyServicesChanged { services: Vec<String> },
-    ServiceStatusChanged { service: String, status: u32 },
+    InstallationPhaseChanged {
+        phase: InstallationPhase,
+    },
+    BusyServicesChanged {
+        services: Vec<String>,
+    },
+    ServiceStatusChanged {
+        service: String,
+        status: u32,
+    },
 }
 
 pub type EventsSender = Sender<Event>;
