@@ -374,14 +374,16 @@ describe("deletedDevices", () => {
       { sid: 60 },
       { sid: 62 },
       { sid: 63 },
-      { sid: 64 }
+      { sid: 64 },
+      { sid: 65, isDrive: true }
     ];
     actions = [
       { device: 60, delete: true },
       // This device does not exist in system.
       { device: 61, delete: true },
       { device: 62, delete: false },
-      { device: 63, delete: true }
+      { device: 63, delete: true },
+      { device: 65, delete: true }
     ];
   });
 
@@ -398,23 +400,34 @@ describe("deletedSystems", () => {
     system = [
       { sid: 60, systems: ["Windows XP"] },
       { sid: 62, systems: ["Ubuntu"] },
-      { sid: 63, systems: ["openSUSE Leap"] },
-      { sid: 64 }
+      {
+        sid: 63,
+        systems: ["openSUSE Leap", "openSUSE Tumbleweed"],
+        partitionTable: {
+          partitions: [{ sid: 65 }, { sid: 66 }]
+        }
+      },
+      { sid: 64 },
+      { sid: 65, systems: ["openSUSE Leap"] },
+      { sid: 66, systems: ["openSUSE Tumbleweed"] }
     ];
     actions = [
       { device: 60, delete: true },
       // This device does not exist in system.
       { device: 61, delete: true },
       { device: 62, delete: false },
-      { device: 63, delete: true }
+      { device: 63, delete: true },
+      { device: 65, delete: true },
+      { device: 66, delete: true }
     ];
   });
 
   it("includes all deleted systems", () => {
     const manager = new DevicesManager(system, staging, actions);
     const systems = manager.deletedSystems();
-    expect(systems.length).toEqual(2);
+    expect(systems.length).toEqual(3);
     expect(systems).toContain("Windows XP");
     expect(systems).toContain("openSUSE Leap");
+    expect(systems).toContain("openSUSE Tumbleweed");
   });
 });

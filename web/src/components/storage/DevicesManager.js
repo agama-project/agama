@@ -153,11 +153,7 @@ export default class DevicesManager {
    * @returns {StorageDevice[]}
    */
   deletedDevices() {
-    const sids = this.actions
-      .filter(a => a.delete)
-      .map(a => a.device);
-    const devices = sids.map(sid => this.systemDevice(sid));
-    return compact(devices);
+    return this.#deleteActionsDevice().filter(d => !d.isDrive);
   }
 
   /**
@@ -166,7 +162,8 @@ export default class DevicesManager {
    * @returns {string[]}
    */
   deletedSystems() {
-    const systems = this.deletedDevices()
+    const systems = this.#deleteActionsDevice()
+      .filter(d => !d.partitionTable)
       .map(d => d.systems)
       .flat();
     return compact(systems);
@@ -203,5 +200,16 @@ export default class DevicesManager {
     return sids.includes(device.sid) ||
       partitions.find(p => this.#isUsed(p)) !== undefined ||
       lvmLvs.find(l => this.#isUsed(l)) !== undefined;
+  }
+
+  /**
+   * @returns {StorageDevice[]}
+   */
+  #deleteActionsDevice() {
+    const sids = this.actions
+      .filter(a => a.delete)
+      .map(a => a.device);
+    const devices = sids.map(sid => this.systemDevice(sid));
+    return compact(devices);
   }
 }
