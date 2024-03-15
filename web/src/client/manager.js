@@ -21,12 +21,8 @@
 
 // @ts-check
 
-import DBusClient from "./dbus";
 import { WithProgress, WithStatus } from "./mixins";
-import cockpit from "../lib/cockpit";
 
-const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
-const MANAGER_IFACE = "org.opensuse.Agama.Manager1";
 const MANAGER_PATH = "/org/opensuse/Agama/Manager1";
 
 /**
