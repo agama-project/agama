@@ -192,12 +192,14 @@ const WithStatus = (superclass, status_path, service_name) =>
  */
 
 /**
- * Extends the given class with methods to get and track the progress over D-Bus
- * @param {string} object_path - object_path
+ * Extends the given class with methods to get and track the service progress
+ *
+ * @template {!WithHTTPClient} T
  * @param {T} superclass - superclass to extend
- * @template {!WithDBusClient} T
+ * @param {string} progress_path - status resource path (e.g., "/manager/status").
+ * @param {string} service_name - service name (e.g., "org.opensuse.Agama.Manager1").
  */
-const WithProgress = (superclass, object_path) =>
+const WithProgress = (superclass, progress_path, service_name) =>
   class extends superclass {
     /**
      * Returns the service progress
@@ -206,12 +208,14 @@ const WithProgress = (superclass, object_path) =>
      *   the current step and whether the service finished or not.
      */
     async getProgress() {
-      const proxy = await this.client.proxy(PROGRESS_IFACE, object_path);
+      const { current_step, max_steps, current_title, finished } = await this.client.get(
+        progress_path,
+      );
       return {
-        total: proxy.TotalSteps,
-        current: proxy.CurrentStep[0],
-        message: proxy.CurrentStep[1],
-        finished: proxy.Finished,
+        total: max_steps,
+        current: current_step,
+        message: current_title,
+        finished,
       };
     }
 
@@ -222,13 +226,16 @@ const WithProgress = (superclass, object_path) =>
      * @return {import ("./dbus").RemoveFn} function to disable the callback
      */
     onProgressChange(handler) {
-      return this.client.onObjectChanged(object_path, PROGRESS_IFACE, (changes) => {
-        const { TotalSteps, CurrentStep, Finished } = changes;
-        if (TotalSteps === undefined && CurrentStep === undefined && Finished === undefined) {
-          return;
+      return this.client.onEvent("Progress", (progress) => {
+        if (progress?.service === service_name) {
+          const { current_step, max_steps, current_title, finished } = progress;
+          handler({
+            total: max_steps,
+            current: current_step,
+            message: current_title,
+            finished,
+          });
         }
-
-        this.getProgress().then(handler);
       });
     }
   };
