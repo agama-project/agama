@@ -143,12 +143,12 @@ const WithIssues = (superclass, object_path) => class extends superclass {
 };
 
 /**
- * Extends the given class with methods to get and track the progress over D-Bus
+ * Extends the given class with methods to get and track the service status
  *
  * @template {!WithHTTPClient} T
+ * @param {T} superclass - superclass to extend
  * @param {string} status_path - status resource path (e.g., "/manager/status").
  * @param {string} service_name - service name (e.g., "org.opensuse.Agama.Manager1").
- * @param {T} superclass - superclass to extend
  */
 const WithStatus = (superclass, status_path, service_name) =>
   class extends superclass {
