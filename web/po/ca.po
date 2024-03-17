@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-10 02:10+0000\n"
-"PO-Revision-Date: 2024-03-08 20:42+0000\n"
+"POT-Creation-Date: 2024-03-14 02:05+0000\n"
+"PO-Revision-Date: 2024-03-12 11:42+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ca/>\n"
@@ -159,8 +159,8 @@ msgstr ""
 #: src/components/storage/ProposalDeviceSection.jsx:169
 #: src/components/storage/ProposalDeviceSection.jsx:364
 #: src/components/storage/ProposalSettingsSection.jsx:263
-#: src/components/storage/ProposalVolumes.jsx:148
-#: src/components/storage/ProposalVolumes.jsx:283
+#: src/components/storage/ProposalVolumes.jsx:152
+#: src/components/storage/ProposalVolumes.jsx:287
 #: src/components/storage/ZFCPPage.jsx:511
 msgid "Accept"
 msgstr "Accepta-ho"
@@ -311,8 +311,8 @@ msgstr "Confirmeu-ho"
 
 #. TRANSLATORS: dropdown label
 #: src/components/core/RowActions.jsx:66
-#: src/components/storage/ProposalVolumes.jsx:119
-#: src/components/storage/ProposalVolumes.jsx:310
+#: src/components/storage/ProposalVolumes.jsx:123
+#: src/components/storage/ProposalVolumes.jsx:314
 msgid "Actions"
 msgstr "Accions"
 
@@ -400,8 +400,8 @@ msgstr ""
 "La llengua usada per l'instal·lador. La llengua del sistema instal·lat es "
 "pot definir a la pàgina %s."
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:56
 #: src/components/l10n/L10nPage.jsx:384
 #: src/components/overview/L10nSection.jsx:52
@@ -538,8 +538,8 @@ msgstr "Adreces"
 msgid "Addresses data list"
 msgstr "Llista de dades d'adreces"
 
-#. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
+#. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/network/ConnectionsTable.jsx:57
 #: src/components/network/ConnectionsTable.jsx:86
 #: src/components/storage/ZFCPPage.jsx:360
@@ -558,7 +558,7 @@ msgid "IP addresses"
 msgstr "Adreces IP"
 
 #: src/components/network/ConnectionsTable.jsx:67
-#: src/components/storage/ProposalVolumes.jsx:234
+#: src/components/storage/ProposalVolumes.jsx:238
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
 #: src/components/users/FirstUser.jsx:208
@@ -675,8 +675,8 @@ msgstr "No s'ha trobat cap connexió WiFi."
 msgid "Connect to a Wi-Fi network"
 msgstr "Connecteu-vos a una xarxa Wi-Fi"
 
-#. TRANSLATORS: page section title
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section title
 #: src/components/network/NetworkPage.jsx:169
 #: src/components/overview/NetworkSection.jsx:83
 msgid "Network"
@@ -761,8 +761,8 @@ msgstr "Connectat"
 msgid "Disconnecting"
 msgstr "Desconnectant"
 
-#. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
+#. TRANSLATORS: iSCSI connection status
 #: src/components/network/WifiNetworkListItem.jsx:50
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -826,8 +826,8 @@ msgstr "Lectura de repositoris de programari"
 msgid "Refresh the repositories"
 msgstr "Refresca els repositoris"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
@@ -871,8 +871,8 @@ msgstr "Instal·la al dispositiu %s"
 msgid "Probing storage devices"
 msgstr "Sondant els dispositius d'emmagatzematge"
 
-#. TRANSLATORS: page section title
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section title
 #: src/components/overview/StorageSection.jsx:208
 #: src/components/storage/ProposalPage.jsx:243
 msgid "Storage"
@@ -1383,13 +1383,13 @@ msgid "Current content"
 msgstr "Contingut actual"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:74
-#: src/components/storage/ProposalVolumes.jsx:309
-#: src/components/storage/VolumeForm.jsx:741
+#: src/components/storage/ProposalVolumes.jsx:313
+#: src/components/storage/VolumeForm.jsx:745
 msgid "Size"
 msgstr "Mida"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:75
-#: src/components/storage/ProposalVolumes.jsx:308
+#: src/components/storage/ProposalVolumes.jsx:312
 msgid "Details"
 msgstr "Detalls"
 
@@ -1448,7 +1448,7 @@ msgid "Space action selector for %s"
 msgstr "Selector d'acció espacial per a %s"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:224
-#: src/components/storage/ProposalVolumes.jsx:229
+#: src/components/storage/ProposalVolumes.jsx:233
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
 msgid "Delete"
 msgstr "Suprimeix"
@@ -1480,20 +1480,19 @@ msgstr ""
 "dispositius que s'indiquen a continuació. Trieu com fer-ho."
 
 #: src/components/storage/ProposalTransactionalInfo.jsx:46
-#, fuzzy
 msgid "Transactional root file system"
-msgstr "Sistema transaccional"
+msgstr "Sistema de fitxers d'arrel transaccional"
 
 #: src/components/storage/ProposalTransactionalInfo.jsx:49
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s is an immutable system with atomic updates. It uses a read-only Btrfs "
 "file system updated via snapshots."
 msgstr ""
-"%s és un sistema immutable amb actualitzacions atòmiques que usa un sistema "
-"de fitxers d'arrel Btrfs només de lectura."
+"%s és un sistema immutable amb actualitzacions atòmiques. Usa un sistema de "
+"fitxers Btrfs només de lectura actualitzat a través d'instantànies."
 
-#. TRANSLATORS: header for a list of items
+#. TRANSLATORS: header for a list of items referring to size limits for file systems
 #: src/components/storage/ProposalVolumes.jsx:59
 msgid "These limits are affected by:"
 msgstr "Aquests límits estan afectats pel següent:"
@@ -1510,63 +1509,69 @@ msgstr "La configuració de les instantànies"
 msgid "Presence of other volumes (%s)"
 msgstr "La presència d'altres volums (%s)"
 
+#. TRANSLATORS: list item, describes a factor that affects the computed size of a
+#. file system; eg. adjusting the size of the swap
+#: src/components/storage/ProposalVolumes.jsx:71
+msgid "The amount of RAM in the system"
+msgstr "La quantitat de RAM del sistema"
+
 #. TRANSLATORS: dropdown menu label
-#: src/components/storage/ProposalVolumes.jsx:129
+#: src/components/storage/ProposalVolumes.jsx:133
 msgid "Reset to defaults"
 msgstr "Restableix els valors predeterminats"
 
 #. TRANSLATORS: dropdown menu label
-#: src/components/storage/ProposalVolumes.jsx:137
 #: src/components/storage/ProposalVolumes.jsx:141
+#: src/components/storage/ProposalVolumes.jsx:145
 msgid "Add file system"
 msgstr "Afegeix-hi un sistema de fitxers"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/ProposalVolumes.jsx:191
+#: src/components/storage/ProposalVolumes.jsx:195
 #, c-format
 msgid "At least %s"
 msgstr "Almenys %s"
 
 #. TRANSLATORS: device flag, the partition size is automatically computed
-#: src/components/storage/ProposalVolumes.jsx:197
+#: src/components/storage/ProposalVolumes.jsx:201
 msgid "auto"
 msgstr "automàtica"
 
 #. TRANSLATORS: the filesystem uses a logical volume (LVM)
-#: src/components/storage/ProposalVolumes.jsx:207
+#: src/components/storage/ProposalVolumes.jsx:211
 msgid "logical volume"
 msgstr "volum lògic"
 
-#: src/components/storage/ProposalVolumes.jsx:207
+#: src/components/storage/ProposalVolumes.jsx:211
 msgid "partition"
 msgstr "partició"
 
 #. TRANSLATORS: filesystem flag, it uses an encryption
-#: src/components/storage/ProposalVolumes.jsx:216
+#: src/components/storage/ProposalVolumes.jsx:220
 msgid "encrypted"
 msgstr "encriptada"
 
 #. TRANSLATORS: filesystem flag, it allows creating snapshots
-#: src/components/storage/ProposalVolumes.jsx:218
+#: src/components/storage/ProposalVolumes.jsx:222
 msgid "with snapshots"
 msgstr "amb instantànies"
 
 #. TRANSLATORS: flag for transactional file system
-#: src/components/storage/ProposalVolumes.jsx:220
+#: src/components/storage/ProposalVolumes.jsx:224
 msgid "transactional"
 msgstr "transaccional"
 
-#: src/components/storage/ProposalVolumes.jsx:275
+#: src/components/storage/ProposalVolumes.jsx:279
 msgid "Edit file system"
 msgstr "Edita el sistema de fitxers"
 
-#: src/components/storage/ProposalVolumes.jsx:307
-#: src/components/storage/VolumeForm.jsx:726
-#: src/components/storage/VolumeForm.jsx:731
+#: src/components/storage/ProposalVolumes.jsx:311
+#: src/components/storage/VolumeForm.jsx:730
+#: src/components/storage/VolumeForm.jsx:735
 msgid "Mount point"
 msgstr "Punt de muntatge"
 
-#: src/components/storage/ProposalVolumes.jsx:345
+#: src/components/storage/ProposalVolumes.jsx:349
 msgid "Table with mount points"
 msgstr "Taula amb punts de muntatge"
 
@@ -1609,37 +1614,42 @@ msgstr "la presència del sistema de fitxers per a %s"
 msgid ", "
 msgstr ", "
 
+#. TRANSLATORS: item which affects the final computed partition size
+#: src/components/storage/VolumeForm.jsx:315
+msgid "the amount of RAM in the system"
+msgstr "la quantitat de RAM del sistema"
+
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeForm.jsx:314
+#: src/components/storage/VolumeForm.jsx:318
 #, c-format
 msgid "The final size depends on %s."
 msgstr "La mida final depèn de %s."
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeForm.jsx:316
+#: src/components/storage/VolumeForm.jsx:320
 msgid " and "
 msgstr " i "
 
 #. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeForm.jsx:321
+#: src/components/storage/VolumeForm.jsx:325
 msgid "Automatically calculated size according to the selected product."
 msgstr "Mida calculada automàticament segons el producte seleccionat."
 
-#: src/components/storage/VolumeForm.jsx:341
+#: src/components/storage/VolumeForm.jsx:345
 msgid "Exact size for the file system."
 msgstr "Mida exacta per al sistema de fitxers."
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeForm.jsx:353
+#: src/components/storage/VolumeForm.jsx:357
 msgid "Exact size"
 msgstr "Mida exacta"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeForm.jsx:368
+#: src/components/storage/VolumeForm.jsx:372
 msgid "Size unit"
 msgstr "Unitat de mida"
 
-#: src/components/storage/VolumeForm.jsx:396
+#: src/components/storage/VolumeForm.jsx:400
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1650,57 +1660,57 @@ msgstr ""
 "de fitxers serà el més gros possible."
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeForm.jsx:403
+#: src/components/storage/VolumeForm.jsx:407
 msgid "Minimum"
 msgstr "Mínim"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeForm.jsx:413
+#: src/components/storage/VolumeForm.jsx:417
 msgid "Minimum desired size"
 msgstr "Mida mínima desitjada"
 
-#: src/components/storage/VolumeForm.jsx:422
+#: src/components/storage/VolumeForm.jsx:426
 msgid "Unit for the minimum size"
 msgstr "Unitat per a la mida mínima"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:433
+#: src/components/storage/VolumeForm.jsx:437
 msgid "Maximum"
 msgstr "Màxim"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:444
+#: src/components/storage/VolumeForm.jsx:448
 msgid "Maximum desired size"
 msgstr "Mida màxima desitjada"
 
-#: src/components/storage/VolumeForm.jsx:452
+#: src/components/storage/VolumeForm.jsx:456
 msgid "Unit for the maximum size"
 msgstr "Unitat per a la mida màxima"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeForm.jsx:469
+#: src/components/storage/VolumeForm.jsx:473
 msgid "Auto"
 msgstr "Automàtica"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeForm.jsx:471
+#: src/components/storage/VolumeForm.jsx:475
 msgid "Fixed"
 msgstr "Fixa"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeForm.jsx:473
+#: src/components/storage/VolumeForm.jsx:477
 msgid "Range"
 msgstr "Interval"
 
-#: src/components/storage/VolumeForm.jsx:681
+#: src/components/storage/VolumeForm.jsx:685
 msgid "A size value is required"
 msgstr "Cal un valor de mida"
 
-#: src/components/storage/VolumeForm.jsx:686
+#: src/components/storage/VolumeForm.jsx:690
 msgid "Minimum size is required"
 msgstr "Cal una mida mínima"
 
-#: src/components/storage/VolumeForm.jsx:690
+#: src/components/storage/VolumeForm.jsx:694
 msgid "Maximum must be greater than minimum"
 msgstr "El màxim ha de ser superior al mínim."
 

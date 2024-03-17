@@ -10,13 +10,14 @@
     },
     "locales": {
         "en-us": "English",
-        "fr-fr": "Français",
-        "zh-Hans": "中文",
-        "ca-es": "Català",
+        "es-es": "Español",
         "id-id": "Indonesia",
+        "fr-fr": "Français",
         "sv-se": "Svenska",
-        "de-de": "Deutsch",
+        "ca-es": "Català",
         "ja-jp": "日本語",
-        "es-es": "Español"
+        "nl-nl": "Nederlands",
+        "zh-Hans": "中文",
+        "de-de": "Deutsch"
     }
 }
