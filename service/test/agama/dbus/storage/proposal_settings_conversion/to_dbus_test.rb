@@ -92,6 +92,7 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
               "SupportAutoSize"       => false,
               "SnapshotsConfigurable" => false,
               "SnapshotsAffectSizes"  => false,
+              "AdjustByRam"           => false,
               "SizeRelevantVolumes"   => []
             }
           }
