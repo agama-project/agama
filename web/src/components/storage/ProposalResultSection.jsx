@@ -66,7 +66,11 @@ const DeletionsInfo = ({ actions, systems }) => {
         condition={systems.length > 0}
         then={
           <p>
-            {_("Affecting %s")} <strong>{systems.join(", ")}</strong>
+            {
+              // TRANSLATORS: This is part of a sentence to hint the user about affected systems.
+              // Eg. "Affecting Windows 11, openSUSE Leap 15, and Ubuntu 22.04"
+            }
+            {_("Affecting")} <strong>{systems.join(", ")}</strong>
           </p>
         }
       />
