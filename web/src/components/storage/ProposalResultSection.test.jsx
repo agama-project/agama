@@ -96,7 +96,7 @@ describe("ProposalResultSection", () => {
        * "Unused space 3.49 GiB"
        * "vdc2 openSUSE Leap 15.2, Fedora 10.30 5 GiB"
        * "Unused space 1 GiB"
-       * "vdc4 Linux Resized 514 MiB 1.5 GiB"
+       * "vdc4 Linux Before 2 GiB 1.5 GiB"
        * "vdc5 / New Btrfs Partition 17.5 GiB"
        *
        * Device      Mount point      Details                                 Size
@@ -107,7 +107,7 @@ describe("ProposalResultSection", () => {
        *                              Unused space                        3.49 GiB
        *     vdc2                     openSUSE Leap 15.2, Fedora 10.30       5 GiB
        *                              Unused space                           1 GiB
-       *     vdc4                     Linux                Resized 514 MiB 1.5 GiB
+       *     vdc4                     Linux                   Before 2 GiB 1.5 GiB
        *     vdc5    /            New Btrfs Partition                     17.5 GiB
        * -------------------------------------------------------------------------
        */
@@ -117,7 +117,7 @@ describe("ProposalResultSection", () => {
       within(treegrid).getByRole("row", { name: "Unused space 3.49 GiB" });
       within(treegrid).getByRole("row", { name: "vdc2 openSUSE Leap 15.2, Fedora 10.30 5 GiB" });
       within(treegrid).getByRole("row", { name: "Unused space 1 GiB" });
-      within(treegrid).getByRole("row", { name: "vdc4 Linux Resized 514 MiB 1.5 GiB" });
+      within(treegrid).getByRole("row", { name: "vdc4 Linux Before 2 GiB 1.5 GiB" });
       within(treegrid).getByRole("row", { name: "vdc5 / New Btrfs Partition 17.5 GiB" });
     });
 

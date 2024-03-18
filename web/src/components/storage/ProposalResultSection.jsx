@@ -162,12 +162,14 @@ const DevicesTreeTable = ({ devicesManager }) => {
   const renderResizedLabel = (item) => {
     if (!item.sid || !devicesManager.isShrunk(item)) return;
 
+    const sizeBefore = devicesManager.systemDevice(item.sid).size;
+
     return (
       <Tag variant="orange">
         {
-          // TRANSLATORS: a label to show how much a device was resized. %s will be
-          // replaced with such a size, including the unit. E.g., 508 MiB
-          sprintf(_("Resized %s"), deviceSize(devicesManager.shrinkSize(item)))
+          // TRANSLATORS: Label to indicate the device size before resizing, where %s is replaced by
+          // the original size (e.g., 3.00 GiB).
+          sprintf(_("Before %s"), deviceSize(sizeBefore))
         }
       </Tag>
     );
