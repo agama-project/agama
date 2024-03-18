@@ -5,7 +5,7 @@ use std::{pin::Pin, task::Poll};
 use agama_lib::{
     error::ServiceError,
     progress::Progress,
-    proxies::{ProgressProxy, ServiceStatusProxy},
+    proxies::{IssuesProxy, ProgressProxy, ServiceStatusProxy},
 };
 use axum::{extract::State, routing::get, Json, Router};
 use pin_project::pin_project;
@@ -17,8 +17,8 @@ use crate::error::Error;
 
 use super::Event;
 
-/// Builds a router to the `org.opensuse.Agama1.ServiceStatus`
-/// interface of the given D-Bus object.
+/// Builds a router to the `org.opensuse.Agama1.ServiceStatus` interface of the
+/// given D-Bus object.
 ///
 /// ```no_run
 /// # use axum::{extract::State, routing::get, Json, Router};
@@ -225,6 +225,125 @@ async fn build_progress_proxy<'a>(
     path: &str,
 ) -> Result<ProgressProxy<'a>, zbus::Error> {
     let proxy = ProgressProxy::builder(&dbus)
+        .destination(destination.to_string())?
+        .path(path.to_string())?
+        .build()
+        .await?;
+    Ok(proxy)
+}
+
+/// Builds a router to the `org.opensuse.Agama1.Issues` interface of a given
+/// D-Bus object.
+///
+/// ```no_run
+/// # use axum::{extract::State, routing::get, Json, Router};
+/// # use agama_lib::connection;
+/// # use agama_server::web::common::service_status_router;
+/// # use tokio_test;
+///
+/// # tokio_test::block_on(async {
+/// async fn hello(state: State<HelloWorldState>) {};
+///
+/// #[derive(Clone)]
+/// struct HelloWorldState {};
+///
+/// let dbus = connection().await.unwrap();
+/// let issues_router = issues_router(
+///   &dbus, "org.opensuse.HelloWorld", "/org/opensuse/hello"
+/// ).await.unwrap();
+/// let router: Router<HelloWorldState> = Router::new()
+///   .route("/hello", get(hello))
+///   .merge(issues_router)
+///   .with_state(HelloWorldState {});
+/// });
+/// ```
+///
+/// * `dbus`: D-Bus connection.
+/// * `destination`: D-Bus service name.
+/// * `path`: D-Bus object path.
+pub async fn issues_router<T>(
+    dbus: &zbus::Connection,
+    destination: &str,
+    path: &str,
+) -> Result<Router<T>, ServiceError> {
+    let proxy = build_issues_proxy(dbus, destination, path).await?;
+    let state = IssuesState { proxy };
+    Ok(Router::new()
+        .route("/issues", get(issues))
+        .with_state(state))
+}
+
+async fn issues(State(state): State<IssuesState<'_>>) -> Result<Json<Vec<Issue>>, Error> {
+    let issues = state.proxy.all().await?;
+    let issues: Vec<Issue> = issues.into_iter().map(Issue::from_tuple).collect();
+    Ok(Json(issues))
+}
+
+#[derive(Clone)]
+struct IssuesState<'a> {
+    proxy: IssuesProxy<'a>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct Issue {
+    description: String,
+    details: Option<String>,
+    source: u32,
+    severity: u32,
+}
+
+impl Issue {
+    pub fn from_tuple(
+        (description, details, source, severity): (String, String, u32, u32),
+    ) -> Self {
+        let details = if details.is_empty() {
+            None
+        } else {
+            Some(details)
+        };
+
+        Self {
+            description,
+            details,
+            source,
+            severity,
+        }
+    }
+}
+
+/// Builds a stream of the changes in the the `org.opensuse.Agama1.Issues`
+/// interface of the given D-Bus object.
+///
+/// * `dbus`: D-Bus connection.
+/// * `destination`: D-Bus service name.
+/// * `path`: D-Bus object path.
+pub async fn issues_stream(
+    dbus: zbus::Connection,
+    destination: &'static str,
+    path: &'static str,
+) -> Result<Pin<Box<dyn Stream<Item = Event> + Send>>, Error> {
+    let proxy = build_issues_proxy(&dbus, destination, path).await?;
+    let stream = proxy
+        .receive_all_changed()
+        .await
+        .then(move |change| async move {
+            if let Ok(issues) = change.get().await {
+                let issues = issues.into_iter().map(Issue::from_tuple).collect();
+                Some(Event::IssuesChanged { issues })
+            } else {
+                None
+            }
+        })
+        .filter_map(|e| e);
+    Ok(Box::pin(stream))
+}
+
+async fn build_issues_proxy<'a>(
+    dbus: &zbus::Connection,
+    destination: &str,
+    path: &str,
+) -> Result<IssuesProxy<'a>, zbus::Error> {
+    let proxy = IssuesProxy::builder(&dbus)
         .destination(destination.to_string())?
         .path(path.to_string())?
         .build()
