@@ -50,7 +50,9 @@ function AuthProvider({ children }) {
       body: JSON.stringify({ password }),
       headers: { "Content-Type": "application/json" },
     });
-    setIsLoggedIn(response.status === 200);
+    const result = response.status === 200;
+    setIsLoggedIn(result);
+    return result;
   }, []);
 
   const logout = useCallback(async () => {

@@ -23,16 +23,11 @@
 
 import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
-import {
-  ActionGroup,
-  Button,
-  Form,
-  FormGroup,
-} from "@patternfly/react-core";
+import { ActionGroup, Button, Form, FormGroup } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { useAuth } from "~/context/auth";
-import { About, Page, PasswordInput, Section } from "~/components/core";
+import { About, FormValidationError, If, Page, PasswordInput, Section } from "~/components/core";
 import { Center } from "~/components/layout";
 
 // @ts-check
@@ -43,11 +38,13 @@ import { Center } from "~/components/layout";
  */
 export default function LoginPage() {
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
   const { isLoggedIn, login: loginFn } = useAuth();
 
   const login = async (e) => {
     e.preventDefault();
-    await loginFn(password);
+    const result = await loginFn(password);
+    setError(!result);
   };
 
   if (isLoggedIn) {
@@ -56,7 +53,7 @@ export default function LoginPage() {
 
   // TRANSLATORS: Title for a form to provide the password for the root user. %s
   // will be replaced by "root"
-  const sectionTitle = sprintf(_("Login as %s"), "root");
+  const sectionTitle = sprintf(_("Log in as %s"), "root");
   return (
     <Page mountSidebar={false} title="Agama">
       <Center>
@@ -66,9 +63,9 @@ export default function LoginPage() {
               __html: sprintf(
                 // TRANSLATORS: An explanation about required privileges for login into the installer. %s
                 // will be replaced by "root"
-                _("The installer requires %s user privileges. Please, provide its password to log into the system."),
-                "<b>root</b>"
-              )
+                _("The installer requires %s user privileges. Please, provide its password to log in to the system."),
+                "<b>root</b>",
+              ),
             }}
           />
 
@@ -82,6 +79,14 @@ export default function LoginPage() {
                 onChange={(_, v) => setPassword(v)}
               />
             </FormGroup>
+            <If
+              condition={error}
+              then={
+                <FormValidationError
+                  message={_("Could not log in. Please, make sure that the password is correct.")}
+                />
+              }
+            />
 
             <ActionGroup>
               <Button type="submit" variant="primary">
@@ -93,7 +98,12 @@ export default function LoginPage() {
       </Center>
 
       <Page.Actions>
-        <About showIcon={false} iconSize="xs" buttonText={_("What is this?")} buttonVariant="link" />
+        <About
+          showIcon={false}
+          iconSize="xs"
+          buttonText={_("What is this?")}
+          buttonVariant="link"
+        />
       </Page.Actions>
     </Page>
   );
