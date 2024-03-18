@@ -53,7 +53,7 @@ export default function LoginPage() {
 
   // TRANSLATORS: Title for a form to provide the password for the root user. %s
   // will be replaced by "root"
-  const sectionTitle = sprintf(_("Login as %s"), "root");
+  const sectionTitle = sprintf(_("Log in as %s"), "root");
   return (
     <Page mountSidebar={false} title="Agama">
       <Center>
@@ -63,7 +63,7 @@ export default function LoginPage() {
               __html: sprintf(
                 // TRANSLATORS: An explanation about required privileges for login into the installer. %s
                 // will be replaced by "root"
-                _("The installer requires %s user privileges. Please, provide its password to log into the system."),
+                _("The installer requires %s user privileges. Please, provide its password to log in to the system."),
                 "<b>root</b>",
               ),
             }}
