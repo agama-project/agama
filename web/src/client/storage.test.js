@@ -205,7 +205,7 @@ const md0 = {
   systems : ["openSUSE Leap 15.2"],
   udevIds: [],
   udevPaths: [],
-  filesystem: { type: "ext4", mountPath: "/test", label: "system" }
+  filesystem: { sid: 100, type: "ext4", mountPath: "/test", label: "system" }
 };
 
 const raid = {
@@ -866,6 +866,7 @@ const contexts = {
         UdevPaths: { t: "as", v: [] }
       },
       "org.opensuse.Agama.Storage1.Filesystem": {
+        SID: { t: "u", v: 100 },
         Type: { t: "s", v: "ext4" },
         MountPath: { t: "s", v: "/test" },
         Label: { t: "s", v: "system" }

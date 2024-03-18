@@ -48,6 +48,103 @@ const ZFCP_DISKS_NAMESPACE = "/org/opensuse/Agama/Storage1/zfcp_disks";
 const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
 
 /**
+ * @typedef {object} StorageDevice
+ * @property {number} sid - Storage ID
+ * @property {string} name - Device name
+ * @property {string} description - Device description
+ * @property {boolean} isDrive - Whether the device is a drive
+ * @property {string} type - Type of device (e.g., "disk", "raid", "multipath", "dasd", "md")
+ * @property {string} [vendor]
+ * @property {string} [model]
+ * @property {string[]} [driver]
+ * @property {string} [bus]
+ * @property {string} [busId] - DASD Bus ID (only for "dasd" type)
+ * @property {string} [transport]
+ * @property {boolean} [sdCard]
+ * @property {boolean} [dellBOOS]
+ * @property {string[]} [devices] - RAID devices (only for "raid" and "md" types)
+ * @property {string[]} [wires] - Multipath wires (only for "multipath" type)
+ * @property {string} [level] - MD RAID level (only for "md" type)
+ * @property {string} [uuid]
+ * @property {number} [start] - First block of the region (only for block devices)
+ * @property {boolean} [active]
+ * @property {boolean} [encrypted] - Whether the device is encrypted (only for block devices)
+ * @property {boolean} [isEFI] - Whether the device is an EFI partition (only for partition)
+ * @property {number} [size]
+ * @property {number} [recoverableSize]
+ * @property {string[]} [systems] - Name of the installed systems
+ * @property {string[]} [udevIds]
+ * @property {string[]} [udevPaths]
+ * @property {PartitionTable} [partitionTable]
+ * @property {Filesystem} [filesystem]
+ * @property {Component} [component] - When it is used as component of other devices
+ * @property {StorageDevice[]} [physicalVolumes] - Only for LVM VGs
+ * @property {StorageDevice[]} [logicalVolumes] - Only for LVM VGs
+ *
+ * @typedef {object} PartitionTable
+ * @property {string} type
+ * @property {StorageDevice[]} partitions
+ * @property {PartitionSlot[]} unusedSlots
+ * @property {number} unpartitionedSize - Total size not assigned to any partition
+ *
+ * @typedef {object} PartitionSlot
+ * @property {number} start
+ * @property {number} size
+ *
+ * @typedef {object} Component
+ * @property {string} type
+ * @property {string[]} deviceNames
+ *
+ * @typedef {object} Filesystem
+ * @property {number} sid
+ * @property {string} type
+ * @property {string} [mountPath]
+ *
+ * @typedef {object} ProposalResult
+ * @property {ProposalSettings} settings
+ * @property {Action[]} actions
+ *
+ * @typedef {object} Action
+ * @property {number} device
+ * @property {string} text
+ * @property {boolean} subvol
+ * @property {boolean} delete
+ *
+ * @typedef {object} ProposalSettings
+ * @property {string} bootDevice
+ * @property {string} encryptionPassword
+ * @property {string} encryptionMethod
+ * @property {boolean} lvm
+ * @property {string} spacePolicy
+ * @property {SpaceAction[]} spaceActions
+ * @property {string[]} systemVGDevices
+ * @property {Volume[]} volumes
+ * @property {StorageDevice[]} installationDevices
+ *
+ * @typedef {object} SpaceAction
+ * @property {string} device
+ * @property {string} action
+ *
+ * @typedef {object} Volume
+ * @property {string} mountPath
+ * @property {string} fsType
+ * @property {number} minSize
+ * @property {number} [maxSize]
+ * @property {boolean} autoSize
+ * @property {boolean} snapshots
+ * @property {boolean} transactional
+ * @property {VolumeOutline} outline
+ *
+ * @typedef {object} VolumeOutline
+ * @property {boolean} required
+ * @property {string[]} fsTypes
+ * @property {boolean} supportAutoSize
+ * @property {boolean} snapshotsConfigurable
+ * @property {boolean} snapshotsAffectSizes
+ * @property {string[]} sizeRelevantVolumes
+ */
+
+/**
  * Enum for the encryption method values
  *
  * @readonly
@@ -106,57 +203,6 @@ class DevicesManager {
    * Gets all the exported devices
    *
    * @returns {Promise<StorageDevice[]>}
-   *
-   * @typedef {object} StorageDevice
-   * @property {string} sid - Storage ID
-   * @property {string} name - Device name
-   * @property {string} description - Device description
-   * @property {boolean} isDrive - Whether the device is a drive
-   * @property {string} type - Type of device ("disk", "raid", "multipath", "dasd", "md")
-   * @property {string} [vendor]
-   * @property {string} [model]
-   * @property {string[]} [driver]
-   * @property {string} [bus]
-   * @property {string} [busId] - DASD Bus ID (only for "dasd" type)
-   * @property {string} [transport]
-   * @property {boolean} [sdCard]
-   * @property {boolean} [dellBOOS]
-   * @property {string[]} [devices] - RAID devices (only for "raid" and "md" types)
-   * @property {string[]} [wires] - Multipath wires (only for "multipath" type)
-   * @property {string} [level] - MD RAID level (only for "md" type)
-   * @property {string} [uuid]
-   * @property {number} [start] - First block of the region (only for block devices)
-   * @property {boolean} [active]
-   * @property {boolean} [encrypted] - Whether the device is encrypted (only for block devices)
-   * @property {boolean} [isEFI] - Whether the device is an EFI partition (only for partition)
-   * @property {number} [size]
-   * @property {number} [recoverableSize]
-   * @property {string[]} [systems] - Name of the installed systems
-   * @property {string[]} [udevIds]
-   * @property {string[]} [udevPaths]
-   * @property {PartitionTable} [partitionTable]
-   * @property {Filesystem} [filesystem]
-   * @property {Component} [component] - When it is used as component of other devices
-   * @property {StorageDevice[]} [physicalVolumes] - Only for LVM VGs
-   * @property {StorageDevice[]} [logicalVolumes] - Only for LVM VGs
-   *
-   * @typedef {object} PartitionTable
-   * @property {string} type
-   * @property {StorageDevice[]} partitions
-   * @property {PartitionSlot[]} unusedSlots
-   * @property {number} unpartitionedSize - Total size not assigned to any partition
-   *
-   * @typedef {object} PartitionSlot
-   * @property {number} start
-   * @property {number} size
-   *
-   * @typedef {object} Component
-   * @property {string} type
-   * @property {string[]} deviceNames
-   *
-   * @typedef {object} Filesystem
-   * @property {string} type
-   * @property {string} [mountPath]
    */
   async getDevices() {
     const buildDevice = (path, dbusDevices) => {
@@ -236,6 +282,7 @@ class DevicesManager {
         const buildMountPath = path => path.length > 0 ? path : undefined;
         const buildLabel = label => label.length > 0 ? label : undefined;
         device.filesystem = {
+          sid: filesystemProperties.SID.v,
           type: filesystemProperties.Type.v,
           mountPath: buildMountPath(filesystemProperties.MountPath.v),
           label: buildLabel(filesystemProperties.Label.v)
@@ -330,42 +377,6 @@ class ProposalManager {
   }
 
   /**
-   * @typedef {object} ProposalSettings
-   * @property {string} bootDevice
-   * @property {string} encryptionPassword
-   * @property {string} encryptionMethod
-   * @property {boolean} lvm
-   * @property {string} spacePolicy
-   * @property {SpaceAction[]} spaceActions
-   * @property {string[]} systemVGDevices
-   * @property {Volume[]} volumes
-   * @property {StorageDevice[]} installationDevices
-   *
-   * @typedef {object} SpaceAction
-   * @property {string} device
-   * @property {string} action
-   *
-   * @typedef {object} Volume
-   * @property {string} mountPath
-   * @property {string} fsType
-   * @property {number} minSize
-   * @property {number} [maxSize]
-   * @property {boolean} autoSize
-   * @property {boolean} snapshots
-   * @property {boolean} transactional
-   * @property {VolumeOutline} outline
-   *
-   * @typedef {object} VolumeOutline
-   * @property {boolean} required
-   * @property {string[]} fsTypes
-   * @property {boolean} supportAutoSize
-   * @property {boolean} adjustByRam
-   * @property {boolean} snapshotsConfigurable
-   * @property {boolean} snapshotsAffectSizes
-   * @property {string[]} sizeRelevantVolumes
-   */
-
-  /**
    * Gets the list of available devices
    *
    * @returns {Promise<StorageDevice[]>}
@@ -421,15 +432,6 @@ class ProposalManager {
    * Gets the values of the current proposal
    *
    * @return {Promise<ProposalResult|undefined>}
-   *
-   * @typedef {object} ProposalResult
-   * @property {ProposalSettings} settings
-   * @property {Action[]} actions
-   *
-   * @typedef {object} Action
-   * @property {string} text
-   * @property {boolean} subvol
-   * @property {boolean} delete
   */
   async getResult() {
     const proxy = await this.proposalProxy();

@@ -45,6 +45,15 @@ module Agama
             FILESYSTEM_INTERFACE = "org.opensuse.Agama.Storage1.Filesystem"
             private_constant :FILESYSTEM_INTERFACE
 
+            # SID of the file system.
+            #
+            # It is useful to detect whether a file system is new.
+            #
+            # @return [Integer]
+            def filesystem_sid
+              storage_device.filesystem.sid
+            end
+
             # File system type.
             #
             # @return [String] e.g., "ext4"
@@ -68,7 +77,8 @@ module Agama
 
             def self.included(base)
               base.class_eval do
-                dbus_interface FILESYSTEM_INTERFACE  do
+                dbus_interface FILESYSTEM_INTERFACE do
+                  dbus_reader :filesystem_sid, "u", dbus_name: "SID"
                   dbus_reader :filesystem_type, "s", dbus_name: "Type"
                   dbus_reader :filesystem_mount_path, "s", dbus_name: "MountPath"
                   dbus_reader :filesystem_label, "s", dbus_name: "Label"

@@ -26,11 +26,11 @@ import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
 import { Page } from "~/components/core";
 import {
-  ProposalActionsSection,
   ProposalPageMenu,
-  ProposalSettingsSection,
   ProposalDeviceSection,
-  ProposalTransactionalInfo
+  ProposalTransactionalInfo,
+  ProposalSettingsSection,
+  ProposalResultSection
 } from "~/components/storage";
 import { IDLE } from "~/client/status";
 
@@ -216,40 +216,33 @@ export default function ProposalPage() {
     calculate(newSettings).catch(console.error);
   };
 
-  const PageContent = () => {
-    return (
-      <>
-        <ProposalTransactionalInfo
-          settings={state.settings}
-        />
-        <ProposalDeviceSection
-          settings={state.settings}
-          availableDevices={state.availableDevices}
-          isLoading={state.loading}
-          onChange={changeSettings}
-        />
-        <ProposalSettingsSection
-          availableDevices={state.availableDevices}
-          encryptionMethods={state.encryptionMethods}
-          volumeTemplates={state.volumeTemplates}
-          settings={state.settings}
-          onChange={changeSettings}
-          isLoading={state.loading}
-        />
-        <ProposalActionsSection
-          actions={state.actions}
-          errors={state.errors}
-          isLoading={state.loading}
-        />
-      </>
-    );
-  };
-
   return (
-    // TRANSLATORS: page title
+    // TRANSLATORS: Storage page title
     <Page icon="hard_drive" title={_("Storage")}>
-      <PageContent />
       <ProposalPageMenu />
+      <ProposalTransactionalInfo
+        settings={state.settings}
+      />
+      <ProposalDeviceSection
+        settings={state.settings}
+        availableDevices={state.availableDevices}
+        isLoading={state.loading}
+        onChange={changeSettings}
+      />
+      <ProposalSettingsSection
+        availableDevices={state.availableDevices}
+        encryptionMethods={state.encryptionMethods}
+        settings={state.settings}
+        onChange={changeSettings}
+        isLoading={state.loading}
+      />
+      <ProposalResultSection
+        system={state.system}
+        staging={state.staging}
+        actions={state.actions}
+        errors={state.errors}
+        isLoading={state.loading}
+      />
     </Page>
   );
 }
