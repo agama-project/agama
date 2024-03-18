@@ -9,7 +9,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 
 const DEFAULT_JWT_FILE: &str = ".agama/agama-jwt";
-const DEFAULT_AUTH_URL: &str = "http://localhost:3000/api/authenticate";
+const DEFAULT_AUTH_URL: &str = "http://localhost:3000/api/auth";
 const DEFAULT_FILE_MODE: u32 = 0o600;
 
 #[derive(Subcommand, Debug)]
