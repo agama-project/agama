@@ -60,7 +60,7 @@ struct Cli {
     pub command: Commands,
 }
 
-// check whether the connection uses SSL or not
+/// Checks whether the connection uses SSL or not
 async fn is_ssl_stream(stream: &tokio::net::TcpStream) -> bool {
     // a buffer for reading the first byte from the TCP connection
     let mut buf = [0u8; 1];
@@ -78,7 +78,7 @@ async fn is_ssl_stream(stream: &tokio::net::TcpStream) -> bool {
         .is_ok_and(|_| buf[0] == 0x16u8 || buf[0] == 0x80u8)
 }
 
-// build a SSL acceptor using a provided SSL certificate or generate a self-signed one
+/// Builds an SSL acceptor using a provided SSL certificate or generates a self-signed one
 fn create_ssl_acceptor(
     cert_file: &String,
     key_file: &String
@@ -111,8 +111,8 @@ fn create_ssl_acceptor(
     Ok(tls_builder.build())
 }
 
-// build a response for the HTTP -> HTTPS redirection
-// returns 308 permanent redirect
+/// Builds a response for the HTTP -> HTTPS redirection
+/// returns (HTTP response status code) 308 permanent redirect
 fn redirect_https(host: &str, uri: &hyper::Uri) -> Response<String> {
     let builder = Response::builder()
         // build the redirection target URL
@@ -126,9 +126,9 @@ fn redirect_https(host: &str, uri: &hyper::Uri) -> Response<String> {
         .expect("Failed to create redirection request")
 }
 
-// build an error response for the HTTP -> HTTPS redirection when we cannot build
-// the redirect response from the original request
-// returns error 400
+/// Builds an error response for the HTTP -> HTTPS redirection when we cannot build
+/// the redirect response from the original request
+/// returns error 400
 fn redirect_error() -> Response<String> {
     let builder = Response::builder().status(hyper::StatusCode::BAD_REQUEST);
 
@@ -140,9 +140,9 @@ fn redirect_error() -> Response<String> {
         .expect("Failed to create an error response")
 }
 
-// build a router for the HTTP -> HTTPS redirection
-// if the redirection URL cannot be built from the original request it returns error 400
-// instead of the redirection
+/// Builds a router for the HTTP -> HTTPS redirection
+/// if the redirection URL cannot be built from the original request it returns error 400
+/// instead of the redirection
 fn https_redirect() -> Router {
     // see https://docs.rs/axum/latest/axum/routing/struct.Router.html#example
     let redirect_service = tower::service_fn(|req: axum::extract::Request| async move {
@@ -159,7 +159,7 @@ fn https_redirect() -> Router {
         .route_service("/*path", redirect_service)
 }
 
-// start the web server
+/// Starts the web server
 async fn start_server(address: String, service: Router, ssl_acceptor: SslAcceptor) {
     tracing::info!("Starting Agama web server at {}", address);
 
