@@ -81,7 +81,7 @@ async fn is_ssl_stream(stream: &tokio::net::TcpStream) -> bool {
 /// Builds an SSL acceptor using a provided SSL certificate or generates a self-signed one
 fn create_ssl_acceptor(
     cert_file: &String,
-    key_file: &String
+    key_file: &String,
 ) -> Result<SslAcceptor, openssl::error::ErrorStack> {
     let mut tls_builder = SslAcceptor::mozilla_modern_v5(SslMethod::tls_server())?;
 
