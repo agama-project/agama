@@ -114,12 +114,12 @@ fn reason_to_selected_by(
 pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &'static str = "org.opensuse.Agama.Software1";
     const DBUS_PATH: &'static str = "/org/opensuse/Agama/Software1";
+    const DBUS_PRODUCT_PATH: &'static str = "/org/opensuse/Agama/Software1/Product";
 
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let software_issues = issues_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
-    let product_issues =
-        issues_router(&dbus, DBUS_SERVICE, "/org/opensuse/Agama/Software1/Product").await?;
+    let product_issues = issues_router(&dbus, DBUS_SERVICE, DBUS_PRODUCT_PATH).await?;
 
     let product = ProductClient::new(dbus.clone()).await?;
     let software = SoftwareClient::new(dbus).await?;
