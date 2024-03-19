@@ -8,7 +8,7 @@
 use std::collections::HashMap;
 use crate::{error::Error, web::Event};
 use agama_lib::{
-    error::ServiceError, proxies::Questions1Proxy,
+    error::ServiceError, proxies::{GenericQuestionProxy, QuestionWithPasswordProxy},
 };
 use anyhow::Context;
 use axum::{
@@ -19,7 +19,7 @@ use axum::{
     Json, Router,
 };
 use tokio_stream::{Stream, StreamExt};
-use zbus::fdo::ObjectManagerProxy;
+use zbus::{fdo::ObjectManagerProxy, names::{InterfaceName, OwnedInterfaceName}};
 use zbus::zvariant::OwnedObjectPath;
 use zbus::zvariant::ObjectPath;
 use thiserror::Error;
@@ -30,7 +30,6 @@ use serde_json::json;
 #[derive(Clone)]
 struct QuestionsClient<'a> {
     connection: zbus::Connection,
-    questions_proxy: Questions1Proxy<'a>,
     objects_proxy: ObjectManagerProxy<'a>,
 }
 
@@ -38,24 +37,70 @@ impl<'a> QuestionsClient<'a> {
     pub async fn new(dbus: zbus::Connection) -> Result<Self, zbus::Error> {
         Ok(Self {
             connection: dbus.clone(),
-            questions_proxy: Questions1Proxy::new(&dbus).await?,
             objects_proxy: ObjectManagerProxy::new(&dbus).await?
         })
     }
 
-    pub async fn questions(self) -> Result<Vec<Question>, ServiceError> {
-        // TODO: real call to dbus
-        Ok(vec![])
-    }
-
-    pub async fn answer(self, id: u32, answer: Answer) -> Result<(), ServiceError> {
+    pub async fn questions(&self) -> Result<Vec<Question>, ServiceError> {
         let objects = self.objects_proxy.get_managed_objects().await
             .context("failed to get managed object with Object Manager")?;
+        let mut result: Vec<Question> = Vec::with_capacity(objects.len());
+        let password_interface = OwnedInterfaceName::from(
+            InterfaceName::from_static_str("org.opensuse.Agama1.Questions.WithPassword")
+                .context("Failed to create interface name for question with password")?
+        );
+        for (path, interfaces_hash) in objects.iter() {
+            if interfaces_hash.contains_key(&password_interface) {
+                result.push(self.create_question_with_password(&path).await?)
+            } else {
+                result.push(self.create_generic_question(&path).await?)
+            }
+        }
+        Ok(result)
+    }
+
+    async fn create_generic_question(&self, path: &OwnedObjectPath) -> Result<Question, ServiceError> {
+        let dbus_question = GenericQuestionProxy::builder(&self.connection)
+            .path(path)?.cache_properties(zbus::CacheProperties::No).build().await?;
+        let result = Question {
+            generic: GenericQuestion {
+                id: dbus_question.id().await?,
+                class: dbus_question.class().await?,
+                text: dbus_question.text().await?,
+                options: dbus_question.options().await?,
+                default_option: dbus_question.default_option().await?,
+                data: dbus_question.data().await?
+            },
+            with_password: None
+        };
+
+        Ok(result)
+    }
+
+    async fn create_question_with_password(&self, path: &OwnedObjectPath) -> Result<Question, ServiceError> {
+        let dbus_question = QuestionWithPasswordProxy::builder(&self.connection)
+            .path(path)?.cache_properties(zbus::CacheProperties::No).build().await?;
+        let mut result = self.create_generic_question(path).await?;
+        result.with_password = Some(QuestionWithPassword{
+            password: dbus_question.password().await?
+        });
+
+        Ok(result)
+    }
+
+    pub async fn answer(&self, id: u32, answer: Answer) -> Result<(), ServiceError> {
         let question_path = OwnedObjectPath::from(
             ObjectPath::try_from(format!("/org/opensuse/Agama1/Questions/{}", id))
                 .context("Failed to create dbus path")?
             );
-        let question = objects.get(&question_path);
+        if let Some(password) = answer.with_password {
+            let dbus_password = QuestionWithPasswordProxy::builder(&self.connection)
+            .path(&question_path)?.cache_properties(zbus::CacheProperties::No).build().await?;
+            dbus_password.set_password(password.password.as_str()).await?
+        }
+        let dbus_generic = GenericQuestionProxy::builder(&self.connection)
+            .path(&question_path)?.cache_properties(zbus::CacheProperties::No).build().await?;
+        dbus_generic.set_answer(answer.generic.answer.as_str()).await?;
         Ok(())
     }
 }
@@ -160,6 +205,6 @@ State(state): State<QuestionsState<'_>>,
 Path(question_id): Path<u32>,
 Json(answer): Json<Answer>
 ) -> Result<(), QuestionsError> {
-    //TODO: real answer
+    state.questions.answer(question_id, answer).await?;
     Ok(())
 }

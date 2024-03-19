@@ -117,7 +117,8 @@ trait Questions1 {
 
 #[dbus_proxy(
     interface = "org.opensuse.Agama1.Questions.Generic",
-    assume_defaults = true
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Questions"
 )]
 trait GenericQuestion {
     /// Answer property
@@ -153,7 +154,8 @@ trait GenericQuestion {
 
 #[dbus_proxy(
     interface = "org.opensuse.Agama1.Questions.WithPassword",
-    assume_defaults = true
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Questions"
 )]
 trait QuestionWithPassword {
     /// Password property
