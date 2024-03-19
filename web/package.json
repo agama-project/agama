@@ -99,7 +99,7 @@
   },
   "dependencies": {
     "@icons-pack/react-simple-icons": "^9.1.0",
-    "@material-symbols/svg-400": "^0.14.0",
+    "@material-symbols/svg-400": "^0.17.0",
     "@patternfly/patternfly": "^5.1.0",
     "@patternfly/react-core": "^5.1.1",
     "@patternfly/react-table": "^5.1.1",
