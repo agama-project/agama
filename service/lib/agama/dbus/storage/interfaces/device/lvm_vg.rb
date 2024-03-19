@@ -20,68 +20,57 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "y2storage/filesystem_label"
 
 module Agama
   module DBus
     module Storage
       module Interfaces
         module Device
-          # Interface for file systems.
+          # Interface for a LVM Volume Group.
           #
           # @note This interface is intended to be included by {Agama::DBus::Storage::Device} if
           #   needed.
-          module Filesystem
+          module LvmVg
             # Whether this interface should be implemented for the given device.
             #
-            # @note Formatted devices implement this interface.
+            # @note LVM Volume Groups implement this interface.
             #
             # @param storage_device [Y2Storage::Device]
             # @return [Boolean]
             def self.apply?(storage_device)
-              storage_device.is?(:blk_device) && !storage_device.filesystem.nil?
+              storage_device.is?(:lvm_vg)
             end
 
-            FILESYSTEM_INTERFACE = "org.opensuse.Agama.Storage1.Filesystem"
-            private_constant :FILESYSTEM_INTERFACE
+            VOLUME_GROUP_INTERFACE = "org.opensuse.Agama.Storage1.LVM.VolumeGroup"
+            private_constant :VOLUME_GROUP_INTERFACE
 
-            # SID of the file system.
-            #
-            # It is useful to detect whether a file system is new.
+            # Size of the volume group in bytes
             #
             # @return [Integer]
-            def filesystem_sid
-              storage_device.filesystem.sid
+            def lvm_vg_size
+              storage_device.size.to_i
             end
 
-            # File system type.
+            # D-Bus paths of the objects representing the physical volumes.
             #
-            # @return [String] e.g., "ext4"
-            def filesystem_type
-              storage_device.filesystem.type.to_s
+            # @return [Array<String>]
+            def lvm_vg_pvs
+              storage_device.lvm_pvs.map { |p| tree.path_for(p.plain_blk_device) }
             end
 
-            # Mount path of the file system.
+            # D-Bus paths of the objects representing the logical volumes.
             #
-            # @return [String] Empty if not mounted.
-            def filesystem_mount_path
-              storage_device.filesystem.mount_path || ""
-            end
-
-            # Label of the file system.
-            #
-            # @return [String] Empty if it has no label.
-            def filesystem_label
-              Y2Storage::FilesystemLabel.new(storage_device).to_s
+            # @return [Array<String>]
+            def lvm_vg_lvs
+              storage_device.lvm_lvs.map { |l| tree.path_for(l) }
             end
 
             def self.included(base)
               base.class_eval do
-                dbus_interface FILESYSTEM_INTERFACE do
-                  dbus_reader :filesystem_sid, "u", dbus_name: "SID"
-                  dbus_reader :filesystem_type, "s", dbus_name: "Type"
-                  dbus_reader :filesystem_mount_path, "s", dbus_name: "MountPath"
-                  dbus_reader :filesystem_label, "s", dbus_name: "Label"
+                dbus_interface VOLUME_GROUP_INTERFACE do
+                  dbus_reader :lvm_vg_size, "t", dbus_name: "Size"
+                  dbus_reader :lvm_vg_pvs, "ao", dbus_name: "PhysicalVolumes"
+                  dbus_reader :lvm_vg_lvs, "ao", dbus_name: "LogicalVolumes"
                 end
               end
             end

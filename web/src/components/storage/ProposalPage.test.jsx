@@ -84,7 +84,13 @@ const storageMock = {
     getProductMountPoints: jest.fn().mockResolvedValue([]),
     getResult: jest.fn().mockResolvedValue(undefined),
     defaultVolume: jest.fn(mountPath => Promise.resolve({ mountPath })),
-    calculate: jest.fn().mockResolvedValue(0)
+    calculate: jest.fn().mockResolvedValue(0),
+  },
+  system: {
+    getDevices: jest.fn().mockResolvedValue([vda, vdb])
+  },
+  staging: {
+    getDevices: jest.fn().mockResolvedValue([vda])
   },
   getErrors: jest.fn().mockResolvedValue([]),
   isDeprecated: jest.fn().mockResolvedValue(false),
@@ -123,12 +129,12 @@ it("loads the proposal data", async () => {
   await screen.findByText(/\/dev\/vda/);
 });
 
-it("renders the settings, find space and actions sections", async () => {
+it("renders the device, settings, find space and result sections", async () => {
   installerRender(<ProposalPage />);
 
+  await screen.findByText(/Device/);
   await screen.findByText(/Settings/);
-  await screen.findByText(/Find Space/);
-  await screen.findByText(/Planned Actions/);
+  await screen.findByText(/Result/);
 });
 
 describe("when the storage devices become deprecated", () => {

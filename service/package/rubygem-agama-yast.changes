@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar 19 14:09:54 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Extend the storage D-Bus API: export LVM volume groups and
+  logical volumes, export staging devices, add Device and Partition
+  interfaces, export unused slots (gh#openSUSE/agama#1104).
+
+-------------------------------------------------------------------
 Tue Feb 27 15:53:46 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Rename the gem to agama-yast and the package to

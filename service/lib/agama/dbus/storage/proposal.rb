@@ -155,6 +155,7 @@ module Agama
         # @return [Hash]
         def to_dbus_action(action)
           {
+            "Device" => action.target_device.sid,
             "Text"   => action.sentence,
             "Subvol" => action.device_is?(:btrfs_subvolume),
             "Delete" => action.delete?
