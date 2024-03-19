@@ -180,8 +180,12 @@ const isTransactionalRoot = (volume) => {
  * @param {Volume[]} volumes
  * @returns {boolean}
  */
-const isTransactionalSystem = (volumes) => {
-  return volumes.find(v => isTransactionalRoot(v)) !== undefined;
+const isTransactionalSystem = (volumes = []) => {
+  try {
+    return volumes?.find(v => isTransactionalRoot(v)) !== undefined;
+  } catch {
+    return false;
+  }
 };
 
 export {
