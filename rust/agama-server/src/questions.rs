@@ -1,12 +1,19 @@
 use std::collections::HashMap;
 
-use crate::error::Error;
 use agama_lib::questions::{self, GenericQuestion, WithPassword};
 use log;
 use zbus::{dbus_interface, fdo::ObjectManager, zvariant::ObjectPath, Connection};
 
 mod answers;
 pub mod web;
+
+#[derive(thiserror::Error, Debug)]
+pub enum QuestionsError {
+    #[error("Could not read the answers file: {0}")]
+    IO(std::io::Error),
+    #[error("Could not deserialize the answers file: {0}")]
+    Deserialize(serde_yaml::Error),
+}
 
 #[derive(Clone, Debug)]
 struct GenericQuestionObject(questions::GenericQuestion);
@@ -49,7 +56,7 @@ impl GenericQuestionObject {
     }
 
     #[dbus_interface(property)]
-    pub fn set_answer(&mut self, value: &str) -> Result<(), zbus::fdo::Error> {
+    pub fn set_answer(&mut self, value: &str) -> zbus::fdo::Result<()> {
         // TODO verify if answer exists in options or if it is valid in other way
         self.0.answer = value.to_string();
 
@@ -144,7 +151,7 @@ impl Questions {
         options: Vec<&str>,
         default_option: &str,
         data: HashMap<String, String>,
-    ) -> Result<ObjectPath, zbus::fdo::Error> {
+    ) -> zbus::fdo::Result<ObjectPath> {
         log::info!("Creating new question with text: {}.", text);
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
@@ -177,7 +184,7 @@ impl Questions {
         options: Vec<&str>,
         default_option: &str,
         data: HashMap<String, String>,
-    ) -> Result<ObjectPath, zbus::fdo::Error> {
+    ) -> zbus::fdo::Result<ObjectPath> {
         log::info!("Creating new question with password with text: {}.", text);
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
@@ -214,7 +221,7 @@ impl Questions {
     }
 
     /// Removes question at given object path
-    async fn delete(&mut self, question: ObjectPath<'_>) -> Result<(), Error> {
+    async fn delete(&mut self, question: ObjectPath<'_>) -> zbus::fdo::Result<()> {
         // TODO: error checking
         let id: u32 = question.rsplit('/').next().unwrap().parse().unwrap();
         let qtype = self.questions.get(&id).unwrap();
@@ -267,16 +274,12 @@ impl Questions {
         }
     }
 
-    fn add_answer_file(&mut self, path: String) -> Result<(), Error> {
+    fn add_answer_file(&mut self, path: String) -> zbus::fdo::Result<()> {
         log::info!("Adding answer file {}", path);
-        let answers = answers::Answers::new_from_file(path.as_str());
-        match answers {
-            Ok(answers) => {
-                self.answer_strategies.push(Box::new(answers));
-                Ok(())
-            }
-            Err(e) => Err(e.into()),
-        }
+        let answers = answers::Answers::new_from_file(path.as_str())
+            .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
+        self.answer_strategies.push(Box::new(answers));
+        Ok(())
     }
 }
 

@@ -310,6 +310,10 @@ const SizeAuto = ({ volume }) => {
       // TRANSLATORS: conjunction for merging two list items
                             volume.outline.sizeRelevantVolumes.join(_(", "))));
 
+  if (volume.outline.adjustByRam)
+    // TRANSLATORS: item which affects the final computed partition size
+    conditions.push(_("the amount of RAM in the system"));
+
   // TRANSLATORS: the %s is replaced by the items which affect the computed size
   const conditionsText = sprintf(_("The final size depends on %s."),
     // TRANSLATORS: conjunction for merging two texts

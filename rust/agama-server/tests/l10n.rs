@@ -49,7 +49,7 @@ async fn test_keymaps() {
     let response = service.oneshot(request).await.unwrap();
     assert_eq!(response.status(), StatusCode::OK);
     let body = body_to_string(response.into_body()).await;
-    assert!(body.contains(r#""layout":"us""#));
+    assert!(body.contains(r#""id":"us""#));
 }
 
 #[test]

@@ -24,16 +24,14 @@
 import { L10nClient } from "./l10n";
 import { ManagerClient } from "./manager";
 import { Monitor } from "./monitor";
-import { SoftwareClient } from "./software";
+import { ProductClient, SoftwareClient } from "./software";
 import { StorageClient } from "./storage";
 import { UsersClient } from "./users";
 import phase from "./phase";
 import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
 import cockpit from "../lib/cockpit";
-
-const BUS_ADDRESS_FILE = "/run/agama/bus.address";
-const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
+import { HTTPClient } from "./http";
 
 /**
  * @typedef {object} InstallerClient
@@ -41,6 +39,7 @@ const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
  * @property {ManagerClient} manager - manager client.
  * @property {Monitor} monitor - service monitor.
  * @property {NetworkClient} network - network client.
+ * @property {ProductClient} product - product client.
  * @property {SoftwareClient} software - software client.
  * @property {StorageClient} storage - storage client.
  * @property {UsersClient} users - users client.
@@ -63,22 +62,26 @@ const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
  * @property {Issue[]} [software] - Issues from software.
  *
  * @typedef {(issues: Issues) => void} IssuesHandler
-*/
+ */
 
 /**
  * Creates the Agama client
  *
+ * @param {URL} url - URL of the HTTP API.
  * @return {InstallerClient}
  */
-const createClient = (address = "unix:path=/run/agama/bus") => {
-  const l10n = new L10nClient(address);
-  const manager = new ManagerClient(address);
-  const monitor = new Monitor(address, MANAGER_SERVICE);
-  const network = new NetworkClient(address);
-  const software = new SoftwareClient(address);
-  const storage = new StorageClient(address);
-  const users = new UsersClient(address);
-  const questions = new QuestionsClient(address);
+const createClient = (url) => {
+  const client = new HTTPClient(url);
+  const l10n = new L10nClient(client);
+  // TODO: unify with the manager client
+  const product = new ProductClient(client);
+  const manager = new ManagerClient(client);
+  // const monitor = new Monitor(address, MANAGER_SERVICE);
+  // const network = new NetworkClient(address);
+  // const software = new SoftwareClient(address);
+  // const storage = new StorageClient(address);
+  // const users = new UsersClient(address);
+  // const questions = new QuestionsClient(address);
 
   /**
    * Gets all issues, grouping them by context.
@@ -88,13 +91,13 @@ const createClient = (address = "unix:path=/run/agama/bus") => {
    *
    * @returns {Promise<Issues>}
    */
-  const issues = async () => {
-    return {
-      product: await software.product.getIssues(),
-      storage: await storage.getIssues(),
-      software: await software.getIssues()
-    };
-  };
+  // const issues = async () => {
+  //   return {
+  //     product: await software.product.getIssues(),
+  //     storage: await storage.getIssues(),
+  //     software: await software.getIssues(),
+  //   };
+  // };
 
   /**
    * Registers a callback to be executed when issues change.
@@ -105,42 +108,55 @@ const createClient = (address = "unix:path=/run/agama/bus") => {
   const onIssuesChange = (handler) => {
     const unsubscribeCallbacks = [];
 
-    unsubscribeCallbacks.push(software.product.onIssuesChange(i => handler({ product: i })));
-    unsubscribeCallbacks.push(storage.onIssuesChange(i => handler({ storage: i })));
-    unsubscribeCallbacks.push(software.onIssuesChange(i => handler({ software: i })));
+    // unsubscribeCallbacks.push(
+    //   software.product.onIssuesChange((i) => handler({ product: i })),
+    // );
+    // unsubscribeCallbacks.push(
+    //   storage.onIssuesChange((i) => handler({ storage: i })),
+    // );
+    // unsubscribeCallbacks.push(
+    //   software.onIssuesChange((i) => handler({ software: i })),
+    // );
 
-    return () => { unsubscribeCallbacks.forEach(cb => cb()) };
+    return () => {
+      unsubscribeCallbacks.forEach((cb) => cb());
+    };
   };
 
   const isConnected = async () => {
-    try {
-      await manager.getStatus();
-      return true;
-    } catch (e) {
-      return false;
-    }
+    // try {
+    //   await manager.getStatus();
+    //   return true;
+    // } catch (e) {
+    //   return false;
+    // }
+    return true;
   };
 
   return {
     l10n,
+    product,
     manager,
-    monitor,
-    network,
-    software,
-    storage,
-    users,
-    questions,
-    issues,
+    // monitor,
+    // network,
+    // software,
+    // storage,
+    // users,
+    // questions,
+    // issues,
     onIssuesChange,
     isConnected,
-    onDisconnect: (handler) => monitor.onDisconnect(handler)
+    onDisconnect: (handler) => {
+      return () => {};
+    },
+    // onDisconnect: (handler) => monitor.onDisconnect(handler),
   };
 };
 
 const createDefaultClient = async () => {
-  const file = cockpit.file(BUS_ADDRESS_FILE);
-  const address = await file.read();
-  return (address) ? createClient(address) : createClient();
+  const httpUrl = new URL(window.location.toString());
+  httpUrl.hash = "";
+  return createClient(httpUrl);
 };
 
 export { createClient, createDefaultClient, phase };

@@ -24,7 +24,7 @@ import { Outlet } from "react-router-dom";
 
 import { useInstallerClient, useInstallerClientStatus } from "~/context/installer";
 import { useProduct } from "./context/product";
-import { STARTUP, INSTALL } from "~/client/phase";
+import { INSTALL, STARTUP } from "~/client/phase";
 import { BUSY } from "~/client/status";
 
 import { DBusError, If, Installation } from "~/components/core";

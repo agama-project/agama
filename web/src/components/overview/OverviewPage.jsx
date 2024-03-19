@@ -41,6 +41,25 @@ export default function OverviewPage() {
     return <Navigate to="/products" />;
   }
 
+  // return (
+  //   <Page
+  //     icon="list_alt"
+  //     // TRANSLATORS: page title
+  //     title={_("Installation Summary")}
+  //   >
+  //     <ProductSection />
+  //     <L10nSection />
+  //     <NetworkSection />
+  //     <StorageSection showErrors />
+  //     <SoftwareSection showErrors />
+  //     <UsersSection showErrors={showErrors} />
+
+  //     <Page.Actions>
+  //       <InstallButton onClick={() => setShowErrors(true)} />
+  //     </Page.Actions>
+  //   </Page>
+  // );
+
   return (
     <Page
       icon="list_alt"
@@ -49,14 +68,6 @@ export default function OverviewPage() {
     >
       <ProductSection />
       <L10nSection />
-      <NetworkSection />
-      <StorageSection showErrors />
-      <SoftwareSection showErrors />
-      <UsersSection showErrors={showErrors} />
-
-      <Page.Actions>
-        <InstallButton onClick={() => setShowErrors(true)} />
-      </Page.Actions>
     </Page>
   );
 }

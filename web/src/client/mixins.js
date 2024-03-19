@@ -36,11 +36,20 @@ const VALIDATION_IFACE = "org.opensuse.Agama1.Validation";
  */
 
 /**
+ * @typedef {GConstructor<{ client: import("./http").HTTPClient }>} WithHTTPClient
+ */
+
+/**
  * @typedef {GConstructor<{ client: import("./dbus").default, proxies: Object }>} WithDBusProxies
  */
 
 /**
  * @typedef {[string, string, number, number]} DBusIssue
+ */
+
+/**
+ * @typedef {object} StatusResource
+ * @property {number} current - current status.
  */
 
 /**
@@ -134,37 +143,39 @@ const WithIssues = (superclass, object_path) => class extends superclass {
 };
 
 /**
- * Extends the given class with methods to get and track the progress over D-Bus
+ * Extends the given class with methods to get and track the service status
  *
- * @template {!WithDBusClient} T
- * @param {string} object_path - object path
+ * @template {!WithHTTPClient} T
  * @param {T} superclass - superclass to extend
+ * @param {string} status_path - status resource path (e.g., "/manager/status").
+ * @param {string} service_name - service name (e.g., "org.opensuse.Agama.Manager1").
  */
-const WithStatus = (superclass, object_path) => class extends superclass {
-  /**
-   * Returns the service status
-   *
-   * @return {Promise<number>} 0 for idle, 1 for busy
-   */
-  async getStatus() {
-    const proxy = await this.client.proxy(STATUS_IFACE, object_path);
-    return proxy.Current;
-  }
+const WithStatus = (superclass, status_path, service_name) =>
+  class extends superclass {
+    /**
+     * Returns the service status
+     *
+     * @return {Promise<number>} 0 for idle, 1 for busy
+     */
+    async getStatus() {
+      const status = await this.client.get(status_path);
+      return status.current;
+    }
 
-  /**
-   * Register a callback to run when the "CurrentInstallationPhase" changes
-   *
-   * @param {function} handler - callback function
-   * @return {function} function to disable the callback
-   */
-  onStatusChange(handler) {
-    return this.client.onObjectChanged(object_path, STATUS_IFACE, (changes) => {
-      if ("Current" in changes) {
-        handler(changes.Current.v);
-      }
-    });
-  }
-};
+    /**
+     * Register a callback to run when the "CurrentInstallationPhase" changes
+     *
+     * @param {function} handler - callback function
+     * @return {function} function to disable the callback
+     */
+    onStatusChange(handler) {
+      return this.client.onEvent("StatusChanged", ({ status, service }) => {
+        if (service === service_name && status) {
+          handler(status);
+        }
+      });
+    }
+  };
 
 /**
  * @typedef {object} Progress
@@ -181,45 +192,53 @@ const WithStatus = (superclass, object_path) => class extends superclass {
  */
 
 /**
- * Extends the given class with methods to get and track the progress over D-Bus
- * @param {string} object_path - object_path
+ * Extends the given class with methods to get and track the service progress
+ *
+ * @template {!WithHTTPClient} T
  * @param {T} superclass - superclass to extend
- * @template {!WithDBusClient} T
+ * @param {string} progress_path - status resource path (e.g., "/manager/status").
+ * @param {string} service_name - service name (e.g., "org.opensuse.Agama.Manager1").
  */
-const WithProgress = (superclass, object_path) => class extends superclass {
-  /**
-   * Returns the service progress
-   *
-   * @return {Promise<Progress>} an object containing the total steps,
-   *   the current step and whether the service finished or not.
-   */
-  async getProgress() {
-    const proxy = await this.client.proxy(PROGRESS_IFACE, object_path);
-    return {
-      total: proxy.TotalSteps,
-      current: proxy.CurrentStep[0],
-      message: proxy.CurrentStep[1],
-      finished: proxy.Finished
-    };
-  }
+const WithProgress = (superclass, progress_path, service_name) =>
+  class extends superclass {
+    /**
+     * Returns the service progress
+     *
+     * @return {Promise<Progress>} an object containing the total steps,
+     *   the current step and whether the service finished or not.
+     */
+    async getProgress() {
+      const { current_step, max_steps, current_title, finished } = await this.client.get(
+        progress_path,
+      );
+      return {
+        total: max_steps,
+        current: current_step,
+        message: current_title,
+        finished,
+      };
+    }
 
-  /**
-   * Register a callback to run when the progress changes
-   *
-   * @param {ProgressHandler} handler - callback function
-   * @return {import ("./dbus").RemoveFn} function to disable the callback
-   */
-  onProgressChange(handler) {
-    return this.client.onObjectChanged(object_path, PROGRESS_IFACE, (changes) => {
-      const { TotalSteps, CurrentStep, Finished } = changes;
-      if (TotalSteps === undefined && CurrentStep === undefined && Finished === undefined) {
-        return;
-      }
-
-      this.getProgress().then(handler);
-    });
-  }
-};
+    /**
+     * Register a callback to run when the progress changes
+     *
+     * @param {ProgressHandler} handler - callback function
+     * @return {import ("./dbus").RemoveFn} function to disable the callback
+     */
+    onProgressChange(handler) {
+      return this.client.onEvent("Progress", (progress) => {
+        if (progress?.service === service_name) {
+          const { current_step, max_steps, current_title, finished } = progress;
+          handler({
+            total: max_steps,
+            current: current_step,
+            message: current_title,
+            finished,
+          });
+        }
+      });
+    }
+  };
 
 /**
  * @typedef {object} ValidationError

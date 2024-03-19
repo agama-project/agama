@@ -1,16 +1,36 @@
-use agama_lib::{progress::Progress, software::SelectedBy};
+use crate::l10n::web::LocaleConfig;
+use agama_lib::{manager::InstallationPhase, progress::Progress, software::SelectedBy};
 use serde::Serialize;
 use std::collections::HashMap;
 use tokio::sync::broadcast::{Receiver, Sender};
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 #[serde(tag = "type")]
 pub enum Event {
-    LocaleChanged { locale: String },
-    Progress(Progress),
-    ProductChanged { id: String },
+    L10nConfigChanged(LocaleConfig),
+    LocaleChanged {
+        locale: String,
+    },
+    Progress {
+        service: String,
+        #[serde(flatten)]
+        progress: Progress,
+    },
+    ProductChanged {
+        id: String,
+    },
     PatternsChanged(HashMap<String, SelectedBy>),
-    QuestionsChanged
+    QuestionsChanged,
+    InstallationPhaseChanged {
+        phase: InstallationPhase,
+    },
+    BusyServicesChanged {
+        services: Vec<String>,
+    },
+    ServiceStatusChanged {
+        service: String,
+        status: u32,
+    },
 }
 
 pub type EventsSender = Sender<Event>;

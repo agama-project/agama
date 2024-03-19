@@ -1,10 +1,15 @@
 //! Implements the handlers for the HTTP-based API.
 
 use super::{
-    auth::{generate_token, AuthError},
+    auth::{generate_token, AuthError, TokenClaims},
     state::ServiceState,
 };
-use axum::{extract::State, Json};
+use axum::{
+    extract::State,
+    http::{header::SET_COOKIE, HeaderMap},
+    response::IntoResponse,
+    Json,
+};
 use pam::Client;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -36,13 +41,13 @@ pub struct LoginRequest {
     pub password: String,
 }
 
-#[utoipa::path(get, path = "/authenticate", responses(
-    (status = 200, description = "The user have been successfully authenticated", body = AuthResponse)
+#[utoipa::path(post, path = "/api/auth", responses(
+    (status = 200, description = "The user has been successfully authenticated.", body = AuthResponse)
 ))]
-pub async fn authenticate(
+pub async fn login(
     State(state): State<ServiceState>,
     Json(login): Json<LoginRequest>,
-) -> Result<Json<AuthResponse>, AuthError> {
+) -> Result<impl IntoResponse, AuthError> {
     let mut pam_client = Client::with_password("agama")?;
     pam_client
         .conversation_mut()
@@ -50,5 +55,38 @@ pub async fn authenticate(
     pam_client.authenticate()?;
 
     let token = generate_token(&state.config.jwt_secret);
-    Ok(Json(AuthResponse { token }))
+    let content = Json(AuthResponse {
+        token: token.to_owned(),
+    });
+
+    let mut headers = HeaderMap::new();
+    let cookie = format!("token={}; HttpOnly", &token);
+    headers.insert(
+        SET_COOKIE,
+        cookie.parse().expect("could not build a valid cookie"),
+    );
+
+    Ok((headers, content))
+}
+
+#[utoipa::path(delete, path = "/api/auth", responses(
+    (status = 204, description = "The user has been logged out.")
+))]
+pub async fn logout(_claims: TokenClaims) -> Result<impl IntoResponse, AuthError> {
+    let mut headers = HeaderMap::new();
+    let cookie = "token=deleted; HttpOnly; Expires=Thu, 01 Jan 1970 00:00:00 GMT".to_string();
+    headers.insert(
+        SET_COOKIE,
+        cookie.parse().expect("could not build a valid cookie"),
+    );
+    Ok(headers)
+}
+
+/// Check whether the user is authenticated.
+#[utoipa::path(get, path = "/api/auth", responses(
+    (status = 200, description = "The user is authenticated."),
+    (status = 400, description = "The user is not authenticated.")
+))]
+pub async fn session(_claims: TokenClaims) -> Result<(), AuthError> {
+    Ok(())
 }

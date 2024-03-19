@@ -184,17 +184,6 @@ function reload(newLanguage) {
 }
 
 /**
- * Extracts the keymap from the `setxkbmap -query` output.
- *
- * @param {string} output
- * @returns {string|undefined}
- */
-function keymapFromX(output) {
-  const matcher = /^layout:\s+(\S.*)$/m;
-  return matcher.exec(output)?.at(1);
-}
-
-/**
  * This provider sets the installer locale. By default, it uses the URL "lang" query parameter or
  * the preferred locale from the browser and synchronizes the UI and the backend locales. To
  * activate a new locale it reloads the whole page.
@@ -258,13 +247,11 @@ function InstallerL10nProvider({ children }) {
   }, [storeInstallerLanguage, setLanguage]);
 
   const changeKeymap = useCallback(async (id) => {
+    if (!client) return;
+
     setKeymap(id);
-    // write the config to file (/etc/X11/xorg.conf.d/00-keyboard.conf),
-    // this also sets the console keyboard!
-    await cockpit.spawn(["localectl", "set-x11-keymap", id]);
-    // set the current X11 keyboard
-    await cockpit.spawn(["setxkbmap", id], { environ: ["DISPLAY=:0"] });
-  }, [setKeymap]);
+    client.l10n.setUIKeymap(id);
+  }, [setKeymap, client]);
 
   useEffect(() => {
     if (!language) changeLanguage();
@@ -278,8 +265,9 @@ function InstallerL10nProvider({ children }) {
   }, [client, language, backendPending, storeInstallerLanguage]);
 
   useEffect(() => {
-    cockpit.spawn(["setxkbmap", "-query"], { environ: ["DISPLAY=:0"] }).then(output => setKeymap(keymapFromX(output)));
-  }, [setKeymap]);
+    if (!client) return;
+    client.l10n.getUIKeymap().then(setKeymap);
+  }, [setKeymap, client]);
 
   const value = { language, changeLanguage, keymap, changeKeymap };
 

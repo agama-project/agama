@@ -57,8 +57,8 @@ export default function ProductSection() {
   const { cancellablePromise } = useCancellablePromise();
 
   useEffect(() => {
-    cancellablePromise(software.product.getIssues()).then(setIssues);
-    return software.product.onIssuesChange(setIssues);
+    // cancellablePromise(software.product.getIssues()).then(setIssues);
+    // return software.product.onIssuesChange(setIssues);
   }, [cancellablePromise, setIssues, software]);
 
   const isLoading = !selectedProduct;

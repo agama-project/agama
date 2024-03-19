@@ -469,6 +469,27 @@ ul[data-type="agama/list"][role="grid"] {
   }
 }
 
+[data-type="agama/reminder"] {
+  --accent-color: var(--color-primary-lighter);
+  --inline-margin: calc(var(--header-icon-size) + var(--spacer-small));
+
+  display: flex;
+  gap: var(--spacer-small);
+  margin-inline: var(--inline-margin);
+  margin-block-end: var(--spacer-normal);
+  padding: var(--spacer-smaller) var(--spacer-small);
+  border-inline-start: 3px solid var(--accent-color);
+
+  svg {
+    fill: var(--accent-color);
+  }
+
+  h4 {
+    color: var(--accent-color);
+    margin-block-end: var(--spacer-smaller);
+  }
+}
+
 [role="dialog"] {
   section:not([class^="pf-c"]) {
     > svg:first-child {

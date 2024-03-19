@@ -39,13 +39,13 @@ function ProductProvider({ children }) {
 
   useEffect(() => {
     const load = async () => {
-      const productManager = client.software.product;
-      const available = await cancellablePromise(productManager.getAll());
-      const selected = await cancellablePromise(productManager.getSelected());
-      const registration = await cancellablePromise(productManager.getRegistration());
+      const productClient = client.product;
+      const available = await cancellablePromise(productClient.getAll());
+      const selected = await cancellablePromise(productClient.getSelected());
+      // const registration = await cancellablePromise(productManager.getRegistration());
       setProducts(available);
-      setSelectedId(selected?.id || null);
-      setRegistration(registration);
+      setSelectedId(selected);
+      // setRegistration(registration);
     };
 
     if (client) {
@@ -56,13 +56,13 @@ function ProductProvider({ children }) {
   useEffect(() => {
     if (!client) return;
 
-    return client.software.product.onChange(setSelectedId);
+    return client.product.onChange(setSelectedId);
   }, [client, setSelectedId]);
 
   useEffect(() => {
-    if (!client) return;
+    // if (!client) return;
 
-    return client.software.product.onRegistrationChange(setRegistration);
+    // return client.product.onRegistrationChange(setRegistration);
   }, [client, setRegistration]);
 
   const value = { products, selectedId, registration };

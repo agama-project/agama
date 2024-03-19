@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,34 +19,21 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
-import { InstallerClientProvider } from "./installer";
-import { InstallerL10nProvider } from "./installerL10n";
-import { L10nProvider } from "./l10n";
-import { ProductProvider } from "./product";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "./context/auth";
+import { AppProviders } from "./context/app";
 
-/**
- * Combines all application providers.
- *
- * @param {object} props
- * @param {React.ReactNode} [props.children] - content to display within the provider.
- */
-function AgamaProviders({ children }) {
+export default function Protected() {
+  const { isLoggedIn } = useAuth();
+
+  if (isLoggedIn !== true) {
+    return <Navigate to="/login" />;
+  }
+
   return (
-    <InstallerClientProvider>
-      <InstallerL10nProvider>
-        <L10nProvider>
-          <ProductProvider>
-            {children}
-          </ProductProvider>
-        </L10nProvider>
-      </InstallerL10nProvider>
-    </InstallerClientProvider>
+    <AppProviders>
+      <Outlet />
+    </AppProviders>
   );
 }
-
-export {
-  AgamaProviders
-};

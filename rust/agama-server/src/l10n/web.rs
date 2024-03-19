@@ -6,20 +6,19 @@ use crate::{
     l10n::helpers,
     web::{Event, EventsSender},
 };
-use agama_locale_data::{InvalidKeymap, LocaleCode};
+use agama_locale_data::{InvalidKeymap, LocaleId};
 use axum::{
     extract::State,
-    http::StatusCode,
-    response::{IntoResponse, Response},
     routing::{get, put},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
-use serde_json::json;
-use std::sync::{Arc, RwLock};
-use thiserror::Error;
+use std::{
+    process::Command,
+    sync::{Arc, RwLock},
+};
 
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum LocaleError {
     #[error("Unknown locale code: {0}")]
     UnknownLocale(String),
@@ -27,17 +26,8 @@ pub enum LocaleError {
     UnknownTimezone(String),
     #[error("Invalid keymap: {0}")]
     InvalidKeymap(#[from] InvalidKeymap),
-    #[error("Cannot translate: {0}")]
-    OtherError(#[from] Error),
-}
-
-impl IntoResponse for LocaleError {
-    fn into_response(self) -> Response {
-        let body = json!({
-            "error": self.to_string()
-        });
-        (StatusCode::BAD_REQUEST, Json(body)).into_response()
-    }
+    #[error("Could not apply the changes")]
+    Commit(#[from] std::io::Error),
 }
 
 #[derive(Clone)]
@@ -50,8 +40,8 @@ struct LocaleState {
 ///
 /// * `events`: channel to send the events to the main service.
 pub fn l10n_service(events: EventsSender) -> Router {
-    let code = LocaleCode::default();
-    let locale = Locale::new_with_locale(&code).unwrap();
+    let id = LocaleId::default();
+    let locale = Locale::new_with_locale(&id).unwrap();
     let state = LocaleState {
         locale: Arc::new(RwLock::new(locale)),
         events,
@@ -74,7 +64,7 @@ async fn locales(State(state): State<LocaleState>) -> Json<Vec<LocaleEntry>> {
     Json(locales)
 }
 
-#[derive(Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct LocaleConfig {
     /// Locales to install in the target system
     locales: Option<Vec<String>>,
@@ -84,6 +74,8 @@ pub struct LocaleConfig {
     timezone: Option<String>,
     /// User-interface locale. It is actually not related to the `locales` property.
     ui_locale: Option<String>,
+    /// User-interface locale. It is relevant only on local installations.
+    ui_keymap: Option<String>,
 }
 
 #[utoipa::path(get, path = "/l10n/timezones", responses(
@@ -104,47 +96,70 @@ async fn keymaps(State(state): State<LocaleState>) -> Json<Vec<Keymap>> {
     Json(keymaps)
 }
 
+// TODO: update all or nothing
+// TODO: send only the attributes that have changed
 #[utoipa::path(put, path = "/l10n/config", responses(
     (status = 200, description = "Set the locale configuration", body = LocaleConfig)
 ))]
 async fn set_config(
     State(state): State<LocaleState>,
     Json(value): Json<LocaleConfig>,
-) -> Result<Json<()>, LocaleError> {
+) -> Result<Json<()>, Error> {
     let mut data = state.locale.write().unwrap();
+    let mut changes = LocaleConfig::default();
 
     if let Some(locales) = &value.locales {
         for loc in locales {
             if !data.locales_db.exists(loc.as_str()) {
-                return Err(LocaleError::UnknownLocale(loc.to_string()));
+                return Err(LocaleError::UnknownLocale(loc.to_string()))?;
             }
         }
         data.locales = locales.clone();
+        changes.locales = Some(data.locales.clone());
     }
 
     if let Some(timezone) = &value.timezone {
         if !data.timezones_db.exists(timezone) {
-            return Err(LocaleError::UnknownTimezone(timezone.to_string()));
+            return Err(LocaleError::UnknownTimezone(timezone.to_string()))?;
         }
         data.timezone = timezone.to_owned();
+        changes.timezone = Some(data.timezone.clone());
     }
 
     if let Some(keymap_id) = &value.keymap {
-        data.keymap = keymap_id.parse()?;
+        data.keymap = keymap_id.parse().map_err(LocaleError::InvalidKeymap)?;
+        changes.keymap = Some(keymap_id.clone());
     }
 
     if let Some(ui_locale) = &value.ui_locale {
-        let locale: LocaleCode = ui_locale
+        let locale: LocaleId = ui_locale
             .as_str()
             .try_into()
             .map_err(|_e| LocaleError::UnknownLocale(ui_locale.to_string()))?;
 
         helpers::set_service_locale(&locale);
         data.translate(&locale)?;
+        changes.ui_locale = Some(locale.to_string());
         _ = state.events.send(Event::LocaleChanged {
             locale: locale.to_string(),
         });
     }
+
+    if let Some(ui_keymap) = &value.ui_keymap {
+        // data.ui_keymap = ui_keymap.parse().into::<Result<KeymapId, LocaleError>>()?;
+        data.ui_keymap = ui_keymap.parse().map_err(LocaleError::InvalidKeymap)?;
+        Command::new("/usr/bin/localectl")
+            .args(["set-x11-keymap", &ui_keymap])
+            .output()
+            .map_err(LocaleError::Commit)?;
+        Command::new("/usr/bin/setxkbmap")
+            .arg(&ui_keymap)
+            .env("DISPLAY", ":0")
+            .output()
+            .map_err(LocaleError::Commit)?;
+    }
+
+    _ = state.events.send(Event::L10nConfigChanged(changes));
 
     Ok(Json(()))
 }
@@ -159,19 +174,20 @@ async fn get_config(State(state): State<LocaleState>) -> Json<LocaleConfig> {
         keymap: Some(data.keymap()),
         timezone: Some(data.timezone().to_string()),
         ui_locale: Some(data.ui_locale().to_string()),
+        ui_keymap: Some(data.ui_keymap.to_string()),
     })
 }
 
 #[cfg(test)]
 mod tests {
     use crate::l10n::{web::LocaleState, Locale};
-    use agama_locale_data::{KeymapId, LocaleCode};
+    use agama_locale_data::{KeymapId, LocaleId};
     use std::sync::{Arc, RwLock};
     use tokio::{sync::broadcast::channel, test};
 
     fn build_state() -> LocaleState {
         let (tx, _) = channel(16);
-        let default_code = LocaleCode::default();
+        let default_code = LocaleId::default();
         let locale = Locale::new_with_locale(&default_code).unwrap();
         LocaleState {
             locale: Arc::new(RwLock::new(locale)),
@@ -183,8 +199,8 @@ mod tests {
     async fn test_locales() {
         let state = build_state();
         let response = super::locales(axum::extract::State(state)).await;
-        let default = LocaleCode::default();
-        let found = response.iter().find(|l| l.code == default);
+        let default = LocaleId::default();
+        let found = response.iter().find(|l| l.id == default);
         assert!(found.is_some());
     }
 
