@@ -268,9 +268,7 @@ pub async fn issues_router<T>(
 ) -> Result<Router<T>, ServiceError> {
     let proxy = build_issues_proxy(dbus, destination, path).await?;
     let state = IssuesState { proxy };
-    Ok(Router::new()
-        .route("/issues", get(issues))
-        .with_state(state))
+    Ok(Router::new().route("/", get(issues)).with_state(state))
 }
 
 async fn issues(State(state): State<IssuesState<'_>>) -> Result<Json<Vec<Issue>>, Error> {
@@ -329,7 +327,11 @@ pub async fn issues_stream(
         .then(move |change| async move {
             if let Ok(issues) = change.get().await {
                 let issues = issues.into_iter().map(Issue::from_tuple).collect();
-                Some(Event::IssuesChanged { issues })
+                Some(Event::IssuesChanged {
+                    service: destination.to_string(),
+                    path: path.to_string(),
+                    issues,
+                })
             } else {
                 None
             }
