@@ -5,12 +5,12 @@ use openssl::hash::MessageDigest;
 use openssl::pkey::{PKey, Private};
 use openssl::rsa::Rsa;
 use openssl::x509::extension::{
-    BasicConstraints, SubjectKeyIdentifier, KeyUsage, SubjectAlternativeName
+    BasicConstraints, SubjectKeyIdentifier, KeyUsage, SubjectAlternativeName,
 };
 use openssl::x509::{X509NameBuilder, X509};
 
-// Generate a self-signed SSL certificate
-// see https://github.com/sfackler/rust-openssl/blob/master/openssl/examples/mk_certs.rs
+/// Generates a self-signed SSL certificate
+/// see https://github.com/sfackler/rust-openssl/blob/master/openssl/examples/mk_certs.rs
 pub fn create_certificate() -> Result<(X509, PKey<Private>), ErrorStack> {
     let rsa = Rsa::generate(2048)?;
     let key = PKey::from_rsa(rsa)?;
