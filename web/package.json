@@ -79,7 +79,7 @@
     "qunit": "^2.20.0",
     "react-refresh": "^0.14.0",
     "sass": "^1.69.5",
-    "sass-loader": "^13.3.2",
+    "sass-loader": "^14.1.1",
     "string-replace-loader": "^3.0.0",
     "stylelint": "^15.11.0",
     "stylelint-config-standard": "^34.0.0",
