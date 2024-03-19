@@ -6,7 +6,7 @@ use axum::{
     http::{Request, Response},
     Router,
 };
-use clap::{Parser, Subcommand};
+use clap::{Args, Parser, Subcommand};
 use futures_util::pin_mut;
 use hyper::body::Incoming;
 use hyper_util::rt::{TokioExecutor, TokioIo};
@@ -22,30 +22,7 @@ use utoipa::OpenApi;
 #[derive(Subcommand, Debug)]
 enum Commands {
     /// Start the API server.
-    Serve {
-        // Address/port to listen on (":::3000" listens for both IPv6 and IPv4
-        // connections unless manually disabled in /proc/sys/net/ipv6/bindv6only)
-        #[arg(long, default_value = ":::3000", help = "Primary address to listen on")]
-        address: String,
-        #[arg(
-            long,
-            default_value = "",
-            help = "Optional secondary address to listen on"
-        )]
-        address2: String,
-        #[arg(
-            long,
-            default_value = "",
-            help = "Path to the SSL private key file in PEM format"
-        )]
-        key: String,
-        #[arg(
-            long,
-            default_value = "",
-            help = "Path to the SSL certificate file in PEM format"
-        )]
-        cert: String,
-    },
+    Serve(ServeArgs),
     /// Display the API documentation in OpenAPI format.
     Openapi,
 }
@@ -58,6 +35,32 @@ enum Commands {
 struct Cli {
     #[command(subcommand)]
     pub command: Commands,
+}
+
+#[derive(Args, Debug)]
+struct ServeArgs {
+    // Address/port to listen on (":::3000" listens for both IPv6 and IPv4
+    // connections unless manually disabled in /proc/sys/net/ipv6/bindv6only)
+    #[arg(long, default_value = ":::3000", help = "Primary address to listen on")]
+    address: String,
+    #[arg(
+        long,
+        default_value = "",
+        help = "Optional secondary address to listen on"
+    )]
+    address2: String,
+    #[arg(
+        long,
+        default_value = "",
+        help = "Path to the SSL private key file in PEM format"
+    )]
+    key: String,
+    #[arg(
+        long,
+        default_value = "",
+        help = "Path to the SSL certificate file in PEM format"
+    )]
+    cert: String,
 }
 
 /// Checks whether the connection uses SSL or not
@@ -288,12 +291,12 @@ fn openapi_command() -> anyhow::Result<()> {
 
 async fn run_command(cli: Cli) -> anyhow::Result<()> {
     match cli.command {
-        Commands::Serve {
-            address,
-            address2,
-            key,
-            cert,
-        } => serve_command(&address, &address2, &cert, &key).await,
+        Commands::Serve(options) => serve_command(
+            &options.address,
+            &options.address2,
+            &options.cert,
+            &options.key,
+        ).await,
         Commands::Openapi => openapi_command(),
     }
 }
