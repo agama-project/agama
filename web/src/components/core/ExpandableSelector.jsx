@@ -19,8 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useState } from "react";
-import { Table, Thead, Tr, Th, Tbody, Td, ExpandableRowContent } from "@patternfly/react-table";
+import { Table, Thead, Tr, Th, Tbody, Td, ExpandableRowContent, RowSelectVariant } from "@patternfly/react-table";
 
 /**
  * An object for sharing data across nested maps
@@ -156,7 +158,7 @@ export default function ExpandableSelector({
       rowIndex,
       onSelect: () => updateSelection(item),
       isSelected: isItemSelected(item),
-      variant: isMultiple ? "checkbox" : "radio"
+      variant: isMultiple ? RowSelectVariant.checkbox : RowSelectVariant.radio
     };
 
     return (
@@ -193,7 +195,7 @@ export default function ExpandableSelector({
       rowIndex,
       onSelect: () => updateSelection(item),
       isSelected: isItemSelected(item),
-      variant: isMultiple ? "checkbox" : "radio"
+      variant: isMultiple ? RowSelectVariant.checkbox : RowSelectVariant.radio
     };
 
     const renderChildren = () => {
