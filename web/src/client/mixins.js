@@ -210,8 +210,8 @@ const WithProgress = (superclass, progress_path, service_name) =>
      * @return {import ("./dbus").RemoveFn} function to disable the callback
      */
     onProgressChange(handler) {
-      return this.client.onEvent("Progress", (progress) => {
-        if (progress?.service === service_name) {
+      return this.client.onEvent("Progress", ({ service, ...progress }) => {
+        if (service === service_name) {
           const { current_step, max_steps, current_title, finished } = progress;
           handler({
             total: max_steps,
