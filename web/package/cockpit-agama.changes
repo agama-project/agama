@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar 19 14:15:30 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- In storage page, replace Planned Actions section by a new Result
+  section, unify File Systems and Settings sections, and move
+  Find Space section to a popup (gh#openSUSE/agama#1104).
+
+-------------------------------------------------------------------
 Fri Mar  1 10:56:35 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Indicate whether the system is transactional
