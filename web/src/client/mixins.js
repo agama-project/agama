@@ -97,8 +97,8 @@ const WithIssues = (superclass, issues_path, dbus_path) =>
      * @return {Promise<Issue[]>}
      */
     async getIssues() {
-      const response = await this.client.get(issues_path);
-      return response.issues.map(buildIssue);
+      const issues = await this.client.get(issues_path);
+      return issues.map(buildIssue);
     }
 
     /**
@@ -153,8 +153,8 @@ const WithStatus = (superclass, status_path, service_name) =>
      * @return {function} function to disable the callback
      */
     onStatusChange(handler) {
-      return this.client.onEvent("StatusChanged", ({ status, service }) => {
-        if (service === service_name && status) {
+      return this.client.onEvent("ServiceStatusChanged", ({ status, service }) => {
+        if (service === service_name) {
           handler(status);
         }
       });
