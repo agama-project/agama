@@ -113,7 +113,6 @@
   },
   "overrides": {
     "jsdom": "^22.1.0",
-    "follow-redirects": "1.15.4",
     "@pmmmwh/react-refresh-webpack-plugin": {
       "webpack-dev-server": "^5.0.3"
     }
