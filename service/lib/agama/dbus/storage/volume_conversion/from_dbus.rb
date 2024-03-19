@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/volume"
+require "agama/storage/volume_location"
 require "agama/storage/volume_templates_builder"
 require "y2storage/disk_size"
 require "y2storage/filesystems/type"
@@ -67,8 +68,8 @@ module Agama
           CONVERSIONS = {
             "MountPath"    => :mount_path_conversion,
             "MountOptions" => :mount_options_conversion,
+            "Target"       => :target_conversion,
             "TargetDevice" => :target_device_conversion,
-            "TargetVG"     => :target_vg_conversion,
             "FsType"       => :fs_type_conversion,
             "MinSize"      => :min_size_conversion,
             "MaxSize"      => :max_size_conversion,
@@ -92,13 +93,16 @@ module Agama
           # @param target [Agama::Storage::Volume]
           # @param value [String]
           def target_device_conversion(target, value)
-            target.device = value
+            target.location.device = value
           end
 
           # @param target [Agama::Storage::Volume]
           # @param value [String]
-          def target_vg_conversion(target, value)
-            target.separate_vg_name = value
+          def target_conversion(target, value)
+            target_value = value.downcase.to_sym
+            return unless Agama::Storage::VolumeLocation.targets.include?(target_value)
+
+            target.location.target = target_value
           end
 
           # @param target [Agama::Storage::Volume]

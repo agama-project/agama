@@ -44,7 +44,10 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
         settings.encryption.pbkd_function = Y2Storage::PbkdFunction::ARGON2ID
         settings.space.policy = :custom
         settings.space.actions = { "/dev/sda" => :force_delete }
-        volume = Agama::Storage::Volume.new("/test").tap { |v| v.device = "/dev/sdc" }
+        volume = Agama::Storage::Volume.new("/test").tap do |vol|
+          vol.location.target = :new_partition
+          vol.location.device = "/dev/sdc"
+        end
         settings.volumes = [volume]
       end
     end

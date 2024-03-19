@@ -37,8 +37,8 @@ module Agama
             {
               "MountPath"     => volume.mount_path.to_s,
               "MountOptions"  => volume.mount_options,
-              "TargetDevice"  => volume.device.to_s,
-              "TargetVG"      => volume.separate_vg_name.to_s,
+              "Target"        => volume.location.target.to_s,
+              "TargetDevice"  => volume.location.device.to_s,
               "FsType"        => volume.fs_type&.to_human_string || "",
               "MinSize"       => volume.min_size&.to_i,
               "AutoSize"      => volume.auto_size?,

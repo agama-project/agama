@@ -67,7 +67,7 @@ describe Agama::DBus::Storage::VolumeConversion::FromDBus do
         "MountPath"    => "/test",
         "MountOptions" => ["rw", "default"],
         "TargetDevice" => "/dev/sda",
-        "TargetVG"     => "/dev/system",
+        "Target"       => "new_vg",
         "FsType"       => "Ext4",
         "MinSize"      => 1024,
         "MaxSize"      => 2048,
@@ -89,8 +89,8 @@ describe Agama::DBus::Storage::VolumeConversion::FromDBus do
       expect(volume).to be_a(Agama::Storage::Volume)
       expect(volume.mount_path).to eq("/test")
       expect(volume.mount_options).to contain_exactly("rw", "default")
-      expect(volume.device).to eq("/dev/sda")
-      expect(volume.separate_vg_name).to eq("/dev/system")
+      expect(volume.location.device).to eq("/dev/sda")
+      expect(volume.location.target).to eq(:new_vg)
       expect(volume.fs_type).to eq(Y2Storage::Filesystems::Type::EXT4)
       expect(volume.auto_size?).to eq(false)
       expect(volume.min_size.to_i).to eq(1024)
@@ -107,8 +107,7 @@ describe Agama::DBus::Storage::VolumeConversion::FromDBus do
         expect(volume).to be_a(Agama::Storage::Volume)
         expect(volume.mount_path).to eq("/test")
         expect(volume.mount_options).to contain_exactly("data=ordered")
-        expect(volume.device).to be_nil
-        expect(volume.separate_vg_name).to be_nil
+        expect(volume.location.target).to eq :default
         expect(volume.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
         expect(volume.auto_size?).to eq(false)
         expect(volume.min_size.to_i).to eq(5 * (1024**3))
@@ -241,6 +240,21 @@ describe Agama::DBus::Storage::VolumeConversion::FromDBus do
         volume = subject.convert
 
         expect(volume.btrfs.snapshots?).to eq(false)
+      end
+    end
+
+    context "when the D-Bus settings provide a Target that makes no sense" do
+      let(:dbus_volume) do
+        {
+          "MountPath" => "/test",
+          "Target"    => "new_disk"
+        }
+      end
+
+      it "ignores the Target value provided from D-Bus and uses :default" do
+        volume = subject.convert
+
+        expect(volume.location.target).to eq :default
       end
     end
   end
