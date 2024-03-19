@@ -101,9 +101,10 @@ module.exports = {
     hot: true,
     // additionally watch these files for changes
     watchFiles: ["./src/manifest.json", "./po/*.po"],
-    proxy: {
+    proxy: [
       // forward all cockpit connections to a real Cockpit instance
-      "/cockpit": {
+      {
+        context: ["/cockpit"],
         target: cockpitTarget,
         // redirect also the websocket connections
         ws: true,
@@ -112,7 +113,8 @@ module.exports = {
       },
       // forward the manifests.js request and patch the response with the
       // current Agama manifest from the ./src/manifest.json file
-      "/manifests.js": {
+      {
+        context: ["/manifests.js"],
         target: cockpitTarget + "/cockpit/@localhost/",
         // ignore SSL problems (self-signed certificate)
         secure: false,
@@ -120,7 +122,7 @@ module.exports = {
         selfHandleResponse : true,
         onProxyRes: manifests_handler,
       },
-    },
+    ],
     // use https so Cockpit uses wss:// when connecting to the backend
     server: "https",
     // hot replacement does not support wss:// transport when running over https://,
