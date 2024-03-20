@@ -355,6 +355,7 @@ class ProductBaseClient {
   }
 }
 
-class ProductClient extends WithIssues(ProductBaseClient, "/issues/product", PRODUCT_PATH) {}
+class ProductClient
+  extends WithIssues(ProductBaseClient, "software/issues/product", PRODUCT_PATH) {}
 
 export { ProductClient, SoftwareClient };
