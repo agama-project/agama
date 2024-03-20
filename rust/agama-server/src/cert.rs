@@ -47,7 +47,9 @@ pub fn create_certificate() -> Result<(X509, PKey<Private>), ErrorStack> {
 
     builder.append_extension(
         SubjectAlternativeName::new()
+            // use the default Agama host name
             .dns("agama")
+            // use the default name for the mDNS/Avahi
             .dns("agama.local")
             .build(&builder.x509v3_context(None, None))?,
     )?;
