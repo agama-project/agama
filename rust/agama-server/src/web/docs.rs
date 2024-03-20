@@ -26,7 +26,6 @@ use utoipa::OpenApi;
         schemas(crate::l10n::LocaleEntry),
         schemas(crate::l10n::TimezoneEntry),
         schemas(crate::l10n::web::LocaleConfig),
-        schemas(crate::software::web::PatternEntry),
         schemas(crate::software::web::SoftwareConfig),
         schemas(crate::software::web::SoftwareProposal),
         schemas(crate::manager::web::InstallerStatus),

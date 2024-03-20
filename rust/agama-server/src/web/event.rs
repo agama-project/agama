@@ -21,7 +21,11 @@ pub enum Event {
     ProductChanged {
         id: String,
     },
-    PatternsChanged(HashMap<String, SelectedBy>),
+    // TODO: it should include the full software proposal or, at least,
+    // all the relevant changes.
+    SoftwareProposalChanged {
+        patterns: HashMap<String, SelectedBy>,
+    },
     InstallationPhaseChanged {
         phase: InstallationPhase,
     },

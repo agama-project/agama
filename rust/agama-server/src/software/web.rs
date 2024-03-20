@@ -92,7 +92,7 @@ async fn patterns_changed_stream(
             }
             None
         })
-        .filter_map(|e| e.map(Event::PatternsChanged));
+        .filter_map(|e| e.map(|patterns| Event::SoftwareProposalChanged { patterns }));
     Ok(stream)
 }
 
@@ -150,43 +150,16 @@ async fn products(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Pro
     Ok(Json(products))
 }
 
-/// Represents a pattern.
-///
-/// It augments the information coming from the D-Bus client.
-#[derive(Serialize, utoipa::ToSchema)]
-pub struct PatternEntry {
-    #[serde(flatten)]
-    pattern: Pattern,
-    selected_by: SelectedBy,
-}
-
 /// Returns the list of software patterns.
 ///
 /// * `state`: service state.
 #[utoipa::path(get, path = "/software/patterns", responses(
-    (status = 200, description = "List of known software patterns", body = Vec<PatternEntry>),
+    (status = 200, description = "List of known software patterns", body = Vec<Pattern>),
     (status = 400, description = "The D-Bus service could not perform the action")
 ))]
-async fn patterns(
-    State(state): State<SoftwareState<'_>>,
-) -> Result<Json<Vec<PatternEntry>>, Error> {
+async fn patterns(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Pattern>>, Error> {
     let patterns = state.software.patterns(true).await?;
-    let selected = state.software.selected_patterns().await?;
-    let items = patterns
-        .into_iter()
-        .map(|pattern| {
-            let selected_by: SelectedBy = selected
-                .get(&pattern.id)
-                .copied()
-                .unwrap_or(SelectedBy::None);
-            PatternEntry {
-                pattern,
-                selected_by,
-            }
-        })
-        .collect();
-
-    Ok(Json(items))
+    Ok(Json(patterns))
 }
 
 /// Sets the software configuration.
@@ -229,7 +202,7 @@ async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<Softw
     let patterns = state.software.user_selected_patterns().await?;
     let config = SoftwareConfig {
         patterns: Some(patterns),
-        product: product,
+        product,
     };
     Ok(Json(config))
 }
@@ -240,6 +213,9 @@ pub struct SoftwareProposal {
     /// Space required for installation. It is returned as a formatted string which includes
     /// a number and a unit (e.g., "GiB").
     size: String,
+    /// Patterns selection. It is respresented as a hash map where the key is the pattern's name
+    /// and the value why the pattern is selected.
+    patterns: HashMap<String, SelectedBy>,
 }
 
 /// Returns the proposal information.
@@ -251,7 +227,8 @@ pub struct SoftwareProposal {
 ))]
 async fn proposal(State(state): State<SoftwareState<'_>>) -> Result<Json<SoftwareProposal>, Error> {
     let size = state.software.used_disk_space().await?;
-    let proposal = SoftwareProposal { size };
+    let patterns = state.software.selected_patterns().await?;
+    let proposal = SoftwareProposal { size, patterns };
     Ok(Json(proposal))
 }
 
