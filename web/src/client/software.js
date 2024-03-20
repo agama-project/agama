@@ -22,12 +22,9 @@
 // @ts-check
 
 import DBusClient from "./dbus";
-import { WithIssues, WithStatus, WithProgress } from "./mixins";
+import { WithIssues, WithProgress, WithStatus } from "./mixins";
 
 const SOFTWARE_SERVICE = "org.opensuse.Agama.Software1";
-const SOFTWARE_IFACE = "org.opensuse.Agama.Software1";
-const SOFTWARE_PATH = "/org/opensuse/Agama/Software1";
-const PRODUCT_IFACE = "org.opensuse.Agama.Software1.Product";
 const PRODUCT_PATH = "/org/opensuse/Agama/Software1/Product";
 const REGISTRATION_IFACE = "org.opensuse.Agama1.Registration";
 
@@ -66,57 +63,6 @@ class BaseProductManager {
   }
 
   /**
-   * Returns the list of available products.
-   *
-   * @return {Promise<Array<Product>>}
-   */
-  async getAll() {
-    const proxy = await this.client.proxy(PRODUCT_IFACE);
-    return proxy.AvailableProducts.map(product => {
-      const [id, name, meta] = product;
-      return { id, name, description: meta.description?.v };
-    });
-  }
-
-  /**
-   * Returns the selected product.
-   *
-   * @return {Promise<Product|null>}
-   */
-  async getSelected() {
-    const products = await this.getAll();
-    const proxy = await this.client.proxy(PRODUCT_IFACE);
-    if (proxy.SelectedProduct === "") {
-      return null;
-    }
-    return products.find(product => product.id === proxy.SelectedProduct);
-  }
-
-  /**
-   * Selects a product for installation.
-   *
-   * @param {string} id - Product ID.
-   */
-  async select(id) {
-    const proxy = await this.client.proxy(PRODUCT_IFACE);
-    return proxy.SelectProduct(id);
-  }
-
-  /**
-   * Registers a callback to run when properties in the Product object change.
-   *
-   * @param {(id: string) => void} handler - Callback function.
-   */
-  onChange(handler) {
-    return this.client.onObjectChanged(PRODUCT_PATH, PRODUCT_IFACE, changes => {
-      if ("SelectedProduct" in changes) {
-        const selected = changes.SelectedProduct.v.toString();
-        handler(selected);
-      }
-    });
-  }
-
-  /**
    * Returns the registration of the selected product.
    *
    * @return {Promise<Registration>}
@@ -147,7 +93,7 @@ class BaseProductManager {
 
     return {
       success: result[0] === 0,
-      message: result[1]
+      message: result[1],
     };
   }
 
@@ -162,7 +108,7 @@ class BaseProductManager {
 
     return {
       success: result[0] === 0,
-      message: result[1]
+      message: result[1],
     };
   }
 
@@ -204,11 +150,6 @@ class BaseProductManager {
 }
 
 /**
- * Manages product selection.
- */
-class ProductManager extends WithIssues(BaseProductManager, PRODUCT_PATH) { }
-
-/**
  * Software client
  *
  * @ignore
@@ -217,10 +158,11 @@ class SoftwareBaseClient {
   /**
    * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
    */
-  constructor(address = undefined) {
-    this.client = new DBusClient(SOFTWARE_SERVICE, address);
-    this.product = new ProductManager(this.client);
-    this.proxies = {};
+  /**
+   * @param {import("./http").HTTPClient} client - HTTP client.
+   */
+  constructor(client) {
+    this.client = client;
   }
 
   /**
@@ -228,67 +170,54 @@ class SoftwareBaseClient {
    *
    * @return {Promise<void>}
    */
-  async probe() {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.Probe();
+  probe() {
+    return this.client.post("/software/probe");
   }
 
   /**
    * Returns how much space installation takes on disk
    *
-   * @return {Promise<string>}
+   * @return {Promise<object>}
    */
-  async getUsedSpace() {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.UsedDiskSpace();
+  getProposal() {
+    return this.client.get("/software/proposal");
   }
 
   /**
    * Returns available patterns
    *
-   * @param {boolean} filter - `true` = filter the patterns, `false` = all patterns
-   * @return {Promise<Array<string>>}
+   * @return {Promise<object>}
    */
-  async patterns(filter) {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.ListPatterns(filter);
+  getPatterns() {
+    return this.client.get("/software/patterns");
   }
 
   /**
    * @typedef {Object.<string, number>} PatternSelection mapping "name" =>
    * "who selected the pattern"
    */
-
-  /**
-   * Returns selected patterns
-   *
-   * @return {Promise<PatternSelection>}
-   */
-  async selectedPatterns() {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.SelectedPatterns;
+  config() {
+    return this.client.get("/software/config");
   }
 
   /**
-   * Select a pattern to install
-   *
-   * @param {string} name - name of the pattern
+   * @param {string[]} patterns - name of the user-selected patterns.
    * @return {Promise<void>}
    */
-  async addPattern(name) {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.AddPattern(name);
+  selectPatterns(patterns) {
+    return this.client.put("/software/config", { patterns });
   }
 
   /**
-   * Deselect a pattern to install
+   * Registers a callback to run when the select product changes.
    *
-   * @param {string} name - name of the pattern
-   * @return {Promise<void>}
+   * @param {(changes: object) => void} handler - Callback function.
+   * @return {import ("./http").RemoveFn} Function to remove the callback.
    */
-  async removePattern(name) {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.RemovePattern(name);
+  onSelectedPatternsChanged(handler) {
+    return this.client.onEvent("SoftwareProposalChanged", ({ patterns }) => {
+      handler(patterns);
+    });
   }
 }
 
@@ -297,10 +226,12 @@ class SoftwareBaseClient {
  */
 class SoftwareClient extends WithIssues(
   WithProgress(
-    WithStatus(SoftwareBaseClient, SOFTWARE_PATH),
-    SOFTWARE_PATH,
+    WithStatus(SoftwareBaseClient, "software/status", SOFTWARE_SERVICE),
+    "software/progress",
+    SOFTWARE_SERVICE,
   ),
-  SOFTWARE_PATH,
+  "software/issues/software",
+  "/org/opensuse/Agama/Software1",
 ) {}
 
 class ProductBaseClient {

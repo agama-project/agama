@@ -78,7 +78,7 @@ const createClient = (url) => {
   const manager = new ManagerClient(client);
   // const monitor = new Monitor(address, MANAGER_SERVICE);
   // const network = new NetworkClient(address);
-  // const software = new SoftwareClient(address);
+  const software = new SoftwareClient(client);
   // const storage = new StorageClient(address);
   // const users = new UsersClient(address);
   // const questions = new QuestionsClient(address);
@@ -139,7 +139,7 @@ const createClient = (url) => {
     manager,
     // monitor,
     // network,
-    // software,
+    software,
     // storage,
     // users,
     // questions,
