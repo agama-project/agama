@@ -10,6 +10,7 @@ use clap::{Args, Parser, Subcommand};
 use futures_util::pin_mut;
 use hyper::body::Incoming;
 use hyper_util::rt::{TokioExecutor, TokioIo};
+use hyper_util::server::conn::auto::Builder;
 use openssl::ssl::{Ssl, SslAcceptor, SslFiletype, SslMethod};
 use std::process::{ExitCode, Termination};
 use std::{path::PathBuf, pin::Pin};
@@ -108,7 +109,7 @@ async fn is_ssl_stream(stream: &tokio::net::TcpStream) -> bool {
         .peek(&mut buf)
         .await
         // SSL3.0/TLS1.x starts with byte 0x16
-        // SSL2 starts with 0x80 (but should not be used as it is considered)
+        // SSL2 starts with 0x80 (but should not be used as it is considered insecure)
         // see https://stackoverflow.com/q/3897883
         // otherwise consider the stream as a plain HTTP stream possibly starting with
         // "GET ... HTTP/1.1" or "POST ... HTTP/1.1" or a similar line
@@ -203,7 +204,7 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
                         tower_service.clone().call(request)
                     });
 
-                let ret = hyper_util::server::conn::auto::Builder::new(TokioExecutor::new())
+                let ret = Builder::new(TokioExecutor::new())
                     .serve_connection_with_upgrades(stream, hyper_service)
                     .await;
 
@@ -227,7 +228,7 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
                         }
                     });
 
-                let ret = hyper_util::server::conn::auto::Builder::new(TokioExecutor::new())
+                let ret = Builder::new(TokioExecutor::new())
                     .serve_connection_with_upgrades(stream, hyper_service)
                     .await;
 
