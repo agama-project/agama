@@ -63,6 +63,40 @@ struct ServeArgs {
     cert: String,
 }
 
+impl ServeArgs {
+    /// Builds an SSL acceptor using a provided SSL certificate or generates a self-signed one
+    fn ssl_acceptor(&self) -> Result<SslAcceptor, openssl::error::ErrorStack> {
+        let mut tls_builder = SslAcceptor::mozilla_modern_v5(SslMethod::tls_server())?;
+
+        if self.cert.is_empty() && self.key.is_empty() {
+            let (cert, key) = agama_dbus_server::cert::create_certificate()?;
+
+            tracing::info!("Generated self signed certificate: {:#?}", cert);
+
+            tls_builder.set_private_key(&key)?;
+            tls_builder.set_certificate(&cert)?;
+
+            // for debugging you might dump the certificate to a file:
+            // use std::io::Write;
+            // let mut cert_file = std::fs::File::create("agama_cert.pem").unwrap();
+            // let mut key_file = std::fs::File::create("agama_key.pem").unwrap();
+            // cert_file.write_all(cert.to_pem().unwrap().as_ref()).unwrap();
+            // key_file.write_all(key.private_key_to_pem_pkcs8().unwrap().as_ref()).unwrap();
+        } else {
+            tracing::info!("Loading PEM certificate: {}", self.cert);
+            tls_builder.set_certificate_file(PathBuf::from(self.cert.clone()), SslFiletype::PEM)?;
+
+            tracing::info!("Loading PEM key: {}", self.key);
+            tls_builder.set_private_key_file(PathBuf::from(self.key.clone()), SslFiletype::PEM)?;
+        }
+
+        // check that the key belongs to the certificate
+        tls_builder.check_private_key()?;
+
+        Ok(tls_builder.build())
+    }
+}
+
 /// Checks whether the connection uses SSL or not
 async fn is_ssl_stream(stream: &tokio::net::TcpStream) -> bool {
     // a buffer for reading the first byte from the TCP connection
@@ -79,39 +113,6 @@ async fn is_ssl_stream(stream: &tokio::net::TcpStream) -> bool {
         // otherwise consider the stream as a plain HTTP stream possibly starting with
         // "GET ... HTTP/1.1" or "POST ... HTTP/1.1" or a similar line
         .is_ok_and(|_| buf[0] == 0x16u8 || buf[0] == 0x80u8)
-}
-
-/// Builds an SSL acceptor using a provided SSL certificate or generates a self-signed one
-fn create_ssl_acceptor(
-    cert_file: &String,
-    key_file: &String,
-) -> Result<SslAcceptor, openssl::error::ErrorStack> {
-    let mut tls_builder = SslAcceptor::mozilla_modern_v5(SslMethod::tls_server())?;
-
-    if cert_file.is_empty() && key_file.is_empty() {
-        let (cert, key) = agama_dbus_server::cert::create_certificate()?;
-        tracing::info!("Generated self signed certificate: {:#?}", cert);
-        tls_builder.set_private_key(key.as_ref())?;
-        tls_builder.set_certificate(cert.as_ref())?;
-
-        // for debugging you might dump the certificate to a file:
-        // use std::io::Write;
-        // let mut cert_file = std::fs::File::create("agama_cert.pem").unwrap();
-        // let mut key_file = std::fs::File::create("agama_key.pem").unwrap();
-        // cert_file.write_all(cert.to_pem().unwrap().as_ref()).unwrap();
-        // key_file.write_all(key.private_key_to_pem_pkcs8().unwrap().as_ref()).unwrap();
-    } else {
-        tracing::info!("Loading PEM certificate: {}", cert_file);
-        tls_builder.set_certificate_file(PathBuf::from(cert_file), SslFiletype::PEM)?;
-
-        tracing::info!("Loading PEM key: {}", key_file);
-        tls_builder.set_private_key_file(PathBuf::from(key_file), SslFiletype::PEM)?;
-    }
-
-    // check that the key belongs to the certificate
-    tls_builder.check_private_key()?;
-
-    Ok(tls_builder.build())
 }
 
 /// Builds a response for the HTTP -> HTTPS redirection
@@ -239,12 +240,7 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
 }
 
 /// Start serving the API.
-async fn serve_command(
-    address: &str,
-    address2: &str,
-    cert: &String,
-    key: &String,
-) -> anyhow::Result<()> {
+async fn serve_command(options: ServeArgs) -> anyhow::Result<()> {
     let journald = tracing_journald::layer().expect("could not connect to journald");
     tracing_subscriber::registry().with(journald).init();
 
@@ -256,27 +252,21 @@ async fn serve_command(
     } else {
         return Err(anyhow::anyhow!("Failed to load the service configuration"));
     };
-    let ssl_acceptor = if let Ok(ssl_acceptor) = create_ssl_acceptor(cert, key) {
+    let ssl_acceptor = if let Ok(ssl_acceptor) = options.ssl_acceptor() {
         ssl_acceptor
     } else {
         return Err(anyhow::anyhow!("SSL initialization failed"));
     };
 
-    let mut servers = vec![];
-    servers.push(tokio::spawn(start_server(
-        address.to_owned(),
-        service.clone(),
-        ssl_acceptor.clone(),
-    )));
+    let mut addresses = vec![options.address];
 
-    // optionally listen on the secondary address/port
-    if !address2.is_empty() {
-        servers.push(tokio::spawn(start_server(
-            address2.to_owned(),
-            service.clone(),
-            ssl_acceptor.clone(),
-        )));
+    if !options.address2.is_empty() {
+        addresses.push(options.address2);
     }
+
+    let servers: Vec<_> = addresses.iter().map(|a|
+        tokio::spawn(start_server(a.clone(), service.clone(), ssl_acceptor.clone())
+    )).collect();
 
     futures_util::future::join_all(servers).await;
 
@@ -291,12 +281,7 @@ fn openapi_command() -> anyhow::Result<()> {
 
 async fn run_command(cli: Cli) -> anyhow::Result<()> {
     match cli.command {
-        Commands::Serve(options) => serve_command(
-            &options.address,
-            &options.address2,
-            &options.cert,
-            &options.key,
-        ).await,
+        Commands::Serve(options) => serve_command(options).await,
         Commands::Openapi => openapi_command(),
     }
 }
