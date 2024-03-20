@@ -35,14 +35,14 @@ const kdePattern = {
     "Packages providing the Plasma desktop environment and applications from KDE.",
     "./pattern-kde",
     "KDE Applications and Plasma 5 Desktop",
-    "1110"
-  ]
+    "1110",
+  ],
 };
 
 let getStatusFn = jest.fn().mockResolvedValue(IDLE);
 let getProgressFn = jest.fn().mockResolvedValue({});
 let getIssuesFn = jest.fn().mockResolvedValue([]);
-let patternsFn = jest.fn().mockResolvedValue(kdePattern);
+let getPatternsFn = jest.fn().mockResolvedValue(kdePattern);
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
@@ -53,8 +53,8 @@ beforeEach(() => {
         getIssues: getIssuesFn,
         onStatusChange: noop,
         onProgressChange: noop,
-        patterns: patternsFn,
-        getUsedSpace: jest.fn().mockResolvedValue("500 MB")
+        getPatterns: getPatternsFn,
+        getProposal: jest.fn().mockResolvedValue({ size: "500 MiB" }),
       },
     };
   });
@@ -63,13 +63,13 @@ beforeEach(() => {
 describe("when the proposal is calculated", () => {
   beforeEach(() => {
     getStatusFn = jest.fn().mockResolvedValue(IDLE);
-    patternsFn = jest.fn().mockResolvedValue(kdePattern);
+    getPatternsFn = jest.fn().mockResolvedValue(kdePattern);
   });
 
   it("renders the required space", async () => {
     installerRender(<SoftwareSection showErrors />);
     await screen.findByText("Installation will take");
-    await screen.findByText("500 MB");
+    await screen.findByText("500 MiB");
   });
 
   describe("patterns are available", () => {
@@ -83,7 +83,7 @@ describe("when the proposal is calculated", () => {
 
   describe("no patterns are available", () => {
     beforeEach(() => {
-      patternsFn = jest.fn().mockResolvedValue({});
+      getPatternsFn = jest.fn().mockResolvedValue({});
     });
 
     it("the header is a plain text", async () => {
@@ -110,7 +110,7 @@ describe("when the proposal is being calculated", () => {
   beforeEach(() => {
     getStatusFn = jest.fn().mockResolvedValue(BUSY);
     getProgressFn = jest.fn().mockResolvedValue(
-      { message: "Initializing target repositories", current: 1, total: 4, finished: false }
+      { message: "Initializing target repositories", current: 1, total: 4, finished: false },
     );
   });
 

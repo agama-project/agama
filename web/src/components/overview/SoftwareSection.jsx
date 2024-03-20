@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer, useEffect } from "react";
+import React, { useEffect, useReducer } from "react";
 import { BUSY } from "~/client/status";
 import { Button } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
@@ -35,7 +35,7 @@ const initialState = {
   errorsRead: false,
   size: "",
   patterns: {},
-  progress: { message: _("Reading software repositories"), current: 0, total: 0, finished: false }
+  progress: { message: _("Reading software repositories"), current: 0, total: 0, finished: false },
 };
 
 const reducer = (state, action) => {
@@ -82,8 +82,8 @@ export default function SoftwareSection({ showErrors }) {
   useEffect(() => {
     const updateProposal = async () => {
       const errors = await cancellablePromise(client.getIssues());
-      const size = await cancellablePromise(client.getUsedSpace());
-      const patterns = await cancellablePromise(client.patterns(true));
+      const { size } = await cancellablePromise(client.getProposal());
+      const patterns = await cancellablePromise(client.getPatterns(true));
 
       dispatch({ type: "UPDATE_PROPOSAL", payload: { errors, size, patterns } });
     };
@@ -95,7 +95,7 @@ export default function SoftwareSection({ showErrors }) {
     cancellablePromise(client.getProgress()).then(({ message, current, total, finished }) => {
       dispatch({
         type: "UPDATE_PROGRESS",
-        payload: { message, current, total, finished }
+        payload: { message, current, total, finished },
       });
     });
   }, [client, cancellablePromise]);
@@ -104,7 +104,7 @@ export default function SoftwareSection({ showErrors }) {
     return client.onProgressChange(({ message, current, total, finished }) => {
       dispatch({
         type: "UPDATE_PROGRESS",
-        payload: { message, current, total, finished }
+        payload: { message, current, total, finished },
       });
     });
   }, [client, cancellablePromise]);
@@ -114,24 +114,24 @@ export default function SoftwareSection({ showErrors }) {
   const SectionContent = () => {
     if (state.busy) {
       const { message, current, total } = state.progress;
-      return (
-        <ProgressText message={message} current={current} total={total} />
-      );
+      return <ProgressText message={message} current={current} total={total} />;
     }
 
     return (
       <>
         <UsedSize size={state.size} />
         {errors.length > 0 &&
-          <Button
-            isInline
-            variant="link"
-            icon={<Icon name="refresh" size="xxs" />}
-            onClick={probe}
-          >
-            {/* TRANSLATORS: clickable link label */}
-            {_("Refresh the repositories")}
-          </Button>}
+          (
+            <Button
+              isInline
+              variant="link"
+              icon={<Icon name="refresh" size="xxs" />}
+              onClick={probe}
+            >
+              {/* TRANSLATORS: clickable link label */}
+              {_("Refresh the repositories")}
+            </Button>
+          )}
       </>
     );
   };

@@ -61,7 +61,7 @@ function convert(pattern_data, selected) {
       icon: pattern[2],
       summary: pattern[3],
       order: pattern[4],
-      selected: selected[name]
+      selected: selected[name],
     });
   });
 
@@ -83,10 +83,10 @@ function groupPatterns(patterns) {
   const pattern_groups = {};
 
   patterns.forEach((pattern) => {
-    if (pattern_groups[pattern.group]) {
-      pattern_groups[pattern.group].push(pattern);
+    if (pattern_groups[pattern.category]) {
+      pattern_groups[pattern.category].push(pattern);
     } else {
-      pattern_groups[pattern.group] = [pattern];
+      pattern_groups[pattern.category] = [pattern];
     }
   });
 
@@ -138,7 +138,8 @@ function sortGroups(groups) {
  */
 function PatternSelector() {
   const [patterns, setPatterns] = useState();
-  const [selected, setSelected] = useState();
+  const [visiblePatterns, setVisiblePatterns] = useState(undefined);
+  const [selected, setSelected] = useState({});
   const [errors, setErrors] = useState([]);
   const [used, setUsed] = useState();
   const [searchValue, setSearchValue] = useState("");
@@ -148,55 +149,75 @@ function PatternSelector() {
     setSearchValue(value);
   };
 
-  // refresh the page content after changing a pattern status
-  const refreshCb = useCallback(() => {
-    const refresh = async () => {
-      setSelected(await client.software.selectedPatterns());
-      setUsed(await client.software.getUsedSpace());
-      setErrors(await client.software.getIssues());
-    };
-
-    refresh();
-  }, [client.software]);
+  useEffect(() => {
+    return client.software.onSelectedPatternsChanged(setSelected);
+  }, [client.software, setSelected]);
 
   useEffect(() => {
-    // patterns already loaded
     if (patterns) return;
 
     const loadData = async () => {
-      setSelected(await client.software.selectedPatterns());
-      setUsed(await client.software.getUsedSpace());
+      setPatterns(await client.software.getPatterns());
+      const { patterns: selected, size } = await client.software.getProposal();
+      setSelected(selected);
+      setUsed(size);
       setErrors(await client.software.getIssues());
-      setPatterns(await client.software.patterns(true));
     };
 
     loadData();
   }, [patterns, client.software]);
 
+  useEffect(() => {
+    if (!patterns) return;
+
+    let visible = patterns.map((pattern) => {
+      const selected_by = (selected[pattern.name] === undefined) ? 2 : selected[pattern.name];
+      return { ...pattern, selected_by };
+    });
+
+    // filtering - search the required text in the name and pattern description
+    if (searchValue !== "") {
+      // case insensitive search
+      const searchData = searchValue.toUpperCase();
+      visible = visible.filter((p) =>
+        p.name.toUpperCase().indexOf(searchData) !== -1 ||
+        p.description.toUpperCase().indexOf(searchData) !== -1
+      );
+    }
+
+    setVisiblePatterns(visible);
+  }, [patterns, selected, searchValue]);
+
+  const onToggle = useCallback((name) => {
+    const selected = visiblePatterns.filter((p) => p.selected_by === 0).map((p) => p.name);
+
+    const index = selected.indexOf(name);
+    if (index === -1) {
+      selected.push(name);
+    } else {
+      selected.splice(index, 1);
+    }
+
+    client.software.selectPatterns(selected);
+  }, [visiblePatterns, client.software]);
+
   // initial empty screen, the patterns are loaded very quickly, no need for any progress
-  if (!patterns) return null;
+  if (!visiblePatterns) return null;
 
-  let patternsData = convert(patterns, selected);
-
-  // filtering - search the required text in the name and pattern description
-  if (searchValue !== "") {
-    // case insensitive search
-    const searchData = searchValue.toUpperCase();
-    patternsData = patternsData.filter((p) =>
-      p.name.toUpperCase().indexOf(searchData) !== -1 ||
-      p.description.toUpperCase().indexOf(searchData) !== -1
-    );
-  }
-
-  const groups = groupPatterns(patternsData);
-
+  const groups = groupPatterns(visiblePatterns);
   const selector = sortGroups(groups).map((group) => {
     return (
       <PatternGroup
         key={group}
         name={group}
       >
-        { (groups[group]).map(p => <PatternItem key={p.name} pattern={p} onChange={refreshCb} />) }
+        {groups[group].map((p) => (
+          <PatternItem
+            key={p.name}
+            pattern={p}
+            onToggle={(name) => onToggle(name)}
+          />
+        ))}
       </PatternGroup>
     );
   });
@@ -218,11 +239,11 @@ function PatternSelector() {
           onChange={(_event, value) => onSearchChange(value)}
           onClear={() => onSearchChange("")}
           // do not display the counter when search filter is empty
-          resultsCount={searchValue === "" ? 0 : patternsData.length}
+          resultsCount={searchValue === "" ? 0 : groups.length}
         />
       </Section>
 
-      { selector }
+      {selector}
     </>
   );
 }

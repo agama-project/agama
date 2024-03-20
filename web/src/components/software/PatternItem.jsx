@@ -77,53 +77,32 @@ function stateAriaLabel(selected) {
  * @param {function} onChange callback called when the pattern status is changed
  * @returns {JSX.Element}
  */
-function PatternItem({ pattern, onChange }) {
-  const client = useInstallerClient();
+function PatternItem({ pattern, onToggle }) {
   const [icon, setIcon] = useState();
-
-  const onClick = () => {
-    switch (pattern.selected) {
-      // available pattern (not selected)
-      case undefined:
-        client.software.addPattern(pattern.name).then(onChange);
-        break;
-      // user selected
-      case 0:
-        client.software.removePattern(pattern.name).then(onChange);
-        break;
-      // auto selected
-      case 1:
-        // try to deselect an automatically selected pattern,
-        // that can work only for soft dependencies (Recommends, Suggests,...),
-        // the hard dependencies (Requires) cannot be changed
-        client.software.removePattern(pattern.name).then(onChange);
-        break;
-      default:
-        console.error("Unknown patterns status: ", pattern.selected);
-    }
-  };
 
   // download the pattern icon from the system
   useEffect(() => {
     if (icon) return;
     cockpit.file(sprintf(ICON_PATH, pattern.icon)).read()
-      .then((data) => { setIcon(data) });
+      .then((data) => {
+        setIcon(data);
+      });
   }, [pattern.icon, icon]);
 
-  const patternIcon = (icon)
+  const patternIcon = icon
     // use a Base64 encoded inline pattern image
     ? <img src={"data:image/svg+xml;base64," + btoa(icon)} aria-hidden="true" />
     // fallback icon
     : <Icon name="apps" aria-hidden="true" />;
 
   return (
-    <div className="pattern-container" onClick={onClick}>
+    <div className="pattern-container" onClick={() => onToggle(pattern.name)}>
       <div className="pattern-checkbox">
-        <img src={stateIcon(pattern.selected)} aria-label={stateAriaLabel(pattern.selected)} />
+        <img src={stateIcon(pattern.selected_by)} aria-label={stateAriaLabel(pattern.selected)} />
       </div>
       <div className="pattern-label">
         <div className="pattern-label-icon">
-          { patternIcon }
+          {patternIcon}
         </div>
         <div className="pattern-label-text">{pattern.summary}</div>
       </div>

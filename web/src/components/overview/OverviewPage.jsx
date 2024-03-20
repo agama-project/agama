@@ -22,14 +22,14 @@
 import React, { useState } from "react";
 import { useProduct } from "~/context/product";
 import { Navigate } from "react-router-dom";
-import { Page, InstallButton } from "~/components/core";
+import { InstallButton, Page } from "~/components/core";
 import {
   L10nSection,
   NetworkSection,
   ProductSection,
   SoftwareSection,
   StorageSection,
-  UsersSection
+  UsersSection,
 } from "~/components/overview";
 import { _ } from "~/i18n";
 
@@ -47,11 +47,8 @@ export default function OverviewPage() {
   //     // TRANSLATORS: page title
   //     title={_("Installation Summary")}
   //   >
-  //     <ProductSection />
-  //     <L10nSection />
   //     <NetworkSection />
   //     <StorageSection showErrors />
-  //     <SoftwareSection showErrors />
   //     <UsersSection showErrors={showErrors} />
 
   //     <Page.Actions>
@@ -68,6 +65,7 @@ export default function OverviewPage() {
     >
       <ProductSection />
       <L10nSection />
+      <SoftwareSection showErrors />
     </Page>
   );
 }
