@@ -3,9 +3,10 @@
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //! agnostic from the real network service (e.g., NetworkManager).
 use crate::network::error::NetworkStateError;
+use agama_lib::network::settings::{BondSettings, NetworkConnection, WirelessSettings};
 use agama_lib::network::types::{BondMode, DeviceType, SSID};
 use cidr::IpInet;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
 use std::{
     collections::HashMap,
@@ -18,8 +19,18 @@ use thiserror::Error;
 use uuid::Uuid;
 use zbus::zvariant::Value;
 
+#[derive(PartialEq)]
+pub enum NetworkStateItems {
+    AccessPoints,
+    Devices,
+    Connections,
+    GeneralState,
+}
+
 #[derive(Default, Clone, Debug, utoipa::ToSchema)]
 pub struct NetworkState {
+    pub general_state: GeneralState,
+    pub access_points: Vec<AccessPoint>,
     pub devices: Vec<Device>,
     pub connections: Vec<Connection>,
 }
@@ -27,10 +38,19 @@ pub struct NetworkState {
 impl NetworkState {
     /// Returns a NetworkState struct with the given devices and connections.
     ///
+    /// * `general_state`: General network configuration
+    /// * `access_points`: Access points to include in the state.
     /// * `devices`: devices to include in the state.
     /// * `connections`: connections to include in the state.
-    pub fn new(devices: Vec<Device>, connections: Vec<Connection>) -> Self {
+    pub fn new(
+        general_state: GeneralState,
+        access_points: Vec<AccessPoint>,
+        devices: Vec<Device>,
+        connections: Vec<Connection>,
+    ) -> Self {
         Self {
+            general_state,
+            access_points,
             devices,
             connections,
         }
@@ -369,6 +389,35 @@ mod tests {
     }
 }
 
+/// Network state
+#[serde_as]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct GeneralState {
+    pub connectivity: bool,
+    pub wireless_enabled: bool,
+    pub networking_enabled: bool, // pub network_state: NMSTATE
+                                  // pub dns: GlobalDnsConfiguration <HashMap>
+}
+
+impl Default for GeneralState {
+    fn default() -> Self {
+        Self {
+            connectivity: false,
+            wireless_enabled: false,
+            networking_enabled: false,
+        }
+    }
+}
+
+/// Access Point
+#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+pub struct AccessPoint {
+    pub ssid: SSID,
+    pub hw_address: String,
+    pub strength: u8,
+    pub security_protocols: Vec<SecurityProtocol>,
+}
+
 /// Network device
 #[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
 pub struct Device {
@@ -462,6 +511,84 @@ impl Default for Connection {
             match_config: Default::default(),
             config: Default::default(),
         }
+    }
+}
+
+impl TryFrom<NetworkConnection> for Connection {
+    type Error = NetworkStateError;
+
+    fn try_from(conn: NetworkConnection) -> Result<Self, Self::Error> {
+        let id = conn.clone().id;
+        let mut connection = Connection::new(id, conn.device_type());
+
+        if let Some(method) = conn.clone().method4 {
+            let method: Ipv4Method = method.parse().unwrap();
+            connection.ip_config.method4 = method;
+        }
+
+        if let Some(method) = conn.method6 {
+            let method: Ipv6Method = method.parse().unwrap();
+            connection.ip_config.method6 = method;
+        }
+
+        if let Some(wireless_config) = conn.wireless {
+            let config = WirelessConfig::try_from(wireless_config)?;
+            connection.config = config.into();
+        }
+
+        if let Some(bond_config) = conn.bond {
+            let config = BondConfig::try_from(bond_config)?;
+            connection.config = config.into();
+        }
+
+        connection.ip_config.nameservers = conn.nameservers;
+        connection.ip_config.gateway4 = conn.gateway4;
+        connection.ip_config.gateway6 = conn.gateway6;
+        connection.interface = conn.interface;
+
+        Ok(connection)
+    }
+}
+
+impl TryFrom<Connection> for NetworkConnection {
+    type Error = NetworkStateError;
+
+    fn try_from(conn: Connection) -> Result<Self, Self::Error> {
+        let id = conn.clone().id;
+        let mac = conn.mac_address.to_string();
+        let method4 = Some(conn.ip_config.method4.to_string());
+        let method6 = Some(conn.ip_config.method6.to_string());
+        let mac_address = (!mac.is_empty()).then(|| mac);
+        let nameservers = conn.ip_config.nameservers.into();
+        let addresses = conn.ip_config.addresses.into();
+        let gateway4 = conn.ip_config.gateway4.into();
+        let gateway6 = conn.ip_config.gateway6.into();
+        let interface = conn.interface.into();
+
+        let mut connection = NetworkConnection {
+            id,
+            method4,
+            method6,
+            gateway4,
+            gateway6,
+            nameservers,
+            mac_address,
+            interface,
+            addresses,
+            ..Default::default()
+        };
+
+        match conn.config {
+            ConnectionConfig::Wireless(config) => {
+                connection.wireless = Some(WirelessSettings::try_from(config)?);
+            }
+            ConnectionConfig::Bond(config) => {
+                connection.bond = Some(BondSettings::try_from(config)?);
+            }
+            _ => {}
+        }
+
+        Ok(connection)
     }
 }
 
@@ -781,6 +908,36 @@ impl TryFrom<ConnectionConfig> for WirelessConfig {
     }
 }
 
+impl TryFrom<WirelessSettings> for WirelessConfig {
+    type Error = NetworkStateError;
+
+    fn try_from(settings: WirelessSettings) -> Result<Self, Self::Error> {
+        let ssid = SSID(settings.ssid.as_bytes().into());
+        let mode = WirelessMode::try_from(settings.mode.as_str())?;
+        let security = SecurityProtocol::try_from(settings.security.as_str())?;
+        Ok(WirelessConfig {
+            ssid,
+            mode,
+            security,
+            password: Some(settings.password),
+            ..Default::default()
+        })
+    }
+}
+
+impl TryFrom<WirelessConfig> for WirelessSettings {
+    type Error = NetworkStateError;
+
+    fn try_from(wireless: WirelessConfig) -> Result<Self, Self::Error> {
+        Ok(WirelessSettings {
+            ssid: wireless.ssid.to_string(),
+            mode: wireless.mode.to_string(),
+            security: wireless.security.to_string(),
+            password: wireless.password.unwrap_or_default(),
+        })
+    }
+}
+
 #[derive(Debug, Default, Clone, Copy, PartialEq, Serialize)]
 pub enum WirelessMode {
     Unknown = 0,
@@ -1005,6 +1162,33 @@ impl TryFrom<ConnectionConfig> for BondConfig {
             ConnectionConfig::Bond(config) => Ok(config),
             _ => Err(NetworkStateError::UnexpectedConfiguration),
         }
+    }
+}
+
+impl TryFrom<BondSettings> for BondConfig {
+    type Error = NetworkStateError;
+
+    fn try_from(settings: BondSettings) -> Result<Self, Self::Error> {
+        let mode = BondMode::try_from(settings.mode.as_str())
+            .map_err(|_| NetworkStateError::InvalidBondMode(settings.mode))?;
+        let mut options = BondOptions::default();
+        if let Some(setting_options) = settings.options {
+            options = BondOptions::try_from(setting_options.as_str())?;
+        }
+
+        Ok(BondConfig { mode, options })
+    }
+}
+
+impl TryFrom<BondConfig> for BondSettings {
+    type Error = NetworkStateError;
+
+    fn try_from(bond: BondConfig) -> Result<Self, Self::Error> {
+        Ok(BondSettings {
+            mode: bond.mode.to_string(),
+            options: Some(bond.options.to_string()),
+            ..Default::default()
+        })
     }
 }
 

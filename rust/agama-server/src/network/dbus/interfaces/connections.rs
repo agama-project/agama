@@ -101,7 +101,10 @@ impl Connections {
             .parse()
             .map_err(|_| NetworkStateError::InvalidUuid(uuid.to_string()))?;
         let actions = self.actions.lock().await;
-        actions.send(Action::RemoveConnection(uuid)).unwrap();
+        let (tx, rx) = oneshot::channel();
+        actions.send(Action::RemoveConnection(uuid, tx)).unwrap();
+
+        rx.await.unwrap()?;
         Ok(())
     }
 

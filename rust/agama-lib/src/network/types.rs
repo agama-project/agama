@@ -1,5 +1,9 @@
+use cidr::errors::NetworkParseError;
 use serde::{Deserialize, Serialize};
-use std::{fmt, str};
+use std::{
+    fmt,
+    str::{self, FromStr},
+};
 use thiserror::Error;
 use zbus;
 
@@ -23,6 +27,14 @@ impl SSID {
 impl fmt::Display for SSID {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", str::from_utf8(&self.0).unwrap())
+    }
+}
+
+impl FromStr for SSID {
+    type Err = NetworkParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(SSID(s.as_bytes().into()))
     }
 }
 

@@ -1,4 +1,4 @@
-use super::{error::NetworkStateError, NetworkAdapterError};
+use super::{error::NetworkStateError, model::NetworkStateItems, NetworkAdapterError};
 use crate::network::{dbus::Tree, model::Connection, Action, Adapter, NetworkState};
 use agama_lib::network::types::DeviceType;
 use std::{error::Error, sync::Arc};
@@ -37,7 +37,7 @@ impl<T: Adapter> NetworkSystem<T> {
     /// Writes the network configuration.
     pub async fn write(&mut self) -> Result<(), NetworkAdapterError> {
         self.adapter.write(&self.state).await?;
-        self.state = self.adapter.read().await?;
+        self.state = self.adapter.read(vec![]).await?;
         Ok(())
     }
 
@@ -50,7 +50,7 @@ impl<T: Adapter> NetworkSystem<T> {
 
     /// Populates the D-Bus tree with the known devices and connections.
     pub async fn setup(&mut self) -> Result<(), Box<dyn Error>> {
-        self.state = self.adapter.read().await?;
+        self.state = self.adapter.read(vec![]).await?;
         let mut tree = self.tree.lock().await;
         tree.set_connections(&mut self.state.connections).await?;
         tree.set_devices(&self.state.devices).await?;
@@ -74,6 +74,26 @@ impl<T: Adapter> NetworkSystem<T> {
             Action::AddConnection(name, ty, tx) => {
                 let result = self.add_connection_action(name, ty).await;
                 tx.send(result).unwrap();
+            }
+            Action::RefreshScan(tx) => {
+                let state = self
+                    .adapter
+                    .read(vec![NetworkStateItems::AccessPoints])
+                    .await?;
+                self.state.general_state = state.general_state;
+                self.state.access_points = state.access_points;
+                tx.send(Ok(())).unwrap();
+            }
+            Action::GetAccessPoints(tx) => {
+                tx.send(self.state.access_points.clone()).unwrap();
+            }
+            Action::NewConnection(conn, tx) => {
+                let result = self.new_connection_action(conn).await;
+                tx.send(result).unwrap();
+            }
+            Action::GetGeneralState(tx) => {
+                let config = self.state.general_state.clone();
+                tx.send(config.clone()).unwrap();
             }
             Action::GetConnection(uuid, tx) => {
                 let conn = self.state.get_connection_by_uuid(uuid);
@@ -122,10 +142,15 @@ impl<T: Adapter> NetworkSystem<T> {
             Action::UpdateConnection(conn) => {
                 self.state.update_connection(*conn)?;
             }
-            Action::RemoveConnection(uuid) => {
+            Action::UpdateGeneralState(general_state) => {
+                self.state.general_state = general_state;
+            }
+            Action::RemoveConnection(uuid, tx) => {
                 let mut tree = self.tree.lock().await;
                 tree.remove_connection(uuid).await?;
-                self.state.remove_connection(uuid)?;
+                let result = self.state.remove_connection(uuid);
+
+                tx.send(result).unwrap();
             }
             Action::Apply(tx) => {
                 let result = self.write().await;
@@ -160,6 +185,20 @@ impl<T: Adapter> NetworkSystem<T> {
         ty: DeviceType,
     ) -> Result<OwnedObjectPath, NetworkStateError> {
         let conn = Connection::new(name, ty);
+        // TODO: handle tree handling problems
+        self.state.add_connection(conn.clone())?;
+        let mut tree = self.tree.lock().await;
+        let path = tree
+            .add_connection(&conn)
+            .await
+            .expect("Could not update the D-Bus tree");
+        Ok(path)
+    }
+
+    async fn new_connection_action(
+        &mut self,
+        conn: Connection,
+    ) -> Result<OwnedObjectPath, NetworkStateError> {
         // TODO: handle tree handling problems
         self.state.add_connection(conn.clone())?;
         let mut tree = self.tree.lock().await;
