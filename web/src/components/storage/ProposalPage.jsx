@@ -232,6 +232,7 @@ export default function ProposalPage() {
       <ProposalSettingsSection
         availableDevices={state.availableDevices}
         encryptionMethods={state.encryptionMethods}
+        volumeTemplates={state.volumeTemplates}
         settings={state.settings}
         onChange={changeSettings}
         isLoading={state.loading}

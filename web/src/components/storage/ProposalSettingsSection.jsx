@@ -131,16 +131,14 @@ const SnapshotsField = ({
 }) => {
   const rootVolume = (settings.volumes || []).find((i) => i.mountPath === "/");
 
-  const initialChecked = rootVolume !== undefined && hasFS(rootVolume, "Btrfs") && rootVolume.snapshots;
-  const [isChecked, setIsChecked] = useState(initialChecked);
-
   // no root volume is probably some error or still loading
   if (rootVolume === undefined) {
     return <Skeleton width="25%" />;
   }
 
+  const isChecked = rootVolume !== undefined && hasFS(rootVolume, "Btrfs") && rootVolume.snapshots;
+
   const switchState = (_, checked) => {
-    setIsChecked(checked);
     onChange({ active: checked, settings });
   };
 
