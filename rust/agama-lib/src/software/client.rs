@@ -7,8 +7,8 @@ use zbus::Connection;
 /// Represents a software product
 #[derive(Debug, Serialize, utoipa::ToSchema)]
 pub struct Pattern {
-    /// Pattern ID (eg., "aaa_base", "gnome")
-    pub id: String,
+    /// Pattern name (eg., "aaa_base", "gnome")
+    pub name: String,
     /// Pattern category (e.g., "Production")
     pub category: String,
     /// Pattern icon path locally on system
@@ -69,8 +69,8 @@ impl<'a> SoftwareClient<'a> {
             .await?
             .into_iter()
             .map(
-                |(id, (category, description, icon, summary, order))| Pattern {
-                    id,
+                |(name, (category, description, icon, summary, order))| Pattern {
+                    name,
                     category,
                     icon,
                     description,
