@@ -265,9 +265,16 @@ async fn serve_command(options: ServeArgs) -> anyhow::Result<()> {
         addresses.push(options.address2);
     }
 
-    let servers: Vec<_> = addresses.iter().map(|a|
-        tokio::spawn(start_server(a.clone(), service.clone(), ssl_acceptor.clone())
-    )).collect();
+    let servers: Vec<_> = addresses
+        .iter()
+        .map(|a| {
+            tokio::spawn(start_server(
+                a.clone(),
+                service.clone(),
+                ssl_acceptor.clone(),
+            ))
+        })
+        .collect();
 
     futures_util::future::join_all(servers).await;
 

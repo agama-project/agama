@@ -5,7 +5,7 @@ use openssl::hash::MessageDigest;
 use openssl::pkey::{PKey, Private};
 use openssl::rsa::Rsa;
 use openssl::x509::extension::{
-    BasicConstraints, SubjectKeyIdentifier, KeyUsage, SubjectAlternativeName,
+    BasicConstraints, KeyUsage, SubjectAlternativeName, SubjectKeyIdentifier,
 };
 use openssl::x509::{X509NameBuilder, X509};
 
