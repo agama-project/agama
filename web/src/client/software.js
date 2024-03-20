@@ -303,7 +303,7 @@ class SoftwareClient extends WithIssues(
   SOFTWARE_PATH,
 ) {}
 
-class ProductClient {
+class ProductBaseClient {
   /**
    * @param {import("./http").HTTPClient} client - HTTP client.
    */
@@ -354,5 +354,8 @@ class ProductClient {
     });
   }
 }
+
+class ProductClient
+  extends WithIssues(ProductBaseClient, "software/issues/product", PRODUCT_PATH) {}
 
 export { ProductClient, SoftwareClient };

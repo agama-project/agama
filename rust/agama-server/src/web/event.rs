@@ -4,6 +4,8 @@ use serde::Serialize;
 use std::collections::HashMap;
 use tokio::sync::broadcast::{Receiver, Sender};
 
+use super::common::Issue;
+
 #[derive(Clone, Debug, Serialize)]
 #[serde(tag = "type")]
 pub enum Event {
@@ -29,6 +31,11 @@ pub enum Event {
     ServiceStatusChanged {
         service: String,
         status: u32,
+    },
+    IssuesChanged {
+        service: String,
+        path: String,
+        issues: Vec<Issue>,
     },
 }
 

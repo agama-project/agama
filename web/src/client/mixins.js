@@ -61,86 +61,70 @@ const VALIDATION_IFACE = "org.opensuse.Agama1.Validation";
  */
 
 /**
-* @callback IssuesHandler
-* @param {Issue[]} issues
-* @return {void}
-*/
-
-/**
- * Builds an issue from a D-Bus issue
- *
- * @param {DBusIssue} dbusIssue
- * @return {Issue}
+ * @callback IssuesHandler
+ * @param {Issue[]} issues
+ * @return {void}
  */
-const buildIssue = (dbusIssue) => {
-  const source = (value) => {
-    switch (value) {
-      case 0: return "unknown";
-      case 1: return "system";
-      case 2: return "config";
-    }
-  };
 
-  const severity = (value) => {
-    return value === 0 ? "warn" : "error";
-  };
+const ISSUES_SOURCES = [
+  "unknown",
+  "system",
+  "config",
+];
 
+const buildIssue = ({ description, details, source, severity }) => {
   return {
-    description: dbusIssue[0],
-    details: dbusIssue[1],
-    source: source(dbusIssue[2]),
-    severity: severity(dbusIssue[3])
+    description,
+    details,
+    source: ISSUES_SOURCES[source],
+    severity: severity === 0 ? "warn" : "error",
   };
 };
 
 /**
  * Extends the given class with methods to get the issues over D-Bus
- * @param {string} object_path - object_path
+ *
+ * @template {!WithHTTPClient} T
  * @param {T} superclass - superclass to extend
- * @template {!WithDBusProxies} T
+ * @param {string} issues_path - validation resource path (e.g., "/manager/issues").
+ * @param {string} dbus_path - service name (e.g., "/org/opensuse/Agama/Software1/product").
  */
-const WithIssues = (superclass, object_path) => class extends superclass {
-  constructor(...args) {
-    super(...args);
-    this.proxies.issues = this.client.proxy(ISSUES_IFACE, object_path);
-  }
+const WithIssues = (superclass, issues_path, dbus_path) =>
+  class extends superclass {
+    /**
+     * Returns the issues
+     *
+     * @return {Promise<Issue[]>}
+     */
+    async getIssues() {
+      const issues = await this.client.get(issues_path);
+      return issues.map(buildIssue);
+    }
 
-  /**
-   * Returns the issues
-   *
-   * @return {Promise<Issue[]>}
-   */
-  async getIssues() {
-    const proxy = await this.proxies.issues;
-    return proxy.All.map(buildIssue);
-  }
+    /**
+     * Gets all issues with error severity
+     *
+     * @return {Promise<Issue[]>}
+     */
+    async getErrors() {
+      const issues = await this.getIssues();
+      return issues.filter((i) => i.severity === "error");
+    }
 
-  /**
-   * Gets all issues with error severity
-   *
-   * @return {Promise<Issue[]>}
-   */
-  async getErrors() {
-    const issues = await this.getIssues();
-    return issues.filter(i => i.severity === "error");
-  }
-
-  /**
-   * Registers a callback to run when the issues change
-   *
-   * @param {IssuesHandler} handler - callback function
-   * @return {import ("./dbus").RemoveFn} function to disable the callback
-   */
-  onIssuesChange(handler) {
-    return this.client.onObjectChanged(object_path, ISSUES_IFACE, (changes) => {
-      if ("All" in changes) {
-        const dbusIssues = changes.All.v;
-        const issues = dbusIssues.map(buildIssue);
-        handler(issues);
-      }
-    });
-  }
-};
+    /**
+     * Registers a callback to run when the issues change
+     *
+     * @param {IssuesHandler} handler - callback function
+     * @return {import ("./http").RemoveFn} function to disable the callback
+     */
+    onIssuesChange(handler) {
+      return this.client.onEvent("IssuesChanged", ({ path, issues }) => {
+        if (path === dbus_path) {
+          handler(issues.map(buildIssue));
+        }
+      });
+    }
+  };
 
 /**
  * Extends the given class with methods to get and track the service status
@@ -169,8 +153,8 @@ const WithStatus = (superclass, status_path, service_name) =>
      * @return {function} function to disable the callback
      */
     onStatusChange(handler) {
-      return this.client.onEvent("StatusChanged", ({ status, service }) => {
-        if (service === service_name && status) {
+      return this.client.onEvent("ServiceStatusChanged", ({ status, service }) => {
+        if (service === service_name) {
           handler(status);
         }
       });
@@ -226,8 +210,8 @@ const WithProgress = (superclass, progress_path, service_name) =>
      * @return {import ("./dbus").RemoveFn} function to disable the callback
      */
     onProgressChange(handler) {
-      return this.client.onEvent("Progress", (progress) => {
-        if (progress?.service === service_name) {
+      return this.client.onEvent("Progress", ({ service, ...progress }) => {
+        if (service === service_name) {
           const { current_step, max_steps, current_title, finished } = progress;
           handler({
             total: max_steps,
