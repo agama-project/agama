@@ -1,6 +1,7 @@
 use super::proxies::Software1Proxy;
 use crate::error::ServiceError;
 use serde::Serialize;
+use serde_repr::Serialize_repr;
 use std::collections::HashMap;
 use zbus::Connection;
 
@@ -22,7 +23,8 @@ pub struct Pattern {
 }
 
 /// Represents the reason why a pattern is selected.
-#[derive(Clone, Copy, Debug, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize_repr)]
+#[repr(u8)]
 pub enum SelectedBy {
     /// The pattern was selected by the user.
     User = 0,
