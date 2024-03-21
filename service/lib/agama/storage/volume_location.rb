@@ -29,7 +29,7 @@ module Agama
 
       # What to do to allocate the volume
       #
-      # @return [Symbol] see .targets
+      # @return [Symbol] see {.targets}
       attr_reader :target
 
       # Concrete device to allocate the volume, the exact meaning depends on {#target}
