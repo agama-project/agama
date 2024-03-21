@@ -8,8 +8,8 @@ use crate::{
     error::Error,
     l10n::web::l10n_service,
     manager::web::{manager_service, manager_stream},
-    software::web::{software_service, software_stream},
     questions::web::{questions_service, questions_stream},
+    software::web::{software_service, software_stream},
     web::common::{progress_stream, service_status_stream},
 };
 use axum::Router;
