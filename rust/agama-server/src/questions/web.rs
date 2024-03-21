@@ -45,7 +45,7 @@ impl<'a> QuestionsClient<'a> {
             connection: dbus.clone(),
             objects_proxy: ObjectManagerProxy::builder(&dbus)
                 .path(question_path)?
-                .destination("org.opensuse.Agama1.Questions")?
+                .destination("org.opensuse.Agama1")?
                 .build()
                 .await?,
         })
@@ -223,7 +223,7 @@ pub async fn questions_stream(
     let proxy = ObjectManagerProxy::builder(&dbus)
         .path(question_path)
         .context("Failed to create object manager path")?
-        .destination("org.opensuse.Agama1.Questions")?
+        .destination("org.opensuse.Agama1")?
         .build()
         .await
         .context("Failed to create Object MAnager proxy")?;
