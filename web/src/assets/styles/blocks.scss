@@ -424,6 +424,44 @@ ul[data-type="agama/list"][role="grid"] {
   }
 }
 
+[data-type="agama/segmented-control"] {
+  ul {
+    display: inline-flex;
+    gap: var(--spacer-smaller);
+    list-style-type: none;
+    border-radius: var(--spacer-smaller);
+    align-items: center;
+    margin-inline: 0;
+
+    li {
+      margin: 0;
+
+      &:not(:last-child) {
+        padding-inline-end: var(--spacer-smaller);
+        border-inline-end: 1px solid var(--color-gray-dark);
+      }
+
+      button {
+        padding: var(--spacer-smaller) var(--spacer-small);
+        border: 1px solid var(--color-gray-darker);
+        border-radius: var(--spacer-smaller);
+        background: white; // var(--color-gray);
+
+        &[aria-current="true"] {
+          background: var(--color-primary);
+          color: white;
+          font-weight: bold;
+          font-size: var(--fs-normal);
+        }
+
+        &:not([aria-current="true"]):hover {
+          background: var(--color-gray);
+        }
+      }
+    }
+  }
+}
+
 table[data-type="agama/tree-table"] {
   th:first-child {
     block-size: fit-content;
