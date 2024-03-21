@@ -139,7 +139,10 @@ const SelectedPatternsList = ({ patterns, proposal }) => {
         <ul>
           {selected.map((pattern) => (
             <li key={pattern.name}>
-              {pattern.summary}
+              <div>
+                <b>{pattern.summary}</b>
+              </div>
+              <div>{pattern.description}</div>
             </li>
           ))}
         </ul>
