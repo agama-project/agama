@@ -22,7 +22,7 @@
 // @ts-check
 
 import React, { useEffect, useState } from "react";
-import { Button, Skeleton } from "@patternfly/react-core";
+import { Button } from "@patternfly/react-core";
 
 import { If, Page, Popup, Section, SectionSkeleton } from "~/components/core";
 import { PatternSelector, UsedSize } from "~/components/software";
@@ -98,10 +98,10 @@ const SelectPatternsButton = ({ patterns, proposal }) => {
   return (
     <>
       <Button
-        variant="primary"
+        variant="link"
         onClick={openPopup}
       >
-        {_("Change")}
+        {_("Change selection")}
       </Button>
       <PatternsSelectorPopup
         patterns={patterns}
@@ -109,6 +109,40 @@ const SelectPatternsButton = ({ patterns, proposal }) => {
         isOpen={isPopupOpen}
         onFinish={closePopup}
       />
+    </>
+  );
+};
+
+const SelectedPatternsList = ({ patterns, proposal }) => {
+  const selected = patterns.filter((p) => p.selected_by !== 2);
+  let description;
+
+  if (selected.length === 0) {
+    description = (
+      <>
+        {_("No additional software was selected.")}
+      </>
+    );
+  } else {
+    description = (
+      <>
+        <p>{_("The following software patterns are selected for installation:")}</p>
+        <ul>
+          {selected.map((pattern) => (
+            <li key={pattern.name}>
+              {pattern.summary}
+            </li>
+          ))}
+        </ul>
+      </>
+    );
+  }
+  return (
+    <>
+      {description}
+      <div>
+        <SelectPatternsButton patterns={patterns} proposal={proposal} />
+      </div>
     </>
   );
 };
@@ -121,6 +155,7 @@ const SelectPatternsButton = ({ patterns, proposal }) => {
 function SoftwarePage() {
   const [status, setStatus] = useState(BUSY);
   const [patterns, setPatterns] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [proposal, setProposal] = useState({ patterns: {}, size: "" });
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
@@ -141,36 +176,35 @@ function SoftwarePage() {
   }, [client.software, patterns]);
 
   useEffect(() => {
-    if (patterns.length > 0) return;
+    if (patterns.length !== 0) return;
 
     const loadPatterns = async () => {
       const patterns = await cancellablePromise(client.software.getPatterns());
       const proposal = await cancellablePromise(client.software.getProposal());
       setPatterns(buildPatterns(patterns, proposal.patterns));
       setProposal(proposal);
+      setIsLoading(false);
     };
 
     loadPatterns();
   }, [client.software, patterns, cancellablePromise]);
 
+  console.log("SoftPage");
+
   return (
     // TRANSLATORS: page title
     <Page icon="apps" title={_("Software")}>
+      {/* TRANSLATORS: page title */}
       <Section title={_("Software selection")}>
         <If
           condition={status === BUSY}
           then={<SectionSkeleton numRows={5} />}
           else={
             <>
-              <UsedSize size={proposal.size} />
-              <ul>
-                {patterns.filter((p) => p.selected_by !== 2).map((pattern) => (
-                  <li key={pattern.name}>
-                    {pattern.summary}
-                  </li>
-                ))}
-              </ul>
-              <SelectPatternsButton patterns={patterns} proposal={proposal} />
+              <SelectedPatternsList patterns={patterns} proposal={proposal} />
+              <div>
+                <UsedSize size={proposal.size} />
+              </div>
             </>
           }
         />

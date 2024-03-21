@@ -25,7 +25,6 @@ import { Em } from "~/components/core";
 import { _ } from "~/i18n";
 
 export default function UsedSize({ size }) {
-  console.log("size", size);
   if (size === undefined || size === "" || size === "0 B") return null;
 
   // TRANSLATORS: %s will be replaced by the estimated installation size,

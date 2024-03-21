@@ -23,10 +23,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { SearchInput } from "@patternfly/react-core";
 
 import { useInstallerClient } from "~/context/installer";
-import { If, Section, Selector, ValidationErrors } from "~/components/core";
-import PatternGroup from "./PatternGroup";
-import PatternItem from "./PatternItem";
-import { toValidationError } from "~/utils";
+import { If, Section, Selector } from "~/components/core";
 import { _ } from "~/i18n";
 
 /**
@@ -40,32 +37,6 @@ import { _ } from "~/i18n";
  * @property {number|undefined} selected who selected the pattern, undefined
  *   means it is not selected to install
  */
-
-/**
- * Convert DBus pattern data to JS objects
- * @param {Object.<string, Array<string>>} pattern_data input pattern data
- * @param {PatternSelection} selected selected patterns
- * @returns {Array<Pattern>} converted patterns
- */
-function convert(pattern_data, selected) {
-  const patterns = [];
-
-  Object.keys(pattern_data).forEach((name) => {
-    const pattern = pattern_data[name];
-
-    patterns.push({
-      name,
-      group: pattern[0],
-      description: pattern[1],
-      icon: pattern[2],
-      summary: pattern[3],
-      order: pattern[4],
-      selected: selected[name],
-    });
-  });
-
-  return patterns;
-}
 
 /**
  * @typedef {Object.<string, Array<Pattern>} PatternGroups mapping "group name" =>
@@ -134,16 +105,9 @@ function sortGroups(groups) {
  * @returns {JSX.Element}
  */
 function PatternSelector({ patterns, proposal }) {
-  const [errors, setErrors] = useState([]);
   const [visiblePatterns, setVisiblePatterns] = useState(patterns);
   const [searchValue, setSearchValue] = useState("");
   const client = useInstallerClient();
-
-  const { patterns: selection, used } = proposal;
-
-  const onSearchChange = (value) => {
-    setSearchValue(value);
-  };
 
   useEffect(() => {
     if (!patterns) return;
@@ -211,11 +175,6 @@ function PatternSelector({ patterns, proposal }) {
     );
   });
 
-  // FIXME: ValidationErrors should be replaced by an equivalent component to show issues.
-  // Note that only the Users client uses the old Validation D-Bus interface.
-  // const validationErrors = errors.map(toValidationError);
-  // <ValidationErrors errors={validationErrors} sectionId="software" />
-
   return (
     <>
       <Section aria-label={_("Software summary and filter options")}>
@@ -224,8 +183,8 @@ function PatternSelector({ patterns, proposal }) {
           placeholder={_("Search")}
           aria-label={_("Search")}
           value={searchValue}
-          onChange={(_event, value) => onSearchChange(value)}
-          onClear={() => onSearchChange("")}
+          onChange={(_event, value) => setSearchValue(value)}
+          onClear={() => setSearchValue("")}
           // do not display the counter when search filter is empty
           resultsCount={searchValue === "" ? 0 : groups.length}
         />
