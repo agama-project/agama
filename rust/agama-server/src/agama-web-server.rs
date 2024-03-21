@@ -176,11 +176,10 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
     let listener = tokio::net::TcpListener::bind(&address)
         .await
         .unwrap_or_else(|error| {
-                let msg = format!("Error: could not listen on {}: {}", &address, error);
-                tracing::error!(msg);
-                panic!("{}", msg)
-            }
-        );
+            let msg = format!("Error: could not listen on {}: {}", &address, error);
+            tracing::error!(msg);
+            panic!("{}", msg)
+        });
 
     pin_mut!(listener);
 
