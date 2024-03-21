@@ -25,6 +25,7 @@ import { SearchInput } from "@patternfly/react-core";
 import { useInstallerClient } from "~/context/installer";
 import { If, Section, Selector } from "~/components/core";
 import { _ } from "~/i18n";
+import { SelectedBy } from "~/client/software";
 
 /**
  * @typedef {Object} Pattern
@@ -127,7 +128,8 @@ function PatternSelector({ patterns, proposal }) {
   }, [patterns, searchValue]);
 
   const onToggle = useCallback((name) => {
-    const selected = patterns.filter((p) => p.selected_by === 0).map((p) => p.name);
+    const selected = patterns.filter((p) => p.selectedBy === SelectedBy.USER)
+      .map((p) => p.name);
 
     const index = selected.indexOf(name);
     if (index === -1) {
@@ -151,12 +153,14 @@ function PatternSelector({ patterns, proposal }) {
       </div>
       <div>{pattern.description}</div>
       {/* eslint-disable-next-line i18next/no-literal-string */}
-      <If condition={pattern.selected_by === 1} then={<div>auto</div>} />
+      <If condition={pattern.selectedBy === SelectedBy.AUTO} then={<div>auto</div>} />
     </>
   );
 
   const selector = sortGroups(groups).map((groupName) => {
-    const selectedIds = groups[groupName].filter((p) => p.selected_by !== 2).map((p) => p.name);
+    const selectedIds = groups[groupName].filter((p) => p.selectedBy !== SelectedBy.NONE).map((p) =>
+      p.name
+    );
     return (
       <Section
         key={groupName}

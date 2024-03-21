@@ -30,6 +30,7 @@ import { useInstallerClient } from "~/context/installer";
 import { noop, useCancellablePromise } from "~/utils";
 import { BUSY } from "~/client/status";
 import { _ } from "~/i18n";
+import { SelectedBy } from "~/client/software";
 
 /**
  * @typedef {Object} Pattern
@@ -38,7 +39,7 @@ import { _ } from "~/i18n";
  * @property {string} summary - pattern name (user visible)
  * @property {string} description -  long description of the pattern
  * @property {number} order - display order (string!)
- * @property {number} selected_by - who selected the pattern
+ * @property {number} selectedBy - who selected the pattern
  */
 
 /**
@@ -50,10 +51,10 @@ import { _ } from "~/i18n";
  */
 function buildPatterns(patterns, selection) {
   return patterns.map((pattern) => {
-    const selected_by = (selection[pattern.name] !== undefined) ? selection[pattern.name] : 2;
+    const selectedBy = (selection[pattern.name] !== undefined) ? selection[pattern.name] : 2;
     return {
       ...pattern,
-      selected_by,
+      selectedBy,
     };
   }).sort((a, b) => a.order - b.order);
 }
@@ -114,7 +115,7 @@ const SelectPatternsButton = ({ patterns, proposal }) => {
 };
 
 const SelectedPatternsList = ({ patterns, proposal }) => {
-  const selected = patterns.filter((p) => p.selected_by !== 2);
+  const selected = patterns.filter((p) => p.selectedBy !== SelectedBy.NONE);
   let description;
 
   if (selected.length === 0) {
