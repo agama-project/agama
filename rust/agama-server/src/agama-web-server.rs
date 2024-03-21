@@ -101,6 +101,7 @@ impl ServeArgs {
 }
 
 /// Checks whether the connection uses SSL or not
+/// `stream`: the TCP stream containing a request from client
 async fn is_ssl_stream(stream: &tokio::net::TcpStream) -> bool {
     // a buffer for reading the first byte from the TCP connection
     let mut buf = [0u8; 1];
@@ -174,7 +175,12 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
     // how to use axum with openSSL
     let listener = tokio::net::TcpListener::bind(&address)
         .await
-        .unwrap_or_else(|_| panic!("could not listen on {}", &address));
+        .unwrap_or_else(|error| {
+                let msg = format!("Error: could not listen on {}: {}", &address, error);
+                tracing::error!(msg);
+                panic!("{}", msg)
+            }
+        );
 
     pin_mut!(listener);
 
