@@ -80,6 +80,8 @@ export default function SoftwareSection({ showErrors }) {
   }, [client, cancellablePromise]);
 
   useEffect(() => {
+    if (state.busy) return;
+
     const updateProposal = async () => {
       const errors = await cancellablePromise(client.getIssues());
       const { size } = await cancellablePromise(client.getProposal());

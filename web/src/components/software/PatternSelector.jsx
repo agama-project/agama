@@ -23,11 +23,10 @@ import React, { useCallback, useEffect, useState } from "react";
 import { SearchInput } from "@patternfly/react-core";
 
 import { useInstallerClient } from "~/context/installer";
-import { Section, ValidationErrors } from "~/components/core";
+import { If, Section, Selector, ValidationErrors } from "~/components/core";
 import PatternGroup from "./PatternGroup";
 import PatternItem from "./PatternItem";
 import { toValidationError } from "~/utils";
-import UsedSize from "./UsedSize";
 import { _ } from "~/i18n";
 
 /**
@@ -76,37 +75,32 @@ function convert(pattern_data, selected) {
 /**
  * Group the patterns with the same group name
  * @param {Array<Pattern>} patterns input
- * @returns {PatternGroups}
+ * @return {PatternGroups}
  */
 function groupPatterns(patterns) {
-  // group patterns
-  const pattern_groups = {};
+  const groups = {};
 
   patterns.forEach((pattern) => {
-    if (pattern_groups[pattern.category]) {
-      pattern_groups[pattern.category].push(pattern);
+    if (groups[pattern.category]) {
+      groups[pattern.category].push(pattern);
     } else {
-      pattern_groups[pattern.category] = [pattern];
+      groups[pattern.category] = [pattern];
     }
   });
 
   // sort patterns by the "order" value
-  Object.keys(pattern_groups).forEach((group) => {
-    pattern_groups[group].sort((p1, p2) => {
+  Object.keys(groups).forEach((group) => {
+    groups[group].sort((p1, p2) => {
       if (p1.order === p2.order) {
         // there should be no patterns with the same name
         return p1.name < p2.name ? -1 : 1;
       } else {
-        // patterns with undefined (empty) order are always at the end
-        if (p1.order === "") return 1;
-        if (p2.order === "") return -1;
-
-        return p1.order < p2.order ? -1 : 1;
+        return p1.order - p2.order;
       }
     });
   });
 
-  return pattern_groups;
+  return groups;
 }
 
 /**
@@ -134,62 +128,42 @@ function sortGroups(groups) {
 /**
  * Pattern selector component
  * @component
+ * @param {object} props
+ * @param {import("~/components/software/SoftwarePage").Pattern[]} props.patterns - list of patterns
+ * @param {import("~/client/software").SoftwareProposal} props.proposal - Software proposal
  * @returns {JSX.Element}
  */
-function PatternSelector() {
-  const [patterns, setPatterns] = useState();
-  const [visiblePatterns, setVisiblePatterns] = useState(undefined);
-  const [selected, setSelected] = useState({});
+function PatternSelector({ patterns, proposal }) {
   const [errors, setErrors] = useState([]);
-  const [used, setUsed] = useState();
+  const [visiblePatterns, setVisiblePatterns] = useState(patterns);
   const [searchValue, setSearchValue] = useState("");
   const client = useInstallerClient();
+
+  const { patterns: selection, used } = proposal;
 
   const onSearchChange = (value) => {
     setSearchValue(value);
   };
 
   useEffect(() => {
-    return client.software.onSelectedPatternsChanged(setSelected);
-  }, [client.software, setSelected]);
-
-  useEffect(() => {
-    if (patterns) return;
-
-    const loadData = async () => {
-      setPatterns(await client.software.getPatterns());
-      const { patterns: selected, size } = await client.software.getProposal();
-      setSelected(selected);
-      setUsed(size);
-      setErrors(await client.software.getIssues());
-    };
-
-    loadData();
-  }, [patterns, client.software]);
-
-  useEffect(() => {
     if (!patterns) return;
-
-    let visible = patterns.map((pattern) => {
-      const selected_by = (selected[pattern.name] === undefined) ? 2 : selected[pattern.name];
-      return { ...pattern, selected_by };
-    });
 
     // filtering - search the required text in the name and pattern description
     if (searchValue !== "") {
       // case insensitive search
       const searchData = searchValue.toUpperCase();
-      visible = visible.filter((p) =>
+      const filtered = patterns.filter((p) =>
         p.name.toUpperCase().indexOf(searchData) !== -1 ||
         p.description.toUpperCase().indexOf(searchData) !== -1
       );
+      setVisiblePatterns(filtered);
+    } else {
+      setVisiblePatterns(patterns);
     }
-
-    setVisiblePatterns(visible);
-  }, [patterns, selected, searchValue]);
+  }, [patterns, searchValue]);
 
   const onToggle = useCallback((name) => {
-    const selected = visiblePatterns.filter((p) => p.selected_by === 0).map((p) => p.name);
+    const selected = patterns.filter((p) => p.selected_by === 0).map((p) => p.name);
 
     const index = selected.indexOf(name);
     if (index === -1) {
@@ -199,38 +173,52 @@ function PatternSelector() {
     }
 
     client.software.selectPatterns(selected);
-  }, [visiblePatterns, client.software]);
+  }, [patterns, client.software]);
 
   // initial empty screen, the patterns are loaded very quickly, no need for any progress
-  if (!visiblePatterns) return null;
+  if (visiblePatterns.length === 0) return null;
 
   const groups = groupPatterns(visiblePatterns);
-  const selector = sortGroups(groups).map((group) => {
+
+  const renderPatternOption = (pattern) => (
+    <>
+      <div>
+        <b>{pattern.summary}</b>
+      </div>
+      <div>{pattern.description}</div>
+      {/* eslint-disable-next-line i18next/no-literal-string */}
+      <If condition={pattern.selected_by === 1} then={<div>auto</div>} />
+    </>
+  );
+
+  const selector = sortGroups(groups).map((groupName) => {
+    const selectedIds = groups[groupName].filter((p) => p.selected_by !== 2).map((p) => p.name);
     return (
-      <PatternGroup
-        key={group}
-        name={group}
+      <Section
+        key={groupName}
+        title={groupName}
       >
-        {groups[group].map((p) => (
-          <PatternItem
-            key={p.name}
-            pattern={p}
-            onToggle={(name) => onToggle(name)}
-          />
-        ))}
-      </PatternGroup>
+        <Selector
+          isMultiple
+          renderOption={renderPatternOption}
+          options={groups[groupName]}
+          onOptionClick={onToggle}
+          optionIdKey="name"
+          selectedIds={selectedIds}
+          dataItemsType="agama/software-patterns"
+        />
+      </Section>
     );
   });
 
   // FIXME: ValidationErrors should be replaced by an equivalent component to show issues.
   // Note that only the Users client uses the old Validation D-Bus interface.
-  const validationErrors = errors.map(toValidationError);
+  // const validationErrors = errors.map(toValidationError);
+  // <ValidationErrors errors={validationErrors} sectionId="software" />
 
   return (
     <>
       <Section aria-label={_("Software summary and filter options")}>
-        <UsedSize size={used} />
-        <ValidationErrors errors={validationErrors} sectionId="software" />
         <SearchInput
           // TRANSLATORS: search field placeholder text
           placeholder={_("Search")}

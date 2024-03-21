@@ -24,8 +24,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Skeleton } from "@patternfly/react-core";
 
-import { Page, Popup, Section } from "~/components/core";
-import { Center } from "~/components/layout";
+import { If, Page, Popup, Section, SectionSkeleton } from "~/components/core";
 import { PatternSelector, UsedSize } from "~/components/software";
 import { useInstallerClient } from "~/context/installer";
 import { noop, useCancellablePromise } from "~/utils";
@@ -65,18 +64,19 @@ function buildPatterns(patterns, selection) {
  *
  * @param {object} props
  * @param {Pattern[]} props.patterns - List of patterns
+ * @param {import("~/client/software").SoftwareProposal} props.proposal - Software proposal
  * @param {boolean} props.isOpen - Whether the pop-up should be open
  * @param {function} props.onFinish - Callback to be called when the selection is finished
  */
 const PatternsSelectorPopup = ({
   patterns,
+  proposal,
   isOpen = false,
   onFinish = noop,
 }) => {
-  console.log("isOpen", isOpen);
   return (
-    <Popup title={_("Software selection")} isOpen={isOpen}>
-      <PatternSelector patterns={patterns} />
+    <Popup className="large" title={_("Software selection")} isOpen={isOpen}>
+      <PatternSelector patterns={patterns} proposal={proposal} />
 
       <Popup.Actions>
         <Popup.PrimaryAction
@@ -89,7 +89,7 @@ const PatternsSelectorPopup = ({
   );
 };
 
-const SelectPatternsButton = ({ patterns }) => {
+const SelectPatternsButton = ({ patterns, proposal }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const openPopup = () => setIsPopupOpen(true);
@@ -105,49 +105,11 @@ const SelectPatternsButton = ({ patterns }) => {
       </Button>
       <PatternsSelectorPopup
         patterns={patterns}
+        proposal={proposal}
         isOpen={isPopupOpen}
         onFinish={closePopup}
       />
     </>
-  );
-};
-
-/**
- * Software page content depending on the current service state
- * @component
- * @param {object} props
- * @param {number} props.status - current backend service status
- * @param {string} props.used- used space in human readable format
- * @param {Pattern[]} props.patterns - patterns
- * @returns {JSX.Element}
- */
-const Content = ({ patterns, status, used }) => {
-  if (status === BUSY) {
-    return (
-      <Center>
-        <Skeleton width="20%" />
-        <Skeleton width="35%" />
-        <Skeleton width="70%" />
-        <Skeleton width="65%" />
-        <Skeleton width="80%" />
-        <Skeleton width="75%" />
-      </Center>
-    );
-  }
-
-  // return <PatternSelector />;
-  return (
-    <Section title={_("Software selection")} aria-label={_("List of software patterns")}>
-      <UsedSize size={used} />
-      <ul>
-        {patterns.filter((p) => p.selected_by !== 2).map((pattern) => (
-          <li key={pattern.name}>
-            {pattern.summary}
-          </li>
-        ))}
-      </ul>
-      <SelectPatternsButton patterns={patterns} />
-    </Section>
   );
 };
 
@@ -159,7 +121,7 @@ const Content = ({ patterns, status, used }) => {
 function SoftwarePage() {
   const [status, setStatus] = useState(BUSY);
   const [patterns, setPatterns] = useState([]);
-  const [used, setUsed] = useState("");
+  const [proposal, setProposal] = useState({ patterns: {}, size: "" });
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
 
@@ -173,26 +135,46 @@ function SoftwarePage() {
     if (!patterns) return;
 
     return client.software.onSelectedPatternsChanged((selection) => {
-      client.software.getProposal().then(({ size }) => setUsed(size));
+      client.software.getProposal().then((proposal) => setProposal(proposal));
       setPatterns(buildPatterns(patterns, selection));
     });
   }, [client.software, patterns]);
 
   useEffect(() => {
+    if (patterns.length > 0) return;
+
     const loadPatterns = async () => {
       const patterns = await cancellablePromise(client.software.getPatterns());
-      const { patterns: selection, size } = await cancellablePromise(client.software.getProposal());
-      setUsed(size);
-      setPatterns(buildPatterns(patterns, selection));
+      const proposal = await cancellablePromise(client.software.getProposal());
+      setPatterns(buildPatterns(patterns, proposal.patterns));
+      setProposal(proposal);
     };
 
     loadPatterns();
-  }, [client.software, cancellablePromise]);
+  }, [client.software, patterns, cancellablePromise]);
 
   return (
     // TRANSLATORS: page title
     <Page icon="apps" title={_("Software")}>
-      <Content patterns={patterns} status={status} used={used} />
+      <Section title={_("Software selection")}>
+        <If
+          condition={status === BUSY}
+          then={<SectionSkeleton numRows={5} />}
+          else={
+            <>
+              <UsedSize size={proposal.size} />
+              <ul>
+                {patterns.filter((p) => p.selected_by !== 2).map((pattern) => (
+                  <li key={pattern.name}>
+                    {pattern.summary}
+                  </li>
+                ))}
+              </ul>
+              <SelectPatternsButton patterns={patterns} proposal={proposal} />
+            </>
+          }
+        />
+      </Section>
     </Page>
   );
 }
