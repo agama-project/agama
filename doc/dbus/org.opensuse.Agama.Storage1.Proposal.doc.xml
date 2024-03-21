@@ -16,8 +16,8 @@
       Each volume has the following properties:
         MountPath               s
         MountOptions            as
-        TargetDevice            s
-        TargetVG                s
+        Target                  s
+        TargetDevice            s (only makes sense if Target is not default)
         FsType                  s
         MinSize                 t (bytes)
         MaxSize                 t (bytes. Optional, max size is considered as unlimited if omitted)

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Mar 21 10:35:09 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Extend the storage D-Bus API: new attributes for the volumes
+  (Target and TargetDevice) to decide where to locate each of them
+  (gh#openSUSE/agama#1105).
+
+-------------------------------------------------------------------
 Tue Mar 19 14:09:54 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Extend the storage D-Bus API: export LVM volume groups and

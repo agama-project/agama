@@ -41,13 +41,12 @@ module Agama
           volume = VolumeTemplatesBuilder.new_from_config(config).for(spec.mount_point || "")
 
           volume.tap do |target|
-            target.device = spec.device
-            target.separate_vg_name = spec.separate_vg_name
             target.mount_options = spec.mount_options
             target.fs_type = spec.fs_type
 
             sizes_conversion(target)
             btrfs_conversion(target)
+            location_conversion(target)
           end
         end
 
@@ -81,6 +80,17 @@ module Agama
           target.btrfs.subvolumes = spec.subvolumes
           target.btrfs.default_subvolume = spec.btrfs_default_subvolume
           target.btrfs.read_only = spec.btrfs_read_only
+        end
+
+        # @param target [Agama::Storage::Volume]
+        def location_conversion(target)
+          if spec.reuse?
+            target.location.target = spec.reformat? ? :device : :filesystem
+            target.location.device = spec.reuse_name
+          elsif !!spec.device
+            target.location.target = spec.separate_vg? ? :new_vg : :new_partition
+            target.location.device = spec.device
+          end
         end
 
         # Planned device for the given mount path.
