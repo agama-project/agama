@@ -83,7 +83,8 @@ module Agama
           lvm = settings.lvm.enabled?
 
           target.lvm = lvm
-          target.separate_vgs = lvm
+          # Activate support for dedicated volume groups
+          target.separate_vgs = true
           # Prevent VG reuse
           target.lvm_vg_reuse = false
         end
@@ -170,7 +171,7 @@ module Agama
         def all_devices
           devices = [settings.boot_device] +
             settings.lvm.system_vg_devices +
-            settings.volumes.map(&:device)
+            settings.volumes.map(&:location).reject(&:reuse_device?).map(&:device)
 
           devices.compact.uniq.map { |d| device_or_partitions(d) }.flatten
         end

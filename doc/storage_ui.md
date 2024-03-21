@@ -21,16 +21,12 @@ the selection of the operating system to install, "product" in Agama jargon.
 This document describes the Agama interface for a traditional (non-transactional) system. See the
 section "interface changes for transactional systems" for the alternative.
 
-### Representation of the Actions to Perform
+### Representation of the Result
 
-Another important point to consider is that currently the list of (libstorage-ng) actions is the
-only way we have to represent the result of a given proposal. That representation is far from ideal.
-It doesn't offer a convenient high-level view of the final layout or of the really significant
-actions (it includes too many intermediate steps by default).
-
-A complete design for a more convenient representation of the result is out of the scope of this
-proposal. Nevertheless, small changes (like grouping the actions based on the operating system
-they affect) are somehow suggested in some of the upcoming sections and mock-ups.
+The result of the storage setup is represented in the mockups of this document as a section of the
+storage page titled "result", which includes a list of (libstorage-ng) actions and a table
+representing the final state of the affected devices. That is far from ideal, but a complete design
+for a more convenient representation of the result is out of the scope of this proposal.
 
 In the long term, we may need to come with a better alternative to show the result.
 
@@ -71,18 +67,18 @@ user.
 ![Initial storage screen](images/storage_ui/agama_guided.png)
 
 Every change to any of the configuration options will result in an immediate re-calculation of the
-"planned actions" section which represents the result. Changes in the configuration of encryption,
-btrfs snapshots or the target devices can also imply refreshing the description of the file systems.
-In a similar way, changes in those volumes or the target device may result in some disk being
-included or excluded in the section "find space".
+section that presents the result. Changes in the configuration of encryption, btrfs snapshots or the
+target devices can also imply refreshing the description of the file systems. In a similar way,
+changes in those volumes or the target device may result in a change in the number of disks
+mentioned in the sentence about finding space.
 
 The table with the file systems actually represents the volumes used as input for the Agama variant
 of the `GuidedProposal`. Compared to YaST, Agama turns the volumes into a much more visible concept.
 The users will be able to see and adjust most of their attributes. Users could even define new
 volumes that are not initially part of the configuration of the selected product.
 
-Pop-up dialogs will be used to modify the target device(s), the encryption configuration or the
-booting setup, as well as to add or edit a given volume.
+Pop-up dialogs will be used to modify the target device(s), the encryption configuration, the
+booting setup or the strategy to find free space, as well as to add or edit a given volume.
 
 All file systems will be created by default at the chosen target disk or at the default LVM volume
 group (in the case of LVM-based proposal). The user will be able to manually overwrite the location
@@ -92,9 +88,9 @@ system at the `vdb1` partition. Continue reading to understand all the possible 
 
 Defining the settings and the list of volumes also defines, as a direct consequence, the disks
 affected by the installation process. It may be needed to make some space in those disks. That
-deserves a dedicated section in the proposal page that is described below.
+deserves a dedicated "find space" setting that is described below.
 
-### Device Selection and General Settings
+### Device Selection
 
 As seen on the image above, the main device to install the system can be chosen at the very top of
 the storage proposal page. Although a Linux installation can extend over several disks, the storage
@@ -109,29 +105,21 @@ which devices will be partitioned in order to allocate the physical volumes of t
 In that case, the file systems will be created by default as new LVM logical volumes at that new
 volume group.
 
+### General Settings
+
 The device selection is followed by some global settings that define how the installation is going
 to look and what are the possibilities in terms of booting and structuring the file systems. Those
 settings include the usage of btrfs snapshots, which in YaST is presented relatively hidden as one
 of the configuration options for the root file system.
 
-One of the main features of the `GuidedProposal` is its ability to automatically determine any extra
-partition that may be needed for booting the new system, like PReP, EFI, Zipl or any other described
-at the [corresponding YaST
-document](https://github.com/yast/yast-storage-ng/blob/master/doc/boot-requirements.md). The
-algorithm can create those partitions or reuse existing ones that are already in the system if the
-user wants to keep them (see the section about finding space). The behavior of that feature can be
-also be tweaked in the "settings" section of the page.
-
-![Dialog to configure booting](images/storage_ui/boot_config_popup.png)
-
 ### File Systems
 
-The next section contains the table that displays the file systems to be created, volumes in YaST
-jargon. The size of each volume is specified as a couple of lower and upper limits (the upper one is
-optional in all cases). With the current approach of the YaST `GuidedProposal` there are some
-volumes that may need to recalculate those limits based on the proposal configuration (eg. whether
-Btrfs snapshots are enabled) or its relationship with others volumes. Their limits will be set as
-"auto-calculated" by default. For more details, see the corresponding section below.
+The "settings" section also contains the table that displays the file systems to be created, volumes
+in YaST jargon. The size of each volume is specified as a couple of lower and upper limits (the
+upper one is optional in all cases). With the current approach of the YaST `GuidedProposal` there
+are some volumes that may need to recalculate those limits based on the proposal configuration (eg.
+whether Btrfs snapshots are enabled) or its relationship with others volumes. Their limits will be
+set as "auto-calculated" by default. For more details, see the corresponding section below.
 
 If btrfs is used for the root file system, it will be possible to define subvolumes for it. Those
 subvolumes are represented in the same table, nested on the entry of the root file system. They can
@@ -155,6 +143,18 @@ specify an an alternative location using the following form that offers several 
 When the option to reuse an existing device is chosen, size limits cannot be adjusted. The size of
 the reused device will be displayed in the table of file systems in the corresponding column.
 
+### Configuration of Booting Partitions
+
+One of the main features of the `GuidedProposal` is its ability to automatically determine any extra
+partition that may be needed for booting the new system, like PReP, EFI, Zipl or any other described
+at the [corresponding YaST
+document](https://github.com/yast/yast-storage-ng/blob/master/doc/boot-requirements.md). The
+algorithm can create those partitions or reuse existing ones that are already in the system if the
+user wants to keep them (see the section about finding space). The behavior of that feature can be
+also be tweaked in the "settings" section of the page.
+
+![Dialog to configure booting](images/storage_ui/boot_config_popup.png)
+
 ### Finding Space for the Volumes
 
 Similar to YaST, Agama will offer by default the option to automatically make space for the new
@@ -164,7 +164,8 @@ three automatic modes.
 As an alternative, the Agama proposal will offer a custom mode in which the user will explicitly
 select which partitions to keep, delete or resize.
 
-That will result in up to four possibilities presented in the corresponding section.
+That will result in up to four possibilities presented at a pop-up dialog if the user clicks on the
+corresponding option at the botton of the "settings" section.
 
 - Delete everything in the disk(s). Obviously, all previous data is removed.
 - Shrink existing partition(s). The information is kept, but partitions are resized as needed to make
@@ -249,9 +250,11 @@ In those systems, it makes no sense to disable Btrfs snapshots, which are requir
 functionality. Is not only that snapshots are mandatory in transactional systems, they are actually
 used with a different purpose when compared to read-write systems.
 
-Thus, if the system being installed is transactional, that will be clearly stated at the "settings"
-section of the storage proposal page. The setting to use btrfs snapshots will not be there and the
-root file system will be labeled as "transactional" in the corresponding table.
+Thus, if the system being installed is transactional, that will be clearly stated at the top of the
+page. The setting to use btrfs snapshots will not be there and the root file system will be labeled as
+"transactional" in the corresponding table.
+
+![Interface changes for transactional systems](images/storage_ui/transactional.png)
 
 ## Advanced Preparations
 

@@ -80,7 +80,7 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
             "MountPath"     => "/test",
             "MountOptions"  => [],
             "TargetDevice"  => "",
-            "TargetVG"      => "",
+            "Target"        => "default",
             "FsType"        => "",
             "MinSize"       => 0,
             "AutoSize"      => false,
@@ -92,6 +92,7 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
               "SupportAutoSize"       => false,
               "SnapshotsConfigurable" => false,
               "SnapshotsAffectSizes"  => false,
+              "AdjustByRam"           => false,
               "SizeRelevantVolumes"   => []
             }
           }

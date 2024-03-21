@@ -1,5 +1,6 @@
 use clap::Parser;
 
+mod auth;
 mod commands;
 mod config;
 mod error;
@@ -13,6 +14,7 @@ use crate::error::CliError;
 use agama_lib::error::ServiceError;
 use agama_lib::manager::ManagerClient;
 use agama_lib::progress::ProgressMonitor;
+use auth::run as run_auth_cmd;
 use commands::Commands;
 use config::run as run_config_cmd;
 use logs::run as run_logs_cmd;
@@ -135,6 +137,7 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
         }
         Commands::Questions(subcommand) => run_questions_cmd(subcommand).await,
         Commands::Logs(subcommand) => run_logs_cmd(subcommand).await,
+        Commands::Auth(subcommand) => run_auth_cmd(subcommand).await,
         _ => unimplemented!(),
     }
 }

@@ -57,14 +57,16 @@ describe Agama::Storage::VolumeConversion::FromY2Storage do
 
       expect(volume).to be_a(Agama::Storage::Volume)
       expect(volume).to have_attributes(
-        mount_path:       "/",
-        device:           "/dev/sda",
-        separate_vg_name: "/dev/vg0",
-        mount_options:    contain_exactly("defaults", "ro"),
-        fs_type:          Y2Storage::Filesystems::Type::BTRFS,
-        min_size:         Y2Storage::DiskSize.GiB(5),
-        max_size:         Y2Storage::DiskSize.GiB(20),
-        btrfs:            an_object_having_attributes(
+        mount_path:    "/",
+        location:      an_object_having_attributes(
+          device: "/dev/sda",
+          target: :new_vg
+        ),
+        mount_options: contain_exactly("defaults", "ro"),
+        fs_type:       Y2Storage::Filesystems::Type::BTRFS,
+        min_size:      Y2Storage::DiskSize.GiB(5),
+        max_size:      Y2Storage::DiskSize.GiB(20),
+        btrfs:         an_object_having_attributes(
           snapshots?:        true,
           subvolumes:        contain_exactly("@/home", "@/var"),
           default_subvolume: "@",

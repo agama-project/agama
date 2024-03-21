@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,7 +19,17 @@
  * find current contact information at www.suse.com.
  */
 
-import { deviceSize, deviceLabel, parseToBytes, splitSize, hasFS } from "./utils";
+import {
+  deviceSize,
+  deviceLabel,
+  deviceChildren,
+  parseToBytes,
+  splitSize,
+  hasFS,
+  hasSnapshots,
+  isTransactionalRoot,
+  isTransactionalSystem
+} from "./utils";
 
 describe("deviceSize", () => {
   it("returns the size with units", () => {
@@ -37,6 +47,66 @@ describe("deviceLabel", () => {
   it("returns only the device name if the device has no size", () => {
     const result = deviceLabel({ name: "/dev/sda" });
     expect(result).toEqual("/dev/sda");
+  });
+});
+
+describe("deviceChildren", () => {
+  let device;
+
+  describe("if the device has partition table", () => {
+    beforeEach(() => {
+      device = {
+        sid: 60,
+        partitionTable: {
+          partitions: [
+            { sid: 61 },
+            { sid: 62 },
+          ],
+          unusedSlots: [
+            { start: 1, size: 1024 },
+            { start: 2345, size: 512 }
+          ]
+        }
+      };
+    });
+
+    it("returns the partitions and unused slots", () => {
+      const children = deviceChildren(device);
+      expect(children.length).toEqual(4);
+      device.partitionTable.partitions.forEach(p => expect(children).toContainEqual(p));
+      device.partitionTable.unusedSlots.forEach(s => expect(children).toContainEqual(s));
+    });
+  });
+
+  describe("if the device is a LVM volume group", () => {
+    beforeEach(() => {
+      device = {
+        sid: 60,
+        type: "lvmVg",
+        logicalVolumes: [
+          { sid: 61 },
+          { sid: 62 },
+          { sid: 63 }
+        ]
+      };
+    });
+
+    it("returns the logical volumes", () => {
+      const children = deviceChildren(device);
+      expect(children.length).toEqual(3);
+      device.logicalVolumes.forEach(l => expect(children).toContainEqual(l));
+    });
+  });
+
+  describe("if the device has neither partition table nor logical volumes", () => {
+    beforeEach(() => {
+      device = { sid: 60 };
+    });
+
+    it("returns an empty list", () => {
+      const children = deviceChildren(device);
+      expect(children.length).toEqual(0);
+    });
   });
 });
 
@@ -98,5 +168,61 @@ describe("hasFS", () => {
 
   it("returns false if volume has different filesystem", () => {
     expect(hasFS({ fsType: "Btrfs" }, "EXT4")).toBe(false);
+  });
+});
+
+describe("hasSnapshots", () => {
+  it("returns false if the volume has not Btrfs file system", () => {
+    expect(hasSnapshots({ fsType: "EXT4", snapshots: true })).toBe(false);
+  });
+
+  it("returns false if the volume has not snapshots enabled", () => {
+    expect(hasSnapshots({ fsType: "Btrfs", snapshots: false })).toBe(false);
+  });
+
+  it("returns true if the volume has Btrfs file system and snapshots enabled", () => {
+    expect(hasSnapshots({ fsType: "Btrfs", snapshots: true })).toBe(true);
+  });
+});
+
+describe("isTransactionalRoot", () => {
+  it("returns false if the volume is not root", () => {
+    expect(isTransactionalRoot({ mountPath: "/home", transactional: true })).toBe(false);
+  });
+
+  it("returns false if the volume has not transactional enabled", () => {
+    expect(isTransactionalRoot({ mountPath: "/", transactional: false })).toBe(false);
+  });
+
+  it("returns true if the volume is root and has transactional enabled", () => {
+    expect(isTransactionalRoot({ mountPath: "/", transactional: true })).toBe(true);
+  });
+});
+
+describe("isTransactionalSystem", () => {
+  it("returns false when a list of volumes is not given", () => {
+    expect(isTransactionalSystem(false)).toBe(false);
+    expect(isTransactionalSystem(undefined)).toBe(false);
+    expect(isTransactionalSystem(null)).toBe(false);
+    expect(isTransactionalSystem([])).toBe(false);
+    expect(isTransactionalSystem("fake")).toBe(false);
+  });
+
+  it("returns false if volumes does not include a transactional root", () => {
+    expect(isTransactionalSystem([])).toBe(false);
+
+    const volumes = [
+      { mountPath: "/" },
+      { mountPath: "/home", transactional: true }
+    ];
+    expect(isTransactionalSystem(volumes)).toBe(false);
+  });
+
+  it("returns true if volumes includes a transactional root", () => {
+    const volumes = [
+      { mountPath: "EXT4" },
+      { mountPath: "/", transactional: true }
+    ];
+    expect(isTransactionalSystem(volumes)).toBe(true);
   });
 });

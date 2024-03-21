@@ -24,6 +24,7 @@ import { Checkbox, Form, Skeleton, Switch, Tooltip } from "@patternfly/react-cor
 
 import { _ } from "~/i18n";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
+import { ProposalVolumes, ProposalSpacePolicyField } from "~/components/storage";
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
 import { hasFS } from "~/components/storage/utils";
@@ -130,44 +131,34 @@ const SnapshotsField = ({
 }) => {
   const rootVolume = (settings.volumes || []).find((i) => i.mountPath === "/");
 
-  const initialChecked = rootVolume !== undefined && hasFS(rootVolume, "Btrfs") && rootVolume.snapshots;
-  const [isChecked, setIsChecked] = useState(initialChecked);
-
   // no root volume is probably some error or still loading
   if (rootVolume === undefined) {
     return <Skeleton width="25%" />;
   }
 
+  const isChecked = rootVolume !== undefined && hasFS(rootVolume, "Btrfs") && rootVolume.snapshots;
+
   const switchState = (_, checked) => {
-    setIsChecked(checked);
     onChange({ active: checked, settings });
   };
 
-  const configurableSnapshots = rootVolume.outline.snapshotsConfigurable;
-  const forcedSnapshots = !configurableSnapshots && hasFS(rootVolume, "Btrfs") && rootVolume.snapshots;
+  if (!rootVolume.outline.snapshotsConfigurable) return;
 
-  const SnapshotsToggle = () => {
-    const explanation = _("Uses Btrfs for the root file system allowing to boot to a previous version of the system after configuration changes or software upgrades.");
-    return (
-      <>
-        <Switch
-          id="snapshots"
-          label={_("Use Btrfs Snapshots")}
-          isReversed
-          isChecked={isChecked}
-          onChange={switchState}
-        />
-        <div>
-          {explanation}
-        </div>
-      </>
-    );
-  };
+  const explanation = _("Uses Btrfs for the root file system allowing to boot to a previous \
+version of the system after configuration changes or software upgrades.");
 
   return (
     <div>
-      <If condition={forcedSnapshots} then={_("Btrfs snapshots required by product.")} />
-      <If condition={configurableSnapshots} then={<SnapshotsToggle />} />
+      <Switch
+        id="snapshots"
+        label={_("Use Btrfs Snapshots")}
+        isReversed
+        isChecked={isChecked}
+        onChange={switchState}
+      />
+      <div>
+        {explanation}
+      </div>
     </div>
   );
 };
@@ -291,6 +282,8 @@ const EncryptionField = ({
 export default function ProposalSettingsSection({
   settings,
   encryptionMethods = [],
+  volumeTemplates = [],
+  isLoading = false,
   onChange = noop
 }) {
   const changeEncryption = ({ password, method }) => {
@@ -310,7 +303,25 @@ export default function ProposalSettingsSection({
     onChange({ volumes: settings.volumes });
   };
 
+  const changeVolumes = (volumes) => {
+    onChange({ volumes });
+  };
+
+  const changeSpacePolicy = (policy, actions) => {
+    onChange({ spacePolicy: policy, spaceActions: actions });
+  };
+
   const encryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
+
+  const { volumes = [] } = settings;
+
+  // Templates for already existing mount points are filtered out
+  const usefulTemplates = () => {
+    const mountPaths = volumes.map(v => v.mountPath);
+    return volumeTemplates.filter(t => (
+      t.mountPath.length > 0 && !mountPaths.includes(t.mountPath)
+    ));
+  };
 
   return (
     <>
@@ -326,6 +337,20 @@ export default function ProposalSettingsSection({
           isChecked={encryption}
           isLoading={settings.encryptionPassword === undefined}
           onChange={changeEncryption}
+        />
+        <ProposalVolumes
+          volumes={volumes}
+          templates={usefulTemplates()}
+          options={{ lvm: settings.lvm, encryption }}
+          isLoading={isLoading && settings.volumes === undefined}
+          onChange={changeVolumes}
+        />
+        <ProposalSpacePolicyField
+          policy={settings.spacePolicy}
+          actions={settings.spaceActions}
+          devices={settings.installationDevices}
+          isLoading={isLoading}
+          onChange={changeSpacePolicy}
         />
       </Section>
     </>

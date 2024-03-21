@@ -1,4 +1,5 @@
-use agama_dbus_server::{
+use agama_lib::connection_to;
+use agama_server::{
     l10n::helpers,
     web::{self, run_monitor},
 };
@@ -62,6 +63,9 @@ struct ServeArgs {
         help = "Path to the SSL certificate file in PEM format"
     )]
     cert: String,
+    // Agama D-Bus address
+    #[arg(long, default_value = "unix:path=/run/agama/bus")]
+    dbus_address: String,
 }
 
 impl ServeArgs {
@@ -70,9 +74,7 @@ impl ServeArgs {
         let mut tls_builder = SslAcceptor::mozilla_modern_v5(SslMethod::tls_server())?;
 
         if self.cert.is_empty() && self.key.is_empty() {
-            let (cert, key) = agama_dbus_server::cert::create_certificate()?;
-
-            tracing::info!("Generated self signed certificate: {:#?}", cert);
+            let (cert, key) = agama_server::cert::create_certificate()?;
 
             tls_builder.set_private_key(&key)?;
             tls_builder.set_certificate(&cert)?;
@@ -241,28 +243,28 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
 }
 
 /// Start serving the API.
-async fn serve_command(options: ServeArgs) -> anyhow::Result<()> {
+/// `options`: command-line arguments.
+async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
     let journald = tracing_journald::layer().expect("could not connect to journald");
     tracing_subscriber::registry().with(journald).init();
 
     let (tx, _) = channel(16);
     run_monitor(tx.clone()).await?;
 
-    let service = if let Ok(config) = web::ServiceConfig::load() {
-        web::service(config, tx)
-    } else {
-        return Err(anyhow::anyhow!("Failed to load the service configuration"));
-    };
-    let ssl_acceptor = if let Ok(ssl_acceptor) = options.ssl_acceptor() {
+    let config = web::ServiceConfig::load()?;
+    let dbus = connection_to(&args.dbus_address).await?;
+    let service = web::service(config, tx, dbus).await?;
+
+    let ssl_acceptor = if let Ok(ssl_acceptor) = args.ssl_acceptor() {
         ssl_acceptor
     } else {
         return Err(anyhow::anyhow!("SSL initialization failed"));
     };
 
-    let mut addresses = vec![options.address];
+    let mut addresses = vec![args.address];
 
-    if !options.address2.is_empty() {
-        addresses.push(options.address2);
+    if !args.address2.is_empty() {
+        addresses.push(args.address2);
     }
 
     let servers: Vec<_> = addresses

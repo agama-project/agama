@@ -36,7 +36,58 @@ jest.mock("@patternfly/react-core", () => {
 let props;
 
 beforeEach(() => {
-  props = {};
+  props = {
+    settings: {},
+    onChange: jest.fn()
+  };
+});
+
+const rootVolume = { mountPath: "/", fsType: "Btrfs", outline: { snapshotsConfigurable: true } };
+
+describe("if snapshots are configurable", () => {
+  beforeEach(() => {
+    props.settings = { volumes: [rootVolume] };
+  });
+
+  it("renders the snapshots switch", () => {
+    plainRender(<ProposalSettingsSection {...props} />);
+
+    screen.getByRole("checkbox", { name: "Use Btrfs Snapshots" });
+  });
+});
+
+describe("if snapshots are not configurable", () => {
+  beforeEach(() => {
+    props.settings = { volumes: [{ ...rootVolume, outline: { ...rootVolume.outline, snapshotsConfigurable: false } }] };
+  });
+
+  it("does not render the snapshots switch", () => {
+    plainRender(<ProposalSettingsSection {...props} />);
+
+    expect(screen.queryByRole("checkbox", { name: "Use Btrfs Snapshots" })).toBeNull();
+  });
+});
+
+it("renders a section holding file systems related stuff", () => {
+  plainRender(<ProposalSettingsSection {...props} />);
+  screen.getByRole("grid", { name: "Table with mount points" });
+  screen.getByRole("grid", { name: /mount points/ });
+});
+
+it("requests a volume change when onChange callback is triggered", async () => {
+  const { user } = plainRender(<ProposalSettingsSection {...props } />);
+  const button = screen.getByRole("button", { name: "Actions" });
+
+  await user.click(button);
+
+  const menu = screen.getByRole("menu");
+  const reset = within(menu).getByRole("menuitem", { name: /Reset/ });
+
+  await user.click(reset);
+
+  expect(props.onChange).toHaveBeenCalledWith(
+    { volumes: expect.any(Array) }
+  );
 });
 
 describe("Encryption field", () => {

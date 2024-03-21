@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -289,6 +289,7 @@ module Agama
           proposal.on_calculate do
             export_proposal
             proposal_properties_changed
+            refresh_staging_devices
           end
         end
 
@@ -332,6 +333,11 @@ module Agama
           system_devices_tree.update(devicegraph)
         end
 
+        def refresh_staging_devices
+          devicegraph = Y2Storage::StorageManager.instance.staging
+          staging_devices_tree.update(devicegraph)
+        end
+
         def refresh_iscsi_nodes
           nodes = backend.iscsi.nodes
           iscsi_nodes_tree.update(nodes)
@@ -346,6 +352,10 @@ module Agama
         #   have the responsibility of creating the trees and pass them to Manager if needed.
         def system_devices_tree
           @system_devices_tree ||= DevicesTree.new(@service, tree_path("system"), logger: logger)
+        end
+
+        def staging_devices_tree
+          @staging_devices_tree ||= DevicesTree.new(@service, tree_path("staging"), logger: logger)
         end
 
         def tree_path(tree_root)

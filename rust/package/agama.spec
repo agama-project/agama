@@ -30,7 +30,6 @@ Source1:        vendor.tar.zst
 BuildRequires:  cargo-packaging
 BuildRequires:  pkgconfig(openssl)
 # used in tests for dbus service
-BuildRequires:  python-langtable-data
 BuildRequires:  dbus-1-common
 Requires:       dbus-1-common
 # required by agama-dbus-server integration tests
@@ -49,6 +48,9 @@ Requires:       xkeyboard-config-lang
 # required for getting the list of timezones
 Requires:       timezone
 BuildRequires:  timezone
+# required for getting the languages information
+BuildRequires:  python-langtable-data
+Requires:       python-langtable-data
 # dependency on the YaST part of Agama
 Requires:       agama-yast
 

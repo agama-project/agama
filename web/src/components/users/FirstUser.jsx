@@ -32,11 +32,17 @@ import {
   FormGroup,
   TextInput,
   Skeleton,
+  Menu,
+  MenuContent,
+  MenuList,
+  MenuItem
 } from "@patternfly/react-core";
 
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 
-import { RowActions, PasswordAndConfirmationInput, Popup } from '~/components/core';
+import { RowActions, PasswordAndConfirmationInput, Popup, If } from '~/components/core';
+
+import { suggestUsernames } from '~/components/users/utils';
 
 const UserNotDefined = ({ actionCb }) => {
   return (
@@ -76,6 +82,32 @@ const UserData = ({ user, actions }) => {
   );
 };
 
+const UsernameSuggestions = ({ entries, onSelect, setInsideDropDown }) => {
+  return (
+    <Menu
+      aria-label={_("Username suggestion dropdown")}
+      className="first-username-dropdown"
+      onMouseEnter={() => setInsideDropDown(true)}
+      onMouseLeave={() => setInsideDropDown(false)}
+    >
+      <MenuContent>
+        <MenuList>
+          {entries.map((suggestion, index) => (
+            <MenuItem
+              key={index}
+              itemId={index}
+              onClick={() => onSelect(suggestion)}
+            >
+              { /* TRANSLATORS: dropdown username suggestions */}
+              {_("Use suggested username")} <b>{suggestion}</b>
+            </MenuItem>
+          ))}
+        </MenuList>
+      </MenuContent>
+    </Menu>
+  );
+};
+
 const CREATE_MODE = 'create';
 const EDIT_MODE = 'edit';
 
@@ -97,6 +129,8 @@ export default function FirstUser() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [isSettingPassword, setIsSettingPassword] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [insideDropDown, setInsideDropDown] = useState(false);
 
   useEffect(() => {
     cancellablePromise(client.users.getUser()).then(userValues => {
@@ -185,6 +219,12 @@ export default function FirstUser() {
   const usingValidPassword = formValues.password && formValues.password !== "" && isValidPassword;
   const submitDisable = formValues.userName === "" || (isSettingPassword && !usingValidPassword);
 
+  const displaySuggestions = !formValues.userName && formValues.fullName && showSuggestions;
+  const onSuggestionSelected = (suggestion) => {
+    setInsideDropDown(false);
+    setFormValues({ ...formValues, userName: suggestion });
+  };
+
   if (isLoading) return <Skeleton />;
 
   return (
@@ -210,7 +250,14 @@ export default function FirstUser() {
               />
             </FormGroup>
 
-            <FormGroup fieldId="userName" label={_("Username")} isRequired>
+            <FormGroup
+              className="first-username-wrapper"
+              fieldId="userName"
+              label={_("Username")}
+              isRequired
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => !insideDropDown && setShowSuggestions(false)}
+            >
               <TextInput
                 id="userName"
                 name="userName"
@@ -219,6 +266,16 @@ export default function FirstUser() {
                 label={_("Username")}
                 isRequired
                 onChange={handleInputChange}
+              />
+              <If
+                condition={displaySuggestions}
+                then={
+                  <UsernameSuggestions
+                    entries={suggestUsernames(formValues.fullName)}
+                    onSelect={onSuggestionSelected}
+                    setInsideDropDown={setInsideDropDown}
+                  />
+                }
               />
             </FormGroup>
 

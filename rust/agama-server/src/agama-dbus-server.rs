@@ -1,4 +1,4 @@
-use agama_dbus_server::{
+use agama_server::{
     l10n::{self, helpers},
     network, questions,
 };

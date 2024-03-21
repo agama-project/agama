@@ -1,3 +1,4 @@
+use crate::auth::AuthCommands;
 use crate::config::ConfigCommands;
 use crate::logs::LogsCommands;
 use crate::profile::ProfileCommands;
@@ -35,4 +36,7 @@ pub enum Commands {
     /// Collects logs
     #[command(subcommand)]
     Logs(LogsCommands),
+    /// Request an action on the web server like Login / Logout
+    #[command(subcommand)]
+    Auth(AuthCommands),
 }

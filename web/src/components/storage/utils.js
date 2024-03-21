@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,11 +19,18 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
 // cspell:ignore xbytes
 
 import xbytes from "xbytes";
 
 import { N_ } from "~/i18n";
+
+/**
+ * @typedef {import ("~/client/storage").Volume} Volume
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/client/storage").PartitionSlot} PartitionSlot
+ */
 
 /**
  * @typedef {Object} SizeObject
@@ -116,7 +123,7 @@ const deviceSize = (size) => {
 const parseToBytes = (size) => {
   if (!size || size === undefined || size === "") return 0;
 
-  const value = xbytes.parseSize(size, { iec: true }) || parseInt(size);
+  const value = xbytes.parseSize(size.toString(), { iec: true }) || parseInt(size.toString());
 
   // Avoid decimals resulting from the conversion. D-Bus iface only accepts integer
   return Math.trunc(value);
@@ -125,7 +132,7 @@ const parseToBytes = (size) => {
 /**
  * Generates the label for the given device
  *
- * @param {import(~/clients/storage).StorageDevice} device
+ * @param {StorageDevice} device
  * @returns {string}
  */
 const deviceLabel = (device) => {
@@ -136,10 +143,37 @@ const deviceLabel = (device) => {
 };
 
 /**
+ * Sorted list of children devices (i.e., partitions and unused slots or logical volumes).
+ * @function
+ *
+ * @note This method could be directly provided by the device object. For now, the method is kept
+ * here because the elements considered as children (e.g., partitions + unused slots) is not a
+ * semantic storage concept but a helper for UI components.
+ *
+ * @param {StorageDevice} device
+ * @returns {(StorageDevice|PartitionSlot)[]}
+ */
+const deviceChildren = (device) => {
+  const partitionTableChildren = (partitionTable) => {
+    const { partitions, unusedSlots } = partitionTable;
+    const children = partitions.concat(unusedSlots);
+    return children.sort((a, b) => a.start < b.start ? -1 : 1);
+  };
+
+  const lvmVgChildren = (lvmVg) => {
+    return lvmVg.logicalVolumes.sort((a, b) => a.name < b.name ? -1 : 1);
+  };
+
+  if (device.partitionTable) return partitionTableChildren(device.partitionTable);
+  if (device.type === "lvmVg") return lvmVgChildren(device);
+  return [];
+};
+
+/**
  * Checks if volume uses given fs. This method works same as in backend
  * case insensitive.
  *
- * @param {import(~/clients/storage).Volume} volume
+ * @param {Volume} volume
  * @param {string} fs - Filesystem name to check.
  * @returns {boolean} true when volume uses given fs
  */
@@ -149,13 +183,51 @@ const hasFS = (volume, fs) => {
   return volFS.toLowerCase() === fs.toLocaleLowerCase();
 };
 
+/**
+ * Checks whether the given volume has snapshots.
+ *
+ * @param {Volume} volume
+ * @returns {boolean}
+ */
+const hasSnapshots = (volume) => {
+  return hasFS(volume, "btrfs") && volume.snapshots;
+};
+
+/**
+ * Checks whether the given volume defines a transactional root.
+ *
+ * @param {Volume} volume
+ * @returns {boolean}
+ */
+const isTransactionalRoot = (volume) => {
+  return volume.mountPath === "/" && volume.transactional;
+};
+
+/**
+ * Checks whether the given volumes defines a transactional system.
+ *
+ * @param {Volume[]} volumes
+ * @returns {boolean}
+ */
+const isTransactionalSystem = (volumes = []) => {
+  try {
+    return volumes?.find(v => isTransactionalRoot(v)) !== undefined;
+  } catch {
+    return false;
+  }
+};
+
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
   SIZE_UNITS,
   deviceLabel,
+  deviceChildren,
   deviceSize,
   parseToBytes,
   splitSize,
-  hasFS
+  hasFS,
+  hasSnapshots,
+  isTransactionalRoot,
+  isTransactionalSystem
 };

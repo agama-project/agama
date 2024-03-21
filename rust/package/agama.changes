@@ -12,6 +12,13 @@ Thu Feb 29 09:49:18 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
     (to allow listening on both HTTP/80 and HTTPS/433 ports)
 
 -------------------------------------------------------------------
+Thu Mar  7 10:52:58 UTC 2024 - Michal Filka <mfilka@suse.com>
+
+- CLI: added auth command with login / logout / show subcommands
+  for handling authentication token management with new agama web
+  server
+
+-------------------------------------------------------------------
 Tue Feb 27 15:55:28 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Reorganize RPM packages (gh#openSUSE/agama#1056):
