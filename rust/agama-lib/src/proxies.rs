@@ -171,3 +171,10 @@ trait QuestionWithPassword {
     #[dbus_proxy(property)]
     fn set_password(&self, value: &str) -> zbus::Result<()>;
 }
+
+#[dbus_proxy(interface = "org.opensuse.Agama1.Issues", assume_defaults = true)]
+trait Issues {
+    /// All property
+    #[dbus_proxy(property)]
+    fn all(&self) -> zbus::Result<Vec<(String, String, u32, u32)>>;
+}

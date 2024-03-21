@@ -10,7 +10,7 @@ use crate::{
     manager::web::{manager_service, manager_stream},
     questions::web::{questions_service, questions_stream},
     software::web::{software_service, software_stream},
-    web::common::{progress_stream, service_status_stream},
+    web::common::{issues_stream, progress_stream, service_status_stream},
 };
 use axum::Router;
 
@@ -117,6 +117,24 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
         .await?,
     );
     stream.insert("questions", questions_stream(dbus.clone()).await?);
+    stream.insert(
+        "software-issues",
+        issues_stream(
+            dbus.clone(),
+            "org.opensuse.Agama.Software1",
+            "/org/opensuse/Agama/Software1",
+        )
+        .await?,
+    );
+    stream.insert(
+        "software-product-issues",
+        issues_stream(
+            dbus.clone(),
+            "org.opensuse.Agama.Software1",
+            "/org/opensuse/Agama/Software1/Product",
+        )
+        .await?,
+    );
 
     tokio::pin!(stream);
     let e = events.clone();

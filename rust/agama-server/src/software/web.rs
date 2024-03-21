@@ -8,7 +8,7 @@
 use crate::{
     error::Error,
     web::{
-        common::{progress_router, service_status_router},
+        common::{issues_router, progress_router, service_status_router},
         Event,
     },
 };
@@ -114,9 +114,12 @@ fn reason_to_selected_by(
 pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &'static str = "org.opensuse.Agama.Software1";
     const DBUS_PATH: &'static str = "/org/opensuse/Agama/Software1";
+    const DBUS_PRODUCT_PATH: &'static str = "/org/opensuse/Agama/Software1/Product";
 
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
+    let software_issues = issues_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
+    let product_issues = issues_router(&dbus, DBUS_SERVICE, DBUS_PRODUCT_PATH).await?;
 
     let product = ProductClient::new(dbus.clone()).await?;
     let software = SoftwareClient::new(dbus).await?;
@@ -129,6 +132,8 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
         .route("/probe", post(probe))
         .merge(status_router)
         .merge(progress_router)
+        .nest("/issues/product", product_issues)
+        .nest("/issues/software", software_issues)
         .with_state(state);
     Ok(router)
 }
