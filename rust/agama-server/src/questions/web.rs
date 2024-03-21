@@ -64,9 +64,9 @@ impl<'a> QuestionsClient<'a> {
         );
         for (path, interfaces_hash) in objects.iter() {
             if interfaces_hash.contains_key(&password_interface) {
-                result.push(self.create_question_with_password(&path).await?)
+                result.push(self.create_question_with_password(path).await?)
             } else {
-                result.push(self.create_generic_question(&path).await?)
+                result.push(self.create_generic_question(path).await?)
             }
         }
         Ok(result)
