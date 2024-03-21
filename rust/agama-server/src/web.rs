@@ -9,7 +9,7 @@ use crate::{
     l10n::web::l10n_service,
     manager::web::{manager_service, manager_stream},
     software::web::{software_service, software_stream},
-    questions::web::{questions_service, questions_stream}
+    questions::web::{questions_service, questions_stream},
     web::common::{progress_stream, service_status_stream},
 };
 use axum::Router;
@@ -51,7 +51,8 @@ where
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/l10n", l10n_service(events.clone()))
         .add_service("/manager", manager_service(dbus.clone()).await?)
-        .add_service("/software", software_service(dbus).await?)
+        .add_service("/software", software_service(dbus.clone()).await?)
+        .add_service("/questions", questions_service(dbus).await?)
         .with_config(config)
         .build();
     Ok(router)
@@ -115,6 +116,7 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
         )
         .await?,
     );
+    stream.insert("questions", questions_stream(dbus.clone()).await?);
 
     tokio::pin!(stream);
     let e = events.clone();

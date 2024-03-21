@@ -5,7 +5,7 @@
 //! * `questions_service` which returns the Axum service.
 //! * `questions_stream` which offers an stream that emits questions related signals.
 
-use std::collections::HashMap;
+use std::{collections::HashMap,pin::Pin};
 use crate::{error::Error, web::Event};
 use agama_lib::{
     error::ServiceError, proxies::{GenericQuestionProxy, QuestionWithPasswordProxy},
@@ -172,13 +172,14 @@ pub async fn questions_service(dbus: zbus::Connection) -> Result<Router, Service
     let questions = QuestionsClient::new(dbus.clone()).await?;
     let state = QuestionsState { questions };
     let router = Router::new()
-        .route("/questions", get(list_questions))
-        .route("/questions/:id/answer", put(answer))
+        .route("/", get(list_questions))
+        .route("/:id/answer", put(answer))
         .with_state(state);
     Ok(router)
 }
 
-pub async fn questions_stream(dbus: zbus::Connection) -> Result<impl Stream<Item = Event>, Error> {
+pub async fn questions_stream(dbus: zbus::Connection) -> 
+        Result<Pin<Box<dyn Stream<Item = Event> + Send>>, Error> {
     let proxy = ObjectManagerProxy::new(&dbus).await?;
     let add_stream = proxy
         .receive_interfaces_added()
@@ -192,7 +193,8 @@ pub async fn questions_stream(dbus: zbus::Connection) -> Result<impl Stream<Item
         .then(|_| async move {
             Event::QuestionsChanged
         });
-    Ok(StreamExt::merge(add_stream, remove_stream))
+    let stream = StreamExt::merge(add_stream, remove_stream);
+    Ok(Box::pin(stream))
 }
 
 async fn list_questions(State(state): State<QuestionsState<'_>>
