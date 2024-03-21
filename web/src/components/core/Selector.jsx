@@ -20,8 +20,8 @@
  */
 
 // @ts-check
-import React from 'react';
-import { noop } from '~/utils';
+import React from "react";
+import { noop } from "~/utils";
 
 /**
  * @callback onSelectionChangeCallback
@@ -62,6 +62,7 @@ import { noop } from '~/utils';
  * @param {string} [props.optionIdKey="id"] - Key used for retrieve options id.
  * @param {Array<*>} [props.selectedIds=[]] - Identifiers for selected options.
  * @param {onSelectionChangeCallback} [props.onSelectionChange=noop] - Callback to be called when the selection changes.
+ * @param {function|undefined} [props.onOptionClick] - Callback to be called when the selection changes.
  * @param {object} [props.props] - Other props sent to the internal selector <ul> component
  */
 const Selector = ({
@@ -72,9 +73,12 @@ const Selector = ({
   optionIdKey = "id",
   selectedIds = [],
   onSelectionChange = noop,
+  onOptionClick,
   ...props
 }) => {
-  const onOptionClick = (optionId) => {
+  const onOptionClicked = (optionId) => {
+    if (typeof onOptionClick === "function") return onOptionClick(optionId);
+
     const alreadySelected = selectedIds.includes(optionId);
 
     if (!isMultiple) {
@@ -90,12 +94,12 @@ const Selector = ({
   };
 
   return (
-    <ul { ...props } id={id} data-type="agama/list" role="grid">
-      { options.map(option => {
+    <ul {...props} id={id} data-type="agama/list" role="grid">
+      {options.map((option) => {
         const optionId = option[optionIdKey];
         const optionHtmlId = `${id}-option-${optionId}`;
         const isSelected = selectedIds.includes(optionId);
-        const onClick = () => onOptionClick(optionId);
+        const onClick = () => onOptionClicked(optionId);
 
         return (
           <li
@@ -112,7 +116,7 @@ const Selector = ({
                 onChange={onClick}
                 aria-labelledby={optionHtmlId}
               />
-              { renderOption(option) }
+              {renderOption(option)}
             </div>
           </li>
         );
