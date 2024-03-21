@@ -114,6 +114,14 @@ const SelectPatternsButton = ({ patterns, proposal }) => {
   );
 };
 
+/**
+ * List of selected patterns.
+ * @component
+ * @param {object} props
+ * @param {Pattern[]} props.patterns - List of patterns, including selected and unselected ones.
+ * @param {import("~/client/software").SoftwareProposal} props.proposal - Software proposal
+ * @return {JSX.Element}
+ */
 const SelectedPatternsList = ({ patterns, proposal }) => {
   const selected = patterns.filter((p) => p.selectedBy !== SelectedBy.NONE);
   let description;
@@ -190,15 +198,13 @@ function SoftwarePage() {
     loadPatterns();
   }, [client.software, patterns, cancellablePromise]);
 
-  console.log("SoftPage");
-
   return (
     // TRANSLATORS: page title
     <Page icon="apps" title={_("Software")}>
       {/* TRANSLATORS: page title */}
       <Section title={_("Software selection")}>
         <If
-          condition={status === BUSY}
+          condition={status === BUSY || isLoading}
           then={<SectionSkeleton numRows={5} />}
           else={
             <>

@@ -105,7 +105,7 @@ function sortGroups(groups) {
  * @param {import("~/client/software").SoftwareProposal} props.proposal - Software proposal
  * @returns {JSX.Element}
  */
-function PatternSelector({ patterns, proposal }) {
+function PatternSelector({ patterns }) {
   const [visiblePatterns, setVisiblePatterns] = useState(patterns);
   const [searchValue, setSearchValue] = useState("");
   const client = useInstallerClient();
