@@ -71,6 +71,12 @@ const SelectedBy = Object.freeze({
  */
 
 /**
+ * @typedef {object} SoftwareConfig
+ * @property {Array<string>|undefined} patterns - Name of the selected packages.
+ * @property {string|undefined} product - Product to install.
+ */
+
+/**
  * @typedef {Object} Pattern
  * @property {string} name - pattern name (internal ID)
  * @property {string} category - pattern category
@@ -220,6 +226,7 @@ class SoftwareBaseClient {
    * @return {Promise<Pattern[]>}
    */
   async getPatterns() {
+    /** @type Array<{ name: string, category: string, summary: string, description: string, order: string, icon: string }> */
     const patterns = await this.client.get("/software/patterns");
     return patterns.map((pattern) => ({
       name: pattern.name,
@@ -232,8 +239,7 @@ class SoftwareBaseClient {
   }
 
   /**
-   * @typedef {Object.<string, number>} PatternSelection mapping "name" =>
-   * "who selected the pattern"
+   * @return {Promise<SoftwareConfig>}
    */
   config() {
     return this.client.get("/software/config");
@@ -328,4 +334,4 @@ class ProductBaseClient {
 class ProductClient
   extends WithIssues(ProductBaseClient, "software/issues/product", PRODUCT_PATH) {}
 
-export { ProductClient, SoftwareClient };
+export { ProductClient, SelectedBy, SoftwareClient };
