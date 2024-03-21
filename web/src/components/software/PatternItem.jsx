@@ -24,7 +24,6 @@ import { sprintf } from "sprintf-js";
 
 import cockpit from "../../lib/cockpit";
 
-import { useInstallerClient } from "~/context/installer";
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 

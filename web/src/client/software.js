@@ -50,6 +50,22 @@ const REGISTRATION_IFACE = "org.opensuse.Agama1.Registration";
  */
 
 /**
+ * @typedef {object} SoftwareProposal
+ * @property {string} size - Used space in human-readable form.
+ * @property {Object.<string, number>} patterns - Selected patterns and the reason.
+ */
+
+/**
+ * @typedef {Object} Pattern
+ * @property {string} name - pattern name (internal ID)
+ * @property {string} category - pattern category
+ * @property {string} summary - pattern name (user visible)
+ * @property {string} description - long description of the pattern
+ * @property {number} order - display order (string!)
+ * @property {string} icon - icon name (not path or file name!)
+ */
+
+/**
  * Product manager.
  * @ignore
  */
@@ -177,7 +193,7 @@ class SoftwareBaseClient {
   /**
    * Returns how much space installation takes on disk
    *
-   * @return {Promise<object>}
+   * @return {Promise<SoftwareProposal>}
    */
   getProposal() {
     return this.client.get("/software/proposal");
@@ -186,10 +202,18 @@ class SoftwareBaseClient {
   /**
    * Returns available patterns
    *
-   * @return {Promise<object>}
+   * @return {Promise<Pattern[]>}
    */
-  getPatterns() {
-    return this.client.get("/software/patterns");
+  async getPatterns() {
+    const patterns = await this.client.get("/software/patterns");
+    return patterns.map((pattern) => ({
+      name: pattern.name,
+      category: pattern.category,
+      summary: pattern.summary,
+      description: pattern.description,
+      order: parseInt(pattern.order),
+      icon: pattern.icon,
+    }));
   }
 
   /**

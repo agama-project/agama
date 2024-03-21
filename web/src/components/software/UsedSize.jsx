@@ -25,12 +25,17 @@ import { Em } from "~/components/core";
 import { _ } from "~/i18n";
 
 export default function UsedSize({ size }) {
+  console.log("size", size);
   if (size === undefined || size === "" || size === "0 B") return null;
 
   // TRANSLATORS: %s will be replaced by the estimated installation size,
   // example: "728.8 MiB"
   const [msg1, msg2] = _("Installation will take %s").split("%s");
   return (
-    <>{msg1}<Em>{size}</Em>{msg2}</>
+    <>
+      {msg1}
+      <Em>{size}</Em>
+      {msg2}
+    </>
   );
 }
