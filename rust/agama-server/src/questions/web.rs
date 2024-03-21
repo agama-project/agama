@@ -239,12 +239,28 @@ pub async fn questions_stream(
     Ok(Box::pin(stream))
 }
 
+/// Returns the list of questions that waits for answer.
+///
+/// * `state`: service state.
+#[utoipa::path(get, path = "/questions", responses(
+    (status = 200, description = "List of open questions", body = Vec<Question>),
+    (status = 400, description = "The D-Bus service could not perform the action")
+))]
 async fn list_questions(
     State(state): State<QuestionsState<'_>>,
 ) -> Result<Json<Vec<Question>>, QuestionsError> {
     Ok(Json(state.questions.questions().await?))
 }
 
+/// Provide answer to question.
+///
+/// * `state`: service state.
+/// * `questions_id`: id of question
+/// * `answer`: struct with answer and possible other data needed for answer like password
+#[utoipa::path(put, path = "/questions/:id/answer", responses(
+    (status = 200, description = "answer question"),
+    (status = 400, description = "The D-Bus service could not perform the action")
+))]
 async fn answer(
     State(state): State<QuestionsState<'_>>,
     Path(question_id): Path<u32>,
