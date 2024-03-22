@@ -402,22 +402,12 @@ mod tests {
 
 /// Network state
 #[serde_as]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct GeneralState {
     pub connectivity: bool,
     pub wireless_enabled: bool,
     pub networking_enabled: bool, // pub network_state: NMSTATE
                                   // pub dns: GlobalDnsConfiguration <HashMap>
-}
-
-impl Default for GeneralState {
-    fn default() -> Self {
-        Self {
-            connectivity: false,
-            wireless_enabled: false,
-            networking_enabled: false,
-        }
-    }
 }
 
 /// Access Point

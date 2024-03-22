@@ -166,10 +166,9 @@ async fn connections(State(state): State<NetworkState>) -> Json<Vec<NetworkConne
 ))]
 async fn add_connection(
     State(state): State<NetworkState>,
-    Json(value): Json<NetworkConnection>,
+    Json(conn): Json<NetworkConnection>,
 ) -> Result<Json<Uuid>, NetworkError> {
     let (tx, rx) = oneshot::channel();
-    let conn = NetworkConnection::from(value);
 
     state
         .actions
@@ -182,13 +181,14 @@ async fn add_connection(
     let _ = rx.await.unwrap();
 
     let conn = Connection::try_from(conn)?;
+    let uuid = conn.uuid.clone();
 
     state
         .actions
-        .send(Action::UpdateConnection(Box::new(conn.clone())))
+        .send(Action::UpdateConnection(Box::new(conn)))
         .unwrap();
 
-    Ok(Json(conn.uuid))
+    Ok(Json(uuid))
 }
 
 #[utoipa::path(delete, path = "/network/connections/:uuid", responses(
@@ -218,9 +218,8 @@ async fn delete_connection(
 async fn update_connection(
     State(state): State<NetworkState>,
     Path(id): Path<Uuid>,
-    Json(value): Json<NetworkConnection>,
+    Json(conn): Json<NetworkConnection>,
 ) -> Result<Json<()>, NetworkError> {
-    let conn = NetworkConnection::from(value);
     let mut conn = Connection::try_from(conn)?;
     conn.uuid = id;
 
