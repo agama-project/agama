@@ -26,6 +26,7 @@ import { useInstallerClient } from "~/context/installer";
 import { If, Section, Selector } from "~/components/core";
 import { _ } from "~/i18n";
 import { SelectedBy } from "~/client/software";
+import { noop } from "~/utils";
 
 /**
  * @typedef {Object} Pattern
@@ -102,13 +103,12 @@ function sortGroups(groups) {
  * @component
  * @param {object} props
  * @param {import("~/components/software/SoftwarePage").Pattern[]} props.patterns - list of patterns
- * @param {import("~/client/software").SoftwareProposal} props.proposal - Software proposal
+ * @param {function} [props.onSelectionChanged] - Callback to be called when the selection changes
  * @returns {JSX.Element}
  */
-function PatternSelector({ patterns }) {
+function PatternSelector({ patterns, onSelectionChanged = noop }) {
   const [visiblePatterns, setVisiblePatterns] = useState(patterns);
   const [searchValue, setSearchValue] = useState("");
-  const client = useInstallerClient();
 
   useEffect(() => {
     if (!patterns) return;
@@ -136,8 +136,8 @@ function PatternSelector({ patterns }) {
     const pattern = patterns.find((p) => p.name === name);
     selected[name] = pattern.selectedBy === SelectedBy.NONE;
 
-    client.software.selectPatterns(selected);
-  }, [patterns, client.software]);
+    onSelectionChanged(selected);
+  }, [patterns, onSelectionChanged]);
 
   // initial empty screen, the patterns are loaded very quickly, no need for any progress
   if (visiblePatterns.length === 0) return null;

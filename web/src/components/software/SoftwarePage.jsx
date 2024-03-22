@@ -68,16 +68,20 @@ function buildPatterns(patterns, selection) {
  * @param {import("~/client/software").SoftwareProposal} props.proposal - Software proposal
  * @param {boolean} props.isOpen - Whether the pop-up should be open
  * @param {function} props.onFinish - Callback to be called when the selection is finished
+ * @param {function} props.onSelectionChanged - Callback to be called when the selection changes
  */
 const PatternsSelectorPopup = ({
   patterns,
-  proposal,
   isOpen = false,
+  onSelectionChanged = noop,
   onFinish = noop,
 }) => {
   return (
     <Popup className="large" title={_("Software selection")} isOpen={isOpen}>
-      <PatternSelector patterns={patterns} proposal={proposal} />
+      <PatternSelector
+        patterns={patterns}
+        onSelectionChanged={onSelectionChanged}
+      />
 
       <Popup.Actions>
         <Popup.PrimaryAction
@@ -90,7 +94,7 @@ const PatternsSelectorPopup = ({
   );
 };
 
-const SelectPatternsButton = ({ patterns, proposal }) => {
+const SelectPatternsButton = ({ patterns, proposal, onSelectionChanged }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const openPopup = () => setIsPopupOpen(true);
@@ -109,6 +113,7 @@ const SelectPatternsButton = ({ patterns, proposal }) => {
         proposal={proposal}
         isOpen={isPopupOpen}
         onFinish={closePopup}
+        onSelectionChanged={onSelectionChanged}
       />
     </>
   );
@@ -120,9 +125,10 @@ const SelectPatternsButton = ({ patterns, proposal }) => {
  * @param {object} props
  * @param {Pattern[]} props.patterns - List of patterns, including selected and unselected ones.
  * @param {import("~/client/software").SoftwareProposal} props.proposal - Software proposal
+ * @param {function} props.onSelectionChanged - Callback to be called when the selection changes
  * @return {JSX.Element}
  */
-const SelectedPatternsList = ({ patterns, proposal }) => {
+const SelectedPatternsList = ({ patterns, proposal, onSelectionChanged }) => {
   const selected = patterns.filter((p) => p.selectedBy !== SelectedBy.NONE);
   let description;
 
@@ -153,7 +159,11 @@ const SelectedPatternsList = ({ patterns, proposal }) => {
     <>
       {description}
       <div>
-        <SelectPatternsButton patterns={patterns} proposal={proposal} />
+        <SelectPatternsButton
+          patterns={patterns}
+          proposal={proposal}
+          onSelectionChanged={onSelectionChanged}
+        />
       </div>
     </>
   );
@@ -211,7 +221,12 @@ function SoftwarePage() {
           then={<SectionSkeleton numRows={5} />}
           else={
             <>
-              <SelectedPatternsList patterns={patterns} proposal={proposal} />
+              <SelectedPatternsList
+                patterns={patterns}
+                proposal={proposal}
+                onSelectionChanged={(selected) => client.software.selectPatterns(selected)}
+              />
+
               <div>
                 <UsedSize size={proposal.size} />
               </div>
