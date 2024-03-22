@@ -167,6 +167,63 @@ fn https_redirect() -> Router {
         .route_service("/*path", redirect_service)
 }
 
+/// handle the HTTPS connection
+async fn handle_https_stream(
+    tls_acceptor: SslAcceptor,
+    addr: std::net::SocketAddr,
+    tcp_stream: tokio::net::TcpStream,
+    service: axum::Router,
+) {
+    // handle HTTPS connection
+    let ssl = Ssl::new(tls_acceptor.context()).unwrap();
+    let mut tls_stream = SslStream::new(ssl, tcp_stream).unwrap();
+    if let Err(err) = SslStream::accept(Pin::new(&mut tls_stream)).await {
+        tracing::error!("Error during TSL handshake from {}: {}", addr, err);
+    }
+
+    let stream = TokioIo::new(tls_stream);
+    let hyper_service =
+        hyper::service::service_fn(move |request: Request<Incoming>| service.clone().call(request));
+
+    let ret = Builder::new(TokioExecutor::new())
+        .serve_connection_with_upgrades(stream, hyper_service)
+        .await;
+
+    if let Err(err) = ret {
+        tracing::error!("Error serving connection from {}: {}", addr, err);
+    }
+}
+
+/// handle the HTTP connection
+async fn handle_http_stream(
+    addr: std::net::SocketAddr,
+    tcp_stream: tokio::net::TcpStream,
+    service: axum::Router,
+    redirector_service: axum::Router,
+) {
+    let stream = TokioIo::new(tcp_stream);
+    let hyper_service = hyper::service::service_fn(move |request: Request<Incoming>| {
+        // check if it is local connection or external
+        // the to_canonical() converts IPv4-mapped IPv6 addresses
+        // to plain IPv4, then is_loopback() works correctly for the IPv4 connections
+        if addr.ip().to_canonical().is_loopback() {
+            // accept plain HTTP on the local connection
+            service.clone().call(request)
+        } else {
+            // redirect external connections to HTTPS
+            redirector_service.clone().call(request)
+        }
+    });
+
+    let ret = Builder::new(TokioExecutor::new())
+        .serve_connection_with_upgrades(stream, hyper_service)
+        .await;
+
+    if let Err(err) = ret {
+        tracing::error!("Error serving connection from {}: {}", addr, err);
+    }
+}
+
 /// Starts the web server
 async fn start_server(address: String, service: Router, ssl_acceptor: SslAcceptor) {
     tracing::info!("Starting Agama web server at {}", address);
@@ -199,49 +256,10 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
         tokio::spawn(async move {
             if is_ssl_stream(&tcp_stream).await {
                 // handle HTTPS connection
-                let ssl = Ssl::new(tls_acceptor.context()).unwrap();
-                let mut tls_stream = SslStream::new(ssl, tcp_stream).unwrap();
-                if let Err(err) = SslStream::accept(Pin::new(&mut tls_stream)).await {
-                    tracing::error!("Error during TSL handshake from {}: {}", addr, err);
-                }
-
-                let stream = TokioIo::new(tls_stream);
-                let hyper_service =
-                    hyper::service::service_fn(move |request: Request<Incoming>| {
-                        tower_service.clone().call(request)
-                    });
-
-                let ret = Builder::new(TokioExecutor::new())
-                    .serve_connection_with_upgrades(stream, hyper_service)
-                    .await;
-
-                if let Err(err) = ret {
-                    tracing::error!("Error serving connection from {}: {}", addr, err);
-                }
+                handle_https_stream(tls_acceptor, addr, tcp_stream, tower_service).await;
             } else {
                 // handle HTTP connection
-                let stream = TokioIo::new(tcp_stream);
-                let hyper_service =
-                    hyper::service::service_fn(move |request: Request<Incoming>| {
-                        // check if it is local connection or external
-                        // the to_canonical() converts IPv4-mapped IPv6 addresses
-                        // to plain IPv4, then is_loopback() works correctly for the IPv4 connections
-                        if addr.ip().to_canonical().is_loopback() {
-                            // accept plain HTTP on the local connection
-                            tower_service.clone().call(request)
-                        } else {
-                            // redirect external connections to HTTPS
-                            redirector_service.clone().call(request)
-                        }
-                    });
-
-                let ret = Builder::new(TokioExecutor::new())
-                    .serve_connection_with_upgrades(stream, hyper_service)
-                    .await;
-
-                if let Err(err) = ret {
-                    tracing::error!("Error serving connection from {}: {}", addr, err);
-                }
+                handle_http_stream(addr, tcp_stream, tower_service, redirector_service).await;
             }
         });
     }
