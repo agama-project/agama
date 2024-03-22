@@ -1,4 +1,4 @@
-use super::{error::NetworkStateError, model::NetworkStateItems, NetworkAdapterError};
+use super::{error::NetworkStateError, model::StateConfig, NetworkAdapterError};
 use crate::network::{dbus::Tree, model::Connection, Action, Adapter, NetworkState};
 use agama_lib::network::types::DeviceType;
 use std::{error::Error, sync::Arc};
@@ -37,7 +37,7 @@ impl<T: Adapter> NetworkSystem<T> {
     /// Writes the network configuration.
     pub async fn write(&mut self) -> Result<(), NetworkAdapterError> {
         self.adapter.write(&self.state).await?;
-        self.state = self.adapter.read(vec![]).await?;
+        self.state = self.adapter.read(StateConfig::default()).await?;
         Ok(())
     }
 
@@ -50,7 +50,7 @@ impl<T: Adapter> NetworkSystem<T> {
 
     /// Populates the D-Bus tree with the known devices and connections.
     pub async fn setup(&mut self) -> Result<(), Box<dyn Error>> {
-        self.state = self.adapter.read(vec![]).await?;
+        self.state = self.adapter.read(StateConfig::default()).await?;
         let mut tree = self.tree.lock().await;
         tree.set_connections(&mut self.state.connections).await?;
         tree.set_devices(&self.state.devices).await?;
@@ -78,7 +78,10 @@ impl<T: Adapter> NetworkSystem<T> {
             Action::RefreshScan(tx) => {
                 let state = self
                     .adapter
-                    .read(vec![NetworkStateItems::AccessPoints])
+                    .read(StateConfig {
+                        access_points: true,
+                        ..Default::default()
+                    })
                     .await?;
                 self.state.general_state = state.general_state;
                 self.state.access_points = state.access_points;

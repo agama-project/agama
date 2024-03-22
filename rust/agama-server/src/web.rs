@@ -8,7 +8,7 @@ use crate::{
     error::Error,
     l10n::web::l10n_service,
     manager::web::{manager_service, manager_stream},
-    network::web::network_service,
+    network::{web::network_service, NetworkManagerAdapter},
     software::web::{software_service, software_stream},
     web::common::{issues_stream, progress_stream, service_status_stream},
 };
@@ -48,11 +48,15 @@ pub async fn service<P>(
 where
     P: AsRef<Path>,
 {
+    let network_adapter = NetworkManagerAdapter::from_system()
+        .await
+        .expect("Could not connect to NetworkManager to read the configuration");
+
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/l10n", l10n_service(events.clone()))
         .add_service("/manager", manager_service(dbus.clone()).await?)
         .add_service("/software", software_service(dbus.clone()).await?)
-        .add_service("/network", network_service(dbus).await?)
+        .add_service("/network", network_service(dbus, network_adapter).await?)
         .with_config(config)
         .build();
     Ok(router)

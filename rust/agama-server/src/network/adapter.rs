@@ -1,4 +1,4 @@
-use crate::network::model::NetworkStateItems;
+use crate::network::model::StateConfig;
 use crate::network::NetworkState;
 use agama_lib::error::ServiceError;
 use async_trait::async_trait;
@@ -17,10 +17,7 @@ pub enum NetworkAdapterError {
 /// A trait for the ability to read/write from/to a network service
 #[async_trait]
 pub trait Adapter {
-    async fn read(
-        &self,
-        items: Vec<NetworkStateItems>,
-    ) -> Result<NetworkState, NetworkAdapterError>;
+    async fn read(&self, config: StateConfig) -> Result<NetworkState, NetworkAdapterError>;
     async fn write(&self, network: &NetworkState) -> Result<(), NetworkAdapterError>;
 }
 

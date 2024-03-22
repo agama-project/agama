@@ -20,11 +20,22 @@ use uuid::Uuid;
 use zbus::zvariant::Value;
 
 #[derive(PartialEq)]
-pub enum NetworkStateItems {
-    AccessPoints,
-    Devices,
-    Connections,
-    GeneralState,
+pub struct StateConfig {
+    pub access_points: bool,
+    pub devices: bool,
+    pub connections: bool,
+    pub general_state: bool,
+}
+
+impl Default for StateConfig {
+    fn default() -> Self {
+        Self {
+            access_points: true,
+            devices: true,
+            connections: true,
+            general_state: true,
+        }
+    }
 }
 
 #[derive(Default, Clone, Debug, utoipa::ToSchema)]

@@ -9,9 +9,9 @@ use axum::{
     Json, Router,
 };
 
-use super::{error::NetworkStateError, model::GeneralState, Action};
+use super::{error::NetworkStateError, model::GeneralState, Action, Adapter};
 
-use crate::network::{model::Connection, model::Device, nm::NetworkManagerAdapter, NetworkSystem};
+use crate::network::{model::Connection, model::Device, NetworkSystem};
 use agama_lib::error::ServiceError;
 use agama_lib::network::settings::NetworkConnection;
 use uuid::Uuid;
@@ -26,9 +26,11 @@ pub enum NetworkError {
     UnknownConnection(String),
     #[error("Cannot translate: {0}")]
     CannotTranslate(#[from] Error),
+    #[error("Cannot update configuration: {0}")]
+    CannotUpdate(Uuid),
     #[error("Cannot apply configuration")]
     CannotApplyConfig,
-    #[error("Network states error: {0}")]
+    #[error("Network state error: {0}")]
     Error(#[from] NetworkStateError),
 }
 
@@ -49,10 +51,10 @@ struct NetworkState {
 /// Sets up and returns the axum service for the network module.
 ///
 /// * `dbus`: zbus Connection.
-pub async fn network_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
-    let adapter = NetworkManagerAdapter::from_system()
-        .await
-        .expect("Could not connect to NetworkManager to read the configuration.");
+pub async fn network_service<T: Adapter + std::marker::Send + 'static>(
+    dbus: zbus::Connection,
+    adapter: T,
+) -> Result<Router, ServiceError> {
     let mut network = NetworkSystem::new(dbus.clone(), adapter);
 
     let state = NetworkState {
@@ -69,7 +71,7 @@ pub async fn network_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     });
 
     Ok(Router::new()
-        .route("/state", get(general_state).post(update_general_state))
+        .route("/state", get(general_state).put(update_general_state))
         .route("/connections", get(connections).post(add_connection))
         .route(
             "/connections/:id",
@@ -93,7 +95,7 @@ async fn general_state(State(state): State<NetworkState>) -> Json<GeneralState> 
     Json(state)
 }
 
-#[utoipa::path(post, path = "/network/state", responses(
+#[utoipa::path(put, path = "/network/state", responses(
   (status = 200, description = "Update general network config", body = GenereralState)
 ))]
 async fn update_general_state(
@@ -224,7 +226,7 @@ async fn update_connection(
 
     state
         .actions
-        .send(Action::UpdateConnection(Box::new(conn.clone())))
+        .send(Action::UpdateConnection(Box::new(conn)))
         .unwrap();
 
     Ok(Json(()))

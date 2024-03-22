@@ -8,7 +8,7 @@ use agama_lib::network::{
 };
 use agama_server::network::{
     self,
-    model::{self, GeneralState, Ipv4Method, Ipv6Method, NetworkStateItems},
+    model::{self, GeneralState, Ipv4Method, Ipv6Method, StateConfig},
     Adapter, NetworkAdapterError, NetworkService, NetworkState,
 };
 use async_trait::async_trait;
@@ -21,10 +21,7 @@ pub struct NetworkTestAdapter(network::NetworkState);
 
 #[async_trait]
 impl Adapter for NetworkTestAdapter {
-    async fn read(
-        &self,
-        _: Vec<NetworkStateItems>,
-    ) -> Result<network::NetworkState, NetworkAdapterError> {
+    async fn read(&self, _: StateConfig) -> Result<network::NetworkState, NetworkAdapterError> {
         Ok(self.0.clone())
     }
 
@@ -37,11 +34,7 @@ impl Adapter for NetworkTestAdapter {
 async fn test_read_connections() -> Result<(), Box<dyn Error>> {
     let mut server = DBusServer::new().start().await?;
 
-    let general_state = GeneralState {
-        wireless_enabled: false,
-        connectivity: true,
-        networking_enabled: true,
-    };
+    let general_state = GeneralState::default();
 
     let device = model::Device {
         name: String::from("eth0"),
@@ -152,12 +145,7 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
 async fn test_update_connection() -> Result<(), Box<dyn Error>> {
     let mut server = DBusServer::new().start().await?;
 
-    let general_state = GeneralState {
-        wireless_enabled: false,
-        connectivity: true,
-        networking_enabled: true,
-    };
-
+    let general_state = GeneralState::default();
     let device = model::Device {
         name: String::from("eth0"),
         type_: DeviceType::Ethernet,
