@@ -102,7 +102,8 @@ const sanitizeSelection = (selection, allowMultiple) => {
  * @param {boolean} [props.isMultiple=false] - Whether multiple selection is allowed.
  * @param {object[]} props.items - Collection of items to be rendered.
  * @param {string} [props.itemIdKey="id"] - The key for retrieving the item id.
- * @param {(item: object) => Array<object>} [props.itemChildren=() =>[]] - Lookup method to retrieve children from given item.
+ * @param {(item: object) => Array<object>} [props.itemChildren=() => []] - Lookup method to retrieve children from given item.
+ * @param {(item: object) => boolean} [props.itemSelectable=() => true] - Whether an item will be selectable or not.
  * @param {object[]} [props.itemsSelected=[]] - Collection of selected items.
  * @param {string[]} [props.initialExpandedKeys=[]] - Ids of initially expanded items.
  * @param {(selection: Array<object>) => void} [props.onSelectionChange=noop] - Callback to be triggered when selection changes.
@@ -114,6 +115,7 @@ export default function ExpandableSelector({
   items = [],
   itemIdKey = "id",
   itemChildren = () => [],
+  itemSelectable = () => true,
   itemsSelected = [],
   initialExpandedKeys = [],
   onSelectionChange,
@@ -164,7 +166,7 @@ export default function ExpandableSelector({
     return (
       <Tr key={rowIndex} isExpanded={isExpanded}>
         <Td />
-        <Td select={selectProps} />
+        <Td select={itemSelectable(item) ? selectProps : undefined} />
         { columns?.map((column, index) => (
           <Td key={index} dataLabel={column.name}>
             <ExpandableRowContent>{column.value(item)}</ExpandableRowContent>
@@ -209,7 +211,7 @@ export default function ExpandableSelector({
       <Tbody key={rowIndex} isExpanded={isItemExpanded(itemKey)}>
         <Tr>
           <Td expand={expandProps} />
-          <Td select={selectProps} />
+          <Td select={itemSelectable(item) ? selectProps : undefined} />
           { columns?.map((column, index) => (
             <Td key={index} dataLabel={column.name}>
               {column.value(item)}

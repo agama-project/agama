@@ -295,6 +295,26 @@ describe("ExpandableSelector", () => {
         expect(radios.length).toEqual(6);
       });
 
+      describe("but `itemSelectable` is given", () => {
+        it("renders a radio only for items for which it returns true", () => {
+          const itemSelectable = (item) => item.isDrive || item.type === "vg";
+          plainRender(<ExpandableSelector {...props} itemSelectable={itemSelectable} />);
+          const table = screen.getByRole("grid");
+          const radios = within(table).getAllByRole("radio");
+
+          // Expected only three radios
+          expect(radios.length).toEqual(3);
+
+          // Not in below items
+          const sda1Row = within(table).getByRole("row", { name: /dev\/sda1/ });
+          const sda2Row = within(table).getByRole("row", { name: /dev\/sda2/ });
+          const lv1Row = within(table).getByRole("row", { name: /lv1/ });
+          expect(within(sda1Row).queryAllByRole("radio")).toEqual([]);
+          expect(within(sda1Row).queryAllByRole("radio")).toEqual([]);
+          expect(within(sda1Row).queryAllByRole("radio")).toEqual([]);
+        });
+      });
+
       describe("and `itemsSelected` is given", () => {
         describe("and it is an array with just one item", () => {
           it("renders it as checked", async () => {
@@ -361,6 +381,26 @@ describe("ExpandableSelector", () => {
       const table = screen.getByRole("grid");
       const checkboxes = within(table).getAllByRole("checkbox");
       expect(checkboxes.length).toEqual(6);
+    });
+
+    describe("but `itemSelectable` is given", () => {
+      it("renders a checkbox only for items for which it returns true", () => {
+        const itemSelectable = (item) => item.isDrive || item.type === "vg";
+        plainRender(<ExpandableSelector {...props} itemSelectable={itemSelectable} />);
+        const table = screen.getByRole("grid");
+        const checkboxes = within(table).getAllByRole("checkbox");
+
+        // Expected only three checkboxes
+        expect(checkboxes.length).toEqual(3);
+
+        // Not in below items
+        const sda1Row = within(table).getByRole("row", { name: /dev\/sda1/ });
+        const sda2Row = within(table).getByRole("row", { name: /dev\/sda2/ });
+        const lv1Row = within(table).getByRole("row", { name: /lv1/ });
+        expect(within(sda1Row).queryAllByRole("checkbox")).toEqual([]);
+        expect(within(sda1Row).queryAllByRole("checkbox")).toEqual([]);
+        expect(within(sda1Row).queryAllByRole("checkbox")).toEqual([]);
+      });
     });
 
     describe("and `itemsSelected` is given", () => {
