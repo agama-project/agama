@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 22 09:18:20 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Make it possible to use non-auto sizes for volumes with
+  adjust_by_ram (gh#openSUSE/agama#1111).
+
+-------------------------------------------------------------------
 Thu Mar 21 10:35:09 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Extend the storage D-Bus API: new attributes for the volumes
