@@ -22,6 +22,7 @@ pub enum Event {
         id: String,
     },
     PatternsChanged(HashMap<String, SelectedBy>),
+    QuestionsChanged,
     InstallationPhaseChanged {
         phase: InstallationPhase,
     },

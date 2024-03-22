@@ -96,7 +96,7 @@ trait Questions1 {
 
     /// New method
     #[dbus_proxy(name = "New")]
-    fn new_quetion(
+    fn new_question(
         &self,
         class: &str,
         text: &str,
@@ -120,6 +120,56 @@ trait Questions1 {
     fn interactive(&self) -> zbus::Result<bool>;
     #[dbus_proxy(property)]
     fn set_interactive(&self, value: bool) -> zbus::Result<()>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama1.Questions.Generic",
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Questions"
+)]
+trait GenericQuestion {
+    /// Answer property
+    #[dbus_proxy(property)]
+    fn answer(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
+    fn set_answer(&self, value: &str) -> zbus::Result<()>;
+
+    /// Class property
+    #[dbus_proxy(property)]
+    fn class(&self) -> zbus::Result<String>;
+
+    /// Data property
+    #[dbus_proxy(property)]
+    fn data(&self) -> zbus::Result<std::collections::HashMap<String, String>>;
+
+    /// DefaultOption property
+    #[dbus_proxy(property)]
+    fn default_option(&self) -> zbus::Result<String>;
+
+    /// Id property
+    #[dbus_proxy(property)]
+    fn id(&self) -> zbus::Result<u32>;
+
+    /// Options property
+    #[dbus_proxy(property)]
+    fn options(&self) -> zbus::Result<Vec<String>>;
+
+    /// Text property
+    #[dbus_proxy(property)]
+    fn text(&self) -> zbus::Result<String>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama1.Questions.WithPassword",
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Questions"
+)]
+trait QuestionWithPassword {
+    /// Password property
+    #[dbus_proxy(property)]
+    fn password(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
+    fn set_password(&self, value: &str) -> zbus::Result<()>;
 }
 
 #[dbus_proxy(interface = "org.opensuse.Agama1.Issues", assume_defaults = true)]

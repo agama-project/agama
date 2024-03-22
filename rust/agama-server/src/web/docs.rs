@@ -16,6 +16,8 @@ use utoipa::OpenApi;
         crate::manager::web::install_action,
         crate::manager::web::finish_action,
         crate::manager::web::installer_status,
+        crate::questions::web::list_questions,
+        crate::questions::web::answer,
         super::http::ping,
     ),
     components(
@@ -30,6 +32,12 @@ use utoipa::OpenApi;
         schemas(crate::software::web::SoftwareConfig),
         schemas(crate::software::web::SoftwareProposal),
         schemas(crate::manager::web::InstallerStatus),
+        schemas(crate::questions::web::Question),
+        schemas(crate::questions::web::GenericQuestion),
+        schemas(crate::questions::web::QuestionWithPassword),
+        schemas(crate::questions::web::Answer),
+        schemas(crate::questions::web::GenericAnswer),
+        schemas(crate::questions::web::PasswordAnswer),
         schemas(super::http::PingResponse),
     )
 )]

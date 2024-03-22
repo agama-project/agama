@@ -41,6 +41,12 @@ pub trait ServerState {}
 impl ServerState for Started {}
 impl ServerState for Stopped {}
 
+impl Default for DBusServer<Stopped> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DBusServer<Stopped> {
     pub fn new() -> Self {
         let uuid = Uuid::new_v4();

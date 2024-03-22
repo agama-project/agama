@@ -1,5 +1,5 @@
 use clap::{arg, Args, Subcommand};
-use home;
+
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
 use std::fs;
 use std::fs::File;
@@ -36,7 +36,7 @@ pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
 /// Reads stored token and returns it
 fn jwt() -> anyhow::Result<String> {
     if let Some(file) = jwt_file() {
-        if let Ok(token) = read_line_from_file(&file.as_path()) {
+        if let Ok(token) = read_line_from_file(file.as_path()) {
             return Ok(token);
         }
     }
@@ -93,7 +93,7 @@ impl Credentials for KnownCredentials {
 
 impl Credentials for FileCredentials {
     fn password(&self) -> io::Result<String> {
-        read_line_from_file(&self.path.as_path())
+        read_line_from_file(self.path.as_path())
     }
 }
 
@@ -119,7 +119,7 @@ fn read_line_from_file(path: &Path) -> io::Result<String> {
         ));
     }
 
-    if let Ok(file) = File::open(&path) {
+    if let Ok(file) = File::open(path) {
         // cares only of first line, take everything. No comments
         // or something like that supported
         let raw = BufReader::new(file).lines().next();
