@@ -129,14 +129,12 @@ function PatternSelector({ patterns }) {
 
   const onToggle = useCallback((name) => {
     const selected = patterns.filter((p) => p.selectedBy === SelectedBy.USER)
-      .map((p) => p.name);
-
-    const index = selected.indexOf(name);
-    if (index === -1) {
-      selected.push(name);
-    } else {
-      selected.splice(index, 1);
-    }
+      .reduce((all, p) => {
+        all[p.name] = true;
+        return all;
+      }, {});
+    const pattern = patterns.find((p) => p.name === name);
+    selected[name] = pattern.selectedBy === SelectedBy.NONE;
 
     client.software.selectPatterns(selected);
   }, [patterns, client.software]);

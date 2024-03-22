@@ -72,7 +72,8 @@ const SelectedBy = Object.freeze({
 
 /**
  * @typedef {object} SoftwareConfig
- * @property {Array<string>|undefined} patterns - Name of the selected packages.
+ * @property {Array<string>|undefined} patterns - An object where the keys are the pattern names
+ *   and the values whether to install them or not.
  * @property {string|undefined} product - Product to install.
  */
 
@@ -246,7 +247,8 @@ class SoftwareBaseClient {
   }
 
   /**
-   * @param {string[]} patterns - name of the user-selected patterns.
+   * @param {Object.<string, boolean>} patterns - An object where the keys are the pattern names
+   *   and the values whether to install them or not.
    * @return {Promise<void>}
    */
   selectPatterns(patterns) {
