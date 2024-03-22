@@ -60,7 +60,7 @@ module Agama
 
         # @param target [Agama::Storage::Volume]
         def sizes_conversion(target)
-          target.auto_size = !spec.ignore_fallback_sizes? || !spec.ignore_snapshots_sizes?
+          target.auto_size = auto_size?
 
           # The volume specification contains the min and max sizes for the volume. But the final
           # range of sizes used by the Y2Storage proposal depends on the fallback sizes (if this
@@ -72,6 +72,16 @@ module Agama
           planned = planned_device_for(spec.mount_point)
           target.min_size = planned&.min || spec.min_size
           target.max_size = planned&.max || spec.max_size
+        end
+
+        # @see #sizes_conversion
+        #
+        # @return [Boolean]
+        def auto_size?
+          # The three ignore_xxx attributes (ignore_snapshots_sizes, ignore_fallback_sizes and
+          # ignore_adjust_by_ram) are always in sync and always initialized to the inverse of
+          # #auto_size
+          !spec.ignore_fallback_sizes?
         end
 
         # @param target [Agama::Storage::Volume]
