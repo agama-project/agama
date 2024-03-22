@@ -421,7 +421,7 @@ impl Default for GeneralState {
 }
 
 /// Access Point
-#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, Clone, Serialize, utoipa::ToSchema)]
 pub struct AccessPoint {
     pub ssid: SSID,
     pub hw_address: String,
