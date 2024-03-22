@@ -5,6 +5,7 @@ use log;
 use zbus::{dbus_interface, fdo::ObjectManager, zvariant::ObjectPath, Connection};
 
 mod answers;
+pub mod web;
 
 #[derive(thiserror::Error, Debug)]
 pub enum QuestionsError {

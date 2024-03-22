@@ -77,8 +77,8 @@ pub async fn manager_stream(
 
 /// Sets up and returns the axum service for the manager module
 pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
-    const DBUS_SERVICE: &'static str = "org.opensuse.Agama.Manager1";
-    const DBUS_PATH: &'static str = "/org/opensuse/Agama/Manager1";
+    const DBUS_SERVICE: &str = "org.opensuse.Agama.Manager1";
+    const DBUS_PATH: &str = "/org/opensuse/Agama/Manager1";
 
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;

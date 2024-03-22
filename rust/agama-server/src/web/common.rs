@@ -109,7 +109,7 @@ async fn build_service_status_proxy<'a>(
     destination: &str,
     path: &str,
 ) -> Result<ServiceStatusProxy<'a>, zbus::Error> {
-    let proxy = ServiceStatusProxy::builder(&dbus)
+    let proxy = ServiceStatusProxy::builder(dbus)
         .destination(destination.to_string())?
         .path(path.to_string())?
         .build()
@@ -205,7 +205,7 @@ impl<'a> Stream for ProgressStream<'a> {
         let pinned = self.project();
         match pinned.inner.poll_next(cx) {
             Poll::Pending => Poll::Pending,
-            Poll::Ready(_change) => match Progress::from_cached_proxy(&pinned.proxy) {
+            Poll::Ready(_change) => match Progress::from_cached_proxy(pinned.proxy) {
                 Some(progress) => {
                     let event = Event::Progress {
                         progress,
@@ -224,7 +224,7 @@ async fn build_progress_proxy<'a>(
     destination: &str,
     path: &str,
 ) -> Result<ProgressProxy<'a>, zbus::Error> {
-    let proxy = ProgressProxy::builder(&dbus)
+    let proxy = ProgressProxy::builder(dbus)
         .destination(destination.to_string())?
         .path(path.to_string())?
         .build()
@@ -345,7 +345,7 @@ async fn build_issues_proxy<'a>(
     destination: &str,
     path: &str,
 ) -> Result<IssuesProxy<'a>, zbus::Error> {
-    let proxy = IssuesProxy::builder(&dbus)
+    let proxy = IssuesProxy::builder(dbus)
         .destination(destination.to_string())?
         .path(path.to_string())?
         .build()

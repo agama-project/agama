@@ -153,7 +153,7 @@ async fn set_config(
             .output()
             .map_err(LocaleError::Commit)?;
         Command::new("/usr/bin/setxkbmap")
-            .arg(&ui_keymap)
+            .arg(ui_keymap)
             .env("DISPLAY", ":0")
             .output()
             .map_err(LocaleError::Commit)?;

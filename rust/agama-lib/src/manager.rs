@@ -61,7 +61,7 @@ impl<'a> ManagerClient<'a> {
     /// Returns the current installation phase.
     pub async fn current_installation_phase(&self) -> Result<InstallationPhase, ServiceError> {
         let phase = self.manager_proxy.current_installation_phase().await?;
-        Ok(phase.try_into()?)
+        phase.try_into()
     }
 
     /// Starts the probing process.

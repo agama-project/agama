@@ -9,6 +9,7 @@ use crate::{
     l10n::web::l10n_service,
     manager::web::{manager_service, manager_stream},
     network::{web::network_service, NetworkManagerAdapter},
+    questions::web::{questions_service, questions_stream},
     software::web::{software_service, software_stream},
     web::common::{issues_stream, progress_stream, service_status_stream},
 };
@@ -56,7 +57,11 @@ where
         .add_service("/l10n", l10n_service(events.clone()))
         .add_service("/manager", manager_service(dbus.clone()).await?)
         .add_service("/software", software_service(dbus.clone()).await?)
-        .add_service("/network", network_service(dbus, network_adapter).await?)
+        .add_service(
+            "/network",
+            network_service(dbus.clone(), network_adapter).await?,
+        )
+        .add_service("/questions", questions_service(dbus).await?)
         .with_config(config)
         .build();
     Ok(router)
@@ -120,6 +125,7 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
         )
         .await?,
     );
+    stream.insert("questions", questions_stream(dbus.clone()).await?);
     stream.insert(
         "software-issues",
         issues_stream(
