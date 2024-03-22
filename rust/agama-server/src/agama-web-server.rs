@@ -4,6 +4,7 @@ use agama_server::{
     web::{self, run_monitor},
 };
 use axum::{
+    extract::Request as AxumRequest,
     http::{Request, Response},
     Router,
 };
@@ -153,7 +154,7 @@ fn redirect_error() -> Response<String> {
 /// instead of the redirection
 fn https_redirect() -> Router {
     // see https://docs.rs/axum/latest/axum/routing/struct.Router.html#example
-    let redirect_service = tower::service_fn(|req: axum::extract::Request| async move {
+    let redirect_service = tower::service_fn(|req: AxumRequest| async move {
         if let Some(host) = req.headers().get("host").and_then(|h| h.to_str().ok()) {
             Ok(redirect_https(host, req.uri()))
         } else {
