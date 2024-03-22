@@ -38,7 +38,7 @@ struct SoftwareState<'a> {
 /// Software service configuration (product, patterns, etc.).
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct SoftwareConfig {
-    /// A map where the keys are the patter names and the values whether they should be installed or not.
+    /// A map where the keys are the pattern names and the values whether to install them or not.
     patterns: Option<HashMap<String, bool>>,
     /// Name of the product to install.
     product: Option<String>,
