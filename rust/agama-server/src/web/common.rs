@@ -138,7 +138,7 @@ async fn build_service_status_proxy<'a>(
 /// ).await.unwrap();
 /// let router: Router<HelloWorldState> = Router::new()
 ///   .route("/hello", get(hello))
-///   .merge(progress)
+///   .merge(progress_router)
 ///   .with_state(HelloWorldState {});
 /// });
 /// ```
@@ -238,7 +238,7 @@ async fn build_progress_proxy<'a>(
 /// ```no_run
 /// # use axum::{extract::State, routing::get, Json, Router};
 /// # use agama_lib::connection;
-/// # use agama_server::web::common::service_status_router;
+/// # use agama_server::web::common::{issues_router, service_status_router};
 /// # use tokio_test;
 ///
 /// # tokio_test::block_on(async {

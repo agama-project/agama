@@ -1,10 +1,15 @@
+use cidr::errors::NetworkParseError;
 use serde::{Deserialize, Serialize};
-use std::{fmt, str};
+use std::{
+    fmt,
+    str::{self, FromStr},
+};
 use thiserror::Error;
 use zbus;
 
 /// Network device
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "type")]
 pub struct Device {
     pub name: String,
     pub type_: DeviceType,
@@ -25,13 +30,21 @@ impl fmt::Display for SSID {
     }
 }
 
+impl FromStr for SSID {
+    type Err = NetworkParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(SSID(s.as_bytes().into()))
+    }
+}
+
 impl From<SSID> for Vec<u8> {
     fn from(value: SSID) -> Self {
         value.0
     }
 }
 
-#[derive(Debug, PartialEq, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Copy, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub enum DeviceType {
     Loopback = 0,
     Ethernet = 1,

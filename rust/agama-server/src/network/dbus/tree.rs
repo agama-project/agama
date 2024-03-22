@@ -130,6 +130,10 @@ impl Tree {
         self.objects.devices_paths()
     }
 
+    pub fn device_path(&self, name: &str) -> Option<OwnedObjectPath> {
+        self.objects.device_path(name).map(|o| o.into())
+    }
+
     /// Returns all connection paths.
     pub fn connections_paths(&self) -> Vec<OwnedObjectPath> {
         self.objects.connections_paths()
@@ -237,6 +241,12 @@ impl ObjectsRegistry {
         path
     }
 
+    /// Returns the path for a device.
+    ///
+    /// * `name`: device name.
+    pub fn device_path(&self, name: &str) -> Option<ObjectPath> {
+        self.devices.get(name).map(|p| p.as_ref())
+    }
     /// Returns the path for a connection.
     ///
     /// * `uuid`: connection ID.

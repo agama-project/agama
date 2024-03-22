@@ -1,33 +1,16 @@
 pub mod common;
 
-use agama_server::{
-    service,
-    web::{generate_token, MainServiceBuilder, ServiceConfig},
-};
+use agama_server::web::{generate_token, MainServiceBuilder, ServiceConfig};
 use axum::{
     body::Body,
     http::{Method, Request, StatusCode},
     response::Response,
     routing::get,
-    Router,
 };
-use common::{body_to_string, DBusServer};
+use common::body_to_string;
 use std::{error::Error, path::PathBuf};
 use tokio::{sync::broadcast::channel, test};
 use tower::ServiceExt;
-
-async fn build_service() -> Router {
-    let (tx, _) = channel(16);
-    let server = DBusServer::new().start().await.unwrap();
-    service(
-        ServiceConfig::default(),
-        tx,
-        server.connection(),
-        public_dir(),
-    )
-    .await
-    .unwrap()
-}
 
 fn public_dir() -> PathBuf {
     std::env::current_dir().unwrap().join("public")
@@ -35,7 +18,13 @@ fn public_dir() -> PathBuf {
 
 #[test]
 async fn test_ping() -> Result<(), Box<dyn Error>> {
-    let web_service = build_service().await;
+    let config = ServiceConfig::default();
+    let (tx, _) = channel(16);
+    let web_service = MainServiceBuilder::new(tx, public_dir())
+        .add_service("/protected", get(protected))
+        .with_config(config)
+        .build();
+
     let request = Request::builder()
         .uri("/api/ping")
         .body(Body::empty())
