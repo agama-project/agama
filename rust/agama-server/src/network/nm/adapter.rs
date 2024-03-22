@@ -1,11 +1,13 @@
 use crate::network::{
-    model::{Connection, NetworkState},
+    model::{Connection, NetworkState, StateConfig},
     nm::NetworkManagerClient,
     Adapter, NetworkAdapterError,
 };
 use agama_lib::error::ServiceError;
 use async_trait::async_trait;
+use core::time;
 use log;
+use std::thread;
 
 /// An adapter for NetworkManager
 pub struct NetworkManagerAdapter<'a> {
@@ -29,18 +31,47 @@ impl<'a> NetworkManagerAdapter<'a> {
 
 #[async_trait]
 impl<'a> Adapter for NetworkManagerAdapter<'a> {
-    async fn read(&self) -> Result<NetworkState, NetworkAdapterError> {
-        let devices = self
+    async fn read(&self, config: StateConfig) -> Result<NetworkState, NetworkAdapterError> {
+        let general_state = self
             .client
-            .devices()
+            .general_state()
             .await
             .map_err(NetworkAdapterError::Read)?;
-        let connections = self
-            .client
-            .connections()
-            .await
-            .map_err(NetworkAdapterError::Read)?;
-        Ok(NetworkState::new(devices, connections))
+
+        let mut state = NetworkState::default();
+
+        if config.devices {
+            state.devices = self
+                .client
+                .devices()
+                .await
+                .map_err(NetworkAdapterError::Read)?;
+        }
+
+        if config.connections {
+            state.connections = self
+                .client
+                .connections()
+                .await
+                .map_err(NetworkAdapterError::Read)?;
+        }
+
+        if config.access_points && general_state.wireless_enabled {
+            if !config.devices && !config.connections {
+                self.client
+                    .request_scan()
+                    .await
+                    .map_err(NetworkAdapterError::Read)?;
+                thread::sleep(time::Duration::from_secs(1));
+            };
+            state.access_points = self
+                .client
+                .access_points()
+                .await
+                .map_err(NetworkAdapterError::Read)?;
+        }
+
+        Ok(state)
     }
 
     /// Writes the connections to NetworkManager.
@@ -51,12 +82,33 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
     ///
     /// * `network`: network model.
     async fn write(&self, network: &NetworkState) -> Result<(), NetworkAdapterError> {
-        let old_state = self.read().await?;
+        let old_state = self.read(StateConfig::default()).await?;
         let checkpoint = self
             .client
             .create_checkpoint()
             .await
             .map_err(NetworkAdapterError::Checkpoint)?;
+
+        log::info!("Updating the general state {:?}", &network.general_state);
+
+        let result = self
+            .client
+            .update_general_state(&network.general_state)
+            .await;
+
+        if let Err(e) = result {
+            self.client
+                .rollback_checkpoint(&checkpoint.as_ref())
+                .await
+                .map_err(NetworkAdapterError::Checkpoint)?;
+
+            log::error!(
+                "Could not update the general state {:?}: {}",
+                &network.general_state,
+                &e
+            );
+            return Err(NetworkAdapterError::Write(e));
+        }
 
         for conn in ordered_connections(network) {
             if !Self::is_writable(conn) {
@@ -88,6 +140,7 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
                 return Err(NetworkAdapterError::Write(e));
             }
         }
+
         self.client
             .destroy_checkpoint(&checkpoint.as_ref())
             .await

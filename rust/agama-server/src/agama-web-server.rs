@@ -13,7 +13,7 @@ use tokio::sync::broadcast::channel;
 use tracing_subscriber::prelude::*;
 use utoipa::OpenApi;
 
-const DEFAULT_WEB_UI_DIR: &'static str = "/usr/share/agama/web_ui";
+const DEFAULT_WEB_UI_DIR: &str = "/usr/share/agama/web_ui";
 
 #[derive(Subcommand, Debug)]
 enum Commands {

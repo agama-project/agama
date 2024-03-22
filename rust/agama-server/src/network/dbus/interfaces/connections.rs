@@ -21,7 +21,7 @@ pub struct Connections {
 impl Connections {
     /// Creates a Connections interface object.
     ///
-    /// * `objects`: Objects paths registry.
+    /// * `actions`: sending-half of a channel to send actions.
     pub fn new(actions: UnboundedSender<Action>) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
@@ -101,7 +101,10 @@ impl Connections {
             .parse()
             .map_err(|_| NetworkStateError::InvalidUuid(uuid.to_string()))?;
         let actions = self.actions.lock().await;
-        actions.send(Action::RemoveConnection(uuid)).unwrap();
+        let (tx, rx) = oneshot::channel();
+        actions.send(Action::RemoveConnection(uuid, tx)).unwrap();
+
+        rx.await.unwrap()?;
         Ok(())
     }
 

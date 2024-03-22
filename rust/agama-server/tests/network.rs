@@ -8,7 +8,7 @@ use agama_lib::network::{
 };
 use agama_server::network::{
     self,
-    model::{self, Ipv4Method, Ipv6Method},
+    model::{self, GeneralState, Ipv4Method, Ipv6Method, StateConfig},
     Adapter, NetworkAdapterError, NetworkService, NetworkState,
 };
 use async_trait::async_trait;
@@ -21,7 +21,7 @@ pub struct NetworkTestAdapter(network::NetworkState);
 
 #[async_trait]
 impl Adapter for NetworkTestAdapter {
-    async fn read(&self) -> Result<network::NetworkState, NetworkAdapterError> {
+    async fn read(&self, _: StateConfig) -> Result<network::NetworkState, NetworkAdapterError> {
         Ok(self.0.clone())
     }
 
@@ -34,12 +34,14 @@ impl Adapter for NetworkTestAdapter {
 async fn test_read_connections() -> Result<(), Box<dyn Error>> {
     let mut server = DBusServer::new().start().await?;
 
+    let general_state = GeneralState::default();
+
     let device = model::Device {
         name: String::from("eth0"),
         type_: DeviceType::Ethernet,
     };
     let eth0 = model::Connection::new("eth0".to_string(), DeviceType::Ethernet);
-    let state = NetworkState::new(vec![device], vec![eth0]);
+    let state = NetworkState::new(general_state, vec![], vec![device], vec![eth0]);
     let adapter = NetworkTestAdapter(state);
 
     NetworkService::start(&server.connection(), adapter).await?;
@@ -143,12 +145,13 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
 async fn test_update_connection() -> Result<(), Box<dyn Error>> {
     let mut server = DBusServer::new().start().await?;
 
+    let general_state = GeneralState::default();
     let device = model::Device {
         name: String::from("eth0"),
         type_: DeviceType::Ethernet,
     };
     let eth0 = model::Connection::new("eth0".to_string(), DeviceType::Ethernet);
-    let state = NetworkState::new(vec![device], vec![eth0]);
+    let state = NetworkState::new(general_state, vec![], vec![device], vec![eth0]);
     let adapter = NetworkTestAdapter(state);
 
     NetworkService::start(&server.connection(), adapter).await?;

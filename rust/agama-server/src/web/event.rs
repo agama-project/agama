@@ -26,6 +26,7 @@ pub enum Event {
     SoftwareProposalChanged {
         patterns: HashMap<String, SelectedBy>,
     },
+    QuestionsChanged,
     InstallationPhaseChanged {
         phase: InstallationPhase,
     },

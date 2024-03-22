@@ -109,7 +109,7 @@ async fn build_service_status_proxy<'a>(
     destination: &str,
     path: &str,
 ) -> Result<ServiceStatusProxy<'a>, zbus::Error> {
-    let proxy = ServiceStatusProxy::builder(&dbus)
+    let proxy = ServiceStatusProxy::builder(dbus)
         .destination(destination.to_string())?
         .path(path.to_string())?
         .build()
@@ -138,7 +138,7 @@ async fn build_service_status_proxy<'a>(
 /// ).await.unwrap();
 /// let router: Router<HelloWorldState> = Router::new()
 ///   .route("/hello", get(hello))
-///   .merge(progress)
+///   .merge(progress_router)
 ///   .with_state(HelloWorldState {});
 /// });
 /// ```
@@ -205,7 +205,7 @@ impl<'a> Stream for ProgressStream<'a> {
         let pinned = self.project();
         match pinned.inner.poll_next(cx) {
             Poll::Pending => Poll::Pending,
-            Poll::Ready(_change) => match Progress::from_cached_proxy(&pinned.proxy) {
+            Poll::Ready(_change) => match Progress::from_cached_proxy(pinned.proxy) {
                 Some(progress) => {
                     let event = Event::Progress {
                         progress,
@@ -224,7 +224,7 @@ async fn build_progress_proxy<'a>(
     destination: &str,
     path: &str,
 ) -> Result<ProgressProxy<'a>, zbus::Error> {
-    let proxy = ProgressProxy::builder(&dbus)
+    let proxy = ProgressProxy::builder(dbus)
         .destination(destination.to_string())?
         .path(path.to_string())?
         .build()
@@ -238,7 +238,7 @@ async fn build_progress_proxy<'a>(
 /// ```no_run
 /// # use axum::{extract::State, routing::get, Json, Router};
 /// # use agama_lib::connection;
-/// # use agama_server::web::common::service_status_router;
+/// # use agama_server::web::common::{issues_router, service_status_router};
 /// # use tokio_test;
 ///
 /// # tokio_test::block_on(async {
@@ -345,7 +345,7 @@ async fn build_issues_proxy<'a>(
     destination: &str,
     path: &str,
 ) -> Result<IssuesProxy<'a>, zbus::Error> {
-    let proxy = IssuesProxy::builder(&dbus)
+    let proxy = IssuesProxy::builder(dbus)
         .destination(destination.to_string())?
         .path(path.to_string())?
         .build()

@@ -40,9 +40,9 @@ impl Locale {
     #[dbus_interface(property)]
     fn set_locales(&mut self, locales: Vec<String>) -> zbus::fdo::Result<()> {
         if locales.is_empty() {
-            return Err(zbus::fdo::Error::Failed(format!(
-                "The locales list cannot be empty"
-            )));
+            return Err(zbus::fdo::Error::Failed(
+                "The locales list cannot be empty".to_string(),
+            ));
         }
         for loc in &locales {
             if !self.locales_db.exists(loc.as_str()) {

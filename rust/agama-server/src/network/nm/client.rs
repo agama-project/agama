@@ -6,9 +6,13 @@ use super::dbus::{
     merge_dbus_connections,
 };
 use super::model::NmDeviceType;
-use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
-use crate::network::model::{Connection, Device};
+use super::proxies::{
+    AccessPointProxy, ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy,
+    WirelessProxy,
+};
+use crate::network::model::{AccessPoint, Connection, Device, GeneralState};
 use agama_lib::error::ServiceError;
+use agama_lib::network::types::{DeviceType, SSID};
 use log;
 use uuid::Uuid;
 use zbus;
@@ -41,7 +45,94 @@ impl<'a> NetworkManagerClient<'a> {
             connection,
         })
     }
+    /// Returns the general state
+    pub async fn general_state(&self) -> Result<GeneralState, ServiceError> {
+        let wireless_enabled = self.nm_proxy.wireless_enabled().await?;
+        let networking_enabled = self.nm_proxy.networking_enabled().await?;
+        // TODO:: Allow to set global DNS configuration
+        // let global_dns_configuration = self.nm_proxy.global_dns_configuration().await?;
+        // Fixme: save as NMConnectivityState enum
+        let connectivity = self.nm_proxy.connectivity().await? == 4;
 
+        Ok(GeneralState {
+            wireless_enabled,
+            networking_enabled,
+            connectivity,
+        })
+    }
+
+    /// Updates the general state
+    pub async fn update_general_state(&self, state: &GeneralState) -> Result<(), ServiceError> {
+        let wireless_enabled = self.nm_proxy.wireless_enabled().await?;
+
+        if wireless_enabled != state.wireless_enabled {
+            self.nm_proxy
+                .set_wireless_enabled(state.wireless_enabled)
+                .await?;
+        };
+
+        Ok(())
+    }
+
+    /// Returns the list of access points.
+    pub async fn request_scan(&self) -> Result<(), ServiceError> {
+        for path in &self.nm_proxy.get_devices().await? {
+            let proxy = DeviceProxy::builder(&self.connection)
+                .path(path.as_str())?
+                .build()
+                .await?;
+
+            let device_type = NmDeviceType(proxy.device_type().await?).try_into();
+            if let Ok(DeviceType::Wireless) = device_type {
+                let wproxy = WirelessProxy::builder(&self.connection)
+                    .path(path.as_str())?
+                    .build()
+                    .await?;
+                wproxy.request_scan(HashMap::new()).await?;
+            }
+        }
+
+        Ok(())
+    }
+
+    /// Returns the list of access points.
+    pub async fn access_points(&self) -> Result<Vec<AccessPoint>, ServiceError> {
+        let mut points = vec![];
+        for path in &self.nm_proxy.get_devices().await? {
+            let proxy = DeviceProxy::builder(&self.connection)
+                .path(path.as_str())?
+                .build()
+                .await?;
+
+            let device_type = NmDeviceType(proxy.device_type().await?).try_into();
+            if let Ok(DeviceType::Wireless) = device_type {
+                let wproxy = WirelessProxy::builder(&self.connection)
+                    .path(path.as_str())?
+                    .build()
+                    .await?;
+
+                for ap_path in wproxy.access_points().await? {
+                    let wproxy = AccessPointProxy::builder(&self.connection)
+                        .path(ap_path.as_str())?
+                        .build()
+                        .await?;
+
+                    let ssid = SSID(wproxy.ssid().await?);
+                    let hw_address = wproxy.hw_address().await?;
+                    let strength = wproxy.strength().await?;
+
+                    points.push(AccessPoint {
+                        ssid,
+                        hw_address,
+                        strength,
+                        security_protocols: vec![],
+                    })
+                }
+            }
+        }
+
+        Ok(points)
+    }
     /// Returns the list of network devices.
     pub async fn devices(&self) -> Result<Vec<Device>, ServiceError> {
         let mut devs = vec![];
