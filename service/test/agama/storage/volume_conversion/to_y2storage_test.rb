@@ -70,6 +70,7 @@ describe Agama::Storage::VolumeConversion::ToY2Storage do
         adjust_by_ram?:          false,
         ignore_fallback_sizes:   true,
         ignore_snapshots_sizes:  true,
+        ignore_adjust_by_ram:    true,
         min_size:                Y2Storage::DiskSize.GiB(5),
         max_size:                Y2Storage::DiskSize.GiB(20),
         max_size_lvm:            Y2Storage::DiskSize.GiB(20),
@@ -96,6 +97,7 @@ describe Agama::Storage::VolumeConversion::ToY2Storage do
         expect(spec).to have_attributes(
           ignore_fallback_sizes:  false,
           ignore_snapshots_sizes: false,
+          ignore_adjust_by_ram:   false,
           min_size:               Y2Storage::DiskSize.GiB(10),
           max_size:               Y2Storage::DiskSize.GiB(50),
           max_size_lvm:           Y2Storage::DiskSize.GiB(50)

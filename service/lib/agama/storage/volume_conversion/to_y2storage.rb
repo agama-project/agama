@@ -63,6 +63,7 @@ module Agama
 
           target.ignore_fallback_sizes = !auto
           target.ignore_snapshots_sizes = !auto
+          target.ignore_adjust_by_ram = !auto
 
           # The range of sizes is defined by the volume outline in case of auto size (mix and max
           # sizes cannot be configured if auto size is set).
