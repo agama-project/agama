@@ -90,7 +90,7 @@ module Agama
           dbus_method(:AddPattern, "in id:s, out result:b") { |p| backend.add_pattern(p) }
           dbus_method(:RemovePattern, "in id:s, out result:b") { |p| backend.remove_pattern(p) }
           dbus_method(:SetUserPatterns, "in add:as, in remove:as, out wrong:as") do |add, remove|
-           [backend.assign_patterns(add, remove)]
+            [backend.assign_patterns(add, remove)]
           end
 
           dbus_method :ProvisionsSelected, "in Provisions:as, out Result:ab" do |provisions|
