@@ -35,7 +35,7 @@ import { noop } from "~/utils";
  * @property {string} description long description of the pattern
  * @property {string} order display order (string!)
  * @property {string} icon icon name (not path or file name!)
- * @property {number|undefined} selected who selected the pattern, undefined
+ * @property {number} selected who selected the pattern, undefined
  *   means it is not selected to install
  */
 

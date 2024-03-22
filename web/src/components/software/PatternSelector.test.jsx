@@ -25,10 +25,13 @@ import { plainRender } from "~/test-utils";
 
 import test_patterns from "./PatternSelector.test.json";
 import PatternSelector from "./PatternSelector";
+import { SelectedBy } from "~/client/software";
+
+const patterns = test_patterns.map((p) => ({ ...p, selectedBy: SelectedBy.NONE }));
 
 describe("PatternSelector", () => {
   it("displays the pattern groups in the correct order", () => {
-    plainRender(<PatternSelector patterns={test_patterns} />);
+    plainRender(<PatternSelector patterns={patterns} />);
     const headings = screen.getAllByRole("heading", { level: 2 });
     const headingsText = headings.map((node) => node.textContent);
     expect(headingsText).toEqual([
@@ -40,7 +43,7 @@ describe("PatternSelector", () => {
 
   it("displays the patterns in a group in correct order", async () => {
     plainRender(
-      <PatternSelector patterns={test_patterns} />,
+      <PatternSelector patterns={patterns} />,
     );
 
     // the "Base Technologies" pattern group
@@ -56,7 +59,7 @@ describe("PatternSelector", () => {
 
   it("displays only the matching patterns when using the search filter", async () => {
     const { user } = plainRender(
-      <PatternSelector patterns={test_patterns} />,
+      <PatternSelector patterns={patterns} />,
     );
 
     // enter "multimedia" into the search filter
@@ -71,5 +74,25 @@ describe("PatternSelector", () => {
     expect(within(desktopGroup).queryByRole("row", { name: /Multimedia/ })).toBeInTheDocument();
     expect(within(desktopGroup).queryByRole("row", { name: /Office Software/ })).not
       .toBeInTheDocument();
+  });
+
+  it("displays the checkbox depending whether the patter is selected", async () => {
+    const pattern = patterns.find((p) => p.name === "yast2_basis");
+    pattern.selectedBy = SelectedBy.USER;
+
+    plainRender(
+      <PatternSelector patterns={patterns} />,
+    );
+
+    // the "Base Technologies" pattern group
+    const baseGroup = await screen.findByRole("region", { name: "Base Technologies" });
+
+    const rowBasis = within(baseGroup).getByRole("row", { name: /YaST Base/ });
+    const checkboxBasis = await within(rowBasis).findByRole("checkbox");
+    expect(checkboxBasis).toBeChecked();
+
+    const rowDesktop = within(baseGroup).getByRole("row", { name: /YaST Desktop/ });
+    const checkboxDesktop = await within(rowDesktop).findByRole("checkbox");
+    expect(checkboxDesktop).not.toBeChecked();
   });
 });
