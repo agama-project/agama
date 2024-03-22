@@ -22,7 +22,7 @@ use tokio_stream::{Stream, StreamExt};
 use zbus::{
     fdo::ObjectManagerProxy,
     names::{InterfaceName, OwnedInterfaceName},
-    zvariant::{ObjectPath,OwnedObjectPath}
+    zvariant::{ObjectPath, OwnedObjectPath},
 };
 
 // TODO: move to lib
