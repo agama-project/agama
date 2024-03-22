@@ -35,9 +35,12 @@ struct SoftwareState<'a> {
     software: SoftwareClient<'a>,
 }
 
+/// Software service configuration (product, patterns, etc.).
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct SoftwareConfig {
-    patterns: Option<Vec<String>>,
+    /// A map where the keys are the patter names and the values whether they should be installed or not.
+    patterns: Option<HashMap<String, bool>>,
+    /// Name of the product to install.
     product: Option<String>,
 }
 
@@ -179,7 +182,7 @@ async fn set_config(
     }
 
     if let Some(patterns) = config.patterns {
-        state.software.select_patterns(&patterns).await?;
+        state.software.select_patterns(patterns).await?;
     }
 
     Ok(())
@@ -199,7 +202,13 @@ async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<Softw
     } else {
         Some(product)
     };
-    let patterns = state.software.user_selected_patterns().await?;
+    let patterns = state
+        .software
+        .user_selected_patterns()
+        .await?
+        .into_iter()
+        .map(|p| (p, true))
+        .collect();
     let config = SoftwareConfig {
         patterns: Some(patterns),
         product,

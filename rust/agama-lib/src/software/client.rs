@@ -120,11 +120,19 @@ impl<'a> SoftwareClient<'a> {
     }
 
     /// Selects patterns by user
-    pub async fn select_patterns(&self, patterns: &[String]) -> Result<(), ServiceError> {
-        let patterns: Vec<&str> = patterns.iter().map(AsRef::as_ref).collect();
+    pub async fn select_patterns(
+        &self,
+        patterns: HashMap<String, bool>,
+    ) -> Result<(), ServiceError> {
+        let (add, remove): (Vec<_>, Vec<_>) =
+            patterns.into_iter().partition(|(_, install)| *install);
+
+        let add: Vec<_> = add.iter().map(|(name, _)| name.as_ref()).collect();
+        let remove: Vec<_> = remove.iter().map(|(name, _)| name.as_ref()).collect();
+
         let wrong_patterns = self
             .software_proxy
-            .set_user_patterns(patterns.as_slice())
+            .set_user_patterns(add.as_slice(), remove.as_slice())
             .await?;
         if !wrong_patterns.is_empty() {
             Err(ServiceError::UnknownPatterns(wrong_patterns))
