@@ -13,21 +13,16 @@ use agama_lib::{
 use anyhow::Context;
 use axum::{
     extract::{Path, State},
-    http::StatusCode,
-    response::{IntoResponse, Response},
     routing::{get, put},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 use std::{collections::HashMap, pin::Pin};
-use thiserror::Error;
 use tokio_stream::{Stream, StreamExt};
-use zbus::zvariant::ObjectPath;
-use zbus::zvariant::OwnedObjectPath;
 use zbus::{
     fdo::ObjectManagerProxy,
     names::{InterfaceName, OwnedInterfaceName},
+    zvariant::{ObjectPath,OwnedObjectPath}
 };
 
 // TODO: move to lib
@@ -140,21 +135,6 @@ impl<'a> QuestionsClient<'a> {
     }
 }
 
-#[derive(Error, Debug)]
-pub enum QuestionsError {
-    #[error("Question service error: {0}")]
-    Error(#[from] ServiceError),
-}
-
-impl IntoResponse for QuestionsError {
-    fn into_response(self) -> Response {
-        let body = json!({
-            "error": self.to_string()
-        });
-        (StatusCode::BAD_REQUEST, Json(body)).into_response()
-    }
-}
-
 #[derive(Clone)]
 struct QuestionsState<'a> {
     questions: QuestionsClient<'a>,
@@ -168,6 +148,11 @@ pub struct Question {
 
 /// Facade of agama_lib::questions::GenericQuestion
 /// For fields details see it.
+/// Reason why it does not use directly GenericQuestion from lib
+/// is that it contain both question and answer. It works for dbus
+/// API which has both as attributes, but web API separate
+/// question and its answer. So here it is split into GenericQuestion
+/// and GenericAnswer
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct GenericQuestion {
     id: u32,
@@ -180,6 +165,11 @@ pub struct GenericQuestion {
 
 /// Facade of agama_lib::questions::WithPassword
 /// For fields details see it.
+/// Reason why it does not use directly WithPassword from lib
+/// is that it is not composition as used here, but more like
+/// child of generic question and contain reference to Base.
+/// Here for web API we want to have in json that separation that would
+/// allow to compose any possible future specialization of question
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct QuestionWithPassword {
     password: String,
@@ -248,7 +238,7 @@ pub async fn questions_stream(
 ))]
 async fn list_questions(
     State(state): State<QuestionsState<'_>>,
-) -> Result<Json<Vec<Question>>, QuestionsError> {
+) -> Result<Json<Vec<Question>>, Error> {
     Ok(Json(state.questions.questions().await?))
 }
 
@@ -265,7 +255,7 @@ async fn answer(
     State(state): State<QuestionsState<'_>>,
     Path(question_id): Path<u32>,
     Json(answer): Json<Answer>,
-) -> Result<(), QuestionsError> {
+) -> Result<(), Error> {
     state.questions.answer(question_id, answer).await?;
     Ok(())
 }
