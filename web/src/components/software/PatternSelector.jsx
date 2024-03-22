@@ -22,8 +22,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { SearchInput } from "@patternfly/react-core";
 
-import { useInstallerClient } from "~/context/installer";
-import { If, Section, Selector } from "~/components/core";
+import { Section, Selector } from "~/components/core";
 import { _ } from "~/i18n";
 import { SelectedBy } from "~/client/software";
 import { noop } from "~/utils";
@@ -85,16 +84,7 @@ function sortGroups(groups) {
   return Object.keys(groups).sort((g1, g2) => {
     const order1 = groups[g1][0].order;
     const order2 = groups[g2][0].order;
-
-    if (order1 === order2) {
-      return g1 === g2 ? 0 : (g1 < g2 ? -1 : 1);
-    }
-
-    // patterns with undefined (empty) order are always at the end
-    if (order1 === "") return 1;
-    if (order2 === "") return -1;
-
-    return order1 < order2 ? -1 : 1;
+    return order1 - order2;
   });
 }
 
@@ -150,8 +140,6 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
         <b>{pattern.summary}</b>
       </div>
       <div>{pattern.description}</div>
-      {/* eslint-disable-next-line i18next/no-literal-string */}
-      <If condition={pattern.selectedBy === SelectedBy.AUTO} then={<div>auto</div>} />
     </>
   );
 
@@ -171,7 +159,6 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
           onOptionClick={onToggle}
           optionIdKey="name"
           selectedIds={selectedIds}
-          dataItemsType="agama/software-patterns"
         />
       </Section>
     );
