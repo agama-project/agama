@@ -48,24 +48,28 @@ struct ServeArgs {
     address: String,
     #[arg(
         long,
-        default_value = "",
+        default_value = None,
         help = "Optional secondary address to listen on"
     )]
-    address2: String,
+    address2: Option<String>,
     #[arg(
         long,
-        default_value = "",
+        default_value = None,
         help = "Path to the SSL private key file in PEM format"
     )]
-    key: String,
+    key: Option<String>,
     #[arg(
         long,
-        default_value = "",
+        default_value = None,
         help = "Path to the SSL certificate file in PEM format"
     )]
-    cert: String,
+    cert: Option<String>,
     // Agama D-Bus address
-    #[arg(long, default_value = "unix:path=/run/agama/bus")]
+    #[arg(
+        long,
+        default_value = "unix:path=/run/agama/bus",
+        help = "The D-Bus address for connecting to the Agama service"
+    )]
     dbus_address: String,
 }
 
@@ -74,17 +78,17 @@ impl ServeArgs {
     fn ssl_acceptor(&self) -> Result<SslAcceptor, openssl::error::ErrorStack> {
         let mut tls_builder = SslAcceptor::mozilla_modern_v5(SslMethod::tls_server())?;
 
-        if self.cert.is_empty() && self.key.is_empty() {
+        if let (Some(cert), Some(key)) = (self.cert.clone(), self.key.clone()) {
+            tracing::info!("Loading PEM certificate: {}", cert);
+            tls_builder.set_certificate_file(PathBuf::from(cert), SslFiletype::PEM)?;
+
+            tracing::info!("Loading PEM key: {}", key);
+            tls_builder.set_private_key_file(PathBuf::from(key), SslFiletype::PEM)?;
+        } else {
             let (cert, key) = agama_server::cert::create_certificate()?;
 
             tls_builder.set_private_key(&key)?;
             tls_builder.set_certificate(&cert)?;
-        } else {
-            tracing::info!("Loading PEM certificate: {}", self.cert);
-            tls_builder.set_certificate_file(PathBuf::from(self.cert.clone()), SslFiletype::PEM)?;
-
-            tracing::info!("Loading PEM key: {}", self.key);
-            tls_builder.set_private_key_file(PathBuf::from(self.key.clone()), SslFiletype::PEM)?;
         }
 
         // check that the key belongs to the certificate
@@ -283,8 +287,8 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
 
     let mut addresses = vec![args.address];
 
-    if !args.address2.is_empty() {
-        addresses.push(args.address2);
+    if let Some(a) = args.address2 {
+        addresses.push(a)
     }
 
     let servers: Vec<_> = addresses
