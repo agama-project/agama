@@ -81,5 +81,12 @@ pub fn create_certificate() -> Result<(X509, PKey<Private>), ErrorStack> {
     builder.sign(&key, MessageDigest::sha256())?;
     let cert = builder.build();
 
+    // for debugging you might dump the certificate to a file:
+    // use std::io::Write;
+    // let mut cert_file = std::fs::File::create("agama_cert.pem").unwrap();
+    // let mut key_file = std::fs::File::create("agama_key.pem").unwrap();
+    // cert_file.write_all(cert.to_pem().unwrap().as_ref()).unwrap();
+    // key_file.write_all(key.private_key_to_pem_pkcs8().unwrap().as_ref()).unwrap();
+
     Ok((cert, key))
 }

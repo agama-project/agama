@@ -79,13 +79,6 @@ impl ServeArgs {
 
             tls_builder.set_private_key(&key)?;
             tls_builder.set_certificate(&cert)?;
-
-            // for debugging you might dump the certificate to a file:
-            // use std::io::Write;
-            // let mut cert_file = std::fs::File::create("agama_cert.pem").unwrap();
-            // let mut key_file = std::fs::File::create("agama_key.pem").unwrap();
-            // cert_file.write_all(cert.to_pem().unwrap().as_ref()).unwrap();
-            // key_file.write_all(key.private_key_to_pem_pkcs8().unwrap().as_ref()).unwrap();
         } else {
             tracing::info!("Loading PEM certificate: {}", self.cert);
             tls_builder.set_certificate_file(PathBuf::from(self.cert.clone()), SslFiletype::PEM)?;
@@ -280,6 +273,8 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
     let dbus = connection_to(&args.dbus_address).await?;
     let service = web::service(config, tx, dbus).await?;
 
+    // TODO: Move elsewhere? Use a singleton? (It would be nice to use the same
+    // generated self-signed certificate on both ports.)
     let ssl_acceptor = if let Ok(ssl_acceptor) = args.ssl_acceptor() {
         ssl_acceptor
     } else {
