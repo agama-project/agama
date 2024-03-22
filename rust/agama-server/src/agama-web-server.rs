@@ -179,18 +179,19 @@ async fn handle_https_stream(
     let mut tls_stream = SslStream::new(ssl, tcp_stream).unwrap();
     if let Err(err) = SslStream::accept(Pin::new(&mut tls_stream)).await {
         tracing::error!("Error during TSL handshake from {}: {}", addr, err);
-    }
+    } else {
+        let stream = TokioIo::new(tls_stream);
+        let hyper_service = hyper::service::service_fn(move |request: Request<Incoming>| {
+            service.clone().call(request)
+        });
 
-    let stream = TokioIo::new(tls_stream);
-    let hyper_service =
-        hyper::service::service_fn(move |request: Request<Incoming>| service.clone().call(request));
+        let ret = Builder::new(TokioExecutor::new())
+            .serve_connection_with_upgrades(stream, hyper_service)
+            .await;
 
-    let ret = Builder::new(TokioExecutor::new())
-        .serve_connection_with_upgrades(stream, hyper_service)
-        .await;
-
-    if let Err(err) = ret {
-        tracing::error!("Error serving connection from {}: {}", addr, err);
+        if let Err(err) = ret {
+            tracing::error!("Error serving connection from {}: {}", addr, err);
+        }
     }
 }
 
