@@ -165,10 +165,12 @@ storage:
     - mount_path: "swap"
       filesystem: swap
       size:
-        auto: false
-        min: 1 GiB
-        max: 2 GiB
+        auto: true
       outline:
+        auto_size:
+          base_min: 1 GiB
+          base_max: 2 GiB
+          adjust_by_ram: true
         required: false
         filesystems:
           - swap
