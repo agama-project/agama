@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 02:05+0000\n"
+"POT-Creation-Date: 2024-03-21 02:06+0000\n"
 "PO-Revision-Date: 2024-03-04 15:43+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
@@ -63,6 +63,7 @@ msgstr "若想了解更多信息，请从 %s 访问项目仓库。"
 #: src/components/core/Terminal.jsx:48
 #: src/components/network/WifiSelector.jsx:151
 #: src/components/product/ProductPage.jsx:239
+#: src/components/storage/ProposalActionsDialog.jsx:96
 msgid "Close"
 msgstr "关闭"
 
@@ -144,9 +145,10 @@ msgstr "尝试开始安装时发现问题。请查看已报告的错误后重试
 #: src/components/product/ProductPage.jsx:71
 #: src/components/product/ProductPage.jsx:140
 #: src/components/product/ProductPage.jsx:207
-#: src/components/storage/ProposalDeviceSection.jsx:169
-#: src/components/storage/ProposalDeviceSection.jsx:364
-#: src/components/storage/ProposalSettingsSection.jsx:263
+#: src/components/storage/ProposalDeviceSection.jsx:173
+#: src/components/storage/ProposalDeviceSection.jsx:372
+#: src/components/storage/ProposalSettingsSection.jsx:262
+#: src/components/storage/ProposalSpacePolicyField.jsx:547
 #: src/components/storage/ProposalVolumes.jsx:152
 #: src/components/storage/ProposalVolumes.jsx:287
 #: src/components/storage/ZFCPPage.jsx:511
@@ -806,7 +808,7 @@ msgid "Software"
 msgstr "软件"
 
 #: src/components/overview/StorageSection.jsx:42
-#: src/components/storage/ProposalDeviceSection.jsx:129
+#: src/components/storage/ProposalDeviceSection.jsx:133
 msgid "No device selected yet"
 msgstr "尚未选择设备"
 
@@ -842,10 +844,10 @@ msgstr "使用设备 %s 安装"
 msgid "Probing storage devices"
 msgstr "正在探测存储设备"
 
-#. TRANSLATORS: page title
+#. TRANSLATORS: Storage page title
 #. TRANSLATORS: page section title
 #: src/components/overview/StorageSection.jsx:208
-#: src/components/storage/ProposalPage.jsx:243
+#: src/components/storage/ProposalPage.jsx:221
 msgid "Storage"
 msgstr "存储"
 
@@ -1064,7 +1066,8 @@ msgstr "状态"
 
 #. TRANSLATORS: The storage "Device" section's title
 #: src/components/storage/DASDTable.jsx:66
-#: src/components/storage/ProposalDeviceSection.jsx:423
+#: src/components/storage/ProposalDeviceSection.jsx:431
+#: src/components/storage/ProposalResultSection.jsx:192
 msgid "Device"
 msgstr "设备"
 
@@ -1140,14 +1143,14 @@ msgid "Storage iSCSI"
 msgstr "存储 iSCSI"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
-#: src/components/storage/ProposalActionsSection.jsx:70
+#: src/components/storage/ProposalActionsDialog.jsx:67
 #, c-format
 msgid "Hide %d subvolume action"
 msgid_plural "Hide %d subvolume actions"
 msgstr[0] "隐藏 %d 个子卷操作"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
-#: src/components/storage/ProposalActionsSection.jsx:72
+#: src/components/storage/ProposalActionsDialog.jsx:69
 #, c-format
 msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
@@ -1156,80 +1159,71 @@ msgstr[0] "显示 %d 个子卷操作"
 #. TRANSLATORS: The storage "Planned Actions" section's title. The
 #. section shows a list of planned actions for the selected device, e.g.
 #. "delete partition A", "create partition B with filesystem C", ...
-#: src/components/storage/ProposalActionsSection.jsx:124
+#: src/components/storage/ProposalActionsDialog.jsx:76
 msgid "Planned Actions"
 msgstr "计划执行的操作"
 
-#. TRANSLATORS: The storage "Planned Actions" section's description
-#: src/components/storage/ProposalActionsSection.jsx:126
-msgid "Actions to create the file systems and to ensure the new system boots."
-msgstr "创建文件系统并确保新系统启动的操作。"
-
-#: src/components/storage/ProposalDeviceSection.jsx:135
+#: src/components/storage/ProposalDeviceSection.jsx:139
 msgid "Waiting for information about selected device"
 msgstr "正在等待已选择设备的信息"
 
-#: src/components/storage/ProposalDeviceSection.jsx:138
+#: src/components/storage/ProposalDeviceSection.jsx:142
 msgid "Select the device for installing the system."
 msgstr "选择要进行系统安装的设备。"
 
-#: src/components/storage/ProposalDeviceSection.jsx:143
 #: src/components/storage/ProposalDeviceSection.jsx:147
-#: src/components/storage/ProposalDeviceSection.jsx:245
+#: src/components/storage/ProposalDeviceSection.jsx:151
+#: src/components/storage/ProposalDeviceSection.jsx:249
 msgid "Installation device"
 msgstr "安装设备"
 
-#: src/components/storage/ProposalDeviceSection.jsx:153
+#: src/components/storage/ProposalDeviceSection.jsx:157
 msgid "No devices found."
 msgstr "未找到设备。"
 
-#: src/components/storage/ProposalDeviceSection.jsx:242
+#: src/components/storage/ProposalDeviceSection.jsx:246
 msgid "Devices for creating the volume group"
 msgstr "用于创建卷组的设备"
 
-#: src/components/storage/ProposalDeviceSection.jsx:251
+#: src/components/storage/ProposalDeviceSection.jsx:255
 msgid "Custom devices"
 msgstr "自定义设备"
 
-#: src/components/storage/ProposalDeviceSection.jsx:315
+#: src/components/storage/ProposalDeviceSection.jsx:323
 msgid ""
 "Configuration of the system volume group. All the file systems will be "
 "created in a logical volume of the system volume group."
 msgstr "系统卷组的设置。所有文件系统将创建于系统卷组下的逻辑卷中。"
 
-#: src/components/storage/ProposalDeviceSection.jsx:321
+#: src/components/storage/ProposalDeviceSection.jsx:329
 msgid "Configure the LVM settings"
 msgstr "配置 LVM 设定"
 
-#: src/components/storage/ProposalDeviceSection.jsx:326
-#: src/components/storage/ProposalDeviceSection.jsx:346
+#: src/components/storage/ProposalDeviceSection.jsx:334
+#: src/components/storage/ProposalDeviceSection.jsx:354
 msgid "LVM settings"
 msgstr "LVM 设定"
 
-#: src/components/storage/ProposalDeviceSection.jsx:333
+#: src/components/storage/ProposalDeviceSection.jsx:341
 msgid "Waiting for information about LVM"
 msgstr "正在等待 LVM 信息"
 
-#: src/components/storage/ProposalDeviceSection.jsx:339
+#: src/components/storage/ProposalDeviceSection.jsx:347
 msgid "Use logical volume management (LVM)"
 msgstr "使用逻辑卷管理（LVM）"
 
-#: src/components/storage/ProposalDeviceSection.jsx:347
+#: src/components/storage/ProposalDeviceSection.jsx:355
 msgid "System Volume Group"
 msgstr "系统卷组"
 
 #. TRANSLATORS: The storage "Device" sections's description. Do not
 #. translate 'abbr' and 'title', they are part of the HTML markup.
-#: src/components/storage/ProposalDeviceSection.jsx:414
+#: src/components/storage/ProposalDeviceSection.jsx:422
 msgid ""
 "Select the main disk or <abbr title='Logical Volume Manager'>LVM</abbr> "
 "Volume Group for installation."
 msgstr ""
 "选择主磁盘或 <abbr title='Logical Volume Manager'>LVM</abbr> 卷组进行安装。"
-
-#: src/components/storage/ProposalFileSystemsSection.jsx:70
-msgid "File systems"
-msgstr "文件系统"
 
 #: src/components/storage/ProposalPageMenu.jsx:40
 msgid "Manage and format"
@@ -1251,10 +1245,76 @@ msgstr "连接到 iSCSI 目标"
 msgid "iSCSI"
 msgstr "iSCSI"
 
+#: src/components/storage/ProposalResultSection.jsx:55
+#, c-format
+msgid "There is %d destructive action planned"
+msgid_plural "There are %d destructive actions planned"
+msgstr[0] ""
+
+#: src/components/storage/ProposalResultSection.jsx:73
+#, fuzzy
+msgid "Affecting"
+msgstr "正在连接"
+
+#: src/components/storage/ProposalResultSection.jsx:95
+#, fuzzy
+msgid "Check all planned actions"
+msgstr "计划执行的操作"
+
+#: src/components/storage/ProposalResultSection.jsx:130
+#, fuzzy
+msgid "New"
+msgstr "网络"
+
+#: src/components/storage/ProposalResultSection.jsx:135
+#, fuzzy
+msgid "Unused space"
+msgstr "查找空间"
+
+#. TRANSLATORS: Label to indicate the device size before resizing, where %s is replaced by
+#. the original size (e.g., 3.00 GiB).
+#: src/components/storage/ProposalResultSection.jsx:172
+#, fuzzy, c-format
+msgid "Before %s"
+msgstr "软件 %s"
+
+#: src/components/storage/ProposalResultSection.jsx:193
+#, fuzzy
+msgid "Mount Point"
+msgstr "挂载点"
+
+#: src/components/storage/ProposalResultSection.jsx:194
+#: src/components/storage/ProposalSpacePolicyField.jsx:99
+#: src/components/storage/ProposalVolumes.jsx:312
+msgid "Details"
+msgstr "细节"
+
+#: src/components/storage/ProposalResultSection.jsx:195
+#: src/components/storage/ProposalSpacePolicyField.jsx:100
+#: src/components/storage/ProposalVolumes.jsx:313
+#: src/components/storage/VolumeForm.jsx:745
+msgid "Size"
+msgstr "大小"
+
+#: src/components/storage/ProposalResultSection.jsx:271
+#, c-format
+msgid ""
+"During installation, %d action will be performed to configure the system as "
+"displayed below"
+msgid_plural ""
+"During installation, %d actions will be performed to configure the system as "
+"displayed below"
+msgstr[0] ""
+
+#. TRANSLATORS: The storage "Result" section's title
+#: src/components/storage/ProposalResultSection.jsx:279
+msgid "Result"
+msgstr ""
+
 #. TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
 #. 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
 #. Do not translate 'abbr' and 'title', they are part of the HTML markup.
-#: src/components/storage/ProposalSettingsSection.jsx:87
+#: src/components/storage/ProposalSettingsSection.jsx:88
 msgid ""
 "The password will not be needed to boot and access the data if the <abbr "
 "title='Trusted Platform Module'>TPM</abbr> can verify the integrity of the "
@@ -1264,11 +1324,11 @@ msgstr ""
 "若 <abbr title='Trusted Platform Module'>TPM</abbr> 可以验证系统的完整性，启"
 "动和访问数据的时候将无需密码。 TPM 密封要求新系统在首次运行时直接引导。"
 
-#: src/components/storage/ProposalSettingsSection.jsx:105
+#: src/components/storage/ProposalSettingsSection.jsx:106
 msgid "Use the TPM to decrypt automatically on each boot"
 msgstr "使用 TPM 在每次启动时自动解密"
 
-#: src/components/storage/ProposalSettingsSection.jsx:148
+#: src/components/storage/ProposalSettingsSection.jsx:147
 msgid ""
 "Uses Btrfs for the root file system allowing to boot to a previous version "
 "of the system after configuration changes or software upgrades."
@@ -1276,162 +1336,168 @@ msgstr ""
 "使用 Btrfs 作为根文件系统，可以允许配置被改变或软件更新后回退启动到先前版本的"
 "系统。"
 
-#: src/components/storage/ProposalSettingsSection.jsx:155
+#: src/components/storage/ProposalSettingsSection.jsx:154
 msgid "Use Btrfs Snapshots"
 msgstr "使用 Btrfs 快照"
 
-#: src/components/storage/ProposalSettingsSection.jsx:227
+#: src/components/storage/ProposalSettingsSection.jsx:226
 msgid "Change encryption settings"
 msgstr "更改加密设置"
 
-#: src/components/storage/ProposalSettingsSection.jsx:232
-#: src/components/storage/ProposalSettingsSection.jsx:253
+#: src/components/storage/ProposalSettingsSection.jsx:231
+#: src/components/storage/ProposalSettingsSection.jsx:252
 msgid "Encryption settings"
 msgstr "加密设置"
 
-#: src/components/storage/ProposalSettingsSection.jsx:246
+#: src/components/storage/ProposalSettingsSection.jsx:245
 msgid "Use encryption"
 msgstr "使用加密"
 
-#: src/components/storage/ProposalSettingsSection.jsx:309
+#: src/components/storage/ProposalSettingsSection.jsx:328
 msgid "Settings"
 msgstr "设置"
 
-#: src/components/storage/ProposalSpacePolicySection.jsx:50
+#: src/components/storage/ProposalSpacePolicyField.jsx:50
 msgid "Delete current content"
 msgstr "删除当前内容"
 
-#: src/components/storage/ProposalSpacePolicySection.jsx:51
+#: src/components/storage/ProposalSpacePolicyField.jsx:51
 msgid "All partitions will be removed and any data in the disks will be lost."
 msgstr "所有分区将被移除，磁盘上的数据将丢失。"
 
-#: src/components/storage/ProposalSpacePolicySection.jsx:55
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space deleting all content[...]"
+#: src/components/storage/ProposalSpacePolicyField.jsx:55
+msgid "deleting all content of the installation device"
+msgstr ""
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space deleting all content[...]"
+#: src/components/storage/ProposalSpacePolicyField.jsx:58
+#, c-format
+msgid "deleting all content of the %d selected disks"
+msgstr ""
+
+#: src/components/storage/ProposalSpacePolicyField.jsx:63
 msgid "Shrink existing partitions"
 msgstr "缩小现有分区"
 
-#: src/components/storage/ProposalSpacePolicySection.jsx:56
+#: src/components/storage/ProposalSpacePolicyField.jsx:64
 msgid "The data is kept, but the current partitions will be resized as needed."
 msgstr "数据将被保留，但当前分区的大小将会按需调整。"
 
-#: src/components/storage/ProposalSpacePolicySection.jsx:60
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space shrinking partitions[...]"
+#: src/components/storage/ProposalSpacePolicyField.jsx:68
+msgid "shrinking partitions of the installation device"
+msgstr ""
+
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space shrinking partitions[...]"
+#: src/components/storage/ProposalSpacePolicyField.jsx:71
+#, c-format
+msgid "shrinking partitions of the %d selected disks"
+msgstr ""
+
+#: src/components/storage/ProposalSpacePolicyField.jsx:76
 msgid "Use available space"
 msgstr "使用可用空间"
 
-#: src/components/storage/ProposalSpacePolicySection.jsx:61
+#: src/components/storage/ProposalSpacePolicyField.jsx:77
 msgid ""
 "The data is kept. Only the space not assigned to any partition will be used."
 msgstr "数据将被保留。仅使用未分配给任何分区的空间。"
 
-#: src/components/storage/ProposalSpacePolicySection.jsx:65
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space without modifying any partition".
+#: src/components/storage/ProposalSpacePolicyField.jsx:81
+#, fuzzy
+msgid "without modifying any partition"
+msgstr "使用设备 %s 进行安装且不修改已存在的分区"
+
+#: src/components/storage/ProposalSpacePolicyField.jsx:86
 msgid "Custom"
 msgstr "自定义"
 
-#: src/components/storage/ProposalSpacePolicySection.jsx:66
+#: src/components/storage/ProposalSpacePolicyField.jsx:87
 msgid "Select what to do with each partition."
 msgstr "选择对每个分区执行的操作。"
 
-#: src/components/storage/ProposalSpacePolicySection.jsx:72
+#. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+#. would read as "Find space performing a custom set of actions".
+#: src/components/storage/ProposalSpacePolicyField.jsx:91
+msgid "performing a custom set of actions"
+msgstr ""
+
+#: src/components/storage/ProposalSpacePolicyField.jsx:98
 msgid "Used device"
 msgstr "已使用的设备"
 
-#: src/components/storage/ProposalSpacePolicySection.jsx:73
-msgid "Current content"
-msgstr "当前内容"
+#: src/components/storage/ProposalSpacePolicyField.jsx:101
+#, fuzzy
+msgid "Size details"
+msgstr "隐藏细节"
 
-#: src/components/storage/ProposalSpacePolicySection.jsx:74
-#: src/components/storage/ProposalVolumes.jsx:313
-#: src/components/storage/VolumeForm.jsx:745
-msgid "Size"
-msgstr "大小"
-
-#: src/components/storage/ProposalSpacePolicySection.jsx:75
-#: src/components/storage/ProposalVolumes.jsx:312
-msgid "Details"
-msgstr "细节"
-
-#: src/components/storage/ProposalSpacePolicySection.jsx:76
+#: src/components/storage/ProposalSpacePolicyField.jsx:102
 msgid "Action"
 msgstr "操作"
 
-#. TRANSLATORS: %s is replaced by partition table type (e.g., GPT)
-#: src/components/storage/ProposalSpacePolicySection.jsx:110
-#, c-format
-msgid "%s partition table"
-msgstr "%s 分区表"
-
-#: src/components/storage/ProposalSpacePolicySection.jsx:121
-msgid "EFI system partition"
-msgstr "EFI 系统分区"
-
-#. TRANSLATORS: %s is replaced by a file system type (e.g., btrfs).
-#: src/components/storage/ProposalSpacePolicySection.jsx:124
-#, c-format
-msgid "%s file system"
-msgstr "%s 文件系统"
-
-#. TRANSLATORS: %s is replaced by a LVM volume group name (e.g., /dev/vg0).
-#: src/components/storage/ProposalSpacePolicySection.jsx:131
-#, c-format
-msgid "LVM physical volume of %s"
-msgstr "%s 中的 LVM 逻辑卷"
-
-#. TRANSLATORS: %s is replaced by a RAID name (e.g., /dev/md0).
-#: src/components/storage/ProposalSpacePolicySection.jsx:134
-#, c-format
-msgid "Member of RAID %s"
-msgstr "RAID %s 的成员"
-
-#: src/components/storage/ProposalSpacePolicySection.jsx:136
-msgid "Not identified"
-msgstr "未识别"
-
 #. TRANSLATORS: %s is replaced by a disk size (e.g., 20 GiB)
-#: src/components/storage/ProposalSpacePolicySection.jsx:173
+#: src/components/storage/ProposalSpacePolicyField.jsx:156
 #, c-format
 msgid "%s unused"
 msgstr "%s 未使用空间"
 
 #. TRANSLATORS: %s is replaced by a disk size (e.g., 2 GiB)
-#: src/components/storage/ProposalSpacePolicySection.jsx:186
+#: src/components/storage/ProposalSpacePolicyField.jsx:164
 #, c-format
 msgid "Shrinkable by %s"
 msgstr "可缩小 %s"
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., /dev/sda)
-#: src/components/storage/ProposalSpacePolicySection.jsx:221
+#: src/components/storage/ProposalSpacePolicyField.jsx:197
 #, c-format
 msgid "Space action selector for %s"
 msgstr "%s 的空间操作选择器"
 
-#: src/components/storage/ProposalSpacePolicySection.jsx:224
+#: src/components/storage/ProposalSpacePolicyField.jsx:200
 #: src/components/storage/ProposalVolumes.jsx:233
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
 msgid "Delete"
 msgstr "删除"
 
-#: src/components/storage/ProposalSpacePolicySection.jsx:228
+#: src/components/storage/ProposalSpacePolicyField.jsx:204
 msgid "Allow resize"
 msgstr "允许调整大小"
 
-#: src/components/storage/ProposalSpacePolicySection.jsx:230
+#: src/components/storage/ProposalSpacePolicyField.jsx:206
 msgid "Do not modify"
 msgstr "不要修改"
 
-#: src/components/storage/ProposalSpacePolicySection.jsx:382
+#: src/components/storage/ProposalSpacePolicyField.jsx:370
 msgid "Actions to find space"
 msgstr "查找空间的操作"
 
-#. TRANSLATORS: The storage "Find Space" section's title
-#: src/components/storage/ProposalSpacePolicySection.jsx:452
-msgid "Find Space"
-msgstr "查找空间"
+#: src/components/storage/ProposalSpacePolicyField.jsx:516
+#, fuzzy
+msgid "Waiting for information about how to find space"
+msgstr "正在等待已选择设备的信息"
 
-#. TRANSLATORS: The storage "Find space" sections's description
-#: src/components/storage/ProposalSpacePolicySection.jsx:454
+#: src/components/storage/ProposalSpacePolicyField.jsx:519
 msgid ""
 "Allocating the file systems might need to find free space in the devices "
 "listed below. Choose how to do it."
 msgstr "若要分配文件系统，或许需要在下列设备中找到可用空间。选择如何操作。"
+
+#. TRANSLATORS: To be completed with the rest of a sentence like "deleting all content"
+#: src/components/storage/ProposalSpacePolicyField.jsx:525
+#, fuzzy
+msgid "Find space"
+msgstr "查找空间"
+
+#: src/components/storage/ProposalSpacePolicyField.jsx:530
+msgid "Find Space"
+msgstr "查找空间"
 
 #: src/components/storage/ProposalTransactionalInfo.jsx:46
 #, fuzzy
@@ -1527,6 +1593,10 @@ msgstr "挂载点"
 #: src/components/storage/ProposalVolumes.jsx:349
 msgid "Table with mount points"
 msgstr "挂载点列表"
+
+#: src/components/storage/ProposalVolumes.jsx:412
+msgid "File systems to create in your system"
+msgstr ""
 
 #: src/components/storage/VolumeForm.jsx:102
 msgid "Select a value"
@@ -1984,23 +2054,23 @@ msgstr "发现"
 msgid "Targets"
 msgstr "目标"
 
-#: src/components/storage/utils.js:49
+#: src/components/storage/utils.js:51
 msgid "KiB"
 msgstr "KiB"
 
-#: src/components/storage/utils.js:50
+#: src/components/storage/utils.js:52
 msgid "MiB"
 msgstr "MiB"
 
-#: src/components/storage/utils.js:51
+#: src/components/storage/utils.js:53
 msgid "GiB"
 msgstr "GiB"
 
-#: src/components/storage/utils.js:52
+#: src/components/storage/utils.js:54
 msgid "TiB"
 msgstr "TiB"
 
-#: src/components/storage/utils.js:53
+#: src/components/storage/utils.js:55
 msgid "PiB"
 msgstr "PiB"
 
@@ -2169,6 +2239,38 @@ msgstr "用户"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "Root 认证"
+
+#~ msgid ""
+#~ "Actions to create the file systems and to ensure the new system boots."
+#~ msgstr "创建文件系统并确保新系统启动的操作。"
+
+#~ msgid "File systems"
+#~ msgstr "文件系统"
+
+#~ msgid "Current content"
+#~ msgstr "当前内容"
+
+#, c-format
+#~ msgid "%s partition table"
+#~ msgstr "%s 分区表"
+
+#~ msgid "EFI system partition"
+#~ msgstr "EFI 系统分区"
+
+#, c-format
+#~ msgid "%s file system"
+#~ msgstr "%s 文件系统"
+
+#, c-format
+#~ msgid "LVM physical volume of %s"
+#~ msgstr "%s 中的 LVM 逻辑卷"
+
+#, c-format
+#~ msgid "Member of RAID %s"
+#~ msgstr "RAID %s 的成员"
+
+#~ msgid "Not identified"
+#~ msgstr "未识别"
 
 #~ msgid "Btrfs snapshots required by product."
 #~ msgstr "该产品要求启用 Btrfs 快照。"
