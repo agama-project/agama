@@ -22,8 +22,8 @@
 // @ts-check
 // cspell:ignore ptable
 
-import DBusClient from "./dbus";
 import { compact, hex, uniq } from "~/utils";
+import DBusClient from "./dbus";
 import { WithIssues, WithStatus, WithProgress } from "./mixins";
 
 const STORAGE_OBJECT = "/org/opensuse/Agama/Storage1";
