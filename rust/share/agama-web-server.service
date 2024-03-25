@@ -1,0 +1,14 @@
+[Unit]
+Description=Agama Web Server
+After=network-online.target
+Requires=agama.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/agama-web-server serve --address 0.0.0.0:80 --generate-token /run/agama/token
+PIDFile=/run/agama/web.pid
+User=root
+TimeoutStopSec=5
+
+[Install]
+WantedBy=default.target
