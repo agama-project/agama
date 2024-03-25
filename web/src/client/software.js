@@ -273,8 +273,8 @@ class SoftwareBaseClient {
  */
 class SoftwareClient extends WithIssues(
   WithProgress(
-    WithStatus(SoftwareBaseClient, "software/status", SOFTWARE_SERVICE),
-    "software/progress",
+    WithStatus(SoftwareBaseClient, "/software/status", SOFTWARE_SERVICE),
+    "/software/progress",
     SOFTWARE_SERVICE,
   ),
   "software/issues/software",
