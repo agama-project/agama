@@ -24,7 +24,7 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceSize } from '~/components/storage/utils';
 import { Icon } from "~/components/layout";
-import { If, ExpandableSelector } from "~/components/core";
+import { If, ExpandableSelector, Tag } from "~/components/core";
 
 /**
  * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
@@ -49,32 +49,39 @@ const DeviceContent = ({ device }) => {
     );
   };
 
+  const FilesystemLabel = () => {
+    const label = device.filesystem?.label;
+    if (label) return <Tag variant="gray-highlight"><b>{label}</b></Tag>;
+  };
+
   const Systems = () => {
     if (device.systems.length === 0) return null;
 
     const System = ({ system }) => {
       const logo = /windows/i.test(system) ? "windows_logo" : "linux_logo";
 
-      return <div><Icon name={logo} size="14" /> {system}</div>;
+      return <div><Icon name={logo} size="14" /> {system} <FilesystemLabel /></div>;
     };
 
     return device.systems.map((s, i) => <System key={i} system={s} />);
   };
 
-  const NotFound = () => {
-    // TRANSLATORS: status message, no existing content was found on the disk,
-    // i.e. the disk is completely empty
-    return <div><Icon name="folder_off" size="14" /> {_("No content found")}</div>;
+  const Description = () => {
+    if (device.partitionTable) return null;
+    if (!device.sid) return _("Unused space");
+
+    return <div>{device.description} <FilesystemLabel /></div>;
   };
 
-  const hasContent = device.partitionTable || device.systems?.length > 0;
+  const hasSystems = device.systems?.length > 0;
 
   return (
     <div>
+      <PTable />
       <If
-        condition={hasContent}
-        then={<><PTable /><Systems /></>}
-        else={<NotFound />}
+        condition={hasSystems}
+        then={<Systems />}
+        else={<Description />}
       />
     </div>
   );
