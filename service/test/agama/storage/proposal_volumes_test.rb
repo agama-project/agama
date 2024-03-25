@@ -83,10 +83,13 @@ describe Agama::Storage::Proposal do
   end
 
   let(:y2storage_proposal) do
-    instance_double(Y2Storage::MinGuidedProposal, propose: true, failed?: false)
+    instance_double(Y2Storage::MinGuidedProposal,
+      propose: true, failed?: false, settings: y2storage_settings, planned_devices: [])
   end
 
   let(:vol_builder) { Agama::Storage::VolumeTemplatesBuilder.new_from_config(config) }
+
+  let(:y2storage_settings) { Y2Storage::ProposalSettings.new }
 
   # Constructs a Agama volume with the given set of attributes
   #
@@ -113,7 +116,7 @@ describe Agama::Storage::Proposal do
   # 'y2storage_proposal'
   #
   # @param specs [Hash] arguments to check on each VolumeSpecification object
-  def expect_proposal_with_expects(*specs)
+  def expect_proposal_with_specs(*specs)
     expect(Y2Storage::MinGuidedProposal).to receive(:new) do |**args|
       expect(args[:settings]).to be_a(Y2Storage::ProposalSettings)
       expect(args[:settings].volumes).to all(be_a(Y2Storage::VolumeSpecification))
@@ -130,11 +133,14 @@ describe Agama::Storage::Proposal do
 
     describe "#calculate" do
       before do
+        allow(Y2Storage::StorageManager.instance)
+          .to receive(:proposal).and_return(y2storage_proposal)
+
         allow(Y2Storage::StorageManager.instance).to receive(:proposal=)
       end
 
       it "runs the Y2Storage proposal with the correct set of VolumeSpecification" do
-        expect_proposal_with_expects(
+        expect_proposal_with_specs(
           {
             mount_point: "/", proposed: true, snapshots: false,
             ignore_fallback_sizes: false, ignore_snapshots_sizes: false,
@@ -168,11 +174,14 @@ describe Agama::Storage::Proposal do
 
     describe "#calculate" do
       before do
+        allow(Y2Storage::StorageManager.instance)
+          .to receive(:proposal).and_return(y2storage_proposal)
+
         allow(Y2Storage::StorageManager.instance).to receive(:proposal=)
       end
 
       it "runs the Y2Storage proposal with the correct set of VolumeSpecification" do
-        expect_proposal_with_expects(
+        expect_proposal_with_specs(
           {
             mount_point: "/", proposed: true, snapshots: true,
             ignore_fallback_sizes: false, ignore_snapshots_sizes: false,
@@ -207,11 +216,14 @@ describe Agama::Storage::Proposal do
 
     describe "#calculate" do
       before do
+        allow(Y2Storage::StorageManager.instance)
+          .to receive(:proposal).and_return(y2storage_proposal)
+
         allow(Y2Storage::StorageManager.instance).to receive(:proposal=)
       end
 
       it "runs the Y2Storage proposal with the correct set of VolumeSpecification" do
-        expect_proposal_with_expects(
+        expect_proposal_with_specs(
           {
             mount_point: "/", proposed: true, snapshots: true,
             ignore_fallback_sizes: false, ignore_snapshots_sizes: false,
@@ -246,11 +258,14 @@ describe Agama::Storage::Proposal do
 
     describe "#calculate" do
       before do
+        allow(Y2Storage::StorageManager.instance)
+          .to receive(:proposal).and_return(y2storage_proposal)
+
         allow(Y2Storage::StorageManager.instance).to receive(:proposal=)
       end
 
       it "runs the Y2Storage proposal with the correct set of VolumeSpecification" do
-        expect_proposal_with_expects(
+        expect_proposal_with_specs(
           { mount_point: "/", proposed: true },
           { mount_point: "/two", proposed: false },
           {
@@ -288,11 +303,14 @@ describe Agama::Storage::Proposal do
 
     describe "#calculate" do
       before do
+        allow(Y2Storage::StorageManager.instance)
+          .to receive(:proposal).and_return(y2storage_proposal)
+
         allow(Y2Storage::StorageManager.instance).to receive(:proposal=)
       end
 
       it "runs the Y2Storage proposal with the correct set of VolumeSpecification" do
-        expect_proposal_with_expects(
+        expect_proposal_with_specs(
           {
             mount_point: "/", proposed: true, snapshots: false,
             ignore_fallback_sizes: true, ignore_snapshots_sizes: true,
