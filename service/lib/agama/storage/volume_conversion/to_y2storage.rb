@@ -25,14 +25,14 @@ require "agama/storage/volume"
 module Agama
   module Storage
     module VolumeConversion
-      # Volume conversion to Y2Storage format.
+      # Volume conversion to Y2Storage.
       class ToY2Storage
         # @param volume [Agama::Storage::Volume]
         def initialize(volume)
           @volume = volume
         end
 
-        # Performs the conversion to Y2Storage format.
+        # Performs the conversion to Y2Storage.
         #
         # @return [Y2Storage::VolumeSpecification]
         def convert # rubocop:disable Metrics/AbcSize

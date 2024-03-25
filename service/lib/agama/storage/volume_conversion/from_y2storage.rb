@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,91 +20,51 @@
 # find current contact information at www.suse.com.
 
 require "y2storage/storage_manager"
-require "agama/storage/volume_templates_builder"
 
 module Agama
   module Storage
     module VolumeConversion
-      # Volume conversion from Y2Storage format.
+      # Volume conversion from Y2Storage.
+      #
+      # @note This class does not perform a real conversion from Y2Storage. Instead of that, it
+      #   copies the given volume and recovers some values from Y2Storage.
       class FromY2Storage
-        # @param spec [Y2Storage::VolumeSpecification]
-        # @param config [Agama::Config]
-        def initialize(spec, config:)
-          @spec = spec
-          @config = config
+        # @param volume [Agama::Storage::ProposalSettings]
+        def initialize(volume)
+          @volume = volume
         end
 
-        # Performs the conversion from Y2Storage format.
+        # Performs the conversion from Y2Storage.
         #
         # @return [Agama::Storage::Volume]
         def convert
-          volume = VolumeTemplatesBuilder.new_from_config(config).for(spec.mount_point || "")
-
-          volume.tap do |target|
-            target.mount_options = spec.mount_options
-            target.fs_type = spec.fs_type
-
+          volume.dup.tap do |target|
             sizes_conversion(target)
-            btrfs_conversion(target)
-            location_conversion(target)
           end
         end
 
       private
 
-        # @return [Y2Storage::VolumeSpecification]
-        attr_reader :spec
-
-        # @return [Agama::Config]
-        attr_reader :config
+        # @return [Agama::Storage::ProposalSettings]
+        attr_reader :volume
 
         # @param target [Agama::Storage::Volume]
         def sizes_conversion(target)
-          target.auto_size = auto_size?
-
-          # The volume specification contains the min and max sizes for the volume. But the final
-          # range of sizes used by the Y2Storage proposal depends on the fallback sizes (if this
-          # volume is fallback for other volume) and the size for snapshots (if snapshots is
-          # active). The planned device contains the real range of sizes used by the proposal.
+          # The final range of sizes used by the Y2Storage proposal depends on the fallback sizes
+          # (if this volume is fallback for other volume) and the size for snapshots (if snapshots
+          # is active). The planned device contains the real range of sizes used by the proposal.
           #
           # From Agama point of view, this is the way of recovering the range of sizes used by
           # Y2Storage when a volume is set to have auto size.
-          planned = planned_device_for(spec.mount_point)
-          target.min_size = planned&.min || spec.min_size
-          target.max_size = planned&.max || spec.max_size
-        end
+          planned = planned_device_for(target.mount_path)
+          return unless planned
 
-        # @see #sizes_conversion
-        #
-        # @return [Boolean]
-        def auto_size?
-          # The three ignore_xxx attributes (ignore_snapshots_sizes, ignore_fallback_sizes and
-          # ignore_adjust_by_ram) are always in sync and always initialized to the inverse of
-          # #auto_size
-          !spec.ignore_fallback_sizes?
-        end
-
-        # @param target [Agama::Storage::Volume]
-        def btrfs_conversion(target)
-          target.btrfs.snapshots = spec.snapshots?
-          target.btrfs.subvolumes = spec.subvolumes
-          target.btrfs.default_subvolume = spec.btrfs_default_subvolume
-          target.btrfs.read_only = spec.btrfs_read_only
-        end
-
-        # @param target [Agama::Storage::Volume]
-        def location_conversion(target)
-          if spec.reuse?
-            target.location.target = spec.reformat? ? :device : :filesystem
-            target.location.device = spec.reuse_name
-          elsif !!spec.device
-            target.location.target = spec.separate_vg? ? :new_vg : :new_partition
-            target.location.device = spec.device
-          end
+          target.min_size = planned.min
+          target.max_size = planned.max
         end
 
         # Planned device for the given mount path.
-
+        #
         # @param mount_path [String]
         # @return [Y2Storage::Planned::Device, nil]
         def planned_device_for(mount_path)
