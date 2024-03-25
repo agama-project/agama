@@ -207,8 +207,14 @@ module Agama
         return if missing.none?
 
         Issue.new(
-          format(_("The following selected devices are not found in the system: %{devices}"),
-            devices: missing.join(", ")),
+          format(
+            n_(
+              "The following selected device is not found in the system: %{devices}",
+              "The following selected devices are not found in the system: %{devices}",
+              missing.size
+            ),
+            devices: missing.join(", ")
+          ),
           source:   Issue::Source::CONFIG,
           severity: Issue::Severity::ERROR
         )

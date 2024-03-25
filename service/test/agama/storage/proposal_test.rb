@@ -246,6 +246,10 @@ describe Agama::Storage::Proposal do
           )
 
           expect(subject.issues).to_not include(
+            an_object_having_attributes(description: /is not found/)
+          )
+
+          expect(subject.issues).to_not include(
             an_object_having_attributes(description: /are not found/)
           )
         end
@@ -258,7 +262,7 @@ describe Agama::Storage::Proposal do
           subject.calculate(settings)
 
           expect(subject.issues).to include(
-            an_object_having_attributes(description: /are not found/)
+            an_object_having_attributes(description: /is not found/)
           )
         end
       end
