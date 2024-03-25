@@ -1,0 +1,39 @@
+#!/usr/bin/env sh
+
+FIREFOX_PROFILE=$HOME/.mozilla/firefox/profile
+COOKIES_DB=$FIREFOX_PROFILE/cookies.sqlite
+TOKEN_FILE=/run/agama/token
+
+if [ ! -f $COOKIES_DB ]; then
+  mkdir -p $FIREFOX_PROFILE
+  sqlite3 $COOKIES_DB "CREATE TABLE moz_cookies (
+    id INTEGER PRIMARY KEY,
+    originAttributes TEXT NOT NULL DEFAULT '',
+    name TEXT,
+    value TEXT,
+    host TEXT,
+    path TEXT,
+    expiry INTEGER,
+    lastAccessed INTEGER,
+    creationTime INTEGER,
+    isSecure INTEGER,
+    isHttpOnly INTEGER,
+    inBrowserElement INTEGER DEFAULT 0,
+    sameSite INTEGER DEFAULT 0,
+    rawSameSite INTEGER DEFAULT 0,
+    schemeMap INTEGER DEFAULT 0,
+    CONSTRAINT moz_uniqueid UNIQUE (name, host, path, originAttributes));"
+else
+  sqlite3 $COOKIES_DB "DELETE FROM moz_cookies WHERE name = 'agamaToken';"
+fi
+
+NOW=$(date +%s)
+VALUE=$(cat $TOKEN_FILE)
+EXPIRATION=$(date --date '1 day' +%s)
+
+sqlite3 $COOKIES_DB "INSERT INTO moz_cookies \
+  (name, value, host, path, expiry, creationTime, isSecure, isHttpOnly, inBrowserElement, sameSite, rawSameSite, schemeMap) \
+  VALUES \
+  ('agamaToken', '$VALUE', 'localhost', '/api', $EXPIRATION, $NOW, 0, 1, 0, 1, 0, 1);"
+
+firefox --kiosk --profile $HOME/.mozilla/firefox/profile http://localhost/
