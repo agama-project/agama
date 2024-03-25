@@ -472,15 +472,6 @@ ul[data-type="agama/list"][role="grid"] {
       display: flex;
       gap: var(--spacer-smaller);
     }
-    // border: 1px solid var(--color-gray);
-    // padding: var(--spacer-small);
-    // gap: var(--spacer-small);
-    // border-radius: var(--spacer-smaller);
-    // position: relative;
-    //
-    // &.hides-control {
-    //   input { position: absolute; opacity: 0 }
-    // }
   }
 
   [data-variant="buttons"] {
@@ -510,15 +501,6 @@ ul[data-type="agama/list"][role="grid"] {
       padding-inline-end: var(--spacer-small);
     }
   }
-
-  // [data-type="agama/radio-action"]:has(input:checked) {
-  //   background: var(--colr-primary);
-  // }
-
-  // [data-type="agama/radio-action"]:has(input:focus-visible) {
-  //   // border: 2px solid red;
-  //   box-shadow: 0 0 0 3px var(--focus-color);
-  // }
 
   > div[aria-expanded="false"] {
     display: none;
