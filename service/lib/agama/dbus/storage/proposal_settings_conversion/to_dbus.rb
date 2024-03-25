@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/dbus/storage/volume_conversion"
+require "agama/storage/device_settings"
 
 module Agama
   module DBus
@@ -34,19 +35,26 @@ module Agama
 
           # Performs the conversion to D-Bus format.
           #
-          # @return [Hash]
+          # @return [Hash<String, Object>]
+          #   * "Target" [String]
+          #   * "Device" [String] Optional
+          #   * "CandidatePVDevices" [Array<String>] Optional
+          #   * "ConfigureBoot" [Boolean]
+          #   * "BootDevice" [String]
+          #   * "EncryptionPassword" [String]
+          #   * "EncryptionMethod" [String]
+          #   * "EncryptionPBKDFunction" [String]
+          #   * "SpacePolicy" [String]
+          #   * "SpaceActions" [Array<Hash>] see {#space_actions_conversion}
+          #   * "Volumes" [Array<Hash>] see {#volumes_conversion}
           def convert
-            {
-              "BootDevice"             => settings.boot_device.to_s,
-              "LVM"                    => settings.lvm.enabled?,
-              "SystemVGDevices"        => settings.lvm.system_vg_devices,
-              "EncryptionPassword"     => settings.encryption.password.to_s,
-              "EncryptionMethod"       => settings.encryption.method.id.to_s,
-              "EncryptionPBKDFunction" => settings.encryption.pbkd_function&.value || "",
-              "SpacePolicy"            => settings.space.policy.to_s,
-              "SpaceActions"           => space_actions_conversion,
-              "Volumes"                => settings.volumes.map { |v| VolumeConversion.to_dbus(v) }
-            }
+            target = device_conversion
+
+            DBUS_PROPERTIES.each do |dbus_property, conversion|
+              target[dbus_property] = send(conversion)
+            end
+
+            target
           end
 
         private
@@ -54,11 +62,103 @@ module Agama
           # @return [Agama::Storage::ProposalSettings]
           attr_reader :settings
 
-          # @return [Array<Hash>]
+          DBUS_PROPERTIES = {
+            "ConfigureBoot"          => :configure_boot_conversion,
+            "BootDevice"             => :boot_device_conversion,
+            "EncryptionPassword"     => :encryption_password_conversion,
+            "EncryptionMethod"       => :encryption_method_conversion,
+            "EncryptionPBKDFunction" => :encryption_pbkd_function_conversion,
+            "SpacePolicy"            => :space_policy_conversion,
+            "SpaceActions"           => :space_actions_conversion,
+            "Volumes"                => :volumes_conversion
+          }.freeze
+
+          private_constant :DBUS_PROPERTIES
+
+          # @return [Hash]
+          def device_conversion
+            device_settings = settings.device
+
+            case device_settings
+            when Agama::Storage::DeviceSettings::Disk
+              disk_device_conversion(device_settings)
+            when Agama::Storage::DeviceSettings::NewLvmVg
+              new_lvm_vg_device_conversion(device_settings)
+            when Agama::Storage::DeviceSettings::ReusedLvmVg
+              reused_lvm_vg_device_conversion(device_settings)
+            end
+          end
+
+          # @param device_settings [Agama::Storage::DeviceSettings::Disk]
+          # @return [Hash]
+          def disk_device_conversion(device_settings)
+            {
+              "Target"       => "disk",
+              "TargetDevice" => device_settings.name || ""
+            }
+          end
+
+          # @param device_settings [Agama::Storage::DeviceSettings::NewLvmVg]
+          # @return [Hash]
+          def new_lvm_vg_device_conversion(device_settings)
+            {
+              "Target"          => "newLvmVg",
+              "TargetPVDevices" => device_settings.candidate_pv_devices
+            }
+          end
+
+          # @param device_settings [Agama::Storage::DeviceSettings::Disk]
+          # @return [Hash]
+          def reused_lvm_vg_device_conversion(device_settings)
+            {
+              "Target"       => "reusedLvmVg",
+              "TargetDevice" => device_settings.name || ""
+            }
+          end
+
+          # @return [Boolean]
+          def configure_boot_conversion
+            settings.boot.configure?
+          end
+
+          # @return [String]
+          def boot_device_conversion
+            settings.boot.device || ""
+          end
+
+          # @return [String]
+          def encryption_password_conversion
+            settings.encryption.password.to_s
+          end
+
+          # @return [String]
+          def encryption_method_conversion
+            settings.encryption.method.id.to_s
+          end
+
+          # @return [String]
+          def encryption_pbkd_function_conversion
+            settings.encryption.pbkd_function&.value || ""
+          end
+
+          # @return [String]
+          def space_policy_conversion
+            settings.space.policy.to_s
+          end
+
+          # @return [Array<Hash<String, Object>>]
+          #   For each action:
+          #   * "Device" [String]
+          #   * "Action" [String]
           def space_actions_conversion
             settings.space.actions.each_with_object([]) do |(device, action), actions|
               actions << { "Device" => device, "Action" => action.to_s }
             end
+          end
+
+          # @return [Array<Hash>] see {VolumeConversion::ToDBus}.
+          def volumes_conversion
+            settings.volumes.map { |v| VolumeConversion.to_dbus(v) }
           end
         end
       end

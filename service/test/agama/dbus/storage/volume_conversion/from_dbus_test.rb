@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -60,6 +60,8 @@ describe Agama::DBus::Storage::VolumeConversion::FromDBus do
       "snapshots_configurable" => true
     }
   end
+
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   describe "#convert" do
     let(:dbus_volume) do

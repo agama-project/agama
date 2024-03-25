@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -30,8 +30,10 @@ describe Agama::DBus::Storage::VolumeConversion do
 
     let(:dbus_volume) { {} }
 
+    let(:logger) { Logger.new($stdout, level: :warn) }
+
     it "generates a volume from D-Bus settings" do
-      result = described_class.from_dbus(dbus_volume, config: config)
+      result = described_class.from_dbus(dbus_volume, config: config, logger: logger)
       expect(result).to be_a(Agama::Storage::Volume)
     end
   end

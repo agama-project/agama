@@ -20,10 +20,10 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../../test_helper"
-require "y2storage/filesystems/type"
-require "y2storage/disk_size"
 require "agama/dbus/storage/volume_conversion/to_dbus"
 require "agama/storage/volume"
+require "y2storage/filesystems/type"
+require "y2storage/disk_size"
 
 describe Agama::DBus::Storage::VolumeConversion::ToDBus do
   let(:default_volume) { Agama::Storage::Volume.new("/test") }

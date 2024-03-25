@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -32,7 +32,18 @@ module Agama
 
           # Performs the conversion to D-Bus format.
           #
-          # @return [Hash]
+          # @return [Hash<String, Object>]
+          #   * "MountPath" [String]
+          #   * "MountOptions" [Array<String>]
+          #   * "TargetDevice" [String]
+          #   * "TargetVG" [String]
+          #   * "FsType" [String]
+          #   * "MinSize" [Integer]
+          #   * "MaxSize" [Integer] Optional
+          #   * "AutoSize" [Boolean]
+          #   * "Snapshots" [Booelan]
+          #   * "Transactional" [Boolean]
+          #   * "Outline" [Hash] see {#outline_conversion}
           def convert
             {
               "MountPath"     => volume.mount_path.to_s,
@@ -43,10 +54,11 @@ module Agama
               "MinSize"       => volume.min_size&.to_i,
               "AutoSize"      => volume.auto_size?,
               "Snapshots"     => volume.btrfs.snapshots?,
-              "Transactional" => volume.btrfs.read_only?
+              "Transactional" => volume.btrfs.read_only?,
+              "Outline"       => outline_conversion
             }.tap do |target|
+              # Some volumes could not have "MaxSize".
               max_size_conversion(target)
-              outline_conversion(target)
             end
           end
 
@@ -62,11 +74,20 @@ module Agama
             target["MaxSize"] = volume.max_size.to_i
           end
 
-          # @param target [Hash]
-          def outline_conversion(target)
+          # Converts volume outline to D-Bus.
+          #
+          # @return [Hash<String, Object>]
+          #   * "Required" [Boolean]
+          #   * "FsTypes" [Array<String>]
+          #   * "SupportAutoSize" [Boolean]
+          #   * "AdjustByRam" [Boolean]
+          #   * "SnapshotsConfigurable" [Boolean]
+          #   * "SnapshotsAffectSizes" [Boolean]
+          #   * "SizeRelevantVolumes" [Array<String>]
+          def outline_conversion
             outline = volume.outline
 
-            target["Outline"] = {
+            {
               "Required"              => outline.required?,
               "FsTypes"               => outline.filesystems.map(&:to_human_string),
               "SupportAutoSize"       => outline.adaptive_sizes?,
