@@ -4,26 +4,35 @@
     Interfaces with the properties of the calculated proposal.
   -->
   <interface name="org.opensuse.Agama.Storage1.Proposal">
-    <property type="s" name="BootDevice" access="read"/>
-    <property type="b" name="LVM" access="read"/>
-    <property type="as" name="SystemVGDevices" access="read"/>
-    <property type="s" name="EncryptionPassword" access="read"/>
-    <property type="s" name="EncryptionMethod" access="read"/>
-    <property type="s" name="EncryptionPBKDFunction" access="read"/>
-    <property type="s" name="SpacePolicy" access="read"/>
     <!--
-      List of volumes used for calculating the proposal.
+      Proposal settings:
+        Target                 s (options: "disk", "newLvmVg", "reusedLvmVg")
+        TargeDevice            s  (optional: does not make sense if Target is "newLvmVg")
+        TargetPVDevices        as (optional: only makes sense if Target is "newLvmVg")
+        ConfigureBoot          b
+        BootDevice             s
+        EncryptionPassword     s
+        EncryptionMethod       s
+        EncryptionPBKDFunction s
+        SpacePolicy            s
+        SpaceActions           aa{sv}
+        Volumes                aa{sv}
+
+      Each space action has the following properties:
+        Device                 s
+        Action                 s (options: "force_delete", "resize")
+
       Each volume has the following properties:
         MountPath               s
         MountOptions            as
-        Target                  s
-        TargetDevice            s (only makes sense if Target is not default)
+        Target                  s (options: "default", "new_partition", "new_vg", "device", "filesystem")
+        TargetDevice            s (only makes sense if Target is not "default")
         FsType                  s
         MinSize                 t (bytes)
         MaxSize                 t (bytes. Optional, max size is considered as unlimited if omitted)
         AutoSize                b
-        Snapshots               b ( makes sense only for btrfs )
-        Transactional           b ( makes sense only for btrfs )
+        Snapshots               b (makes sense only for btrfs)
+        Transactional           b (makes sense only for btrfs)
         Outline                 a{sv}
           Required              b
           FsTypes               as
@@ -32,10 +41,11 @@
           SnapshotsAffectSizes  b
           SizeRelevantVolumes   as
     -->
-    <property type="aa{sv}" name="Volumes" access="read"/>
+    <property type="a{sv}" name="Settings" access="read"/>
     <!--
       Actions to perform in the system in order to create the volumes.
       Each action has the following properties:
+        Device  s
         Text    s
         Subvol  b
         Delete  b
