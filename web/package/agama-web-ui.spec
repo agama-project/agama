@@ -45,14 +45,15 @@ local-npm-registry %{_sourcedir} install --with=dev --legacy-peer-deps || ( find
 NODE_ENV="production" npm run build
 
 %install
-%make_install
-
-%check
-appstream-util validate-relax --nonet %{buildroot}/%{_datadir}/metainfo/*
+install -D -m 0644 --target-directory=%{buildroot}%{_datadir}/agama/web_ui %{_builddir}/agama/dist/*.{gz,json,map,svg}
+install -D -m 0644 --target-directory=%{buildroot}%{_datadir}/agama/web_ui/fonts %{_builddir}/agama/dist/fonts/*.woff?
 
 %files
 %doc README.md
-%{_datadir}/cockpit
-%{_datadir}/metainfo/*
+%{_datadir}/agama
+%{_datadir}/agama/web_ui
+%{_datadir}/agama/web_ui/*
+%{_datadir}/agama/web_ui/fonts
+%{_datadir}/agama/web_ui/fonts/*
 
 %changelog
