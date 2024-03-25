@@ -7,7 +7,7 @@
     <!--
       Proposal settings:
         Target                 s (options: "disk", "newLvmVg", "reusedLvmVg")
-        TargeDevice            s  (optional: does not make sense if Target is "newLvmVg")
+        TargeDevice            s (optional: does not make sense if Target is "newLvmVg")
         TargetPVDevices        as (optional: only makes sense if Target is "newLvmVg")
         ConfigureBoot          b
         BootDevice             s
