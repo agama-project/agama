@@ -78,7 +78,7 @@ impl FromRequestParts<ServiceState> for TokenClaims {
                     .await
                     .map_err(|_| AuthError::MissingToken)?;
                 cookie
-                    .get("token")
+                    .get("agamaToken")
                     .ok_or(AuthError::MissingToken)?
                     .to_owned()
             }
