@@ -79,12 +79,12 @@ const SelectedBy = Object.freeze({
 
 /**
  * @typedef {Object} Pattern
- * @property {string} name - pattern name (internal ID)
- * @property {string} category - pattern category
- * @property {string} summary - pattern name (user visible)
- * @property {string} description - long description of the pattern
- * @property {number} order - display order (string!)
- * @property {string} icon - icon name (not path or file name!)
+ * @property {string} name - Pattern name (internal ID).
+ * @property {string} category - Pattern category.
+ * @property {string} summary - User visible pattern name.
+ * @property {string} description - Long description of the pattern.
+ * @property {number} order - Display order (string!).
+ * @property {string} icon - Icon name (not path or file name!).
  */
 
 /**
