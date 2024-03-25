@@ -48,7 +48,7 @@ trait Software1 {
     fn remove_pattern(&self, id: &str) -> zbus::Result<bool>;
 
     /// SetUserPatterns method
-    fn set_user_patterns(&self, ids: &[&str]) -> zbus::Result<Vec<String>>;
+    fn set_user_patterns(&self, add: &[&str], remove: &[&str]) -> zbus::Result<Vec<String>>;
 
     /// UsedDiskSpace method
     fn used_disk_space(&self) -> zbus::Result<String>;
