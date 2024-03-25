@@ -28,7 +28,7 @@ import {
 
 import { _ } from "~/i18n";
 import { If, Section, Popup } from "~/components/core";
-import { DeviceSelector } from "~/components/storage";
+import { DeviceSelector, DeviceSelectionDialog } from "~/components/storage";
 import { deviceLabel } from '~/components/storage/utils';
 import { noop } from "~/utils";
 
@@ -142,6 +142,8 @@ const InstallationDeviceField = ({
       <div className="split">
         <span>{_("Installation device")}</span>
         <DeviceContent device={device} />
+        { /* FIXME: the new dialog we're working on, remove `={false}` to see it ;) */ }
+        <DeviceSelectionDialog devices={devices} isOpen={false} />
       </div>
       <Popup
         title={_("Installation device")}
