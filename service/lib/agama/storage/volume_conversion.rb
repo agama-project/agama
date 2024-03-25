@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -26,17 +26,15 @@ module Agama
   module Storage
     # Conversions for a volume
     module VolumeConversion
-      # Performs conversion from Y2Storage format.
+      # Performs conversion from Y2Storage.
       #
-      # @param spec [Y2Storage::VolumeSpecification]
-      # @param config [Agama::Config]
-      #
+      # @param volume [Agama::Storage::Volume]
       # @return [Agama::Storage::Volume]
-      def self.from_y2storage(spec, config:)
-        FromY2Storage.new(spec, config: config).convert
+      def self.from_y2storage(volume)
+        FromY2Storage.new(volume).convert
       end
 
-      # Performs conversion to Y2Storage format.
+      # Performs conversion to Y2Storage.
       #
       # @param volume [Agama::Storage::Volume]
       # @return [Y2Storage::VolumeSpecification]

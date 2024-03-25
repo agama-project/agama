@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -57,31 +57,29 @@ describe Agama::Storage::VolumeConversion::ToY2Storage do
       spec = subject.convert
 
       expect(spec).to be_a(Y2Storage::VolumeSpecification)
-      expect(spec).to have_attributes(
-        device:                  "/dev/sda",
-        separate_vg_name:        "vg-root",
-        mount_point:             "/",
-        mount_options:           "defaults",
-        proposed?:               true,
-        proposed_configurable?:  false,
-        fs_types:                contain_exactly(btrfs, ext4, xfs),
-        fs_type:                 btrfs,
-        weight:                  100,
-        adjust_by_ram?:          false,
-        ignore_fallback_sizes:   true,
-        ignore_snapshots_sizes:  true,
-        ignore_adjust_by_ram:    true,
-        min_size:                Y2Storage::DiskSize.GiB(5),
-        max_size:                Y2Storage::DiskSize.GiB(20),
-        max_size_lvm:            Y2Storage::DiskSize.GiB(20),
-        snapshots:               true,
-        snapshots_configurable?: true,
-        snapshots_size:          Y2Storage::DiskSize.GiB(10),
-        snapshots_percentage:    20,
-        subvolumes:              ["@/home", "@/var"],
-        btrfs_default_subvolume: "@",
-        btrfs_read_only:         true
-      )
+      expect(spec.device).to eq("/dev/sda")
+      expect(spec.separate_vg_name).to eq("vg-root")
+      expect(spec.mount_point).to eq("/")
+      expect(spec.mount_options).to eq("defaults")
+      expect(spec.proposed).to eq(true)
+      expect(spec.proposed_configurable).to eq(false)
+      expect(spec.fs_types).to contain_exactly(btrfs, ext4, xfs)
+      expect(spec.fs_type).to eq(btrfs)
+      expect(spec.weight).to eq(100)
+      expect(spec.adjust_by_ram).to eq(false)
+      expect(spec.ignore_fallback_sizes).to eq(true)
+      expect(spec.ignore_snapshots_sizes).to eq(true)
+      expect(spec.ignore_adjust_by_ram).to eq(true)
+      expect(spec.min_size).to eq(Y2Storage::DiskSize.GiB(5))
+      expect(spec.max_size).to eq(Y2Storage::DiskSize.GiB(20))
+      expect(spec.max_size_lvm).to eq(Y2Storage::DiskSize.GiB(20))
+      expect(spec.snapshots).to eq(true)
+      expect(spec.snapshots_configurable).to eq(true)
+      expect(spec.snapshots_size).to eq(Y2Storage::DiskSize.GiB(10))
+      expect(spec.snapshots_percentage).to eq(20)
+      expect(spec.subvolumes).to contain_exactly("@/home", "@/var")
+      expect(spec.btrfs_default_subvolume).to eq("@")
+      expect(spec.btrfs_read_only).to eq(true)
     end
 
     context "when auto size is used" do
@@ -94,14 +92,12 @@ describe Agama::Storage::VolumeConversion::ToY2Storage do
       it "sets the min and max spec sizes according to the volume outline" do
         spec = subject.convert
 
-        expect(spec).to have_attributes(
-          ignore_fallback_sizes:  false,
-          ignore_snapshots_sizes: false,
-          ignore_adjust_by_ram:   false,
-          min_size:               Y2Storage::DiskSize.GiB(10),
-          max_size:               Y2Storage::DiskSize.GiB(50),
-          max_size_lvm:           Y2Storage::DiskSize.GiB(50)
-        )
+        expect(spec.ignore_fallback_sizes).to eq(false)
+        expect(spec.ignore_snapshots_sizes).to eq(false)
+        expect(spec.ignore_adjust_by_ram).to eq(false)
+        expect(spec.min_size).to eq(Y2Storage::DiskSize.GiB(10))
+        expect(spec.max_size).to eq(Y2Storage::DiskSize.GiB(50))
+        expect(spec.max_size_lvm).to eq(Y2Storage::DiskSize.GiB(50))
       end
     end
 

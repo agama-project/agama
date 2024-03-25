@@ -152,7 +152,9 @@ module Agama
         # @param dbus_settings [Hash]
         # @return [Integer] 0 success; 1 error
         def calculate_proposal(dbus_settings)
-          settings = ProposalSettingsConversion.from_dbus(dbus_settings, config: config)
+          settings = ProposalSettingsConversion.from_dbus(dbus_settings,
+            config: config, logger: logger)
+
           logger.info(
             "Calculating storage proposal from D-Bus.\n " \
             "D-Bus settings: #{dbus_settings}\n" \

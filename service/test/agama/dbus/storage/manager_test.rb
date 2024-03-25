@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require_relative "../../../test_helper"
 require "agama/dbus/storage/manager"
 require "agama/dbus/storage/proposal"
+require "agama/storage/device_settings"
 require "agama/storage/manager"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
@@ -262,8 +263,9 @@ describe Agama::DBus::Storage::Manager do
   describe "#calculate_proposal" do
     let(:dbus_settings) do
       {
-        "BootDevice"         => "/dev/vda",
-        "LVM"                => true,
+        "Target"             => "disk",
+        "TargetDevice"       => "/dev/vda",
+        "BootDevice"         => "/dev/vdb",
         "EncryptionPassword" => "n0ts3cr3t",
         "Volumes"            => dbus_volumes
       }
@@ -279,9 +281,9 @@ describe Agama::DBus::Storage::Manager do
     it "calculates a proposal with settings having values from D-Bus" do
       expect(proposal).to receive(:calculate) do |settings|
         expect(settings).to be_a(Agama::Storage::ProposalSettings)
-        expect(settings.boot_device).to eq "/dev/vda"
-        expect(settings.lvm).to be_a(Agama::Storage::LvmSettings)
-        expect(settings.lvm.enabled).to eq true
+        expect(settings.device).to be_a(Agama::Storage::DeviceSettings::Disk)
+        expect(settings.device.name).to eq "/dev/vda"
+        expect(settings.boot.device).to eq "/dev/vdb"
         expect(settings.encryption).to be_a(Agama::Storage::EncryptionSettings)
         expect(settings.encryption.password).to eq("n0ts3cr3t")
         expect(settings.volumes).to contain_exactly(
@@ -296,12 +298,12 @@ describe Agama::DBus::Storage::Manager do
     context "when the D-Bus settings does not include some values" do
       let(:dbus_settings) { {} }
 
-      it "calculates a proposal with default/empty values for the missing settings" do
+      it "calculates a proposal with default values for the missing settings" do
         expect(proposal).to receive(:calculate) do |settings|
           expect(settings).to be_a(Agama::Storage::ProposalSettings)
-          expect(settings.boot_device).to eq nil
-          expect(settings.lvm).to be_a(Agama::Storage::LvmSettings)
-          expect(settings.lvm.enabled).to eq false
+          expect(settings.device).to be_a(Agama::Storage::DeviceSettings::Disk)
+          expect(settings.device.name).to be_nil
+          expect(settings.boot.device).to be_nil
           expect(settings.encryption).to be_a(Agama::Storage::EncryptionSettings)
           expect(settings.encryption.password).to be_nil
           expect(settings.volumes).to eq([])

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -31,10 +31,11 @@ module Agama
         #
         # @param dbus_settings [Hash]
         # @param config [Agama::Config]
+        # @param logger [Logger, nil]
         #
         # @return [Agama::Storage::ProposalSettings]
-        def self.from_dbus(dbus_settings, config:)
-          FromDBus.new(dbus_settings, config: config).convert
+        def self.from_dbus(dbus_settings, config:, logger: nil)
+          FromDBus.new(dbus_settings, config: config, logger: logger).convert
         end
 
         # Performs conversion to D-Bus format.

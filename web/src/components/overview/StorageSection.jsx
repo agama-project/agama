@@ -38,11 +38,11 @@ import { _ } from "~/i18n";
 const ProposalSummary = ({ proposal }) => {
   const { availableDevices = [], result = {} } = proposal;
 
-  const bootDevice = result.settings?.bootDevice;
-  if (!bootDevice) return <Text>{_("No device selected yet")}</Text>;
+  const targetDevice = result.settings?.targetDevice;
+  if (!targetDevice) return <Text>{_("No device selected yet")}</Text>;
 
-  const device = availableDevices.find(d => d.name === bootDevice);
-  const label = device ? deviceLabel(device) : bootDevice;
+  const device = availableDevices.find(d => d.name === targetDevice);
+  const label = device ? deviceLabel(device) : targetDevice;
 
   const fullMsg = (policy) => {
     switch (policy) {
