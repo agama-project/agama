@@ -82,9 +82,7 @@ const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
  */
 export default function NetworkPage() {
   const { network: client } = useInstallerClient();
-  const [initialized, setInitialized] = useState(false);
-  const [ready, setReady] = useState(false);
-  const [connections, setConnections] = useState([]);
+  const [connections, setConnections] = useState(undefined);
   const [selectedConnection, setSelectedConnection] = useState(null);
   const [wifiScanSupported, setWifiScanSupported] = useState(false);
   const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
@@ -93,60 +91,26 @@ export default function NetworkPage() {
   const closeWifiSelector = () => setWifiSelectorOpen(false);
 
   useEffect(() => {
-    client.setUp().then(() => setInitialized(true));
-  }, [client]);
+    if (connections !== undefined) return;
 
-  useEffect(() => {
-    if (!initialized) return;
+    client.settings().then((s) => setWifiScanSupported(s.wirelessEnabled));
+    client.connections().then(setConnections);
+  }, [client, connections]);
 
-    setWifiScanSupported(client.settings().wifiScanSupported);
-    setConnections(client.activeConnections());
-    setReady(true);
-  }, [client, initialized]);
-
-  useEffect(() => {
-    return client.onNetworkEvent(({ type, payload }) => {
-      switch (type) {
-        case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
-          setConnections(conns => {
-            const newConnections = conns.filter(c => c.id !== payload.id);
-            return [...newConnections, payload];
-          });
-          break;
-        }
-
-        case NetworkEventTypes.ACTIVE_CONNECTION_UPDATED: {
-          setConnections(conns => {
-            const newConnections = conns.filter(c => c.id !== payload.id);
-            return [...newConnections, payload];
-          });
-          break;
-        }
-
-        case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
-          setConnections(conns => conns.filter(c => c.id !== payload.id));
-          break;
-        }
-
-        case NetworkEventTypes.SETTINGS_UPDATED: {
-          setWifiScanSupported(payload.wifiScanSupported);
-        }
-      }
-    });
-  });
-
-  const selectConnection = ({ uuid }) => {
-    client.getConnection(uuid).then(setSelectedConnection);
+  const selectConnection = ({ id }) => {
+    client.getConnection(id).then(setSelectedConnection);
   };
 
-  const forgetConnection = async ({ uuid }) => {
-    await client.deleteConnection(uuid);
+  const forgetConnection = async ({ id }) => {
+    await client.deleteConnection(id);
   };
 
-  const activeWiredConnections = connections.filter(c => c.type === ConnectionTypes.ETHERNET);
-  const activeWifiConnections = connections.filter(c => c.type === ConnectionTypes.WIFI);
+  const ready = connections !== undefined;
+  console.log(connections);
 
   const WifiConnections = () => {
+    const activeWifiConnections = connections.filter(c => c.wireless);
+
     if (activeWifiConnections.length === 0) {
       return (
         <NoWifiConnections wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
@@ -159,6 +123,8 @@ export default function NetworkPage() {
   };
 
   const WiredConnections = () => {
+    const activeWiredConnections = connections.filter(c => !c.wireless);
+
     if (activeWiredConnections.length === 0) return <NoWiredConnections />;
 
     return <ConnectionsTable connections={activeWiredConnections} onEdit={selectConnection} />;

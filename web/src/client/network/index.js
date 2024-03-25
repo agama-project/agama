@@ -25,6 +25,7 @@ import DBusClient from "../dbus";
 import { NetworkManagerAdapter } from "./network_manager";
 import cockpit from "../../lib/cockpit";
 import { createConnection, ConnectionTypes, ConnectionState } from "./model";
+import { formatIp } from "./utils";
 
 const SERVICE_NAME = "org.opensuse.Agama1";
 const CONNECTIONS_IFACE = "org.opensuse.Agama1.Network.Connections";
@@ -95,62 +96,10 @@ const NetworkEventTypes = Object.freeze({
  */
 class NetworkClient {
   /**
-   * @param {string} address - D-Bus address
+   * @param {import("../http").HTTPClient} client - HTTP client.
    */
-  constructor(address) {
-    this.subscribed = false;
-    this.nm = new NetworkManagerAdapter();
-    this.client = new DBusClient(SERVICE_NAME, address);
-    this.proxies = {
-      connectionsRoot: null,
-      connections: {},
-      ipConfigs: {},
-      wireless: {}
-    };
-    this.eventsHandler = null;
-    this.setUpDone = false;
-    this.handlers = [];
-  }
-
-  /**
-   * Adds a callback to run when a network event happens (a connection is added,
-   * updated, removed, etc.).
-   *
-   * @param {NetworkEventFn} handler - Callback function
-   * @return {() => void} Function to remove the handler
-   */
-  onNetworkEvent(handler) {
-    this.handlers.push(handler);
-    return () => {
-      const position = this.handlers.indexOf(handler);
-      if (position > -1) this.handlers.splice(position, 1);
-    };
-  }
-
-  /**
-   * Set up the client
-   */
-  async setUp() {
-    if (this.setUpDone) return;
-
-    this.proxies = {
-      connectionsRoot: await this.client.proxy(CONNECTIONS_IFACE, CONNECTIONS_PATH),
-      connections: await this.client.proxies(CONNECTION_IFACE, CONNECTIONS_NAMESPACE),
-      ipConfigs: await this.client.proxies(IP_IFACE, CONNECTIONS_NAMESPACE),
-      wireless: await this.client.proxies(WIRELESS_IFACE, CONNECTIONS_NAMESPACE)
-    };
-
-    this.setUpDone = true;
-    return this.nm.setUp(e => this.handlers.forEach(f => f(e)));
-  }
-
-  /**
-   * Returns the active connections
-   *
-   * @return {ActiveConnection[]}
-   */
-  activeConnections() {
-    return this.nm.activeConnections();
+  constructor(client) {
+    this.client = client;
   }
 
   /**
@@ -158,17 +107,36 @@ class NetworkClient {
    *
    * @return {Promise<Connection[]>}
    */
-  connections() {
-    return this.nm.connections();
+  async connections() {
+    const connections = await this.client.get("/network/connections");
+
+    return connections.map((connection) => {
+      return this.fromApiConnection(connection);
+    });
+  }
+
+  fromApiConnection(connection) {
+    const addresses = (connection.addresses || []).map((address) => {
+      const [ip, netmask] = address.split("/");
+      return { address: ip, prefix: netmask };
+    });
+
+    return { ...connection, addresses };
+  }
+
+  toApiConnection(connection) {
+    const addresses = (connection.addresses || []).map((addr) => formatIp(addr));
+
+    return { ...connection, addresses };
   }
 
   /**
    * Returns the list of available wireless access points (AP)
    *
-   * @return {AccessPoint[]}
+   * @return {Promise<AccessPoint[]>}
    */
   accessPoints() {
-    return this.nm.accessPoints();
+    return this.client.get("/network/wifi");
   }
 
   /**
@@ -177,7 +145,7 @@ class NetworkClient {
    * @param {Connection} connection - connection to be activated
    */
   async connectTo(connection) {
-    return this.nm.connectTo(connection);
+    return this.client.post("/network/connections", connection);
   }
 
   /**
@@ -199,7 +167,7 @@ class NetworkClient {
     });
 
     // the connection is automatically activated when written
-    return this.addConnection(connection);
+    return this.connectTo(connection);
   }
 
   /**
@@ -212,166 +180,33 @@ class NetworkClient {
    * @return {Promise<Connection>} the added connection
    */
   async addConnection(connection) {
-    const { id } = connection;
-    const proxy = await this.client.proxy(CONNECTIONS_IFACE, CONNECTIONS_PATH);
-    const deviceType = (connection.wireless) ? DeviceType.WIRELESS : DeviceType.ETHERNET;
-    let path;
-    try {
-      path = await proxy.GetConnectionById(id);
-    } catch {
-      path = await proxy.AddConnection(id, deviceType);
-    }
-    await this.updateConnectionAt(path, connection);
-    return this.connectionFromPath(path);
+    return this.connectTo(connection);
   }
 
   /**
    * Returns the connection with the given ID
    *
-   * @param {string} uuid - Connection ID
+   * @param {string} id - Connection ID
    * @return {Promise<Connection|undefined>}
    */
-  async getConnection(uuid) {
-    const path = await this.getConnectionPath(uuid);
-    if (path) {
-      return this.connectionFromPath(path);
-    }
-  }
+  async getConnection(id) {
+    const connections = await this.connections();
 
-  /**
-   * Returns a connection from the given D-Bus path
-   *
-   * @param {string} path - Path of the D-Bus object representing the connection
-   * @return {Promise<Connection>}
-   */
-  async connectionFromPath(path) {
-    const connection = await this.proxies.connections[path];
-    const ip = await this.proxies.ipConfigs[path];
-
-    const conn = {
-      id: connection.Id,
-      uuid: connection.Uuid,
-      iface: connection.Interface,
-      ipv4: {
-        method: ip.Method4,
-        nameServers: ip.Nameservers,
-        addresses: ip.Addresses.map(addr => {
-          const [address, prefix] = addr.split("/");
-          return { address, prefix };
-        }),
-        gateway: ip.Gateway4
-      },
-    };
-
-    const wireless = await this.proxies.wireless[path];
-    if (wireless) {
-      conn.wireless = {
-        ssid: window.atob(wireless.SSID),
-        hidden: wireless.Hidden,
-        mode: wireless.Mode,
-        security: wireless.Security // see AgamaSecurityProtocols
-      };
-    }
-
-    return createConnection(conn);
-  }
-
-  /**
-   * Sets a property for a given path
-   *
-   * @param {string} path - Object path.
-   * @param {string} iface - Interface name.
-   * @param {object} values - Properties values (indexed by names). The value
-   *   should be created by using the cockpit.variant() function.
-   */
-  async setProperties(path, iface, values) {
-    for (const [prop, value] of Object.entries(values)) {
-      await this.setProperty(path, iface, prop, value);
-    }
-  }
-
-  /**
-   * Sets a property for a given path
-   *
-   * @param {string} path - Object path.
-   * @param {string} iface - Interface name.
-   * @param {string} property - Property name.
-   * @param {object} value - Property value. The value should be created by
-   *   using the cockpit.variant() function.
-   */
-  async setProperty(path, iface, property, value) {
-    return this.client.call(path, "org.freedesktop.DBus.Properties", "Set", [iface, property, value]);
-  }
-
-  /**
-   * Returns the D-Bus path of the connection.
-   *
-   * @param {string} uuid - Connection UUID
-   * @return {Promise<string|undefined>} - Connection D-Bus path
-   */
-  async getConnectionPath(uuid) {
-    for (const path in this.proxies.connections) {
-      const proxy = await this.proxies.connections[path];
-      if (proxy.Uuid === uuid) {
-        return path;
-      }
-    }
+    return connections.find((conn) => conn.id === id);
   }
 
   /**
    * Updates the connection
    *
-   * It uses the 'uuid' to match the connection in the backend.
+   * It uses the 'id' to match the connection in the backend.
    *
    * @param {Connection} connection - Connection to update
    * @return {Promise<boolean>} - the promise resolves to true if the connection
    *   was successfully updated and to false it it does not exist.
    */
-  async updateConnection(connection) {
-    const path = await this.getConnectionPath(connection.uuid);
-    if (path === undefined) {
-      return false;
-    }
-
-    await this.updateConnectionAt(path, connection);
-    return true;
-  }
-
-  /**
-   * Updates the connection in the given path
-   *
-   *
-   * @param {string} path - D-Bus path of the connection to update.
-   * @param {Connection} connection - Connection to update.
-   */
-  async updateConnectionAt(path, connection) {
-    const { ipv4, wireless } = connection;
-    const addresses = ipv4.addresses.map(a => `${a.address}/${a.prefix}`);
-    const ipv4_props = {
-      Method4: cockpit.variant("s", ipv4.method),
-      Gateway4: cockpit.variant("s", ipv4.gateway),
-      Addresses: cockpit.variant("as", addresses),
-      Nameservers: cockpit.variant("as", ipv4.nameServers)
-    };
-    await this.setProperties(path, IP_IFACE, ipv4_props);
-
-    if (wireless) {
-      const wireless_props = {
-        Mode: cockpit.variant("s", "infrastructure"),
-        Security: cockpit.variant("s", wireless.security),
-        SSID: cockpit.variant("ay", cockpit.byte_array(wireless.ssid)),
-        Hidden: cockpit.variant("b", !!wireless.hidden)
-      };
-
-      if (wireless.password) {
-        wireless_props.Password = cockpit.variant("s", wireless.password);
-      }
-
-      await this.setProperties(path, WIRELESS_IFACE, wireless_props);
-    }
-
-    // TODO: apply the changes only in this connection
-    return this.proxies.connectionsRoot.Apply();
+  updateConnection(connection) {
+    const conn = this.toApiConnection(connection);
+    return this.client.put(`/network/connections/${conn.id}`, conn);
   }
 
   /**
@@ -379,12 +214,12 @@ class NetworkClient {
    *
    * It uses the 'path' to match the connection in the backend.
    *
-   * @param {String} uuid - Connection uuid
+   * @param {String} id - Connection id
+   * @return {Promise<boolean>} - the promise resolves to true if the connection
+   *  was successfully deleted.
    */
-  async deleteConnection(uuid) {
-    const proxy = await this.client.proxy(CONNECTIONS_IFACE, CONNECTIONS_PATH);
-    await proxy.RemoveConnection(uuid);
-    return this.proxies.connectionsRoot.Apply();
+  deleteConnection(id) {
+    return this.client.delete(`/network/connections/${id}`);
   }
 
   /*
@@ -394,8 +229,8 @@ class NetworkClient {
    * @private
    * @return {Promise<IPAddress[]>}
    */
-  addresses() {
-    const conns = this.activeConnections();
+  async addresses() {
+    const conns = await this.connections();
     return conns.flatMap(c => c.addresses);
   }
 
@@ -403,7 +238,7 @@ class NetworkClient {
   * Returns network general settings
   */
   settings() {
-    return this.nm.settings();
+    return this.client.get("/network/state");
   }
 }
 

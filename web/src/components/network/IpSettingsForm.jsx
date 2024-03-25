@@ -37,13 +37,12 @@ const usingDHCP = (method) => method === METHODS.AUTO;
 
 export default function IpSettingsForm({ connection, onClose }) {
   const client = useInstallerClient();
-  const { ipv4 = {} } = connection;
-  const [addresses, setAddresses] = useState(ipv4.addresses);
-  const [nameServers, setNameServers] = useState(ipv4.nameServers.map(a => {
+  const [addresses, setAddresses] = useState(connection.addresses);
+  const [nameServers, setNameServers] = useState(connection.nameservers.map(a => {
     return { address: a };
   }));
-  const [method, setMethod] = useState(ipv4.method || "auto");
-  const [gateway, setGateway] = useState(ipv4.gateway || "");
+  const [method, setMethod] = useState(connection.method4);
+  const [gateway, setGateway] = useState(connection.gateway4);
   const [errors, setErrors] = useState({});
 
   const isSetAsInvalid = field => Object.keys(errors).includes(field);
@@ -103,12 +102,10 @@ export default function IpSettingsForm({ connection, onClose }) {
     // TODO: deal with DNS servers
     const updatedConnection = {
       ...connection,
-      ipv4: {
-        addresses: sanitizedAddresses,
-        method,
-        gateway,
-        nameServers: sanitizedNameServers.map(s => s.address)
-      }
+      addresses: sanitizedAddresses,
+      method4: method,
+      gatewa4: gateway,
+      nameservers: sanitizedNameServers.map(s => s.address)
     };
 
     client.network.updateConnection(updatedConnection)

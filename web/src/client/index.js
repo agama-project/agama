@@ -77,7 +77,7 @@ const createClient = (url) => {
   const product = new ProductClient(client);
   const manager = new ManagerClient(client);
   // const monitor = new Monitor(address, MANAGER_SERVICE);
-  // const network = new NetworkClient(address);
+  const network = new NetworkClient(client);
   const software = new SoftwareClient(client);
   // const storage = new StorageClient(address);
   // const users = new UsersClient(address);
@@ -138,7 +138,7 @@ const createClient = (url) => {
     product,
     manager,
     // monitor,
-    // network,
+    network,
     software,
     // storage,
     // users,
@@ -147,7 +147,7 @@ const createClient = (url) => {
     onIssuesChange,
     isConnected,
     onDisconnect: (handler) => {
-      return () => {};
+      return () => { };
     },
     // onDisconnect: (handler) => monitor.onDisconnect(handler),
   };

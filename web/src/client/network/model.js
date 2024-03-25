@@ -78,20 +78,15 @@ const SecurityProtocols = Object.freeze({
  */
 
 /**
- * @typedef {object} ActiveConnection
- * @property {string} id
- * @property {string} uuid
- * @property {string} type
- * @property {number} state
- * @property {IPAddress[]} addresses
- */
-
-/**
  * @typedef {object} Connection
  * @property {string} id
- * @property {string} uuid
  * @property {string} iface
- * @property {IPv4} [ipv4]
+ * @property {IPAddress[]} addresses
+ * @property {string[]} nameServers
+ * @property {string} gateway4
+ * @property {string} gateway6
+ * @property {string} method4
+ * @property {string} method6
  * @property {Wireless} [wireless]
  */
 
@@ -104,14 +99,6 @@ const SecurityProtocols = Object.freeze({
  */
 
 /**
- * @typedef {object} IPv4
- * @property {string} method
- * @property {IPAddress[]} addresses
- * @property {string[]} nameServers
- * @property {string} gateway
- */
-
-/**
  * @typedef {object} AccessPoint
  * @property {string} ssid
  * @property {number} strength
@@ -121,30 +108,10 @@ const SecurityProtocols = Object.freeze({
 
 /**
 * @typedef {object} NetworkSettings
-* @property {boolean} wifiScanSupported
+* @property {boolean} connectivity
+* @property {boolean} wirelessEnabled
+* @property {boolean} networkingEnabled
 * @property {string} hostname
-
-/**
- * Returns an IPv4 configuration object
- *
- * Defaults values can be overridden
- *
- * @private
- * @param {object} props
- * @param {string} [props.method]
- * @param {IPAddress[]} [props.addresses]
- * @param {string[]} [props.nameServers]
- * @param {string} [props.gateway]
- * @return {IPv4}
- */
-const createIPv4 = ({ method, addresses, nameServers, gateway }) => {
-  return {
-    method: method || "auto",
-    addresses: addresses || [],
-    nameServers: nameServers || [],
-    gateway: gateway || "",
-  };
-};
 
 /**
  * Returns a connection object
@@ -153,18 +120,26 @@ const createIPv4 = ({ method, addresses, nameServers, gateway }) => {
  *
  * @param {object} options
  * @param {string} [options.id] - Connection ID
- * @param {string} [options.uuid] - Connection UUID
+ * @param {string} [options.method4] - Connection IPv4 method
+ * @param {string} [options.method6] - Connection IPv6 method
+ * @param {string} [options.gateway4] - Connection IPv4 gateway
+ * @param {string} [options.gateway6] - Connection IPv6 gateway
  * @param {string} [options.iface] - Connection interface
- * @param {object} [options.ipv4] IPv4 Settings
+ * @param {IPAddress[]} [options.addresses] Connection addresses
+ * @param {string[]} [options.nameServers] Connection nameservers
  * @param {object} [options.wireless] Wireless Settings
  * @return {Connection}
  */
-const createConnection = ({ id, uuid, iface, ipv4, wireless }) => {
+const createConnection = ({ id, iface, method4, method6, gateway4, gateway6, addresses, nameServers, wireless }) => {
   const connection = {
     id,
-    uuid,
     iface,
-    ipv4: createIPv4(ipv4 || {}),
+    method4: method4 || "auto",
+    method6: method6 || "auto",
+    gateway4: gateway4 || "",
+    gateway6: gateway6 || "",
+    addresses: addresses || [],
+    nameServers: nameServers || []
   };
 
   if (wireless) connection.wireless = wireless;

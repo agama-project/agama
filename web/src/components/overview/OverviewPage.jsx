@@ -47,7 +47,6 @@ export default function OverviewPage() {
   //     // TRANSLATORS: page title
   //     title={_("Installation Summary")}
   //   >
-  //     <NetworkSection />
   //     <StorageSection showErrors />
   //     <UsersSection showErrors={showErrors} />
 
@@ -65,6 +64,7 @@ export default function OverviewPage() {
     >
       <ProductSection />
       <L10nSection />
+      <NetworkSection />
       <SoftwareSection showErrors />
     </Page>
   );
