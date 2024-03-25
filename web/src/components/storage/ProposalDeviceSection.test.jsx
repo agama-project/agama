@@ -115,7 +115,8 @@ const md1 = {
 
 const props = {
   settings: {
-    bootDevice: "/dev/sda",
+    target: "disk",
+    targetDevice: "/dev/sda",
   },
   availableDevices: [sda, sdb],
   isLoading: false,
@@ -131,7 +132,7 @@ describe("ProposalDeviceSection", () => {
 
       describe("and selected device is not defined yet", () => {
         beforeEach(() => {
-          props.settings = { bootDevice: undefined };
+          props.settings = { targetDevice: undefined };
         });
 
         it("renders a loading hint", () => {
@@ -142,7 +143,7 @@ describe("ProposalDeviceSection", () => {
     });
     describe("when installation device is not selected yet", () => {
       beforeEach(() => {
-        props.settings = { bootDevice: "" };
+        props.settings = { targetDevice: "" };
       });
 
       it("uses a 'No device selected yet' text for the selection button", async () => {
@@ -157,7 +158,7 @@ describe("ProposalDeviceSection", () => {
 
     describe("when installation device is selected", () => {
       beforeEach(() => {
-        props.settings = { bootDevice: "/dev/sda" };
+        props.settings = { targetDevice: "/dev/sda" };
       });
 
       it("uses its name as part of the text for the selection button", async () => {
@@ -184,7 +185,7 @@ describe("ProposalDeviceSection", () => {
       await user.click(accept);
 
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-      expect(props.onChange).toHaveBeenCalledWith({ bootDevice: sdb.name });
+      expect(props.onChange).toHaveBeenCalledWith({ targetDevice: sdb.name });
     });
 
     it("allows canceling a device selection", async () => {

@@ -397,12 +397,11 @@ export default function ProposalDeviceSection({
   isLoading = false,
   onChange = noop
 }) {
-  // FIXME: we should work with devices objects ASAP
-  const { bootDevice } = settings;
+  const targetDevice = settings.targetDevice;
 
   const changeBootDevice = (device) => {
-    if (device.name !== bootDevice) {
-      onChange({ bootDevice: device.name });
+    if (device.name !== targetDevice) {
+      onChange({ targetDevice: device.name });
     }
   };
 
@@ -432,9 +431,9 @@ Volume Group for installation.")
       description={<Description />}
     >
       <InstallationDeviceField
-        current={bootDevice}
+        current={targetDevice}
         devices={availableDevices}
-        isLoading={isLoading && bootDevice === undefined}
+        isLoading={isLoading && targetDevice === undefined}
         onChange={changeBootDevice}
       />
       <LVMField
