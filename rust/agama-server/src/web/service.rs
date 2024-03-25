@@ -84,7 +84,7 @@ impl MainServiceBuilder {
             .route("/ping", get(super::http::ping))
             .route("/auth", post(login).get(session).delete(logout));
 
-        let serve = ServeDir::new(self.public_dir);
+        let serve = ServeDir::new(self.public_dir).precompressed_gzip();
         Router::new()
             .nest_service("/", serve)
             .nest("/api", api_router)
