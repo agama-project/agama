@@ -60,7 +60,7 @@ pub async fn login(
     });
 
     let mut headers = HeaderMap::new();
-    let cookie = format!("token={}; HttpOnly", &token);
+    let cookie = format!("agamaToken={}; HttpOnly", &token);
     headers.insert(
         SET_COOKIE,
         cookie.parse().expect("could not build a valid cookie"),
@@ -74,7 +74,7 @@ pub async fn login(
 ))]
 pub async fn logout(_claims: TokenClaims) -> Result<impl IntoResponse, AuthError> {
     let mut headers = HeaderMap::new();
-    let cookie = "token=deleted; HttpOnly; Expires=Thu, 01 Jan 1970 00:00:00 GMT".to_string();
+    let cookie = "agamaToken=deleted; HttpOnly; Expires=Thu, 01 Jan 1970 00:00:00 GMT".to_string();
     headers.insert(
         SET_COOKIE,
         cookie.parse().expect("could not build a valid cookie"),
