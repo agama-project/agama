@@ -98,7 +98,11 @@ impl<T: Adapter> NetworkSystem<T> {
                 let config = self.state.general_state.clone();
                 tx.send(config.clone()).unwrap();
             }
-            Action::GetConnection(uuid, tx) => {
+            Action::GetConnection(id, tx) => {
+                let conn = self.state.get_connection(id.as_ref());
+                tx.send(conn.cloned()).unwrap();
+            }
+            Action::GetConnectionByUuid(uuid, tx) => {
                 let conn = self.state.get_connection_by_uuid(uuid);
                 tx.send(conn.cloned()).unwrap();
             }
@@ -148,10 +152,8 @@ impl<T: Adapter> NetworkSystem<T> {
             Action::UpdateGeneralState(general_state) => {
                 self.state.general_state = general_state;
             }
-            Action::RemoveConnection(uuid, tx) => {
-                let mut tree = self.tree.lock().await;
-                tree.remove_connection(uuid).await?;
-                let result = self.state.remove_connection(uuid);
+            Action::RemoveConnection(id, tx) => {
+                let result = self.state.remove_connection(id.as_str());
 
                 tx.send(result).unwrap();
             }

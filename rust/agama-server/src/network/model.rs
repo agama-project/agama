@@ -149,9 +149,9 @@ impl NetworkState {
     /// Removes a connection from the state.
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
-    pub fn remove_connection(&mut self, uuid: Uuid) -> Result<(), NetworkStateError> {
-        let Some(conn) = self.get_connection_by_uuid_mut(uuid) else {
-            return Err(NetworkStateError::UnknownConnection(uuid.to_string()));
+    pub fn remove_connection(&mut self, id: &str) -> Result<(), NetworkStateError> {
+        let Some(conn) = self.get_connection_mut(id) else {
+            return Err(NetworkStateError::UnknownConnection(id.to_string()));
         };
 
         conn.remove();
@@ -311,7 +311,7 @@ mod tests {
         let conn0 = Connection::new("eth0".to_string(), DeviceType::Ethernet);
         let uuid = conn0.uuid;
         state.add_connection(conn0).unwrap();
-        state.remove_connection(uuid).unwrap();
+        state.remove_connection("eth0".as_ref()).unwrap();
         let found = state.get_connection("eth0").unwrap();
         assert!(found.is_removed());
     }
@@ -319,7 +319,7 @@ mod tests {
     #[test]
     fn test_remove_unknown_connection() {
         let mut state = NetworkState::default();
-        let error = state.remove_connection(Uuid::new_v4()).unwrap_err();
+        let error = state.remove_connection("unknown".as_ref()).unwrap_err();
         assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
     }
 
@@ -542,6 +542,7 @@ impl TryFrom<NetworkConnection> for Connection {
             connection.config = config.into();
         }
 
+        connection.ip_config.addresses = conn.addresses;
         connection.ip_config.nameservers = conn.nameservers;
         connection.ip_config.gateway4 = conn.gateway4;
         connection.ip_config.gateway6 = conn.gateway6;

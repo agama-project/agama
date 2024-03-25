@@ -25,7 +25,7 @@ pub trait ConnectionInterface {
         let actions = self.actions().await;
         let (tx, rx) = oneshot::channel();
         actions
-            .send(Action::GetConnection(self.uuid(), tx))
+            .send(Action::GetConnectionByUuid(self.uuid(), tx))
             .unwrap();
         rx.await
             .unwrap()
