@@ -49,9 +49,9 @@ const Options = ({ children, ...props }) => {
  * @property {React.AriaAttributes["aria-controls"]} controls - A space-separated of one or more ID values
  *   referencing the elements whose contents or presence are controlled by the option.
  * @property {boolean} isSelected - Whether the option is selected or not.
- * @property {Omit<React.HTMLAttributes<HTMLInputElement>, "id" | "aria-controls">} props - Other props for the internal radio input
+ * @typedef {Omit<React.ComponentPropsWithoutRef<"input">, "aria-controls">} InputProps
  *
- * @param {React.PropsWithChildren<OptionProps>} props
+ * @param {React.PropsWithChildren<InputProps & OptionProps>} props
  */
 const Option = ({ id, controls, isSelected, children, ...props }) => {
   return (

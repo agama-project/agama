@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useState } from "react";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
@@ -52,7 +54,7 @@ const Html = ({ children, ...props }) => (
  * @param {function} props.onClose - Callback to execute when user closes the dialog
  * @param {function} props.onConfirm - Callback to execute when user closes the dialog
  */
-export default function DeviceSelectionDialog({ devices = [], isOpen = true, onClose, onConfirm, ...props }) {
+export default function DeviceSelectionDialog({ devices, isOpen, onClose, onConfirm, ...props }) {
   const [mode, setMode] = useState(SELECT_DISK_ID);
   const [disks, setDisks] = useState([]);
   const [vgDevices, setVgDevices] = useState([]);
@@ -62,7 +64,7 @@ export default function DeviceSelectionDialog({ devices = [], isOpen = true, onC
 
     switch (mode) {
       case SELECT_DISK_ID:
-        settings = { lvm: false, vgDevices };
+        settings = { lvm: false, devices: disks };
         break;
       case CREATE_LVM_ID:
         settings = { lvm: true, vgDevices };
@@ -84,9 +86,8 @@ export default function DeviceSelectionDialog({ devices = [], isOpen = true, onC
     <Popup
       title={_("Device for installing the system")}
       isOpen={isOpen}
-      variant="large"
+      className="large"
       {...props}
-      style={{ minBlockSize: "70dvh" }}
     >
       <Panels className="stack">
         <Panels.Options data-variant="buttons">
