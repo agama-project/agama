@@ -6,22 +6,19 @@
 
 use axum::{
     extract::State,
-    routing::{delete, get, post, put},
+    routing::put,
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
-use zbus::PropertyStream;
-use std::{collections::HashMap, pin::Pin};
-use tokio_stream::{Stream, StreamExt, StreamMap};
+use std::pin::Pin;
+use tokio_stream::{Stream, StreamExt};
 use crate::{
     error::Error,
-    web::{
-        common::{issues_router, progress_router, service_status_router},
-        Event,
-    },
+    web::Event
+    ,
 };
 use agama_lib::{
-    connection, error::ServiceError, users::{
+    error::ServiceError, users::{
         proxies::Users1Proxy, FirstUser, FirstUserSettings, UsersClient
     }
 };
@@ -117,6 +114,7 @@ pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceErro
     let state = UsersState { users };
     let router = Router::new()
         .route("/first_user", put(set_first_user).delete(remove_first_user))
+        .route("/root_password", put(set_root_password).delete(remove_root_password))
         .with_state(state);
     Ok(router)
 }
@@ -132,4 +130,23 @@ async fn set_first_user(
     ) -> Result<(), Error> {
     state.users.set_first_user(&config).await?;
     Ok(())
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct RootPasswordSettings {
+    pub value: String,
+    pub encrypted: bool,
+}
+
+async fn remove_root_password(State(state): State<UsersState<'_>>) -> Result<(), Error> {
+    state.users.remove_root_password().await?;
+    Ok(())
+}
+
+async fn set_root_password(
+    State(state): State<UsersState<'_>>,
+    Json(config) : Json<RootPasswordSettings>
+) -> Result<(), Error> {
+state.users.set_root_password(&config.value, config.encrypted).await?;
+Ok(())
 }

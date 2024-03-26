@@ -62,7 +62,8 @@ where
             "/network",
             network_service(dbus.clone(), network_adapter).await?,
         )
-        .add_service("/questions", questions_service(dbus).await?)
+        .add_service("/questions", questions_service(dbus.clone()).await?)
+        .add_service("/users", users_service(dbus.clone()).await?)
         .with_config(config)
         .build();
     Ok(router)

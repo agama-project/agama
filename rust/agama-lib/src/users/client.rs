@@ -92,6 +92,10 @@ impl<'a> UsersClient<'a> {
         Ok(self.users_proxy.set_root_password(value, encrypted).await?)
     }
 
+    pub async fn remove_root_password(&self) -> Result<u32, ServiceError> {
+        Ok(self.users_proxy.remove_root_password().await?)
+    }
+
     /// Whether the root password is set or not
     pub async fn is_root_password(&self) -> Result<bool, ServiceError> {
         Ok(self.users_proxy.root_password_set().await?)
