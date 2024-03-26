@@ -10,6 +10,7 @@ use axum::{
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
+use zbus::PropertyStream;
 use std::{collections::HashMap, pin::Pin};
 use tokio_stream::{Stream, StreamExt, StreamMap};
 use crate::{
@@ -30,24 +31,25 @@ struct UsersState<'a> {
     users: UsersClient<'a>,
 }
 
-/// Returns an stream that emits users related events coming from D-Bus.
+/// Returns streams that emits users related events coming from D-Bus.
 ///
 /// It emits the Event::RootPasswordChange, Event::RootSSHKeyChanged and Event::FirstUserChanged events.
 ///
 /// * `connection`: D-Bus connection to listen for events.
-/// * `map`: stream map to which it adds streams
-pub async fn add_users_streams(
+pub async fn users_streams(
     dbus: zbus::Connection,
-    mut map: StreamMap<&str, Pin<Box<dyn Stream<Item = Event> + Send>>>,
-) -> Result<StreamMap<&str, Pin<Box<dyn Stream<Item = Event> + Send>>>, Error> {
-    map.insert("first_user", Box::pin(first_user_changed_stream(dbus.clone()).await?));
-    map.insert("root_password", Box::pin(root_password_changed_stream(dbus.clone()).await?));
-    map.insert("root_sshkey", Box::pin(root_ssh_key_changed_stream(dbus.clone()).await?));
-    Ok(map)
+) -> Result<Vec<(String, Pin<Box<dyn Stream<Item = Event> + Send>>)>, Error> {
+    let result : Vec<(String, Pin<Box<dyn Stream<Item = Event> + Send>>)> = vec![
+      ("first_user".to_string(), Box::pin(first_user_changed_stream(dbus.clone()).await?)),
+      ("root_password".to_string(), Box::pin(root_password_changed_stream(dbus.clone()).await?)),
+      ("root_sshkey".to_string(), Box::pin(root_ssh_key_changed_stream(dbus.clone()).await?)),
+    ];
+
+    Ok(result)
 }
 
 async fn first_user_changed_stream(dbus: zbus::Connection,
-) -> Result<impl Stream<Item = Event>, Error> {
+) -> Result<impl Stream<Item = Event> + Send, Error> {
     let proxy = Users1Proxy::new(&dbus).await?;
     let stream = proxy
         .receive_first_user_changed()
@@ -69,7 +71,7 @@ async fn first_user_changed_stream(dbus: zbus::Connection,
 }
 
 async fn root_password_changed_stream(dbus: zbus::Connection,
-) -> Result<impl Stream<Item = Event>, Error> {
+) -> Result<impl Stream<Item = Event> + Send, Error> {
     let proxy = Users1Proxy::new(&dbus).await?;
     let stream = proxy
         .receive_root_password_set_changed()
@@ -85,7 +87,7 @@ async fn root_password_changed_stream(dbus: zbus::Connection,
 }
 
 async fn root_ssh_key_changed_stream(dbus: zbus::Connection,
-) -> Result<impl Stream<Item = Event>, Error> {
+) -> Result<impl Stream<Item = Event> + Send, Error> {
     let proxy = Users1Proxy::new(&dbus).await?;
     let stream = proxy
         .receive_root_sshkey_changed()
