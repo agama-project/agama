@@ -3,10 +3,10 @@ use std::process::Command;
 use agama_locale_data::{KeymapId, LocaleId};
 use zbus::{dbus_interface, Connection};
 
-use super::{helpers, Locale};
+use super::{helpers, L10n};
 
 #[dbus_interface(name = "org.opensuse.Agama1.Locale")]
-impl Locale {
+impl L10n {
     #[dbus_interface(property)]
     pub fn locales(&self) -> Vec<String> {
         self.locales.to_owned()
@@ -113,7 +113,7 @@ pub async fn export_dbus_objects(
     const PATH: &str = "/org/opensuse/Agama1/Locale";
 
     // When serving, request the service name _after_ exposing the main object
-    let locale_iface = Locale::new_with_locale(locale)?;
+    let locale_iface = L10n::new_with_locale(locale)?;
     connection.object_server().at(PATH, locale_iface).await?;
 
     Ok(())

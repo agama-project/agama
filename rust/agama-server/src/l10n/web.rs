@@ -1,6 +1,6 @@
 //! This module implements the web API for the localization module.
 
-use super::{keyboard::Keymap, locale::LocaleEntry, timezone::TimezoneEntry, Locale};
+use super::{keyboard::Keymap, locale::LocaleEntry, timezone::TimezoneEntry, L10n};
 use crate::{
     error::Error,
     l10n::helpers,
@@ -32,7 +32,7 @@ pub enum LocaleError {
 
 #[derive(Clone)]
 struct LocaleState {
-    locale: Arc<RwLock<Locale>>,
+    locale: Arc<RwLock<L10n>>,
     events: EventsSender,
 }
 
@@ -41,7 +41,7 @@ struct LocaleState {
 /// * `events`: channel to send the events to the main service.
 pub fn l10n_service(events: EventsSender) -> Router {
     let id = LocaleId::default();
-    let locale = Locale::new_with_locale(&id).unwrap();
+    let locale = L10n::new_with_locale(&id).unwrap();
     let state = LocaleState {
         locale: Arc::new(RwLock::new(locale)),
         events,
@@ -180,7 +180,7 @@ async fn get_config(State(state): State<LocaleState>) -> Json<LocaleConfig> {
 
 #[cfg(test)]
 mod tests {
-    use crate::l10n::{web::LocaleState, Locale};
+    use crate::l10n::{web::LocaleState, L10n};
     use agama_locale_data::{KeymapId, LocaleId};
     use std::sync::{Arc, RwLock};
     use tokio::{sync::broadcast::channel, test};
@@ -188,7 +188,7 @@ mod tests {
     fn build_state() -> LocaleState {
         let (tx, _) = channel(16);
         let default_code = LocaleId::default();
-        let locale = Locale::new_with_locale(&default_code).unwrap();
+        let locale = L10n::new_with_locale(&default_code).unwrap();
         LocaleState {
             locale: Arc::new(RwLock::new(locale)),
             events: tx,
