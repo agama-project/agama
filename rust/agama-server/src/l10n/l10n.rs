@@ -1,11 +1,14 @@
+use std::io;
+use std::process::Command;
+
 use crate::error::Error;
 use agama_locale_data::{KeymapId, LocaleId};
+use regex::Regex;
 
 use super::keyboard::KeymapsDatabase;
 use super::locale::LocalesDatabase;
 use super::timezone::TimezonesDatabase;
-use regex::Regex;
-use std::{io, process::Command};
+use super::{helpers, LocaleError};
 
 pub struct L10n {
     pub timezone: String,
@@ -59,10 +62,75 @@ impl L10n {
         Ok(locale)
     }
 
+    pub fn set_locales(&mut self, locales: &Vec<String>) -> Result<(), LocaleError> {
+        for loc in locales {
+            if !self.locales_db.exists(loc.as_str()) {
+                return Err(LocaleError::UnknownLocale(loc.to_string()))?;
+            }
+        }
+        self.locales = locales.clone();
+        Ok(())
+    }
+
+    pub fn set_timezone(&mut self, timezone: &str) -> Result<(), LocaleError> {
+        // TODO: modify exists() to receive an `&str`
+        if !self.timezones_db.exists(&timezone.to_string()) {
+            return Err(LocaleError::UnknownTimezone(timezone.to_string()))?;
+        }
+        self.timezone = timezone.to_owned();
+        Ok(())
+    }
+
+    pub fn set_keymap(&mut self, keymap_id: KeymapId) -> Result<(), LocaleError> {
+        if !self.keymaps_db.exists(&keymap_id) {
+            return Err(LocaleError::UnknownKeymap(keymap_id));
+        }
+
+        self.keymap = keymap_id;
+        Ok(())
+    }
+
+    // TODO: use LocaleError
     pub fn translate(&mut self, locale: &LocaleId) -> Result<(), Error> {
+        helpers::set_service_locale(&locale);
         self.timezones_db.read(&locale.language)?;
         self.locales_db.read(&locale.language)?;
         self.ui_locale = locale.clone();
+        Ok(())
+    }
+
+    // TODO: use LocaleError
+    pub fn set_ui_keymap(&mut self, keymap: KeymapId) -> Result<(), Error> {
+        let keymap = keymap.to_string();
+        Command::new("/usr/bin/localectl")
+            .args(["set-x11-keymap", &keymap])
+            .output()
+            .map_err(LocaleError::Commit)?;
+        Command::new("/usr/bin/setxkbmap")
+            .arg(keymap)
+            .env("DISPLAY", ":0")
+            .output()
+            .map_err(LocaleError::Commit)?;
+        Ok(())
+    }
+
+    // TODO: what should be returned value for commit?
+    pub fn commit(&self) -> Result<(), LocaleError> {
+        const ROOT: &str = "/mnt";
+
+        Command::new("/usr/bin/systemd-firstboot")
+            .args([
+                "--root",
+                ROOT,
+                "--force",
+                "--locale",
+                self.locales.first().unwrap_or(&"en_US.UTF-8".to_string()),
+                "--keymap",
+                &self.keymap.to_string(),
+                "--timezone",
+                &self.timezone,
+            ])
+            .status()?;
         Ok(())
     }
 

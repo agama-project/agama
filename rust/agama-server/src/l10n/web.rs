@@ -5,7 +5,6 @@ use super::{
 };
 use crate::{
     error::Error,
-    l10n::helpers,
     web::{Event, EventsSender},
 };
 use agama_locale_data::LocaleId;
@@ -15,10 +14,7 @@ use axum::{
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
-use std::{
-    process::Command,
-    sync::{Arc, RwLock},
-};
+use std::sync::{Arc, RwLock};
 
 #[derive(Clone)]
 struct LocaleState {
@@ -99,26 +95,19 @@ async fn set_config(
     let mut changes = LocaleConfig::default();
 
     if let Some(locales) = &value.locales {
-        for loc in locales {
-            if !data.locales_db.exists(loc.as_str()) {
-                return Err(LocaleError::UnknownLocale(loc.to_string()))?;
-            }
-        }
-        data.locales = locales.clone();
-        changes.locales = Some(data.locales.clone());
+        data.set_locales(&locales)?;
+        changes.locales = value.locales.clone();
     }
 
     if let Some(timezone) = &value.timezone {
-        if !data.timezones_db.exists(timezone) {
-            return Err(LocaleError::UnknownTimezone(timezone.to_string()))?;
-        }
-        data.timezone = timezone.to_owned();
-        changes.timezone = Some(data.timezone.clone());
+        data.set_timezone(timezone)?;
+        changes.timezone = value.timezone.clone();
     }
 
     if let Some(keymap_id) = &value.keymap {
-        data.keymap = keymap_id.parse().map_err(LocaleError::InvalidKeymap)?;
-        changes.keymap = Some(keymap_id.clone());
+        let keymap_id = keymap_id.parse().map_err(LocaleError::InvalidKeymap)?;
+        data.set_keymap(keymap_id)?;
+        changes.keymap = value.keymap.clone();
     }
 
     if let Some(ui_locale) = &value.ui_locale {
@@ -126,27 +115,17 @@ async fn set_config(
             .as_str()
             .try_into()
             .map_err(|_e| LocaleError::UnknownLocale(ui_locale.to_string()))?;
-
-        helpers::set_service_locale(&locale);
         data.translate(&locale)?;
         changes.ui_locale = Some(locale.to_string());
+
         _ = state.events.send(Event::LocaleChanged {
             locale: locale.to_string(),
         });
     }
 
     if let Some(ui_keymap) = &value.ui_keymap {
-        // data.ui_keymap = ui_keymap.parse().into::<Result<KeymapId, LocaleError>>()?;
-        data.ui_keymap = ui_keymap.parse().map_err(LocaleError::InvalidKeymap)?;
-        Command::new("/usr/bin/localectl")
-            .args(["set-x11-keymap", &ui_keymap])
-            .output()
-            .map_err(LocaleError::Commit)?;
-        Command::new("/usr/bin/setxkbmap")
-            .arg(ui_keymap)
-            .env("DISPLAY", ":0")
-            .output()
-            .map_err(LocaleError::Commit)?;
+        let ui_keymap = ui_keymap.parse().map_err(LocaleError::InvalidKeymap)?;
+        data.set_ui_keymap(ui_keymap)?;
     }
 
     _ = state.events.send(Event::L10nConfigChanged(changes));
@@ -161,9 +140,9 @@ async fn get_config(State(state): State<LocaleState>) -> Json<LocaleConfig> {
     let data = state.locale.read().unwrap();
     Json(LocaleConfig {
         locales: Some(data.locales.clone()),
-        keymap: Some(data.keymap()),
-        timezone: Some(data.timezone().to_string()),
-        ui_locale: Some(data.ui_locale().to_string()),
+        keymap: Some(data.keymap.to_string()),
+        timezone: Some(data.timezone.to_string()),
+        ui_locale: Some(data.ui_locale.to_string()),
         ui_keymap: Some(data.ui_keymap.to_string()),
     })
 }

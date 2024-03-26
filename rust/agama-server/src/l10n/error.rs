@@ -1,4 +1,4 @@
-use agama_locale_data::InvalidKeymap;
+use agama_locale_data::{InvalidKeymap, KeymapId};
 
 #[derive(thiserror::Error, Debug)]
 pub enum LocaleError {
@@ -6,6 +6,8 @@ pub enum LocaleError {
     UnknownLocale(String),
     #[error("Unknown timezone: {0}")]
     UnknownTimezone(String),
+    #[error("Unknown keymap: {0}")]
+    UnknownKeymap(KeymapId),
     #[error("Invalid keymap: {0}")]
     InvalidKeymap(#[from] InvalidKeymap),
     #[error("Could not apply the changes")]
