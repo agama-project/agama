@@ -66,6 +66,7 @@ impl Settings for FirstUser {
 }
 
 /// D-Bus client for the users service
+#[derive(Clone)]
 pub struct UsersClient<'a> {
     users_proxy: Users1Proxy<'a>,
 }

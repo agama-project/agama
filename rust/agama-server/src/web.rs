@@ -11,6 +11,7 @@ use crate::{
     network::{web::network_service, NetworkManagerAdapter},
     questions::web::{questions_service, questions_stream},
     software::web::{software_service, software_stream},
+    users::web::{users_service, add_users_streams},
     web::common::{issues_stream, progress_stream, service_status_stream},
 };
 use axum::Router;
@@ -105,7 +106,7 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
         )
         .await?,
     );
-
+    stream = add_users_streams(dbus.clone(), stream).await?;
     stream.insert("software", software_stream(dbus.clone()).await?);
     stream.insert(
         "software-status",
