@@ -46,7 +46,9 @@ const copy_files = [
 const plugins = [
   new Copy({ patterns: copy_files }),
   new Extract({ filename: "[name].css" }),
-  new CockpitPoPlugin(),
+  // the wrapper sets the main code called in the po.js files,
+  // the PO_DATA tag is replaced by the real translation data
+  new CockpitPoPlugin({ wrapper: "agama.locale(PO_DATA);" }),
   new CockpitRsyncPlugin({ dest: packageJson.name }),
   development && new ReactRefreshWebpackPlugin({ overlay: false }),
   // replace the "process.env.WEBPACK_SERVE" text in the source code by

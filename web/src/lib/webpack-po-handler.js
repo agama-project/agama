@@ -11,7 +11,7 @@ const path = require("path");
 // @param res HTTP response
 module.exports = function (req, res) {
   // the regexp was taken from the original Cockpit code :-)
-  const language = req.headers.cookie.replace(/(?:(?:^|.*;\s*)CockpitLang\s*=\s*([^;]*).*$)|^.*$/, "$1") || "";
+  const language = req.headers.cookie.replace(/(?:(?:^|.*;\s*)AgamaLang\s*=\s*([^;]*).*$)|^.*$/, "$1") || "";
   // the cookie uses "pt-br" format while the PO file is "pt_BR" :-/
   let [lang, country] = language.split("-");
   country = country?.toUpperCase();

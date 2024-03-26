@@ -26,6 +26,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useCancellablePromise, locationReload, setLocationSearch } from "~/utils";
 import cockpit from "../lib/cockpit";
 import { useInstallerClient } from "./installer";
+import agama from "~/agama";
 
 const L10nContext = React.createContext(null);
 
@@ -49,37 +50,43 @@ function useInstallerL10n() {
 }
 
 /**
- * Current language according to Cockpit (in xx_XX format).
+ * Current language (in xx_XX format).
  *
- * It takes the language from the CockpitLang cookie.
+ * It takes the language from the AgamaLang cookie.
  *
  * @return {string|undefined} Undefined if language is not set.
  */
-function cockpitLanguage() {
+function agamaLanguage() {
   // language from cookie, empty string if not set (regexp taken from Cockpit)
   // https://github.com/cockpit-project/cockpit/blob/98a2e093c42ea8cd2431cf15c7ca0e44bb4ce3f1/pkg/shell/shell-modals.jsx#L91
-  const languageString = decodeURIComponent(document.cookie.replace(/(?:(?:^|.*;\s*)CockpitLang\s*=\s*([^;]*).*$)|^.*$/, "$1"));
+  const languageString = decodeURIComponent(document.cookie.replace(/(?:(?:^|.*;\s*)AgamaLang\s*=\s*([^;]*).*$)|^.*$/, "$1"));
   if (languageString) {
     return languageString.toLowerCase();
   }
 }
 
 /**
- * Helper function for storing the Cockpit language.
+ * Helper function for storing the Agama language.
  *
- * Automatically converts the language from xx_XX to xx-xx, as it is the one used by Cockpit.
+ * Automatically converts the language from xx_XX to xx-xx, as it is the one used by Agama.
  *
  * @param {string} language - The new locale (e.g., "cs", "cs_CZ").
  * @return {boolean} True if the locale was changed.
  */
-function storeCockpitLanguage(language) {
-  const current = cockpitLanguage();
+function storeAgamaLanguage(language) {
+  const current = agamaLanguage();
   if (current === language) return false;
 
   // Code taken from Cockpit.
-  const cookie = "CockpitLang=" + encodeURIComponent(language) + "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
+  const cookie = "AgamaLang=" + encodeURIComponent(language) + "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
   document.cookie = cookie;
+
+  // for backward compatibility, CockpitLang cookie is needed to load correct po.js content from Cockpit
+  // TODO: remove after dropping Cockpit completely
+  const cockpit_cookie = "CockpitLang=" + encodeURIComponent(language) + "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
+  document.cookie = cockpit_cookie;
   window.localStorage.setItem("cockpit.lang", language);
+
   return true;
 }
 
@@ -238,16 +245,16 @@ function InstallerL10nProvider({ children }) {
     const wanted = lang || languageFromQuery();
 
     if (wanted === "xx" || wanted === "xx-xx") {
-      cockpit.language = wanted;
+      agama.language = wanted;
       setLanguage(wanted);
       return;
     }
 
-    const current = cockpitLanguage();
+    const current = agamaLanguage();
     const candidateLanguages = [wanted, current].concat(navigatorLanguages()).filter(l => l);
     const newLanguage = findSupportedLanguage(candidateLanguages) || "en-us";
 
-    let mustReload = storeCockpitLanguage(newLanguage);
+    let mustReload = storeAgamaLanguage(newLanguage);
     mustReload = await storeInstallerLanguage(newLanguage) || mustReload;
 
     if (mustReload) {
