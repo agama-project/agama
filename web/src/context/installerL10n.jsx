@@ -52,14 +52,14 @@ function useInstallerL10n() {
 /**
  * Current language (in xx_XX format).
  *
- * It takes the language from the AgamaLang cookie.
+ * It takes the language from the agamaLang cookie.
  *
  * @return {string|undefined} Undefined if language is not set.
  */
 function agamaLanguage() {
   // language from cookie, empty string if not set (regexp taken from Cockpit)
   // https://github.com/cockpit-project/cockpit/blob/98a2e093c42ea8cd2431cf15c7ca0e44bb4ce3f1/pkg/shell/shell-modals.jsx#L91
-  const languageString = decodeURIComponent(document.cookie.replace(/(?:(?:^|.*;\s*)AgamaLang\s*=\s*([^;]*).*$)|^.*$/, "$1"));
+  const languageString = decodeURIComponent(document.cookie.replace(/(?:(?:^|.*;\s*)agamaLang\s*=\s*([^;]*).*$)|^.*$/, "$1"));
   if (languageString) {
     return languageString.toLowerCase();
   }
@@ -78,7 +78,7 @@ function storeAgamaLanguage(language) {
   if (current === language) return false;
 
   // Code taken from Cockpit.
-  const cookie = "AgamaLang=" + encodeURIComponent(language) + "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
+  const cookie = "agamaLang=" + encodeURIComponent(language) + "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
   document.cookie = cookie;
 
   // for backward compatibility, CockpitLang cookie is needed to load correct po.js content from Cockpit

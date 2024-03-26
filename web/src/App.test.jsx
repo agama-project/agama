@@ -61,7 +61,7 @@ const changePhaseTo = phase => act(() => callbacks.onPhaseChange(phase));
 describe("App", () => {
   beforeEach(() => {
     // setting the language through a cookie
-    document.cookie = "AgamaLang=en-us; path=/;";
+    document.cookie = "agamaLang=en-us; path=/;";
     createClient.mockImplementation(() => {
       return {
         manager: {
@@ -94,7 +94,7 @@ describe("App", () => {
 
   afterEach(() => {
     // setting a cookie with already expired date removes it
-    document.cookie = "AgamaLang=; path=/; expires=" + new Date(0).toUTCString();
+    document.cookie = "agamaLang=; path=/; expires=" + new Date(0).toUTCString();
   });
 
   describe("when the software context is not initialized", () => {
