@@ -107,7 +107,7 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
         .await?,
     );
     for (id, user_stream) in users_streams(dbus.clone()).await? {
-        stream.insert(id.as_str(), user_stream);
+        stream.insert(id, user_stream);
     }
     stream.insert("software", software_stream(dbus.clone()).await?);
     stream.insert(

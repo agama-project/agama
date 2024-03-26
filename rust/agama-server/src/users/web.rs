@@ -6,7 +6,7 @@
 
 use axum::{
     extract::State,
-    routing::{get, post, put},
+    routing::{delete, get, post, put},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
@@ -22,7 +22,7 @@ use crate::{
 };
 use agama_lib::{
     connection, error::ServiceError, users::{
-        proxies::Users1Proxy, FirstUserSettings, UsersClient
+        proxies::Users1Proxy, FirstUser, FirstUserSettings, UsersClient
     }
 };
 
@@ -38,11 +38,14 @@ struct UsersState<'a> {
 /// * `connection`: D-Bus connection to listen for events.
 pub async fn users_streams(
     dbus: zbus::Connection,
-) -> Result<Vec<(String, Pin<Box<dyn Stream<Item = Event> + Send>>)>, Error> {
-    let result : Vec<(String, Pin<Box<dyn Stream<Item = Event> + Send>>)> = vec![
-      ("first_user".to_string(), Box::pin(first_user_changed_stream(dbus.clone()).await?)),
-      ("root_password".to_string(), Box::pin(root_password_changed_stream(dbus.clone()).await?)),
-      ("root_sshkey".to_string(), Box::pin(root_ssh_key_changed_stream(dbus.clone()).await?)),
+) -> Result<Vec<(&'static str, Pin<Box<dyn Stream<Item = Event> + Send>>)>, Error> {
+    const FIRST_USER_ID : &str = "first_user";
+    const ROOT_PASSWORD_ID : &str = "root_password";
+    const ROOT_SSHKEY_ID : &str = "root_sshkey";
+    let result : Vec<(&str, Pin<Box<dyn Stream<Item = Event> + Send>>)> = vec![
+      (FIRST_USER_ID, Box::pin(first_user_changed_stream(dbus.clone()).await?)),
+      (ROOT_PASSWORD_ID, Box::pin(root_password_changed_stream(dbus.clone()).await?)),
+      (ROOT_SSHKEY_ID, Box::pin(root_ssh_key_changed_stream(dbus.clone()).await?)),
     ];
 
     Ok(result)
@@ -113,6 +116,20 @@ pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceErro
     let users = UsersClient::new(dbus).await?;
     let state = UsersState { users };
     let router = Router::new()
+        .route("/first_user", put(set_first_user).delete(remove_first_user))
         .with_state(state);
     Ok(router)
+}
+
+async fn remove_first_user(State(state): State<UsersState<'_>>) -> Result<(), Error> {
+    state.users.remove_first_user().await?;
+    Ok(())
+}
+
+async fn set_first_user(
+        State(state): State<UsersState<'_>>,
+        Json(config) : Json<FirstUser>
+    ) -> Result<(), Error> {
+    state.users.set_first_user(&config).await?;
+    Ok(())
 }

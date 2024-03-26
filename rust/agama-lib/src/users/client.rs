@@ -3,11 +3,11 @@
 use super::proxies::{FirstUser as FirstUserFromDBus, Users1Proxy};
 use crate::error::ServiceError;
 use agama_settings::{settings::Settings, SettingValue, SettingsError};
-use serde::Serialize;
+use serde::{Serialize,Deserialize};
 use zbus::Connection;
 
 /// Represents the settings for the first user
-#[derive(Serialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct FirstUser {
     /// First user's full name
     pub full_name: String,
@@ -121,5 +121,9 @@ impl<'a> UsersClient<'a> {
                 std::collections::HashMap::new(),
             )
             .await
+    }
+
+    pub async fn remove_first_user(&self) -> zbus::Result<bool> {
+        Ok(self.users_proxy.remove_first_user().await? == 0)
     }
 }
