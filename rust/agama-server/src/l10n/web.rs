@@ -1,12 +1,14 @@
 //! This module implements the web API for the localization module.
 
-use super::{keyboard::Keymap, locale::LocaleEntry, timezone::TimezoneEntry, L10n};
+use super::{
+    error::LocaleError, keyboard::Keymap, locale::LocaleEntry, timezone::TimezoneEntry, L10n,
+};
 use crate::{
     error::Error,
     l10n::helpers,
     web::{Event, EventsSender},
 };
-use agama_locale_data::{InvalidKeymap, LocaleId};
+use agama_locale_data::LocaleId;
 use axum::{
     extract::State,
     routing::{get, put},
@@ -17,18 +19,6 @@ use std::{
     process::Command,
     sync::{Arc, RwLock},
 };
-
-#[derive(thiserror::Error, Debug)]
-pub enum LocaleError {
-    #[error("Unknown locale code: {0}")]
-    UnknownLocale(String),
-    #[error("Unknown timezone: {0}")]
-    UnknownTimezone(String),
-    #[error("Invalid keymap: {0}")]
-    InvalidKeymap(#[from] InvalidKeymap),
-    #[error("Could not apply the changes")]
-    Commit(#[from] std::io::Error),
-}
 
 #[derive(Clone)]
 struct LocaleState {
