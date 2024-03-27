@@ -40,18 +40,14 @@ const client = {
   onDisconnect: jest.fn()
 };
 
+jest.mock("~/languages.json", () => ({
+  "es-ar": "Español (Argentina)",
+  "cs-cz": "čeština",
+  "en-us": "English (US)",
+  "es-es": "Español"
+}));
+
 jest.mock("~/lib/cockpit", () => ({
-  gettext: term => term,
-  manifests: {
-    agama: {
-      locales: {
-        "es-ar": "Español (Argentina)",
-        "cs-cz": "čeština",
-        "en-us": "English (US)",
-        "es-es": "Español"
-      }
-    }
-  },
   spawn: jest.fn().mockResolvedValue()
 }));
 
