@@ -407,16 +407,19 @@ pub struct GeneralState {
     pub connectivity: bool,
     pub wireless_enabled: bool,
     pub networking_enabled: bool, // pub network_state: NMSTATE
-                                  // pub dns: GlobalDnsConfiguration <HashMap>
 }
 
 /// Access Point
+#[serde_as]
 #[derive(Default, Debug, Clone, Serialize, utoipa::ToSchema)]
 pub struct AccessPoint {
+    #[serde_as(as = "DisplayFromStr")]
     pub ssid: SSID,
     pub hw_address: String,
     pub strength: u8,
-    pub security_protocols: Vec<SecurityProtocol>,
+    pub flags: u32,
+    pub rsn_flags: u32,
+    pub wpa_flags: u32,
 }
 
 /// Network device

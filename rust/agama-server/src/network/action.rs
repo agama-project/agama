@@ -22,10 +22,7 @@ pub enum Action {
         Responder<Result<OwnedObjectPath, NetworkStateError>>,
     ),
     /// Add a new connection
-    NewConnection(
-        Connection,
-        Responder<Result<OwnedObjectPath, NetworkStateError>>,
-    ),
+    NewConnection(Connection, Responder<Result<(), NetworkStateError>>),
     /// Gets a connection by its id
     GetConnection(String, Responder<Option<Connection>>),
     /// Gets a connection by its Uuid

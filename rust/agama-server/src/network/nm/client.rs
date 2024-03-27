@@ -120,12 +120,17 @@ impl<'a> NetworkManagerClient<'a> {
                     let ssid = SSID(wproxy.ssid().await?);
                     let hw_address = wproxy.hw_address().await?;
                     let strength = wproxy.strength().await?;
+                    let flags = wproxy.flags().await?;
+                    let rsn_flags = wproxy.rsn_flags().await?;
+                    let wpa_flags = wproxy.wpa_flags().await?;
 
                     points.push(AccessPoint {
                         ssid,
                         hw_address,
                         strength,
-                        security_protocols: vec![],
+                        flags,
+                        rsn_flags,
+                        wpa_flags,
                     })
                 }
             }

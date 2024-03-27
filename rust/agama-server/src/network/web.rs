@@ -9,7 +9,11 @@ use axum::{
     Json, Router,
 };
 
-use super::{error::NetworkStateError, model::GeneralState, Action, Adapter};
+use super::{
+    error::NetworkStateError,
+    model::{AccessPoint, GeneralState},
+    Action, Adapter,
+};
 
 use crate::network::{model::Connection, model::Device, NetworkSystem};
 use agama_lib::error::ServiceError;
@@ -116,9 +120,9 @@ async fn update_general_state(
 }
 
 #[utoipa::path(get, path = "/network/wifi", responses(
-  (status = 200, description = "List of wireless networks", body = Vec<String>)
+  (status = 200, description = "List of wireless networks", body = Vec<AccessPoint>)
 ))]
-async fn wifi_networks(State(state): State<NetworkState>) -> Json<Vec<String>> {
+async fn wifi_networks(State(state): State<NetworkState>) -> Json<Vec<AccessPoint>> {
     let (tx, rx) = oneshot::channel();
     state.actions.send(Action::RefreshScan(tx)).unwrap();
     let _ = rx.await.unwrap();
@@ -126,11 +130,12 @@ async fn wifi_networks(State(state): State<NetworkState>) -> Json<Vec<String>> {
     state.actions.send(Action::GetAccessPoints(tx)).unwrap();
 
     let access_points = rx.await.unwrap();
+
     let mut networks = vec![];
+
     for ap in access_points {
-        let ssid = ap.ssid.to_string();
-        if !ssid.is_empty() && !networks.contains(&ssid) {
-            networks.push(ssid);
+        if !ap.ssid.to_string().is_empty() {
+            networks.push(ap);
         }
     }
 
@@ -171,18 +176,13 @@ async fn add_connection(
 ) -> Result<Json<Connection>, NetworkError> {
     let (tx, rx) = oneshot::channel();
 
-    state
-        .actions
-        .send(Action::AddConnection(
-            conn.id.clone(),
-            conn.device_type(),
-            tx,
-        ))
-        .unwrap();
-    let _ = rx.await.unwrap();
-
     let conn = Connection::try_from(conn)?;
     let id = conn.id.clone();
+    state
+        .actions
+        .send(Action::NewConnection(conn.clone(), tx))
+        .unwrap();
+    let _ = rx.await.unwrap();
 
     state
         .actions
@@ -236,16 +236,17 @@ async fn update_connection(
         .send(Action::GetConnection(id.clone(), tx))
         .unwrap();
     let current_conn = rx.await.unwrap();
+    let mut conn = Connection::try_from(conn)?;
     match current_conn {
         Some(current) => {
             if current.id != id.clone() {
                 return Err(NetworkError::UnknownConnection(id));
+            } else {
+                conn.uuid = current.uuid;
             }
         }
         None => return Err(NetworkError::UnknownConnection(id)),
     }
-
-    let conn = Connection::try_from(conn)?;
 
     state
         .actions

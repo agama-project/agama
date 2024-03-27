@@ -91,8 +91,7 @@ impl<T: Adapter> NetworkSystem<T> {
                 tx.send(self.state.access_points.clone()).unwrap();
             }
             Action::NewConnection(conn, tx) => {
-                let result = self.new_connection_action(conn).await;
-                tx.send(result).unwrap();
+                tx.send(self.state.add_connection(conn.clone())).unwrap();
             }
             Action::GetGeneralState(tx) => {
                 let config = self.state.general_state.clone();
@@ -190,20 +189,6 @@ impl<T: Adapter> NetworkSystem<T> {
         ty: DeviceType,
     ) -> Result<OwnedObjectPath, NetworkStateError> {
         let conn = Connection::new(name, ty);
-        // TODO: handle tree handling problems
-        self.state.add_connection(conn.clone())?;
-        let mut tree = self.tree.lock().await;
-        let path = tree
-            .add_connection(&conn)
-            .await
-            .expect("Could not update the D-Bus tree");
-        Ok(path)
-    }
-
-    async fn new_connection_action(
-        &mut self,
-        conn: Connection,
-    ) -> Result<OwnedObjectPath, NetworkStateError> {
         // TODO: handle tree handling problems
         self.state.add_connection(conn.clone())?;
         let mut tree = self.tree.lock().await;

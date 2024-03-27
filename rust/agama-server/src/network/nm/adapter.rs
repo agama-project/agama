@@ -40,6 +40,10 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
 
         let mut state = NetworkState::default();
 
+        if config.general_state {
+            state.general_state = general_state.clone();
+        }
+
         if config.devices {
             state.devices = self
                 .client
