@@ -93,7 +93,7 @@ export default function NetworkPage() {
   useEffect(() => {
     if (connections !== undefined) return;
 
-    client.settings().then((s) => setWifiScanSupported(s.wirelessEnabled));
+    client.settings().then((s) => setWifiScanSupported(s.wireless_enabled));
     client.connections().then(setConnections);
   }, [client, connections]);
 
@@ -106,7 +106,6 @@ export default function NetworkPage() {
   };
 
   const ready = connections !== undefined;
-  console.log(connections);
 
   const WifiConnections = () => {
     const activeWifiConnections = connections.filter(c => c.wireless);

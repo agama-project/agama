@@ -38,7 +38,7 @@ const usingDHCP = (method) => method === METHODS.AUTO;
 export default function IpSettingsForm({ connection, onClose }) {
   const client = useInstallerClient();
   const [addresses, setAddresses] = useState(connection.addresses);
-  const [nameServers, setNameServers] = useState(connection.nameservers.map(a => {
+  const [nameservers, setNameservers] = useState(connection.nameservers.map(a => {
     return { address: a };
   }));
   const [method, setMethod] = useState(connection.method4);
@@ -95,7 +95,7 @@ export default function IpSettingsForm({ connection, onClose }) {
     e.preventDefault();
 
     const sanitizedAddresses = cleanAddresses(addresses);
-    const sanitizedNameServers = cleanAddresses(nameServers);
+    const sanitizedNameservers = cleanAddresses(nameservers);
 
     if (!validate(sanitizedAddresses)) return;
 
@@ -105,7 +105,7 @@ export default function IpSettingsForm({ connection, onClose }) {
       addresses: sanitizedAddresses,
       method4: method,
       gatewa4: gateway,
-      nameservers: sanitizedNameServers.map(s => s.address)
+      nameservers: sanitizedNameservers.map(s => s.address)
     };
 
     client.network.updateConnection(updatedConnection)
@@ -167,7 +167,7 @@ export default function IpSettingsForm({ connection, onClose }) {
           />
         </FormGroup>
 
-        <DnsDataList servers={nameServers} updateDnsServers={setNameServers} />
+        <DnsDataList servers={nameservers} updateDnsServers={setNameservers} />
       </Form>
 
       <Popup.Actions>

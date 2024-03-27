@@ -22,9 +22,9 @@
 // @ts-check
 
 import DBusClient from "../dbus";
-import { NetworkManagerAdapter } from "./network_manager";
+import { NetworkManagerAdapter, securityFromFlags } from "./network_manager";
 import cockpit from "../../lib/cockpit";
-import { createConnection, ConnectionTypes, ConnectionState } from "./model";
+import { createConnection, ConnectionTypes, ConnectionState, createAccessPoint } from "./model";
 import { formatIp } from "./utils";
 
 const SERVICE_NAME = "org.opensuse.Agama1";
@@ -116,18 +116,23 @@ class NetworkClient {
   }
 
   fromApiConnection(connection) {
+    const nameservers = (connection.nameservers || []);
     const addresses = (connection.addresses || []).map((address) => {
       const [ip, netmask] = address.split("/");
       return { address: ip, prefix: netmask };
     });
 
-    return { ...connection, addresses };
+    return { ...connection, addresses, nameservers };
   }
 
   toApiConnection(connection) {
     const addresses = (connection.addresses || []).map((addr) => formatIp(addr));
+    const { iface, gateway4, gateway6, ...conn } = connection;
 
-    return { ...connection, addresses };
+    if (gateway4?.trim() !== "") conn.gateway4 = gateway4;
+    if (gateway6?.trim() !== "") conn.gateway6 = gateway6;
+
+    return { ...conn, addresses, interface: iface };
   }
 
   /**
@@ -135,8 +140,17 @@ class NetworkClient {
    *
    * @return {Promise<AccessPoint[]>}
    */
-  accessPoints() {
-    return this.client.get("/network/wifi");
+  async accessPoints() {
+    const access_points = await this.client.get("/network/wifi");
+
+    return access_points.map(ap => {
+      return createAccessPoint({
+        ssid: ap.ssid,
+        hwAddress: ap.hw_address,
+        strength: ap.strength,
+        security: securityFromFlags(ap.flags, ap.wpa_flags, ap.rsn_flags)
+      });
+    });
   }
 
   /**
@@ -145,7 +159,7 @@ class NetworkClient {
    * @param {Connection} connection - connection to be activated
    */
   async connectTo(connection) {
-    return this.client.post("/network/connections", connection);
+    return this.client.post("/network/connections", this.toApiConnection(connection));
   }
 
   /**
@@ -156,14 +170,15 @@ class NetworkClient {
    */
   async addAndConnectTo(ssid, options) {
     // duplicated code (see network manager adapter)
-    const wireless = { ssid };
+    const wireless = { ssid, mode: "infrastructure" };
     if (options.security) wireless.security = options.security;
     if (options.password) wireless.password = options.password;
     if (options.hidden) wireless.hidden = options.hidden;
+    if (options.mode) wireless.mode = options.mode;
 
     const connection = createConnection({
       id: ssid,
-      wireless
+      wireless,
     });
 
     // the connection is automatically activated when written
@@ -236,6 +251,8 @@ class NetworkClient {
 
   /*
   * Returns network general settings
+  *
+   * @return {Promise<NetworkSettings>}
   */
   settings() {
     return this.client.get("/network/state");

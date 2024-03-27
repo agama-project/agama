@@ -82,7 +82,7 @@ const SecurityProtocols = Object.freeze({
  * @property {string} id
  * @property {string} iface
  * @property {IPAddress[]} addresses
- * @property {string[]} nameServers
+ * @property {string[]} nameservers
  * @property {string} gateway4
  * @property {string} gateway6
  * @property {string} method4
@@ -109,8 +109,8 @@ const SecurityProtocols = Object.freeze({
 /**
 * @typedef {object} NetworkSettings
 * @property {boolean} connectivity
-* @property {boolean} wirelessEnabled
-* @property {boolean} networkingEnabled
+* @property {boolean} wireless_enabled
+* @property {boolean} networking_enabled
 * @property {string} hostname
 
 /**
@@ -126,11 +126,11 @@ const SecurityProtocols = Object.freeze({
  * @param {string} [options.gateway6] - Connection IPv6 gateway
  * @param {string} [options.iface] - Connection interface
  * @param {IPAddress[]} [options.addresses] Connection addresses
- * @param {string[]} [options.nameServers] Connection nameservers
+ * @param {string[]} [options.nameservers] Connection nameservers
  * @param {object} [options.wireless] Wireless Settings
  * @return {Connection}
  */
-const createConnection = ({ id, iface, method4, method6, gateway4, gateway6, addresses, nameServers, wireless }) => {
+const createConnection = ({ id, iface, method4, method6, gateway4, gateway6, addresses, nameservers, wireless }) => {
   const connection = {
     id,
     iface,
@@ -139,7 +139,7 @@ const createConnection = ({ id, iface, method4, method6, gateway4, gateway6, add
     gateway4: gateway4 || "",
     gateway6: gateway6 || "",
     addresses: addresses || [],
-    nameServers: nameServers || []
+    nameservers: nameservers || []
   };
 
   if (wireless) connection.wireless = wireless;

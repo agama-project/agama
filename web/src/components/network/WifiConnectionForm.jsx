@@ -87,12 +87,12 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
 
   return (
     <Form id={`${ssid}-connection-form`} onSubmit={accept} innerRef={formRef}>
-      { error &&
+      {error &&
         <Alert variant="warning" isInline title={_("Something went wrong")}>
           <p>{_("Please, review provided settings and try again.")}</p>
-        </Alert> }
+        </Alert>}
 
-      { network?.hidden &&
+      {network?.hidden &&
         // TRANSLATORS: SSID (Wifi network name) configuration
         <FormGroup fieldId="ssid" label={_("SSID")}>
           <TextInput
@@ -103,9 +103,9 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
             value={ssid}
             onChange={(_, value) => setSsid(value)}
           />
-        </FormGroup> }
+        </FormGroup>}
 
-      { /* TRANSLATORS: Wifi security configuration (password protected or not) */ }
+      { /* TRANSLATORS: Wifi security configuration (password protected or not) */}
       <FormGroup fieldId="security" label={_("Security")}>
         <FormSelect
           id="security"
@@ -116,7 +116,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
           {selectorOptions}
         </FormSelect>
       </FormGroup>
-      { security === "wpa-psk" &&
+      {security === "wpa-psk" &&
         // TRANSLATORS: WiFi password
         <FormGroup fieldId="password" label={_("WPA Password")}>
           <PasswordInput
@@ -126,7 +126,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
             value={password}
             onChange={(_, value) => setPassword(value)}
           />
-        </FormGroup> }
+        </FormGroup>}
       <ActionGroup>
         <Button type="submit" variant="primary" isLoading={isConnecting} isDisabled={isConnecting}>
           {/* TRANSLATORS: button label, connect to a WiFi network */}

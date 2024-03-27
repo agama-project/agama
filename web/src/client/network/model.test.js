@@ -34,7 +34,7 @@ describe("createConnection", () => {
       method4: "auto",
       method6: "auto",
       addresses: [],
-      nameServers: [],
+      nameservers: [],
       gateway4: "",
       gateway6: ""
     });
@@ -47,7 +47,7 @@ describe("createConnection", () => {
     expect(connection.method4).toEqual("auto");
     expect(connection.gateway4).toEqual("auto");
     expect(connection.addresses).toEqual([]);
-    expect(connection.nameServers).toEqual(addresses);
+    expect(connection.nameservers).toEqual(addresses);
   });
 });
 
