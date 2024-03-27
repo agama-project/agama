@@ -27,6 +27,7 @@ import { useCancellablePromise, locationReload, setLocationSearch } from "~/util
 import cockpit from "../lib/cockpit";
 import { useInstallerClient } from "./installer";
 import agama from "~/agama";
+import supportedLanguages from "~/languages.json";
 
 const L10nContext = React.createContext(null);
 
@@ -154,7 +155,7 @@ function navigatorLanguages() {
  * @return {string|undefined} Undefined if none of the given languages is supported.
  */
 function findSupportedLanguage(languages) {
-  const supported = Object.keys(cockpit.manifests.agama?.locales || {});
+  const supported = Object.keys(supportedLanguages);
 
   for (const candidate of languages) {
     const [language, country] = candidate.split("-");

@@ -15,7 +15,6 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const webpack = require('webpack');
 const po_handler = require("./src/lib/webpack-po-handler");
-const manifests_handler = require("./src/lib/webpack-manifests-handler");
 
 /* A standard nodejs and webpack pattern */
 const production = process.env.NODE_ENV === 'production';
@@ -111,16 +110,6 @@ module.exports = {
         ws: true,
         // ignore SSL problems (self-signed certificate)
         secure: false,
-      },
-      // forward the manifests.js request and patch the response with the
-      // current Agama manifest from the ./src/manifest.json file
-      "/manifests.js": {
-        target: cockpitTarget + "/cockpit/@localhost/",
-        // ignore SSL problems (self-signed certificate)
-        secure: false,
-        // the response is modified by the onProxyRes handler
-        selfHandleResponse : true,
-        onProxyRes: manifests_handler,
       },
     },
     // use https so Cockpit uses wss:// when connecting to the backend

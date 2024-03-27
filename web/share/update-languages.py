@@ -23,9 +23,7 @@ from argparse import ArgumentParser
 from langtable import language_name
 from pathlib import Path
 import json
-import re
 import subprocess
-
 
 class Locale:
     language: str
@@ -76,20 +74,16 @@ class PoFile:
         return self.path.stem
 
 
-class Manifest:
-    """ This class takes care of updating the manifest file"""
+class Languages:
+    """ This class takes care of generating the supported languages file"""
 
     def __init__(self, path: Path):
         self.path = path
-        self.__read__()
-
-    def __read__(self):
-        with open(self.path) as file:
-            self.content = json.load(file)
+        self.content = dict()
 
     def update(self, po_files, lang2territory: str, threshold: int):
         """
-        Updates the list of locales in the manifest file
+        Generate the list of supported locales
 
         It does not write the changes to file system. Use the write() function
         for that.
@@ -124,32 +118,31 @@ class Manifest:
                 supported.append(locale)
 
         languages = [loc.language for loc in supported]
-        self.content["locales"] = dict()
         for locale in supported:
             include_territory = languages.count(locale.language) > 1
-            self.content["locales"][locale.code()] = locale.name(
-                include_territory)
+            self.content[locale.code()] = locale.name(include_territory)
 
     def write(self):
         with open(self.path, "w+") as file:
-            json.dump(self.content, file, indent=4, ensure_ascii=False)
+            json.dump(self.content, file, indent=4, ensure_ascii=False,
+                      sort_keys=True)
 
 
-def update_manifest(args):
+def update_languages(args):
     """Command to update the manifest.json file"""
-    manifest = Manifest(Path(args.manifest))
+    languages = Languages(Path(args.file))
     paths = [path for path in Path(args.po_directory).glob("*.po")]
     with open(args.territories) as file:
         lang2territory = json.load(file)
-    manifest.update(paths, lang2territory, args.threshold)
-    manifest.write()
+    languages.update(paths, lang2territory, args.threshold)
+    languages.write()
 
 
 if __name__ == "__main__":
-    parser = ArgumentParser(prog="locales.py")
-    parser.set_defaults(func=update_manifest)
+    parser = ArgumentParser(prog="update-languages.py")
+    parser.set_defaults(func=update_languages)
     parser.add_argument(
-        "manifest", type=str, help="Path to the manifest file",
+        "file", type=str, help="Path to the output file",
     )
     parser.add_argument(
         "--po-directory", type=str, help="Directory containing the po files",
