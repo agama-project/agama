@@ -5,7 +5,7 @@ use std::{pin::Pin, task::Poll};
 use agama_lib::{
     error::ServiceError,
     progress::Progress,
-    proxies::{IssuesProxy, ProgressProxy, ServiceStatusProxy},
+    proxies::{IssuesProxy, ProgressProxy, ServiceStatusProxy, ValidationProxy},
 };
 use axum::{extract::State, routing::get, Json, Router};
 use pin_project::pin_project;
@@ -346,6 +346,109 @@ async fn build_issues_proxy<'a>(
     path: &str,
 ) -> Result<IssuesProxy<'a>, zbus::Error> {
     let proxy = IssuesProxy::builder(dbus)
+        .destination(destination.to_string())?
+        .path(path.to_string())?
+        .build()
+        .await?;
+    Ok(proxy)
+}
+
+/// Builds a router to the `org.opensuse.Agama1.Validation` interface of a given
+/// D-Bus object.
+///
+/// ```no_run
+/// # use axum::{extract::State, routing::get, Json, Router};
+/// # use agama_lib::connection;
+/// # use agama_server::web::common::validation_router;
+/// # use tokio_test;
+///
+/// # tokio_test::block_on(async {
+/// async fn hello(state: State<HelloWorldState>) {};
+///
+/// #[derive(Clone)]
+/// struct HelloWorldState {};
+///
+/// let dbus = connection().await.unwrap();
+/// let issues_router = validation_router(
+///   &dbus, "org.opensuse.HelloWorld", "/org/opensuse/hello"
+/// ).await.unwrap();
+/// let router: Router<HelloWorldState> = Router::new()
+///   .route("/hello", get(hello))
+///   .merge(validation_router)
+///   .with_state(HelloWorldState {});
+/// });
+/// ```
+///
+/// * `dbus`: D-Bus connection.
+/// * `destination`: D-Bus service name.
+/// * `path`: D-Bus object path.
+pub async fn validation_router<T>(
+    dbus: &zbus::Connection,
+    destination: &str,
+    path: &str,
+) -> Result<Router<T>, ServiceError> {
+    let proxy = build_validation_proxy(dbus, destination, path).await?;
+    let state = ValidationState { proxy };
+    Ok(Router::new().route("/", get(validation)).with_state(state))
+}
+
+#[derive(Clone, Serialize, utoipa::ToSchema)]
+pub struct ValidationResult {
+    valid: bool,
+    errors: Vec<String>,
+}
+
+async fn validation(
+    State(state): State<ValidationState<'_>>,
+) -> Result<Json<ValidationResult>, Error> {
+    let validation = ValidationResult {
+        valid: state.proxy.valid().await?,
+        errors: state.proxy.errors().await?,
+    };
+    Ok(Json(validation))
+}
+
+#[derive(Clone)]
+struct ValidationState<'a> {
+    proxy: ValidationProxy<'a>,
+}
+
+/// Builds a stream of the changes in the the `org.opensuse.Agama1.Issues`
+/// interface of the given D-Bus object.
+///
+/// * `dbus`: D-Bus connection.
+/// * `destination`: D-Bus service name.
+/// * `path`: D-Bus object path.
+pub async fn validation_stream(
+    dbus: zbus::Connection,
+    destination: &'static str,
+    path: &'static str,
+) -> Result<Pin<Box<dyn Stream<Item = Event> + Send>>, Error> {
+    let proxy = build_validation_proxy(&dbus, destination, path).await?;
+    let stream = proxy
+        .receive_errors_changed()
+        .await
+        .then(move |change| async move {
+            if let Ok(errors) = change.get().await {
+                Some(Event::ValidationChanged {
+                    service: destination.to_string(),
+                    path: path.to_string(),
+                    errors,
+                })
+            } else {
+                None
+            }
+        })
+        .filter_map(|e| e);
+    Ok(Box::pin(stream))
+}
+
+async fn build_validation_proxy<'a>(
+    dbus: &zbus::Connection,
+    destination: &str,
+    path: &str,
+) -> Result<ValidationProxy<'a>, zbus::Error> {
+    let proxy = ValidationProxy::builder(dbus)
         .destination(destination.to_string())?
         .path(path.to_string())?
         .build()

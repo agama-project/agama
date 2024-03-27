@@ -3,11 +3,11 @@
 use super::proxies::{FirstUser as FirstUserFromDBus, Users1Proxy};
 use crate::error::ServiceError;
 use agama_settings::{settings::Settings, SettingValue, SettingsError};
-use serde::{Serialize,Deserialize};
+use serde::{Deserialize, Serialize};
 use zbus::Connection;
 
 /// Represents the settings for the first user
-#[derive(Serialize, Deserialize, Clone, Debug, Default)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default, utoipa::ToSchema)]
 pub struct FirstUser {
     /// First user's full name
     pub full_name: String,

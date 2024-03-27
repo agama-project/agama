@@ -1,5 +1,7 @@
 use crate::l10n::web::LocaleConfig;
-use agama_lib::{manager::InstallationPhase, progress::Progress, software::SelectedBy, users::FirstUserSettings};
+use agama_lib::{
+    manager::InstallationPhase, progress::Progress, software::SelectedBy, users::FirstUserSettings,
+};
 use serde::Serialize;
 use std::collections::HashMap;
 use tokio::sync::broadcast::{Receiver, Sender};
@@ -23,7 +25,7 @@ pub enum Event {
     },
     FirstUserChanged(FirstUserSettings),
     RootPasswordChanged {
-        password_is_set: bool
+        password_is_set: bool,
     },
     RootSSHKeyChanged {
         key: Option<String>,
@@ -44,6 +46,11 @@ pub enum Event {
         service: String,
         path: String,
         issues: Vec<Issue>,
+    },
+    ValidationChanged {
+        service: String,
+        path: String,
+        errors: Vec<String>,
     },
 }
 
