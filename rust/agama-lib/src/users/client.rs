@@ -7,7 +7,7 @@ use serde::{Serialize,Deserialize};
 use zbus::Connection;
 
 /// Represents the settings for the first user
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct FirstUser {
     /// First user's full name
     pub full_name: String,

@@ -6,7 +6,7 @@
 
 use axum::{
     extract::State,
-    routing::put,
+    routing::{get, put},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
@@ -113,9 +113,10 @@ pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceErro
     let users = UsersClient::new(dbus).await?;
     let state = UsersState { users };
     let router = Router::new()
+        .route("/", get(get_info))
         .route("/first_user", put(set_first_user).delete(remove_first_user))
         .route("/root_password", put(set_root_password).delete(remove_root_password))
-        .route("/root_sshkey", put(set_root_password).delete(remove_root_password))
+        .route("/root_sshkey", put(set_root_sshkey).delete(remove_root_sshkey))
         .with_state(state);
     Ok(router)
 }
@@ -163,4 +164,35 @@ async fn set_root_sshkey(
 ) -> Result<(), Error> {
 state.users.set_root_sshkey(key.as_str()).await?;
 Ok(())
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct RootInfo {
+    password: bool,
+    sshkey: Option<String>,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct UsersInfo {
+    user: Option<FirstUser>,
+    root: RootInfo,
+}
+
+async fn get_info(State(state): State<UsersState<'_>>) 
+        -> Result<Json<UsersInfo>, Error> {
+    let mut result = UsersInfo::default();
+    let first_user = state.users.first_user().await?;
+    if first_user.user_name.is_empty() {
+        result.user = None;
+    } else {
+        result.user = Some(first_user);
+    }
+    result.root.password = state.users.is_root_password().await?;
+    let ssh_key = state.users.root_ssh_key().await?;
+    if ssh_key.is_empty() {
+        result.root.sshkey = None;
+    } else {
+        result.root.sshkey = Some(ssh_key);
+    }
+    Ok(Json(result))
 }
