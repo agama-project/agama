@@ -115,6 +115,7 @@ pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceErro
     let router = Router::new()
         .route("/first_user", put(set_first_user).delete(remove_first_user))
         .route("/root_password", put(set_root_password).delete(remove_root_password))
+        .route("/root_sshkey", put(set_root_password).delete(remove_root_password))
         .with_state(state);
     Ok(router)
 }
@@ -148,5 +149,18 @@ async fn set_root_password(
     Json(config) : Json<RootPasswordSettings>
 ) -> Result<(), Error> {
 state.users.set_root_password(&config.value, config.encrypted).await?;
+Ok(())
+}
+
+async fn remove_root_sshkey(State(state): State<UsersState<'_>>) -> Result<(), Error> {
+    state.users.set_root_sshkey("").await?;
+    Ok(())
+}
+
+async fn set_root_sshkey(
+    State(state): State<UsersState<'_>>,
+    Json(key) : Json<String>
+) -> Result<(), Error> {
+state.users.set_root_sshkey(key.as_str()).await?;
 Ok(())
 }
