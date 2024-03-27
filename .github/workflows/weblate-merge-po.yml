@@ -92,7 +92,7 @@ jobs:
         if: steps.check_changes.outputs.po_updated == 'true'
         working-directory: ./agama
         run: |
-          web/share/update-languages.py web/src/languages.json
+          web/share/update-languages.py > web/src/languages.json
           # use a unique branch to avoid possible conflicts with already existing branches
           git checkout -b "po_merge_${GITHUB_RUN_ID}"
           git commit -a -m "Update web PO files"$'\n\n'"Agama-weblate commit: `git -C ../agama-weblate rev-parse HEAD`"

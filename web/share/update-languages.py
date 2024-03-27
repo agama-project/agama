@@ -19,11 +19,16 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+#
+# This script generates the list of supported languages in JSON format.
+#
+
 from argparse import ArgumentParser
 from langtable import language_name
 from pathlib import Path
 import json
 import subprocess
+import sys
 
 class Locale:
     language: str
@@ -77,8 +82,7 @@ class PoFile:
 class Languages:
     """ This class takes care of generating the supported languages file"""
 
-    def __init__(self, path: Path):
-        self.path = path
+    def __init__(self):
         self.content = dict()
 
     def update(self, po_files, lang2territory: str, threshold: int):
@@ -105,14 +109,16 @@ class Languages:
             if locale.territory is None:
                 print(
                     "could not find a territory for '{language}'"
-                    .format(language=locale.language)
+                    .format(language=locale.language),
+                    file=sys.stderr
                 )
             elif po_file.coverage() < threshold:
                 print(
                     "not enough coverage for '{language}' ({coverage}%)"
                     .format(
                         language=locale.code(),
-                        coverage=po_file.coverage())
+                        coverage=po_file.coverage()),
+                    file=sys.stderr
                 )
             else:
                 supported.append(locale)
@@ -122,28 +128,24 @@ class Languages:
             include_territory = languages.count(locale.language) > 1
             self.content[locale.code()] = locale.name(include_territory)
 
-    def write(self):
-        with open(self.path, "w+") as file:
-            json.dump(self.content, file, indent=4, ensure_ascii=False,
-                      sort_keys=True)
+    def dump(self):
+        json.dump(self.content, sys.stdout, indent=4, ensure_ascii=False,
+                  sort_keys=True)
 
 
 def update_languages(args):
-    """Command to update the manifest.json file"""
-    languages = Languages(Path(args.file))
+    """Print the supported languages in JSON format"""
+    languages = Languages()
     paths = [path for path in Path(args.po_directory).glob("*.po")]
     with open(args.territories) as file:
         lang2territory = json.load(file)
     languages.update(paths, lang2territory, args.threshold)
-    languages.write()
+    languages.dump()
 
 
 if __name__ == "__main__":
     parser = ArgumentParser(prog="update-languages.py")
     parser.set_defaults(func=update_languages)
-    parser.add_argument(
-        "file", type=str, help="Path to the output file",
-    )
     parser.add_argument(
         "--po-directory", type=str, help="Directory containing the po files",
         default="web/po"
