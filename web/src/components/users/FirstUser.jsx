@@ -82,7 +82,7 @@ const UserData = ({ user, actions }) => {
   );
 };
 
-const UsernameSuggestions = ({ entries, onSelect, setInsideDropDown }) => {
+const UsernameSuggestions = ({ entries, onSelect, setInsideDropDown, focusedIndex = -1 }) => {
   return (
     <Menu
       aria-label={_("Username suggestion dropdown")}
@@ -96,6 +96,7 @@ const UsernameSuggestions = ({ entries, onSelect, setInsideDropDown }) => {
             <MenuItem
               key={index}
               itemId={index}
+              isFocused={focusedIndex === index}
               onClick={() => onSelect(suggestion)}
             >
               { /* TRANSLATORS: dropdown username suggestions */}
@@ -131,6 +132,8 @@ export default function FirstUser() {
   const [isSettingPassword, setIsSettingPassword] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [insideDropDown, setInsideDropDown] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
     cancellablePromise(client.users.getUser()).then(userValues => {
@@ -220,9 +223,36 @@ export default function FirstUser() {
   const submitDisable = formValues.userName === "" || (isSettingPassword && !usingValidPassword);
 
   const displaySuggestions = !formValues.userName && formValues.fullName && showSuggestions;
+  useEffect(() => {
+    if (displaySuggestions) {
+      setFocusedIndex(-1);
+      setSuggestions(suggestUsernames(formValues.fullName));
+    }
+  }, [displaySuggestions, formValues.fullName]);
+
   const onSuggestionSelected = (suggestion) => {
     setInsideDropDown(false);
     setFormValues({ ...formValues, userName: suggestion });
+  };
+
+  const handleKeyDown = (event) => {
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault(); // Prevent page scrolling
+        setFocusedIndex((prevIndex) => (prevIndex + 1) % suggestions.length);
+        break;
+      case 'ArrowUp':
+        event.preventDefault(); // Prevent page scrolling
+        setFocusedIndex((prevIndex) => (prevIndex - 1 + suggestions.length) % suggestions.length);
+        break;
+      case 'Enter':
+        if (focusedIndex >= 0) {
+          onSuggestionSelected(suggestions[focusedIndex]);
+        }
+        break;
+      default:
+        break;
+    }
   };
 
   if (isLoading) return <Skeleton />;
@@ -266,14 +296,16 @@ export default function FirstUser() {
                 label={_("Username")}
                 isRequired
                 onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
               />
               <If
                 condition={displaySuggestions}
                 then={
                   <UsernameSuggestions
-                    entries={suggestUsernames(formValues.fullName)}
+                    entries={suggestions}
                     onSelect={onSuggestionSelected}
                     setInsideDropDown={setInsideDropDown}
+                    focusedIndex={focusedIndex}
                   />
                 }
               />
