@@ -151,6 +151,23 @@ class HTTPClient {
   }
 
   /**
+   * @param {string} url - Endpoint URL (e.g., "/l10n/config").
+   * @return {Promise<object>} Server response.
+   */
+  async delete(url) {
+    const response = await fetch(`${this.baseUrl}/${url}`, {
+      method: "DELETE",
+    });
+
+    try {
+      return await response.json();
+    } catch (e) {
+      console.warn("Expecting a JSON response", e);
+      return response.status === 200;
+    }
+  }
+
+  /**
    * Registers a handler for a given type of events.
    *
    * @param {string} type - Event type (e.g., "LocaleChanged").

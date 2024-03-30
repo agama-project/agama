@@ -68,6 +68,7 @@ export default function OverviewPage() {
     >
       <ProductSection />
       <L10nSection />
+      <UsersSection showErrors={showErrors} />
     </Page>
   );
 }

@@ -21,12 +21,9 @@
 
 // @ts-check
 
-import DBusClient from "./dbus";
 import { WithValidation } from "./mixins";
 
-const USERS_SERVICE = "org.opensuse.Agama.Manager1";
-const USERS_IFACE = "org.opensuse.Agama.Users1";
-const USERS_PATH = "/org/opensuse/Agama/Users1";
+const USERS_PATH = "/users/info"; // TODO: it should be /users/ when routing in rs is solved
 
 /**
 * @typedef {object} UserResult
@@ -56,10 +53,10 @@ const USERS_PATH = "/org/opensuse/Agama/Users1";
  */
 class UsersBaseClient {
   /**
-   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
+   * @param {import("./http").HTTPClient} client - HTTP client.
    */
-  constructor(address = undefined) {
-    this.client = new DBusClient(USERS_SERVICE, address);
+  constructor(client) {
+    this.client = client;
   }
 
   /**
@@ -68,8 +65,12 @@ class UsersBaseClient {
    * @return {Promise<User>}
    */
   async getUser() {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    const [fullName, userName, password, autologin] = proxy.FirstUser;
+    const proxy = await this.client.get(USERS_PATH);
+    if (proxy.user === undefined) {
+      return { fullName: "", userName: "", password: "", autologin: false };
+    }
+
+    const [fullName, userName, password, autologin] = proxy.user;
     return { fullName, userName, password, autologin };
   }
 
@@ -79,8 +80,8 @@ class UsersBaseClient {
    * @return {Promise<boolean>}
    */
   async isRootPasswordSet() {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    return proxy.RootPasswordSet;
+    const proxy = await this.client.get(USERS_PATH);
+    return proxy.root.password;
   }
 
   /**
@@ -90,16 +91,9 @@ class UsersBaseClient {
    * @return {Promise<UserResult>} returns an object with the result and the issues found if error
    */
   async setUser(user) {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    const [result, issues] = await proxy.SetFirstUser(
-      user.fullName,
-      user.userName,
-      user.password,
-      user.autologin,
-      {}
-    );
+    const result = await this.client.put("/users/user", user);
 
-    return { result, issues };
+    return { result, issues: [] }; // TODO: check how to handle issues and result. Maybe separate call to validate?
   }
 
   /**
@@ -108,9 +102,7 @@ class UsersBaseClient {
    * @return {Promise<boolean>} whether the operation was successful or not
    */
   async removeUser() {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    const result = await proxy.RemoveFirstUser();
-    return result === 0;
+    return this.client.delete("/users/user");
   }
 
   /**
@@ -120,9 +112,7 @@ class UsersBaseClient {
    * @return {Promise<boolean>} whether the operation was successful or not
    */
   async setRootPassword(password) {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    const result = await proxy.SetRootPassword(password, false);
-    return result === 0;
+    return this.client.put("/users/root_password", { value: password, encrypted: false });
   }
 
   /**
@@ -131,9 +121,7 @@ class UsersBaseClient {
    * @return {Promise<boolean>} whether the operation was successful or not
    */
   async removeRootPassword() {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    const result = await proxy.RemoveRootPassword();
-    return result === 0;
+    return this.client.delete("/users/root_password");
   }
 
   /**
@@ -142,8 +130,8 @@ class UsersBaseClient {
    * @return {Promise<String>} SSH public key or an empty string if it is not set
    */
   async getRootSSHKey() {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    return proxy.RootSSHKey;
+    const proxy = await this.client.get(USERS_PATH);
+    return proxy.root.password || "";
   }
 
   /**
@@ -153,9 +141,7 @@ class UsersBaseClient {
    * @return {Promise<boolean>} whether the operation was successful or not
    */
   async setRootSSHKey(key) {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    const result = await proxy.SetRootSSHKey(key);
-    return result === 0;
+    return this.client.put("/users/root_sshkey", key);
   }
 
   /**
@@ -165,15 +151,15 @@ class UsersBaseClient {
    * @return {import ("./dbus").RemoveFn} function to disable the callback
    */
   onUsersChange(handler) {
-    return this.client.onObjectChanged(USERS_PATH, USERS_IFACE, changes => {
-      if (changes.RootPasswordSet) {
+    return this.client.ws.onEvent((event) => {
+      if (event.type === "RootPasswordChanged") {
         // @ts-ignore
-        return handler({ rootPasswordSet: changes.RootPasswordSet.v });
-      } else if (changes.RootSSHKey) {
-        return handler({ rootSSHKey: changes.RootSSHKey.v.toString() });
-      } else if (changes.FirstUser) {
+        return handler({ rootPasswordSet: event.password_is_set });
+      } else if (event.type === "RootSSHKeyChanged") {
+        return handler({ rootSSHKey: event.key.toString() });
+      } else if (event.type === "FirstUserChanged") {
         // @ts-ignore
-        const [fullName, userName, password, autologin] = changes.FirstUser.v;
+        const { fullName, userName, password, autologin } = event;
         return handler({ firstUser: { fullName, userName, password, autologin } });
       }
     });
@@ -183,6 +169,6 @@ class UsersBaseClient {
 /**
  * Client to interact with the Agama users service
  */
-class UsersClient extends WithValidation(UsersBaseClient, USERS_PATH) { }
+class UsersClient extends WithValidation(UsersBaseClient, "users/validation", "/org/opensuse/Agama/Users1") { }
 
 export { UsersClient };
