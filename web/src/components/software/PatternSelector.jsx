@@ -134,14 +134,16 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
 
   const groups = groupPatterns(visiblePatterns);
 
-  const renderPatternOption = (pattern) => (
-    <>
+  const renderPatternOption = (pattern) => {
+    return (
       <div>
-        <b>{pattern.summary}</b>
+        <div>
+          <b>{pattern.summary}</b>
+        </div>
+        <div>{pattern.description}</div>
       </div>
-      <div>{pattern.description}</div>
-    </>
-  );
+    );
+  }
 
   const selector = sortGroups(groups).map((groupName) => {
     const selectedIds = groups[groupName].filter((p) => p.selectedBy !== SelectedBy.NONE).map((p) =>
@@ -159,6 +161,8 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
           onOptionClick={onToggle}
           optionIdKey="name"
           selectedIds={selectedIds}
+          autoSelectionCheck={pattern => pattern.selectedBy === SelectedBy.AUTO}
+          data-items-type="agama/patterns"
         />
       </Section>
     );
