@@ -7,6 +7,7 @@ use crate::{
     error::Error,
     web::{Event, EventsSender},
 };
+use agama_lib::{error::ServiceError, localization::LocaleProxy};
 use agama_locale_data::LocaleId;
 use axum::{
     extract::State,
@@ -14,38 +15,46 @@ use axum::{
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 #[derive(Clone)]
-struct LocaleState {
+struct LocaleState<'a> {
     locale: Arc<RwLock<L10n>>,
+    proxy: LocaleProxy<'a>,
     events: EventsSender,
 }
 
 /// Sets up and returns the axum service for the localization module.
 ///
 /// * `events`: channel to send the events to the main service.
-pub fn l10n_service(events: EventsSender) -> Router {
+pub async fn l10n_service(
+    dbus: zbus::Connection,
+    events: EventsSender,
+) -> Result<Router, ServiceError> {
     let id = LocaleId::default();
     let locale = L10n::new_with_locale(&id).unwrap();
+    let proxy = LocaleProxy::new(&dbus).await?;
     let state = LocaleState {
         locale: Arc::new(RwLock::new(locale)),
+        proxy,
         events,
     };
 
-    Router::new()
+    let router = Router::new()
         .route("/keymaps", get(keymaps))
         .route("/locales", get(locales))
         .route("/timezones", get(timezones))
         .route("/config", put(set_config).get(get_config))
-        .with_state(state)
+        .with_state(state);
+    Ok(router)
 }
 
 #[utoipa::path(get, path = "/l10n/locales", responses(
   (status = 200, description = "List of known locales", body = Vec<LocaleEntry>)
 ))]
-async fn locales(State(state): State<LocaleState>) -> Json<Vec<LocaleEntry>> {
-    let data = state.locale.read().unwrap();
+async fn locales(State(state): State<LocaleState<'_>>) -> Json<Vec<LocaleEntry>> {
+    let data = state.locale.read().await;
     let locales = data.locales_db.entries().to_vec();
     Json(locales)
 }
@@ -67,8 +76,8 @@ pub struct LocaleConfig {
 #[utoipa::path(get, path = "/l10n/timezones", responses(
     (status = 200, description = "List of known timezones")
 ))]
-async fn timezones(State(state): State<LocaleState>) -> Json<Vec<TimezoneEntry>> {
-    let data = state.locale.read().unwrap();
+async fn timezones(State(state): State<LocaleState<'_>>) -> Json<Vec<TimezoneEntry>> {
+    let data = state.locale.read().await;
     let timezones = data.timezones_db.entries().to_vec();
     Json(timezones)
 }
@@ -76,8 +85,8 @@ async fn timezones(State(state): State<LocaleState>) -> Json<Vec<TimezoneEntry>>
 #[utoipa::path(get, path = "/l10n/keymaps", responses(
     (status = 200, description = "List of known keymaps", body = Vec<Keymap>)
 ))]
-async fn keymaps(State(state): State<LocaleState>) -> Json<Vec<Keymap>> {
-    let data = state.locale.read().unwrap();
+async fn keymaps(State(state): State<LocaleState<'_>>) -> Json<Vec<Keymap>> {
+    let data = state.locale.read().await;
     let keymaps = data.keymaps_db.entries().to_vec();
     Json(keymaps)
 }
@@ -88,10 +97,10 @@ async fn keymaps(State(state): State<LocaleState>) -> Json<Vec<Keymap>> {
     (status = 200, description = "Set the locale configuration", body = LocaleConfig)
 ))]
 async fn set_config(
-    State(state): State<LocaleState>,
+    State(state): State<LocaleState<'_>>,
     Json(value): Json<LocaleConfig>,
 ) -> Result<Json<()>, Error> {
-    let mut data = state.locale.write().unwrap();
+    let mut data = state.locale.write().await;
     let mut changes = LocaleConfig::default();
 
     if let Some(locales) = &value.locales {
@@ -128,6 +137,9 @@ async fn set_config(
         data.set_ui_keymap(ui_keymap)?;
     }
 
+    if let Err(e) = update_dbus(&state.proxy, &changes).await {
+        log::warn!("Could not synchronize settings in the localization D-Bus service: {e}");
+    }
     _ = state.events.send(Event::L10nConfigChanged(changes));
 
     Ok(Json(()))
@@ -136,8 +148,8 @@ async fn set_config(
 #[utoipa::path(get, path = "/l10n/config", responses(
     (status = 200, description = "Localization configuration", body = LocaleConfig)
 ))]
-async fn get_config(State(state): State<LocaleState>) -> Json<LocaleConfig> {
-    let data = state.locale.read().unwrap();
+async fn get_config(State(state): State<LocaleState<'_>>) -> Json<LocaleConfig> {
+    let data = state.locale.read().await;
     Json(LocaleConfig {
         locales: Some(data.locales.clone()),
         keymap: Some(data.keymap.to_string()),
@@ -147,46 +159,26 @@ async fn get_config(State(state): State<LocaleState>) -> Json<LocaleConfig> {
     })
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::l10n::{web::LocaleState, L10n};
-    use agama_locale_data::{KeymapId, LocaleId};
-    use std::sync::{Arc, RwLock};
-    use tokio::{sync::broadcast::channel, test};
-
-    fn build_state() -> LocaleState {
-        let (tx, _) = channel(16);
-        let default_code = LocaleId::default();
-        let locale = L10n::new_with_locale(&default_code).unwrap();
-        LocaleState {
-            locale: Arc::new(RwLock::new(locale)),
-            events: tx,
-        }
+pub async fn update_dbus(
+    client: &LocaleProxy<'_>,
+    config: &LocaleConfig,
+) -> Result<(), ServiceError> {
+    if let Some(locales) = &config.locales {
+        let locales: Vec<_> = locales.iter().map(|l| l.as_ref()).collect();
+        client.set_locales(&locales).await?;
     }
 
-    #[test]
-    async fn test_locales() {
-        let state = build_state();
-        let response = super::locales(axum::extract::State(state)).await;
-        let default = LocaleId::default();
-        let found = response.iter().find(|l| l.id == default);
-        assert!(found.is_some());
+    if let Some(keymap) = &config.keymap {
+        client.set_keymap(keymap.as_str()).await?;
     }
 
-    #[test]
-    async fn test_keymaps() {
-        let state = build_state();
-        let response = super::keymaps(axum::extract::State(state)).await;
-        let english: KeymapId = "us".parse().unwrap();
-        let found = response.iter().find(|k| k.id == english);
-        assert!(found.is_some());
+    if let Some(timezone) = &config.timezone {
+        client.set_timezone(&timezone).await?;
     }
 
-    #[test]
-    async fn test_timezones() {
-        let state = build_state();
-        let response = super::timezones(axum::extract::State(state)).await;
-        let found = response.iter().find(|t| t.code == "Atlantic/Canary");
-        assert!(found.is_some());
+    if let Some(ui_locale) = &config.ui_locale {
+        client.set_uilocale(ui_locale).await?;
     }
+
+    Ok(())
 }

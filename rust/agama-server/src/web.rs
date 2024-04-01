@@ -54,7 +54,7 @@ where
         .expect("Could not connect to NetworkManager to read the configuration");
 
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
-        .add_service("/l10n", l10n_service(events.clone()))
+        .add_service("/l10n", l10n_service(dbus.clone(), events.clone()).await?)
         .add_service("/manager", manager_service(dbus.clone()).await?)
         .add_service("/software", software_service(dbus.clone()).await?)
         .add_service(
