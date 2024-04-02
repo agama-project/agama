@@ -120,7 +120,7 @@ async fn root_ssh_key_changed_stream(
 
 /// Sets up and returns the axum service for the software module.
 pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
-    const DBUS_SERVICE: &str = "org.opensuse.Agama.Users1";
+    const DBUS_SERVICE: &str = "org.opensuse.Agama.Manager1";
     const DBUS_PATH: &str = "/org/opensuse/Agama/Users1";
 
     let users = UsersClient::new(dbus.clone()).await?;

@@ -66,7 +66,8 @@ class UsersBaseClient {
    */
   async getUser() {
     const proxy = await this.client.get(USERS_PATH);
-    if (proxy.user === undefined) {
+    console.log(proxy.user);
+    if (proxy.user === null) {
       return { fullName: "", userName: "", password: "", autologin: false };
     }
 
