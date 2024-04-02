@@ -134,16 +134,14 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
 
   const groups = groupPatterns(visiblePatterns);
 
-  const renderPatternOption = (pattern) => {
-    return (
+  const renderPatternOption = (pattern) => (
+    <div>
       <div>
-        <div>
-          <b>{pattern.summary}</b>
-        </div>
-        <div>{pattern.description}</div>
+        <b>{pattern.summary}</b>
       </div>
-    );
-  }
+      <div>{pattern.description}</div>
+    </div>
+  );
 
   const selector = sortGroups(groups).map((groupName) => {
     const selectedIds = groups[groupName].filter((p) => p.selectedBy !== SelectedBy.NONE).map((p) =>
