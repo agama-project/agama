@@ -20,8 +20,9 @@
  */
 
 // @ts-check
-import React from 'react';
-import { noop } from '~/utils';
+import React from "react";
+import { _ } from "~/i18n";
+import { noop } from "~/utils";
 
 /**
  * @callback onSelectionChangeCallback
@@ -61,7 +62,9 @@ import { noop } from '~/utils';
  * @param {function} props.renderOption=noop - Function used for rendering options.
  * @param {string} [props.optionIdKey="id"] - Key used for retrieve options id.
  * @param {Array<*>} [props.selectedIds=[]] - Identifiers for selected options.
+ * @param {function} props.autoSelectionCheck=noop - Function used to check if option should be marked as auto selected.
  * @param {onSelectionChangeCallback} [props.onSelectionChange=noop] - Callback to be called when the selection changes.
+ * @param {function|undefined} [props.onOptionClick] - Callback to be called when the selection changes.
  * @param {object} [props.props] - Other props sent to the internal selector <ul> component
  */
 const Selector = ({
@@ -71,10 +74,14 @@ const Selector = ({
   renderOption = noop,
   optionIdKey = "id",
   selectedIds = [],
+  autoSelectionCheck = noop,
   onSelectionChange = noop,
+  onOptionClick,
   ...props
 }) => {
-  const onOptionClick = (optionId) => {
+  const onOptionClicked = (optionId) => {
+    if (typeof onOptionClick === "function") return onOptionClick(optionId);
+
     const alreadySelected = selectedIds.includes(optionId);
 
     if (!isMultiple) {
@@ -90,12 +97,13 @@ const Selector = ({
   };
 
   return (
-    <ul { ...props } id={id} data-type="agama/list" role="grid">
-      { options.map(option => {
+    <ul {...props} id={id} data-type="agama/list" role="grid">
+      {options.map((option) => {
         const optionId = option[optionIdKey];
         const optionHtmlId = `${id}-option-${optionId}`;
         const isSelected = selectedIds.includes(optionId);
-        const onClick = () => onOptionClick(optionId);
+        const isAutoSelected = isSelected && autoSelectionCheck(option);
+        const onClick = () => onOptionClicked(optionId);
 
         return (
           <li
@@ -104,15 +112,20 @@ const Selector = ({
             role="row"
             onClick={onClick}
             aria-selected={isSelected || undefined}
+            data-auto-selected={isAutoSelected || undefined}
           >
             <div role="gridcell">
-              <input
-                type={isMultiple ? "checkbox" : "radio"}
-                checked={isSelected}
-                onChange={onClick}
-                aria-labelledby={optionHtmlId}
-              />
-              { renderOption(option) }
+              <div>
+                <input
+                  type={isMultiple ? "checkbox" : "radio"}
+                  checked={isSelected}
+                  onChange={onClick}
+                  aria-labelledby={optionHtmlId}
+                  data-auto-selected={isAutoSelected || undefined}
+                />
+                {isAutoSelected && <div><span>{_("auto selected")}</span></div>}
+              </div>
+              {renderOption(option)}
             </div>
           </li>
         );

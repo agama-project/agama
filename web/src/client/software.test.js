@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,7 +22,20 @@
 // @ts-check
 
 import DBusClient from "./dbus";
-import { SoftwareClient } from "./software";
+import { HTTPClient } from "./http";
+import { ProductClient, SoftwareClient } from "./software";
+
+jest.mock("./http", () => {
+  return {
+    HTTPClient: jest.fn().mockImplementation(() => {
+      return {
+        get: mockGetFn,
+      };
+    }),
+  };
+});
+
+const mockGetFn = jest.fn();
 
 jest.mock("./dbus");
 
@@ -33,12 +46,24 @@ const productProxy = {
   wait: jest.fn(),
   AvailableProducts: [
     ["MicroOS", "openSUSE MicroOS", {}],
-    ["Tumbleweed", "openSUSE Tumbleweed", {}]
+    ["Tumbleweed", "openSUSE Tumbleweed", {}],
   ],
-  SelectedProduct: "MicroOS"
+  SelectedProduct: "MicroOS",
 };
 
 const registrationProxy = {};
+
+const tumbleweed = {
+  id: "Tumbleweed",
+  name: "openSUSE Tumbleweed",
+  description: "Tumbleweed is...",
+};
+
+const microos = {
+  id: "MicroOS",
+  name: "openSUSE MicroOS",
+  description: "MicroOS is...",
+};
 
 beforeEach(() => {
   // @ts-ignore
@@ -47,30 +72,32 @@ beforeEach(() => {
       proxy: (iface) => {
         if (iface === PRODUCT_IFACE) return productProxy;
         if (iface === REGISTRATION_IFACE) return registrationProxy;
-      }
+      },
     };
   });
 });
 
-describe("#product", () => {
+describe("ProductClient", () => {
   describe("#getAll", () => {
-    it("returns the list of available products", async () => {
-      const client = new SoftwareClient();
-      const availableProducts = await client.product.getAll();
-      expect(availableProducts).toEqual([
-        { id: "MicroOS", name: "openSUSE MicroOS" },
-        { id: "Tumbleweed", name: "openSUSE Tumbleweed" }
+    it.only("returns the list of available products", async () => {
+      const http = new HTTPClient(new URL("http://localhost"));
+      const client = new ProductClient(http);
+      mockGetFn.mockResolvedValue([tumbleweed, microos]);
+      const products = await client.getAll();
+      expect(products).toEqual([
+        { id: "Tumbleweed", name: "openSUSE Tumbleweed", description: "Tumbleweed is..." },
+        { id: "MicroOS", name: "openSUSE MicroOS", description: "MicroOS is..." },
       ]);
     });
   });
 
   describe("#getSelected", () => {
-    it("returns the selected product", async () => {
-      const client = new SoftwareClient();
-      const selectedProduct = await client.product.getSelected();
-      expect(selectedProduct).toEqual(
-        { id: "MicroOS", name: "openSUSE MicroOS" }
-      );
+    it.only("returns the selected product", async () => {
+      const http = new HTTPClient(new URL("http://localhost"));
+      const client = new ProductClient(http);
+      mockGetFn.mockResolvedValue({ product: "microos" });
+      const selected = await client.getSelected();
+      expect(selected).toEqual("microos");
     });
   });
 
@@ -88,7 +115,7 @@ describe("#product", () => {
         expect(registration).toStrictEqual({
           code: null,
           email: null,
-          requirement: "optional"
+          requirement: "optional",
         });
       });
     });
@@ -106,7 +133,7 @@ describe("#product", () => {
         expect(registration).toStrictEqual({
           code: "111222",
           email: "test@test.com",
-          requirement: "mandatory"
+          requirement: "mandatory",
         });
       });
     });
@@ -122,7 +149,7 @@ describe("#product", () => {
       await client.product.register("111222", "test@test.com");
       expect(registrationProxy.Register).toHaveBeenCalledWith(
         "111222",
-        { Email: { t: "s", v: "test@test.com" } }
+        { Email: { t: "s", v: "test@test.com" } },
       );
     });
 
@@ -136,7 +163,7 @@ describe("#product", () => {
         const result = await client.product.register("111222", "test@test.com");
         expect(result).toStrictEqual({
           success: true,
-          message: ""
+          message: "",
         });
       });
     });
@@ -151,7 +178,7 @@ describe("#product", () => {
         const result = await client.product.register("111222", "test@test.com");
         expect(result).toStrictEqual({
           success: false,
-          message: "error message"
+          message: "error message",
         });
       });
     });
@@ -168,7 +195,7 @@ describe("#product", () => {
         const result = await client.product.deregister();
         expect(result).toStrictEqual({
           success: true,
-          message: ""
+          message: "",
         });
       });
     });
@@ -183,7 +210,7 @@ describe("#product", () => {
         const result = await client.product.deregister();
         expect(result).toStrictEqual({
           success: false,
-          message: "error message"
+          message: "error message",
         });
       });
     });

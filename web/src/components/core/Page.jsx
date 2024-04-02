@@ -162,8 +162,7 @@ const BackAction = () => {
  * @param {string} [props.title="Agama"] - The title for the page. By default it
  *   uses the name of the tool, do not mark it for translation.
  * @param {boolean} [props.mountSidebar=true] - Whether include the core/Sidebar component.
- * @param {JSX.Element[]} [props.children] - The page content.
- *
+ * @param {React.ReactNode} [props.children] - The page content.
  */
 const Page = ({
   icon,

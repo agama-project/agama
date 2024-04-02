@@ -30,7 +30,11 @@ pub enum Event {
     RootSSHKeyChanged {
         key: Option<String>,
     },
-    PatternsChanged(HashMap<String, SelectedBy>),
+    // TODO: it should include the full software proposal or, at least,
+    // all the relevant changes.
+    SoftwareProposalChanged {
+        patterns: HashMap<String, SelectedBy>,
+    },
     QuestionsChanged,
     InstallationPhaseChanged {
         phase: InstallationPhase,

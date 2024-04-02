@@ -41,7 +41,6 @@ use utoipa::OpenApi;
         schemas(crate::network::model::Device),
         schemas(crate::network::model::Connection),
         schemas(agama_lib::network::types::DeviceType),
-        schemas(crate::software::web::PatternEntry),
         schemas(crate::software::web::SoftwareConfig),
         schemas(crate::software::web::SoftwareProposal),
         schemas(crate::manager::web::InstallerStatus),

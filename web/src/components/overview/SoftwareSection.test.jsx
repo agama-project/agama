@@ -30,19 +30,17 @@ import { SoftwareSection } from "~/components/overview";
 jest.mock("~/client");
 
 const kdePattern = {
-  kde: [
-    "Graphical Environments",
-    "Packages providing the Plasma desktop environment and applications from KDE.",
-    "./pattern-kde",
-    "KDE Applications and Plasma 5 Desktop",
-    "1110"
-  ]
+  "name": "kde",
+  "category": "Graphical Environments",
+  "icon": "./pattern-kde",
+  "description": "Packages providing the Plasma desktop environment and applications from KDE.",
+  "summary": "KDE Applications and Plasma Desktop",
+  "order": "1110",
 };
 
 let getStatusFn = jest.fn().mockResolvedValue(IDLE);
 let getProgressFn = jest.fn().mockResolvedValue({});
 let getIssuesFn = jest.fn().mockResolvedValue([]);
-let patternsFn = jest.fn().mockResolvedValue(kdePattern);
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
@@ -53,8 +51,7 @@ beforeEach(() => {
         getIssues: getIssuesFn,
         onStatusChange: noop,
         onProgressChange: noop,
-        patterns: patternsFn,
-        getUsedSpace: jest.fn().mockResolvedValue("500 MB")
+        getProposal: jest.fn().mockResolvedValue({ size: "500 MiB" }),
       },
     };
   });
@@ -63,35 +60,12 @@ beforeEach(() => {
 describe("when the proposal is calculated", () => {
   beforeEach(() => {
     getStatusFn = jest.fn().mockResolvedValue(IDLE);
-    patternsFn = jest.fn().mockResolvedValue(kdePattern);
   });
 
   it("renders the required space", async () => {
     installerRender(<SoftwareSection showErrors />);
     await screen.findByText("Installation will take");
-    await screen.findByText("500 MB");
-  });
-
-  describe("patterns are available", () => {
-    it("the header is a link", async () => {
-      const { container } = installerRender(<SoftwareSection showErrors />);
-      // wait until the component is fully rendered
-      await screen.findByText("Installation will take");
-      expect(container.querySelector("h2 a[href='/software']")).not.toBeNull();
-    });
-  });
-
-  describe("no patterns are available", () => {
-    beforeEach(() => {
-      patternsFn = jest.fn().mockResolvedValue({});
-    });
-
-    it("the header is a plain text", async () => {
-      const { container } = installerRender(<SoftwareSection showErrors />);
-      // wait until the component is fully rendered
-      await screen.findByText("Installation will take");
-      expect(container.querySelector("h2 a")).toBeNull();
-    });
+    await screen.findByText("500 MiB");
   });
 
   describe("and there are errors", () => {
@@ -110,7 +84,7 @@ describe("when the proposal is being calculated", () => {
   beforeEach(() => {
     getStatusFn = jest.fn().mockResolvedValue(BUSY);
     getProgressFn = jest.fn().mockResolvedValue(
-      { message: "Initializing target repositories", current: 1, total: 4, finished: false }
+      { message: "Initializing target repositories", current: 1, total: 4, finished: false },
     );
   });
 

@@ -145,7 +145,7 @@ const WithStatus = (superclass, status_path, service_name) =>
      * Register a callback to run when the "CurrentInstallationPhase" changes
      *
      * @param {function} handler - callback function
-     * @return {function} function to disable the callback
+     * @return {import ("./http").RemoveFn} function to disable the callback
      */
     onStatusChange(handler) {
       return this.client.onEvent("ServiceStatusChanged", ({ status, service }) => {
@@ -202,7 +202,7 @@ const WithProgress = (superclass, progress_path, service_name) =>
      * Register a callback to run when the progress changes
      *
      * @param {ProgressHandler} handler - callback function
-     * @return {import ("./dbus").RemoveFn} function to disable the callback
+     * @return {import ("./http").RemoveFn} function to disable the callback
      */
     onProgressChange(handler) {
       return this.client.onEvent("Progress", ({ service, ...progress }) => {

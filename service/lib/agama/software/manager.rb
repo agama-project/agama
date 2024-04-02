@@ -249,16 +249,28 @@ module Agama
         true
       end
 
-      def assign_patterns(ids)
-        wrong_patterns = ids.reject { |p| pattern_exist?(p) }
+      def assign_patterns(add, remove)
+        wrong_patterns = [add, remove].flatten.reject { |p| pattern_exist?(p) }
         return wrong_patterns unless wrong_patterns.empty?
 
         user_patterns = Yast::PackagesProposal.GetResolvables(PROPOSAL_ID, :pattern)
         user_patterns.each { |p| Yast::Pkg.ResolvableNeutral(p, :pattern, force = false) }
-        Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :pattern, ids)
-        ids.each { |p| Yast::Pkg.ResolvableInstall(p, :pattern) }
-        logger.info "Setting patterns to #{ids.inspect}"
+        logger.info "Adding patterns: #{add.join(", ")}. Removing patterns: #{remove.join(",")}."
+
+        Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :pattern, add)
+        add.each do |id|
+          res = Yast::Pkg.ResolvableInstall(id, :pattern)
+          logger.info "Adding pattern #{id}: #{res.inspect}"
+        end
+
+        remove.each do |id|
+          res = Yast::Pkg.ResolvableNeutral(id, :pattern, force = false)
+          logger.info "Removing pattern #{id}: #{res.inspect}"
+          Yast::PackagesProposal.RemoveResolvables(PROPOSAL_ID, :pattern, [id])
+        end
+
         proposal.solve_dependencies
+
         selected_patterns_changed
 
         []
