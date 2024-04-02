@@ -5,6 +5,7 @@
     "noEmit": true,
     "target": "esnext",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "allowJs": true,
     "jsx": "react",
     "allowSyntheticDefaultImports": true,

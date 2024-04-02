@@ -26,13 +26,11 @@ import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
 import { Page } from "~/components/core";
 import {
-  ProposalActionsSection,
   ProposalPageMenu,
-  ProposalSettingsSection,
-  ProposalSpacePolicySection,
   ProposalDeviceSection,
-  ProposalFileSystemsSection,
-  ProposalTransactionalInfo
+  ProposalTransactionalInfo,
+  ProposalSettingsSection,
+  ProposalResultSection
 } from "~/components/storage";
 import { IDLE } from "~/client/status";
 
@@ -42,6 +40,8 @@ const initialState = {
   volumeTemplates: [],
   encryptionMethods: [],
   settings: {},
+  system: [],
+  staging: [],
   actions: [],
   errors: []
 };
@@ -79,6 +79,11 @@ const reducer = (state, action) => {
     case "UPDATE_SETTINGS": {
       const { settings } = action.payload;
       return { ...state, settings };
+    }
+
+    case "UPDATE_DEVICES": {
+      const { system, staging } = action.payload;
+      return { ...state, system, staging };
     }
 
     case "UPDATE_ERRORS": {
@@ -121,6 +126,12 @@ export default function ProposalPage() {
     return await cancellablePromise(client.proposal.getResult());
   }, [client, cancellablePromise]);
 
+  const loadDevices = useCallback(async () => {
+    const system = await cancellablePromise(client.system.getDevices()) || [];
+    const staging = await cancellablePromise(client.staging.getDevices()) || [];
+    return { system, staging };
+  }, [client, cancellablePromise]);
+
   const loadErrors = useCallback(async () => {
     const issues = await cancellablePromise(client.getErrors());
     return issues.map(toValidationError);
@@ -152,11 +163,14 @@ export default function ProposalPage() {
     const result = await loadProposalResult();
     if (result !== undefined) dispatch({ type: "UPDATE_RESULT", payload: { result } });
 
+    const devices = await loadDevices();
+    dispatch({ type: "UPDATE_DEVICES", payload: devices });
+
     const errors = await loadErrors();
     dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
 
     if (result !== undefined) dispatch({ type: "STOP_LOADING" });
-  }, [calculateProposal, cancellablePromise, client, loadAvailableDevices, loadEncryptionMethods, loadErrors, loadProposalResult, loadVolumeTemplates]);
+  }, [calculateProposal, cancellablePromise, client, loadAvailableDevices, loadDevices, loadEncryptionMethods, loadErrors, loadProposalResult, loadVolumeTemplates]);
 
   const calculate = useCallback(async (settings) => {
     dispatch({ type: "START_LOADING" });
@@ -166,11 +180,14 @@ export default function ProposalPage() {
     const result = await loadProposalResult();
     dispatch({ type: "UPDATE_RESULT", payload: { result } });
 
+    const devices = await loadDevices();
+    dispatch({ type: "UPDATE_DEVICES", payload: devices });
+
     const errors = await loadErrors();
     dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
 
     dispatch({ type: "STOP_LOADING" });
-  }, [calculateProposal, loadErrors, loadProposalResult]);
+  }, [calculateProposal, loadDevices, loadErrors, loadProposalResult]);
 
   useEffect(() => {
     load().catch(console.error);
@@ -199,50 +216,34 @@ export default function ProposalPage() {
     calculate(newSettings).catch(console.error);
   };
 
-  const PageContent = () => {
-    return (
-      <>
-        <ProposalTransactionalInfo
-          settings={state.settings}
-        />
-        <ProposalDeviceSection
-          settings={state.settings}
-          availableDevices={state.availableDevices}
-          isLoading={state.loading}
-          onChange={changeSettings}
-        />
-        <ProposalSettingsSection
-          availableDevices={state.availableDevices}
-          encryptionMethods={state.encryptionMethods}
-          settings={state.settings}
-          onChange={changeSettings}
-          isLoading={state.loading}
-        />
-        <ProposalFileSystemsSection
-          settings={state.settings}
-          volumeTemplates={state.volumeTemplates}
-          onChange={changeSettings}
-          isLoading={state.loading}
-        />
-        <ProposalSpacePolicySection
-          settings={state.settings}
-          onChange={changeSettings}
-          isLoading={state.loading}
-        />
-        <ProposalActionsSection
-          actions={state.actions}
-          errors={state.errors}
-          isLoading={state.loading}
-        />
-      </>
-    );
-  };
-
   return (
-    // TRANSLATORS: page title
+    // TRANSLATORS: Storage page title
     <Page icon="hard_drive" title={_("Storage")}>
-      <PageContent />
       <ProposalPageMenu />
+      <ProposalTransactionalInfo
+        settings={state.settings}
+      />
+      <ProposalDeviceSection
+        settings={state.settings}
+        availableDevices={state.availableDevices}
+        isLoading={state.loading}
+        onChange={changeSettings}
+      />
+      <ProposalSettingsSection
+        availableDevices={state.availableDevices}
+        encryptionMethods={state.encryptionMethods}
+        volumeTemplates={state.volumeTemplates}
+        settings={state.settings}
+        onChange={changeSettings}
+        isLoading={state.loading}
+      />
+      <ProposalResultSection
+        system={state.system}
+        staging={state.staging}
+        actions={state.actions}
+        errors={state.errors}
+        isLoading={state.loading}
+      />
     </Page>
   );
 }

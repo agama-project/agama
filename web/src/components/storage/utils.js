@@ -19,6 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
 // cspell:ignore xbytes
 
 import xbytes from "xbytes";
@@ -27,7 +28,8 @@ import { N_ } from "~/i18n";
 
 /**
  * @typedef {import ("~/client/storage").Volume} Volume
- * @typedef {import ("~/clients/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/client/storage").PartitionSlot} PartitionSlot
  */
 
 /**
@@ -121,7 +123,7 @@ const deviceSize = (size) => {
 const parseToBytes = (size) => {
   if (!size || size === undefined || size === "") return 0;
 
-  const value = xbytes.parseSize(size, { iec: true }) || parseInt(size);
+  const value = xbytes.parseSize(size.toString(), { iec: true }) || parseInt(size.toString());
 
   // Avoid decimals resulting from the conversion. D-Bus iface only accepts integer
   return Math.trunc(value);
@@ -138,6 +140,33 @@ const deviceLabel = (device) => {
   const size = device.size;
 
   return size ? `${name}, ${deviceSize(size)}` : name;
+};
+
+/**
+ * Sorted list of children devices (i.e., partitions and unused slots or logical volumes).
+ * @function
+ *
+ * @note This method could be directly provided by the device object. For now, the method is kept
+ * here because the elements considered as children (e.g., partitions + unused slots) is not a
+ * semantic storage concept but a helper for UI components.
+ *
+ * @param {StorageDevice} device
+ * @returns {(StorageDevice|PartitionSlot)[]}
+ */
+const deviceChildren = (device) => {
+  const partitionTableChildren = (partitionTable) => {
+    const { partitions, unusedSlots } = partitionTable;
+    const children = partitions.concat(unusedSlots);
+    return children.sort((a, b) => a.start < b.start ? -1 : 1);
+  };
+
+  const lvmVgChildren = (lvmVg) => {
+    return lvmVg.logicalVolumes.sort((a, b) => a.name < b.name ? -1 : 1);
+  };
+
+  if (device.partitionTable) return partitionTableChildren(device.partitionTable);
+  if (device.type === "lvmVg") return lvmVgChildren(device);
+  return [];
 };
 
 /**
@@ -193,6 +222,7 @@ export {
   SIZE_METHODS,
   SIZE_UNITS,
   deviceLabel,
+  deviceChildren,
   deviceSize,
   parseToBytes,
   splitSize,

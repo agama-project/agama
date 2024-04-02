@@ -29,8 +29,8 @@ describe Agama::Storage::VolumeConversion::ToY2Storage do
   describe "#convert" do
     let(:volume) do
       Agama::Storage::Volume.new("/").tap do |volume|
-        volume.device = "/dev/sda"
-        volume.separate_vg_name = "/dev/vg0"
+        volume.location.device = "/dev/sda"
+        volume.location.target = :new_vg
         volume.mount_options = ["defaults"]
         volume.fs_type = btrfs
         volume.auto_size = false
@@ -59,7 +59,7 @@ describe Agama::Storage::VolumeConversion::ToY2Storage do
       expect(spec).to be_a(Y2Storage::VolumeSpecification)
       expect(spec).to have_attributes(
         device:                  "/dev/sda",
-        separate_vg_name:        "/dev/vg0",
+        separate_vg_name:        "vg-root",
         mount_point:             "/",
         mount_options:           "defaults",
         proposed?:               true,
@@ -70,6 +70,7 @@ describe Agama::Storage::VolumeConversion::ToY2Storage do
         adjust_by_ram?:          false,
         ignore_fallback_sizes:   true,
         ignore_snapshots_sizes:  true,
+        ignore_adjust_by_ram:    true,
         min_size:                Y2Storage::DiskSize.GiB(5),
         max_size:                Y2Storage::DiskSize.GiB(20),
         max_size_lvm:            Y2Storage::DiskSize.GiB(20),
@@ -96,10 +97,103 @@ describe Agama::Storage::VolumeConversion::ToY2Storage do
         expect(spec).to have_attributes(
           ignore_fallback_sizes:  false,
           ignore_snapshots_sizes: false,
+          ignore_adjust_by_ram:   false,
           min_size:               Y2Storage::DiskSize.GiB(10),
           max_size:               Y2Storage::DiskSize.GiB(50),
           max_size_lvm:           Y2Storage::DiskSize.GiB(50)
         )
+      end
+    end
+
+    context "when the default target is used" do
+      before { volume.location.target = :default }
+
+      it "sets both #device and #reuse_name to nil" do
+        spec = subject.convert
+
+        expect(spec.device).to be_nil
+        expect(spec.reuse_name).to be_nil
+      end
+    end
+
+    context "when the target is a new dedicated partition" do
+      before { volume.location.target = :new_partition }
+
+      it "sets #device to the expected disk name" do
+        expect(subject.convert.device).to eq "/dev/sda"
+      end
+
+      it "sets #separate_vg_name and #reuse_name to nil" do
+        spec = subject.convert
+
+        expect(spec.reuse_name).to be_nil
+        expect(spec.separate_vg_name).to be_nil
+      end
+    end
+
+    context "when the target is a new dedicated volume group" do
+      before { volume.location.target = :new_vg }
+
+      context "when the mount point is /" do
+        it "sets #device, #separate_vg_name and #reuse_name to the expected values" do
+          spec = subject.convert
+
+          expect(spec.device).to eq "/dev/sda"
+          expect(spec.reuse_name).to be_nil
+          expect(spec.separate_vg_name).to eq "vg-root"
+        end
+      end
+
+      context "when the mount point is not the root one" do
+        let(:volume) do
+          Agama::Storage::Volume.new("/var/log").tap do |volume|
+            volume.location.device = "/dev/sda"
+          end
+        end
+
+        it "sets #device, #separate_vg_name and #reuse_name to the expected values" do
+          spec = subject.convert
+
+          expect(spec.device).to eq "/dev/sda"
+          expect(spec.reuse_name).to be_nil
+          expect(spec.separate_vg_name).to eq "vg-var_log"
+        end
+      end
+    end
+
+    context "when the target is an existing block device" do
+      before { volume.location.target = :device }
+
+      it "sets #reuse_name and #reformat to the proper values" do
+        spec = subject.convert
+
+        expect(spec.reuse_name).to eq "/dev/sda"
+        expect(spec.reformat).to eq true
+      end
+
+      it "sets #device and #separate_vg_name to nil" do
+        spec = subject.convert
+
+        expect(spec.device).to be_nil
+        expect(spec.separate_vg_name).to be_nil
+      end
+    end
+
+    context "when the target is an existing file system" do
+      before { volume.location.target = :filesystem }
+
+      it "sets #reuse_name and #reformat to the proper values" do
+        spec = subject.convert
+
+        expect(spec.reuse_name).to eq "/dev/sda"
+        expect(spec.reformat).to eq false
+      end
+
+      it "sets #device and #separate_vg_name to nil" do
+        spec = subject.convert
+
+        expect(spec.device).to be_nil
+        expect(spec.separate_vg_name).to be_nil
       end
     end
   end

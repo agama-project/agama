@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -37,8 +37,6 @@ module Agama
         # @return [Y2Storage::VolumeSpecification]
         def convert # rubocop:disable Metrics/AbcSize
           Y2Storage::VolumeSpecification.new({}).tap do |target|
-            target.device = volume.device
-            target.separate_vg_name = volume.separate_vg_name
             target.mount_point = volume.mount_path
             target.mount_options = volume.mount_options.join(",")
             target.proposed = true
@@ -50,6 +48,7 @@ module Agama
 
             sizes_conversion(target)
             btrfs_conversion(target)
+            location_conversion(target)
           end
         end
 
@@ -64,6 +63,7 @@ module Agama
 
           target.ignore_fallback_sizes = !auto
           target.ignore_snapshots_sizes = !auto
+          target.ignore_adjust_by_ram = !auto
 
           # The range of sizes is defined by the volume outline in case of auto size (mix and max
           # sizes cannot be configured if auto size is set).
@@ -87,6 +87,29 @@ module Agama
           target.subvolumes = volume.btrfs.subvolumes
           target.btrfs_default_subvolume = volume.btrfs.default_subvolume
           target.btrfs_read_only = volume.btrfs.read_only?
+        end
+
+        # @param target [Y2Storage::VolumeSpecification]
+        def location_conversion(target)
+          location = volume.location
+          return if location.default?
+
+          if location.reuse_device?
+            target.reuse_name = location.device
+            target.reformat = location.target == :device
+            return
+          end
+
+          target.device = location.device
+          target.separate_vg_name = vg_name(target) if location.target == :new_vg
+        end
+
+        # Name to be used as separate_vg_name for the given Y2Storage volume
+        #
+        # @param target [Y2Storage::VolumeSpecification]
+        def vg_name(target)
+          mount_point = target.root? ? "root" : target.mount_point.sub(%r{^/}, "")
+          "vg-#{mount_point.tr("/", "_")}"
         end
       end
     end

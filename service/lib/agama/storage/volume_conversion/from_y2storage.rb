@@ -41,13 +41,12 @@ module Agama
           volume = VolumeTemplatesBuilder.new_from_config(config).for(spec.mount_point || "")
 
           volume.tap do |target|
-            target.device = spec.device
-            target.separate_vg_name = spec.separate_vg_name
             target.mount_options = spec.mount_options
             target.fs_type = spec.fs_type
 
             sizes_conversion(target)
             btrfs_conversion(target)
+            location_conversion(target)
           end
         end
 
@@ -61,7 +60,7 @@ module Agama
 
         # @param target [Agama::Storage::Volume]
         def sizes_conversion(target)
-          target.auto_size = !spec.ignore_fallback_sizes? || !spec.ignore_snapshots_sizes?
+          target.auto_size = auto_size?
 
           # The volume specification contains the min and max sizes for the volume. But the final
           # range of sizes used by the Y2Storage proposal depends on the fallback sizes (if this
@@ -75,12 +74,33 @@ module Agama
           target.max_size = planned&.max || spec.max_size
         end
 
+        # @see #sizes_conversion
+        #
+        # @return [Boolean]
+        def auto_size?
+          # The three ignore_xxx attributes (ignore_snapshots_sizes, ignore_fallback_sizes and
+          # ignore_adjust_by_ram) are always in sync and always initialized to the inverse of
+          # #auto_size
+          !spec.ignore_fallback_sizes?
+        end
+
         # @param target [Agama::Storage::Volume]
         def btrfs_conversion(target)
           target.btrfs.snapshots = spec.snapshots?
           target.btrfs.subvolumes = spec.subvolumes
           target.btrfs.default_subvolume = spec.btrfs_default_subvolume
           target.btrfs.read_only = spec.btrfs_read_only
+        end
+
+        # @param target [Agama::Storage::Volume]
+        def location_conversion(target)
+          if spec.reuse?
+            target.location.target = spec.reformat? ? :device : :filesystem
+            target.location.device = spec.reuse_name
+          elsif !!spec.device
+            target.location.target = spec.separate_vg? ? :new_vg : :new_partition
+            target.location.device = spec.device
+          end
         end
 
         # Planned device for the given mount path.

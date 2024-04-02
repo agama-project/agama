@@ -1,4 +1,24 @@
 -------------------------------------------------------------------
+Fri Mar 22 09:18:20 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Make it possible to use non-auto sizes for volumes with
+  adjust_by_ram (gh#openSUSE/agama#1111).
+
+-------------------------------------------------------------------
+Thu Mar 21 10:35:09 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Extend the storage D-Bus API: new attributes for the volumes
+  (Target and TargetDevice) to decide where to locate each of them
+  (gh#openSUSE/agama#1105).
+
+-------------------------------------------------------------------
+Tue Mar 19 14:09:54 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Extend the storage D-Bus API: export LVM volume groups and
+  logical volumes, export staging devices, add Device and Partition
+  interfaces, export unused slots (gh#openSUSE/agama#1104).
+
+-------------------------------------------------------------------
 Tue Feb 27 15:53:46 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Rename the gem to agama-yast and the package to
