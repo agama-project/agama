@@ -4,7 +4,7 @@
 //! agnostic from the real network service (e.g., NetworkManager).
 use crate::network::error::NetworkStateError;
 use agama_lib::network::settings::{BondSettings, NetworkConnection, WirelessSettings};
-use agama_lib::network::types::{BondMode, DeviceType, SSID};
+use agama_lib::network::types::{BondMode, DeviceType, Status, SSID};
 use cidr::IpInet;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
@@ -535,6 +535,10 @@ impl TryFrom<NetworkConnection> for Connection {
             connection.ip_config.method6 = method;
         }
 
+        if let Some(status) = conn.status {
+            connection.status = status;
+        }
+
         if let Some(wireless_config) = conn.wireless {
             let config = WirelessConfig::try_from(wireless_config)?;
             connection.config = config.into();
@@ -569,9 +573,11 @@ impl TryFrom<Connection> for NetworkConnection {
         let gateway4 = conn.ip_config.gateway4.into();
         let gateway6 = conn.ip_config.gateway6.into();
         let interface = conn.interface.into();
+        let status = Some(conn.status);
 
         let mut connection = NetworkConnection {
             id,
+            status,
             method4,
             method6,
             gateway4,
@@ -690,14 +696,6 @@ impl From<InvalidMacAddress> for zbus::fdo::Error {
     fn from(value: InvalidMacAddress) -> Self {
         zbus::fdo::Error::Failed(value.to_string())
     }
-}
-
-#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize)]
-pub enum Status {
-    #[default]
-    Up,
-    Down,
-    Removed,
 }
 
 #[skip_serializing_none]
