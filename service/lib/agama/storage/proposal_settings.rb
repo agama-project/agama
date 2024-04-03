@@ -71,6 +71,20 @@ module Agama
           .uniq
       end
 
+      # Default device to use for configuring boot.
+      #
+      # @return [String, nil]
+      def default_boot_device
+        case device
+        when DeviceSettings::Disk
+          device.name
+        when DeviceSettings::NewLvmVg
+          device.candidate_pv_devices.min
+        when DeviceSettings::ReusedLvmVg
+          # TODO: Decide what device to use.
+        end
+      end
+
     private
 
       # Device used for booting.

@@ -28,7 +28,7 @@ import { _, n_ } from "~/i18n";
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import DevicesManager from "~/components/storage/DevicesManager";
 import { If, Section, Reminder, Tag, TreeTable } from "~/components/core";
-import { ProposalActionsDialog } from "~/components/storage";
+import { ProposalActionsDialog, FilesystemLabel } from "~/components/storage";
 
 /**
  * @typedef {import ("~/client/storage").Action} Action
@@ -139,11 +139,6 @@ const DevicesTreeTable = ({ devicesManager }) => {
     return item.description;
   };
 
-  const renderFilesystemLabel = (item) => {
-    const label = item.filesystem?.label;
-    if (label) return <Tag variant="gray-highlight"><b>{label}</b></Tag>;
-  };
-
   const renderPTableType = (item) => {
     // TODO: Create a map for partition table types and use an <abbr/> here.
     const type = item.partitionTable?.type;
@@ -154,7 +149,7 @@ const DevicesTreeTable = ({ devicesManager }) => {
     return (
       <>
         <div>{renderNewLabel(item)}</div>
-        <div>{renderContent(item)} {renderFilesystemLabel(item)} {renderPTableType(item)}</div>
+        <div>{renderContent(item)} <FilesystemLabel device={item} /> {renderPTableType(item)}</div>
       </>
     );
   };
