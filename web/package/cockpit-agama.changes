@@ -5,6 +5,15 @@ Wed Apr  3 15:16:07 UTC 2024 - José Iván López González <jlopez@suse.com>
   boot device (gh#openSUSE/agama#1068).
 
 -------------------------------------------------------------------
+Wed Mar 27 12:41:11 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Dropping Cockpit dependency:
+  - Do not use Cockpit gettext functionality
+    (gh#openSUSE/agama#1118)
+  - Do not store the list of supported languages to the Cockpit
+    manifest file (gh#openSUSE/agama#1121)
+
+-------------------------------------------------------------------
 Tue Mar 19 14:15:30 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - In storage page, replace Planned Actions section by a new Result
