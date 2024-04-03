@@ -113,9 +113,10 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
  * @typedef {object} ProposalSettings
  * @property {string} target
  * @property {string} [targetDevice]
- * @property {string[]} [targetPVDevices]
+ * @property {string[]} targetPVDevices
  * @property {boolean} configureBoot
  * @property {string} bootDevice
+ * @property {string} defaultBootDevice
  * @property {string} encryptionPassword
  * @property {string} encryptionMethod
  * @property {string} spacePolicy
@@ -499,6 +500,7 @@ class ProposalManager {
           targetPVDevices: buildTargetPVDevices(dbusSettings.TargetPVDevices),
           configureBoot: dbusSettings.ConfigureBoot.v,
           bootDevice: dbusSettings.BootDevice.v,
+          defaultBootDevice: dbusSettings.DefaultBootDevice.v,
           spacePolicy: dbusSettings.SpacePolicy.v,
           spaceActions: dbusSettings.SpaceActions.v.map(a => buildSpaceAction(a.v)),
           encryptionPassword: dbusSettings.EncryptionPassword.v,

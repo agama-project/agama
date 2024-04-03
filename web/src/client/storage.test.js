@@ -457,6 +457,7 @@ const contexts = {
         },
         ConfigureBoot: { t: "b", v: true },
         BootDevice: { t: "s", v: "/dev/sda" },
+        DefaultBootDevice: { t: "s", v: "/dev/sdb" },
         EncryptionPassword: { t: "s", v: "00000" },
         EncryptionMethod: { t: "s", v: "luks1" },
         SpacePolicy: { t: "s", v: "custom" },
@@ -1538,6 +1539,7 @@ describe("#proposal", () => {
           targetPVDevices: ["/dev/sda", "/dev/sdb"],
           configureBoot: true,
           bootDevice: "/dev/sda",
+          defaultBootDevice: "/dev/sdb",
           encryptionPassword: "00000",
           spacePolicy: "custom",
           spaceActions: [
