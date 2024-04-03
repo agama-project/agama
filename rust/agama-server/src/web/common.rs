@@ -389,7 +389,7 @@ pub async fn validation_router<T>(
 ) -> Result<Router<T>, ServiceError> {
     let proxy = build_validation_proxy(dbus, destination, path).await?;
     let state = ValidationState { proxy };
-    Ok(Router::new().route("/", get(validation)).with_state(state))
+    Ok(Router::new().route("/validation", get(validation)).with_state(state))
 }
 
 #[derive(Clone, Serialize, utoipa::ToSchema)]

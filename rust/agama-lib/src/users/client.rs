@@ -8,6 +8,7 @@ use zbus::Connection;
 
 /// Represents the settings for the first user
 #[derive(Serialize, Deserialize, Clone, Debug, Default, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct FirstUser {
     /// First user's full name
     pub full_name: String,

@@ -13,7 +13,7 @@ use crate::{
 };
 use agama_lib::{
     error::ServiceError,
-    users::{proxies::Users1Proxy, FirstUser, FirstUserSettings, UsersClient},
+    users::{proxies::Users1Proxy, FirstUser, UsersClient},
 };
 use axum::{
     extract::State,
@@ -67,11 +67,12 @@ async fn first_user_changed_stream(
         .await
         .then(|change| async move {
             if let Ok(user) = change.get().await {
-                let user_struct = FirstUserSettings {
-                    full_name: Some(user.0),
-                    user_name: Some(user.1),
-                    password: Some(user.2),
-                    autologin: Some(user.3),
+                let user_struct = FirstUser {
+                    full_name: user.0,
+                    user_name: user.1,
+                    password: user.2,
+                    autologin: user.3,
+                    data: user.4
                 };
                 return Some(Event::FirstUserChanged(user_struct));
             }
@@ -128,8 +129,7 @@ pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceErro
     let validation_router = validation_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let router = Router::new()
-        // TODO: "/" route failing, so workaround it with /info, but it should be /api/users in the end
-        .route("/info", get(get_info))
+        .route("/config", get(get_info))
         .route("/user", put(set_first_user).delete(remove_first_user))
         .route(
             "/root_password",
@@ -230,7 +230,7 @@ pub struct UsersInfo {
     root: RootInfo,
 }
 
-#[utoipa::path(put, path = "/users/", responses(
+#[utoipa::path(put, path = "/users/config", responses(
     (status = 200, description = "Configuration for users including root and the first user", body = UsersInfo),
     (status = 400, description = "The D-Bus service could not perform the action"),
 ))]

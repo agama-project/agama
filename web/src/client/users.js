@@ -23,7 +23,7 @@
 
 import { WithValidation } from "./mixins";
 
-const USERS_PATH = "/users/info"; // TODO: it should be /users/ when routing in rs is solved
+const USERS_PATH = "/users/config";
 
 /**
 * @typedef {object} UserResult
@@ -37,6 +37,7 @@ const USERS_PATH = "/users/info"; // TODO: it should be /users/ when routing in 
  * @property {string} userName - userName
  * @property {string} [password] - user password
  * @property {boolean} autologin - Whether autologin is enabled
+ * @property {object} data - additional user data
  */
 
 /**
@@ -66,13 +67,12 @@ class UsersBaseClient {
    */
   async getUser() {
     const proxy = await this.client.get(USERS_PATH);
-    console.log(proxy.user);
+
     if (proxy.user === null) {
-      return { fullName: "", userName: "", password: "", autologin: false };
+      return { fullName: "", userName: "", password: "", autologin: false, data: {} };
     }
 
-    const [fullName, userName, password, autologin] = proxy.user;
-    return { fullName, userName, password, autologin };
+    return proxy.user;
   }
 
   /**
@@ -132,7 +132,7 @@ class UsersBaseClient {
    */
   async getRootSSHKey() {
     const proxy = await this.client.get(USERS_PATH);
-    return proxy.root.password || "";
+    return proxy.root.ssh_key || "";
   }
 
   /**
@@ -160,8 +160,8 @@ class UsersBaseClient {
         return handler({ rootSSHKey: event.key.toString() });
       } else if (event.type === "FirstUserChanged") {
         // @ts-ignore
-        const { fullName, userName, password, autologin } = event;
-        return handler({ firstUser: { fullName, userName, password, autologin } });
+        const { fullName, userName, password, autologin, data } = event;
+        return handler({ firstUser: { fullName, userName, password, autologin, data } });
       }
     });
   }
