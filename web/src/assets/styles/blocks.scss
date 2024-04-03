@@ -741,3 +741,12 @@ section [data-type="agama/reminder"] {
     }
   }
 }
+
+#boot-form {
+  legend {
+    label {
+      font-size: var(--fs-large);
+      font-weight: bold;
+    }
+  }
+}
