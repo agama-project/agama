@@ -36,3 +36,5 @@ export { default as ZFCPDiskForm } from "./ZFCPDiskForm";
 export { default as ISCSIPage } from "./ISCSIPage";
 export { DeviceList, DeviceSelector, DeviceContentInfo, DeviceExtendedInfo, FilesystemLabel } from "./device-utils";
 export { default as VolumeForm } from "./VolumeForm";
+export { default as DeviceSelectorTable } from "./DeviceSelectorTable";
+export { default as DevicesFormSelect } from "./DevicesFormSelect";

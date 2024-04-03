@@ -481,6 +481,8 @@ table[data-type="agama/tree-table"] {
   }
 }
 
+// FIXME: use a single selector
+table.devices-table,
 table.proposal-result {
   tr.dimmed-row {
     background-color: #fff;
