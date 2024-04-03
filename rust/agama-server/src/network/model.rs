@@ -567,12 +567,12 @@ impl TryFrom<Connection> for NetworkConnection {
         let mac = conn.mac_address.to_string();
         let method4 = Some(conn.ip_config.method4.to_string());
         let method6 = Some(conn.ip_config.method6.to_string());
-        let mac_address = (!mac.is_empty()).then(|| mac);
-        let nameservers = conn.ip_config.nameservers.into();
-        let addresses = conn.ip_config.addresses.into();
-        let gateway4 = conn.ip_config.gateway4.into();
-        let gateway6 = conn.ip_config.gateway6.into();
-        let interface = conn.interface.into();
+        let mac_address = (!mac.is_empty()).then_some(mac);
+        let nameservers = conn.ip_config.nameservers;
+        let addresses = conn.ip_config.addresses;
+        let gateway4 = conn.ip_config.gateway4;
+        let gateway6 = conn.ip_config.gateway6;
+        let interface = conn.interface;
         let status = Some(conn.status);
 
         let mut connection = NetworkConnection {

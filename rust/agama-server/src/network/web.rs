@@ -183,7 +183,7 @@ async fn add_connection(
 
     state
         .actions
-        .send(Action::NewConnection(conn.clone(), tx))
+        .send(Action::NewConnection(Box::new(conn.clone()), tx))
         .unwrap();
     let _ = rx.await.unwrap();
 

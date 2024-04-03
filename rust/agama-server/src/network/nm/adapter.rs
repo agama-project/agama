@@ -123,15 +123,13 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
                 if old_conn == conn {
                     continue;
                 }
-            } else {
-                if conn.is_removed() {
-                    log::info!(
-                        "Connection {} ({}) does not need to be removed",
-                        conn.id,
-                        conn.uuid
-                    );
-                    continue;
-                }
+            } else if conn.is_removed() {
+                log::info!(
+                    "Connection {} ({}) does not need to be removed",
+                    conn.id,
+                    conn.uuid
+                );
+                continue;
             }
 
             log::info!("Updating connection {} ({})", conn.id, conn.uuid);

@@ -91,7 +91,7 @@ impl<T: Adapter> NetworkSystem<T> {
                 tx.send(self.state.access_points.clone()).unwrap();
             }
             Action::NewConnection(conn, tx) => {
-                tx.send(self.state.add_connection(conn.clone())).unwrap();
+                tx.send(self.state.add_connection(*conn)).unwrap();
             }
             Action::GetGeneralState(tx) => {
                 let config = self.state.general_state.clone();
