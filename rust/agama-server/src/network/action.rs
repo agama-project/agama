@@ -59,7 +59,7 @@ pub enum Action {
         Responder<Result<(), NetworkStateError>>,
     ),
     /// Updates a connection (replacing the old one).
-    UpdateConnection(Box<Connection>),
+    UpdateConnection(Box<Connection>, Responder<Result<(), NetworkStateError>>),
     /// Updates the general network configuration
     UpdateGeneralState(GeneralState),
     /// Forces a wireless networks scan refresh

@@ -106,7 +106,15 @@ impl<T: Adapter> NetworkSystem<T> {
                 tx.send(conn.cloned()).unwrap();
             }
             Action::GetConnections(tx) => {
-                tx.send(self.state.connections.clone()).unwrap();
+                let connections = self
+                    .state
+                    .connections
+                    .clone()
+                    .into_iter()
+                    .filter(|c| !c.is_removed())
+                    .collect();
+
+                tx.send(connections).unwrap();
             }
             Action::GetConnectionPath(uuid, tx) => {
                 let tree = self.tree.lock().await;
@@ -145,8 +153,9 @@ impl<T: Adapter> NetworkSystem<T> {
                 let result = self.set_ports_action(uuid, *ports);
                 rx.send(result).unwrap();
             }
-            Action::UpdateConnection(conn) => {
-                self.state.update_connection(*conn)?;
+            Action::UpdateConnection(conn, tx) => {
+                let result = self.state.update_connection(*conn);
+                tx.send(result).unwrap();
             }
             Action::UpdateGeneralState(general_state) => {
                 self.state.general_state = general_state;

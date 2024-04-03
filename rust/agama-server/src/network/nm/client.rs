@@ -189,6 +189,7 @@ impl<'a> NetworkManagerClient<'a> {
                 if let Some(iname) = &connection.interface {
                     uuids_map.insert(iname.to_string(), connection.uuid);
                 }
+
                 connections.push(connection);
             }
         }
@@ -236,7 +237,9 @@ impl<'a> NetworkManagerClient<'a> {
         if conn.is_up() {
             self.activate_connection(path).await?;
         } else {
-            self.deactivate_connection(path).await?;
+            //FIXME: This is wrong, deactivate receive an active connection path and this is a
+            //settings path
+            // self.deactivate_connection(path).await?;
         }
         Ok(())
     }

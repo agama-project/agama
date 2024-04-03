@@ -41,13 +41,15 @@ pub trait ConnectionInterface {
     where
         F: FnOnce(&mut NetworkConnection) + std::marker::Send,
     {
+        let (tx, rx) = oneshot::channel();
         let mut connection = self.get_connection().await?;
         func(&mut connection);
         let actions = self.actions().await;
         actions
-            .send(Action::UpdateConnection(Box::new(connection)))
+            .send(Action::UpdateConnection(Box::new(connection), tx))
             .unwrap();
-        Ok(())
+
+        rx.await.unwrap()
     }
 }
 
@@ -73,9 +75,12 @@ pub trait ConnectionConfigInterface: ConnectionInterface {
         func(&mut config);
         connection.config = config.into();
         let actions = self.actions().await;
+
+        let (tx, rx) = oneshot::channel();
         actions
-            .send(Action::UpdateConnection(Box::new(connection)))
+            .send(Action::UpdateConnection(Box::new(connection), tx))
             .unwrap();
-        Ok(())
+
+        rx.await.unwrap()
     }
 }
