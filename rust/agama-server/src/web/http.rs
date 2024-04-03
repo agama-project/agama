@@ -63,7 +63,7 @@ pub async fn login(
     });
 
     let mut headers = HeaderMap::new();
-    let cookie = format!("agamaToken={}; HttpOnly", &token);
+    let cookie = auth_cookie_from_token(&token);
     headers.insert(
         SET_COOKIE,
         cookie.parse().expect("could not build a valid cookie"),
@@ -88,7 +88,7 @@ pub async fn login_from_query(
     let mut headers = HeaderMap::new();
 
     if TokenClaims::from_token(&params.token, &state.config.jwt_secret).is_ok() {
-        let cookie = format!("agamaToken={}; HttpOnly", params.token);
+        let cookie = auth_cookie_from_token(&params.token);
         headers.insert(
             SET_COOKIE,
             cookie.parse().expect("could not build a valid cookie"),
@@ -119,4 +119,17 @@ pub async fn logout(_claims: TokenClaims) -> Result<impl IntoResponse, AuthError
 ))]
 pub async fn session(_claims: TokenClaims) -> Result<(), AuthError> {
     Ok(())
+}
+
+/// Creates the cookie containing the authentication token.
+///
+/// It is a session token (no expiration date) so it should be gone
+/// when the browser is closed.
+///
+/// See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+/// for further information.
+///
+/// * `token`: authentication token.
+fn auth_cookie_from_token(token: &str) -> String {
+    format!("agamaToken={}; HttpOnly", &token)
 }
