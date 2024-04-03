@@ -25,6 +25,60 @@ require "agama/storage/proposal_settings"
 require "agama/storage/volume"
 
 describe Agama::Storage::ProposalSettings do
+  describe "#default_boot_device" do
+    context "when the device is configured to use a disk" do
+      before do
+        subject.device = Agama::Storage::DeviceSettings::Disk.new
+      end
+
+      context "and no device is selected yet" do
+        before do
+          subject.device.name = nil
+        end
+
+        it "returns nil" do
+          expect(subject.default_boot_device).to be_nil
+        end
+      end
+
+      context "and a device is selected" do
+        before do
+          subject.device.name = "/dev/sda"
+        end
+
+        it "returns the target device" do
+          expect(subject.default_boot_device).to eq("/dev/sda")
+        end
+      end
+    end
+
+    context "when the device is configured to create a new LVM volume group" do
+      before do
+        subject.device = Agama::Storage::DeviceSettings::NewLvmVg.new
+      end
+
+      context "and no device is selected yet" do
+        before do
+          subject.device.candidate_pv_devices = []
+        end
+
+        it "returns nil" do
+          expect(subject.default_boot_device).to be_nil
+        end
+      end
+
+      context "and some candidate devices for creating the LVM physical volumes are selected" do
+        before do
+          subject.device.candidate_pv_devices = ["/dev/sdc", "/dev/sda", "/dev/sdb"]
+        end
+
+        it "returns the first candidate device in alphabetical order" do
+          expect(subject.default_boot_device).to eq("/dev/sda")
+        end
+      end
+    end
+  end
+
   describe "#installation_devices" do
     shared_examples "boot device" do
       context "when boot is set to be configured" do

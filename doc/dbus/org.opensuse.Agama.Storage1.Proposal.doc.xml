@@ -11,6 +11,7 @@
         TargetPVDevices        as (optional: only makes sense if Target is "newLvmVg")
         ConfigureBoot          b
         BootDevice             s
+        DefaultBootDevice      s
         EncryptionPassword     s
         EncryptionMethod       s
         EncryptionPBKDFunction s

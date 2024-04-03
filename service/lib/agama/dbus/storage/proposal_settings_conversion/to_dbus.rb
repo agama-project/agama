@@ -41,6 +41,7 @@ module Agama
           #   * "CandidatePVDevices" [Array<String>] Optional
           #   * "ConfigureBoot" [Boolean]
           #   * "BootDevice" [String]
+          #   * "DefaultBootDevice" [String]
           #   * "EncryptionPassword" [String]
           #   * "EncryptionMethod" [String]
           #   * "EncryptionPBKDFunction" [String]
@@ -65,6 +66,7 @@ module Agama
           DBUS_PROPERTIES = {
             "ConfigureBoot"          => :configure_boot_conversion,
             "BootDevice"             => :boot_device_conversion,
+            "DefaultBootDevice"      => :default_boot_device_conversion,
             "EncryptionPassword"     => :encryption_password_conversion,
             "EncryptionMethod"       => :encryption_method_conversion,
             "EncryptionPBKDFunction" => :encryption_pbkd_function_conversion,
@@ -124,6 +126,11 @@ module Agama
           # @return [String]
           def boot_device_conversion
             settings.boot.device || ""
+          end
+
+          # @return [String]
+          def default_boot_device_conversion
+            settings.default_boot_device || ""
           end
 
           # @return [String]
