@@ -1,4 +1,4 @@
-use super::http::{login, logout, session};
+use super::http::{login, login_from_query, logout, session};
 use super::{auth::TokenClaims, config::ServiceConfig, state::ServiceState, EventsSender};
 use axum::{
     extract::Request,
@@ -87,6 +87,7 @@ impl MainServiceBuilder {
         let serve = ServeDir::new(self.public_dir).precompressed_gzip();
         Router::new()
             .nest_service("/", serve)
+            .route("/login", get(login_from_query))
             .nest("/api", api_router)
             .layer(TraceLayer::new_for_http())
             .layer(CompressionLayer::new().br(true))

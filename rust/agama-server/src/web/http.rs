@@ -1,12 +1,15 @@
-//! Implements the handlers for the HTTP-based API.
+//! Implements the basic handlers for the HTTP-based API (login, logout, ping, etc.).
 
 use super::{
     auth::{generate_token, AuthError, TokenClaims},
     state::ServiceState,
 };
 use axum::{
-    extract::State,
-    http::{header::SET_COOKIE, HeaderMap},
+    extract::{Query, State},
+    http::{
+        header::{LOCATION, SET_COOKIE},
+        HeaderMap, StatusCode,
+    },
     response::IntoResponse,
     Json,
 };
@@ -67,6 +70,33 @@ pub async fn login(
     );
 
     Ok((headers, content))
+}
+
+#[derive(Clone, Deserialize, utoipa::ToSchema)]
+pub struct LoginFromQueryParams {
+    /// Token to use for authentication.
+    token: String,
+}
+
+#[utoipa::path(get, path = "/login", responses(
+    (status = 301, description = "Injects the authentication cookie if correct and redirects to the web UI")
+))]
+pub async fn login_from_query(
+    State(state): State<ServiceState>,
+    Query(params): Query<LoginFromQueryParams>,
+) -> impl IntoResponse {
+    let mut headers = HeaderMap::new();
+
+    if TokenClaims::from_token(&params.token, &state.config.jwt_secret).is_ok() {
+        let cookie = format!("agamaToken={}; HttpOnly", params.token);
+        headers.insert(
+            SET_COOKIE,
+            cookie.parse().expect("could not build a valid cookie"),
+        );
+    }
+
+    headers.insert(LOCATION, "/".parse().unwrap());
+    (StatusCode::PERMANENT_REDIRECT, headers)
 }
 
 #[utoipa::path(delete, path = "/api/auth", responses(
