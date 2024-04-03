@@ -25,7 +25,7 @@ const eslint = process.env.ESLINT !== '0';
 const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== '0') : development;
 
 // Agama API server. By default it connects to a local development server.
-let agamaServer= process.env.AGAMA_SERVER || "localhost:3000";
+let agamaServer = process.env.AGAMA_SERVER || "localhost:3000";
 if (!agamaServer.startsWith("http")) {
   agamaServer = "http://" + agamaServer;
 }
