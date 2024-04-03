@@ -140,11 +140,11 @@
         <package name="MozillaFirefox-branding-openSUSE" arch="aarch64,x86_64"/>
         <package name="libpwquality-tools"/>
         <package name="NetworkManager"/>
-        <package name="cockpit-agama"/>
         <package name="ruby3.3-rubygem-byebug"/>
         <package name="ruby3.3-rubygem-agama-yast"/>
         <package name="agama"/>
         <package name="agama-cli"/>
+        <package name="agama-web-ui"/>
         <package name="microos-tools"/>
         <package name="staging-build-key"/>
         <package name="icewm-lite"/>
@@ -173,7 +173,7 @@
     <!-- additional packages for the Playwright flavors -->
     <packages type="image" profiles="openSUSE-Playwright,ALP-Playwright">
         <package name="playwright"/>
-        <package name="cockpit-agama-playwright"/>
+        <!-- <package name="cockpit-agama-playwright"/> -->
         <!-- Playwright does not work with the openSUSE Firefox, -->
         <!-- install the chromium browser for running the tests -->
         <!-- unfortunately it is not available for s390x -->
