@@ -129,7 +129,7 @@ pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceErro
     let validation_router = validation_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let router = Router::new()
-        .route("/config", get(get_info))
+        .route("/config", get(get_config))
         .route("/user", put(set_first_user).delete(remove_first_user))
         .route(
             "/root_password",
@@ -234,7 +234,7 @@ pub struct UsersInfo {
     (status = 200, description = "Configuration for users including root and the first user", body = UsersInfo),
     (status = 400, description = "The D-Bus service could not perform the action"),
 ))]
-async fn get_info(State(state): State<UsersState<'_>>) -> Result<Json<UsersInfo>, Error> {
+async fn get_config(State(state): State<UsersState<'_>>) -> Result<Json<UsersInfo>, Error> {
     let mut result = UsersInfo::default();
     let first_user = state.users.first_user().await?;
     if first_user.user_name.is_empty() {

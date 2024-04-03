@@ -252,15 +252,15 @@ const WithValidation = (superclass, validation_path, service_name) => class exte
    * @return {Promise<ValidationError[]>}
    */
   async getValidationErrors() {
-    let errors;
+    let response;
 
     try {
-      errors = await this.client.get(validation_path);
+      response = await this.client.get(validation_path);
     } catch (error) {
       console.error(`Could not get validation errors for ${validation_path}`, error);
     }
 
-    return errors.errors.map(createError);
+    return response.errors.map(createError);
   }
 
   /**

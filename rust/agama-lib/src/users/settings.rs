@@ -17,7 +17,7 @@ pub struct UserSettings {
 /// First user settings
 ///
 /// Holds the settings for the first user.
-#[derive(Clone, Debug, Default, Settings, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Settings, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FirstUserSettings {
     /// First user's full name
