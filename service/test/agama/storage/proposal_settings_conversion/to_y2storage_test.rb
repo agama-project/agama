@@ -99,18 +99,13 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
       context "when the device settings is set to use a disk" do
         before do
           settings.device = Agama::Storage::DeviceSettings::Disk.new("/dev/sda")
+          settings.boot.device = "/dev/sdb"
         end
 
         it "sets lvm to false" do
           y2storage_settings = subject.convert
 
           expect(y2storage_settings.lvm).to eq(false)
-        end
-
-        it "sets the boot device as candidate device" do
-          y2storage_settings = subject.convert
-
-          expect(y2storage_settings.candidate_devices).to contain_exactly("/dev/sda")
         end
 
         it "sets the target device as device for the volumes with missing device" do
@@ -121,6 +116,24 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
             an_object_having_attributes(mount_point: "/test2", device: "/dev/sda"),
             an_object_having_attributes(mount_point: "/test3", device: "/dev/sdb")
           )
+        end
+
+        it "sets the boot device as candidate device" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings.candidate_devices).to contain_exactly("/dev/sdb")
+        end
+
+        context "and no boot device is selected" do
+          before do
+            settings.boot.device = nil
+          end
+
+          it "sets the target device as candidate device" do
+            y2storage_settings = subject.convert
+
+            expect(y2storage_settings.candidate_devices).to contain_exactly("/dev/sda")
+          end
         end
       end
 
@@ -172,16 +185,6 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
     end
 
     context "boot conversion" do
-      before do
-        settings.boot.device = "/dev/sda"
-      end
-
-      it "sets the boot device as root device" do
-        y2storage_settings = subject.convert
-
-        expect(y2storage_settings.root_device).to eq("/dev/sda")
-      end
-
       context "if boot configuration is enabled" do
         before do
           settings.boot.configure = true
@@ -203,6 +206,48 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
           y2storage_settings = subject.convert
 
           expect(y2storage_settings.boot).to eq(false)
+        end
+      end
+
+      context "if a boot device is selected" do
+        before do
+          settings.boot.device = "/dev/sda"
+        end
+
+        it "sets the boot device as root device" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings.root_device).to eq("/dev/sda")
+        end
+      end
+
+      context "if no boot device is selected" do
+        before do
+          settings.boot.device = nil
+        end
+
+        context "and the device settings is set to use a disk" do
+          before do
+            settings.device = Agama::Storage::DeviceSettings::Disk.new("/dev/sda")
+          end
+
+          it "sets the target device as root device" do
+            y2storage_settings = subject.convert
+
+            expect(y2storage_settings.root_device).to eq("/dev/sda")
+          end
+        end
+
+        context "and the device settings is set to create a new LVM volume group" do
+          before do
+            settings.device = Agama::Storage::DeviceSettings::NewLvmVg.new(["/dev/sda", "/dev/sdb"])
+          end
+
+          it "sets the first candidate device as root device" do
+            y2storage_settings = subject.convert
+
+            expect(y2storage_settings.root_device).to eq("/dev/sda")
+          end
         end
       end
     end

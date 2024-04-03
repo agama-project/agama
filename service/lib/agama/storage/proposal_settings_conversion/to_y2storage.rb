@@ -77,7 +77,7 @@ module Agama
         # @param target [Y2Storage::ProposalSettings]
         def disk_device_conversion(target)
           target.lvm = false
-          target.candidate_devices = [settings.boot.device].compact
+          target.candidate_devices = [boot_device].compact
         end
 
         # @param target [Y2Storage::ProposalSettings]
@@ -109,8 +109,8 @@ module Agama
 
         # @param target [Y2Storage::ProposalSettings]
         def boot_conversion(target)
-          target.root_device = settings.boot.device
           target.boot = settings.boot.configure?
+          target.root_device = boot_device
         end
 
         # @param target [Y2Storage::ProposalSettings]
@@ -194,6 +194,13 @@ module Agama
         def find_max_size_fallback(mount_path)
           volume = settings.volumes.find { |v| v.max_size_fallback_for.include?(mount_path) }
           volume&.mount_path
+        end
+
+        # Device used for booting.
+        #
+        # @return [String, nil]
+        def boot_device
+          settings.boot.device || settings.default_boot_device
         end
 
         # All block devices affected by the space policy.
