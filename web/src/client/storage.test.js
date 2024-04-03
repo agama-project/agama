@@ -1468,7 +1468,7 @@ describe("#proposal", () => {
       expect(home).toStrictEqual({
         mountPath: "/home",
         target: "default",
-        targetDevice: "",
+        targetDevice: undefined,
         fsType: "XFS",
         minSize: 2048,
         maxSize: 4096,
@@ -1491,7 +1491,7 @@ describe("#proposal", () => {
       expect(generic).toStrictEqual({
         mountPath: "",
         target: "default",
-        targetDevice: "",
+        targetDevice: undefined,
         fsType: "Ext4",
         minSize: 1024,
         maxSize: 2048,
@@ -1550,7 +1550,7 @@ describe("#proposal", () => {
             {
               mountPath: "/",
               target: "default",
-              targetDevice: "",
+              targetDevice: undefined,
               fsType: "Btrfs",
               minSize: 1024,
               maxSize: 2048,
@@ -1569,7 +1569,7 @@ describe("#proposal", () => {
             {
               mountPath: "/home",
               target: "default",
-              targetDevice: "",
+              targetDevice: undefined,
               fsType: "XFS",
               minSize: 2048,
               maxSize: 4096,
