@@ -159,7 +159,17 @@ class NetworkClient {
    * @param {Connection} connection - connection to be activated
    */
   async connectTo(connection) {
-    return this.client.post("/network/connections", this.toApiConnection(connection));
+    const conn = await this.addConnection(connection);
+    await this.apply();
+
+    return conn;
+  }
+
+  /**
+   * Apply network changes
+   */
+  async apply() {
+    return this.client.put("/network/system/apply");
   }
 
   /**
@@ -195,7 +205,7 @@ class NetworkClient {
    * @return {Promise<Connection>} the added connection
    */
   async addConnection(connection) {
-    return this.connectTo(connection);
+    return this.client.post("/network/connections", this.toApiConnection(connection));
   }
 
   /**
@@ -219,9 +229,10 @@ class NetworkClient {
    * @return {Promise<boolean>} - the promise resolves to true if the connection
    *   was successfully updated and to false it it does not exist.
    */
-  updateConnection(connection) {
+  async updateConnection(connection) {
     const conn = this.toApiConnection(connection);
-    return this.client.put(`/network/connections/${conn.id}`, conn);
+    await this.client.put(`/network/connections/${conn.id}`, conn);
+    return this.apply();
   }
 
   /**
@@ -233,8 +244,9 @@ class NetworkClient {
    * @return {Promise<boolean>} - the promise resolves to true if the connection
    *  was successfully deleted.
    */
-  deleteConnection(id) {
-    return this.client.delete(`/network/connections/${id}`);
+  async deleteConnection(id) {
+    await this.client.delete(`/network/connections/${id}`);
+    return this.apply();
   }
 
   /*
