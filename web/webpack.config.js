@@ -66,7 +66,7 @@ if (stylelint) {
 if (production) {
   plugins.unshift(new CompressionPlugin({
     test: /\.(js|html|css)$/,
-    deleteOriginalAssets: "keep-source-map"
+    deleteOriginalAssets: false
   }));
 }
 
