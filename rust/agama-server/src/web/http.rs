@@ -8,7 +8,7 @@ use axum::{
     extract::{Query, State},
     http::{
         header::{LOCATION, SET_COOKIE},
-        HeaderMap, StatusCode,
+        HeaderMap, HeaderValue, StatusCode,
     },
     response::IntoResponse,
     Json,
@@ -95,8 +95,8 @@ pub async fn login_from_query(
         );
     }
 
-    headers.insert(LOCATION, "/".parse().unwrap());
-    (StatusCode::PERMANENT_REDIRECT, headers)
+    headers.insert(LOCATION, HeaderValue::from_static("/"));
+    (StatusCode::TEMPORARY_REDIRECT, headers)
 }
 
 #[utoipa::path(delete, path = "/api/auth", responses(
