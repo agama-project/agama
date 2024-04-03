@@ -135,12 +135,12 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
   const groups = groupPatterns(visiblePatterns);
 
   const renderPatternOption = (pattern) => (
-    <>
+    <div>
       <div>
         <b>{pattern.summary}</b>
       </div>
       <div>{pattern.description}</div>
-    </>
+    </div>
   );
 
   const selector = sortGroups(groups).map((groupName) => {
@@ -159,6 +159,8 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
           onOptionClick={onToggle}
           optionIdKey="name"
           selectedIds={selectedIds}
+          autoSelectionCheck={pattern => pattern.selectedBy === SelectedBy.AUTO}
+          data-items-type="agama/patterns"
         />
       </Section>
     );
