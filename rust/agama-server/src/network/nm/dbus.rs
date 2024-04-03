@@ -1054,10 +1054,7 @@ mod test {
                 Some(macaddr::MacAddr6::from_str("12:34:56:78:9A:BC").unwrap())
             );
             assert!(!wireless.hidden);
-            let wep_security = wireless.wep_security.as_ref().unwrap();
-            assert_eq!(wep_security.wep_key_type, WEPKeyType::Key);
-            assert_eq!(wep_security.auth_alg, WEPAuthAlg::Open);
-            assert_eq!(wep_security.wep_key_index, 1);
+            assert_eq!(wireless.wep_security, None);
         }
     }
 

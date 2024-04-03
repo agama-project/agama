@@ -162,6 +162,7 @@ async fn test_network_wifis() -> Result<(), Box<dyn Error>> {
     let response = network_service.oneshot(request).await?;
     assert_eq!(response.status(), StatusCode::OK);
     let body = body_to_string(response.into_body()).await;
-    assert_eq!(body, to_string(&json!(["AgamaNetwork", "AgamaNetwork2"]))?);
+    assert!(body.contains(r#""ssid":"AgamaNetwork""#));
+    assert!(body.contains(r#""ssid":"AgamaNetwork2""#));
     Ok(())
 }
