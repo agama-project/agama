@@ -5,5 +5,5 @@ TOKEN_FILE=/run/agama/token
 TOKEN=$(cat $TOKEN_FILE)
 PREFS=$HOME/.mozilla/firefox/profile/user.js
 
-sed -e "s/__HOMEPAGE__/http://localhost/login?token=$TOKEN" -i $PREFS
+sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN/" -i $PREFS
 firefox --kiosk --profile $HOME/.mozilla/firefox/profile
