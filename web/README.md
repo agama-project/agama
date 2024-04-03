@@ -43,16 +43,16 @@ Example of running from different machine:
   agama-web-server serve --address 10.100.1.1:3030
 
   # frontend machine
-  # ESLINT=0 is useful during development when there is some styling issues
+  # ESLINT=0 is useful to ignore linter problems during development
   ESLINT=0 AGAMA_SERVER=10.100.1.1:3000 npm run server
 ```
 
 ### Debugging Hints
 
-There are more locations where to look when something does not work and require debugging.
-The first location to check when something does not work is browser console which can give
+There are several places to look when something does not work and requires debugging.
+The first place is the browser's console which can give
 some hints. The second location to check for errors or warnings is output of `npm run server`
-where some issues when communicating with backend can be seen. And last but on least is
+where you can find issues when communicating with the backend. And last but on least is
 journal on backend machine where is logged backend activity `journalctl -b`.
 
 ### Special Environment Variables

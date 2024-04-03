@@ -415,7 +415,7 @@ struct ValidationState<'a> {
     proxy: ValidationProxy<'a>,
 }
 
-/// Builds a stream of the changes in the the `org.opensuse.Agama1.Issues`
+/// Builds a stream of the changes in the the `org.opensuse.Agama1.Validation`
 /// interface of the given D-Bus object.
 ///
 /// * `dbus`: D-Bus connection.
