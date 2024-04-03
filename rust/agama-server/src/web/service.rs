@@ -1,12 +1,15 @@
 use super::http::{login, logout, session};
 use super::{auth::TokenClaims, config::ServiceConfig, state::ServiceState, EventsSender};
 use axum::{
+    body::Body,
     extract::Request,
+    http::{header, HeaderMap, HeaderValue, StatusCode},
     middleware,
     response::IntoResponse,
     routing::{get, post},
     Router,
 };
+use axum_extra::extract::cookie::CookieJar;
 use std::{
     convert::Infallible,
     path::{Path, PathBuf},
@@ -85,8 +88,64 @@ impl MainServiceBuilder {
             .route("/auth", post(login).get(session).delete(logout));
 
         let serve = ServeDir::new(self.public_dir);
+
+        // handle the /po.js request
+        // the requested language (locale) is sent in the "agamaLanguage" HTTP cookie
+        // this reimplements the Cockpit translation support
+        async fn po(jar: CookieJar) -> impl IntoResponse {
+            let mut response_headers = HeaderMap::new();
+
+            if let Some(cookie) = jar.get("agamaLanguage") {
+                let mut target_file = String::new();
+                let mut found = false;
+                // FIXME: this does not work, the public_dir setting is not accessible :-/
+                // when using something like PathBuf::from("/usr/share/cockpit/agama") here
+                // it works just fine....
+                let prefix = self.public_dir;
+
+                // try parsing the cookie
+                if let Some((lang, region)) = cookie.value().split_once('-') {
+                    // first try the full locale
+                    target_file = format!("po.{}_{}.js", lang, region.to_uppercase());
+                    found = prefix.join(&target_file).exists();
+
+                    if !found {
+                        // then try the language only
+                        target_file = format!("po.{}.js", lang);
+                        found = prefix.join(&target_file).exists();
+                    }
+                }
+
+                if !found {
+                    // use the full cookie without parsing
+                    target_file = format!("po.{}.js", cookie.value());
+                    found = prefix.join(&target_file).exists();
+                }
+
+                if found {
+                    // translation found, redirect to the real file
+                    response_headers.insert(
+                        header::LOCATION,
+                        // if the file exists then the name is a valid header value and unwrapping is safe
+                        HeaderValue::from_str(&target_file).unwrap()
+                    );
+
+                    return (StatusCode::TEMPORARY_REDIRECT, response_headers, Body::empty())
+                }
+            }
+
+            // fallback, return empty javascript translations if the language is not supported
+            response_headers.insert(
+                header::CONTENT_TYPE,
+                HeaderValue::from_static("text/javascript"),
+            );
+
+            (StatusCode::OK, response_headers, Body::empty())
+        }
+
         Router::new()
             .nest_service("/", serve)
+            .route("/po.js", get(po))
             .nest("/api", api_router)
             .layer(TraceLayer::new_for_http())
             .layer(CompressionLayer::new().br(true))
