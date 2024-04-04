@@ -1,4 +1,7 @@
 use std::{
+    fs,
+    io::{self, Write},
+    os::unix::fs::OpenOptionsExt,
     path::{Path, PathBuf},
     process::{ExitCode, Termination},
 };
@@ -6,8 +9,9 @@ use std::{
 use agama_lib::connection_to;
 use agama_server::{
     l10n::helpers,
-    web::{self, run_monitor},
+    web::{self, generate_token, run_monitor},
 };
+use anyhow::Context;
 use clap::{Args, Parser, Subcommand};
 use tokio::sync::broadcast::channel;
 use tracing_subscriber::prelude::*;
@@ -35,6 +39,8 @@ pub struct ServeArgs {
     // Directory containing the web UI code.
     #[arg(long)]
     web_ui_dir: Option<PathBuf>,
+    #[arg(long)]
+    generate_token: Option<PathBuf>,
 }
 
 #[derive(Parser, Debug)]
@@ -62,7 +68,7 @@ fn find_web_ui_dir() -> PathBuf {
 ///
 /// `args`: command-line arguments.
 async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
-    let journald = tracing_journald::layer().expect("could not connect to journald");
+    let journald = tracing_journald::layer().context("could not connect to journald")?;
     tracing_subscriber::registry().with(journald).init();
 
     let listener = tokio::net::TcpListener::bind(&args.address)
@@ -73,6 +79,11 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
     run_monitor(tx.clone()).await?;
 
     let config = web::ServiceConfig::load()?;
+
+    if let Some(token_file) = args.generate_token {
+        write_token(&token_file, &config.jwt_secret).context("could not create the token file")?;
+    }
+
     let dbus = connection_to(&args.dbus_address).await?;
     let web_ui_dir = args.web_ui_dir.unwrap_or(find_web_ui_dir());
     let service = web::service(config, tx, dbus, web_ui_dir).await?;
@@ -94,6 +105,17 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
         Commands::Serve(args) => serve_command(args).await,
         Commands::Openapi => openapi_command(),
     }
+}
+
+fn write_token(path: &PathBuf, secret: &str) -> io::Result<()> {
+    let token = generate_token(secret);
+    let mut file = fs::OpenOptions::new()
+        .create(true)
+        .write(true)
+        .mode(0o400)
+        .open(path)?;
+    file.write_all(token.as_bytes())?;
+    Ok(())
 }
 
 /// Represents the result of execution.

@@ -50,6 +50,18 @@ pub struct TokenClaims {
     exp: i64,
 }
 
+impl TokenClaims {
+    /// Builds claims for a given token.
+    ///
+    /// * `token`: token to extract the claims from.
+    /// * `secret`: secret to decode the token.
+    pub fn from_token(token: &str, secret: &str) -> Result<Self, AuthError> {
+        let decoding = DecodingKey::from_secret(secret.as_ref());
+        let token_data = jsonwebtoken::decode(&token, &decoding, &Validation::default())?;
+        Ok(token_data.claims)
+    }
+}
+
 impl Default for TokenClaims {
     fn default() -> Self {
         let exp = Utc::now() + Duration::days(1);
@@ -84,10 +96,7 @@ impl FromRequestParts<ServiceState> for TokenClaims {
             }
         };
 
-        let decoding = DecodingKey::from_secret(state.config.jwt_secret.as_ref());
-        let token_data = jsonwebtoken::decode(&token, &decoding, &Validation::default())?;
-
-        Ok(token_data.claims)
+        TokenClaims::from_token(&token, &state.config.jwt_secret)
     }
 }
 

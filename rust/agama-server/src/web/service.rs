@@ -1,4 +1,4 @@
-use super::http::{login, logout, session};
+use super::http::{login, login_from_query, logout, session};
 use super::{auth::TokenClaims, config::ServiceConfig, state::ServiceState, EventsSender};
 use axum::{
     extract::Request,
@@ -86,10 +86,11 @@ impl MainServiceBuilder {
             .route("/auth", post(login).get(session).delete(logout));
 
         tracing::info!("Serving static files from {}", self.public_dir.display());
-        let serve = ServeDir::new(self.public_dir);
+        let serve = ServeDir::new(self.public_dir).precompressed_gzip();
 
         Router::new()
             .nest_service("/", serve)
+            .route("/login", get(login_from_query))
             .route("/po.js", get(super::http::po))
             .nest("/api", api_router)
             .layer(TraceLayer::new_for_http())

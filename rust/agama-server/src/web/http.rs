@@ -1,4 +1,4 @@
-//! Implements the handlers for the HTTP-based API.
+//! Implements the basic handlers for the HTTP-based API (login, logout, ping, etc.).
 
 use super::{
     auth::{generate_token, AuthError, TokenClaims},
@@ -6,7 +6,7 @@ use super::{
 };
 use axum::{
     body::Body,
-    extract::State,
+    extract::{Query, State},
     http::{header, HeaderMap, HeaderValue, StatusCode},
     response::IntoResponse,
     Json,
@@ -62,13 +62,40 @@ pub async fn login(
     });
 
     let mut headers = HeaderMap::new();
-    let cookie = format!("agamaToken={}; HttpOnly", &token);
+    let cookie = auth_cookie_from_token(&token);
     headers.insert(
         header::SET_COOKIE,
         cookie.parse().expect("could not build a valid cookie"),
     );
 
     Ok((headers, content))
+}
+
+#[derive(Clone, Deserialize, utoipa::ToSchema)]
+pub struct LoginFromQueryParams {
+    /// Token to use for authentication.
+    token: String,
+}
+
+#[utoipa::path(get, path = "/login", responses(
+    (status = 301, description = "Injects the authentication cookie if correct and redirects to the web UI")
+))]
+pub async fn login_from_query(
+    State(state): State<ServiceState>,
+    Query(params): Query<LoginFromQueryParams>,
+) -> impl IntoResponse {
+    let mut headers = HeaderMap::new();
+
+    if TokenClaims::from_token(&params.token, &state.config.jwt_secret).is_ok() {
+        let cookie = auth_cookie_from_token(&params.token);
+        headers.insert(
+            header::SET_COOKIE,
+            cookie.parse().expect("could not build a valid cookie"),
+        );
+    }
+
+    headers.insert(header::LOCATION, HeaderValue::from_static("/"));
+    (StatusCode::TEMPORARY_REDIRECT, headers)
 }
 
 #[utoipa::path(delete, path = "/api/auth", responses(
@@ -91,6 +118,19 @@ pub async fn logout(_claims: TokenClaims) -> Result<impl IntoResponse, AuthError
 ))]
 pub async fn session(_claims: TokenClaims) -> Result<(), AuthError> {
     Ok(())
+}
+
+/// Creates the cookie containing the authentication token.
+///
+/// It is a session token (no expiration date) so it should be gone
+/// when the browser is closed.
+///
+/// See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+/// for further information.
+///
+/// * `token`: authentication token.
+fn auth_cookie_from_token(token: &str) -> String {
+    format!("agamaToken={}; HttpOnly", &token)
 }
 
 // builds a response tuple for translation redirection
