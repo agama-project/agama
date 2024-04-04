@@ -91,13 +91,13 @@ const createClient = (url) => {
    *
    * @returns {Promise<Issues>}
    */
-  // const issues = async () => {
-  //   return {
-  //     product: await software.product.getIssues(),
-  //     storage: await storage.getIssues(),
-  //     software: await software.getIssues(),
-  //   };
-  // };
+  const issues = async () => {
+    return {
+      product: await product.getIssues(),
+      // storage: await storage.getIssues(),
+      software: await software.getIssues(),
+    };
+  };
 
   /**
    * Registers a callback to be executed when issues change.
@@ -108,15 +108,15 @@ const createClient = (url) => {
   const onIssuesChange = (handler) => {
     const unsubscribeCallbacks = [];
 
-    // unsubscribeCallbacks.push(
-    //   software.product.onIssuesChange((i) => handler({ product: i })),
-    // );
+    unsubscribeCallbacks.push(
+      product.onIssuesChange((i) => handler({ product: i })),
+    );
     // unsubscribeCallbacks.push(
     //   storage.onIssuesChange((i) => handler({ storage: i })),
     // );
-    // unsubscribeCallbacks.push(
-    //   software.onIssuesChange((i) => handler({ software: i })),
-    // );
+    unsubscribeCallbacks.push(
+      software.onIssuesChange((i) => handler({ software: i })),
+    );
 
     return () => {
       unsubscribeCallbacks.forEach((cb) => cb());
@@ -143,7 +143,7 @@ const createClient = (url) => {
     // storage,
     // users,
     // questions,
-    // issues,
+    issues,
     onIssuesChange,
     isConnected,
     onDisconnect: (handler) => {
