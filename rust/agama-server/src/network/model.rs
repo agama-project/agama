@@ -404,6 +404,7 @@ mod tests {
 #[serde_as]
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct GeneralState {
+    pub hostname: String,
     pub connectivity: bool,
     pub wireless_enabled: bool,
     pub networking_enabled: bool, // pub network_state: NMSTATE
