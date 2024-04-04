@@ -35,6 +35,7 @@ pub struct ManagerState<'a> {
 
 /// Holds information about the manager's status.
 #[derive(Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct InstallerStatus {
     /// Current installation phase.
     phase: InstallationPhase,
