@@ -31,8 +31,7 @@ import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
-import { Em, If, Popup, RowActions, Tip } from '~/components/core';
-import { Icon } from '~/components/layout';
+import { If, Popup, RowActions, Tip } from '~/components/core';
 import { VolumeForm } from '~/components/storage';
 import { deviceSize, hasSnapshots, isTransactionalRoot } from '~/components/storage/utils';
 import { noop } from "~/utils";
@@ -185,8 +184,12 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
   };
 
   const SizeLimits = ({ volume }) => {
-    const minSize = deviceSize(volume.minSize);
-    const maxSize = volume.maxSize ? deviceSize(volume.maxSize) : undefined;
+    let targetSize;
+    if (volume.target === "filesystem" || volume.target === "device")
+      targetSize = volume.targetDevice.size;
+
+    const minSize = deviceSize(targetSize || volume.minSize);
+    const maxSize = targetSize ? deviceSize(targetSize) : volume.maxSize ? deviceSize(volume.maxSize) : undefined;
     const isAuto = volume.autoSize;
 
     let size = minSize;
@@ -203,27 +206,34 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
     );
   };
 
-  const Details = ({ volume, options }) => {
+  const Details = ({ volume }) => {
     const snapshots = hasSnapshots(volume);
     const transactional = isTransactionalRoot(volume);
 
-    // TRANSLATORS: the filesystem uses a logical volume (LVM)
-    const text = `${volume.fsType} ${options.lvm ? _("logical volume") : _("partition")}`;
-    const lockIcon = <Icon name="lock" size="xxxs" />;
-    const snapshotsIcon = <Icon name="add_a_photo" size="xxxs" />;
-    const transactionalIcon = <Icon name="sync" size="xxxs" />;
+    if (volume.target === "filesystem")
+      // TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
+      return sprintf(_("Reused %s"), volume.targetDevice?.filesystem?.type || "");
+    if (transactional)
+      return _("Transactional Btrfs");
+    if (snapshots)
+      return _("Btrfs with snapshots");
 
-    return (
-      <div className="split">
-        <span>{text}</span>
-        {/* TRANSLATORS: filesystem flag, it uses an encryption */}
-        <If condition={options.encryption} then={<Em icon={lockIcon}>{_("encrypted")}</Em>} />
-        {/* TRANSLATORS: filesystem flag, it allows creating snapshots */}
-        <If condition={snapshots && !transactional} then={<Em icon={snapshotsIcon}>{_("with snapshots")}</Em>} />
-        {/* TRANSLATORS: flag for transactional file system  */}
-        <If condition={transactional} then={<Em icon={transactionalIcon}>{_("transactional")}</Em>} />
-      </div>
-    );
+    return volume.fsType;
+  };
+
+  const Location = ({ volume, options }) => {
+    if (volume.target === "new_partition")
+      // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
+      return sprintf(_("Partition at %s"), volume.targetDevice?.name || "");
+    if (volume.target === "new_vg")
+      // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
+      return sprintf(_("Separate LVM at %s"), volume.targetDevice?.name || "");
+    if (volume.target === "device" || volume.target === "filesystem")
+      return volume.targetDevice?.name || "";
+    if (options.lvm)
+      return _("Logical volume at system LVM");
+
+    return _("Partition at installation disk");
   };
 
   const VolumeActions = ({ volume, onEdit, onDelete }) => {
@@ -265,8 +275,9 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
     <>
       <Tr>
         <Td dataLabel={columns.mountPath}>{volume.mountPath}</Td>
-        <Td dataLabel={columns.details}><Details volume={volume} options={options} /></Td>
+        <Td dataLabel={columns.details}><Details volume={volume} /></Td>
         <Td dataLabel={columns.size}><SizeLimits volume={volume} /></Td>
+        <Td dataLabel={columns.location}><Location volume={volume} options={options} /></Td>
         <Td isActionCell>
           <VolumeActions
             volume={volume}
@@ -311,6 +322,8 @@ const VolumesTable = ({ volumes, options, isLoading, onVolumesChange }) => {
     mountPath: _("Mount point"),
     details: _("Details"),
     size: _("Size"),
+    // TRANSLATORS: where (and how) the file-system is going to be created
+    location: _("Location"),
     actions: _("Actions")
   };
 
@@ -352,6 +365,7 @@ const VolumesTable = ({ volumes, options, isLoading, onVolumesChange }) => {
           <Th>{columns.mountPath}</Th>
           <Th>{columns.details}</Th>
           <Th>{columns.size}</Th>
+          <Th>{columns.location}</Th>
           <Th />
         </Tr>
       </Thead>

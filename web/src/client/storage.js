@@ -131,7 +131,7 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
  * @typedef {object} Volume
  * @property {string} mountPath
  * @property {string} target
- * @property {string} [targetDevice]
+ * @property {StorageDevice} [targetDevice]
  * @property {string} fsType
  * @property {number} minSize
  * @property {number} [maxSize]
@@ -430,7 +430,8 @@ class ProposalManager {
    */
   async defaultVolume(mountPath) {
     const proxy = await this.proxies.proposalCalculator;
-    return this.buildVolume(await proxy.DefaultVolume(mountPath));
+    const systemDevices = await this.system.getDevices();
+    return this.buildVolume(await proxy.DefaultVolume(mountPath), systemDevices);
   }
 
   /**
@@ -505,7 +506,7 @@ class ProposalManager {
           spaceActions: dbusSettings.SpaceActions.v.map(a => buildSpaceAction(a.v)),
           encryptionPassword: dbusSettings.EncryptionPassword.v,
           encryptionMethod: dbusSettings.EncryptionMethod.v,
-          volumes: dbusSettings.Volumes.v.map(vol => this.buildVolume(vol.v)),
+          volumes: dbusSettings.Volumes.v.map(vol => this.buildVolume(vol.v, systemDevices)),
           // NOTE: strictly speaking, installation devices does not belong to the settings. It
           // should be a separate method instead of an attribute in the settings object.
           // Nevertheless, it was added here for simplicity and to avoid passing more props in some
@@ -559,6 +560,8 @@ class ProposalManager {
         MinSize: { t: "t", v: volume.minSize },
         MaxSize: { t: "t", v: volume.maxSize },
         AutoSize: { t: "b", v: volume.autoSize },
+        Target: { t: "s", v: volume.target },
+        TargetDevice: { t: "s", v: volume.targetDevice?.name },
         Snapshots: { t: "b", v: volume.snapshots },
         Transactional: { t: "b", v: volume.transactional },
       });
@@ -597,6 +600,8 @@ class ProposalManager {
    * @property {CockpitBoolean} AutoSize
    * @property {CockpitBoolean} Snapshots
    * @property {CockpitBoolean} Transactional
+   * @property {CockpitString} Target
+   * @property {CockpitString} [TargetDevice]
    * @property {CockpitVolumeOutline} Outline
    *
    * @typedef {Object} DBusVolumeOutline
@@ -629,7 +634,7 @@ class ProposalManager {
    *
    * @returns {Volume}
    */
-  buildVolume(dbusVolume) {
+  buildVolume(dbusVolume, devices) {
     const buildOutline = (dbusOutline) => {
       if (dbusOutline === undefined) return null;
 
@@ -646,7 +651,7 @@ class ProposalManager {
 
     return {
       target: dbusVolume.Target.v,
-      targetDevice: dbusVolume.TargetDevice?.v,
+      targetDevice: devices.find(d => d.name === dbusVolume.TargetDevice?.v),
       mountPath: dbusVolume.MountPath.v,
       fsType: dbusVolume.FsType.v,
       minSize: dbusVolume.MinSize.v,
