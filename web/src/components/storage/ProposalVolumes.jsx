@@ -210,46 +210,30 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
     const snapshots = hasSnapshots(volume);
     const transactional = isTransactionalRoot(volume);
 
-    const text = () => {
-      if (volume.target === "filesystem")
-        // TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
-        return sprintf(_("Reused %s"), volume.targetDevice?.filesystem?.type || "");
-      if (transactional)
-        return _("Transactional Btrfs");
-      if (snapshots)
-        return _("Btrfs with snapshots");
+    if (volume.target === "filesystem")
+      // TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
+      return sprintf(_("Reused %s"), volume.targetDevice?.filesystem?.type || "");
+    if (transactional)
+      return _("Transactional Btrfs");
+    if (snapshots)
+      return _("Btrfs with snapshots");
 
-      return volume.fsType;
-    };
-
-    return (
-      <div className="split">
-        <span>{text()}</span>
-      </div>
-    );
+    return volume.fsType;
   };
 
   const Location = ({ volume, options }) => {
-    const text = () => {
-      if (volume.target === "new_partition")
-        // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-        return sprintf(_("Partition at %s"), volume.targetDevice?.name || "");
-      if (volume.target === "new_vg")
-        // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-        return sprintf(_("Separate LVM at %s"), volume.targetDevice?.name || "");
-      if (volume.target === "device" || volume.target === "filesystem")
-        return volume.targetDevice?.name || "";
-      if (options.lvm)
-        return _("Logical volume at system LVM");
+    if (volume.target === "new_partition")
+      // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
+      return sprintf(_("Partition at %s"), volume.targetDevice?.name || "");
+    if (volume.target === "new_vg")
+      // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
+      return sprintf(_("Separate LVM at %s"), volume.targetDevice?.name || "");
+    if (volume.target === "device" || volume.target === "filesystem")
+      return volume.targetDevice?.name || "";
+    if (options.lvm)
+      return _("Logical volume at system LVM");
 
-      return _("Partition at installation disk");
-    };
-
-    return (
-      <div className="split">
-        <span>{text()}</span>
-      </div>
-    );
+    return _("Partition at installation disk");
   };
 
   const VolumeActions = ({ volume, onEdit, onDelete }) => {

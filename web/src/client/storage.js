@@ -650,7 +650,7 @@ class ProposalManager {
     };
 
     return {
-      target: dbusVolume.Target?.v || "default",
+      target: dbusVolume.Target.v,
       targetDevice: devices.find(d => d.name === dbusVolume.TargetDevice?.v),
       mountPath: dbusVolume.MountPath.v,
       fsType: dbusVolume.FsType.v,
