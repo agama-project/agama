@@ -1,6 +1,7 @@
 //! Implements the web service state.
 
 use super::{config::ServiceConfig, EventsSender};
+use std::path::PathBuf;
 
 /// Web service state.
 ///
@@ -9,4 +10,5 @@ use super::{config::ServiceConfig, EventsSender};
 pub struct ServiceState {
     pub config: ServiceConfig,
     pub events: EventsSender,
+    pub public_dir: PathBuf,
 }

@@ -74,6 +74,7 @@ impl MainServiceBuilder {
         let state = ServiceState {
             config: self.config,
             events: self.events,
+            public_dir: self.public_dir.clone(),
         };
 
         let api_router = self
@@ -84,9 +85,12 @@ impl MainServiceBuilder {
             .route("/ping", get(super::http::ping))
             .route("/auth", post(login).get(session).delete(logout));
 
+        tracing::info!("Serving static files from {}", self.public_dir.display());
         let serve = ServeDir::new(self.public_dir);
+
         Router::new()
             .nest_service("/", serve)
+            .route("/po.js", get(super::http::po))
             .nest("/api", api_router)
             .layer(TraceLayer::new_for_http())
             .layer(CompressionLayer::new().br(true))
