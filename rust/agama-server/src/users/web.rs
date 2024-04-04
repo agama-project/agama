@@ -40,6 +40,9 @@ pub async fn users_streams(
     const FIRST_USER_ID: &str = "first_user";
     const ROOT_PASSWORD_ID: &str = "root_password";
     const ROOT_SSHKEY_ID: &str = "root_sshkey";
+    // here we have three streams, but only two events. Reason is
+    // that we have three streams from dbus about property change
+    // and munify two root user properties into single event to http API
     let result: Vec<(&str, Pin<Box<dyn Stream<Item = Event> + Send>>)> = vec![
         (
             FIRST_USER_ID,
@@ -91,9 +94,7 @@ async fn root_password_changed_stream(
         .await
         .then(|change| async move {
             if let Ok(is_set) = change.get().await {
-                return Some(Event::RootPasswordChanged {
-                    password_is_set: is_set,
-                });
+                return Some(Event::RootChanged { password: Some(is_set), sshkey: None });
             }
             None
         })
@@ -110,8 +111,7 @@ async fn root_ssh_key_changed_stream(
         .await
         .then(|change| async move {
             if let Ok(key) = change.get().await {
-                let value = if key.is_empty() { None } else { Some(key) };
-                return Some(Event::RootSSHKeyChanged { key: value });
+                return Some(Event::RootChanged { password: None, sshkey: Some(key) });
             }
             None
         })

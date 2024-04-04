@@ -153,11 +153,16 @@ class UsersBaseClient {
    */
   onUsersChange(handler) {
     return this.client.ws.onEvent((event) => {
-      if (event.type === "RootPasswordChanged") {
+      if (event.type === "RootChanged") {
+        const res = {};
+        if (event.password !== null) {
+          res.rootPasswordSet = event.password;
+        }
+        if (event.sshkey !== null) {
+          res.rootSSHKey = event.sshkey;
+        }
         // @ts-ignore
-        return handler({ rootPasswordSet: event.password_is_set });
-      } else if (event.type === "RootSSHKeyChanged") {
-        return handler({ rootSSHKey: event.key.toString() });
+        return handler(res);
       } else if (event.type === "FirstUserChanged") {
         // @ts-ignore
         const { fullName, userName, password, autologin, data } = event;
