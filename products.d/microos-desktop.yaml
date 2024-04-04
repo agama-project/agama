@@ -12,6 +12,10 @@ description: 'A distribution for the desktop offering automatic updates and
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
+    ca: Una distribució per a l'escriptori que ofereix actualitzacions automàtiques
+      i retrocessos sobre els fonaments de l'openSUSE MicroSO. Inclou el Podman
+      Container Runtime i permet gestionar programari mitjançant el Programari
+      del Gnome o el KDE Discover.
     es: Una distribución para escritorio que ofrece actualizaciones automáticas y
       reversión sobre los fundamentos de openSUSE MicroOS. Incluye Podman
       Container Runtime y permite administrar software usando Gnome Software o
@@ -30,6 +34,8 @@ translations:
       möjligheten att rulla tillbaka byggt ovanpå grunden av openSUSE MicroOS.
       Inkluderar Podman behållarkörtid och gör det möjligt att hantera
       programvara med Gnome Programvara eller KDE Discover.
+    zh_Hans: 在 openSUSE MicroOS 基础上提供自动更新和回滚的桌面设备发行版。包含 Podman 容器运行时，且允许透过 GNOME
+      Software 或 KDE Discover 管理软件。
 software:
   installation_repositories:
     - url: https://download.opensuse.org/tumbleweed/repo/oss/

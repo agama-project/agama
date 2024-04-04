@@ -26,12 +26,11 @@ import { FormSelect, FormSelectOption, Popover } from "@patternfly/react-core";
 import { Icon } from "../layout";
 import { _ } from "~/i18n";
 import { useInstallerL10n } from "~/context/installerL10n";
-import cockpit from "~/lib/cockpit";
+import supportedLanguages from "~/languages.json";
 
 export default function InstallerLocaleSwitcher() {
   const { language, changeLanguage } = useInstallerL10n();
   const [selected, setSelected] = useState(null);
-  const languages = cockpit.manifests.agama?.locales || [];
 
   const onChange = useCallback((_event, value) => {
     setSelected(value);
@@ -39,8 +38,8 @@ export default function InstallerLocaleSwitcher() {
   }, [setSelected, changeLanguage]);
 
   // sort by the language code to maintain consistent order
-  const options = Object.keys(languages).sort()
-    .map(id => <FormSelectOption key={id} value={id} label={languages[id]} />);
+  const options = Object.keys(supportedLanguages).sort()
+    .map(id => <FormSelectOption key={id} value={id} label={supportedLanguages[id]} />);
 
   // TRANSLATORS: help text for the language selector in the sidebar,
   // %s will be replaced by the "Localization" page link

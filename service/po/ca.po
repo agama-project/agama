@@ -1,0 +1,190 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-05 02:04+0000\n"
+"PO-Revision-Date: 2024-03-05 12:42+0000\n"
+"Last-Translator: David Medina <medipas@gmail.com>\n"
+"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/ca/>\n"
+"Language: ca\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.9.1\n"
+
+#. Runs the config phase
+#: service/lib/agama/manager.rb:88
+msgid "Probing Storage"
+msgstr "Sondant l'emmagatzematge"
+
+#: service/lib/agama/manager.rb:89
+msgid "Probing Software"
+msgstr "Sondant el programari"
+
+#. Runs the install phase
+#. rubocop:disable Metrics/AbcSize
+#: service/lib/agama/manager.rb:109
+msgid "Partitioning"
+msgstr "Particions"
+
+#. propose software after /mnt is already separated, so it uses proper
+#. target
+#: service/lib/agama/manager.rb:117
+msgid "Installing Software"
+msgstr "Instal·lant programari"
+
+#: service/lib/agama/manager.rb:120
+msgid "Writing Users"
+msgstr "Escrivint els usuaris"
+
+#: service/lib/agama/manager.rb:121
+msgid "Writing Network Configuration"
+msgstr "Escrivint la configuració de la xarxa"
+
+#: service/lib/agama/manager.rb:122
+msgid "Saving Language Settings"
+msgstr "Desant els paràmetres de llengua"
+
+#: service/lib/agama/manager.rb:123
+msgid "Writing repositories information"
+msgstr "Escrivint la informació dels repositoris"
+
+#: service/lib/agama/manager.rb:124
+msgid "Finishing storage configuration"
+msgstr "Acabant la configuració de l'emmagatzematge"
+
+#. Callback to handle unsigned files
+#.
+#. @param filename [String] File name
+#. @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
+#: service/lib/agama/software/callbacks/signature.rb:63
+#, perl-brace-format
+msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
+msgstr "El fitxer %{filename} del repositori %{repo_name} (%{repo_url})"
+
+#: service/lib/agama/software/callbacks/signature.rb:67
+#, perl-brace-format
+msgid "The file %{filename}"
+msgstr "El fitxer %{filename}"
+
+#: service/lib/agama/software/callbacks/signature.rb:71
+#, perl-brace-format
+msgid ""
+"%{source} is not digitally signed. The origin and integrity of the file cannot"
+" be verified. Use it anyway?"
+msgstr ""
+"%{source} no està signat digitalment. L'origen i la integritat del fitxer no "
+"es poden verificar. Voleu usar-lo tanmateix?"
+
+#. Callback to handle signature verification failures
+#.
+#. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
+#. @param _repo_id [Integer] Repository ID
+#: service/lib/agama/software/callbacks/signature.rb:94
+#, perl-brace-format
+msgid ""
+"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you wan"
+"t to trust this key?"
+msgstr ""
+"La clau %{id} (%{name}) amb l'empremta digital %{fingerprint} és "
+"desconeguda. Voleu confiar en aquesta clau?"
+
+#. as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
+#: service/lib/agama/software/manager.rb:134
+msgid "Initializing target repositories"
+msgstr "Iniciant els repositoris de destinació"
+
+#: service/lib/agama/software/manager.rb:135
+msgid "Initializing sources"
+msgstr "Iniciant les fonts"
+
+#: service/lib/agama/software/manager.rb:140
+msgid "Refreshing repositories metadata"
+msgstr "Refrescant les metadades dels repositoris"
+
+#: service/lib/agama/software/manager.rb:141
+msgid "Calculating the software proposal"
+msgstr "Calculant la proposta de programari"
+
+#. Writes the repositories information to the installed system
+#: service/lib/agama/software/manager.rb:190
+msgid "Writing repositories to the target system"
+msgstr "Escrivint els repositoris al sistema de destinació"
+
+#: service/lib/agama/software/manager.rb:196
+msgid "Restoring original repositories"
+msgstr "Restaurant els repositoris originals"
+
+#. Issues related to the software proposal.
+#.
+#. Repositories that could not be probed are reported as errors.
+#.
+#. @return [Array<Agama::Issue>]
+#: service/lib/agama/software/manager.rb:470
+#, c-format
+msgid "Could not read repository \"%s\""
+msgstr "No s'ha pogut llegir el repositori %s."
+
+#. Issue when a product is missing
+#.
+#. @return [Agama::Issue]
+#: service/lib/agama/software/manager.rb:480
+msgid "Product not selected yet"
+msgstr "Encara no s'ha seleccionat el producte."
+
+#. Issue when a product requires registration but it is not registered yet.
+#.
+#. @return [Agama::Issue]
+#: service/lib/agama/software/manager.rb:489
+msgid "Product must be registered"
+msgstr "El producte ha d'estar registrat."
+
+#. Returns solver error messages from the last attempt
+#.
+#. @return [Array<String>] Error messages
+#: service/lib/agama/software/proposal.rb:227
+#, c-format
+msgid "Found %s dependency issues."
+msgstr "S'han trobat %s problemes de dependències."
+
+#. Probes storage devices and performs an initial proposal
+#: service/lib/agama/storage/manager.rb:112
+msgid "Activating storage devices"
+msgstr "Activant els dispositius d'emmagatzematge"
+
+#: service/lib/agama/storage/manager.rb:113
+msgid "Probing storage devices"
+msgstr "Sondant els dispositius d'emmagatzematge"
+
+#: service/lib/agama/storage/manager.rb:114
+msgid "Calculating the storage proposal"
+msgstr "Calculant la proposta d'emmagatzematge"
+
+#: service/lib/agama/storage/manager.rb:115
+msgid "Selecting Linux Security Modules"
+msgstr "Seleccionant els mòduls de seguretat de Linux"
+
+#. Prepares the partitioning to install the system
+#: service/lib/agama/storage/manager.rb:123
+msgid "Preparing bootloader proposal"
+msgstr "Preparant la proposta de carregador d'arrencada"
+
+#. first make bootloader proposal to be sure that required packages are installed
+#: service/lib/agama/storage/manager.rb:128
+msgid "Adding storage-related packages"
+msgstr "Afegint paquets relacionats amb l'emmagatzematge"
+
+#: service/lib/agama/storage/manager.rb:129
+msgid "Preparing the storage devices"
+msgstr "Preparant els dispositius d'emmagatzematge"
+
+#: service/lib/agama/storage/manager.rb:130
+msgid "Writing bootloader sysconfig"
+msgstr "Escrivint la configuració de sistema del carregador d'arrencada"

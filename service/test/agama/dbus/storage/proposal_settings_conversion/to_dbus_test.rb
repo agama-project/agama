@@ -20,20 +20,20 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../../test_helper"
-require "y2storage/encryption_method"
-require "y2storage/pbkd_function"
 require "agama/dbus/storage/proposal_settings_conversion/to_dbus"
+require "agama/storage/device_settings"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume"
+require "y2storage/encryption_method"
+require "y2storage/pbkd_function"
 
 describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
   let(:default_settings) { Agama::Storage::ProposalSettings.new }
 
   let(:custom_settings) do
     Agama::Storage::ProposalSettings.new.tap do |settings|
-      settings.boot_device = "/dev/sda"
-      settings.lvm.enabled = true
-      settings.lvm.system_vg_devices = ["/dev/sda", "/dev/sdb"]
+      settings.device.name = "/dev/sda"
+      settings.boot.device = "/dev/sdb"
       settings.encryption.password = "notsecret"
       settings.encryption.method = Y2Storage::EncryptionMethod::LUKS2
       settings.encryption.pbkd_function = Y2Storage::PbkdFunction::ARGON2ID
@@ -46,9 +46,11 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
   describe "#convert" do
     it "converts the settings to a D-Bus hash" do
       expect(described_class.new(default_settings).convert).to eq(
+        "Target"                 => "disk",
+        "TargetDevice"           => "",
+        "ConfigureBoot"          => true,
         "BootDevice"             => "",
-        "LVM"                    => false,
-        "SystemVGDevices"        => [],
+        "DefaultBootDevice"      => "",
         "EncryptionPassword"     => "",
         "EncryptionMethod"       => "luks2",
         "EncryptionPBKDFunction" => "pbkdf2",
@@ -58,9 +60,11 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
       )
 
       expect(described_class.new(custom_settings).convert).to eq(
-        "BootDevice"             => "/dev/sda",
-        "LVM"                    => true,
-        "SystemVGDevices"        => ["/dev/sda", "/dev/sdb"],
+        "Target"                 => "disk",
+        "TargetDevice"           => "/dev/sda",
+        "ConfigureBoot"          => true,
+        "BootDevice"             => "/dev/sdb",
+        "DefaultBootDevice"      => "/dev/sda",
         "EncryptionPassword"     => "notsecret",
         "EncryptionMethod"       => "luks2",
         "EncryptionPBKDFunction" => "argon2id",
@@ -80,7 +84,7 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
             "MountPath"     => "/test",
             "MountOptions"  => [],
             "TargetDevice"  => "",
-            "TargetVG"      => "",
+            "Target"        => "default",
             "FsType"        => "",
             "MinSize"       => 0,
             "AutoSize"      => false,
@@ -98,6 +102,63 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
           }
         ]
       )
+    end
+
+    context "when the device is set to create partitions" do
+      let(:settings) do
+        Agama::Storage::ProposalSettings.new.tap do |settings|
+          settings.device = Agama::Storage::DeviceSettings::Disk.new("/dev/vda")
+        end
+      end
+
+      it "generates settings to use a disk as target device" do
+        dbus_settings = described_class.new(settings).convert
+
+        expect(dbus_settings).to include(
+          "Target"       => "disk",
+          "TargetDevice" => "/dev/vda"
+        )
+
+        expect(dbus_settings).to_not include("TargetPVDevices")
+      end
+    end
+
+    context "when the device is set to create a new LVM volume group" do
+      let(:settings) do
+        Agama::Storage::ProposalSettings.new.tap do |settings|
+          settings.device = Agama::Storage::DeviceSettings::NewLvmVg.new(["/dev/vda"])
+        end
+      end
+
+      it "generates settings to create a LVM volume group as target device" do
+        dbus_settings = described_class.new(settings).convert
+
+        expect(dbus_settings).to include(
+          "Target"          => "newLvmVg",
+          "TargetPVDevices" => ["/dev/vda"]
+        )
+
+        expect(dbus_settings).to_not include("TargetDevice")
+      end
+    end
+
+    context "when the device is set to reuse a LVM volume group" do
+      let(:settings) do
+        Agama::Storage::ProposalSettings.new.tap do |settings|
+          settings.device = Agama::Storage::DeviceSettings::ReusedLvmVg.new("/dev/vg0")
+        end
+      end
+
+      it "generates settings to reuse a LVM volume group as target device" do
+        dbus_settings = described_class.new(settings).convert
+
+        expect(dbus_settings).to include(
+          "Target"       => "reusedLvmVg",
+          "TargetDevice" => "/dev/vg0"
+        )
+
+        expect(dbus_settings).to_not include("TargetPVDevices")
+      end
     end
   end
 end

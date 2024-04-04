@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    agama (7)
+    agama-yast (7.devel737)
       cfa (~> 1.0.2)
       cfa_grub2 (~> 2.0.0)
       cheetah (~> 1.0.0)
@@ -26,7 +26,9 @@ GEM
     docile (1.4.0)
     eventmachine (1.2.7)
     fast_gettext (2.3.0)
-    nokogiri (1.15.5-x86_64-linux)
+    mini_portile2 (2.8.5)
+    nokogiri (1.15.5)
+      mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     packaging_rake_tasks (1.5.4)
       rake
@@ -63,7 +65,7 @@ PLATFORMS
   x86_64-linux-gnu
 
 DEPENDENCIES
-  agama!
+  agama-yast!
   byebug
   packaging_rake_tasks (~> 1.5.1)
   rake (~> 13.0.6)

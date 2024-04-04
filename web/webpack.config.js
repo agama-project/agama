@@ -12,7 +12,7 @@ const StylelintPlugin = require('stylelint-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const webpack = require('webpack');
-const manifests_handler = require("./src/lib/webpack-manifests-handler");
+const po_handler = require("./src/lib/webpack-po-handler");
 
 /* A standard nodejs and webpack pattern */
 const production = process.env.NODE_ENV === 'production';
@@ -44,6 +44,9 @@ const copy_files = [
 const plugins = [
   new Copy({ patterns: copy_files }),
   new Extract({ filename: "[name].css" }),
+  // the wrapper sets the main code called in the po.js files,
+  // the PO_DATA tag is replaced by the real translation data
+  new CockpitPoPlugin({ wrapper: "agama.locale(PO_DATA);" }),
   development && new ReactRefreshWebpackPlugin({ overlay: false }),
   // replace the "process.env.WEBPACK_SERVE" text in the source code by
   // the current value of the environment variable, that variable is set to
@@ -118,6 +121,12 @@ module.exports = {
     // hot replacement does not support wss:// transport when running over https://,
     // as a workaround use sockjs (which uses standard https:// protocol)
     webSocketServer: "sockjs",
+
+    // special handling for the "po.js" requests specially
+    setupMiddlewares: (middlewares, devServer) => {
+      devServer.app.get("/po.js", po_handler);
+      return middlewares;
+    }
   },
   devtool: "source-map",
   stats: "errors-warnings",

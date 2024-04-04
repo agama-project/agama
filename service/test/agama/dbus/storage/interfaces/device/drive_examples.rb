@@ -192,13 +192,29 @@ shared_examples "Drive interface" do
         allow(device).to receive(:transport).and_return(transport)
       end
 
-      let(:transport) { instance_double(Y2Storage::DataTransport, to_s: "usb") }
+      let(:transport) { Y2Storage::DataTransport::FCOE }
 
       it "returns the transport" do
-        expect(subject.drive_transport).to eq("usb")
+        expect(subject.drive_transport).to eq("fcoe")
       end
 
-      context "if transport is unknown" do
+      context "if transport is Unknown" do
+        let(:transport) { Y2Storage::DataTransport::UNKNOWN }
+
+        it "returns an empty string" do
+          expect(subject.drive_transport).to eq("")
+        end
+      end
+
+      context "if transport is USB" do
+        let(:transport) { Y2Storage::DataTransport::USB }
+
+        it "returns the corresponding string" do
+          expect(subject.drive_transport).to eq("USB")
+        end
+      end
+
+      context "if transport is missing" do
         let(:transport) { nil }
 
         it "returns an empty string" do

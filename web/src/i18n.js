@@ -20,19 +20,19 @@
  */
 
 /**
- * This is a wrapper module for i18n functions. Currently it uses the cockpit
- * implementation but the wrapper allows easy transition to another backend if
- * needed.
+ * This is a wrapper module for i18n functions. Currently it uses the
+ * implementation similar to cockpit but the wrapper allows easy transition to
+ * another backend if needed.
  */
 
-import cockpit from "./lib/cockpit";
+import agama from "~/agama";
 
 /**
  * Tests whether a special testing language is used.
  *
  * @returns {boolean} true if the testing language is set
  */
-const isTestingLanguage = () => cockpit.language === "xx";
+const isTestingLanguage = () => agama.language === "xx";
 
 /**
  * "Translate" the string to special "xx" testing language.
@@ -72,7 +72,7 @@ const xTranslate = (str) => {
  * @param {string} str the input string to translate
  * @return {string} translated or original text
  */
-const _ = (str) => isTestingLanguage() ? xTranslate(str) : cockpit.gettext(str);
+const _ = (str) => isTestingLanguage() ? xTranslate(str) : agama.gettext(str);
 
 /**
  * Similar to the _() function. This variant returns singular or plural form
@@ -88,7 +88,7 @@ const _ = (str) => isTestingLanguage() ? xTranslate(str) : cockpit.gettext(str);
 const n_ = (str1, strN, n) => {
   return isTestingLanguage()
     ? xTranslate((n === 1) ? str1 : strN)
-    : cockpit.ngettext(str1, strN, n);
+    : agama.ngettext(str1, strN, n);
 };
 
 /**

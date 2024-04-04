@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -47,9 +47,14 @@ module Agama
       #
       # @param objects [Array]
       def objects=(objects)
-        try_add_objects(objects)
         try_update_objects(objects)
+        try_add_objects(objects)
         try_delete_objects(objects)
+      end
+
+      # Unexports the current D-Bus objects of this tree.
+      def clean
+        dbus_objects.each { |o| service.unexport(o) }
       end
 
     private

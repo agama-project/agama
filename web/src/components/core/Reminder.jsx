@@ -62,7 +62,8 @@ const ReminderTitle = ({ children }) => {
  * @param {object} props
  * @param {string} [props.icon] - The name of desired icon.
  * @param {JSX.Element|string} [props.title] - The content for the title.
- * @param {string} [props.role="status"] - The reminder's role, "status" by
+ * @param {string} [props.role="status"] - The reminder's role, "status" by default.
+ * @param {("subtle")} [props.variant] - The reminder's variant, none by default.
  *   default. See {@link https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/status_role}
  * @param {JSX.Element} [props.children] - The content for the description.
  */
@@ -70,10 +71,11 @@ export default function Reminder ({
   icon,
   title,
   role = "status",
+  variant,
   children
 }) {
   return (
-    <div role={role} data-type="agama/reminder">
+    <div role={role} data-type="agama/reminder" data-variant={variant}>
       <ReminderIcon name={icon} />
       <div>
         <ReminderTitle>{title}</ReminderTitle>

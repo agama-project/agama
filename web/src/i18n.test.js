@@ -20,14 +20,14 @@
  */
 
 import { _, n_, N_, Nn_ } from "~/i18n";
-import cockpit from "./lib/cockpit";
+import agama from "~/agama";
 
 // mock the cockpit gettext functions
-jest.mock("./lib/cockpit");
+jest.mock("~/agama");
 const gettextFn = jest.fn();
-cockpit.gettext.mockImplementation(gettextFn);
+agama.gettext.mockImplementation(gettextFn);
 const ngettextFn = jest.fn();
-cockpit.ngettext.mockImplementation(ngettextFn);
+agama.ngettext.mockImplementation(ngettextFn);
 
 // some testing texts
 const text = "text to translate";
@@ -36,7 +36,7 @@ const pluralText = "plural text to translate";
 
 describe("i18n", () => {
   describe("_", () => {
-    it("calls the cockpit.gettext() implementation", () => {
+    it("calls the agama.gettext() implementation", () => {
       _(text);
 
       expect(gettextFn).toHaveBeenCalledWith(text);
@@ -44,7 +44,7 @@ describe("i18n", () => {
   });
 
   describe("n_", () => {
-    it("calls the cockpit.ngettext() implementation", () => {
+    it("calls the agama.ngettext() implementation", () => {
       n_(singularText, pluralText, 1);
 
       expect(ngettextFn).toHaveBeenCalledWith(singularText, pluralText, 1);

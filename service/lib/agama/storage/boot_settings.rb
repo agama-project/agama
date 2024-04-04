@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,22 +21,21 @@
 
 module Agama
   module Storage
-    # Settings regarding LVM for the Agama storage proposal
-    class LvmSettings
-      # Whether to use LVM
+    # Class for configuring the boot settings of the Agama storage proposal.
+    class BootSettings
+      # Whether to configure partitions for booting.
       #
       # @return [Boolean]
-      attr_accessor :enabled
-      alias_method :enabled?, :enabled
+      attr_accessor :configure
+      alias_method :configure?, :configure
 
-      # Devices to use for the system LVM volume group
+      # Device to use for booting.
       #
-      # @return [Array<String>]
-      attr_accessor :system_vg_devices
+      # @return [String, nil]
+      attr_accessor :device
 
       def initialize
-        @enabled = false
-        @system_vg_devices = []
+        @configure = true
       end
     end
   end

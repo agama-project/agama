@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -39,8 +39,8 @@ const encryptionMethods = ["luks2", "tpm_fde"];
 
 const proposalResult = {
   settings: {
-    bootDevice: "/dev/sda",
-    lvm: false,
+    target: "disk",
+    targetDevice: "/dev/sda",
     spacePolicy: "delete"
   },
   actions: []
@@ -95,7 +95,7 @@ describe("when there is a proposal", () => {
 
   describe("and the space policy is set to 'resize'", () => {
     beforeEach(() => {
-      const result = { settings: { spacePolicy: "resize", bootDevice: "/dev/sda" } };
+      const result = { settings: { spacePolicy: "resize", targetDevice: "/dev/sda" } };
       storage.proposal.getResult = jest.fn().mockResolvedValue(result);
     });
 
@@ -108,7 +108,7 @@ describe("when there is a proposal", () => {
 
   describe("and the space policy is set to 'keep'", () => {
     beforeEach(() => {
-      const result = { settings: { spacePolicy: "keep", bootDevice: "/dev/sda" } };
+      const result = { settings: { spacePolicy: "keep", targetDevice: "/dev/sda" } };
       storage.proposal.getResult = jest.fn().mockResolvedValue(result);
     });
 
@@ -119,9 +119,9 @@ describe("when there is a proposal", () => {
     });
   });
 
-  describe("and there is no boot device", () => {
+  describe("and there is no target device", () => {
     beforeEach(() => {
-      const result = { settings: { bootDevice: "" } };
+      const result = { settings: { targetDevice: "" } };
       storage.proposal.getResult = jest.fn().mockResolvedValue(result);
     });
 

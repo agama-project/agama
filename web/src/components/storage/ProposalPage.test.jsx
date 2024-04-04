@@ -84,7 +84,13 @@ const storageMock = {
     getProductMountPoints: jest.fn().mockResolvedValue([]),
     getResult: jest.fn().mockResolvedValue(undefined),
     defaultVolume: jest.fn(mountPath => Promise.resolve({ mountPath })),
-    calculate: jest.fn().mockResolvedValue(0)
+    calculate: jest.fn().mockResolvedValue(0),
+  },
+  system: {
+    getDevices: jest.fn().mockResolvedValue([vda, vdb])
+  },
+  staging: {
+    getDevices: jest.fn().mockResolvedValue([vda])
   },
   getErrors: jest.fn().mockResolvedValue([]),
   isDeprecated: jest.fn().mockResolvedValue(false),
@@ -112,7 +118,7 @@ it("does not probe storage if the storage devices are not deprecated", async () 
 
 it("loads the proposal data", async () => {
   storage.proposal.getResult = jest.fn().mockResolvedValue(
-    { settings: { bootDevice: vda.name } }
+    { settings: { target: "disk", targetDevice: vda.name } }
   );
 
   installerRender(<ProposalPage />);
@@ -123,12 +129,12 @@ it("loads the proposal data", async () => {
   await screen.findByText(/\/dev\/vda/);
 });
 
-it("renders the settings, find space and actions sections", async () => {
+it("renders the device, settings and result sections", async () => {
   installerRender(<ProposalPage />);
 
+  await screen.findByText(/Device/);
   await screen.findByText(/Settings/);
-  await screen.findByText(/Find Space/);
-  await screen.findByText(/Planned Actions/);
+  await screen.findByText(/Result/);
 });
 
 describe("when the storage devices become deprecated", () => {
@@ -146,7 +152,7 @@ describe("when the storage devices become deprecated", () => {
   });
 
   it("loads the proposal data", async () => {
-    const result = { settings: { bootDevice: vda.name } };
+    const result = { settings: { target: "disk", targetDevice: vda.name } };
     storage.proposal.getResult = jest.fn().mockResolvedValue(result);
 
     const [mockFunction, callbacks] = createCallbackMock();
@@ -156,7 +162,7 @@ describe("when the storage devices become deprecated", () => {
 
     await screen.findByText(/\/dev\/vda/);
 
-    result.settings.bootDevice = vdb.name;
+    result.settings.targetDevice = vdb.name;
 
     const [onDeprecateCb] = callbacks;
     await act(() => onDeprecateCb());
@@ -186,7 +192,7 @@ describe("when there is no proposal yet", () => {
     screen.getAllByText(/PFSkeleton/);
 
     storage.proposal.getResult = jest.fn().mockResolvedValue(
-      { settings: { bootDevice: vda.name } }
+      { settings: { target: "disk", targetDevice: vda.name } }
     );
 
     const [onStatusChangeCb] = callbacks;
@@ -198,7 +204,7 @@ describe("when there is no proposal yet", () => {
 describe("when there is a proposal", () => {
   beforeEach(() => {
     storage.proposal.getResult = jest.fn().mockResolvedValue(
-      { settings: { bootDevice: vda.name } }
+      { settings: { target: "disk", targetDevice: vda.name } }
     );
   });
 

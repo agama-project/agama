@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -26,17 +26,17 @@ module Agama
   module Storage
     # Conversions for the proposal settings.
     module ProposalSettingsConversion
-      # Performs conversion from Y2Storage format.
+      # Performs conversion from Y2Storage.
       #
-      # @param settings [Y2Storage::ProposalSettings]
-      # @param config [Agama::Config]
+      # @param y2storage_settings [Y2Storage::ProposalSettings]
+      # @param settings [Agama::Storage::ProposalSettings]
       #
       # @return [Agama::Storage::ProposalSettings]
-      def self.from_y2storage(settings, config:)
-        FromY2Storage.new(settings, config: config).convert
+      def self.from_y2storage(y2storage_settings, settings)
+        FromY2Storage.new(y2storage_settings, settings).convert
       end
 
-      # Performs conversion to Y2Storage format.
+      # Performs conversion to Y2Storage.
       #
       # @param settings [Agama::Storage::ProposalSettings]
       # @param config [Agama::Config]

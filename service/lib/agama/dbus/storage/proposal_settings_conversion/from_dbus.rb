@@ -19,12 +19,15 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2storage/encryption_method"
-require "y2storage/pbkd_function"
+require "agama/dbus/hash_validator"
+require "agama/dbus/storage/volume_conversion"
+require "agama/dbus/types"
+require "agama/storage/device_settings"
 require "agama/storage/proposal_settings"
 require "agama/storage/proposal_settings_reader"
 require "agama/storage/space_settings"
-require "agama/dbus/storage/volume_conversion"
+require "y2storage/encryption_method"
+require "y2storage/pbkd_function"
 
 module Agama
   module DBus
@@ -34,25 +37,23 @@ module Agama
         class FromDBus
           # @param dbus_settings [Hash]
           # @param config [Agama::Config]
-          def initialize(dbus_settings, config:)
+          # @param logger [Logger, nil]
+          def initialize(dbus_settings, config:, logger: nil)
             @dbus_settings = dbus_settings
             @config = config
+            @logger = logger || Logger.new($stdout)
           end
 
           # Performs the conversion from D-Bus format.
           #
           # @return [Agama::Storage::ProposalSettings]
           def convert
-            settings = Agama::Storage::ProposalSettingsReader.new(config).read
+            logger.info("D-Bus settings: #{dbus_settings}")
 
-            settings.tap do |target|
-              dbus_settings.each do |dbus_property, dbus_value|
-                converter = CONVERSIONS[dbus_property]
-                # FIXME: likely ignoring the wrong attribute is not the best
-                next unless converter
+            dbus_settings_issues.each { |i| logger.warn(i) }
 
-                send(converter, target, dbus_value)
-              end
+            Agama::Storage::ProposalSettingsReader.new(config).read.tap do |target|
+              valid_dbus_properties.each { |p| conversion(target, p) }
             end
           end
 
@@ -64,36 +65,145 @@ module Agama
           # @return [Agama::Config]
           attr_reader :config
 
-          # D-Bus attributes and their converters.
-          CONVERSIONS = {
-            "BootDevice"             => :boot_device_conversion,
-            "LVM"                    => :lvm_conversion,
-            "SystemVGDevices"        => :system_vg_devices_conversion,
-            "EncryptionPassword"     => :encryption_password_conversion,
-            "EncryptionMethod"       => :encryption_method_conversion,
-            "EncryptionPBKDFunction" => :encryption_pbkd_function_conversion,
-            "SpacePolicy"            => :space_policy_conversion,
-            "SpaceActions"           => :space_actions_conversion,
-            "Volumes"                => :volumes_conversion
-          }.freeze
-          private_constant :CONVERSIONS
+          # @return [Logger]
+          attr_reader :logger
+
+          DBUS_PROPERTIES = [
+            {
+              name:       "Target",
+              type:       String,
+              conversion: :device_conversion
+            },
+            {
+              name: "TargetDevice",
+              type: String
+            },
+            {
+              name: "TargetPVDevices",
+              type: Types::Array.new(String)
+            },
+            {
+              name:       "ConfigureBoot",
+              type:       Types::BOOL,
+              conversion: :configure_boot_conversion
+            },
+            {
+              name:       "BootDevice",
+              type:       String,
+              conversion: :boot_device_conversion
+            },
+            {
+              name:       "EncryptionPassword",
+              type:       String,
+              conversion: :encryption_password_conversion
+            },
+            {
+              name:       "EncryptionMethod",
+              type:       String,
+              conversion: :encryption_method_conversion
+            },
+            {
+              name:       "EncryptionPBKDFunction",
+              type:       String,
+              conversion: :encryption_pbkd_function_conversion
+            },
+            {
+              name:       "SpacePolicy",
+              type:       String,
+              conversion: :space_policy_conversion
+            },
+            {
+              name:       "SpaceActions",
+              type:       Types::Array.new(Types::Hash.new(key: String, value: String)),
+              conversion: :space_actions_conversion
+            },
+            {
+              name:       "Volumes",
+              type:       Types::Array.new(Types::Hash.new(key: String)),
+              conversion: :volumes_conversion
+            }
+          ].freeze
+
+          private_constant :DBUS_PROPERTIES
+
+          # Issues detected in the D-Bus settings, see {HashValidator#issues}.
+          #
+          # @return [Array<String>]
+          def dbus_settings_issues
+            validator.issues
+          end
+
+          # D-Bus properties with valid type, see {HashValidator#valid_keys}.
+          #
+          # @return [Array<String>]
+          def valid_dbus_properties
+            validator.valid_keys
+          end
+
+          # Validator for D-Bus settings.
+          #
+          # @return [HashValidator]
+          def validator
+            return @validator if @validator
+
+            scheme = DBUS_PROPERTIES.map { |p| [p[:name], p[:type]] }.to_h
+            @validator = HashValidator.new(dbus_settings, scheme: scheme)
+          end
+
+          # @param target [Agama::Storage::ProposalSettings]
+          # @param dbus_property_name [String]
+          def conversion(target, dbus_property_name)
+            dbus_property = DBUS_PROPERTIES.find { |d| d[:name] == dbus_property_name }
+            conversion_method = dbus_property[:conversion]
+
+            return unless conversion_method
+
+            send(conversion_method, target, dbus_settings[dbus_property_name])
+          end
 
           # @param target [Agama::Storage::ProposalSettings]
           # @param value [String]
-          def boot_device_conversion(target, value)
-            target.boot_device = value.empty? ? nil : value
+          def device_conversion(target, value)
+            device_settings = case value
+            when "disk"
+              disk_device_conversion
+            when "newLvmVg"
+              new_lvm_vg_device_conversion
+            when "reusedLvmVg"
+              reused_lvm_vg_device_conversion
+            end
+
+            target.device = device_settings
+          end
+
+          # @return [Agama::Storage::DeviceSettings::Disk]
+          def disk_device_conversion
+            device = dbus_settings["TargetDevice"]
+            Agama::Storage::DeviceSettings::Disk.new(device)
+          end
+
+          # @return [Agama::Storage::DeviceSettings::NewLvmVg]
+          def new_lvm_vg_device_conversion
+            candidates = dbus_settings["TargetPVDevices"] || []
+            Agama::Storage::DeviceSettings::NewLvmVg.new(candidates)
+          end
+
+          # @return [Agama::Storage::DeviceSettings::ReusedLvmVg]
+          def reused_lvm_vg_device_conversion
+            device = dbus_settings["TargetDevice"]
+            Agama::Storage::DeviceSettings::ReusedLvmVg.new(device)
           end
 
           # @param target [Agama::Storage::ProposalSettings]
           # @param value [Boolean]
-          def lvm_conversion(target, value)
-            target.lvm.enabled = value
+          def configure_boot_conversion(target, value)
+            target.boot.configure = value
           end
 
           # @param target [Agama::Storage::ProposalSettings]
-          # @param value [Array<String>]
-          def system_vg_devices_conversion(target, value)
-            target.lvm.system_vg_devices = value
+          # @param value [String]
+          def boot_device_conversion(target, value)
+            target.boot.device = value.empty? ? nil : value
           end
 
           # @param target [Agama::Storage::ProposalSettings]
@@ -144,7 +254,9 @@ module Agama
             return if value.empty?
 
             required_volumes = target.volumes.select { |v| v.outline.required? }
-            volumes = value.map { |v| VolumeConversion.from_dbus(v, config: config) }
+            volumes = value.map do |dbus_volume|
+              VolumeConversion.from_dbus(dbus_volume, config: config, logger: logger)
+            end
 
             target.volumes = volumes + missing_volumes(required_volumes, volumes)
           end

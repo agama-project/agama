@@ -103,12 +103,16 @@ dependencies = [
  "cidr",
  "clap",
  "config",
+ "futures-util",
  "gettext-rs",
  "http-body-util",
+ "hyper 1.2.0",
+ "hyper-util",
  "jsonwebtoken",
  "log",
  "macaddr",
  "once_cell",
+ "openssl",
  "pam",
  "pin-project",
  "rand",
@@ -121,6 +125,7 @@ dependencies = [
  "systemd-journal-logger",
  "thiserror",
  "tokio",
+ "tokio-openssl",
  "tokio-stream",
  "tokio-test",
  "tower",
@@ -3363,6 +3368,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bbae76ab933c85776efabc971569dd6119c580d8f5d448769dec1764bf796ef2"
 dependencies = [
  "native-tls",
+ "tokio",
+]
+
+[[package]]
+name = "tokio-openssl"
+version = "0.6.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6ffab79df67727f6acf57f1ff743091873c24c579b1e2ce4d8f53e47ded4d63d"
+dependencies = [
+ "futures-util",
+ "openssl",
+ "openssl-sys",
  "tokio",
 ]
 
