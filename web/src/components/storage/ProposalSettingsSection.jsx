@@ -43,14 +43,10 @@ import { hasFS, deviceLabel } from "~/components/storage/utils";
  * @param {object} props
  * @param {string} props.id - Form ID.
  * @param {string} props.password - Password for encryption.
- * @param {onSubmitFn} [props.onSubmit=noop] - On submit callback.
- * @param {onValidateFn} [props.onValidate=noop] - On validate callback.
- *
- * @callback onSubmitFn
- * @param {string} password
- *
- * @callback onValidateFn
- * @param {boolean} valid
+ * @param {string} props.method - Encryption method.
+ * @param {string[]} props.methods - Possible encryption methods.
+ * @param {(password: string, method: string) => void} [props.onSubmit=noop] - On submit callback.
+ * @param {(valid: boolean) => void} [props.onValidate=noop] - On validate callback.
  */
 const EncryptionSettingsForm = ({
   id,
@@ -94,7 +90,6 @@ const EncryptionSettingsForm = ({
   return (
     <Form id={id} onSubmit={submitForm}>
       <PasswordAndConfirmationInput
-        id="encryptionPasswordInput"
         value={password}
         onChange={changePassword}
         onValidation={onValidate}
@@ -171,24 +166,24 @@ version of the system after configuration changes or software upgrades.");
  * @param {object} props
  * @param {string} [props.password=""] - Password for encryption
  * @param {string} [props.method=""] - Encryption method
+ * @param {string[]} [props.methods] - Possible encryption methods
  * @param {boolean} [props.isChecked=false] - Whether encryption is selected
  * @param {boolean} [props.isLoading=false] - Whether to show the selector as loading
- * @param {onChangeFn} [props.onChange=noop] - On change callback
+ * @param {(config: EncryptionConfig) => void} [props.onChange=noop] - On change callback
  *
- * @callback onChangeFn
- * @param {object} settings
+ * @typedef {object} EncryptionConfig
+ * @property {string} password
+ * @property {string} [method]
  */
 const EncryptionField = ({
-  password: passwordProp = "",
-  method: methodProp = "",
+  password = "",
+  method = "",
   methods,
-  isChecked: isCheckedProp = false,
+  isChecked: defaultIsChecked = false,
   isLoading = false,
   onChange = noop
 }) => {
-  const [isChecked, setIsChecked] = useState(isCheckedProp);
-  const [password, setPassword] = useState(passwordProp);
-  const [method, setMethod] = useState(methodProp);
+  const [isChecked, setIsChecked] = useState(defaultIsChecked);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isFormValid, setIsFormValid] = useState(true);
 
@@ -198,14 +193,12 @@ const EncryptionField = ({
 
   const acceptForm = (newPassword, newMethod) => {
     closeForm();
-    setPassword(newPassword);
-    setMethod(newMethod);
-    onChange({ isChecked, password: newPassword, method: newMethod });
+    onChange({ password: newPassword, method: newMethod });
   };
 
   const cancelForm = () => {
+    setIsChecked(defaultIsChecked);
     closeForm();
-    if (password.length === 0) setIsChecked(false);
   };
 
   const validateForm = (valid) => setIsFormValid(valid);
@@ -216,8 +209,7 @@ const EncryptionField = ({
     if (value && password.length === 0) openForm();
 
     if (!value) {
-      setPassword("");
-      onChange({ isChecked: false, password: "" });
+      onChange({ password: "" });
     }
   };
 
