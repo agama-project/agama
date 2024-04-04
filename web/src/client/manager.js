@@ -112,7 +112,7 @@ class ManagerBaseClient {
    * Runs cleanup when installation is done
    */
   finishInstallation() {
-    return this.client.post("/manager/install");
+    return this.client.post("/manager/finish");
   }
 
   /**
