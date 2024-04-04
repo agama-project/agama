@@ -19,13 +19,11 @@ use utoipa::OpenApi;
         crate::manager::web::installer_status,
         crate::questions::web::list_questions,
         crate::questions::web::answer,
-        crate::users::web::get_config,
+        crate::users::web::get_root_config,
+        crate::users::web::get_user_config,
         crate::users::web::set_first_user,
         crate::users::web::remove_first_user,
-        crate::users::web::set_root_password,
-        crate::users::web::remove_root_password,
-        crate::users::web::set_root_sshkey,
-        crate::users::web::remove_root_sshkey,
+        crate::users::web::patch_root,
         super::http::ping,
     ),
     components(
@@ -50,9 +48,8 @@ use utoipa::OpenApi;
         schemas(crate::questions::web::GenericAnswer),
         schemas(crate::questions::web::PasswordAnswer),
         schemas(agama_lib::users::FirstUser),
-        schemas(crate::users::web::RootPasswordSettings),
-        schemas(crate::users::web::RootInfo),
-        schemas(crate::users::web::UsersInfo),
+        schemas(crate::users::web::RootConfig),
+        schemas(crate::users::web::RootPatchSettings),
         schemas(super::http::PingResponse),
     )
 )]

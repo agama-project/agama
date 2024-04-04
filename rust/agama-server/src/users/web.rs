@@ -15,11 +15,7 @@ use agama_lib::{
     error::ServiceError,
     users::{proxies::Users1Proxy, FirstUser, UsersClient},
 };
-use axum::{
-    extract::State,
-    routing::{get, put},
-    Json, Router,
-};
+use axum::{extract::State, routing::get, Json, Router};
 use serde::{Deserialize, Serialize};
 use std::pin::Pin;
 use tokio_stream::{Stream, StreamExt};
@@ -94,7 +90,10 @@ async fn root_password_changed_stream(
         .await
         .then(|change| async move {
             if let Ok(is_set) = change.get().await {
-                return Some(Event::RootChanged { password: Some(is_set), sshkey: None });
+                return Some(Event::RootChanged {
+                    password: Some(is_set),
+                    sshkey: None,
+                });
             }
             None
         })
@@ -111,7 +110,10 @@ async fn root_ssh_key_changed_stream(
         .await
         .then(|change| async move {
             if let Ok(key) = change.get().await {
-                return Some(Event::RootChanged { password: None, sshkey: Some(key) });
+                return Some(Event::RootChanged {
+                    password: None,
+                    sshkey: Some(key),
+                });
             }
             None
         })
@@ -129,16 +131,13 @@ pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceErro
     let validation_router = validation_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let router = Router::new()
-        .route("/config", get(get_config))
-        .route("/user", put(set_first_user).delete(remove_first_user))
         .route(
-            "/root_password",
-            put(set_root_password).delete(remove_root_password),
+            "/first",
+            get(get_user_config)
+                .put(set_first_user)
+                .delete(remove_first_user),
         )
-        .route(
-            "/root_sshkey",
-            put(set_root_sshkey).delete(remove_root_sshkey),
-        )
+        .route("/root", get(get_root_config).patch(patch_root))
         .merge(validation_router)
         .merge(status_router)
         .with_state(state);
@@ -146,7 +145,7 @@ pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceErro
 }
 
 /// Removes the first user settings
-#[utoipa::path(delete, path = "/users/user", responses(
+#[utoipa::path(delete, path = "/users/first", responses(
     (status = 200, description = "Removes the first user"),
     (status = 400, description = "The D-Bus service could not perform the action"),
 ))]
@@ -155,7 +154,7 @@ async fn remove_first_user(State(state): State<UsersState<'_>>) -> Result<(), Er
     Ok(())
 }
 
-#[utoipa::path(put, path = "/users/user", responses(
+#[utoipa::path(put, path = "/users/first", responses(
     (status = 200, description = "User values are set"),
     (status = 400, description = "The D-Bus service could not perform the action"),
 ))]
@@ -167,87 +166,64 @@ async fn set_first_user(
     Ok(())
 }
 
+#[utoipa::path(get, path = "/users/first", responses(
+    (status = 200, description = "Configuration for the first user", body = FirstUser),
+    (status = 400, description = "The D-Bus service could not perform the action"),
+))]
+async fn get_user_config(State(state): State<UsersState<'_>>) -> Result<Json<FirstUser>, Error> {
+    Ok(Json(state.users.first_user().await?))
+}
+
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct RootPasswordSettings {
-    pub value: String,
-    pub encrypted: bool,
+#[serde(rename_all = "camelCase")]
+pub struct RootPatchSettings {
+    /// empty string here means remove ssh key for root
+    pub sshkey: Option<String>,
+    /// empty string here means remove password for root
+    pub password: Option<String>,
+    /// specify if patched password is provided in encrypted form
+    pub password_encrypted: Option<bool>,
 }
 
-#[utoipa::path(delete, path = "/users/root_password", responses(
-    (status = 200, description = "Removes the root password"),
+#[utoipa::path(patch, path = "/users/root", responses(
+    (status = 200, description = "Root configuration is modified", body = RootPatchSettings),
     (status = 400, description = "The D-Bus service could not perform the action"),
 ))]
-async fn remove_root_password(State(state): State<UsersState<'_>>) -> Result<(), Error> {
-    state.users.remove_root_password().await?;
-    Ok(())
-}
-
-#[utoipa::path(put, path = "/users/root_password", responses(
-    (status = 200, description = "Root password is set"),
-    (status = 400, description = "The D-Bus service could not perform the action"),
-))]
-async fn set_root_password(
+async fn patch_root(
     State(state): State<UsersState<'_>>,
-    Json(config): Json<RootPasswordSettings>,
+    Json(config): Json<RootPatchSettings>,
 ) -> Result<(), Error> {
-    state
-        .users
-        .set_root_password(&config.value, config.encrypted)
-        .await?;
-    Ok(())
-}
-
-#[utoipa::path(delete, path = "/users/root_sshkey", responses(
-    (status = 200, description = "Removes the root SSH key"),
-    (status = 400, description = "The D-Bus service could not perform the action"),
-))]
-async fn remove_root_sshkey(State(state): State<UsersState<'_>>) -> Result<(), Error> {
-    state.users.set_root_sshkey("").await?;
-    Ok(())
-}
-
-#[utoipa::path(put, path = "/users/root_sshkey", responses(
-    (status = 200, description = "Root SSH Key is set"),
-    (status = 400, description = "The D-Bus service could not perform the action"),
-))]
-async fn set_root_sshkey(
-    State(state): State<UsersState<'_>>,
-    Json(key): Json<String>,
-) -> Result<(), Error> {
-    state.users.set_root_sshkey(key.as_str()).await?;
+    if let Some(key) = config.sshkey {
+        state.users.set_root_sshkey(&key).await?;
+    }
+    if let Some(password) = config.password {
+        if password.is_empty() {
+            state.users.remove_root_password().await?;
+        } else {
+            state
+                .users
+                .set_root_password(&password, config.password_encrypted == Some(true))
+                .await?;
+        }
+    }
     Ok(())
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct RootInfo {
+pub struct RootConfig {
+    /// returns if password for root is set or not
     password: bool,
-    sshkey: Option<String>,
+    /// empty string mean no sshkey is specified
+    sshkey: String,
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct UsersInfo {
-    user: Option<FirstUser>,
-    root: RootInfo,
-}
-
-#[utoipa::path(put, path = "/users/config", responses(
-    (status = 200, description = "Configuration for users including root and the first user", body = UsersInfo),
+#[utoipa::path(get, path = "/users/root", responses(
+    (status = 200, description = "Configuration for the root user", body = RootConfig),
     (status = 400, description = "The D-Bus service could not perform the action"),
 ))]
-async fn get_config(State(state): State<UsersState<'_>>) -> Result<Json<UsersInfo>, Error> {
-    let mut result = UsersInfo::default();
-    let first_user = state.users.first_user().await?;
-    if first_user.user_name.is_empty() {
-        result.user = None;
-    } else {
-        result.user = Some(first_user);
-    }
-    result.root.password = state.users.is_root_password().await?;
-    let ssh_key = state.users.root_ssh_key().await?;
-    if ssh_key.is_empty() {
-        result.root.sshkey = None;
-    } else {
-        result.root.sshkey = Some(ssh_key);
-    }
-    Ok(Json(result))
+async fn get_root_config(State(state): State<UsersState<'_>>) -> Result<Json<RootConfig>, Error> {
+    let password = state.users.is_root_password().await?;
+    let sshkey = state.users.root_ssh_key().await?;
+    let config = RootConfig { password, sshkey };
+    Ok(Json(config))
 }

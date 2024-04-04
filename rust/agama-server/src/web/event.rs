@@ -26,7 +26,7 @@ pub enum Event {
     FirstUserChanged(FirstUser),
     RootChanged {
         password: Option<bool>,
-        sshkey: Option<String>
+        sshkey: Option<String>,
     },
     // TODO: it should include the full software proposal or, at least,
     // all the relevant changes.
