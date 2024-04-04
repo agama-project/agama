@@ -25,7 +25,7 @@ import DBusClient from "../dbus";
 import { NetworkManagerAdapter, securityFromFlags } from "./network_manager";
 import cockpit from "../../lib/cockpit";
 import { createConnection, ConnectionTypes, ConnectionState, createAccessPoint } from "./model";
-import { formatIp } from "./utils";
+import { formatIp, ipPrefixFor } from "./utils";
 
 const SERVICE_NAME = "org.opensuse.Agama1";
 const CONNECTIONS_IFACE = "org.opensuse.Agama1.Network.Connections";
@@ -46,7 +46,6 @@ const DeviceType = Object.freeze({
 /**
  * @typedef {import("./model").NetworkSettings} NetworkSettings
  * @typedef {import("./model").Connection} Connection
- * @typedef {import("./model").ActiveConnection} ActiveConnection
  * @typedef {import("./model").IPAddress} IPAddress
  * @typedef {import("./model").AccessPoint} AccessPoint
  */
@@ -63,7 +62,6 @@ const NetworkEventTypes = Object.freeze({
 
 /**
  * @typedef {object} NetworkAdapter
- * @property {() => ActiveConnection[]} activeConnections
  * @property {() => AccessPoint[]} accessPoints
  * @property {() => Promise<Connection[]>} connections
  * @property {(handler: (event: NetworkEvent) => void) => void} subscribe
@@ -119,7 +117,7 @@ class NetworkClient {
     const nameservers = (connection.nameservers || []);
     const addresses = (connection.addresses || []).map((address) => {
       const [ip, netmask] = address.split("/");
-      return { address: ip, prefix: netmask };
+      return { address: ip, prefix: ipPrefixFor(netmask) };
     });
 
     return { ...connection, addresses, nameservers };

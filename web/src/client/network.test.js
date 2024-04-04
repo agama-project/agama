@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,68 +21,95 @@
 
 // @ts-check
 
-import { NetworkClient, ConnectionTypes, ConnectionState } from "./network";
-const ADDRESS = "unix:path=/run/agama/bus";
+import { HTTPClient } from "./http";
+import { NetworkClient } from "./network";
+const ADDRESS = "http://localhost";
 
-const mockActiveConnection = {
-  id: "uuid-wired",
-  name: "Wired connection 1",
-  type: ConnectionTypes.ETHERNET,
-  state: ConnectionState.ACTIVATED,
-  addresses: [{ address: "192.168.122.1", prefix: 24 }]
-};
+
+const mockWiredConnection = {
+  "id": "eth0",
+  "status": "up",
+  "interface": "eth0",
+  "method4": "manual",
+  "method6": "manual",
+  "addresses": ["192.168.122.100/24"],
+  "nameservers": ["192.168.122.1"],
+  "gateway4": "192.168.122.1"
+}
+
+const mockWirelessConnection = {
+  "id": "AgamaNetwork",
+  "method4": "auto",
+  "method6": "auto",
+  "wireless": {
+    "passworkd": "agama.test",
+    "security": "wpa-psk",
+    "ssid": "Agama",
+    "mode": "infrastructure"
+  },
+  "status": "down"
+}
 
 const mockConnection = {
-  id: "uuid-wired",
-  name: "Wired connection 1",
-  type: ConnectionTypes.ETHERNET,
-  addresses: [{ address: "192.168.122.1", prefix: 24 }]
-};
+  "id": "eth0",
+  "status": "up",
+  "interface": "eth0",
+  "method4": "manual",
+  "method6": "manual",
+  "addresses": [{ address: "192.168.122.100", prefix: 24 }],
+  "nameservers": ["192.168.122.1"],
+  "gateway4": "192.168.122.1"
+}
 
-const settings = {
-  wifiScanSupported: true,
-  hostname: "localhost.localdomain"
-};
+const mockSettings = {
+  hostname: "localhost.localdomain",
+  connectivity: true,
+  wireless_enabled: true,
+  networking_enabled: true
+}
 
-jest.mock("./network/network_manager", () => {
+jest.mock("./http", () => {
   return {
-    NetworkManagerAdapter: jest.fn().mockImplementation(() => {
+    HTTPClient: jest.fn().mockImplementation(() => {
       return {
-        setUp: jest.fn(),
-        activeConnections: jest.fn().mockReturnValue([mockActiveConnection]),
-        connections: jest.fn().mockReturnValue([mockConnection]),
-        subscribe: jest.fn(),
-        getConnection: jest.fn(),
-        accessPoints: jest.fn(),
-        connectTo: jest.fn(),
-        addAndConnectTo: jest.fn(),
-        settings: jest.fn().mockReturnValue(settings),
+        get: mockGetFn,
       };
     }),
   };
 });
 
+const mockGetFn = jest.fn();
+
 describe("NetworkClient", () => {
-  describe("#activeConnections", () => {
-    it("returns the list of active connections from the adapter", () => {
-      const client = new NetworkClient(ADDRESS);
-      const connections = client.activeConnections();
-      expect(connections).toEqual([mockActiveConnection]);
+  describe("#connections", () => {
+    it("returns the list of active connections from the adapter", async () => {
+      const http = new HTTPClient(new URL(ADDRESS));
+      const client = new NetworkClient(http);
+      mockGetFn.mockResolvedValue([mockWiredConnection, mockWirelessConnection]);
+      const connections = await client.connections();
+      const eth0 = connections.find(c => c.id === "eth0");
+      expect(eth0).toEqual(mockConnection);
     });
   });
 
   describe("#addresses", () => {
-    it("returns the list of addresses", () => {
-      const client = new NetworkClient(ADDRESS);
-      expect(client.addresses()).toEqual([{ address: "192.168.122.1", prefix: 24 }]);
+    it("returns the list of addresses", async () => {
+      const http = new HTTPClient(new URL(ADDRESS));
+      const client = new NetworkClient(http);
+      mockGetFn.mockResolvedValue([mockWiredConnection, mockWirelessConnection]);
+      const addresses = await client.addresses();
+      expect(addresses).toEqual([{ address: "192.168.122.100", prefix: 24 }]);
     });
   });
 
+
   describe("#settings", () => {
-    it("returns network general settings", () => {
-      const client = new NetworkClient(ADDRESS);
-      expect(client.settings().hostname).toEqual("localhost.localdomain");
-      expect(client.settings().wifiScanSupported).toEqual(true);
+    it("returns network general settings", async () => {
+      const http = new HTTPClient(new URL(ADDRESS));
+      const client = new NetworkClient(http);
+      mockGetFn.mockResolvedValue(mockSettings);
+      const settings = await client.settings();
+      expect(settings.hostname).toEqual("localhost.localdomain");
     });
   });
 });
