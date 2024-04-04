@@ -424,6 +424,51 @@ ul[data-type="agama/list"][role="grid"] {
   }
 }
 
+[data-type="agama/controlled-panels"] {
+  [data-type="agama/option"] {
+    label, input {
+      cursor: pointer;
+    }
+
+    label {
+      display: flex;
+      gap: var(--spacer-smaller);
+    }
+  }
+
+  [data-variant="buttons"] {
+    input { position: absolute; opacity: 0 }
+
+    label {
+      border: 1px solid var(--color-primary);
+      padding: var(--spacer-small);
+      gap: var(--spacer-small);
+      border-radius: var(--spacer-smaller);
+      position: relative;
+
+      &:has(input:checked) {
+        background: var(--color-primary);
+        color: white;
+      }
+
+      &:has(input:focus-visible) {
+        // outline: 1px dotted;
+        // outline-offset: 0.25rem;
+        box-shadow: 0 0 0 3px var(--focus-color);
+      }
+    }
+
+    [data-type="agama/option"]:not(:last-child) {
+      border-inline-end: 2px solid var(--color-gray-darker);
+      padding-inline-end: var(--spacer-small);
+    }
+  }
+
+  > div[aria-expanded="false"] {
+    display: none;
+  }
+}
+
 table[data-type="agama/tree-table"] {
   th:first-child {
     block-size: fit-content;
@@ -481,6 +526,8 @@ table[data-type="agama/tree-table"] {
   }
 }
 
+// FIXME: use a single selector
+table.devices-table,
 table.proposal-result {
   tr.dimmed-row {
     background-color: #fff;
@@ -668,5 +715,38 @@ section [data-type="agama/reminder"] {
 
   .pf-v5-c-alert__description {
     max-inline-size: 100%;
+  }
+}
+
+
+[data-type="agama/expandable-selector"] {
+  // The expandable selector is built on top of PF/Table#expandable
+  // Let's tweak some styles
+  tr {
+    td:first-child {
+      padding-inline-start: 0;
+    }
+
+    td:last-child {
+      padding-inline-end: 0;
+    }
+  }
+
+  tr.pf-v5-c-table__expandable-row.pf-m-expanded {
+    border-bottom: 0;
+
+    .pf-v5-c-table__expandable-row-content {
+      font-size: var(--fs-medium);
+      padding-block: var(--spacer-small);
+    }
+  }
+}
+
+#boot-form {
+  legend {
+    label {
+      font-size: var(--fs-large);
+      font-weight: bold;
+    }
   }
 }

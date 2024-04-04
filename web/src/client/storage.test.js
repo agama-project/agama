@@ -446,65 +446,98 @@ const contexts = {
   },
   withProposal: () => {
     cockpitProxies.proposal = {
-      BootDevice: "/dev/sda",
-      LVM: true,
-      SystemVGDevices: ["/dev/sda", "/dev/sdb"],
-      EncryptionPassword: "00000",
-      SpacePolicy: "custom",
-      SpaceActions: [
-        {
-          Device: { t: "s", v: "/dev/sda" },
-          Action: { t: "s", v: "force_delete" }
+      Settings: {
+        Target: { t: "s", v: "newLvmVg" },
+        TargetPVDevices: {
+          t: "av",
+          v: [
+            { t: "s", v: "/dev/sda" },
+            { t: "s", v: "/dev/sdb" }
+          ]
         },
-        {
-          Device: { t: "s", v: "/dev/sdb" },
-          Action: { t: "s", v: "resize" }
-        }
-      ],
-      Volumes: [
-        {
-          MountPath: { t: "s", v: "/" },
-          FsType: { t: "s", v: "Btrfs" },
-          MinSize: { t: "x", v: 1024 },
-          MaxSize: { t: "x", v: 2048 },
-          AutoSize: { t: "b", v: true },
-          Snapshots: { t: "b", v: true },
-          Transactional: { t: "b", v: true },
-          Outline: {
-            t: "a{sv}",
-            v: {
-              Required: { t: "b", v: true },
-              FsTypes: { t: "as", v: [{ t: "s", v: "Btrfs" }, { t: "s", v: "Ext3" }] },
-              SupportAutoSize: { t: "b", v: true },
-              SnapshotsConfigurable: { t: "b", v: true },
-              SnapshotsAffectSizes: { t: "b", v: true },
-              AdjustByRam: { t: "b", v: false },
-              SizeRelevantVolumes: { t: "as", v: [{ t: "s", v: "/home" }] }
+        ConfigureBoot: { t: "b", v: true },
+        BootDevice: { t: "s", v: "/dev/sda" },
+        DefaultBootDevice: { t: "s", v: "/dev/sdb" },
+        EncryptionPassword: { t: "s", v: "00000" },
+        EncryptionMethod: { t: "s", v: "luks1" },
+        SpacePolicy: { t: "s", v: "custom" },
+        SpaceActions: {
+          t: "av",
+          v: [
+            {
+              t: "a{sv}",
+              v: {
+                Device: { t: "s", v: "/dev/sda" },
+                Action: { t: "s", v: "force_delete" }
+              }
+            },
+            {
+              t: "a{sv}",
+              v: {
+                Device: { t: "s", v: "/dev/sdb" },
+                Action: { t: "s", v: "resize" }
+              }
             }
-          }
+          ]
         },
-        {
-          MountPath: { t: "s", v: "/home" },
-          FsType: { t: "s", v: "XFS" },
-          MinSize: { t: "x", v: 2048 },
-          MaxSize: { t: "x", v: 4096 },
-          AutoSize: { t: "b", v: false },
-          Snapshots: { t: "b", v: false },
-          Transactional: { t: "b", v: false },
-          Outline: {
-            t: "a{sv}",
-            v: {
-              Required: { t: "b", v: false },
-              FsTypes: { t: "as", v: [{ t: "s", v: "Ext4" }, { t: "s", v: "XFS" }] },
-              SupportAutoSize: { t: "b", v: false },
-              SnapshotsConfigurable: { t: "b", v: false },
-              SnapshotsAffectSizes: { t: "b", v: false },
-              AdjustByRam: { t: "b", v: false },
-              SizeRelevantVolumes: { t: "as", v: [] }
+        Volumes: {
+          t: "av",
+          v: [
+            {
+              t: "a{sv}",
+              v: {
+                MountPath: { t: "s", v: "/" },
+                Target: { t: "s", v: "default" },
+                TargetDevice: { t: "s", v: "" },
+                FsType: { t: "s", v: "Btrfs" },
+                MinSize: { t: "x", v: 1024 },
+                MaxSize: { t: "x", v: 2048 },
+                AutoSize: { t: "b", v: true },
+                Snapshots: { t: "b", v: true },
+                Transactional: { t: "b", v: true },
+                Outline: {
+                  t: "a{sv}",
+                  v: {
+                    Required: { t: "b", v: true },
+                    FsTypes: { t: "as", v: [{ t: "s", v: "Btrfs" }, { t: "s", v: "Ext3" }] },
+                    SupportAutoSize: { t: "b", v: true },
+                    SnapshotsConfigurable: { t: "b", v: true },
+                    SnapshotsAffectSizes: { t: "b", v: true },
+                    AdjustByRam: { t: "b", v: false },
+                    SizeRelevantVolumes: { t: "as", v: [{ t: "s", v: "/home" }] }
+                  }
+                }
+              }
+            },
+            {
+              t: "a{sv}",
+              v: {
+                MountPath: { t: "s", v: "/home" },
+                Target: { t: "s", v: "default" },
+                TargetDevice: { t: "s", v: "" },
+                FsType: { t: "s", v: "XFS" },
+                MinSize: { t: "x", v: 2048 },
+                MaxSize: { t: "x", v: 4096 },
+                AutoSize: { t: "b", v: false },
+                Snapshots: { t: "b", v: false },
+                Transactional: { t: "b", v: false },
+                Outline: {
+                  t: "a{sv}",
+                  v: {
+                    Required: { t: "b", v: false },
+                    FsTypes: { t: "as", v: [{ t: "s", v: "Ext4" }, { t: "s", v: "XFS" }] },
+                    SupportAutoSize: { t: "b", v: false },
+                    SnapshotsConfigurable: { t: "b", v: false },
+                    SnapshotsAffectSizes: { t: "b", v: false },
+                    AdjustByRam: { t: "b", v: false },
+                    SizeRelevantVolumes: { t: "as", v: [] }
+                  }
+                }
+              }
             }
-          }
-        }
-      ],
+          ]
+        },
+      },
       Actions: [
         {
           Device: { t: "u", v: 2 },
@@ -1379,6 +1412,8 @@ describe("#proposal", () => {
         switch (mountPath) {
           case "/home": return {
             MountPath: { t: "s", v: "/home" },
+            Target: { t: "s", v: "default" },
+            TargetDevice: { t: "s", v: "" },
             FsType: { t: "s", v: "XFS" },
             MinSize: { t: "x", v: 2048 },
             MaxSize: { t: "x", v: 4096 },
@@ -1400,6 +1435,8 @@ describe("#proposal", () => {
           };
           case "": return {
             MountPath: { t: "s", v: "" },
+            Target: { t: "s", v: "default" },
+            TargetDevice: { t: "s", v: "" },
             FsType: { t: "s", v: "Ext4" },
             MinSize: { t: "x", v: 1024 },
             MaxSize: { t: "x", v: 2048 },
@@ -1430,6 +1467,8 @@ describe("#proposal", () => {
 
       expect(home).toStrictEqual({
         mountPath: "/home",
+        target: "default",
+        targetDevice: "",
         fsType: "XFS",
         minSize: 2048,
         maxSize: 4096,
@@ -1451,6 +1490,8 @@ describe("#proposal", () => {
 
       expect(generic).toStrictEqual({
         mountPath: "",
+        target: "default",
+        targetDevice: "",
         fsType: "Ext4",
         minSize: 1024,
         maxSize: 2048,
@@ -1494,9 +1535,11 @@ describe("#proposal", () => {
         const { settings, actions } = await client.proposal.getResult();
 
         expect(settings).toMatchObject({
+          target: "newLvmVg",
+          targetPVDevices: ["/dev/sda", "/dev/sdb"],
+          configureBoot: true,
           bootDevice: "/dev/sda",
-          lvm: true,
-          systemVGDevices: ["/dev/sda", "/dev/sdb"],
+          defaultBootDevice: "/dev/sdb",
           encryptionPassword: "00000",
           spacePolicy: "custom",
           spaceActions: [
@@ -1506,6 +1549,8 @@ describe("#proposal", () => {
           volumes: [
             {
               mountPath: "/",
+              target: "default",
+              targetDevice: "",
               fsType: "Btrfs",
               minSize: 1024,
               maxSize: 2048,
@@ -1523,6 +1568,8 @@ describe("#proposal", () => {
             },
             {
               mountPath: "/home",
+              target: "default",
+              targetDevice: "",
               fsType: "XFS",
               minSize: 2048,
               maxSize: 4096,
@@ -1568,10 +1615,11 @@ describe("#proposal", () => {
 
     it("calculates a proposal with the given settings", async () => {
       await client.proposal.calculate({
+        target: "disk",
+        targetDevice: "/dev/vdc",
+        configureBoot: true,
         bootDevice: "/dev/vdb",
         encryptionPassword: "12345",
-        lvm: true,
-        systemVGDevices: ["/dev/sdc"],
         spacePolicy: "custom",
         spaceActions: [{ device: "/dev/sda", action: "resize" }],
         volumes: [
@@ -1591,10 +1639,11 @@ describe("#proposal", () => {
       });
 
       expect(cockpitProxies.proposalCalculator.Calculate).toHaveBeenCalledWith({
+        Target: { t: "s", v: "disk" },
+        TargetDevice: { t: "s", v: "/dev/vdc" },
+        ConfigureBoot: { t: "b", v: true },
         BootDevice: { t: "s", v: "/dev/vdb" },
         EncryptionPassword: { t: "s", v: "12345" },
-        LVM: { t: "b", v: true },
-        SystemVGDevices: { t: "as", v: ["/dev/sdc"] },
         SpacePolicy: { t: "s", v: "custom" },
         SpaceActions: {
           t: "aa{sv}",

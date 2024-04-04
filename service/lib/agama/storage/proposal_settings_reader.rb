@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,10 +19,11 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/device_settings"
+require "agama/storage/space_settings"
+require "agama/storage/volume_templates_builder"
 require "y2storage/encryption_method"
 require "y2storage/pbkd_function"
-require "agama/storage/volume_templates_builder"
-require "agama/storage/space_settings"
 
 module Agama
   module Storage
@@ -63,7 +64,9 @@ module Agama
       # @param settings [Agama::Storage::ProposalSettings]
       # @param value [Boolean]
       def lvm_reader(settings, value)
-        settings.lvm.enabled = value
+        return unless value
+
+        settings.device = DeviceSettings::NewLvmVg.new
       end
 
       # @param settings [Agama::Storage::ProposalSettings]

@@ -118,7 +118,7 @@ it("does not probe storage if the storage devices are not deprecated", async () 
 
 it("loads the proposal data", async () => {
   storage.proposal.getResult = jest.fn().mockResolvedValue(
-    { settings: { bootDevice: vda.name } }
+    { settings: { target: "disk", targetDevice: vda.name } }
   );
 
   installerRender(<ProposalPage />);
@@ -129,7 +129,7 @@ it("loads the proposal data", async () => {
   await screen.findByText(/\/dev\/vda/);
 });
 
-it("renders the device, settings, find space and result sections", async () => {
+it("renders the device, settings and result sections", async () => {
   installerRender(<ProposalPage />);
 
   await screen.findByText(/Device/);
@@ -152,7 +152,7 @@ describe("when the storage devices become deprecated", () => {
   });
 
   it("loads the proposal data", async () => {
-    const result = { settings: { bootDevice: vda.name } };
+    const result = { settings: { target: "disk", targetDevice: vda.name } };
     storage.proposal.getResult = jest.fn().mockResolvedValue(result);
 
     const [mockFunction, callbacks] = createCallbackMock();
@@ -162,7 +162,7 @@ describe("when the storage devices become deprecated", () => {
 
     await screen.findByText(/\/dev\/vda/);
 
-    result.settings.bootDevice = vdb.name;
+    result.settings.targetDevice = vdb.name;
 
     const [onDeprecateCb] = callbacks;
     await act(() => onDeprecateCb());
@@ -192,7 +192,7 @@ describe("when there is no proposal yet", () => {
     screen.getAllByText(/PFSkeleton/);
 
     storage.proposal.getResult = jest.fn().mockResolvedValue(
-      { settings: { bootDevice: vda.name } }
+      { settings: { target: "disk", targetDevice: vda.name } }
     );
 
     const [onStatusChangeCb] = callbacks;
@@ -204,7 +204,7 @@ describe("when there is no proposal yet", () => {
 describe("when there is a proposal", () => {
   beforeEach(() => {
     storage.proposal.getResult = jest.fn().mockResolvedValue(
-      { settings: { bootDevice: vda.name } }
+      { settings: { target: "disk", targetDevice: vda.name } }
     );
   });
 

@@ -19,66 +19,54 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+// @ts-check
+
+import React, { useState } from "react";
 import {
   Button,
-  Form,
   Skeleton,
-  Switch,
-  ToggleGroup, ToggleGroupItem,
-  Tooltip
 } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
-import { Icon } from "~/components/layout";
-import { If, Section, Popup } from "~/components/core";
-import { DeviceList, DeviceSelector } from "~/components/storage";
+import { DeviceSelectionDialog } from "~/components/storage";
 import { deviceLabel } from '~/components/storage/utils';
-import { noop } from "~/utils";
+import { If, Section } from "~/components/core";
+import { sprintf } from "sprintf-js";
+import { compact, noop } from "~/utils";
 
 /**
- * @typedef {import ("~/client/storage").ProposalManager.ProposalSettings} ProposalSettings
- * @typedef {import ("~/client/storage").DevicesManager.StorageDevice} StorageDevice
+ * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
 
 /**
- * Form for selecting the installation device.
- * @component
+ * Renders a button that allows changing the target device for installation.
  *
  * @param {object} props
- * @param {string} props.id - Form ID.
- * @param {StorageDevice} [props.current] - Currently selected device, if any.
- * @param {StorageDevice[]} [props.devices=[]] - Available devices for the selection.
- * @param {onSubmitFn} [props.onSubmit=noop] - On submit callback.
- *
- * @callback onSubmitFn
- * @param {string} device - Name of the selected device.
+ * @param {string} props.target
+ * @param {StorageDevice|undefined} props.targetDevice
+ * @param {StorageDevice[]} props.targetPVDevices
+ * @param {import("react").MouseEventHandler<HTMLButtonElement>} [props.onClick=noop]
  */
-const InstallationDeviceForm = ({
-  id,
-  current,
-  devices = [],
-  onSubmit = noop
-}) => {
-  const [device, setDevice] = useState(current || devices[0]);
+const TargetDeviceButton = ({ target, targetDevice, targetPVDevices, onClick = noop }) => {
+  const label = () => {
+    if (target === "disk" && targetDevice) return deviceLabel(targetDevice);
+    if (target === "newLvmVg" && targetPVDevices.length > 0) {
+      if (targetPVDevices.length > 1) return _("new LVM volume group");
 
-  const changeSelected = (deviceId) => {
-    setDevice(devices.find(d => d.sid === deviceId));
-  };
+      if (targetPVDevices.length === 1) {
+        // TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
+        return sprintf(_("new LVM volume group on %s"), deviceLabel(targetPVDevices[0]));
+      }
+    }
 
-  const submitForm = (e) => {
-    e.preventDefault();
-    if (device !== undefined) onSubmit(device);
+    return _("No device selected yet");
   };
 
   return (
-    <Form id={id} onSubmit={submitForm}>
-      <DeviceSelector
-        selected={device}
-        devices={devices}
-        onChange={changeSelected}
-      />
-    </Form>
+    <Button variant="link" isInline onClick={onClick}>
+      {label()}
+    </Button>
   );
 };
 
@@ -86,310 +74,78 @@ const InstallationDeviceForm = ({
  * Allows to select the installation device.
  * @component
  *
- * @callback onChangeFn
- * @param {string} device - Name of the selected device.
- *
  * @param {object} props
- * @param {string} [props.current] - Device name, if any.
- * @param {StorageDevice[]} [props.devices=[]] - Available devices for the selection.
- * @param {boolean} [props.isLoading=false] - Whether to show the selector as loading.
- * @param {onChangeFn} [props.onChange=noop] - On change callback.
+ * @param {string} props.target - Installation target ("disk", "newLvmVg", "reusedLvmVg").
+ * @param {StorageDevice|undefined} props.targetDevice - Target device (for target "disk").
+ * @param {StorageDevice[]} props.targetPVDevices - Target devices for the LVM volume group (target "newLvmVg").
+ * @param {StorageDevice[]} props.devices - Available devices for installation.
+ * @param {boolean} props.isLoading
+ * @param {(target: Target) => void} props.onChange
+ *
+ * @typedef {object} Target
+ * @property {string} target
+ * @property {StorageDevice|undefined} targetDevice
+ * @property {StorageDevice[]} targetPVDevices
  */
 const InstallationDeviceField = ({
-  current,
-  devices = [],
-  isLoading = false,
-  onChange = noop
+  target,
+  targetDevice,
+  targetPVDevices,
+  devices,
+  isLoading,
+  onChange
 }) => {
-  const [device, setDevice] = useState();
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const openForm = () => setIsFormOpen(true);
+  const openDialog = () => setIsDialogOpen(true);
 
-  const closeForm = () => setIsFormOpen(false);
+  const closeDialog = () => setIsDialogOpen(false);
 
-  const acceptForm = (selectedDevice) => {
-    closeForm();
-    setDevice(selectedDevice);
-    onChange(selectedDevice);
-  };
-
-  useEffect(() => {
-    setDevice(devices.find(d => d.name === current));
-  }, [current, devices, setDevice]);
-
-  /**
-   * Renders a button that allows changing selected device
-   *
-   * NOTE: if a device is already selected, its name and size will be used for
-   * the button text. Otherwise, a "No device selected" text will be shown.
-   *
-   * @param {object} props
-   * @param {StorageDevice|undefined} [props.current] - Currently selected device, if any.
-   */
-  const DeviceContent = ({ device }) => {
-    return (
-      <Button variant="link" isInline onClick={openForm}>
-        {device ? deviceLabel(device) : _("No device selected yet")}
-      </Button>
-    );
+  const onAccept = ({ target, targetDevice, targetPVDevices }) => {
+    closeDialog();
+    onChange({ target, targetDevice, targetPVDevices });
   };
 
   if (isLoading) {
     return <Skeleton screenreaderText={_("Waiting for information about selected device")} width="25%" />;
   }
 
-  const description = _("Select the device for installing the system.");
-
   return (
-    <>
-      <div className="split">
-        <span>{_("Installation device")}</span>
-        <DeviceContent device={device} />
-      </div>
-      <Popup
-        title={_("Installation device")}
-        description={description}
-        isOpen={isFormOpen}
-      >
-        <If
-          condition={devices.length === 0}
-          then={_("No devices found.")}
-          else={
-            <InstallationDeviceForm
-              id="bootDeviceForm"
-              current={device}
-              devices={devices}
-              onSubmit={acceptForm}
-            />
-          }
-        />
-        <Popup.Actions>
-          <Popup.Confirm
-            form="bootDeviceForm"
-            type="submit"
-            isDisabled={devices.length === 0}
-          >
-            {_("Accept")}
-          </Popup.Confirm>
-          <Popup.Cancel onClick={closeForm} />
-        </Popup.Actions>
-      </Popup>
-    </>
-  );
-};
-
-/**
- * Form for configuring the system volume group.
- * @component
- *
- * @param {object} props
- * @param {string} props.id - Form ID.
- * @param {ProposalSettings} props.settings - Settings used for calculating a proposal.
- * @param {StorageDevice[]} [props.devices=[]] - Available storage devices.
- * @param {onSubmitFn} [props.onSubmit=noop] - On submit callback.
- * @param {onValidateFn} [props.onValidate=noop] - On validate callback.
- *
- * @callback onSubmitFn
- * @param {string[]} devices - Name of the selected devices.
- *
- * @callback onValidateFn
- * @param {boolean} valid
- */
-const LVMSettingsForm = ({
-  id,
-  settings,
-  devices = [],
-  onSubmit: onSubmitProp = noop,
-  onValidate = noop
-}) => {
-  const [vgDevices, setVgDevices] = useState(settings.systemVGDevices);
-  const [isBootDeviceSelected, setIsBootDeviceSelected] = useState(settings.systemVGDevices.length === 0);
-  const [editedDevices, setEditedDevices] = useState(false);
-
-  const selectBootDevice = () => {
-    setIsBootDeviceSelected(true);
-    onValidate(true);
-  };
-
-  const selectCustomDevices = () => {
-    setIsBootDeviceSelected(false);
-    const { bootDevice } = settings;
-    const customDevices = (vgDevices.length === 0 && !editedDevices) ? [bootDevice] : vgDevices;
-    setVgDevices(customDevices);
-    onValidate(customDevices.length > 0);
-  };
-
-  const onChangeDevices = (selection) => {
-    const selectedDevices = devices.filter(d => selection.includes(d.sid)).map(d => d.name);
-    setVgDevices(selectedDevices);
-    setEditedDevices(true);
-    onValidate(devices.length > 0);
-  };
-
-  const onSubmit = (e) => {
-    e.preventDefault();
-    const customDevices = isBootDeviceSelected ? [] : vgDevices;
-    onSubmitProp(customDevices);
-  };
-
-  const BootDevice = () => {
-    const bootDevice = devices.find(d => d.name === settings.bootDevice);
-
-    // FIXME: In this case, should be a "readOnly" selector.
-    return <DeviceList devices={[bootDevice]} />;
-  };
-
-  return (
-    <Form id={id} onSubmit={onSubmit}>
-      <div className="split">
-        <span>{_("Devices for creating the volume group")}</span>
-        <ToggleGroup isCompact>
-          <ToggleGroupItem
-            text={_("Installation device")}
-            buttonId="bootDevice"
-            isSelected={isBootDeviceSelected}
-            onClick={selectBootDevice}
-          />
-          <ToggleGroupItem
-            text={_("Custom devices")}
-            buttonId="customDevices"
-            isSelected={!isBootDeviceSelected}
-            onClick={selectCustomDevices}
-          />
-        </ToggleGroup>
-      </div>
+    <div className="split">
+      <span>{_("Installation device")}</span>
+      <TargetDeviceButton
+        target={target}
+        targetDevice={targetDevice}
+        targetPVDevices={targetPVDevices}
+        onClick={openDialog}
+      />
       <If
-        condition={isBootDeviceSelected}
-        then={<BootDevice />}
-        else={
-          <DeviceSelector
-            isMultiple
-            selected={devices.filter(d => vgDevices?.includes(d.name))}
+        condition={isDialogOpen}
+        then={
+          <DeviceSelectionDialog
+            isOpen
+            target={target}
+            targetDevice={targetDevice}
+            targetPVDevices={targetPVDevices}
             devices={devices}
-            onChange={onChangeDevices}
+            onAccept={onAccept}
+            onCancel={closeDialog}
           />
         }
       />
-    </Form>
-  );
-};
-
-/**
- * Allows to select LVM and configure the system volume group.
- * @component
- *
- * @param {object} props
- * @param {ProposalSettings} props.settings - Settings used for calculating a proposal.
- * @param {StorageDevice[]} [props.devices=[]] - Available storage devices.
- * @param {boolean} [props.isChecked=false] - Whether LVM is selected.
- * @param {boolean} [props.isLoading=false] - Whether to show the selector as loading.
- * @param {onChangeFn} [props.onChange=noop] - On change callback.
- *
- * @callback onChangeFn
- * @param {boolean} lvm
- */
-const LVMField = ({
-  settings,
-  devices = [],
-  isChecked: isCheckedProp = false,
-  isLoading = false,
-  onChange: onChangeProp = noop
-}) => {
-  const [isChecked, setIsChecked] = useState();
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isFormValid, setIsFormValid] = useState(true);
-
-  const onChange = (_, value) => {
-    setIsChecked(value);
-    onChangeProp({ lvm: value, vgDevices: [] });
-  };
-
-  const openForm = () => setIsFormOpen(true);
-
-  const closeForm = () => setIsFormOpen(false);
-
-  const onValidateForm = (valid) => setIsFormValid(valid);
-
-  const onSubmitForm = (vgDevices) => {
-    closeForm();
-    onChangeProp({ vgDevices });
-  };
-
-  useEffect(() => {
-    setIsChecked(isCheckedProp);
-  }, [isCheckedProp, setIsChecked]);
-
-  const description = _("Configuration of the system volume group. All the file systems will be \
-created in a logical volume of the system volume group.");
-
-  const LVMSettingsButton = () => {
-    return (
-      <Tooltip
-        content={_("Configure the LVM settings")}
-        entryDelay={400}
-        exitDelay={50}
-        position="right"
-      >
-        <button aria-label={_("LVM settings")} className="plain-control" onClick={openForm}>
-          <Icon name="tune" size="s" />
-        </button>
-      </Tooltip>
-    );
-  };
-
-  if (isLoading) return <Skeleton screenreaderText={_("Waiting for information about LVM")} width="25%" />;
-
-  return (
-    <div className="split">
-      <Switch
-        id="lvm"
-        label={_("Use logical volume management (LVM)")}
-        isReversed
-        isChecked={isChecked}
-        onChange={onChange}
-      />
-      <If condition={isChecked} then={<LVMSettingsButton />} />
-      <Popup
-        aria-label={_("LVM settings")}
-        title={_("System Volume Group")}
-        description={description}
-        isOpen={isFormOpen}
-      >
-        <LVMSettingsForm
-          id="lvmSettingsForm"
-          devices={devices}
-          settings={settings}
-          onSubmit={onSubmitForm}
-          onValidate={onValidateForm}
-        />
-        <Popup.Actions>
-          <Popup.Confirm
-            form="lvmSettingsForm"
-            type="submit"
-            isDisabled={!isFormValid}
-          >
-            {_("Accept")}
-          </Popup.Confirm>
-          <Popup.Cancel onClick={closeForm} />
-        </Popup.Actions>
-      </Popup>
     </div>
   );
 };
 
 /**
- * Section for editing the selected device
+ * Section for editing the target device for installation.
  * @component
- *
- * @callback onChangeFn
- * @param {object} settings
  *
  * @param {object} props
  * @param {ProposalSettings} props.settings
  * @param {StorageDevice[]} [props.availableDevices=[]]
- * @param {boolean} [isLoading=false]
- * @param {onChangeFn} [props.onChange=noop]
+ * @param {boolean} [props.isLoading=false]
+ * @param {(settings: object) => void} [props.onChange=noop]
  */
 export default function ProposalDeviceSection({
   settings,
@@ -397,21 +153,18 @@ export default function ProposalDeviceSection({
   isLoading = false,
   onChange = noop
 }) {
-  // FIXME: we should work with devices objects ASAP
-  const { bootDevice } = settings;
+  const findDevice = (name) => availableDevices.find(a => a.name === name);
 
-  const changeBootDevice = (device) => {
-    if (device.name !== bootDevice) {
-      onChange({ bootDevice: device.name });
-    }
-  };
+  const target = settings.target;
+  const targetDevice = findDevice(settings.targetDevice);
+  const targetPVDevices = compact(settings.targetPVDevices?.map(findDevice) || []);
 
-  const changeLVM = ({ lvm, vgDevices }) => {
-    const settings = {};
-    if (lvm !== undefined) settings.lvm = lvm;
-    if (vgDevices !== undefined) settings.systemVGDevices = vgDevices;
-
-    onChange(settings);
+  const changeTarget = ({ target, targetDevice, targetPVDevices }) => {
+    onChange({
+      target,
+      targetDevice: targetDevice?.name,
+      targetPVDevices: targetPVDevices.map(d => d.name)
+    });
   };
 
   const Description = () => (
@@ -427,22 +180,17 @@ Volume Group for installation.")
 
   return (
     <Section
-      // TRANSLATORS: The storage "Device" section's title
+      // TRANSLATORS: The storage "Device" section's title.
       title={_("Device")}
       description={<Description />}
     >
       <InstallationDeviceField
-        current={bootDevice}
+        target={target}
+        targetDevice={targetDevice}
+        targetPVDevices={targetPVDevices}
         devices={availableDevices}
-        isLoading={isLoading && bootDevice === undefined}
-        onChange={changeBootDevice}
-      />
-      <LVMField
-        settings={settings}
-        devices={availableDevices}
-        isChecked={settings.lvm === true}
-        isLoading={settings.lvm === undefined}
-        onChange={changeLVM}
+        isLoading={isLoading && target === undefined}
+        onChange={changeTarget}
       />
     </Section>
   );

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr  3 15:16:07 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Add new selection for the target device and for configuring the
+  boot device (gh#openSUSE/agama#1068).
+
+-------------------------------------------------------------------
 Wed Mar 27 12:41:11 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Dropping Cockpit dependency:
