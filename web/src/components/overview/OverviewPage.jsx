@@ -42,19 +42,9 @@ export default function OverviewPage() {
   }
 
   // return (
-  //   <Page
-  //     icon="list_alt"
-  //     // TRANSLATORS: page title
-  //     title={_("Installation Summary")}
-  //   >
   //     <NetworkSection />
   //     <StorageSection showErrors />
   //     <UsersSection showErrors={showErrors} />
-
-  //     <Page.Actions>
-  //       <InstallButton onClick={() => setShowErrors(true)} />
-  //     </Page.Actions>
-  //   </Page>
   // );
 
   return (
@@ -66,6 +56,10 @@ export default function OverviewPage() {
       <ProductSection />
       <L10nSection />
       <SoftwareSection showErrors />
+
+      <Page.Actions>
+        <InstallButton onClick={() => setShowErrors(true)} />
+      </Page.Actions>
     </Page>
   );
 }
