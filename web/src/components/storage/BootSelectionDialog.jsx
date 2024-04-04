@@ -28,6 +28,8 @@ import { Popup } from "~/components/core";
 import { deviceLabel } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 
+// @ts-check
+
 /**
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
