@@ -1,7 +1,6 @@
 [Unit]
 Description=Agama Web Server
-After=network-online.target
-Requires=agama.service
+After=network-online.target agama.service
 
 [Service]
 Type=simple
