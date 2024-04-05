@@ -30,8 +30,15 @@ module Agama
       #
       # The D-Bus object includes the required interfaces for the storage object that it represents.
       class Device < BaseObject
-        # @return [Y2Storage::Device]
-        attr_reader :storage_device
+        # sid of the Y2Storage device.
+        #
+        # @note A Y2Storage device is a wrapper over a libstorage-ng object. If the source
+        #   devicegraph does not exist anymore (e.g., after reprobing), then the Y2Storage device
+        #   object cannot be used (memory error). The device sid is stored to avoid accessing to
+        #   the old Y2Storage device when updating the represented device, see {#storage_device=}.
+        #
+        # @return [Integer]
+        attr_reader :sid
 
         # Constructor
         #
@@ -43,6 +50,7 @@ module Agama
           super(path, logger: logger)
 
           @storage_device = storage_device
+          @sid = storage_device.sid
           @tree = tree
           add_interfaces
         end
@@ -54,12 +62,13 @@ module Agama
         #
         # @param value [Y2Storage::Device]
         def storage_device=(value)
-          if value.sid != storage_device.sid
+          if value.sid != sid
             raise "Cannot update the D-Bus object because the given device has a different sid: " \
-                  "#{value} instead of #{storage_device.sid}"
+                  "#{value} instead of #{sid}"
           end
 
           @storage_device = value
+          @sid = value.sid
 
           interfaces_and_properties.each do |interface, properties|
             dbus_properties_changed(interface, properties, [])
@@ -70,6 +79,9 @@ module Agama
 
         # @return [DevicesTree]
         attr_reader :tree
+
+        # @return [Y2Storage::Device]
+        attr_reader :storage_device
 
         # Adds the required interfaces according to the storage object.
         def add_interfaces

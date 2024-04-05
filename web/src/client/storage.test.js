@@ -33,10 +33,10 @@ const cockpitCallbacks = {};
 
 let managedObjects = {};
 
-// Define devices
+// System devices
 
 const sda = {
-  sid: "59",
+  sid: 59,
   isDrive: true,
   type: "disk",
   vendor: "Micron",
@@ -49,7 +49,10 @@ const sda = {
   sdCard: true,
   active: true,
   name: "/dev/sda",
+  description: "",
   size: 1024,
+  start: 0,
+  encrypted: false,
   recoverableSize: 0,
   systems : [],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
@@ -57,33 +60,41 @@ const sda = {
 };
 
 const sda1 = {
-  sid: "60",
+  sid: 60,
   isDrive: false,
-  type: "",
+  type: "partition",
   active: true,
   name: "/dev/sda1",
+  description: "",
   size: 512,
+  start: 123,
+  encrypted: false,
   recoverableSize: 128,
   systems : [],
   udevIds: [],
-  udevPaths: []
+  udevPaths: [],
+  isEFI: false
 };
 
 const sda2 = {
-  sid: "61",
+  sid: 61,
   isDrive: false,
-  type: "",
+  type: "partition",
   active: true,
   name: "/dev/sda2",
+  description: "",
   size: 256,
+  start: 1789,
+  encrypted: false,
   recoverableSize: 0,
   systems : [],
   udevIds: [],
-  udevPaths: []
+  udevPaths: [],
+  isEFI: false
 };
 
 const sdb = {
-  sid: "62",
+  sid: 62,
   isDrive: true,
   type: "disk",
   vendor: "Samsung",
@@ -96,7 +107,10 @@ const sdb = {
   sdCard: false,
   active: true,
   name: "/dev/sdb",
+  description: "",
   size: 2048,
+  start: 0,
+  encrypted: false,
   recoverableSize: 0,
   systems : [],
   udevIds: [],
@@ -104,7 +118,7 @@ const sdb = {
 };
 
 const sdc = {
-  sid: "63",
+  sid: 63,
   isDrive: true,
   type: "disk",
   vendor: "Disk",
@@ -117,7 +131,10 @@ const sdc = {
   sdCard: false,
   active: true,
   name: "/dev/sdc",
+  description: "",
   size: 2048,
+  start: 0,
+  encrypted: false,
   recoverableSize: 0,
   systems : [],
   udevIds: [],
@@ -125,7 +142,7 @@ const sdc = {
 };
 
 const sdd = {
-  sid: "64",
+  sid: 64,
   isDrive: true,
   type: "disk",
   vendor: "Disk",
@@ -138,7 +155,10 @@ const sdd = {
   sdCard: false,
   active: true,
   name: "/dev/sdd",
+  description: "",
   size: 2048,
+  start: 0,
+  encrypted: false,
   recoverableSize: 0,
   systems : [],
   udevIds: [],
@@ -146,7 +166,7 @@ const sdd = {
 };
 
 const sde = {
-  sid: "65",
+  sid: 65,
   isDrive: true,
   type: "disk",
   vendor: "Disk",
@@ -159,7 +179,10 @@ const sde = {
   sdCard: false,
   active: true,
   name: "/dev/sde",
+  description: "",
   size: 2048,
+  start: 0,
+  encrypted: false,
   recoverableSize: 0,
   systems : [],
   udevIds: [],
@@ -167,23 +190,26 @@ const sde = {
 };
 
 const md0 = {
-  sid: "66",
+  sid: 66,
   isDrive: false,
   type: "md",
   level: "raid0",
   uuid: "12345:abcde",
   active: true,
   name: "/dev/md0",
+  description: "EXT4 RAID",
   size: 2048,
+  start: 0,
+  encrypted: false,
   recoverableSize: 0,
   systems : ["openSUSE Leap 15.2"],
   udevIds: [],
   udevPaths: [],
-  filesystem: { type: "ext4", isEFI: false }
+  filesystem: { sid: 100, type: "ext4", mountPath: "/test", label: "system" }
 };
 
 const raid = {
-  sid: "67",
+  sid: 67,
   isDrive: true,
   type: "raid",
   vendor: "Dell",
@@ -196,7 +222,10 @@ const raid = {
   sdCard: false,
   active: true,
   name: "/dev/mapper/isw_ddgdcbibhd_244",
+  description: "",
   size: 2048,
+  start: 0,
+  encrypted: false,
   recoverableSize: 0,
   systems : [],
   udevIds: [],
@@ -204,7 +233,7 @@ const raid = {
 };
 
 const multipath = {
-  sid: "68",
+  sid: 68,
   isDrive: true,
   type: "multipath",
   vendor: "",
@@ -217,7 +246,10 @@ const multipath = {
   sdCard: false,
   active: true,
   name: "/dev/mapper/36005076305ffc73a00000000000013b4",
+  description: "",
   size: 2048,
+  start: 0,
+  encrypted: false,
   recoverableSize: 0,
   systems : [],
   udevIds: [],
@@ -225,7 +257,7 @@ const multipath = {
 };
 
 const dasd = {
-  sid: "69",
+  sid: 69,
   isDrive: true,
   type: "dasd",
   vendor: "IBM",
@@ -238,7 +270,76 @@ const dasd = {
   sdCard: false,
   active: true,
   name: "/dev/dasda",
+  description: "",
   size: 2048,
+  start: 0,
+  encrypted: false,
+  recoverableSize: 0,
+  systems : [],
+  udevIds: [],
+  udevPaths: []
+};
+
+const sdf = {
+  sid: 70,
+  isDrive: true,
+  type: "disk",
+  vendor: "Disk",
+  model: "",
+  driver: [],
+  bus: "IDE",
+  busId: "",
+  transport: "",
+  dellBOSS: false,
+  sdCard: false,
+  active: true,
+  name: "/dev/sdf",
+  description: "",
+  size: 2048,
+  start: 0,
+  encrypted: false,
+  recoverableSize: 0,
+  systems : [],
+  udevIds: [],
+  udevPaths: []
+};
+
+const sdf1 = {
+  sid: 71,
+  isDrive: false,
+  type: "partition",
+  active: true,
+  name: "/dev/sdf1",
+  description: "PV of vg0",
+  size: 512,
+  start: 1024,
+  encrypted: true,
+  recoverableSize: 0,
+  systems : [],
+  udevIds: [],
+  udevPaths: [],
+  isEFI: false
+};
+
+const lvmVg = {
+  sid: 72,
+  isDrive: false,
+  type: "lvmVg",
+  name: "/dev/vg0",
+  description: "LVM",
+  size: 512
+};
+
+const lvmLv1 = {
+  sid: 73,
+  isDrive: false,
+  type: "lvmLv",
+  active: true,
+  name: "/dev/vg0/lv1",
+  description: "",
+  size: 512,
+  start: 0,
+  encrypted: false,
   recoverableSize: 0,
   systems : [],
   udevIds: [],
@@ -250,7 +351,8 @@ const dasd = {
 sda.partitionTable = {
   type: "gpt",
   partitions: [sda1, sda2],
-  unpartitionedSize: 256
+  unpartitionedSize: 256,
+  unusedSlots: [{ start: 1234, size: 256 }]
 };
 
 sda1.component = {
@@ -283,13 +385,60 @@ sde.component = {
   deviceNames: ["/dev/mapper/36005076305ffc73a00000000000013b4"]
 };
 
+sdf.partitionTable = {
+  type: "gpt",
+  partitions: [sdf1],
+  unpartitionedSize: 1536,
+  unusedSlots: []
+};
+
+sdf1.component = {
+  type: "physical_volume",
+  deviceNames: ["/dev/vg0"]
+};
+
 md0.devices = [sda1, sda2];
 
 raid.devices = [sdb, sdc];
 
 multipath.wires = [sdd, sde];
 
-const systemDevices = { sda, sda1, sda2, sdb, sdc, sdd, sde, md0, raid, multipath, dasd };
+lvmVg.logicalVolumes = [lvmLv1];
+lvmVg.physicalVolumes = [sdf1];
+
+const systemDevices = {
+  sda, sda1, sda2, sdb, sdc, sdd, sde, md0, raid, multipath, dasd, sdf, sdf1, lvmVg, lvmLv1
+};
+
+// Staging devices
+//
+// Using a single device because most of the checks are already done with system devices.
+
+const sdbStaging = {
+  sid: 62,
+  isDrive: true,
+  type: "disk",
+  vendor: "Samsung",
+  model: "Samsung Evo 8 Pro",
+  driver: ["ahci"],
+  bus: "IDE",
+  busId: "",
+  transport: "",
+  dellBOSS: false,
+  sdCard: false,
+  active: true,
+  name: "/dev/sdb",
+  description: "",
+  size: 2048,
+  start: 0,
+  encrypted: false,
+  recoverableSize: 0,
+  systems : [],
+  udevIds: [],
+  udevPaths: ["pci-0000:00-19"]
+};
+
+const stagingDevices = { sdb: sdbStaging };
 
 const contexts = {
   withoutProposal: () => {
@@ -297,67 +446,101 @@ const contexts = {
   },
   withProposal: () => {
     cockpitProxies.proposal = {
-      BootDevice: "/dev/sda",
-      LVM: true,
-      SystemVGDevices: ["/dev/sda", "/dev/sdb"],
-      EncryptionPassword: "00000",
-      SpacePolicy: "custom",
-      SpaceActions: [
-        {
-          Device: { t: "s", v: "/dev/sda" },
-          Action: { t: "s", v: "force_delete" }
+      Settings: {
+        Target: { t: "s", v: "newLvmVg" },
+        TargetPVDevices: {
+          t: "av",
+          v: [
+            { t: "s", v: "/dev/sda" },
+            { t: "s", v: "/dev/sdb" }
+          ]
         },
-        {
-          Device: { t: "s", v: "/dev/sdb" },
-          Action: { t: "s", v: "resize" }
-        }
-      ],
-      Volumes: [
-        {
-          MountPath: { t: "s", v: "/" },
-          FsType: { t: "s", v: "Btrfs" },
-          MinSize: { t: "x", v: 1024 },
-          MaxSize: { t: "x", v: 2048 },
-          AutoSize: { t: "b", v: true },
-          Snapshots: { t: "b", v: true },
-          Transactional: { t: "b", v: true },
-          Outline: {
-            t: "a{sv}",
-            v: {
-              Required: { t: "b", v: true },
-              FsTypes: { t: "as", v: [{ t: "s", v: "Btrfs" }, { t: "s", v: "Ext3" }] },
-              SupportAutoSize: { t: "b", v: true },
-              SnapshotsConfigurable: { t: "b", v: true },
-              SnapshotsAffectSizes: { t: "b", v: true },
-              AdjustByRam: { t: "b", v: false },
-              SizeRelevantVolumes: { t: "as", v: [{ t: "s", v: "/home" }] }
+        ConfigureBoot: { t: "b", v: true },
+        BootDevice: { t: "s", v: "/dev/sda" },
+        DefaultBootDevice: { t: "s", v: "/dev/sdb" },
+        EncryptionPassword: { t: "s", v: "00000" },
+        EncryptionMethod: { t: "s", v: "luks1" },
+        SpacePolicy: { t: "s", v: "custom" },
+        SpaceActions: {
+          t: "av",
+          v: [
+            {
+              t: "a{sv}",
+              v: {
+                Device: { t: "s", v: "/dev/sda" },
+                Action: { t: "s", v: "force_delete" }
+              }
+            },
+            {
+              t: "a{sv}",
+              v: {
+                Device: { t: "s", v: "/dev/sdb" },
+                Action: { t: "s", v: "resize" }
+              }
             }
-          }
+          ]
         },
-        {
-          MountPath: { t: "s", v: "/home" },
-          FsType: { t: "s", v: "XFS" },
-          MinSize: { t: "x", v: 2048 },
-          MaxSize: { t: "x", v: 4096 },
-          AutoSize: { t: "b", v: false },
-          Snapshots: { t: "b", v: false },
-          Transactional: { t: "b", v: false },
-          Outline: {
-            t: "a{sv}",
-            v: {
-              Required: { t: "b", v: false },
-              FsTypes: { t: "as", v: [{ t: "s", v: "Ext4" }, { t: "s", v: "XFS" }] },
-              SupportAutoSize: { t: "b", v: false },
-              SnapshotsConfigurable: { t: "b", v: false },
-              SnapshotsAffectSizes: { t: "b", v: false },
-              AdjustByRam: { t: "b", v: false },
-              SizeRelevantVolumes: { t: "as", v: [] }
+        Volumes: {
+          t: "av",
+          v: [
+            {
+              t: "a{sv}",
+              v: {
+                MountPath: { t: "s", v: "/" },
+                Target: { t: "s", v: "default" },
+                TargetDevice: { t: "s", v: "" },
+                FsType: { t: "s", v: "Btrfs" },
+                MinSize: { t: "x", v: 1024 },
+                MaxSize: { t: "x", v: 2048 },
+                AutoSize: { t: "b", v: true },
+                Snapshots: { t: "b", v: true },
+                Transactional: { t: "b", v: true },
+                Outline: {
+                  t: "a{sv}",
+                  v: {
+                    Required: { t: "b", v: true },
+                    FsTypes: { t: "as", v: [{ t: "s", v: "Btrfs" }, { t: "s", v: "Ext3" }] },
+                    SupportAutoSize: { t: "b", v: true },
+                    SnapshotsConfigurable: { t: "b", v: true },
+                    SnapshotsAffectSizes: { t: "b", v: true },
+                    AdjustByRam: { t: "b", v: false },
+                    SizeRelevantVolumes: { t: "as", v: [{ t: "s", v: "/home" }] }
+                  }
+                }
+              }
+            },
+            {
+              t: "a{sv}",
+              v: {
+                MountPath: { t: "s", v: "/home" },
+                Target: { t: "s", v: "default" },
+                TargetDevice: { t: "s", v: "" },
+                FsType: { t: "s", v: "XFS" },
+                MinSize: { t: "x", v: 2048 },
+                MaxSize: { t: "x", v: 4096 },
+                AutoSize: { t: "b", v: false },
+                Snapshots: { t: "b", v: false },
+                Transactional: { t: "b", v: false },
+                Outline: {
+                  t: "a{sv}",
+                  v: {
+                    Required: { t: "b", v: false },
+                    FsTypes: { t: "as", v: [{ t: "s", v: "Ext4" }, { t: "s", v: "XFS" }] },
+                    SupportAutoSize: { t: "b", v: false },
+                    SnapshotsConfigurable: { t: "b", v: false },
+                    SnapshotsAffectSizes: { t: "b", v: false },
+                    AdjustByRam: { t: "b", v: false },
+                    SizeRelevantVolumes: { t: "as", v: [] }
+                  }
+                }
+              }
             }
-          }
-        }
-      ],
+          ]
+        },
+      },
       Actions: [
         {
+          Device: { t: "u", v: 2 },
           Text: { t: "s", v: "Mount /dev/sdb1 as root" },
           Subvol: { t: "b", v: false },
           Delete: { t: "b", v: false }
@@ -479,6 +662,11 @@ const contexts = {
   },
   withSystemDevices: () => {
     managedObjects["/org/opensuse/Agama/Storage1/system/59"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 59 },
+        Name: { t: "s", v: "/dev/sda" },
+        Description: { t: "s", v: "" }
+      },
       "org.opensuse.Agama.Storage1.Drive": {
         Type: { t: "s", v: "disk" },
         Vendor: { t: "s", v: "Micron" },
@@ -491,8 +679,9 @@ const contexts = {
       },
       "org.opensuse.Agama.Storage1.Block": {
         Active: { t: "b", v: true },
-        Name: { t: "s", v: "/dev/sda" },
+        Encrypted: { t: "b", v: false },
         Size: { t: "x", v: 1024 },
+        Start: { t: "t", v: 0 },
         RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: [] },
         UdevIds: { t: "as", v: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"] },
@@ -503,14 +692,24 @@ const contexts = {
         Partitions: {
           t: "as",
           v: ["/org/opensuse/Agama/Storage1/system/60", "/org/opensuse/Agama/Storage1/system/61"]
-        }
+        },
+        UnusedSlots: { t: "a(tt)", v: [[1234, 256]] }
       }
     };
     managedObjects["/org/opensuse/Agama/Storage1/system/60"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 60 },
+        Name: { t: "s", v: "/dev/sda1" },
+        Description: { t: "s", v: "" }
+      },
+      "org.opensuse.Agama.Storage1.Partition": {
+        EFI: { t: "b", v: false }
+      },
       "org.opensuse.Agama.Storage1.Block": {
         Active: { t: "b", v: true },
-        Name: { t: "s", v: "/dev/sda1" },
+        Encrypted: { t: "b", v: false },
         Size: { t: "x", v: 512 },
+        Start: { t: "t", v: 123 },
         RecoverableSize: { t: "x", v: 128 },
         Systems: { t: "as", v: [] },
         UdevIds: { t: "as", v: [] },
@@ -523,10 +722,19 @@ const contexts = {
       }
     };
     managedObjects["/org/opensuse/Agama/Storage1/system/61"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 61 },
+        Name: { t: "s", v: "/dev/sda2" },
+        Description: { t: "s", v: "" }
+      },
+      "org.opensuse.Agama.Storage1.Partition": {
+        EFI: { t: "b", v: false }
+      },
       "org.opensuse.Agama.Storage1.Block": {
         Active: { t: "b", v: true },
-        Name: { t: "s", v: "/dev/sda2" },
+        Encrypted: { t: "b", v: false },
         Size: { t: "x", v: 256 },
+        Start: { t: "t", v: 1789 },
         RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: [] },
         UdevIds: { t: "as", v: [] },
@@ -539,6 +747,11 @@ const contexts = {
       }
     };
     managedObjects["/org/opensuse/Agama/Storage1/system/62"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 62 },
+        Name: { t: "s", v: "/dev/sdb" },
+        Description: { t: "s", v: "" }
+      },
       "org.opensuse.Agama.Storage1.Drive": {
         Type: { t: "s", v: "disk" },
         Vendor: { t: "s", v: "Samsung" },
@@ -551,8 +764,9 @@ const contexts = {
       },
       "org.opensuse.Agama.Storage1.Block": {
         Active: { t: "b", v: true },
-        Name: { t: "s", v: "/dev/sdb" },
+        Encrypted: { t: "b", v: false },
         Size: { t: "x", v: 2048 },
+        Start: { t: "t", v: 0 },
         RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: [] },
         UdevIds: { t: "as", v: [] },
@@ -565,6 +779,11 @@ const contexts = {
       }
     };
     managedObjects["/org/opensuse/Agama/Storage1/system/63"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 63 },
+        Name: { t: "s", v: "/dev/sdc" },
+        Description: { t: "s", v: "" }
+      },
       "org.opensuse.Agama.Storage1.Drive": {
         Type: { t: "s", v: "disk" },
         Vendor: { t: "s", v: "Disk" },
@@ -577,8 +796,9 @@ const contexts = {
       },
       "org.opensuse.Agama.Storage1.Block": {
         Active: { t: "b", v: true },
-        Name: { t: "s", v: "/dev/sdc" },
+        Encrypted: { t: "b", v: false },
         Size: { t: "x", v: 2048 },
+        Start: { t: "t", v: 0 },
         RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: [] },
         UdevIds: { t: "as", v: [] },
@@ -591,6 +811,11 @@ const contexts = {
       }
     };
     managedObjects["/org/opensuse/Agama/Storage1/system/64"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 64 },
+        Name: { t: "s", v: "/dev/sdd" },
+        Description: { t: "s", v: "" }
+      },
       "org.opensuse.Agama.Storage1.Drive": {
         Type: { t: "s", v: "disk" },
         Vendor: { t: "s", v: "Disk" },
@@ -603,8 +828,9 @@ const contexts = {
       },
       "org.opensuse.Agama.Storage1.Block": {
         Active: { t: "b", v: true },
-        Name: { t: "s", v: "/dev/sdd" },
+        Encrypted: { t: "b", v: false },
         Size: { t: "x", v: 2048 },
+        Start: { t: "t", v: 0 },
         RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: [] },
         UdevIds: { t: "as", v: [] },
@@ -617,6 +843,11 @@ const contexts = {
       }
     };
     managedObjects["/org/opensuse/Agama/Storage1/system/65"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 65 },
+        Name: { t: "s", v: "/dev/sde" },
+        Description: { t: "s", v: "" }
+      },
       "org.opensuse.Agama.Storage1.Drive": {
         Type: { t: "s", v: "disk" },
         Vendor: { t: "s", v: "Disk" },
@@ -629,8 +860,9 @@ const contexts = {
       },
       "org.opensuse.Agama.Storage1.Block": {
         Active: { t: "b", v: true },
-        Name: { t: "s", v: "/dev/sde" },
+        Encrypted: { t: "b", v: false },
         Size: { t: "x", v: 2048 },
+        Start: { t: "t", v: 0 },
         RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: [] },
         UdevIds: { t: "as", v: [] },
@@ -643,6 +875,11 @@ const contexts = {
       }
     };
     managedObjects["/org/opensuse/Agama/Storage1/system/66"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 66 },
+        Name: { t: "s", v: "/dev/md0" },
+        Description: { t: "s", v: "EXT4 RAID" }
+      },
       "org.opensuse.Agama.Storage1.MD": {
         Level: { t: "s", v: "raid0" },
         UUID: { t: "s", v: "12345:abcde" },
@@ -653,19 +890,27 @@ const contexts = {
       },
       "org.opensuse.Agama.Storage1.Block": {
         Active: { t: "b", v: true },
-        Name: { t: "s", v: "/dev/md0" },
+        Encrypted: { t: "b", v: false },
         Size: { t: "x", v: 2048 },
+        Start: { t: "t", v: 0 },
         RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: ["openSUSE Leap 15.2"] },
         UdevIds: { t: "as", v: [] },
         UdevPaths: { t: "as", v: [] }
       },
       "org.opensuse.Agama.Storage1.Filesystem": {
+        SID: { t: "u", v: 100 },
         Type: { t: "s", v: "ext4" },
-        EFI: { t: "b", v: false }
+        MountPath: { t: "s", v: "/test" },
+        Label: { t: "s", v: "system" }
       }
     };
     managedObjects["/org/opensuse/Agama/Storage1/system/67"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 67 },
+        Name: { t: "s", v: "/dev/mapper/isw_ddgdcbibhd_244" },
+        Description: { t: "s", v: "" }
+      },
       "org.opensuse.Agama.Storage1.Drive": {
         Type: { t: "s", v: "raid" },
         Vendor: { t: "s", v: "Dell" },
@@ -684,8 +929,9 @@ const contexts = {
       },
       "org.opensuse.Agama.Storage1.Block": {
         Active: { t: "b", v: true },
-        Name: { t: "s", v: "/dev/mapper/isw_ddgdcbibhd_244" },
+        Encrypted: { t: "b", v: false },
         Size: { t: "x", v: 2048 },
+        Start: { t: "t", v: 0 },
         RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: [] },
         UdevIds: { t: "as", v: [] },
@@ -693,6 +939,11 @@ const contexts = {
       }
     };
     managedObjects["/org/opensuse/Agama/Storage1/system/68"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 68 },
+        Name: { t: "s", v: "/dev/mapper/36005076305ffc73a00000000000013b4" },
+        Description: { t: "s", v: "" }
+      },
       "org.opensuse.Agama.Storage1.Drive": {
         Type: { t: "s", v: "multipath" },
         Vendor: { t: "s", v: "" },
@@ -711,8 +962,9 @@ const contexts = {
       },
       "org.opensuse.Agama.Storage1.Block": {
         Active: { t: "b", v: true },
-        Name: { t: "s", v: "/dev/mapper/36005076305ffc73a00000000000013b4" },
+        Encrypted: { t: "b", v: false },
         Size: { t: "x", v: 2048 },
+        Start: { t: "t", v: 0 },
         RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: [] },
         UdevIds: { t: "as", v: [] },
@@ -720,6 +972,11 @@ const contexts = {
       }
     };
     managedObjects["/org/opensuse/Agama/Storage1/system/69"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 69 },
+        Name: { t: "s", v: "/dev/dasda" },
+        Description: { t: "s", v: "" }
+      },
       "org.opensuse.Agama.Storage1.Drive": {
         Type: { t: "s", v: "dasd" },
         Vendor: { t: "s", v: "IBM" },
@@ -732,12 +989,135 @@ const contexts = {
       },
       "org.opensuse.Agama.Storage1.Block": {
         Active: { t: "b", v: true },
-        Name: { t: "s", v: "/dev/dasda" },
+        Encrypted: { t: "b", v: false },
         Size: { t: "x", v: 2048 },
+        Start: { t: "t", v: 0 },
         RecoverableSize: { t: "x", v: 0 },
         Systems: { t: "as", v: [] },
         UdevIds: { t: "as", v: [] },
         UdevPaths: { t: "as", v: [] }
+      }
+    };
+    managedObjects["/org/opensuse/Agama/Storage1/system/70"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 70 },
+        Name: { t: "s", v: "/dev/sdf" },
+        Description: { t: "s", v: "" }
+      },
+      "org.opensuse.Agama.Storage1.Drive": {
+        Type: { t: "s", v: "disk" },
+        Vendor: { t: "s", v: "Disk" },
+        Model: { t: "s", v: "" },
+        Driver: { t: "as", v: [] },
+        Bus: { t: "s", v: "IDE" },
+        BusId: { t: "s", v: "" },
+        Transport: { t: "s", v: "" },
+        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: false } } },
+      },
+      "org.opensuse.Agama.Storage1.Block": {
+        Active: { t: "b", v: true },
+        Encrypted: { t: "b", v: false },
+        Size: { t: "x", v: 2048 },
+        Start: { t: "t", v: 0 },
+        RecoverableSize: { t: "x", v: 0 },
+        Systems: { t: "as", v: [] },
+        UdevIds: { t: "as", v: [] },
+        UdevPaths: { t: "as", v: [] }
+      },
+      "org.opensuse.Agama.Storage1.PartitionTable": {
+        Type: { t: "s", v: "gpt" },
+        Partitions: {
+          t: "as",
+          v: ["/org/opensuse/Agama/Storage1/system/71"]
+        },
+        UnusedSlots: { t: "a(tt)", v: [] }
+      }
+    };
+    managedObjects["/org/opensuse/Agama/Storage1/system/71"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 71 },
+        Name: { t: "s", v: "/dev/sdf1" },
+        Description: { t: "s", v: "PV of vg0" }
+      },
+      "org.opensuse.Agama.Storage1.Partition": {
+        EFI: { t: "b", v: false }
+      },
+      "org.opensuse.Agama.Storage1.Block": {
+        Active: { t: "b", v: true },
+        Encrypted: { t: "b", v: true },
+        Size: { t: "x", v: 512 },
+        Start: { t: "t", v: 1024 },
+        RecoverableSize: { t: "x", v: 0 },
+        Systems: { t: "as", v: [] },
+        UdevIds: { t: "as", v: [] },
+        UdevPaths: { t: "as", v: [] }
+      },
+      "org.opensuse.Agama.Storage1.Component": {
+        Type: { t: "s", v: "physical_volume" },
+        DeviceNames: { t: "as", v: ["/dev/vg0"] },
+        Devices: { t: "ao", v: ["/org/opensuse/Agama/Storage1/system/72"] }
+      }
+    };
+    managedObjects["/org/opensuse/Agama/Storage1/system/72"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 72 },
+        Name: { t: "s", v: "/dev/vg0" },
+        Description: { t: "s", v: "LVM" }
+      },
+      "org.opensuse.Agama.Storage1.LVM.VolumeGroup": {
+        Type: { t: "s", v: "physical_volume" },
+        Size: { t: "x", v: 512 },
+        PhysicalVolumes: { t: "ao", v: ["/org/opensuse/Agama/Storage1/system/71"] },
+        LogicalVolumes: { t: "ao", v: ["/org/opensuse/Agama/Storage1/system/73"] }
+      }
+    };
+    managedObjects["/org/opensuse/Agama/Storage1/system/73"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 73 },
+        Name: { t: "s", v: "/dev/vg0/lv1" },
+        Description: { t: "s", v: "" }
+      },
+      "org.opensuse.Agama.Storage1.Block": {
+        Active: { t: "b", v: true },
+        Encrypted: { t: "b", v: false },
+        Size: { t: "x", v: 512 },
+        Start: { t: "t", v: 0 },
+        RecoverableSize: { t: "x", v: 0 },
+        Systems: { t: "as", v: [] },
+        UdevIds: { t: "as", v: [] },
+        UdevPaths: { t: "as", v: [] }
+      },
+      "org.opensuse.Agama.Storage1.LVM.LogicalVolume": {
+        VolumeGroup: { t: "o", v: "/org/opensuse/Agama/Storage1/system/72" }
+      }
+    };
+  },
+  withStagingDevices: () => {
+    managedObjects["/org/opensuse/Agama/Storage1/staging/62"] = {
+      "org.opensuse.Agama.Storage1.Device": {
+        SID: { t: "u", v: 62 },
+        Name: { t: "s", v: "/dev/sdb" },
+        Description: { t: "s", v: "" }
+      },
+      "org.opensuse.Agama.Storage1.Drive": {
+        Type: { t: "s", v: "disk" },
+        Vendor: { t: "s", v: "Samsung" },
+        Model: { t: "s", v: "Samsung Evo 8 Pro" },
+        Driver: { t: "as", v: ["ahci"] },
+        Bus: { t: "s", v: "IDE" },
+        BusId: { t: "s", v: "" },
+        Transport: { t: "s", v: "" },
+        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: false } } },
+      },
+      "org.opensuse.Agama.Storage1.Block": {
+        Active: { t: "b", v: true },
+        Encrypted: { t: "b", v: false },
+        Size: { t: "x", v: 2048 },
+        Start: { t: "t", v: 0 },
+        RecoverableSize: { t: "x", v: 0 },
+        Systems: { t: "as", v: [] },
+        UdevIds: { t: "as", v: [] },
+        UdevPaths: { t: "as", v: ["pci-0000:00-19"] }
       }
     };
   }
@@ -973,6 +1353,33 @@ describe("#system", () => {
   });
 });
 
+describe("#staging", () => {
+  describe("#getDevices", () => {
+    describe("when there are devices", () => {
+      beforeEach(() => {
+        contexts.withStagingDevices();
+        client = new StorageClient();
+      });
+
+      it("returns the staging devices", async () => {
+        const devices = await client.staging.getDevices();
+        expect(devices).toEqual(Object.values(stagingDevices));
+      });
+    });
+
+    describe("when there are not devices", () => {
+      beforeEach(() => {
+        client = new StorageClient();
+      });
+
+      it("returns an empty list", async () => {
+        const devices = await client.staging.getDevices();
+        expect(devices).toEqual([]);
+      });
+    });
+  });
+});
+
 describe("#proposal", () => {
   describe("#getAvailableDevices", () => {
     beforeEach(() => {
@@ -1005,6 +1412,8 @@ describe("#proposal", () => {
         switch (mountPath) {
           case "/home": return {
             MountPath: { t: "s", v: "/home" },
+            Target: { t: "s", v: "default" },
+            TargetDevice: { t: "s", v: "" },
             FsType: { t: "s", v: "XFS" },
             MinSize: { t: "x", v: 2048 },
             MaxSize: { t: "x", v: 4096 },
@@ -1026,6 +1435,8 @@ describe("#proposal", () => {
           };
           case "": return {
             MountPath: { t: "s", v: "" },
+            Target: { t: "s", v: "default" },
+            TargetDevice: { t: "s", v: "" },
             FsType: { t: "s", v: "Ext4" },
             MinSize: { t: "x", v: 1024 },
             MaxSize: { t: "x", v: 2048 },
@@ -1056,6 +1467,8 @@ describe("#proposal", () => {
 
       expect(home).toStrictEqual({
         mountPath: "/home",
+        target: "default",
+        targetDevice: "",
         fsType: "XFS",
         minSize: 2048,
         maxSize: 4096,
@@ -1077,6 +1490,8 @@ describe("#proposal", () => {
 
       expect(generic).toStrictEqual({
         mountPath: "",
+        target: "default",
+        targetDevice: "",
         fsType: "Ext4",
         minSize: 1024,
         maxSize: 2048,
@@ -1120,9 +1535,11 @@ describe("#proposal", () => {
         const { settings, actions } = await client.proposal.getResult();
 
         expect(settings).toMatchObject({
+          target: "newLvmVg",
+          targetPVDevices: ["/dev/sda", "/dev/sdb"],
+          configureBoot: true,
           bootDevice: "/dev/sda",
-          lvm: true,
-          systemVGDevices: ["/dev/sda", "/dev/sdb"],
+          defaultBootDevice: "/dev/sdb",
           encryptionPassword: "00000",
           spacePolicy: "custom",
           spaceActions: [
@@ -1132,6 +1549,8 @@ describe("#proposal", () => {
           volumes: [
             {
               mountPath: "/",
+              target: "default",
+              targetDevice: "",
               fsType: "Btrfs",
               minSize: 1024,
               maxSize: 2048,
@@ -1149,6 +1568,8 @@ describe("#proposal", () => {
             },
             {
               mountPath: "/home",
+              target: "default",
+              targetDevice: "",
               fsType: "XFS",
               minSize: 2048,
               maxSize: 4096,
@@ -1172,7 +1593,7 @@ describe("#proposal", () => {
         );
 
         expect(actions).toStrictEqual([
-          { text: "Mount /dev/sdb1 as root", subvol: false, delete: false }
+          { device: 2, text: "Mount /dev/sdb1 as root", subvol: false, delete: false }
         ]);
       });
     });
@@ -1194,10 +1615,11 @@ describe("#proposal", () => {
 
     it("calculates a proposal with the given settings", async () => {
       await client.proposal.calculate({
+        target: "disk",
+        targetDevice: "/dev/vdc",
+        configureBoot: true,
         bootDevice: "/dev/vdb",
         encryptionPassword: "12345",
-        lvm: true,
-        systemVGDevices: ["/dev/sdc"],
         spacePolicy: "custom",
         spaceActions: [{ device: "/dev/sda", action: "resize" }],
         volumes: [
@@ -1217,10 +1639,11 @@ describe("#proposal", () => {
       });
 
       expect(cockpitProxies.proposalCalculator.Calculate).toHaveBeenCalledWith({
+        Target: { t: "s", v: "disk" },
+        TargetDevice: { t: "s", v: "/dev/vdc" },
+        ConfigureBoot: { t: "b", v: true },
         BootDevice: { t: "s", v: "/dev/vdb" },
         EncryptionPassword: { t: "s", v: "12345" },
-        LVM: { t: "b", v: true },
-        SystemVGDevices: { t: "as", v: ["/dev/sdc"] },
         SpacePolicy: { t: "s", v: "custom" },
         SpaceActions: {
           t: "aa{sv}",

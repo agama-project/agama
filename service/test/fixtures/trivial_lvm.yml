@@ -1,0 +1,24 @@
+---
+- disk:
+    name: /dev/sda
+    size: 200 GiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         100 GiB
+        name:         /dev/sda1
+        id:           lvm
+
+- lvm_vg:
+    vg_name: vg0
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/sda1
+
+    lvm_lvs:
+        - lvm_lv:
+            size:         100 GiB
+            lv_name:      lv1
+            file_system:  btrfs
+            mount_point:  /

@@ -21,6 +21,7 @@
 
 require_relative "../../../test_helper"
 require "agama/dbus/storage/proposal"
+require "agama/storage/device_settings"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume"
@@ -29,212 +30,66 @@ require "y2storage"
 describe Agama::DBus::Storage::Proposal do
   subject { described_class.new(backend, logger) }
 
-  let(:logger) { Logger.new($stdout, level: :warn) }
-
   let(:backend) do
     instance_double(Agama::Storage::Proposal, settings: settings)
   end
 
+  let(:logger) { Logger.new($stdout, level: :warn) }
+
   let(:settings) { nil }
 
-  describe "#boot_device" do
+  describe "#settings" do
     context "if a proposal has not been calculated yet" do
       let(:settings) { nil }
 
-      it "returns an empty string" do
-        expect(subject.boot_device).to eq ""
-      end
-    end
-
-    context "if a proposal has been calculated" do
-      let(:settings) do
-        Agama::Storage::ProposalSettings.new.tap { |s| s.boot_device = "/dev/vda" }
-      end
-
-      it "returns the candidate devices used by the proposal" do
-        expect(subject.boot_device).to eq "/dev/vda"
-      end
-    end
-  end
-
-  describe "#lvm" do
-    context "if a proposal has not been calculated yet" do
-      let(:settings) { nil }
-
-      it "returns false" do
-        expect(subject.lvm).to eq(false)
-      end
-    end
-
-    context "if a proposal has been calculated" do
-      let(:settings) do
-        Agama::Storage::ProposalSettings.new.tap { |s| s.lvm.enabled = true }
-      end
-
-      it "return whether LVM was used" do
-        expect(subject.lvm).to eq(true)
-      end
-    end
-  end
-
-  describe "#system_vg_devices" do
-    context "if a proposal has not been calculated yet" do
-      let(:settings) { nil }
-
-      it "returns an empty list" do
-        expect(subject.system_vg_devices).to eq([])
-      end
-    end
-
-    context "if a proposal has been calculated" do
-      let(:settings) do
-        Agama::Storage::ProposalSettings.new.tap { |s| s.lvm.system_vg_devices = ["/dev/vda"] }
-      end
-
-      it "returns the devices used for the system VG" do
-        expect(subject.system_vg_devices).to contain_exactly("/dev/vda")
-      end
-    end
-  end
-
-  describe "#encryption_password" do
-    context "if a proposal has not been calculated yet" do
-      let(:settings) { nil }
-
-      it "returns an empty string" do
-        expect(subject.encryption_password).to eq("")
-      end
-    end
-
-    context "if a proposal has been calculated" do
-      let(:settings) do
-        Agama::Storage::ProposalSettings.new.tap { |s| s.encryption.password = "n0ts3cr3t" }
-      end
-
-      it "return the encryption password used by the proposal" do
-        expect(subject.encryption_password).to eq("n0ts3cr3t")
-      end
-    end
-  end
-
-  describe "#encryption_method" do
-    context "if a proposal has not been calculated yet" do
-      let(:settings) { nil }
-
-      it "returns an empty string" do
-        expect(subject.encryption_method).to eq("")
-      end
-    end
-
-    context "if a proposal has been calculated" do
-      let(:settings) do
-        Agama::Storage::ProposalSettings.new.tap { |s| s.encryption.method = luks2 }
-      end
-
-      let(:luks2) { Y2Storage::EncryptionMethod::LUKS2 }
-
-      it "return the encryption method used by the proposal" do
-        expect(subject.encryption_method).to eq(luks2.id.to_s)
-      end
-    end
-  end
-
-  describe "#encryption_pbkd_function" do
-    context "if a proposal has not been calculated yet" do
-      let(:settings) { nil }
-
-      it "returns an empty string" do
-        expect(subject.encryption_pbkd_function).to eq("")
-      end
-    end
-
-    context "if a proposal has been calculated" do
-      let(:settings) do
-        Agama::Storage::ProposalSettings.new.tap { |s| s.encryption.pbkd_function = argon2id }
-      end
-
-      let(:argon2id) { Y2Storage::PbkdFunction::ARGON2ID }
-
-      it "return the encryption method used by the proposal" do
-        expect(subject.encryption_pbkd_function).to eq(argon2id.value)
-      end
-    end
-  end
-
-  describe "#space_policy" do
-    context "if a proposal has not been calculated yet" do
-      let(:settings) { nil }
-
-      it "returns an empty string" do
-        expect(subject.space_policy).to eq("")
-      end
-    end
-
-    context "if a proposal has been calculated" do
-      let(:settings) do
-        Agama::Storage::ProposalSettings.new.tap { |s| s.space.policy = :delete }
-      end
-
-      it "return the space policy used by the proposal" do
-        expect(subject.space_policy).to eq("delete")
-      end
-    end
-  end
-
-  describe "#space_actions" do
-    context "if a proposal has not been calculated yet" do
-      let(:settings) { nil }
-
-      it "returns an empty list" do
-        expect(subject.space_actions).to eq([])
+      it "returns an empty hash" do
+        expect(subject.settings).to eq({})
       end
     end
 
     context "if a proposal has been calculated" do
       let(:settings) do
         Agama::Storage::ProposalSettings.new.tap do |settings|
+          settings.device = Agama::Storage::DeviceSettings::Disk.new("/dev/vda")
+          settings.boot.device = "/dev/vdb"
+          settings.encryption.password = "n0ts3cr3t"
+          settings.encryption.method = luks2
+          settings.encryption.pbkd_function = argon2id
+          settings.space.policy = :custom
           settings.space.actions = {
             "/dev/vda1" => :force_delete,
             "/dev/vda2" => :resize
           }
+          settings.volumes = [
+            Agama::Storage::Volume.new("/test1"),
+            Agama::Storage::Volume.new("/test2")
+          ]
         end
       end
 
-      it "return a list with a hash for each action" do
-        expect(subject.space_actions).to contain_exactly(
-          { "Device" => "/dev/vda1", "Action" => "force_delete" },
-          { "Device" => "/dev/vda2", "Action" => "resize" }
+      let(:luks2) { Y2Storage::EncryptionMethod::LUKS2 }
+
+      let(:argon2id) { Y2Storage::PbkdFunction::ARGON2ID }
+
+      it "returns the proposal settings in D-Bus format" do
+        expect(subject.settings).to include(
+          "Target"                 => "disk",
+          "TargetDevice"           => "/dev/vda",
+          "ConfigureBoot"          => true,
+          "BootDevice"             => "/dev/vdb",
+          "EncryptionPassword"     => "n0ts3cr3t",
+          "EncryptionMethod"       => luks2.id.to_s,
+          "EncryptionPBKDFunction" => argon2id.value,
+          "SpacePolicy"            => "custom",
+          "SpaceActions"           => [
+            { "Device" => "/dev/vda1", "Action" => "force_delete" },
+            { "Device" => "/dev/vda2", "Action" => "resize" }
+          ],
+          "Volumes"                => [
+            include("MountPath" => "/test1"),
+            include("MountPath" => "/test2")
+          ]
         )
-      end
-    end
-  end
-
-  describe "#volumes" do
-    let(:settings) do
-      Agama::Storage::ProposalSettings.new.tap { |s| s.volumes = calculated_volumes }
-    end
-
-    context "if the calculated settings has no volumes" do
-      let(:calculated_volumes) { [] }
-
-      it "returns an empty list" do
-        expect(subject.volumes).to eq([])
-      end
-    end
-
-    context "if the calculated settings has volumes" do
-      let(:calculated_volumes) { [calculated_volume1, calculated_volume2] }
-      let(:calculated_volume1) { Agama::Storage::Volume.new("/test1") }
-      let(:calculated_volume2) { Agama::Storage::Volume.new("/test2") }
-
-      it "returns a list with a hash for each volume" do
-        expect(subject.volumes.size).to eq(2)
-        expect(subject.volumes).to all(be_a(Hash))
-
-        volume1, volume2 = subject.volumes
-
-        expect(volume1).to include("MountPath" => "/test1")
-        expect(volume2).to include("MountPath" => "/test2")
       end
     end
   end
@@ -257,13 +112,17 @@ describe Agama::DBus::Storage::Proposal do
 
       let(:action1) do
         instance_double(Y2Storage::CompoundAction,
-          sentence: "test1", device_is?: false, delete?: false)
+          sentence: "test1", target_device: device1, device_is?: false, delete?: false)
       end
 
       let(:action2) do
         instance_double(Y2Storage::CompoundAction,
-          sentence: "test2", device_is?: true, delete?: true)
+          sentence: "test2", target_device: device2, device_is?: true, delete?: true)
       end
+
+      let(:device1) { instance_double(Y2Storage::Device, sid: 1) }
+
+      let(:device2) { instance_double(Y2Storage::Device, sid: 2) }
 
       it "returns a list with a hash for each action" do
         expect(subject.actions.size).to eq(2)
@@ -272,12 +131,14 @@ describe Agama::DBus::Storage::Proposal do
         action1, action2 = subject.actions
 
         expect(action1).to eq({
+          "Device" => 1,
           "Text"   => "test1",
           "Subvol" => false,
           "Delete" => false
         })
 
         expect(action2).to eq({
+          "Device" => 2,
           "Text"   => "test2",
           "Subvol" => true,
           "Delete" => true

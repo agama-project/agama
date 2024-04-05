@@ -20,7 +20,7 @@
  */
 
 import {
-  classNames, partition, noop, toValidationError,
+  classNames, partition, compact, uniq, noop, toValidationError,
   localConnection, remoteConnection, isObject
 } from "./utils";
 
@@ -38,6 +38,22 @@ describe("partition", () => {
 
     expect(odd).toEqual([1, 3, 5]);
     expect(even).toEqual([2, 4, 6]);
+  });
+});
+
+describe("compact", () => {
+  it("removes null and undefined values", () => {
+    expect(compact([])).toEqual([]);
+    expect(compact([undefined, null, "", 0, 1, NaN, false, true]))
+      .toEqual(["", 0, 1, NaN, false, true]);
+  });
+});
+
+describe("uniq", () => {
+  it("removes duplicated values", () => {
+    expect(uniq([])).toEqual([]);
+    expect(uniq([undefined, null, null, 0, 1, NaN, false, true, false, "test"]))
+      .toEqual([undefined, null, 0, 1, NaN, false, true, "test"]);
   });
 });
 

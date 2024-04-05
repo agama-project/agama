@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -27,7 +27,8 @@ import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
 import { deviceLabel } from "~/components/storage/utils";
 import { Em, ProgressText, Section } from "~/components/core";
-import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
+import { _, n_ } from "~/i18n";
 
 /**
  * Text explaining the storage proposal
@@ -38,11 +39,72 @@ import { _ } from "~/i18n";
 const ProposalSummary = ({ proposal }) => {
   const { availableDevices = [], result = {} } = proposal;
 
-  const bootDevice = result.settings?.bootDevice;
-  if (!bootDevice) return <Text>{_("No device selected yet")}</Text>;
+  const label = (deviceName) => {
+    const device = availableDevices.find(d => d.name === deviceName);
+    return device ? deviceLabel(device) : deviceName;
+  };
 
-  const device = availableDevices.find(d => d.name === bootDevice);
-  const label = device ? deviceLabel(device) : bootDevice;
+  if (result.settings?.target === "newLvmVg") {
+    // TRANSLATORS: Part of the message describing where the system will be installed.
+    // Do not translate 'abbr' and 'title', they are part of the HTML markup.
+    const vg = _("<abbr title='Logical Volume Manager'>LVM</abbr> volume group");
+    const pvDevices = result.settings?.targetPVDevices;
+    const fullMsg = (policy, num_pvs) => {
+      switch (policy) {
+        case "resize":
+          // TRANSLATORS: %1$s will be replaced by "LVM volume group" (already translated and with some markup)
+          // %2$s (if present) will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
+          return n_(
+            "Install in a new %1$s on %2$s shrinking existing partitions as needed",
+            "Install in a new %1$s shrinking existing partitions at the underlying devices as needed",
+            num_pvs
+          );
+        case "keep":
+          // TRANSLATORS: %1$s will be replaced by "LVM volume group" (already translated and with some markup)
+          // %2$s (if present) will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
+          return n_(
+            "Install in a new %1$s on %2$s without modifying existing partitions",
+            "Install in a new %1$s without modifying the partitions at the underlying devices",
+            num_pvs
+          );
+        case "delete":
+          // TRANSLATORS: %1$s will be replaced by "LVM volume group" (already translated and with some markup)
+          // %2$s (if present) will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
+          return n_(
+            "Install in a new %1$s on %2$s deleting all its content",
+            "Install in a new %1$s deleting all the content of the underlying devices",
+            num_pvs
+          );
+        case "custom":
+          // TRANSLATORS: %1$s will be replaced by "LVM volume group" (already translated and with some markup)
+          // %2$s (if present) will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
+          return n_(
+            "Install in a new %1$s on %2$s using a custom strategy to find the needed space",
+            "Install in a new %1$s using a custom strategy to find the needed space at the underlying devices",
+            num_pvs
+          );
+      }
+    };
+
+    const msg = sprintf(fullMsg(result.settings?.spacePolicy, pvDevices.length), vg, "%dev%");
+
+    if (pvDevices.length > 1) {
+      return (<span dangerouslySetInnerHTML={{ __html: msg }} />);
+    } else {
+      const [msg1, msg2] = msg.split("%dev%");
+
+      return (
+        <Text>
+          <span dangerouslySetInnerHTML={{ __html: msg1 }} />
+          <Em>{ label(pvDevices[0]) }</Em>
+          <span dangerouslySetInnerHTML={{ __html: msg2 }} />
+        </Text>
+      );
+    }
+  }
+
+  const targetDevice = result.settings?.targetDevice;
+  if (!targetDevice) return <Text>{_("No device selected yet")}</Text>;
 
   const fullMsg = (policy) => {
     switch (policy) {
@@ -60,17 +122,16 @@ const ProposalSummary = ({ proposal }) => {
         return _("Install using device %s and deleting all its content");
     }
 
-    console.log(`Unknown space policy: ${policy}`);
     // TRANSLATORS: %s will be replaced by the device name and its size,
     // example: "/dev/sda, 20 GiB"
-    return _("Install using device %s");
+    return _("Install using device %s with a custom strategy to find the needed space");
   };
 
   const [msg1, msg2] = fullMsg(result.settings?.spacePolicy).split("%s");
 
   return (
     <Text>
-      {msg1}<Em>{label}</Em>{msg2}
+      {msg1}<Em>{label(targetDevice)}</Em>{msg2}
     </Text>
   );
 };

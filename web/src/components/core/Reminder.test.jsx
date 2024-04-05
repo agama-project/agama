@@ -37,6 +37,12 @@ describe("Reminder", () => {
     within(reminder).getByText("Example");
   });
 
+  it("renders a region with given data-variant, if any", () => {
+    plainRender(<Reminder role="alert" variant="subtle">Example</Reminder>);
+    const reminder = screen.getByRole("alert");
+    expect(reminder).toHaveAttribute("data-variant", "subtle");
+  });
+
   it("renders given title", () => {
     plainRender(
       <Reminder title={<span><strong>Kindly</strong> reminder</span>}>

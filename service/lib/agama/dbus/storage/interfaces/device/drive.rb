@@ -85,7 +85,10 @@ module Agama
             #
             # @return [String]
             def drive_bus
-              storage_device.bus || ""
+              # FIXME: not sure whether checking for "none" is robust enough
+              return "" if storage_device.bus.nil? || storage_device.bus.casecmp?("none")
+
+              storage_device.bus
             end
 
             # Bus Id for DASD
@@ -110,7 +113,15 @@ module Agama
             def drive_transport
               return "" unless storage_device.respond_to?(:transport)
 
-              storage_device.transport.to_s
+              transport = storage_device.transport
+              return "" if transport.nil? || transport.is?(:unknown)
+
+              # FIXME: transport does not have proper i18n support at yast2-storage-ng, so we are
+              # just duplicating some logic from yast2-storage-ng here
+              return "USB" if transport.is?(:usb)
+              return "IEEE 1394" if transport.is?(:sbp)
+
+              transport.to_s
             end
 
             # More info about the device

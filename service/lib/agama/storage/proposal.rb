@@ -19,18 +19,32 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2storage"
 require "agama/issue"
 require "agama/storage/actions"
+require "agama/storage/device_settings"
 require "agama/storage/proposal_settings_conversion"
+require "yast"
+require "y2storage"
 
 module Agama
   module Storage
     # Backend class to calculate a storage proposal.
     class Proposal
+      include Yast::I18n
+
+      # Settings used for calculating the proposal.
+      #
+      # @note Some values are recoverd from Y2Storage, see
+      #   {ProposalSettingsConversion::FromY2Storage}
+      #
+      # @return [ProposalSettings, nil] nil if no proposal has been calculated yet.
+      attr_reader :settings
+
       # @param config [Config] Agama config
       # @param logger [Logger]
       def initialize(config, logger: nil)
+        textdomain "agama"
+
         @config = config
         @logger = logger || Logger.new($stdout)
         @on_calculate_callbacks = []
@@ -60,38 +74,14 @@ module Agama
       # @param settings [Agamal::Storage::ProposalSettings] settings to calculate the proposal.
       # @return [Boolean] whether the proposal was correctly calculated.
       def calculate(settings)
-        # Use the first available device if no boot device is indicated.
-        settings.boot_device ||= available_devices.first&.name
-
-        @original_settings = settings
+        select_target_device(settings) if missing_target_device?(settings)
 
         calculate_proposal(settings)
 
+        @settings = ProposalSettingsConversion.from_y2storage(proposal.settings, settings)
         @on_calculate_callbacks.each(&:call)
 
         success?
-      end
-
-      # Settings used for calculating the proposal.
-      #
-      # Note that this settings might differ from the {#original_settings}. For example, the sizes
-      # of some volumes could be adjusted if auto size is set.
-      #
-      # @return [ProposalSettings, nil] nil if no proposal has been calculated yet.
-      def settings
-        return nil unless calculated?
-
-        ProposalSettingsConversion.from_y2storage(
-          proposal.settings,
-          config: config
-        ).tap do |settings|
-          # The conversion from Y2Storage cannot infer the space policy. Copying space policy from
-          # the original settings.
-          settings.space.policy = original_settings.space.policy
-          # FIXME: The conversion from Y2Storage cannot reliably infer the system VG devices in all
-          #   cases. Copying system VG devices from the original settings.
-          settings.lvm.system_vg_devices = original_settings.lvm.system_vg_devices
-        end
       end
 
       # Storage actions.
@@ -110,7 +100,7 @@ module Agama
         return [] if !calculated? || success?
 
         [
-          boot_device_issue,
+          target_device_issue,
           missing_devices_issue,
           proposal_issue
         ].compact
@@ -124,11 +114,6 @@ module Agama
       # @return [Logger]
       attr_reader :logger
 
-      # Settings originally used for calculating the proposal (without conversion from Y2Storage).
-      #
-      # @return [Agama::Storage::ProposalSettings]
-      attr_reader :original_settings
-
       # @return [Y2Storage::MinGuidedProposal, nil]
       def proposal
         storage_manager.proposal
@@ -139,6 +124,36 @@ module Agama
       # @return [Boolean]
       def calculated?
         !proposal.nil?
+      end
+
+      # Selects the first available device as target device for installation.
+      #
+      # @param settings [ProposalSettings]
+      def select_target_device(settings)
+        device = available_devices.first&.name
+        return unless device
+
+        case settings.device
+        when DeviceSettings::Disk
+          settings.device.name = device
+        when DeviceSettings::NewLvmVg
+          settings.device.candidate_pv_devices = [device]
+        when DeviceSettings::ReusedLvmVg
+          # TODO: select an existing VG?
+        end
+      end
+
+      # Whether the given settings has no target device for the installation.
+      #
+      # @param settings [ProposalSettings]
+      # @return [Boolean]
+      def missing_target_device?(settings)
+        case settings.device
+        when DeviceSettings::Disk, DeviceSettings::ReusedLvmVg
+          settings.device.name.nil?
+        when DeviceSettings::NewLvmVg
+          settings.device.candidate_pv_devices.empty?
+        end
       end
 
       # Instantiates and executes a Y2Storage proposal with the given settings
@@ -171,13 +186,13 @@ module Agama
         Y2Storage::StorageManager.instance
       end
 
-      # Returns an issue if there is no boot device.
+      # Returns an issue if there is no target device.
       #
       # @return [Issue, nil]
-      def boot_device_issue
-        return if settings.boot_device
+      def target_device_issue
+        return unless missing_target_device?(settings)
 
-        Issue.new("No device selected for installation",
+        Issue.new(_("No device selected for installation"),
           source:   Issue::Source::CONFIG,
           severity: Issue::Severity::ERROR)
       end
@@ -186,13 +201,23 @@ module Agama
       #
       # @return [Issue, nil]
       def missing_devices_issue
-        # At this moment, only the boot device is checked.
-        return unless settings.boot_device
-        return if available_devices.map(&:name).include?(settings.boot_device)
+        available = available_devices.map(&:name)
+        missing = settings.installation_devices.reject { |d| available.include?(d) }
 
-        Issue.new("Selected device is not found in the system",
+        return if missing.none?
+
+        Issue.new(
+          format(
+            n_(
+              "The following selected device is not found in the system: %{devices}",
+              "The following selected devices are not found in the system: %{devices}",
+              missing.size
+            ),
+            devices: missing.join(", ")
+          ),
           source:   Issue::Source::CONFIG,
-          severity: Issue::Severity::ERROR)
+          severity: Issue::Severity::ERROR
+        )
       end
 
       # Returns an issue if the proposal is not valid.
@@ -201,7 +226,7 @@ module Agama
       def proposal_issue
         return if success?
 
-        Issue.new("Cannot accommodate the required file systems for installation",
+        Issue.new(_("Cannot accommodate the required file systems for installation"),
           source:   Issue::Source::CONFIG,
           severity: Issue::Severity::ERROR)
       end
