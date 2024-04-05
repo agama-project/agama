@@ -46,6 +46,7 @@ pub fn create_certificate() -> Result<(X509, PKey<Private>), ErrorStack> {
     };
     builder.set_serial_number(&serial_number)?;
     builder.set_subject_name(&x509_name)?;
+    builder.set_issuer_name(&x509_name)?;
     builder.set_pubkey(&key)?;
 
     let not_before = Asn1Time::days_from_now(0)?;
@@ -54,13 +55,6 @@ pub fn create_certificate() -> Result<(X509, PKey<Private>), ErrorStack> {
     builder.set_not_after(&not_after)?;
 
     builder.append_extension(BasicConstraints::new().critical().ca().build()?)?;
-    builder.append_extension(
-        KeyUsage::new()
-            .critical()
-            .key_cert_sign()
-            .crl_sign()
-            .build()?,
-    )?;
 
     builder.append_extension(
         SubjectAlternativeName::new()
