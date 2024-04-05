@@ -151,6 +151,21 @@ class HTTPClient {
   }
 
   /**
+   * @param {string} url - Endpoint URL (e.g., "/l10n/config").
+   * @param {object} data - Data to submit
+   * @return {Promise<void>} Server response.
+   */
+  async patch(url, data) {
+    await fetch(`${this.baseUrl}/${url}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
+
+  /**
    * Registers a handler for a given type of events.
    *
    * @param {string} type - Event type (e.g., "LocaleChanged").

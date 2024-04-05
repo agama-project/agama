@@ -3,6 +3,7 @@ use crate::error::ServiceError;
 use zbus::Connection;
 
 /// D-Bus client for the software service
+#[derive(Clone)]
 pub struct LocalizationClient<'a> {
     localization_proxy: LocaleProxy<'a>,
 }
@@ -22,6 +23,10 @@ impl<'a> LocalizationClient<'a> {
         Ok(first)
     }
 
+    pub async fn locales(&self) -> zbus::Result<Vec<String>> {
+        self.localization_proxy.locales().await
+    }
+
     pub async fn keyboard(&self) -> Result<String, ServiceError> {
         Ok(self.localization_proxy.keymap().await?)
     }
@@ -33,6 +38,10 @@ impl<'a> LocalizationClient<'a> {
     pub async fn set_language(&self, language: &str) -> zbus::Result<()> {
         let locales = [language];
         self.localization_proxy.set_locales(&locales).await
+    }
+
+    pub async fn set_locales(&self, locales: &[&str]) -> zbus::Result<()> {
+        self.localization_proxy.set_locales(locales).await
     }
 
     pub async fn set_keyboard(&self, keyboard: &str) -> zbus::Result<()> {
