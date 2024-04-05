@@ -23,8 +23,6 @@
 
 import { WithValidation } from "./mixins";
 
-const USERS_PATH = "/users/config";
-
 /**
 * @typedef {object} UserResult
 * @property {boolean} result - whether the action succeeded or not
@@ -66,13 +64,13 @@ class UsersBaseClient {
    * @return {Promise<User>}
    */
   async getUser() {
-    const proxy = await this.client.get(USERS_PATH);
+    const user = await this.client.get("/users/first");
 
-    if (proxy.user === null) {
+    if (user === null) {
       return { fullName: "", userName: "", password: "", autologin: false, data: {} };
     }
 
-    return proxy.user;
+    return user;
   }
 
   /**
@@ -81,8 +79,8 @@ class UsersBaseClient {
    * @return {Promise<boolean>}
    */
   async isRootPasswordSet() {
-    const proxy = await this.client.get(USERS_PATH);
-    return proxy.root.password;
+    const proxy = await this.client.get("/users/root");
+    return proxy.password;
   }
 
   /**
@@ -94,7 +92,7 @@ class UsersBaseClient {
   async setUser(user) {
     const result = await this.client.put("/users/user", user);
 
-    return { result, issues: [] }; // TODO: check how to handle issues and result. Maybe separate call to validate?
+    return { result: result.ok, issues: [] }; // TODO: check how to handle issues and result. Maybe separate call to validate?
   }
 
   /**
@@ -103,7 +101,7 @@ class UsersBaseClient {
    * @return {Promise<boolean>} whether the operation was successful or not
    */
   async removeUser() {
-    return this.client.delete("/users/user");
+    return (await this.client.delete("/users/user")).ok;
   }
 
   /**
@@ -113,7 +111,8 @@ class UsersBaseClient {
    * @return {Promise<boolean>} whether the operation was successful or not
    */
   async setRootPassword(password) {
-    return this.client.put("/users/root_password", { value: password, encrypted: false });
+    const response = await this.client.patch("/users/root", { password, password_encrypted: false });
+    return response.ok;
   }
 
   /**
@@ -122,7 +121,7 @@ class UsersBaseClient {
    * @return {Promise<boolean>} whether the operation was successful or not
    */
   async removeRootPassword() {
-    return this.client.delete("/users/root_password");
+    return this.setRootPassword("");
   }
 
   /**
@@ -131,8 +130,8 @@ class UsersBaseClient {
    * @return {Promise<String>} SSH public key or an empty string if it is not set
    */
   async getRootSSHKey() {
-    const proxy = await this.client.get(USERS_PATH);
-    return proxy.root.ssh_key || "";
+    const proxy = await this.client.get("/users/root");
+    return proxy.sshkey;
   }
 
   /**
@@ -142,7 +141,8 @@ class UsersBaseClient {
    * @return {Promise<boolean>} whether the operation was successful or not
    */
   async setRootSSHKey(key) {
-    return this.client.put("/users/root_sshkey", key);
+    const response = await this.client.patch("/users/root", { sshkey: key });
+    return response.ok;
   }
 
   /**
