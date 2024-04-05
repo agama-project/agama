@@ -81,7 +81,7 @@ const createClient = (url) => {
   const software = new SoftwareClient(client);
   // const storage = new StorageClient(address);
   // const users = new UsersClient(address);
-  // const questions = new QuestionsClient(address);
+  const questions = new QuestionsClient(client);
 
   /**
    * Gets all issues, grouping them by context.
@@ -142,7 +142,7 @@ const createClient = (url) => {
     software,
     // storage,
     // users,
-    // questions,
+    questions,
     issues,
     onIssuesChange,
     isConnected,
