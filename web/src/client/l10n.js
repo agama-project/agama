@@ -61,7 +61,7 @@ class L10nClient {
    */
   async getUILocale() {
     const config = await this.client.get("/l10n/config");
-    return config.ui_locale;
+    return config.uiLocale;
   }
 
   /**
