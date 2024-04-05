@@ -20,10 +20,10 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../../test_helper"
-require "y2storage/filesystems/type"
-require "y2storage/disk_size"
 require "agama/dbus/storage/volume_conversion/to_dbus"
 require "agama/storage/volume"
+require "y2storage/filesystems/type"
+require "y2storage/disk_size"
 
 describe Agama::DBus::Storage::VolumeConversion::ToDBus do
   let(:default_volume) { Agama::Storage::Volume.new("/test") }
@@ -47,8 +47,8 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
       volume.btrfs.snapshots = true
       volume.btrfs.read_only = true
       volume.mount_options = ["rw", "default"]
-      volume.device = "/dev/sda"
-      volume.separate_vg_name = "/dev/system"
+      volume.location.device = "/dev/sda"
+      volume.location.target = :new_partition
       volume.min_size = Y2Storage::DiskSize.new(1024)
       volume.max_size = Y2Storage::DiskSize.new(2048)
       volume.auto_size = true
@@ -61,7 +61,7 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
         "MountPath"     => "/test",
         "MountOptions"  => [],
         "TargetDevice"  => "",
-        "TargetVG"      => "",
+        "Target"        => "default",
         "FsType"        => "",
         "MinSize"       => 0,
         "AutoSize"      => false,
@@ -82,7 +82,7 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
         "MountPath"     => "/test",
         "MountOptions"  => ["rw", "default"],
         "TargetDevice"  => "/dev/sda",
-        "TargetVG"      => "/dev/system",
+        "Target"        => "new_partition",
         "FsType"        => "Ext4",
         "MinSize"       => 1024,
         "MaxSize"       => 2048,

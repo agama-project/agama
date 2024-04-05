@@ -22,8 +22,8 @@
 require_relative "../../../test_helper"
 require_relative "../../storage/storage_helpers"
 require "agama/dbus/storage/devices_tree"
-require "y2storage"
 require "dbus"
+require "y2storage"
 
 describe Agama::DBus::Storage::DevicesTree do
   include Agama::RSpec::StorageHelpers
@@ -87,7 +87,8 @@ describe Agama::DBus::Storage::DevicesTree do
       mock_storage(devicegraph: scenario)
 
       allow(service).to receive(:get_node).with(root_path, anything).and_return(root_node)
-      allow(root_node).to receive(:descendant_objects).and_return(dbus_objects)
+      # Returning an empty list for the second call to mock the effect of calling to #clear.
+      allow(root_node).to receive(:descendant_objects).and_return(dbus_objects, [])
 
       allow(service).to receive(:export)
       allow(service).to receive(:unexport)
@@ -102,57 +103,48 @@ describe Agama::DBus::Storage::DevicesTree do
 
     let(:devicegraph) { Y2Storage::StorageManager.instance.probed }
 
-    context "if a device is not exported yet" do
+    let(:dbus_objects) { [dbus_object1, dbus_object2] }
+    let(:dbus_object1) { Agama::DBus::Storage::Device.new(sda, subject.path_for(sda), subject) }
+    let(:dbus_object2) { Agama::DBus::Storage::Device.new(sdb, subject.path_for(sdb), subject) }
+    let(:sda) { devicegraph.find_by_name("/dev/sda") }
+    let(:sdb) { devicegraph.find_by_name("/dev/sdb") }
+
+    it "unexports the current D-Bus objects" do
+      expect(service).to unexport_object("#{root_path}/#{sda.sid}")
+      expect(service).to unexport_object("#{root_path}/#{sdb.sid}")
+
+      subject.update(devicegraph)
+    end
+
+    it "exports disk devices and partitions" do
+      md0 = devicegraph.find_by_name("/dev/md0")
+      sda1 = devicegraph.find_by_name("/dev/sda1")
+      sda2 = devicegraph.find_by_name("/dev/sda2")
+      md0p1 = devicegraph.find_by_name("/dev/md0p1")
+
+      expect(service).to export_object("#{root_path}/#{sda.sid}")
+      expect(service).to export_object("#{root_path}/#{sdb.sid}")
+      expect(service).to export_object("#{root_path}/#{md0.sid}")
+      expect(service).to export_object("#{root_path}/#{sda1.sid}")
+      expect(service).to export_object("#{root_path}/#{sda2.sid}")
+      expect(service).to export_object("#{root_path}/#{md0p1.sid}")
+      expect(service).to_not receive(:export)
+
+      subject.update(devicegraph)
+    end
+
+    context "if there are LVM volume groups" do
+      let(:scenario) { "trivial_lvm.yml" }
+
       let(:dbus_objects) { [] }
 
-      it "exports a D-Bus object" do
-        sda = devicegraph.find_by_name("/dev/sda")
-        sdb = devicegraph.find_by_name("/dev/sdb")
-        md0 = devicegraph.find_by_name("/dev/md0")
-        sda1 = devicegraph.find_by_name("/dev/sda1")
-        sda2 = devicegraph.find_by_name("/dev/sda2")
-        md0p1 = devicegraph.find_by_name("/dev/md0p1")
+      it "exports the LVM volume groups and the logical volumes" do
+        vg0 = devicegraph.find_by_name("/dev/vg0")
+        lv1 = devicegraph.find_by_name("/dev/vg0/lv1")
 
-        expect(service).to export_object("#{root_path}/#{sda.sid}")
-        expect(service).to export_object("#{root_path}/#{sdb.sid}")
-        expect(service).to export_object("#{root_path}/#{md0.sid}")
-        expect(service).to export_object("#{root_path}/#{sda1.sid}")
-        expect(service).to export_object("#{root_path}/#{sda2.sid}")
-        expect(service).to export_object("#{root_path}/#{md0p1.sid}")
-        expect(service).to_not receive(:export)
-
-        subject.update(devicegraph)
-      end
-    end
-
-    context "if a device is already exported" do
-      let(:dbus_objects) { [dbus_object1] }
-      let(:dbus_object1) { Agama::DBus::Storage::Device.new(sda, subject.path_for(sda), subject) }
-      let(:sda) { devicegraph.find_by_name("/dev/sda") }
-
-      it "does not export a D-Bus object" do
-        expect(service).to_not export_object("#{root_path}/#{sda.sid}")
-
-        subject.update(devicegraph)
-      end
-
-      it "updates the D-Bus object" do
-        expect(dbus_object1.storage_device).to equal(sda)
-
-        subject.update(devicegraph)
-
-        expect(dbus_object1.storage_device).to_not equal(sda)
-        expect(dbus_object1.storage_device.sid).to equal(sda.sid)
-      end
-    end
-
-    context "if an exported D-Bus object does not represent any of the current devices" do
-      let(:dbus_objects) { [dbus_object1] }
-      let(:dbus_object1) { Agama::DBus::Storage::Device.new(sdd, subject.path_for(sdd), subject) }
-      let(:sdd) { instance_double(Y2Storage::Disk, sid: 1, is?: false, filesystem: false) }
-
-      it "unexports the D-Bus object" do
-        expect(service).to unexport_object("#{root_path}/1")
+        expect(service).to receive(:export)
+        expect(service).to export_object("#{root_path}/#{vg0.sid}")
+        expect(service).to export_object("#{root_path}/#{lv1.sid}")
 
         subject.update(devicegraph)
       end

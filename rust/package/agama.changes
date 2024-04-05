@@ -1,9 +1,27 @@
 -------------------------------------------------------------------
+Wed Mar  13 12:42:58 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add infiniband to network model (gh#openSUSE/agama#1032).
+
+-------------------------------------------------------------------
 Thu Mar  7 10:52:58 UTC 2024 - Michal Filka <mfilka@suse.com>
 
 - CLI: added auth command with login / logout / show subcommands
   for handling authentication token management with new agama web
   server
+
+-------------------------------------------------------------------
+Thu Feb 29 09:49:18 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Web server:
+  - Accept also IPv6 connections (gh#openSUSE/agama#1057)
+  - Added SSL (HTTPS) support (gh#openSUSE/agama#1062)
+    - Use either the cerfificate specified via command line
+      arguments or generate a self-signed certificate
+    - Redirect external HTTP requests to HTTPS
+    - Allow HTTP for internal connections (http://localhost)
+  - Optionally listen on a secondary address
+    (to allow listening on both HTTP/80 and HTTPS/433 ports)
 
 -------------------------------------------------------------------
 Tue Feb 27 15:55:28 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

@@ -22,7 +22,7 @@
 import React from "react";
 import { FormSelect, FormSelectOption } from "@patternfly/react-core";
 
-import cockpit from "../../lib/cockpit";
+import agama from "~/agama";
 
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
@@ -33,7 +33,7 @@ import { If } from "~/components/core";
 
 const sort = (keymaps) => {
   // sort the keymap names using the current locale
-  const lang = cockpit.language || "en";
+  const lang = agama.language || "en";
   return keymaps.sort((k1, k2) => k1.name.localeCompare(k2.name, lang));
 };
 

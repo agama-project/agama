@@ -19,13 +19,16 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+#
+# This script generates the list of supported languages in JSON format.
+#
+
 from argparse import ArgumentParser
 from langtable import language_name
 from pathlib import Path
 import json
-import re
 import subprocess
-
+import sys
 
 class Locale:
     language: str
@@ -76,20 +79,15 @@ class PoFile:
         return self.path.stem
 
 
-class Manifest:
-    """ This class takes care of updating the manifest file"""
+class Languages:
+    """ This class takes care of generating the supported languages file"""
 
-    def __init__(self, path: Path):
-        self.path = path
-        self.__read__()
-
-    def __read__(self):
-        with open(self.path) as file:
-            self.content = json.load(file)
+    def __init__(self):
+        self.content = dict()
 
     def update(self, po_files, lang2territory: str, threshold: int):
         """
-        Updates the list of locales in the manifest file
+        Generate the list of supported locales
 
         It does not write the changes to file system. Use the write() function
         for that.
@@ -111,46 +109,43 @@ class Manifest:
             if locale.territory is None:
                 print(
                     "could not find a territory for '{language}'"
-                    .format(language=locale.language)
+                    .format(language=locale.language),
+                    file=sys.stderr
                 )
             elif po_file.coverage() < threshold:
                 print(
                     "not enough coverage for '{language}' ({coverage}%)"
                     .format(
                         language=locale.code(),
-                        coverage=po_file.coverage())
+                        coverage=po_file.coverage()),
+                    file=sys.stderr
                 )
             else:
                 supported.append(locale)
 
         languages = [loc.language for loc in supported]
-        self.content["locales"] = dict()
         for locale in supported:
             include_territory = languages.count(locale.language) > 1
-            self.content["locales"][locale.code()] = locale.name(
-                include_territory)
+            self.content[locale.code()] = locale.name(include_territory)
 
-    def write(self):
-        with open(self.path, "w+") as file:
-            json.dump(self.content, file, indent=4, ensure_ascii=False)
+    def dump(self):
+        json.dump(self.content, sys.stdout, indent=4, ensure_ascii=False,
+                  sort_keys=True)
 
 
-def update_manifest(args):
-    """Command to update the manifest.json file"""
-    manifest = Manifest(Path(args.manifest))
+def update_languages(args):
+    """Print the supported languages in JSON format"""
+    languages = Languages()
     paths = [path for path in Path(args.po_directory).glob("*.po")]
     with open(args.territories) as file:
         lang2territory = json.load(file)
-    manifest.update(paths, lang2territory, args.threshold)
-    manifest.write()
+    languages.update(paths, lang2territory, args.threshold)
+    languages.dump()
 
 
 if __name__ == "__main__":
-    parser = ArgumentParser(prog="locales.py")
-    parser.set_defaults(func=update_manifest)
-    parser.add_argument(
-        "manifest", type=str, help="Path to the manifest file",
-    )
+    parser = ArgumentParser(prog="update-languages.py")
+    parser.set_defaults(func=update_languages)
     parser.add_argument(
         "--po-directory", type=str, help="Directory containing the po files",
         default="web/po"

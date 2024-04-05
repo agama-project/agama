@@ -6,7 +6,7 @@ use axum::{
 };
 use serde_json::json;
 
-use crate::{l10n::web::LocaleError, questions::QuestionsError};
+use crate::{l10n::LocaleError, questions::QuestionsError};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {

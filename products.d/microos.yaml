@@ -12,6 +12,17 @@ description: 'A quick, small distribution designed to host container workloads
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
+    ca: Una distribució ràpida i petita dissenyada per allotjar càrregues de treball
+      de contenidors amb administració i pedaços automatitzats. L'openSUSE
+      MicroSO proporciona actualitzacions transaccionals (atòmiques) en un
+      sistema de fitxers d'arrel btrfs només de lectura. Com a distribució
+      contínua, el programari està sempre actualitzat.
+    de: Eine schnelle, kleine Distribution, die für den Betrieb von
+      Container-Arbeitslasten mit automatischer Verwaltung und automatisiertem
+      Patching entwickelt wurde. openSUSE MicroOS bietet transaktionale
+      (atomare) Aktualisierungen auf einem schreibgeschützten
+      btrfs-Wurzeldateisystem. Als Distribution mit rollierenden
+      Veröffentlichungen ist die Software immer auf dem neuesten Stand.
     es: Una distribución pequeña y rápida diseñada para alojar cargas de trabajo de
       contenedores con administración y parches automatizados. openSUSE MicroOS
       proporciona actualizaciones transaccionales (atómicas) en un sistema de
@@ -35,6 +46,8 @@ translations:
       patchning. openSUSE MicroOS tillhandahåller transaktionella (atomära)
       uppdateringar på ett skrivskyddat btrfs-rootfilsystem. Som rullande
       releasedistribution är mjukvaran alltid uppdaterad.
+    zh_Hans: 一个快速、小型的发行版，旨在通过自动化管理和修补来托管容器工作负载。openSUSE MicroOS 提供基于只读 Btrfs
+      根文件系统之上的事务性（原子）更新。作为滚动发行版，它的软件始终保持最新。
 software:
   installation_repositories:
     - url: https://download.opensuse.org/tumbleweed/repo/oss/

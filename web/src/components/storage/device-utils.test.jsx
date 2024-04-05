@@ -143,31 +143,22 @@ const renderOptions = (Component) => {
       screen.getByText("Micron 1100 SATA");
     });
 
+    it("renders the partition table info", () => {
+      plainRender(<Component devices={[vda]} />);
+      screen.getByText("GPT with 2 partitions");
+    });
+
+    it("renders systems info", () => {
+      plainRender(<Component devices={[vda]} />);
+      screen.getByText("Windows 11");
+      screen.getByText("openSUSE Leap 15.2");
+    });
+
     describe("when device is a SDCard", () => {
       it("renders 'SD Card'", () => {
         const sdCard = { ...vda, sdCard: true };
         plainRender(<Component devices={[sdCard]} />);
         screen.getByText("SD Card");
-      });
-    });
-
-    describe("when content is given", () => {
-      it("renders the partition table info", () => {
-        plainRender(<Component devices={[vda]} />);
-        screen.getByText("GPT with 2 partitions");
-      });
-
-      it("renders systems info", () => {
-        plainRender(<Component devices={[vda]} />);
-        screen.getByText("Windows 11");
-        screen.getByText("openSUSE Leap 15.2");
-      });
-    });
-
-    describe("when content is not given", () => {
-      it("renders 'No content found'", () => {
-        plainRender(<Component devices={[multipath]} />);
-        screen.getByText("No content found");
       });
     });
 

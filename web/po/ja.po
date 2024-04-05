@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-03 02:07+0000\n"
-"PO-Revision-Date: 2024-02-29 04:42+0000\n"
+"POT-Creation-Date: 2024-03-14 02:05+0000\n"
+"PO-Revision-Date: 2024-03-12 11:42+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -156,9 +156,9 @@ msgstr ""
 #: src/components/product/ProductPage.jsx:207
 #: src/components/storage/ProposalDeviceSection.jsx:169
 #: src/components/storage/ProposalDeviceSection.jsx:364
-#: src/components/storage/ProposalSettingsSection.jsx:275
-#: src/components/storage/ProposalVolumes.jsx:148
-#: src/components/storage/ProposalVolumes.jsx:283
+#: src/components/storage/ProposalSettingsSection.jsx:263
+#: src/components/storage/ProposalVolumes.jsx:152
+#: src/components/storage/ProposalVolumes.jsx:287
 #: src/components/storage/ZFCPPage.jsx:511
 msgid "Accept"
 msgstr "受け入れる"
@@ -308,8 +308,8 @@ msgstr "確認"
 
 #. TRANSLATORS: dropdown label
 #: src/components/core/RowActions.jsx:66
-#: src/components/storage/ProposalVolumes.jsx:119
-#: src/components/storage/ProposalVolumes.jsx:310
+#: src/components/storage/ProposalVolumes.jsx:123
+#: src/components/storage/ProposalVolumes.jsx:314
 msgid "Actions"
 msgstr "処理"
 
@@ -534,8 +534,8 @@ msgstr "アドレス"
 msgid "Addresses data list"
 msgstr "アドレスデータの一覧"
 
-#. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
+#. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/network/ConnectionsTable.jsx:57
 #: src/components/network/ConnectionsTable.jsx:86
 #: src/components/storage/ZFCPPage.jsx:360
@@ -554,7 +554,7 @@ msgid "IP addresses"
 msgstr "IP アドレス"
 
 #: src/components/network/ConnectionsTable.jsx:67
-#: src/components/storage/ProposalVolumes.jsx:234
+#: src/components/storage/ProposalVolumes.jsx:238
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
 #: src/components/users/FirstUser.jsx:208
@@ -757,8 +757,8 @@ msgstr "接続済み"
 msgid "Disconnecting"
 msgstr "切断中"
 
-#. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
+#. TRANSLATORS: iSCSI connection status
 #: src/components/network/WifiNetworkListItem.jsx:50
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -821,8 +821,8 @@ msgstr "ソフトウエアリポジトリを読み込んでいます"
 msgid "Refresh the repositories"
 msgstr "リポジトリの更新"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
@@ -869,7 +869,7 @@ msgstr "ストレージデバイスを検出しています"
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section title
 #: src/components/overview/StorageSection.jsx:208
-#: src/components/storage/ProposalPage.jsx:239
+#: src/components/storage/ProposalPage.jsx:243
 msgid "Storage"
 msgstr "ストレージ"
 
@@ -1283,7 +1283,7 @@ msgstr "iSCSI"
 #. TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
 #. 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
 #. Do not translate 'abbr' and 'title', they are part of the HTML markup.
-#: src/components/storage/ProposalSettingsSection.jsx:89
+#: src/components/storage/ProposalSettingsSection.jsx:87
 msgid ""
 "The password will not be needed to boot and access the data if the <abbr "
 "title='Trusted Platform Module'>TPM</abbr> can verify the integrity of the "
@@ -1295,11 +1295,11 @@ msgstr ""
 "シーリングを使用するには、新しいシステムの初回起動時に直接起動を行う必要があ"
 "ります。"
 
-#: src/components/storage/ProposalSettingsSection.jsx:107
+#: src/components/storage/ProposalSettingsSection.jsx:105
 msgid "Use the TPM to decrypt automatically on each boot"
 msgstr "毎回の起動時に TPM を利用して自動的に暗号化解除する"
 
-#: src/components/storage/ProposalSettingsSection.jsx:152
+#: src/components/storage/ProposalSettingsSection.jsx:148
 msgid ""
 "Uses Btrfs for the root file system allowing to boot to a previous version "
 "of the system after configuration changes or software upgrades."
@@ -1307,43 +1307,26 @@ msgstr ""
 "ルートファイルシステムに btrfs を使用することで、設定変更前やソフトウエアの"
 "アップグレード前に戻して起動し直すことができるようになります。"
 
-#: src/components/storage/ProposalSettingsSection.jsx:159
+#: src/components/storage/ProposalSettingsSection.jsx:155
 msgid "Use Btrfs Snapshots"
 msgstr "btrfs スナップショットを使用する"
 
-#: src/components/storage/ProposalSettingsSection.jsx:173
-msgid "Btrfs snapshots required by product."
-msgstr "btrfs のスナップショットは製品側の要件で必須となっています。"
-
-#: src/components/storage/ProposalSettingsSection.jsx:239
+#: src/components/storage/ProposalSettingsSection.jsx:227
 msgid "Change encryption settings"
 msgstr "暗号化設定の変更"
 
-#: src/components/storage/ProposalSettingsSection.jsx:244
-#: src/components/storage/ProposalSettingsSection.jsx:265
+#: src/components/storage/ProposalSettingsSection.jsx:232
+#: src/components/storage/ProposalSettingsSection.jsx:253
 msgid "Encryption settings"
 msgstr "暗号化の設定"
 
-#: src/components/storage/ProposalSettingsSection.jsx:258
+#: src/components/storage/ProposalSettingsSection.jsx:246
 msgid "Use encryption"
 msgstr "暗号化を使用する"
 
-#: src/components/storage/ProposalSettingsSection.jsx:325
+#: src/components/storage/ProposalSettingsSection.jsx:309
 msgid "Settings"
 msgstr "設定"
-
-#: src/components/storage/ProposalSettingsSection.jsx:330
-#, fuzzy
-msgid "Transactional system"
-msgstr "トランザクション型"
-
-#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
-#: src/components/storage/ProposalSettingsSection.jsx:333
-#, c-format
-msgid ""
-"%s is an immutable system with atomic updates using a read-only Btrfs root "
-"file system."
-msgstr ""
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:50
 msgid "Delete current content"
@@ -1393,13 +1376,13 @@ msgid "Current content"
 msgstr "現在の内容"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:74
-#: src/components/storage/ProposalVolumes.jsx:309
-#: src/components/storage/VolumeForm.jsx:741
+#: src/components/storage/ProposalVolumes.jsx:313
+#: src/components/storage/VolumeForm.jsx:745
 msgid "Size"
 msgstr "サイズ"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:75
-#: src/components/storage/ProposalVolumes.jsx:308
+#: src/components/storage/ProposalVolumes.jsx:312
 msgid "Details"
 msgstr "詳細"
 
@@ -1458,7 +1441,7 @@ msgid "Space action selector for %s"
 msgstr "%s に対する領域処理の選択"
 
 #: src/components/storage/ProposalSpacePolicySection.jsx:224
-#: src/components/storage/ProposalVolumes.jsx:229
+#: src/components/storage/ProposalVolumes.jsx:233
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
 msgid "Delete"
 msgstr "削除"
@@ -1489,7 +1472,20 @@ msgstr ""
 "ファイルシステムを割り当てるには、下記のデバイス内に空き領域を確保する必要が"
 "あるかもしれません。ここではその方法を選択します。"
 
-#. TRANSLATORS: header for a list of items
+#: src/components/storage/ProposalTransactionalInfo.jsx:46
+msgid "Transactional root file system"
+msgstr "トランザクション型のルートファイルシステム"
+
+#: src/components/storage/ProposalTransactionalInfo.jsx:49
+#, c-format
+msgid ""
+"%s is an immutable system with atomic updates. It uses a read-only Btrfs "
+"file system updated via snapshots."
+msgstr ""
+"%s は一括更新のできる不可変なシステムです。読み込み専用の btrfs ルートファイ"
+"ルシステムを利用して更新を適用します。"
+
+#. TRANSLATORS: header for a list of items referring to size limits for file systems
 #: src/components/storage/ProposalVolumes.jsx:59
 msgid "These limits are affected by:"
 msgstr "これらの制限は下記による影響を受けます:"
@@ -1506,63 +1502,69 @@ msgstr "スナップショットの設定"
 msgid "Presence of other volumes (%s)"
 msgstr "その他のボリューム (%s) の存在"
 
+#. TRANSLATORS: list item, describes a factor that affects the computed size of a
+#. file system; eg. adjusting the size of the swap
+#: src/components/storage/ProposalVolumes.jsx:71
+msgid "The amount of RAM in the system"
+msgstr "システムに搭載された RAM の量"
+
 #. TRANSLATORS: dropdown menu label
-#: src/components/storage/ProposalVolumes.jsx:129
+#: src/components/storage/ProposalVolumes.jsx:133
 msgid "Reset to defaults"
 msgstr "既定値に戻す"
 
 #. TRANSLATORS: dropdown menu label
-#: src/components/storage/ProposalVolumes.jsx:137
 #: src/components/storage/ProposalVolumes.jsx:141
+#: src/components/storage/ProposalVolumes.jsx:145
 msgid "Add file system"
 msgstr "ファイルシステムの追加"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/ProposalVolumes.jsx:191
+#: src/components/storage/ProposalVolumes.jsx:195
 #, c-format
 msgid "At least %s"
 msgstr "少なくとも %s"
 
 #. TRANSLATORS: device flag, the partition size is automatically computed
-#: src/components/storage/ProposalVolumes.jsx:197
+#: src/components/storage/ProposalVolumes.jsx:201
 msgid "auto"
 msgstr "自動"
 
 #. TRANSLATORS: the filesystem uses a logical volume (LVM)
-#: src/components/storage/ProposalVolumes.jsx:207
+#: src/components/storage/ProposalVolumes.jsx:211
 msgid "logical volume"
 msgstr "論理ボリューム"
 
-#: src/components/storage/ProposalVolumes.jsx:207
+#: src/components/storage/ProposalVolumes.jsx:211
 msgid "partition"
 msgstr "パーティション"
 
 #. TRANSLATORS: filesystem flag, it uses an encryption
-#: src/components/storage/ProposalVolumes.jsx:216
+#: src/components/storage/ProposalVolumes.jsx:220
 msgid "encrypted"
 msgstr "暗号化"
 
 #. TRANSLATORS: filesystem flag, it allows creating snapshots
-#: src/components/storage/ProposalVolumes.jsx:218
+#: src/components/storage/ProposalVolumes.jsx:222
 msgid "with snapshots"
 msgstr "スナップショット有り"
 
 #. TRANSLATORS: flag for transactional file system
-#: src/components/storage/ProposalVolumes.jsx:220
+#: src/components/storage/ProposalVolumes.jsx:224
 msgid "transactional"
 msgstr "トランザクション型"
 
-#: src/components/storage/ProposalVolumes.jsx:275
+#: src/components/storage/ProposalVolumes.jsx:279
 msgid "Edit file system"
 msgstr "ファイルシステムの編集"
 
-#: src/components/storage/ProposalVolumes.jsx:307
-#: src/components/storage/VolumeForm.jsx:726
-#: src/components/storage/VolumeForm.jsx:731
+#: src/components/storage/ProposalVolumes.jsx:311
+#: src/components/storage/VolumeForm.jsx:730
+#: src/components/storage/VolumeForm.jsx:735
 msgid "Mount point"
 msgstr "マウントポイント"
 
-#: src/components/storage/ProposalVolumes.jsx:345
+#: src/components/storage/ProposalVolumes.jsx:349
 msgid "Table with mount points"
 msgstr "マウントポイントの一覧"
 
@@ -1604,37 +1606,42 @@ msgstr "%s に対するファイルシステムの存在"
 msgid ", "
 msgstr ", "
 
+#. TRANSLATORS: item which affects the final computed partition size
+#: src/components/storage/VolumeForm.jsx:315
+msgid "the amount of RAM in the system"
+msgstr "システムに搭載された RAM の量"
+
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeForm.jsx:314
+#: src/components/storage/VolumeForm.jsx:318
 #, c-format
 msgid "The final size depends on %s."
 msgstr "最終的なサイズは %s に依存します。"
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeForm.jsx:316
+#: src/components/storage/VolumeForm.jsx:320
 msgid " and "
 msgstr " および "
 
 #. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeForm.jsx:321
+#: src/components/storage/VolumeForm.jsx:325
 msgid "Automatically calculated size according to the selected product."
 msgstr "選択した製品に合わせてサイズを自動計算します。"
 
-#: src/components/storage/VolumeForm.jsx:341
+#: src/components/storage/VolumeForm.jsx:345
 msgid "Exact size for the file system."
 msgstr "ファイルシステムに対して正確なサイズを設定します。"
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeForm.jsx:353
+#: src/components/storage/VolumeForm.jsx:357
 msgid "Exact size"
 msgstr "正確なサイズ"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeForm.jsx:368
+#: src/components/storage/VolumeForm.jsx:372
 msgid "Size unit"
 msgstr "サイズの単位"
 
-#: src/components/storage/VolumeForm.jsx:396
+#: src/components/storage/VolumeForm.jsx:400
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1645,57 +1652,57 @@ msgstr ""
 "きくなるように設定されます。"
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeForm.jsx:403
+#: src/components/storage/VolumeForm.jsx:407
 msgid "Minimum"
 msgstr "最小"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeForm.jsx:413
+#: src/components/storage/VolumeForm.jsx:417
 msgid "Minimum desired size"
 msgstr "最小必須サイズ"
 
-#: src/components/storage/VolumeForm.jsx:422
+#: src/components/storage/VolumeForm.jsx:426
 msgid "Unit for the minimum size"
 msgstr "最小サイズの単位"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:433
+#: src/components/storage/VolumeForm.jsx:437
 msgid "Maximum"
 msgstr "最大"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:444
+#: src/components/storage/VolumeForm.jsx:448
 msgid "Maximum desired size"
 msgstr "最大要求サイズ"
 
-#: src/components/storage/VolumeForm.jsx:452
+#: src/components/storage/VolumeForm.jsx:456
 msgid "Unit for the maximum size"
 msgstr "最大サイズの単位"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeForm.jsx:469
+#: src/components/storage/VolumeForm.jsx:473
 msgid "Auto"
 msgstr "自動"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeForm.jsx:471
+#: src/components/storage/VolumeForm.jsx:475
 msgid "Fixed"
 msgstr "固定値"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeForm.jsx:473
+#: src/components/storage/VolumeForm.jsx:477
 msgid "Range"
 msgstr "範囲"
 
-#: src/components/storage/VolumeForm.jsx:681
+#: src/components/storage/VolumeForm.jsx:685
 msgid "A size value is required"
 msgstr "サイズを指定する必要があります"
 
-#: src/components/storage/VolumeForm.jsx:686
+#: src/components/storage/VolumeForm.jsx:690
 msgid "Minimum size is required"
 msgstr "最小サイズを指定する必要があります"
 
-#: src/components/storage/VolumeForm.jsx:690
+#: src/components/storage/VolumeForm.jsx:694
 msgid "Maximum must be greater than minimum"
 msgstr "最大サイズは最小サイズより大きくなければなりません"
 
@@ -2072,12 +2079,12 @@ msgstr "ユーザ名"
 
 #: src/components/users/FirstUser.jsx:88
 msgid "Username suggestion dropdown"
-msgstr ""
+msgstr "ユーザ名の提案ドロップダウン"
 
 #. TRANSLATORS: dropdown username suggestions
 #: src/components/users/FirstUser.jsx:102
 msgid "Use suggested username"
-msgstr ""
+msgstr "提案されたユーザ名を使用する"
 
 #: src/components/users/FirstUser.jsx:212
 #: src/components/users/RootAuthMethods.jsx:99
@@ -2210,6 +2217,9 @@ msgstr "ユーザ"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "root の認証"
+
+#~ msgid "Btrfs snapshots required by product."
+#~ msgstr "btrfs のスナップショットは製品側の要件で必須となっています。"
 
 #~ msgid ""
 #~ "Allows rolling back any change done to the system and restoring its "

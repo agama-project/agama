@@ -21,9 +21,10 @@
 
 require_relative "../../test_helper"
 require_relative "storage_helpers"
+require "agama/config"
+require "agama/storage/device_settings"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
-require "agama/config"
 require "y2storage"
 
 describe Agama::Storage::Proposal do
@@ -39,14 +40,15 @@ describe Agama::Storage::Proposal do
 
   let(:achievable_settings) do
     Agama::Storage::ProposalSettings.new.tap do |settings|
-      settings.boot_device = "/dev/sdb"
+      settings.device.name = "/dev/sdb"
+      settings.boot.device = "/dev/sda"
       settings.volumes = [Agama::Storage::Volume.new("/")]
     end
   end
 
   let(:impossible_settings) do
     Agama::Storage::ProposalSettings.new.tap do |settings|
-      settings.boot_device = "/dev/sdb"
+      settings.device.name = "/dev/sdb"
       settings.volumes = [
         # The boot disk size is 500 GiB, so it cannot accomodate a 1 TiB volume.
         Agama::Storage::Volume.new("/").tap { |v| v.min_size = Y2Storage::DiskSize.TiB(1) }
@@ -89,11 +91,10 @@ describe Agama::Storage::Proposal do
       subject.calculate(achievable_settings)
 
       expect(Y2Storage::StorageManager.instance.proposal).to_not be_nil
-      expect(Y2Storage::StorageManager.instance.proposal.settings).to have_attributes(
-        root_device: "/dev/sdb",
-        volumes:     contain_exactly(
-          an_object_having_attributes(mount_point: "/")
-        )
+      y2storage_settings = Y2Storage::StorageManager.instance.proposal.settings
+      expect(y2storage_settings.root_device).to eq("/dev/sda")
+      expect(y2storage_settings.volumes).to contain_exactly(
+        an_object_having_attributes(mount_point: "/", device: "/dev/sdb")
       )
     end
 
@@ -115,17 +116,43 @@ describe Agama::Storage::Proposal do
       expect(subject.calculate(impossible_settings)).to eq(false)
     end
 
-    context "if the given settings does not indicate a boot device" do
-      let(:settings) do
-        achievable_settings.tap { |s| s.boot_device = nil }
+    context "if the given device settings sets a disk as target" do
+      before do
+        achievable_settings.device = Agama::Storage::DeviceSettings::Disk.new
       end
 
-      it "calculates a new proposal using the first disk as boot device" do
-        subject.calculate(settings)
+      context "and the target disk is not indicated" do
+        before do
+          achievable_settings.device.name = nil
+        end
 
-        expect(Y2Storage::StorageManager.instance.proposal.settings).to have_attributes(
-          root_device: "/dev/sda"
-        )
+        it "sets the first available device as target device for volumes" do
+          subject.calculate(achievable_settings)
+          y2storage_settings = Y2Storage::StorageManager.instance.proposal.settings
+
+          expect(y2storage_settings.volumes).to contain_exactly(
+            an_object_having_attributes(mount_point: "/", device: "/dev/sda")
+          )
+        end
+      end
+    end
+
+    context "if the given device settings sets a new LVM volume group as target" do
+      before do
+        achievable_settings.device = Agama::Storage::DeviceSettings::NewLvmVg.new
+      end
+
+      context "and the target disks for physical volumes are not indicated" do
+        before do
+          achievable_settings.device.candidate_pv_devices = []
+        end
+
+        it "sets the first available device as candidate device" do
+          subject.calculate(achievable_settings)
+          y2storage_settings = Y2Storage::StorageManager.instance.proposal.settings
+
+          expect(y2storage_settings.candidate_devices).to contain_exactly("/dev/sda")
+        end
       end
     end
   end
@@ -137,78 +164,18 @@ describe Agama::Storage::Proposal do
 
     context "if the proposal was already calculated" do
       before do
-        subject.calculate(settings)
-      end
-
-      let(:settings) do
-        achievable_settings.tap do |settings|
-          settings.space.policy = :custom
-          settings.space.actions = { "/dev/sda" => :force_delete }
-        end
+        subject.calculate(achievable_settings)
       end
 
       it "returns the settings used for calculating the proposal" do
         expect(subject.settings).to be_a(Agama::Storage::ProposalSettings)
 
         expect(subject.settings).to have_attributes(
-          boot_device: "/dev/sdb",
-          volumes:     contain_exactly(
+          device:  an_object_having_attributes(name: "/dev/sdb"),
+          volumes: contain_exactly(
             an_object_having_attributes(mount_path: "/")
-          ),
-          # Checking space policy explicitly here because the settings converter cannot infer the
-          # space policy from the Y2Storage settings. The space policy is directly recovered from
-          # the original settings passed to #calculate.
-          space:       an_object_having_attributes(policy: :custom)
+          )
         )
-      end
-
-      # Checking system VG devices explicitly here because the settings converter cannot infer the
-      # system VG devices from the Y2Storage settings in all cases. The system VG devices are
-      # directly recovered from the original settings passed to #calculate.
-      context "system VG devices" do
-        let(:settings) do
-          achievable_settings.tap do |settings|
-            settings.lvm.system_vg_devices = system_vg_devices
-          end
-        end
-
-        context "if no devices were assigned as system VG devices" do
-          let(:system_vg_devices) { [] }
-
-          it "returns settings containing no system VG devices " do
-            expect(subject.settings).to have_attributes(
-              lvm: an_object_having_attributes(
-                system_vg_devices: be_empty
-              )
-            )
-          end
-        end
-
-        context "if only boot device was assigned as system VG device" do
-          let(:system_vg_devices) { ["/dev/sdb"] }
-
-          # This case cannot be inferred by conversion from Y2Storage, so the test does not pass if
-          # system VG devices are not copied from the settings passed to #calculate.
-          it "returns settings containing only boot device as system VG device" do
-            expect(subject.settings).to have_attributes(
-              lvm: an_object_having_attributes(
-                system_vg_devices: contain_exactly("/dev/sdb")
-              )
-            )
-          end
-        end
-
-        context "if several devices were assigned as system VG devices" do
-          let(:system_vg_devices) { ["/dev/sdb", "/dev/sdc"] }
-
-          it "returns settings containing the system VG devices" do
-            expect(subject.settings).to have_attributes(
-              lvm: an_object_having_attributes(
-                system_vg_devices: contain_exactly("/dev/sdb", "/dev/sdc")
-              )
-            )
-          end
-        end
       end
     end
   end
@@ -263,13 +230,13 @@ describe Agama::Storage::Proposal do
         )
       end
 
-      context "and the settings does not indicate a boot device" do
+      context "and the settings does not indicate a target device" do
         before do
           # Avoid to automatically set the first device
           allow(subject).to receive(:available_devices).and_return([])
         end
 
-        let(:settings) { impossible_settings.tap { |s| s.boot_device = nil } }
+        let(:settings) { impossible_settings.tap { |s| s.device.name = nil } }
 
         it "includes an error because a device is not selected" do
           subject.calculate(settings)
@@ -279,19 +246,23 @@ describe Agama::Storage::Proposal do
           )
 
           expect(subject.issues).to_not include(
-            an_object_having_attributes(description: /device is not found/)
+            an_object_having_attributes(description: /is not found/)
+          )
+
+          expect(subject.issues).to_not include(
+            an_object_having_attributes(description: /are not found/)
           )
         end
       end
 
-      context "and the boot device is missing in the system" do
-        let(:settings) { impossible_settings.tap { |s| s.boot_device = "/dev/vdz" } }
+      context "and some installation device is missing in the system" do
+        let(:settings) { impossible_settings.tap { |s| s.device.name = "/dev/vdz" } }
 
         it "includes an error because the device is not found" do
           subject.calculate(settings)
 
           expect(subject.issues).to include(
-            an_object_having_attributes(description: /device is not found/)
+            an_object_having_attributes(description: /is not found/)
           )
         end
       end

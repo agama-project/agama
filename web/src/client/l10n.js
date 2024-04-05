@@ -71,7 +71,7 @@ class L10nClient {
    * @return {Promise<void>}
    */
   async setUILocale(id) {
-    return this.client.put("/l10n/config", { ui_locale: id });
+    return this.client.patch("/l10n/config", { uiLocale: id });
   }
 
   /**
@@ -83,7 +83,7 @@ class L10nClient {
    */
   async getUIKeymap() {
     const config = await this.client.get("/l10n/config");
-    return config.ui_locale;
+    return config.uiKeymap;
   }
 
   /**
@@ -95,7 +95,7 @@ class L10nClient {
    * @return {Promise<void>}
    */
   async setUIKeymap(id) {
-    return this.client.put("/l10n/config", { ui_keymap: id });
+    return this.client.patch("/l10n/config", { uiKeymap: id });
   }
 
   /**
@@ -254,7 +254,7 @@ class L10nClient {
    * @return {Promise<object>}
    */
   async setConfig(data) {
-    return this.client.put("/l10n/config", data);
+    return this.client.patch("/l10n/config", data);
   }
 
   /**
