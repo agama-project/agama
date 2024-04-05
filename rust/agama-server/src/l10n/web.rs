@@ -11,7 +11,9 @@ use agama_lib::{error::ServiceError, localization::LocaleProxy};
 use agama_locale_data::LocaleId;
 use axum::{
     extract::State,
-    routing::{get, put},
+    http::StatusCode,
+    response::IntoResponse,
+    routing::{get, patch},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
@@ -45,7 +47,7 @@ pub async fn l10n_service(
         .route("/keymaps", get(keymaps))
         .route("/locales", get(locales))
         .route("/timezones", get(timezones))
-        .route("/config", put(set_config).get(get_config))
+        .route("/config", patch(set_config).get(get_config))
         .with_state(state);
     Ok(router)
 }
@@ -94,13 +96,13 @@ async fn keymaps(State(state): State<LocaleState<'_>>) -> Json<Vec<Keymap>> {
 
 // TODO: update all or nothing
 // TODO: send only the attributes that have changed
-#[utoipa::path(put, path = "/l10n/config", responses(
-    (status = 200, description = "Set the locale configuration", body = LocaleConfig)
+#[utoipa::path(patch, path = "/l10n/config", responses(
+    (status = 204, description = "Set the locale configuration", body = LocaleConfig)
 ))]
 async fn set_config(
     State(state): State<LocaleState<'_>>,
     Json(value): Json<LocaleConfig>,
-) -> Result<Json<()>, Error> {
+) -> Result<impl IntoResponse, Error> {
     let mut data = state.locale.write().await;
     let mut changes = LocaleConfig::default();
 
@@ -143,7 +145,7 @@ async fn set_config(
     }
     _ = state.events.send(Event::L10nConfigChanged(changes));
 
-    Ok(Json(()))
+    Ok(StatusCode::NO_CONTENT)
 }
 
 #[utoipa::path(get, path = "/l10n/config", responses(

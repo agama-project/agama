@@ -88,11 +88,11 @@ async fn test_set_config_locales() -> Result<(), Box<dyn Error>> {
 
     let content = "{\"locales\":[\"es_ES.UTF-8\"]}";
     let body = Body::from(content);
-    let request = Request::put("/config")
+    let request = Request::patch("/config")
         .header("Content-Type", "application/json")
         .body(body)?;
     let response = service.clone().oneshot(request).await?;
-    assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(response.status(), StatusCode::NO_CONTENT);
 
     // check whether the value changed
     let request = Request::get("/config")
