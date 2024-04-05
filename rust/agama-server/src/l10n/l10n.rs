@@ -100,8 +100,14 @@ impl L10n {
     }
 
     // TODO: use LocaleError
-    pub fn set_ui_keymap(&mut self, keymap: KeymapId) -> Result<(), Error> {
-        let keymap = keymap.to_string();
+    pub fn set_ui_keymap(&mut self, keymap_id: KeymapId) -> Result<(), LocaleError> {
+        if !self.keymaps_db.exists(&keymap_id) {
+            return Err(LocaleError::UnknownKeymap(keymap_id));
+        }
+
+        let keymap = keymap_id.to_string();
+        self.ui_keymap = keymap_id;
+
         Command::new("/usr/bin/localectl")
             .args(["set-x11-keymap", &keymap])
             .output()
