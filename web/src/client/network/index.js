@@ -117,7 +117,11 @@ class NetworkClient {
     const nameservers = (connection.nameservers || []);
     const addresses = (connection.addresses || []).map((address) => {
       const [ip, netmask] = address.split("/");
-      return { address: ip, prefix: ipPrefixFor(netmask) };
+      if (netmask !== undefined) {
+        return { address: ip, prefix: ipPrefixFor(netmask) };
+      } else {
+        return { address: ip };
+      }
     });
 
     return { ...connection, addresses, nameservers };
