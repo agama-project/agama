@@ -41,7 +41,7 @@ Example of running from different machine:
   # backend machine
   # using ip of machine instead of localhost is important to be network accessible
   # second address is needed for SSL which is mandatory for remote access
-  agama-web-server serve --address 10.100.1.1:3000 --address2 0.0.0.0:443
+  agama-web-server serve --address :::3000 --address2 :::443
 
   # frontend machine
   # ESLINT=0 is useful to ignore linter problems during development
@@ -55,8 +55,8 @@ The first place is the browser's console which can give
 some hints. The second location to check for errors or warnings is output of `npm run server`
 where you can find issues when communicating with the backend. And last but on least is
 journal on backend machine where is logged backend activity `journalctl -b`.
-If journal does not provide required info, there is also option to see dbus communication
-which can give hint about data flow. Command is `busctl monitor --address /run/agama/bus`
+If the journal does not contain the required info, you can inspect the D-Bus communication
+which can give hint about data flow. Command is `busctl monitor --address unix:path=/run/agama/bus`
 
 ### Special Environment Variables
 
