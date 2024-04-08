@@ -35,6 +35,7 @@ function buildQuestion(httpQuestion) {
   if (httpQuestion.generic) {
     question.type = QUESTION_TYPES.generic;
     question = { ...httpQuestion.generic, type: QUESTION_TYPES.generic };
+    question.answer = httpQuestion.generic.answer;
   }
 
   if (httpQuestion.withPassword) {
