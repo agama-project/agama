@@ -80,7 +80,7 @@ const createClient = (url) => {
   const software = new SoftwareClient(client);
   // const storage = new StorageClient(address);
   const users = new UsersClient(client);
-  // const questions = new QuestionsClient(address);
+  const questions = new QuestionsClient(client);
 
   /**
    * Gets all issues, grouping them by context.
@@ -90,13 +90,13 @@ const createClient = (url) => {
    *
    * @returns {Promise<Issues>}
    */
-  // const issues = async () => {
-  //   return {
-  //     product: await software.product.getIssues(),
-  //     storage: await storage.getIssues(),
-  //     software: await software.getIssues(),
-  //   };
-  // };
+  const issues = async () => {
+    return {
+      product: await product.getIssues(),
+      // storage: await storage.getIssues(),
+      software: await software.getIssues(),
+    };
+  };
 
   /**
    * Registers a callback to be executed when issues change.
@@ -107,15 +107,15 @@ const createClient = (url) => {
   const onIssuesChange = (handler) => {
     const unsubscribeCallbacks = [];
 
-    // unsubscribeCallbacks.push(
-    //   software.product.onIssuesChange((i) => handler({ product: i })),
-    // );
+    unsubscribeCallbacks.push(
+      product.onIssuesChange((i) => handler({ product: i })),
+    );
     // unsubscribeCallbacks.push(
     //   storage.onIssuesChange((i) => handler({ storage: i })),
     // );
-    // unsubscribeCallbacks.push(
-    //   software.onIssuesChange((i) => handler({ software: i })),
-    // );
+    unsubscribeCallbacks.push(
+      software.onIssuesChange((i) => handler({ software: i })),
+    );
 
     return () => {
       unsubscribeCallbacks.forEach((cb) => cb());
@@ -141,8 +141,8 @@ const createClient = (url) => {
     software,
     // storage,
     users,
-    // questions,
-    // issues,
+    questions,
+    issues,
     onIssuesChange,
     isConnected,
     onDisconnect: (handler) => {

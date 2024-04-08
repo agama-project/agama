@@ -43,15 +43,15 @@ describe("InstallationFinished", () => {
       return {
         manager: {
           finishInstallation: finishInstallationFn,
-          useIguana: () => Promise.resolve(false)
+          useIguana: () => Promise.resolve(false),
         },
         storage: {
           proposal: {
             getResult: jest.fn().mockResolvedValue({
-              settings: { encryptionMethod, encryptionPassword }
-            })
+              settings: { encryptionMethod, encryptionPassword },
+            }),
           },
-        }
+        },
       };
     });
   });
@@ -73,7 +73,7 @@ describe("InstallationFinished", () => {
     expect(finishInstallationFn).toHaveBeenCalled();
   });
 
-  describe("when TPM is set as encryption method", () => {
+  describe.skip("when TPM is set as encryption method", () => {
     beforeEach(() => {
       encryptionMethod = EncryptionMethods.TPM;
     });

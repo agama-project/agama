@@ -35,6 +35,7 @@ pub struct ManagerState<'a> {
 
 /// Holds information about the manager's status.
 #[derive(Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct InstallerStatus {
     /// Current installation phase.
     phase: InstallationPhase,
@@ -128,10 +129,16 @@ async fn finish_action(State(state): State<ManagerState<'_>>) -> Result<(), Erro
 async fn installer_status(
     State(state): State<ManagerState<'_>>,
 ) -> Result<Json<InstallerStatus>, Error> {
+    let phase = state.manager.current_installation_phase().await?;
+    // CanInstall gets blocked during installation
+    let can_install = match phase {
+        InstallationPhase::Install => false,
+        _ => state.manager.can_install().await?,
+    };
     let status = InstallerStatus {
-        phase: state.manager.current_installation_phase().await?,
+        phase,
+        can_install,
         busy: state.manager.busy_services().await?,
-        can_install: state.manager.can_install().await?,
         iguana: state.manager.use_iguana().await?,
     };
     Ok(Json(status))
