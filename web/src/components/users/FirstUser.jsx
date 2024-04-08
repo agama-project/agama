@@ -243,7 +243,7 @@ export default function FirstUser() {
         break;
       case 'ArrowUp':
         event.preventDefault(); // Prevent page scrolling
-        setFocusedIndex((prevIndex) => (prevIndex - 1 + suggestions.length) % suggestions.length);
+        setFocusedIndex((prevIndex) => (prevIndex - (prevIndex === -1 ? 0 : 1) + suggestions.length) % suggestions.length);
         break;
       case 'Enter':
         if (focusedIndex >= 0) {
