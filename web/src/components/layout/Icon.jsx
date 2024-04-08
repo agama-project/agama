@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -79,6 +79,11 @@ import { SiLinux, SiWindows } from "@icons-pack/react-simple-icons";
 // Icons from SVG
 import Loading from "./three-dots-loader-icon.svg?component";
 
+/**
+ * @typedef {string|number} IconSize
+ * @typedef {keyof icons} IconName
+ */
+
 const icons = {
   add_a_photo: AddAPhoto,
   apps: Apps,
@@ -149,9 +154,9 @@ const PREDEFINED_SIZES = [
  *   <Icon name="warning" size="16" />
  *
  * @param {object} props - Component props
- * @param {string} props.name - Name of the desired icon.
+ * @param {IconName} props.name - Name of the desired icon.
  * @param {string} [props.className=""] - CSS classes.
- * @param {string|number} [props.size] - Size used for both, width and height.
+ * @param {IconSize} [props.size] - Size used for both, width and height.
  *   It can be a CSS unit or one of PREDEFINED_SIZES.
  * @param {object} [props.otherProps] Other props sent to SVG icon. Please, note
  *   that width and height will be overwritten by the size value if it was given.
