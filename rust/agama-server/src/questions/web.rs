@@ -141,6 +141,7 @@ struct QuestionsState<'a> {
 }
 
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Question {
     generic: GenericQuestion,
     with_password: Option<QuestionWithPassword>,
@@ -154,6 +155,7 @@ pub struct Question {
 /// question and its answer. So here it is split into GenericQuestion
 /// and GenericAnswer
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct GenericQuestion {
     id: u32,
     class: String,
@@ -171,11 +173,13 @@ pub struct GenericQuestion {
 /// Here for web API we want to have in json that separation that would
 /// allow to compose any possible future specialization of question
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct QuestionWithPassword {
     password: String,
 }
 
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Answer {
     generic: GenericAnswer,
     with_password: Option<PasswordAnswer>,
@@ -183,15 +187,18 @@ pub struct Answer {
 
 /// Answer needed for GenericQuestion
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct GenericAnswer {
     answer: String,
 }
 
 /// Answer needed for Password specific questions.
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct PasswordAnswer {
     password: String,
 }
+
 /// Sets up and returns the axum service for the questions module.
 pub async fn questions_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
     let questions = QuestionsClient::new(dbus.clone()).await?;

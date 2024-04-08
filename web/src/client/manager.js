@@ -71,7 +71,7 @@ class ManagerBaseClient {
    */
   async canInstall() {
     const installer = await this.client.get("/manager/installer");
-    return installer.can_install;
+    return installer.canInstall;
   }
 
   /**
@@ -112,7 +112,7 @@ class ManagerBaseClient {
    * Runs cleanup when installation is done
    */
   finishInstallation() {
-    return this.client.post("/manager/install");
+    return this.client.post("/manager/finish");
   }
 
   /**

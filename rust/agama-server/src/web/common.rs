@@ -369,12 +369,12 @@ async fn build_issues_proxy<'a>(
 /// struct HelloWorldState {};
 ///
 /// let dbus = connection().await.unwrap();
-/// let issues_router = validation_router(
+/// let validation_routes = validation_router(
 ///   &dbus, "org.opensuse.HelloWorld", "/org/opensuse/hello"
 /// ).await.unwrap();
 /// let router: Router<HelloWorldState> = Router::new()
 ///   .route("/hello", get(hello))
-///   .merge(validation_router)
+///   .merge(validation_routes)
 ///   .with_state(HelloWorldState {});
 /// });
 /// ```
