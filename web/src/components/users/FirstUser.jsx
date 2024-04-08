@@ -299,7 +299,7 @@ export default function FirstUser() {
                 onKeyDown={handleKeyDown}
               />
               <If
-                condition={displaySuggestions}
+                condition={displaySuggestions && suggestions.length > 0}
                 then={
                   <UsernameSuggestions
                     entries={suggestions}
