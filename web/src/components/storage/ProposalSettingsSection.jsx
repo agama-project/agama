@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useEffect, useState } from "react";
 import { Button, Checkbox, Form, Skeleton, Switch, Tooltip } from "@patternfly/react-core";
 
@@ -31,9 +33,11 @@ import { noop } from "~/utils";
 import { hasFS, deviceLabel, SPACE_POLICIES } from "~/components/storage/utils";
 
 /**
- * @typedef {import ("~/client/storage").ProposalManager.ProposalSettings} ProposalSettings
- * @typedef {import ("~/client/storage").DevicesManager.StorageDevice} StorageDevice
- * @typedef {import ("~/client/storage").ProposalManager.Volume} Volume
+ * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
+ * @typedef {import ("~/client/storage").SpaceAction} SpaceAction
+ * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/client/storage").Volume} Volume
  */
 
 /**
@@ -116,10 +120,11 @@ const EncryptionSettingsForm = ({
  *
  * @param {object} props
  * @param {ProposalSettings} props.settings - Settings used for calculating a proposal.
- * @param {onChangeFn} [props.onChange=noop] - On change callback
+ * @param {(config: SnapshotsConfig) => void} [props.onChange=noop] - On change callback
  *
- * @callback onChangeFn
- * @param {object} settings
+ * @typedef {object} SnapshotsConfig
+ * @property {boolean} active
+ * @property {ProposalSettings} settings
  */
 const SnapshotsField = ({
   settings,
@@ -406,10 +411,9 @@ const SpacePolicyField = ({
  * @param {ProposalSettings} props.settings
  * @param {StorageDevice[]} [props.availableDevices=[]]
  * @param {String[]} [props.encryptionMethods=[]]
- * @param {onChangeFn} [props.onChange=noop]
- *
- * @callback onChangeFn
- * @param {object} settings
+ * @param {Volume[]} [props.volumeTemplates=[]]
+ * @param {boolean} [props.isLoading=false]
+ * @param {(settings: object) => void} [props.onChange=noop]
  */
 export default function ProposalSettingsSection({
   settings,
