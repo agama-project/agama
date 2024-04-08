@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useState } from "react";
 import { Form } from "@patternfly/react-core";
 
@@ -53,7 +55,7 @@ const Html = ({ children, ...props }) => (
  * @param {StorageDevice[]} props.targetPVDevices
  * @param {StorageDevice[]} props.devices - The actions to perform in the system.
  * @param {boolean} [props.isOpen=false] - Whether the dialog is visible or not.
- * @param {function} [props.onCancel=noop]
+ * @param {() => void} [props.onCancel=noop]
  * @param {(target: Target) => void} [props.onAccept=noop]
  *
  * @typedef {object} Target

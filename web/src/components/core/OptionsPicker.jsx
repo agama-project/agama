@@ -19,7 +19,11 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
+
+import { noop } from "~/utils";
 
 /**
  * Wrapper for OptionsPicker options
@@ -29,12 +33,14 @@ import React from "react";
  * @param {string} [props.title] - Text to be used as option title
  * @param {string} [props.body] - Text to be used as option body
  * @param {boolean} [props.isSelected=false] - Whether the option should be set as select of not
+ * @param {() => void} [props.onClick=noop]
  * @param {object} [props.props] - Other props sent to div#option node
  */
-const Option = ({ title, body, isSelected = false, ...props }) => {
+const Option = ({ title, body, isSelected = false, onClick = noop, ...props }) => {
   return (
     <div
       {...props}
+      onClick={onClick}
       role="option"
       aria-selected={isSelected}
     >
@@ -50,10 +56,10 @@ const Option = ({ title, body, isSelected = false, ...props }) => {
  *
  * @param {object} props
  * @param {string} [props.ariaLabel] - Text to be used as accessible label
- * @param {Array<Option>} props.children - A collection of Option
+ * @param {React.ReactNode} props.children - A collection of Option
  * @param {object} [props.props] - Other props sent to div#listbox node
  */
-const OptionsPicker = ({ "aria-label": ariaLabel, children, ...props }) => {
+const OptionsPicker = ({ ariaLabel, children, ...props }) => {
   return (
     <div
       {...props}

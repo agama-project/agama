@@ -180,6 +180,7 @@ const DevicesTreeTable = ({ devicesManager }) => {
   };
 
   const renderMountPoint = (item) => item.sid && <em>{item.filesystem?.mountPath}</em>;
+  const devices = devicesManager.usedDevices();
 
   return (
     <TreeTable
@@ -189,7 +190,8 @@ const DevicesTreeTable = ({ devicesManager }) => {
         { title: _("Details"), content: renderDetails, classNames: "details-column" },
         { title: _("Size"), content: renderSize, classNames: "sizes-column" }
       ]}
-      items={devicesManager.usedDevices()}
+      items={devices}
+      expandedItems={devices}
       itemChildren={d => deviceChildren(d)}
       rowClassNames={(item) => {
         if (!item.sid) return "dimmed-row";

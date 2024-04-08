@@ -24,7 +24,7 @@ import { FormGroup } from "@patternfly/react-core";
 import { FormValidationError, PasswordInput } from "~/components/core";
 import { _ } from "~/i18n";
 
-const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisabled }) => {
+const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisabled = false }) => {
   const [confirmation, setConfirmation] = useState(value || "");
   const [error, setError] = useState("");
 

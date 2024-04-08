@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr  8 14:17:45 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Improve the representation of the devices in the dialog for
+  finding space (gh#openSUSE/agama#1128).
+
+-------------------------------------------------------------------
 Thu Apr  4 15:59:37 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Changes in the table of file systems (gh#openSUSE/agama#1125)

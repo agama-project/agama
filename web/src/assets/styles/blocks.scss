@@ -526,9 +526,7 @@ table[data-type="agama/tree-table"] {
   }
 }
 
-// FIXME: use a single selector
-table.devices-table,
-table.proposal-result {
+table.devices-table {
   tr.dimmed-row {
     background-color: #fff;
     opacity: 0.8;
@@ -538,8 +536,11 @@ table.proposal-result {
       color: var(--color-gray-dimmed);
       padding-block: 0;
     }
-
   }
+}
+
+table.proposal-result {
+  @extend .devices-table;
 
   /**
    * Temporary hack because the collapse/expand callback was not given to the

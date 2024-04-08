@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Thead, Tr, Th, Tbody, Td, TreeRowWrapper } from '@patternfly/react-table';
 
 /**
@@ -39,6 +39,7 @@ import { Table, Thead, Tr, Th, Tbody, Td, TreeRowWrapper } from '@patternfly/rea
  * @typedef {object} TreeTableBaseProps
  * @property {TreeTableColumn[]} columns=[]
  * @property {object[]} items=[]
+ * @property {object[]} [expandedItems=[]]
  * @property {(any) => array} [itemChildren]
  * @property {(any) => string} [rowClassNames]
  */
@@ -58,9 +59,26 @@ export default function TreeTable({
   columns = [],
   items = [],
   itemChildren = () => [],
+  expandedItems = [],
   rowClassNames = () => "",
   ...tableProps
 }) {
+  const [expanded, setExpanded] = useState(expandedItems);
+
+  useEffect(() => {
+    setExpanded(expandedItems);
+  }, [expandedItems, setExpanded]);
+
+  const isExpanded = (item) => expanded.includes(item);
+
+  const toggle = (item) => {
+    if (isExpanded(item)) {
+      setExpanded(expanded.filter(d => d !== item));
+    } else {
+      setExpanded([...expanded, item]);
+    }
+  };
+
   const renderColumns = (item, treeRow) => {
     return columns.map((c, cIdx) => {
       const props = {
@@ -76,17 +94,20 @@ export default function TreeTable({
     });
   };
 
-  const renderRows = (items, level) => {
+  const renderRows = (items, level, hidden = false) => {
     if (items?.length <= 0) return;
 
     return (
       items.map((item, itemIdx) => {
         const children = itemChildren(item);
+        const expanded = isExpanded(item);
 
         const treeRow = {
+          onCollapse: () => toggle(item),
           props: {
-            isExpanded: true,
+            isExpanded: expanded,
             isDetailsExpanded: true,
+            isHidden: hidden,
             "aria-level": level,
             "aria-posinset": itemIdx + 1,
             "aria-setsize": children?.length || 0
@@ -101,7 +122,7 @@ export default function TreeTable({
         return (
           <React.Fragment key={itemIdx}>
             <TreeRowWrapper {...rowProps}>{renderColumns(item, treeRow)}</TreeRowWrapper>
-            { renderRows(children, level + 1)}
+            { renderRows(children, level + 1, !expanded)}
           </React.Fragment>
         );
       })
