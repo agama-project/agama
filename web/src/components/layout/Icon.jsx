@@ -28,6 +28,7 @@ import Apps from "@icons/apps.svg?component";
 import Badge from "@icons/badge.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
 import ChevronRight from "@icons/chevron_right.svg?component";
+import CollapseAll from "@icons/collapse_all.svg?component";
 import Delete from "@icons/delete.svg?component";
 import Description from "@icons/description.svg?component";
 import Download from "@icons/download.svg?component";
@@ -35,6 +36,7 @@ import Downloading from "@icons/downloading.svg?component";
 import Edit from "@icons/edit.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Error from "@icons/error.svg?component";
+import ExpandAll from "@icons/expand_all.svg?component";
 import ExpandMore from "@icons/expand_more.svg?component";
 import Folder from "@icons/folder.svg?component";
 import FolderOff from "@icons/folder_off.svg?component";
@@ -64,6 +66,8 @@ import Storage from "@icons/storage.svg?component";
 import Sync from "@icons/sync.svg?component";
 import TaskAlt from "@icons/task_alt.svg?component";
 import Terminal from "@icons/terminal.svg?component";
+import ToggleOff from "@icons/toggle_off.svg?component";
+import ToggleOn from "@icons/toggle_on.svg?component";
 import Translate from "@icons/translate.svg?component";
 import Tune from "@icons/tune.svg?component";
 import Warning from "@icons/warning.svg?component";
@@ -90,6 +94,7 @@ const icons = {
   badge: Badge,
   check_circle: CheckCircle,
   chevron_right: ChevronRight,
+  collapse_all: CollapseAll,
   delete: Delete,
   description: Description,
   download: Download,
@@ -97,6 +102,7 @@ const icons = {
   edit: Edit,
   edit_square: EditSquare,
   error: Error,
+  expand_all: ExpandAll,
   expand_more: ExpandMore,
   folder: Folder,
   folder_off: FolderOff,
@@ -127,6 +133,8 @@ const icons = {
   sync: Sync,
   task_alt: TaskAlt,
   terminal: Terminal,
+  toggle_off: ToggleOff,
+  toggle_on: ToggleOn,
   translate: Translate,
   tune: Tune,
   visibility: Visibility,
