@@ -253,8 +253,6 @@ export default function FirstUser() {
         }
         break;
       case 'Escape':
-        setShowSuggestions(false);
-        break;
       case 'Tab':
         setShowSuggestions(false);
         break;
