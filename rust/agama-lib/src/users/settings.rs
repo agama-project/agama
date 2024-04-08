@@ -17,7 +17,7 @@ pub struct UserSettings {
 /// First user settings
 ///
 /// Holds the settings for the first user.
-#[derive(Debug, Default, Settings, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Settings, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FirstUserSettings {
     /// First user's full name

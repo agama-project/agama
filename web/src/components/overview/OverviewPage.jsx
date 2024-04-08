@@ -49,7 +49,6 @@ export default function OverviewPage() {
   //   >
   //     <NetworkSection />
   //     <StorageSection showErrors />
-  //     <UsersSection showErrors={showErrors} />
 
   //     <Page.Actions>
   //       <InstallButton onClick={() => setShowErrors(true)} />
@@ -66,6 +65,7 @@ export default function OverviewPage() {
       <ProductSection />
       <L10nSection />
       <SoftwareSection showErrors />
+      <UsersSection showErrors={showErrors} />
     </Page>
   );
 }

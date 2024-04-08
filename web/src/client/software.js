@@ -277,7 +277,7 @@ class SoftwareClient extends WithIssues(
     "/software/progress",
     SOFTWARE_SERVICE,
   ),
-  "software/issues/software",
+  "/software/issues/software",
   "/org/opensuse/Agama/Software1",
 ) {}
 
@@ -334,6 +334,6 @@ class ProductBaseClient {
 }
 
 class ProductClient
-  extends WithIssues(ProductBaseClient, "software/issues/product", PRODUCT_PATH) {}
+  extends WithIssues(ProductBaseClient, "/software/issues/product", PRODUCT_PATH) {}
 
 export { ProductClient, SelectedBy, SoftwareClient };

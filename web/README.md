@@ -35,6 +35,26 @@ running Agama server instance. This is especially useful if you use the Live ISO
 which does not contain any development tools, you can develop the web frontend
 easily from your workstation.
 
+Example of running from different machine:
+
+```
+  # backend machine
+  # using ip of machine instead of localhost is important to be network accessible
+  agama-web-server serve --address 10.100.1.1:3000
+
+  # frontend machine
+  # ESLINT=0 is useful to ignore linter problems during development
+  ESLINT=0 AGAMA_SERVER=10.100.1.1:3000 npm run server
+```
+
+### Debugging Hints
+
+There are several places to look when something does not work and requires debugging.
+The first place is the browser's console which can give
+some hints. The second location to check for errors or warnings is output of `npm run server`
+where you can find issues when communicating with the backend. And last but on least is
+journal on backend machine where is logged backend activity `journalctl -b`.
+
 ### Special Environment Variables
 
 `AGAMA_SERVER` - When running the development server set up a proxy to

@@ -80,7 +80,7 @@ const createClient = (url) => {
   // const network = new NetworkClient(address);
   const software = new SoftwareClient(client);
   // const storage = new StorageClient(address);
-  // const users = new UsersClient(address);
+  const users = new UsersClient(client);
   // const questions = new QuestionsClient(address);
 
   /**
@@ -141,7 +141,7 @@ const createClient = (url) => {
     // network,
     software,
     // storage,
-    // users,
+    users,
     // questions,
     // issues,
     onIssuesChange,
