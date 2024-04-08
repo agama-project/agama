@@ -38,7 +38,7 @@ pub async fn users_streams(
     const ROOT_SSHKEY_ID: &str = "root_sshkey";
     // here we have three streams, but only two events. Reason is
     // that we have three streams from dbus about property change
-    // and munify two root user properties into single event to http API
+    // and unify two root user properties into single event to http API
     let result: Vec<(&str, Pin<Box<dyn Stream<Item = Event> + Send>>)> = vec![
         (
             FIRST_USER_ID,
@@ -155,7 +155,7 @@ async fn remove_first_user(State(state): State<UsersState<'_>>) -> Result<(), Er
 }
 
 #[utoipa::path(put, path = "/users/first", responses(
-    (status = 200, description = "User values are set"),
+    (status = 200, description = "Sets the first user"),
     (status = 400, description = "The D-Bus service could not perform the action"),
 ))]
 async fn set_first_user(

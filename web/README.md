@@ -40,7 +40,7 @@ Example of running from different machine:
 ```
   # backend machine
   # using ip of machine instead of localhost is important to be network accessible
-  agama-web-server serve --address 10.100.1.1:3030
+  agama-web-server serve --address 10.100.1.1:3000
 
   # frontend machine
   # ESLINT=0 is useful to ignore linter problems during development
