@@ -1,5 +1,7 @@
 use crate::l10n::web::LocaleConfig;
-use agama_lib::{manager::InstallationPhase, progress::Progress, software::SelectedBy};
+use agama_lib::{
+    manager::InstallationPhase, progress::Progress, software::SelectedBy, users::FirstUser,
+};
 use serde::Serialize;
 use std::collections::HashMap;
 use tokio::sync::broadcast::{Receiver, Sender};
@@ -21,6 +23,11 @@ pub enum Event {
     ProductChanged {
         id: String,
     },
+    FirstUserChanged(FirstUser),
+    RootChanged {
+        password: Option<bool>,
+        sshkey: Option<String>,
+    },
     // TODO: it should include the full software proposal or, at least,
     // all the relevant changes.
     SoftwareProposalChanged {
@@ -41,6 +48,11 @@ pub enum Event {
         service: String,
         path: String,
         issues: Vec<Issue>,
+    },
+    ValidationChanged {
+        service: String,
+        path: String,
+        errors: Vec<String>,
     },
 }
 

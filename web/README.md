@@ -27,13 +27,36 @@ This can work also remotely, with a Agama instance running in a different
 machine (a virtual machine as well). In that case run
 
 ```
-    AGAMA_SERVER=<IP> npm run server -- --open
+    AGAMA_SERVER=https://<IP>:<port> npm run server -- --open
 ```
 
 Where  `AGAMA_SERVER` is the IP address, the hostname or the full URL of the
 running Agama server instance. This is especially useful if you use the Live ISO
 which does not contain any development tools, you can develop the web frontend
 easily from your workstation.
+
+Example of running from different machine:
+
+```
+  # backend machine
+  # using ip of machine instead of localhost is important to be network accessible
+  # second address is needed for SSL which is mandatory for remote access
+  agama-web-server serve --address :::3000 --address2 :::443
+
+  # frontend machine
+  # ESLINT=0 is useful to ignore linter problems during development
+  ESLINT=0 AGAMA_SERVER=https://10.100.1.1:3000 npm run server
+```
+
+### Debugging Hints
+
+There are several places to look when something does not work and requires debugging.
+The first place is the browser's console which can give
+some hints. The second location to check for errors or warnings is output of `npm run server`
+where you can find issues when communicating with the backend. And last but on least is
+journal on backend machine where is logged backend activity `journalctl -b`.
+If the journal does not contain the required info, you can inspect the D-Bus communication
+which can give hint about data flow. Command is `busctl monitor --address unix:path=/run/agama/bus`
 
 ### Special Environment Variables
 

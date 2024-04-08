@@ -21,11 +21,6 @@
 
 // @ts-check
 
-const ISSUES_IFACE = "org.opensuse.Agama1.Issues";
-const STATUS_IFACE = "org.opensuse.Agama1.ServiceStatus";
-const PROGRESS_IFACE = "org.opensuse.Agama1.Progress";
-const VALIDATION_IFACE = "org.opensuse.Agama1.Validation";
-
 /**
  * @typedef {new(...args: any[]) => T} GConstructor
  * @template {object} T
@@ -245,26 +240,27 @@ const createError = (message) => {
 
 /**
  * Extends the given class with methods to get validation errors over D-Bus
- * @param {string} object_path - object_path
+ * @template {!WithHTTPClient} T
  * @param {T} superclass - superclass to extend
- * @template {!WithDBusClient} T
+ * @param {string} validation_path - status resource path (e.g., "/manager/status").
+ * @param {string} service_name - service name (e.g., "org.opensuse.Agama.Manager1").
  */
-const WithValidation = (superclass, object_path) => class extends superclass {
+const WithValidation = (superclass, validation_path, service_name) => class extends superclass {
   /**
    * Returns the validation errors
    *
    * @return {Promise<ValidationError[]>}
    */
   async getValidationErrors() {
-    let errors;
+    let response;
 
     try {
-      errors = await this.client.getProperty(object_path, VALIDATION_IFACE, "Errors");
+      response = await this.client.get(validation_path);
     } catch (error) {
-      console.error(`Could not get validation errors for ${object_path}`, error);
+      console.error(`Could not get validation errors for ${validation_path}`, error);
     }
 
-    return errors.map(createError);
+    return response.errors.map(createError);
   }
 
   /**
@@ -274,8 +270,10 @@ const WithValidation = (superclass, object_path) => class extends superclass {
    * @return {import ("./dbus").RemoveFn} function to disable the callback
    */
   onValidationChange(handler) {
-    return this.client.onObjectChanged(object_path, VALIDATION_IFACE, () => {
-      this.getValidationErrors().then(handler);
+    return this.client.onEvent("ValidationChange", ({ service, errors }) => {
+      if (service === service_name) {
+        handler(errors);
+      }
     });
   }
 };
