@@ -23,12 +23,12 @@ import React, { useEffect, useState } from "react";
 import { Button, Checkbox, Form, Skeleton, Switch, Tooltip } from "@patternfly/react-core";
 
 import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
-import { BootSelectionDialog, ProposalVolumes, ProposalSpacePolicyField } from "~/components/storage";
+import { _, n_ } from "~/i18n";
+import { BootSelectionDialog, ProposalVolumes, SpacePolicyDialog } from "~/components/storage";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
-import { hasFS, deviceLabel } from "~/components/storage/utils";
+import { hasFS, deviceLabel, SPACE_POLICIES } from "~/components/storage/utils";
 
 /**
  * @typedef {import ("~/client/storage").ProposalManager.ProposalSettings} ProposalSettings
@@ -333,6 +333,72 @@ const BootConfigField = ({
 };
 
 /**
+ * Allows to select the space policy.
+ * @component
+ *
+ * @param {object} props
+ * @param {SpacePolicy|undefined} props.policy
+ * @param {SpaceAction[]} props.actions
+ * @param {StorageDevice[]} props.devices
+ * @param {boolean} props.isLoading
+ * @param {(config: SpacePolicyConfig) => void} props.onChange
+ *
+ * @typedef {object} SpacePolicyConfig
+ * @property {SpacePolicy} spacePolicy
+ * @property {SpaceAction[]} spaceActions
+ */
+const SpacePolicyField = ({
+  policy,
+  actions,
+  devices,
+  isLoading,
+  onChange
+}) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const openDialog = () => setIsDialogOpen(true);
+
+  const closeDialog = () => setIsDialogOpen(false);
+
+  const onAccept = ({ spacePolicy, spaceActions }) => {
+    closeDialog();
+    onChange({ spacePolicy, spaceActions });
+  };
+
+  const label = () => {
+    // eslint-disable-next-line agama-i18n/string-literals
+    if (policy.summaryLabels.length === 1) return _(policy.summaryLabels[0]);
+
+    // eslint-disable-next-line agama-i18n/string-literals
+    return sprintf(n_(policy.summaryLabels[0], policy.summaryLabels[1], devices.length), devices.length);
+  };
+
+  if (isLoading || !policy) {
+    return <Skeleton screenreaderText={_("Waiting for information about space policy")} width="25%" />;
+  }
+
+  return (
+    <div className="split">
+      <span>{_("Find space")}</span>
+      <Button variant="link" isInline onClick={openDialog}>{label()}</Button>
+      <If
+        condition={isDialogOpen}
+        then={
+          <SpacePolicyDialog
+            isOpen
+            policy={policy}
+            actions={actions}
+            devices={devices}
+            onAccept={onAccept}
+            onCancel={closeDialog}
+          />
+        }
+      />
+    </div>
+  );
+};
+
+/**
  * Section for editing the proposal settings
  * @component
  *
@@ -374,8 +440,11 @@ export default function ProposalSettingsSection({
     onChange({ volumes });
   };
 
-  const changeSpacePolicy = (policy, actions) => {
-    onChange({ spacePolicy: policy, spaceActions: actions });
+  const changeSpacePolicy = ({ spacePolicy, spaceActions }) => {
+    onChange({
+      spacePolicy: spacePolicy.id,
+      spaceActions
+    });
   };
 
   const changeBoot = ({ configureBoot, bootDevice }) => {
@@ -385,12 +454,12 @@ export default function ProposalSettingsSection({
     });
   };
 
+  const lvm = settings.target === "newLvmVg" || settings.target === "reusedLvmVg";
   const encryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
-
-  const { volumes = [], installationDevices = [] } = settings;
-
+  const { volumes = [], installationDevices = [], spaceActions = [] } = settings;
   const bootDevice = availableDevices.find(d => d.name === settings.bootDevice);
   const defaultBootDevice = availableDevices.find(d => d.name === settings.defaultBootDevice);
+  const spacePolicy = SPACE_POLICIES.find(p => p.id === settings.spacePolicy);
 
   // Templates for already existing mount points are filtered out
   const usefulTemplates = () => {
@@ -418,7 +487,7 @@ export default function ProposalSettingsSection({
         <ProposalVolumes
           volumes={volumes}
           templates={usefulTemplates()}
-          options={{ lvm: settings.lvm, encryption }}
+          options={{ lvm, encryption }}
           isLoading={isLoading && settings.volumes === undefined}
           onChange={changeVolumes}
         />
@@ -430,9 +499,9 @@ export default function ProposalSettingsSection({
           isLoading={isLoading}
           onChange={changeBoot}
         />
-        <ProposalSpacePolicyField
-          policy={settings.spacePolicy}
-          actions={settings.spaceActions}
+        <SpacePolicyField
+          policy={spacePolicy}
+          actions={spaceActions}
           devices={installationDevices}
           isLoading={isLoading}
           onChange={changeSpacePolicy}

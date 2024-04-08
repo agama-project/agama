@@ -237,3 +237,44 @@ describe("Encryption field", () => {
     });
   });
 });
+
+describe("Space policy field", () => {
+  describe("if there is no space policy", () => {
+    beforeEach(() => {
+      props.settings = {};
+    });
+
+    it("does not render the space policy field", () => {
+      plainRender(<ProposalSettingsSection {...props} />);
+
+      expect(screen.queryByLabelText("Find space")).toBeNull();
+    });
+  });
+
+  describe("if there is a space policy", () => {
+    beforeEach(() => {
+      props.settings = {
+        spacePolicy: "delete"
+      };
+    });
+
+    it("renders the button with a text according to given policy", () => {
+      const { rerender } = plainRender(<ProposalSettingsSection {...props} />);
+      screen.getByRole("button", { name: /deleting/ });
+      rerender(<ProposalSettingsSection settings={{ spacePolicy: "resize" }} />);
+      screen.getByRole("button", { name: /shrinking/ });
+    });
+
+    it("allows to change the policy", async () => {
+      const { user } = plainRender(<ProposalSettingsSection {...props} />);
+      const button = screen.getByRole("button", { name: /deleting all content/ });
+
+      await user.click(button);
+
+      const popup = await screen.findByRole("dialog");
+      within(popup).getByText("Find space");
+      const cancel = within(popup).getByRole("button", { name: "Cancel" });
+      await user.click(cancel);
+    });
+  });
+});

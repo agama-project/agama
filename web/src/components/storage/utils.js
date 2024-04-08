@@ -41,6 +41,15 @@ import { N_ } from "~/i18n";
  * @property {string|undefined} unit - The size unit (MiB, GiB, ...)
  */
 
+/**
+ * @typedef SpacePolicy
+ * @type {object}
+ * @property {string} id
+ * @property {string} label
+ * @property {string} description
+ * @property {string[]} summaryLabels
+ */
+
 const SIZE_METHODS = Object.freeze({
   AUTO: "auto",
   MANUAL: "fixed",
@@ -56,6 +65,56 @@ const SIZE_UNITS = Object.freeze({
 });
 
 const DEFAULT_SIZE_UNIT = "GiB";
+
+/** @type {SpacePolicy[]} */
+const SPACE_POLICIES = [
+  {
+    id: "delete",
+    label: N_("Delete current content"),
+    description: N_("All partitions will be removed and any data in the disks will be lost."),
+    summaryLabels: [
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space deleting all content[...]"
+      N_("deleting all content of the installation device"),
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space deleting all content[...]"
+      N_("deleting all content of the %d selected disks")
+    ]
+  },
+  {
+    id: "resize",
+    label: N_("Shrink existing partitions"),
+    description: N_("The data is kept, but the current partitions will be resized as needed."),
+    summaryLabels: [
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space shrinking partitions[...]"
+      N_("shrinking partitions of the installation device"),
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space shrinking partitions[...]"
+      N_("shrinking partitions of the %d selected disks")
+    ]
+  },
+  {
+    id: "keep",
+    label: N_("Use available space"),
+    description: N_("The data is kept. Only the space not assigned to any partition will be used."),
+    summaryLabels: [
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space without modifying any partition".
+      N_("without modifying any partition")
+    ]
+  },
+  {
+    id: "custom",
+    label: N_("Custom"),
+    description: N_("Select what to do with each partition."),
+    summaryLabels: [
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space performing a custom set of actions".
+      N_("performing a custom set of actions")
+    ]
+  }
+];
 
 /**
  * Convenience method for generating a size object based on given input
@@ -221,6 +280,7 @@ export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
   SIZE_UNITS,
+  SPACE_POLICIES,
   deviceLabel,
   deviceChildren,
   deviceSize,

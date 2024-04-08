@@ -40,3 +40,5 @@ export { default as BootSelectionDialog } from "./BootSelectionDialog";
 export { default as DeviceSelectionDialog } from "./DeviceSelectionDialog";
 export { default as DeviceSelectorTable } from "./DeviceSelectorTable";
 export { default as DevicesFormSelect } from "./DevicesFormSelect";
+export { default as SpacePolicyDialog } from "./SpacePolicyDialog";
+export { default as SpaceActionsTable } from "./SpaceActionsTable";
