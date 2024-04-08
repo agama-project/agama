@@ -30,7 +30,6 @@ import { UsersClient } from "./users";
 import phase from "./phase";
 import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
-import cockpit from "../lib/cockpit";
 import { HTTPClient } from "./http";
 
 /**

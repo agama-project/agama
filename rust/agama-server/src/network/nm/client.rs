@@ -243,8 +243,6 @@ impl<'a> NetworkManagerClient<'a> {
         if conn.is_up() {
             self.activate_connection(path).await?;
         } else {
-            //FIXME: This is wrong, deactivate receive an active connection path and this is a
-            //settings path
             self.deactivate_connection(path).await?;
         }
         Ok(())
@@ -304,23 +302,17 @@ impl<'a> NetworkManagerClient<'a> {
         let proxy = NetworkManagerProxy::new(&self.connection).await?;
 
         if let Some(active_connection) = self.settings_active_connection(path.clone()).await? {
-            match proxy
+            if let Err(e) = proxy
                 .deactivate_connection(&active_connection.as_ref())
                 .await
             {
-                Err(e) => {
-                    // Ignore ConnectionNotActive error since this just means the state is already correct
-                    if e.to_string().contains("ConnectionNotActive") {
-                        Ok(())
-                    } else {
-                        Err(ServiceError::DBus(e))
-                    }
+                // Ignore ConnectionNotActive error since this just means the state is already correct
+                if !e.to_string().contains("ConnectionNotActive") {
+                    return Err(ServiceError::DBus(e));
                 }
-                _ => Ok(()),
             }
-        } else {
-            Ok(())
         }
+        Ok(())
     }
 
     async fn get_connection_proxy(&self, uuid: Uuid) -> Result<ConnectionProxy, ServiceError> {

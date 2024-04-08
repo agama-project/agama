@@ -152,23 +152,14 @@ class HTTPClient {
 
   /**
    * @param {string} url - Endpoint URL (e.g., "/l10n/config").
-   * @param {object} data - Data to submit
    * @return {Promise<object>} Server response.
    */
   async delete(url) {
     const response = await fetch(`${this.baseUrl}/${url}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      method: "DELETE"
     });
 
-    try {
-      return await response.json();
-    } catch (e) {
-      console.warn("Expecting a JSON response", e);
-      return response.status === 200;
-    }
+    return response;
   }
 
   /**

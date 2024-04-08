@@ -108,9 +108,7 @@ class NetworkClient {
   async connections() {
     const connections = await this.client.get("/network/connections");
 
-    return connections.map((connection) => {
-      return this.fromApiConnection(connection);
-    });
+    return connections.map(this.fromApiConnection);
   }
 
   fromApiConnection(connection) {

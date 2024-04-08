@@ -56,7 +56,7 @@ pub enum DeviceType {
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub enum Status {
     #[default]
     Up,

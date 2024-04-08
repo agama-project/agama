@@ -205,14 +205,17 @@ async fn add_connection(
 async fn delete_connection(
     State(state): State<NetworkState>,
     Path(id): Path<String>,
-) -> Result<Json<()>, NetworkError> {
+) -> impl IntoResponse {
     let (tx, rx) = oneshot::channel();
     state
         .actions
         .send(Action::RemoveConnection(id, tx))
         .unwrap();
-
-    Ok(Json(rx.await.unwrap()?))
+    if rx.await.unwrap().is_ok() {
+        StatusCode::NO_CONTENT
+    } else {
+        StatusCode::NOT_FOUND
+    }
 }
 
 #[utoipa::path(put, path = "/network/connections/:id", responses(
@@ -228,17 +231,13 @@ async fn update_connection(
         .actions
         .send(Action::GetConnection(id.clone(), tx))
         .unwrap();
-    let current_conn = rx.await.unwrap();
+    let orig_conn = rx.await.unwrap();
     let mut conn = Connection::try_from(conn)?;
-    match current_conn {
-        Some(current) => {
-            if current.id != id.clone() {
-                return Err(NetworkError::UnknownConnection(id));
-            } else {
-                conn.uuid = current.uuid;
-            }
-        }
-        None => return Err(NetworkError::UnknownConnection(id)),
+    let orig_conn = orig_conn.ok_or_else(|| NetworkError::UnknownConnection(id.clone()))?;
+    if orig_conn.id != id {
+        return Err(NetworkError::UnknownConnection(id));
+    } else {
+        conn.uuid = orig_conn.uuid;
     }
 
     let (tx, rx) = oneshot::channel();
@@ -263,21 +262,20 @@ async fn connect(
         .send(Action::GetConnection(id.clone(), tx))
         .unwrap();
 
-    if let Some(mut current_conn) = rx.await.unwrap() {
-        current_conn.set_up();
-
-        let (tx, rx) = oneshot::channel();
-        state
-            .actions
-            .send(Action::UpdateConnection(Box::new(current_conn), tx))
-            .unwrap();
-
-        rx.await
-            .unwrap()
-            .map_err(|_| NetworkError::CannotApplyConfig)?;
-    } else {
+    let Some(mut conn) = rx.await.unwrap() else {
         return Err(NetworkError::UnknownConnection(id));
-    }
+    };
+    conn.set_up();
+
+    let (tx, rx) = oneshot::channel();
+    state
+        .actions
+        .send(Action::UpdateConnection(Box::new(conn), tx))
+        .unwrap();
+
+    rx.await
+        .unwrap()
+        .map_err(|_| NetworkError::CannotApplyConfig)?;
 
     Ok(Json(()))
 }
@@ -295,21 +293,21 @@ async fn disconnect(
         .send(Action::GetConnection(id.clone(), tx))
         .unwrap();
 
-    if let Some(mut current_conn) = rx.await.unwrap() {
-        current_conn.set_down();
-
-        let (tx, rx) = oneshot::channel();
-        state
-            .actions
-            .send(Action::UpdateConnection(Box::new(current_conn), tx))
-            .unwrap();
-
-        rx.await
-            .unwrap()
-            .map_err(|_| NetworkError::CannotApplyConfig)?;
-    } else {
+    let Some(mut current_conn) = rx.await.unwrap() else {
         return Err(NetworkError::UnknownConnection(id));
-    }
+    };
+
+    current_conn.set_down();
+
+    let (tx, rx) = oneshot::channel();
+    state
+        .actions
+        .send(Action::UpdateConnection(Box::new(current_conn), tx))
+        .unwrap();
+
+    rx.await
+        .unwrap()
+        .map_err(|_| NetworkError::CannotApplyConfig)?;
 
     Ok(Json(()))
 }
