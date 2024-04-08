@@ -239,16 +239,21 @@ export default function FirstUser() {
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault(); // Prevent page scrolling
+        if (suggestions.length > 0) setShowSuggestions(true);
         setFocusedIndex((prevIndex) => (prevIndex + 1) % suggestions.length);
         break;
       case 'ArrowUp':
         event.preventDefault(); // Prevent page scrolling
+        if (suggestions.length > 0) setShowSuggestions(true);
         setFocusedIndex((prevIndex) => (prevIndex - (prevIndex === -1 ? 0 : 1) + suggestions.length) % suggestions.length);
         break;
       case 'Enter':
         if (focusedIndex >= 0) {
           onSuggestionSelected(suggestions[focusedIndex]);
         }
+        break;
+      case 'Escape':
+        setShowSuggestions(false);
         break;
       default:
         break;
