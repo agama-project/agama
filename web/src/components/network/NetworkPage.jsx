@@ -103,6 +103,11 @@ export default function NetworkPage() {
 
   const forgetConnection = async ({ id }) => {
     await client.deleteConnection(id);
+    setConnections(undefined);
+  };
+
+  const updateConnections = async () => {
+    setConnections(undefined);
   };
 
   const ready = connections !== undefined;
@@ -152,7 +157,7 @@ export default function NetworkPage() {
       { /* TODO: improve the connections edition */}
       <If
         condition={selectedConnection}
-        then={<IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} />}
+        then={<IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} onSubmit={updateConnections} />}
       />
     </Page>
   );

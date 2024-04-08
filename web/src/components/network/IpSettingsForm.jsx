@@ -35,7 +35,7 @@ const METHODS = {
 
 const usingDHCP = (method) => method === METHODS.AUTO;
 
-export default function IpSettingsForm({ connection, onClose }) {
+export default function IpSettingsForm({ connection, onClose, onSubmit }) {
   const client = useInstallerClient();
   const [addresses, setAddresses] = useState(connection.addresses);
   const [nameservers, setNameservers] = useState(connection.nameservers.map(a => {
@@ -91,7 +91,7 @@ export default function IpSettingsForm({ connection, onClose }) {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const onSubmit = e => {
+  const onSubmitForm = e => {
     e.preventDefault();
 
     const sanitizedAddresses = cleanAddresses(addresses);
@@ -109,6 +109,7 @@ export default function IpSettingsForm({ connection, onClose }) {
     };
 
     client.network.updateConnection(updatedConnection)
+      .then(onSubmit)
       .then(onClose)
       // TODO: better error reporting. By now, it sets an error for the whole connection.
       .catch(({ message }) => setErrors({ object: message }));
@@ -129,7 +130,7 @@ export default function IpSettingsForm({ connection, onClose }) {
   return (
     <Popup isOpen title={sprintf(_("Edit %s"), connection.id)}>
       {renderError("object")}
-      <Form id="edit-connection" onSubmit={onSubmit}>
+      <Form id="edit-connection" onSubmit={onSubmitForm}>
         <FormGroup fieldId="method" label={_("Mode")} isRequired>
           <FormSelect
             id="method"
