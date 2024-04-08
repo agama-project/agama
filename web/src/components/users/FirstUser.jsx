@@ -255,6 +255,9 @@ export default function FirstUser() {
       case 'Escape':
         setShowSuggestions(false);
         break;
+      case 'Tab':
+        setShowSuggestions(false);
+        break;
       default:
         break;
     }
