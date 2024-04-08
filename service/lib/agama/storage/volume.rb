@@ -23,6 +23,7 @@ require "forwardable"
 require "y2storage/disk_size"
 require "agama/storage/btrfs_settings"
 require "agama/storage/volume_outline"
+require "agama/storage/volume_location"
 
 module Agama
   module Storage
@@ -58,15 +59,10 @@ module Agama
       # @return [Array<String>]
       attr_accessor :mount_options
 
-      # Used to locate the volume in a separate disk
+      # Location of the volume
       #
-      # @return [String, nil]
-      attr_accessor :device
-
-      # Used to locate the volume in a separate VG
-      #
-      # @return [String, nil]
-      attr_accessor :separate_vg_name
+      # @return [VolumeLocation]
+      attr_accessor :location
 
       # Min size for the volume
       #
@@ -98,6 +94,7 @@ module Agama
         @max_size = Y2Storage::DiskSize.unlimited
         @btrfs = BtrfsSettings.new
         @outline = VolumeOutline.new
+        @location = VolumeLocation.new
       end
 
       def_delegators :outline,

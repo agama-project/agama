@@ -72,19 +72,19 @@ const SelectedBy = Object.freeze({
 
 /**
  * @typedef {object} SoftwareConfig
- * @property {Array<string>|undefined} patterns - An object where the keys are the pattern names
+ * @propery {Object.<string, boolean>} patterns - An object where the keys are the pattern names
  *   and the values whether to install them or not.
  * @property {string|undefined} product - Product to install.
  */
 
 /**
  * @typedef {Object} Pattern
- * @property {string} name - pattern name (internal ID)
- * @property {string} category - pattern category
- * @property {string} summary - pattern name (user visible)
- * @property {string} description - long description of the pattern
- * @property {number} order - display order (string!)
- * @property {string} icon - icon name (not path or file name!)
+ * @property {string} name - Pattern name (internal ID).
+ * @property {string} category - Pattern category.
+ * @property {string} summary - User visible pattern name.
+ * @property {string} description - Long description of the pattern.
+ * @property {number} order - Display order (string!).
+ * @property {string} icon - Icon name (not path or file name!).
  */
 
 /**
@@ -273,11 +273,11 @@ class SoftwareBaseClient {
  */
 class SoftwareClient extends WithIssues(
   WithProgress(
-    WithStatus(SoftwareBaseClient, "software/status", SOFTWARE_SERVICE),
-    "software/progress",
+    WithStatus(SoftwareBaseClient, "/software/status", SOFTWARE_SERVICE),
+    "/software/progress",
     SOFTWARE_SERVICE,
   ),
-  "software/issues/software",
+  "/software/issues/software",
   "/org/opensuse/Agama/Software1",
 ) {}
 
@@ -334,6 +334,6 @@ class ProductBaseClient {
 }
 
 class ProductClient
-  extends WithIssues(ProductBaseClient, "software/issues/product", PRODUCT_PATH) {}
+  extends WithIssues(ProductBaseClient, "/software/issues/product", PRODUCT_PATH) {}
 
 export { ProductClient, SelectedBy, SoftwareClient };

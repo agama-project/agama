@@ -40,23 +40,19 @@ const client = {
   onDisconnect: jest.fn()
 };
 
+jest.mock("~/languages.json", () => ({
+  "es-ar": "Español (Argentina)",
+  "cs-cz": "čeština",
+  "en-us": "English (US)",
+  "es-es": "Español"
+}));
+
 jest.mock("~/lib/cockpit", () => ({
-  gettext: term => term,
-  manifests: {
-    agama: {
-      locales: {
-        "es-ar": "Español (Argentina)",
-        "cs-cz": "čeština",
-        "en-us": "English (US)",
-        "es-es": "Español"
-      }
-    }
-  },
   spawn: jest.fn().mockResolvedValue()
 }));
 
 // Helper component that displays a translated message depending on the
-// CockpitLang value.
+// agamaLang value.
 const TranslatedContent = () => {
   const text = {
     "cs-cz": "ahoj",
@@ -65,7 +61,7 @@ const TranslatedContent = () => {
     "es-ar": "hola!",
   };
 
-  const regexp = /CockpitLang=([^;]+)/;
+  const regexp = /agamaLang=([^;]+)/;
   const found = document.cookie.match(regexp);
   if (!found) return <>{text["en-us"]}</>;
 
@@ -85,7 +81,7 @@ describe("InstallerL10nProvider", () => {
   // remove the Cockpit language cookie after each test
   afterEach(() => {
     // setting a cookie with already expired date removes it
-    document.cookie = "CockpitLang=; path=/; expires=" + new Date(0).toUTCString();
+    document.cookie = "agamaLang=; path=/; expires=" + new Date(0).toUTCString();
   });
 
   describe("when no URL query parameter is set", () => {
@@ -95,7 +91,7 @@ describe("InstallerL10nProvider", () => {
 
     describe("when the Cockpit language is already set", () => {
       beforeEach(() => {
-        document.cookie = "CockpitLang=en-us; path=/;";
+        document.cookie = "agamaLang=en-us; path=/;";
         getUILocaleFn.mockResolvedValueOnce("en_US.UTF-8");
       });
 
@@ -115,7 +111,7 @@ describe("InstallerL10nProvider", () => {
 
     describe("when the Cockpit language is set to an unsupported language", () => {
       beforeEach(() => {
-        document.cookie = "CockpitLang=de-de; path=/;";
+        document.cookie = "agamaLang=de-de; path=/;";
         getUILocaleFn.mockResolvedValueOnce("de_DE.UTF-8");
         getUILocaleFn.mockResolvedValueOnce("es_ES.UTF-8");
       });
@@ -200,7 +196,7 @@ describe("InstallerL10nProvider", () => {
 
     describe("when the Cockpit language is already set to 'cs-cz'", () => {
       beforeEach(() => {
-        document.cookie = "CockpitLang=cs-cz; path=/;";
+        document.cookie = "agamaLang=cs-cz; path=/;";
         getUILocaleFn.mockResolvedValueOnce("cs_CZ.UTF-8");
       });
 
@@ -215,7 +211,7 @@ describe("InstallerL10nProvider", () => {
         await screen.findByText("ahoj");
         expect(setUILocaleFn).not.toHaveBeenCalled();
 
-        expect(document.cookie).toEqual("CockpitLang=cs-cz");
+        expect(document.cookie).toMatch(/agamaLang=cs-cz/);
         expect(utils.locationReload).not.toHaveBeenCalled();
         expect(utils.setLocationSearch).not.toHaveBeenCalled();
       });
@@ -223,7 +219,7 @@ describe("InstallerL10nProvider", () => {
 
     describe("when the Cockpit language is set to 'en-us'", () => {
       beforeEach(() => {
-        document.cookie = "CockpitLang=en-us; path=/;";
+        document.cookie = "agamaLang=en-us; path=/;";
         getUILocaleFn.mockResolvedValueOnce("en_US");
         getUILocaleFn.mockResolvedValueOnce("cs_CZ");
         setUILocaleFn.mockResolvedValue();

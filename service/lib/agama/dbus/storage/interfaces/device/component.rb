@@ -84,6 +84,8 @@ module Agama
               base.class_eval do
                 dbus_interface COMPONENT_INTERFACE do
                   dbus_reader :component_type, "s", dbus_name: "Type"
+                  # The names are provided just in case the device is component of a device that
+                  # is not exported yet (e.g., Bcache devices).
                   dbus_reader :component_device_names, "as", dbus_name: "DeviceNames"
                   dbus_reader :component_devices, "ao", dbus_name: "Devices"
                 end

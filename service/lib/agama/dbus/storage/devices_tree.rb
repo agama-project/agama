@@ -36,10 +36,19 @@ module Agama
           ::DBus::ObjectPath.new(File.join(root_path, device.sid.to_s))
         end
 
-        # Updates the D-Bus tree according to the given devicegraph
+        # Updates the D-Bus tree according to the given devicegraph.
+        #
+        # @note In the devices tree it is important to avoid updating D-Bus nodes. Note that an
+        #   already exported D-Bus object could require to add or remove interfaces (e.g., an
+        #   existing partition needs to add the Filesystem interface after formatting the
+        #   partition). Dynamically adding or removing interfaces is not possible with ruby-dbus
+        #   once the object is exported on D-Bus.
+        #
+        #   Updating the currently exported D-Bus objects is avoided by calling to {#clean} first.
         #
         # @param devicegraph [Y2Storage::Devicegraph]
         def update(devicegraph)
+          clean
           self.objects = devices(devicegraph)
         end
 
@@ -52,17 +61,17 @@ module Agama
         end
 
         # @see BaseTree
-        # @param dbus_object [Device]
-        # @param device [Y2Storage::Device]
-        def update_dbus_object(dbus_object, device)
-          dbus_object.storage_device = device
+        #
+        # @note D-Bus objects representing devices cannot be safely updated, see {#update}.
+        def update_dbus_object(_dbus_object, _device)
+          nil
         end
 
         # @see BaseTree
         # @param dbus_object [Device]
         # @param device [Y2Storage::Device]
         def dbus_object?(dbus_object, device)
-          dbus_object.storage_device.sid == device.sid
+          dbus_object.sid == device.sid
         end
 
         # Devices to be exported.
@@ -70,13 +79,16 @@ module Agama
         # Right now, only the required information for calculating a proposal is exported, that is:
         # * Potential candidate devices (i.e., disk devices, MDs).
         # * Partitions of the candidate devices in order to indicate how to find free space.
-        #
-        # TODO: export LVM VGs and file systems of directly formatted devices.
+        # * LVM volume groups and logical volumes.
         #
         # @param devicegraph [Y2Storage::Devicegraph]
         # @return [Array<Y2Storage::Device>]
         def devices(devicegraph)
-          devices = devicegraph.disk_devices + devicegraph.software_raids
+          devices = devicegraph.disk_devices +
+            devicegraph.software_raids +
+            devicegraph.lvm_vgs +
+            devicegraph.lvm_lvs
+
           devices + partitions_from(devices)
         end
 

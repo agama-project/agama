@@ -1,6 +1,5 @@
 [Unit]
 Description=Agama Installer Service
-Requires=cockpit.socket
 After=network-online.target
 
 [Service]

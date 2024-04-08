@@ -98,7 +98,7 @@ class HTTPClient {
    * @return {Promise<object>} Server response.
    */
   async get(url) {
-    const response = await fetch(`${this.baseUrl}/${url}`, {
+    const response = await fetch(`${this.baseUrl}${url}`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -112,7 +112,7 @@ class HTTPClient {
    * @return {Promise<object>} Server response.
    */
   async post(url, data) {
-    const response = await fetch(`${this.baseUrl}/${url}`, {
+    const response = await fetch(`${this.baseUrl}${url}`, {
       method: "POST",
       body: JSON.stringify(data),
       headers: {
@@ -134,7 +134,7 @@ class HTTPClient {
    * @return {Promise<object>} Server response.
    */
   async put(url, data) {
-    const response = await fetch(`${this.baseUrl}/${url}`, {
+    const response = await fetch(`${this.baseUrl}${url}`, {
       method: "PUT",
       body: JSON.stringify(data),
       headers: {
@@ -142,21 +142,33 @@ class HTTPClient {
       },
     });
 
-    try {
-      return await response.json();
-    } catch (e) {
-      console.warn("Expecting a JSON response", e);
-      return response.status === 200;
-    }
+    return response;
   }
 
   /**
    * @param {string} url - Endpoint URL (e.g., "/l10n/config").
-   * @return {Promise<object>} Server response.
+   * @return {Promise<Response>} Server response.
    */
   async delete(url) {
     const response = await fetch(`${this.baseUrl}/${url}`, {
-      method: "DELETE"
+      method: "DELETE",
+    });
+
+    return response;
+  }
+
+  /**
+   * @param {string} url - Endpoint URL (e.g., "/l10n/config").
+   * @param {object} data - Data to submit
+   * @return {Promise<Response>} Server response.
+   */
+  async patch(url, data) {
+    const response = await fetch(`${this.baseUrl}/${url}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
 
     return response;

@@ -27,17 +27,10 @@ import InstallerLocaleSwitcher from "./InstallerLocaleSwitcher";
 const mockLanguage = "es-es";
 let mockChangeLanguageFn;
 
-jest.mock("~/lib/cockpit", () => ({
-  gettext: term => term,
-  manifests: {
-    agama: {
-      locales: {
-        "de-de": "Deutsch",
-        "en-us": "English (US)",
-        "es-es": "Español"
-      }
-    }
-  }
+jest.mock("~/languages.json", () => ({
+  "de-de": "Deutsch",
+  "en-us": "English (US)",
+  "es-es": "Español"
 }));
 
 jest.mock("~/context/installerL10n", () => ({

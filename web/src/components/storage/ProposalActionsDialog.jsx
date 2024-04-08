@@ -20,21 +20,12 @@
  */
 
 import React, { useState } from "react";
-import {
-  List,
-  ListItem,
-  ExpandableSection,
-  Skeleton,
-} from "@patternfly/react-core";
+import { List, ListItem, ExpandableSection, } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
-
 import { _, n_ } from "~/i18n";
-import { If, Section } from "~/components/core";
 import { partition } from "~/utils";
+import { If, Popup } from "~/components/core";
 
-// TODO: would be nice adding an aria-description to these lists, but aria-description still in
-// draft yet and aria-describedby should be used... which id not ideal right now
-// https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-description
 const ActionsList = ({ actions }) => {
   // Some actions (e.g., deleting a LV) are reported as several actions joined by a line break
   const actionItems = (action, id) => {
@@ -53,14 +44,20 @@ const ActionsList = ({ actions }) => {
 };
 
 /**
- * Renders the list of actions to perform in the system
+ * Renders a dialog with the given list of actions
  * @component
  *
  * @param {object} props
- * @param {object[]} [props.actions=[]]
+ * @param {object[]} [props.actions=[]] - The actions to perform in the system.
+ * @param {boolean} [props.isOpen=false] - Whether the dialog is visible or not.
+ * @param {function} props.onClose - Whether the dialog is visible or not.
  */
-const ProposalActions = ({ actions = [] }) => {
+export default function ProposalActionsDialog({ actions = [], isOpen = false, onClose }) {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  if (typeof onClose !== 'function') {
+    console.error("Missing ProposalActionsDialog#onClose callback");
+  }
 
   if (actions.length === 0) return null;
 
@@ -72,66 +69,32 @@ const ProposalActions = ({ actions = [] }) => {
     : sprintf(n_("Show %d subvolume action", "Show %d subvolume actions", subvolActions.length), subvolActions.length);
 
   return (
-    <>
-      <ActionsList actions={generalActions} />
-      {subvolActions.length > 0 && (
-        <ExpandableSection
-          isIndented
-          isExpanded={isExpanded}
-          onToggle={() => setIsExpanded(!isExpanded)}
-          toggleText={toggleText}
-          className="expandable-actions"
-        >
-          <ActionsList actions={subvolActions} />
-        </ExpandableSection>
-      )}
-    </>
-  );
-};
-
-/**
- * @todo Create a component for rendering a customized skeleton
- */
-const ActionsSkeleton = () => {
-  return (
-    <>
-      <Skeleton width="80%" />
-      <Skeleton width="65%" />
-      <Skeleton width="70%" />
-      <Skeleton width="65%" />
-      <Skeleton width="40%" />
-    </>
-  );
-};
-
-/**
- * Section with the actions to perform in the system
- * @component
- *
- * @param {object} props
- * @param {object[]} [props.actions=[]]
- * @param {string[]} [props.errors=[]]
- * @param {boolean} [props.isLoading=false] - Whether the section content should be rendered as loading
- */
-export default function ProposalActionsSection({ actions = [], errors = [], isLoading = false }) {
-  if (isLoading) errors = [];
-
-  return (
-    <Section
+    <Popup
       // TRANSLATORS: The storage "Planned Actions" section's title. The
       // section shows a list of planned actions for the selected device, e.g.
       // "delete partition A", "create partition B with filesystem C", ...
       title={_("Planned Actions")}
-      // TRANSLATORS: The storage "Planned Actions" section's description
-      description={_("Actions to create the file systems and to ensure the new system boots.")}
-      id="storage-actions"
-      errors={errors}
+      isOpen={isOpen}
+      variant="large"
     >
+      <ActionsList actions={generalActions} />
       <If
-        condition={isLoading}
-        then={<ActionsSkeleton />}
-        else={<ProposalActions actions={actions} />}
+        condition={subvolActions.length > 0}
+        then={
+          <ExpandableSection
+            isIndented
+            isExpanded={isExpanded}
+            onToggle={() => setIsExpanded(!isExpanded)}
+            toggleText={toggleText}
+            className="expandable-actions"
+          >
+            <ActionsList actions={subvolActions} />
+          </ExpandableSection>
+        }
       />
-    </Section>
+      <Popup.Actions>
+        <Popup.SecondaryAction onClick={onClose}>{_("Close")}</Popup.SecondaryAction>
+      </Popup.Actions>
+    </Popup>
   );
 }

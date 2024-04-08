@@ -20,168 +20,60 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
-require "agama/storage/proposal_settings_conversion/from_y2storage"
 require "agama/config"
+require "agama/storage/proposal_settings"
+require "agama/storage/proposal_settings_conversion/from_y2storage"
 require "y2storage"
 
 describe Agama::Storage::ProposalSettingsConversion::FromY2Storage do
-  subject { described_class.new(y2storage_settings, config: config) }
+  subject { described_class.new(y2storage_settings, original_settings) }
 
-  let(:config) { Agama::Config.new }
+  let(:y2storage_settings) do
+    Y2Storage::ProposalSettings.new.tap do |settings|
+      settings.space_settings.actions = {
+        "/dev/sda"  => :force_delete,
+        "/dev/sdb1" => :resize
+      }
+    end
+  end
+
+  let(:original_settings) do
+    Agama::Storage::ProposalSettings.new.tap do |settings|
+      settings.device.name = "/dev/sda"
+      settings.boot.device = "/dev/sdb"
+      settings.encryption.password = "notsecret"
+      settings.encryption.method = Y2Storage::EncryptionMethod::LUKS2
+      settings.encryption.pbkd_function = Y2Storage::PbkdFunction::ARGON2ID
+      settings.space.policy = :delete
+      settings.space.actions = []
+      settings.volumes = [Agama::Storage::Volume.new("/test")]
+    end
+  end
 
   describe "#convert" do
-    let(:y2storage_settings) do
-      Y2Storage::ProposalSettings.new.tap do |settings|
-        settings.root_device = "/dev/sda"
-        settings.lvm = false
-        settings.candidate_devices = ["/dev/sda"]
-        settings.encryption_password = "notsecret"
-        settings.encryption_method = Y2Storage::EncryptionMethod::LUKS2
-        settings.encryption_pbkdf = Y2Storage::PbkdFunction::ARGON2ID
-        settings.space_settings.actions = {
-          "/dev/sda"  => :force_delete,
-          "/dev/sdb1" => :resize
-        }
-        settings.volumes = []
-      end
-    end
-
-    it "converts the Y2Storage settings to Agama settings" do
+    it "generates settings with the same values as the given settings" do
       settings = subject.convert
 
       expect(settings).to be_a(Agama::Storage::ProposalSettings)
-      expect(settings).to have_attributes(
-        boot_device: "/dev/sda",
-        lvm:         an_object_having_attributes(
-          enabled:           false,
-          system_vg_devices: []
-        ),
-        encryption:  an_object_having_attributes(
-          password:      "notsecret",
-          method:        Y2Storage::EncryptionMethod::LUKS2,
-          pbkd_function: Y2Storage::PbkdFunction::ARGON2ID
-        ),
-        space:       an_object_having_attributes(
-          actions: { "/dev/sda" => :force_delete, "/dev/sdb1" => :resize }
-        ),
-        volumes:     []
+      expect(settings.device).to be_a(Agama::Storage::DeviceSettings::Disk)
+      expect(settings.device.name).to eq("/dev/sda")
+      expect(settings.boot.device).to eq("/dev/sdb")
+      expect(settings.encryption.password).to eq("notsecret")
+      expect(settings.encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS2)
+      expect(settings.encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::ARGON2ID)
+      expect(settings.space.policy).to eq(:delete)
+      expect(settings.volumes).to contain_exactly(
+        an_object_having_attributes(mount_path: "/test")
       )
     end
 
-    context "LVM settings conversion" do
-      before do
-        y2storage_settings.root_device = "/dev/sda"
-        y2storage_settings.candidate_devices = candidate_devices
-      end
+    it "restores the space actions from Y2Storage" do
+      settings = subject.convert
 
-      context "when the candidate devices only includes the root device" do
-        let(:candidate_devices) { ["/dev/sda"] }
-
-        it "does not set system VG devices" do
-          settings = subject.convert
-
-          expect(settings).to have_attributes(
-            lvm: an_object_having_attributes(
-              system_vg_devices: []
-            )
-          )
-        end
-      end
-
-      context "when the candidate devices includes the root device and other devices" do
-        let(:candidate_devices) { ["/dev/sda", "/dev/sdb"] }
-
-        it "sets the candidate devices as system VG devices" do
-          settings = subject.convert
-
-          expect(settings).to have_attributes(
-            lvm: an_object_having_attributes(
-              system_vg_devices: contain_exactly("/dev/sda", "/dev/sdb")
-            )
-          )
-        end
-      end
-
-      context "when the candidate devices only includes other devices" do
-        let(:candidate_devices) { ["/dev/sdb", "/dev/sdc"] }
-
-        it "sets the candidate devices as system VG devices" do
-          settings = subject.convert
-
-          expect(settings).to have_attributes(
-            lvm: an_object_having_attributes(
-              system_vg_devices: contain_exactly("/dev/sdb", "/dev/sdc")
-            )
-          )
-        end
-
-        it "does not set the root device as system VG device" do
-          settings = subject.convert
-
-          expect(settings.lvm.system_vg_devices).to_not include("/dev/sda")
-        end
-      end
-    end
-
-    context "volumes conversion" do
-      before do
-        y2storage_settings.volumes = [spec1, spec2, spec3]
-      end
-
-      let(:spec1) do
-        Y2Storage::VolumeSpecification.new({}).tap do |spec|
-          spec.mount_point = "/"
-          spec.proposed = true
-        end
-      end
-
-      let(:spec2) do
-        Y2Storage::VolumeSpecification.new({}).tap do |spec|
-          spec.mount_point = "/home"
-          spec.proposed = true
-          spec.fallback_for_min_size = "/"
-          spec.fallback_for_max_size = "/"
-        end
-      end
-
-      let(:spec3) do
-        Y2Storage::VolumeSpecification.new({}).tap do |spec|
-          spec.mount_point = "swap"
-          spec.proposed = false
-          spec.fallback_for_min_size = "/"
-          spec.fallback_for_max_size = "/home"
-        end
-      end
-
-      it "only includes volumes for the proposed specs" do
-        settings = subject.convert
-
-        expect(settings).to have_attributes(
-          volumes: contain_exactly(
-            an_object_having_attributes(mount_path: "/"),
-            an_object_having_attributes(mount_path: "/home")
-          )
-        )
-      end
-
-      it "sets the fallbacks for min and max sizes" do
-        settings = subject.convert
-
-        expect(settings).to have_attributes(
-          volumes: contain_exactly(
-            an_object_having_attributes(
-              mount_path:            "/",
-              min_size_fallback_for: contain_exactly("/home", "swap"),
-              max_size_fallback_for: contain_exactly("/home")
-            ),
-            an_object_having_attributes(
-              mount_path:            "/home",
-              min_size_fallback_for: be_empty,
-              max_size_fallback_for: contain_exactly("swap")
-            )
-          )
-        )
-      end
+      expect(settings.space.actions).to eq(
+        "/dev/sda"  => :force_delete,
+        "/dev/sdb1" => :resize
+      )
     end
   end
 end

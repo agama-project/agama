@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,7 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/lvm_settings"
+require "agama/storage/boot_settings"
+require "agama/storage/device_settings"
 require "agama/storage/encryption_settings"
 require "agama/storage/space_settings"
 
@@ -27,37 +28,93 @@ module Agama
   module Storage
     # Settings used to calculate an storage proposal.
     class ProposalSettings
-      # Configuration of LVM
+      # Target device settings.
       #
-      # @return [LvmSettings]
-      attr_reader :lvm
+      # @return [DeviceSettings::Disk, DeviceSettings::NewLvmVg, DeviceSettings::ReusedLvmVg]
+      attr_accessor :device
 
-      # Encryption settings
+      # Boot settings.
+      #
+      # @return [BootSettings]
+      attr_accessor :boot
+
+      # Encryption settings.
       #
       # @return [EncryptionSettings]
-      attr_reader :encryption
+      attr_accessor :encryption
 
-      # Settings to configure the behavior when making space to allocate the new partitions
+      # Settings to configure the behavior when making space to allocate the new partitions.
       #
       # @return [SpaceSettings]
-      attr_reader :space
+      attr_accessor :space
 
-      # Device name of the disk that will be used for booting the system and also to allocate all
-      # the partitions, except those that have been explicitly assigned to other disk(s).
-      #
-      # @return [String, nil] nil if no device has been selected yet.
-      attr_accessor :boot_device
-
-      # Set of volumes to create
+      # Set of volumes to create.
       #
       # @return [Array<Volume>]
       attr_accessor :volumes
 
       def initialize
-        @lvm = LvmSettings.new
+        @device = DeviceSettings::Disk.new
+        @boot = BootSettings.new
         @encryption = EncryptionSettings.new
         @space = SpaceSettings.new
         @volumes = []
+      end
+
+      # All devices involved in the installation.
+      #
+      # @return [Array<String>]
+      def installation_devices
+        [boot_device, target_devices, volume_devices]
+          .flatten
+          .compact
+          .uniq
+      end
+
+      # Default device to use for configuring boot.
+      #
+      # @return [String, nil]
+      def default_boot_device
+        case device
+        when DeviceSettings::Disk
+          device.name
+        when DeviceSettings::NewLvmVg
+          device.candidate_pv_devices.min
+        when DeviceSettings::ReusedLvmVg
+          # TODO: Decide what device to use.
+        end
+      end
+
+    private
+
+      # Device used for booting.
+      #
+      # @return [String, nil]
+      def boot_device
+        return nil unless boot.configure?
+
+        boot.device
+      end
+
+      # Target devices for the installation depending on the device settings.
+      #
+      # @return [Array<String>]
+      def target_devices
+        case device
+        when DeviceSettings::Disk, DeviceSettings::ReusedLvmVg
+          [device.name].compact
+        when DeviceSettings::NewLvmVg
+          device.candidate_pv_devices
+        else
+          []
+        end
+      end
+
+      # Devices directly assigned to the volumes.
+      #
+      # @return [Array<String>]
+      def volume_devices
+        volumes.map(&:location).reject(&:reuse_device?).map(&:device)
       end
     end
   end

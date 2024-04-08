@@ -22,15 +22,16 @@
 // @ts-check
 // cspell:ignore ptable
 
+import { compact, hex, uniq } from "~/utils";
 import DBusClient from "./dbus";
 import { WithIssues, WithStatus, WithProgress } from "./mixins";
-import { hex } from "~/utils";
 
 const STORAGE_OBJECT = "/org/opensuse/Agama/Storage1";
 const STORAGE_IFACE = "org.opensuse.Agama.Storage1";
 const STORAGE_JOBS_NAMESPACE = "/org/opensuse/Agama/Storage1/jobs";
 const STORAGE_JOB_IFACE = "org.opensuse.Agama.Storage1.Job";
 const STORAGE_SYSTEM_NAMESPACE = "/org/opensuse/Agama/Storage1/system";
+const STORAGE_STAGING_NAMESPACE = "/org/opensuse/Agama/Storage1/staging";
 const PROPOSAL_IFACE = "org.opensuse.Agama.Storage1.Proposal";
 const PROPOSAL_CALCULATOR_IFACE = "org.opensuse.Agama.Storage1.Proposal.Calculator";
 const ISCSI_INITIATOR_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Initiator";
@@ -45,6 +46,108 @@ const ZFCP_CONTROLLERS_NAMESPACE = "/org/opensuse/Agama/Storage1/zfcp_controller
 const ZFCP_CONTROLLER_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Controller";
 const ZFCP_DISKS_NAMESPACE = "/org/opensuse/Agama/Storage1/zfcp_disks";
 const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
+
+/**
+ * @typedef {object} StorageDevice
+ * @property {number} sid - Storage ID
+ * @property {string} name - Device name
+ * @property {string} description - Device description
+ * @property {boolean} isDrive - Whether the device is a drive
+ * @property {string} type - Type of device (e.g., "disk", "raid", "multipath", "dasd", "md")
+ * @property {string} [vendor]
+ * @property {string} [model]
+ * @property {string[]} [driver]
+ * @property {string} [bus]
+ * @property {string} [busId] - DASD Bus ID (only for "dasd" type)
+ * @property {string} [transport]
+ * @property {boolean} [sdCard]
+ * @property {boolean} [dellBOOS]
+ * @property {string[]} [devices] - RAID devices (only for "raid" and "md" types)
+ * @property {string[]} [wires] - Multipath wires (only for "multipath" type)
+ * @property {string} [level] - MD RAID level (only for "md" type)
+ * @property {string} [uuid]
+ * @property {number} [start] - First block of the region (only for block devices)
+ * @property {boolean} [active]
+ * @property {boolean} [encrypted] - Whether the device is encrypted (only for block devices)
+ * @property {boolean} [isEFI] - Whether the device is an EFI partition (only for partition)
+ * @property {number} [size]
+ * @property {number} [recoverableSize]
+ * @property {string[]} [systems] - Name of the installed systems
+ * @property {string[]} [udevIds]
+ * @property {string[]} [udevPaths]
+ * @property {PartitionTable} [partitionTable]
+ * @property {Filesystem} [filesystem]
+ * @property {Component} [component] - When it is used as component of other devices
+ * @property {StorageDevice[]} [physicalVolumes] - Only for LVM VGs
+ * @property {StorageDevice[]} [logicalVolumes] - Only for LVM VGs
+ *
+ * @typedef {object} PartitionTable
+ * @property {string} type
+ * @property {StorageDevice[]} partitions
+ * @property {PartitionSlot[]} unusedSlots
+ * @property {number} unpartitionedSize - Total size not assigned to any partition
+ *
+ * @typedef {object} PartitionSlot
+ * @property {number} start
+ * @property {number} size
+ *
+ * @typedef {object} Component
+ * @property {string} type
+ * @property {string[]} deviceNames
+ *
+ * @typedef {object} Filesystem
+ * @property {number} sid
+ * @property {string} type
+ * @property {string} [mountPath]
+ *
+ * @typedef {object} ProposalResult
+ * @property {ProposalSettings} settings
+ * @property {Action[]} actions
+ *
+ * @typedef {object} Action
+ * @property {number} device
+ * @property {string} text
+ * @property {boolean} subvol
+ * @property {boolean} delete
+ *
+ * @typedef {object} ProposalSettings
+ * @property {string} target
+ * @property {string} [targetDevice]
+ * @property {string[]} targetPVDevices
+ * @property {boolean} configureBoot
+ * @property {string} bootDevice
+ * @property {string} defaultBootDevice
+ * @property {string} encryptionPassword
+ * @property {string} encryptionMethod
+ * @property {string} spacePolicy
+ * @property {SpaceAction[]} spaceActions
+ * @property {Volume[]} volumes
+ * @property {StorageDevice[]} installationDevices
+ *
+ * @typedef {object} SpaceAction
+ * @property {string} device
+ * @property {string} action
+ *
+ * @typedef {object} Volume
+ * @property {string} mountPath
+ * @property {string} target
+ * @property {string} [targetDevice]
+ * @property {string} fsType
+ * @property {number} minSize
+ * @property {number} [maxSize]
+ * @property {boolean} autoSize
+ * @property {boolean} snapshots
+ * @property {boolean} transactional
+ * @property {VolumeOutline} outline
+ *
+ * @typedef {object} VolumeOutline
+ * @property {boolean} required
+ * @property {string[]} fsTypes
+ * @property {boolean} supportAutoSize
+ * @property {boolean} snapshotsConfigurable
+ * @property {boolean} snapshotsAffectSizes
+ * @property {string[]} sizeRelevantVolumes
+ */
 
 /**
  * Enum for the encryption method values
@@ -105,44 +208,15 @@ class DevicesManager {
    * Gets all the exported devices
    *
    * @returns {Promise<StorageDevice[]>}
-   *
-   * @typedef {object} StorageDevice
-   * @property {string} sid - Internal id that is used as D-Bus object basename
-   * @property {boolean} isDrive - Whether the device is a drive
-   * @property {string} type - Type of device ("disk", "raid", "multipath", "dasd", "md")
-   * @property {string} [vendor]
-   * @property {string} [model]
-   * @property {string[]} [driver]
-   * @property {string} [bus]
-   * @property {string} [busId] - DASD Bus ID (only for "dasd" type)
-   * @property {string} [transport]
-   * @property {boolean} [sdCard]
-   * @property {boolean} [dellBOOS]
-   * @property {string[]} [devices] - RAID devices (only for "raid" and "md" types)
-   * @property {string[]} [wires] - Multipath wires (only for "multipath" type)
-   * @property {string} [level] - MD RAID level (only for "md" type)
-   * @property {string} [uuid]
-   * @property {boolean} [active]
-   * @property {string} [name] - Block device name
-   * @property {number} [size]
-   * @property {number} [recoverableSize]
-   * @property {string[]} [systems] - Name of the installed systems
-   * @property {string[]} [udevIds]
-   * @property {string[]} [udevPaths]
-   * @property {PartitionTable} [partitionTable]
-   * @property {Filesystem} [filesystem]
-   *
-   * @typedef {object} PartitionTable
-   * @property {string} type
-   * @property {StorageDevice[]} partitions
-   * @property {number} unpartitionedSize - Total size not assigned to any partition
-   *
-   * @typedef {object} Filesystem
-   * @property {string} type
-   * @property {boolean} isEFI
    */
   async getDevices() {
     const buildDevice = (path, dbusDevices) => {
+      const addDeviceProperties = (device, dbusProperties) => {
+        device.sid = dbusProperties.SID.v;
+        device.name = dbusProperties.Name.v;
+        device.description = dbusProperties.Description.v;
+      };
+
       const addDriveProperties = (device, dbusProperties) => {
         device.isDrive = true;
         device.type = dbusProperties.Type.v;
@@ -173,7 +247,8 @@ class DevicesManager {
 
       const addBlockProperties = (device, blockProperties) => {
         device.active = blockProperties.Active.v;
-        device.name = blockProperties.Name.v;
+        device.encrypted = blockProperties.Encrypted.v;
+        device.start = blockProperties.Start.v;
         device.size = blockProperties.Size.v;
         device.recoverableSize = blockProperties.RecoverableSize.v;
         device.systems = blockProperties.Systems.v;
@@ -181,19 +256,41 @@ class DevicesManager {
         device.udevPaths = blockProperties.UdevPaths.v;
       };
 
+      const addPartitionProperties = (device, partitionProperties) => {
+        device.type = "partition";
+        device.isEFI = partitionProperties.EFI.v;
+      };
+
+      const addLvmVgProperties = (device, lvmVgProperties) => {
+        device.type = "lvmVg";
+        device.size = lvmVgProperties.Size.v;
+        device.physicalVolumes = lvmVgProperties.PhysicalVolumes.v.map(d => buildDevice(d, dbusDevices));
+        device.logicalVolumes = lvmVgProperties.LogicalVolumes.v.map(d => buildDevice(d, dbusDevices));
+      };
+
+      const addLvmLvProperties = (device) => {
+        device.type = "lvmLv";
+      };
+
       const addPtableProperties = (device, ptableProperties) => {
+        const buildPartitionSlot = ([start, size]) => ({ start, size });
         const partitions = ptableProperties.Partitions.v.map(p => buildDevice(p, dbusDevices));
         device.partitionTable = {
           type: ptableProperties.Type.v,
           partitions,
-          unpartitionedSize: device.size - partitions.reduce((s, p) => s + p.size, 0)
+          unpartitionedSize: device.size - partitions.reduce((s, p) => s + p.size, 0),
+          unusedSlots: ptableProperties.UnusedSlots.v.map(buildPartitionSlot)
         };
       };
 
       const addFilesystemProperties = (device, filesystemProperties) => {
+        const buildMountPath = path => path.length > 0 ? path : undefined;
+        const buildLabel = label => label.length > 0 ? label : undefined;
         device.filesystem = {
+          sid: filesystemProperties.SID.v,
           type: filesystemProperties.Type.v,
-          isEFI: filesystemProperties.EFI.v
+          mountPath: buildMountPath(filesystemProperties.MountPath.v),
+          label: buildLabel(filesystemProperties.Label.v)
         };
       };
 
@@ -206,12 +303,17 @@ class DevicesManager {
 
       const device = {
         sid: path.split("/").pop(),
+        name: "",
+        description: "",
         isDrive: false,
         type: ""
       };
 
       const dbusDevice = dbusDevices[path];
       if (!dbusDevice) return device;
+
+      const deviceProperties = dbusDevice["org.opensuse.Agama.Storage1.Device"];
+      if (deviceProperties !== undefined) addDeviceProperties(device, deviceProperties);
 
       const driveProperties = dbusDevice["org.opensuse.Agama.Storage1.Drive"];
       if (driveProperties !== undefined) addDriveProperties(device, driveProperties);
@@ -227,6 +329,15 @@ class DevicesManager {
 
       const blockProperties = dbusDevice["org.opensuse.Agama.Storage1.Block"];
       if (blockProperties !== undefined) addBlockProperties(device, blockProperties);
+
+      const partitionProperties = dbusDevice["org.opensuse.Agama.Storage1.Partition"];
+      if (partitionProperties !== undefined) addPartitionProperties(device, partitionProperties);
+
+      const lvmVgProperties = dbusDevice["org.opensuse.Agama.Storage1.LVM.VolumeGroup"];
+      if (lvmVgProperties !== undefined) addLvmVgProperties(device, lvmVgProperties);
+
+      const lvmLvProperties = dbusDevice["org.opensuse.Agama.Storage1.LVM.LogicalVolume"];
+      if (lvmLvProperties !== undefined) addLvmLvProperties(device);
 
       const ptableProperties = dbusDevice["org.opensuse.Agama.Storage1.PartitionTable"];
       if (ptableProperties !== undefined) addPtableProperties(device, ptableProperties);
@@ -271,42 +382,6 @@ class ProposalManager {
   }
 
   /**
-   * @typedef {object} ProposalSettings
-   * @property {string} bootDevice
-   * @property {string} encryptionPassword
-   * @property {string} encryptionMethod
-   * @property {boolean} lvm
-   * @property {string} spacePolicy
-   * @property {SpaceAction[]} spaceActions
-   * @property {string[]} systemVGDevices
-   * @property {Volume[]} volumes
-   * @property {StorageDevice[]} installationDevices
-   *
-   * @typedef {object} SpaceAction
-   * @property {string} device
-   * @property {string} action
-   *
-   * @typedef {object} Volume
-   * @property {string} mountPath
-   * @property {string} fsType
-   * @property {number} minSize
-   * @property {number} [maxSize]
-   * @property {boolean} autoSize
-   * @property {boolean} snapshots
-   * @property {boolean} transactional
-   * @property {VolumeOutline} outline
-   *
-   * @typedef {object} VolumeOutline
-   * @property {boolean} required
-   * @property {string[]} fsTypes
-   * @property {boolean} supportAutoSize
-   * @property {boolean} adjustByRam
-   * @property {boolean} snapshotsConfigurable
-   * @property {boolean} snapshotsAffectSizes
-   * @property {string[]} sizeRelevantVolumes
-   */
-
-  /**
    * Gets the list of available devices
    *
    * @returns {Promise<StorageDevice[]>}
@@ -314,7 +389,7 @@ class ProposalManager {
   async getAvailableDevices() {
     const findDevice = (devices, path) => {
       const sid = path.split("/").pop();
-      const device = devices.find(d => d.sid === sid);
+      const device = devices.find(d => d.sid === Number(sid));
 
       if (device === undefined) console.log("D-Bus object not found: ", path);
 
@@ -362,15 +437,6 @@ class ProposalManager {
    * Gets the values of the current proposal
    *
    * @return {Promise<ProposalResult|undefined>}
-   *
-   * @typedef {object} ProposalResult
-   * @property {ProposalSettings} settings
-   * @property {Action[]} actions
-   *
-   * @typedef {object} Action
-   * @property {string} text
-   * @property {boolean} subvol
-   * @property {boolean} delete
   */
   async getResult() {
     const proxy = await this.proposalProxy();
@@ -389,14 +455,22 @@ class ProposalManager {
 
       const buildAction = dbusAction => {
         return {
+          device: dbusAction.Device.v,
           text: dbusAction.Text.v,
           subvol: dbusAction.Subvol.v,
           delete: dbusAction.Delete.v
         };
       };
 
-      const buildInstallationDevices = (proxy, devices) => {
-        const findDevice = (devices, name) => {
+      const buildTargetPVDevices = dbusTargetPVDevices => {
+        if (!dbusTargetPVDevices) return [];
+
+        return dbusTargetPVDevices.v.map(d => d.v);
+      };
+
+      // TODO: Read installation devices from D-Bus.
+      const buildInstallationDevices = (dbusSettings, devices) => {
+        const findDevice = (name) => {
           const device = devices.find(d => d.name === name);
 
           if (device === undefined) console.log("D-Bus object not found: ", name);
@@ -404,26 +478,39 @@ class ProposalManager {
           return device;
         };
 
-        const names = proxy.SystemVGDevices.filter(n => n !== proxy.BootDevice).concat([proxy.BootDevice]);
+        const values = [
+          dbusSettings.TargetDevice?.v,
+          buildTargetPVDevices(dbusSettings.TargetPVDevices),
+          dbusSettings.BootDevice.v,
+          dbusSettings.Volumes.v.map(vol => vol.v.TargetDevice.v)
+        ].flat();
+
+        const names = uniq(compact(values)).filter(d => d.length > 0);
+
         // #findDevice returns undefined if no device is found with the given name.
-        return names.map(dev => findDevice(devices, dev)).filter(dev => dev !== undefined);
+        return compact(names.map(n => findDevice(n)));
       };
+
+      const dbusSettings = proxy.Settings;
 
       return {
         settings: {
-          bootDevice: proxy.BootDevice,
-          lvm: proxy.LVM,
-          spacePolicy: proxy.SpacePolicy,
-          spaceActions: proxy.SpaceActions.map(buildSpaceAction),
-          systemVGDevices: proxy.SystemVGDevices,
-          encryptionPassword: proxy.EncryptionPassword,
-          encryptionMethod: proxy.EncryptionMethod,
-          volumes: proxy.Volumes.map(this.buildVolume),
+          target: dbusSettings.Target.v,
+          targetDevice: dbusSettings.TargetDevice?.v,
+          targetPVDevices: buildTargetPVDevices(dbusSettings.TargetPVDevices),
+          configureBoot: dbusSettings.ConfigureBoot.v,
+          bootDevice: dbusSettings.BootDevice.v,
+          defaultBootDevice: dbusSettings.DefaultBootDevice.v,
+          spacePolicy: dbusSettings.SpacePolicy.v,
+          spaceActions: dbusSettings.SpaceActions.v.map(a => buildSpaceAction(a.v)),
+          encryptionPassword: dbusSettings.EncryptionPassword.v,
+          encryptionMethod: dbusSettings.EncryptionMethod.v,
+          volumes: dbusSettings.Volumes.v.map(vol => this.buildVolume(vol.v)),
           // NOTE: strictly speaking, installation devices does not belong to the settings. It
           // should be a separate method instead of an attribute in the settings object.
           // Nevertheless, it was added here for simplicity and to avoid passing more props in some
           // react components. Please, do not use settings as a jumble.
-          installationDevices: buildInstallationDevices(proxy, systemDevices)
+          installationDevices: buildInstallationDevices(proxy.Settings, systemDevices)
         },
         actions: proxy.Actions.map(buildAction)
       };
@@ -440,13 +527,15 @@ class ProposalManager {
    */
   async calculate(settings) {
     const {
+      target,
+      targetDevice,
+      targetPVDevices,
+      configureBoot,
       bootDevice,
       encryptionPassword,
       encryptionMethod,
-      lvm,
       spacePolicy,
       spaceActions,
-      systemVGDevices,
       volumes
     } = settings;
 
@@ -476,13 +565,15 @@ class ProposalManager {
     };
 
     const dbusSettings = removeUndefinedCockpitProperties({
+      Target: { t: "s", v: target },
+      TargetDevice: { t: "s", v: targetDevice },
+      TargetPVDevices: { t: "as", v: targetPVDevices },
+      ConfigureBoot: { t: "b", v: configureBoot },
       BootDevice: { t: "s", v: bootDevice },
       EncryptionPassword: { t: "s", v: encryptionPassword },
       EncryptionMethod: { t: "s", v: encryptionMethod },
-      LVM: { t: "b", v: lvm },
       SpacePolicy: { t: "s", v: spacePolicy },
       SpaceActions: { t: "aa{sv}", v: dbusSpaceActions() },
-      SystemVGDevices: { t: "as", v: systemVGDevices },
       Volumes: { t: "aa{sv}", v: volumes?.map(dbusVolume) }
     });
 
@@ -497,6 +588,8 @@ class ProposalManager {
    * @param {DBusVolume} dbusVolume
    *
    * @typedef {Object} DBusVolume
+   * @property {CockpitString} Target
+   * @property {CockpitString} [TargetDevice]
    * @property {CockpitString} MountPath
    * @property {CockpitString} FsType
    * @property {CockpitNumber} MinSize
@@ -552,6 +645,8 @@ class ProposalManager {
     };
 
     return {
+      target: dbusVolume.Target.v,
+      targetDevice: dbusVolume.TargetDevice?.v,
       mountPath: dbusVolume.MountPath.v,
       fsType: dbusVolume.FsType.v,
       minSize: dbusVolume.MinSize.v,
@@ -1469,6 +1564,7 @@ class StorageBaseClient {
   constructor(address = undefined) {
     this.client = new DBusClient(StorageBaseClient.SERVICE, address);
     this.system = new DevicesManager(this.client, STORAGE_SYSTEM_NAMESPACE);
+    this.staging = new DevicesManager(this.client, STORAGE_STAGING_NAMESPACE);
     this.proposal = new ProposalManager(this.client, this.system);
     this.iscsi = new ISCSIManager(StorageBaseClient.SERVICE, address);
     this.dasd = new DASDManager(StorageBaseClient.SERVICE, address);

@@ -22,6 +22,7 @@
 import {
   deviceSize,
   deviceLabel,
+  deviceChildren,
   parseToBytes,
   splitSize,
   hasFS,
@@ -46,6 +47,66 @@ describe("deviceLabel", () => {
   it("returns only the device name if the device has no size", () => {
     const result = deviceLabel({ name: "/dev/sda" });
     expect(result).toEqual("/dev/sda");
+  });
+});
+
+describe("deviceChildren", () => {
+  let device;
+
+  describe("if the device has partition table", () => {
+    beforeEach(() => {
+      device = {
+        sid: 60,
+        partitionTable: {
+          partitions: [
+            { sid: 61 },
+            { sid: 62 },
+          ],
+          unusedSlots: [
+            { start: 1, size: 1024 },
+            { start: 2345, size: 512 }
+          ]
+        }
+      };
+    });
+
+    it("returns the partitions and unused slots", () => {
+      const children = deviceChildren(device);
+      expect(children.length).toEqual(4);
+      device.partitionTable.partitions.forEach(p => expect(children).toContainEqual(p));
+      device.partitionTable.unusedSlots.forEach(s => expect(children).toContainEqual(s));
+    });
+  });
+
+  describe("if the device is a LVM volume group", () => {
+    beforeEach(() => {
+      device = {
+        sid: 60,
+        type: "lvmVg",
+        logicalVolumes: [
+          { sid: 61 },
+          { sid: 62 },
+          { sid: 63 }
+        ]
+      };
+    });
+
+    it("returns the logical volumes", () => {
+      const children = deviceChildren(device);
+      expect(children.length).toEqual(3);
+      device.logicalVolumes.forEach(l => expect(children).toContainEqual(l));
+    });
+  });
+
+  describe("if the device has neither partition table nor logical volumes", () => {
+    beforeEach(() => {
+      device = { sid: 60 };
+    });
+
+    it("returns an empty list", () => {
+      const children = deviceChildren(device);
+      expect(children.length).toEqual(0);
+    });
   });
 });
 

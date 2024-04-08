@@ -103,12 +103,16 @@ dependencies = [
  "cidr",
  "clap",
  "config",
+ "futures-util",
  "gettext-rs",
  "http-body-util",
+ "hyper 1.2.0",
+ "hyper-util",
  "jsonwebtoken",
  "log",
  "macaddr",
  "once_cell",
+ "openssl",
  "pam",
  "pin-project",
  "rand",
@@ -121,6 +125,7 @@ dependencies = [
  "systemd-journal-logger",
  "thiserror",
  "tokio",
+ "tokio-openssl",
  "tokio-stream",
  "tokio-test",
  "tower",
@@ -508,6 +513,7 @@ dependencies = [
  "axum",
  "axum-core",
  "bytes",
+ "cookie",
  "futures-util",
  "headers",
  "http 1.1.0",
@@ -865,6 +871,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec182b0ca2f35d8fc196cf3404988fd8b8c739a4d270ff118a398feb0cbec1ca"
 dependencies = [
  "unicode-segmentation",
+]
+
+[[package]]
+name = "cookie"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3cd91cf61412820176e137621345ee43b3f4423e589e7ae4e50d601d93e35ef8"
+dependencies = [
+ "percent-encoding",
+ "time",
+ "version_check",
 ]
 
 [[package]]
@@ -3351,6 +3368,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bbae76ab933c85776efabc971569dd6119c580d8f5d448769dec1764bf796ef2"
 dependencies = [
  "native-tls",
+ "tokio",
+]
+
+[[package]]
+name = "tokio-openssl"
+version = "0.6.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6ffab79df67727f6acf57f1ff743091873c24c579b1e2ce4d8f53e47ded4d63d"
+dependencies = [
+ "futures-util",
+ "openssl",
+ "openssl-sys",
  "tokio",
 ]
 

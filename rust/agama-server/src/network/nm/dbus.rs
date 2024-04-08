@@ -23,6 +23,7 @@ const DUMMY_KEY: &str = "dummy";
 const VLAN_KEY: &str = "vlan";
 const BRIDGE_KEY: &str = "bridge";
 const BRIDGE_PORT_KEY: &str = "bridge-port";
+const INFINIBAND_KEY: &str = "infiniband";
 
 /// Converts a connection struct into a HashMap that can be sent over D-Bus.
 ///
@@ -97,6 +98,10 @@ pub fn connection_to_dbus<'a>(
             connection_dbus.insert("type", BRIDGE_KEY.into());
             result.insert(BRIDGE_KEY, bridge_config_to_dbus(bridge));
         }
+        ConnectionConfig::Infiniband(infiniband) => {
+            connection_dbus.insert("type", INFINIBAND_KEY.into());
+            result.insert(INFINIBAND_KEY, infiniband_config_to_dbus(infiniband));
+        }
         _ => {}
     }
 
@@ -138,6 +143,11 @@ pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
 
     if let Some(bridge_config) = bridge_config_from_dbus(&conn) {
         connection.config = ConnectionConfig::Bridge(bridge_config);
+        return Some(connection);
+    }
+
+    if let Some(infiniband_config) = infiniband_config_from_dbus(&conn) {
+        connection.config = ConnectionConfig::Infiniband(infiniband_config);
         return Some(connection);
     }
 
@@ -475,6 +485,45 @@ fn bridge_port_config_from_dbus(conn: &OwnedNestedHash) -> Option<BridgePortConf
     }
 
     Some(bpc)
+}
+
+fn infiniband_config_to_dbus(config: &InfinibandConfig) -> HashMap<&str, zvariant::Value> {
+    let mut infiniband_config: HashMap<&str, zvariant::Value> = HashMap::from([
+        (
+            "transport-mode",
+            Value::new(config.transport_mode.to_string()),
+        ),
+        ("p-key", Value::new(config.p_key.unwrap_or(-1))),
+    ]);
+
+    if let Some(parent) = &config.parent {
+        infiniband_config.insert("parent", parent.into());
+    }
+
+    infiniband_config
+}
+
+fn infiniband_config_from_dbus(conn: &OwnedNestedHash) -> Option<InfinibandConfig> {
+    let Some(infiniband) = conn.get(INFINIBAND_KEY) else {
+        return None;
+    };
+
+    let mut infiniband_config = InfinibandConfig::default();
+
+    if let Some(p_key) = infiniband.get("p-key") {
+        infiniband_config.p_key = Some(*p_key.downcast_ref::<i32>()?);
+    }
+
+    if let Some(parent) = infiniband.get("parent") {
+        infiniband_config.parent = Some(parent.downcast_ref::<str>()?.to_string());
+    }
+
+    if let Some(transport_mode) = infiniband.get("transport-mode") {
+        infiniband_config.transport_mode =
+            InfinibandTransportMode::from_str(transport_mode.downcast_ref::<str>()?).ok()?;
+    }
+
+    Some(infiniband_config)
 }
 
 /// Converts a MatchConfig struct into a HashMap that can be sent over D-Bus.
@@ -857,7 +906,7 @@ mod test {
     };
     use crate::network::{
         model::*,
-        nm::dbus::{BOND_KEY, ETHERNET_KEY, WIRELESS_KEY, WIRELESS_SECURITY_KEY},
+        nm::dbus::{BOND_KEY, ETHERNET_KEY, INFINIBAND_KEY, WIRELESS_KEY, WIRELESS_SECURITY_KEY},
     };
     use agama_lib::network::types::{BondMode, SSID};
     use cidr::IpInet;
@@ -1080,6 +1129,64 @@ mod test {
         if let ConnectionConfig::Bond(config) = connection.config {
             assert_eq!(config.mode, BondMode::ActiveBackup);
         }
+    }
+
+    #[test]
+    fn test_connection_from_dbus_infiniband() {
+        let uuid = Uuid::new_v4().to_string();
+        let connection_section = HashMap::from([
+            ("id".to_string(), Value::new("ib0").to_owned()),
+            ("uuid".to_string(), Value::new(uuid).to_owned()),
+        ]);
+
+        let infiniband_section = HashMap::from([
+            ("p-key".to_string(), Value::new(0x8001 as i32).to_owned()),
+            ("parent".to_string(), Value::new("ib0").to_owned()),
+            (
+                "transport-mode".to_string(),
+                Value::new("datagram").to_owned(),
+            ),
+        ]);
+
+        let dbus_conn = HashMap::from([
+            ("connection".to_string(), connection_section),
+            (INFINIBAND_KEY.to_string(), infiniband_section),
+        ]);
+
+        let connection = connection_from_dbus(dbus_conn).unwrap();
+        let ConnectionConfig::Infiniband(infiniband) = &connection.config else {
+            panic!("Wrong connection type")
+        };
+        assert_eq!(infiniband.p_key, Some(0x8001));
+        assert_eq!(infiniband.parent, Some("ib0".to_string()));
+        assert_eq!(infiniband.transport_mode, InfinibandTransportMode::Datagram);
+    }
+
+    #[test]
+    fn test_dbus_from_infiniband_connection() {
+        let config = InfinibandConfig {
+            p_key: Some(0x8002),
+            parent: Some("ib1".to_string()),
+            transport_mode: InfinibandTransportMode::Connected,
+        };
+        let mut infiniband = build_base_connection();
+        infiniband.config = ConnectionConfig::Infiniband(config);
+        let infiniband_dbus = connection_to_dbus(&infiniband, None);
+
+        let infiniband = infiniband_dbus.get(INFINIBAND_KEY).unwrap();
+        let p_key: i32 = *infiniband.get("p-key").unwrap().downcast_ref().unwrap();
+        assert_eq!(p_key, 0x8002);
+        let parent: &str = infiniband.get("parent").unwrap().downcast_ref().unwrap();
+        assert_eq!(parent, "ib1");
+        let transport_mode: &str = infiniband
+            .get("transport-mode")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(
+            transport_mode,
+            InfinibandTransportMode::Connected.to_string()
+        );
     }
 
     #[test]

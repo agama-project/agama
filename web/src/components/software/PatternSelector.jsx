@@ -33,7 +33,7 @@ import { noop } from "~/utils";
  * @property {string} group pattern group
  * @property {string} summary pattern name (user visible)
  * @property {string} description long description of the pattern
- * @property {string} order display order (string!)
+ * @property {string} order display order
  * @property {string} icon icon name (not path or file name!)
  * @property {number} selected who selected the pattern, undefined
  *   means it is not selected to install
@@ -135,12 +135,12 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
   const groups = groupPatterns(visiblePatterns);
 
   const renderPatternOption = (pattern) => (
-    <>
+    <div>
       <div>
         <b>{pattern.summary}</b>
       </div>
       <div>{pattern.description}</div>
-    </>
+    </div>
   );
 
   const selector = sortGroups(groups).map((groupName) => {
@@ -159,6 +159,8 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
           onOptionClick={onToggle}
           optionIdKey="name"
           selectedIds={selectedIds}
+          autoSelectionCheck={pattern => pattern.selectedBy === SelectedBy.AUTO}
+          data-items-type="agama/patterns"
         />
       </Section>
     );

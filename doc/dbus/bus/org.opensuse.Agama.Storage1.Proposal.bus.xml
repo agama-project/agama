@@ -27,14 +27,7 @@
     </signal>
   </interface>
   <interface name="org.opensuse.Agama.Storage1.Proposal">
-    <property type="s" name="BootDevice" access="read"/>
-    <property type="b" name="LVM" access="read"/>
-    <property type="as" name="SystemVGDevices" access="read"/>
-    <property type="s" name="EncryptionPassword" access="read"/>
-    <property type="s" name="EncryptionMethod" access="read"/>
-    <property type="s" name="EncryptionPBKDFunction" access="read"/>
-    <property type="s" name="SpacePolicy" access="read"/>
-    <property type="aa{sv}" name="Volumes" access="read"/>
+    <property type="a{sv}" name="Settings" access="read"/>
     <property type="aa{sv}" name="Actions" access="read"/>
   </interface>
 </node>

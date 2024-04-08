@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,19 +20,18 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
-require "agama/storage/volume_conversion"
-require "agama/storage/volume"
 require "agama/config"
+require "agama/storage/proposal_settings"
+require "agama/storage/volume"
+require "agama/storage/volume_conversion"
 require "y2storage"
 
 describe Agama::Storage::VolumeConversion do
   describe "#from_y2storage" do
-    let(:config) { Agama::Config.new }
+    let(:volume) { Agama::Storage::Volume.new("/test") }
 
-    let(:spec) { Y2Storage::VolumeSpecification.new({}) }
-
-    it "generates a volume from a Y2Storage volume spec" do
-      result = described_class.from_y2storage(spec, config: config)
+    it "generates a volume" do
+      result = described_class.from_y2storage(volume)
       expect(result).to be_a(Agama::Storage::Volume)
     end
   end
@@ -40,7 +39,7 @@ describe Agama::Storage::VolumeConversion do
   describe "#to_y2storage" do
     let(:volume) { Agama::Storage::Volume.new("/test") }
 
-    it "generates a Y2Storage volume spec from a volume" do
+    it "generates a Y2Storage volume spec" do
       result = described_class.to_y2storage(volume)
       expect(result).to be_a(Y2Storage::VolumeSpecification)
     end
