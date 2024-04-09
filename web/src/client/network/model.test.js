@@ -45,17 +45,16 @@ describe("createConnection", () => {
     const addresses = [{ address: "192.168.0.1", prefix: 24 }];
     const connection = createConnection({ addresses, testing: 1 });
     expect(connection.method4).toEqual("auto");
-    expect(connection.gateway4).toEqual("auto");
-    expect(connection.addresses).toEqual([]);
-    expect(connection.nameservers).toEqual(addresses);
+    expect(connection.gateway4).toEqual("");
+    expect(connection.addresses).toEqual(addresses);
+    expect(connection.nameservers).toEqual([]);
   });
-});
 
-it("adds a wireless key when given", () => {
-  const wireless = { ssid: "MY_WIRELESS" };
-  const connection = createConnection({ id: "Wireless connection 1", wireless });
-  expect(connection.wireless).toEqual(wireless);
-});
+  it("adds a wireless key when given", () => {
+    const wireless = { ssid: "MY_WIRELESS" };
+    const connection = createConnection({ id: "Wireless connection 1", wireless });
+    expect(connection.wireless).toEqual(wireless);
+  });
 });
 
 describe("createAccessPoint", () => {
