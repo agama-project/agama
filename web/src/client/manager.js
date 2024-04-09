@@ -44,10 +44,10 @@ class ManagerBaseClient {
    *
    * The progress of the probing process can be tracked through installer signals.
    *
-   * @return {Promise<void>}
+   * @return {Promise<Response>}
    */
   startProbing() {
-    return this.client.post("/manager/probe");
+    return this.client.post("/manager/probe", {});
   }
 
   /**
@@ -55,10 +55,10 @@ class ManagerBaseClient {
    *
    * The progress of the installation process can be tracked through installer signals.
    *
-   * @return {Promise}
+   * @return {Promise<Response>}
    */
   startInstallation() {
-    return this.client.post("/manager/install");
+    return this.client.post("/manager/install", {});
   }
 
   /**
@@ -70,7 +70,12 @@ class ManagerBaseClient {
    * @return {Promise<boolean>}
    */
   async canInstall() {
-    const installer = await this.client.get("/manager/installer");
+    const response = await this.client.get("/manager/installer");
+    if (!response.ok) {
+      console.log("Failed to get installer config: ", response);
+      return false;
+    }
+    const installer = await response.json();
     return installer.canInstall;
   }
 
@@ -90,7 +95,12 @@ class ManagerBaseClient {
    * @return {Promise<number>}
    */
   async getPhase() {
-    const installer = await this.client.get("/manager/installer");
+    const response = await this.client.get("/manager/installer");
+    if (!response.ok) {
+      console.log("Failed to get installer config: ", response);
+      return 0;
+    }
+    const installer = await response.json();
     return installer.phase;
   }
 
@@ -112,7 +122,7 @@ class ManagerBaseClient {
    * Runs cleanup when installation is done
    */
   finishInstallation() {
-    return this.client.post("/manager/finish");
+    return this.client.post("/manager/finish", {});
   }
 
   /**
@@ -121,7 +131,12 @@ class ManagerBaseClient {
    * @return {Promise<boolean>}
    */
   async useIguana() {
-    const installer = await this.client.get("/manager/installer");
+    const response = await this.client.get("/manager/installer");
+    if (!response.ok) {
+      console.log("Failed to get installer config: ", response);
+      return false;
+    }
+    const installer = await response.json();
     return installer.iguana;
   }
 }

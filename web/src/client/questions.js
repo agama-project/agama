@@ -72,7 +72,12 @@ class QuestionsClient {
    * @return {Promise<Array<object>>}
    */
   async getQuestions() {
-    const questions = await this.client.get("/questions");
+    const response = await this.client.get("/questions");
+    if (!response.ok) {
+      console.log("Failed to get questions: ", response);
+      return [];
+    }
+    const questions = await response.json();
     return questions.map(buildQuestion);
   }
 

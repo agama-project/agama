@@ -92,8 +92,14 @@ const WithIssues = (superclass, issues_path, dbus_path) =>
      * @return {Promise<Issue[]>}
      */
     async getIssues() {
-      const issues = await this.client.get(issues_path);
-      return issues.map(buildIssue);
+      const response = await this.client.get(issues_path);
+      if (!response.ok) {
+        console.log("get issues failed with:", response);
+        return [];
+      } else {
+        const issues = await response.json();
+        return issues.map(buildIssue);
+      }
     }
 
     /**
@@ -137,8 +143,14 @@ const WithStatus = (superclass, status_path, service_name) =>
      * @return {Promise<number>} 0 for idle, 1 for busy
      */
     async getStatus() {
-      const status = await this.client.get(status_path);
-      return status.current;
+      const response = await this.client.get(status_path);
+      if (!response.ok) {
+        console.log("get status failed with:", response);
+        return 1; // lets use busy to be on safe side
+      } else {
+        const status = await response.json();
+        return status.current;
+      }
     }
 
     /**
@@ -187,15 +199,24 @@ const WithProgress = (superclass, progress_path, service_name) =>
      *   the current step and whether the service finished or not.
      */
     async getProgress() {
-      const { current_step, max_steps, current_title, finished } = await this.client.get(
-        progress_path,
-      );
-      return {
-        total: max_steps,
-        current: current_step,
-        message: current_title,
-        finished,
-      };
+      const response = await this.client.get(progress_path);
+      if (!response.ok) {
+        console.log("get progress failed with:", response);
+        return {
+          total: 0,
+          current: 0,
+          message: "Failed to get progress",
+          finished: false
+        };
+      } else {
+        const { current_step, max_steps, current_title, finished } = await response.json();
+        return {
+          total: max_steps,
+          current: current_step,
+          message: current_title,
+          finished,
+        };
+      }
     }
 
     /**
@@ -252,15 +273,16 @@ const WithValidation = (superclass, validation_path, service_name) => class exte
    * @return {Promise<ValidationError[]>}
    */
   async getValidationErrors() {
-    let response;
-
-    try {
-      response = await this.client.get(validation_path);
-    } catch (error) {
-      console.error(`Could not get validation errors for ${validation_path}`, error);
+    const response = await this.client.get(validation_path);
+    if (!response.ok) {
+      console.log("get validation failed with:", response);
+      return [{
+        message: "Failed to validate",
+      }];
+    } else {
+      const data = await response.json();
+      return data.errors.map(createError);
     }
-
-    return response.errors.map(createError);
   }
 
   /**

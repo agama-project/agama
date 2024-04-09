@@ -60,7 +60,12 @@ class L10nClient {
    * @return {Promise<String>} Locale ID.
    */
   async getUILocale() {
-    const config = await this.client.get("/l10n/config");
+    const response = await this.client.get("/l10n/config");
+    if (!response.ok) {
+      console.log("Failed to get localizaation config: ", response);
+      return "";
+    }
+    const config = await response.json();
     return config.uiLocale;
   }
 
@@ -68,7 +73,7 @@ class L10nClient {
    * Sets the locale to translate the installer UI.
    *
    * @param {String} id - Locale ID.
-   * @return {Promise<void>}
+   * @return {Promise<Response>}
    */
   async setUILocale(id) {
     return this.client.patch("/l10n/config", { uiLocale: id });
@@ -82,7 +87,12 @@ class L10nClient {
    * @return {Promise<String>} Keymap ID.
    */
   async getUIKeymap() {
-    const config = await this.client.get("/l10n/config");
+    const response = await this.client.get("/l10n/config");
+    if (!response.ok) {
+      console.log("Failed to get localizaation config: ", response);
+      return "";
+    }
+    const config = await response.json();
     return config.uiKeymap;
   }
 
@@ -92,7 +102,7 @@ class L10nClient {
    * This setting is only relevant in the local installation.
    *
    * @param {String} id - Keymap ID.
-   * @return {Promise<void>}
+   * @return {Promise<Response>}
    */
   async setUIKeymap(id) {
     return this.client.patch("/l10n/config", { uiKeymap: id });
@@ -104,7 +114,12 @@ class L10nClient {
    * @return {Promise<Array<Timezone>>}
    */
   async timezones() {
-    const timezones = await this.client.get("/l10n/timezones");
+    const response = await this.client.get("/l10n/timezones");
+    if (!response.ok) {
+      console.log("Failed to get localizaation config: ", response);
+      return [];
+    }
+    const timezones = await response.json();
     return timezones.map(this.buildTimezone);
   }
 
@@ -136,7 +151,12 @@ class L10nClient {
    * @return {Promise<Array<Locale>>}
    */
   async locales() {
-    const locales = await this.client.get("/l10n/locales");
+    const response = await this.client.get("/l10n/locales");
+    if (!response.ok) {
+      console.log("Failed to get localizaation config: ", response);
+      return [];
+    }
+    const locales = await response.json();
     return locales.map(this.buildLocale);
   }
 
@@ -169,7 +189,12 @@ class L10nClient {
    * @return {Promise<Array<Keymap>>}
    */
   async keymaps() {
-    const keymaps = await this.client.get("/l10n/keymaps");
+    const response = await this.client.get("/l10n/keymaps");
+    if (!response.ok) {
+      console.log("Failed to get localizaation config: ", response);
+      return [];
+    }
+    const keymaps = await response.json();
     return keymaps.map(this.buildKeymap);
   }
 
@@ -242,7 +267,12 @@ class L10nClient {
    * @return {Promise<object>} Localization configuration.
    */
   async getConfig() {
-    return await this.client.get("/l10n/config");
+    const response = await this.client.get("/l10n/config");
+    if (!response.ok) {
+      console.log("Failed to get localization config: ", response);
+      return {};
+    }
+    return await response.json();
   }
 
   /**
@@ -251,7 +281,7 @@ class L10nClient {
    * Convenience method to set l10n the configuration.
    *
    * @param {object} data - Configuration to update. It can just part of the configuration.
-   * @return {Promise<object>}
+   * @return {Promise<Response>}
    */
   async setConfig(data) {
     return this.client.patch("/l10n/config", data);

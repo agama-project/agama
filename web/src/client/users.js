@@ -64,13 +64,12 @@ class UsersBaseClient {
    * @return {Promise<User>}
    */
   async getUser() {
-    const user = await this.client.get("/users/first");
-
-    if (user === null) {
+    const response = await this.client.get("/users/first");
+    if (!response.ok) {
+      console.log("Failed to get first user config: ", response);
       return { fullName: "", userName: "", password: "", autologin: false, data: {} };
     }
-
-    return user;
+    return response.json();
   }
 
   /**
@@ -79,8 +78,13 @@ class UsersBaseClient {
    * @return {Promise<boolean>}
    */
   async isRootPasswordSet() {
-    const proxy = await this.client.get("/users/root");
-    return proxy.password;
+    const response = await this.client.get("/users/root");
+    if (!response.ok) {
+      console.log("Failed to get root config: ", response);
+      return false;
+    }
+    const config = await response.json();
+    return config.password;
   }
 
   /**
@@ -130,8 +134,13 @@ class UsersBaseClient {
    * @return {Promise<String>} SSH public key or an empty string if it is not set
    */
   async getRootSSHKey() {
-    const proxy = await this.client.get("/users/root");
-    return proxy.sshkey;
+    const response = await this.client.get("/users/root");
+    if (!response.ok) {
+      console.log("Failed to get root config: ", response);
+      return "";
+    }
+    const config = await response.json();
+    return config.sshkey;
   }
 
   /**
