@@ -38,7 +38,7 @@ import { If } from "~/components/core";
  * @property {IconName} [icon] - The name of the icon for the field.
  * @property {IconSize} [iconSize="s"] - The size for the field icon.
  * @property {string} [className] - ClassName
- * @property {() => {}} [onClick] - Callback
+ * @property {() => void} [onClick] - Callback
  * @property {React.ReactNode} [children] - A content to be rendered as field children
  *
  * @typedef {Omit<FieldProps, 'icon'>} FieldPropsWithoutIcon

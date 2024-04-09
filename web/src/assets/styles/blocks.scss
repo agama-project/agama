@@ -760,6 +760,12 @@ section [data-type="agama/reminder"] {
       text-decoration: underline;
       text-underline-offset: var(--spacer-smaller);
     }
+
+    div.pf-v5-c-skeleton {
+      display: inline-block;
+      vertical-align: middle;
+      height: 1.5ex;
+    }
   }
 
   > div:nth-child(n+2) {
