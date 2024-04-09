@@ -28,7 +28,9 @@ import { WifiNetworkListItem } from "~/components/network";
 
 jest.mock("~/components/network/WifiConnectionForm", () => () => <div>WifiConnectionForm mock</div>);
 jest.mock("~/components/network/WifiNetworkMenu", () => () => <div>WifiNetworkMenu mock</div>);
+import { createClient } from "~/client";
 
+jest.mock("~/client");
 const onSelectCallback = jest.fn();
 const fakeNetwork = {
   ssid: "Fake Wi-Fi AP",
@@ -42,7 +44,33 @@ const fakeSettings = {
   }
 };
 
+const accessPoints = [{
+  ssid: "Fake Wi-Fi AP",
+  hw_address: "00:11:22:33:44:55",
+  strength: 61,
+  security: ["WPA2"]
+}];
+
+const settingsFn = jest.fn();
+const networkSettings = { wireless_enabled: false, hostname: "test", networking_enabled: true, connectivity: true };
+
 describe("NetworkListItem", () => {
+  beforeEach(() => {
+    settingsFn.mockReturnValue({ ...networkSettings });
+
+    createClient.mockImplementation(() => {
+      return {
+        network: {
+          setUp: () => Promise.resolve(true),
+          connections: () => Promise.resolve([]),
+          accessPoints: () => Promise.resolve(accessPoints),
+          onNetworkEvent: jest.fn(),
+          settings: () => Promise.resolve(settingsFn())
+        }
+      };
+    });
+  });
+
   it("renders an input radio for selecting the network", async () => {
     installerRender(<WifiNetworkListItem network={fakeNetwork} />);
 

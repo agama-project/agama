@@ -4,7 +4,7 @@
 //! agnostic from the real network service (e.g., NetworkManager).
 use crate::network::error::NetworkStateError;
 use agama_lib::network::settings::{BondSettings, NetworkConnection, WirelessSettings};
-use agama_lib::network::types::{BondMode, DeviceType, SSID};
+use agama_lib::network::types::{BondMode, DeviceType, Status, SSID};
 use cidr::IpInet;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
@@ -149,9 +149,9 @@ impl NetworkState {
     /// Removes a connection from the state.
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
-    pub fn remove_connection(&mut self, uuid: Uuid) -> Result<(), NetworkStateError> {
-        let Some(conn) = self.get_connection_by_uuid_mut(uuid) else {
-            return Err(NetworkStateError::UnknownConnection(uuid.to_string()));
+    pub fn remove_connection(&mut self, id: &str) -> Result<(), NetworkStateError> {
+        let Some(conn) = self.get_connection_mut(id) else {
+            return Err(NetworkStateError::UnknownConnection(id.to_string()));
         };
 
         conn.remove();
@@ -311,7 +311,7 @@ mod tests {
         let conn0 = Connection::new("eth0".to_string(), DeviceType::Ethernet);
         let uuid = conn0.uuid;
         state.add_connection(conn0).unwrap();
-        state.remove_connection(uuid).unwrap();
+        state.remove_connection("eth0".as_ref()).unwrap();
         let found = state.get_connection("eth0").unwrap();
         assert!(found.is_removed());
     }
@@ -319,7 +319,7 @@ mod tests {
     #[test]
     fn test_remove_unknown_connection() {
         let mut state = NetworkState::default();
-        let error = state.remove_connection(Uuid::new_v4()).unwrap_err();
+        let error = state.remove_connection("unknown".as_ref()).unwrap_err();
         assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
     }
 
@@ -404,19 +404,23 @@ mod tests {
 #[serde_as]
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct GeneralState {
+    pub hostname: String,
     pub connectivity: bool,
     pub wireless_enabled: bool,
     pub networking_enabled: bool, // pub network_state: NMSTATE
-                                  // pub dns: GlobalDnsConfiguration <HashMap>
 }
 
 /// Access Point
+#[serde_as]
 #[derive(Default, Debug, Clone, Serialize, utoipa::ToSchema)]
 pub struct AccessPoint {
+    #[serde_as(as = "DisplayFromStr")]
     pub ssid: SSID,
     pub hw_address: String,
     pub strength: u8,
-    pub security_protocols: Vec<SecurityProtocol>,
+    pub flags: u32,
+    pub rsn_flags: u32,
+    pub wpa_flags: u32,
 }
 
 /// Network device
@@ -532,6 +536,10 @@ impl TryFrom<NetworkConnection> for Connection {
             connection.ip_config.method6 = method;
         }
 
+        if let Some(status) = conn.status {
+            connection.status = status;
+        }
+
         if let Some(wireless_config) = conn.wireless {
             let config = WirelessConfig::try_from(wireless_config)?;
             connection.config = config.into();
@@ -542,6 +550,7 @@ impl TryFrom<NetworkConnection> for Connection {
             connection.config = config.into();
         }
 
+        connection.ip_config.addresses = conn.addresses;
         connection.ip_config.nameservers = conn.nameservers;
         connection.ip_config.gateway4 = conn.gateway4;
         connection.ip_config.gateway6 = conn.gateway6;
@@ -559,15 +568,17 @@ impl TryFrom<Connection> for NetworkConnection {
         let mac = conn.mac_address.to_string();
         let method4 = Some(conn.ip_config.method4.to_string());
         let method6 = Some(conn.ip_config.method6.to_string());
-        let mac_address = (!mac.is_empty()).then(|| mac);
-        let nameservers = conn.ip_config.nameservers.into();
-        let addresses = conn.ip_config.addresses.into();
-        let gateway4 = conn.ip_config.gateway4.into();
-        let gateway6 = conn.ip_config.gateway6.into();
-        let interface = conn.interface.into();
+        let mac_address = (!mac.is_empty()).then_some(mac);
+        let nameservers = conn.ip_config.nameservers;
+        let addresses = conn.ip_config.addresses;
+        let gateway4 = conn.ip_config.gateway4;
+        let gateway6 = conn.ip_config.gateway6;
+        let interface = conn.interface;
+        let status = Some(conn.status);
 
         let mut connection = NetworkConnection {
             id,
+            status,
             method4,
             method6,
             gateway4,
@@ -687,14 +698,6 @@ impl From<InvalidMacAddress> for zbus::fdo::Error {
     fn from(value: InvalidMacAddress) -> Self {
         zbus::fdo::Error::Failed(value.to_string())
     }
-}
-
-#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize)]
-pub enum Status {
-    #[default]
-    Up,
-    Down,
-    Removed,
 }
 
 #[skip_serializing_none]

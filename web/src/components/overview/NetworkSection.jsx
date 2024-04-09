@@ -30,43 +30,28 @@ import { _, n_ } from "~/i18n";
 
 export default function NetworkSection() {
   const { network: client } = useInstallerClient();
-  const [initialized, setInitialized] = useState(false);
-  const [connections, setConnections] = useState([]);
+  const [connections, setConnections] = useState(undefined);
 
   useEffect(() => {
-    client.setUp().then(() => setInitialized(true));
-  }, [client]);
+    if (connections !== undefined) return;
 
-  useEffect(() => {
-    if (initialized) {
-      setConnections(client.activeConnections());
-    }
-  }, [client, initialized]);
-
-  useEffect(() => {
-    if (!initialized) return;
-
-    return client.onNetworkEvent(() => {
-      setConnections(client.activeConnections());
-    });
-  }, [client, initialized]);
+    client.connections().then(setConnections);
+  }, [client, connections]);
 
   const Content = () => {
-    if (!initialized) return <SectionSkeleton />;
+    if (connections === undefined) return <SectionSkeleton />;
 
-    const activeConnections = connections.filter(c => [ConnectionTypes.WIFI, ConnectionTypes.ETHERNET].includes(c.type));
+    if (connections.length === 0) return _("No network connections detected");
 
-    if (activeConnections.length === 0) return _("No network connections detected");
-
-    const summary = activeConnections.map(connection => (
-      <Em key={connection.uuid}>{connection.id} - {connection.addresses.map(formatIp)}</Em>
+    const summary = connections.map(connection => (
+      <Em key={connection.id}>{connection.id} - {connection.addresses.map(formatIp).join(", ")}</Em>
     ));
 
     const msg = sprintf(
       // TRANSLATORS: header for the list of active network connections,
       // %d is replaced by the number of active connections
-      n_("%d connection set:", "%d connections set:", activeConnections.length),
-      activeConnections.length
+      n_("%d connection set:", "%d connections set:", connections.length),
+      connections.length
     );
 
     return (
@@ -82,7 +67,7 @@ export default function NetworkSection() {
       // TRANSLATORS: page section title
       title={_("Network")}
       icon="settings_ethernet"
-      loading={!initialized}
+      loading={!connections}
       path="/network"
       id="network"
     >

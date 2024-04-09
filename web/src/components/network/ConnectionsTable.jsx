@@ -82,12 +82,12 @@ export default function ConnectionsTable({
           ].filter(Boolean);
 
           return (
-            <Tr key={connection.uuid}>
+            <Tr key={connection.id}>
               <Td dataLabel={_("Name")}>{connection.id}</Td>
-              <Td dataLabel={_("IP addresses")}>{connection.addresses.map(formatIp).join(", ")}</Td>
+              <Td dataLabel={_("IP addresses")}>{connection.addresses?.map(formatIp).join(", ")}</Td>
               <Td isActionCell>
                 <RowActions
-                  id={`actions-for-connection-${connection.uuid}`}
+                  id={`actions-for-connection-${connection.id}`}
                   // TRANSLATORS: %s is replaced by a network connection name
                   aria-label={sprintf(_("Actions for connection %s"), connection.id)}
                   actions={actions}

@@ -42,7 +42,11 @@ export default function OverviewPage() {
   }
 
   // return (
-  //     <NetworkSection />
+  //   <Page
+  //     icon="list_alt"
+  //     // TRANSLATORS: page title
+  //     title={_("Installation Summary")}
+  //   >
   //     <StorageSection showErrors />
   //   </Page>
   // );
@@ -55,6 +59,7 @@ export default function OverviewPage() {
     >
       <ProductSection />
       <L10nSection />
+      <NetworkSection />
       <SoftwareSection showErrors />
       <UsersSection showErrors={showErrors} />
 

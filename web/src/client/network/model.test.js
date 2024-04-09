@@ -31,33 +31,31 @@ describe("createConnection", () => {
     expect(connection).toEqual({
       id: "Wired connection 1",
       iface: undefined,
-      uuid: undefined,
-      ipv4: {
-        method: "auto",
-        addresses: [],
-        nameServers: [],
-        gateway: ""
-      }
+      method4: "auto",
+      method6: "auto",
+      addresses: [],
+      nameservers: [],
+      gateway4: "",
+      gateway6: ""
     });
     expect(connection.wireless).toBeUndefined();
   });
 
   it("merges given properties", () => {
     const addresses = [{ address: "192.168.0.1", prefix: 24 }];
-    const connection = createConnection({ ipv4: { addresses, testing: 1 } });
-    expect(connection.ipv4).toEqual({
-      method: "auto",
-      addresses,
-      nameServers: [],
-      gateway: ""
-    });
+    const connection = createConnection({ addresses, testing: 1 });
+    expect(connection.method4).toEqual("auto");
+    expect(connection.gateway4).toEqual("auto");
+    expect(connection.addresses).toEqual([]);
+    expect(connection.nameservers).toEqual(addresses);
   });
+});
 
-  it("adds a wireless key when given", () => {
-    const wireless = { ssid: "MY_WIRELESS" };
-    const connection = createConnection({ id: "Wireless connection 1", wireless });
-    expect(connection.wireless).toEqual(wireless);
-  });
+it("adds a wireless key when given", () => {
+  const wireless = { ssid: "MY_WIRELESS" };
+  const connection = createConnection({ id: "Wireless connection 1", wireless });
+  expect(connection.wireless).toEqual(wireless);
+});
 });
 
 describe("createAccessPoint", () => {

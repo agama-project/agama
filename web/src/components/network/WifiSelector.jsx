@@ -35,7 +35,8 @@ function WifiSelector({ isOpen = false, onClose }) {
   const [networks, setNetworks] = useState([]);
   const [showHiddenForm, setShowHiddenForm] = useState(false);
   const [connections, setConnections] = useState([]);
-  const [activeConnections, setActiveConnections] = useState(client.network.activeConnections());
+  const [activeConnections, setActiveConnections] = useState([]);
+  const [accessPoints, setAccessPoints] = useState([]);
   const [selectedNetwork, setSelectedNetwork] = useState(null);
   const [activeNetwork, setActiveNetwork] = useState(null);
 
@@ -46,13 +47,14 @@ function WifiSelector({ isOpen = false, onClose }) {
 
   useEffect(() => {
     client.network.connections().then(setConnections);
+    client.network.accessPoints().then(setAccessPoints);
   }, [client.network]);
 
   useEffect(() => {
     const loadNetworks = async () => {
       const knownSsids = [];
 
-      return client.network.accessPoints()
+      return accessPoints
         .sort((a, b) => b.strength - a.strength)
         .reduce((networks, ap) => {
           // Do not include networks without SSID
@@ -85,50 +87,7 @@ function WifiSelector({ isOpen = false, onClose }) {
       setNetworks(data);
       setActiveNetwork(networksFromValues(data).find(d => d.connection));
     });
-  }, [client.network, connections, activeConnections, isOpen]);
-
-  useEffect(() => {
-    return client.network.onNetworkEvent(({ type, payload }) => {
-      switch (type) {
-        case NetworkEventTypes.CONNECTION_ADDED: {
-          setConnections(conns => [...conns, payload]);
-          break;
-        }
-
-        case NetworkEventTypes.CONNECTION_UPDATED: {
-          setConnections(conns => {
-            const newConnections = conns.filter(c => c.id !== payload.id);
-            return [...newConnections, payload];
-          });
-          break;
-        }
-
-        case NetworkEventTypes.CONNECTION_REMOVED: {
-          setConnections(conns => conns.filter(c => c.path !== payload.path));
-          break;
-        }
-
-        case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
-          setActiveConnections(conns => [...conns, payload]);
-          break;
-        }
-
-        case NetworkEventTypes.ACTIVE_CONNECTION_UPDATED: {
-          setActiveConnections(conns => {
-            const newConnections = conns.filter(c => c.id !== payload.id);
-            return [...newConnections, payload];
-          });
-          break;
-        }
-
-        case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
-          setActiveConnections(conns => conns.filter(c => c.id !== payload.id));
-          if (selectedNetwork?.settings?.id === payload.id) switchSelectedNetwork(null);
-          break;
-        }
-      }
-    });
-  });
+  }, [client.network, connections, activeConnections, accessPoints, isOpen]);
 
   return (
     <Popup isOpen={isOpen} title={_("Connect to a Wi-Fi network")}>
