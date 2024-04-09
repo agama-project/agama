@@ -55,6 +55,43 @@ pub enum DeviceType {
     Bridge = 6,
 }
 
+#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum Status {
+    #[default]
+    Up,
+    Down,
+    Removed,
+}
+
+impl fmt::Display for Status {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            Status::Up => "up",
+            Status::Down => "down",
+            Status::Removed => "removed",
+        };
+        write!(f, "{}", name)
+    }
+}
+
+#[derive(Debug, Error, PartialEq)]
+#[error("Invalid status: {0}")]
+pub struct InvalidStatus(String);
+
+impl TryFrom<&str> for Status {
+    type Error = InvalidStatus;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "up" => Ok(Status::Up),
+            "down" => Ok(Status::Down),
+            "removed" => Ok(Status::Removed),
+            _ => Err(InvalidStatus(value.to_string())),
+        }
+    }
+}
+
 /// Bond mode
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy)]
 pub enum BondMode {

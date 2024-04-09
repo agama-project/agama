@@ -7,8 +7,8 @@ use super::dbus::{
 };
 use super::model::NmDeviceType;
 use super::proxies::{
-    AccessPointProxy, ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy,
-    WirelessProxy,
+    AccessPointProxy, ActiveConnectionProxy, ConnectionProxy, DeviceProxy, NetworkManagerProxy,
+    SettingsProxy, WirelessProxy,
 };
 use crate::network::model::{AccessPoint, Connection, Device, GeneralState};
 use agama_lib::error::ServiceError;
@@ -47,6 +47,8 @@ impl<'a> NetworkManagerClient<'a> {
     }
     /// Returns the general state
     pub async fn general_state(&self) -> Result<GeneralState, ServiceError> {
+        let proxy = SettingsProxy::new(&self.connection).await?;
+        let hostname = proxy.hostname().await?;
         let wireless_enabled = self.nm_proxy.wireless_enabled().await?;
         let networking_enabled = self.nm_proxy.networking_enabled().await?;
         // TODO:: Allow to set global DNS configuration
@@ -55,6 +57,7 @@ impl<'a> NetworkManagerClient<'a> {
         let connectivity = self.nm_proxy.connectivity().await? == 4;
 
         Ok(GeneralState {
+            hostname,
             wireless_enabled,
             networking_enabled,
             connectivity,
@@ -120,12 +123,17 @@ impl<'a> NetworkManagerClient<'a> {
                     let ssid = SSID(wproxy.ssid().await?);
                     let hw_address = wproxy.hw_address().await?;
                     let strength = wproxy.strength().await?;
+                    let flags = wproxy.flags().await?;
+                    let rsn_flags = wproxy.rsn_flags().await?;
+                    let wpa_flags = wproxy.wpa_flags().await?;
 
                     points.push(AccessPoint {
                         ssid,
                         hw_address,
                         strength,
-                        security_protocols: vec![],
+                        flags,
+                        rsn_flags,
+                        wpa_flags,
                     })
                 }
             }
@@ -177,12 +185,16 @@ impl<'a> NetworkManagerClient<'a> {
                 .await?;
             let settings = proxy.get_settings().await?;
 
-            if let Some(connection) = connection_from_dbus(settings.clone()) {
+            if let Some(mut connection) = connection_from_dbus(settings.clone()) {
                 if let Some(controller) = controller_from_dbus(&settings) {
                     controlled_by.insert(connection.uuid, controller.to_string());
                 }
                 if let Some(iname) = &connection.interface {
                     uuids_map.insert(iname.to_string(), connection.uuid);
+                }
+
+                if self.settings_active_connection(path).await?.is_none() {
+                    connection.set_down()
                 }
                 connections.push(connection);
             }
@@ -288,17 +300,19 @@ impl<'a> NetworkManagerClient<'a> {
     /// * `path`: D-Bus patch of the connection.
     async fn deactivate_connection(&self, path: OwnedObjectPath) -> Result<(), ServiceError> {
         let proxy = NetworkManagerProxy::new(&self.connection).await?;
-        match proxy.deactivate_connection(&path.as_ref()).await {
-            Err(e) => {
+
+        if let Some(active_connection) = self.settings_active_connection(path.clone()).await? {
+            if let Err(e) = proxy
+                .deactivate_connection(&active_connection.as_ref())
+                .await
+            {
                 // Ignore ConnectionNotActive error since this just means the state is already correct
-                if e.to_string().contains("ConnectionNotActive") {
-                    Ok(())
-                } else {
-                    Err(ServiceError::DBus(e))
+                if !e.to_string().contains("ConnectionNotActive") {
+                    return Err(ServiceError::DBus(e));
                 }
             }
-            _ => Ok(()),
         }
+        Ok(())
     }
 
     async fn get_connection_proxy(&self, uuid: Uuid) -> Result<ConnectionProxy, ServiceError> {
@@ -310,5 +324,24 @@ impl<'a> NetworkManagerClient<'a> {
             .build()
             .await?;
         Ok(proxy)
+    }
+
+    async fn settings_active_connection(
+        &self,
+        path: OwnedObjectPath,
+    ) -> Result<Option<OwnedObjectPath>, ServiceError> {
+        for active_path in &self.nm_proxy.active_connections().await? {
+            let proxy = ActiveConnectionProxy::builder(&self.connection)
+                .path(active_path.as_str())?
+                .build()
+                .await?;
+
+            let connection = proxy.connection().await?;
+            if path == connection {
+                return Ok(Some(active_path.to_owned()));
+            };
+        }
+
+        Ok(None)
     }
 }

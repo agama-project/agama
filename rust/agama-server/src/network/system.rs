@@ -91,19 +91,30 @@ impl<T: Adapter> NetworkSystem<T> {
                 tx.send(self.state.access_points.clone()).unwrap();
             }
             Action::NewConnection(conn, tx) => {
-                let result = self.new_connection_action(conn).await;
-                tx.send(result).unwrap();
+                tx.send(self.state.add_connection(*conn)).unwrap();
             }
             Action::GetGeneralState(tx) => {
                 let config = self.state.general_state.clone();
                 tx.send(config.clone()).unwrap();
             }
-            Action::GetConnection(uuid, tx) => {
+            Action::GetConnection(id, tx) => {
+                let conn = self.state.get_connection(id.as_ref());
+                tx.send(conn.cloned()).unwrap();
+            }
+            Action::GetConnectionByUuid(uuid, tx) => {
                 let conn = self.state.get_connection_by_uuid(uuid);
                 tx.send(conn.cloned()).unwrap();
             }
             Action::GetConnections(tx) => {
-                tx.send(self.state.connections.clone()).unwrap();
+                let connections = self
+                    .state
+                    .connections
+                    .clone()
+                    .into_iter()
+                    .filter(|c| !c.is_removed())
+                    .collect();
+
+                tx.send(connections).unwrap();
             }
             Action::GetConnectionPath(uuid, tx) => {
                 let tree = self.tree.lock().await;
@@ -142,16 +153,15 @@ impl<T: Adapter> NetworkSystem<T> {
                 let result = self.set_ports_action(uuid, *ports);
                 rx.send(result).unwrap();
             }
-            Action::UpdateConnection(conn) => {
-                self.state.update_connection(*conn)?;
+            Action::UpdateConnection(conn, tx) => {
+                let result = self.state.update_connection(*conn);
+                tx.send(result).unwrap();
             }
             Action::UpdateGeneralState(general_state) => {
                 self.state.general_state = general_state;
             }
-            Action::RemoveConnection(uuid, tx) => {
-                let mut tree = self.tree.lock().await;
-                tree.remove_connection(uuid).await?;
-                let result = self.state.remove_connection(uuid);
+            Action::RemoveConnection(id, tx) => {
+                let result = self.state.remove_connection(id.as_str());
 
                 tx.send(result).unwrap();
             }
@@ -188,20 +198,6 @@ impl<T: Adapter> NetworkSystem<T> {
         ty: DeviceType,
     ) -> Result<OwnedObjectPath, NetworkStateError> {
         let conn = Connection::new(name, ty);
-        // TODO: handle tree handling problems
-        self.state.add_connection(conn.clone())?;
-        let mut tree = self.tree.lock().await;
-        let path = tree
-            .add_connection(&conn)
-            .await
-            .expect("Could not update the D-Bus tree");
-        Ok(path)
-    }
-
-    async fn new_connection_action(
-        &mut self,
-        conn: Connection,
-    ) -> Result<OwnedObjectPath, NetworkStateError> {
         // TODO: handle tree handling problems
         self.state.add_connection(conn.clone())?;
         let mut tree = self.tree.lock().await;
