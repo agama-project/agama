@@ -68,6 +68,15 @@ const mockSettings = {
   networking_enabled: true
 }
 
+const mockJsonFn = jest.fn();
+
+const mockGetFn = jest.fn().mockImplementation(() => {
+  return {
+    ok: true,
+    json: mockJsonFn,
+  };
+});
+
 jest.mock("./http", () => {
   return {
     HTTPClient: jest.fn().mockImplementation(() => {
@@ -78,14 +87,12 @@ jest.mock("./http", () => {
   };
 });
 
-const mockGetFn = jest.fn();
-
 describe("NetworkClient", () => {
   describe("#connections", () => {
     it("returns the list of active connections from the adapter", async () => {
       const http = new HTTPClient(new URL(ADDRESS));
       const client = new NetworkClient(http);
-      mockGetFn.mockResolvedValue([mockWiredConnection, mockWirelessConnection]);
+      mockJsonFn.mockResolvedValue([mockWiredConnection, mockWirelessConnection]);
       const connections = await client.connections();
       const eth0 = connections.find(c => c.id === "eth0");
       expect(eth0).toEqual(mockConnection);
@@ -96,7 +103,7 @@ describe("NetworkClient", () => {
     it("returns the list of addresses", async () => {
       const http = new HTTPClient(new URL(ADDRESS));
       const client = new NetworkClient(http);
-      mockGetFn.mockResolvedValue([mockWiredConnection, mockWirelessConnection]);
+      mockJsonFn.mockResolvedValue([mockWiredConnection, mockWirelessConnection]);
       const addresses = await client.addresses();
       expect(addresses).toEqual([{ address: "192.168.122.100", prefix: 24 }]);
     });
@@ -107,7 +114,7 @@ describe("NetworkClient", () => {
     it("returns network general settings", async () => {
       const http = new HTTPClient(new URL(ADDRESS));
       const client = new NetworkClient(http);
-      mockGetFn.mockResolvedValue(mockSettings);
+      mockJsonFn.mockResolvedValue(mockSettings);
       const settings = await client.settings();
       expect(settings.hostname).toEqual("localhost.localdomain");
     });

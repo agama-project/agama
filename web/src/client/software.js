@@ -169,7 +169,7 @@ class BaseProductManager {
    * @returns {string}
    */
   registrationRequirement(value) {
-    let requirement;
+    let requirement = "unknown";
 
     switch (value) {
       case 0:
@@ -206,10 +206,10 @@ class SoftwareBaseClient {
   /**
    * Asks the service to reload the repositories metadata
    *
-   * @return {Promise<void>}
+   * @return {Promise<Response>}
    */
   probe() {
-    return this.client.post("/software/probe");
+    return this.client.post("/software/probe", {});
   }
 
   /**
@@ -217,8 +217,13 @@ class SoftwareBaseClient {
    *
    * @return {Promise<SoftwareProposal>}
    */
-  getProposal() {
-    return this.client.get("/software/proposal");
+  async getProposal() {
+    const response = await this.client.get("/software/proposal");
+    if (!response.ok) {
+      console.log("Failed to get software proposal: ", response);
+    }
+
+    return response.json();
   }
 
   /**
@@ -227,8 +232,13 @@ class SoftwareBaseClient {
    * @return {Promise<Pattern[]>}
    */
   async getPatterns() {
+    const response = await this.client.get("/software/patterns");
+    if (!response.ok) {
+      console.log("Failed to get software patterns: ", response);
+      return [];
+    }
     /** @type Array<{ name: string, category: string, summary: string, description: string, order: string, icon: string }> */
-    const patterns = await this.client.get("/software/patterns");
+    const patterns = await response.json();
     return patterns.map((pattern) => ({
       name: pattern.name,
       category: pattern.category,
@@ -249,7 +259,7 @@ class SoftwareBaseClient {
   /**
    * @param {Object.<string, boolean>} patterns - An object where the keys are the pattern names
    *   and the values whether to install them or not.
-   * @return {Promise<void>}
+   * @return {Promise<Response>}
    */
   selectPatterns(patterns) {
     return this.client.put("/software/config", { patterns });
@@ -295,8 +305,11 @@ class ProductBaseClient {
    * @return {Promise<Array<Product>>}
    */
   async getAll() {
-    const products = await this.client.get("/software/products");
-    return products;
+    const response = await this.client.get("/software/products");
+    if (!response.ok) {
+      console.log("Failed to get software products: ", response);
+    }
+    return response.json();
   }
 
   /**
@@ -305,7 +318,11 @@ class ProductBaseClient {
    * @return {Promise<string>} Selected identifier.
    */
   async getSelected() {
-    const config = await this.client.get("/software/config");
+    const response = await this.client.get("/software/config");
+    if (!response.ok) {
+      console.log("Failed to get software config: ", response);
+    }
+    const config = await response.json();
     return config.product;
   }
 

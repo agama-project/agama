@@ -95,7 +95,7 @@ class HTTPClient {
 
   /**
    * @param {string} url - Endpoint URL (e.g., "/l10n/config").
-   * @return {Promise<object>} Server response.
+   * @return {Promise<Response>} Server response.
    */
   async get(url) {
     const response = await fetch(`${this.baseUrl}${url}`, {
@@ -103,13 +103,13 @@ class HTTPClient {
         "Content-Type": "application/json",
       },
     });
-    return await response.json();
+    return response;
   }
 
   /**
    * @param {string} url - Endpoint URL (e.g., "/l10n/config").
    * @param {object} data - Data to submit
-   * @return {Promise<object>} Server response.
+   * @return {Promise<Response>} Server response.
    */
   async post(url, data) {
     const response = await fetch(`${this.baseUrl}${url}`, {
@@ -120,18 +120,13 @@ class HTTPClient {
       },
     });
 
-    try {
-      return await response.json();
-    } catch (e) {
-      console.warn("Expecting a JSON response", e);
-      return response.status === 200;
-    }
+    return response;
   }
 
   /**
    * @param {string} url - Endpoint URL (e.g., "/l10n/config").
    * @param {object} data - Data to submit
-   * @return {Promise<object>} Server response.
+   * @return {Promise<Response>} Server response.
    */
   async put(url, data) {
     const response = await fetch(`${this.baseUrl}${url}`, {

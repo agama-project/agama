@@ -25,6 +25,15 @@ import DBusClient from "./dbus";
 import { HTTPClient } from "./http";
 import { ProductClient, SoftwareClient } from "./software";
 
+const mockJsonFn = jest.fn();
+
+const mockGetFn = jest.fn().mockImplementation(() => {
+  return {
+    ok: true,
+    json: mockJsonFn,
+  };
+});
+
 jest.mock("./http", () => {
   return {
     HTTPClient: jest.fn().mockImplementation(() => {
@@ -34,8 +43,6 @@ jest.mock("./http", () => {
     }),
   };
 });
-
-const mockGetFn = jest.fn();
 
 jest.mock("./dbus");
 
@@ -82,7 +89,7 @@ describe("ProductClient", () => {
     it.only("returns the list of available products", async () => {
       const http = new HTTPClient(new URL("http://localhost"));
       const client = new ProductClient(http);
-      mockGetFn.mockResolvedValue([tumbleweed, microos]);
+      mockJsonFn.mockResolvedValue([tumbleweed, microos]);
       const products = await client.getAll();
       expect(products).toEqual([
         { id: "Tumbleweed", name: "openSUSE Tumbleweed", description: "Tumbleweed is..." },
@@ -95,7 +102,7 @@ describe("ProductClient", () => {
     it.only("returns the selected product", async () => {
       const http = new HTTPClient(new URL("http://localhost"));
       const client = new ProductClient(http);
-      mockGetFn.mockResolvedValue({ product: "microos" });
+      mockJsonFn.mockResolvedValue({ product: "microos" });
       const selected = await client.getSelected();
       expect(selected).toEqual("microos");
     });
