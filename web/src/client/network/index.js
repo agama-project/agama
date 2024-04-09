@@ -106,8 +106,13 @@ class NetworkClient {
    * @return {Promise<Connection[]>}
    */
   async connections() {
-    const connections = await this.client.get("/network/connections");
+    const response = await this.client.get("/network/connections");
+    if (!response.ok) {
+      console.error("Failed to get list of connections", response);
+      return [];
+    }
 
+    const connections = await response.json();
     return connections.map(this.fromApiConnection);
   }
 
@@ -141,9 +146,14 @@ class NetworkClient {
    * @return {Promise<AccessPoint[]>}
    */
   async accessPoints() {
-    const access_points = await this.client.get("/network/wifi");
+    const response = await this.client.get("/network/wifi");
+    if (!response.ok) {
+      console.error("Failed to get list of APs", response);
+      return [];
+    }
+    const access_points = await response.json();
 
-    return access_points.map(ap => {
+    return access_points.map((ap) => {
       return createAccessPoint({
         ssid: ap.ssid,
         hwAddress: ap.hw_address,
@@ -169,7 +179,7 @@ class NetworkClient {
    * Apply network changes
    */
   async apply() {
-    return this.client.put("/network/system/apply");
+    return this.client.put("/network/system/apply", {});
   }
 
   /**
@@ -205,7 +215,13 @@ class NetworkClient {
    * @return {Promise<Connection>} the added connection
    */
   async addConnection(connection) {
-    return this.client.post("/network/connections", this.toApiConnection(connection));
+    const response = await this.client.post("/network/connections", this.toApiConnection(connection));
+    if (!response.ok) {
+      console.error("Failed to post list of connections", response);
+      return null;
+    }
+
+    return response.json();
   }
 
   /**
@@ -232,7 +248,7 @@ class NetworkClient {
   async updateConnection(connection) {
     const conn = this.toApiConnection(connection);
     await this.client.put(`/network/connections/${conn.id}`, conn);
-    return this.apply();
+    return (await this.apply()).ok;
   }
 
   /**
@@ -246,7 +262,7 @@ class NetworkClient {
    */
   async deleteConnection(id) {
     await this.client.delete(`/network/connections/${id}`);
-    return this.apply();
+    return (await this.apply()).ok;
   }
 
   /*
@@ -266,8 +282,13 @@ class NetworkClient {
   *
    * @return {Promise<NetworkSettings>}
   */
-  settings() {
-    return this.client.get("/network/state");
+  async settings() {
+    const response = await this.client.get("/network/settings");
+    if (!response.ok) {
+      console.error("Failed to get settings", response);
+      return {};
+    }
+    return response.json();
   }
 }
 

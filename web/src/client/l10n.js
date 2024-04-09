@@ -62,7 +62,7 @@ class L10nClient {
   async getUILocale() {
     const response = await this.client.get("/l10n/config");
     if (!response.ok) {
-      console.log("Failed to get localizaation config: ", response);
+      console.error("Failed to get localization config: ", response);
       return "";
     }
     const config = await response.json();
@@ -89,7 +89,7 @@ class L10nClient {
   async getUIKeymap() {
     const response = await this.client.get("/l10n/config");
     if (!response.ok) {
-      console.log("Failed to get localizaation config: ", response);
+      console.error("Failed to get localizaation config: ", response);
       return "";
     }
     const config = await response.json();
@@ -116,7 +116,7 @@ class L10nClient {
   async timezones() {
     const response = await this.client.get("/l10n/timezones");
     if (!response.ok) {
-      console.log("Failed to get localizaation config: ", response);
+      console.error("Failed to get localizaation config: ", response);
       return [];
     }
     const timezones = await response.json();
@@ -153,7 +153,7 @@ class L10nClient {
   async locales() {
     const response = await this.client.get("/l10n/locales");
     if (!response.ok) {
-      console.log("Failed to get localizaation config: ", response);
+      console.error("Failed to get localizaation config: ", response);
       return [];
     }
     const locales = await response.json();
@@ -191,7 +191,7 @@ class L10nClient {
   async keymaps() {
     const response = await this.client.get("/l10n/keymaps");
     if (!response.ok) {
-      console.log("Failed to get localizaation config: ", response);
+      console.error("Failed to get localizaation config: ", response);
       return [];
     }
     const keymaps = await response.json();
@@ -269,7 +269,7 @@ class L10nClient {
   async getConfig() {
     const response = await this.client.get("/l10n/config");
     if (!response.ok) {
-      console.log("Failed to get localization config: ", response);
+      console.error("Failed to get localization config: ", response);
       return {};
     }
     return await response.json();

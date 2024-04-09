@@ -72,7 +72,7 @@ class ManagerBaseClient {
   async canInstall() {
     const response = await this.client.get("/manager/installer");
     if (!response.ok) {
-      console.log("Failed to get installer config: ", response);
+      console.error("Failed to get installer config: ", response);
       return false;
     }
     const installer = await response.json();
@@ -97,7 +97,7 @@ class ManagerBaseClient {
   async getPhase() {
     const response = await this.client.get("/manager/installer");
     if (!response.ok) {
-      console.log("Failed to get installer config: ", response);
+      console.error("Failed to get installer config: ", response);
       return 0;
     }
     const installer = await response.json();
@@ -133,7 +133,7 @@ class ManagerBaseClient {
   async useIguana() {
     const response = await this.client.get("/manager/installer");
     if (!response.ok) {
-      console.log("Failed to get installer config: ", response);
+      console.error("Failed to get installer config: ", response);
       return false;
     }
     const installer = await response.json();
