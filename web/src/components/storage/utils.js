@@ -215,7 +215,7 @@ const deviceLabel = (device) => {
 const deviceChildren = (device) => {
   const partitionTableChildren = (partitionTable) => {
     const { partitions, unusedSlots } = partitionTable;
-    const children = partitions.concat(unusedSlots);
+    const children = partitions.concat(unusedSlots).filter(i => !!i);
     return children.sort((a, b) => a.start < b.start ? -1 : 1);
   };
 

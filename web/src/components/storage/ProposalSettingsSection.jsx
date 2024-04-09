@@ -25,8 +25,9 @@ import React, { useEffect, useState } from "react";
 import { Button, Checkbox, Form, Skeleton, Switch, Tooltip } from "@patternfly/react-core";
 
 import { sprintf } from "sprintf-js";
-import { _, n_ } from "~/i18n";
-import { BootSelectionDialog, ProposalVolumes, SpacePolicyDialog } from "~/components/storage";
+import { _ } from "~/i18n";
+import { BootSelectionDialog, ProposalVolumes } from "~/components/storage";
+import SpacePolicyField from "~/components/storage/SpacePolicyField";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
@@ -327,72 +328,6 @@ const BootConfigField = ({
             configureBoot={configureBoot}
             bootDevice={bootDevice}
             defaultBootDevice={defaultBootDevice}
-            devices={devices}
-            onAccept={onAccept}
-            onCancel={closeDialog}
-          />
-        }
-      />
-    </div>
-  );
-};
-
-/**
- * Allows to select the space policy.
- * @component
- *
- * @param {object} props
- * @param {SpacePolicy|undefined} props.policy
- * @param {SpaceAction[]} props.actions
- * @param {StorageDevice[]} props.devices
- * @param {boolean} props.isLoading
- * @param {(config: SpacePolicyConfig) => void} props.onChange
- *
- * @typedef {object} SpacePolicyConfig
- * @property {SpacePolicy} spacePolicy
- * @property {SpaceAction[]} spaceActions
- */
-const SpacePolicyField = ({
-  policy,
-  actions,
-  devices,
-  isLoading,
-  onChange
-}) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const openDialog = () => setIsDialogOpen(true);
-
-  const closeDialog = () => setIsDialogOpen(false);
-
-  const onAccept = ({ spacePolicy, spaceActions }) => {
-    closeDialog();
-    onChange({ spacePolicy, spaceActions });
-  };
-
-  const label = () => {
-    // eslint-disable-next-line agama-i18n/string-literals
-    if (policy.summaryLabels.length === 1) return _(policy.summaryLabels[0]);
-
-    // eslint-disable-next-line agama-i18n/string-literals
-    return sprintf(n_(policy.summaryLabels[0], policy.summaryLabels[1], devices.length), devices.length);
-  };
-
-  if (isLoading || !policy) {
-    return <Skeleton screenreaderText={_("Waiting for information about space policy")} width="25%" />;
-  }
-
-  return (
-    <div className="split">
-      <span>{_("Find space")}</span>
-      <Button variant="link" isInline onClick={openDialog}>{label()}</Button>
-      <If
-        condition={isDialogOpen}
-        then={
-          <SpacePolicyDialog
-            isOpen
-            policy={policy}
-            actions={actions}
             devices={devices}
             onAccept={onAccept}
             onCancel={closeDialog}
