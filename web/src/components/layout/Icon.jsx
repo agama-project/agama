@@ -172,13 +172,9 @@ const PREDEFINED_SIZES = [
  * @returns {JSX.Element|null} null if requested icon is not available or given a falsy value as name; JSX block otherwise.
  */
 export default function Icon({ name, size, ...otherProps }) {
-  if (!name) {
-    console.error(`Icon called without name. '${name}' given instead. Rendering nothing.`);
-    return null;
-  }
-
-  if (!icons[name]) {
-    console.error(`Icon '${name}' not found!`);
+  // NOTE: Reaching this is unlikely, but let's be safe.
+  if (!name || !icons[name]) {
+    console.error(`Icon '${name}' not found.`);
     return null;
   }
 
