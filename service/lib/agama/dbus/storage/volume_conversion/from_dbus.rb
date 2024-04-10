@@ -51,9 +51,19 @@ module Agama
             dbus_volume_issues.each { |i| logger.warn(i) }
 
             builder = Agama::Storage::VolumeTemplatesBuilder.new_from_config(config)
-            builder.for(dbus_volume["MountPath"] || "").tap do |target|
+            ret = builder.for(dbus_volume["MountPath"] || "").tap do |target|
               valid_dbus_properties.each { |p| conversion(target, p) }
             end
+
+            # The `undefined` value is used as a value for unlimited size in the
+            # UI but D-Bus cannot send `undefined`, `nil` or `NULL` values. In
+            # that case the value is missing in the D-Bus data. Override the
+            # default from the config when the max size is missing.
+            if ret.max_size && !ret.max_size.unlimited? && !dbus_volume.key?("MaxSize")
+              ret.max_size = Y2Storage::DiskSize.unlimited
+            end
+
+            ret
           end
 
         private

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr 10 11:35:53 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed setting unlimited maximum partition size
+  (gh#openSUSE/agama#1065)
+
+-------------------------------------------------------------------
 Wed Apr  3 15:12:05 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Add new proposal settings to allow configuring the boot device
