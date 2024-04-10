@@ -391,7 +391,8 @@ describe Agama::DBus::Storage::Manager do
             expect(volume.mount_path).to eq("/")
             expect(volume.auto_size).to eq(false)
             expect(volume.min_size.to_i).to eq(5 * (1024**3))
-            expect(volume.max_size.to_i).to eq(20 * (1024**3))
+            # missing maximum value means unlimited size
+            expect(volume.max_size.to_i).to eq(-1)
             expect(volume.btrfs.snapshots).to eq(false)
           end
 

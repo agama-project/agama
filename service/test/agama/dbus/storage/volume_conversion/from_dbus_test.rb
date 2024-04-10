@@ -113,7 +113,8 @@ describe Agama::DBus::Storage::VolumeConversion::FromDBus do
         expect(volume.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
         expect(volume.auto_size?).to eq(false)
         expect(volume.min_size.to_i).to eq(5 * (1024**3))
-        expect(volume.max_size.to_i).to eq(10 * (1024**3))
+        # missing maximum value means unlimited size
+        expect(volume.max_size.to_i).to eq(-1)
         expect(volume.btrfs.snapshots?).to eq(false)
       end
     end
