@@ -138,6 +138,14 @@
   padding: 0;
 }
 
+.inline-flex-button{
+  @extend .plain-button;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7ch;
+  text-decoration: underline;
+}
+
 .p-0 {
   padding: 0;
 }

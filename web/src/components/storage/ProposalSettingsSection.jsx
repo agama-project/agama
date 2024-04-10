@@ -22,16 +22,16 @@
 // @ts-check
 
 import React, { useEffect, useState } from "react";
-import { Button, Checkbox, Form, Skeleton, Switch, Tooltip } from "@patternfly/react-core";
+import { Checkbox, Form, Skeleton, Switch, Tooltip } from "@patternfly/react-core";
 
-import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { BootSelectionDialog, ProposalVolumes } from "~/components/storage";
+import { ProposalVolumes } from "~/components/storage";
 import SpacePolicyField from "~/components/storage/SpacePolicyField";
+import BootConfigField from "~/components/storage/BootConfigField";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
-import { hasFS, deviceLabel, SPACE_POLICIES } from "~/components/storage/utils";
+import { hasFS, SPACE_POLICIES } from "~/components/storage/utils";
 
 /**
  * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
@@ -263,78 +263,6 @@ const EncryptionField = ({
         </Popup.Actions>
       </Popup>
     </>
-  );
-};
-
-/**
- * Allows to select the boot config.
- * @component
- *
- * @param {object} props
- * @param {boolean} props.configureBoot
- * @param {StorageDevice|undefined} props.bootDevice
- * @param {StorageDevice|undefined} props.defaultBootDevice
- * @param {StorageDevice[]} props.devices
- * @param {boolean} props.isLoading
- * @param {(boot: Boot) => void} props.onChange
- *
- * @typedef {object} Boot
- * @property {boolean} configureBoot
- * @property {StorageDevice} bootDevice
- */
-const BootConfigField = ({
-  configureBoot,
-  bootDevice,
-  defaultBootDevice,
-  devices,
-  isLoading,
-  onChange
-}) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const openDialog = () => setIsDialogOpen(true);
-
-  const closeDialog = () => setIsDialogOpen(false);
-
-  const onAccept = ({ configureBoot, bootDevice }) => {
-    closeDialog();
-    onChange({ configureBoot, bootDevice });
-  };
-
-  const label = _("Automatically configure any additional partition to boot the system");
-
-  const value = () => {
-    if (!configureBoot) return _("nowhere (manual boot setup)");
-
-    if (!bootDevice) return _("at the installation device");
-
-    // TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
-    return sprintf(_("at %s"), deviceLabel(bootDevice));
-  };
-
-  if (isLoading) {
-    return <Skeleton screenreaderText={_("Waiting for information about boot config")} width="25%" />;
-  }
-
-  return (
-    <div className="split">
-      <span>{label}</span>
-      <Button variant="link" isInline onClick={openDialog}>{value()}</Button>
-      <If
-        condition={isDialogOpen}
-        then={
-          <BootSelectionDialog
-            isOpen
-            configureBoot={configureBoot}
-            bootDevice={bootDevice}
-            defaultBootDevice={defaultBootDevice}
-            devices={devices}
-            onAccept={onAccept}
-            onCancel={closeDialog}
-          />
-        }
-      />
-    </div>
   );
 };
 
