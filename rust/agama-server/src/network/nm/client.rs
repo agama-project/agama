@@ -1,5 +1,5 @@
 //! NetworkManager client.
-use std::collections::HashMap;
+use std::{collections::HashMap, net::IpAddr, str::FromStr};
 
 use super::dbus::{
     cleanup_dbus_connection, connection_from_dbus, connection_to_dbus, controller_from_dbus,
@@ -7,16 +7,20 @@ use super::dbus::{
 };
 use super::model::NmDeviceType;
 use super::proxies::{
-    AccessPointProxy, ActiveConnectionProxy, ConnectionProxy, DeviceProxy, NetworkManagerProxy,
-    SettingsProxy, WirelessProxy,
+    AccessPointProxy, ActiveConnectionProxy, ConnectionProxy, DeviceProxy, IP4ConfigProxy,
+    IP6ConfigProxy, NetworkManagerProxy, SettingsProxy, WirelessProxy,
 };
-use crate::network::model::{AccessPoint, Connection, Device, GeneralState};
+use crate::network::model::{
+    AccessPoint, Connection, Device, GeneralState, IpConfig, IpRoute, MacAddress,
+};
 use agama_lib::error::ServiceError;
 use agama_lib::network::types::{DeviceType, SSID};
+use cidr::IpInet;
 use log;
+use macaddr::MacAddr6;
 use uuid::Uuid;
 use zbus;
-use zbus::zvariant::{ObjectPath, OwnedObjectPath};
+use zbus::zvariant::{self, ObjectPath, OwnedObjectPath};
 
 /// Simplified NetworkManager D-Bus client.
 ///
@@ -141,6 +145,17 @@ impl<'a> NetworkManagerClient<'a> {
 
         Ok(points)
     }
+
+    pub fn mac_address_from_dbus(&self, mac: &str) -> MacAddress {
+        match MacAddress::from_str(mac) {
+            Ok(mac) => mac,
+            Err(_) => {
+                log::warn!("Unable to parse mac {}", &mac);
+                MacAddress::Unset
+            }
+        }
+    }
+
     /// Returns the list of network devices.
     pub async fn devices(&self) -> Result<Vec<Device>, ServiceError> {
         let mut devs = vec![];
@@ -152,11 +167,26 @@ impl<'a> NetworkManagerClient<'a> {
 
             let device_name = proxy.interface().await?;
             let device_type = NmDeviceType(proxy.device_type().await?);
+            let ip4_path = proxy.ip4_config().await?;
+            let ip6_path = proxy.ip6_config().await?;
+            let state = proxy.state().await?;
+            let mac_address = self.mac_address_from_dbus(proxy.hw_address().await?.as_str());
+            let ip_config = if state == 100 {
+                let config = &self.ip_config_for(&ip4_path, &ip6_path).await?;
+
+                Some(config.to_owned())
+            } else {
+                None
+            };
+
             if let Ok(device_type) = device_type.try_into() {
-                devs.push(Device {
+                let device = Device {
                     name: device_name,
                     type_: device_type,
-                });
+                    mac_address,
+                    ip_config,
+                };
+                devs.push(device);
             } else {
                 // TODO: use a logger
                 log::warn!(
@@ -168,6 +198,140 @@ impl<'a> NetworkManagerClient<'a> {
         }
 
         Ok(devs)
+    }
+
+    pub fn address_with_prefix_from_dbus(
+        &self,
+        address_data: HashMap<String, zbus::zvariant::OwnedValue>,
+    ) -> Option<IpInet> {
+        let addr_str: &str = address_data.get("address")?.downcast_ref()?;
+        let prefix: &u32 = address_data.get("prefix")?.downcast_ref()?;
+        let prefix = *prefix as u8;
+        let address = IpInet::new(addr_str.parse().unwrap(), prefix).ok()?;
+        Some(address)
+    }
+
+    pub fn nameserver_from_dbus(
+        &self,
+        nameserver_data: HashMap<String, zbus::zvariant::OwnedValue>,
+    ) -> Option<IpAddr> {
+        let addr_str: &str = nameserver_data.get("address")?.downcast_ref()?;
+        Some(addr_str.parse().unwrap())
+    }
+
+    pub fn route_from_dbus(
+        &self,
+        route_data: HashMap<String, zbus::zvariant::OwnedValue>,
+    ) -> Option<IpRoute> {
+        let dest_str: &str = route_data.get("dest")?.downcast_ref()?;
+        let prefix: u8 = *route_data.get("prefix")?.downcast_ref::<u32>()? as u8;
+        let destination = IpInet::new(dest_str.parse().unwrap(), prefix).ok()?;
+        let mut new_route = IpRoute {
+            destination,
+            next_hop: None,
+            metric: None,
+        };
+
+        if let Some(next_hop) = route_data.get("next-hop") {
+            let next_hop_str: &str = next_hop.downcast_ref()?;
+            new_route.next_hop = Some(IpAddr::from_str(next_hop_str).unwrap());
+        }
+        if let Some(metric) = route_data.get("metric") {
+            let metric: u32 = *metric.downcast_ref()?;
+            new_route.metric = Some(metric);
+        }
+
+        Some(new_route)
+    }
+
+    pub async fn ip_config_for(
+        &self,
+        ip4_path: &ObjectPath<'_>,
+        ip6_path: &ObjectPath<'_>,
+    ) -> Result<IpConfig, ServiceError> {
+        let ip4_proxy = IP4ConfigProxy::builder(&self.connection)
+            .path(ip4_path.as_str())?
+            .build()
+            .await?;
+
+        let ip6_proxy = IP6ConfigProxy::builder(&self.connection)
+            .path(ip6_path.as_str())?
+            .build()
+            .await?;
+
+        let address_data = ip4_proxy.address_data().await?;
+        let nameserver_data = ip4_proxy.nameserver_data().await?;
+        let mut addresses: Vec<IpInet> = vec![];
+        let mut nameservers: Vec<IpAddr> = vec![];
+
+        for addr in address_data {
+            if let Some(address) = self.address_with_prefix_from_dbus(addr) {
+                addresses.push(address)
+            }
+        }
+
+        let address_data = ip6_proxy.address_data().await?;
+        for addr in address_data {
+            if let Some(address) = self.address_with_prefix_from_dbus(addr) {
+                addresses.push(address)
+            }
+        }
+
+        for nameserver in nameserver_data {
+            if let Some(address) = self.nameserver_from_dbus(nameserver) {
+                nameservers.push(address)
+            }
+        }
+        let nameserver_data = ip6_proxy.nameservers().await?;
+        for nameserver in nameserver_data {
+            // FIXME: Convert from Vec<u8> to u16
+            dbg!(nameserver);
+        }
+        let route_data = ip4_proxy.route_data().await?;
+        let mut routes4: Vec<IpRoute> = vec![];
+        if !route_data.is_empty() {
+            for route in route_data {
+                if let Some(route) = self.route_from_dbus(route) {
+                    routes4.push(route)
+                }
+            }
+        }
+
+        let mut routes6: Vec<IpRoute> = vec![];
+        let route_data = ip6_proxy.route_data().await?;
+        if !route_data.is_empty() {
+            for route in route_data {
+                if let Some(route) = self.route_from_dbus(route) {
+                    routes6.push(route)
+                }
+            }
+        }
+
+        let ip4_gateway = ip4_proxy.gateway().await?;
+        let ip6_gateway = ip6_proxy.gateway().await?;
+
+        let mut ip_config = IpConfig {
+            addresses,
+            nameservers,
+            ..Default::default()
+        };
+
+        if !ip4_gateway.is_empty() {
+            ip_config.gateway4 = Some(ip4_gateway.parse().unwrap());
+        };
+        if !ip6_gateway.is_empty() {
+            ip_config.gateway6 = Some(ip6_gateway.parse().unwrap());
+        };
+
+        if !routes4.is_empty() {
+            ip_config.routes4 = Some(routes4);
+        }
+
+        if !routes6.is_empty() {
+            ip_config.routes6 = Some(routes6);
+        }
+
+        Ok(ip_config)
     }
 
     /// Returns the list of network connections.

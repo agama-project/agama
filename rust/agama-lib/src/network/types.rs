@@ -44,9 +44,10 @@ impl From<SSID> for Vec<u8> {
     }
 }
 
-#[derive(Debug, PartialEq, Copy, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Copy, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub enum DeviceType {
     Loopback = 0,
+    #[default]
     Ethernet = 1,
     Wireless = 2,
     Dummy = 3,

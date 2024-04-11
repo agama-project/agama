@@ -424,17 +424,24 @@ pub struct AccessPoint {
 }
 
 /// Network device
-#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde_as]
+#[skip_serializing_none]
+#[derive(Default, Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Device {
     pub name: String,
     #[serde(rename = "type")]
     pub type_: DeviceType,
+    #[serde_as(as = "DisplayFromStr")]
+    pub mac_address: MacAddress,
+    pub ip_config: Option<IpConfig>,
 }
 
 /// Represents a known network connection.
 #[serde_as]
 #[skip_serializing_none]
 #[derive(Debug, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Connection {
     pub id: String,
     pub uuid: Uuid,
@@ -815,6 +822,7 @@ impl From<UnknownIpMethod> for zbus::fdo::Error {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IpRoute {
     pub destination: IpInet,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -884,6 +892,7 @@ pub struct VlanConfig {
 
 #[serde_as]
 #[derive(Debug, Default, PartialEq, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct WirelessConfig {
     pub mode: WirelessMode,
     #[serde_as(as = "DisplayFromStr")]
