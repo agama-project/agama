@@ -64,21 +64,20 @@ jest.mock("./http", () => {
   };
 });
 
-const FirstUser = {
+const firstUser = {
   fullName: "Jane Doe",
   userName: "jane",
   password: "12345",
   autologin: false,
   data: {}
 };
-const RootPasswordSet = false;
-const RootSSHKey = "ssh-key";
+const rootSSHKey = "ssh-key";
 
 describe("#getUser", () => {
   it("returns the defined first user", async () => {
     const http = new HTTPClient(new URL("http://localhost"));
     const client = new UsersClient(http);
-    mockJsonFn.mockResolvedValue(FirstUser);
+    mockJsonFn.mockResolvedValue(firstUser);
     const user = await client.getUser();
     expect(user).toEqual({
       fullName: "Jane Doe",
@@ -116,7 +115,7 @@ describe("#getRootSSHKey", () => {
   it("returns the SSH key for the root user", async () => {
     const http = new HTTPClient(new URL("http://localhost"));
     const client = new UsersClient(http);
-    mockJsonFn.mockResolvedValue({ sshkey: RootSSHKey });
+    mockJsonFn.mockResolvedValue({ sshkey: rootSSHKey });
     const result = await client.getRootSSHKey();
     expect(result).toEqual("ssh-key");
   });
