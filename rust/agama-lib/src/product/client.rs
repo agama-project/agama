@@ -18,6 +18,28 @@ pub struct Product {
     pub description: String,
 }
 
+pub enum RegistrationRequirement {
+    /// Product does not require registration
+    NotRequired = 0,
+    /// Product has optional registration
+    Optional = 1,
+    /// It is mandatory to register product
+    Mandatory = 2,
+}
+
+impl TryFrom<u32> for RegistrationRequirement {
+    type Error = ();
+
+    fn try_from(v: u32) -> Result<Self, Self::Error> {
+        match v {
+            x if x == RegistrationRequirement::NotRequired as u32 => Ok(RegistrationRequirement::NotRequired),
+            x if x == RegistrationRequirement::Optional as u32 => Ok(RegistrationRequirement::Optional),
+            x if x == RegistrationRequirement::Mandatory as u32 => Ok(RegistrationRequirement::Mandatory),
+            _ => Err(()),
+        }
+    }
+}
+
 /// D-Bus client for the software service
 #[derive(Clone)]
 pub struct ProductClient<'a> {
@@ -86,6 +108,13 @@ impl<'a> ProductClient<'a> {
         Ok(self.registration_proxy.email().await?)
     }
 
+    pub async fn registration_requirement(&self) -> Result<RegistrationRequirement, ServiceError> {
+        let requirement = self.registration_proxy.requirement().await?;
+        // unknown number can happen only if we do programmer mistake
+        let result: RegistrationRequirement = requirement.try_into().unwrap();
+        Ok(result)
+    }
+
     /// register product
     pub async fn register(&self, code: &str, email: &str) -> Result<(u32, String), ServiceError> {
         let mut options: HashMap<&str, zbus::zvariant::Value> = HashMap::new();
@@ -93,5 +122,10 @@ impl<'a> ProductClient<'a> {
             options.insert("Email", zbus::zvariant::Value::new(email));
         }
         Ok(self.registration_proxy.register(code, options).await?)
+    }
+
+    /// de-register product
+    pub async fn deregister(&self) -> Result<(u32, String), ServiceError> {
+        Ok(self.registration_proxy.deregister().await?)
     }
 }
