@@ -111,7 +111,7 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
  * @property {boolean} delete
  *
  * @typedef {object} ProposalSettings
- * @property {string} target
+ * @property {ProposalTarget} target
  * @property {string} [targetDevice]
  * @property {string[]} targetPVDevices
  * @property {boolean} configureBoot
@@ -124,13 +124,15 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
  * @property {Volume[]} volumes
  * @property {StorageDevice[]} installationDevices
  *
+ * @typedef {keyof ProposalTargets} ProposalTarget
+ *
  * @typedef {object} SpaceAction
  * @property {string} device
  * @property {string} action
  *
  * @typedef {object} Volume
  * @property {string} mountPath
- * @property {string} target
+ * @property {VolumeTarget} target
  * @property {StorageDevice} [targetDevice]
  * @property {string} fsType
  * @property {number} minSize
@@ -140,14 +142,43 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
  * @property {boolean} transactional
  * @property {VolumeOutline} outline
  *
+ * @typedef {keyof VolumeTargets} VolumeTarget
+ *
+ * @todo Define an enum for file system types.
+ *
  * @typedef {object} VolumeOutline
  * @property {boolean} required
  * @property {string[]} fsTypes
+ * @property {boolean} adjustByRam
  * @property {boolean} supportAutoSize
  * @property {boolean} snapshotsConfigurable
  * @property {boolean} snapshotsAffectSizes
  * @property {string[]} sizeRelevantVolumes
  */
+
+/**
+ * Enum for the possible proposal targets.
+ *
+ * @readonly
+ */
+const ProposalTargets = Object.freeze({
+  DISK: "disk",
+  NEW_LVM_VG: "newLvmVg",
+  REUSED_LVM_VG: "reusedLvmVg"
+});
+
+/**
+ * Enum for the possible volume targets.
+ *
+ * @readonly
+ */
+const VolumeTargets = Object.freeze({
+  DEFAULT: "default",
+  NEW_PARTITION: "new_partition",
+  NEW_VG: "new_vg",
+  DEVICE: "device",
+  FILESYSTEM: "filesystem"
+});
 
 /**
  * Enum for the encryption method values
@@ -463,6 +494,23 @@ class ProposalManager {
         };
       };
 
+      /**
+       * Builds the proposal target from a D-Bus value.
+       *
+       * @param {string} dbusTarget
+       * @returns {ProposalTarget}
+       */
+      const buildTarget = (dbusTarget) => {
+        switch (dbusTarget) {
+          case "disk": return "DISK";
+          case "newLvmVg": return "NEW_LVM_VG";
+          case "reusedLvmVg": return "REUSED_LVM_VG";
+          default:
+            console.info(`Unknown proposal target "${dbusTarget}", using "disk".`);
+            return "DISK";
+        }
+      };
+
       const buildTargetPVDevices = dbusTargetPVDevices => {
         if (!dbusTargetPVDevices) return [];
 
@@ -474,7 +522,7 @@ class ProposalManager {
         const findDevice = (name) => {
           const device = devices.find(d => d.name === name);
 
-          if (device === undefined) console.log("D-Bus object not found: ", name);
+          if (device === undefined) console.error("D-Bus object not found: ", name);
 
           return device;
         };
@@ -489,14 +537,14 @@ class ProposalManager {
         const names = uniq(compact(values)).filter(d => d.length > 0);
 
         // #findDevice returns undefined if no device is found with the given name.
-        return compact(names.map(n => findDevice(n)));
+        return compact(names.map(findDevice));
       };
 
       const dbusSettings = proxy.Settings;
 
       return {
         settings: {
-          target: dbusSettings.Target.v,
+          target: buildTarget(dbusSettings.Target.v),
           targetDevice: dbusSettings.TargetDevice?.v,
           targetPVDevices: buildTargetPVDevices(dbusSettings.TargetPVDevices),
           configureBoot: dbusSettings.ConfigureBoot.v,
@@ -560,7 +608,7 @@ class ProposalManager {
         MinSize: { t: "t", v: volume.minSize },
         MaxSize: { t: "t", v: volume.maxSize },
         AutoSize: { t: "b", v: volume.autoSize },
-        Target: { t: "s", v: volume.target },
+        Target: { t: "s", v: VolumeTargets[volume.target] },
         TargetDevice: { t: "s", v: volume.targetDevice?.name },
         Snapshots: { t: "b", v: volume.snapshots },
         Transactional: { t: "b", v: volume.transactional },
@@ -568,7 +616,7 @@ class ProposalManager {
     };
 
     const dbusSettings = removeUndefinedCockpitProperties({
-      Target: { t: "s", v: target },
+      Target: { t: "s", v: ProposalTargets[target] },
       TargetDevice: { t: "s", v: targetDevice },
       TargetPVDevices: { t: "as", v: targetPVDevices },
       ConfigureBoot: { t: "b", v: configureBoot },
@@ -635,6 +683,25 @@ class ProposalManager {
    * @returns {Volume}
    */
   buildVolume(dbusVolume, devices) {
+    /**
+     * Builds a volume target from a D-Bus value.
+     *
+     * @param {string} dbusTarget
+     * @returns {VolumeTarget}
+     */
+    const buildTarget = (dbusTarget) => {
+      switch (dbusTarget) {
+        case "default": return "DEFAULT";
+        case "new_partition": return "NEW_PARTITION";
+        case "new_vg": return "NEW_VG";
+        case "device": return "DEVICE";
+        case "filesystem": return "FILESYSTEM";
+        default:
+          console.info(`Unknown volume target "${dbusTarget}", using "default".`);
+          return "DEFAULT";
+      }
+    };
+
     const buildOutline = (dbusOutline) => {
       if (dbusOutline === undefined) return null;
 
@@ -650,7 +717,7 @@ class ProposalManager {
     };
 
     return {
-      target: dbusVolume.Target.v,
+      target: buildTarget(dbusVolume.Target.v),
       targetDevice: devices.find(d => d.name === dbusVolume.TargetDevice?.v),
       mountPath: dbusVolume.MountPath.v,
       fsType: dbusVolume.FsType.v,

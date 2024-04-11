@@ -185,7 +185,7 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
 
   const SizeLimits = ({ volume }) => {
     let targetSize;
-    if (volume.target === "filesystem" || volume.target === "device")
+    if (volume.target === "FILESYSTEM" || volume.target === "DEVICE")
       targetSize = volume.targetDevice.size;
 
     const minSize = deviceSize(targetSize || volume.minSize);
@@ -210,7 +210,7 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
     const snapshots = hasSnapshots(volume);
     const transactional = isTransactionalRoot(volume);
 
-    if (volume.target === "filesystem")
+    if (volume.target === "FILESYSTEM")
       // TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
       return sprintf(_("Reused %s"), volume.targetDevice?.filesystem?.type || "");
     if (transactional)
@@ -225,12 +225,12 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
     if (volume.target === "new_partition")
       // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
       return sprintf(_("Partition at %s"), volume.targetDevice?.name || "");
-    if (volume.target === "new_vg")
+    if (volume.target === "NEW_VG")
       // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
       return sprintf(_("Separate LVM at %s"), volume.targetDevice?.name || "");
-    if (volume.target === "device" || volume.target === "filesystem")
+    if (volume.target === "DEVICE" || volume.target === "FILESYSTEM")
       return volume.targetDevice?.name || "";
-    if (options.lvm)
+    if (target === "NEW_LVM_VG")
       return _("Logical volume at system LVM");
 
     return _("Partition at installation disk");

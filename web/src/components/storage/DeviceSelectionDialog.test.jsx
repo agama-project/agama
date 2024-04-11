@@ -121,7 +121,7 @@ describe("DeviceSelectionDialog", () => {
   beforeEach(() => {
     props = {
       isOpen: true,
-      target: "disk",
+      target: "DISK",
       targetPVDevices: [],
       devices: [sda, sdb, sdc],
       onCancel: jest.fn(),
@@ -141,7 +141,7 @@ describe("DeviceSelectionDialog", () => {
 
   describe("if the target is a disk", () => {
     beforeEach(() => {
-      props.target = "disk";
+      props.target = "DISK";
       props.targetDevice = sda;
     });
 
@@ -188,7 +188,7 @@ describe("DeviceSelectionDialog", () => {
 
   describe("if the target is a new LVM volume group", () => {
     beforeEach(() => {
-      props.target = "newLvmVg";
+      props.target = "NEW_LVM_VG";
       props.targetPVDevices = [sda, sdc];
     });
 
@@ -244,7 +244,7 @@ describe("DeviceSelectionDialog", () => {
 
   describe("if the option to select a disk as target device is selected", () => {
     beforeEach(() => {
-      props.target = "newLvmVg";
+      props.target = "NEW_LVM_VG";
       props.targetDevice = sda;
     });
 
@@ -261,7 +261,7 @@ describe("DeviceSelectionDialog", () => {
       await user.click(accept);
 
       expect(props.onAccept).toHaveBeenCalledWith({
-        target: "disk",
+        target: "DISK",
         targetDevice: sdb,
         targetPVDevices: []
       });
@@ -270,7 +270,7 @@ describe("DeviceSelectionDialog", () => {
 
   describe("if the option to create a new LVM volume group is selected", () => {
     beforeEach(() => {
-      props.target = "disk";
+      props.target = "DISK";
       props.targetDevice = sdb;
     });
 
@@ -288,7 +288,7 @@ describe("DeviceSelectionDialog", () => {
       await user.click(accept);
 
       expect(props.onAccept).toHaveBeenCalledWith({
-        target: "newLvmVg",
+        target: "NEW_LVM_VG",
         targetDevice: sdb,
         targetPVDevices: [sda, sdc]
       });

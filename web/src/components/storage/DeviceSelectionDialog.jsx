@@ -50,7 +50,7 @@ const Html = ({ children, ...props }) => (
  * @component
  *
  * @param {object} props
- * @param {string} props.target
+ * @param {ProposalTarget} props.target
  * @param {StorageDevice|undefined} props.targetDevice
  * @param {StorageDevice[]} props.targetPVDevices
  * @param {StorageDevice[]} props.devices - The actions to perform in the system.
@@ -78,11 +78,11 @@ export default function DeviceSelectionDialog({
   const [targetDevice, setTargetDevice] = useState(defaultTargetDevice);
   const [targetPVDevices, setTargetPVDevices] = useState(defaultPVDevices);
 
-  const isTargetDisk = target === "disk";
-  const isTargetNewLvmVg = target === "newLvmVg";
+  const isTargetDisk = target === "DISK";
+  const isTargetNewLvmVg = target === "NEW_LVM_VG";
 
-  const selectTargetDisk = () => setTarget("disk");
-  const selectTargetNewLvmVG = () => setTarget("newLvmVg");
+  const selectTargetDisk = () => setTarget("DISK");
+  const selectTargetNewLvmVG = () => setTarget("NEW_LVM_VG");
 
   const selectTargetDevice = (devices) => setTargetDevice(devices[0]);
 

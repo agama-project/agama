@@ -44,7 +44,7 @@ const ProposalSummary = ({ proposal }) => {
     return device ? deviceLabel(device) : deviceName;
   };
 
-  if (result.settings?.target === "newLvmVg") {
+  if (result.settings.target === "NEW_LVM_VG") {
     // TRANSLATORS: Part of the message describing where the system will be installed.
     // Do not translate 'abbr' and 'title', they are part of the HTML markup.
     const vg = _("<abbr title='Logical Volume Manager'>LVM</abbr> volume group");
