@@ -28,10 +28,11 @@ import { _ } from "~/i18n";
 import { ProposalVolumes } from "~/components/storage";
 import SpacePolicyField from "~/components/storage/SpacePolicyField";
 import BootConfigField from "~/components/storage/BootConfigField";
+import SnapshotsField from "~/components/storage/SnapshotsField";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
-import { hasFS, SPACE_POLICIES } from "~/components/storage/utils";
+import { SPACE_POLICIES } from "~/components/storage/utils";
 
 /**
  * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
@@ -116,56 +117,6 @@ const EncryptionSettingsForm = ({
 };
 
 /**
- * Allows to define snapshots enablement
- * @component
- *
- * @param {object} props
- * @param {ProposalSettings} props.settings - Settings used for calculating a proposal.
- * @param {(config: SnapshotsConfig) => void} [props.onChange=noop] - On change callback
- *
- * @typedef {object} SnapshotsConfig
- * @property {boolean} active
- * @property {ProposalSettings} settings
- */
-const SnapshotsField = ({
-  settings,
-  onChange = noop
-}) => {
-  const rootVolume = (settings.volumes || []).find((i) => i.mountPath === "/");
-
-  // no root volume is probably some error or still loading
-  if (rootVolume === undefined) {
-    return <Skeleton width="25%" />;
-  }
-
-  const isChecked = rootVolume !== undefined && hasFS(rootVolume, "Btrfs") && rootVolume.snapshots;
-
-  const switchState = (_, checked) => {
-    onChange({ active: checked, settings });
-  };
-
-  if (!rootVolume.outline.snapshotsConfigurable) return;
-
-  const explanation = _("Uses Btrfs for the root file system allowing to boot to a previous \
-version of the system after configuration changes or software upgrades.");
-
-  return (
-    <div>
-      <Switch
-        id="snapshots"
-        label={_("Use Btrfs Snapshots")}
-        isReversed
-        isChecked={isChecked}
-        onChange={switchState}
-      />
-      <div>
-        {explanation}
-      </div>
-    </div>
-  );
-};
-
-/**
  * Allows to define encryption
  * @component
  *
@@ -246,7 +197,7 @@ const EncryptionField = ({
           isChecked={isChecked}
           onChange={changeSelected}
         />
-        { isChecked && <ChangeSettingsButton /> }
+        {isChecked && <ChangeSettingsButton />}
       </div>
       <Popup aria-label={_("Encryption settings")} title={_("Encryption settings")} isOpen={isFormOpen}>
         <EncryptionSettingsForm
@@ -292,7 +243,7 @@ export default function ProposalSettingsSection({
     onChange({ encryptionPassword: password, encryptionMethod: method });
   };
 
-  const changeBtrfsSnapshots = ({ active, settings }) => {
+  const changeBtrfsSnapshots = ({ active }) => {
     const rootVolume = settings.volumes.find((i) => i.mountPath === "/");
 
     if (active) {
@@ -338,12 +289,19 @@ export default function ProposalSettingsSection({
     ));
   };
 
+  const rootVolume = (settings.volumes || []).find((i) => i.mountPath === "/");
+
   return (
     <>
       <Section title={_("Settings")}>
-        <SnapshotsField
-          settings={settings}
-          onChange={changeBtrfsSnapshots}
+        <If
+          condition={rootVolume?.outline.snapshotsConfigurable}
+          then={
+            <SnapshotsField
+              rootVolume={rootVolume}
+              onChange={changeBtrfsSnapshots}
+            />
+          }
         />
         <EncryptionField
           password={settings.encryptionPassword || ""}

@@ -23,9 +23,9 @@
 
 import React from "react";
 import { Icon } from "~/components/layout";
-import { If } from "~/components/core";
 
 /**
+ * @typedef {import("react").ButtonHTMLAttributes} ButtonHTMLAttributes
  * @typedef {import("~/components/layout/Icon").IconName} IconName
  * @typedef {import("~/components/layout/Icon").IconSize} IconSize
  */
@@ -37,6 +37,8 @@ import { If } from "~/components/core";
  * @property {React.ReactNode} [description] - A field description, useful for providing context to the user.
  * @property {IconName} [icon] - The name of the icon for the field.
  * @property {IconSize} [iconSize="s"] - The size for the field icon.
+ * @property {("b"|"span")} [textWrapper="b"] - The element used for wrapping the label.
+ * @property {ButtonHTMLAttributes} [buttonAttrs={}] - The element used for wrapping the label.
  * @property {string} [className] - ClassName
  * @property {() => void} [onClick] - Callback
  * @property {React.ReactNode} [children] - A content to be rendered as field children
@@ -57,20 +59,24 @@ const Field = ({
   iconSize = "s",
   onClick,
   children,
+  textWrapper = "b",
+  buttonAttrs = {},
   ...props
 }) => {
+  const FieldIcon = () => icon?.length > 0 && <Icon name={icon} size={iconSize} />;
+  const TextWrapper = textWrapper;
   return (
     <div {...props} data-type="agama/field">
       <div>
-        <button className="plain-control" onClick={onClick}>
-          <If condition={icon?.length > 0} then={<Icon name={icon} size={iconSize} />} /> <b>{label}</b>
+        <button {...buttonAttrs} className="plain-button" onClick={onClick}>
+          <FieldIcon /> <TextWrapper>{label}</TextWrapper>
         </button> {value}
       </div>
       <div>
         {description}
       </div>
       <div>
-        { children }
+        {children}
       </div>
     </div>
   );
@@ -84,13 +90,20 @@ const SettingsField = ({ ...props }) => {
 };
 
 /**
- * @param {Omit<FieldProps, 'icon'> & {isChecked: true}} props
+ * @param {Omit<FieldProps, 'icon'> & {isChecked: boolean}} props
  */
-const SwitchField = ({ isChecked, ...props }) => {
+const SwitchField = ({ isChecked = false, ...props }) => {
   const iconName = isChecked ? "toggle_on" : "toggle_off";
   const className = isChecked ? "on" : "off";
 
-  return <Field {...props} icon={iconName} className={className} />;
+  return (
+    <Field
+      {...props}
+      icon={iconName}
+      className={className}
+      buttonAttrs={{ role: "switch", "aria-checked": isChecked }}
+    />
+  );
 };
 
 /**

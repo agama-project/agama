@@ -76,9 +76,26 @@ describe("SettingsField", () => {
 });
 
 describe("SwitchField", () => {
+  it("sets button role to switch", () => {
+    plainRender(<SwitchField label="Zoom" value="enabled" isChecked />);
+    const switchButton = screen.getByRole("switch", { name: "Zoom" });
+    expect(switchButton instanceof HTMLButtonElement).toBe(true);
+  });
+
+  it("keeps aria-checked attribute in sync with isChecked prop", () => {
+    let switchButton;
+    const { rerender } = plainRender(<SwitchField label="Zoom" value="enabled" isChecked />);
+    switchButton = screen.getByRole("switch", { name: "Zoom" });
+    expect(switchButton).toHaveAttribute("aria-checked", "true");
+
+    rerender(<SwitchField label="Zoom" value="disabled" />);
+    switchButton = screen.getByRole("switch", { name: "Zoom" });
+    expect(switchButton).toHaveAttribute("aria-checked", "false");
+  });
+
   it("uses the 'toggle_on' icon when isChecked", () => {
     const { container } = plainRender(
-      <SwitchField label="Zoom" value="active" isChecked />
+      <SwitchField label="Zoom" value="enabled" isChecked />
     );
     const icon = container.querySelector("button > svg");
     expect(icon).toHaveAttribute("data-icon-name", "toggle_on");
@@ -86,7 +103,7 @@ describe("SwitchField", () => {
 
   it("uses the 'toggle_off' icon when not isChecked", () => {
     const { container } = plainRender(
-      <SwitchField label="Zoom" value="not active" />
+      <SwitchField label="Zoom" value="disabled" />
     );
     const icon = container.querySelector("button > svg");
     expect(icon).toHaveAttribute("data-icon-name", "toggle_off");

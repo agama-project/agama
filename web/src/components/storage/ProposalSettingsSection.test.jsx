@@ -89,27 +89,28 @@ beforeEach(() => {
   };
 });
 
-describe("if snapshots are configurable", () => {
+const rootVolume = { mountPath: "/", fsType: "Btrfs", outline: { snapshotsConfigurable: true } };
+
+describe("when snapshots are configurable", () => {
   beforeEach(() => {
     props.settings.volumes = [volume];
   });
 
-  it("renders the snapshots switch", () => {
+  it("renders the snapshots field", () => {
     plainRender(<ProposalSettingsSection {...props} />);
-
-    screen.getByRole("checkbox", { name: "Use Btrfs Snapshots" });
+    screen.getByRole("switch", { name: /snapshots for the root file system/ });
   });
 });
 
-describe("if snapshots are not configurable", () => {
+describe("when snapshots are not configurable", () => {
   beforeEach(() => {
     volume.outline.snapshotsConfigurable = false;
   });
 
-  it("does not render the snapshots switch", () => {
+  it("does not render the snapshots field", () => {
     plainRender(<ProposalSettingsSection {...props} />);
-
-    expect(screen.queryByRole("checkbox", { name: "Use Btrfs Snapshots" })).toBeNull();
+    const snapshotsSwitch = screen.queryByRole("switch", { name: /snapshots for the root file system/ });
+    expect(snapshotsSwitch).toBeNull();
   });
 });
 
@@ -120,7 +121,7 @@ it("renders a section holding file systems related stuff", () => {
 });
 
 it("requests a volume change when onChange callback is triggered", async () => {
-  const { user } = plainRender(<ProposalSettingsSection {...props } />);
+  const { user } = plainRender(<ProposalSettingsSection {...props} />);
   const button = screen.getByRole("button", { name: "Actions" });
 
   await user.click(button);
