@@ -458,8 +458,8 @@ export default function ProposalSettingsSection({
     });
   };
 
-  const lvm = settings.target === "newLvmVg" || settings.target === "reusedLvmVg";
-  const encryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
+  const targetDevice = availableDevices.find(d => d.name === settings.targetDevice);
+  const useEncryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
   const { volumes = [], installationDevices = [], spaceActions = [] } = settings;
   const bootDevice = availableDevices.find(d => d.name === settings.bootDevice);
   const defaultBootDevice = availableDevices.find(d => d.name === settings.defaultBootDevice);
@@ -484,14 +484,16 @@ export default function ProposalSettingsSection({
           password={settings.encryptionPassword || ""}
           method={settings.encryptionMethod}
           methods={encryptionMethods}
-          isChecked={encryption}
+          isChecked={useEncryption}
           isLoading={settings.encryptionPassword === undefined}
           onChange={changeEncryption}
         />
         <ProposalVolumes
           volumes={volumes}
           templates={usefulTemplates()}
-          options={{ lvm, encryption }}
+          devices={availableDevices}
+          target={settings.target}
+          targetDevice={targetDevice}
           isLoading={isLoading && settings.volumes === undefined}
           onChange={changeVolumes}
         />

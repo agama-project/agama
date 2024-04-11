@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useState } from "react";
 import {
   Dropdown, DropdownItem, DropdownList,
@@ -33,8 +35,15 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { If, Popup, RowActions, Tip } from '~/components/core';
 import { VolumeForm } from '~/components/storage';
+import VolumeLocationDialog from '~/components/storage/VolumeLocationDialog';
 import { deviceSize, hasSnapshots, isTransactionalRoot } from '~/components/storage/utils';
 import { noop } from "~/utils";
+
+/**
+ * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/client/storage").Volume} Volume
+ */
 
 /**
  * Generates an hint describing which attributes affect the auto-calculated limits.
@@ -42,7 +51,7 @@ import { noop } from "~/utils";
  * @function
  *
  * @param {object} volume - storage volume object
- * @returns {(ReactComponent|null)} component to display (can be `null`)
+ * @returns {(React.ReactElement|null)} component to display (can be `null`)
  */
 const AutoCalculatedHint = (volume) => {
   const { snapshotsAffectSizes = false, sizeRelevantVolumes = [], adjustByRam } = volume.outline;
@@ -161,28 +170,47 @@ const GeneralActions = ({ templates, onAdd, onReset }) => {
  * @component
  *
  * @param {object} props
- * @param {object[]} props.columns - Column specs
- * @param {object} props.volume - Volume to show
- * @param {ProposalOptions} props.options - General proposal options
+ * @param {object} [props.columns] - Column specs
+ * @param {Volume} [props.volume] - Volume to show
+ * @param {StorageDevice[]} [props.devices=[]] - Devices available for installation
+ * @param {ProposalTarget} [props.target] - Installation target
+ * @param {StorageDevice} [props.targetDevice] - Device selected for installation, if target is a disk
  * @param {boolean} props.isLoading - Whether to show the row as loading
- * @param {onDeleteFn} props.onDelete - Function to use for deleting the volume
- *
- * @callback onDeleteFn
- * @param {object} volume
- * @return {void}
+ * @param {(volume: Volume) => void} [props.onEdit=noop] - Function to use for editing the volume
+ * @param {(volume: Volume) => void} [props.onDelete=noop] - Function to use for deleting the volume
  */
-const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) => {
-  const [isFormOpen, setIsFormOpen] = useState(false);
+const VolumeRow = ({
+  columns,
+  volume,
+  devices,
+  target,
+  targetDevice,
+  isLoading,
+  onEdit = noop,
+  onDelete = noop
+}) => {
+  /** @type {[string, (dialog: string) => void]} */
+  const [dialog, setDialog] = useState();
 
-  const openForm = () => setIsFormOpen(true);
+  const openEditDialog = () => setDialog("edit");
 
-  const closeForm = () => setIsFormOpen(false);
+  const openLocationDialog = () => setDialog("location");
+
+  const closeDialog = () => setDialog(undefined);
 
   const acceptForm = (volume) => {
-    closeForm();
+    closeDialog();
     onEdit(volume);
   };
 
+  const isEditDialogOpen = dialog === "edit";
+  const isLocationDialogOpen = dialog === "location";
+
+  /**
+   * @component
+   * @param {object} props
+   * @param {Volume} props.volume
+   */
   const SizeLimits = ({ volume }) => {
     let targetSize;
     if (volume.target === "FILESYSTEM" || volume.target === "DEVICE")
@@ -206,6 +234,11 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
     );
   };
 
+  /**
+   * @component
+   * @param {object} props
+   * @param {Volume} props.volume
+   */
   const Details = ({ volume }) => {
     const snapshots = hasSnapshots(volume);
     const transactional = isTransactionalRoot(volume);
@@ -221,8 +254,14 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
     return volume.fsType;
   };
 
-  const Location = ({ volume, options }) => {
-    if (volume.target === "new_partition")
+  /**
+   * @component
+   * @param {object} props
+   * @param {Volume} props.volume
+   * @param {ProposalTarget} props.target
+   */
+  const Location = ({ volume, target }) => {
+    if (volume.target === "NEW_PARTITION")
       // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
       return sprintf(_("Partition at %s"), volume.targetDevice?.name || "");
     if (volume.target === "NEW_VG")
@@ -236,31 +275,38 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
     return _("Partition at installation disk");
   };
 
-  const VolumeActions = ({ volume, onEdit, onDelete }) => {
+  /**
+   * @component
+   * @param {object} props
+   * @param {Volume} props.volume
+   * @param {() => void} props.onEditClick
+   * @param {() => void} props.onLocationClick
+   * @param {(volume: Volume) => void} props.onDeleteClick
+   */
+  const VolumeActions = ({ volume, onEditClick, onLocationClick, onDeleteClick }) => {
     const actions = () => {
       const actions = {
         delete: {
           title: _("Delete"),
-          onClick: () => onDelete(volume),
+          onClick: () => onDeleteClick(volume),
           isDanger: true
         },
         edit: {
           title: _("Edit"),
-          onClick: () => onEdit(volume)
+          onClick: onEditClick
+        },
+        location: {
+          title: _("Change location"),
+          onClick: onLocationClick
         }
       };
 
-      if (volume.outline.required)
-        return [actions.edit];
-      else
-        return [actions.edit, actions.delete];
+      if (!volume.outline.required) return Object.values(actions);
+
+      return [actions.edit, actions.location];
     };
 
-    const currentActions = actions();
-
-    if (currentActions.length === 0) return null;
-
-    return <RowActions actions={currentActions} />;
+    return <RowActions id="volume_actions" actions={actions()} />;
   };
 
   if (isLoading) {
@@ -277,17 +323,18 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
         <Td dataLabel={columns.mountPath}>{volume.mountPath}</Td>
         <Td dataLabel={columns.details}><Details volume={volume} /></Td>
         <Td dataLabel={columns.size}><SizeLimits volume={volume} /></Td>
-        <Td dataLabel={columns.location}><Location volume={volume} options={options} /></Td>
+        <Td dataLabel={columns.location}><Location volume={volume} target={target} /></Td>
         <Td isActionCell>
           <VolumeActions
             volume={volume}
-            onEdit={openForm}
-            onDelete={onDelete}
+            onEditClick={openEditDialog}
+            onLocationClick={openLocationDialog}
+            onDeleteClick={onDelete}
           />
         </Td>
       </Tr>
 
-      <Popup title={_("Edit file system")} isOpen={isFormOpen}>
+      <Popup title={_("Edit file system")} isOpen={isEditDialogOpen}>
         <VolumeForm
           id="editVolumeForm"
           volume={volume}
@@ -296,9 +343,24 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
         />
         <Popup.Actions>
           <Popup.Confirm form="editVolumeForm" type="submit">{_("Accept")}</Popup.Confirm>
-          <Popup.Cancel onClick={closeForm} />
+          <Popup.Cancel onClick={closeDialog} />
         </Popup.Actions>
       </Popup>
+
+      <If
+        condition={isLocationDialogOpen}
+        then={
+          <VolumeLocationDialog
+            isOpen
+            volume={volume}
+            devices={devices}
+            target={target}
+            targetDevice={targetDevice}
+            onAccept={acceptForm}
+            onCancel={closeDialog}
+          />
+        }
+      />
     </>
   );
 };
@@ -309,15 +371,13 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
  *
  * @param {object} props
  * @param {object[]} props.volumes - Volumes to show
- * @param {ProposalOptions} props.options - General proposal options
+ * @param {StorageDevice[]} props.devices - Devices available for installation
+ * @param {ProposalTarget} props.target - Installation target
+ * @param {StorageDevice|undefined} props.targetDevice - Device selected for installation, if target is a disk
  * @param {boolean} props.isLoading - Whether to show the table as loading
- * @param {onVolumesChangeFn} props.onVolumesChange - Function to submit changes in volumes
- *
- * @callback onVolumesChangeFn
- * @param {object[]} volumes
- * @return {void}
+ * @param {(volumes: Volume[]) => void} props.onVolumesChange - Function to submit changes in volumes
  */
-const VolumesTable = ({ volumes, options, isLoading, onVolumesChange }) => {
+const VolumesTable = ({ volumes, devices, target, targetDevice, isLoading, onVolumesChange }) => {
   const columns = {
     mountPath: _("Mount point"),
     details: _("Details"),
@@ -327,29 +387,30 @@ const VolumesTable = ({ volumes, options, isLoading, onVolumesChange }) => {
     actions: _("Actions")
   };
 
-  const VolumesContent = ({ volumes, options, isLoading, onVolumesChange }) => {
-    const editVolume = (volume) => {
-      const index = volumes.findIndex(v => v.mountPath === volume.mountPath);
-      const newVolumes = [...volumes];
-      newVolumes[index] = volume;
-      onVolumesChange(newVolumes);
-    };
+  const editVolume = (volume) => {
+    const index = volumes.findIndex(v => v.mountPath === volume.mountPath);
+    const newVolumes = [...volumes];
+    newVolumes[index] = volume;
+    onVolumesChange(newVolumes);
+  };
 
-    const deleteVolume = (volume) => {
-      const newVolumes = volumes.filter(v => v.mountPath !== volume.mountPath);
-      onVolumesChange(newVolumes);
-    };
+  const deleteVolume = (volume) => {
+    const newVolumes = volumes.filter(v => v.mountPath !== volume.mountPath);
+    onVolumesChange(newVolumes);
+  };
 
+  const renderVolumes = () => {
     if (volumes.length === 0 && isLoading) return <VolumeRow isLoading />;
 
     return volumes.map((volume, index) => {
       return (
         <VolumeRow
-          key={`volume${index}`}
-          id={index}
+          key={index}
           columns={columns}
           volume={volume}
-          options={options}
+          devices={devices}
+          target={target}
+          targetDevice={targetDevice}
           isLoading={isLoading}
           onEdit={editVolume}
           onDelete={deleteVolume}
@@ -370,53 +431,43 @@ const VolumesTable = ({ volumes, options, isLoading, onVolumesChange }) => {
         </Tr>
       </Thead>
       <Tbody>
-        <VolumesContent
-          volumes={volumes}
-          options={options}
-          isLoading={isLoading}
-          onVolumesChange={onVolumesChange}
-        />
+        {renderVolumes()}
       </Tbody>
     </Table>
   );
 };
 
 /**
+ * @todo This component should be restructured to use the same approach as other newer components:
+ *  * Create dialog components for the popup forms (e.g., EditVolumeDialog).
+ *  * Use a TreeTable, specially if we need to represent subvolumes.
+ *
  * Renders information of the volumes and actions to modify them
  * @component
  *
- * @param {object} props
- * @param {object[]} [props.volumes=[]] - Volumes to show
- * @param {object[]} [props.templates=[]] - Templates to use for new volumes
- * @param {ProposalOptions} [props.options={}] - General proposal options
- * @param {boolean} [props.isLoading=false] - Whether to show the content as loading
- * @param {onChangeFn} [props.onChange=noop] - Function to use for changing the volumes
+ * @typedef {object} ProposalVolumesProps
+ * @property {Volume[]} volumes - Volumes to show
+ * @property {Volume[]} templates - Templates to use for new volumes
+ * @property {StorageDevice[]} devices - Devices available for installation
+ * @property {ProposalTarget} target - Installation target
+ * @property {StorageDevice|undefined} targetDevice - Device selected for installation, if target is a disk
+ * @property {boolean} [isLoading=false] - Whether to show the content as loading
+ * @property {(volumes: Volume[]) => void} onChange - Function to use for changing the volumes
  *
- * @typedef {object} ProposalOptions
- * @property {boolean} [lvm]
- * @property {boolean} [encryption]
- *
- * @callback onChangeFn
- * @param {object[]} volumes
- * @return {void}
+ * @param {ProposalVolumesProps} props
  */
 export default function ProposalVolumes({
-  volumes = [],
-  templates = [],
-  options = {},
+  volumes,
+  templates,
+  devices,
+  target,
+  targetDevice,
   isLoading = false,
   onChange = noop
 }) {
-  const addVolume = (volume) => {
-    if (onChange === noop) return;
-    const newVolumes = [...volumes, volume];
-    onChange(newVolumes);
-  };
+  const addVolume = (volume) => onChange([...volumes, volume]);
 
-  const resetVolumes = () => {
-    if (onChange === noop) return;
-    onChange([]);
-  };
+  const resetVolumes = () => onChange([]);
 
   return (
     <>
@@ -436,7 +487,9 @@ export default function ProposalVolumes({
       </Toolbar>
       <VolumesTable
         volumes={volumes}
-        options={options}
+        devices={devices}
+        target={target}
+        targetDevice={targetDevice}
         onVolumesChange={onChange}
         isLoading={isLoading}
       />
