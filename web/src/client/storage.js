@@ -61,7 +61,7 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
  * @property {string} [busId] - DASD Bus ID (only for "dasd" type)
  * @property {string} [transport]
  * @property {boolean} [sdCard]
- * @property {boolean} [dellBOOS]
+ * @property {boolean} [dellBOSS]
  * @property {string[]} [devices] - RAID devices (only for "raid" and "md" types)
  * @property {string[]} [wires] - Multipath wires (only for "multipath" type)
  * @property {string} [level] - MD RAID level (only for "md" type)
@@ -109,6 +109,8 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
  * @property {string} text
  * @property {boolean} subvol
  * @property {boolean} delete
+ *
+ * @todo Define an enum for space policies.
  *
  * @typedef {object} ProposalSettings
  * @property {ProposalTarget} target

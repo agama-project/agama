@@ -407,21 +407,23 @@ const SpacePolicyField = ({
  * Section for editing the proposal settings
  * @component
  *
- * @param {object} props
- * @param {ProposalSettings} props.settings
- * @param {StorageDevice[]} [props.availableDevices=[]]
- * @param {String[]} [props.encryptionMethods=[]]
- * @param {Volume[]} [props.volumeTemplates=[]]
- * @param {boolean} [props.isLoading=false]
- * @param {(settings: object) => void} [props.onChange=noop]
+ * @typedef {object} ProposalSettingsSectionProps
+ * @property {ProposalSettings} settings
+ * @property {StorageDevice[]} availableDevices
+ * @property {String[]} encryptionMethods
+ * @property {Volume[]} volumeTemplates
+ * @property {boolean} [isLoading=false]
+ * @property {(settings: object) => void} onChange
+ *
+ * @param {ProposalSettingsSectionProps} props
  */
 export default function ProposalSettingsSection({
   settings,
-  availableDevices = [],
-  encryptionMethods = [],
-  volumeTemplates = [],
+  availableDevices,
+  encryptionMethods,
+  volumeTemplates,
   isLoading = false,
-  onChange = noop
+  onChange
 }) {
   const changeEncryption = ({ password, method }) => {
     onChange({ encryptionPassword: password, encryptionMethod: method });

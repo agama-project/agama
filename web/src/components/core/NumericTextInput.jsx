@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import { TextInput } from "@patternfly/react-core";
 import { noop } from "~/utils";
@@ -42,9 +44,7 @@ import { noop } from "~/utils";
  * @param {object} props
  * @param {string|number} props.value - the input value
  * @param {onChangeFn} props.onChange - the callback to be called when the entered value match the input pattern
- * @param {object} props.textInputProps - @see {@link https://www.patternfly.org/components/forms/text-input#props}
- *
- * @returns {ReactComponent}
+ * @param {import("@patternfly/react-core").TextInputProps} props.textInputProps
  */
 export default function NumericTextInput({ value = "", onChange = noop, ...textInputProps }) {
   // NOTE: Using \d* instead of \d+ at the beginning to allow empty

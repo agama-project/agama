@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import { Popover, Button } from "@patternfly/react-core";
 
@@ -26,8 +28,10 @@ import { Popover, Button } from "@patternfly/react-core";
  * Displays details popup after clicking the children elements
  * @component
  *
- * @param {(JSX.Element|null)} description content displayed in a popup
- * @param {JSX.Element} children the wrapped content
+ * @param {object} props
+ * @param {React.ReactElement} props.description - Content displayed in a popup.
+ * @param {React.ReactNode} props.children - The wrapped content.
+ * @param {import("@patternfly/react-core").PopoverProps} [props.otherProps]
  */
 export default function Description ({ description, children, ...otherProps }) {
   if (description) {

@@ -31,6 +31,7 @@ import { DeviceSelectorTable } from "~/components/storage";
 import { noop } from "~/utils";
 
 /**
+ * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
  * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */

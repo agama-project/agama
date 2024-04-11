@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useReducer, useState } from "react";
 import {
   InputGroup, InputGroupItem, Form, FormGroup, FormSelect, FormSelectOption, MenuToggle,
@@ -32,7 +34,7 @@ import { DEFAULT_SIZE_UNIT, SIZE_METHODS, SIZE_UNITS, parseToBytes, splitSize } 
 import { Icon } from "~/components/layout";
 
 /**
- * @typedef {import ("~/client/storage").ProposalManager.Volume} Volume
+ * @typedef {import ("~/client/storage").Volume} Volume
  */
 
 /**
@@ -51,8 +53,7 @@ import { Icon } from "~/components/layout";
  *
  * @param {object} props
  * @param {Array<String>} props.units - a collection of size units
- * @param {object} props.formSelectProps - @see {@link https://www.patternfly.org/components/forms/form-select#props}
- * @returns {ReactComponent}
+ * @param {import("@patternfly/react-core").FormSelectProps} props.formSelectProps
  */
 const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
   return (
@@ -74,8 +75,7 @@ const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
  * @param {string} props.value - mountPath of current selected volume
  * @param {Array<Volume>} props.volumes - a collection of storage volumes
  * @param {onChangeFn} props.onChange - callback for notifying input changes
- * @param {object} props.selectProps - other props sent to {@link https://www.patternfly.org/components/menus/select#props PF/Select}
- * @returns {ReactComponent}
+ * @param {import("@patternfly/react-core").SelectProps} [props.selectProps]
 */
 
 const MountPointFormSelect = ({ value, volumes, onChange, ...selectProps }) => {
@@ -135,24 +135,11 @@ const fsOptions = (volume) => {
 };
 
 /**
- * File system properties from a file system type option.
- * @function
- *
- * @param {string} fsOption
- * @returns {FsValue}
- */
-const fsValue = (fsOption) => {
-  return { fsType: fsOption, snapshots: false };
-};
-
-/**
  * Option for selecting a file system type.
  * @component
  *
  * @param {object} props
  * @param {string} props.fsOption - File system type option.
- *
- * @returns {ReactComponent}
  */
 const FsSelectOption = ({ fsOption }) => {
   return (
@@ -168,11 +155,9 @@ const FsSelectOption = ({ fsOption }) => {
  *
  * @param {object} props
  * @param {string} props.id - Widget id.
- * @param {FsValue} props.value - Currently selected file system properties.
- * @param {Volume} volume - The selected storage volume.
+ * @param {string} props.value - Currently selected file system.
+ * @param {Volume} props.volume - The selected storage volume.
  * @param {onChangeFn} props.onChange - Callback for notifying input changes.
- *
- * @returns {ReactComponent}
  */
 const FsSelect = ({ id, value, volume, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -186,7 +171,7 @@ const FsSelect = ({ id, value, volume, onChange }) => {
 
   const onSelect = (_event, option) => {
     setIsOpen(false);
-    onChange(fsValue(option));
+    onChange({ fsType: option, snapshots: false });
   };
 
   const toggle = toggleRef => {
@@ -229,15 +214,9 @@ const FsSelect = ({ id, value, volume, onChange }) => {
  * @component
  *
  * @param {object} props
- * @param {FsValue} props.value - Currently selected file system properties.
- * @param {Volume} volume - The selected storage volume.
+ * @param {string} props.value - Currently selected file system.
+ * @param {Volume} props.volume - The selected storage volume.
  * @param {onChangeFn} props.onChange - Callback for notifying input changes.
- *
- * @typedef {object} FsValue
- * @property {string} fsType
- * @property {boolean} snapshots
- *
- * @returns {ReactComponent}
  */
 const FsField = ({ value, volume, onChange }) => {
   const isSingleFs = () => {
@@ -293,8 +272,7 @@ const FsField = ({ value, volume, onChange }) => {
  * @component
  *
  * @param {object} props
- * @param {Volume} volume - a storage volume object
- * @returns {ReactComponent}
+ * @param {Volume} props.volume - a storage volume object
  */
 const SizeAuto = ({ volume }) => {
   const conditions = [];
@@ -335,8 +313,6 @@ const SizeAuto = ({ volume }) => {
  * @param {object} props.errors - the form errors
  * @param {object} props.formData - the form data
  * @param {onChangeFn} props.onChange - callback for notifying input changes
- *
- * @returns {ReactComponent}
  */
 const SizeManual = ({ errors, formData, onChange }) => {
   return (
@@ -351,6 +327,7 @@ const SizeManual = ({ errors, formData, onChange }) => {
         <InputGroup className="size-input-group">
           <InputGroupItem>
             <NumericTextInput
+              /** @ts-expect-error: for some reason using id makes TS complain */
               id="size"
               name="size"
               // TRANSLATORS: requested partition size
@@ -367,6 +344,7 @@ const SizeManual = ({ errors, formData, onChange }) => {
           </InputGroupItem>
           <InputGroupItem>
             <SizeUnitFormSelect
+              /** @ts-expect-error: for some reason using id makes TS complain */
               id="sizeUnit"
               // TRANSLATORS: units selector (like KiB, MiB, GiB...)
               aria-label={_("Size unit")}
@@ -390,8 +368,6 @@ const SizeManual = ({ errors, formData, onChange }) => {
  * @param {object} props.errors - the form errors
  * @param {object} props.formData - the form data
  * @param {onChangeFn} props.onChange - callback for notifying input changes
- *
- * @returns {ReactComponent}
  */
 const SizeRange = ({ errors, formData, onChange }) => {
   return (
@@ -411,6 +387,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
           <InputGroup>
             <InputGroupItem>
               <NumericTextInput
+                /** @ts-expect-error: for some reason using id makes TS complain */
                 id="minSize"
                 name="minSize"
                 // TRANSLATORS: the minium partition size
@@ -422,6 +399,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
             </InputGroupItem>
             <InputGroupItem>
               <SizeUnitFormSelect
+                /** @ts-expect-error: for some reason using id makes TS complain */
                 id="minSizeUnit"
                 aria-label={_("Unit for the minimum size")}
                 units={Object.values(SIZE_UNITS)}
@@ -441,6 +419,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
           <InputGroup>
             <InputGroupItem>
               <NumericTextInput
+                /** @ts-expect-error: for some reason using id makes TS complain */
                 id="maxSize"
                 name="maxSize"
                 validated={errors.maxSize && 'error'}
@@ -452,6 +431,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
             </InputGroupItem>
             <InputGroupItem>
               <SizeUnitFormSelect
+                /** @ts-expect-error: for some reason using id makes TS complain */
                 id="maxSizeUnit"
                 aria-label={_("Unit for the maximum size")}
                 units={Object.values(SIZE_UNITS)}
@@ -484,15 +464,14 @@ const SIZE_OPTION_LABELS = Object.freeze({
  * @param {object} props
  * @param {object} props.errors - the form errors
  * @param {object} props.formData - the form data
- * @param {Volume} volume - the selected storage volume
+ * @param {Volume} props.volume - the selected storage volume
  * @param {onChangeFn} props.onChange - callback for notifying input changes
- *
- * @returns {ReactComponent}
  */
 const SizeOptions = ({ errors, formData, volume, onChange }) => {
   const { sizeMethod } = formData;
   const sizeWidgetProps = { errors, formData, volume, onChange };
 
+  /** @type {string[]} */
   const sizeOptions = [SIZE_METHODS.MANUAL, SIZE_METHODS.RANGE];
 
   if (volume.outline.supportAutoSize) sizeOptions.push(SIZE_METHODS.AUTO);
@@ -656,7 +635,8 @@ const reducer = (state, action) => {
  *
  * @param {object} props
  * @param {string} props.id - Form ID
- * @param {Array<Volume>} props.volumes - a collection of storage volumes
+ * @param {Volume} [props.volume] - Volume if editing
+ * @param {Volume[]} props.templates
  * @param {onSubmitFn} props.onSubmit - Function to use for submitting a new volume
  *
  * @callback onSubmitFn
@@ -664,6 +644,7 @@ const reducer = (state, action) => {
  * @return {void}
  */
 export default function VolumeForm({ id, volume: currentVolume, templates = [], onSubmit }) {
+  /** @type {[object, (action: object) => void]} */
   const [state, dispatch] = useReducer(reducer, currentVolume || templates[0], createInitialState);
 
   const changeVolume = (mountPath) => {
