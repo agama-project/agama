@@ -4,16 +4,15 @@ use axum::{
     body::Body,
     extract::Request,
     middleware,
-    response::IntoResponse,
-    response::Response,
+    response::{IntoResponse, Response},
     routing::{get, post},
     Router,
 };
+use std::time::Duration;
 use std::{
     convert::Infallible,
     path::{Path, PathBuf},
 };
-use std::time::Duration;
 use tower::Service;
 use tower_http::{compression::CompressionLayer, services::ServeDir, trace::TraceLayer};
 use tracing::Span;
@@ -101,7 +100,7 @@ impl MainServiceBuilder {
                 TraceLayer::new_for_http()
                     .on_request(|request: &Request<Body>, _span: &Span| {
                         tracing::info!("request: {} {}", request.method(), request.uri().path())
-                        })
+                    })
                     .on_response(
                         |response: &Response<Body>, latency: Duration, _span: &Span| {
                             tracing::info!("response: {} {:?}", response.status(), latency)
