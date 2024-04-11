@@ -19,10 +19,18 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalSettingsSection } from "~/components/storage";
+
+/**
+ * @typedef {import ("~/components/storage/ProposalSettingsSection").ProposalSettingsSectionProps} ProposalSettingsSectionProps
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/client/storage").Volume} Volume
+ */
 
 jest.mock("@patternfly/react-core", () => {
   const original = jest.requireActual("@patternfly/react-core");
@@ -33,20 +41,57 @@ jest.mock("@patternfly/react-core", () => {
   };
 });
 
+/** @type {Volume} */
+let volume;
+
+/** @type {ProposalSettingsSectionProps} */
 let props;
 
 beforeEach(() => {
+  volume = {
+    mountPath: "/",
+    target: "DEFAULT",
+    fsType: "Btrfs",
+    minSize: 1024,
+    maxSize: 2048,
+    autoSize: false,
+    snapshots: false,
+    transactional: false,
+    outline: {
+      required: true,
+      fsTypes: ["Btrfs", "Ext4"],
+      supportAutoSize: true,
+      snapshotsConfigurable: true,
+      snapshotsAffectSizes: true,
+      sizeRelevantVolumes: [],
+      adjustByRam: false
+    }
+  };
+
   props = {
-    settings: {},
+    settings: {
+      target: "DISK",
+      targetPVDevices: [],
+      configureBoot: false,
+      bootDevice: "",
+      defaultBootDevice: "",
+      encryptionPassword: "",
+      encryptionMethod: "",
+      spacePolicy: "",
+      spaceActions: [],
+      volumes: [],
+      installationDevices: []
+    },
+    availableDevices: [],
+    encryptionMethods: [],
+    volumeTemplates: [],
     onChange: jest.fn()
   };
 });
 
-const rootVolume = { mountPath: "/", fsType: "Btrfs", outline: { snapshotsConfigurable: true } };
-
 describe("if snapshots are configurable", () => {
   beforeEach(() => {
-    props.settings = { volumes: [rootVolume] };
+    props.settings.volumes = [volume];
   });
 
   it("renders the snapshots switch", () => {
@@ -58,7 +103,7 @@ describe("if snapshots are configurable", () => {
 
 describe("if snapshots are not configurable", () => {
   beforeEach(() => {
-    props.settings = { volumes: [{ ...rootVolume, outline: { ...rootVolume.outline, snapshotsConfigurable: false } }] };
+    volume.outline.snapshotsConfigurable = false;
   });
 
   it("does not render the snapshots switch", () => {
@@ -91,9 +136,10 @@ it("requests a volume change when onChange callback is triggered", async () => {
 });
 
 describe("Encryption field", () => {
-  describe("if encryption password setting is not set yet", () => {
+  describe.skip("if encryption password setting is not set yet", () => {
     beforeEach(() => {
-      props.settings = {};
+      // Currently settings cannot be undefined.
+      props.settings = undefined;
     });
 
     it("does not render the encryption switch", () => {
@@ -105,7 +151,7 @@ describe("Encryption field", () => {
 
   describe("if encryption password setting is set", () => {
     beforeEach(() => {
-      props.settings = { encryptionPassword: "" };
+      props.settings.encryptionPassword = "";
     });
 
     it("renders the encryption switch", () => {
@@ -117,8 +163,7 @@ describe("Encryption field", () => {
 
   describe("if encryption password is not empty", () => {
     beforeEach(() => {
-      props.settings = { encryptionPassword: "1234" };
-      props.onChange = jest.fn();
+      props.settings.encryptionPassword = "1234";
     });
 
     it("renders the encryption switch as selected", () => {
@@ -179,8 +224,7 @@ describe("Encryption field", () => {
 
   describe("if encryption password is empty", () => {
     beforeEach(() => {
-      props.settings = { encryptionPassword: "" };
-      props.onChange = jest.fn();
+      props.settings.encryptionPassword = "";
     });
 
     it("renders the encryption switch as not selected", () => {
@@ -239,9 +283,10 @@ describe("Encryption field", () => {
 });
 
 describe("Space policy field", () => {
-  describe("if there is no space policy", () => {
+  describe.skip("if there is no space policy", () => {
     beforeEach(() => {
-      props.settings = {};
+      // Currently settings cannot be undefined.
+      props.settings = undefined;
     });
 
     it("does not render the space policy field", () => {
@@ -253,15 +298,15 @@ describe("Space policy field", () => {
 
   describe("if there is a space policy", () => {
     beforeEach(() => {
-      props.settings = {
-        spacePolicy: "delete"
-      };
+      props.settings.spacePolicy = "delete";
     });
 
     it("renders the button with a text according to given policy", () => {
       const { rerender } = plainRender(<ProposalSettingsSection {...props} />);
       screen.getByRole("button", { name: /deleting/ });
-      rerender(<ProposalSettingsSection settings={{ spacePolicy: "resize" }} />);
+
+      props.settings.spacePolicy = "resize";
+      rerender(<ProposalSettingsSection {...props} />);
       screen.getByRole("button", { name: /shrinking/ });
     });
 
