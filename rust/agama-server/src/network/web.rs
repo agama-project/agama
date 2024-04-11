@@ -49,7 +49,7 @@ impl IntoResponse for NetworkError {
 }
 
 #[derive(Clone)]
-struct NetworkState {
+struct NetworkServiceState {
     actions: UnboundedSender<Action>,
 }
 
@@ -62,7 +62,7 @@ pub async fn network_service<T: Adapter + std::marker::Send + 'static>(
 ) -> Result<Router, ServiceError> {
     let mut network = NetworkSystem::new(dbus.clone(), adapter);
 
-    let state = NetworkState {
+    let state = NetworkServiceState {
         actions: network.actions_tx(),
     };
 
@@ -93,7 +93,7 @@ pub async fn network_service<T: Adapter + std::marker::Send + 'static>(
 #[utoipa::path(get, path = "/network/state", responses(
   (status = 200, description = "Get general network config", body = GenereralState)
 ))]
-async fn general_state(State(state): State<NetworkState>) -> Json<GeneralState> {
+async fn general_state(State(state): State<NetworkServiceState>) -> Json<GeneralState> {
     let (tx, rx) = oneshot::channel();
     state.actions.send(Action::GetGeneralState(tx)).unwrap();
 
@@ -106,7 +106,7 @@ async fn general_state(State(state): State<NetworkState>) -> Json<GeneralState> 
   (status = 200, description = "Update general network config", body = GenereralState)
 ))]
 async fn update_general_state(
-    State(state): State<NetworkState>,
+    State(state): State<NetworkServiceState>,
     Json(value): Json<GeneralState>,
 ) -> Result<Json<GeneralState>, NetworkError> {
     state
@@ -124,7 +124,7 @@ async fn update_general_state(
 #[utoipa::path(get, path = "/network/wifi", responses(
   (status = 200, description = "List of wireless networks", body = Vec<AccessPoint>)
 ))]
-async fn wifi_networks(State(state): State<NetworkState>) -> Json<Vec<AccessPoint>> {
+async fn wifi_networks(State(state): State<NetworkServiceState>) -> Json<Vec<AccessPoint>> {
     let (tx, rx) = oneshot::channel();
     state.actions.send(Action::RefreshScan(tx)).unwrap();
     let _ = rx.await.unwrap();
@@ -147,7 +147,7 @@ async fn wifi_networks(State(state): State<NetworkState>) -> Json<Vec<AccessPoin
 #[utoipa::path(get, path = "/network/devices", responses(
   (status = 200, description = "List of devices", body = Vec<Device>)
 ))]
-async fn devices(State(state): State<NetworkState>) -> Json<Vec<Device>> {
+async fn devices(State(state): State<NetworkServiceState>) -> Json<Vec<Device>> {
     let (tx, rx) = oneshot::channel();
     state.actions.send(Action::GetDevices(tx)).unwrap();
 
@@ -157,7 +157,7 @@ async fn devices(State(state): State<NetworkState>) -> Json<Vec<Device>> {
 #[utoipa::path(get, path = "/network/connections", responses(
   (status = 200, description = "List of known connections", body = Vec<NetworkConnection>)
 ))]
-async fn connections(State(state): State<NetworkState>) -> Json<Vec<NetworkConnection>> {
+async fn connections(State(state): State<NetworkServiceState>) -> Json<Vec<NetworkConnection>> {
     let (tx, rx) = oneshot::channel();
     state.actions.send(Action::GetConnections(tx)).unwrap();
     let connections = rx.await.unwrap();
@@ -173,7 +173,7 @@ async fn connections(State(state): State<NetworkState>) -> Json<Vec<NetworkConne
   (status = 200, description = "Add a new connection", body = Connection)
 ))]
 async fn add_connection(
-    State(state): State<NetworkState>,
+    State(state): State<NetworkServiceState>,
     Json(conn): Json<NetworkConnection>,
 ) -> Result<Json<Connection>, NetworkError> {
     let (tx, rx) = oneshot::channel();
@@ -203,7 +203,7 @@ async fn add_connection(
   (status = 200, description = "Delete connection", body = Connection)
 ))]
 async fn delete_connection(
-    State(state): State<NetworkState>,
+    State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
 ) -> impl IntoResponse {
     let (tx, rx) = oneshot::channel();
@@ -222,7 +222,7 @@ async fn delete_connection(
   (status = 200, description = "Update connection", body = Connection)
 ))]
 async fn update_connection(
-    State(state): State<NetworkState>,
+    State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
     Json(conn): Json<NetworkConnection>,
 ) -> Result<Json<()>, NetworkError> {
@@ -253,7 +253,7 @@ async fn update_connection(
   (status = 200, description = "Connect to the given connection", body = String)
 ))]
 async fn connect(
-    State(state): State<NetworkState>,
+    State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
 ) -> Result<Json<()>, NetworkError> {
     let (tx, rx) = oneshot::channel();
@@ -284,7 +284,7 @@ async fn connect(
   (status = 200, description = "Connect to the given connection", body = String)
 ))]
 async fn disconnect(
-    State(state): State<NetworkState>,
+    State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
 ) -> Result<Json<()>, NetworkError> {
     let (tx, rx) = oneshot::channel();
@@ -315,7 +315,7 @@ async fn disconnect(
 #[utoipa::path(put, path = "/network/system/apply", responses(
   (status = 200, description = "Apply configuration")
 ))]
-async fn apply(State(state): State<NetworkState>) -> Result<Json<()>, NetworkError> {
+async fn apply(State(state): State<NetworkServiceState>) -> Result<Json<()>, NetworkError> {
     let (tx, rx) = oneshot::channel();
     state.actions.send(Action::Apply(tx)).unwrap();
 
