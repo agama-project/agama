@@ -538,7 +538,7 @@ const Basic = ({ volumes, configureBoot, bootDevice, target, isLoading }) => {
 
   return (
     <div className="split">
-      { volumes.map((v, i) => <VolumeLabel key={i} volume={v} target={target} />) }
+      {volumes.map((v, i) => <VolumeLabel key={i} volume={v} target={target} />)}
       <BootLabel bootDevice={bootDevice} configureBoot={configureBoot} />
     </div>
   );
@@ -630,7 +630,7 @@ const Advanced = ({
  * @property {TODO} defaultBootDevice - TODO
  * @property {boolean} [isLoading=false] - Whether to show the content as loading
  * @property {(volumes: Volume[]) => void} onVolumesChange - Function to use for changing the volumes
- * @property {(volumes: Volume[]) => void} onBootChange - Function for changing the boot settings
+ * @property {TODO} onBootChange - Function for changing the boot settings
  *
  * @param {PartitionsFieldProps} props
  */

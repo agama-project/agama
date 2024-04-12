@@ -21,17 +21,15 @@
 
 // @ts-check
 
-import React, { useEffect, useState } from "react";
-import { Checkbox, Form, Skeleton, Switch, Tooltip } from "@patternfly/react-core";
-
+import React from "react";
 import { _ } from "~/i18n";
-import InstallationDeviceField from "~/components/storage/InstallationDeviceField";
-import SpacePolicyField from "~/components/storage/SpacePolicyField";
-import PartitionsField from "~/components/storage/PartitionsField";
-import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
-import { Icon } from "~/components/layout";
-import { compact, noop } from "~/utils";
+import { compact } from "~/utils";
+import { Section } from "~/components/core";
 import { SPACE_POLICIES } from "~/components/storage/utils";
+import EncryptionField from "~/components/storage/EncryptionField";
+import InstallationDeviceField from "~/components/storage/InstallationDeviceField";
+import PartitionsField from "~/components/storage/PartitionsField";
+import SpacePolicyField from "~/components/storage/SpacePolicyField";
 
 /**
  * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
@@ -41,181 +39,6 @@ import { SPACE_POLICIES } from "~/components/storage/utils";
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  * @typedef {import ("~/client/storage").Volume} Volume
  */
-
-/**
- * Form for configuring the encryption password.
- * @component
- *
- * @param {object} props
- * @param {string} props.id - Form ID.
- * @param {string} props.password - Password for encryption.
- * @param {string} props.method - Encryption method.
- * @param {string[]} props.methods - Possible encryption methods.
- * @param {(password: string, method: string) => void} [props.onSubmit=noop] - On submit callback.
- * @param {(valid: boolean) => void} [props.onValidate=noop] - On validate callback.
- */
-const EncryptionSettingsForm = ({
-  id,
-  password: passwordProp,
-  method: methodProp,
-  methods,
-  onSubmit = noop,
-  onValidate = noop
-}) => {
-  const [password, setPassword] = useState(passwordProp || "");
-  const [method, setMethod] = useState(methodProp);
-  const tpmId = "tpm_fde";
-  const luks2Id = "luks2";
-
-  useEffect(() => {
-    if (password.length === 0) onValidate(false);
-  }, [password, onValidate]);
-
-  const changePassword = (_, v) => setPassword(v);
-
-  const changeMethod = (_, value) => {
-    value ? setMethod(tpmId) : setMethod(luks2Id);
-  };
-
-  const submitForm = (e) => {
-    e.preventDefault();
-    onSubmit(password, method);
-  };
-
-  const Description = () => (
-    <span
-      dangerouslySetInnerHTML={{
-        // TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
-        // 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
-        // Do not translate 'abbr' and 'title', they are part of the HTML markup.
-        __html: _("The password will not be needed to boot and access the data if the <abbr title='Trusted Platform Module'>TPM</abbr> can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.")
-      }}
-    />
-  );
-
-  return (
-    <Form id={id} onSubmit={submitForm}>
-      <PasswordAndConfirmationInput
-        value={password}
-        onChange={changePassword}
-        onValidation={onValidate}
-      />
-      <If
-        condition={methods.includes(tpmId)}
-        then={
-          <Checkbox
-            id="encryption_method"
-            label={_("Use the TPM to decrypt automatically on each boot")}
-            description={<Description />}
-            isChecked={method === tpmId}
-            onChange={changeMethod}
-          />
-        }
-      />
-    </Form>
-  );
-};
-
-/**
- * Allows to define encryption
- * @component
- *
- * @param {object} props
- * @param {string} [props.password=""] - Password for encryption
- * @param {string} [props.method=""] - Encryption method
- * @param {string[]} [props.methods] - Possible encryption methods
- * @param {boolean} [props.isChecked=false] - Whether encryption is selected
- * @param {boolean} [props.isLoading=false] - Whether to show the selector as loading
- * @param {(config: EncryptionConfig) => void} [props.onChange=noop] - On change callback
- *
- * @typedef {object} EncryptionConfig
- * @property {string} password
- * @property {string} [method]
- */
-const EncryptionField = ({
-  password = "",
-  method = "",
-  methods,
-  isChecked: defaultIsChecked = false,
-  isLoading = false,
-  onChange = noop
-}) => {
-  const [isChecked, setIsChecked] = useState(defaultIsChecked);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isFormValid, setIsFormValid] = useState(true);
-
-  const openForm = () => setIsFormOpen(true);
-
-  const closeForm = () => setIsFormOpen(false);
-
-  const acceptForm = (newPassword, newMethod) => {
-    closeForm();
-    onChange({ password: newPassword, method: newMethod });
-  };
-
-  const cancelForm = () => {
-    setIsChecked(defaultIsChecked);
-    closeForm();
-  };
-
-  const validateForm = (valid) => setIsFormValid(valid);
-
-  const changeSelected = (_, value) => {
-    setIsChecked(value);
-
-    if (value && password.length === 0) openForm();
-
-    if (!value) {
-      onChange({ password: "" });
-    }
-  };
-
-  const ChangeSettingsButton = () => {
-    return (
-      <Tooltip
-        content={_("Change encryption settings")}
-        entryDelay={400}
-        exitDelay={50}
-        position="right"
-      >
-        <button aria-label={_("Encryption settings")} className="plain-control" onClick={openForm}>
-          <Icon name="tune" size="s" />
-        </button>
-      </Tooltip>
-    );
-  };
-
-  if (isLoading) return <Skeleton width="25%" />;
-
-  return (
-    <>
-      <div className="split">
-        <Switch
-          id="encryption"
-          label={_("Use encryption")}
-          isReversed
-          isChecked={isChecked}
-          onChange={changeSelected}
-        />
-        {isChecked && <ChangeSettingsButton />}
-      </div>
-      <Popup aria-label={_("Encryption settings")} title={_("Encryption settings")} isOpen={isFormOpen}>
-        <EncryptionSettingsForm
-          id="encryptionSettingsForm"
-          password={password}
-          method={method}
-          methods={methods}
-          onSubmit={acceptForm}
-          onValidate={validateForm}
-        />
-        <Popup.Actions>
-          <Popup.Confirm form="encryptionSettingsForm" type="submit" isDisabled={!isFormValid}>{_("Accept")}</Popup.Confirm>
-          <Popup.Cancel onClick={cancelForm} />
-        </Popup.Actions>
-      </Popup>
-    </>
-  );
-};
 
 /**
  * Section for editing the proposal settings
