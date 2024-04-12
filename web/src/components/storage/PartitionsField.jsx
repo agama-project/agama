@@ -653,7 +653,7 @@ export default function PartitionsField({
     <ExpandableField
       isExpanded={isExpanded}
       label={_("Partitions and file systems")}
-      description={_("Structure of the new system, including any additional partiton needed for booting,")}
+      description={_("Structure of the new system, including any additional partition needed for booting,")}
       onClick={() => setIsExpanded(!isExpanded)}
     >
       <If
