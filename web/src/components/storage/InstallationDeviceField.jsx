@@ -25,7 +25,7 @@ import React, { useState } from "react";
 import { Skeleton } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
-import { DeviceSelectionDialog } from "~/components/storage";
+import { DeviceSelectionDialog, ProposalPageMenu } from "~/components/storage";
 import { deviceLabel } from '~/components/storage/utils';
 import { If, SettingsField } from "~/components/core";
 import { sprintf } from "sprintf-js";
@@ -74,6 +74,12 @@ Volume Group for installation.")
     }}
   />
 );
+
+const StorageTechSelector = () => {
+  return (
+    <ProposalPageMenu label={_("storage technologies")} />
+  );
+};
 
 /**
  * Allows to select the installation device.
@@ -127,6 +133,7 @@ export default function InstallationDeviceField({
       description={renderDescription()}
       onClick={openDialog}
     >
+      {_("Prepare more devices by configuring advanced")} <StorageTechSelector />
       <If
         condition={isDialogOpen}
         then={

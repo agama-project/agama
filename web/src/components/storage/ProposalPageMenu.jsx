@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -18,6 +18,8 @@
  * To contact SUSE LLC about this file by physical or electronic mail, you may
  * find current contact information at www.suse.com.
  */
+
+// @ts-check
 
 import React, { useEffect, useState } from "react";
 import { useHref } from "react-router-dom";
@@ -83,8 +85,13 @@ const ISCSILink = () => {
 /**
  * Component for rendering the options available from Storage/ProposalPage
  * @component
+ *
+ * @typedef {object} ProposalMenuProps
+ * @property {string} label
+ *
+ * @param {ProposalMenuProps} props
  */
-export default function ProposalPageMenu () {
+export default function ProposalPageMenu ({ label }) {
   const [showDasdLink, setShowDasdLink] = useState(false);
   const [showZFCPLink, setShowZFCPLink] = useState(false);
   const { storage: client } = useInstallerClient();
@@ -95,7 +102,7 @@ export default function ProposalPageMenu () {
   }, [client.dasd, client.zfcp]);
 
   return (
-    <Page.Menu>
+    <Page.Menu label={label}>
       <Page.Menu.Options>
         <If condition={showDasdLink} then={<DASDLink />} />
         <ISCSILink />

@@ -719,6 +719,9 @@ section [data-type="agama/reminder"] {
   }
 }
 
+[data-type="agama/field"] button.pf-v5-c-menu-toggle.pf-m-plain {
+  padding: 0;
+}
 
 [data-type="agama/expandable-selector"] {
   // The expandable selector is built on top of PF/Table#expandable
