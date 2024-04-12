@@ -166,8 +166,6 @@ export default function EncryptionField({
 
   const validateForm = (valid) => setIsFormValid(valid);
 
-  if (isLoading) return <Skeleton width="25%" />;
-
   // FIXME: extract to the top to avoid redefinitions?
   const FieldValue = () => {
     if (isLoading) return <Skeleton width="25%" />;
