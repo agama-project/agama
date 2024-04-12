@@ -25,10 +25,8 @@ import React, { useEffect, useState } from "react";
 import { Checkbox, Form, Skeleton, Switch, Tooltip } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
-import { ProposalVolumes } from "~/components/storage";
 import SpacePolicyField from "~/components/storage/SpacePolicyField";
-import BootConfigField from "~/components/storage/BootConfigField";
-import SnapshotsField from "~/components/storage/SnapshotsField";
+import PartitionsField from "~/components/storage/PartitionsField";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
@@ -243,19 +241,6 @@ export default function ProposalSettingsSection({
     onChange({ encryptionPassword: password, encryptionMethod: method });
   };
 
-  const changeBtrfsSnapshots = ({ active }) => {
-    const rootVolume = settings.volumes.find((i) => i.mountPath === "/");
-
-    if (active) {
-      rootVolume.fsType = "Btrfs";
-      rootVolume.snapshots = true;
-    } else {
-      rootVolume.snapshots = false;
-    }
-
-    onChange({ volumes: settings.volumes });
-  };
-
   const changeVolumes = (volumes) => {
     onChange({ volumes });
   };
@@ -289,20 +274,9 @@ export default function ProposalSettingsSection({
     ));
   };
 
-  const rootVolume = (settings.volumes || []).find((i) => i.mountPath === "/");
-
   return (
     <>
       <Section title={_("Settings")}>
-        <If
-          condition={rootVolume?.outline.snapshotsConfigurable}
-          then={
-            <SnapshotsField
-              rootVolume={rootVolume}
-              onChange={changeBtrfsSnapshots}
-            />
-          }
-        />
         <EncryptionField
           password={settings.encryptionPassword || ""}
           method={settings.encryptionMethod}
@@ -311,22 +285,18 @@ export default function ProposalSettingsSection({
           isLoading={settings.encryptionPassword === undefined}
           onChange={changeEncryption}
         />
-        <ProposalVolumes
+        <PartitionsField
           volumes={volumes}
           templates={usefulTemplates()}
           devices={availableDevices}
           target={settings.target}
           targetDevice={targetDevice}
-          isLoading={isLoading && settings.volumes === undefined}
-          onChange={changeVolumes}
-        />
-        <BootConfigField
           configureBoot={settings.configureBoot}
           bootDevice={bootDevice}
           defaultBootDevice={defaultBootDevice}
-          devices={availableDevices}
-          isLoading={isLoading}
-          onChange={changeBoot}
+          isLoading={isLoading || settings.volumes === undefined}
+          onVolumesChange={changeVolumes}
+          onBootChange={changeBoot}
         />
         <SpacePolicyField
           policy={spacePolicy}
