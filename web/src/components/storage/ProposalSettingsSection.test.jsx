@@ -22,8 +22,8 @@
 // @ts-check
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { screen } from "@testing-library/react";
+import { installerRender } from "~/test-utils";
 import { ProposalSettingsSection } from "~/components/storage";
 
 /**
@@ -124,7 +124,7 @@ beforeEach(() => {
       defaultBootDevice: "",
       encryptionPassword: "",
       encryptionMethod: "",
-      spacePolicy: "",
+      spacePolicy: "delete",
       spaceActions: [],
       volumes: [],
       installationDevices: [sda, sdb]
@@ -137,54 +137,30 @@ beforeEach(() => {
 });
 
 it("allows changing the selected device", async () => {
-  const { user } = plainRender(<ProposalSettingsSection {...props} />);
+  const { user } = installerRender(<ProposalSettingsSection {...props} />);
   const button = screen.getByRole("button", { name: /installation device/i });
 
   await user.click(button);
   await screen.findByRole("dialog", { name: /Device for installing/ });
 });
 
-describe("when snapshots are configurable", () => {
-  beforeEach(() => {
-    props.settings.volumes = [volume];
-  });
+it("allows changing the encryption settings", async () => {
+  const { user } = installerRender(<ProposalSettingsSection {...props} />);
+  const button = screen.getByRole("button", { name: /Encryption/ });
 
-  it("renders the snapshots field", () => {
-    plainRender(<ProposalSettingsSection {...props} />);
-    screen.getByRole("switch", { name: /snapshots for the root file system/ });
-  });
-});
-
-describe("when snapshots are not configurable", () => {
-  beforeEach(() => {
-    volume.outline.snapshotsConfigurable = false;
-  });
-
-  it("does not render the snapshots field", () => {
-    plainRender(<ProposalSettingsSection {...props} />);
-    const snapshotsSwitch = screen.queryByRole("switch", { name: /snapshots for the root file system/ });
-    expect(snapshotsSwitch).toBeNull();
-  });
+  await user.click(button);
+  await screen.findByRole("dialog", { name: /Encryption settings/ });
 });
 
 it("renders a section holding file systems related stuff", () => {
-  plainRender(<ProposalSettingsSection {...props} />);
-  screen.getByRole("grid", { name: "Table with mount points" });
-  screen.getByRole("grid", { name: /mount points/ });
+  installerRender(<ProposalSettingsSection {...props} />);
+  screen.getByRole("button", { name: /Partitions and file systems/ });
 });
 
-it("requests a volume change when onChange callback is triggered", async () => {
-  const { user } = plainRender(<ProposalSettingsSection {...props} />);
-  const button = screen.getByRole("button", { name: "Actions" });
+it("allows changing the space policy settings", async () => {
+  const { user } = installerRender(<ProposalSettingsSection {...props} />);
+  const button = screen.getByRole("button", { name: /Find space/ });
 
   await user.click(button);
-
-  const menu = screen.getByRole("menu");
-  const reset = within(menu).getByRole("menuitem", { name: /Reset/ });
-
-  await user.click(reset);
-
-  expect(props.onChange).toHaveBeenCalledWith(
-    { volumes: expect.any(Array) }
-  );
+  await screen.findByRole("dialog", { name: /Find space/ });
 });
