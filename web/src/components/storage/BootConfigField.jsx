@@ -62,9 +62,9 @@ const Button = ({ isBold = false, onClick }) => {
  * @param {StorageDevice|undefined} props.defaultBootDevice
  * @param {StorageDevice[]} props.devices
  * @param {boolean} props.isLoading
- * @param {(boot: Boot) => void} props.onChange
+ * @param {(boot: BootConfig) => void} props.onChange
  *
- * @typedef {object} Boot
+ * @typedef {object} BootConfig
  * @property {boolean} configureBoot
  * @property {StorageDevice} bootDevice
  */

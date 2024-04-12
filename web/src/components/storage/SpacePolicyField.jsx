@@ -33,23 +33,24 @@ import SpacePolicyDialog from "~/components/storage/SpacePolicyDialog";
  * @typedef {import ("~/client/storage").SpaceAction} SpaceAction
  * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- *
- * @typedef {object} SpacePolicyConfig
- * @property {SpacePolicy} spacePolicy
- * @property {SpaceAction[]} spaceActions
  */
 
 /**
  * Allows to select the space policy.
  * @component
  *
- * @param {object} props
- * @param {SpacePolicy|undefined} props.policy
- * @param {SpaceAction[]} props.actions
- * @param {StorageDevice[]} props.devices
- * @param {boolean} props.isLoading
- * @param {(config: SpacePolicyConfig) => void} props.onChange
+ * @typedef {object} SpacePolicyFieldProps
+ * @property {SpacePolicy|undefined} policy
+ * @property {SpaceAction[]} actions
+ * @property {StorageDevice[]} devices
+ * @property {boolean} isLoading
+ * @property {(config: SpacePolicyConfig) => void} onChange
  *
+ * @typedef {object} SpacePolicyConfig
+ * @property {SpacePolicy} spacePolicy
+ * @property {SpaceAction[]} spaceActions
+ *
+ * @param {SpacePolicyFieldProps} props
  */
 export default function SpacePolicyField({
   policy,

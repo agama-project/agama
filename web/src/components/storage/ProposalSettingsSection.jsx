@@ -62,9 +62,7 @@ export default function ProposalSettingsSection({
   isLoading = false,
   onChange
 }) {
-  /**
-   * @param {import("~/components/storage/InstallationDeviceField").Target} targetOptions
-   */
+  /** @param {import("~/components/storage/InstallationDeviceField").TargetConfig} targetConfig */
   const changeTarget = ({ target, targetDevice, targetPVDevices }) => {
     onChange({
       target,
@@ -73,14 +71,17 @@ export default function ProposalSettingsSection({
     });
   };
 
+  /** @param {import("~/components/storage/EncryptionField").EncryptionConfig} encrytionConfig */
   const changeEncryption = ({ password, method }) => {
     onChange({ encryptionPassword: password, encryptionMethod: method });
   };
 
+  /** @param {Volume[]} volumes */
   const changeVolumes = (volumes) => {
     onChange({ volumes });
   };
 
+  /** @param {import("~/components/storage/SpacePolicyField").SpacePolicyConfig} spacePolicyConfig */
   const changeSpacePolicy = ({ spacePolicy, spaceActions }) => {
     onChange({
       spacePolicy: spacePolicy.id,
@@ -88,6 +89,7 @@ export default function ProposalSettingsSection({
     });
   };
 
+  /** @param {import("~/components/storage/PartitionsField").BootConfig} bootConfig */
   const changeBoot = ({ configureBoot, bootDevice }) => {
     onChange({
       configureBoot,
@@ -105,13 +107,16 @@ export default function ProposalSettingsSection({
   const targetDevice = findDevice(settings.targetDevice);
   /** @type {StorageDevice[]} */
   const targetPVDevices = compact(settings.targetPVDevices?.map(findDevice) || []);
-  const useEncryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
   const { volumes = [], installationDevices = [], spaceActions = [] } = settings;
   const bootDevice = findDevice(settings.bootDevice);
   const defaultBootDevice = findDevice(settings.defaultBootDevice);
   const spacePolicy = SPACE_POLICIES.find(p => p.id === settings.spacePolicy);
 
-  // Templates for already existing mount points are filtered out
+  /**
+   * Templates for already existing mount points are filtered out.
+   *
+   * @returns {Volume[]}
+   */
   const usefulTemplates = () => {
     const mountPaths = volumes.map(v => v.mountPath);
     return volumeTemplates.filter(t => (
@@ -134,7 +139,6 @@ export default function ProposalSettingsSection({
           password={settings.encryptionPassword || ""}
           method={settings.encryptionMethod}
           methods={encryptionMethods}
-          isChecked={useEncryption}
           isLoading={settings.encryptionPassword === undefined}
           onChange={changeEncryption}
         />

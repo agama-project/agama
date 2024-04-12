@@ -91,9 +91,9 @@ const StorageTechSelector = () => {
  * @property {StorageDevice[]} targetPVDevices - Target devices for the LVM volume group (target "NEW_LVM_VG").
  * @property {StorageDevice[]} devices - Available devices for installation.
  * @property {boolean} isLoading
- * @property {(target: Target) => void} onChange
+ * @property {(target: TargetConfig) => void} onChange
  *
- * @typedef {object} Target
+ * @typedef {object} TargetConfig
  * @property {ProposalTarget} target
  * @property {StorageDevice|undefined} targetDevice
  * @property {StorageDevice[]} targetPVDevices

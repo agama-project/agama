@@ -34,7 +34,7 @@ import SnapshotsField from "~/components/storage/SnapshotsField";
 /** @type {Volume} */
 const rootVolume = {
   mountPath: "/",
-  target: "/dev/sda",
+  target: "DEFAULT",
   fsType: "Btrfs",
   minSize: 1024,
   autoSize: true,
@@ -46,6 +46,7 @@ const rootVolume = {
     supportAutoSize: true,
     snapshotsConfigurable: false,
     snapshotsAffectSizes: true,
+    adjustByRam: false,
     sizeRelevantVolumes: ["/home"]
   }
 };

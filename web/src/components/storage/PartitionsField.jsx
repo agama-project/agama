@@ -42,9 +42,12 @@ import { noop } from "~/utils";
  */
 
 /**
- * TODO: document
+ * @component
+ *
+ * @param {object} props
+ * @param {Volume} props.volume
  */
-const SizeText = (volume) => {
+const SizeText = ({ volume }) => {
   let targetSize;
   if (volume.target === "FILESYSTEM" || volume.target === "DEVICE")
     targetSize = volume.targetDevice.size;
@@ -60,12 +63,16 @@ const SizeText = (volume) => {
 };
 
 /**
- * TODO: document
+ * @component
+ *
+ * @param {object} props
+ * @param {Volume} props.volume
+ * @param {ProposalTarget} props.target
  */
-const BasicVolumeText = (volume, target) => {
+const BasicVolumeText = ({ volume, target }) => {
   const snapshots = hasSnapshots(volume);
   const transactional = isTransactionalRoot(volume);
-  const size = SizeText(volume);
+  const size = SizeText({ volume });
   const lvm = (target === "NEW_LVM_VG");
   // When target is "filesystem" or "device" this is irrelevant since the type of device
   // is not mentioned
@@ -141,9 +148,13 @@ const BasicVolumeText = (volume, target) => {
 };
 
 /**
- * TODO: document
+ * @component
+ *
+ * @param {object} props
+ * @param {boolean} props.configure
+ * @param {StorageDevice} props.device
  */
-const BootLabelText = (configure, device) => {
+const BootLabelText = ({ configure, device }) => {
   if (!configure)
     return _("Do not configure partitions for booting");
 
@@ -157,12 +168,12 @@ const BootLabelText = (configure, device) => {
 /**
  * Generates an hint describing which attributes affect the auto-calculated limits.
  * If the limits are not affected then it returns `null`.
- * @function
+ * @component
  *
- * @param {object} volume - storage volume object
- * @returns {(React.ReactElement|null)} component to display (can be `null`)
+ * @param {object} props
+ * @param {Volume} props.volume
  */
-const AutoCalculatedHint = (volume) => {
+const AutoCalculatedHint = ({ volume }) => {
   const { snapshotsAffectSizes = false, sizeRelevantVolumes = [], adjustByRam } = volume.outline;
 
   // no hint, the size is not affected by known criteria
@@ -243,23 +254,31 @@ const GeneralActions = ({ templates, onAdd, onReset }) => {
 };
 
 /**
- * TODO: document
+ * @component
+ *
+ * @param {object} props
+ * @param {Volume} props.volume
+ * @param {ProposalTarget} props.target
  */
 const VolumeLabel = ({ volume, target }) => {
   return (
     <div className="split" style={{ background: "var(--color-gray)", padding: "var(--spacer-smaller) var(--spacer-small)", borderRadius: "var(--spacer-smaller)" }}>
-      <span>{BasicVolumeText(volume, target)}</span>
+      <span>{BasicVolumeText({ volume, target })}</span>
     </div>
   );
 };
 
 /**
- * TODO: document
+ * @component
+ *
+ * @param {object} props
+ * @param {StorageDevice|undefined} props.bootDevice
+ * @param {boolean} props.configureBoot
  */
 const BootLabel = ({ bootDevice, configureBoot }) => {
   return (
     <div className="split" style={{ background: "var(--color-gray)", padding: "var(--spacer-smaller) var(--spacer-small)", borderRadius: "var(--spacer-smaller)" }}>
-      <span>{BootLabelText(configureBoot, bootDevice)}</span>
+      <span>{BootLabelText({ configure: configureBoot, device: bootDevice })}</span>
     </div>
   );
 };
@@ -315,9 +334,9 @@ const VolumeRow = ({
 
     return (
       <div className="split">
-        <span>{SizeText(volume)}</span>
+        <span>{SizeText({ volume })}</span>
         {/* TRANSLATORS: device flag, the partition size is automatically computed */}
-        <If condition={isAuto} then={<Tip description={AutoCalculatedHint(volume)}>{_("auto")}</Tip>} />
+        <If condition={isAuto} then={<Tip description={AutoCalculatedHint({ volume })}>{_("auto")}</Tip>} />
       </div>
     );
   };
@@ -526,7 +545,15 @@ const VolumesTable = ({ volumes, devices, target, targetDevice, isLoading, onVol
 };
 
 /**
- * TODO: document
+ * Content to show when the field is collapsed.
+ * @component
+ *
+ * @param {object} props
+ * @param {Volume[]} props.volumes
+ * @param {boolean} props.configureBoot
+ * @param {StorageDevice|undefined} props.bootDevice
+ * @param {ProposalTarget} props.target
+ * @param {boolean} props.isLoading
  */
 const Basic = ({ volumes, configureBoot, bootDevice, target, isLoading }) => {
   if (isLoading)
@@ -545,7 +572,21 @@ const Basic = ({ volumes, configureBoot, bootDevice, target, isLoading }) => {
 };
 
 /**
- * TODO: document
+ * Content to show when the field is expanded.
+ * @component
+ *
+ * @param {object} props
+ * @param {Volume[]} props.volumes
+ * @param {Volume[]} props.templates
+ * @param {StorageDevice[]} props.devices
+ * @param {ProposalTarget} props.target
+ * @param {StorageDevice|undefined} props.targetDevice
+ * @param {boolean} props.configureBoot
+ * @param {StorageDevice|undefined} props.bootDevice
+ * @param {StorageDevice|undefined} props.defaultBootDevice
+ * @param {(volumes: Volume[]) => void} props.onVolumesChange
+ * @param {(boot: BootConfig) => void} props.onBootChange
+ * @param {boolean} props.isLoading
  */
 const Advanced = ({
   volumes,
@@ -616,7 +657,7 @@ const Advanced = ({
  *  * Create dialog components for the popup forms (e.g., EditVolumeDialog).
  *  * Use a TreeTable, specially if we need to represent subvolumes.
  *
- * Renders information of the volumes and boot-related partitions and actions to modify them
+ * Renders information of the volumes and boot-related partitions and actions to modify them.
  * @component
  *
  * @typedef {object} PartitionsFieldProps
@@ -625,12 +666,16 @@ const Advanced = ({
  * @property {StorageDevice[]} devices - Devices available for installation
  * @property {ProposalTarget} target - Installation target
  * @property {StorageDevice|undefined} targetDevice - Device selected for installation, if target is a disk
- * @property {TODO} configureBoot - TODO
- * @property {TODO} bootDevice - TODO
- * @property {TODO} defaultBootDevice - TODO
+ * @property {boolean} configureBoot - Whether to configure boot partitions.
+ * @property {StorageDevice|undefined} bootDevice - Device to use for creating boot partitions.
+ * @property {StorageDevice|undefined} defaultBootDevice - Default device for boot partitions if no device has been indicated yet.
  * @property {boolean} [isLoading=false] - Whether to show the content as loading
  * @property {(volumes: Volume[]) => void} onVolumesChange - Function to use for changing the volumes
- * @property {TODO} onBootChange - Function for changing the boot settings
+ * @property {(boot: BootConfig) => void} onBootChange - Function for changing the boot settings
+ *
+ * @typedef {object} BootConfig
+ * @property {boolean} configureBoot
+ * @property {StorageDevice|undefined} bootDevice
  *
  * @param {PartitionsFieldProps} props
  */
@@ -644,8 +689,8 @@ export default function PartitionsField({
   bootDevice,
   defaultBootDevice,
   isLoading = false,
-  onVolumesChange = noop,
-  onBootChange = noop
+  onVolumesChange,
+  onBootChange
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
