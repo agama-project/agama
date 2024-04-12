@@ -17,6 +17,8 @@ use crate::error::Error;
 
 use super::Event;
 
+pub type Streams = Vec<(&'static str, Pin<Box<dyn Stream<Item = Event> + Send>>)>;
+
 /// Builds a router to the `org.opensuse.Agama1.ServiceStatus` interface of the
 /// given D-Bus object.
 ///

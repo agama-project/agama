@@ -8,13 +8,13 @@
 use crate::{
     error::Error,
     web::{
-        common::{issues_router, progress_router, service_status_router},
+        common::{issues_router, progress_router, service_status_router, Streams},
         Event,
     },
 };
 use agama_lib::{
     error::ServiceError,
-    product::{Product, ProductClient, RegistrationRequirement},
+    product::{Product, ProductClient, RegistrationRequirement, proxies::RegistrationProxy},
     software::{
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
@@ -26,7 +26,7 @@ use axum::{
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, pin::Pin};
+use std::collections::HashMap;
 use tokio_stream::{Stream, StreamExt};
 
 #[derive(Clone)]
@@ -49,14 +49,33 @@ pub struct SoftwareConfig {
 /// It emits the Event::ProductChanged and Event::PatternsChanged events.
 ///
 /// * `connection`: D-Bus connection to listen for events.
-pub async fn software_stream(
+pub async fn software_streams(
     dbus: zbus::Connection,
-) -> Result<Pin<Box<dyn Stream<Item = Event> + Send>>, Error> {
-    let stream = StreamExt::merge(
-        product_changed_stream(dbus.clone()).await?,
-        patterns_changed_stream(dbus.clone()).await?,
-    );
-    Ok(Box::pin(stream))
+) -> Result<Streams, Error> {
+    let result: Streams = vec![
+        (
+            "patterns_changed",
+            Box::pin(patterns_changed_stream(dbus.clone()).await?),
+        ),
+        (
+            "product_changed",
+            Box::pin(product_changed_stream(dbus.clone()).await?),
+        ),
+        (
+            "registration_requirement_changed",
+            Box::pin(registration_requirement_changed_stream(dbus.clone()).await?),
+        ),
+        (
+            "registration_code_changed",
+            Box::pin(registration_code_changed_stream(dbus.clone()).await?),
+        ),
+        (
+            "registration_email_changed",
+            Box::pin(registration_email_changed_stream(dbus.clone()).await?),
+        ),
+    ];
+
+    Ok(result)
 }
 
 async fn product_changed_stream(
@@ -96,6 +115,57 @@ async fn patterns_changed_stream(
             None
         })
         .filter_map(|e| e.map(|patterns| Event::SoftwareProposalChanged { patterns }));
+    Ok(stream)
+}
+
+async fn registration_requirement_changed_stream(dbus: zbus::Connection,
+) -> Result<impl Stream<Item = Event>, Error> {
+    let proxy = RegistrationProxy::new(&dbus).await?;
+    let stream = proxy
+        .receive_requirement_changed()
+        .await
+        .then(|change| async move {
+            if let Ok(id) = change.get().await {
+                // unwrap is safe as possible numbers is send by our controlled dbus
+                return Some(Event::RegistrationRequirementChanged { requirement: id.try_into().unwrap() });
+            }
+            None
+        })
+        .filter_map(|e| e);
+    Ok(stream)
+}
+
+async fn registration_email_changed_stream(dbus: zbus::Connection,
+) -> Result<impl Stream<Item = Event>, Error> {
+    let proxy = RegistrationProxy::new(&dbus).await?;
+    let stream = proxy
+        .receive_email_changed()
+        .await
+        .then(|change| async move {
+            if let Ok(_id) = change.get().await {
+                // unwrap is safe as possible numbers is send by our controlled dbus
+                return Some(Event::RegistrationChanged);
+            }
+            None
+        })
+        .filter_map(|e| e);
+    Ok(stream)
+}
+
+async fn registration_code_changed_stream(dbus: zbus::Connection,
+) -> Result<impl Stream<Item = Event>, Error> {
+    let proxy = RegistrationProxy::new(&dbus).await?;
+    let stream = proxy
+        .receive_reg_code_changed()
+        .await
+        .then(|change| async move {
+            if let Ok(_id) = change.get().await {
+                // unwrap is safe as possible numbers is send by our controlled dbus
+                return Some(Event::RegistrationChanged);
+            }
+            None
+        })
+        .filter_map(|e| e);
     Ok(stream)
 }
 

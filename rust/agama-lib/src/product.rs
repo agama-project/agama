@@ -1,7 +1,7 @@
 //! Implements support for handling the product settings
 
 mod client;
-mod proxies;
+pub mod proxies;
 mod settings;
 mod store;
 
