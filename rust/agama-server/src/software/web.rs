@@ -14,7 +14,7 @@ use crate::{
 };
 use agama_lib::{
     error::ServiceError,
-    product::{Product, ProductClient},
+    product::{Product, ProductClient, RegistrationRequirement},
     software::{
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
@@ -130,6 +130,10 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
     let router = Router::new()
         .route("/patterns", get(patterns))
         .route("/products", get(products))
+        .route(
+            "/registration",
+            get(get_registration).post(register).delete(deregister),
+        )
         .route("/proposal", get(proposal))
         .route("/config", put(set_config).get(get_config))
         .route("/probe", post(probe))
@@ -151,6 +155,74 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
 async fn products(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Product>>, Error> {
     let products = state.product.products().await?;
     Ok(Json(products))
+}
+
+/// Information about registration configuration (product, patterns, etc.).
+#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct RegistrationInfo {
+    /// Registration key. Empty value mean key not used or not registered.
+    key: String,
+    /// Registration email. Empty value mean email not used or not registered.
+    email: String,
+    /// if registration is required, optional or not needed for current product.
+    /// Change only if selected product is changed.
+    requirement: RegistrationRequirement,
+}
+
+/// returns registration info
+///
+/// * `state`: service state.
+#[utoipa::path(get, path = "/software/registration", responses(
+    (status = 200, description = "registration configuration", body = RegistrationInfo),
+    (status = 400, description = "The D-Bus service could not perform the action")
+))]
+async fn get_registration(
+    State(state): State<SoftwareState<'_>>,
+) -> Result<Json<RegistrationInfo>, Error> {
+    let result = RegistrationInfo {
+        key: state.product.registration_code().await?,
+        email: state.product.email().await?,
+        requirement: state.product.registration_requirement().await?,
+    };
+    Ok(Json(result))
+}
+
+/// Software service configuration (product, patterns, etc.).
+#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct RegistrationParams {
+    /// Registration key.
+    key: String,
+    /// Registration email.
+    email: String,
+}
+
+/// Register product
+///
+/// * `state`: service state.
+#[utoipa::path(post, path = "/software/registration", responses(
+    (status = 200, description = "registration successfull"),
+    (status = 400, description = "The D-Bus service could not perform the action")
+))]
+async fn register(
+    State(state): State<SoftwareState<'_>>,
+    Json(config): Json<RegistrationParams>,
+) -> Result<Json<()>, Error> {
+    state.product.register(&config.key, &config.email).await?;
+    Ok(Json(()))
+}
+
+/// Deregister product
+///
+/// * `state`: service state.
+#[utoipa::path(delete, path = "/software/registration", responses(
+    (status = 200, description = "deregistration successfull"),
+    (status = 400, description = "The D-Bus service could not perform the action")
+))]
+async fn deregister(State(state): State<SoftwareState<'_>>) -> Result<Json<()>, Error> {
+    state.product.deregister().await?;
+    Ok(Json(()))
 }
 
 /// Returns the list of software patterns.

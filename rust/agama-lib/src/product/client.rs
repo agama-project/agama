@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::error::ServiceError;
 use crate::software::proxies::SoftwareProductProxy;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use zbus::Connection;
 
 use super::proxies::RegistrationProxy;
@@ -18,6 +18,7 @@ pub struct Product {
     pub description: String,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub enum RegistrationRequirement {
     /// Product does not require registration
     NotRequired = 0,
@@ -32,9 +33,15 @@ impl TryFrom<u32> for RegistrationRequirement {
 
     fn try_from(v: u32) -> Result<Self, Self::Error> {
         match v {
-            x if x == RegistrationRequirement::NotRequired as u32 => Ok(RegistrationRequirement::NotRequired),
-            x if x == RegistrationRequirement::Optional as u32 => Ok(RegistrationRequirement::Optional),
-            x if x == RegistrationRequirement::Mandatory as u32 => Ok(RegistrationRequirement::Mandatory),
+            x if x == RegistrationRequirement::NotRequired as u32 => {
+                Ok(RegistrationRequirement::NotRequired)
+            }
+            x if x == RegistrationRequirement::Optional as u32 => {
+                Ok(RegistrationRequirement::Optional)
+            }
+            x if x == RegistrationRequirement::Mandatory as u32 => {
+                Ok(RegistrationRequirement::Mandatory)
+            }
             _ => Err(()),
         }
     }
