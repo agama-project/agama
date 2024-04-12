@@ -558,13 +558,15 @@ const VolumesTable = ({ volumes, devices, target, targetDevice, isLoading, onVol
 const Basic = ({ volumes, configureBoot, bootDevice, target, isLoading }) => {
   if (isLoading)
     return (
-      <div className="split" style={{ padding: "var(--spacer-smaller) var(--spacer-small)" }}>
-        <Skeleton width="100%" />
+      <div className="wrapped split">
+        <Skeleton width="30%" />
+        <Skeleton width="20%" />
+        <Skeleton width="15%" />
       </div>
     );
 
   return (
-    <div className="split">
+    <div className="wrapped split">
       {volumes.map((v, i) => <VolumeLabel key={i} volume={v} target={target} />)}
       <BootLabel bootDevice={bootDevice} configureBoot={configureBoot} />
     </div>
