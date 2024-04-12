@@ -71,7 +71,7 @@ export default function ProposalSettingsSection({
     });
   };
 
-  /** @param {import("~/components/storage/EncryptionField").EncryptionConfig} encrytionConfig */
+  /** @param {import("~/components/storage/EncryptionField").EncryptionConfig} encryptionConfig */
   const changeEncryption = ({ password, method }) => {
     onChange({ encryptionPassword: password, encryptionMethod: method });
   };
