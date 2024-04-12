@@ -120,6 +120,7 @@ async fn patterns_changed_stream(
 
 async fn registration_requirement_changed_stream(dbus: zbus::Connection,
 ) -> Result<impl Stream<Item = Event>, Error> {
+    // TODO: move registration requirement to product in dbus and so just one event will be needed.
     let proxy = RegistrationProxy::new(&dbus).await?;
     let stream = proxy
         .receive_requirement_changed()
@@ -143,7 +144,7 @@ async fn registration_email_changed_stream(dbus: zbus::Connection,
         .await
         .then(|change| async move {
             if let Ok(_id) = change.get().await {
-                // unwrap is safe as possible numbers is send by our controlled dbus
+                // TODO: add to stream also proxy and return whole cached registration info
                 return Some(Event::RegistrationChanged);
             }
             None
@@ -160,7 +161,6 @@ async fn registration_code_changed_stream(dbus: zbus::Connection,
         .await
         .then(|change| async move {
             if let Ok(_id) = change.get().await {
-                // unwrap is safe as possible numbers is send by our controlled dbus
                 return Some(Event::RegistrationChanged);
             }
             None

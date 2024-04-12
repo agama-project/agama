@@ -88,106 +88,6 @@ const SelectedBy = Object.freeze({
  */
 
 /**
- * Product manager.
- * @ignore
- */
-class BaseProductManager {
-  /**
-   * @param {DBusClient} client
-   */
-  constructor(client) {
-    this.client = client;
-    this.proxies = {};
-  }
-
-  /**
-   * Returns the registration of the selected product.
-   *
-   * @return {Promise<Registration>}
-   */
-  async getRegistration() {
-    const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
-    const requirement = this.registrationRequirement(proxy.Requirement);
-    const code = proxy.RegCode;
-    const email = proxy.Email;
-
-    const registration = { requirement, code, email };
-    if (code.length === 0) registration.code = null;
-    if (email.length === 0) registration.email = null;
-
-    return registration;
-  }
-
-  /**
-   * Tries to register the selected product.
-   *
-   * @param {string} code
-   * @param {string} [email]
-   * @returns {Promise<ActionResult>}
-   */
-  async register(code, email = "") {
-    const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
-    const result = await proxy.Register(code, { Email: { t: "s", v: email } });
-
-    return {
-      success: result[0] === 0,
-      message: result[1],
-    };
-  }
-
-  /**
-   * Tries to deregister the selected product.
-   *
-   * @returns {Promise<ActionResult>}
-   */
-  async deregister() {
-    const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
-    const result = await proxy.Deregister();
-
-    return {
-      success: result[0] === 0,
-      message: result[1],
-    };
-  }
-
-  /**
-   * Registers a callback to run when the registration changes.
-   *
-   * @param {(registration: Registration) => void} handler - Callback function.
-   */
-  onRegistrationChange(handler) {
-    return this.client.onObjectChanged(PRODUCT_PATH, REGISTRATION_IFACE, () => {
-      this.getRegistration().then(handler);
-    });
-  }
-
-  /**
-   * Helper method to generate the requirement representation.
-   * @private
-   *
-   * @param {number} value - D-Bus registration value.
-   * @returns {string}
-   */
-  registrationRequirement(value) {
-    let requirement = "unknown";
-
-    switch (value) {
-      case 0:
-        requirement = "not-required";
-        break;
-      case 1:
-        requirement = "optional";
-        break;
-      case 2:
-        requirement = "mandatory";
-        break;
-    }
-
-    return requirement;
-  }
-}
-
-/**
  * Software client
  *
  * @ignore
@@ -346,6 +246,71 @@ class ProductBaseClient {
       if (id) {
         handler(id);
       }
+    });
+  }
+
+  /**
+   * Returns the registration of the selected product.
+   *
+   * @return {Promise<Registration>}
+   */
+  async getRegistration() {
+    const response = await this.client.get("/software/registration");
+    if (!response.ok) {
+      console.log("Failed to get registration config: ", response);
+      return { requirement: "unknown", code: null, email: null };
+    }
+    const config = await response.json();
+
+    const requirement = config.requirement;
+    const code = config.key;
+    const email = config.email;
+
+    const registration = { requirement, code, email };
+    if (code.length === 0) registration.code = null;
+    if (email.length === 0) registration.email = null;
+
+    return registration;
+  }
+
+  /**
+   * Tries to register the selected product.
+   *
+   * @param {string} code
+   * @param {string} [email]
+   * @returns {Promise<ActionResult>}
+   */
+  async register(code, email = "") {
+    const response = await this.client.post("/software/registration", { code, email });
+
+    return {
+      success: response.ok,
+      message: "", // TODO: pass message and code in body
+    };
+  }
+
+  /**
+   * Tries to deregister the selected product.
+   *
+   * @returns {Promise<ActionResult>}
+   */
+  async deregister() {
+    const response = await this.client.delete("/software/registration");
+
+    return {
+      success: response.ok,
+      message: "", // TODO: how to get message?
+    };
+  }
+
+  /**
+   * Registers a callback to run when the registration changes.
+   *
+   * @param {(registration: Registration) => void} handler - Callback function.
+   */
+  onRegistrationChange(handler) {
+    return this.client.onEvent("RegistrationChanged", () => {
+      this.getRegistration().then(handler);
     });
   }
 }

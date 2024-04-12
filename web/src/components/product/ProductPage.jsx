@@ -382,7 +382,7 @@ const RegistrationContent = ({ isLoading = false }) => {
 const RegistrationSection = ({ isLoading = false }) => {
   const { registration } = useProduct();
 
-  const isRequired = registration?.requirement !== "not-required";
+  const isRequired = registration?.requirement !== "NotRequired";
   const isRegistered = registration?.code !== null;
 
   return (

@@ -7,7 +7,7 @@
 use crate::{
     error::Error,
     web::{
-        common::{service_status_router, validation_router},
+        common::{service_status_router, validation_router, Streams},
         Event,
     },
 };
@@ -32,14 +32,14 @@ struct UsersState<'a> {
 /// * `connection`: D-Bus connection to listen for events.
 pub async fn users_streams(
     dbus: zbus::Connection,
-) -> Result<Vec<(&'static str, Pin<Box<dyn Stream<Item = Event> + Send>>)>, Error> {
+) -> Result<Streams, Error> {
     const FIRST_USER_ID: &str = "first_user";
     const ROOT_PASSWORD_ID: &str = "root_password";
     const ROOT_SSHKEY_ID: &str = "root_sshkey";
     // here we have three streams, but only two events. Reason is
     // that we have three streams from dbus about property change
     // and unify two root user properties into single event to http API
-    let result: Vec<(&str, Pin<Box<dyn Stream<Item = Event> + Send>>)> = vec![
+    let result: Streams = vec![
         (
             FIRST_USER_ID,
             Box::pin(first_user_changed_stream(dbus.clone()).await?),
