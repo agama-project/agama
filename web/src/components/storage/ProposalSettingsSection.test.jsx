@@ -29,7 +29,6 @@ import { ProposalSettingsSection } from "~/components/storage";
 /**
  * @typedef {import ("~/components/storage/ProposalSettingsSection").ProposalSettingsSectionProps} ProposalSettingsSectionProps
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- * @typedef {import ("~/client/storage").Volume} Volume
  */
 
 jest.mock("@patternfly/react-core", () => {
@@ -87,33 +86,10 @@ const sdb = {
   udevPaths: ["pci-0000:00-19"]
 };
 
-/** @type {Volume} */
-let volume;
-
 /** @type {ProposalSettingsSectionProps} */
 let props;
 
 beforeEach(() => {
-  volume = {
-    mountPath: "/",
-    target: "DEFAULT",
-    fsType: "Btrfs",
-    minSize: 1024,
-    maxSize: 2048,
-    autoSize: false,
-    snapshots: false,
-    transactional: false,
-    outline: {
-      required: true,
-      fsTypes: ["Btrfs", "Ext4"],
-      supportAutoSize: true,
-      snapshotsConfigurable: true,
-      snapshotsAffectSizes: true,
-      sizeRelevantVolumes: [],
-      adjustByRam: false
-    }
-  };
-
   props = {
     settings: {
       target: "DISK",
@@ -149,7 +125,7 @@ it("allows changing the encryption settings", async () => {
   const button = screen.getByRole("button", { name: /Encryption/ });
 
   await user.click(button);
-  await screen.findByRole("dialog", { name: /Encryption settings/ });
+  await screen.findByRole("dialog", { name: /Encryption/ });
 });
 
 it("renders a section holding file systems related stuff", () => {
