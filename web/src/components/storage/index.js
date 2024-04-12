@@ -22,7 +22,6 @@
 export { default as ProposalPage } from "./ProposalPage";
 export { default as ProposalPageMenu } from "./ProposalPageMenu";
 export { default as ProposalSettingsSection } from "./ProposalSettingsSection";
-export { default as ProposalDeviceSection } from "./ProposalDeviceSection";
 export { default as ProposalTransactionalInfo } from "./ProposalTransactionalInfo";
 export { default as ProposalActionsDialog } from "./ProposalActionsDialog";
 export { default as ProposalResultSection } from "./ProposalResultSection";
