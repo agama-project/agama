@@ -92,21 +92,21 @@ describe("BootConfigField", () => {
   describe("when installation is set for not configuring boot", () => {
     it("renders a text warning about it", () => {
       plainRender(<BootConfigField {...props} />);
-      screen.getByText(/will not create boot partitions/);
+      screen.getByText(/will not configure partitions/);
     });
   });
 
   describe("when installation is set for automatically configuring boot", () => {
     it("renders a text reporting about it", () => {
       plainRender(<BootConfigField {...props} configureBoot />);
-      screen.getByText(/create boot partitions at the installation device/);
+      screen.getByText(/configure partitions for booting at the installation disk/);
     });
   });
 
   describe("when installation is set for configuring boot at specific device", () => {
     it("renders a text reporting about it", () => {
       plainRender(<BootConfigField {...props} configureBoot bootDevice={sda} />);
-      screen.getByText(/boot partitions at \/dev\/sda/);
+      screen.getByText(/partitions for booting at \/dev\/sda/);
     });
   });
 });

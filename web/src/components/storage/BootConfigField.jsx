@@ -94,12 +94,12 @@ export default function BootConfigField ({
   let value;
 
   if (!configureBoot) {
-    value = <><Icon name="feedback" size="xs" /> {_("Installation will not create boot partitions.")}</>;
+    value = <><Icon name="feedback" size="xs" /> {_("Installation will not configure partitions for booting.")}</>;
   } else if (!bootDevice) {
-    value = _("Installation might create boot partitions at the installation device.");
+    value = _("Installation will configure partitions for booting at the installation disk.");
   } else {
     // TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
-    value = sprintf(_("Installation might create boot partitions at %s."), deviceLabel(bootDevice));
+    value = sprintf(_("Installation will configure partitions for booting at %s."), deviceLabel(bootDevice));
   }
 
   return (
