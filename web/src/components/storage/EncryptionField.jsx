@@ -25,7 +25,7 @@ import React, { useEffect, useState } from "react";
 import { Checkbox, Form, Skeleton } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { noop } from "~/utils";
-import { If, SettingsField, PasswordAndConfirmationInput, Popup } from "~/components/core";
+import { If, SwitchField, SettingsField, PasswordAndConfirmationInput, Popup } from "~/components/core";
 import { EncryptionMethods } from "~/client/storage";
 
 /**
@@ -44,6 +44,7 @@ the device, including data, programs, and system files.");
  *
  * @param {object} props
  * @param {string} props.id - Form ID.
+ * @param {boolean} props.isDisabled=false - Whether the form is disabled or not.
  * @param {string} props.password - Password for encryption.
  * @param {string} props.method - Encryption method.
  * @param {string[]} props.methods - Possible encryption methods.
@@ -52,6 +53,7 @@ the device, including data, programs, and system files.");
  */
 const EncryptionSettingsForm = ({
   id,
+  isDisabled = false,
   password: passwordProp,
   method: methodProp,
   methods,
@@ -62,8 +64,14 @@ const EncryptionSettingsForm = ({
   const [method, setMethod] = useState(methodProp);
 
   useEffect(() => {
+    if (isDisabled) {
+      onValidate(true);
+      setPassword("");
+      return;
+    }
+
     if (password.length === 0) onValidate(false);
-  }, [password, onValidate]);
+  }, [isDisabled, password, onValidate]);
 
   const changePassword = (_, v) => setPassword(v);
 
@@ -94,6 +102,7 @@ const EncryptionSettingsForm = ({
         value={password}
         onChange={changePassword}
         onValidation={onValidate}
+        isDisabled={isDisabled}
       />
       <If
         condition={methods.includes(EncryptionMethods.TPM)}
@@ -103,6 +112,7 @@ const EncryptionSettingsForm = ({
             label={_("Use the TPM to decrypt automatically on each boot")}
             description={<Description />}
             isChecked={method === EncryptionMethods.TPM}
+            isDisabled={isDisabled}
             onChange={changeMethod}
           />
         }
@@ -136,6 +146,7 @@ export default function EncryptionField({
   isLoading = false,
   onChange = noop
 }) {
+  const [isActive, setIsActive] = useState(password !== "");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isFormValid, setIsFormValid] = useState(true);
 
@@ -145,7 +156,12 @@ export default function EncryptionField({
 
   const acceptForm = (newPassword, newMethod) => {
     closeForm();
-    onChange({ password: newPassword, method: newMethod });
+
+    if (isActive) {
+      onChange({ password: newPassword, method: newMethod });
+    } else {
+      onChange({ password: "" });
+    }
   };
 
   const validateForm = (valid) => setIsFormValid(valid);
@@ -158,7 +174,7 @@ export default function EncryptionField({
 
     if (!password || password === "") return _("disabled");
     if (method === EncryptionMethods.LUKS2) return _("enabled");
-    if (method === EncryptionMethods.TPM) return _("enabled using TPM");
+    if (method === EncryptionMethods.TPM) return _("using TPM unlocking");
   };
 
   return (
@@ -168,15 +184,26 @@ export default function EncryptionField({
       value={<FieldValue />}
       onClick={openForm}
     >
-      <Popup aria-label={_("Encryption settings")} title={_("Encryption settings")} isOpen={isFormOpen}>
-        <EncryptionSettingsForm
-          id="encryptionSettingsForm"
-          password={password}
-          method={method}
-          methods={methods}
-          onSubmit={acceptForm}
-          onValidate={validateForm}
-        />
+      <Popup title={_("Encryption")} description={DESCRIPTION} isOpen={isFormOpen}>
+        <div className="stack">
+          <SwitchField
+            highlightContent
+            isChecked={isActive}
+            onClick={() => setIsActive(!isActive)}
+            label={_("Encrypt the system")}
+            textWrapper="span"
+          >
+            <EncryptionSettingsForm
+              id="encryptionSettingsForm"
+              isDisabled={!isActive}
+              password={password}
+              method={method}
+              methods={methods}
+              onSubmit={acceptForm}
+              onValidate={validateForm}
+            />
+          </SwitchField>
+        </div>
         <Popup.Actions>
           <Popup.Confirm form="encryptionSettingsForm" type="submit" isDisabled={!isFormValid}>{_("Accept")}</Popup.Confirm>
           <Popup.Cancel onClick={closeForm} />

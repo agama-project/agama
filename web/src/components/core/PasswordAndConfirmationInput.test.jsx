@@ -49,14 +49,37 @@ it("uses the given password value for confirmation too", async () => {
   expect(passwordInput.value).toEqual(confirmationInput.value);
 });
 
-it("disables both, password and confirmation, when isDisabled prop is given", async () => {
-  plainRender(
-    <PasswordAndConfirmationInput value="12345" isDisabled />
-  );
+describe("when isDisabled", () => {
+  it("disables both, password and confirmation", async () => {
+    plainRender(
+      <PasswordAndConfirmationInput value="12345" isDisabled />
+    );
 
-  const passwordInput = screen.getByLabelText("Password");
-  const confirmationInput = screen.getByLabelText("Password confirmation");
+    const passwordInput = screen.getByLabelText("Password");
+    const confirmationInput = screen.getByLabelText("Password confirmation");
 
-  expect(passwordInput).toBeDisabled();
-  expect(confirmationInput).toBeDisabled();
+    expect(passwordInput).toBeDisabled();
+    expect(confirmationInput).toBeDisabled();
+  });
+
+  it("clean errors", async () => {
+    const CleanErrorTest = () => {
+      const [isDisabled, setIsDisabled] = React.useState(false);
+
+      return (
+        <>
+          <PasswordAndConfirmationInput isDisabled={isDisabled} />
+          <button onClick={() => setIsDisabled(true)}>Set as disabled</button>
+        </>
+      );
+    };
+
+    const { user } = plainRender(<CleanErrorTest />);
+    const passwordInput = screen.getByLabelText("Password");
+    user.type(passwordInput, "123456");
+    await screen.findByText("Passwords do not match");
+    const setAsDisabledButton = screen.getByRole("button", { name: "Set as disabled" });
+    await user.click(setAsDisabledButton);
+    expect(screen.queryByText("Passwords do not match")).toBeNull();
+  });
 });

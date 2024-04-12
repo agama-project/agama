@@ -784,8 +784,23 @@ section [data-type="agama/reminder"] {
     margin-block-start: var(--spacer-small);
   }
 
+  &.highlighted > div:last-child {
+    --spacing: calc(var(--icon-size-s) / 2);
+    margin-inline: var(--spacing);
+    padding-inline: var(--spacing);
+    border-inline-start: 2px solid;
+  }
+
+  &.highlighted.on > div:last-child {
+    border-color: var(--color-link-hover);
+  }
+
+  &.highlighted.off > div:last-child {
+    border-color: var(--color-gray-darker);
+  }
+
   &.on {
-    button {
+    button:not(.password-toggler) {
       fill: var(--color-link-hover);
     }
   }

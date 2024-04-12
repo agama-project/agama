@@ -90,17 +90,18 @@ const SettingsField = ({ ...props }) => {
 };
 
 /**
- * @param {Omit<FieldProps, 'icon'> & {isChecked: boolean}} props
+ * @param {Omit<FieldProps, 'icon'> & {isChecked: boolean, highlightContent?: boolean}} props
  */
-const SwitchField = ({ isChecked = false, ...props }) => {
+const SwitchField = ({ isChecked = false, highlightContent = false, ...props }) => {
   const iconName = isChecked ? "toggle_on" : "toggle_off";
-  const className = isChecked ? "on" : "off";
+  const baseClassnames = highlightContent ? "highlighted" : "";
+  const stateClassnames = isChecked ? "on" : "off";
 
   return (
     <Field
       {...props}
       icon={iconName}
-      className={className}
+      className={[baseClassnames, stateClassnames].join(" ")}
       buttonAttrs={{ role: "switch", "aria-checked": isChecked }}
     />
   );
