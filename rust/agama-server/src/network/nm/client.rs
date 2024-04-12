@@ -20,6 +20,7 @@ use log;
 use macaddr::MacAddr6;
 use uuid::Uuid;
 use zbus;
+use zbus::fdo::DBusProxy;
 use zbus::zvariant::{self, ObjectPath, OwnedObjectPath};
 
 /// Simplified NetworkManager D-Bus client.
@@ -169,10 +170,20 @@ impl<'a> NetworkManagerClient<'a> {
             let device_type = NmDeviceType(proxy.device_type().await?);
             let ip4_path = proxy.ip4_config().await?;
             let ip6_path = proxy.ip6_config().await?;
+            let ip4_proxy = IP4ConfigProxy::builder(&self.connection)
+                .path(ip4_path.as_str())?
+                .build()
+                .await?;
+
+            let ip6_proxy = IP6ConfigProxy::builder(&self.connection)
+                .path(ip6_path.as_str())?
+                .build()
+                .await?;
+
             let state = proxy.state().await?;
             let mac_address = self.mac_address_from_dbus(proxy.hw_address().await?.as_str());
             let ip_config = if state == 100 {
-                let config = &self.ip_config_for(&ip4_path, &ip6_path).await?;
+                let config = &self.ip_config_for(ip4_proxy, ip6_proxy).await?;
 
                 Some(config.to_owned())
             } else {
@@ -246,19 +257,9 @@ impl<'a> NetworkManagerClient<'a> {
 
     pub async fn ip_config_for(
         &self,
-        ip4_path: &ObjectPath<'_>,
-        ip6_path: &ObjectPath<'_>,
+        ip4_proxy: IP4ConfigProxy<'_>,
+        ip6_proxy: IP6ConfigProxy<'_>,
     ) -> Result<IpConfig, ServiceError> {
-        let ip4_proxy = IP4ConfigProxy::builder(&self.connection)
-            .path(ip4_path.as_str())?
-            .build()
-            .await?;
-
-        let ip6_proxy = IP6ConfigProxy::builder(&self.connection)
-            .path(ip6_path.as_str())?
-            .build()
-            .await?;
-
         let address_data = ip4_proxy.address_data().await?;
         let nameserver_data = ip4_proxy.nameserver_data().await?;
         let mut addresses: Vec<IpInet> = vec![];
@@ -282,11 +283,11 @@ impl<'a> NetworkManagerClient<'a> {
                 nameservers.push(address)
             }
         }
-        let nameserver_data = ip6_proxy.nameservers().await?;
-        for nameserver in nameserver_data {
-            // FIXME: Convert from Vec<u8> to u16
-            dbg!(nameserver);
-        }
+        // FIXME: Convert from Vec<u8> to [u8; 16] and take into account big vs little endian order,
+        // in IP6Config there is no nameserver-data.
+        //
+        // let nameserver_data = ip6_proxy.nameservers().await?;
+
         let route_data = ip4_proxy.route_data().await?;
         let mut routes4: Vec<IpRoute> = vec![];
         if !route_data.is_empty() {
