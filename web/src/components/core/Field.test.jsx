@@ -65,13 +65,13 @@ describe("Field", () => {
 });
 
 describe("SettingsField", () => {
-  it("uses the 'settings' icon", () => {
+  it("uses the 'shadow' icon", () => {
     const { container } = plainRender(
       // Trying to set other icon, although typechecking should catch it.
       <SettingsField icon="edit" label="Theme" value="dark" onClick={onClick} />
     );
     const icon = container.querySelector("button > svg");
-    expect(icon).toHaveAttribute("data-icon-name", "settings");
+    expect(icon).toHaveAttribute("data-icon-name", "shadow");
   });
 });
 

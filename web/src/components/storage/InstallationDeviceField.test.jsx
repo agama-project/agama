@@ -23,7 +23,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import InstallationDeviceField from "~/components/storage/InstallationDeviceField";
 
 /**
@@ -97,7 +97,7 @@ describe("when set as loading", () => {
   });
 
   it("renders a loading hint", () => {
-    plainRender(<InstallationDeviceField {...props} />);
+    installerRender(<InstallationDeviceField {...props} />);
     screen.getByText("Waiting for information about selected device");
   });
 });
@@ -113,7 +113,7 @@ describe("when the target is a disk", () => {
     });
 
     it("uses a 'No device selected yet' text for the selection button", async () => {
-      plainRender(<InstallationDeviceField {...props} />);
+      installerRender(<InstallationDeviceField {...props} />);
       screen.getByText("No device selected yet");
     });
   });
@@ -124,7 +124,7 @@ describe("when the target is a disk", () => {
     });
 
     it("uses its name as part of the text for the selection button", async () => {
-      plainRender(<InstallationDeviceField {...props} />);
+      installerRender(<InstallationDeviceField {...props} />);
       screen.getByText(/\/dev\/sda/);
     });
   });
@@ -141,7 +141,7 @@ describe("when the target is a new LVM volume group", () => {
     });
 
     it("uses a 'No device selected yet' text for the selection button", async () => {
-      plainRender(<InstallationDeviceField {...props} />);
+      installerRender(<InstallationDeviceField {...props} />);
       screen.getByText("No device selected yet");
     });
   });
@@ -152,7 +152,7 @@ describe("when the target is a new LVM volume group", () => {
     });
 
     it("uses its name as part of the text for the selection button", async () => {
-      plainRender(<InstallationDeviceField {...props} />);
+      installerRender(<InstallationDeviceField {...props} />);
       screen.getByText(/new LVM .* \/dev\/sda/);
     });
   });
@@ -163,14 +163,14 @@ describe("when the target is a new LVM volume group", () => {
     });
 
     it("does not use the names as part of the text for the selection button", async () => {
-      plainRender(<InstallationDeviceField {...props} />);
+      installerRender(<InstallationDeviceField {...props} />);
       screen.getByText("new LVM volume group");
     });
   });
 });
 
 it("allows changing the selected device", async () => {
-  const { user } = plainRender(<InstallationDeviceField {...props} />);
+  const { user } = installerRender(<InstallationDeviceField {...props} />);
   const button = screen.getByRole("button", { name: /installation device/i });
 
   await user.click(button);
@@ -193,7 +193,7 @@ it("allows changing the selected device", async () => {
 });
 
 it("allows canceling a device selection", async () => {
-  const { user } = plainRender(<InstallationDeviceField {...props} />);
+  const { user } = installerRender(<InstallationDeviceField {...props} />);
   const button = screen.getByRole("button", { name: /installation device/i });
 
   await user.click(button);
