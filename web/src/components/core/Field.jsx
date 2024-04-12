@@ -86,7 +86,7 @@ const Field = ({
  * @param {Omit<FieldProps, 'icon'>} props
  */
 const SettingsField = ({ ...props }) => {
-  return <Field {...props} icon="settings" />;
+  return <Field {...props} icon="shadow" />;
 };
 
 /**
