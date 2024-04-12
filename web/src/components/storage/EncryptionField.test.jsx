@@ -40,18 +40,17 @@ const openEncryptionSettings = async ({ password = "", onChange = onChangeFn }) 
 };
 
 describe("Encryption field", () => {
-  it("renders 'disabled' when encryption is not set", () => {
-    plainRender(<EncryptionField />);
+  it("renders proper value depending of encryption status", () => {
+    // No encryption set
+    const { rerender } = plainRender(<EncryptionField />);
     screen.getByText("disabled");
-  });
 
-  it("renders 'enabled' when encryption is set", () => {
-    plainRender(<EncryptionField password="1234" method={EncryptionMethods.LUKS2} />);
+    // Encryption set with LUKS2
+    rerender(<EncryptionField password="1234" method={EncryptionMethods.LUKS2} />);
     screen.getByText("enabled");
-  });
 
-  it("renders 'using TPM unlocking' when encryption is set with TPM", () => {
-    plainRender(<EncryptionField password="1234" method={EncryptionMethods.TPM} />);
+    // Encryption set with TPM
+    rerender(<EncryptionField password="1234" method={EncryptionMethods.TPM} />);
     screen.getByText("using TPM unlocking");
   });
 
@@ -106,6 +105,6 @@ describe("Encryption field", () => {
     expect(onChangeFn).not.toHaveBeenCalled();
   });
 
-  test.todo("allows setting the TPM");
+  test.todo("test that it allows setting the TPM");
   test.todo("improve above tests");
 });

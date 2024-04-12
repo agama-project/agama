@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Checkbox, Form, Skeleton } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { noop } from "~/utils";
@@ -32,9 +32,17 @@ import { EncryptionMethods } from "~/client/storage";
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
 
+// Field texts at root level to avoid redefinitions every time the component
+// is rendered.
 const LABEL = _("Encryption");
 const DESCRIPTION = _("Full disk encryption allows to protect the information stored at \
 the device, including data, programs, and system files.");
+const VALUES = {
+  loading: <Skeleton width="150px" />,
+  disabled: _("disabled"),
+  [EncryptionMethods.LUKS2]: _("enabled"),
+  [EncryptionMethods.TPM]: _("using TPM unlocking")
+};
 
 /**
  * Form for configuring the encryption password.
@@ -146,9 +154,14 @@ export default function EncryptionField({
   isLoading = false,
   onChange = noop
 }) {
-  const [isActive, setIsActive] = useState(password?.length > 0);
+  const validPassword = useCallback(() => password?.length > 0, [password]);
+  const [isEnabled, setIsEnabled] = useState(validPassword());
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isFormValid, setIsFormValid] = useState(true);
+
+  useEffect(() => {
+    setIsEnabled(validPassword());
+  }, [password, validPassword]);
 
   const openForm = () => setIsFormOpen(true);
 
@@ -157,51 +170,38 @@ export default function EncryptionField({
   const acceptForm = (newPassword, newMethod) => {
     closeForm();
 
-    if (isActive) {
+    if (isEnabled) {
       onChange({ password: newPassword, method: newMethod });
     } else {
       onChange({ password: "" });
     }
   };
 
-  const validateForm = (valid) => setIsFormValid(valid);
-
-  // FIXME: extract to the top to avoid redefinitions?
-  const FieldValue = () => {
-    if (isLoading) return <Skeleton width="25%" />;
-
-    if (!isActive) return _("disabled");
-    if (method === EncryptionMethods.LUKS2) return _("enabled");
-    if (method === EncryptionMethods.TPM) return _("using TPM unlocking");
-  };
-
   return (
     <SettingsField
       label={LABEL}
       description={DESCRIPTION}
-      value={<FieldValue />}
+      value={isLoading ? VALUES.loading : VALUES[isEnabled ? method : "disabled"]}
       onClick={openForm}
     >
       <Popup title={_("Encryption")} description={DESCRIPTION} isOpen={isFormOpen}>
-        <div className="stack">
-          <SwitchField
-            highlightContent
-            isChecked={isActive}
-            onClick={() => setIsActive(!isActive)}
-            label={_("Encrypt the system")}
-            textWrapper="span"
-          >
-            <EncryptionSettingsForm
-              id="encryptionSettingsForm"
-              isDisabled={!isActive}
-              password={password}
-              method={method}
-              methods={methods}
-              onSubmit={acceptForm}
-              onValidate={validateForm}
-            />
-          </SwitchField>
-        </div>
+        <SwitchField
+          highlightContent
+          isChecked={isEnabled}
+          onClick={() => setIsEnabled(!isEnabled)}
+          label={_("Encrypt the system")}
+          textWrapper="span"
+        >
+          <EncryptionSettingsForm
+            id="encryptionSettingsForm"
+            isDisabled={!isEnabled}
+            password={password}
+            method={method}
+            methods={methods}
+            onSubmit={acceptForm}
+            onValidate={setIsFormValid}
+          />
+        </SwitchField>
         <Popup.Actions>
           <Popup.Confirm form="encryptionSettingsForm" type="submit" isDisabled={!isFormValid}>{_("Accept")}</Popup.Confirm>
           <Popup.Cancel onClick={closeForm} />
