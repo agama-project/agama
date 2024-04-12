@@ -41,6 +41,52 @@ jest.mock("@patternfly/react-core", () => {
   };
 });
 
+/** @type {StorageDevice} */
+const sda = {
+  sid: 59,
+  isDrive: true,
+  type: "disk",
+  description: "",
+  vendor: "Micron",
+  model: "Micron 1100 SATA",
+  driver: ["ahci", "mmcblk"],
+  bus: "IDE",
+  busId: "",
+  transport: "usb",
+  dellBOSS: false,
+  sdCard: true,
+  active: true,
+  name: "/dev/sda",
+  size: 1024,
+  recoverableSize: 0,
+  systems : [],
+  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
+  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+};
+
+/** @type {StorageDevice} */
+const sdb = {
+  sid: 62,
+  isDrive: true,
+  type: "disk",
+  description: "",
+  vendor: "Samsung",
+  model: "Samsung Evo 8 Pro",
+  driver: ["ahci"],
+  bus: "IDE",
+  busId: "",
+  transport: "",
+  dellBOSS: false,
+  sdCard: false,
+  active: true,
+  name: "/dev/sdb",
+  size: 2048,
+  recoverableSize: 0,
+  systems : [],
+  udevIds: [],
+  udevPaths: ["pci-0000:00-19"]
+};
+
 /** @type {Volume} */
 let volume;
 
@@ -71,6 +117,7 @@ beforeEach(() => {
   props = {
     settings: {
       target: "DISK",
+      targetDevice: "/dev/sda",
       targetPVDevices: [],
       configureBoot: false,
       bootDevice: "",
@@ -80,7 +127,7 @@ beforeEach(() => {
       spacePolicy: "",
       spaceActions: [],
       volumes: [],
-      installationDevices: []
+      installationDevices: [sda, sdb]
     },
     availableDevices: [],
     encryptionMethods: [],
@@ -89,7 +136,13 @@ beforeEach(() => {
   };
 });
 
-const rootVolume = { mountPath: "/", fsType: "Btrfs", outline: { snapshotsConfigurable: true } };
+it("allows changing the selected device", async () => {
+  const { user } = plainRender(<ProposalSettingsSection {...props} />);
+  const button = screen.getByRole("button", { name: /installation device/i });
+
+  await user.click(button);
+  await screen.findByRole("dialog", { name: /Device for installing/ });
+});
 
 describe("when snapshots are configurable", () => {
   beforeEach(() => {

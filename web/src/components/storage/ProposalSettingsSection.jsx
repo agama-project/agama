@@ -25,15 +25,17 @@ import React, { useEffect, useState } from "react";
 import { Checkbox, Form, Skeleton, Switch, Tooltip } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
+import InstallationDeviceField from "~/components/storage/InstallationDeviceField";
 import SpacePolicyField from "~/components/storage/SpacePolicyField";
 import PartitionsField from "~/components/storage/PartitionsField";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { noop } from "~/utils";
+import { compact, noop } from "~/utils";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 
 /**
  * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
+ * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
  * @typedef {import ("~/client/storage").SpaceAction} SpaceAction
  * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
@@ -237,6 +239,17 @@ export default function ProposalSettingsSection({
   isLoading = false,
   onChange
 }) {
+  /**
+   * @param {import("~/components/storage/InstallationDeviceField").Target} targetOptions
+   */
+  const changeTarget = ({ target, targetDevice, targetPVDevices }) => {
+    onChange({
+      target,
+      targetDevice: targetDevice?.name,
+      targetPVDevices: targetPVDevices.map(d => d.name)
+    });
+  };
+
   const changeEncryption = ({ password, method }) => {
     onChange({ encryptionPassword: password, encryptionMethod: method });
   };
@@ -259,11 +272,20 @@ export default function ProposalSettingsSection({
     });
   };
 
-  const targetDevice = availableDevices.find(d => d.name === settings.targetDevice);
+  /**
+   * @param {string} name
+   * @returns {StorageDevice|undefined}
+   */
+  const findDevice = (name) => availableDevices.find(a => a.name === name);
+
+  /** @type {StorageDevice|undefined} */
+  const targetDevice = findDevice(settings.targetDevice);
+  /** @type {StorageDevice[]} */
+  const targetPVDevices = compact(settings.targetPVDevices?.map(findDevice) || []);
   const useEncryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
   const { volumes = [], installationDevices = [], spaceActions = [] } = settings;
-  const bootDevice = availableDevices.find(d => d.name === settings.bootDevice);
-  const defaultBootDevice = availableDevices.find(d => d.name === settings.defaultBootDevice);
+  const bootDevice = findDevice(settings.bootDevice);
+  const defaultBootDevice = findDevice(settings.defaultBootDevice);
   const spacePolicy = SPACE_POLICIES.find(p => p.id === settings.spacePolicy);
 
   // Templates for already existing mount points are filtered out
@@ -277,6 +299,14 @@ export default function ProposalSettingsSection({
   return (
     <>
       <Section title={_("Settings")}>
+        <InstallationDeviceField
+          target={settings.target}
+          targetDevice={targetDevice}
+          targetPVDevices={targetPVDevices}
+          devices={availableDevices}
+          isLoading={isLoading}
+          onChange={changeTarget}
+        />
         <EncryptionField
           password={settings.encryptionPassword || ""}
           method={settings.encryptionMethod}

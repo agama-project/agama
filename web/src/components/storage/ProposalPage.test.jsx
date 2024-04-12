@@ -168,7 +168,7 @@ beforeEach(() => {
     onStatusChange: jest.fn()
   };
 
-  // @ts-expect-error Mocking method does not exist fo InstallerClient type.
+  // @ts-expect-error Mocking method does not exist for InstallerClient type.
   createClient.mockImplementation(() => ({ storage }));
 });
 
