@@ -146,7 +146,7 @@ export default function EncryptionField({
   isLoading = false,
   onChange = noop
 }) {
-  const [isActive, setIsActive] = useState(password !== "");
+  const [isActive, setIsActive] = useState(password?.length > 0);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isFormValid, setIsFormValid] = useState(true);
 
@@ -170,7 +170,7 @@ export default function EncryptionField({
   const FieldValue = () => {
     if (isLoading) return <Skeleton width="25%" />;
 
-    if (!password || password === "") return _("disabled");
+    if (!isActive) return _("disabled");
     if (method === EncryptionMethods.LUKS2) return _("enabled");
     if (method === EncryptionMethods.TPM) return _("using TPM unlocking");
   };

@@ -27,7 +27,6 @@ import { plainRender } from "~/test-utils";
 import { EncryptionMethods } from "~/client/storage";
 import EncryptionField from "~/components/storage/EncryptionField";
 
-let props;
 const onChangeFn = jest.fn();
 
 const openEncryptionSettings = async ({ password = "", onChange = onChangeFn }) => {
@@ -41,21 +40,18 @@ const openEncryptionSettings = async ({ password = "", onChange = onChangeFn }) 
 };
 
 describe("Encryption field", () => {
-  beforeEach(() => {
-    props = { onChange: onChangeFn };
+  it("renders 'disabled' when encryption is not set", () => {
+    plainRender(<EncryptionField />);
+    screen.getByText("disabled");
   });
 
-  it("renders proper value depending of encryption status", () => {
-    // No encryption set
-    const { rerender } = plainRender(<EncryptionField />);
-    screen.getByText("disabled");
-
-    // Encryption set with LUKS2
-    rerender(<EncryptionField password="1234" method={EncryptionMethods.LUKS2} />);
+  it("renders 'enabled' when encryption is set", () => {
+    plainRender(<EncryptionField password="1234" method={EncryptionMethods.LUKS2} />);
     screen.getByText("enabled");
+  });
 
-    // Encryption set with TPM
-    rerender(<EncryptionField password="1234" method={EncryptionMethods.TPM} />);
+  it("renders 'using TPM unlocking' when encryption is set with TPM", () => {
+    plainRender(<EncryptionField password="1234" method={EncryptionMethods.TPM} />);
     screen.getByText("using TPM unlocking");
   });
 
@@ -78,7 +74,7 @@ describe("Encryption field", () => {
     await user.click(accept);
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(props.onChange).toHaveBeenCalledWith(
+    expect(onChangeFn).toHaveBeenCalledWith(
       expect.objectContaining({ password: "1234" })
     );
   });
@@ -99,7 +95,7 @@ describe("Encryption field", () => {
     expect(passwordConfirmInput).not.toBeEnabled();
     await user.click(accept);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(props.onChange).toHaveBeenCalledWith({ password: "" });
+    expect(onChangeFn).toHaveBeenCalledWith({ password: "" });
   });
 
   it("allows discarding the encryption settings dialog", async () => {
@@ -107,7 +103,7 @@ describe("Encryption field", () => {
     const cancel = screen.getByRole("button", { name: "Cancel" });
     await user.click(cancel);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(props.onChange).not.toHaveBeenCalled();
+    expect(onChangeFn).not.toHaveBeenCalled();
   });
 
   test.todo("allows setting the TPM");
