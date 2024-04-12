@@ -19,12 +19,22 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import { act, screen, waitFor } from "@testing-library/react";
 import { createCallbackMock, installerRender } from "~/test-utils";
 import { createClient } from "~/client";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { StorageClient } from "~/client/storage";
 import { IDLE } from "~/client/status";
 import { ProposalPage } from "~/components/storage";
+
+/**
+ * @typedef {import ("~/client/storage").ProposalResult} ProposalResult
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/client/storage").Volume} Volume
+ */
 
 jest.mock("~/client");
 jest.mock("@patternfly/react-core", () => {
@@ -46,9 +56,12 @@ jest.mock("~/context/product", () => ({
   })
 }));
 
+/** @type {StorageDevice} */
 const vda = {
-  sid: "59",
+  sid: 59,
   type: "disk",
+  isDrive: true,
+  description: "",
   vendor: "Micron",
   model: "Micron 1100 SATA",
   driver: ["ahci", "mmcblk"],
@@ -62,12 +75,14 @@ const vda = {
   systems : ["Windows 11", "openSUSE Leap 15.2"],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
-  partitionTable: { type: "gpt", partitions: ["/dev/vda1", "/dev/vda2"] }
 };
 
+/** @type {StorageDevice} */
 const vdb = {
-  sid: "60",
+  sid: 60,
   type: "disk",
+  isDrive: true,
+  description: "",
   vendor: "Seagate",
   model: "Unknown",
   driver: ["ahci", "mmcblk"],
@@ -76,32 +91,84 @@ const vdb = {
   size: 1e+6
 };
 
-const storageMock = {
-  probe: jest.fn().mockResolvedValue(0),
-  proposal: {
-    getAvailableDevices: jest.fn().mockResolvedValue([vda, vdb]),
-    getEncryptionMethods: jest.fn().mockResolvedValue([]),
-    getProductMountPoints: jest.fn().mockResolvedValue([]),
-    getResult: jest.fn().mockResolvedValue(undefined),
-    defaultVolume: jest.fn(mountPath => Promise.resolve({ mountPath })),
-    calculate: jest.fn().mockResolvedValue(0),
-  },
-  system: {
-    getDevices: jest.fn().mockResolvedValue([vda, vdb])
-  },
-  staging: {
-    getDevices: jest.fn().mockResolvedValue([vda])
-  },
-  getErrors: jest.fn().mockResolvedValue([]),
-  isDeprecated: jest.fn().mockResolvedValue(false),
-  onDeprecate: jest.fn(),
-  onStatusChange: jest.fn()
+/**
+ * @param {string} mountPath
+ * @returns {Volume}
+ */
+const volume = (mountPath) => {
+  return (
+    {
+      mountPath,
+      target: "DEFAULT",
+      fsType: "Btrfs",
+      minSize: 1024,
+      maxSize: 1024,
+      autoSize: false,
+      snapshots: false,
+      transactional: false,
+      outline: {
+        required: false,
+        fsTypes: ["Btrfs"],
+        supportAutoSize: false,
+        snapshotsConfigurable: false,
+        snapshotsAffectSizes: false,
+        sizeRelevantVolumes: [],
+        adjustByRam: false
+      }
+    }
+  );
 };
 
+/** @type {StorageClient} */
 let storage;
 
+/** @type {ProposalResult} */
+let proposalResult;
+
 beforeEach(() => {
-  storage = { ...storageMock, proposal: { ...storageMock.proposal } };
+  proposalResult = {
+    settings: {
+      target: "DISK",
+      targetPVDevices: [],
+      configureBoot: false,
+      bootDevice: "",
+      defaultBootDevice: "",
+      encryptionPassword: "",
+      encryptionMethod: "",
+      spacePolicy: "",
+      spaceActions: [],
+      volumes: [],
+      installationDevices: []
+    },
+    actions: []
+  };
+
+  storage = {
+    probe: jest.fn().mockResolvedValue(0),
+    // @ts-expect-error Some methods have to be private to avoid type complaint.
+    proposal: {
+      getAvailableDevices: jest.fn().mockResolvedValue([vda, vdb]),
+      getEncryptionMethods: jest.fn().mockResolvedValue([]),
+      getProductMountPoints: jest.fn().mockResolvedValue([]),
+      getResult: jest.fn().mockResolvedValue(proposalResult),
+      defaultVolume: jest.fn(mountPath => Promise.resolve(volume(mountPath))),
+      calculate: jest.fn().mockResolvedValue(0),
+    },
+    // @ts-expect-error Some methods have to be private to avoid type complaint.
+    system: {
+      getDevices: jest.fn().mockResolvedValue([vda, vdb])
+    },
+    // @ts-expect-error Some methods have to be private to avoid type complaint.
+    staging: {
+      getDevices: jest.fn().mockResolvedValue([vda])
+    },
+    getErrors: jest.fn().mockResolvedValue([]),
+    isDeprecated: jest.fn().mockResolvedValue(false),
+    onDeprecate: jest.fn(),
+    onStatusChange: jest.fn()
+  };
+
+  // @ts-expect-error Mocking method does not exist fo InstallerClient type.
   createClient.mockImplementation(() => ({ storage }));
 });
 
@@ -117,9 +184,8 @@ it("does not probe storage if the storage devices are not deprecated", async () 
 });
 
 it("loads the proposal data", async () => {
-  storage.proposal.getResult = jest.fn().mockResolvedValue(
-    { settings: { target: "disk", targetDevice: vda.name } }
-  );
+  proposalResult.settings.target = "DISK";
+  proposalResult.settings.targetDevice = vda.name;
 
   installerRender(<ProposalPage />);
 
@@ -152,8 +218,8 @@ describe("when the storage devices become deprecated", () => {
   });
 
   it("loads the proposal data", async () => {
-    const result = { settings: { target: "disk", targetDevice: vda.name } };
-    storage.proposal.getResult = jest.fn().mockResolvedValue(result);
+    proposalResult.settings.target = "DISK";
+    proposalResult.settings.targetDevice = vda.name;
 
     const [mockFunction, callbacks] = createCallbackMock();
     storage.onDeprecate = mockFunction;
@@ -162,7 +228,7 @@ describe("when the storage devices become deprecated", () => {
 
     await screen.findByText(/\/dev\/vda/);
 
-    result.settings.targetDevice = vdb.name;
+    proposalResult.settings.targetDevice = vdb.name;
 
     const [onDeprecateCb] = callbacks;
     await act(() => onDeprecateCb());
@@ -172,11 +238,9 @@ describe("when the storage devices become deprecated", () => {
 });
 
 describe("when there is no proposal yet", () => {
-  beforeEach(() => {
-    storage.proposal.getResult = jest.fn().mockResolvedValue(undefined);
-  });
-
   it("shows the page as loading", async () => {
+    proposalResult = undefined;
+
     installerRender(<ProposalPage />);
 
     screen.getAllByText(/PFSkeleton/);
@@ -184,6 +248,9 @@ describe("when there is no proposal yet", () => {
   });
 
   it("loads the proposal when the service finishes to calculate", async () => {
+    const defaultResult = proposalResult;
+    proposalResult = undefined;
+
     const [mockFunction, callbacks] = createCallbackMock();
     storage.onStatusChange = mockFunction;
 
@@ -191,9 +258,9 @@ describe("when there is no proposal yet", () => {
 
     screen.getAllByText(/PFSkeleton/);
 
-    storage.proposal.getResult = jest.fn().mockResolvedValue(
-      { settings: { target: "disk", targetDevice: vda.name } }
-    );
+    proposalResult = defaultResult;
+    proposalResult.settings.target = "DISK";
+    proposalResult.settings.targetDevice = vda.name;
 
     const [onStatusChangeCb] = callbacks;
     await act(() => onStatusChangeCb(IDLE));
@@ -203,14 +270,13 @@ describe("when there is no proposal yet", () => {
 
 describe("when there is a proposal", () => {
   beforeEach(() => {
-    storage.proposal.getResult = jest.fn().mockResolvedValue(
-      { settings: { target: "disk", targetDevice: vda.name } }
-    );
+    proposalResult.settings.target = "DISK";
+    proposalResult.settings.targetDevice = vda.name;
   });
 
   it("does not load the proposal when the service finishes to calculate", async () => {
     const [mockFunction, callbacks] = createCallbackMock();
-    storage.proposal.onStatusChange = mockFunction;
+    storage.onStatusChange = mockFunction;
 
     installerRender(<ProposalPage />);
 

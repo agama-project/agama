@@ -407,21 +407,23 @@ const SpacePolicyField = ({
  * Section for editing the proposal settings
  * @component
  *
- * @param {object} props
- * @param {ProposalSettings} props.settings
- * @param {StorageDevice[]} [props.availableDevices=[]]
- * @param {String[]} [props.encryptionMethods=[]]
- * @param {Volume[]} [props.volumeTemplates=[]]
- * @param {boolean} [props.isLoading=false]
- * @param {(settings: object) => void} [props.onChange=noop]
+ * @typedef {object} ProposalSettingsSectionProps
+ * @property {ProposalSettings} settings
+ * @property {StorageDevice[]} availableDevices
+ * @property {String[]} encryptionMethods
+ * @property {Volume[]} volumeTemplates
+ * @property {boolean} [isLoading=false]
+ * @property {(settings: object) => void} onChange
+ *
+ * @param {ProposalSettingsSectionProps} props
  */
 export default function ProposalSettingsSection({
   settings,
-  availableDevices = [],
-  encryptionMethods = [],
-  volumeTemplates = [],
+  availableDevices,
+  encryptionMethods,
+  volumeTemplates,
   isLoading = false,
-  onChange = noop
+  onChange
 }) {
   const changeEncryption = ({ password, method }) => {
     onChange({ encryptionPassword: password, encryptionMethod: method });
@@ -458,8 +460,8 @@ export default function ProposalSettingsSection({
     });
   };
 
-  const lvm = settings.target === "newLvmVg" || settings.target === "reusedLvmVg";
-  const encryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
+  const targetDevice = availableDevices.find(d => d.name === settings.targetDevice);
+  const useEncryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
   const { volumes = [], installationDevices = [], spaceActions = [] } = settings;
   const bootDevice = availableDevices.find(d => d.name === settings.bootDevice);
   const defaultBootDevice = availableDevices.find(d => d.name === settings.defaultBootDevice);
@@ -484,14 +486,16 @@ export default function ProposalSettingsSection({
           password={settings.encryptionPassword || ""}
           method={settings.encryptionMethod}
           methods={encryptionMethods}
-          isChecked={encryption}
+          isChecked={useEncryption}
           isLoading={settings.encryptionPassword === undefined}
           onChange={changeEncryption}
         />
         <ProposalVolumes
           volumes={volumes}
           templates={usefulTemplates()}
-          options={{ lvm, encryption }}
+          devices={availableDevices}
+          target={settings.target}
+          targetDevice={targetDevice}
           isLoading={isLoading && settings.volumes === undefined}
           onChange={changeVolumes}
         />

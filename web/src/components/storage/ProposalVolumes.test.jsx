@@ -19,10 +19,18 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalVolumes } from "~/components/storage";
+
+/**
+ * @typedef {import ("~/components/storage/ProposalVolumes").ProposalVolumesProps} ProposalVolumesProps
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/client/storage").Volume} Volume
+ */
 
 jest.mock("@patternfly/react-core", () => {
   const original = jest.requireActual("@patternfly/react-core");
@@ -34,60 +42,73 @@ jest.mock("@patternfly/react-core", () => {
   };
 });
 
-const volumes = {
-  root: {
-    mountPath: "/",
-    fsType: "Btrfs",
-    minSize: 1024,
-    maxSize: 2048,
-    autoSize: false,
-    snapshots: false,
-    transactional: false,
-    outline: {
-      required: true,
-      fsTypes: ["Btrfs", "Ext4"],
-      supportAutoSize: true,
-      snapshotsConfigurable: true,
-      snapshotsAffectSizes: true,
-      sizeRelevantVolumes: []
-    }
-  },
-  swap: {
-    mountPath: "swap",
-    fsType: "Swap",
-    minSize: 1024,
-    maxSize: 1024,
-    autoSize: false,
-    snapshots: false,
-    outline: {
-      required: false,
-      fsTypes: ["Swap"],
-      supportAutoSize: false,
-      snapshotsConfigurable: false,
-      snapshotsAffectSizes: false,
-      sizeRelevantVolumes: []
-    }
-  },
-  home: {
-    mountPath: "/home",
-    fsType: "XFS",
-    minSize: 1024,
-    autoSize: false,
-    snapshots: false,
-    outline: {
-      required: false,
-      fsTypes: ["Ext4", "XFS"],
-      supportAutoSize: false,
-      snapshotsConfigurable: false,
-      snapshotsAffectSizes: false,
-      sizeRelevantVolumes: []
-    }
+/** @type {Volume} */
+const rootVolume = {
+  mountPath: "/",
+  target: "DEFAULT",
+  fsType: "Btrfs",
+  minSize: 1024,
+  maxSize: 2048,
+  autoSize: false,
+  snapshots: false,
+  transactional: false,
+  outline: {
+    required: true,
+    fsTypes: ["Btrfs", "Ext4"],
+    supportAutoSize: true,
+    snapshotsConfigurable: true,
+    snapshotsAffectSizes: true,
+    sizeRelevantVolumes: [],
+    adjustByRam: false
   }
 };
 
+/** @type {Volume} */
+const swapVolume = {
+  mountPath: "swap",
+  target: "DEFAULT",
+  fsType: "Swap",
+  minSize: 1024,
+  maxSize: 1024,
+  autoSize: false,
+  snapshots: false,
+  transactional: false,
+  outline: {
+    required: false,
+    fsTypes: ["Swap"],
+    supportAutoSize: false,
+    snapshotsConfigurable: false,
+    snapshotsAffectSizes: false,
+    sizeRelevantVolumes: [],
+    adjustByRam: false
+  }
+};
+
+/** @type {Volume} */
+const homeVolume = {
+  mountPath: "/home",
+  target: "DEFAULT",
+  fsType: "XFS",
+  minSize: 1024,
+  autoSize: false,
+  snapshots: false,
+  transactional: false,
+  outline: {
+    required: false,
+    fsTypes: ["Ext4", "XFS"],
+    supportAutoSize: false,
+    snapshotsConfigurable: false,
+    snapshotsAffectSizes: false,
+    sizeRelevantVolumes: [],
+    adjustByRam: false
+  }
+};
+
+/** @type {StorageDevice} */
 const sda = {
   sid: 59,
   name: "/dev/sda",
+  description: "",
   isDrive: true,
   type: "disk",
   vendor: "Micron",
@@ -96,9 +117,11 @@ const sda = {
   size: 1024
 };
 
+/** @type {StorageDevice} */
 const sda1 = {
   sid: 69,
   name: "/dev/sda1",
+  description: "",
   isDrive: false,
   type: "partition",
   size: 256,
@@ -108,9 +131,11 @@ const sda1 = {
   }
 };
 
+/** @type {StorageDevice} */
 const sda2 = {
   sid: 79,
   name: "/dev/sda2",
+  description: "",
   isDrive: false,
   type: "partition",
   size: 512,
@@ -120,10 +145,18 @@ const sda2 = {
   }
 };
 
+/** @type {ProposalVolumesProps} */
 let props;
 
 beforeEach(() => {
-  props = {};
+  props = {
+    volumes: [],
+    templates: [],
+    devices: [],
+    target: "DISK",
+    targetDevice: undefined,
+    onChange: jest.fn()
+  };
 });
 
 it("renders a button for the generic actions", async () => {
@@ -138,8 +171,6 @@ it("renders a button for the generic actions", async () => {
 });
 
 it("changes the volumes if reset action is used", async () => {
-  props.onChange = jest.fn();
-
   const { user } = plainRender(<ProposalVolumes {...props} />);
 
   const button = screen.getByRole("button", { name: "Actions" });
@@ -152,8 +183,7 @@ it("changes the volumes if reset action is used", async () => {
 });
 
 it("allows to add a volume if add action is used", async () => {
-  props.templates = [volumes.home];
-  props.onChange = jest.fn();
+  props.templates = [homeVolume];
 
   const { user } = plainRender(<ProposalVolumes {...props} />);
 
@@ -172,8 +202,7 @@ it("allows to add a volume if add action is used", async () => {
 });
 
 it("allows to cancel if add action is used", async () => {
-  props.templates = [volumes.home];
-  props.onChange = jest.fn();
+  props.templates = [homeVolume];
 
   const { user } = plainRender(<ProposalVolumes {...props} />);
 
@@ -193,7 +222,7 @@ it("allows to cancel if add action is used", async () => {
 
 describe("if there are volumes", () => {
   beforeEach(() => {
-    props.volumes = [volumes.root, volumes.home, volumes.swap];
+    props.volumes = [rootVolume, homeVolume, swapVolume];
   });
 
   it("renders skeleton for each volume if loading", async () => {
@@ -222,8 +251,6 @@ describe("if there are volumes", () => {
   });
 
   it("allows deleting the volume", async () => {
-    props.onChange = jest.fn();
-
     const { user } = plainRender(<ProposalVolumes {...props} />);
 
     const [, body] = await screen.findAllByRole("rowgroup");
@@ -233,12 +260,10 @@ describe("if there are volumes", () => {
     const deleteAction = within(row).queryByRole("menuitem", { name: "Delete" });
     await user.click(deleteAction);
 
-    expect(props.onChange).toHaveBeenCalledWith(expect.not.arrayContaining([volumes.home]));
+    expect(props.onChange).toHaveBeenCalledWith(expect.not.arrayContaining([homeVolume]));
   });
 
   it("allows editing the volume", async () => {
-    props.onChange = jest.fn();
-
     const { user } = plainRender(<ProposalVolumes {...props} />);
 
     const [, body] = await screen.findAllByRole("rowgroup");
@@ -252,9 +277,23 @@ describe("if there are volumes", () => {
     within(popup).getByText("Edit file system");
   });
 
-  describe("and there is transactional Btrfs root volume", () => {
+  it("allows changing the location of the volume", async () => {
+    const { user } = plainRender(<ProposalVolumes {...props} />);
+
+    const [, body] = await screen.findAllByRole("rowgroup");
+    const row = within(body).getByRole("row", { name: "/home XFS At least 1 KiB Partition at installation disk" });
+    const actions = within(row).getByRole("button", { name: "Actions" });
+    await user.click(actions);
+    const locationAction = within(row).queryByRole("menuitem", { name: "Change location" });
+    await user.click(locationAction);
+
+    const popup = await screen.findByRole("dialog");
+    within(popup).getByText("Location for /home file system");
+  });
+
+  describe("and there is a transactional Btrfs root volume", () => {
     beforeEach(() => {
-      props.volumes = [{ ...volumes.root, snapshots: true, transactional: true }];
+      props.volumes = [{ ...rootVolume, snapshots: true, transactional: true }];
     });
 
     it("renders 'transactional' legend as part of its information", async () => {
@@ -268,7 +307,7 @@ describe("if there are volumes", () => {
 
   describe("and there is Btrfs volume using snapshots", () => {
     beforeEach(() => {
-      props.volumes = [{ ...volumes.root, snapshots: true, transactional: false }];
+      props.volumes = [{ ...rootVolume, snapshots: true, transactional: false }];
     });
 
     it("renders 'with snapshots' legend as part of its information", async () => {
@@ -283,9 +322,9 @@ describe("if there are volumes", () => {
   describe("and some volumes are allocated at separate disks", () => {
     beforeEach(() => {
       props.volumes = [
-        volumes.root,
-        { ...volumes.swap, target: "new_partition", targetDevice: sda },
-        { ...volumes.home, target: "new_vg", targetDevice: sda }
+        rootVolume,
+        { ...swapVolume, target: "NEW_PARTITION", targetDevice: sda },
+        { ...homeVolume, target: "NEW_VG", targetDevice: sda }
       ];
     });
 
@@ -302,9 +341,9 @@ describe("if there are volumes", () => {
   describe("and some volumes are reusing existing block devices", () => {
     beforeEach(() => {
       props.volumes = [
-        volumes.root,
-        { ...volumes.swap, target: "filesystem", targetDevice: sda1 },
-        { ...volumes.home, target: "device", targetDevice: sda2 }
+        rootVolume,
+        { ...swapVolume, target: "FILESYSTEM", targetDevice: sda1 },
+        { ...homeVolume, target: "DEVICE", targetDevice: sda2 }
       ];
     });
 

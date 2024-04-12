@@ -24,12 +24,20 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { BootSelectionDialog } from "~/components/storage";
+import VolumeLocationDialog from "~/components/storage/VolumeLocationDialog";
 
+/**
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/client/storage").Volume} Volume
+ * @typedef {import ("~/components/storage/VolumeLocationDialog").VolumeLocationDialogProps} VolumeLocationDialogProps
+ */
+
+/** @type {StorageDevice} */
 const sda = {
   sid: 59,
   isDrive: true,
   type: "disk",
+  description: "",
   vendor: "Micron",
   model: "Micron 1100 SATA",
   driver: ["ahci", "mmcblk"],
@@ -47,10 +55,12 @@ const sda = {
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
+/** @type {StorageDevice} */
 const sdb = {
   sid: 62,
   isDrive: true,
   type: "disk",
+  description: "",
   vendor: "Samsung",
   model: "Samsung Evo 8 Pro",
   driver: ["ahci"],
@@ -68,10 +78,12 @@ const sdb = {
   udevPaths: ["pci-0000:00-19"]
 };
 
+/** @type {StorageDevice} */
 const sdc = {
   sid: 63,
   isDrive: true,
   type: "disk",
+  description: "",
   vendor: "Samsung",
   model: "Samsung Evo 8 Pro",
   driver: ["ahci"],
@@ -89,14 +101,38 @@ const sdc = {
   udevPaths: ["pci-0000:00-19"]
 };
 
+/** @type {Volume} */
+const volume = {
+  mountPath: "/",
+  target: "DEFAULT",
+  fsType: "Btrfs",
+  minSize: 1024,
+  maxSize: 2048,
+  autoSize: false,
+  snapshots: false,
+  transactional: false,
+  outline: {
+    required: true,
+    fsTypes: ["Btrfs", "Ext4"],
+    supportAutoSize: true,
+    snapshotsConfigurable: true,
+    snapshotsAffectSizes: true,
+    sizeRelevantVolumes: [],
+    adjustByRam: false
+  }
+};
+
+/** @type {VolumeLocationDialogProps} */
 let props;
 
-describe("BootSelectionDialog", () => {
+describe("VolumeLocationDialog", () => {
   beforeEach(() => {
     props = {
       isOpen: true,
-      configureBoot: false,
+      volume,
       devices: [sda, sdb, sdc],
+      target: "DISK",
+      targetDevice: sda,
       onCancel: jest.fn(),
       onAccept: jest.fn()
     };
@@ -104,72 +140,70 @@ describe("BootSelectionDialog", () => {
 
   const automaticOption = () => screen.queryByRole("radio", { name: "Automatic" });
   const selectDiskOption = () => screen.queryByRole("radio", { name: "Select a disk" });
-  const notConfigureOption = () => screen.queryByRole("radio", { name: "Do not configure" });
   const diskSelector = () => screen.queryByRole("combobox", { name: /choose a disk/i });
+  const lvmSelector = () => screen.queryByRole("checkbox", { name: /dedicated lvm/i });
 
-  it("offers an option to configure boot in the installation disk", () => {
-    plainRender(<BootSelectionDialog {...props} />);
+  it("offers an option to use the installation disk", () => {
+    plainRender(<VolumeLocationDialog {...props} />);
     expect(automaticOption()).toBeInTheDocument();
   });
 
-  it("offers an option to configure boot in a selected disk", () => {
-    plainRender(<BootSelectionDialog {...props} />);
+  it("offers an option to selected a disk", () => {
+    plainRender(<VolumeLocationDialog {...props} />);
     expect(selectDiskOption()).toBeInTheDocument();
     expect(diskSelector()).toBeInTheDocument();
+    expect(lvmSelector()).toBeInTheDocument();
   });
 
-  it("offers an option to not configure boot", () => {
-    plainRender(<BootSelectionDialog {...props} />);
-    expect(notConfigureOption()).toBeInTheDocument();
-  });
-
-  describe("if the current value is set to boot from the installation disk", () => {
+  describe("if the current value is set to use the installation disk", () => {
     beforeEach(() => {
-      props.configureBoot = true;
-      props.bootDevice = undefined;
+      props.volume.target = "DEFAULT";
+      props.targetDevice = sda;
     });
 
     it("selects 'Automatic' option by default", () => {
-      plainRender(<BootSelectionDialog {...props} />);
+      plainRender(<VolumeLocationDialog {...props} />);
       expect(automaticOption()).toBeChecked();
       expect(selectDiskOption()).not.toBeChecked();
       expect(diskSelector()).toBeDisabled();
-      expect(notConfigureOption()).not.toBeChecked();
+      expect(lvmSelector()).toBeDisabled();
     });
   });
 
-  describe("if the current value is set to boot from a selected disk", () => {
+  describe("if the current value is set to use a selected disk", () => {
     beforeEach(() => {
-      props.configureBoot = true;
-      props.bootDevice = sdb;
+      props.volume.target = "NEW_PARTITION";
+      props.targetDevice = sda;
     });
 
     it("selects 'Select a disk' option by default", () => {
-      plainRender(<BootSelectionDialog {...props} />);
+      plainRender(<VolumeLocationDialog {...props} />);
       expect(automaticOption()).not.toBeChecked();
       expect(selectDiskOption()).toBeChecked();
       expect(diskSelector()).toBeEnabled();
-      expect(notConfigureOption()).not.toBeChecked();
+      expect(lvmSelector()).toBeEnabled();
+      expect(lvmSelector()).not.toBeChecked();
     });
   });
 
-  describe("if the current value is set to not configure boot", () => {
+  describe("if the current value is set to use a selected disk for a dedicated LVM", () => {
     beforeEach(() => {
-      props.configureBoot = false;
-      props.bootDevice = sdb;
+      props.volume.target = "NEW_VG";
+      props.targetDevice = sda;
     });
 
-    it("selects 'Do not configure' option by default", () => {
-      plainRender(<BootSelectionDialog {...props} />);
+    it("selects 'Select a disk' option and check LVM by default", () => {
+      plainRender(<VolumeLocationDialog {...props} />);
       expect(automaticOption()).not.toBeChecked();
-      expect(selectDiskOption()).not.toBeChecked();
-      expect(diskSelector()).toBeDisabled();
-      expect(notConfigureOption()).toBeChecked();
+      expect(selectDiskOption()).toBeChecked();
+      expect(diskSelector()).toBeEnabled();
+      expect(lvmSelector()).toBeEnabled();
+      expect(lvmSelector()).toBeChecked();
     });
   });
 
   it("does not call onAccept on cancel", async () => {
-    const { user } = plainRender(<BootSelectionDialog {...props} />);
+    const { user } = plainRender(<VolumeLocationDialog {...props} />);
     const cancel = screen.getByRole("button", { name: "Cancel" });
 
     await user.click(cancel);
@@ -179,33 +213,32 @@ describe("BootSelectionDialog", () => {
 
   describe("if the 'Automatic' option is selected", () => {
     beforeEach(() => {
-      props.configureBoot = false;
-      props.bootDevice = undefined;
+      props.volume.target = "NEW_PARTITION";
+      props.volume.targetDevice = sda;
     });
 
     it("calls onAccept with the selected options on accept", async () => {
-      const { user } = plainRender(<BootSelectionDialog {...props} />);
+      const { user } = plainRender(<VolumeLocationDialog {...props} />);
 
       await user.click(automaticOption());
 
       const accept = screen.getByRole("button", { name: "Confirm" });
       await user.click(accept);
 
-      expect(props.onAccept).toHaveBeenCalledWith({
-        configureBoot: true,
-        bootDevice: undefined
-      });
+      expect(props.onAccept).toHaveBeenCalledWith(expect.objectContaining(
+        { target: "DEFAULT", targetDevice: undefined }
+      ));
     });
   });
 
   describe("if the 'Select a disk' option is selected", () => {
     beforeEach(() => {
-      props.configureBoot = false;
-      props.bootDevice = undefined;
+      props.volume.target = "DEFAULT";
+      props.volume.targetDevice = undefined;
     });
 
     it("calls onAccept with the selected options on accept", async () => {
-      const { user } = plainRender(<BootSelectionDialog {...props} />);
+      const { user } = plainRender(<VolumeLocationDialog {...props} />);
 
       await user.click(selectDiskOption());
       const selector = diskSelector();
@@ -215,30 +248,27 @@ describe("BootSelectionDialog", () => {
       const accept = screen.getByRole("button", { name: "Confirm" });
       await user.click(accept);
 
-      expect(props.onAccept).toHaveBeenCalledWith({
-        configureBoot: true,
-        bootDevice: sdb
-      });
-    });
-  });
-
-  describe("if the 'Do not configure' option is selected", () => {
-    beforeEach(() => {
-      props.configureBoot = true;
-      props.bootDevice = undefined;
+      expect(props.onAccept).toHaveBeenCalledWith(expect.objectContaining(
+        { target: "NEW_PARTITION", targetDevice: sdb }
+      ));
     });
 
-    it("calls onAccept with the selected options on accept", async () => {
-      const { user } = plainRender(<BootSelectionDialog {...props} />);
+    describe("and dedicated LVM is checked", () => {
+      it("calls onAccept with the selected options on accept", async () => {
+        const { user } = plainRender(<VolumeLocationDialog {...props} />);
 
-      await user.click(notConfigureOption());
+        await user.click(selectDiskOption());
+        const selector = diskSelector();
+        const sdbOption = within(selector).getByRole("option", { name: /sdb/ });
+        await user.selectOptions(selector, sdbOption);
+        await user.click(lvmSelector());
 
-      const accept = screen.getByRole("button", { name: "Confirm" });
-      await user.click(accept);
+        const accept = screen.getByRole("button", { name: "Confirm" });
+        await user.click(accept);
 
-      expect(props.onAccept).toHaveBeenCalledWith({
-        configureBoot: false,
-        bootDevice: undefined
+        expect(props.onAccept).toHaveBeenCalledWith(expect.objectContaining(
+          { target: "NEW_VG", targetDevice: sdb }
+        ));
       });
     });
   });

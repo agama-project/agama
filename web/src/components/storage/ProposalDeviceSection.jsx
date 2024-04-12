@@ -35,6 +35,7 @@ import { sprintf } from "sprintf-js";
 import { compact, noop } from "~/utils";
 
 /**
+ * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
  * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
@@ -43,15 +44,15 @@ import { compact, noop } from "~/utils";
  * Renders a button that allows changing the target device for installation.
  *
  * @param {object} props
- * @param {string} props.target
+ * @param {ProposalTarget} props.target
  * @param {StorageDevice|undefined} props.targetDevice
  * @param {StorageDevice[]} props.targetPVDevices
  * @param {import("react").MouseEventHandler<HTMLButtonElement>} [props.onClick=noop]
  */
 const TargetDeviceButton = ({ target, targetDevice, targetPVDevices, onClick = noop }) => {
   const label = () => {
-    if (target === "disk" && targetDevice) return deviceLabel(targetDevice);
-    if (target === "newLvmVg" && targetPVDevices.length > 0) {
+    if (target === "DISK" && targetDevice) return deviceLabel(targetDevice);
+    if (target === "NEW_LVM_VG" && targetPVDevices.length > 0) {
       if (targetPVDevices.length > 1) return _("new LVM volume group");
 
       if (targetPVDevices.length === 1) {
@@ -75,15 +76,15 @@ const TargetDeviceButton = ({ target, targetDevice, targetPVDevices, onClick = n
  * @component
  *
  * @param {object} props
- * @param {string} props.target - Installation target ("disk", "newLvmVg", "reusedLvmVg").
- * @param {StorageDevice|undefined} props.targetDevice - Target device (for target "disk").
- * @param {StorageDevice[]} props.targetPVDevices - Target devices for the LVM volume group (target "newLvmVg").
+ * @param {ProposalTarget} props.target - Installation target
+ * @param {StorageDevice|undefined} props.targetDevice - Target device (for target "DISK").
+ * @param {StorageDevice[]} props.targetPVDevices - Target devices for the LVM volume group (target "NEW_LVM_VG").
  * @param {StorageDevice[]} props.devices - Available devices for installation.
  * @param {boolean} props.isLoading
  * @param {(target: Target) => void} props.onChange
  *
  * @typedef {object} Target
- * @property {string} target
+ * @property {ProposalTarget} target
  * @property {StorageDevice|undefined} targetDevice
  * @property {StorageDevice[]} targetPVDevices
  */

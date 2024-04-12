@@ -1467,7 +1467,7 @@ describe("#proposal", () => {
 
       expect(home).toStrictEqual({
         mountPath: "/home",
-        target: "default",
+        target: "DEFAULT",
         targetDevice: undefined,
         fsType: "XFS",
         minSize: 2048,
@@ -1490,7 +1490,7 @@ describe("#proposal", () => {
 
       expect(generic).toStrictEqual({
         mountPath: "",
-        target: "default",
+        target: "DEFAULT",
         targetDevice: undefined,
         fsType: "Ext4",
         minSize: 1024,
@@ -1535,7 +1535,7 @@ describe("#proposal", () => {
         const { settings, actions } = await client.proposal.getResult();
 
         expect(settings).toMatchObject({
-          target: "newLvmVg",
+          target: "NEW_LVM_VG",
           targetPVDevices: ["/dev/sda", "/dev/sdb"],
           configureBoot: true,
           bootDevice: "/dev/sda",
@@ -1549,7 +1549,7 @@ describe("#proposal", () => {
           volumes: [
             {
               mountPath: "/",
-              target: "default",
+              target: "DEFAULT",
               targetDevice: undefined,
               fsType: "Btrfs",
               minSize: 1024,
@@ -1568,7 +1568,7 @@ describe("#proposal", () => {
             },
             {
               mountPath: "/home",
-              target: "default",
+              target: "DEFAULT",
               targetDevice: undefined,
               fsType: "XFS",
               minSize: 2048,
@@ -1615,7 +1615,7 @@ describe("#proposal", () => {
 
     it("calculates a proposal with the given settings", async () => {
       await client.proposal.calculate({
-        target: "disk",
+        target: "DISK",
         targetDevice: "/dev/vdc",
         configureBoot: true,
         bootDevice: "/dev/vdb",

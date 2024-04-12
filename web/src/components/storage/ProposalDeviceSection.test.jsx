@@ -19,13 +19,15 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalDeviceSection } from "~/components/storage";
 
 const sda = {
-  sid: "59",
+  sid: 59,
   isDrive: true,
   type: "disk",
   vendor: "Micron",
@@ -46,7 +48,7 @@ const sda = {
 };
 
 const sdb = {
-  sid: "62",
+  sid: 62,
   isDrive: true,
   type: "disk",
   vendor: "Samsung",
@@ -72,7 +74,7 @@ describe("ProposalDeviceSection", () => {
   beforeEach(() => {
     props = {
       settings: {
-        target: "disk",
+        target: "DISK",
         targetDevice: "/dev/sda",
       },
       availableDevices: [sda, sdb],
@@ -101,7 +103,7 @@ describe("ProposalDeviceSection", () => {
 
     describe("when the target is a disk", () => {
       beforeEach(() => {
-        props.settings.target = "disk";
+        props.settings.target = "DISK";
       });
 
       describe("and installation device is not selected yet", () => {
@@ -137,7 +139,7 @@ describe("ProposalDeviceSection", () => {
 
     describe("when the target is a new LVM volume group", () => {
       beforeEach(() => {
-        props.settings.target = "newLvmVg";
+        props.settings.target = "NEW_LVM_VG";
       });
 
       describe("and the target devices are not selected yet", () => {
@@ -203,7 +205,7 @@ describe("ProposalDeviceSection", () => {
 
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
       expect(props.onChange).toHaveBeenCalledWith({
-        target: "disk",
+        target: "DISK",
         targetDevice: sdb.name,
         targetPVDevices: []
       });

@@ -216,6 +216,13 @@ export default function ProposalPage() {
     calculate(newSettings).catch(console.error);
   };
 
+  /**
+   * @todo Enable type checking and ensure the components are called with the correct props.
+   *
+   * @note The default value for `settings` should be `undefined` instead of an empty object, and
+   * the settings prop of the components should accept both a ProposalSettings object or undefined.
+   */
+
   return (
     // TRANSLATORS: Storage page title
     <Page icon="hard_drive" title={_("Storage")}>

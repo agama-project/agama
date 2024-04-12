@@ -52,8 +52,6 @@ import { _ } from "~/i18n";
  * @param {object} [props.rest]
  *
  * @typedef {import("@patternfly/react-table").IAction} Action
- *
- * @return {React.ActionsColumn}
  */
 export default function RowActions({ id, actions, "aria-label": toggleAriaLabel, ...rest }) {
   const actionsToggle = (props) => (
