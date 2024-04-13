@@ -1,9 +1,18 @@
-use super::{error::NetworkStateError, model::StateConfig, NetworkAdapterError};
-use crate::network::{dbus::Tree, model::Connection, Action, Adapter, NetworkState};
+use super::{
+    error::NetworkStateError,
+    model::{Device, StateConfig},
+    NetworkAdapterError,
+};
+use crate::network::{
+    dbus::Tree,
+    model::{Connection, GeneralState},
+    Action, Adapter, NetworkState,
+};
 use agama_lib::{error::ServiceError, network::types::DeviceType};
 use std::{error::Error, sync::Arc};
 use tokio::sync::{
-    mpsc::{self, UnboundedReceiver, UnboundedSender},
+    mpsc::{self, error::SendError, UnboundedReceiver, UnboundedSender},
+    oneshot::{self, error::RecvError},
     Mutex,
 };
 use uuid::Uuid;
@@ -29,14 +38,12 @@ use zbus::zvariant::OwnedObjectPath;
 /// let network = NetworkSystem::new(dbus, adapter);
 ///
 /// // Start the networking service and get the channel for communication.
-/// let actions = network.start()
+/// let client = network.start()
 ///     .await
 ///     .expect("Could not start the networking configuration system.");
 ///
 /// // Perform some action, like getting the list of devices.
-/// let (tx, rx) = oneshot::channel();
-/// actions.send(Action::GetDevices(tx)).unwrap();
-/// let devices = rx.await.unwrap();
+/// let devices = client.get_devices().await.unwrap();
 /// # });
 /// ```
 pub struct NetworkSystem<T: Adapter + Send> {
@@ -59,12 +66,11 @@ impl<T: Adapter + Send + 'static> NetworkSystem<T> {
         }
     }
 
-    /// Starts the network configuration service and returns a channel for communication.
+    /// Starts the network configuration service and returns a client for communication purposes.
     ///
     /// This function starts the server (using [NetworkSystemServer]) on a separate
-    /// task. All the communication is performed through the returned channel by
-    /// issuing [actions](crate::network::Action).
-    pub async fn start(self) -> Result<UnboundedSender<Action>, ServiceError> {
+    /// task. All the communication is performed through the returned [NetworkSystemClient].
+    pub async fn start(self) -> Result<NetworkSystemClient, ServiceError> {
         let mut state = self.adapter.read(StateConfig::default()).await.unwrap();
         let (actions_tx, actions_rx) = mpsc::unbounded_channel();
         let mut tree = Tree::new(self.connection, actions_tx.clone());
@@ -82,7 +88,52 @@ impl<T: Adapter + Send + 'static> NetworkSystem<T> {
             server.listen().await;
         });
 
-        Ok(actions_tx)
+        Ok(NetworkSystemClient {
+            actions: actions_tx,
+        })
+    }
+}
+
+/// Client to interact with the NetworkSystem once it is running.
+///
+/// It hides the details of the message-passing behind a convenient API.
+#[derive(Clone)]
+pub struct NetworkSystemClient {
+    /// Channel to talk to the server. This field is temporarily public, but it will
+    /// be set to private once web interface is adapted.
+    pub actions: UnboundedSender<Action>,
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum NetworkSystemError {
+    #[error("Network state error: {0}")]
+    StateError(#[from] NetworkStateError),
+    #[error("Could not talk to the network system: {0}")]
+    InputError(#[from] SendError<Action>),
+    #[error("Could not read an answer from the network system: {0}")]
+    OutputError(#[from] RecvError),
+}
+
+// TODO: add a NetworkSystemError type
+impl NetworkSystemClient {
+    /// Returns the general state.
+    pub async fn get_state(&self) -> Result<GeneralState, NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::GetGeneralState(tx))?;
+        Ok(rx.await?)
+    }
+
+    /// Updates the network general state.
+    pub fn update_state(&self, state: GeneralState) -> Result<(), NetworkSystemError> {
+        self.actions.send(Action::UpdateGeneralState(state))?;
+        Ok(())
+    }
+
+    /// Returns the collection of network devices.
+    pub async fn get_devices(&self) -> Result<Vec<Device>, NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::GetDevices(tx))?;
+        Ok(rx.await?)
     }
 }
 
