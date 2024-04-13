@@ -719,10 +719,6 @@ section [data-type="agama/reminder"] {
   }
 }
 
-[data-type="agama/field"] button.pf-v5-c-menu-toggle.pf-m-plain {
-  padding: 0;
-}
-
 [data-type="agama/expandable-selector"] {
   // The expandable selector is built on top of PF/Table#expandable
   // Let's tweak some styles
@@ -810,6 +806,15 @@ section [data-type="agama/reminder"] {
     border: 0;
     border-bottom: thin dashed var(--color-gray);
   }
+}
+
+[data-type="agama/field"] button.pf-v5-c-menu-toggle.pf-m-plain {
+  padding: 0;
+}
+
+[data-type="agama/field"] .pf-v5-c-menu__list {
+  padding: calc(var(--spacer-smaller) / 2) 0;
+  margin: 0;
 }
 
 #boot-form {
