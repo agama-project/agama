@@ -1,6 +1,6 @@
 use super::{error::NetworkStateError, model::StateConfig, NetworkAdapterError};
 use crate::network::{dbus::Tree, model::Connection, Action, Adapter, NetworkState};
-use agama_lib::network::types::DeviceType;
+use agama_lib::{error::ServiceError, network::types::DeviceType};
 use std::{error::Error, sync::Arc};
 use tokio::sync::{
     mpsc::{self, UnboundedReceiver, UnboundedSender},
@@ -9,59 +9,96 @@ use tokio::sync::{
 use uuid::Uuid;
 use zbus::zvariant::OwnedObjectPath;
 
-/// Represents the network system using holding the state and setting up the D-Bus tree.
-pub struct NetworkSystem<T: Adapter> {
-    /// Network state
-    pub state: NetworkState,
-    /// Side of the channel to send actions.
-    actions_tx: UnboundedSender<Action>,
-    actions_rx: UnboundedReceiver<Action>,
-    tree: Arc<Mutex<Tree>>,
-    /// Adapter to read/write the network state.
+/// Represents the network configuration service.
+///
+/// It offers an API to start the service and interact with it by using message
+/// passing like the example below.
+///
+/// ```no_run
+/// # use agama_server::network::{Action, NetworkManagerAdapter, NetworkSystem};
+/// # use agama_lib::connection;
+/// # use tokio::sync::oneshot;
+///
+/// # tokio_test::block_on(async {
+/// let adapter = NetworkManagerAdapter::from_system()
+///     .await
+///     .expect("Could not connect to NetworkManager.");
+/// let dbus = connection()
+///     .await
+///     .expect("Could not connect to Agama's D-Bus server.");
+/// let network = NetworkSystem::new(dbus, adapter);
+///
+/// // Start the networking service and get the channel for communication.
+/// let actions = network.start()
+///     .await
+///     .expect("Could not start the networking configuration system.");
+///
+/// // Perform some action, like getting the list of devices.
+/// let (tx, rx) = oneshot::channel();
+/// actions.send(Action::GetDevices(tx)).unwrap();
+/// let devices = rx.await.unwrap();
+/// # });
+/// ```
+pub struct NetworkSystem<T: Adapter + Send> {
+    connection: zbus::Connection,
     adapter: T,
 }
 
-impl<T: Adapter> NetworkSystem<T> {
-    pub fn new(conn: zbus::Connection, adapter: T) -> Self {
-        let (actions_tx, actions_rx) = mpsc::unbounded_channel();
-        let tree = Tree::new(conn, actions_tx.clone());
+impl<T: Adapter + Send + 'static> NetworkSystem<T> {
+    /// Returns a new instance of the network configuration system.
+    ///
+    /// This function does not start the system. To get it running, you must call
+    /// the [start](Self::start) method.
+    ///
+    /// * `connection`: D-Bus connection to publish the network tree.
+    /// * `adapter`: networking configuration adapter.
+    pub fn new(connection: zbus::Connection, adapter: T) -> Self {
         Self {
-            state: NetworkState::default(),
-            actions_tx,
-            actions_rx,
-            tree: Arc::new(Mutex::new(tree)),
+            connection,
             adapter,
         }
     }
 
-    /// Writes the network configuration.
-    pub async fn write(&mut self) -> Result<(), NetworkAdapterError> {
-        self.adapter.write(&self.state).await?;
-        self.state = self.adapter.read(StateConfig::default()).await?;
-        Ok(())
-    }
+    /// Starts the network configuration service and returns a channel for communication.
+    ///
+    /// This function starts the server (using [NetworkSystemServer]) on a separate
+    /// task. All the communication is performed through the returned channel by
+    /// issuing [actions](crate::network::Action).
+    pub async fn start(self) -> Result<UnboundedSender<Action>, ServiceError> {
+        let mut state = self.adapter.read(StateConfig::default()).await.unwrap();
+        let (actions_tx, actions_rx) = mpsc::unbounded_channel();
+        let mut tree = Tree::new(self.connection, actions_tx.clone());
+        tree.set_connections(&mut state.connections).await?;
+        tree.set_devices(&state.devices).await?;
 
-    /// Returns a clone of the
-    /// [UnboundedSender](https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.UnboundedSender.html)
-    /// to execute [actions](Action).
-    pub fn actions_tx(&self) -> UnboundedSender<Action> {
-        self.actions_tx.clone()
-    }
+        tokio::spawn(async move {
+            let mut server = NetworkSystemServer {
+                state,
+                input: actions_rx,
+                adapter: self.adapter,
+                tree: Arc::new(Mutex::new(tree)),
+            };
 
-    /// Populates the D-Bus tree with the known devices and connections.
-    pub async fn setup(&mut self) -> Result<(), Box<dyn Error>> {
-        self.state = self.adapter.read(StateConfig::default()).await?;
-        let mut tree = self.tree.lock().await;
-        tree.set_connections(&mut self.state.connections).await?;
-        tree.set_devices(&self.state.devices).await?;
-        Ok(())
-    }
+            server.listen().await;
+        });
 
+        Ok(actions_tx)
+    }
+}
+
+struct NetworkSystemServer<T: Adapter> {
+    state: NetworkState,
+    input: UnboundedReceiver<Action>,
+    adapter: T,
+    tree: Arc<Mutex<Tree>>,
+}
+
+impl<T: Adapter> NetworkSystemServer<T> {
     /// Process incoming actions.
     ///
     /// This function is expected to be executed on a separate thread.
     pub async fn listen(&mut self) {
-        while let Some(action) = self.actions_rx.recv().await {
+        while let Some(action) = self.input.recv().await {
             if let Err(error) = self.dispatch_action(action).await {
                 eprintln!("Could not process the action: {}", error);
             }
@@ -244,5 +281,12 @@ impl<T: Adapter> NetworkSystem<T> {
         let conn = self.state.get_connection(id)?;
         let tree = self.tree.lock().await;
         tree.connection_path(conn.uuid)
+    }
+
+    /// Writes the network configuration.
+    pub async fn write(&mut self) -> Result<(), NetworkAdapterError> {
+        self.adapter.write(&self.state).await?;
+        self.state = self.adapter.read(StateConfig::default()).await?;
+        Ok(())
     }
 }

@@ -60,20 +60,9 @@ pub async fn network_service<T: Adapter + std::marker::Send + 'static>(
     dbus: zbus::Connection,
     adapter: T,
 ) -> Result<Router, ServiceError> {
-    let mut network = NetworkSystem::new(dbus.clone(), adapter);
-
-    let state = NetworkState {
-        actions: network.actions_tx(),
-    };
-
-    tokio::spawn(async move {
-        network
-            .setup()
-            .await
-            .expect("Could not set up the D-Bus tree");
-
-        network.listen().await;
-    });
+    let network = NetworkSystem::new(dbus.clone(), adapter);
+    let actions = network.start().await?;
+    let state = NetworkState { actions };
 
     Ok(Router::new()
         .route("/state", get(general_state).put(update_general_state))
