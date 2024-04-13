@@ -12,6 +12,7 @@ use axum::{
 use super::{
     error::NetworkStateError,
     model::{AccessPoint, GeneralState},
+    system::{NetworkSystemClient, NetworkSystemError},
     Action, Adapter,
 };
 
@@ -21,7 +22,7 @@ use agama_lib::network::settings::NetworkConnection;
 
 use serde_json::json;
 use thiserror::Error;
-use tokio::sync::{mpsc::UnboundedSender, oneshot};
+use tokio::sync::oneshot;
 
 #[derive(Error, Debug)]
 pub enum NetworkError {
@@ -35,8 +36,11 @@ pub enum NetworkError {
     CannotUpdate(String),
     #[error("Cannot apply configuration")]
     CannotApplyConfig,
+    // TODO: to be removed after adapting to the NetworkSystemServer API
     #[error("Network state error: {0}")]
     Error(#[from] NetworkStateError),
+    #[error("Network system error: {0}")]
+    SystemError(#[from] NetworkSystemError),
 }
 
 impl IntoResponse for NetworkError {
@@ -50,7 +54,7 @@ impl IntoResponse for NetworkError {
 
 #[derive(Clone)]
 struct NetworkState {
-    actions: UnboundedSender<Action>,
+    network: NetworkSystemClient,
 }
 
 /// Sets up and returns the axum service for the network module.
@@ -61,8 +65,8 @@ pub async fn network_service<T: Adapter + std::marker::Send + 'static>(
     adapter: T,
 ) -> Result<Router, ServiceError> {
     let network = NetworkSystem::new(dbus.clone(), adapter);
-    let actions = network.start().await?;
-    let state = NetworkState { actions };
+    let client = network.start().await?;
+    let state = NetworkState { network: client };
 
     Ok(Router::new()
         .route("/state", get(general_state).put(update_general_state))
@@ -84,7 +88,11 @@ pub async fn network_service<T: Adapter + std::marker::Send + 'static>(
 ))]
 async fn general_state(State(state): State<NetworkState>) -> Json<GeneralState> {
     let (tx, rx) = oneshot::channel();
-    state.actions.send(Action::GetGeneralState(tx)).unwrap();
+    state
+        .network
+        .actions
+        .send(Action::GetGeneralState(tx))
+        .unwrap();
 
     let state = rx.await.unwrap();
 
@@ -98,15 +106,8 @@ async fn update_general_state(
     State(state): State<NetworkState>,
     Json(value): Json<GeneralState>,
 ) -> Result<Json<GeneralState>, NetworkError> {
-    state
-        .actions
-        .send(Action::UpdateGeneralState(value.clone()))
-        .unwrap();
-
-    let (tx, rx) = oneshot::channel();
-    state.actions.send(Action::GetGeneralState(tx)).unwrap();
-    let state = rx.await.unwrap();
-
+    state.network.update_state(value)?;
+    let state = state.network.get_state().await?;
     Ok(Json(state))
 }
 
@@ -115,10 +116,14 @@ async fn update_general_state(
 ))]
 async fn wifi_networks(State(state): State<NetworkState>) -> Json<Vec<AccessPoint>> {
     let (tx, rx) = oneshot::channel();
-    state.actions.send(Action::RefreshScan(tx)).unwrap();
+    state.network.actions.send(Action::RefreshScan(tx)).unwrap();
     let _ = rx.await.unwrap();
     let (tx, rx) = oneshot::channel();
-    state.actions.send(Action::GetAccessPoints(tx)).unwrap();
+    state
+        .network
+        .actions
+        .send(Action::GetAccessPoints(tx))
+        .unwrap();
 
     let access_points = rx.await.unwrap();
 
@@ -136,11 +141,8 @@ async fn wifi_networks(State(state): State<NetworkState>) -> Json<Vec<AccessPoin
 #[utoipa::path(get, path = "/network/devices", responses(
   (status = 200, description = "List of devices", body = Vec<Device>)
 ))]
-async fn devices(State(state): State<NetworkState>) -> Json<Vec<Device>> {
-    let (tx, rx) = oneshot::channel();
-    state.actions.send(Action::GetDevices(tx)).unwrap();
-
-    Json(rx.await.unwrap())
+async fn devices(State(state): State<NetworkState>) -> Result<Json<Vec<Device>>, NetworkError> {
+    Ok(Json(state.network.get_devices().await?))
 }
 
 #[utoipa::path(get, path = "/network/connections", responses(
@@ -148,7 +150,11 @@ async fn devices(State(state): State<NetworkState>) -> Json<Vec<Device>> {
 ))]
 async fn connections(State(state): State<NetworkState>) -> Json<Vec<NetworkConnection>> {
     let (tx, rx) = oneshot::channel();
-    state.actions.send(Action::GetConnections(tx)).unwrap();
+    state
+        .network
+        .actions
+        .send(Action::GetConnections(tx))
+        .unwrap();
     let connections = rx.await.unwrap();
     let connections = connections
         .iter()
@@ -171,6 +177,7 @@ async fn add_connection(
     let id = conn.id.clone();
 
     state
+        .network
         .actions
         .send(Action::NewConnection(Box::new(conn.clone()), tx))
         .unwrap();
@@ -178,6 +185,7 @@ async fn add_connection(
 
     let (tx, rx) = oneshot::channel();
     state
+        .network
         .actions
         .send(Action::GetConnection(id.clone(), tx))
         .unwrap();
@@ -197,6 +205,7 @@ async fn delete_connection(
 ) -> impl IntoResponse {
     let (tx, rx) = oneshot::channel();
     state
+        .network
         .actions
         .send(Action::RemoveConnection(id, tx))
         .unwrap();
@@ -217,6 +226,7 @@ async fn update_connection(
 ) -> Result<Json<()>, NetworkError> {
     let (tx, rx) = oneshot::channel();
     state
+        .network
         .actions
         .send(Action::GetConnection(id.clone(), tx))
         .unwrap();
@@ -231,6 +241,7 @@ async fn update_connection(
 
     let (tx, rx) = oneshot::channel();
     state
+        .network
         .actions
         .send(Action::UpdateConnection(Box::new(conn), tx))
         .unwrap();
@@ -247,6 +258,7 @@ async fn connect(
 ) -> Result<Json<()>, NetworkError> {
     let (tx, rx) = oneshot::channel();
     state
+        .network
         .actions
         .send(Action::GetConnection(id.clone(), tx))
         .unwrap();
@@ -258,6 +270,7 @@ async fn connect(
 
     let (tx, rx) = oneshot::channel();
     state
+        .network
         .actions
         .send(Action::UpdateConnection(Box::new(conn), tx))
         .unwrap();
@@ -278,6 +291,7 @@ async fn disconnect(
 ) -> Result<Json<()>, NetworkError> {
     let (tx, rx) = oneshot::channel();
     state
+        .network
         .actions
         .send(Action::GetConnection(id.clone(), tx))
         .unwrap();
@@ -290,6 +304,7 @@ async fn disconnect(
 
     let (tx, rx) = oneshot::channel();
     state
+        .network
         .actions
         .send(Action::UpdateConnection(Box::new(current_conn), tx))
         .unwrap();
@@ -306,7 +321,7 @@ async fn disconnect(
 ))]
 async fn apply(State(state): State<NetworkState>) -> Result<Json<()>, NetworkError> {
     let (tx, rx) = oneshot::channel();
-    state.actions.send(Action::Apply(tx)).unwrap();
+    state.network.actions.send(Action::Apply(tx)).unwrap();
 
     rx.await
         .unwrap()
