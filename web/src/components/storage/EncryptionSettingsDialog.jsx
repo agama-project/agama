@@ -55,34 +55,36 @@ TPM sealing requires the new system to be booted directly on its first run.");
  * @property {boolean} [isOpen=false] - Whether the dialog is visible or not.
  * @property {() => void} onCancel - Callback to trigger when on cancel action.
  * @property {(settings: EncryptionSetting) => void} onAccept - Callback to trigger on accept action.
+ *
+ * @param {EncryptionSettingsDialogProps} props
  */
 export default function EncryptionSettingsDialog({
-  password,
-  method,
+  password: passwordProp,
+  method: methodProp,
   methods,
   isOpen = false,
   onCancel,
   onAccept
 }) {
-  const [isEnabled, setIsEnabled] = useState(password?.length > 0);
-  const [newPassword, setNewPassword] = useState(password);
-  const [newMethod, setNewMethod] = useState(method);
+  const [isEnabled, setIsEnabled] = useState(passwordProp?.length > 0);
+  const [password, setPassword] = useState(passwordProp);
+  const [method, setMethod] = useState(methodProp);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [validSettings, setValidSettings] = useState(true);
   const formId = "encryptionSettingsForm";
 
   useEffect(() => {
-    setValidSettings(!isEnabled || (newPassword.length > 0 && passwordsMatch));
-  }, [isEnabled, newPassword, passwordsMatch]);
+    setValidSettings(!isEnabled || (password.length > 0 && passwordsMatch));
+  }, [isEnabled, password, passwordsMatch]);
 
-  const changePassword = (_, v) => setNewPassword(v);
-  const changeMethod = (_, value) => setNewMethod(value ? EncryptionMethods.TPM : EncryptionMethods.LUKS2);
+  const changePassword = (_, v) => setPassword(v);
+  const changeMethod = (_, useTPM) => setMethod(useTPM ? EncryptionMethods.TPM : EncryptionMethods.LUKS2);
 
   const submitSettings = (e) => {
     e.preventDefault();
 
     if (isEnabled) {
-      onAccept({ password: newPassword, method: newMethod });
+      onAccept({ password, method });
     } else {
       onAccept({ password: "" });
     }
@@ -99,7 +101,7 @@ export default function EncryptionSettingsDialog({
       >
         <Form id={formId} onSubmit={submitSettings}>
           <PasswordAndConfirmationInput
-            value={newPassword}
+            value={password}
             onChange={changePassword}
             onValidation={setPasswordsMatch}
             isDisabled={!isEnabled}

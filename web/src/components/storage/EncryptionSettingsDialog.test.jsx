@@ -111,6 +111,25 @@ describe("EncryptionSettingsDialog", () => {
     });
   });
 
+  describe("when using TPM", () => {
+    beforeEach(() => {
+      props.method = EncryptionMethods.TPM;
+    });
+
+    it("allows to stop using it", async () => {
+      const { user } = plainRender(<EncryptionSettingsDialog {...props} />);
+      const tpmCheckbox = screen.queryByRole("checkbox", { name: /Use the TPM/ });
+      const acceptButton = screen.queryByRole("button", { name: "Accept" });
+      expect(tpmCheckbox).toBeChecked();
+      await user.click(tpmCheckbox);
+      expect(tpmCheckbox).not.toBeChecked();
+      await user.click(acceptButton);
+      expect(props.onAccept).toHaveBeenCalledWith(
+        expect.not.objectContaining({ method: EncryptionMethods.TPM })
+      );
+    });
+  });
+
   describe("when TPM is not included in given methods", () => {
     beforeEach(() => {
       props.methods = [EncryptionMethods.LUKS2];
