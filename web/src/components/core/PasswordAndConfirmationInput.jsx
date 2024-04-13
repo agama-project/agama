@@ -63,7 +63,6 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
         <PasswordInput
           id="password"
           name="password"
-          aria-label={_("User password")}
           value={value}
           isDisabled={isDisabled}
           onChange={onValueChange}
@@ -77,7 +76,6 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
         <PasswordInput
           id="passwordConfirmation"
           name="passwordConfirmation"
-          aria-label={_("User password confirmation")}
           value={confirmation}
           isDisabled={isDisabled}
           onChange={onConfirmationChange}
