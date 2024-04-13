@@ -18,6 +18,20 @@ use tokio::sync::{
 use uuid::Uuid;
 use zbus::zvariant::OwnedObjectPath;
 
+#[derive(thiserror::Error, Debug)]
+pub enum NetworkSystemError {
+    #[error("Network state error: {0}")]
+    Stater(#[from] NetworkStateError),
+    #[error("Could not talk to the network system: {0}")]
+    InputError(#[from] SendError<Action>),
+    #[error("Could not read an answer from the network system: {0}")]
+    OutputError(#[from] RecvError),
+    #[error("D-Bus service error: {0}")]
+    ServiceError(#[from] ServiceError),
+    #[error("Network backend error: {0}")]
+    AdapterError(#[from] NetworkAdapterError),
+}
+
 /// Represents the network configuration service.
 ///
 /// It offers an API to start the service and interact with it by using message
@@ -43,7 +57,8 @@ use zbus::zvariant::OwnedObjectPath;
 ///     .expect("Could not start the networking configuration system.");
 ///
 /// // Perform some action, like getting the list of devices.
-/// let devices = client.get_devices().await.unwrap();
+/// let devices = client.get_devices().await
+///     .expect("Could not get the list of devices.");
 /// # });
 /// ```
 pub struct NetworkSystem<T: Adapter + Send> {
@@ -70,8 +85,8 @@ impl<T: Adapter + Send + 'static> NetworkSystem<T> {
     ///
     /// This function starts the server (using [NetworkSystemServer]) on a separate
     /// task. All the communication is performed through the returned [NetworkSystemClient].
-    pub async fn start(self) -> Result<NetworkSystemClient, ServiceError> {
-        let mut state = self.adapter.read(StateConfig::default()).await.unwrap();
+    pub async fn start(self) -> Result<NetworkSystemClient, NetworkSystemError> {
+        let mut state = self.adapter.read(StateConfig::default()).await?;
         let (actions_tx, actions_rx) = mpsc::unbounded_channel();
         let mut tree = Tree::new(self.connection, actions_tx.clone());
         tree.set_connections(&mut state.connections).await?;
@@ -102,16 +117,6 @@ pub struct NetworkSystemClient {
     /// Channel to talk to the server. This field is temporarily public, but it will
     /// be set to private once web interface is adapted.
     pub actions: UnboundedSender<Action>,
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum NetworkSystemError {
-    #[error("Network state error: {0}")]
-    StateError(#[from] NetworkStateError),
-    #[error("Could not talk to the network system: {0}")]
-    InputError(#[from] SendError<Action>),
-    #[error("Could not read an answer from the network system: {0}")]
-    OutputError(#[from] RecvError),
 }
 
 // TODO: add a NetworkSystemError type

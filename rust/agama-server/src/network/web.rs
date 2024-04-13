@@ -1,6 +1,7 @@
 //! This module implements the web API for the network module.
 
 use crate::error::Error;
+use anyhow::Context;
 use axum::{
     extract::{Path, State},
     http::StatusCode,
@@ -17,8 +18,7 @@ use super::{
 };
 
 use crate::network::{model::Connection, model::Device, NetworkSystem};
-use agama_lib::error::ServiceError;
-use agama_lib::network::settings::NetworkConnection;
+use agama_lib::{error::ServiceError, network::settings::NetworkConnection};
 
 use serde_json::json;
 use thiserror::Error;
@@ -65,7 +65,12 @@ pub async fn network_service<T: Adapter + std::marker::Send + 'static>(
     adapter: T,
 ) -> Result<Router, ServiceError> {
     let network = NetworkSystem::new(dbus.clone(), adapter);
-    let client = network.start().await?;
+    // FIXME: we are somehow abusing ServiceError. The HTTP/JSON API should have its own
+    // error type.
+    let client = network
+        .start()
+        .await
+        .context("Could not start the network configuration service.")?;
     let state = NetworkState { network: client };
 
     Ok(Router::new()
