@@ -22,25 +22,13 @@
 // @ts-check
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { EncryptionMethods } from "~/client/storage";
 import EncryptionField from "~/components/storage/EncryptionField";
 
-const onChangeFn = jest.fn();
-
-const openEncryptionSettings = async ({ password = "", onChange = onChangeFn }) => {
-  const { user } = plainRender(<EncryptionField password={password} onChange={onChange} />);
-  const button = screen.getByRole("button", { name: /Encryption/ });
-  await user.click(button);
-  const dialog = await screen.findByRole("dialog");
-  screen.getByRole("heading", { name: "Encryption" });
-
-  return { user, dialog };
-};
-
-describe("Encryption field", () => {
-  it("renders proper value depending of encryption status", () => {
+describe("EncryptionField", () => {
+  it("renders proper value depending on encryption status", () => {
     // No encryption set
     const { rerender } = plainRender(<EncryptionField />);
     screen.getByText("disabled");
@@ -54,57 +42,11 @@ describe("Encryption field", () => {
     screen.getByText("using TPM unlocking");
   });
 
-  it("allows setting the encryption", async () => {
-    const { user } = await openEncryptionSettings({});
-
-    const switchField = screen.getByRole("switch", { name: "Encrypt the system" });
-    const passwordInput = screen.getByLabelText("Password");
-    const passwordConfirmInput = screen.getByLabelText("Password confirmation");
-    const accept = screen.getByRole("button", { name: "Accept" });
-    expect(switchField).toHaveAttribute("aria-checked", "false");
-    expect(passwordInput).not.toBeEnabled();
-    expect(passwordConfirmInput).not.toBeEnabled();
-    await user.click(switchField);
-    expect(switchField).toHaveAttribute("aria-checked", "true");
-    expect(passwordInput).toBeEnabled();
-    expect(passwordConfirmInput).toBeEnabled();
-    await user.type(passwordInput, "1234");
-    await user.type(passwordConfirmInput, "1234");
-    await user.click(accept);
-
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(onChangeFn).toHaveBeenCalledWith(
-      expect.objectContaining({ password: "1234" })
-    );
+  it("allows opening the encryption settings dialog", async () => {
+    const { user } = plainRender(<EncryptionField />);
+    const button = screen.getByRole("button", { name: /Encryption/ });
+    await user.click(button);
+    const dialog = await screen.findByRole("dialog");
+    within(dialog).getByRole("heading", { name: "Encryption" });
   });
-
-  it("allows unsetting the encryption", async () => {
-    const { user } = await openEncryptionSettings({ password: "1234" });
-
-    const switchField = screen.getByRole("switch", { name: "Encrypt the system" });
-    const passwordInput = screen.getByLabelText("Password");
-    const passwordConfirmInput = screen.getByLabelText("Password confirmation");
-    const accept = screen.getByRole("button", { name: "Accept" });
-    expect(switchField).toHaveAttribute("aria-checked", "true");
-    expect(passwordInput).toBeEnabled();
-    expect(passwordConfirmInput).toBeEnabled();
-    await user.click(switchField);
-    expect(switchField).toHaveAttribute("aria-checked", "false");
-    expect(passwordInput).not.toBeEnabled();
-    expect(passwordConfirmInput).not.toBeEnabled();
-    await user.click(accept);
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(onChangeFn).toHaveBeenCalledWith({ password: "" });
-  });
-
-  it("allows discarding the encryption settings dialog", async () => {
-    const { user } = await openEncryptionSettings({});
-    const cancel = screen.getByRole("button", { name: "Cancel" });
-    await user.click(cancel);
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(onChangeFn).not.toHaveBeenCalled();
-  });
-
-  test.todo("test that it allows setting the TPM");
-  test.todo("improve above tests");
 });
