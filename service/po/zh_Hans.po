@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-07 02:10+0000\n"
-"PO-Revision-Date: 2024-03-04 15:43+0000\n"
+"PO-Revision-Date: 2024-04-10 09:43+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
 "agama/agama-service-master/zh_Hans/>\n"
@@ -192,7 +192,7 @@ msgstr "正在写入引导加载程序 sysconfig"
 #. @return [Issue, nil]
 #: service/lib/agama/storage/proposal.rb:195
 msgid "No device selected for installation"
-msgstr ""
+msgstr "未选择用于安装的设备"
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
@@ -202,11 +202,11 @@ msgstr ""
 msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
 "The following selected devices are not found in the system: %{devices}"
-msgstr[0] ""
+msgstr[0] "未在系统中找到下列已选择的设备： %{devices}"
 
 #. Returns an issue if the proposal is not valid.
 #.
 #. @return [Issue, nil]
 #: service/lib/agama/storage/proposal.rb:229
 msgid "Cannot accommodate the required file systems for installation"
-msgstr ""
+msgstr "无法调整进行安装所需的文件系统"
