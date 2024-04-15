@@ -1,6 +1,7 @@
 use super::{
     error::NetworkStateError,
-    model::{AccessPoint, Device, StateConfig},
+    model::{AccessPoint, Device, NetworkChange, StateConfig},
+    nm::NetworkManagerWatcher,
     NetworkAdapterError,
 };
 use crate::network::{
@@ -298,6 +299,12 @@ impl<T: Adapter> NetworkSystemServer<T> {
             Action::GetDevice(name, tx) => {
                 let device = self.state.get_device(name.as_str());
                 tx.send(device.cloned()).unwrap();
+            }
+            Action::AddDevice(device) => {
+                self.state.add_device(device.clone())?;
+            }
+            Action::RemoveDevice(name) => {
+                self.state.remove_device(&name)?;
             }
             Action::GetDevicePath(name, tx) => {
                 let tree = self.tree.lock().await;

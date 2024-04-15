@@ -158,6 +158,19 @@ impl NetworkState {
         Ok(())
     }
 
+    pub fn add_device(&mut self, device: Device) -> Result<(), NetworkStateError> {
+        self.devices.push(device);
+        Ok(())
+    }
+
+    pub fn remove_device(&mut self, name: &str) -> Result<(), NetworkStateError> {
+        // TODO: return an error if the device does not exist
+        if let Some(position) = self.devices.iter().position(|d| &d.name == name) {
+            self.devices.remove(position);
+        }
+        Ok(())
+    }
+
     /// Sets a controller's ports.
     ///
     /// If the connection is not a controller, returns an error.
@@ -1267,4 +1280,10 @@ impl fmt::Display for InfinibandTransportMode {
         };
         write!(f, "{}", name)
     }
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub enum NetworkChange {
+    DeviceAdded(Device),
+    DeviceRemoved(String),
 }

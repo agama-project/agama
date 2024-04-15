@@ -42,6 +42,10 @@ pub enum Action {
     ),
     /// Gets all scanned access points
     GetAccessPoints(Responder<Vec<AccessPoint>>),
+    /// Adds a new device.
+    AddDevice(Device),
+    /// Removes a device.
+    RemoveDevice(String),
     /// Gets a device by its name
     GetDevice(String, Responder<Option<Device>>),
     /// Gets all the existent devices
