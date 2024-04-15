@@ -1,6 +1,7 @@
 //! This module implements the web API for the network module.
 
 use crate::error::Error;
+use anyhow::Context;
 use axum::{
     extract::{Path, State},
     http::StatusCode,
@@ -12,16 +13,16 @@ use axum::{
 use super::{
     error::NetworkStateError,
     model::{AccessPoint, GeneralState},
+    system::{NetworkSystemClient, NetworkSystemError},
     Action, Adapter,
 };
 
 use crate::network::{model::Connection, model::Device, NetworkSystem};
-use agama_lib::error::ServiceError;
-use agama_lib::network::settings::NetworkConnection;
+use agama_lib::{error::ServiceError, network::settings::NetworkConnection};
 
 use serde_json::json;
 use thiserror::Error;
-use tokio::sync::{mpsc::UnboundedSender, oneshot};
+use tokio::sync::oneshot;
 
 #[derive(Error, Debug)]
 pub enum NetworkError {
@@ -35,8 +36,11 @@ pub enum NetworkError {
     CannotUpdate(String),
     #[error("Cannot apply configuration")]
     CannotApplyConfig,
+    // TODO: to be removed after adapting to the NetworkSystemServer API
     #[error("Network state error: {0}")]
     Error(#[from] NetworkStateError),
+    #[error("Network system error: {0}")]
+    SystemError(#[from] NetworkSystemError),
 }
 
 impl IntoResponse for NetworkError {
@@ -50,7 +54,7 @@ impl IntoResponse for NetworkError {
 
 #[derive(Clone)]
 struct NetworkState {
-    actions: UnboundedSender<Action>,
+    network: NetworkSystemClient,
 }
 
 /// Sets up and returns the axum service for the network module.
@@ -60,20 +64,14 @@ pub async fn network_service<T: Adapter + std::marker::Send + 'static>(
     dbus: zbus::Connection,
     adapter: T,
 ) -> Result<Router, ServiceError> {
-    let mut network = NetworkSystem::new(dbus.clone(), adapter);
-
-    let state = NetworkState {
-        actions: network.actions_tx(),
-    };
-
-    tokio::spawn(async move {
-        network
-            .setup()
-            .await
-            .expect("Could not set up the D-Bus tree");
-
-        network.listen().await;
-    });
+    let network = NetworkSystem::new(dbus.clone(), adapter);
+    // FIXME: we are somehow abusing ServiceError. The HTTP/JSON API should have its own
+    // error type.
+    let client = network
+        .start()
+        .await
+        .context("Could not start the network configuration service.")?;
+    let state = NetworkState { network: client };
 
     Ok(Router::new()
         .route("/state", get(general_state).put(update_general_state))
@@ -93,13 +91,11 @@ pub async fn network_service<T: Adapter + std::marker::Send + 'static>(
 #[utoipa::path(get, path = "/network/state", responses(
   (status = 200, description = "Get general network config", body = GenereralState)
 ))]
-async fn general_state(State(state): State<NetworkState>) -> Json<GeneralState> {
-    let (tx, rx) = oneshot::channel();
-    state.actions.send(Action::GetGeneralState(tx)).unwrap();
-
-    let state = rx.await.unwrap();
-
-    Json(state)
+async fn general_state(
+    State(state): State<NetworkState>,
+) -> Result<Json<GeneralState>, NetworkError> {
+    let general_state = state.network.get_state().await?;
+    Ok(Json(general_state))
 }
 
 #[utoipa::path(put, path = "/network/state", responses(
@@ -109,64 +105,49 @@ async fn update_general_state(
     State(state): State<NetworkState>,
     Json(value): Json<GeneralState>,
 ) -> Result<Json<GeneralState>, NetworkError> {
-    state
-        .actions
-        .send(Action::UpdateGeneralState(value.clone()))
-        .unwrap();
-
-    let (tx, rx) = oneshot::channel();
-    state.actions.send(Action::GetGeneralState(tx)).unwrap();
-    let state = rx.await.unwrap();
-
+    state.network.update_state(value)?;
+    let state = state.network.get_state().await?;
     Ok(Json(state))
 }
 
 #[utoipa::path(get, path = "/network/wifi", responses(
   (status = 200, description = "List of wireless networks", body = Vec<AccessPoint>)
 ))]
-async fn wifi_networks(State(state): State<NetworkState>) -> Json<Vec<AccessPoint>> {
-    let (tx, rx) = oneshot::channel();
-    state.actions.send(Action::RefreshScan(tx)).unwrap();
-    let _ = rx.await.unwrap();
-    let (tx, rx) = oneshot::channel();
-    state.actions.send(Action::GetAccessPoints(tx)).unwrap();
-
-    let access_points = rx.await.unwrap();
+async fn wifi_networks(
+    State(state): State<NetworkState>,
+) -> Result<Json<Vec<AccessPoint>>, NetworkError> {
+    state.network.wifi_scan().await?;
+    let access_points = state.network.get_access_points().await?;
 
     let mut networks = vec![];
-
     for ap in access_points {
         if !ap.ssid.to_string().is_empty() {
             networks.push(ap);
         }
     }
 
-    Json(networks)
+    Ok(Json(networks))
 }
 
 #[utoipa::path(get, path = "/network/devices", responses(
   (status = 200, description = "List of devices", body = Vec<Device>)
 ))]
-async fn devices(State(state): State<NetworkState>) -> Json<Vec<Device>> {
-    let (tx, rx) = oneshot::channel();
-    state.actions.send(Action::GetDevices(tx)).unwrap();
-
-    Json(rx.await.unwrap())
+async fn devices(State(state): State<NetworkState>) -> Result<Json<Vec<Device>>, NetworkError> {
+    Ok(Json(state.network.get_devices().await?))
 }
 
 #[utoipa::path(get, path = "/network/connections", responses(
   (status = 200, description = "List of known connections", body = Vec<NetworkConnection>)
 ))]
-async fn connections(State(state): State<NetworkState>) -> Json<Vec<NetworkConnection>> {
-    let (tx, rx) = oneshot::channel();
-    state.actions.send(Action::GetConnections(tx)).unwrap();
-    let connections = rx.await.unwrap();
+async fn connections(
+    State(state): State<NetworkState>,
+) -> Result<Json<Vec<NetworkConnection>>, NetworkError> {
+    let connections = state.network.get_connections().await?;
     let connections = connections
         .iter()
         .map(|c| NetworkConnection::try_from(c.clone()).unwrap())
         .collect();
-
-    Json(connections)
+    Ok(Json(connections))
 }
 
 #[utoipa::path(post, path = "/network/connections", responses(
@@ -176,24 +157,11 @@ async fn add_connection(
     State(state): State<NetworkState>,
     Json(conn): Json<NetworkConnection>,
 ) -> Result<Json<Connection>, NetworkError> {
-    let (tx, rx) = oneshot::channel();
-
     let conn = Connection::try_from(conn)?;
     let id = conn.id.clone();
 
-    state
-        .actions
-        .send(Action::NewConnection(Box::new(conn.clone()), tx))
-        .unwrap();
-    let _ = rx.await.unwrap();
-
-    let (tx, rx) = oneshot::channel();
-    state
-        .actions
-        .send(Action::GetConnection(id.clone(), tx))
-        .unwrap();
-
-    match rx.await.unwrap() {
+    state.network.add_connection(conn).await?;
+    match state.network.get_connection(&id).await? {
         None => Err(NetworkError::CannotAddConnection(id.clone())),
         Some(conn) => Ok(Json(conn)),
     }
@@ -206,12 +174,7 @@ async fn delete_connection(
     State(state): State<NetworkState>,
     Path(id): Path<String>,
 ) -> impl IntoResponse {
-    let (tx, rx) = oneshot::channel();
-    state
-        .actions
-        .send(Action::RemoveConnection(id, tx))
-        .unwrap();
-    if rx.await.unwrap().is_ok() {
+    if state.network.remove_connection(&id).await.is_ok() {
         StatusCode::NO_CONTENT
     } else {
         StatusCode::NOT_FOUND
@@ -219,109 +182,81 @@ async fn delete_connection(
 }
 
 #[utoipa::path(put, path = "/network/connections/:id", responses(
-  (status = 200, description = "Update connection", body = Connection)
+  (status = 204, description = "Update connection", body = Connection)
 ))]
 async fn update_connection(
     State(state): State<NetworkState>,
     Path(id): Path<String>,
     Json(conn): Json<NetworkConnection>,
-) -> Result<Json<()>, NetworkError> {
-    let (tx, rx) = oneshot::channel();
-    state
-        .actions
-        .send(Action::GetConnection(id.clone(), tx))
-        .unwrap();
-    let orig_conn = rx.await.unwrap();
+) -> Result<impl IntoResponse, NetworkError> {
+    let orig_conn = state
+        .network
+        .get_connection(&id)
+        .await?
+        .ok_or_else(|| NetworkError::UnknownConnection(id.clone()))?;
     let mut conn = Connection::try_from(conn)?;
-    let orig_conn = orig_conn.ok_or_else(|| NetworkError::UnknownConnection(id.clone()))?;
     if orig_conn.id != id {
+        // FIXME: why?
         return Err(NetworkError::UnknownConnection(id));
     } else {
         conn.uuid = orig_conn.uuid;
     }
 
-    let (tx, rx) = oneshot::channel();
-    state
-        .actions
-        .send(Action::UpdateConnection(Box::new(conn), tx))
-        .unwrap();
-
-    Ok(Json(rx.await.unwrap()?))
+    state.network.update_connection(conn).await?;
+    Ok(StatusCode::NO_CONTENT)
 }
 
 #[utoipa::path(get, path = "/network/connections/:id/connect", responses(
-  (status = 200, description = "Connect to the given connection", body = String)
+  (status = 204, description = "Connect to the given connection", body = String)
 ))]
 async fn connect(
     State(state): State<NetworkState>,
     Path(id): Path<String>,
-) -> Result<Json<()>, NetworkError> {
-    let (tx, rx) = oneshot::channel();
-    state
-        .actions
-        .send(Action::GetConnection(id.clone(), tx))
-        .unwrap();
-
-    let Some(mut conn) = rx.await.unwrap() else {
+) -> Result<impl IntoResponse, NetworkError> {
+    let Some(mut conn) = state.network.get_connection(&id).await? else {
         return Err(NetworkError::UnknownConnection(id));
     };
     conn.set_up();
 
-    let (tx, rx) = oneshot::channel();
     state
-        .actions
-        .send(Action::UpdateConnection(Box::new(conn), tx))
-        .unwrap();
-
-    rx.await
-        .unwrap()
+        .network
+        .update_connection(conn)
+        .await
         .map_err(|_| NetworkError::CannotApplyConfig)?;
 
-    Ok(Json(()))
+    Ok(StatusCode::NO_CONTENT)
 }
 
 #[utoipa::path(get, path = "/network/connections/:id/disconnect", responses(
-  (status = 200, description = "Connect to the given connection", body = String)
+  (status = 204, description = "Connect to the given connection", body = String)
 ))]
 async fn disconnect(
     State(state): State<NetworkState>,
     Path(id): Path<String>,
-) -> Result<Json<()>, NetworkError> {
-    let (tx, rx) = oneshot::channel();
-    state
-        .actions
-        .send(Action::GetConnection(id.clone(), tx))
-        .unwrap();
-
-    let Some(mut current_conn) = rx.await.unwrap() else {
+) -> Result<impl IntoResponse, NetworkError> {
+    let Some(mut conn) = state.network.get_connection(&id).await? else {
         return Err(NetworkError::UnknownConnection(id));
     };
+    conn.set_down();
 
-    current_conn.set_down();
-
-    let (tx, rx) = oneshot::channel();
     state
-        .actions
-        .send(Action::UpdateConnection(Box::new(current_conn), tx))
-        .unwrap();
-
-    rx.await
-        .unwrap()
+        .network
+        .update_connection(conn)
+        .await
         .map_err(|_| NetworkError::CannotApplyConfig)?;
 
-    Ok(Json(()))
+    Ok(StatusCode::NO_CONTENT)
 }
 
 #[utoipa::path(put, path = "/network/system/apply", responses(
-  (status = 200, description = "Apply configuration")
+  (status = 204, description = "Apply configuration")
 ))]
-async fn apply(State(state): State<NetworkState>) -> Result<Json<()>, NetworkError> {
-    let (tx, rx) = oneshot::channel();
-    state.actions.send(Action::Apply(tx)).unwrap();
-
-    rx.await
-        .unwrap()
+async fn apply(State(state): State<NetworkState>) -> Result<impl IntoResponse, NetworkError> {
+    state
+        .network
+        .apply()
+        .await
         .map_err(|_| NetworkError::CannotApplyConfig)?;
 
-    Ok(Json(()))
+    Ok(StatusCode::NO_CONTENT)
 }
