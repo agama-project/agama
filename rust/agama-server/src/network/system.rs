@@ -8,7 +8,10 @@ use crate::network::{
     model::{Connection, GeneralState},
     Action, Adapter, NetworkState,
 };
-use agama_lib::{error::ServiceError, network::types::DeviceType};
+use agama_lib::{
+    error::ServiceError,
+    network::{settings::NetworkConnection, types::DeviceType},
+};
 use std::{error::Error, sync::Arc};
 use tokio::sync::{
     mpsc::{self, error::SendError, UnboundedReceiver, UnboundedSender},
@@ -21,7 +24,7 @@ use zbus::zvariant::OwnedObjectPath;
 #[derive(thiserror::Error, Debug)]
 pub enum NetworkSystemError {
     #[error("Network state error: {0}")]
-    Stater(#[from] NetworkStateError),
+    State(#[from] NetworkStateError),
     #[error("Could not talk to the network system: {0}")]
     InputError(#[from] SendError<Action>),
     #[error("Could not read an answer from the network system: {0}")]
@@ -139,6 +142,66 @@ impl NetworkSystemClient {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::GetDevices(tx))?;
         Ok(rx.await?)
+    }
+
+    /// Returns the collection of network connections.
+    pub async fn get_connections(&self) -> Result<Vec<Connection>, NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::GetConnections(tx))?;
+        Ok(rx.await?)
+    }
+
+    /// Adds a new connection.
+    pub async fn add_connection(&self, connection: Connection) -> Result<(), NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions
+            .send(Action::NewConnection(Box::new(connection.clone()), tx))?;
+        let result = rx.await?;
+        Ok(result?)
+    }
+
+    /// Returns the connection with the given ID.
+    ///
+    /// * `id`: Connection ID.
+    pub async fn get_connection(&self, id: &str) -> Result<Option<Connection>, NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions
+            .send(Action::GetConnection(id.to_string(), tx))?;
+        let result = rx.await?;
+        Ok(result)
+    }
+
+    /// Updates the connection.
+    ///
+    /// * `connection`: Updated connection.
+    pub async fn update_connection(
+        &self,
+        connection: Connection,
+    ) -> Result<(), NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions
+            .send(Action::UpdateConnection(Box::new(connection), tx))?;
+        let result = rx.await?;
+        Ok(result?)
+    }
+
+    /// Removes the connection with the given ID.
+    ///
+    /// * `id`: Connection ID.
+    pub async fn remove_connection(&self, id: &str) -> Result<(), NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions
+            .send(Action::RemoveConnection(id.to_string(), tx))?;
+        let result = rx.await?;
+        Ok(result?)
+    }
+
+    /// Applies the network configuration.
+    pub async fn apply(&self) -> Result<(), NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::Apply(tx))?;
+        let result = rx.await?;
+        Ok(result?)
     }
 }
 
