@@ -25,7 +25,7 @@ import React, { useState } from "react";
 import { Checkbox, Form } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { DevicesFormSelect } from "~/components/storage";
-import { Popup } from "~/components/core";
+import { Popup, RadioField } from "~/components/core";
 import { deviceLabel } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 
@@ -36,9 +36,6 @@ import { sprintf } from "sprintf-js";
  * @typedef {import ("~/client/storage").Volume} Volume
  * @typedef {import ("~/client/storage").VolumeTarget} VolumeTarget
  */
-
-const LOCATION_AUTO_ID = "location-auto";
-const LOCATION_MANUAL_ID = "location-manual";
 
 /**
  * Generates a location option value from the given target.
@@ -58,21 +55,6 @@ const targetToOption = (target) => {
     case "FILESYSTEM":
       return "reuse";
   }
-};
-
-/**
- * Internal component for building the options.
- * @component
- *
- * @param {React.PropsWithChildren<React.ComponentProps<"input">>} props
- */
-const RadioOption = ({ id, onChange, defaultChecked, children }) => {
-  return (
-    <>
-      <input id={id} name="location-mode" type="radio" defaultChecked={defaultChecked} onChange={onChange} />
-      <label htmlFor={id}>{children}</label>
-    </>
-  );
 };
 
 /**
@@ -151,28 +133,24 @@ disk (%s)."), deviceLabel(defaultTargetDevice));
       {...props}
     >
       <Form id="volume-location-form" onSubmit={onSubmit}>
-        <fieldset className="stack">
-          <legend className="split">
-            <RadioOption id={LOCATION_AUTO_ID} defaultChecked={isLocationAuto} onChange={selectAutoOption}>
-              {_("Automatic")}
-            </RadioOption>
-          </legend>
-          <div>
-            {autoText()}
-          </div>
-        </fieldset>
+        <RadioField
+          label={_("Automatic")}
+          description={autoText()}
+          iconSize="xs"
+          textWrapper="span"
+          isChecked={isLocationAuto}
+          onClick={selectAutoOption}
+        />
 
-        <fieldset className="stack">
-          <legend className="split">
-            <RadioOption id={LOCATION_MANUAL_ID} defaultChecked={isLocationDevice} onChange={selectDeviceOption}>
-              {_("Select a disk")}
-            </RadioOption>
-          </legend>
-
+        <RadioField
+          label={_("Select a disk")}
+          description={_("The file system will be allocated as a new partition at the selected disk.")}
+          iconSize="xs"
+          textWrapper="span"
+          isChecked={isLocationDevice}
+          onClick={selectDeviceOption}
+        >
           <div className="stack">
-            <div>
-              {_("The file system will be allocated as a new partition at the selected disk.")}
-            </div>
             <DevicesFormSelect
               aria-label={_("Choose a disk for placing the file system")}
               devices={devices}
@@ -184,13 +162,13 @@ disk (%s)."), deviceLabel(defaultTargetDevice));
               id="dedicated_lvm"
               label={_("Create a dedicated LVM volume group")}
               description={_("A new volume group will be allocated in the selected disk and the \
-file system will be created as a logical volume.")}
+  file system will be created as a logical volume.")}
               isChecked={isDedicatedVG}
               onChange={toggleDedicatedVG}
               isDisabled={!isLocationDevice}
             />
           </div>
-        </fieldset>
+        </RadioField>
       </Form>
       <Popup.Actions>
         <Popup.Confirm form="volume-location-form" type="submit" isDisabled={isAcceptDisabled()} />
