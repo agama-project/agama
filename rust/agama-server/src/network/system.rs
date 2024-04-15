@@ -51,7 +51,7 @@ pub enum NetworkSystemError {
 ///     .expect("Could not connect to Agama's D-Bus server.");
 /// let network = NetworkSystem::new(dbus, adapter);
 ///
-/// // Start the networking service and get the channel for communication.
+/// // Start the networking service and get the client for communication.
 /// let client = network.start()
 ///     .await
 ///     .expect("Could not start the networking configuration system.");
