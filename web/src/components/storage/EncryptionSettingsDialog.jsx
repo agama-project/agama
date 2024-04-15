@@ -34,8 +34,8 @@ import { EncryptionMethods } from "~/client/storage";
  */
 
 const DIALOG_TITLE = _("Encryption");
-const DIALOG_DESCRIPTION = _("Full disk encryption allows to protect the information stored at \
-the device, including data, programs, and system files.");
+const DIALOG_DESCRIPTION = _("Full Disk Encryption (FDE) allows to protect the information stored \
+at the device, including data, programs, and system files.");
 // TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
 const TPM_LABEL = _("Use the Trusted Platform Module (TPM) to decrypt automatically on each boot");
 // TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing

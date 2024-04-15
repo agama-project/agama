@@ -36,7 +36,7 @@ import EncryptionSettingsDialog from "~/components/storage/EncryptionSettingsDia
 // Field texts at root level to avoid redefinitions every time the component
 // is rendered.
 const LABEL = _("Encryption");
-const DESCRIPTION = _("Full disk encryption allows to protect the information stored at \
+const DESCRIPTION = _("Full Disk Encryption (FDE) allows to protect the information stored at \
 the device, including data, programs, and system files.");
 const VALUES = {
   loading: <Skeleton width="150px" />,
