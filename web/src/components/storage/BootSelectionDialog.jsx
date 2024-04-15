@@ -24,7 +24,7 @@ import { Form } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { DevicesFormSelect } from "~/components/storage";
 import { noop } from "~/utils";
-import { Popup } from "~/components/core";
+import { Popup, RadioField } from "~/components/core";
 import { deviceLabel } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 
@@ -33,26 +33,6 @@ import { sprintf } from "sprintf-js";
 /**
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
-
-const BOOT_AUTO_ID = "boot-auto";
-const BOOT_MANUAL_ID = "boot-manual";
-const BOOT_DISABLED_ID = "boot-disabled";
-const OPTIONS_NAME = "boot-mode";
-
-/**
- * Internal component for building the options
- * @component
- *
- * @param {React.PropsWithChildren<React.ComponentProps<"input">>} props
- */
-const RadioOption = ({ id, onChange, defaultChecked, children }) => {
-  return (
-    <>
-      <input id={id} name={OPTIONS_NAME} type="radio" defaultChecked={defaultChecked} onChange={onChange} />
-      <label htmlFor={id}>{children}</label>
-    </>
-  );
-};
 
 /**
  * Renders a dialog that allows the user to select the boot configuration.
@@ -137,48 +117,40 @@ partitions in the appropriate disk."
       {...props}
     >
       <Form id="boot-form" onSubmit={onSubmit}>
-        <fieldset className="stack">
-          <legend className="split">
-            <RadioOption id={BOOT_AUTO_ID} defaultChecked={isBootAuto} onChange={() => selectBootAuto()}>
-              {_("Automatic")}
-            </RadioOption>
-          </legend>
-          <div>
-            {automaticText()}
-          </div>
-        </fieldset>
+        <RadioField
+          label={_("Automatic")}
+          description={automaticText()}
+          iconSize="xs"
+          textWrapper="span"
+          isChecked={isBootAuto}
+          onClick={selectBootAuto}
+        />
 
-        <fieldset className="stack">
-          <legend className="split">
-            <RadioOption id={BOOT_MANUAL_ID} defaultChecked={isBootManual} onChange={() => selectBootManual()}>
-              {_("Select a disk")}
-            </RadioOption>
-          </legend>
+        <RadioField
+          label={_("Select a disk")}
+          description={_("Partitions to boot will be allocated at the following device.")}
+          iconSize="xs"
+          textWrapper="span"
+          isChecked={isBootManual}
+          onClick={selectBootManual}
+        >
+          <DevicesFormSelect
+            aria-label={_("Choose a disk for placing the boot loader")}
+            devices={devices}
+            selectedDevice={bootDevice}
+            onChange={setBootDevice}
+            isDisabled={!isBootManual}
+          />
+        </RadioField>
 
-          <div className="stack">
-            <div>
-              {_("Partitions to boot will be allocated at the following device.")}
-            </div>
-            <DevicesFormSelect
-              aria-label={_("Choose a disk for placing the boot loader")}
-              devices={devices}
-              selectedDevice={bootDevice}
-              onChange={setBootDevice}
-              isDisabled={!isBootManual}
-            />
-          </div>
-        </fieldset>
-
-        <fieldset className="stack">
-          <legend className="split">
-            <RadioOption id={BOOT_DISABLED_ID} defaultChecked={!configureBoot} onChange={() => selectBootDisabled()}>
-              {_("Do not configure")}
-            </RadioOption>
-          </legend>
-          <div>
-            {_("No partitions will be automatically configured for booting. Use with caution.")}
-          </div>
-        </fieldset>
+        <RadioField
+          label={_("Do not configure")}
+          description={_("No partitions will be automatically configured for booting. Use with caution.")}
+          iconSize="xs"
+          textWrapper="span"
+          isChecked={!configureBoot}
+          onClick={selectBootDisabled}
+        />
       </Form>
       <Popup.Actions>
         <Popup.Confirm form="boot-form" type="submit" isDisabled={isAcceptDisabled()} />
