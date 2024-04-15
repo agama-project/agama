@@ -42,10 +42,6 @@ const SELECT_DISK_PANEL_ID = "panel-for-disk-selection";
 const CREATE_LVM_PANEL_ID = "panel-for-lvm-creation";
 const OPTIONS_NAME = "selection-mode";
 
-const Html = ({ children, ...props }) => (
-  <div {...props} dangerouslySetInnerHTML={{ __html: children }} />
-);
-
 /**
  * Renders a dialog that allows the user to select a target device for installation.
  * @component
@@ -101,6 +97,19 @@ export default function DeviceSelectionDialog({
 
   const isDeviceSelectable = (device) => device.isDrive || device.type === "md";
 
+  // TRANSLATORS: description for using plain partitions for installing the
+  // system, the text in the square brackets [] is displayed in bold, use only
+  // one pair in the translation
+  const [msgStart1, msgBold1, msgEnd1] = _("The file systems will be allocated \
+by default as [new partitions in the selected device].").split(/[[\]]/);
+  // TRANSLATORS: description for using logical volumes for installing the
+  // system, the text in the square brackets [] is displayed in bold, use only
+  // one pair in the translation
+  const [msgStart2, msgBold2, msgEnd2] = _("The file systems will be allocated \
+by default as [logical volumes of a new LVM Volume Group]. The corresponding \
+physical volumes will be created on demand as new partitions at the selected \
+devices.").split(/[[\]]/);
+
   return (
     <Popup
       title={_("Device for installing the system")}
@@ -132,12 +141,9 @@ export default function DeviceSelectionDialog({
           </Panels.Options>
 
           <Panels.Panel id={SELECT_DISK_PANEL_ID} isExpanded={isTargetDisk}>
-            <Html>
-              {
-                // TRANSLATORS: beware the HTML markup (<b> and </b>)
-                _("The file systems will be allocated by default as <b>new partitions in the selected device</b>.")
-              }
-            </Html>
+            {msgStart1}
+            <b>{msgBold1}</b>
+            {msgEnd1}
 
             <DeviceSelectorTable
               aria-label={_("Device selector for target disk")}
@@ -151,13 +157,9 @@ export default function DeviceSelectionDialog({
           </Panels.Panel>
 
           <Panels.Panel id={CREATE_LVM_PANEL_ID} isExpanded={isTargetNewLvmVg} className="stack">
-            <Html>
-              {
-                // TRANSLATORS: beware the HTML markup (<b> and </b>)
-                _("The file systems will be allocated by default as <b>logical volumes of a new LVM Volume \
-Group</b>. The corresponding physical volumes will be created on demand as new partitions at the selected devices.")
-              }
-            </Html>
+            {msgStart2}
+            <b>{msgBold2}</b>
+            {msgEnd2}
 
             <DeviceSelectorTable
               aria-label={_("Device selector for new LVM volume group")}
