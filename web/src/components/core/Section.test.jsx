@@ -19,18 +19,23 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender, installerRender } from "~/test-utils";
 import { Section } from "~/components/core";
 
+let consoleErrorSpy;
+
 describe("Section", () => {
   beforeAll(() => {
-    jest.spyOn(console, "error").mockImplementation();
+    consoleErrorSpy = jest.spyOn(console, "error");
+    consoleErrorSpy.mockImplementation();
   });
 
   afterAll(() => {
-    console.error.mockRestore();
+    consoleErrorSpy.mockRestore();
   });
 
   describe("when title is given", () => {
@@ -60,7 +65,8 @@ describe("Section", () => {
     });
 
     it("does not render an icon if not valid icon name is given", () => {
-      const { container } = plainRender(<Section title="Settings" icon="not-valid-icon-name" />);
+      // @ts-expect-error: Creating the icon name dynamically is unlikely, but let's be safe.
+      const { container } = plainRender(<Section title="Settings" icon={`fake-${Date.now()}-icon`} />);
       const icon = container.querySelector("svg");
       expect(icon).toBeNull();
     });
@@ -124,12 +130,14 @@ describe("Section", () => {
 
   it("sets predictable header id if name is given", () => {
     plainRender(<Section title="Settings" name="settings" />);
-    screen.getByRole("heading", { name: "Settings", id: "settings-header-section" });
+    const section = screen.getByRole("heading", { name: "Settings" });
+    expect(section).toHaveAttribute("id", "settings-section-header");
   });
 
   it("sets partially random header id if name is not given", () => {
-    plainRender(<Section title="Settings" name="settings" />);
-    screen.getByRole("heading", { name: "Settings", id: /.*(-header-section)$/ });
+    plainRender(<Section title="Settings" />);
+    const section = screen.getByRole("heading", { name: "Settings" });
+    expect(section).toHaveAttribute("id", expect.stringContaining("section-header"));
   });
 
   it("renders a polite live region", () => {

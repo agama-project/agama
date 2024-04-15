@@ -136,6 +136,15 @@
   color: inherit;
   font: inherit;
   padding: 0;
+  text-align: start;
+}
+
+.inline-flex-button{
+  @extend .plain-button;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7ch;
+  text-decoration: underline;
 }
 
 .p-0 {

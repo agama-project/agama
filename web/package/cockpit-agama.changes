@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr 15 07:14:35 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Enhance the storage page to make it easier to use and understand.
+  (gh#openSUSE/agama#1138).
+
+-------------------------------------------------------------------
 Thu Apr 11 15:16:42 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Allow changing the location of a file system

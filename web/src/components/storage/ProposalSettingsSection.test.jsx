@@ -22,14 +22,13 @@
 // @ts-check
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { screen } from "@testing-library/react";
+import { installerRender } from "~/test-utils";
 import { ProposalSettingsSection } from "~/components/storage";
 
 /**
  * @typedef {import ("~/components/storage/ProposalSettingsSection").ProposalSettingsSectionProps} ProposalSettingsSectionProps
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
- * @typedef {import ("~/client/storage").Volume} Volume
  */
 
 jest.mock("@patternfly/react-core", () => {
@@ -41,46 +40,70 @@ jest.mock("@patternfly/react-core", () => {
   };
 });
 
-/** @type {Volume} */
-let volume;
+/** @type {StorageDevice} */
+const sda = {
+  sid: 59,
+  isDrive: true,
+  type: "disk",
+  description: "",
+  vendor: "Micron",
+  model: "Micron 1100 SATA",
+  driver: ["ahci", "mmcblk"],
+  bus: "IDE",
+  busId: "",
+  transport: "usb",
+  dellBOSS: false,
+  sdCard: true,
+  active: true,
+  name: "/dev/sda",
+  size: 1024,
+  recoverableSize: 0,
+  systems : [],
+  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
+  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+};
+
+/** @type {StorageDevice} */
+const sdb = {
+  sid: 62,
+  isDrive: true,
+  type: "disk",
+  description: "",
+  vendor: "Samsung",
+  model: "Samsung Evo 8 Pro",
+  driver: ["ahci"],
+  bus: "IDE",
+  busId: "",
+  transport: "",
+  dellBOSS: false,
+  sdCard: false,
+  active: true,
+  name: "/dev/sdb",
+  size: 2048,
+  recoverableSize: 0,
+  systems : [],
+  udevIds: [],
+  udevPaths: ["pci-0000:00-19"]
+};
 
 /** @type {ProposalSettingsSectionProps} */
 let props;
 
 beforeEach(() => {
-  volume = {
-    mountPath: "/",
-    target: "DEFAULT",
-    fsType: "Btrfs",
-    minSize: 1024,
-    maxSize: 2048,
-    autoSize: false,
-    snapshots: false,
-    transactional: false,
-    outline: {
-      required: true,
-      fsTypes: ["Btrfs", "Ext4"],
-      supportAutoSize: true,
-      snapshotsConfigurable: true,
-      snapshotsAffectSizes: true,
-      sizeRelevantVolumes: [],
-      adjustByRam: false
-    }
-  };
-
   props = {
     settings: {
       target: "DISK",
+      targetDevice: "/dev/sda",
       targetPVDevices: [],
       configureBoot: false,
       bootDevice: "",
       defaultBootDevice: "",
       encryptionPassword: "",
       encryptionMethod: "",
-      spacePolicy: "",
+      spacePolicy: "delete",
       spaceActions: [],
       volumes: [],
-      installationDevices: []
+      installationDevices: [sda, sdb]
     },
     availableDevices: [],
     encryptionMethods: [],
@@ -89,237 +112,31 @@ beforeEach(() => {
   };
 });
 
-describe("if snapshots are configurable", () => {
-  beforeEach(() => {
-    props.settings.volumes = [volume];
-  });
+it("allows changing the selected device", async () => {
+  const { user } = installerRender(<ProposalSettingsSection {...props} />);
+  const button = screen.getByRole("button", { name: /installation device/i });
 
-  it("renders the snapshots switch", () => {
-    plainRender(<ProposalSettingsSection {...props} />);
-
-    screen.getByRole("checkbox", { name: "Use Btrfs Snapshots" });
-  });
+  await user.click(button);
+  await screen.findByRole("dialog", { name: /Device for installing/ });
 });
 
-describe("if snapshots are not configurable", () => {
-  beforeEach(() => {
-    volume.outline.snapshotsConfigurable = false;
-  });
+it("allows changing the encryption settings", async () => {
+  const { user } = installerRender(<ProposalSettingsSection {...props} />);
+  const button = screen.getByRole("button", { name: /Encryption/ });
 
-  it("does not render the snapshots switch", () => {
-    plainRender(<ProposalSettingsSection {...props} />);
-
-    expect(screen.queryByRole("checkbox", { name: "Use Btrfs Snapshots" })).toBeNull();
-  });
+  await user.click(button);
+  await screen.findByRole("dialog", { name: /Encryption/ });
 });
 
 it("renders a section holding file systems related stuff", () => {
-  plainRender(<ProposalSettingsSection {...props} />);
-  screen.getByRole("grid", { name: "Table with mount points" });
-  screen.getByRole("grid", { name: /mount points/ });
+  installerRender(<ProposalSettingsSection {...props} />);
+  screen.getByRole("button", { name: /Partitions and file systems/ });
 });
 
-it("requests a volume change when onChange callback is triggered", async () => {
-  const { user } = plainRender(<ProposalSettingsSection {...props } />);
-  const button = screen.getByRole("button", { name: "Actions" });
+it("allows changing the space policy settings", async () => {
+  const { user } = installerRender(<ProposalSettingsSection {...props} />);
+  const button = screen.getByRole("button", { name: /Find space/ });
 
   await user.click(button);
-
-  const menu = screen.getByRole("menu");
-  const reset = within(menu).getByRole("menuitem", { name: /Reset/ });
-
-  await user.click(reset);
-
-  expect(props.onChange).toHaveBeenCalledWith(
-    { volumes: expect.any(Array) }
-  );
-});
-
-describe("Encryption field", () => {
-  describe.skip("if encryption password setting is not set yet", () => {
-    beforeEach(() => {
-      // Currently settings cannot be undefined.
-      props.settings = undefined;
-    });
-
-    it("does not render the encryption switch", () => {
-      plainRender(<ProposalSettingsSection {...props} />);
-
-      expect(screen.queryByLabelText("Use encryption")).toBeNull();
-    });
-  });
-
-  describe("if encryption password setting is set", () => {
-    beforeEach(() => {
-      props.settings.encryptionPassword = "";
-    });
-
-    it("renders the encryption switch", () => {
-      plainRender(<ProposalSettingsSection {...props} />);
-
-      screen.getByRole("checkbox", { name: "Use encryption" });
-    });
-  });
-
-  describe("if encryption password is not empty", () => {
-    beforeEach(() => {
-      props.settings.encryptionPassword = "1234";
-    });
-
-    it("renders the encryption switch as selected", () => {
-      plainRender(<ProposalSettingsSection {...props} />);
-
-      const checkbox = screen.getByRole("checkbox", { name: "Use encryption" });
-      expect(checkbox).toBeChecked();
-    });
-
-    it("renders a button for changing the encryption settings", () => {
-      plainRender(<ProposalSettingsSection {...props} />);
-
-      screen.getByRole("button", { name: /Encryption settings/ });
-    });
-
-    it("changes the selection on click", async () => {
-      const { user } = plainRender(<ProposalSettingsSection {...props} />);
-
-      const checkbox = screen.getByRole("checkbox", { name: "Use encryption" });
-      await user.click(checkbox);
-
-      expect(checkbox).not.toBeChecked();
-      expect(props.onChange).toHaveBeenCalled();
-    });
-
-    it("allows changing the encryption settings when clicking on the settings button", async () => {
-      const { user } = plainRender(<ProposalSettingsSection {...props} />);
-
-      const button = screen.getByRole("button", { name: /Encryption settings/ });
-      await user.click(button);
-
-      const popup = await screen.findByRole("dialog");
-      screen.getByText("Encryption settings");
-
-      const accept = within(popup).getByRole("button", { name: "Accept" });
-      await user.click(accept);
-
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-      expect(props.onChange).toHaveBeenCalled();
-    });
-
-    it("allows canceling the changes of the encryption settings", async () => {
-      const { user } = plainRender(<ProposalSettingsSection {...props} />);
-
-      const button = screen.getByRole("button", { name: /Encryption settings/ });
-      await user.click(button);
-
-      const popup = await screen.findByRole("dialog");
-      screen.getByText("Encryption settings");
-
-      const cancel = within(popup).getByRole("button", { name: "Cancel" });
-      await user.click(cancel);
-
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-      expect(props.onChange).not.toHaveBeenCalled();
-    });
-  });
-
-  describe("if encryption password is empty", () => {
-    beforeEach(() => {
-      props.settings.encryptionPassword = "";
-    });
-
-    it("renders the encryption switch as not selected", () => {
-      plainRender(<ProposalSettingsSection {...props} />);
-
-      const checkbox = screen.getByRole("checkbox", { name: "Use encryption" });
-      expect(checkbox).not.toBeChecked();
-    });
-
-    it("does not render a button for changing the encryption settings", () => {
-      plainRender(<ProposalSettingsSection {...props} />);
-
-      const button = screen.queryByRole("button", { name: /Encryption settings/ });
-      expect(button).toBeNull();
-    });
-
-    it("changes the selection and allows changing the settings on click", async () => {
-      const { user } = plainRender(<ProposalSettingsSection {...props} />);
-
-      const checkbox = screen.getByRole("checkbox", { name: "Use encryption" });
-      await user.click(checkbox);
-
-      const popup = await screen.findByRole("dialog");
-      screen.getByText("Encryption settings");
-
-      const passwordInput = screen.getByLabelText("Password");
-      const passwordConfirmInput = screen.getByLabelText("Password confirmation");
-      await user.type(passwordInput, "1234");
-      await user.type(passwordConfirmInput, "1234");
-      const accept = within(popup).getByRole("button", { name: "Accept" });
-      await user.click(accept);
-
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-
-      expect(props.onChange).toHaveBeenCalled();
-      expect(checkbox).toBeChecked();
-    });
-
-    it("does not select encryption if the settings are canceled", async () => {
-      const { user } = plainRender(<ProposalSettingsSection {...props} />);
-
-      const checkbox = screen.getByRole("checkbox", { name: "Use encryption" });
-      await user.click(checkbox);
-
-      const popup = await screen.findByRole("dialog");
-      screen.getByText("Encryption settings");
-
-      const cancel = within(popup).getByRole("button", { name: "Cancel" });
-      await user.click(cancel);
-
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-      expect(props.onChange).not.toHaveBeenCalled();
-      expect(checkbox).not.toBeChecked();
-    });
-  });
-});
-
-describe("Space policy field", () => {
-  describe.skip("if there is no space policy", () => {
-    beforeEach(() => {
-      // Currently settings cannot be undefined.
-      props.settings = undefined;
-    });
-
-    it("does not render the space policy field", () => {
-      plainRender(<ProposalSettingsSection {...props} />);
-
-      expect(screen.queryByLabelText("Find space")).toBeNull();
-    });
-  });
-
-  describe("if there is a space policy", () => {
-    beforeEach(() => {
-      props.settings.spacePolicy = "delete";
-    });
-
-    it("renders the button with a text according to given policy", () => {
-      const { rerender } = plainRender(<ProposalSettingsSection {...props} />);
-      screen.getByRole("button", { name: /deleting/ });
-
-      props.settings.spacePolicy = "resize";
-      rerender(<ProposalSettingsSection {...props} />);
-      screen.getByRole("button", { name: /shrinking/ });
-    });
-
-    it("allows to change the policy", async () => {
-      const { user } = plainRender(<ProposalSettingsSection {...props} />);
-      const button = screen.getByRole("button", { name: /deleting all content/ });
-
-      await user.click(button);
-
-      const popup = await screen.findByRole("dialog");
-      within(popup).getByText("Find space");
-      const cancel = within(popup).getByRole("button", { name: "Cancel" });
-      await user.click(cancel);
-    });
-  });
+  await screen.findByRole("dialog", { name: /Find space/ });
 });

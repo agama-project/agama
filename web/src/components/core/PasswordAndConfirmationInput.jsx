@@ -19,7 +19,9 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+// @ts-check
+
+import React, { useEffect, useState } from "react";
 import { FormGroup } from "@patternfly/react-core";
 import { FormValidationError, PasswordInput } from "~/components/core";
 import { _ } from "~/i18n";
@@ -27,6 +29,10 @@ import { _ } from "~/i18n";
 const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisabled = false }) => {
   const [confirmation, setConfirmation] = useState(value || "");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isDisabled) setError("");
+  }, [isDisabled]);
 
   const validate = (password, passwordConfirmation) => {
     let newError = "";
@@ -57,7 +63,6 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
         <PasswordInput
           id="password"
           name="password"
-          aria-label={_("User password")}
           value={value}
           isDisabled={isDisabled}
           onChange={onValueChange}
@@ -71,7 +76,6 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
         <PasswordInput
           id="passwordConfirmation"
           name="passwordConfirmation"
-          aria-label={_("User password confirmation")}
           value={confirmation}
           isDisabled={isDisabled}
           onChange={onConfirmationChange}

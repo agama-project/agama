@@ -56,6 +56,8 @@ jest.mock("~/context/product", () => ({
   })
 }));
 
+const createClientMock = /** @type {jest.Mock} */(createClient);
+
 /** @type {StorageDevice} */
 const vda = {
   sid: 59,
@@ -168,8 +170,7 @@ beforeEach(() => {
     onStatusChange: jest.fn()
   };
 
-  // @ts-expect-error Mocking method does not exist fo InstallerClient type.
-  createClient.mockImplementation(() => ({ storage }));
+  createClientMock.mockImplementation(() => ({ storage }));
 });
 
 it("probes storage if the storage devices are deprecated", async () => {
@@ -189,9 +190,6 @@ it("loads the proposal data", async () => {
 
   installerRender(<ProposalPage />);
 
-  screen.getAllByText(/PFSkeleton/);
-  expect(screen.queryByText(/Installation device/)).toBeNull();
-  await screen.findByText(/Installation device/);
   await screen.findByText(/\/dev\/vda/);
 });
 
@@ -238,15 +236,6 @@ describe("when the storage devices become deprecated", () => {
 });
 
 describe("when there is no proposal yet", () => {
-  it("shows the page as loading", async () => {
-    proposalResult = undefined;
-
-    installerRender(<ProposalPage />);
-
-    screen.getAllByText(/PFSkeleton/);
-    await waitFor(() => expect(screen.queryByText(/Installation device/)).toBeNull());
-  });
-
   it("loads the proposal when the service finishes to calculate", async () => {
     const defaultResult = proposalResult;
     proposalResult = undefined;
