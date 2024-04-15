@@ -26,7 +26,7 @@ import { Form } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
 import { SPACE_POLICIES } from '~/components/storage/utils';
-import { If, OptionsPicker, Popup } from "~/components/core";
+import { If, Popup, RadioField } from "~/components/core";
 import { noop } from "~/utils";
 import { SpaceActionsTable } from '~/components/storage';
 
@@ -35,34 +35,6 @@ import { SpaceActionsTable } from '~/components/storage';
  * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
-
-/**
- * Widget to allow user picking desired policy to make space.
- * @component
- *
- * @param {object} props
- * @param {SpacePolicy} props.currentPolicy
- * @param {(policy: SpacePolicy) => void} [props.onChange]
- */
-const SpacePolicyPicker = ({ currentPolicy, onChange = noop }) => {
-  return (
-    <OptionsPicker>
-      {/* eslint-disable agama-i18n/string-literals */}
-      {SPACE_POLICIES.map((policy) => {
-        return (
-          <OptionsPicker.Option
-            key={policy.id}
-            title={_(policy.label)}
-            body={_(policy.description)}
-            onClick={() => onChange(policy)}
-            isSelected={currentPolicy?.id === policy.id}
-          />
-        );
-      })}
-      {/* eslint-enable agama-i18n/string-literals */}
-    </OptionsPicker>
-  );
-};
 
 /**
  * Renders a dialog that allows the user to select the space policy and actions.
@@ -89,14 +61,16 @@ export default function SpacePolicyDialog({
   onAccept = noop,
   ...props
 }) {
-  const [policy, setPolicy] = useState(defaultPolicy);
+  const [currentPolicy, setCurrentPolicy] = useState(defaultPolicy);
   const [actions, setActions] = useState(defaultActions);
   const [customUsed, setCustomUsed] = useState(false);
   const [expandedDevices, setExpandedDevices] = useState([]);
 
+  console.log("isOpen", isOpen);
+
   useEffect(() => {
-    if (policy.id === "custom") setExpandedDevices(devices);
-  }, [devices, policy, setExpandedDevices]);
+    if (currentPolicy.id === "custom") setExpandedDevices(devices);
+  }, [devices, currentPolicy, setExpandedDevices]);
 
   // The selectors for the space action have to be initialized always to the same value
   // (e.g., "keep") when the custom policy is selected for first time. The following two useEffect
@@ -104,23 +78,23 @@ export default function SpacePolicyDialog({
 
   // Stores whether the custom policy has been used.
   useEffect(() => {
-    if (policy.id === "custom" && !customUsed) setCustomUsed(true);
-  }, [policy, customUsed, setCustomUsed]);
+    if (currentPolicy.id === "custom" && !customUsed) setCustomUsed(true);
+  }, [currentPolicy, customUsed, setCustomUsed]);
 
   // Resets actions (i.e., sets everything to "keep") if the custom policy has not been used yet.
   useEffect(() => {
-    if (policy.id !== "custom" && !customUsed) setActions([]);
-  }, [policy, customUsed, setActions]);
+    if (currentPolicy.id !== "custom" && !customUsed) setActions([]);
+  }, [currentPolicy, customUsed, setActions]);
 
   // Generates the action value according to the policy.
   const deviceAction = (device) => {
     let action;
 
-    if (policy.id === "custom") {
+    if (currentPolicy.id === "custom") {
       action = actions.find(a => a.device === device.name)?.action || "keep";
     } else {
       const policyAction = { delete: "force_delete", resize: "resize", keep: "keep" };
-      action = policyAction[policy.id];
+      action = policyAction[currentPolicy.id];
     }
 
     // For a drive device (e.g., Disk, RAID) it does not make sense to offer the resize action.
@@ -137,8 +111,9 @@ export default function SpacePolicyDialog({
   };
 
   const onSubmit = (e) => {
+    console.log("submitting the form because of", e);
     e.preventDefault();
-    onAccept({ spacePolicy: policy, spaceActions: actions });
+    onAccept({ spacePolicy: currentPolicy, spaceActions: actions });
   };
 
   const description = _("Allocating the file systems might need to find free space \
@@ -153,19 +128,33 @@ in the devices listed below. Choose how to do it.");
       {...props}
     >
       <Form id="space-policy-form" onSubmit={onSubmit}>
-        <SpacePolicyPicker currentPolicy={policy} onChange={setPolicy} />
-        <If
-          condition={devices.length > 0}
-          then={
-            <SpaceActionsTable
-              devices={devices}
-              expandedDevices={expandedDevices}
-              deviceAction={deviceAction}
-              isActionDisabled={policy.id !== "custom"}
-              onActionChange={changeActions}
-            />
-          }
-        />
+        {/* eslint-disable agama-i18n/string-literals */}
+        {SPACE_POLICIES.map((policy) => {
+          return (
+            <RadioField
+              key={policy.id}
+              label={_(policy.label)}
+              description={_(policy.description)}
+              onClick={() => setCurrentPolicy(policy)}
+              isChecked={currentPolicy?.id === policy.id}
+              textWrapper="span"
+            >
+              <If
+                condition={devices.length > 0 && currentPolicy?.id === policy.id}
+                then={
+                  <SpaceActionsTable
+                    devices={devices}
+                    expandedDevices={expandedDevices}
+                    deviceAction={deviceAction}
+                    isActionDisabled={policy.id !== "custom"}
+                    onActionChange={changeActions}
+                  />
+                }
+              />
+            </RadioField>
+          );
+        })}
+        {/* eslint-enable agama-i18n/string-literals */}
       </Form>
       <Popup.Actions>
         <Popup.Confirm form="space-policy-form" type="submit" />
