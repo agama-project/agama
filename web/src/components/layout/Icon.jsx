@@ -58,6 +58,8 @@ import MoreVert from "@icons/more_vert.svg?component";
 import Person from "@icons/person.svg?component";
 import Problem from "@icons/problem.svg?component";
 import Refresh from "@icons/refresh.svg?component";
+import RadioButtonChecked from "@icons/radio_button_checked.svg?component";
+import RadioButtonUnchecked from "@icons/radio_button_unchecked.svg?component";
 import Schedule from "@icons/schedule.svg?component";
 import SettingsApplications from "@icons/settings_applications.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
@@ -126,6 +128,8 @@ const icons = {
   more_vert: MoreVert,
   person: Person,
   problem: Problem,
+  radio_button_checked: RadioButtonChecked,
+  radio_button_unchecked: RadioButtonUnchecked,
   refresh: Refresh,
   schedule: Schedule,
   settings: SettingsFill,

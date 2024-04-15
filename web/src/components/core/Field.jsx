@@ -65,10 +65,12 @@ const Field = ({
 }) => {
   const FieldIcon = () => icon?.length > 0 && <Icon name={icon} size={iconSize} />;
   const TextWrapper = textWrapper;
+  const btnAttrs = { ...buttonAttrs, type: "button" };
+
   return (
     <div {...props} data-type="agama/field">
       <div>
-        <button {...buttonAttrs} className="plain-button" onClick={onClick}>
+        <button {...btnAttrs} className="plain-button" onClick={onClick}>
           <FieldIcon /> <TextWrapper>{label}</TextWrapper>
         </button> {value}
       </div>
@@ -108,6 +110,24 @@ const SwitchField = ({ isChecked = false, highlightContent = false, ...props }) 
 };
 
 /**
+ * @param {Omit<FieldProps, 'icon'> & {isChecked: boolean, highlightContent?: boolean}} props
+ */
+const RadioField = ({ isChecked = false, highlightContent = false, ...props }) => {
+  const iconName = isChecked ? "radio_button_checked" : "radio_button_unchecked";
+  const baseClassnames = highlightContent ? "highlighted" : "";
+  const stateClassnames = isChecked ? "on" : "off";
+
+  return (
+    <Field
+      {...props}
+      icon={iconName}
+      className={[baseClassnames, stateClassnames].join(" ")}
+      buttonAttrs={{ role: "switch", "aria-checked": isChecked }}
+    />
+  );
+};
+
+/**
  * @param {Omit<FieldProps, 'icon'> & {isExpanded: boolean}} props
  */
 const ExpandableField = ({ isExpanded, ...props }) => {
@@ -118,4 +138,4 @@ const ExpandableField = ({ isExpanded, ...props }) => {
 };
 
 export default Field;
-export { ExpandableField, SettingsField, SwitchField };
+export { ExpandableField, SettingsField, SwitchField, RadioField };
