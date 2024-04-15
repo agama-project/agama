@@ -1,18 +1,21 @@
 use super::http::{login, login_from_query, logout, session};
 use super::{auth::TokenClaims, config::ServiceConfig, state::ServiceState, EventsSender};
 use axum::{
+    body::Body,
     extract::Request,
     middleware,
-    response::IntoResponse,
+    response::{IntoResponse, Response},
     routing::{get, post},
     Router,
 };
+use std::time::Duration;
 use std::{
     convert::Infallible,
     path::{Path, PathBuf},
 };
 use tower::Service;
 use tower_http::{compression::CompressionLayer, services::ServeDir, trace::TraceLayer};
+use tracing::Span;
 
 /// Builder for Agama main service.
 ///
@@ -93,7 +96,17 @@ impl MainServiceBuilder {
             .route("/login", get(login_from_query))
             .route("/po.js", get(super::http::po))
             .nest("/api", api_router)
-            .layer(TraceLayer::new_for_http())
+            .layer(
+                TraceLayer::new_for_http()
+                    .on_request(|request: &Request<Body>, _span: &Span| {
+                        tracing::info!("request: {} {}", request.method(), request.uri().path())
+                    })
+                    .on_response(
+                        |response: &Response<Body>, latency: Duration, _span: &Span| {
+                            tracing::info!("response: {} {:?}", response.status(), latency)
+                        },
+                    ),
+            )
             .layer(CompressionLayer::new().br(true))
             .with_state(state)
     }
