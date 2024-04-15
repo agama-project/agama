@@ -35,6 +35,10 @@ import { sprintf } from "sprintf-js";
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
 
+const LABEL = _("Installation device");
+// TRANSLATORS: The storage "Installation device" field's description.
+const DESCRIPTION = _("Select the main disk or LVM Volume Group for installation.");
+
 /**
  * Generates the target value.
  * @function
@@ -57,23 +61,6 @@ const targetValue = (target, targetDevice, targetPVDevices) => {
 
   return _("No device selected yet");
 };
-
-/**
- * Field description.
- * @function
- *
- * @returns {React.ReactElement}
- */
-const renderDescription = () => (
-  <span
-    dangerouslySetInnerHTML={{
-      // TRANSLATORS: The storage "Device" sections's description. Do not translate 'abbr' and
-      // 'title', they are part of the HTML markup.
-      __html: _("Select the main disk or <abbr title='Logical Volume Manager'>LVM</abbr> \
-Volume Group for installation.")
-    }}
-  />
-);
 
 const StorageTechSelector = () => {
   return (
@@ -128,9 +115,9 @@ export default function InstallationDeviceField({
 
   return (
     <SettingsField
-      label={_("Installation device")}
+      label={LABEL}
       value={value}
-      description={renderDescription()}
+      description={DESCRIPTION}
       onClick={openDialog}
     >
       {_("Prepare more devices by configuring advanced")} <StorageTechSelector />

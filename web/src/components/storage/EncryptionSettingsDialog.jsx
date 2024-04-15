@@ -36,13 +36,13 @@ import { EncryptionMethods } from "~/client/storage";
 const DIALOG_TITLE = _("Encryption");
 const DIALOG_DESCRIPTION = _("Full disk encryption allows to protect the information stored at \
 the device, including data, programs, and system files.");
-const TPM_LABEL = _("Use the TPM to decrypt automatically on each boot");
+// TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
+const TPM_LABEL = _("Use the Trusted Platform Module (TPM) to decrypt automatically on each boot");
 // TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
 // 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
-// Do not translate 'abbr' and 'title', they are part of the HTML markup.
 const TPM_EXPLANATION = _("The password will not be needed to boot and access the data if the \
-<abbr title='Trusted Platform Module'>TPM</abbr> can verify the integrity of the system. \
-TPM sealing requires the new system to be booted directly on its first run.");
+TPM can verify the integrity of the system. TPM sealing requires the new system to be booted \
+directly on its first run.");
 
 /**
  * Renders a dialog that allows the user change encryption settings
@@ -112,7 +112,7 @@ export default function EncryptionSettingsDialog({
               <Checkbox
                 id="tpm_encryption_method"
                 label={TPM_LABEL}
-                description={<span dangerouslySetInnerHTML={{ __html: TPM_EXPLANATION }} />}
+                description={TPM_EXPLANATION}
                 isChecked={method === EncryptionMethods.TPM}
                 isDisabled={!isEnabled}
                 onChange={changeMethod}

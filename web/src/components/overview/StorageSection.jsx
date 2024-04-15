@@ -60,8 +60,7 @@ const ProposalSummary = ({ proposal }) => {
 
   if (result.settings.target === "NEW_LVM_VG") {
     // TRANSLATORS: Part of the message describing where the system will be installed.
-    // Do not translate 'abbr' and 'title', they are part of the HTML markup.
-    const vg = _("<abbr title='Logical Volume Manager'>LVM</abbr> volume group");
+    const vg = _("Logical Volume Manager (LVM) volume group");
     const pvDevices = result.settings.targetPVDevices;
     const fullMsg = (policy, num_pvs) => {
       switch (policy) {
@@ -110,7 +109,7 @@ const ProposalSummary = ({ proposal }) => {
       return (
         <Text>
           <span dangerouslySetInnerHTML={{ __html: msg1 }} />
-          <Em>{ label(pvDevices[0]) }</Em>
+          <Em>{label(pvDevices[0])}</Em>
           <span dangerouslySetInnerHTML={{ __html: msg2 }} />
         </Text>
       );

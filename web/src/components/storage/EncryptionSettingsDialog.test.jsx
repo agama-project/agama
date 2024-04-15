@@ -54,7 +54,7 @@ describe("EncryptionSettingsDialog", () => {
       const switchField = screen.getByRole("switch", { name: "Encrypt the system" });
       const passwordInput = screen.getByLabelText("Password");
       const confirmationInput = screen.getByLabelText("Password confirmation");
-      const tpmCheckbox = screen.getByRole("checkbox", { name: /Use the TPM/ });
+      const tpmCheckbox = screen.getByRole("checkbox", { name: /Use.*TPM/ });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
 
       expect(switchField).not.toBeChecked();
@@ -85,7 +85,7 @@ describe("EncryptionSettingsDialog", () => {
       const passwordInput = screen.getByLabelText("Password");
       const confirmationInput = screen.getByLabelText("Password confirmation");
       const acceptButton = screen.getByRole("button", { name: "Accept" });
-      const tpmCheckbox = screen.getByRole("checkbox", { name: /Use the TPM/ });
+      const tpmCheckbox = screen.getByRole("checkbox", { name: /Use.*TPM/ });
 
       await user.clear(passwordInput);
       await user.type(passwordInput, "9876");
@@ -118,8 +118,8 @@ describe("EncryptionSettingsDialog", () => {
 
     it("allows to stop using it", async () => {
       const { user } = plainRender(<EncryptionSettingsDialog {...props} />);
-      const tpmCheckbox = screen.queryByRole("checkbox", { name: /Use the TPM/ });
-      const acceptButton = screen.queryByRole("button", { name: "Accept" });
+      const tpmCheckbox = screen.getByRole("checkbox", { name: /Use.*TPM/ });
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
       expect(tpmCheckbox).toBeChecked();
       await user.click(tpmCheckbox);
       expect(tpmCheckbox).not.toBeChecked();
@@ -137,7 +137,7 @@ describe("EncryptionSettingsDialog", () => {
 
     it("does not render the TPM checkbox", () => {
       plainRender(<EncryptionSettingsDialog {...props} />);
-      expect(screen.queryByRole("checkbox", { name: /Use the TPM/ })).toBeNull();
+      expect(screen.queryByRole("checkbox", { name: /Use.*TPM/ })).toBeNull();
     });
   });
 
