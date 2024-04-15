@@ -100,6 +100,7 @@ export default function DeviceSelectionDialog({
       title={_("Device for installing the system")}
       isOpen={isOpen}
       variant="medium"
+      className="large"
       {...props}
     >
       <Form id="target-form" onSubmit={onSubmit}>
