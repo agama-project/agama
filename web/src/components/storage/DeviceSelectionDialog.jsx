@@ -26,7 +26,7 @@ import { Form } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
 import { deviceChildren } from "~/components/storage/utils";
-import { ControlledPanels as Panels, Popup } from "~/components/core";
+import { Popup, RadioField } from "~/components/core";
 import { DeviceSelectorTable } from "~/components/storage";
 import { noop } from "~/utils";
 
@@ -35,12 +35,6 @@ import { noop } from "~/utils";
  * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
-
-const SELECT_DISK_ID = "select-disk";
-const CREATE_LVM_ID = "create-lvm";
-const SELECT_DISK_PANEL_ID = "panel-for-disk-selection";
-const CREATE_LVM_PANEL_ID = "panel-for-lvm-creation";
-const OPTIONS_NAME = "selection-mode";
 
 const Html = ({ children, ...props }) => (
   <div {...props} dangerouslySetInnerHTML={{ __html: children }} />
@@ -109,48 +103,30 @@ export default function DeviceSelectionDialog({
       {...props}
     >
       <Form id="target-form" onSubmit={onSubmit}>
-        <Panels className="stack">
-          <Panels.Options data-variant="buttons">
-            <Panels.Option
-              id={SELECT_DISK_ID}
-              name={OPTIONS_NAME}
-              isSelected={isTargetDisk}
-              onChange={selectTargetDisk}
-              controls={SELECT_DISK_PANEL_ID}
-            >
-              {_("Select a disk")}
-            </Panels.Option>
-            <Panels.Option
-              id={CREATE_LVM_ID}
-              name={OPTIONS_NAME}
-              isSelected={isTargetNewLvmVg}
-              onChange={selectTargetNewLvmVG}
-              controls={CREATE_LVM_PANEL_ID}
-            >
-              {_("Create an LVM Volume Group")}
-            </Panels.Option>
-          </Panels.Options>
-
-          <Panels.Panel id={SELECT_DISK_PANEL_ID} isExpanded={isTargetDisk}>
-            <Html>
-              {
-                // TRANSLATORS: beware the HTML markup (<b> and </b>)
-                _("The file systems will be allocated by default as <b>new partitions in the selected device</b>.")
-              }
-            </Html>
-
-            <DeviceSelectorTable
-              aria-label={_("Device selector for target disk")}
-              devices={devices}
-              selected={[targetDevice]}
-              itemChildren={deviceChildren}
-              itemSelectable={isDeviceSelectable}
-              onSelectionChange={selectTargetDevice}
-              variant="compact"
-            />
-          </Panels.Panel>
-
-          <Panels.Panel id={CREATE_LVM_PANEL_ID} isExpanded={isTargetNewLvmVg} className="stack">
+        <RadioField
+          label={_("Select a disk")}
+          // TRANSLATORS: beware the HTML markup (<b> and </b>)
+          description={<Html>{_("The file systems will be allocated by default as <b>new partitions in the selected device</b>.")}</Html>}
+          iconSize="xs"
+          textWrapper="span"
+          isChecked={isTargetDisk}
+          onClick={selectTargetDisk}
+        >
+          <DeviceSelectorTable
+            aria-label={_("Device selector for target disk")}
+            devices={devices}
+            selected={[targetDevice]}
+            itemChildren={deviceChildren}
+            itemSelectable={isDeviceSelectable}
+            onSelectionChange={selectTargetDevice}
+            variant="compact"
+            className={isTargetDisk ? undefined : "hidden"}
+          />
+        </RadioField>
+        <RadioField
+          label={_("Create an LVM Volume Group")}
+          // TRANSLATORS: beware the HTML markup (<b> and </b>)
+          description={
             <Html>
               {
                 // TRANSLATORS: beware the HTML markup (<b> and </b>)
@@ -158,19 +134,24 @@ export default function DeviceSelectionDialog({
 Group</b>. The corresponding physical volumes will be created on demand as new partitions at the selected devices.")
               }
             </Html>
-
-            <DeviceSelectorTable
-              aria-label={_("Device selector for new LVM volume group")}
-              isMultiple
-              devices={devices}
-              selected={targetPVDevices}
-              itemChildren={deviceChildren}
-              itemSelectable={isDeviceSelectable}
-              onSelectionChange={setTargetPVDevices}
-              variant="compact"
-            />
-          </Panels.Panel>
-        </Panels>
+          }
+          iconSize="xs"
+          textWrapper="span"
+          isChecked={isTargetNewLvmVg}
+          onClick={selectTargetNewLvmVG}
+        >
+          <DeviceSelectorTable
+            aria-label={_("Device selector for new LVM volume group")}
+            isMultiple
+            devices={devices}
+            selected={targetPVDevices}
+            itemChildren={deviceChildren}
+            itemSelectable={isDeviceSelectable}
+            onSelectionChange={setTargetPVDevices}
+            variant="compact"
+            className={isTargetNewLvmVg ? undefined : "hidden"}
+          />
+        </RadioField>
       </Form>
       <Popup.Actions>
         <Popup.Confirm form="target-form" type="submit" isDisabled={isAcceptDisabled()} />
