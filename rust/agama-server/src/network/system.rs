@@ -1,6 +1,6 @@
 use super::{
     error::NetworkStateError,
-    model::{Device, StateConfig},
+    model::{AccessPoint, Device, StateConfig},
     NetworkAdapterError,
 };
 use crate::network::{
@@ -8,10 +8,7 @@ use crate::network::{
     model::{Connection, GeneralState},
     Action, Adapter, NetworkState,
 };
-use agama_lib::{
-    error::ServiceError,
-    network::{settings::NetworkConnection, types::DeviceType},
-};
+use agama_lib::{error::ServiceError, network::types::DeviceType};
 use std::{error::Error, sync::Arc};
 use tokio::sync::{
     mpsc::{self, error::SendError, UnboundedReceiver, UnboundedSender},
@@ -117,9 +114,7 @@ impl<T: Adapter + Send + 'static> NetworkSystem<T> {
 /// It hides the details of the message-passing behind a convenient API.
 #[derive(Clone)]
 pub struct NetworkSystemClient {
-    /// Channel to talk to the server. This field is temporarily public, but it will
-    /// be set to private once web interface is adapted.
-    pub actions: UnboundedSender<Action>,
+    actions: UnboundedSender<Action>,
 }
 
 // TODO: add a NetworkSystemError type
@@ -200,6 +195,21 @@ impl NetworkSystemClient {
     pub async fn apply(&self) -> Result<(), NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::Apply(tx))?;
+        let result = rx.await?;
+        Ok(result?)
+    }
+
+    /// Returns the collection of access points.
+    pub async fn get_access_points(&self) -> Result<Vec<AccessPoint>, NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::GetAccessPoints(tx))?;
+        let access_points = rx.await?;
+        Ok(access_points)
+    }
+
+    pub async fn wifi_scan(&self) -> Result<(), NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::RefreshScan(tx)).unwrap();
         let result = rx.await?;
         Ok(result?)
     }

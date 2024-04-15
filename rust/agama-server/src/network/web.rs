@@ -91,17 +91,11 @@ pub async fn network_service<T: Adapter + std::marker::Send + 'static>(
 #[utoipa::path(get, path = "/network/state", responses(
   (status = 200, description = "Get general network config", body = GenereralState)
 ))]
-async fn general_state(State(state): State<NetworkState>) -> Json<GeneralState> {
-    let (tx, rx) = oneshot::channel();
-    state
-        .network
-        .actions
-        .send(Action::GetGeneralState(tx))
-        .unwrap();
-
-    let state = rx.await.unwrap();
-
-    Json(state)
+async fn general_state(
+    State(state): State<NetworkState>,
+) -> Result<Json<GeneralState>, NetworkError> {
+    let general_state = state.network.get_state().await?;
+    Ok(Json(general_state))
 }
 
 #[utoipa::path(put, path = "/network/state", responses(
@@ -119,28 +113,20 @@ async fn update_general_state(
 #[utoipa::path(get, path = "/network/wifi", responses(
   (status = 200, description = "List of wireless networks", body = Vec<AccessPoint>)
 ))]
-async fn wifi_networks(State(state): State<NetworkState>) -> Json<Vec<AccessPoint>> {
-    let (tx, rx) = oneshot::channel();
-    state.network.actions.send(Action::RefreshScan(tx)).unwrap();
-    let _ = rx.await.unwrap();
-    let (tx, rx) = oneshot::channel();
-    state
-        .network
-        .actions
-        .send(Action::GetAccessPoints(tx))
-        .unwrap();
-
-    let access_points = rx.await.unwrap();
+async fn wifi_networks(
+    State(state): State<NetworkState>,
+) -> Result<Json<Vec<AccessPoint>>, NetworkError> {
+    state.network.wifi_scan().await?;
+    let access_points = state.network.get_access_points().await?;
 
     let mut networks = vec![];
-
     for ap in access_points {
         if !ap.ssid.to_string().is_empty() {
             networks.push(ap);
         }
     }
 
-    Json(networks)
+    Ok(Json(networks))
 }
 
 #[utoipa::path(get, path = "/network/devices", responses(
