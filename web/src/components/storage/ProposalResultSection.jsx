@@ -140,7 +140,7 @@ const DevicesTreeTable = ({ devicesManager }) => {
   };
 
   const renderPTableType = (item) => {
-    // TODO: Create a map for partition table types and use an <abbr/> here.
+    // TODO: Create a map for partition table types.
     const type = item.partitionTable?.type;
     if (type) return <Tag><b>{type.toUpperCase()}</b></Tag>;
   };
