@@ -133,6 +133,7 @@ in the devices listed below. Choose how to do it.");
           return (
             <RadioField
               key={policy.id}
+              iconSize="xs"
               label={_(policy.label)}
               description={_(policy.description)}
               onClick={() => setCurrentPolicy(policy)}

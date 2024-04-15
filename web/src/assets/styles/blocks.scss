@@ -771,6 +771,10 @@ section [data-type="agama/reminder"] {
     margin-inline-start: calc(var(--icon-size-s) + 1ch);
   }
 
+  &:has(svg.icon-xs) > div:nth-child(n+2) {
+    margin-inline-start: calc(var(--icon-size-xs) + 1ch);
+  }
+
   > div:nth-child(2) {
     color: gray;
   }
