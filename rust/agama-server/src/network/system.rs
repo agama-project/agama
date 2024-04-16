@@ -90,7 +90,6 @@ impl<T: Adapter + Send + Sync + 'static> NetworkSystem<T> {
     pub async fn start(self) -> Result<NetworkSystemClient, NetworkSystemError> {
         let mut state = self.adapter.read(StateConfig::default()).await?;
         let (actions_tx, actions_rx) = mpsc::unbounded_channel();
-        let connection = zbus::Connection::system().await.unwrap();
         let (updates_tx, _updates_rx) = broadcast::channel(16);
 
         if let Some(watcher) = self.adapter.watcher() {
