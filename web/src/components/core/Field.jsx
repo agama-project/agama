@@ -106,9 +106,9 @@ const SwitchField = ({ isChecked = false, highlightContent = false, ...props }) 
 const ExpandableField = ({ label, isExpanded, ...props }) => {
   const iconName = isExpanded ? "collapse_all" : "expand_all";
   const className = isExpanded ? "expanded" : "collapsed";
-  const iconizedLabel = <>{label} <Icon name={iconName} size="xs" /></>;
+  const labelWithIcon = <>{label} <Icon name={iconName} size="xs" /></>;
 
-  return <Field {...props} label={iconizedLabel} className={className} />;
+  return <Field {...props} label={labelWithIcon} className={className} />;
 };
 
 export default Field;
