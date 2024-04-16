@@ -276,3 +276,44 @@ describe("when the user has been modified", () => {
     screen.getByText("ytm");
   });
 });
+
+describe("dropdown suggestions when full name is given", () => {
+  it("dropdown suggestions is shown on username focus", async () => {
+    const { user } = installerRender(<FirstUser />);
+    await screen.findByText("No user defined yet.");
+    const button = await screen.findByRole("button", { name: "Define a user now" });
+    await user.click(button);
+
+    const dialog = await screen.findByRole("dialog");
+
+    const fullNameInput = within(dialog).getByLabelText("Full name");
+    await user.type(fullNameInput, "Jane Doe");
+
+    await user.tab();
+
+    const menuItems = screen.getAllByText("Use suggested username");
+    expect(menuItems.length).toBe(4);
+  });
+
+  it("if focused is removed, dropdown is closed", async () => {
+    const { user } = installerRender(<FirstUser />);
+    await screen.findByText("No user defined yet.");
+    const button = await screen.findByRole("button", { name: "Define a user now" });
+    await user.click(button);
+
+    const dialog = await screen.findByRole("dialog");
+
+    const fullNameInput = within(dialog).getByLabelText("Full name");
+    await user.type(fullNameInput, "Jane Doe");
+    
+    await user.tab();
+
+    let menuItems = screen.getAllByText("Use suggested username");
+    expect(menuItems.length).toBe(4);
+
+    await user.tab();
+
+    menuItems = screen.queryAllByText("Use suggested username");
+    expect(menuItems.length).toBe(0);
+  });
+});
