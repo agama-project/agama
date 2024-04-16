@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-07 02:10+0000\n"
-"PO-Revision-Date: 2024-03-05 12:42+0000\n"
+"PO-Revision-Date: 2024-04-07 11:43+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
-"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/ca/>\n"
+"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/ca/>\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -194,7 +194,7 @@ msgstr "Escrivint la configuració de sistema del carregador d'arrencada"
 #. @return [Issue, nil]
 #: service/lib/agama/storage/proposal.rb:195
 msgid "No device selected for installation"
-msgstr ""
+msgstr "No s'ha seleccionat cap dispositiu per a la instal·lació."
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
@@ -204,8 +204,9 @@ msgstr ""
 msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
 "The following selected devices are not found in the system: %{devices}"
-msgstr[0] ""
+msgstr[0] "El dispositiu seleccionat següent no es troba al sistema: %{devices}"
 msgstr[1] ""
+"Els dispositius seleccionats següents no es troben al sistema: %{devices}"
 
 #. Returns an issue if the proposal is not valid.
 #.
@@ -213,3 +214,5 @@ msgstr[1] ""
 #: service/lib/agama/storage/proposal.rb:229
 msgid "Cannot accommodate the required file systems for installation"
 msgstr ""
+"No es poden acomodar els sistemes de fitxers necessaris per a la "
+"instal·lació."
