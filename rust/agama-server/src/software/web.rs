@@ -14,7 +14,7 @@ use crate::{
 };
 use agama_lib::{
     error::ServiceError,
-    product::{Product, ProductClient, RegistrationRequirement, proxies::RegistrationProxy},
+    product::{proxies::RegistrationProxy, Product, ProductClient, RegistrationRequirement},
     software::{
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
@@ -49,9 +49,7 @@ pub struct SoftwareConfig {
 /// It emits the Event::ProductChanged and Event::PatternsChanged events.
 ///
 /// * `connection`: D-Bus connection to listen for events.
-pub async fn software_streams(
-    dbus: zbus::Connection,
-) -> Result<Streams, Error> {
+pub async fn software_streams(dbus: zbus::Connection) -> Result<Streams, Error> {
     let result: Streams = vec![
         (
             "patterns_changed",
@@ -118,7 +116,8 @@ async fn patterns_changed_stream(
     Ok(stream)
 }
 
-async fn registration_requirement_changed_stream(dbus: zbus::Connection,
+async fn registration_requirement_changed_stream(
+    dbus: zbus::Connection,
 ) -> Result<impl Stream<Item = Event>, Error> {
     // TODO: move registration requirement to product in dbus and so just one event will be needed.
     let proxy = RegistrationProxy::new(&dbus).await?;
@@ -128,7 +127,9 @@ async fn registration_requirement_changed_stream(dbus: zbus::Connection,
         .then(|change| async move {
             if let Ok(id) = change.get().await {
                 // unwrap is safe as possible numbers is send by our controlled dbus
-                return Some(Event::RegistrationRequirementChanged { requirement: id.try_into().unwrap() });
+                return Some(Event::RegistrationRequirementChanged {
+                    requirement: id.try_into().unwrap(),
+                });
             }
             None
         })
@@ -136,7 +137,8 @@ async fn registration_requirement_changed_stream(dbus: zbus::Connection,
     Ok(stream)
 }
 
-async fn registration_email_changed_stream(dbus: zbus::Connection,
+async fn registration_email_changed_stream(
+    dbus: zbus::Connection,
 ) -> Result<impl Stream<Item = Event>, Error> {
     let proxy = RegistrationProxy::new(&dbus).await?;
     let stream = proxy
@@ -153,7 +155,8 @@ async fn registration_email_changed_stream(dbus: zbus::Connection,
     Ok(stream)
 }
 
-async fn registration_code_changed_stream(dbus: zbus::Connection,
+async fn registration_code_changed_stream(
+    dbus: zbus::Connection,
 ) -> Result<impl Stream<Item = Event>, Error> {
     let proxy = RegistrationProxy::new(&dbus).await?;
     let stream = proxy

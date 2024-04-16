@@ -30,9 +30,7 @@ struct UsersState<'a> {
 /// It emits the Event::RootPasswordChange, Event::RootSSHKeyChanged and Event::FirstUserChanged events.
 ///
 /// * `connection`: D-Bus connection to listen for events.
-pub async fn users_streams(
-    dbus: zbus::Connection,
-) -> Result<Streams, Error> {
+pub async fn users_streams(dbus: zbus::Connection) -> Result<Streams, Error> {
     const FIRST_USER_ID: &str = "first_user";
     const ROOT_PASSWORD_ID: &str = "root_password";
     const ROOT_SSHKEY_ID: &str = "root_sshkey";
