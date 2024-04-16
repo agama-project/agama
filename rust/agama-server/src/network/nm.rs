@@ -10,6 +10,8 @@ mod dbus;
 mod error;
 mod model;
 mod proxies;
+mod watcher;
 
 pub use adapter::NetworkManagerAdapter;
 pub use client::NetworkManagerClient;
+pub use watcher::NetworkManagerWatcher;

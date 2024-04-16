@@ -1,6 +1,7 @@
 use crate::network::{
+    adapter::Watcher,
     model::{Connection, NetworkState, StateConfig},
-    nm::NetworkManagerClient,
+    nm::{NetworkManagerClient, NetworkManagerWatcher},
     Adapter, NetworkAdapterError,
 };
 use agama_lib::error::ServiceError;
@@ -12,13 +13,15 @@ use std::thread;
 /// An adapter for NetworkManager
 pub struct NetworkManagerAdapter<'a> {
     client: NetworkManagerClient<'a>,
+    connection: zbus::Connection,
 }
 
 impl<'a> NetworkManagerAdapter<'a> {
     /// Returns the adapter for system's NetworkManager.
     pub async fn from_system() -> Result<NetworkManagerAdapter<'a>, ServiceError> {
-        let client = NetworkManagerClient::from_system().await?;
-        Ok(Self { client })
+        let connection = zbus::Connection::system().await?;
+        let client = NetworkManagerClient::new(connection.clone()).await?;
+        Ok(Self { client, connection })
     }
 
     /// Determines whether the write operation is supported for a connection
@@ -157,6 +160,10 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
             .await
             .map_err(NetworkAdapterError::Checkpoint)?;
         Ok(())
+    }
+
+    fn watcher(&self) -> Box<dyn Watcher + Send> {
+        Box::new(NetworkManagerWatcher::new(&self.connection))
     }
 }
 
