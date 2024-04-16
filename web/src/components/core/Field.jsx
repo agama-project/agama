@@ -83,13 +83,6 @@ const Field = ({
 };
 
 /**
- * @param {Omit<FieldProps, 'icon'>} props
- */
-const SettingsField = ({ ...props }) => {
-  return <Field {...props} icon="shadow" />;
-};
-
-/**
  * @param {Omit<FieldProps, 'icon'> & {isChecked: boolean, highlightContent?: boolean}} props
  */
 const SwitchField = ({ isChecked = false, highlightContent = false, ...props }) => {
@@ -117,4 +110,4 @@ const ExpandableField = ({ isExpanded, ...props }) => {
 };
 
 export default Field;
-export { ExpandableField, SettingsField, SwitchField };
+export { ExpandableField, SwitchField };

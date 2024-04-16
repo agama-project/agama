@@ -22,7 +22,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { Field, ExpandableField, SettingsField, SwitchField } from "~/components/core";
+import { Field, ExpandableField, SwitchField } from "~/components/core";
 
 const onClick = jest.fn();
 
@@ -61,17 +61,6 @@ describe("Field", () => {
     const button = screen.getByRole("button");
     await user.click(button);
     expect(onClick).toHaveBeenCalled();
-  });
-});
-
-describe("SettingsField", () => {
-  it("uses the 'shadow' icon", () => {
-    const { container } = plainRender(
-      // Trying to set other icon, although typechecking should catch it.
-      <SettingsField icon="edit" label="Theme" value="dark" onClick={onClick} />
-    );
-    const icon = container.querySelector("button > svg");
-    expect(icon).toHaveAttribute("data-icon-name", "shadow");
   });
 });
 
