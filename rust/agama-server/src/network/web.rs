@@ -1,6 +1,9 @@
 //! This module implements the web API for the network module.
 
-use crate::error::Error;
+use crate::{
+    error::Error,
+    web::{Event, EventsSender},
+};
 use anyhow::Context;
 use axum::{
     extract::{Path, State},
@@ -59,9 +62,10 @@ struct NetworkServiceState {
 /// Sets up and returns the axum service for the network module.
 ///
 /// * `dbus`: zbus Connection.
-pub async fn network_service<T: Adapter + std::marker::Send + 'static>(
+pub async fn network_service<T: Adapter + Send + Sync + 'static>(
     dbus: zbus::Connection,
     adapter: T,
+    events: EventsSender,
 ) -> Result<Router, ServiceError> {
     let network = NetworkSystem::new(dbus.clone(), adapter);
     // FIXME: we are somehow abusing ServiceError. The HTTP/JSON API should have its own
@@ -70,6 +74,16 @@ pub async fn network_service<T: Adapter + std::marker::Send + 'static>(
         .start()
         .await
         .context("Could not start the network configuration service.")?;
+
+    let mut changes = client.subscribe();
+    tokio::spawn(async move {
+        while let Ok(message) = changes.recv().await {
+            if let Err(e) = events.send(Event::NetworkChange { change: message }) {
+                eprintln!("Could not send the event: {}", e);
+            }
+        }
+    });
+
     let state = NetworkServiceState { network: client };
 
     Ok(Router::new()

@@ -1,4 +1,4 @@
-use crate::l10n::web::LocaleConfig;
+use crate::{l10n::web::LocaleConfig, network::model::NetworkChange};
 use agama_lib::{
     manager::InstallationPhase, progress::Progress, software::SelectedBy, users::FirstUser,
 };
@@ -27,6 +27,10 @@ pub enum Event {
     RootChanged {
         password: Option<bool>,
         sshkey: Option<String>,
+    },
+    NetworkChange {
+        #[serde(flatten)]
+        change: NetworkChange,
     },
     // TODO: it should include the full software proposal or, at least,
     // all the relevant changes.
