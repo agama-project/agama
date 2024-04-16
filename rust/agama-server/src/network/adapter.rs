@@ -1,8 +1,8 @@
-use crate::network::model::StateConfig;
-use crate::network::NetworkState;
+use crate::network::{model::StateConfig, Action, NetworkState};
 use agama_lib::error::ServiceError;
 use async_trait::async_trait;
 use thiserror::Error;
+use tokio::sync::mpsc::UnboundedSender;
 
 #[derive(Error, Debug)]
 pub enum NetworkAdapterError {
@@ -14,15 +14,46 @@ pub enum NetworkAdapterError {
     Checkpoint(ServiceError), // only relevant for adapters that implement a checkpoint mechanism
 }
 
-/// A trait for the ability to read/write from/to a network service
+/// A trait for the ability to read/write from/to a network service.
 #[async_trait]
 pub trait Adapter {
     async fn read(&self, config: StateConfig) -> Result<NetworkState, NetworkAdapterError>;
     async fn write(&self, network: &NetworkState) -> Result<(), NetworkAdapterError>;
+    /// Returns the watcher, which is responsible for listening for network changes.
+    ///
+    /// TODO: should we return a Option?
+    fn watcher(&self) -> Box<dyn Watcher + Send> {
+        Box::new(DummyWatcher {})
+    }
 }
 
 impl From<NetworkAdapterError> for zbus::fdo::Error {
     fn from(value: NetworkAdapterError) -> zbus::fdo::Error {
         zbus::fdo::Error::Failed(value.to_string())
+    }
+}
+
+#[async_trait]
+/// A trait for the ability to listen for network changes.
+pub trait Watcher {
+    /// Listens for network changes and emit actions to update the state.
+    ///
+    /// * `actions`: channel to emit the actions.
+    async fn run(
+        mut self: Box<Self>,
+        actions: UnboundedSender<Action>,
+    ) -> Result<(), NetworkAdapterError>;
+}
+
+/// A dummy watcher for those adapters that do not implement one.
+struct DummyWatcher {}
+
+#[async_trait]
+impl Watcher for DummyWatcher {
+    async fn run(
+        mut self: Box<Self>,
+        _actions: UnboundedSender<Action>,
+    ) -> Result<(), NetworkAdapterError> {
+        Ok(())
     }
 }
