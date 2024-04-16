@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr 16 11:15:13 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Use better icons in storage proposal page
+  (gh#openSUSE/agama#1152).
+
+-------------------------------------------------------------------
 Mon Apr 15 10:52:14 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Stop using `<abbr>` tag because "its exposure continues to be
