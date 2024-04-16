@@ -25,7 +25,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Skeleton } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { noop } from "~/utils";
-import { If, SettingsField } from "~/components/core";
+import { If, Field } from "~/components/core";
 import { EncryptionMethods } from "~/client/storage";
 import EncryptionSettingsDialog from "~/components/storage/EncryptionSettingsDialog";
 
@@ -91,7 +91,8 @@ export default function EncryptionField({
   };
 
   return (
-    <SettingsField
+    <Field
+      icon="shield_lock"
       label={LABEL}
       description={DESCRIPTION}
       value={isLoading ? VALUES.loading : VALUES[isEnabled ? method : "disabled"]}
@@ -110,6 +111,6 @@ export default function EncryptionField({
           />
         }
       />
-    </SettingsField>
+    </Field>
   );
 }

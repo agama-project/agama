@@ -41,6 +41,7 @@ import ExpandMore from "@icons/expand_more.svg?component";
 import Feedback from "@icons/feedback.svg?component";
 import Folder from "@icons/folder.svg?component";
 import FolderOff from "@icons/folder_off.svg?component";
+import FrameInspect from "@icons/frame_inspect.svg?component";
 import Globe from "@icons/globe.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Help from "@icons/help.svg?component";
@@ -63,6 +64,7 @@ import SettingsApplications from "@icons/settings_applications.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import SettingsFill from "@icons/settings-fill.svg?component";
 import Shadow from "@icons/shadow.svg?component";
+import ShieldLock from "@icons/shield_lock.svg?component";
 import SignalCellularAlt from "@icons/signal_cellular_alt.svg?component";
 import Storage from "@icons/storage.svg?component";
 import Sync from "@icons/sync.svg?component";
@@ -109,6 +111,7 @@ const icons = {
   feedback: Feedback,
   folder: Folder,
   folder_off: FolderOff,
+  frame_inspect: FrameInspect,
   globe: Globe,
   hard_drive: HardDrive,
   help: Help,
@@ -132,6 +135,7 @@ const icons = {
   settings_applications: SettingsApplications,
   settings_ethernet: SettingsEthernet,
   shadow: Shadow,
+  shield_lock: ShieldLock,
   signal_cellular_alt: SignalCellularAlt,
   storage: Storage,
   sync: Sync,

@@ -22,7 +22,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { Field, ExpandableField, SettingsField, SwitchField } from "~/components/core";
+import { Field, ExpandableField, SwitchField } from "~/components/core";
 
 const onClick = jest.fn();
 
@@ -64,17 +64,6 @@ describe("Field", () => {
   });
 });
 
-describe("SettingsField", () => {
-  it("uses the 'shadow' icon", () => {
-    const { container } = plainRender(
-      // Trying to set other icon, although typechecking should catch it.
-      <SettingsField icon="edit" label="Theme" value="dark" onClick={onClick} />
-    );
-    const icon = container.querySelector("button > svg");
-    expect(icon).toHaveAttribute("data-icon-name", "shadow");
-  });
-});
-
 describe("SwitchField", () => {
   it("sets button role to switch", () => {
     plainRender(<SwitchField label="Zoom" value="enabled" isChecked />);
@@ -111,19 +100,15 @@ describe("SwitchField", () => {
 });
 
 describe("ExpandableField", () => {
-  it("uses the 'collapse_all' icon when isExpanded", () => {
-    const { container } = plainRender(
-      <ExpandableField label="More settings" isExpanded />
-    );
-    const icon = container.querySelector("button > svg");
-    expect(icon).toHaveAttribute("data-icon-name", "collapse_all");
+  it("uses 'expanded' as className prop value when isExpanded", () => {
+    const { container } = plainRender(<ExpandableField label="More settings" isExpanded />);
+    const field = container.querySelector("[data-type='agama/field']");
+    expect(field.classList.contains("expanded")).toBe(true);
   });
 
-  it("uses the 'expand_all' icon when not isExpanded", () => {
-    const { container } = plainRender(
-      <ExpandableField label="More settings" />
-    );
-    const icon = container.querySelector("button > svg");
-    expect(icon).toHaveAttribute("data-icon-name", "expand_all");
+  it("uses 'collapsed' as className prop value when isExpanded", () => {
+    const { container } = plainRender(<ExpandableField label="More settings" />);
+    const field = container.querySelector("[data-type='agama/field']");
+    expect(field.classList.contains("collapsed")).toBe(true);
   });
 });

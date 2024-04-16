@@ -698,6 +698,7 @@ export default function PartitionsField({
 
   return (
     <ExpandableField
+      icon="storage"
       isExpanded={isExpanded}
       label={_("Partitions and file systems")}
       description={_("Structure of the new system, including any additional partition needed for booting,")}

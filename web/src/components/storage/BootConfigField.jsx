@@ -47,7 +47,7 @@ const Button = ({ isBold = false, onClick }) => {
 
   return (
     <button onClick={onClick} className="inline-flex-button">
-      {isBold ? <b>{text}</b> : text} <Icon name="shadow" size="xxs" />
+      {isBold ? <b>{text}</b> : text}
     </button>
   );
 };
@@ -68,7 +68,7 @@ const Button = ({ isBold = false, onClick }) => {
  * @property {boolean} configureBoot
  * @property {StorageDevice} bootDevice
  */
-export default function BootConfigField ({
+export default function BootConfigField({
   configureBoot,
   bootDevice,
   defaultBootDevice,
@@ -104,7 +104,7 @@ export default function BootConfigField ({
 
   return (
     <div>
-      { value } <Button onClick={openDialog} isBold={!configureBoot} />
+      {value} <Button onClick={openDialog} isBold={!configureBoot} />
       <If
         condition={isDialogOpen}
         then={
