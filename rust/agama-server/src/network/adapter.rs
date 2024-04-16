@@ -20,10 +20,8 @@ pub trait Adapter {
     async fn read(&self, config: StateConfig) -> Result<NetworkState, NetworkAdapterError>;
     async fn write(&self, network: &NetworkState) -> Result<(), NetworkAdapterError>;
     /// Returns the watcher, which is responsible for listening for network changes.
-    ///
-    /// TODO: should we return a Option?
-    fn watcher(&self) -> Box<dyn Watcher + Send> {
-        Box::new(DummyWatcher {})
+    fn watcher(&self) -> Option<Box<dyn Watcher + Send>> {
+        None
     }
 }
 
@@ -43,17 +41,4 @@ pub trait Watcher {
         mut self: Box<Self>,
         actions: UnboundedSender<Action>,
     ) -> Result<(), NetworkAdapterError>;
-}
-
-/// A dummy watcher for those adapters that do not implement one.
-struct DummyWatcher {}
-
-#[async_trait]
-impl Watcher for DummyWatcher {
-    async fn run(
-        mut self: Box<Self>,
-        _actions: UnboundedSender<Action>,
-    ) -> Result<(), NetworkAdapterError> {
-        Ok(())
-    }
 }

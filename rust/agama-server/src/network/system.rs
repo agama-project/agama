@@ -93,11 +93,12 @@ impl<T: Adapter + Send + Sync + 'static> NetworkSystem<T> {
         let connection = zbus::Connection::system().await.unwrap();
         let (updates_tx, _updates_rx) = broadcast::channel(16);
 
-        let watcher = self.adapter.watcher();
-        let actions_tx_clone = actions_tx.clone();
-        tokio::spawn(async move {
-            watcher.run(actions_tx_clone).await.unwrap();
-        });
+        if let Some(watcher) = self.adapter.watcher() {
+            let actions_tx_clone = actions_tx.clone();
+            tokio::spawn(async move {
+                watcher.run(actions_tx_clone).await.unwrap();
+            });
+        }
 
         let mut tree = Tree::new(self.connection, actions_tx.clone());
         tree.set_connections(&mut state.connections).await?;

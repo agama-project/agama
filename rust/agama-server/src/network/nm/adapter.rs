@@ -162,8 +162,8 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
         Ok(())
     }
 
-    fn watcher(&self) -> Box<dyn Watcher + Send> {
-        Box::new(NetworkManagerWatcher::new(&self.connection))
+    fn watcher(&self) -> Option<Box<dyn Watcher + Send>> {
+        Some(Box::new(NetworkManagerWatcher::new(&self.connection)))
     }
 }
 
