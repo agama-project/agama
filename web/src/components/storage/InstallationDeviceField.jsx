@@ -27,7 +27,7 @@ import { Skeleton } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { DeviceSelectionDialog, ProposalPageMenu } from "~/components/storage";
 import { deviceLabel } from '~/components/storage/utils';
-import { If, SettingsField } from "~/components/core";
+import { If, Field } from "~/components/core";
 import { sprintf } from "sprintf-js";
 
 /**
@@ -114,7 +114,8 @@ export default function InstallationDeviceField({
     value = targetValue(target, targetDevice, targetPVDevices);
 
   return (
-    <SettingsField
+    <Field
+      icon="hard_drive"
       label={LABEL}
       value={value}
       description={DESCRIPTION}
@@ -135,6 +136,6 @@ export default function InstallationDeviceField({
           />
         }
       />
-    </SettingsField>
+    </Field>
   );
 }

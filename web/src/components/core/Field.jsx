@@ -108,13 +108,12 @@ const SwitchField = ({ isChecked = false, highlightContent = false, ...props }) 
 };
 
 /**
- * @param {Omit<FieldProps, 'icon'> & {isExpanded: boolean}} props
+ * @param {FieldProps & {isExpanded: boolean}} props
  */
 const ExpandableField = ({ isExpanded, ...props }) => {
-  const iconName = isExpanded ? "collapse_all" : "expand_all";
   const className = isExpanded ? "expanded" : "collapsed";
 
-  return <Field {...props} icon={iconName} className={className} />;
+  return <Field {...props} className={className} />;
 };
 
 export default Field;

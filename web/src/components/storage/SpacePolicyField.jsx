@@ -26,7 +26,7 @@ import { Skeleton } from "@patternfly/react-core";
 
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
-import { If, SettingsField } from "~/components/core";
+import { If, Field } from "~/components/core";
 import SpacePolicyDialog from "~/components/storage/SpacePolicyDialog";
 
 /**
@@ -82,10 +82,11 @@ export default function SpacePolicyField({
   }
 
   return (
-    <SettingsField
+    <Field
+      icon="frame_inspect"
       label={_("Find space")}
       value={value}
-      description={ _("Allocating the file systems might need to find free space \
+      description={_("Allocating the file systems might need to find free space \
 in the installation device(s).")}
       onClick={openDialog}
     >
@@ -102,6 +103,6 @@ in the installation device(s).")}
           />
         }
       />
-    </SettingsField>
+    </Field>
   );
 }
