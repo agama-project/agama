@@ -43,7 +43,7 @@ import { useProduct } from "~/context/product";
  * @param {function} props.onCancel - Callback to be called when the product selection is canceled.
  */
 const ChangeProductPopup = ({ isOpen = false, onFinish = noop, onCancel = noop }) => {
-  const { manager, software } = useInstallerClient();
+  const { manager, software, product } = useInstallerClient();
   const { products, selectedProduct } = useProduct();
   const [newProductId, setNewProductId] = useState(selectedProduct?.id);
 
@@ -51,7 +51,7 @@ const ChangeProductPopup = ({ isOpen = false, onFinish = noop, onCancel = noop }
     e.preventDefault();
 
     if (newProductId !== selectedProduct?.id) {
-      await software.product.select(newProductId);
+      await product.select(newProductId);
       manager.startProbing();
     }
 
@@ -92,7 +92,7 @@ const RegisterProductPopup = ({
   onFinish = noop,
   onCancel: onCancelProp = noop
 }) => {
-  const { software } = useInstallerClient();
+  const { software, product } = useInstallerClient();
   const { selectedProduct } = useProduct();
   const [isLoading, setIsLoading] = useState(false);
   const [isFormValid, setIsFormValid] = useState(true);
@@ -100,7 +100,7 @@ const RegisterProductPopup = ({
 
   const onSubmit = async ({ code, email }) => {
     setIsLoading(true);
-    const result = await software.product.register(code, email);
+    const result = await product.register(code, email);
     setIsLoading(false);
     if (result.success) {
       software.probe();
@@ -161,14 +161,14 @@ const DeregisterProductPopup = ({
   onFinish = noop,
   onCancel: onCancelProp = noop
 }) => {
-  const { software } = useInstallerClient();
+  const { software, product } = useInstallerClient();
   const { selectedProduct } = useProduct();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
 
   const onAccept = async () => {
     setIsLoading(true);
-    const result = await software.product.deregister();
+    const result = await product.deregister();
     setIsLoading(false);
     if (result.success) {
       software.probe();

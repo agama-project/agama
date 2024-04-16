@@ -21,12 +21,10 @@
 
 // @ts-check
 
-import DBusClient from "./dbus";
 import { WithIssues, WithProgress, WithStatus } from "./mixins";
 
 const SOFTWARE_SERVICE = "org.opensuse.Agama.Software1";
 const PRODUCT_PATH = "/org/opensuse/Agama/Software1/Product";
-const REGISTRATION_IFACE = "org.opensuse.Agama1.Registration";
 
 /**
  * Enum for the reasons to select a pattern
@@ -281,7 +279,7 @@ class ProductBaseClient {
    * @returns {Promise<ActionResult>}
    */
   async register(code, email = "") {
-    const response = await this.client.post("/software/registration", { code, email });
+    const response = await this.client.post("/software/registration", { key: code, email });
 
     return {
       success: response.ok,
@@ -309,8 +307,10 @@ class ProductBaseClient {
    * @param {(registration: Registration) => void} handler - Callback function.
    */
   onRegistrationChange(handler) {
-    return this.client.onEvent("RegistrationChanged", () => {
-      this.getRegistration().then(handler);
+    return this.client.ws.onEvent((event) => {
+      if (event.type === "RegistrationChanged" || event.type === "RegistrationRequirementChanged") {
+        this.getRegistration().then(handler);
+      }
     });
   }
 }
