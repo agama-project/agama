@@ -186,7 +186,7 @@ const DevicesTreeTable = ({ devicesManager }) => {
     <TreeTable
       columns={[
         { title: _("Device"), content: renderDeviceName },
-        { title: _("Mount Point"), content: renderMountPoint, classNames: "fit-content" },
+        { title: _("Mount Point"), content: renderMountPoint },
         { title: _("Details"), content: renderDetails, classNames: "details-column" },
         { title: _("Size"), content: renderSize, classNames: "sizes-column" }
       ]}
