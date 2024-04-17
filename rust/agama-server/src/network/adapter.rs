@@ -38,7 +38,7 @@ pub trait Watcher {
     ///
     /// * `actions`: channel to emit the actions.
     async fn run(
-        mut self: Box<Self>,
+        self: Box<Self>,
         actions: UnboundedSender<Action>,
     ) -> Result<(), NetworkAdapterError>;
 }
