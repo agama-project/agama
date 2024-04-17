@@ -62,7 +62,7 @@ module Agama
             #
             # @return [String] e.g., "EXT4 Partition".
             def device_description
-              Y2Storage::DeviceDescription.new(storage_device).to_s
+              Y2Storage::DeviceDescription.new(storage_device, include_encryption: true).to_s
             end
 
             def self.included(base)
