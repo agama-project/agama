@@ -127,7 +127,7 @@ export default function NetworkPage() {
   };
 
   const WiredConnections = () => {
-    const activeWiredConnections = connections.filter(c => !c.wireless);
+    const activeWiredConnections = connections.filter(c => !c.wireless && (c.id !== "lo"));
 
     if (activeWiredConnections.length === 0) return <NoWiredConnections />;
 

@@ -182,6 +182,15 @@ class NetworkClient {
     return { ...connection, addresses, nameservers };
   }
 
+  connectionType(connection) {
+    if (connection.wireless) return ConnectionTypes.WIFI;
+    if (connection.bond) return ConnectionTypes.BOND;
+    if (connection.vlan) return ConnectionTypes.VLAN;
+    if (connection.iface === "lo") return ConnectionTypes.LOOPBACK;
+
+    return ConnectionTypes.ETHERNET;
+  }
+
   toApiConnection(connection) {
     const addresses = (connection.addresses || []).map((addr) => formatIp(addr));
     const { iface, gateway4, gateway6, ...conn } = connection;

@@ -49,8 +49,13 @@ const connectionHumanState = (state) => {
 };
 
 const ConnectionTypes = Object.freeze({
-  ETHERNET: "802-3-ethernet",
-  WIFI: "802-11-wireless"
+  ETHERNET: "ethernet",
+  WIFI: "wireless",
+  LOOPBACK: "loopback",
+  BOND: "bond",
+  BRIDGE: "bridge",
+  VLAN: "vlan",
+  UNKNOWN: "unknown"
 });
 
 const SecurityProtocols = Object.freeze({

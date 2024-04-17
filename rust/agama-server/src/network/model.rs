@@ -426,6 +426,7 @@ pub struct GeneralState {
 /// Access Point
 #[serde_as]
 #[derive(Default, Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct AccessPoint {
     #[serde_as(as = "DisplayFromStr")]
     pub ssid: SSID,
@@ -723,6 +724,7 @@ impl From<InvalidMacAddress> for zbus::fdo::Error {
 
 #[skip_serializing_none]
 #[derive(Default, Debug, PartialEq, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IpConfig {
     pub method4: Ipv4Method,
     pub method6: Ipv6Method,
@@ -754,6 +756,7 @@ pub struct MatchConfig {
 pub struct UnknownIpMethod(String);
 
 #[derive(Debug, Default, Copy, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub enum Ipv4Method {
     #[default]
     Disabled = 0,
@@ -789,6 +792,7 @@ impl FromStr for Ipv4Method {
 }
 
 #[derive(Debug, Default, Copy, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub enum Ipv6Method {
     #[default]
     Disabled = 0,

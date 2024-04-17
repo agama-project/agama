@@ -45,6 +45,7 @@ impl From<SSID> for Vec<u8> {
 }
 
 #[derive(Default, Debug, PartialEq, Copy, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub enum DeviceType {
     Loopback = 0,
     #[default]
