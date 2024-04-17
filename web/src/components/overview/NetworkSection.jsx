@@ -23,35 +23,44 @@ import React, { useEffect, useState } from "react";
 import { sprintf } from "sprintf-js";
 
 import { Em, Section, SectionSkeleton } from "~/components/core";
-import { ConnectionTypes } from "~/client/network";
 import { useInstallerClient } from "~/context/installer";
 import { formatIp } from "~/client/network/utils";
 import { _, n_ } from "~/i18n";
 
 export default function NetworkSection() {
   const { network: client } = useInstallerClient();
-  const [connections, setConnections] = useState(undefined);
+  const [devices, setDevices] = useState(undefined);
 
   useEffect(() => {
-    if (connections !== undefined) return;
+    if (devices !== undefined) return;
 
-    client.connections().then(setConnections);
-  }, [client, connections]);
+    client.devices().then(setDevices);
+  }, [client, devices]);
+
+  const deviceSummary = (device) => {
+    if ((device?.addresses || []).length === 0) {
+      return (
+        <Em key={device.name}>{device.name}</Em>
+      );
+    } else {
+      return (
+        <Em key={device.name}>{device.name} - {device.addresses.map(formatIp).join(", ")}</Em>
+      );
+    }
+  };
 
   const Content = () => {
-    if (connections === undefined) return <SectionSkeleton />;
+    if (devices === undefined) return <SectionSkeleton />;
 
-    if (connections.length === 0) return _("No network connections detected");
+    if (devices.length === 0) return _("No network devices detected");
 
-    const summary = connections.map(connection => (
-      <Em key={connection.id}>{connection.id} - {connection.addresses.map(formatIp).join(", ")}</Em>
-    ));
+    const summary = devices.map(deviceSummary);
 
     const msg = sprintf(
       // TRANSLATORS: header for the list of active network connections,
       // %d is replaced by the number of active connections
-      n_("%d connection set:", "%d connections set:", connections.length),
-      connections.length
+      n_("%d device set:", "%d devices set:", devices.length),
+      devices.length
     );
 
     return (
@@ -67,7 +76,7 @@ export default function NetworkSection() {
       // TRANSLATORS: page section title
       title={_("Network")}
       icon="settings_ethernet"
-      loading={!connections}
+      loading={!devices}
       path="/network"
       id="network"
     >

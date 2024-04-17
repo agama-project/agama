@@ -190,12 +190,18 @@ impl<'a> NetworkManagerClient<'a> {
                 None
             };
 
+            let connection = match proxy.get_applied_connection(0).await {
+                Ok((conn, _)) => self.connection_id(conn),
+                Err(_) => None,
+            };
+
             if let Ok(device_type) = device_type.try_into() {
                 let device = Device {
                     name: device_name,
                     type_: device_type,
                     mac_address,
                     ip_config,
+                    connection,
                 };
                 devs.push(device);
             } else {
@@ -209,6 +215,16 @@ impl<'a> NetworkManagerClient<'a> {
         }
 
         Ok(devs)
+    }
+
+    pub fn connection_id(
+        &self,
+        connection_data: HashMap<String, HashMap<String, zbus::zvariant::OwnedValue>>,
+    ) -> Option<String> {
+        let connection = connection_data.get("connection")?;
+        let id: &str = connection.get("id")?.downcast_ref()?;
+
+        Some(id.to_string())
     }
 
     pub fn address_with_prefix_from_dbus(

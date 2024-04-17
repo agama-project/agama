@@ -78,6 +78,28 @@ const SecurityProtocols = Object.freeze({
  */
 
 /**
+ * @typedef {object} Device
+ * @property {string} name
+ * @property {IPAddress[]} addresses
+ * @property {string[]} nameservers
+ * @property {string} gateway4
+ * @property {string} gateway6
+ * @property {string} method4
+ * @property {string} method6
+ * @property {Route[]} routes4
+ * @property {Route[]} routes6
+ * @property {string} macAddress
+ * @property {string} [connection]
+ */
+
+/**
+ * @typedef {object} Route
+ * @property {IPAddress} destination
+ * @property {string} next_hop
+ * @property {number} metric
+ */
+
+/**
  * @typedef {object} Connection
  * @property {string} id
  * @property {string} iface
@@ -109,8 +131,8 @@ const SecurityProtocols = Object.freeze({
 /**
 * @typedef {object} NetworkSettings
 * @property {boolean} connectivity
-* @property {boolean} wireless_enabled
-* @property {boolean} networking_enabled
+* @property {boolean} wirelessEnabled
+* @property {boolean} networkingEnabled
 * @property {string} hostname
 
 /**
@@ -147,6 +169,21 @@ const createConnection = ({ id, iface, method4, method6, gateway4, gateway6, add
   return connection;
 };
 
+const createDevice = ({ name, macAddress, method4, method6, gateway4, gateway6, addresses, nameservers, routes4, routes6 }) => {
+  return {
+    name,
+    macAddress,
+    method4: method4 || "auto",
+    method6: method6 || "auto",
+    gateway4: gateway4 || "",
+    gateway6: gateway6 || "",
+    addresses: addresses || [],
+    nameservers: nameservers || [],
+    routes4: routes4 || [],
+    routes6: routes6 || []
+  };
+};
+
 /**
  * Returns an access point object
  *
@@ -167,8 +204,9 @@ const createAccessPoint = ({ ssid, hwAddress, strength, security }) => (
 );
 
 export {
-  createConnection,
   createAccessPoint,
+  createConnection,
+  createDevice,
   connectionHumanState,
   ConnectionState,
   ConnectionTypes,

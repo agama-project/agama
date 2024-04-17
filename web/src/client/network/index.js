@@ -24,7 +24,7 @@
 import DBusClient from "../dbus";
 import { NetworkManagerAdapter, securityFromFlags } from "./network_manager";
 import cockpit from "../../lib/cockpit";
-import { createConnection, ConnectionTypes, ConnectionState, createAccessPoint } from "./model";
+import { createConnection, ConnectionTypes, ConnectionState, createAccessPoint, createDevice } from "./model";
 import { formatIp, ipPrefixFor } from "./utils";
 
 const SERVICE_NAME = "org.opensuse.Agama1";
@@ -46,6 +46,8 @@ const DeviceType = Object.freeze({
 /**
  * @typedef {import("./model").NetworkSettings} NetworkSettings
  * @typedef {import("./model").Connection} Connection
+ * @typedef {import("./model").Connection} Device
+ * @typedef {import("./model").Connection} Route
  * @typedef {import("./model").IPAddress} IPAddress
  * @typedef {import("./model").AccessPoint} AccessPoint
  */
@@ -98,6 +100,56 @@ class NetworkClient {
    */
   constructor(client) {
     this.client = client;
+  }
+
+  /**
+   * Returns the devices running configuration
+   *
+   * @return {Promise<Device[]>}
+   */
+  async devices() {
+    const response = await this.client.get("/network/devices");
+    if (!response.ok) {
+      return [];
+    }
+
+    const devices = await response.json();
+    return devices.map(this.fromApiDevice);
+  }
+
+  /**
+   * Returns the device settings
+   *
+   * @param {object} device - device settings from the API server
+   * @return {Device}
+   */
+  fromApiDevice(device) {
+    const nameservers = (device?.ipConfig?.nameservers || []);
+    const { ipConfig = {}, ...dev } = device;
+    const routes4 = (ipConfig.routes4 || []).map((route) => {
+      const [ip, netmask] = route.destination.split("/");
+      const destination = { address: ip, prefix: ipPrefixFor(netmask) };
+
+      return { ...route, destination };
+    });
+
+    const routes6 = (ipConfig.routes6 || []).map((route) => {
+      const [ip, netmask] = route.destination.split("/");
+      const destination = (netmask !== undefined) ? { address: ip, prefix: ipPrefixFor(netmask) } : { address: ip };
+
+      return { ...route, destination };
+    });
+
+    const addresses = (ipConfig.addresses || []).map((address) => {
+      const [ip, netmask] = address.split("/");
+      if (netmask !== undefined) {
+        return { address: ip, prefix: ipPrefixFor(netmask) };
+      } else {
+        return { address: ip };
+      }
+    });
+
+    return { ...dev, ...ipConfig, addresses, nameservers, routes4, routes6 };
   }
 
   /**

@@ -448,6 +448,7 @@ pub struct Device {
     #[serde_as(as = "DisplayFromStr")]
     pub mac_address: MacAddress,
     pub ip_config: Option<IpConfig>,
+    pub connection: Option<String>,
 }
 
 /// Represents a known network connection.
