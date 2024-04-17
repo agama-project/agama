@@ -51,15 +51,15 @@ const Content = ({ isLoading = false }) => {
 };
 
 export default function ProductSection() {
-  const { software } = useInstallerClient();
+  const { product } = useInstallerClient();
   const [issues, setIssues] = useState([]);
   const { selectedProduct } = useProduct();
   const { cancellablePromise } = useCancellablePromise();
 
   useEffect(() => {
-    // cancellablePromise(software.product.getIssues()).then(setIssues);
-    // return software.product.onIssuesChange(setIssues);
-  }, [cancellablePromise, setIssues, software]);
+    cancellablePromise(product.getIssues()).then(setIssues);
+    return product.onIssuesChange(setIssues);
+  }, [cancellablePromise, setIssues, product]);
 
   const isLoading = !selectedProduct;
   const errors = isLoading ? [] : errorsFrom(issues);
