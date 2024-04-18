@@ -22,6 +22,8 @@ use agama_lib::{
 };
 use axum::{
     extract::State,
+    http::StatusCode,
+    response::IntoResponse,
     routing::{get, post, put},
     Json, Router,
 };
@@ -263,7 +265,6 @@ async fn get_registration(
 
 /// Software service configuration (product, patterns, etc.).
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
 pub struct RegistrationParams {
     /// Registration key.
     key: String,
@@ -271,19 +272,35 @@ pub struct RegistrationParams {
     email: String,
 }
 
+#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct FailureDetails {
+    /// ID of error. See dbus API for possible values
+    id: u32,
+    /// human readable error string intended to be displayed to user
+    message: String,
+}
 /// Register product
 ///
 /// * `state`: service state.
 #[utoipa::path(post, path = "/software/registration", responses(
-    (status = 200, description = "registration successfull"),
+    (status = 204, description = "registration successfull"),
+    (status = 422, description = "Registration failed. Details are in body", body=FailureDetails),
     (status = 400, description = "The D-Bus service could not perform the action")
 ))]
 async fn register(
     State(state): State<SoftwareState<'_>>,
     Json(config): Json<RegistrationParams>,
-) -> Result<Json<()>, Error> {
-    state.product.register(&config.key, &config.email).await?;
-    Ok(Json(()))
+) -> Result<impl IntoResponse, Error> {
+    let (id, message) = state.product.register(&config.key, &config.email).await?;
+    let details = FailureDetails { id, message };
+    if id == 0 {
+        Ok((StatusCode::NO_CONTENT, ().into_response()))
+    } else {
+        Ok((
+            StatusCode::UNPROCESSABLE_ENTITY,
+            Json(details).into_response(),
+        ))
+    }
 }
 
 /// Deregister product
@@ -291,11 +308,20 @@ async fn register(
 /// * `state`: service state.
 #[utoipa::path(delete, path = "/software/registration", responses(
     (status = 200, description = "deregistration successfull"),
+    (status = 422, description = "De-registration failed. Details are in body", body=FailureDetails),
     (status = 400, description = "The D-Bus service could not perform the action")
 ))]
-async fn deregister(State(state): State<SoftwareState<'_>>) -> Result<Json<()>, Error> {
-    state.product.deregister().await?;
-    Ok(Json(()))
+async fn deregister(State(state): State<SoftwareState<'_>>) -> Result<impl IntoResponse, Error> {
+    let (id, message) = state.product.deregister().await?;
+    let details = FailureDetails { id, message };
+    if id == 0 {
+        Ok((StatusCode::NO_CONTENT, ().into_response()))
+    } else {
+        Ok((
+            StatusCode::UNPROCESSABLE_ENTITY,
+            Json(details).into_response(),
+        ))
+    }
 }
 
 /// Returns the list of software patterns.
