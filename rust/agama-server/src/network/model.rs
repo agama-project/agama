@@ -338,7 +338,6 @@ mod tests {
     fn test_remove_connection() {
         let mut state = NetworkState::default();
         let conn0 = Connection::new("eth0".to_string(), DeviceType::Ethernet);
-        let uuid = conn0.uuid;
         state.add_connection(conn0).unwrap();
         state.remove_connection("eth0".as_ref()).unwrap();
         let found = state.get_connection("eth0").unwrap();

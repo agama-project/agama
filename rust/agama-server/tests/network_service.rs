@@ -23,14 +23,12 @@ use std::error::Error;
 use tokio::{sync::broadcast, test};
 use tower::ServiceExt;
 
-fn public_dir() -> PathBuf {
-    std::env::current_dir().unwrap().join("public")
-}
 async fn build_state() -> NetworkState {
     let general_state = GeneralState::default();
     let device = model::Device {
         name: String::from("eth0"),
         type_: DeviceType::Ethernet,
+        ..Default::default()
     };
     let eth0 = model::Connection::new("eth0".to_string(), DeviceType::Ethernet);
 
@@ -41,7 +39,8 @@ async fn build_service(state: NetworkState) -> Result<Router, ServiceError> {
     let dbus = DBusServer::new().start().await?.connection();
 
     let adapter = NetworkTestAdapter(state);
-    Ok(network_service(dbus, adapter).await?)
+    let (tx, _rx) = broadcast::channel(16);
+    Ok(network_service(dbus, adapter, tx).await?)
 }
 
 #[derive(Default)]
