@@ -24,7 +24,7 @@ pub enum RegistrationRequirement {
     NotRequired = 0,
     /// Product has optional registration
     Optional = 1,
-    /// It is mandatory to register product
+    /// It is mandatory to register the product
     Mandatory = 2,
 }
 
