@@ -199,9 +199,8 @@ impl<'a> ActionDispatcher<'a> {
         connection: &zbus::Connection,
         proxy: DeviceProxy<'_>,
     ) -> Result<Device, ServiceError> {
-        let builder = DeviceFromProxyBuilder::new(connection.clone());
-        let result = builder.build(&proxy).await?;
-        Ok(result.unwrap())
+        let builder = DeviceFromProxyBuilder::new(connection.clone(), &proxy);
+        Ok(builder.build().await?)
     }
 }
 

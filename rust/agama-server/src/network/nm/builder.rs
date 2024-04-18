@@ -1,52 +1,52 @@
 //! Conversion mechanism between proxies and model structs.
 
+use crate::network::{
+    model::{Device, IpConfig, IpRoute},
+    nm::{
+        model::NmDeviceType,
+        proxies::{DeviceProxy, IP4ConfigProxy, IP6ConfigProxy},
+    },
+};
+use agama_lib::{error::ServiceError, network::types::DeviceType};
+use anyhow::Context;
+use cidr::IpInet;
 use std::{collections::HashMap, net::IpAddr, str::FromStr};
 
-use agama_lib::error::ServiceError;
-use cidr::IpInet;
-
-use crate::network::model::{Device, IpConfig, IpRoute};
-
-use super::{
-    model::NmDeviceType,
-    proxies::{DeviceProxy, IP4ConfigProxy, IP6ConfigProxy},
-};
-
-pub struct DeviceFromProxyBuilder {
+/// Builder to create a [Device] from its corresponding NetworkManager D-Bus representation.
+pub struct DeviceFromProxyBuilder<'a> {
     connection: zbus::Connection,
+    proxy: &'a DeviceProxy<'a>,
 }
 
-impl DeviceFromProxyBuilder {
-    pub fn new(connection: zbus::Connection) -> Self {
-        Self { connection }
+impl<'a> DeviceFromProxyBuilder<'a> {
+    pub fn new(connection: zbus::Connection, proxy: &'a DeviceProxy<'a>) -> Self {
+        Self { connection, proxy }
     }
 
-    pub async fn build(&self, proxy: &DeviceProxy<'_>) -> Result<Option<Device>, ServiceError> {
-        let device_type = NmDeviceType(proxy.device_type().await?);
-        let Ok(type_) = device_type.try_into() else {
-            return Ok(None);
-        };
-
+    /// Creates a [Device] starting on the [DeviceProxy].
+    pub async fn build(&self) -> Result<Device, ServiceError> {
+        let device_type = NmDeviceType(self.proxy.device_type().await?);
+        // TODO: we need to check the errors hierarchy to not abuse ServiceError.
+         let type_: DeviceType = device_type
+            .try_into()
+            .context("Unsupported device type: {device_type}")?;
         let mut device = Device {
-            name: proxy.interface().await?,
+            name: self.proxy.interface().await?,
             type_,
             ..Default::default()
         };
+        let state = self.proxy.state().await?;
 
-        let state = proxy.state().await?;
         if state == 100 {
-            device.ip_config = self.build_ip_config(&proxy).await?;
+            device.ip_config = self.build_ip_config().await?;
         }
 
-        Ok(Some(device))
+        Ok(device)
     }
 
-    async fn build_ip_config(
-        &self,
-        proxy: &DeviceProxy<'_>,
-    ) -> Result<Option<IpConfig>, ServiceError> {
-        let ip4_path = proxy.ip4_config().await?;
-        let ip6_path = proxy.ip6_config().await?;
+    async fn build_ip_config(&self) -> Result<Option<IpConfig>, ServiceError> {
+        let ip4_path = self.proxy.ip4_config().await?;
+        let ip6_path = self.proxy.ip6_config().await?;
 
         let ip4_proxy = IP4ConfigProxy::builder(&self.connection)
             .path(ip4_path.as_str())?
