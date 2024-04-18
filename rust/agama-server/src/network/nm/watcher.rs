@@ -24,6 +24,8 @@ use zbus::{
     MatchRule, Message, MessageStream, MessageType,
 };
 
+use super::{builder::DeviceFromProxyBuilder, proxies::NetworkManagerProxy};
+
 /// Implements a [crate::network::adapter::Watcher] for NetworkManager.
 ///
 /// It detects the following changes by monitoring NetworkManager's D-Bus API:
@@ -94,17 +96,16 @@ impl<'a> ActionDispatcher<'a> {
     }
 
     pub async fn run(&mut self) {
+        self.read_devices().await.unwrap();
         while let Some(update) = self.updates.recv().await {
+            let builder = DeviceFromProxyBuilder::new(self.connection.clone());
             match update {
                 DeviceChange::DeviceAdded(path) => {
                     if let Ok(proxy) = self.build_device_proxy(path.clone()).await {
-                        let device = Device {
-                            name: proxy.interface().await.unwrap().to_string(),
-                            type_: DeviceType::Ethernet,
-                            ..Default::default()
-                        };
+                        if let Some(device) = builder.build(&proxy).await.unwrap() {
+                            _ = self.actions.send(Action::AddDevice(Box::new(device)));
+                        }
                         self.devices.insert(path, proxy);
-                        _ = self.actions.send(Action::AddDevice(device));
                     }
                 }
 
@@ -116,11 +117,70 @@ impl<'a> ActionDispatcher<'a> {
                     }
                 }
 
-                _ => {
-                    println!("Unhandled message");
+                DeviceChange::IP4ConfigChanged(path) => {
+                    if let Some(device_proxy) = self.find_ip4_config_device(&path).await {
+                        // TODO: be careful
+                        if let Some(device) = builder.build(&device_proxy).await.unwrap() {
+                            _ = self.actions.send(Action::UpdateDevice(Box::new(device)));
+                        }
+                    } else {
+                        tracing::warn!("Could not find the matching device for Ip4Config {path}");
+                    }
+                }
+
+                DeviceChange::IP6ConfigChanged(path) => {
+                    if let Some(device_proxy) = self.find_ip6_config_device(&path).await {
+                        println!("found proxy: {}", device_proxy.interface().await.unwrap());
+                    } else {
+                        tracing::warn!("Could not find the matching device for Ip6Config {path}");
+                    }
                 }
             }
         }
+    }
+
+    async fn read_devices(&mut self) -> Result<(), ServiceError> {
+        let nm_proxy = NetworkManagerProxy::new(&self.connection).await?;
+        for path in nm_proxy.get_devices().await? {
+            let cloned_path = path.clone();
+            let proxy = DeviceProxy::builder(&self.connection)
+                .path(path.to_string())
+                .unwrap()
+                .build()
+                .await
+                .unwrap();
+            self.devices.insert(cloned_path.to_owned(), proxy);
+        }
+        Ok(())
+    }
+
+    async fn find_ip4_config_device(
+        &self,
+        ip4_config_path: &OwnedObjectPath,
+    ) -> Option<&DeviceProxy> {
+        for (_, proxy) in &self.devices {
+            if let Ok(path) = proxy.ip4_config().await {
+                if path == *ip4_config_path {
+                    return Some(&proxy);
+                }
+            }
+        }
+        None
+    }
+
+    // TODO: reduce code duplication
+    async fn find_ip6_config_device(
+        &self,
+        ip6_config_path: &OwnedObjectPath,
+    ) -> Option<&DeviceProxy> {
+        for (_, proxy) in &self.devices {
+            if let Ok(path) = proxy.ip6_config().await {
+                if path == *ip6_config_path {
+                    return Some(&proxy);
+                }
+            }
+        }
+        None
     }
 
     async fn build_device_proxy(

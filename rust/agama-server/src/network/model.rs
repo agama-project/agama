@@ -112,6 +112,13 @@ impl NetworkState {
         self.connections.iter_mut().find(|c| c.id == id)
     }
 
+    /// Get a device by name as mutable
+    ///
+    /// * `name`: device name
+    pub fn get_device_mut(&mut self, name: &str) -> Option<&mut Device> {
+        self.devices.iter_mut().find(|c| c.name == name)
+    }
+
     pub fn get_controlled_by(&mut self, uuid: Uuid) -> Vec<&Connection> {
         let uuid = Some(uuid);
         self.connections
@@ -160,6 +167,15 @@ impl NetworkState {
 
     pub fn add_device(&mut self, device: Device) -> Result<(), NetworkStateError> {
         self.devices.push(device);
+        Ok(())
+    }
+
+    pub fn update_device(&mut self, device: Device) -> Result<(), NetworkStateError> {
+        let Some(old_device) = self.get_device_mut(&device.name) else {
+            return Err(NetworkStateError::UnknownDevice(device.name.clone()));
+        };
+        *old_device = device;
+
         Ok(())
     }
 
@@ -1291,4 +1307,5 @@ impl fmt::Display for InfinibandTransportMode {
 pub enum NetworkChange {
     DeviceAdded(Device),
     DeviceRemoved(String),
+    DeviceUpdated(Device),
 }

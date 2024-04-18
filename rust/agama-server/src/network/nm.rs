@@ -5,6 +5,7 @@
 //! internally, so the API is focused on Agama's use cases.
 
 mod adapter;
+mod builder;
 mod client;
 mod dbus;
 mod error;
