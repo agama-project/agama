@@ -1,0 +1,171 @@
+#! /bin/bash
+
+# This script takes an unpacked s390x Live iso image in the form KIWI-NG currently creates.
+#
+# It modifies the tree to match s390x expectations.
+#
+# Usage:
+#
+# fix_bootconfig.s390x DST_DIR
+#
+# iso layout before:
+# .
+# ├── LiveOS
+# │   └── squashfs.img
+# └── boot
+#     └── s390x
+#         └── loader
+#             ├── initrd
+#             ├── isolinux.cfg
+#             ├── isolinux.msg
+#             └── linux
+#
+#
+# iso layout adjusted:
+# .
+# ├── LiveOS
+# │   └── squashfs.img
+# ├── boot
+# │   └── s390x
+# │       ├── cd.ikr
+# │       ├── initrd
+# │       ├── initrd.off
+# │       ├── initrd.siz
+# │       ├── linux
+# │       ├── parmfile
+# │       ├── parmfile.hmc
+# │       ├── sles.exec
+# │       └── suse.ins
+# ├── suse.ins
+# └── susehmc.ins
+#
+
+dst="$1"
+
+if [ ! -d "$dst" ] ; then
+  echo "fix_bootconfig.s390x: image dir \"$dst\" not found"
+  exit 1
+fi
+
+# ----------------
+
+# Note:
+#
+# KIWI-NG creates an iso with isolinux boot files in boot/s390x/loader.
+#
+# These files are not needed except for kernel and initrd (and kernel params from isolinux.cfg).
+#
+# This script removes the isolinux config and adds s390x related config
+# files. It also moves kernel and initrd to the usual location (in boot/s390x).
+#
+
+boot_dir=$dst/boot/s390x
+
+# if files are in a 'loader' subdir, move them out
+if [ -d $boot_dir/loader ] ; then
+  mv $boot_dir/loader/{initrd,linux} $boot_dir
+  rm -r $boot_dir/loader
+fi
+
+# Create parmfile.
+#
+# These parameters are taken from a sampel isolinux.cfg; the required parameters will
+# possibly change according to the KIWI config.
+#
+parmfile_content=
+echo "$parmfile_content" >$boot_dir/parmfile
+
+# Note on parmfile:
+#
+# Possibly s390 expects parmfile to have a maximal line length of 80 chars - but you can have several lines.
+#
+# In contrast the parmfile blob embedded in cd.ikr should have no line breaks but can be longer than 80 chars.
+#
+
+# Create suse.ins & cd.ikr.
+#
+# cd.ikr is an image file combining kernel and initrd; suse.ins describes its layout.
+#
+# cd.ikr is used as boot image in El-torito style cd booting.
+#
+
+# Offsets used for cd.ikr.
+initrd_ofs_ofs=0x0001040c
+initrd_siz_ofs=0x00010414
+initrd_ofs=0x01000000
+parmfile_ofs=0x00010480
+
+# Create initrd.off (note: 32 bit, stored in big endian).
+printf "%08x" $((initrd_ofs)) | xxd -r -p - $boot_dir/initrd.off
+
+# Create initrd.siz (note: 32 bit, stored in big endian).
+read initrd_size x < <(du -b $boot_dir/initrd)
+printf "%08x" $((initrd_size)) | xxd -r -p - $boot_dir/initrd.siz
+
+# Create suse.ins.
+cat >$boot_dir/suse.ins <<XXX
+* SUSE Linux for IBM z Systems Installation System
+linux 0x00000000
+initrd.off $initrd_ofs_ofs
+initrd.siz $initrd_siz_ofs
+initrd $initrd_ofs
+parmfile $parmfile_ofs
+XXX
+
+# A suse.ins copy at media root dir - note the different paths.
+cat >$dst/suse.ins <<XXX
+* SUSE Linux for IBM z Systems Installation System
+boot/s390x/linux 0x00000000
+boot/s390x/initrd.off $initrd_ofs_ofs
+boot/s390x/initrd.siz $initrd_siz_ofs
+boot/s390x/initrd $initrd_ofs
+boot/s390x/parmfile $parmfile_ofs
+XXX
+
+# Another suse.ins copy at media root dir - note the different paths and the hmc stuff.
+cat >$dst/susehmc.ins <<XXX
+* SUSE Linux for IBM z Systems Installation System via HMC
+boot/s390x/linux 0x00000000
+boot/s390x/initrd.off $initrd_ofs_ofs
+boot/s390x/initrd.siz $initrd_siz_ofs
+boot/s390x/initrd $initrd_ofs
+boot/s390x/parmfile.hmc $parmfile_ofs
+XXX
+echo "$parmfile_content console=ttyS1" >$boot_dir/parmfile.hmc
+
+# Some rexx script to ipl something...
+cat >$boot_dir/sles.exec <<XXX
+/* REXX LOAD EXEC FOR SUSE LINUX S/390 VM GUESTS       */                       
+/* LOADS SUSE LINUX S/390 FILES INTO READER            */                       
+SAY ''                                                                          
+SAY 'LOADING SLES FILES INTO READER...'                                         
+'CP CLOSE RDR'                                                                  
+'PURGE RDR ALL'                                                                 
+'SPOOL PUNCH * RDR'                                                             
+'PUNCH SLES LINUX A (NOH'                                                       
+'PUNCH SLES PARMFILE A (NOH'                                                    
+'PUNCH SLES INITRD A (NOH'                                                      
+'IPL 00C'                                                                       
+XXX
+
+# Note:
+#
+# SUSE installer media also have boot/s390x/zpxe.rexx - a rexx script
+# that comes directly from the s390-tools package.
+#
+
+# Create cd.ikr with all the file blobs mentioned in suse.ins.
+dd status=none if=$boot_dir/linux of=$boot_dir/cd.ikr
+dd status=none conv=notrunc obs=1 seek=$((initrd_ofs_ofs)) if=$boot_dir/initrd.off of=$boot_dir/cd.ikr
+dd status=none conv=notrunc obs=1 seek=$((initrd_siz_ofs)) if=$boot_dir/initrd.siz of=$boot_dir/cd.ikr
+dd status=none conv=notrunc obs=4096 seek=$((initrd_ofs/4096)) if=$boot_dir/initrd of=$boot_dir/cd.ikr
+echo -n "$parmfile_content" | dd status=none conv=notrunc obs=1 seek=$((parmfile_ofs)) of=$boot_dir/cd.ikr
+
+# S390 Magic?
+echo 80010000 | xxd -r -p -seek 4 - $boot_dir/cd.ikr
+
+# Pad cd.ikr to full 4k blocks.
+dd status=none conv=notrunc oflag=append bs=1 count=$((-initrd_size & 0xfff)) if=/dev/zero of=$boot_dir/cd.ikr
+
+# Add zipl map file for later use
+dd status=none if=/dev/zero of=$boot_dir/zipl.map bs=4k count=4

@@ -1,0 +1,89 @@
+#! /bin/bash
+
+# This script uses the KIWI 'editbootconfig' hook to modify the Live layout
+# and ISO generation.
+#
+# Note that the 'editbootconfig' hook runs before the initrd is generated -
+# this is too early for our purposes. So we have to do some gray area
+# trickery:
+#
+# 1. Inject our modification scripts via config-cdroot.tar.xz into the Live tree.
+# 2. Inject a 'xorriso' wrapper script into /usr/local/bin to hook into the ISO
+#    creation directly.
+#    This script (a) adjusts the boot config, (b) runs xorriso, and (c) makes
+#    it zIPL bootable on s390x.
+#
+
+# KIWI config
+test -f .profile && . .profile
+
+dst=${1#iso:}
+
+arch=`uname -m`
+
+# removing live root setting from command line - it's in /etc/cmdline.d instead
+if [ -f $dst/boot/grub2/grub.cfg ] ; then
+  sed -i -E -e 's/\s+root=\S+//' -e 's/\s+rd.live\.image//' $dst/boot/grub2/grub.cfg
+fi
+
+bootfix=$dst/fix_bootconfig.$arch
+if [ -f $bootfix ] ; then
+  echo "bootconfig script found: \"$bootfix\""
+fi
+
+if [ $arch = ppc64le ] ; then
+  mkdir -p $dst/boot/grub2
+  cp -r usr/share/grub2/powerpc-ieee1275 $dst/boot/grub2
+  mv $dst/boot/grub2/powerpc-ieee1275/grub.elf $dst/boot/grub2
+fi
+
+cat <<XXX >/usr/local/bin/xorriso
+#! /bin/bash
+
+set -x
+
+# get ISO file name and ISO volume id from xorriso parameters
+for i in "\$@" ; do
+  if [ -n "\$iso_opt" ] ; then
+    iso_opt=
+    export iso="\$i"
+    continue
+  fi
+  if [ -n "\$volid_opt" ] ; then
+    volid_opt=
+    export volid="\$i"
+    continue
+  fi
+  if [ "\$i" = "-outdev" ] ; then
+    iso_opt=1
+    continue
+  fi
+  if [ "\$i" = "-volid" ] ; then
+    volid_opt=1
+    continue
+  fi
+done
+
+volid=${kiwi_install_volid:-$kiwi_iname}
+
+[ -x $bootfix ] && $bootfix $dst
+rm -f $dst/fix_bootconfig.*
+
+case $arch in
+  s390x)
+    /usr/bin/xorriso "\$@" -volid "\$volid" -boot_image any bin_path=boot/s390x/cd.ikr -boot_image any boot_info_table=off -boot_image any load_size=512
+    err=\$?
+    [ -x /usr/bin/isozipl ] && isozipl "\$iso"
+    ;;
+  ppc64le)
+    /usr/bin/xorriso "\$@" -volid "\$volid" -boot_image any chrp_boot_part=on
+    err=\$?
+    ;;
+  *)
+    /usr/bin/xorriso "\$@" -volid "\$volid"
+esac
+
+exit \$err
+XXX
+
+chmod +x /usr/local/bin/xorriso
