@@ -187,27 +187,34 @@ const AncillaryAction = ({ children, ...actionsProps }) => (
  *     </Popup.Actions>
  *   </Popup>
  *
- * @param {ModalProps} props
+ * @typedef {object} PopupBaseProps
+ * @property {"auto" | "small" | "medium" | "large"} [blockSize="auto"] - The block/height size for the dialog. Default is auto.
+ * @property {"auto" | "small" | "medium" | "large"} [inlineSize="auto"] - The inline/width size for the dialog. Default is auto.
+ * @typedef {Omit<ModalProps, "variant" | "size"> & PopupBaseProps} PopupProps
+ *
+ * @param {PopupProps} props
  */
 const Popup = ({
   isOpen = false,
   showClose = false,
-  variant = "small",
+  inlineSize = "medium",
+  blockSize = "auto",
+  className = "",
   children,
-  ...pfModalProps
+  ...props
 }) => {
   const [actions, content] = partition(React.Children.toArray(children), child => child.type === Actions);
 
   return (
     /** @ts-ignore */
     <Modal
-      { ...pfModalProps }
+      {...props}
       isOpen={isOpen}
       showClose={showClose}
-      variant={variant}
       actions={actions}
+      className={`${className} block-size-${blockSize} inline-size-${inlineSize}`.trim()}
     >
-      { content }
+      {content}
     </Modal>
   );
 };
