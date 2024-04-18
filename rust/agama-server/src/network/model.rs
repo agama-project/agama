@@ -1304,6 +1304,7 @@ impl fmt::Display for InfinibandTransportMode {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub enum NetworkChange {
     DeviceAdded(Device),
     DeviceRemoved(String),
