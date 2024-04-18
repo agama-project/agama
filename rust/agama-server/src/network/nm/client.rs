@@ -29,12 +29,6 @@ pub struct NetworkManagerClient<'a> {
 }
 
 impl<'a> NetworkManagerClient<'a> {
-    /// Creates a NetworkManagerClient connecting to the system bus.
-    pub async fn from_system() -> Result<NetworkManagerClient<'a>, ServiceError> {
-        let connection = zbus::Connection::system().await?;
-        Self::new(connection).await
-    }
-
     /// Creates a NetworkManagerClient using the given D-Bus connection.
     ///
     /// * `connection`: D-Bus connection.
