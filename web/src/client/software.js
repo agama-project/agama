@@ -57,6 +57,12 @@ const SelectedBy = Object.freeze({
  */
 
 /**
+ * @typedef {object} RegistrationFailure
+ * @property {Number} id - ID of error.
+ * @property {string} message - Failure message.
+ */
+
+/**
  * @typedef {object} ActionResult
  * @property {boolean} success - Whether the action was successfully done.
  * @property {string} message - Result message.
@@ -255,14 +261,12 @@ class ProductBaseClient {
   async getRegistration() {
     const response = await this.client.get("/software/registration");
     if (!response.ok) {
-      console.log("Failed to get registration config: ", response);
+      console.log("Failed to get registration config:", response);
       return { requirement: "unknown", code: null, email: null };
     }
     const config = await response.json();
 
-    const requirement = config.requirement;
-    const code = config.key;
-    const email = config.email;
+    const { requirement, key: code, email } = config;
 
     const registration = { requirement, code, email };
     if (code.length === 0) registration.code = null;
@@ -280,10 +284,18 @@ class ProductBaseClient {
    */
   async register(code, email = "") {
     const response = await this.client.post("/software/registration", { key: code, email });
+    if (response.status === 422) {
+      /**  @type RegistrationFailure */
+      const body = await response.json();
+      return {
+        success: false,
+        message: body.message,
+      };
+    }
 
     return {
-      success: response.ok,
-      message: "", // TODO: pass message and code in body
+      success: response.ok, // still we can fail 400 due to dbus issue or 500 if backend stop working. maybe some message for this case?
+      message: ""
     };
   }
 
@@ -295,9 +307,18 @@ class ProductBaseClient {
   async deregister() {
     const response = await this.client.delete("/software/registration");
 
+    if (response.status === 422) {
+      /**  @type RegistrationFailure */
+      const body = await response.json();
+      return {
+        success: false,
+        message: body.message,
+      };
+    }
+
     return {
-      success: response.ok,
-      message: "", // TODO: how to get message?
+      success: response.ok, // still we can fail 400 due to dbus issue or 500 if backend stop working. maybe some message for this case?
+      message: ""
     };
   }
 

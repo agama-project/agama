@@ -8,7 +8,7 @@
 use crate::{
     error::Error,
     web::{
-        common::{issues_router, progress_router, service_status_router, Streams},
+        common::{issues_router, progress_router, service_status_router, EventStreams},
         Event,
     },
 };
@@ -51,8 +51,8 @@ pub struct SoftwareConfig {
 /// It emits the Event::ProductChanged and Event::PatternsChanged events.
 ///
 /// * `connection`: D-Bus connection to listen for events.
-pub async fn software_streams(dbus: zbus::Connection) -> Result<Streams, Error> {
-    let result: Streams = vec![
+pub async fn software_streams(dbus: zbus::Connection) -> Result<EventStreams, Error> {
+    let result: EventStreams = vec![
         (
             "patterns_changed",
             Box::pin(patterns_changed_stream(dbus.clone()).await?),
