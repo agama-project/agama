@@ -1,7 +1,7 @@
 //! Conversion mechanism between proxies and model structs.
 
 use crate::network::{
-    model::{Device, IpConfig, IpRoute},
+    model::{Device, IpConfig, IpRoute, MacAddress},
     nm::{
         model::NmDeviceType,
         proxies::{DeviceProxy, IP4ConfigProxy, IP6ConfigProxy},
@@ -19,8 +19,11 @@ pub struct DeviceFromProxyBuilder<'a> {
 }
 
 impl<'a> DeviceFromProxyBuilder<'a> {
-    pub fn new(connection: zbus::Connection, proxy: &'a DeviceProxy<'a>) -> Self {
-        Self { connection, proxy }
+    pub fn new(connection: &zbus::Connection, proxy: &'a DeviceProxy<'a>) -> Self {
+        Self {
+            connection: connection.clone(),
+            proxy,
+        }
     }
 
     /// Creates a [Device] starting on the [DeviceProxy].
@@ -35,10 +38,15 @@ impl<'a> DeviceFromProxyBuilder<'a> {
             type_,
             ..Default::default()
         };
-        let state = self.proxy.state().await?;
 
+        let state = self.proxy.state().await?;
         if state == 100 {
             device.ip_config = self.build_ip_config().await?;
+        }
+
+        device.mac_address = self.mac_address_from_dbus(self.proxy.hw_address().await?.as_str());
+        if let Ok((connection, _)) = self.proxy.get_applied_connection(0).await {
+            device.connection = self.connection_id(connection);
         }
 
         Ok(device)
@@ -195,5 +203,25 @@ impl<'a> DeviceFromProxyBuilder<'a> {
         }
 
         Some(new_route)
+    }
+
+    fn mac_address_from_dbus(&self, mac: &str) -> MacAddress {
+        match MacAddress::from_str(mac) {
+            Ok(mac) => mac,
+            Err(_) => {
+                log::warn!("Unable to parse mac {}", &mac);
+                MacAddress::Unset
+            }
+        }
+    }
+
+    pub fn connection_id(
+        &self,
+        connection_data: HashMap<String, HashMap<String, zbus::zvariant::OwnedValue>>,
+    ) -> Option<String> {
+        let connection = connection_data.get("connection")?;
+        let id: &str = connection.get("id")?.downcast_ref()?;
+
+        Some(id.to_string())
     }
 }
