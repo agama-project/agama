@@ -263,19 +263,39 @@ impl DeviceChangedStream {
     }
 
     fn handle_changed(message: PropertiesChanged) -> Option<DeviceChange> {
+        const IP_CONFIG_PROPS: &[&str] = &["AddressData", "Gateway", "NameserverData", "RouteData"];
+        const DEVICE_PROPS: &[&str] = &["DeviceType", "HwAddress", "Interface", "State"];
+
         let path = OwnedObjectPath::from(message.path()?);
         let args = message.args().ok()?;
 
         match args.interface_name.as_str() {
             "org.freedesktop.NetworkManager.IP4Config" => {
-                Some(DeviceChange::IP4ConfigChanged(path))
+                if Self::include_properties(IP_CONFIG_PROPS, &args.changed_properties) {
+                    return Some(DeviceChange::IP4ConfigChanged(path));
+                }
             }
             "org.freedesktop.NetworkManager.IP6Config" => {
-                Some(DeviceChange::IP6ConfigChanged(path))
+                if Self::include_properties(IP_CONFIG_PROPS, &args.changed_properties) {
+                    return Some(DeviceChange::IP6ConfigChanged(path));
+                }
             }
-            "org.freedesktop.NetworkManager.Device" => Some(DeviceChange::DeviceUpdated(path)),
-            _ => None,
-        }
+            "org.freedesktop.NetworkManager.Device" => {
+                if Self::include_properties(DEVICE_PROPS, &args.changed_properties) {
+                    return Some(DeviceChange::DeviceUpdated(path));
+                }
+            }
+            _ => {}
+        };
+        None
+    }
+
+    fn include_properties(
+        wanted: &[&str],
+        changed: &HashMap<&'_ str, zbus::zvariant::Value<'_>>,
+    ) -> bool {
+        let properties: Vec<_> = changed.keys().collect();
+        wanted.iter().any(|i| properties.contains(&i))
     }
 
     fn handle_message(message: Result<Arc<Message>, zbus::Error>) -> Option<DeviceChange> {
