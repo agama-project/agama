@@ -6,24 +6,21 @@ use agama_lib::network::types::{DeviceType, SSID};
 use agama_server::network::web::network_service;
 use agama_server::network::{
     self,
-    model::{self, AccessPoint, GeneralState, Ipv4Method, Ipv6Method, StateConfig},
-    Adapter, NetworkAdapterError, NetworkService, NetworkState,
+    model::{self, AccessPoint, GeneralState, StateConfig},
+    Adapter, NetworkAdapterError, NetworkState,
 };
-use agama_server::web::{generate_token, MainServiceBuilder, ServiceConfig};
 
 use async_trait::async_trait;
 use axum::http::header;
 use axum::{
     body::Body,
     http::{Method, Request, StatusCode},
-    response::Response,
-    routing::{get, put},
-    Json, Router,
+    Router,
 };
 use common::body_to_string;
-use serde_json::{json, to_string};
-use std::{error::Error, path::PathBuf};
-use tokio::{sync::broadcast::channel, test};
+use serde_json::to_string;
+use std::error::Error;
+use tokio::{sync::broadcast, test};
 use tower::ServiceExt;
 
 fn public_dir() -> PathBuf {

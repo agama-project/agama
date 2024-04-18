@@ -1,5 +1,5 @@
 //! NetworkManager client.
-use std::{collections::HashMap, net::IpAddr, str::FromStr};
+use std::collections::HashMap;
 
 use super::builder::DeviceFromProxyBuilder;
 use super::dbus::{
@@ -8,21 +8,16 @@ use super::dbus::{
 };
 use super::model::NmDeviceType;
 use super::proxies::{
-    AccessPointProxy, ActiveConnectionProxy, ConnectionProxy, DeviceProxy, IP4ConfigProxy,
-    IP6ConfigProxy, NetworkManagerProxy, SettingsProxy, WirelessProxy,
+    AccessPointProxy, ActiveConnectionProxy, ConnectionProxy, DeviceProxy, NetworkManagerProxy,
+    SettingsProxy, WirelessProxy,
 };
-use crate::network::model::{
-    AccessPoint, Connection, Device, GeneralState, IpConfig, IpRoute, MacAddress,
-};
+use crate::network::model::{AccessPoint, Connection, Device, GeneralState};
 use agama_lib::error::ServiceError;
 use agama_lib::network::types::{DeviceType, SSID};
-use cidr::IpInet;
 use log;
-use macaddr::MacAddr6;
 use uuid::Uuid;
 use zbus;
-use zbus::fdo::DBusProxy;
-use zbus::zvariant::{self, ObjectPath, OwnedObjectPath};
+use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
 /// Simplified NetworkManager D-Bus client.
 ///

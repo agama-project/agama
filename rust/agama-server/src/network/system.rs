@@ -1,7 +1,6 @@
 use super::{
     error::NetworkStateError,
     model::{AccessPoint, Device, NetworkChange, StateConfig},
-    nm::NetworkManagerWatcher,
     NetworkAdapterError,
 };
 use crate::network::{
@@ -12,8 +11,8 @@ use crate::network::{
 use agama_lib::{error::ServiceError, network::types::DeviceType};
 use std::{error::Error, sync::Arc};
 use tokio::sync::{
-    broadcast::{self, Receiver, Sender},
-    mpsc::{self, error::SendError, unbounded_channel, UnboundedReceiver, UnboundedSender},
+    broadcast::{self, Receiver},
+    mpsc::{self, error::SendError, UnboundedReceiver, UnboundedSender},
     oneshot::{self, error::RecvError},
     Mutex,
 };
