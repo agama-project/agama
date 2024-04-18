@@ -12,6 +12,8 @@ pub enum NetworkAdapterError {
     Write(ServiceError),
     #[error("Checkpoint handling error: {0}")]
     Checkpoint(ServiceError), // only relevant for adapters that implement a checkpoint mechanism
+    #[error("The network watcher cannot run: {0}")]
+    Watcher(ServiceError),
 }
 
 /// A trait for the ability to read/write from/to a network service.

@@ -6,12 +6,12 @@
 use crate::network::{
     adapter::Watcher, model::Device, nm::proxies::DeviceProxy, Action, NetworkAdapterError,
 };
-use agama_lib::{error::ServiceError, network::types::DeviceType};
+use agama_lib::error::ServiceError;
 use async_trait::async_trait;
 use futures_util::ready;
 use pin_project::pin_project;
 use std::{
-    collections::HashMap,
+    collections::{hash_map::Entry, HashMap},
     pin::Pin,
     sync::Arc,
     task::{Context, Poll},
@@ -28,9 +28,18 @@ use super::{builder::DeviceFromProxyBuilder, proxies::NetworkManagerProxy};
 
 /// Implements a [crate::network::adapter::Watcher] for NetworkManager.
 ///
-/// It detects the following changes by monitoring NetworkManager's D-Bus API:
+/// This process is composed of the following pieces:
 ///
-/// * A device is added or removed.
+/// * A stream of potentially useful D-Bus signals (see [DeviceChangedStream]).
+/// * A dispatcher that receives the signals from the stream and turns them into
+///   [network system actions](crate::network::Action).
+///
+/// To avoid deadlocks, the stream runs on a separate Tokio task and it communicates
+/// with the dispatcher through a multi-producer single-consumer (mpsc) channel.
+///
+/// At this point, it detects the following changes:
+///
+/// * A device is added, changed or removed.
 /// * The IPv4 or IPv6 configuration changes.
 pub struct NetworkManagerWatcher {
     connection: zbus::Connection,
@@ -68,159 +77,131 @@ impl Watcher for NetworkManagerWatcher {
         // Turn the changes into actions in a separate task.
         let connection = self.connection.clone();
         let mut dispatcher = ActionDispatcher::new(connection, rx, actions);
-        dispatcher.run().await;
-
-        Ok(())
+        dispatcher.run().await.map_err(NetworkAdapterError::Watcher)
     }
 }
 
+/// Receives the updates and turns them into [network actions](crate::network::Action).
+///
+/// See [ActionDispatcher::run] for further details.
 struct ActionDispatcher<'a> {
     connection: zbus::Connection,
-    devices: HashMap<OwnedObjectPath, DeviceProxy<'a>>,
-    names: HashMap<OwnedObjectPath, String>,
-    updates: UnboundedReceiver<DeviceChange>,
-    actions: UnboundedSender<Action>,
+    proxies: ProxiesRegistry<'a>,
+    updates_rx: UnboundedReceiver<DeviceChange>,
+    actions_tx: UnboundedSender<Action>,
 }
 
 impl<'a> ActionDispatcher<'a> {
+    /// Returns a new dispatcher.
+    ///
+    /// * `connection`: D-Bus connection to NetworkManager.
+    /// * `updates_rx`: Channel to receive the updates.
+    /// * `actions_tx`: Channel to dispatch the network actions.
     pub fn new(
         connection: zbus::Connection,
-        updates: UnboundedReceiver<DeviceChange>,
-        actions: UnboundedSender<Action>,
+        updates_rx: UnboundedReceiver<DeviceChange>,
+        actions_tx: UnboundedSender<Action>,
     ) -> Self {
         Self {
+            proxies: ProxiesRegistry::new(&connection),
             connection,
-            updates,
-            actions,
-            devices: HashMap::new(),
-            names: HashMap::new(),
+            updates_rx,
+            actions_tx,
         }
     }
 
-    pub async fn run(&mut self) {
-        self.read_devices().await.unwrap();
-        while let Some(update) = self.updates.recv().await {
-            let builder = DeviceFromProxyBuilder::new(self.connection.clone());
-            match update {
-                DeviceChange::DeviceAdded(path) => {
-                    if let Ok(proxy) = self.build_device_proxy(path.clone()).await {
-                        if let Some(device) = builder.build(&proxy).await.unwrap() {
-                            _ = self.actions.send(Action::AddDevice(Box::new(device)));
-                        }
-                        self.names
-                            .insert(path.clone(), proxy.interface().await.unwrap());
-                        self.devices.insert(path, proxy);
-                    }
-                }
+    /// Processes the updates.
+    ///
+    /// It runs until the updates channel is closed.
+    pub async fn run(&mut self) -> Result<(), ServiceError> {
+        self.read_devices().await?;
+        while let Some(update) = self.updates_rx.recv().await {
+            let result = match update {
+                DeviceChange::DeviceAdded(path) => self.handle_device_added(path).await,
+                DeviceChange::DeviceUpdated(path) => self.handle_device_updated(path).await,
+                DeviceChange::DeviceRemoved(path) => self.handle_device_removed(path).await,
+                DeviceChange::IP4ConfigChanged(path) => self.handle_ip4_config_changed(path).await,
+                DeviceChange::IP6ConfigChanged(path) => self.handle_ip6_config_changed(path).await,
+            };
 
-                DeviceChange::DeviceUpdated(path) => {
-                    if let Ok(proxy) = self.build_device_proxy(path.clone()).await {
-                        if let Some(old_name) = self.names.get(&path) {
-                            if let Ok(device) = builder.build(&proxy).await {
-                                if let Some(device) = device {
-                                    _ = self.actions.send(Action::UpdateDevice(
-                                        old_name.clone(),
-                                        Box::new(device),
-                                    ));
-                                }
-                                let name = proxy.interface().await.unwrap();
-                                self.names.insert(path, name);
-                            }
-                        }
-                    }
-                }
-
-                DeviceChange::DeviceRemoved(path) => {
-                    if let Some(proxy) = self.devices.remove(&path) {
-                        if let Ok(name) = proxy.interface().await {
-                            _ = self.actions.send(Action::RemoveDevice(name));
-                        }
-                    }
-                }
-
-                DeviceChange::IP4ConfigChanged(path) => {
-                    if let Some(device_proxy) = self.find_ip4_config_device(&path).await {
-                        // TODO: be careful
-                        if let Some(old_name) = self.names.get(&path) {
-                            if let Some(device) = builder.build(&device_proxy).await.unwrap() {
-                                _ = self
-                                    .actions
-                                    .send(Action::UpdateDevice(old_name.clone(), Box::new(device)));
-                            }
-                        }
-                    } else {
-                        tracing::warn!("Could not find the matching device for Ip4Config {path}");
-                    }
-                }
-
-                DeviceChange::IP6ConfigChanged(path) => {
-                    if let Some(device_proxy) = self.find_ip6_config_device(&path).await {
-                        println!("found proxy: {}", device_proxy.interface().await.unwrap());
-                    } else {
-                        tracing::warn!("Could not find the matching device for Ip6Config {path}");
-                    }
-                }
-            }
-        }
-    }
-
-    async fn read_devices(&mut self) -> Result<(), ServiceError> {
-        let nm_proxy = NetworkManagerProxy::new(&self.connection).await?;
-        for path in nm_proxy.get_devices().await? {
-            let cloned_path = path.clone();
-            let proxy = DeviceProxy::builder(&self.connection)
-                .path(path.to_string())
-                .unwrap()
-                .build()
-                .await
-                .unwrap();
-            let name = proxy.interface().await;
-            self.devices.insert(cloned_path.clone(), proxy);
-            if let Ok(name) = name {
-                self.names.insert(cloned_path, name);
+            if let Err(error) = result {
+                tracing::warn!("Could not process a network update: {error}]")
             }
         }
         Ok(())
     }
 
-    async fn find_ip4_config_device(
-        &self,
-        ip4_config_path: &OwnedObjectPath,
-    ) -> Option<&DeviceProxy> {
-        for (_, proxy) in &self.devices {
-            if let Ok(path) = proxy.ip4_config().await {
-                if path == *ip4_config_path {
-                    return Some(&proxy);
-                }
-            }
+    /// Reads the devices.
+    async fn read_devices(&mut self) -> Result<(), ServiceError> {
+        let nm_proxy = NetworkManagerProxy::new(&self.connection).await?;
+        for path in nm_proxy.get_devices().await? {
+            self.proxies.find_or_create_device(&path).await?;
         }
-        None
+        Ok(())
     }
 
-    // TODO: reduce code duplication
-    async fn find_ip6_config_device(
-        &self,
-        ip6_config_path: &OwnedObjectPath,
-    ) -> Option<&DeviceProxy> {
-        for (_, proxy) in &self.devices {
-            if let Ok(path) = proxy.ip6_config().await {
-                if path == *ip6_config_path {
-                    return Some(&proxy);
-                }
-            }
+    async fn handle_device_added(&mut self, path: OwnedObjectPath) -> Result<(), ServiceError> {
+        let (_, proxy) = self.proxies.find_or_create_device(&path).await?;
+        if let Ok(device) = Self::device_from_proxy(&self.connection, proxy.clone()).await {
+            _ = self.actions_tx.send(Action::AddDevice(Box::new(device)));
         }
-        None
+        // TODO: report an error if the device cannot get generated
+
+        Ok(())
     }
 
-    async fn build_device_proxy(
-        &self,
+    async fn handle_device_updated(&mut self, path: OwnedObjectPath) -> Result<(), ServiceError> {
+        let (old_name, proxy) = self.proxies.find_or_create_device(&path).await?;
+        let device = Self::device_from_proxy(&self.connection, proxy.clone()).await?;
+        let new_name = device.name.clone();
+        _ = self
+            .actions_tx
+            .send(Action::UpdateDevice(old_name.to_string(), Box::new(device)));
+        self.proxies.update_device_name(&path, &new_name);
+        Ok(())
+    }
+
+    async fn handle_device_removed(&mut self, path: OwnedObjectPath) -> Result<(), ServiceError> {
+        if let Some((name, _)) = self.proxies.remove_device(&path) {
+            _ = self.actions_tx.send(Action::RemoveDevice(name));
+        }
+        Ok(())
+    }
+
+    async fn handle_ip4_config_changed(
+        &mut self,
         path: OwnedObjectPath,
-    ) -> Result<DeviceProxy<'a>, ServiceError> {
-        let proxy = DeviceProxy::builder(&self.connection.clone())
-            .path(path.clone())?
-            .build()
-            .await?;
-        Ok(proxy)
+    ) -> Result<(), ServiceError> {
+        if let Some((name, proxy)) = self.proxies.find_device_for_ip4(&path).await {
+            let device = Self::device_from_proxy(&self.connection, proxy.clone()).await?;
+            _ = self
+                .actions_tx
+                .send(Action::UpdateDevice(name.to_string(), Box::new(device)));
+        }
+        Ok(())
+    }
+
+    async fn handle_ip6_config_changed(
+        &mut self,
+        path: OwnedObjectPath,
+    ) -> Result<(), ServiceError> {
+        if let Some((name, proxy)) = self.proxies.find_device_for_ip6(&path).await {
+            let device = Self::device_from_proxy(&self.connection, proxy.clone()).await?;
+            _ = self
+                .actions_tx
+                .send(Action::UpdateDevice(name.to_string(), Box::new(device)));
+        }
+        Ok(())
+    }
+
+    // TODO: improve after DeviceFromProxyBuilder API is improved
+    async fn device_from_proxy(
+        connection: &zbus::Connection,
+        proxy: DeviceProxy<'_>,
+    ) -> Result<Device, ServiceError> {
+        let builder = DeviceFromProxyBuilder::new(connection.clone());
+        let result = builder.build(&proxy).await?;
+        Ok(result.unwrap())
     }
 }
 
@@ -362,10 +343,80 @@ async fn build_properties_changed_stream(
 }
 
 #[derive(Debug, Clone)]
-pub enum DeviceChange {
+enum DeviceChange {
     DeviceAdded(OwnedObjectPath),
     DeviceUpdated(OwnedObjectPath),
     DeviceRemoved(OwnedObjectPath),
     IP4ConfigChanged(OwnedObjectPath),
     IP6ConfigChanged(OwnedObjectPath),
+}
+
+struct ProxiesRegistry<'a> {
+    connection: zbus::Connection,
+    devices: HashMap<OwnedObjectPath, (String, DeviceProxy<'a>)>,
+}
+
+impl<'a> ProxiesRegistry<'a> {
+    pub fn new(connection: &zbus::Connection) -> Self {
+        Self {
+            connection: connection.clone(),
+            devices: HashMap::new(),
+        }
+    }
+    pub async fn find_or_create_device(
+        &mut self,
+        path: &OwnedObjectPath,
+    ) -> Result<&(String, DeviceProxy<'a>), ServiceError> {
+        // Cannot use entry(...).or_insert_with(...) because of the async call.
+        match self.devices.entry(path.clone()) {
+            Entry::Vacant(entry) => {
+                let proxy = DeviceProxy::builder(&self.connection.clone())
+                    .path(path.clone())?
+                    .build()
+                    .await?;
+                let name = proxy.interface().await?;
+
+                Ok(entry.insert((name, proxy)))
+            }
+            Entry::Occupied(entry) => Ok(entry.into_mut()),
+        }
+    }
+
+    pub fn remove_device(&mut self, path: &OwnedObjectPath) -> Option<(String, DeviceProxy)> {
+        self.devices.remove(&path)
+    }
+
+    pub fn update_device_name(&mut self, path: &OwnedObjectPath, new_name: &str) {
+        if let Some(value) = self.devices.get_mut(path) {
+            value.0 = new_name.to_string();
+        };
+    }
+
+    pub async fn find_device_for_ip4(
+        &self,
+        ip4_config_path: &OwnedObjectPath,
+    ) -> Option<&(String, DeviceProxy<'_>)> {
+        for (_, device) in &self.devices {
+            if let Ok(path) = device.1.ip4_config().await {
+                if path == *ip4_config_path {
+                    return Some(&device);
+                }
+            }
+        }
+        None
+    }
+
+    pub async fn find_device_for_ip6(
+        &self,
+        ip4_config_path: &OwnedObjectPath,
+    ) -> Option<&(String, DeviceProxy<'_>)> {
+        for (_, device) in &self.devices {
+            if let Ok(path) = device.1.ip4_config().await {
+                if path == *ip4_config_path {
+                    return Some(&device);
+                }
+            }
+        }
+        None
+    }
 }
