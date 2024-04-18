@@ -45,7 +45,7 @@ pub enum Action {
     /// Adds a new device.
     AddDevice(Box<Device>),
     /// Updates a device.
-    UpdateDevice(Box<Device>),
+    UpdateDevice(String, Box<Device>),
     /// Removes a device.
     RemoveDevice(String),
     /// Gets a device by its name

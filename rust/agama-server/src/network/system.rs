@@ -332,9 +332,9 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 self.state.add_device(*device.clone())?;
                 return Ok(Some(NetworkChange::DeviceAdded(*device)));
             }
-            Action::UpdateDevice(device) => {
-                self.state.update_device(*device.clone())?;
-                return Ok(Some(NetworkChange::DeviceUpdated(*device)));
+            Action::UpdateDevice(name, device) => {
+                self.state.update_device(&name, *device.clone())?;
+                return Ok(Some(NetworkChange::DeviceUpdated(name, *device)));
             }
             Action::RemoveDevice(name) => {
                 self.state.remove_device(&name)?;

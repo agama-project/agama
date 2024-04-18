@@ -170,8 +170,8 @@ impl NetworkState {
         Ok(())
     }
 
-    pub fn update_device(&mut self, device: Device) -> Result<(), NetworkStateError> {
-        let Some(old_device) = self.get_device_mut(&device.name) else {
+    pub fn update_device(&mut self, name: &str, device: Device) -> Result<(), NetworkStateError> {
+        let Some(old_device) = self.get_device_mut(name) else {
             return Err(NetworkStateError::UnknownDevice(device.name.clone()));
         };
         *old_device = device;
@@ -1308,5 +1308,5 @@ impl fmt::Display for InfinibandTransportMode {
 pub enum NetworkChange {
     DeviceAdded(Device),
     DeviceRemoved(String),
-    DeviceUpdated(Device),
+    DeviceUpdated(String, Device),
 }

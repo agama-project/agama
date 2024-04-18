@@ -77,6 +77,7 @@ impl Watcher for NetworkManagerWatcher {
 struct ActionDispatcher<'a> {
     connection: zbus::Connection,
     devices: HashMap<OwnedObjectPath, DeviceProxy<'a>>,
+    names: HashMap<OwnedObjectPath, String>,
     updates: UnboundedReceiver<DeviceChange>,
     actions: UnboundedSender<Action>,
 }
@@ -92,6 +93,7 @@ impl<'a> ActionDispatcher<'a> {
             updates,
             actions,
             devices: HashMap::new(),
+            names: HashMap::new(),
         }
     }
 
@@ -105,7 +107,26 @@ impl<'a> ActionDispatcher<'a> {
                         if let Some(device) = builder.build(&proxy).await.unwrap() {
                             _ = self.actions.send(Action::AddDevice(Box::new(device)));
                         }
+                        self.names
+                            .insert(path.clone(), proxy.interface().await.unwrap());
                         self.devices.insert(path, proxy);
+                    }
+                }
+
+                DeviceChange::DeviceUpdated(path) => {
+                    if let Ok(proxy) = self.build_device_proxy(path.clone()).await {
+                        if let Some(old_name) = self.names.get(&path) {
+                            if let Ok(device) = builder.build(&proxy).await {
+                                if let Some(device) = device {
+                                    _ = self.actions.send(Action::UpdateDevice(
+                                        old_name.clone(),
+                                        Box::new(device),
+                                    ));
+                                }
+                                let name = proxy.interface().await.unwrap();
+                                self.names.insert(path, name);
+                            }
+                        }
                     }
                 }
 
@@ -120,8 +141,12 @@ impl<'a> ActionDispatcher<'a> {
                 DeviceChange::IP4ConfigChanged(path) => {
                     if let Some(device_proxy) = self.find_ip4_config_device(&path).await {
                         // TODO: be careful
-                        if let Some(device) = builder.build(&device_proxy).await.unwrap() {
-                            _ = self.actions.send(Action::UpdateDevice(Box::new(device)));
+                        if let Some(old_name) = self.names.get(&path) {
+                            if let Some(device) = builder.build(&device_proxy).await.unwrap() {
+                                _ = self
+                                    .actions
+                                    .send(Action::UpdateDevice(old_name.clone(), Box::new(device)));
+                            }
                         }
                     } else {
                         tracing::warn!("Could not find the matching device for Ip4Config {path}");
@@ -149,7 +174,11 @@ impl<'a> ActionDispatcher<'a> {
                 .build()
                 .await
                 .unwrap();
-            self.devices.insert(cloned_path.to_owned(), proxy);
+            let name = proxy.interface().await;
+            self.devices.insert(cloned_path.clone(), proxy);
+            if let Ok(name) = name {
+                self.names.insert(cloned_path, name);
+            }
         }
         Ok(())
     }
@@ -264,6 +293,7 @@ impl DeviceChangedStream {
             "org.freedesktop.NetworkManager.IP6Config" => {
                 Some(DeviceChange::IP6ConfigChanged(path))
             }
+            "org.freedesktop.NetworkManager.Device" => Some(DeviceChange::DeviceUpdated(path)),
             _ => None,
         }
     }
@@ -334,6 +364,7 @@ async fn build_properties_changed_stream(
 #[derive(Debug, Clone)]
 pub enum DeviceChange {
     DeviceAdded(OwnedObjectPath),
+    DeviceUpdated(OwnedObjectPath),
     DeviceRemoved(OwnedObjectPath),
     IP4ConfigChanged(OwnedObjectPath),
     IP6ConfigChanged(OwnedObjectPath),
