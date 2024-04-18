@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 18 08:46:06 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Display encryption status in the storage result
+  (gh#openSUSE/agama#1155)
+
+-------------------------------------------------------------------
 Wed Apr 10 11:35:53 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed setting unlimited maximum partition size
