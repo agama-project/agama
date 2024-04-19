@@ -60,7 +60,8 @@ export default function FileViewer({ file, title, onCloseCallback }) {
     <Popup
       isOpen={isOpen}
       title={title || file}
-      className="large"
+      blockSize="large"
+      inlineSize="large"
     >
       {state === "loading" && <Loading text={_("Reading file...")} />}
       {(content === null || error) &&

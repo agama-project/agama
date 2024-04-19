@@ -149,7 +149,8 @@ in the devices listed below. Choose how to do it.");
       title={_("Find space")}
       description={description}
       isOpen={isOpen}
-      variant="medium"
+      blockSize="large"
+      inlineSize="large"
       {...props}
     >
       <Form id="space-policy-form" onSubmit={onSubmit}>

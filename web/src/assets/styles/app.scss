@@ -55,20 +55,6 @@
   }
 }
 
-.auto-modal-popup {
-  block-size: auto;
-}
-
-.medium-modal-popup {
-  min-block-size: 55vh;
-  max-block-size: 55vh;
-}
-
-.large-modal-popup {
-  min-block-size: 85vh;
-  max-block-size: 85vh;
-}
-
 // *DataLists custom styles
 li.pf-v5-c-data-list__item {
   border-block-end-width: thin;
