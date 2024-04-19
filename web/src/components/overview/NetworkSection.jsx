@@ -66,14 +66,20 @@ export default function NetworkSection() {
     client.devices().then(setDevices);
   }, [client, devices]);
 
+  const nameFor = (device) => {
+    if (device.connection === undefined || device.connection.trim() === "") return device.name;
+
+    return device.connection;
+  };
+
   const deviceSummary = (device) => {
     if ((device?.addresses || []).length === 0) {
       return (
-        <Em key={device.name}>{device.name}</Em>
+        <Em key={device.name}>{nameFor(device)}</Em>
       );
     } else {
       return (
-        <Em key={device.name}>{device.name} - {device.addresses.map(formatIp).join(", ")}</Em>
+        <Em key={device.name}>{nameFor(device)} - {device.addresses.map(formatIp).join(", ")}</Em>
       );
     }
   };
