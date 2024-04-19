@@ -17,6 +17,7 @@ pub struct StorageDevice {
 }
 
 /// D-Bus client for the storage service
+#[derive(Clone)]
 pub struct StorageClient<'a> {
     pub connection: Connection,
     calculator_proxy: ProposalCalculatorProxy<'a>,
