@@ -64,7 +64,7 @@ export default function RootPasswordPopup({
   const onPasswordValidation = (isValid) => setIsValidPassword(isValid);
 
   return (
-    <Popup title={title} isOpen={isOpen}>
+    <Popup title={title} isOpen={isOpen} inlineSize="small">
       <Form id="root-password" onSubmit={accept}>
         <PasswordAndConfirmationInput
           value={password}

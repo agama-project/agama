@@ -38,8 +38,9 @@ export default function Terminal({ onCloseCallback }) {
   return (
     <Popup
       isOpen={isOpen}
-      className="large"
       aria-label="terminal popup"
+      blockSize="large"
+      inlineSize="large"
     >
 
       <iframe className="vertically-centered" src="/cockpit/@localhost/system/terminal.html" />
