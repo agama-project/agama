@@ -21,19 +21,9 @@
 
 // @ts-check
 
-import DBusClient from "../dbus";
-import { NetworkManagerAdapter, securityFromFlags } from "./network_manager";
-import cockpit from "../../lib/cockpit";
-import { createConnection, ConnectionTypes, ConnectionState, createAccessPoint, createDevice } from "./model";
+import { securityFromFlags } from "./network_manager";
+import { createConnection, ConnectionTypes, ConnectionState, createAccessPoint } from "./model";
 import { formatIp, ipPrefixFor } from "./utils";
-
-const SERVICE_NAME = "org.opensuse.Agama1";
-const CONNECTIONS_IFACE = "org.opensuse.Agama1.Network.Connections";
-const CONNECTIONS_PATH = "/org/opensuse/Agama1/Network/connections";
-const CONNECTION_IFACE = "org.opensuse.Agama1.Network.Connection";
-const CONNECTIONS_NAMESPACE = "/org/opensuse/Agama1/Network/connections";
-const IP_IFACE = "org.opensuse.Agama1.Network.Connection.IP";
-const WIRELESS_IFACE = "org.opensuse.Agama1.Network.Connection.Wireless";
 
 const DeviceType = Object.freeze({
   LOOPBACK: 0,
@@ -53,13 +43,13 @@ const DeviceType = Object.freeze({
  */
 
 const NetworkEventTypes = Object.freeze({
-  ACTIVE_CONNECTION_ADDED: "active_connection_added",
-  ACTIVE_CONNECTION_UPDATED: "active_connection_updated",
-  ACTIVE_CONNECTION_REMOVED: "active_connection_removed",
-  CONNECTION_ADDED: "connection_added",
-  CONNECTION_UPDATED: "connection_updated",
-  CONNECTION_REMOVED: "connection_removed",
-  SETTINGS_UPDATED: "settings_updated"
+  DEVICE_ADDED: "deviceAdded",
+  DEVICE_REMOVED: "deviceRemoved",
+  DEVICE_UPDATED: "deviceUpdated",
+  CONNECTION_ADDED: "connectionAdded",
+  CONNECTION_UPDATED: "connectionUpdated",
+  CONNECTION_REMOVED: "connectionRemoved",
+  SETTINGS_UPDATED: "settingsUpdated"
 });
 
 /**
@@ -344,12 +334,32 @@ class NetworkClient {
    * @return {Promise<NetworkSettings>}
   */
   async settings() {
-    const response = await this.client.get("/network/settings");
+    const response = await this.client.get("/network/state");
     if (!response.ok) {
-      console.error("Failed to get settings", response);
       return {};
     }
     return response.json();
+  }
+
+  /**
+   * Registers a callback to run when the network config change.
+   *
+   * @param {(handler: NetworkEvent) => void} handler - Callback function.
+   * @return {import ("../http").RemoveFn} Function to remove the callback.
+   */
+  onNetworkChange(handler) {
+    return this.client.onEvent("NetworkChange", ({ type, ...data }) => {
+      const subtype = Object.values(NetworkEventTypes).find((event) => data[event]);
+
+      if (subtype === undefined) {
+        console.error("Unknown subevent:", data);
+      } else {
+        const payload = data[subtype];
+        if (payload) {
+          handler({ type: subtype, payload });
+        }
+      }
+    });
   }
 }
 

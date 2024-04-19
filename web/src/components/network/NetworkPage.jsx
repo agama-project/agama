@@ -23,7 +23,6 @@ import React, { useEffect, useState } from "react";
 import { Button, Skeleton } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
-import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
 import { If, Page, Section } from "~/components/core";
 import { ConnectionsTable, IpSettingsForm, NetworkPageMenu, WifiSelector } from "~/components/network";
 import { _ } from "~/i18n";
@@ -83,6 +82,7 @@ const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
 export default function NetworkPage() {
   const { network: client } = useInstallerClient();
   const [connections, setConnections] = useState(undefined);
+  const [devices, setDevices] = useState(undefined);
   const [selectedConnection, setSelectedConnection] = useState(null);
   const [wifiScanSupported, setWifiScanSupported] = useState(false);
   const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
@@ -97,6 +97,12 @@ export default function NetworkPage() {
     client.connections().then(setConnections);
   }, [client, connections]);
 
+  useEffect(() => {
+    if (devices !== undefined) return;
+
+    client.devices().then(setDevices);
+  }, [client, devices]);
+
   const selectConnection = ({ id }) => {
     client.getConnection(id).then(setSelectedConnection);
   };
@@ -108,9 +114,10 @@ export default function NetworkPage() {
 
   const updateConnections = async () => {
     setConnections(undefined);
+    setDevices(undefined);
   };
 
-  const ready = connections !== undefined;
+  const ready = (connections !== undefined) && (devices !== undefined);
 
   const WifiConnections = () => {
     const activeWifiConnections = connections.filter(c => c.wireless);
@@ -122,7 +129,7 @@ export default function NetworkPage() {
     }
 
     return (
-      <ConnectionsTable connections={activeWifiConnections} onEdit={selectConnection} onForget={forgetConnection} />
+      <ConnectionsTable connections={activeWifiConnections} devices={devices} onEdit={selectConnection} onForget={forgetConnection} />
     );
   };
 
@@ -131,7 +138,7 @@ export default function NetworkPage() {
 
     if (activeWiredConnections.length === 0) return <NoWiredConnections />;
 
-    return <ConnectionsTable connections={activeWiredConnections} onEdit={selectConnection} />;
+    return <ConnectionsTable connections={activeWiredConnections} devices={devices} onEdit={selectConnection} />;
   };
 
   return (

@@ -44,10 +44,19 @@ import { _ } from "~/i18n";
  */
 export default function ConnectionsTable({
   connections,
+  devices,
   onEdit,
   onForget
 }) {
   if (connections.length === 0) return null;
+
+  const connectionDevice = ({ id }) => devices.find(({ connection }) => id === connection);
+  const connectionAddresses = (connection) => {
+    const device = connectionDevice(connection);
+    const addresses = device ? device.addresses : connection.addresses;
+
+    return addresses?.map(formatIp).join(", ");
+  };
 
   return (
     <Table variant="compact">
@@ -84,7 +93,7 @@ export default function ConnectionsTable({
           return (
             <Tr key={connection.id}>
               <Td dataLabel={_("Name")}>{connection.id}</Td>
-              <Td dataLabel={_("IP addresses")}>{connection.addresses?.map(formatIp).join(", ")}</Td>
+              <Td dataLabel={_("IP addresses")}>{connectionAddresses(connection)}</Td>
               <Td isActionCell>
                 <RowActions
                   id={`actions-for-connection-${connection.id}`}

@@ -24,12 +24,39 @@ import { sprintf } from "sprintf-js";
 
 import { Em, Section, SectionSkeleton } from "~/components/core";
 import { useInstallerClient } from "~/context/installer";
+import { NetworkEventTypes } from "~/client/network";
 import { formatIp } from "~/client/network/utils";
 import { _, n_ } from "~/i18n";
 
 export default function NetworkSection() {
   const { network: client } = useInstallerClient();
   const [devices, setDevices] = useState(undefined);
+
+  useEffect(() => {
+    return client.onNetworkChange(({ type, payload }) => {
+      switch (type) {
+        case NetworkEventTypes.DEVICE_ADDED: {
+          const newDevices = devices.filter((d) => d.name !== payload.name);
+          console.log(newDevices);
+          console.log(client.fromApiDevice(payload));
+          setDevices([...newDevices, client.fromApiDevice(payload)]);
+          break;
+        }
+
+        case NetworkEventTypes.DEVICE_UPDATED: {
+          const newDevices = devices.filter((d) => d.name !== payload.name);
+          setDevices(newDevices, payload);
+          break;
+        }
+
+        case NetworkEventTypes.DEVICE_REMOVED: {
+          const newDevices = devices.filter((d) => d.name !== payload);
+          setDevices(newDevices);
+          break;
+        }
+      }
+    });
+  }, [client, devices]);
 
   useEffect(() => {
     if (devices !== undefined) return;
