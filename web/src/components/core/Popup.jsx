@@ -188,8 +188,8 @@ const AncillaryAction = ({ children, ...actionsProps }) => (
  *   </Popup>
  *
  * @typedef {object} PopupBaseProps
- * @property {"auto" | "small" | "medium" | "large"} [blockSize="auto"] - The block/height size for the dialog. Default is auto.
- * @property {"auto" | "small" | "medium" | "large"} [inlineSize="auto"] - The inline/width size for the dialog. Default is auto.
+ * @property {"auto" | "small" | "medium" | "large"} [blockSize="auto"] - The block/height size for the dialog. Default is "auto".
+ * @property {"auto" | "small" | "medium" | "large"} [inlineSize="medium"] - The inline/width size for the dialog. Default is "medium".
  * @typedef {Omit<ModalProps, "variant" | "size"> & PopupBaseProps} PopupProps
  *
  * @param {PopupProps} props
