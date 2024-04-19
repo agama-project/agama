@@ -6,7 +6,7 @@
 //! * `storage_stream` which offers an stream that emits the storage events coming from D-Bus.
 
 use agama_lib::{error::ServiceError, storage::StorageClient};
-use axum::Router;
+use axum::{extract::State, routing::get, Json, Router};
 
 use crate::{
     error::Error,
@@ -38,9 +38,14 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     let client = StorageClient::new(dbus.clone()).await?;
     let state = StorageState { client };
     let router = Router::new()
+        .route("/devices/dirty", get(devices_dirty))
         .merge(status_router)
         .merge(progress_router)
         .nest("/issues", issues_router)
         .with_state(state);
     Ok(router)
+}
+
+async fn devices_dirty(State(state): State<StorageState<'_>>) -> Result<Json<bool>, Error> {
+    Ok(Json(state.client.devices_dirty_bit().await?))
 }

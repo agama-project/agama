@@ -41,6 +41,10 @@ impl<'a> StorageClient<'a> {
         Ok(ProposalProxy::new(&self.connection).await?)
     }
 
+    pub async fn devices_dirty_bit(&self) -> Result<bool, ServiceError> {
+        Ok(self.storage_proxy.deprecated_system().await?)
+    }
+
     /// Returns the available devices
     ///
     /// These devices can be used for installing the system.
