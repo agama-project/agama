@@ -54,20 +54,18 @@ const managerMock = {
   startProbing: jest.fn()
 };
 
-const softwareMock = {
-  product: {
-    getAll: () => Promise.resolve(products),
-    getSelected: jest.fn(() => Promise.resolve(products[0])),
-    select: jest.fn().mockResolvedValue(),
-    onChange: jest.fn()
-  }
+const productMock = {
+  getAll: () => Promise.resolve(products),
+  getSelected: jest.fn(() => Promise.resolve(products[0])),
+  select: jest.fn().mockResolvedValue(),
+  onChange: jest.fn()
 };
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       manager: managerMock,
-      software: softwareMock
+      product: productMock,
     };
   });
 });
@@ -79,7 +77,7 @@ describe("when the user chooses a product", () => {
     const selectButton = screen.getByRole("button", { name: "Select" });
     await user.click(productOption);
     await user.click(selectButton);
-    expect(softwareMock.product.select).toHaveBeenCalledWith("MicroOS");
+    expect(productMock.select).toHaveBeenCalledWith("MicroOS");
     expect(managerMock.startProbing).toHaveBeenCalled();
     expect(mockNavigateFn).toHaveBeenCalledWith("/");
   });
@@ -91,7 +89,7 @@ describe("when the user chooses does not change the product", () => {
     screen.getByText("openSUSE Tumbleweed");
     const selectButton = await screen.findByRole("button", { name: "Select" });
     await user.click(selectButton);
-    expect(softwareMock.product.select).not.toHaveBeenCalled();
+    expect(productMock.select).not.toHaveBeenCalled();
     expect(managerMock.startProbing).not.toHaveBeenCalled();
     expect(mockNavigateFn).toHaveBeenCalledWith("/");
   });

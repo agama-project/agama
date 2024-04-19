@@ -7,7 +7,7 @@
 use crate::{
     error::Error,
     web::{
-        common::{service_status_router, validation_router},
+        common::{service_status_router, validation_router, EventStreams},
         Event,
     },
 };
@@ -17,7 +17,6 @@ use agama_lib::{
 };
 use axum::{extract::State, routing::get, Json, Router};
 use serde::{Deserialize, Serialize};
-use std::pin::Pin;
 use tokio_stream::{Stream, StreamExt};
 
 #[derive(Clone)]
@@ -30,16 +29,14 @@ struct UsersState<'a> {
 /// It emits the Event::RootPasswordChange, Event::RootSSHKeyChanged and Event::FirstUserChanged events.
 ///
 /// * `connection`: D-Bus connection to listen for events.
-pub async fn users_streams(
-    dbus: zbus::Connection,
-) -> Result<Vec<(&'static str, Pin<Box<dyn Stream<Item = Event> + Send>>)>, Error> {
+pub async fn users_streams(dbus: zbus::Connection) -> Result<EventStreams, Error> {
     const FIRST_USER_ID: &str = "first_user";
     const ROOT_PASSWORD_ID: &str = "root_password";
     const ROOT_SSHKEY_ID: &str = "root_sshkey";
     // here we have three streams, but only two events. Reason is
     // that we have three streams from dbus about property change
     // and unify two root user properties into single event to http API
-    let result: Vec<(&str, Pin<Box<dyn Stream<Item = Event> + Send>>)> = vec![
+    let result: EventStreams = vec![
         (
             FIRST_USER_ID,
             Box::pin(first_user_changed_stream(dbus.clone()).await?),

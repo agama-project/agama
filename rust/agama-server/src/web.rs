@@ -10,7 +10,7 @@ use crate::{
     manager::web::{manager_service, manager_stream},
     network::{web::network_service, NetworkManagerAdapter},
     questions::web::{questions_service, questions_stream},
-    software::web::{software_service, software_stream},
+    software::web::{software_service, software_streams},
     users::web::{users_service, users_streams},
     web::common::{issues_stream, progress_stream, service_status_stream},
 };
@@ -110,7 +110,9 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
     for (id, user_stream) in users_streams(dbus.clone()).await? {
         stream.insert(id, user_stream);
     }
-    stream.insert("software", software_stream(dbus.clone()).await?);
+    for (id, software_stream) in software_streams(dbus.clone()).await? {
+        stream.insert(id, software_stream);
+    }
     stream.insert(
         "software-status",
         service_status_stream(

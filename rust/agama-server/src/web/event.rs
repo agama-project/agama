@@ -1,6 +1,7 @@
 use crate::l10n::web::LocaleConfig;
 use agama_lib::{
-    manager::InstallationPhase, progress::Progress, software::SelectedBy, users::FirstUser,
+    manager::InstallationPhase, product::RegistrationRequirement, progress::Progress,
+    software::SelectedBy, users::FirstUser,
 };
 use serde::Serialize;
 use std::collections::HashMap;
@@ -23,6 +24,10 @@ pub enum Event {
     ProductChanged {
         id: String,
     },
+    RegistrationRequirementChanged {
+        requirement: RegistrationRequirement,
+    },
+    RegistrationChanged,
     FirstUserChanged(FirstUser),
     RootChanged {
         password: Option<bool>,

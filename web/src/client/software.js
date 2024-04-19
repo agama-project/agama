@@ -21,12 +21,10 @@
 
 // @ts-check
 
-import DBusClient from "./dbus";
 import { WithIssues, WithProgress, WithStatus } from "./mixins";
 
 const SOFTWARE_SERVICE = "org.opensuse.Agama.Software1";
 const PRODUCT_PATH = "/org/opensuse/Agama/Software1/Product";
-const REGISTRATION_IFACE = "org.opensuse.Agama1.Registration";
 
 /**
  * Enum for the reasons to select a pattern
@@ -59,6 +57,12 @@ const SelectedBy = Object.freeze({
  */
 
 /**
+ * @typedef {object} RegistrationFailure
+ * @property {Number} id - ID of error.
+ * @property {string} message - Failure message.
+ */
+
+/**
  * @typedef {object} ActionResult
  * @property {boolean} success - Whether the action was successfully done.
  * @property {string} message - Result message.
@@ -86,106 +90,6 @@ const SelectedBy = Object.freeze({
  * @property {number} order - Display order (string!).
  * @property {string} icon - Icon name (not path or file name!).
  */
-
-/**
- * Product manager.
- * @ignore
- */
-class BaseProductManager {
-  /**
-   * @param {DBusClient} client
-   */
-  constructor(client) {
-    this.client = client;
-    this.proxies = {};
-  }
-
-  /**
-   * Returns the registration of the selected product.
-   *
-   * @return {Promise<Registration>}
-   */
-  async getRegistration() {
-    const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
-    const requirement = this.registrationRequirement(proxy.Requirement);
-    const code = proxy.RegCode;
-    const email = proxy.Email;
-
-    const registration = { requirement, code, email };
-    if (code.length === 0) registration.code = null;
-    if (email.length === 0) registration.email = null;
-
-    return registration;
-  }
-
-  /**
-   * Tries to register the selected product.
-   *
-   * @param {string} code
-   * @param {string} [email]
-   * @returns {Promise<ActionResult>}
-   */
-  async register(code, email = "") {
-    const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
-    const result = await proxy.Register(code, { Email: { t: "s", v: email } });
-
-    return {
-      success: result[0] === 0,
-      message: result[1],
-    };
-  }
-
-  /**
-   * Tries to deregister the selected product.
-   *
-   * @returns {Promise<ActionResult>}
-   */
-  async deregister() {
-    const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
-    const result = await proxy.Deregister();
-
-    return {
-      success: result[0] === 0,
-      message: result[1],
-    };
-  }
-
-  /**
-   * Registers a callback to run when the registration changes.
-   *
-   * @param {(registration: Registration) => void} handler - Callback function.
-   */
-  onRegistrationChange(handler) {
-    return this.client.onObjectChanged(PRODUCT_PATH, REGISTRATION_IFACE, () => {
-      this.getRegistration().then(handler);
-    });
-  }
-
-  /**
-   * Helper method to generate the requirement representation.
-   * @private
-   *
-   * @param {number} value - D-Bus registration value.
-   * @returns {string}
-   */
-  registrationRequirement(value) {
-    let requirement = "unknown";
-
-    switch (value) {
-      case 0:
-        requirement = "not-required";
-        break;
-      case 1:
-        requirement = "optional";
-        break;
-      case 2:
-        requirement = "mandatory";
-        break;
-    }
-
-    return requirement;
-  }
-}
 
 /**
  * Software client
@@ -345,6 +249,88 @@ class ProductBaseClient {
     return this.client.onEvent("ProductChanged", ({ id }) => {
       if (id) {
         handler(id);
+      }
+    });
+  }
+
+  /**
+   * Returns the registration of the selected product.
+   *
+   * @return {Promise<Registration>}
+   */
+  async getRegistration() {
+    const response = await this.client.get("/software/registration");
+    if (!response.ok) {
+      console.log("Failed to get registration config:", response);
+      return { requirement: "unknown", code: null, email: null };
+    }
+    const config = await response.json();
+
+    const { requirement, key: code, email } = config;
+
+    const registration = { requirement, code, email };
+    if (code.length === 0) registration.code = null;
+    if (email.length === 0) registration.email = null;
+
+    return registration;
+  }
+
+  /**
+   * Tries to register the selected product.
+   *
+   * @param {string} code
+   * @param {string} [email]
+   * @returns {Promise<ActionResult>}
+   */
+  async register(code, email = "") {
+    const response = await this.client.post("/software/registration", { key: code, email });
+    if (response.status === 422) {
+      /**  @type RegistrationFailure */
+      const body = await response.json();
+      return {
+        success: false,
+        message: body.message,
+      };
+    }
+
+    return {
+      success: response.ok, // still we can fail 400 due to dbus issue or 500 if backend stop working. maybe some message for this case?
+      message: ""
+    };
+  }
+
+  /**
+   * Tries to deregister the selected product.
+   *
+   * @returns {Promise<ActionResult>}
+   */
+  async deregister() {
+    const response = await this.client.delete("/software/registration");
+
+    if (response.status === 422) {
+      /**  @type RegistrationFailure */
+      const body = await response.json();
+      return {
+        success: false,
+        message: body.message,
+      };
+    }
+
+    return {
+      success: response.ok, // still we can fail 400 due to dbus issue or 500 if backend stop working. maybe some message for this case?
+      message: ""
+    };
+  }
+
+  /**
+   * Registers a callback to run when the registration changes.
+   *
+   * @param {(registration: Registration) => void} handler - Callback function.
+   */
+  onRegistrationChange(handler) {
+    return this.client.ws.onEvent((event) => {
+      if (event.type === "RegistrationChanged" || event.type === "RegistrationRequirementChanged") {
+        this.getRegistration().then(handler);
       }
     });
   }
