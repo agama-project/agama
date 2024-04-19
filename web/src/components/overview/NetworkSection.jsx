@@ -36,22 +36,24 @@ export default function NetworkSection() {
     return client.onNetworkChange(({ type, payload }) => {
       switch (type) {
         case NetworkEventTypes.DEVICE_ADDED: {
-          const newDevices = devices.filter((d) => d.name !== payload.name);
-          console.log(newDevices);
-          console.log(client.fromApiDevice(payload));
-          setDevices([...newDevices, client.fromApiDevice(payload)]);
+          setDevices((devs) => {
+            const newDevices = devs.filter((d) => d.name !== payload.name);
+            return [...newDevices, client.fromApiDevice(payload)];
+          });
           break;
         }
 
         case NetworkEventTypes.DEVICE_UPDATED: {
-          const newDevices = devices.filter((d) => d.name !== payload.name);
-          setDevices(newDevices, payload);
+          const [name, data] = payload;
+          setDevices(devs => {
+            const newDevices = devs.filter((d) => d.name !== name);
+            return [...newDevices, client.fromApiDevice(data)];
+          });
           break;
         }
 
         case NetworkEventTypes.DEVICE_REMOVED: {
-          const newDevices = devices.filter((d) => d.name !== payload);
-          setDevices(newDevices);
+          setDevices(devs => devs.filter((d) => d.name !== payload));
           break;
         }
       }
