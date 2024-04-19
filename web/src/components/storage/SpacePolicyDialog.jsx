@@ -149,7 +149,7 @@ in the devices listed below. Choose how to do it.");
       title={_("Find space")}
       description={description}
       isOpen={isOpen}
-      blockSize="medium"
+      blockSize="large"
       inlineSize="large"
       {...props}
     >
