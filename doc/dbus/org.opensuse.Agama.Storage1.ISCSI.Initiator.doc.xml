@@ -1,0 +1,19 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/org/opensuse/Agama/Storage1">
+  <node name="iscsi_nodes" />
+  <interface name="org.opensuse.Agama.Storage1.ISCSI.Initiator">
+    <method name="Discover">
+      <arg name="address" direction="in" type="s"/>
+      <arg name="port" direction="in" type="u"/>
+      <arg name="options" direction="in" type="a{sv}"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <method name="Delete">
+      <arg name="node" direction="in" type="o"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <property type="s" name="InitiatorName" access="readwrite"/>
+    <property type="b" name="IBFT" access="read"/>
+  </interface>
+</node>
