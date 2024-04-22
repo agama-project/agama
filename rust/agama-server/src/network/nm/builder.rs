@@ -7,7 +7,10 @@ use crate::network::{
         proxies::{DeviceProxy, IP4ConfigProxy, IP6ConfigProxy},
     },
 };
-use agama_lib::{error::ServiceError, network::types::DeviceType};
+use agama_lib::{
+    error::ServiceError,
+    network::types::{DeviceState, DeviceType},
+};
 use anyhow::Context;
 use cidr::IpInet;
 use std::{collections::HashMap, net::IpAddr, str::FromStr};
@@ -33,14 +36,20 @@ impl<'a> DeviceFromProxyBuilder<'a> {
         let type_: DeviceType = device_type
             .try_into()
             .context("Unsupported device type: {device_type}")?;
+
+        let state = self.proxy.state().await? as u8;
+        let state: DeviceState = state
+            .try_into()
+            .context("Unsupported device state: {state}")?;
+
         let mut device = Device {
             name: self.proxy.interface().await?,
             type_,
+            state,
             ..Default::default()
         };
 
-        let state = self.proxy.state().await?;
-        if state == 100 {
+        if state == DeviceState::Activated {
             device.ip_config = self.build_ip_config().await?;
         }
 

@@ -3,7 +3,7 @@ use super::proxies::{
     WirelessProxy,
 };
 use super::settings::{BondSettings, MatchSettings, NetworkConnection, WirelessSettings};
-use super::types::{Device, DeviceType, SSID};
+use super::types::{Device, DeviceState, DeviceType, SSID};
 use crate::error::ServiceError;
 use tokio_stream::StreamExt;
 use zbus::zvariant::OwnedObjectPath;
@@ -86,10 +86,12 @@ impl<'a> NetworkClient<'a> {
             .await?;
         let name = device_proxy.name().await?;
         let device_type = device_proxy.type_().await?;
+        let state = DeviceState::try_from(device_proxy.state().await?).unwrap();
 
         Ok(Device {
             name,
             type_: DeviceType::try_from(device_type).unwrap(),
+            state,
         })
     }
 

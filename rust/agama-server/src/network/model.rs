@@ -4,7 +4,7 @@
 //! agnostic from the real network service (e.g., NetworkManager).
 use crate::network::error::NetworkStateError;
 use agama_lib::network::settings::{BondSettings, NetworkConnection, WirelessSettings};
-use agama_lib::network::types::{BondMode, DeviceType, Status, SSID};
+use agama_lib::network::types::{BondMode, DeviceState, DeviceType, Status, SSID};
 use cidr::IpInet;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
@@ -465,6 +465,7 @@ pub struct Device {
     pub mac_address: MacAddress,
     pub ip_config: Option<IpConfig>,
     pub connection: Option<String>,
+    pub state: DeviceState,
 }
 
 /// Represents a known network connection.

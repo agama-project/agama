@@ -1,6 +1,6 @@
 //! Representation of the network settings
 
-use super::types::{DeviceType, Status};
+use super::types::{DeviceState, DeviceType, Status};
 use agama_settings::error::ConversionError;
 use agama_settings::{SettingObject, SettingValue, Settings};
 use cidr::IpInet;
@@ -71,6 +71,7 @@ impl Default for BondSettings {
 pub struct NetworkDevice {
     pub id: String,
     pub type_: DeviceType,
+    pub state: DeviceState,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
