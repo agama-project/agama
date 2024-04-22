@@ -30,7 +30,7 @@ impl<'a> DeviceFromProxyBuilder<'a> {
     pub async fn build(&self) -> Result<Device, ServiceError> {
         let device_type = NmDeviceType(self.proxy.device_type().await?);
         // TODO: we need to check the errors hierarchy to not abuse ServiceError.
-         let type_: DeviceType = device_type
+        let type_: DeviceType = device_type
             .try_into()
             .context("Unsupported device type: {device_type}")?;
         let mut device = Device {
