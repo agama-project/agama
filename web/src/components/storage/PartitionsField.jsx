@@ -22,15 +22,19 @@
 // @ts-check
 
 import React, { useState } from "react";
-import { Button, List, ListItem, Skeleton } from '@patternfly/react-core';
+import {
+  Button, Dropdown, DropdownList, DropdownItem, List, ListItem, MenuToggle, Skeleton
+} from '@patternfly/react-core';
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
-import { If, ExpandableField, Popup, RowActions, Tip } from '~/components/core';
-import { VolumeForm } from '~/components/storage';
+import { If, ExpandableField, RowActions, Tip } from '~/components/core';
+import VolumeDialog from '~/components/storage/VolumeDialog';
 import VolumeLocationDialog from '~/components/storage/VolumeLocationDialog';
-import { deviceSize, hasSnapshots, isTransactionalRoot } from '~/components/storage/utils';
+import {
+  deviceSize, hasSnapshots, isTransactionalRoot, isTransactionalSystem
+} from '~/components/storage/utils';
 import SnapshotsField from "~/components/storage/SnapshotsField";
 import BootConfigField from "~/components/storage/BootConfigField";
 import { noop } from "~/utils";
@@ -38,6 +42,8 @@ import { noop } from "~/utils";
 /**
  * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import("~/components/storage/SnapshotsField").SnapshotsConfig} SnapshotsConfig
+ *
  * @typedef {import ("~/client/storage").Volume} Volume
  */
 
@@ -203,57 +209,6 @@ const AutoCalculatedHint = ({ volume }) => {
 };
 
 /**
- * Button with general actions for the file systems
- * @component
- *
- * @param {object} props
- * @param {object[]} props.templates - Volume templates
- * @param {onAddFn} props.onAdd - Function to use for adding a new volume
- * @param {onResetFn} props.onReset - Function to use for resetting to the default subvolumes
- *
- * @callback onAddFn
- * @param {object} volume
- * @return {void}
- *
- * @callback onResetFn
- * @return {void}
- */
-const GeneralActions = ({ templates, onAdd, onReset }) => {
-  const [isFormOpen, setIsFormOpen] = useState(false);
-
-  const openForm = () => setIsFormOpen(true);
-
-  const closeForm = () => setIsFormOpen(false);
-
-  const acceptForm = (volume) => {
-    closeForm();
-    onAdd(volume);
-  };
-
-  return (
-    <div className="split" style={{ flexDirection: "row-reverse" }}>
-      <Button isDisabled={templates.length === 0} onClick={openForm} variant="secondary">
-        {_("Add file system")}
-      </Button>
-      <Button variant="plain" onClick={onReset}>
-        {_("Reset to defaults")}
-      </Button>
-      <Popup aria-label={_("Add file system")} title={_("Add file system")} isOpen={isFormOpen}>
-        <VolumeForm
-          id="addVolumeForm"
-          templates={templates}
-          onSubmit={acceptForm}
-        />
-        <Popup.Actions>
-          <Popup.Confirm form="addVolumeForm" type="submit">{_("Accept")}</Popup.Confirm>
-          <Popup.Cancel onClick={closeForm} />
-        </Popup.Actions>
-      </Popup>
-    </div>
-  );
-};
-
-/**
  * @component
  *
  * @param {object} props
@@ -290,6 +245,8 @@ const BootLabel = ({ bootDevice, configureBoot }) => {
  * @param {object} props
  * @param {object} [props.columns] - Column specs
  * @param {Volume} [props.volume] - Volume to show
+ * @param {Volume[]} [props.volumes] - List of current volumes
+ * @param {Volume[]} [props.templates] - List of available templates
  * @param {StorageDevice[]} [props.devices=[]] - Devices available for installation
  * @param {ProposalTarget} [props.target] - Installation target
  * @param {StorageDevice} [props.targetDevice] - Device selected for installation, if target is a disk
@@ -300,6 +257,8 @@ const BootLabel = ({ bootDevice, configureBoot }) => {
 const VolumeRow = ({
   columns,
   volume,
+  volumes,
+  templates,
   devices,
   target,
   targetDevice,
@@ -440,20 +399,19 @@ const VolumeRow = ({
           />
         </Td>
       </Tr>
-
-      <Popup title={_("Edit file system")} isOpen={isEditDialogOpen}>
-        <VolumeForm
-          id="editVolumeForm"
-          volume={volume}
-          templates={[]}
-          onSubmit={acceptForm}
-        />
-        <Popup.Actions>
-          <Popup.Confirm form="editVolumeForm" type="submit">{_("Accept")}</Popup.Confirm>
-          <Popup.Cancel onClick={closeDialog} />
-        </Popup.Actions>
-      </Popup>
-
+      <If
+        condition={isEditDialogOpen}
+        then={
+          <VolumeDialog
+            isOpen
+            volume={volume}
+            volumes={volumes}
+            templates={templates}
+            onAccept={acceptForm}
+            onCancel={closeDialog}
+          />
+        }
+      />
       <If
         condition={isLocationDialogOpen}
         then={
@@ -477,14 +435,23 @@ const VolumeRow = ({
  * @component
  *
  * @param {object} props
- * @param {object[]} props.volumes - Volumes to show
+ * @param {Volume[]} props.volumes - Volumes to show
+ * @param {Volume[]} props.templates - List of available templates
  * @param {StorageDevice[]} props.devices - Devices available for installation
  * @param {ProposalTarget} props.target - Installation target
  * @param {StorageDevice|undefined} props.targetDevice - Device selected for installation, if target is a disk
  * @param {boolean} props.isLoading - Whether to show the table as loading
  * @param {(volumes: Volume[]) => void} props.onVolumesChange - Function to submit changes in volumes
  */
-const VolumesTable = ({ volumes, devices, target, targetDevice, isLoading, onVolumesChange }) => {
+const VolumesTable = ({
+  volumes,
+  templates,
+  devices,
+  target,
+  targetDevice,
+  isLoading,
+  onVolumesChange
+}) => {
   const columns = {
     mountPath: _("Mount point"),
     details: _("Details"),
@@ -494,6 +461,7 @@ const VolumesTable = ({ volumes, devices, target, targetDevice, isLoading, onVol
     actions: _("Actions")
   };
 
+  /** @type {(volume: Volume) => void} */
   const editVolume = (volume) => {
     const index = volumes.findIndex(v => v.mountPath === volume.mountPath);
     const newVolumes = [...volumes];
@@ -501,11 +469,13 @@ const VolumesTable = ({ volumes, devices, target, targetDevice, isLoading, onVol
     onVolumesChange(newVolumes);
   };
 
+  /** @type {(volume: Volume) => void} */
   const deleteVolume = (volume) => {
     const newVolumes = volumes.filter(v => v.mountPath !== volume.mountPath);
     onVolumesChange(newVolumes);
   };
 
+  /** @type {() => React.ReactElement[]|React.ReactElement} */
   const renderVolumes = () => {
     if (volumes.length === 0 && isLoading) return <VolumeRow isLoading />;
 
@@ -515,6 +485,8 @@ const VolumesTable = ({ volumes, devices, target, targetDevice, isLoading, onVol
           key={index}
           columns={columns}
           volume={volume}
+          volumes={volumes}
+          templates={templates}
           devices={devices}
           target={target}
           targetDevice={targetDevice}
@@ -574,6 +546,68 @@ const Basic = ({ volumes, configureBoot, bootDevice, target, isLoading }) => {
 };
 
 /**
+ * Button for adding a new volume. It renders either a menu or a button depending on the number
+ * of options.
+ * @component
+ *
+ * @param {object} props
+ * @param {string[]} props.options - Possible mount points to add. An empty string represent an
+ *  arbitrary mount point.
+ * @param {(option: string) => void} props.onClick
+ */
+const AddVolumeButton = ({ options, onClick }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  /** @type {() => void} */
+  const onToggleClick = () => setIsOpen(!isOpen);
+
+  /** @type {(_: any, value: string) => void} */
+  const onSelect = (_, value) => {
+    setIsOpen(false);
+    onClick(value);
+  };
+
+  // Shows a button if the only option is to add an arbitrary volume.
+  if (options.length === 1 && options[0] === "") {
+    return (
+      <Button variant="secondary" onClick={() => onClick("")}>{_("Add file system")}</Button>
+    );
+  }
+
+  const isDisabled = !options.length;
+
+  return (
+    <Dropdown
+      isOpen={isOpen}
+      onSelect={onSelect}
+      onOpenChange={setIsOpen}
+      toggle={toggleRef => (
+        <MenuToggle
+          ref={toggleRef}
+          onClick={onToggleClick}
+          variant="secondary"
+          isExpanded={isOpen}
+          isDisabled={isDisabled}
+        >
+          {_("Add file system")}
+        </MenuToggle>
+      )}
+      shouldFocusToggleOnSelect
+    >
+      <DropdownList>
+        {options.map((option, index) => {
+          return (
+            <DropdownItem key={index} value={option}>
+              {option === "" ? _("Other") : option}
+            </DropdownItem>
+          );
+        })}
+      </DropdownList>
+    </Dropdown>
+  );
+};
+
+/**
  * Content to show when the field is expanded.
  * @component
  *
@@ -603,15 +637,69 @@ const Advanced = ({
   onBootChange,
   isLoading
 }) => {
-  const rootVolume = (volumes || []).find((i) => i.mountPath === "/");
+  const [isVolumeDialogOpen, setIsVolumeDialogOpen] = useState(false);
+  /** @type {[Volume|undefined, (volume: Volume) => void]} */
+  const [template, setTemplate] = useState();
 
-  const addVolume = (volume) => onVolumesChange([...volumes, volume]);
+  const openVolumeDialog = () => setIsVolumeDialogOpen(true);
+
+  const closeVolumeDialog = () => setIsVolumeDialogOpen(false);
+
+  /** @type {(volume: Volume) => void} */
+  const onAcceptVolumeDialog = (volume) => {
+    closeVolumeDialog();
+
+    const index = volumes.findIndex(v => v.mountPath === volume.mountPath);
+
+    if (index !== -1) {
+      const newVolumes = [...volumes];
+      newVolumes[index] = volume;
+      onVolumesChange(newVolumes);
+    } else {
+      onVolumesChange([...volumes, volume]);
+    }
+  };
 
   const resetVolumes = () => onVolumesChange([]);
 
-  const changeBtrfsSnapshots = ({ active }) => {
-    //  const rootVolume = volumes.find((i) => i.mountPath === "/");
+  /** @type {(mountPath: string) => void} */
+  const addVolume = (mountPath) => {
+    const template = templates.find(t => t.mountPath === mountPath);
+    setTemplate(template);
+    openVolumeDialog();
+  };
 
+  /**
+   * Possible mount paths to add.
+   * @type {() => string[]}
+   */
+  const mountPathOptions = () => {
+    const mountPaths = volumes.map(v => v.mountPath);
+    const isTransactional = isTransactionalSystem(templates);
+
+    return templates
+      .map(t => t.mountPath)
+      .filter(p => !mountPaths.includes(p))
+      .filter(p => !isTransactional || p.length);
+  };
+
+  /**
+   * Whether to show the button for adding a volume.
+   * @type {() => boolean}
+   */
+  const showAddVolume = () => {
+    const hasOptionalVolumes = () => {
+      return templates.find(t => t.mountPath.length && !t.outline.required) !== undefined;
+    };
+
+    return !isTransactionalSystem(templates) || hasOptionalVolumes();
+  };
+
+  /** @type {Volume} */
+  const rootVolume = volumes.find(v => v.mountPath === "/");
+
+  /** @type {(config: SnapshotsConfig) => void} */
+  const changeBtrfsSnapshots = ({ active }) => {
     if (active) {
       rootVolume.fsType = "Btrfs";
       rootVolume.snapshots = true;
@@ -630,16 +718,32 @@ const Advanced = ({
       />
       <VolumesTable
         volumes={volumes}
+        templates={templates}
         devices={devices}
         target={target}
         targetDevice={targetDevice}
         onVolumesChange={onVolumesChange}
         isLoading={isLoading}
       />
-      <GeneralActions
-        templates={templates}
-        onAdd={addVolume}
-        onReset={resetVolumes}
+      <div className="split" style={{ flexDirection: "row-reverse" }}>
+        <If
+          condition={showAddVolume()}
+          then={<AddVolumeButton options={mountPathOptions()} onClick={addVolume} />}
+        />
+        <Button variant="plain" onClick={resetVolumes}>{_("Reset to defaults")}</Button>
+      </div>
+      <If
+        condition={isVolumeDialogOpen}
+        then={
+          <VolumeDialog
+            isOpen
+            volume={template}
+            volumes={volumes}
+            templates={templates}
+            onAccept={onAcceptVolumeDialog}
+            onCancel={closeVolumeDialog}
+          />
+        }
       />
       <hr />
       <BootConfigField
@@ -656,7 +760,6 @@ const Advanced = ({
 
 /**
  * @todo This component should be restructured to use the same approach as other newer components:
- *  * Create dialog components for the popup forms (e.g., EditVolumeDialog).
  *  * Use a TreeTable, specially if we need to represent subvolumes.
  *
  * Renders information of the volumes and boot-related partitions and actions to modify them.
