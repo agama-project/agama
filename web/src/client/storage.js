@@ -150,6 +150,7 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
  *
  * @typedef {object} VolumeOutline
  * @property {boolean} required
+ * @property {boolean} productDefined
  * @property {string[]} fsTypes
  * @property {boolean} adjustByRam
  * @property {boolean} supportAutoSize
@@ -464,7 +465,8 @@ class ProposalManager {
   async defaultVolume(mountPath) {
     const proxy = await this.proxies.proposalCalculator;
     const systemDevices = await this.system.getDevices();
-    return this.buildVolume(await proxy.DefaultVolume(mountPath), systemDevices);
+    const productMountPoints = await this.getProductMountPoints();
+    return this.buildVolume(await proxy.DefaultVolume(mountPath), systemDevices, productMountPoints);
   }
 
   /**
@@ -478,6 +480,7 @@ class ProposalManager {
     if (!proxy) return undefined;
 
     const systemDevices = await this.system.getDevices();
+    const productMountPoints = await this.getProductMountPoints();
 
     const buildResult = (proxy) => {
       const buildSpaceAction = dbusSpaceAction => {
@@ -556,7 +559,9 @@ class ProposalManager {
           spaceActions: dbusSettings.SpaceActions.v.map(a => buildSpaceAction(a.v)),
           encryptionPassword: dbusSettings.EncryptionPassword.v,
           encryptionMethod: dbusSettings.EncryptionMethod.v,
-          volumes: dbusSettings.Volumes.v.map(vol => this.buildVolume(vol.v, systemDevices)),
+          volumes: dbusSettings.Volumes.v.map(vol => (
+            this.buildVolume(vol.v, systemDevices, productMountPoints))
+          ),
           // NOTE: strictly speaking, installation devices does not belong to the settings. It
           // should be a separate method instead of an attribute in the settings object.
           // Nevertheless, it was added here for simplicity and to avoid passing more props in some
@@ -639,6 +644,8 @@ class ProposalManager {
    * Builds a volume from the D-Bus data
    *
    * @param {DBusVolume} dbusVolume
+   * @param {StorageDevice[]} devices
+   * @param {string[]} productMountPoints
    *
    * @typedef {Object} DBusVolume
    * @property {CockpitString} Target
@@ -684,7 +691,7 @@ class ProposalManager {
    *
    * @returns {Volume}
    */
-  buildVolume(dbusVolume, devices) {
+  buildVolume(dbusVolume, devices, productMountPoints) {
     /**
      * Builds a volume target from a D-Bus value.
      *
@@ -704,11 +711,11 @@ class ProposalManager {
       }
     };
 
+    /** @returns {VolumeOutline} */
     const buildOutline = (dbusOutline) => {
-      if (dbusOutline === undefined) return null;
-
       return {
         required: dbusOutline.Required.v,
+        productDefined: false,
         fsTypes: dbusOutline.FsTypes.v.map(val => val.v),
         supportAutoSize: dbusOutline.SupportAutoSize.v,
         adjustByRam: dbusOutline.AdjustByRam.v,
@@ -718,7 +725,7 @@ class ProposalManager {
       };
     };
 
-    return {
+    const volume = {
       target: buildTarget(dbusVolume.Target.v),
       targetDevice: devices.find(d => d.name === dbusVolume.TargetDevice?.v),
       mountPath: dbusVolume.MountPath.v,
@@ -730,6 +737,12 @@ class ProposalManager {
       transactional: dbusVolume.Transactional.v,
       outline: buildOutline(dbusVolume.Outline.v)
     };
+
+    // Indicate whether a volume is defined by the product.
+    if (productMountPoints.includes(volume.mountPath))
+      volume.outline.productDefined = true;
+
+    return volume;
   }
 
   /**
