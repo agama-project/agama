@@ -28,10 +28,13 @@ $(DESTDIR)/%: $(SRCDIR)/%
 	cp -f $< $@
 
 # make a tarball from a directory
-# the tarball is reproducible, i.e. the same sources should result in the very same tarball (bitwise)
-# for the file time stamps use the date of the last commit in the respective directory
+# the tarball is reproducible, i.e. the same sources should result in the very
+# same tarball (bitwise) for the file time stamps use the date of the last
+# commit in the respective directory, use the UTC date to avoid possible time
+# zone and DST differences
 $(DESTDIR)/%.tar.xz: %
-	(cd $< && find . -xtype f -not -name README.md | LC_ALL=C sort | tar -c -v -f - --format=gnu --owner=0 --group=0 --files-from - --mtime="$(shell git log -n 1 --pretty=format:%ci $<)") | xz -c -9 -e > $@
+	MTIME=$$(date --date="$$(git log -n 1 --pretty=format:%ci $<)" --utc +"%Y-%m-%d %H:%M:%S"); \
+	(cd $< && find . -xtype f -not -name README.md | LC_ALL=C sort | tar -c -v -f - --format=gnu --owner=0 --group=0 --files-from - --mtime="$$MTIME") | xz -c -9 -e > $@
 
 # build the ISO locally
 build: $(DESTDIR)

@@ -2,6 +2,11 @@
 
 Agama installer is deployed as a regular application which can be installed and run on a local system. However, the most expected way of using Agama is by running it on a live ISO image.
 
+## Sources
+
+The Live ISO sources are maintained in the [live](../live/) subdirectory,
+See more details in a [live/README.md](../live/README.md) documentation.
+
 ## Live ISO Requirements
 
 A live ISO for running Agama should provide the following software:

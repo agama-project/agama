@@ -9,7 +9,7 @@
   - [Building the ISO Image](#building-the-iso-image)
     - [Build Options](#build-options)
   - [Image Definition](#image-definition)
-    - [Kiwi Files](#kiwi-files)
+    - [KIWI Files](#kiwi-files)
   - [Image Configuration](#image-configuration)
     - [SSH Server](#ssh-server)
     - [Autologin](#autologin)
@@ -106,7 +106,7 @@ build the Live ISO. See the [Kiwi documentation](
 https://osinside.github.io/kiwi/index.html) for more details about the build
 workflow and the `.kiwi` file format.
 
-### Kiwi Files
+### KIWI Files
 
 The main Kiwi source files are located in the [src](src) subdirectory:
 
