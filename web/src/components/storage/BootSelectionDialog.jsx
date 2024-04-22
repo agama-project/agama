@@ -104,7 +104,7 @@ export default function BootSelectionDialog({
 
   const onSubmit = (e) => {
     e.preventDefault();
-    const device = isBootAuto ? undefined : bootDevice;
+    const device = ((configureBoot && !isBootAuto) ? bootDevice : undefined);
     onAccept({ configureBoot, bootDevice: device });
   };
 

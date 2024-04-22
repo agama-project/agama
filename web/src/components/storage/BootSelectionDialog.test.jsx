@@ -225,7 +225,7 @@ describe("BootSelectionDialog", () => {
   describe("if the 'Do not configure' option is selected", () => {
     beforeEach(() => {
       props.configureBoot = true;
-      props.bootDevice = undefined;
+      props.bootDevice = sda;
     });
 
     it("calls onAccept with the selected options on accept", async () => {
