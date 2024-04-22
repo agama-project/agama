@@ -47,7 +47,8 @@ const rootVolume = {
     snapshotsConfigurable: false,
     snapshotsAffectSizes: true,
     adjustByRam: false,
-    sizeRelevantVolumes: ["/home"]
+    sizeRelevantVolumes: ["/home"],
+    productDefined: true
   }
 };
 

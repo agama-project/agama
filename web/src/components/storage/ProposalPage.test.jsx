@@ -115,7 +115,8 @@ const volume = (mountPath) => {
         snapshotsConfigurable: false,
         snapshotsAffectSizes: false,
         sizeRelevantVolumes: [],
-        adjustByRam: false
+        adjustByRam: false,
+        productDefined: false
       }
     }
   );

@@ -58,7 +58,8 @@ const rootVolume = {
     snapshotsConfigurable: true,
     snapshotsAffectSizes: true,
     sizeRelevantVolumes: [],
-    adjustByRam: false
+    adjustByRam: false,
+    productDefined: true
   }
 };
 
@@ -79,7 +80,8 @@ const swapVolume = {
     snapshotsConfigurable: false,
     snapshotsAffectSizes: false,
     sizeRelevantVolumes: [],
-    adjustByRam: false
+    adjustByRam: false,
+    productDefined: true
   }
 };
 
@@ -99,7 +101,8 @@ const homeVolume = {
     snapshotsConfigurable: false,
     snapshotsAffectSizes: false,
     sizeRelevantVolumes: [],
-    adjustByRam: false
+    adjustByRam: false,
+    productDefined: true
   }
 };
 
