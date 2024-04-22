@@ -36,6 +36,18 @@ const ConnectionState = Object.freeze({
   DEACTIVATED: 4
 });
 
+const DeviceState = Object.freeze({
+  UNKNOWN: "unknown",
+  UNMANAGED: "unmanaged",
+  UNAVAILABLE: "unavailable",
+  DISCONNECTED: "disconnected",
+  CONFIG: "config",
+  NEEDAUTH: "auth",
+  ACTIVATED: "activated",
+  DEACTIVATING: "deactivating",
+  FAILED: "failed"
+});
+
 /**
  * Returns a human readable connection state
  *
@@ -95,6 +107,7 @@ const SecurityProtocols = Object.freeze({
  * @property {Route[]} routes6
  * @property {string} macAddress
  * @property {string} [connection]
+ * @property {string} DeviceState
  */
 
 /**
@@ -215,5 +228,6 @@ export {
   connectionHumanState,
   ConnectionState,
   ConnectionTypes,
+  DeviceState,
   SecurityProtocols
 };

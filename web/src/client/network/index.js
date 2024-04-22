@@ -209,7 +209,7 @@ class NetworkClient {
         ssid: ap.ssid,
         hwAddress: ap.hw_address,
         strength: ap.strength,
-        security: securityFromFlags(ap.flags, ap.wpa_flags, ap.rsn_flags)
+        security: securityFromFlags(ap.flags, ap.wpaFlags, ap.rsnFlags)
       });
     });
   }
@@ -220,10 +220,16 @@ class NetworkClient {
    * @param {Connection} connection - connection to be activated
    */
   async connectTo(connection) {
-    const conn = await this.addConnection(connection);
-    await this.apply();
+    return this.client.get(`/network/${connection.id}/connect`);
+  }
 
-    return conn;
+  /**
+   * Connects to given Wireless network
+   *
+   * @param {Connection} connection - connection to be activated
+   */
+  async disconnect(connection) {
+    return this.client.get(`/network/${connection.id}/disconnect`);
   }
 
   /**
@@ -252,8 +258,11 @@ class NetworkClient {
       wireless,
     });
 
+    const conn = await this.addConnection(connection);
+    await this.apply();
+
     // the connection is automatically activated when written
-    return this.connectTo(connection);
+    return conn;
   }
 
   /**
@@ -349,6 +358,7 @@ class NetworkClient {
    */
   onNetworkChange(handler) {
     return this.client.onEvent("NetworkChange", ({ type, ...data }) => {
+      console.log("Event:", type, ", with data:", data);
       const subtype = Object.values(NetworkEventTypes).find((event) => data[event]);
 
       if (subtype === undefined) {

@@ -31,11 +31,11 @@ const networksFromValues = (networks) => Object.values(networks).flat();
 const baseHiddenNetwork = { ssid: undefined, hidden: true };
 
 function WifiSelector({ isOpen = false, onClose }) {
-  const client = useInstallerClient();
+  const { network: client } = useInstallerClient();
   const [networks, setNetworks] = useState([]);
   const [showHiddenForm, setShowHiddenForm] = useState(false);
+  const [devices, setDevices] = useState([]);
   const [connections, setConnections] = useState([]);
-  const [activeConnections, setActiveConnections] = useState([]);
   const [accessPoints, setAccessPoints] = useState([]);
   const [selectedNetwork, setSelectedNetwork] = useState(null);
   const [activeNetwork, setActiveNetwork] = useState(null);
@@ -46,9 +46,10 @@ function WifiSelector({ isOpen = false, onClose }) {
   };
 
   useEffect(() => {
-    client.network.connections().then(setConnections);
-    client.network.accessPoints().then(setAccessPoints);
-  }, [client.network]);
+    client.devices().then(setDevices);
+    client.connections().then(setConnections);
+    client.accessPoints().then(setAccessPoints);
+  }, [client]);
 
   useEffect(() => {
     const loadNetworks = async () => {
@@ -65,11 +66,11 @@ function WifiSelector({ isOpen = false, onClose }) {
           const network = {
             ...ap,
             settings: connections.find(c => c.wireless?.ssid === ap.ssid),
-            connection: activeConnections.find(c => c.id === ap.ssid)
+            device: devices.find(c => c.connection === ap.ssid)
           };
 
           // Group networks
-          if (network.connection) {
+          if (network.device) {
             networks.connected.push(network);
           } else if (network.settings) {
             networks.configured.push(network);
@@ -85,9 +86,37 @@ function WifiSelector({ isOpen = false, onClose }) {
 
     loadNetworks().then((data) => {
       setNetworks(data);
-      setActiveNetwork(networksFromValues(data).find(d => d.connection));
+      setActiveNetwork(networksFromValues(data).find(d => d.device));
     });
-  }, [client.network, connections, activeConnections, accessPoints, isOpen]);
+  }, [client, connections, devices, accessPoints, isOpen]);
+
+  useEffect(() => {
+    return client.onNetworkChange(({ type, payload }) => {
+      switch (type) {
+        case NetworkEventTypes.DEVICE_ADDED: {
+          setDevices((devs) => {
+            const newDevices = devs.filter((d) => d.name !== payload.name);
+            return [...newDevices, client.fromApiDevice(payload)];
+          });
+          break;
+        }
+
+        case NetworkEventTypes.DEVICE_UPDATED: {
+          const [name, data] = payload;
+          setDevices(devs => {
+            const newDevices = devs.filter((d) => d.name !== name);
+            return [...newDevices, client.fromApiDevice(data)];
+          });
+          break;
+        }
+
+        case NetworkEventTypes.DEVICE_REMOVED: {
+          setDevices(devs => devs.filter((d) => d.name !== payload));
+          break;
+        }
+      }
+    });
+  });
 
   return (
     <Popup isOpen={isOpen} title={_("Connect to a Wi-Fi network")}>
@@ -100,7 +129,7 @@ function WifiSelector({ isOpen = false, onClose }) {
         availableNetworks={networks}
         onSelectionCallback={(network) => {
           switchSelectedNetwork(network);
-          if (network.settings && !network.connection) {
+          if (network.settings && !network.device) {
             client.network.connectTo(network.settings);
           }
         }}
