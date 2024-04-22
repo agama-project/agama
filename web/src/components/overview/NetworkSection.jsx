@@ -83,19 +83,19 @@ export default function NetworkSection() {
       );
     }
   };
-
   const Content = () => {
     if (devices === undefined) return <SectionSkeleton />;
+    const activeDevices = devices.filter(d => d.connection);
+    const total = activeDevices.length;
 
-    if (devices.length === 0) return _("No network devices detected");
+    if (total === 0) return _("No network devices detected");
 
-    const summary = devices.map(deviceSummary);
+    const summary = activeDevices.map(deviceSummary);
 
     const msg = sprintf(
       // TRANSLATORS: header for the list of active network connections,
       // %d is replaced by the number of active connections
-      n_("%d device set:", "%d devices set:", devices.length),
-      devices.length
+      n_("%d device set:", "%d devices set:", total), total
     );
 
     return (

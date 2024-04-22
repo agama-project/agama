@@ -45,6 +45,8 @@ const networkState = (state) => {
     case DeviceState.DEACTIVATING:
       // TRANSLATORS: Wifi network status
       return _("Disconnecting");
+    case DeviceState.FAILED:
+      return _("Failed");
     case DeviceState.DISCONNECTED:
       // TRANSLATORS: Wifi network status
       return _("Disconnected");
@@ -55,7 +57,7 @@ const networkState = (state) => {
 
 const isStateChanging = (network) => {
   const state = network.device?.state;
-  return state === DeviceState.CONFIG || DeviceState.NEEDAUTH || state === DeviceState.DEACTIVATING;
+  return state === DeviceState.CONFIG || state === DeviceState.NEEDAUTH || state === DeviceState.DEACTIVATING || state === DeviceState.FAILED;
 };
 
 /**
@@ -72,7 +74,7 @@ function WifiNetworkListItem({ network, isSelected, isActive, onSelect, onCancel
   // Do not wait until receive the next D-Bus network event to have the connection object available
   // and display the spinner as soon as possible. I.e., renders it immediately when the user clicks
   // on an already configured network.
-  const showSpinner = (isSelected && network.settings && !network.device);
+  const showSpinner = (isSelected && network.settings && !network.device) || isStateChanging(network);
 
   return (
     <li
@@ -103,7 +105,7 @@ function WifiNetworkListItem({ network, isSelected, isActive, onSelect, onCancel
             <WifiNetworkMenu settings={network.settings} />}
         </div>
       </div>
-      {isSelected && (!network.settings || network.settings.error) &&
+      {isSelected && (!network.settings || network.error) &&
         <div className="content">
           <WifiConnectionForm network={network} onCancel={onCancel} />
         </div>}

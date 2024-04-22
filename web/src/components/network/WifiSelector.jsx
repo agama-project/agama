@@ -66,7 +66,8 @@ function WifiSelector({ isOpen = false, onClose }) {
           const network = {
             ...ap,
             settings: connections.find(c => c.wireless?.ssid === ap.ssid),
-            device: devices.find(c => c.connection === ap.ssid)
+            device: devices.find(c => c.connection === ap.ssid),
+            error: undefined
           };
 
           // Group networks
@@ -103,6 +104,9 @@ function WifiSelector({ isOpen = false, onClose }) {
 
         case NetworkEventTypes.DEVICE_UPDATED: {
           const [name, data] = payload;
+          if (data.state === "failed") {
+            selectedNetwork.error = "Failed";
+          }
           setDevices(devs => {
             const newDevices = devs.filter((d) => d.name !== name);
             return [...newDevices, client.fromApiDevice(data)];
@@ -115,6 +119,7 @@ function WifiSelector({ isOpen = false, onClose }) {
           break;
         }
       }
+      client.connections().then(setConnections);
     });
   });
 

@@ -19,13 +19,15 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useEffect, useState } from "react";
 import { Button, Skeleton } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { If, Page, Section } from "~/components/core";
 import { ConnectionsTable, IpSettingsForm, NetworkPageMenu, WifiSelector } from "~/components/network";
-import { NetworkEventTypes } from "~/client/network";
+import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
 import { _ } from "~/i18n";
 
 /**
@@ -116,6 +118,7 @@ export default function NetworkPage() {
           break;
         }
       }
+      client.connections().then(setConnections);
     });
   }, [client, devices]);
 

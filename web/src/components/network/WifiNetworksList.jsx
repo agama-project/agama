@@ -65,7 +65,7 @@ function WifiNetworksList({
   return (
     <ul className="selection-list" data-type="agama/list">
       {renderElements()}
-      <li data-state={showHiddenForm ? "focused" : "unstyled" }>
+      <li data-state={showHiddenForm ? "focused" : "unstyled"}>
         <div className="content">
           <WifiHiddenNetworkForm
             network={hiddenNetwork}

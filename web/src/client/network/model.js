@@ -60,6 +60,10 @@ const connectionHumanState = (state) => {
   return stateKey.toLowerCase();
 };
 
+/**
+ * @typedef {keyof ConnectionTypes} ConnectionType
+ */
+
 const ConnectionTypes = Object.freeze({
   ETHERNET: "ethernet",
   WIFI: "wireless",
@@ -97,6 +101,7 @@ const SecurityProtocols = Object.freeze({
 /**
  * @typedef {object} Device
  * @property {string} name
+ * @property {ConnectionType} type
  * @property {IPAddress[]} addresses
  * @property {string[]} nameservers
  * @property {string} gateway4
