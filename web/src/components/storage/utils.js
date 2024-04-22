@@ -33,21 +33,18 @@ import { N_ } from "~/i18n";
  */
 
 /**
- * @typedef {Object} SizeObject
- *
  * @note undefined for either property means unknown
- *
+ * @typedef {object} SizeObject
  * @property {number|undefined} size - The "amount" of size (10, 128, ...)
  * @property {string|undefined} unit - The size unit (MiB, GiB, ...)
- */
-
-/**
- * @typedef SpacePolicy
- * @type {object}
+ *
+ * @typedef {object} SpacePolicy
  * @property {string} id
  * @property {string} label
  * @property {string} description
  * @property {string[]} summaryLabels
+ *
+ * @typedef {"auto"|"fixed"|"range"} SizeMethod
  */
 
 const SIZE_METHODS = Object.freeze({

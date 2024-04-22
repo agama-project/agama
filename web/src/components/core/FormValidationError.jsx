@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import { FormHelperText, HelperText, HelperTextItem } from "@patternfly/react-core";
 
@@ -26,7 +28,7 @@ import { FormHelperText, HelperText, HelperTextItem } from "@patternfly/react-co
  * Helper component for displaying error messages in a PF/FormGroup
  *
  * @param {object} props - component props
- * @param {string} [props.message] - text to be shown as error
+ * @param {string|React.ReactElement} [props.message] - text to be shown as error
  */
 export default function FormValidationError({ message }) {
   if (!message) return;
