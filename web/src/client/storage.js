@@ -535,9 +535,10 @@ class ProposalManager {
         const values = [
           dbusSettings.TargetDevice?.v,
           buildTargetPVDevices(dbusSettings.TargetPVDevices),
-          dbusSettings.BootDevice.v,
           dbusSettings.Volumes.v.map(vol => vol.v.TargetDevice.v)
         ].flat();
+
+        if (dbusSettings.ConfigureBoot.v) values.push(dbusSettings.BootDevice.v);
 
         const names = uniq(compact(values)).filter(d => d.length > 0);
 

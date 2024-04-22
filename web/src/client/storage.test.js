@@ -1603,6 +1603,19 @@ describe("#proposal", () => {
           { device: 2, text: "Mount /dev/sdb1 as root", subvol: false, delete: false }
         ]);
       });
+
+      describe("if boot is not configured", () => {
+        beforeEach(() => {
+          cockpitProxies.proposal.Settings.ConfigureBoot = { t: "b", v: false };
+          cockpitProxies.proposal.Settings.BootDevice = { t: "s", v: "/dev/sdc" };
+        });
+
+        it("does not include the boot device as installation device", async () => {
+          client = new StorageClient();
+          const { settings } = await client.proposal.getResult();
+          expect(settings.installationDevices).toEqual([sda, sdb]);
+        });
+      });
     });
   });
 
