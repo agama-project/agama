@@ -103,20 +103,28 @@ trait Proposal {
 
 #[dbus_proxy(
     interface = "org.opensuse.Agama.Storage1.Block",
-    default_service = "org.opensuse.Agama.Storage1"
+    assume_defaults = true
 )]
-trait BlockDevice {
+trait Block {
     /// Active property
     #[dbus_proxy(property)]
     fn active(&self) -> zbus::Result<bool>;
 
-    /// Name property
+    /// Encrypted property
     #[dbus_proxy(property)]
-    fn name(&self) -> zbus::Result<String>;
+    fn encrypted(&self) -> zbus::Result<bool>;
+
+    /// RecoverableSize property
+    #[dbus_proxy(property)]
+    fn recoverable_size(&self) -> zbus::Result<u64>;
 
     /// Size property
     #[dbus_proxy(property)]
     fn size(&self) -> zbus::Result<u64>;
+
+    /// Start property
+    #[dbus_proxy(property)]
+    fn start(&self) -> zbus::Result<u64>;
 
     /// Systems property
     #[dbus_proxy(property)]
@@ -129,4 +137,89 @@ trait BlockDevice {
     /// UdevPaths property
     #[dbus_proxy(property)]
     fn udev_paths(&self) -> zbus::Result<Vec<String>>;
+}
+
+use zbus::proxy;
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Storage1.Drive",
+    assume_defaults = true
+)]
+trait Drive {
+    /// Bus property
+    #[dbus_proxy(property)]
+    fn bus(&self) -> zbus::Result<String>;
+
+    /// BusId property
+    #[dbus_proxy(property)]
+    fn bus_id(&self) -> zbus::Result<String>;
+
+    /// Driver property
+    #[dbus_proxy(property)]
+    fn driver(&self) -> zbus::Result<Vec<String>>;
+
+    /// Info property
+    #[dbus_proxy(property)]
+    fn info(&self) -> zbus::Result<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>;
+
+    /// Model property
+    #[dbus_proxy(property)]
+    fn model(&self) -> zbus::Result<String>;
+
+    /// Transport property
+    #[dbus_proxy(property)]
+    fn transport(&self) -> zbus::Result<String>;
+
+    /// Type property
+    #[dbus_proxy(property)]
+    fn type_(&self) -> zbus::Result<String>;
+
+    /// Vendor property
+    #[dbus_proxy(property)]
+    fn vendor(&self) -> zbus::Result<String>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Storage1.Multipath",
+    assume_defaults = true
+)]
+trait Multipath {
+    /// Wires property
+    #[dbus_proxy(property)]
+    fn wires(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Storage1.PartitionTable",
+    assume_defaults = true
+)]
+trait PartitionTable {
+    /// Partitions property
+    #[dbus_proxy(property)]
+    fn partitions(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
+
+    /// Type property
+    #[dbus_proxy(property)]
+    fn type_(&self) -> zbus::Result<String>;
+
+    /// UnusedSlots property
+    #[dbus_proxy(property)]
+    fn unused_slots(&self) -> zbus::Result<Vec<(u64, u64)>>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Storage1.Device",
+    assume_defaults = true
+)]
+trait Device {
+    /// Description property
+    #[dbus_proxy(property)]
+    fn description(&self) -> zbus::Result<String>;
+
+    /// Name property
+    #[dbus_proxy(property)]
+    fn name(&self) -> zbus::Result<String>;
+
+    /// SID property
+    #[dbus_proxy(property, name = "SID")]
+    fn sid(&self) -> zbus::Result<u32>;
 }

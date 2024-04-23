@@ -10,8 +10,8 @@ use crate::{
     manager::web::{manager_service, manager_stream},
     network::{web::network_service, NetworkManagerAdapter},
     questions::web::{questions_service, questions_stream},
-    storage::web::{storage_service, storage_streams},
     software::web::{software_service, software_streams},
+    storage::web::{storage_service, storage_streams},
     users::web::{users_service, users_streams},
     web::common::{issues_stream, progress_stream, service_status_stream},
 };

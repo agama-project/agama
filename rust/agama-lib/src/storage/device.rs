@@ -25,56 +25,34 @@ pub struct DeviceInfo {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct BlockDevice {
-
-}
+pub struct BlockDevice {}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct Component {
-
-}
+pub struct Component {}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct Drive {
-
-}
+pub struct Drive {}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct Filesystem {
-
-}
+pub struct Filesystem {}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct LvmLv {
-
-}
+pub struct LvmLv {}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct LvmVg {
-
-}
+pub struct LvmVg {}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct MD {
-
-}
+pub struct MD {}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct Multipath {
-
-}
+pub struct Multipath {}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct Partition {
-
-}
+pub struct Partition {}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct PartitionTable {
-
-}
+pub struct PartitionTable {}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct Raid {
-
-}
+pub struct Raid {}

@@ -1,11 +1,14 @@
 //! Implements a client to access Agama's storage service.
 
-use super::proxies::{BlockDeviceProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
+use super::device::{Device, DeviceInfo};
+use super::proxies::{BlockProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
 use super::StorageSettings;
 use crate::error::ServiceError;
+use anyhow::Context;
 use futures_util::future::join_all;
 use serde::Serialize;
 use std::collections::HashMap;
+use zbus::fdo::ObjectManagerProxy;
 use zbus::zvariant::OwnedObjectPath;
 use zbus::Connection;
 
@@ -22,6 +25,7 @@ pub struct StorageClient<'a> {
     pub connection: Connection,
     calculator_proxy: ProposalCalculatorProxy<'a>,
     storage_proxy: Storage1Proxy<'a>,
+    object_manager_proxy: ObjectManagerProxy<'a>,
 }
 
 impl<'a> StorageClient<'a> {
@@ -29,6 +33,11 @@ impl<'a> StorageClient<'a> {
         Ok(Self {
             calculator_proxy: ProposalCalculatorProxy::new(&connection).await?,
             storage_proxy: Storage1Proxy::new(&connection).await?,
+            object_manager_proxy: ObjectManagerProxy::builder(&connection)
+                .destination("org.opensuse.Agama.Storage1")?
+                .path("/org/opensuse/Agama/Storage1")?
+                .build()
+                .await?,
             connection,
         })
     }
@@ -65,7 +74,7 @@ impl<'a> StorageClient<'a> {
         &self,
         dbus_path: OwnedObjectPath,
     ) -> Result<StorageDevice, ServiceError> {
-        let proxy = BlockDeviceProxy::builder(&self.connection)
+        let proxy = BlockProxy::builder(&self.connection)
             .path(dbus_path)?
             .build()
             .await?;
@@ -144,5 +153,38 @@ impl<'a> StorageClient<'a> {
         }
 
         Ok(self.calculator_proxy.calculate(dbus_settings).await?)
+    }
+
+    pub async fn system_devices(&self) -> Result<Vec<Device>, ServiceError> {
+        let objects = self
+            .object_manager_proxy
+            .get_managed_objects()
+            .await
+            .context("Failed to get managed objects")?;
+        let result: Vec<Device> = objects
+            .into_iter()
+            // take ony system devices
+            .filter(|object| object.0.as_str().contains("Storage1/system"))
+            .map(|object| Device {
+                device_info: DeviceInfo {
+                    sid: 0,
+                    name: "TODO".to_string(),
+                    description: "TODO".to_string(),
+                },
+                component: None,
+                drive: None,
+                block_device: None,
+                filesystem: None,
+                lvm_lv: None,
+                lvm_vg: None,
+                md: None,
+                multipath: None,
+                partition: None,
+                partition_table: None,
+                raid: None,
+            })
+            .collect();
+
+        Ok(result)
     }
 }
