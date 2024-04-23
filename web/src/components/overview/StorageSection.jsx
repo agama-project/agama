@@ -102,15 +102,15 @@ const ProposalSummary = ({ proposal }) => {
     const msg = sprintf(fullMsg(result.settings.spacePolicy, pvDevices.length), vg, "%dev%");
 
     if (pvDevices.length > 1) {
-      return (<span dangerouslySetInnerHTML={{ __html: msg }} />);
+      return (<span>{msg}</span>);
     } else {
       const [msg1, msg2] = msg.split("%dev%");
 
       return (
         <Text>
-          <span dangerouslySetInnerHTML={{ __html: msg1 }} />
+          <span>{msg1}</span>
           <Em>{label(pvDevices[0])}</Em>
-          <span dangerouslySetInnerHTML={{ __html: msg2 }} />
+          <span>{msg2}</span>
         </Text>
       );
     }
