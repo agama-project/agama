@@ -1,0 +1,3 @@
+#! /bin/sh
+
+BROWSER="firefox --kiosk --profile $HOME/.mozilla/firefox/profile" /usr/libexec/cockpit-desktop /cockpit/@localhost/agama/index.html
