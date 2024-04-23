@@ -102,7 +102,7 @@ make build
 ## Image Definition
 
 The [KIWI](https://github.com/OSInside/kiwi) image builder is used by OBS to
-build the Live ISO. See the [Kiwi documentation](
+build the Live ISO. See the [KIWI documentation](
 https://osinside.github.io/kiwi/index.html) for more details about the build
 workflow and the `.kiwi` file format.
 
