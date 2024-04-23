@@ -22,7 +22,7 @@
 // @ts-check
 
 import React, { useReducer } from "react";
-import { Button, Form, FormGroup } from "@patternfly/react-core";
+import { Button, Form } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
@@ -31,7 +31,7 @@ import {
   DEFAULT_SIZE_UNIT, SIZE_METHODS, parseToBytes, splitSize
 } from '~/components/storage/utils';
 import { FsField, MountPathField, SizeOptionsField } from "~/components/storage/VolumeFields";
-import { If, Popup } from '~/components/core';
+import { Popup } from '~/components/core';
 
 /**
  * @typedef {import ("~/client/storage").Volume} Volume
@@ -709,20 +709,11 @@ export default function VolumeDialog({
     /** @fixme blockSize medium is too big and small is too small. */
     <Popup title={title} isOpen={isOpen} blockSize="medium" inlineSize="medium">
       <Form id="volume-form" onSubmit={submitForm}>
-        <If
-          condition={!isMountPathEditable()}
-          then={
-            <FormGroup label={_("Mount point")}>
-              <p>{mountPath}</p>
-            </FormGroup>
-          }
-          else={
-            <MountPathField
-              value={mountPath}
-              onChange={changeMountPath}
-              error={mountPathError()}
-            />
-          }
+        <MountPathField
+          value={mountPath}
+          isReadOnly={!isMountPathEditable()}
+          onChange={changeMountPath}
+          error={mountPathError()}
         />
         <FsField
           value={fsType}

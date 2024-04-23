@@ -29,7 +29,7 @@ import {
 import { sprintf } from "sprintf-js";
 
 import { _, N_ } from "~/i18n";
-import { FormValidationError, If, NumericTextInput } from '~/components/core';
+import { FormValidationError, FormReadOnlyField, If, NumericTextInput } from '~/components/core';
 import { Icon } from "~/components/layout";
 import { SIZE_METHODS, SIZE_UNITS } from '~/components/storage/utils';
 
@@ -43,29 +43,33 @@ import { SIZE_METHODS, SIZE_UNITS } from '~/components/storage/utils';
  *
  * @typedef {object} MountPathFieldProps
  * @property {string} value
+ * @property {boolean} [isReadOnly=false]
  * @property {(mountPath: string) => void} onChange
  * @property {string|React.ReactElement} [error]
  *
  * @param {MountPathFieldProps} props
  */
-const MountPathField = ({ value, onChange, error }) => {
+const MountPathField = ({ value, onChange, isReadOnly = false, error }) => {
+  const label = _("Mount point");
   /** @type {(_: any, mountPath: string) => void} */
   const changeMountPath = (_, mountPath) => onChange(mountPath);
 
+  if (isReadOnly) {
+    return <FormReadOnlyField label={label}>{value}</FormReadOnlyField>;
+  }
+
   return (
-    <>
-      <FormGroup isRequired fieldId="mountPath" label={_("Mount point")}>
-        <TextInput
-          id="mountPath"
-          name="mountPath"
-          value={value}
-          label={_("Mount point")}
-          onChange={changeMountPath}
-          validated={error ? "error" : "default"}
-        />
-        <FormValidationError message={error} />
-      </FormGroup>
-    </>
+    <FormGroup isRequired fieldId="mountPath" label={_("Mount point")}>
+      <TextInput
+        id="mountPath"
+        name="mountPath"
+        value={value}
+        label={_("Mount point")}
+        onChange={changeMountPath}
+        validated={error ? "error" : "default"}
+      />
+      <FormValidationError message={error} />
+    </FormGroup>
   );
 };
 
@@ -221,26 +225,20 @@ const FsField = ({ value, volume, isDisabled, onChange }) => {
   // TRANSLATORS: label for the file system selector.
   const label = _("File system type");
 
+  if (isSingleFs()) {
+    return <FormReadOnlyField label={label}>{value}</FormReadOnlyField>;
+  }
+
   return (
-    <If
-      condition={isSingleFs()}
-      then={
-        <FormGroup label={label}>
-          <p>{value}</p>
-        </FormGroup>
-      }
-      else={
-        <FormGroup isRequired label={label} labelIcon={<Info />} fieldId="fsType">
-          <FsSelect
-            id="fsType"
-            value={value}
-            volume={volume}
-            isDisabled={isDisabled}
-            onChange={onChange}
-          />
-        </FormGroup>
-      }
-    />
+    <FormGroup isRequired label={label} labelIcon={<Info />} fieldId="fsType">
+      <FsSelect
+        id="fsType"
+        value={value}
+        volume={volume}
+        isDisabled={isDisabled}
+        onChange={onChange}
+      />
+    </FormGroup>
   );
 };
 
