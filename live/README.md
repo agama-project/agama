@@ -119,7 +119,7 @@ The main Kiwi source files are located in the [src](src) subdirectory:
   configuration files or deleting not needed files).
 - [_constraints](src/_constraints) file tells OBS to build the image on the
   hosts with enough resources (enough free disk space).
-- [_multibuild](src/_multibuild) defines the image flavors (Kiwi profiles)
+- [_multibuild](src/_multibuild) defines the image flavors (KIWI profiles)
   which are available to build
 - [images.sh](src/images.sh) - injects a script which checks whether the machine
   has enough RAM when booting the Live ISO
