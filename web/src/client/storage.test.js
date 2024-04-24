@@ -25,6 +25,10 @@
 import DBusClient from "./dbus";
 import { StorageClient } from "./storage";
 
+/**
+ * @typedef {import("~/client/storage").StorageDevice} StorageDevice
+ */
+
 jest.mock("./dbus");
 
 const cockpitProxies = {};
@@ -35,6 +39,7 @@ let managedObjects = {};
 
 // System devices
 
+/** @type {StorageDevice}  */
 const sda = {
   sid: 59,
   isDrive: true,
@@ -59,6 +64,7 @@ const sda = {
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
+/** @type {StorageDevice}  */
 const sda1 = {
   sid: 60,
   isDrive: false,
@@ -76,6 +82,7 @@ const sda1 = {
   isEFI: false
 };
 
+/** @type {StorageDevice}  */
 const sda2 = {
   sid: 61,
   isDrive: false,
@@ -93,6 +100,7 @@ const sda2 = {
   isEFI: false
 };
 
+/** @type {StorageDevice}  */
 const sdb = {
   sid: 62,
   isDrive: true,
@@ -117,6 +125,7 @@ const sdb = {
   udevPaths: ["pci-0000:00-19"]
 };
 
+/** @type {StorageDevice}  */
 const sdc = {
   sid: 63,
   isDrive: true,
@@ -141,6 +150,7 @@ const sdc = {
   udevPaths: []
 };
 
+/** @type {StorageDevice}  */
 const sdd = {
   sid: 64,
   isDrive: true,
@@ -165,6 +175,7 @@ const sdd = {
   udevPaths: []
 };
 
+/** @type {StorageDevice}  */
 const sde = {
   sid: 65,
   isDrive: true,
@@ -189,6 +200,7 @@ const sde = {
   udevPaths: []
 };
 
+/** @type {StorageDevice}  */
 const md0 = {
   sid: 66,
   isDrive: false,
@@ -202,12 +214,14 @@ const md0 = {
   start: 0,
   encrypted: false,
   recoverableSize: 0,
+  devices: [],
   systems : ["openSUSE Leap 15.2"],
   udevIds: [],
   udevPaths: [],
   filesystem: { sid: 100, type: "ext4", mountPath: "/test", label: "system" }
 };
 
+/** @type {StorageDevice}  */
 const raid = {
   sid: 67,
   isDrive: true,
@@ -227,11 +241,13 @@ const raid = {
   start: 0,
   encrypted: false,
   recoverableSize: 0,
+  devices: [],
   systems : [],
   udevIds: [],
   udevPaths: []
 };
 
+/** @type {StorageDevice}  */
 const multipath = {
   sid: 68,
   isDrive: true,
@@ -256,6 +272,7 @@ const multipath = {
   udevPaths: []
 };
 
+/** @type {StorageDevice}  */
 const dasd = {
   sid: 69,
   isDrive: true,
@@ -280,6 +297,7 @@ const dasd = {
   udevPaths: []
 };
 
+/** @type {StorageDevice}  */
 const sdf = {
   sid: 70,
   isDrive: true,
@@ -304,6 +322,7 @@ const sdf = {
   udevPaths: []
 };
 
+/** @type {StorageDevice}  */
 const sdf1 = {
   sid: 71,
   isDrive: false,
@@ -321,6 +340,7 @@ const sdf1 = {
   isEFI: false
 };
 
+/** @type {StorageDevice}  */
 const lvmVg = {
   sid: 72,
   isDrive: false,
@@ -330,6 +350,7 @@ const lvmVg = {
   size: 512
 };
 
+/** @type {StorageDevice}  */
 const lvmLv1 = {
   sid: 73,
   isDrive: false,
@@ -414,6 +435,7 @@ const systemDevices = {
 //
 // Using a single device because most of the checks are already done with system devices.
 
+/** @type {StorageDevice}  */
 const sdbStaging = {
   sid: 62,
   isDrive: true,
