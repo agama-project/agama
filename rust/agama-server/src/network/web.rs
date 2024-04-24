@@ -77,9 +77,16 @@ pub async fn network_service<T: Adapter + Send + Sync + 'static>(
 
     let mut changes = client.subscribe();
     tokio::spawn(async move {
-        while let Ok(message) = changes.recv().await {
-            if let Err(e) = events.send(Event::NetworkChange { change: message }) {
-                eprintln!("Could not send the event: {}", e);
+        loop {
+            match changes.recv().await {
+                Ok(message) => {
+                    if let Err(e) = events.send(Event::NetworkChange { change: message }) {
+                        eprintln!("Could not send the event: {}", e);
+                    }
+                }
+                Err(e) => {
+                    eprintln!("Could not send the event: {}", e);
+                }
             }
         }
     });
