@@ -262,7 +262,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
           settings.space.policy = :delete
         end
 
-        it "generates delete actions for all used devices" do
+        it "generates delete actions for all the partitions at the used devices" do
           y2storage_settings = subject.convert
 
           expect(y2storage_settings.space_settings).to have_attributes(
@@ -270,9 +270,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
             actions:  {
               "/dev/sda1" => :force_delete,
               "/dev/sda2" => :force_delete,
-              "/dev/sda3" => :force_delete,
-              "/dev/sdb"  => :force_delete,
-              "/dev/sdc"  => :force_delete
+              "/dev/sda3" => :force_delete
             }
           )
         end
@@ -283,7 +281,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
           settings.space.policy = :resize
         end
 
-        it "generates resize actions for all used devices" do
+        it "generates resize actions for all the partitions at the used devices" do
           y2storage_settings = subject.convert
 
           expect(y2storage_settings.space_settings).to have_attributes(
@@ -291,9 +289,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
             actions:  {
               "/dev/sda1" => :resize,
               "/dev/sda2" => :resize,
-              "/dev/sda3" => :resize,
-              "/dev/sdb"  => :resize,
-              "/dev/sdc"  => :resize
+              "/dev/sda3" => :resize
             }
           )
         end
