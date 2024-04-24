@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import { sprintf } from "sprintf-js";
 
@@ -27,16 +29,29 @@ import { noop } from "~/utils";
 import { Icon } from "~/components/layout";
 import { If, Selector, Tag } from "~/components/core";
 import { deviceSize } from "~/components/storage/utils";
+import { deviceBaseName } from "~/components/storage/utils";
 
 /**
- * @typedef {import ("~/client/storage").DeviceManager.StorageDevice} StorageDevice
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
 
+/**
+ * @component
+ *
+ * @param {object} props
+ * @param {StorageDevice} props.device
+ */
 const FilesystemLabel = ({ device }) => {
   const label = device.filesystem?.label;
   if (label) return <Tag variant="gray-highlight"><b>{label}</b></Tag>;
 };
 
+/**
+ * @component
+ *
+ * @param {object} props
+ * @param {StorageDevice} props.device
+ */
 const DeviceExtendedInfo = ({ device }) => {
   const DeviceName = () => {
     if (device.name === undefined) return null;
@@ -86,9 +101,9 @@ const DeviceExtendedInfo = ({ device }) => {
   };
 
   const MDInfo = () => {
-    if (device.type !== "md" || !device.members) return null;
+    if (device.type !== "md" || !device.devices) return null;
 
-    const members = device.members.map(m => m.split("/").at(-1));
+    const members = device.devices.map(deviceBaseName);
 
     // TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
     return <div>{sprintf(_("Members: %s"), members.sort().join(", "))}</div>;
@@ -97,7 +112,7 @@ const DeviceExtendedInfo = ({ device }) => {
   const RAIDInfo = () => {
     if (device.type !== "raid") return null;
 
-    const devices = device.devices.map(m => m.split("/").at(-1));
+    const devices = device.devices.map(deviceBaseName);
 
     // TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
     return <div>{sprintf(_("Devices: %s"), devices.sort().join(", "))}</div>;
@@ -106,7 +121,7 @@ const DeviceExtendedInfo = ({ device }) => {
   const MultipathInfo = () => {
     if (device.type !== "multipath") return null;
 
-    const wires = device.wires.map(m => m.split("/").at(-1));
+    const wires = device.wires.map(deviceBaseName);
 
     // TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
     return <div>{sprintf(_("Wires: %s"), wires.sort().join(", "))}</div>;
@@ -124,6 +139,12 @@ const DeviceExtendedInfo = ({ device }) => {
   );
 };
 
+/**
+ * @component
+ *
+ * @param {object} props
+ * @param {StorageDevice} props.device
+ */
 const DeviceContentInfo = ({ device }) => {
   const PTable = () => {
     if (device.partitionTable === undefined) return null;
