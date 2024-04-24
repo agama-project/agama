@@ -539,7 +539,7 @@ class ProposalManager {
         const names = uniq(compact(values)).filter(d => d.length > 0);
 
         // #findDevice returns undefined if no device is found with the given name.
-        return compact(names.map(findDevice));
+        return compact(names.sort().map(findDevice));
       };
 
       const dbusSettings = proxy.Settings;
