@@ -688,7 +688,7 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Option<IpConfig> {
     Some(ip_config)
 }
 
-pub fn addresses_with_prefix_from_dbus(address_data: &OwnedValue) -> Option<Vec<IpInet>> {
+fn addresses_with_prefix_from_dbus(address_data: &OwnedValue) -> Option<Vec<IpInet>> {
     let address_data = address_data.downcast_ref::<zbus::zvariant::Array>()?;
     let mut addresses: Vec<IpInet> = vec![];
     for addr in address_data.get() {
