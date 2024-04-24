@@ -89,7 +89,7 @@ impl<T: Adapter + Send + Sync + 'static> NetworkSystem<T> {
     pub async fn start(self) -> Result<NetworkSystemClient, NetworkSystemError> {
         let mut state = self.adapter.read(StateConfig::default()).await?;
         let (actions_tx, actions_rx) = mpsc::unbounded_channel();
-        let (updates_tx, _updates_rx) = broadcast::channel(16);
+        let (updates_tx, _updates_rx) = broadcast::channel(1024);
 
         if let Some(watcher) = self.adapter.watcher() {
             let actions_tx_clone = actions_tx.clone();

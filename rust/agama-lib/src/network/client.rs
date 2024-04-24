@@ -86,11 +86,11 @@ impl<'a> NetworkClient<'a> {
             .await?;
         let name = device_proxy.name().await?;
         let device_type = device_proxy.type_().await?;
-        let state = DeviceState::try_from(device_proxy.state().await?).unwrap();
+        let state = DeviceState::try_from(device_proxy.state().await?).expect("Unknown state");
 
         Ok(Device {
             name,
-            type_: DeviceType::try_from(device_type).unwrap(),
+            type_: DeviceType::try_from(device_type).expect("Unknown type"),
             state,
         })
     }
