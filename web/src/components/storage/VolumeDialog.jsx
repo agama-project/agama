@@ -62,6 +62,14 @@ import { Popup } from '~/components/core';
  * @property {string|null} missingSize
  * @property {string|null} missingMinSize
  * @property {string|null} invalidMaxSize
+ *
+ * @typedef {object} VolumeDialogProps
+ * @property {Volume} volume
+ * @property {Volume[]} volumes
+ * @property {Volume[]} templates
+ * @property {boolean} [isOpen=false]
+ * @property {() => void} onCancel
+ * @property {(volume: Volume) => void} onAccept
  */
 
 /**
@@ -581,14 +589,6 @@ const reducer = (state, action) => {
 /**
  * Renders a dialog that allows the user to add or edit a file system.
  * @component
- *
- * @typedef {object} VolumeDialogProps
- * @property {Volume} volume
- * @property {Volume[]} volumes
- * @property {Volume[]} templates
- * @property {boolean} [isOpen=false]
- * @property {() => void} onCancel
- * @property {(volume: Volume) => void} onAccept
  *
  * @param {VolumeDialogProps} props
  */
