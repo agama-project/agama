@@ -114,19 +114,12 @@ export default function SpacePolicyDialog({
 
   // Generates the action value according to the policy.
   const deviceAction = (device) => {
-    let action;
-
     if (policy.id === "custom") {
-      action = actions.find(a => a.device === device.name)?.action || "keep";
-    } else {
-      const policyAction = { delete: "force_delete", resize: "resize", keep: "keep" };
-      action = policyAction[policy.id];
+      return actions.find(a => a.device === device.name)?.action || "keep";
     }
 
-    // For a drive device (e.g., Disk, RAID) it does not make sense to offer the resize action.
-    // At this moment, the Agama backend generates a resize action for drives if the policy is set
-    // to 'resize'. In that cases, the action is converted here to 'keep'.
-    return ((device.isDrive && action === "resize") ? "keep" : action);
+    const policyAction = { delete: "force_delete", resize: "resize", keep: "keep" };
+    return policyAction[policy.id];
   };
 
   const changeActions = (spaceAction) => {
