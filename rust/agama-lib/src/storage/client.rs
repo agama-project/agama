@@ -1,7 +1,7 @@
 //! Implements a client to access Agama's storage service.
 
 use super::device::{Device, DeviceInfo};
-use super::proxies::{BlockProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
+use super::proxies::{BlockProxy, DeviceProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
 use super::StorageSettings;
 use crate::error::ServiceError;
 use anyhow::Context;
@@ -74,17 +74,13 @@ impl<'a> StorageClient<'a> {
         &self,
         dbus_path: OwnedObjectPath,
     ) -> Result<StorageDevice, ServiceError> {
-        let proxy = BlockProxy::builder(&self.connection)
+        let proxy = DeviceProxy::builder(&self.connection)
             .path(dbus_path)?
             .build()
             .await?;
 
-        let name = proxy.name().await?;
-        // TODO: The description is not used yet. Decide what info to show, for example the device
-        // size, see https://crates.io/crates/size.
-        let description = name.clone();
 
-        Ok(StorageDevice { name, description })
+        Ok(StorageDevice { name: proxy.name().await?, description: proxy.description().await? })
     }
 
     /// Returns the boot device proposal setting
@@ -166,11 +162,7 @@ impl<'a> StorageClient<'a> {
             // take ony system devices
             .filter(|object| object.0.as_str().contains("Storage1/system"))
             .map(|object| Device {
-                device_info: DeviceInfo {
-                    sid: 0,
-                    name: "TODO".to_string(),
-                    description: "TODO".to_string(),
-                },
+                device_info: self.build_device_info(&object.0).await?,
                 component: None,
                 drive: None,
                 block_device: None,
@@ -186,5 +178,14 @@ impl<'a> StorageClient<'a> {
             .collect();
 
         Ok(result)
+    }
+
+    async fn build_device_info(&self, path: &OwnedObjectPath) -> Result<DeviceInfo, ServiceError> {
+        let proxy = DeviceProxy::builder(&self.connection).path(path)?.build().await?;
+        DeviceInfo {
+            sid: proxy.sid().await?,
+            name: proxy.name().await?,
+            description: proxy.description().await?,
+        }
     }
 }

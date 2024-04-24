@@ -103,7 +103,8 @@ trait Proposal {
 
 #[dbus_proxy(
     interface = "org.opensuse.Agama.Storage1.Block",
-    assume_defaults = true
+    default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1"
 )]
 trait Block {
     /// Active property
@@ -139,10 +140,10 @@ trait Block {
     fn udev_paths(&self) -> zbus::Result<Vec<String>>;
 }
 
-use zbus::proxy;
 #[dbus_proxy(
     interface = "org.opensuse.Agama.Storage1.Drive",
-    assume_defaults = true
+    default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1"
 )]
 trait Drive {
     /// Bus property
@@ -180,7 +181,8 @@ trait Drive {
 
 #[dbus_proxy(
     interface = "org.opensuse.Agama.Storage1.Multipath",
-    assume_defaults = true
+    default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1"
 )]
 trait Multipath {
     /// Wires property
@@ -190,7 +192,8 @@ trait Multipath {
 
 #[dbus_proxy(
     interface = "org.opensuse.Agama.Storage1.PartitionTable",
-    assume_defaults = true
+    default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1"
 )]
 trait PartitionTable {
     /// Partitions property
@@ -208,7 +211,8 @@ trait PartitionTable {
 
 #[dbus_proxy(
     interface = "org.opensuse.Agama.Storage1.Device",
-    assume_defaults = true
+    default_service = "org.opensuse.Agama.Storage1",
+    default_path = "/org/opensuse/Agama/Storage1"
 )]
 trait Device {
     /// Description property
