@@ -1,7 +1,9 @@
 //! Implements a client to access Agama's storage service.
 
 use super::device::{Device, DeviceInfo};
-use super::proxies::{BlockProxy, DeviceProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
+use super::proxies::{
+    BlockProxy, DeviceProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy,
+};
 use super::StorageSettings;
 use crate::error::ServiceError;
 use anyhow::Context;
@@ -9,7 +11,8 @@ use futures_util::future::join_all;
 use serde::Serialize;
 use std::collections::HashMap;
 use zbus::fdo::ObjectManagerProxy;
-use zbus::zvariant::OwnedObjectPath;
+use zbus::names::OwnedInterfaceName;
+use zbus::zvariant::{OwnedObjectPath, OwnedValue};
 use zbus::Connection;
 
 /// Represents a storage device
@@ -79,8 +82,10 @@ impl<'a> StorageClient<'a> {
             .build()
             .await?;
 
-
-        Ok(StorageDevice { name: proxy.name().await?, description: proxy.description().await? })
+        Ok(StorageDevice {
+            name: proxy.name().await?,
+            description: proxy.description().await?,
+        })
     }
 
     /// Returns the boot device proposal setting
@@ -151,41 +156,56 @@ impl<'a> StorageClient<'a> {
         Ok(self.calculator_proxy.calculate(dbus_settings).await?)
     }
 
+    async fn build_device(
+        &self,
+        object: &(
+            OwnedObjectPath,
+            HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+        ),
+    ) -> Result<Device, ServiceError> {
+        Ok(Device {
+            device_info: self.build_device_info(&object.0).await?,
+            component: None,
+            drive: None,
+            block_device: None,
+            filesystem: None,
+            lvm_lv: None,
+            lvm_vg: None,
+            md: None,
+            multipath: None,
+            partition: None,
+            partition_table: None,
+            raid: None,
+        })
+    }
+
     pub async fn system_devices(&self) -> Result<Vec<Device>, ServiceError> {
         let objects = self
             .object_manager_proxy
             .get_managed_objects()
             .await
             .context("Failed to get managed objects")?;
-        let result: Vec<Device> = objects
-            .into_iter()
-            // take ony system devices
-            .filter(|object| object.0.as_str().contains("Storage1/system"))
-            .map(|object| Device {
-                device_info: self.build_device_info(&object.0).await?,
-                component: None,
-                drive: None,
-                block_device: None,
-                filesystem: None,
-                lvm_lv: None,
-                lvm_vg: None,
-                md: None,
-                multipath: None,
-                partition: None,
-                partition_table: None,
-                raid: None,
-            })
-            .collect();
+        let mut result = vec![];
+        for object in objects {
+            if !object.0.as_str().contains("Storage1/system") {
+                continue;
+            }
+
+            result.push(self.build_device(&object).await?)
+        }
 
         Ok(result)
     }
 
     async fn build_device_info(&self, path: &OwnedObjectPath) -> Result<DeviceInfo, ServiceError> {
-        let proxy = DeviceProxy::builder(&self.connection).path(path)?.build().await?;
-        DeviceInfo {
+        let proxy = DeviceProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+        Ok(DeviceInfo {
             sid: proxy.sid().await?,
             name: proxy.name().await?,
             description: proxy.description().await?,
-        }
+        })
     }
 }
