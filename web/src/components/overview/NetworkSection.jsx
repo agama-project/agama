@@ -38,6 +38,8 @@ export default function NetworkSection() {
         case NetworkEventTypes.DEVICE_ADDED: {
           setDevices((devs) => {
             const newDevices = devs.filter((d) => d.name !== payload.name);
+            if (payload.connection) return newDevices;
+
             return [...newDevices, client.fromApiDevice(payload)];
           });
           break;
