@@ -40,6 +40,7 @@ use super::{builder::DeviceFromProxyBuilder, proxies::NetworkManagerProxy};
 /// At this point, it detects the following changes:
 ///
 /// * A device is added, changed or removed.
+/// * The status of a device changes.
 /// * The IPv4 or IPv6 configuration changes.
 pub struct NetworkManagerWatcher {
     connection: zbus::Connection,
@@ -135,13 +136,16 @@ impl<'a> ActionDispatcher<'a> {
     async fn read_devices(&mut self) -> Result<(), ServiceError> {
         let nm_proxy = NetworkManagerProxy::new(&self.connection).await?;
         for path in nm_proxy.get_devices().await? {
-            self.proxies.find_or_create_device(&path).await?;
+            self.proxies.find_or_add_device(&path).await?;
         }
         Ok(())
     }
 
+    /// Handles the case where a new device appears.
+    ///
+    /// * `path`: D-Bus object path of the new device.
     async fn handle_device_added(&mut self, path: OwnedObjectPath) -> Result<(), ServiceError> {
-        let (_, proxy) = self.proxies.find_or_create_device(&path).await?;
+        let (_, proxy) = self.proxies.find_or_add_device(&path).await?;
         if let Ok(device) = Self::device_from_proxy(&self.connection, proxy.clone()).await {
             _ = self.actions_tx.send(Action::AddDevice(Box::new(device)));
         }
@@ -150,8 +154,11 @@ impl<'a> ActionDispatcher<'a> {
         Ok(())
     }
 
+    /// Handles the case where a device is updated.
+    ///
+    /// * `path`: D-Bus object path of the updated device.
     async fn handle_device_updated(&mut self, path: OwnedObjectPath) -> Result<(), ServiceError> {
-        let (old_name, proxy) = self.proxies.find_or_create_device(&path).await?;
+        let (old_name, proxy) = self.proxies.find_or_add_device(&path).await?;
         let device = Self::device_from_proxy(&self.connection, proxy.clone()).await?;
         let new_name = device.name.clone();
         _ = self
@@ -161,6 +168,9 @@ impl<'a> ActionDispatcher<'a> {
         Ok(())
     }
 
+    /// Handles the case where a device is removed.
+    ///
+    /// * `path`: D-Bus object path of the removed device.
     async fn handle_device_removed(&mut self, path: OwnedObjectPath) -> Result<(), ServiceError> {
         if let Some((name, _)) = self.proxies.remove_device(&path) {
             _ = self.actions_tx.send(Action::RemoveDevice(name));
@@ -168,6 +178,9 @@ impl<'a> ActionDispatcher<'a> {
         Ok(())
     }
 
+    /// Handles the case where the IPv4 configuration changes.
+    ///
+    /// * `path`: D-Bus object path of the changed IP configuration.
     async fn handle_ip4_config_changed(
         &mut self,
         path: OwnedObjectPath,
@@ -181,6 +194,9 @@ impl<'a> ActionDispatcher<'a> {
         Ok(())
     }
 
+    /// Handles the case where the IPv6 configuration changes.
+    ///
+    /// * `path`: D-Bus object path of the changed IP configuration.
     async fn handle_ip6_config_changed(
         &mut self,
         path: OwnedObjectPath,
@@ -194,7 +210,6 @@ impl<'a> ActionDispatcher<'a> {
         Ok(())
     }
 
-    // TODO: improve after DeviceFromProxyBuilder API is improved
     async fn device_from_proxy(
         connection: &zbus::Connection,
         proxy: DeviceProxy<'_>,
@@ -204,11 +219,12 @@ impl<'a> ActionDispatcher<'a> {
     }
 }
 
-/// Stream of addded and removed devices.
+/// Stream of device-related events.
 ///
-/// This is a private stream that detects when a device was added or removed
-/// from NetworkManager. It is implemented as a struct because it needs to
-/// keep the ObjectManagerProxy alive.
+/// This stream listens for many NetworkManager events that are related to network devices (state,
+/// IP configuration, etc.) and converts them into variants of the [DeviceChange] enum.
+///
+/// It is implemented as a struct because it needs to keep the ObjectManagerProxy alive.
 #[pin_project]
 struct DeviceChangedStream {
     connection: zbus::Connection,
@@ -217,6 +233,9 @@ struct DeviceChangedStream {
 }
 
 impl DeviceChangedStream {
+    /// Builds a new stream using the given D-Bus connection.
+    ///
+    /// * `connection`: D-Bus connection.
     pub async fn new(connection: &zbus::Connection) -> Result<Self, ServiceError> {
         let connection = connection.clone();
         let mut inner = StreamMap::new();
@@ -349,6 +368,9 @@ async fn build_added_and_removed_stream(
     Ok(stream)
 }
 
+/// Returns a stream of properties changes to be used by DeviceChangedStream.
+///
+/// It listens for changes in several objects that are related to a network device.
 async fn build_properties_changed_stream(
     connection: &zbus::Connection,
 ) -> Result<MessageStream, ServiceError> {
@@ -370,6 +392,7 @@ enum DeviceChange {
     IP6ConfigChanged(OwnedObjectPath),
 }
 
+/// Ancillary class to track the devices and their related D-Bus objects.
 struct ProxiesRegistry<'a> {
     connection: zbus::Connection,
     devices: HashMap<OwnedObjectPath, (String, DeviceProxy<'a>)>,
@@ -382,7 +405,11 @@ impl<'a> ProxiesRegistry<'a> {
             devices: HashMap::new(),
         }
     }
-    pub async fn find_or_create_device(
+
+    /// Finds or adds a device to the registry.
+    ///
+    /// * `path`: D-Bus object path.
+    pub async fn find_or_add_device(
         &mut self,
         path: &OwnedObjectPath,
     ) -> Result<&(String, DeviceProxy<'a>), ServiceError> {
@@ -401,16 +428,26 @@ impl<'a> ProxiesRegistry<'a> {
         }
     }
 
+    /// Removes a device from the registry.
+    ///
+    /// * `path`: D-Bus object path.
     pub fn remove_device(&mut self, path: &OwnedObjectPath) -> Option<(String, DeviceProxy)> {
         self.devices.remove(&path)
     }
 
+    //// Updates a device name.
+    ///
+    /// * `path`: D-Bus object path.
+    /// * `new_name`: New device name.
     pub fn update_device_name(&mut self, path: &OwnedObjectPath, new_name: &str) {
         if let Some(value) = self.devices.get_mut(path) {
             value.0 = new_name.to_string();
         };
     }
 
+    //// For the device corresponding to a given IPv4 configuration.
+    ///
+    /// * `ip4_config_path`: D-Bus object path of the IPv4 configuration.
     pub async fn find_device_for_ip4(
         &self,
         ip4_config_path: &OwnedObjectPath,
@@ -425,6 +462,9 @@ impl<'a> ProxiesRegistry<'a> {
         None
     }
 
+    //// For the device corresponding to a given IPv6 configuration.
+    ///
+    /// * `ip6_config_path`: D-Bus object path of the IPv6 configuration.
     pub async fn find_device_for_ip6(
         &self,
         ip4_config_path: &OwnedObjectPath,
