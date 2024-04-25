@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,29 +21,57 @@
 
 // @ts-check
 
-import React, { useReducer, useState } from "react";
+import React, { useState } from "react";
 import {
-  InputGroup, InputGroupItem, Form, FormGroup, FormSelect, FormSelectOption, MenuToggle,
-  Popover, Radio, Select, SelectOption, SelectList
+  InputGroup, InputGroupItem, FormGroup, FormSelect, FormSelectOption, MenuToggle, Popover, Radio,
+  Select, SelectOption, SelectList, TextInput
 } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
 import { _, N_ } from "~/i18n";
-import { FormValidationError, If, NumericTextInput } from '~/components/core';
-import { DEFAULT_SIZE_UNIT, SIZE_METHODS, SIZE_UNITS, parseToBytes, splitSize } from '~/components/storage/utils';
+import { FormValidationError, FormReadOnlyField, If, NumericTextInput } from '~/components/core';
 import { Icon } from "~/components/layout";
+import { SIZE_METHODS, SIZE_UNITS } from '~/components/storage/utils';
 
 /**
  * @typedef {import ("~/client/storage").Volume} Volume
  */
 
 /**
- * Callback function for notifying a form input change
+ * Field for the mount path of a volume.
+ * @component
  *
- * @callback onChangeFn
- * @param {object} an object with the changed input and its new value
- * @return {void}
+ * @typedef {object} MountPathFieldProps
+ * @property {string} [value=""]
+ * @property {boolean} [isReadOnly=false]
+ * @property {(mountPath: string) => void} onChange
+ * @property {React.ReactNode} [error]
+ *
+ * @param {MountPathFieldProps} props
  */
+const MountPathField = ({ value = "", onChange, isReadOnly = false, error }) => {
+  const label = _("Mount point");
+  /** @type {(_: any, mountPath: string) => void} */
+  const changeMountPath = (_, mountPath) => onChange(mountPath);
+
+  if (isReadOnly) {
+    return <FormReadOnlyField label={label}>{value}</FormReadOnlyField>;
+  }
+
+  return (
+    <FormGroup isRequired fieldId="mountPath" label={_("Mount point")}>
+      <TextInput
+        id="mountPath"
+        name="mountPath"
+        value={value}
+        label={_("Mount point")}
+        onChange={changeMountPath}
+        validated={error ? "error" : "default"}
+      />
+      <FormValidationError message={error} />
+    </FormGroup>
+  );
+};
 
 /**
  * Form control for selecting a size unit
@@ -57,69 +85,11 @@ import { Icon } from "~/components/layout";
  */
 const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
   return (
-    <FormSelect { ...formSelectProps }>
+    <FormSelect {...formSelectProps}>
       {/* the unit values are marked for translation in the utils.js file */}
       {/* eslint-disable-next-line agama-i18n/string-literals */}
-      { units.map(unit => <FormSelectOption key={unit} value={unit} label={_(unit)} />) }
+      {units.map(unit => <FormSelectOption key={unit} value={unit} label={_(unit)} />)}
     </FormSelect>
-  );
-};
-
-/**
- * Form control for selecting a mount point
- * @component
- *
- * Based on {@link PF/FormSelect https://www.patternfly.org/components/forms/form-select}
- *
- * @param {object} props
- * @param {string} props.value - mountPath of current selected volume
- * @param {Array<Volume>} props.volumes - a collection of storage volumes
- * @param {onChangeFn} props.onChange - callback for notifying input changes
- * @param {import("@patternfly/react-core").SelectProps} [props.selectProps]
-*/
-
-const MountPointFormSelect = ({ value, volumes, onChange, ...selectProps }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const onSelect = (_, mountPath) => {
-    setIsOpen(false);
-    onChange(mountPath);
-  };
-
-  const onToggleClick = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const toggle = toggleRef => {
-    return (
-      <MenuToggle
-       id="mountPoint"
-       ref={toggleRef}
-       onClick={onToggleClick}
-       isExpanded={isOpen}
-       className="full-width"
-      >
-        {value || _("Select a value")}
-      </MenuToggle>
-    );
-  };
-  return (
-    <Select
-      onOpenChange={setIsOpen}
-      onSelect={onSelect}
-      isOpen={isOpen}
-      toggle={toggle}
-      shouldFocusToggleOnSelect
-      { ...selectProps }
-    >
-      <SelectList>
-        {volumes.map(v => (
-          <SelectOption isSelected={value === v.mountPath} key={v.mountPath} value={v.mountPath}>
-            {v.mountPath}
-          </SelectOption>
-        ))}
-      </SelectList>
-    </Select>
   );
 };
 
@@ -157,9 +127,10 @@ const FsSelectOption = ({ fsOption }) => {
  * @param {string} props.id - Widget id.
  * @param {string} props.value - Currently selected file system.
  * @param {Volume} props.volume - The selected storage volume.
- * @param {onChangeFn} props.onChange - Callback for notifying input changes.
+ * @param {boolean} props.isDisabled
+ * @param {(data: object) => void} props.onChange - Callback for notifying input changes.
  */
-const FsSelect = ({ id, value, volume, onChange }) => {
+const FsSelect = ({ id, value, volume, isDisabled, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const options = fsOptions(volume);
@@ -171,7 +142,7 @@ const FsSelect = ({ id, value, volume, onChange }) => {
 
   const onSelect = (_event, option) => {
     setIsOpen(false);
-    onChange({ fsType: option, snapshots: false });
+    onChange({ fsType: option });
   };
 
   const toggle = toggleRef => {
@@ -182,6 +153,7 @@ const FsSelect = ({ id, value, volume, onChange }) => {
         onClick={onToggleClick}
         isExpanded={isOpen}
         className="full-width"
+        isDisabled={isDisabled}
       >
         {selected}
       </MenuToggle>
@@ -213,12 +185,15 @@ const FsSelect = ({ id, value, volume, onChange }) => {
  * text with the unique option.
  * @component
  *
- * @param {object} props
- * @param {string} props.value - Currently selected file system.
- * @param {Volume} props.volume - The selected storage volume.
- * @param {onChangeFn} props.onChange - Callback for notifying input changes.
+ * @typedef {object} FsFieldProps
+ * @property {string} value - Currently selected file system.
+ * @property {Volume} volume - The selected storage volume.
+ * @property {boolean} [isDisabled=false] - Whether the field is disabled or not.
+ * @property {(data: object) => void} onChange - Callback for notifying input changes.
+ *
+ * @param {FsFieldProps} props
  */
-const FsField = ({ value, volume, onChange }) => {
+const FsField = ({ value, volume, isDisabled = false, onChange }) => {
   const isSingleFs = () => {
     // check for btrfs with snapshots
     if (volume.fsType === "Btrfs" && volume.snapshots) {
@@ -250,20 +225,20 @@ const FsField = ({ value, volume, onChange }) => {
   // TRANSLATORS: label for the file system selector.
   const label = _("File system type");
 
+  if (isSingleFs()) {
+    return <FormReadOnlyField label={label}>{value}</FormReadOnlyField>;
+  }
+
   return (
-    <If
-      condition={isSingleFs()}
-      then={
-        <FormGroup label={label}>
-          <p>{value}</p>
-        </FormGroup>
-      }
-      else={
-        <FormGroup isRequired label={label} labelIcon={<Info />} fieldId="fsType">
-          <FsSelect id="fsType" value={value} volume={volume} onChange={onChange} />
-        </FormGroup>
-      }
-    />
+    <FormGroup isRequired label={label} labelIcon={<Info />} fieldId="fsType">
+      <FsSelect
+        id="fsType"
+        value={value}
+        volume={volume}
+        isDisabled={isDisabled}
+        onChange={onChange}
+      />
+    </FormGroup>
   );
 };
 
@@ -312,9 +287,10 @@ const SizeAuto = ({ volume }) => {
  * @param {object} props
  * @param {object} props.errors - the form errors
  * @param {object} props.formData - the form data
- * @param {onChangeFn} props.onChange - callback for notifying input changes
+ * @param {boolean} props.isDisabled
+ * @param {(v: object) => void} props.onChange - callback for notifying input changes
  */
-const SizeManual = ({ errors, formData, onChange }) => {
+const SizeManual = ({ errors, formData, isDisabled, onChange }) => {
   return (
     <div className="stack">
       <p>
@@ -340,6 +316,7 @@ const SizeManual = ({ errors, formData, onChange }) => {
               value={formData.size}
               onChange={(size) => onChange({ size })}
               validated={errors.size && 'error'}
+              isDisabled={isDisabled}
             />
           </InputGroupItem>
           <InputGroupItem>
@@ -349,8 +326,9 @@ const SizeManual = ({ errors, formData, onChange }) => {
               // TRANSLATORS: units selector (like KiB, MiB, GiB...)
               aria-label={_("Size unit")}
               units={Object.values(SIZE_UNITS)}
-              value={formData.sizeUnit }
+              value={formData.sizeUnit}
               onChange={(_, sizeUnit) => onChange({ sizeUnit })}
+              isDisabled={isDisabled}
             />
           </InputGroupItem>
         </InputGroup>
@@ -367,9 +345,10 @@ const SizeManual = ({ errors, formData, onChange }) => {
  * @param {object} props
  * @param {object} props.errors - the form errors
  * @param {object} props.formData - the form data
- * @param {onChangeFn} props.onChange - callback for notifying input changes
+ * @param {boolean} props.isDisabled
+ * @param {(v: object) => void} props.onChange - callback for notifying input changes
  */
-const SizeRange = ({ errors, formData, onChange }) => {
+const SizeRange = ({ errors, formData, isDisabled, onChange }) => {
   return (
     <div className="stack">
       <p>
@@ -395,6 +374,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
                 value={formData.minSize}
                 onChange={(minSize) => onChange({ minSize })}
                 validated={errors.minSize && 'error'}
+                isDisabled={isDisabled}
               />
             </InputGroupItem>
             <InputGroupItem>
@@ -403,8 +383,9 @@ and maximum. If no maximum is given then the file system will be as big as possi
                 id="minSizeUnit"
                 aria-label={_("Unit for the minimum size")}
                 units={Object.values(SIZE_UNITS)}
-                value={formData.minSizeUnit }
+                value={formData.minSizeUnit}
                 onChange={(_, minSizeUnit) => onChange({ minSizeUnit })}
+                isDisabled={isDisabled}
               />
             </InputGroupItem>
           </InputGroup>
@@ -427,6 +408,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
                 aria-label={_("Maximum desired size")}
                 value={formData.maxSize}
                 onChange={(maxSize) => onChange({ maxSize })}
+                isDisabled={isDisabled}
               />
             </InputGroupItem>
             <InputGroupItem>
@@ -435,8 +417,9 @@ and maximum. If no maximum is given then the file system will be as big as possi
                 id="maxSizeUnit"
                 aria-label={_("Unit for the maximum size")}
                 units={Object.values(SIZE_UNITS)}
-                value={formData.maxSizeUnit || formData.minSizeUnit }
+                value={formData.maxSizeUnit || formData.minSizeUnit}
                 onChange={(_, maxSizeUnit) => onChange({ maxSizeUnit })}
+                isDisabled={isDisabled}
               />
             </InputGroupItem>
           </InputGroup>
@@ -461,15 +444,18 @@ const SIZE_OPTION_LABELS = Object.freeze({
  * Widget for rendering the volume size options
  * @component
  *
- * @param {object} props
- * @param {object} props.errors - the form errors
- * @param {object} props.formData - the form data
- * @param {Volume} props.volume - the selected storage volume
- * @param {onChangeFn} props.onChange - callback for notifying input changes
+ * @typedef {object} SizeOptionsFieldProps
+ * @property {Volume} volume - the selected storage volume
+ * @property {object} formData - the form data
+ * @property {object} [errors={}] - the form errors
+ * @property {boolean} [isDisabled=false] - Whether the field options are disabled or not.
+ * @property {(v: object) => void} onChange - callback for notifying input changes
+ *
+ * @param {SizeOptionsFieldProps} props
  */
-const SizeOptions = ({ errors, formData, volume, onChange }) => {
+const SizeOptionsField = ({ volume, formData, isDisabled = false, errors = {}, onChange }) => {
   const { sizeMethod } = formData;
-  const sizeWidgetProps = { errors, formData, volume, onChange };
+  const sizeWidgetProps = { errors, formData, volume, isDisabled, onChange };
 
   /** @type {string[]} */
   const sizeOptions = [SIZE_METHODS.MANUAL, SIZE_METHODS.RANGE];
@@ -477,255 +463,37 @@ const SizeOptions = ({ errors, formData, volume, onChange }) => {
   if (volume.outline.supportAutoSize) sizeOptions.push(SIZE_METHODS.AUTO);
 
   return (
-    <div>
-      <div className="split radio-group">
-        { sizeOptions.map((value) => {
-          const isSelected = sizeMethod === value;
+    <FormGroup role="radiogroup" fieldId="size" label={_("Size")} isRequired>
+      <div>
+        <div className="split radio-group">
+          {sizeOptions.map((value) => {
+            const isSelected = sizeMethod === value;
 
-          return (
-            <Radio
-              id={value}
-              key={`size-${value}`}
-              // eslint-disable-next-line agama-i18n/string-literals
-              label={_(SIZE_OPTION_LABELS[value] || value)}
-              value={value}
-              name="size-option"
-              className={isSelected && "selected"}
-              isChecked={isSelected}
-              onChange={() => onChange({ sizeMethod: value })}
-            />
-          );
-        })}
+            return (
+              <Radio
+                id={value}
+                key={`size-${value}`}
+                // eslint-disable-next-line agama-i18n/string-literals
+                label={_(SIZE_OPTION_LABELS[value] || value)}
+                value={value}
+                name="size-option"
+                className={isSelected && "selected"}
+                isChecked={isSelected}
+                onChange={() => onChange({ sizeMethod: value })}
+                isDisabled={isDisabled}
+              />
+            );
+          })}
+        </div>
+
+        <div aria-live="polite" className="highlighted-live-region">
+          <If condition={sizeMethod === SIZE_METHODS.AUTO} then={<SizeAuto {...sizeWidgetProps} />} />
+          <If condition={sizeMethod === SIZE_METHODS.RANGE} then={<SizeRange {...sizeWidgetProps} />} />
+          <If condition={sizeMethod === SIZE_METHODS.MANUAL} then={<SizeManual {...sizeWidgetProps} />} />
+        </div>
       </div>
-
-      <div aria-live="polite" className="highlighted-live-region">
-        <If condition={sizeMethod === SIZE_METHODS.AUTO} then={<SizeAuto { ...sizeWidgetProps } />} />
-        <If condition={sizeMethod === SIZE_METHODS.RANGE} then={<SizeRange {...sizeWidgetProps } />} />
-        <If condition={sizeMethod === SIZE_METHODS.MANUAL} then={<SizeManual { ...sizeWidgetProps } />} />
-      </div>
-    </div>
+    </FormGroup>
   );
 };
 
-/**
- * Creates a new storage volume object based on given params
- *
- * @param {Volume} volume - a storage volume
- * @param {object} formData - data used to calculate the volume updates
- * @returns {object} storage volume object
- */
-const createUpdatedVolume = (volume, formData) => {
-  let sizeAttrs = {};
-  const size = parseToBytes(`${formData.size} ${formData.sizeUnit}`);
-  const minSize = parseToBytes(`${formData.minSize} ${formData.minSizeUnit}`);
-  const maxSize = parseToBytes(`${formData.maxSize} ${formData.maxSizeUnit}`);
-
-  switch (formData.sizeMethod) {
-    case SIZE_METHODS.AUTO:
-      sizeAttrs = { minSize: undefined, maxSize: undefined, autoSize: true };
-      break;
-    case SIZE_METHODS.MANUAL:
-      sizeAttrs = { minSize: size, maxSize: size, autoSize: false };
-      break;
-    case SIZE_METHODS.RANGE:
-      sizeAttrs = { minSize, maxSize: formData.maxSize ? maxSize : undefined, autoSize: false };
-      break;
-  }
-
-  const { fsType, snapshots } = formData;
-
-  return { ...volume, ...sizeAttrs, fsType, snapshots };
-};
-
-/**
- * Form-related helper for guessing the size method for given volume
- *
- * @param {Volume} volume - a storage volume
- * @return {string} corresponding size method
- */
-const sizeMethodFor = (volume) => {
-  const { autoSize, minSize, maxSize } = volume;
-
-  if (autoSize) {
-    return SIZE_METHODS.AUTO;
-  } else if (minSize !== maxSize) {
-    return SIZE_METHODS.RANGE;
-  } else {
-    return SIZE_METHODS.MANUAL;
-  }
-};
-
-/**
- * Form-related helper for preparing data based on given volume
- *
- * @param {Volume} volume - a storage volume object
- * @return {object} an object ready to be used as a "form state"
- */
-const prepareFormData = (volume) => {
-  const { size: minSize = "", unit: minSizeUnit = DEFAULT_SIZE_UNIT } = splitSize(volume.minSize);
-  const { size: maxSize = "", unit: maxSizeUnit = minSizeUnit || DEFAULT_SIZE_UNIT } = splitSize(volume.maxSize);
-
-  return {
-    size: minSize,
-    sizeUnit: minSizeUnit,
-    minSize,
-    minSizeUnit,
-    maxSize,
-    maxSizeUnit,
-    sizeMethod: sizeMethodFor(volume),
-    mountPoint: volume.mountPath,
-    fsType: volume.fsType,
-    snapshots: volume.snapshots
-  };
-};
-
-/**
- * Initializer function for the React#useReducer used in the {@link VolumesForm}
- *
- * @param {Volume} volume - a storage volume object
- * @returns {object} a ready to use initial state
- */
-const createInitialState = (volume) => {
-  return {
-    volume,
-    formData: prepareFormData(volume),
-    errors: {}
-  };
-};
-
-/**
- * The VolumeForm reducer
- */
-const reducer = (state, action) => {
-  const { type, payload } = action;
-
-  switch (type) {
-    case "CHANGE_VOLUME": {
-      return createInitialState(payload.volume);
-    }
-
-    case "UPDATE_DATA": {
-      return {
-        ...state,
-        formData: {
-          ...state.formData,
-          ...payload
-        }
-      };
-    }
-
-    case "SET_ERRORS": {
-      return { ...state, errors: payload };
-    }
-
-    default: {
-      return state;
-    }
-  }
-};
-
-/**
- * Form used for adding a new file system from a list of templates
- * @component
- *
- * @note VolumeForm does not provide a submit button. It is the consumer's
- * responsibility to provide both: the button for triggering the submission by
- * using the form id and the callback function used to perform the submission
- * once the form has been validated.
- *
- * @param {object} props
- * @param {string} props.id - Form ID
- * @param {Volume} [props.volume] - Volume if editing
- * @param {Volume[]} props.templates
- * @param {onSubmitFn} props.onSubmit - Function to use for submitting a new volume
- *
- * @callback onSubmitFn
- * @param {Volume} volume - a storage volume object
- * @return {void}
- */
-export default function VolumeForm({ id, volume: currentVolume, templates = [], onSubmit }) {
-  /** @type {[object, (action: object) => void]} */
-  const [state, dispatch] = useReducer(reducer, currentVolume || templates[0], createInitialState);
-
-  const changeVolume = (mountPath) => {
-    const volume = templates.find(t => t.mountPath === mountPath);
-    dispatch({ type: "CHANGE_VOLUME", payload: { volume } });
-  };
-
-  const updateData = (data) => dispatch({ type: "UPDATE_DATA", payload: data });
-
-  const validateVolumeSize = (sizeMethod, volume) => {
-    const errors = {};
-    const { minSize, maxSize } = volume;
-
-    switch (sizeMethod) {
-      case SIZE_METHODS.AUTO:
-        break;
-      case SIZE_METHODS.MANUAL:
-        if (!minSize) {
-          errors.size = _("A size value is required");
-        }
-        break;
-      case SIZE_METHODS.RANGE:
-        if (!minSize) {
-          errors.minSize = _("Minimum size is required");
-        }
-
-        if (maxSize !== -1 && maxSize <= minSize) {
-          errors.maxSize = _("Maximum must be greater than minimum");
-        }
-        break;
-    }
-
-    return errors;
-  };
-
-  const submitForm = (e) => {
-    e.preventDefault();
-    const { volume: originalVolume, formData } = state;
-    const volume = createUpdatedVolume(originalVolume, formData);
-    const errors = validateVolumeSize(formData.sizeMethod, volume);
-
-    dispatch({ type: "SET_ERRORS", payload: errors });
-
-    if (!Object.keys(errors).length) onSubmit(volume);
-  };
-
-  const { fsType } = state.formData;
-
-  const ShowMountPointSelector = () => (
-    <MountPointFormSelect
-        value={state.formData.mountPoint}
-        onChange={changeVolume}
-        volumes={currentVolume ? [currentVolume] : templates}
-    />
-  );
-
-  const ShowMountPoint = () => <p>{state.formData.mountPoint}</p>;
-
-  return (
-    <Form id={id} onSubmit={submitForm}>
-      <If
-        condition={currentVolume !== undefined}
-        then={
-          <FormGroup label={_("Mount point")}>
-            <ShowMountPoint />
-          </FormGroup>
-        }
-        else={
-          <FormGroup isRequired label={_("Mount point")} fieldId="mountPoint">
-            <ShowMountPointSelector />
-          </FormGroup>
-        }
-      />
-      <FsField
-        value={fsType}
-        volume={state.volume}
-        onChange={updateData}
-      />
-      <FormGroup fieldId="size" label={_("Size")} isRequired>
-        <SizeOptions { ...state } onChange={updateData} />
-      </FormGroup>
-    </Form>
-  );
-}
+export { FsField, MountPathField, SizeOptionsField };

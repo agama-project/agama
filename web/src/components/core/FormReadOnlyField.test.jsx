@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,29 +19,15 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
-import { FormHelperText, HelperText, HelperTextItem } from "@patternfly/react-core";
+import { screen } from "@testing-library/react";
+import { plainRender } from "~/test-utils";
+import { FormReadOnlyField } from "~/components/core";
 
-/**
- * Helper component for displaying error messages in a PF/FormGroup
- *
- * @todo: allow it to accept children instead of message prop
- *
- * @param {object} props - component props
- * @param {React.ReactNode} [props.message] - text to be shown as error
- */
-export default function FormValidationError({ message }) {
-  if (!message) return;
-
-  return (
-    <FormHelperText>
-      <HelperText>
-        <HelperTextItem variant="error">
-          {message}
-        </HelperTextItem>
-      </HelperText>
-    </FormHelperText>
-  );
-}
+it("renders label and content wrapped in div nodes using expected PatternFly styles", () => {
+  plainRender(<FormReadOnlyField label="Product">Agama</FormReadOnlyField>);
+  const field = screen.getByText("Agama");
+  const label = screen.getByText("Product");
+  expect(field.classList.contains("pf-v5-c-form__group")).toBe(true);
+  expect(label.classList.contains("pf-v5-c-form__label-text")).toBe(true);
+});

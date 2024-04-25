@@ -43,7 +43,10 @@ system after configuration changes or software upgrades.");
  *
  * @typedef {object} SnapshotsFieldProps
  * @property {Volume} rootVolume
- * @property {(config: object) => void} onChange
+ * @property {(config: SnapshotsConfig) => void} onChange
+ *
+ * @typedef {object} SnapshotsConfig
+ * @property {boolean} active
  *
  * @param {SnapshotsFieldProps} props
  */

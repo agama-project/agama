@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Apr 25 15:04:05 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Allow adding arbitrary volumes (gh#openSUSE/agama#1154).
+
+-------------------------------------------------------------------
 Thu Apr 25 13:40:06 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Adapted to recent changes on Y2Storage::GuidedProposal

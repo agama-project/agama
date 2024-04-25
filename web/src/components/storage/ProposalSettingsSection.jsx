@@ -112,18 +112,6 @@ export default function ProposalSettingsSection({
   const defaultBootDevice = findDevice(settings.defaultBootDevice);
   const spacePolicy = SPACE_POLICIES.find(p => p.id === settings.spacePolicy);
 
-  /**
-   * Templates for already existing mount points are filtered out.
-   *
-   * @returns {Volume[]}
-   */
-  const usefulTemplates = () => {
-    const mountPaths = volumes.map(v => v.mountPath);
-    return volumeTemplates.filter(t => (
-      t.mountPath.length > 0 && !mountPaths.includes(t.mountPath)
-    ));
-  };
-
   return (
     <>
       <Section title={_("Settings")}>
@@ -144,7 +132,7 @@ export default function ProposalSettingsSection({
         />
         <PartitionsField
           volumes={volumes}
-          templates={usefulTemplates()}
+          templates={volumeTemplates}
           devices={availableDevices}
           target={settings.target}
           targetDevice={targetDevice}

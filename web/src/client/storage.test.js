@@ -1430,6 +1430,7 @@ describe("#proposal", () => {
 
   describe("#defaultVolume", () => {
     beforeEach(() => {
+      cockpitProxies.proposalCalculator.ProductMountPoints = ["/", "swap", "/home"];
       cockpitProxies.proposalCalculator.DefaultVolume = jest.fn(mountPath => {
         switch (mountPath) {
           case "/home": return {
@@ -1504,7 +1505,8 @@ describe("#proposal", () => {
           snapshotsConfigurable: false,
           snapshotsAffectSizes: false,
           adjustByRam: false,
-          sizeRelevantVolumes: []
+          sizeRelevantVolumes: [],
+          productDefined: true
         }
       });
 
@@ -1527,7 +1529,8 @@ describe("#proposal", () => {
           snapshotsConfigurable: false,
           snapshotsAffectSizes: false,
           adjustByRam: false,
-          sizeRelevantVolumes: []
+          sizeRelevantVolumes: [],
+          productDefined: false
         }
       });
     });
@@ -1550,10 +1553,12 @@ describe("#proposal", () => {
       beforeEach(() => {
         contexts.withSystemDevices();
         contexts.withProposal();
-        client = new StorageClient();
+        cockpitProxies.proposalCalculator.ProductMountPoints = ["/", "swap"];
       });
 
       it("returns the proposal settings and actions", async () => {
+        client = new StorageClient();
+
         const { settings, actions } = await client.proposal.getResult();
 
         expect(settings).toMatchObject({
@@ -1585,7 +1590,8 @@ describe("#proposal", () => {
                 supportAutoSize: true,
                 snapshotsConfigurable: true,
                 snapshotsAffectSizes: true,
-                sizeRelevantVolumes: ["/home"]
+                sizeRelevantVolumes: ["/home"],
+                productDefined: true
               }
             },
             {
@@ -1604,7 +1610,8 @@ describe("#proposal", () => {
                 supportAutoSize: false,
                 snapshotsConfigurable: false,
                 snapshotsAffectSizes: false,
-                sizeRelevantVolumes: []
+                sizeRelevantVolumes: [],
+                productDefined: false
               }
             }
           ]
@@ -1617,6 +1624,19 @@ describe("#proposal", () => {
         expect(actions).toStrictEqual([
           { device: 2, text: "Mount /dev/sdb1 as root", subvol: false, delete: false }
         ]);
+      });
+
+      describe("if boot is not configured", () => {
+        beforeEach(() => {
+          cockpitProxies.proposal.Settings.ConfigureBoot = { t: "b", v: false };
+          cockpitProxies.proposal.Settings.BootDevice = { t: "s", v: "/dev/sdc" };
+        });
+
+        it("does not include the boot device as installation device", async () => {
+          client = new StorageClient();
+          const { settings } = await client.proposal.getResult();
+          expect(settings.installationDevices).toEqual([sda, sdb]);
+        });
       });
     });
   });
