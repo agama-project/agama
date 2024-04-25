@@ -1,10 +1,9 @@
 //! Implements a client to access Agama's storage service.
 
 use super::device::{BlockDevice, Device, DeviceInfo};
-use super::proxies::{
-    DeviceProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy,
-};
+use super::proxies::{DeviceProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
 use super::StorageSettings;
+use crate::dbus::get_property;
 use crate::error::ServiceError;
 use anyhow::{anyhow, Context};
 use futures_util::future::join_all;
@@ -14,24 +13,6 @@ use zbus::fdo::ObjectManagerProxy;
 use zbus::names::{InterfaceName, OwnedInterfaceName};
 use zbus::zvariant::{OwnedObjectPath, OwnedValue, Value};
 use zbus::Connection;
-
-// TODO: move to better place
-/// Helper to get property of given type from ManagedObjects map
-fn get_property<'a, T>(properties: &'a HashMap<String, OwnedValue>, name: &str) -> Result<T, ServiceError> 
-where
-T: TryFrom<Value<'a>>,
-<T as TryFrom<Value<'a>>>::Error: Into<zbus::zvariant::Error>
-{
-    let value: Value = properties.get(name).context(format!("Failed to find property '{}'", name))?.into();
-    match T::try_from(value) {
-        Ok(v) => Ok(v),
-        Err(e) => {
-            let verr : zbus::zvariant::Error = e.into();
-            let serr : ServiceError = verr.into();
-            Err(serr)
-        }
-    }       
-}
 
 /// Represents a storage device
 #[derive(Serialize, Debug)]
@@ -178,8 +159,8 @@ impl<'a> StorageClient<'a> {
         &self,
         object: &(
             OwnedObjectPath,
-            HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>
-        )
+            HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+        ),
     ) -> Result<Device, ServiceError> {
         let interfaces = &object.1;
         Ok(Device {
@@ -217,8 +198,12 @@ impl<'a> StorageClient<'a> {
         Ok(result)
     }
 
-    async fn build_device_info(&self, interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>) -> Result<DeviceInfo, ServiceError> {
-        let interface : OwnedInterfaceName = InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Device").into();
+    async fn build_device_info(
+        &self,
+        interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+    ) -> Result<DeviceInfo, ServiceError> {
+        let interface: OwnedInterfaceName =
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Device").into();
         let properties = interfaces.get(&interface);
         // All devices has to implement device info, so report error if it is not there
         if let Some(properties) = properties {
@@ -228,8 +213,9 @@ impl<'a> StorageClient<'a> {
                 description: get_property(properties, "Description")?,
             })
         } else {
-            Err(ServiceError::Anyhow(anyhow!("Device does not implement device info")))
+            Err(ServiceError::Anyhow(anyhow!(
+                "Device does not implement device info"
+            )))
         }
-        
     }
 }

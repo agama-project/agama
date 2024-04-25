@@ -5,7 +5,7 @@
 //! * `storage_service` which returns the Axum service.
 //! * `storage_stream` which offers an stream that emits the storage events coming from D-Bus.
 
-use agama_lib::{error::ServiceError, storage::StorageClient, storage::device::Device};
+use agama_lib::{error::ServiceError, storage::device::Device, storage::StorageClient};
 use axum::{extract::State, routing::get, Json, Router};
 
 use crate::{
