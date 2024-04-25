@@ -27,8 +27,10 @@ import { FormHelperText, HelperText, HelperTextItem } from "@patternfly/react-co
 /**
  * Helper component for displaying error messages in a PF/FormGroup
  *
+ * @todo: allow it to accept children instead of message prop
+ *
  * @param {object} props - component props
- * @param {string|React.ReactElement} [props.message] - text to be shown as error
+ * @param {React.ReactNode} [props.message] - text to be shown as error
  */
 export default function FormValidationError({ message }) {
   if (!message) return;
@@ -37,7 +39,7 @@ export default function FormValidationError({ message }) {
     <FormHelperText>
       <HelperText>
         <HelperTextItem variant="error">
-          { message }
+          {message}
         </HelperTextItem>
       </HelperText>
     </FormHelperText>
