@@ -63,7 +63,8 @@ const volume = (properties = {}) => {
       snapshotsConfigurable: false,
       snapshotsAffectSizes: false,
       sizeRelevantVolumes: [],
-      adjustByRam: false
+      adjustByRam: false,
+      productDefined: false
     }
   };
 
