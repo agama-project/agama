@@ -198,6 +198,25 @@ impl<'a> StorageClient<'a> {
         Ok(result)
     }
 
+    pub async fn staging_devices(&self) -> Result<Vec<Device>, ServiceError> {
+        let objects = self
+            .object_manager_proxy
+            .get_managed_objects()
+            .await
+            .context("Failed to get managed objects")?;
+        let mut result = vec![];
+        for object in objects {
+            let path = &object.0;
+            if !path.as_str().contains("Storage1/staging") {
+                continue;
+            }
+
+            result.push(self.build_device(&object).await?)
+        }
+
+        Ok(result)
+    }
+
     async fn build_device_info(
         &self,
         interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,

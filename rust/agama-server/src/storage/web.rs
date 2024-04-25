@@ -40,6 +40,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     let router = Router::new()
         .route("/devices/dirty", get(devices_dirty))
         .route("/devices/system", get(system_devices))
+        .route("/devices/result", get(staging_devices))
         .merge(status_router)
         .merge(progress_router)
         .nest("/issues", issues_router)
@@ -53,4 +54,8 @@ async fn devices_dirty(State(state): State<StorageState<'_>>) -> Result<Json<boo
 
 async fn system_devices(State(state): State<StorageState<'_>>) -> Result<Json<Vec<Device>>, Error> {
     Ok(Json(state.client.system_devices().await?))
+}
+
+async fn staging_devices(State(state): State<StorageState<'_>>) -> Result<Json<Vec<Device>>, Error> {
+    Ok(Json(state.client.staging_devices().await?))
 }
