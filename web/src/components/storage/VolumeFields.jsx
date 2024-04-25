@@ -142,7 +142,7 @@ const FsSelect = ({ id, value, volume, isDisabled, onChange }) => {
 
   const onSelect = (_event, option) => {
     setIsOpen(false);
-    onChange({ fsType: option, snapshots: false });
+    onChange({ fsType: option });
   };
 
   const toggle = toggleRef => {
