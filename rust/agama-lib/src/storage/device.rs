@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 /// Information about system device created by composition to reflect different devices on system
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Device {
     pub device_info: DeviceInfo,
     pub block_device: Option<BlockDevice>,
@@ -25,7 +26,17 @@ pub struct DeviceInfo {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct BlockDevice {}
+#[serde(rename_all = "camelCase")]
+pub struct BlockDevice {
+    pub active: bool,
+    pub encrypted: bool,
+    pub recoverable_size: u64,
+    pub size: u64,
+    pub start: u64,
+    pub systems: Vec<String>,
+    pub udev_ids: Vec<String>,
+    pub udev_paths: Vec<String>,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct Component {}
