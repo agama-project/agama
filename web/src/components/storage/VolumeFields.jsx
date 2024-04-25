@@ -42,14 +42,14 @@ import { SIZE_METHODS, SIZE_UNITS } from '~/components/storage/utils';
  * @component
  *
  * @typedef {object} MountPathFieldProps
- * @property {string} value
+ * @property {string} [value=""]
  * @property {boolean} [isReadOnly=false]
  * @property {(mountPath: string) => void} onChange
- * @property {string|React.ReactElement} [error]
+ * @property {React.ReactNode} [error]
  *
  * @param {MountPathFieldProps} props
  */
-const MountPathField = ({ value, onChange, isReadOnly = false, error }) => {
+const MountPathField = ({ value = "", onChange, isReadOnly = false, error }) => {
   const label = _("Mount point");
   /** @type {(_: any, mountPath: string) => void} */
   const changeMountPath = (_, mountPath) => onChange(mountPath);
@@ -85,10 +85,10 @@ const MountPathField = ({ value, onChange, isReadOnly = false, error }) => {
  */
 const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
   return (
-    <FormSelect { ...formSelectProps }>
+    <FormSelect {...formSelectProps}>
       {/* the unit values are marked for translation in the utils.js file */}
       {/* eslint-disable-next-line agama-i18n/string-literals */}
-      { units.map(unit => <FormSelectOption key={unit} value={unit} label={_(unit)} />) }
+      {units.map(unit => <FormSelectOption key={unit} value={unit} label={_(unit)} />)}
     </FormSelect>
   );
 };
@@ -188,12 +188,12 @@ const FsSelect = ({ id, value, volume, isDisabled, onChange }) => {
  * @typedef {object} FsFieldProps
  * @property {string} value - Currently selected file system.
  * @property {Volume} volume - The selected storage volume.
- * @property {boolean} isDisabled
+ * @property {boolean} [isDisabled=false] - Whether the field is disabled or not.
  * @property {(data: object) => void} onChange - Callback for notifying input changes.
  *
  * @param {FsFieldProps} props
  */
-const FsField = ({ value, volume, isDisabled, onChange }) => {
+const FsField = ({ value, volume, isDisabled = false, onChange }) => {
   const isSingleFs = () => {
     // check for btrfs with snapshots
     if (volume.fsType === "Btrfs" && volume.snapshots) {
@@ -326,7 +326,7 @@ const SizeManual = ({ errors, formData, isDisabled, onChange }) => {
               // TRANSLATORS: units selector (like KiB, MiB, GiB...)
               aria-label={_("Size unit")}
               units={Object.values(SIZE_UNITS)}
-              value={formData.sizeUnit }
+              value={formData.sizeUnit}
               onChange={(_, sizeUnit) => onChange({ sizeUnit })}
               isDisabled={isDisabled}
             />
@@ -383,7 +383,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
                 id="minSizeUnit"
                 aria-label={_("Unit for the minimum size")}
                 units={Object.values(SIZE_UNITS)}
-                value={formData.minSizeUnit }
+                value={formData.minSizeUnit}
                 onChange={(_, minSizeUnit) => onChange({ minSizeUnit })}
                 isDisabled={isDisabled}
               />
@@ -417,7 +417,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
                 id="maxSizeUnit"
                 aria-label={_("Unit for the maximum size")}
                 units={Object.values(SIZE_UNITS)}
-                value={formData.maxSizeUnit || formData.minSizeUnit }
+                value={formData.maxSizeUnit || formData.minSizeUnit}
                 onChange={(_, maxSizeUnit) => onChange({ maxSizeUnit })}
                 isDisabled={isDisabled}
               />
@@ -445,15 +445,15 @@ const SIZE_OPTION_LABELS = Object.freeze({
  * @component
  *
  * @typedef {object} SizeOptionsFieldProps
- * @property {object} errors - the form errors
- * @property {object} formData - the form data
  * @property {Volume} volume - the selected storage volume
- * @property {boolean} isDisabled
+ * @property {object} formData - the form data
+ * @property {object} [errors={}] - the form errors
+ * @property {boolean} [isDisabled=false] - Whether the field options are disabled or not.
  * @property {(v: object) => void} onChange - callback for notifying input changes
  *
  * @param {SizeOptionsFieldProps} props
  */
-const SizeOptionsField = ({ errors, formData, volume, isDisabled, onChange }) => {
+const SizeOptionsField = ({ volume, formData, isDisabled = false, errors = {}, onChange }) => {
   const { sizeMethod } = formData;
   const sizeWidgetProps = { errors, formData, volume, isDisabled, onChange };
 
@@ -463,10 +463,10 @@ const SizeOptionsField = ({ errors, formData, volume, isDisabled, onChange }) =>
   if (volume.outline.supportAutoSize) sizeOptions.push(SIZE_METHODS.AUTO);
 
   return (
-    <FormGroup fieldId="size" label={_("Size")} isRequired>
+    <FormGroup role="radiogroup" fieldId="size" label={_("Size")} isRequired>
       <div>
         <div className="split radio-group">
-          { sizeOptions.map((value) => {
+          {sizeOptions.map((value) => {
             const isSelected = sizeMethod === value;
 
             return (
@@ -487,9 +487,9 @@ const SizeOptionsField = ({ errors, formData, volume, isDisabled, onChange }) =>
         </div>
 
         <div aria-live="polite" className="highlighted-live-region">
-          <If condition={sizeMethod === SIZE_METHODS.AUTO} then={<SizeAuto { ...sizeWidgetProps } />} />
-          <If condition={sizeMethod === SIZE_METHODS.RANGE} then={<SizeRange {...sizeWidgetProps } />} />
-          <If condition={sizeMethod === SIZE_METHODS.MANUAL} then={<SizeManual { ...sizeWidgetProps } />} />
+          <If condition={sizeMethod === SIZE_METHODS.AUTO} then={<SizeAuto {...sizeWidgetProps} />} />
+          <If condition={sizeMethod === SIZE_METHODS.RANGE} then={<SizeRange {...sizeWidgetProps} />} />
+          <If condition={sizeMethod === SIZE_METHODS.MANUAL} then={<SizeManual {...sizeWidgetProps} />} />
         </div>
       </div>
     </FormGroup>
