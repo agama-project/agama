@@ -19,6 +19,9 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+// cspell:ignore labelable
+
 import React from "react";
 import styles from '@patternfly/react-styles/css/components/Form/form';
 
