@@ -5,7 +5,7 @@
 //! * `storage_service` which returns the Axum service.
 //! * `storage_stream` which offers an stream that emits the storage events coming from D-Bus.
 
-use agama_lib::{error::ServiceError, storage::device::Device, storage::StorageClient};
+use agama_lib::{error::ServiceError, storage::{client::Action, device::Device, StorageClient}};
 use axum::{extract::State, routing::get, Json, Router};
 
 use crate::{
@@ -41,6 +41,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .route("/devices/dirty", get(devices_dirty))
         .route("/devices/system", get(system_devices))
         .route("/devices/result", get(staging_devices))
+        .route("/proposal/actions", get(actions))
         .merge(status_router)
         .merge(progress_router)
         .nest("/issues", issues_router)
@@ -58,4 +59,8 @@ async fn system_devices(State(state): State<StorageState<'_>>) -> Result<Json<Ve
 
 async fn staging_devices(State(state): State<StorageState<'_>>) -> Result<Json<Vec<Device>>, Error> {
     Ok(Json(state.client.staging_devices().await?))
+}
+
+async fn actions(State(state): State<StorageState<'_>>) -> Result<Json<Vec<Action>>, Error> {
+    Ok(Json(state.client.actions().await?))
 }

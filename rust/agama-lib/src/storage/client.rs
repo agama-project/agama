@@ -21,6 +21,16 @@ pub struct StorageDevice {
     description: String,
 }
 
+/// Represent single change action done to storage
+#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Action {
+    device: String,
+    text: String,
+    subvol: bool,
+    delete: bool,
+}
+
 /// D-Bus client for the storage service
 #[derive(Clone)]
 pub struct StorageClient<'a> {
@@ -28,6 +38,7 @@ pub struct StorageClient<'a> {
     calculator_proxy: ProposalCalculatorProxy<'a>,
     storage_proxy: Storage1Proxy<'a>,
     object_manager_proxy: ObjectManagerProxy<'a>,
+    proposal_proxy: ProposalProxy<'a>,
 }
 
 impl<'a> StorageClient<'a> {
@@ -40,6 +51,7 @@ impl<'a> StorageClient<'a> {
                 .path("/org/opensuse/Agama/Storage1")?
                 .build()
                 .await?,
+            proposal_proxy: ProposalProxy::new(&connection).await?,
             connection,
         })
     }
@@ -54,6 +66,23 @@ impl<'a> StorageClient<'a> {
 
     pub async fn devices_dirty_bit(&self) -> Result<bool, ServiceError> {
         Ok(self.storage_proxy.deprecated_system().await?)
+    }
+
+    pub async fn actions(&self) -> Result<Vec<Action>, ServiceError> {
+        let actions = self.proposal_proxy.actions().await?;
+        let mut result: Vec<Action> = Vec::with_capacity(actions.len());
+
+        for i in actions {
+            let action = Action {
+                device: get_property(&i, "Device")?,
+                text: get_property(&i, "Text")?,
+                subvol: get_property(&i, "Subvol")?,
+                delete: get_property(&i, "Delete")?,
+            };
+            result.push(action);
+        }
+
+        Ok(result)
     }
 
     /// Returns the available devices
