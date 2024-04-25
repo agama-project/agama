@@ -95,3 +95,77 @@ trait Device {
     #[dbus_proxy(property, name = "SID")]
     fn sid(&self) -> zbus::Result<u32>;
 }
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Storage1.ISCSI.Initiator",
+    default_service = "org.opensuse.Agama.Storage1",
+    assume_defaults = true
+)]
+trait Initiator {
+    /// Delete method
+    fn delete(&self, node: &zbus::zvariant::ObjectPath<'_>) -> zbus::Result<u32>;
+
+    /// Discover method
+    fn discover(
+        &self,
+        address: &str,
+        port: u32,
+        options: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+    ) -> zbus::Result<u32>;
+
+    /// IBFT property
+    #[dbus_proxy(property, name = "IBFT")]
+    fn ibft(&self) -> zbus::Result<bool>;
+
+    /// InitiatorName property
+    #[dbus_proxy(property)]
+    fn initiator_name(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
+    fn set_initiator_name(&self, value: &str) -> zbus::Result<()>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Storage1.ISCSI.Node",
+    default_service = "org.opensuse.Agama.Storage1",
+    assume_defaults = true
+)]
+trait Node {
+    /// Login method
+    fn login(
+        &self,
+        options: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+    ) -> zbus::Result<u32>;
+
+    /// Logout method
+    fn logout(&self) -> zbus::Result<u32>;
+
+    /// Address property
+    #[dbus_proxy(property)]
+    fn address(&self) -> zbus::Result<String>;
+
+    /// Connected property
+    #[dbus_proxy(property)]
+    fn connected(&self) -> zbus::Result<bool>;
+
+    /// IBFT property
+    #[dbus_proxy(property, name = "IBFT")]
+    fn ibft(&self) -> zbus::Result<bool>;
+
+    /// Interface property
+    #[dbus_proxy(property)]
+    fn interface(&self) -> zbus::Result<String>;
+
+    /// Port property
+    #[dbus_proxy(property)]
+    fn port(&self) -> zbus::Result<u32>;
+
+    /// Startup property
+    #[dbus_proxy(property)]
+    fn startup(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
+    fn set_startup(&self, value: &str) -> zbus::Result<()>;
+
+    /// Target property
+    #[dbus_proxy(property)]
+    fn target(&self) -> zbus::Result<String>;
+}
