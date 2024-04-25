@@ -1,0 +1,142 @@
+-------------------------------------------------------------------
+Fri Feb  9 16:16:29 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Image size reduced:
+  - Removed translations and locale definitions for unsupported
+    languages, removed translations for unused tools
+  - Removed sound card and TV card drivers (not needed for the installer)
+  - Removed alsa packages
+  - Removed unused firmware files
+- Require 25GB disk space for build (PXE build might fail with
+  just 20GB)
+
+-------------------------------------------------------------------
+Thu Feb  1 08:27:29 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Improve multipath experience: preload kernel module and set probing
+  to smart option (bsc#1215598)
+
+-------------------------------------------------------------------
+Thu Dec 21 15:43:06 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 7
+
+-------------------------------------------------------------------
+Mon Dec  4 16:03:08 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Remove dependencies included by Agama packages (related to
+  gh#openSUSE/agama#911).
+
+-------------------------------------------------------------------
+Fri Dec  1 14:23:09 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 6
+
+-------------------------------------------------------------------
+Mon Nov 13 18:02:39 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Use by default zram to allow having 2GiB memory requirements
+  (jsc#PED-7303)
+
+-------------------------------------------------------------------
+Mon Nov  6 08:30:01 UTC 2023 - Marcus Schäfer <marcus.schaefer@suse.com>
+
+- Fix s390 PXE build by using 'custom' bootloader for s390 target
+  There is an error inside grub2-zipl-setup which calls zipl that
+  then complains with "Unable to create temporary device node: No such device or address".
+  We don't see this issue with zipl in the kiwi integration test from here:
+  https://build.opensuse.org/project/show/Virtualization:Appliances:Images:Testing_s390:tumbleweed
+  Thus I don't think it's an issue with kiwi but most probably a conflict
+  between the zipl setup and the raw btrfs filesystem usage in this case.
+  Long story short, the zipl issue needs extra inspection and the fix
+  here is simple because we actually don't need a bootloader to be installed
+  into the disk image because it is expected to be deployed via a remote
+  boot infrastructure. Therefore this change disables the bootloader
+  install for s390 by setting the attribute: bootloader="custom"
+
+-------------------------------------------------------------------
+Tue Oct 24 08:04:07 UTC 2023 - Marcus Schäfer <marcus.schaefer@suse.com>
+
+- Add new profile ALP-PXE which builds a variant of the agama
+  installer that is an oem disk image which can be remote deployed
+  into a ramdisk to boot into the agama installation. The size constraints
+  are similar to the live-iso size. For more details please refer
+  to README.pxe
+
+----------------------------------------------------------------------------
+Mon Oct 23 12:03:55 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Add adobe-sourcehansans-jp-fonts
+- Version 5
+
+----------------------------------------------------------------------------
+Thu Oct 19 20:19:11 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Add libstorage-ng translations
+
+----------------------------------------------------------------------------
+Wed Sep 27 08:45:26 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Version 4
+
+----------------------------------------------------------------------------
+Tue Sep 26 07:55:34 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Clean-up zypper logs
+
+----------------------------------------------------------------------------
+Tue Sep 26 05:28:35 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Added nvme-cli requested by https://bugzilla.suse.com/show_bug.cgi?id=1215572
+
+----------------------------------------------------------------------------
+Wed Aug 30 09:44:04 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Add microos-tools package and enable proxy setup services.
+
+----------------------------------------------------------------------------
+Tue Aug 29 09:19:26 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Enable ppc64le images
+
+----------------------------------------------------------------------------
+Thu Aug 03 10:23:49 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Disable building the ALP image for ppc64le
+
+----------------------------------------------------------------------------
+Wed Aug 02 10:37:21 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Version 3
+
+----------------------------------------------------------------------------
+Tue Aug 01 09:56:42 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Replace "default" flavor with a new "openSUSE" flavor that only includes
+  openSUSE-based products.
+- Replace ALP-build-key with suse-build-key.
+
+----------------------------------------------------------------------------
+Mon Jul 31 11:34:26 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Replace ALP-build-key with suse-build-key
+
+----------------------------------------------------------------------------
+Tue Jul 25 14:43:39 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Update filtering
+
+----------------------------------------------------------------------------
+Wed Jul 05 08:27:33 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Bump version to match Agama
+
+----------------------------------------------------------------------------
+Thu Jun 08 14:12:15 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- add to live image also dbus services written in rust
+
+----------------------------------------------------------------------------
+Thu Jun 01 14:05:13 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
+
+- osc copypac from project:YaST:Head:Agama package:agama-live revision:13

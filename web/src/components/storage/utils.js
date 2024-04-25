@@ -115,6 +115,7 @@ const SPACE_POLICIES = [
 
 /**
  * Convenience method for generating a size object based on given input
+ * @function
  *
  * It split given input when a string is given or the result of converting the
  * input otherwise. Note, however, that -1 number will treated as empty string
@@ -186,7 +187,19 @@ const parseToBytes = (size) => {
 };
 
 /**
+ * Base name of a device.
+ * @function
+ *
+ * @param {StorageDevice} device
+ * @returns {string}
+ */
+const deviceBaseName = (device) => {
+  return device.name.split("/").pop();
+};
+
+/**
  * Generates the label for the given device
+ * @function
  *
  * @param {StorageDevice} device
  * @returns {string}
@@ -226,8 +239,8 @@ const deviceChildren = (device) => {
 };
 
 /**
- * Checks if volume uses given fs. This method works same as in backend
- * case insensitive.
+ * Checks if volume uses given fs. This method works same as in backend case insensitive.
+ * @function
  *
  * @param {Volume} volume
  * @param {string} fs - Filesystem name to check.
@@ -241,6 +254,7 @@ const hasFS = (volume, fs) => {
 
 /**
  * Checks whether the given volume has snapshots.
+ * @function
  *
  * @param {Volume} volume
  * @returns {boolean}
@@ -251,6 +265,7 @@ const hasSnapshots = (volume) => {
 
 /**
  * Checks whether the given volume defines a transactional root.
+ * @function
  *
  * @param {Volume} volume
  * @returns {boolean}
@@ -261,16 +276,13 @@ const isTransactionalRoot = (volume) => {
 
 /**
  * Checks whether the given volumes defines a transactional system.
+ * @function
  *
  * @param {Volume[]} volumes
  * @returns {boolean}
  */
 const isTransactionalSystem = (volumes = []) => {
-  try {
-    return volumes?.find(v => isTransactionalRoot(v)) !== undefined;
-  } catch {
-    return false;
-  }
+  return volumes.find(v => isTransactionalRoot(v)) !== undefined;
 };
 
 export {
@@ -278,6 +290,7 @@ export {
   SIZE_METHODS,
   SIZE_UNITS,
   SPACE_POLICIES,
+  deviceBaseName,
   deviceLabel,
   deviceChildren,
   deviceSize,

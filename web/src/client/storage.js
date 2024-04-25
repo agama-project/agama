@@ -62,8 +62,8 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
  * @property {string} [transport]
  * @property {boolean} [sdCard]
  * @property {boolean} [dellBOSS]
- * @property {string[]} [devices] - RAID devices (only for "raid" and "md" types)
- * @property {string[]} [wires] - Multipath wires (only for "multipath" type)
+ * @property {StorageDevice[]} [devices] - RAID devices (only for "raid" and "md" types)
+ * @property {StorageDevice[]} [wires] - Multipath wires (only for "multipath" type)
  * @property {string} [level] - MD RAID level (only for "md" type)
  * @property {string} [uuid]
  * @property {number} [start] - First block of the region (only for block devices)
@@ -99,6 +99,7 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
  * @property {number} sid
  * @property {string} type
  * @property {string} [mountPath]
+ * @property {string} [label]
  *
  * @typedef {object} ProposalResult
  * @property {ProposalSettings} settings
@@ -244,34 +245,40 @@ class DevicesManager {
    * @returns {Promise<StorageDevice[]>}
    */
   async getDevices() {
+    /** @type {(path: string, dbusDevices: object[]) => StorageDevice} */
     const buildDevice = (path, dbusDevices) => {
-      const addDeviceProperties = (device, dbusProperties) => {
-        device.sid = dbusProperties.SID.v;
-        device.name = dbusProperties.Name.v;
-        device.description = dbusProperties.Description.v;
+      /** @type {(device: StorageDevice, deviceProperties: object) => void} */
+      const addDeviceProperties = (device, deviceProperties) => {
+        device.sid = deviceProperties.SID.v;
+        device.name = deviceProperties.Name.v;
+        device.description = deviceProperties.Description.v;
       };
 
-      const addDriveProperties = (device, dbusProperties) => {
+      /** @type {(device: StorageDevice, driveProperties: object) => void} */
+      const addDriveProperties = (device, driveProperties) => {
         device.isDrive = true;
-        device.type = dbusProperties.Type.v;
-        device.vendor = dbusProperties.Vendor.v;
-        device.model = dbusProperties.Model.v;
-        device.driver = dbusProperties.Driver.v;
-        device.bus = dbusProperties.Bus.v;
-        device.busId = dbusProperties.BusId.v;
-        device.transport = dbusProperties.Transport.v;
-        device.sdCard = dbusProperties.Info.v.SDCard.v;
-        device.dellBOSS = dbusProperties.Info.v.DellBOSS.v;
+        device.type = driveProperties.Type.v;
+        device.vendor = driveProperties.Vendor.v;
+        device.model = driveProperties.Model.v;
+        device.driver = driveProperties.Driver.v;
+        device.bus = driveProperties.Bus.v;
+        device.busId = driveProperties.BusId.v;
+        device.transport = driveProperties.Transport.v;
+        device.sdCard = driveProperties.Info.v.SDCard.v;
+        device.dellBOSS = driveProperties.Info.v.DellBOSS.v;
       };
 
+      /** @type {(device: StorageDevice, raidProperties: object) => void} */
       const addRAIDProperties = (device, raidProperties) => {
         device.devices = raidProperties.Devices.v.map(d => buildDevice(d, dbusDevices));
       };
 
+      /** @type {(device: StorageDevice, multipathProperties: object) => void} */
       const addMultipathProperties = (device, multipathProperties) => {
         device.wires = multipathProperties.Wires.v.map(d => buildDevice(d, dbusDevices));
       };
 
+      /** @type {(device: StorageDevice, mdProperties: object) => void} */
       const addMDProperties = (device, mdProperties) => {
         device.type = "md";
         device.level = mdProperties.Level.v;
@@ -279,6 +286,7 @@ class DevicesManager {
         device.devices = mdProperties.Devices.v.map(d => buildDevice(d, dbusDevices));
       };
 
+      /** @type {(device: StorageDevice, blockProperties: object) => void} */
       const addBlockProperties = (device, blockProperties) => {
         device.active = blockProperties.Active.v;
         device.encrypted = blockProperties.Encrypted.v;
@@ -290,11 +298,13 @@ class DevicesManager {
         device.udevPaths = blockProperties.UdevPaths.v;
       };
 
+      /** @type {(device: StorageDevice, partitionProperties: object) => void} */
       const addPartitionProperties = (device, partitionProperties) => {
         device.type = "partition";
         device.isEFI = partitionProperties.EFI.v;
       };
 
+      /** @type {(device: StorageDevice, lvmVgProperties: object) => void} */
       const addLvmVgProperties = (device, lvmVgProperties) => {
         device.type = "lvmVg";
         device.size = lvmVgProperties.Size.v;
@@ -302,10 +312,12 @@ class DevicesManager {
         device.logicalVolumes = lvmVgProperties.LogicalVolumes.v.map(d => buildDevice(d, dbusDevices));
       };
 
+      /** @type {(device: StorageDevice) => void} */
       const addLvmLvProperties = (device) => {
         device.type = "lvmLv";
       };
 
+      /** @type {(device: StorageDevice, ptableProperties: object) => void} */
       const addPtableProperties = (device, ptableProperties) => {
         const buildPartitionSlot = ([start, size]) => ({ start, size });
         const partitions = ptableProperties.Partitions.v.map(p => buildDevice(p, dbusDevices));
@@ -317,6 +329,7 @@ class DevicesManager {
         };
       };
 
+      /** @type {(device: StorageDevice, filesystemProperties: object) => void} */
       const addFilesystemProperties = (device, filesystemProperties) => {
         const buildMountPath = path => path.length > 0 ? path : undefined;
         const buildLabel = label => label.length > 0 ? label : undefined;
@@ -328,6 +341,7 @@ class DevicesManager {
         };
       };
 
+      /** @type {(device: StorageDevice, componentProperties: object) => void} */
       const addComponentProperties = (device, componentProperties) => {
         device.component = {
           type: componentProperties.Type.v,
@@ -335,8 +349,9 @@ class DevicesManager {
         };
       };
 
+      /** @type {StorageDevice} */
       const device = {
-        sid: path.split("/").pop(),
+        sid: Number(path.split("/").pop()),
         name: "",
         description: "",
         isDrive: false,

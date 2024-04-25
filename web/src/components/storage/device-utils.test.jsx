@@ -19,15 +19,22 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
 // cspell:ignore dasda ddgdcbibhd
 
-import React, { useState } from "react";
-import { screen, within } from "@testing-library/react";
+import React from "react";
+import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { DeviceList, DeviceSelector } from "~/components/storage/device-utils";
+import { DeviceContentInfo, DeviceExtendedInfo } from "~/components/storage/device-utils";
 
+/**
+ * @typedef {import("~/client/storage").StorageDevice} StorageDevice
+ */
+
+/** @type {StorageDevice} */
 const vda = {
-  sid: "59",
+  sid: 59,
+  isDrive: true,
   type: "disk",
   vendor: "Micron",
   model: "Micron 1100 SATA",
@@ -38,31 +45,104 @@ const vda = {
   sdCard: true,
   active: true,
   name: "/dev/vda",
+  description: "",
   size: 1024,
   systems : ["Windows 11", "openSUSE Leap 15.2"],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
-  partitionTable: { type: "gpt", partitions: ["/dev/vda1", "/dev/vda2"] }
 };
 
+/** @type {StorageDevice} */
+const vda1 = {
+  sid: 60,
+  isDrive: false,
+  type: "partition",
+  active: true,
+  name: "/dev/vda1",
+  description: "",
+  size: 512,
+  start: 123,
+  encrypted: false,
+  recoverableSize: 128,
+  systems : [],
+  udevIds: [],
+  udevPaths: [],
+  isEFI: false
+};
+
+/** @type {StorageDevice} */
+const vda2 = {
+  sid: 61,
+  isDrive: false,
+  type: "partition",
+  active: true,
+  name: "/dev/vda2",
+  description: "",
+  size: 256,
+  start: 1789,
+  encrypted: false,
+  recoverableSize: 0,
+  systems : [],
+  udevIds: [],
+  udevPaths: [],
+  isEFI: false
+};
+
+vda.partitionTable = {
+  type: "gpt",
+  partitions: [vda1, vda2],
+  unpartitionedSize: 0,
+  unusedSlots: []
+};
+
+/** @type {StorageDevice} */
+const vdb = {
+  sid: 62,
+  isDrive: true,
+  type: "disk",
+  vendor: "Disk",
+  model: "",
+  driver: [],
+  bus: "IDE",
+  busId: "",
+  transport: "",
+  dellBOSS: false,
+  sdCard: false,
+  active: true,
+  name: "/dev/vdb",
+  description: "",
+  size: 2048,
+  start: 0,
+  encrypted: false,
+  recoverableSize: 0,
+  systems : [],
+  udevIds: [],
+  udevPaths: []
+};
+
+/** @type {StorageDevice} */
 const md0 = {
-  sid: "62",
+  sid: 63,
+  isDrive: false,
   type: "md",
   level: "raid0",
   uuid: "12345:abcde",
-  members: ["/dev/vdb"],
+  devices: [vdb],
   active: true,
   name: "/dev/md0",
+  description: "",
   size: 2048,
   systems : [],
   udevIds: [],
   udevPaths: []
 };
 
+/** @type {StorageDevice} */
 const raid = {
-  sid: "63",
+  sid: 64,
+  isDrive: true,
   type: "raid",
-  devices: ["/dev/sda", "/dev/sdb"],
+  devices: [vda, vdb],
   vendor: "Dell",
   model: "Dell BOSS-N1 Modular",
   driver: [],
@@ -73,16 +153,19 @@ const raid = {
   sdCard: false,
   active: true,
   name: "/dev/mapper/isw_ddgdcbibhd_244",
+  description: "",
   size: 2048,
   systems : [],
   udevIds: [],
   udevPaths: []
 };
 
+/** @type {StorageDevice} */
 const multipath = {
-  sid: "64",
+  sid: 65,
+  isDrive: true,
   type: "multipath",
-  wires: ["/dev/sdc", "/dev/sdd"],
+  wires: [vda, vdb],
   vendor: "",
   model: "",
   driver: [],
@@ -93,14 +176,17 @@ const multipath = {
   sdCard: false,
   active: true,
   name: "/dev/mapper/36005076305ffc73a00000000000013b4",
+  description: "",
   size: 2048,
   systems : [],
   udevIds: [],
   udevPaths: []
 };
 
+/** @type {StorageDevice} */
 const dasd = {
-  sid: "65",
+  sid: 66,
+  isDrive: true,
   type: "dasd",
   vendor: "IBM",
   model: "IBM",
@@ -112,230 +198,85 @@ const dasd = {
   sdCard: false,
   active: true,
   name: "/dev/dasda",
+  description: "",
   size: 2048,
   systems : [],
   udevIds: [],
   udevPaths: []
 };
 
-const availableDevices = [
-  vda,
-  md0,
-  raid,
-  multipath,
-  dasd
-];
-
-const renderOptions = (Component) => {
-  return () => describe("DeviceContent", () => {
-    it("renders the device size", () => {
-      plainRender(<Component devices={[vda]} />);
-      screen.getByText("1 KiB");
-    });
-
-    it("renders the device name", () => {
-      plainRender(<Component devices={[vda]} />);
-      screen.getByText("/dev/vda");
-    });
-
-    it("renders the device model", () => {
-      plainRender(<Component devices={[vda]} />);
-      screen.getByText("Micron 1100 SATA");
-    });
-
-    it("renders the partition table info", () => {
-      plainRender(<Component devices={[vda]} />);
-      screen.getByText("GPT with 2 partitions");
-    });
-
-    it("renders systems info", () => {
-      plainRender(<Component devices={[vda]} />);
-      screen.getByText("Windows 11");
-      screen.getByText("openSUSE Leap 15.2");
-    });
-
-    describe("when device is a SDCard", () => {
-      it("renders 'SD Card'", () => {
-        const sdCard = { ...vda, sdCard: true };
-        plainRender(<Component devices={[sdCard]} />);
-        screen.getByText("SD Card");
-      });
-    });
-
-    describe("when device is software RAID", () => {
-      it("renders its level", () => {
-        plainRender(<Component devices={[md0]} />);
-        screen.getByText("Software RAID0");
-      });
-
-      it("renders its members", () => {
-        plainRender(<Component devices={[md0]} />);
-        screen.getByText(/Members/);
-        screen.getByText(/vdb/);
-      });
-    });
-
-    describe("when device is RAID", () => {
-      it("renders its devices", () => {
-        plainRender(<Component devices={[raid]} />);
-        screen.getByText(/Devices/);
-        screen.getByText(/sda/);
-        screen.getByText(/sdb/);
-      });
-    });
-
-    describe("when device is a multipath", () => {
-      it("renders 'Multipath'", () => {
-        plainRender(<Component devices={[multipath]} />);
-        screen.getByText("Multipath");
-      });
-
-      it("renders its wires", () => {
-        plainRender(<Component devices={[multipath]} />);
-        screen.getByText(/Wires/);
-        screen.getByText(/sdc/);
-        screen.getByText(/sdd/);
-      });
-    });
-
-    describe("when device is DASD", () => {
-      it("renders its bus id", () => {
-        plainRender(<Component devices={[dasd]} />);
-        screen.getByText("DASD 0.0.0150");
-      });
-    });
+describe("DeviceExtendedInfo", () => {
+  it("renders the device name", () => {
+    plainRender(<DeviceExtendedInfo device={vda} />);
+    screen.getByText("/dev/vda");
   });
-};
 
-describe("DeviceList", renderOptions(DeviceList));
-describe("DeviceList", () => {
-  describe("when no devices are given", () => {
-    it("renders an empty list", () => {
-      plainRender(<DeviceList devices={[]} />);
+  it("renders the device model", () => {
+    plainRender(<DeviceExtendedInfo device={vda} />);
+    screen.getByText("Micron 1100 SATA");
+  });
 
-      const list = screen.queryByRole("list");
-      expect(list).toBeEmptyDOMElement();
+  describe("when device is a SDCard", () => {
+    it("renders 'SD Card'", () => {
+      const sdCard = { ...vda, sdCard: true };
+      plainRender(<DeviceExtendedInfo device={sdCard} />);
+      screen.getByText("SD Card");
     });
   });
 
-  describe("when devices are given", () => {
-    it("renders a list with an option per device", () => {
-      plainRender(<DeviceList devices={[vda, md0]} />);
+  describe("when device is software RAID", () => {
+    it("renders its level", () => {
+      plainRender(<DeviceExtendedInfo device={md0} />);
+      screen.getByText("Software RAID0");
+    });
 
-      const list = screen.getByRole("list");
+    it("renders its members", () => {
+      plainRender(<DeviceExtendedInfo device={md0} />);
+      screen.getByText(/Members/);
+      screen.getByText(/vdb/);
+    });
+  });
 
-      within(list).getByRole("listitem", { name: /vda/ });
-      within(list).getByRole("listitem", { name: /md0/ });
+  describe("when device is RAID", () => {
+    it("renders its devices", () => {
+      plainRender(<DeviceExtendedInfo device={raid} />);
+      screen.getByText(/Devices/);
+      screen.getByText(/vda/);
+      screen.getByText(/vdb/);
+    });
+  });
+
+  describe("when device is a multipath", () => {
+    it("renders 'Multipath'", () => {
+      plainRender(<DeviceExtendedInfo device={multipath} />);
+      screen.getByText("Multipath");
+    });
+
+    it("renders its wires", () => {
+      plainRender(<DeviceExtendedInfo device={multipath} />);
+      screen.getByText(/Wires/);
+      screen.getByText(/vda/);
+      screen.getByText(/vdb/);
+    });
+  });
+
+  describe("when device is DASD", () => {
+    it("renders its bus id", () => {
+      plainRender(<DeviceExtendedInfo device={dasd} />);
+      screen.getByText("DASD 0.0.0150");
     });
   });
 });
 
-describe("DeviceSelector", renderOptions(DeviceSelector));
-describe("DeviceSelector", () => {
-  describe("when no devices are given", () => {
-    it("renders an empty grid", () => {
-      plainRender(<DeviceSelector devices={[]} />);
-
-      const selector = screen.queryByRole("grid");
-      expect(selector).toBeEmptyDOMElement();
-    });
+describe("DeviceContentInfo", () => {
+  it("renders the partition table info", () => {
+    plainRender(<DeviceContentInfo device={vda} />);
+    screen.getByText("GPT with 2 partitions");
   });
 
-  it("renders a grid with an option per device", () => {
-    plainRender(<DeviceSelector devices={[vda, md0]} />);
-
-    const selector = screen.getByRole("grid");
-    within(selector).getByRole("row", { name: /vda/ });
-    within(selector).getByRole("row", { name: /md0/ });
-  });
-
-  it("renders as selected options matching selected device(s)", () => {
-    plainRender(
-      <DeviceSelector
-        devices={[vda, md0, raid, dasd]}
-        selected={[vda, dasd]}
-      />
-    );
-
-    const selectedOptions = screen.queryAllByRole("row", { selected: true });
-    const vdaOption = screen.getByRole("row", { name: /vda/ });
-    const dasdOption = screen.getByRole("row", { name: /dasda/ });
-    expect(selectedOptions).toEqual([vdaOption, dasdOption]);
-  });
-
-  describe("when user clicks an option", () => {
-    describe("and it only allows single selection", () => {
-      const onChangeFn = jest.fn();
-
-      const TestSingleDeviceSelection = () => {
-        const [selected, setSelected] = useState(vda);
-
-        onChangeFn.mockImplementation(device => setSelected(device));
-
-        return (
-          <DeviceSelector
-            devices={[vda, md0]}
-            selected={selected}
-            onChange={onChangeFn}
-          />
-        );
-      };
-
-      it("notifies selected device if it has changed", async () => {
-        const { user } = plainRender(<TestSingleDeviceSelection />);
-
-        const vdaOption = screen.getByRole("row", { name: /vda/ });
-        const md0Option = screen.getByRole("row", { name: /md0/ });
-
-        // click on selected device to check nothing is notified
-        await user.click(vdaOption);
-        expect(onChangeFn).not.toHaveBeenCalled();
-
-        await user.click(md0Option);
-        expect(onChangeFn).toHaveBeenCalledWith(md0.sid);
-
-        await user.click(vdaOption);
-        expect(onChangeFn).toHaveBeenCalledWith(vda.sid);
-      });
-    });
-
-    describe("and it allows multiple selection", () => {
-      const onChangeFn = jest.fn();
-
-      const TestMultipleDeviceSelection = () => {
-        const [selected, setSelected] = useState(vda);
-
-        onChangeFn.mockImplementation(selection => setSelected(
-          availableDevices.filter(d => selection.includes(d.sid)))
-        );
-
-        return (
-          <DeviceSelector
-            isMultiple
-            devices={[vda, md0, dasd]}
-            selected={selected}
-            onChange={onChangeFn}
-          />
-        );
-      };
-
-      it("notifies selected devices", async () => {
-        const { user } = plainRender(<TestMultipleDeviceSelection />);
-
-        const vdaOption = screen.getByRole("row", { name: /vda/ });
-        const md0Option = screen.getByRole("row", { name: /md0/ });
-        const dasdOption = screen.getByRole("row", { name: /dasda/ });
-
-        await user.click(md0Option);
-        expect(onChangeFn).toHaveBeenCalledWith([vda.sid, md0.sid]);
-
-        await user.click(dasdOption);
-        expect(onChangeFn).toHaveBeenCalledWith([vda.sid, md0.sid, dasd.sid]);
-
-        // click on selected device to check it is notified as not selected
-        await user.click(vdaOption);
-        expect(onChangeFn).toHaveBeenCalledWith([md0.sid, dasd.sid]);
-      });
-    });
+  it("renders systems info", () => {
+    plainRender(<DeviceContentInfo device={vda} />);
+    screen.getByText("Windows 11");
+    screen.getByText("openSUSE Leap 15.2");
   });
 });

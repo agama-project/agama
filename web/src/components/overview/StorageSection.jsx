@@ -29,8 +29,7 @@ import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
 import { deviceLabel } from "~/components/storage/utils";
 import { Em, ProgressText, Section } from "~/components/core";
-import { sprintf } from "sprintf-js";
-import { _, n_ } from "~/i18n";
+import { _ } from "~/i18n";
 
 /**
  * @typedef {import ("~/client/storage").ProposalResult} ProposalResult
@@ -40,6 +39,57 @@ import { _, n_ } from "~/i18n";
  * @property {StorageDevice[]} availableDevices
  * @property {ProposalResult} result
  */
+
+/**
+ * Build a translated summary string for installing on an LVM with multiple
+ * physical partitions/disks
+ * @param {String} policy Find space policy
+ * @returns {String} Translated description
+ */
+const msgLvmMultipleDisks = (policy) => {
+  switch (policy) {
+    case "resize":
+      // TRANSLATORS: installing on an LVM with multiple physical partitions/disks
+      return _("Install in a new Logical Volume Manager (LVM) volume group shrinking existing partitions at the underlying devices as needed");
+    case "keep":
+      // TRANSLATORS: installing on an LVM with multiple physical partitions/disks
+      return _("Install in a new Logical Volume Manager (LVM) volume group without modifying the partitions at the underlying devices");
+    case "delete":
+      // TRANSLATORS: installing on an LVM with multiple physical partitions/disks
+      return _("Install in a new Logical Volume Manager (LVM) volume group deleting all the content of the underlying devices");
+    case "custom":
+      // TRANSLATORS: installing on an LVM with multiple physical partitions/disks
+      return _("Install in a new Logical Volume Manager (LVM) volume group using a custom strategy to find the needed space at the underlying devices");
+  }
+};
+
+/**
+ * Build a translated summary string for installing on an LVM with a single
+ * physical partition/disk
+ * @param {String} policy Find space policy
+ * @returns {String} Translated description with %s placeholder for the device
+ * name
+ */
+const msgLvmSingleDisk = (policy) => {
+  switch (policy) {
+    case "resize":
+      // TRANSLATORS: installing on an LVM with a single physical partition/disk,
+      // %s will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
+      return _("Install in a new Logical Volume Manager (LVM) volume group on %s shrinking existing partitions as needed");
+    case "keep":
+      // TRANSLATORS: installing on an LVM with a single physical partition/disk,
+      // %s will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
+      return _("Install in a new Logical Volume Manager (LVM) volume group on %s without modifying existing partitions");
+    case "delete":
+      // TRANSLATORS: installing on an LVM with a single physical partition/disk,
+      // %s will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
+      return _("Install in a new Logical Volume Manager (LVM) volume group on %s deleting all its content");
+    case "custom":
+      // TRANSLATORS: installing on an LVM with a single physical partition/disk,
+      // %s will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
+      return _("Install in a new Logical Volume Manager (LVM) volume group on %s using a custom strategy to find the needed space");
+  }
+};
 
 /**
  * Text explaining the storage proposal
@@ -59,58 +109,18 @@ const ProposalSummary = ({ proposal }) => {
   };
 
   if (result.settings.target === "NEW_LVM_VG") {
-    // TRANSLATORS: Part of the message describing where the system will be installed.
-    const vg = _("Logical Volume Manager (LVM) volume group");
     const pvDevices = result.settings.targetPVDevices;
-    const fullMsg = (policy, num_pvs) => {
-      switch (policy) {
-        case "resize":
-          // TRANSLATORS: %1$s will be replaced by "LVM volume group" (already translated and with some markup)
-          // %2$s (if present) will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
-          return n_(
-            "Install in a new %1$s on %2$s shrinking existing partitions as needed",
-            "Install in a new %1$s shrinking existing partitions at the underlying devices as needed",
-            num_pvs
-          );
-        case "keep":
-          // TRANSLATORS: %1$s will be replaced by "LVM volume group" (already translated and with some markup)
-          // %2$s (if present) will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
-          return n_(
-            "Install in a new %1$s on %2$s without modifying existing partitions",
-            "Install in a new %1$s without modifying the partitions at the underlying devices",
-            num_pvs
-          );
-        case "delete":
-          // TRANSLATORS: %1$s will be replaced by "LVM volume group" (already translated and with some markup)
-          // %2$s (if present) will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
-          return n_(
-            "Install in a new %1$s on %2$s deleting all its content",
-            "Install in a new %1$s deleting all the content of the underlying devices",
-            num_pvs
-          );
-        case "custom":
-          // TRANSLATORS: %1$s will be replaced by "LVM volume group" (already translated and with some markup)
-          // %2$s (if present) will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
-          return n_(
-            "Install in a new %1$s on %2$s using a custom strategy to find the needed space",
-            "Install in a new %1$s using a custom strategy to find the needed space at the underlying devices",
-            num_pvs
-          );
-      }
-    };
-
-    const msg = sprintf(fullMsg(result.settings.spacePolicy, pvDevices.length), vg, "%dev%");
 
     if (pvDevices.length > 1) {
-      return (<span dangerouslySetInnerHTML={{ __html: msg }} />);
+      return (<span>{msgLvmMultipleDisks(result.settings.spacePolicy)}</span>);
     } else {
-      const [msg1, msg2] = msg.split("%dev%");
+      const [msg1, msg2] = msgLvmSingleDisk(result.settings.spacePolicy).split("%s");
 
       return (
         <Text>
-          <span dangerouslySetInnerHTML={{ __html: msg1 }} />
+          <span>{msg1}</span>
           <Em>{label(pvDevices[0])}</Em>
-          <span dangerouslySetInnerHTML={{ __html: msg2 }} />
+          <span>{msg2}</span>
         </Text>
       );
     }
