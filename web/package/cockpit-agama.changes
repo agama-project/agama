@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 25 13:40:06 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Adapted to recent changes on Y2Storage::GuidedProposal
+  (gh#yast/yast-storage-ng#1382)
+
+-------------------------------------------------------------------
 Tue Apr 16 11:15:13 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Use better icons in storage proposal page
