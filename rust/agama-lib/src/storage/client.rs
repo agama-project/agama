@@ -11,7 +11,7 @@ use serde::Serialize;
 use std::collections::HashMap;
 use zbus::fdo::ObjectManagerProxy;
 use zbus::names::{InterfaceName, OwnedInterfaceName};
-use zbus::zvariant::{OwnedObjectPath, OwnedValue, Value};
+use zbus::zvariant::{OwnedObjectPath, OwnedValue};
 use zbus::Connection;
 
 /// Represents a storage device
@@ -167,7 +167,7 @@ impl<'a> StorageClient<'a> {
             device_info: self.build_device_info(interfaces).await?,
             component: None,
             drive: None,
-            block_device: None,
+            block_device: self.build_block_device(interfaces).await?,
             filesystem: None,
             lvm_lv: None,
             lvm_vg: None,
@@ -208,14 +208,37 @@ impl<'a> StorageClient<'a> {
         // All devices has to implement device info, so report error if it is not there
         if let Some(properties) = properties {
             Ok(DeviceInfo {
-                sid: get_property::<u32>(properties, "SID")?,
-                name: get_property::<String>(properties, "Name")?,
+                sid: get_property(properties, "SID")?,
+                name: get_property(properties, "Name")?,
                 description: get_property(properties, "Description")?,
             })
         } else {
             Err(ServiceError::Anyhow(anyhow!(
                 "Device does not implement device info"
             )))
+        }
+    }
+
+    async fn build_block_device(
+        &self,
+        interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+    ) -> Result<Option<BlockDevice>, ServiceError> {
+        let interface: OwnedInterfaceName =
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Block").into();
+        let properties = interfaces.get(&interface);
+        if let Some(properties) = properties {
+            Ok(Some(BlockDevice {
+                active: get_property(properties, "Active")?,
+                encrypted: get_property(properties, "Encrypted")?,
+                recoverable_size: get_property(properties, "RecoverableSize")?,
+                size: get_property(properties, "Size")?,
+                start: get_property(properties, "Start")?,
+                systems: get_property(properties, "Systems")?,
+                udev_ids: get_property(properties, "UdevIds")?,
+                udev_paths: get_property(properties, "UdevPaths")?,
+            }))
+        } else {
+            Ok(None)
         }
     }
 }
