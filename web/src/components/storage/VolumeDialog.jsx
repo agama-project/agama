@@ -91,6 +91,19 @@ const renderTitle = (volume, volumes) => {
   return isNewVolume ? _("Add file system") : _("Edit file system");
 };
 
+/** @fixme Redesign *Error classes.
+ *
+ *  Having different *Error classes does not seem to be a good design. Note these classes do not
+ *  represent an error but a helper to check and render an error. It would be a better approach to
+ *  have something like a volume checker which generates errors:
+ *
+ *  For example:
+ *
+ *  const checker = new VolumeChecker(volume, volumes, templates);
+ *  const error = checker.existingMountPathError();
+ *  const message = error?.render(onClick);
+*/
+
 class MissingMountPathError {
   /**
    * @constructor
