@@ -106,6 +106,28 @@ const homeVolume = {
   }
 };
 
+/** @type {Volume} */
+const arbitraryVolume = {
+  mountPath: "",
+  target: "DEFAULT",
+  fsType: "XFS",
+  minSize: 1024,
+  maxSize: 4096,
+  autoSize: false,
+  snapshots: false,
+  transactional: false,
+  outline: {
+    required: false,
+    fsTypes: ["Ext4", "XFS"],
+    supportAutoSize: false,
+    snapshotsConfigurable: false,
+    snapshotsAffectSizes: false,
+    adjustByRam: false,
+    sizeRelevantVolumes: [],
+    productDefined: false
+  }
+};
+
 /** @type {StorageDevice} */
 const sda = {
   sid: 59,
@@ -172,8 +194,6 @@ beforeEach(() => {
   };
 });
 
-/** @todo Add tests for collapsed field. */
-
 it("allows to reset the file systems", async () => {
   const { user } = await expandField();
   const button = screen.getByRole("button", { name: "Reset to defaults" });
@@ -182,15 +202,61 @@ it("allows to reset the file systems", async () => {
   expect(props.onVolumesChange).toHaveBeenCalledWith([]);
 });
 
+it("renders a button for adding a file system when only arbitrary volumes can be added", async () => {
+  props.templates = [arbitraryVolume];
+  const { user } = await expandField();
+  const button = screen.getByRole("button", { name: "Add file system" });
+  expect(button).not.toHaveAttribute("aria-expanded");
+  await user.click(button);
+  screen.getByRole("dialog", { name: "Add file system" });
+});
+
+it("renders a menu for adding a file system when predefined and arbitrary volume can be added", async () => {
+  props.templates = [homeVolume, arbitraryVolume];
+  const { user } = await expandField();
+
+  const button = screen.getByRole("button", { name: "Add file system" });
+  expect(button).toHaveAttribute("aria-expanded", "false");
+  await user.click(button);
+
+  expect(button).toHaveAttribute("aria-expanded", "true");
+  const homeOption = screen.getByRole("menuitem", { name: "/home" });
+  await user.click(homeOption);
+
+  screen.getByRole("dialog", { name: "Add /home file system" });
+});
+
+it("renders the control for adding a file system when using transactional system with optional templates", async () => {
+  props.templates = [{ ...rootVolume, transactional: true }, homeVolume];
+  await expandField();
+  screen.queryByRole("button", { name: "Add file system" });
+});
+
+it("does not render the control for adding a file system when using transactional system with no optional templates", async () => {
+  props.templates = [{ ...rootVolume, transactional: true }];
+  await expandField();
+  expect(screen.queryByRole("button", { name: "Add file system" })).toBeNull();
+});
+
+it("renders the control as disabled when there are no more left predefined volumes to add and arbitrary volumes are not allowed", async () => {
+  props.templates = [rootVolume, homeVolume];
+  props.volumes = [rootVolume, homeVolume];
+  await expandField();
+  const button = screen.getByRole("button", { name: "Add file system" });
+  expect(button).toBeDisabled();
+});
+
 it("allows to add a file system", async () => {
   props.templates = [homeVolume];
   const { user } = await expandField();
 
   const button = screen.getByRole("button", { name: "Add file system" });
   await user.click(button);
+  const homeOption = screen.getByRole("menuitem", { name: "/home" });
+  await user.click(homeOption);
 
-  const popup = await screen.findByRole("dialog");
-  const accept = within(popup).getByRole("button", { name: "Accept" });
+  const dialog = await screen.findByRole("dialog");
+  const accept = within(dialog).getByRole("button", { name: "Accept" });
   await user.click(accept);
 
   expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -198,7 +264,7 @@ it("allows to add a file system", async () => {
 });
 
 it("allows to cancel adding a file system", async () => {
-  props.templates = [homeVolume];
+  props.templates = [arbitraryVolume];
   const { user } = await expandField();
 
   const button = screen.getByRole("button", { name: "Add file system" });
@@ -265,7 +331,7 @@ describe("if there are volumes", () => {
     await user.click(editAction);
 
     const popup = await screen.findByRole("dialog");
-    within(popup).getByText("Edit file system");
+    within(popup).getByRole("heading", { name: "Edit /home file system" });
   });
 
   it("allows changing the location of the volume", async () => {
