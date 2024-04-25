@@ -27,7 +27,7 @@ import { FormSelect, FormSelectOption } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { FilesystemLabel } from "~/components/storage";
 import { deviceChildren, deviceSize } from '~/components/storage/utils';
-import { If, Tag, TreeTable } from "~/components/core";
+import { Tag, TreeTable } from "~/components/core";
 import { sprintf } from "sprintf-js";
 
 /**
@@ -97,7 +97,7 @@ const DeviceSizeDetails = ({ device }) => {
 };
 
 /**
- * Column content with the space action for a device.
+ * Form to configure the space action for a device (a partition).
  * @component
  *
  * @param {object} props
@@ -106,9 +106,7 @@ const DeviceSizeDetails = ({ device }) => {
  * @param {boolean} [props.isDisabled=false]
  * @param {(action: SpaceAction) => void} [props.onChange]
  */
-const DeviceAction = ({ device, action, isDisabled = false, onChange }) => {
-  if (!device.sid || device.partitionTable) return null;
-
+const DeviceActionForm = ({ device, action, isDisabled = false, onChange }) => {
   const changeAction = (_, action) => onChange({ device: device.name, action });
 
   return (
@@ -122,14 +120,43 @@ const DeviceAction = ({ device, action, isDisabled = false, onChange }) => {
       }
     >
       <FormSelectOption value="force_delete" label={_("Delete")} />
-      {/* Resize action does not make sense for drives, so it is filtered out. */}
-      <If
-        condition={!device.isDrive}
-        then={<FormSelectOption value="resize" label={_("Allow resize")} />}
-      />
+      <FormSelectOption value="resize" label={_("Allow resize")} />
       <FormSelectOption value="keep" label={_("Do not modify")} />
     </FormSelect>
   );
+};
+
+/**
+ * Column content with the space action (a form or a description) for a device
+ * @component
+ *
+ * @param {object} props
+ * @param {StorageDevice} props.device
+ * @param {string} props.action - Possible values: "force_delete", "resize" or "keep".
+ * @param {boolean} [props.isDisabled=false]
+ * @param {(action: SpaceAction) => void} [props.onChange]
+ */
+const DeviceAction = ({ device, action, isDisabled = false, onChange }) => {
+  if (!device.sid) return null;
+
+  if (device.type === "partition") {
+    return (
+      <DeviceActionForm
+        device={device}
+        action={action}
+        isDisabled={isDisabled}
+        onChange={onChange}
+      />
+    );
+  }
+
+  if (device.filesystem || device.component)
+    return _("The content may be deleted");
+
+  if (!device.partitionTable || device.partitionTable.partitions.length === 0)
+    return _("No content found");
+
+  return null;
 };
 
 /**
