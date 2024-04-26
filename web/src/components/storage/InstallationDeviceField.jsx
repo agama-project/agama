@@ -127,6 +127,7 @@ export default function InstallationDeviceField({
         then={
           <DeviceSelectionDialog
             isOpen
+            isLoading={isLoading}
             target={target}
             targetDevice={targetDevice}
             targetPVDevices={targetPVDevices}

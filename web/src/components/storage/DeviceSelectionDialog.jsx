@@ -26,7 +26,7 @@ import { Form } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
 import { deviceChildren } from "~/components/storage/utils";
-import { ControlledPanels as Panels, Popup } from "~/components/core";
+import { ControlledPanels as Panels, If, Popup, SectionSkeleton } from "~/components/core";
 import { DeviceSelectorTable } from "~/components/storage";
 import { noop } from "~/utils";
 
@@ -52,6 +52,7 @@ const OPTIONS_NAME = "selection-mode";
  * @param {StorageDevice[]} props.targetPVDevices
  * @param {StorageDevice[]} props.devices - The actions to perform in the system.
  * @param {boolean} [props.isOpen=false] - Whether the dialog is visible or not.
+ * @param {boolean} [props.isLoading=false] - Whether loading the data is in progress
  * @param {() => void} [props.onCancel=noop]
  * @param {(target: Target) => void} [props.onAccept=noop]
  *
@@ -67,6 +68,7 @@ export default function DeviceSelectionDialog({
   targetPVDevices: defaultPVDevices,
   devices,
   isOpen,
+  isLoading,
   onCancel = noop,
   onAccept = noop,
   ...props
@@ -95,6 +97,11 @@ export default function DeviceSelectionDialog({
     return true;
   };
 
+  // change the initial `undefined` state when receiving the real data
+  if (!target && defaultTarget) { setTarget(defaultTarget) }
+  if (!targetDevice && defaultTargetDevice) { setTargetDevice(defaultTargetDevice) }
+  if (!targetPVDevices && defaultPVDevices) { setTargetPVDevices(defaultPVDevices) }
+
   const isDeviceSelectable = (device) => device.isDrive || device.type === "md";
 
   // TRANSLATORS: description for using plain partitions for installing the
@@ -118,63 +125,70 @@ devices.").split(/[[\]]/);
       inlineSize="large"
       {...props}
     >
-      <Form id="target-form" onSubmit={onSubmit}>
-        <Panels className="stack">
-          <Panels.Options data-variant="buttons">
-            <Panels.Option
-              id={SELECT_DISK_ID}
-              name={OPTIONS_NAME}
-              isSelected={isTargetDisk}
-              onChange={selectTargetDisk}
-              controls={SELECT_DISK_PANEL_ID}
-            >
-              {_("Select a disk")}
-            </Panels.Option>
-            <Panels.Option
-              id={CREATE_LVM_ID}
-              name={OPTIONS_NAME}
-              isSelected={isTargetNewLvmVg}
-              onChange={selectTargetNewLvmVG}
-              controls={CREATE_LVM_PANEL_ID}
-            >
-              {_("Create an LVM Volume Group")}
-            </Panels.Option>
-          </Panels.Options>
+      <If
+        condition={isLoading}
+        then={ <SectionSkeleton numRows={6} /> }
+        else={
+          <Form id="target-form" onSubmit={onSubmit}>
+            <Panels className="stack">
+              <Panels.Options data-variant="buttons">
+                <Panels.Option
+                  id={SELECT_DISK_ID}
+                  name={OPTIONS_NAME}
+                  isSelected={isTargetDisk}
+                  onChange={selectTargetDisk}
+                  controls={SELECT_DISK_PANEL_ID}
+                >
+                  {_("Select a disk")}
+                </Panels.Option>
+                <Panels.Option
+                  id={CREATE_LVM_ID}
+                  name={OPTIONS_NAME}
+                  isSelected={isTargetNewLvmVg}
+                  onChange={selectTargetNewLvmVG}
+                  controls={CREATE_LVM_PANEL_ID}
+                >
+                  {_("Create an LVM Volume Group")}
+                </Panels.Option>
+              </Panels.Options>
 
-          <Panels.Panel id={SELECT_DISK_PANEL_ID} isExpanded={isTargetDisk}>
-            {msgStart1}
-            <b>{msgBold1}</b>
-            {msgEnd1}
+              <Panels.Panel id={SELECT_DISK_PANEL_ID} isExpanded={isTargetDisk}>
+                {msgStart1}
+                <b>{msgBold1}</b>
+                {msgEnd1}
 
-            <DeviceSelectorTable
-              aria-label={_("Device selector for target disk")}
-              devices={devices}
-              selected={[targetDevice]}
-              itemChildren={deviceChildren}
-              itemSelectable={isDeviceSelectable}
-              onSelectionChange={selectTargetDevice}
-              variant="compact"
-            />
-          </Panels.Panel>
+                <DeviceSelectorTable
+                  aria-label={_("Device selector for target disk")}
+                  devices={devices}
+                  selected={[targetDevice]}
+                  itemChildren={deviceChildren}
+                  itemSelectable={isDeviceSelectable}
+                  onSelectionChange={selectTargetDevice}
+                  variant="compact"
+                />
+              </Panels.Panel>
 
-          <Panels.Panel id={CREATE_LVM_PANEL_ID} isExpanded={isTargetNewLvmVg} className="stack">
-            {msgStart2}
-            <b>{msgBold2}</b>
-            {msgEnd2}
+              <Panels.Panel id={CREATE_LVM_PANEL_ID} isExpanded={isTargetNewLvmVg} className="stack">
+                {msgStart2}
+                <b>{msgBold2}</b>
+                {msgEnd2}
 
-            <DeviceSelectorTable
-              aria-label={_("Device selector for new LVM volume group")}
-              isMultiple
-              devices={devices}
-              selected={targetPVDevices}
-              itemChildren={deviceChildren}
-              itemSelectable={isDeviceSelectable}
-              onSelectionChange={setTargetPVDevices}
-              variant="compact"
-            />
-          </Panels.Panel>
-        </Panels>
-      </Form>
+                <DeviceSelectorTable
+                  aria-label={_("Device selector for new LVM volume group")}
+                  isMultiple
+                  devices={devices}
+                  selected={targetPVDevices}
+                  itemChildren={deviceChildren}
+                  itemSelectable={isDeviceSelectable}
+                  onSelectionChange={setTargetPVDevices}
+                  variant="compact"
+                />
+              </Panels.Panel>
+            </Panels>
+          </Form>
+        }
+      />
+
       <Popup.Actions>
         <Popup.Confirm form="target-form" type="submit" isDisabled={isAcceptDisabled()} />
         <Popup.Cancel onClick={onCancel} />

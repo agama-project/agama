@@ -26,6 +26,7 @@ import { Button, Skeleton } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
+import { NOT_AFFECTED } from "~/components/storage/ProposalPage";
 import DevicesManager from "~/components/storage/DevicesManager";
 import { If, Section, Reminder, Tag, TreeTable } from "~/components/core";
 import { ProposalActionsDialog, FilesystemLabel } from "~/components/storage";
@@ -35,6 +36,13 @@ import { ProposalActionsDialog, FilesystemLabel } from "~/components/storage";
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  * @typedef {import("~/client/mixins").ValidationError} ValidationError
  */
+
+/**
+ * A helper function to decide whether to show the progress skeletons or not
+ * @param {boolean} loading
+ * @param {symbol} changing the item which is being changed
+ */
+const ShowSkeleton = (loading, changing) => loading && !NOT_AFFECTED.ProposalResultSection.includes(changing);
 
 /**
  * Renders information about planned actions, allowing to check all of them and warning with a
@@ -251,13 +259,15 @@ const SectionContent = ({ system, staging, actions, errors }) => {
  * @param {Action[]} [props.actions=[]]
  * @param {ValidationError[]} [props.errors=[]] - Validation errors
  * @param {boolean} [props.isLoading=false] - Whether the section content should be rendered as loading
+ * @param {symbol} [props.changing=undefined] - Which part of the configuration is being changed by user
  */
 export default function ProposalResultSection({
   system = [],
   staging = [],
   actions = [],
   errors = [],
-  isLoading = false
+  isLoading = false,
+  changing = undefined
 }) {
   if (isLoading) errors = [];
   const totalActions = actions.length;
@@ -274,12 +284,12 @@ export default function ProposalResultSection({
     <Section
       // TRANSLATORS: The storage "Result" section's title
       title={_("Result")}
-      description={!isLoading && errors.length === 0 && description}
+      description={!ShowSkeleton(isLoading, changing) && errors.length === 0 && description}
       id="storage-result"
       errors={errors}
     >
       <If
-        condition={isLoading}
+        condition={ShowSkeleton(isLoading, changing)}
         then={<ResultSkeleton />}
         else={
           <SectionContent
