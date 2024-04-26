@@ -32,25 +32,25 @@ where
     }
 }
 
-pub fn get_optional_property<'a, U, T>(
+pub fn get_optional_property<'a, T>(
     properties: &'a HashMap<String, OwnedValue>,
     name: &str,
-) -> Result<T, ServiceError>
+) -> Result<Option<T>, ServiceError>
 where
     T: TryFrom<Value<'a>>,
-    U: Option<T>,
     <T as TryFrom<Value<'a>>>::Error: Into<zbus::zvariant::Error>,
 {
-    let value: Value = properties
-        .get(name)
-        .context(format!("Failed to find property '{}'", name))?
-        .into();
-    match T::try_from(value) {
-        Ok(v) => Ok(v),
-        Err(e) => {
-            let verr: zbus::zvariant::Error = e.into();
-            let serr: ServiceError = verr.into();
-            Err(serr)
+    if let Some(value) = properties.get(name) {
+        let value : Value = value.into();
+        match T::try_from(value) {
+            Ok(v) => Ok(Some(v)),
+            Err(e) => {
+                let verr: zbus::zvariant::Error = e.into();
+                let serr: ServiceError = verr.into();
+                Err(serr)
+            }
         }
+    } else {
+        Ok(None)
     }
 }

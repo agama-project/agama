@@ -3,7 +3,7 @@
 use super::device::{BlockDevice, Device, DeviceInfo};
 use super::proxies::{DeviceProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
 use super::StorageSettings;
-use crate::dbus::get_property;
+use crate::dbus::{get_optional_property, get_property};
 use crate::error::ServiceError;
 use anyhow::{anyhow, Context};
 use futures_util::future::join_all;
@@ -148,13 +148,13 @@ impl<'a> StorageClient<'a> {
             mount_path: get_property(&volume_hash, "MountPath")?,
             mount_options: get_property(&volume_hash, "MountOptions")?,
             target: get_property(&volume_hash, "Target")?,
-            target_device: get_property(&volume_hash, "TargetDevice")?,
+            target_device: get_optional_property(&volume_hash, "TargetDevice")?,
             min_size: get_property(&volume_hash, "MinSize")?,
-            max_size: get_property(&volume_hash, "MaxSize")?,
+            max_size: get_optional_property(&volume_hash, "MaxSize")?,
             auto_size: get_property(&volume_hash, "AutoSize")?,
-            snapshots: get_property(&volume_hash, "Snapshots")?,
-            transactional: get_property(&volume_hash, "Transactional")?,
-            outline: get_property(&volume_hash, "Outline"),
+            snapshots: get_optional_property(&volume_hash, "Snapshots")?,
+            transactional: get_optional_property(&volume_hash, "Transactional")?,
+            outline: get_property(&volume_hash, "Outline")?,
         };
 
         Ok(volume)
