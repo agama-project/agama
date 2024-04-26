@@ -350,7 +350,7 @@ describe("if there are volumes", () => {
   });
 
   // FIXME: improve at least the test description
-  it("does not allow reseting the volume location when already using the default location", async () => {
+  it("does not allow resetting the volume location when already using the default location", async () => {
     const { user } = await expandField();
 
     const [, body] = await screen.findAllByRole("rowgroup");
@@ -360,12 +360,12 @@ describe("if there are volumes", () => {
     expect(within(row).queryByRole("menuitem", { name: "Reset location" })).toBeNull();
   });
 
-  describe("and a volume has a non defautl location", () => {
+  describe("and a volume has a non default location", () => {
     beforeEach(() => {
       props.volumes = [{ ...homeVolume, target: "NEW_PARTITION", targetDevice: sda }];
     });
 
-    it("allows reseting the volume location", async () => {
+    it("allows resetting the volume location", async () => {
       const { user } = await expandField();
 
       const [, body] = await screen.findAllByRole("rowgroup");
@@ -380,7 +380,7 @@ describe("if there are volumes", () => {
         ])
       );
 
-      // NOTE: sadly we cannot peform the below check because the component is
+      // NOTE: sadly we cannot perform the below check because the component is
       // always receiving the same mocked props and will still having a /home as
       // "Partition at /dev/sda"
       // await within(body).findByRole("row", { name: "/home XFS at least 1 KiB Partition at installation device" });

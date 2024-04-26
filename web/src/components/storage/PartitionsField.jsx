@@ -239,7 +239,7 @@ const BootLabel = ({ bootDevice, configureBoot }) => {
 };
 
 // TODO: Extract VolumesTable or at least VolumeRow and all related internal
-// comonents to a new file.
+// components to a new file.
 
 /**
   * @component
