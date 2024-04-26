@@ -6,9 +6,9 @@ As frontend Agama offers web based UI or CLI. Backend currently is bunch of serv
 
 ### Authorization
 
-Authorization is done via password. To get authorized user is asked for a password of root on backend's machine. The password is validated through PAM [1]. Once the authorization succeeds, backend generates an authorization token and passes it back to frontend / user. Agama uses JWT [2] as authorization token [3]. All subsequent calls to the API has to be done together with the token.
+Authorization is done via password. To get authorized frontend has to provide a root password (root on backend's machine). The password is validated through PAM [1]. Once the authorization succeeds, backend generates an authorization token and passes it back to frontend / user. Agama uses JWT [2] as authorization token [3]. All subsequent calls to the API has to be done together with the token. In case of web UI the token is stored in session cookie.
 
-To make local use (frontend and backend running on same machine) with respect to agama-live use case more user friendly and allow skipping login in web UI Agama implements option ```--generate-token```. When this option is used, Agama's web server service generates valid JWT automatically on start. The token is stored locally [4] and then imported into web browser's internal database by Agama provided startup [5]. The script prepares custom profile with predefined homepage pointing to Agama's login page with the generated token as get parameter in the homepage url. Then the firefox browser is started in kiosk mode.
+To make local use (frontend and backend running on same machine) with respect to agama-live use case more friendly and allow skipping explicit login in web UI Agama implements option ```--generate-token```. When this option is used, Agama's web server service generates valid JWT automatically on start. The token is stored locally [4] and then imported into web browser's internal database by Agama provided startup [5]. The script prepares custom profile with predefined homepage pointing to Agama's login page with the generated token as get parameter in the homepage url. Then the firefox browser is started in kiosk mode.
 
 ### JWT
 
