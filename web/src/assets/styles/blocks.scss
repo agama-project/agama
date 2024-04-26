@@ -449,14 +449,7 @@ ul[data-type="agama/list"][role="grid"] {
 
 table[data-type="agama/tree-table"] {
   th:first-child {
-    block-size: fit-content;
     padding-inline-end: var(--spacer-normal);
-  }
-
-  th.fit-content {
-    block-size: fit-content;
-    overflow: visible;
-    text-overflow: unset;
   }
 
   /**
