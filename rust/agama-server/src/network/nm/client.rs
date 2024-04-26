@@ -152,7 +152,7 @@ impl<'a> NetworkManagerClient<'a> {
             {
                 devs.push(device);
             } else {
-                tracing::warn!("Ignoring network device: ");
+                tracing::warn!("Ignoring network device on path {}", &path);
             }
         }
 

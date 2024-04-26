@@ -58,6 +58,8 @@ pub enum DeviceType {
     Bridge = 6,
 }
 
+// For now this mirrors NetworkManager, because it was less mental work than coming up with
+// what exactly Agama needs. Expected to be adapted.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum DeviceState {
