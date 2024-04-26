@@ -1305,10 +1305,16 @@ impl fmt::Display for InfinibandTransportMode {
     }
 }
 
+/// Represents a network change.
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub enum NetworkChange {
+    /// A new device has been added.
     DeviceAdded(Device),
+    /// A device has been removed.
     DeviceRemoved(String),
+    /// The device has been updated. The String corresponds to the
+    /// original device name, which is especially useful if the
+    /// device gets renamed.
     DeviceUpdated(String, Device),
 }
