@@ -42,10 +42,27 @@ pub enum VolumeTarget {
     Filesystem,
 }
 
+impl TryFrom<zbus::zvariant::Value<'_>> for VolumeTarget {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(value: zbus::zvariant::Value) -> Result<Self, zbus::zvariant::Error> {
+        let svalue: String = value.try_into()?;
+        match svalue.as_str() {
+            "default" => Ok(VolumeTarget::Default),
+            "new_partition" => Ok(VolumeTarget::NewPartition),
+            "new_vg" => Ok(VolumeTarget::NewVg),
+            "device" => Ok(VolumeTarget::Device),
+            "filesystem" => Ok(VolumeTarget::Filesystem),
+            _ => Err(zbus::zvariant::Error::Message(
+                format!("Wrong value for Target: {}", svalue).to_string(),
+            )),
+        }
+    }
+}
 
 /// Represents volume outline aka requirements for volume
 #[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all = "camelCase")]
 pub struct VolumeOutline {
     required: bool,
     fs_types: Vec<String>,
@@ -55,10 +72,27 @@ pub struct VolumeOutline {
     size_relevant_volumes: Vec<String>,
 }
 
+impl TryFrom<zbus::zvariant::Value<'_>> for VolumeOutline {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(value: zbus::zvariant::Value) -> Result<Self, zbus::zvariant::Error> {
+        let mvalue: HashMap<String, OwnedValue> = value.try_into()?;
+        let res = VolumeOutline {
+            required: get_property(&mvalue, "Required")?,
+            fs_types: get_property(&mvalue, "FsTypes")?,
+            support_auto_size: get_property(&mvalue, "SupportAutoSize")?,
+            snapshots_configurable: get_property(&mvalue, "SnapshotsConfigurable")?,
+            snaphosts_affect_sizes: get_property(&mvalue, "SnapshotsAffectSizes")?,
+            size_relevant_volumes: get_property(&mvalue, "SizeRelevantVolumes")?,
+        };
+
+        Ok(res)
+    }
+}
+
 /// Represents single volume
-// TODO: Do we really want to expose PascalCase from dbus or use more consistent snakeCase?
 #[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all = "camelCase")]
 pub struct Volume {
     mount_path: String,
     mount_options: Vec<String>,
@@ -142,8 +176,7 @@ impl<'a> StorageClient<'a> {
     }
 
     pub async fn volume_for(&self, mount_path: &str) -> Result<Volume, ServiceError> {
-        let volume_hash = self.calculator_proxy
-            .default_volume(mount_path).await?;
+        let volume_hash = self.calculator_proxy.default_volume(mount_path).await?;
         let volume = Volume {
             mount_path: get_property(&volume_hash, "MountPath")?,
             mount_options: get_property(&volume_hash, "MountOptions")?,
@@ -154,7 +187,7 @@ impl<'a> StorageClient<'a> {
             auto_size: get_property(&volume_hash, "AutoSize")?,
             snapshots: get_optional_property(&volume_hash, "Snapshots")?,
             transactional: get_optional_property(&volume_hash, "Transactional")?,
-            outline: get_property(&volume_hash, "Outline")?,
+            outline: get_optional_property(&volume_hash, "Outline")?,
         };
 
         Ok(volume)

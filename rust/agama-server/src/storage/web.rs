@@ -5,8 +5,22 @@
 //! * `storage_service` which returns the Axum service.
 //! * `storage_stream` which offers an stream that emits the storage events coming from D-Bus.
 
-use agama_lib::{error::ServiceError, storage::{client::Action, device::Device, StorageClient}};
-use axum::{extract::State, routing::get, Json, Router};
+use std::collections::HashMap;
+
+use agama_lib::{
+    error::ServiceError,
+    storage::{
+        client::{Action, Volume},
+        device::Device,
+        StorageClient,
+    },
+};
+use anyhow::anyhow;
+use axum::{
+    extract::{Query, State},
+    routing::get,
+    Json, Router,
+};
 
 use crate::{
     error::Error,
@@ -41,6 +55,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .route("/devices/dirty", get(devices_dirty))
         .route("/devices/system", get(system_devices))
         .route("/devices/result", get(staging_devices))
+        .route("/product/volume_for", get(volume_for))
         .route("/proposal/actions", get(actions))
         .merge(status_router)
         .merge(progress_router)
@@ -57,10 +72,22 @@ async fn system_devices(State(state): State<StorageState<'_>>) -> Result<Json<Ve
     Ok(Json(state.client.system_devices().await?))
 }
 
-async fn staging_devices(State(state): State<StorageState<'_>>) -> Result<Json<Vec<Device>>, Error> {
+async fn staging_devices(
+    State(state): State<StorageState<'_>>,
+) -> Result<Json<Vec<Device>>, Error> {
     Ok(Json(state.client.staging_devices().await?))
 }
 
 async fn actions(State(state): State<StorageState<'_>>) -> Result<Json<Vec<Action>>, Error> {
     Ok(Json(state.client.actions().await?))
+}
+
+async fn volume_for(
+    State(state): State<StorageState<'_>>,
+    Query(params): Query<HashMap<String, String>>,
+) -> Result<Json<Volume>, Error> {
+    let mount_path = params
+        .get("mount_path")
+        .ok_or(anyhow!("Missing mount_path parameter"))?;
+    Ok(Json(state.client.volume_for(mount_path).await?))
 }
