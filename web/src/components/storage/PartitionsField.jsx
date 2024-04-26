@@ -238,6 +238,87 @@ const BootLabel = ({ bootDevice, configureBoot }) => {
   );
 };
 
+// TODO: Extract VolumesTable or at least VolumeRow and all related internal
+// comonents to a new file.
+
+/**
+  * @component
+  * @param {object} props
+  * @param {Volume} props.volume
+  */
+const VolumeSizeLimits = ({ volume }) => {
+  const isAuto = volume.autoSize;
+
+  return (
+    <div className="split">
+      <span>{SizeText({ volume })}</span>
+      {/* TRANSLATORS: device flag, the partition size is automatically computed */}
+      <If condition={isAuto} then={<Tip description={AutoCalculatedHint({ volume })}>{_("auto")}</Tip>} />
+    </div>
+  );
+};
+
+/**
+  * @component
+  * @param {object} props
+  * @param {Volume} props.volume
+  */
+const VolumeDetails = ({ volume }) => {
+  const snapshots = hasSnapshots(volume);
+  const transactional = isTransactionalRoot(volume);
+
+  if (volume.target === "FILESYSTEM")
+    // TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
+    return sprintf(_("Reused %s"), volume.targetDevice?.filesystem?.type || "");
+  if (transactional)
+    return _("Transactional Btrfs");
+  if (snapshots)
+    return _("Btrfs with snapshots");
+
+  return volume.fsType;
+};
+
+/**
+  * @component
+  * @param {object} props
+  * @param {Volume} props.volume
+  * @param {ProposalTarget} props.target
+  */
+const VolumeLocation = ({ volume, target }) => {
+  if (volume.target === "NEW_PARTITION")
+    // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
+    return sprintf(_("Partition at %s"), volume.targetDevice?.name || "");
+  if (volume.target === "NEW_VG")
+    // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
+    return sprintf(_("Separate LVM at %s"), volume.targetDevice?.name || "");
+  if (volume.target === "DEVICE" || volume.target === "FILESYSTEM")
+    return volume.targetDevice?.name || "";
+  if (target === "NEW_LVM_VG")
+    return _("Logical volume at system LVM");
+
+  return _("Partition at installation disk");
+};
+
+/**
+  * @component
+  * @param {object} props
+  * @param {Volume} props.volume
+  * @param {() => void} props.onEdit
+  * @param {() => void} props.onResetLocation
+  * @param {() => void} props.onLocation
+  * @param {() => void} props.onDelete
+  */
+const VolumeActions = ({ volume, onEdit, onResetLocation, onLocation, onDelete }) => {
+  const actions = [
+    { title: _("Edit"), onClick: onEdit },
+    volume.target !== "DEFAULT" && { title: _("Reset location"), onClick: onResetLocation },
+    { title: _("Change location"), onClick: onLocation },
+    !volume.outline.required && { title: _("Delete"), onClick: onDelete, isDanger: true }
+  ];
+
+  return <RowActions id="volume_actions" actions={actions.filter(Boolean)} />;
+};
+
 /**
  * Renders a table row with the information and actions for a volume
  * @component
@@ -287,84 +368,6 @@ const VolumeRow = ({
   const isEditDialogOpen = dialog === "edit";
   const isLocationDialogOpen = dialog === "location";
 
-  /**
-   * @component
-   * @param {object} props
-   * @param {Volume} props.volume
-   */
-  const SizeLimits = ({ volume }) => {
-    const isAuto = volume.autoSize;
-
-    return (
-      <div className="split">
-        <span>{SizeText({ volume })}</span>
-        {/* TRANSLATORS: device flag, the partition size is automatically computed */}
-        <If condition={isAuto} then={<Tip description={AutoCalculatedHint({ volume })}>{_("auto")}</Tip>} />
-      </div>
-    );
-  };
-
-  /**
-   * @component
-   * @param {object} props
-   * @param {Volume} props.volume
-   */
-  const Details = ({ volume }) => {
-    const snapshots = hasSnapshots(volume);
-    const transactional = isTransactionalRoot(volume);
-
-    if (volume.target === "FILESYSTEM")
-      // TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
-      return sprintf(_("Reused %s"), volume.targetDevice?.filesystem?.type || "");
-    if (transactional)
-      return _("Transactional Btrfs");
-    if (snapshots)
-      return _("Btrfs with snapshots");
-
-    return volume.fsType;
-  };
-
-  /**
-   * @component
-   * @param {object} props
-   * @param {Volume} props.volume
-   * @param {ProposalTarget} props.target
-   */
-  const Location = ({ volume, target }) => {
-    if (volume.target === "NEW_PARTITION")
-      // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-      return sprintf(_("Partition at %s"), volume.targetDevice?.name || "");
-    if (volume.target === "NEW_VG")
-      // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-      return sprintf(_("Separate LVM at %s"), volume.targetDevice?.name || "");
-    if (volume.target === "DEVICE" || volume.target === "FILESYSTEM")
-      return volume.targetDevice?.name || "";
-    if (target === "NEW_LVM_VG")
-      return _("Logical volume at system LVM");
-
-    return _("Partition at installation disk");
-  };
-
-  /**
-   * @component
-   * @param {object} props
-   * @param {Volume} props.volume
-   * @param {() => void} props.onEdit
-   * @param {() => void} props.onResetLocation
-   * @param {() => void} props.onLocation
-   * @param {() => void} props.onDelete
-   */
-  const VolumeActions = ({ volume, onEdit, onResetLocation, onLocation, onDelete }) => {
-    const actions = [
-      { title: _("Edit"), onClick: onEdit },
-      volume.target !== "DEFAULT" && { title: _("Reset location"), onClick: onResetLocation },
-      { title: _("Change location"), onClick: onLocation },
-      !volume.outline.required && { title: _("Delete"), onClick: onDelete, isDanger: true }
-    ];
-
-    return <RowActions id="volume_actions" actions={actions.filter(Boolean)} />;
-  };
-
   if (isLoading) {
     return (
       <Tr>
@@ -377,9 +380,9 @@ const VolumeRow = ({
     <>
       <Tr>
         <Td dataLabel={columns.mountPath}>{volume.mountPath}</Td>
-        <Td dataLabel={columns.details}><Details volume={volume} /></Td>
-        <Td dataLabel={columns.size}><SizeLimits volume={volume} /></Td>
-        <Td dataLabel={columns.location}><Location volume={volume} target={target} /></Td>
+        <Td dataLabel={columns.details}><VolumeDetails volume={volume} /></Td>
+        <Td dataLabel={columns.size}><VolumeSizeLimits volume={volume} /></Td>
+        <Td dataLabel={columns.location}><VolumeLocation volume={volume} target={target} /></Td>
         <Td isActionCell>
           <VolumeActions
             volume={volume}
