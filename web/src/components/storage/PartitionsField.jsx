@@ -349,42 +349,20 @@ const VolumeRow = ({
    * @component
    * @param {object} props
    * @param {Volume} props.volume
-   * @param {() => void} props.onEditClick
-   * @param {() => void} props.onResetLocationClick,
-   * @param {() => void} props.onLocationClick
-   * @param {(volume: Volume) => void} props.onDeleteClick
+   * @param {() => void} props.onEdit
+   * @param {() => void} props.onResetLocation
+   * @param {() => void} props.onLocation
+   * @param {() => void} props.onDelete
    */
-  const VolumeActions = ({ volume, onEditClick, onResetLocationClick, onLocationClick, onDeleteClick }) => {
-    const actions = () => {
-      const actions = {
-        edit: {
-          title: _("Edit"),
-          onClick: onEditClick
-        },
-        location: {
-          title: _("Change location"),
-          onClick: onLocationClick
-        },
-        delete: {
-          title: _("Delete"),
-          onClick: () => onDeleteClick(volume),
-          isDanger: true
-        },
-      };
+  const VolumeActions = ({ volume, onEdit, onResetLocation, onLocation, onDelete }) => {
+    const actions = [
+      { title: _("Edit"), onClick: onEdit },
+      volume.target !== "DEFAULT" && { title: _("Reset location"), onClick: onResetLocation },
+      { title: _("Change location"), onClick: onLocation },
+      !volume.outline.required && { title: _("Delete"), onClick: onDelete, isDanger: true }
+    ];
 
-      if (volume.target !== "DEFAULT") {
-        actions.reset_location = {
-          title: _("Reset location"),
-          onClick: onResetLocationClick
-        };
-      }
-
-      if (!volume.outline.required) return Object.values(actions);
-
-      return [actions.edit, actions.location];
-    };
-
-    return <RowActions id="volume_actions" actions={actions()} />;
+    return <RowActions id="volume_actions" actions={actions.filter(Boolean)} />;
   };
 
   if (isLoading) {
@@ -405,10 +383,10 @@ const VolumeRow = ({
         <Td isActionCell>
           <VolumeActions
             volume={volume}
-            onEditClick={openEditDialog}
-            onResetLocationClick={onResetLocationClick}
-            onLocationClick={openLocationDialog}
-            onDeleteClick={onDelete}
+            onEdit={openEditDialog}
+            onResetLocation={onResetLocationClick}
+            onLocation={openLocationDialog}
+            onDelete={onDelete}
           />
         </Td>
       </Tr>
@@ -505,7 +483,7 @@ const VolumesTable = ({
           targetDevice={targetDevice}
           isLoading={isLoading}
           onEdit={editVolume}
-          onDelete={deleteVolume}
+          onDelete={() => deleteVolume(volume)}
         />
       );
     });
