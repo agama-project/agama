@@ -23,75 +23,31 @@
 
 import React from "react";
 import { FormSelect, FormSelectOption } from "@patternfly/react-core";
-
-import { _ } from "~/i18n";
-import { FilesystemLabel } from "~/components/storage";
-import { deviceChildren, deviceSize } from '~/components/storage/utils';
-import { Tag, TreeTable } from "~/components/core";
 import { sprintf } from "sprintf-js";
 
+import { _ } from "~/i18n";
+import { deviceChildren, deviceSize } from '~/components/storage/utils';
+import {
+  DeviceName, DeviceDetails, DeviceSize, toStorageDevice
+} from "~/components/storage/device-utils";
+import { TreeTable } from "~/components/core";
+
 /**
+ * @typedef {import("~/client/storage").PartitionSlot} PartitionSlot
  * @typedef {import ("~/client/storage").SpaceAction} SpaceAction
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import("../core/TreeTable").TreeTableColumn} TreeTableColumn
  */
 
 /**
- * Column content.
  * @component
  *
  * @param {object} props
- * @param {StorageDevice} props.device
+ * @param {PartitionSlot|StorageDevice} props.item
  */
-const DeviceName = ({ device }) => {
-  let name = device.sid && device.name;
-  // NOTE: returning a fragment here to avoid a weird React complaint when using a PF/Table +
-  // treeRow props.
-  if (!name) return <></>;
-
-  if (["partition"].includes(device.type))
-    name = name.split("/").pop();
-
-  return (
-    <span>{name}</span>
-  );
-};
-
-/**
- * Column content.
- * @component
- *
- * @param {object} props
- * @param {StorageDevice} props.device
- */
-const DeviceDetails = ({ device }) => {
-  if (!device.sid) return _("Unused space");
-
-  const renderContent = (device) => {
-    if (!device.partitionTable && device.systems?.length > 0)
-      return device.systems.join(", ");
-
-    return device.description;
-  };
-
-  const renderPTableType = (device) => {
-    const type = device.partitionTable?.type;
-    if (type) return <Tag><b>{type.toUpperCase()}</b></Tag>;
-  };
-
-  return (
-    <div>{renderContent(device)} <FilesystemLabel device={device} /> {renderPTableType(device)}</div>
-  );
-};
-
-/**
- * Column content.
- * @component
- *
- * @param {object} props
- * @param {StorageDevice} props.device
- */
-const DeviceSizeDetails = ({ device }) => {
-  if (!device.sid || device.isDrive || device.recoverableSize === 0) return null;
+const DeviceSizeDetails = ({ item }) => {
+  const device = toStorageDevice(item);
+  if (!device || device.isDrive || device.recoverableSize === 0) return null;
 
   return deviceSize(device.recoverableSize);
 };
@@ -131,13 +87,14 @@ const DeviceActionForm = ({ device, action, isDisabled = false, onChange }) => {
  * @component
  *
  * @param {object} props
- * @param {StorageDevice} props.device
+ * @param {PartitionSlot|StorageDevice} props.item
  * @param {string} props.action - Possible values: "force_delete", "resize" or "keep".
  * @param {boolean} [props.isDisabled=false]
  * @param {(action: SpaceAction) => void} [props.onChange]
  */
-const DeviceAction = ({ device, action, isDisabled = false, onChange }) => {
-  if (!device.sid) return null;
+const DeviceAction = ({ item, action, isDisabled = false, onChange }) => {
+  const device = toStorageDevice(item);
+  if (!device) return null;
 
   if (device.type === "partition") {
     return (
@@ -163,12 +120,14 @@ const DeviceAction = ({ device, action, isDisabled = false, onChange }) => {
  * Table for selecting the space actions of the given devices.
  * @component
  *
- * @param {object} props
- * @param {StorageDevice[]} props.devices
- * @param {StorageDevice[]} [props.expandedDevices=[]] - Initially expanded devices.
- * @param {boolean} [props.isActionDisabled=false] - Whether the action selector is disabled.
- * @param {(device: StorageDevice) => string} props.deviceAction - Gets the action for a device.
- * @param {(action: SpaceAction) => void} props.onActionChange
+ * @typedef {object} SpaceActionsTableProps
+ * @property {StorageDevice[]} devices
+ * @property {StorageDevice[]} [expandedDevices=[]] - Initially expanded devices.
+ * @property {boolean} [isActionDisabled=false] - Whether the action selector is disabled.
+ * @property {(item: PartitionSlot|StorageDevice) => string} deviceAction - Gets the action for a device.
+ * @property {(action: SpaceAction) => void} onActionChange
+ *
+ * @param {SpaceActionsTableProps} props
  */
 export default function SpaceActionsTable({
   devices,
@@ -177,17 +136,18 @@ export default function SpaceActionsTable({
   deviceAction,
   onActionChange,
 }) {
+  /** @type {TreeTableColumn[]} */
   const columns = [
-    { title: _("Device"), content: (device) => <DeviceName device={device} /> },
-    { title: _("Details"), content: (device) => <DeviceDetails device={device} /> },
-    { title: _("Size"), content: (device) => deviceSize(device.size) },
-    { title: _("Shrinkable"), content: (device) => <DeviceSizeDetails device={device} /> },
+    { name: _("Device"), value: (item) => <DeviceName item={item} /> },
+    { name: _("Details"), value: (item) => <DeviceDetails item={item} /> },
+    { name: _("Size"), value: (item) => <DeviceSize item={item} /> },
+    { name: _("Shrinkable"), value: (item) => <DeviceSizeDetails item={item} /> },
     {
-      title: _("Action"),
-      content: (device) => (
+      name: _("Action"),
+      value: (item) => (
         <DeviceAction
-          device={device}
-          action={deviceAction(device)}
+          item={item}
+          action={deviceAction(item)}
           isDisabled={isActionDisabled}
           onChange={onActionChange}
         />
@@ -201,7 +161,7 @@ export default function SpaceActionsTable({
       items={devices}
       aria-label={_("Actions to find space")}
       expandedItems={expandedDevices}
-      itemChildren={d => deviceChildren(d)}
+      itemChildren={deviceChildren}
       rowClassNames={(item) => {
         if (!item.sid) return "dimmed-row";
       }}

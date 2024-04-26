@@ -68,17 +68,19 @@ const SpacePolicyPicker = ({ currentPolicy, onChange = noop }) => {
  * Renders a dialog that allows the user to select the space policy and actions.
  * @component
  *
- * @param {object} props
- * @param {SpacePolicy} props.policy
- * @param {SpaceAction[]} props.actions
- * @param {StorageDevice[]} props.devices
- * @param {boolean} [props.isOpen=false]
- * @param {() => void} [props.onCancel=noop]
- * @param {(spaceConfig: SpaceConfig) => void} [props.onAccept=noop]
+ * @typedef {object} SpacePolicyDialogProps
+ * @property {SpacePolicy} policy
+ * @property {SpaceAction[]} actions
+ * @property {StorageDevice[]} devices
+ * @property {boolean} [isOpen=false]
+ * @property {() => void} [onCancel=noop]
+ * @property {(spaceConfig: SpaceConfig) => void} [onAccept=noop]
  *
  * @typedef {object} SpaceConfig
  * @property {SpacePolicy} spacePolicy
  * @property {SpaceAction[]} spaceActions
+ *
+ * @param {SpacePolicyDialogProps} props
  */
 export default function SpacePolicyDialog({
   policy: defaultPolicy,

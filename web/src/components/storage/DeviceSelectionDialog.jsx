@@ -28,7 +28,7 @@ import { _ } from "~/i18n";
 import { deviceChildren } from "~/components/storage/utils";
 import { ControlledPanels as Panels, Popup } from "~/components/core";
 import { DeviceSelectorTable } from "~/components/storage";
-import { noop } from "~/utils";
+import { compact, noop } from "~/utils";
 
 /**
  * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
@@ -46,20 +46,21 @@ const OPTIONS_NAME = "selection-mode";
  * Renders a dialog that allows the user to select a target device for installation.
  * @component
  *
- * @param {object} props
- * @param {ProposalTarget} props.target
- * @param {StorageDevice|undefined} props.targetDevice
- * @param {StorageDevice[]} props.targetPVDevices
- * @param {StorageDevice[]} props.devices - The actions to perform in the system.
- * @param {boolean} [props.isOpen=false] - Whether the dialog is visible or not.
- * @param {() => void} [props.onCancel=noop]
- * @param {(target: Target) => void} [props.onAccept=noop]
+ * @typedef {object} DeviceSelectionDialogProps
+ * @property {ProposalTarget} target
+ * @property {StorageDevice|undefined} targetDevice
+ * @property {StorageDevice[]} targetPVDevices
+ * @property {StorageDevice[]} devices - The actions to perform in the system.
+ * @property {boolean} [isOpen=false] - Whether the dialog is visible or not.
+ * @property {() => void} [onCancel=noop]
+ * @property {(target: TargetConfig) => void} [onAccept=noop]
  *
- * @typedef {object} Target
+ * @typedef {object} TargetConfig
  * @property {string} target
  * @property {StorageDevice|undefined} targetDevice
  * @property {StorageDevice[]} targetPVDevices
-
+ *
+ * @param {DeviceSelectionDialogProps} props
  */
 export default function DeviceSelectionDialog({
   target: defaultTarget,
@@ -149,7 +150,7 @@ devices.").split(/[[\]]/);
             <DeviceSelectorTable
               aria-label={_("Device selector for target disk")}
               devices={devices}
-              selected={[targetDevice]}
+              selectedDevices={compact([targetDevice])}
               itemChildren={deviceChildren}
               itemSelectable={isDeviceSelectable}
               onSelectionChange={selectTargetDevice}
@@ -166,7 +167,7 @@ devices.").split(/[[\]]/);
               aria-label={_("Device selector for new LVM volume group")}
               isMultiple
               devices={devices}
-              selected={targetPVDevices}
+              selectedDevices={targetPVDevices}
               itemChildren={deviceChildren}
               itemSelectable={isDeviceSelectable}
               onSelectionChange={setTargetPVDevices}

@@ -30,8 +30,8 @@ import { Table, Thead, Tr, Th, Tbody, Td, TreeRowWrapper } from '@patternfly/rea
 
 /**
  * @typedef {object} TreeTableColumn
- * @property {string} title
- * @property {(any) => React.ReactNode} content
+ * @property {string} name
+ * @property {(object) => React.ReactNode} value
  * @property {string} [classNames]
  */
 
@@ -82,14 +82,14 @@ export default function TreeTable({
   const renderColumns = (item, treeRow) => {
     return columns.map((c, cIdx) => {
       const props = {
-        dataLabel: c.title,
+        dataLabel: c.name,
         className: c.classNames
       };
 
       if (cIdx === 0) props.treeRow = treeRow;
 
       return (
-        <Td key={cIdx} {...props}>{c.content(item)}</Td>
+        <Td key={cIdx} {...props}>{c.value(item)}</Td>
       );
     });
   };
@@ -138,7 +138,7 @@ export default function TreeTable({
     >
       <Thead>
         <Tr>
-          { columns.map((c, i) => <Th key={i} className={c.classNames}>{c.title}</Th>) }
+          { columns.map((c, i) => <Th key={i} className={c.classNames}>{c.name}</Th>) }
         </Tr>
       </Thead>
       <Tbody>

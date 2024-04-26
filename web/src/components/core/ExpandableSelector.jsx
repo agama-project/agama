@@ -25,6 +25,11 @@ import React, { useState } from "react";
 import { Table, Thead, Tr, Th, Tbody, Td, ExpandableRowContent, RowSelectVariant } from "@patternfly/react-table";
 
 /**
+ * @typedef {import("@patternfly/react-table").TableProps} TableProps
+ * @typedef {import("react").RefAttributes<HTMLTableElement>} HTMLTableProps
+ */
+
+/**
  * An object for sharing data across nested maps
  *
  * Since function arguments are always passed by value, an object passed by
@@ -93,23 +98,26 @@ const sanitizeSelection = (selection, allowMultiple) => {
 };
 
 /**
- * Build a expandable table with selectable items
+ * Build a expandable table with selectable items.
  * @component
  *
  * @note It only accepts one nesting level.
  *
- * @param {object} props
- * @param {ExpandableSelectorColumn[]} props.columns - Collection of objects defining columns.
- * @param {boolean} [props.isMultiple=false] - Whether multiple selection is allowed.
- * @param {object[]} props.items - Collection of items to be rendered.
- * @param {string} [props.itemIdKey="id"] - The key for retrieving the item id.
- * @param {(item: object) => Array<object>} [props.itemChildren=() => []] - Lookup method to retrieve children from given item.
- * @param {(item: object) => boolean} [props.itemSelectable=() => true] - Whether an item will be selectable or not.
- * @param {(item: object) => (string|undefined)} [props.itemClassNames=() => ""] - Callback that allows adding additional CSS class names to item row.
- * @param {object[]} [props.itemsSelected=[]] - Collection of selected items.
- * @param {string[]} [props.initialExpandedKeys=[]] - Ids of initially expanded items.
- * @param {(selection: Array<object>) => void} [props.onSelectionChange=noop] - Callback to be triggered when selection changes.
- * @param {object} [props.tableProps] - Props for {@link https://www.patternfly.org/components/table/#table PF/Table}.
+ * @typedef {object} ExpandableSelectorBaseProps
+ * @property {ExpandableSelectorColumn[]} [columns=[]] - Collection of objects defining columns.
+ * @property {boolean} [isMultiple=false] - Whether multiple selection is allowed.
+ * @property {object[]} [items=[]] - Collection of items to be rendered.
+ * @property {string} [itemIdKey="id"] - The key for retrieving the item id.
+ * @property {(item: object) => Array<object>} [itemChildren=() => []] - Lookup method to retrieve children from given item.
+ * @property {(item: object) => boolean} [itemSelectable=() => true] - Whether an item will be selectable or not.
+ * @property {(item: object) => (string|undefined)} [itemClassNames=() => ""] - Callback that allows adding additional CSS class names to item row.
+ * @property {object[]} [itemsSelected=[]] - Collection of selected items.
+ * @property {string[]} [initialExpandedKeys=[]] - Ids of initially expanded items.
+ * @property {(selection: Array<object>) => void} [onSelectionChange=noop] - Callback to be triggered when selection changes.
+ *
+ * @typedef {ExpandableSelectorBaseProps & TableProps & HTMLTableProps} ExpandableSelectorProps
+ *
+ * @param {ExpandableSelectorProps} props
  */
 export default function ExpandableSelector({
   columns = [],
@@ -126,7 +134,14 @@ export default function ExpandableSelector({
 }) {
   const [expandedItemsKeys, setExpandedItemsKeys] = useState(initialExpandedKeys);
   const selection = sanitizeSelection(itemsSelected, isMultiple);
-  const isItemSelected = (item) => selection.includes(item);
+  const isItemSelected = (item) => {
+    const selected = selection.find((selectionItem) => {
+      return Object.hasOwn(selectionItem, itemIdKey) &&
+        selectionItem[itemIdKey] === item[itemIdKey];
+    });
+
+    return selected !== undefined || selection.includes(item);
+  };
   const isItemExpanded = (key) => expandedItemsKeys.includes(key);
   const toggleExpanded = (key) => {
     if (isItemExpanded(key)) {

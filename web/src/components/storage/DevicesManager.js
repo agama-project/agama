@@ -33,6 +33,8 @@ import { compact, uniq } from "~/utils";
  */
 export default class DevicesManager {
   /**
+   * @constructor
+   *
    * @param {StorageDevice[]} system - Devices representing the current state of the system.
    * @param {StorageDevice[]} staging - Devices representing the target state of the system.
    * @param {Action[]} actions - Actions to perform from system to staging.
@@ -45,6 +47,7 @@ export default class DevicesManager {
 
   /**
    * System device with the given SID.
+   * @method
    *
    * @param {Number} sid
    * @returns {StorageDevice|undefined}
@@ -55,6 +58,7 @@ export default class DevicesManager {
 
   /**
    * Staging device with the given SID.
+   * @method
    *
    * @param {Number} sid
    * @returns {StorageDevice|undefined}
@@ -65,6 +69,7 @@ export default class DevicesManager {
 
   /**
    * Whether the given device exists in system.
+   * @method
    *
    * @param {StorageDevice} device
    * @returns {Boolean}
@@ -75,6 +80,7 @@ export default class DevicesManager {
 
   /**
    * Whether the given device exists in staging.
+   * @method
    *
    * @param {StorageDevice} device
    * @returns {Boolean}
@@ -85,6 +91,7 @@ export default class DevicesManager {
 
   /**
    * Whether the given device is going to be formatted.
+   * @method
    *
    * @param {StorageDevice} device
    * @returns {Boolean}
@@ -100,6 +107,7 @@ export default class DevicesManager {
 
   /**
    * Whether the given device is going to be shrunk.
+   * @method
    *
    * @param {StorageDevice} device
    * @returns {Boolean}
@@ -110,6 +118,7 @@ export default class DevicesManager {
 
   /**
    * Amount of bytes the given device is going to be shrunk.
+   * @method
    *
    * @param {StorageDevice} device
    * @returns {Number}
@@ -126,6 +135,7 @@ export default class DevicesManager {
 
   /**
    * Disk devices and LVM volume groups used for the installation.
+   * @method
    *
    * @note The used devices are extracted from the actions.
    *
@@ -147,6 +157,7 @@ export default class DevicesManager {
 
   /**
    * Devices deleted.
+   * @method
    *
    * @note The devices are extracted from the actions.
    *
@@ -158,6 +169,7 @@ export default class DevicesManager {
 
   /**
    * Systems deleted.
+   * @method
    *
    * @returns {string[]}
    */

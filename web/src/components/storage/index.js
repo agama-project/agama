@@ -31,7 +31,6 @@ export { default as DASDFormatProgress } from "./DASDFormatProgress";
 export { default as ZFCPPage } from "./ZFCPPage";
 export { default as ZFCPDiskForm } from "./ZFCPDiskForm";
 export { default as ISCSIPage } from "./ISCSIPage";
-export { DeviceContentInfo, DeviceExtendedInfo, FilesystemLabel } from "./device-utils";
 export { default as BootSelectionDialog } from "./BootSelectionDialog";
 export { default as DeviceSelectionDialog } from "./DeviceSelectionDialog";
 export { default as DeviceSelectorTable } from "./DeviceSelectorTable";
