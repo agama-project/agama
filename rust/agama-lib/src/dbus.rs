@@ -22,14 +22,7 @@ where
         .get(name)
         .context(format!("Failed to find property '{}'", name))?
         .into();
-    match T::try_from(value) {
-        Ok(v) => Ok(v),
-        Err(e) => {
-            let verr: zbus::zvariant::Error = e.into();
-            let serr: ServiceError = verr.into();
-            Err(serr)
-        }
-    }
+    T::try_from(value).map_err(|e| e.into().into())
 }
 
 pub fn get_optional_property<'a, T>(
@@ -42,14 +35,9 @@ where
 {
     if let Some(value) = properties.get(name) {
         let value : Value = value.into();
-        match T::try_from(value) {
-            Ok(v) => Ok(Some(v)),
-            Err(e) => {
-                let verr: zbus::zvariant::Error = e.into();
-                let serr: ServiceError = verr.into();
-                Err(serr)
-            }
-        }
+        T::try_from(value)
+            .map(|v| Some(v))
+            .map_err(|e| e.into().into() )
     } else {
         Ok(None)
     }
