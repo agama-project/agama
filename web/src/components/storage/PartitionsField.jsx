@@ -352,11 +352,6 @@ const VolumeRow = ({
   const VolumeActions = ({ volume, onEditClick, onLocationClick, onDeleteClick }) => {
     const actions = () => {
       const actions = {
-        delete: {
-          title: _("Delete"),
-          onClick: () => onDeleteClick(volume),
-          isDanger: true
-        },
         edit: {
           title: _("Edit"),
           onClick: onEditClick
@@ -364,7 +359,12 @@ const VolumeRow = ({
         location: {
           title: _("Change location"),
           onClick: onLocationClick
-        }
+        },
+        delete: {
+          title: _("Delete"),
+          onClick: () => onDeleteClick(volume),
+          isDanger: true
+        },
       };
 
       if (!volume.outline.required) return Object.values(actions);
