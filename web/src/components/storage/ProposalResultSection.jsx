@@ -39,7 +39,7 @@ import { ProposalActionsDialog, FilesystemLabel } from "~/components/storage";
 
 /**
  * A helper function to decide whether to show the progress skeletons or not
- * @param {boolean} loading
+ * @param {boolean} loading loading status
  * @param {symbol} changing the item which is being changed
  */
 const ShowSkeleton = (loading, changing) => loading && !NOT_AFFECTED.ProposalResultSection.includes(changing);

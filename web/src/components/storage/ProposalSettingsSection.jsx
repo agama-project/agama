@@ -43,8 +43,9 @@ import SpacePolicyField from "~/components/storage/SpacePolicyField";
 
 /**
  * A helper function to decide whether to show the progress skeletons or not
- * @param {boolean} loading
- * @param {string} component
+ * for the specified component
+ * @param {boolean} loading loading status
+ * @param {string} component name of the component
  * @param {symbol} changing the item which is being changed
  * @returns {boolean} true if the skeleton should be displayed, false otherwise
  */
@@ -62,7 +63,7 @@ const ShowSkeleton = (loading, component, changing) => {
  * @property {String[]} encryptionMethods
  * @property {Volume[]} volumeTemplates
  * @property {boolean} [isLoading=false]
- * @property {symbol} [changing=undefined] Which part of the configuration is being changed by user
+ * @property {symbol} [changing=undefined] which part of the configuration is being changed by user
  * @property {(changing: symbol, settings: object) => void} onChange
  *
  * @param {ProposalSettingsSectionProps} props
