@@ -1,16 +1,18 @@
 ## Agama Concepts
 
-Agama's functionality is divided into backend and frontend. Communication between two parts is done through REST api. Most of the api requires an authorization.
+Agama's functionality is divided into backend and frontend. Communication between two parts is done through HTTP/JSON and/or websocket. Most of the api requires an authorization.
+
+As frontend Agama offers web based UI or CLI. Backend currently is bunch of services implemented in Rust or Ruby with support from YaST libraries. For interprocess communication Agama uses D-Bus.
 
 ### Authorization
 
 Authorization is done via password. To get authorized user is asked for a password of root on backend's machine. The password is validated through PAM [1]. Once the authorization succeeds, backend generates an authorization token and passes it back to frontend / user. Agama uses JWT [2] as authorization token [3]. All subsequent calls to the API has to be done together with the token.
 
-To make local use (frontend and backend running on same machine) a bit easier Agama implements option ```--generate-token```. When this option is used, Agama-web-server generates valid JWT automatically on start. The token is pushed into web browser's cache by Agama.
+To make local use (frontend and backend running on same machine) with respect to agama-live use case more user friendly and allow skipping login in web UI Agama implements option ```--generate-token```. When this option is used, Agama's web server service generates valid JWT automatically on start. The token is stored locally [4] and then imported into web browser's internal database by Agama provided startup [5]. The script prepares custom profile with predefined homepage pointing to Agama's login page with the generated token as get parameter in the homepage url. Then the firefox browser is started in kiosk mode.
 
 ### JWT
 
-The token carries just one claim - the expiration date. Token's lifetime is currently set to one day. The token is provided in an encrypted form. Security key is either automatically created random string [3] of length at least 30 characters. However, security key can be provided via ```/etc/agama.d/server.yaml``` using ```jwt_secret``` option. Content of this option is expected to be a string but no checks are done.
+The token carries just one claim - the expiration date. Token's lifetime is currently set to one day. The token is provided in an encrypted form. Security key is either automatically created random string [6] of length at least 30 characters. However, security key can be provided via ```/etc/agama.d/server.yaml``` using ```jwt_secret``` option. Content of this option is expected to be a string but no checks are done.
 
 ### Communication between the frontend and the backend
 
@@ -25,4 +27,6 @@ SSL communication is secured either by self-signed certificate which is automati
 - [1] Rust pam crate, https://crates.io/crates/pam
 - [2] RFC 7519, http://jwt.io
 - [3] Rust jsonwebtoken crate, https://crates.io/crates/jsonwebtoken
-- [4] Rust rand crate, https://crates.io/crates/rand
+- [4] Backend's machine at /run/agama/token
+- [5] Agama's git repo - live/root/.icewm/startup
+- [6] Rust rand crate, https://crates.io/crates/rand
