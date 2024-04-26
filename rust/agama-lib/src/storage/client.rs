@@ -7,7 +7,7 @@ use crate::dbus::get_property;
 use crate::error::ServiceError;
 use anyhow::{anyhow, Context};
 use futures_util::future::join_all;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use zbus::fdo::ObjectManagerProxy;
 use zbus::names::{InterfaceName, OwnedInterfaceName};
@@ -29,6 +29,47 @@ pub struct Action {
     text: String,
     subvol: bool,
     delete: bool,
+}
+
+/// Represents value for target key of Volume
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum VolumeTarget {
+    Default,
+    NewPartition,
+    NewVg,
+    Device,
+    Filesystem,
+}
+
+
+/// Represents volume outline aka requirements for volume
+#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "PascalCase")]
+pub struct VolumeOutline {
+    required: bool,
+    fs_types: Vec<String>,
+    support_auto_size: bool,
+    snapshots_configurable: bool,
+    snaphosts_affect_sizes: bool,
+    size_relevant_volumes: Vec<String>,
+}
+
+/// Represents single volume
+// TODO: Do we really want to expose PascalCase from dbus or use more consistent snakeCase?
+#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "PascalCase")]
+pub struct Volume {
+    mount_path: String,
+    mount_options: Vec<String>,
+    target: VolumeTarget,
+    target_device: Option<String>,
+    min_size: u64,
+    max_size: Option<u64>,
+    auto_size: bool,
+    snapshots: Option<bool>,
+    transactional: Option<bool>,
+    outline: Option<VolumeOutline>,
 }
 
 /// D-Bus client for the storage service
@@ -98,6 +139,25 @@ impl<'a> StorageClient<'a> {
             .collect();
 
         join_all(devices).await.into_iter().collect()
+    }
+
+    pub async fn volume_for(&self, mount_path: &str) -> Result<Volume, ServiceError> {
+        let volume_hash = self.calculator_proxy
+            .default_volume(mount_path).await?;
+        let volume = Volume {
+            mount_path: get_property(&volume_hash, "MountPath")?,
+            mount_options: get_property(&volume_hash, "MountOptions")?,
+            target: get_property(&volume_hash, "Target")?,
+            target_device: get_property(&volume_hash, "TargetDevice")?,
+            min_size: get_property(&volume_hash, "MinSize")?,
+            max_size: get_property(&volume_hash, "MaxSize")?,
+            auto_size: get_property(&volume_hash, "AutoSize")?,
+            snapshots: get_property(&volume_hash, "Snapshots")?,
+            transactional: get_property(&volume_hash, "Transactional")?,
+            outline: get_property(&volume_hash, "Outline"),
+        };
+
+        Ok(volume)
     }
 
     /// Returns the storage device for the given D-Bus path
