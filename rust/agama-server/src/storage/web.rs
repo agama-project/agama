@@ -24,8 +24,11 @@ use axum::{
 use serde::Serialize;
 use tokio_stream::{Stream, StreamExt};
 
+mod iscsi;
+
 use crate::{
     error::Error,
+    storage::web::iscsi::iscsi_service,
     web::{
         common::{issues_router, progress_router, service_status_router, EventStreams},
         Event,
@@ -77,6 +80,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let issues_router = issues_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
+    let iscsi_router = iscsi_service(&dbus).await?;
 
     let client = StorageClient::new(dbus.clone()).await?;
     let state = StorageState { client };
@@ -95,6 +99,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .merge(progress_router)
         .merge(status_router)
         .nest("/issues", issues_router)
+        .nest("/iscsi", iscsi_router)
         .with_state(state);
     Ok(router)
 }
