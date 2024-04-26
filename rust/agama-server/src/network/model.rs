@@ -464,6 +464,7 @@ pub struct Device {
     #[serde_as(as = "DisplayFromStr")]
     pub mac_address: MacAddress,
     pub ip_config: Option<IpConfig>,
+    // Connection.id
     pub connection: Option<String>,
     pub state: DeviceState,
 }

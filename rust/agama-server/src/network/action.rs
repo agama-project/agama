@@ -44,9 +44,9 @@ pub enum Action {
     GetAccessPoints(Responder<Vec<AccessPoint>>),
     /// Adds a new device.
     AddDevice(Box<Device>),
-    /// Updates a device.
+    /// Updates a device by its `name`.
     UpdateDevice(String, Box<Device>),
-    /// Removes a device.
+    /// Removes a device by its `name`.
     RemoveDevice(String),
     /// Gets a device by its name
     GetDevice(String, Responder<Option<Device>>),

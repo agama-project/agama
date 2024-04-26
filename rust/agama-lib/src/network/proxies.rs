@@ -25,7 +25,7 @@ trait Device {
     /// Type property
     #[dbus_proxy(property)]
     fn type_(&self) -> zbus::Result<u8>;
-    /// Type property
+    /// State property
     #[dbus_proxy(property)]
     fn state(&self) -> zbus::Result<u8>;
 }

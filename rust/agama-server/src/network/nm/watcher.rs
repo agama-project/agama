@@ -395,6 +395,7 @@ enum DeviceChange {
 /// Ancillary class to track the devices and their related D-Bus objects.
 struct ProxiesRegistry<'a> {
     connection: zbus::Connection,
+    // the String is the device name like eth0
     devices: HashMap<OwnedObjectPath, (String, DeviceProxy<'a>)>,
 }
 
