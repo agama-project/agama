@@ -275,6 +275,10 @@ const VolumeRow = ({
 
   const closeDialog = () => setDialog(undefined);
 
+  const onResetLocationClick = () => {
+    onEdit({ ...volume, target: "DEFAULT", targetDevice: undefined });
+  };
+
   const acceptForm = (volume) => {
     closeDialog();
     onEdit(volume);
@@ -346,10 +350,11 @@ const VolumeRow = ({
    * @param {object} props
    * @param {Volume} props.volume
    * @param {() => void} props.onEditClick
+   * @param {() => void} props.onResetLocationClick,
    * @param {() => void} props.onLocationClick
    * @param {(volume: Volume) => void} props.onDeleteClick
    */
-  const VolumeActions = ({ volume, onEditClick, onLocationClick, onDeleteClick }) => {
+  const VolumeActions = ({ volume, onEditClick, onResetLocationClick, onLocationClick, onDeleteClick }) => {
     const actions = () => {
       const actions = {
         edit: {
@@ -366,6 +371,13 @@ const VolumeRow = ({
           isDanger: true
         },
       };
+
+      if (volume.target !== "DEFAULT") {
+        actions.reset_location = {
+          title: _("Reset location"),
+          onClick: onResetLocationClick
+        };
+      }
 
       if (!volume.outline.required) return Object.values(actions);
 
@@ -394,6 +406,7 @@ const VolumeRow = ({
           <VolumeActions
             volume={volume}
             onEditClick={openEditDialog}
+            onResetLocationClick={onResetLocationClick}
             onLocationClick={openLocationDialog}
             onDeleteClick={onDelete}
           />
