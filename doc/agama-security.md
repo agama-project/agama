@@ -26,9 +26,9 @@ SSL communication is secured either by self-signed certificate which is automati
 
 ## Links to external sources
 
-- [1] Rust pam crate, https://crates.io/crates/pam
+- [1] Rust PAM crate, https://crates.io/crates/pam
 - [2] RFC 7519, http://jwt.io
 - [3] Rust jsonwebtoken crate, https://crates.io/crates/jsonwebtoken
 - [4] Backend's machine at /run/agama/token
-- [5] [Firefox startup script] See Agama's git repository path - live/root/.icewm/startup
+- [5] [Firefox startup script] See https://github.com/openSUSE/agama/blob/master/live/root/root/.icewm/startup
 - [6] Rust rand crate, https://crates.io/crates/rand
