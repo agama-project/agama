@@ -116,11 +116,11 @@ export const CHANGING = Object.freeze({
 //        the state of the component
 export const NOT_AFFECTED = {
   // the EncryptionField shows the skeleton only during initial load,
-  // it does not depend on any changed item and does not show skeleton later
+  // it does not depend on any changed item and does not show skeleton later.
+  // the ProposalResultSection is refreshed always
   InstallationDeviceField: [CHANGING.ENCRYPTION, CHANGING.BOOT, CHANGING.POLICY, CHANGING.VOLUMES],
   PartitionsField: [CHANGING.ENCRYPTION],
   SpacePolicyField: [CHANGING.ENCRYPTION, CHANGING.BOOT, CHANGING.VOLUMES, CHANGING.TARGET],
-  ProposalResultSection: [CHANGING.ENCRYPTION],
 };
 
 export default function ProposalPage() {
@@ -271,7 +271,6 @@ export default function ProposalPage() {
         actions={state.actions}
         errors={state.errors}
         isLoading={state.loading}
-        changing={state.changing}
       />
     </Page>
   );

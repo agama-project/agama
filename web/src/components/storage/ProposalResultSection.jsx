@@ -26,7 +26,6 @@ import { Button, Skeleton } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
-import { NOT_AFFECTED } from "~/components/storage/ProposalPage";
 import DevicesManager from "~/components/storage/DevicesManager";
 import { If, Section, Reminder, Tag, TreeTable } from "~/components/core";
 import { ProposalActionsDialog, FilesystemLabel } from "~/components/storage";
@@ -36,13 +35,6 @@ import { ProposalActionsDialog, FilesystemLabel } from "~/components/storage";
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  * @typedef {import("~/client/mixins").ValidationError} ValidationError
  */
-
-/**
- * A helper function to decide whether to show the progress skeletons or not
- * @param {boolean} loading loading status
- * @param {symbol} changing the item which is being changed
- */
-const ShowSkeleton = (loading, changing) => loading && !NOT_AFFECTED.ProposalResultSection.includes(changing);
 
 /**
  * Renders information about planned actions, allowing to check all of them and warning with a
@@ -266,8 +258,7 @@ export default function ProposalResultSection({
   staging = [],
   actions = [],
   errors = [],
-  isLoading = false,
-  changing = undefined
+  isLoading = false
 }) {
   if (isLoading) errors = [];
   const totalActions = actions.length;
@@ -284,12 +275,12 @@ export default function ProposalResultSection({
     <Section
       // TRANSLATORS: The storage "Result" section's title
       title={_("Result")}
-      description={!ShowSkeleton(isLoading, changing) && errors.length === 0 && description}
+      description={!isLoading && errors.length === 0 && description}
       id="storage-result"
       errors={errors}
     >
       <If
-        condition={ShowSkeleton(isLoading, changing)}
+        condition={isLoading}
         then={<ResultSkeleton />}
         else={
           <SectionContent
