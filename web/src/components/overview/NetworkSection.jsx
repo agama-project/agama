@@ -37,10 +37,11 @@ export default function NetworkSection() {
       switch (type) {
         case NetworkEventTypes.DEVICE_ADDED: {
           setDevices((devs) => {
-            const newDevices = devs.filter((d) => d.name !== payload.name);
-            if (payload.connection) return newDevices;
+            const currentDevices = devs.filter((d) => d.name !== payload.name);
+            // only show connecting or connected devices
+            if (!payload.connection) return currentDevices;
 
-            return [...newDevices, client.fromApiDevice(payload)];
+            return [...currentDevices, client.fromApiDevice(payload)];
           });
           break;
         }
@@ -48,8 +49,10 @@ export default function NetworkSection() {
         case NetworkEventTypes.DEVICE_UPDATED: {
           const [name, data] = payload;
           setDevices(devs => {
-            const newDevices = devs.filter((d) => d.name !== name);
-            return [...newDevices, client.fromApiDevice(data)];
+            const currentDevices = devs.filter((d) => d.name !== name);
+            // only show connecting or connected devices
+            if (!data.connection) return currentDevices;
+            return [...currentDevices, client.fromApiDevice(data)];
           });
           break;
         }
@@ -95,8 +98,8 @@ export default function NetworkSection() {
     const summary = activeDevices.map(deviceSummary);
 
     const msg = sprintf(
-      // TRANSLATORS: header for the list of active network connections,
-      // %d is replaced by the number of active connections
+      // TRANSLATORS: header for the list of connected devices,
+      // %d is replaced by the number of active devices
       n_("%d device set:", "%d devices set:", total), total
     );
 

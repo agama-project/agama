@@ -42,7 +42,7 @@ const DeviceState = Object.freeze({
   UNAVAILABLE: "unavailable",
   DISCONNECTED: "disconnected",
   CONFIG: "config",
-  NEEDAUTH: "auth",
+  NEEDAUTH: "needAuth",
   ACTIVATED: "activated",
   DEACTIVATING: "deactivating",
   FAILED: "failed"
