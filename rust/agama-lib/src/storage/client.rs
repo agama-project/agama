@@ -32,6 +32,7 @@ pub struct Action {
 }
 
 /// Represents value for target key of Volume
+/// It is snake cased when serializing to be compatible with yast2-storage-ng.
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum VolumeTarget {
@@ -286,7 +287,7 @@ impl<'a> StorageClient<'a> {
     ) -> Result<Device, ServiceError> {
         let interfaces = &object.1;
         Ok(Device {
-            device_info: self.build_device_info(interfaces).await?,
+            device_info: self.build_device_info(object).await?,
             component: None,
             drive: None,
             block_device: self.build_block_device(interfaces).await?,
@@ -302,11 +303,7 @@ impl<'a> StorageClient<'a> {
     }
 
     pub async fn system_devices(&self) -> Result<Vec<Device>, ServiceError> {
-        let objects = self
-            .object_manager_proxy
-            .get_managed_objects()
-            .await
-            .context("Failed to get managed objects")?;
+        let objects = self.object_manager_proxy.get_managed_objects().await?;
         let mut result = vec![];
         for object in objects {
             let path = &object.0;
@@ -321,11 +318,7 @@ impl<'a> StorageClient<'a> {
     }
 
     pub async fn staging_devices(&self) -> Result<Vec<Device>, ServiceError> {
-        let objects = self
-            .object_manager_proxy
-            .get_managed_objects()
-            .await
-            .context("Failed to get managed objects")?;
+        let objects = self.object_manager_proxy.get_managed_objects().await?;
         let mut result = vec![];
         for object in objects {
             let path = &object.0;
@@ -341,8 +334,12 @@ impl<'a> StorageClient<'a> {
 
     async fn build_device_info(
         &self,
-        interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+        object: &(
+            OwnedObjectPath,
+            HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+        ),
     ) -> Result<DeviceInfo, ServiceError> {
+        let interfaces = &object.1;
         let interface: OwnedInterfaceName =
             InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Device").into();
         let properties = interfaces.get(&interface);
@@ -354,9 +351,9 @@ impl<'a> StorageClient<'a> {
                 description: get_property(properties, "Description")?,
             })
         } else {
-            Err(ServiceError::Anyhow(anyhow!(
-                "Device does not implement device info"
-            )))
+            let message =
+                format!("storage device {} is missing Device interface", object.0).to_string();
+            Err(zbus::zvariant::Error::Message(message).into())
         }
     }
 
