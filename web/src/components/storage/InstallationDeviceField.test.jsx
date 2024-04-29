@@ -97,8 +97,10 @@ describe("when set as loading", () => {
   });
 
   it("renders a loading hint", () => {
-    installerRender(<InstallationDeviceField {...props} />);
-    screen.getByText("Waiting for information about selected device");
+    const { container } = installerRender(<InstallationDeviceField {...props} />);
+
+    // a PF skeleton is displayed
+    expect(container.querySelector("div.pf-v5-c-skeleton")).toBeVisible();
   });
 });
 
