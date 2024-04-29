@@ -21,7 +21,7 @@ pub struct StorageDevice {
     description: String,
 }
 
-/// Represent single change action done to storage
+/// Represents a single change action done to storage
 #[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Action {
@@ -90,7 +90,7 @@ impl TryFrom<zbus::zvariant::Value<'_>> for VolumeOutline {
     }
 }
 
-/// Represents single volume
+/// Represents a single volume
 #[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Volume {

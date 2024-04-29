@@ -10,7 +10,7 @@ pub enum ServiceError {
     DBus(#[from] zbus::Error),
     #[error("Could not connect to Agama bus at '{0}': {1}")]
     DBusConnectionError(String, #[source] zbus::Error),
-    #[error("Unexpected type on DBus '{0}'")]
+    #[error("Unexpected type on D-Bus '{0}'")]
     ZVariant(#[from] zvariant::Error),
     // it's fine to say only "Error" because the original
     // specific error will be printed too

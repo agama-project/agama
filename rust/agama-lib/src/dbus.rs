@@ -9,7 +9,7 @@ pub type NestedHash<'a> = HashMap<&'a str, HashMap<&'a str, zvariant::Value<'a>>
 /// Nested hash as it comes from D-Bus.
 pub type OwnedNestedHash = HashMap<String, HashMap<String, zvariant::OwnedValue>>;
 
-/// Helper to get property of given type from ManagedObjects map or any generic dbus Hash with variant as value
+/// Helper to get property of given type from ManagedObjects map or any generic D-Bus Hash with variant as value
 pub fn get_property<'a, T>(
     properties: &'a HashMap<String, OwnedValue>,
     name: &str,
