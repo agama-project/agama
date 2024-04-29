@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-24 10:46+0000\n"
+"POT-Creation-Date: 2024-04-28 02:18+0000\n"
 "PO-Revision-Date: 2024-04-17 18:43+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -144,8 +144,7 @@ msgstr ""
 #: src/components/product/ProductPage.jsx:140
 #: src/components/product/ProductPage.jsx:207
 #: src/components/storage/EncryptionSettingsDialog.jsx:126
-#: src/components/storage/PartitionsField.jsx:248
-#: src/components/storage/PartitionsField.jsx:452
+#: src/components/storage/VolumeDialog.jsx:750
 #: src/components/storage/ZFCPPage.jsx:511
 msgid "Accept"
 msgstr "დასტური"
@@ -277,7 +276,7 @@ msgid "Confirm"
 msgstr "დადასტურება"
 
 #: src/components/core/RowActions.jsx:64
-#: src/components/storage/PartitionsField.jsx:494
+#: src/components/storage/PartitionsField.jsx:461
 msgid "Actions"
 msgstr "ქმედებები"
 
@@ -521,7 +520,7 @@ msgid "IP addresses"
 msgstr "IP მისამართები"
 
 #: src/components/network/ConnectionsTable.jsx:67
-#: src/components/storage/PartitionsField.jsx:402
+#: src/components/storage/PartitionsField.jsx:361
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
 #: src/components/users/FirstUser.jsx:208
@@ -1192,7 +1191,7 @@ msgstr "სტატუსი"
 #: src/components/storage/DASDTable.jsx:66
 #: src/components/storage/DeviceSelectorTable.jsx:40
 #: src/components/storage/ProposalResultSection.jsx:188
-#: src/components/storage/SpaceActionsTable.jsx:154
+#: src/components/storage/SpaceActionsTable.jsx:181
 msgid "Device"
 msgstr "მოწყობილობა"
 
@@ -1313,10 +1312,10 @@ msgid "Content"
 msgstr "გაგრძელება"
 
 #: src/components/storage/DeviceSelectorTable.jsx:42
-#: src/components/storage/PartitionsField.jsx:491
+#: src/components/storage/PartitionsField.jsx:458
 #: src/components/storage/ProposalResultSection.jsx:191
-#: src/components/storage/SpaceActionsTable.jsx:156
-#: src/components/storage/VolumeForm.jsx:726
+#: src/components/storage/SpaceActionsTable.jsx:183
+#: src/components/storage/VolumeFields.jsx:466
 msgid "Size"
 msgstr "ზომა"
 
@@ -1401,64 +1400,64 @@ msgid "Prepare more devices by configuring advanced"
 msgstr ""
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:60
+#: src/components/storage/PartitionsField.jsx:66
 #, fuzzy, c-format
 msgid "at least %s"
 msgstr "%s მაინც"
 
 #. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:84
+#: src/components/storage/PartitionsField.jsx:90
 #, c-format
 msgid "Transactional Btrfs root volume (%s)"
 msgstr "ტრანზაქციული Btrfs ძირითადი ტომი (%s)"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:86
+#: src/components/storage/PartitionsField.jsx:92
 #, c-format
 msgid "Transactional Btrfs root partition (%s)"
 msgstr "ტრანზაქციული Btrfs ძირითადი დანაყოფი (%s)"
 
 #. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:91
+#: src/components/storage/PartitionsField.jsx:97
 #, c-format
 msgid "Btrfs root volume with snapshots (%s)"
 msgstr "Btrfs ძირითადი ტომი სწრაფი ასლებით (%s)"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:93
+#: src/components/storage/PartitionsField.jsx:99
 #, c-format
 msgid "Btrfs root partition with snapshots (%s)"
 msgstr "Btrfs ძირითადი დანაყოფი სწრაფი ასლებით (%s)"
 
 #. TRANSLATORS: This results in something like "Mount /dev/sda3 at /home (25 GiB)" since
 #. %1$s is replaced by the device name, %2$s by the mount point and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:102
+#: src/components/storage/PartitionsField.jsx:108
 #, c-format
 msgid "Mount %1$s at %2$s (%3$s)"
 msgstr ""
 
 #. TRANSLATORS: This results in something like "Swap at /dev/sda3 (2 GiB)" since
 #. %1$s is replaced by the device name, and %2$s by the size
-#: src/components/storage/PartitionsField.jsx:108
+#: src/components/storage/PartitionsField.jsx:114
 #, c-format
 msgid "Swap at %1$s (%2$s)"
 msgstr ""
 
 #. TRANSLATORS: Swap is in an LVM logical volume. %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:112
+#: src/components/storage/PartitionsField.jsx:118
 #, c-format
 msgid "Swap volume (%s)"
 msgstr ""
 
 #. TRANSLATORS: %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:114
+#: src/components/storage/PartitionsField.jsx:120
 #, c-format
 msgid "Swap partition (%s)"
 msgstr "სვოპის დანაყოფი (%s)"
 
 #. TRANSLATORS: This results in something like "Btrfs root at /dev/sda3 (20 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the device name, and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:123
+#: src/components/storage/PartitionsField.jsx:129
 #, c-format
 msgid "%1$s root at %2$s (%3$s)"
 msgstr ""
@@ -1466,21 +1465,21 @@ msgstr ""
 #. TRANSLATORS: "/" is in an LVM logical volume.
 #. Results in something like "Btrfs root volume (at least 20 GiB)" since
 #. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:129
+#: src/components/storage/PartitionsField.jsx:135
 #, c-format
 msgid "%1$s root volume (%2$s)"
 msgstr ""
 
 #. TRANSLATORS: Results in something like "Btrfs root partition (at least 20 GiB)" since
 #. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:132
+#: src/components/storage/PartitionsField.jsx:138
 #, c-format
 msgid "%1$s root partition (%2$s)"
 msgstr ""
 
 #. TRANSLATORS: This results in something like "Ext4 /home at /dev/sda3 (20 GiB)" since
 #. %1$s is replaced by filesystem type, %2$s by mount point, %3$s by device name and %4$s by size
-#: src/components/storage/PartitionsField.jsx:138
+#: src/components/storage/PartitionsField.jsx:144
 #, c-format
 msgid "%1$s %2$s at %3$s (%4$s)"
 msgstr ""
@@ -1488,151 +1487,153 @@ msgstr ""
 #. TRANSLATORS: The filesystem is in an LVM logical volume.
 #. Results in something like "Ext4 /home volume (at least 10 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:144
+#: src/components/storage/PartitionsField.jsx:150
 #, c-format
 msgid "%1$s %2$s volume (%3$s)"
 msgstr ""
 
 #. TRANSLATORS: This results in something like "Ext4 /home partition (at least 10 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:147
+#: src/components/storage/PartitionsField.jsx:153
 #, c-format
 msgid "%1$s %2$s partition (%3$s)"
 msgstr ""
 
-#: src/components/storage/PartitionsField.jsx:159
+#: src/components/storage/PartitionsField.jsx:165
 #, fuzzy
 msgid "Do not configure partitions for booting"
 msgstr "დანაყოფის ინფორმაცია"
 
-#: src/components/storage/PartitionsField.jsx:162
+#: src/components/storage/PartitionsField.jsx:168
 #, fuzzy
 msgid "Boot partitions at installation disk"
 msgstr "დაყენების მოწყობილობა"
 
 #. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/PartitionsField.jsx:165
+#: src/components/storage/PartitionsField.jsx:171
 #, c-format
 msgid "Boot partitions at %s"
 msgstr "ჩატვირთვადი დანაყოფები მისამართზე %s"
 
 #. TRANSLATORS: header for a list of items referring to size limits for file systems
-#: src/components/storage/PartitionsField.jsx:187
+#: src/components/storage/PartitionsField.jsx:193
 msgid "These limits are affected by:"
 msgstr ""
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
-#: src/components/storage/PartitionsField.jsx:191
+#: src/components/storage/PartitionsField.jsx:197
 msgid "The configuration of snapshots"
 msgstr ""
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
 #. %s is replaced by a list of the volumes (like "/home, /boot")
-#: src/components/storage/PartitionsField.jsx:195
+#: src/components/storage/PartitionsField.jsx:201
 #, c-format
 msgid "Presence of other volumes (%s)"
 msgstr ""
 
 #. TRANSLATORS: list item, describes a factor that affects the computed size of a
 #. file system; eg. adjusting the size of the swap
-#: src/components/storage/PartitionsField.jsx:199
+#: src/components/storage/PartitionsField.jsx:205
 msgid "The amount of RAM in the system"
 msgstr ""
 
-#: src/components/storage/PartitionsField.jsx:236
-#: src/components/storage/PartitionsField.jsx:241
-msgid "Add file system"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:239
-msgid "Reset to defaults"
-msgstr "ნაგულისხმები პარამეტრების დაყენება"
-
 #. TRANSLATORS: device flag, the partition size is automatically computed
-#: src/components/storage/PartitionsField.jsx:339
+#: src/components/storage/PartitionsField.jsx:298
 msgid "auto"
 msgstr "ავტომატური"
 
 #. TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
-#: src/components/storage/PartitionsField.jsx:355
+#: src/components/storage/PartitionsField.jsx:314
 #, c-format
 msgid "Reused %s"
 msgstr ""
 
-#: src/components/storage/PartitionsField.jsx:357
+#: src/components/storage/PartitionsField.jsx:316
 #, fuzzy
 msgid "Transactional Btrfs"
 msgstr "ტრანზაქციული"
 
-#: src/components/storage/PartitionsField.jsx:359
+#: src/components/storage/PartitionsField.jsx:318
 #, fuzzy
 msgid "Btrfs with snapshots"
 msgstr "სწრაფი ასლებით"
 
 #. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:373
+#: src/components/storage/PartitionsField.jsx:332
 #, c-format
 msgid "Partition at %s"
 msgstr "დანაყოფი მისამართზე %s"
 
 #. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:376
+#: src/components/storage/PartitionsField.jsx:335
 #, c-format
 msgid "Separate LVM at %s"
 msgstr ""
 
-#: src/components/storage/PartitionsField.jsx:380
+#: src/components/storage/PartitionsField.jsx:339
 #, fuzzy
 msgid "Logical volume at system LVM"
 msgstr "ლოგიკური ტომი"
 
-#: src/components/storage/PartitionsField.jsx:382
+#: src/components/storage/PartitionsField.jsx:341
 msgid "Partition at installation disk"
 msgstr ""
 
-#: src/components/storage/PartitionsField.jsx:397
-#: src/components/storage/SpaceActionsTable.jsx:124
+#: src/components/storage/PartitionsField.jsx:356
+#: src/components/storage/SpaceActionsTable.jsx:122
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
 msgid "Delete"
 msgstr "წაშლა"
 
-#: src/components/storage/PartitionsField.jsx:406
+#: src/components/storage/PartitionsField.jsx:365
 #, fuzzy
 msgid "Change location"
 msgstr "დროის სარტყელის შეცვლა"
 
-#: src/components/storage/PartitionsField.jsx:444
-msgid "Edit file system"
-msgstr ""
-
-#: src/components/storage/PartitionsField.jsx:489
-#: src/components/storage/VolumeForm.jsx:711
-#: src/components/storage/VolumeForm.jsx:716
+#: src/components/storage/PartitionsField.jsx:456
+#: src/components/storage/VolumeFields.jsx:53
+#: src/components/storage/VolumeFields.jsx:62
+#: src/components/storage/VolumeFields.jsx:67
 msgid "Mount point"
 msgstr "მიმაგრების წერტილი"
 
-#: src/components/storage/PartitionsField.jsx:490
+#: src/components/storage/PartitionsField.jsx:457
 #: src/components/storage/ProposalResultSection.jsx:190
-#: src/components/storage/SpaceActionsTable.jsx:155
+#: src/components/storage/SpaceActionsTable.jsx:182
 msgid "Details"
 msgstr "დეტალები"
 
 #. TRANSLATORS: where (and how) the file-system is going to be created
-#: src/components/storage/PartitionsField.jsx:493
+#: src/components/storage/PartitionsField.jsx:460
 #, fuzzy
 msgid "Location"
 msgstr "ლოკალიზაცია"
 
-#: src/components/storage/PartitionsField.jsx:530
+#: src/components/storage/PartitionsField.jsx:502
 msgid "Table with mount points"
 msgstr ""
 
-#: src/components/storage/PartitionsField.jsx:703
+#: src/components/storage/PartitionsField.jsx:573
+#: src/components/storage/PartitionsField.jsx:592
+#: src/components/storage/VolumeDialog.jsx:91
+msgid "Add file system"
+msgstr ""
+
+#: src/components/storage/PartitionsField.jsx:601
+msgid "Other"
+msgstr ""
+
+#: src/components/storage/PartitionsField.jsx:733
+msgid "Reset to defaults"
+msgstr "ნაგულისხმები პარამეტრების დაყენება"
+
+#: src/components/storage/PartitionsField.jsx:806
 #, fuzzy
 msgid "Partitions and file systems"
 msgstr "ტრანზაქციული"
 
-#: src/components/storage/PartitionsField.jsx:704
+#: src/components/storage/PartitionsField.jsx:807
 msgid ""
 "Structure of the new system, including any additional partition needed for "
 "booting,"
@@ -1731,7 +1732,7 @@ msgstr[1] ""
 msgid "Result"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:129
+#: src/components/storage/ProposalSettingsSection.jsx:117
 msgid "Settings"
 msgstr "მორგება"
 
@@ -1758,39 +1759,50 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., /dev/sda)
-#: src/components/storage/SpaceActionsTable.jsx:121
+#: src/components/storage/SpaceActionsTable.jsx:119
 #, c-format
 msgid "Space action selector for %s"
 msgstr ""
 
-#: src/components/storage/SpaceActionsTable.jsx:128
+#: src/components/storage/SpaceActionsTable.jsx:123
 msgid "Allow resize"
 msgstr ""
 
-#: src/components/storage/SpaceActionsTable.jsx:130
+#: src/components/storage/SpaceActionsTable.jsx:124
 msgid "Do not modify"
 msgstr ""
 
+#: src/components/storage/SpaceActionsTable.jsx:154
+msgid "The content may be deleted"
+msgstr ""
+
+#. TRANSLATORS: status message, no existing content was found on the disk,
+#. i.e. the disk is completely empty
 #: src/components/storage/SpaceActionsTable.jsx:157
+#: src/components/storage/device-utils.jsx:184
+msgid "No content found"
+msgstr ""
+
+#: src/components/storage/SpaceActionsTable.jsx:184
 msgid "Shrinkable"
 msgstr ""
 
-#: src/components/storage/SpaceActionsTable.jsx:159
+#: src/components/storage/SpaceActionsTable.jsx:186
 #, fuzzy
 msgid "Action"
 msgstr "ქმედებები"
 
-#: src/components/storage/SpaceActionsTable.jsx:175
+#: src/components/storage/SpaceActionsTable.jsx:202
 msgid "Actions to find space"
 msgstr ""
 
-#: src/components/storage/SpacePolicyDialog.jsx:144
+#: src/components/storage/SpacePolicyDialog.jsx:137
 msgid ""
 "Allocating the file systems might need to find free space in the devices "
 "listed below. Choose how to do it."
 msgstr ""
 
-#: src/components/storage/SpacePolicyDialog.jsx:149
+#: src/components/storage/SpacePolicyDialog.jsx:142
 #: src/components/storage/SpacePolicyField.jsx:87
 #, fuzzy
 msgid "Find space"
@@ -1806,79 +1818,127 @@ msgid ""
 "installation device(s)."
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:102
-msgid "Select a value"
+#: src/components/storage/VolumeDialog.jsx:88
+#, fuzzy, c-format
+msgid "Add %s file system"
+msgstr "მდებარეობა %s ფაილური სისტემისთვის"
+
+#: src/components/storage/VolumeDialog.jsx:89
+#, fuzzy, c-format
+msgid "Edit %s file system"
+msgstr "მდებარეობა %s ფაილური სისტემისთვის"
+
+#: src/components/storage/VolumeDialog.jsx:91
+msgid "Edit file system"
+msgstr ""
+
+#: src/components/storage/VolumeDialog.jsx:129
+msgid "A mount point is required"
+msgstr ""
+
+#: src/components/storage/VolumeDialog.jsx:156
+msgid "The mount point is invalid"
+msgstr ""
+
+#: src/components/storage/VolumeDialog.jsx:184
+msgid "A size value is required"
+msgstr ""
+
+#: src/components/storage/VolumeDialog.jsx:212
+msgid "Minimum size is required"
+msgstr ""
+
+#: src/components/storage/VolumeDialog.jsx:244
+msgid "Maximum must be greater than minimum"
+msgstr ""
+
+#: src/components/storage/VolumeDialog.jsx:286
+#, c-format
+msgid "There is already a file system for %s."
+msgstr ""
+
+#: src/components/storage/VolumeDialog.jsx:288
+msgid "Do you want to edit it?"
+msgstr ""
+
+#: src/components/storage/VolumeDialog.jsx:333
+#, c-format
+msgid "There is a predefined file system for %s."
+msgstr ""
+
+#: src/components/storage/VolumeDialog.jsx:335
+msgid "Do you want to add it?"
 msgstr ""
 
 #. TRANSLATORS: info about possible file system types.
-#: src/components/storage/VolumeForm.jsx:234
+#: src/components/storage/VolumeFields.jsx:209
 msgid ""
 "The options for the file system type depends on the product and the mount "
 "point."
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:240
+#: src/components/storage/VolumeFields.jsx:215
 msgid "More info for file system types"
 msgstr ""
 
 #. TRANSLATORS: label for the file system selector.
-#: src/components/storage/VolumeForm.jsx:251
+#: src/components/storage/VolumeFields.jsx:226
 msgid "File system type"
 msgstr ""
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeForm.jsx:282
+#: src/components/storage/VolumeFields.jsx:257
 msgid "the configuration of snapshots"
 msgstr ""
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
-#: src/components/storage/VolumeForm.jsx:287
+#: src/components/storage/VolumeFields.jsx:262
 #, c-format
 msgid "the presence of the file system for %s"
 msgstr ""
 
 #. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeForm.jsx:289
+#: src/components/storage/VolumeFields.jsx:264
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeForm.jsx:293
+#: src/components/storage/VolumeFields.jsx:268
 msgid "the amount of RAM in the system"
 msgstr ""
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeForm.jsx:296
+#: src/components/storage/VolumeFields.jsx:271
 #, c-format
 msgid "The final size depends on %s."
 msgstr ""
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeForm.jsx:298
+#: src/components/storage/VolumeFields.jsx:273
 msgid " and "
 msgstr " და "
 
 #. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeForm.jsx:303
+#: src/components/storage/VolumeFields.jsx:278
 msgid "Automatically calculated size according to the selected product."
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:321
+#: src/components/storage/VolumeFields.jsx:297
 msgid "Exact size for the file system."
 msgstr ""
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeForm.jsx:334
+#: src/components/storage/VolumeFields.jsx:310
 msgid "Exact size"
 msgstr "ზუსტი ზომა"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeForm.jsx:350
+#: src/components/storage/VolumeFields.jsx:327
 msgid "Size unit"
 msgstr "ზომის ერთეული"
 
-#: src/components/storage/VolumeForm.jsx:376
+#: src/components/storage/VolumeFields.jsx:355
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1886,59 +1946,47 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeForm.jsx:383
+#: src/components/storage/VolumeFields.jsx:362
 msgid "Minimum"
 msgstr "მინიმუმი"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeForm.jsx:394
+#: src/components/storage/VolumeFields.jsx:373
 msgid "Minimum desired size"
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:404
+#: src/components/storage/VolumeFields.jsx:384
 msgid "Unit for the minimum size"
 msgstr ""
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:415
+#: src/components/storage/VolumeFields.jsx:396
 msgid "Maximum"
 msgstr "მაქსიმუმი"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:427
+#: src/components/storage/VolumeFields.jsx:408
 msgid "Maximum desired size"
 msgstr ""
 
-#: src/components/storage/VolumeForm.jsx:436
+#: src/components/storage/VolumeFields.jsx:418
 msgid "Unit for the maximum size"
 msgstr ""
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeForm.jsx:453
+#: src/components/storage/VolumeFields.jsx:436
 msgid "Auto"
 msgstr "ავტო"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeForm.jsx:455
+#: src/components/storage/VolumeFields.jsx:438
 msgid "Fixed"
 msgstr "ფიქსირებული"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeForm.jsx:457
+#: src/components/storage/VolumeFields.jsx:440
 msgid "Range"
 msgstr "დიაპაზონი"
-
-#: src/components/storage/VolumeForm.jsx:666
-msgid "A size value is required"
-msgstr ""
-
-#: src/components/storage/VolumeForm.jsx:671
-msgid "Minimum size is required"
-msgstr ""
-
-#: src/components/storage/VolumeForm.jsx:675
-msgid "Maximum must be greater than minimum"
-msgstr ""
 
 #. TRANSLATORS: %s is replaced by a device label (e.g., "/dev/vda, 50 GiB").
 #: src/components/storage/VolumeLocationDialog.jsx:138
@@ -2074,71 +2122,61 @@ msgid "Storage zFCP"
 msgstr "საცავი zFCP"
 
 #. TRANSLATORS: multipath device type
-#: src/components/storage/device-utils.jsx:53
+#: src/components/storage/device-utils.jsx:66
 msgid "Multipath"
 msgstr "Multipath"
 
 #. TRANSLATORS: %s is replaced by the device bus ID
-#: src/components/storage/device-utils.jsx:58
+#: src/components/storage/device-utils.jsx:71
 #, c-format
 msgid "DASD %s"
 msgstr "DASD %s"
 
 #. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
-#: src/components/storage/device-utils.jsx:63
+#: src/components/storage/device-utils.jsx:76
 #, c-format
 msgid "Software %s"
 msgstr "პროგრამული %s"
 
-#: src/components/storage/device-utils.jsx:68
+#: src/components/storage/device-utils.jsx:81
 msgid "SD Card"
 msgstr "SD ბარათი"
 
 #. TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
-#: src/components/storage/device-utils.jsx:73
+#: src/components/storage/device-utils.jsx:86
 #, c-format
 msgid "%s disk"
 msgstr ""
 
-#: src/components/storage/device-utils.jsx:74
+#: src/components/storage/device-utils.jsx:87
 #, fuzzy
 msgid "Disk"
 msgstr "დისკები"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/device-utils.jsx:94
+#: src/components/storage/device-utils.jsx:107
 #, c-format
 msgid "Members: %s"
 msgstr "წევრები: %s"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/device-utils.jsx:103
+#: src/components/storage/device-utils.jsx:116
 #, c-format
 msgid "Devices: %s"
 msgstr "მოწყობილობები: %s"
 
 #. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
-#: src/components/storage/device-utils.jsx:112
+#: src/components/storage/device-utils.jsx:125
 #, c-format
 msgid "Wires: %s"
 msgstr "მავთულები: %s"
 
 #. TRANSLATORS: disk partition info, %s is replaced by partition table
 #. type (MS-DOS or GPT), %d is the number of the partitions
-#: src/components/storage/device-utils.jsx:136
+#: src/components/storage/device-utils.jsx:155
 #, c-format
 msgid "%s with %d partitions"
 msgstr ""
-
-#. TRANSLATORS: status message, no existing content was found on the disk,
-#. i.e. the disk is completely empty
-#: src/components/storage/device-utils.jsx:165
-msgid "No content found"
-msgstr ""
-
-#: src/components/storage/device-utils.jsx:276
-msgid "Available devices"
-msgstr "ხელმისაწვდომი მოწყობილობები"
 
 #: src/components/storage/iscsi/AuthFields.jsx:70
 msgid "Only available if authentication by target is provided"
@@ -2302,95 +2340,95 @@ msgstr "აღმოაჩინეთ"
 msgid "Targets"
 msgstr "სამიზნეები"
 
-#: src/components/storage/utils.js:60
+#: src/components/storage/utils.js:57
 msgid "KiB"
 msgstr "კიბ"
 
-#: src/components/storage/utils.js:61
+#: src/components/storage/utils.js:58
 msgid "MiB"
 msgstr "მიბ"
 
-#: src/components/storage/utils.js:62
+#: src/components/storage/utils.js:59
 msgid "GiB"
 msgstr "გიბ"
 
-#: src/components/storage/utils.js:63
+#: src/components/storage/utils.js:60
 msgid "TiB"
 msgstr "ტიბ"
 
-#: src/components/storage/utils.js:64
+#: src/components/storage/utils.js:61
 msgid "PiB"
 msgstr "პიბ"
 
-#: src/components/storage/utils.js:73
+#: src/components/storage/utils.js:70
 msgid "Delete current content"
 msgstr ""
 
-#: src/components/storage/utils.js:74
+#: src/components/storage/utils.js:71
 msgid "All partitions will be removed and any data in the disks will be lost."
 msgstr ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space deleting all content[...]"
-#: src/components/storage/utils.js:78
+#: src/components/storage/utils.js:75
 msgid "deleting all content of the installation device"
 msgstr ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space deleting all content[...]"
-#: src/components/storage/utils.js:81
+#: src/components/storage/utils.js:78
 #, c-format
 msgid "deleting all content of the %d selected disks"
 msgstr ""
 
-#: src/components/storage/utils.js:86
+#: src/components/storage/utils.js:83
 msgid "Shrink existing partitions"
 msgstr ""
 
-#: src/components/storage/utils.js:87
+#: src/components/storage/utils.js:84
 msgid "The data is kept, but the current partitions will be resized as needed."
 msgstr ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space shrinking partitions[...]"
-#: src/components/storage/utils.js:91
+#: src/components/storage/utils.js:88
 msgid "shrinking partitions of the installation device"
 msgstr ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space shrinking partitions[...]"
-#: src/components/storage/utils.js:94
+#: src/components/storage/utils.js:91
 #, c-format
 msgid "shrinking partitions of the %d selected disks"
 msgstr ""
 
-#: src/components/storage/utils.js:99
+#: src/components/storage/utils.js:96
 msgid "Use available space"
 msgstr ""
 
-#: src/components/storage/utils.js:100
+#: src/components/storage/utils.js:97
 msgid ""
 "The data is kept. Only the space not assigned to any partition will be used."
 msgstr ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space without modifying any partition".
-#: src/components/storage/utils.js:104
+#: src/components/storage/utils.js:101
 msgid "without modifying any partition"
 msgstr ""
 
-#: src/components/storage/utils.js:109
+#: src/components/storage/utils.js:106
 #, fuzzy
 msgid "Custom"
 msgstr "მომხმარებლის მოწყობილობები"
 
-#: src/components/storage/utils.js:110
+#: src/components/storage/utils.js:107
 msgid "Select what to do with each partition."
 msgstr ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space performing a custom set of actions".
-#: src/components/storage/utils.js:114
+#: src/components/storage/utils.js:111
 msgid "performing a custom set of actions"
 msgstr ""
 
@@ -2559,6 +2597,9 @@ msgstr "მომხმარებელი"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "Root-ით ავთენტიკაცია"
+
+#~ msgid "Available devices"
+#~ msgstr "ხელმისაწვდომი მოწყობილობები"
 
 #~ msgid "Diag"
 #~ msgstr "დიაგნოსტიკა"
