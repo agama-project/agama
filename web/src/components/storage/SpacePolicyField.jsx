@@ -72,7 +72,7 @@ export default function SpacePolicyField({
 
   let value;
   if (isLoading || !policy) {
-    value = <Skeleton screenreaderText={_("Waiting for information about space policy")} width="25%" />;
+    value = <Skeleton width="25%" />;
   } else if (policy.summaryLabels.length === 1) {
     // eslint-disable-next-line agama-i18n/string-literals
     value = _(policy.summaryLabels[0]);

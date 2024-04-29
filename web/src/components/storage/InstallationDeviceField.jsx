@@ -109,7 +109,7 @@ export default function InstallationDeviceField({
 
   let value;
   if (isLoading || !target)
-    value = <Skeleton screenreaderText={_("Waiting for information about selected device")} width="25%" />;
+    value = <Skeleton width="25%" />;
   else
     value = targetValue(target, targetDevice, targetPVDevices);
 
