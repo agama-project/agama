@@ -328,21 +328,21 @@ const VolumeActions = ({ volume, onEdit, onResetLocation, onLocation, onDelete }
  * @param {Volume} [props.volume] - Volume to show
  * @param {Volume[]} [props.volumes] - List of current volumes
  * @param {Volume[]} [props.templates] - List of available templates
- * @param {StorageDevice[]} [props.devices=[]] - Devices available for installation
- * @param {ProposalTarget} [props.target] - Installation target
- * @param {StorageDevice} [props.targetDevice] - Device selected for installation, if target is a disk
+ * @param {StorageDevice[]} [props.volumeDevices=[]] - Devices available for installation
+ * @param {ProposalTarget} [props.target]
+ * @param {StorageDevice[]} [props.targetDevices] - Device selected for installation, if target is a disk
  * @param {boolean} props.isLoading - Whether to show the row as loading
  * @param {(volume: Volume) => void} [props.onEdit=noop] - Function to use for editing the volume
- * @param {(volume: Volume) => void} [props.onDelete=noop] - Function to use for deleting the volume
+ * @param {() => void} [props.onDelete=noop] - Function to use for deleting the volume
  */
 const VolumeRow = ({
   columns,
   volume,
   volumes,
   templates,
-  devices,
+  volumeDevices,
   target,
-  targetDevice,
+  targetDevices,
   isLoading,
   onEdit = noop,
   onDelete = noop
@@ -412,9 +412,9 @@ const VolumeRow = ({
           <VolumeLocationDialog
             isOpen
             volume={volume}
-            devices={devices}
-            target={target}
-            targetDevice={targetDevice}
+            volumes={volumes}
+            volumeDevices={volumeDevices}
+            targetDevices={targetDevices}
             onAccept={acceptForm}
             onCancel={closeDialog}
           />
@@ -431,18 +431,18 @@ const VolumeRow = ({
  * @param {object} props
  * @param {Volume[]} props.volumes - Volumes to show
  * @param {Volume[]} props.templates - List of available templates
- * @param {StorageDevice[]} props.devices - Devices available for installation
- * @param {ProposalTarget} props.target - Installation target
- * @param {StorageDevice|undefined} props.targetDevice - Device selected for installation, if target is a disk
+ * @param {StorageDevice[]} props.volumeDevices
+ * @param {ProposalTarget} props.target
+ * @param {StorageDevice[]} props.targetDevices
  * @param {boolean} props.isLoading - Whether to show the table as loading
  * @param {(volumes: Volume[]) => void} props.onVolumesChange - Function to submit changes in volumes
  */
 const VolumesTable = ({
   volumes,
   templates,
-  devices,
+  volumeDevices,
   target,
-  targetDevice,
+  targetDevices,
   isLoading,
   onVolumesChange
 }) => {
@@ -481,9 +481,9 @@ const VolumesTable = ({
           volume={volume}
           volumes={volumes}
           templates={templates}
-          devices={devices}
+          volumeDevices={volumeDevices}
           target={target}
-          targetDevice={targetDevice}
+          targetDevices={targetDevices}
           isLoading={isLoading}
           onEdit={editVolume}
           onDelete={() => deleteVolume(volume)}
@@ -608,9 +608,10 @@ const AddVolumeButton = ({ options, onClick }) => {
  * @param {object} props
  * @param {Volume[]} props.volumes
  * @param {Volume[]} props.templates
- * @param {StorageDevice[]} props.devices
+ * @param {StorageDevice[]} props.availableDevices
+ * @param {StorageDevice[]} props.volumeDevices
  * @param {ProposalTarget} props.target
- * @param {StorageDevice|undefined} props.targetDevice
+ * @param {StorageDevice[]} props.targetDevices
  * @param {boolean} props.configureBoot
  * @param {StorageDevice|undefined} props.bootDevice
  * @param {StorageDevice|undefined} props.defaultBootDevice
@@ -621,9 +622,10 @@ const AddVolumeButton = ({ options, onClick }) => {
 const Advanced = ({
   volumes,
   templates,
-  devices,
+  availableDevices,
+  volumeDevices,
   target,
-  targetDevice,
+  targetDevices,
   configureBoot,
   bootDevice,
   defaultBootDevice,
@@ -713,9 +715,9 @@ const Advanced = ({
       <VolumesTable
         volumes={volumes}
         templates={templates}
-        devices={devices}
+        volumeDevices={volumeDevices}
         target={target}
-        targetDevice={targetDevice}
+        targetDevices={targetDevices}
         onVolumesChange={onVolumesChange}
         isLoading={isLoading}
       />
@@ -744,7 +746,7 @@ const Advanced = ({
         configureBoot={configureBoot}
         bootDevice={bootDevice}
         defaultBootDevice={defaultBootDevice}
-        devices={devices}
+        availableDevices={availableDevices}
         isLoading={isLoading}
         onChange={onBootChange}
       />
@@ -762,9 +764,10 @@ const Advanced = ({
  * @typedef {object} PartitionsFieldProps
  * @property {Volume[]} volumes - Volumes to show
  * @property {Volume[]} templates - Templates to use for new volumes
- * @property {StorageDevice[]} devices - Devices available for installation
+ * @property {StorageDevice[]} availableDevices - Devices available for installation
+ * @property {StorageDevice[]} volumeDevices
  * @property {ProposalTarget} target - Installation target
- * @property {StorageDevice|undefined} targetDevice - Device selected for installation, if target is a disk
+ * @property {StorageDevice[]} targetDevices
  * @property {boolean} configureBoot - Whether to configure boot partitions.
  * @property {StorageDevice|undefined} bootDevice - Device to use for creating boot partitions.
  * @property {StorageDevice|undefined} defaultBootDevice - Default device for boot partitions if no device has been indicated yet.
@@ -781,9 +784,10 @@ const Advanced = ({
 export default function PartitionsField({
   volumes,
   templates,
-  devices,
+  availableDevices,
+  volumeDevices,
   target,
-  targetDevice,
+  targetDevices,
   configureBoot,
   bootDevice,
   defaultBootDevice,
@@ -807,9 +811,10 @@ export default function PartitionsField({
           <Advanced
             volumes={volumes}
             templates={templates}
-            devices={devices}
+            volumeDevices={volumeDevices}
+            availableDevices={availableDevices}
             target={target}
-            targetDevice={targetDevice}
+            targetDevices={targetDevices}
             configureBoot={configureBoot}
             bootDevice={bootDevice}
             defaultBootDevice={defaultBootDevice}

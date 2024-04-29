@@ -142,7 +142,7 @@ export default class DevicesManager {
    * @returns {StorageDevice[]}
    */
   usedDevices() {
-    const isTarget = (device) => device.isDrive || device.type === "lvmVg";
+    const isTarget = (device) => device.isDrive || ["md", "lvmVg"].includes(device.type);
 
     // Check in system devices to detect removals.
     const targetSystem = this.system.filter(isTarget);

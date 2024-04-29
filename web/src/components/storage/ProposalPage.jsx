@@ -36,6 +36,7 @@ import { IDLE } from "~/client/status";
 const initialState = {
   loading: true,
   availableDevices: [],
+  volumeDevices: [],
   volumeTemplates: [],
   encryptionMethods: [],
   settings: {},
@@ -58,6 +59,11 @@ const reducer = (state, action) => {
     case "UPDATE_AVAILABLE_DEVICES": {
       const { availableDevices } = action.payload;
       return { ...state, availableDevices };
+    }
+
+    case "UPDATE_VOLUME_DEVICES": {
+      const { volumeDevices } = action.payload;
+      return { ...state, volumeDevices };
     }
 
     case "UPDATE_ENCRYPTION_METHODS": {
@@ -103,6 +109,10 @@ export default function ProposalPage() {
 
   const loadAvailableDevices = useCallback(async () => {
     return await cancellablePromise(client.proposal.getAvailableDevices());
+  }, [client, cancellablePromise]);
+
+  const loadVolumeDevices = useCallback(async () => {
+    return await cancellablePromise(client.proposal.getVolumeDevices());
   }, [client, cancellablePromise]);
 
   const loadEncryptionMethods = useCallback(async () => {
@@ -153,6 +163,9 @@ export default function ProposalPage() {
     const availableDevices = await loadAvailableDevices();
     dispatch({ type: "UPDATE_AVAILABLE_DEVICES", payload: { availableDevices } });
 
+    const volumeDevices = await loadVolumeDevices();
+    dispatch({ type: "UPDATE_VOLUME_DEVICES", payload: { volumeDevices } });
+
     const encryptionMethods = await loadEncryptionMethods();
     dispatch({ type: "UPDATE_ENCRYPTION_METHODS", payload: { encryptionMethods } });
 
@@ -169,7 +182,7 @@ export default function ProposalPage() {
     dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
 
     if (result !== undefined) dispatch({ type: "STOP_LOADING" });
-  }, [calculateProposal, cancellablePromise, client, loadAvailableDevices, loadDevices, loadEncryptionMethods, loadErrors, loadProposalResult, loadVolumeTemplates]);
+  }, [calculateProposal, cancellablePromise, client, loadAvailableDevices, loadVolumeDevices, loadDevices, loadEncryptionMethods, loadErrors, loadProposalResult, loadVolumeTemplates]);
 
   const calculate = useCallback(async (settings) => {
     dispatch({ type: "START_LOADING" });
@@ -231,6 +244,7 @@ export default function ProposalPage() {
       />
       <ProposalSettingsSection
         availableDevices={state.availableDevices}
+        volumeDevices={state.volumeDevices}
         encryptionMethods={state.encryptionMethods}
         volumeTemplates={state.volumeTemplates}
         settings={state.settings}

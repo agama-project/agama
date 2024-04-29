@@ -66,7 +66,7 @@ const RadioOption = ({ id, onChange, defaultChecked, children }) => {
  * @param {boolean} props.configureBoot - Whether the boot is configurable
  * @param {StorageDevice|undefined} props.bootDevice - Currently selected booting device.
  * @param {StorageDevice|undefined} props.defaultBootDevice - Default booting device.
- * @param {StorageDevice[]} props.devices - Devices that user can select to boot from.
+ * @param {StorageDevice[]} props.availableDevices - Devices that user can select to boot from.
  * @param {boolean} [props.isOpen=false] - Whether the dialog is visible or not.
  * @param {function} [props.onCancel=noop]
  * @param {(boot: Boot) => void} [props.onAccept=noop]
@@ -75,7 +75,7 @@ export default function BootSelectionDialog({
   configureBoot: configureBootProp,
   bootDevice: bootDeviceProp,
   defaultBootDevice,
-  devices,
+  availableDevices,
   isOpen,
   onCancel = noop,
   onAccept = noop,
@@ -161,7 +161,7 @@ partitions in the appropriate disk."
             </div>
             <DevicesFormSelect
               aria-label={_("Choose a disk for placing the boot loader")}
-              devices={devices}
+              devices={availableDevices}
               selectedDevice={bootDevice}
               onChange={setBootDevice}
               isDisabled={!isBootManual}

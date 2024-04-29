@@ -22,57 +22,50 @@
 // @ts-check
 
 import React, { useState } from "react";
-import { Checkbox, Form } from "@patternfly/react-core";
-import { _ } from "~/i18n";
-import { DevicesFormSelect } from "~/components/storage";
-import { Popup } from "~/components/core";
-import { deviceLabel } from "~/components/storage/utils";
+import { Radio, Form, FormGroup } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
+
+import { _ } from "~/i18n";
+import { deviceChildren } from "~/components/storage/utils";
+import { Popup } from "~/components/core";
+import VolumeLocationSelectorTable from "~/components/storage/VolumeLocationSelectorTable";
 
 /**
  * @typedef {"auto"|"device"|"reuse"} LocationOption
- * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  * @typedef {import ("~/client/storage").Volume} Volume
  * @typedef {import ("~/client/storage").VolumeTarget} VolumeTarget
  */
 
-const LOCATION_AUTO_ID = "location-auto";
-const LOCATION_MANUAL_ID = "location-manual";
+/** @type {(device: StorageDevice) => VolumeTarget} */
+const defaultTarget = (device) => {
+  if (["partition", "lvmLv", "md"].includes(device.type)) return "DEVICE";
 
-/**
- * Generates a location option value from the given target.
- * @function
- *
- * @param {VolumeTarget} target
- * @returns {LocationOption}
- */
-const targetToOption = (target) => {
-  switch (target) {
-    case "DEFAULT":
-      return "auto";
-    case "NEW_PARTITION":
-    case "NEW_VG":
-      return "device";
-    case "DEVICE":
-    case "FILESYSTEM":
-      return "reuse";
-  }
+  return "NEW_PARTITION";
 };
 
-/**
- * Internal component for building the options.
- * @component
- *
- * @param {React.PropsWithChildren<React.ComponentProps<"input">>} props
- */
-const RadioOption = ({ id, onChange, defaultChecked, children }) => {
-  return (
-    <>
-      <input id={id} name="location-mode" type="radio" defaultChecked={defaultChecked} onChange={onChange} />
-      <label htmlFor={id}>{children}</label>
-    </>
-  );
+/** @type {(volume: Volume, device: StorageDevice) => VolumeTarget[]} */
+const availableTargets = (volume, device) => {
+  /** @type {VolumeTarget[]} */
+  const targets = ["DEVICE"];
+
+  if (device.isDrive) {
+    targets.push("NEW_PARTITION");
+    targets.push("NEW_VG");
+  }
+
+  /** @fixme define type for possible fstypes */
+  const fsTypes = volume.outline.fsTypes.map(f => f.toLowerCase());
+  if (device.filesystem && fsTypes.includes(device.filesystem.type))
+    targets.push("FILESYSTEM");
+
+  return targets;
+};
+
+/** @type {(volume: Volume, device: StorageDevice) => VolumeTarget} */
+const sanitizeTarget = (volume, device) => {
+  const targets = availableTargets(volume, device);
+  return targets.includes(volume.target) ? volume.target : defaultTarget(device);
 };
 
 /**
@@ -80,10 +73,10 @@ const RadioOption = ({ id, onChange, defaultChecked, children }) => {
  * @component
  *
  * @typedef {object} VolumeLocationDialogProps
- * @property {Volume} volume - Volume to edit.
- * @property {StorageDevice[]} devices - Devices available for installation.
- * @property {ProposalTarget} target - Installation target.
- * @property {StorageDevice|undefined} targetDevice - Device selected for installation, if target is a disk.
+ * @property {Volume} volume
+ * @property {Volume[]} volumes
+ * @property {StorageDevice[]} volumeDevices
+ * @property {StorageDevice[]} targetDevices
  * @property {boolean} [isOpen=false] - Whether the dialog is visible or not.
  * @property {() => void} onCancel
  * @property {(volume: Volume) => void} onAccept
@@ -92,105 +85,110 @@ const RadioOption = ({ id, onChange, defaultChecked, children }) => {
  */
 export default function VolumeLocationDialog({
   volume,
-  devices,
-  target,
-  targetDevice: defaultTargetDevice,
+  volumes,
+  volumeDevices,
+  targetDevices,
   isOpen,
   onCancel,
   onAccept,
   ...props
 }) {
-  const [locationOption, setLocationOption] = useState(targetToOption(volume.target));
-  const [targetDevice, setTargetDevice] = useState(volume.targetDevice || defaultTargetDevice || devices[0]);
-  const [isDedicatedVG, setIsDedicatedVG] = useState(volume.target === "NEW_VG");
+  const initialDevice = volume.targetDevice || targetDevices[0] || volumeDevices[0];
+  const initialTarget = sanitizeTarget(volume, initialDevice);
 
-  const selectAutoOption = () => setLocationOption("auto");
-  const selectDeviceOption = () => setLocationOption("device");
-  const toggleDedicatedVG = (_, value) => setIsDedicatedVG(value);
+  const [target, setTarget] = useState(initialTarget);
+  const [targetDevice, setTargetDevice] = useState(initialDevice);
 
-  const isLocationAuto = locationOption === "auto";
-  const isLocationDevice = locationOption === "device";
+  const changeTargetDevice = (devices) => {
+    const newTargetDevice = devices[0];
+
+    if (newTargetDevice.name !== targetDevice.name) {
+      setTarget(defaultTarget(newTargetDevice));
+      setTargetDevice(newTargetDevice);
+    }
+  };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    const newVolume = { ...volume };
-
-    if (isLocationAuto) {
-      newVolume.target = "DEFAULT";
-      newVolume.targetDevice = undefined;
-    }
-
-    if (isLocationDevice) {
-      newVolume.target = isDedicatedVG ? "NEW_VG" : "NEW_PARTITION";
-      newVolume.targetDevice = targetDevice;
-    }
-
+    const newVolume = { ...volume, target, targetDevice };
     onAccept(newVolume);
   };
 
   const isAcceptDisabled = () => {
-    return isLocationDevice && targetDevice === undefined;
+    return false;
   };
 
-  const autoText = () => {
-    if (target === "DISK" && defaultTargetDevice)
-      // TRANSLATORS: %s is replaced by a device label (e.g., "/dev/vda, 50 GiB").
-      return sprintf(_("The filesystem will be allocated as a new partition at the installation \
-disk (%s)."), deviceLabel(defaultTargetDevice));
-
-    if (target === "DISK")
-      return _("The filesystem will be allocated as a new partition at the installation disk.");
-
-    return _("The file system will be allocated as a logical volume at the system LVM.");
+  /** @type {(device: StorageDevice) => boolean} */
+  const isDeviceSelectable = (device) => {
+    return device.isDrive || ["md", "partition", "lvmLv"].includes(device.type);
   };
+
+  const targets = availableTargets(volume, targetDevice);
 
   return (
     <Popup
       title={sprintf(_("Location for %s file system"), volume.mountPath)}
+      description={_("Select in which device to allocate the file system.")}
+      inlineSize="large"
       isOpen={isOpen}
       {...props}
     >
       <Form id="volume-location-form" onSubmit={onSubmit}>
-        <fieldset className="stack">
-          <legend className="split">
-            <RadioOption id={LOCATION_AUTO_ID} defaultChecked={isLocationAuto} onChange={selectAutoOption}>
-              {_("Automatic")}
-            </RadioOption>
-          </legend>
-          <div>
-            {autoText()}
-          </div>
-        </fieldset>
-
-        <fieldset className="stack">
-          <legend className="split">
-            <RadioOption id={LOCATION_MANUAL_ID} defaultChecked={isLocationDevice} onChange={selectDeviceOption}>
-              {_("Select a disk")}
-            </RadioOption>
-          </legend>
-
-          <div className="stack">
-            <div>
-              {_("The file system will be allocated as a new partition at the selected disk.")}
-            </div>
-            <DevicesFormSelect
-              aria-label={_("Choose a disk for placing the file system")}
-              devices={devices}
-              selectedDevice={targetDevice}
-              onChange={setTargetDevice}
-              isDisabled={!isLocationDevice}
+        <div className="stack">
+          <VolumeLocationSelectorTable
+            aria-label={_("Select a device for placing the file system")}
+            devices={volumeDevices}
+            selectedDevices={[targetDevice]}
+            targetDevices={targetDevices}
+            volumes={volumes}
+            itemChildren={deviceChildren}
+            itemSelectable={isDeviceSelectable}
+            onSelectionChange={changeTargetDevice}
+            initialExpandedKeys={volumeDevices.map(d => d.sid)}
+            variant="compact"
+          />
+          <FormGroup label={sprintf(_("Select how to allocate the %s file system"), volume.mountPath)}>
+            <Radio
+              id="new_partition"
+              name="target"
+              label={_("Create a new partition")}
+              description={_("The new file system will be allocated as a new partition at the \
+selected disk.")}
+              isChecked={target === "NEW_PARTITION"}
+              isDisabled={!targets.includes("NEW_PARTITION")}
+              onChange={() => setTarget("NEW_PARTITION")}
             />
-            <Checkbox
+            <Radio
               id="dedicated_lvm"
+              name="target"
               label={_("Create a dedicated LVM volume group")}
               description={_("A new volume group will be allocated in the selected disk and the \
 file system will be created as a logical volume.")}
-              isChecked={isDedicatedVG}
-              onChange={toggleDedicatedVG}
-              isDisabled={!isLocationDevice}
+              isChecked={target === "NEW_VG"}
+              isDisabled={!targets.includes("NEW_VG")}
+              onChange={() => setTarget("NEW_VG")}
             />
-          </div>
-        </fieldset>
+            <Radio
+              id="format"
+              name="target"
+              label={_("Format the device")}
+              description={sprintf(_("The selected device will be formatted as %s file system and \
+mounted at %s."), volume.fsType, volume.mountPath)}
+              isChecked={target === "DEVICE"}
+              isDisabled={!targets.includes("DEVICE")}
+              onChange={() => setTarget("DEVICE")}
+            />
+            <Radio
+              id="mount"
+              name="target"
+              label={_("Mount file system")}
+              description={sprintf(_("The selected device will be mounted at %s."), volume.mountPath)}
+              isChecked={target === "FILESYSTEM"}
+              isDisabled={!targets.includes("FILESYSTEM")}
+              onChange={() => setTarget("FILESYSTEM")}
+            />
+          </FormGroup>
+        </div>
       </Form>
       <Popup.Actions>
         <Popup.Confirm form="volume-location-form" type="submit" isDisabled={isAcceptDisabled()} />

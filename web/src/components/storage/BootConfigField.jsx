@@ -60,7 +60,7 @@ const Button = ({ isBold = false, onClick }) => {
  * @param {boolean} props.configureBoot
  * @param {StorageDevice|undefined} props.bootDevice
  * @param {StorageDevice|undefined} props.defaultBootDevice
- * @param {StorageDevice[]} props.devices
+ * @param {StorageDevice[]} props.availableDevices
  * @param {boolean} props.isLoading
  * @param {(boot: BootConfig) => void} props.onChange
  *
@@ -72,7 +72,7 @@ export default function BootConfigField({
   configureBoot,
   bootDevice,
   defaultBootDevice,
-  devices,
+  availableDevices,
   isLoading,
   onChange
 }) {
@@ -113,7 +113,7 @@ export default function BootConfigField({
             configureBoot={configureBoot}
             bootDevice={bootDevice}
             defaultBootDevice={defaultBootDevice}
-            devices={devices}
+            availableDevices={availableDevices}
             onAccept={onAccept}
             onCancel={closeDialog}
           />

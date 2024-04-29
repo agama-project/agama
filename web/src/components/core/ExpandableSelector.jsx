@@ -112,7 +112,7 @@ const sanitizeSelection = (selection, allowMultiple) => {
  * @property {(item: object) => boolean} [itemSelectable=() => true] - Whether an item will be selectable or not.
  * @property {(item: object) => (string|undefined)} [itemClassNames=() => ""] - Callback that allows adding additional CSS class names to item row.
  * @property {object[]} [itemsSelected=[]] - Collection of selected items.
- * @property {string[]} [initialExpandedKeys=[]] - Ids of initially expanded items.
+ * @property {any[]} [initialExpandedKeys=[]] - Ids of initially expanded items.
  * @property {(selection: Array<object>) => void} [onSelectionChange=noop] - Callback to be triggered when selection changes.
  *
  * @typedef {ExpandableSelectorBaseProps & TableProps & HTMLTableProps} ExpandableSelectorProps

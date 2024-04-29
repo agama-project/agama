@@ -47,6 +47,7 @@ import SpacePolicyField from "~/components/storage/SpacePolicyField";
  * @typedef {object} ProposalSettingsSectionProps
  * @property {ProposalSettings} settings
  * @property {StorageDevice[]} availableDevices
+ * @property {StorageDevice[]} volumeDevices
  * @property {String[]} encryptionMethods
  * @property {Volume[]} volumeTemplates
  * @property {boolean} [isLoading=false]
@@ -57,6 +58,7 @@ import SpacePolicyField from "~/components/storage/SpacePolicyField";
 export default function ProposalSettingsSection({
   settings,
   availableDevices,
+  volumeDevices,
   encryptionMethods,
   volumeTemplates,
   isLoading = false,
@@ -112,6 +114,8 @@ export default function ProposalSettingsSection({
   const defaultBootDevice = findDevice(settings.defaultBootDevice);
   const spacePolicy = SPACE_POLICIES.find(p => p.id === settings.spacePolicy);
 
+  const targetDevices = compact([targetDevice, ...targetPVDevices]);
+
   return (
     <>
       <Section title={_("Settings")}>
@@ -133,9 +137,10 @@ export default function ProposalSettingsSection({
         <PartitionsField
           volumes={volumes}
           templates={volumeTemplates}
-          devices={availableDevices}
+          availableDevices={availableDevices}
+          volumeDevices={volumeDevices}
           target={settings.target}
-          targetDevice={targetDevice}
+          targetDevices={targetDevices}
           configureBoot={settings.configureBoot}
           bootDevice={bootDevice}
           defaultBootDevice={defaultBootDevice}

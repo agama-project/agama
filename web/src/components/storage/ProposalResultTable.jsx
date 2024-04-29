@@ -58,7 +58,7 @@ const MountPoint = ({ item }) => {
  * @param {TableItem} props.item
  * @param {DevicesManager} props.devicesManager
  */
-const ExtendedDeviceDetails = ({ item, devicesManager }) => {
+const DeviceCustomDetails = ({ item, devicesManager }) => {
   const isNew = () => {
     const device = toStorageDevice(item);
     if (!device) return false;
@@ -83,7 +83,7 @@ const ExtendedDeviceDetails = ({ item, devicesManager }) => {
  * @param {TableItem} props.item
  * @param {DevicesManager} props.devicesManager
  */
-const ExtendedDeviceSize = ({ item, devicesManager }) => {
+const DeviceCustomSize = ({ item, devicesManager }) => {
   const device = toStorageDevice(item);
   const isResized = device && devicesManager.isShrunk(device);
   const sizeBefore = isResized ? devicesManager.systemDevice(device.sid).size : item.size;
@@ -121,12 +121,12 @@ const columns = (devicesManager) => {
 
   /** @type {() => (item: TableItem) => React.ReactNode} */
   const detailsRender = () => {
-    return (item) => <ExtendedDeviceDetails item={item} devicesManager={devicesManager} />;
+    return (item) => <DeviceCustomDetails item={item} devicesManager={devicesManager} />;
   };
 
   /** @type {() => (item: TableItem) => React.ReactNode} */
   const sizeRender = () => {
-    return (item) => <ExtendedDeviceSize item={item} devicesManager={devicesManager} />;
+    return (item) => <DeviceCustomSize item={item} devicesManager={devicesManager} />;
   };
 
   return [

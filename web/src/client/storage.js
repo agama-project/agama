@@ -452,6 +452,35 @@ class ProposalManager {
   }
 
   /**
+   * Gets the devices that can be selected as target for a volume.
+   *
+   * @returns {Promise<StorageDevice[]>}
+   */
+  async getVolumeDevices() {
+    const availableDevices = await this.getAvailableDevices();
+
+    const isAvailable = (device) => {
+      const isChildren = (device, parentDevice) => {
+        const partitions = parentDevice.partitionTable?.partitions || [];
+        return !!partitions.find(d => d.name === device.name);
+      };
+
+      return (
+        !!availableDevices.find(d => d.name === device.name) ||
+        !!availableDevices.find(d => isChildren(device, d))
+      );
+    };
+
+    const allAvailable = (devices) => devices.every(isAvailable);
+
+    const system = await this.system.getDevices();
+    const mds = system.filter(d => d.type === "md" && allAvailable(d.devices));
+    const vgs = system.filter(d => d.type === "lvmVg" && allAvailable(d.physicalVolumes));
+
+    return [...availableDevices, ...mds, ...vgs];
+  }
+
+  /**
    * Gets the list of meaningful mount points for the selected product
    *
    * @returns {Promise<string[]>}
