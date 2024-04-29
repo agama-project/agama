@@ -2,25 +2,25 @@
 
 Agama's functionality is divided into backend and frontend. Communication between two parts is done through HTTP/JSON and/or websocket. Most of the api requires an authorization.
 
-As frontend Agama offers web based UI or CLI. Backend currently is bunch of services implemented in Rust or Ruby with support from YaST libraries. For interprocess communication Agama uses D-Bus.
+As frontend Agama offers a web based user interface (web UI) or a commandline interface (CLI). Backend currently is bunch of services implemented in Rust or Ruby with support from YaST libraries. For interprocess communication Agama uses D-Bus.
 
 ### Authorization
 
-Authorization is done via password. To get authorized frontend has to provide a root password (root on backend's machine). The password is validated through PAM [1]. Once the authorization succeeds, backend generates an authorization token and passes it back to frontend / user. Agama uses JWT [2] as authorization token [3]. All subsequent calls to the API has to be done together with the token. In case of web UI the token is stored in session cookie.
+Authorization is done via password. To get authorized the frontend has to provide the root password (root on the backend's system). The password is validated through PAM [1]. Once the authorization succeeds, the backend generates an authorization token and passes it back to frontend. Agama uses [JSON Web Token (JWT)] [2] as authorization token [3]. All subsequent calls to the API has to be done together with the token. In case of the web UI, the token is stored in a HTTP-only cookie.
 
-To make local use (frontend and backend running on same machine) with respect to agama-live use case more friendly and allow skipping explicit login in web UI Agama implements option ```--generate-token```. When this option is used, Agama's web server service generates valid JWT automatically on start. The token is stored locally [4] and then imported into web browser's internal database by Agama provided startup [5]. The script prepares custom profile with predefined homepage pointing to Agama's login page with the generated token as get parameter in the homepage url. Then the firefox browser is started in kiosk mode.
+Agama supports special use case when Agama's UI or CLI is used in live installation media. In such case skipping autorization is supported to get feeling of using a desktop application. However, skipping authorization happens only for local access. When connecting remotely, authorization is still in place. Skipping of authorization is made possible thanks to option ```--generate-token```. When this option is used, Agama's web server service generates valid JWT automatically on start. The token is stored locally [4]. To make it usable for web UI, token is imported into web browser's internal database by Agama provided startup [5] script. The script prepares custom profile for Firefox with predefined homepage pointing to Agama's special login page with the generated token as part of a get request in the homepage url. As part of the response, the token is stored as `httpOnly` cookie. In case of CLI the situation is way easier as the token can be accessed and used directly as needed from well known location [4].
 
 ### JWT
 
-The token carries just one claim - the expiration date. Token's lifetime is currently set to one day. The token is provided in an encrypted form. Security key is either automatically created random string [6] of length at least 30 characters. However, security key can be provided via ```/etc/agama.d/server.yaml``` using ```jwt_secret``` option. Content of this option is expected to be a string but no checks are done.
+The token carries just one claim - the expiration date. Token's lifetime is currently set to one day. The token is provided in encrypted form. Security key is either automatically created random string [6] which is 30 characters long. However, security can be provided via the `jwt_secret` option in the `/etc/agama.d/server.yaml` agama's configuration file. The content of this option is expected to be a string but no checks are done.
 
 ### Communication between the frontend and the backend
 
-If both components run locally, communication can be done over HTTP even HTTPS. However, in case when both run on different machines the HTTPS is mandatory. In such case all HTTP requests are automatically redirected to HTTPS. A HTTP response with code 308 (permanent redirect) is returned in such case.
+If both components run locally, communication can be done over HTTP or HTTPS. However, in case when both run on different machines, HTTPS is mandatory. In such case all HTTP requests are automatically redirected to HTTPS. A HTTP response with code 308 (permanent redirect) is returned in such case.
 
 For notifications on changes from backend Agama uses WebSocket technology. Typically backend notificates about installation progress or network configuration changes this way.
 
-### Https certificates
+### HTTPS certificates
 
 SSL communication is secured either by self-signed certificate which is automatically generated by Agama if no certificate was provided by user. If Agama should use particular custom certificate Agama's web server provides options --cert and --key for path to certificate respectively to private key (in PEM format).
 
@@ -30,5 +30,5 @@ SSL communication is secured either by self-signed certificate which is automati
 - [2] RFC 7519, http://jwt.io
 - [3] Rust jsonwebtoken crate, https://crates.io/crates/jsonwebtoken
 - [4] Backend's machine at /run/agama/token
-- [5] Agama's git repo - live/root/.icewm/startup
+- [5] [Firefox startup script] See Agama's git repository path - live/root/.icewm/startup
 - [6] Rust rand crate, https://crates.io/crates/rand
