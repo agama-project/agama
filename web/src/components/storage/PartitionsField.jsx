@@ -23,7 +23,7 @@
 
 import React, { useState } from "react";
 import {
-  Button, Dropdown, DropdownList, DropdownItem, List, ListItem, MenuToggle, Skeleton
+  Button, Divider, Dropdown, DropdownList, DropdownItem, List, ListItem, MenuToggle, Skeleton
 } from '@patternfly/react-core';
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sprintf } from "sprintf-js";
@@ -596,11 +596,18 @@ const AddVolumeButton = ({ options, onClick }) => {
     >
       <DropdownList>
         {options.map((option, index) => {
-          return (
-            <DropdownItem key={index} value={option}>
-              {option === "" ? _("Other") : option}
-            </DropdownItem>
-          );
+          if (option === "") {
+            return (
+              <React.Fragment key="other-option">
+                <Divider component="li" key="separator" />
+                <DropdownItem key={index} value={option}>{_("Other")}</DropdownItem>
+              </React.Fragment>
+            );
+          } else {
+            return (
+              <DropdownItem key={index} value={option}><b>{option}</b></DropdownItem>
+            );
+          }
         })}
       </DropdownList>
     </Dropdown>
