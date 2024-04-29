@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr 29 15:29:38 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Added initial support por listening and notifying network changes
+  (gh#openSUSE/agama#1158).
+
+-------------------------------------------------------------------
 Wed Mar  13 12:42:58 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Add infiniband to network model (gh#openSUSE/agama#1032).
