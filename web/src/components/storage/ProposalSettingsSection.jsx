@@ -49,7 +49,7 @@ import SpacePolicyField from "~/components/storage/SpacePolicyField";
  * @param {symbol} changing the item which is being changed
  * @returns {boolean} true if the skeleton should be displayed, false otherwise
  */
-const ShowSkeleton = (loading, component, changing) => {
+const showSkeleton = (loading, component, changing) => {
   return loading && !NOT_AFFECTED[component].includes(changing);
 };
 
@@ -144,7 +144,7 @@ export default function ProposalSettingsSection({
           targetDevice={targetDevice}
           targetPVDevices={targetPVDevices}
           devices={availableDevices}
-          isLoading={ShowSkeleton(isLoading, "InstallationDeviceField", changing)}
+          isLoading={showSkeleton(isLoading, "InstallationDeviceField", changing)}
           onChange={changeTarget}
         />
         <EncryptionField
@@ -163,7 +163,7 @@ export default function ProposalSettingsSection({
           configureBoot={settings.configureBoot}
           bootDevice={bootDevice}
           defaultBootDevice={defaultBootDevice}
-          isLoading={ShowSkeleton(isLoading, "PartitionsField", changing) || settings.volumes === undefined}
+          isLoading={showSkeleton(isLoading, "PartitionsField", changing) || settings.volumes === undefined}
           onVolumesChange={changeVolumes}
           onBootChange={changeBoot}
         />
@@ -171,7 +171,7 @@ export default function ProposalSettingsSection({
           policy={spacePolicy}
           actions={spaceActions}
           devices={installationDevices}
-          isLoading={ShowSkeleton(isLoading, "SpacePolicyField", changing)}
+          isLoading={showSkeleton(isLoading, "SpacePolicyField", changing)}
           onChange={changeSpacePolicy}
         />
       </Section>
