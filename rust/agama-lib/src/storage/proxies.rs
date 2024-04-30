@@ -45,6 +45,10 @@ trait ProposalCalculator {
     #[dbus_proxy(property)]
     fn available_devices(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 
+    /// EncryptionMethods property
+    #[dbus_proxy(property)]
+    fn encryption_methods(&self) -> zbus::Result<Vec<String>>;
+
     /// ProductMountPoints property
     #[dbus_proxy(property)]
     fn product_mount_points(&self) -> zbus::Result<Vec<String>>;

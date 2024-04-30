@@ -1,8 +1,5 @@
-use anyhow::Context;
 use std::collections::HashMap;
 use zbus::zvariant::{self, OwnedValue, Value};
-
-use crate::error::ServiceError;
 
 /// Nested hash to send to D-Bus.
 pub type NestedHash<'a> = HashMap<&'a str, HashMap<&'a str, zvariant::Value<'a>>>;

@@ -21,6 +21,7 @@ use axum::{
     routing::get,
     Json, Router,
 };
+use serde::Serialize;
 
 use crate::{
     error::Error,
@@ -40,6 +41,15 @@ struct StorageState<'a> {
     client: StorageClient<'a>,
 }
 
+#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct ProductParams {
+    /// List of mount points defined in product
+    mount_points: Vec<String>,
+    /// list of encryption methods defined in product
+    encryption_methods: Vec<String>,
+}
+
 /// Sets up and returns the axum service for the software module.
 pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Storage1";
@@ -56,6 +66,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .route("/devices/system", get(system_devices))
         .route("/devices/result", get(staging_devices))
         .route("/product/volume_for", get(volume_for))
+        .route("/product/params", get(product_params))
         .route("/proposal/actions", get(actions))
         .merge(status_router)
         .merge(progress_router)
@@ -90,4 +101,14 @@ async fn volume_for(
         .get("mount_path")
         .ok_or(anyhow!("Missing mount_path parameter"))?;
     Ok(Json(state.client.volume_for(mount_path).await?))
+}
+
+async fn product_params(
+    State(state): State<StorageState<'_>>,
+) -> Result<Json<ProductParams>, Error> {
+    let params = ProductParams {
+        mount_points: state.client.product_mount_points().await?,
+        encryption_methods: state.client.encryption_methods().await?,
+   };
+    Ok(Json(params))
 }

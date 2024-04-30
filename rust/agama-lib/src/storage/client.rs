@@ -5,7 +5,6 @@ use super::proxies::{DeviceProxy, ProposalCalculatorProxy, ProposalProxy, Storag
 use super::StorageSettings;
 use crate::dbus::{get_optional_property, get_property};
 use crate::error::ServiceError;
-use anyhow::{anyhow, Context};
 use futures_util::future::join_all;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -184,6 +183,14 @@ impl<'a> StorageClient<'a> {
         };
 
         Ok(volume)
+    }
+
+    pub async fn product_mount_points(&self) -> Result<Vec<String>, ServiceError> {
+        Ok(self.calculator_proxy.product_mount_points().await?)
+    }
+
+    pub async fn encryption_methods(&self) -> Result<Vec<String>, ServiceError> {
+        Ok(self.calculator_proxy.encryption_methods().await?)
     }
 
     /// Returns the storage device for the given D-Bus path
