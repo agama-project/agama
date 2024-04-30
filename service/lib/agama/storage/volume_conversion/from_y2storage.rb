@@ -59,8 +59,8 @@ module Agama
           planned = planned_device_for(target.mount_path)
           return unless planned
 
-          target.min_size = planned.min
-          target.max_size = planned.max
+          target.min_size = planned.min if planned.respond_to?(:min)
+          target.max_size = planned.max if planned.respond_to?(:max)
         end
 
         # Planned device for the given mount path.
