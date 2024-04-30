@@ -566,7 +566,7 @@ class ProposalManager {
         return dbusTargetPVDevices.v.map(d => d.v);
       };
 
-      // TODO: Read installation devices from D-Bus.
+      /** @todo Read installation devices from D-Bus. */
       const buildInstallationDevices = (dbusSettings, devices) => {
         const findDevice = (name) => {
           const device = devices.find(d => d.name === name);
@@ -576,10 +576,14 @@ class ProposalManager {
           return device;
         };
 
+        const volumes = dbusSettings.Volumes.v.filter(vol => (
+          [VolumeTargets.NEW_PARTITION, VolumeTargets.NEW_VG].includes(vol.v.Target.v))
+        );
+
         const values = [
           dbusSettings.TargetDevice?.v,
           buildTargetPVDevices(dbusSettings.TargetPVDevices),
-          dbusSettings.Volumes.v.map(vol => vol.v.TargetDevice.v)
+          volumes.map(vol => vol.v.TargetDevice.v)
         ].flat();
 
         if (dbusSettings.ConfigureBoot.v) values.push(dbusSettings.BootDevice.v);
