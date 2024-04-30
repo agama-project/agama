@@ -21,6 +21,7 @@ use axum::{
     routing::get,
     Json, Router,
 };
+use futures_util::TryFutureExt;
 use serde::Serialize;
 
 use crate::{
@@ -68,6 +69,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .route("/product/volume_for", get(volume_for))
         .route("/product/params", get(product_params))
         .route("/proposal/actions", get(actions))
+        .route("/proposal/usable_devices", get(usable_devices))
         .merge(status_router)
         .merge(progress_router)
         .nest("/issues", issues_router)
@@ -111,4 +113,13 @@ async fn product_params(
         encryption_methods: state.client.encryption_methods().await?,
    };
     Ok(Json(params))
+}
+
+async fn usable_devices(
+    State(state): State<StorageState<'_>>,
+) -> Result<Json<String>, Error> {
+    let devices = state.client.available_devices().await?;
+    let devices_names = devices.into_iter().map(|d| d.name).collect();
+
+    Ok(Json(devices_names))
 }

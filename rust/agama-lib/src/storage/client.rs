@@ -16,8 +16,8 @@ use zbus::Connection;
 /// Represents a storage device
 #[derive(Serialize, Debug)]
 pub struct StorageDevice {
-    name: String,
-    description: String,
+    pub name: String,
+    pub description: String,
 }
 
 /// Represents a single change action done to storage
