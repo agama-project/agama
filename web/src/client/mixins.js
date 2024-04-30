@@ -155,7 +155,7 @@ const WithStatus = (superclass, object_path) => class extends superclass {
    * Register a callback to run when the "CurrentInstallationPhase" changes
    *
    * @param {function} handler - callback function
-   * @return {function} function to disable the callback
+   * @return {() => void} function to disable the callback
    */
   onStatusChange(handler) {
     return this.client.onObjectChanged(object_path, STATUS_IFACE, (changes) => {

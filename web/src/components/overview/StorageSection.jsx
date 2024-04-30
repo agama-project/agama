@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useReducer, useEffect } from "react";
 import { Text } from "@patternfly/react-core";
 
@@ -30,19 +32,102 @@ import { Em, ProgressText, Section } from "~/components/core";
 import { _ } from "~/i18n";
 
 /**
+ * @typedef {import ("~/client/storage").ProposalResult} ProposalResult
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ *
+ * @typedef {object} Proposal
+ * @property {StorageDevice[]} availableDevices
+ * @property {ProposalResult} result
+ */
+
+/**
+ * Build a translated summary string for installing on an LVM with multiple
+ * physical partitions/disks
+ * @param {String} policy Find space policy
+ * @returns {String} Translated description
+ */
+const msgLvmMultipleDisks = (policy) => {
+  switch (policy) {
+    case "resize":
+      // TRANSLATORS: installing on an LVM with multiple physical partitions/disks
+      return _("Install in a new Logical Volume Manager (LVM) volume group shrinking existing partitions at the underlying devices as needed");
+    case "keep":
+      // TRANSLATORS: installing on an LVM with multiple physical partitions/disks
+      return _("Install in a new Logical Volume Manager (LVM) volume group without modifying the partitions at the underlying devices");
+    case "delete":
+      // TRANSLATORS: installing on an LVM with multiple physical partitions/disks
+      return _("Install in a new Logical Volume Manager (LVM) volume group deleting all the content of the underlying devices");
+    case "custom":
+      // TRANSLATORS: installing on an LVM with multiple physical partitions/disks
+      return _("Install in a new Logical Volume Manager (LVM) volume group using a custom strategy to find the needed space at the underlying devices");
+  }
+};
+
+/**
+ * Build a translated summary string for installing on an LVM with a single
+ * physical partition/disk
+ * @param {String} policy Find space policy
+ * @returns {String} Translated description with %s placeholder for the device
+ * name
+ */
+const msgLvmSingleDisk = (policy) => {
+  switch (policy) {
+    case "resize":
+      // TRANSLATORS: installing on an LVM with a single physical partition/disk,
+      // %s will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
+      return _("Install in a new Logical Volume Manager (LVM) volume group on %s shrinking existing partitions as needed");
+    case "keep":
+      // TRANSLATORS: installing on an LVM with a single physical partition/disk,
+      // %s will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
+      return _("Install in a new Logical Volume Manager (LVM) volume group on %s without modifying existing partitions");
+    case "delete":
+      // TRANSLATORS: installing on an LVM with a single physical partition/disk,
+      // %s will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
+      return _("Install in a new Logical Volume Manager (LVM) volume group on %s deleting all its content");
+    case "custom":
+      // TRANSLATORS: installing on an LVM with a single physical partition/disk,
+      // %s will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
+      return _("Install in a new Logical Volume Manager (LVM) volume group on %s using a custom strategy to find the needed space");
+  }
+};
+
+/**
  * Text explaining the storage proposal
  *
  * FIXME: this needs to be basically rewritten. See
  * https://github.com/openSUSE/agama/discussions/778#discussioncomment-7715244
+ *
+ * @param {object} props
+ * @param {Proposal} props.proposal
  */
 const ProposalSummary = ({ proposal }) => {
-  const { availableDevices = [], result = {} } = proposal;
+  const { availableDevices, result } = proposal;
 
-  const bootDevice = result.settings?.bootDevice;
-  if (!bootDevice) return <Text>{_("No device selected yet")}</Text>;
+  const label = (deviceName) => {
+    const device = availableDevices.find(d => d.name === deviceName);
+    return device ? deviceLabel(device) : deviceName;
+  };
 
-  const device = availableDevices.find(d => d.name === bootDevice);
-  const label = device ? deviceLabel(device) : bootDevice;
+  if (result.settings.target === "NEW_LVM_VG") {
+    const pvDevices = result.settings.targetPVDevices;
+
+    if (pvDevices.length > 1) {
+      return (<span>{msgLvmMultipleDisks(result.settings.spacePolicy)}</span>);
+    } else {
+      const [msg1, msg2] = msgLvmSingleDisk(result.settings.spacePolicy).split("%s");
+
+      return (
+        <Text>
+          <span>{msg1}</span>
+          <Em>{label(pvDevices[0])}</Em>
+          <span>{msg2}</span>
+        </Text>
+      );
+    }
+  }
+
+  const targetDevice = result.settings.targetDevice;
+  if (!targetDevice) return <Text>{_("No device selected yet")}</Text>;
 
   const fullMsg = (policy) => {
     switch (policy) {
@@ -60,17 +145,16 @@ const ProposalSummary = ({ proposal }) => {
         return _("Install using device %s and deleting all its content");
     }
 
-    console.log(`Unknown space policy: ${policy}`);
     // TRANSLATORS: %s will be replaced by the device name and its size,
     // example: "/dev/sda, 20 GiB"
-    return _("Install using device %s");
+    return _("Install using device %s with a custom strategy to find the needed space");
   };
 
-  const [msg1, msg2] = fullMsg(result.settings?.spacePolicy).split("%s");
+  const [msg1, msg2] = fullMsg(result.settings.spacePolicy).split("%s");
 
   return (
     <Text>
-      {msg1}<Em>{label}</Em>{msg2}
+      {msg1}<Em>{label(targetDevice)}</Em>{msg2}
     </Text>
   );
 };
@@ -122,6 +206,7 @@ const reducer = (state, action) => {
 export default function StorageSection({ showErrors = false }) {
   const { storage: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
+  /** @type {[object, (action: object) => void]} */
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
@@ -197,7 +282,7 @@ export default function StorageSection({ showErrors = false }) {
     }
 
     return (
-      <ProposalSummary proposal={state.proposal || {}} />
+      <ProposalSummary proposal={state.proposal} />
     );
   };
 

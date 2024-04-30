@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import Apps from "@icons/apps.svg?component";
 import Badge from "@icons/badge.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
 import ChevronRight from "@icons/chevron_right.svg?component";
+import CollapseAll from "@icons/collapse_all.svg?component";
 import Delete from "@icons/delete.svg?component";
 import Description from "@icons/description.svg?component";
 import Download from "@icons/download.svg?component";
@@ -35,9 +36,12 @@ import Downloading from "@icons/downloading.svg?component";
 import Edit from "@icons/edit.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Error from "@icons/error.svg?component";
+import ExpandAll from "@icons/expand_all.svg?component";
 import ExpandMore from "@icons/expand_more.svg?component";
+import Feedback from "@icons/feedback.svg?component";
 import Folder from "@icons/folder.svg?component";
 import FolderOff from "@icons/folder_off.svg?component";
+import FrameInspect from "@icons/frame_inspect.svg?component";
 import Globe from "@icons/globe.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Help from "@icons/help.svg?component";
@@ -59,11 +63,15 @@ import Schedule from "@icons/schedule.svg?component";
 import SettingsApplications from "@icons/settings_applications.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import SettingsFill from "@icons/settings-fill.svg?component";
+import Shadow from "@icons/shadow.svg?component";
+import ShieldLock from "@icons/shield_lock.svg?component";
 import SignalCellularAlt from "@icons/signal_cellular_alt.svg?component";
 import Storage from "@icons/storage.svg?component";
 import Sync from "@icons/sync.svg?component";
 import TaskAlt from "@icons/task_alt.svg?component";
 import Terminal from "@icons/terminal.svg?component";
+import ToggleOff from "@icons/toggle_off.svg?component";
+import ToggleOn from "@icons/toggle_on.svg?component";
 import Translate from "@icons/translate.svg?component";
 import Tune from "@icons/tune.svg?component";
 import Warning from "@icons/warning.svg?component";
@@ -79,12 +87,18 @@ import { SiLinux, SiWindows } from "@icons-pack/react-simple-icons";
 // Icons from SVG
 import Loading from "./three-dots-loader-icon.svg?component";
 
+/**
+ * @typedef {string|number} IconSize
+ * @typedef {keyof icons} IconName
+ */
+
 const icons = {
   add_a_photo: AddAPhoto,
   apps: Apps,
   badge: Badge,
   check_circle: CheckCircle,
   chevron_right: ChevronRight,
+  collapse_all: CollapseAll,
   delete: Delete,
   description: Description,
   download: Download,
@@ -92,9 +106,12 @@ const icons = {
   edit: Edit,
   edit_square: EditSquare,
   error: Error,
+  expand_all: ExpandAll,
   expand_more: ExpandMore,
+  feedback: Feedback,
   folder: Folder,
   folder_off: FolderOff,
+  frame_inspect: FrameInspect,
   globe: Globe,
   hard_drive: HardDrive,
   help: Help,
@@ -117,11 +134,15 @@ const icons = {
   settings: SettingsFill,
   settings_applications: SettingsApplications,
   settings_ethernet: SettingsEthernet,
+  shadow: Shadow,
+  shield_lock: ShieldLock,
   signal_cellular_alt: SignalCellularAlt,
   storage: Storage,
   sync: Sync,
   task_alt: TaskAlt,
   terminal: Terminal,
+  toggle_off: ToggleOff,
+  toggle_on: ToggleOn,
   translate: Translate,
   tune: Tune,
   visibility: Visibility,
@@ -149,9 +170,9 @@ const PREDEFINED_SIZES = [
  *   <Icon name="warning" size="16" />
  *
  * @param {object} props - Component props
- * @param {string} props.name - Name of the desired icon.
+ * @param {IconName} props.name - Name of the desired icon.
  * @param {string} [props.className=""] - CSS classes.
- * @param {string|number} [props.size] - Size used for both, width and height.
+ * @param {IconSize} [props.size] - Size used for both, width and height.
  *   It can be a CSS unit or one of PREDEFINED_SIZES.
  * @param {object} [props.otherProps] Other props sent to SVG icon. Please, note
  *   that width and height will be overwritten by the size value if it was given.
@@ -159,13 +180,9 @@ const PREDEFINED_SIZES = [
  * @returns {JSX.Element|null} null if requested icon is not available or given a falsy value as name; JSX block otherwise.
  */
 export default function Icon({ name, size, ...otherProps }) {
-  if (!name) {
-    console.error(`Icon called without name. '${name}' given instead. Rendering nothing.`);
-    return null;
-  }
-
-  if (!icons[name]) {
-    console.error(`Icon '${name}' not found!`);
+  // NOTE: Reaching this is unlikely, but let's be safe.
+  if (!name || !icons[name]) {
+    console.error(`Icon '${name}' not found.`);
     return null;
   }
 

@@ -27,7 +27,6 @@ import { toValidationError, useCancellablePromise } from "~/utils";
 import { Page } from "~/components/core";
 import {
   ProposalPageMenu,
-  ProposalDeviceSection,
   ProposalTransactionalInfo,
   ProposalSettingsSection,
   ProposalResultSection
@@ -196,7 +195,7 @@ export default function ProposalPage() {
   }, [client, load]);
 
   useEffect(() => {
-    const proposalLoaded = () => state.settings.bootDevice !== undefined;
+    const proposalLoaded = () => state.settings.targetDevice !== undefined;
 
     const statusHandler = (serviceStatus) => {
       // Load the proposal if no proposal has been loaded yet. This can happen if the proposal
@@ -216,18 +215,19 @@ export default function ProposalPage() {
     calculate(newSettings).catch(console.error);
   };
 
+  /**
+   * @todo Enable type checking and ensure the components are called with the correct props.
+   *
+   * @note The default value for `settings` should be `undefined` instead of an empty object, and
+   * the settings prop of the components should accept both a ProposalSettings object or undefined.
+   */
+
   return (
     // TRANSLATORS: Storage page title
     <Page icon="hard_drive" title={_("Storage")}>
       <ProposalPageMenu />
       <ProposalTransactionalInfo
         settings={state.settings}
-      />
-      <ProposalDeviceSection
-        settings={state.settings}
-        availableDevices={state.availableDevices}
-        isLoading={state.loading}
-        onChange={changeSettings}
       />
       <ProposalSettingsSection
         availableDevices={state.availableDevices}

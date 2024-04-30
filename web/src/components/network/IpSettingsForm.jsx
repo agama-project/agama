@@ -130,7 +130,11 @@ export default function IpSettingsForm({ connection, onClose }) {
   // TRANSLATORS: manual network configuration mode with a static IP address
   // %s is replaced by the connection name
   return (
-    <Popup isOpen title={sprintf(_("Edit %s"), connection.id)}>
+    <Popup
+      isOpen
+      title={sprintf(_("Edit %s"), connection.id)}
+      blockSize="medium"
+    >
       {renderError("object")}
       <Form id="edit-connection" onSubmit={onSubmit}>
         <FormGroup fieldId="method" label={_("Mode")} isRequired>

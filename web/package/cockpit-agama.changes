@@ -1,4 +1,57 @@
 -------------------------------------------------------------------
+Thu Apr 25 15:04:05 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Allow adding arbitrary volumes (gh#openSUSE/agama#1154).
+
+-------------------------------------------------------------------
+Thu Apr 25 13:40:06 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Adapted to recent changes on Y2Storage::GuidedProposal
+  (gh#yast/yast-storage-ng#1382)
+
+-------------------------------------------------------------------
+Tue Apr 16 11:15:13 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Use better icons in storage proposal page
+  (gh#openSUSE/agama#1152).
+
+-------------------------------------------------------------------
+Mon Apr 15 10:52:14 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Stop using `<abbr>` tag because "its exposure continues to be
+  inconsistent across browsers and assistive technologies"
+  (gh#openSUSE/agama#1149).
+
+-------------------------------------------------------------------
+Mon Apr 15 07:14:35 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Enhance the storage page to make it easier to use and understand.
+  (gh#openSUSE/agama#1138).
+
+-------------------------------------------------------------------
+Thu Apr 11 15:16:42 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Allow changing the location of a file system
+  (gh#openSUSE/agama#1141).
+
+-------------------------------------------------------------------
+Mon Apr  8 14:17:45 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Improve the representation of the devices in the dialog for
+  finding space (gh#openSUSE/agama#1128).
+
+-------------------------------------------------------------------
+Thu Apr  4 15:59:37 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Changes in the table of file systems (gh#openSUSE/agama#1125)
+
+-------------------------------------------------------------------
+Wed Apr  3 15:16:07 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Add new selection for the target device and for configuring the
+  boot device (gh#openSUSE/agama#1068).
+
+-------------------------------------------------------------------
 Wed Mar 27 12:41:11 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Dropping Cockpit dependency:

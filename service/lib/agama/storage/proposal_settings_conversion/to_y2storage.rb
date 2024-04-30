@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,13 +20,14 @@
 # find current contact information at www.suse.com.
 
 require "y2storage"
+require "agama/storage/device_settings"
 require "agama/storage/volume_conversion"
 require "agama/storage/volume_templates_builder"
 
 module Agama
   module Storage
     module ProposalSettingsConversion
-      # Proposal settings conversion to Y2Storage format.
+      # Proposal settings conversion to Y2Storage.
       class ToY2Storage
         # @param settings [Agama::Storage::ProposalSettings]
         # @param config [Agama::Config]
@@ -35,7 +36,7 @@ module Agama
           @config = config
         end
 
-        # Performs the conversion to Y2Storage format.
+        # Performs the conversion to Y2Storage.
         #
         # @return [Y2Storage::ProposalSettings]
         def convert
@@ -43,9 +44,8 @@ module Agama
           # generic default values that are independent of the product (there is no YaST
           # ProductFeatures mechanism in place).
           Y2Storage::ProposalSettings.new_for_current_product.tap do |target|
-            boot_device_conversion(target)
-            candidate_devices_conversion(target)
-            lvm_conversion(target)
+            device_conversion(target)
+            boot_conversion(target)
             encryption_conversion(target)
             space_policy_conversion(target)
             volumes_conversion(target)
@@ -61,32 +61,56 @@ module Agama
         attr_reader :config
 
         # @param target [Y2Storage::ProposalSettings]
-        def boot_device_conversion(target)
-          target.root_device = settings.boot_device
-        end
+        def device_conversion(target)
+          device_settings = settings.device
 
-        # @param target [Y2Storage::ProposalSettings]
-        def candidate_devices_conversion(target)
-          candidate_devices = []
-
-          if settings.lvm.enabled? && settings.lvm.system_vg_devices.any?
-            candidate_devices = settings.lvm.system_vg_devices
-          elsif settings.boot_device
-            candidate_devices = [settings.boot_device]
+          case device_settings
+          when DeviceSettings::Disk
+            disk_device_conversion(target)
+          when DeviceSettings::NewLvmVg
+            new_lvm_vg_device_conversion(target, device_settings)
+          when DeviceSettings::ReusedLvmVg
+            reused_lvm_vg_device_conversion(target, device_settings)
           end
-
-          target.candidate_devices = candidate_devices
         end
 
         # @param target [Y2Storage::ProposalSettings]
-        def lvm_conversion(target)
-          lvm = settings.lvm.enabled?
+        def disk_device_conversion(target)
+          target.lvm = false
+          target.candidate_devices = [boot_device].compact
+        end
 
-          target.lvm = lvm
-          # Activate support for dedicated volume groups
+        # @param target [Y2Storage::ProposalSettings]
+        # @param device_settings [DeviceSettings::NewLvmVg]
+        def new_lvm_vg_device_conversion(target, device_settings)
+          enable_lvm(target)
+          target.candidate_devices = device_settings.candidate_pv_devices
+        end
+
+        # @param target [Y2Storage::ProposalSettings]
+        # @param _device_settings [DeviceSettings::ReusedLvmVg]
+        def reused_lvm_vg_device_conversion(target, _device_settings)
+          enable_lvm(target)
+          # TODO: Sets the reused VG (not supported by yast2-storage-ng yet).
+          # TODO: Decide what to consider as candidate devices.
+          target.candidate_devices = []
+        end
+
+        # @param target [Y2Storage::ProposalSettings]
+        def enable_lvm(target)
+          target.lvm = true
+          # Activate support for dedicated volume groups.
           target.separate_vgs = true
           # Prevent VG reuse
           target.lvm_vg_reuse = false
+          # Create VG as big as needed to allocate the LVs.
+          target.lvm_vg_strategy = :use_needed
+        end
+
+        # @param target [Y2Storage::ProposalSettings]
+        def boot_conversion(target)
+          target.boot = settings.boot.configure?
+          target.root_device = boot_device
         end
 
         # @param target [Y2Storage::ProposalSettings]
@@ -119,12 +143,14 @@ module Agama
           target.swap_reuse = :none
 
           volumes = settings.volumes.map { |v| VolumeConversion.to_y2storage(v) }
+
           disabled_volumes = missing_volumes.map do |volume|
             VolumeConversion.to_y2storage(volume).tap { |v| v.proposed = false }
           end
 
           target.volumes = volumes + disabled_volumes
 
+          volume_device_conversion(target)
           fallbacks_conversion(target)
         end
 
@@ -135,6 +161,15 @@ module Agama
           VolumeTemplatesBuilder.new_from_config(config).all
             .reject { |t| mount_paths.include?(t.mount_path) }
             .reject { |t| t.mount_path.empty? }
+        end
+
+        # Assigns the target device if needed.
+        #
+        # @param target [Y2Storage::ProposalSettings]
+        def volume_device_conversion(target)
+          return unless settings.device.is_a?(DeviceSettings::Disk)
+
+          target.volumes.select(&:proposed?).each { |v| v.device ||= settings.device.name }
         end
 
         # @param target [Y2Storage::ProposalSettings]
@@ -161,26 +196,20 @@ module Agama
           volume&.mount_path
         end
 
+        # Device used for booting.
+        #
+        # @return [String, nil]
+        def boot_device
+          settings.boot.device || settings.default_boot_device
+        end
+
         # All block devices affected by the space policy.
         #
-        # This includes the partitions from the boot device, the candidate devices and from the
-        # devices directly assigned to a volume as target device. If a device is not partitioned,
-        # then the device itself is included.
+        # @see ProposalSettings#installation_devices
         #
         # @return [Array<String>]
         def all_devices
-          devices = [settings.boot_device] +
-            settings.lvm.system_vg_devices +
-            settings.volumes.map(&:location).reject(&:reuse_device?).map(&:device)
-
-          devices.compact.uniq.map { |d| device_or_partitions(d) }.flatten
-        end
-
-        # @param device [String]
-        # @return [String, Array<String>]
-        def device_or_partitions(device)
-          partitions = partitions(device)
-          partitions.empty? ? device : partitions
+          settings.installation_devices.flat_map { |d| partitions(d) }
         end
 
         # @param device [String]

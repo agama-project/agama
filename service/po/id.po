@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-04 02:09+0000\n"
+"POT-Creation-Date: 2024-04-07 02:10+0000\n"
 "PO-Revision-Date: 2023-12-28 21:02+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -188,3 +188,27 @@ msgstr "Mempersiapkan perangkat penyimpanan"
 #: service/lib/agama/storage/manager.rb:130
 msgid "Writing bootloader sysconfig"
 msgstr "Menulis sysconfig bootloader"
+
+#. Returns an issue if there is no target device.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/proposal.rb:195
+msgid "No device selected for installation"
+msgstr ""
+
+#. Returns an issue if any of the devices required for the proposal is not found
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/proposal.rb:211
+#, perl-brace-format
+msgid "The following selected device is not found in the system: %{devices}"
+msgid_plural ""
+"The following selected devices are not found in the system: %{devices}"
+msgstr[0] ""
+
+#. Returns an issue if the proposal is not valid.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/proposal.rb:229
+msgid "Cannot accommodate the required file systems for installation"
+msgstr ""

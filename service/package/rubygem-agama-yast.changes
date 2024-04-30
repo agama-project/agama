@@ -1,4 +1,30 @@
 -------------------------------------------------------------------
+Thu Apr 25 13:40:06 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Adapted to recent changes on Y2Storage::GuidedProposal
+  (gh#yast/yast-storage-ng#1382)
+
+-------------------------------------------------------------------
+Thu Apr 18 08:46:06 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Display encryption status in the storage result
+  (gh#openSUSE/agama#1155)
+
+-------------------------------------------------------------------
+Wed Apr 10 11:35:53 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed setting unlimited maximum partition size
+  (gh#openSUSE/agama#1065)
+
+-------------------------------------------------------------------
+Wed Apr  3 15:12:05 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Add new proposal settings to allow configuring the boot device
+  and to select different scenarios for the installation device:
+  a disk, a new LVM volume group or reuse an LVM volume group
+  (gh#openSUSE/agama#1068).
+
+-------------------------------------------------------------------
 Fri Mar 22 09:18:20 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Make it possible to use non-auto sizes for volumes with

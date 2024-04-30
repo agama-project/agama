@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -27,6 +27,10 @@ import { Icon } from '~/components/layout';
 import { If, ValidationErrors } from "~/components/core";
 
 /**
+ * @typedef {import("~/components/layout/Icon").IconName} IconName
+ */
+
+/**
  * Renders children into an HTML section
  * @component
  *
@@ -46,7 +50,7 @@ import { If, ValidationErrors } from "~/components/core";
  *   </Section>
  *
  * @typedef { Object } SectionProps
- * @property {string} [icon] - Name of the section icon. Not rendered if title is not provided.
+ * @property {IconName} [icon] - Name of the section icon. Not rendered if title is not provided.
  * @property {string} [title] - The section title. If not given, aria-label must be provided.
  * @property {string|React.ReactElement} [description] - A section description. Use only if really needed.
  * @property {string} [name] - The section name. Used to build the header id.
@@ -56,7 +60,7 @@ import { If, ValidationErrors } from "~/components/core";
  * @property {string} [className] - Class name for section html tag.
  * @property {string} [id] - Id of the section ("software", "product", "storage", "storage-actions", ...)
  * @property {import("~/client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title.
- * @property {React.ReactElement} [children] - The section content.
+ * @property {React.ReactNode} [children] - The section content.
  * @property {string} [aria-label] - aria-label attribute, required if title if not given
  *
  * @param { SectionProps } props

@@ -19,30 +19,32 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/proposal_settings"
 require "agama/storage/volume_conversion"
 
 module Agama
   module Storage
     module ProposalSettingsConversion
-      # Proposal settings conversion from Y2Storage format.
+      # Proposal settings conversion from Y2Storage.
+      #
+      # @note This class does not perform a real conversion from Y2Storage settings. Instead of
+      #   that, it copies the given settings and recovers some values from Y2Storage.
+      #   A real conversion is not needed because the original settings are always available.
+      #   Moreover, Agama introduces some concepts that do not exist in the Y2Storage settings
+      #   (e.g., target, boot device or space policy), which could be impossible to infer.
       class FromY2Storage
-        # @param settings [Y2Storage::ProposalSettings]
-        # @param config [Agama::Config]
-        def initialize(settings, config:)
+        # @param y2storage_settings [Y2Storage::ProposalSettings]
+        # @param settings [Agama::Storage::ProposalSettings] Settings to be copied and modified.
+        def initialize(y2storage_settings, settings)
+          @y2storage_settings = y2storage_settings
           @settings = settings
-          @config = config
         end
 
-        # Performs the conversion from Y2Storage format.
+        # Performs the conversion from Y2Storage.
         #
         # @return [Agama::Storage::ProposalSettings]
         def convert
-          ProposalSettings.new.tap do |target|
-            boot_device_conversion(target)
-            lvm_conversion(target)
-            encryption_conversion(target)
-            space_settings_conversion(target)
+          settings.dup.tap do |target|
+            space_actions_conversion(target)
             volumes_conversion(target)
           end
         end
@@ -50,82 +52,32 @@ module Agama
       private
 
         # @return [Y2Storage::ProposalSettings]
+        attr_reader :y2storage_settings
+
+        # @return [Agama::Storage::ProposalSettings]
         attr_reader :settings
 
-        # @return [Agama::Config]
-        attr_reader :config
-
+        # Recovers space actions.
+        #
+        # @note Space actions are generated in the conversion of the settings to Y2Storage format,
+        #   see {ProposalSettingsConversion::ToY2Storage}.
+        #
         # @param target [Agama::Storage::ProposalSettings]
-        def boot_device_conversion(target)
-          target.boot_device = settings.root_device
+        def space_actions_conversion(target)
+          target.space.actions = y2storage_settings.space_settings.actions
         end
 
-        # @param target [Agama::Storage::ProposalSettings]
-        def lvm_conversion(target)
-          target.lvm.enabled = settings.lvm
-
-          # FIXME: The candidate devices list represents the system VG devices if it contains any
-          #   device different to the root device. If the candidate devices only contains the root
-          #   device, then there is no way to know whether the root device was explicitly assigned
-          #   as system VG device. Note that candidate devices will also contain the root device
-          #   when the system VG devices list was empty.
-          candidate_devices = settings.candidate_devices || []
-          return unless candidate_devices.reject { |d| d == settings.root_device }.any?
-
-          target.lvm.system_vg_devices = settings.candidate_devices
-        end
-
-        # @param target [Agama::Storage::ProposalSettings]
-        def encryption_conversion(target)
-          target.encryption.password = settings.encryption_password
-          target.encryption.method = settings.encryption_method
-          target.encryption.pbkd_function = settings.encryption_pbkdf
-        end
-
-        # @note The space policy cannot be inferred from Y2Storage settings.
-        # @param target [Agama::Storage::ProposalSettings]
-        def space_settings_conversion(target)
-          target.space.actions = settings.space_settings.actions
-        end
-
+        # Some values of the volumes have to be recovered from Y2Storage proposal.
+        #
         # @param target [Agama::Storage::ProposalSettings]
         def volumes_conversion(target)
-          target.volumes = volumes.select(&:proposed?).map do |spec|
-            VolumeConversion.from_y2storage(spec, config: config)
-          end
-
-          fallbacks_conversion(target)
+          target.volumes = target.volumes.map { |v| volume_conversion(v) }
         end
 
-        # @param target [Agama::Storage::ProposalSettings]
-        def fallbacks_conversion(target)
-          target.volumes.each do |volume|
-            volume.min_size_fallback_for = volumes_with_min_size_fallback(volume.mount_path)
-            volume.max_size_fallback_for = volumes_with_max_size_fallback(volume.mount_path)
-          end
-        end
-
-        # @param mount_path [String]
-        # @return [Array<String>]
-        def volumes_with_min_size_fallback(mount_path)
-          specs = volumes.select { |s| s.fallback_for_min_size == mount_path }
-          specs.map(&:mount_point)
-        end
-
-        # @param mount_path [String]
-        # @return [Array<String>]
-        def volumes_with_max_size_fallback(mount_path)
-          specs = volumes.select { |s| s.fallback_for_max_size == mount_path }
-          specs.map(&:mount_point)
-        end
-
-        # Volumes from settings.
-        #
-        # Note that volumes might be nil in Y2Storage settings.
-        #
-        # @return [Array<Y2Storage::VolumeSpecification>]
-        def volumes
-          settings.volumes || []
+        # @param volume [Agama::Storage::Volume]
+        # @return [Agama::Storage::Volume]
+        def volume_conversion(volume)
+          VolumeConversion.from_y2storage(volume)
         end
       end
     end

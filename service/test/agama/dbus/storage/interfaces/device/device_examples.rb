@@ -46,7 +46,9 @@ shared_examples "Device interface" do
 
     describe "#device_description" do
       before do
-        allow(Y2Storage::DeviceDescription).to receive(:new).with(device).and_return(description)
+        allow(Y2Storage::DeviceDescription).to receive(:new)
+          .with(device, include_encryption: true)
+          .and_return(description)
       end
 
       let(:description) { instance_double(Y2Storage::DeviceDescription, to_s: "test") }

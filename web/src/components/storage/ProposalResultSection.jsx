@@ -28,7 +28,7 @@ import { _, n_ } from "~/i18n";
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import DevicesManager from "~/components/storage/DevicesManager";
 import { If, Section, Reminder, Tag, TreeTable } from "~/components/core";
-import { ProposalActionsDialog } from "~/components/storage";
+import { ProposalActionsDialog, FilesystemLabel } from "~/components/storage";
 
 /**
  * @typedef {import ("~/client/storage").Action} Action
@@ -139,13 +139,8 @@ const DevicesTreeTable = ({ devicesManager }) => {
     return item.description;
   };
 
-  const renderFilesystemLabel = (item) => {
-    const label = item.filesystem?.label;
-    if (label) return <Tag variant="gray-highlight"><b>{label}</b></Tag>;
-  };
-
   const renderPTableType = (item) => {
-    // TODO: Create a map for partition table types and use an <abbr/> here.
+    // TODO: Create a map for partition table types.
     const type = item.partitionTable?.type;
     if (type) return <Tag><b>{type.toUpperCase()}</b></Tag>;
   };
@@ -154,7 +149,7 @@ const DevicesTreeTable = ({ devicesManager }) => {
     return (
       <>
         <div>{renderNewLabel(item)}</div>
-        <div>{renderContent(item)} {renderFilesystemLabel(item)} {renderPTableType(item)}</div>
+        <div>{renderContent(item)} <FilesystemLabel device={item} /> {renderPTableType(item)}</div>
       </>
     );
   };
@@ -185,16 +180,18 @@ const DevicesTreeTable = ({ devicesManager }) => {
   };
 
   const renderMountPoint = (item) => item.sid && <em>{item.filesystem?.mountPath}</em>;
+  const devices = devicesManager.usedDevices();
 
   return (
     <TreeTable
       columns={[
         { title: _("Device"), content: renderDeviceName },
-        { title: _("Mount Point"), content: renderMountPoint, classNames: "fit-content" },
+        { title: _("Mount Point"), content: renderMountPoint },
         { title: _("Details"), content: renderDetails, classNames: "details-column" },
         { title: _("Size"), content: renderSize, classNames: "sizes-column" }
       ]}
-      items={devicesManager.usedDevices()}
+      items={devices}
+      expandedItems={devices}
       itemChildren={d => deviceChildren(d)}
       rowClassNames={(item) => {
         if (!item.sid) return "dimmed-row";

@@ -24,7 +24,7 @@ jobs:
       image: registry.opensuse.org/opensuse/tumbleweed:latest
       volumes:
         # bind mount the GitHub CLI tool from the Ubuntu host,
-        # it is a statically linked binary so it should work everywhere
+        # it is a statically linked binary so it should work also in TumbleWeed
         - /usr/bin/gh:/usr/bin/gh
 
     steps:
@@ -32,7 +32,7 @@ jobs:
         run: |
           # disable unused repositories to have a faster refresh
           zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && \
-            zypper --non-interactive --gpg-auto-import-keys ref
+            zypper --non-interactive ref
 
       - name: Install tools
         run: zypper --non-interactive install --no-recommends git gettext-tools

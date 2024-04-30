@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,8 +22,8 @@
 require_relative "../../../test_helper"
 require_relative "../storage_helpers"
 require_relative "../../rspec/matchers/storage"
+require "agama/storage/volume"
 require "agama/storage/volume_conversion/from_y2storage"
-require "agama/config"
 require "y2storage"
 
 describe Agama::Storage::VolumeConversion::FromY2Storage do
@@ -31,86 +31,53 @@ describe Agama::Storage::VolumeConversion::FromY2Storage do
 
   before { mock_storage }
 
-  subject { described_class.new(spec, config: config) }
+  subject { described_class.new(volume) }
 
-  let(:config) { Agama::Config.new }
+  let(:btrfs) { Y2Storage::Filesystems::Type::BTRFS }
+  let(:ext4) { Y2Storage::Filesystems::Type::EXT4 }
+  let(:xfs) { Y2Storage::Filesystems::Type::XFS }
+
+  let(:volume) do
+    Agama::Storage::Volume.new("/").tap do |volume|
+      volume.location.target = :new_vg
+      volume.location.device = "/dev/sda"
+      volume.mount_options = ["defaults"]
+      volume.fs_type = btrfs
+      volume.auto_size = false
+      volume.min_size = Y2Storage::DiskSize.GiB(5)
+      volume.max_size = Y2Storage::DiskSize.GiB(20)
+      volume.btrfs.snapshots = true
+      volume.btrfs.subvolumes = ["@/home", "@/var"]
+      volume.btrfs.default_subvolume = "@"
+      volume.btrfs.read_only = true
+      volume.outline.required = true
+      volume.outline.filesystems = [btrfs, ext4, xfs]
+      volume.outline.adjust_by_ram = false
+      volume.outline.snapshots_configurable = true
+      volume.outline.snapshots_size = Y2Storage::DiskSize.GiB(10)
+      volume.outline.snapshots_percentage = 20
+    end
+  end
 
   describe "#convert" do
-    let(:spec) do
-      Y2Storage::VolumeSpecification.new({}).tap do |spec|
-        spec.mount_point = "/"
-        spec.device = "/dev/sda"
-        spec.separate_vg_name = "/dev/vg0"
-        spec.mount_options = ["defaults", "ro"]
-        spec.fs_type = Y2Storage::Filesystems::Type::BTRFS
-        spec.min_size = Y2Storage::DiskSize.GiB(5)
-        spec.max_size = Y2Storage::DiskSize.GiB(20)
-        spec.snapshots = true
-        spec.subvolumes = ["@/home", "@/var"]
-        spec.btrfs_default_subvolume = "@"
-        spec.btrfs_read_only = true
-      end
-    end
+    it "generates a volume with the same values as the given volume" do
+      result = subject.convert
 
-    it "converts the Y2Storage volume spec to an Agama volume" do
-      volume = subject.convert
-
-      expect(volume).to be_a(Agama::Storage::Volume)
-      expect(volume).to have_attributes(
-        mount_path:    "/",
-        location:      an_object_having_attributes(
-          device: "/dev/sda",
-          target: :new_vg
-        ),
-        mount_options: contain_exactly("defaults", "ro"),
-        fs_type:       Y2Storage::Filesystems::Type::BTRFS,
-        min_size:      Y2Storage::DiskSize.GiB(5),
-        max_size:      Y2Storage::DiskSize.GiB(20),
-        btrfs:         an_object_having_attributes(
-          snapshots?:        true,
-          subvolumes:        contain_exactly("@/home", "@/var"),
-          default_subvolume: "@",
-          read_only?:        true
-        )
-      )
-
-      outline = Agama::Storage::VolumeTemplatesBuilder.new_from_config(config).for("/").outline
-      expect(volume.outline).to eq_outline(outline)
-    end
-
-    context "auto size conversion" do
-      before do
-        spec.ignore_fallback_sizes = ignore_fallback_sizes
-        spec.ignore_snapshots_sizes = ignore_snapshots_sizes
-      end
-
-      context "if :ignore_fallback_sizes and :ignore_snapshots_sizes are set" do
-        let(:ignore_fallback_sizes) { true }
-
-        let(:ignore_snapshots_sizes) { true }
-
-        it "does not set auto size" do
-          volume = subject.convert
-
-          expect(volume).to have_attributes(
-            auto_size?: false
-          )
-        end
-      end
-
-      context "if :ignore_fallback_sizes and :ignore_snapshots_sizes are not set" do
-        let(:ignore_fallback_sizes) { false }
-
-        let(:ignore_snapshots_sizes) { false }
-
-        it "sets auto size" do
-          volume = subject.convert
-
-          expect(volume).to have_attributes(
-            auto_size?: true
-          )
-        end
-      end
+      expect(result).to be_a(Agama::Storage::Volume)
+      expect(result).to_not equal(volume)
+      expect(result.location.target).to eq(:new_vg)
+      expect(result.location.device).to eq("/dev/sda")
+      expect(result.mount_path).to eq("/")
+      expect(result.mount_options).to contain_exactly("defaults")
+      expect(result.fs_type).to eq(btrfs)
+      expect(result.auto_size).to eq(false)
+      expect(result.min_size).to eq(Y2Storage::DiskSize.GiB(5))
+      expect(result.max_size).to eq(Y2Storage::DiskSize.GiB(20))
+      expect(result.btrfs.snapshots).to eq(true)
+      expect(result.btrfs.subvolumes).to contain_exactly("@/home", "@/var")
+      expect(result.btrfs.default_subvolume).to eq("@")
+      expect(result.btrfs.read_only).to eq(true)
+      expect(result.outline).to eq_outline(volume.outline)
     end
 
     context "sizes conversion" do
@@ -133,12 +100,10 @@ describe Agama::Storage::VolumeConversion::FromY2Storage do
         end
 
         it "sets the min and max sizes according to the planned device" do
-          volume = subject.convert
+          result = subject.convert
 
-          expect(volume).to have_attributes(
-            min_size: Y2Storage::DiskSize.GiB(10),
-            max_size: Y2Storage::DiskSize.GiB(40)
-          )
+          expect(result.min_size).to eq(Y2Storage::DiskSize.GiB(10))
+          expect(result.max_size).to eq(Y2Storage::DiskSize.GiB(40))
         end
       end
 
@@ -152,13 +117,11 @@ describe Agama::Storage::VolumeConversion::FromY2Storage do
           end
         end
 
-        it "sets the min and max sizes according to the volume spec" do
-          volume = subject.convert
+        it "sets the sizes of the given volume" do
+          result = subject.convert
 
-          expect(volume).to have_attributes(
-            min_size: Y2Storage::DiskSize.GiB(5),
-            max_size: Y2Storage::DiskSize.GiB(20)
-          )
+          expect(result.min_size).to eq(Y2Storage::DiskSize.GiB(5))
+          expect(result.max_size).to eq(Y2Storage::DiskSize.GiB(20))
         end
       end
     end

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-04 02:50+0000\n"
-"PO-Revision-Date: 2024-03-04 15:43+0000\n"
+"POT-Creation-Date: 2024-04-07 02:10+0000\n"
+"PO-Revision-Date: 2024-04-10 09:43+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
 "agama/agama-service-master/zh_Hans/>\n"
@@ -77,9 +77,10 @@ msgstr "文件 %{filename}"
 #: service/lib/agama/software/callbacks/signature.rb:71
 #, perl-brace-format
 msgid ""
-"%{source} is not digitally signed. The origin and integrity of the file cannot"
-" be verified. Use it anyway?"
-msgstr "%{source} 未经过数字签名。因此无法验证文件来源和完整性。是否仍要使用它？"
+"%{source} is not digitally signed. The origin and integrity of the file "
+"cannot be verified. Use it anyway?"
+msgstr ""
+"%{source} 未经过数字签名。因此无法验证文件来源和完整性。是否仍要使用它？"
 
 #. Callback to handle signature verification failures
 #.
@@ -88,9 +89,10 @@ msgstr "%{source} 未经过数字签名。因此无法验证文件来源和完�
 #: service/lib/agama/software/callbacks/signature.rb:94
 #, perl-brace-format
 msgid ""
-"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you wan"
-"t to trust this key?"
-msgstr "密钥 %{id} （%{name}）（指纹为 %{fingerprint})）未知。您想要信任该密钥吗？"
+"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
+"want to trust this key?"
+msgstr ""
+"密钥 %{id} （%{name}）（指纹为 %{fingerprint})）未知。您想要信任该密钥吗？"
 
 #. as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
 #: service/lib/agama/software/manager.rb:134
@@ -184,3 +186,27 @@ msgstr "正在准备存储设备"
 #: service/lib/agama/storage/manager.rb:130
 msgid "Writing bootloader sysconfig"
 msgstr "正在写入引导加载程序 sysconfig"
+
+#. Returns an issue if there is no target device.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/proposal.rb:195
+msgid "No device selected for installation"
+msgstr "未选择用于安装的设备"
+
+#. Returns an issue if any of the devices required for the proposal is not found
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/proposal.rb:211
+#, perl-brace-format
+msgid "The following selected device is not found in the system: %{devices}"
+msgid_plural ""
+"The following selected devices are not found in the system: %{devices}"
+msgstr[0] "未在系统中找到下列已选择的设备： %{devices}"
+
+#. Returns an issue if the proposal is not valid.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/proposal.rb:229
+msgid "Cannot accommodate the required file systems for installation"
+msgstr "无法调整进行安装所需的文件系统"

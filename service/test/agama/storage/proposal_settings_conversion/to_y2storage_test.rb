@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,9 +21,10 @@
 
 require_relative "../../../test_helper"
 require_relative "../storage_helpers"
-require "agama/storage/proposal_settings_conversion/to_y2storage"
-require "agama/storage/proposal_settings"
 require "agama/config"
+require "agama/storage/device_settings"
+require "agama/storage/proposal_settings"
+require "agama/storage/proposal_settings_conversion/to_y2storage"
 require "y2storage"
 
 describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
@@ -36,9 +37,8 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
   describe "#convert" do
     let(:settings) do
       Agama::Storage::ProposalSettings.new.tap do |settings|
-        settings.boot_device = "/dev/sda"
-        settings.lvm.enabled = true
-        settings.lvm.system_vg_devices = ["/dev/sda", "/dev/sdb"]
+        settings.device.name = "/dev/sdc"
+        settings.boot.device = "/dev/sda"
         settings.encryption.password = "notsecret"
         settings.encryption.method = Y2Storage::EncryptionMethod::LUKS2
         settings.encryption.pbkd_function = Y2Storage::PbkdFunction::ARGON2ID
@@ -46,7 +46,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
         settings.space.actions = { "/dev/sda" => :force_delete }
         volume = Agama::Storage::Volume.new("/test").tap do |vol|
           vol.location.target = :new_partition
-          vol.location.device = "/dev/sdc"
+          vol.location.device = "/dev/sdb"
         end
         settings.volumes = [volume]
       end
@@ -56,107 +56,198 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
       y2storage_settings = subject.convert
 
       expect(y2storage_settings).to be_a(Y2Storage::ProposalSettings)
-      expect(y2storage_settings).to have_attributes(
-        candidate_devices:   contain_exactly("/dev/sda", "/dev/sdb"),
-        root_device:         "/dev/sda",
-        swap_reuse:          :none,
-        lvm:                 true,
-        separate_vgs:        true,
-        lvm_vg_reuse:        false,
-        encryption_password: "notsecret",
-        encryption_method:   Y2Storage::EncryptionMethod::LUKS2,
-        encryption_pbkdf:    Y2Storage::PbkdFunction::ARGON2ID,
-        space_settings:      an_object_having_attributes(
-          strategy: :bigger_resize,
-          actions:  { "/dev/sda" => :force_delete }
-        ),
-        volumes:             include(an_object_having_attributes(mount_point: "/test"))
+      expect(y2storage_settings.root_device).to eq("/dev/sda")
+      expect(y2storage_settings.candidate_devices).to eq(["/dev/sda"])
+      expect(y2storage_settings.swap_reuse).to eq(:none)
+      expect(y2storage_settings.lvm).to eq(false)
+      expect(y2storage_settings.encryption_password).to eq("notsecret")
+      expect(y2storage_settings.encryption_method).to eq(Y2Storage::EncryptionMethod::LUKS2)
+      expect(y2storage_settings.encryption_pbkdf).to eq(Y2Storage::PbkdFunction::ARGON2ID)
+      expect(y2storage_settings.space_settings.strategy).to eq(:bigger_resize)
+      expect(y2storage_settings.space_settings.actions).to eq({ "/dev/sda" => :force_delete })
+      expect(y2storage_settings.volumes).to include(
+        an_object_having_attributes(
+          mount_point: "/test",
+          device:      "/dev/sdb"
+        )
       )
     end
 
-    context "candidate devices conversion" do
-      context "when LVM is not set" do
-        before do
-          settings.lvm.enabled = false
-          settings.lvm.system_vg_devices = ["/dev/sdb"]
-        end
-
-        context "and there is a boot device" do
-          before do
-            settings.boot_device = "/dev/sda"
-          end
-
-          it "uses the boot device as candidate device" do
-            y2storage_settings = subject.convert
-
-            expect(y2storage_settings).to have_attributes(
-              candidate_devices: contain_exactly("/dev/sda")
-            )
-          end
-        end
-
-        context "and there is no boot device" do
-          before do
-            settings.boot_device = nil
-          end
-
-          it "does not set candidate devices" do
-            y2storage_settings = subject.convert
-
-            expect(y2storage_settings).to have_attributes(
-              candidate_devices: be_empty
-            )
-          end
-        end
-      end
-
-      context "when LVM is set but no system VG devices are indicated" do
-        before do
-          settings.lvm.enabled = true
-          settings.lvm.system_vg_devices = []
-        end
-
-        context "and there is a boot device" do
-          before do
-            settings.boot_device = "/dev/sda"
-          end
-
-          it "uses the boot device as candidate device" do
-            y2storage_settings = subject.convert
-
-            expect(y2storage_settings).to have_attributes(
-              candidate_devices: contain_exactly("/dev/sda")
-            )
-          end
-        end
-
-        context "and there is no boot device" do
-          before do
-            settings.boot_device = nil
-          end
-
-          it "does not set candidate device" do
-            y2storage_settings = subject.convert
-
-            expect(y2storage_settings).to have_attributes(
-              candidate_devices: be_empty
-            )
-          end
-        end
-      end
-
-      context "when LVM is set and some system VG devices are indicated" do
-        before do
-          settings.lvm.enabled = true
-          settings.lvm.system_vg_devices = ["/dev/sdb", "/dev/sdc"]
-        end
-
-        it "uses the system VG devices as candidate devices" do
+    context "device conversion" do
+      shared_examples "lvm conversion" do
+        it "configures LVM settings" do
           y2storage_settings = subject.convert
 
-          expect(y2storage_settings).to have_attributes(
-            candidate_devices: contain_exactly("/dev/sdb", "/dev/sdc")
+          expect(y2storage_settings.lvm).to eq(true)
+          expect(y2storage_settings.separate_vgs).to eq(true)
+          expect(y2storage_settings.lvm_vg_reuse).to eq(false)
+          expect(y2storage_settings.lvm_vg_strategy).to eq(:use_needed)
+        end
+      end
+
+      before do
+        settings.volumes = [
+          Agama::Storage::Volume.new("/test1"),
+          Agama::Storage::Volume.new("/test2"),
+          Agama::Storage::Volume.new("/test3").tap do |volume|
+            volume.location.target = :new_partition
+            volume.location.device = "/dev/sdb"
+          end
+        ]
+      end
+
+      context "when the device settings is set to use a disk" do
+        before do
+          settings.device = Agama::Storage::DeviceSettings::Disk.new("/dev/sda")
+          settings.boot.device = "/dev/sdb"
+        end
+
+        it "sets lvm to false" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings.lvm).to eq(false)
+        end
+
+        it "sets the target device as device for the volumes with missing device" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings.volumes).to contain_exactly(
+            an_object_having_attributes(mount_point: "/test1", device: "/dev/sda"),
+            an_object_having_attributes(mount_point: "/test2", device: "/dev/sda"),
+            an_object_having_attributes(mount_point: "/test3", device: "/dev/sdb")
           )
+        end
+
+        it "sets the boot device as candidate device" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings.candidate_devices).to contain_exactly("/dev/sdb")
+        end
+
+        context "and no boot device is selected" do
+          before do
+            settings.boot.device = nil
+          end
+
+          it "sets the target device as candidate device" do
+            y2storage_settings = subject.convert
+
+            expect(y2storage_settings.candidate_devices).to contain_exactly("/dev/sda")
+          end
+        end
+      end
+
+      context "when the device settings is set to create a new LVM volume group" do
+        before do
+          settings.device = Agama::Storage::DeviceSettings::NewLvmVg.new(["/dev/sda", "/dev/sdb"])
+        end
+
+        include_examples "lvm conversion"
+
+        it "sets the candidate PV devices as candidate devices" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings.candidate_devices).to contain_exactly("/dev/sda", "/dev/sdb")
+        end
+
+        it "does not set the device for the volumes with missing device" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings.volumes).to contain_exactly(
+            an_object_having_attributes(mount_point: "/test1", device: nil),
+            an_object_having_attributes(mount_point: "/test2", device: nil),
+            an_object_having_attributes(mount_point: "/test3", device: "/dev/sdb")
+          )
+        end
+      end
+
+      context "when the device settings is set to reuse a LVM volume group" do
+        before do
+          settings.device = Agama::Storage::DeviceSettings::ReusedLvmVg.new("/dev/vg0")
+        end
+
+        include_examples "lvm conversion"
+
+        xit "sets the reused LVM volume group as target device" do
+          # TODO: Feature not supported yet by yast2-storage-ng.
+        end
+
+        it "does not set the device for the volumes with missing device" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings.volumes).to contain_exactly(
+            an_object_having_attributes(mount_point: "/test1", device: nil),
+            an_object_having_attributes(mount_point: "/test2", device: nil),
+            an_object_having_attributes(mount_point: "/test3", device: "/dev/sdb")
+          )
+        end
+      end
+    end
+
+    context "boot conversion" do
+      context "if boot configuration is enabled" do
+        before do
+          settings.boot.configure = true
+        end
+
+        it "sets boot to true" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings.boot).to eq(true)
+        end
+      end
+
+      context "if boot configuration is disabled" do
+        before do
+          settings.boot.configure = false
+        end
+
+        it "sets boot to false" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings.boot).to eq(false)
+        end
+      end
+
+      context "if a boot device is selected" do
+        before do
+          settings.boot.device = "/dev/sda"
+        end
+
+        it "sets the boot device as root device" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings.root_device).to eq("/dev/sda")
+        end
+      end
+
+      context "if no boot device is selected" do
+        before do
+          settings.boot.device = nil
+        end
+
+        context "and the device settings is set to use a disk" do
+          before do
+            settings.device = Agama::Storage::DeviceSettings::Disk.new("/dev/sda")
+          end
+
+          it "sets the target device as root device" do
+            y2storage_settings = subject.convert
+
+            expect(y2storage_settings.root_device).to eq("/dev/sda")
+          end
+        end
+
+        context "and the device settings is set to create a new LVM volume group" do
+          before do
+            settings.device = Agama::Storage::DeviceSettings::NewLvmVg.new(["/dev/sda", "/dev/sdb"])
+          end
+
+          it "sets the first candidate device as root device" do
+            y2storage_settings = subject.convert
+
+            expect(y2storage_settings.root_device).to eq("/dev/sda")
+          end
         end
       end
     end
@@ -171,7 +262,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
           settings.space.policy = :delete
         end
 
-        it "generates delete actions for all used devices" do
+        it "generates delete actions for all the partitions at the used devices" do
           y2storage_settings = subject.convert
 
           expect(y2storage_settings.space_settings).to have_attributes(
@@ -179,9 +270,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
             actions:  {
               "/dev/sda1" => :force_delete,
               "/dev/sda2" => :force_delete,
-              "/dev/sda3" => :force_delete,
-              "/dev/sdb"  => :force_delete,
-              "/dev/sdc"  => :force_delete
+              "/dev/sda3" => :force_delete
             }
           )
         end
@@ -192,7 +281,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
           settings.space.policy = :resize
         end
 
-        it "generates resize actions for all used devices" do
+        it "generates resize actions for all the partitions at the used devices" do
           y2storage_settings = subject.convert
 
           expect(y2storage_settings.space_settings).to have_attributes(
@@ -200,9 +289,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
             actions:  {
               "/dev/sda1" => :resize,
               "/dev/sda2" => :resize,
-              "/dev/sda3" => :resize,
-              "/dev/sdb"  => :resize,
-              "/dev/sdc"  => :resize
+              "/dev/sda3" => :resize
             }
           )
         end

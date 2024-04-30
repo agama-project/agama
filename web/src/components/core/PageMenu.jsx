@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useState } from 'react';
 import {
   Dropdown, DropdownGroup, DropdownItem, DropdownList,
@@ -31,18 +33,23 @@ import { Icon } from "~/components/layout";
  * Internal component to build the {PageMenu} toggler
  * @component
  *
- * @param {object} props
- * @param {string} [props.aria-label="Show page menu"]
- * @param {function} props.onClick
+ * @typedef {object} TogglerBaseProps
+ * @property {React.Ref<import('@patternfly/react-core').MenuToggleElement>} toggleRef
+ * @property {string} label
+ *
+ * @typedef {TogglerBaseProps & import('@patternfly/react-core').MenuToggleProps} TogglerProps
+ *
+ * @param {TogglerProps} props
  */
-const Toggler = ({ toggleRef, onClick, "aria-label": ariaLabel = _(("Show page menu")) }) => {
+const Toggler = ({ toggleRef, label, onClick, "aria-label": ariaLabel = _(("Show page menu")) }) => {
   return (
     <MenuToggle
       ref={toggleRef}
       onClick={onClick}
-      aria-label={ariaLabel}
+      aria-label={label || ariaLabel}
       variant="plain"
     >
+      {label}
       <Icon name="expand_more" />
     </MenuToggle>
   );
@@ -54,9 +61,9 @@ const Toggler = ({ toggleRef, onClick, "aria-label": ariaLabel = _(("Show page m
  *
  * Built on top of {@link https://www.patternfly.org/components/menus/dropdown#dropdowngroup PF/DropdownGroup}
  *
- * @see {PageMenu } examples.
+ * @see {PageMenu} examples.
  *
- * @param {object} props - PF/DropdownGroup props, See {@link https://www.patternfly.org/components/menus/dropdown#dropdowngroup}
+ * @param {import('@patternfly/react-core').DropdownGroupProps} props
  */
 const Group = ({ children, ...props }) => {
   return (
@@ -74,7 +81,7 @@ const Group = ({ children, ...props }) => {
  *
  * @see {PageMenu} examples.
  *
- * @param {object} props - PF/DropdownItem props, See {@link https://www.patternfly.org/components/menus/dropdown#dropdownitem}
+ * @param {import('@patternfly/react-core').DropdownItemProps} props
  */
 const Option = ({ children, ...props }) => {
   return (
@@ -92,7 +99,7 @@ const Option = ({ children, ...props }) => {
  *
  * @see {PageMenu} examples.
  *
- * @param {object} props - PF/DropdownList props, See {@link https://www.patternfly.org/components/menus/dropdown#dropdownlist}
+ * @param {import('@patternfly/react-core').DropdownListProps} props
  */
 const Options = ({ children, ...props }) => {
   return (
@@ -147,10 +154,14 @@ const Options = ({ children, ...props }) => {
  *     </PageMenu.Group>
  *   </PageMenu>
  *
- * @param {object} props
- * @param {Group|Item|Array<Group|Item>} props.children
+ * @typedef {object} PageMenuProps
+ * @property {string} [togglerAriaLabel]
+ * @property {string} label
+ * @property {React.ReactNode} children
+ *
+ * @param {PageMenuProps} props
  */
-const PageMenu = ({ togglerAriaLabel, children }) => {
+const PageMenu = ({ togglerAriaLabel, label, children }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggle = () => setIsOpen(!isOpen);
@@ -159,14 +170,14 @@ const PageMenu = ({ togglerAriaLabel, children }) => {
   return (
     <Dropdown
       isOpen={isOpen}
-      toggle={(toggleRef) => <Toggler toggleRef={toggleRef} onClick={toggle} aria-label={togglerAriaLabel} />}
+      toggle={(toggleRef) => <Toggler label={label} toggleRef={toggleRef} onClick={toggle} aria-label={togglerAriaLabel} />}
       onSelect={close}
       onOpenChange={close}
       popperProps={{ minWidth: "150px", position: "right" }}
       data-type="agama/page-menu"
     >
       <DropdownList>
-        {Array(children)}
+        {children}
       </DropdownList>
     </Dropdown>
   );

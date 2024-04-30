@@ -380,6 +380,7 @@ pub struct Connection {
     pub id: String,
     pub uuid: Uuid,
     pub mac_address: MacAddress,
+    pub firewall_zone: Option<String>,
     pub ip_config: IpConfig,
     pub status: Status,
     pub interface: Option<String>,
@@ -448,6 +449,7 @@ impl Default for Connection {
             id: Default::default(),
             uuid: Uuid::new_v4(),
             mac_address: Default::default(),
+            firewall_zone: Default::default(),
             ip_config: Default::default(),
             status: Default::default(),
             interface: Default::default(),
@@ -469,6 +471,7 @@ pub enum ConnectionConfig {
     Bond(BondConfig),
     Vlan(VlanConfig),
     Bridge(BridgeConfig),
+    Infiniband(InfinibandConfig),
 }
 
 #[derive(Default, Debug, PartialEq, Clone)]
@@ -998,4 +1001,44 @@ pub struct BridgeConfig {
 pub struct BridgePortConfig {
     pub priority: Option<u32>,
     pub path_cost: Option<u32>,
+}
+
+#[derive(Default, Debug, PartialEq, Clone)]
+pub struct InfinibandConfig {
+    pub p_key: Option<i32>,
+    pub parent: Option<String>,
+    pub transport_mode: InfinibandTransportMode,
+}
+
+#[derive(Default, Debug, PartialEq, Clone)]
+pub enum InfinibandTransportMode {
+    #[default]
+    Datagram,
+    Connected,
+}
+
+#[derive(Debug, Error)]
+#[error("Invalid infiniband transport-mode: {0}")]
+pub struct InvalidInfinibandTransportMode(String);
+
+impl FromStr for InfinibandTransportMode {
+    type Err = InvalidInfinibandTransportMode;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "datagram" => Ok(Self::Datagram),
+            "connected" => Ok(Self::Connected),
+            _ => Err(InvalidInfinibandTransportMode(s.to_string())),
+        }
+    }
+}
+
+impl fmt::Display for InfinibandTransportMode {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            InfinibandTransportMode::Datagram => "datagram",
+            InfinibandTransportMode::Connected => "connected",
+        };
+        write!(f, "{}", name)
+    }
 }

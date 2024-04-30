@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -61,6 +61,8 @@ describe Agama::DBus::Storage::VolumeConversion::FromDBus do
     }
   end
 
+  let(:logger) { Logger.new($stdout, level: :warn) }
+
   describe "#convert" do
     let(:dbus_volume) do
       {
@@ -111,7 +113,8 @@ describe Agama::DBus::Storage::VolumeConversion::FromDBus do
         expect(volume.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
         expect(volume.auto_size?).to eq(false)
         expect(volume.min_size.to_i).to eq(5 * (1024**3))
-        expect(volume.max_size.to_i).to eq(10 * (1024**3))
+        # missing maximum value means unlimited size
+        expect(volume.max_size.to_i).to eq(-1)
         expect(volume.btrfs.snapshots?).to eq(false)
       end
     end
