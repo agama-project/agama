@@ -192,6 +192,7 @@ const AncillaryAction = ({ children, ...actionsProps }) => (
  * @property {"auto" | "small" | "medium" | "large"} [blockSize="auto"] - The block/height size for the dialog. Default is "auto".
  * @property {"auto" | "small" | "medium" | "large"} [inlineSize="medium"] - The inline/width size for the dialog. Default is "medium".
  * @property {boolean} [isLoading=false] - Whether the data is loading, if yes it displays a loading indicator instead of the requested content
+ * @property {string} [loadingText="Loading data..."] - Text displayed when `isLoading` is set to `true`
  * @typedef {Omit<ModalProps, "variant" | "size"> & PopupBaseProps} PopupProps
  *
  * @param {PopupProps} props
@@ -199,6 +200,8 @@ const AncillaryAction = ({ children, ...actionsProps }) => (
 const Popup = ({
   isOpen = false,
   isLoading = false,
+  // TRANSLATORS: progress message
+  loadingText = _("Loading data..."),
   showClose = false,
   inlineSize = "medium",
   blockSize = "auto",
@@ -217,7 +220,7 @@ const Popup = ({
       actions={actions}
       className={`${className} block-size-${blockSize} inline-size-${inlineSize}`.trim()}
     >
-      {isLoading ? <Loading text={_("Loading data...")} /> : content}
+      {isLoading ? <Loading text={loadingText} /> : content}
     </Modal>
   );
 };
