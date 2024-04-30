@@ -1,6 +1,7 @@
 //! Implements support for handling the storage settings
 
-mod client;
+pub mod client;
+pub mod device;
 mod proxies;
 mod settings;
 mod store;

@@ -11,6 +11,7 @@ use crate::{
     network::{web::network_service, NetworkManagerAdapter},
     questions::web::{questions_service, questions_stream},
     software::web::{software_service, software_streams},
+    storage::web::{storage_service, storage_streams},
     users::web::{users_service, users_streams},
     web::common::{issues_stream, progress_stream, service_status_stream},
 };
@@ -58,6 +59,7 @@ where
         .add_service("/l10n", l10n_service(dbus.clone(), events.clone()).await?)
         .add_service("/manager", manager_service(dbus.clone()).await?)
         .add_service("/software", software_service(dbus.clone()).await?)
+        .add_service("/storage", storage_service(dbus.clone()).await?)
         .add_service(
             "/network",
             network_service(dbus.clone(), network_adapter, events).await?,
@@ -109,6 +111,9 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
     );
     for (id, user_stream) in users_streams(dbus.clone()).await? {
         stream.insert(id, user_stream);
+    }
+    for (id, storage_stream) in storage_streams(dbus.clone()).await? {
+        stream.insert(id, storage_stream);
     }
     for (id, software_stream) in software_streams(dbus.clone()).await? {
         stream.insert(id, software_stream);
