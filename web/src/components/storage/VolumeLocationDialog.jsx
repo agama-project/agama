@@ -27,7 +27,7 @@ import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
 import { deviceChildren } from "~/components/storage/utils";
-import { Popup } from "~/components/core";
+import { FormReadOnlyField, Popup } from "~/components/core";
 import VolumeLocationSelectorTable from "~/components/storage/VolumeLocationSelectorTable";
 
 /**
@@ -36,6 +36,9 @@ import VolumeLocationSelectorTable from "~/components/storage/VolumeLocationSele
  * @typedef {import ("~/client/storage").Volume} Volume
  * @typedef {import ("~/client/storage").VolumeTarget} VolumeTarget
  */
+
+const DIALOG_DESCRIPTION = _("The file systems are allocated at the installation device by \
+default. Indicate a custom location to create the file system at a specific device.");
 
 /** @type {(device: StorageDevice) => VolumeTarget} */
 const defaultTarget = (device) => {
@@ -128,31 +131,33 @@ export default function VolumeLocationDialog({
   return (
     <Popup
       title={sprintf(_("Location for %s file system"), volume.mountPath)}
-      description={_("Select in which device to allocate the file system.")}
+      description={DIALOG_DESCRIPTION}
       inlineSize="large"
       isOpen={isOpen}
       {...props}
     >
       <Form id="volume-location-form" onSubmit={onSubmit}>
         <div className="stack">
-          <VolumeLocationSelectorTable
-            aria-label={_("Select a device for placing the file system")}
-            devices={volumeDevices}
-            selectedDevices={[targetDevice]}
-            targetDevices={targetDevices}
-            volumes={volumes}
-            itemChildren={deviceChildren}
-            itemSelectable={isDeviceSelectable}
-            onSelectionChange={changeTargetDevice}
-            initialExpandedKeys={volumeDevices.map(d => d.sid)}
-            variant="compact"
-          />
-          <FormGroup label={sprintf(_("Select how to allocate the %s file system"), volume.mountPath)}>
+          <FormReadOnlyField label={_("Select in which device to allocate the file system")}>
+            <VolumeLocationSelectorTable
+              aria-label={_("Select a location")}
+              devices={volumeDevices}
+              selectedDevices={[targetDevice]}
+              targetDevices={targetDevices}
+              volumes={volumes}
+              itemChildren={deviceChildren}
+              itemSelectable={isDeviceSelectable}
+              onSelectionChange={changeTargetDevice}
+              initialExpandedKeys={volumeDevices.map(d => d.sid)}
+              variant="compact"
+            />
+          </FormReadOnlyField>
+          <FormGroup label={_("Select how to allocate the file system")}>
             <Radio
               id="new_partition"
               name="target"
               label={_("Create a new partition")}
-              description={_("The new file system will be allocated as a new partition at the \
+              description={_("The file system will be allocated as a new partition at the \
 selected disk.")}
               isChecked={target === "NEW_PARTITION"}
               isDisabled={!targets.includes("NEW_PARTITION")}
@@ -172,8 +177,7 @@ file system will be created as a logical volume.")}
               id="format"
               name="target"
               label={_("Format the device")}
-              description={sprintf(_("The selected device will be formatted as %s file system and \
-mounted at %s."), volume.fsType, volume.mountPath)}
+              description={sprintf(_("The selected device will be formatted as %s file system."), volume.fsType)}
               isChecked={target === "DEVICE"}
               isDisabled={!targets.includes("DEVICE")}
               onChange={() => setTarget("DEVICE")}
@@ -181,8 +185,8 @@ mounted at %s."), volume.fsType, volume.mountPath)}
             <Radio
               id="mount"
               name="target"
-              label={_("Mount file system")}
-              description={sprintf(_("The selected device will be mounted at %s."), volume.mountPath)}
+              label={_("Mount the file system")}
+              description={_("The current file system on the selected device will be mounted without formatting the device.")}
               isChecked={target === "FILESYSTEM"}
               isDisabled={!targets.includes("FILESYSTEM")}
               onChange={() => setTarget("FILESYSTEM")}
