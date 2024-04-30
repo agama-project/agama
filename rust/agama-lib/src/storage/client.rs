@@ -132,14 +132,6 @@ impl<'a> StorageClient<'a> {
         })
     }
 
-    /// Returns the proposal proxy
-    ///
-    /// The proposal might not exist.
-    // NOTE: should we implement some kind of memoization?
-    async fn proposal_proxy(&self) -> Result<ProposalProxy<'a>, ServiceError> {
-        Ok(ProposalProxy::new(&self.connection).await?)
-    }
-
     pub async fn devices_dirty_bit(&self) -> Result<bool, ServiceError> {
         Ok(self.storage_proxy.deprecated_system().await?)
     }
@@ -212,8 +204,7 @@ impl<'a> StorageClient<'a> {
 
     /// Returns the boot device proposal setting
     pub async fn boot_device(&self) -> Result<Option<String>, ServiceError> {
-        let proxy = self.proposal_proxy().await?;
-        let value = self.proposal_value(proxy.boot_device().await)?;
+        let value = self.proposal_value(self.proposal_proxy.boot_device().await)?;
 
         match value {
             Some(v) if v.is_empty() => Ok(None),
@@ -224,14 +215,12 @@ impl<'a> StorageClient<'a> {
 
     /// Returns the lvm proposal setting
     pub async fn lvm(&self) -> Result<Option<bool>, ServiceError> {
-        let proxy = self.proposal_proxy().await?;
-        self.proposal_value(proxy.lvm().await)
+        self.proposal_value(self.proposal_proxy.lvm().await)
     }
 
     /// Returns the encryption password proposal setting
     pub async fn encryption_password(&self) -> Result<Option<String>, ServiceError> {
-        let proxy = self.proposal_proxy().await?;
-        let value = self.proposal_value(proxy.encryption_password().await)?;
+        let value = self.proposal_value(self.proposal_proxy.encryption_password().await)?;
 
         match value {
             Some(v) if v.is_empty() => Ok(None),
