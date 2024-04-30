@@ -39,6 +39,7 @@ async fn test_read_connections() -> Result<(), Box<dyn Error>> {
     let device = model::Device {
         name: String::from("eth0"),
         type_: DeviceType::Ethernet,
+        ..Default::default()
     };
     let eth0 = model::Connection::new("eth0".to_string(), DeviceType::Ethernet);
     let state = NetworkState::new(general_state, vec![], vec![device], vec![eth0]);
@@ -149,6 +150,7 @@ async fn test_update_connection() -> Result<(), Box<dyn Error>> {
     let device = model::Device {
         name: String::from("eth0"),
         type_: DeviceType::Ethernet,
+        ..Default::default()
     };
     let eth0 = model::Connection::new("eth0".to_string(), DeviceType::Ethernet);
     let state = NetworkState::new(general_state, vec![], vec![device], vec![eth0]);

@@ -19,13 +19,15 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useEffect, useState } from "react";
 import { Button, Skeleton } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
-import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
 import { If, Page, Section } from "~/components/core";
 import { ConnectionsTable, IpSettingsForm, NetworkPageMenu, WifiSelector } from "~/components/network";
+import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
 import { _ } from "~/i18n";
 
 /**
@@ -83,6 +85,7 @@ const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
 export default function NetworkPage() {
   const { network: client } = useInstallerClient();
   const [connections, setConnections] = useState(undefined);
+  const [devices, setDevices] = useState(undefined);
   const [selectedConnection, setSelectedConnection] = useState(null);
   const [wifiScanSupported, setWifiScanSupported] = useState(false);
   const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
@@ -91,11 +94,46 @@ export default function NetworkPage() {
   const closeWifiSelector = () => setWifiSelectorOpen(false);
 
   useEffect(() => {
+    return client.onNetworkChange(({ type, payload }) => {
+      switch (type) {
+        case NetworkEventTypes.DEVICE_ADDED: {
+          setDevices((devs) => {
+            const newDevices = devs.filter((d) => d.name !== payload.name);
+            return [...newDevices, client.fromApiDevice(payload)];
+          });
+          break;
+        }
+
+        case NetworkEventTypes.DEVICE_UPDATED: {
+          const [name, data] = payload;
+          setDevices(devs => {
+            const newDevices = devs.filter((d) => d.name !== name);
+            return [...newDevices, client.fromApiDevice(data)];
+          });
+          break;
+        }
+
+        case NetworkEventTypes.DEVICE_REMOVED: {
+          setDevices(devs => devs.filter((d) => d.name !== payload));
+          break;
+        }
+      }
+      client.connections().then(setConnections);
+    });
+  }, [client, devices]);
+
+  useEffect(() => {
     if (connections !== undefined) return;
 
     client.settings().then((s) => setWifiScanSupported(s.wireless_enabled));
     client.connections().then(setConnections);
   }, [client, connections]);
+
+  useEffect(() => {
+    if (devices !== undefined) return;
+
+    client.devices().then(setDevices);
+  }, [client, devices]);
 
   const selectConnection = ({ id }) => {
     client.getConnection(id).then(setSelectedConnection);
@@ -108,30 +146,31 @@ export default function NetworkPage() {
 
   const updateConnections = async () => {
     setConnections(undefined);
+    setDevices(undefined);
   };
 
-  const ready = connections !== undefined;
+  const ready = (connections !== undefined) && (devices !== undefined);
 
   const WifiConnections = () => {
-    const activeWifiConnections = connections.filter(c => c.wireless);
+    const wifiConnections = connections.filter(c => c.wireless);
 
-    if (activeWifiConnections.length === 0) {
+    if (wifiConnections.length === 0) {
       return (
         <NoWifiConnections wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
       );
     }
 
     return (
-      <ConnectionsTable connections={activeWifiConnections} onEdit={selectConnection} onForget={forgetConnection} />
+      <ConnectionsTable connections={wifiConnections} devices={devices} onEdit={selectConnection} onForget={forgetConnection} />
     );
   };
 
   const WiredConnections = () => {
-    const activeWiredConnections = connections.filter(c => !c.wireless);
+    const wiredConnections = connections.filter(c => !c.wireless && (c.id !== "lo"));
 
-    if (activeWiredConnections.length === 0) return <NoWiredConnections />;
+    if (wiredConnections.length === 0) return <NoWiredConnections />;
 
-    return <ConnectionsTable connections={activeWiredConnections} onEdit={selectConnection} />;
+    return <ConnectionsTable connections={wiredConnections} devices={devices} onEdit={selectConnection} />;
   };
 
   return (

@@ -36,6 +36,18 @@ const ConnectionState = Object.freeze({
   DEACTIVATED: 4
 });
 
+const DeviceState = Object.freeze({
+  UNKNOWN: "unknown",
+  UNMANAGED: "unmanaged",
+  UNAVAILABLE: "unavailable",
+  DISCONNECTED: "disconnected",
+  CONFIG: "config",
+  NEEDAUTH: "needAuth",
+  ACTIVATED: "activated",
+  DEACTIVATING: "deactivating",
+  FAILED: "failed"
+});
+
 /**
  * Returns a human readable connection state
  *
@@ -48,9 +60,18 @@ const connectionHumanState = (state) => {
   return stateKey.toLowerCase();
 };
 
+/**
+ * @typedef {keyof ConnectionTypes} ConnectionType
+ */
+
 const ConnectionTypes = Object.freeze({
-  ETHERNET: "802-3-ethernet",
-  WIFI: "802-11-wireless"
+  ETHERNET: "ethernet",
+  WIFI: "wireless",
+  LOOPBACK: "loopback",
+  BOND: "bond",
+  BRIDGE: "bridge",
+  VLAN: "vlan",
+  UNKNOWN: "unknown"
 });
 
 const SecurityProtocols = Object.freeze({
@@ -75,6 +96,30 @@ const SecurityProtocols = Object.freeze({
  * @typedef {object} IPAddress
  * @property {string} address - like "129.168.1.2"
  * @property {number|string} prefix - like "16"
+ */
+
+/**
+ * @typedef {object} Device
+ * @property {string} name
+ * @property {ConnectionType} type
+ * @property {IPAddress[]} addresses
+ * @property {string[]} nameservers
+ * @property {string} gateway4
+ * @property {string} gateway6
+ * @property {string} method4
+ * @property {string} method6
+ * @property {Route[]} routes4
+ * @property {Route[]} routes6
+ * @property {string} macAddress
+ * @property {string} [connection]
+ * @property {string} DeviceState
+ */
+
+/**
+ * @typedef {object} Route
+ * @property {IPAddress} destination
+ * @property {string} next_hop
+ * @property {number} metric
  */
 
 /**
@@ -109,8 +154,8 @@ const SecurityProtocols = Object.freeze({
 /**
 * @typedef {object} NetworkSettings
 * @property {boolean} connectivity
-* @property {boolean} wireless_enabled
-* @property {boolean} networking_enabled
+* @property {boolean} wirelessEnabled
+* @property {boolean} networkingEnabled
 * @property {string} hostname
 
 /**
@@ -147,6 +192,21 @@ const createConnection = ({ id, iface, method4, method6, gateway4, gateway6, add
   return connection;
 };
 
+const createDevice = ({ name, macAddress, method4, method6, gateway4, gateway6, addresses, nameservers, routes4, routes6 }) => {
+  return {
+    name,
+    macAddress,
+    method4: method4 || "auto",
+    method6: method6 || "auto",
+    gateway4: gateway4 || "",
+    gateway6: gateway6 || "",
+    addresses: addresses || [],
+    nameservers: nameservers || [],
+    routes4: routes4 || [],
+    routes6: routes6 || []
+  };
+};
+
 /**
  * Returns an access point object
  *
@@ -167,10 +227,12 @@ const createAccessPoint = ({ ssid, hwAddress, strength, security }) => (
 );
 
 export {
-  createConnection,
   createAccessPoint,
+  createConnection,
+  createDevice,
   connectionHumanState,
   ConnectionState,
   ConnectionTypes,
+  DeviceState,
   SecurityProtocols
 };

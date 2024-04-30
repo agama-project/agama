@@ -6,34 +6,29 @@ use agama_lib::network::types::{DeviceType, SSID};
 use agama_server::network::web::network_service;
 use agama_server::network::{
     self,
-    model::{self, AccessPoint, GeneralState, Ipv4Method, Ipv6Method, StateConfig},
-    Adapter, NetworkAdapterError, NetworkService, NetworkState,
+    model::{self, AccessPoint, GeneralState, StateConfig},
+    Adapter, NetworkAdapterError, NetworkState,
 };
-use agama_server::web::{generate_token, MainServiceBuilder, ServiceConfig};
 
 use async_trait::async_trait;
 use axum::http::header;
 use axum::{
     body::Body,
     http::{Method, Request, StatusCode},
-    response::Response,
-    routing::{get, put},
-    Json, Router,
+    Router,
 };
 use common::body_to_string;
-use serde_json::{json, to_string};
-use std::{error::Error, path::PathBuf};
-use tokio::{sync::broadcast::channel, test};
+use serde_json::to_string;
+use std::error::Error;
+use tokio::{sync::broadcast, test};
 use tower::ServiceExt;
 
-fn public_dir() -> PathBuf {
-    std::env::current_dir().unwrap().join("public")
-}
 async fn build_state() -> NetworkState {
     let general_state = GeneralState::default();
     let device = model::Device {
         name: String::from("eth0"),
         type_: DeviceType::Ethernet,
+        ..Default::default()
     };
     let eth0 = model::Connection::new("eth0".to_string(), DeviceType::Ethernet);
 
@@ -44,7 +39,8 @@ async fn build_service(state: NetworkState) -> Result<Router, ServiceError> {
     let dbus = DBusServer::new().start().await?.connection();
 
     let adapter = NetworkTestAdapter(state);
-    Ok(network_service(dbus, adapter).await?)
+    let (tx, _rx) = broadcast::channel(16);
+    Ok(network_service(dbus, adapter, tx).await?)
 }
 
 #[derive(Default)]

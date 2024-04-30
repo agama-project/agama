@@ -30,24 +30,41 @@ jest.mock("~/client");
 
 const firstConnection = {
   id: "WiFi 1",
-  uuid: "89e7d438-8143-4318-9e35-cdedfdf6c98a",
+  iface: "wlan0",
   type: ConnectionTypes.WIFI,
   addresses: [{ address: "192.168.69.200", prefix: 24 }]
 };
 
+const firstDevice = {
+  name: "wlan0",
+  connection: "WiFi 1",
+  type: ConnectionTypes.WIFI,
+  addresses: [{ address: "192.168.69.200", prefix: 24 }],
+  macAddress: "AA:11:22:33:44::FF"
+};
+
 const secondConnection = {
   id: "WiFi 2",
-  uuid: "ddc46599-db7f-4306-aee4-2ab0938fd7d6",
+  iface: "wlan1",
   type: ConnectionTypes.WIFI,
   addresses: [{ address: "192.168.69.201", prefix: 24 }]
 };
 
+const secondDevice = {
+  name: "wlan1",
+  connection: "WiFi 2",
+  type: ConnectionTypes.WIFI,
+  addresses: [{ address: "192.168.69.201", prefix: 24 }],
+  macAddress: "AA:11:22:33:44::AA"
+};
+
 const conns = [firstConnection, secondConnection];
+const devices = [firstDevice, secondDevice];
 
 describe("ConnectionsTable", () => {
   describe("when there are no connections", () => {
     it("renders nothing", async () => {
-      const { container } = plainRender(<ConnectionsTable connections={[]} />);
+      const { container } = plainRender(<ConnectionsTable connections={[]} devices={[]} />);
 
       await waitFor(() => expect(container).toBeEmptyDOMElement());
     });
@@ -55,7 +72,7 @@ describe("ConnectionsTable", () => {
 
   describe("when there are connections", () => {
     it("renders them in a table", () => {
-      plainRender(<ConnectionsTable connections={conns} />);
+      plainRender(<ConnectionsTable connections={conns} devices={devices} />);
 
       const table = screen.getByRole("grid");
       within(table).getByText("Name");
@@ -68,7 +85,7 @@ describe("ConnectionsTable", () => {
 
     describe("and the user clicks on the actions toggler", () => {
       it("renders a list of available actions", async () => {
-        const { user } = plainRender(<ConnectionsTable connections={conns} />);
+        const { user } = plainRender(<ConnectionsTable connections={conns} devices={devices} />);
         const connectionActions = screen.getByRole("button", { name: "Actions for connection WiFi 1" });
         const actionsColumn = connectionActions.parentNode;
         const menu = within(actionsColumn).queryByRole("menu");
@@ -80,7 +97,7 @@ describe("ConnectionsTable", () => {
       describe("and then in the Edit action", () => {
         it("triggers the onEdit callback", async () => {
           const onEditFn = jest.fn();
-          const { user } = plainRender(<ConnectionsTable connections={conns} onEdit={onEditFn} />);
+          const { user } = plainRender(<ConnectionsTable connections={conns} devices={devices} onEdit={onEditFn} />);
           const connectionActions = screen.getByRole("button", { name: "Actions for connection WiFi 1" });
           const actionsColumn = connectionActions.parentNode;
           await user.click(connectionActions);

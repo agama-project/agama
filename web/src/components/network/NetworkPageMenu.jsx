@@ -31,7 +31,7 @@ import { _ } from "~/i18n";
  * @param {boolean} [props.wifiScanSupported=false] - whether the scan of WiFi networks is supported
  * @param {function} props.openWifiSelector - the function for opening the WiFi network selector
  */
-export default function NetworkPageMenu ({
+export default function NetworkPageMenu({
   wifiScanSupported = false,
   openWifiSelector,
 }) {

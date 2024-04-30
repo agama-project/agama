@@ -32,7 +32,7 @@ jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 const wiredConnection = {
   "id": "eth0",
   "status": "up",
-  "interface": "eth0",
+  "iface": "eth0",
   "method4": "manual",
   "method6": "manual",
   "addresses": [{ address: "192.168.122.20", prefix: 24 }],
@@ -42,6 +42,7 @@ const wiredConnection = {
 
 const wiFiConnection = {
   "id": "AgamaNetwork",
+  "iface": "wlan0",
   "method4": "auto",
   "method6": "auto",
   "wireless": {
@@ -52,11 +53,29 @@ const wiFiConnection = {
   },
   "addresses": [{ address: "192.168.69.200", prefix: 24 }],
   "nameservers": [],
-  "status": "down"
+  "status": "up"
 }
+
+const ethernetDevice = {
+  name: "eth0",
+  connection: "eth0",
+  type: ConnectionTypes.ETHERNET,
+  addresses: [{ address: "192.168.122.20", prefix: 24 }],
+  macAddress: "00:11:22:33:44::55"
+};
+
+const wifiDevice = {
+  name: "wlan0",
+  connection: "AgamaNetwork",
+  type: ConnectionTypes.WIFI,
+  addresses: [{ address: "192.168.69.200", prefix: 24 }],
+  macAddress: "AA:11:22:33:44::FF"
+};
 
 const settingsFn = jest.fn();
 const connectionsFn = jest.fn();
+const onNetworChangeEventFn = jest.fn();
+const devicesFn = jest.fn();
 const activeConnections = [wiredConnection, wiFiConnection];
 const networkSettings = { wireless_enabled: false, hostname: "test", networking_enabled: true, connectivity: true };
 
@@ -64,14 +83,15 @@ describe("NetworkPage", () => {
   beforeEach(() => {
     settingsFn.mockReturnValue({ ...networkSettings });
     connectionsFn.mockReturnValue(activeConnections);
+    devicesFn.mockResolvedValue([ethernetDevice, wifiDevice]);
 
     createClient.mockImplementation(() => {
       return {
         network: {
-          setUp: () => Promise.resolve(true),
+          devices: devicesFn,
           connections: () => Promise.resolve(connectionsFn()),
           accessPoints: () => Promise.resolve([]),
-          onNetworkEvent: jest.fn(),
+          onNetworkChange: onNetworChangeEventFn,
           settings: () => Promise.resolve(settingsFn())
         }
       };

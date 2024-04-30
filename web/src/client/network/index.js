@@ -21,19 +21,9 @@
 
 // @ts-check
 
-import DBusClient from "../dbus";
-import { NetworkManagerAdapter, securityFromFlags } from "./network_manager";
-import cockpit from "../../lib/cockpit";
+import { securityFromFlags } from "./network_manager";
 import { createConnection, ConnectionTypes, ConnectionState, createAccessPoint } from "./model";
 import { formatIp, ipPrefixFor } from "./utils";
-
-const SERVICE_NAME = "org.opensuse.Agama1";
-const CONNECTIONS_IFACE = "org.opensuse.Agama1.Network.Connections";
-const CONNECTIONS_PATH = "/org/opensuse/Agama1/Network/connections";
-const CONNECTION_IFACE = "org.opensuse.Agama1.Network.Connection";
-const CONNECTIONS_NAMESPACE = "/org/opensuse/Agama1/Network/connections";
-const IP_IFACE = "org.opensuse.Agama1.Network.Connection.IP";
-const WIRELESS_IFACE = "org.opensuse.Agama1.Network.Connection.Wireless";
 
 const DeviceType = Object.freeze({
   LOOPBACK: 0,
@@ -46,18 +36,20 @@ const DeviceType = Object.freeze({
 /**
  * @typedef {import("./model").NetworkSettings} NetworkSettings
  * @typedef {import("./model").Connection} Connection
+ * @typedef {import("./model").Connection} Device
+ * @typedef {import("./model").Connection} Route
  * @typedef {import("./model").IPAddress} IPAddress
  * @typedef {import("./model").AccessPoint} AccessPoint
  */
 
 const NetworkEventTypes = Object.freeze({
-  ACTIVE_CONNECTION_ADDED: "active_connection_added",
-  ACTIVE_CONNECTION_UPDATED: "active_connection_updated",
-  ACTIVE_CONNECTION_REMOVED: "active_connection_removed",
-  CONNECTION_ADDED: "connection_added",
-  CONNECTION_UPDATED: "connection_updated",
-  CONNECTION_REMOVED: "connection_removed",
-  SETTINGS_UPDATED: "settings_updated"
+  DEVICE_ADDED: "deviceAdded",
+  DEVICE_REMOVED: "deviceRemoved",
+  DEVICE_UPDATED: "deviceUpdated",
+  CONNECTION_ADDED: "connectionAdded",
+  CONNECTION_UPDATED: "connectionUpdated",
+  CONNECTION_REMOVED: "connectionRemoved",
+  SETTINGS_UPDATED: "settingsUpdated"
 });
 
 /**
@@ -101,6 +93,56 @@ class NetworkClient {
   }
 
   /**
+   * Returns the devices running configuration
+   *
+   * @return {Promise<Device[]>}
+   */
+  async devices() {
+    const response = await this.client.get("/network/devices");
+    if (!response.ok) {
+      return [];
+    }
+
+    const devices = await response.json();
+    return devices.map(this.fromApiDevice);
+  }
+
+  /**
+   * Returns the device settings
+   *
+   * @param {object} device - device settings from the API server
+   * @return {Device}
+   */
+  fromApiDevice(device) {
+    const nameservers = (device?.ipConfig?.nameservers || []);
+    const { ipConfig = {}, ...dev } = device;
+    const routes4 = (ipConfig.routes4 || []).map((route) => {
+      const [ip, netmask] = route.destination.split("/");
+      const destination = { address: ip, prefix: ipPrefixFor(netmask) };
+
+      return { ...route, destination };
+    });
+
+    const routes6 = (ipConfig.routes6 || []).map((route) => {
+      const [ip, netmask] = route.destination.split("/");
+      const destination = (netmask !== undefined) ? { address: ip, prefix: ipPrefixFor(netmask) } : { address: ip };
+
+      return { ...route, destination };
+    });
+
+    const addresses = (ipConfig.addresses || []).map((address) => {
+      const [ip, netmask] = address.split("/");
+      if (netmask !== undefined) {
+        return { address: ip, prefix: ipPrefixFor(netmask) };
+      } else {
+        return { address: ip };
+      }
+    });
+
+    return { ...dev, ...ipConfig, addresses, nameservers, routes4, routes6 };
+  }
+
+  /**
    * Returns the connection settings
    *
    * @return {Promise<Connection[]>}
@@ -128,6 +170,15 @@ class NetworkClient {
     });
 
     return { ...connection, addresses, nameservers };
+  }
+
+  connectionType(connection) {
+    if (connection.wireless) return ConnectionTypes.WIFI;
+    if (connection.bond) return ConnectionTypes.BOND;
+    if (connection.vlan) return ConnectionTypes.VLAN;
+    if (connection.iface === "lo") return ConnectionTypes.LOOPBACK;
+
+    return ConnectionTypes.ETHERNET;
   }
 
   toApiConnection(connection) {
@@ -158,7 +209,7 @@ class NetworkClient {
         ssid: ap.ssid,
         hwAddress: ap.hw_address,
         strength: ap.strength,
-        security: securityFromFlags(ap.flags, ap.wpa_flags, ap.rsn_flags)
+        security: securityFromFlags(ap.flags, ap.wpaFlags, ap.rsnFlags)
       });
     });
   }
@@ -169,10 +220,16 @@ class NetworkClient {
    * @param {Connection} connection - connection to be activated
    */
   async connectTo(connection) {
-    const conn = await this.addConnection(connection);
-    await this.apply();
+    return this.client.get(`/network/${connection.id}/connect`);
+  }
 
-    return conn;
+  /**
+   * Connects to given Wireless network
+   *
+   * @param {Connection} connection - connection to be activated
+   */
+  async disconnect(connection) {
+    return this.client.get(`/network/${connection.id}/disconnect`);
   }
 
   /**
@@ -201,8 +258,11 @@ class NetworkClient {
       wireless,
     });
 
+    const conn = await this.addConnection(connection);
+    await this.apply();
+
     // the connection is automatically activated when written
-    return this.connectTo(connection);
+    return conn;
   }
 
   /**
@@ -283,12 +343,33 @@ class NetworkClient {
    * @return {Promise<NetworkSettings>}
   */
   async settings() {
-    const response = await this.client.get("/network/settings");
+    const response = await this.client.get("/network/state");
     if (!response.ok) {
-      console.error("Failed to get settings", response);
       return {};
     }
     return response.json();
+  }
+
+  /**
+   * Registers a callback to run when the network config change.
+   *
+   * @param {(handler: NetworkEvent) => void} handler - Callback function.
+   * @return {import ("../http").RemoveFn} Function to remove the callback.
+   */
+  onNetworkChange(handler) {
+    return this.client.onEvent("NetworkChange", ({ type, ...data }) => {
+      console.log("Event:", type, ", with data:", data);
+      const subtype = Object.values(NetworkEventTypes).find((event) => data[event]);
+
+      if (subtype === undefined) {
+        console.error("Unknown subevent:", data);
+      } else {
+        const payload = data[subtype];
+        if (payload) {
+          handler({ type: subtype, payload });
+        }
+      }
+    });
   }
 }
 

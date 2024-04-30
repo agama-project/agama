@@ -13,7 +13,7 @@ pub struct NetworkService;
 
 impl NetworkService {
     /// Starts listening and dispatching events on the D-Bus connection.
-    pub async fn start<T: Adapter + std::marker::Send + 'static>(
+    pub async fn start<T: Adapter + Send + Sync + 'static>(
         connection: &Connection,
         adapter: T,
     ) -> Result<(), Box<dyn Error>> {
