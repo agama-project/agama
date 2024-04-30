@@ -26,7 +26,7 @@ import { Radio, Form, FormGroup } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
-import { deviceChildren } from "~/components/storage/utils";
+import { deviceChildren, volumeLabel } from "~/components/storage/utils";
 import { FormReadOnlyField, Popup } from "~/components/core";
 import VolumeLocationSelectorTable from "~/components/storage/VolumeLocationSelectorTable";
 
@@ -128,7 +128,7 @@ export default function VolumeLocationDialog({
 
   return (
     <Popup
-      title={sprintf(_("Location for %s file system"), volume.mountPath)}
+      title={sprintf(_("Location for %s file system"), volumeLabel(volume))}
       description={DIALOG_DESCRIPTION}
       inlineSize="large"
       isOpen={isOpen}

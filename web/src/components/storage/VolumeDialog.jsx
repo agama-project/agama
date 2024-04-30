@@ -22,13 +22,14 @@
 // @ts-check
 
 import React, { useReducer } from "react";
-import { Button, Form } from "@patternfly/react-core";
+import { Alert, Button, Form } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
 import { compact, useDebounce } from "~/utils";
 import {
-  DEFAULT_SIZE_UNIT, SIZE_METHODS, parseToBytes, splitSize
+  DEFAULT_SIZE_UNIT, SIZE_METHODS, mountFilesystem, parseToBytes, reuseDevice, splitSize,
+  volumeLabel
 } from '~/components/storage/utils';
 import { FsField, MountPathField, SizeOptionsField } from "~/components/storage/VolumeFields";
 import { Popup } from '~/components/core';
@@ -83,12 +84,34 @@ import { Popup } from '~/components/core';
 const renderTitle = (volume, volumes) => {
   const isNewVolume = !volumes.includes(volume);
   const isProductDefined = volume.outline.productDefined;
-  const mountPath = volume.mountPath === "/" ? "root" : volume.mountPath;
+  const label = volumeLabel(volume);
 
-  if (isNewVolume && isProductDefined) return sprintf(_("Add %s file system"), mountPath);
-  if (!isNewVolume && isProductDefined) return sprintf(_("Edit %s file system"), mountPath);
+  if (isNewVolume && isProductDefined) return sprintf(_("Add %s file system"), label);
+  if (!isNewVolume && isProductDefined) return sprintf(_("Edit %s file system"), label);
 
   return isNewVolume ? _("Add file system") : _("Edit file system");
+};
+
+const VolumeAlert = ({ volume }) => {
+  let alert;
+
+  if (mountFilesystem(volume)) {
+    alert = {
+      title: _("The type and size of the file system cannot be edited."),
+      text: sprintf(_("The current file system on %s is selected to be mounted at %s."),
+                    volume.targetDevice.name, volume.mountPath)
+    };
+  } else if (reuseDevice(volume)) {
+    alert = {
+      title: _("The size of the file system cannot be edited"),
+      text: sprintf(_("The file system is allocated at the device %s."),
+                    volume.targetDevice.name)
+    };
+  }
+
+  if (!alert) return null;
+
+  return <Alert variant="warning" isInline title={alert.title}>{alert.text}</Alert>;
 };
 
 /** @fixme Redesign *Error classes.
@@ -717,10 +740,13 @@ export default function VolumeDialog({
   const title = renderTitle(state.volume, volumes);
   const { fsType, mountPath } = state.formData;
   const isDisabled = disableWidgets();
+  const isFsFieldDisabled = isDisabled || mountFilesystem(state.volume);
+  const isSizeFieldDisabled = isDisabled || reuseDevice(state.volume);
 
   return (
     /** @fixme blockSize medium is too big and small is too small. */
     <Popup title={title} isOpen={isOpen} blockSize="medium" inlineSize="medium">
+      <VolumeAlert volume={state.volume} />
       <Form id="volume-form" onSubmit={submitForm}>
         <MountPathField
           value={mountPath}
@@ -731,13 +757,13 @@ export default function VolumeDialog({
         <FsField
           value={fsType}
           volume={state.volume}
-          isDisabled={isDisabled}
+          isDisabled={isFsFieldDisabled}
           onChange={updateData}
         />
         <SizeOptionsField
           { ...state }
           errors={sizeErrors()}
-          isDisabled={isDisabled}
+          isDisabled={isSizeFieldDisabled}
           onChange={changeSizeOptions}
         />
       </Form>

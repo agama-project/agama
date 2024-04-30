@@ -29,21 +29,20 @@ import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
+import BootConfigField from "~/components/storage/BootConfigField";
+import {
+  deviceSize, hasSnapshots, isTransactionalRoot, isTransactionalSystem, reuseDevice
+} from '~/components/storage/utils';
 import { If, ExpandableField, RowActions, Tip } from '~/components/core';
+import { noop } from "~/utils";
+import SnapshotsField from "~/components/storage/SnapshotsField";
 import VolumeDialog from '~/components/storage/VolumeDialog';
 import VolumeLocationDialog from '~/components/storage/VolumeLocationDialog';
-import {
-  deviceSize, hasSnapshots, isTransactionalRoot, isTransactionalSystem
-} from '~/components/storage/utils';
-import SnapshotsField from "~/components/storage/SnapshotsField";
-import BootConfigField from "~/components/storage/BootConfigField";
-import { noop } from "~/utils";
 
 /**
  * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  * @typedef {import("~/components/storage/SnapshotsField").SnapshotsConfig} SnapshotsConfig
- *
  * @typedef {import ("~/client/storage").Volume} Volume
  */
 
@@ -55,7 +54,7 @@ import { noop } from "~/utils";
  */
 const SizeText = ({ volume }) => {
   let targetSize;
-  if (volume.target === "FILESYSTEM" || volume.target === "DEVICE")
+  if (reuseDevice(volume))
     targetSize = volume.targetDevice.size;
 
   const minSize = deviceSize(targetSize || volume.minSize);
@@ -253,7 +252,10 @@ const VolumeSizeLimits = ({ volume }) => {
     <div className="split">
       <span>{SizeText({ volume })}</span>
       {/* TRANSLATORS: device flag, the partition size is automatically computed */}
-      <If condition={isAuto} then={<Tip description={AutoCalculatedHint({ volume })}>{_("auto")}</Tip>} />
+      <If
+        condition={isAuto && !reuseDevice(volume)}
+        then={<Tip description={AutoCalculatedHint({ volume })}>{_("auto")}</Tip>}
+      />
     </div>
   );
 };

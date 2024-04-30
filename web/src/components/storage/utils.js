@@ -285,6 +285,12 @@ const isTransactionalSystem = (volumes = []) => {
   return volumes.find(v => isTransactionalRoot(v)) !== undefined;
 };
 
+const mountFilesystem = (volume) => volume.target === "FILESYSTEM";
+
+const reuseDevice = (volume) => volume.target === "FILESYSTEM" || volume.target === "DEVICE";
+
+const volumeLabel = (volume) => volume.mountPath === "/" ? "root" : volume.mountPath;
+
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
@@ -299,5 +305,8 @@ export {
   hasFS,
   hasSnapshots,
   isTransactionalRoot,
-  isTransactionalSystem
+  isTransactionalSystem,
+  mountFilesystem,
+  reuseDevice,
+  volumeLabel
 };
