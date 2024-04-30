@@ -158,22 +158,21 @@ in the devices listed below. Choose how to do it.");
           <Loading text={_("Loading data...")} />
         }
         else={
-          () =>
-            <Form id="space-policy-form" onSubmit={onSubmit}>
-              <SpacePolicyPicker currentPolicy={policy} onChange={setPolicy} />
-              <If
-                condition={devices.length > 0}
-                then={
-                  <SpaceActionsTable
-                    devices={devices}
-                    expandedDevices={expandedDevices}
-                    deviceAction={deviceAction}
-                    isActionDisabled={policy.id !== "custom"}
-                    onActionChange={changeActions}
-                  />
-                }
-              />
-            </Form>
+          <Form id="space-policy-form" onSubmit={onSubmit}>
+            <SpacePolicyPicker currentPolicy={policy} onChange={setPolicy} />
+            <If
+              condition={devices.length > 0}
+              then={
+                <SpaceActionsTable
+                  devices={devices}
+                  expandedDevices={expandedDevices}
+                  deviceAction={deviceAction}
+                  isActionDisabled={policy?.id !== "custom"}
+                  onActionChange={changeActions}
+                />
+              }
+            />
+          </Form>
         }
       />
       <Popup.Actions>

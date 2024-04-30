@@ -60,15 +60,13 @@
  *
  * @param {object} props
  * @param {boolean} props.condition
- * @param {(JSX.Element|function():JSX.Element)} [props.then=null] - the content to be rendered when the condition is true
- * @param {(JSX.Element|function():JSX.Element)} [props.else=null] - the content to be rendered when the condition is false
+ * @param {JSX.Element} [props.then=null] - the content to be rendered when the condition is true
+ * @param {JSX.Element} [props.else=null] - the content to be rendered when the condition is false
  */
 export default function If ({
   condition,
   then: positive = null,
   else: negative = null
 }) {
-  const ret = condition ? positive : negative;
-  // if the parameter is a function then evaluate it
-  return (typeof ret === "function") ? ret() : ret;
+  return condition ? positive : negative;
 }
