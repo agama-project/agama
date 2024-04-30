@@ -48,8 +48,8 @@ const openUserForm = async () => {
   await user.click(button);
   const dialog = await screen.findByRole("dialog");
 
-  return { user, dialog }
-}
+  return { user, dialog };
+};
 
 beforeEach(() => {
   user = emptyUser;
@@ -339,7 +339,7 @@ describe("username suggestions", () => {
 
     // confirming that we have suggestions
     let menuItems = screen.queryAllByText("Use suggested username");
-    expect(menuItems.length).toBe(4)
+    expect(menuItems.length).toBe(4);
 
     const usernameInput = within(dialog).getByLabelText("Username");
     // the user now types something
@@ -347,25 +347,24 @@ describe("username suggestions", () => {
 
     // checking if suggestions are gone
     menuItems = screen.queryAllByText("Use suggested username");
-    expect(menuItems.length).toBe(0)
+    expect(menuItems.length).toBe(0);
   });
 
   it("fills username input with chosen suggestion", async () => {
     const { user, dialog } = await openUserForm();
 
     const fullNameInput = within(dialog).getByLabelText("Full name");
-    await user.type(fullNameInput, "Jane Doe");
+    await user.type(fullNameInput, "Will Power");
 
     await user.tab();
 
-    const menuItem = screen.getByText('janed');
+    const menuItem = screen.getByText('willpower');
     const usernameInput = within(dialog).getByLabelText("Username");
     
-    await act(async () => {
-      menuItem.click();
-    });
+    await user.click(menuItem);
 
-    expect(usernameInput.value).toBe("janed");
+    expect(usernameInput).toHaveFocus();
+    expect(usernameInput.value).toBe("willpower");
   });
 
   it("fills username input with chosen suggestion using keyboard for selection", async () => {
@@ -384,6 +383,7 @@ describe("username suggestions", () => {
     await user.keyboard("{Enter}");
 
     const usernameInput = within(dialog).getByLabelText("Username");
+    expect(usernameInput).toHaveFocus();
     expect(usernameInput.value).toBe(menuItemTwo);
   });
 });
