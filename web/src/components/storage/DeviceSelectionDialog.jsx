@@ -26,9 +26,10 @@ import { Form } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
 import { deviceChildren } from "~/components/storage/utils";
-import { ControlledPanels as Panels, If, Popup, SectionSkeleton } from "~/components/core";
+import { ControlledPanels as Panels, If, Popup } from "~/components/core";
 import { DeviceSelectorTable } from "~/components/storage";
 import { noop } from "~/utils";
+import { Loading } from "~/components/layout";
 
 /**
  * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
@@ -127,7 +128,9 @@ devices.").split(/[[\]]/);
     >
       <If
         condition={isLoading}
-        then={ <SectionSkeleton numRows={6} /> }
+        then={
+          <Loading text={_("Loading data...")} />
+        }
         else={
           <Form id="target-form" onSubmit={onSubmit}>
             <Panels className="stack">

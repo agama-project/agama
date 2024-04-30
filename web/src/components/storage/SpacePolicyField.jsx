@@ -95,6 +95,7 @@ in the installation device(s).")}
         then={
           <SpacePolicyDialog
             isOpen
+            isLoading={isLoading}
             policy={policy}
             actions={actions}
             devices={devices}

@@ -32,6 +32,11 @@ describe("If", () => {
 
         screen.getByText("Hello World!");
       });
+      it("renders result of function given in 'then' prop", () => {
+        plainRender(<If condition={3 < 6} then={() => "Hello World!"} else={() => "Goodbye World!"} />);
+
+        screen.getByText("Hello World!");
+      });
     });
 
     describe("but 'then' prop was not given", () => {
@@ -47,6 +52,11 @@ describe("If", () => {
     describe("and 'else' prop was given", () => {
       it("renders content given in 'else' prop", () => {
         plainRender(<If condition={6 < 3} then="Hello World!" else="Goodbye World!" />);
+
+        screen.getByText("Goodbye World!");
+      });
+      it("renders result of function given in 'else' prop", () => {
+        plainRender(<If condition={6 < 3} then={() => "Hello World!"} else={() => "Goodbye World!"} />);
 
         screen.getByText("Goodbye World!");
       });
