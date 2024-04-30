@@ -30,7 +30,7 @@ where
 }
 
 /// It is similar helper like get_property with difference that name does not need to be in HashMap.
-/// In such case `None``is returned, so type has to be enclosed in `Option`.`
+/// In such case `None` is returned, so type has to be enclosed in `Option`.
 pub fn get_optional_property<'a, T>(
     properties: &'a HashMap<String, OwnedValue>,
     name: &str,
