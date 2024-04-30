@@ -57,9 +57,7 @@ const availableTargets = (volume, device) => {
     targets.push("NEW_VG");
   }
 
-  /** @fixme define type for possible fstypes */
-  const fsTypes = volume.outline.fsTypes.map(f => f.toLowerCase());
-  if (device.filesystem && fsTypes.includes(device.filesystem.type))
+  if (device.filesystem && volume.outline.fsTypes.includes(device.filesystem.type))
     targets.push("FILESYSTEM");
 
   return targets;
