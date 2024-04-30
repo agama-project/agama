@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
@@ -134,6 +134,7 @@ export default function FirstUser() {
   const [insideDropDown, setInsideDropDown] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [suggestions, setSuggestions] = useState([]);
+  const usernameInputRef = useRef();
 
   useEffect(() => {
     cancellablePromise(client.users.getUser()).then(userValues => {
@@ -233,6 +234,7 @@ export default function FirstUser() {
   const onSuggestionSelected = (suggestion) => {
     setInsideDropDown(false);
     setFormValues({ ...formValues, userName: suggestion });
+    usernameInputRef.current?.focus();
   };
 
   const handleKeyDown = (event) => {
@@ -302,6 +304,7 @@ export default function FirstUser() {
                 id="userName"
                 name="userName"
                 aria-label={_("Username")}
+                ref={usernameInputRef}
                 value={formValues.userName}
                 label={_("Username")}
                 isRequired
