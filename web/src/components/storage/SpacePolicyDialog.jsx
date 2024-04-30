@@ -27,7 +27,6 @@ import { Form } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { SPACE_POLICIES } from '~/components/storage/utils';
 import { If, OptionsPicker, Popup } from "~/components/core";
-import { Loading } from "~/components/layout";
 import { noop } from "~/utils";
 import { SpaceActionsTable } from '~/components/storage';
 
@@ -148,33 +147,26 @@ in the devices listed below. Choose how to do it.");
       title={_("Find space")}
       description={description}
       isOpen={isOpen}
+      isLoading={isLoading}
       blockSize="large"
       inlineSize="large"
       {...props}
     >
-      <If
-        condition={isLoading}
-        then={
-          <Loading text={_("Loading data...")} />
-        }
-        else={
-          <Form id="space-policy-form" onSubmit={onSubmit}>
-            <SpacePolicyPicker currentPolicy={policy} onChange={setPolicy} />
-            <If
-              condition={devices.length > 0}
-              then={
-                <SpaceActionsTable
-                  devices={devices}
-                  expandedDevices={expandedDevices}
-                  deviceAction={deviceAction}
-                  isActionDisabled={policy?.id !== "custom"}
-                  onActionChange={changeActions}
-                />
-              }
+      <Form id="space-policy-form" onSubmit={onSubmit}>
+        <SpacePolicyPicker currentPolicy={policy} onChange={setPolicy} />
+        <If
+          condition={devices.length > 0}
+          then={
+            <SpaceActionsTable
+              devices={devices}
+              expandedDevices={expandedDevices}
+              deviceAction={deviceAction}
+              isActionDisabled={policy?.id !== "custom"}
+              onActionChange={changeActions}
             />
-          </Form>
-        }
-      />
+          }
+        />
+      </Form>
       <Popup.Actions>
         <Popup.Confirm form="space-policy-form" type="submit" />
         <Popup.Cancel onClick={onCancel} />

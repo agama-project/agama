@@ -53,6 +53,7 @@ directly on its first run.");
  * @property {string} method - Encryption method.
  * @property {string[]} methods - Possible encryption methods.
  * @property {boolean} [isOpen=false] - Whether the dialog is visible or not.
+ * @property {boolean} [isLoading=false] - Whether the data is loading
  * @property {() => void} onCancel - Callback to trigger when on cancel action.
  * @property {(settings: EncryptionSetting) => void} onAccept - Callback to trigger on accept action.
  *
@@ -63,6 +64,7 @@ export default function EncryptionSettingsDialog({
   method: methodProp,
   methods,
   isOpen = false,
+  isLoading = false,
   onCancel,
   onAccept
 }) {
@@ -72,6 +74,13 @@ export default function EncryptionSettingsDialog({
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [validSettings, setValidSettings] = useState(true);
   const formId = "encryptionSettingsForm";
+
+  // refresh the state when the real values are loaded
+  if (method === "" && methodProp !== "") { setMethod(methodProp) }
+  if (password === "" && passwordProp !== "") {
+    setPassword(passwordProp);
+    setIsEnabled(true);
+  }
 
   useEffect(() => {
     setValidSettings(!isEnabled || (password.length > 0 && passwordsMatch));
@@ -91,7 +100,7 @@ export default function EncryptionSettingsDialog({
   };
 
   return (
-    <Popup title={DIALOG_TITLE} description={DIALOG_DESCRIPTION} isOpen={isOpen}>
+    <Popup title={DIALOG_TITLE} description={DIALOG_DESCRIPTION} isOpen={isOpen} isLoading={isLoading}>
       <SwitchField
         highlightContent
         isChecked={isEnabled}

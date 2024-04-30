@@ -106,6 +106,7 @@ export default function EncryptionField({
             method={method}
             methods={methods}
             isOpen={isDialogOpen}
+            isLoading={isLoading}
             onCancel={closeDialog}
             onAccept={onAccept}
           />
