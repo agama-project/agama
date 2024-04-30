@@ -1,6 +1,6 @@
 use super::{
     error::NetworkStateError,
-    model::{AccessPoint, Device, StateConfig},
+    model::{AccessPoint, Device, NetworkChange, StateConfig},
     NetworkAdapterError,
 };
 use crate::network::{
@@ -11,6 +11,7 @@ use crate::network::{
 use agama_lib::{error::ServiceError, network::types::DeviceType};
 use std::{error::Error, sync::Arc};
 use tokio::sync::{
+    broadcast::{self, Receiver},
     mpsc::{self, error::SendError, UnboundedReceiver, UnboundedSender},
     oneshot::{self, error::RecvError},
     Mutex,
@@ -66,7 +67,7 @@ pub struct NetworkSystem<T: Adapter + Send> {
     adapter: T,
 }
 
-impl<T: Adapter + Send + 'static> NetworkSystem<T> {
+impl<T: Adapter + Send + Sync + 'static> NetworkSystem<T> {
     /// Returns a new instance of the network configuration system.
     ///
     /// This function does not start the system. To get it running, you must call
@@ -88,14 +89,25 @@ impl<T: Adapter + Send + 'static> NetworkSystem<T> {
     pub async fn start(self) -> Result<NetworkSystemClient, NetworkSystemError> {
         let mut state = self.adapter.read(StateConfig::default()).await?;
         let (actions_tx, actions_rx) = mpsc::unbounded_channel();
+        let (updates_tx, _updates_rx) = broadcast::channel(1024);
+
+        if let Some(watcher) = self.adapter.watcher() {
+            let actions_tx_clone = actions_tx.clone();
+            tokio::spawn(async move {
+                watcher.run(actions_tx_clone).await.unwrap();
+            });
+        }
+
         let mut tree = Tree::new(self.connection, actions_tx.clone());
         tree.set_connections(&mut state.connections).await?;
         tree.set_devices(&state.devices).await?;
 
+        let updates_tx_clone = updates_tx.clone();
         tokio::spawn(async move {
             let mut server = NetworkSystemServer {
                 state,
                 input: actions_rx,
+                output: updates_tx_clone,
                 adapter: self.adapter,
                 tree: Arc::new(Mutex::new(tree)),
             };
@@ -105,6 +117,7 @@ impl<T: Adapter + Send + 'static> NetworkSystem<T> {
 
         Ok(NetworkSystemClient {
             actions: actions_tx,
+            updates: updates_tx,
         })
     }
 }
@@ -115,10 +128,15 @@ impl<T: Adapter + Send + 'static> NetworkSystem<T> {
 #[derive(Clone)]
 pub struct NetworkSystemClient {
     actions: UnboundedSender<Action>,
+    updates: broadcast::Sender<NetworkChange>,
 }
 
 // TODO: add a NetworkSystemError type
 impl NetworkSystemClient {
+    pub fn subscribe(&self) -> Receiver<NetworkChange> {
+        self.updates.subscribe()
+    }
+
     /// Returns the general state.
     pub async fn get_state(&self) -> Result<GeneralState, NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
@@ -218,6 +236,7 @@ impl NetworkSystemClient {
 struct NetworkSystemServer<T: Adapter> {
     state: NetworkState,
     input: UnboundedReceiver<Action>,
+    output: broadcast::Sender<NetworkChange>,
     adapter: T,
     tree: Arc<Mutex<Tree>>,
 }
@@ -228,14 +247,23 @@ impl<T: Adapter> NetworkSystemServer<T> {
     /// This function is expected to be executed on a separate thread.
     pub async fn listen(&mut self) {
         while let Some(action) = self.input.recv().await {
-            if let Err(error) = self.dispatch_action(action).await {
-                eprintln!("Could not process the action: {}", error);
+            match self.dispatch_action(action).await {
+                Ok(Some(update)) => {
+                    _ = self.output.send(update);
+                }
+                Err(error) => {
+                    eprintln!("Could not process the action: {}", error);
+                }
+                _ => {}
             }
         }
     }
 
     /// Dispatch an action.
-    pub async fn dispatch_action(&mut self, action: Action) -> Result<(), Box<dyn Error>> {
+    pub async fn dispatch_action(
+        &mut self,
+        action: Action,
+    ) -> Result<Option<NetworkChange>, Box<dyn Error>> {
         match action {
             Action::AddConnection(name, ty, tx) => {
                 let result = self.add_connection_action(name, ty).await;
@@ -299,6 +327,18 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 let device = self.state.get_device(name.as_str());
                 tx.send(device.cloned()).unwrap();
             }
+            Action::AddDevice(device) => {
+                self.state.add_device(*device.clone())?;
+                return Ok(Some(NetworkChange::DeviceAdded(*device)));
+            }
+            Action::UpdateDevice(name, device) => {
+                self.state.update_device(&name, *device.clone())?;
+                return Ok(Some(NetworkChange::DeviceUpdated(name, *device)));
+            }
+            Action::RemoveDevice(name) => {
+                self.state.remove_device(&name)?;
+                return Ok(Some(NetworkChange::DeviceRemoved(name)));
+            }
             Action::GetDevicePath(name, tx) => {
                 let tree = self.tree.lock().await;
                 let path = tree.device_path(name.as_str());
@@ -336,7 +376,7 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 let failed = result.is_err();
                 tx.send(result).unwrap();
                 if failed {
-                    return Ok(());
+                    return Ok(None);
                 }
 
                 // TODO: re-creating the tree is kind of brute-force and it sends signals about
@@ -355,7 +395,7 @@ impl<T: Adapter> NetworkSystemServer<T> {
             }
         }
 
-        Ok(())
+        Ok(None)
     }
 
     async fn add_connection_action(

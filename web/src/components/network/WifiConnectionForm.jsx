@@ -58,7 +58,7 @@ const securityFrom = (supported) => {
 };
 
 export default function WifiConnectionForm({ network, onCancel, onSubmitCallback }) {
-  const client = useInstallerClient();
+  const { network: client } = useInstallerClient();
   const formRef = useRef();
   const [error, setError] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -80,7 +80,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
       onSubmitCallback({ ssid, password, hidden, security: [security] });
     }
 
-    client.network.addAndConnectTo(ssid, { security, password, hidden })
+    client.addAndConnectTo(ssid, { security, password, hidden })
       .catch(() => setError(true))
       .finally(() => setIsConnecting(false));
   };

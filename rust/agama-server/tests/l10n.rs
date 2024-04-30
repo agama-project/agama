@@ -1,21 +1,15 @@
 pub mod common;
 
-use std::{error::Error, future::pending, thread, time};
+use std::error::Error;
 
-use agama_lib::localization::LocalizationClient;
-use agama_locale_data::LocaleId;
-use agama_server::l10n::{export_dbus_objects, web::l10n_service};
+use agama_server::l10n::web::l10n_service;
 use axum::{
     body::Body,
     http::{Request, StatusCode},
     Router,
 };
 use common::{body_to_string, DBusServer};
-use tokio::{
-    sync::broadcast::channel,
-    test,
-    time::{sleep, Duration},
-};
+use tokio::{sync::broadcast::channel, test};
 use tower::ServiceExt;
 
 async fn build_service(dbus: zbus::Connection) -> Router {

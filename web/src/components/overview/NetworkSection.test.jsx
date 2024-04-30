@@ -27,39 +27,39 @@ import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
 import { createClient } from "~/client";
 
 jest.mock("~/client");
-
 jest.mock('~/components/core/SectionSkeleton', () => () => <div>Section Skeleton</div>);
 
-const wiredConnection = {
-  id: "Wired 1",
-  uuid: "d59200d4-838d-4051-99a0-fde8121a242c",
+const ethernetDevice = {
+  name: "eth0",
+  connection: "Wired 1",
   type: ConnectionTypes.ETHERNET,
-  addresses: [{ address: "192.168.122.20", prefix: 24 }]
+  addresses: [{ address: "192.168.122.20", prefix: 24 }],
+  macAddress: "00:11:22:33:44::55"
 };
-const wifiConnection = {
-  id: "WiFi 1",
-  uuid: "0c00dccb-a6ae-40b2-8495-0de721006bc0",
+const wifiDevice = {
+  name: "wlan0",
+  connection: "WiFi 1",
   type: ConnectionTypes.WIFI,
-  addresses: [{ address: "192.168.69.200", prefix: 24 }]
+  addresses: [{ address: "192.168.69.200", prefix: 24 }],
+  macAddress: "AA:11:22:33:44::FF"
 };
 
-const setUpFn = jest.fn();
-const activeConnectionsFn = jest.fn();
-let onNetworkEventFn = jest.fn();
+const devicesFn = jest.fn();
+let onNetworkChangeEventFn = jest.fn();
+const fromApiDeviceFn = (data) => data;
 
 beforeEach(() => {
-  setUpFn.mockResolvedValue(true);
-  activeConnectionsFn.mockReturnValue([wiredConnection, wifiConnection]);
+  devicesFn.mockResolvedValue([ethernetDevice, wifiDevice]);
 
   // if defined outside, the mock is cleared automatically
   createClient.mockImplementation(() => {
     return {
       network: {
-        setUp: setUpFn,
-        activeConnections: activeConnectionsFn,
-        onNetworkEvent: onNetworkEventFn,
+        devices: devicesFn,
+        onNetworkChange: onNetworkChangeEventFn,
+        fromApiDevice: fromApiDeviceFn
       }
-    };
+    }
   });
 });
 
@@ -71,20 +71,20 @@ describe("when is not ready", () => {
 });
 
 describe("when is ready", () => {
-  it("renders the number of connections found", async () => {
+  it("renders the number of devices found", async () => {
     installerRender(<NetworkSection />);
 
-    await screen.findByText(/2 connection/i);
+    await screen.findByText(/2 devices/i);
   });
 
-  it("renders connections names", async () => {
+  it("renders devices names", async () => {
     installerRender(<NetworkSection />);
 
     await screen.findByText(/Wired 1/i);
     await screen.findByText(/WiFi 1/i);
   });
 
-  it("renders connections addresses", async () => {
+  it("renders devices addresses", async () => {
     installerRender(<NetworkSection />);
 
     await screen.findByText(/192.168.122.20/i);
@@ -92,44 +92,46 @@ describe("when is ready", () => {
   });
 
   describe("but none active connection was found", () => {
-    beforeEach(() => activeConnectionsFn.mockReturnValue([]));
+    beforeEach(() => devicesFn.mockResolvedValue([]));
 
     it("renders info about it", async () => {
       installerRender(<NetworkSection />);
 
-      await screen.findByText("No network connections detected");
+      await screen.findByText("No network devices detected");
     });
   });
 });
 
-describe("when connection is added", () => {
-  it("renders the added connection", async () => {
+describe("when a device is added", () => {
+  it("renders the added device", async () => {
     const [mockFunction, callbacks] = createCallbackMock();
-    onNetworkEventFn = mockFunction;
+    onNetworkChangeEventFn = mockFunction;
     installerRender(<NetworkSection />);
     await screen.findByText(/Wired 1/);
     await screen.findByText(/WiFi 1/);
 
     // add a new connection
-    const addedConnection = {
-      id: "New Wired Network",
-      uuid: "b143c0a6-ee61-49dc-94aa-e62230afc199",
+    const addedDevice = {
+      name: "eth1",
+      connection: "New Wired Network",
       type: ConnectionTypes.ETHERNET,
-      addresses: [{ address: "192.168.168.192", prefix: 24 }]
+      addresses: [{ address: "192.168.168.192", prefix: 24 }],
+      macAddress: "AA:BB:CC:DD:EE:00"
     };
-    activeConnectionsFn.mockReturnValue([wiredConnection, wifiConnection, addedConnection]);
+
+    devicesFn.mockResolvedValue([ethernetDevice, wifiDevice, addedDevice]);
 
     const [cb] = callbacks;
     act(() => {
       cb({
-        type: NetworkEventTypes.ACTIVE_CONNECTION_ADDED,
-        payload: addedConnection
+        type: NetworkEventTypes.DEVICE_ADDED,
+        payload: addedDevice
       });
     });
 
     await screen.findByText(/Wired 1/);
-    await screen.findByText(/WiFi 1/);
     await screen.findByText(/New Wired Network/);
+    await screen.findByText(/WiFi 1/);
     await screen.findByText(/192.168.168.192/);
   });
 });
@@ -137,18 +139,18 @@ describe("when connection is added", () => {
 describe("when connection is removed", () => {
   it("stops rendering its details", async () => {
     const [mockFunction, callbacks] = createCallbackMock();
-    onNetworkEventFn = mockFunction;
+    onNetworkChangeEventFn = mockFunction;
     installerRender(<NetworkSection />);
     await screen.findByText(/Wired 1/);
     await screen.findByText(/WiFi 1/);
 
     // remove a connection
-    activeConnectionsFn.mockReturnValue([wifiConnection]);
+    devicesFn.mockResolvedValue([wifiDevice]);
     const [cb] = callbacks;
     act(() => {
       cb({
-        type: NetworkEventTypes.ACTIVE_CONNECTION_REMOVED,
-        payload: { ...wiredConnection }
+        type: NetworkEventTypes.DEVICE_REMOVED,
+        payload: ethernetDevice.name
       });
     });
 
@@ -161,24 +163,24 @@ describe("when connection is removed", () => {
 describe("when connection is updated", () => {
   it("re-renders the updated connection", async () => {
     const [mockFunction, callbacks] = createCallbackMock();
-    onNetworkEventFn = mockFunction;
+    onNetworkChangeEventFn = mockFunction;
     installerRender(<NetworkSection />);
     await screen.findByText(/Wired 1/);
     await screen.findByText(/WiFi 1/);
 
     // update a connection
-    const updatedConnection = { ...wiredConnection, id: "My Wired Connection" };
-    activeConnectionsFn.mockReturnValue([updatedConnection, wifiConnection]);
+    const updatedDevice = { ...ethernetDevice, name: "enp2s0f0", connection: "Wired renamed" };
+    devicesFn.mockResolvedValue([updatedDevice, wifiDevice]);
     const [cb] = callbacks;
     act(() => {
       cb({
-        type: NetworkEventTypes.ACTIVE_CONNECTION_UPDATED,
-        payload: { ...wiredConnection, id: "My Wired Connection" }
+        type: NetworkEventTypes.DEVICE_UPDATED,
+        payload: ["eth0", updatedDevice]
       });
     });
 
-    await screen.findByText(/My Wired Connection/);
     await screen.findByText(/WiFi 1/);
+    await screen.findByText(/Wired renamed/);
 
     const formerWiredName = screen.queryByText(/Wired 1/);
     expect(formerWiredName).toBeNull();

@@ -1,6 +1,7 @@
 //! NetworkManager client.
 use std::collections::HashMap;
 
+use super::builder::DeviceFromProxyBuilder;
 use super::dbus::{
     cleanup_dbus_connection, connection_from_dbus, connection_to_dbus, controller_from_dbus,
     merge_dbus_connections,
@@ -28,12 +29,6 @@ pub struct NetworkManagerClient<'a> {
 }
 
 impl<'a> NetworkManagerClient<'a> {
-    /// Creates a NetworkManagerClient connecting to the system bus.
-    pub async fn from_system() -> Result<NetworkManagerClient<'a>, ServiceError> {
-        let connection = zbus::Connection::system().await?;
-        Self::new(connection).await
-    }
-
     /// Creates a NetworkManagerClient using the given D-Bus connection.
     ///
     /// * `connection`: D-Bus connection.
@@ -141,6 +136,7 @@ impl<'a> NetworkManagerClient<'a> {
 
         Ok(points)
     }
+
     /// Returns the list of network devices.
     pub async fn devices(&self) -> Result<Vec<Device>, ServiceError> {
         let mut devs = vec![];
@@ -150,20 +146,13 @@ impl<'a> NetworkManagerClient<'a> {
                 .build()
                 .await?;
 
-            let device_name = proxy.interface().await?;
-            let device_type = NmDeviceType(proxy.device_type().await?);
-            if let Ok(device_type) = device_type.try_into() {
-                devs.push(Device {
-                    name: device_name,
-                    type_: device_type,
-                });
+            if let Ok(device) = DeviceFromProxyBuilder::new(&self.connection, &proxy)
+                .build()
+                .await
+            {
+                devs.push(device);
             } else {
-                // TODO: use a logger
-                log::warn!(
-                    "Ignoring network device '{}' (unsupported type '{}')",
-                    &device_name,
-                    &device_type
-                );
+                tracing::warn!("Ignoring network device on path {}", &path);
             }
         }
 

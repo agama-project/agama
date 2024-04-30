@@ -1,6 +1,9 @@
 //! This module implements the web API for the network module.
 
-use crate::error::Error;
+use crate::{
+    error::Error,
+    web::{Event, EventsSender},
+};
 use anyhow::Context;
 use axum::{
     extract::{Path, State},
@@ -14,7 +17,7 @@ use super::{
     error::NetworkStateError,
     model::{AccessPoint, GeneralState},
     system::{NetworkSystemClient, NetworkSystemError},
-    Action, Adapter,
+    Adapter,
 };
 
 use crate::network::{model::Connection, model::Device, NetworkSystem};
@@ -22,7 +25,6 @@ use agama_lib::{error::ServiceError, network::settings::NetworkConnection};
 
 use serde_json::json;
 use thiserror::Error;
-use tokio::sync::oneshot;
 
 #[derive(Error, Debug)]
 pub enum NetworkError {
@@ -53,16 +55,17 @@ impl IntoResponse for NetworkError {
 }
 
 #[derive(Clone)]
-struct NetworkState {
+struct NetworkServiceState {
     network: NetworkSystemClient,
 }
 
 /// Sets up and returns the axum service for the network module.
 ///
 /// * `dbus`: zbus Connection.
-pub async fn network_service<T: Adapter + std::marker::Send + 'static>(
+pub async fn network_service<T: Adapter + Send + Sync + 'static>(
     dbus: zbus::Connection,
     adapter: T,
+    events: EventsSender,
 ) -> Result<Router, ServiceError> {
     let network = NetworkSystem::new(dbus.clone(), adapter);
     // FIXME: we are somehow abusing ServiceError. The HTTP/JSON API should have its own
@@ -71,7 +74,24 @@ pub async fn network_service<T: Adapter + std::marker::Send + 'static>(
         .start()
         .await
         .context("Could not start the network configuration service.")?;
-    let state = NetworkState { network: client };
+
+    let mut changes = client.subscribe();
+    tokio::spawn(async move {
+        loop {
+            match changes.recv().await {
+                Ok(message) => {
+                    if let Err(e) = events.send(Event::NetworkChange { change: message }) {
+                        eprintln!("Could not send the event: {}", e);
+                    }
+                }
+                Err(e) => {
+                    eprintln!("Could not send the event: {}", e);
+                }
+            }
+        }
+    });
+
+    let state = NetworkServiceState { network: client };
 
     Ok(Router::new()
         .route("/state", get(general_state).put(update_general_state))
@@ -92,7 +112,7 @@ pub async fn network_service<T: Adapter + std::marker::Send + 'static>(
   (status = 200, description = "Get general network config", body = GenereralState)
 ))]
 async fn general_state(
-    State(state): State<NetworkState>,
+    State(state): State<NetworkServiceState>,
 ) -> Result<Json<GeneralState>, NetworkError> {
     let general_state = state.network.get_state().await?;
     Ok(Json(general_state))
@@ -102,7 +122,7 @@ async fn general_state(
   (status = 200, description = "Update general network config", body = GenereralState)
 ))]
 async fn update_general_state(
-    State(state): State<NetworkState>,
+    State(state): State<NetworkServiceState>,
     Json(value): Json<GeneralState>,
 ) -> Result<Json<GeneralState>, NetworkError> {
     state.network.update_state(value)?;
@@ -114,7 +134,7 @@ async fn update_general_state(
   (status = 200, description = "List of wireless networks", body = Vec<AccessPoint>)
 ))]
 async fn wifi_networks(
-    State(state): State<NetworkState>,
+    State(state): State<NetworkServiceState>,
 ) -> Result<Json<Vec<AccessPoint>>, NetworkError> {
     state.network.wifi_scan().await?;
     let access_points = state.network.get_access_points().await?;
@@ -132,7 +152,9 @@ async fn wifi_networks(
 #[utoipa::path(get, path = "/network/devices", responses(
   (status = 200, description = "List of devices", body = Vec<Device>)
 ))]
-async fn devices(State(state): State<NetworkState>) -> Result<Json<Vec<Device>>, NetworkError> {
+async fn devices(
+    State(state): State<NetworkServiceState>,
+) -> Result<Json<Vec<Device>>, NetworkError> {
     Ok(Json(state.network.get_devices().await?))
 }
 
@@ -140,7 +162,7 @@ async fn devices(State(state): State<NetworkState>) -> Result<Json<Vec<Device>>,
   (status = 200, description = "List of known connections", body = Vec<NetworkConnection>)
 ))]
 async fn connections(
-    State(state): State<NetworkState>,
+    State(state): State<NetworkServiceState>,
 ) -> Result<Json<Vec<NetworkConnection>>, NetworkError> {
     let connections = state.network.get_connections().await?;
     let connections = connections
@@ -154,7 +176,7 @@ async fn connections(
   (status = 200, description = "Add a new connection", body = Connection)
 ))]
 async fn add_connection(
-    State(state): State<NetworkState>,
+    State(state): State<NetworkServiceState>,
     Json(conn): Json<NetworkConnection>,
 ) -> Result<Json<Connection>, NetworkError> {
     let conn = Connection::try_from(conn)?;
@@ -171,7 +193,7 @@ async fn add_connection(
   (status = 200, description = "Delete connection", body = Connection)
 ))]
 async fn delete_connection(
-    State(state): State<NetworkState>,
+    State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
 ) -> impl IntoResponse {
     if state.network.remove_connection(&id).await.is_ok() {
@@ -185,7 +207,7 @@ async fn delete_connection(
   (status = 204, description = "Update connection", body = Connection)
 ))]
 async fn update_connection(
-    State(state): State<NetworkState>,
+    State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
     Json(conn): Json<NetworkConnection>,
 ) -> Result<impl IntoResponse, NetworkError> {
@@ -210,7 +232,7 @@ async fn update_connection(
   (status = 204, description = "Connect to the given connection", body = String)
 ))]
 async fn connect(
-    State(state): State<NetworkState>,
+    State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, NetworkError> {
     let Some(mut conn) = state.network.get_connection(&id).await? else {
@@ -231,7 +253,7 @@ async fn connect(
   (status = 204, description = "Connect to the given connection", body = String)
 ))]
 async fn disconnect(
-    State(state): State<NetworkState>,
+    State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, NetworkError> {
     let Some(mut conn) = state.network.get_connection(&id).await? else {
@@ -251,7 +273,9 @@ async fn disconnect(
 #[utoipa::path(put, path = "/network/system/apply", responses(
   (status = 204, description = "Apply configuration")
 ))]
-async fn apply(State(state): State<NetworkState>) -> Result<impl IntoResponse, NetworkError> {
+async fn apply(
+    State(state): State<NetworkServiceState>,
+) -> Result<impl IntoResponse, NetworkError> {
     state
         .network
         .apply()

@@ -4,9 +4,7 @@ use openssl::error::ErrorStack;
 use openssl::hash::MessageDigest;
 use openssl::pkey::{PKey, Private};
 use openssl::rsa::Rsa;
-use openssl::x509::extension::{
-    BasicConstraints, KeyUsage, SubjectAlternativeName, SubjectKeyIdentifier,
-};
+use openssl::x509::extension::{BasicConstraints, SubjectAlternativeName, SubjectKeyIdentifier};
 use openssl::x509::{X509NameBuilder, X509};
 
 // TODO: move the certificate related functions into a struct

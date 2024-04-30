@@ -4,7 +4,7 @@
 //! agnostic from the real network service (e.g., NetworkManager).
 use crate::network::error::NetworkStateError;
 use agama_lib::network::settings::{BondSettings, NetworkConnection, WirelessSettings};
-use agama_lib::network::types::{BondMode, DeviceType, Status, SSID};
+use agama_lib::network::types::{BondMode, DeviceState, DeviceType, Status, SSID};
 use cidr::IpInet;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
@@ -112,6 +112,13 @@ impl NetworkState {
         self.connections.iter_mut().find(|c| c.id == id)
     }
 
+    /// Get a device by name as mutable
+    ///
+    /// * `name`: device name
+    pub fn get_device_mut(&mut self, name: &str) -> Option<&mut Device> {
+        self.devices.iter_mut().find(|c| c.name == name)
+    }
+
     pub fn get_controlled_by(&mut self, uuid: Uuid) -> Vec<&Connection> {
         let uuid = Some(uuid);
         self.connections
@@ -155,6 +162,29 @@ impl NetworkState {
         };
 
         conn.remove();
+        Ok(())
+    }
+
+    pub fn add_device(&mut self, device: Device) -> Result<(), NetworkStateError> {
+        self.devices.push(device);
+        Ok(())
+    }
+
+    pub fn update_device(&mut self, name: &str, device: Device) -> Result<(), NetworkStateError> {
+        let Some(old_device) = self.get_device_mut(name) else {
+            return Err(NetworkStateError::UnknownDevice(device.name.clone()));
+        };
+        *old_device = device;
+
+        Ok(())
+    }
+
+    pub fn remove_device(&mut self, name: &str) -> Result<(), NetworkStateError> {
+        let Some(position) = self.devices.iter().position(|d| &d.name == name) else {
+            return Err(NetworkStateError::UnknownDevice(name.to_string()));
+        };
+
+        self.devices.remove(position);
         Ok(())
     }
 
@@ -309,7 +339,6 @@ mod tests {
     fn test_remove_connection() {
         let mut state = NetworkState::default();
         let conn0 = Connection::new("eth0".to_string(), DeviceType::Ethernet);
-        let uuid = conn0.uuid;
         state.add_connection(conn0).unwrap();
         state.remove_connection("eth0".as_ref()).unwrap();
         let found = state.get_connection("eth0").unwrap();
@@ -413,6 +442,7 @@ pub struct GeneralState {
 /// Access Point
 #[serde_as]
 #[derive(Default, Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct AccessPoint {
     #[serde_as(as = "DisplayFromStr")]
     pub ssid: SSID,
@@ -424,17 +454,27 @@ pub struct AccessPoint {
 }
 
 /// Network device
-#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde_as]
+#[skip_serializing_none]
+#[derive(Default, Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Device {
     pub name: String,
     #[serde(rename = "type")]
     pub type_: DeviceType,
+    #[serde_as(as = "DisplayFromStr")]
+    pub mac_address: MacAddress,
+    pub ip_config: Option<IpConfig>,
+    // Connection.id
+    pub connection: Option<String>,
+    pub state: DeviceState,
 }
 
 /// Represents a known network connection.
 #[serde_as]
 #[skip_serializing_none]
 #[derive(Debug, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Connection {
     pub id: String,
     pub uuid: Uuid,
@@ -702,6 +742,7 @@ impl From<InvalidMacAddress> for zbus::fdo::Error {
 
 #[skip_serializing_none]
 #[derive(Default, Debug, PartialEq, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IpConfig {
     pub method4: Ipv4Method,
     pub method6: Ipv6Method,
@@ -733,6 +774,7 @@ pub struct MatchConfig {
 pub struct UnknownIpMethod(String);
 
 #[derive(Debug, Default, Copy, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub enum Ipv4Method {
     #[default]
     Disabled = 0,
@@ -768,6 +810,7 @@ impl FromStr for Ipv4Method {
 }
 
 #[derive(Debug, Default, Copy, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub enum Ipv6Method {
     #[default]
     Disabled = 0,
@@ -815,6 +858,7 @@ impl From<UnknownIpMethod> for zbus::fdo::Error {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IpRoute {
     pub destination: IpInet,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -884,6 +928,7 @@ pub struct VlanConfig {
 
 #[serde_as]
 #[derive(Debug, Default, PartialEq, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct WirelessConfig {
     pub mode: WirelessMode,
     #[serde_as(as = "DisplayFromStr")]
@@ -1258,4 +1303,18 @@ impl fmt::Display for InfinibandTransportMode {
         };
         write!(f, "{}", name)
     }
+}
+
+/// Represents a network change.
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub enum NetworkChange {
+    /// A new device has been added.
+    DeviceAdded(Device),
+    /// A device has been removed.
+    DeviceRemoved(String),
+    /// The device has been updated. The String corresponds to the
+    /// original device name, which is especially useful if the
+    /// device gets renamed.
+    DeviceUpdated(String, Device),
 }
