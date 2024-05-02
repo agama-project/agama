@@ -56,6 +56,41 @@ const sda = {
 };
 
 /** @type {StorageDevice} */
+const sda1 = {
+  sid: 69,
+  name: "/dev/sda1",
+  description: "",
+  isDrive: false,
+  type: "partition",
+  size: 256,
+  filesystem: {
+    sid: 169,
+    type: "Swap"
+  }
+};
+
+/** @type {StorageDevice} */
+const sda2 = {
+  sid: 79,
+  name: "/dev/sda2",
+  description: "",
+  isDrive: false,
+  type: "partition",
+  size: 512,
+  filesystem: {
+    sid: 179,
+    type: "Ext4"
+  }
+};
+
+sda.partitionTable = {
+  type: "gpt",
+  partitions: [sda1, sda2],
+  unpartitionedSize: 0,
+  unusedSlots: []
+};
+
+/** @type {StorageDevice} */
 const sdb = {
   sid: 62,
   isDrive: true,
@@ -71,29 +106,6 @@ const sdb = {
   sdCard: false,
   active: true,
   name: "/dev/sdb",
-  size: 2048,
-  recoverableSize: 0,
-  systems : [],
-  udevIds: [],
-  udevPaths: ["pci-0000:00-19"]
-};
-
-/** @type {StorageDevice} */
-const sdc = {
-  sid: 63,
-  isDrive: true,
-  type: "disk",
-  description: "",
-  vendor: "Samsung",
-  model: "Samsung Evo 8 Pro",
-  driver: ["ahci"],
-  bus: "IDE",
-  busId: "",
-  transport: "",
-  dellBOSS: false,
-  sdCard: false,
-  active: true,
-  name: "/dev/sdc",
   size: 2048,
   recoverableSize: 0,
   systems : [],
@@ -131,76 +143,97 @@ describe("VolumeLocationDialog", () => {
     props = {
       isOpen: true,
       volume,
-      devices: [sda, sdb, sdc],
-      target: "DISK",
-      targetDevice: sda,
+      volumes: [],
+      volumeDevices: [sda, sdb],
+      targetDevices: [sda],
       onCancel: jest.fn(),
       onAccept: jest.fn()
     };
   });
 
-  const automaticOption = () => screen.queryByRole("radio", { name: "Automatic" });
-  const selectDiskOption = () => screen.queryByRole("radio", { name: "Select a disk" });
-  const diskSelector = () => screen.queryByRole("combobox", { name: /choose a disk/i });
-  const lvmSelector = () => screen.queryByRole("checkbox", { name: /dedicated lvm/i });
-
-  it("offers an option to use the installation disk", () => {
+  it("offers an option to create a new partition", () => {
     plainRender(<VolumeLocationDialog {...props} />);
-    expect(automaticOption()).toBeInTheDocument();
+    screen.getByRole("radio", { name: "Create a new partition" });
   });
 
-  it("offers an option to selected a disk", () => {
+  it("offers an option to create a dedicated VG", () => {
     plainRender(<VolumeLocationDialog {...props} />);
-    expect(selectDiskOption()).toBeInTheDocument();
-    expect(diskSelector()).toBeInTheDocument();
-    expect(lvmSelector()).toBeInTheDocument();
+    screen.getByRole("radio", { name: /Create a dedicated LVM/ });
   });
 
-  describe("if the current value is set to use the installation disk", () => {
-    beforeEach(() => {
-      props.volume.target = "DEFAULT";
-      props.targetDevice = sda;
-    });
-
-    it("selects 'Automatic' option by default", () => {
-      plainRender(<VolumeLocationDialog {...props} />);
-      expect(automaticOption()).toBeChecked();
-      expect(selectDiskOption()).not.toBeChecked();
-      expect(diskSelector()).toBeDisabled();
-      expect(lvmSelector()).toBeDisabled();
-    });
+  it("offers an option to format the device", () => {
+    plainRender(<VolumeLocationDialog {...props} />);
+    screen.getByRole("radio", { name: "Format the device" });
   });
 
-  describe("if the current value is set to use a selected disk", () => {
-    beforeEach(() => {
-      props.volume.target = "NEW_PARTITION";
-      props.targetDevice = sda;
+  it("offers an option to mount the file system", () => {
+    plainRender(<VolumeLocationDialog {...props} />);
+    screen.getByRole("radio", { name: "Mount the file system" });
+  });
+
+  describe("if the selected device cannot be partitioned", () => {
+    beforeEach(async () => {
+      const { user } = plainRender(<VolumeLocationDialog {...props} />);
+      const sda1Row = screen.getByRole("row", { name: /sda1/ });
+      const sda1Radio = within(sda1Row).getByRole("radio");
+      await user.click(sda1Radio);
     });
 
-    it("selects 'Select a disk' option by default", () => {
-      plainRender(<VolumeLocationDialog {...props} />);
-      expect(automaticOption()).not.toBeChecked();
-      expect(selectDiskOption()).toBeChecked();
-      expect(diskSelector()).toBeEnabled();
-      expect(lvmSelector()).toBeEnabled();
-      expect(lvmSelector()).not.toBeChecked();
+    it("disables the option for creating a new partition", () => {
+      const option = screen.getByRole("radio", { name: "Create a new partition" });
+      expect(option).toBeDisabled();
+    });
+
+    it("disables the option for creating a dedicated VG", () => {
+      const option = screen.getByRole("radio", { name: /Create a dedicated LVM/ });
+      expect(option).toBeDisabled();
     });
   });
 
-  describe("if the current value is set to use a selected disk for a dedicated LVM", () => {
-    beforeEach(() => {
-      props.volume.target = "NEW_VG";
-      props.targetDevice = sda;
+  describe("if the selected device has not a compatible file system", () => {
+    beforeEach(async () => {
+      const { user } = plainRender(<VolumeLocationDialog {...props} />);
+      const sda1Row = screen.getByRole("row", { name: /sda1/ });
+      const sda1Radio = within(sda1Row).getByRole("radio");
+      await user.click(sda1Radio);
     });
 
-    it("selects 'Select a disk' option and check LVM by default", () => {
-      plainRender(<VolumeLocationDialog {...props} />);
-      expect(automaticOption()).not.toBeChecked();
-      expect(selectDiskOption()).toBeChecked();
-      expect(diskSelector()).toBeEnabled();
-      expect(lvmSelector()).toBeEnabled();
-      expect(lvmSelector()).toBeChecked();
+    it("disables the option for mounting the file system", () => {
+      const option = screen.getByRole("radio", { name: "Mount the file system" });
+      expect(option).toBeDisabled();
     });
+  });
+
+  describe("if the selected device has a compatible file system", () => {
+    beforeEach(async () => {
+      const { user } = plainRender(<VolumeLocationDialog {...props} />);
+      const sda2Row = screen.getByRole("row", { name: /sda2/ });
+      const sda2Radio = within(sda2Row).getByRole("radio");
+      await user.click(sda2Radio);
+    });
+
+    it("enables the option for mounting the file system", () => {
+      const option = screen.getByRole("radio", { name: "Mount the file system" });
+      expect(option).toBeEnabled();
+    });
+  });
+
+  it("calls onAccept with the selected options on accept", async () => {
+    const { user } = plainRender(<VolumeLocationDialog {...props} />);
+
+    const sdbRow = screen.getByRole("row", { name: /sdb/ });
+    const sdbRadio = within(sdbRow).getByRole("radio");
+    await user.click(sdbRadio);
+
+    const formatRadio = screen.getByRole("radio", { name: /format the device/i });
+    await user.click(formatRadio);
+
+    const accept = screen.getByRole("button", { name: "Confirm" });
+    await user.click(accept);
+
+    expect(props.onAccept).toHaveBeenCalledWith(expect.objectContaining(
+      { target: "DEVICE", targetDevice: sdb }
+    ));
   });
 
   it("does not call onAccept on cancel", async () => {
@@ -210,67 +243,5 @@ describe("VolumeLocationDialog", () => {
     await user.click(cancel);
 
     expect(props.onAccept).not.toHaveBeenCalled();
-  });
-
-  describe("if the 'Automatic' option is selected", () => {
-    beforeEach(() => {
-      props.volume.target = "NEW_PARTITION";
-      props.volume.targetDevice = sda;
-    });
-
-    it("calls onAccept with the selected options on accept", async () => {
-      const { user } = plainRender(<VolumeLocationDialog {...props} />);
-
-      await user.click(automaticOption());
-
-      const accept = screen.getByRole("button", { name: "Confirm" });
-      await user.click(accept);
-
-      expect(props.onAccept).toHaveBeenCalledWith(expect.objectContaining(
-        { target: "DEFAULT", targetDevice: undefined }
-      ));
-    });
-  });
-
-  describe("if the 'Select a disk' option is selected", () => {
-    beforeEach(() => {
-      props.volume.target = "DEFAULT";
-      props.volume.targetDevice = undefined;
-    });
-
-    it("calls onAccept with the selected options on accept", async () => {
-      const { user } = plainRender(<VolumeLocationDialog {...props} />);
-
-      await user.click(selectDiskOption());
-      const selector = diskSelector();
-      const sdbOption = within(selector).getByRole("option", { name: /sdb/ });
-      await user.selectOptions(selector, sdbOption);
-
-      const accept = screen.getByRole("button", { name: "Confirm" });
-      await user.click(accept);
-
-      expect(props.onAccept).toHaveBeenCalledWith(expect.objectContaining(
-        { target: "NEW_PARTITION", targetDevice: sdb }
-      ));
-    });
-
-    describe("and dedicated LVM is checked", () => {
-      it("calls onAccept with the selected options on accept", async () => {
-        const { user } = plainRender(<VolumeLocationDialog {...props} />);
-
-        await user.click(selectDiskOption());
-        const selector = diskSelector();
-        const sdbOption = within(selector).getByRole("option", { name: /sdb/ });
-        await user.selectOptions(selector, sdbOption);
-        await user.click(lvmSelector());
-
-        const accept = screen.getByRole("button", { name: "Confirm" });
-        await user.click(accept);
-
-        expect(props.onAccept).toHaveBeenCalledWith(expect.objectContaining(
-          { target: "NEW_VG", targetDevice: sdb }
-        ));
-      });
-    });
   });
 });
