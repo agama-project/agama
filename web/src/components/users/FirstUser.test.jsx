@@ -305,7 +305,7 @@ describe("username suggestions", () => {
 
     const fullNameInput = within(dialog).getByLabelText("Full name");
     await user.type(fullNameInput, "Jane Doe");
-    
+
     await user.tab();
 
     let menuItems = screen.getAllByText("Use suggested username");
@@ -360,7 +360,7 @@ describe("username suggestions", () => {
 
     const menuItem = screen.getByText('willpower');
     const usernameInput = within(dialog).getByLabelText("Username");
-    
+
     await user.click(menuItem);
 
     expect(usernameInput).toHaveFocus();
