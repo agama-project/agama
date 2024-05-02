@@ -57,7 +57,7 @@ import { Table, Thead, Tr, Th, Tbody, Td, ExpandableRowContent, RowSelectVariant
  * @param {ExpandableSelectorColumn[]} props.columns
  */
 const TableHeader = ({ columns }) => (
-  <Thead>
+  <Thead noWrap>
     <Tr>
       <Th />
       <Th />

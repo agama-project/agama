@@ -496,7 +496,7 @@ const VolumesTable = ({
 
   return (
     <Table aria-label={_("Table with mount points")} variant="compact" borders>
-      <Thead>
+      <Thead noWrap>
         <Tr>
           <Th>{columns.mountPath}</Th>
           <Th>{columns.details}</Th>
