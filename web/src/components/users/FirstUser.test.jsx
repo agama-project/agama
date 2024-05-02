@@ -41,6 +41,16 @@ let setUserFn = jest.fn().mockResolvedValue(setUserResult);
 const removeUserFn = jest.fn();
 let onUsersChangeFn = jest.fn();
 
+const openUserForm = async () => {
+  const { user } = installerRender(<FirstUser />);
+  await screen.findByText("No user defined yet.");
+  const button = await screen.findByRole("button", { name: "Define a user now" });
+  await user.click(button);
+  const dialog = await screen.findByRole("dialog");
+
+  return { user, dialog };
+};
+
 beforeEach(() => {
   user = emptyUser;
   createClient.mockImplementation(() => {
@@ -274,5 +284,106 @@ describe("when the user has been modified", () => {
     expect(noUserInfo).toBeNull();
     screen.getByText("YaST Team Member");
     screen.getByText("ytm");
+  });
+});
+
+describe("username suggestions", () => {
+  it("shows suggestions when full name is given and username gets focus", async () => {
+    const { user, dialog } = await openUserForm();
+
+    const fullNameInput = within(dialog).getByLabelText("Full name");
+    await user.type(fullNameInput, "Jane Doe");
+
+    await user.tab();
+
+    const menuItems = screen.getAllByText("Use suggested username");
+    expect(menuItems.length).toBe(4);
+  });
+
+  it("hides suggestions when username loses focus", async () => {
+    const { user, dialog } = await openUserForm();
+
+    const fullNameInput = within(dialog).getByLabelText("Full name");
+    await user.type(fullNameInput, "Jane Doe");
+
+    await user.tab();
+
+    let menuItems = screen.getAllByText("Use suggested username");
+    expect(menuItems.length).toBe(4);
+
+    await user.tab();
+
+    menuItems = screen.queryAllByText("Use suggested username");
+    expect(menuItems.length).toBe(0);
+  });
+
+  it("does not show suggestions when full name is not given", async () => {
+    const { user, dialog } = await openUserForm();
+
+    const fullNameInput = within(dialog).getByLabelText("Full name");
+    fullNameInput.focus();
+
+    await user.tab();
+
+    const menuItems = screen.queryAllByText("Use suggested username");
+    expect(menuItems.length).toBe(0);
+  });
+
+  it("hides suggestions if user types something", async () => {
+    const { user, dialog } = await openUserForm();
+
+    const fullNameInput = within(dialog).getByLabelText("Full name");
+    await user.type(fullNameInput, "Jane Doe");
+
+    await user.tab();
+
+    // confirming that we have suggestions
+    let menuItems = screen.queryAllByText("Use suggested username");
+    expect(menuItems.length).toBe(4);
+
+    const usernameInput = within(dialog).getByLabelText("Username");
+    // the user now types something
+    await user.type(usernameInput, "John Smith");
+
+    // checking if suggestions are gone
+    menuItems = screen.queryAllByText("Use suggested username");
+    expect(menuItems.length).toBe(0);
+  });
+
+  it("fills username input with chosen suggestion", async () => {
+    const { user, dialog } = await openUserForm();
+
+    const fullNameInput = within(dialog).getByLabelText("Full name");
+    await user.type(fullNameInput, "Will Power");
+
+    await user.tab();
+
+    const menuItem = screen.getByText('willpower');
+    const usernameInput = within(dialog).getByLabelText("Username");
+
+    await user.click(menuItem);
+
+    expect(usernameInput).toHaveFocus();
+    expect(usernameInput.value).toBe("willpower");
+  });
+
+  it("fills username input with chosen suggestion using keyboard for selection", async () => {
+    const { user, dialog } = await openUserForm();
+
+    const fullNameInput = within(dialog).getByLabelText("Full name");
+    await user.type(fullNameInput, "Jane Doe");
+
+    await user.tab();
+
+    const menuItems = screen.getAllByRole("menuitem");
+    const menuItemTwo = menuItems[1].textContent.replace("Use suggested username ", "");
+
+    await user.keyboard("{ArrowDown}");
+    await user.keyboard("{ArrowDown}");
+    await user.keyboard("{Enter}");
+
+    const usernameInput = within(dialog).getByLabelText("Username");
+    expect(usernameInput).toHaveFocus();
+    expect(usernameInput.value).toBe(menuItemTwo);
   });
 });
