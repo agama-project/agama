@@ -20,6 +20,7 @@
  */
 
 // @ts-check
+// cspell:ignore dasda ddgdcbibhd
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
@@ -47,7 +48,7 @@ const vda = {
   name: "/dev/vda",
   description: "",
   size: 1024,
-  systems : ["Windows 11", "openSUSE Leap 15.2"],
+  systems: ["Windows 11", "openSUSE Leap 15.2"],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
@@ -64,7 +65,7 @@ const vda1 = {
   start: 123,
   encrypted: false,
   recoverableSize: 128,
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: [],
   isEFI: false
@@ -82,7 +83,7 @@ const vda2 = {
   start: 1789,
   encrypted: false,
   recoverableSize: 0,
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: [],
   isEFI: false
@@ -115,7 +116,7 @@ const vdb = {
   start: 0,
   encrypted: false,
   recoverableSize: 0,
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: []
 };
@@ -138,7 +139,7 @@ const vdc = {
   description: "",
   size: 2048,
   recoverableSize: 0,
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: ["pci-0000:00-19"]
 };
@@ -155,7 +156,7 @@ const md0 = {
   name: "/dev/md0",
   description: "",
   size: 2048,
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: []
 };
@@ -178,7 +179,7 @@ const raid = {
   name: "/dev/mapper/isw_ddgdcbibhd_244",
   description: "",
   size: 2048,
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: []
 };
@@ -201,7 +202,7 @@ const multipath = {
   name: "/dev/mapper/36005076305ffc73a00000000000013b4",
   description: "",
   size: 2048,
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: []
 };
@@ -223,7 +224,7 @@ const dasd = {
   name: "/dev/dasda",
   description: "",
   size: 2048,
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: []
 };
