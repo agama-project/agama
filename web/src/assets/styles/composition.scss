@@ -47,6 +47,20 @@
   }
 }
 
+.location-layout table button[id^="expand-toggle"] {
+  display: none;
+}
+
+.location-layout table tbody tr:not(:first-child) {
+  td:nth-child(2) {
+    padding-inline-start: 2ch;
+  }
+
+  td:nth-child(3) {
+    padding-inline-start: 5ch;
+  }
+}
+
 [data-state="reversed"] {
   flex-direction: row-reverse;
 }

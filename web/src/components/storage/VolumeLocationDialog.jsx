@@ -178,7 +178,7 @@ export default function VolumeLocationDialog({
               description={
                 // TRANSLATORS: %s is replaced by a file system type (e.g., Ext4).
                 sprintf(_("The selected device will be formatted as %s file system."),
-                  volume.fsType)
+                        volume.fsType)
               }
               isChecked={target === "DEVICE"}
               isDisabled={!targets.includes("DEVICE")}
