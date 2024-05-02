@@ -168,7 +168,7 @@ const DeviceExtendedDetails = ({ item }) => {
     const System = ({ system }) => {
       const logo = /windows/i.test(system) ? "windows_logo" : "linux_logo";
 
-      return <><Icon name={logo} size="14" /> {system}</>;
+      return <div><Icon name={logo} size="14" /> {system}</div>;
     };
 
     return device.systems.map((s, i) => <System key={i} system={s} />);
