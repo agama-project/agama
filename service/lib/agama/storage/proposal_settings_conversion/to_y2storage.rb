@@ -169,7 +169,9 @@ module Agama
         def volume_device_conversion(target)
           return unless settings.device.is_a?(DeviceSettings::Disk)
 
-          target.volumes.select(&:proposed?).each { |v| v.device ||= settings.device.name }
+          target.volumes
+            .select { |v| v.proposed? && !v.reuse_name }
+            .each { |v| v.device ||= settings.device.name }
         end
 
         # @param target [Y2Storage::ProposalSettings]
