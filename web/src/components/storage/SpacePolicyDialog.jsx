@@ -73,6 +73,7 @@ const SpacePolicyPicker = ({ currentPolicy, onChange = noop }) => {
  * @property {SpaceAction[]} actions
  * @property {StorageDevice[]} devices
  * @property {boolean} [isOpen=false]
+ * @property {boolean} [isLoading]
  * @property {() => void} [onCancel=noop]
  * @property {(spaceConfig: SpaceConfig) => void} [onAccept=noop]
  *
@@ -87,6 +88,7 @@ export default function SpacePolicyDialog({
   actions: defaultActions,
   devices,
   isOpen,
+  isLoading,
   onCancel = noop,
   onAccept = noop,
   ...props
@@ -96,8 +98,11 @@ export default function SpacePolicyDialog({
   const [customUsed, setCustomUsed] = useState(false);
   const [expandedDevices, setExpandedDevices] = useState([]);
 
+  if (!policy && defaultPolicy) { setPolicy(defaultPolicy) }
+  if (!actions && defaultActions) { setActions(defaultActions) }
+
   useEffect(() => {
-    if (policy.id === "custom") setExpandedDevices(devices);
+    if (policy && policy.id === "custom") setExpandedDevices(devices);
   }, [devices, policy, setExpandedDevices]);
 
   // The selectors for the space action have to be initialized always to the same value
@@ -106,12 +111,12 @@ export default function SpacePolicyDialog({
 
   // Stores whether the custom policy has been used.
   useEffect(() => {
-    if (policy.id === "custom" && !customUsed) setCustomUsed(true);
+    if (policy && policy.id === "custom" && !customUsed) setCustomUsed(true);
   }, [policy, customUsed, setCustomUsed]);
 
   // Resets actions (i.e., sets everything to "keep") if the custom policy has not been used yet.
   useEffect(() => {
-    if (policy.id !== "custom" && !customUsed) setActions([]);
+    if (policy && policy.id !== "custom" && !customUsed) setActions([]);
   }, [policy, customUsed, setActions]);
 
   // Generates the action value according to the policy.
@@ -144,6 +149,7 @@ in the devices listed below. Choose how to do it.");
       title={_("Find space")}
       description={description}
       isOpen={isOpen}
+      isLoading={isLoading}
       blockSize="large"
       inlineSize="large"
       {...props}
@@ -157,7 +163,7 @@ in the devices listed below. Choose how to do it.");
               devices={devices}
               expandedDevices={expandedDevices}
               deviceAction={deviceAction}
-              isActionDisabled={policy.id !== "custom"}
+              isActionDisabled={policy?.id !== "custom"}
               onActionChange={changeActions}
             />
           }

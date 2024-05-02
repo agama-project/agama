@@ -26,6 +26,15 @@ import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import InstallationDeviceField from "~/components/storage/InstallationDeviceField";
 
+jest.mock("@patternfly/react-core", () => {
+  const original = jest.requireActual("@patternfly/react-core");
+
+  return {
+    ...original,
+    Skeleton: () => <div>PF-Skeleton</div>
+  };
+});
+
 /**
  * @typedef {import ("~/components/storage/InstallationDeviceField").InstallationDeviceFieldProps} InstallationDeviceFieldProps
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
@@ -98,7 +107,9 @@ describe("when set as loading", () => {
 
   it("renders a loading hint", () => {
     installerRender(<InstallationDeviceField {...props} />);
-    screen.getByText("Waiting for information about selected device");
+
+    // a PF skeleton is displayed
+    screen.getByText("PF-Skeleton");
   });
 });
 

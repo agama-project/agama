@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 02 11:07:23 UTC 2024 - Balsa Asanovic <balsaasanovic95@gmail.com>
+
+- Added keyboard support for navigating dropdown
+  of suggested usernames. (gh#openSUSE/agama#1122).
+
+-------------------------------------------------------------------
 Thu Apr 25 15:04:05 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Allow adding arbitrary volumes (gh#openSUSE/agama#1154).

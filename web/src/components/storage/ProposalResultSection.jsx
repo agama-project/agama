@@ -104,7 +104,7 @@ const ActionsInfo = ({ actions }) => {
 const ResultSkeleton = () => {
   return (
     <>
-      <Skeleton width="80%" />
+      <Skeleton screenreaderText={_("Waiting for information about storage configuration")} width="80%" />
       <Skeleton width="65%" />
       <Skeleton width="70%" />
     </>
