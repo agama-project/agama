@@ -142,7 +142,9 @@ export default function VolumeLocationDialog({
       {...props}
     >
       <Form id="volume-location-form" onSubmit={onSubmit}>
-        <FormReadOnlyField label={_("Select in which device to allocate the file system")}>
+        { /** FIXME: Rename FormReadOnlyField */}
+        <FormReadOnlyField label={_("Select in which device to allocate the file system")} />
+        <div className="scrollbox">
           <VolumeLocationSelectorTable
             aria-label={_("Select a location")}
             devices={volumeDevices}
@@ -155,7 +157,7 @@ export default function VolumeLocationDialog({
             initialExpandedKeys={volumeDevices.map(d => d.sid)}
             variant="compact"
           />
-        </FormReadOnlyField>
+        </div>
         <FormGroup label={_("Select how to allocate the file system")}>
           <div className="stack">
             <Radio
