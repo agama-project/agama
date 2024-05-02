@@ -767,7 +767,7 @@ const Advanced = ({
  * @property {Volume[]} volumes - Volumes to show
  * @property {Volume[]} templates - Templates to use for new volumes
  * @property {StorageDevice[]} availableDevices - Devices available for installation
- * @property {StorageDevice[]} volumeDevices
+ * @property {StorageDevice[]} volumeDevices - Devices that can be selected as target for a volume
  * @property {ProposalTarget} target - Installation target
  * @property {StorageDevice[]} targetDevices
  * @property {boolean} configureBoot - Whether to configure boot partitions.

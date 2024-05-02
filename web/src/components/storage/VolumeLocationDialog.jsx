@@ -41,30 +41,30 @@ import VolumeLocationSelectorTable from "~/components/storage/VolumeLocationSele
 const DIALOG_DESCRIPTION = _("The file systems are allocated at the installation device by \
 default. Indicate a custom location to create the file system at a specific device.");
 
-/** @type {(device: StorageDevice) => VolumeTarget} */
+/** @type {(device: StorageDevice|undefined) => VolumeTarget} */
 const defaultTarget = (device) => {
-  if (["partition", "lvmLv", "md"].includes(device.type)) return "DEVICE";
+  if (["partition", "lvmLv", "md"].includes(device?.type)) return "DEVICE";
 
   return "NEW_PARTITION";
 };
 
-/** @type {(volume: Volume, device: StorageDevice) => VolumeTarget[]} */
+/** @type {(volume: Volume, device: StorageDevice|undefined) => VolumeTarget[]} */
 const availableTargets = (volume, device) => {
   /** @type {VolumeTarget[]} */
   const targets = ["DEVICE"];
 
-  if (device.isDrive) {
+  if (device?.isDrive) {
     targets.push("NEW_PARTITION");
     targets.push("NEW_VG");
   }
 
-  if (device.filesystem && volume.outline.fsTypes.includes(device.filesystem.type))
+  if (device?.filesystem && volume.outline.fsTypes.includes(device.filesystem.type))
     targets.push("FILESYSTEM");
 
   return targets;
 };
 
-/** @type {(volume: Volume, device: StorageDevice) => VolumeTarget} */
+/** @type {(volume: Volume, device: StorageDevice|undefined) => VolumeTarget} */
 const sanitizeTarget = (volume, device) => {
   const targets = availableTargets(volume, device);
   return targets.includes(volume.target) ? volume.target : defaultTarget(device);
@@ -95,12 +95,15 @@ export default function VolumeLocationDialog({
   onAccept,
   ...props
 }) {
+  /** @type {StorageDevice|undefined} */
   const initialDevice = volume.targetDevice || targetDevices[0] || volumeDevices[0];
+  /** @type {VolumeTarget} */
   const initialTarget = sanitizeTarget(volume, initialDevice);
 
   const [target, setTarget] = useState(initialTarget);
   const [targetDevice, setTargetDevice] = useState(initialDevice);
 
+  /** @type {(devices: StorageDevice[]) => void} */
   const changeTargetDevice = (devices) => {
     const newTargetDevice = devices[0];
 
@@ -110,6 +113,7 @@ export default function VolumeLocationDialog({
     }
   };
 
+  /** @type {(e: import("react").FormEvent) => void} */
   const onSubmit = (e) => {
     e.preventDefault();
     const newVolume = { ...volume, target, targetDevice };
@@ -122,6 +126,8 @@ export default function VolumeLocationDialog({
   };
 
   const targets = availableTargets(volume, targetDevice);
+
+  if (!targetDevice) return null;
 
   return (
     <Popup
