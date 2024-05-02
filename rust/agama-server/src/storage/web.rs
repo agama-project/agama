@@ -10,8 +10,7 @@ use std::collections::HashMap;
 use agama_lib::{
     error::ServiceError,
     storage::{
-        client::{Action, Volume},
-        device::Device,
+        model::{Device, Action, Volume},
         StorageClient,
     },
 };
@@ -21,7 +20,6 @@ use axum::{
     routing::get,
     Json, Router,
 };
-use futures_util::TryFutureExt;
 use serde::Serialize;
 
 use crate::{

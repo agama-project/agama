@@ -1,110 +1,16 @@
 //! Implements a client to access Agama's storage service.
 
-use super::device::{BlockDevice, Device, DeviceInfo};
+use super::model::{Action, BlockDevice, Device, DeviceInfo, StorageDevice, Volume};
 use super::proxies::{DeviceProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
 use super::StorageSettings;
 use crate::dbus::{get_optional_property, get_property};
 use crate::error::ServiceError;
 use futures_util::future::join_all;
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use zbus::fdo::ObjectManagerProxy;
 use zbus::names::{InterfaceName, OwnedInterfaceName};
 use zbus::zvariant::{OwnedObjectPath, OwnedValue};
 use zbus::Connection;
-
-/// Represents a storage device
-#[derive(Serialize, Debug)]
-pub struct StorageDevice {
-    pub name: String,
-    pub description: String,
-}
-
-/// Represents a single change action done to storage
-#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct Action {
-    device: String,
-    text: String,
-    subvol: bool,
-    delete: bool,
-}
-
-/// Represents value for target key of Volume
-/// It is snake cased when serializing to be compatible with yast2-storage-ng.
-#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "snake_case")]
-pub enum VolumeTarget {
-    Default,
-    NewPartition,
-    NewVg,
-    Device,
-    Filesystem,
-}
-
-impl TryFrom<zbus::zvariant::Value<'_>> for VolumeTarget {
-    type Error = zbus::zvariant::Error;
-
-    fn try_from(value: zbus::zvariant::Value) -> Result<Self, zbus::zvariant::Error> {
-        let svalue: String = value.try_into()?;
-        match svalue.as_str() {
-            "default" => Ok(VolumeTarget::Default),
-            "new_partition" => Ok(VolumeTarget::NewPartition),
-            "new_vg" => Ok(VolumeTarget::NewVg),
-            "device" => Ok(VolumeTarget::Device),
-            "filesystem" => Ok(VolumeTarget::Filesystem),
-            _ => Err(zbus::zvariant::Error::Message(
-                format!("Wrong value for Target: {}", svalue).to_string(),
-            )),
-        }
-    }
-}
-
-/// Represents volume outline aka requirements for volume
-#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct VolumeOutline {
-    required: bool,
-    fs_types: Vec<String>,
-    support_auto_size: bool,
-    snapshots_configurable: bool,
-    snaphosts_affect_sizes: bool,
-    size_relevant_volumes: Vec<String>,
-}
-
-impl TryFrom<zbus::zvariant::Value<'_>> for VolumeOutline {
-    type Error = zbus::zvariant::Error;
-
-    fn try_from(value: zbus::zvariant::Value) -> Result<Self, zbus::zvariant::Error> {
-        let mvalue: HashMap<String, OwnedValue> = value.try_into()?;
-        let res = VolumeOutline {
-            required: get_property(&mvalue, "Required")?,
-            fs_types: get_property(&mvalue, "FsTypes")?,
-            support_auto_size: get_property(&mvalue, "SupportAutoSize")?,
-            snapshots_configurable: get_property(&mvalue, "SnapshotsConfigurable")?,
-            snaphosts_affect_sizes: get_property(&mvalue, "SnapshotsAffectSizes")?,
-            size_relevant_volumes: get_property(&mvalue, "SizeRelevantVolumes")?,
-        };
-
-        Ok(res)
-    }
-}
-
-/// Represents a single volume
-#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct Volume {
-    mount_path: String,
-    mount_options: Vec<String>,
-    target: VolumeTarget,
-    target_device: Option<String>,
-    min_size: u64,
-    max_size: Option<u64>,
-    auto_size: bool,
-    snapshots: Option<bool>,
-    transactional: Option<bool>,
-    outline: Option<VolumeOutline>,
-}
 
 /// D-Bus client for the storage service
 #[derive(Clone)]
