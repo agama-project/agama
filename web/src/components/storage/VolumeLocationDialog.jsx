@@ -131,70 +131,69 @@ export default function VolumeLocationDialog({
       description={DIALOG_DESCRIPTION}
       inlineSize="large"
       isOpen={isOpen}
+      className="location-layout"
       {...props}
     >
       <Form id="volume-location-form" onSubmit={onSubmit}>
-        <div className="stack">
-          <FormReadOnlyField label={_("Select in which device to allocate the file system")}>
-            <VolumeLocationSelectorTable
-              aria-label={_("Select a location")}
-              devices={volumeDevices}
-              selectedDevices={[targetDevice]}
-              targetDevices={targetDevices}
-              volumes={volumes}
-              itemChildren={deviceChildren}
-              itemSelectable={isDeviceSelectable}
-              onSelectionChange={changeTargetDevice}
-              initialExpandedKeys={volumeDevices.map(d => d.sid)}
-              variant="compact"
-            />
-          </FormReadOnlyField>
-          <FormGroup label={_("Select how to allocate the file system")}>
-            <Radio
-              id="new_partition"
-              name="target"
-              label={_("Create a new partition")}
-              description={_("The file system will be allocated as a new partition at the selected \
+        <FormReadOnlyField label={_("Select in which device to allocate the file system")}>
+          <VolumeLocationSelectorTable
+            aria-label={_("Select a location")}
+            devices={volumeDevices}
+            selectedDevices={[targetDevice]}
+            targetDevices={targetDevices}
+            volumes={volumes}
+            itemChildren={deviceChildren}
+            itemSelectable={isDeviceSelectable}
+            onSelectionChange={changeTargetDevice}
+            initialExpandedKeys={volumeDevices.map(d => d.sid)}
+            variant="compact"
+          />
+        </FormReadOnlyField>
+        <FormGroup label={_("Select how to allocate the file system")}>
+          <Radio
+            id="new_partition"
+            name="target"
+            label={_("Create a new partition")}
+            description={_("The file system will be allocated as a new partition at the selected \
 disk.")}
-              isChecked={target === "NEW_PARTITION"}
-              isDisabled={!targets.includes("NEW_PARTITION")}
-              onChange={() => setTarget("NEW_PARTITION")}
-            />
-            <Radio
-              id="dedicated_lvm"
-              name="target"
-              label={_("Create a dedicated LVM volume group")}
-              description={_("A new volume group will be allocated in the selected disk and the \
+            isChecked={target === "NEW_PARTITION"}
+            isDisabled={!targets.includes("NEW_PARTITION")}
+            onChange={() => setTarget("NEW_PARTITION")}
+          />
+          <Radio
+            id="dedicated_lvm"
+            name="target"
+            label={_("Create a dedicated LVM volume group")}
+            description={_("A new volume group will be allocated in the selected disk and the \
 file system will be created as a logical volume.")}
-              isChecked={target === "NEW_VG"}
-              isDisabled={!targets.includes("NEW_VG")}
-              onChange={() => setTarget("NEW_VG")}
-            />
-            <Radio
-              id="format"
-              name="target"
-              label={_("Format the device")}
-              description={
-                // TRANSLATORS: %s is replaced by a file system type (e.g., Ext4).
-                sprintf(_("The selected device will be formatted as %s file system."),
-                        volume.fsType)
-              }
-              isChecked={target === "DEVICE"}
-              isDisabled={!targets.includes("DEVICE")}
-              onChange={() => setTarget("DEVICE")}
-            />
-            <Radio
-              id="mount"
-              name="target"
-              label={_("Mount the file system")}
-              description={_("The current file system on the selected device will be mounted \
+            isChecked={target === "NEW_VG"}
+            isDisabled={!targets.includes("NEW_VG")}
+            onChange={() => setTarget("NEW_VG")}
+          />
+          <Radio
+            id="format"
+            name="target"
+            label={_("Format the device")}
+            description={
+              // TRANSLATORS: %s is replaced by a file system type (e.g., Ext4).
+              sprintf(_("The selected device will be formatted as %s file system."),
+                volume.fsType)
+            }
+            isChecked={target === "DEVICE"}
+            isDisabled={!targets.includes("DEVICE")}
+            onChange={() => setTarget("DEVICE")}
+          />
+          <Radio
+            id="mount"
+            name="target"
+            label={_("Mount the file system")}
+            description={_("The current file system on the selected device will be mounted \
 without formatting the device.")}
-              isChecked={target === "FILESYSTEM"}
-              isDisabled={!targets.includes("FILESYSTEM")}
-              onChange={() => setTarget("FILESYSTEM")}
-            />
-          </FormGroup>
-        </div>
+            isChecked={target === "FILESYSTEM"}
+            isDisabled={!targets.includes("FILESYSTEM")}
+            onChange={() => setTarget("FILESYSTEM")}
+          />
+        </FormGroup>
       </Form>
       <Popup.Actions>
         <Popup.Confirm form="volume-location-form" type="submit" />

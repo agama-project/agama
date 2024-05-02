@@ -24,6 +24,25 @@
   flex-wrap: wrap;
 }
 
+// TODO: make it less specific.
+.location-layout > div {
+  display: flex;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+  }
+
+  form > div:first-child {
+    overflow-y: auto;
+  }
+
+  form > div:last-child {
+    min-block-size: min-content;
+  }
+}
+
 [data-state="reversed"] {
   flex-direction: row-reverse;
 }
