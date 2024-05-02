@@ -67,7 +67,11 @@ const deviceUsers = (item, targetDevices, volumes) => {
  * @param {string[]} props.users
  */
 const DeviceUsage = ({ users }) => {
-  return users.map((user, index) => <Chip key={index} isReadOnly>{user}</Chip>);
+  return (
+    <div className="wrapped split">
+      {users.map((user, index) => <Chip key={index} isReadOnly>{user}</Chip>)}
+    </div>
+  );
 };
 
 /**

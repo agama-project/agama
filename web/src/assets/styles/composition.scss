@@ -3,6 +3,10 @@
   margin-block-end: var(--stack-gutter);
 }
 
+.stack.small {
+  --stack-gutter: var(--spacer-smaller);
+}
+
 .flex-stack {
   display: flex;
   flex-direction: column;
