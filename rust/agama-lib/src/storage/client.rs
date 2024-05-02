@@ -1,9 +1,12 @@
 //! Implements a client to access Agama's storage service.
 
-use super::model::{Action, BlockDevice, Device, DeviceInfo, StorageDevice, Volume};
+use super::model::{
+    Action, BlockDevice, Device, DeviceInfo, ProposalSettings, ProposalTarget, StorageDevice,
+    Volume,
+};
 use super::proxies::{DeviceProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
 use super::StorageSettings;
-use crate::dbus::{get_optional_property, get_property};
+use crate::dbus::get_property;
 use crate::error::ServiceError;
 use futures_util::future::join_all;
 use std::collections::HashMap;
@@ -46,13 +49,7 @@ impl<'a> StorageClient<'a> {
         let mut result: Vec<Action> = Vec::with_capacity(actions.len());
 
         for i in actions {
-            let action = Action {
-                device: get_property(&i, "Device")?,
-                text: get_property(&i, "Text")?,
-                subvol: get_property(&i, "Subvol")?,
-                delete: get_property(&i, "Delete")?,
-            };
-            result.push(action);
+            result.push(i.try_into()?);
         }
 
         Ok(result)
@@ -75,20 +72,8 @@ impl<'a> StorageClient<'a> {
 
     pub async fn volume_for(&self, mount_path: &str) -> Result<Volume, ServiceError> {
         let volume_hash = self.calculator_proxy.default_volume(mount_path).await?;
-        let volume = Volume {
-            mount_path: get_property(&volume_hash, "MountPath")?,
-            mount_options: get_property(&volume_hash, "MountOptions")?,
-            target: get_property(&volume_hash, "Target")?,
-            target_device: get_optional_property(&volume_hash, "TargetDevice")?,
-            min_size: get_property(&volume_hash, "MinSize")?,
-            max_size: get_optional_property(&volume_hash, "MaxSize")?,
-            auto_size: get_property(&volume_hash, "AutoSize")?,
-            snapshots: get_optional_property(&volume_hash, "Snapshots")?,
-            transactional: get_optional_property(&volume_hash, "Transactional")?,
-            outline: get_optional_property(&volume_hash, "Outline")?,
-        };
 
-        Ok(volume)
+        Ok(volume_hash.try_into()?)
     }
 
     pub async fn product_mount_points(&self) -> Result<Vec<String>, ServiceError> {
@@ -97,6 +82,10 @@ impl<'a> StorageClient<'a> {
 
     pub async fn encryption_methods(&self) -> Result<Vec<String>, ServiceError> {
         Ok(self.calculator_proxy.encryption_methods().await?)
+    }
+
+    pub async fn proposal_settings(&self) -> Result<ProposalSettings, ServiceError> {
+        Ok(self.proposal_proxy.settings().await?.try_into()?)
     }
 
     /// Returns the storage device for the given D-Bus path
@@ -116,41 +105,35 @@ impl<'a> StorageClient<'a> {
     }
 
     /// Returns the boot device proposal setting
+    /// DEPRECATED, use proposal_settings instead
     pub async fn boot_device(&self) -> Result<Option<String>, ServiceError> {
-        let value = self.proposal_value(self.proposal_proxy.boot_device().await)?;
+        let settings = self.proposal_settings().await?;
+        let boot_device = settings.boot_device;
 
-        match value {
-            Some(v) if v.is_empty() => Ok(None),
-            Some(v) => Ok(Some(v)),
-            None => Ok(None),
+        if boot_device.is_empty() {
+            Ok(None)
+        } else {
+            Ok(Some(boot_device))
         }
     }
 
     /// Returns the lvm proposal setting
+    /// DEPRECATED, use proposal_settings instead
     pub async fn lvm(&self) -> Result<Option<bool>, ServiceError> {
-        self.proposal_value(self.proposal_proxy.lvm().await)
+        let settings = self.proposal_settings().await?;
+        Ok(Some(matches!(settings.target, ProposalTarget::Disk)))
     }
 
     /// Returns the encryption password proposal setting
+    /// DEPRECATED, use proposal_settings instead
     pub async fn encryption_password(&self) -> Result<Option<String>, ServiceError> {
-        let value = self.proposal_value(self.proposal_proxy.encryption_password().await)?;
+        let settings = self.proposal_settings().await?;
+        let value = settings.encryption_password;
 
-        match value {
-            Some(v) if v.is_empty() => Ok(None),
-            Some(v) => Ok(Some(v)),
-            None => Ok(None),
-        }
-    }
-
-    fn proposal_value<T>(&self, value: Result<T, zbus::Error>) -> Result<Option<T>, ServiceError> {
-        match value {
-            Ok(v) => Ok(Some(v)),
-            Err(zbus::Error::MethodError(name, _, _))
-                if name.as_str() == "org.freedesktop.DBus.Error.UnknownObject" =>
-            {
-                Ok(None)
-            }
-            Err(e) => Err(e.into()),
+        if value.is_empty() {
+            Ok(None)
+        } else {
+            Ok(Some(value))
         }
     }
 

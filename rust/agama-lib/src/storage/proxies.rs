@@ -70,39 +70,11 @@ trait Proposal {
         &self,
     ) -> zbus::Result<Vec<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>>;
 
-    /// BootDevice property
+    /// Settings property
     #[dbus_proxy(property)]
-    fn boot_device(&self) -> zbus::Result<String>;
-
-    /// EncryptionMethod property
-    #[dbus_proxy(property)]
-    fn encryption_method(&self) -> zbus::Result<String>;
-
-    /// EncryptionPBKDFunction property
-    #[dbus_proxy(property, name = "EncryptionPBKDFunction")]
-    fn encryption_pbkdfunction(&self) -> zbus::Result<String>;
-
-    /// EncryptionPassword property
-    #[dbus_proxy(property)]
-    fn encryption_password(&self) -> zbus::Result<String>;
-
-    /// LVM property
-    #[dbus_proxy(property, name = "LVM")]
-    fn lvm(&self) -> zbus::Result<bool>;
-
-    /// SpacePolicy property
-    #[dbus_proxy(property)]
-    fn space_policy(&self) -> zbus::Result<String>;
-
-    /// SystemVGDevices property
-    #[dbus_proxy(property, name = "SystemVGDevices")]
-    fn system_vg_devices(&self) -> zbus::Result<Vec<Vec<String>>>;
-
-    /// Volumes property
-    #[dbus_proxy(property)]
-    fn volumes(
+    fn settings(
         &self,
-    ) -> zbus::Result<Vec<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>>;
+    ) -> zbus::Result<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>;
 }
 
 #[dbus_proxy(

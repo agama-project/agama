@@ -10,7 +10,7 @@ use std::collections::HashMap;
 use agama_lib::{
     error::ServiceError,
     storage::{
-        model::{Device, Action, Volume},
+        model::{Action, Device, ProposalSettings, Volume},
         StorageClient,
     },
 };
@@ -68,6 +68,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .route("/product/params", get(product_params))
         .route("/proposal/actions", get(actions))
         .route("/proposal/usable_devices", get(usable_devices))
+        .route("/proposal/settings", get(get_proposal_settings))
         .merge(status_router)
         .merge(progress_router)
         .nest("/issues", issues_router)
@@ -118,4 +119,10 @@ async fn usable_devices(State(state): State<StorageState<'_>>) -> Result<Json<St
     let devices_names = devices.into_iter().map(|d| d.name).collect();
 
     Ok(Json(devices_names))
+}
+
+async fn get_proposal_settings(
+    State(state): State<StorageState<'_>>,
+) -> Result<Json<ProposalSettings>, Error> {
+    Ok(Json(state.client.proposal_settings().await?))
 }

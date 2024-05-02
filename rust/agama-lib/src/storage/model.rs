@@ -3,23 +3,148 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use zbus::zvariant::OwnedValue;
 
-use crate::dbus::get_property;
+use crate::dbus::{get_optional_property, get_property};
 
 /// Represents a storage device
+/// Just for backward compatibility with CLI.
+/// See struct Device
 #[derive(Serialize, Debug)]
 pub struct StorageDevice {
     pub name: String,
     pub description: String,
 }
 
+#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+// note that dbus use camelCase for proposalTarget values and snake_case for volumeTarget
+#[serde(rename_all = "camelCase")]
+pub enum ProposalTarget {
+    Disk,
+    NewLvmVg,
+    ReusedLvmVg,
+}
+
+impl TryFrom<zbus::zvariant::Value<'_>> for ProposalTarget {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(value: zbus::zvariant::Value) -> Result<Self, zbus::zvariant::Error> {
+        let svalue: String = value.try_into()?;
+        match svalue.as_str() {
+            "disk" => Ok(Self::Disk),
+            "newLvmVg" => Ok(Self::NewLvmVg),
+            "reusedLvmVg" => Ok(Self::ReusedLvmVg),
+            _ => Err(zbus::zvariant::Error::Message(
+                format!("Wrong value for Target: {}", svalue).to_string(),
+            )),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum SpaceAction {
+    ForceDelete,
+    Resize,
+}
+
+impl TryFrom<zbus::zvariant::Value<'_>> for SpaceAction {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(value: zbus::zvariant::Value) -> Result<Self, zbus::zvariant::Error> {
+        let svalue: String = value.try_into()?;
+        match svalue.as_str() {
+            "force_delete" => Ok(Self::ForceDelete),
+            "resize" => Ok(Self::Resize),
+            _ => Err(zbus::zvariant::Error::Message(
+                format!("Wrong value for SpacePolicy: {}", svalue).to_string(),
+            )),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+pub struct SpaceActionSettings {
+    pub device: String,
+    pub action: SpaceAction,
+}
+
+impl TryFrom<zbus::zvariant::Value<'_>> for SpaceActionSettings {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(value: zbus::zvariant::Value) -> Result<Self, zbus::zvariant::Error> {
+        let mvalue: HashMap<String, OwnedValue> = value.try_into()?;
+        let res = SpaceActionSettings {
+            device: get_property(&mvalue, "Device")?,
+            action: get_property(&mvalue, "Action")?,
+        };
+
+        Ok(res)
+    }
+}
+
+/// Represents a proposal configuration
+#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct ProposalSettings {
+    pub target: ProposalTarget,
+    pub target_device: Option<String>,
+    #[serde(rename = "targetPVDevices")]
+    pub target_pv_devices: Option<String>,
+    pub configure_boot: bool,
+    pub boot_device: String,
+    pub encryption_password: String,
+    pub encryption_method: String,
+    #[serde(rename = "encryptionPBKDFunction")]
+    pub encryption_pbkd_function: String,
+    pub space_policy: String,
+    pub space_actions: Vec<SpaceActionSettings>,
+    pub volumes: Vec<Volume>,
+}
+
+impl TryFrom<HashMap<String, OwnedValue>> for ProposalSettings {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(hash: HashMap<String, OwnedValue>) -> Result<Self, zbus::zvariant::Error> {
+        let res = ProposalSettings {
+            target: get_property(&hash, "Target")?,
+            target_device: get_optional_property(&hash, "TargetDevice")?,
+            target_pv_devices: get_optional_property(&hash, "TargetPVDevices")?,
+            configure_boot: get_property(&hash, "ConfigureBoot")?,
+            boot_device: get_property(&hash, "BootDevice")?,
+            encryption_password: get_property(&hash, "EncryptionPassword")?,
+            encryption_method: get_property(&hash, "EncryptionMethod")?,
+            encryption_pbkd_function: get_property(&hash, "EncryptionPBKDFunction")?,
+            space_policy: get_property(&hash, "SpacePolicy")?,
+            space_actions: get_property(&hash, "SpaceActions")?,
+            volumes: get_property(&hash, "Volumes")?,
+        };
+
+        Ok(res)
+    }
+}
+
 /// Represents a single change action done to storage
 #[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Action {
-    pub device: String,
-    pub text: String,
-    pub subvol: bool,
-    pub delete: bool,
+    device: String,
+    text: String,
+    subvol: bool,
+    delete: bool,
+}
+
+impl TryFrom<HashMap<String, OwnedValue>> for Action {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(hash: HashMap<String, OwnedValue>) -> Result<Self, zbus::zvariant::Error> {
+        let res = Action {
+            device: get_property(&hash, "Device")?,
+            text: get_property(&hash, "Text")?,
+            subvol: get_property(&hash, "Subvol")?,
+            delete: get_property(&hash, "Delete")?,
+        };
+
+        Ok(res)
+    }
 }
 
 /// Represents value for target key of Volume
@@ -86,16 +211,47 @@ impl TryFrom<zbus::zvariant::Value<'_>> for VolumeOutline {
 #[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Volume {
-    pub mount_path: String,
-    pub mount_options: Vec<String>,
-    pub target: VolumeTarget,
-    pub target_device: Option<String>,
-    pub min_size: u64,
-    pub max_size: Option<u64>,
-    pub auto_size: bool,
-    pub snapshots: Option<bool>,
-    pub transactional: Option<bool>,
-    pub outline: Option<VolumeOutline>,
+    mount_path: String,
+    mount_options: Vec<String>,
+    target: VolumeTarget,
+    target_device: Option<String>,
+    min_size: u64,
+    max_size: Option<u64>,
+    auto_size: bool,
+    snapshots: Option<bool>,
+    transactional: Option<bool>,
+    outline: Option<VolumeOutline>,
+}
+
+impl TryFrom<zbus::zvariant::Value<'_>> for Volume {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(object: zbus::zvariant::Value) -> Result<Self, zbus::zvariant::Error> {
+        let hash: HashMap<String, OwnedValue> = object.try_into()?;
+
+        hash.try_into()
+    }
+}
+
+impl TryFrom<HashMap<String, OwnedValue>> for Volume {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(volume_hash: HashMap<String, OwnedValue>) -> Result<Self, zbus::zvariant::Error> {
+        let res = Volume {
+            mount_path: get_property(&volume_hash, "MountPath")?,
+            mount_options: get_property(&volume_hash, "MountOptions")?,
+            target: get_property(&volume_hash, "Target")?,
+            target_device: get_optional_property(&volume_hash, "TargetDevice")?,
+            min_size: get_property(&volume_hash, "MinSize")?,
+            max_size: get_optional_property(&volume_hash, "MaxSize")?,
+            auto_size: get_property(&volume_hash, "AutoSize")?,
+            snapshots: get_optional_property(&volume_hash, "Snapshots")?,
+            transactional: get_optional_property(&volume_hash, "Transactional")?,
+            outline: get_optional_property(&volume_hash, "Outline")?,
+        };
+
+        Ok(res)
+    }
 }
 
 /// Information about system device created by composition to reflect different devices on system
