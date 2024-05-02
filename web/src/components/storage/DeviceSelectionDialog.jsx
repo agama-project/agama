@@ -52,6 +52,7 @@ const OPTIONS_NAME = "selection-mode";
  * @param {StorageDevice[]} props.targetPVDevices
  * @param {StorageDevice[]} props.devices - The actions to perform in the system.
  * @param {boolean} [props.isOpen=false] - Whether the dialog is visible or not.
+ * @param {boolean} [props.isLoading=false] - Whether loading the data is in progress
  * @param {() => void} [props.onCancel=noop]
  * @param {(target: Target) => void} [props.onAccept=noop]
  *
@@ -67,6 +68,7 @@ export default function DeviceSelectionDialog({
   targetPVDevices: defaultPVDevices,
   devices,
   isOpen,
+  isLoading,
   onCancel = noop,
   onAccept = noop,
   ...props
@@ -95,6 +97,11 @@ export default function DeviceSelectionDialog({
     return true;
   };
 
+  // change the initial `undefined` state when receiving the real data
+  if (!target && defaultTarget) { setTarget(defaultTarget) }
+  if (!targetDevice && defaultTargetDevice) { setTargetDevice(defaultTargetDevice) }
+  if (!targetPVDevices && defaultPVDevices) { setTargetPVDevices(defaultPVDevices) }
+
   const isDeviceSelectable = (device) => device.isDrive || device.type === "md";
 
   // TRANSLATORS: description for using plain partitions for installing the
@@ -114,6 +121,7 @@ devices.").split(/[[\]]/);
     <Popup
       title={_("Device for installing the system")}
       isOpen={isOpen}
+      isLoading={isLoading}
       blockSize="large"
       inlineSize="large"
       {...props}
@@ -175,6 +183,7 @@ devices.").split(/[[\]]/);
           </Panels.Panel>
         </Panels>
       </Form>
+
       <Popup.Actions>
         <Popup.Confirm form="target-form" type="submit" isDisabled={isAcceptDisabled()} />
         <Popup.Cancel onClick={onCancel} />

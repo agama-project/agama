@@ -87,8 +87,8 @@ export default function BootConfigField({
     onChange({ configureBoot, bootDevice });
   };
 
-  if (isLoading) {
-    return <Skeleton screenreaderText={_("Waiting for information about boot config")} width="75%" />;
+  if (isLoading && configureBoot === undefined) {
+    return <Skeleton width="75%" />;
   }
 
   let value;

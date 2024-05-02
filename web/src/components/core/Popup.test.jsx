@@ -27,8 +27,10 @@ import { installerRender } from "~/test-utils";
 import { Popup } from "~/components/core";
 
 let isOpen;
+let isLoading;
 const confirmFn = jest.fn();
 const cancelFn = jest.fn();
+const loadingText = "Loading text";
 
 const TestingPopup = (props) => {
   const [isMounted, setIsMounted] = useState(true);
@@ -39,6 +41,8 @@ const TestingPopup = (props) => {
     <Popup
       title="Testing Popup component"
       isOpen={isOpen}
+      isLoading={isLoading}
+      loadingText={loadingText}
       {...props}
     >
       <p>The Popup Content</p>
@@ -55,6 +59,7 @@ describe("Popup", () => {
   describe("when it is not open", () => {
     beforeEach(() => {
       isOpen = false;
+      isLoading = false;
     });
 
     it("renders nothing", async () => {
@@ -65,9 +70,10 @@ describe("Popup", () => {
     });
   });
 
-  describe("when it is open", () => {
+  describe("when it is open and not loading", () => {
     beforeEach(() => {
       isOpen = true;
+      isLoading = false;
     });
 
     it("renders the popup content inside a PF/Modal", async () => {
@@ -77,6 +83,14 @@ describe("Popup", () => {
       expect(dialog.classList.contains("pf-v5-c-modal-box")).toBe(true);
 
       within(dialog).getByText("The Popup Content");
+    });
+
+    it("does not display a progress message", async () => {
+      installerRender(<TestingPopup />);
+
+      const dialog = await screen.findByRole("dialog");
+
+      expect(within(dialog).queryByText(loadingText)).toBeNull();
     });
 
     it("renders the popup actions inside a PF/Modal footer", async () => {
@@ -90,6 +104,22 @@ describe("Popup", () => {
 
       within(footer).getByText("Confirm");
       within(footer).getByText("Cancel");
+    });
+  });
+
+  describe("when it is open and loading", () => {
+    beforeEach(() => {
+      isOpen = true;
+      isLoading = true;
+    });
+
+    it("displays progress message instead of the content", async () => {
+      installerRender(<TestingPopup />);
+
+      const dialog = await screen.findByRole("dialog");
+
+      expect(within(dialog).queryByText("The Popup Content")).toBeNull();
+      within(dialog).getByText(loadingText);
     });
   });
 });

@@ -207,7 +207,7 @@ const DevicesTreeTable = ({ devicesManager }) => {
 const ResultSkeleton = () => {
   return (
     <>
-      <Skeleton width="80%" />
+      <Skeleton screenreaderText={_("Waiting for information about storage configuration")} width="80%" />
       <Skeleton width="65%" />
       <Skeleton width="70%" />
     </>
@@ -251,6 +251,7 @@ const SectionContent = ({ system, staging, actions, errors }) => {
  * @param {Action[]} [props.actions=[]]
  * @param {ValidationError[]} [props.errors=[]] - Validation errors
  * @param {boolean} [props.isLoading=false] - Whether the section content should be rendered as loading
+ * @param {symbol} [props.changing=undefined] - Which part of the configuration is being changed by user
  */
 export default function ProposalResultSection({
   system = [],
