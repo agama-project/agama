@@ -454,11 +454,18 @@ class ProposalManager {
   /**
    * Gets the devices that can be selected as target for a volume.
    *
+   * A device can be selected as target for a volume if either it is an available device for
+   * installation or it is a device built over the available devices for installation. For example,
+   * a MD RAID is a possible target only if all its members are available devices or children of the
+   * available devices.
+   *
    * @returns {Promise<StorageDevice[]>}
    */
   async getVolumeDevices() {
+    /** @type {StorageDevice[]} */
     const availableDevices = await this.getAvailableDevices();
 
+    /** @type {(device: StorageDevice) => boolean} */
     const isAvailable = (device) => {
       const isChildren = (device, parentDevice) => {
         const partitions = parentDevice.partitionTable?.partitions || [];
@@ -471,6 +478,7 @@ class ProposalManager {
       );
     };
 
+    /** @type {(device: StorageDevice[]) => boolean} */
     const allAvailable = (devices) => devices.every(isAvailable);
 
     const system = await this.system.getDevices();
@@ -576,6 +584,9 @@ class ProposalManager {
           return device;
         };
 
+        // Only consider the device assigned to a volume as installation device if it is needed
+        // to find space in that device. For example, devices directly formatted or mounted are not
+        // considered as installation devices.
         const volumes = dbusSettings.Volumes.v.filter(vol => (
           [VolumeTargets.NEW_PARTITION, VolumeTargets.NEW_VG].includes(vol.v.Target.v))
         );

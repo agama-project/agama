@@ -33,7 +33,7 @@ import { deviceBaseName, deviceSize } from "~/components/storage/utils";
  */
 
 /**
- * Conversion to StorageDevice.
+ * Ensures the given item is a StorageDevice.
  * @function
  *
  * @param {PartitionSlot|StorageDevice} item

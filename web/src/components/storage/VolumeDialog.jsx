@@ -63,14 +63,6 @@ import { Popup } from '~/components/core';
  * @property {string|null} missingSize
  * @property {string|null} missingMinSize
  * @property {string|null} invalidMaxSize
- *
- * @typedef {object} VolumeDialogProps
- * @property {Volume} volume
- * @property {Volume[]} volumes
- * @property {Volume[]} templates
- * @property {boolean} [isOpen=false]
- * @property {() => void} onCancel
- * @property {(volume: Volume) => void} onAccept
  */
 
 /**
@@ -92,18 +84,29 @@ const renderTitle = (volume, volumes) => {
   return isNewVolume ? _("Add file system") : _("Edit file system");
 };
 
+/**
+ * @component
+ *
+ * @param {object} props
+ * @param {Volume} props.volume
+ */
 const VolumeAlert = ({ volume }) => {
   let alert;
 
   if (mountFilesystem(volume)) {
     alert = {
+      // TRANSLATORS: Warning when editing a file system.
       title: _("The type and size of the file system cannot be edited."),
+      // TRANSLATORS: Description of a warning. The first %s is replaced by a device name (e.g.,
+      // /dev/vda) and the second %s is replaced by a mount path (e.g., /home).
       text: sprintf(_("The current file system on %s is selected to be mounted at %s."),
                     volume.targetDevice.name, volume.mountPath)
     };
   } else if (reuseDevice(volume)) {
     alert = {
+      // TRANSLATORS: Warning when editing a file system.
       title: _("The size of the file system cannot be edited"),
+      // TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
       text: sprintf(_("The file system is allocated at the device %s."),
                     volume.targetDevice.name)
     };
@@ -625,6 +628,14 @@ const reducer = (state, action) => {
 /**
  * Renders a dialog that allows the user to add or edit a file system.
  * @component
+ *
+ * @typedef {object} VolumeDialogProps
+ * @property {Volume} volume
+ * @property {Volume[]} volumes
+ * @property {Volume[]} templates
+ * @property {boolean} [isOpen=false]
+ * @property {() => void} onCancel
+ * @property {(volume: Volume) => void} onAccept
  *
  * @param {VolumeDialogProps} props
  */

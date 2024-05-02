@@ -109,36 +109,28 @@ const DeviceCustomSize = ({ item, devicesManager }) => {
 
 /** @type {(devicesManager: DevicesManager) => TreeTableColumn[] } */
 const columns = (devicesManager) => {
-  /** @type {() => (item: TableItem) => React.ReactNode} */
-  const deviceRender = () => {
-    return (item) => <DeviceName item={item} />;
-  };
+  /** @type {(item: TableItem) => React.ReactNode} */
+  const renderDevice = (item) => <DeviceName item={item} />;
 
-  /** @type {() => (item: TableItem) => React.ReactNode} */
-  const mountPointRender = () => {
-    return (item) => <MountPoint item={item} />;
-  };
+  /** @type {(item: TableItem) => React.ReactNode} */
+  const renderMountPoint = (item) => <MountPoint item={item} />;
 
-  /** @type {() => (item: TableItem) => React.ReactNode} */
-  const detailsRender = () => {
-    return (item) => <DeviceCustomDetails item={item} devicesManager={devicesManager} />;
-  };
+  /** @type {(item: TableItem) => React.ReactNode} */
+  const renderDetails = (item) => <DeviceCustomDetails item={item} devicesManager={devicesManager} />;
 
-  /** @type {() => (item: TableItem) => React.ReactNode} */
-  const sizeRender = () => {
-    return (item) => <DeviceCustomSize item={item} devicesManager={devicesManager} />;
-  };
+  /** @type {(item: TableItem) => React.ReactNode} */
+  const renderSize = (item) => <DeviceCustomSize item={item} devicesManager={devicesManager} />;
 
   return [
-    { name: _("Device"), value: deviceRender() },
-    { name: _("Mount Point"), value: mountPointRender() },
-    { name: _("Details"), value: detailsRender(), classNames: "details-column" },
-    { name: _("Size"), value: sizeRender(), classNames: "sizes-column" }
+    { name: _("Device"), value: renderDevice },
+    { name: _("Mount Point"), value: renderMountPoint },
+    { name: _("Details"), value: renderDetails, classNames: "details-column" },
+    { name: _("Size"), value: renderSize, classNames: "sizes-column" }
   ];
 };
 
 /**
- * Renders a TreeTable rendering the devices proposal result.
+ * Renders the proposal result.
  * @component
  *
  * @typedef {object} ProposalResultTableProps

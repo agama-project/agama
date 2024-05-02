@@ -33,10 +33,20 @@ import { ExpandableSelector } from "~/components/core";
 /**
  * @typedef {import("../core/ExpandableSelector").ExpandableSelectorColumn} ExpandableSelectorColumn
  * @typedef {import("../core/ExpandableSelector").ExpandableSelectorProps} ExpandableSelectorProps
+ * @typedef {import ("~/client/storage").PartitionSlot} PartitionSlot
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  * @typedef {import ("~/client/storage").Volume} Volume
  */
 
+/**
+ * Returns what (volumes, installation device) is using a device.
+ * @function
+ *
+ * @param {PartitionSlot|StorageDevice} item
+ * @param {StorageDevice[]} targetDevices
+ * @param {Volume[]} volumes
+ * @returns {string[]}
+ */
 const deviceUsers = (item, targetDevices, volumes) => {
   const device = toStorageDevice(item);
   if (!device) return [];
@@ -50,6 +60,12 @@ const deviceUsers = (item, targetDevices, volumes) => {
   return users.concat(volumeUsers.map(v => v.mountPath));
 };
 
+/**
+ * @component
+ *
+ * @param {object} props
+ * @param {string[]} props.users
+ */
 const DeviceUsage = ({ users }) => {
   return users.map((user, index) => <Chip key={index} isReadOnly>{user}</Chip>);
 };
@@ -64,9 +80,9 @@ const DeviceUsage = ({ users }) => {
  * @property {StorageDevice[]} targetDevices
  * @property {Volume[]} volumes
  *
- * @typedef {VolumeLocationSelectorTableBaseProps & ExpandableSelectorProps} VolumeLocationSelectorTable
+ * @typedef {VolumeLocationSelectorTableBaseProps & ExpandableSelectorProps} VolumeLocationSelectorTableProps
  *
- * @param {VolumeLocationSelectorTable} props
+ * @param {VolumeLocationSelectorTableProps} props
  */
 export default function VolumeLocationSelectorTable({
   devices,

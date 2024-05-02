@@ -37,6 +37,7 @@ import VolumeLocationSelectorTable from "~/components/storage/VolumeLocationSele
  * @typedef {import ("~/client/storage").VolumeTarget} VolumeTarget
  */
 
+// TRANSLATORS: Description of the dialog for changing the location of a file system.
 const DIALOG_DESCRIPTION = _("The file systems are allocated at the installation device by \
 default. Indicate a custom location to create the file system at a specific device.");
 
@@ -115,10 +116,6 @@ export default function VolumeLocationDialog({
     onAccept(newVolume);
   };
 
-  const isAcceptDisabled = () => {
-    return false;
-  };
-
   /** @type {(device: StorageDevice) => boolean} */
   const isDeviceSelectable = (device) => {
     return device.isDrive || ["md", "partition", "lvmLv"].includes(device.type);
@@ -128,6 +125,8 @@ export default function VolumeLocationDialog({
 
   return (
     <Popup
+      // TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
+      // by a mount path (e.g., /home).
       title={sprintf(_("Location for %s file system"), volumeLabel(volume))}
       description={DIALOG_DESCRIPTION}
       inlineSize="large"
@@ -155,8 +154,8 @@ export default function VolumeLocationDialog({
               id="new_partition"
               name="target"
               label={_("Create a new partition")}
-              description={_("The file system will be allocated as a new partition at the \
-selected disk.")}
+              description={_("The file system will be allocated as a new partition at the selected \
+disk.")}
               isChecked={target === "NEW_PARTITION"}
               isDisabled={!targets.includes("NEW_PARTITION")}
               onChange={() => setTarget("NEW_PARTITION")}
@@ -175,7 +174,11 @@ file system will be created as a logical volume.")}
               id="format"
               name="target"
               label={_("Format the device")}
-              description={sprintf(_("The selected device will be formatted as %s file system."), volume.fsType)}
+              description={
+                // TRANSLATORS: %s is replaced by a file system type (e.g., Ext4).
+                sprintf(_("The selected device will be formatted as %s file system."),
+                        volume.fsType)
+              }
               isChecked={target === "DEVICE"}
               isDisabled={!targets.includes("DEVICE")}
               onChange={() => setTarget("DEVICE")}
@@ -184,7 +187,8 @@ file system will be created as a logical volume.")}
               id="mount"
               name="target"
               label={_("Mount the file system")}
-              description={_("The current file system on the selected device will be mounted without formatting the device.")}
+              description={_("The current file system on the selected device will be mounted \
+without formatting the device.")}
               isChecked={target === "FILESYSTEM"}
               isDisabled={!targets.includes("FILESYSTEM")}
               onChange={() => setTarget("FILESYSTEM")}
@@ -193,7 +197,7 @@ file system will be created as a logical volume.")}
         </div>
       </Form>
       <Popup.Actions>
-        <Popup.Confirm form="volume-location-form" type="submit" isDisabled={isAcceptDisabled()} />
+        <Popup.Confirm form="volume-location-form" type="submit" />
         <Popup.Cancel onClick={onCancel} />
       </Popup.Actions>
     </Popup>
