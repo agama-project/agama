@@ -73,13 +73,19 @@ export default function EncryptionSettingsDialog({
   const [method, setMethod] = useState(methodProp);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [validSettings, setValidSettings] = useState(true);
+  const [wasLoading, setWasLoading] = useState(isLoading);
   const formId = "encryptionSettingsForm";
 
-  // refresh the state when the real values are loaded
-  if (method === "" && methodProp !== "") { setMethod(methodProp) }
-  if (password === "" && passwordProp !== "") {
-    setPassword(passwordProp);
-    setIsEnabled(true);
+  // reset the settings only after loading is finished
+  if (isLoading && !wasLoading) { setWasLoading(true) }
+  if (!isLoading && wasLoading) {
+    setWasLoading(false);
+    // refresh the state when the real values are loaded
+    if (method !== methodProp) { setMethod(methodProp) }
+    if (password !== passwordProp) {
+      setPassword(passwordProp);
+      setIsEnabled(passwordProp?.length > 0);
+    }
   }
 
   useEffect(() => {
