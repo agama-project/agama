@@ -106,6 +106,7 @@ beforeEach(() => {
       installationDevices: [sda, sdb]
     },
     availableDevices: [],
+    volumeDevices: [],
     encryptionMethods: [],
     volumeTemplates: [],
     onChange: jest.fn()

@@ -183,10 +183,10 @@ beforeEach(() => {
   props = {
     volumes: [rootVolume, swapVolume],
     templates: [],
-    devices: [],
-    system: [sda],
+    availableDevices: [],
+    volumeDevices: [sda],
     target: "DISK",
-    targetDevice: undefined,
+    targetDevices: [],
     configureBoot: false,
     bootDevice: undefined,
     defaultBootDevice: undefined,
