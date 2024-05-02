@@ -130,6 +130,7 @@ export default function VolumeLocationDialog({
       title={sprintf(_("Location for %s file system"), volumeLabel(volume))}
       description={DIALOG_DESCRIPTION}
       inlineSize="large"
+      blockSize="large"
       isOpen={isOpen}
       className="location-layout"
       {...props}
@@ -150,7 +151,7 @@ export default function VolumeLocationDialog({
           />
         </FormReadOnlyField>
         <FormGroup label={_("Select how to allocate the file system")}>
-          <div className="stack small">
+          <div className="stack">
             <Radio
               id="new_partition"
               name="target"

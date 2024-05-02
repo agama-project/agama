@@ -3,10 +3,6 @@
   margin-block-end: var(--stack-gutter);
 }
 
-.stack.small {
-  --stack-gutter: var(--spacer-smaller);
-}
-
 .flex-stack {
   display: flex;
   flex-direction: column;
@@ -39,6 +35,7 @@
   }
 
   form > div:first-child {
+    min-block-size: 120px;
     overflow-y: auto;
   }
 
@@ -47,15 +44,12 @@
   }
 }
 
+// FIXME: Teporary solution to hide expand button. The button should be removed instead.
 .location-layout table button[id^="expand-toggle"] {
   display: none;
 }
 
 .location-layout table tbody tr:not(:first-child) {
-  td:nth-child(2) {
-    padding-inline-start: 2ch;
-  }
-
   td:nth-child(3) {
     padding-inline-start: 5ch;
   }

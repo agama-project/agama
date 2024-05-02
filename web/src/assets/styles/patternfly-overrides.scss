@@ -268,8 +268,12 @@ ul {
   vertical-align: middle;
 }
 
+.pf-v5-c-radio {
+  align-items: center;
+}
+
 .pf-v5-c-radio__label {
-  font-size: var(--fs-large);
+  font-size: var(--pf-v5-c-form__label--FontSize);
 }
 
 @media screen and (width <= 768px) {

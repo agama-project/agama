@@ -757,8 +757,8 @@ export default function VolumeDialog({
   return (
     /** @fixme blockSize medium is too big and small is too small. */
     <Popup title={title} isOpen={isOpen} blockSize="medium" inlineSize="medium">
-      <VolumeAlert volume={state.volume} />
       <Form id="volume-form" onSubmit={submitForm}>
+        <VolumeAlert volume={state.volume} />
         <MountPathField
           value={mountPath}
           isReadOnly={!isMountPathEditable()}
