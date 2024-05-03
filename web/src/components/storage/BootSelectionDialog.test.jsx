@@ -26,6 +26,12 @@ import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { BootSelectionDialog } from "~/components/storage";
 
+/**
+ * @typedef {import("./BootSelectionDialog").BootSelectionDialogProps} BootSelectionDialogProps
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ */
+
+/** @type {StorageDevice} */
 const sda = {
   sid: 59,
   isDrive: true,
@@ -40,6 +46,7 @@ const sda = {
   sdCard: true,
   active: true,
   name: "/dev/sda",
+  description: "",
   size: 1024,
   recoverableSize: 0,
   systems : [],
@@ -47,6 +54,7 @@ const sda = {
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
+/** @type {StorageDevice} */
 const sdb = {
   sid: 62,
   isDrive: true,
@@ -61,6 +69,7 @@ const sdb = {
   sdCard: false,
   active: true,
   name: "/dev/sdb",
+  description: "",
   size: 2048,
   recoverableSize: 0,
   systems : [],
@@ -68,6 +77,7 @@ const sdb = {
   udevPaths: ["pci-0000:00-19"]
 };
 
+/** @type {StorageDevice} */
 const sdc = {
   sid: 63,
   isDrive: true,
@@ -82,6 +92,7 @@ const sdc = {
   sdCard: false,
   active: true,
   name: "/dev/sdc",
+  description: "",
   size: 2048,
   recoverableSize: 0,
   systems : [],
@@ -89,6 +100,7 @@ const sdc = {
   udevPaths: ["pci-0000:00-19"]
 };
 
+/** @type {BootSelectionDialogProps} */
 let props;
 
 describe("BootSelectionDialog", () => {
@@ -96,7 +108,9 @@ describe("BootSelectionDialog", () => {
     props = {
       isOpen: true,
       configureBoot: false,
-      devices: [sda, sdb, sdc],
+      availableDevices: [sda, sdb, sdc],
+      bootDevice: undefined,
+      defaultBootDevice: undefined,
       onCancel: jest.fn(),
       onAccept: jest.fn()
     };
