@@ -57,7 +57,9 @@ const FilesystemLabel = ({ item }) => {
   if (!device) return null;
 
   const label = device.filesystem?.label;
-  if (label) return <Tag variant="gray-highlight"><b>{label}</b></Tag>;
+  if (!label) return null;
+
+  return <Tag variant="gray-highlight"><b>{label}</b></Tag>;
 };
 
 /**
