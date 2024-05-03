@@ -113,7 +113,13 @@ const stringToIPInt = (text) => {
  * @param {IPAddress} addr
  * @return {string}
  */
-const formatIp = addr => `${addr.address}/${addr.prefix}`;
+const formatIp = (addr) => {
+  if (addr.prefix === undefined) {
+    return `${addr.address}`;
+  } else {
+    return `${addr.address}/${addr.prefix}`;
+  }
+};
 
 export {
   isValidIp,

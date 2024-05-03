@@ -306,9 +306,7 @@ const localConnection = (location = window.location) => {
   // forced local behavior
   if (process.env.LOCAL_CONNECTION === "1") return true;
 
-  // when running in a development server use the COCKPIT_TARGET_URL value
-  // (a proxy is used) otherwise use the page URL from the browser
-  const hostname = process.env.WEBPACK_SERVE ? (new URL(COCKPIT_TARGET_URL)).hostname : location.hostname;
+  const hostname = location.hostname;
 
   // using the loopback device? (hostname or IP address)
   return hostname === "localhost" || hostname.startsWith("127.");

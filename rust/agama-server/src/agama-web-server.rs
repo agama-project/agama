@@ -1,8 +1,18 @@
+use std::{
+    fs,
+    io::{self, Write},
+    os::unix::fs::OpenOptionsExt,
+    path::{Path, PathBuf},
+    pin::Pin,
+    process::{ExitCode, Termination},
+};
+
 use agama_lib::connection_to;
 use agama_server::{
     l10n::helpers,
-    web::{self, run_monitor},
+    web::{self, generate_token, run_monitor},
 };
+use anyhow::Context;
 use axum::{
     extract::Request as AxumRequest,
     http::{Request, Response},
@@ -14,13 +24,13 @@ use hyper::body::Incoming;
 use hyper_util::rt::{TokioExecutor, TokioIo};
 use hyper_util::server::conn::auto::Builder;
 use openssl::ssl::{Ssl, SslAcceptor, SslFiletype, SslMethod};
-use std::process::{ExitCode, Termination};
-use std::{path::PathBuf, pin::Pin};
 use tokio::sync::broadcast::channel;
 use tokio_openssl::SslStream;
 use tower::Service;
 use tracing_subscriber::prelude::*;
 use utoipa::OpenApi;
+
+const DEFAULT_WEB_UI_DIR: &str = "/usr/share/agama/web_ui";
 
 #[derive(Subcommand, Debug)]
 enum Commands {
@@ -38,6 +48,17 @@ enum Commands {
 struct Cli {
     #[command(subcommand)]
     pub command: Commands,
+}
+
+fn find_web_ui_dir() -> PathBuf {
+    if let Ok(home) = std::env::var("HOME") {
+        let path = Path::new(&home).join(".local/share/agama");
+        if path.exists() {
+            return path;
+        }
+    }
+
+    Path::new(DEFAULT_WEB_UI_DIR).into()
 }
 
 #[derive(Args, Debug)]
@@ -71,6 +92,11 @@ struct ServeArgs {
         help = "The D-Bus address for connecting to the Agama service"
     )]
     dbus_address: String,
+    // Directory containing the web UI code.
+    #[arg(long)]
+    web_ui_dir: Option<PathBuf>,
+    #[arg(long)]
+    generate_token: Option<PathBuf>,
 }
 
 impl ServeArgs {
@@ -267,16 +293,21 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
 /// Start serving the API.
 /// `options`: command-line arguments.
 async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
-    let journald = tracing_journald::layer().expect("could not connect to journald");
+    let journald = tracing_journald::layer().context("could not connect to journald")?;
     tracing_subscriber::registry().with(journald).init();
 
     let (tx, _) = channel(16);
     run_monitor(tx.clone()).await?;
 
     let config = web::ServiceConfig::load()?;
-    let dbus = connection_to(&args.dbus_address).await?;
-    let service = web::service(config, tx, dbus).await?;
 
+    if let Some(token_file) = args.generate_token.clone() {
+        write_token(&token_file, &config.jwt_secret).context("could not create the token file")?;
+    }
+
+    let dbus = connection_to(&args.dbus_address).await?;
+    let web_ui_dir = args.web_ui_dir.clone().unwrap_or(find_web_ui_dir());
+    let service = web::service(config, tx, dbus, web_ui_dir).await?;
     // TODO: Move elsewhere? Use a singleton? (It would be nice to use the same
     // generated self-signed certificate on both ports.)
     let ssl_acceptor = if let Ok(ssl_acceptor) = args.ssl_acceptor() {
@@ -318,6 +349,17 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
         Commands::Serve(options) => serve_command(options).await,
         Commands::Openapi => openapi_command(),
     }
+}
+
+fn write_token(path: &PathBuf, secret: &str) -> io::Result<()> {
+    let token = generate_token(secret);
+    let mut file = fs::OpenOptions::new()
+        .create(true)
+        .write(true)
+        .mode(0o400)
+        .open(path)?;
+    file.write_all(token.as_bytes())?;
+    Ok(())
 }
 
 /// Represents the result of execution.

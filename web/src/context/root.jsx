@@ -19,23 +19,23 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
+import { AuthProvider } from "./auth";
 
-import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+/**
+ * Combines all application providers.
+ *
+ * @param {object} props
+ * @param {React.ReactNode} [props.children] - content to display within the provider.
+ */
+function RootProviders({ children }) {
+  return (
+    <AuthProvider>
+      {children}
+    </AuthProvider>
+  );
+}
 
-import PatternGroup from "./PatternGroup";
-
-describe("PatternGroup", () => {
-  const name = "Pattern name";
-  const content = "Just a children content";
-
-  it("displays the pattern name and the content", async () => {
-    plainRender(<PatternGroup name={name}>{content}</PatternGroup>);
-
-    // the name is displayed
-    screen.getByText(name);
-    // the content is displayed
-    screen.getByText(content);
-  });
-});
+export { RootProviders };

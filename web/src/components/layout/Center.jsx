@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 
 /**
@@ -42,7 +44,8 @@ import React from "react";
  *     - https://www.w3.org/TR/selectors-4/#relational
  *     - https://ishadeed.com/article/css-has-parent-selector/
  *
- * @param {React.ReactNode} [props.children]
+ * @param {object} props
+ * @param {React.ReactNode} props.children
  */
 const Center = ({ children }) => (
   <div className="vertically-centered">

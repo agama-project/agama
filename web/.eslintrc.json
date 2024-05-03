@@ -36,7 +36,7 @@
         "no-var": "error",
         "no-multi-str": "off",
         "no-use-before-define": "off",
-        "@typescript-eslint/no-unused-vars": ["warn", { "ignoreRestSiblings": true }],
+        "@typescript-eslint/no-unused-vars": "off",
         "@typescript-eslint/no-use-before-define": "warn",
         "@typescript-eslint/ban-ts-comment": "off",
         "lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }],
@@ -78,7 +78,6 @@
     ],
     "globals": {
         "require": false,
-        "module": false,
-        "COCKPIT_TARGET_URL": "readonly"
+        "module": false
     }
 }

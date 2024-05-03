@@ -2,7 +2,7 @@ use curl;
 use serde_json;
 use std::io;
 use thiserror::Error;
-use zbus;
+use zbus::{self, zvariant};
 
 #[derive(Error, Debug)]
 pub enum ServiceError {
@@ -10,6 +10,10 @@ pub enum ServiceError {
     DBus(#[from] zbus::Error),
     #[error("Could not connect to Agama bus at '{0}': {1}")]
     DBusConnectionError(String, #[source] zbus::Error),
+    #[error("D-Bus protocol error: {0}")]
+    DBusProtocol(#[from] zbus::fdo::Error),
+    #[error("Unexpected type on D-Bus '{0}'")]
+    ZVariant(#[from] zvariant::Error),
     // it's fine to say only "Error" because the original
     // specific error will be printed too
     #[error("Error: {0}")]
@@ -22,6 +26,8 @@ pub enum ServiceError {
     UnknownPatterns(Vec<String>),
     #[error("Could not perform action '{0}'")]
     UnsuccessfulAction(String),
+    #[error("Unknown installation phase: '{0}")]
+    UnknownInstallationPhase(u32),
 }
 
 #[derive(Error, Debug)]

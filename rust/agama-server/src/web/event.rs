@@ -1,15 +1,68 @@
-use agama_lib::{progress::Progress, software::SelectedBy};
+use crate::{l10n::web::LocaleConfig, network::model::NetworkChange};
+use agama_lib::{
+    manager::InstallationPhase, product::RegistrationRequirement, progress::Progress,
+    software::SelectedBy, users::FirstUser,
+};
 use serde::Serialize;
 use std::collections::HashMap;
 use tokio::sync::broadcast::{Receiver, Sender};
 
-#[derive(Clone, Serialize)]
+use super::common::Issue;
+
+#[derive(Clone, Debug, Serialize)]
 #[serde(tag = "type")]
 pub enum Event {
-    LocaleChanged { locale: String },
-    Progress(Progress),
-    ProductChanged { id: String },
-    PatternsChanged(HashMap<String, SelectedBy>),
+    L10nConfigChanged(LocaleConfig),
+    LocaleChanged {
+        locale: String,
+    },
+    Progress {
+        service: String,
+        #[serde(flatten)]
+        progress: Progress,
+    },
+    ProductChanged {
+        id: String,
+    },
+    RegistrationRequirementChanged {
+        requirement: RegistrationRequirement,
+    },
+    RegistrationChanged,
+    FirstUserChanged(FirstUser),
+    RootChanged {
+        password: Option<bool>,
+        sshkey: Option<String>,
+    },
+    NetworkChange {
+        #[serde(flatten)]
+        change: NetworkChange,
+    },
+    // TODO: it should include the full software proposal or, at least,
+    // all the relevant changes.
+    SoftwareProposalChanged {
+        patterns: HashMap<String, SelectedBy>,
+    },
+    QuestionsChanged,
+    InstallationPhaseChanged {
+        phase: InstallationPhase,
+    },
+    BusyServicesChanged {
+        services: Vec<String>,
+    },
+    ServiceStatusChanged {
+        service: String,
+        status: u32,
+    },
+    IssuesChanged {
+        service: String,
+        path: String,
+        issues: Vec<Issue>,
+    },
+    ValidationChanged {
+        service: String,
+        path: String,
+        errors: Vec<String>,
+    },
 }
 
 pub type EventsSender = Sender<Event>;

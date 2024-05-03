@@ -31,11 +31,12 @@ const networksFromValues = (networks) => Object.values(networks).flat();
 const baseHiddenNetwork = { ssid: undefined, hidden: true };
 
 function WifiSelector({ isOpen = false, onClose }) {
-  const client = useInstallerClient();
+  const { network: client } = useInstallerClient();
   const [networks, setNetworks] = useState([]);
   const [showHiddenForm, setShowHiddenForm] = useState(false);
+  const [devices, setDevices] = useState([]);
   const [connections, setConnections] = useState([]);
-  const [activeConnections, setActiveConnections] = useState(client.network.activeConnections());
+  const [accessPoints, setAccessPoints] = useState([]);
   const [selectedNetwork, setSelectedNetwork] = useState(null);
   const [activeNetwork, setActiveNetwork] = useState(null);
 
@@ -45,14 +46,16 @@ function WifiSelector({ isOpen = false, onClose }) {
   };
 
   useEffect(() => {
-    client.network.connections().then(setConnections);
-  }, [client.network]);
+    client.devices().then(setDevices);
+    client.connections().then(setConnections);
+    client.accessPoints().then(setAccessPoints);
+  }, [client]);
 
   useEffect(() => {
     const loadNetworks = async () => {
       const knownSsids = [];
 
-      return client.network.accessPoints()
+      return accessPoints
         .sort((a, b) => b.strength - a.strength)
         .reduce((networks, ap) => {
           // Do not include networks without SSID
@@ -63,11 +66,12 @@ function WifiSelector({ isOpen = false, onClose }) {
           const network = {
             ...ap,
             settings: connections.find(c => c.wireless?.ssid === ap.ssid),
-            connection: activeConnections.find(c => c.id === ap.ssid)
+            device: devices.find(c => c.connection === ap.ssid),
+            error: undefined
           };
 
           // Group networks
-          if (network.connection) {
+          if (network.device) {
             networks.connected.push(network);
           } else if (network.settings) {
             networks.configured.push(network);
@@ -83,50 +87,39 @@ function WifiSelector({ isOpen = false, onClose }) {
 
     loadNetworks().then((data) => {
       setNetworks(data);
-      setActiveNetwork(networksFromValues(data).find(d => d.connection));
+      setActiveNetwork(networksFromValues(data).find(d => d.device));
     });
-  }, [client.network, connections, activeConnections, isOpen]);
+  }, [client, connections, devices, accessPoints, isOpen]);
 
   useEffect(() => {
-    return client.network.onNetworkEvent(({ type, payload }) => {
+    return client.onNetworkChange(({ type, payload }) => {
       switch (type) {
-        case NetworkEventTypes.CONNECTION_ADDED: {
-          setConnections(conns => [...conns, payload]);
-          break;
-        }
-
-        case NetworkEventTypes.CONNECTION_UPDATED: {
-          setConnections(conns => {
-            const newConnections = conns.filter(c => c.id !== payload.id);
-            return [...newConnections, payload];
+        case NetworkEventTypes.DEVICE_ADDED: {
+          setDevices((devs) => {
+            const newDevices = devs.filter((d) => d.name !== payload.name);
+            return [...newDevices, client.fromApiDevice(payload)];
           });
           break;
         }
 
-        case NetworkEventTypes.CONNECTION_REMOVED: {
-          setConnections(conns => conns.filter(c => c.path !== payload.path));
-          break;
-        }
-
-        case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
-          setActiveConnections(conns => [...conns, payload]);
-          break;
-        }
-
-        case NetworkEventTypes.ACTIVE_CONNECTION_UPDATED: {
-          setActiveConnections(conns => {
-            const newConnections = conns.filter(c => c.id !== payload.id);
-            return [...newConnections, payload];
+        case NetworkEventTypes.DEVICE_UPDATED: {
+          const [name, data] = payload;
+          if (data.state === "failed") {
+            selectedNetwork.error = "Failed";
+          }
+          setDevices(devs => {
+            const newDevices = devs.filter((d) => d.name !== name);
+            return [...newDevices, client.fromApiDevice(data)];
           });
           break;
         }
 
-        case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
-          setActiveConnections(conns => conns.filter(c => c.id !== payload.id));
-          if (selectedNetwork?.settings?.id === payload.id) switchSelectedNetwork(null);
+        case NetworkEventTypes.DEVICE_REMOVED: {
+          setDevices(devs => devs.filter((d) => d.name !== payload));
           break;
         }
       }
+      client.connections().then(setConnections);
     });
   });
 
@@ -145,7 +138,7 @@ function WifiSelector({ isOpen = false, onClose }) {
         availableNetworks={networks}
         onSelectionCallback={(network) => {
           switchSelectedNetwork(network);
-          if (network.settings && !network.connection) {
+          if (network.settings && !network.device) {
             client.network.connectTo(network.settings);
           }
         }}

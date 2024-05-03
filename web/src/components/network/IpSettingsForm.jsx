@@ -35,15 +35,14 @@ const METHODS = {
 
 const usingDHCP = (method) => method === METHODS.AUTO;
 
-export default function IpSettingsForm({ connection, onClose }) {
+export default function IpSettingsForm({ connection, onClose, onSubmit }) {
   const client = useInstallerClient();
-  const { ipv4 = {} } = connection;
-  const [addresses, setAddresses] = useState(ipv4.addresses);
-  const [nameServers, setNameServers] = useState(ipv4.nameServers.map(a => {
+  const [addresses, setAddresses] = useState(connection.addresses);
+  const [nameservers, setNameservers] = useState(connection.nameservers.map(a => {
     return { address: a };
   }));
-  const [method, setMethod] = useState(ipv4.method || "auto");
-  const [gateway, setGateway] = useState(ipv4.gateway || "");
+  const [method, setMethod] = useState(connection.method4);
+  const [gateway, setGateway] = useState(connection.gateway4);
   const [errors, setErrors] = useState({});
 
   const isSetAsInvalid = field => Object.keys(errors).includes(field);
@@ -92,26 +91,25 @@ export default function IpSettingsForm({ connection, onClose }) {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const onSubmit = e => {
+  const onSubmitForm = e => {
     e.preventDefault();
 
     const sanitizedAddresses = cleanAddresses(addresses);
-    const sanitizedNameServers = cleanAddresses(nameServers);
+    const sanitizedNameservers = cleanAddresses(nameservers);
 
     if (!validate(sanitizedAddresses)) return;
 
     // TODO: deal with DNS servers
     const updatedConnection = {
       ...connection,
-      ipv4: {
-        addresses: sanitizedAddresses,
-        method,
-        gateway,
-        nameServers: sanitizedNameServers.map(s => s.address)
-      }
+      addresses: sanitizedAddresses,
+      method4: method,
+      gatewa4: gateway,
+      nameservers: sanitizedNameservers.map(s => s.address)
     };
 
     client.network.updateConnection(updatedConnection)
+      .then(onSubmit)
       .then(onClose)
       // TODO: better error reporting. By now, it sets an error for the whole connection.
       .catch(({ message }) => setErrors({ object: message }));
@@ -136,7 +134,7 @@ export default function IpSettingsForm({ connection, onClose }) {
       blockSize="medium"
     >
       {renderError("object")}
-      <Form id="edit-connection" onSubmit={onSubmit}>
+      <Form id="edit-connection" onSubmit={onSubmitForm}>
         <FormGroup fieldId="method" label={_("Mode")} isRequired>
           <FormSelect
             id="method"
@@ -174,7 +172,7 @@ export default function IpSettingsForm({ connection, onClose }) {
           />
         </FormGroup>
 
-        <DnsDataList servers={nameServers} updateDnsServers={setNameServers} />
+        <DnsDataList servers={nameservers} updateDnsServers={setNameservers} />
       </Form>
 
       <Popup.Actions>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,17 +20,20 @@
  */
 
 import React from "react";
-import { Section } from "~/components/core";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "./context/auth";
+import { AppProviders } from "./context/app";
 
-/**
- * Pattern group component
- * @component
- * @param {string} name name of the group
- * @param {JSX.Element} children the wrapped content with the patterns belonging to this group
- * @returns {JSX.Element}
- */
-export default function PatternGroup({ name, children }) {
+export default function Protected() {
+  const { isLoggedIn } = useAuth();
+
+  if (isLoggedIn !== true) {
+    return <Navigate to="/login" />;
+  }
+
   return (
-    <Section title={name}>{children}</Section>
+    <AppProviders>
+      <Outlet />
+    </AppProviders>
   );
 }

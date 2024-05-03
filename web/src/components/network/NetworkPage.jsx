@@ -19,13 +19,15 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useEffect, useState } from "react";
 import { Button, Skeleton } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
-import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
 import { If, Page, Section } from "~/components/core";
 import { ConnectionsTable, IpSettingsForm, NetworkPageMenu, WifiSelector } from "~/components/network";
+import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
 import { _ } from "~/i18n";
 
 /**
@@ -82,9 +84,8 @@ const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
  */
 export default function NetworkPage() {
   const { network: client } = useInstallerClient();
-  const [initialized, setInitialized] = useState(false);
-  const [ready, setReady] = useState(false);
-  const [connections, setConnections] = useState([]);
+  const [connections, setConnections] = useState(undefined);
+  const [devices, setDevices] = useState(undefined);
   const [selectedConnection, setSelectedConnection] = useState(null);
   const [wifiScanSupported, setWifiScanSupported] = useState(false);
   const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
@@ -93,75 +94,83 @@ export default function NetworkPage() {
   const closeWifiSelector = () => setWifiSelectorOpen(false);
 
   useEffect(() => {
-    client.setUp().then(() => setInitialized(true));
-  }, [client]);
-
-  useEffect(() => {
-    if (!initialized) return;
-
-    setWifiScanSupported(client.settings().wifiScanSupported);
-    setConnections(client.activeConnections());
-    setReady(true);
-  }, [client, initialized]);
-
-  useEffect(() => {
-    return client.onNetworkEvent(({ type, payload }) => {
+    return client.onNetworkChange(({ type, payload }) => {
       switch (type) {
-        case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
-          setConnections(conns => {
-            const newConnections = conns.filter(c => c.id !== payload.id);
-            return [...newConnections, payload];
+        case NetworkEventTypes.DEVICE_ADDED: {
+          setDevices((devs) => {
+            const newDevices = devs.filter((d) => d.name !== payload.name);
+            return [...newDevices, client.fromApiDevice(payload)];
           });
           break;
         }
 
-        case NetworkEventTypes.ACTIVE_CONNECTION_UPDATED: {
-          setConnections(conns => {
-            const newConnections = conns.filter(c => c.id !== payload.id);
-            return [...newConnections, payload];
+        case NetworkEventTypes.DEVICE_UPDATED: {
+          const [name, data] = payload;
+          setDevices(devs => {
+            const newDevices = devs.filter((d) => d.name !== name);
+            return [...newDevices, client.fromApiDevice(data)];
           });
           break;
         }
 
-        case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
-          setConnections(conns => conns.filter(c => c.id !== payload.id));
+        case NetworkEventTypes.DEVICE_REMOVED: {
+          setDevices(devs => devs.filter((d) => d.name !== payload));
           break;
-        }
-
-        case NetworkEventTypes.SETTINGS_UPDATED: {
-          setWifiScanSupported(payload.wifiScanSupported);
         }
       }
+      client.connections().then(setConnections);
     });
-  });
+  }, [client, devices]);
 
-  const selectConnection = ({ uuid }) => {
-    client.getConnection(uuid).then(setSelectedConnection);
+  useEffect(() => {
+    if (connections !== undefined) return;
+
+    client.settings().then((s) => setWifiScanSupported(s.wireless_enabled));
+    client.connections().then(setConnections);
+  }, [client, connections]);
+
+  useEffect(() => {
+    if (devices !== undefined) return;
+
+    client.devices().then(setDevices);
+  }, [client, devices]);
+
+  const selectConnection = ({ id }) => {
+    client.getConnection(id).then(setSelectedConnection);
   };
 
-  const forgetConnection = async ({ uuid }) => {
-    await client.deleteConnection(uuid);
+  const forgetConnection = async ({ id }) => {
+    await client.deleteConnection(id);
+    setConnections(undefined);
   };
 
-  const activeWiredConnections = connections.filter(c => c.type === ConnectionTypes.ETHERNET);
-  const activeWifiConnections = connections.filter(c => c.type === ConnectionTypes.WIFI);
+  const updateConnections = async () => {
+    setConnections(undefined);
+    setDevices(undefined);
+  };
+
+  const ready = (connections !== undefined) && (devices !== undefined);
 
   const WifiConnections = () => {
-    if (activeWifiConnections.length === 0) {
+    const wifiConnections = connections.filter(c => c.wireless);
+
+    if (wifiConnections.length === 0) {
       return (
         <NoWifiConnections wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
       );
     }
 
     return (
-      <ConnectionsTable connections={activeWifiConnections} onEdit={selectConnection} onForget={forgetConnection} />
+      <ConnectionsTable connections={wifiConnections} devices={devices} onEdit={selectConnection} onForget={forgetConnection} />
     );
   };
 
   const WiredConnections = () => {
-    if (activeWiredConnections.length === 0) return <NoWiredConnections />;
+    const wiredConnections = connections.filter(c => !c.wireless && (c.id !== "lo"));
 
-    return <ConnectionsTable connections={activeWiredConnections} onEdit={selectConnection} />;
+    if (wiredConnections.length === 0) return <NoWiredConnections />;
+
+    return <ConnectionsTable connections={wiredConnections} devices={devices} onEdit={selectConnection} />;
   };
 
   return (
@@ -187,7 +196,7 @@ export default function NetworkPage() {
       { /* TODO: improve the connections edition */}
       <If
         condition={selectedConnection}
-        then={<IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} />}
+        then={<IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} onSubmit={updateConnections} />}
       />
     </Page>
   );

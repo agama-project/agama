@@ -1,45 +1,14 @@
-# Agama Web-Based UI
+# Agama Web UI
 
-This Cockpit modules offers a UI to the [Agama service](file:../service). The code is based on
-[Cockpit's Starter Kit
-(b2379f7)](https://github.com/cockpit-project/starter-kit/tree/b2379f78e203aab0028d8548b39f5f0bd2b27d2a).
+The Agama web user interface is a React-based application that offers a user
+interface to the [Agama service](file:../service).
 
 ## Development
 
-There are basically two ways how to develop the Agama fronted. You can
-override the original Cockpit plugins with your own code in your `$HOME` directory
-or you can run a development server which works as a proxy and sends the Cockpit
-requests to a real Cockpit server.
-
-The advantage of using the development server is that you can use the
-[Hot Module Replacement](https://webpack.js.org/concepts/hot-module-replacement/)
-feature for automatically updating the code and stylesheet in the browser
-without reloading the page.
-
-### Overriding the Cockpit Plugin
-
-Cockpit searches for modules in the `$HOME/.local/share/cockpit` directory of the logged in user,
-which is really handy when working on a module. To make the module available to Cockpit, you can
-link your build folder (`dist`) or just rely on the `devel-install` task:
-
-```
-    make devel-install
-```
-
-Then you can visit the Agama module through the following URL:
-
-http://localhost:9090/cockpit/@localhost/agama/index.html.
-
-Bear in mind that if something goes wrong while building the application (e.g., the linter fails),
-the link will not be created.
-
-To automatically rebuild the sources after any change you can run
-
-```
-    npm run watch
-```
-
-*But do not forget that you have to reload the code in your browser manually after each change!*
+The easiest way to work on the Agama Web UI is to use the development server.
+The advantage is that you can use the [Hot Module Replacement] (https://
+webpack.js.org/concepts/hot-module-replacement/) feature for automatically
+updating the code and stylesheet in the browser without reloading the page.
 
 ### Using a development server
 
@@ -52,28 +21,48 @@ use this command:
 
 The extra `--open` option automatically opens the server page in your default
 web browser. In this case the server will use the `https://localhost:8080` URL
-and expects a running Cockpit instance at `https://localhost:9090`.
-
-At the first start the development server generates a self-signed SSL
-certificate, you have to accept it in the browser. The certificate is saved to
-disk and is used in the next runs so you do not have to accept it again.
+and expects a running `agama-web-server` at `https://localhost:9090`.
 
 This can work also remotely, with a Agama instance running in a different
 machine (a virtual machine as well). In that case run
 
 ```
-    COCKPIT_TARGET=<IP> npm run server -- --open
+    AGAMA_SERVER=https://<IP>:<port> npm run server -- --open
 ```
 
-Where  `COCKPIT_TARGET` is the IP address or hostname of the running Agama
-instance. This is especially useful if you use the Live ISO which does not contain
-any development tools, you can develop the web frontend easily from your workstation.
+Where  `AGAMA_SERVER` is the IP address, the hostname or the full URL of the
+running Agama server instance. This is especially useful if you use the Live ISO
+which does not contain any development tools, you can develop the web frontend
+easily from your workstation.
+
+Example of running from different machine:
+
+```
+  # backend machine
+  # using ip of machine instead of localhost is important to be network accessible
+  # second address is needed for SSL which is mandatory for remote access
+  agama-web-server serve --address :::3000 --address2 :::443
+
+  # frontend machine
+  # ESLINT=0 is useful to ignore linter problems during development
+  ESLINT=0 AGAMA_SERVER=https://10.100.1.1:3000 npm run server
+```
+
+### Debugging Hints
+
+There are several places to look when something does not work and requires debugging.
+The first place is the browser's console which can give
+some hints. The second location to check for errors or warnings is output of `npm run server`
+where you can find issues when communicating with the backend. And last but on least is
+journal on backend machine where is logged backend activity `journalctl -b`.
+If the journal does not contain the required info, you can inspect the D-Bus communication
+which can give hint about data flow. Command is `busctl monitor --address unix:path=/run/agama/bus`
 
 ### Special Environment Variables
 
-`COCKPIT_TARGET` - When running the development server set up a proxy to the
-specified Cockpit server. See the [using a development
-server](#using-a-development-server) section above.
+`AGAMA_SERVER` - When running the development server set up a proxy to
+the specified Agama web server. See the [using a development server]
+(#using-a-development-server) section above.
 
 `LOCAL_CONNECTION` - Force behaving as in a local connection, useful for
 development or testing some Agama features. For example the keyboard layout
@@ -112,7 +101,6 @@ you want a JavaScript file to be type-checked, please add a `// @ts-check` comme
 
 ### Links
 
-- [Cockpit developer documentation](https://cockpit-project.org/guide/latest/development)
 - [Webpack documentation](https://webpack.js.org/configuration/)
 - [PatternFly documentation](https://www.patternfly.org)
 - [Material Symbols (aka icons)](https://fonts.google.com/icons)

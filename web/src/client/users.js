@@ -21,12 +21,7 @@
 
 // @ts-check
 
-import DBusClient from "./dbus";
 import { WithValidation } from "./mixins";
-
-const USERS_SERVICE = "org.opensuse.Agama.Manager1";
-const USERS_IFACE = "org.opensuse.Agama.Users1";
-const USERS_PATH = "/org/opensuse/Agama/Users1";
 
 /**
 * @typedef {object} UserResult
@@ -40,6 +35,7 @@ const USERS_PATH = "/org/opensuse/Agama/Users1";
  * @property {string} userName - userName
  * @property {string} [password] - user password
  * @property {boolean} autologin - Whether autologin is enabled
+ * @property {object} data - additional user data
  */
 
 /**
@@ -56,10 +52,10 @@ const USERS_PATH = "/org/opensuse/Agama/Users1";
  */
 class UsersBaseClient {
   /**
-   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
+   * @param {import("./http").HTTPClient} client - HTTP client.
    */
-  constructor(address = undefined) {
-    this.client = new DBusClient(USERS_SERVICE, address);
+  constructor(client) {
+    this.client = client;
   }
 
   /**
@@ -68,9 +64,12 @@ class UsersBaseClient {
    * @return {Promise<User>}
    */
   async getUser() {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    const [fullName, userName, password, autologin] = proxy.FirstUser;
-    return { fullName, userName, password, autologin };
+    const response = await this.client.get("/users/first");
+    if (!response.ok) {
+      console.log("Failed to get first user config: ", response);
+      return { fullName: "", userName: "", password: "", autologin: false, data: {} };
+    }
+    return response.json();
   }
 
   /**
@@ -79,8 +78,13 @@ class UsersBaseClient {
    * @return {Promise<boolean>}
    */
   async isRootPasswordSet() {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    return proxy.RootPasswordSet;
+    const response = await this.client.get("/users/root");
+    if (!response.ok) {
+      console.log("Failed to get root config: ", response);
+      return false;
+    }
+    const config = await response.json();
+    return config.password;
   }
 
   /**
@@ -90,16 +94,9 @@ class UsersBaseClient {
    * @return {Promise<UserResult>} returns an object with the result and the issues found if error
    */
   async setUser(user) {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    const [result, issues] = await proxy.SetFirstUser(
-      user.fullName,
-      user.userName,
-      user.password,
-      user.autologin,
-      {}
-    );
+    const result = await this.client.put("/users/first", user);
 
-    return { result, issues };
+    return { result: result.ok, issues: [] }; // TODO: check how to handle issues and result. Maybe separate call to validate?
   }
 
   /**
@@ -108,9 +105,7 @@ class UsersBaseClient {
    * @return {Promise<boolean>} whether the operation was successful or not
    */
   async removeUser() {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    const result = await proxy.RemoveFirstUser();
-    return result === 0;
+    return (await this.client.delete("/users/first")).ok;
   }
 
   /**
@@ -120,9 +115,8 @@ class UsersBaseClient {
    * @return {Promise<boolean>} whether the operation was successful or not
    */
   async setRootPassword(password) {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    const result = await proxy.SetRootPassword(password, false);
-    return result === 0;
+    const response = await this.client.patch("/users/root", { password, password_encrypted: false });
+    return response.ok;
   }
 
   /**
@@ -131,9 +125,7 @@ class UsersBaseClient {
    * @return {Promise<boolean>} whether the operation was successful or not
    */
   async removeRootPassword() {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    const result = await proxy.RemoveRootPassword();
-    return result === 0;
+    return this.setRootPassword("");
   }
 
   /**
@@ -142,8 +134,13 @@ class UsersBaseClient {
    * @return {Promise<String>} SSH public key or an empty string if it is not set
    */
   async getRootSSHKey() {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    return proxy.RootSSHKey;
+    const response = await this.client.get("/users/root");
+    if (!response.ok) {
+      console.log("Failed to get root config: ", response);
+      return "";
+    }
+    const config = await response.json();
+    return config.sshkey;
   }
 
   /**
@@ -153,9 +150,8 @@ class UsersBaseClient {
    * @return {Promise<boolean>} whether the operation was successful or not
    */
   async setRootSSHKey(key) {
-    const proxy = await this.client.proxy(USERS_IFACE);
-    const result = await proxy.SetRootSSHKey(key);
-    return result === 0;
+    const response = await this.client.patch("/users/root", { sshkey: key });
+    return response.ok;
   }
 
   /**
@@ -165,16 +161,21 @@ class UsersBaseClient {
    * @return {import ("./dbus").RemoveFn} function to disable the callback
    */
   onUsersChange(handler) {
-    return this.client.onObjectChanged(USERS_PATH, USERS_IFACE, changes => {
-      if (changes.RootPasswordSet) {
+    return this.client.ws.onEvent((event) => {
+      if (event.type === "RootChanged") {
+        const res = {};
+        if (event.password !== null) {
+          res.rootPasswordSet = event.password;
+        }
+        if (event.sshkey !== null) {
+          res.rootSSHKey = event.sshkey;
+        }
         // @ts-ignore
-        return handler({ rootPasswordSet: changes.RootPasswordSet.v });
-      } else if (changes.RootSSHKey) {
-        return handler({ rootSSHKey: changes.RootSSHKey.v.toString() });
-      } else if (changes.FirstUser) {
+        return handler(res);
+      } else if (event.type === "FirstUserChanged") {
         // @ts-ignore
-        const [fullName, userName, password, autologin] = changes.FirstUser.v;
-        return handler({ firstUser: { fullName, userName, password, autologin } });
+        const { fullName, userName, password, autologin, data } = event;
+        return handler({ firstUser: { fullName, userName, password, autologin, data } });
       }
     });
   }
@@ -183,6 +184,6 @@ class UsersBaseClient {
 /**
  * Client to interact with the Agama users service
  */
-class UsersClient extends WithValidation(UsersBaseClient, USERS_PATH) { }
+class UsersClient extends WithValidation(UsersBaseClient, "/users/validation", "/org/opensuse/Agama/Users1") { }
 
 export { UsersClient };

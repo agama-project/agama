@@ -23,50 +23,84 @@ import React, { useEffect, useState } from "react";
 import { sprintf } from "sprintf-js";
 
 import { Em, Section, SectionSkeleton } from "~/components/core";
-import { ConnectionTypes } from "~/client/network";
 import { useInstallerClient } from "~/context/installer";
+import { NetworkEventTypes } from "~/client/network";
 import { formatIp } from "~/client/network/utils";
 import { _, n_ } from "~/i18n";
 
 export default function NetworkSection() {
   const { network: client } = useInstallerClient();
-  const [initialized, setInitialized] = useState(false);
-  const [connections, setConnections] = useState([]);
+  const [devices, setDevices] = useState(undefined);
 
   useEffect(() => {
-    client.setUp().then(() => setInitialized(true));
-  }, [client]);
+    return client.onNetworkChange(({ type, payload }) => {
+      switch (type) {
+        case NetworkEventTypes.DEVICE_ADDED: {
+          setDevices((devs) => {
+            const currentDevices = devs.filter((d) => d.name !== payload.name);
+            // only show connecting or connected devices
+            if (!payload.connection) return currentDevices;
 
-  useEffect(() => {
-    if (initialized) {
-      setConnections(client.activeConnections());
-    }
-  }, [client, initialized]);
+            return [...currentDevices, client.fromApiDevice(payload)];
+          });
+          break;
+        }
 
-  useEffect(() => {
-    if (!initialized) return;
+        case NetworkEventTypes.DEVICE_UPDATED: {
+          const [name, data] = payload;
+          setDevices(devs => {
+            const currentDevices = devs.filter((d) => d.name !== name);
+            // only show connecting or connected devices
+            if (!data.connection) return currentDevices;
+            return [...currentDevices, client.fromApiDevice(data)];
+          });
+          break;
+        }
 
-    return client.onNetworkEvent(() => {
-      setConnections(client.activeConnections());
+        case NetworkEventTypes.DEVICE_REMOVED: {
+          setDevices(devs => devs.filter((d) => d.name !== payload));
+          break;
+        }
+      }
     });
-  }, [client, initialized]);
+  }, [client, devices]);
 
+  useEffect(() => {
+    if (devices !== undefined) return;
+
+    client.devices().then(setDevices);
+  }, [client, devices]);
+
+  const nameFor = (device) => {
+    if (device.connection === undefined || device.connection.trim() === "") return device.name;
+
+    return device.connection;
+  };
+
+  const deviceSummary = (device) => {
+    if ((device?.addresses || []).length === 0) {
+      return (
+        <Em key={device.name}>{nameFor(device)}</Em>
+      );
+    } else {
+      return (
+        <Em key={device.name}>{nameFor(device)} - {device.addresses.map(formatIp).join(", ")}</Em>
+      );
+    }
+  };
   const Content = () => {
-    if (!initialized) return <SectionSkeleton />;
+    if (devices === undefined) return <SectionSkeleton />;
+    const activeDevices = devices.filter(d => d.connection);
+    const total = activeDevices.length;
 
-    const activeConnections = connections.filter(c => [ConnectionTypes.WIFI, ConnectionTypes.ETHERNET].includes(c.type));
+    if (total === 0) return _("No network devices detected");
 
-    if (activeConnections.length === 0) return _("No network connections detected");
-
-    const summary = activeConnections.map(connection => (
-      <Em key={connection.uuid}>{connection.id} - {connection.addresses.map(formatIp)}</Em>
-    ));
+    const summary = activeDevices.map(deviceSummary);
 
     const msg = sprintf(
-      // TRANSLATORS: header for the list of active network connections,
-      // %d is replaced by the number of active connections
-      n_("%d connection set:", "%d connections set:", activeConnections.length),
-      activeConnections.length
+      // TRANSLATORS: header for the list of connected devices,
+      // %d is replaced by the number of active devices
+      n_("%d device set:", "%d devices set:", total), total
     );
 
     return (
@@ -82,7 +116,7 @@ export default function NetworkSection() {
       // TRANSLATORS: page section title
       title={_("Network")}
       icon="settings_ethernet"
-      loading={!initialized}
+      loading={!devices}
       path="/network"
       id="network"
     >

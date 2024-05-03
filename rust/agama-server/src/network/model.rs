@@ -3,8 +3,11 @@
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //! agnostic from the real network service (e.g., NetworkManager).
 use crate::network::error::NetworkStateError;
-use agama_lib::network::types::{BondMode, DeviceType, SSID};
+use agama_lib::network::settings::{BondSettings, NetworkConnection, WirelessSettings};
+use agama_lib::network::types::{BondMode, DeviceState, DeviceType, Status, SSID};
 use cidr::IpInet;
+use serde::{Deserialize, Serialize};
+use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
 use std::{
     collections::HashMap,
     default::Default,
@@ -16,8 +19,29 @@ use thiserror::Error;
 use uuid::Uuid;
 use zbus::zvariant::Value;
 
-#[derive(Default, Clone, Debug)]
+#[derive(PartialEq)]
+pub struct StateConfig {
+    pub access_points: bool,
+    pub devices: bool,
+    pub connections: bool,
+    pub general_state: bool,
+}
+
+impl Default for StateConfig {
+    fn default() -> Self {
+        Self {
+            access_points: true,
+            devices: true,
+            connections: true,
+            general_state: true,
+        }
+    }
+}
+
+#[derive(Default, Clone, Debug, utoipa::ToSchema)]
 pub struct NetworkState {
+    pub general_state: GeneralState,
+    pub access_points: Vec<AccessPoint>,
     pub devices: Vec<Device>,
     pub connections: Vec<Connection>,
 }
@@ -25,10 +49,19 @@ pub struct NetworkState {
 impl NetworkState {
     /// Returns a NetworkState struct with the given devices and connections.
     ///
+    /// * `general_state`: General network configuration
+    /// * `access_points`: Access points to include in the state.
     /// * `devices`: devices to include in the state.
     /// * `connections`: connections to include in the state.
-    pub fn new(devices: Vec<Device>, connections: Vec<Connection>) -> Self {
+    pub fn new(
+        general_state: GeneralState,
+        access_points: Vec<AccessPoint>,
+        devices: Vec<Device>,
+        connections: Vec<Connection>,
+    ) -> Self {
         Self {
+            general_state,
+            access_points,
             devices,
             connections,
         }
@@ -79,6 +112,13 @@ impl NetworkState {
         self.connections.iter_mut().find(|c| c.id == id)
     }
 
+    /// Get a device by name as mutable
+    ///
+    /// * `name`: device name
+    pub fn get_device_mut(&mut self, name: &str) -> Option<&mut Device> {
+        self.devices.iter_mut().find(|c| c.name == name)
+    }
+
     pub fn get_controlled_by(&mut self, uuid: Uuid) -> Vec<&Connection> {
         let uuid = Some(uuid);
         self.connections
@@ -116,12 +156,35 @@ impl NetworkState {
     /// Removes a connection from the state.
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
-    pub fn remove_connection(&mut self, uuid: Uuid) -> Result<(), NetworkStateError> {
-        let Some(conn) = self.get_connection_by_uuid_mut(uuid) else {
-            return Err(NetworkStateError::UnknownConnection(uuid.to_string()));
+    pub fn remove_connection(&mut self, id: &str) -> Result<(), NetworkStateError> {
+        let Some(conn) = self.get_connection_mut(id) else {
+            return Err(NetworkStateError::UnknownConnection(id.to_string()));
         };
 
         conn.remove();
+        Ok(())
+    }
+
+    pub fn add_device(&mut self, device: Device) -> Result<(), NetworkStateError> {
+        self.devices.push(device);
+        Ok(())
+    }
+
+    pub fn update_device(&mut self, name: &str, device: Device) -> Result<(), NetworkStateError> {
+        let Some(old_device) = self.get_device_mut(name) else {
+            return Err(NetworkStateError::UnknownDevice(device.name.clone()));
+        };
+        *old_device = device;
+
+        Ok(())
+    }
+
+    pub fn remove_device(&mut self, name: &str) -> Result<(), NetworkStateError> {
+        let Some(position) = self.devices.iter().position(|d| &d.name == name) else {
+            return Err(NetworkStateError::UnknownDevice(name.to_string()));
+        };
+
+        self.devices.remove(position);
         Ok(())
     }
 
@@ -276,9 +339,8 @@ mod tests {
     fn test_remove_connection() {
         let mut state = NetworkState::default();
         let conn0 = Connection::new("eth0".to_string(), DeviceType::Ethernet);
-        let uuid = conn0.uuid;
         state.add_connection(conn0).unwrap();
-        state.remove_connection(uuid).unwrap();
+        state.remove_connection("eth0".as_ref()).unwrap();
         let found = state.get_connection("eth0").unwrap();
         assert!(found.is_removed());
     }
@@ -286,7 +348,7 @@ mod tests {
     #[test]
     fn test_remove_unknown_connection() {
         let mut state = NetworkState::default();
-        let error = state.remove_connection(Uuid::new_v4()).unwrap_err();
+        let error = state.remove_connection("unknown".as_ref()).unwrap_err();
         assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
     }
 
@@ -367,18 +429,56 @@ mod tests {
     }
 }
 
-/// Network device
-#[derive(Debug, Clone)]
-pub struct Device {
-    pub name: String,
-    pub type_: DeviceType,
+/// Network state
+#[serde_as]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct GeneralState {
+    pub hostname: String,
+    pub connectivity: bool,
+    pub wireless_enabled: bool,
+    pub networking_enabled: bool, // pub network_state: NMSTATE
 }
 
-/// Represents an availble network connection.
-#[derive(Debug, Clone, PartialEq)]
+/// Access Point
+#[serde_as]
+#[derive(Default, Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct AccessPoint {
+    #[serde_as(as = "DisplayFromStr")]
+    pub ssid: SSID,
+    pub hw_address: String,
+    pub strength: u8,
+    pub flags: u32,
+    pub rsn_flags: u32,
+    pub wpa_flags: u32,
+}
+
+/// Network device
+#[serde_as]
+#[skip_serializing_none]
+#[derive(Default, Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Device {
+    pub name: String,
+    #[serde(rename = "type")]
+    pub type_: DeviceType,
+    #[serde_as(as = "DisplayFromStr")]
+    pub mac_address: MacAddress,
+    pub ip_config: Option<IpConfig>,
+    // Connection.id
+    pub connection: Option<String>,
+    pub state: DeviceState,
+}
+
+/// Represents a known network connection.
+#[serde_as]
+#[skip_serializing_none]
+#[derive(Debug, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Connection {
     pub id: String,
     pub uuid: Uuid,
+    #[serde_as(as = "DisplayFromStr")]
     pub mac_address: MacAddress,
     pub firewall_zone: Option<String>,
     pub ip_config: IpConfig,
@@ -461,7 +561,92 @@ impl Default for Connection {
     }
 }
 
-#[derive(Default, Debug, PartialEq, Clone)]
+impl TryFrom<NetworkConnection> for Connection {
+    type Error = NetworkStateError;
+
+    fn try_from(conn: NetworkConnection) -> Result<Self, Self::Error> {
+        let id = conn.clone().id;
+        let mut connection = Connection::new(id, conn.device_type());
+
+        if let Some(method) = conn.clone().method4 {
+            let method: Ipv4Method = method.parse().unwrap();
+            connection.ip_config.method4 = method;
+        }
+
+        if let Some(method) = conn.method6 {
+            let method: Ipv6Method = method.parse().unwrap();
+            connection.ip_config.method6 = method;
+        }
+
+        if let Some(status) = conn.status {
+            connection.status = status;
+        }
+
+        if let Some(wireless_config) = conn.wireless {
+            let config = WirelessConfig::try_from(wireless_config)?;
+            connection.config = config.into();
+        }
+
+        if let Some(bond_config) = conn.bond {
+            let config = BondConfig::try_from(bond_config)?;
+            connection.config = config.into();
+        }
+
+        connection.ip_config.addresses = conn.addresses;
+        connection.ip_config.nameservers = conn.nameservers;
+        connection.ip_config.gateway4 = conn.gateway4;
+        connection.ip_config.gateway6 = conn.gateway6;
+        connection.interface = conn.interface;
+
+        Ok(connection)
+    }
+}
+
+impl TryFrom<Connection> for NetworkConnection {
+    type Error = NetworkStateError;
+
+    fn try_from(conn: Connection) -> Result<Self, Self::Error> {
+        let id = conn.clone().id;
+        let mac = conn.mac_address.to_string();
+        let method4 = Some(conn.ip_config.method4.to_string());
+        let method6 = Some(conn.ip_config.method6.to_string());
+        let mac_address = (!mac.is_empty()).then_some(mac);
+        let nameservers = conn.ip_config.nameservers;
+        let addresses = conn.ip_config.addresses;
+        let gateway4 = conn.ip_config.gateway4;
+        let gateway6 = conn.ip_config.gateway6;
+        let interface = conn.interface;
+        let status = Some(conn.status);
+
+        let mut connection = NetworkConnection {
+            id,
+            status,
+            method4,
+            method6,
+            gateway4,
+            gateway6,
+            nameservers,
+            mac_address,
+            interface,
+            addresses,
+            ..Default::default()
+        };
+
+        match conn.config {
+            ConnectionConfig::Wireless(config) => {
+                connection.wireless = Some(WirelessSettings::try_from(config)?);
+            }
+            ConnectionConfig::Bond(config) => {
+                connection.bond = Some(BondSettings::try_from(config)?);
+            }
+            _ => {}
+        }
+
+        Ok(connection)
+    }
+}
+
+#[derive(Default, Debug, PartialEq, Clone, Serialize)]
 pub enum ConnectionConfig {
     #[default]
     Ethernet,
@@ -474,7 +659,7 @@ pub enum ConnectionConfig {
     Infiniband(InfinibandConfig),
 }
 
-#[derive(Default, Debug, PartialEq, Clone)]
+#[derive(Default, Debug, PartialEq, Clone, Serialize)]
 pub enum PortConfig {
     #[default]
     None,
@@ -497,7 +682,7 @@ impl From<WirelessConfig> for ConnectionConfig {
 #[error("Invalid MAC address: {0}")]
 pub struct InvalidMacAddress(String);
 
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize)]
 pub enum MacAddress {
     MacAddress(macaddr::MacAddr6),
     Preserve,
@@ -557,19 +742,15 @@ impl From<InvalidMacAddress> for zbus::fdo::Error {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub enum Status {
-    #[default]
-    Up,
-    Down,
-    Removed,
-}
-
-#[derive(Default, Debug, PartialEq, Clone)]
+#[skip_serializing_none]
+#[derive(Default, Debug, PartialEq, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IpConfig {
     pub method4: Ipv4Method,
     pub method6: Ipv6Method,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub addresses: Vec<IpInet>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub nameservers: Vec<IpAddr>,
     pub gateway4: Option<IpAddr>,
     pub gateway6: Option<IpAddr>,
@@ -577,11 +758,16 @@ pub struct IpConfig {
     pub routes6: Option<Vec<IpRoute>>,
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[skip_serializing_none]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub struct MatchConfig {
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub driver: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub interface: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub path: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub kernel: Vec<String>,
 }
 
@@ -589,7 +775,8 @@ pub struct MatchConfig {
 #[error("Unknown IP configuration method name: {0}")]
 pub struct UnknownIpMethod(String);
 
-#[derive(Debug, Default, Copy, Clone, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub enum Ipv4Method {
     #[default]
     Disabled = 0,
@@ -624,7 +811,8 @@ impl FromStr for Ipv4Method {
     }
 }
 
-#[derive(Debug, Default, Copy, Clone, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub enum Ipv6Method {
     #[default]
     Disabled = 0,
@@ -671,10 +859,13 @@ impl From<UnknownIpMethod> for zbus::fdo::Error {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IpRoute {
     pub destination: IpInet,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub next_hop: Option<IpAddr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub metric: Option<u32>,
 }
 
@@ -697,7 +888,7 @@ impl From<&IpRoute> for HashMap<&str, Value<'_>> {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub enum VlanProtocol {
     #[default]
     IEEE802_1Q,
@@ -730,22 +921,30 @@ impl fmt::Display for VlanProtocol {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub struct VlanConfig {
     pub parent: String,
     pub id: u32,
     pub protocol: VlanProtocol,
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[serde_as]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct WirelessConfig {
     pub mode: WirelessMode,
+    #[serde_as(as = "DisplayFromStr")]
     pub ssid: SSID,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
     pub security: SecurityProtocol,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub band: Option<WirelessBand>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub channel: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub bssid: Option<macaddr::MacAddr6>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub wep_security: Option<WEPSecurity>,
     pub hidden: bool,
 }
@@ -761,7 +960,37 @@ impl TryFrom<ConnectionConfig> for WirelessConfig {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq)]
+impl TryFrom<WirelessSettings> for WirelessConfig {
+    type Error = NetworkStateError;
+
+    fn try_from(settings: WirelessSettings) -> Result<Self, Self::Error> {
+        let ssid = SSID(settings.ssid.as_bytes().into());
+        let mode = WirelessMode::try_from(settings.mode.as_str())?;
+        let security = SecurityProtocol::try_from(settings.security.as_str())?;
+        Ok(WirelessConfig {
+            ssid,
+            mode,
+            security,
+            password: Some(settings.password),
+            ..Default::default()
+        })
+    }
+}
+
+impl TryFrom<WirelessConfig> for WirelessSettings {
+    type Error = NetworkStateError;
+
+    fn try_from(wireless: WirelessConfig) -> Result<Self, Self::Error> {
+        Ok(WirelessSettings {
+            ssid: wireless.ssid.to_string(),
+            mode: wireless.mode.to_string(),
+            security: wireless.security.to_string(),
+            password: wireless.password.unwrap_or_default(),
+        })
+    }
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize)]
 pub enum WirelessMode {
     Unknown = 0,
     AdHoc = 1,
@@ -799,7 +1028,7 @@ impl fmt::Display for WirelessMode {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Serialize)]
 pub enum SecurityProtocol {
     #[default]
     WEP, // No encryption or WEP ("none")
@@ -845,15 +1074,16 @@ impl TryFrom<&str> for SecurityProtocol {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub struct WEPSecurity {
     pub auth_alg: WEPAuthAlg,
     pub wep_key_type: WEPKeyType,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub keys: Vec<String>,
     pub wep_key_index: u32,
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub enum WEPKeyType {
     #[default]
     Unknown = 0,
@@ -874,7 +1104,7 @@ impl TryFrom<u32> for WEPKeyType {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub enum WEPAuthAlg {
     #[default]
     Unset,
@@ -909,7 +1139,7 @@ impl fmt::Display for WEPAuthAlg {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
 pub enum WirelessBand {
     A,  // 5GHz
     BG, // 2.4GHz
@@ -937,7 +1167,7 @@ impl TryFrom<&str> for WirelessBand {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize)]
 pub struct BondOptions(pub HashMap<String, String>);
 
 impl TryFrom<&str> for BondOptions {
@@ -970,7 +1200,7 @@ impl fmt::Display for BondOptions {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub struct BondConfig {
     pub mode: BondMode,
     pub options: BondOptions,
@@ -987,30 +1217,64 @@ impl TryFrom<ConnectionConfig> for BondConfig {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+impl TryFrom<BondSettings> for BondConfig {
+    type Error = NetworkStateError;
+
+    fn try_from(settings: BondSettings) -> Result<Self, Self::Error> {
+        let mode = BondMode::try_from(settings.mode.as_str())
+            .map_err(|_| NetworkStateError::InvalidBondMode(settings.mode))?;
+        let mut options = BondOptions::default();
+        if let Some(setting_options) = settings.options {
+            options = BondOptions::try_from(setting_options.as_str())?;
+        }
+
+        Ok(BondConfig { mode, options })
+    }
+}
+
+impl TryFrom<BondConfig> for BondSettings {
+    type Error = NetworkStateError;
+
+    fn try_from(bond: BondConfig) -> Result<Self, Self::Error> {
+        Ok(BondSettings {
+            mode: bond.mode.to_string(),
+            options: Some(bond.options.to_string()),
+            ..Default::default()
+        })
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub struct BridgeConfig {
     pub stp: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub priority: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub forward_delay: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub hello_time: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub max_age: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ageing_time: Option<u32>,
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
 pub struct BridgePortConfig {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub priority: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub path_cost: Option<u32>,
 }
 
-#[derive(Default, Debug, PartialEq, Clone)]
+#[derive(Default, Debug, PartialEq, Clone, Serialize)]
 pub struct InfinibandConfig {
     pub p_key: Option<i32>,
     pub parent: Option<String>,
     pub transport_mode: InfinibandTransportMode,
 }
 
-#[derive(Default, Debug, PartialEq, Clone)]
+#[derive(Default, Debug, PartialEq, Clone, Serialize)]
 pub enum InfinibandTransportMode {
     #[default]
     Datagram,
@@ -1041,4 +1305,18 @@ impl fmt::Display for InfinibandTransportMode {
         };
         write!(f, "{}", name)
     }
+}
+
+/// Represents a network change.
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub enum NetworkChange {
+    /// A new device has been added.
+    DeviceAdded(Device),
+    /// A device has been removed.
+    DeviceRemoved(String),
+    /// The device has been updated. The String corresponds to the
+    /// original device name, which is especially useful if the
+    /// device gets renamed.
+    DeviceUpdated(String, Device),
 }
