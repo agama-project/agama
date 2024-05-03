@@ -1,8 +1,8 @@
 //! Implements a client to access Agama's storage service.
 
 use super::model::{
-    Action, BlockDevice, Device, DeviceInfo, ProposalSettings, ProposalTarget, StorageDevice,
-    Volume,
+    Action, BlockDevice, Device, DeviceInfo, ProposalSettings, ProposalSettingsPatch,
+    ProposalTarget, StorageDevice, Volume,
 };
 use super::proxies::{DeviceProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
 use super::StorageSettings;
@@ -140,6 +140,11 @@ impl<'a> StorageClient<'a> {
     /// Runs the probing process
     pub async fn probe(&self) -> Result<(), ServiceError> {
         Ok(self.storage_proxy.probe().await?)
+    }
+
+    /// TODO: remove calculate when CLI will be adapted
+    pub async fn calculate2(&self, settings: ProposalSettingsPatch) -> Result<u32, ServiceError> {
+        Ok(self.calculator_proxy.calculate(settings.into()).await?)
     }
 
     pub async fn calculate(&self, settings: &StorageSettings) -> Result<u32, ServiceError> {

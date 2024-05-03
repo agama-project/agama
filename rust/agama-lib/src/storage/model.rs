@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
-use zbus::zvariant::OwnedValue;
+use zbus::zvariant::{OwnedValue, Value};
 
 use crate::dbus::{get_optional_property, get_property};
 
@@ -14,7 +14,7 @@ pub struct StorageDevice {
     pub description: String,
 }
 
-#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 // note that dbus use camelCase for proposalTarget values and snake_case for volumeTarget
 #[serde(rename_all = "camelCase")]
 pub enum ProposalTarget {
@@ -39,11 +39,32 @@ impl TryFrom<zbus::zvariant::Value<'_>> for ProposalTarget {
     }
 }
 
-#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+impl ProposalTarget {
+    pub fn as_dbus_string(&self) -> String {
+        match &self {
+            ProposalTarget::Disk => "disk",
+            ProposalTarget::NewLvmVg => "newLvmVg",
+            ProposalTarget::ReusedLvmVg => "reusedLvmVg",
+        }
+        .to_string()
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum SpaceAction {
     ForceDelete,
     Resize,
+}
+
+impl SpaceAction {
+    pub fn as_dbus_string(&self) -> String {
+        match &self {
+            Self::ForceDelete => "force_delete",
+            Self::Resize => "resize",
+        }
+        .to_string()
+    }
 }
 
 impl TryFrom<zbus::zvariant::Value<'_>> for SpaceAction {
@@ -61,7 +82,7 @@ impl TryFrom<zbus::zvariant::Value<'_>> for SpaceAction {
     }
 }
 
-#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct SpaceActionSettings {
     pub device: String,
     pub action: SpaceAction,
@@ -81,6 +102,78 @@ impl TryFrom<zbus::zvariant::Value<'_>> for SpaceActionSettings {
     }
 }
 
+impl<'a> Into<zbus::zvariant::Value<'a>> for SpaceActionSettings {
+    fn into(self) -> zbus::zvariant::Value<'a> {
+        let result: HashMap<&str, Value> = HashMap::from([
+            ("Device", Value::new(self.device)),
+            ("Action", Value::new(self.action.as_dbus_string())),
+        ]);
+
+        Value::new(result)
+    }
+}
+
+/// Represents a proposal patch -> change of proposal configuration that can be partial
+#[derive(Debug, Clone, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct ProposalSettingsPatch {
+    pub target: Option<ProposalTarget>,
+    pub target_device: Option<String>,
+    #[serde(rename = "targetPVDevices")]
+    pub target_pv_devices: Option<Vec<String>>,
+    pub configure_boot: Option<bool>,
+    pub boot_device: Option<String>,
+    pub encryption_password: Option<String>,
+    pub encryption_method: Option<String>,
+    #[serde(rename = "encryptionPBKDFunction")]
+    pub encryption_pbkd_function: Option<String>,
+    pub space_policy: Option<String>,
+    pub space_actions: Option<Vec<SpaceActionSettings>>,
+    pub volumes: Option<Vec<Volume>>,
+}
+
+impl<'a> Into<HashMap<&'static str, Value<'a>>> for ProposalSettingsPatch {
+    fn into(self) -> HashMap<&'static str, Value<'a>> {
+        let mut result = HashMap::new();
+        if let Some(target) = self.target {
+            result.insert("Target", Value::new(target.as_dbus_string()));
+        }
+        if let Some(dev) = self.target_device {
+            result.insert("TargetDevice", Value::new(dev));
+        }
+        if let Some(devs) = self.target_pv_devices {
+            result.insert("TargetPVDevices", Value::new(devs));
+        }
+        if let Some(value) = self.configure_boot {
+            result.insert("ConfigureBoot", Value::new(value));
+        }
+        if let Some(value) = self.boot_device {
+            result.insert("BootDevice", Value::new(value));
+        }
+        if let Some(value) = self.encryption_password {
+            result.insert("EncryptionPassword", Value::new(value));
+        }
+        if let Some(value) = self.encryption_method {
+            result.insert("EncryptionMethod", Value::new(value));
+        }
+        if let Some(value) = self.encryption_pbkd_function {
+            result.insert("EncryptionPBKDFunction", Value::new(value));
+        }
+        if let Some(value) = self.space_policy {
+            result.insert("SpacePolicy", Value::new(value));
+        }
+        if let Some(value) = self.space_actions {
+            let list: Vec<Value> = value.into_iter().map(|a| a.into()).collect();
+            result.insert("SpaceActions", Value::new(list));
+        }
+        if let Some(value) = self.volumes {
+            let list: Vec<Value> = value.into_iter().map(|a| a.into()).collect();
+            result.insert("Volumes", Value::new(list));
+        }
+        result
+    }
+}
+
 /// Represents a proposal configuration
 #[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
@@ -88,7 +181,7 @@ pub struct ProposalSettings {
     pub target: ProposalTarget,
     pub target_device: Option<String>,
     #[serde(rename = "targetPVDevices")]
-    pub target_pv_devices: Option<String>,
+    pub target_pv_devices: Option<Vec<String>>,
     pub configure_boot: bool,
     pub boot_device: String,
     pub encryption_password: String,
@@ -159,6 +252,20 @@ pub enum VolumeTarget {
     Filesystem,
 }
 
+impl<'a> Into<zbus::zvariant::Value<'a>> for VolumeTarget {
+    fn into(self) -> zbus::zvariant::Value<'a> {
+        let str = match self {
+            Self::Default => "default",
+            Self::NewPartition => "new_partition",
+            Self::NewVg => "new_vg",
+            Self::Device => "device",
+            Self::Filesystem => "filesystem",
+        };
+
+        Value::new(str)
+    }
+}
+
 impl TryFrom<zbus::zvariant::Value<'_>> for VolumeTarget {
     type Error = zbus::zvariant::Error;
 
@@ -178,7 +285,7 @@ impl TryFrom<zbus::zvariant::Value<'_>> for VolumeTarget {
 }
 
 /// Represents volume outline aka requirements for volume
-#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct VolumeOutline {
     required: bool,
@@ -208,7 +315,7 @@ impl TryFrom<zbus::zvariant::Value<'_>> for VolumeOutline {
 }
 
 /// Represents a single volume
-#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Volume {
     mount_path: String,
@@ -221,6 +328,32 @@ pub struct Volume {
     snapshots: Option<bool>,
     transactional: Option<bool>,
     outline: Option<VolumeOutline>,
+}
+
+impl<'a> Into<zbus::zvariant::Value<'a>> for Volume {
+    fn into(self) -> zbus::zvariant::Value<'a> {
+        let mut result: HashMap<&str, Value> = HashMap::from([
+            ("MountPath", Value::new(self.mount_path)),
+            ("MountOptions", Value::new(self.mount_options)),
+            ("Target", self.target.into()),
+            ("MinSize", Value::new(self.min_size)),
+            ("AutoSize", Value::new(self.auto_size)),
+        ]);
+        if let Some(dev) = self.target_device {
+            result.insert("TargetDevice", Value::new(dev));
+        }
+        if let Some(value) = self.max_size {
+            result.insert("MaxSize", Value::new(value));
+        }
+        if let Some(value) = self.snapshots {
+            result.insert("Snapshots", Value::new(value));
+        }
+        if let Some(value) = self.transactional {
+            result.insert("Transactional", Value::new(value));
+        }
+        // intentionally skip outline as it is not send to dbus and act as read only parameter
+        Value::new(result)
+    }
 }
 
 impl TryFrom<zbus::zvariant::Value<'_>> for Volume {
