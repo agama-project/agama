@@ -1,6 +1,7 @@
 use clap::{arg, Args, Subcommand};
 
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
+use rpassword::{prompt_password, read_password};
 use std::fs;
 use std::fs::File;
 use std::io;
@@ -153,12 +154,9 @@ fn read_line_from_file(path: &Path) -> io::Result<String> {
 
 /// Asks user to provide a line of input. Displays a prompt.
 fn read_credential(caption: String) -> io::Result<String> {
-    let mut cred = String::new();
-
-    println!("{}: ", caption);
-
-    io::stdin().read_line(&mut cred)?;
-    if cred.pop().is_none() || cred.is_empty() {
+    let caption = format!("{}: ", caption);
+    let cred = prompt_password(caption.clone()).unwrap();
+    if cred.is_empty() {
         return Err(io::Error::new(
             io::ErrorKind::Other,
             format!("Failed to read {}", caption),
