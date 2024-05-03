@@ -163,7 +163,7 @@ class MissingSizeError {
    * @param {SizeMethod} sizeMethod
    * @param {string|number} size
    */
-  constructor (sizeMethod, size) {
+  constructor(sizeMethod, size) {
     this.sizeMethod = sizeMethod;
     this.size = size;
   }
@@ -191,7 +191,7 @@ class MissingMinSizeError {
    * @param {SizeMethod} sizeMethod
    * @param {string|number} minSize
    */
-  constructor (sizeMethod, minSize) {
+  constructor(sizeMethod, minSize) {
     this.sizeMethod = sizeMethod;
     this.minSize = minSize;
   }
@@ -220,7 +220,7 @@ class InvalidMaxSizeError {
    * @param {string|number} minSize
    * @param {string|number} maxSize
    */
-  constructor (sizeMethod, minSize, maxSize) {
+  constructor(sizeMethod, minSize, maxSize) {
     this.sizeMethod = sizeMethod;
     this.minSize = minSize;
     this.maxSize = maxSize;
@@ -735,7 +735,7 @@ export default function VolumeDialog({
           onChange={updateData}
         />
         <SizeOptionsField
-          { ...state }
+          {...state}
           errors={sizeErrors()}
           isDisabled={isDisabled}
           onChange={changeSizeOptions}
