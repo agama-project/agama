@@ -31,8 +31,8 @@ import {
 import { ExpandableSelector } from "~/components/core";
 
 /**
- * @typedef {import("../core/ExpandableSelector").ExpandableSelectorColumn} ExpandableSelectorColumn
- * @typedef {import("../core/ExpandableSelector").ExpandableSelectorProps} ExpandableSelectorProps
+ * @typedef {import ("~/components/core/ExpandableSelector").ExpandableSelectorColumn} ExpandableSelectorColumn
+ * @typedef {import ("~/components/core/ExpandableSelector").ExpandableSelectorProps} ExpandableSelectorProps
  * @typedef {import ("~/client/storage").PartitionSlot} PartitionSlot
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  * @typedef {import ("~/client/storage").Volume} Volume

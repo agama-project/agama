@@ -472,10 +472,7 @@ class ProposalManager {
         return !!partitions.find(d => d.name === device.name);
       };
 
-      return (
-        !!availableDevices.find(d => d.name === device.name) ||
-        !!availableDevices.find(d => isChildren(device, d))
-      );
+      return !!availableDevices.find(d => d.name === device.name || isChildren(device, d));
     };
 
     /** @type {(device: StorageDevice[]) => boolean} */
