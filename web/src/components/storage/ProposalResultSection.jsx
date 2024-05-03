@@ -25,10 +25,10 @@ import React, { useState } from "react";
 import { Button, Skeleton } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
-import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import DevicesManager from "~/components/storage/DevicesManager";
-import { If, Section, Reminder, Tag, TreeTable } from "~/components/core";
-import { ProposalActionsDialog, FilesystemLabel } from "~/components/storage";
+import { If, Section, Reminder } from "~/components/core";
+import { ProposalActionsDialog } from "~/components/storage";
+import ProposalResultTable from "~/components/storage/ProposalResultTable";
 
 /**
  * @typedef {import ("~/client/storage").Action} Action
@@ -99,109 +99,6 @@ const ActionsInfo = ({ actions }) => {
 };
 
 /**
- * Renders a TreeTable rendering the devices proposal result.
- * @component
- *
- * @param {object} props
- * @param {DevicesManager} props.devicesManager
- */
-const DevicesTreeTable = ({ devicesManager }) => {
-  const renderDeviceName = (item) => {
-    let name = item.sid && item.name;
-    // NOTE: returning a fragment here to avoid a weird React complaint when using a PF/Table +
-    // treeRow props.
-    if (!name) return <></>;
-
-    if (["partition", "lvmLv"].includes(item.type))
-      name = name.split("/").pop();
-
-    return (
-      <div className="split">
-        <span>{name}</span>
-      </div>
-    );
-  };
-
-  const renderNewLabel = (item) => {
-    if (!item.sid) return;
-
-    // FIXME New PVs over a disk is not detected as new.
-    if (!devicesManager.existInSystem(item) || devicesManager.hasNewFilesystem(item))
-      return <Tag variant="teal">{_("New")}</Tag>;
-  };
-
-  const renderContent = (item) => {
-    if (!item.sid)
-      return _("Unused space");
-    if (!item.partitionTable && item.systems?.length > 0)
-      return item.systems.join(", ");
-
-    return item.description;
-  };
-
-  const renderPTableType = (item) => {
-    // TODO: Create a map for partition table types.
-    const type = item.partitionTable?.type;
-    if (type) return <Tag><b>{type.toUpperCase()}</b></Tag>;
-  };
-
-  const renderDetails = (item) => {
-    return (
-      <>
-        <div>{renderNewLabel(item)}</div>
-        <div>{renderContent(item)} <FilesystemLabel device={item} /> {renderPTableType(item)}</div>
-      </>
-    );
-  };
-
-  const renderResizedLabel = (item) => {
-    if (!item.sid || !devicesManager.isShrunk(item)) return;
-
-    const sizeBefore = devicesManager.systemDevice(item.sid).size;
-
-    return (
-      <Tag variant="orange">
-        {
-          // TRANSLATORS: Label to indicate the device size before resizing, where %s is replaced by
-          // the original size (e.g., 3.00 GiB).
-          sprintf(_("Before %s"), deviceSize(sizeBefore))
-        }
-      </Tag>
-    );
-  };
-
-  const renderSize = (item) => {
-    return (
-      <div className="split">
-        {renderResizedLabel(item)}
-        {deviceSize(item.size)}
-      </div>
-    );
-  };
-
-  const renderMountPoint = (item) => item.sid && <em>{item.filesystem?.mountPath}</em>;
-  const devices = devicesManager.usedDevices();
-
-  return (
-    <TreeTable
-      columns={[
-        { title: _("Device"), content: renderDeviceName },
-        { title: _("Mount Point"), content: renderMountPoint },
-        { title: _("Details"), content: renderDetails, classNames: "details-column" },
-        { title: _("Size"), content: renderSize, classNames: "sizes-column" }
-      ]}
-      items={devices}
-      expandedItems={devices}
-      itemChildren={d => deviceChildren(d)}
-      rowClassNames={(item) => {
-        if (!item.sid) return "dimmed-row";
-      }}
-      className="proposal-result"
-    />
-  );
-};
-
-/**
  * @todo Create a component for rendering a customized skeleton
  */
 const ResultSkeleton = () => {
@@ -236,7 +133,7 @@ const SectionContent = ({ system, staging, actions, errors }) => {
         systems={devicesManager.deletedSystems()}
       />
       <ActionsInfo actions={actions} />
-      <DevicesTreeTable devicesManager={devicesManager} />
+      <ProposalResultTable devicesManager={devicesManager} />
     </>
   );
 };
@@ -245,13 +142,14 @@ const SectionContent = ({ system, staging, actions, errors }) => {
  * Section holding the proposal result and actions to perform in the system
  * @component
  *
- * @param {object} props
- * @param {StorageDevice[]} [props.system=[]]
- * @param {StorageDevice[]} [props.staging=[]]
- * @param {Action[]} [props.actions=[]]
- * @param {ValidationError[]} [props.errors=[]] - Validation errors
- * @param {boolean} [props.isLoading=false] - Whether the section content should be rendered as loading
- * @param {symbol} [props.changing=undefined] - Which part of the configuration is being changed by user
+ * @typedef {object} ProposalResultSectionProps
+ * @property {StorageDevice[]} [system=[]]
+ * @property {StorageDevice[]} [staging=[]]
+ * @property {Action[]} [actions=[]]
+ * @property {ValidationError[]} [errors=[]] - Validation errors
+ * @property {boolean} [isLoading=false] - Whether the section content should be rendered as loading
+ *
+ * @param {ProposalResultSectionProps} props
  */
 export default function ProposalResultSection({
   system = [],

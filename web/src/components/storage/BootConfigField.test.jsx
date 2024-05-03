@@ -26,6 +26,12 @@ import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import BootConfigField from "~/components/storage/BootConfigField";
 
+/**
+ * @typedef {import("~/components/storage/BootConfigField").BootConfigFieldProps} BootConfigFieldProps
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ */
+
+/** @type {StorageDevice} */
 const sda = {
   sid: 59,
   description: "A fake disk for testing",
@@ -48,6 +54,7 @@ const sda = {
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
+/** @type {BootConfigFieldProps} */
 let props;
 
 beforeEach(() => {
@@ -55,7 +62,7 @@ beforeEach(() => {
     configureBoot: false,
     bootDevice: undefined,
     defaultBootDevice: undefined,
-    devices: [sda],
+    availableDevices: [sda],
     isLoading: false,
     onChange: jest.fn()
   };

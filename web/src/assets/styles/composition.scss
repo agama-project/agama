@@ -24,6 +24,40 @@
   flex-wrap: wrap;
 }
 
+// TODO: make it less specific.
+.location-layout > div {
+  display: flex;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    gap: 0
+  }
+
+  form > div:nth-child(2) {
+    overflow-y: auto;
+    min-block-size: 120px;
+    margin-block-end: var(--spacer-medium);
+    table { background: transparent; }
+  }
+
+  form > div:last-child {
+    min-block-size: min-content;
+  }
+}
+
+// FIXME: Temporary solution to hide expand button. The button should be removed instead.
+.location-layout table button[id^="expand-toggle"] {
+  display: none;
+}
+
+.location-layout table tbody tr:not(:first-child) {
+  td:nth-child(3) {
+    padding-inline-start: 5ch;
+  }
+}
+
 [data-state="reversed"] {
   flex-direction: row-reverse;
 }

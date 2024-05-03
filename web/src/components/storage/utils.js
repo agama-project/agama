@@ -22,6 +22,13 @@
 // @ts-check
 // cspell:ignore xbytes
 
+/**
+ * @fixme This file implements utils for the storage components and it also offers several functions
+ * to get information from a Volume (e.g., #hasSnapshots, #isTransactionalRoot, etc). It would be
+ * better to use another approach to encapsulate the volume information. For example, by creating
+ * a Volume class or by providing a kind of interface for volumes.
+ */
+
 import xbytes from "xbytes";
 
 import { N_ } from "~/i18n";
@@ -285,6 +292,33 @@ const isTransactionalSystem = (volumes = []) => {
   return volumes.find(v => isTransactionalRoot(v)) !== undefined;
 };
 
+/**
+ * Checks whether the given volume is configured to mount an existing file system.
+ * @function
+ *
+ * @param {Volume} volume
+ * @returns {boolean}
+ */
+const mountFilesystem = (volume) => volume.target === "FILESYSTEM";
+
+/**
+ * Checks whether the given volume is configured to reuse a device (format or mount a file system).
+ * @function
+ *
+ * @param {Volume} volume
+ * @returns {boolean}
+ */
+const reuseDevice = (volume) => volume.target === "FILESYSTEM" || volume.target === "DEVICE";
+
+/**
+ * Generates a label for the given volume.
+ * @function
+ *
+ * @param {Volume} volume
+ * @returns {string}
+ */
+const volumeLabel = (volume) => volume.mountPath === "/" ? "root" : volume.mountPath;
+
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
@@ -299,5 +333,8 @@ export {
   hasFS,
   hasSnapshots,
   isTransactionalRoot,
-  isTransactionalSystem
+  isTransactionalSystem,
+  mountFilesystem,
+  reuseDevice,
+  volumeLabel
 };

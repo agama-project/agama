@@ -223,6 +223,18 @@
   max-inline-size: calc(var(--ui-max-inline-size) + var(--spacer-large))
 }
 
+.scrollbox {
+  background:
+    linear-gradient(#fff 33%, rgb(255 255 255 / 0%)),
+    linear-gradient(rgb(255 255 255 / 0%), #fff 66%) 0 100%,
+    radial-gradient(farthest-side at 50% 0, rgb(102 102 102 / 50%), rgb(0 0 0 / 0%)),
+    radial-gradient(farthest-side at 50% 100%, rgba(102 102 102 / 50%), rgb(0 0 0 / 0%)) 0 100%;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-attachment: local, local, scroll, scroll;
+  background-size: 100% 48px, 100% 48px, 100% 16px, 100% 16px;
+}
+
 .height-75 {
   height: 75dvh;
 }

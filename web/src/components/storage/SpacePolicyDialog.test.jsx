@@ -19,12 +19,20 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender, resetLocalStorage } from "~/test-utils";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 import { SpacePolicyDialog } from "~/components/storage";
 
+/**
+ * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import("./SpacePolicyDialog").SpacePolicyDialogProps} SpacePolicyDialogProps
+ */
+
+/** @type {StorageDevice} */
 const sda = {
   sid: 59,
   isDrive: true,
@@ -39,6 +47,7 @@ const sda = {
   sdCard: true,
   active: true,
   name: "/dev/sda",
+  description: "",
   size: 1024,
   recoverableSize: 0,
   systems : [],
@@ -46,12 +55,14 @@ const sda = {
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
+/** @type {StorageDevice} */
 const sda1 = {
   sid: 60,
   isDrive: false,
   type: "partition",
   active: true,
   name: "/dev/sda1",
+  description: "",
   size: 512,
   recoverableSize: 128,
   systems : [],
@@ -59,12 +70,14 @@ const sda1 = {
   udevPaths: []
 };
 
+/** @type {StorageDevice} */
 const sda2 = {
   sid: 61,
   isDrive: false,
   type: "partition",
   active: true,
   name: "/dev/sda2",
+  description: "",
   size: 512,
   recoverableSize: 0,
   systems : [],
@@ -79,6 +92,7 @@ sda.partitionTable = {
   unpartitionedSize: 512
 };
 
+/** @type {StorageDevice} */
 const sdb = {
   sid: 62,
   isDrive: true,
@@ -93,6 +107,7 @@ const sdb = {
   sdCard: false,
   active: true,
   name: "/dev/sdb",
+  description: "",
   size: 2048,
   recoverableSize: 0,
   systems : [],
@@ -105,6 +120,7 @@ const resizePolicy = SPACE_POLICIES.find(p => p.id === "resize");
 const keepPolicy = SPACE_POLICIES.find(p => p.id === "keep");
 const customPolicy = SPACE_POLICIES.find(p => p.id === "custom");
 
+/** @type {SpacePolicyDialogProps} */
 let props;
 
 const expandRow = async (user, name) => {

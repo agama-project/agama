@@ -29,21 +29,20 @@ import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
+import BootConfigField from "~/components/storage/BootConfigField";
+import {
+  deviceSize, hasSnapshots, isTransactionalRoot, isTransactionalSystem, reuseDevice
+} from '~/components/storage/utils';
 import { If, ExpandableField, RowActions, Tip } from '~/components/core';
+import { noop } from "~/utils";
+import SnapshotsField from "~/components/storage/SnapshotsField";
 import VolumeDialog from '~/components/storage/VolumeDialog';
 import VolumeLocationDialog from '~/components/storage/VolumeLocationDialog';
-import {
-  deviceSize, hasSnapshots, isTransactionalRoot, isTransactionalSystem
-} from '~/components/storage/utils';
-import SnapshotsField from "~/components/storage/SnapshotsField";
-import BootConfigField from "~/components/storage/BootConfigField";
-import { noop } from "~/utils";
 
 /**
  * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  * @typedef {import("~/components/storage/SnapshotsField").SnapshotsConfig} SnapshotsConfig
- *
  * @typedef {import ("~/client/storage").Volume} Volume
  */
 
@@ -55,7 +54,7 @@ import { noop } from "~/utils";
  */
 const SizeText = ({ volume }) => {
   let targetSize;
-  if (volume.target === "FILESYSTEM" || volume.target === "DEVICE")
+  if (reuseDevice(volume))
     targetSize = volume.targetDevice.size;
 
   const minSize = deviceSize(targetSize || volume.minSize);
@@ -238,6 +237,90 @@ const BootLabel = ({ bootDevice, configureBoot }) => {
   );
 };
 
+// TODO: Extract VolumesTable or at least VolumeRow and all related internal
+// components to a new file.
+
+/**
+  * @component
+  * @param {object} props
+  * @param {Volume} props.volume
+  */
+const VolumeSizeLimits = ({ volume }) => {
+  const isAuto = volume.autoSize;
+
+  return (
+    <div className="split">
+      <span>{SizeText({ volume })}</span>
+      {/* TRANSLATORS: device flag, the partition size is automatically computed */}
+      <If
+        condition={isAuto && !reuseDevice(volume)}
+        then={<Tip description={AutoCalculatedHint({ volume })}>{_("auto")}</Tip>}
+      />
+    </div>
+  );
+};
+
+/**
+  * @component
+  * @param {object} props
+  * @param {Volume} props.volume
+  */
+const VolumeDetails = ({ volume }) => {
+  const snapshots = hasSnapshots(volume);
+  const transactional = isTransactionalRoot(volume);
+
+  if (volume.target === "FILESYSTEM")
+    // TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
+    return sprintf(_("Reused %s"), volume.targetDevice?.filesystem?.type || "");
+  if (transactional)
+    return _("Transactional Btrfs");
+  if (snapshots)
+    return _("Btrfs with snapshots");
+
+  return volume.fsType;
+};
+
+/**
+  * @component
+  * @param {object} props
+  * @param {Volume} props.volume
+  * @param {ProposalTarget} props.target
+  */
+const VolumeLocation = ({ volume, target }) => {
+  if (volume.target === "NEW_PARTITION")
+    // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
+    return sprintf(_("Partition at %s"), volume.targetDevice?.name || "");
+  if (volume.target === "NEW_VG")
+    // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
+    return sprintf(_("Separate LVM at %s"), volume.targetDevice?.name || "");
+  if (volume.target === "DEVICE" || volume.target === "FILESYSTEM")
+    return volume.targetDevice?.name || "";
+  if (target === "NEW_LVM_VG")
+    return _("Logical volume at system LVM");
+
+  return _("Partition at installation disk");
+};
+
+/**
+  * @component
+  * @param {object} props
+  * @param {Volume} props.volume
+  * @param {() => void} props.onEdit
+  * @param {() => void} props.onResetLocation
+  * @param {() => void} props.onLocation
+  * @param {() => void} props.onDelete
+  */
+const VolumeActions = ({ volume, onEdit, onResetLocation, onLocation, onDelete }) => {
+  const actions = [
+    { title: _("Edit"), onClick: onEdit },
+    volume.target !== "DEFAULT" && { title: _("Reset location"), onClick: onResetLocation },
+    { title: _("Change location"), onClick: onLocation },
+    !volume.outline.required && { title: _("Delete"), onClick: onDelete, isDanger: true }
+  ];
+
+  return <RowActions id="volume_actions" actions={actions.filter(Boolean)} />;
+};
+
 /**
  * Renders a table row with the information and actions for a volume
  * @component
@@ -247,21 +330,21 @@ const BootLabel = ({ bootDevice, configureBoot }) => {
  * @param {Volume} [props.volume] - Volume to show
  * @param {Volume[]} [props.volumes] - List of current volumes
  * @param {Volume[]} [props.templates] - List of available templates
- * @param {StorageDevice[]} [props.devices=[]] - Devices available for installation
- * @param {ProposalTarget} [props.target] - Installation target
- * @param {StorageDevice} [props.targetDevice] - Device selected for installation, if target is a disk
+ * @param {StorageDevice[]} [props.volumeDevices=[]] - Devices available for installation
+ * @param {ProposalTarget} [props.target]
+ * @param {StorageDevice[]} [props.targetDevices] - Device selected for installation, if target is a disk
  * @param {boolean} props.isLoading - Whether to show the row as loading
  * @param {(volume: Volume) => void} [props.onEdit=noop] - Function to use for editing the volume
- * @param {(volume: Volume) => void} [props.onDelete=noop] - Function to use for deleting the volume
+ * @param {() => void} [props.onDelete=noop] - Function to use for deleting the volume
  */
 const VolumeRow = ({
   columns,
   volume,
   volumes,
   templates,
-  devices,
+  volumeDevices,
   target,
-  targetDevice,
+  targetDevices,
   isLoading,
   onEdit = noop,
   onDelete = noop
@@ -275,6 +358,10 @@ const VolumeRow = ({
 
   const closeDialog = () => setDialog(undefined);
 
+  const onResetLocationClick = () => {
+    onEdit({ ...volume, target: "DEFAULT", targetDevice: undefined });
+  };
+
   const acceptForm = (volume) => {
     closeDialog();
     onEdit(volume);
@@ -282,98 +369,6 @@ const VolumeRow = ({
 
   const isEditDialogOpen = dialog === "edit";
   const isLocationDialogOpen = dialog === "location";
-
-  /**
-   * @component
-   * @param {object} props
-   * @param {Volume} props.volume
-   */
-  const SizeLimits = ({ volume }) => {
-    const isAuto = volume.autoSize;
-
-    return (
-      <div className="split">
-        <span>{SizeText({ volume })}</span>
-        {/* TRANSLATORS: device flag, the partition size is automatically computed */}
-        <If condition={isAuto} then={<Tip description={AutoCalculatedHint({ volume })}>{_("auto")}</Tip>} />
-      </div>
-    );
-  };
-
-  /**
-   * @component
-   * @param {object} props
-   * @param {Volume} props.volume
-   */
-  const Details = ({ volume }) => {
-    const snapshots = hasSnapshots(volume);
-    const transactional = isTransactionalRoot(volume);
-
-    if (volume.target === "FILESYSTEM")
-      // TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
-      return sprintf(_("Reused %s"), volume.targetDevice?.filesystem?.type || "");
-    if (transactional)
-      return _("Transactional Btrfs");
-    if (snapshots)
-      return _("Btrfs with snapshots");
-
-    return volume.fsType;
-  };
-
-  /**
-   * @component
-   * @param {object} props
-   * @param {Volume} props.volume
-   * @param {ProposalTarget} props.target
-   */
-  const Location = ({ volume, target }) => {
-    if (volume.target === "NEW_PARTITION")
-      // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-      return sprintf(_("Partition at %s"), volume.targetDevice?.name || "");
-    if (volume.target === "NEW_VG")
-      // TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-      return sprintf(_("Separate LVM at %s"), volume.targetDevice?.name || "");
-    if (volume.target === "DEVICE" || volume.target === "FILESYSTEM")
-      return volume.targetDevice?.name || "";
-    if (target === "NEW_LVM_VG")
-      return _("Logical volume at system LVM");
-
-    return _("Partition at installation disk");
-  };
-
-  /**
-   * @component
-   * @param {object} props
-   * @param {Volume} props.volume
-   * @param {() => void} props.onEditClick
-   * @param {() => void} props.onLocationClick
-   * @param {(volume: Volume) => void} props.onDeleteClick
-   */
-  const VolumeActions = ({ volume, onEditClick, onLocationClick, onDeleteClick }) => {
-    const actions = () => {
-      const actions = {
-        delete: {
-          title: _("Delete"),
-          onClick: () => onDeleteClick(volume),
-          isDanger: true
-        },
-        edit: {
-          title: _("Edit"),
-          onClick: onEditClick
-        },
-        location: {
-          title: _("Change location"),
-          onClick: onLocationClick
-        }
-      };
-
-      if (!volume.outline.required) return Object.values(actions);
-
-      return [actions.edit, actions.location];
-    };
-
-    return <RowActions id="volume_actions" actions={actions()} />;
-  };
 
   if (isLoading) {
     return (
@@ -387,15 +382,16 @@ const VolumeRow = ({
     <>
       <Tr>
         <Td dataLabel={columns.mountPath}>{volume.mountPath}</Td>
-        <Td dataLabel={columns.details}><Details volume={volume} /></Td>
-        <Td dataLabel={columns.size}><SizeLimits volume={volume} /></Td>
-        <Td dataLabel={columns.location}><Location volume={volume} target={target} /></Td>
+        <Td dataLabel={columns.details}><VolumeDetails volume={volume} /></Td>
+        <Td dataLabel={columns.size}><VolumeSizeLimits volume={volume} /></Td>
+        <Td dataLabel={columns.location}><VolumeLocation volume={volume} target={target} /></Td>
         <Td isActionCell>
           <VolumeActions
             volume={volume}
-            onEditClick={openEditDialog}
-            onLocationClick={openLocationDialog}
-            onDeleteClick={onDelete}
+            onEdit={openEditDialog}
+            onResetLocation={onResetLocationClick}
+            onLocation={openLocationDialog}
+            onDelete={onDelete}
           />
         </Td>
       </Tr>
@@ -418,9 +414,9 @@ const VolumeRow = ({
           <VolumeLocationDialog
             isOpen
             volume={volume}
-            devices={devices}
-            target={target}
-            targetDevice={targetDevice}
+            volumes={volumes}
+            volumeDevices={volumeDevices}
+            targetDevices={targetDevices}
             onAccept={acceptForm}
             onCancel={closeDialog}
           />
@@ -437,18 +433,18 @@ const VolumeRow = ({
  * @param {object} props
  * @param {Volume[]} props.volumes - Volumes to show
  * @param {Volume[]} props.templates - List of available templates
- * @param {StorageDevice[]} props.devices - Devices available for installation
- * @param {ProposalTarget} props.target - Installation target
- * @param {StorageDevice|undefined} props.targetDevice - Device selected for installation, if target is a disk
+ * @param {StorageDevice[]} props.volumeDevices
+ * @param {ProposalTarget} props.target
+ * @param {StorageDevice[]} props.targetDevices
  * @param {boolean} props.isLoading - Whether to show the table as loading
  * @param {(volumes: Volume[]) => void} props.onVolumesChange - Function to submit changes in volumes
  */
 const VolumesTable = ({
   volumes,
   templates,
-  devices,
+  volumeDevices,
   target,
-  targetDevice,
+  targetDevices,
   isLoading,
   onVolumesChange
 }) => {
@@ -487,12 +483,12 @@ const VolumesTable = ({
           volume={volume}
           volumes={volumes}
           templates={templates}
-          devices={devices}
+          volumeDevices={volumeDevices}
           target={target}
-          targetDevice={targetDevice}
+          targetDevices={targetDevices}
           isLoading={isLoading}
           onEdit={editVolume}
-          onDelete={deleteVolume}
+          onDelete={() => deleteVolume(volume)}
         />
       );
     });
@@ -621,9 +617,10 @@ const AddVolumeButton = ({ options, onClick }) => {
  * @param {object} props
  * @param {Volume[]} props.volumes
  * @param {Volume[]} props.templates
- * @param {StorageDevice[]} props.devices
+ * @param {StorageDevice[]} props.availableDevices
+ * @param {StorageDevice[]} props.volumeDevices
  * @param {ProposalTarget} props.target
- * @param {StorageDevice|undefined} props.targetDevice
+ * @param {StorageDevice[]} props.targetDevices
  * @param {boolean} props.configureBoot
  * @param {StorageDevice|undefined} props.bootDevice
  * @param {StorageDevice|undefined} props.defaultBootDevice
@@ -634,9 +631,10 @@ const AddVolumeButton = ({ options, onClick }) => {
 const Advanced = ({
   volumes,
   templates,
-  devices,
+  availableDevices,
+  volumeDevices,
   target,
-  targetDevice,
+  targetDevices,
   configureBoot,
   bootDevice,
   defaultBootDevice,
@@ -726,9 +724,9 @@ const Advanced = ({
       <VolumesTable
         volumes={volumes}
         templates={templates}
-        devices={devices}
+        volumeDevices={volumeDevices}
         target={target}
-        targetDevice={targetDevice}
+        targetDevices={targetDevices}
         onVolumesChange={onVolumesChange}
         isLoading={isLoading}
       />
@@ -757,7 +755,7 @@ const Advanced = ({
         configureBoot={configureBoot}
         bootDevice={bootDevice}
         defaultBootDevice={defaultBootDevice}
-        devices={devices}
+        availableDevices={availableDevices}
         isLoading={isLoading}
         onChange={onBootChange}
       />
@@ -775,9 +773,10 @@ const Advanced = ({
  * @typedef {object} PartitionsFieldProps
  * @property {Volume[]} volumes - Volumes to show
  * @property {Volume[]} templates - Templates to use for new volumes
- * @property {StorageDevice[]} devices - Devices available for installation
+ * @property {StorageDevice[]} availableDevices - Devices available for installation
+ * @property {StorageDevice[]} volumeDevices - Devices that can be selected as target for a volume
  * @property {ProposalTarget} target - Installation target
- * @property {StorageDevice|undefined} targetDevice - Device selected for installation, if target is a disk
+ * @property {StorageDevice[]} targetDevices
  * @property {boolean} configureBoot - Whether to configure boot partitions.
  * @property {StorageDevice|undefined} bootDevice - Device to use for creating boot partitions.
  * @property {StorageDevice|undefined} defaultBootDevice - Default device for boot partitions if no device has been indicated yet.
@@ -794,9 +793,10 @@ const Advanced = ({
 export default function PartitionsField({
   volumes,
   templates,
-  devices,
+  availableDevices,
+  volumeDevices,
   target,
-  targetDevice,
+  targetDevices,
   configureBoot,
   bootDevice,
   defaultBootDevice,
@@ -820,9 +820,10 @@ export default function PartitionsField({
           <Advanced
             volumes={volumes}
             templates={templates}
-            devices={devices}
+            volumeDevices={volumeDevices}
+            availableDevices={availableDevices}
             target={target}
-            targetDevice={targetDevice}
+            targetDevices={targetDevices}
             configureBoot={configureBoot}
             bootDevice={bootDevice}
             defaultBootDevice={defaultBootDevice}

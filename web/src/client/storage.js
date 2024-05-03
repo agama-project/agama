@@ -452,6 +452,40 @@ class ProposalManager {
   }
 
   /**
+   * Gets the devices that can be selected as target for a volume.
+   *
+   * A device can be selected as target for a volume if either it is an available device for
+   * installation or it is a device built over the available devices for installation. For example,
+   * a MD RAID is a possible target only if all its members are available devices or children of the
+   * available devices.
+   *
+   * @returns {Promise<StorageDevice[]>}
+   */
+  async getVolumeDevices() {
+    /** @type {StorageDevice[]} */
+    const availableDevices = await this.getAvailableDevices();
+
+    /** @type {(device: StorageDevice) => boolean} */
+    const isAvailable = (device) => {
+      const isChildren = (device, parentDevice) => {
+        const partitions = parentDevice.partitionTable?.partitions || [];
+        return !!partitions.find(d => d.name === device.name);
+      };
+
+      return !!availableDevices.find(d => d.name === device.name || isChildren(device, d));
+    };
+
+    /** @type {(device: StorageDevice[]) => boolean} */
+    const allAvailable = (devices) => devices.every(isAvailable);
+
+    const system = await this.system.getDevices();
+    const mds = system.filter(d => d.type === "md" && allAvailable(d.devices));
+    const vgs = system.filter(d => d.type === "lvmVg" && allAvailable(d.physicalVolumes));
+
+    return [...availableDevices, ...mds, ...vgs];
+  }
+
+  /**
    * Gets the list of meaningful mount points for the selected product
    *
    * @returns {Promise<string[]>}
@@ -537,7 +571,7 @@ class ProposalManager {
         return dbusTargetPVDevices.v.map(d => d.v);
       };
 
-      // TODO: Read installation devices from D-Bus.
+      /** @todo Read installation devices from D-Bus. */
       const buildInstallationDevices = (dbusSettings, devices) => {
         const findDevice = (name) => {
           const device = devices.find(d => d.name === name);
@@ -547,10 +581,17 @@ class ProposalManager {
           return device;
         };
 
+        // Only consider the device assigned to a volume as installation device if it is needed
+        // to find space in that device. For example, devices directly formatted or mounted are not
+        // considered as installation devices.
+        const volumes = dbusSettings.Volumes.v.filter(vol => (
+          [VolumeTargets.NEW_PARTITION, VolumeTargets.NEW_VG].includes(vol.v.Target.v))
+        );
+
         const values = [
           dbusSettings.TargetDevice?.v,
           buildTargetPVDevices(dbusSettings.TargetPVDevices),
-          dbusSettings.Volumes.v.map(vol => vol.v.TargetDevice.v)
+          volumes.map(vol => vol.v.TargetDevice.v)
         ].flat();
 
         if (dbusSettings.ConfigureBoot.v) values.push(dbusSettings.BootDevice.v);

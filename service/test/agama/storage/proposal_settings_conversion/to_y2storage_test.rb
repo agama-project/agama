@@ -135,6 +135,25 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
             expect(y2storage_settings.candidate_devices).to contain_exactly("/dev/sda")
           end
         end
+
+        context "and a volume is reusing a device" do
+          before do
+            settings.volumes = [
+              Agama::Storage::Volume.new("/test1").tap do |volume|
+                volume.location.target = :device
+                volume.location.device = "/dev/sdb"
+              end
+            ]
+          end
+
+          it "does not set the target device as device for the volume with missing device" do
+            y2storage_settings = subject.convert
+
+            expect(y2storage_settings.volumes).to contain_exactly(
+              an_object_having_attributes(mount_point: "/test1", device: nil)
+            )
+          end
+        end
       end
 
       context "when the device settings is set to create a new LVM volume group" do

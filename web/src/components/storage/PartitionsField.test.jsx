@@ -183,9 +183,10 @@ beforeEach(() => {
   props = {
     volumes: [rootVolume, swapVolume],
     templates: [],
-    devices: [],
+    availableDevices: [],
+    volumeDevices: [sda],
     target: "DISK",
-    targetDevice: undefined,
+    targetDevices: [],
     configureBoot: false,
     bootDevice: undefined,
     defaultBootDevice: undefined,
@@ -346,6 +347,44 @@ describe("if there are volumes", () => {
 
     const popup = await screen.findByRole("dialog");
     within(popup).getByText("Location for /home file system");
+  });
+
+  // FIXME: improve at least the test description
+  it("does not allow resetting the volume location when already using the default location", async () => {
+    const { user } = await expandField();
+
+    const [, body] = await screen.findAllByRole("rowgroup");
+    const row = within(body).getByRole("row", { name: "/home XFS at least 1 KiB Partition at installation disk" });
+    const actions = within(row).getByRole("button", { name: "Actions" });
+    await user.click(actions);
+    expect(within(row).queryByRole("menuitem", { name: "Reset location" })).toBeNull();
+  });
+
+  describe("and a volume has a non default location", () => {
+    beforeEach(() => {
+      props.volumes = [{ ...homeVolume, target: "NEW_PARTITION", targetDevice: sda }];
+    });
+
+    it("allows resetting the volume location", async () => {
+      const { user } = await expandField();
+
+      const [, body] = await screen.findAllByRole("rowgroup");
+      const row = within(body).getByRole("row", { name: "/home XFS at least 1 KiB Partition at /dev/sda" });
+      const actions = within(row).getByRole("button", { name: "Actions" });
+      await user.click(actions);
+      const resetLocationAction = within(row).queryByRole("menuitem", { name: "Reset location" });
+      await user.click(resetLocationAction);
+      expect(props.onVolumesChange).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ mountPath: "/home", target: "DEFAULT", targetDevice: undefined })
+        ])
+      );
+
+      // NOTE: sadly we cannot perform the below check because the component is
+      // always receiving the same mocked props and will still having a /home as
+      // "Partition at /dev/sda"
+      // await within(body).findByRole("row", { name: "/home XFS at least 1 KiB Partition at installation device" });
+    });
   });
 
   describe("and there is a transactional Btrfs root volume", () => {

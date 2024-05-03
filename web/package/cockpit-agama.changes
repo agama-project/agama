@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May  3 09:45:36 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Allow reusing an existing device or file system
+  (gh#openSUSE/agama#1165).
+
+-------------------------------------------------------------------
 Thu May 02 11:07:23 UTC 2024 - Balsa Asanovic <balsaasanovic95@gmail.com>
 
 - Added keyboard support for navigating dropdown
