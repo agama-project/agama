@@ -1,3 +1,4 @@
+use crate::auth;
 use crate::error::CliError;
 use crate::printers::{print, Format};
 use agama_lib::connection;
@@ -31,41 +32,57 @@ pub enum ConfigAction {
     Load(String),
 }
 
-pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<()> {
-    let store = SettingsStore::new(connection().await?).await?;
+fn token() -> Option<String> {
+    match auth::jwt() {
+        Ok(token) => return Some(token),
+        Err(_) => match auth::agama_token() {
+            Ok(token) => return Some(token),
+            Err(_) => return None,
+        },
+    }
+}
 
-    let command = parse_config_command(subcommand)?;
-    match command {
-        ConfigAction::Set(changes) => {
-            let scopes = changes
-                .keys()
-                .filter_map(|k| key_to_scope(k).ok())
-                .collect();
-            let mut model = store.load(Some(scopes)).await?;
-            for (key, value) in changes {
-                model.set(&key.to_case(Case::Snake), SettingValue(value))?;
+pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<()> {
+    if let Some(token) = token() {
+        let client = agama_lib::http_client(token)?;
+        let store = SettingsStore::new(connection().await?, client).await?;
+
+        let command = parse_config_command(subcommand)?;
+        match command {
+            ConfigAction::Set(changes) => {
+                let scopes = changes
+                    .keys()
+                    .filter_map(|k| key_to_scope(k).ok())
+                    .collect();
+                let mut model = store.load(Some(scopes)).await?;
+                for (key, value) in changes {
+                    model.set(&key.to_case(Case::Snake), SettingValue(value))?;
+                }
+                Ok(store.store(&model).await?)
             }
-            Ok(store.store(&model).await?)
+            ConfigAction::Show => {
+                let model = store.load(None).await?;
+                print(model, io::stdout(), format)?;
+                Ok(())
+            }
+            ConfigAction::Add(key, values) => {
+                let scope = key_to_scope(&key).unwrap();
+                let mut model = store.load(Some(vec![scope])).await?;
+                model.add(&key.to_case(Case::Snake), SettingObject::from(values))?;
+                Ok(store.store(&model).await?)
+            }
+            ConfigAction::Load(path) => {
+                let contents = std::fs::read_to_string(path)?;
+                let result: InstallSettings = serde_json::from_str(&contents)?;
+                let scopes = result.defined_scopes();
+                let mut model = store.load(Some(scopes)).await?;
+                model.merge(&result);
+                Ok(store.store(&model).await?)
+            }
         }
-        ConfigAction::Show => {
-            let model = store.load(None).await?;
-            print(model, io::stdout(), format)?;
-            Ok(())
-        }
-        ConfigAction::Add(key, values) => {
-            let scope = key_to_scope(&key).unwrap();
-            let mut model = store.load(Some(vec![scope])).await?;
-            model.add(&key.to_case(Case::Snake), SettingObject::from(values))?;
-            Ok(store.store(&model).await?)
-        }
-        ConfigAction::Load(path) => {
-            let contents = std::fs::read_to_string(path)?;
-            let result: InstallSettings = serde_json::from_str(&contents)?;
-            let scopes = result.defined_scopes();
-            let mut model = store.load(Some(scopes)).await?;
-            model.merge(&result);
-            Ok(store.store(&model).await?)
-        }
+    } else {
+        println!("You need to login for generating a valid token");
+        Ok(())
     }
 }
 

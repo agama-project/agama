@@ -98,7 +98,9 @@ pub async fn network_service<T: Adapter + Send + Sync + 'static>(
         .route("/connections", get(connections).post(add_connection))
         .route(
             "/connections/:id",
-            delete(delete_connection).put(update_connection),
+            delete(delete_connection)
+                .put(update_connection)
+                .get(connection),
         )
         .route("/connections/:id/connect", get(connect))
         .route("/connections/:id/disconnect", get(disconnect))
@@ -158,6 +160,24 @@ async fn devices(
     Ok(Json(state.network.get_devices().await?))
 }
 
+#[utoipa::path(get, path = "/network/connections/:id", responses(
+  (status = 200, description = "Get connection given by its id", body = NetworkConnection)
+))]
+async fn connection(
+    State(state): State<NetworkServiceState>,
+    Path(id): Path<String>,
+) -> Result<Json<NetworkConnection>, NetworkError> {
+    let conn = state
+        .network
+        .get_connection(&id)
+        .await?
+        .ok_or_else(|| NetworkError::UnknownConnection(id.clone()))?;
+
+    let conn = NetworkConnection::try_from(conn)?;
+
+    Ok(Json(conn))
+}
+
 #[utoipa::path(get, path = "/network/connections", responses(
   (status = 200, description = "List of known connections", body = Vec<NetworkConnection>)
 ))]
@@ -169,6 +189,7 @@ async fn connections(
         .iter()
         .map(|c| NetworkConnection::try_from(c.clone()).unwrap())
         .collect();
+
     Ok(Json(connections))
 }
 

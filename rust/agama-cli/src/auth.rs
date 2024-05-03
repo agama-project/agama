@@ -9,6 +9,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 
 const DEFAULT_JWT_FILE: &str = ".agama/agama-jwt";
+const DEFAULT_AGAMA_TOKEN_FILE: &str = "/run/agama/token";
 const DEFAULT_AUTH_URL: &str = "http://localhost:3000/api/auth";
 const DEFAULT_FILE_MODE: u32 = 0o600;
 
@@ -33,8 +34,19 @@ pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
     }
 }
 
+/// Reads stored agama-live token and returns it
+pub fn agama_token() -> anyhow::Result<String> {
+    if let Some(file) = agama_token_file() {
+        if let Ok(token) = read_line_from_file(file.as_path()) {
+            return Ok(token);
+        }
+    }
+
+    Err(anyhow::anyhow!("Authentication token not available"))
+}
+
 /// Reads stored token and returns it
-fn jwt() -> anyhow::Result<String> {
+pub fn jwt() -> anyhow::Result<String> {
     if let Some(file) = jwt_file() {
         if let Ok(token) = read_line_from_file(file.as_path()) {
             return Ok(token);
@@ -108,6 +120,10 @@ impl Credentials for MissingCredentials {
 /// Path to file where JWT is stored
 fn jwt_file() -> Option<PathBuf> {
     Some(home::home_dir()?.join(DEFAULT_JWT_FILE))
+}
+/// Path to agama-live token file
+fn agama_token_file() -> Option<PathBuf> {
+    Some(home::home_dir()?.join(DEFAULT_AGAMA_TOKEN_FILE))
 }
 
 /// Reads first line from given file

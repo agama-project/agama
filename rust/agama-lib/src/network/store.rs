@@ -1,17 +1,16 @@
 use super::settings::NetworkConnection;
 use crate::error::ServiceError;
 use crate::network::{NetworkClient, NetworkSettings};
-use zbus::Connection;
 
 /// Loads and stores the network settings from/to the D-Bus service.
-pub struct NetworkStore<'a> {
-    network_client: NetworkClient<'a>,
+pub struct NetworkStore {
+    network_client: NetworkClient,
 }
 
-impl<'a> NetworkStore<'a> {
-    pub async fn new(connection: Connection) -> Result<NetworkStore<'a>, ServiceError> {
+impl NetworkStore {
+    pub async fn new(client: reqwest::Client) -> Result<NetworkStore, ServiceError> {
         Ok(Self {
-            network_client: NetworkClient::new(connection).await?,
+            network_client: NetworkClient::new(client).await?,
         })
     }
 
@@ -27,7 +26,9 @@ impl<'a> NetworkStore<'a> {
             let id = id.as_str();
             let fallback = default_connection(id);
             let conn = find_connection(id, &settings.connections).unwrap_or(&fallback);
-            self.network_client.add_or_update_connection(conn).await?;
+            self.network_client
+                .add_or_update_connection(conn.clone())
+                .await?;
         }
         self.network_client.apply().await?;
 

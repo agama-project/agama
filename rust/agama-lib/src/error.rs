@@ -18,6 +18,8 @@ pub enum ServiceError {
     // specific error will be printed too
     #[error("Error: {0}")]
     Anyhow(#[from] anyhow::Error),
+    #[error("Network client error: '{0}'")]
+    NetworkClientError(String),
     #[error("Wrong user parameters: '{0:?}'")]
     WrongUser(Vec<String>),
     #[error("Registration failed: '{0}'")]
