@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-28 02:18+0000\n"
-"PO-Revision-Date: 2024-04-24 13:43+0000\n"
+"POT-Creation-Date: 2024-05-05 02:16+0000\n"
+"PO-Revision-Date: 2024-04-29 01:43+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -127,7 +127,7 @@ msgstr ""
 "何か不安な点があれば、キャンセルして設定を確認しておくことをお勧めします。"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:65 src/components/core/Popup.jsx:129
+#: src/components/core/InstallButton.jsx:65 src/components/core/Popup.jsx:130
 #: src/components/network/WifiConnectionForm.jsx:136
 msgid "Cancel"
 msgstr "キャンセル"
@@ -155,8 +155,8 @@ msgstr ""
 #: src/components/product/ProductPage.jsx:71
 #: src/components/product/ProductPage.jsx:140
 #: src/components/product/ProductPage.jsx:207
-#: src/components/storage/EncryptionSettingsDialog.jsx:126
-#: src/components/storage/VolumeDialog.jsx:750
+#: src/components/storage/EncryptionSettingsDialog.jsx:141
+#: src/components/storage/VolumeDialog.jsx:787
 #: src/components/storage/ZFCPPage.jsx:511
 msgid "Accept"
 msgstr "受け入れる"
@@ -292,12 +292,18 @@ msgstr "パスワードの確認"
 msgid "Password visibility button"
 msgstr "パスワード表示ボタン"
 
-#: src/components/core/Popup.jsx:93
+#: src/components/core/Popup.jsx:94
 msgid "Confirm"
 msgstr "確認"
 
+#. TRANSLATORS: progress message
+#: src/components/core/Popup.jsx:204
+#, fuzzy
+msgid "Loading data..."
+msgstr "ファイルを読み込んでいます..."
+
 #: src/components/core/RowActions.jsx:64
-#: src/components/storage/PartitionsField.jsx:461
+#: src/components/storage/PartitionsField.jsx:457
 msgid "Actions"
 msgstr "処理"
 
@@ -542,10 +548,10 @@ msgid "IP addresses"
 msgstr "IP アドレス"
 
 #: src/components/network/ConnectionsTable.jsx:67
-#: src/components/storage/PartitionsField.jsx:361
+#: src/components/storage/PartitionsField.jsx:315
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:208
+#: src/components/users/FirstUser.jsx:212
 msgid "Edit"
 msgstr "編集"
 
@@ -694,7 +700,7 @@ msgstr "WPA および WPA2 Personal"
 #: src/components/storage/ZFCPDiskForm.jsx:112
 #: src/components/storage/iscsi/DiscoverForm.jsx:108
 #: src/components/storage/iscsi/LoginForm.jsx:72
-#: src/components/users/FirstUser.jsx:242
+#: src/components/users/FirstUser.jsx:280
 msgid "Something went wrong"
 msgstr "何らかの問題が発生しました"
 
@@ -938,7 +944,7 @@ msgstr "ストレージデバイスを検出しています"
 #. TRANSLATORS: Storage page title
 #. TRANSLATORS: page section title
 #: src/components/overview/StorageSection.jsx:293
-#: src/components/storage/ProposalPage.jsx:227
+#: src/components/storage/ProposalPage.jsx:267
 msgid "Storage"
 msgstr "ストレージ"
 
@@ -1116,15 +1122,11 @@ msgstr "インストールを行うには %s が必要です"
 msgid "Change boot options"
 msgstr "起動オプションの変更"
 
-#: src/components/storage/BootConfigField.jsx:91
-msgid "Waiting for information about boot config"
-msgstr "起動設定に関する情報を待機しています"
-
-#: src/components/storage/BootConfigField.jsx:97
+#: src/components/storage/BootConfigField.jsx:99
 msgid "Installation will not configure partitions for booting."
 msgstr "インストール作業では起動用のパーティションを設定しません。"
 
-#: src/components/storage/BootConfigField.jsx:99
+#: src/components/storage/BootConfigField.jsx:101
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr ""
@@ -1132,12 +1134,12 @@ msgstr ""
 "す。"
 
 #. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/BootConfigField.jsx:102
+#: src/components/storage/BootConfigField.jsx:104
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "インストール作業で %s に起動用のパーティションを設定します。"
 
-#: src/components/storage/BootSelectionDialog.jsx:116
+#: src/components/storage/BootSelectionDialog.jsx:117
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
@@ -1145,46 +1147,44 @@ msgstr ""
 "システムを起動できるようにするため、インストーラはディスク内にいくつかの追加"
 "パーティションを作成もしくは設定する必要があるかもしれません。"
 
-#: src/components/storage/BootSelectionDialog.jsx:122
+#: src/components/storage/BootSelectionDialog.jsx:123
 msgid "Partitions to boot will be allocated at the installation disk."
 msgstr "インストール先のディスク内に起動用のパーティションを割り当てます。"
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelectionDialog.jsx:127
+#: src/components/storage/BootSelectionDialog.jsx:128
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
 msgstr ""
 "インストール先のディスク (%s) 内に起動用のパーティションを割り当てます。"
 
-#: src/components/storage/BootSelectionDialog.jsx:134
+#: src/components/storage/BootSelectionDialog.jsx:135
 msgid "Partitions for booting"
 msgstr "起動用パーティション"
 
-#: src/components/storage/BootSelectionDialog.jsx:143
-#: src/components/storage/VolumeLocationDialog.jsx:157
+#: src/components/storage/BootSelectionDialog.jsx:144
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
 msgstr "自動"
 
-#: src/components/storage/BootSelectionDialog.jsx:154
-#: src/components/storage/DeviceSelectionDialog.jsx:131
-#: src/components/storage/VolumeLocationDialog.jsx:168
+#: src/components/storage/BootSelectionDialog.jsx:155
+#: src/components/storage/DeviceSelectionDialog.jsx:140
 msgid "Select a disk"
 msgstr "ディスクの選択"
 
-#: src/components/storage/BootSelectionDialog.jsx:160
+#: src/components/storage/BootSelectionDialog.jsx:161
 msgid "Partitions to boot will be allocated at the following device."
 msgstr "下記のデバイス内に起動用パーティションを割り当てます。"
 
-#: src/components/storage/BootSelectionDialog.jsx:163
+#: src/components/storage/BootSelectionDialog.jsx:164
 msgid "Choose a disk for placing the boot loader"
 msgstr "ブートローダを配置するディスクを選択してください"
 
-#: src/components/storage/BootSelectionDialog.jsx:175
+#: src/components/storage/BootSelectionDialog.jsx:176
 msgid "Do not configure"
 msgstr "設定しない"
 
-#: src/components/storage/BootSelectionDialog.jsx:179
+#: src/components/storage/BootSelectionDialog.jsx:180
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr "起動用のパーティションを自動設定しません。注意してお使いください。"
@@ -1233,9 +1233,10 @@ msgid "Status"
 msgstr "状態"
 
 #: src/components/storage/DASDTable.jsx:66
-#: src/components/storage/DeviceSelectorTable.jsx:40
-#: src/components/storage/ProposalResultSection.jsx:188
-#: src/components/storage/SpaceActionsTable.jsx:181
+#: src/components/storage/DeviceSelectorTable.jsx:187
+#: src/components/storage/ProposalResultTable.jsx:125
+#: src/components/storage/SpaceActionsTable.jsx:141
+#: src/components/storage/VolumeLocationSelectorTable.jsx:100
 msgid "Device"
 msgstr "デバイス"
 
@@ -1311,7 +1312,7 @@ msgstr "最大チャネルのフィルタを削除"
 #. TRANSLATORS: description for using plain partitions for installing the
 #. system, the text in the square brackets [] is displayed in bold, use only
 #. one pair in the translation
-#: src/components/storage/DeviceSelectionDialog.jsx:103
+#: src/components/storage/DeviceSelectionDialog.jsx:111
 msgid ""
 "The file systems will be allocated by default as [new partitions in the "
 "selected device]."
@@ -1322,7 +1323,7 @@ msgstr ""
 #. TRANSLATORS: description for using logical volumes for installing the
 #. system, the text in the square brackets [] is displayed in bold, use only
 #. one pair in the translation
-#: src/components/storage/DeviceSelectionDialog.jsx:108
+#: src/components/storage/DeviceSelectionDialog.jsx:116
 msgid ""
 "The file systems will be allocated by default as [logical volumes of a new "
 "LVM Volume Group]. The corresponding physical volumes will be created on "
@@ -1332,37 +1333,99 @@ msgstr ""
 "して割り当てます。対応する物理ボリュームは、必要に応じて選択したデバイス内の"
 "新規パーティションとして作成します。"
 
-#: src/components/storage/DeviceSelectionDialog.jsx:115
+#: src/components/storage/DeviceSelectionDialog.jsx:123
 msgid "Device for installing the system"
 msgstr "システムのインストール先デバイス"
 
-#: src/components/storage/DeviceSelectionDialog.jsx:140
+#: src/components/storage/DeviceSelectionDialog.jsx:149
 msgid "Create an LVM Volume Group"
 msgstr "LVM ボリュームグループの作成"
 
-#: src/components/storage/DeviceSelectionDialog.jsx:150
+#: src/components/storage/DeviceSelectionDialog.jsx:159
 msgid "Device selector for target disk"
 msgstr "宛先のディスクデバイス選択"
 
-#: src/components/storage/DeviceSelectionDialog.jsx:166
+#: src/components/storage/DeviceSelectionDialog.jsx:175
 msgid "Device selector for new LVM volume group"
 msgstr "新規 LVM ボリュームグループのデバイス選択"
 
-#: src/components/storage/DeviceSelectorTable.jsx:34
-#: src/components/storage/ProposalResultSection.jsx:135
-#: src/components/storage/SpaceActionsTable.jsx:67
-msgid "Unused space"
-msgstr "未使用の領域"
+#. TRANSLATORS: multipath device type
+#: src/components/storage/DeviceSelectorTable.jsx:58
+msgid "Multipath"
+msgstr "マルチパス"
 
-#: src/components/storage/DeviceSelectorTable.jsx:41
-msgid "Content"
-msgstr "内容"
+#. TRANSLATORS: %s is replaced by the device bus ID
+#: src/components/storage/DeviceSelectorTable.jsx:63
+#, c-format
+msgid "DASD %s"
+msgstr "DASD %s"
 
-#: src/components/storage/DeviceSelectorTable.jsx:42
-#: src/components/storage/PartitionsField.jsx:458
-#: src/components/storage/ProposalResultSection.jsx:191
-#: src/components/storage/SpaceActionsTable.jsx:183
+#. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
+#: src/components/storage/DeviceSelectorTable.jsx:68
+#, c-format
+msgid "Software %s"
+msgstr "ソフトウエア %s"
+
+#: src/components/storage/DeviceSelectorTable.jsx:73
+msgid "SD Card"
+msgstr "SD カード"
+
+#. TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
+#: src/components/storage/DeviceSelectorTable.jsx:78
+#, c-format
+msgid "%s disk"
+msgstr "%s ディスク"
+
+#: src/components/storage/DeviceSelectorTable.jsx:79
+msgid "Disk"
+msgstr "ディスク"
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/DeviceSelectorTable.jsx:99
+#, c-format
+msgid "Members: %s"
+msgstr "メンバー: %s"
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/DeviceSelectorTable.jsx:108
+#, c-format
+msgid "Devices: %s"
+msgstr "デバイス: %s"
+
+#. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
+#: src/components/storage/DeviceSelectorTable.jsx:117
+#, c-format
+msgid "Wires: %s"
+msgstr "接続: %s"
+
+#. TRANSLATORS: disk partition info, %s is replaced by partition table
+#. type (MS-DOS or GPT), %d is the number of the partitions
+#: src/components/storage/DeviceSelectorTable.jsx:153
+#, c-format
+msgid "%s with %d partitions"
+msgstr "%s (%d 個のパーティション)"
+
+#. TRANSLATORS: status message, no existing content was found on the disk,
+#. i.e. the disk is completely empty
+#: src/components/storage/DeviceSelectorTable.jsx:159
+#: src/components/storage/SpaceActionsTable.jsx:114
+msgid "No content found"
+msgstr "内容が見つかりませんでした"
+
+#: src/components/storage/DeviceSelectorTable.jsx:188
+#: src/components/storage/PartitionsField.jsx:453
+#: src/components/storage/ProposalResultTable.jsx:127
+#: src/components/storage/SpaceActionsTable.jsx:142
+#: src/components/storage/VolumeLocationSelectorTable.jsx:101
+msgid "Details"
+msgstr "詳細"
+
+#: src/components/storage/DeviceSelectorTable.jsx:189
+#: src/components/storage/PartitionsField.jsx:454
+#: src/components/storage/ProposalResultTable.jsx:128
+#: src/components/storage/SpaceActionsTable.jsx:143
 #: src/components/storage/VolumeFields.jsx:466
+#: src/components/storage/VolumeLocationSelectorTable.jsx:103
 msgid "Size"
 msgstr "サイズ"
 
@@ -1412,7 +1475,7 @@ msgstr ""
 "てパスワードが不要になります。 TPM シーリングを使用するには、新しいシステムの"
 "初回起動時に直接起動を行う必要があります。"
 
-#: src/components/storage/EncryptionSettingsDialog.jsx:99
+#: src/components/storage/EncryptionSettingsDialog.jsx:114
 msgid "Encrypt the system"
 msgstr "システムの暗号化"
 
@@ -1422,6 +1485,7 @@ msgid "Storage iSCSI"
 msgstr "ストレージ iSCSI"
 
 #: src/components/storage/InstallationDeviceField.jsx:38
+#: src/components/storage/VolumeLocationSelectorTable.jsx:58
 msgid "Installation device"
 msgstr "インストール先のデバイス"
 
@@ -1446,73 +1510,69 @@ msgstr "%s 内の新規 LVM ボリュームグループ"
 msgid "storage technologies"
 msgstr "ストレージ技術"
 
-#: src/components/storage/InstallationDeviceField.jsx:112
-msgid "Waiting for information about selected device"
-msgstr "選択したデバイスに関する情報を待機しています"
-
 #: src/components/storage/InstallationDeviceField.jsx:124
 msgid "Prepare more devices by configuring advanced"
 msgstr "高度な設定でさらにデバイスを検出"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:66
+#: src/components/storage/PartitionsField.jsx:65
 #, c-format
 msgid "at least %s"
 msgstr "少なくとも %s"
 
 #. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:90
+#: src/components/storage/PartitionsField.jsx:89
 #, c-format
 msgid "Transactional Btrfs root volume (%s)"
 msgstr "トランザクション型の btrfs ルートボリューム (%s)"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:92
+#: src/components/storage/PartitionsField.jsx:91
 #, c-format
 msgid "Transactional Btrfs root partition (%s)"
 msgstr "トランザクション型の btrfs ルートパーティション (%s)"
 
 #. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:97
+#: src/components/storage/PartitionsField.jsx:96
 #, c-format
 msgid "Btrfs root volume with snapshots (%s)"
 msgstr "スナップショット有りの btrfs ルートボリューム (%s)"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:99
+#: src/components/storage/PartitionsField.jsx:98
 #, c-format
 msgid "Btrfs root partition with snapshots (%s)"
 msgstr "スナップショット有りの btrfs ルートパーティション (%s)"
 
 #. TRANSLATORS: This results in something like "Mount /dev/sda3 at /home (25 GiB)" since
 #. %1$s is replaced by the device name, %2$s by the mount point and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:108
+#: src/components/storage/PartitionsField.jsx:107
 #, c-format
 msgid "Mount %1$s at %2$s (%3$s)"
 msgstr "%1$s を %2$s にマウント (%3$s)"
 
 #. TRANSLATORS: This results in something like "Swap at /dev/sda3 (2 GiB)" since
 #. %1$s is replaced by the device name, and %2$s by the size
-#: src/components/storage/PartitionsField.jsx:114
+#: src/components/storage/PartitionsField.jsx:113
 #, c-format
 msgid "Swap at %1$s (%2$s)"
 msgstr "%1$s にスワップを配置 (%2$s)"
 
 #. TRANSLATORS: Swap is in an LVM logical volume. %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:118
+#: src/components/storage/PartitionsField.jsx:117
 #, c-format
 msgid "Swap volume (%s)"
 msgstr "スワップボリューム (%s)"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:120
+#: src/components/storage/PartitionsField.jsx:119
 #, c-format
 msgid "Swap partition (%s)"
 msgstr "スワップパーティション (%s)"
 
 #. TRANSLATORS: This results in something like "Btrfs root at /dev/sda3 (20 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the device name, and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:129
+#: src/components/storage/PartitionsField.jsx:128
 #, c-format
 msgid "%1$s root at %2$s (%3$s)"
 msgstr "%2$s (%3$s) に %1$s ルートを配置"
@@ -1520,21 +1580,21 @@ msgstr "%2$s (%3$s) に %1$s ルートを配置"
 #. TRANSLATORS: "/" is in an LVM logical volume.
 #. Results in something like "Btrfs root volume (at least 20 GiB)" since
 #. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:135
+#: src/components/storage/PartitionsField.jsx:134
 #, c-format
 msgid "%1$s root volume (%2$s)"
 msgstr "%1$s ルートボリューム (%2$s)"
 
 #. TRANSLATORS: Results in something like "Btrfs root partition (at least 20 GiB)" since
 #. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:138
+#: src/components/storage/PartitionsField.jsx:137
 #, c-format
 msgid "%1$s root partition (%2$s)"
 msgstr "%1$s ルートパーティション (%2$s)"
 
 #. TRANSLATORS: This results in something like "Ext4 /home at /dev/sda3 (20 GiB)" since
 #. %1$s is replaced by filesystem type, %2$s by mount point, %3$s by device name and %4$s by size
-#: src/components/storage/PartitionsField.jsx:144
+#: src/components/storage/PartitionsField.jsx:143
 #, c-format
 msgid "%1$s %2$s at %3$s (%4$s)"
 msgstr "%3$s (%4$s) に %1$s %2$s を配置"
@@ -1542,145 +1602,143 @@ msgstr "%3$s (%4$s) に %1$s %2$s を配置"
 #. TRANSLATORS: The filesystem is in an LVM logical volume.
 #. Results in something like "Ext4 /home volume (at least 10 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:150
+#: src/components/storage/PartitionsField.jsx:149
 #, c-format
 msgid "%1$s %2$s volume (%3$s)"
 msgstr "%1$s %2$s ボリューム (%3$s)"
 
 #. TRANSLATORS: This results in something like "Ext4 /home partition (at least 10 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:153
+#: src/components/storage/PartitionsField.jsx:152
 #, c-format
 msgid "%1$s %2$s partition (%3$s)"
 msgstr "%1$s %2$s パーティション (%3$s)"
 
-#: src/components/storage/PartitionsField.jsx:165
+#: src/components/storage/PartitionsField.jsx:164
 msgid "Do not configure partitions for booting"
 msgstr "起動用のパーティションを設定しない"
 
-#: src/components/storage/PartitionsField.jsx:168
+#: src/components/storage/PartitionsField.jsx:167
 msgid "Boot partitions at installation disk"
 msgstr "インストール先のディスクに起動用のパーティションを設定する"
 
 #. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/PartitionsField.jsx:171
+#: src/components/storage/PartitionsField.jsx:170
 #, c-format
 msgid "Boot partitions at %s"
 msgstr "%s に起動用のパーティションを設定する"
 
 #. TRANSLATORS: header for a list of items referring to size limits for file systems
-#: src/components/storage/PartitionsField.jsx:193
+#: src/components/storage/PartitionsField.jsx:192
 msgid "These limits are affected by:"
 msgstr "これらの制限は下記による影響を受けます:"
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
-#: src/components/storage/PartitionsField.jsx:197
+#: src/components/storage/PartitionsField.jsx:196
 msgid "The configuration of snapshots"
 msgstr "スナップショットの設定"
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
 #. %s is replaced by a list of the volumes (like "/home, /boot")
-#: src/components/storage/PartitionsField.jsx:201
+#: src/components/storage/PartitionsField.jsx:200
 #, c-format
 msgid "Presence of other volumes (%s)"
 msgstr "その他のボリューム (%s) の存在"
 
 #. TRANSLATORS: list item, describes a factor that affects the computed size of a
 #. file system; eg. adjusting the size of the swap
-#: src/components/storage/PartitionsField.jsx:205
+#: src/components/storage/PartitionsField.jsx:204
 msgid "The amount of RAM in the system"
 msgstr "システムに搭載された RAM の量"
 
-#. TRANSLATORS: device flag, the partition size is automatically computed
-#: src/components/storage/PartitionsField.jsx:298
+#: src/components/storage/PartitionsField.jsx:257
 msgid "auto"
 msgstr "自動"
 
 #. TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
-#: src/components/storage/PartitionsField.jsx:314
+#: src/components/storage/PartitionsField.jsx:274
 #, c-format
 msgid "Reused %s"
 msgstr "%s の再利用"
 
-#: src/components/storage/PartitionsField.jsx:316
+#: src/components/storage/PartitionsField.jsx:276
 msgid "Transactional Btrfs"
 msgstr "トランザクション型 btrfs"
 
-#: src/components/storage/PartitionsField.jsx:318
+#: src/components/storage/PartitionsField.jsx:278
 msgid "Btrfs with snapshots"
 msgstr "スナップショット有りの btrfs"
 
 #. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:332
+#: src/components/storage/PartitionsField.jsx:292
 #, c-format
 msgid "Partition at %s"
 msgstr "%s に存在するパーティション"
 
 #. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:335
+#: src/components/storage/PartitionsField.jsx:295
 #, c-format
 msgid "Separate LVM at %s"
 msgstr "%s に存在する個別の LVM"
 
-#: src/components/storage/PartitionsField.jsx:339
+#: src/components/storage/PartitionsField.jsx:299
 msgid "Logical volume at system LVM"
 msgstr "システム LVM 内の論理ボリューム"
 
-#: src/components/storage/PartitionsField.jsx:341
+#: src/components/storage/PartitionsField.jsx:301
 msgid "Partition at installation disk"
 msgstr "インストール先のディスクのパーティション"
 
-#: src/components/storage/PartitionsField.jsx:356
-#: src/components/storage/SpaceActionsTable.jsx:122
+#: src/components/storage/PartitionsField.jsx:316
+#, fuzzy
+msgid "Reset location"
+msgstr "登録"
+
+#: src/components/storage/PartitionsField.jsx:317
+msgid "Change location"
+msgstr "場所の変更"
+
+#: src/components/storage/PartitionsField.jsx:318
+#: src/components/storage/SpaceActionsTable.jsx:78
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
 msgid "Delete"
 msgstr "削除"
 
-#: src/components/storage/PartitionsField.jsx:365
-msgid "Change location"
-msgstr "場所の変更"
-
-#: src/components/storage/PartitionsField.jsx:456
+#: src/components/storage/PartitionsField.jsx:452
 #: src/components/storage/VolumeFields.jsx:53
 #: src/components/storage/VolumeFields.jsx:62
 #: src/components/storage/VolumeFields.jsx:67
 msgid "Mount point"
 msgstr "マウントポイント"
 
-#: src/components/storage/PartitionsField.jsx:457
-#: src/components/storage/ProposalResultSection.jsx:190
-#: src/components/storage/SpaceActionsTable.jsx:182
-msgid "Details"
-msgstr "詳細"
-
 #. TRANSLATORS: where (and how) the file-system is going to be created
-#: src/components/storage/PartitionsField.jsx:460
+#: src/components/storage/PartitionsField.jsx:456
 msgid "Location"
 msgstr "場所"
 
-#: src/components/storage/PartitionsField.jsx:502
+#: src/components/storage/PartitionsField.jsx:498
 msgid "Table with mount points"
 msgstr "マウントポイントの一覧"
 
-#: src/components/storage/PartitionsField.jsx:573
-#: src/components/storage/PartitionsField.jsx:592
-#: src/components/storage/VolumeDialog.jsx:91
+#: src/components/storage/PartitionsField.jsx:569
+#: src/components/storage/PartitionsField.jsx:588
+#: src/components/storage/VolumeDialog.jsx:84
 msgid "Add file system"
 msgstr "ファイルシステムの追加"
 
-#: src/components/storage/PartitionsField.jsx:601
+#: src/components/storage/PartitionsField.jsx:599
 msgid "Other"
-msgstr ""
+msgstr "その他"
 
-#: src/components/storage/PartitionsField.jsx:733
+#: src/components/storage/PartitionsField.jsx:738
 msgid "Reset to defaults"
 msgstr "既定値に戻す"
 
-#: src/components/storage/PartitionsField.jsx:806
+#: src/components/storage/PartitionsField.jsx:813
 msgid "Partitions and file systems"
 msgstr "パーティションとファイルシステム"
 
-#: src/components/storage/PartitionsField.jsx:807
+#: src/components/storage/PartitionsField.jsx:814
 msgid ""
 "Structure of the new system, including any additional partition needed for "
 "booting,"
@@ -1741,22 +1799,12 @@ msgstr "下記に影響があります:"
 msgid "Check all planned actions"
 msgstr "全ての処理計画を確認する"
 
-#: src/components/storage/ProposalResultSection.jsx:130
-msgid "New"
-msgstr "新規"
+#: src/components/storage/ProposalResultSection.jsx:107
+#, fuzzy
+msgid "Waiting for information about storage configuration"
+msgstr "起動設定に関する情報を待機しています"
 
-#. TRANSLATORS: Label to indicate the device size before resizing, where %s is replaced by
-#. the original size (e.g., 3.00 GiB).
 #: src/components/storage/ProposalResultSection.jsx:167
-#, c-format
-msgid "Before %s"
-msgstr "変更前: %s"
-
-#: src/components/storage/ProposalResultSection.jsx:189
-msgid "Mount Point"
-msgstr "マウントポイント"
-
-#: src/components/storage/ProposalResultSection.jsx:268
 #, c-format
 msgid ""
 "During installation, %d action will be performed to configure the system as "
@@ -1769,11 +1817,26 @@ msgstr[0] ""
 "す"
 
 #. TRANSLATORS: The storage "Result" section's title
-#: src/components/storage/ProposalResultSection.jsx:276
+#: src/components/storage/ProposalResultSection.jsx:175
 msgid "Result"
 msgstr "結果"
 
-#: src/components/storage/ProposalSettingsSection.jsx:117
+#: src/components/storage/ProposalResultTable.jsx:73
+msgid "New"
+msgstr "新規"
+
+#. TRANSLATORS: Label to indicate the device size before resizing, where %s is
+#. replaced by the original size (e.g., 3.00 GiB).
+#: src/components/storage/ProposalResultTable.jsx:100
+#, c-format
+msgid "Before %s"
+msgstr "変更前: %s"
+
+#: src/components/storage/ProposalResultTable.jsx:126
+msgid "Mount Point"
+msgstr "マウントポイント"
+
+#: src/components/storage/ProposalSettingsSection.jsx:145
 msgid "Settings"
 msgstr "設定"
 
@@ -1803,43 +1866,36 @@ msgstr ""
 "戻して起動することができます。"
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., /dev/sda)
-#: src/components/storage/SpaceActionsTable.jsx:119
+#: src/components/storage/SpaceActionsTable.jsx:75
 #, c-format
 msgid "Space action selector for %s"
 msgstr "%s に対する領域処理の選択"
 
-#: src/components/storage/SpaceActionsTable.jsx:123
+#: src/components/storage/SpaceActionsTable.jsx:79
 msgid "Allow resize"
 msgstr "サイズ変更の許可"
 
-#: src/components/storage/SpaceActionsTable.jsx:124
+#: src/components/storage/SpaceActionsTable.jsx:80
 msgid "Do not modify"
 msgstr "変更しない"
 
-#: src/components/storage/SpaceActionsTable.jsx:154
+#: src/components/storage/SpaceActionsTable.jsx:111
 msgid "The content may be deleted"
-msgstr ""
+msgstr "内容が削除されるかもしれません"
 
-#. TRANSLATORS: status message, no existing content was found on the disk,
-#. i.e. the disk is completely empty
-#: src/components/storage/SpaceActionsTable.jsx:157
-#: src/components/storage/device-utils.jsx:184
-msgid "No content found"
-msgstr "内容が見つかりませんでした"
-
-#: src/components/storage/SpaceActionsTable.jsx:184
+#: src/components/storage/SpaceActionsTable.jsx:144
 msgid "Shrinkable"
 msgstr "縮小可能"
 
-#: src/components/storage/SpaceActionsTable.jsx:186
+#: src/components/storage/SpaceActionsTable.jsx:146
 msgid "Action"
 msgstr "処理"
 
-#: src/components/storage/SpaceActionsTable.jsx:202
+#: src/components/storage/SpaceActionsTable.jsx:162
 msgid "Actions to find space"
 msgstr "領域の検出処理"
 
-#: src/components/storage/SpacePolicyDialog.jsx:137
+#: src/components/storage/SpacePolicyDialog.jsx:144
 msgid ""
 "Allocating the file systems might need to find free space in the devices "
 "listed below. Choose how to do it."
@@ -1847,14 +1903,10 @@ msgstr ""
 "ファイルシステムを割り当てるには、下記のデバイス内に空き領域を確保する必要が"
 "あるかもしれません。ここではその方法を選択します。"
 
-#: src/components/storage/SpacePolicyDialog.jsx:142
+#: src/components/storage/SpacePolicyDialog.jsx:149
 #: src/components/storage/SpacePolicyField.jsx:87
 msgid "Find space"
 msgstr "領域の検出"
-
-#: src/components/storage/SpacePolicyField.jsx:75
-msgid "Waiting for information about space policy"
-msgstr "領域ポリシーに関する情報を待機しています"
 
 #: src/components/storage/SpacePolicyField.jsx:89
 msgid ""
@@ -1864,61 +1916,83 @@ msgstr ""
 "ファイルシステムを割り当てるには、下記のデバイス内に空き領域を確保する必要が"
 "あるかもしれません。"
 
-#: src/components/storage/VolumeDialog.jsx:88
-#, fuzzy, c-format
+#: src/components/storage/VolumeDialog.jsx:81
+#, c-format
 msgid "Add %s file system"
-msgstr "ファイルシステムの追加"
+msgstr "%s ファイルシステムの追加"
 
-#: src/components/storage/VolumeDialog.jsx:89
-#, fuzzy, c-format
+#: src/components/storage/VolumeDialog.jsx:82
+#, c-format
 msgid "Edit %s file system"
-msgstr "ファイルシステムの編集"
+msgstr "%s ファイルシステムの編集"
 
-#: src/components/storage/VolumeDialog.jsx:91
+#: src/components/storage/VolumeDialog.jsx:84
 msgid "Edit file system"
 msgstr "ファイルシステムの編集"
 
-#: src/components/storage/VolumeDialog.jsx:129
+#. TRANSLATORS: Warning when editing a file system.
+#: src/components/storage/VolumeDialog.jsx:99
 #, fuzzy
+msgid "The type and size of the file system cannot be edited."
+msgstr "%s に対するファイルシステムの存在"
+
+#. TRANSLATORS: Description of a warning. The first %s is replaced by a device name (e.g.,
+#. /dev/vda) and the second %s is replaced by a mount path (e.g., /home).
+#: src/components/storage/VolumeDialog.jsx:102
+#, c-format
+msgid "The current file system on %s is selected to be mounted at %s."
+msgstr ""
+
+#. TRANSLATORS: Warning when editing a file system.
+#: src/components/storage/VolumeDialog.jsx:108
+#, fuzzy
+msgid "The size of the file system cannot be edited"
+msgstr "%s に対するファイルシステムの存在"
+
+#. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
+#: src/components/storage/VolumeDialog.jsx:110
+#, fuzzy, c-format
+msgid "The file system is allocated at the device %s."
+msgstr ""
+"ファイルシステムは選択したディスク内の新規パーティションとして作成します。"
+
+#: src/components/storage/VolumeDialog.jsx:155
 msgid "A mount point is required"
-msgstr "最小サイズを指定する必要があります"
+msgstr "マウントポイントを指定する必要があります"
 
-#: src/components/storage/VolumeDialog.jsx:156
-#, fuzzy
+#: src/components/storage/VolumeDialog.jsx:182
 msgid "The mount point is invalid"
-msgstr "マウントポイントの一覧"
+msgstr "マウントポイントが正しくありません"
 
-#: src/components/storage/VolumeDialog.jsx:184
+#: src/components/storage/VolumeDialog.jsx:210
 msgid "A size value is required"
 msgstr "サイズを指定する必要があります"
 
-#: src/components/storage/VolumeDialog.jsx:212
+#: src/components/storage/VolumeDialog.jsx:238
 msgid "Minimum size is required"
 msgstr "最小サイズを指定する必要があります"
 
-#: src/components/storage/VolumeDialog.jsx:244
+#: src/components/storage/VolumeDialog.jsx:270
 msgid "Maximum must be greater than minimum"
 msgstr "最大サイズは最小サイズより大きくなければなりません"
 
-#: src/components/storage/VolumeDialog.jsx:286
-#, fuzzy, c-format
+#: src/components/storage/VolumeDialog.jsx:312
+#, c-format
 msgid "There is already a file system for %s."
-msgstr "%s に対するファイルシステムの存在"
+msgstr "%s に対するファイルシステムが既に存在しています。"
 
-#: src/components/storage/VolumeDialog.jsx:288
-#, fuzzy
+#: src/components/storage/VolumeDialog.jsx:314
 msgid "Do you want to edit it?"
-msgstr "%s を登録解除してよろしいですか？"
+msgstr "編集してよろしいですか？"
 
-#: src/components/storage/VolumeDialog.jsx:333
-#, fuzzy, c-format
+#: src/components/storage/VolumeDialog.jsx:359
+#, c-format
 msgid "There is a predefined file system for %s."
-msgstr "%s に対するファイルシステムの存在"
+msgstr "%s に対して事前設定されたファイルシステムが既に存在しています。"
 
-#: src/components/storage/VolumeDialog.jsx:335
-#, fuzzy
+#: src/components/storage/VolumeDialog.jsx:361
 msgid "Do you want to add it?"
-msgstr "%s を登録解除してよろしいですか？"
+msgstr "追加してよろしいですか？"
 
 #. TRANSLATORS: info about possible file system types.
 #: src/components/storage/VolumeFields.jsx:209
@@ -2042,55 +2116,86 @@ msgstr "固定値"
 msgid "Range"
 msgstr "範囲"
 
-#. TRANSLATORS: %s is replaced by a device label (e.g., "/dev/vda, 50 GiB").
-#: src/components/storage/VolumeLocationDialog.jsx:138
-#, c-format
+#. TRANSLATORS: Description of the dialog for changing the location of a file system.
+#: src/components/storage/VolumeLocationDialog.jsx:41
 msgid ""
-"The filesystem will be allocated as a new partition at the installation disk "
-"(%s)."
+"The file systems are allocated at the installation device by default. "
+"Indicate a custom location to create the file system at a specific device."
 msgstr ""
-"ファイルシステムはインストール先のディスク (%s) 内の新規パーティションとして"
-"作成します。"
 
-#: src/components/storage/VolumeLocationDialog.jsx:142
-msgid ""
-"The filesystem will be allocated as a new partition at the installation disk."
-msgstr ""
-"ファイルシステムはインストール先のディスク内の新規パーティションとして作成し"
-"ます。"
-
-#: src/components/storage/VolumeLocationDialog.jsx:144
-msgid ""
-"The file system will be allocated as a logical volume at the system LVM."
-msgstr ""
-"ファイルシステムはシステム LVM 内の新しい論理ボリュームとして作成します。"
-
-#: src/components/storage/VolumeLocationDialog.jsx:149
+#. TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
+#. by a mount path (e.g., /home).
+#: src/components/storage/VolumeLocationDialog.jsx:136
 #, c-format
 msgid "Location for %s file system"
 msgstr "%s ファイルシステムの場所"
 
-#: src/components/storage/VolumeLocationDialog.jsx:174
+#: src/components/storage/VolumeLocationDialog.jsx:146
+#, fuzzy
+msgid "Select in which device to allocate the file system"
+msgstr ""
+"選択したディスク内にファイルシステムを割り当てるための領域確保方法を選択して"
+"ください。"
+
+#: src/components/storage/VolumeLocationDialog.jsx:149
+#, fuzzy
+msgid "Select a location"
+msgstr "ディスクの選択"
+
+#: src/components/storage/VolumeLocationDialog.jsx:161
+#, fuzzy
+msgid "Select how to allocate the file system"
+msgstr "ファイルシステムに対して正確なサイズを設定します。"
+
+#: src/components/storage/VolumeLocationDialog.jsx:166
+msgid "Create a new partition"
+msgstr ""
+
+#: src/components/storage/VolumeLocationDialog.jsx:167
+#, fuzzy
 msgid ""
-"The file system will be allocated as a new partition at the selected disk."
+"The file system will be allocated as a new partition at the selected   disk."
 msgstr ""
 "ファイルシステムは選択したディスク内の新規パーティションとして作成します。"
 
-#: src/components/storage/VolumeLocationDialog.jsx:177
-msgid "Choose a disk for placing the file system"
-msgstr "ファイルシステムを配置するディスクの選択"
-
-#: src/components/storage/VolumeLocationDialog.jsx:185
+#: src/components/storage/VolumeLocationDialog.jsx:176
 msgid "Create a dedicated LVM volume group"
 msgstr "専用の LVM ボリュームグループの作成"
 
-#: src/components/storage/VolumeLocationDialog.jsx:186
+#: src/components/storage/VolumeLocationDialog.jsx:177
+#, fuzzy
 msgid ""
-"A new volume group will be allocated in the selected disk and the file "
+"A new volume group will be allocated in the selected disk and the   file "
 "system will be created as a logical volume."
 msgstr ""
 "選択したディスク内に新しいボリュームグループを作成し、論理ボリュームとして"
 "ファイルシステムを作成します。"
+
+#: src/components/storage/VolumeLocationDialog.jsx:186
+#, fuzzy
+msgid "Format the device"
+msgstr "DASD デバイスをフォーマットしています"
+
+#. TRANSLATORS: %s is replaced by a file system type (e.g., Ext4).
+#: src/components/storage/VolumeLocationDialog.jsx:189
+#, c-format
+msgid "The selected device will be formatted as %s file system."
+msgstr ""
+
+#: src/components/storage/VolumeLocationDialog.jsx:199
+#, fuzzy
+msgid "Mount the file system"
+msgstr "ファイルシステムの編集"
+
+#: src/components/storage/VolumeLocationDialog.jsx:200
+msgid ""
+"The current file system on the selected device will be mounted   without "
+"formatting the device."
+msgstr ""
+
+#: src/components/storage/VolumeLocationSelectorTable.jsx:102
+msgid "Usage"
+msgstr ""
 
 #: src/components/storage/ZFCPDiskForm.jsx:113
 msgid "The zFCP disk was not activated."
@@ -2187,61 +2292,9 @@ msgstr "ディスク"
 msgid "Storage zFCP"
 msgstr "ストレージ zFCP"
 
-#. TRANSLATORS: multipath device type
-#: src/components/storage/device-utils.jsx:66
-msgid "Multipath"
-msgstr "マルチパス"
-
-#. TRANSLATORS: %s is replaced by the device bus ID
-#: src/components/storage/device-utils.jsx:71
-#, c-format
-msgid "DASD %s"
-msgstr "DASD %s"
-
-#. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
-#: src/components/storage/device-utils.jsx:76
-#, c-format
-msgid "Software %s"
-msgstr "ソフトウエア %s"
-
-#: src/components/storage/device-utils.jsx:81
-msgid "SD Card"
-msgstr "SD カード"
-
-#. TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
-#: src/components/storage/device-utils.jsx:86
-#, c-format
-msgid "%s disk"
-msgstr "%s ディスク"
-
-#: src/components/storage/device-utils.jsx:87
-msgid "Disk"
-msgstr "ディスク"
-
-#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/device-utils.jsx:107
-#, c-format
-msgid "Members: %s"
-msgstr "メンバー: %s"
-
-#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/device-utils.jsx:116
-#, c-format
-msgid "Devices: %s"
-msgstr "デバイス: %s"
-
-#. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
-#: src/components/storage/device-utils.jsx:125
-#, c-format
-msgid "Wires: %s"
-msgstr "接続: %s"
-
-#. TRANSLATORS: disk partition info, %s is replaced by partition table
-#. type (MS-DOS or GPT), %d is the number of the partitions
-#: src/components/storage/device-utils.jsx:155
-#, c-format
-msgid "%s with %d partitions"
-msgstr "%s (%d 個のパーティション)"
+#: src/components/storage/device-utils.jsx:88
+msgid "Unused space"
+msgstr "未使用の領域"
 
 #: src/components/storage/iscsi/AuthFields.jsx:70
 msgid "Only available if authentication by target is provided"
@@ -2406,31 +2459,31 @@ msgstr "検索"
 msgid "Targets"
 msgstr "ターゲット"
 
-#: src/components/storage/utils.js:57
+#: src/components/storage/utils.js:64
 msgid "KiB"
 msgstr "KiB"
 
-#: src/components/storage/utils.js:58
+#: src/components/storage/utils.js:65
 msgid "MiB"
 msgstr "MiB"
 
-#: src/components/storage/utils.js:59
+#: src/components/storage/utils.js:66
 msgid "GiB"
 msgstr "GiB"
 
-#: src/components/storage/utils.js:60
+#: src/components/storage/utils.js:67
 msgid "TiB"
 msgstr "TiB"
 
-#: src/components/storage/utils.js:61
+#: src/components/storage/utils.js:68
 msgid "PiB"
 msgstr "PiB"
 
-#: src/components/storage/utils.js:70
+#: src/components/storage/utils.js:77
 msgid "Delete current content"
 msgstr "現在の内容を全て削除"
 
-#: src/components/storage/utils.js:71
+#: src/components/storage/utils.js:78
 msgid "All partitions will be removed and any data in the disks will be lost."
 msgstr ""
 "ディスク内の全てのパーティションを削除します。これにより、ディスク内に存在す"
@@ -2438,22 +2491,22 @@ msgstr ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space deleting all content[...]"
-#: src/components/storage/utils.js:75
+#: src/components/storage/utils.js:82
 msgid "deleting all content of the installation device"
 msgstr "インストール先のディスクの全内容を削除します"
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space deleting all content[...]"
-#: src/components/storage/utils.js:78
+#: src/components/storage/utils.js:85
 #, c-format
 msgid "deleting all content of the %d selected disks"
 msgstr "選択した %d 個のディスクの全内容を削除します"
 
-#: src/components/storage/utils.js:83
+#: src/components/storage/utils.js:90
 msgid "Shrink existing partitions"
 msgstr "既存のパーティションの縮小"
 
-#: src/components/storage/utils.js:84
+#: src/components/storage/utils.js:91
 msgid "The data is kept, but the current partitions will be resized as needed."
 msgstr ""
 "既存のデータは保持しますが、十分な領域を確保するために既存のパーティションの"
@@ -2461,22 +2514,22 @@ msgstr ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space shrinking partitions[...]"
-#: src/components/storage/utils.js:88
+#: src/components/storage/utils.js:95
 msgid "shrinking partitions of the installation device"
 msgstr "インストール先のディスクのパーティションを縮小します"
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space shrinking partitions[...]"
-#: src/components/storage/utils.js:91
+#: src/components/storage/utils.js:98
 #, c-format
 msgid "shrinking partitions of the %d selected disks"
 msgstr "選択した %d 個のディスクのパーティションを縮小します"
 
-#: src/components/storage/utils.js:96
+#: src/components/storage/utils.js:103
 msgid "Use available space"
 msgstr "利用可能な領域を使用する"
 
-#: src/components/storage/utils.js:97
+#: src/components/storage/utils.js:104
 msgid ""
 "The data is kept. Only the space not assigned to any partition will be used."
 msgstr ""
@@ -2485,21 +2538,21 @@ msgstr ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space without modifying any partition".
-#: src/components/storage/utils.js:101
+#: src/components/storage/utils.js:108
 msgid "without modifying any partition"
 msgstr "パーティションの変更を行いません"
 
-#: src/components/storage/utils.js:106
+#: src/components/storage/utils.js:113
 msgid "Custom"
 msgstr "独自設定"
 
-#: src/components/storage/utils.js:107
+#: src/components/storage/utils.js:114
 msgid "Select what to do with each partition."
 msgstr "パーティションの設定作業を独自に実施します。"
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space performing a custom set of actions".
-#: src/components/storage/utils.js:111
+#: src/components/storage/utils.js:118
 msgid "performing a custom set of actions"
 msgstr "独自の処理を実行します"
 
@@ -2520,13 +2573,13 @@ msgstr ""
 msgid "Define a user now"
 msgstr "今すぐユーザを設定する"
 
-#: src/components/users/FirstUser.jsx:67 src/components/users/FirstUser.jsx:246
+#: src/components/users/FirstUser.jsx:67 src/components/users/FirstUser.jsx:284
 msgid "Full name"
 msgstr "フルネーム"
 
-#: src/components/users/FirstUser.jsx:68 src/components/users/FirstUser.jsx:260
-#: src/components/users/FirstUser.jsx:268
-#: src/components/users/FirstUser.jsx:270
+#: src/components/users/FirstUser.jsx:68 src/components/users/FirstUser.jsx:298
+#: src/components/users/FirstUser.jsx:306
+#: src/components/users/FirstUser.jsx:309
 msgid "Username"
 msgstr "ユーザ名"
 
@@ -2535,41 +2588,41 @@ msgid "Username suggestion dropdown"
 msgstr "ユーザ名の提案ドロップダウン"
 
 #. TRANSLATORS: dropdown username suggestions
-#: src/components/users/FirstUser.jsx:102
+#: src/components/users/FirstUser.jsx:103
 msgid "Use suggested username"
 msgstr "提案されたユーザ名を使用する"
 
-#: src/components/users/FirstUser.jsx:212
+#: src/components/users/FirstUser.jsx:216
 #: src/components/users/RootAuthMethods.jsx:99
 #: src/components/users/RootAuthMethods.jsx:111
 msgid "Discard"
 msgstr "破棄"
 
-#: src/components/users/FirstUser.jsx:237
+#: src/components/users/FirstUser.jsx:275
 msgid "Create user account"
 msgstr "ユーザアカウントの作成"
 
-#: src/components/users/FirstUser.jsx:237
+#: src/components/users/FirstUser.jsx:275
 msgid "Edit user account"
 msgstr "ユーザアカウントの編集"
 
-#: src/components/users/FirstUser.jsx:250
-#: src/components/users/FirstUser.jsx:252
+#: src/components/users/FirstUser.jsx:288
+#: src/components/users/FirstUser.jsx:290
 msgid "User full name"
 msgstr "ユーザのフルネーム"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUser.jsx:288
-#: src/components/users/FirstUser.jsx:292
+#: src/components/users/FirstUser.jsx:329
+#: src/components/users/FirstUser.jsx:333
 msgid "Edit password too"
 msgstr "パスワードも編集する"
 
-#: src/components/users/FirstUser.jsx:305
+#: src/components/users/FirstUser.jsx:346
 msgid "user autologin"
 msgstr "ユーザの自動ログイン"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUser.jsx:309
+#: src/components/users/FirstUser.jsx:350
 msgid "Auto-login"
 msgstr "自動ログイン"
 
@@ -2670,6 +2723,38 @@ msgstr "ユーザ"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "root の認証"
+
+#~ msgid "Content"
+#~ msgstr "内容"
+
+#~ msgid "Waiting for information about selected device"
+#~ msgstr "選択したデバイスに関する情報を待機しています"
+
+#~ msgid "Waiting for information about space policy"
+#~ msgstr "領域ポリシーに関する情報を待機しています"
+
+#, c-format
+#~ msgid ""
+#~ "The filesystem will be allocated as a new partition at the installation "
+#~ "disk (%s)."
+#~ msgstr ""
+#~ "ファイルシステムはインストール先のディスク (%s) 内の新規パーティションとし"
+#~ "て作成します。"
+
+#~ msgid ""
+#~ "The filesystem will be allocated as a new partition at the installation "
+#~ "disk."
+#~ msgstr ""
+#~ "ファイルシステムはインストール先のディスク内の新規パーティションとして作成"
+#~ "します。"
+
+#~ msgid ""
+#~ "The file system will be allocated as a logical volume at the system LVM."
+#~ msgstr ""
+#~ "ファイルシステムはシステム LVM 内の新しい論理ボリュームとして作成します。"
+
+#~ msgid "Choose a disk for placing the file system"
+#~ msgstr "ファイルシステムを配置するディスクの選択"
 
 #~ msgid "Select a value"
 #~ msgstr "値の選択"
@@ -2812,13 +2897,6 @@ msgstr "root の認証"
 
 #~ msgid "Devices will not be modified until installation starts."
 #~ msgstr "インストールを開始するまではデバイスへの書き込みは行われません。"
-
-#~ msgid ""
-#~ "Select how to make free space in the disks selected for allocating "
-#~ "the     file systems."
-#~ msgstr ""
-#~ "選択したディスク内にファイルシステムを割り当てるための領域確保方法を選択し"
-#~ "てください。"
 
 #~ msgid "Space Policy"
 #~ msgstr "領域ポリシー"
