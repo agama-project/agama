@@ -1,10 +1,13 @@
 pub mod common;
 
 use self::common::{async_retry, DBusServer};
-use agama_lib::network::{
-    settings::{self},
-    types::DeviceType,
-    NetworkClient,
+use agama_lib::{
+    http_client,
+    network::{
+        settings::{self},
+        types::DeviceType,
+        NetworkClient,
+    },
 };
 use agama_server::network::{
     self,
@@ -32,6 +35,7 @@ impl Adapter for NetworkTestAdapter {
 
 #[test]
 async fn test_read_connections() -> Result<(), Box<dyn Error>> {
+    let rclient = http_client("test".to_string())?;
     let mut server = DBusServer::new().start().await?;
 
     let general_state = GeneralState::default();
@@ -48,7 +52,7 @@ async fn test_read_connections() -> Result<(), Box<dyn Error>> {
     NetworkService::start(&server.connection(), adapter).await?;
     server.request_name().await?;
 
-    let client = NetworkClient::new(server.connection()).await?;
+    let client = NetworkClient::new(rclient).await?;
     let conns = async_retry(|| client.connections()).await?;
     assert_eq!(conns.len(), 1);
     let dbus_eth0 = conns.first().unwrap();
@@ -59,6 +63,7 @@ async fn test_read_connections() -> Result<(), Box<dyn Error>> {
 
 #[test]
 async fn test_add_connection() -> Result<(), Box<dyn Error>> {
+    let rclient = http_client("test".to_string())?;
     let mut server = DBusServer::new().start().await?;
 
     let adapter = NetworkTestAdapter(NetworkState::default());
@@ -66,7 +71,7 @@ async fn test_add_connection() -> Result<(), Box<dyn Error>> {
     NetworkService::start(&server.connection(), adapter).await?;
     server.request_name().await?;
 
-    let client = NetworkClient::new(server.connection().clone()).await?;
+    let client = NetworkClient::new(rclient).await?;
 
     let addresses: Vec<IpInet> = vec!["192.168.0.2/24".parse()?, "::ffff:c0a8:7ac7/64".parse()?];
     let wlan0 = settings::NetworkConnection {
@@ -76,14 +81,14 @@ async fn test_add_connection() -> Result<(), Box<dyn Error>> {
         method6: Some("disabled".to_string()),
         addresses: addresses.clone(),
         wireless: Some(settings::WirelessSettings {
-            password: "123456".to_string(),
+            password: Some("123456".to_string()),
             security: "wpa-psk".to_string(),
             ssid: "TEST".to_string(),
             mode: "infrastructure".to_string(),
         }),
         ..Default::default()
     };
-    client.add_or_update_connection(&wlan0).await?;
+    client.add_or_update_connection(wlan0).await?;
 
     let conns = async_retry(|| client.connections()).await?;
     assert_eq!(conns.len(), 1);
@@ -103,6 +108,7 @@ async fn test_add_connection() -> Result<(), Box<dyn Error>> {
 
 #[test]
 async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
+    let rclient = http_client("test".to_string())?;
     let mut server = DBusServer::new().start().await?;
 
     let adapter = NetworkTestAdapter(NetworkState::default());
@@ -110,7 +116,7 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
     NetworkService::start(&server.connection(), adapter).await?;
     server.request_name().await?;
 
-    let client = NetworkClient::new(server.connection().clone()).await?;
+    let client = NetworkClient::new(rclient).await?;
     let eth0 = settings::NetworkConnection {
         id: "eth0".to_string(),
         ..Default::default()
@@ -128,8 +134,8 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
         ..Default::default()
     };
 
-    client.add_or_update_connection(&eth0).await?;
-    client.add_or_update_connection(&bond0).await?;
+    client.add_or_update_connection(eth0).await?;
+    client.add_or_update_connection(bond0).await?;
     let conns = async_retry(|| client.connections()).await?;
     assert_eq!(conns.len(), 2);
 
@@ -144,6 +150,7 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
 
 #[test]
 async fn test_update_connection() -> Result<(), Box<dyn Error>> {
+    let rclient = http_client("test".to_string())?;
     let mut server = DBusServer::new().start().await?;
 
     let general_state = GeneralState::default();
@@ -159,14 +166,14 @@ async fn test_update_connection() -> Result<(), Box<dyn Error>> {
     NetworkService::start(&server.connection(), adapter).await?;
     server.request_name().await?;
 
-    let client = NetworkClient::new(server.connection()).await?;
+    let client = NetworkClient::new(rclient).await?;
     // make sure connections have been published.
     let _conns = async_retry(|| client.connections()).await?;
 
-    let mut dbus_eth0 = async_retry(|| client.get_connection("eth0")).await?;
+    let mut dbus_eth0 = async_retry(|| client.connection("eth0")).await?;
     dbus_eth0.interface = Some("eth0".to_string());
-    client.add_or_update_connection(&dbus_eth0).await?;
-    let dbus_eth0 = client.get_connection("eth0").await?;
+    client.add_or_update_connection(dbus_eth0).await?;
+    let dbus_eth0 = client.connection("eth0").await?;
     assert_eq!(dbus_eth0.interface, Some("eth0".to_string()));
     Ok(())
 }
