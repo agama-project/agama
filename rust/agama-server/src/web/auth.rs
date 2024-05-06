@@ -9,7 +9,7 @@ use axum::{
     Json, RequestPartsExt,
 };
 use axum_extra::{
-    headers::{authorization::Bearer, Authorization},
+    headers::{self, authorization::Bearer},
     TypedHeader,
 };
 use chrono::{Duration, Utc};
@@ -50,6 +50,18 @@ pub struct TokenClaims {
     exp: i64,
 }
 
+impl TokenClaims {
+    /// Builds claims for a given token.
+    ///
+    /// * `token`: token to extract the claims from.
+    /// * `secret`: secret to decode the token.
+    pub fn from_token(token: &str, secret: &str) -> Result<Self, AuthError> {
+        let decoding = DecodingKey::from_secret(secret.as_ref());
+        let token_data = jsonwebtoken::decode(&token, &decoding, &Validation::default())?;
+        Ok(token_data.claims)
+    }
+}
+
 impl Default for TokenClaims {
     fn default() -> Self {
         let exp = Utc::now() + Duration::days(1);
@@ -67,15 +79,24 @@ impl FromRequestParts<ServiceState> for TokenClaims {
         parts: &mut request::Parts,
         state: &ServiceState,
     ) -> Result<Self, Self::Rejection> {
-        let TypedHeader(Authorization(bearer)) = parts
-            .extract::<TypedHeader<Authorization<Bearer>>>()
+        let token = match parts
+            .extract::<TypedHeader<headers::Authorization<Bearer>>>()
             .await
-            .map_err(|_| AuthError::MissingToken)?;
+        {
+            Ok(TypedHeader(headers::Authorization(bearer))) => bearer.token().to_owned(),
+            Err(_) => {
+                let cookie = parts
+                    .extract::<TypedHeader<headers::Cookie>>()
+                    .await
+                    .map_err(|_| AuthError::MissingToken)?;
+                cookie
+                    .get("agamaToken")
+                    .ok_or(AuthError::MissingToken)?
+                    .to_owned()
+            }
+        };
 
-        let decoding = DecodingKey::from_secret(state.config.jwt_secret.as_ref());
-        let token_data = jsonwebtoken::decode(bearer.token(), &decoding, &Validation::default())?;
-
-        Ok(token_data.claims)
+        TokenClaims::from_token(&token, &state.config.jwt_secret)
     }
 }
 

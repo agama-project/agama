@@ -1,6 +1,6 @@
 //! Representation of the network settings
 
-use super::types::DeviceType;
+use super::types::{DeviceState, DeviceType, Status};
 use agama_settings::error::ConversionError;
 use agama_settings::{SettingObject, SettingValue, Settings};
 use cidr::IpInet;
@@ -71,6 +71,7 @@ impl Default for BondSettings {
 pub struct NetworkDevice {
     pub id: String,
     pub type_: DeviceType,
+    pub state: DeviceState,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -100,6 +101,8 @@ pub struct NetworkConnection {
     pub bond: Option<BondSettings>,
     #[serde(rename = "mac-address", skip_serializing_if = "Option::is_none")]
     pub mac_address: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<Status>,
 }
 
 impl NetworkConnection {

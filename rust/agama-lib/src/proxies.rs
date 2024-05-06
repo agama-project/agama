@@ -47,15 +47,18 @@ trait ServiceStatus {
     default_service = "org.opensuse.Agama.Manager1",
     default_path = "/org/opensuse/Agama/Manager1"
 )]
-trait Manager {
+trait Manager1 {
     /// CanInstall method
     fn can_install(&self) -> zbus::Result<bool>;
 
     /// CollectLogs method
-    fn collect_logs(&self, user: &str) -> zbus::Result<String>;
+    fn collect_logs(&self) -> zbus::Result<String>;
 
     /// Commit method
     fn commit(&self) -> zbus::Result<()>;
+
+    /// Finish method
+    fn finish(&self) -> zbus::Result<()>;
 
     /// Probe method
     fn probe(&self) -> zbus::Result<()>;
@@ -67,6 +70,10 @@ trait Manager {
     /// CurrentInstallationPhase property
     #[dbus_proxy(property)]
     fn current_installation_phase(&self) -> zbus::Result<u32>;
+
+    /// IguanaBackend property
+    #[dbus_proxy(property)]
+    fn iguana_backend(&self) -> zbus::Result<bool>;
 
     /// InstallationPhases property
     #[dbus_proxy(property)]
@@ -89,7 +96,7 @@ trait Questions1 {
 
     /// New method
     #[dbus_proxy(name = "New")]
-    fn new_quetion(
+    fn new_question(
         &self,
         class: &str,
         text: &str,
@@ -113,4 +120,72 @@ trait Questions1 {
     fn interactive(&self) -> zbus::Result<bool>;
     #[dbus_proxy(property)]
     fn set_interactive(&self, value: bool) -> zbus::Result<()>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama1.Questions.Generic",
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Questions"
+)]
+trait GenericQuestion {
+    /// Answer property
+    #[dbus_proxy(property)]
+    fn answer(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
+    fn set_answer(&self, value: &str) -> zbus::Result<()>;
+
+    /// Class property
+    #[dbus_proxy(property)]
+    fn class(&self) -> zbus::Result<String>;
+
+    /// Data property
+    #[dbus_proxy(property)]
+    fn data(&self) -> zbus::Result<std::collections::HashMap<String, String>>;
+
+    /// DefaultOption property
+    #[dbus_proxy(property)]
+    fn default_option(&self) -> zbus::Result<String>;
+
+    /// Id property
+    #[dbus_proxy(property)]
+    fn id(&self) -> zbus::Result<u32>;
+
+    /// Options property
+    #[dbus_proxy(property)]
+    fn options(&self) -> zbus::Result<Vec<String>>;
+
+    /// Text property
+    #[dbus_proxy(property)]
+    fn text(&self) -> zbus::Result<String>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama1.Questions.WithPassword",
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Questions"
+)]
+trait QuestionWithPassword {
+    /// Password property
+    #[dbus_proxy(property)]
+    fn password(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
+    fn set_password(&self, value: &str) -> zbus::Result<()>;
+}
+
+#[dbus_proxy(interface = "org.opensuse.Agama1.Issues", assume_defaults = true)]
+trait Issues {
+    /// All property
+    #[dbus_proxy(property)]
+    fn all(&self) -> zbus::Result<Vec<(String, String, u32, u32)>>;
+}
+
+#[dbus_proxy(interface = "org.opensuse.Agama1.Validation", assume_defaults = true)]
+trait Validation {
+    /// Errors property
+    #[dbus_proxy(property)]
+    fn errors(&self) -> zbus::Result<Vec<String>>;
+
+    /// Valid property
+    #[dbus_proxy(property)]
+    fn valid(&self) -> zbus::Result<bool>;
 }

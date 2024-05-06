@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,136 +22,153 @@
 // @ts-check
 
 import DBusClient from "./dbus";
-import { SoftwareClient } from "./software";
+import { HTTPClient } from "./http";
+import { ProductClient, SoftwareClient } from "./software";
 
-jest.mock("./dbus");
+const mockJsonFn = jest.fn();
+
+const mockGetFn = jest.fn().mockImplementation(() => {
+  return {
+    ok: true,
+    json: mockJsonFn,
+  };
+});
+
+const mockPostFn = jest.fn().mockImplementation(() => {
+  return {
+    ok: true,
+  };
+});
+
+const mockDeleteFn = jest.fn().mockImplementation(() => {
+  return {
+    ok: true,
+  };
+});
+
+jest.mock("./http", () => {
+  return {
+    HTTPClient: jest.fn().mockImplementation(() => {
+      return {
+        get: mockGetFn,
+        post: mockPostFn,
+        delete: mockDeleteFn,
+      };
+    }),
+  };
+});
 
 const PRODUCT_IFACE = "org.opensuse.Agama.Software1.Product";
 const REGISTRATION_IFACE = "org.opensuse.Agama1.Registration";
 
-const productProxy = {
-  wait: jest.fn(),
-  AvailableProducts: [
-    ["MicroOS", "openSUSE MicroOS", {}],
-    ["Tumbleweed", "openSUSE Tumbleweed", {}]
-  ],
-  SelectedProduct: "MicroOS"
+const tumbleweed = {
+  id: "Tumbleweed",
+  name: "openSUSE Tumbleweed",
+  description: "Tumbleweed is...",
 };
 
-const registrationProxy = {};
+const microos = {
+  id: "MicroOS",
+  name: "openSUSE MicroOS",
+  description: "MicroOS is...",
+};
 
-beforeEach(() => {
-  // @ts-ignore
-  DBusClient.mockImplementation(() => {
-    return {
-      proxy: (iface) => {
-        if (iface === PRODUCT_IFACE) return productProxy;
-        if (iface === REGISTRATION_IFACE) return registrationProxy;
-      }
-    };
-  });
-});
-
-describe("#product", () => {
+describe("ProductClient", () => {
   describe("#getAll", () => {
     it("returns the list of available products", async () => {
-      const client = new SoftwareClient();
-      const availableProducts = await client.product.getAll();
-      expect(availableProducts).toEqual([
-        { id: "MicroOS", name: "openSUSE MicroOS" },
-        { id: "Tumbleweed", name: "openSUSE Tumbleweed" }
+      const http = new HTTPClient(new URL("http://localhost"));
+      const client = new ProductClient(http);
+      mockJsonFn.mockResolvedValue([tumbleweed, microos]);
+      const products = await client.getAll();
+      expect(products).toEqual([
+        { id: "Tumbleweed", name: "openSUSE Tumbleweed", description: "Tumbleweed is..." },
+        { id: "MicroOS", name: "openSUSE MicroOS", description: "MicroOS is..." },
       ]);
     });
   });
 
   describe("#getSelected", () => {
     it("returns the selected product", async () => {
-      const client = new SoftwareClient();
-      const selectedProduct = await client.product.getSelected();
-      expect(selectedProduct).toEqual(
-        { id: "MicroOS", name: "openSUSE MicroOS" }
-      );
+      const http = new HTTPClient(new URL("http://localhost"));
+      const client = new ProductClient(http);
+      mockJsonFn.mockResolvedValue({ product: "microos" });
+      const selected = await client.getSelected();
+      expect(selected).toEqual("microos");
     });
   });
 
   describe("#getRegistration", () => {
     describe("if the product is not registered yet", () => {
-      beforeEach(() => {
-        registrationProxy.RegCode = "";
-        registrationProxy.Email = "";
-        registrationProxy.Requirement = 1;
-      });
-
       it("returns the expected registration result", async () => {
-        const client = new SoftwareClient();
-        const registration = await client.product.getRegistration();
+        mockJsonFn.mockResolvedValue({
+          key: "",
+          email: "",
+          requirement: "Optional"
+        });
+        const http = new HTTPClient(new URL("http://localhost"));
+        const client = new ProductClient(http);
+        const registration = await client.getRegistration();
         expect(registration).toStrictEqual({
           code: null,
           email: null,
-          requirement: "optional"
+          requirement: "Optional",
         });
       });
     });
 
     describe("if the product is registered", () => {
-      beforeEach(() => {
-        registrationProxy.RegCode = "111222";
-        registrationProxy.Email = "test@test.com";
-        registrationProxy.Requirement = 2;
-      });
-
       it("returns the expected registration", async () => {
-        const client = new SoftwareClient();
-        const registration = await client.product.getRegistration();
+        mockJsonFn.mockResolvedValue({
+          key: "111222",
+          email: "test@test.com",
+          requirement: "Mandatory"
+        });
+        const http = new HTTPClient(new URL("http://localhost"));
+        const client = new ProductClient(http);
+        const registration = await client.getRegistration();
         expect(registration).toStrictEqual({
           code: "111222",
           email: "test@test.com",
-          requirement: "mandatory"
+          requirement: "Mandatory",
         });
       });
     });
   });
 
   describe("#register", () => {
-    beforeEach(() => {
-      registrationProxy.Register = jest.fn().mockResolvedValue([0, ""]);
-    });
-
-    it("performs the expected D-Bus call", async () => {
-      const client = new SoftwareClient();
-      await client.product.register("111222", "test@test.com");
-      expect(registrationProxy.Register).toHaveBeenCalledWith(
-        "111222",
-        { Email: { t: "s", v: "test@test.com" } }
-      );
+    it("performs the backend call", async () => {
+      const http = new HTTPClient(new URL("http://localhost"));
+      const client = new ProductClient(http);
+      await client.register("111222", "test@test.com");
+      expect(mockPostFn).toHaveBeenCalledWith("/software/registration", {
+        key: "111222",
+        email: "test@test.com",
+      });
     });
 
     describe("when the action is correctly done", () => {
-      beforeEach(() => {
-        registrationProxy.Register = jest.fn().mockResolvedValue([0, ""]);
-      });
-
       it("returns a successful result", async () => {
-        const client = new SoftwareClient();
-        const result = await client.product.register("111222", "test@test.com");
+        const http = new HTTPClient(new URL("http://localhost"));
+        const client = new ProductClient(http);
+        const result = await client.register("111222", "test@test.com");
         expect(result).toStrictEqual({
           success: true,
-          message: ""
+          message: "",
         });
       });
     });
 
     describe("when the action fails", () => {
-      beforeEach(() => {
-        registrationProxy.Register = jest.fn().mockResolvedValue([1, "error message"]);
-      });
-
       it("returns an unsuccessful result", async () => {
-        const client = new SoftwareClient();
-        const result = await client.product.register("111222", "test@test.com");
+        mockPostFn.mockImplementationOnce(() => {
+          return { ok: false };
+        });
+        const http = new HTTPClient(new URL("http://localhost"));
+        const client = new ProductClient(http);
+        const result = await client.register("111222", "test@test.com");
         expect(result).toStrictEqual({
           success: false,
-          message: "error message"
+          message: "",
         });
       });
     });
@@ -159,31 +176,28 @@ describe("#product", () => {
 
   describe("#deregister", () => {
     describe("when the action is correctly done", () => {
-      beforeEach(() => {
-        registrationProxy.Deregister = jest.fn().mockResolvedValue([0, ""]);
-      });
-
       it("returns a successful result", async () => {
-        const client = new SoftwareClient();
-        const result = await client.product.deregister();
+        const http = new HTTPClient(new URL("http://localhost"));
+        const client = new ProductClient(http);
+        const result = await client.deregister();
         expect(result).toStrictEqual({
           success: true,
-          message: ""
+          message: "",
         });
       });
     });
 
     describe("when the action fails", () => {
-      beforeEach(() => {
-        registrationProxy.Deregister = jest.fn().mockResolvedValue([1, "error message"]);
-      });
-
       it("returns an unsuccessful result", async () => {
-        const client = new SoftwareClient();
-        const result = await client.product.deregister();
+        mockDeleteFn.mockImplementationOnce(() => {
+          return { ok: false };
+        });
+        const http = new HTTPClient(new URL("http://localhost"));
+        const client = new ProductClient(http);
+        const result = await client.deregister();
         expect(result).toStrictEqual({
           success: false,
-          message: "error message"
+          message: "",
         });
       });
     });

@@ -49,11 +49,9 @@ beforeEach(() => {
 
   createClient.mockImplementation(() => {
     return {
-      software: {
-        product: {
-          getIssues: jest.fn().mockResolvedValue(issues),
-          onIssuesChange: jest.fn()
-        }
+      product: {
+        getIssues: jest.fn().mockResolvedValue(issues),
+        onIssuesChange: jest.fn()
       }
     };
   });

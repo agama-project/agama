@@ -21,15 +21,25 @@
 
 // @ts-check
 
-import DBusClient from "./dbus";
-import { WithIssues, WithStatus, WithProgress } from "./mixins";
+import { WithIssues, WithProgress, WithStatus } from "./mixins";
 
 const SOFTWARE_SERVICE = "org.opensuse.Agama.Software1";
-const SOFTWARE_IFACE = "org.opensuse.Agama.Software1";
-const SOFTWARE_PATH = "/org/opensuse/Agama/Software1";
-const PRODUCT_IFACE = "org.opensuse.Agama.Software1.Product";
 const PRODUCT_PATH = "/org/opensuse/Agama/Software1/Product";
-const REGISTRATION_IFACE = "org.opensuse.Agama1.Registration";
+
+/**
+ * Enum for the reasons to select a pattern
+ *
+ * @readonly
+ * @enum { number }
+ */
+const SelectedBy = Object.freeze({
+  /** Selected by the user */
+  USER: 0,
+  /** Automatically selected as a dependency of another package */
+  AUTO: 1,
+  /** No selected */
+  NONE: 2,
+});
 
 /**
  * @typedef {object} Product
@@ -47,22 +57,150 @@ const REGISTRATION_IFACE = "org.opensuse.Agama1.Registration";
  */
 
 /**
+ * @typedef {object} RegistrationFailure
+ * @property {Number} id - ID of error.
+ * @property {string} message - Failure message.
+ */
+
+/**
  * @typedef {object} ActionResult
  * @property {boolean} success - Whether the action was successfully done.
  * @property {string} message - Result message.
  */
 
 /**
- * Product manager.
+ * @typedef {object} SoftwareProposal
+ * @property {string} size - Used space in human-readable form.
+ * @property {Object.<string, number>} patterns - Selected patterns and the reason.
+ */
+
+/**
+ * @typedef {object} SoftwareConfig
+ * @propery {Object.<string, boolean>} patterns - An object where the keys are the pattern names
+ *   and the values whether to install them or not.
+ * @property {string|undefined} product - Product to install.
+ */
+
+/**
+ * @typedef {Object} Pattern
+ * @property {string} name - Pattern name (internal ID).
+ * @property {string} category - Pattern category.
+ * @property {string} summary - User visible pattern name.
+ * @property {string} description - Long description of the pattern.
+ * @property {number} order - Display order (string!).
+ * @property {string} icon - Icon name (not path or file name!).
+ */
+
+/**
+ * Software client
+ *
  * @ignore
  */
-class BaseProductManager {
+class SoftwareBaseClient {
   /**
-   * @param {DBusClient} client
+   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
+   */
+  /**
+   * @param {import("./http").HTTPClient} client - HTTP client.
    */
   constructor(client) {
     this.client = client;
-    this.proxies = {};
+  }
+
+  /**
+   * Asks the service to reload the repositories metadata
+   *
+   * @return {Promise<Response>}
+   */
+  probe() {
+    return this.client.post("/software/probe", {});
+  }
+
+  /**
+   * Returns how much space installation takes on disk
+   *
+   * @return {Promise<SoftwareProposal>}
+   */
+  async getProposal() {
+    const response = await this.client.get("/software/proposal");
+    if (!response.ok) {
+      console.log("Failed to get software proposal: ", response);
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Returns available patterns
+   *
+   * @return {Promise<Pattern[]>}
+   */
+  async getPatterns() {
+    const response = await this.client.get("/software/patterns");
+    if (!response.ok) {
+      console.log("Failed to get software patterns: ", response);
+      return [];
+    }
+    /** @type Array<{ name: string, category: string, summary: string, description: string, order: string, icon: string }> */
+    const patterns = await response.json();
+    return patterns.map((pattern) => ({
+      name: pattern.name,
+      category: pattern.category,
+      summary: pattern.summary,
+      description: pattern.description,
+      order: parseInt(pattern.order),
+      icon: pattern.icon,
+    }));
+  }
+
+  /**
+   * @return {Promise<SoftwareConfig>}
+   */
+  config() {
+    return this.client.get("/software/config");
+  }
+
+  /**
+   * @param {Object.<string, boolean>} patterns - An object where the keys are the pattern names
+   *   and the values whether to install them or not.
+   * @return {Promise<Response>}
+   */
+  selectPatterns(patterns) {
+    return this.client.put("/software/config", { patterns });
+  }
+
+  /**
+   * Registers a callback to run when the select product changes.
+   *
+   * @param {(changes: object) => void} handler - Callback function.
+   * @return {import ("./http").RemoveFn} Function to remove the callback.
+   */
+  onSelectedPatternsChanged(handler) {
+    return this.client.onEvent("SoftwareProposalChanged", ({ patterns }) => {
+      handler(patterns);
+    });
+  }
+}
+
+/**
+ * Manages software and product configuration.
+ */
+class SoftwareClient extends WithIssues(
+  WithProgress(
+    WithStatus(SoftwareBaseClient, "/software/status", SOFTWARE_SERVICE),
+    "/software/progress",
+    SOFTWARE_SERVICE,
+  ),
+  "/software/issues/software",
+  "/org/opensuse/Agama/Software1",
+) {}
+
+class ProductBaseClient {
+  /**
+   * @param {import("./http").HTTPClient} client - HTTP client.
+   */
+  constructor(client) {
+    this.client = client;
   }
 
   /**
@@ -71,25 +209,25 @@ class BaseProductManager {
    * @return {Promise<Array<Product>>}
    */
   async getAll() {
-    const proxy = await this.client.proxy(PRODUCT_IFACE);
-    return proxy.AvailableProducts.map(product => {
-      const [id, name, meta] = product;
-      return { id, name, description: meta.description?.v };
-    });
+    const response = await this.client.get("/software/products");
+    if (!response.ok) {
+      console.log("Failed to get software products: ", response);
+    }
+    return response.json();
   }
 
   /**
-   * Returns the selected product.
+   * Returns the identifier of the selected product.
    *
-   * @return {Promise<Product|null>}
+   * @return {Promise<string>} Selected identifier.
    */
   async getSelected() {
-    const products = await this.getAll();
-    const proxy = await this.client.proxy(PRODUCT_IFACE);
-    if (proxy.SelectedProduct === "") {
-      return null;
+    const response = await this.client.get("/software/config");
+    if (!response.ok) {
+      console.log("Failed to get software config: ", response);
     }
-    return products.find(product => product.id === proxy.SelectedProduct);
+    const config = await response.json();
+    return config.product;
   }
 
   /**
@@ -98,20 +236,19 @@ class BaseProductManager {
    * @param {string} id - Product ID.
    */
   async select(id) {
-    const proxy = await this.client.proxy(PRODUCT_IFACE);
-    return proxy.SelectProduct(id);
+    await this.client.put("/software/config", { product: id });
   }
 
   /**
-   * Registers a callback to run when properties in the Product object change.
+   * Registers a callback to run when the select product changes.
    *
    * @param {(id: string) => void} handler - Callback function.
+   * @return {import ("./http").RemoveFn} Function to remove the callback.
    */
   onChange(handler) {
-    return this.client.onObjectChanged(PRODUCT_PATH, PRODUCT_IFACE, changes => {
-      if ("SelectedProduct" in changes) {
-        const selected = changes.SelectedProduct.v.toString();
-        handler(selected);
+    return this.client.onEvent("ProductChanged", ({ id }) => {
+      if (id) {
+        handler(id);
       }
     });
   }
@@ -122,10 +259,14 @@ class BaseProductManager {
    * @return {Promise<Registration>}
    */
   async getRegistration() {
-    const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
-    const requirement = this.registrationRequirement(proxy.Requirement);
-    const code = proxy.RegCode;
-    const email = proxy.Email;
+    const response = await this.client.get("/software/registration");
+    if (!response.ok) {
+      console.log("Failed to get registration config:", response);
+      return { requirement: "unknown", code: null, email: null };
+    }
+    const config = await response.json();
+
+    const { requirement, key: code, email } = config;
 
     const registration = { requirement, code, email };
     if (code.length === 0) registration.code = null;
@@ -142,12 +283,19 @@ class BaseProductManager {
    * @returns {Promise<ActionResult>}
    */
   async register(code, email = "") {
-    const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
-    const result = await proxy.Register(code, { Email: { t: "s", v: email } });
+    const response = await this.client.post("/software/registration", { key: code, email });
+    if (response.status === 422) {
+      /**  @type RegistrationFailure */
+      const body = await response.json();
+      return {
+        success: false,
+        message: body.message,
+      };
+    }
 
     return {
-      success: result[0] === 0,
-      message: result[1]
+      success: response.ok, // still we can fail 400 due to dbus issue or 500 if backend stop working. maybe some message for this case?
+      message: ""
     };
   }
 
@@ -157,12 +305,20 @@ class BaseProductManager {
    * @returns {Promise<ActionResult>}
    */
   async deregister() {
-    const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
-    const result = await proxy.Deregister();
+    const response = await this.client.delete("/software/registration");
+
+    if (response.status === 422) {
+      /**  @type RegistrationFailure */
+      const body = await response.json();
+      return {
+        success: false,
+        message: body.message,
+      };
+    }
 
     return {
-      success: result[0] === 0,
-      message: result[1]
+      success: response.ok, // still we can fail 400 due to dbus issue or 500 if backend stop working. maybe some message for this case?
+      message: ""
     };
   }
 
@@ -172,133 +328,15 @@ class BaseProductManager {
    * @param {(registration: Registration) => void} handler - Callback function.
    */
   onRegistrationChange(handler) {
-    return this.client.onObjectChanged(PRODUCT_PATH, REGISTRATION_IFACE, () => {
-      this.getRegistration().then(handler);
+    return this.client.ws.onEvent((event) => {
+      if (event.type === "RegistrationChanged" || event.type === "RegistrationRequirementChanged") {
+        this.getRegistration().then(handler);
+      }
     });
   }
-
-  /**
-   * Helper method to generate the requirement representation.
-   * @private
-   *
-   * @param {number} value - D-Bus registration value.
-   * @returns {string}
-   */
-  registrationRequirement(value) {
-    let requirement;
-
-    switch (value) {
-      case 0:
-        requirement = "not-required";
-        break;
-      case 1:
-        requirement = "optional";
-        break;
-      case 2:
-        requirement = "mandatory";
-        break;
-    }
-
-    return requirement;
-  }
 }
 
-/**
- * Manages product selection.
- */
-class ProductManager extends WithIssues(BaseProductManager, PRODUCT_PATH) { }
+class ProductClient
+  extends WithIssues(ProductBaseClient, "/software/issues/product", PRODUCT_PATH) {}
 
-/**
- * Software client
- *
- * @ignore
- */
-class SoftwareBaseClient {
-  /**
-   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
-   */
-  constructor(address = undefined) {
-    this.client = new DBusClient(SOFTWARE_SERVICE, address);
-    this.product = new ProductManager(this.client);
-    this.proxies = {};
-  }
-
-  /**
-   * Asks the service to reload the repositories metadata
-   *
-   * @return {Promise<void>}
-   */
-  async probe() {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.Probe();
-  }
-
-  /**
-   * Returns how much space installation takes on disk
-   *
-   * @return {Promise<string>}
-   */
-  async getUsedSpace() {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.UsedDiskSpace();
-  }
-
-  /**
-   * Returns available patterns
-   *
-   * @param {boolean} filter - `true` = filter the patterns, `false` = all patterns
-   * @return {Promise<Array<string>>}
-   */
-  async patterns(filter) {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.ListPatterns(filter);
-  }
-
-  /**
-   * @typedef {Object.<string, number>} PatternSelection mapping "name" =>
-   * "who selected the pattern"
-   */
-
-  /**
-   * Returns selected patterns
-   *
-   * @return {Promise<PatternSelection>}
-   */
-  async selectedPatterns() {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.SelectedPatterns;
-  }
-
-  /**
-   * Select a pattern to install
-   *
-   * @param {string} name - name of the pattern
-   * @return {Promise<void>}
-   */
-  async addPattern(name) {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.AddPattern(name);
-  }
-
-  /**
-   * Deselect a pattern to install
-   *
-   * @param {string} name - name of the pattern
-   * @return {Promise<void>}
-   */
-  async removePattern(name) {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.RemovePattern(name);
-  }
-}
-
-/**
- * Manages software and product configuration.
- */
-class SoftwareClient extends WithIssues(
-  WithProgress(
-    WithStatus(SoftwareBaseClient, SOFTWARE_PATH), SOFTWARE_PATH
-  ), SOFTWARE_PATH
-) { }
-
-export { SoftwareClient };
+export { ProductClient, SelectedBy, SoftwareClient };

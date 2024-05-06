@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import { ProductProvider } from "./product";
  * @param {object} props
  * @param {React.ReactNode} [props.children] - content to display within the provider.
  */
-function AgamaProviders({ children }) {
+function AppProviders({ children }) {
   return (
     <InstallerClientProvider>
       <InstallerL10nProvider>
@@ -47,6 +47,4 @@ function AgamaProviders({ children }) {
   );
 }
 
-export {
-  AgamaProviders
-};
+export { AppProviders };

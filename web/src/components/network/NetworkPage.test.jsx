@@ -30,37 +30,69 @@ jest.mock("~/client");
 jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const wiredConnection = {
-  id: "Wired 1",
-  uuid: "e1ce3e83-f57c-4649-97d5-ecc468b74f97",
-  type: ConnectionTypes.ETHERNET,
-  addresses: [{ address: "192.168.122.20", prefix: 24 }]
-};
+  "id": "eth0",
+  "status": "up",
+  "iface": "eth0",
+  "method4": "manual",
+  "method6": "manual",
+  "addresses": [{ address: "192.168.122.20", prefix: 24 }],
+  "nameservers": ["192.168.122.1"],
+  "gateway4": "192.168.122.1"
+}
+
 const wiFiConnection = {
-  id: "WiFi 1",
-  uuid: "a4cf03c5-cb87-469d-824e-26b855a6bcfc",
+  "id": "AgamaNetwork",
+  "iface": "wlan0",
+  "method4": "auto",
+  "method6": "auto",
+  "wireless": {
+    "passworkd": "agama.test",
+    "security": "wpa-psk",
+    "ssid": "Agama",
+    "mode": "infrastructure"
+  },
+  "addresses": [{ address: "192.168.69.200", prefix: 24 }],
+  "nameservers": [],
+  "status": "up"
+}
+
+const ethernetDevice = {
+  name: "eth0",
+  connection: "eth0",
+  type: ConnectionTypes.ETHERNET,
+  addresses: [{ address: "192.168.122.20", prefix: 24 }],
+  macAddress: "00:11:22:33:44::55"
+};
+
+const wifiDevice = {
+  name: "wlan0",
+  connection: "AgamaNetwork",
   type: ConnectionTypes.WIFI,
-  addresses: [{ address: "192.168.69.200", prefix: 24 }]
+  addresses: [{ address: "192.168.69.200", prefix: 24 }],
+  macAddress: "AA:11:22:33:44::FF"
 };
 
 const settingsFn = jest.fn();
-const activeConnectionsFn = jest.fn();
+const connectionsFn = jest.fn();
+const onNetworChangeEventFn = jest.fn();
+const devicesFn = jest.fn();
 const activeConnections = [wiredConnection, wiFiConnection];
-const networkSettings = { wifiScanSupported: false, hostname: "test" };
+const networkSettings = { wireless_enabled: false, hostname: "test", networking_enabled: true, connectivity: true };
 
 describe("NetworkPage", () => {
   beforeEach(() => {
     settingsFn.mockReturnValue({ ...networkSettings });
-    activeConnectionsFn.mockReturnValue(activeConnections);
+    connectionsFn.mockReturnValue(activeConnections);
+    devicesFn.mockResolvedValue([ethernetDevice, wifiDevice]);
 
     createClient.mockImplementation(() => {
       return {
         network: {
-          setUp: () => Promise.resolve(true),
-          activeConnections: () => activeConnectionsFn,
-          connections: () => Promise.resolve([]),
-          accessPoints: () => [],
-          onNetworkEvent: jest.fn(),
-          settings: settingsFn
+          devices: devicesFn,
+          connections: () => Promise.resolve(connectionsFn()),
+          accessPoints: () => Promise.resolve([]),
+          onNetworkChange: onNetworChangeEventFn,
+          settings: () => Promise.resolve(settingsFn())
         }
       };
     });
@@ -69,20 +101,20 @@ describe("NetworkPage", () => {
   it("renders section for wired connections", async () => {
     installerRender(<NetworkPage />);
     const section = await screen.findByRole("region", { name: "Wired networks" });
-    await within(section).findByText("Wired 1");
+    await within(section).findByText("eth0");
     within(section).getByText("192.168.122.20/24");
   });
 
   it("renders section for WiFi connections", async () => {
     installerRender(<NetworkPage />);
     const section = await screen.findByRole("region", { name: "WiFi networks" });
-    await within(section).findByText("WiFi 1");
+    await within(section).findByText("AgamaNetwork");
     within(section).getByText("192.168.69.200/24");
   });
 
   describe("when no wired connection is detected", () => {
     beforeEach(() => {
-      activeConnectionsFn.mockReturnValue([wiFiConnection]);
+      connectionsFn.mockReturnValue([wiFiConnection]);
     });
 
     it("renders an informative message", async () => {
@@ -95,7 +127,7 @@ describe("NetworkPage", () => {
 
   describe("when no WiFi connection is detected", () => {
     beforeEach(() => {
-      activeConnectionsFn.mockReturnValue([wiredConnection]);
+      connectionsFn.mockReturnValue([wiredConnection]);
     });
 
     it("renders an informative message", async () => {
@@ -107,7 +139,7 @@ describe("NetworkPage", () => {
 
     describe("and WiFi scan is supported", () => {
       beforeEach(() => {
-        settingsFn.mockReturnValue({ ...networkSettings, wifiScanSupported: true });
+        settingsFn.mockReturnValue({ ...networkSettings, wireless_enabled: true });
       });
 
       it("displays a button for scanning WiFi networks", async () => {

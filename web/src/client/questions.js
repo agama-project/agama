@@ -21,86 +21,26 @@
 
 // @ts-check
 
-import DBusClient from "./dbus";
-
-const QUESTIONS_SERVICE = "org.opensuse.Agama1";
-
-const DBUS_CONFIG = {
-  questions: {
-    path: "/org/opensuse/Agama1/Questions",
-    ifaces: {
-      objectManager: "org.freedesktop.DBus.ObjectManager"
-    }
-  },
-  question: {
-    ifaces: {
-      generic: "org.opensuse.Agama1.Questions.Generic",
-      withPassword: "org.opensuse.Agama1.Questions.WithPassword"
-    }
-  }
-};
-
 const QUESTION_TYPES = {
   generic: "generic",
-  withPassword: "withPassword"
+  withPassword: "withPassword",
 };
 
 /**
- * Returns interfaces and properties from given DBus question object
- *
- * @param {Object} dbusQuestion
+ * @param {Object} httpQuestion
  * @return {Object}
  */
-const getIfacesAndProperties = (dbusQuestion) => Object.values(dbusQuestion)[0];
-
-/**
- * Returns interfaces from given DBus question object
- *
- * @param {Object} dbusQuestion
- * @return {Object}
- */
-const getIfaces = (dbusQuestion) => Object.keys(getIfacesAndProperties(dbusQuestion));
-
-/**
- * Returns the value from given object at given key
- *
- * @param {Object} ifaceProperties
- * @param {String} key
- * @return {*} the value
- */
-const fetchValue = (ifaceProperties, key) => {
-  const dbusValue = ifaceProperties[key];
-  if (dbusValue) return dbusValue.v;
-  return null;
-};
-
-/**
- * @param {Object} dbusQuestion
- * @return {Object}
-*/
-function buildQuestion(dbusQuestion) {
-  const question = {};
-  const ifaces = getIfaces(dbusQuestion);
-  const ifacesAndProperties = getIfacesAndProperties(dbusQuestion);
-
-  if (ifaces.includes(DBUS_CONFIG.question.ifaces.generic)) {
-    const dbusProperties = ifacesAndProperties[DBUS_CONFIG.question.ifaces.generic];
-
+function buildQuestion(httpQuestion) {
+  let question = {};
+  if (httpQuestion.generic) {
     question.type = QUESTION_TYPES.generic;
-    question.id = fetchValue(dbusProperties, "Id");
-    question.options = fetchValue(dbusProperties, "Options");
-    question.defaultOption = fetchValue(dbusProperties, "DefaultOption");
-    question.text = fetchValue(dbusProperties, "Text");
-    question.class = fetchValue(dbusProperties, "Class");
-    question.data = fetchValue(dbusProperties, "Data");
-    question.answer = fetchValue(dbusProperties, "Answer");
+    question = { ...httpQuestion.generic, type: QUESTION_TYPES.generic };
+    question.answer = httpQuestion.generic.answer;
   }
 
-  if (ifaces.includes(DBUS_CONFIG.question.ifaces.withPassword)) {
-    const dbusProperties = ifacesAndProperties[DBUS_CONFIG.question.ifaces.withPassword];
-
+  if (httpQuestion.withPassword) {
     question.type = QUESTION_TYPES.withPassword;
-    question.password = fetchValue(dbusProperties, "Password");
+    question.password = httpQuestion.withPassword.Password;
   }
 
   return question;
@@ -111,10 +51,19 @@ function buildQuestion(dbusQuestion) {
  */
 class QuestionsClient {
   /**
-   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
+   * @param {import("./http").HTTPClient} client - HTTP client.
    */
-  constructor(address) {
-    this.client = new DBusClient(QUESTIONS_SERVICE, address);
+  constructor(client) {
+    this.client = client;
+    this.questionIds = [];
+    this.handlers = {
+      added: [],
+      removed: [],
+    };
+    this.getQuestions().then((qs) => {
+      this.questionIds = qs.map((q) => q.id);
+    });
+    this.listenQuestions();
   }
 
   /**
@@ -123,17 +72,13 @@ class QuestionsClient {
    * @return {Promise<Array<object>>}
    */
   async getQuestions() {
-    const dbusQuestions = await this.client.call(
-      DBUS_CONFIG.questions.path,
-      DBUS_CONFIG.questions.ifaces.objectManager,
-      "GetManagedObjects",
-      null
-    );
-
-    // Note: dbusQuestions contains an empty object when there are no questions.
-    // Note: questions without id is not yet fully created with all interfaces.
-    return dbusQuestions.filter(q => Object.keys(q).length !== 0).map(buildQuestion)
-      .filter(q => "id" in q);
+    const response = await this.client.get("/questions");
+    if (!response.ok) {
+      console.log("Failed to get questions: ", response);
+      return [];
+    }
+    const questions = await response.json();
+    return questions.map(buildQuestion);
   }
 
   /**
@@ -141,37 +86,16 @@ class QuestionsClient {
    *
    * @param {Object} question
    */
-  async answer(question) {
-    const path = DBUS_CONFIG.questions.path + "/" + question.id;
-
+  answer(question) {
+    let answer;
     if (question.type === QUESTION_TYPES.withPassword) {
-      const proxy = await this.client.proxy(DBUS_CONFIG.question.ifaces.withPassword, path);
-      proxy.Password = question.password;
+      answer = { withPassword: { password: question.password } };
+    } else {
+      answer = { generic: { answer: question.answer } };
     }
 
-    const proxy = await this.client.proxy(DBUS_CONFIG.question.ifaces.generic, path);
-    proxy.Answer = question.answer;
-  }
-
-  /**
-   * Register a callback to run when the questions D-Bus object emits an Object Manager signal
-   *
-   * @param {String} member - name of the Object Manager signal
-   * @param {function} handler - callback function
-   * @return {function} function to unsubscribe
-   */
-  onObjectsChanged(member, handler) {
-    return this.client.onSignal(
-      {
-        path: DBUS_CONFIG.questions.path,
-        interface: "org.freedesktop.DBus.ObjectManager",
-        member
-      },
-      (_path, _iface, _signal, args) => {
-        const [path, changes, invalid] = args;
-        handler(path, changes, invalid);
-      }
-    );
+    const path = `/questions/${question.id}/answer`;
+    return this.client.put(path, answer);
   }
 
   /**
@@ -181,18 +105,12 @@ class QuestionsClient {
    * @return {function} function to unsubscribe
    */
   onQuestionAdded(handler) {
-    return this.onObjectsChanged("InterfacesAdded", (path, ifacesAndProperties) => {
-      const question = buildQuestion({ [path]: ifacesAndProperties });
-      // questions without id is not fully created questions
-      if ('id' in question) {
-        // and here is second tricky part. As we get new interface, but not all interfaces, we do another
-        // dbus call to get all interfaces of question
-        this.getQuestions().then(questions => {
-          const changed_question = questions.find(q => q.id === question.id);
-          handler(changed_question);
-        });
-      }
-    });
+    this.handlers.added.push(handler);
+
+    return () => {
+      const position = this.handlers.added.indexOf(handler);
+      if (position > -1) this.handlers.added.splice(position, 1);
+    };
   }
 
   /**
@@ -202,9 +120,31 @@ class QuestionsClient {
    * @return {function} function to unsubscribe
    */
   onQuestionRemoved(handler) {
-    return this.onObjectsChanged("InterfacesRemoved", path => {
-      const id = path.split("/").at(-1);
-      handler(Number(id));
+    this.handlers.removed.push(handler);
+
+    return () => {
+      const position = this.handlers.removed.indexOf(handler);
+      if (position > -1) this.handlers.removed.splice(position, 1);
+    };
+  }
+
+  async listenQuestions() {
+    return this.client.onEvent("QuestionsChanged", () => {
+      this.getQuestions().then((qs) => {
+        const updatedIds = qs.map((q) => q.id);
+
+        const newQuestions = qs.filter((q) => !this.questionIds.includes(q.id));
+        newQuestions.forEach((q) => {
+          this.handlers.added.forEach((f) => f(q));
+        });
+
+        const removed = this.questionIds.filter((id) => !updatedIds.includes(id));
+        removed.forEach((id) => {
+          this.handlers.removed.forEach((f) => f(id));
+        });
+
+        this.questionIds = updatedIds;
+      });
     });
   }
 }

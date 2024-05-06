@@ -27,6 +27,35 @@ import { plainRender } from "~/test-utils";
 import About from "./About";
 
 describe("About", () => {
+  it("renders a help icon inside the button by default", () => {
+    const { container } = plainRender(<About />);
+    const icon = container.querySelector('svg');
+    expect(icon).toHaveAttribute("data-icon-name", "help");
+  });
+
+  it("does not render a help icon inside the button if showIcon=false", () => {
+    const { container } = plainRender(<About showIcon={false} />);
+    const icon = container.querySelector('svg');
+    expect(icon).toBeNull();
+  });
+
+  it("allows setting its icon size", () => {
+    const { container } = plainRender(<About iconSize="xxs" />);
+    const icon = container.querySelector('svg');
+    expect(icon.classList.contains("icon-xxs")).toBe(true);
+  });
+
+  it("allows setting its button text", () => {
+    plainRender(<About buttonText="What is this?" />);
+    screen.getByRole("button", { name: "What is this?" });
+  });
+
+  it("allows setting its button variant", () => {
+    plainRender(<About buttonVariant="tertiary" />);
+    const button = screen.getByRole("button", { name: "About Agama" });
+    expect(button.classList.contains("pf-m-tertiary")).toBe(true);
+  });
+
   it("allows user to read 'About Agama'", async () => {
     const { user } = plainRender(<About />);
 

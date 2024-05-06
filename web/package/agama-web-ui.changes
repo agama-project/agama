@@ -1,4 +1,22 @@
 -------------------------------------------------------------------
+Mon May  6 05:41:15 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt to the new HTTP/JSON API:
+  - Authentication (gh#openSUSE/agama#1080).
+  - Localization (gh#openSUSE/agama#1094).
+  - Networking (gh#openSUSE/agama#1116).
+  - Software (gh#openSUSE/agama#1094 and gh#openSUSE/agama#1112).
+  - Manager service (gh#openSUSE/agama#1132).
+  - Questions (gh#openSUSE/agama#1132).
+  - Progress interface (gh#openSUSE/agama#1103).
+  - Issues interface (gh#openSUSE/agama#1100).
+  - Product registration (gh#openSUSE/agama#1146).
+  - Users (gh#openSUSE/agama#1117).
+- Adapt webpack to work with the new architecture
+  (gh#openSUSE/agama#1061, gh#openSUSE/agama#1074 and
+  gh#openSUSE/agama#1130).
+
+-------------------------------------------------------------------
 Fri May  3 09:45:36 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Allow reusing an existing device or file system

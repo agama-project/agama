@@ -28,7 +28,7 @@ import {
 } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
-import { ConnectionState } from "~/client/network/model";
+import { DeviceState } from "~/client/network/model";
 
 import { Icon } from "~/components/layout";
 import { WifiNetworkMenu, WifiConnectionForm } from "~/components/network";
@@ -36,16 +36,18 @@ import { _ } from "~/i18n";
 
 const networkState = (state) => {
   switch (state) {
-    case ConnectionState.ACTIVATING:
+    case DeviceState.CONFIG:
       // TRANSLATORS: Wifi network status
       return _("Connecting");
-    case ConnectionState.ACTIVATED:
+    case DeviceState.ACTIVATED:
       // TRANSLATORS: Wifi network status
       return _("Connected");
-    case ConnectionState.DEACTIVATING:
+    case DeviceState.DEACTIVATING:
       // TRANSLATORS: Wifi network status
       return _("Disconnecting");
-    case ConnectionState.DEACTIVATED:
+    case DeviceState.FAILED:
+      return _("Failed");
+    case DeviceState.DISCONNECTED:
       // TRANSLATORS: Wifi network status
       return _("Disconnected");
     default:
@@ -54,8 +56,8 @@ const networkState = (state) => {
 };
 
 const isStateChanging = (network) => {
-  const state = network.connection?.state;
-  return state === ConnectionState.ACTIVATING || state === ConnectionState.DEACTIVATING;
+  const state = network.device?.state;
+  return state === DeviceState.CONFIG || state === DeviceState.NEEDAUTH || state === DeviceState.DEACTIVATING || state === DeviceState.FAILED;
 };
 
 /**
@@ -72,7 +74,7 @@ function WifiNetworkListItem({ network, isSelected, isActive, onSelect, onCancel
   // Do not wait until receive the next D-Bus network event to have the connection object available
   // and display the spinner as soon as possible. I.e., renders it immediately when the user clicks
   // on an already configured network.
-  const showSpinner = (isSelected && network.settings && !network.connection) || isStateChanging(network);
+  const showSpinner = (isSelected && network.settings && !network.device) || isStateChanging(network);
 
   return (
     <li
@@ -96,14 +98,14 @@ function WifiNetworkListItem({ network, isSelected, isActive, onSelect, onCancel
           {/* TRANSLATORS: %s is replaced by a WiFi network name */}
           {showSpinner && <Spinner size="md" aria-label={sprintf(_("%s connection is waiting for an state change"), network.ssid)} />}
           <Text component="small" className="keep-words">
-            {showSpinner && !network.connection && _("Connecting")}
-            {networkState(network.connection?.state)}
+            {showSpinner && !network.device && _("Connecting")}
+            {networkState(network.device?.state)}
           </Text>
           {network.settings &&
             <WifiNetworkMenu settings={network.settings} />}
         </div>
       </div>
-      {isSelected && (!network.settings || network.settings.error) &&
+      {isSelected && (!network.settings || network.error) &&
         <div className="content">
           <WifiConnectionForm network={network} onCancel={onCancel} />
         </div>}

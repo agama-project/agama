@@ -45,6 +45,7 @@ pub mod error;
 pub mod model;
 mod nm;
 pub mod system;
+pub mod web;
 
 pub use action::Action;
 pub use adapter::{Adapter, NetworkAdapterError};

@@ -1,13 +1,19 @@
+use cidr::errors::NetworkParseError;
 use serde::{Deserialize, Serialize};
-use std::{fmt, str};
+use std::{
+    fmt,
+    str::{self, FromStr},
+};
 use thiserror::Error;
 use zbus;
 
 /// Network device
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "type")]
 pub struct Device {
     pub name: String,
     pub type_: DeviceType,
+    pub state: DeviceState,
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
@@ -25,21 +31,135 @@ impl fmt::Display for SSID {
     }
 }
 
+impl FromStr for SSID {
+    type Err = NetworkParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(SSID(s.as_bytes().into()))
+    }
+}
+
 impl From<SSID> for Vec<u8> {
     fn from(value: SSID) -> Self {
         value.0
     }
 }
 
-#[derive(Debug, PartialEq, Copy, Clone, Serialize, Deserialize)]
+#[derive(Default, Debug, PartialEq, Copy, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub enum DeviceType {
     Loopback = 0,
+    #[default]
     Ethernet = 1,
     Wireless = 2,
     Dummy = 3,
     Bond = 4,
     Vlan = 5,
     Bridge = 6,
+}
+
+// For now this mirrors NetworkManager, because it was less mental work than coming up with
+// what exactly Agama needs. Expected to be adapted.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum DeviceState {
+    #[default]
+    Unknown = 0,
+    Unmanaged = 10,
+    Unavailable = 20,
+    Disconnected = 30,
+    Prepare = 40,
+    Config = 50,
+    NeedAuth = 60,
+    IpConfig = 70,
+    IpCheck = 80,
+    Secondaries = 90,
+    Activated = 100,
+    Deactivating = 110,
+    Failed = 120,
+}
+#[derive(Debug, Error, PartialEq)]
+#[error("Invalid state: {0}")]
+pub struct InvalidDeviceState(String);
+
+impl TryFrom<u8> for DeviceState {
+    type Error = InvalidDeviceState;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(DeviceState::Unknown),
+            10 => Ok(DeviceState::Unmanaged),
+            20 => Ok(DeviceState::Unavailable),
+            30 => Ok(DeviceState::Disconnected),
+            40 => Ok(DeviceState::Prepare),
+            50 => Ok(DeviceState::Config),
+            60 => Ok(DeviceState::NeedAuth),
+            70 => Ok(DeviceState::IpConfig),
+            80 => Ok(DeviceState::IpCheck),
+            90 => Ok(DeviceState::Secondaries),
+            100 => Ok(DeviceState::Activated),
+            110 => Ok(DeviceState::Deactivating),
+            120 => Ok(DeviceState::Failed),
+            _ => Err(InvalidDeviceState(value.to_string())),
+        }
+    }
+}
+impl fmt::Display for DeviceState {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            DeviceState::Unknown => "unknown",
+            DeviceState::Unmanaged => "unmanaged",
+            DeviceState::Unavailable => "unavailable",
+            DeviceState::Disconnected => "disconnected",
+            DeviceState::Prepare => "prepare",
+            DeviceState::Config => "config",
+            DeviceState::NeedAuth => "need_auth",
+            DeviceState::IpConfig => "ip_config",
+            DeviceState::IpCheck => "ip_check",
+            DeviceState::Secondaries => "secondaries",
+            DeviceState::Activated => "activated",
+            DeviceState::Deactivating => "deactivating",
+            DeviceState::Failed => "failed",
+        };
+        write!(f, "{}", name)
+    }
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum Status {
+    #[default]
+    Up,
+    Down,
+    Removed,
+}
+
+impl fmt::Display for Status {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            Status::Up => "up",
+            Status::Down => "down",
+            Status::Removed => "removed",
+        };
+        write!(f, "{}", name)
+    }
+}
+
+#[derive(Debug, Error, PartialEq)]
+#[error("Invalid status: {0}")]
+pub struct InvalidStatus(String);
+
+impl TryFrom<&str> for Status {
+    type Error = InvalidStatus;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "up" => Ok(Status::Up),
+            "down" => Ok(Status::Down),
+            "removed" => Ok(Status::Removed),
+            _ => Err(InvalidStatus(value.to_string())),
+        }
+    }
 }
 
 /// Bond mode

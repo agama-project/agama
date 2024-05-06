@@ -800,24 +800,29 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
         let key_mgmt: &str = security.get("key-mgmt")?.downcast_ref()?;
         wireless_config.security = NmKeyManagement(key_mgmt.to_string()).try_into().ok()?;
 
-        let wep_key_type = security
-            .get("wep-key-type")
-            .and_then(|alg| WEPKeyType::try_from(*alg.downcast_ref::<u32>()?).ok())
-            .unwrap_or_default();
-        let auth_alg = security
-            .get("auth-alg")
-            .and_then(|alg| WEPAuthAlg::try_from(alg.downcast_ref()?).ok())
-            .unwrap_or_default();
-        let wep_key_index = security
-            .get("wep-tx-keyidx")
-            .and_then(|idx| idx.downcast_ref::<u32>().cloned())
-            .unwrap_or_default();
-        wireless_config.wep_security = Some(WEPSecurity {
-            wep_key_type,
-            auth_alg,
-            wep_key_index,
-            ..Default::default()
-        });
+        match wireless_config.security {
+            SecurityProtocol::WEP => {
+                let wep_key_type = security
+                    .get("wep-key-type")
+                    .and_then(|alg| WEPKeyType::try_from(*alg.downcast_ref::<u32>()?).ok())
+                    .unwrap_or_default();
+                let auth_alg = security
+                    .get("auth-alg")
+                    .and_then(|alg| WEPAuthAlg::try_from(alg.downcast_ref()?).ok())
+                    .unwrap_or_default();
+                let wep_key_index = security
+                    .get("wep-tx-keyidx")
+                    .and_then(|idx| idx.downcast_ref::<u32>().cloned())
+                    .unwrap_or_default();
+                wireless_config.wep_security = Some(WEPSecurity {
+                    wep_key_type,
+                    auth_alg,
+                    wep_key_index,
+                    ..Default::default()
+                });
+            }
+            _ => wireless_config.wep_security = None,
+        }
     }
 
     Some(wireless_config)
@@ -1107,10 +1112,7 @@ mod test {
                 Some(macaddr::MacAddr6::from_str("12:34:56:78:9A:BC").unwrap())
             );
             assert!(!wireless.hidden);
-            let wep_security = wireless.wep_security.as_ref().unwrap();
-            assert_eq!(wep_security.wep_key_type, WEPKeyType::Key);
-            assert_eq!(wep_security.auth_alg, WEPAuthAlg::Open);
-            assert_eq!(wep_security.wep_key_index, 1);
+            assert_eq!(wireless.wep_security, None);
         }
     }
 

@@ -31,6 +31,10 @@ export default function UsedSize({ size }) {
   // example: "728.8 MiB"
   const [msg1, msg2] = _("Installation will take %s").split("%s");
   return (
-    <>{msg1}<Em>{size}</Em>{msg2}</>
+    <>
+      {msg1}
+      <Em>{size}</Em>
+      {msg2}
+    </>
   );
 }

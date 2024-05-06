@@ -6,6 +6,10 @@ use thiserror::Error;
 pub enum NetworkStateError {
     #[error("Unknown connection '{0}'")]
     UnknownConnection(String),
+    #[error("Cannot update connection '{0}'")]
+    CannotUpdateConnection(String),
+    #[error("Unknown device '{0}'")]
+    UnknownDevice(String),
     #[error("Invalid connection UUID: '{0}'")]
     InvalidUuid(String),
     #[error("Invalid IP address: '{0}'")]

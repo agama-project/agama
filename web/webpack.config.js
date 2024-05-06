@@ -9,7 +9,6 @@ const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin');
 const CockpitPoPlugin = require("./src/lib/cockpit-po-plugin");
-const CockpitRsyncPlugin = require("./src/lib/cockpit-rsync-plugin");
 const StylelintPlugin = require('stylelint-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
@@ -26,10 +25,11 @@ const eslint = process.env.ESLINT !== '0';
 /* Default to disable csslint for faster production builds */
 const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== '0') : development;
 
-// Cockpit target managed by the development server,
-// by default connect to a locally running Cockpit
-let cockpitTarget = process.env.COCKPIT_TARGET || "localhost:9090";
-cockpitTarget = "https://" + cockpitTarget;
+// Agama API server. By default it connects to a local development server.
+let agamaServer = process.env.AGAMA_SERVER || "localhost:3000";
+if (!agamaServer.startsWith("http")) {
+  agamaServer = "http://" + agamaServer;
+}
 
 // Obtain package name from package.json
 const packageJson = JSON.parse(fs.readFileSync('package.json'));
@@ -48,18 +48,12 @@ const plugins = [
   // the wrapper sets the main code called in the po.js files,
   // the PO_DATA tag is replaced by the real translation data
   new CockpitPoPlugin({ wrapper: "agama.locale(PO_DATA);" }),
-  new CockpitRsyncPlugin({ dest: packageJson.name }),
   development && new ReactRefreshWebpackPlugin({ overlay: false }),
   // replace the "process.env.WEBPACK_SERVE" text in the source code by
   // the current value of the environment variable, that variable is set to
   // "true" when running the development server ("npm run server")
   // https://webpack.js.org/plugins/environment-plugin/
   new webpack.EnvironmentPlugin({ WEBPACK_SERVE: null, LOCAL_CONNECTION: null }),
-  // similarly for a non-environment value
-  // https://webpack.js.org/plugins/define-plugin/
-  // but because ESlint runs *before* the DefinePlugin we need to
-  // add it as a global variable in .eslintrc.json config file
-  new webpack.DefinePlugin({ COCKPIT_TARGET_URL: JSON.stringify(cockpitTarget) }),
 ].filter(Boolean);
 
 if (eslint) {
@@ -76,7 +70,7 @@ if (stylelint) {
 if (production) {
   plugins.unshift(new CompressionPlugin({
     test: /\.(js|html|css)$/,
-    deleteOriginalAssets: "keep-source-map"
+    deleteOriginalAssets: false
   }));
 }
 
@@ -103,22 +97,33 @@ module.exports = {
     // additionally watch these files for changes
     watchFiles: ["./src/manifest.json", "./po/*.po"],
     proxy: {
-      // forward all cockpit connections to a real Cockpit instance
-      "/cockpit": {
-        target: cockpitTarget,
-        // redirect also the websocket connections
+      // TODO: modify it to not depend on cockpit
+      // forward the manifests.js request and patch the response with the
+      // current Agama manifest from the ./src/manifest.json file
+      // "/manifests.js": {
+      //   target: cockpitTarget + "/cockpit/@localhost/",
+      //   // ignore SSL problems (self-signed certificate)
+      //   secure: false,
+      //   // the response is modified by the onProxyRes handler
+      //   selfHandleResponse : true,
+      //   onProxyRes: manifests_handler,
+      // },
+      "/api/ws": {
+        target: agamaServer.replace(/^http/, "ws"),
         ws: true,
-        // ignore SSL problems (self-signed certificate)
+        secure: false,
+      },
+      "/api": {
+        target: agamaServer,
         secure: false,
       },
     },
-    // use https so Cockpit uses wss:// when connecting to the backend
-    server: "https",
+    server: "http",
     // hot replacement does not support wss:// transport when running over https://,
     // as a workaround use sockjs (which uses standard https:// protocol)
     webSocketServer: "sockjs",
 
-    // Cockpit handles the "po.js" requests specially
+    // special handling for the "po.js" requests specially
     setupMiddlewares: (middlewares, devServer) => {
       devServer.app.get("/po.js", po_handler);
       return middlewares;

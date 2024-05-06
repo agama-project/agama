@@ -90,7 +90,6 @@ table td > .pf-v5-c-empty-state {
   padding-block: var(--pf-v5-c-modal-box__body--PaddingTop);
 }
 
-.pf-v5-c-form__actions,
 .pf-v5-c-modal-box__footer {
   // We prefer buttons placed at the right
   flex-direction: row-reverse;
@@ -223,6 +222,10 @@ table td > .pf-v5-c-empty-state {
     --pf-v5-c-expandable-section__content--PaddingRight: var(--spacer-normal);
     --pf-v5-c-expandable-section__content--PaddingLeft: var(--spacer-normal);
   }
+}
+
+.pf-v5-c-form__group.pf-m-action {
+  --pf-v5-c-form__group--m-action--MarginTop: var(--spacer-small);
 }
 
 .pf-v5-c-form__group-label-help {

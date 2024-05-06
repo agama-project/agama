@@ -7,7 +7,7 @@ use std::{fmt::Display, str::FromStr};
 use thiserror::Error;
 
 #[derive(Clone, Debug, PartialEq, Serialize)]
-pub struct LocaleCode {
+pub struct LocaleId {
     // ISO-639
     pub language: String,
     // ISO-3166
@@ -15,7 +15,7 @@ pub struct LocaleCode {
     pub encoding: String,
 }
 
-impl Display for LocaleCode {
+impl Display for LocaleId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
@@ -25,7 +25,7 @@ impl Display for LocaleCode {
     }
 }
 
-impl Default for LocaleCode {
+impl Default for LocaleId {
     fn default() -> Self {
         Self {
             language: "en".to_string(),
@@ -39,7 +39,7 @@ impl Default for LocaleCode {
 #[error("Not a valid locale string: {0}")]
 pub struct InvalidLocaleCode(String);
 
-impl TryFrom<&str> for LocaleCode {
+impl TryFrom<&str> for LocaleId {
     type Error = InvalidLocaleCode;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
@@ -84,6 +84,15 @@ static KEYMAP_ID_REGEX: OnceLock<Regex> = OnceLock::new();
 pub struct KeymapId {
     pub layout: String,
     pub variant: Option<String>,
+}
+
+impl Default for KeymapId {
+    fn default() -> Self {
+        Self {
+            layout: "us".to_string(),
+            variant: None,
+        }
+    }
 }
 
 #[derive(Error, Debug, PartialEq)]

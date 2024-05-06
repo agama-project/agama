@@ -1,14 +1,19 @@
 //! NetworkManager client.
 use std::collections::HashMap;
 
+use super::builder::DeviceFromProxyBuilder;
 use super::dbus::{
     cleanup_dbus_connection, connection_from_dbus, connection_to_dbus, controller_from_dbus,
     merge_dbus_connections,
 };
 use super::model::NmDeviceType;
-use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
-use crate::network::model::{Connection, Device};
+use super::proxies::{
+    AccessPointProxy, ActiveConnectionProxy, ConnectionProxy, DeviceProxy, NetworkManagerProxy,
+    SettingsProxy, WirelessProxy,
+};
+use crate::network::model::{AccessPoint, Connection, Device, GeneralState};
 use agama_lib::error::ServiceError;
+use agama_lib::network::types::{DeviceType, SSID};
 use log;
 use uuid::Uuid;
 use zbus;
@@ -24,12 +29,6 @@ pub struct NetworkManagerClient<'a> {
 }
 
 impl<'a> NetworkManagerClient<'a> {
-    /// Creates a NetworkManagerClient connecting to the system bus.
-    pub async fn from_system() -> Result<NetworkManagerClient<'a>, ServiceError> {
-        let connection = zbus::Connection::system().await?;
-        Self::new(connection).await
-    }
-
     /// Creates a NetworkManagerClient using the given D-Bus connection.
     ///
     /// * `connection`: D-Bus connection.
@@ -41,6 +40,102 @@ impl<'a> NetworkManagerClient<'a> {
             connection,
         })
     }
+    /// Returns the general state
+    pub async fn general_state(&self) -> Result<GeneralState, ServiceError> {
+        let proxy = SettingsProxy::new(&self.connection).await?;
+        let hostname = proxy.hostname().await?;
+        let wireless_enabled = self.nm_proxy.wireless_enabled().await?;
+        let networking_enabled = self.nm_proxy.networking_enabled().await?;
+        // TODO:: Allow to set global DNS configuration
+        // let global_dns_configuration = self.nm_proxy.global_dns_configuration().await?;
+        // Fixme: save as NMConnectivityState enum
+        let connectivity = self.nm_proxy.connectivity().await? == 4;
+
+        Ok(GeneralState {
+            hostname,
+            wireless_enabled,
+            networking_enabled,
+            connectivity,
+        })
+    }
+
+    /// Updates the general state
+    pub async fn update_general_state(&self, state: &GeneralState) -> Result<(), ServiceError> {
+        let wireless_enabled = self.nm_proxy.wireless_enabled().await?;
+
+        if wireless_enabled != state.wireless_enabled {
+            self.nm_proxy
+                .set_wireless_enabled(state.wireless_enabled)
+                .await?;
+        };
+
+        Ok(())
+    }
+
+    /// Returns the list of access points.
+    pub async fn request_scan(&self) -> Result<(), ServiceError> {
+        for path in &self.nm_proxy.get_devices().await? {
+            let proxy = DeviceProxy::builder(&self.connection)
+                .path(path.as_str())?
+                .build()
+                .await?;
+
+            let device_type = NmDeviceType(proxy.device_type().await?).try_into();
+            if let Ok(DeviceType::Wireless) = device_type {
+                let wproxy = WirelessProxy::builder(&self.connection)
+                    .path(path.as_str())?
+                    .build()
+                    .await?;
+                wproxy.request_scan(HashMap::new()).await?;
+            }
+        }
+
+        Ok(())
+    }
+
+    /// Returns the list of access points.
+    pub async fn access_points(&self) -> Result<Vec<AccessPoint>, ServiceError> {
+        let mut points = vec![];
+        for path in &self.nm_proxy.get_devices().await? {
+            let proxy = DeviceProxy::builder(&self.connection)
+                .path(path.as_str())?
+                .build()
+                .await?;
+
+            let device_type = NmDeviceType(proxy.device_type().await?).try_into();
+            if let Ok(DeviceType::Wireless) = device_type {
+                let wproxy = WirelessProxy::builder(&self.connection)
+                    .path(path.as_str())?
+                    .build()
+                    .await?;
+
+                for ap_path in wproxy.access_points().await? {
+                    let wproxy = AccessPointProxy::builder(&self.connection)
+                        .path(ap_path.as_str())?
+                        .build()
+                        .await?;
+
+                    let ssid = SSID(wproxy.ssid().await?);
+                    let hw_address = wproxy.hw_address().await?;
+                    let strength = wproxy.strength().await?;
+                    let flags = wproxy.flags().await?;
+                    let rsn_flags = wproxy.rsn_flags().await?;
+                    let wpa_flags = wproxy.wpa_flags().await?;
+
+                    points.push(AccessPoint {
+                        ssid,
+                        hw_address,
+                        strength,
+                        flags,
+                        rsn_flags,
+                        wpa_flags,
+                    })
+                }
+            }
+        }
+
+        Ok(points)
+    }
 
     /// Returns the list of network devices.
     pub async fn devices(&self) -> Result<Vec<Device>, ServiceError> {
@@ -51,20 +146,13 @@ impl<'a> NetworkManagerClient<'a> {
                 .build()
                 .await?;
 
-            let device_name = proxy.interface().await?;
-            let device_type = NmDeviceType(proxy.device_type().await?);
-            if let Ok(device_type) = device_type.try_into() {
-                devs.push(Device {
-                    name: device_name,
-                    type_: device_type,
-                });
+            if let Ok(device) = DeviceFromProxyBuilder::new(&self.connection, &proxy)
+                .build()
+                .await
+            {
+                devs.push(device);
             } else {
-                // TODO: use a logger
-                log::warn!(
-                    "Ignoring network device '{}' (unsupported type '{}')",
-                    &device_name,
-                    &device_type
-                );
+                tracing::warn!("Ignoring network device on path {}", &path);
             }
         }
 
@@ -86,12 +174,16 @@ impl<'a> NetworkManagerClient<'a> {
                 .await?;
             let settings = proxy.get_settings().await?;
 
-            if let Some(connection) = connection_from_dbus(settings.clone()) {
+            if let Some(mut connection) = connection_from_dbus(settings.clone()) {
                 if let Some(controller) = controller_from_dbus(&settings) {
                     controlled_by.insert(connection.uuid, controller.to_string());
                 }
                 if let Some(iname) = &connection.interface {
                     uuids_map.insert(iname.to_string(), connection.uuid);
+                }
+
+                if self.settings_active_connection(path).await?.is_none() {
+                    connection.set_down()
                 }
                 connections.push(connection);
             }
@@ -197,17 +289,19 @@ impl<'a> NetworkManagerClient<'a> {
     /// * `path`: D-Bus patch of the connection.
     async fn deactivate_connection(&self, path: OwnedObjectPath) -> Result<(), ServiceError> {
         let proxy = NetworkManagerProxy::new(&self.connection).await?;
-        match proxy.deactivate_connection(&path.as_ref()).await {
-            Err(e) => {
+
+        if let Some(active_connection) = self.settings_active_connection(path.clone()).await? {
+            if let Err(e) = proxy
+                .deactivate_connection(&active_connection.as_ref())
+                .await
+            {
                 // Ignore ConnectionNotActive error since this just means the state is already correct
-                if e.to_string().contains("ConnectionNotActive") {
-                    Ok(())
-                } else {
-                    Err(ServiceError::DBus(e))
+                if !e.to_string().contains("ConnectionNotActive") {
+                    return Err(ServiceError::DBus(e));
                 }
             }
-            _ => Ok(()),
         }
+        Ok(())
     }
 
     async fn get_connection_proxy(&self, uuid: Uuid) -> Result<ConnectionProxy, ServiceError> {
@@ -219,5 +313,24 @@ impl<'a> NetworkManagerClient<'a> {
             .build()
             .await?;
         Ok(proxy)
+    }
+
+    async fn settings_active_connection(
+        &self,
+        path: OwnedObjectPath,
+    ) -> Result<Option<OwnedObjectPath>, ServiceError> {
+        for active_path in &self.nm_proxy.active_connections().await? {
+            let proxy = ActiveConnectionProxy::builder(&self.connection)
+                .path(active_path.as_str())?
+                .build()
+                .await?;
+
+            let connection = proxy.connection().await?;
+            if path == connection {
+                return Ok(Some(active_path.to_owned()));
+            };
+        }
+
+        Ok(None)
     }
 }

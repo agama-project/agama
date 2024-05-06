@@ -36,6 +36,18 @@ const ConnectionState = Object.freeze({
   DEACTIVATED: 4
 });
 
+const DeviceState = Object.freeze({
+  UNKNOWN: "unknown",
+  UNMANAGED: "unmanaged",
+  UNAVAILABLE: "unavailable",
+  DISCONNECTED: "disconnected",
+  CONFIG: "config",
+  NEEDAUTH: "needAuth",
+  ACTIVATED: "activated",
+  DEACTIVATING: "deactivating",
+  FAILED: "failed"
+});
+
 /**
  * Returns a human readable connection state
  *
@@ -48,9 +60,18 @@ const connectionHumanState = (state) => {
   return stateKey.toLowerCase();
 };
 
+/**
+ * @typedef {keyof ConnectionTypes} ConnectionType
+ */
+
 const ConnectionTypes = Object.freeze({
-  ETHERNET: "802-3-ethernet",
-  WIFI: "802-11-wireless"
+  ETHERNET: "ethernet",
+  WIFI: "wireless",
+  LOOPBACK: "loopback",
+  BOND: "bond",
+  BRIDGE: "bridge",
+  VLAN: "vlan",
+  UNKNOWN: "unknown"
 });
 
 const SecurityProtocols = Object.freeze({
@@ -78,20 +99,39 @@ const SecurityProtocols = Object.freeze({
  */
 
 /**
- * @typedef {object} ActiveConnection
- * @property {string} id
- * @property {string} uuid
- * @property {string} type
- * @property {number} state
+ * @typedef {object} Device
+ * @property {string} name
+ * @property {ConnectionType} type
  * @property {IPAddress[]} addresses
+ * @property {string[]} nameservers
+ * @property {string} gateway4
+ * @property {string} gateway6
+ * @property {string} method4
+ * @property {string} method6
+ * @property {Route[]} routes4
+ * @property {Route[]} routes6
+ * @property {string} macAddress
+ * @property {string} [connection]
+ * @property {string} DeviceState
+ */
+
+/**
+ * @typedef {object} Route
+ * @property {IPAddress} destination
+ * @property {string} next_hop
+ * @property {number} metric
  */
 
 /**
  * @typedef {object} Connection
  * @property {string} id
- * @property {string} uuid
  * @property {string} iface
- * @property {IPv4} [ipv4]
+ * @property {IPAddress[]} addresses
+ * @property {string[]} nameservers
+ * @property {string} gateway4
+ * @property {string} gateway6
+ * @property {string} method4
+ * @property {string} method6
  * @property {Wireless} [wireless]
  */
 
@@ -104,14 +144,6 @@ const SecurityProtocols = Object.freeze({
  */
 
 /**
- * @typedef {object} IPv4
- * @property {string} method
- * @property {IPAddress[]} addresses
- * @property {string[]} nameServers
- * @property {string} gateway
- */
-
-/**
  * @typedef {object} AccessPoint
  * @property {string} ssid
  * @property {number} strength
@@ -121,30 +153,10 @@ const SecurityProtocols = Object.freeze({
 
 /**
 * @typedef {object} NetworkSettings
-* @property {boolean} wifiScanSupported
+* @property {boolean} connectivity
+* @property {boolean} wirelessEnabled
+* @property {boolean} networkingEnabled
 * @property {string} hostname
-
-/**
- * Returns an IPv4 configuration object
- *
- * Defaults values can be overridden
- *
- * @private
- * @param {object} props
- * @param {string} [props.method]
- * @param {IPAddress[]} [props.addresses]
- * @param {string[]} [props.nameServers]
- * @param {string} [props.gateway]
- * @return {IPv4}
- */
-const createIPv4 = ({ method, addresses, nameServers, gateway }) => {
-  return {
-    method: method || "auto",
-    addresses: addresses || [],
-    nameServers: nameServers || [],
-    gateway: gateway || "",
-  };
-};
 
 /**
  * Returns a connection object
@@ -153,23 +165,46 @@ const createIPv4 = ({ method, addresses, nameServers, gateway }) => {
  *
  * @param {object} options
  * @param {string} [options.id] - Connection ID
- * @param {string} [options.uuid] - Connection UUID
+ * @param {string} [options.method4] - Connection IPv4 method
+ * @param {string} [options.method6] - Connection IPv6 method
+ * @param {string} [options.gateway4] - Connection IPv4 gateway
+ * @param {string} [options.gateway6] - Connection IPv6 gateway
  * @param {string} [options.iface] - Connection interface
- * @param {object} [options.ipv4] IPv4 Settings
+ * @param {IPAddress[]} [options.addresses] Connection addresses
+ * @param {string[]} [options.nameservers] Connection nameservers
  * @param {object} [options.wireless] Wireless Settings
  * @return {Connection}
  */
-const createConnection = ({ id, uuid, iface, ipv4, wireless }) => {
+const createConnection = ({ id, iface, method4, method6, gateway4, gateway6, addresses, nameservers, wireless }) => {
   const connection = {
     id,
-    uuid,
     iface,
-    ipv4: createIPv4(ipv4 || {}),
+    method4: method4 || "auto",
+    method6: method6 || "auto",
+    gateway4: gateway4 || "",
+    gateway6: gateway6 || "",
+    addresses: addresses || [],
+    nameservers: nameservers || []
   };
 
   if (wireless) connection.wireless = wireless;
 
   return connection;
+};
+
+const createDevice = ({ name, macAddress, method4, method6, gateway4, gateway6, addresses, nameservers, routes4, routes6 }) => {
+  return {
+    name,
+    macAddress,
+    method4: method4 || "auto",
+    method6: method6 || "auto",
+    gateway4: gateway4 || "",
+    gateway6: gateway6 || "",
+    addresses: addresses || [],
+    nameservers: nameservers || [],
+    routes4: routes4 || [],
+    routes6: routes6 || []
+  };
 };
 
 /**
@@ -192,10 +227,12 @@ const createAccessPoint = ({ ssid, hwAddress, strength, security }) => (
 );
 
 export {
-  createConnection,
   createAccessPoint,
+  createConnection,
+  createDevice,
   connectionHumanState,
   ConnectionState,
   ConnectionTypes,
+  DeviceState,
   SecurityProtocols
 };

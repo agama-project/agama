@@ -90,8 +90,8 @@ install -D -p -m 644 %{_builddir}/agama/share/agama.pam $RPM_BUILD_ROOT%{_pam_ve
 install -D -d -m 0755 %{buildroot}%{_datadir}/agama-cli
 install -m 0644 %{_builddir}/agama/agama-lib/share/profile.schema.json %{buildroot}%{_datadir}/agama-cli
 install --directory %{buildroot}%{_datadir}/dbus-1/agama-services
-install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services %{_builddir}/agama/share/*.service
-
+install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services %{_builddir}/agama/share/org.opensuse.Agama1.service
+install -D -m 0644 %{_builddir}/agama/share/agama-web-server.service %{buildroot}%{_unitdir}/agama-web-server.service
 
 %check
 PATH=$PWD/share/bin:$PATH
@@ -102,11 +102,24 @@ echo $PATH
 %{cargo_test}
 %endif
 
+%pre
+%service_add_pre agama-web-server.service
+
+%post
+%service_add_post agama-web-server.service
+
+%preun
+%service_del_preun agama-web-server.service
+
+%postun
+%service_del_preun agama-web-server.service
+
 %files
 %{_bindir}/agama-dbus-server
 %{_bindir}/agama-web-server
 %{_datadir}/dbus-1/agama-services
 %{_pam_vendordir}/agama
+%{_unitdir}/agama-web-server.service
 
 %files -n agama-cli
 %{_bindir}/agama

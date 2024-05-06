@@ -71,6 +71,21 @@ describe("Selector", () => {
     expect(onChangeFn).toHaveBeenCalledWith([2]);
   });
 
+  it("sets data-auto-selected attribute to selected options for which `autoSelectionCheck` returns true", () => {
+    plainRender(
+      // Forcing a not selected option (en_GB) as auto selected for checking that it is not.
+      <TestingSelector autoSelectionCheck={o => ["es_ES", "en_GB"].includes(o.id)} />
+    );
+    const spanishRow = screen.getByRole("row", { name: "Spanish - Spain auto selected" });
+    const englishRow = screen.getByRole("row", { name: "English - United Kingdom" });
+    const spanishOption = within(spanishRow).getByRole("radio");
+    const englishOption = within(englishRow).getByRole("radio");
+    expect(spanishRow).toHaveAttribute("data-auto-selected");
+    expect(spanishOption).toHaveAttribute("data-auto-selected");
+    expect(englishRow).not.toHaveAttribute("data-auto-selected");
+    expect(englishOption).not.toHaveAttribute("data-auto-selected");
+  });
+
   describe("when set as single selector", () => {
     it("renders a radio input for each option", () => {
       plainRender(<TestingSelector />);

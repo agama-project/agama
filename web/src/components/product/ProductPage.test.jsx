@@ -30,6 +30,7 @@ import { createClient } from "~/client";
 let mockManager;
 let mockSoftware;
 let mockProducts;
+let mockProduct;
 let mockRegistration;
 
 const products = [
@@ -69,11 +70,12 @@ beforeEach(() => {
     probe: jest.fn(),
     getStatus: jest.fn().mockResolvedValue(),
     onStatusChange: jest.fn(),
-    product: {
-      getSelected: selectedProduct.id,
-      select: jest.fn().mockResolvedValue(),
-      onChange: jest.fn()
-    }
+  };
+
+  mockProduct = {
+    getSelected: selectedProduct.id,
+    select: jest.fn().mockResolvedValue(),
+    onChange: jest.fn()
   };
 
   mockProducts = products;
@@ -87,7 +89,8 @@ beforeEach(() => {
   createClient.mockImplementation(() => (
     {
       manager: mockManager,
-      software: mockSoftware
+      software: mockSoftware,
+      product: mockProduct,
     }
   ));
 });
@@ -132,7 +135,7 @@ describe("if the product is already registered", () => {
 
 describe("if the product does not require registration", () => {
   beforeEach(() => {
-    mockRegistration.requirement = "not-required";
+    mockRegistration.requirement = "NotRequired";
   });
 
   it("does not show a button to register the product", async () => {
@@ -208,7 +211,7 @@ describe("when the button for changing the product is clicked", () => {
       const accept = within(popup).getByRole("button", { name: "Accept" });
       await user.click(accept);
 
-      expect(mockSoftware.product.select).toHaveBeenCalledWith("Test-Product2");
+      expect(mockProduct.select).toHaveBeenCalledWith("Test-Product2");
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
 
@@ -226,7 +229,7 @@ describe("when the button for changing the product is clicked", () => {
         const cancel = within(popup).getByRole("button", { name: "Cancel" });
         await user.click(cancel);
 
-        expect(mockSoftware.product.select).not.toHaveBeenCalled();
+        expect(mockProduct.select).not.toHaveBeenCalled();
         expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
       });
     });
@@ -259,7 +262,7 @@ describe("when the button for registering the product is clicked", () => {
   beforeEach(() => {
     mockRegistration.requirement = "mandatory";
     mockRegistration.code = null;
-    mockSoftware.product.register = jest.fn().mockResolvedValue({ success: true });
+    mockProduct.register = jest.fn().mockResolvedValue({ success: true });
   });
 
   it("opens a popup for registering the product", async () => {
@@ -278,7 +281,7 @@ describe("when the button for registering the product is clicked", () => {
     const accept = within(popup).getByRole("button", { name: "Accept" });
     await user.click(accept);
 
-    expect(mockSoftware.product.register).toHaveBeenCalledWith("111222", "test@test.com");
+    expect(mockProduct.register).toHaveBeenCalledWith("111222", "test@test.com");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
@@ -293,14 +296,14 @@ describe("when the button for registering the product is clicked", () => {
       const cancel = within(popup).getByRole("button", { name: "Cancel" });
       await user.click(cancel);
 
-      expect(mockSoftware.product.register).not.toHaveBeenCalled();
+      expect(mockProduct.register).not.toHaveBeenCalled();
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
   });
 
   describe("if there is an error registering the product", () => {
     beforeEach(() => {
-      mockSoftware.product.register = jest.fn().mockResolvedValue({
+      mockProduct.register = jest.fn().mockResolvedValue({
         success: false,
         message: "Error registering product"
       });
@@ -329,7 +332,7 @@ describe("when the button to perform product de-registration is clicked", () => 
   beforeEach(() => {
     mockRegistration.requirement = "mandatory";
     mockRegistration.code = "111222";
-    mockSoftware.product.deregister = jest.fn().mockResolvedValue({ success: true });
+    mockProduct.deregister = jest.fn().mockResolvedValue({ success: true });
   });
 
   it("opens a popup to deregister the product", async () => {
@@ -344,7 +347,7 @@ describe("when the button to perform product de-registration is clicked", () => 
     const accept = within(popup).getByRole("button", { name: "Accept" });
     await user.click(accept);
 
-    expect(mockSoftware.product.deregister).toHaveBeenCalled();
+    expect(mockProduct.deregister).toHaveBeenCalled();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
@@ -359,14 +362,14 @@ describe("when the button to perform product de-registration is clicked", () => 
       const cancel = within(popup).getByRole("button", { name: "Cancel" });
       await user.click(cancel);
 
-      expect(mockSoftware.product.deregister).not.toHaveBeenCalled();
+      expect(mockProduct.deregister).not.toHaveBeenCalled();
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
   });
 
   describe("if there is an error performing the product de-registration", () => {
     beforeEach(() => {
-      mockSoftware.product.deregister = jest.fn().mockResolvedValue({
+      mockProduct.deregister = jest.fn().mockResolvedValue({
         success: false,
         message: "Product cannot be deregistered"
       });

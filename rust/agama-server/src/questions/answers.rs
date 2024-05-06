@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 
 use agama_lib::questions::GenericQuestion;
-use anyhow::Context;
 use serde::{Deserialize, Serialize};
+
+use super::QuestionsError;
 
 /// Data structure for single yaml answer. For variables specification see
 /// corresponding [agama_lib::questions::GenericQuestion] fields.
@@ -60,10 +61,9 @@ pub struct Answers {
 }
 
 impl Answers {
-    pub fn new_from_file(path: &str) -> anyhow::Result<Self> {
-        let f = std::fs::File::open(path).context(format!("Failed to open {}", path))?;
-        let result: Self =
-            serde_yaml::from_reader(f).context(format!("Failed to parse values at {}", path))?;
+    pub fn new_from_file(path: &str) -> Result<Self, QuestionsError> {
+        let f = std::fs::File::open(path).map_err(QuestionsError::IO)?;
+        let result: Self = serde_yaml::from_reader(f).map_err(QuestionsError::Deserialize)?;
 
         Ok(result)
     }

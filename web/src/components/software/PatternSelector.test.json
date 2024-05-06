@@ -1,58 +1,74 @@
-{
-  "32bit": [
-    "Base Technologies",
-    "This will install the 32-bit variant of all selected patterns. This allows to execute 32-bit software.",
-    "./pattern-cli",
-    "32-Bit Runtime Environment",
-    "1180"
-  ],
-  "base": [
-    "Base Technologies",
-    "This is the base runtime system.  It contains only a basic multiuser booting system. For running on real hardware, you need to add additional packages and pattern to make this pattern useful on its own.",
-    "./pattern-basis",
-    "Base System",
-    "1030"
-  ],
-  "documentation": [
-    "Documentation",
-    "Help and Support Documentation",
-    "./pattern-documentation",
-    "Help and Support Documentation",
-    "1005"
-  ],
-  "books": [
-    "Documentation",
-    "Help and Documentation, various books.",
-    "./pattern-documentation",
-    "Documentation",
-    "5200"
-  ],
-  "devel_C_C++": [
-    "Development",
-    "Tools and libraries for software development using C/C++ and other derivative\nof the C programming language.",
-    "./pattern-c-devel",
-    "C/C++ Development",
-    "3240"
-  ],
-  "devel_basis": [
-    "Development",
-    "Minimal set of tools for compiling and linking applications.",
-    "./pattern-basis-devel",
-    "Base Development",
-    "3140"
-  ],
-  "devel_rpm_build": [
-    "Development",
-    "Minimal set of tools and libraries for building packages using the RPM package manager.",
-    "./pattern-rpm-devel",
-    "RPM Build Environment",
-    "3280"
-  ],
-  "wsl_base": [
-    "Development",
-    "This package contains the wsl_base pattern: recommended configs,tools,libraries for using WSL.",
-    "./pattern-generic",
-    "Base WSL packages",
-    ""
-  ]
-}
+[
+  {
+    "name": "xfce",
+    "category": "Graphical Environments",
+    "icon": "./pattern-xfce",
+    "description": "Xfce is a lightweight desktop environment for various *NIX systems.",
+    "summary": "XFCE Desktop Environment",
+    "order": "1310"
+  },
+  {
+    "name": "basic_desktop",
+    "category": "Graphical Environments",
+    "icon": "./pattern-x11",
+    "description": "This pattern installs a rather basic desktop (icewm)",
+    "summary": "A very basic desktop (previously part of x11 pattern)",
+    "order": "1802"
+  },
+  {
+    "name": "yast2_server",
+    "category": "Base Technologies",
+    "icon": "./yast",
+    "description": "YaST tools for server system administration.",
+    "summary": "YaST Server Utilities",
+    "order": "1224"
+  },
+  {
+    "name": "office",
+    "category": "Desktop Functions",
+    "icon": "./pattern-office",
+    "description": "Office software for your desktop environment including LibreOffice.",
+    "summary": "Office Software",
+    "order": "1640"
+  },
+  {
+    "name": "gnome",
+    "category": "Graphical Environments",
+    "icon": "./pattern-gnome-wayland",
+    "description": "The GNOME desktop environment is an intuitive and attractive desktop for users.\nThis pattern installs components for GNOME to run with Wayland and X11 technologies.",
+    "summary": "GNOME Desktop Environment (Wayland)",
+    "order": "1010"
+  },
+  {
+    "name": "kde",
+    "category": "Graphical Environments",
+    "icon": "./pattern-kde",
+    "description": "Packages providing the Plasma desktop environment and applications from KDE.",
+    "summary": "KDE Applications and Plasma Desktop",
+    "order": "1110"
+  },
+  {
+    "name": "multimedia",
+    "category": "Desktop Functions",
+    "icon": "./pattern-multimedia",
+    "description": "Multimedia players, sound editing tools, video and image manipulation applications.",
+    "summary": "Multimedia",
+    "order": "1580"
+  },
+  {
+    "name": "yast2_basis",
+    "category": "Base Technologies",
+    "icon": "./yast",
+    "description": "YaST tools for basic system administration.",
+    "summary": "YaST Base Utilities",
+    "order": "1220"
+  },
+  {
+    "name": "yast2_desktop",
+    "category": "Base Technologies",
+    "icon": "./yast",
+    "description": "YaST tools for desktop system administration.",
+    "summary": "YaST Desktop Utilities",
+    "order": "1222"
+  }
+]
