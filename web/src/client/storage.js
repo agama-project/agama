@@ -1569,19 +1569,16 @@ class StorageBaseClient {
   static SERVICE = "org.opensuse.Agama.Storage1";
 
   /**
-   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
+   * @param {import("./http").HTTPClient} client - HTTP client.
    */
-  constructor(address = undefined) {
-    this.client = new DBusClient(StorageBaseClient.SERVICE, address);
+  constructor(client = undefined) {
+    this.client = client;
     this.system = new DevicesManager(this.client, STORAGE_SYSTEM_NAMESPACE);
     this.staging = new DevicesManager(this.client, STORAGE_STAGING_NAMESPACE);
     this.proposal = new ProposalManager(this.client, this.system);
-    this.iscsi = new ISCSIManager(StorageBaseClient.SERVICE, address);
-    this.dasd = new DASDManager(StorageBaseClient.SERVICE, address);
-    this.zfcp = new ZFCPManager(StorageBaseClient.SERVICE, address);
-    this.proxies = {
-      storage: this.client.proxy(STORAGE_IFACE)
-    };
+    this.iscsi = new ISCSIManager(StorageBaseClient.SERVICE, client);
+    this.dasd = new DASDManager(StorageBaseClient.SERVICE, client);
+    this.zfcp = new ZFCPManager(StorageBaseClient.SERVICE, client);
   }
 
   /**
@@ -1598,8 +1595,11 @@ class StorageBaseClient {
    * @returns {Promise<boolean>}
    */
   async isDeprecated() {
-    const proxy = await this.proxies.storage;
-    return proxy.DeprecatedSystem;
+    const response = await this.client.get("/storage/devices/dirty");
+    if (!response.ok) {
+      console.log("Failed to get storage devices dirty: ", response);
+    }
+    return response.json();
   }
 
   /**
@@ -1611,8 +1611,10 @@ class StorageBaseClient {
    * @param {handlerFn} handler
    */
   onDeprecate(handler) {
-    return this.client.onObjectChanged(STORAGE_OBJECT, STORAGE_IFACE, (changes) => {
-      if (changes.DeprecatedSystem?.v) return handler();
+    return this.client.onEvent("DevicesDirty", ({ value }) => {
+      if (value) {
+        handler();
+      }
     });
   }
 }
