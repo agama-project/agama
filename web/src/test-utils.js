@@ -149,7 +149,7 @@ const plainRender = (ui, options = {}) => {
  * It can be useful to mock functions that might receive a callback that you can
  * execute on-demand during the test.
  *
- * @return a tuple with the mocked function and the list of callbacks.
+ * @return {[() => () => void, Array<(any) => void>]} a tuple with the mocked function and the list of callbacks.
  */
 const createCallbackMock = () => {
   const callbacks = [];

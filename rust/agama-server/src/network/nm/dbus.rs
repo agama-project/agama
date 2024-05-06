@@ -62,6 +62,10 @@ pub fn connection_to_dbus<'a>(
         connection_dbus.insert("master", "".into());
     }
 
+    if let Some(zone) = &conn.firewall_zone {
+        connection_dbus.insert("zone", zone.into());
+    }
+
     result.insert("ipv4", ip_config_to_ipv4_dbus(&conn.ip_config));
     result.insert("ipv6", ip_config_to_ipv6_dbus(&conn.ip_config));
     result.insert("match", match_config_to_dbus(&conn.match_config));
@@ -567,6 +571,11 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<Connection> {
 
     if let Some(match_config) = conn.get("match") {
         base_connection.match_config = match_config_from_dbus(match_config)?;
+    }
+
+    if let Some(zone) = connection.get("zone") {
+        let zone: &str = zone.downcast_ref()?;
+        base_connection.firewall_zone = Some(zone.to_string());
     }
 
     if let Some(ethernet_config) = conn.get(ETHERNET_KEY) {

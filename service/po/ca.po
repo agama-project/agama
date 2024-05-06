@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-05 02:04+0000\n"
-"PO-Revision-Date: 2024-03-05 12:42+0000\n"
+"POT-Creation-Date: 2024-04-07 02:10+0000\n"
+"PO-Revision-Date: 2024-04-07 11:43+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/"
 "agama-service-master/ca/>\n"
@@ -77,8 +77,8 @@ msgstr "El fitxer %{filename}"
 #: service/lib/agama/software/callbacks/signature.rb:71
 #, perl-brace-format
 msgid ""
-"%{source} is not digitally signed. The origin and integrity of the file cannot"
-" be verified. Use it anyway?"
+"%{source} is not digitally signed. The origin and integrity of the file "
+"cannot be verified. Use it anyway?"
 msgstr ""
 "%{source} no està signat digitalment. L'origen i la integritat del fitxer no "
 "es poden verificar. Voleu usar-lo tanmateix?"
@@ -90,8 +90,8 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:94
 #, perl-brace-format
 msgid ""
-"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you wan"
-"t to trust this key?"
+"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
+"want to trust this key?"
 msgstr ""
 "La clau %{id} (%{name}) amb l'empremta digital %{fingerprint} és "
 "desconeguda. Voleu confiar en aquesta clau?"
@@ -188,3 +188,31 @@ msgstr "Preparant els dispositius d'emmagatzematge"
 #: service/lib/agama/storage/manager.rb:130
 msgid "Writing bootloader sysconfig"
 msgstr "Escrivint la configuració de sistema del carregador d'arrencada"
+
+#. Returns an issue if there is no target device.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/proposal.rb:195
+msgid "No device selected for installation"
+msgstr "No s'ha seleccionat cap dispositiu per a la instal·lació."
+
+#. Returns an issue if any of the devices required for the proposal is not found
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/proposal.rb:211
+#, perl-brace-format
+msgid "The following selected device is not found in the system: %{devices}"
+msgid_plural ""
+"The following selected devices are not found in the system: %{devices}"
+msgstr[0] "El dispositiu seleccionat següent no es troba al sistema: %{devices}"
+msgstr[1] ""
+"Els dispositius seleccionats següents no es troben al sistema: %{devices}"
+
+#. Returns an issue if the proposal is not valid.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/proposal.rb:229
+msgid "Cannot accommodate the required file systems for installation"
+msgstr ""
+"No es poden acomodar els sistemes de fitxers necessaris per a la "
+"instal·lació."

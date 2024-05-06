@@ -61,9 +61,9 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
  * @property {string} [busId] - DASD Bus ID (only for "dasd" type)
  * @property {string} [transport]
  * @property {boolean} [sdCard]
- * @property {boolean} [dellBOOS]
- * @property {string[]} [devices] - RAID devices (only for "raid" and "md" types)
- * @property {string[]} [wires] - Multipath wires (only for "multipath" type)
+ * @property {boolean} [dellBOSS]
+ * @property {StorageDevice[]} [devices] - RAID devices (only for "raid" and "md" types)
+ * @property {StorageDevice[]} [wires] - Multipath wires (only for "multipath" type)
  * @property {string} [level] - MD RAID level (only for "md" type)
  * @property {string} [uuid]
  * @property {number} [start] - First block of the region (only for block devices)
@@ -99,6 +99,7 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
  * @property {number} sid
  * @property {string} type
  * @property {string} [mountPath]
+ * @property {string} [label]
  *
  * @typedef {object} ProposalResult
  * @property {ProposalSettings} settings
@@ -110,8 +111,10 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
  * @property {boolean} subvol
  * @property {boolean} delete
  *
+ * @todo Define an enum for space policies.
+ *
  * @typedef {object} ProposalSettings
- * @property {string} target
+ * @property {ProposalTarget} target
  * @property {string} [targetDevice]
  * @property {string[]} targetPVDevices
  * @property {boolean} configureBoot
@@ -124,14 +127,16 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
  * @property {Volume[]} volumes
  * @property {StorageDevice[]} installationDevices
  *
+ * @typedef {keyof ProposalTargets} ProposalTarget
+ *
  * @typedef {object} SpaceAction
  * @property {string} device
  * @property {string} action
  *
  * @typedef {object} Volume
  * @property {string} mountPath
- * @property {string} target
- * @property {string} [targetDevice]
+ * @property {VolumeTarget} target
+ * @property {StorageDevice} [targetDevice]
  * @property {string} fsType
  * @property {number} minSize
  * @property {number} [maxSize]
@@ -140,14 +145,44 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
  * @property {boolean} transactional
  * @property {VolumeOutline} outline
  *
+ * @typedef {keyof VolumeTargets} VolumeTarget
+ *
+ * @todo Define an enum for file system types.
+ *
  * @typedef {object} VolumeOutline
  * @property {boolean} required
+ * @property {boolean} productDefined
  * @property {string[]} fsTypes
+ * @property {boolean} adjustByRam
  * @property {boolean} supportAutoSize
  * @property {boolean} snapshotsConfigurable
  * @property {boolean} snapshotsAffectSizes
  * @property {string[]} sizeRelevantVolumes
  */
+
+/**
+ * Enum for the possible proposal targets.
+ *
+ * @readonly
+ */
+const ProposalTargets = Object.freeze({
+  DISK: "disk",
+  NEW_LVM_VG: "newLvmVg",
+  REUSED_LVM_VG: "reusedLvmVg"
+});
+
+/**
+ * Enum for the possible volume targets.
+ *
+ * @readonly
+ */
+const VolumeTargets = Object.freeze({
+  DEFAULT: "default",
+  NEW_PARTITION: "new_partition",
+  NEW_VG: "new_vg",
+  DEVICE: "device",
+  FILESYSTEM: "filesystem"
+});
 
 /**
  * Enum for the encryption method values
@@ -256,6 +291,40 @@ class ProposalManager {
   }
 
   /**
+   * Gets the devices that can be selected as target for a volume.
+   *
+   * A device can be selected as target for a volume if either it is an available device for
+   * installation or it is a device built over the available devices for installation. For example,
+   * a MD RAID is a possible target only if all its members are available devices or children of the
+   * available devices.
+   *
+   * @returns {Promise<StorageDevice[]>}
+   */
+  async getVolumeDevices() {
+    /** @type {StorageDevice[]} */
+    const availableDevices = await this.getAvailableDevices();
+
+    /** @type {(device: StorageDevice) => boolean} */
+    const isAvailable = (device) => {
+      const isChildren = (device, parentDevice) => {
+        const partitions = parentDevice.partitionTable?.partitions || [];
+        return !!partitions.find(d => d.name === device.name);
+      };
+
+      return !!availableDevices.find(d => d.name === device.name || isChildren(device, d));
+    };
+
+    /** @type {(device: StorageDevice[]) => boolean} */
+    const allAvailable = (devices) => devices.every(isAvailable);
+
+    const system = await this.system.getDevices();
+    const mds = system.filter(d => d.type === "md" && allAvailable(d.devices));
+    const vgs = system.filter(d => d.type === "lvmVg" && allAvailable(d.physicalVolumes));
+
+    return [...availableDevices, ...mds, ...vgs];
+  }
+
+  /**
    * Gets the list of meaningful mount points for the selected product
    *
    * @returns {Promise<string[]>}
@@ -297,6 +366,11 @@ class ProposalManager {
     }
 
     return response.json();
+// TODO: change from master
+//    const proxy = await this.proxies.proposalCalculator;
+//    const systemDevices = await this.system.getDevices();
+//    const productMountPoints = await this.getProductMountPoints();
+//    return this.buildVolume(await proxy.DefaultVolume(mountPath), systemDevices, productMountPoints);
   }
 
   /**
@@ -310,6 +384,7 @@ class ProposalManager {
     if (!proxy) return undefined;
 
     const systemDevices = await this.system.getDevices();
+    const productMountPoints = await this.getProductMountPoints();
 
     const buildResult = (proxy) => {
       const buildSpaceAction = dbusSpaceAction => {
@@ -328,40 +403,65 @@ class ProposalManager {
         };
       };
 
+      /**
+       * Builds the proposal target from a D-Bus value.
+       *
+       * @param {string} dbusTarget
+       * @returns {ProposalTarget}
+       */
+      const buildTarget = (dbusTarget) => {
+        switch (dbusTarget) {
+          case "disk": return "DISK";
+          case "newLvmVg": return "NEW_LVM_VG";
+          case "reusedLvmVg": return "REUSED_LVM_VG";
+          default:
+            console.info(`Unknown proposal target "${dbusTarget}", using "disk".`);
+            return "DISK";
+        }
+      };
+
       const buildTargetPVDevices = dbusTargetPVDevices => {
         if (!dbusTargetPVDevices) return [];
 
         return dbusTargetPVDevices.v.map(d => d.v);
       };
 
-      // TODO: Read installation devices from D-Bus.
+      /** @todo Read installation devices from D-Bus. */
       const buildInstallationDevices = (dbusSettings, devices) => {
         const findDevice = (name) => {
           const device = devices.find(d => d.name === name);
 
-          if (device === undefined) console.log("D-Bus object not found: ", name);
+          if (device === undefined) console.error("D-Bus object not found: ", name);
 
           return device;
         };
 
+        // Only consider the device assigned to a volume as installation device if it is needed
+        // to find space in that device. For example, devices directly formatted or mounted are not
+        // considered as installation devices.
+        const volumes = dbusSettings.Volumes.v.filter(vol => (
+          [VolumeTargets.NEW_PARTITION, VolumeTargets.NEW_VG].includes(vol.v.Target.v))
+        );
+
         const values = [
           dbusSettings.TargetDevice?.v,
           buildTargetPVDevices(dbusSettings.TargetPVDevices),
-          dbusSettings.BootDevice.v,
-          dbusSettings.Volumes.v.map(vol => vol.v.TargetDevice.v)
+          volumes.map(vol => vol.v.TargetDevice.v)
         ].flat();
+
+        if (dbusSettings.ConfigureBoot.v) values.push(dbusSettings.BootDevice.v);
 
         const names = uniq(compact(values)).filter(d => d.length > 0);
 
         // #findDevice returns undefined if no device is found with the given name.
-        return compact(names.map(n => findDevice(n)));
+        return compact(names.sort().map(findDevice));
       };
 
       const dbusSettings = proxy.Settings;
 
       return {
         settings: {
-          target: dbusSettings.Target.v,
+          target: buildTarget(dbusSettings.Target.v),
           targetDevice: dbusSettings.TargetDevice?.v,
           targetPVDevices: buildTargetPVDevices(dbusSettings.TargetPVDevices),
           configureBoot: dbusSettings.ConfigureBoot.v,
@@ -371,7 +471,9 @@ class ProposalManager {
           spaceActions: dbusSettings.SpaceActions.v.map(a => buildSpaceAction(a.v)),
           encryptionPassword: dbusSettings.EncryptionPassword.v,
           encryptionMethod: dbusSettings.EncryptionMethod.v,
-          volumes: dbusSettings.Volumes.v.map(vol => this.buildVolume(vol.v)),
+          volumes: dbusSettings.Volumes.v.map(vol => (
+            this.buildVolume(vol.v, systemDevices, productMountPoints))
+          ),
           // NOTE: strictly speaking, installation devices does not belong to the settings. It
           // should be a separate method instead of an attribute in the settings object.
           // Nevertheless, it was added here for simplicity and to avoid passing more props in some
@@ -425,13 +527,15 @@ class ProposalManager {
         MinSize: { t: "t", v: volume.minSize },
         MaxSize: { t: "t", v: volume.maxSize },
         AutoSize: { t: "b", v: volume.autoSize },
+        Target: { t: "s", v: VolumeTargets[volume.target] },
+        TargetDevice: { t: "s", v: volume.targetDevice?.name },
         Snapshots: { t: "b", v: volume.snapshots },
         Transactional: { t: "b", v: volume.transactional },
       });
     };
 
     const dbusSettings = removeUndefinedCockpitProperties({
-      Target: { t: "s", v: target },
+      Target: { t: "s", v: ProposalTargets[target] },
       TargetDevice: { t: "s", v: targetDevice },
       TargetPVDevices: { t: "as", v: targetPVDevices },
       ConfigureBoot: { t: "b", v: configureBoot },
@@ -452,6 +556,8 @@ class ProposalManager {
    * Builds a volume from the D-Bus data
    *
    * @param {DBusVolume} dbusVolume
+   * @param {StorageDevice[]} devices
+   * @param {string[]} productMountPoints
    *
    * @typedef {Object} DBusVolume
    * @property {CockpitString} Target
@@ -463,6 +569,8 @@ class ProposalManager {
    * @property {CockpitBoolean} AutoSize
    * @property {CockpitBoolean} Snapshots
    * @property {CockpitBoolean} Transactional
+   * @property {CockpitString} Target
+   * @property {CockpitString} [TargetDevice]
    * @property {CockpitVolumeOutline} Outline
    *
    * @typedef {Object} DBusVolumeOutline
@@ -495,12 +603,31 @@ class ProposalManager {
    *
    * @returns {Volume}
    */
-  buildVolume(dbusVolume) {
-    const buildOutline = (dbusOutline) => {
-      if (dbusOutline === undefined) return null;
+  buildVolume(dbusVolume, devices, productMountPoints) {
+    /**
+     * Builds a volume target from a D-Bus value.
+     *
+     * @param {string} dbusTarget
+     * @returns {VolumeTarget}
+     */
+    const buildTarget = (dbusTarget) => {
+      switch (dbusTarget) {
+        case "default": return "DEFAULT";
+        case "new_partition": return "NEW_PARTITION";
+        case "new_vg": return "NEW_VG";
+        case "device": return "DEVICE";
+        case "filesystem": return "FILESYSTEM";
+        default:
+          console.info(`Unknown volume target "${dbusTarget}", using "default".`);
+          return "DEFAULT";
+      }
+    };
 
+    /** @returns {VolumeOutline} */
+    const buildOutline = (dbusOutline) => {
       return {
         required: dbusOutline.Required.v,
+        productDefined: false,
         fsTypes: dbusOutline.FsTypes.v.map(val => val.v),
         supportAutoSize: dbusOutline.SupportAutoSize.v,
         adjustByRam: dbusOutline.AdjustByRam.v,
@@ -510,9 +637,9 @@ class ProposalManager {
       };
     };
 
-    return {
-      target: dbusVolume.Target.v,
-      targetDevice: dbusVolume.TargetDevice?.v,
+    const volume = {
+      target: buildTarget(dbusVolume.Target.v),
+      targetDevice: devices.find(d => d.name === dbusVolume.TargetDevice?.v),
       mountPath: dbusVolume.MountPath.v,
       fsType: dbusVolume.FsType.v,
       minSize: dbusVolume.MinSize.v,
@@ -522,6 +649,12 @@ class ProposalManager {
       transactional: dbusVolume.Transactional.v,
       outline: buildOutline(dbusVolume.Outline.v)
     };
+
+    // Indicate whether a volume is defined by the product.
+    if (productMountPoints.includes(volume.mountPath))
+      volume.outline.productDefined = true;
+
+    return volume;
   }
 
   /**

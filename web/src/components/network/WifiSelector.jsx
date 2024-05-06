@@ -124,7 +124,11 @@ function WifiSelector({ isOpen = false, onClose }) {
   });
 
   return (
-    <Popup isOpen={isOpen} title={_("Connect to a Wi-Fi network")}>
+    <Popup
+      isOpen={isOpen}
+      title={_("Connect to a Wi-Fi network")}
+      blockSize="medium"
+    >
       <WifiNetworksList
         networks={networksFromValues(networks)}
         hiddenNetwork={baseHiddenNetwork}

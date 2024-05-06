@@ -19,14 +19,21 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalResultSection } from "~/components/storage";
 import { devices, actions } from "./test-data/full-result-example";
 
+/**
+ * @typedef {import("./ProposalResultSection").ProposalResultSectionProps} ProposalResultSectionProps
+ */
+
 const errorMessage = "Something went wrong, proposal not possible";
 const errors = [{ severity: 0, message: errorMessage }];
+/** @type {ProposalResultSectionProps} */
 const defaultProps = { system: devices.system, staging: devices.staging, actions };
 
 describe("ProposalResultSection", () => {
@@ -74,7 +81,7 @@ describe("ProposalResultSection", () => {
       // affected systems are rendered in the warning summary
       const props = {
         ...defaultProps,
-        actions: [{ device: 79, delete: true }]
+        actions: [{ device: 79, subvol: false, delete: true, text: "" }]
       };
 
       plainRender(<ProposalResultSection {...props} />);

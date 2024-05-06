@@ -1,0 +1,122 @@
+#! /bin/bash
+
+# This script takes an unpacked ppc64le Live iso image in the form KIWI-NG currently creates.
+#
+# It modifies the tree to match ppx64le expectations.
+#
+# Usage:
+#
+# fix_bootconfig.ppc64le DST_DIR
+#
+# iso layout before:
+# .
+# ├── LiveOS
+# │   └── squashfs.img
+# └── boot
+#     └── ppc64le
+#         └── loader
+#             ├── initrd
+#             ├── isolinux.cfg
+#             ├── isolinux.msg
+#             └── linux
+#
+# iso layout adjusted:
+# .
+# ├── LiveOS
+# │   └── squashfs.img
+# ├── boot
+# │   ├── grub2
+# │   │   ├── core.elf
+# │   │   ├── grub.cfg
+# │   │   └── powerpc-ieee1275
+# │   │       └── *.mod
+# │   └── ppc64le
+# │       ├── initrd
+# │       └── linux
+# └── ppc
+#     └── bootinfo.txt
+#
+
+dst="$1"
+
+if [ ! -d "$dst" ] ; then
+  echo "fix_bootconfig.ppc64le: image dir \"$dst\" not found"
+  exit 1
+fi
+
+# ----------------
+
+# Note:
+#
+# KIWI-NG creates an iso with isolinux boot files in boot/ppc64le/loader.
+#
+# These files are not needed except for kernel and initrd (and kernel params from isolinux.cfg).
+#
+# This script removes the isolinux config and adds ppc64le related config
+# files. It also moves kernel and initrd to the usual location (in boot/s390x).
+#
+
+boot_dir=$dst/boot/ppc64le
+grub_dir=$dst/boot/grub2
+
+mkdir -p $boot_dir $grub_dir $dst/ppc
+
+# if files are in a 'loader' subdir, move them out
+if [ -d $boot_dir/loader ] ; then
+  mv $boot_dir/loader/{initrd,linux} $boot_dir
+  rm -r $boot_dir/loader
+fi
+
+chmod 644 $boot_dir/{initrd,linux}
+
+# Create grub.cfg.
+#
+cat >$dst/boot/grub2/grub.cfg <<XXX
+gfxmode=auto
+
+set default='Agama Live'
+
+insmod gettext
+
+if sleep --interruptible 0 ; then
+  timeout=60
+fi
+
+menuentry 'Agama Live' --class os --unrestricted {
+  echo 'Loading kernel...'
+  linux /boot/ppc64le/linux
+  echo 'Loading initrd...'
+  initrd /boot/ppc64le/initrd
+}
+
+menuentry 'Check Installation Media -- Agama Live' --class os --unrestricted {
+  echo 'Loading kernel...'
+  linux /boot/ppc64le/linux mediacheck=1 plymouth.enable=0
+  echo 'Loading initrd...'
+  initrd /boot/ppc64le/initrd
+}
+
+menuentry 'local' {
+  exit
+}
+
+submenu 'Other options...' {
+ menuentry 'Reboot' {
+ reboot
+ }
+
+ menuentry 'Exit to Open Firmware' {
+ exit
+ }
+}
+XXX
+
+# Create bootinfo.txt
+#
+cat >$dst/ppc/bootinfo.txt <<XXX
+<chrp-boot>
+<description>Agama Live</description>
+<os-name>openSuSE Tumbleweed</os-name>
+<boot-script>boot &device;:1,\boot\grub2\grub.elf</boot-script>
+</chrp-boot>
+XXX

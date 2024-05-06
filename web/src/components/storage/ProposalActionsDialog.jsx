@@ -50,7 +50,7 @@ const ActionsList = ({ actions }) => {
  * @param {object} props
  * @param {object[]} [props.actions=[]] - The actions to perform in the system.
  * @param {boolean} [props.isOpen=false] - Whether the dialog is visible or not.
- * @param {function} props.onClose - Whether the dialog is visible or not.
+ * @param {() => void} props.onClose - Whether the dialog is visible or not.
  */
 export default function ProposalActionsDialog({ actions = [], isOpen = false, onClose }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -68,14 +68,16 @@ export default function ProposalActionsDialog({ actions = [], isOpen = false, on
     // TRANSLATORS: show/hide toggle action, this is a clickable link
     : sprintf(n_("Show %d subvolume action", "Show %d subvolume actions", subvolActions.length), subvolActions.length);
 
+  const blockSize = actions.length < 15 ? "medium" : "large";
+
   return (
     <Popup
-      // TRANSLATORS: The storage "Planned Actions" section's title. The
-      // section shows a list of planned actions for the selected device, e.g.
+      // TRANSLATORS: The storage "Planned Actions" dialog's title. The
+      // dialog shows a list of planned actions for the selected device, e.g.
       // "delete partition A", "create partition B with filesystem C", ...
       title={_("Planned Actions")}
       isOpen={isOpen}
-      variant="large"
+      blockSize={subvolActions.length === 0 ? "auto" : blockSize}
     >
       <ActionsList actions={generalActions} />
       <If

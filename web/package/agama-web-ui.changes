@@ -1,4 +1,81 @@
 -------------------------------------------------------------------
+Mon May  6 05:41:15 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt to the new HTTP/JSON API:
+  - Authentication (gh#openSUSE/agama#1080).
+  - Localization (gh#openSUSE/agama#1094).
+  - Networking (gh#openSUSE/agama#1116).
+  - Software (gh#openSUSE/agama#1094 and gh#openSUSE/agama#1112).
+  - Manager service (gh#openSUSE/agama#1132).
+  - Questions (gh#openSUSE/agama#1132).
+  - Progress interface (gh#openSUSE/agama#1103).
+  - Issues interface (gh#openSUSE/agama#1100).
+  - Product registration (gh#openSUSE/agama#1146).
+  - Users (gh#openSUSE/agama#1117).
+- Adapt webpack to work with the new architecture
+  (gh#openSUSE/agama#1061, gh#openSUSE/agama#1074 and
+  gh#openSUSE/agama#1130).
+
+-------------------------------------------------------------------
+Fri May  3 09:45:36 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Allow reusing an existing device or file system
+  (gh#openSUSE/agama#1165).
+
+-------------------------------------------------------------------
+Thu May 02 11:07:23 UTC 2024 - Balsa Asanovic <balsaasanovic95@gmail.com>
+
+- Added keyboard support for navigating dropdown
+  of suggested usernames. (gh#openSUSE/agama#1122).
+
+-------------------------------------------------------------------
+Thu Apr 25 15:04:05 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Allow adding arbitrary volumes (gh#openSUSE/agama#1154).
+
+-------------------------------------------------------------------
+Thu Apr 25 13:40:06 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Adapted to recent changes on Y2Storage::GuidedProposal
+  (gh#yast/yast-storage-ng#1382)
+
+-------------------------------------------------------------------
+Tue Apr 16 11:15:13 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Use better icons in storage proposal page
+  (gh#openSUSE/agama#1152).
+
+-------------------------------------------------------------------
+Mon Apr 15 10:52:14 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Stop using `<abbr>` tag because "its exposure continues to be
+  inconsistent across browsers and assistive technologies"
+  (gh#openSUSE/agama#1149).
+
+-------------------------------------------------------------------
+Mon Apr 15 07:14:35 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Enhance the storage page to make it easier to use and understand.
+  (gh#openSUSE/agama#1138).
+
+-------------------------------------------------------------------
+Thu Apr 11 15:16:42 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Allow changing the location of a file system
+  (gh#openSUSE/agama#1141).
+
+-------------------------------------------------------------------
+Mon Apr  8 14:17:45 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Improve the representation of the devices in the dialog for
+  finding space (gh#openSUSE/agama#1128).
+
+-------------------------------------------------------------------
+Thu Apr  4 15:59:37 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Changes in the table of file systems (gh#openSUSE/agama#1125)
+
+-------------------------------------------------------------------
 Wed Apr  3 15:16:07 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Add new selection for the target device and for configuring the

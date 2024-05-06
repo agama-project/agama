@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import { Label } from "@patternfly/react-core";
 
@@ -31,8 +33,9 @@ import { Icon } from "~/components/layout";
  * If the label is not defined or is empty it behaves like a plain label.
  * @component
  *
- * @param {JSX.Element} description details displayed after clicking the label
- * @param {JSX.Element} children the content of the label
+ * @param {object} props
+ * @param {React.ReactElement} props.description - Details displayed after clicking the label.
+ * @param {React.ReactNode} props.children - The content of the label.
  */
 export default function Tip ({ description, children }) {
   if (description) {

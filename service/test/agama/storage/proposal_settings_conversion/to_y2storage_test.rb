@@ -135,6 +135,25 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
             expect(y2storage_settings.candidate_devices).to contain_exactly("/dev/sda")
           end
         end
+
+        context "and a volume is reusing a device" do
+          before do
+            settings.volumes = [
+              Agama::Storage::Volume.new("/test1").tap do |volume|
+                volume.location.target = :device
+                volume.location.device = "/dev/sdb"
+              end
+            ]
+          end
+
+          it "does not set the target device as device for the volume with missing device" do
+            y2storage_settings = subject.convert
+
+            expect(y2storage_settings.volumes).to contain_exactly(
+              an_object_having_attributes(mount_point: "/test1", device: nil)
+            )
+          end
+        end
       end
 
       context "when the device settings is set to create a new LVM volume group" do
@@ -262,7 +281,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
           settings.space.policy = :delete
         end
 
-        it "generates delete actions for all used devices" do
+        it "generates delete actions for all the partitions at the used devices" do
           y2storage_settings = subject.convert
 
           expect(y2storage_settings.space_settings).to have_attributes(
@@ -270,9 +289,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
             actions:  {
               "/dev/sda1" => :force_delete,
               "/dev/sda2" => :force_delete,
-              "/dev/sda3" => :force_delete,
-              "/dev/sdb"  => :force_delete,
-              "/dev/sdc"  => :force_delete
+              "/dev/sda3" => :force_delete
             }
           )
         end
@@ -283,7 +300,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
           settings.space.policy = :resize
         end
 
-        it "generates resize actions for all used devices" do
+        it "generates resize actions for all the partitions at the used devices" do
           y2storage_settings = subject.convert
 
           expect(y2storage_settings.space_settings).to have_attributes(
@@ -291,9 +308,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
             actions:  {
               "/dev/sda1" => :resize,
               "/dev/sda2" => :resize,
-              "/dev/sda3" => :resize,
-              "/dev/sdb"  => :resize,
-              "/dev/sdc"  => :resize
+              "/dev/sda3" => :resize
             }
           )
         end

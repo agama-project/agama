@@ -19,11 +19,12 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useState } from "react";
 import { Form } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { DevicesFormSelect } from "~/components/storage";
-import { noop } from "~/utils";
 import { Popup } from "~/components/core";
 import { deviceLabel } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
@@ -56,27 +57,29 @@ const RadioOption = ({ id, onChange, defaultChecked, children }) => {
  * Renders a dialog that allows the user to select the boot configuration.
  * @component
  *
- * @typedef {object} Boot
+ * @typedef {object} BootSelectionDialogProps
+ * @property {boolean} configureBoot - Whether the boot is configurable
+ * @property {StorageDevice|undefined} bootDevice - Currently selected booting device.
+ * @property {StorageDevice|undefined} defaultBootDevice - Default booting device.
+ * @property {StorageDevice[]} availableDevices - Devices that user can select to boot from.
+ * @property {boolean} [isOpen=false] - Whether the dialog is visible or not.
+ * @property {() => void} onCancel
+ * @property {(boot: BootConfig) => void} onAccept
+ *
+ * @typedef {object} BootConfig
  * @property {boolean} configureBoot
  * @property {StorageDevice|undefined} bootDevice
  *
- * @param {object} props
- * @param {boolean} props.configureBoot - Whether the boot is configurable
- * @param {StorageDevice|undefined} props.bootDevice - Currently selected booting device.
- * @param {StorageDevice|undefined} props.defaultBootDevice - Default booting device.
- * @param {StorageDevice[]} props.devices - Devices that user can select to boot from.
- * @param {boolean} [props.isOpen=false] - Whether the dialog is visible or not.
- * @param {function} [props.onCancel=noop]
- * @param {(boot: Boot) => void} [props.onAccept=noop]
+ * @param {BootSelectionDialogProps} props
  */
 export default function BootSelectionDialog({
   configureBoot: configureBootProp,
   bootDevice: bootDeviceProp,
   defaultBootDevice,
-  devices,
+  availableDevices,
   isOpen,
-  onCancel = noop,
-  onAccept = noop,
+  onCancel,
+  onAccept,
   ...props
 }) {
   const [configureBoot, setConfigureBoot] = useState(configureBootProp);
@@ -102,7 +105,7 @@ export default function BootSelectionDialog({
 
   const onSubmit = (e) => {
     e.preventDefault();
-    const device = isBootAuto ? undefined : bootDevice;
+    const device = ((configureBoot && !isBootAuto) ? bootDevice : undefined);
     onAccept({ configureBoot, bootDevice: device });
   };
 
@@ -159,7 +162,7 @@ partitions in the appropriate disk."
             </div>
             <DevicesFormSelect
               aria-label={_("Choose a disk for placing the boot loader")}
-              devices={devices}
+              devices={availableDevices}
               selectedDevice={bootDevice}
               onChange={setBootDevice}
               isDisabled={!isBootManual}

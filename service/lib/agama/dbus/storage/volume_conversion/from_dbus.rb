@@ -53,6 +53,7 @@ module Agama
             builder = Agama::Storage::VolumeTemplatesBuilder.new_from_config(config)
             builder.for(dbus_volume["MountPath"] || "").tap do |target|
               valid_dbus_properties.each { |p| conversion(target, p) }
+              target.max_size = Y2Storage::DiskSize.unlimited unless dbus_volume.key?("MaxSize")
             end
           end
 

@@ -25,6 +25,13 @@ import React from "react";
 import { Button, Modal } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { partition } from "~/utils";
+import { Loading } from "~/components/layout";
+
+/**
+ * @typedef {import("@patternfly/react-core").ModalProps} ModalProps
+ * @typedef {import("@patternfly/react-core").ButtonProps} ButtonProps
+ * @typedef {Omit<ButtonProps, 'variant'>} ButtonWithoutVariantProps
+ */
 
 /**
  * @typedef {import("@patternfly/react-core").ModalProps} ModalProps
@@ -53,7 +60,7 @@ const Actions = ({ children }) => <>{children}</>;
  * @param {ButtonProps} props
  */
 const Action = ({ children, ...buttonProps }) => (
-  <Button { ...buttonProps }>
+  <Button {...buttonProps}>
     {children}
   </Button>
 );
@@ -76,7 +83,7 @@ const Action = ({ children, ...buttonProps }) => (
  * @param {ButtonWithoutVariantProps} props
  */
 const PrimaryAction = ({ children, ...actionProps }) => (
-  <Action { ...actionProps } variant="primary">{ children }</Action>
+  <Action {...actionProps} variant="primary">{children}</Action>
 );
 
 /**
@@ -91,7 +98,7 @@ const PrimaryAction = ({ children, ...actionProps }) => (
  * @param {ButtonWithoutVariantProps} props
  */
 const Confirm = ({ children = _("Confirm"), ...actionProps }) => (
-  <PrimaryAction key="confirm" { ...actionProps }>{ children }</PrimaryAction>
+  <PrimaryAction key="confirm" {...actionProps}>{children}</PrimaryAction>
 );
 
 /**
@@ -112,7 +119,7 @@ const Confirm = ({ children = _("Confirm"), ...actionProps }) => (
  * @param {ButtonWithoutVariantProps} props
  */
 const SecondaryAction = ({ children, ...actionProps }) => (
-  <Action { ...actionProps } variant="secondary">{ children }</Action>
+  <Action {...actionProps} variant="secondary">{children}</Action>
 );
 
 /**
@@ -127,7 +134,7 @@ const SecondaryAction = ({ children, ...actionProps }) => (
  * @param {ButtonWithoutVariantProps} props
  */
 const Cancel = ({ children = _("Cancel"), ...actionProps }) => (
-  <SecondaryAction key="cancel" { ...actionProps }>{ children }</SecondaryAction>
+  <SecondaryAction key="cancel" {...actionProps}>{children}</SecondaryAction>
 );
 
 /**
@@ -148,7 +155,7 @@ const Cancel = ({ children = _("Cancel"), ...actionProps }) => (
  * @param {ButtonWithoutVariantProps} props
  */
 const AncillaryAction = ({ children, ...actionsProps }) => (
-  <Action { ...actionsProps } variant="link">{ children }</Action>
+  <Action {...actionsProps} variant="link">{children}</Action>
 );
 
 /**
@@ -187,27 +194,42 @@ const AncillaryAction = ({ children, ...actionsProps }) => (
  *     </Popup.Actions>
  *   </Popup>
  *
- * @param {ModalProps} props
+ * @typedef {object} PopupBaseProps
+ * @property {"auto" | "small" | "medium" | "large"} [blockSize="auto"] - The block/height size for the dialog. Default is "auto".
+ * @property {"auto" | "small" | "medium" | "large"} [inlineSize="medium"] - The inline/width size for the dialog. Default is "medium".
+ * @property {boolean} [isLoading=false] - Whether the data is loading, if yes it displays a loading indicator instead of the requested content
+ * @property {string} [loadingText="Loading data..."] - Text displayed when `isLoading` is set to `true`
+ * @typedef {Omit<ModalProps, "variant" | "size"> & PopupBaseProps} PopupProps
+ *
+ * @param {PopupProps} props
  */
 const Popup = ({
   isOpen = false,
+  isLoading = false,
+  // TRANSLATORS: progress message
+  loadingText = _("Loading data..."),
   showClose = false,
-  variant = "small",
+  inlineSize = "medium",
+  blockSize = "auto",
+  className = "",
   children,
-  ...pfModalProps
+  ...props
 }) => {
-  const [actions, content] = partition(React.Children.toArray(children), child => child.type === Actions);
+  const [actions, content] = partition(
+    React.Children.toArray(children),
+    (child) => child.type === Actions,
+  );
 
   return (
     /** @ts-ignore */
     <Modal
-      { ...pfModalProps }
+      {...props}
       isOpen={isOpen}
       showClose={showClose}
-      variant={variant}
       actions={actions}
+      className={`${className} block-size-${blockSize} inline-size-${inlineSize}`.trim()}
     >
-      { content }
+      {isLoading ? <Loading text={loadingText} /> : content}
     </Modal>
   );
 };

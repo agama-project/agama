@@ -36,7 +36,7 @@ shared_examples "Filesystem interface" do
 
     describe "#filesystem_type" do
       it "returns the file system type" do
-        expect(subject.filesystem_type).to eq("ext4")
+        expect(subject.filesystem_type).to eq("Ext4")
       end
     end
 

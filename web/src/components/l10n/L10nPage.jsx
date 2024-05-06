@@ -65,7 +65,7 @@ const TimezonePopup = ({ onFinish = noop, onCancel = noop }) => {
       isOpen
       title={_("Select time zone")}
       description={sprintf(_("%s will use the selected time zone."), selectedProduct.name)}
-      className="height-75"
+      blockSize="large"
     >
       <Form id="timezoneForm" onSubmit={onSubmit}>
         <TimezoneSelector value={timezoneId} timezones={sortedTimezones} onChange={setTimezoneId} />
@@ -181,7 +181,7 @@ const LocalePopup = ({ onFinish = noop, onCancel = noop }) => {
       isOpen
       title={_("Select language")}
       description={sprintf(_("%s will use the selected language."), selectedProduct.name)}
-      className="height-75"
+      blockSize="large"
     >
       <Form id="localeForm" onSubmit={onSubmit}>
         <LocaleSelector value={localeId} locales={sortedLocales} onChange={setLocaleId} />
@@ -294,7 +294,7 @@ const KeymapPopup = ({ onFinish = noop, onCancel = noop }) => {
       isOpen
       title={_("Select keyboard")}
       description={sprintf(_("%s will use the selected keyboard."), selectedProduct.name)}
-      className="height-75"
+      blockSize="large"
     >
       <Form id="keymapForm" onSubmit={onSubmit}>
         <KeymapSelector value={keymapId} keymaps={sortedKeymaps} onChange={setKeymapId} />

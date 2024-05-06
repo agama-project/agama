@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,10 +23,33 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, plainRender, mockNavigateFn } from "~/test-utils";
 import { Page } from "~/components/core";
+import { createClient } from "~/client";
+
+jest.mock("~/client");
+
+const l10nClientMock = {
+  getUILocale: jest.fn().mockResolvedValue("en_US"),
+  keymaps: jest.fn().mockResolvedValue([]),
+  getKeymap: jest.fn().mockResolvedValue(undefined),
+  timezones: jest.fn().mockResolvedValue([]),
+  getTimezone: jest.fn().mockResolvedValue(undefined),
+  onLocalesChange: jest.fn(),
+  onKeymapChange: jest.fn(),
+  onTimezoneChange: jest.fn()
+};
 
 describe("Page", () => {
   beforeAll(() => {
     jest.spyOn(console, "error").mockImplementation();
+  });
+
+  beforeEach(() => {
+    // if defined outside, the mock is cleared automatically
+    createClient.mockImplementation(() => {
+      return {
+        l10n: l10nClientMock
+      };
+    });
   });
 
   afterAll(() => {

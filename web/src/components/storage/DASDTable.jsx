@@ -65,7 +65,10 @@ const columns = [
   { id: "status", label: _("Status") },
   { id: "name", label: _("Device") },
   { id: "type", label: _("Type") },
-  { id: "diag", label: _("Diag") },
+  // TRANSLATORS: table header, the column contains "Yes"/"No" values
+  // for the DIAG access mode (special disk access mode on IBM mainframes),
+  // usually keep untranslated
+  { id: "diag", label: _("DIAG") },
   { id: "formatted", label: _("Formatted") },
   { id: "partitionInfo", label: _("Partition Info") }
 ];

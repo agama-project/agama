@@ -1,0 +1,218 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-25 02:09+0000\n"
+"PO-Revision-Date: 2024-04-27 03:43+0000\n"
+"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
+"Language-Team: German <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/de/>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.9.1\n"
+
+#. Runs the config phase
+#: service/lib/agama/manager.rb:88
+msgid "Probing Storage"
+msgstr "Speicher wird untersucht"
+
+#: service/lib/agama/manager.rb:89
+msgid "Probing Software"
+msgstr "Software wird untersucht"
+
+#. Runs the install phase
+#. rubocop:disable Metrics/AbcSize
+#: service/lib/agama/manager.rb:109
+msgid "Partitioning"
+msgstr "Partitionierung"
+
+#. propose software after /mnt is already separated, so it uses proper
+#. target
+#: service/lib/agama/manager.rb:117
+msgid "Installing Software"
+msgstr "Software wird installiert"
+
+#: service/lib/agama/manager.rb:120
+msgid "Writing Users"
+msgstr "Benutzer werden geschrieben"
+
+#: service/lib/agama/manager.rb:121
+msgid "Writing Network Configuration"
+msgstr "Netzwerkkonfiguration wird geschrieben"
+
+#: service/lib/agama/manager.rb:122
+msgid "Saving Language Settings"
+msgstr "Spracheinstellungen werden gespeichert"
+
+#: service/lib/agama/manager.rb:123
+msgid "Writing repositories information"
+msgstr "Repositorien-Informationen werden geschrieben"
+
+#: service/lib/agama/manager.rb:124
+msgid "Finishing storage configuration"
+msgstr "Speicherkonfiguration wird abgeschlossen"
+
+#. Callback to handle unsigned files
+#.
+#. @param filename [String] File name
+#. @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
+#: service/lib/agama/software/callbacks/signature.rb:63
+#, perl-brace-format
+msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
+msgstr "Die Datei %{filename} aus dem Repositorium %{repo_name} (%{repo_url})"
+
+#: service/lib/agama/software/callbacks/signature.rb:67
+#, perl-brace-format
+msgid "The file %{filename}"
+msgstr "Die Datei %{filename}"
+
+#: service/lib/agama/software/callbacks/signature.rb:71
+#, perl-brace-format
+msgid ""
+"%{source} is not digitally signed. The origin and integrity of the file cannot"
+" be verified. Use it anyway?"
+msgstr ""
+"%{source} ist nicht digital signiert. Der Ursprung und die Integrität der "
+"Datei können nicht überprüft werden. Trotzdem verwenden?"
+
+#. Callback to handle signature verification failures
+#.
+#. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
+#. @param _repo_id [Integer] Repository ID
+#: service/lib/agama/software/callbacks/signature.rb:94
+#, perl-brace-format
+msgid ""
+"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you wan"
+"t to trust this key?"
+msgstr ""
+"Der Schlüssel %{id} (%{name}) mit dem Fingerabdruck %{fingerprint} ist "
+"unbekannt. Möchten Sie diesem Schlüssel vertrauen?"
+
+#. as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
+#: service/lib/agama/software/manager.rb:134
+msgid "Initializing target repositories"
+msgstr "Ziel-Repositorien werden initialisiert"
+
+#: service/lib/agama/software/manager.rb:135
+msgid "Initializing sources"
+msgstr "Quellen werden initialisiert"
+
+#: service/lib/agama/software/manager.rb:140
+msgid "Refreshing repositories metadata"
+msgstr "Repositorien-Metadaten werden aufgefrischt"
+
+#: service/lib/agama/software/manager.rb:141
+msgid "Calculating the software proposal"
+msgstr "Software-Vorschlag wird berechnet"
+
+#. Writes the repositories information to the installed system
+#: service/lib/agama/software/manager.rb:190
+msgid "Writing repositories to the target system"
+msgstr "Repositorien werden auf das Zielsystem geschrieben"
+
+#: service/lib/agama/software/manager.rb:196
+msgid "Restoring original repositories"
+msgstr "Ursprüngliche Repositorien werden wiederhergestellt"
+
+#. Issues related to the software proposal.
+#.
+#. Repositories that could not be probed are reported as errors.
+#.
+#. @return [Array<Agama::Issue>]
+#: service/lib/agama/software/manager.rb:470
+#, c-format
+msgid "Could not read repository \"%s\""
+msgstr "Repositorium „%s“ konnte nicht gelesen werden"
+
+#. Issue when a product is missing
+#.
+#. @return [Agama::Issue]
+#: service/lib/agama/software/manager.rb:480
+msgid "Product not selected yet"
+msgstr "Produkt noch nicht ausgewählt"
+
+#. Issue when a product requires registration but it is not registered yet.
+#.
+#. @return [Agama::Issue]
+#: service/lib/agama/software/manager.rb:489
+msgid "Product must be registered"
+msgstr "Produkt muss registriert sein"
+
+#. Returns solver error messages from the last attempt
+#.
+#. @return [Array<String>] Error messages
+#: service/lib/agama/software/proposal.rb:227
+#, c-format
+msgid "Found %s dependency issues."
+msgstr "%s Abhängigkeitsprobleme gefunden."
+
+#. Probes storage devices and performs an initial proposal
+#: service/lib/agama/storage/manager.rb:112
+msgid "Activating storage devices"
+msgstr "Speichergeräte werden aktiviert"
+
+#: service/lib/agama/storage/manager.rb:113
+msgid "Probing storage devices"
+msgstr "Speichergeräte werden untersucht"
+
+#: service/lib/agama/storage/manager.rb:114
+msgid "Calculating the storage proposal"
+msgstr "Speichervorschlag wird berechnet"
+
+#: service/lib/agama/storage/manager.rb:115
+msgid "Selecting Linux Security Modules"
+msgstr "Linux-Sicherheitsmodule werden ausgewählt"
+
+#. Prepares the partitioning to install the system
+#: service/lib/agama/storage/manager.rb:123
+msgid "Preparing bootloader proposal"
+msgstr "Bootloader-Vorschlag wird vorbereitet"
+
+#. first make bootloader proposal to be sure that required packages are installed
+#: service/lib/agama/storage/manager.rb:128
+msgid "Adding storage-related packages"
+msgstr "Speicherbezogene Pakete werden hinzugefügt"
+
+#: service/lib/agama/storage/manager.rb:129
+msgid "Preparing the storage devices"
+msgstr "Speichergeräte werden vorbereitet"
+
+#: service/lib/agama/storage/manager.rb:130
+msgid "Writing bootloader sysconfig"
+msgstr "Bootloader-Systemkonfiguration wird geschrieben"
+
+#. Returns an issue if there is no target device.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/proposal.rb:195
+msgid "No device selected for installation"
+msgstr "Kein Gerät für die Installation ausgewählt"
+
+#. Returns an issue if any of the devices required for the proposal is not found
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/proposal.rb:211
+#, perl-brace-format
+msgid "The following selected device is not found in the system: %{devices}"
+msgid_plural "The following selected devices are not found in the system: %{devices}"
+msgstr[0] ""
+"Das folgende ausgewählte Gerät wird im System nicht gefunden: %{devices}"
+msgstr[1] ""
+"Die folgenden ausgewählten Geräte werden im System nicht gefunden: %{devices}"
+
+#. Returns an issue if the proposal is not valid.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/proposal.rb:229
+msgid "Cannot accommodate the required file systems for installation"
+msgstr ""
+"Die für die Installation erforderlichen Dateisysteme können nicht "
+"untergebracht werden"

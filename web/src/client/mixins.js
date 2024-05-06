@@ -206,7 +206,7 @@ const WithProgress = (superclass, progress_path, service_name) =>
           total: 0,
           current: 0,
           message: "Failed to get progress",
-          finished: false
+          finished: false,
         };
       } else {
         const { current_step, max_steps, current_title, finished } = await response.json();
@@ -252,7 +252,6 @@ const WithProgress = (superclass, progress_path, service_name) =>
  */
 
 /**
- *
  * @param {string} message - Error message
  */
 const createError = (message) => {
@@ -266,38 +265,39 @@ const createError = (message) => {
  * @param {string} validation_path - status resource path (e.g., "/manager/status").
  * @param {string} service_name - service name (e.g., "org.opensuse.Agama.Manager1").
  */
-const WithValidation = (superclass, validation_path, service_name) => class extends superclass {
-  /**
-   * Returns the validation errors
-   *
-   * @return {Promise<ValidationError[]>}
-   */
-  async getValidationErrors() {
-    const response = await this.client.get(validation_path);
-    if (!response.ok) {
-      console.log("get validation failed with:", response);
-      return [{
-        message: "Failed to validate",
-      }];
-    } else {
-      const data = await response.json();
-      return data.errors.map(createError);
-    }
-  }
-
-  /**
-   * Register a callback to run when the validation changes
-   *
-   * @param {ValidationErrorsHandler} handler - callback function
-   * @return {import ("./dbus").RemoveFn} function to disable the callback
-   */
-  onValidationChange(handler) {
-    return this.client.onEvent("ValidationChange", ({ service, errors }) => {
-      if (service === service_name) {
-        handler(errors);
+const WithValidation = (superclass, validation_path, service_name) =>
+  class extends superclass {
+    /**
+     * Returns the validation errors
+     *
+     * @return {Promise<ValidationError[]>}
+     */
+    async getValidationErrors() {
+      const response = await this.client.get(validation_path);
+      if (!response.ok) {
+        console.log("get validation failed with:", response);
+        return [{
+          message: "Failed to validate",
+        }];
+      } else {
+        const data = await response.json();
+        return data.errors.map(createError);
       }
-    });
-  }
-};
+    }
 
-export { WithIssues, WithStatus, WithProgress, WithValidation };
+    /**
+     * Register a callback to run when the validation changes
+     *
+     * @param {ValidationErrorsHandler} handler - callback function
+     * @return {import ("./dbus").RemoveFn} function to disable the callback
+     */
+    onValidationChange(handler) {
+      return this.client.onEvent("ValidationChange", ({ service, errors }) => {
+        if (service === service_name) {
+          handler(errors);
+        }
+      });
+    }
+  };
+
+export { WithIssues, WithProgress, WithStatus, WithValidation };

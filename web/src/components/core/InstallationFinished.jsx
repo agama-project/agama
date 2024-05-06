@@ -49,12 +49,12 @@ const TpmHint = () => {
           onToggle={() => setIsExpanded(!isExpanded)}
           toggleText={isExpanded ? _("Hide details") : _("See more details")}
         >
-          <Text
-            dangerouslySetInnerHTML={{
-              // TRANSLATORS: Do not translate 'abbr' and 'title', they are part of the HTML markup
-              __html: _("The final step to configure the <abbr title='Trusted Platform Module'>TPM</abbr> to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.")
-            }}
-          />
+          {
+            // TRANSLATORS: "Trusted Platform Module" is the name of the technology and "TPM" its abbreviation
+            _("The final step to configure the Trusted Platform Module (TPM) to automatically \
+open encrypted devices will take place during the first boot of the new system. For that to work, \
+the machine needs to boot directly to the new boot loader.")
+          }
         </ExpandableSection>
       </div>
     </Alert>

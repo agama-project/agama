@@ -346,28 +346,6 @@ ul[data-type="agama/list"][role="grid"] {
   }
 }
 
-// Each kind of list/selector has its way of laying out their items
-[data-items-type="agama/storage-devices"] {
-  display: grid;
-  gap: var(--spacer-smaller);
-  grid-template-columns: 1fr 2fr 2fr;
-  grid-template-areas: "type-and-size drive-info drive-content";
-
-  svg {
-    vertical-align: inherit;
-  }
-
-  > div {
-    margin-block-end: 0;
-  }
-
-  > :first-child {
-    align-self: center;
-    text-align: center;
-    justify-self: start;
-  }
-}
-
 [data-items-type="agama/space-policies"] {
   // It works with the default styling
 }
@@ -500,14 +478,7 @@ ul[data-items-type="agama/patterns"] {
 
 table[data-type="agama/tree-table"] {
   th:first-child {
-    block-size: fit-content;
     padding-inline-end: var(--spacer-normal);
-  }
-
-  th.fit-content {
-    block-size: fit-content;
-    overflow: visible;
-    text-overflow: unset;
   }
 
   /**
@@ -555,9 +526,7 @@ table[data-type="agama/tree-table"] {
   }
 }
 
-// FIXME: use a single selector
-table.devices-table,
-table.proposal-result {
+table.devices-table {
   tr.dimmed-row {
     background-color: #fff;
     opacity: 0.8;
@@ -567,8 +536,11 @@ table.proposal-result {
       color: var(--color-gray-dimmed);
       padding-block: 0;
     }
-
   }
+}
+
+table.proposal-result {
+  @extend .devices-table;
 
   /**
    * Temporary hack because the collapse/expand callback was not given to the
@@ -747,7 +719,6 @@ section [data-type="agama/reminder"] {
   }
 }
 
-
 [data-type="agama/expandable-selector"] {
   // The expandable selector is built on top of PF/Table#expandable
   // Let's tweak some styles
@@ -769,6 +740,81 @@ section [data-type="agama/reminder"] {
       padding-block: var(--spacer-small);
     }
   }
+}
+
+[data-type="agama/field"] {
+  > div:first-child {
+    font-size: var(--fs-large);
+
+    button {
+      padding-inline: 0;
+    }
+
+    button:hover {
+      color: var(--color-link-hover);
+      fill: var(--color-link-hover);
+    }
+
+    button b, button:hover b {
+      text-decoration: underline;
+      text-underline-offset: var(--spacer-smaller);
+    }
+
+    div.pf-v5-c-skeleton {
+      display: inline-block;
+      vertical-align: middle;
+      height: 1.5ex;
+    }
+  }
+
+  > div:nth-child(n+2) {
+    margin-inline-start: calc(var(--icon-size-s) + 1ch);
+  }
+
+  > div:nth-child(2) {
+    color: gray;
+    font-size: var(--fs-medium);
+  }
+
+  > div:nth-child(n+3) {
+    margin-block-start: var(--spacer-small);
+  }
+
+  &.highlighted > div:last-child {
+    --spacing: calc(var(--icon-size-s) / 2);
+    margin-inline: var(--spacing);
+    padding-inline: var(--spacing);
+    border-inline-start: 2px solid;
+  }
+
+  &.highlighted.on > div:last-child {
+    border-color: var(--color-link-hover);
+  }
+
+  &.highlighted.off > div:last-child {
+    border-color: var(--color-gray-darker);
+  }
+
+  &.on {
+    button:not(.password-toggler) {
+      fill: var(--color-link-hover);
+    }
+  }
+
+  hr {
+    margin-block: var(--spacer-normal);
+    border: 0;
+    border-bottom: thin dashed var(--color-gray);
+  }
+}
+
+[data-type="agama/field"] button.pf-v5-c-menu-toggle.pf-m-plain {
+  padding: 0;
+}
+
+[data-type="agama/field"] .pf-v5-c-menu__list {
+  padding: calc(var(--spacer-smaller) / 2) 0;
+  margin: 0;
 }
 
 #boot-form {

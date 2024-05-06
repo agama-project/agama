@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
@@ -82,7 +82,7 @@ const UserData = ({ user, actions }) => {
   );
 };
 
-const UsernameSuggestions = ({ entries, onSelect, setInsideDropDown }) => {
+const UsernameSuggestions = ({ entries, onSelect, setInsideDropDown, focusedIndex = -1 }) => {
   return (
     <Menu
       aria-label={_("Username suggestion dropdown")}
@@ -96,6 +96,7 @@ const UsernameSuggestions = ({ entries, onSelect, setInsideDropDown }) => {
             <MenuItem
               key={index}
               itemId={index}
+              isFocused={focusedIndex === index}
               onClick={() => onSelect(suggestion)}
             >
               { /* TRANSLATORS: dropdown username suggestions */}
@@ -131,6 +132,9 @@ export default function FirstUser() {
   const [isSettingPassword, setIsSettingPassword] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [insideDropDown, setInsideDropDown] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [suggestions, setSuggestions] = useState([]);
+  const usernameInputRef = useRef();
 
   useEffect(() => {
     cancellablePromise(client.users.getUser()).then(userValues => {
@@ -220,19 +224,57 @@ export default function FirstUser() {
   const submitDisable = formValues.userName === "" || (isSettingPassword && !usingValidPassword);
 
   const displaySuggestions = !formValues.userName && formValues.fullName && showSuggestions;
+  useEffect(() => {
+    if (displaySuggestions) {
+      setFocusedIndex(-1);
+      setSuggestions(suggestUsernames(formValues.fullName));
+    }
+  }, [displaySuggestions, formValues.fullName]);
+
   const onSuggestionSelected = (suggestion) => {
     setInsideDropDown(false);
     setFormValues({ ...formValues, userName: suggestion });
+    usernameInputRef.current?.focus();
+  };
+
+  const handleKeyDown = (event) => {
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault(); // Prevent page scrolling
+        if (suggestions.length > 0) setShowSuggestions(true);
+        setFocusedIndex((prevIndex) => (prevIndex + 1) % suggestions.length);
+        break;
+      case 'ArrowUp':
+        event.preventDefault(); // Prevent page scrolling
+        if (suggestions.length > 0) setShowSuggestions(true);
+        setFocusedIndex((prevIndex) => (prevIndex - (prevIndex === -1 ? 0 : 1) + suggestions.length) % suggestions.length);
+        break;
+      case 'Enter':
+        if (focusedIndex >= 0) {
+          onSuggestionSelected(suggestions[focusedIndex]);
+        }
+        break;
+      case 'Escape':
+      case 'Tab':
+        setShowSuggestions(false);
+        break;
+      default:
+        break;
+    }
   };
 
   if (isLoading) return <Skeleton />;
 
   return (
     <>
-      { isUserDefined ? <UserData user={user} actions={actions} /> : <UserNotDefined actionCb={openForm} /> }
-      { /* TODO: Extract this form to a component, if possible */ }
-      { isFormOpen &&
-        <Popup isOpen title={isEditing ? _("Edit user account") : _("Create user account")}>
+      {isUserDefined ? <UserData user={user} actions={actions} /> : <UserNotDefined actionCb={openForm} />}
+      { /* TODO: Extract this form to a component, if possible */}
+      {isFormOpen &&
+        <Popup
+          isOpen
+          title={isEditing ? _("Edit user account") : _("Create user account")}
+          inlineSize="small"
+        >
           <Form id="createUser" onSubmit={(e) => accept("createUser", e)}>
             { showErrors() &&
               <Alert variant="warning" isInline title={_("Something went wrong")}>
@@ -262,18 +304,21 @@ export default function FirstUser() {
                 id="userName"
                 name="userName"
                 aria-label={_("Username")}
+                ref={usernameInputRef}
                 value={formValues.userName}
                 label={_("Username")}
                 isRequired
                 onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
               />
               <If
-                condition={displaySuggestions}
+                condition={displaySuggestions && suggestions.length > 0}
                 then={
                   <UsernameSuggestions
-                    entries={suggestUsernames(formValues.fullName)}
+                    entries={suggestions}
                     onSelect={onSuggestionSelected}
                     setInsideDropDown={setInsideDropDown}
+                    focusedIndex={focusedIndex}
                   />
                 }
               />

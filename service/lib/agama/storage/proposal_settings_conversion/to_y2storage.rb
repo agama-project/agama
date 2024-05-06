@@ -169,7 +169,9 @@ module Agama
         def volume_device_conversion(target)
           return unless settings.device.is_a?(DeviceSettings::Disk)
 
-          target.volumes.select(&:proposed?).each { |v| v.device ||= settings.device.name }
+          target.volumes
+            .select { |v| v.proposed? && !v.reuse_name }
+            .each { |v| v.device ||= settings.device.name }
         end
 
         # @param target [Y2Storage::ProposalSettings]
@@ -207,20 +209,9 @@ module Agama
         #
         # @see ProposalSettings#installation_devices
         #
-        # If a device is partitioned, then its partitions are included instead of the device.
-        #
         # @return [Array<String>]
         def all_devices
-          settings.installation_devices
-            .map { |d| device_or_partitions(d) }
-            .flatten
-        end
-
-        # @param device [String]
-        # @return [String, Array<String>]
-        def device_or_partitions(device)
-          partitions = partitions(device)
-          partitions.empty? ? device : partitions
+          settings.installation_devices.flat_map { |d| partitions(d) }
         end
 
         # @param device [String]

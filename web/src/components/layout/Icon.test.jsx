@@ -19,17 +19,22 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import { plainRender } from "~/test-utils";
 import { Icon } from "~/components/layout";
 
+let consoleErrorSpy;
+
 describe("Icon", () => {
   beforeAll(() => {
-    jest.spyOn(console, "error").mockImplementation();
+    consoleErrorSpy = jest.spyOn(console, "error");
+    consoleErrorSpy.mockImplementation();
   });
 
   afterAll(() => {
-    console.error.mockRestore();
+    consoleErrorSpy.mockRestore();
   });
 
   describe("mounted with a known name", () => {
@@ -70,6 +75,7 @@ describe("Icon", () => {
 
   describe("mounted with unknown name", () => {
     it("outputs to console.error", () => {
+      // @ts-expect-error: It's unlikely to happen, but let's test it anyway
       plainRender(<Icon name="apsens" />);
       expect(console.error).toHaveBeenCalledWith(
         expect.stringContaining("'apsens' not found")
@@ -77,6 +83,7 @@ describe("Icon", () => {
     });
 
     it("renders nothing", async () => {
+      // @ts-expect-error: It's unlikely to happen, but let's test it anyway
       const { container } = plainRender(<Icon name="apsens" />);
       expect(container).toBeEmptyDOMElement();
     });
@@ -84,19 +91,19 @@ describe("Icon", () => {
 
   describe("mounted with a falsy value as name", () => {
     it("outputs to console.error", () => {
+      // @ts-expect-error: It's unlikely to happen, but let's test it anyway
       plainRender(<Icon name="" />);
       expect(console.error).toHaveBeenCalledWith(
-        expect.stringContaining("Rendering nothing")
+        expect.stringContaining("not found")
       );
     });
 
     it("renders nothing", () => {
-      const { container: contentWhenNotDefined } = plainRender(<Icon />);
-      expect(contentWhenNotDefined).toBeEmptyDOMElement();
-
+      // @ts-expect-error: It's unlikely to happen, but let's test it anyway
       const { container: contentWhenEmpty } = plainRender(<Icon name="" />);
       expect(contentWhenEmpty).toBeEmptyDOMElement();
 
+      // @ts-expect-error: It's unlikely to happen, but let's test it anyway
       const { container: contentWhenFalse } = plainRender(<Icon name={false} />);
       expect(contentWhenFalse).toBeEmptyDOMElement();
 

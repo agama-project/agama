@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useState } from "react";
 import { Form } from "@patternfly/react-core";
 
@@ -26,9 +28,10 @@ import { _ } from "~/i18n";
 import { deviceChildren } from "~/components/storage/utils";
 import { ControlledPanels as Panels, Popup } from "~/components/core";
 import { DeviceSelectorTable } from "~/components/storage";
-import { noop } from "~/utils";
+import { compact, noop } from "~/utils";
 
 /**
+ * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
  * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
@@ -39,28 +42,26 @@ const SELECT_DISK_PANEL_ID = "panel-for-disk-selection";
 const CREATE_LVM_PANEL_ID = "panel-for-lvm-creation";
 const OPTIONS_NAME = "selection-mode";
 
-const Html = ({ children, ...props }) => (
-  <div {...props} dangerouslySetInnerHTML={{ __html: children }} />
-);
-
 /**
  * Renders a dialog that allows the user to select a target device for installation.
  * @component
  *
- * @param {object} props
- * @param {string} props.target
- * @param {StorageDevice|undefined} props.targetDevice
- * @param {StorageDevice[]} props.targetPVDevices
- * @param {StorageDevice[]} props.devices - The actions to perform in the system.
- * @param {boolean} [props.isOpen=false] - Whether the dialog is visible or not.
- * @param {function} [props.onCancel=noop]
- * @param {(target: Target) => void} [props.onAccept=noop]
+ * @typedef {object} DeviceSelectionDialogProps
+ * @property {ProposalTarget} target
+ * @property {StorageDevice|undefined} targetDevice
+ * @property {StorageDevice[]} targetPVDevices
+ * @property {StorageDevice[]} devices - The actions to perform in the system.
+ * @property {boolean} [isOpen=false] - Whether the dialog is visible or not.
+ * @property {boolean} [isLoading=false] - Whether loading the data is in progress
+ * @property {() => void} [onCancel=noop]
+ * @property {(target: TargetConfig) => void} [onAccept=noop]
  *
- * @typedef {object} Target
+ * @typedef {object} TargetConfig
  * @property {string} target
  * @property {StorageDevice|undefined} targetDevice
  * @property {StorageDevice[]} targetPVDevices
-
+ *
+ * @param {DeviceSelectionDialogProps} props
  */
 export default function DeviceSelectionDialog({
   target: defaultTarget,
@@ -68,6 +69,7 @@ export default function DeviceSelectionDialog({
   targetPVDevices: defaultPVDevices,
   devices,
   isOpen,
+  isLoading,
   onCancel = noop,
   onAccept = noop,
   ...props
@@ -76,11 +78,11 @@ export default function DeviceSelectionDialog({
   const [targetDevice, setTargetDevice] = useState(defaultTargetDevice);
   const [targetPVDevices, setTargetPVDevices] = useState(defaultPVDevices);
 
-  const isTargetDisk = target === "disk";
-  const isTargetNewLvmVg = target === "newLvmVg";
+  const isTargetDisk = target === "DISK";
+  const isTargetNewLvmVg = target === "NEW_LVM_VG";
 
-  const selectTargetDisk = () => setTarget("disk");
-  const selectTargetNewLvmVG = () => setTarget("newLvmVg");
+  const selectTargetDisk = () => setTarget("DISK");
+  const selectTargetNewLvmVG = () => setTarget("NEW_LVM_VG");
 
   const selectTargetDevice = (devices) => setTargetDevice(devices[0]);
 
@@ -96,13 +98,33 @@ export default function DeviceSelectionDialog({
     return true;
   };
 
+  // change the initial `undefined` state when receiving the real data
+  if (!target && defaultTarget) { setTarget(defaultTarget) }
+  if (!targetDevice && defaultTargetDevice) { setTargetDevice(defaultTargetDevice) }
+  if (!targetPVDevices && defaultPVDevices) { setTargetPVDevices(defaultPVDevices) }
+
   const isDeviceSelectable = (device) => device.isDrive || device.type === "md";
+
+  // TRANSLATORS: description for using plain partitions for installing the
+  // system, the text in the square brackets [] is displayed in bold, use only
+  // one pair in the translation
+  const [msgStart1, msgBold1, msgEnd1] = _("The file systems will be allocated \
+by default as [new partitions in the selected device].").split(/[[\]]/);
+  // TRANSLATORS: description for using logical volumes for installing the
+  // system, the text in the square brackets [] is displayed in bold, use only
+  // one pair in the translation
+  const [msgStart2, msgBold2, msgEnd2] = _("The file systems will be allocated \
+by default as [logical volumes of a new LVM Volume Group]. The corresponding \
+physical volumes will be created on demand as new partitions at the selected \
+devices.").split(/[[\]]/);
 
   return (
     <Popup
       title={_("Device for installing the system")}
       isOpen={isOpen}
-      variant="medium"
+      isLoading={isLoading}
+      blockSize="large"
+      inlineSize="large"
       {...props}
     >
       <Form id="target-form" onSubmit={onSubmit}>
@@ -129,17 +151,14 @@ export default function DeviceSelectionDialog({
           </Panels.Options>
 
           <Panels.Panel id={SELECT_DISK_PANEL_ID} isExpanded={isTargetDisk}>
-            <Html>
-              {
-                // TRANSLATORS: beware the HTML markup (<b> and </b>)
-                _("The file systems will be allocated by default as <b>new partitions in the selected device</b>.")
-              }
-            </Html>
+            {msgStart1}
+            <b>{msgBold1}</b>
+            {msgEnd1}
 
             <DeviceSelectorTable
               aria-label={_("Device selector for target disk")}
               devices={devices}
-              selected={[targetDevice]}
+              selectedDevices={compact([targetDevice])}
               itemChildren={deviceChildren}
               itemSelectable={isDeviceSelectable}
               onSelectionChange={selectTargetDevice}
@@ -148,19 +167,15 @@ export default function DeviceSelectionDialog({
           </Panels.Panel>
 
           <Panels.Panel id={CREATE_LVM_PANEL_ID} isExpanded={isTargetNewLvmVg} className="stack">
-            <Html>
-              {
-                // TRANSLATORS: beware the HTML markup (<b> and </b>)
-                _("The file systems will be allocated by default as <b>logical volumes of a new LVM Volume \
-Group</b>. The corresponding physical volumes will be created on demand as new partitions at the selected devices.")
-              }
-            </Html>
+            {msgStart2}
+            <b>{msgBold2}</b>
+            {msgEnd2}
 
             <DeviceSelectorTable
               aria-label={_("Device selector for new LVM volume group")}
               isMultiple
               devices={devices}
-              selected={targetPVDevices}
+              selectedDevices={targetPVDevices}
               itemChildren={deviceChildren}
               itemSelectable={isDeviceSelectable}
               onSelectionChange={setTargetPVDevices}
@@ -169,6 +184,7 @@ Group</b>. The corresponding physical volumes will be created on demand as new p
           </Panels.Panel>
         </Panels>
       </Form>
+
       <Popup.Actions>
         <Popup.Confirm form="target-form" type="submit" isDisabled={isAcceptDisabled()} />
         <Popup.Cancel onClick={onCancel} />

@@ -25,6 +25,10 @@
 import DBusClient from "./dbus";
 import { StorageClient } from "./storage";
 
+/**
+ * @typedef {import("~/client/storage").StorageDevice} StorageDevice
+ */
+
 jest.mock("./dbus");
 
 const cockpitProxies = {};
@@ -35,6 +39,7 @@ let managedObjects = {};
 
 // System devices
 
+/** @type {StorageDevice}  */
 const sda = {
   sid: 59,
   isDrive: true,
@@ -59,6 +64,7 @@ const sda = {
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
+/** @type {StorageDevice}  */
 const sda1 = {
   sid: 60,
   isDrive: false,
@@ -76,6 +82,7 @@ const sda1 = {
   isEFI: false
 };
 
+/** @type {StorageDevice}  */
 const sda2 = {
   sid: 61,
   isDrive: false,
@@ -93,6 +100,7 @@ const sda2 = {
   isEFI: false
 };
 
+/** @type {StorageDevice}  */
 const sdb = {
   sid: 62,
   isDrive: true,
@@ -117,6 +125,7 @@ const sdb = {
   udevPaths: ["pci-0000:00-19"]
 };
 
+/** @type {StorageDevice}  */
 const sdc = {
   sid: 63,
   isDrive: true,
@@ -141,6 +150,7 @@ const sdc = {
   udevPaths: []
 };
 
+/** @type {StorageDevice}  */
 const sdd = {
   sid: 64,
   isDrive: true,
@@ -165,6 +175,7 @@ const sdd = {
   udevPaths: []
 };
 
+/** @type {StorageDevice}  */
 const sde = {
   sid: 65,
   isDrive: true,
@@ -189,6 +200,7 @@ const sde = {
   udevPaths: []
 };
 
+/** @type {StorageDevice}  */
 const md0 = {
   sid: 66,
   isDrive: false,
@@ -202,12 +214,14 @@ const md0 = {
   start: 0,
   encrypted: false,
   recoverableSize: 0,
+  devices: [],
   systems : ["openSUSE Leap 15.2"],
   udevIds: [],
   udevPaths: [],
   filesystem: { sid: 100, type: "ext4", mountPath: "/test", label: "system" }
 };
 
+/** @type {StorageDevice}  */
 const raid = {
   sid: 67,
   isDrive: true,
@@ -227,11 +241,13 @@ const raid = {
   start: 0,
   encrypted: false,
   recoverableSize: 0,
+  devices: [],
   systems : [],
   udevIds: [],
   udevPaths: []
 };
 
+/** @type {StorageDevice}  */
 const multipath = {
   sid: 68,
   isDrive: true,
@@ -256,6 +272,7 @@ const multipath = {
   udevPaths: []
 };
 
+/** @type {StorageDevice}  */
 const dasd = {
   sid: 69,
   isDrive: true,
@@ -280,6 +297,7 @@ const dasd = {
   udevPaths: []
 };
 
+/** @type {StorageDevice}  */
 const sdf = {
   sid: 70,
   isDrive: true,
@@ -304,6 +322,7 @@ const sdf = {
   udevPaths: []
 };
 
+/** @type {StorageDevice}  */
 const sdf1 = {
   sid: 71,
   isDrive: false,
@@ -321,6 +340,7 @@ const sdf1 = {
   isEFI: false
 };
 
+/** @type {StorageDevice}  */
 const lvmVg = {
   sid: 72,
   isDrive: false,
@@ -330,6 +350,7 @@ const lvmVg = {
   size: 512
 };
 
+/** @type {StorageDevice}  */
 const lvmLv1 = {
   sid: 73,
   isDrive: false,
@@ -414,6 +435,7 @@ const systemDevices = {
 //
 // Using a single device because most of the checks are already done with system devices.
 
+/** @type {StorageDevice}  */
 const sdbStaging = {
   sid: 62,
   isDrive: true,
@@ -1408,6 +1430,7 @@ describe("#proposal", () => {
 
   describe("#defaultVolume", () => {
     beforeEach(() => {
+      cockpitProxies.proposalCalculator.ProductMountPoints = ["/", "swap", "/home"];
       cockpitProxies.proposalCalculator.DefaultVolume = jest.fn(mountPath => {
         switch (mountPath) {
           case "/home": return {
@@ -1467,8 +1490,8 @@ describe("#proposal", () => {
 
       expect(home).toStrictEqual({
         mountPath: "/home",
-        target: "default",
-        targetDevice: "",
+        target: "DEFAULT",
+        targetDevice: undefined,
         fsType: "XFS",
         minSize: 2048,
         maxSize: 4096,
@@ -1482,7 +1505,8 @@ describe("#proposal", () => {
           snapshotsConfigurable: false,
           snapshotsAffectSizes: false,
           adjustByRam: false,
-          sizeRelevantVolumes: []
+          sizeRelevantVolumes: [],
+          productDefined: true
         }
       });
 
@@ -1490,8 +1514,8 @@ describe("#proposal", () => {
 
       expect(generic).toStrictEqual({
         mountPath: "",
-        target: "default",
-        targetDevice: "",
+        target: "DEFAULT",
+        targetDevice: undefined,
         fsType: "Ext4",
         minSize: 1024,
         maxSize: 2048,
@@ -1505,7 +1529,8 @@ describe("#proposal", () => {
           snapshotsConfigurable: false,
           snapshotsAffectSizes: false,
           adjustByRam: false,
-          sizeRelevantVolumes: []
+          sizeRelevantVolumes: [],
+          productDefined: false
         }
       });
     });
@@ -1528,14 +1553,16 @@ describe("#proposal", () => {
       beforeEach(() => {
         contexts.withSystemDevices();
         contexts.withProposal();
-        client = new StorageClient();
+        cockpitProxies.proposalCalculator.ProductMountPoints = ["/", "swap"];
       });
 
       it("returns the proposal settings and actions", async () => {
+        client = new StorageClient();
+
         const { settings, actions } = await client.proposal.getResult();
 
         expect(settings).toMatchObject({
-          target: "newLvmVg",
+          target: "NEW_LVM_VG",
           targetPVDevices: ["/dev/sda", "/dev/sdb"],
           configureBoot: true,
           bootDevice: "/dev/sda",
@@ -1549,8 +1576,8 @@ describe("#proposal", () => {
           volumes: [
             {
               mountPath: "/",
-              target: "default",
-              targetDevice: "",
+              target: "DEFAULT",
+              targetDevice: undefined,
               fsType: "Btrfs",
               minSize: 1024,
               maxSize: 2048,
@@ -1563,13 +1590,14 @@ describe("#proposal", () => {
                 supportAutoSize: true,
                 snapshotsConfigurable: true,
                 snapshotsAffectSizes: true,
-                sizeRelevantVolumes: ["/home"]
+                sizeRelevantVolumes: ["/home"],
+                productDefined: true
               }
             },
             {
               mountPath: "/home",
-              target: "default",
-              targetDevice: "",
+              target: "DEFAULT",
+              targetDevice: undefined,
               fsType: "XFS",
               minSize: 2048,
               maxSize: 4096,
@@ -1582,7 +1610,8 @@ describe("#proposal", () => {
                 supportAutoSize: false,
                 snapshotsConfigurable: false,
                 snapshotsAffectSizes: false,
-                sizeRelevantVolumes: []
+                sizeRelevantVolumes: [],
+                productDefined: false
               }
             }
           ]
@@ -1595,6 +1624,19 @@ describe("#proposal", () => {
         expect(actions).toStrictEqual([
           { device: 2, text: "Mount /dev/sdb1 as root", subvol: false, delete: false }
         ]);
+      });
+
+      describe("if boot is not configured", () => {
+        beforeEach(() => {
+          cockpitProxies.proposal.Settings.ConfigureBoot = { t: "b", v: false };
+          cockpitProxies.proposal.Settings.BootDevice = { t: "s", v: "/dev/sdc" };
+        });
+
+        it("does not include the boot device as installation device", async () => {
+          client = new StorageClient();
+          const { settings } = await client.proposal.getResult();
+          expect(settings.installationDevices).toEqual([sda, sdb]);
+        });
       });
     });
   });
@@ -1615,7 +1657,7 @@ describe("#proposal", () => {
 
     it("calculates a proposal with the given settings", async () => {
       await client.proposal.calculate({
-        target: "disk",
+        target: "DISK",
         targetDevice: "/dev/vdc",
         configureBoot: true,
         bootDevice: "/dev/vdb",

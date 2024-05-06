@@ -480,6 +480,7 @@ pub struct Connection {
     pub uuid: Uuid,
     #[serde_as(as = "DisplayFromStr")]
     pub mac_address: MacAddress,
+    pub firewall_zone: Option<String>,
     pub ip_config: IpConfig,
     pub status: Status,
     pub interface: Option<String>,
@@ -548,6 +549,7 @@ impl Default for Connection {
             id: Default::default(),
             uuid: Uuid::new_v4(),
             mac_address: Default::default(),
+            firewall_zone: Default::default(),
             ip_config: Default::default(),
             status: Default::default(),
             interface: Default::default(),

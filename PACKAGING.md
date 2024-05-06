@@ -130,6 +130,7 @@ respect such a tag. (e.g. `2.1+42`).
 
 ### The Live ISO
 
-The ISO is built and developed in [systemsmanagement:Agama:Staging/agama-live](
-https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-live).
-See [IMAGE.md](./IMAGE.md) for more details.
+The ISO is built in the [systemsmanagement:Agama:Staging/agama-live](
+https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-live)
+OBS project. The sources are maintained in the [live](live) subdirectory. See
+[live/README.md](live/README.md) for more details.

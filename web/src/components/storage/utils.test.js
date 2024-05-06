@@ -19,8 +19,11 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import {
   deviceSize,
+  deviceBaseName,
   deviceLabel,
   deviceChildren,
   parseToBytes,
@@ -31,6 +34,139 @@ import {
   isTransactionalSystem
 } from "./utils";
 
+/**
+ * @typedef {import("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import("~/client/storage").Volume} Volume
+ */
+
+/** Volume factory.
+ * @function
+ *
+ * @param {object} [properties={}]
+ * @returns {Volume}
+ */
+const volume = (properties = {}) => {
+  /** @type {Volume} */
+  const testVolume = {
+    mountPath: "/test",
+    target: "DEFAULT",
+    fsType: "Btrfs",
+    minSize: 1024,
+    maxSize: 2048,
+    autoSize: false,
+    snapshots: false,
+    transactional: false,
+    outline: {
+      required: false,
+      fsTypes: ["Btrfs", "Ext4"],
+      supportAutoSize: false,
+      snapshotsConfigurable: false,
+      snapshotsAffectSizes: false,
+      sizeRelevantVolumes: [],
+      adjustByRam: false,
+      productDefined: false
+    }
+  };
+
+  return { ...testVolume, ...properties };
+};
+
+/** @type {StorageDevice} */
+const sda = {
+  sid: 59,
+  isDrive: true,
+  type: "disk",
+  vendor: "Micron",
+  model: "Micron 1100 SATA",
+  driver: [],
+  bus: "IDE",
+  transport: "",
+  dellBOSS: false,
+  sdCard: true,
+  active: true,
+  name: "/dev/sda",
+  description: "",
+  size: 1024,
+  systems : [],
+  udevIds: [],
+  udevPaths: [],
+};
+
+/** @type {StorageDevice} */
+const sda1 = {
+  sid: 60,
+  isDrive: false,
+  type: "partition",
+  active: true,
+  name: "/dev/sda1",
+  description: "",
+  size: 512,
+  start: 123,
+  encrypted: false,
+  recoverableSize: 128,
+  systems : [],
+  udevIds: [],
+  udevPaths: [],
+  isEFI: false
+};
+
+/** @type {StorageDevice} */
+const sda2 = {
+  sid: 61,
+  isDrive: false,
+  type: "partition",
+  active: true,
+  name: "/dev/sda2",
+  description: "",
+  size: 256,
+  start: 1789,
+  encrypted: false,
+  recoverableSize: 0,
+  systems : [],
+  udevIds: [],
+  udevPaths: [],
+  isEFI: false
+};
+
+sda.partitionTable = {
+  type: "gpt",
+  partitions: [sda1, sda2],
+  unpartitionedSize: 0,
+  unusedSlots: [
+    { start: 1, size: 1024 },
+    { start: 2345, size: 512 }
+  ]
+};
+
+/** @type {StorageDevice}  */
+const lvmVg = {
+  sid: 72,
+  isDrive: false,
+  type: "lvmVg",
+  name: "/dev/vg0",
+  description: "LVM",
+  size: 512
+};
+
+/** @type {StorageDevice}  */
+const lvmLv1 = {
+  sid: 73,
+  isDrive: false,
+  type: "lvmLv",
+  active: true,
+  name: "/dev/vg0/lv1",
+  description: "",
+  size: 512,
+  start: 0,
+  encrypted: false,
+  recoverableSize: 0,
+  systems : [],
+  udevIds: [],
+  udevPaths: []
+};
+
+lvmVg.logicalVolumes = [lvmLv1];
+
 describe("deviceSize", () => {
   it("returns the size with units", () => {
     const result = deviceSize(1024);
@@ -38,36 +174,36 @@ describe("deviceSize", () => {
   });
 });
 
+describe("deviceBaseName", () => {
+  it("returns the base name of the given device", () => {
+    const device = { ...sda };
+    expect(deviceBaseName(device)).toEqual("sda");
+
+    device.name = "/dev/mapper/dm332";
+    expect(deviceBaseName(device)).toEqual("dm332");
+  });
+});
+
 describe("deviceLabel", () => {
   it("returns the device name and size", () => {
-    const result = deviceLabel({ name: "/dev/sda", size: 1024 });
+    const result = deviceLabel(sda);
     expect(result).toEqual("/dev/sda, 1 KiB");
   });
 
   it("returns only the device name if the device has no size", () => {
-    const result = deviceLabel({ name: "/dev/sda" });
+    const device = { ...sda, size: 0 };
+    const result = deviceLabel(device);
     expect(result).toEqual("/dev/sda");
   });
 });
 
 describe("deviceChildren", () => {
+  /** @type {StorageDevice} */
   let device;
 
   describe("if the device has partition table", () => {
     beforeEach(() => {
-      device = {
-        sid: 60,
-        partitionTable: {
-          partitions: [
-            { sid: 61 },
-            { sid: 62 },
-          ],
-          unusedSlots: [
-            { start: 1, size: 1024 },
-            { start: 2345, size: 512 }
-          ]
-        }
-      };
+      device = sda;
     });
 
     it("returns the partitions and unused slots", () => {
@@ -80,27 +216,19 @@ describe("deviceChildren", () => {
 
   describe("if the device is a LVM volume group", () => {
     beforeEach(() => {
-      device = {
-        sid: 60,
-        type: "lvmVg",
-        logicalVolumes: [
-          { sid: 61 },
-          { sid: 62 },
-          { sid: 63 }
-        ]
-      };
+      device = lvmVg;
     });
 
     it("returns the logical volumes", () => {
       const children = deviceChildren(device);
-      expect(children.length).toEqual(3);
+      expect(children.length).toEqual(1);
       device.logicalVolumes.forEach(l => expect(children).toContainEqual(l));
     });
   });
 
   describe("if the device has neither partition table nor logical volumes", () => {
     beforeEach(() => {
-      device = { sid: 60 };
+      device = { ...sda, partitionTable: undefined };
     });
 
     it("returns an empty list", () => {
@@ -159,69 +287,61 @@ describe("splitSize", () => {
 
 describe("hasFS", () => {
   it("returns true if volume has given filesystem", () => {
-    expect(hasFS({ fsType: "Btrfs" }, "Btrfs")).toBe(true);
+    expect(hasFS(volume({ fsType: "Btrfs" }), "Btrfs")).toBe(true);
   });
 
   it("returns true if volume has given filesystem regarding different case", () => {
-    expect(hasFS({ fsType: "btrfs" }, "Btrfs")).toBe(true);
+    expect(hasFS(volume({ fsType: "btrfs" }), "Btrfs")).toBe(true);
   });
 
   it("returns false if volume has different filesystem", () => {
-    expect(hasFS({ fsType: "Btrfs" }, "EXT4")).toBe(false);
+    expect(hasFS(volume({ fsType: "Btrfs" }), "EXT4")).toBe(false);
   });
 });
 
 describe("hasSnapshots", () => {
   it("returns false if the volume has not Btrfs file system", () => {
-    expect(hasSnapshots({ fsType: "EXT4", snapshots: true })).toBe(false);
+    expect(hasSnapshots(volume({ fsType: "EXT4", snapshots: true }))).toBe(false);
   });
 
   it("returns false if the volume has not snapshots enabled", () => {
-    expect(hasSnapshots({ fsType: "Btrfs", snapshots: false })).toBe(false);
+    expect(hasSnapshots(volume({ fsType: "Btrfs", snapshots: false }))).toBe(false);
   });
 
   it("returns true if the volume has Btrfs file system and snapshots enabled", () => {
-    expect(hasSnapshots({ fsType: "Btrfs", snapshots: true })).toBe(true);
+    expect(hasSnapshots(volume({ fsType: "Btrfs", snapshots: true }))).toBe(true);
   });
 });
 
 describe("isTransactionalRoot", () => {
   it("returns false if the volume is not root", () => {
-    expect(isTransactionalRoot({ mountPath: "/home", transactional: true })).toBe(false);
+    expect(isTransactionalRoot(volume({ mountPath: "/home", transactional: true }))).toBe(false);
   });
 
   it("returns false if the volume has not transactional enabled", () => {
-    expect(isTransactionalRoot({ mountPath: "/", transactional: false })).toBe(false);
+    expect(isTransactionalRoot(volume({ mountPath: "/", transactional: false }))).toBe(false);
   });
 
   it("returns true if the volume is root and has transactional enabled", () => {
-    expect(isTransactionalRoot({ mountPath: "/", transactional: true })).toBe(true);
+    expect(isTransactionalRoot(volume({ mountPath: "/", transactional: true }))).toBe(true);
   });
 });
 
 describe("isTransactionalSystem", () => {
-  it("returns false when a list of volumes is not given", () => {
-    expect(isTransactionalSystem(false)).toBe(false);
-    expect(isTransactionalSystem(undefined)).toBe(false);
-    expect(isTransactionalSystem(null)).toBe(false);
-    expect(isTransactionalSystem([])).toBe(false);
-    expect(isTransactionalSystem("fake")).toBe(false);
-  });
-
   it("returns false if volumes does not include a transactional root", () => {
     expect(isTransactionalSystem([])).toBe(false);
 
     const volumes = [
-      { mountPath: "/" },
-      { mountPath: "/home", transactional: true }
+      volume({ mountPath: "/" }),
+      volume({ mountPath: "/home", transactional: true })
     ];
     expect(isTransactionalSystem(volumes)).toBe(false);
   });
 
   it("returns true if volumes includes a transactional root", () => {
     const volumes = [
-      { mountPath: "EXT4" },
-      { mountPath: "/", transactional: true }
+      volume({ mountPath: "EXT4" }),
+      volume({ mountPath: "/", transactional: true })
     ];
     expect(isTransactionalSystem(volumes)).toBe(true);
   });

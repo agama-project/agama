@@ -19,33 +19,192 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
+import { sprintf } from "sprintf-js";
+
 import { _ } from "~/i18n";
-import { deviceSize } from '~/components/storage/utils';
-import { DeviceExtendedInfo, DeviceContentInfo } from "~/components/storage";
-import { ExpandableSelector } from "~/components/core";
+import { deviceBaseName } from "~/components/storage/utils";
+import {
+  DeviceName, DeviceDetails, DeviceSize, FilesystemLabel, toStorageDevice
+} from "~/components/storage/device-utils";
+import { ExpandableSelector, If } from "~/components/core";
+import { Icon } from "~/components/layout";
 
 /**
- * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
+ * @typedef {import("../core/ExpandableSelector").ExpandableSelectorColumn} ExpandableSelectorColumn
+ * @typedef {import("../core/ExpandableSelector").ExpandableSelectorProps} ExpandableSelectorProps
+ * @typedef {import("~/client/storage").PartitionSlot} PartitionSlot
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
 
-const DeviceInfo = ({ device }) => {
-  if (!device.sid) return _("Unused space");
+/**
+ * @component
+ *
+ * @param {object} props
+ * @param {PartitionSlot|StorageDevice} props.item
+ */
+const DeviceInfo = ({ item }) => {
+  const device = toStorageDevice(item);
+  if (!device) return null;
 
-  return <DeviceExtendedInfo device={device} />;
+  const DeviceType = () => {
+    let type;
+
+    switch (device.type) {
+      case "multipath": {
+        // TRANSLATORS: multipath device type
+        type = _("Multipath");
+        break;
+      }
+      case "dasd": {
+        // TRANSLATORS: %s is replaced by the device bus ID
+        type = sprintf(_("DASD %s"), device.busId);
+        break;
+      }
+      case "md": {
+        // TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
+        type = sprintf(_("Software %s"), device.level.toUpperCase());
+        break;
+      }
+      case "disk": {
+        if (device.sdCard) {
+          type = _("SD Card");
+        } else {
+          const technology = device.transport || device.bus;
+          type = technology
+            // TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
+            ? sprintf(_("%s disk"), technology)
+            : _("Disk");
+        }
+      }
+    }
+
+    return <If condition={type} then={<div>{type}</div>} />;
+  };
+
+  const DeviceModel = () => {
+    if (!device.model || device.model === "") return null;
+
+    return <div>{device.model}</div>;
+  };
+
+  const MDInfo = () => {
+    if (device.type !== "md" || !device.devices) return null;
+
+    const members = device.devices.map(deviceBaseName);
+
+    // TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+    return <div>{sprintf(_("Members: %s"), members.sort().join(", "))}</div>;
+  };
+
+  const RAIDInfo = () => {
+    if (device.type !== "raid") return null;
+
+    const devices = device.devices.map(deviceBaseName);
+
+    // TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+    return <div>{sprintf(_("Devices: %s"), devices.sort().join(", "))}</div>;
+  };
+
+  const MultipathInfo = () => {
+    if (device.type !== "multipath") return null;
+
+    const wires = device.wires.map(deviceBaseName);
+
+    // TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
+    return <div>{sprintf(_("Wires: %s"), wires.sort().join(", "))}</div>;
+  };
+
+  return (
+    <div>
+      <DeviceName item={device} />
+      <DeviceType />
+      <DeviceModel />
+      <MDInfo />
+      <RAIDInfo />
+      <MultipathInfo />
+    </div>
+  );
 };
 
-const deviceColumns = [
-  { name: _("Device"), value: (device) => <DeviceInfo device={device} /> },
-  { name: _("Content"), value: (device) => <DeviceContentInfo device={device} /> },
-  { name: _("Size"), value: (device) => deviceSize(device.size), classNames: "sizes-column" }
+/**
+ * @component
+ *
+ * @param {object} props
+ * @param {PartitionSlot|StorageDevice} props.item
+ */
+const DeviceExtendedDetails = ({ item }) => {
+  const device = toStorageDevice(item);
+
+  if (!device || ["partition", "lvmLv"].includes(device.type))
+    return <DeviceDetails item={item} />;
+
+  // TODO: there is a lot of room for improvement here, but first we would need
+  // device.description (comes from YaST) to be way more granular
+  const Description = () => {
+    if (device.partitionTable) {
+      const type = device.partitionTable.type.toUpperCase();
+      const numPartitions = device.partitionTable.partitions.length;
+
+      // TRANSLATORS: disk partition info, %s is replaced by partition table
+      // type (MS-DOS or GPT), %d is the number of the partitions
+      return sprintf(_("%s with %d partitions"), type, numPartitions);
+    }
+
+    if (!!device.model && device.model === device.description) {
+      // TRANSLATORS: status message, no existing content was found on the disk,
+      // i.e. the disk is completely empty
+      return _("No content found");
+    }
+
+    return <div>{device.description} <FilesystemLabel item={device} /></div>;
+  };
+
+  const Systems = () => {
+    if (!device.systems || device.systems.length === 0) return null;
+
+    const System = ({ system }) => {
+      const logo = /windows/i.test(system) ? "windows_logo" : "linux_logo";
+
+      return <div><Icon name={logo} size="14" /> {system}</div>;
+    };
+
+    return device.systems.map((s, i) => <System key={i} system={s} />);
+  };
+
+  return (
+    <div>
+      <Description />
+      <Systems />
+    </div>
+  );
+};
+
+/** @type {ExpandableSelectorColumn[]} */
+const columns = [
+  { name: _("Device"), value: (item) => <DeviceInfo item={item} /> },
+  { name: _("Details"), value: (item) => <DeviceExtendedDetails item={item} /> },
+  { name: _("Size"), value: (item) => <DeviceSize item={item} />, classNames: "sizes-column" }
 ];
 
-export default function DeviceSelectorTable({ devices, selected, ...props }) {
+/**
+ * Table for selecting the installation device.
+ * @component
+ *
+ * @typedef {object} DeviceSelectorTableBaseProps
+ * @property {StorageDevice[]} devices
+ * @property {StorageDevice[]} selectedDevices
+ *
+ * @typedef {DeviceSelectorTableBaseProps & ExpandableSelectorProps} DeviceSelectorTableProps
+ *
+ * @param {DeviceSelectorTableProps} props
+ */
+export default function DeviceSelectorTable({ devices, selectedDevices, ...props }) {
   return (
     <ExpandableSelector
-      columns={deviceColumns}
+      columns={columns}
       items={devices}
       itemIdKey="sid"
       itemClassNames={(device) => {
@@ -53,7 +212,7 @@ export default function DeviceSelectorTable({ devices, selected, ...props }) {
           return "dimmed-row";
         }
       }}
-      itemsSelected={selected}
+      itemsSelected={selectedDevices}
       className="devices-table"
       {...props}
     />

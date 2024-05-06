@@ -22,6 +22,13 @@
 // @ts-check
 // cspell:ignore xbytes
 
+/**
+ * @fixme This file implements utils for the storage components and it also offers several functions
+ * to get information from a Volume (e.g., #hasSnapshots, #isTransactionalRoot, etc). It would be
+ * better to use another approach to encapsulate the volume information. For example, by creating
+ * a Volume class or by providing a kind of interface for volumes.
+ */
+
 import xbytes from "xbytes";
 
 import { N_ } from "~/i18n";
@@ -33,12 +40,18 @@ import { N_ } from "~/i18n";
  */
 
 /**
- * @typedef {Object} SizeObject
- *
  * @note undefined for either property means unknown
- *
+ * @typedef {object} SizeObject
  * @property {number|undefined} size - The "amount" of size (10, 128, ...)
  * @property {string|undefined} unit - The size unit (MiB, GiB, ...)
+ *
+ * @typedef {object} SpacePolicy
+ * @property {string} id
+ * @property {string} label
+ * @property {string} description
+ * @property {string[]} summaryLabels
+ *
+ * @typedef {"auto"|"fixed"|"range"} SizeMethod
  */
 
 const SIZE_METHODS = Object.freeze({
@@ -57,8 +70,59 @@ const SIZE_UNITS = Object.freeze({
 
 const DEFAULT_SIZE_UNIT = "GiB";
 
+/** @type {SpacePolicy[]} */
+const SPACE_POLICIES = [
+  {
+    id: "delete",
+    label: N_("Delete current content"),
+    description: N_("All partitions will be removed and any data in the disks will be lost."),
+    summaryLabels: [
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space deleting all content[...]"
+      N_("deleting all content of the installation device"),
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space deleting all content[...]"
+      N_("deleting all content of the %d selected disks")
+    ]
+  },
+  {
+    id: "resize",
+    label: N_("Shrink existing partitions"),
+    description: N_("The data is kept, but the current partitions will be resized as needed."),
+    summaryLabels: [
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space shrinking partitions[...]"
+      N_("shrinking partitions of the installation device"),
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space shrinking partitions[...]"
+      N_("shrinking partitions of the %d selected disks")
+    ]
+  },
+  {
+    id: "keep",
+    label: N_("Use available space"),
+    description: N_("The data is kept. Only the space not assigned to any partition will be used."),
+    summaryLabels: [
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space without modifying any partition".
+      N_("without modifying any partition")
+    ]
+  },
+  {
+    id: "custom",
+    label: N_("Custom"),
+    description: N_("Select what to do with each partition."),
+    summaryLabels: [
+      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+      // would read as "Find space performing a custom set of actions".
+      N_("performing a custom set of actions")
+    ]
+  }
+];
+
 /**
  * Convenience method for generating a size object based on given input
+ * @function
  *
  * It split given input when a string is given or the result of converting the
  * input otherwise. Note, however, that -1 number will treated as empty string
@@ -130,7 +194,19 @@ const parseToBytes = (size) => {
 };
 
 /**
+ * Base name of a device.
+ * @function
+ *
+ * @param {StorageDevice} device
+ * @returns {string}
+ */
+const deviceBaseName = (device) => {
+  return device.name.split("/").pop();
+};
+
+/**
  * Generates the label for the given device
+ * @function
  *
  * @param {StorageDevice} device
  * @returns {string}
@@ -156,7 +232,7 @@ const deviceLabel = (device) => {
 const deviceChildren = (device) => {
   const partitionTableChildren = (partitionTable) => {
     const { partitions, unusedSlots } = partitionTable;
-    const children = partitions.concat(unusedSlots);
+    const children = partitions.concat(unusedSlots).filter(i => !!i);
     return children.sort((a, b) => a.start < b.start ? -1 : 1);
   };
 
@@ -170,8 +246,8 @@ const deviceChildren = (device) => {
 };
 
 /**
- * Checks if volume uses given fs. This method works same as in backend
- * case insensitive.
+ * Checks if volume uses given fs. This method works same as in backend case insensitive.
+ * @function
  *
  * @param {Volume} volume
  * @param {string} fs - Filesystem name to check.
@@ -185,6 +261,7 @@ const hasFS = (volume, fs) => {
 
 /**
  * Checks whether the given volume has snapshots.
+ * @function
  *
  * @param {Volume} volume
  * @returns {boolean}
@@ -195,6 +272,7 @@ const hasSnapshots = (volume) => {
 
 /**
  * Checks whether the given volume defines a transactional root.
+ * @function
  *
  * @param {Volume} volume
  * @returns {boolean}
@@ -205,22 +283,48 @@ const isTransactionalRoot = (volume) => {
 
 /**
  * Checks whether the given volumes defines a transactional system.
+ * @function
  *
  * @param {Volume[]} volumes
  * @returns {boolean}
  */
 const isTransactionalSystem = (volumes = []) => {
-  try {
-    return volumes?.find(v => isTransactionalRoot(v)) !== undefined;
-  } catch {
-    return false;
-  }
+  return volumes.find(v => isTransactionalRoot(v)) !== undefined;
 };
+
+/**
+ * Checks whether the given volume is configured to mount an existing file system.
+ * @function
+ *
+ * @param {Volume} volume
+ * @returns {boolean}
+ */
+const mountFilesystem = (volume) => volume.target === "FILESYSTEM";
+
+/**
+ * Checks whether the given volume is configured to reuse a device (format or mount a file system).
+ * @function
+ *
+ * @param {Volume} volume
+ * @returns {boolean}
+ */
+const reuseDevice = (volume) => volume.target === "FILESYSTEM" || volume.target === "DEVICE";
+
+/**
+ * Generates a label for the given volume.
+ * @function
+ *
+ * @param {Volume} volume
+ * @returns {string}
+ */
+const volumeLabel = (volume) => volume.mountPath === "/" ? "root" : volume.mountPath;
 
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
   SIZE_UNITS,
+  SPACE_POLICIES,
+  deviceBaseName,
   deviceLabel,
   deviceChildren,
   deviceSize,
@@ -229,5 +333,8 @@ export {
   hasFS,
   hasSnapshots,
   isTransactionalRoot,
-  isTransactionalSystem
+  isTransactionalSystem,
+  mountFilesystem,
+  reuseDevice,
+  volumeLabel
 };
