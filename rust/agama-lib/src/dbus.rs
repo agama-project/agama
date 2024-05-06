@@ -43,3 +43,44 @@ where
         Ok(None)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+
+    use zbus::zvariant::{self, OwnedValue, Str};
+
+    use crate::dbus::{get_optional_property, get_property};
+
+    #[test]
+    fn test_get_property() {
+        let data: HashMap<String, OwnedValue> = HashMap::from([
+            ("Id".to_string(), (1 as u8).into()),
+            ("Device".to_string(), Str::from_static("/dev/sda").into()),
+        ]);
+        let id: u8 = get_property(&data, "Id").unwrap();
+        assert_eq!(id, 1);
+
+        let device: String = get_property(&data, "Device").unwrap();
+        assert_eq!(device, "/dev/sda".to_string());
+    }
+
+    #[test]
+    fn test_get_property_wrong_type() {
+        let data: HashMap<String, OwnedValue> =
+            HashMap::from([("Id".to_string(), (1 as u8).into())]);
+        let result: Result<u16, _> = get_property(&data, "Id");
+        assert_eq!(result, Err(zvariant::Error::IncorrectType));
+    }
+
+    #[test]
+    fn test_get_optional_property() {
+        let data: HashMap<String, OwnedValue> =
+            HashMap::from([("Id".to_string(), (1 as u8).into())]);
+        let id: Option<u8> = get_optional_property(&data, "Id").unwrap();
+        assert_eq!(id, Some(1));
+
+        let device: Option<String> = get_optional_property(&data, "Device").unwrap();
+        assert_eq!(device, None);
+    }
+}
