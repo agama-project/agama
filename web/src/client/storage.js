@@ -1624,8 +1624,8 @@ class StorageBaseClient {
  */
 class StorageClient extends WithIssues(
   WithProgress(
-    WithStatus(StorageBaseClient, STORAGE_OBJECT), STORAGE_OBJECT
-  ), STORAGE_OBJECT
+    WithStatus(StorageBaseClient, "/storage/status", STORAGE_OBJECT), "/storage/progress", STORAGE_OBJECT
+  ), "/storage/issues", STORAGE_OBJECT
 ) { }
 
 export { StorageClient, EncryptionMethods };
