@@ -2,8 +2,9 @@ use core::fmt;
 use std::collections::HashMap;
 
 use crate::{
-    dbus::get_property,
+    dbus::{get_optional_property, get_property, UpdateFromDBus},
     error::ServiceError,
+    property_from_dbus,
     storage::proxies::{InitiatorProxy, NodeProxy},
 };
 use serde::{Deserialize, Serialize};
@@ -20,7 +21,7 @@ pub struct Initiator {
     ibft: bool,
 }
 
-#[derive(Default, Serialize)]
+#[derive(Clone, Debug, Default, Serialize)]
 /// ISCSI node
 pub struct ISCSINode {
     /// Artificial ID to match it against the D-Bus backend.
@@ -55,6 +56,22 @@ impl TryFrom<&HashMap<String, OwnedValue>> for ISCSINode {
             connected: get_property(value, "Connected")?,
             startup: get_property(value, "Startup")?,
         })
+    }
+}
+
+impl UpdateFromDBus for ISCSINode {
+    fn update_from_dbus(
+        &mut self,
+        value: &HashMap<String, OwnedValue>,
+    ) -> Result<(), zbus::zvariant::Error> {
+        property_from_dbus!(self, target, "Target", value, str);
+        property_from_dbus!(self, address, "Address", value, str);
+        property_from_dbus!(self, interface, "Interface", value, str);
+        property_from_dbus!(self, startup, "Startup", value, str);
+        property_from_dbus!(self, id, "Id", value, u32);
+        property_from_dbus!(self, port, "Port", value, u32);
+        property_from_dbus!(self, connected, "Connected", value, bool);
+        Ok(())
     }
 }
 
