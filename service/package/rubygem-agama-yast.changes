@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May  6 05:13:11 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Remove the dependency on cockpit.socket (gh#openSUSE/agama#1119)
+
+-------------------------------------------------------------------
 Thu Apr 25 13:40:06 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Adapted to recent changes on Y2Storage::GuidedProposal

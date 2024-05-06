@@ -1,4 +1,24 @@
 -------------------------------------------------------------------
+Mon May  6 05:13:54 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Extend the HTTP/JSON API:
+  - Localization (gh#openSUSE/agama#1047, gh#openSUSE/agama#1120).
+  - Networking (gh#openSUSE/agama#1064).
+  - Software (gh#openSUSE/agama#1069).
+  - Manager service (gh#openSUSE/agama#1089).
+  - Questions (gh#openSUSE/agama#1091).
+  - Progress interface (gh#openSUSE/agama#1092).
+  - Issues interface (gh#openSUSE/agama#1100).
+  - Users (gh#openSUSE/agama#1117).
+  - Product registration (gh#openSUSE/agama#1146).
+- Add an "agama-web-server" service (gh#openSUSE/agama/1119).
+- Fix the generation of the self-signed certificate
+  (gh#openSUSE/agama#1131).
+- Improve agama-server logging (gh#openSUSE/agama#1143).
+- Provide frontend translations via the /po.js path
+  (gh#openSUSE/agama#1126).
+
+-------------------------------------------------------------------
 Wed Mar  13 12:42:58 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Add infiniband to network model (gh#openSUSE/agama#1032).
