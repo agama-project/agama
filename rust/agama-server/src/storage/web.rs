@@ -28,7 +28,7 @@ mod iscsi;
 
 use crate::{
     error::Error,
-    storage::web::iscsi::iscsi_service,
+    storage::web::iscsi::{iscsi_service, iscsi_stream},
     web::{
         common::{issues_router, progress_router, service_status_router, EventStreams},
         Event,
@@ -36,10 +36,13 @@ use crate::{
 };
 
 pub async fn storage_streams(dbus: zbus::Connection) -> Result<EventStreams, Error> {
-    let result: EventStreams = vec![(
-        "devices_dirty",
-        Box::pin(devices_dirty_stream(dbus.clone()).await?),
-    )]; // TODO:
+    let result: EventStreams = vec![
+        (
+            "devices_dirty",
+            Box::pin(devices_dirty_stream(dbus.clone()).await?),
+        ),
+        ("iscsi_stream", Box::pin(iscsi_stream(&dbus).await?)),
+    ];
     Ok(result)
 }
 

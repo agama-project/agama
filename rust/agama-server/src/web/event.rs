@@ -1,7 +1,7 @@
 use crate::{l10n::web::LocaleConfig, network::model::NetworkChange};
 use agama_lib::{
     manager::InstallationPhase, product::RegistrationRequirement, progress::Progress,
-    software::SelectedBy, users::FirstUser,
+    software::SelectedBy, storage::ISCSINode, users::FirstUser,
 };
 use serde::Serialize;
 use std::collections::HashMap;
@@ -65,6 +65,15 @@ pub enum Event {
         service: String,
         path: String,
         errors: Vec<String>,
+    },
+    ISCSINodeAdded {
+        node: ISCSINode,
+    },
+    ISCSINodeChanged {
+        node: ISCSINode,
+    },
+    ISCSINodeRemoved {
+        node: ISCSINode,
     },
 }
 

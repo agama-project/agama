@@ -5,6 +5,7 @@
 //! * `iscsi_service` which returns the Axum service.
 //! * `iscsi_stream` which offers an stream that emits the iSCSI-related events coming from D-Bus.
 
+use crate::{error::Error, web::Event};
 use agama_lib::{
     error::ServiceError,
     storage::{
@@ -19,15 +20,46 @@ use axum::{
     routing::{delete, get, post},
     Json, Router,
 };
+use futures_util::Stream;
 use serde::{Deserialize, Serialize};
+use tokio_stream::StreamExt;
+use zbus::zvariant::ObjectPath;
 
-use crate::error::Error;
+use crate::dbus::{ObjectEvent, ObjectsStream};
+
+/// Returns the stream of iSCSI-related events.
+///
+/// It relies on [ObjectsStream].
+///
+/// * `dbus`: D-Bus connection to use.
+pub async fn iscsi_stream(
+    dbus: &zbus::Connection,
+) -> Result<impl Stream<Item = Event> + Send, Error> {
+    let stream: ObjectsStream<ISCSINode> = ObjectsStream::new(
+        &dbus,
+        &ObjectPath::from_str_unchecked("/org/opensuse/Agama/Storage1"),
+        &ObjectPath::from_str_unchecked("/org/opensuse/Agama/Storage1/iscsi_nodes"),
+        "org.opensuse.Agama.Storage1.ISCSI.Node",
+    )
+    .await?;
+    let stream = stream.map(|device| match device {
+        ObjectEvent::Added(node) => Event::ISCSINodeAdded { node },
+        ObjectEvent::Removed(node) => Event::ISCSINodeRemoved { node },
+        ObjectEvent::Changed(node) => Event::ISCSINodeChanged { node },
+    });
+    Ok(stream)
+}
 
 #[derive(Clone)]
 struct ISCSIState<'a> {
     client: ISCSIClient<'a>,
 }
 
+/// Sets up and returns the Axum service for the iSCSI part of the storage module.
+///
+/// It acts as a proxy to Agama D-Bus service.
+///
+/// * `dbus`: D-Bus connection to use.
 pub async fn iscsi_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, ServiceError> {
     let client = ISCSIClient::new(dbus.clone()).await?;
     let state = ISCSIState { client };
