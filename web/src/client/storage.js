@@ -238,9 +238,9 @@ class ProposalManager {
    */
   async getAvailableDevices() {
     const findDevice = (devices, name) => {
-      const device = devices.find(d => d.device.name === name);
+      const device = devices.find(d => d.deviceInfo.name === name);
 
-      if (device === undefined) console.log("Device not found: ", path);
+      if (device === undefined) console.log("Device not found: ", name);
 
       return device;
     };
