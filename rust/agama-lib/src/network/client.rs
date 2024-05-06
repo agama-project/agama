@@ -20,6 +20,20 @@ impl NetworkClient {
         Ok(Self { client })
     }
 
+    async fn text_for(&self, response: Response) -> Result<String, ServiceError> {
+        let status = response.status().clone();
+        let text = response
+            .text()
+            .await
+            .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
+
+        if status != 200 {
+            return Err(ServiceError::NetworkClientError(text));
+        }
+
+        Ok(text)
+    }
+
     async fn get(&self, path: &str) -> Result<String, ServiceError> {
         let response = self
             .client
@@ -28,17 +42,17 @@ impl NetworkClient {
             .await
             .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
 
-        let status = response.status().clone();
-        let text = response
-            .text()
-            .await
+        Ok(self.text_for(response).await?)
+    }
+
+    /// Returns an array of network devices
+    pub async fn devices(&self) -> Result<Vec<Device>, ServiceError> {
+        let text = self.get("/devices").await?;
+
+        let json: Vec<Device> = serde_json::from_str(&text)
             .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
 
-        if status != 200 {
-            return Err(ServiceError::NetworkClientError((text)));
-        }
-
-        Ok(text)
+        Ok(json)
     }
 
     /// Returns an array of network connections
@@ -66,12 +80,9 @@ impl NetworkClient {
         connection: NetworkConnection,
     ) -> Result<(), ServiceError> {
         let id = connection.id.clone();
-        let json = serde_json::to_string(&connection)
-            .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
-
         let response = self.connection(id.as_str()).await;
 
-        if let Ok(response) = response {
+        if let Ok(_) = response {
             let path = format!("{API_URL}/connections/{id}");
             self.client
                 .put(path)
