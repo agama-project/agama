@@ -10,8 +10,7 @@ use std::collections::HashMap;
 use agama_lib::{
     error::ServiceError,
     storage::{
-        model::{Action, Device, ProposalSettings, ProposalSettingsPatch, Volume},
-        StorageClient,
+        model::{Action, Device, ProposalSettings, ProposalSettingsPatch, Volume}, proxies::Storage1Proxy, StorageClient
     },
 };
 use anyhow::anyhow;
@@ -20,6 +19,7 @@ use axum::{
     routing::get,
     Json, Router,
 };
+use tokio_stream::{Stream, StreamExt};
 use serde::Serialize;
 
 use crate::{
@@ -31,8 +31,30 @@ use crate::{
 };
 
 pub async fn storage_streams(dbus: zbus::Connection) -> Result<EventStreams, Error> {
-    let result: EventStreams = vec![]; // TODO:
+    let result: EventStreams = vec![
+        (
+            "devices_dirty",
+            Box::pin(devices_dirty_stream(dbus.clone()).await?),
+        ),
+    ]; // TODO:
     Ok(result)
+}
+
+async fn devices_dirty_stream(
+    dbus: zbus::Connection,
+) -> Result<impl Stream<Item = Event>, Error> {
+    let proxy = Storage1Proxy::new(&dbus).await?;
+    let stream = proxy
+        .receive_deprecated_system_changed()
+        .await
+        .then(|change| async move {
+            if let Ok(value) = change.get().await {
+                return Some(Event::DevicesDirty { dirty: value });
+            }
+            None
+        })
+        .filter_map(|e| e);
+    Ok(stream)
 }
 
 #[derive(Clone)]
