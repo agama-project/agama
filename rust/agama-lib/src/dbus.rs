@@ -68,6 +68,19 @@ pub trait UpdateFromDBus {
     ) -> Result<(), zbus::zvariant::Error>;
 }
 
+/// Converts a hash map containing zbus non-owned values to hash map with owned ones.
+///
+/// * `source`: hash map containing non-onwed values ([zbus::zvariant::Value]).
+pub fn to_owned_hash(source: &HashMap<&str, Value<'_>>) -> HashMap<String, OwnedValue> {
+    let mut owned = HashMap::new();
+    for (key, value) in source.iter() {
+        if let Ok(owned_value) = value.try_into() {
+            owned.insert(key.to_string(), owned_value);
+        }
+    }
+    owned
+}
+
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
