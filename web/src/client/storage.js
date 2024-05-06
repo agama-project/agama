@@ -23,8 +23,8 @@
 // cspell:ignore ptable
 
 import { compact, hex, uniq } from "~/utils";
-import DBusClient from "./dbus";
 import { WithIssues, WithStatus, WithProgress } from "./mixins";
+import { HTTPClient } from "./http";
 
 const STORAGE_OBJECT = "/org/opensuse/Agama/Storage1";
 const STORAGE_IFACE = "org.opensuse.Agama.Storage1";
@@ -196,7 +196,7 @@ const dbusBasename = (path) => path.split("/").slice(-1)[0];
  */
 class DevicesManager {
   /**
-   * @param {DBusClient} client
+   * @param {HTTPClient} client
    * @param {string} rootPath - Root path of the devices tree
    */
   constructor(client, rootPath) {
@@ -370,15 +370,12 @@ class DevicesManager {
  */
 class ProposalManager {
   /**
-   * @param {DBusClient} client
+   * @param {HTTPClient} client
    * @param {DevicesManager} system
    */
   constructor(client, system) {
     this.client = client;
     this.system = system;
-    this.proxies = {
-      proposalCalculator: this.client.proxy(PROPOSAL_CALCULATOR_IFACE, STORAGE_OBJECT)
-    };
   }
 
   /**
@@ -408,8 +405,12 @@ class ProposalManager {
    * @returns {Promise<string[]>}
    */
   async getProductMountPoints() {
-    const proxy = await this.proxies.proposalCalculator;
-    return proxy.ProductMountPoints;
+    const response = await this.client.get("/storage/product/params");
+    if (!response.ok) {
+      console.log("Failed to get product params: ", response);
+    }
+
+    return response.json().then(params => params.mountPoints);
   }
 
   /**
@@ -418,8 +419,12 @@ class ProposalManager {
    * @returns {Promise<string[]>}
    */
   async getEncryptionMethods() {
-    const proxy = await this.proxies.proposalCalculator;
-    return proxy.EncryptionMethods;
+    const response = await this.client.get("/storage/product/params");
+    if (!response.ok) {
+      console.log("Failed to get product params: ", response);
+    }
+
+    return response.json().then(params => params.encryptionMethods);
   }
 
   /**
@@ -429,8 +434,13 @@ class ProposalManager {
    * @returns {Promise<Volume>}
    */
   async defaultVolume(mountPath) {
-    const proxy = await this.proxies.proposalCalculator;
-    return this.buildVolume(await proxy.DefaultVolume(mountPath));
+    const param = encodeURIComponent("mountPath");
+    const response = await this.client.get(`/storage/product/volume_for?mount_path=${param}`);
+    if (!response.ok) {
+      console.log("Failed to get product volume: ", response);
+    }
+
+    return response.json();
   }
 
   /**
