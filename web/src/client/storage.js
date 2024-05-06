@@ -197,7 +197,7 @@ const dbusBasename = (path) => path.split("/").slice(-1)[0];
 class DevicesManager {
   /**
    * @param {HTTPClient} client
-   * @param {string} rootPath - Root path of the devices tree
+   * @param {string} rootPath - path of the devices tree, either system or staging
    */
   constructor(client, rootPath) {
     this.client = client;
@@ -210,158 +210,11 @@ class DevicesManager {
    * @returns {Promise<StorageDevice[]>}
    */
   async getDevices() {
-    const buildDevice = (path, dbusDevices) => {
-      const addDeviceProperties = (device, dbusProperties) => {
-        device.sid = dbusProperties.SID.v;
-        device.name = dbusProperties.Name.v;
-        device.description = dbusProperties.Description.v;
-      };
-
-      const addDriveProperties = (device, dbusProperties) => {
-        device.isDrive = true;
-        device.type = dbusProperties.Type.v;
-        device.vendor = dbusProperties.Vendor.v;
-        device.model = dbusProperties.Model.v;
-        device.driver = dbusProperties.Driver.v;
-        device.bus = dbusProperties.Bus.v;
-        device.busId = dbusProperties.BusId.v;
-        device.transport = dbusProperties.Transport.v;
-        device.sdCard = dbusProperties.Info.v.SDCard.v;
-        device.dellBOSS = dbusProperties.Info.v.DellBOSS.v;
-      };
-
-      const addRAIDProperties = (device, raidProperties) => {
-        device.devices = raidProperties.Devices.v.map(d => buildDevice(d, dbusDevices));
-      };
-
-      const addMultipathProperties = (device, multipathProperties) => {
-        device.wires = multipathProperties.Wires.v.map(d => buildDevice(d, dbusDevices));
-      };
-
-      const addMDProperties = (device, mdProperties) => {
-        device.type = "md";
-        device.level = mdProperties.Level.v;
-        device.uuid = mdProperties.UUID.v;
-        device.devices = mdProperties.Devices.v.map(d => buildDevice(d, dbusDevices));
-      };
-
-      const addBlockProperties = (device, blockProperties) => {
-        device.active = blockProperties.Active.v;
-        device.encrypted = blockProperties.Encrypted.v;
-        device.start = blockProperties.Start.v;
-        device.size = blockProperties.Size.v;
-        device.recoverableSize = blockProperties.RecoverableSize.v;
-        device.systems = blockProperties.Systems.v;
-        device.udevIds = blockProperties.UdevIds.v;
-        device.udevPaths = blockProperties.UdevPaths.v;
-      };
-
-      const addPartitionProperties = (device, partitionProperties) => {
-        device.type = "partition";
-        device.isEFI = partitionProperties.EFI.v;
-      };
-
-      const addLvmVgProperties = (device, lvmVgProperties) => {
-        device.type = "lvmVg";
-        device.size = lvmVgProperties.Size.v;
-        device.physicalVolumes = lvmVgProperties.PhysicalVolumes.v.map(d => buildDevice(d, dbusDevices));
-        device.logicalVolumes = lvmVgProperties.LogicalVolumes.v.map(d => buildDevice(d, dbusDevices));
-      };
-
-      const addLvmLvProperties = (device) => {
-        device.type = "lvmLv";
-      };
-
-      const addPtableProperties = (device, ptableProperties) => {
-        const buildPartitionSlot = ([start, size]) => ({ start, size });
-        const partitions = ptableProperties.Partitions.v.map(p => buildDevice(p, dbusDevices));
-        device.partitionTable = {
-          type: ptableProperties.Type.v,
-          partitions,
-          unpartitionedSize: device.size - partitions.reduce((s, p) => s + p.size, 0),
-          unusedSlots: ptableProperties.UnusedSlots.v.map(buildPartitionSlot)
-        };
-      };
-
-      const addFilesystemProperties = (device, filesystemProperties) => {
-        const buildMountPath = path => path.length > 0 ? path : undefined;
-        const buildLabel = label => label.length > 0 ? label : undefined;
-        device.filesystem = {
-          sid: filesystemProperties.SID.v,
-          type: filesystemProperties.Type.v,
-          mountPath: buildMountPath(filesystemProperties.MountPath.v),
-          label: buildLabel(filesystemProperties.Label.v)
-        };
-      };
-
-      const addComponentProperties = (device, componentProperties) => {
-        device.component = {
-          type: componentProperties.Type.v,
-          deviceNames: componentProperties.DeviceNames.v
-        };
-      };
-
-      const device = {
-        sid: path.split("/").pop(),
-        name: "",
-        description: "",
-        isDrive: false,
-        type: ""
-      };
-
-      const dbusDevice = dbusDevices[path];
-      if (!dbusDevice) return device;
-
-      const deviceProperties = dbusDevice["org.opensuse.Agama.Storage1.Device"];
-      if (deviceProperties !== undefined) addDeviceProperties(device, deviceProperties);
-
-      const driveProperties = dbusDevice["org.opensuse.Agama.Storage1.Drive"];
-      if (driveProperties !== undefined) addDriveProperties(device, driveProperties);
-
-      const raidProperties = dbusDevice["org.opensuse.Agama.Storage1.RAID"];
-      if (raidProperties !== undefined) addRAIDProperties(device, raidProperties);
-
-      const multipathProperties = dbusDevice["org.opensuse.Agama.Storage1.Multipath"];
-      if (multipathProperties !== undefined) addMultipathProperties(device, multipathProperties);
-
-      const mdProperties = dbusDevice["org.opensuse.Agama.Storage1.MD"];
-      if (mdProperties !== undefined) addMDProperties(device, mdProperties);
-
-      const blockProperties = dbusDevice["org.opensuse.Agama.Storage1.Block"];
-      if (blockProperties !== undefined) addBlockProperties(device, blockProperties);
-
-      const partitionProperties = dbusDevice["org.opensuse.Agama.Storage1.Partition"];
-      if (partitionProperties !== undefined) addPartitionProperties(device, partitionProperties);
-
-      const lvmVgProperties = dbusDevice["org.opensuse.Agama.Storage1.LVM.VolumeGroup"];
-      if (lvmVgProperties !== undefined) addLvmVgProperties(device, lvmVgProperties);
-
-      const lvmLvProperties = dbusDevice["org.opensuse.Agama.Storage1.LVM.LogicalVolume"];
-      if (lvmLvProperties !== undefined) addLvmLvProperties(device);
-
-      const ptableProperties = dbusDevice["org.opensuse.Agama.Storage1.PartitionTable"];
-      if (ptableProperties !== undefined) addPtableProperties(device, ptableProperties);
-
-      const filesystemProperties = dbusDevice["org.opensuse.Agama.Storage1.Filesystem"];
-      if (filesystemProperties !== undefined) addFilesystemProperties(device, filesystemProperties);
-
-      const componentProperties = dbusDevice["org.opensuse.Agama.Storage1.Component"];
-      if (componentProperties !== undefined) addComponentProperties(device, componentProperties);
-
-      return device;
-    };
-
-    const managedObjects = await this.client.call(
-      STORAGE_OBJECT,
-      "org.freedesktop.DBus.ObjectManager",
-      "GetManagedObjects",
-      null
-    );
-
-    const dbusObjects = managedObjects.shift();
-    const systemPaths = Object.keys(dbusObjects).filter(k => k.startsWith(this.rootPath));
-
-    return systemPaths.map(p => buildDevice(p, dbusObjects));
+    const response = await this.client.get(`/storage/devices/${this.rootPath}`);
+    if (!response.ok) {
+      console.log("Failed to get storage devices: ", response);
+    }
+    return response.json();
   }
 }
 
@@ -384,19 +237,22 @@ class ProposalManager {
    * @returns {Promise<StorageDevice[]>}
    */
   async getAvailableDevices() {
-    const findDevice = (devices, path) => {
-      const sid = path.split("/").pop();
-      const device = devices.find(d => d.sid === Number(sid));
+    const findDevice = (devices, name) => {
+      const device = devices.find(d => d.device.name === name);
 
-      if (device === undefined) console.log("D-Bus object not found: ", path);
+      if (device === undefined) console.log("Device not found: ", path);
 
       return device;
     };
 
     const systemDevices = await this.system.getDevices();
 
-    const proxy = await this.proxies.proposalCalculator;
-    return proxy.AvailableDevices.map(path => findDevice(systemDevices, path)).filter(d => d);
+    const response = await this.client.get("/storage/proposal/usable_devices");
+    if (!response.ok) {
+      console.log("Failed to get usable devices: ", response);
+    }
+    const usable_devices = await response.json();
+    return usable_devices.map(name => findDevice(systemDevices, name)).filter(d => d);
   }
 
   /**
@@ -1573,8 +1429,8 @@ class StorageBaseClient {
    */
   constructor(client = undefined) {
     this.client = client;
-    this.system = new DevicesManager(this.client, STORAGE_SYSTEM_NAMESPACE);
-    this.staging = new DevicesManager(this.client, STORAGE_STAGING_NAMESPACE);
+    this.system = new DevicesManager(this.client, "system");
+    this.staging = new DevicesManager(this.client, "staging");
     this.proposal = new ProposalManager(this.client, this.system);
     this.iscsi = new ISCSIManager(StorageBaseClient.SERVICE, client);
     this.dasd = new DASDManager(StorageBaseClient.SERVICE, client);

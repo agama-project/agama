@@ -139,7 +139,7 @@ async fn product_params(
     Ok(Json(params))
 }
 
-async fn usable_devices(State(state): State<StorageState<'_>>) -> Result<Json<String>, Error> {
+async fn usable_devices(State(state): State<StorageState<'_>>) -> Result<Json<Vec<String>>, Error> {
     let devices = state.client.available_devices().await?;
     let devices_names = devices.into_iter().map(|d| d.name).collect();
 
