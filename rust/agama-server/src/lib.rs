@@ -1,4 +1,5 @@
 pub mod cert;
+pub mod dbus;
 pub mod error;
 pub mod l10n;
 pub mod manager;
