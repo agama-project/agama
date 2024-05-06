@@ -290,7 +290,7 @@ class ProposalManager {
    * @returns {Promise<Volume>}
    */
   async defaultVolume(mountPath) {
-    const param = encodeURIComponent("mountPath");
+    const param = encodeURIComponent(mountPath);
     const response = await this.client.get(`/storage/product/volume_for?mount_path=${param}`);
     if (!response.ok) {
       console.log("Failed to get product volume: ", response);
