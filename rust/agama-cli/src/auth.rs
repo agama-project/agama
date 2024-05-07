@@ -35,7 +35,7 @@ pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
     }
 }
 
-/// Reads stored agama-live token and returns it
+/// Returns the stored Agama token.
 pub fn agama_token() -> anyhow::Result<String> {
     if let Some(file) = agama_token_file() {
         if let Ok(token) = read_line_from_file(file.as_path()) {
