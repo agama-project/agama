@@ -53,22 +53,10 @@ macro_rules! property_from_dbus {
     };
 }
 
-/// Merges an struct when the values coming from D-Bus.
-///
-/// NOTE: Instead of using a trait, we could follow a different approach by
-/// exporting the struct to a HashMap<String, OwnedValue> (implementing From/Into),
-/// merging both hashes and creating a new struct from the merged values.
-pub trait UpdateFromDBus {
-    /// Updates the struct when the given values.
-    ///
-    /// * `value`: values from D-Bus.
-    fn update_from_dbus(
-        &mut self,
-        value: &HashMap<String, OwnedValue>,
-    ) -> Result<(), zbus::zvariant::Error>;
-}
-
 /// Converts a hash map containing zbus non-owned values to hash map with owned ones.
+///
+/// NOTE: we could follow a different approach like building our own type (e.g.
+/// using the newtype idiom) and offering a better API.
 ///
 /// * `source`: hash map containing non-onwed values ([zbus::zvariant::Value]).
 pub fn to_owned_hash(source: &HashMap<&str, Value<'_>>) -> HashMap<String, OwnedValue> {

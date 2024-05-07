@@ -8,17 +8,13 @@ use std::{
     task::{Context, Poll},
 };
 
-use agama_lib::{
-    dbus::{to_owned_hash, UpdateFromDBus},
-    error::ServiceError,
-};
+use agama_lib::{dbus::to_owned_hash, error::ServiceError};
 use futures_util::{ready, Stream};
 use pin_project::pin_project;
-use tokio::sync::mpsc::unbounded_channel;
-use tokio_stream::{wrappers::UnboundedReceiverStream, StreamExt, StreamMap};
+use tokio_stream::StreamMap;
 use zbus::{
     fdo::{InterfacesAdded, InterfacesRemoved, PropertiesChanged},
-    zvariant::{ObjectPath, OwnedObjectPath, OwnedValue},
+    zvariant::{ObjectPath, OwnedObjectPath},
     MatchRule, Message, MessageStream, MessageType,
 };
 
@@ -200,118 +196,7 @@ impl Stream for DBusObjectChangesStream {
     }
 }
 
-#[derive(Debug, Clone)]
-pub enum ObjectEvent<T> {
-    Added(T),
-    Changed(T),
-    Removed(T),
-}
-
-/// This stream listens for changes in a collection of D-Bus objects and emits
-/// the updated objects.
-///
-/// By implementing a cache, it avoids holding a bunch of proxy objects.
-#[pin_project]
-pub struct ObjectsStream<T> {
-    dbus: zbus::Connection,
-    cache: ObjectsCache<T>,
-    #[pin]
-    inner: UnboundedReceiverStream<DBusObjectChange>,
-}
-
-impl<T> Stream for ObjectsStream<T>
-where
-    T: Default + Clone + UpdateFromDBus,
-{
-    type Item = ObjectEvent<T>;
-
-    fn poll_next(
-        self: std::pin::Pin<&mut Self>,
-        cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Option<Self::Item>> {
-        let mut pinned = self.project();
-        let change = ready!(pinned.inner.as_mut().poll_next(cx));
-
-        match change {
-            Some(change) => match change {
-                DBusObjectChange::Added(path, values) => {
-                    let object = Self::handle_added(pinned.cache, path, values).unwrap();
-                    Poll::Ready(Some(ObjectEvent::Added(object.clone())))
-                }
-                DBusObjectChange::Changed(path, updated) => {
-                    let object = Self::handle_changed(pinned.cache, path, updated).unwrap();
-                    Poll::Ready(Some(ObjectEvent::Changed(object.clone())))
-                }
-                DBusObjectChange::Removed(path) => {
-                    let object = Self::handle_removed(pinned.cache, path).unwrap();
-                    Poll::Ready(Some(ObjectEvent::Removed(object)))
-                }
-            },
-            None => Poll::Ready(None),
-        }
-    }
-}
-
-impl<T> ObjectsStream<T>
-where
-    T: Default + Clone + UpdateFromDBus,
-{
-    /// Creates a new stream.
-    ///
-    /// * `connection`: D-Bus connection to listen on.
-    /// * `manager_path`: D-Bus path of the object implementing the ObjectManager.
-    /// * `namespace`: namespace to watch (corresponds to a "path_namespace" in the MatchRule).
-    /// * `interface`: name of the interface to watch.
-    pub async fn new(
-        dbus: &zbus::Connection,
-        manager_path: &ObjectPath<'_>,
-        namespace: &ObjectPath<'_>,
-        interface: &str,
-    ) -> Result<Self, ServiceError> {
-        let (tx, rx) = unbounded_channel();
-        let mut stream =
-            DBusObjectChangesStream::new(&dbus, manager_path, namespace, interface).await?;
-
-        tokio::spawn(async move {
-            while let Some(change) = stream.next().await {
-                let _ = tx.send(change);
-            }
-        });
-        let rx = UnboundedReceiverStream::new(rx);
-
-        Ok(Self {
-            dbus: dbus.clone(),
-            cache: Default::default(),
-            inner: rx,
-        })
-    }
-
-    fn handle_added(
-        cache: &mut ObjectsCache<T>,
-        path: OwnedObjectPath,
-        values: HashMap<String, OwnedValue>,
-    ) -> Result<&mut T, ServiceError> {
-        let object = cache.find_or_create_device(&path);
-        object.update_from_dbus(&values)?;
-        Ok(object)
-    }
-
-    fn handle_changed(
-        cache: &mut ObjectsCache<T>,
-        path: OwnedObjectPath,
-        values: HashMap<String, OwnedValue>,
-    ) -> Result<&mut T, ServiceError> {
-        let object = cache.find_or_create_device(&path);
-        object.update_from_dbus(&values)?;
-        Ok(object)
-    }
-
-    fn handle_removed(cache: &mut ObjectsCache<T>, path: OwnedObjectPath) -> Option<T> {
-        cache.remove_device(&path)
-    }
-}
-
-struct ObjectsCache<T> {
+pub struct ObjectsCache<T> {
     objects: HashMap<OwnedObjectPath, T>,
 }
 
@@ -319,14 +204,14 @@ impl<T> ObjectsCache<T>
 where
     T: Default,
 {
-    fn find_or_create_device(&mut self, path: &OwnedObjectPath) -> &mut T {
+    pub fn find_or_create(&mut self, path: &OwnedObjectPath) -> &mut T {
         match self.objects.entry(path.clone()) {
             Entry::Vacant(entry) => entry.insert(T::default()),
             Entry::Occupied(entry) => entry.into_mut(),
         }
     }
 
-    fn remove_device(&mut self, path: &OwnedObjectPath) -> Option<T> {
+    pub fn remove(&mut self, path: &OwnedObjectPath) -> Option<T> {
         self.objects.remove(&path)
     }
 }

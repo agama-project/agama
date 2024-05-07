@@ -22,10 +22,9 @@ use axum::{
 };
 use futures_util::Stream;
 use serde::{Deserialize, Serialize};
-use tokio_stream::StreamExt;
-use zbus::zvariant::ObjectPath;
 
-use crate::dbus::{ObjectEvent, ObjectsStream};
+mod stream;
+use stream::ISCSINodeStream;
 
 /// Returns the stream of iSCSI-related events.
 ///
@@ -35,18 +34,7 @@ use crate::dbus::{ObjectEvent, ObjectsStream};
 pub async fn iscsi_stream(
     dbus: &zbus::Connection,
 ) -> Result<impl Stream<Item = Event> + Send, Error> {
-    let stream: ObjectsStream<ISCSINode> = ObjectsStream::new(
-        &dbus,
-        &ObjectPath::from_str_unchecked("/org/opensuse/Agama/Storage1"),
-        &ObjectPath::from_str_unchecked("/org/opensuse/Agama/Storage1/iscsi_nodes"),
-        "org.opensuse.Agama.Storage1.ISCSI.Node",
-    )
-    .await?;
-    let stream = stream.map(|device| match device {
-        ObjectEvent::Added(node) => Event::ISCSINodeAdded { node },
-        ObjectEvent::Removed(node) => Event::ISCSINodeRemoved { node },
-        ObjectEvent::Changed(node) => Event::ISCSINodeChanged { node },
-    });
+    let stream = ISCSINodeStream::new(&dbus).await?;
     Ok(stream)
 }
 
