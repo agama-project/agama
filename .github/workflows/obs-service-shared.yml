@@ -18,8 +18,8 @@ on:
 
 jobs:
   update_service:
-    # do not run in forks
-    if: github.repository == 'openSUSE/agama'
+    # do not run in forks which do not set the OBS_PROJECT variable
+    if: vars.OBS_PROJECT != ''
 
     runs-on: ubuntu-latest
 

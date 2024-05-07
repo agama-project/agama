@@ -16,5 +16,5 @@ jobs:
     secrets: inherit
     with:
       install_packages: obs-service-node_modules
-      project_name: systemsmanagement:Agama:Staging
+      project_name: ${{ vars.OBS_PROJECT }}
       package_name: cockpit-agama

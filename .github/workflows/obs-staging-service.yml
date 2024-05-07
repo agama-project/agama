@@ -16,4 +16,4 @@ jobs:
     # pass all secrets
     secrets: inherit
     with:
-      project_name: systemsmanagement:Agama:Staging
+      project_name: ${{ vars.OBS_PROJECT }}

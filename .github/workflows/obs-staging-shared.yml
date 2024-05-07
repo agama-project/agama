@@ -28,8 +28,8 @@ on:
 
 jobs:
   update_staging_package:
-    # do not run in forks
-    if: github.repository == 'openSUSE/agama'
+    # do not run in forks which do not set the OBS_PROJECT variable
+    if: vars.OBS_PROJECT != ''
 
     runs-on: ubuntu-latest
 
@@ -59,7 +59,7 @@ jobs:
           OBS_USER:     ${{ secrets.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Checkout ${{ inputs.package_name }}
+      - name: Checkout ${{ inputs.project_name }} ${{ inputs.package_name }}
         run: osc co ${{ inputs.project_name }} ${{ inputs.package_name }}
 
       - name: Update service revision
@@ -78,7 +78,7 @@ jobs:
         run: osc diff && osc status
         working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
 
-      - name: Commit ${{ inputs.package_name }}
+      - name: Commit ${{ inputs.package_name }} to ${{ inputs.project_name }}
         run: |-
           osc commit -m "Updated to $(sed -e '/^version:/!d' -e 's/version: *\(.*\)/\1/' agama.obsinfo) ($(sed -e '/^commit:/!d' -e 's/commit: *\(.*\)/\1/' agama.obsinfo))"
         working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}

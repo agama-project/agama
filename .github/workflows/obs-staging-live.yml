@@ -37,7 +37,7 @@ jobs:
           OBS_USER:     ${{ secrets.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Checkout agama-live
+      - name: Checkout ${{ vars.OBS_PROJECT }} agama-live
         run: osc co -o dist ${{ vars.OBS_PROJECT }} agama-live
         working-directory: ./live
 
@@ -53,6 +53,6 @@ jobs:
         run: osc diff && osc status
         working-directory: ./live/dist
 
-      - name: Commit agama-live
+      - name: Commit agama-live to ${{ vars.OBS_PROJECT }}
         run:  osc commit -m "Updated to Agama $GITHUB_SHA"
         working-directory: ./live/dist
