@@ -96,7 +96,7 @@ module.exports = {
     hot: true,
     // additionally watch these files for changes
     watchFiles: ["./src/manifest.json", "./po/*.po"],
-    proxy: {
+    proxy: [
       // TODO: modify it to not depend on cockpit
       // forward the manifests.js request and patch the response with the
       // current Agama manifest from the ./src/manifest.json file
@@ -108,16 +108,18 @@ module.exports = {
       //   selfHandleResponse : true,
       //   onProxyRes: manifests_handler,
       // },
-      "/api/ws": {
+      {
+        context: ["/api/ws"],
         target: agamaServer.replace(/^http/, "ws"),
         ws: true,
         secure: false,
       },
-      "/api": {
+      {
+        context: ["/api"],
         target: agamaServer,
         secure: false,
-      },
-    },
+      }
+    ],
     server: "http",
     // hot replacement does not support wss:// transport when running over https://,
     // as a workaround use sockjs (which uses standard https:// protocol)
