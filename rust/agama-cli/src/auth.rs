@@ -122,7 +122,7 @@ impl Credentials for MissingCredentials {
 fn jwt_file() -> Option<PathBuf> {
     Some(home::home_dir()?.join(DEFAULT_JWT_FILE))
 }
-/// Path to agama-live token file
+/// Path to agama-live token file.
 fn agama_token_file() -> Option<PathBuf> {
     Some(home::home_dir()?.join(DEFAULT_AGAMA_TOKEN_FILE))
 }
