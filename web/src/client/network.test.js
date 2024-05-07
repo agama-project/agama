@@ -25,48 +25,47 @@ import { HTTPClient } from "./http";
 import { NetworkClient } from "./network";
 const ADDRESS = "http://localhost";
 
-
 const mockWiredConnection = {
-  "id": "eth0",
-  "status": "up",
-  "interface": "eth0",
-  "method4": "manual",
-  "method6": "manual",
-  "addresses": ["192.168.122.100/24"],
-  "nameservers": ["192.168.122.1"],
-  "gateway4": "192.168.122.1"
-}
+  id: "eth0",
+  status: "up",
+  interface: "eth0",
+  method4: "manual",
+  method6: "manual",
+  addresses: ["192.168.122.100/24"],
+  nameservers: ["192.168.122.1"],
+  gateway4: "192.168.122.1"
+};
 
 const mockWirelessConnection = {
-  "id": "AgamaNetwork",
-  "method4": "auto",
-  "method6": "auto",
-  "wireless": {
-    "passworkd": "agama.test",
-    "security": "wpa-psk",
-    "ssid": "Agama",
-    "mode": "infrastructure"
+  id: "AgamaNetwork",
+  method4: "auto",
+  method6: "auto",
+  wireless: {
+    passworkd: "agama.test",
+    security: "wpa-psk",
+    ssid: "Agama",
+    mode: "infrastructure"
   },
-  "status": "down"
-}
+  status: "down"
+};
 
 const mockConnection = {
-  "id": "eth0",
-  "status": "up",
-  "interface": "eth0",
-  "method4": "manual",
-  "method6": "manual",
-  "addresses": [{ address: "192.168.122.100", prefix: 24 }],
-  "nameservers": ["192.168.122.1"],
-  "gateway4": "192.168.122.1"
-}
+  id: "eth0",
+  status: "up",
+  interface: "eth0",
+  method4: "manual",
+  method6: "manual",
+  addresses: [{ address: "192.168.122.100", prefix: 24 }],
+  nameservers: ["192.168.122.1"],
+  gateway4: "192.168.122.1"
+};
 
 const mockSettings = {
   hostname: "localhost.localdomain",
   connectivity: true,
   wireless_enabled: true,
   networking_enabled: true
-}
+};
 
 const mockJsonFn = jest.fn();
 
@@ -108,7 +107,6 @@ describe("NetworkClient", () => {
       expect(addresses).toEqual([{ address: "192.168.122.100", prefix: 24 }]);
     });
   });
-
 
   describe("#settings", () => {
     it("returns network general settings", async () => {
