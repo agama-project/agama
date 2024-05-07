@@ -14,7 +14,7 @@ FLAVOR = openSUSE
 # files to copy from src/
 COPY_FILES = $(patsubst $(SRCDIR)/%,$(DESTDIR)/%,$(wildcard $(SRCDIR)/*))
 
-all: $(DESTDIR) $(COPY_FILES) $(DESTDIR)/config-cdroot.tar.xz $(DESTDIR)/root.tar.xz $(DESTDIR)/root-ALP-PXE.tar.xz
+all: $(DESTDIR) $(COPY_FILES) $(DESTDIR)/config-cdroot.tar.xz $(DESTDIR)/root.tar.xz
 
 # clean the destination directory (but keep the .osc directory if it is present)
 clean:
