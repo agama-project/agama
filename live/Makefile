@@ -11,6 +11,10 @@ DESTDIR = ./dist
 # to build a different flavor run "make build FLAVOR=<flavor>"
 FLAVOR = openSUSE
 
+# the default OBS project,
+# to use a different project run "make build OBS_PROJECT=<project>"
+OBS_PROJECT = "systemsmanagement:Agama:Staging"
+
 # files to copy from src/
 COPY_FILES = $(patsubst $(SRCDIR)/%,$(DESTDIR)/%,$(wildcard $(SRCDIR)/*))
 
@@ -48,7 +52,7 @@ $(DESTDIR)/%.tar.xz: % $$(shell find % -type f,l)
 
 # build the ISO locally
 build: $(DESTDIR)
-	if [ ! -e  $(DESTDIR)/.osc ]; then make clean; osc co -o $(DESTDIR) systemsmanagement:Agama:Staging agama-live; fi
+	if [ ! -e  $(DESTDIR)/.osc ]; then make clean; osc co -o $(DESTDIR) $(OBS_PROJECT) agama-live; fi
 	$(MAKE) all
 	(cd $(DESTDIR) && osc build -M $(FLAVOR) images)
 

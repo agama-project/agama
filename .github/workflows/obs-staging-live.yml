@@ -11,8 +11,8 @@ on:
 
 jobs:
   update_staging_package:
-    # do not run in forks
-    if: github.repository_owner == 'openSUSE'
+    # do not run in forks which do not set the OBS_PROJECT variable
+    if: vars.OBS_PROJECT != ''
 
     runs-on: ubuntu-latest
 
@@ -38,7 +38,7 @@ jobs:
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
       - name: Checkout agama-live
-        run: osc co -o dist systemsmanagement:Agama:Staging agama-live
+        run: osc co -o dist ${{ vars.OBS_PROJECT }} agama-live
         working-directory: ./live
 
       - name: Build sources
