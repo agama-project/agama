@@ -1,9 +1,10 @@
 <services>
   <service name="obs_scm" mode="manual">
-    <param name="versionformat">@PARENT_TAG@~@TAG_OFFSET@</param>
+    <param name="versionformat">@PARENT_TAG@+@TAG_OFFSET@</param>
+    <param name="versionrewrite-pattern">v(.*)</param>
     <param name="url">https://github.com/openSUSE/agama.git</param>
     <param name="scm">git</param>
-    <param name="revision">agama</param>
+    <param name="revision">master</param>
     <param name="subdir">playwright</param>
     <param name="without-version">enable</param>
     <param name="extract">package/cockpit-agama-playwright.changes</param>

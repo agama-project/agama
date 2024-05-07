@@ -1,20 +1,14 @@
 <services>
   <service name="obs_scm" mode="manual">
+    <param name="url">https://github.com/openSUSE/agama.git</param>
     <param name="versionformat">@PARENT_TAG@+@TAG_OFFSET@</param>
     <param name="versionrewrite-pattern">v(.*)</param>
-    <param name="url">http://github.com/openSUSE/agama.git</param>
     <param name="scm">git</param>
     <param name="revision">master</param>
-    <param name="subdir">web</param>
+    <param name="subdir">products.d</param>
     <param name="without-version">enable</param>
-    <param name="extract">package-lock.json</param>
-    <param name="extract">package/cockpit-agama.changes</param>
-    <param name="extract">package/cockpit-agama.spec</param>
-  </service>
-  <service name="node_modules" mode="manual">
-    <param name="cpio">node_modules.obscpio</param>
-    <param name="output">node_modules.spec.inc</param>
-    <param name="source-offset">1000</param>
+    <param name="extract">agama-products-opensuse.changes</param>
+    <param name="extract">agama-products-opensuse.spec</param>
   </service>
   <service mode="buildtime" name="tar">
     <param name="obsinfo">agama.obsinfo</param>
