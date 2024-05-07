@@ -15,5 +15,4 @@ jobs:
     # pass all secrets
     secrets: inherit
     with:
-      project_name: ${{ vars.OBS_PROJECT }}
       package_name: agama-products-opensuse

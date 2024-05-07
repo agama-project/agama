@@ -21,11 +21,6 @@ on:
           required: true
           type: string
 
-      project_name:
-        description: OBS project name
-        required: true
-        type: string
-
 jobs:
   update_staging_package:
     # do not run in forks which do not set the OBS_PROJECT variable
@@ -59,8 +54,8 @@ jobs:
           OBS_USER:     ${{ secrets.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Checkout ${{ inputs.project_name }} ${{ inputs.package_name }}
-        run: osc co ${{ inputs.project_name }} ${{ inputs.package_name }}
+      - name: Checkout ${{ vars.OBS_PROJECT }} ${{ inputs.package_name }}
+        run: osc co ${{ vars.OBS_PROJECT }} ${{ inputs.package_name }}
 
       - name: Update service revision
         # only when a tag has been pushed
@@ -68,23 +63,23 @@ jobs:
         run: |-
           echo "Updating revision to ${{ github.ref_name }}"
           sed -i -e 's#<param name="revision">.*</param>#<param name="revision">${{ github.ref_name }}</param>#' _service
-        working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
+        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
 
       - name: Run services
         run: osc service manualrun
-        working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
+        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
 
       - name: Check status
         run: osc diff && osc status
-        working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
+        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
 
-      - name: Commit ${{ inputs.package_name }} to ${{ inputs.project_name }}
+      - name: Commit ${{ inputs.package_name }} to ${{ vars.OBS_PROJECT }}
         run: |-
           osc commit -m "Updated to $(sed -e '/^version:/!d' -e 's/version: *\(.*\)/\1/' agama.obsinfo) ($(sed -e '/^commit:/!d' -e 's/commit: *\(.*\)/\1/' agama.obsinfo))"
-        working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
+        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
 
       - name: Submit the package
         # only when a tag has been pushed
         if: ${{ github.ref_type == 'tag' }}
         run: osc sr --yes -m "Releasing version ${{ github.ref_name }}"
-        working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
+        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}

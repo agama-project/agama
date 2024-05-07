@@ -15,5 +15,3 @@ jobs:
     uses: ./.github/workflows/obs-service-shared.yml
     # pass all secrets
     secrets: inherit
-    with:
-      project_name: ${{ vars.OBS_PROJECT }}

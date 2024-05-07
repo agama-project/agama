@@ -62,14 +62,14 @@ jobs:
           OBS_USER:     ${{ secrets.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Commit the rubygem-agama-yast package to ${{ inputs.project_name }}
+      - name: Commit the rubygem-agama-yast package to ${{ vars.OBS_PROJECT }}
         run: rake osc:commit
         working-directory: ./service
         env:
           # do not build the package with "osc", it takes long time
           # and does not provide much value
           SKIP_OSC_BUILD: 1
-          OBS_PROJECT: ${{ inputs.project_name }}
+          OBS_PROJECT: ${{ vars.OBS_PROJECT }}
 
       - name: Submit the rubygem-agama-yast package
         # only when a tag has been pushed
@@ -78,4 +78,4 @@ jobs:
         run: rake osc:sr:force
         working-directory: ./service
         env:
-          OBS_PROJECT: ${{ inputs.project_name }}
+          OBS_PROJECT: ${{ vars.OBS_PROJECT }}
