@@ -59,7 +59,7 @@ beforeEach(() => {
         onNetworkChange: onNetworkChangeEventFn,
         fromApiDevice: fromApiDeviceFn
       }
-    }
+    };
   });
 });
 

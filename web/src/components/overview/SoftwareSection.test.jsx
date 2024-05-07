@@ -30,12 +30,12 @@ import { SoftwareSection } from "~/components/overview";
 jest.mock("~/client");
 
 const kdePattern = {
-  "name": "kde",
-  "category": "Graphical Environments",
-  "icon": "./pattern-kde",
-  "description": "Packages providing the Plasma desktop environment and applications from KDE.",
-  "summary": "KDE Applications and Plasma Desktop",
-  "order": "1110",
+  name: "kde",
+  category: "Graphical Environments",
+  icon: "./pattern-kde",
+  description: "Packages providing the Plasma desktop environment and applications from KDE.",
+  summary: "KDE Applications and Plasma Desktop",
+  order: "1110",
 };
 
 let getStatusFn = jest.fn().mockResolvedValue(IDLE);

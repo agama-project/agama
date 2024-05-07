@@ -30,31 +30,31 @@ jest.mock("~/client");
 jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const wiredConnection = {
-  "id": "eth0",
-  "status": "up",
-  "iface": "eth0",
-  "method4": "manual",
-  "method6": "manual",
-  "addresses": [{ address: "192.168.122.20", prefix: 24 }],
-  "nameservers": ["192.168.122.1"],
-  "gateway4": "192.168.122.1"
-}
+  id: "eth0",
+  status: "up",
+  iface: "eth0",
+  method4: "manual",
+  method6: "manual",
+  addresses: [{ address: "192.168.122.20", prefix: 24 }],
+  nameservers: ["192.168.122.1"],
+  gateway4: "192.168.122.1"
+};
 
 const wiFiConnection = {
-  "id": "AgamaNetwork",
-  "iface": "wlan0",
-  "method4": "auto",
-  "method6": "auto",
-  "wireless": {
-    "passworkd": "agama.test",
-    "security": "wpa-psk",
-    "ssid": "Agama",
-    "mode": "infrastructure"
+  id: "AgamaNetwork",
+  iface: "wlan0",
+  method4: "auto",
+  method6: "auto",
+  wireless: {
+    passworkd: "agama.test",
+    security: "wpa-psk",
+    ssid: "Agama",
+    mode: "infrastructure"
   },
-  "addresses": [{ address: "192.168.69.200", prefix: 24 }],
-  "nameservers": [],
-  "status": "up"
-}
+  addresses: [{ address: "192.168.69.200", prefix: 24 }],
+  nameservers: [],
+  status: "up"
+};
 
 const ethernetDevice = {
   name: "eth0",
