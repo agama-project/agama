@@ -1,12 +1,8 @@
 use super::settings::{BondSettings, MatchSettings, NetworkConnection, WirelessSettings};
 use super::types::{Device, DeviceState, DeviceType, SSID};
 use crate::error::ServiceError;
-use reqwest::cookie::CookieStore;
-use reqwest::{header, ClientBuilder};
-use reqwest::{Client, Error, Response};
+use reqwest::{Client, Response};
 use serde_json;
-use std::collections::HashMap;
-use tokio_stream::StreamExt;
 
 const API_URL: &str = "http://localhost:3000/api/network";
 

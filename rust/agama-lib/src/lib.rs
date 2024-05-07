@@ -41,9 +41,7 @@ mod store;
 pub use store::Store;
 pub mod questions;
 use crate::error::ServiceError;
-use reqwest::cookie::Jar;
 use reqwest::{header, Client};
-use std::sync::Arc;
 
 const ADDRESS: &str = "unix:path=/run/agama/bus";
 
@@ -52,7 +50,6 @@ pub async fn connection() -> Result<zbus::Connection, ServiceError> {
 }
 
 pub fn http_client(token: String) -> Result<reqwest::Client, ServiceError> {
-    let cookie_store = Arc::new(Jar::default());
     let mut headers = header::HeaderMap::new();
     let value = header::HeaderValue::from_str(format!("Bearer {}", token).as_str())
         .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
@@ -60,8 +57,6 @@ pub fn http_client(token: String) -> Result<reqwest::Client, ServiceError> {
     headers.insert(header::AUTHORIZATION, value);
 
     let client = Client::builder()
-        .cookie_store(true)
-        .cookie_provider(cookie_store.clone())
         .default_headers(headers)
         .build()
         .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
