@@ -21,7 +21,7 @@ impl NetworkClient {
     }
 
     async fn text_for(&self, response: Response) -> Result<String, ServiceError> {
-        let status = response.status().clone();
+        let status = response.status();
         let text = response
             .text()
             .await
@@ -42,7 +42,7 @@ impl NetworkClient {
             .await
             .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
 
-        Ok(self.text_for(response).await?)
+        self.text_for(response).await
     }
 
     /// Returns an array of network devices
@@ -82,7 +82,7 @@ impl NetworkClient {
         let id = connection.id.clone();
         let response = self.connection(id.as_str()).await;
 
-        if let Ok(_) = response {
+        if response.is_ok() {
             let path = format!("{API_URL}/connections/{id}");
             self.client
                 .put(path)

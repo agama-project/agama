@@ -1,7 +1,6 @@
 use clap::{arg, Args, Subcommand};
 
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
-use rpassword::{prompt_password, read_password};
 use std::fs;
 use std::fs::File;
 use std::io;
@@ -124,7 +123,7 @@ fn jwt_file() -> Option<PathBuf> {
 }
 /// Path to agama-live token file.
 fn agama_token_file() -> Option<PathBuf> {
-    Some(home::home_dir()?.join(DEFAULT_AGAMA_TOKEN_FILE))
+    home::home_dir().map(|p| p.join(DEFAULT_AGAMA_TOKEN_FILE))
 }
 
 /// Reads first line from given file
@@ -155,7 +154,7 @@ fn read_line_from_file(path: &Path) -> io::Result<String> {
 /// Asks user to provide a line of input. Displays a prompt.
 fn read_credential(caption: String) -> io::Result<String> {
     let caption = format!("{}: ", caption);
-    let cred = prompt_password(caption.clone()).unwrap();
+    let cred = rpassword::prompt_password(caption.clone()).unwrap();
     if cred.is_empty() {
         return Err(io::Error::new(
             io::ErrorKind::Other,

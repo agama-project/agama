@@ -1,14 +1,17 @@
-use crate::auth;
-use crate::error::CliError;
-use crate::printers::{print, Format};
-use agama_lib::connection;
-use agama_lib::install_settings::{InstallSettings, Scope};
-use agama_lib::Store as SettingsStore;
+use crate::{
+    auth,
+    error::CliError,
+    printers::{print, Format},
+};
+use agama_lib::{
+    connection,
+    install_settings::{InstallSettings, Scope},
+    Store as SettingsStore,
+};
 use agama_settings::{settings::Settings, SettingObject, SettingValue};
 use clap::Subcommand;
 use convert_case::{Case, Casing};
-use std::str::FromStr;
-use std::{collections::HashMap, error::Error, io};
+use std::{collections::HashMap, error::Error, io, str::FromStr};
 
 #[derive(Subcommand, Debug)]
 pub enum ConfigCommands {
@@ -33,56 +36,50 @@ pub enum ConfigAction {
 }
 
 fn token() -> Option<String> {
-    match auth::jwt() {
-        Ok(token) => return Some(token),
-        Err(_) => match auth::agama_token() {
-            Ok(token) => return Some(token),
-            Err(_) => return None,
-        },
-    }
+    auth::jwt().or_else(|_| auth::agama_token()).ok()
 }
 
 pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<()> {
-    if let Some(token) = token() {
-        let client = agama_lib::http_client(token)?;
-        let store = SettingsStore::new(connection().await?, client).await?;
-
-        let command = parse_config_command(subcommand)?;
-        match command {
-            ConfigAction::Set(changes) => {
-                let scopes = changes
-                    .keys()
-                    .filter_map(|k| key_to_scope(k).ok())
-                    .collect();
-                let mut model = store.load(Some(scopes)).await?;
-                for (key, value) in changes {
-                    model.set(&key.to_case(Case::Snake), SettingValue(value))?;
-                }
-                Ok(store.store(&model).await?)
-            }
-            ConfigAction::Show => {
-                let model = store.load(None).await?;
-                print(model, io::stdout(), format)?;
-                Ok(())
-            }
-            ConfigAction::Add(key, values) => {
-                let scope = key_to_scope(&key).unwrap();
-                let mut model = store.load(Some(vec![scope])).await?;
-                model.add(&key.to_case(Case::Snake), SettingObject::from(values))?;
-                Ok(store.store(&model).await?)
-            }
-            ConfigAction::Load(path) => {
-                let contents = std::fs::read_to_string(path)?;
-                let result: InstallSettings = serde_json::from_str(&contents)?;
-                let scopes = result.defined_scopes();
-                let mut model = store.load(Some(scopes)).await?;
-                model.merge(&result);
-                Ok(store.store(&model).await?)
-            }
-        }
-    } else {
+    let Some(token) = token() else {
         println!("You need to login for generating a valid token");
-        Ok(())
+        return Ok(());
+    };
+
+    let client = agama_lib::http_client(token)?;
+    let store = SettingsStore::new(connection().await?, client).await?;
+
+    let command = parse_config_command(subcommand)?;
+    match command {
+        ConfigAction::Set(changes) => {
+            let scopes = changes
+                .keys()
+                .filter_map(|k| key_to_scope(k).ok())
+                .collect();
+            let mut model = store.load(Some(scopes)).await?;
+            for (key, value) in changes {
+                model.set(&key.to_case(Case::Snake), SettingValue(value))?;
+            }
+            Ok(store.store(&model).await?)
+        }
+        ConfigAction::Show => {
+            let model = store.load(None).await?;
+            print(model, io::stdout(), format)?;
+            Ok(())
+        }
+        ConfigAction::Add(key, values) => {
+            let scope = key_to_scope(&key).unwrap();
+            let mut model = store.load(Some(vec![scope])).await?;
+            model.add(&key.to_case(Case::Snake), SettingObject::from(values))?;
+            Ok(store.store(&model).await?)
+        }
+        ConfigAction::Load(path) => {
+            let contents = std::fs::read_to_string(path)?;
+            let result: InstallSettings = serde_json::from_str(&contents)?;
+            let scopes = result.defined_scopes();
+            let mut model = store.load(Some(scopes)).await?;
+            model.merge(&result);
+            Ok(store.store(&model).await?)
+        }
     }
 }
 
