@@ -1431,8 +1431,9 @@ class ISCSIManager {
     const path = this.nodePath(node) + "/login";
     const response = await this.client.post(path, options);
     if (!response.ok) {
-      console.error("Could not login into the iSCSI node", response);
-      return response.json();
+      const reason = await response.json();
+      console.warn("Could not login into the iSCSI node", reason);
+      return reason === "InvalidStartup" ? 1 : 2;
     }
 
     return 0;

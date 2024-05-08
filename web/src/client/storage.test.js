@@ -2374,20 +2374,42 @@ describe("#iscsi", () => {
   });
 
   describe("#login", () => {
-    it("performs an iSCSI login with the given options", async () => {
-      const auth = {
-        username: "test",
-        password: "12345",
-        reverseUsername: "target",
-        reversePassword: "nonsecret",
-        startup: "automatic",
-      };
-      await client.iscsi.login({ id: "1" }, auth);
+    let auth = {
+      username: "test",
+      password: "12345",
+      reverseUsername: "target",
+      reversePassword: "nonsecret",
+      startup: "automatic",
+    };
 
+    it("performs an iSCSI login with the given options", async () => {
+      const result = await client.iscsi.login({ id: "1" }, auth);
+
+      expect(result).toEqual(0);
       expect(mockPostFn).toHaveBeenCalledWith(
         "/storage/iscsi/nodes/1/login",
         auth,
       );
+    });
+
+    it("returns 1 when the startup is invalid", async () => {
+      mockPostFn.mockImplementation(() => (
+        { ok: false, json: mockJsonFn }
+      ));
+      mockJsonFn.mockResolvedValue("InvalidStartup");
+
+      const result = await client.iscsi.login({ id: "1" }, { ...auth, startup: "invalid" });
+      expect(result).toEqual(1);
+    });
+
+    it("returns 2 in case of an error different from an invalid startup value", async () => {
+      mockPostFn.mockImplementation(() => (
+        { ok: false, json: mockJsonFn }
+      ));
+      mockJsonFn.mockResolvedValue("Failed");
+
+      const result = await client.iscsi.login({ id: "1" }, { ...auth, startup: "invalid" });
+      expect(result).toEqual(2);
     });
   });
 
