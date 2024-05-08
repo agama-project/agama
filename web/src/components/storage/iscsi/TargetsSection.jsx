@@ -121,13 +121,16 @@ export default function TargetsSection() {
 
   const submitDiscoverForm = async (data) => {
     const { username, password, reverseUsername, reversePassword } = data;
-    const result = await client.iscsi.discover(data.address, parseInt(data.port), {
-      username, password, reverseUsername, reversePassword
+    const success = await client.iscsi.discover(data.address, parseInt(data.port), {
+      username,
+      password,
+      reverseUsername,
+      reversePassword,
     });
 
-    if (result === 0) closeDiscoverForm();
+    if (success) closeDiscoverForm();
 
-    return result;
+    return success;
   };
 
   const SectionContent = () => {

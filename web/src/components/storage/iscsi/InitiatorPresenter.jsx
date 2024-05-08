@@ -21,10 +21,10 @@
 
 import React, { useEffect, useState } from "react";
 import { Skeleton } from "@patternfly/react-core";
-import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 
 import { _ } from "~/i18n";
-import { RowActions } from '~/components/core';
+import { RowActions } from "~/components/core";
 import { InitiatorForm } from "~/components/storage/iscsi";
 
 export default function InitiatorPresenter({ initiator, client }) {
@@ -46,14 +46,14 @@ export default function InitiatorPresenter({ initiator, client }) {
 
   const initiatorActions = () => {
     const actions = {
-      edit: { title: _("Edit"), onClick: openForm }
+      edit: { title: _("Edit"), onClick: openForm },
     };
 
     return [actions.edit];
   };
 
   const Content = () => {
-    if (isLoading) {
+    if (isLoading || !initiator) {
       return (
         <Tr>
           <Td colSpan={4}>
@@ -92,12 +92,14 @@ export default function InitiatorPresenter({ initiator, client }) {
           <Content />
         </Tbody>
       </Table>
-      { isFormOpen &&
-        <InitiatorForm
-          initiator={initiator}
-          onSubmit={submitForm}
-          onCancel={closeForm}
-        /> }
+      {isFormOpen &&
+        (
+          <InitiatorForm
+            initiator={initiator}
+            onSubmit={submitForm}
+            onCancel={closeForm}
+          />
+        )}
     </>
   );
 }

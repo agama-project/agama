@@ -35,8 +35,7 @@ export default function InitiatorSection() {
   useEffect(() => {
     const loadInitiator = async () => {
       setInitiator(undefined);
-      const name = await cancellablePromise(client.iscsi.getInitiatorName());
-      const ibft = await cancellablePromise(client.iscsi.getInitiatorIbft());
+      const { name, ibft } = await cancellablePromise(client.iscsi.getInitiator());
       setInitiator({ name, ibft, offloadCard: "" });
     };
 
