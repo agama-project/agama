@@ -22,8 +22,38 @@
 // @ts-check
 // cspell:ignore ECKD dasda ddgdcbibhd wwpns
 
+import { HTTPClient } from "./http";
 import DBusClient from "./dbus";
 import { StorageClient } from "./storage";
+
+const mockJsonFn = jest.fn();
+const mockGetFn = jest.fn().mockImplementation(() => {
+  return { ok: true, json: mockJsonFn };
+});
+const mockPostFn = jest.fn().mockImplementation(() => {
+  return { ok: true };
+});
+const mockDeleteFn = jest.fn().mockImplementation(() => {
+  return {
+    ok: true,
+  };
+});
+const mockPatchFn = jest.fn().mockImplementation(() => {
+  return { ok: true };
+});
+
+jest.mock("./http", () => {
+  return {
+    HTTPClient: jest.fn().mockImplementation(() => {
+      return {
+        get: mockGetFn,
+        patch: mockPatchFn,
+        post: mockPostFn,
+        delete: mockDeleteFn,
+      };
+    }),
+  };
+});
 
 /**
  * @typedef {import("~/client/storage").StorageDevice} StorageDevice
@@ -565,54 +595,49 @@ const contexts = {
           Device: { t: "u", v: 2 },
           Text: { t: "s", v: "Mount /dev/sdb1 as root" },
           Subvol: { t: "b", v: false },
-          Delete: { t: "b", v: false }
-        }
-      ]
+          Delete: { t: "b", v: false },
+        },
+      ],
     };
   },
   withAvailableDevices: () => {
     cockpitProxies.proposalCalculator.AvailableDevices = [
       "/org/opensuse/Agama/Storage1/system/59",
-      "/org/opensuse/Agama/Storage1/system/62"
+      "/org/opensuse/Agama/Storage1/system/62",
     ];
   },
   withoutIssues: () => {
     cockpitProxies.issues = {
-      All: []
+      All: [],
     };
   },
   withIssues: () => {
     cockpitProxies.issues = {
-      All: [["Issue 1", "", 1, 1], ["Issue 2", "", 1, 0], ["Issue 3", "", 2, 1]]
+      All: [["Issue 1", "", 1, 1], ["Issue 2", "", 1, 0], ["Issue 3", "", 2, 1]],
     };
   },
-  withoutISCSINodes: () => {
-    cockpitProxies.iscsiNodes = {};
-  },
-  withISCSINodes: () => {
-    cockpitProxies.iscsiNodes = {
-      "/org/opensuse/Agama/Storage1/iscsi_nodes/1": {
-        path: "/org/opensuse/Agama/Storage1/iscsi_nodes/1",
-        Target: "iqn.2023-01.com.example:37dac",
-        Address: "192.168.100.101",
-        Port: 3260,
-        Interface: "default",
-        IBFT: false,
-        Connected: false,
-        Startup: ""
-      },
-      "/org/opensuse/Agama/Storage1/iscsi_nodes/2": {
-        path: "/org/opensuse/Agama/Storage1/iscsi_nodes/2",
-        Target: "iqn.2023-01.com.example:74afb",
-        Address: "192.168.100.102",
-        Port: 3260,
-        Interface: "default",
-        IBFT: true,
-        Connected: true,
-        Startup: "onboot"
-      }
-    };
-  },
+  withISCSINodes: () => [
+    {
+      id: 1,
+      target: "iqn.2023-01.com.example:37dac",
+      address: "192.168.100.101",
+      port: 3260,
+      interface: "default",
+      ibft: false,
+      connected: false,
+      startup: "",
+    },
+    {
+      id: 2,
+      target: "iqn.2023-01.com.example:74afb",
+      address: "192.168.100.102",
+      port: 3260,
+      interface: "default",
+      ibft: true,
+      connected: true,
+      startup: "onboot",
+    },
+  ],
   withoutDASDDevices: () => {
     cockpitProxies.dasdDevices = {};
   },
@@ -2248,40 +2273,41 @@ describe("#zfcp", () => {
 
 describe("#iscsi", () => {
   beforeEach(() => {
-    client = new StorageClient();
+    client = new StorageClient(new HTTPClient(new URL("http://localhost")));
   });
 
-  describe("#getInitiatorName", () => {
+  describe("#getInitiator", () => {
     beforeEach(() => {
-      cockpitProxies.iscsiInitiator = {
-        InitiatorName: "iqn.1996-04.com.suse:01:351e6d6249"
-      };
+      mockJsonFn.mockResolvedValue({
+        name: "iqn.1996-04.com.suse:01:351e6d6249",
+        ibft: false,
+      });
     });
 
-    it("returns the current initiator name", async () => {
-      const initiatorName = await client.iscsi.getInitiatorName();
-      expect(initiatorName).toEqual("iqn.1996-04.com.suse:01:351e6d6249");
+    it("returns the current initiator", async () => {
+      const { name, ibft } = await client.iscsi.getInitiator();
+      expect(name).toEqual("iqn.1996-04.com.suse:01:351e6d6249");
+      expect(ibft).toEqual(false);
     });
   });
 
   describe("#setInitiatorName", () => {
     beforeEach(() => {
       cockpitProxies.iscsiInitiator = {
-        InitiatorName: "iqn.1996-04.com.suse:01:351e6d6249"
+        InitiatorName: "iqn.1996-04.com.suse:01:351e6d6249",
       };
     });
 
     it("sets the given initiator name", async () => {
       await client.iscsi.setInitiatorName("test");
-      const initiatorName = await client.iscsi.getInitiatorName();
-      expect(initiatorName).toEqual("test");
+      expect(mockPatchFn).toHaveBeenCalledWith("/storage/iscsi/initiator", { name: "test" });
     });
   });
 
   describe("#getNodes", () => {
     describe("if there is no exported iSCSI nodes yet", () => {
       beforeEach(() => {
-        contexts.withoutISCSINodes();
+        mockJsonFn.mockResolvedValue([]);
       });
 
       it("returns an empty list", async () => {
@@ -2292,119 +2318,83 @@ describe("#iscsi", () => {
 
     describe("if there are exported iSCSI nodes", () => {
       beforeEach(() => {
-        contexts.withISCSINodes();
+        mockJsonFn.mockResolvedValue(contexts.withISCSINodes());
       });
 
       it("returns a list with the exported iSCSI nodes", async () => {
         const result = await client.iscsi.getNodes();
         expect(result.length).toEqual(2);
         expect(result).toContainEqual({
-          id: "1",
+          id: 1,
           target: "iqn.2023-01.com.example:37dac",
           address: "192.168.100.101",
-          port:  3260,
+          port: 3260,
           interface: "default",
           ibft: false,
           connected: false,
-          startup: ""
+          startup: "",
         });
         expect(result).toContainEqual({
-          id: "2",
+          id: 2,
           target: "iqn.2023-01.com.example:74afb",
           address: "192.168.100.102",
-          port:  3260,
+          port: 3260,
           interface: "default",
           ibft: true,
           connected: true,
-          startup: "onboot"
+          startup: "onboot",
         });
       });
     });
   });
 
   describe("#discover", () => {
-    beforeEach(() => {
-      cockpitProxies.iscsiInitiator = {
-        Discover: jest.fn()
-      };
-    });
-
     it("performs an iSCSI discovery with the given options", async () => {
-      await client.iscsi.discover("192.168.100.101", 3260, {
+      const options = {
         username: "test",
         password: "12345",
         reverseUsername: "target",
-        reversePassword: "nonsecret"
-      });
-
-      expect(cockpitProxies.iscsiInitiator.Discover).toHaveBeenCalledWith("192.168.100.101", 3260, {
-        Username: { t: "s", v: "test" },
-        Password: { t: "s", v: "12345" },
-        ReverseUsername: { t: "s", v: "target" },
-        ReversePassword: { t: "s", v: "nonsecret" }
-      });
+        reversePassword: "nonsecret",
+      };
+      await client.iscsi.discover("192.168.100.101", 3260, options);
+      expect(mockPostFn).toHaveBeenCalledWith(
+        "/storage/iscsi/discover",
+        { address: "192.168.100.101", port: 3260, options },
+      );
     });
   });
 
-  describe("#Delete", () => {
-    beforeEach(() => {
-      cockpitProxies.iscsiInitiator = {
-        Delete: jest.fn()
-      };
-    });
-
+  describe("#delete", () => {
     it("deletes the given iSCSI node", async () => {
       await client.iscsi.delete({ id: "1" });
-      expect(cockpitProxies.iscsiInitiator.Delete).toHaveBeenCalledWith(
-        "/org/opensuse/Agama/Storage1/iscsi_nodes/1"
+      expect(mockDeleteFn).toHaveBeenCalledWith(
+        "/storage/iscsi/nodes/1",
       );
     });
   });
 
   describe("#login", () => {
-    const nodeProxy = {
-      Login: jest.fn()
-    };
-
-    beforeEach(() => {
-      cockpitProxies.iscsiNode = {
-        "/org/opensuse/Agama/Storage1/iscsi_nodes/1": nodeProxy
-      };
-    });
-
     it("performs an iSCSI login with the given options", async () => {
-      await client.iscsi.login({ id: "1" }, {
+      const auth = {
         username: "test",
         password: "12345",
         reverseUsername: "target",
         reversePassword: "nonsecret",
-        startup: "automatic"
-      });
+        startup: "automatic",
+      };
+      await client.iscsi.login({ id: "1" }, auth);
 
-      expect(nodeProxy.Login).toHaveBeenCalledWith({
-        Username: { t: "s", v: "test" },
-        Password: { t: "s", v: "12345" },
-        ReverseUsername: { t: "s", v: "target" },
-        ReversePassword: { t: "s", v: "nonsecret" },
-        Startup: { t: "s", v: "automatic" }
-      });
+      expect(mockPostFn).toHaveBeenCalledWith(
+        "/storage/iscsi/nodes/1/login",
+        auth,
+      );
     });
   });
 
   describe("#logout", () => {
-    const nodeProxy = {
-      Logout: jest.fn()
-    };
-
-    beforeEach(() => {
-      cockpitProxies.iscsiNode = {
-        "/org/opensuse/Agama/Storage1/iscsi_nodes/1": nodeProxy
-      };
-    });
-
     it("performs an iSCSI logout of the given node", async () => {
       await client.iscsi.logout({ id: "1" });
-      expect(nodeProxy.Logout).toHaveBeenCalled();
+      expect(mockPostFn).toHaveBeenCalledWith("/storage/iscsi/nodes/1/logout");
     });
   });
 });
