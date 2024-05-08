@@ -428,7 +428,10 @@ impl TryFrom<zbus::zvariant::Value<'_>> for DeviceSid {
         match value {
             Value::ObjectPath(path) => path.try_into(),
             Value::U32(v) => Ok(v.into()),
-            _ => Err(Self::Error::Message(format!("Cannot convert sid from {}", value)))
+            _ => Err(Self::Error::Message(format!(
+                "Cannot convert sid from {}",
+                value
+            ))),
         }
     }
 }
@@ -438,12 +441,15 @@ impl TryFrom<zbus::zvariant::ObjectPath<'_>> for DeviceSid {
 
     fn try_from(path: zbus::zvariant::ObjectPath) -> Result<Self, Self::Error> {
         if let Some((_, sid_str)) = path.as_str().rsplit_once("/") {
-            let sid: u32 = sid_str
-                .parse()
-                .map_err(|e| Self::Error::Message(format!("Cannot parse sid from {}: {}", path, e)))?;
+            let sid: u32 = sid_str.parse().map_err(|e| {
+                Self::Error::Message(format!("Cannot parse sid from {}: {}", path, e))
+            })?;
             Ok(sid.into())
         } else {
-            Err(Self::Error::Message(format!("Cannot find sid from path {}", path)))
+            Err(Self::Error::Message(format!(
+                "Cannot find sid from path {}",
+                path
+            )))
         }
     }
 }
@@ -528,7 +534,7 @@ pub struct Filesystem {
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct LvmLv {
-    pub volume_group: DeviceSid
+    pub volume_group: DeviceSid,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]

@@ -276,7 +276,8 @@ impl<'a> StorageClient<'a> {
         interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
     ) -> Result<Option<Component>, ServiceError> {
         let interface: OwnedInterfaceName =
-            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Component").into();
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Component")
+                .into();
         let properties = interfaces.get(&interface);
         if let Some(properties) = properties {
             Ok(Some(Component {
@@ -317,7 +318,8 @@ impl<'a> StorageClient<'a> {
         interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
     ) -> Result<Option<Filesystem>, ServiceError> {
         let interface: OwnedInterfaceName =
-            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Filesystem").into();
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Filesystem")
+                .into();
         let properties = interfaces.get(&interface);
         if let Some(properties) = properties {
             Ok(Some(Filesystem {
@@ -335,8 +337,10 @@ impl<'a> StorageClient<'a> {
         &self,
         interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
     ) -> Result<Option<LvmLv>, ServiceError> {
-        let interface: OwnedInterfaceName =
-            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.LVM.LogicalVolume").into();
+        let interface: OwnedInterfaceName = InterfaceName::from_static_str_unchecked(
+            "org.opensuse.Agama.Storage1.LVM.LogicalVolume",
+        )
+        .into();
         let properties = interfaces.get(&interface);
         if let Some(properties) = properties {
             Ok(Some(LvmLv {
@@ -352,7 +356,8 @@ impl<'a> StorageClient<'a> {
         interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
     ) -> Result<Option<LvmVg>, ServiceError> {
         let interface: OwnedInterfaceName =
-            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.LVM.VolumeGroup").into();
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.LVM.VolumeGroup")
+                .into();
         let properties = interfaces.get(&interface);
         if let Some(properties) = properties {
             Ok(Some(LvmVg {
@@ -388,7 +393,8 @@ impl<'a> StorageClient<'a> {
         interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
     ) -> Result<Option<Multipath>, ServiceError> {
         let interface: OwnedInterfaceName =
-            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Multipath").into();
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Multipath")
+                .into();
         let properties = interfaces.get(&interface);
         if let Some(properties) = properties {
             Ok(Some(Multipath {
@@ -404,7 +410,8 @@ impl<'a> StorageClient<'a> {
         interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
     ) -> Result<Option<Partition>, ServiceError> {
         let interface: OwnedInterfaceName =
-            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Partition").into();
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Partition")
+                .into();
         let properties = interfaces.get(&interface);
         if let Some(properties) = properties {
             Ok(Some(Partition {
@@ -421,7 +428,8 @@ impl<'a> StorageClient<'a> {
         interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
     ) -> Result<Option<PartitionTable>, ServiceError> {
         let interface: OwnedInterfaceName =
-            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.PartitionTable").into();
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.PartitionTable")
+                .into();
         let properties = interfaces.get(&interface);
         if let Some(properties) = properties {
             Ok(Some(PartitionTable {
