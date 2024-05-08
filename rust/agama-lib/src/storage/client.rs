@@ -1,8 +1,9 @@
 //! Implements a client to access Agama's storage service.
 
 use super::model::{
-    Action, BlockDevice, Device, DeviceInfo, ProposalSettings, ProposalSettingsPatch,
-    ProposalTarget, StorageDevice, Volume,
+    Action, BlockDevice, Component, Device, DeviceInfo, Drive, Filesystem, LvmLv, LvmVg, Md,
+    Multipath, Partition, PartitionTable, ProposalSettings, ProposalSettingsPatch, ProposalTarget,
+    Raid, StorageDevice, Volume,
 };
 use super::proxies::{DeviceProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
 use super::StorageSettings;
@@ -178,17 +179,17 @@ impl<'a> StorageClient<'a> {
         let interfaces = &object.1;
         Ok(Device {
             device_info: self.build_device_info(object).await?,
-            component: None,
-            drive: None,
+            component: self.build_component(interfaces).await?,
+            drive: self.build_drive(interfaces).await?,
             block_device: self.build_block_device(interfaces).await?,
-            filesystem: None,
-            lvm_lv: None,
-            lvm_vg: None,
-            md: None,
-            multipath: None,
-            partition: None,
-            partition_table: None,
-            raid: None,
+            filesystem: self.build_filesystem(interfaces).await?,
+            lvm_lv: self.build_lvm_lv(interfaces).await?,
+            lvm_vg: self.build_lvm_vg(interfaces).await?,
+            md: self.build_md(interfaces).await?,
+            multipath: self.build_multipath(interfaces).await?,
+            partition: self.build_partition(interfaces).await?,
+            partition_table: self.build_partition_table(interfaces).await?,
+            raid: self.build_raid(interfaces).await?,
         })
     }
 
@@ -264,6 +265,185 @@ impl<'a> StorageClient<'a> {
                 systems: get_property(properties, "Systems")?,
                 udev_ids: get_property(properties, "UdevIds")?,
                 udev_paths: get_property(properties, "UdevPaths")?,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    async fn build_component(
+        &self,
+        interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+    ) -> Result<Option<Component>, ServiceError> {
+        let interface: OwnedInterfaceName =
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Component").into();
+        let properties = interfaces.get(&interface);
+        if let Some(properties) = properties {
+            Ok(Some(Component {
+                component_type: get_property(properties, "Type")?,
+                device_names: get_property(properties, "DeviceNames")?,
+                devices: get_property(properties, "Devices")?,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    async fn build_drive(
+        &self,
+        interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+    ) -> Result<Option<Drive>, ServiceError> {
+        let interface: OwnedInterfaceName =
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Drive").into();
+        let properties = interfaces.get(&interface);
+        if let Some(properties) = properties {
+            Ok(Some(Drive {
+                drive_type: get_property(properties, "Type")?,
+                vendor: get_property(properties, "Vendor")?,
+                model: get_property(properties, "Model")?,
+                bus: get_property(properties, "Bus")?,
+                bus_id: get_property(properties, "BusId")?,
+                driver: get_property(properties, "Driver")?,
+                transport: get_property(properties, "Transport")?,
+                info: get_property(properties, "Info")?,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    async fn build_filesystem(
+        &self,
+        interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+    ) -> Result<Option<Filesystem>, ServiceError> {
+        let interface: OwnedInterfaceName =
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Filesystem").into();
+        let properties = interfaces.get(&interface);
+        if let Some(properties) = properties {
+            Ok(Some(Filesystem {
+                sid: get_property(properties, "SID")?,
+                fs_type: get_property(properties, "Type")?,
+                mount_path: get_property(properties, "MountPath")?,
+                label: get_property(properties, "Label")?,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    async fn build_lvm_lv(
+        &self,
+        interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+    ) -> Result<Option<LvmLv>, ServiceError> {
+        let interface: OwnedInterfaceName =
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.LVM.LogicalVolume").into();
+        let properties = interfaces.get(&interface);
+        if let Some(properties) = properties {
+            Ok(Some(LvmLv {
+                volume_group: get_property(properties, "VolumeGroup")?,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    async fn build_lvm_vg(
+        &self,
+        interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+    ) -> Result<Option<LvmVg>, ServiceError> {
+        let interface: OwnedInterfaceName =
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.LVM.VolumeGroup").into();
+        let properties = interfaces.get(&interface);
+        if let Some(properties) = properties {
+            Ok(Some(LvmVg {
+                size: get_property(properties, "Size")?,
+                physical_volumes: get_property(properties, "PhysicalVolumes")?,
+                logical_volumes: get_property(properties, "LogicalVolumes")?,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    async fn build_md(
+        &self,
+        interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+    ) -> Result<Option<Md>, ServiceError> {
+        let interface: OwnedInterfaceName =
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.MD").into();
+        let properties = interfaces.get(&interface);
+        if let Some(properties) = properties {
+            Ok(Some(Md {
+                uuid: get_property(properties, "UUID")?,
+                level: get_property(properties, "Level")?,
+                devices: get_property(properties, "Devices")?,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    async fn build_multipath(
+        &self,
+        interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+    ) -> Result<Option<Multipath>, ServiceError> {
+        let interface: OwnedInterfaceName =
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Multipath").into();
+        let properties = interfaces.get(&interface);
+        if let Some(properties) = properties {
+            Ok(Some(Multipath {
+                wires: get_property(properties, "Wires")?,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    async fn build_partition(
+        &self,
+        interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+    ) -> Result<Option<Partition>, ServiceError> {
+        let interface: OwnedInterfaceName =
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.Partition").into();
+        let properties = interfaces.get(&interface);
+        if let Some(properties) = properties {
+            Ok(Some(Partition {
+                device: get_property(properties, "Device")?,
+                efi: get_property(properties, "EFI")?,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    async fn build_partition_table(
+        &self,
+        interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+    ) -> Result<Option<PartitionTable>, ServiceError> {
+        let interface: OwnedInterfaceName =
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.PartitionTable").into();
+        let properties = interfaces.get(&interface);
+        if let Some(properties) = properties {
+            Ok(Some(PartitionTable {
+                ptable_type: get_property(properties, "Type")?,
+                partitions: get_property(properties, "Partitions")?,
+                unused_slots: get_property(properties, "UnusedSlots")?,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    async fn build_raid(
+        &self,
+        interfaces: &HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
+    ) -> Result<Option<Raid>, ServiceError> {
+        let interface: OwnedInterfaceName =
+            InterfaceName::from_static_str_unchecked("org.opensuse.Agama.Storage1.RAID").into();
+        let properties = interfaces.get(&interface);
+        if let Some(properties) = properties {
+            Ok(Some(Raid {
+                devices: get_property(properties, "Devices")?,
             }))
         } else {
             Ok(None)

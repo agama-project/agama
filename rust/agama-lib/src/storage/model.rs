@@ -398,7 +398,7 @@ pub struct Device {
     pub filesystem: Option<Filesystem>,
     pub lvm_lv: Option<LvmLv>,
     pub lvm_vg: Option<LvmVg>,
-    pub md: Option<MD>,
+    pub md: Option<Md>,
     pub multipath: Option<Multipath>,
     pub partition: Option<Partition>,
     pub partition_table: Option<PartitionTable>,
@@ -407,9 +407,45 @@ pub struct Device {
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct DeviceInfo {
-    pub sid: u32,
+    pub sid: DeviceSid,
     pub name: String,
     pub description: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct DeviceSid(u32);
+
+impl From<u32> for DeviceSid {
+    fn from(sid: u32) -> Self {
+        DeviceSid(sid)
+    }
+}
+
+impl TryFrom<zbus::zvariant::Value<'_>> for DeviceSid {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::ObjectPath(path) => path.try_into(),
+            Value::U32(v) => Ok(v.into()),
+            _ => Err(Self::Error::Message(format!("Cannot convert sid from {}", value)))
+        }
+    }
+}
+
+impl TryFrom<zbus::zvariant::ObjectPath<'_>> for DeviceSid {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(path: zbus::zvariant::ObjectPath) -> Result<Self, Self::Error> {
+        if let Some((_, sid_str)) = path.as_str().rsplit_once("/") {
+            let sid: u32 = sid_str
+                .parse()
+                .map_err(|e| Self::Error::Message(format!("Cannot parse sid from {}: {}", path, e)))?;
+            Ok(sid.into())
+        } else {
+            Err(Self::Error::Message(format!("Cannot find sid from path {}", path)))
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
@@ -426,31 +462,135 @@ pub struct BlockDevice {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct Component {}
+#[serde(rename_all = "camelCase")]
+pub struct Component {
+    #[serde(rename = "type")]
+    pub component_type: String,
+    pub device_names: Vec<String>,
+    pub devices: Vec<DeviceSid>,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct Drive {}
+#[serde(rename_all = "camelCase")]
+pub struct Drive {
+    #[serde(rename = "type")]
+    pub drive_type: String,
+    pub vendor: String,
+    pub model: String,
+    pub bus: String,
+    pub bus_id: String,
+    pub driver: Vec<String>,
+    pub transport: String,
+    pub info: DriveInfo,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct Filesystem {}
+#[serde(rename_all = "camelCase")]
+pub struct DriveInfo {
+    pub sd_card: bool,
+    #[serde(rename = "dellBOSS")]
+    pub dell_boss: bool,
+}
+
+impl TryFrom<zbus::zvariant::Value<'_>> for DriveInfo {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(object: zbus::zvariant::Value) -> Result<Self, zbus::zvariant::Error> {
+        let hash: HashMap<String, OwnedValue> = object.try_into()?;
+
+        hash.try_into()
+    }
+}
+
+impl TryFrom<HashMap<String, OwnedValue>> for DriveInfo {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(info_hash: HashMap<String, OwnedValue>) -> Result<Self, zbus::zvariant::Error> {
+        let res = DriveInfo {
+            sd_card: get_property(&info_hash, "SDCard")?,
+            dell_boss: get_property(&info_hash, "DellBOSS")?,
+        };
+
+        Ok(res)
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct LvmLv {}
+#[serde(rename_all = "camelCase")]
+pub struct Filesystem {
+    pub sid: DeviceSid,
+    #[serde(rename = "type")]
+    pub fs_type: String,
+    pub mount_path: String,
+    pub label: String,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct LvmVg {}
+#[serde(rename_all = "camelCase")]
+pub struct LvmLv {
+    pub volume_group: DeviceSid
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct MD {}
+#[serde(rename_all = "camelCase")]
+pub struct LvmVg {
+    pub size: u64,
+    pub physical_volumes: Vec<DeviceSid>,
+    pub logical_volumes: Vec<DeviceSid>,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct Multipath {}
+#[serde(rename_all = "camelCase")]
+pub struct Md {
+    pub uuid: String,
+    pub level: String,
+    pub devices: Vec<DeviceSid>,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct Partition {}
+#[serde(rename_all = "camelCase")]
+pub struct Multipath {
+    pub wires: Vec<DeviceSid>,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct PartitionTable {}
+#[serde(rename_all = "camelCase")]
+pub struct Partition {
+    pub device: DeviceSid,
+    pub efi: bool,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct Raid {}
+#[serde(rename_all = "camelCase")]
+pub struct PartitionTable {
+    #[serde(rename = "type")]
+    pub ptable_type: String,
+    pub partitions: Vec<DeviceSid>,
+    pub unused_slots: Vec<UnusedSlot>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct UnusedSlot {
+    pub start: u64,
+    pub size: u64,
+}
+
+impl TryFrom<zbus::zvariant::Value<'_>> for UnusedSlot {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        let slot_info: (u64, u64) = value.try_into()?;
+
+        Ok(UnusedSlot {
+            start: slot_info.0,
+            size: slot_info.1,
+        })
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Raid {
+    pub devices: Vec<DeviceSid>,
+}
