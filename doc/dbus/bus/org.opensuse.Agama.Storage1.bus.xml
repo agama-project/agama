@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <node name="/org/opensuse/Agama/Storage1">
+  <node name="iscsi_nodes" />
   <node name="zfcp_controllers" />
   <node name="zfcp_disks" />
   <interface name="org.freedesktop.DBus.Introspectable">
