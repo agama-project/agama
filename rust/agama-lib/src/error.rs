@@ -18,6 +18,7 @@ pub enum ServiceError {
     // specific error will be printed too
     #[error("Error: {0}")]
     Anyhow(#[from] anyhow::Error),
+    // FIXME: It is too generic and starting to looks like an Anyhow error
     #[error("Network client error: '{0}'")]
     NetworkClientError(String),
     #[error("Wrong user parameters: '{0:?}'")]

@@ -161,7 +161,7 @@ async fn devices(
 }
 
 #[utoipa::path(get, path = "/network/connections/:id", responses(
-  (status = 200, description = "Get connection given by its id", body = NetworkConnection)
+  (status = 200, description = "Get connection given by its ID", body = NetworkConnection)
 ))]
 async fn connection(
     State(state): State<NetworkServiceState>,

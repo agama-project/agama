@@ -31,6 +31,7 @@ use tracing_subscriber::prelude::*;
 use utoipa::OpenApi;
 
 const DEFAULT_WEB_UI_DIR: &str = "/usr/share/agama/web_ui";
+const TOKEN_FILE: &str = "/run/agama/token";
 
 #[derive(Subcommand, Debug)]
 enum Commands {
@@ -95,8 +96,6 @@ struct ServeArgs {
     // Directory containing the web UI code.
     #[arg(long)]
     web_ui_dir: Option<PathBuf>,
-    #[arg(long)]
-    generate_token: Option<PathBuf>,
 }
 
 impl ServeArgs {
@@ -301,9 +300,7 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
 
     let config = web::ServiceConfig::load()?;
 
-    if let Some(token_file) = args.generate_token.clone() {
-        write_token(&token_file, &config.jwt_secret).context("could not create the token file")?;
-    }
+    write_token(TOKEN_FILE, &config.jwt_secret).context("could not create the token file")?;
 
     let dbus = connection_to(&args.dbus_address).await?;
     let web_ui_dir = args.web_ui_dir.clone().unwrap_or(find_web_ui_dir());
@@ -351,7 +348,7 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
     }
 }
 
-fn write_token(path: &PathBuf, secret: &str) -> io::Result<()> {
+fn write_token(path: &str, secret: &str) -> io::Result<()> {
     let token = generate_token(secret);
     let mut file = fs::OpenOptions::new()
         .create(true)
