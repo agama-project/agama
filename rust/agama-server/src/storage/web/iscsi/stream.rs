@@ -1,7 +1,10 @@
 use std::{collections::HashMap, task::Poll};
 
 use agama_lib::{
-    dbus::get_optional_property, error::ServiceError, property_from_dbus, storage::ISCSINode,
+    dbus::{extract_id_from_path, get_optional_property},
+    error::ServiceError,
+    property_from_dbus,
+    storage::{ISCSIClient, ISCSINode},
 };
 use futures_util::{ready, Stream};
 use pin_project::pin_project;
@@ -42,11 +45,14 @@ impl ISCSINodeStream {
     ///
     /// * `connection`: D-Bus connection to listen on.
     pub async fn new(dbus: &zbus::Connection) -> Result<Self, ServiceError> {
+        const MANAGER_PATH: &str = "/org/opensuse/Agama/Storage1";
+        const NAMESPACE: &str = "/org/opensuse/Agama/Storage1/iscsi_nodes";
+
         let (tx, rx) = unbounded_channel();
         let mut stream = DBusObjectChangesStream::new(
             &dbus,
-            &ObjectPath::from_str_unchecked("/org/opensuse/Agama/Storage1"),
-            &ObjectPath::from_str_unchecked("/org/opensuse/Agama/Storage1/iscsi_nodes"),
+            &ObjectPath::from_str_unchecked(MANAGER_PATH),
+            &ObjectPath::from_str_unchecked(NAMESPACE),
             "org.opensuse.Agama.Storage1.ISCSI.Node",
         )
         .await?;
@@ -58,9 +64,17 @@ impl ISCSINodeStream {
         });
         let rx = UnboundedReceiverStream::new(rx);
 
+        //  Populate the objects cache
+        let mut cache: ObjectsCache<ISCSINode> = Default::default();
+        let client = ISCSIClient::new(dbus.clone()).await?;
+        for node in client.get_nodes().await? {
+            let path = ObjectPath::from_string_unchecked(format!("{}/{}", NAMESPACE, node.id));
+            cache.add(path.into(), node);
+        }
+
         Ok(Self {
             dbus: dbus.clone(),
-            cache: Default::default(),
+            cache,
             inner: rx,
         })
     }

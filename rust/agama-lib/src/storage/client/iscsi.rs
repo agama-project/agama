@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use zbus::{
     fdo::ObjectManagerProxy,
-    zvariant::{self, ObjectPath, OwnedObjectPath, OwnedValue, Value},
+    zvariant::{self, ObjectPath, OwnedValue, Value},
     Connection,
 };
 

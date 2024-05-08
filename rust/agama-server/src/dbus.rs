@@ -204,6 +204,10 @@ impl<T> ObjectsCache<T>
 where
     T: Default,
 {
+    pub fn add(&mut self, path: OwnedObjectPath, object: T) {
+        _ = self.objects.insert(path, object)
+    }
+
     pub fn find_or_create(&mut self, path: &OwnedObjectPath) -> &mut T {
         match self.objects.entry(path.clone()) {
             Entry::Vacant(entry) => entry.insert(T::default()),
