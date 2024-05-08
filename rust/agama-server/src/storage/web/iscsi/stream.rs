@@ -71,14 +71,11 @@ impl ISCSINodeStream {
         values: &HashMap<String, OwnedValue>,
     ) -> Result<&'a ISCSINode, ServiceError> {
         let node = cache.find_or_create(&path);
-        if let Some((_, id)) = path.as_str().rsplit_once("/") {
-            node.id = id.parse().unwrap();
-        }
+        node.id = extract_id_from_path(&path)?;
         property_from_dbus!(node, target, "Target", values, str);
         property_from_dbus!(node, address, "Address", values, str);
         property_from_dbus!(node, interface, "Interface", values, str);
         property_from_dbus!(node, startup, "Startup", values, str);
-        property_from_dbus!(node, id, "Id", values, u32);
         property_from_dbus!(node, port, "Port", values, u32);
         property_from_dbus!(node, connected, "Connected", values, bool);
         Ok(node)

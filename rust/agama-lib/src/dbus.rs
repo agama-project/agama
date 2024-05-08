@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use zbus::zvariant::{self, OwnedValue, Value};
+use zbus::zvariant::{self, OwnedObjectPath, OwnedValue, Value};
 
 /// Nested hash to send to D-Bus.
 pub type NestedHash<'a> = HashMap<&'a str, HashMap<&'a str, zvariant::Value<'a>>>;
@@ -67,6 +67,18 @@ pub fn to_owned_hash(source: &HashMap<&str, Value<'_>>) -> HashMap<String, Owned
         }
     }
     owned
+}
+
+/// Extracts the object ID from the path.
+///
+/// TODO: should we merge this feature with the "DeviceSid"?
+pub fn extract_id_from_path(path: &OwnedObjectPath) -> Result<u32, zvariant::Error> {
+    path.as_str()
+        .rsplit_once("/")
+        .and_then(|(_, id)| id.parse::<u32>().ok())
+        .ok_or_else(|| {
+            zvariant::Error::Message(format!("Could not extract the ID from {}", path.as_str()))
+        })
 }
 
 #[cfg(test)]

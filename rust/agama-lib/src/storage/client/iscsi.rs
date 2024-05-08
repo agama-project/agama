@@ -2,7 +2,7 @@ use core::fmt;
 use std::collections::HashMap;
 
 use crate::{
-    dbus::get_property,
+    dbus::{extract_id_from_path, get_property},
     error::ServiceError,
     storage::proxies::{InitiatorProxy, NodeProxy},
 };
@@ -185,7 +185,7 @@ impl<'a> ISCSIClient<'a> {
         let mut nodes: Vec<ISCSINode> = vec![];
         for (path, ifaces) in managed_objects {
             if let Some(properties) = ifaces.get("org.opensuse.Agama.Storage1.ISCSI.Node") {
-                let id = extract_node_id(&path).unwrap_or(0);
+                let id = extract_id_from_path(&path).unwrap_or(0);
                 match ISCSINode::try_from(properties) {
                     Ok(mut node) => {
                         node.id = id;
@@ -251,11 +251,6 @@ impl<'a> ISCSIClient<'a> {
             .await?;
         Ok(proxy)
     }
-}
-
-fn extract_node_id(path: &OwnedObjectPath) -> Option<u32> {
-    let id = path.split("/").nth(6)?;
-    id.parse::<u32>().ok()
 }
 
 #[derive(Serialize)]
