@@ -24,7 +24,7 @@ use axum::{
 use serde::Serialize;
 use tokio_stream::{Stream, StreamExt};
 
-mod iscsi;
+pub mod iscsi;
 
 use crate::{
     error::Error,

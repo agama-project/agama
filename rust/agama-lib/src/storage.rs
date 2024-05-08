@@ -7,7 +7,7 @@ mod settings;
 mod store;
 
 pub use client::{
-    iscsi::{ISCSIClient, ISCSINode},
+    iscsi::{ISCSIAuth, ISCSIClient, ISCSIInitiator, ISCSINode},
     StorageClient,
 };
 pub use settings::StorageSettings;

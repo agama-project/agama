@@ -14,13 +14,13 @@ use zbus::{
     Connection,
 };
 
-#[derive(Serialize)]
-pub struct Initiator {
+#[derive(Serialize, utoipa::ToSchema)]
+pub struct ISCSIInitiator {
     name: String,
     ibft: bool,
 }
 
-#[derive(Clone, Debug, Default, Serialize)]
+#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
 /// ISCSI node
 pub struct ISCSINode {
     /// Artificial ID to match it against the D-Bus backend.
@@ -58,11 +58,15 @@ impl TryFrom<&HashMap<String, OwnedValue>> for ISCSINode {
     }
 }
 
-#[derive(Clone, Default, Serialize, Deserialize)]
+#[derive(Clone, Default, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct ISCSIAuth {
+    /// Username for authentication by target.
     pub username: Option<String>,
+    /// Password for authentication by target.
     pub password: Option<String>,
+    /// Username for authentication by initiator.
     pub reverse_username: Option<String>,
+    /// Password for authentication by initiator.
     pub reverse_password: Option<String>,
 }
 
@@ -165,10 +169,10 @@ impl<'a> ISCSIClient<'a> {
     }
 
     /// Returns the initiator data.
-    pub async fn get_initiator(&self) -> Result<Initiator, ServiceError> {
+    pub async fn get_initiator(&self) -> Result<ISCSIInitiator, ServiceError> {
         let ibft = self.initiator_proxy.ibft().await?;
         let name = self.initiator_proxy.initiator_name().await?;
-        Ok(Initiator { name, ibft })
+        Ok(ISCSIInitiator { name, ibft })
     }
 
     /// Sets the initiator name.
@@ -253,10 +257,13 @@ impl<'a> ISCSIClient<'a> {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, utoipa::ToSchema)]
 pub enum LoginResult {
+    /// Successful login.
     Success = 0,
+    /// Invalid startup value.
     InvalidStartup = 1,
+    /// Failed login.
     Failed = 2,
 }
 

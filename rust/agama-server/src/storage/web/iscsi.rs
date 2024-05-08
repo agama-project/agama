@@ -13,8 +13,7 @@ use agama_lib::{
     dbus::{get_optional_property, to_owned_hash},
     error::ServiceError,
     storage::{
-        client::iscsi::{ISCSIAuth, ISCSINode, Initiator, LoginResult},
-        proxies::InitiatorProxy,
+        client::iscsi::{ISCSIAuth, ISCSIInitiator, ISCSINode, LoginResult},
         ISCSIClient,
     },
 };
@@ -25,7 +24,7 @@ use axum::{
     routing::{delete, get, post},
     Json, Router,
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 mod stream;
 use stream::ISCSINodeStream;
@@ -101,16 +100,39 @@ pub async fn iscsi_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Serv
     Ok(router)
 }
 
-async fn initiator(State(state): State<ISCSIState<'_>>) -> Result<Json<Initiator>, Error> {
+/// Returns the iSCSI initiator properties.
+///
+/// The iSCSI properties include the name and whether iBFT is enabled.
+#[utoipa::path(
+    get,
+    path="/initiator",
+    context_path="/api/storage/iscsi",
+    responses(
+        (status = OK, description = "iSCSI initiator properties.", body = ISCSIInitiator),
+        (status = BAD_REQUEST, description = "It could not read the iSCSI initiator properties."),
+    )
+)]
+async fn initiator(State(state): State<ISCSIState<'_>>) -> Result<Json<ISCSIInitiator>, Error> {
     let initiator = state.client.get_initiator().await?;
     Ok(Json(initiator))
 }
 
-#[derive(Deserialize)]
-struct InitiatorParams {
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct InitiatorParams {
+    /// iSCSI initiator name.
     name: String,
 }
 
+/// Updates the iSCSI initiator properties.
+#[utoipa::path(
+    patch,
+    path="/initiator",
+    context_path="/api/storage/iscsi",
+    responses(
+        (status = NO_CONTENT, description = "The iSCSI initiator properties were succesfully updated."),
+        (status = BAD_REQUEST, description = "It could not update the iSCSI initiator properties."),
+    )
+)]
 async fn update_initiator(
     State(state): State<ISCSIState<'_>>,
     Json(params): Json<InitiatorParams>,
@@ -119,39 +141,42 @@ async fn update_initiator(
     Ok(StatusCode::NO_CONTENT)
 }
 
+/// Returns the list of known iSCSI nodes.
+#[utoipa::path(
+    get,
+    path="/nodes",
+    context_path="/api/storage/iscsi",
+    responses(
+    (status = OK, description = "List of iSCSI nodes.", body = Vec<ISCSINode>),
+    (status = BAD_REQUEST, description = "It was not possible to get the list of iSCSI nodes."),
+  )
+)]
 async fn nodes(State(state): State<ISCSIState<'_>>) -> Result<Json<Vec<ISCSINode>>, Error> {
     let nodes = state.client.get_nodes().await?;
     Ok(Json(nodes))
 }
 
-#[derive(Deserialize)]
-struct DiscoverParams {
-    address: String,
-    port: u32,
-    #[serde(default)]
-    options: ISCSIAuth,
-}
-
-async fn discover(
-    State(state): State<ISCSIState<'_>>,
-    Json(params): Json<DiscoverParams>,
-) -> Result<impl IntoResponse, Error> {
-    let result = state
-        .client
-        .discover(&params.address, params.port, params.options)
-        .await?;
-    if result {
-        Ok(StatusCode::NO_CONTENT)
-    } else {
-        Ok(StatusCode::BAD_REQUEST)
-    }
-}
-
-#[derive(Deserialize)]
-struct NodeParams {
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct NodeParams {
+    /// Startup value.
     startup: String,
 }
 
+/// Updates iSCSI node properties.
+///
+/// At this point, only the startup option can be changed.
+#[utoipa::path(
+    put,
+    path="/nodes/{id}",
+    context_path="/api/storage/iscsi",
+    params(
+        ("id" = u32, Path, description = "iSCSI artificial ID.")
+    ),
+    responses(
+        (status = NO_CONTENT, description = "The iSCSI node was updated.", body = NodeParams),
+        (status = BAD_REQUEST, description = "Could not update the iSCSI node."),
+    )
+)]
 async fn update_node(
     State(state): State<ISCSIState<'_>>,
     Path(id): Path<u32>,
@@ -161,6 +186,19 @@ async fn update_node(
     Ok(StatusCode::NO_CONTENT)
 }
 
+/// Deletes the iSCSI node.
+#[utoipa::path(
+    delete,
+    path="/nodes/{id}",
+    context_path="/api/storage/iscsi",
+    params(
+        ("id" = u32, Path, description = "iSCSI artificial ID.")
+    ),
+    responses(
+        (status = NO_CONTENT, description = "The iSCSI node was deleted."),
+        (status = BAD_REQUEST, description = "Could not delete the iSCSI node."),
+    )
+)]
 async fn delete_node(
     State(state): State<ISCSIState<'_>>,
     Path(id): Path<u32>,
@@ -169,18 +207,29 @@ async fn delete_node(
     Ok(StatusCode::NO_CONTENT)
 }
 
-#[derive(Deserialize)]
-struct LoginParams {
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct LoginParams {
+    /// Authentication options.
     #[serde(flatten)]
     auth: ISCSIAuth,
+    /// Startup value.
     startup: String,
 }
 
-#[derive(Serialize)]
-struct LoginError {
-    code: LoginResult,
-}
-
+#[utoipa::path(
+    post,
+    path="/nodes/{id}/login",
+    context_path="/api/storage/iscsi",
+    params(
+        ("id" = u32, Path, description = "iSCSI artificial ID.")
+    ),
+    responses(
+        (status = NO_CONTENT, description = "The login request was successful."),
+        (status = BAD_REQUEST, description = "Could not reach the iSCSI server."),
+        (status = UNPROCESSABLE_ENTITY, description = "The login request failed.",
+             body = LoginResult),
+    )
+)]
 async fn login_node(
     State(state): State<ISCSIState<'_>>,
     Path(id): Path<u32>,
@@ -196,6 +245,19 @@ async fn login_node(
     }
 }
 
+#[utoipa::path(
+    post,
+    path="/nodes/{id}/logout",
+    context_path="/api/storage/iscsi",
+    params(
+        ("id" = u32, Path, description = "iSCSI artificial ID.")
+    ),
+    responses(
+        (status = 204, description = "The logout request was successful."),
+        (status = 400, description = "Could not reach the iSCSI server."),
+        (status = 422, description = "The logout request failed."),
+    )
+)]
 async fn logout_node(
     State(state): State<ISCSIState<'_>>,
     Path(id): Path<u32>,
@@ -204,5 +266,41 @@ async fn logout_node(
         Ok(StatusCode::NO_CONTENT)
     } else {
         Ok(StatusCode::UNPROCESSABLE_ENTITY)
+    }
+}
+
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct DiscoverParams {
+    /// iSCSI server address.
+    address: String,
+    /// iSCSI service port.
+    port: u32,
+    /// Authentication options.
+    #[serde(default)]
+    options: ISCSIAuth,
+}
+
+/// Performs an iSCSI discovery.
+#[utoipa::path(
+    post,
+    path="/discover",
+    context_path="/api/storage/iscsi",
+    responses(
+        (status = 204, description = "The iSCSI discovery request was successful."),
+        (status = 400, description = "The iSCSI discovery request failed."),
+    )
+)]
+async fn discover(
+    State(state): State<ISCSIState<'_>>,
+    Json(params): Json<DiscoverParams>,
+) -> Result<impl IntoResponse, Error> {
+    let result = state
+        .client
+        .discover(&params.address, params.port, params.options)
+        .await?;
+    if result {
+        Ok(StatusCode::NO_CONTENT)
+    } else {
+        Ok(StatusCode::BAD_REQUEST)
     }
 }
