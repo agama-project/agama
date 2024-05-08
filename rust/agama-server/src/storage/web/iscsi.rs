@@ -34,7 +34,10 @@ use zbus::fdo::{PropertiesChanged, PropertiesProxy};
 
 /// Returns the stream of iSCSI-related events.
 ///
-/// It relies on [ObjectsStream].
+/// The stream combines the following events:
+///
+/// * Changes on the iSCSI nodes collection.
+/// * Changes to the initiator (name or ibft).
 ///
 /// * `dbus`: D-Bus connection to use.
 pub async fn iscsi_stream(dbus: &zbus::Connection) -> Result<EventStreams, Error> {
@@ -56,18 +59,22 @@ async fn initiator_stream(
     let stream = proxy
         .receive_properties_changed()
         .await?
-        .filter_map(|change| {
-            let Ok(args) = change.args() else {
-                return None;
-            };
-
-            let changes = to_owned_hash(args.changed_properties());
-            let name = get_optional_property(&changes, "InitiatorName").unwrap();
-            let ibft = get_optional_property(&changes, "IBFT").unwrap();
-
-            Some(Event::ISCSIInitiatorChanged { ibft, name })
+        .filter_map(|change| match handle_initiator_change(change) {
+            Ok(event) => Some(event),
+            Err(error) => {
+                log::warn!("Could not read the initiator change: {}", error);
+                None
+            }
         });
     Ok(stream)
+}
+
+fn handle_initiator_change(change: PropertiesChanged) -> Result<Event, ServiceError> {
+    let args = change.args()?;
+    let changes = to_owned_hash(args.changed_properties());
+    let name = get_optional_property(&changes, "InitiatorName")?;
+    let ibft = get_optional_property(&changes, "IBFT")?;
+    Ok(Event::ISCSIInitiatorChanged { ibft, name })
 }
 
 #[derive(Clone)]
