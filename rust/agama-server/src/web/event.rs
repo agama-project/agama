@@ -75,6 +75,10 @@ pub enum Event {
     ISCSINodeRemoved {
         node: ISCSINode,
     },
+    ISCSIInitiatorChanged {
+        name: Option<String>,
+        ibft: Option<bool>,
+    },
 }
 
 pub type EventsSender = Sender<Event>;

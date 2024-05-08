@@ -36,13 +36,13 @@ use crate::{
 };
 
 pub async fn storage_streams(dbus: zbus::Connection) -> Result<EventStreams, Error> {
-    let result: EventStreams = vec![
-        (
-            "devices_dirty",
-            Box::pin(devices_dirty_stream(dbus.clone()).await?),
-        ),
-        ("iscsi_stream", Box::pin(iscsi_stream(&dbus).await?)),
-    ];
+    let mut result: EventStreams = vec![(
+        "devices_dirty",
+        Box::pin(devices_dirty_stream(dbus.clone()).await?),
+    )];
+    let mut iscsi = iscsi_stream(&dbus).await?;
+
+    result.append(&mut iscsi);
     Ok(result)
 }
 

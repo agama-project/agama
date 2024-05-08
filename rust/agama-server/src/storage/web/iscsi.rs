@@ -5,11 +5,16 @@
 //! * `iscsi_service` which returns the Axum service.
 //! * `iscsi_stream` which offers an stream that emits the iSCSI-related events coming from D-Bus.
 
-use crate::{error::Error, web::Event};
+use crate::{
+    error::Error,
+    web::{common::EventStreams, Event},
+};
 use agama_lib::{
+    dbus::{get_optional_property, to_owned_hash},
     error::ServiceError,
     storage::{
         client::iscsi::{ISCSIAuth, ISCSINode, Initiator, LoginResult},
+        proxies::InitiatorProxy,
         ISCSIClient,
     },
 };
@@ -20,21 +25,48 @@ use axum::{
     routing::{delete, get, post},
     Json, Router,
 };
-use futures_util::Stream;
 use serde::{Deserialize, Serialize};
 
 mod stream;
 use stream::ISCSINodeStream;
+use tokio_stream::{Stream, StreamExt};
+use zbus::fdo::{PropertiesChanged, PropertiesProxy};
 
 /// Returns the stream of iSCSI-related events.
 ///
 /// It relies on [ObjectsStream].
 ///
 /// * `dbus`: D-Bus connection to use.
-pub async fn iscsi_stream(
+pub async fn iscsi_stream(dbus: &zbus::Connection) -> Result<EventStreams, Error> {
+    let stream: EventStreams = vec![
+        ("iscsi_nodes", Box::pin(ISCSINodeStream::new(dbus).await?)),
+        ("initiator", Box::pin(initiator_stream(dbus).await?)),
+    ];
+    Ok(stream)
+}
+
+async fn initiator_stream(
     dbus: &zbus::Connection,
 ) -> Result<impl Stream<Item = Event> + Send, Error> {
-    let stream = ISCSINodeStream::new(&dbus).await?;
+    let proxy = PropertiesProxy::builder(dbus)
+        .destination("org.opensuse.Agama.Storage1")?
+        .path("/org/opensuse/Agama/Storage1")?
+        .build()
+        .await?;
+    let stream = proxy
+        .receive_properties_changed()
+        .await?
+        .filter_map(|change| {
+            let Ok(args) = change.args() else {
+                return None;
+            };
+
+            let changes = to_owned_hash(args.changed_properties());
+            let name = get_optional_property(&changes, "InitiatorName").unwrap();
+            let ibft = get_optional_property(&changes, "IBFT").unwrap();
+
+            Some(Event::ISCSIInitiatorChanged { ibft, name })
+        });
     Ok(stream)
 }
 
