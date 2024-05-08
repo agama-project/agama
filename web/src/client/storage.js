@@ -244,11 +244,123 @@ class DevicesManager {
    * @returns {Promise<StorageDevice[]>}
    */
   async getDevices() {
+    const buildDevice = (jsonDevice, jsonDevices) => {
+      /** @type {(sids: String[], jsonDevices: object[]) => StorageDevice[]} */
+      const buildCollection = (sids, jsonDevices) => {
+        if (sids === null || sids === undefined) return [];
+
+        return sids.map(sid => buildDevice(jsonDevices.find(dev => dev.deviceInfo?.sid === sid), jsonDevices));
+      };
+
+      /** @type {(device: StorageDevice, info: object) => void} */
+      const addDriveInfo = (device, info) => {
+        device.isDrive = true;
+        Object.assign(device, info);
+      };
+
+      /** @type {(device: StorageDevice, info: object) => void} */
+      const addRaidInfo = (device, info) => {
+        device.devices = buildCollection(info.devices, jsonDevices);
+      };
+
+      /** @type {(device: StorageDevice, info: object) => void} */
+      const addMultipathInfo = (device, info) => {
+        device.wires = buildCollection(info.wires, jsonDevices);
+      };
+
+      /** @type {(device: StorageDevice, info: object) => void} */
+      const addMDInfo = (device, info) => {
+        device.type = "md";
+        device.level = info.level;
+        device.uuid = info.UUID;
+        addRaidInfo(device, info);
+      };
+
+      /** @type {(device: StorageDevice, info: object) => void} */
+      const addPartitionInfo = (device, info) => {
+        device.type = "partition";
+        device.isEFI = info.EFI;
+      };
+
+      /** @type {(device: StorageDevice, info: object) => void} */
+      const addVgInfo = (device, info) => {
+        device.type = "lvmVg";
+        device.size = info.size;
+        device.physicalVolumes = buildCollection(info.physicalVolumes, jsonDevices);
+        device.logicalVolumes = buildCollection(info.logicalVolumes, jsonDevices);
+      };
+
+      /** @type {(device: StorageDevice, info: object) => void} */
+      const addLvInfo = (device, info) => {
+        device.type = "lvmLv";
+      };
+
+      /** @type {(device: StorageDevice, tableInfo: object) => void} */
+      const addPTableInfo = (device, tableInfo) => {
+        const partitions = buildCollection(tableInfo.partitions, jsonDevices);
+        device.partitionTable = {
+          type: tableInfo.type,
+          partitions,
+          unpartitionedSize: device.size - partitions.reduce((s, p) => s + p.size, 0),
+          unusedSlots: tableInfo.unusedSlots.map(s => Object.assign({}, s))
+        };
+      };
+
+      /** @type {(device: StorageDevice, filesystemInfo: object) => void} */
+      const addFilesystemInfo = (device, filesystemInfo) => {
+        const buildMountPath = path => path.length > 0 ? path : undefined;
+        const buildLabel = label => label.length > 0 ? label : undefined;
+        device.filesystem = {
+          sid: filesystemInfo.sid,
+          type: filesystemInfo.type,
+          mountPath: buildMountPath(filesystemInfo.mountPath),
+          label: buildLabel(filesystemInfo.label)
+        };
+      };
+
+      /** @type {(device: StorageDevice, info: object) => void} */
+      const addComponentInfo = (device, info) => {
+        device.component = Object.assign({}, info);
+      };
+
+      /** @type {StorageDevice} */
+      const device = {
+        name: "",
+        description: "",
+        isDrive: false,
+        type: ""
+      };
+
+      /** @type {(jsonProperty: String, info: function) => void} */
+      const process = (jsonProperty, method) => {
+        const info = jsonDevice[jsonProperty];
+        if (info === undefined || info === null) return;
+
+        method(device, info);
+      };
+
+      process("deviceInfo", Object.assign);
+      process("drive", addDriveInfo);
+      process("raid", addRaidInfo);
+      process("multipath", addMultipathInfo);
+      process("md", addMDInfo);
+      process("blockDevice", Object.assign);
+      process("partition", addPartitionInfo);
+      process("lvmVg", addVgInfo);
+      process("lvmLv", addLvInfo);
+      process("partitionTable", addPTableInfo);
+      process("filesystem", addFilesystemInfo);
+      process("component", addComponentInfo);
+
+      return device;
+    };
+
     const response = await this.client.get(`/storage/devices/${this.rootPath}`);
     if (!response.ok) {
       console.log("Failed to get storage devices: ", response);
     }
-    return response.json();
+    const jsonDevices = await response.json();
+    return jsonDevices.map(d => buildDevice(d, jsonDevices));
   }
 }
 
@@ -272,7 +384,7 @@ class ProposalManager {
    */
   async getAvailableDevices() {
     const findDevice = (devices, name) => {
-      const device = devices.find(d => d.deviceInfo.name === name);
+      const device = devices.find(d => d.name === name);
 
       if (device === undefined) console.log("Device not found: ", name);
 
@@ -1456,7 +1568,7 @@ class StorageBaseClient {
   constructor(client = undefined) {
     this.client = client;
     this.system = new DevicesManager(this.client, "system");
-    this.staging = new DevicesManager(this.client, "staging");
+    this.staging = new DevicesManager(this.client, "result");
     this.proposal = new ProposalManager(this.client, this.system);
     this.iscsi = new ISCSIManager(StorageBaseClient.SERVICE, client);
     this.dasd = new DASDManager(StorageBaseClient.SERVICE, client);
