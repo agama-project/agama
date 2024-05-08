@@ -17,3 +17,4 @@ jobs:
     with:
       install_packages: obs-service-cargo_audit obs-service-cargo_vendor
       package_name: agama
+      service_file: rust/package/_service

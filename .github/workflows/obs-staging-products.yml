@@ -16,3 +16,4 @@ jobs:
     secrets: inherit
     with:
       package_name: agama-products-opensuse
+      service_file: products.d/_service
