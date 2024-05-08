@@ -255,7 +255,15 @@ class DevicesManager {
       /** @type {(device: StorageDevice, info: object) => void} */
       const addDriveInfo = (device, info) => {
         device.isDrive = true;
-        Object.assign(device, info);
+        device.type = info.type;
+        device.vendor = info.vendor;
+        device.model = info.model;
+        device.driver = info.driver;
+        device.bus = info.bus;
+        device.busId = info.busId;
+        device.transport = info.transport;
+        device.sdCard = info.info.sdCard;
+        device.dellBOSS = info.info.dellBOSS;
       };
 
       /** @type {(device: StorageDevice, info: object) => void} */
@@ -272,7 +280,7 @@ class DevicesManager {
       const addMDInfo = (device, info) => {
         device.type = "md";
         device.level = info.level;
-        device.uuid = info.UUID;
+        device.uuid = info.uuid;
         addRaidInfo(device, info);
       };
 
@@ -320,7 +328,10 @@ class DevicesManager {
 
       /** @type {(device: StorageDevice, info: object) => void} */
       const addComponentInfo = (device, info) => {
-        device.component = Object.assign({}, info);
+        device.component = {
+          type: info.type,
+          deviceNames: info.deviceNames
+        };
       };
 
       /** @type {StorageDevice} */
