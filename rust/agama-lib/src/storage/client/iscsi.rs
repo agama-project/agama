@@ -171,6 +171,13 @@ impl<'a> ISCSIClient<'a> {
         Ok(Initiator { name, ibft })
     }
 
+    /// Sets the initiator name.
+    ///
+    /// * `name`: new name.
+    pub async fn set_initiator_name(&self, name: &str) -> Result<(), ServiceError> {
+        Ok(self.initiator_proxy.set_initiator_name(name).await?)
+    }
+
     /// Returns the iSCSI nodes.
     pub async fn get_nodes(&self) -> Result<Vec<ISCSINode>, ServiceError> {
         let managed_objects = self.object_manager_proxy.get_managed_objects().await?;
@@ -191,6 +198,15 @@ impl<'a> ISCSIClient<'a> {
             }
         }
         Ok(nodes)
+    }
+
+    /// Sets the startup for a ISCSI node.
+    ///
+    /// * `id`: node ID.
+    /// * `startup`: new startup value.
+    pub async fn set_startup(&self, id: u32, startup: &str) -> Result<(), ServiceError> {
+        let proxy = self.get_node_proxy(id).await?;
+        Ok(proxy.set_startup(startup).await?)
     }
 
     pub async fn login(

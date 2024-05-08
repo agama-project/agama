@@ -52,9 +52,9 @@ pub async fn iscsi_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Serv
     let client = ISCSIClient::new(dbus.clone()).await?;
     let state = ISCSIState { client };
     let router = Router::new()
-        .route("/initiator", get(initiator))
+        .route("/initiator", get(initiator).patch(update_initiator))
         .route("/nodes", get(nodes))
-        .route("/nodes/:id", delete(delete_node))
+        .route("/nodes/:id", delete(delete_node).patch(update_node))
         .route("/nodes/:id/login", post(login_node))
         .route("/nodes/:id/logout", post(logout_node))
         .route("/discover", post(discover))
@@ -65,6 +65,19 @@ pub async fn iscsi_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Serv
 async fn initiator(State(state): State<ISCSIState<'_>>) -> Result<Json<Initiator>, Error> {
     let initiator = state.client.get_initiator().await?;
     Ok(Json(initiator))
+}
+
+#[derive(Deserialize)]
+struct InitiatorParams {
+    name: String,
+}
+
+async fn update_initiator(
+    State(state): State<ISCSIState<'_>>,
+    Json(params): Json<InitiatorParams>,
+) -> Result<impl IntoResponse, Error> {
+    state.client.set_initiator_name(&params.name).await?;
+    Ok(StatusCode::NO_CONTENT)
 }
 
 async fn nodes(State(state): State<ISCSIState<'_>>) -> Result<Json<Vec<ISCSINode>>, Error> {
@@ -93,6 +106,20 @@ async fn discover(
     } else {
         Ok(StatusCode::BAD_REQUEST)
     }
+}
+
+#[derive(Deserialize)]
+struct NodeParams {
+    startup: String,
+}
+
+async fn update_node(
+    State(state): State<ISCSIState<'_>>,
+    Path(id): Path<u32>,
+    Json(params): Json<NodeParams>,
+) -> Result<impl IntoResponse, Error> {
+    state.client.set_startup(id, &params.startup).await?;
+    Ok(StatusCode::NO_CONTENT)
 }
 
 async fn delete_node(
