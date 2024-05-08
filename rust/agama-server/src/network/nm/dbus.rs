@@ -790,6 +790,9 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
     if let Some(security) = conn.get(WIRELESS_SECURITY_KEY) {
         let key_mgmt: &str = security.get("key-mgmt")?.downcast_ref()?;
         wireless_config.security = NmKeyManagement(key_mgmt.to_string()).try_into().ok()?;
+        if let Some(password) = security.get("psk") {
+            wireless_config.password = Some(password.to_string());
+        }
 
         match wireless_config.security {
             SecurityProtocol::WEP => {

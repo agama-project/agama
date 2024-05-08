@@ -1,13 +1,17 @@
-use crate::error::CliError;
-use crate::printers::{print, Format};
-use agama_lib::connection;
-use agama_lib::install_settings::{InstallSettings, Scope};
-use agama_lib::Store as SettingsStore;
+use crate::{
+    auth,
+    error::CliError,
+    printers::{print, Format},
+};
+use agama_lib::{
+    connection,
+    install_settings::{InstallSettings, Scope},
+    Store as SettingsStore,
+};
 use agama_settings::{settings::Settings, SettingObject, SettingValue};
 use clap::Subcommand;
 use convert_case::{Case, Casing};
-use std::str::FromStr;
-use std::{collections::HashMap, error::Error, io};
+use std::{collections::HashMap, error::Error, io, str::FromStr};
 
 #[derive(Subcommand, Debug)]
 pub enum ConfigCommands {
@@ -31,8 +35,18 @@ pub enum ConfigAction {
     Load(String),
 }
 
+fn token() -> Option<String> {
+    auth::jwt().or_else(|_| auth::agama_token()).ok()
+}
+
 pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<()> {
-    let store = SettingsStore::new(connection().await?).await?;
+    let Some(token) = token() else {
+        println!("You need to login for generating a valid token");
+        return Ok(());
+    };
+
+    let client = agama_lib::http_client(token)?;
+    let store = SettingsStore::new(connection().await?, client).await?;
 
     let command = parse_config_command(subcommand)?;
     match command {

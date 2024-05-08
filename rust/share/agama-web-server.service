@@ -4,7 +4,7 @@ After=network-online.target agama.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/agama-web-server serve --address :::80 --address2 :::443 --generate-token /run/agama/token
+ExecStart=/usr/bin/agama-web-server serve --address :::80 --address2 :::443
 PIDFile=/run/agama/web.pid
 User=root
 TimeoutStopSec=5

@@ -41,8 +41,8 @@ impl MatchSettings {
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct WirelessSettings {
-    #[serde(skip_serializing_if = "String::is_empty")]
-    pub password: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub password: Option<String>,
     pub security: String,
     pub ssid: String,
     pub mode: String,
