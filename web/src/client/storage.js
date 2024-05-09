@@ -683,8 +683,7 @@ class ProposalManager {
     };
 
     // Indicate whether a volume is defined by the product.
-    if (productMountPoints.includes(volume.mountPath))
-      volume.outline.productDefined = true;
+    volume.outline.productDefined = productMountPoints.includes(volume.mountPath);
 
     return volume;
   }
