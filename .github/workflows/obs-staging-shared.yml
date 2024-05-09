@@ -78,6 +78,7 @@ jobs:
         # forks also by default do not inherit the tags so remove the version format option
         if: inputs.service_file != ''
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           sed -e 's#<param name="url">.*</param>#<param name="url">https://github.com/${{ github.repository }}.git</param>#' ${{ inputs.service_file }} > ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}/_service
           if [ -z "$(git tag -l)" ]; then sed -i -e 's#<param name="versionformat">.*</param>##' ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}/_service; fi
 
