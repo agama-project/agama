@@ -1,5 +1,5 @@
 #
-# spec file for package cockpit-agama-playwright
+# spec file for package agama-playwright
 #
 # Copyright (c) 2023 SUSE LLC
 #
@@ -16,10 +16,10 @@
 #
 
 
-Name:           cockpit-agama-playwright
+Name:           agama-playwright
 Version:        0
 Release:        0
-Summary:        Integration tests for the Agama Cockpit module
+Summary:        Integration tests for the Agama installer
 License:        GPL-2.0-only
 URL:            https://github.com/openSUSE/agama
 # source_validator insists that if obscpio has no version then
@@ -30,7 +30,7 @@ BuildRequires:  coreutils
 Requires:       playwright
 
 %description
-Playwright integration tests for the Agama Cockpit module.
+Playwright integration tests for the Agama installer.
 
 %prep
 %autosetup -p1 -n agama

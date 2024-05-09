@@ -7,8 +7,8 @@
     <param name="revision">master</param>
     <param name="subdir">playwright</param>
     <param name="without-version">enable</param>
-    <param name="extract">package/cockpit-agama-playwright.changes</param>
-    <param name="extract">package/cockpit-agama-playwright.spec</param>
+    <param name="extract">package/agama-playwright.changes</param>
+    <param name="extract">package/agama-playwright.spec</param>
   </service>
   <service mode="buildtime" name="tar">
     <param name="obsinfo">agama.obsinfo</param>

@@ -1,4 +1,4 @@
-name: Submit cockpit-agama-playwright
+name: Submit agama-playwright
 
 on:
   # runs on pushes targeting the default branch
@@ -18,5 +18,5 @@ jobs:
     # pass all secrets
     secrets: inherit
     with:
-      package_name: cockpit-agama-playwright
+      package_name: agama-playwright
       service_file: playwright/package/_service
