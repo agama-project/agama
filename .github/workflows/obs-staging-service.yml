@@ -10,6 +10,9 @@ on:
       - service/**
       - Rakefile
 
+  # allow running manually
+  workflow_dispatch:
+
 jobs:
   update_service:
     uses: ./.github/workflows/obs-service-shared.yml

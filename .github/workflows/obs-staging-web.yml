@@ -9,6 +9,9 @@ on:
       # run only when a web frontend source is changed
       - web/**
 
+  # allow running manually
+  workflow_dispatch:
+
 jobs:
   update_staging:
     uses: ./.github/workflows/obs-staging-shared.yml

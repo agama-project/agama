@@ -9,6 +9,9 @@ on:
       # run only when a Playwright source is changed
       - playwright/**
 
+  # allow running manually
+  workflow_dispatch:
+
 jobs:
   update_staging:
     uses: ./.github/workflows/obs-staging-shared.yml
@@ -16,3 +19,4 @@ jobs:
     secrets: inherit
     with:
       package_name: cockpit-agama-playwright
+      service_file: playwright/package/_service

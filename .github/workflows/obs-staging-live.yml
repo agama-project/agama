@@ -9,6 +9,9 @@ on:
       # run only when a live ISO source is changed
       - live/**
 
+  # allow running manually
+  workflow_dispatch:
+
 jobs:
   update_staging_package:
     # do not run in forks which do not set the OBS_PROJECT variable

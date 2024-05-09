@@ -8,6 +8,8 @@ on:
     paths:
       # run only when a Rust source is changed
       - rust/**
+  # allow running manually
+  workflow_dispatch:
 
 jobs:
   update_staging:

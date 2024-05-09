@@ -9,6 +9,9 @@ on:
       # run only when a Rust source is changed
       - products.d/**
 
+  # allow running manually
+  workflow_dispatch:
+
 jobs:
   update_staging:
     uses: ./.github/workflows/obs-staging-shared.yml
