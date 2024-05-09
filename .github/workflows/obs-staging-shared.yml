@@ -75,14 +75,13 @@ jobs:
         run: |
           sed -i -e 's#<param name="url">.*</param>#<param name="url">https://github.com/${{ github.repository }}.git</param>#' > ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}/_service
           cd ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
-          osc addremove
 
       - name: Run services
         run: osc service manualrun
         working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
 
       - name: Check status
-        run: osc diff && osc status
+        run: osc addremove && osc diff && osc status
         working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
 
       - name: Commit ${{ inputs.package_name }} to ${{ vars.OBS_PROJECT }}
