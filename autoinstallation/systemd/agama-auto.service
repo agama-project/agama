@@ -5,8 +5,7 @@ After=dbus.socket
 # it needs to NetworkManager, so it has access to it
 After=NetworkManager.service
 # it needs agama, of course
-After=agama.service
-Requires=agama.service
+After=agama-web-server.service
 
 [Service]
 ExecStart=/usr/bin/auto.sh
