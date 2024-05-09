@@ -72,7 +72,10 @@ jobs:
 
       - name: Copy optional service file
         if: inputs.service_file != ''
-        run: cp -f ${{ inputs.service_file }} ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
+        run: |
+          sed -i -e 's#<param name="url">.*</param>#<param name="url">https://github.com/${{ github.repository }}.git</param>#' > ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}/_service
+          cd ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
+          osc addremove
 
       - name: Run services
         run: osc service manualrun
