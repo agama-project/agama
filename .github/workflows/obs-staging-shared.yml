@@ -37,9 +37,6 @@ jobs:
       image: registry.opensuse.org/opensuse/tumbleweed:latest
 
     steps:
-      - name: Git Checkout
-        uses: actions/checkout@v4
-
       - name: Configure and refresh repositories
         # disable unused repositories to have a faster refresh
         run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
@@ -53,6 +50,11 @@ jobs:
              obs-service-obs_scm
              osc
              ${{ inputs.install_packages }}
+
+      - name: Git Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
 
       - name: Configure osc
         run: .github/workflows/configure_osc.sh
