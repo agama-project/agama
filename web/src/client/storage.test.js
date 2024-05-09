@@ -55,6 +55,8 @@ jest.mock("./http", () => {
   };
 });
 
+const http = new HTTPClient(new URL("http://localhost"));
+
 /**
  * @typedef {import("~/client/storage").StorageDevice} StorageDevice
  */
@@ -493,129 +495,71 @@ const sdbStaging = {
 const stagingDevices = { sdb: sdbStaging };
 
 const contexts = {
-  withoutProposal: () => {
-    cockpitProxies.proposal = null;
-  },
-  withProposal: () => {
-    cockpitProxies.proposal = {
-      Settings: {
-        Target: { t: "s", v: "newLvmVg" },
-        TargetPVDevices: {
-          t: "av",
-          v: [
-            { t: "s", v: "/dev/sda" },
-            { t: "s", v: "/dev/sdb" }
-          ]
-        },
-        ConfigureBoot: { t: "b", v: true },
-        BootDevice: { t: "s", v: "/dev/sda" },
-        DefaultBootDevice: { t: "s", v: "/dev/sdb" },
-        EncryptionPassword: { t: "s", v: "00000" },
-        EncryptionMethod: { t: "s", v: "luks1" },
-        SpacePolicy: { t: "s", v: "custom" },
-        SpaceActions: {
-          t: "av",
-          v: [
-            {
-              t: "a{sv}",
-              v: {
-                Device: { t: "s", v: "/dev/sda" },
-                Action: { t: "s", v: "force_delete" }
-              }
-            },
-            {
-              t: "a{sv}",
-              v: {
-                Device: { t: "s", v: "/dev/sdb" },
-                Action: { t: "s", v: "resize" }
-              }
-            }
-          ]
-        },
-        Volumes: {
-          t: "av",
-          v: [
-            {
-              t: "a{sv}",
-              v: {
-                MountPath: { t: "s", v: "/" },
-                Target: { t: "s", v: "default" },
-                TargetDevice: { t: "s", v: "" },
-                FsType: { t: "s", v: "Btrfs" },
-                MinSize: { t: "x", v: 1024 },
-                MaxSize: { t: "x", v: 2048 },
-                AutoSize: { t: "b", v: true },
-                Snapshots: { t: "b", v: true },
-                Transactional: { t: "b", v: true },
-                Outline: {
-                  t: "a{sv}",
-                  v: {
-                    Required: { t: "b", v: true },
-                    FsTypes: { t: "as", v: [{ t: "s", v: "Btrfs" }, { t: "s", v: "Ext3" }] },
-                    SupportAutoSize: { t: "b", v: true },
-                    SnapshotsConfigurable: { t: "b", v: true },
-                    SnapshotsAffectSizes: { t: "b", v: true },
-                    AdjustByRam: { t: "b", v: false },
-                    SizeRelevantVolumes: { t: "as", v: [{ t: "s", v: "/home" }] }
-                  }
-                }
-              }
-            },
-            {
-              t: "a{sv}",
-              v: {
-                MountPath: { t: "s", v: "/home" },
-                Target: { t: "s", v: "default" },
-                TargetDevice: { t: "s", v: "" },
-                FsType: { t: "s", v: "XFS" },
-                MinSize: { t: "x", v: 2048 },
-                MaxSize: { t: "x", v: 4096 },
-                AutoSize: { t: "b", v: false },
-                Snapshots: { t: "b", v: false },
-                Transactional: { t: "b", v: false },
-                Outline: {
-                  t: "a{sv}",
-                  v: {
-                    Required: { t: "b", v: false },
-                    FsTypes: { t: "as", v: [{ t: "s", v: "Ext4" }, { t: "s", v: "XFS" }] },
-                    SupportAutoSize: { t: "b", v: false },
-                    SnapshotsConfigurable: { t: "b", v: false },
-                    SnapshotsAffectSizes: { t: "b", v: false },
-                    AdjustByRam: { t: "b", v: false },
-                    SizeRelevantVolumes: { t: "as", v: [] }
-                  }
-                }
-              }
-            }
-          ]
-        },
-      },
-      Actions: [
+  withProposal: () => { return {
+    settings: {
+      target: "newLvmVg",
+      targetPVDevices: ["/dev/sda", "/dev/sdb"],
+      configureBoot: true,
+      bootDevice: "/dev/sda",
+      defaultBootDevice: "/dev/sdb",
+      encryptionPassword: "00000",
+      encryptionMethod: "luks1",
+      spacePolicy: "custom",
+      spaceActions: [
+        {device: "/dev/sda", action: "force_delete" },
+        {device: "/dev/sdb", action: "resize" }
+      ],
+      volumes: [
         {
-          Device: { t: "u", v: 2 },
-          Text: { t: "s", v: "Mount /dev/sdb1 as root" },
-          Subvol: { t: "b", v: false },
-          Delete: { t: "b", v: false }
+          mountPath: "/",
+          target: "default",
+          targetDevice: "",
+          fsType: "Btrfs",
+          minSize: 1024,
+          maxSize: 2048,
+          autoSize: true,
+          snapshots: true,
+          transactional: true,
+          outline: {
+            required: true,
+            fsTypes: ["Btrfs", "Ext3"],
+            supportAutoSize: true,
+            snapshotsConfigurable: true,
+            snapshotsAffectSizes: true,
+            adjustByRam: false,
+            sizeRelevantVolumes: ["/home"]
+          }
+        },
+        {
+          mountPath: "/home",
+          target: "default",
+          targetDevice: "",
+          fsType: "XFS",
+          minSize: 2048,
+          maxSize: 4096,
+          autoSize: false,
+          snapshots: false,
+          transactional: false,
+          outline: {
+            required: false,
+            fsTypes: ["Ext4", "XFS"],
+            supportAutoSize: false,
+            snapshotsConfigurable: false,
+            snapshotsAffectSizes: false,
+            adjustByRam: false,
+            sizeRelevantVolumes: []
+          }
         }
       ]
-    };
-  },
-  withAvailableDevices: () => {
-    cockpitProxies.proposalCalculator.AvailableDevices = [
-      "/org/opensuse/Agama/Storage1/system/59",
-      "/org/opensuse/Agama/Storage1/system/62"
-    ];
-  },
-  withoutIssues: () => {
-    cockpitProxies.issues = {
-      All: []
-    };
-  },
-  withIssues: () => {
-    cockpitProxies.issues = {
-      All: [["Issue 1", "", 1, 1], ["Issue 2", "", 1, 0], ["Issue 3", "", 2, 1]]
-    };
-  },
+    },
+    actions: [{device: 2, text: "Mount /dev/sdb1 as root", subvol: false, delete: false}]
+  }},
+  withAvailableDevices: () => ["/dev/sda", "/dev/sdb"],
+  withIssues: () => [
+    {description: "Issue 1", details: "", source: 1, severity: 1},
+    {description: "Issue 2", details: "", source: 1, severity: 0},
+    {description: "Issue 3", details: "", source: 2, severity: 1}
+  ],
   withoutISCSINodes: () => {
     cockpitProxies.iscsiNodes = {};
   },
@@ -1150,35 +1094,38 @@ const contexts = {
       }
     },
   ],
-  withStagingDevices: () => {
-    managedObjects["/org/opensuse/Agama/Storage1/staging/62"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 62 },
-        Name: { t: "s", v: "/dev/sdb" },
-        Description: { t: "s", v: "" }
+  withStagingDevices: () => [
+    {
+      deviceInfo: {
+        sid: 62,
+        name: "/dev/sdb",
+        description: ""
       },
-      "org.opensuse.Agama.Storage1.Drive": {
-        Type: { t: "s", v: "disk" },
-        Vendor: { t: "s", v: "Samsung" },
-        Model: { t: "s", v: "Samsung Evo 8 Pro" },
-        Driver: { t: "as", v: ["ahci"] },
-        Bus: { t: "s", v: "IDE" },
-        BusId: { t: "s", v: "" },
-        Transport: { t: "s", v: "" },
-        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: false } } },
+      drive: {
+        type: "disk",
+        vendor: "Samsung",
+        model: "Samsung Evo 8 Pro",
+        driver: ["ahci"],
+        bus: "IDE",
+        busId: "",
+        transport: "",
+        info: {
+          dellBOSS: false,
+          sdCard: false
+        }
       },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: false },
-        Size: { t: "x", v: 2048 },
-        Start: { t: "t", v: 0 },
-        RecoverableSize: { t: "x", v: 0 },
-        Systems: { t: "as", v: [] },
-        UdevIds: { t: "as", v: [] },
-        UdevPaths: { t: "as", v: ["pci-0000:00-19"] }
+      blockDevice: {
+        active: true,
+        encrypted: false,
+        size: 2048,
+        start: 0,
+        recoverableSize: 0,
+        systems: [],
+        udevIds: [],
+        udevPaths: ["pci-0000:00-19"]
       }
-    };
-  }
+    }
+  ]
 };
 
 const mockProxy = (iface, path) => {
@@ -1274,9 +1221,7 @@ describe("#probe", () => {
 describe("#isDeprecated", () => {
   describe("if the system is not deprecated", () => {
     beforeEach(() => {
-      const http = new HTTPClient(new URL("http://localhost"));
       mockJsonFn.mockResolvedValue(false);
-
       client = new StorageClient(http);
     });
 
@@ -1323,13 +1268,16 @@ describe("#onDeprecate", () => {
 });
 
 describe("#getIssues", () => {
+  beforeEach(() => {
+    client = new StorageClient(http);
+  });
+
   describe("if there are no issues", () => {
     beforeEach(() => {
-      contexts.withoutIssues();
+      mockJsonFn.mockResolvedValue([]);
     });
 
     it("returns an empty list", async () => {
-      client = new StorageClient();
       const issues = await client.getIssues();
       expect(issues).toEqual([]);
     });
@@ -1337,11 +1285,10 @@ describe("#getIssues", () => {
 
   describe("if there are issues", () => {
     beforeEach(() => {
-      contexts.withIssues();
+      mockJsonFn.mockResolvedValue(contexts.withIssues());
     });
 
     it("returns the list of issues", async () => {
-      client = new StorageClient();
       const issues = await client.getIssues();
       expect(issues).toEqual(expect.arrayContaining([
         { description: "Issue 1", details: "", source: "system", severity: "error" },
@@ -1354,11 +1301,11 @@ describe("#getIssues", () => {
 
 describe("#getErrors", () => {
   beforeEach(() => {
-    contexts.withIssues();
+    client = new StorageClient(http);
+    mockJsonFn.mockResolvedValue(contexts.withIssues());
   });
 
   it("returns the issues with error severity", async () => {
-    client = new StorageClient();
     const errors = await client.getErrors();
     expect(errors.map(e => e.description)).toEqual(expect.arrayContaining(["Issue 1", "Issue 3"]));
   });
@@ -1386,8 +1333,6 @@ describe("#onIssuesChange", () => {
 describe("#system", () => {
   describe("#getDevices", () => {
     beforeEach(() => {
-      const http = new HTTPClient(new URL("http://localhost"));
-
       client = new StorageClient(http);
     });
 
@@ -1417,10 +1362,13 @@ describe("#system", () => {
 
 describe("#staging", () => {
   describe("#getDevices", () => {
+    beforeEach(() => {
+      client = new StorageClient(http);
+    });
+
     describe("when there are devices", () => {
       beforeEach(() => {
-        contexts.withStagingDevices();
-        client = new StorageClient();
+        mockJsonFn.mockResolvedValue(contexts.withStagingDevices());
       });
 
       it("returns the staging devices", async () => {
@@ -1431,7 +1379,7 @@ describe("#staging", () => {
 
     describe("when there are not devices", () => {
       beforeEach(() => {
-        client = new StorageClient();
+        mockJsonFn.mockResolvedValue([]);
       });
 
       it("returns an empty list", async () => {
@@ -1445,9 +1393,18 @@ describe("#staging", () => {
 describe("#proposal", () => {
   describe("#getAvailableDevices", () => {
     beforeEach(() => {
-      contexts.withSystemDevices();
-      contexts.withAvailableDevices();
-      client = new StorageClient();
+      mockGetFn.mockImplementation(path => {
+        switch (path) {
+          case "/storage/devices/system":
+            return { ok: true, json: jest.fn().mockResolvedValue(contexts.withSystemDevices()) };
+          case "/storage/proposal/usable_devices":
+            return { ok: true, json: jest.fn().mockResolvedValue(contexts.withAvailableDevices()) };
+          default:
+            return { ok: true, json: mockJsonFn };
+        }
+      });
+
+      client = new StorageClient(http);
     });
 
     it("returns the list of available devices", async () => {
@@ -1458,8 +1415,8 @@ describe("#proposal", () => {
 
   describe("#getProductMountPoints", () => {
     beforeEach(() => {
-      cockpitProxies.proposalCalculator.ProductMountPoints = ["/", "swap", "/home"];
-      client = new StorageClient();
+      client = new StorageClient(http);
+      mockJsonFn.mockResolvedValue({mountPoints: ["/", "swap", "/home"]});
     });
 
     it("returns the list of product mount points", async () => {
@@ -1577,10 +1534,13 @@ describe("#proposal", () => {
   });
 
   describe("#getResult", () => {
+    beforeEach(() => {
+      client = new StorageClient(http);
+    });
+
     describe("if there is no proposal yet", () => {
       beforeEach(() => {
-        contexts.withoutProposal();
-        client = new StorageClient();
+        mockJsonFn.mockResolvedValue({});
       });
 
       it("returns undefined", async () => {
@@ -1591,13 +1551,23 @@ describe("#proposal", () => {
 
     describe("if there is a proposal", () => {
       beforeEach(() => {
-        contexts.withSystemDevices();
-        contexts.withProposal();
-        cockpitProxies.proposalCalculator.ProductMountPoints = ["/", "swap"];
+        mockGetFn.mockImplementation(path => {
+          const proposal = contexts.withProposal();
+          switch (path) {
+            case "/storage/devices/system":
+              return { ok: true, json: jest.fn().mockResolvedValue(contexts.withSystemDevices()) };
+            case "/storage/proposal/settings":
+              return { ok: true, json: jest.fn().mockResolvedValue(proposal.settings) };
+            case "/storage/proposal/actions":
+              return { ok: true, json: jest.fn().mockResolvedValue(proposal.actions) };
+            case "/storage/product/params":
+              return { ok: true, json: jest.fn().mockResolvedValue({mountPoints: ["/", "swap"]}) };
+          }
+        });
       });
 
       it("returns the proposal settings and actions", async () => {
-        client = new StorageClient();
+        client = new StorageClient(http);
 
         const { settings, actions } = await client.proposal.getResult();
 
