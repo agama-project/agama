@@ -29,7 +29,7 @@ jobs:
 
       - name: Install tools
         run: zypper --non-interactive install --no-recommends
-             make osc
+             git make osc
 
       - name: Configure osc
         run: .github/workflows/configure_osc.sh
