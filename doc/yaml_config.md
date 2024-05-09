@@ -74,25 +74,6 @@ Default policy. Only applicable for selinux lsm.
 List of supported distros that can be offered in installer. Archs key is used
 for products that is not available for all hardware architectures.
 
-### web
-
-Cockpit's web server related settings.
-
-#### ssl
-
-Whether enable or disable TLS/SSL for remote connections. If it is not set, it does not modify
-Cockpit configuration in that regard.
-
-#### ssl\_cert
-
-Location of the certificate to use for remote connections. The certificate is retrieved and copied
-to `/etc/cockpit/ws-certs.d`.
-
-#### ssl\_key
-
-Location of the certificate key to use for remote connections. The key is retrieved and copied to
-`/etc/cockpit/ws-certs.d`. This option is ignored unless the `ssl_cert` is set.
-
 ## storage
 
 Options related to management of storage devices. It is map with the following keys:
