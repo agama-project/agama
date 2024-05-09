@@ -15,6 +15,51 @@ pub struct StorageDevice {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct DeviceSize(u64);
+
+impl From<u64> for DeviceSize {
+    fn from(value: u64) -> Self {
+        DeviceSize(value)
+    }
+}
+
+impl TryFrom<i64> for DeviceSize {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(value: i64) -> Result<Self, Self::Error> {
+        u64::try_from(value).map(|v| v.into()).or_else(|_| {
+            Err(Self::Error::Message(format!(
+                "Cannot convert size from {}",
+                value
+            )))
+        })
+    }
+}
+
+impl TryFrom<zbus::zvariant::Value<'_>> for DeviceSize {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::U32(v) => Ok(u64::from(v).into()),
+            Value::U64(v) => Ok(v.into()),
+            Value::I32(v) => i64::from(v).try_into(),
+            Value::I64(v) => v.try_into(),
+            _ => Err(Self::Error::Message(format!(
+                "Cannot convert size from {}",
+                value
+            ))),
+        }
+    }
+}
+
+impl<'a> Into<zbus::zvariant::Value<'a>> for DeviceSize {
+    fn into(self) -> Value<'a> {
+        Value::new(self.0)
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 // note that dbus use camelCase for proposalTarget values and snake_case for volumeTarget
 #[serde(rename_all = "camelCase")]
 pub enum ProposalTarget {
@@ -322,8 +367,8 @@ pub struct Volume {
     mount_options: Vec<String>,
     target: VolumeTarget,
     target_device: Option<String>,
-    min_size: i64,
-    max_size: Option<i64>,
+    min_size: DeviceSize,
+    max_size: Option<DeviceSize>,
     auto_size: bool,
     snapshots: Option<bool>,
     transactional: Option<bool>,
@@ -336,14 +381,14 @@ impl<'a> Into<zbus::zvariant::Value<'a>> for Volume {
             ("MountPath", Value::new(self.mount_path)),
             ("MountOptions", Value::new(self.mount_options)),
             ("Target", self.target.into()),
-            ("MinSize", Value::new(self.min_size)),
+            ("MinSize", self.min_size.into()),
             ("AutoSize", Value::new(self.auto_size)),
         ]);
         if let Some(dev) = self.target_device {
             result.insert("TargetDevice", Value::new(dev));
         }
         if let Some(value) = self.max_size {
-            result.insert("MaxSize", Value::new(value));
+            result.insert("MaxSize", value.into());
         }
         if let Some(value) = self.snapshots {
             result.insert("Snapshots", Value::new(value));
@@ -459,8 +504,8 @@ impl TryFrom<zbus::zvariant::ObjectPath<'_>> for DeviceSid {
 pub struct BlockDevice {
     pub active: bool,
     pub encrypted: bool,
-    pub recoverable_size: u64,
-    pub size: u64,
+    pub recoverable_size: DeviceSize,
+    pub size: DeviceSize,
     pub start: u64,
     pub systems: Vec<String>,
     pub udev_ids: Vec<String>,
@@ -540,7 +585,7 @@ pub struct LvmLv {
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct LvmVg {
-    pub size: u64,
+    pub size: DeviceSize,
     pub physical_volumes: Vec<DeviceSid>,
     pub logical_volumes: Vec<DeviceSid>,
 }
@@ -579,7 +624,7 @@ pub struct PartitionTable {
 #[serde(rename_all = "camelCase")]
 pub struct UnusedSlot {
     pub start: u64,
-    pub size: u64,
+    pub size: DeviceSize,
 }
 
 impl TryFrom<zbus::zvariant::Value<'_>> for UnusedSlot {
@@ -590,7 +635,7 @@ impl TryFrom<zbus::zvariant::Value<'_>> for UnusedSlot {
 
         Ok(UnusedSlot {
             start: slot_info.0,
-            size: slot_info.1,
+            size: slot_info.1.into(),
         })
     }
 }
