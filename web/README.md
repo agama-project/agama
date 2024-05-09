@@ -21,7 +21,7 @@ use this command:
 
 The extra `--open` option automatically opens the server page in your default
 web browser. In this case the server will use the `https://localhost:8080` URL
-and expects a running `agama-web-server` at `https://localhost:9090`.
+and expects a running `agama-web-server` at `https://localhost:3000`.
 
 This can work also remotely, with a Agama instance running in a different
 machine (a virtual machine as well). In that case run
