@@ -1,4 +1,4 @@
-name: Submit agama-cli
+name: Submit agama
 
 on:
   # runs on pushes targeting the default branch
@@ -8,6 +8,7 @@ on:
     paths:
       # run only when a Rust source is changed
       - rust/**
+
   # allow running manually
   workflow_dispatch:
 
