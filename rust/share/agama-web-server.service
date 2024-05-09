@@ -1,6 +1,6 @@
 [Unit]
 Description=Agama Web Server
-After=network-online.target agama.service
+After=network-online.target agama.service agama-hostname.service
 
 [Service]
 Type=simple
