@@ -369,6 +369,7 @@ pub struct Volume {
     mount_options: Vec<String>,
     target: VolumeTarget,
     target_device: Option<String>,
+    fs_type: String,
     min_size: DeviceSize,
     max_size: Option<DeviceSize>,
     auto_size: bool,
@@ -383,6 +384,7 @@ impl<'a> Into<zbus::zvariant::Value<'a>> for Volume {
             ("MountPath", Value::new(self.mount_path)),
             ("MountOptions", Value::new(self.mount_options)),
             ("Target", self.target.into()),
+            ("FsType", Value::new(self.fs_type)),
             ("MinSize", self.min_size.into()),
             ("AutoSize", Value::new(self.auto_size)),
         ]);
@@ -422,6 +424,7 @@ impl TryFrom<HashMap<String, OwnedValue>> for Volume {
             mount_options: get_property(&volume_hash, "MountOptions")?,
             target: get_property(&volume_hash, "Target")?,
             target_device: get_optional_property(&volume_hash, "TargetDevice")?,
+            fs_type: get_property(&volume_hash, "FsType")?,
             min_size: get_property(&volume_hash, "MinSize")?,
             max_size: get_optional_property(&volume_hash, "MaxSize")?,
             auto_size: get_property(&volume_hash, "AutoSize")?,
