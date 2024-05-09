@@ -43,14 +43,14 @@ jobs:
 
       - name: Git Checkout (full history)
         if: ${{ github.ref_type != 'tag' }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # fetch all history, we need to find the latest tag and offset for the version number
           fetch-depth: 0
 
       - name: Git Checkout (release tag only)
         if: ${{ github.ref_type == 'tag' }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Fix file owner
         # workaround for a strict git check
