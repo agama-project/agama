@@ -37,7 +37,6 @@ const packageJson = JSON.parse(fs.readFileSync('package.json'));
 // Non-JS files which are copied verbatim to dist/
 const copy_files = [
   "./src/index.html",
-  "./src/manifest.json",
   // TODO: consider using something more complete like https://github.com/jantimon/favicons-webpack-plugin
   "./src/assets/favicon.svg",
 ];
@@ -95,19 +94,8 @@ module.exports = {
   devServer: {
     hot: true,
     // additionally watch these files for changes
-    watchFiles: ["./src/manifest.json", "./po/*.po"],
+    watchFiles: ["./po/*.po"],
     proxy: [
-      // TODO: modify it to not depend on cockpit
-      // forward the manifests.js request and patch the response with the
-      // current Agama manifest from the ./src/manifest.json file
-      // "/manifests.js": {
-      //   target: cockpitTarget + "/cockpit/@localhost/",
-      //   // ignore SSL problems (self-signed certificate)
-      //   secure: false,
-      //   // the response is modified by the onProxyRes handler
-      //   selfHandleResponse : true,
-      //   onProxyRes: manifests_handler,
-      // },
       {
         context: ["/api/ws"],
         target: agamaServer.replace(/^http/, "ws"),
