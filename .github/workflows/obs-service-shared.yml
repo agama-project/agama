@@ -10,12 +10,6 @@ on:
       OBS_PASSWORD:
         required: true
 
-    inputs:
-      project_name:
-        description: OBS project name
-        required: true
-        type: string
-
 jobs:
   update_service:
     # do not run in forks which do not set the OBS_PROJECT variable
@@ -52,9 +46,8 @@ jobs:
         if: ${{ github.ref_type == 'tag' }}
         uses: actions/checkout@v4
 
-      - name: Fix file owner
-        # workaround for a strict git check
-        run: chown -R -c 0 .
+      - name: Configure git
+        run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Configure osc
         run: .github/workflows/configure_osc.sh
