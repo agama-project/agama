@@ -487,12 +487,12 @@ class ProposalManager {
       console.log("Failed to get product volume: ", response);
     }
 
-    return response.json();
-    // TODO: change from master
-    //    const proxy = await this.proxies.proposalCalculator;
-    //    const systemDevices = await this.system.getDevices();
-    //    const productMountPoints = await this.getProductMountPoints();
-    //    return this.buildVolume(await proxy.DefaultVolume(mountPath), systemDevices, productMountPoints);
+    const systemDevices = await this.system.getDevices();
+    const productMountPoints = await this.getProductMountPoints();
+
+    return response.json().then(volume => {
+      return this.buildVolume(volume, systemDevices, productMountPoints);
+    });
   }
 
   /**
