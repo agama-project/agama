@@ -21,7 +21,7 @@ On the server side, Agama is composed by:
   component implements complex parts, like storage and software handling. Communication with the
   Agama web server happens over D-Bus.
 
-* **Agama D-Bus server**: implements a minimal API to allow **Agama YaST server** to talk to the web
+* **Agama D-Bus service**: implements a minimal API to allow **Agama YaST server** to talk to the web
 server. It is expected to be replaced by direct communication in the future.
 
 On the client side, these are the main components:
@@ -29,7 +29,7 @@ On the client side, these are the main components:
 * **Web user interface (old `cockpit-agama`)**: Agama's graphical user interface. The **Agama web
 server** makes this React application available to browsers.
 
-* **Command Line Interface (`agama-cli`)**: it allows interaction with Agama and drives the
+* **Command-Line Interface (`agama-cli`)**: it allows interaction with Agama and drives the
 auto-installation process.
 
 * **Auto-installation (`autoinstallation`)**: it is composed of a Systemd service (`agama-auto`) and
