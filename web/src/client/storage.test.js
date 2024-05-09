@@ -1551,13 +1551,15 @@ describe("#proposal", () => {
 
     describe("if there is a proposal", () => {
       beforeEach(() => {
+        const proposal = contexts.withProposal();
+        mockJsonFn.mockResolvedValue(proposal.settings);
+
         mockGetFn.mockImplementation(path => {
-          const proposal = contexts.withProposal();
           switch (path) {
             case "/storage/devices/system":
               return { ok: true, json: jest.fn().mockResolvedValue(contexts.withSystemDevices()) };
             case "/storage/proposal/settings":
-              return { ok: true, json: jest.fn().mockResolvedValue(proposal.settings) };
+              return { ok: true, json: mockJsonFn };
             case "/storage/proposal/actions":
               return { ok: true, json: jest.fn().mockResolvedValue(proposal.actions) };
             case "/storage/product/params":
@@ -1567,8 +1569,6 @@ describe("#proposal", () => {
       });
 
       it("returns the proposal settings and actions", async () => {
-        client = new StorageClient(http);
-
         const { settings, actions } = await client.proposal.getResult();
 
         expect(settings).toMatchObject({
@@ -1638,12 +1638,12 @@ describe("#proposal", () => {
 
       describe("if boot is not configured", () => {
         beforeEach(() => {
-          cockpitProxies.proposal.Settings.ConfigureBoot = { t: "b", v: false };
-          cockpitProxies.proposal.Settings.BootDevice = { t: "s", v: "/dev/sdc" };
+          mockJsonFn.mockResolvedValue(
+            {...contexts.withProposal().settings, configureBoot: false, bootDevice: "/dev/sdc"}
+          );
         });
 
         it("does not include the boot device as installation device", async () => {
-          client = new StorageClient();
           const { settings } = await client.proposal.getResult();
           expect(settings.installationDevices).toEqual([sda, sdb]);
         });
