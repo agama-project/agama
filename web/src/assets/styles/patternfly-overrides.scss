@@ -238,15 +238,6 @@ table td > .pf-v5-c-empty-state {
   padding-inline: 0;
 }
 
-ul {
-  list-style: initial;
-  margin-inline: var(--spacer-normal);
-
-  li:not(:last-child) {
-    margin-block-end: var(--spacer-small);
-  }
-}
-
 // Styles for tree table used by storage page.
 
 .pf-v5-c-table tbody {
@@ -278,4 +269,16 @@ ul {
   .pf-m-grid-md.pf-v5-c-table tr:where(.pf-v5-c-table__tr):not(.pf-v5-c-table__expandable-row) {
     padding-inline: 0;
   }
+}
+
+
+// New-ui overrides
+
+.pf-v5-c-nav__link {
+  fill: var(--pf-v5-c-nav__link--Color);
+}
+
+.pf-v5-c-nav__link {
+  align-items: center;
+  gap: calc(var(--pf-v5-c-nav__link--FontSize) / 2);
 }

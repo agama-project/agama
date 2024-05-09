@@ -30,6 +30,43 @@ import { ProposalPage as StoragePage, ISCSIPage, DASDPage, ZFCPPage } from "~/co
 import { UsersPage } from "~/components/users";
 import { L10nPage } from "~/components/l10n";
 import { NetworkPage } from "~/components/network";
+import { _ } from "~/i18n";
+
+// FIXME: think in a better apprach for routes, if any.
+// FIXME: think if it worth it to have the routes ready for work with them
+// dinamically of would be better to go for an explicit use of them (see
+// Root#Sidebar navigation)
+
+const createRoute = (name, path, element, children = [], icon) => (
+  {
+    path,
+    element,
+    handle: { name, icon },
+    children
+  }
+);
+
+const overviewRoutes = createRoute(_("Overview"), "overview", <OverviewPage />, [], "list_alt");
+const productRoutes = createRoute(_("Product"), "product", <ProductPage />, [], "inventory_2");
+const l10nRoutes = createRoute(_("Localization"), "l10n", <L10nPage />, [], "globe");
+const softwareRoutes = createRoute(_("Software"), "software", <SoftwarePage />, [], "apps");
+const storageRoutes = createRoute(_("Storage"), "storage", <StoragePage />, [
+  createRoute(_("iSCSI"), "iscsi", <ISCSIPage />),
+  createRoute(_("DASD"), "dasd", <DASDPage />),
+  createRoute(_("ZFCP"), "zfcp", <ZFCPPage />)
+], "hard_drive");
+const networkRoutes = createRoute(_("Network"), "network", <NetworkPage />, [], "settings_ethernet");
+const usersRoutes = createRoute(_("Users"), "users", <UsersPage />, [], "manage_accounts");
+
+const rootRoutes = [
+  overviewRoutes,
+  productRoutes,
+  l10nRoutes,
+  softwareRoutes,
+  storageRoutes,
+  networkRoutes,
+  usersRoutes,
+];
 
 const routes = [
   {
@@ -43,48 +80,7 @@ const routes = [
             index: true,
             element: <OverviewPage />
           },
-          {
-            path: "overview",
-            element: <OverviewPage />
-          },
-          {
-            path: "product",
-            element: <ProductPage />
-          },
-          {
-            path: "l10n",
-            element: <L10nPage />
-          },
-          {
-            path: "software",
-            element: <SoftwarePage />
-          },
-          {
-            path: "storage",
-            element: <StoragePage />,
-            children: [
-              {
-                path: "iscsi",
-                element: <ISCSIPage />
-              },
-              {
-                path: "dasd",
-                element: <DASDPage />
-              },
-              {
-                path: "zfcp",
-                element: <ZFCPPage />
-              }
-            ]
-          },
-          {
-            path: "network",
-            element: <NetworkPage />
-          },
-          {
-            path: "users",
-            element: <UsersPage />
-          },
+          ...rootRoutes
         ]
       },
       {
@@ -97,4 +93,15 @@ const routes = [
 
 const router = createHashRouter(routes);
 
-export { routes, router };
+export {
+  overviewRoutes,
+  productRoutes,
+  l10nRoutes,
+  softwareRoutes,
+  storageRoutes,
+  networkRoutes,
+  usersRoutes,
+  rootRoutes,
+  routes,
+  router
+};
