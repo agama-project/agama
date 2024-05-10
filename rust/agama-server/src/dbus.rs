@@ -140,7 +140,7 @@ impl DBusObjectChangesStream {
     /// Builds a stream of added/removed objects within the collection.
     ///
     /// * `connection`: D-Bus connection.
-    /// * `manager_path`: .
+    /// * `manager_path`: path of the object implementing the ObjectManager interface.
     async fn build_added_and_removed_stream(
         connection: &zbus::Connection,
         manager_path: &OwnedObjectPath,
