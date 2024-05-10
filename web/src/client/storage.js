@@ -44,7 +44,11 @@ const ZFCP_DISKS_NAMESPACE = "/org/opensuse/Agama/Storage1/zfcp_disks";
 const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
 
 /** @fixme Adapt code depending on D-Bus */
-class DBusClient {}
+class DBusClient {
+  proxy() {
+    return Promise.resolve(undefined);
+  }
+}
 
 /**
  * @typedef {object} StorageDevice
