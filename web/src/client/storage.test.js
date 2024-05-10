@@ -499,70 +499,72 @@ const sdbStaging = {
 const stagingDevices = { sdb: sdbStaging };
 
 const contexts = {
-  withProposal: () => { return {
-    settings: {
-      target: "newLvmVg",
-      targetPVDevices: ["/dev/sda", "/dev/sdb"],
-      configureBoot: true,
-      bootDevice: "/dev/sda",
-      defaultBootDevice: "/dev/sdb",
-      encryptionPassword: "00000",
-      encryptionMethod: "luks1",
-      spacePolicy: "custom",
-      spaceActions: [
-        {device: "/dev/sda", action: "force_delete" },
-        {device: "/dev/sdb", action: "resize" }
-      ],
-      volumes: [
-        {
-          mountPath: "/",
-          target: "default",
-          targetDevice: "",
-          fsType: "Btrfs",
-          minSize: 1024,
-          maxSize: 2048,
-          autoSize: true,
-          snapshots: true,
-          transactional: true,
-          outline: {
-            required: true,
-            fsTypes: ["Btrfs", "Ext3"],
-            supportAutoSize: true,
-            snapshotsConfigurable: true,
-            snapshotsAffectSizes: true,
-            adjustByRam: false,
-            sizeRelevantVolumes: ["/home"]
+  withProposal: () => {
+    return {
+      settings: {
+        target: "newLvmVg",
+        targetPVDevices: ["/dev/sda", "/dev/sdb"],
+        configureBoot: true,
+        bootDevice: "/dev/sda",
+        defaultBootDevice: "/dev/sdb",
+        encryptionPassword: "00000",
+        encryptionMethod: "luks1",
+        spacePolicy: "custom",
+        spaceActions: [
+          { device: "/dev/sda", action: "force_delete" },
+          { device: "/dev/sdb", action: "resize" }
+        ],
+        volumes: [
+          {
+            mountPath: "/",
+            target: "default",
+            targetDevice: "",
+            fsType: "Btrfs",
+            minSize: 1024,
+            maxSize: 2048,
+            autoSize: true,
+            snapshots: true,
+            transactional: true,
+            outline: {
+              required: true,
+              fsTypes: ["Btrfs", "Ext3"],
+              supportAutoSize: true,
+              snapshotsConfigurable: true,
+              snapshotsAffectSizes: true,
+              adjustByRam: false,
+              sizeRelevantVolumes: ["/home"]
+            }
+          },
+          {
+            mountPath: "/home",
+            target: "default",
+            targetDevice: "",
+            fsType: "XFS",
+            minSize: 2048,
+            maxSize: 4096,
+            autoSize: false,
+            snapshots: false,
+            transactional: false,
+            outline: {
+              required: false,
+              fsTypes: ["Ext4", "XFS"],
+              supportAutoSize: false,
+              snapshotsConfigurable: false,
+              snapshotsAffectSizes: false,
+              adjustByRam: false,
+              sizeRelevantVolumes: []
+            }
           }
-        },
-        {
-          mountPath: "/home",
-          target: "default",
-          targetDevice: "",
-          fsType: "XFS",
-          minSize: 2048,
-          maxSize: 4096,
-          autoSize: false,
-          snapshots: false,
-          transactional: false,
-          outline: {
-            required: false,
-            fsTypes: ["Ext4", "XFS"],
-            supportAutoSize: false,
-            snapshotsConfigurable: false,
-            snapshotsAffectSizes: false,
-            adjustByRam: false,
-            sizeRelevantVolumes: []
-          }
-        }
-      ]
-    },
-    actions: [{device: 2, text: "Mount /dev/sdb1 as root", subvol: false, delete: false}]
-  }},
+        ]
+      },
+      actions: [{ device: 2, text: "Mount /dev/sdb1 as root", subvol: false, delete: false }]
+    };
+  },
   withAvailableDevices: () => ["/dev/sda", "/dev/sdb"],
   withIssues: () => [
-    {description: "Issue 1", details: "", source: 1, severity: 1},
-    {description: "Issue 2", details: "", source: 1, severity: 0},
-    {description: "Issue 3", details: "", source: 2, severity: 1}
+    { description: "Issue 1", details: "", source: 1, severity: 1 },
+    { description: "Issue 2", details: "", source: 1, severity: 0 },
+    { description: "Issue 3", details: "", source: 2, severity: 1 }
   ],
   withoutISCSINodes: () => {
     cockpitProxies.iscsiNodes = {};
@@ -693,7 +695,7 @@ const contexts = {
       partitionTable: {
         type: "gpt",
         partitions: [60, 61],
-        unusedSlots: [{start: 1234, size: 256}]
+        unusedSlots: [{ start: 1234, size: 256 }]
       }
     },
     {
@@ -1410,7 +1412,7 @@ describe("#proposal", () => {
   describe("#getProductMountPoints", () => {
     beforeEach(() => {
       client = new StorageClient(http);
-      mockJsonFn.mockResolvedValue({mountPoints: ["/", "swap", "/home"]});
+      mockJsonFn.mockResolvedValue({ mountPoints: ["/", "swap", "/home"] });
     });
 
     it("returns the list of product mount points", async () => {
@@ -1426,10 +1428,10 @@ describe("#proposal", () => {
           case "/storage/devices/system":
             return { ok: true, json: jest.fn().mockResolvedValue(contexts.withSystemDevices()) };
           case "/storage/product/params":
-            return { ok: true, json: jest.fn().mockResolvedValue({mountPoints: ["/", "swap", "/home"]}) };
+            return { ok: true, json: jest.fn().mockResolvedValue({ mountPoints: ["/", "swap", "/home"] }) };
           // GET for /storage/product/volume_for?path=XX
-          default:
-            const param = path.split("=")[1]
+          default: {
+            const param = path.split("=")[1];
             switch (param) {
               case "%2Fhome":
                 return {
@@ -1479,8 +1481,9 @@ describe("#proposal", () => {
                     }
                   })
                 };
-            };
-          };
+            }
+          }
+        }
       });
 
       client = new StorageClient(http);
@@ -1569,7 +1572,7 @@ describe("#proposal", () => {
             case "/storage/proposal/actions":
               return { ok: true, json: jest.fn().mockResolvedValue(proposal.actions) };
             case "/storage/product/params":
-              return { ok: true, json: jest.fn().mockResolvedValue({mountPoints: ["/", "swap"]}) };
+              return { ok: true, json: jest.fn().mockResolvedValue({ mountPoints: ["/", "swap"] }) };
           }
         });
       });
@@ -1645,7 +1648,7 @@ describe("#proposal", () => {
       describe("if boot is not configured", () => {
         beforeEach(() => {
           mockJsonFn.mockResolvedValue(
-            {...contexts.withProposal().settings, configureBoot: false, bootDevice: "/dev/sdc"}
+            { ...contexts.withProposal().settings, configureBoot: false, bootDevice: "/dev/sdc" }
           );
         });
 
@@ -1699,7 +1702,7 @@ describe("#proposal", () => {
         bootDevice: "/dev/vdb",
         encryptionPassword: "12345",
         spacePolicy: "custom",
-        spaceActions: [{device: "/dev/sda", action: "resize"}],
+        spaceActions: [{ device: "/dev/sda", action: "resize" }],
         volumes: [
           {
             mountPath: "/test1",
@@ -1723,7 +1726,7 @@ describe("#proposal", () => {
         spaceActions: [{ device: "/dev/sda", action: "resize" }],
       });
 
-      expect(mockPutFn).toHaveBeenCalledWith("/storage/proposal/settings", {spacePolicy: "delete"});
+      expect(mockPutFn).toHaveBeenCalledWith("/storage/proposal/settings", { spacePolicy: "delete" });
     });
   });
 });
