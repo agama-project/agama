@@ -41,7 +41,10 @@ impl<'a> StorageClient<'a> {
                 .path("/org/opensuse/Agama/Storage1")?
                 .build()
                 .await?,
-            proposal_proxy: ProposalProxy::new(&connection).await?,
+            proposal_proxy: ProposalProxy::builder(&connection)
+                .cache_properties(zbus::CacheProperties::No)
+                .build()
+                .await?,
             connection,
         })
     }
