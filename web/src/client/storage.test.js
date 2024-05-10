@@ -1201,16 +1201,12 @@ let client;
 
 describe("#probe", () => {
   beforeEach(() => {
-    cockpitProxies.storage = {
-      Probe: jest.fn()
-    };
-
-    client = new StorageClient();
+    client = new StorageClient(http);
   });
 
   it("probes the system", async () => {
     await client.probe();
-    expect(cockpitProxies.storage.Probe).toHaveBeenCalled();
+    expect(mockPostFn).toHaveBeenCalledWith("/storage/probe");
   });
 });
 

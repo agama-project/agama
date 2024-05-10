@@ -1575,11 +1575,13 @@ class StorageBaseClient {
 
   /**
    * Probes the system
-   * @todo
    */
   async probe() {
-    const proxy = await this.proxies.storage;
-    return proxy.Probe();
+    const response = await this.client.post("/storage/probe");
+
+    if (!response.ok) {
+      console.warn("Failed to probe the storage setup: ", response);
+    }
   }
 
   /**
