@@ -468,6 +468,7 @@ pub struct Device {
     // Connection.id
     pub connection: Option<String>,
     pub state: DeviceState,
+    pub state_reason: u8,
 }
 
 /// Represents a known network connection.
@@ -971,7 +972,7 @@ impl TryFrom<WirelessSettings> for WirelessConfig {
             ssid,
             mode,
             security,
-            password: Some(settings.password),
+            password: settings.password,
             ..Default::default()
         })
     }
@@ -985,7 +986,7 @@ impl TryFrom<WirelessConfig> for WirelessSettings {
             ssid: wireless.ssid.to_string(),
             mode: wireless.mode.to_string(),
             security: wireless.security.to_string(),
-            password: wireless.password.unwrap_or_default(),
+            password: wireless.password,
         })
     }
 }
