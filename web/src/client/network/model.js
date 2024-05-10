@@ -92,6 +92,28 @@ const SecurityProtocols = Object.freeze({
 //  WPA3Only: "wpa-eap-suite-b-192"
 // });
 
+const ApFlags = Object.freeze({
+  NONE: 0x00000000,
+  PRIVACY: 0x00000001,
+  WPS: 0x00000002,
+  WPS_PBC: 0x00000004,
+  WPS_PIN: 0x00000008,
+});
+
+const ApSecurityFlags = Object.freeze({
+  NONE: 0x00000000,
+  PAIR_WEP40: 0x00000001,
+  PAIR_WEP104: 0x00000002,
+  PAIR_TKIP: 0x00000004,
+  PAIR_CCMP: 0x00000008,
+  GROUP_WEP40: 0x00000010,
+  GROUP_WEP104: 0x00000020,
+  GROUP_TKIP: 0x00000040,
+  GROUP_CCMP: 0x00000080,
+  KEY_MGMT_PSK: 0x00000100,
+  KEY_MGMT_8021_X: 0x00000200,
+});
+
 /**
  * @typedef {object} IPAddress
  * @property {string} address - like "129.168.1.2"
@@ -226,13 +248,42 @@ const createAccessPoint = ({ ssid, hwAddress, strength, security }) => (
   }
 );
 
+/**
+ * @param {number} flags - AP flags
+ * @param {number} wpa_flags - AP WPA1 flags
+ * @param {number} rsn_flags - AP WPA2 flags
+ * @return {string[]} security protocols supported
+ */
+const securityFromFlags = (flags, wpa_flags, rsn_flags) => {
+  const security = [];
+
+  if ((flags & ApFlags.PRIVACY) && (wpa_flags === 0) && (rsn_flags === 0)) {
+    security.push(SecurityProtocols.WEP);
+  }
+
+  if (wpa_flags > 0) {
+    security.push(SecurityProtocols.WPA);
+  }
+  if (rsn_flags > 0) {
+    security.push(SecurityProtocols.RSN);
+  }
+  if (
+    (wpa_flags & ApSecurityFlags.KEY_MGMT_8021_X) || (rsn_flags & ApSecurityFlags.KEY_MGMT_8021_X)
+  ) {
+    security.push(SecurityProtocols._8021X);
+  }
+
+  return security;
+};
+
 export {
-  createAccessPoint,
-  createConnection,
-  createDevice,
   connectionHumanState,
   ConnectionState,
   ConnectionTypes,
+  createAccessPoint,
+  createConnection,
+  createDevice,
   DeviceState,
-  SecurityProtocols
+  securityFromFlags,
+  SecurityProtocols,
 };
