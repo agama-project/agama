@@ -72,7 +72,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const Providers = ({ children, withL10n }) => {
-  const client = createClient();
+  const client = createClient(new URL("https://localhost"));
 
   // FIXME: workaround to fix the tests. We should inject
   // the client instead of mocking `createClient`.

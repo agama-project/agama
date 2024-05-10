@@ -44,6 +44,10 @@ export default function Questions() {
     removeQuestion(question.id);
   }, [client.questions, removeQuestion]);
 
+  useEffect(() => client.questions.listenQuestions(),
+    [client.questions, cancellablePromise]
+  );
+
   useEffect(() => {
     cancellablePromise(client.questions.getQuestions())
       .then(setPendingQuestions)
