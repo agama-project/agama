@@ -43,7 +43,7 @@ enum ISCSINodeStreamError {
 impl ISCSINodeStream {
     /// Creates a new stream.
     ///
-    /// * `connection`: D-Bus connection to listen on.
+    /// * `dbus`: D-Bus connection to listen on.
     pub async fn new(dbus: &zbus::Connection) -> Result<Self, ServiceError> {
         const MANAGER_PATH: &str = "/org/opensuse/Agama/Storage1";
         const NAMESPACE: &str = "/org/opensuse/Agama/Storage1/iscsi_nodes";
