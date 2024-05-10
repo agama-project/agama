@@ -29,13 +29,14 @@ jest.mock("~/client");
 
 const l10nClientMock = {
   getUILocale: jest.fn().mockResolvedValue("en_US"),
+  getUIKeymap: jest.fn().mockResolvedValue("en"),
   keymaps: jest.fn().mockResolvedValue([]),
   getKeymap: jest.fn().mockResolvedValue(undefined),
   timezones: jest.fn().mockResolvedValue([]),
   getTimezone: jest.fn().mockResolvedValue(undefined),
   onLocalesChange: jest.fn(),
   onKeymapChange: jest.fn(),
-  onTimezoneChange: jest.fn()
+  onTimezoneChange: jest.fn(),
 };
 
 describe("Page", () => {
