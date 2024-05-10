@@ -1130,10 +1130,6 @@ const contexts = {
 
 const mockProxy = (iface, path) => {
   switch (iface) {
-    case "org.opensuse.Agama1.Issues": return cockpitProxies.issues;
-    case "org.opensuse.Agama.Storage1": return cockpitProxies.storage;
-    case "org.opensuse.Agama.Storage1.Proposal": return cockpitProxies.proposal;
-    case "org.opensuse.Agama.Storage1.Proposal.Calculator": return cockpitProxies.proposalCalculator;
     case "org.opensuse.Agama.Storage1.ISCSI.Initiator": return cockpitProxies.iscsiInitiator;
     case "org.opensuse.Agama.Storage1.ISCSI.Node": return cockpitProxies.iscsiNode[path];
     case "org.opensuse.Agama.Storage1.DASD.Manager": return cockpitProxies.dasdManager;
@@ -1171,10 +1167,6 @@ const mockCall = (_path, iface, method) => {
 };
 
 const reset = () => {
-  cockpitProxies.issues = {};
-  cockpitProxies.storage = {};
-  cockpitProxies.proposalCalculator = {};
-  cockpitProxies.proposal = null;
   cockpitProxies.iscsiInitiator = {};
   cockpitProxies.iscsiNodes = {};
   cockpitProxies.iscsiNode = {};
@@ -1427,59 +1419,69 @@ describe("#proposal", () => {
 
   describe("#defaultVolume", () => {
     beforeEach(() => {
-      cockpitProxies.proposalCalculator.ProductMountPoints = ["/", "swap", "/home"];
-      cockpitProxies.proposalCalculator.DefaultVolume = jest.fn(mountPath => {
-        switch (mountPath) {
-          case "/home": return {
-            MountPath: { t: "s", v: "/home" },
-            Target: { t: "s", v: "default" },
-            TargetDevice: { t: "s", v: "" },
-            FsType: { t: "s", v: "XFS" },
-            MinSize: { t: "x", v: 2048 },
-            MaxSize: { t: "x", v: 4096 },
-            AutoSize: { t: "b", v: false },
-            Snapshots: { t: "b", v: false },
-            Transactional: { t: "b", v: false },
-            Outline: {
-              t: "a{sv}",
-              v: {
-                Required: { t: "b", v: false },
-                FsTypes: { t: "as", v: [{ t: "s", v: "Ext4" }, { t: "s", v: "XFS" }] },
-                SupportAutoSize: { t: "b", v: false },
-                SnapshotsConfigurable: { t: "b", v: false },
-                SnapshotsAffectSizes: { t: "b", v: false },
-                AdjustByRam: { t: "b", v: false },
-                SizeRelevantVolumes: { t: "as", v: [] }
-              }
-            }
+      mockGetFn.mockImplementation(path => {
+        switch (path) {
+          case "/storage/devices/system":
+            return { ok: true, json: jest.fn().mockResolvedValue(contexts.withSystemDevices()) };
+          case "/storage/product/params":
+            return { ok: true, json: jest.fn().mockResolvedValue({mountPoints: ["/", "swap", "/home"]}) };
+          // GET for /storage/product/volume_for?path=XX
+          default:
+            const param = path.split("=")[1]
+            switch (param) {
+              case "%2Fhome":
+                return {
+                  ok: true,
+                  json: jest.fn().mockResolvedValue({
+                    mountPath: "/home",
+                    target: "default",
+                    targetDevice: "",
+                    fsType: "XFS",
+                    minSize: 2048,
+                    maxSize: 4096,
+                    autoSize: false,
+                    snapshots: false,
+                    transactional: false,
+                    outline: {
+                      required: false,
+                      fsTypes: ["Ext4", "XFS"],
+                      supportAutoSize: false,
+                      snapshotsConfigurable: false,
+                      snapshotsAffectSizes: false,
+                      adjustByRam: false,
+                      sizeRelevantVolumes: []
+                    }
+                  })
+                };
+              default:
+                return {
+                  ok: true,
+                  json: jest.fn().mockResolvedValue({
+                    mountPath: "",
+                    target: "default",
+                    targetDevice: "",
+                    fsType: "Ext4",
+                    minSize: 1024,
+                    maxSize: 2048,
+                    autoSize: false,
+                    snapshots: false,
+                    transactional: false,
+                    outline: {
+                      required: false,
+                      fsTypes: ["Ext4", "XFS"],
+                      supportAutoSize: false,
+                      snapshotsConfigurable: false,
+                      snapshotsAffectSizes: false,
+                      adjustByRam: false,
+                      sizeRelevantVolumes: []
+                    }
+                  })
+                };
+            };
           };
-          case "": return {
-            MountPath: { t: "s", v: "" },
-            Target: { t: "s", v: "default" },
-            TargetDevice: { t: "s", v: "" },
-            FsType: { t: "s", v: "Ext4" },
-            MinSize: { t: "x", v: 1024 },
-            MaxSize: { t: "x", v: 2048 },
-            AutoSize: { t: "b", v: false },
-            Snapshots: { t: "b", v: false },
-            Transactional: { t: "b", v: false },
-            Outline: {
-              t: "a{sv}",
-              v: {
-                Required: { t: "b", v: false },
-                FsTypes: { t: "as", v: [{ t: "s", v: "Ext4" }, { t: "s", v: "XFS" }] },
-                SupportAutoSize: { t: "b", v: false },
-                SnapshotsConfigurable: { t: "b", v: false },
-                SnapshotsAffectSizes: { t: "b", v: false },
-                AdjustByRam: { t: "b", v: false },
-                SizeRelevantVolumes: { t: "as", v: [] }
-              }
-            }
-          };
-        }
       });
 
-      client = new StorageClient();
+      client = new StorageClient(http);
     });
 
     it("returns the default volume for the given path", async () => {
