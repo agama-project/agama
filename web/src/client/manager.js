@@ -23,7 +23,6 @@
 
 import { WithProgress, WithStatus } from "./mixins";
 
-const MANAGER_PATH = "/org/opensuse/Agama/Manager1";
 const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
 
 /**
