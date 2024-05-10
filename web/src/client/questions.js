@@ -40,7 +40,7 @@ function buildQuestion(httpQuestion) {
 
   if (httpQuestion.withPassword) {
     question.type = QUESTION_TYPES.withPassword;
-    question.password = httpQuestion.withPassword.Password;
+    question.password = httpQuestion.withPassword.password;
   }
 
   return question;
@@ -74,7 +74,7 @@ class QuestionsClient {
   async getQuestions() {
     const response = await this.client.get("/questions");
     if (!response.ok) {
-      console.log("Failed to get questions: ", response);
+      console.warn("Failed to get questions: ", response);
       return [];
     }
     const questions = await response.json();
@@ -87,11 +87,9 @@ class QuestionsClient {
    * @param {Object} question
    */
   answer(question) {
-    let answer;
+    const answer = { generic: { answer: question.answer } };
     if (question.type === QUESTION_TYPES.withPassword) {
-      answer = { withPassword: { password: question.password } };
-    } else {
-      answer = { generic: { answer: question.answer } };
+      answer.withPassword = { password: question.password };
     }
 
     const path = `/questions/${question.id}/answer`;
