@@ -400,7 +400,7 @@ class ProposalManager {
     const findDevice = (devices, name) => {
       const device = devices.find(d => d.name === name);
 
-      if (device === undefined) console.log("Device not found: ", name);
+      if (device === undefined) console.warn("Device not found: ", name);
 
       return device;
     };
@@ -569,8 +569,6 @@ class ProposalManager {
 
     const systemDevices = await this.system.getDevices();
     const productMountPoints = await this.getProductMountPoints();
-
-    console.log("system: ", systemDevices);
 
     return {
       settings: {
