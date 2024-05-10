@@ -173,7 +173,7 @@ class HTTPClient {
    * Registers a handler for a given type of events.
    *
    * @param {string} type - Event type (e.g., "LocaleChanged").
-   * @param {(object) => void} func - Handler function to register.
+   * @param {(event: Object) => void} func - Handler function to register.
    * @return {RemoveFn} - Function to remove the handler.
    */
   onEvent(type, func) {

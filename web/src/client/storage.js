@@ -1466,18 +1466,41 @@ class ISCSIManager {
     return true;
   }
 
+  /**
+   * Registers a callback for initiator changes.
+   *
+   * @param {(event: object) => void} handler - Callback.
+   */
   onInitiatorChanged(handler) {
     return this.client.onEvent("ISCSIInitiatorChanged", handler);
   }
 
+  /**
+   * Registers a callback to run when an iSCSI node appears.
+   *
+   * @param {(node: ISCSINode) => void} handler - callback which receives the
+   *   ISCSINode object.
+   */
   onNodeAdded(handler) {
     return this.onNodeEvent("ISCSINodeAdded", handler);
   }
 
+  /**
+   * Registers a callback to run when an iSCSI node changes.
+   *
+   * @param {(node: ISCSINode) => void} handler - callback which receives the
+   *   ISCSINode object.
+   */
   onNodeChanged(handler) {
     return this.onNodeEvent("ISCSINodeChanged", handler);
   }
 
+  /**
+   * Registers a callback to run when an iSCSI node disappears.
+   *
+   * @param {(node: ISCSINode) => void} handler - callback which receives the
+   *   ISCSINode object.
+   */
   onNodeRemoved(handler) {
     return this.onNodeEvent("ISCSINodeRemoved", handler);
   }
@@ -1486,7 +1509,9 @@ class ISCSIManager {
    * @private
    * Registers a handler for the given iSCSI node event.
    *
-   * @param {string} eventName - Event name
+   * @param {string} eventName - Event name.
+   * @param {(node: ISCSINode) => void} handler - callback which receives the
+   *   ISCSINode object.
    */
   onNodeEvent(eventName, handler) {
     return this.client.onEvent(eventName, ({ node }) => handler(node));
