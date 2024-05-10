@@ -21,15 +21,15 @@ on:
           required: true
           type: string
 
-      project_name:
-        description: OBS project name
-        required: true
+      service_file:
+        description: Optional service file to copy from the sources
+        required: false
         type: string
 
 jobs:
   update_staging_package:
-    # do not run in forks
-    if: github.repository == 'openSUSE/agama'
+    # do not run in forks which do not set the OBS_PROJECT variable
+    if: vars.OBS_PROJECT != ''
 
     runs-on: ubuntu-latest
 
@@ -37,15 +37,13 @@ jobs:
       image: registry.opensuse.org/opensuse/tumbleweed:latest
 
     steps:
-      - name: Git Checkout
-        uses: actions/checkout@v3
-
       - name: Configure and refresh repositories
         # disable unused repositories to have a faster refresh
         run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
 
       - name: Install tools
         run: zypper --non-interactive install --no-recommends
+             git
              cpio
              obs-service-download_files
              obs-service-format_spec_file
@@ -53,14 +51,22 @@ jobs:
              osc
              ${{ inputs.install_packages }}
 
+      - name: Git Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+
       - name: Configure osc
         run: .github/workflows/configure_osc.sh
         env:
           OBS_USER:     ${{ secrets.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Checkout ${{ inputs.package_name }}
-        run: osc co ${{ inputs.project_name }} ${{ inputs.package_name }}
+      - name: Checkout ${{ vars.OBS_PROJECT }} ${{ inputs.package_name }}
+        run: osc co ${{ vars.OBS_PROJECT }} ${{ inputs.package_name }}
+
+      - name: Configure git
+        run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Update service revision
         # only when a tag has been pushed
@@ -68,23 +74,32 @@ jobs:
         run: |-
           echo "Updating revision to ${{ github.ref_name }}"
           sed -i -e 's#<param name="revision">.*</param>#<param name="revision">${{ github.ref_name }}</param>#' _service
-        working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
+        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
+
+      - name: Copy optional service file
+        # patch the URL in the file so it works also from forks, forks also by
+        # default do not inherit the tags so remove the version format option if
+        # no tag is present
+        if: inputs.service_file != ''
+        run: |
+          sed -e 's#<param name="url">.*</param>#<param name="url">https://github.com/${{ github.repository }}.git</param>#' ${{ inputs.service_file }} > ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}/_service
+          if [ -z "$(git tag -l)" ]; then sed -i -e 's#<param name="versionformat">.*</param>##' ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}/_service; fi
 
       - name: Run services
         run: osc service manualrun
-        working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
+        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
 
       - name: Check status
-        run: osc diff && osc status
-        working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
+        run: osc addremove && osc diff && osc status
+        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
 
-      - name: Commit ${{ inputs.package_name }}
+      - name: Commit ${{ inputs.package_name }} to ${{ vars.OBS_PROJECT }}
         run: |-
           osc commit -m "Updated to $(sed -e '/^version:/!d' -e 's/version: *\(.*\)/\1/' agama.obsinfo) ($(sed -e '/^commit:/!d' -e 's/commit: *\(.*\)/\1/' agama.obsinfo))"
-        working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
+        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
 
       - name: Submit the package
         # only when a tag has been pushed
         if: ${{ github.ref_type == 'tag' }}
         run: osc sr --yes -m "Releasing version ${{ github.ref_name }}"
-        working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
+        working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}

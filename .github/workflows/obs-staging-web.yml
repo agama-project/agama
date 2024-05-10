@@ -1,4 +1,4 @@
-name: Submit cockpit-agama
+name: Submit agama-web-ui
 
 on:
   # runs on pushes targeting the default branch
@@ -9,6 +9,9 @@ on:
       # run only when a web frontend source is changed
       - web/**
 
+  # allow running manually
+  workflow_dispatch:
+
 jobs:
   update_staging:
     uses: ./.github/workflows/obs-staging-shared.yml
@@ -16,5 +19,5 @@ jobs:
     secrets: inherit
     with:
       install_packages: obs-service-node_modules
-      project_name: systemsmanagement:Agama:Staging
-      package_name: cockpit-agama
+      package_name: agama-web-ui
+      service_file: web/package/_service

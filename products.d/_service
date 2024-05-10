@@ -1,14 +1,14 @@
 <services>
   <service name="obs_scm" mode="manual">
+    <param name="url">https://github.com/openSUSE/agama.git</param>
     <param name="versionformat">@PARENT_TAG@+@TAG_OFFSET@</param>
     <param name="versionrewrite-pattern">v(.*)</param>
-    <param name="url">https://github.com/openSUSE/agama.git</param>
     <param name="scm">git</param>
     <param name="revision">master</param>
-    <param name="subdir">playwright</param>
+    <param name="subdir">products.d</param>
     <param name="without-version">enable</param>
-    <param name="extract">package/agama-playwright.changes</param>
-    <param name="extract">package/agama-playwright.spec</param>
+    <param name="extract">agama-products-opensuse.changes</param>
+    <param name="extract">agama-products-opensuse.spec</param>
   </service>
   <service mode="buildtime" name="tar">
     <param name="obsinfo">agama.obsinfo</param>

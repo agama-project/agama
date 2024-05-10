@@ -11,11 +11,10 @@
     <div id="root"></div>
     <script type="module" src="./index.js"></script>
     <!--
-      The Cockpit server returns "po.<LANG>.js" content for the "po.js" request,
-      the requested language is obtained from the "CockpitLang" cookie sent in
-      the HTTP header. For missing translation files it returns an empty script.
+      The Agama server redirects the "po.js" request to "po.<LANG>.js",
+      the requested language is sent in the HTTP header in the "AgamaLang"
+      cookie. For missing translation files it returns an empty script.
     -->
     <script src="po.js" defer></script>
-    <script src="../manifests.js" defer></script>
   </body>
 </html>

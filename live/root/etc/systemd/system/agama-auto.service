@@ -4,7 +4,7 @@ Description=Agama automatic profile runner
 After=dbus.socket
 # it needs to NetworkManager, so it has access to it
 After=NetworkManager.service
-# it needs dinstaller, of course
+# it needs Agama, of course
 After=agama.service
 Requires=agama.service
 

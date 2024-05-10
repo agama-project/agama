@@ -9,10 +9,13 @@ on:
       # run only when a live ISO source is changed
       - live/**
 
+  # allow running manually
+  workflow_dispatch:
+
 jobs:
   update_staging_package:
-    # do not run in forks
-    if: github.repository_owner == 'openSUSE'
+    # do not run in forks which do not set the OBS_PROJECT variable
+    if: vars.OBS_PROJECT != ''
 
     runs-on: ubuntu-latest
 
@@ -20,16 +23,19 @@ jobs:
       image: registry.opensuse.org/opensuse/tumbleweed:latest
 
     steps:
-      - name: Git Checkout
-        uses: actions/checkout@v4
-
       - name: Configure and refresh repositories
         # disable unused repositories to have a faster refresh
         run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
 
       - name: Install tools
         run: zypper --non-interactive install --no-recommends
-             make osc
+             git make osc
+
+      - name: Git Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure git
+        run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Configure osc
         run: .github/workflows/configure_osc.sh
@@ -37,8 +43,8 @@ jobs:
           OBS_USER:     ${{ secrets.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Checkout agama-live
-        run: osc co -o dist systemsmanagement:Agama:Staging agama-live
+      - name: Checkout ${{ vars.OBS_PROJECT }} agama-live
+        run: osc co -o dist ${{ vars.OBS_PROJECT }} agama-live
         working-directory: ./live
 
       - name: Build sources
@@ -53,6 +59,6 @@ jobs:
         run: osc diff && osc status
         working-directory: ./live/dist
 
-      - name: Commit agama-live
+      - name: Commit agama-live to ${{ vars.OBS_PROJECT }}
         run:  osc commit -m "Updated to Agama $GITHUB_SHA"
         working-directory: ./live/dist

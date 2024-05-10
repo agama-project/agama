@@ -1,4 +1,4 @@
-name: Submit cockpit-agama-playwright
+name: Submit agama-playwright
 
 on:
   # runs on pushes targeting the default branch
@@ -9,11 +9,14 @@ on:
       # run only when a Playwright source is changed
       - playwright/**
 
+  # allow running manually
+  workflow_dispatch:
+
 jobs:
   update_staging:
     uses: ./.github/workflows/obs-staging-shared.yml
     # pass all secrets
     secrets: inherit
     with:
-      project_name: systemsmanagement:Agama:Staging
-      package_name: cockpit-agama-playwright
+      package_name: agama-playwright
+      service_file: playwright/package/_service

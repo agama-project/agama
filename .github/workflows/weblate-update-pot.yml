@@ -32,7 +32,7 @@ jobs:
           zypper --non-interactive install --no-recommends diffutils git gettext-tools npm-default "rubygem(ruby:$RUBY_VERSION:yast-rake)" "rubygem(ruby:$RUBY_VERSION:gettext)" yast2-devtools
 
       - name: Checkout Agama sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: agama
 
@@ -46,7 +46,7 @@ jobs:
         run:  msgfmt --check-format agama/web/agama.pot
 
       - name: Checkout Weblate sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: agama-weblate
           repository: openSUSE/agama-weblate

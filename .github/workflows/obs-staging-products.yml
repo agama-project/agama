@@ -9,11 +9,14 @@ on:
       # run only when a Rust source is changed
       - products.d/**
 
+  # allow running manually
+  workflow_dispatch:
+
 jobs:
   update_staging:
     uses: ./.github/workflows/obs-staging-shared.yml
     # pass all secrets
     secrets: inherit
     with:
-      project_name: systemsmanagement:Agama:Staging
       package_name: agama-products-opensuse
+      service_file: products.d/_service

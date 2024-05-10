@@ -43,12 +43,12 @@ jobs:
           git config --global user.email "yast-devel@opensuse.org"
 
       - name: Checkout sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: agama
 
       - name: Checkout Agama-weblate sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: agama-weblate
           repository: openSUSE/agama-weblate
