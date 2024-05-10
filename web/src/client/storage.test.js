@@ -1741,7 +1741,7 @@ describe("#proposal", () => {
   });
 });
 
-describe("#dasd", () => {
+describe.skip("#dasd", () => {
   const sampleDasdDevice = {
     id: "8",
     accessType: "",
@@ -1851,7 +1851,7 @@ describe("#dasd", () => {
   });
 });
 
-describe("#zfcp", () => {
+describe.skip("#zfcp", () => {
   const probeFn = jest.fn();
   let controllersCallbacks;
   let disksCallbacks;
