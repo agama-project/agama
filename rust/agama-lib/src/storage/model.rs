@@ -56,17 +56,11 @@ impl TryFrom<zbus::zvariant::ObjectPath<'_>> for DeviceSid {
     type Error = zbus::zvariant::Error;
 
     fn try_from(path: zbus::zvariant::ObjectPath) -> Result<Self, Self::Error> {
-        if let Some((_, sid_str)) = path.as_str().rsplit_once("/") {
-            let sid: u32 = sid_str
-                .parse()
-                .map_err(|_| Self::Error::Message(format!("Cannot parse sid from {}", path)))?;
-            Ok(sid.into())
-        } else {
-            Err(Self::Error::Message(format!(
-                "Cannot find sid from path {}",
-                path
-            )))
-        }
+        path.as_str()
+            .rsplit_once("/")
+            .and_then(|(_, sid)| sid.parse::<u32>().ok())
+            .ok_or_else(|| Self::Error::Message(format!("Cannot parse sid from {}", path)))
+            .map(DeviceSid)
     }
 }
 
