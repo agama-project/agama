@@ -1544,7 +1544,9 @@ describe("#proposal", () => {
 
     describe("if there is no proposal yet", () => {
       beforeEach(() => {
-        mockJsonFn.mockResolvedValue({});
+        mockGetFn.mockImplementation(() => {
+          return { ok: false };
+        });
       });
 
       it("returns undefined", async () => {

@@ -507,11 +507,13 @@ class ProposalManager {
     const settingsResponse = await this.client.get("/storage/proposal/settings");
     if (!settingsResponse.ok) {
       console.warn("Failed to get proposal settings: ", settingsResponse);
+      return undefined;
     }
 
     const actionsResponse = await this.client.get("/storage/proposal/actions");
     if (!actionsResponse.ok) {
       console.warn("Failed to get proposal actions: ", actionsResponse);
+      return undefined;
     }
 
     /**
