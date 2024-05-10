@@ -371,7 +371,7 @@ class DevicesManager {
 
     const response = await this.client.get(`/storage/devices/${this.rootPath}`);
     if (!response.ok) {
-      console.log("Failed to get storage devices: ", response);
+      console.warn("Failed to get storage devices: ", response);
     }
     const jsonDevices = await response.json();
     return jsonDevices.map(d => buildDevice(d, jsonDevices));
@@ -409,7 +409,7 @@ class ProposalManager {
 
     const response = await this.client.get("/storage/proposal/usable_devices");
     if (!response.ok) {
-      console.log("Failed to get usable devices: ", response);
+      console.warn("Failed to get usable devices: ", response);
     }
     const usable_devices = await response.json();
     return usable_devices.map(name => findDevice(systemDevices, name)).filter(d => d);
@@ -457,7 +457,7 @@ class ProposalManager {
   async getProductMountPoints() {
     const response = await this.client.get("/storage/product/params");
     if (!response.ok) {
-      console.log("Failed to get product params: ", response);
+      console.warn("Failed to get product params: ", response);
     }
 
     return response.json().then(params => params.mountPoints);
@@ -471,7 +471,7 @@ class ProposalManager {
   async getEncryptionMethods() {
     const response = await this.client.get("/storage/product/params");
     if (!response.ok) {
-      console.log("Failed to get product params: ", response);
+      console.warn("Failed to get product params: ", response);
     }
 
     return response.json().then(params => params.encryptionMethods);
@@ -487,7 +487,7 @@ class ProposalManager {
     const param = encodeURIComponent(mountPath);
     const response = await this.client.get(`/storage/product/volume_for?mount_path=${param}`);
     if (!response.ok) {
-      console.log("Failed to get product volume: ", response);
+      console.warn("Failed to get product volume: ", response);
     }
 
     const systemDevices = await this.system.getDevices();
@@ -506,12 +506,12 @@ class ProposalManager {
   async getResult() {
     const settingsResponse = await this.client.get("/storage/proposal/settings");
     if (!settingsResponse.ok) {
-      console.log("Failed to get proposal settings: ", settingsResponse);
+      console.warn("Failed to get proposal settings: ", settingsResponse);
     }
 
     const actionsResponse = await this.client.get("/storage/proposal/actions");
     if (!actionsResponse.ok) {
-      console.log("Failed to get proposal actions: ", actionsResponse);
+      console.warn("Failed to get proposal actions: ", actionsResponse);
     }
 
     /**
@@ -625,13 +625,10 @@ class ProposalManager {
     /** @fixe Define HttpSettings type */
     /** @type {object} */
     const httpSettings = buildHttpSettings(settings);
-
-    console.log("HttpSettings: ", httpSettings);
-
     const response = await this.client.put("/storage/proposal/settings", httpSettings);
 
     if (!response.ok) {
-      console.log("Failed to set proposal settings: ", response);
+      console.warn("Failed to set proposal settings: ", response);
     }
 
     return response.ok ? 0 : 1;
@@ -1593,7 +1590,7 @@ class StorageBaseClient {
   async isDeprecated() {
     const response = await this.client.get("/storage/devices/dirty");
     if (!response.ok) {
-      console.log("Failed to get storage devices dirty: ", response);
+      console.warn("Failed to get storage devices dirty: ", response);
     }
     return response.json();
   }
