@@ -339,6 +339,7 @@ class DevicesManager {
 
       /** @type {StorageDevice} */
       const device = {
+        sid: 0,
         name: "",
         description: "",
         isDrive: false,
