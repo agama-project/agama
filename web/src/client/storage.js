@@ -29,7 +29,6 @@ import { HTTPClient } from "./http";
 const STORAGE_OBJECT = "/org/opensuse/Agama/Storage1";
 const STORAGE_JOBS_NAMESPACE = "/org/opensuse/Agama/Storage1/jobs";
 const STORAGE_JOB_IFACE = "org.opensuse.Agama.Storage1.Job";
-const PROPOSAL_IFACE = "org.opensuse.Agama.Storage1.Proposal";
 const ISCSI_INITIATOR_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Initiator";
 const ISCSI_NODES_NAMESPACE = "/org/opensuse/Agama/Storage1/iscsi_nodes";
 const ISCSI_NODE_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Node";
@@ -593,61 +592,49 @@ class ProposalManager {
    * @returns {Promise<number>} 0 on success, 1 on failure
    */
   async calculate(settings) {
-    const {
-      target,
-      targetDevice,
-      targetPVDevices,
-      configureBoot,
-      bootDevice,
-      encryptionPassword,
-      encryptionMethod,
-      spacePolicy,
-      spaceActions,
-      volumes
-    } = settings;
-
-    const dbusSpaceActions = () => {
-      const dbusSpaceAction = (spaceAction) => {
-        return {
-          Device: { t: "s", v: spaceAction.device },
-          Action: { t: "s", v: spaceAction.action }
-        };
+    const buildHttpVolume = (volume) => {
+      return {
+        autoSize: volume.autoSize,
+        fsType: volume.fsType,
+        maxSize: volume.maxSize,
+        minSize: volume.minSize,
+        mountOptions: volume.mountOptions,
+        mountPath: volume.mountPath,
+        snapshots: volume.snapshots,
+        target: VolumeTargets[volume.target],
+        targetDevice: volume.targetDevice?.name
       };
-
-      if (spacePolicy !== "custom") return;
-
-      return spaceActions?.map(dbusSpaceAction);
     };
 
-    const dbusVolume = (volume) => {
-      return removeUndefinedCockpitProperties({
-        MountPath: { t: "s", v: volume.mountPath },
-        FsType: { t: "s", v: volume.fsType },
-        MinSize: { t: "t", v: volume.minSize },
-        MaxSize: { t: "t", v: volume.maxSize },
-        AutoSize: { t: "b", v: volume.autoSize },
-        Target: { t: "s", v: VolumeTargets[volume.target] },
-        TargetDevice: { t: "s", v: volume.targetDevice?.name },
-        Snapshots: { t: "b", v: volume.snapshots },
-        Transactional: { t: "b", v: volume.transactional },
-      });
+    const buildHttpSettings = (settings) => {
+      return {
+        bootDevice: settings.bootDevice,
+        configureBoot: settings.configureBoot,
+        encryptionMethod: settings.encryptionMethod,
+        encryptionPBKDFunction: settings.encryptionPBKDFunction,
+        encryptionPassword: settings.encryptionPassword,
+        spaceActions: settings.spacePolicy === "custom" ? settings.spaceActions : [],
+        spacePolicy: settings.spacePolicy,
+        target: ProposalTargets[settings.target],
+        targetDevice: settings.targetDevice,
+        targetPVDevices: settings.targetPVDevices,
+        volumes: settings.volumes.map(buildHttpVolume)
+      };
     };
 
-    const dbusSettings = removeUndefinedCockpitProperties({
-      Target: { t: "s", v: ProposalTargets[target] },
-      TargetDevice: { t: "s", v: targetDevice },
-      TargetPVDevices: { t: "as", v: targetPVDevices },
-      ConfigureBoot: { t: "b", v: configureBoot },
-      BootDevice: { t: "s", v: bootDevice },
-      EncryptionPassword: { t: "s", v: encryptionPassword },
-      EncryptionMethod: { t: "s", v: encryptionMethod },
-      SpacePolicy: { t: "s", v: spacePolicy },
-      SpaceActions: { t: "aa{sv}", v: dbusSpaceActions() },
-      Volumes: { t: "aa{sv}", v: volumes?.map(dbusVolume) }
-    });
+    /** @fixe Define HttpSettings type */
+    /** @type {object} */
+    const httpSettings = buildHttpSettings(settings);
 
-    const proxy = await this.proxies.proposalCalculator;
-    return proxy.Calculate(dbusSettings);
+    console.log("HttpSettings: ", httpSettings);
+
+    const response = await this.client.put("/storage/proposal/settings", httpSettings);
+
+    if (!response.ok) {
+      console.log("Failed to set proposal settings: ", response);
+    }
+
+    return response.ok ? 0 : 1;
   }
 
   /**
