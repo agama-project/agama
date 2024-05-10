@@ -24,6 +24,7 @@
 
 import { HTTPClient } from "./http";
 import DBusClient from "./dbus";
+import { HTTPClient } from "./http";
 import { StorageClient } from "./storage";
 
 const mockJsonFn = jest.fn();
@@ -54,6 +55,8 @@ jest.mock("./http", () => {
     }),
   };
 });
+
+const http = new HTTPClient(new URL("http://localhost"));
 
 /**
  * @typedef {import("~/client/storage").StorageDevice} StorageDevice
@@ -493,127 +496,96 @@ const sdbStaging = {
 const stagingDevices = { sdb: sdbStaging };
 
 const contexts = {
-  withoutProposal: () => {
-    cockpitProxies.proposal = null;
-  },
-  withProposal: () => {
-    cockpitProxies.proposal = {
-      Settings: {
-        Target: { t: "s", v: "newLvmVg" },
-        TargetPVDevices: {
-          t: "av",
-          v: [
-            { t: "s", v: "/dev/sda" },
-            { t: "s", v: "/dev/sdb" }
-          ]
-        },
-        ConfigureBoot: { t: "b", v: true },
-        BootDevice: { t: "s", v: "/dev/sda" },
-        DefaultBootDevice: { t: "s", v: "/dev/sdb" },
-        EncryptionPassword: { t: "s", v: "00000" },
-        EncryptionMethod: { t: "s", v: "luks1" },
-        SpacePolicy: { t: "s", v: "custom" },
-        SpaceActions: {
-          t: "av",
-          v: [
-            {
-              t: "a{sv}",
-              v: {
-                Device: { t: "s", v: "/dev/sda" },
-                Action: { t: "s", v: "force_delete" }
-              }
-            },
-            {
-              t: "a{sv}",
-              v: {
-                Device: { t: "s", v: "/dev/sdb" },
-                Action: { t: "s", v: "resize" }
-              }
-            }
-          ]
-        },
-        Volumes: {
-          t: "av",
-          v: [
-            {
-              t: "a{sv}",
-              v: {
-                MountPath: { t: "s", v: "/" },
-                Target: { t: "s", v: "default" },
-                TargetDevice: { t: "s", v: "" },
-                FsType: { t: "s", v: "Btrfs" },
-                MinSize: { t: "x", v: 1024 },
-                MaxSize: { t: "x", v: 2048 },
-                AutoSize: { t: "b", v: true },
-                Snapshots: { t: "b", v: true },
-                Transactional: { t: "b", v: true },
-                Outline: {
-                  t: "a{sv}",
-                  v: {
-                    Required: { t: "b", v: true },
-                    FsTypes: { t: "as", v: [{ t: "s", v: "Btrfs" }, { t: "s", v: "Ext3" }] },
-                    SupportAutoSize: { t: "b", v: true },
-                    SnapshotsConfigurable: { t: "b", v: true },
-                    SnapshotsAffectSizes: { t: "b", v: true },
-                    AdjustByRam: { t: "b", v: false },
-                    SizeRelevantVolumes: { t: "as", v: [{ t: "s", v: "/home" }] }
-                  }
-                }
-              }
-            },
-            {
-              t: "a{sv}",
-              v: {
-                MountPath: { t: "s", v: "/home" },
-                Target: { t: "s", v: "default" },
-                TargetDevice: { t: "s", v: "" },
-                FsType: { t: "s", v: "XFS" },
-                MinSize: { t: "x", v: 2048 },
-                MaxSize: { t: "x", v: 4096 },
-                AutoSize: { t: "b", v: false },
-                Snapshots: { t: "b", v: false },
-                Transactional: { t: "b", v: false },
-                Outline: {
-                  t: "a{sv}",
-                  v: {
-                    Required: { t: "b", v: false },
-                    FsTypes: { t: "as", v: [{ t: "s", v: "Ext4" }, { t: "s", v: "XFS" }] },
-                    SupportAutoSize: { t: "b", v: false },
-                    SnapshotsConfigurable: { t: "b", v: false },
-                    SnapshotsAffectSizes: { t: "b", v: false },
-                    AdjustByRam: { t: "b", v: false },
-                    SizeRelevantVolumes: { t: "as", v: [] }
-                  }
-                }
-              }
-            }
-          ]
-        },
-      },
-      Actions: [
-        {
-          Device: { t: "u", v: 2 },
-          Text: { t: "s", v: "Mount /dev/sdb1 as root" },
-          Subvol: { t: "b", v: false },
-          Delete: { t: "b", v: false },
-        },
+  withProposal: () => { return {
+    settings: {
+      target: "newLvmVg",
+      targetPVDevices: ["/dev/sda", "/dev/sdb"],
+      configureBoot: true,
+      bootDevice: "/dev/sda",
+      defaultBootDevice: "/dev/sdb",
+      encryptionPassword: "00000",
+      encryptionMethod: "luks1",
+      spacePolicy: "custom",
+      spaceActions: [
+        {device: "/dev/sda", action: "force_delete" },
+        {device: "/dev/sdb", action: "resize" }
       ],
-    };
+      volumes: [
+        {
+          mountPath: "/",
+          target: "default",
+          targetDevice: "",
+          fsType: "Btrfs",
+          minSize: 1024,
+          maxSize: 2048,
+          autoSize: true,
+          snapshots: true,
+          transactional: true,
+          outline: {
+            required: true,
+            fsTypes: ["Btrfs", "Ext3"],
+            supportAutoSize: true,
+            snapshotsConfigurable: true,
+            snapshotsAffectSizes: true,
+            adjustByRam: false,
+            sizeRelevantVolumes: ["/home"]
+          }
+        },
+        {
+          mountPath: "/home",
+          target: "default",
+          targetDevice: "",
+          fsType: "XFS",
+          minSize: 2048,
+          maxSize: 4096,
+          autoSize: false,
+          snapshots: false,
+          transactional: false,
+          outline: {
+            required: false,
+            fsTypes: ["Ext4", "XFS"],
+            supportAutoSize: false,
+            snapshotsConfigurable: false,
+            snapshotsAffectSizes: false,
+            adjustByRam: false,
+            sizeRelevantVolumes: []
+          }
+        }
+      ]
+    },
+    actions: [{device: 2, text: "Mount /dev/sdb1 as root", subvol: false, delete: false}]
+  }},
+  withAvailableDevices: () => ["/dev/sda", "/dev/sdb"],
+  withIssues: () => [
+    {description: "Issue 1", details: "", source: 1, severity: 1},
+    {description: "Issue 2", details: "", source: 1, severity: 0},
+    {description: "Issue 3", details: "", source: 2, severity: 1}
+  ],
+  withoutISCSINodes: () => {
+    cockpitProxies.iscsiNodes = {};
   },
-  withAvailableDevices: () => {
-    cockpitProxies.proposalCalculator.AvailableDevices = [
-      "/org/opensuse/Agama/Storage1/system/59",
-      "/org/opensuse/Agama/Storage1/system/62",
-    ];
-  },
-  withoutIssues: () => {
-    cockpitProxies.issues = {
-      All: [],
-    };
-  },
-  withIssues: () => {
-    cockpitProxies.issues = {
-      All: [["Issue 1", "", 1, 1], ["Issue 2", "", 1, 0], ["Issue 3", "", 2, 1]],
+  withISCSINodes: () => {
+    cockpitProxies.iscsiNodes = {
+      "/org/opensuse/Agama/Storage1/iscsi_nodes/1": {
+        path: "/org/opensuse/Agama/Storage1/iscsi_nodes/1",
+        Target: "iqn.2023-01.com.example:37dac",
+        Address: "192.168.100.101",
+        Port: 3260,
+        Interface: "default",
+        IBFT: false,
+        Connected: false,
+        Startup: ""
+      },
+      "/org/opensuse/Agama/Storage1/iscsi_nodes/2": {
+        path: "/org/opensuse/Agama/Storage1/iscsi_nodes/2",
+        Target: "iqn.2023-01.com.example:74afb",
+        Address: "192.168.100.102",
+        Port: 3260,
+        Interface: "default",
+        IBFT: true,
+        Connected: true,
+        Startup: "onboot"
+      }
     };
   },
   withISCSINodes: () => [
@@ -707,467 +679,476 @@ const contexts = {
       }
     };
   },
-  withSystemDevices: () => {
-    managedObjects["/org/opensuse/Agama/Storage1/system/59"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 59 },
-        Name: { t: "s", v: "/dev/sda" },
-        Description: { t: "s", v: "" }
+  withSystemDevices: () => [
+    {
+      deviceInfo: {
+        sid: 59,
+        name: "/dev/sda",
+        description: ""
       },
-      "org.opensuse.Agama.Storage1.Drive": {
-        Type: { t: "s", v: "disk" },
-        Vendor: { t: "s", v: "Micron" },
-        Model: { t: "s", v: "Micron 1100 SATA" },
-        Driver: { t: "as", v: ["ahci", "mmcblk"] },
-        Bus: { t: "s", v: "IDE" },
-        BusId: { t: "s", v: "" },
-        Transport: { t: "s", v: "usb" },
-        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: true } } },
+      blockDevice: {
+        active: true,
+        encrypted: false,
+        size: 1024,
+        start: 0,
+        recoverableSize: 0,
+        systems: [],
+        udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
+        udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"]
       },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: false },
-        Size: { t: "x", v: 1024 },
-        Start: { t: "t", v: 0 },
-        RecoverableSize: { t: "x", v: 0 },
-        Systems: { t: "as", v: [] },
-        UdevIds: { t: "as", v: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"] },
-        UdevPaths: { t: "as", v: ["pci-0000:00-12", "pci-0000:00-12-ata"] }
-      },
-      "org.opensuse.Agama.Storage1.PartitionTable": {
-        Type: { t: "s", v: "gpt" },
-        Partitions: {
-          t: "as",
-          v: ["/org/opensuse/Agama/Storage1/system/60", "/org/opensuse/Agama/Storage1/system/61"]
-        },
-        UnusedSlots: { t: "a(tt)", v: [[1234, 256]] }
-      }
-    };
-    managedObjects["/org/opensuse/Agama/Storage1/system/60"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 60 },
-        Name: { t: "s", v: "/dev/sda1" },
-        Description: { t: "s", v: "" }
-      },
-      "org.opensuse.Agama.Storage1.Partition": {
-        EFI: { t: "b", v: false }
-      },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: false },
-        Size: { t: "x", v: 512 },
-        Start: { t: "t", v: 123 },
-        RecoverableSize: { t: "x", v: 128 },
-        Systems: { t: "as", v: [] },
-        UdevIds: { t: "as", v: [] },
-        UdevPaths: { t: "as", v: [] }
-      },
-      "org.opensuse.Agama.Storage1.Component": {
-        Type: { t: "s", v: "md_device" },
-        DeviceNames: { t: "as", v: ["/dev/md0"] },
-        Devices: { t: "ao", v: ["/org/opensuse/Agama/Storage1/system/66"] }
-      }
-    };
-    managedObjects["/org/opensuse/Agama/Storage1/system/61"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 61 },
-        Name: { t: "s", v: "/dev/sda2" },
-        Description: { t: "s", v: "" }
-      },
-      "org.opensuse.Agama.Storage1.Partition": {
-        EFI: { t: "b", v: false }
-      },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: false },
-        Size: { t: "x", v: 256 },
-        Start: { t: "t", v: 1789 },
-        RecoverableSize: { t: "x", v: 0 },
-        Systems: { t: "as", v: [] },
-        UdevIds: { t: "as", v: [] },
-        UdevPaths: { t: "as", v: [] }
-      },
-      "org.opensuse.Agama.Storage1.Component": {
-        Type: { t: "s", v: "md_device" },
-        DeviceNames: { t: "as", v: ["/dev/md0"] },
-        Devices: { t: "ao", v: ["/org/opensuse/Agama/Storage1/system/66"] }
-      }
-    };
-    managedObjects["/org/opensuse/Agama/Storage1/system/62"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 62 },
-        Name: { t: "s", v: "/dev/sdb" },
-        Description: { t: "s", v: "" }
-      },
-      "org.opensuse.Agama.Storage1.Drive": {
-        Type: { t: "s", v: "disk" },
-        Vendor: { t: "s", v: "Samsung" },
-        Model: { t: "s", v: "Samsung Evo 8 Pro" },
-        Driver: { t: "as", v: ["ahci"] },
-        Bus: { t: "s", v: "IDE" },
-        BusId: { t: "s", v: "" },
-        Transport: { t: "s", v: "" },
-        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: false } } },
-      },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: false },
-        Size: { t: "x", v: 2048 },
-        Start: { t: "t", v: 0 },
-        RecoverableSize: { t: "x", v: 0 },
-        Systems: { t: "as", v: [] },
-        UdevIds: { t: "as", v: [] },
-        UdevPaths: { t: "as", v: ["pci-0000:00-19"] }
-      },
-      "org.opensuse.Agama.Storage1.Component": {
-        Type: { t: "s", v: "raid_device" },
-        DeviceNames: { t: "as", v: ["/dev/mapper/isw_ddgdcbibhd_244"] },
-        Devices: { t: "ao", v: ["/org/opensuse/Agama/Storage1/system/67"] }
-      }
-    };
-    managedObjects["/org/opensuse/Agama/Storage1/system/63"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 63 },
-        Name: { t: "s", v: "/dev/sdc" },
-        Description: { t: "s", v: "" }
-      },
-      "org.opensuse.Agama.Storage1.Drive": {
-        Type: { t: "s", v: "disk" },
-        Vendor: { t: "s", v: "Disk" },
-        Model: { t: "s", v: "" },
-        Driver: { t: "as", v: [] },
-        Bus: { t: "s", v: "IDE" },
-        BusId: { t: "s", v: "" },
-        Transport: { t: "s", v: "" },
-        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: false } } },
-      },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: false },
-        Size: { t: "x", v: 2048 },
-        Start: { t: "t", v: 0 },
-        RecoverableSize: { t: "x", v: 0 },
-        Systems: { t: "as", v: [] },
-        UdevIds: { t: "as", v: [] },
-        UdevPaths: { t: "as", v: [] }
-      },
-      "org.opensuse.Agama.Storage1.Component": {
-        Type: { t: "s", v: "raid_device" },
-        DeviceNames: { t: "as", v: ["/dev/mapper/isw_ddgdcbibhd_244"] },
-        Devices: { t: "ao", v: ["/org/opensuse/Agama/Storage1/system/67"] }
-      }
-    };
-    managedObjects["/org/opensuse/Agama/Storage1/system/64"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 64 },
-        Name: { t: "s", v: "/dev/sdd" },
-        Description: { t: "s", v: "" }
-      },
-      "org.opensuse.Agama.Storage1.Drive": {
-        Type: { t: "s", v: "disk" },
-        Vendor: { t: "s", v: "Disk" },
-        Model: { t: "s", v: "" },
-        Driver: { t: "as", v: [] },
-        Bus: { t: "s", v: "IDE" },
-        BusId: { t: "s", v: "" },
-        Transport: { t: "s", v: "" },
-        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: false } } },
-      },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: false },
-        Size: { t: "x", v: 2048 },
-        Start: { t: "t", v: 0 },
-        RecoverableSize: { t: "x", v: 0 },
-        Systems: { t: "as", v: [] },
-        UdevIds: { t: "as", v: [] },
-        UdevPaths: { t: "as", v: [] }
-      },
-      "org.opensuse.Agama.Storage1.Component": {
-        Type: { t: "s", v: "multipath_wire" },
-        DeviceNames: { t: "as", v: ["/dev/mapper/36005076305ffc73a00000000000013b4"] },
-        Devices: { t: "ao", v: ["/org/opensuse/Agama/Storage1/system/68"] }
-      }
-    };
-    managedObjects["/org/opensuse/Agama/Storage1/system/65"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 65 },
-        Name: { t: "s", v: "/dev/sde" },
-        Description: { t: "s", v: "" }
-      },
-      "org.opensuse.Agama.Storage1.Drive": {
-        Type: { t: "s", v: "disk" },
-        Vendor: { t: "s", v: "Disk" },
-        Model: { t: "s", v: "" },
-        Driver: { t: "as", v: [] },
-        Bus: { t: "s", v: "IDE" },
-        BusId: { t: "s", v: "" },
-        Transport: { t: "s", v: "" },
-        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: false } } },
-      },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: false },
-        Size: { t: "x", v: 2048 },
-        Start: { t: "t", v: 0 },
-        RecoverableSize: { t: "x", v: 0 },
-        Systems: { t: "as", v: [] },
-        UdevIds: { t: "as", v: [] },
-        UdevPaths: { t: "as", v: [] }
-      },
-      "org.opensuse.Agama.Storage1.Component": {
-        Type: { t: "s", v: "multipath_wire" },
-        DeviceNames: { t: "as", v: ["/dev/mapper/36005076305ffc73a00000000000013b4"] },
-        Devices: { t: "ao", v: ["/org/opensuse/Agama/Storage1/system/68"] }
-      }
-    };
-    managedObjects["/org/opensuse/Agama/Storage1/system/66"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 66 },
-        Name: { t: "s", v: "/dev/md0" },
-        Description: { t: "s", v: "EXT4 RAID" }
-      },
-      "org.opensuse.Agama.Storage1.MD": {
-        Level: { t: "s", v: "raid0" },
-        UUID: { t: "s", v: "12345:abcde" },
-        Devices: {
-          t: "ao",
-          v: ["/org/opensuse/Agama/Storage1/system/60", "/org/opensuse/Agama/Storage1/system/61"]
+      drive: {
+        type: "disk",
+        vendor: "Micron",
+        model: "Micron 1100 SATA",
+        driver: ["ahci", "mmcblk"],
+        bus: "IDE",
+        busId: "",
+        transport: "usb",
+        info: {
+          dellBOSS: false,
+          sdCard: true
         }
       },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: false },
-        Size: { t: "x", v: 2048 },
-        Start: { t: "t", v: 0 },
-        RecoverableSize: { t: "x", v: 0 },
-        Systems: { t: "as", v: ["openSUSE Leap 15.2"] },
-        UdevIds: { t: "as", v: [] },
-        UdevPaths: { t: "as", v: [] }
-      },
-      "org.opensuse.Agama.Storage1.Filesystem": {
-        SID: { t: "u", v: 100 },
-        Type: { t: "s", v: "ext4" },
-        MountPath: { t: "s", v: "/test" },
-        Label: { t: "s", v: "system" }
+      partitionTable: {
+        type: "gpt",
+        partitions: [60, 61],
+        unusedSlots: [{start: 1234, size: 256}]
       }
-    };
-    managedObjects["/org/opensuse/Agama/Storage1/system/67"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 67 },
-        Name: { t: "s", v: "/dev/mapper/isw_ddgdcbibhd_244" },
-        Description: { t: "s", v: "" }
+    },
+    {
+      deviceInfo: {
+        sid: 60,
+        name: "/dev/sda1",
+        description: ""
       },
-      "org.opensuse.Agama.Storage1.Drive": {
-        Type: { t: "s", v: "raid" },
-        Vendor: { t: "s", v: "Dell" },
-        Model: { t: "s", v: "Dell BOSS-N1 Modular" },
-        Driver: { t: "as", v: [] },
-        Bus: { t: "s", v: "" },
-        BusId: { t: "s", v: "" },
-        Transport: { t: "s", v: "" },
-        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: true }, SDCard: { t: "b", v: false } } },
+      partition: { EFI: false },
+      blockDevice: {
+        active: true,
+        encrypted: false,
+        size: 512,
+        start: 123,
+        recoverableSize: 128,
+        systems: [],
+        udevIds: [],
+        udevPaths: []
       },
-      "org.opensuse.Agama.Storage1.RAID" : {
-        Devices: {
-          t: "ao",
-          v: ["/org/opensuse/Agama/Storage1/system/62", "/org/opensuse/Agama/Storage1/system/63"]
+      component: {
+        type: "md_device",
+        deviceNames: ["/dev/md0"],
+        devices: [66]
+      }
+    },
+    {
+      deviceInfo: {
+        sid: 61,
+        name: "/dev/sda2",
+        description: ""
+      },
+      partition: { EFI: false },
+      blockDevice: {
+        active: true,
+        encrypted: false,
+        size: 256,
+        start: 1789,
+        recoverableSize: 0,
+        systems: [],
+        udevIds: [],
+        udevPaths: []
+      },
+      component: {
+        type: "md_device",
+        deviceNames: ["/dev/md0"],
+        devices: [66]
+      }
+    },
+    {
+      deviceInfo: {
+        sid: 62,
+        name: "/dev/sdb",
+        description: ""
+      },
+      blockDevice: {
+        active: true,
+        encrypted: false,
+        size: 2048,
+        start: 0,
+        recoverableSize: 0,
+        systems: [],
+        udevIds: [],
+        udevPaths: ["pci-0000:00-19"]
+      },
+      drive: {
+        type: "disk",
+        vendor: "Samsung",
+        model: "Samsung Evo 8 Pro",
+        driver: ["ahci"],
+        bus: "IDE",
+        busId: "",
+        transport: "",
+        info: {
+          dellBOSS: false,
+          sdCard: false
         }
       },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: false },
-        Size: { t: "x", v: 2048 },
-        Start: { t: "t", v: 0 },
-        RecoverableSize: { t: "x", v: 0 },
-        Systems: { t: "as", v: [] },
-        UdevIds: { t: "as", v: [] },
-        UdevPaths: { t: "as", v: [] }
+      component: {
+        type: "raid_device",
+        deviceNames: ["/dev/mapper/isw_ddgdcbibhd_244"],
+        devices: [67]
       }
-    };
-    managedObjects["/org/opensuse/Agama/Storage1/system/68"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 68 },
-        Name: { t: "s", v: "/dev/mapper/36005076305ffc73a00000000000013b4" },
-        Description: { t: "s", v: "" }
+    },
+    {
+      deviceInfo: {
+        sid: 63,
+        name: "/dev/sdc",
+        description: ""
       },
-      "org.opensuse.Agama.Storage1.Drive": {
-        Type: { t: "s", v: "multipath" },
-        Vendor: { t: "s", v: "" },
-        Model: { t: "s", v: "" },
-        Driver: { t: "as", v: [] },
-        Bus: { t: "s", v: "" },
-        BusId: { t: "s", v: "" },
-        Transport: { t: "s", v: "" },
-        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: false } } },
+      blockDevice: {
+        active: true,
+        encrypted: false,
+        size: 2048,
+        start: 0,
+        recoverableSize: 0,
+        systems: [],
+        udevIds: [],
+        udevPaths: []
       },
-      "org.opensuse.Agama.Storage1.Multipath" : {
-        Wires: {
-          t: "ao",
-          v: ["/org/opensuse/Agama/Storage1/system/64", "/org/opensuse/Agama/Storage1/system/65"]
+      drive: {
+        type: "disk",
+        vendor: "Disk",
+        model: "",
+        driver: [],
+        bus: "IDE",
+        busId: "",
+        transport: "",
+        info: {
+          dellBOSS: false,
+          sdCard: false
         }
       },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: false },
-        Size: { t: "x", v: 2048 },
-        Start: { t: "t", v: 0 },
-        RecoverableSize: { t: "x", v: 0 },
-        Systems: { t: "as", v: [] },
-        UdevIds: { t: "as", v: [] },
-        UdevPaths: { t: "as", v: [] }
+      component: {
+        type: "raid_device",
+        deviceNames: ["/dev/mapper/isw_ddgdcbibhd_244"],
+        devices: [67]
       }
-    };
-    managedObjects["/org/opensuse/Agama/Storage1/system/69"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 69 },
-        Name: { t: "s", v: "/dev/dasda" },
-        Description: { t: "s", v: "" }
+    },
+    {
+      deviceInfo: {
+        sid: 64,
+        name: "/dev/sdd",
+        description: ""
       },
-      "org.opensuse.Agama.Storage1.Drive": {
-        Type: { t: "s", v: "dasd" },
-        Vendor: { t: "s", v: "IBM" },
-        Model: { t: "s", v: "IBM" },
-        Driver: { t: "as", v: [] },
-        Bus: { t: "s", v: "" },
-        BusId: { t: "s", v: "0.0.0150" },
-        Transport: { t: "s", v: "" },
-        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: false } } },
+      blockDevice: {
+        active: true,
+        encrypted: false,
+        size: 2048,
+        start: 0,
+        recoverableSize: 0,
+        systems: [],
+        udevIds: [],
+        udevPaths: []
       },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: false },
-        Size: { t: "x", v: 2048 },
-        Start: { t: "t", v: 0 },
-        RecoverableSize: { t: "x", v: 0 },
-        Systems: { t: "as", v: [] },
-        UdevIds: { t: "as", v: [] },
-        UdevPaths: { t: "as", v: [] }
+      drive: {
+        type: "disk",
+        vendor: "Disk",
+        model: "",
+        driver: [],
+        bus: "IDE",
+        busId: "",
+        transport: "",
+        info: {
+          dellBOSS: false,
+          sdCard: false
+        }
+      },
+      component: {
+        type: "multipath_wire",
+        deviceNames: ["/dev/mapper/36005076305ffc73a00000000000013b4"],
+        devices: [68]
       }
-    };
-    managedObjects["/org/opensuse/Agama/Storage1/system/70"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 70 },
-        Name: { t: "s", v: "/dev/sdf" },
-        Description: { t: "s", v: "" }
+    },
+    {
+      deviceInfo: {
+        sid: 65,
+        name: "/dev/sde",
+        description: ""
       },
-      "org.opensuse.Agama.Storage1.Drive": {
-        Type: { t: "s", v: "disk" },
-        Vendor: { t: "s", v: "Disk" },
-        Model: { t: "s", v: "" },
-        Driver: { t: "as", v: [] },
-        Bus: { t: "s", v: "IDE" },
-        BusId: { t: "s", v: "" },
-        Transport: { t: "s", v: "" },
-        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: false } } },
+      blockDevice: {
+        active: true,
+        encrypted: false,
+        size: 2048,
+        start: 0,
+        recoverableSize: 0,
+        systems: [],
+        udevIds: [],
+        udevPaths: []
       },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: false },
-        Size: { t: "x", v: 2048 },
-        Start: { t: "t", v: 0 },
-        RecoverableSize: { t: "x", v: 0 },
-        Systems: { t: "as", v: [] },
-        UdevIds: { t: "as", v: [] },
-        UdevPaths: { t: "as", v: [] }
+      drive: {
+        type: "disk",
+        vendor: "Disk",
+        model: "",
+        driver: [],
+        bus: "IDE",
+        busId: "",
+        transport: "",
+        info: {
+          dellBOSS: false,
+          sdCard: false
+        }
       },
-      "org.opensuse.Agama.Storage1.PartitionTable": {
-        Type: { t: "s", v: "gpt" },
-        Partitions: {
-          t: "as",
-          v: ["/org/opensuse/Agama/Storage1/system/71"]
-        },
-        UnusedSlots: { t: "a(tt)", v: [] }
+      component: {
+        type: "multipath_wire",
+        deviceNames: ["/dev/mapper/36005076305ffc73a00000000000013b4"],
+        devices: [68]
       }
-    };
-    managedObjects["/org/opensuse/Agama/Storage1/system/71"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 71 },
-        Name: { t: "s", v: "/dev/sdf1" },
-        Description: { t: "s", v: "PV of vg0" }
+    },
+    {
+      deviceInfo: {
+        sid: 66,
+        name: "/dev/md0",
+        description: "EXT4 RAID"
       },
-      "org.opensuse.Agama.Storage1.Partition": {
-        EFI: { t: "b", v: false }
+      blockDevice: {
+        active: true,
+        encrypted: false,
+        size: 2048,
+        start: 0,
+        recoverableSize: 0,
+        systems: ["openSUSE Leap 15.2"],
+        udevIds: [],
+        udevPaths: []
       },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: true },
-        Size: { t: "x", v: 512 },
-        Start: { t: "t", v: 1024 },
-        RecoverableSize: { t: "x", v: 0 },
-        Systems: { t: "as", v: [] },
-        UdevIds: { t: "as", v: [] },
-        UdevPaths: { t: "as", v: [] }
+      md: {
+        level: "raid0",
+        uuid: "12345:abcde",
+        devices: [60, 61]
       },
-      "org.opensuse.Agama.Storage1.Component": {
-        Type: { t: "s", v: "physical_volume" },
-        DeviceNames: { t: "as", v: ["/dev/vg0"] },
-        Devices: { t: "ao", v: ["/org/opensuse/Agama/Storage1/system/72"] }
+      filesystem: {
+        sid: 100,
+        type: "ext4",
+        mountPath: "/test",
+        label: "system"
       }
-    };
-    managedObjects["/org/opensuse/Agama/Storage1/system/72"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 72 },
-        Name: { t: "s", v: "/dev/vg0" },
-        Description: { t: "s", v: "LVM" }
+    },
+    {
+      deviceInfo: {
+        sid: 67,
+        name: "/dev/mapper/isw_ddgdcbibhd_244",
+        description: ""
       },
-      "org.opensuse.Agama.Storage1.LVM.VolumeGroup": {
-        Type: { t: "s", v: "physical_volume" },
-        Size: { t: "x", v: 512 },
-        PhysicalVolumes: { t: "ao", v: ["/org/opensuse/Agama/Storage1/system/71"] },
-        LogicalVolumes: { t: "ao", v: ["/org/opensuse/Agama/Storage1/system/73"] }
+      blockDevice: {
+        active: true,
+        encrypted: false,
+        size: 2048,
+        start: 0,
+        recoverableSize: 0,
+        systems: [],
+        udevIds: [],
+        udevPaths: []
+      },
+      drive: {
+        type: "raid",
+        vendor: "Dell",
+        model: "Dell BOSS-N1 Modular",
+        driver: [],
+        bus: "",
+        busId: "",
+        transport: "",
+        info: {
+          dellBOSS: true,
+          sdCard: false
+        }
+      },
+      raid: {
+        devices: [62, 63]
       }
-    };
-    managedObjects["/org/opensuse/Agama/Storage1/system/73"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 73 },
-        Name: { t: "s", v: "/dev/vg0/lv1" },
-        Description: { t: "s", v: "" }
+    },
+    {
+      deviceInfo: {
+        sid: 68,
+        name: "/dev/mapper/36005076305ffc73a00000000000013b4",
+        description: ""
       },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: false },
-        Size: { t: "x", v: 512 },
-        Start: { t: "t", v: 0 },
-        RecoverableSize: { t: "x", v: 0 },
-        Systems: { t: "as", v: [] },
-        UdevIds: { t: "as", v: [] },
-        UdevPaths: { t: "as", v: [] }
+      blockDevice: {
+        active: true,
+        encrypted: false,
+        size: 2048,
+        start: 0,
+        recoverableSize: 0,
+        systems: [],
+        udevIds: [],
+        udevPaths: []
       },
-      "org.opensuse.Agama.Storage1.LVM.LogicalVolume": {
-        VolumeGroup: { t: "o", v: "/org/opensuse/Agama/Storage1/system/72" }
+      drive: {
+        type: "multipath",
+        vendor: "",
+        model: "",
+        driver: [],
+        bus: "",
+        busId: "",
+        transport: "",
+        info: {
+          dellBOSS: false,
+          sdCard: false
+        }
+      },
+      multipath: {
+        wires: [64, 65]
       }
-    };
-  },
-  withStagingDevices: () => {
-    managedObjects["/org/opensuse/Agama/Storage1/staging/62"] = {
-      "org.opensuse.Agama.Storage1.Device": {
-        SID: { t: "u", v: 62 },
-        Name: { t: "s", v: "/dev/sdb" },
-        Description: { t: "s", v: "" }
+    },
+    {
+      deviceInfo: {
+        sid: 69,
+        name: "/dev/dasda",
+        description: ""
       },
-      "org.opensuse.Agama.Storage1.Drive": {
-        Type: { t: "s", v: "disk" },
-        Vendor: { t: "s", v: "Samsung" },
-        Model: { t: "s", v: "Samsung Evo 8 Pro" },
-        Driver: { t: "as", v: ["ahci"] },
-        Bus: { t: "s", v: "IDE" },
-        BusId: { t: "s", v: "" },
-        Transport: { t: "s", v: "" },
-        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: false } } },
+      blockDevice: {
+        active: true,
+        encrypted: false,
+        size: 2048,
+        start: 0,
+        recoverableSize: 0,
+        systems: [],
+        udevIds: [],
+        udevPaths: []
       },
-      "org.opensuse.Agama.Storage1.Block": {
-        Active: { t: "b", v: true },
-        Encrypted: { t: "b", v: false },
-        Size: { t: "x", v: 2048 },
-        Start: { t: "t", v: 0 },
-        RecoverableSize: { t: "x", v: 0 },
-        Systems: { t: "as", v: [] },
-        UdevIds: { t: "as", v: [] },
-        UdevPaths: { t: "as", v: ["pci-0000:00-19"] }
+      drive: {
+        type: "dasd",
+        vendor: "IBM",
+        model: "IBM",
+        driver: [],
+        bus: "",
+        busId: "0.0.0150",
+        transport: "",
+        info: {
+          dellBOSS: false,
+          sdCard: false
+        }
       }
-    };
-  }
+    },
+    {
+      deviceInfo: {
+        sid: 70,
+        name: "/dev/sdf",
+        description: ""
+      },
+      blockDevice: {
+        active: true,
+        encrypted: false,
+        size: 2048,
+        start: 0,
+        recoverableSize: 0,
+        systems: [],
+        udevIds: [],
+        udevPaths: []
+      },
+      drive: {
+        type: "disk",
+        vendor: "Disk",
+        model: "",
+        driver: [],
+        bus: "IDE",
+        busId: "",
+        transport: "",
+        info: {
+          dellBOSS: false,
+          sdCard: false
+        }
+      },
+      partitionTable: {
+        type: "gpt",
+        partitions: [71],
+        unusedSlots: []
+      }
+    },
+    {
+      deviceInfo: {
+        sid: 71,
+        name: "/dev/sdf1",
+        description: "PV of vg0"
+      },
+      partition: { EFI: false },
+      blockDevice: {
+        active: true,
+        encrypted: true,
+        size: 512,
+        start: 1024,
+        recoverableSize: 0,
+        systems: [],
+        udevIds: [],
+        udevPaths: []
+      },
+      component: {
+        type: "physical_volume",
+        deviceNames: ["/dev/vg0"],
+        devices: [72]
+      }
+    },
+    {
+      deviceInfo: {
+        sid: 72,
+        name: "/dev/vg0",
+        description: "LVM"
+      },
+      lvmVg: {
+        type: "physical_volume",
+        size: 512,
+        physicalVolumes: [71],
+        logicalVolumes: [73]
+      }
+    },
+    {
+      deviceInfo: {
+        sid: 73,
+        name: "/dev/vg0/lv1",
+        description: ""
+      },
+      blockDevice: {
+        active: true,
+        encrypted: false,
+        size: 512,
+        start: 0,
+        recoverableSize: 0,
+        systems: [],
+        udevIds: [],
+        udevPaths: []
+      },
+      lvmLv: {
+        volumeGroup: [72]
+      }
+    },
+  ],
+  withStagingDevices: () => [
+    {
+      deviceInfo: {
+        sid: 62,
+        name: "/dev/sdb",
+        description: ""
+      },
+      drive: {
+        type: "disk",
+        vendor: "Samsung",
+        model: "Samsung Evo 8 Pro",
+        driver: ["ahci"],
+        bus: "IDE",
+        busId: "",
+        transport: "",
+        info: {
+          dellBOSS: false,
+          sdCard: false
+        }
+      },
+      blockDevice: {
+        active: true,
+        encrypted: false,
+        size: 2048,
+        start: 0,
+        recoverableSize: 0,
+        systems: [],
+        udevIds: [],
+        udevPaths: ["pci-0000:00-19"]
+      }
+    }
+  ]
 };
 
 const mockProxy = (iface, path) => {
@@ -1263,11 +1244,8 @@ describe("#probe", () => {
 describe("#isDeprecated", () => {
   describe("if the system is not deprecated", () => {
     beforeEach(() => {
-      cockpitProxies.storage = {
-        DeprecatedSystem: false
-      };
-
-      client = new StorageClient();
+      mockJsonFn.mockResolvedValue(false);
+      client = new StorageClient(http);
     });
 
     it("returns false", async () => {
@@ -1313,13 +1291,16 @@ describe("#onDeprecate", () => {
 });
 
 describe("#getIssues", () => {
+  beforeEach(() => {
+    client = new StorageClient(http);
+  });
+
   describe("if there are no issues", () => {
     beforeEach(() => {
-      contexts.withoutIssues();
+      mockJsonFn.mockResolvedValue([]);
     });
 
     it("returns an empty list", async () => {
-      client = new StorageClient();
       const issues = await client.getIssues();
       expect(issues).toEqual([]);
     });
@@ -1327,11 +1308,10 @@ describe("#getIssues", () => {
 
   describe("if there are issues", () => {
     beforeEach(() => {
-      contexts.withIssues();
+      mockJsonFn.mockResolvedValue(contexts.withIssues());
     });
 
     it("returns the list of issues", async () => {
-      client = new StorageClient();
       const issues = await client.getIssues();
       expect(issues).toEqual(expect.arrayContaining([
         { description: "Issue 1", details: "", source: "system", severity: "error" },
@@ -1344,11 +1324,11 @@ describe("#getIssues", () => {
 
 describe("#getErrors", () => {
   beforeEach(() => {
-    contexts.withIssues();
+    client = new StorageClient(http);
+    mockJsonFn.mockResolvedValue(contexts.withIssues());
   });
 
   it("returns the issues with error severity", async () => {
-    client = new StorageClient();
     const errors = await client.getErrors();
     expect(errors.map(e => e.description)).toEqual(expect.arrayContaining(["Issue 1", "Issue 3"]));
   });
@@ -1375,10 +1355,13 @@ describe("#onIssuesChange", () => {
 
 describe("#system", () => {
   describe("#getDevices", () => {
+    beforeEach(() => {
+      client = new StorageClient(http);
+    });
+
     describe("when there are devices", () => {
       beforeEach(() => {
-        contexts.withSystemDevices();
-        client = new StorageClient();
+        mockJsonFn.mockResolvedValue(contexts.withSystemDevices());
       });
 
       it("returns the system devices", async () => {
@@ -1389,7 +1372,7 @@ describe("#system", () => {
 
     describe("when there are not devices", () => {
       beforeEach(() => {
-        client = new StorageClient();
+        mockJsonFn.mockResolvedValue([]);
       });
 
       it("returns an empty list", async () => {
@@ -1402,10 +1385,13 @@ describe("#system", () => {
 
 describe("#staging", () => {
   describe("#getDevices", () => {
+    beforeEach(() => {
+      client = new StorageClient(http);
+    });
+
     describe("when there are devices", () => {
       beforeEach(() => {
-        contexts.withStagingDevices();
-        client = new StorageClient();
+        mockJsonFn.mockResolvedValue(contexts.withStagingDevices());
       });
 
       it("returns the staging devices", async () => {
@@ -1416,7 +1402,7 @@ describe("#staging", () => {
 
     describe("when there are not devices", () => {
       beforeEach(() => {
-        client = new StorageClient();
+        mockJsonFn.mockResolvedValue([]);
       });
 
       it("returns an empty list", async () => {
@@ -1430,9 +1416,18 @@ describe("#staging", () => {
 describe("#proposal", () => {
   describe("#getAvailableDevices", () => {
     beforeEach(() => {
-      contexts.withSystemDevices();
-      contexts.withAvailableDevices();
-      client = new StorageClient();
+      mockGetFn.mockImplementation(path => {
+        switch (path) {
+          case "/storage/devices/system":
+            return { ok: true, json: jest.fn().mockResolvedValue(contexts.withSystemDevices()) };
+          case "/storage/proposal/usable_devices":
+            return { ok: true, json: jest.fn().mockResolvedValue(contexts.withAvailableDevices()) };
+          default:
+            return { ok: true, json: mockJsonFn };
+        }
+      });
+
+      client = new StorageClient(http);
     });
 
     it("returns the list of available devices", async () => {
@@ -1443,8 +1438,8 @@ describe("#proposal", () => {
 
   describe("#getProductMountPoints", () => {
     beforeEach(() => {
-      cockpitProxies.proposalCalculator.ProductMountPoints = ["/", "swap", "/home"];
-      client = new StorageClient();
+      client = new StorageClient(http);
+      mockJsonFn.mockResolvedValue({mountPoints: ["/", "swap", "/home"]});
     });
 
     it("returns the list of product mount points", async () => {
@@ -1562,10 +1557,13 @@ describe("#proposal", () => {
   });
 
   describe("#getResult", () => {
+    beforeEach(() => {
+      client = new StorageClient(http);
+    });
+
     describe("if there is no proposal yet", () => {
       beforeEach(() => {
-        contexts.withoutProposal();
-        client = new StorageClient();
+        mockJsonFn.mockResolvedValue({});
       });
 
       it("returns undefined", async () => {
@@ -1576,14 +1574,24 @@ describe("#proposal", () => {
 
     describe("if there is a proposal", () => {
       beforeEach(() => {
-        contexts.withSystemDevices();
-        contexts.withProposal();
-        cockpitProxies.proposalCalculator.ProductMountPoints = ["/", "swap"];
+        const proposal = contexts.withProposal();
+        mockJsonFn.mockResolvedValue(proposal.settings);
+
+        mockGetFn.mockImplementation(path => {
+          switch (path) {
+            case "/storage/devices/system":
+              return { ok: true, json: jest.fn().mockResolvedValue(contexts.withSystemDevices()) };
+            case "/storage/proposal/settings":
+              return { ok: true, json: mockJsonFn };
+            case "/storage/proposal/actions":
+              return { ok: true, json: jest.fn().mockResolvedValue(proposal.actions) };
+            case "/storage/product/params":
+              return { ok: true, json: jest.fn().mockResolvedValue({mountPoints: ["/", "swap"]}) };
+          }
+        });
       });
 
       it("returns the proposal settings and actions", async () => {
-        client = new StorageClient();
-
         const { settings, actions } = await client.proposal.getResult();
 
         expect(settings).toMatchObject({
@@ -1653,12 +1661,12 @@ describe("#proposal", () => {
 
       describe("if boot is not configured", () => {
         beforeEach(() => {
-          cockpitProxies.proposal.Settings.ConfigureBoot = { t: "b", v: false };
-          cockpitProxies.proposal.Settings.BootDevice = { t: "s", v: "/dev/sdc" };
+          mockJsonFn.mockResolvedValue(
+            {...contexts.withProposal().settings, configureBoot: false, bootDevice: "/dev/sdc"}
+          );
         });
 
         it("does not include the boot device as installation device", async () => {
-          client = new StorageClient();
           const { settings } = await client.proposal.getResult();
           expect(settings.installationDevices).toEqual([sda, sdb]);
         });

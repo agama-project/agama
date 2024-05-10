@@ -255,7 +255,15 @@ class DevicesManager {
       /** @type {(device: StorageDevice, info: object) => void} */
       const addDriveInfo = (device, info) => {
         device.isDrive = true;
-        Object.assign(device, info);
+        device.type = info.type;
+        device.vendor = info.vendor;
+        device.model = info.model;
+        device.driver = info.driver;
+        device.bus = info.bus;
+        device.busId = info.busId;
+        device.transport = info.transport;
+        device.sdCard = info.info.sdCard;
+        device.dellBOSS = info.info.dellBOSS;
       };
 
       /** @type {(device: StorageDevice, info: object) => void} */
@@ -272,7 +280,7 @@ class DevicesManager {
       const addMDInfo = (device, info) => {
         device.type = "md";
         device.level = info.level;
-        device.uuid = info.UUID;
+        device.uuid = info.uuid;
         addRaidInfo(device, info);
       };
 
@@ -320,7 +328,10 @@ class DevicesManager {
 
       /** @type {(device: StorageDevice, info: object) => void} */
       const addComponentInfo = (device, info) => {
-        device.component = Object.assign({}, info);
+        device.component = {
+          type: info.type,
+          deviceNames: info.deviceNames
+        };
       };
 
       /** @type {StorageDevice} */
@@ -476,12 +487,12 @@ class ProposalManager {
       console.log("Failed to get product volume: ", response);
     }
 
-    return response.json();
-    // TODO: change from master
-    //    const proxy = await this.proxies.proposalCalculator;
-    //    const systemDevices = await this.system.getDevices();
-    //    const productMountPoints = await this.getProductMountPoints();
-    //    return this.buildVolume(await proxy.DefaultVolume(mountPath), systemDevices, productMountPoints);
+    const systemDevices = await this.system.getDevices();
+    const productMountPoints = await this.getProductMountPoints();
+
+    return response.json().then(volume => {
+      return this.buildVolume(volume, systemDevices, productMountPoints);
+    });
   }
 
   /**
@@ -672,8 +683,7 @@ class ProposalManager {
     };
 
     // Indicate whether a volume is defined by the product.
-    if (productMountPoints.includes(volume.mountPath))
-      volume.outline.productDefined = true;
+    volume.outline.productDefined = productMountPoints.includes(volume.mountPath);
 
     return volume;
   }
