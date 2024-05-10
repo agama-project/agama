@@ -15,6 +15,62 @@ pub struct StorageDevice {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct DeviceSid(u32);
+
+impl From<u32> for DeviceSid {
+    fn from(sid: u32) -> Self {
+        DeviceSid(sid)
+    }
+}
+
+impl TryFrom<i32> for DeviceSid {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        u32::try_from(value).map(|v| v.into()).or_else(|_| {
+            Err(Self::Error::Message(format!(
+                "Cannot convert sid from {}",
+                value
+            )))
+        })
+    }
+}
+
+impl TryFrom<zbus::zvariant::Value<'_>> for DeviceSid {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::ObjectPath(path) => path.try_into(),
+            Value::U32(v) => Ok(v.into()),
+            Value::I32(v) => v.try_into(),
+            _ => Err(Self::Error::Message(format!(
+                "Cannot convert sid from {}",
+                value
+            ))),
+        }
+    }
+}
+
+impl TryFrom<zbus::zvariant::ObjectPath<'_>> for DeviceSid {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(path: zbus::zvariant::ObjectPath) -> Result<Self, Self::Error> {
+        if let Some((_, sid_str)) = path.as_str().rsplit_once("/") {
+            let sid: u32 = sid_str
+                .parse()
+                .map_err(|_| Self::Error::Message(format!("Cannot parse sid from {}", path)))?;
+            Ok(sid.into())
+        } else {
+            Err(Self::Error::Message(format!(
+                "Cannot find sid from path {}",
+                path
+            )))
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct DeviceSize(u64);
 
 impl From<u64> for DeviceSize {
@@ -264,7 +320,7 @@ impl TryFrom<HashMap<String, OwnedValue>> for ProposalSettings {
 #[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Action {
-    device: String,
+    device: DeviceSid,
     text: String,
     subvol: bool,
     delete: bool,
@@ -370,10 +426,10 @@ pub struct Volume {
     target: VolumeTarget,
     target_device: Option<String>,
     fs_type: String,
-    min_size: DeviceSize,
+    min_size: Option<DeviceSize>,
     max_size: Option<DeviceSize>,
     auto_size: bool,
-    snapshots: Option<bool>,
+    snapshots: bool,
     transactional: Option<bool>,
     outline: Option<VolumeOutline>,
 }
@@ -385,20 +441,17 @@ impl<'a> Into<zbus::zvariant::Value<'a>> for Volume {
             ("MountOptions", Value::new(self.mount_options)),
             ("Target", self.target.into()),
             ("FsType", Value::new(self.fs_type)),
-            ("MinSize", self.min_size.into()),
             ("AutoSize", Value::new(self.auto_size)),
+            ("Snapshots", Value::new(self.snapshots)),
         ]);
         if let Some(dev) = self.target_device {
             result.insert("TargetDevice", Value::new(dev));
         }
+        if let Some(value) = self.min_size {
+            result.insert("MinSize", value.into());
+        }
         if let Some(value) = self.max_size {
             result.insert("MaxSize", value.into());
-        }
-        if let Some(value) = self.snapshots {
-            result.insert("Snapshots", Value::new(value));
-        }
-        if let Some(value) = self.transactional {
-            result.insert("Transactional", Value::new(value));
         }
         // intentionally skip outline as it is not send to dbus and act as read only parameter
         Value::new(result)
@@ -425,10 +478,10 @@ impl TryFrom<HashMap<String, OwnedValue>> for Volume {
             target: get_property(&volume_hash, "Target")?,
             target_device: get_optional_property(&volume_hash, "TargetDevice")?,
             fs_type: get_property(&volume_hash, "FsType")?,
-            min_size: get_property(&volume_hash, "MinSize")?,
+            min_size: get_optional_property(&volume_hash, "MinSize")?,
             max_size: get_optional_property(&volume_hash, "MaxSize")?,
             auto_size: get_property(&volume_hash, "AutoSize")?,
-            snapshots: get_optional_property(&volume_hash, "Snapshots")?,
+            snapshots: get_property(&volume_hash, "Snapshots")?,
             transactional: get_optional_property(&volume_hash, "Transactional")?,
             outline: get_optional_property(&volume_hash, "Outline")?,
         };
@@ -460,48 +513,6 @@ pub struct DeviceInfo {
     pub sid: DeviceSid,
     pub name: String,
     pub description: String,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct DeviceSid(u32);
-
-impl From<u32> for DeviceSid {
-    fn from(sid: u32) -> Self {
-        DeviceSid(sid)
-    }
-}
-
-impl TryFrom<zbus::zvariant::Value<'_>> for DeviceSid {
-    type Error = zbus::zvariant::Error;
-
-    fn try_from(value: Value) -> Result<Self, Self::Error> {
-        match value {
-            Value::ObjectPath(path) => path.try_into(),
-            Value::U32(v) => Ok(v.into()),
-            _ => Err(Self::Error::Message(format!(
-                "Cannot convert sid from {}",
-                value
-            ))),
-        }
-    }
-}
-
-impl TryFrom<zbus::zvariant::ObjectPath<'_>> for DeviceSid {
-    type Error = zbus::zvariant::Error;
-
-    fn try_from(path: zbus::zvariant::ObjectPath) -> Result<Self, Self::Error> {
-        if let Some((_, sid_str)) = path.as_str().rsplit_once("/") {
-            let sid: u32 = sid_str.parse().map_err(|e| {
-                Self::Error::Message(format!("Cannot parse sid from {}: {}", path, e))
-            })?;
-            Ok(sid.into())
-        } else {
-            Err(Self::Error::Message(format!(
-                "Cannot find sid from path {}",
-                path
-            )))
-        }
-    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
