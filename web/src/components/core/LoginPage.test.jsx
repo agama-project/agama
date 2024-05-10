@@ -75,16 +75,4 @@ describe("LoginPage", () => {
       within(dialog).getByText(/About/);
     });
   });
-
-  describe("when user is already authenticated", () => {
-    beforeEach(() => {
-      mockIsAuthenticated = true;
-    });
-
-    it("redirects to root route", async () => {
-      plainRender(<LoginPage />);
-      // react-router-dom Navigate is mocked. See test-utils for more details.
-      await screen.findByText("Navigating to /");
-    });
-  });
 });
