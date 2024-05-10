@@ -1,5 +1,7 @@
 [Unit]
 Description=Agama Web Server
+# agama-hostname might change the host name which is used when creating
+# a self signed certificate, run it before the web server
 After=network-online.target agama.service agama-hostname.service
 
 [Service]
