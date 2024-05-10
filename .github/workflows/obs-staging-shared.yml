@@ -77,8 +77,9 @@ jobs:
         working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
 
       - name: Copy optional service file
-        # patch the URL in the file so it works also from forks,
-        # forks also by default do not inherit the tags so remove the version format option
+        # patch the URL in the file so it works also from forks, forks also by
+        # default do not inherit the tags so remove the version format option if
+        # no tag is present
         if: inputs.service_file != ''
         run: |
           sed -e 's#<param name="url">.*</param>#<param name="url">https://github.com/${{ github.repository }}.git</param>#' ${{ inputs.service_file }} > ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}/_service
