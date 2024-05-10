@@ -33,6 +33,9 @@ const mockGetFn = jest.fn().mockImplementation(() => {
 const mockPostFn = jest.fn().mockImplementation(() => {
   return { ok: true };
 });
+const mockPutFn = jest.fn().mockImplementation(() => {
+  return { ok: true };
+});
 const mockDeleteFn = jest.fn().mockImplementation(() => {
   return {
     ok: true,
@@ -49,6 +52,7 @@ jest.mock("./http", () => {
         get: mockGetFn,
         patch: mockPatchFn,
         post: mockPostFn,
+        put: mockPutFn,
         delete: mockDeleteFn,
       };
     }),
@@ -1655,16 +1659,12 @@ describe("#proposal", () => {
 
   describe("#calculate", () => {
     beforeEach(() => {
-      cockpitProxies.proposalCalculator = {
-        Calculate: jest.fn()
-      };
-
-      client = new StorageClient();
+      client = new StorageClient(http);
     });
 
     it("calculates a default proposal when no settings are given", async () => {
       await client.proposal.calculate({});
-      expect(cockpitProxies.proposalCalculator.Calculate).toHaveBeenCalledWith({});
+      expect(mockPutFn).toHaveBeenCalledWith("/storage/proposal/settings", {});
     });
 
     it("calculates a proposal with the given settings", async () => {
@@ -1692,39 +1692,28 @@ describe("#proposal", () => {
         ]
       });
 
-      expect(cockpitProxies.proposalCalculator.Calculate).toHaveBeenCalledWith({
-        Target: { t: "s", v: "disk" },
-        TargetDevice: { t: "s", v: "/dev/vdc" },
-        ConfigureBoot: { t: "b", v: true },
-        BootDevice: { t: "s", v: "/dev/vdb" },
-        EncryptionPassword: { t: "s", v: "12345" },
-        SpacePolicy: { t: "s", v: "custom" },
-        SpaceActions: {
-          t: "aa{sv}",
-          v: [
-            {
-              Device: { t: "s", v: "/dev/sda" },
-              Action: { t: "s", v: "resize" }
-            }
-          ]
-        },
-        Volumes: {
-          t: "aa{sv}",
-          v: [
-            {
-              MountPath: { t: "s", v: "/test1" },
-              FsType: { t: "s", v: "Btrfs" },
-              MinSize: { t: "t", v: 1024 },
-              MaxSize: { t: "t", v: 2048 },
-              AutoSize: { t: "b", v: false },
-              Snapshots: { t: "b", v: true }
-            },
-            {
-              MountPath: { t: "s", v: "/test2" },
-              MinSize: { t: "t", v: 1024 }
-            }
-          ]
-        }
+      expect(mockPutFn).toHaveBeenCalledWith("/storage/proposal/settings", {
+        target: "disk",
+        targetDevice: "/dev/vdc",
+        configureBoot: true,
+        bootDevice: "/dev/vdb",
+        encryptionPassword: "12345",
+        spacePolicy: "custom",
+        spaceActions: [{device: "/dev/sda", action: "resize"}],
+        volumes: [
+          {
+            mountPath: "/test1",
+            fsType: "Btrfs",
+            minSize: 1024,
+            maxSize: 2048,
+            autoSize: false,
+            snapshots: true
+          },
+          {
+            mountPath: "/test2",
+            minSize: 1024
+          }
+        ]
       });
     });
 
@@ -1734,9 +1723,7 @@ describe("#proposal", () => {
         spaceActions: [{ device: "/dev/sda", action: "resize" }],
       });
 
-      expect(cockpitProxies.proposalCalculator.Calculate).toHaveBeenCalledWith({
-        SpacePolicy: { t: "s", v: "delete" }
-      });
+      expect(mockPutFn).toHaveBeenCalledWith("/storage/proposal/settings", {spacePolicy: "delete"});
     });
   });
 });

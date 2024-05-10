@@ -613,12 +613,12 @@ class ProposalManager {
         encryptionMethod: settings.encryptionMethod,
         encryptionPBKDFunction: settings.encryptionPBKDFunction,
         encryptionPassword: settings.encryptionPassword,
-        spaceActions: settings.spacePolicy === "custom" ? settings.spaceActions : [],
+        spaceActions: settings.spacePolicy === "custom" ? settings.spaceActions : undefined,
         spacePolicy: settings.spacePolicy,
         target: ProposalTargets[settings.target],
         targetDevice: settings.targetDevice,
         targetPVDevices: settings.targetPVDevices,
-        volumes: settings.volumes.map(buildHttpVolume)
+        volumes: settings.volumes?.map(buildHttpVolume)
       };
     };
 
