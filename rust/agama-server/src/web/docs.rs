@@ -8,11 +8,20 @@ use utoipa::OpenApi;
         crate::l10n::web::locales,
         crate::l10n::web::set_config,
         crate::l10n::web::timezones,
-        crate::network::web::devices,
+        crate::network::web::add_connection,
+        crate::network::web::apply,
+        crate::network::web::connect,
         crate::network::web::connections,
+        crate::network::web::delete_connection,
+        crate::network::web::devices,
+        crate::network::web::disconnect,
+        crate::network::web::update_connection,
         crate::software::web::get_config,
         crate::software::web::patterns,
         crate::software::web::set_config,
+        crate::software::web::proposal,
+        crate::software::web::probe,
+        crate::software::web::products,
         crate::manager::web::probe_action,
         crate::manager::web::install_action,
         crate::manager::web::finish_action,
@@ -30,6 +39,8 @@ use utoipa::OpenApi;
         crate::storage::web::iscsi::nodes,
         crate::storage::web::iscsi::update_node,
         crate::storage::web::iscsi::delete_node,
+        crate::storage::web::iscsi::login_node,
+        crate::storage::web::iscsi::logout_node,
         crate::storage::web::iscsi::discover
     ),
     components(
@@ -40,7 +51,6 @@ use utoipa::OpenApi;
         schemas(crate::l10n::LocaleEntry),
         schemas(crate::l10n::TimezoneEntry),
         schemas(crate::l10n::web::LocaleConfig),
-        schemas(crate::network::model::NetworkState),
         schemas(crate::network::model::Device),
         schemas(crate::network::model::Connection),
         schemas(agama_lib::network::types::DeviceType),
@@ -65,6 +75,7 @@ use utoipa::OpenApi;
         schemas(agama_lib::storage::client::iscsi::ISCSINode),
         schemas(agama_lib::storage::client::iscsi::ISCSIAuth),
         schemas(agama_lib::storage::client::iscsi::LoginResult),
+        schemas(agama_lib::network::settings::NetworkConnection)
     )
 )]
 pub struct ApiDoc;
