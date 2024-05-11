@@ -1,15 +1,3 @@
-#root {
-  position: relative;
-  /** block-size fallbacks **/
-  height: 100vh;
-  height: 100dvb;
-  block-size: 100vh;
-  /** END of block-size fallbacks **/
-  block-size: 100dvb;
-  max-inline-size: var(--ui-max-inline-size);
-  margin-inline: auto;
-}
-
 // Make proposal actions compact
 .proposal-actions li + li {
   margin-block-start: 0;
