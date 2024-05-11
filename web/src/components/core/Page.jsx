@@ -21,15 +21,17 @@
 
 // @ts-check
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@patternfly/react-core";
+import React from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import {
+  Button,
+  PageGroup, PageSection, PageSectionVariants,
+} from "@patternfly/react-core";
+import tabsStyles from '@patternfly/react-styles/css/components/Tabs/tabs';
+
 import { _ } from "~/i18n";
-import { partition } from "~/utils";
 import { Icon } from "~/components/layout";
-import { If, PageMenu, Sidebar } from "~/components/core";
-// @ts-ignore
-import logoUrl from "~/assets/suse-horizontal-logo.svg";
+import { If, PageMenu } from "~/components/core";
 
 /**
  * @typedef {import("@patternfly/react-core").ButtonProps} ButtonProps
@@ -84,7 +86,7 @@ const Action = ({ navigateTo, children, ...props }) => {
 
   if (!props.size) props.size = "lg";
 
-  return <Button { ...props }>{children}</Button>;
+  return <Button {...props}>{children}</Button>;
 };
 
 /**
@@ -101,6 +103,32 @@ const BackAction = () => {
     <Action variant="secondary" onClick={() => history.back()}>
       {_("Back")}
     </Action>
+  );
+};
+
+const Navigation = ({ routes }) => {
+  if (!Array.isArray(routes) || routes.length === 0) return;
+
+  // FIXME: routes should have a "subnavigation" flag to decide if should be
+  // rendered here. For example, Storage/iSCSI, Storage/DASD and so on might be
+  // not part of this navigation but part of an expandable menu.
+  //
+  // FIXME: extract to a component since using PF/Tab is not possible to achieve
+  // it because the tabs needs a content. As a reference, see https://github.com/patternfly/patternfly-org/blob/b2dbe716096e05cc68d3c85ada692e6140b4e992/packages/documentation-framework/templates/mdx.js#L304-L323
+  return (
+    <PageSection variant="light" type="tabs" stickyOnBreakpoint={{ default: "top" }}>
+      <nav className={tabsStyles.tabs}>
+        <ul className={tabsStyles.tabsList}>
+          {routes.filter(r => !r.index && r.handle?.name).map((r) => (
+            <li className={tabsStyles.tabsItem} key={r.path}>
+              <NavLink to={r.path} className={({ isActive }) => [tabsStyles.tabsLink, isActive ? "pf-m-current" : ""].join(" ")}>
+                {r.handle?.name}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </PageSection>
   );
 };
 
@@ -164,84 +192,20 @@ const BackAction = () => {
  * @param {boolean} [props.mountSidebar=true] - Whether include the core/Sidebar component.
  * @param {React.ReactNode} [props.children] - The page content.
  */
-const Page = ({
-  icon,
-  title = "Agama",
-  mountSidebar = true,
-  children
-}) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  /**
-   * To make possible placing everything in the right place, it's
-   * needed to work with given children to look for actions, menus, and or other
-   * kind of things can be added in the future.
-   *
-   * To do so, below lines will extract some children based on their type.
-   *
-   * As for actions, the check is straightforward since it is just a convenience
-   * component that consumers will use directly as <Page.Actions>...</Page.Actions>.
-   * However, <Page.Menu> could be wrapped by another component holding all the logic
-   * to build and render an specific menu. Hence, the only option for them at this
-   * moment is to look for children whose type ends in "PageMenu".
-   *
-   * @note: hot reloading could make weird things when working with this
-   * component because of the type check.
-   *
-   * @see https://stackoverflow.com/questions/55729582/check-type-of-react-component
-   */
-  const [actions, rest] = partition(React.Children.toArray(children), child => child.type === Actions);
-  const [menu, content] = partition(rest, child => child.type.name?.endsWith("PageMenu"));
-
-  if (actions.length === 0) {
-    actions.push(<BackAction key="back-action" />);
-  }
-
-  const openSidebar = () => setSidebarOpen(true);
-  const closeSidebar = () => setSidebarOpen(false);
-
+const Page = ({ icon, title = "Agama", routes = [], children }) => {
   return (
-    <div data-type="agama/page" data-layout="agama/base">
-      <header>
-        <h1>
+    <PageGroup>
+      <PageSection variant={PageSectionVariants.light}>
+        <h2 className="split">
           <If condition={icon} then={<Icon name={icon} />} />
           <span>{title}</span>
-        </h1>
-        <div data-type="agama/header-actions">
-          { menu }
-          <If
-            condition={mountSidebar}
-            then={
-              <button
-                onClick={openSidebar}
-                className="plain-control"
-                aria-label={_("Show global options")}
-                aria-controls="global-options"
-                aria-expanded={sidebarOpen}
-              >
-                <Icon name="menu" />
-              </button>
-            }
-          />
-        </div>
-      </header>
-
-      <main>
-        { content }
-      </main>
-
-      <footer>
-        <div role="navigation" aria-label={_("Page Actions")}>
-          { actions }
-        </div>
-        <img src={logoUrl} alt="Logo of SUSE" />
-      </footer>
-
-      <If
-        condition={mountSidebar}
-        then={<Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />}
-      />
-    </div>
+        </h2>
+      </PageSection>
+      <Navigation routes={routes} />
+      <PageSection>
+        {children}
+      </PageSection>
+    </PageGroup>
   );
 };
 

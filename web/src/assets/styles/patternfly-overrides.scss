@@ -273,12 +273,24 @@ table td > .pf-v5-c-empty-state {
 
 
 // New-ui overrides
+// ================
 
+// For using icons, set fill as color.
 .pf-v5-c-nav__link {
   fill: var(--pf-v5-c-nav__link--Color);
 }
 
+// center alignment and a bit of gap makes links with icons looks better
 .pf-v5-c-nav__link {
   align-items: center;
   gap: calc(var(--pf-v5-c-nav__link--FontSize) / 2);
+}
+
+// Allows the pf-m-current directly in the a element instead of li.
+// Needed because setting the pf-m-current in ReactRouter/NavLink (the one
+// that knowst that link "isActive")
+
+.pf-v5-c-tabs__link.pf-m-current {
+  --pf-v5-c-tabs__link--after--BorderColor: var(--pf-v5-c-tabs__item--m-current__link--after--BorderColor);
+  --pf-v5-c-tabs__link--after--BorderWidth: var(--pf-v5-c-tabs__item--m-current__link--after--BorderWidth);
 }
