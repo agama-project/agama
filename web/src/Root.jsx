@@ -89,17 +89,18 @@ export default function Root() {
 
     return (
       <Breadcrumb>
-        {matches.filter(m => m.handle).map(m => (
-          <BreadcrumbItem
-            key={m.pathname}
-            to={m.pathname}
-            render={({ className }) => (
-              <NavLink end to={m.pathname} className={({ isActive }) => [className, isActive ? "pf-m-current" : ""].join(" ")}>
-                {m.handle.name}
-              </NavLink>
-            )}
-          />
-        ))}
+        {matches.filter(m => m.handle).slice(0, -1)
+          .map(m => (
+            <BreadcrumbItem
+              key={m.pathname}
+              to={m.pathname}
+              render={({ className }) => (
+                <NavLink end to={m.pathname} className={({ isActive }) => [className, isActive ? "pf-m-current" : ""].join(" ")}>
+                  {m.handle.name}
+                </NavLink>
+              )}
+            />
+          ))}
       </Breadcrumb>
     );
   };

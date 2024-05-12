@@ -22,7 +22,7 @@
 // @ts-check
 
 import React from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate, useMatches, useLocation } from "react-router-dom";
 import {
   Button,
   PageGroup, PageSection, PageSectionVariants,
@@ -193,12 +193,17 @@ const Navigation = ({ routes }) => {
  * @param {React.ReactNode} [props.children] - The page content.
  */
 const Page = ({ icon, title = "Agama", routes = [], children }) => {
+  const location = useLocation();
+  const matches = useMatches();
+  const currentRoute = matches.find(r => r.pathname === location.pathname);
+  const titleFromRoute = currentRoute?.handle?.name;
+
   return (
     <PageGroup>
       <PageSection variant={PageSectionVariants.light}>
         <h2 className="split">
           <If condition={icon} then={<Icon name={icon} />} />
-          <span>{title}</span>
+          <span>{titleFromRoute || title}</span>
         </h2>
       </PageSection>
       <Navigation routes={routes} />
