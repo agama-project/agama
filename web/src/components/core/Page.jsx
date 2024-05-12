@@ -22,7 +22,7 @@
 // @ts-check
 
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   Button,
   PageGroup, PageSection, PageSectionVariants,
@@ -202,8 +202,8 @@ const Page = ({ icon, title = "Agama", routes = [], children }) => {
         </h2>
       </PageSection>
       <Navigation routes={routes} />
-      <PageSection>
-        {children}
+      <PageSection variant="light">
+        {children || <Outlet />}
       </PageSection>
     </PageGroup>
   );

@@ -21,12 +21,9 @@
 
 import React, { useCallback, useReducer, useEffect } from "react";
 
-import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
-import { Page } from "~/components/core";
 import {
-  ProposalPageMenu,
   ProposalTransactionalInfo,
   ProposalSettingsSection,
   ProposalResultSection
@@ -50,11 +47,11 @@ const initialState = {
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "START_LOADING" : {
+    case "START_LOADING": {
       return { ...state, loading: true };
     }
 
-    case "STOP_LOADING" : {
+    case "STOP_LOADING": {
       // reset the changing value after the refresh is finished
       return { ...state, loading: false, changing: undefined };
     }
@@ -264,8 +261,7 @@ export default function ProposalPage() {
 
   return (
     // TRANSLATORS: Storage page title
-    <Page icon="hard_drive" title={_("Storage")}>
-      <ProposalPageMenu />
+    <>
       <ProposalTransactionalInfo
         settings={state.settings}
       />
@@ -286,6 +282,6 @@ export default function ProposalPage() {
         errors={state.errors}
         isLoading={state.loading}
       />
-    </Page>
+    </>
   );
 }

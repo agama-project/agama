@@ -22,11 +22,12 @@
 import React from "react";
 import { createHashRouter } from "react-router-dom";
 import App from "~/App";
-import Main from "~/Main";
+import Root from "~/Root";
+import { Page } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
-import { ProductPage, ProductSelectionPage } from "~/components/product";
+import { ProductPage, ProductSelectionPage, ProductRegistrationPage } from "~/components/product";
 import { SoftwarePage } from "~/components/software";
-import { ProposalPage as StoragePage, ISCSIPage, DASDPage, ZFCPPage } from "~/components/storage";
+import { ProposalPage, ISCSIPage, DASDPage, ZFCPPage } from "~/components/storage";
 import { UsersPage } from "~/components/users";
 import { L10nPage } from "~/components/l10n";
 import { NetworkPage } from "~/components/network";
@@ -47,13 +48,22 @@ const createRoute = (name, path, element, children = [], icon) => (
 );
 
 const overviewRoutes = createRoute(_("Overview"), "overview", <OverviewPage />, [], "list_alt");
-const productRoutes = createRoute(_("Product"), "product", <ProductPage />, [], "inventory_2");
+const productRoutes = createRoute(_("Product"), "product", <Page title={_("Product")} />, [
+  { index: true, element: <ProductPage /> },
+  createRoute(_("Change selected product"), "change", <ProductSelectionPage />),
+  createRoute(_("Register"), "register", <ProductRegistrationPage />),
+], "inventory_2");
 const l10nRoutes = createRoute(_("Localization"), "l10n", <L10nPage />, [], "globe");
 const softwareRoutes = createRoute(_("Software"), "software", <SoftwarePage />, [], "apps");
-const storageRoutes = createRoute(_("Storage"), "storage", <StoragePage />, [
+const storagePages = [
+  { index: true, element: <ProposalPage /> },
+  createRoute(_("Storage"), "proposal", <ProposalPage />),
   createRoute(_("iSCSI"), "iscsi", <ISCSIPage />),
   createRoute(_("DASD"), "dasd", <DASDPage />),
   createRoute(_("ZFCP"), "zfcp", <ZFCPPage />)
+];
+const storageRoutes = createRoute(_("Storage"), "storage", <Page title={_("Storage")} routes={storagePages} />, [
+  ...storagePages,
 ], "hard_drive");
 const networkRoutes = createRoute(_("Network"), "network", <NetworkPage />, [], "settings_ethernet");
 const usersRoutes = createRoute(_("Users"), "users", <UsersPage />, [], "manage_accounts");
@@ -74,7 +84,7 @@ const routes = [
     element: <App />,
     children: [
       {
-        element: <Main />,
+        element: <Root />,
         children: [
           {
             index: true,

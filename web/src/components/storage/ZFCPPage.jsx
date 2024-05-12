@@ -24,9 +24,8 @@
 import React, { useCallback, useEffect, useReducer, useState } from "react";
 import { Button, Skeleton, Toolbar, ToolbarContent, ToolbarItem } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
-
 import { _ } from "~/i18n";
-import { If, Page, Popup, RowActions, Section, SectionSkeleton } from "~/components/core";
+import { If, Popup, RowActions, Section, SectionSkeleton } from "~/components/core";
 import { ZFCPDiskForm } from "~/components/storage";
 import { noop, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
@@ -261,18 +260,18 @@ const DevicesTable = ({ devices = [], columns = [], columnValue = noop, actions 
     <Table variant="compact">
       <Thead>
         <Tr>
-          { columns.map((column) => <Th key={column.id}>{column.label}</Th>) }
+          {columns.map((column) => <Th key={column.id}>{column.label}</Th>)}
         </Tr>
       </Thead>
       <Tbody>
-        { sortedDevices().map((device) => (
+        {sortedDevices().map((device) => (
           <Tr key={device.id}>
             <If
               condition={loadingRow === device.id}
               then={<Td colSpan={columns.length + 1}><Skeleton /></Td>}
               else={
                 <>
-                  { columns.map(column => <Td key={column.id} dataLabel={column.label}>{columnValue(device, column)}</Td>) }
+                  {columns.map(column => <Td key={column.id} dataLabel={column.label}>{columnValue(device, column)}</Td>)}
                   <Td isActionCell key="device-actions">
                     <Actions device={device} />
                   </Td>
@@ -727,8 +726,7 @@ export default function ZFCPPage() {
   }, [client.zfcp, cancellablePromise, getLUNs]);
 
   return (
-    // TRANSLATORS: page title
-    <Page icon="hard_drive" title={_("Storage zFCP")}>
+    <>
       <ControllersSection
         client={client.zfcp}
         manager={state.manager}
@@ -740,6 +738,6 @@ export default function ZFCPPage() {
         manager={state.manager}
         isLoading={state.isLoading}
       />
-    </Page>
+    </>
   );
 }

@@ -20,6 +20,7 @@
  */
 
 import React, { useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
 
 import { useInstallerClient, useInstallerClientStatus } from "~/context/installer";
 import { useProduct } from "./context/product";
@@ -27,7 +28,6 @@ import { INSTALL, STARTUP } from "~/client/phase";
 import { BUSY } from "~/client/status";
 
 import { DBusError, If, Installation } from "~/components/core";
-import Root from "~/Root";
 import { Loading } from "./components/layout";
 import { useInstallerL10n } from "./context/installerL10n";
 
@@ -87,7 +87,7 @@ function App() {
       return <Installation status={status} />;
     }
 
-    return <Root />;
+    return <Outlet />;
   };
 
   return (

@@ -44,7 +44,7 @@ const Header = () => {
         </PageToggleButton>
       </MastheadToggle>
       <MastheadMain>
-        <MastheadBrand href="#/overview">{_("Agama")}</MastheadBrand>
+        <MastheadBrand component="h1"><NavLink to="/">{_("Agama")}</NavLink></MastheadBrand>
       </MastheadMain>
     </Masthead>
   );

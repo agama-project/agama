@@ -20,7 +20,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Form, FormGroup } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
@@ -32,6 +32,7 @@ import { useProduct } from "~/context/product";
 
 function ProductSelectionPage() {
   const { manager, product } = useInstallerClient();
+  const location = useLocation();
   const navigate = useNavigate();
   const { products, selectedProduct } = useProduct();
   const [newProductId, setNewProductId] = useState(selectedProduct?.id);
@@ -51,7 +52,7 @@ function ProductSelectionPage() {
       manager.startProbing();
     }
 
-    navigate("/");
+    navigate(location?.state?.from?.pathname || "/");
   };
 
   if (!products) return (
@@ -60,7 +61,7 @@ function ProductSelectionPage() {
 
   return (
     // TRANSLATORS: page title
-    <Page icon="home_storage" title={_("Product selection")}>
+    <>
       <Form id="productSelectionForm" onSubmit={onSubmit}>
         <FormGroup isStack label={_("Choose a product")}>
           <ProductSelector value={newProductId} products={products} onChange={setNewProductId} />
@@ -69,10 +70,10 @@ function ProductSelectionPage() {
 
       <Page.Actions>
         <Page.Action type="submit" form="productSelectionForm">
-          { _("Select") }
+          {_("Select")}
         </Page.Action>
       </Page.Actions>
-    </Page>
+    </>
   );
 }
 

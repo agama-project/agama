@@ -22,128 +22,19 @@
 // cspell:ignore Deregistration
 
 import React, { useEffect, useState } from "react";
-import { Alert, Button, Form } from "@patternfly/react-core";
+import { Link, useLocation } from "react-router-dom";
+import { Alert, Button } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
 import { BUSY } from "~/client/status";
-import { If, Page, Popup, Section } from "~/components/core";
+import { If, Popup, Section } from "~/components/core";
 import { noop, useCancellablePromise } from "~/utils";
-import { ProductRegistrationForm, ProductSelector } from "~/components/product";
 import { useInstallerClient } from "~/context/installer";
 import { useProduct } from "~/context/product";
 
-/**
- * Popup for selecting a product.
- * @component
- *
- * @param {object} props
- * @param {boolean} props.isOpen
- * @param {function} props.onFinish - Callback to be called when the product is correctly selected.
- * @param {function} props.onCancel - Callback to be called when the product selection is canceled.
- */
-const ChangeProductPopup = ({ isOpen = false, onFinish = noop, onCancel = noop }) => {
-  const { manager, software, product } = useInstallerClient();
-  const { products, selectedProduct } = useProduct();
-  const [newProductId, setNewProductId] = useState(selectedProduct?.id);
-
-  const onSubmit = async (e) => {
-    e.preventDefault();
-
-    if (newProductId !== selectedProduct?.id) {
-      await product.select(newProductId);
-      manager.startProbing();
-    }
-
-    onFinish();
-  };
-
-  return (
-    <Popup
-      title={_("Choose a product")}
-      isOpen={isOpen}
-    >
-      <Form id="productSelectionForm" onSubmit={onSubmit}>
-        <ProductSelector value={newProductId} products={products} onChange={setNewProductId} />
-      </Form>
-      <Popup.Actions>
-        <Popup.Confirm form="productSelectionForm" type="submit">
-          {_("Accept")}
-        </Popup.Confirm>
-        <Popup.Cancel onClick={onCancel} />
-      </Popup.Actions>
-    </Popup>
-  );
-};
-
-/**
- * Popup for registering a product.
- * @component
- *
- * @param {object} props
- * @param {boolean} props.isOpen
- * @param {function} props.onFinish - Callback to be called when the product is correctly
- *  registered.
- * @param {function} props.onCancel - Callback to be called when the product registration is
- *  canceled.
- */
-const RegisterProductPopup = ({
-  isOpen = false,
-  onFinish = noop,
-  onCancel: onCancelProp = noop
-}) => {
-  const { software, product } = useInstallerClient();
-  const { selectedProduct } = useProduct();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFormValid, setIsFormValid] = useState(true);
-  const [error, setError] = useState();
-
-  const onSubmit = async ({ code, email }) => {
-    setIsLoading(true);
-    const result = await product.register(code, email);
-    setIsLoading(false);
-    if (result.success) {
-      software.probe();
-      onFinish();
-    } else {
-      setError(result.message);
-    }
-  };
-
-  const onCancel = () => {
-    setError(null);
-    onCancelProp();
-  };
-
-  const isDisabled = isLoading || !isFormValid;
-
-  return (
-    <Popup
-      title={sprintf(_("Register %s"), selectedProduct.name)}
-      isOpen={isOpen}
-    >
-      <If
-        condition={error}
-        then={
-          <Alert variant="warning" isInline title={_("Something went wrong")}>
-            <p>{error}</p>
-          </Alert>
-        }
-      />
-      <ProductRegistrationForm
-        id="productRegistrationForm"
-        onSubmit={onSubmit}
-        onValidate={setIsFormValid}
-      />
-      <Popup.Actions>
-        <Popup.Confirm form="productRegistrationForm" type="submit" isDisabled={isDisabled}>
-          {_("Accept")}
-        </Popup.Confirm>
-        <Popup.Cancel onClick={onCancel} />
-      </Popup.Actions>
-    </Popup>
-  );
-};
+// NOTE: code duplication removal, see ChangeProductPopup and
+// ProductSelecitonPage for example
 
 /**
  * Popup to deregister a product.
@@ -244,39 +135,39 @@ const RegisteredWarningPopup = ({ isOpen = false, onAccept = noop }) => {
 };
 
 const ChangeProductButton = ({ isDisabled = false }) => {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const location = useLocation();
+  const [isWarningOpen, setIsWarningOpen] = useState(false);
   const { registration } = useProduct();
 
-  const openPopup = () => setIsPopupOpen(true);
-  const closePopup = () => setIsPopupOpen(false);
+  const openWarning = () => setIsWarningOpen(true);
+  const closeWarning = () => setIsWarningOpen(false);
 
   const isRegistered = registration.code !== null;
 
+  // FIXME: Rethink the idea of having a "disabled link" or use instead a
+  // button. Read more at
+  // https://www.scottohara.me/blog/2021/05/28/disabled-links.html and
+  // https://css-tricks.com/how-to-disable-links/#aa-just-dont-do-it
+  console.log("read the FIXME about isDisabled", isDisabled);
+
   return (
     <>
-      <Button
-        variant="link"
-        className="p-0"
-        onClick={openPopup}
+      <Link
+        to="change"
+        state={{ from: location }}
         isDisabled={isDisabled}
+        onClick={(e) => {
+          if (isRegistered) {
+            e.preventDefault();
+            openWarning();
+          }
+        }}
       >
         {_("Change product")}
-      </Button>
-      <If
-        condition={isRegistered}
-        then={
-          <RegisteredWarningPopup
-            isOpen={isPopupOpen}
-            onAccept={closePopup}
-          />
-        }
-        else={
-          <ChangeProductPopup
-            isOpen={isPopupOpen}
-            onFinish={closePopup}
-            onCancel={closePopup}
-          />
-        }
+      </Link>
+      <RegisteredWarningPopup
+        isOpen={isWarningOpen}
+        onAccept={closeWarning}
       />
     </>
   );
@@ -289,26 +180,12 @@ const ChangeProductButton = ({ isDisabled = false }) => {
  * @param {object} props
  * @param {boolean} props.isDisabled
  */
-const RegisterProductButton = ({ isDisabled = false }) => {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  const openPopup = () => setIsPopupOpen(true);
-  const closePopup = () => setIsPopupOpen(false);
-
+const RegisterProductButton = () => {
   return (
     <>
-      <Button
-        variant="primary"
-        onClick={openPopup}
-        isDisabled={isDisabled}
-      >
+      <Link to="register">
         {_("Register")}
-      </Button>
-      <RegisterProductPopup
-        isOpen={isPopupOpen}
-        onFinish={closePopup}
-        onCancel={closePopup}
-      />
+      </Link>
     </>
   );
 };
@@ -385,6 +262,9 @@ const RegistrationSection = ({ isLoading = false }) => {
   const isRequired = registration?.requirement !== "NotRequired";
   const isRegistered = registration?.code !== null;
 
+  // FIXME: re-evaluate if the Registration Section should be shown when
+  // selected product does not requires/offer registration.
+
   return (
     // TRANSLATORS: section title.
     <Section title={_("Registration")}>
@@ -431,10 +311,9 @@ export default function ProductPage() {
   const isLoading = managerStatus === BUSY || softwareStatus === BUSY;
 
   return (
-    // TRANSLATORS: page title
-    <Page icon="inventory_2" title={_("Product")}>
+    <>
       <ProductSection isLoading={isLoading} />
       <RegistrationSection isLoading={isLoading} />
-    </Page>
+    </>
   );
 }

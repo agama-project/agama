@@ -19,43 +19,31 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { useProduct } from "~/context/product";
 import { Navigate } from "react-router-dom";
-import { InstallButton, Page } from "~/components/core";
-import {
-  L10nSection,
-  NetworkSection,
-  ProductSection,
-  SoftwareSection,
-  StorageSection,
-  UsersSection,
-} from "~/components/overview";
+import { Page, InstallButton } from "~/components/core";
 import { _ } from "~/i18n";
 
 export default function OverviewPage() {
   const { selectedProduct } = useProduct();
-  const [showErrors, setShowErrors] = useState(false);
 
+  // FIXME: this check could be no longer needed
   if (selectedProduct === null) {
     return <Navigate to="/products" />;
   }
 
   return (
-    <Page
-      icon="list_alt"
-      // TRANSLATORS: page title
-      title={_("Installation Summary")}
-    >
-      <ProductSection />
-      <L10nSection />
-      <NetworkSection />
-      <StorageSection showErrors />
-      <SoftwareSection showErrors />
-      <UsersSection showErrors={showErrors} />
+    <Page title={_("Installation Summary")}>
+      <p>
+        {_("This page should have a reasonable overview about the target system before proceeding with installation.")}
+      </p>
+      <p>
+        {_("It's also a good place for telling/reminder the user the minimum required steps to have a valid installation setup.")}
+      </p>
 
       <Page.Actions>
-        <InstallButton onClick={() => setShowErrors(true)} />
+        <InstallButton />
       </Page.Actions>
     </Page>
   );
