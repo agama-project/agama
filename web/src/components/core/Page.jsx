@@ -202,9 +202,7 @@ const Page = ({ icon, title = "Agama", routes = [], children }) => {
         </h2>
       </PageSection>
       <Navigation routes={routes} />
-      <PageSection variant="light">
-        {children || <Outlet />}
-      </PageSection>
+      {children || <Outlet />}
     </PageGroup>
   );
 };

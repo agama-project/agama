@@ -1,57 +1,6 @@
 // CSS rules used for the standard Agama section (core/Section.jsx)
 // In the future we might add different section layouts by using data-variant attribute
 // or similar strategy
-[data-type="agama/section"] {
-  display: grid;
-  grid-template-rows:
-    [header] auto
-    [content] auto
-  ;
-  grid-template-columns: [bleed] var(--section-icon-size) [content] 1fr;
-  gap: var(--spacer-small);
-  margin-inline-start: calc(
-    var(--header-icon-size) - var(--section-icon-size)
-  );
-  margin-inline-end: var(--section-icon-size);
-
-  &:not(:last-child) {
-    margin-block-end: var(--spacer-medium);
-  }
-
-  > header {
-    display: grid;
-    grid-area: header;
-    grid-template-columns: subgrid;
-    grid-column: bleed / content-end;
-
-    h2 {
-      display: grid;
-      grid-template-columns: subgrid;
-      grid-column: bleed / content-end;
-
-      svg {
-        block-size: var(--section-icon-size);
-        inline-size: var(--section-icon-size);
-        grid-column: bleed / content;
-      }
-
-      :not(svg) {
-        grid-column: content
-      }
-    }
-
-    p {
-      grid-column: content;
-      color: var(--color-gray-dimmest);
-      margin-block-end: var(--spacer-smaller);
-    }
-  }
-
-  > :not(header) {
-    grid-area: content;
-    grid-column: content;
-  }
-}
 
 // Custom selection list
 .selection-list > * {
