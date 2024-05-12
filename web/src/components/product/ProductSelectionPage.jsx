@@ -19,9 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Form, FormGroup } from "@patternfly/react-core";
+import { Form, Flex, FormGroup, PageGroup, PageSection } from "@patternfly/react-core";
+import styles from '@patternfly/react-styles/css/utilities/Flex/flex';
 
 import { _ } from "~/i18n";
 import { Page } from "~/components/core";
@@ -31,12 +32,12 @@ import { useInstallerClient } from "~/context/installer";
 import { useProduct } from "~/context/product";
 
 function ProductSelectionPage() {
-  const { manager, product } = useInstallerClient();
   const location = useLocation();
   const navigate = useNavigate();
+  const { manager, product } = useInstallerClient();
   const { products, selectedProduct } = useProduct();
-  const [newProductId, setNewProductId] = useState(selectedProduct?.id);
 
+  // FIXME: Review below useEffect.
   useEffect(() => {
     // TODO: display a notification in the UI to emphasizes that
     // selected product has changed
@@ -44,9 +45,15 @@ function ProductSelectionPage() {
   }, [product, navigate]);
 
   const onSubmit = async (e) => {
+    // NOTE: Using FormData here allows having a not controlled selector,
+    // removing small pieces of internal state and simplifying components.
+    // We should evaluate to use it or to use a ReactRouterDom/Form.
+    // Also, to have into consideration React 19 Actions, https://react.dev/blog/2024/04/25/react-19#actions
     e.preventDefault();
+    const dataForm = new FormData(e.target);
+    const nextProduct = JSON.parse(dataForm.get("product"));
 
-    if (newProductId !== selectedProduct?.id) {
+    if (nextProduct?.id !== selectedProduct?.id) {
       // TODO: handle errors
       await product.select(newProductId);
       manager.startProbing();
@@ -60,19 +67,27 @@ function ProductSelectionPage() {
   );
 
   return (
-    // TRANSLATORS: page title
     <>
-      <Form id="productSelectionForm" onSubmit={onSubmit}>
-        <FormGroup isStack label={_("Choose a product")}>
-          <ProductSelector value={newProductId} products={products} onChange={setNewProductId} />
-        </FormGroup>
-      </Form>
+      <PageSection isFilled>
+        <Form id="productSelectionForm" onSubmit={onSubmit}>
+          <FormGroup isStack>
+            <ProductSelector defaultChecked={selectedProduct} products={products} />
+          </FormGroup>
+        </Form>
+      </PageSection>
 
-      <Page.Actions>
-        <Page.Action type="submit" form="productSelectionForm">
-          {_("Select")}
-        </Page.Action>
-      </Page.Actions>
+      <PageGroup hasShadowTop className={styles.flexGrow_0} stickyOnBreakpoint={{ default: "bottom" }}>
+        <PageSection variant="light">
+          <Page.Actions>
+            <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
+              <Page.CancelAction />
+              <Page.Action type="submit" form="productSelectionForm">
+                {_("Select")}
+              </Page.Action>
+            </Flex>
+          </Page.Actions>
+        </PageSection>
+      </PageGroup>
     </>
   );
 }

@@ -91,17 +91,13 @@ const Action = ({ navigateTo, children, ...props }) => {
 
 /**
  * Simple action for navigating back
- *
- * @note it will be used by default if a page is mounted without actions
- *
- * TODO: Explain below note better
- * @note that we cannot use navigate("..") because our routes are all nested in
- * the root.
  */
-const BackAction = () => {
+const CancelAction = ({ text = _("Cancel"), navigateTo }) => {
+  const navigate = useNavigate();
+
   return (
-    <Action variant="secondary" onClick={() => history.back()}>
-      {_("Back")}
+    <Action variant="link" onClick={() => navigate(navigateTo || "..")}>
+      {text}
     </Action>
   );
 };
@@ -215,6 +211,6 @@ const Page = ({ icon, title = "Agama", routes = [], children }) => {
 Page.Actions = Actions;
 Page.Action = Action;
 Page.Menu = Menu;
-Page.BackAction = BackAction;
+Page.CancelAction = CancelAction;
 
 export default Page;

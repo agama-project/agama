@@ -20,30 +20,28 @@
  */
 
 import React from "react";
-import { Selector } from "~/components/core";
-
+import { Radio } from "@patternfly/react-core";
+import styles from '@patternfly/react-styles/css/utilities/Text/text';
 import { _ } from "~/i18n";
-import { noop } from "~/utils";
 
-const renderProductOption = (product) => (
-  <div className="stack">
-    <h3>{product.name}</h3>
-    <p>{product.description}</p>
-  </div>
+const Label = ({ children }) => (
+  <span className={`${styles.fontSizeLg} ${styles.fontWeightBold}`}>
+    {children}
+  </span>
 );
 
-export default function ProductSelector({ value, products = [], onChange = noop }) {
-  if (products.length === 0) return <p>{_("No products available for selection")}</p>;
+export default function ProductSelector({ products, defaultChecked }) {
+  if (products?.length === 0) return <p>{_("No products available for selection")}</p>;
 
-  const onSelectionChange = (selection) => onChange(selection[0]);
-
-  return (
-    <Selector
-      aria-label={_("Available products")}
-      options={products}
-      renderOption={renderProductOption}
-      selectedIds={[value]}
-      onSelectionChange={onSelectionChange}
+  return products.map((product, index) => (
+    <Radio
+      key={index}
+      name="product"
+      id={product.name}
+      label={<Label>{product.name}</Label>}
+      body={product.description}
+      value={JSON.stringify(product)}
+      defaultChecked={defaultChecked === product}
     />
-  );
+  ));
 }
