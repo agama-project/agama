@@ -10,17 +10,19 @@ use std::collections::HashMap;
 use agama_lib::{
     error::ServiceError,
     storage::{
-        client::{Action, Volume},
-        device::Device,
+        model::{Action, Device, ProposalSettings, ProposalSettingsPatch, Volume},
+        proxies::Storage1Proxy,
         StorageClient,
     },
 };
 use anyhow::anyhow;
 use axum::{
     extract::{Query, State},
-    routing::get,
+    routing::{get, post},
     Json, Router,
 };
+use serde::Serialize;
+use tokio_stream::{Stream, StreamExt};
 
 use crate::{
     error::Error,
@@ -31,13 +33,40 @@ use crate::{
 };
 
 pub async fn storage_streams(dbus: zbus::Connection) -> Result<EventStreams, Error> {
-    let result: EventStreams = vec![]; // TODO:
+    let result: EventStreams = vec![(
+        "devices_dirty",
+        Box::pin(devices_dirty_stream(dbus.clone()).await?),
+    )]; // TODO:
     Ok(result)
+}
+
+async fn devices_dirty_stream(dbus: zbus::Connection) -> Result<impl Stream<Item = Event>, Error> {
+    let proxy = Storage1Proxy::new(&dbus).await?;
+    let stream = proxy
+        .receive_deprecated_system_changed()
+        .await
+        .then(|change| async move {
+            if let Ok(value) = change.get().await {
+                return Some(Event::DevicesDirty { dirty: value });
+            }
+            None
+        })
+        .filter_map(|e| e);
+    Ok(stream)
 }
 
 #[derive(Clone)]
 struct StorageState<'a> {
     client: StorageClient<'a>,
+}
+
+#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct ProductParams {
+    /// List of mount points defined in product
+    mount_points: Vec<String>,
+    /// list of encryption methods defined in product
+    encryption_methods: Vec<String>,
 }
 
 /// Sets up and returns the axum service for the software module.
@@ -52,16 +81,27 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     let client = StorageClient::new(dbus.clone()).await?;
     let state = StorageState { client };
     let router = Router::new()
+        .route("/probe", post(probe))
         .route("/devices/dirty", get(devices_dirty))
         .route("/devices/system", get(system_devices))
         .route("/devices/result", get(staging_devices))
         .route("/product/volume_for", get(volume_for))
+        .route("/product/params", get(product_params))
         .route("/proposal/actions", get(actions))
-        .merge(status_router)
+        .route("/proposal/usable_devices", get(usable_devices))
+        .route(
+            "/proposal/settings",
+            get(get_proposal_settings).put(set_proposal_settings),
+        )
         .merge(progress_router)
+        .merge(status_router)
         .nest("/issues", issues_router)
         .with_state(state);
     Ok(router)
+}
+
+async fn probe(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
+    Ok(Json(state.client.probe().await?))
 }
 
 async fn devices_dirty(State(state): State<StorageState<'_>>) -> Result<Json<bool>, Error> {
@@ -90,4 +130,36 @@ async fn volume_for(
         .get("mount_path")
         .ok_or(anyhow!("Missing mount_path parameter"))?;
     Ok(Json(state.client.volume_for(mount_path).await?))
+}
+
+async fn product_params(
+    State(state): State<StorageState<'_>>,
+) -> Result<Json<ProductParams>, Error> {
+    let params = ProductParams {
+        mount_points: state.client.product_mount_points().await?,
+        encryption_methods: state.client.encryption_methods().await?,
+    };
+    Ok(Json(params))
+}
+
+async fn usable_devices(State(state): State<StorageState<'_>>) -> Result<Json<Vec<String>>, Error> {
+    let devices = state.client.available_devices().await?;
+    let devices_names = devices.into_iter().map(|d| d.name).collect();
+
+    Ok(Json(devices_names))
+}
+
+async fn get_proposal_settings(
+    State(state): State<StorageState<'_>>,
+) -> Result<Json<ProposalSettings>, Error> {
+    Ok(Json(state.client.proposal_settings().await?))
+}
+
+async fn set_proposal_settings(
+    State(state): State<StorageState<'_>>,
+    Json(config): Json<ProposalSettingsPatch>,
+) -> Result<(), Error> {
+    state.client.calculate2(config).await?;
+
+    Ok(())
 }

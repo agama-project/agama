@@ -78,7 +78,7 @@ module Agama
         #
         # @param action [Y2Storage::CompoundAction]
         # @return [Hash<String, Object>]
-        #   * "Device" [String]
+        #   * "Device" [Integer]
         #   * "Text" [String]
         #   * "Subvol" [Boolean]
         #   * "Delete" [Boolean]

@@ -78,7 +78,7 @@ const createClient = (url) => {
   // const monitor = new Monitor(address, MANAGER_SERVICE);
   const network = new NetworkClient(client);
   const software = new SoftwareClient(client);
-  // const storage = new StorageClient(address);
+  const storage = new StorageClient(client);
   const users = new UsersClient(client);
   const questions = new QuestionsClient(client);
 
@@ -93,7 +93,7 @@ const createClient = (url) => {
   const issues = async () => {
     return {
       product: await product.getIssues(),
-      // storage: await storage.getIssues(),
+      storage: await storage.getIssues(),
       software: await software.getIssues(),
     };
   };
@@ -110,9 +110,9 @@ const createClient = (url) => {
     unsubscribeCallbacks.push(
       product.onIssuesChange((i) => handler({ product: i })),
     );
-    // unsubscribeCallbacks.push(
-    //   storage.onIssuesChange((i) => handler({ storage: i })),
-    // );
+    unsubscribeCallbacks.push(
+      storage.onIssuesChange((i) => handler({ storage: i })),
+    );
     unsubscribeCallbacks.push(
       software.onIssuesChange((i) => handler({ software: i })),
     );
@@ -139,7 +139,7 @@ const createClient = (url) => {
     // monitor,
     network,
     software,
-    // storage,
+    storage,
     users,
     questions,
     issues,

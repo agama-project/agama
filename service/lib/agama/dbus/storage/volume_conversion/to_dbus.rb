@@ -35,8 +35,8 @@ module Agama
           # @return [Hash<String, Object>]
           #   * "MountPath" [String]
           #   * "MountOptions" [Array<String>]
+          #   * "Target" [String]
           #   * "TargetDevice" [String]
-          #   * "TargetVG" [String]
           #   * "FsType" [String]
           #   * "MinSize" [Integer]
           #   * "MaxSize" [Integer] Optional

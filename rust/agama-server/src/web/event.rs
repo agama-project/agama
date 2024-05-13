@@ -16,6 +16,9 @@ pub enum Event {
     LocaleChanged {
         locale: String,
     },
+    DevicesDirty {
+        dirty: bool,
+    },
     Progress {
         service: String,
         #[serde(flatten)]
