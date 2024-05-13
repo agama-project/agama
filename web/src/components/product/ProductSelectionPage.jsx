@@ -21,8 +21,7 @@
 
 import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Form, Flex, FormGroup, PageGroup, PageSection } from "@patternfly/react-core";
-import styles from '@patternfly/react-styles/css/utilities/Flex/flex';
+import { Form, FormGroup } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
 import { Page } from "~/components/core";
@@ -68,26 +67,20 @@ function ProductSelectionPage() {
 
   return (
     <>
-      <PageSection isFilled>
+      <Page.MainContent>
         <Form id="productSelectionForm" onSubmit={onSubmit}>
           <FormGroup isStack>
             <ProductSelector defaultChecked={selectedProduct} products={products} />
           </FormGroup>
         </Form>
-      </PageSection>
+      </Page.MainContent>
 
-      <PageGroup hasShadowTop className={styles.flexGrow_0} stickyOnBreakpoint={{ default: "bottom" }}>
-        <PageSection variant="light">
-          <Page.Actions>
-            <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
-              <Page.CancelAction />
-              <Page.Action type="submit" form="productSelectionForm">
-                {_("Select")}
-              </Page.Action>
-            </Flex>
-          </Page.Actions>
-        </PageSection>
-      </PageGroup>
+      <Page.NextActions>
+        <Page.CancelAction />
+        <Page.Action type="submit" form="productSelectionForm">
+          {_("Select")}
+        </Page.Action>
+      </Page.NextActions>
     </>
   );
 }

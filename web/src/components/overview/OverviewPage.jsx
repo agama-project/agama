@@ -35,16 +35,18 @@ export default function OverviewPage() {
 
   return (
     <Page title={_("Installation Summary")}>
-      <p>
-        {_("This page should have a reasonable overview about the target system before proceeding with installation.")}
-      </p>
-      <p>
-        {_("It's also a good place for telling/reminder the user the minimum required steps to have a valid installation setup.")}
-      </p>
+      <Page.MainContent>
+        <p>
+          {_("This page should have a reasonable overview about the target system before proceeding with installation.")}
+        </p>
+        <p>
+          {_("It's also a good place for telling/reminder the user the minimum required steps to have a valid installation setup.")}
+        </p>
+      </Page.MainContent>
 
-      <Page.Actions>
+      <Page.NextActions>
         <InstallButton />
-      </Page.Actions>
+      </Page.NextActions>
     </Page>
   );
 }

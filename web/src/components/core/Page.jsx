@@ -25,9 +25,11 @@ import React from "react";
 import { NavLink, Outlet, useNavigate, useMatches, useLocation } from "react-router-dom";
 import {
   Button,
+  Flex,
   PageGroup, PageSection, PageSectionVariants,
 } from "@patternfly/react-core";
 import tabsStyles from '@patternfly/react-styles/css/components/Tabs/tabs';
+import flexStyles from '@patternfly/react-styles/css/utilities/Flex/flex';
 
 import { _ } from "~/i18n";
 import { Icon } from "~/components/layout";
@@ -101,6 +103,21 @@ const CancelAction = ({ text = _("Cancel"), navigateTo }) => {
     </Action>
   );
 };
+
+// FIXME: would replace Actions
+const NextActions = ({ children }) => (
+  <PageGroup hasShadowTop className={flexStyles.flexGrow_0} stickyOnBreakpoint={{ default: "bottom" }}>
+    <PageSection variant="light">
+      <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
+        {children}
+      </Flex>
+    </PageSection>
+  </PageGroup>
+);
+
+const MainContent = ({ children }) => (
+  <PageSection isFilled>{children}</PageSection>
+);
 
 const Navigation = ({ routes }) => {
   if (!Array.isArray(routes) || routes.length === 0) return;
@@ -209,8 +226,10 @@ const Page = ({ icon, title = "Agama", routes = [], children }) => {
 };
 
 Page.Actions = Actions;
+Page.NextActions = NextActions;
 Page.Action = Action;
 Page.Menu = Menu;
+Page.MainContent = MainContent;
 Page.CancelAction = CancelAction;
 
 export default Page;

@@ -21,11 +21,11 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Alert, Button, Form, FormGroup } from "@patternfly/react-core";
+import { Alert, Form, FormGroup } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { If, EmailInput, PasswordInput } from "~/components/core";
+import { If, EmailInput, Page, PasswordInput } from "~/components/core";
 import { useProduct } from "~/context/product";
 import { useInstallerClient } from "~/context/installer";
 
@@ -63,29 +63,34 @@ export default function ProductRegistrationPage() {
 
   return (
     <>
-      <h3>{sprintf(_("Register %s"), selectedProduct.name)}</h3>
-      <If
-        condition={error}
-        then={
-          <Alert variant="warning" isInline title={_("Something went wrong")}>
-            <p>{error}</p>
-          </Alert>
-        }
-      />
-      <Form id="productRegistrationForm" onSubmit={onSubmit}>
-        <FormGroup fieldId="regCode" label={_("Registration code")} isRequired>
-          <PasswordInput id="regCode" value={code} onChange={(_, v) => setCode(v)} />
-        </FormGroup>
-        <FormGroup fieldId="email" label={_("Email")}>
-          <EmailInput
-            id="email"
-            value={email}
-            onChange={(_, v) => setEmail(v)}
-          />
-        </FormGroup>
-        <Button type="submit">{_("Accept")}</Button>
-        <Button type="button" onClick={onCancel}>{_("Cancel")}</Button>
-      </Form>
+      <Page.MainContent>
+        <h3>{sprintf(_("Register %s"), selectedProduct.name)}</h3>
+        <If
+          condition={error}
+          then={
+            <Alert variant="warning" isInline title={_("Something went wrong")}>
+              <p>{error}</p>
+            </Alert>
+          }
+        />
+        <Form id="productRegistrationForm" onSubmit={onSubmit}>
+          <FormGroup fieldId="regCode" label={_("Registration code")} isRequired>
+            <PasswordInput id="regCode" value={code} onChange={(_, v) => setCode(v)} />
+          </FormGroup>
+          <FormGroup fieldId="email" label={_("Email")}>
+            <EmailInput
+              id="email"
+              value={email}
+              onChange={(_, v) => setEmail(v)}
+            />
+          </FormGroup>
+        </Form>
+      </Page.MainContent>
+
+      <Page.NextActions>
+        <Page.CancelAction onClick={onCancel} />
+        <Page.Action type="submit" form="productRegistrationForm">{_("Accept")}</Page.Action>
+      </Page.NextActions>
     </>
   );
 }
