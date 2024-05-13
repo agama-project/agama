@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-28 02:18+0000\n"
+"POT-Creation-Date: 2024-05-08 01:57+0000\n"
 "PO-Revision-Date: 2024-03-13 09:42+0000\n"
 "Last-Translator: Natasha Ament <stacheldrahtje@gmail.com>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-web/nl/"
@@ -19,28 +19,12 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.9.1\n"
 
-#. TRANSLATORS: error message, %s is replaced by the server URL
-#: src/DevServerWrapper.jsx:82
-#, c-format
-msgid "The server at %s is not reachable."
-msgstr "De server op %s is niet bereikbaar."
-
-#. TRANSLATORS: error message
-#: src/DevServerWrapper.jsx:88
-msgid "Cannot connect to the Cockpit server"
-msgstr "Kan niet verbinden met de Cockpit server"
-
-#. TRANSLATORS: button label
-#: src/DevServerWrapper.jsx:104
-msgid "Try Again"
-msgstr "Probeer opnieuw"
-
-#: src/components/core/About.jsx:43 src/components/core/About.jsx:48
+#: src/components/core/About.jsx:49 src/components/core/About.jsx:69
 msgid "About Agama"
 msgstr "Over Agama"
 
 #. TRANSLATORS: content of the "About" popup (1/2)
-#: src/components/core/About.jsx:53
+#: src/components/core/About.jsx:74
 #, fuzzy
 msgid ""
 "Agama is an experimental installer for (open)SUSE systems. It is still under "
@@ -55,18 +39,18 @@ msgstr ""
 
 #. TRANSLATORS: content of the "About" popup (2/2)
 #. %s is replaced by the project URL
-#: src/components/core/About.jsx:65
+#: src/components/core/About.jsx:86
 #, c-format
 msgid "For more information, please visit the project's repository at %s."
 msgstr ""
 "Voor meer informatie kunt u de opslagruimte van het project bezoek op %s."
 
 #. TRANSLATORS: button label
-#: src/components/core/About.jsx:71 src/components/core/FileViewer.jsx:81
-#: src/components/core/IssuesDialog.jsx:119 src/components/core/Sidebar.jsx:157
-#: src/components/core/Terminal.jsx:49
-#: src/components/network/WifiSelector.jsx:155
+#: src/components/core/About.jsx:92 src/components/core/FileViewer.jsx:81
+#: src/components/core/IssuesDialog.jsx:119 src/components/core/Sidebar.jsx:160
+#: src/components/network/WifiSelector.jsx:148
 #: src/components/product/ProductPage.jsx:239
+#: src/components/software/SoftwarePage.jsx:90
 #: src/components/storage/ProposalActionsDialog.jsx:98
 msgid "Close"
 msgstr "Sluiten"
@@ -90,10 +74,6 @@ msgstr ""
 #: src/components/core/DBusError.jsx:51
 msgid "Reload"
 msgstr "Herladen"
-
-#: src/components/core/DevelopmentInfo.jsx:55
-msgid "Cockpit server"
-msgstr "Cockpit server"
 
 #: src/components/core/FileViewer.jsx:66
 msgid "Reading file..."
@@ -129,7 +109,7 @@ msgstr ""
 "Klik bij twijfel alstbulieft op annuleren en controleer de instellingen."
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:65 src/components/core/Popup.jsx:129
+#: src/components/core/InstallButton.jsx:65 src/components/core/Popup.jsx:136
 #: src/components/network/WifiConnectionForm.jsx:136
 msgid "Cancel"
 msgstr "Annuleren"
@@ -157,8 +137,8 @@ msgstr ""
 #: src/components/product/ProductPage.jsx:71
 #: src/components/product/ProductPage.jsx:140
 #: src/components/product/ProductPage.jsx:207
-#: src/components/storage/EncryptionSettingsDialog.jsx:126
-#: src/components/storage/VolumeDialog.jsx:750
+#: src/components/storage/EncryptionSettingsDialog.jsx:141
+#: src/components/storage/VolumeDialog.jsx:787
 #: src/components/storage/ZFCPPage.jsx:511
 msgid "Accept"
 msgstr "Accepteren"
@@ -204,31 +184,31 @@ msgstr ""
 "boot loader."
 
 #. TRANSLATORS: page title
-#: src/components/core/InstallationFinished.jsx:88
+#: src/components/core/InstallationFinished.jsx:91
 msgid "Installation Finished"
 msgstr "Installatie voltooid"
 
-#: src/components/core/InstallationFinished.jsx:91
+#: src/components/core/InstallationFinished.jsx:94
 msgid "Congratulations!"
 msgstr "Gefeliciteerd!"
 
-#: src/components/core/InstallationFinished.jsx:96
+#: src/components/core/InstallationFinished.jsx:99
 msgid "The installation on your machine is complete."
 msgstr "De installatie van uw machine is voltooid."
 
-#: src/components/core/InstallationFinished.jsx:100
+#: src/components/core/InstallationFinished.jsx:103
 msgid "At this point you can power off the machine."
 msgstr "U kunt nu de machine uitzetten."
 
-#: src/components/core/InstallationFinished.jsx:101
+#: src/components/core/InstallationFinished.jsx:104
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr "U kunt nu opnieuw opstarten om in te loggen in het nieuwe systeem."
 
-#: src/components/core/InstallationFinished.jsx:113
+#: src/components/core/InstallationFinished.jsx:116
 msgid "Finish"
 msgstr "Voltooien"
 
-#: src/components/core/InstallationFinished.jsx:113
+#: src/components/core/InstallationFinished.jsx:116
 msgid "Reboot"
 msgstr "Herstarten"
 
@@ -238,10 +218,48 @@ msgstr "Installeren"
 
 #. TRANSLATORS: search field placeholder text
 #: src/components/core/ListSearch.jsx:50
-#: src/components/software/PatternSelector.jsx:215
-#: src/components/software/PatternSelector.jsx:216
+#: src/components/software/PatternSelector.jsx:174
+#: src/components/software/PatternSelector.jsx:175
 msgid "Search"
 msgstr "Zoeken"
+
+#. TRANSLATORS: Title for a form to provide the password for the root user. %s
+#. will be replaced by "root"
+#: src/components/core/LoginPage.jsx:56
+#, c-format
+msgid "Log in as %s"
+msgstr ""
+
+#. TRANSLATORS: An explanation about required privileges for login into the installer. %s
+#. will be replaced by "root"
+#: src/components/core/LoginPage.jsx:66
+#, c-format
+msgid ""
+"The installer requires %s user privileges. Please, provide its password to "
+"log in to the system."
+msgstr ""
+
+#: src/components/core/LoginPage.jsx:72
+#, fuzzy
+msgid "Login form"
+msgstr "Login %s"
+
+#: src/components/core/LoginPage.jsx:78
+#, fuzzy
+msgid "Password input"
+msgstr "Wachtwoord"
+
+#: src/components/core/LoginPage.jsx:86
+msgid "Could not log in. Please, make sure that the password is correct."
+msgstr ""
+
+#: src/components/core/LoginPage.jsx:93
+msgid "Log in"
+msgstr ""
+
+#: src/components/core/LoginPage.jsx:104
+msgid "What is this?"
+msgstr ""
 
 #: src/components/core/LogsButton.jsx:98
 msgid "Collecting logs..."
@@ -264,15 +282,15 @@ msgid "Something went wrong while collecting logs. Please, try again."
 msgstr ""
 "Iets is verkeerd gegaan bij het verzamelen van de logs. Probeer het opnieuw."
 
-#: src/components/core/Page.jsx:93 src/components/users/UsersPage.jsx:30
+#: src/components/core/Page.jsx:102 src/components/users/UsersPage.jsx:30
 msgid "Back"
 msgstr "Terug"
 
-#: src/components/core/Page.jsx:201
+#: src/components/core/Page.jsx:218
 msgid "Show global options"
 msgstr "Toon algemene opties"
 
-#: src/components/core/Page.jsx:215
+#: src/components/core/Page.jsx:234
 msgid "Page Actions"
 msgstr "Pagina acties"
 
@@ -292,22 +310,33 @@ msgstr "Wachtwoord"
 msgid "Password confirmation"
 msgstr "Wachtwoord bevestiging"
 
-#: src/components/core/PasswordInput.jsx:59
+#: src/components/core/PasswordInput.jsx:63
 msgid "Password visibility button"
 msgstr "Wachtwoord zichtbaarheidsknop"
 
-#: src/components/core/Popup.jsx:93
+#: src/components/core/Popup.jsx:100
 msgid "Confirm"
 msgstr "Bevestigen"
 
+#. TRANSLATORS: progress message
+#: src/components/core/Popup.jsx:210
+#, fuzzy
+msgid "Loading data..."
+msgstr "Leest bestand..."
+
 #: src/components/core/RowActions.jsx:64
-#: src/components/storage/PartitionsField.jsx:461
+#: src/components/storage/PartitionsField.jsx:457
 msgid "Actions"
 msgstr "Acties"
 
 #: src/components/core/SectionSkeleton.jsx:29
 msgid "Waiting"
 msgstr "Wachten"
+
+#: src/components/core/Selector.jsx:126
+#, fuzzy
+msgid "auto selected"
+msgstr "Niet ingesteld"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
@@ -320,20 +349,20 @@ msgid "YaST Logs"
 msgstr "YaST logs"
 
 #. TRANSLATORS: button label
-#: src/components/core/ShowTerminalButton.jsx:48
+#: src/components/core/ShowTerminalButton.jsx:46
 msgid "Open Terminal"
 msgstr "Open terminal"
 
 #. TRANSLATORS: sidebar header
-#: src/components/core/Sidebar.jsx:113 src/components/core/Sidebar.jsx:121
+#: src/components/core/Sidebar.jsx:116 src/components/core/Sidebar.jsx:124
 msgid "Installer Options"
 msgstr "Installatie opties"
 
-#: src/components/core/Sidebar.jsx:128
+#: src/components/core/Sidebar.jsx:131
 msgid "Hide installer options"
 msgstr "Verberg installer opties"
 
-#: src/components/core/Sidebar.jsx:136
+#: src/components/core/Sidebar.jsx:139
 msgid "Diagnostic tools"
 msgstr "Diagnostische hulpmiddelen"
 
@@ -540,8 +569,8 @@ msgstr "Adressen data lijst"
 
 #. TRANSLATORS: table header
 #. TRANSLATORS: input field for the iSCSI initiator name
-#: src/components/network/ConnectionsTable.jsx:57
-#: src/components/network/ConnectionsTable.jsx:86
+#: src/components/network/ConnectionsTable.jsx:66
+#: src/components/network/ConnectionsTable.jsx:95
 #: src/components/storage/ZFCPPage.jsx:360
 #: src/components/storage/iscsi/InitiatorForm.jsx:52
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:68
@@ -552,37 +581,37 @@ msgid "Name"
 msgstr "Naam"
 
 #. TRANSLATORS: table header
-#: src/components/network/ConnectionsTable.jsx:59
-#: src/components/network/ConnectionsTable.jsx:87
+#: src/components/network/ConnectionsTable.jsx:68
+#: src/components/network/ConnectionsTable.jsx:96
 msgid "IP addresses"
 msgstr "IP adressen"
 
-#: src/components/network/ConnectionsTable.jsx:67
-#: src/components/storage/PartitionsField.jsx:361
+#: src/components/network/ConnectionsTable.jsx:76
+#: src/components/storage/PartitionsField.jsx:315
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:208
+#: src/components/users/FirstUser.jsx:212
 msgid "Edit"
 msgstr "Wijzigen"
 
 #. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:70
+#: src/components/network/ConnectionsTable.jsx:79
 #, c-format
 msgid "Edit connection %s"
 msgstr "Wijzig verbinding %s"
 
-#: src/components/network/ConnectionsTable.jsx:74
+#: src/components/network/ConnectionsTable.jsx:83
 msgid "Forget"
 msgstr "Vergeten"
 
 #. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:77
+#: src/components/network/ConnectionsTable.jsx:86
 #, c-format
 msgid "Forget connection %s"
 msgstr "Vergeet verbinding %s"
 
 #. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:92
+#: src/components/network/ConnectionsTable.jsx:101
 #, c-format
 msgid "Actions for connection %s"
 msgstr "Acties voor verbinding %s"
@@ -612,53 +641,53 @@ msgid "IP prefix or netmask"
 msgstr "IP prefix of netmask"
 
 #. TRANSLATORS: error message
-#: src/components/network/IpSettingsForm.jsx:87
+#: src/components/network/IpSettingsForm.jsx:86
 msgid "At least one address must be provided for selected mode"
 msgstr "Minstens een adres moet worden opgegeven voor de geselecteerde modus"
 
 #. TRANSLATORS: %s is replaced by the iSCSI target node name
-#: src/components/network/IpSettingsForm.jsx:135
+#: src/components/network/IpSettingsForm.jsx:133
 #: src/components/storage/iscsi/EditNodeForm.jsx:50
 #, c-format
 msgid "Edit %s"
 msgstr "Wijzig %s"
 
 #. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
-#: src/components/network/IpSettingsForm.jsx:140
+#: src/components/network/IpSettingsForm.jsx:138
+#: src/components/network/IpSettingsForm.jsx:143
 #: src/components/network/IpSettingsForm.jsx:145
-#: src/components/network/IpSettingsForm.jsx:147
 msgid "Mode"
 msgstr "Modus"
 
-#: src/components/network/IpSettingsForm.jsx:151
+#: src/components/network/IpSettingsForm.jsx:149
 msgid "Automatic (DHCP)"
 msgstr "Automatisch (DHCP)"
 
 #. TRANSLATORS: manual network configuration mode with a static IP address
-#: src/components/network/IpSettingsForm.jsx:153
+#: src/components/network/IpSettingsForm.jsx:151
 #: src/components/storage/iscsi/NodeStartupOptions.js:25
 msgid "Manual"
 msgstr "Handmatig"
 
 #. TRANSLATORS: network gateway configuration
-#: src/components/network/IpSettingsForm.jsx:168
-#: src/components/network/IpSettingsForm.jsx:171
+#: src/components/network/IpSettingsForm.jsx:166
+#: src/components/network/IpSettingsForm.jsx:169
 msgid "Gateway"
 msgstr "Gateway"
 
-#: src/components/network/NetworkPage.jsx:38
+#: src/components/network/NetworkPage.jsx:40
 #, fuzzy
 msgid "No wired connections found."
 msgstr "Geen bedrade verbindingen gevonden"
 
-#: src/components/network/NetworkPage.jsx:53
+#: src/components/network/NetworkPage.jsx:55
 msgid ""
 "The system has not been configured for connecting to a WiFi network yet."
 msgstr ""
 "Het systeem is nog niet geconfigureerd voor het verbinden met een WiFi "
 "netwerk."
 
-#: src/components/network/NetworkPage.jsx:54
+#: src/components/network/NetworkPage.jsx:56
 msgid ""
 "The system does not support WiFi connections, probably because of missing or "
 "disabled hardware."
@@ -666,32 +695,32 @@ msgstr ""
 "Het systeem ondersteunt geen WiFi verbindingen, waarschijnlijk door "
 "ontbrekende of uitgeschakelde hardware."
 
-#: src/components/network/NetworkPage.jsx:58
+#: src/components/network/NetworkPage.jsx:60
 #, fuzzy
 msgid "No WiFi connections found."
 msgstr "Geen WiFi verbindingen gevonden"
 
 #. TRANSLATORS: button label
-#: src/components/network/NetworkPage.jsx:70
+#: src/components/network/NetworkPage.jsx:72
 #: src/components/network/NetworkPageMenu.jsx:46
-#: src/components/network/WifiSelector.jsx:136
+#: src/components/network/WifiSelector.jsx:129
 msgid "Connect to a Wi-Fi network"
 msgstr "Verbind met een WiFi netwerk"
 
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section title
-#: src/components/network/NetworkPage.jsx:169
-#: src/components/overview/NetworkSection.jsx:83
+#: src/components/network/NetworkPage.jsx:178
+#: src/components/overview/NetworkSection.jsx:117
 msgid "Network"
 msgstr "Netwerk"
 
 #. TRANSLATORS: page section
-#: src/components/network/NetworkPage.jsx:171
+#: src/components/network/NetworkPage.jsx:180
 msgid "Wired networks"
 msgstr "Bedrade netwerken"
 
 #. TRANSLATORS: page section
-#: src/components/network/NetworkPage.jsx:176
+#: src/components/network/NetworkPage.jsx:185
 msgid "WiFi networks"
 msgstr "WiFi netwerken"
 
@@ -712,7 +741,7 @@ msgstr "WPA & WPA2 Personal"
 #: src/components/storage/ZFCPDiskForm.jsx:112
 #: src/components/storage/iscsi/DiscoverForm.jsx:108
 #: src/components/storage/iscsi/LoginForm.jsx:72
-#: src/components/users/FirstUser.jsx:242
+#: src/components/users/FirstUser.jsx:280
 msgid "Something went wrong"
 msgstr "Iets is er verkeerd gegaan"
 
@@ -749,7 +778,7 @@ msgstr "Verbind met een verborgen netwerk"
 
 #. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:41
-#: src/components/network/WifiNetworkListItem.jsx:99
+#: src/components/network/WifiNetworkListItem.jsx:101
 msgid "Connecting"
 msgstr "Verbinden"
 
@@ -763,15 +792,19 @@ msgstr "Verbonden"
 msgid "Disconnecting"
 msgstr "Verbinding verbreken"
 
+#: src/components/network/WifiNetworkListItem.jsx:49
+msgid "Failed"
+msgstr ""
+
 #. TRANSLATORS: Wifi network status
 #. TRANSLATORS: iSCSI connection status
-#: src/components/network/WifiNetworkListItem.jsx:50
+#: src/components/network/WifiNetworkListItem.jsx:52
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr "Verbroken"
 
 #. TRANSLATORS: %s is replaced by a WiFi network name
-#: src/components/network/WifiNetworkListItem.jsx:97
+#: src/components/network/WifiNetworkListItem.jsx:99
 #, c-format
 msgid "%s connection is waiting for an state change"
 msgstr "%s verbinding wacht op een verandering van de status"
@@ -788,26 +821,27 @@ msgstr "Netwerk vergeten"
 msgid "The system will use %s as its default language."
 msgstr "Het systeem zal het %s als standaard taal gebruiken."
 
-#: src/components/overview/NetworkSection.jsx:59
-msgid "No network connections detected"
+#: src/components/overview/NetworkSection.jsx:96
+#, fuzzy
+msgid "No network devices detected"
 msgstr "Geen netwerkverbindingen gedetecteerd"
 
-#. TRANSLATORS: header for the list of active network connections,
-#. %d is replaced by the number of active connections
-#: src/components/overview/NetworkSection.jsx:68
-#, c-format
-msgid "%d connection set:"
-msgid_plural "%d connections set:"
-msgstr[0] "%d verbinding ingesteld:"
-msgstr[1] "%d verbindingen ingesteld:"
+#. TRANSLATORS: header for the list of connected devices,
+#. %d is replaced by the number of active devices
+#: src/components/overview/NetworkSection.jsx:103
+#, fuzzy, c-format
+msgid "%d device set:"
+msgid_plural "%d devices set:"
+msgstr[0] "Lees zFCP apparaten"
+msgstr[1] "Lees zFCP apparaten"
 
 #. TRANSLATORS: page title
-#: src/components/overview/OverviewPage.jsx:48
+#: src/components/overview/OverviewPage.jsx:58
 #, fuzzy
 msgid "Installation Summary"
 msgstr "Installatie apparaat"
 
-#. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+#. TRANSLATORS: %s is replaced by a product name (e.g. SLES)
 #: src/components/overview/ProductSection.jsx:48
 #, c-format
 msgid "%s (registered)"
@@ -820,19 +854,19 @@ msgstr ""
 msgid "Product"
 msgstr ""
 
-#: src/components/overview/SoftwareSection.jsx:38
+#: src/components/overview/SoftwareSection.jsx:37
 msgid "Reading software repositories"
 msgstr "Lezen van software opslagruimtes"
 
 #. TRANSLATORS: clickable link label
-#: src/components/overview/SoftwareSection.jsx:133
+#: src/components/overview/SoftwareSection.jsx:132
 msgid "Refresh the repositories"
 msgstr "Ververs de opslagruimtes"
 
 #. TRANSLATORS: page section
 #. TRANSLATORS: page title
 #: src/components/overview/SoftwareSection.jsx:143
-#: src/components/software/SoftwarePage.jsx:81
+#: src/components/software/SoftwarePage.jsx:216
 msgid "Software"
 msgstr "Software"
 
@@ -941,7 +975,7 @@ msgstr "Onderzoeken van opslagapparaten"
 #. TRANSLATORS: Storage page title
 #. TRANSLATORS: page section title
 #: src/components/overview/StorageSection.jsx:293
-#: src/components/storage/ProposalPage.jsx:227
+#: src/components/storage/ProposalPage.jsx:267
 msgid "Storage"
 msgstr "Opslag"
 
@@ -993,7 +1027,7 @@ msgstr ""
 msgid "Deregister %s"
 msgstr ""
 
-#. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+#. TRANSLATORS: %s is replaced by a product name (e.g. SLES)
 #: src/components/product/ProductPage.jsx:202
 #, c-format
 msgid "Do you want to deregister %s?"
@@ -1094,25 +1128,28 @@ msgstr "Versleuteld apparaat"
 msgid "Encryption Password"
 msgstr "Encryptie wachtwoord"
 
-#. TRANSLATORS: pattern status, selected to install (by user)
-#: src/components/software/PatternItem.jsx:63
-#, fuzzy
-msgid "selected"
-msgstr "Selecteer"
-
-#. TRANSLATORS: pattern status, selected to install (by dependencies)
-#: src/components/software/PatternItem.jsx:66
-msgid "automatically selected"
+#: src/components/software/PatternSelector.jsx:171
+msgid "Software summary and filter options"
 msgstr ""
 
-#. TRANSLATORS: pattern status, not selected to install
-#: src/components/software/PatternItem.jsx:69
+#. TRANSLATORS: page title
+#: src/components/software/SoftwarePage.jsx:80
+#: src/components/software/SoftwarePage.jsx:218
 #, fuzzy
-msgid "not selected"
-msgstr "Niet ingesteld"
+msgid "Software selection"
+msgstr "Software %s"
 
-#: src/components/software/PatternSelector.jsx:210
-msgid "Software summary and filter options"
+#: src/components/software/SoftwarePage.jsx:109
+#, fuzzy
+msgid "Change selection"
+msgstr "Wijzig product"
+
+#: src/components/software/SoftwarePage.jsx:138
+msgid "No additional software was selected."
+msgstr ""
+
+#: src/components/software/SoftwarePage.jsx:144
+msgid "The following software patterns are selected for installation:"
 msgstr ""
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
@@ -1127,72 +1164,66 @@ msgstr "De installatie zal %s in beslag nemen"
 msgid "Change boot options"
 msgstr "Wijzig product"
 
-#: src/components/storage/BootConfigField.jsx:91
-msgid "Waiting for information about boot config"
-msgstr ""
-
-#: src/components/storage/BootConfigField.jsx:97
+#: src/components/storage/BootConfigField.jsx:99
 msgid "Installation will not configure partitions for booting."
 msgstr ""
 
-#: src/components/storage/BootConfigField.jsx:99
+#: src/components/storage/BootConfigField.jsx:101
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr ""
 
 #. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/BootConfigField.jsx:102
+#: src/components/storage/BootConfigField.jsx:104
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr ""
 
-#: src/components/storage/BootSelectionDialog.jsx:116
+#: src/components/storage/BootSelectionDialog.jsx:117
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
 msgstr ""
 
-#: src/components/storage/BootSelectionDialog.jsx:122
+#: src/components/storage/BootSelectionDialog.jsx:123
 msgid "Partitions to boot will be allocated at the installation disk."
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelectionDialog.jsx:127
+#: src/components/storage/BootSelectionDialog.jsx:128
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
 msgstr ""
 
-#: src/components/storage/BootSelectionDialog.jsx:134
+#: src/components/storage/BootSelectionDialog.jsx:135
 #, fuzzy
 msgid "Partitions for booting"
 msgstr "Partitie informatie"
 
-#: src/components/storage/BootSelectionDialog.jsx:143
-#: src/components/storage/VolumeLocationDialog.jsx:157
+#: src/components/storage/BootSelectionDialog.jsx:144
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
 msgstr "Automatisch"
 
-#: src/components/storage/BootSelectionDialog.jsx:154
-#: src/components/storage/DeviceSelectionDialog.jsx:131
-#: src/components/storage/VolumeLocationDialog.jsx:168
+#: src/components/storage/BootSelectionDialog.jsx:155
+#: src/components/storage/DeviceSelectionDialog.jsx:140
 #, fuzzy
 msgid "Select a disk"
 msgstr "taal"
 
-#: src/components/storage/BootSelectionDialog.jsx:160
+#: src/components/storage/BootSelectionDialog.jsx:161
 msgid "Partitions to boot will be allocated at the following device."
 msgstr ""
 
-#: src/components/storage/BootSelectionDialog.jsx:163
+#: src/components/storage/BootSelectionDialog.jsx:164
 msgid "Choose a disk for placing the boot loader"
 msgstr ""
 
-#: src/components/storage/BootSelectionDialog.jsx:175
+#: src/components/storage/BootSelectionDialog.jsx:176
 msgid "Do not configure"
 msgstr ""
 
-#: src/components/storage/BootSelectionDialog.jsx:179
+#: src/components/storage/BootSelectionDialog.jsx:180
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr ""
@@ -1241,9 +1272,10 @@ msgid "Status"
 msgstr "Status"
 
 #: src/components/storage/DASDTable.jsx:66
-#: src/components/storage/DeviceSelectorTable.jsx:40
-#: src/components/storage/ProposalResultSection.jsx:188
-#: src/components/storage/SpaceActionsTable.jsx:181
+#: src/components/storage/DeviceSelectorTable.jsx:187
+#: src/components/storage/ProposalResultTable.jsx:125
+#: src/components/storage/SpaceActionsTable.jsx:141
+#: src/components/storage/VolumeLocationSelectorTable.jsx:100
 msgid "Device"
 msgstr "Apparaat"
 
@@ -1319,7 +1351,7 @@ msgstr "Verwijder maximaal kanaal filter"
 #. TRANSLATORS: description for using plain partitions for installing the
 #. system, the text in the square brackets [] is displayed in bold, use only
 #. one pair in the translation
-#: src/components/storage/DeviceSelectionDialog.jsx:103
+#: src/components/storage/DeviceSelectionDialog.jsx:111
 msgid ""
 "The file systems will be allocated by default as [new partitions in the "
 "selected device]."
@@ -1328,46 +1360,107 @@ msgstr ""
 #. TRANSLATORS: description for using logical volumes for installing the
 #. system, the text in the square brackets [] is displayed in bold, use only
 #. one pair in the translation
-#: src/components/storage/DeviceSelectionDialog.jsx:108
+#: src/components/storage/DeviceSelectionDialog.jsx:116
 msgid ""
 "The file systems will be allocated by default as [logical volumes of a new "
 "LVM Volume Group]. The corresponding physical volumes will be created on "
 "demand as new partitions at the selected devices."
 msgstr ""
 
-#: src/components/storage/DeviceSelectionDialog.jsx:115
+#: src/components/storage/DeviceSelectionDialog.jsx:123
 msgid "Device for installing the system"
 msgstr ""
 
-#: src/components/storage/DeviceSelectionDialog.jsx:140
+#: src/components/storage/DeviceSelectionDialog.jsx:149
 msgid "Create an LVM Volume Group"
 msgstr ""
 
-#: src/components/storage/DeviceSelectionDialog.jsx:150
+#: src/components/storage/DeviceSelectionDialog.jsx:159
 msgid "Device selector for target disk"
 msgstr ""
 
-#: src/components/storage/DeviceSelectionDialog.jsx:166
+#: src/components/storage/DeviceSelectionDialog.jsx:175
 msgid "Device selector for new LVM volume group"
 msgstr ""
 
-#: src/components/storage/DeviceSelectorTable.jsx:34
-#: src/components/storage/ProposalResultSection.jsx:135
-#: src/components/storage/SpaceActionsTable.jsx:67
-#, fuzzy
-msgid "Unused space"
-msgstr "Lees zFCP apparaten"
+#. TRANSLATORS: multipath device type
+#: src/components/storage/DeviceSelectorTable.jsx:58
+msgid "Multipath"
+msgstr "Multipath"
 
-#: src/components/storage/DeviceSelectorTable.jsx:41
-#, fuzzy
-msgid "Content"
-msgstr "Doorgaan"
+#. TRANSLATORS: %s is replaced by the device bus ID
+#: src/components/storage/DeviceSelectorTable.jsx:63
+#, c-format
+msgid "DASD %s"
+msgstr "DASD %s"
 
-#: src/components/storage/DeviceSelectorTable.jsx:42
-#: src/components/storage/PartitionsField.jsx:458
-#: src/components/storage/ProposalResultSection.jsx:191
-#: src/components/storage/SpaceActionsTable.jsx:183
+#. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
+#: src/components/storage/DeviceSelectorTable.jsx:68
+#, c-format
+msgid "Software %s"
+msgstr "Software %s"
+
+#: src/components/storage/DeviceSelectorTable.jsx:73
+msgid "SD Card"
+msgstr "SD kaart"
+
+#. TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
+#: src/components/storage/DeviceSelectorTable.jsx:78
+#, c-format
+msgid "%s disk"
+msgstr ""
+
+#: src/components/storage/DeviceSelectorTable.jsx:79
+#, fuzzy
+msgid "Disk"
+msgstr "Disks"
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/DeviceSelectorTable.jsx:99
+#, c-format
+msgid "Members: %s"
+msgstr "Leden: %s"
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/DeviceSelectorTable.jsx:108
+#, c-format
+msgid "Devices: %s"
+msgstr "Apparaten: %s"
+
+#. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
+#: src/components/storage/DeviceSelectorTable.jsx:117
+#, c-format
+msgid "Wires: %s"
+msgstr "Draden: %s"
+
+#. TRANSLATORS: disk partition info, %s is replaced by partition table
+#. type (MS-DOS or GPT), %d is the number of the partitions
+#: src/components/storage/DeviceSelectorTable.jsx:153
+#, c-format
+msgid "%s with %d partitions"
+msgstr "%s met %d partities"
+
+#. TRANSLATORS: status message, no existing content was found on the disk,
+#. i.e. the disk is completely empty
+#: src/components/storage/DeviceSelectorTable.jsx:159
+#: src/components/storage/SpaceActionsTable.jsx:114
+msgid "No content found"
+msgstr "Geen inhoud gevonden"
+
+#: src/components/storage/DeviceSelectorTable.jsx:188
+#: src/components/storage/PartitionsField.jsx:453
+#: src/components/storage/ProposalResultTable.jsx:127
+#: src/components/storage/SpaceActionsTable.jsx:142
+#: src/components/storage/VolumeLocationSelectorTable.jsx:101
+msgid "Details"
+msgstr "Details"
+
+#: src/components/storage/DeviceSelectorTable.jsx:189
+#: src/components/storage/PartitionsField.jsx:454
+#: src/components/storage/ProposalResultTable.jsx:128
+#: src/components/storage/SpaceActionsTable.jsx:143
 #: src/components/storage/VolumeFields.jsx:466
+#: src/components/storage/VolumeLocationSelectorTable.jsx:103
 msgid "Size"
 msgstr "Grootte"
 
@@ -1411,7 +1504,7 @@ msgid ""
 "be booted directly on its first run."
 msgstr ""
 
-#: src/components/storage/EncryptionSettingsDialog.jsx:99
+#: src/components/storage/EncryptionSettingsDialog.jsx:114
 #, fuzzy
 msgid "Encrypt the system"
 msgstr "Wijzig bestandssysteem"
@@ -1422,6 +1515,7 @@ msgid "Storage iSCSI"
 msgstr "iSCSI opslag"
 
 #: src/components/storage/InstallationDeviceField.jsx:38
+#: src/components/storage/VolumeLocationSelectorTable.jsx:58
 msgid "Installation device"
 msgstr "Installatie apparaat"
 
@@ -1444,73 +1538,69 @@ msgstr ""
 msgid "storage technologies"
 msgstr ""
 
-#: src/components/storage/InstallationDeviceField.jsx:112
-msgid "Waiting for information about selected device"
-msgstr ""
-
 #: src/components/storage/InstallationDeviceField.jsx:124
 msgid "Prepare more devices by configuring advanced"
 msgstr ""
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:66
+#: src/components/storage/PartitionsField.jsx:65
 #, fuzzy, c-format
 msgid "at least %s"
 msgstr "Tenminste %s"
 
 #. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:90
+#: src/components/storage/PartitionsField.jsx:89
 #, fuzzy, c-format
 msgid "Transactional Btrfs root volume (%s)"
 msgstr "Voer een actie uit"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:92
+#: src/components/storage/PartitionsField.jsx:91
 #, fuzzy, c-format
 msgid "Transactional Btrfs root partition (%s)"
 msgstr "Voer een actie uit"
 
 #. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:97
+#: src/components/storage/PartitionsField.jsx:96
 #, fuzzy, c-format
 msgid "Btrfs root volume with snapshots (%s)"
 msgstr "met snapshots"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:99
+#: src/components/storage/PartitionsField.jsx:98
 #, fuzzy, c-format
 msgid "Btrfs root partition with snapshots (%s)"
 msgstr "met snapshots"
 
 #. TRANSLATORS: This results in something like "Mount /dev/sda3 at /home (25 GiB)" since
 #. %1$s is replaced by the device name, %2$s by the mount point and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:108
+#: src/components/storage/PartitionsField.jsx:107
 #, c-format
 msgid "Mount %1$s at %2$s (%3$s)"
 msgstr ""
 
 #. TRANSLATORS: This results in something like "Swap at /dev/sda3 (2 GiB)" since
 #. %1$s is replaced by the device name, and %2$s by the size
-#: src/components/storage/PartitionsField.jsx:114
+#: src/components/storage/PartitionsField.jsx:113
 #, c-format
 msgid "Swap at %1$s (%2$s)"
 msgstr ""
 
 #. TRANSLATORS: Swap is in an LVM logical volume. %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:118
+#: src/components/storage/PartitionsField.jsx:117
 #, c-format
 msgid "Swap volume (%s)"
 msgstr ""
 
 #. TRANSLATORS: %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:120
+#: src/components/storage/PartitionsField.jsx:119
 #, fuzzy, c-format
 msgid "Swap partition (%s)"
 msgstr "Partitie informatie"
 
 #. TRANSLATORS: This results in something like "Btrfs root at /dev/sda3 (20 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the device name, and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:129
+#: src/components/storage/PartitionsField.jsx:128
 #, c-format
 msgid "%1$s root at %2$s (%3$s)"
 msgstr ""
@@ -1518,21 +1608,21 @@ msgstr ""
 #. TRANSLATORS: "/" is in an LVM logical volume.
 #. Results in something like "Btrfs root volume (at least 20 GiB)" since
 #. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:135
+#: src/components/storage/PartitionsField.jsx:134
 #, fuzzy, c-format
 msgid "%1$s root volume (%2$s)"
 msgstr "Aanwezigheid van andere volumes (%s)"
 
 #. TRANSLATORS: Results in something like "Btrfs root partition (at least 20 GiB)" since
 #. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:138
+#: src/components/storage/PartitionsField.jsx:137
 #, fuzzy, c-format
 msgid "%1$s root partition (%2$s)"
 msgstr "%s met %d partities"
 
 #. TRANSLATORS: This results in something like "Ext4 /home at /dev/sda3 (20 GiB)" since
 #. %1$s is replaced by filesystem type, %2$s by mount point, %3$s by device name and %4$s by size
-#: src/components/storage/PartitionsField.jsx:144
+#: src/components/storage/PartitionsField.jsx:143
 #, c-format
 msgid "%1$s %2$s at %3$s (%4$s)"
 msgstr ""
@@ -1540,153 +1630,151 @@ msgstr ""
 #. TRANSLATORS: The filesystem is in an LVM logical volume.
 #. Results in something like "Ext4 /home volume (at least 10 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:150
+#: src/components/storage/PartitionsField.jsx:149
 #, c-format
 msgid "%1$s %2$s volume (%3$s)"
 msgstr ""
 
 #. TRANSLATORS: This results in something like "Ext4 /home partition (at least 10 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:153
+#: src/components/storage/PartitionsField.jsx:152
 #, fuzzy, c-format
 msgid "%1$s %2$s partition (%3$s)"
 msgstr "%s met %d partities"
 
-#: src/components/storage/PartitionsField.jsx:165
+#: src/components/storage/PartitionsField.jsx:164
 #, fuzzy
 msgid "Do not configure partitions for booting"
 msgstr "Partitie informatie"
 
-#: src/components/storage/PartitionsField.jsx:168
+#: src/components/storage/PartitionsField.jsx:167
 #, fuzzy
 msgid "Boot partitions at installation disk"
 msgstr "Installatie apparaat"
 
 #. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/PartitionsField.jsx:171
+#: src/components/storage/PartitionsField.jsx:170
 #, fuzzy, c-format
 msgid "Boot partitions at %s"
 msgstr "Partitie informatie"
 
 #. TRANSLATORS: header for a list of items referring to size limits for file systems
-#: src/components/storage/PartitionsField.jsx:193
+#: src/components/storage/PartitionsField.jsx:192
 msgid "These limits are affected by:"
 msgstr "Deze limieten worden beïnvloed door:"
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
-#: src/components/storage/PartitionsField.jsx:197
+#: src/components/storage/PartitionsField.jsx:196
 msgid "The configuration of snapshots"
 msgstr "De configuratie van snapshots"
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
 #. %s is replaced by a list of the volumes (like "/home, /boot")
-#: src/components/storage/PartitionsField.jsx:201
+#: src/components/storage/PartitionsField.jsx:200
 #, c-format
 msgid "Presence of other volumes (%s)"
 msgstr "Aanwezigheid van andere volumes (%s)"
 
 #. TRANSLATORS: list item, describes a factor that affects the computed size of a
 #. file system; eg. adjusting the size of the swap
-#: src/components/storage/PartitionsField.jsx:205
+#: src/components/storage/PartitionsField.jsx:204
 msgid "The amount of RAM in the system"
 msgstr ""
 
-#. TRANSLATORS: device flag, the partition size is automatically computed
-#: src/components/storage/PartitionsField.jsx:298
+#: src/components/storage/PartitionsField.jsx:257
 msgid "auto"
 msgstr "auto"
 
 #. TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
-#: src/components/storage/PartitionsField.jsx:314
+#: src/components/storage/PartitionsField.jsx:274
 #, c-format
 msgid "Reused %s"
 msgstr ""
 
-#: src/components/storage/PartitionsField.jsx:316
+#: src/components/storage/PartitionsField.jsx:276
 #, fuzzy
 msgid "Transactional Btrfs"
 msgstr "Voer een actie uit"
 
-#: src/components/storage/PartitionsField.jsx:318
+#: src/components/storage/PartitionsField.jsx:278
 #, fuzzy
 msgid "Btrfs with snapshots"
 msgstr "met snapshots"
 
 #. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:332
+#: src/components/storage/PartitionsField.jsx:292
 #, fuzzy, c-format
 msgid "Partition at %s"
 msgstr "Partitie informatie"
 
 #. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:335
+#: src/components/storage/PartitionsField.jsx:295
 #, c-format
 msgid "Separate LVM at %s"
 msgstr ""
 
-#: src/components/storage/PartitionsField.jsx:339
+#: src/components/storage/PartitionsField.jsx:299
 #, fuzzy
 msgid "Logical volume at system LVM"
 msgstr "Gebuik logische volume beheer (LVM)"
 
-#: src/components/storage/PartitionsField.jsx:341
+#: src/components/storage/PartitionsField.jsx:301
 msgid "Partition at installation disk"
 msgstr ""
 
-#: src/components/storage/PartitionsField.jsx:356
-#: src/components/storage/SpaceActionsTable.jsx:122
-#: src/components/storage/iscsi/NodesPresenter.jsx:77
-msgid "Delete"
-msgstr "Verwijderen"
+#: src/components/storage/PartitionsField.jsx:316
+#, fuzzy
+msgid "Reset location"
+msgstr "Vraag"
 
-#: src/components/storage/PartitionsField.jsx:365
+#: src/components/storage/PartitionsField.jsx:317
 #, fuzzy
 msgid "Change location"
 msgstr "Wijzig product"
 
-#: src/components/storage/PartitionsField.jsx:456
+#: src/components/storage/PartitionsField.jsx:318
+#: src/components/storage/SpaceActionsTable.jsx:78
+#: src/components/storage/iscsi/NodesPresenter.jsx:77
+msgid "Delete"
+msgstr "Verwijderen"
+
+#: src/components/storage/PartitionsField.jsx:452
 #: src/components/storage/VolumeFields.jsx:53
 #: src/components/storage/VolumeFields.jsx:62
 #: src/components/storage/VolumeFields.jsx:67
 msgid "Mount point"
 msgstr "Koppelpunt"
 
-#: src/components/storage/PartitionsField.jsx:457
-#: src/components/storage/ProposalResultSection.jsx:190
-#: src/components/storage/SpaceActionsTable.jsx:182
-msgid "Details"
-msgstr "Details"
-
 #. TRANSLATORS: where (and how) the file-system is going to be created
-#: src/components/storage/PartitionsField.jsx:460
+#: src/components/storage/PartitionsField.jsx:456
 #, fuzzy
 msgid "Location"
 msgstr "Lokalisatie"
 
-#: src/components/storage/PartitionsField.jsx:502
+#: src/components/storage/PartitionsField.jsx:498
 msgid "Table with mount points"
 msgstr "Tabel met koppelpunten"
 
-#: src/components/storage/PartitionsField.jsx:573
-#: src/components/storage/PartitionsField.jsx:592
-#: src/components/storage/VolumeDialog.jsx:91
+#: src/components/storage/PartitionsField.jsx:569
+#: src/components/storage/PartitionsField.jsx:588
+#: src/components/storage/VolumeDialog.jsx:84
 msgid "Add file system"
 msgstr "Voeg bestandssysteem toe"
 
-#: src/components/storage/PartitionsField.jsx:601
+#: src/components/storage/PartitionsField.jsx:599
 msgid "Other"
 msgstr ""
 
-#: src/components/storage/PartitionsField.jsx:733
+#: src/components/storage/PartitionsField.jsx:738
 msgid "Reset to defaults"
 msgstr "Reset naar standaard"
 
-#: src/components/storage/PartitionsField.jsx:806
+#: src/components/storage/PartitionsField.jsx:813
 #, fuzzy
 msgid "Partitions and file systems"
 msgstr "Exacte grootte voor het bestandssysteem."
 
-#: src/components/storage/PartitionsField.jsx:807
+#: src/components/storage/PartitionsField.jsx:814
 msgid ""
 "Structure of the new system, including any additional partition needed for "
 "booting,"
@@ -1752,24 +1840,11 @@ msgstr "Verbinden"
 msgid "Check all planned actions"
 msgstr "Geplande acties"
 
-#: src/components/storage/ProposalResultSection.jsx:130
-#, fuzzy
-msgid "New"
-msgstr "Netwerk"
+#: src/components/storage/ProposalResultSection.jsx:107
+msgid "Waiting for information about storage configuration"
+msgstr ""
 
-#. TRANSLATORS: Label to indicate the device size before resizing, where %s is replaced by
-#. the original size (e.g., 3.00 GiB).
 #: src/components/storage/ProposalResultSection.jsx:167
-#, fuzzy, c-format
-msgid "Before %s"
-msgstr "Software %s"
-
-#: src/components/storage/ProposalResultSection.jsx:189
-#, fuzzy
-msgid "Mount Point"
-msgstr "Koppelpunt"
-
-#: src/components/storage/ProposalResultSection.jsx:268
 #, c-format
 msgid ""
 "During installation, %d action will be performed to configure the system as "
@@ -1781,11 +1856,28 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. TRANSLATORS: The storage "Result" section's title
-#: src/components/storage/ProposalResultSection.jsx:276
+#: src/components/storage/ProposalResultSection.jsx:175
 msgid "Result"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:117
+#: src/components/storage/ProposalResultTable.jsx:73
+#, fuzzy
+msgid "New"
+msgstr "Netwerk"
+
+#. TRANSLATORS: Label to indicate the device size before resizing, where %s is
+#. replaced by the original size (e.g., 3.00 GiB).
+#: src/components/storage/ProposalResultTable.jsx:100
+#, fuzzy, c-format
+msgid "Before %s"
+msgstr "Software %s"
+
+#: src/components/storage/ProposalResultTable.jsx:126
+#, fuzzy
+msgid "Mount Point"
+msgstr "Koppelpunt"
+
+#: src/components/storage/ProposalSettingsSection.jsx:145
 msgid "Settings"
 msgstr "Instellingen"
 
@@ -1813,57 +1905,46 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., /dev/sda)
-#: src/components/storage/SpaceActionsTable.jsx:119
+#: src/components/storage/SpaceActionsTable.jsx:75
 #, c-format
 msgid "Space action selector for %s"
 msgstr ""
 
-#: src/components/storage/SpaceActionsTable.jsx:123
+#: src/components/storage/SpaceActionsTable.jsx:79
 msgid "Allow resize"
 msgstr ""
 
-#: src/components/storage/SpaceActionsTable.jsx:124
+#: src/components/storage/SpaceActionsTable.jsx:80
 msgid "Do not modify"
 msgstr ""
 
-#: src/components/storage/SpaceActionsTable.jsx:154
+#: src/components/storage/SpaceActionsTable.jsx:111
 msgid "The content may be deleted"
 msgstr ""
 
-#. TRANSLATORS: status message, no existing content was found on the disk,
-#. i.e. the disk is completely empty
-#: src/components/storage/SpaceActionsTable.jsx:157
-#: src/components/storage/device-utils.jsx:184
-msgid "No content found"
-msgstr "Geen inhoud gevonden"
-
-#: src/components/storage/SpaceActionsTable.jsx:184
+#: src/components/storage/SpaceActionsTable.jsx:144
 msgid "Shrinkable"
 msgstr ""
 
-#: src/components/storage/SpaceActionsTable.jsx:186
+#: src/components/storage/SpaceActionsTable.jsx:146
 #, fuzzy
 msgid "Action"
 msgstr "Acties"
 
-#: src/components/storage/SpaceActionsTable.jsx:202
+#: src/components/storage/SpaceActionsTable.jsx:162
 #, fuzzy
 msgid "Actions to find space"
 msgstr "Acties voor verbinding %s"
 
-#: src/components/storage/SpacePolicyDialog.jsx:137
+#: src/components/storage/SpacePolicyDialog.jsx:144
 msgid ""
 "Allocating the file systems might need to find free space in the devices "
 "listed below. Choose how to do it."
 msgstr ""
 
-#: src/components/storage/SpacePolicyDialog.jsx:142
+#: src/components/storage/SpacePolicyDialog.jsx:149
 #: src/components/storage/SpacePolicyField.jsx:87
 msgid "Find space"
-msgstr ""
-
-#: src/components/storage/SpacePolicyField.jsx:75
-msgid "Waiting for information about space policy"
 msgstr ""
 
 #: src/components/storage/SpacePolicyField.jsx:89
@@ -1872,57 +1953,82 @@ msgid ""
 "installation device(s)."
 msgstr ""
 
-#: src/components/storage/VolumeDialog.jsx:88
+#: src/components/storage/VolumeDialog.jsx:81
 #, fuzzy, c-format
 msgid "Add %s file system"
 msgstr "Voeg bestandssysteem toe"
 
-#: src/components/storage/VolumeDialog.jsx:89
+#: src/components/storage/VolumeDialog.jsx:82
 #, fuzzy, c-format
 msgid "Edit %s file system"
 msgstr "Wijzig bestandssysteem"
 
-#: src/components/storage/VolumeDialog.jsx:91
+#: src/components/storage/VolumeDialog.jsx:84
 msgid "Edit file system"
 msgstr "Wijzig bestandssysteem"
 
-#: src/components/storage/VolumeDialog.jsx:129
+#. TRANSLATORS: Warning when editing a file system.
+#: src/components/storage/VolumeDialog.jsx:99
+#, fuzzy
+msgid "The type and size of the file system cannot be edited."
+msgstr "de aanwezigheid van het bestandssysteem voor %s"
+
+#. TRANSLATORS: Description of a warning. The first %s is replaced by a device name (e.g.,
+#. /dev/vda) and the second %s is replaced by a mount path (e.g., /home).
+#: src/components/storage/VolumeDialog.jsx:102
+#, c-format
+msgid "The current file system on %s is selected to be mounted at %s."
+msgstr ""
+
+#. TRANSLATORS: Warning when editing a file system.
+#: src/components/storage/VolumeDialog.jsx:108
+#, fuzzy
+msgid "The size of the file system cannot be edited"
+msgstr "de aanwezigheid van het bestandssysteem voor %s"
+
+#. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
+#: src/components/storage/VolumeDialog.jsx:110
+#, c-format
+msgid "The file system is allocated at the device %s."
+msgstr ""
+
+#: src/components/storage/VolumeDialog.jsx:155
 #, fuzzy
 msgid "A mount point is required"
 msgstr "Minimum grootte is vereist"
 
-#: src/components/storage/VolumeDialog.jsx:156
+#: src/components/storage/VolumeDialog.jsx:182
 #, fuzzy
 msgid "The mount point is invalid"
 msgstr "Tabel met koppelpunten"
 
-#: src/components/storage/VolumeDialog.jsx:184
+#: src/components/storage/VolumeDialog.jsx:210
 msgid "A size value is required"
 msgstr "Een grootheids waarde is nodig"
 
-#: src/components/storage/VolumeDialog.jsx:212
+#: src/components/storage/VolumeDialog.jsx:238
 msgid "Minimum size is required"
 msgstr "Minimum grootte is vereist"
 
-#: src/components/storage/VolumeDialog.jsx:244
+#: src/components/storage/VolumeDialog.jsx:270
 msgid "Maximum must be greater than minimum"
 msgstr "Maximum moet groter zijn dan het minimum"
 
-#: src/components/storage/VolumeDialog.jsx:286
+#: src/components/storage/VolumeDialog.jsx:312
 #, fuzzy, c-format
 msgid "There is already a file system for %s."
 msgstr "de aanwezigheid van het bestandssysteem voor %s"
 
-#: src/components/storage/VolumeDialog.jsx:288
+#: src/components/storage/VolumeDialog.jsx:314
 msgid "Do you want to edit it?"
 msgstr ""
 
-#: src/components/storage/VolumeDialog.jsx:333
+#: src/components/storage/VolumeDialog.jsx:359
 #, fuzzy, c-format
 msgid "There is a predefined file system for %s."
 msgstr "de aanwezigheid van het bestandssysteem voor %s"
 
-#: src/components/storage/VolumeDialog.jsx:335
+#: src/components/storage/VolumeDialog.jsx:361
 msgid "Do you want to add it?"
 msgstr ""
 
@@ -2048,47 +2154,77 @@ msgstr "Vast"
 msgid "Range"
 msgstr "Reikwijdte"
 
-#. TRANSLATORS: %s is replaced by a device label (e.g., "/dev/vda, 50 GiB").
-#: src/components/storage/VolumeLocationDialog.jsx:138
-#, c-format
+#. TRANSLATORS: Description of the dialog for changing the location of a file system.
+#: src/components/storage/VolumeLocationDialog.jsx:41
 msgid ""
-"The filesystem will be allocated as a new partition at the installation disk "
-"(%s)."
+"The file systems are allocated at the installation device by default. "
+"Indicate a custom location to create the file system at a specific device."
 msgstr ""
 
-#: src/components/storage/VolumeLocationDialog.jsx:142
-msgid ""
-"The filesystem will be allocated as a new partition at the installation disk."
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:144
-msgid ""
-"The file system will be allocated as a logical volume at the system LVM."
-msgstr ""
-
-#: src/components/storage/VolumeLocationDialog.jsx:149
+#. TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
+#. by a mount path (e.g., /home).
+#: src/components/storage/VolumeLocationDialog.jsx:136
 #, fuzzy, c-format
 msgid "Location for %s file system"
 msgstr "Exacte grootte voor het bestandssysteem."
 
-#: src/components/storage/VolumeLocationDialog.jsx:174
-msgid ""
-"The file system will be allocated as a new partition at the selected disk."
+#: src/components/storage/VolumeLocationDialog.jsx:146
+msgid "Select in which device to allocate the file system"
 msgstr ""
 
-#: src/components/storage/VolumeLocationDialog.jsx:177
+#: src/components/storage/VolumeLocationDialog.jsx:149
 #, fuzzy
-msgid "Choose a disk for placing the file system"
+msgid "Select a location"
+msgstr "taal"
+
+#: src/components/storage/VolumeLocationDialog.jsx:161
+#, fuzzy
+msgid "Select how to allocate the file system"
 msgstr "Exacte grootte voor het bestandssysteem."
 
-#: src/components/storage/VolumeLocationDialog.jsx:185
+#: src/components/storage/VolumeLocationDialog.jsx:166
+msgid "Create a new partition"
+msgstr ""
+
+#: src/components/storage/VolumeLocationDialog.jsx:167
+msgid ""
+"The file system will be allocated as a new partition at the selected   disk."
+msgstr ""
+
+#: src/components/storage/VolumeLocationDialog.jsx:176
 msgid "Create a dedicated LVM volume group"
 msgstr ""
 
-#: src/components/storage/VolumeLocationDialog.jsx:186
+#: src/components/storage/VolumeLocationDialog.jsx:177
 msgid ""
-"A new volume group will be allocated in the selected disk and the file "
+"A new volume group will be allocated in the selected disk and the   file "
 "system will be created as a logical volume."
+msgstr ""
+
+#: src/components/storage/VolumeLocationDialog.jsx:186
+#, fuzzy
+msgid "Format the device"
+msgstr "Formatteren DASD apparaten"
+
+#. TRANSLATORS: %s is replaced by a file system type (e.g., Ext4).
+#: src/components/storage/VolumeLocationDialog.jsx:189
+#, c-format
+msgid "The selected device will be formatted as %s file system."
+msgstr ""
+
+#: src/components/storage/VolumeLocationDialog.jsx:199
+#, fuzzy
+msgid "Mount the file system"
+msgstr "Wijzig bestandssysteem"
+
+#: src/components/storage/VolumeLocationDialog.jsx:200
+msgid ""
+"The current file system on the selected device will be mounted   without "
+"formatting the device."
+msgstr ""
+
+#: src/components/storage/VolumeLocationSelectorTable.jsx:102
+msgid "Usage"
 msgstr ""
 
 #: src/components/storage/ZFCPDiskForm.jsx:113
@@ -2188,62 +2324,10 @@ msgstr "Disks"
 msgid "Storage zFCP"
 msgstr "Opslag zFCP"
 
-#. TRANSLATORS: multipath device type
-#: src/components/storage/device-utils.jsx:66
-msgid "Multipath"
-msgstr "Multipath"
-
-#. TRANSLATORS: %s is replaced by the device bus ID
-#: src/components/storage/device-utils.jsx:71
-#, c-format
-msgid "DASD %s"
-msgstr "DASD %s"
-
-#. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
-#: src/components/storage/device-utils.jsx:76
-#, c-format
-msgid "Software %s"
-msgstr "Software %s"
-
-#: src/components/storage/device-utils.jsx:81
-msgid "SD Card"
-msgstr "SD kaart"
-
-#. TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
-#: src/components/storage/device-utils.jsx:86
-#, c-format
-msgid "%s disk"
-msgstr ""
-
-#: src/components/storage/device-utils.jsx:87
+#: src/components/storage/device-utils.jsx:88
 #, fuzzy
-msgid "Disk"
-msgstr "Disks"
-
-#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/device-utils.jsx:107
-#, c-format
-msgid "Members: %s"
-msgstr "Leden: %s"
-
-#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/device-utils.jsx:116
-#, c-format
-msgid "Devices: %s"
-msgstr "Apparaten: %s"
-
-#. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
-#: src/components/storage/device-utils.jsx:125
-#, c-format
-msgid "Wires: %s"
-msgstr "Draden: %s"
-
-#. TRANSLATORS: disk partition info, %s is replaced by partition table
-#. type (MS-DOS or GPT), %d is the number of the partitions
-#: src/components/storage/device-utils.jsx:155
-#, c-format
-msgid "%s with %d partitions"
-msgstr "%s met %d partities"
+msgid "Unused space"
+msgstr "Lees zFCP apparaten"
 
 #: src/components/storage/iscsi/AuthFields.jsx:70
 msgid "Only available if authentication by target is provided"
@@ -2408,97 +2492,97 @@ msgstr "Detecteer"
 msgid "Targets"
 msgstr "Doelen"
 
-#: src/components/storage/utils.js:57
+#: src/components/storage/utils.js:64
 msgid "KiB"
 msgstr "KiB"
 
-#: src/components/storage/utils.js:58
+#: src/components/storage/utils.js:65
 msgid "MiB"
 msgstr "MiB"
 
-#: src/components/storage/utils.js:59
+#: src/components/storage/utils.js:66
 msgid "GiB"
 msgstr "GiB"
 
-#: src/components/storage/utils.js:60
+#: src/components/storage/utils.js:67
 msgid "TiB"
 msgstr "TiB"
 
-#: src/components/storage/utils.js:61
+#: src/components/storage/utils.js:68
 msgid "PiB"
 msgstr "PiB"
 
-#: src/components/storage/utils.js:70
+#: src/components/storage/utils.js:77
 msgid "Delete current content"
 msgstr ""
 
-#: src/components/storage/utils.js:71
+#: src/components/storage/utils.js:78
 msgid "All partitions will be removed and any data in the disks will be lost."
 msgstr ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space deleting all content[...]"
-#: src/components/storage/utils.js:75
+#: src/components/storage/utils.js:82
 msgid "deleting all content of the installation device"
 msgstr ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space deleting all content[...]"
-#: src/components/storage/utils.js:78
+#: src/components/storage/utils.js:85
 #, c-format
 msgid "deleting all content of the %d selected disks"
 msgstr ""
 
-#: src/components/storage/utils.js:83
+#: src/components/storage/utils.js:90
 msgid "Shrink existing partitions"
 msgstr ""
 
-#: src/components/storage/utils.js:84
+#: src/components/storage/utils.js:91
 msgid "The data is kept, but the current partitions will be resized as needed."
 msgstr ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space shrinking partitions[...]"
-#: src/components/storage/utils.js:88
+#: src/components/storage/utils.js:95
 msgid "shrinking partitions of the installation device"
 msgstr ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space shrinking partitions[...]"
-#: src/components/storage/utils.js:91
+#: src/components/storage/utils.js:98
 #, c-format
 msgid "shrinking partitions of the %d selected disks"
 msgstr ""
 
-#: src/components/storage/utils.js:96
+#: src/components/storage/utils.js:103
 #, fuzzy
 msgid "Use available space"
 msgstr "Beschikbare apparaten"
 
-#: src/components/storage/utils.js:97
+#: src/components/storage/utils.js:104
 msgid ""
 "The data is kept. Only the space not assigned to any partition will be used."
 msgstr ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space without modifying any partition".
-#: src/components/storage/utils.js:101
+#: src/components/storage/utils.js:108
 #, fuzzy
 msgid "without modifying any partition"
 msgstr "%s met %d partities"
 
-#: src/components/storage/utils.js:106
+#: src/components/storage/utils.js:113
 #, fuzzy
 msgid "Custom"
 msgstr "Installatie apparaat"
 
-#: src/components/storage/utils.js:107
+#: src/components/storage/utils.js:114
 msgid "Select what to do with each partition."
 msgstr ""
 
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space performing a custom set of actions".
-#: src/components/storage/utils.js:111
+#: src/components/storage/utils.js:118
 msgid "performing a custom set of actions"
 msgstr ""
 
@@ -2520,13 +2604,13 @@ msgstr ""
 msgid "Define a user now"
 msgstr "Definieer nu een gebruiker"
 
-#: src/components/users/FirstUser.jsx:67 src/components/users/FirstUser.jsx:246
+#: src/components/users/FirstUser.jsx:67 src/components/users/FirstUser.jsx:284
 msgid "Full name"
 msgstr "Volledige naam"
 
-#: src/components/users/FirstUser.jsx:68 src/components/users/FirstUser.jsx:260
-#: src/components/users/FirstUser.jsx:268
-#: src/components/users/FirstUser.jsx:270
+#: src/components/users/FirstUser.jsx:68 src/components/users/FirstUser.jsx:298
+#: src/components/users/FirstUser.jsx:306
+#: src/components/users/FirstUser.jsx:309
 msgid "Username"
 msgstr "Gebruikersnaam"
 
@@ -2535,41 +2619,41 @@ msgid "Username suggestion dropdown"
 msgstr ""
 
 #. TRANSLATORS: dropdown username suggestions
-#: src/components/users/FirstUser.jsx:102
+#: src/components/users/FirstUser.jsx:103
 msgid "Use suggested username"
 msgstr ""
 
-#: src/components/users/FirstUser.jsx:212
+#: src/components/users/FirstUser.jsx:216
 #: src/components/users/RootAuthMethods.jsx:99
 #: src/components/users/RootAuthMethods.jsx:111
 msgid "Discard"
 msgstr "Niet opslaan"
 
-#: src/components/users/FirstUser.jsx:237
+#: src/components/users/FirstUser.jsx:275
 msgid "Create user account"
 msgstr "Maak gebruikersaccount"
 
-#: src/components/users/FirstUser.jsx:237
+#: src/components/users/FirstUser.jsx:275
 msgid "Edit user account"
 msgstr "Wijziging gebruikersaccount"
 
-#: src/components/users/FirstUser.jsx:250
-#: src/components/users/FirstUser.jsx:252
+#: src/components/users/FirstUser.jsx:288
+#: src/components/users/FirstUser.jsx:290
 msgid "User full name"
 msgstr "Volledige naam gebruiker"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUser.jsx:288
-#: src/components/users/FirstUser.jsx:292
+#: src/components/users/FirstUser.jsx:329
+#: src/components/users/FirstUser.jsx:333
 msgid "Edit password too"
 msgstr "Wijzig ook het wachtwoord"
 
-#: src/components/users/FirstUser.jsx:305
+#: src/components/users/FirstUser.jsx:346
 msgid "user autologin"
 msgstr "gebruiker autologin"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUser.jsx:309
+#: src/components/users/FirstUser.jsx:350
 msgid "Auto-login"
 msgstr "Auto-login"
 
@@ -2674,6 +2758,37 @@ msgstr "Gebruiker"
 msgid "Root authentication"
 msgstr "Root authenticatie"
 
+#, c-format
+#~ msgid "The server at %s is not reachable."
+#~ msgstr "De server op %s is niet bereikbaar."
+
+#~ msgid "Cannot connect to the Cockpit server"
+#~ msgstr "Kan niet verbinden met de Cockpit server"
+
+#~ msgid "Try Again"
+#~ msgstr "Probeer opnieuw"
+
+#~ msgid "Cockpit server"
+#~ msgstr "Cockpit server"
+
+#, c-format
+#~ msgid "%d connection set:"
+#~ msgid_plural "%d connections set:"
+#~ msgstr[0] "%d verbinding ingesteld:"
+#~ msgstr[1] "%d verbindingen ingesteld:"
+
+#, fuzzy
+#~ msgid "selected"
+#~ msgstr "Selecteer"
+
+#, fuzzy
+#~ msgid "Content"
+#~ msgstr "Doorgaan"
+
+#, fuzzy
+#~ msgid "Choose a disk for placing the file system"
+#~ msgstr "Exacte grootte voor het bestandssysteem."
+
 #, fuzzy
 #~ msgid "Select a value"
 #~ msgstr "taal"
@@ -2708,10 +2823,6 @@ msgstr "Root authenticatie"
 #, fuzzy
 #~ msgid "File systems to create"
 #~ msgstr "Bestandssystemen die worden gemaakt in uw systeem"
-
-#, fuzzy
-#~ msgid "Used device"
-#~ msgstr "Lees zFCP apparaten"
 
 #, fuzzy
 #~ msgid "Size details"
