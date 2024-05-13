@@ -73,7 +73,7 @@ mDNS (sometimes called Avahi, Zeroconf, Bonjour) for hostname resolution. Theref
 > hostname resolutions and point you to a wrong Agama instance which could for example steal your 
 > root password!
 
-If you have troubles or you want to know more about this feature, check our [Avahi/mDNS] (./doc/avahi.md) documentation.
+If you have troubles or you want to know more about this feature, check our [Avahi/mDNS](./doc/avahi.md) documentation.
 
 ## Other Resources
 
