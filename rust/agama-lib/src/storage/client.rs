@@ -220,195 +220,185 @@ impl<'a> StorageClient<'a> {
     }
 
     async fn build_device_info(&self, object: &DBusObject) -> Result<DeviceInfo, ServiceError> {
-        let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.Device");
-        // All devices has to implement device info, so report error if it is not there
-        if let Some(properties) = properties {
-            Ok(DeviceInfo {
-                sid: get_property(properties, "SID")?,
-                name: get_property(properties, "Name")?,
-                description: get_property(properties, "Description")?,
-            })
-        } else {
-            let message =
-                format!("storage device {} is missing Device interface", object.0).to_string();
-            Err(zbus::zvariant::Error::Message(message).into())
-        }
+        let iface = self.get_interface(object, "org.opensuse.Agama.Storage1.Device");
+        // All devices have to implement the Device interface, so report error if it is not there.
+        let Some(properties) = iface else {
+            return Err(zbus::zvariant::Error::Message(format!(
+                "Storage device {} is missing the Device interface",
+                object.0
+            ))
+            .into());
+        };
+
+        Ok(DeviceInfo {
+            sid: get_property(properties, "SID")?,
+            name: get_property(properties, "Name")?,
+            description: get_property(properties, "Description")?,
+        })
     }
 
     async fn build_block_device(
         &self,
         object: &DBusObject,
     ) -> Result<Option<BlockDevice>, ServiceError> {
-        let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.Block");
+        let iface = self.get_interface(object, "org.opensuse.Agama.Storage1.Block");
+        let Some(properties) = iface else {
+            return Ok(None);
+        };
 
-        if let Some(properties) = properties {
-            Ok(Some(BlockDevice {
-                active: get_property(properties, "Active")?,
-                encrypted: get_property(properties, "Encrypted")?,
-                recoverable_size: get_property(properties, "RecoverableSize")?,
-                size: get_property(properties, "Size")?,
-                start: get_property(properties, "Start")?,
-                systems: get_property(properties, "Systems")?,
-                udev_ids: get_property(properties, "UdevIds")?,
-                udev_paths: get_property(properties, "UdevPaths")?,
-            }))
-        } else {
-            Ok(None)
-        }
+        Ok(Some(BlockDevice {
+            active: get_property(properties, "Active")?,
+            encrypted: get_property(properties, "Encrypted")?,
+            recoverable_size: get_property(properties, "RecoverableSize")?,
+            size: get_property(properties, "Size")?,
+            start: get_property(properties, "Start")?,
+            systems: get_property(properties, "Systems")?,
+            udev_ids: get_property(properties, "UdevIds")?,
+            udev_paths: get_property(properties, "UdevPaths")?,
+        }))
     }
 
     async fn build_component(
         &self,
         object: &DBusObject,
     ) -> Result<Option<Component>, ServiceError> {
-        let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.Component");
+        let iface = self.get_interface(object, "org.opensuse.Agama.Storage1.Component");
+        let Some(properties) = iface else {
+            return Ok(None);
+        };
 
-        if let Some(properties) = properties {
-            Ok(Some(Component {
-                component_type: get_property(properties, "Type")?,
-                device_names: get_property(properties, "DeviceNames")?,
-                devices: get_property(properties, "Devices")?,
-            }))
-        } else {
-            Ok(None)
-        }
+        Ok(Some(Component {
+            component_type: get_property(properties, "Type")?,
+            device_names: get_property(properties, "DeviceNames")?,
+            devices: get_property(properties, "Devices")?,
+        }))
     }
 
     async fn build_drive(&self, object: &DBusObject) -> Result<Option<Drive>, ServiceError> {
-        let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.Drive");
+        let iface = self.get_interface(object, "org.opensuse.Agama.Storage1.Drive");
+        let Some(properties) = iface else {
+            return Ok(None);
+        };
 
-        if let Some(properties) = properties {
-            Ok(Some(Drive {
-                drive_type: get_property(properties, "Type")?,
-                vendor: get_property(properties, "Vendor")?,
-                model: get_property(properties, "Model")?,
-                bus: get_property(properties, "Bus")?,
-                bus_id: get_property(properties, "BusId")?,
-                driver: get_property(properties, "Driver")?,
-                transport: get_property(properties, "Transport")?,
-                info: get_property(properties, "Info")?,
-            }))
-        } else {
-            Ok(None)
-        }
+        Ok(Some(Drive {
+            drive_type: get_property(properties, "Type")?,
+            vendor: get_property(properties, "Vendor")?,
+            model: get_property(properties, "Model")?,
+            bus: get_property(properties, "Bus")?,
+            bus_id: get_property(properties, "BusId")?,
+            driver: get_property(properties, "Driver")?,
+            transport: get_property(properties, "Transport")?,
+            info: get_property(properties, "Info")?,
+        }))
     }
 
     async fn build_filesystem(
         &self,
         object: &DBusObject,
     ) -> Result<Option<Filesystem>, ServiceError> {
-        let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.Filesystem");
+        let iface = self.get_interface(object, "org.opensuse.Agama.Storage1.Filesystem");
+        let Some(properties) = iface else {
+            return Ok(None);
+        };
 
-        if let Some(properties) = properties {
-            Ok(Some(Filesystem {
-                sid: get_property(properties, "SID")?,
-                fs_type: get_property(properties, "Type")?,
-                mount_path: get_property(properties, "MountPath")?,
-                label: get_property(properties, "Label")?,
-            }))
-        } else {
-            Ok(None)
-        }
+        Ok(Some(Filesystem {
+            sid: get_property(properties, "SID")?,
+            fs_type: get_property(properties, "Type")?,
+            mount_path: get_property(properties, "MountPath")?,
+            label: get_property(properties, "Label")?,
+        }))
     }
 
     async fn build_lvm_lv(&self, object: &DBusObject) -> Result<Option<LvmLv>, ServiceError> {
-        let properties =
-            self.get_interface(object, "org.opensuse.Agama.Storage1.LVM.LogicalVolume");
+        let iface = self.get_interface(object, "org.opensuse.Agama.Storage1.LVM.LogicalVolume");
+        let Some(properties) = iface else {
+            return Ok(None);
+        };
 
-        if let Some(properties) = properties {
-            Ok(Some(LvmLv {
-                volume_group: get_property(properties, "VolumeGroup")?,
-            }))
-        } else {
-            Ok(None)
-        }
+        Ok(Some(LvmLv {
+            volume_group: get_property(properties, "VolumeGroup")?,
+        }))
     }
 
     async fn build_lvm_vg(&self, object: &DBusObject) -> Result<Option<LvmVg>, ServiceError> {
-        let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.LVM.VolumeGroup");
+        let iface = self.get_interface(object, "org.opensuse.Agama.Storage1.LVM.VolumeGroup");
+        let Some(properties) = iface else {
+            return Ok(None);
+        };
 
-        if let Some(properties) = properties {
-            Ok(Some(LvmVg {
-                size: get_property(properties, "Size")?,
-                physical_volumes: get_property(properties, "PhysicalVolumes")?,
-                logical_volumes: get_property(properties, "LogicalVolumes")?,
-            }))
-        } else {
-            Ok(None)
-        }
+        Ok(Some(LvmVg {
+            size: get_property(properties, "Size")?,
+            physical_volumes: get_property(properties, "PhysicalVolumes")?,
+            logical_volumes: get_property(properties, "LogicalVolumes")?,
+        }))
     }
 
     async fn build_md(&self, object: &DBusObject) -> Result<Option<Md>, ServiceError> {
-        let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.MD");
+        let iface = self.get_interface(object, "org.opensuse.Agama.Storage1.MD");
+        let Some(properties) = iface else {
+            return Ok(None);
+        };
 
-        if let Some(properties) = properties {
-            Ok(Some(Md {
-                uuid: get_property(properties, "UUID")?,
-                level: get_property(properties, "Level")?,
-                devices: get_property(properties, "Devices")?,
-            }))
-        } else {
-            Ok(None)
-        }
+        Ok(Some(Md {
+            uuid: get_property(properties, "UUID")?,
+            level: get_property(properties, "Level")?,
+            devices: get_property(properties, "Devices")?,
+        }))
     }
 
     async fn build_multipath(
         &self,
         object: &DBusObject,
     ) -> Result<Option<Multipath>, ServiceError> {
-        let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.Multipath");
+        let iface = self.get_interface(object, "org.opensuse.Agama.Storage1.Multipath");
+        let Some(properties) = iface else {
+            return Ok(None);
+        };
 
-        if let Some(properties) = properties {
-            Ok(Some(Multipath {
-                wires: get_property(properties, "Wires")?,
-            }))
-        } else {
-            Ok(None)
-        }
+        Ok(Some(Multipath {
+            wires: get_property(properties, "Wires")?,
+        }))
     }
 
     async fn build_partition(
         &self,
         object: &DBusObject,
     ) -> Result<Option<Partition>, ServiceError> {
-        let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.Partition");
+        let iface = self.get_interface(object, "org.opensuse.Agama.Storage1.Partition");
+        let Some(properties) = iface else {
+            return Ok(None);
+        };
 
-        if let Some(properties) = properties {
-            Ok(Some(Partition {
-                device: get_property(properties, "Device")?,
-                efi: get_property(properties, "EFI")?,
-            }))
-        } else {
-            Ok(None)
-        }
+        Ok(Some(Partition {
+            device: get_property(properties, "Device")?,
+            efi: get_property(properties, "EFI")?,
+        }))
     }
 
     async fn build_partition_table(
         &self,
         object: &DBusObject,
     ) -> Result<Option<PartitionTable>, ServiceError> {
-        let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.PartitionTable");
+        let iface = self.get_interface(object, "org.opensuse.Agama.Storage1.PartitionTable");
+        let Some(properties) = iface else {
+            return Ok(None);
+        };
 
-        if let Some(properties) = properties {
-            Ok(Some(PartitionTable {
-                ptable_type: get_property(properties, "Type")?,
-                partitions: get_property(properties, "Partitions")?,
-                unused_slots: get_property(properties, "UnusedSlots")?,
-            }))
-        } else {
-            Ok(None)
-        }
+        Ok(Some(PartitionTable {
+            ptable_type: get_property(properties, "Type")?,
+            partitions: get_property(properties, "Partitions")?,
+            unused_slots: get_property(properties, "UnusedSlots")?,
+        }))
     }
 
     async fn build_raid(&self, object: &DBusObject) -> Result<Option<Raid>, ServiceError> {
-        let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.RAID");
+        let iface = self.get_interface(object, "org.opensuse.Agama.Storage1.RAID");
+        let Some(properties) = iface else {
+            return Ok(None);
+        };
 
-        if let Some(properties) = properties {
-            Ok(Some(Raid {
-                devices: get_property(properties, "Devices")?,
-            }))
-        } else {
-            Ok(None)
-        }
+        Ok(Some(Raid {
+            devices: get_property(properties, "Devices")?,
+        }))
     }
 }
