@@ -24,7 +24,6 @@
 
 import { HTTPClient } from "./http";
 import DBusClient from "./dbus";
-import { HTTPClient } from "./http";
 import { StorageClient } from "./storage";
 
 const mockJsonFn = jest.fn();
