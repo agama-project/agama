@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May 13 09:01:21 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Extend the storage HTTP API to support handling the iSCSI
+  configuration (gh#openSUSE/agama#1187).
+
+-------------------------------------------------------------------
 Mon May 13 08:47:27 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Provide HTTP API for storage (gh#openSUSE/agama#1175).

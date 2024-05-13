@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May 13 09:01:29 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt the iSCSI UI to use the new HTTP API instead of D-Bus
+  (gh#openSUSE/agama#1187).
+
+-------------------------------------------------------------------
 Mon May 13 08:45:57 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Adapt the storage UI to use the HTTP API instead of D-Bus
