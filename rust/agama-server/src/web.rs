@@ -60,10 +60,7 @@ where
         .add_service("/manager", manager_service(dbus.clone()).await?)
         .add_service("/software", software_service(dbus.clone()).await?)
         .add_service("/storage", storage_service(dbus.clone()).await?)
-        .add_service(
-            "/network",
-            network_service(dbus.clone(), network_adapter, events).await?,
-        )
+        .add_service("/network", network_service(network_adapter, events).await?)
         .add_service("/questions", questions_service(dbus.clone()).await?)
         .add_service("/users", users_service(dbus.clone()).await?)
         .with_config(config)

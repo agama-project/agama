@@ -60,14 +60,13 @@ struct NetworkServiceState {
 }
 
 /// Sets up and returns the axum service for the network module.
-///
-/// * `dbus`: zbus Connection.
+/// * `adapter`: networking configuration adapter.
+/// * `events`: sending-half of the broadcast channel.
 pub async fn network_service<T: Adapter + Send + Sync + 'static>(
-    dbus: zbus::Connection,
     adapter: T,
     events: EventsSender,
 ) -> Result<Router, ServiceError> {
-    let network = NetworkSystem::new(dbus.clone(), adapter);
+    let network = NetworkSystem::new(adapter);
     // FIXME: we are somehow abusing ServiceError. The HTTP/JSON API should have its own
     // error type.
     let client = network
