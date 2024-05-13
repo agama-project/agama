@@ -22,8 +22,9 @@
 import React from "react";
 import { createHashRouter } from "react-router-dom";
 import App from "~/App";
+import Protected from "~/Protected";
 import Root from "~/Root";
-import { Page } from "~/components/core";
+import { Page, LoginPage, ProgressText } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
 import { ProductPage, ProductSelectionPage, ProductRegistrationPage } from "~/components/product";
 import { SoftwarePage } from "~/components/software";
@@ -78,7 +79,7 @@ const rootRoutes = [
   usersRoutes,
 ];
 
-const routes = [
+const protectedRoutes = [
   {
     path: "/",
     element: <App />,
@@ -98,6 +99,19 @@ const routes = [
         element: <ProductSelectionPage />
       }
     ]
+  }
+];
+
+const routes = [
+  {
+    path: "/login",
+    exact: true,
+    element: <LoginPage />
+  },
+  {
+    path: "/",
+    element: <Protected />,
+    children: [...protectedRoutes]
   }
 ];
 
