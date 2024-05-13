@@ -108,28 +108,41 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     Ok(router)
 }
 
+/// Probes the storage devices.
 async fn probe(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
     Ok(Json(state.client.probe().await?))
 }
 
+/// Whether the system is in a deprecated status.
+///
+/// The system is usually set as deprecated as effect of managing some kind of devices, for example,
+/// when iSCSI sessions are created or when a zFCP disk is activated.
+///
+/// A deprecated system means that the probed system could not match with the current system.
+///
+/// It is expected that clients probe devices again if the system is deprecated.
 async fn devices_dirty(State(state): State<StorageState<'_>>) -> Result<Json<bool>, Error> {
     Ok(Json(state.client.devices_dirty_bit().await?))
 }
 
+/// Information about the current storage devices in the system.
 async fn system_devices(State(state): State<StorageState<'_>>) -> Result<Json<Vec<Device>>, Error> {
     Ok(Json(state.client.system_devices().await?))
 }
 
+/// Information about the target storage devices for the installation.
 async fn staging_devices(
     State(state): State<StorageState<'_>>,
 ) -> Result<Json<Vec<Device>>, Error> {
     Ok(Json(state.client.staging_devices().await?))
 }
 
+/// Actions to perform to transform system into staging.
 async fn actions(State(state): State<StorageState<'_>>) -> Result<Json<Vec<Action>>, Error> {
     Ok(Json(state.client.actions().await?))
 }
 
+/// The default values for a volume with the given mount path.
 async fn volume_for(
     State(state): State<StorageState<'_>>,
     Query(params): Query<HashMap<String, String>>,
@@ -140,6 +153,8 @@ async fn volume_for(
     Ok(Json(state.client.volume_for(mount_path).await?))
 }
 
+/// Some information about the selected product, for example, the pre-defined mount paths or the
+/// available encryption methods.
 async fn product_params(
     State(state): State<StorageState<'_>>,
 ) -> Result<Json<ProductParams>, Error> {
@@ -150,7 +165,7 @@ async fn product_params(
     Ok(Json(params))
 }
 
-/// Returns the SID of the devices usable for the installation.
+/// The SID of the devices usable for the installation.
 ///
 /// Note that not all the existing devices can be selected as target device for the installation.
 async fn usable_devices(
@@ -160,12 +175,14 @@ async fn usable_devices(
     Ok(Json(sids))
 }
 
+/// Settings used for calculating the proposal.
 async fn get_proposal_settings(
     State(state): State<StorageState<'_>>,
 ) -> Result<Json<ProposalSettings>, Error> {
     Ok(Json(state.client.proposal_settings().await?))
 }
 
+/// Calculates a new proposal with the given settings.
 async fn set_proposal_settings(
     State(state): State<StorageState<'_>>,
     Json(config): Json<ProposalSettingsPatch>,
