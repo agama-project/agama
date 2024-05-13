@@ -1,4 +1,4 @@
-#### Avahi/mDNS
+# Avahi/mDNS
 
 Agama's Live ISO is configured to use mDNS (sometimes called Avahi, Zeroconf, Bonjour) for hostname
 resolution. The reason is that it might be quite difficult to find out which URL should be used for
@@ -12,7 +12,7 @@ This document explains how this feature works and offers a few hints for fix pot
 > hostname resolutions and point you to a wrong Agama instance which could for example steal your
 > root password!
 
-##### Firewall Configuration
+## Firewall Configuration
 
 If you cannot connect to a server using the `.local` domain then maybe the
 firewall is blocking the traffic. Then you need to enable the mDNS traffic using
@@ -25,7 +25,7 @@ firewall-cmd --zone=public --add-service=mdns
 firewall-cmd --permanent --zone=public --add-service=mdns
 ```
 
-##### Using mDNS
+## Using mDNS
 
 The Live ISO by default uses the `agama.local` hostname. To connect to the
 running instance simply type `https://agama.local` in your browser. In most
@@ -62,13 +62,13 @@ ping agama.local
 ssh root@agama.local
 ```
 
-##### Fallback
+## Fallback
 
 The mDNS approach is just an addition, one more possibility how to connect to
 the machine. If it does not work for you then you can always use the old good
 classic IP address approach.
 
-##### Service Advertising
+## Service Advertising
 
 The Agama Live ISO also uses Avahi service advertising. With this you can easily
 search for all running Agama instances in the local network:
@@ -79,12 +79,11 @@ avahi-browse -t -r _agama._sub._https._tcp
 
 The command will print the found servers and their hostnames and IP addresses.
 
-##### Notes
+## Notes
 
 - mDNS works only in the same local network, it does not work over internet
   or separate network segments.
 - mDNS might not be supported in all systems or it might be blocked by firewall.
 - On mobile phones with Android OS mDNS is supported since Android version 12.
   (but this might be vendor dependent...).
-
 
