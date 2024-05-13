@@ -1,15 +1,14 @@
 //! Implements a client to access Agama's storage service.
 
 use super::model::{
-    Action, BlockDevice, Component, Device, DeviceInfo, Drive, Filesystem, LvmLv, LvmVg, Md,
-    Multipath, Partition, PartitionTable, ProposalSettings, ProposalSettingsPatch, ProposalTarget,
-    Raid, StorageDevice, Volume,
+    Action, BlockDevice, Component, Device, DeviceInfo, DeviceSid, Drive, Filesystem, LvmLv, LvmVg,
+    Md, Multipath, Partition, PartitionTable, ProposalSettings, ProposalSettingsPatch,
+    ProposalTarget, Raid, Volume,
 };
-use super::proxies::{DeviceProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
+use super::proxies::{ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
 use super::StorageSettings;
 use crate::dbus::get_property;
 use crate::error::ServiceError;
-use futures_util::future::join_all;
 use std::collections::HashMap;
 use zbus::fdo::ObjectManagerProxy;
 use zbus::names::{InterfaceName, OwnedInterfaceName};
@@ -67,19 +66,18 @@ impl<'a> StorageClient<'a> {
         Ok(result)
     }
 
-    /// Returns the available devices
-    ///
-    /// These devices can be used for installing the system.
-    pub async fn available_devices(&self) -> Result<Vec<StorageDevice>, ServiceError> {
-        let devices: Vec<_> = self
+    pub async fn available_devices(&self) -> Result<Vec<DeviceSid>, ServiceError> {
+        let paths: Vec<zbus::zvariant::ObjectPath> = self
             .calculator_proxy
             .available_devices()
             .await?
             .into_iter()
-            .map(|path| self.storage_device(path))
+            .map(|p| p.into_inner())
             .collect();
 
-        join_all(devices).await.into_iter().collect()
+        let result: Result<Vec<DeviceSid>, _> = paths.into_iter().map(|v| v.try_into()).collect();
+
+        Ok(result?)
     }
 
     pub async fn volume_for(&self, mount_path: &str) -> Result<Volume, ServiceError> {
@@ -98,22 +96,6 @@ impl<'a> StorageClient<'a> {
 
     pub async fn proposal_settings(&self) -> Result<ProposalSettings, ServiceError> {
         Ok(self.proposal_proxy.settings().await?.try_into()?)
-    }
-
-    /// Returns the storage device for the given D-Bus path
-    async fn storage_device(
-        &self,
-        dbus_path: OwnedObjectPath,
-    ) -> Result<StorageDevice, ServiceError> {
-        let proxy = DeviceProxy::builder(&self.connection)
-            .path(dbus_path)?
-            .build()
-            .await?;
-
-        Ok(StorageDevice {
-            name: proxy.name().await?,
-            description: proxy.description().await?,
-        })
     }
 
     /// Returns the boot device proposal setting

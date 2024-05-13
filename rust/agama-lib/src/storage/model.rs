@@ -5,15 +5,6 @@ use zbus::zvariant::{OwnedValue, Value};
 
 use crate::dbus::{get_optional_property, get_property};
 
-/// Represents a storage device
-/// Just for backward compatibility with CLI.
-/// See struct Device
-#[derive(Serialize, Debug)]
-pub struct StorageDevice {
-    pub name: String,
-    pub description: String,
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct DeviceSid(u32);
 

@@ -10,7 +10,7 @@ use std::collections::HashMap;
 use agama_lib::{
     error::ServiceError,
     storage::{
-        model::{Action, Device, ProposalSettings, ProposalSettingsPatch, Volume},
+        model::{Action, Device, DeviceSid, ProposalSettings, ProposalSettingsPatch, Volume},
         proxies::Storage1Proxy,
         StorageClient,
     },
@@ -150,11 +150,14 @@ async fn product_params(
     Ok(Json(params))
 }
 
-async fn usable_devices(State(state): State<StorageState<'_>>) -> Result<Json<Vec<String>>, Error> {
-    let devices = state.client.available_devices().await?;
-    let devices_names = devices.into_iter().map(|d| d.name).collect();
-
-    Ok(Json(devices_names))
+/// Returns the SID of the devices usable for the installation.
+///
+/// Note that not all the existing devices can be selected as target device for the installation.
+async fn usable_devices(
+    State(state): State<StorageState<'_>>,
+) -> Result<Json<Vec<DeviceSid>>, Error> {
+    let sids = state.client.available_devices().await?;
+    Ok(Json(sids))
 }
 
 async fn get_proposal_settings(
