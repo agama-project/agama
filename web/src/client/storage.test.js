@@ -115,7 +115,7 @@ const sda1 = {
   systems : [],
   udevIds: [],
   udevPaths: [],
-  isEFI: false
+  isEFI: true
 };
 
 /** @type {StorageDevice}  */
@@ -704,7 +704,7 @@ const contexts = {
         name: "/dev/sda1",
         description: ""
       },
-      partition: { EFI: false },
+      partition: { efi: true },
       blockDevice: {
         active: true,
         encrypted: false,
@@ -727,7 +727,7 @@ const contexts = {
         name: "/dev/sda2",
         description: ""
       },
-      partition: { EFI: false },
+      partition: { efi: false },
       blockDevice: {
         active: true,
         encrypted: false,
@@ -1049,7 +1049,7 @@ const contexts = {
         name: "/dev/sdf1",
         description: "PV of vg0"
       },
-      partition: { EFI: false },
+      partition: { efi: false },
       blockDevice: {
         active: true,
         encrypted: true,

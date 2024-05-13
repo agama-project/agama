@@ -290,7 +290,7 @@ class DevicesManager {
       /** @type {(device: StorageDevice, info: object) => void} */
       const addPartitionInfo = (device, info) => {
         device.type = "partition";
-        device.isEFI = info.EFI;
+        device.isEFI = info.efi;
       };
 
       /** @type {(device: StorageDevice, info: object) => void} */
