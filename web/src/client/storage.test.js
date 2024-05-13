@@ -2277,6 +2277,7 @@ describe("#iscsi", () => {
 
   describe("#getInitiator", () => {
     beforeEach(() => {
+      mockGetFn.mockResolvedValue({ ok: true, json: mockJsonFn });
       mockJsonFn.mockResolvedValue({
         name: "iqn.1996-04.com.suse:01:351e6d6249",
         ibft: false,
