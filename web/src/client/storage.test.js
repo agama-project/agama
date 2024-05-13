@@ -22,6 +22,7 @@
 // @ts-check
 // cspell:ignore ECKD dasda ddgdcbibhd wwpns
 
+import { HTTPClient } from "./http";
 import DBusClient from "./dbus";
 import { HTTPClient } from "./http";
 import { StorageClient } from "./storage";
@@ -593,6 +594,28 @@ const contexts = {
       }
     };
   },
+  withISCSINodes: () => [
+    {
+      id: 1,
+      target: "iqn.2023-01.com.example:37dac",
+      address: "192.168.100.101",
+      port: 3260,
+      interface: "default",
+      ibft: false,
+      connected: false,
+      startup: "",
+    },
+    {
+      id: 2,
+      target: "iqn.2023-01.com.example:74afb",
+      address: "192.168.100.102",
+      port: 3260,
+      interface: "default",
+      ibft: true,
+      connected: true,
+      startup: "onboot",
+    },
+  ],
   withoutDASDDevices: () => {
     cockpitProxies.dasdDevices = {};
   },
@@ -2250,40 +2273,41 @@ describe.skip("#zfcp", () => {
 
 describe("#iscsi", () => {
   beforeEach(() => {
-    client = new StorageClient();
+    client = new StorageClient(new HTTPClient(new URL("http://localhost")));
   });
 
-  describe("#getInitiatorName", () => {
+  describe("#getInitiator", () => {
     beforeEach(() => {
-      cockpitProxies.iscsiInitiator = {
-        InitiatorName: "iqn.1996-04.com.suse:01:351e6d6249"
-      };
+      mockJsonFn.mockResolvedValue({
+        name: "iqn.1996-04.com.suse:01:351e6d6249",
+        ibft: false,
+      });
     });
 
-    it("returns the current initiator name", async () => {
-      const initiatorName = await client.iscsi.getInitiatorName();
-      expect(initiatorName).toEqual("iqn.1996-04.com.suse:01:351e6d6249");
+    it("returns the current initiator", async () => {
+      const { name, ibft } = await client.iscsi.getInitiator();
+      expect(name).toEqual("iqn.1996-04.com.suse:01:351e6d6249");
+      expect(ibft).toEqual(false);
     });
   });
 
   describe("#setInitiatorName", () => {
     beforeEach(() => {
       cockpitProxies.iscsiInitiator = {
-        InitiatorName: "iqn.1996-04.com.suse:01:351e6d6249"
+        InitiatorName: "iqn.1996-04.com.suse:01:351e6d6249",
       };
     });
 
     it("sets the given initiator name", async () => {
       await client.iscsi.setInitiatorName("test");
-      const initiatorName = await client.iscsi.getInitiatorName();
-      expect(initiatorName).toEqual("test");
+      expect(mockPatchFn).toHaveBeenCalledWith("/storage/iscsi/initiator", { name: "test" });
     });
   });
 
   describe("#getNodes", () => {
     describe("if there is no exported iSCSI nodes yet", () => {
       beforeEach(() => {
-        contexts.withoutISCSINodes();
+        mockJsonFn.mockResolvedValue([]);
       });
 
       it("returns an empty list", async () => {
@@ -2294,119 +2318,105 @@ describe("#iscsi", () => {
 
     describe("if there are exported iSCSI nodes", () => {
       beforeEach(() => {
-        contexts.withISCSINodes();
+        mockJsonFn.mockResolvedValue(contexts.withISCSINodes());
       });
 
       it("returns a list with the exported iSCSI nodes", async () => {
         const result = await client.iscsi.getNodes();
         expect(result.length).toEqual(2);
         expect(result).toContainEqual({
-          id: "1",
+          id: 1,
           target: "iqn.2023-01.com.example:37dac",
           address: "192.168.100.101",
-          port:  3260,
+          port: 3260,
           interface: "default",
           ibft: false,
           connected: false,
-          startup: ""
+          startup: "",
         });
         expect(result).toContainEqual({
-          id: "2",
+          id: 2,
           target: "iqn.2023-01.com.example:74afb",
           address: "192.168.100.102",
-          port:  3260,
+          port: 3260,
           interface: "default",
           ibft: true,
           connected: true,
-          startup: "onboot"
+          startup: "onboot",
         });
       });
     });
   });
 
   describe("#discover", () => {
-    beforeEach(() => {
-      cockpitProxies.iscsiInitiator = {
-        Discover: jest.fn()
-      };
-    });
-
     it("performs an iSCSI discovery with the given options", async () => {
-      await client.iscsi.discover("192.168.100.101", 3260, {
+      const options = {
         username: "test",
         password: "12345",
         reverseUsername: "target",
-        reversePassword: "nonsecret"
-      });
-
-      expect(cockpitProxies.iscsiInitiator.Discover).toHaveBeenCalledWith("192.168.100.101", 3260, {
-        Username: { t: "s", v: "test" },
-        Password: { t: "s", v: "12345" },
-        ReverseUsername: { t: "s", v: "target" },
-        ReversePassword: { t: "s", v: "nonsecret" }
-      });
+        reversePassword: "nonsecret",
+      };
+      await client.iscsi.discover("192.168.100.101", 3260, options);
+      expect(mockPostFn).toHaveBeenCalledWith(
+        "/storage/iscsi/discover",
+        { address: "192.168.100.101", port: 3260, options },
+      );
     });
   });
 
-  describe("#Delete", () => {
-    beforeEach(() => {
-      cockpitProxies.iscsiInitiator = {
-        Delete: jest.fn()
-      };
-    });
-
+  describe("#delete", () => {
     it("deletes the given iSCSI node", async () => {
       await client.iscsi.delete({ id: "1" });
-      expect(cockpitProxies.iscsiInitiator.Delete).toHaveBeenCalledWith(
-        "/org/opensuse/Agama/Storage1/iscsi_nodes/1"
+      expect(mockDeleteFn).toHaveBeenCalledWith(
+        "/storage/iscsi/nodes/1",
       );
     });
   });
 
   describe("#login", () => {
-    const nodeProxy = {
-      Login: jest.fn()
+    let auth = {
+      username: "test",
+      password: "12345",
+      reverseUsername: "target",
+      reversePassword: "nonsecret",
+      startup: "automatic",
     };
 
-    beforeEach(() => {
-      cockpitProxies.iscsiNode = {
-        "/org/opensuse/Agama/Storage1/iscsi_nodes/1": nodeProxy
-      };
+    it("performs an iSCSI login with the given options", async () => {
+      const result = await client.iscsi.login({ id: "1" }, auth);
+
+      expect(result).toEqual(0);
+      expect(mockPostFn).toHaveBeenCalledWith(
+        "/storage/iscsi/nodes/1/login",
+        auth,
+      );
     });
 
-    it("performs an iSCSI login with the given options", async () => {
-      await client.iscsi.login({ id: "1" }, {
-        username: "test",
-        password: "12345",
-        reverseUsername: "target",
-        reversePassword: "nonsecret",
-        startup: "automatic"
-      });
+    it("returns 1 when the startup is invalid", async () => {
+      mockPostFn.mockImplementation(() => (
+        { ok: false, json: mockJsonFn }
+      ));
+      mockJsonFn.mockResolvedValue("InvalidStartup");
 
-      expect(nodeProxy.Login).toHaveBeenCalledWith({
-        Username: { t: "s", v: "test" },
-        Password: { t: "s", v: "12345" },
-        ReverseUsername: { t: "s", v: "target" },
-        ReversePassword: { t: "s", v: "nonsecret" },
-        Startup: { t: "s", v: "automatic" }
-      });
+      const result = await client.iscsi.login({ id: "1" }, { ...auth, startup: "invalid" });
+      expect(result).toEqual(1);
+    });
+
+    it("returns 2 in case of an error different from an invalid startup value", async () => {
+      mockPostFn.mockImplementation(() => (
+        { ok: false, json: mockJsonFn }
+      ));
+      mockJsonFn.mockResolvedValue("Failed");
+
+      const result = await client.iscsi.login({ id: "1" }, { ...auth, startup: "invalid" });
+      expect(result).toEqual(2);
     });
   });
 
   describe("#logout", () => {
-    const nodeProxy = {
-      Logout: jest.fn()
-    };
-
-    beforeEach(() => {
-      cockpitProxies.iscsiNode = {
-        "/org/opensuse/Agama/Storage1/iscsi_nodes/1": nodeProxy
-      };
-    });
-
     it("performs an iSCSI logout of the given node", async () => {
       await client.iscsi.logout({ id: "1" });
-      expect(nodeProxy.Logout).toHaveBeenCalled();
+      expect(mockPostFn).toHaveBeenCalledWith("/storage/iscsi/nodes/1/logout");
     });
   });
 });

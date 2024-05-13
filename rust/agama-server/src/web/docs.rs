@@ -25,6 +25,12 @@ use utoipa::OpenApi;
         crate::users::web::remove_first_user,
         crate::users::web::patch_root,
         super::http::ping,
+        crate::storage::web::iscsi::initiator,
+        crate::storage::web::iscsi::update_initiator,
+        crate::storage::web::iscsi::nodes,
+        crate::storage::web::iscsi::update_node,
+        crate::storage::web::iscsi::delete_node,
+        crate::storage::web::iscsi::discover
     ),
     components(
         schemas(agama_lib::product::Product),
@@ -51,6 +57,14 @@ use utoipa::OpenApi;
         schemas(crate::users::web::RootConfig),
         schemas(crate::users::web::RootPatchSettings),
         schemas(super::http::PingResponse),
+        schemas(crate::storage::web::iscsi::InitiatorParams),
+        schemas(crate::storage::web::iscsi::DiscoverParams),
+        schemas(crate::storage::web::iscsi::NodeParams),
+        schemas(crate::storage::web::iscsi::LoginParams),
+        schemas(agama_lib::storage::client::iscsi::ISCSIInitiator),
+        schemas(agama_lib::storage::client::iscsi::ISCSINode),
+        schemas(agama_lib::storage::client::iscsi::ISCSIAuth),
+        schemas(agama_lib::storage::client::iscsi::LoginResult),
     )
 )]
 pub struct ApiDoc;

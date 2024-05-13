@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use zbus::zvariant::{self, OwnedValue, Value};
+use zbus::zvariant::{self, OwnedObjectPath, OwnedValue, Value};
 
 /// Nested hash to send to D-Bus.
 pub type NestedHash<'a> = HashMap<&'a str, HashMap<&'a str, zvariant::Value<'a>>>;
@@ -41,5 +41,83 @@ where
         T::try_from(value).map(|v| Some(v)).map_err(|e| e.into())
     } else {
         Ok(None)
+    }
+}
+
+#[macro_export]
+macro_rules! property_from_dbus {
+    ($self:ident, $field:ident, $key:expr, $dbus:ident, $type:ty) => {
+        if let Some(v) = get_optional_property($dbus, $key)? {
+            $self.$field = v;
+        }
+    };
+}
+
+/// Converts a hash map containing zbus non-owned values to hash map with owned ones.
+///
+/// NOTE: we could follow a different approach like building our own type (e.g.
+/// using the newtype idiom) and offering a better API.
+///
+/// * `source`: hash map containing non-onwed values ([zbus::zvariant::Value]).
+pub fn to_owned_hash(source: &HashMap<&str, Value<'_>>) -> HashMap<String, OwnedValue> {
+    let mut owned = HashMap::new();
+    for (key, value) in source.iter() {
+        if let Ok(owned_value) = value.try_into() {
+            owned.insert(key.to_string(), owned_value);
+        }
+    }
+    owned
+}
+
+/// Extracts the object ID from the path.
+///
+/// TODO: should we merge this feature with the "DeviceSid"?
+pub fn extract_id_from_path(path: &OwnedObjectPath) -> Result<u32, zvariant::Error> {
+    path.as_str()
+        .rsplit_once("/")
+        .and_then(|(_, id)| id.parse::<u32>().ok())
+        .ok_or_else(|| {
+            zvariant::Error::Message(format!("Could not extract the ID from {}", path.as_str()))
+        })
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+
+    use zbus::zvariant::{self, OwnedValue, Str};
+
+    use crate::dbus::{get_optional_property, get_property};
+
+    #[test]
+    fn test_get_property() {
+        let data: HashMap<String, OwnedValue> = HashMap::from([
+            ("Id".to_string(), (1 as u8).into()),
+            ("Device".to_string(), Str::from_static("/dev/sda").into()),
+        ]);
+        let id: u8 = get_property(&data, "Id").unwrap();
+        assert_eq!(id, 1);
+
+        let device: String = get_property(&data, "Device").unwrap();
+        assert_eq!(device, "/dev/sda".to_string());
+    }
+
+    #[test]
+    fn test_get_property_wrong_type() {
+        let data: HashMap<String, OwnedValue> =
+            HashMap::from([("Id".to_string(), (1 as u8).into())]);
+        let result: Result<u16, _> = get_property(&data, "Id");
+        assert_eq!(result, Err(zvariant::Error::IncorrectType));
+    }
+
+    #[test]
+    fn test_get_optional_property() {
+        let data: HashMap<String, OwnedValue> =
+            HashMap::from([("Id".to_string(), (1 as u8).into())]);
+        let id: Option<u8> = get_optional_property(&data, "Id").unwrap();
+        assert_eq!(id, Some(1));
+
+        let device: Option<String> = get_optional_property(&data, "Device").unwrap();
+        assert_eq!(device, None);
     }
 }

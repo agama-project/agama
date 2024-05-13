@@ -295,7 +295,7 @@ class ProductBaseClient {
 
     return {
       success: response.ok, // still we can fail 400 due to dbus issue or 500 if backend stop working. maybe some message for this case?
-      message: ""
+      message: "",
     };
   }
 
@@ -318,7 +318,7 @@ class ProductBaseClient {
 
     return {
       success: response.ok, // still we can fail 400 due to dbus issue or 500 if backend stop working. maybe some message for this case?
-      message: ""
+      message: "",
     };
   }
 

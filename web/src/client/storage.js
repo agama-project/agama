@@ -23,14 +23,14 @@
 // cspell:ignore ptable
 
 import { compact, hex, uniq } from "~/utils";
-import { WithIssues, WithStatus, WithProgress } from "./mixins";
+import { WithIssues, WithProgress, WithStatus } from "./mixins";
 import { HTTPClient } from "./http";
 
 const STORAGE_OBJECT = "/org/opensuse/Agama/Storage1";
 const STORAGE_JOBS_NAMESPACE = "/org/opensuse/Agama/Storage1/jobs";
 const STORAGE_JOB_IFACE = "org.opensuse.Agama.Storage1.Job";
 const ISCSI_INITIATOR_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Initiator";
-const ISCSI_NODES_NAMESPACE = "/org/opensuse/Agama/Storage1/iscsi_nodes";
+const ISCSI_NODES_NAMESPACE = "/storage/iscsi/nodes";
 const ISCSI_NODE_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Node";
 const DASD_MANAGER_IFACE = "org.opensuse.Agama.Storage1.DASD.Manager";
 const DASD_DEVICES_NAMESPACE = "/org/opensuse/Agama/Storage1/dasds";
@@ -1305,40 +1305,28 @@ class ZFCPManager {
  */
 class ISCSIManager {
   /**
-   * @param {string} service - D-Bus service name
-   * @param {string} address - D-Bus address
+   * @param {import("./http").HTTPClient} client - HTTP client.
    */
-  constructor(service, address) {
-    this.service = service;
-    this.address = address;
-    this.proxies = {};
+  constructor(client) {
+    this.client = client;
   }
 
   /**
-   * @return {DBusClient} client
+   * Gets the iSCSI initiator
+   *
+   * @return {Promise<ISCSIInitiator>}
+   *
+   * @typedef {object} ISCSIInitiator
+   * @property {string} name
+   * @property {boolean} ibft
    */
-  client() {
-    // return this.assigned_client;
-    if (!this._client) {
-      this._client = new DBusClient(this.service, this.address);
+  async getInitiator() {
+    const response = await this.client.get("/storage/iscsi/initiator");
+    if (!response.ok) {
+      console.error("Failed to get the iSCSI initiator", response);
     }
 
-    return this._client;
-  }
-
-  async getInitiatorIbft() {
-    const proxy = await this.iscsiInitiatorProxy();
-    return proxy.IBFT;
-  }
-
-  /**
-   * Gets the iSCSI initiator name
-   *
-   * @returns {Promise<string>}
-   */
-  async getInitiatorName() {
-    const proxy = await this.iscsiInitiatorProxy();
-    return proxy.InitiatorName;
+    return response.json();
   }
 
   /**
@@ -1346,9 +1334,8 @@ class ISCSIManager {
    *
    * @param {string} value
    */
-  async setInitiatorName(value) {
-    const proxy = await this.iscsiInitiatorProxy();
-    proxy.InitiatorName = value;
+  setInitiatorName(value) {
+    return this.client.patch("/storage/iscsi/initiator", { name: value });
   }
 
   /**
@@ -1367,8 +1354,12 @@ class ISCSIManager {
    * @property {string} startup
    */
   async getNodes() {
-    const proxy = await this.iscsiNodesProxy();
-    return Object.values(proxy).map(this.buildNode);
+    const response = await this.client.get("/storage/iscsi/nodes");
+    if (!response.ok) {
+      console.error("Failed to get the list of iSCSI nodes", response);
+    }
+
+    return response.json();
   }
 
   /**
@@ -1384,18 +1375,16 @@ class ISCSIManager {
    * @property {string} [reverseUsername] - Username for authentication by initiator
    * @property {string} [reversePassword] - Password for authentication by initiator
    *
-   * @returns {Promise<number>} 0 on success, 1 on failure
+   * @returns {Promise<boolean>} true on success, false on failure
    */
   async discover(address, port, options = {}) {
-    const auth = removeUndefinedCockpitProperties({
-      Username: { t: "s", v: options.username },
-      Password: { t: "s", v: options.password },
-      ReverseUsername: { t: "s", v: options.reverseUsername },
-      ReversePassword: { t: "s", v: options.reversePassword }
-    });
-
-    const proxy = await this.iscsiInitiatorProxy();
-    return proxy.Discover(address, port, auth);
+    const data = {
+      address,
+      port,
+      options,
+    };
+    const response = await this.client.post("/storage/iscsi/discover", data);
+    return response.ok;
   }
 
   /**
@@ -1404,25 +1393,21 @@ class ISCSIManager {
    * @param {ISCSINode} node
    * @param {String} startup
    */
-  async setStartup(node, startup) {
-    const path = this.nodePath(node);
-
-    const proxy = await this.client().proxy(ISCSI_NODE_IFACE, path);
-    proxy.Startup = startup;
+  setStartup(node, startup) {
+    this.client.patch(this.nodePath(node), { startup });
   }
 
   /**
    * Deletes the given iSCSI node
    *
    * @param {ISCSINode} node
-   * @returns {Promise<number>} 0 on success, 1 on failure if the given path is not exported, 2 on
+   * @returns {Promise<boolean>} 0 on success, 1 on failure if the given path is not exported, 2 on
    *  failure because any other reason.
    */
   async delete(node) {
-    const path = this.nodePath(node);
-
-    const proxy = await this.iscsiInitiatorProxy();
-    return proxy.Delete(path);
+    // FIXME: return the proper error code
+    const response = await this.client.delete(this.nodePath(node));
+    return response.ok;
   }
 
   /**
@@ -1442,63 +1427,87 @@ class ISCSIManager {
    *  valid, and 2 on failure because any other reason
    */
   async login(node, options = {}) {
-    const path = this.nodePath(node);
+    const path = this.nodePath(node) + "/login";
+    const response = await this.client.post(path, options);
+    if (!response.ok) {
+      const reason = await response.json();
+      console.warn("Could not login into the iSCSI node", reason);
+      return reason === "InvalidStartup" ? 1 : 2;
+    }
 
-    const dbusOptions = removeUndefinedCockpitProperties({
-      Username: { t: "s", v: options.username },
-      Password: { t: "s", v: options.password },
-      ReverseUsername: { t: "s", v: options.reverseUsername },
-      ReversePassword: { t: "s", v: options.reversePassword },
-      Startup: { t: "s", v: options.startup }
-    });
-
-    const proxy = await this.client().proxy(ISCSI_NODE_IFACE, path);
-    return proxy.Login(dbusOptions);
+    return 0;
   }
 
   /**
    * Closes an iSCSI session
    *
    * @param {ISCSINode} node
-   * @returns {Promise<number>} 0 on success, 1 on failure
+   * @returns {Promise<boolean>} true on success, false on failure
    */
   async logout(node) {
-    const path = this.nodePath(node);
-    // const iscsiNode = new ISCSINodeObject(this.client, path);
-    // return await iscsiNode.iface.logout();
-    const proxy = await this.client().proxy(ISCSI_NODE_IFACE, path);
-    return proxy.Logout();
+    const path = this.nodePath(node) + "/logout";
+    const response = await this.client.post(path);
+    if (!response.ok) {
+      console.error("Could not logout from the iSCSI node", response);
+      return false;
+    }
+
+    return true;
   }
 
+  /**
+   * Registers a callback for initiator changes.
+   *
+   * @param {(event: object) => void} handler - Callback.
+   */
   onInitiatorChanged(handler) {
-    return this.client().onObjectChanged(STORAGE_OBJECT, ISCSI_INITIATOR_IFACE, (changes) => {
-      const data = {
-        name: changes.InitiatorName?.v,
-        ibft: changes.IBFT?.v
-      };
-
-      const filtered = Object.entries(data).filter(([, v]) => v !== undefined);
-      return handler(Object.fromEntries(filtered));
-    });
+    return this.client.onEvent("ISCSIInitiatorChanged", handler);
   }
 
-  async onNodeAdded(handler) {
-    const proxy = await this.iscsiNodesProxy();
-    proxy.addEventListener("added", (_, proxy) => handler(this.buildNode(proxy)));
+  /**
+   * Registers a callback to run when an iSCSI node appears.
+   *
+   * @param {(node: ISCSINode) => void} handler - callback which receives the
+   *   ISCSINode object.
+   */
+  onNodeAdded(handler) {
+    return this.onNodeEvent("ISCSINodeAdded", handler);
   }
 
-  async onNodeChanged(handler) {
-    const proxy = await this.iscsiNodesProxy();
-    proxy.addEventListener("changed", (_, proxy) => handler(this.buildNode(proxy)));
+  /**
+   * Registers a callback to run when an iSCSI node changes.
+   *
+   * @param {(node: ISCSINode) => void} handler - callback which receives the
+   *   ISCSINode object.
+   */
+  onNodeChanged(handler) {
+    return this.onNodeEvent("ISCSINodeChanged", handler);
   }
 
-  async onNodeRemoved(handler) {
-    const proxy = await this.iscsiNodesProxy();
-    proxy.addEventListener("removed", (_, proxy) => handler(this.buildNode(proxy)));
+  /**
+   * Registers a callback to run when an iSCSI node disappears.
+   *
+   * @param {(node: ISCSINode) => void} handler - callback which receives the
+   *   ISCSINode object.
+   */
+  onNodeRemoved(handler) {
+    return this.onNodeEvent("ISCSINodeRemoved", handler);
+  }
+
+  /**
+   * @private
+   * Registers a handler for the given iSCSI node event.
+   *
+   * @param {string} eventName - Event name.
+   * @param {(node: ISCSINode) => void} handler - callback which receives the
+   *   ISCSINode object.
+   */
+  onNodeEvent(eventName, handler) {
+    return this.client.onEvent(eventName, ({ node }) => handler(node));
   }
 
   buildNode(proxy) {
-    const id = path => path.split("/").slice(-1)[0];
+    const id = (path) => path.split("/").slice(-1)[0];
 
     return {
       id: id(proxy.path),
@@ -1508,37 +1517,8 @@ class ISCSIManager {
       interface: proxy.Interface,
       ibft: proxy.IBFT,
       connected: proxy.Connected,
-      startup: proxy.Startup
+      startup: proxy.Startup,
     };
-  }
-
-  /**
-   * @private
-   * Proxy for org.opensuse.Agama.Storage1.ISCSI.Initiator iface
-   *
-   * @returns {Promise<object>}
-   */
-  async iscsiInitiatorProxy() {
-    if (!this.proxies.iscsiInitiator) {
-      this.proxies.iscsiInitiator = await this.client().proxy(ISCSI_INITIATOR_IFACE, STORAGE_OBJECT);
-    }
-
-    return this.proxies.iscsiInitiator;
-  }
-
-  /**
-   * @private
-   * Proxy for objects implementing org.opensuse.Agama.Storage1.ISCSI.Node iface
-   *
-   * @note The ISCSI nodes are dynamically exported.
-   *
-   * @returns {Promise<object>}
-   */
-  async iscsiNodesProxy() {
-    if (!this.proxies.iscsiNodes)
-      this.proxies.iscsiNodes = await this.client().proxies(ISCSI_NODE_IFACE, ISCSI_NODES_NAMESPACE);
-
-    return this.proxies.iscsiNodes;
   }
 
   /**
@@ -1569,7 +1549,7 @@ class StorageBaseClient {
     this.system = new DevicesManager(this.client, "system");
     this.staging = new DevicesManager(this.client, "result");
     this.proposal = new ProposalManager(this.client, this.system);
-    this.iscsi = new ISCSIManager(StorageBaseClient.SERVICE, client);
+    this.iscsi = new ISCSIManager(this.client);
     this.dasd = new DASDManager(StorageBaseClient.SERVICE, client);
     this.zfcp = new ZFCPManager(StorageBaseClient.SERVICE, client);
   }

@@ -55,11 +55,12 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
 
   useEffect(() => {
     // Scroll the alert into view
-    if (isFailed)
+    if (isFailed) {
       alertRef.current.scrollIntoView({
         behavior: "smooth",
-        block: "start"
+        block: "start",
       });
+    }
   });
 
   const updateData = (key, value) => setData({ ...data, [key]: value });
@@ -72,9 +73,9 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
     setIsLoading(true);
     setSavedData(data);
 
-    const result = await onSubmitProp(data);
+    const success = await onSubmitProp(data);
 
-    if (result !== 0) {
+    if (!success) {
       setIsFailed(true);
       setIsLoading(false);
     }
@@ -100,16 +101,18 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
     // TRANSLATORS: popup title
     <Popup isOpen title={_("Discover iSCSI Targets")}>
       <Form id={id} onSubmit={onSubmit}>
-        { isFailed &&
-          <div ref={alertRef}>
-            <Alert
-              variant="warning"
-              isInline
-              title={_("Something went wrong")}
-            >
-              <p>{_("Make sure you provide the correct values")}</p>
-            </Alert>
-          </div> }
+        {isFailed &&
+          (
+            <div ref={alertRef}>
+              <Alert
+                variant="warning"
+                isInline
+                title={_("Something went wrong")}
+              >
+                <p>{_("Make sure you provide the correct values")}</p>
+              </Alert>
+            </div>
+          )}
         <FormGroup
           fieldId="address"
           label={_("IP address")}
