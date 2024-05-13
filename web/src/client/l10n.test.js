@@ -49,25 +49,25 @@ let client;
 
 const locales = [
   {
-    "id": "en_US.UTF-8",
-    "language": "English",
-    "territory": "United States",
+    id: "en_US.UTF-8",
+    language: "English",
+    territory: "United States",
   },
   {
-    "id": "es_ES.UTF-8",
-    "language": "Spanish",
-    "territory": "Spain",
+    id: "es_ES.UTF-8",
+    language: "Spanish",
+    territory: "Spain",
   },
 ];
 
 const config = {
-  "locales": [
+  locales: [
     "en_US.UTF-8",
   ],
-  "keymap": "us",
-  "timezone": "Europe/Berlin",
-  "uiLocale": "en_US.UTF-8",
-  "uiKeymap": "us",
+  keymap: "us",
+  timezone: "Europe/Berlin",
+  uiLocale: "en_US.UTF-8",
+  uiKeymap: "us",
 };
 
 beforeEach(() => {

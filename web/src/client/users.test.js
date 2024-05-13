@@ -53,7 +53,7 @@ jest.mock("./http", () => {
 
 let client;
 
-let firstUser = {
+const firstUser = {
   fullName: "Jane Doe",
   userName: "jane",
   password: "12345",
@@ -113,7 +113,7 @@ describe("#getRootSSHKey", () => {
 
 describe("#setUser", () => {
   it("sets the values of the first user and returns whether succeeded or not an errors found", async () => {
-    let user = {
+    const user = {
       fullName: "Jane Doe",
       userName: "jane",
       password: "12345",
