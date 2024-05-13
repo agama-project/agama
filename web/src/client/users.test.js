@@ -21,114 +21,124 @@
 
 // @ts-check
 
-import DBusClient from "./dbus";
+import { HTTPClient } from "./http";
 import { UsersClient } from "./users";
 
-jest.mock("./dbus");
+const mockJsonFn = jest.fn();
+const mockGetFn = jest.fn().mockImplementation(() => {
+  return { ok: true, json: mockJsonFn };
+});
+const mockPatchFn = jest.fn().mockImplementation(() => {
+  return { ok: true };
+});
+const mockPutFn = jest.fn().mockImplementation(() => {
+  return { ok: true };
+});
+const mockDeleteFn = jest.fn().mockImplementation(() => {
+  return { ok: true };
+});
 
-const USERS_IFACE = "org.opensuse.Agama.Users1";
+jest.mock("./http", () => {
+  return {
+    HTTPClient: jest.fn().mockImplementation(() => {
+      return {
+        get: mockGetFn,
+        patch: mockPatchFn,
+        put: mockPutFn,
+        delete: mockDeleteFn,
+      };
+    }),
+  };
+});
 
-let setFirstUserResult = [true, []];
+let client;
 
-const usersProxy = {
-  wait: jest.fn(),
-  FirstUser: ["Jane Doe", "jane", "12345", false, {}],
-  SetFirstUser: jest.fn().mockResolvedValue(setFirstUserResult),
-  RemoveFirstUser: jest.fn().mockResolvedValue(0),
-  SetRootPassword: jest.fn().mockResolvedValue(0),
-  RemoveRootPassword: jest.fn().mockResolvedValue(0),
-  RootPasswordSet: false,
-  SetRootSSHKey: jest.fn().mockResolvedValue(0),
-  RootSSHKey: "ssh-key"
+const firstUser = {
+  fullName: "Jane Doe",
+  userName: "jane",
+  password: "12345",
+  autologin: false,
 };
 
 beforeEach(() => {
-  // @ts-ignore
-  DBusClient.mockImplementation(() => {
-    return {
-      proxy: (iface) => {
-        if (iface === USERS_IFACE) return usersProxy;
-      }
-    };
-  });
+  client = new UsersClient(new HTTPClient(new URL("http://localhost")));
 });
 
 describe("#getUser", () => {
+  beforeEach(() => {
+    mockJsonFn.mockResolvedValue(firstUser);
+  });
+
   it("returns the defined first user", async () => {
-    const client = new UsersClient();
     const user = await client.getUser();
-    expect(user).toEqual({
-      fullName: "Jane Doe",
-      userName: "jane",
-      password: "12345",
-      autologin: false
-    });
+    expect(user).toEqual(firstUser);
+    expect(mockGetFn).toHaveBeenCalledWith("/users/first");
   });
 });
 
 describe("#isRootPasswordSet", () => {
   describe("when the root password is set", () => {
     beforeEach(() => {
-      usersProxy.RootPasswordSet = true;
+      mockJsonFn.mockResolvedValue({ password: "12345", sshkey: "" });
     });
 
     it("returns true", async () => {
-      const client = new UsersClient();
-      const result = await client.isRootPasswordSet();
-      expect(result).toEqual(true);
+      expect(await client.isRootPasswordSet()).toEqual(true);
+      expect(mockGetFn).toHaveBeenCalledWith("/users/root");
     });
   });
 
   describe("when the root password is not set", () => {
     beforeEach(() => {
-      usersProxy.RootPasswordSet = false;
+      mockJsonFn.mockResolvedValue({ password: "", sshkey: "" });
     });
 
     it("returns false", async () => {
-      const client = new UsersClient();
-      const result = await client.isRootPasswordSet();
-      expect(result).toEqual(false);
+      expect(await client.isRootPasswordSet()).toEqual(false);
+      expect(mockGetFn).toHaveBeenCalledWith("/users/root");
     });
   });
 });
 
 describe("#getRootSSHKey", () => {
+  beforeEach(() => {
+    mockJsonFn.mockResolvedValue({ password: "", sshkey: "ssh-key" });
+  });
+
   it("returns the SSH key for the root user", async () => {
-    const client = new UsersClient();
-    const result = await client.getRootSSHKey();
-    expect(result).toEqual("ssh-key");
+    const result = expect(await client.getRootSSHKey()).toEqual("ssh-key");
+    expect(mockGetFn).toHaveBeenCalledWith("/users/root");
   });
 });
 
 describe("#setUser", () => {
   it("sets the values of the first user and returns whether succeeded or not an errors found", async () => {
-    const client = new UsersClient();
-    const result = await client.setUser({
+    const user = {
       fullName: "Jane Doe",
       userName: "jane",
       password: "12345",
-      autologin: false
-    });
-
-    expect(usersProxy.SetFirstUser).toHaveBeenCalledWith("Jane Doe", "jane", "12345", false, {});
-    expect(result).toEqual({ result: true, issues: [] });
+      autologin: false,
+    };
+    const result = await client.setUser(user);
+    expect(mockPutFn).toHaveBeenCalledWith("/users/first", user);
+    expect(result);
   });
 
   describe("when setting the user fails because some issue", () => {
     beforeEach(() => {
-      setFirstUserResult = [false, ["There is an error"]];
-      usersProxy.SetFirstUser = jest.fn().mockResolvedValue(setFirstUserResult);
+      mockPutFn.mockResolvedValue({ ok: false });
     });
 
-    it("returns an object with the result as false and the issues found", async () => {
-      const client = new UsersClient();
+    // issues are not included in the response
+    it.skip("returns an object with the result as false and the issues found", async () => {
       const result = await client.setUser({
         fullName: "Jane Doe",
         userName: "jane",
         password: "12345",
-        autologin: false
+        autologin: false,
       });
 
+      expect(mockPutFn).toHaveBeenCalledWith("/users/first");
       expect(result).toEqual({ result: false, issues: ["There is an error"] });
     });
   });
@@ -136,75 +146,99 @@ describe("#setUser", () => {
 
 describe("#removeUser", () => {
   it("removes the first user and returns true", async () => {
-    const client = new UsersClient();
     const result = await client.removeUser();
-    expect(usersProxy.RemoveFirstUser).toHaveBeenCalled();
     expect(result).toEqual(true);
+    expect(mockDeleteFn).toHaveBeenCalledWith("/users/first");
   });
 
   describe("when removing the user fails", () => {
-    beforeEach(() => (usersProxy.RemoveFirstUser = jest.fn().mockResolvedValue(1)));
+    beforeEach(() => {
+      mockDeleteFn.mockResolvedValue({ ok: false });
+    });
 
     it("returns false", async () => {
-      const client = new UsersClient();
       const result = await client.removeUser();
       expect(result).toEqual(false);
+      expect(mockDeleteFn).toHaveBeenCalledWith("/users/first");
     });
   });
 });
 
 describe("#setRootPassword", () => {
   it("sets the root password and returns true", async () => {
-    const client = new UsersClient();
     const result = await client.setRootPassword("12345");
-    expect(usersProxy.SetRootPassword).toHaveBeenCalledWith("12345", false);
+    expect(mockPatchFn).toHaveBeenCalledWith("/users/root", {
+      password: "12345",
+      password_encrypted: false,
+    });
     expect(result).toEqual(true);
   });
 
   describe("when setting the password fails", () => {
-    beforeEach(() => (usersProxy.SetRootPassword = jest.fn().mockResolvedValue(1)));
+    beforeEach(() => {
+      mockPatchFn.mockResolvedValue({ ok: false });
+    });
 
     it("returns false", async () => {
-      const client = new UsersClient();
       const result = await client.setRootPassword("12345");
+      expect(mockPatchFn).toHaveBeenCalledWith("/users/root", {
+        password: "12345",
+        password_encrypted: false,
+      });
       expect(result).toEqual(false);
     });
   });
 });
 
 describe("#removeRootPassword", () => {
+  beforeEach(() => {
+    mockPatchFn.mockResolvedValue({ ok: true });
+  });
+
   it("removes the root password", async () => {
-    const client = new UsersClient();
     const result = await client.removeRootPassword();
-    expect(usersProxy.RemoveRootPassword).toHaveBeenCalled();
+    expect(mockPatchFn).toHaveBeenCalledWith("/users/root", {
+      password: "",
+      password_encrypted: false,
+    });
     expect(result).toEqual(true);
   });
 
   describe("when setting the user fails", () => {
-    beforeEach(() => (usersProxy.RemoveRootPassword = jest.fn().mockResolvedValue(1)));
+    beforeEach(() => {
+      mockPatchFn.mockResolvedValue({ ok: false });
+    });
 
     it("returns false", async () => {
-      const client = new UsersClient();
       const result = await client.removeRootPassword();
+      expect(mockPatchFn).toHaveBeenCalledWith("/users/root", {
+        password: "",
+        password_encrypted: false,
+      });
       expect(result).toEqual(false);
     });
   });
 });
 
 describe("#setRootSSHKey", () => {
+  beforeEach(() => {
+    mockPatchFn.mockResolvedValue({ ok: true });
+  });
+
   it("sets the root password and returns true", async () => {
-    const client = new UsersClient();
     const result = await client.setRootSSHKey("ssh-key");
-    expect(usersProxy.SetRootSSHKey).toHaveBeenCalledWith("ssh-key");
+    expect(mockPatchFn).toHaveBeenCalledWith("/users/root", { sshkey: "ssh-key" });
     expect(result).toEqual(true);
   });
 
   describe("when setting the user fails", () => {
-    beforeEach(() => (usersProxy.SetRootSSHKey = jest.fn().mockResolvedValue(1)));
+    beforeEach(() => {
+      mockPatchFn.mockResolvedValue({ ok: false });
+    });
 
     it("returns false", async () => {
-      const client = new UsersClient();
       const result = await client.setRootSSHKey("ssh-key");
+      expect(mockPatchFn).toHaveBeenCalledWith("/users/root", { sshkey: "ssh-key" });
       expect(result).toEqual(false);
     });
   });

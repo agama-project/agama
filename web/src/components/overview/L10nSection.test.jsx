@@ -21,7 +21,7 @@
 
 import React from "react";
 import { act, screen } from "@testing-library/react";
-import { installerRender, createCallbackMock } from "~/test-utils";
+import { createCallbackMock, installerRender } from "~/test-utils";
 import { L10nSection } from "~/components/overview";
 import { createClient } from "~/client";
 
@@ -29,27 +29,28 @@ jest.mock("~/client");
 
 const locales = [
   { id: "en_US", name: "English", territory: "United States" },
-  { id: "de_DE", name: "German", territory: "Germany" }
+  { id: "de_DE", name: "German", territory: "Germany" },
 ];
 
 const l10nClientMock = {
   locales: jest.fn().mockResolvedValue(locales),
   getLocales: jest.fn().mockResolvedValue(["en_US"]),
   getUILocale: jest.fn().mockResolvedValue("en_US"),
+  getUIKeymap: jest.fn().mockResolvedValue("en"),
   keymaps: jest.fn().mockResolvedValue([]),
   getKeymap: jest.fn().mockResolvedValue(undefined),
   timezones: jest.fn().mockResolvedValue([]),
   getTimezone: jest.fn().mockResolvedValue(undefined),
   onLocalesChange: jest.fn(),
   onKeymapChange: jest.fn(),
-  onTimezoneChange: jest.fn()
+  onTimezoneChange: jest.fn(),
 };
 
 beforeEach(() => {
   // if defined outside, the mock is cleared automatically
   createClient.mockImplementation(() => {
     return {
-      l10n: l10nClientMock
+      l10n: l10nClientMock,
     };
   });
 });

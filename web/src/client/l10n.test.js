@@ -20,43 +20,110 @@
  */
 
 // @ts-check
-// cspell:ignore Cestina
 
-import DBusClient from "./dbus";
+import { HTTPClient } from "./http";
 import { L10nClient } from "./l10n";
 
 jest.mock("./dbus");
 
-const L10N_IFACE = "org.opensuse.Agama1.Locale";
+const mockJsonFn = jest.fn();
+const mockGetFn = jest.fn().mockImplementation(() => {
+  return { ok: true, json: mockJsonFn };
+});
+const mockPatchFn = jest.fn().mockImplementation(() => {
+  return { ok: true };
+});
 
-const l10nProxy = {
-  ListLocales: jest.fn().mockResolvedValue(
-    [
-      ["es_ES.UTF-8", "Spanish", "Spain"],
-      ["en_US.UTF-8", "English", "United States"]
-    ]
-  ),
+jest.mock("./http", () => {
+  return {
+    HTTPClient: jest.fn().mockImplementation(() => {
+      return {
+        get: mockGetFn,
+        patch: mockPatchFn,
+      };
+    }),
+  };
+});
+
+let client;
+
+const locales = [
+  {
+    id: "en_US.UTF-8",
+    language: "English",
+    territory: "United States",
+  },
+  {
+    id: "es_ES.UTF-8",
+    language: "Spanish",
+    territory: "Spain",
+  },
+];
+
+const config = {
+  locales: [
+    "en_US.UTF-8",
+  ],
+  keymap: "us",
+  timezone: "Europe/Berlin",
+  uiLocale: "en_US.UTF-8",
+  uiKeymap: "us",
 };
 
 beforeEach(() => {
-  // @ts-ignore
-  DBusClient.mockImplementation(() => {
-    return {
-      proxy: (iface) => {
-        if (iface === L10N_IFACE) return l10nProxy;
-      }
-    };
-  });
+  client = new L10nClient(new HTTPClient(new URL("http://localhost")));
 });
 
 describe("#locales", () => {
+  beforeEach(() => {
+    mockJsonFn.mockResolvedValue(locales);
+  });
+
   it("returns the list of available locales", async () => {
-    const client = new L10nClient();
     const locales = await client.locales();
 
     expect(locales).toEqual([
+      { id: "en_US.UTF-8", name: "English", territory: "United States" },
       { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
-      { id: "en_US.UTF-8", name: "English", territory: "United States" }
     ]);
+    expect(mockGetFn).toHaveBeenCalledWith("/l10n/locales");
+  });
+});
+
+describe("#getConfig", () => {
+  beforeEach(() => {
+    mockJsonFn.mockResolvedValue(config);
+  });
+
+  it("returns the list of selected locales", async () => {
+    const l10nConfig = await client.getConfig();
+
+    expect(l10nConfig).toEqual(config);
+    expect(mockGetFn).toHaveBeenCalledWith("/l10n/config");
+  });
+});
+
+describe("#setConfig", () => {
+  beforeEach(() => {
+    mockJsonFn.mockResolvedValue(config);
+  });
+
+  it("updates the l10n configuration", async () => {
+    await client.setConfig(config);
+    client.setConfig(config);
+    expect(mockPatchFn).toHaveBeenCalledWith("/l10n/config", config);
+  });
+});
+
+describe("#getLocales", () => {
+  beforeEach(() => {
+    mockJsonFn.mockResolvedValue(config);
+  });
+
+  it("returns the list of selected locales", async () => {
+    const locales = await client.getLocales();
+
+    expect(locales).toEqual(["en_US.UTF-8"]);
+    expect(mockGetFn).toHaveBeenCalledWith("/l10n/config");
   });
 });

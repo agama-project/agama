@@ -24,7 +24,6 @@
 
 import { HTTPClient } from "./http";
 import DBusClient from "./dbus";
-import { HTTPClient } from "./http";
 import { StorageClient } from "./storage";
 
 const mockJsonFn = jest.fn();
@@ -569,30 +568,6 @@ const contexts = {
   ],
   withoutISCSINodes: () => {
     cockpitProxies.iscsiNodes = {};
-  },
-  withISCSINodes: () => {
-    cockpitProxies.iscsiNodes = {
-      "/org/opensuse/Agama/Storage1/iscsi_nodes/1": {
-        path: "/org/opensuse/Agama/Storage1/iscsi_nodes/1",
-        Target: "iqn.2023-01.com.example:37dac",
-        Address: "192.168.100.101",
-        Port: 3260,
-        Interface: "default",
-        IBFT: false,
-        Connected: false,
-        Startup: ""
-      },
-      "/org/opensuse/Agama/Storage1/iscsi_nodes/2": {
-        path: "/org/opensuse/Agama/Storage1/iscsi_nodes/2",
-        Target: "iqn.2023-01.com.example:74afb",
-        Address: "192.168.100.102",
-        Port: 3260,
-        Interface: "default",
-        IBFT: true,
-        Connected: true,
-        Startup: "onboot"
-      }
-    };
   },
   withISCSINodes: () => [
     {
@@ -2278,6 +2253,7 @@ describe("#iscsi", () => {
 
   describe("#getInitiator", () => {
     beforeEach(() => {
+      mockGetFn.mockResolvedValue({ ok: true, json: mockJsonFn });
       mockJsonFn.mockResolvedValue({
         name: "iqn.1996-04.com.suse:01:351e6d6249",
         ibft: false,
@@ -2374,7 +2350,7 @@ describe("#iscsi", () => {
   });
 
   describe("#login", () => {
-    let auth = {
+    const auth = {
       username: "test",
       password: "12345",
       reverseUsername: "target",

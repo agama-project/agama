@@ -29,10 +29,13 @@ import { Questions } from "~/components/questions";
 
 jest.mock("~/client");
 jest.mock("~/components/questions/GenericQuestion", () => () => <div>A Generic question mock</div>);
-jest.mock("~/components/questions/LuksActivationQuestion", () => () => <div>A LUKS activation question mock</div>);
+jest.mock(
+  "~/components/questions/LuksActivationQuestion",
+  () => () => <div>A LUKS activation question mock</div>,
+);
 
 const handlers = {};
-const genericQuestion = { id: 1, type: 'generic' };
+const genericQuestion = { id: 1, type: "generic" };
 const luksActivationQuestion = { id: 1, class: "storage.luks_activation" };
 let pendingQuestions = [];
 
@@ -42,16 +45,17 @@ beforeEach(() => {
       questions: {
         getQuestions: () => Promise.resolve(pendingQuestions),
         // Capture the handler for the onQuestionAdded signal for triggering it manually
-        onQuestionAdded: onAddHandler => {
+        onQuestionAdded: (onAddHandler) => {
           handlers.onAdd = onAddHandler;
           return jest.fn;
         },
         // Capture the handler for the onQuestionREmoved signal for triggering it manually
-        onQuestionRemoved: onRemoveHandler => {
+        onQuestionRemoved: (onRemoveHandler) => {
           handlers.onRemove = onRemoveHandler;
           return jest.fn;
         },
-      }
+        listenQuestions: jest.fn(),
+      },
     };
   });
 });

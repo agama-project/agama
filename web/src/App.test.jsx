@@ -77,6 +77,7 @@ describe("App", () => {
           getTimezone: jest.fn().mockResolvedValue("Europe/Berlin"),
           keymaps: jest.fn().mockResolvedValue([]),
           getKeymap: jest.fn().mockResolvedValue(undefined),
+          getUIKeymap: jest.fn().mockResolvedValue("en"),
           getUILocale: jest.fn().mockResolvedValue("en_us"),
           setUILocale: jest.fn().mockResolvedValue("en_us"),
           onTimezoneChange: jest.fn(),

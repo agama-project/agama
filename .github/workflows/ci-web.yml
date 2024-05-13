@@ -57,24 +57,24 @@ jobs:
 
     - name: Install dependencies
       run: npm install
-# 
-#    - name: Build the application
-#      run: make
-#
+
+    - name: Build the application
+      run: npm run build
+
 #    - name: Run check spell
 #      run: npm run cspell
 #
 #    - name: Check types
 #      run: npm run check-types
 #
-#    - name: Run ESLint
-#      run: npm run eslint
-#
-#    - name: Run Stylelint
-#      run: npm run stylelint
-#
-#    - name: Run the tests and generate coverage report
-#      run: npm test -- --coverage
+    - name: Run ESLint
+      run: npm run eslint
+
+    - name: Run Stylelint
+      run: npm run stylelint
+
+    - name: Run the tests and generate coverage report
+      run: npm test -- --coverage
 #
 #    # send the code coverage for the web part to the coveralls.io
 #    - name: Coveralls GitHub Action

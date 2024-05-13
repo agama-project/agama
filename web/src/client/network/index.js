@@ -21,8 +21,13 @@
 
 // @ts-check
 
-import { securityFromFlags } from "./network_manager";
-import { createConnection, ConnectionTypes, ConnectionState, createAccessPoint } from "./model";
+import {
+  ConnectionState,
+  ConnectionTypes,
+  createAccessPoint,
+  createConnection,
+  securityFromFlags,
+} from "./model";
 import { formatIp, ipPrefixFor } from "./utils";
 
 const DeviceType = Object.freeze({

@@ -35,7 +35,9 @@ const Content = ({ locales }) => {
 
   return (
     <Text>
-      {msg1}<Em>{`${locale.id} (${locale.territory})`}</Em>{msg2}
+      {msg1}
+      <Em>{`${locale.name} (${locale.territory})`}</Em>
+      {msg2}
     </Text>
   );
 };

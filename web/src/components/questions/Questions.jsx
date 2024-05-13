@@ -14,12 +14,12 @@
  *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, contact SUSE LLC.
- *Creating new
+ *
  * To contact SUSE LLC about this file by physical or electronic mail, you may
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
 
@@ -31,23 +31,26 @@ export default function Questions() {
 
   const [pendingQuestions, setPendingQuestions] = useState([]);
 
-  const addQuestion = useCallback(question => {
-    setPendingQuestions(pending => [...pending, question]);
+  const addQuestion = useCallback((question) => {
+    setPendingQuestions((pending) => [...pending, question]);
   }, []);
 
-  const removeQuestion = useCallback(id =>
-    setPendingQuestions(pending => pending.filter(q => q.id !== id))
-  , []);
+  const removeQuestion = useCallback(
+    (id) => setPendingQuestions((pending) => pending.filter((q) => q.id !== id)),
+    [],
+  );
 
-  const answerQuestion = useCallback(question => {
+  const answerQuestion = useCallback((question) => {
     client.questions.answer(question);
     removeQuestion(question.id);
   }, [client.questions, removeQuestion]);
 
+  useEffect(() => client.questions.listenQuestions(), [client.questions, cancellablePromise]);
+
   useEffect(() => {
     cancellablePromise(client.questions.getQuestions())
       .then(setPendingQuestions)
-      .catch(e => console.error("Something went wrong retrieving pending questions", e));
+      .catch((e) => console.error("Something went wrong retrieving pending questions", e));
   }, [client.questions, cancellablePromise]);
 
   useEffect(() => {
@@ -55,7 +58,9 @@ export default function Questions() {
     unsubscribeCallbacks.push(client.questions.onQuestionAdded(addQuestion));
     unsubscribeCallbacks.push(client.questions.onQuestionRemoved(removeQuestion));
 
-    return () => { unsubscribeCallbacks.forEach(cb => cb()) };
+    return () => {
+      unsubscribeCallbacks.forEach((cb) => cb());
+    };
   }, [client.questions, addQuestion, removeQuestion]);
 
   if (pendingQuestions.length === 0) return null;

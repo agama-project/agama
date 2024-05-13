@@ -55,15 +55,12 @@ class QuestionsClient {
    */
   constructor(client) {
     this.client = client;
+    this.listening = false;
     this.questionIds = [];
     this.handlers = {
       added: [],
       removed: [],
     };
-    this.getQuestions().then((qs) => {
-      this.questionIds = qs.map((q) => q.id);
-    });
-    this.listenQuestions();
   }
 
   /**
@@ -127,6 +124,12 @@ class QuestionsClient {
   }
 
   async listenQuestions() {
+    if (this.listening) return;
+
+    this.listening = true;
+    this.getQuestions().then((qs) => {
+      this.questionIds = qs.map((q) => q.id);
+    });
     return this.client.onEvent("QuestionsChanged", () => {
       this.getQuestions().then((qs) => {
         const updatedIds = qs.map((q) => q.id);
