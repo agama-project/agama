@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-25 02:09+0000\n"
+"POT-Creation-Date: 2024-05-07 02:20+0000\n"
 "PO-Revision-Date: 2024-04-27 03:43+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
-"Language-Team: German <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/de/>\n"
+"Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-"
+"service-master/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -77,8 +77,8 @@ msgstr "Die Datei %{filename}"
 #: service/lib/agama/software/callbacks/signature.rb:71
 #, perl-brace-format
 msgid ""
-"%{source} is not digitally signed. The origin and integrity of the file cannot"
-" be verified. Use it anyway?"
+"%{source} is not digitally signed. The origin and integrity of the file "
+"cannot be verified. Use it anyway?"
 msgstr ""
 "%{source} ist nicht digital signiert. Der Ursprung und die Integrität der "
 "Datei können nicht überprüft werden. Trotzdem verwenden?"
@@ -90,8 +90,8 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:94
 #, perl-brace-format
 msgid ""
-"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you wan"
-"t to trust this key?"
+"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
+"want to trust this key?"
 msgstr ""
 "Der Schlüssel %{id} (%{name}) mit dem Fingerabdruck %{fingerprint} ist "
 "unbekannt. Möchten Sie diesem Schlüssel vertrauen?"
@@ -127,7 +127,7 @@ msgstr "Ursprüngliche Repositorien werden wiederhergestellt"
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:470
+#: service/lib/agama/software/manager.rb:482
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "Repositorium „%s“ konnte nicht gelesen werden"
@@ -135,14 +135,14 @@ msgstr "Repositorium „%s“ konnte nicht gelesen werden"
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:480
+#: service/lib/agama/software/manager.rb:492
 msgid "Product not selected yet"
 msgstr "Produkt noch nicht ausgewählt"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:489
+#: service/lib/agama/software/manager.rb:501
 msgid "Product must be registered"
 msgstr "Produkt muss registriert sein"
 
@@ -202,7 +202,8 @@ msgstr "Kein Gerät für die Installation ausgewählt"
 #: service/lib/agama/storage/proposal.rb:211
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
-msgid_plural "The following selected devices are not found in the system: %{devices}"
+msgid_plural ""
+"The following selected devices are not found in the system: %{devices}"
 msgstr[0] ""
 "Das folgende ausgewählte Gerät wird im System nicht gefunden: %{devices}"
 msgstr[1] ""
