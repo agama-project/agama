@@ -79,7 +79,7 @@ describe("#getUser", () => {
 describe("#isRootPasswordSet", () => {
   describe("when the root password is set", () => {
     beforeEach(() => {
-      mockJsonFn.mockResolvedValue({ password: "12345", sshkey: "" });
+      mockJsonFn.mockResolvedValue({ password: true, sshkey: "" });
     });
 
     it("returns true", async () => {
@@ -90,7 +90,7 @@ describe("#isRootPasswordSet", () => {
 
   describe("when the root password is not set", () => {
     beforeEach(() => {
-      mockJsonFn.mockResolvedValue({ password: "", sshkey: "" });
+      mockJsonFn.mockResolvedValue({ password: false, sshkey: "" });
     });
 
     it("returns false", async () => {

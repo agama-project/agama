@@ -84,7 +84,7 @@ class UsersBaseClient {
       return false;
     }
     const config = await response.json();
-    return config.password !== "";
+    return config.password;
   }
 
   /**
