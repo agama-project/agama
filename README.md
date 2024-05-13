@@ -36,14 +36,14 @@ Agama is a new Linux installer born in the core of the YaST team. It is designed
 
 ## Why a New Installer
 
-This new project follows two main motivations: to overcome some of the limitations of YaST and to serve as installer for new projects like SUSE ALP (Adaptable Linux Platform).
+This new project follows two main motivations: to overcome some of the limitations of YaST and to serve as installer for new projects, like those based on SUSE Linux Framework One.
 
 YaST is a mature installer and control center for SUSE and openSUSE operating systems. With more than 20 years behind it, YaST is a competent and flexible installer able to cover uncountable use cases. But time goes by, and the good old YaST is starting to show its age in some aspects:
 
 * The architecture of YaST is complex and its code-base has too much technical debt.
 * Designing and building rich and modern user interfaces is a real challenge.
 * Sharing logic with other tools like Salt or Ansible is very difficult.
-* Some in-house solutions like libyui makes more difficult to contribute to the project.
+* Some in-house solutions like [libyui](https://github.com/libyui/libyui) make more difficult to contribute to the project.
 
 ## Running Agama
 
@@ -73,7 +73,7 @@ mDNS (sometimes called Avahi, Zeroconf, Bonjour) for hostname resolution. Theref
 > hostname resolutions and point you to a wrong Agama instance which could for example steal your 
 > root password!
 
-If you have troubles or you want to know more about this feature, check our [Avahi/mDNS] (./doc/avahi.md) documentation.
+If you have troubles or you want to know more about this feature, check our [Avahi/mDNS](./doc/avahi.md) documentation.
 
 ## Other Resources
 
