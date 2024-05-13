@@ -21,7 +21,7 @@ jobs:
     # TODO: Cache the Ruby gems and node packages
 
     - name: Git Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         # fetch complete history with tags, agama.gemspec calls "git describe --tags"
         # that would fail with just last commit checked out

@@ -2,6 +2,7 @@ pub mod common;
 
 use crate::common::DBusServer;
 use agama_lib::error::ServiceError;
+use agama_lib::network::settings::{BondSettings, NetworkConnection};
 use agama_lib::network::types::{DeviceType, SSID};
 use agama_server::network::web::network_service;
 use agama_server::network::{
@@ -11,6 +12,7 @@ use agama_server::network::{
 };
 
 use async_trait::async_trait;
+use axum::body;
 use axum::http::header;
 use axum::{
     body::Body,
@@ -160,5 +162,65 @@ async fn test_network_wifis() -> Result<(), Box<dyn Error>> {
     let body = body_to_string(response.into_body()).await;
     assert!(body.contains(r#""ssid":"AgamaNetwork""#));
     assert!(body.contains(r#""ssid":"AgamaNetwork2""#));
+    Ok(())
+}
+
+#[test]
+async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
+    let state = build_state().await;
+    let network_service = build_service(state.clone()).await?;
+
+    let eth0 = NetworkConnection {
+        id: "eth2".to_string(),
+        ..Default::default()
+    };
+
+    let bond0 = NetworkConnection {
+        id: "bond0".to_string(),
+        method4: Some("auto".to_string()),
+        method6: Some("disabled".to_string()),
+        interface: Some("bond0".to_string()),
+        bond: Some(BondSettings {
+            mode: "active-backup".to_string(),
+            ports: vec!["eth0".to_string()],
+            options: Some("primary=eth0".to_string()),
+        }),
+        ..Default::default()
+    };
+
+    let request = Request::builder()
+        .uri("/connections")
+        .header("Content-Type", "application/json")
+        .method(Method::POST)
+        .body(serde_json::to_string(&eth0)?)
+        .unwrap();
+
+    let response = network_service.clone().oneshot(request).await?;
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let request = Request::builder()
+        .uri("/connections")
+        .header("Content-Type", "application/json")
+        .method(Method::POST)
+        .body(serde_json::to_string(&bond0)?)
+        .unwrap();
+
+    let response = network_service.clone().oneshot(request).await?;
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let request = Request::builder()
+        .uri("/connections")
+        .method(Method::GET)
+        .body(Body::empty())
+        .unwrap();
+
+    let response = network_service.clone().oneshot(request).await?;
+    assert_eq!(response.status(), StatusCode::OK);
+    let body = body_to_string(response.into_body()).await;
+    assert!(body.contains(r#""id":"eth0""#));
+    assert!(body.contains(r#""id":"bond0""#));
+    assert!(body.contains(r#""mode":"active-backup""#));
+    assert!(body.contains(r#""primary=eth0""#));
+
     Ok(())
 }

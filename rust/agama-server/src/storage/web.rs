@@ -18,7 +18,7 @@ use agama_lib::{
 use anyhow::anyhow;
 use axum::{
     extract::{Query, State},
-    routing::get,
+    routing::{get, post},
     Json, Router,
 };
 use serde::Serialize;
@@ -88,6 +88,7 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     let client = StorageClient::new(dbus.clone()).await?;
     let state = StorageState { client };
     let router = Router::new()
+        .route("/probe", post(probe))
         .route("/devices/dirty", get(devices_dirty))
         .route("/devices/system", get(system_devices))
         .route("/devices/result", get(staging_devices))
@@ -105,6 +106,10 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .nest("/iscsi", iscsi_router)
         .with_state(state);
     Ok(router)
+}
+
+async fn probe(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
+    Ok(Json(state.client.probe().await?))
 }
 
 async fn devices_dirty(State(state): State<StorageState<'_>>) -> Result<Json<bool>, Error> {

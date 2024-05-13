@@ -44,7 +44,7 @@ const Content = ({ isLoading = false }) => {
 
   return (
     <Text>
-      {/* TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite) */}
+      {/* TRANSLATORS: %s is replaced by a product name (e.g. SLES) */}
       {isRegistered ? sprintf(_("%s (registered)"), productName) : productName}
     </Text>
   );

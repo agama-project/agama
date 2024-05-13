@@ -29,11 +29,6 @@ jest.mock("~/client");
 
 const products = [
   {
-    id: "ALP-Dolomite",
-    name: "ALP Dolomite",
-    description: "ALP Dolomite description"
-  },
-  {
     id: "Tumbleweed",
     name: "openSUSE Tumbleweed",
     description: "Tumbleweed description..."
@@ -53,7 +48,6 @@ it("shows an option for each product", async () => {
   installerRender(<ProductSelector products={products} />);
 
   await screen.findByRole("grid", { name: "Available products" });
-  screen.getByRole("row", { name: /ALP Dolomite/ });
   screen.getByRole("row", { name: /openSUSE Tumbleweed/ });
   screen.getByRole("row", { name: /openSUSE MicroOS/ });
 });

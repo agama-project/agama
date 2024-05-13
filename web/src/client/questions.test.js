@@ -19,72 +19,30 @@
  * find current contact information at www.suse.com.
  */
 
-import DBusClient from "./dbus";
+import { HTTPClient } from "./http";
 import { QuestionsClient } from "./questions";
 
-jest.mock("./dbus");
+const mockJsonFn = jest.fn();
+const mockGetFn = jest.fn().mockImplementation(() => {
+  return { ok: true, json: mockJsonFn };
+});
+const mockPutFn = jest.fn().mockImplementation(() => {
+  return { ok: true };
+});
 
-// NOTE: should we export them?
-const GENERIC_IFACE = "org.opensuse.Agama1.Questions.Generic";
-const WITH_PASSWORD_IFACE = "org.opensuse.Agama1.Questions.WithPassword";
+jest.mock("./http", () => {
+  return {
+    HTTPClient: jest.fn().mockImplementation(() => {
+      return {
+        get: mockGetFn,
+        put: mockPutFn,
+        onEvent: jest.fn(),
+      };
+    }),
+  };
+});
 
-const questionProxy = {
-  wait: jest.fn(),
-  Answer: ""
-};
-
-const withPasswordProxy = {
-  wait: jest.fn(),
-  Password: ""
-};
-
-const questionPath = "/org/opensuse/Agama1/Questions/432";
-const ifacesAndProperties = {
-  "org.freedesktop.DBus.Properties": {},
-  "org.opensuse.Agama1.Questions.Generic": {
-    Id: {
-      t: "u",
-      v: 432
-    },
-    Class: {
-      t: "s",
-      v: "storage.luks_activation"
-    },
-    Text: {
-      t: "s",
-      v: "The device /dev/vdb1 (2.00 GiB) is encrypted. Do you want to decrypt it?"
-    },
-    Options: {
-      t: "as",
-      v: [
-        "skip",
-        "decrypt"
-      ]
-    },
-    DefaultOption: {
-      t: "s",
-      v: "decrypt"
-    },
-    Data: {
-      t: "a{ss}",
-      v: { Attempt: "1" }
-    },
-    Answer: {
-      t: "s",
-      v: ""
-    }
-  },
-  "org.opensuse.Agama1.Questions.WithPassword": {
-    Password: {
-      t: "s",
-      v: ""
-    },
-  }
-};
-
-const getManagedObjectsMock = [
-  { [questionPath]: ifacesAndProperties }
-];
+let client;
 
 const expectedQuestions = [
   {
@@ -97,27 +55,31 @@ const expectedQuestions = [
     answer: "",
     data: { Attempt: "1" },
     password: "",
-  }
+  },
 ];
 
-const proxies = {
-  [GENERIC_IFACE]: questionProxy,
-  [WITH_PASSWORD_IFACE]: withPasswordProxy
+const luksQuestion = {
+  generic: {
+    id: 432,
+    class: "storage.luks_activation",
+    text: "The device /dev/vdb1 (2.00 GiB) is encrypted. Do you want to decrypt it?",
+    options: ["skip", "decrypt"],
+    defaultOption: "decrypt",
+    data: { Attempt: "1" },
+    answer: "",
+  },
+  withPassword: { password: "" },
 };
 
-beforeEach(() => {
-  DBusClient.mockImplementation(() => {
-    return {
-      proxy: (iface) => proxies[iface],
-      call: () => getManagedObjectsMock
-    };
-  });
-});
-
 describe("#getQuestions", () => {
+  beforeEach(() => {
+    mockJsonFn.mockResolvedValue([luksQuestion]);
+    client = new QuestionsClient(new HTTPClient(new URL("http://localhost")));
+  });
+
   it("returns pending questions", async () => {
-    const client = new QuestionsClient();
     const questions = await client.getQuestions();
+    expect(mockGetFn).toHaveBeenCalledWith("/questions");
     expect(questions).toEqual(expectedQuestions);
   });
 });
@@ -126,26 +88,37 @@ describe("#answer", () => {
   let question;
 
   beforeEach(() => {
-    question = { id: 321, type: 'whatever', answer: 'the-answer' };
+    question = { id: 321, type: "whatever", answer: "the-answer" };
   });
 
   it("sets given answer", async () => {
-    const client = new QuestionsClient();
+    client = new QuestionsClient(new HTTPClient(new URL("http://localhost")));
     await client.answer(question);
 
-    expect(questionProxy).toMatchObject({ Answer: 'the-answer' });
+    expect(mockPutFn).toHaveBeenCalledWith("/questions/321/answer", {
+      generic: { answer: "the-answer" },
+    });
   });
 
   describe("when answering a question implementing the LUKS activation interface", () => {
     beforeEach(() => {
-      question = { id: 432, type: 'withPassword', class: 'storage.luks_activation', answer: 'skip', password: 'notSecret' };
+      question = {
+        id: 432,
+        type: "withPassword",
+        class: "storage.luks_activation",
+        answer: "decrypt",
+        password: "notSecret",
+      };
     });
 
     it("sets given password", async () => {
-      const client = new QuestionsClient();
+      client = new QuestionsClient(new HTTPClient(new URL("http://localhost")));
       await client.answer(question);
 
-      expect(withPasswordProxy).toMatchObject({ Password: "notSecret" });
+      expect(mockPutFn).toHaveBeenCalledWith("/questions/432/answer", {
+        generic: { answer: "decrypt" },
+        withPassword: { password: "notSecret" },
+      });
     });
   });
 });

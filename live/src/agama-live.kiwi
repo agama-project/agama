@@ -10,10 +10,7 @@
     </description>
     <profiles>
         <profile name="openSUSE" description="openSUSE multiproduct image" import="true" />
-        <profile name="ALP" description="ALP-only image" />
         <profile name="openSUSE-Playwright" description="openSUSE image with Playwright integration tests" arch="aarch64,x86_64" />
-        <profile name="ALP-Playwright" description="ALP image with Playwright integration tests" arch="aarch64,x86_64" />
-        <profile name="ALP-PXE" description="ALP OEM image for remote installation" />
     </profiles>
     <preferences>
         <version>7.0.0</version>
@@ -26,59 +23,19 @@
         <bootsplash-theme>bgrt</bootsplash-theme>
         <bootloader-theme>openSUSE</bootloader-theme>
     </preferences>
-    <preferences arch="ppc64le" profiles="openSUSE,ALP">
+    <preferences arch="ppc64le" profiles="openSUSE">
         <type image="iso" flags="dmsquash"  firmware="ofw" mediacheck="true" volid="agama" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" console="serial" timeout="10"/>
         </type>
     </preferences>
-    <preferences arch="aarch64,x86_64" profiles="openSUSE,ALP,openSUSE-Playwright,ALP-Playwright">
+    <preferences arch="aarch64,x86_64" profiles="openSUSE,openSUSE-Playwright">
         <type image="iso" flags="dmsquash" firmware="uefi" mediacheck="true" volid="agama" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" timeout="10"/>
         </type>
     </preferences>
-    <preferences arch="s390x" profiles="openSUSE,ALP">
+    <preferences arch="s390x" profiles="openSUSE">
         <type image="iso" flags="dmsquash" volid="agama" editbootconfig="fix_bootconfig">
             <bootloader name="custom" />
-        </type>
-    </preferences>
-    <preferences arch="ppc64le" profiles="ALP-PXE">
-        <!-- For some reason the compression results on ppc64le are not as good as on the other archs -->
-        <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="ofw" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=3174400" volid="agama">
-            <bootloader name="grub2" console="serial" timeout="1"/>
-            <oemconfig>
-                <oem-skip-verify>true</oem-skip-verify>
-                <oem-unattended>true</oem-unattended>
-                <oem-unattended-id>/dev/ram1</oem-unattended-id>
-                <oem-swap>false</oem-swap>
-                <oem-multipath-scan>false</oem-multipath-scan>
-            </oemconfig>
-            <size unit="M">3000</size>
-        </type>
-    </preferences>
-    <preferences arch="s390x" profiles="ALP-PXE">
-        <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152" volid="agama">
-            <bootloader name="custom"/>
-            <oemconfig>
-                <oem-skip-verify>true</oem-skip-verify>
-                <oem-unattended>true</oem-unattended>
-                <oem-unattended-id>/dev/ram1</oem-unattended-id>
-                <oem-swap>false</oem-swap>
-                <oem-multipath-scan>false</oem-multipath-scan>
-            </oemconfig>
-            <size unit="M">1900</size>
-        </type>
-    </preferences>
-    <preferences arch="aarch64,x86_64" profiles="ALP-PXE">
-        <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="uefi" installiso="true" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152" volid="agama">
-            <bootloader name="grub2" timeout="1"/>
-            <oemconfig>
-                <oem-skip-verify>true</oem-skip-verify>
-                <oem-unattended>true</oem-unattended>
-                <oem-unattended-id>/dev/ram1</oem-unattended-id>
-                <oem-swap>false</oem-swap>
-                <oem-multipath-scan>false</oem-multipath-scan>
-            </oemconfig>
-            <size unit="M">1900</size>
         </type>
     </preferences>
     <users>
@@ -87,11 +44,6 @@
     <repository type="rpm-md">
         <source path="obsrepositories:/"/>
     </repository>
-    <packages type="image" profiles="ALP-PXE">
-        <package name="dracut-kiwi-oem-repart"/>
-        <package name="dracut-kiwi-oem-dump"/>
-        <archive name="root-ALP-PXE.tar.xz"/>
-    </packages>
     <packages type="image">
         <package name="avahi"/>
         <package name="bind-utils"/>
@@ -140,10 +92,10 @@
         <package name="MozillaFirefox-branding-openSUSE" arch="aarch64,x86_64"/>
         <package name="libpwquality-tools"/>
         <package name="NetworkManager"/>
-        <package name="cockpit-agama"/>
         <package name="ruby3.3-rubygem-byebug"/>
         <package name="ruby3.3-rubygem-agama-yast"/>
         <package name="agama"/>
+        <package name="agama-web-ui"/>
         <package name="agama-cli"/>
         <package name="microos-tools"/>
         <package name="staging-build-key"/>
@@ -161,15 +113,10 @@
       <package name="agama-products-opensuse"/>
       <package name="openSUSE-build-key"/>
     </packages>
-    <!-- additional packages for the ALP flavors -->
-    <packages type="image" profiles="ALP,ALP-Playwright">
-      <package name="agama-products-ALP-Dolomite"/>
-      <package name="suse-build-key"/>
-    </packages>
     <!-- additional packages for the Playwright flavors -->
-    <packages type="image" profiles="openSUSE-Playwright,ALP-Playwright">
+    <packages type="image" profiles="openSUSE-Playwright">
         <package name="playwright"/>
-        <package name="cockpit-agama-playwright"/>
+        <package name="agama-playwright"/>
         <!-- Playwright does not work with the openSUSE Firefox, -->
         <!-- install the chromium browser for running the tests -->
         <!-- unfortunately it is not available for s390x -->

@@ -17,7 +17,7 @@ use zbus::zvariant::{OwnedObjectPath, OwnedValue};
 use zbus::Connection;
 pub mod iscsi;
 
-type DbusObject = (
+type DBusObject = (
     OwnedObjectPath,
     HashMap<OwnedInterfaceName, HashMap<std::string::String, OwnedValue>>,
 );
@@ -42,7 +42,12 @@ impl<'a> StorageClient<'a> {
                 .path("/org/opensuse/Agama/Storage1")?
                 .build()
                 .await?,
-            proposal_proxy: ProposalProxy::new(&connection).await?,
+            // Do not cache the D-Bus proposal proxy because the proposal object is reexported with
+            // every new call to calculate.
+            proposal_proxy: ProposalProxy::builder(&connection)
+                .cache_properties(zbus::CacheProperties::No)
+                .build()
+                .await?,
             connection,
         })
     }
@@ -207,7 +212,7 @@ impl<'a> StorageClient<'a> {
 
     fn get_interface<'b>(
         &'b self,
-        object: &'b DbusObject,
+        object: &'b DBusObject,
         name: &str,
     ) -> Option<&HashMap<String, OwnedValue>> {
         let interface: OwnedInterfaceName = InterfaceName::from_str_unchecked(name).into();
@@ -215,7 +220,7 @@ impl<'a> StorageClient<'a> {
         interfaces.get(&interface)
     }
 
-    async fn build_device(&self, object: &DbusObject) -> Result<Device, ServiceError> {
+    async fn build_device(&self, object: &DBusObject) -> Result<Device, ServiceError> {
         Ok(Device {
             block_device: self.build_block_device(object).await?,
             component: self.build_component(object).await?,
@@ -232,7 +237,7 @@ impl<'a> StorageClient<'a> {
         })
     }
 
-    async fn build_device_info(&self, object: &DbusObject) -> Result<DeviceInfo, ServiceError> {
+    async fn build_device_info(&self, object: &DBusObject) -> Result<DeviceInfo, ServiceError> {
         let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.Device");
         // All devices has to implement device info, so report error if it is not there
         if let Some(properties) = properties {
@@ -250,7 +255,7 @@ impl<'a> StorageClient<'a> {
 
     async fn build_block_device(
         &self,
-        object: &DbusObject,
+        object: &DBusObject,
     ) -> Result<Option<BlockDevice>, ServiceError> {
         let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.Block");
 
@@ -272,7 +277,7 @@ impl<'a> StorageClient<'a> {
 
     async fn build_component(
         &self,
-        object: &DbusObject,
+        object: &DBusObject,
     ) -> Result<Option<Component>, ServiceError> {
         let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.Component");
 
@@ -287,7 +292,7 @@ impl<'a> StorageClient<'a> {
         }
     }
 
-    async fn build_drive(&self, object: &DbusObject) -> Result<Option<Drive>, ServiceError> {
+    async fn build_drive(&self, object: &DBusObject) -> Result<Option<Drive>, ServiceError> {
         let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.Drive");
 
         if let Some(properties) = properties {
@@ -308,7 +313,7 @@ impl<'a> StorageClient<'a> {
 
     async fn build_filesystem(
         &self,
-        object: &DbusObject,
+        object: &DBusObject,
     ) -> Result<Option<Filesystem>, ServiceError> {
         let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.Filesystem");
 
@@ -324,7 +329,7 @@ impl<'a> StorageClient<'a> {
         }
     }
 
-    async fn build_lvm_lv(&self, object: &DbusObject) -> Result<Option<LvmLv>, ServiceError> {
+    async fn build_lvm_lv(&self, object: &DBusObject) -> Result<Option<LvmLv>, ServiceError> {
         let properties =
             self.get_interface(object, "org.opensuse.Agama.Storage1.LVM.LogicalVolume");
 
@@ -337,7 +342,7 @@ impl<'a> StorageClient<'a> {
         }
     }
 
-    async fn build_lvm_vg(&self, object: &DbusObject) -> Result<Option<LvmVg>, ServiceError> {
+    async fn build_lvm_vg(&self, object: &DBusObject) -> Result<Option<LvmVg>, ServiceError> {
         let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.LVM.VolumeGroup");
 
         if let Some(properties) = properties {
@@ -351,7 +356,7 @@ impl<'a> StorageClient<'a> {
         }
     }
 
-    async fn build_md(&self, object: &DbusObject) -> Result<Option<Md>, ServiceError> {
+    async fn build_md(&self, object: &DBusObject) -> Result<Option<Md>, ServiceError> {
         let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.MD");
 
         if let Some(properties) = properties {
@@ -367,7 +372,7 @@ impl<'a> StorageClient<'a> {
 
     async fn build_multipath(
         &self,
-        object: &DbusObject,
+        object: &DBusObject,
     ) -> Result<Option<Multipath>, ServiceError> {
         let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.Multipath");
 
@@ -382,7 +387,7 @@ impl<'a> StorageClient<'a> {
 
     async fn build_partition(
         &self,
-        object: &DbusObject,
+        object: &DBusObject,
     ) -> Result<Option<Partition>, ServiceError> {
         let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.Partition");
 
@@ -398,7 +403,7 @@ impl<'a> StorageClient<'a> {
 
     async fn build_partition_table(
         &self,
-        object: &DbusObject,
+        object: &DBusObject,
     ) -> Result<Option<PartitionTable>, ServiceError> {
         let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.PartitionTable");
 
@@ -413,7 +418,7 @@ impl<'a> StorageClient<'a> {
         }
     }
 
-    async fn build_raid(&self, object: &DbusObject) -> Result<Option<Raid>, ServiceError> {
+    async fn build_raid(&self, object: &DBusObject) -> Result<Option<Raid>, ServiceError> {
         let properties = self.get_interface(object, "org.opensuse.Agama.Storage1.RAID");
 
         if let Some(properties) = properties {

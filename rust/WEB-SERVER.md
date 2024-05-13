@@ -1,6 +1,6 @@
 # Web server development notes
 
-This document includes some notes about the usage and development of the new Agama web server.
+This document includes some notes about the usage and development of Agama's web server.
 
 ## Installing Rust and related tools
 

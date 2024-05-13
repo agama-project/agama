@@ -25,10 +25,10 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 
 import { WifiNetworkListItem } from "~/components/network";
+import { createClient } from "~/client";
 
 jest.mock("~/components/network/WifiConnectionForm", () => () => <div>WifiConnectionForm mock</div>);
 jest.mock("~/components/network/WifiNetworkMenu", () => () => <div>WifiNetworkMenu mock</div>);
-import { createClient } from "~/client";
 
 jest.mock("~/client");
 const onSelectCallback = jest.fn();

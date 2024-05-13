@@ -198,7 +198,7 @@ const DeregisterProductPopup = ({
       />
       <p>
         {
-          // TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+          // TRANSLATORS: %s is replaced by a product name (e.g. SLES)
           sprintf(_("Do you want to deregister %s?"), selectedProduct.name)
         }
       </p>

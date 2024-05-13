@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May 13 08:47:27 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Provide HTTP API for storage (gh#openSUSE/agama#1175).
+
+-------------------------------------------------------------------
 Mon May  6 05:13:54 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Extend the HTTP/JSON API:

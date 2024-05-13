@@ -29,7 +29,6 @@ import { HTTPClient } from "./http";
 const STORAGE_OBJECT = "/org/opensuse/Agama/Storage1";
 const STORAGE_JOBS_NAMESPACE = "/org/opensuse/Agama/Storage1/jobs";
 const STORAGE_JOB_IFACE = "org.opensuse.Agama.Storage1.Job";
-const PROPOSAL_IFACE = "org.opensuse.Agama.Storage1.Proposal";
 const ISCSI_INITIATOR_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Initiator";
 const ISCSI_NODES_NAMESPACE = "/storage/iscsi/nodes";
 const ISCSI_NODE_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Node";
@@ -44,7 +43,11 @@ const ZFCP_DISKS_NAMESPACE = "/org/opensuse/Agama/Storage1/zfcp_disks";
 const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
 
 /** @fixme Adapt code depending on D-Bus */
-class DBusClient {}
+class DBusClient {
+  proxy() {
+    return Promise.resolve(undefined);
+  }
+}
 
 /**
  * @typedef {object} StorageDevice
@@ -287,7 +290,7 @@ class DevicesManager {
       /** @type {(device: StorageDevice, info: object) => void} */
       const addPartitionInfo = (device, info) => {
         device.type = "partition";
-        device.isEFI = info.EFI;
+        device.isEFI = info.efi;
       };
 
       /** @type {(device: StorageDevice, info: object) => void} */
@@ -336,6 +339,7 @@ class DevicesManager {
 
       /** @type {StorageDevice} */
       const device = {
+        sid: 0,
         name: "",
         description: "",
         isDrive: false,
@@ -368,7 +372,7 @@ class DevicesManager {
 
     const response = await this.client.get(`/storage/devices/${this.rootPath}`);
     if (!response.ok) {
-      console.log("Failed to get storage devices: ", response);
+      console.warn("Failed to get storage devices: ", response);
     }
     const jsonDevices = await response.json();
     return jsonDevices.map(d => buildDevice(d, jsonDevices));
@@ -397,7 +401,7 @@ class ProposalManager {
     const findDevice = (devices, name) => {
       const device = devices.find(d => d.name === name);
 
-      if (device === undefined) console.log("Device not found: ", name);
+      if (device === undefined) console.warn("Device not found: ", name);
 
       return device;
     };
@@ -406,7 +410,7 @@ class ProposalManager {
 
     const response = await this.client.get("/storage/proposal/usable_devices");
     if (!response.ok) {
-      console.log("Failed to get usable devices: ", response);
+      console.warn("Failed to get usable devices: ", response);
     }
     const usable_devices = await response.json();
     return usable_devices.map(name => findDevice(systemDevices, name)).filter(d => d);
@@ -454,7 +458,7 @@ class ProposalManager {
   async getProductMountPoints() {
     const response = await this.client.get("/storage/product/params");
     if (!response.ok) {
-      console.log("Failed to get product params: ", response);
+      console.warn("Failed to get product params: ", response);
     }
 
     return response.json().then(params => params.mountPoints);
@@ -468,7 +472,7 @@ class ProposalManager {
   async getEncryptionMethods() {
     const response = await this.client.get("/storage/product/params");
     if (!response.ok) {
-      console.log("Failed to get product params: ", response);
+      console.warn("Failed to get product params: ", response);
     }
 
     return response.json().then(params => params.encryptionMethods);
@@ -484,7 +488,7 @@ class ProposalManager {
     const param = encodeURIComponent(mountPath);
     const response = await this.client.get(`/storage/product/volume_for?mount_path=${param}`);
     if (!response.ok) {
-      console.log("Failed to get product volume: ", response);
+      console.warn("Failed to get product volume: ", response);
     }
 
     const systemDevices = await this.system.getDevices();
@@ -503,12 +507,14 @@ class ProposalManager {
   async getResult() {
     const settingsResponse = await this.client.get("/storage/proposal/settings");
     if (!settingsResponse.ok) {
-      console.log("Failed to get proposal settings: ", settingsResponse);
+      console.warn("Failed to get proposal settings: ", settingsResponse);
+      return undefined;
     }
 
     const actionsResponse = await this.client.get("/storage/proposal/actions");
     if (!actionsResponse.ok) {
-      console.log("Failed to get proposal actions: ", actionsResponse);
+      console.warn("Failed to get proposal actions: ", actionsResponse);
+      return undefined;
     }
 
     /**
@@ -565,8 +571,6 @@ class ProposalManager {
     const systemDevices = await this.system.getDevices();
     const productMountPoints = await this.getProductMountPoints();
 
-    console.log("system: ", systemDevices);
-
     return {
       settings: {
         ...settings,
@@ -589,61 +593,46 @@ class ProposalManager {
    * @returns {Promise<number>} 0 on success, 1 on failure
    */
   async calculate(settings) {
-    const {
-      target,
-      targetDevice,
-      targetPVDevices,
-      configureBoot,
-      bootDevice,
-      encryptionPassword,
-      encryptionMethod,
-      spacePolicy,
-      spaceActions,
-      volumes
-    } = settings;
-
-    const dbusSpaceActions = () => {
-      const dbusSpaceAction = (spaceAction) => {
-        return {
-          Device: { t: "s", v: spaceAction.device },
-          Action: { t: "s", v: spaceAction.action }
-        };
+    const buildHttpVolume = (volume) => {
+      return {
+        autoSize: volume.autoSize,
+        fsType: volume.fsType,
+        maxSize: volume.maxSize,
+        minSize: volume.minSize,
+        mountOptions: volume.mountOptions,
+        mountPath: volume.mountPath,
+        snapshots: volume.snapshots,
+        target: VolumeTargets[volume.target],
+        targetDevice: volume.targetDevice?.name
       };
-
-      if (spacePolicy !== "custom") return;
-
-      return spaceActions?.map(dbusSpaceAction);
     };
 
-    const dbusVolume = (volume) => {
-      return removeUndefinedCockpitProperties({
-        MountPath: { t: "s", v: volume.mountPath },
-        FsType: { t: "s", v: volume.fsType },
-        MinSize: { t: "t", v: volume.minSize },
-        MaxSize: { t: "t", v: volume.maxSize },
-        AutoSize: { t: "b", v: volume.autoSize },
-        Target: { t: "s", v: VolumeTargets[volume.target] },
-        TargetDevice: { t: "s", v: volume.targetDevice?.name },
-        Snapshots: { t: "b", v: volume.snapshots },
-        Transactional: { t: "b", v: volume.transactional },
-      });
+    const buildHttpSettings = (settings) => {
+      return {
+        bootDevice: settings.bootDevice,
+        configureBoot: settings.configureBoot,
+        encryptionMethod: settings.encryptionMethod,
+        encryptionPBKDFunction: settings.encryptionPBKDFunction,
+        encryptionPassword: settings.encryptionPassword,
+        spaceActions: settings.spacePolicy === "custom" ? settings.spaceActions : undefined,
+        spacePolicy: settings.spacePolicy,
+        target: ProposalTargets[settings.target],
+        targetDevice: settings.targetDevice,
+        targetPVDevices: settings.targetPVDevices,
+        volumes: settings.volumes?.map(buildHttpVolume)
+      };
     };
 
-    const dbusSettings = removeUndefinedCockpitProperties({
-      Target: { t: "s", v: ProposalTargets[target] },
-      TargetDevice: { t: "s", v: targetDevice },
-      TargetPVDevices: { t: "as", v: targetPVDevices },
-      ConfigureBoot: { t: "b", v: configureBoot },
-      BootDevice: { t: "s", v: bootDevice },
-      EncryptionPassword: { t: "s", v: encryptionPassword },
-      EncryptionMethod: { t: "s", v: encryptionMethod },
-      SpacePolicy: { t: "s", v: spacePolicy },
-      SpaceActions: { t: "aa{sv}", v: dbusSpaceActions() },
-      Volumes: { t: "aa{sv}", v: volumes?.map(dbusVolume) }
-    });
+    /** @fixe Define HttpSettings type */
+    /** @type {object} */
+    const httpSettings = buildHttpSettings(settings);
+    const response = await this.client.put("/storage/proposal/settings", httpSettings);
 
-    const proxy = await this.proxies.proposalCalculator;
-    return proxy.Calculate(dbusSettings);
+    if (!response.ok) {
+      console.warn("Failed to set proposal settings: ", response);
+    }
+
+    return response.ok ? 0 : 1;
   }
 
   /**
@@ -1567,11 +1556,13 @@ class StorageBaseClient {
 
   /**
    * Probes the system
-   * @todo
    */
   async probe() {
-    const proxy = await this.proxies.storage;
-    return proxy.Probe();
+    const response = await this.client.post("/storage/probe");
+
+    if (!response.ok) {
+      console.warn("Failed to probe the storage setup: ", response);
+    }
   }
 
   /**
@@ -1582,7 +1573,7 @@ class StorageBaseClient {
   async isDeprecated() {
     const response = await this.client.get("/storage/devices/dirty");
     if (!response.ok) {
-      console.log("Failed to get storage devices dirty: ", response);
+      console.warn("Failed to get storage devices dirty: ", response);
     }
     return response.json();
   }
