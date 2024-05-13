@@ -48,13 +48,16 @@ function ProductSelectionPage() {
     // removing small pieces of internal state and simplifying components.
     // We should evaluate to use it or to use a ReactRouterDom/Form.
     // Also, to have into consideration React 19 Actions, https://react.dev/blog/2024/04/25/react-19#actions
+    // FIXME: re-evaluate if we should work with the entire product object or
+    // just the id in the form (the latest avoids the need of JSON.stringify &
+    // JSON.parse)
     e.preventDefault();
     const dataForm = new FormData(e.target);
-    const nextProduct = JSON.parse(dataForm.get("product"));
+    const nextProductId = JSON.parse(dataForm.get("product"))?.id;
 
-    if (nextProduct?.id !== selectedProduct?.id) {
+    if (nextProductId !== selectedProduct?.id) {
       // TODO: handle errors
-      await product.select(newProductId);
+      await product.select(nextProductId);
       manager.startProbing();
     }
 
