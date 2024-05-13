@@ -41,6 +41,8 @@ impl<'a> StorageClient<'a> {
                 .path("/org/opensuse/Agama/Storage1")?
                 .build()
                 .await?,
+            // Do not cache the D-Bus proposal proxy because the proposal object is reexported with
+            // every new call to calculate.
             proposal_proxy: ProposalProxy::builder(&connection)
                 .cache_properties(zbus::CacheProperties::No)
                 .build()
