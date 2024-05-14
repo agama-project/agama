@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -35,13 +35,11 @@ import { _ } from "~/i18n";
  * @param {import ("~/client/mixins").Issue} props.issue
  */
 const IssueItem = ({ issue }) => {
-  const hasDetails = issue.details.length > 0;
-
   return (
     <li>
       {issue.description}
       <If
-        condition={hasDetails}
+        condition={issue.details}
         then={<pre>{issue.details}</pre>}
       />
     </li>

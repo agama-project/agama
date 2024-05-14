@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -38,7 +38,7 @@ const issues = {
   product: [],
   storage: [
     { description: "storage issue 1", details: "Details 1", source: "system", severity: "warn" },
-    { description: "storage issue 2", details: "Details 2", source: "config", severity: "error" }
+    { description: "storage issue 2", details: null, source: "config", severity: "error" }
   ],
   software: [
     { description: "software issue 1", details: "Details 1", source: "system", severity: "warn" }
@@ -62,6 +62,7 @@ it("loads the issues", async () => {
   installerRender(<IssuesDialog isOpen sectionId="storage" title="Storage issues" />);
 
   await screen.findByText(/storage issue 1/);
+  await screen.findByText(/storage issue 2/);
 });
 
 it('calls onClose callback when close button is clicked', async () => {
