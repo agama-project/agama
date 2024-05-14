@@ -59,9 +59,19 @@ fi
 rm /var/log/zypper.log /var/log/zypp/history
 
 du -h -s /usr/{share,lib}/locale/
+
+# Agama expects that the same locales available in the installation system can
+# be also used later in the installed system and offers them in the web UI to
+# select. But to make the Live ISO smaller it makes sense to delete the locales
+# not supported by Agama itself. To solve this problem the list of available
+# locales is saved to a file before deleting the locales not supported by Agama.
+# Agama then reads this file instead of running the "localectl list-locales"
+# command.
+localectl list-locales > /etc/agama.d/locales
+
 # delete translations and unusupported languages (makes ISO about 22MiB smaller)
 # build list of ignore options for "ls" with supported languages like "-I cs* -I de* -I es* ..."
-readarray -t IGNORE_OPTS < <(ls /usr/share/cockpit/agama/po.*.js.gz | sed -e "s#/usr/share/cockpit/agama/po\.\(.*\)\.js\.gz#-I\n\\1*#")
+readarray -t IGNORE_OPTS < <(ls /usr/share/agama/web_ui/po.*.js.gz | sed -e "s#/usr/share/agama/web_ui/po\.\(.*\)\.js\.gz#-I\n\\1*#")
 # additionally keep the en_US translations
 ls -1 "${IGNORE_OPTS[@]}" -I en_US /usr/share/locale/ | xargs -I% sh -c "echo 'Removing translations %...' && rm -rf /usr/share/locale/%"
 
