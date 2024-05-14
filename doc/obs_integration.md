@@ -1,5 +1,22 @@
 # The Open Build Service (OBS) Integration
 
+- [The Open Build Service (OBS) Integration](#the-open-build-service-obs-integration)
+  - [Staging Project](#staging-project)
+  - [Development Project](#development-project)
+  - [Releasing a New Version](#releasing-a-new-version)
+  - [OBS Synchronization](#obs-synchronization)
+    - [Details](#details)
+  - [Synchronizing GitHub Fork with OBS Branch](#synchronizing-github-fork-with-obs-branch)
+    - [OBS Branch](#obs-branch)
+    - [GitHub Fork](#github-fork)
+    - [Configuring the GitHub Actions](#configuring-the-github-actions)
+    - [Triggering the Rebuild](#triggering-the-rebuild)
+  - [Package Versioning](#package-versioning)
+    - [Staging](#staging)
+    - [Devel](#devel)
+
+---
+
 The Agama installer packages are built in the openSUSE [Open Build Service](
 https://build.opensuse.org/).
 
@@ -75,13 +92,13 @@ use `*.gem` files which are not supported by OBS services. It uses the
 [osc:commit](https://github.com/openSUSE/packaging_rake_tasks#osccommit) Rake
 task, same as the YaST packages.
 
-### Synchronizing GitHub Fork with OBS Branch
+## Synchronizing GitHub Fork with OBS Branch
 
 It is possible to synchronize your GitHub fork with your OBS brach
 automatically. This allows easily build your own updated packages or even the
 Live ISO.
 
-#### OBS Branch
+### OBS Branch
 
 First you need to create an OBS project where the packages will be built.
 
@@ -130,7 +147,7 @@ osc detachbranch home:$OBS_USER:branches:systemsmanagement:Agama:Staging agama-l
 *Please delete your branched OBS project once you do not need it anymore, it
 will save quite some OBS build power.*
 
-#### GitHub Fork
+### GitHub Fork
 
 Then you can fork the [Agama](https://github.com/openSUSE/agama) repository at
 GitHub.
@@ -146,7 +163,7 @@ If you want to have similar versions as the original packages then create a full
 fork including all branches and tags (unselect the "Copy the master branch only"
 option).
 
-#### Configuring the GitHub Actions
+### Configuring the GitHub Actions
 
 The GitHub Actions needs some configuration to allow the automatic submission.
 
@@ -164,7 +181,7 @@ The GitHub Actions needs some configuration to allow the automatic submission.
 
 3. Enable the GitHub Actions in the "Actions" tab.
 
-#### Triggering the Rebuild
+### Triggering the Rebuild
 
 *The autosubmission only works in the `master` branch in your fork, not in any
 other branch!*
@@ -177,7 +194,7 @@ Alternatively you can trigger the package submission manually. Go to the
 bar and in the main area click the "Run workflow" selector. Then in the popup
 keep the default `master` branch and click the "Run workflow" button.
 
-### Package Versioning
+## Package Versioning
 
 ### Staging
 
