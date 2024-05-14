@@ -26,12 +26,11 @@ import { compact, hex, uniq } from "~/utils";
 import { WithIssues, WithProgress, WithStatus } from "./mixins";
 import { HTTPClient } from "./http";
 
+const SERVICE_NAME = "org.opensuse.Agama.Storage1";
 const STORAGE_OBJECT = "/org/opensuse/Agama/Storage1";
 const STORAGE_JOBS_NAMESPACE = "/org/opensuse/Agama/Storage1/jobs";
 const STORAGE_JOB_IFACE = "org.opensuse.Agama.Storage1.Job";
-const ISCSI_INITIATOR_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Initiator";
 const ISCSI_NODES_NAMESPACE = "/storage/iscsi/nodes";
-const ISCSI_NODE_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Node";
 const DASD_MANAGER_IFACE = "org.opensuse.Agama.Storage1.DASD.Manager";
 const DASD_DEVICES_NAMESPACE = "/org/opensuse/Agama/Storage1/dasds";
 const DASD_DEVICE_IFACE = "org.opensuse.Agama.Storage1.DASD.Device";
@@ -198,25 +197,6 @@ const EncryptionMethods = Object.freeze({
 });
 
 /**
- * Removes properties with undefined value
- *
- * @example
- * removeUndefinedCockpitProperties({
- *  property1: { t: "s", v: "foo" },
- *  property2: { t: b, v: false },
- *  property3: { t: "s", v: undefined }
- * });
- * //returns { property1: { t: "s", v: "foo" }, property2: { t: "b", v: false } }
- *
- * @param {object} cockpitObject
- * @returns {object}
- */
-const removeUndefinedCockpitProperties = (cockpitObject) => {
-  const filtered = Object.entries(cockpitObject).filter(([, { v }]) => v !== undefined);
-  return Object.fromEntries(filtered);
-};
-
-/**
  * Gets the basename of a D-Bus path
  *
  * @example
@@ -373,6 +353,7 @@ class DevicesManager {
     const response = await this.client.get(`/storage/devices/${this.rootPath}`);
     if (!response.ok) {
       console.warn("Failed to get storage devices: ", response);
+      return [];
     }
     const jsonDevices = await response.json();
     return jsonDevices.map(d => buildDevice(d, jsonDevices));
@@ -411,6 +392,7 @@ class ProposalManager {
     const response = await this.client.get("/storage/proposal/usable_devices");
     if (!response.ok) {
       console.warn("Failed to get usable devices: ", response);
+      return [];
     }
     const usable_devices = await response.json();
     return usable_devices.map(name => findDevice(systemDevices, name)).filter(d => d);
@@ -459,6 +441,7 @@ class ProposalManager {
     const response = await this.client.get("/storage/product/params");
     if (!response.ok) {
       console.warn("Failed to get product params: ", response);
+      return [];
     }
 
     return response.json().then(params => params.mountPoints);
@@ -473,6 +456,7 @@ class ProposalManager {
     const response = await this.client.get("/storage/product/params");
     if (!response.ok) {
       console.warn("Failed to get product params: ", response);
+      return [];
     }
 
     return response.json().then(params => params.encryptionMethods);
@@ -482,13 +466,14 @@ class ProposalManager {
    * Obtains the default volume for the given mount path
    *
    * @param {string} mountPath
-   * @returns {Promise<Volume>}
+   * @returns {Promise<Volume|undefined>}
    */
   async defaultVolume(mountPath) {
     const param = encodeURIComponent(mountPath);
     const response = await this.client.get(`/storage/product/volume_for?mount_path=${param}`);
     if (!response.ok) {
       console.warn("Failed to get product volume: ", response);
+      return undefined;
     }
 
     const systemDevices = await this.system.getDevices();
@@ -1314,7 +1299,7 @@ class ISCSIManager {
   /**
    * Gets the iSCSI initiator
    *
-   * @return {Promise<ISCSIInitiator>}
+   * @return {Promise<ISCSIInitiator|undefined>}
    *
    * @typedef {object} ISCSIInitiator
    * @property {string} name
@@ -1324,6 +1309,7 @@ class ISCSIManager {
     const response = await this.client.get("/storage/iscsi/initiator");
     if (!response.ok) {
       console.error("Failed to get the iSCSI initiator", response);
+      return undefined;
     }
 
     return response.json();
@@ -1357,6 +1343,7 @@ class ISCSIManager {
     const response = await this.client.get("/storage/iscsi/nodes");
     if (!response.ok) {
       console.error("Failed to get the list of iSCSI nodes", response);
+      return [];
     }
 
     return response.json();
@@ -1574,6 +1561,7 @@ class StorageBaseClient {
     const response = await this.client.get("/storage/devices/dirty");
     if (!response.ok) {
       console.warn("Failed to get storage devices dirty: ", response);
+      return false;
     }
     return response.json();
   }
@@ -1600,8 +1588,8 @@ class StorageBaseClient {
  */
 class StorageClient extends WithIssues(
   WithProgress(
-    WithStatus(StorageBaseClient, "/storage/status", STORAGE_OBJECT), "/storage/progress", STORAGE_OBJECT
-  ), "/storage/issues", STORAGE_OBJECT
+    WithStatus(StorageBaseClient, "/storage/status", SERVICE_NAME), "/storage/progress", SERVICE_NAME
+  ), "/storage/issues", SERVICE_NAME
 ) { }
 
 export { StorageClient, EncryptionMethods };

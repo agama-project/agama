@@ -116,6 +116,33 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
         stream.insert(id, software_stream);
     }
     stream.insert(
+        "storage-status",
+        service_status_stream(
+            dbus.clone(),
+            "org.opensuse.Agama.Storage1",
+            "/org/opensuse/Agama/Storage1",
+        )
+        .await?,
+    );
+    stream.insert(
+        "storage-progress",
+        progress_stream(
+            dbus.clone(),
+            "org.opensuse.Agama.Storage1",
+            "/org/opensuse/Agama/Storage1",
+        )
+        .await?,
+    );
+    stream.insert(
+        "storage-issues",
+        issues_stream(
+            dbus.clone(),
+            "org.opensuse.Agama.Storage1",
+            "/org/opensuse/Agama/Storage1",
+        )
+        .await?,
+    );
+    stream.insert(
         "software-status",
         service_status_stream(
             dbus.clone(),

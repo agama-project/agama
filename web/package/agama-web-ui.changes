@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 14 12:24:23 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Make storage UI work again when there are no devices
+  (gh#openSUSE/agama#1203).
+
+-------------------------------------------------------------------
 Tue May 14 11:17:45 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix DELETE and PATCH calls in the HTTPClient

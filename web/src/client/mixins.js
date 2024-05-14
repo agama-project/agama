@@ -82,9 +82,9 @@ const buildIssue = ({ description, details, source, severity }) => {
  * @template {!WithHTTPClient} T
  * @param {T} superclass - superclass to extend
  * @param {string} issues_path - validation resource path (e.g., "/manager/issues").
- * @param {string} dbus_path - service name (e.g., "/org/opensuse/Agama/Software1/product").
+ * @param {string} service_name - service name (e.g., "org.opensuse.Agama.Manager1").
  */
-const WithIssues = (superclass, issues_path, dbus_path) =>
+const WithIssues = (superclass, issues_path, service_name) =>
   class extends superclass {
     /**
      * Returns the issues
@@ -119,8 +119,8 @@ const WithIssues = (superclass, issues_path, dbus_path) =>
      * @return {import ("./http").RemoveFn} function to disable the callback
      */
     onIssuesChange(handler) {
-      return this.client.onEvent("IssuesChanged", ({ path, issues }) => {
-        if (path === dbus_path) {
+      return this.client.onEvent("IssuesChanged", ({ service, issues }) => {
+        if (service === service_name) {
           handler(issues.map(buildIssue));
         }
       });

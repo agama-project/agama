@@ -26,41 +26,6 @@ import { HTTPClient } from "./http";
 import DBusClient from "./dbus";
 import { StorageClient } from "./storage";
 
-const mockJsonFn = jest.fn();
-const mockGetFn = jest.fn().mockImplementation(() => {
-  return { ok: true, json: mockJsonFn };
-});
-const mockPostFn = jest.fn().mockImplementation(() => {
-  return { ok: true };
-});
-const mockPutFn = jest.fn().mockImplementation(() => {
-  return { ok: true };
-});
-const mockDeleteFn = jest.fn().mockImplementation(() => {
-  return {
-    ok: true,
-  };
-});
-const mockPatchFn = jest.fn().mockImplementation(() => {
-  return { ok: true };
-});
-
-jest.mock("./http", () => {
-  return {
-    HTTPClient: jest.fn().mockImplementation(() => {
-      return {
-        get: mockGetFn,
-        patch: mockPatchFn,
-        post: mockPostFn,
-        put: mockPutFn,
-        delete: mockDeleteFn,
-      };
-    }),
-  };
-});
-
-const http = new HTTPClient(new URL("http://localhost"));
-
 /**
  * @typedef {import("~/client/storage").StorageDevice} StorageDevice
  */
@@ -1183,6 +1148,21 @@ const reset = () => {
   managedObjects = {};
 };
 
+let mockJsonFn;
+let mockGetFn;
+let mockPostFn;
+let mockPutFn;
+let mockDeleteFn;
+let mockPatchFn;
+let mockHTTPClient;
+let http;
+
+jest.mock("./http", () => {
+  return {
+    HTTPClient: jest.fn().mockImplementation(() => mockHTTPClient)
+  };
+});
+
 beforeEach(() => {
   reset();
 
@@ -1195,6 +1175,35 @@ beforeEach(() => {
       call: mockCall
     };
   });
+
+  mockJsonFn = jest.fn();
+  mockGetFn = jest.fn().mockImplementation(() => {
+    return { ok: true, json: mockJsonFn };
+  });
+  mockPostFn = jest.fn().mockImplementation(() => {
+    return { ok: true };
+  });
+  mockPutFn = jest.fn().mockImplementation(() => {
+    return { ok: true };
+  });
+  mockDeleteFn = jest.fn().mockImplementation(() => {
+    return {
+      ok: true,
+    };
+  });
+  mockPatchFn = jest.fn().mockImplementation(() => {
+    return { ok: true };
+  });
+
+  mockHTTPClient = {
+    get: mockGetFn,
+    patch: mockPatchFn,
+    post: mockPostFn,
+    put: mockPutFn,
+    delete: mockDeleteFn,
+  };
+
+  http = new HTTPClient(new URL("http://localhost"));
 });
 
 let client;
@@ -1211,9 +1220,40 @@ describe("#probe", () => {
 });
 
 describe("#isDeprecated", () => {
+  describe("if the system is deprecated", () => {
+    beforeEach(() => {
+      mockJsonFn.mockResolvedValue(true);
+      client = new StorageClient(http);
+    });
+
+    it("returns true", async () => {
+      const result = await client.isDeprecated();
+      expect(result).toEqual(true);
+    });
+  });
+
   describe("if the system is not deprecated", () => {
     beforeEach(() => {
-      mockJsonFn.mockResolvedValue(false);
+      mockGetFn.mockResolvedValue(false);
+      client = new StorageClient(http);
+    });
+
+    it("returns false", async () => {
+      const result = await client.isDeprecated();
+      expect(result).toEqual(false);
+    });
+  });
+
+  describe("when the HTTP call fails", () => {
+    beforeEach(() => {
+      mockGetFn.mockImplementation(path => {
+        if (path === "/storage/devices/dirty")
+          return { ok: false, json: undefined };
+        else
+          return { ok: true, json: mockJsonFn };
+      }
+      );
+
       client = new StorageClient(http);
     });
 
@@ -1351,6 +1391,25 @@ describe("#system", () => {
         expect(devices).toEqual([]);
       });
     });
+
+    describe("when the HTTP call fails", () => {
+      beforeEach(() => {
+        mockGetFn.mockImplementation(path => {
+          if (path === "/storage/devices/system")
+            return { ok: false, json: undefined };
+          else
+            return { ok: true, json: mockJsonFn };
+        }
+        );
+
+        client = new StorageClient(http);
+      });
+
+      it("returns an empty list", async () => {
+        const devices = await client.system.getDevices();
+        expect(devices).toEqual([]);
+      });
+    });
   });
 });
 
@@ -1381,18 +1440,41 @@ describe("#staging", () => {
         expect(devices).toEqual([]);
       });
     });
+
+    describe("when the HTTP call fails", () => {
+      beforeEach(() => {
+        mockGetFn.mockImplementation(path => {
+          if (path === "/storage/devices/result")
+            return { ok: false, json: undefined };
+          else
+            return { ok: true, json: mockJsonFn };
+        }
+        );
+
+        client = new StorageClient(http);
+      });
+
+      it("returns an empty list", async () => {
+        const devices = await client.staging.getDevices();
+        expect(devices).toEqual([]);
+      });
+    });
   });
 });
 
 describe("#proposal", () => {
   describe("#getAvailableDevices", () => {
+    let response;
+
     beforeEach(() => {
+      response = { ok: true, json: jest.fn().mockResolvedValue(contexts.withAvailableDevices()) };
+
       mockGetFn.mockImplementation(path => {
         switch (path) {
           case "/storage/devices/system":
             return { ok: true, json: jest.fn().mockResolvedValue(contexts.withSystemDevices()) };
           case "/storage/proposal/usable_devices":
-            return { ok: true, json: jest.fn().mockResolvedValue(contexts.withAvailableDevices()) };
+            return response;
           default:
             return { ok: true, json: mockJsonFn };
         }
@@ -1405,22 +1487,139 @@ describe("#proposal", () => {
       const availableDevices = await client.proposal.getAvailableDevices();
       expect(availableDevices).toEqual([systemDevices.sda, systemDevices.sdb]);
     });
+
+    describe("when the HTTP call fails", () => {
+      beforeEach(() => {
+        response = { ok: false, json: undefined };
+      });
+
+      it("returns an empty list", async () => {
+        const availableDevices = await client.proposal.getAvailableDevices();
+        expect(availableDevices).toEqual([]);
+      });
+    });
   });
 
   describe("#getProductMountPoints", () => {
     beforeEach(() => {
-      client = new StorageClient(http);
       mockJsonFn.mockResolvedValue({ mountPoints: ["/", "swap", "/home"] });
+      client = new StorageClient(http);
     });
 
     it("returns the list of product mount points", async () => {
       const mount_points = await client.proposal.getProductMountPoints();
       expect(mount_points).toEqual(["/", "swap", "/home"]);
     });
+
+    describe("when the HTTP call fails", () => {
+      beforeEach(() => {
+        mockGetFn.mockImplementation(path => {
+          if (path === "/storage/product/params")
+            return { ok: false, json: undefined };
+          else
+            return { ok: true, json: mockJsonFn };
+        }
+        );
+
+        client = new StorageClient(http);
+      });
+
+      it("returns an empty list", async () => {
+        const mount_points = await client.proposal.getProductMountPoints();
+        expect(mount_points).toEqual([]);
+      });
+    });
+  });
+
+  describe("#getEncryptionMethods", () => {
+    beforeEach(() => {
+      mockJsonFn.mockResolvedValue({ encryptionMethods: ["luks1", "luks2"] });
+      client = new StorageClient(http);
+    });
+
+    it("returns the list of encryption methods", async () => {
+      const encryptionMethods = await client.proposal.getEncryptionMethods();
+      expect(encryptionMethods).toEqual(["luks1", "luks2"]);
+    });
+
+    describe("when the HTTP call fails", () => {
+      beforeEach(() => {
+        mockGetFn.mockImplementation(path => {
+          if (path === "/storage/product/params")
+            return { ok: false, json: undefined };
+          else
+            return { ok: true, json: mockJsonFn };
+        }
+        );
+
+        client = new StorageClient(http);
+      });
+
+      it("returns an empty list", async () => {
+        const encryptionMethods = await client.proposal.getEncryptionMethods();
+        expect(encryptionMethods).toEqual([]);
+      });
+    });
   });
 
   describe("#defaultVolume", () => {
+    let response;
+
     beforeEach(() => {
+      response = (path) => {
+        const param = path.split("=")[1];
+        switch (param) {
+          case "%2Fhome":
+            return {
+              ok: true,
+              json: jest.fn().mockResolvedValue({
+                mountPath: "/home",
+                target: "default",
+                targetDevice: "",
+                fsType: "XFS",
+                minSize: 2048,
+                maxSize: 4096,
+                autoSize: false,
+                snapshots: false,
+                transactional: false,
+                outline: {
+                  required: false,
+                  fsTypes: ["Ext4", "XFS"],
+                  supportAutoSize: false,
+                  snapshotsConfigurable: false,
+                  snapshotsAffectSizes: false,
+                  adjustByRam: false,
+                  sizeRelevantVolumes: []
+                }
+              })
+            };
+          default:
+            return {
+              ok: true,
+              json: jest.fn().mockResolvedValue({
+                mountPath: "",
+                target: "default",
+                targetDevice: "",
+                fsType: "Ext4",
+                minSize: 1024,
+                maxSize: 2048,
+                autoSize: false,
+                snapshots: false,
+                transactional: false,
+                outline: {
+                  required: false,
+                  fsTypes: ["Ext4", "XFS"],
+                  supportAutoSize: false,
+                  snapshotsConfigurable: false,
+                  snapshotsAffectSizes: false,
+                  adjustByRam: false,
+                  sizeRelevantVolumes: []
+                }
+              })
+            };
+        }
+      };
+
       mockGetFn.mockImplementation(path => {
         switch (path) {
           case "/storage/devices/system":
@@ -1428,59 +1627,8 @@ describe("#proposal", () => {
           case "/storage/product/params":
             return { ok: true, json: jest.fn().mockResolvedValue({ mountPoints: ["/", "swap", "/home"] }) };
           // GET for /storage/product/volume_for?path=XX
-          default: {
-            const param = path.split("=")[1];
-            switch (param) {
-              case "%2Fhome":
-                return {
-                  ok: true,
-                  json: jest.fn().mockResolvedValue({
-                    mountPath: "/home",
-                    target: "default",
-                    targetDevice: "",
-                    fsType: "XFS",
-                    minSize: 2048,
-                    maxSize: 4096,
-                    autoSize: false,
-                    snapshots: false,
-                    transactional: false,
-                    outline: {
-                      required: false,
-                      fsTypes: ["Ext4", "XFS"],
-                      supportAutoSize: false,
-                      snapshotsConfigurable: false,
-                      snapshotsAffectSizes: false,
-                      adjustByRam: false,
-                      sizeRelevantVolumes: []
-                    }
-                  })
-                };
-              default:
-                return {
-                  ok: true,
-                  json: jest.fn().mockResolvedValue({
-                    mountPath: "",
-                    target: "default",
-                    targetDevice: "",
-                    fsType: "Ext4",
-                    minSize: 1024,
-                    maxSize: 2048,
-                    autoSize: false,
-                    snapshots: false,
-                    transactional: false,
-                    outline: {
-                      required: false,
-                      fsTypes: ["Ext4", "XFS"],
-                      supportAutoSize: false,
-                      snapshotsConfigurable: false,
-                      snapshotsAffectSizes: false,
-                      adjustByRam: false,
-                      sizeRelevantVolumes: []
-                    }
-                  })
-                };
-            }
-          }
+          default:
+            return response(path);
         }
       });
 
@@ -1534,6 +1682,17 @@ describe("#proposal", () => {
           sizeRelevantVolumes: [],
           productDefined: false
         }
+      });
+    });
+
+    describe("when then HTTP call fails", () => {
+      beforeEach(() => {
+        response = () => ({ ok: false, json: undefined });
+      });
+
+      it("returns undefined", async () => {
+        const volume = await client.proposal.defaultVolume("/home");
+        expect(volume).toBeUndefined();
       });
     });
   });
@@ -2265,6 +2424,17 @@ describe("#iscsi", () => {
       expect(name).toEqual("iqn.1996-04.com.suse:01:351e6d6249");
       expect(ibft).toEqual(false);
     });
+
+    describe("when the HTTP call fails", () => {
+      beforeEach(() => {
+        mockGetFn.mockResolvedValue({ ok: false, json: undefined });
+      });
+
+      it("returns undefined", async () => {
+        const initiator = await client.iscsi.getInitiator();
+        expect(initiator).toBeUndefined();
+      });
+    });
   });
 
   describe("#setInitiatorName", () => {
@@ -2319,6 +2489,17 @@ describe("#iscsi", () => {
           ibft: true,
           connected: true,
           startup: "onboot",
+        });
+      });
+
+      describe("when the HTTP call fails", () => {
+        beforeEach(() => {
+          mockGetFn.mockResolvedValue({ ok: false, json: undefined });
+        });
+
+        it("returns an empty list", async () => {
+          const result = await client.iscsi.getNodes();
+          expect(result).toStrictEqual([]);
         });
       });
     });
