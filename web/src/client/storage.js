@@ -198,25 +198,6 @@ const EncryptionMethods = Object.freeze({
 });
 
 /**
- * Removes properties with undefined value
- *
- * @example
- * removeUndefinedCockpitProperties({
- *  property1: { t: "s", v: "foo" },
- *  property2: { t: b, v: false },
- *  property3: { t: "s", v: undefined }
- * });
- * //returns { property1: { t: "s", v: "foo" }, property2: { t: "b", v: false } }
- *
- * @param {object} cockpitObject
- * @returns {object}
- */
-const removeUndefinedCockpitProperties = (cockpitObject) => {
-  const filtered = Object.entries(cockpitObject).filter(([, { v }]) => v !== undefined);
-  return Object.fromEntries(filtered);
-};
-
-/**
  * Gets the basename of a D-Bus path
  *
  * @example
