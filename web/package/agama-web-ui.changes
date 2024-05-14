@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Tue May 14 12:24:23 UTC 2024 - José Iván López González <jlopez@suse.com>
 
-- Make storage UI to work again when there is no device
+- Make storage UI work again when there are no devices
   (gh#openSUSE/agama#1203).
 
 -------------------------------------------------------------------
