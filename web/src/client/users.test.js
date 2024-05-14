@@ -169,7 +169,7 @@ describe("#setRootPassword", () => {
     const result = await client.setRootPassword("12345");
     expect(mockPatchFn).toHaveBeenCalledWith("/users/root", {
       password: "12345",
-      password_encrypted: false,
+      passwordEncrypted: false,
     });
     expect(result).toEqual(true);
   });
@@ -183,7 +183,7 @@ describe("#setRootPassword", () => {
       const result = await client.setRootPassword("12345");
       expect(mockPatchFn).toHaveBeenCalledWith("/users/root", {
         password: "12345",
-        password_encrypted: false,
+        passwordEncrypted: false,
       });
       expect(result).toEqual(false);
     });
@@ -199,7 +199,7 @@ describe("#removeRootPassword", () => {
     const result = await client.removeRootPassword();
     expect(mockPatchFn).toHaveBeenCalledWith("/users/root", {
       password: "",
-      password_encrypted: false,
+      passwordEncrypted: false,
     });
     expect(result).toEqual(true);
   });
@@ -213,7 +213,7 @@ describe("#removeRootPassword", () => {
       const result = await client.removeRootPassword();
       expect(mockPatchFn).toHaveBeenCalledWith("/users/root", {
         password: "",
-        password_encrypted: false,
+        passwordEncrypted: false,
       });
       expect(result).toEqual(false);
     });

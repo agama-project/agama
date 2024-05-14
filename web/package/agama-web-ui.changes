@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 14 11:17:45 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix DELETE and PATCH calls in the HTTPClient
+  (gh#openSUSE/agama#1204).
+
+-------------------------------------------------------------------
 Mon May 13 09:01:29 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Adapt the iSCSI UI to use the new HTTP API instead of D-Bus
