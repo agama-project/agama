@@ -145,7 +145,7 @@ class HTTPClient {
    * @return {Promise<Response>} Server response.
    */
   async delete(url) {
-    const response = await fetch(`${this.baseUrl}/${url}`, {
+    const response = await fetch(`${this.baseUrl}${url}`, {
       method: "DELETE",
     });
 
@@ -158,7 +158,7 @@ class HTTPClient {
    * @return {Promise<Response>} Server response.
    */
   async patch(url, data) {
-    const response = await fetch(`${this.baseUrl}/${url}`, {
+    const response = await fetch(`${this.baseUrl}${url}`, {
       method: "PATCH",
       body: JSON.stringify(data),
       headers: {
