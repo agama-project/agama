@@ -354,6 +354,7 @@ class DevicesManager {
     const response = await this.client.get(`/storage/devices/${this.rootPath}`);
     if (!response.ok) {
       console.warn("Failed to get storage devices: ", response);
+      return [];
     }
     const jsonDevices = await response.json();
     return jsonDevices.map(d => buildDevice(d, jsonDevices));
@@ -392,6 +393,7 @@ class ProposalManager {
     const response = await this.client.get("/storage/proposal/usable_devices");
     if (!response.ok) {
       console.warn("Failed to get usable devices: ", response);
+      return [];
     }
     const usable_devices = await response.json();
     return usable_devices.map(name => findDevice(systemDevices, name)).filter(d => d);
@@ -440,6 +442,7 @@ class ProposalManager {
     const response = await this.client.get("/storage/product/params");
     if (!response.ok) {
       console.warn("Failed to get product params: ", response);
+      return [];
     }
 
     return response.json().then(params => params.mountPoints);
@@ -454,6 +457,7 @@ class ProposalManager {
     const response = await this.client.get("/storage/product/params");
     if (!response.ok) {
       console.warn("Failed to get product params: ", response);
+      return [];
     }
 
     return response.json().then(params => params.encryptionMethods);
@@ -463,13 +467,14 @@ class ProposalManager {
    * Obtains the default volume for the given mount path
    *
    * @param {string} mountPath
-   * @returns {Promise<Volume>}
+   * @returns {Promise<Volume|undefined>}
    */
   async defaultVolume(mountPath) {
     const param = encodeURIComponent(mountPath);
     const response = await this.client.get(`/storage/product/volume_for?mount_path=${param}`);
     if (!response.ok) {
       console.warn("Failed to get product volume: ", response);
+      return undefined;
     }
 
     const systemDevices = await this.system.getDevices();
@@ -1295,7 +1300,7 @@ class ISCSIManager {
   /**
    * Gets the iSCSI initiator
    *
-   * @return {Promise<ISCSIInitiator>}
+   * @return {Promise<ISCSIInitiator|undefined>}
    *
    * @typedef {object} ISCSIInitiator
    * @property {string} name
@@ -1305,6 +1310,7 @@ class ISCSIManager {
     const response = await this.client.get("/storage/iscsi/initiator");
     if (!response.ok) {
       console.error("Failed to get the iSCSI initiator", response);
+      return undefined;
     }
 
     return response.json();
@@ -1338,6 +1344,7 @@ class ISCSIManager {
     const response = await this.client.get("/storage/iscsi/nodes");
     if (!response.ok) {
       console.error("Failed to get the list of iSCSI nodes", response);
+      return [];
     }
 
     return response.json();
@@ -1555,6 +1562,7 @@ class StorageBaseClient {
     const response = await this.client.get("/storage/devices/dirty");
     if (!response.ok) {
       console.warn("Failed to get storage devices dirty: ", response);
+      return false;
     }
     return response.json();
   }
