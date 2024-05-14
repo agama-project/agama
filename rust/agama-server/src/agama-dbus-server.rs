@@ -1,6 +1,6 @@
 use agama_server::{
     l10n::{self, helpers},
-    network, questions,
+    questions,
 };
 
 use agama_lib::connection_to;
@@ -41,8 +41,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     log::info!("Started questions interface");
     l10n::export_dbus_objects(&connection, &locale).await?;
     log::info!("Started locale interface");
-    network::export_dbus_objects(&connection).await?;
-    log::info!("Started network interface");
 
     connection
         .request_name(SERVICE_NAME)

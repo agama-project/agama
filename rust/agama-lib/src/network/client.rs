@@ -1,5 +1,4 @@
-use super::settings::{BondSettings, MatchSettings, NetworkConnection, WirelessSettings};
-use super::types::{Device, DeviceState, DeviceType, SSID};
+use super::{settings::NetworkConnection, types::Device};
 use crate::error::ServiceError;
 use reqwest::{Client, Response};
 use serde_json;

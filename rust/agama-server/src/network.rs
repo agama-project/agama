@@ -40,7 +40,6 @@
 
 mod action;
 mod adapter;
-pub mod dbus;
 pub mod error;
 pub mod model;
 mod nm;
@@ -49,17 +48,6 @@ pub mod web;
 
 pub use action::Action;
 pub use adapter::{Adapter, NetworkAdapterError};
-pub use dbus::NetworkService;
 pub use model::NetworkState;
 pub use nm::NetworkManagerAdapter;
 pub use system::NetworkSystem;
-use zbus::Connection;
-
-pub async fn export_dbus_objects(
-    connection: &Connection,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let adapter = NetworkManagerAdapter::from_system()
-        .await
-        .expect("Could not connect to NetworkManager to read the configuration.");
-    NetworkService::start(connection, adapter).await
-}

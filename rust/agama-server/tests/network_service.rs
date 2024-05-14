@@ -1,6 +1,5 @@
 pub mod common;
 
-use crate::common::DBusServer;
 use agama_lib::error::ServiceError;
 use agama_lib::network::settings::{BondSettings, NetworkConnection};
 use agama_lib::network::types::{DeviceType, SSID};
@@ -12,7 +11,6 @@ use agama_server::network::{
 };
 
 use async_trait::async_trait;
-use axum::body;
 use axum::http::header;
 use axum::{
     body::Body,
@@ -38,11 +36,9 @@ async fn build_state() -> NetworkState {
 }
 
 async fn build_service(state: NetworkState) -> Result<Router, ServiceError> {
-    let dbus = DBusServer::new().start().await?.connection();
-
     let adapter = NetworkTestAdapter(state);
     let (tx, _rx) = broadcast::channel(16);
-    Ok(network_service(dbus, adapter, tx).await?)
+    Ok(network_service(adapter, tx).await?)
 }
 
 #[derive(Default)]

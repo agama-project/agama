@@ -4,20 +4,17 @@ use super::{
     NetworkAdapterError,
 };
 use crate::network::{
-    dbus::Tree,
     model::{Connection, GeneralState},
     Action, Adapter, NetworkState,
 };
 use agama_lib::{error::ServiceError, network::types::DeviceType};
-use std::{error::Error, sync::Arc};
+use std::error::Error;
 use tokio::sync::{
     broadcast::{self, Receiver},
     mpsc::{self, error::SendError, UnboundedReceiver, UnboundedSender},
     oneshot::{self, error::RecvError},
-    Mutex,
 };
 use uuid::Uuid;
-use zbus::zvariant::OwnedObjectPath;
 
 #[derive(thiserror::Error, Debug)]
 pub enum NetworkSystemError {
@@ -47,10 +44,7 @@ pub enum NetworkSystemError {
 /// let adapter = NetworkManagerAdapter::from_system()
 ///     .await
 ///     .expect("Could not connect to NetworkManager.");
-/// let dbus = connection()
-///     .await
-///     .expect("Could not connect to Agama's D-Bus server.");
-/// let network = NetworkSystem::new(dbus, adapter);
+/// let network = NetworkSystem::new(adapter);
 ///
 /// // Start the networking service and get the client for communication.
 /// let client = network.start()
@@ -63,7 +57,6 @@ pub enum NetworkSystemError {
 /// # });
 /// ```
 pub struct NetworkSystem<T: Adapter + Send> {
-    connection: zbus::Connection,
     adapter: T,
 }
 
@@ -73,13 +66,9 @@ impl<T: Adapter + Send + Sync + 'static> NetworkSystem<T> {
     /// This function does not start the system. To get it running, you must call
     /// the [start](Self::start) method.
     ///
-    /// * `connection`: D-Bus connection to publish the network tree.
     /// * `adapter`: networking configuration adapter.
-    pub fn new(connection: zbus::Connection, adapter: T) -> Self {
-        Self {
-            connection,
-            adapter,
-        }
+    pub fn new(adapter: T) -> Self {
+        Self { adapter }
     }
 
     /// Starts the network configuration service and returns a client for communication purposes.
@@ -87,7 +76,7 @@ impl<T: Adapter + Send + Sync + 'static> NetworkSystem<T> {
     /// This function starts the server (using [NetworkSystemServer]) on a separate
     /// task. All the communication is performed through the returned [NetworkSystemClient].
     pub async fn start(self) -> Result<NetworkSystemClient, NetworkSystemError> {
-        let mut state = self.adapter.read(StateConfig::default()).await?;
+        let state = self.adapter.read(StateConfig::default()).await?;
         let (actions_tx, actions_rx) = mpsc::unbounded_channel();
         let (updates_tx, _updates_rx) = broadcast::channel(1024);
 
@@ -98,10 +87,6 @@ impl<T: Adapter + Send + Sync + 'static> NetworkSystem<T> {
             });
         }
 
-        let mut tree = Tree::new(self.connection, actions_tx.clone());
-        tree.set_connections(&mut state.connections).await?;
-        tree.set_devices(&state.devices).await?;
-
         let updates_tx_clone = updates_tx.clone();
         tokio::spawn(async move {
             let mut server = NetworkSystemServer {
@@ -109,7 +94,6 @@ impl<T: Adapter + Send + Sync + 'static> NetworkSystem<T> {
                 input: actions_rx,
                 output: updates_tx_clone,
                 adapter: self.adapter,
-                tree: Arc::new(Mutex::new(tree)),
             };
 
             server.listen().await;
@@ -238,7 +222,6 @@ struct NetworkSystemServer<T: Adapter> {
     input: UnboundedReceiver<Action>,
     output: broadcast::Sender<NetworkChange>,
     adapter: T,
-    tree: Arc<Mutex<Tree>>,
 }
 
 impl<T: Adapter> NetworkSystemServer<T> {
@@ -310,15 +293,7 @@ impl<T: Adapter> NetworkSystemServer<T> {
 
                 tx.send(connections).unwrap();
             }
-            Action::GetConnectionPath(uuid, tx) => {
-                let tree = self.tree.lock().await;
-                let path = tree.connection_path(uuid);
-                tx.send(path).unwrap();
-            }
-            Action::GetConnectionPathById(id, tx) => {
-                let path = self.get_connection_path_by_id_action(&id).await;
-                tx.send(path).unwrap();
-            }
+
             Action::GetController(uuid, tx) => {
                 let result = self.get_controller_action(uuid);
                 tx.send(result).unwrap()
@@ -339,21 +314,8 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 self.state.remove_device(&name)?;
                 return Ok(Some(NetworkChange::DeviceRemoved(name)));
             }
-            Action::GetDevicePath(name, tx) => {
-                let tree = self.tree.lock().await;
-                let path = tree.device_path(name.as_str());
-                tx.send(path).unwrap();
-            }
             Action::GetDevices(tx) => {
                 tx.send(self.state.devices.clone()).unwrap();
-            }
-            Action::GetDevicesPaths(tx) => {
-                let tree = self.tree.lock().await;
-                tx.send(tree.devices_paths()).unwrap();
-            }
-            Action::GetConnectionsPaths(tx) => {
-                let tree = self.tree.lock().await;
-                tx.send(tree.connections_paths()).unwrap();
             }
             Action::SetPorts(uuid, ports, rx) => {
                 let result = self.set_ports_action(uuid, *ports);
@@ -373,25 +335,7 @@ impl<T: Adapter> NetworkSystemServer<T> {
             }
             Action::Apply(tx) => {
                 let result = self.write().await;
-                let failed = result.is_err();
                 tx.send(result).unwrap();
-                if failed {
-                    return Ok(None);
-                }
-
-                // TODO: re-creating the tree is kind of brute-force and it sends signals about
-                // adding/removing interfaces. We should add/update/delete objects as needed.
-                // NOTE updating the tree at the same time than dispatching actions can cause a
-                // deadlock. We might consider using message passing too but at this point
-                // is enough to use a separate task.
-                let mut connections = self.state.connections.clone();
-                let tree = Arc::clone(&self.tree);
-                tokio::spawn(async move {
-                    let mut tree = tree.lock().await;
-                    if let Err(e) = tree.set_connections(&mut connections).await {
-                        log::error!("Could not update the D-Bus tree: {}", e);
-                    }
-                });
             }
         }
 
@@ -402,16 +346,11 @@ impl<T: Adapter> NetworkSystemServer<T> {
         &mut self,
         name: String,
         ty: DeviceType,
-    ) -> Result<OwnedObjectPath, NetworkStateError> {
+    ) -> Result<(), NetworkStateError> {
         let conn = Connection::new(name, ty);
         // TODO: handle tree handling problems
         self.state.add_connection(conn.clone())?;
-        let mut tree = self.tree.lock().await;
-        let path = tree
-            .add_connection(&conn)
-            .await
-            .expect("Could not update the D-Bus tree");
-        Ok(path)
+        Ok(())
     }
 
     fn set_ports_action(
@@ -444,12 +383,6 @@ impl<T: Adapter> NetworkSystemServer<T> {
             .collect::<Vec<_>>();
 
         Ok((conn, controlled))
-    }
-
-    async fn get_connection_path_by_id_action(&mut self, id: &str) -> Option<OwnedObjectPath> {
-        let conn = self.state.get_connection(id)?;
-        let tree = self.tree.lock().await;
-        tree.connection_path(conn.uuid)
     }
 
     /// Writes the network configuration.
