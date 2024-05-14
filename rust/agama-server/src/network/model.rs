@@ -38,7 +38,7 @@ impl Default for StateConfig {
     }
 }
 
-#[derive(Default, Clone, Debug, utoipa::ToSchema)]
+#[derive(Default, Clone, Debug)]
 pub struct NetworkState {
     pub general_state: GeneralState,
     pub access_points: Vec<AccessPoint>,

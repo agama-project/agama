@@ -223,10 +223,15 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
 /// Returns the list of available products.
 ///
 /// * `state`: service state.
-#[utoipa::path(get, path = "/software/products", responses(
-    (status = 200, description = "List of known products", body = Vec<Product>),
-    (status = 400, description = "The D-Bus service could not perform the action")
-))]
+#[utoipa::path(
+    get,
+    path = "/products",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "List of known products", body = Vec<Product>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn products(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Product>>, Error> {
     let products = state.product.products().await?;
     Ok(Json(products))
@@ -248,10 +253,15 @@ pub struct RegistrationInfo {
 /// returns registration info
 ///
 /// * `state`: service state.
-#[utoipa::path(get, path = "/software/registration", responses(
-    (status = 200, description = "registration configuration", body = RegistrationInfo),
-    (status = 400, description = "The D-Bus service could not perform the action")
-))]
+#[utoipa::path(
+    get,
+    path = "/registration",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "registration configuration", body = RegistrationInfo),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn get_registration(
     State(state): State<SoftwareState<'_>>,
 ) -> Result<Json<RegistrationInfo>, Error> {
@@ -282,11 +292,16 @@ pub struct FailureDetails {
 /// Register product
 ///
 /// * `state`: service state.
-#[utoipa::path(post, path = "/software/registration", responses(
-    (status = 204, description = "registration successfull"),
-    (status = 422, description = "Registration failed. Details are in body", body=FailureDetails),
-    (status = 400, description = "The D-Bus service could not perform the action")
-))]
+#[utoipa::path(
+    post,
+    path = "/registration",
+    context_path = "/api/software",
+    responses(
+        (status = 204, description = "registration successfull"),
+        (status = 422, description = "Registration failed. Details are in body", body=FailureDetails),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn register(
     State(state): State<SoftwareState<'_>>,
     Json(config): Json<RegistrationParams>,
@@ -306,11 +321,16 @@ async fn register(
 /// Deregister product
 ///
 /// * `state`: service state.
-#[utoipa::path(delete, path = "/software/registration", responses(
-    (status = 200, description = "deregistration successfull"),
-    (status = 422, description = "De-registration failed. Details are in body", body=FailureDetails),
-    (status = 400, description = "The D-Bus service could not perform the action")
-))]
+#[utoipa::path(
+    delete,
+    path = "/registration",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "deregistration successfull"),
+        (status = 422, description = "De-registration failed. Details are in body", body=FailureDetails),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn deregister(State(state): State<SoftwareState<'_>>) -> Result<impl IntoResponse, Error> {
     let (id, message) = state.product.deregister().await?;
     let details = FailureDetails { id, message };
@@ -327,10 +347,15 @@ async fn deregister(State(state): State<SoftwareState<'_>>) -> Result<impl IntoR
 /// Returns the list of software patterns.
 ///
 /// * `state`: service state.
-#[utoipa::path(get, path = "/software/patterns", responses(
-    (status = 200, description = "List of known software patterns", body = Vec<Pattern>),
-    (status = 400, description = "The D-Bus service could not perform the action")
-))]
+#[utoipa::path(
+    get,
+    path = "patterns",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "List of known software patterns", body = Vec<Pattern>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn patterns(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Pattern>>, Error> {
     let patterns = state.software.patterns(true).await?;
     Ok(Json(patterns))
@@ -340,10 +365,15 @@ async fn patterns(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Pat
 ///
 /// * `state`: service state.
 /// * `config`: software configuration.
-#[utoipa::path(put, path = "/software/config", responses(
-    (status = 200, description = "Set the software configuration"),
-    (status = 400, description = "The D-Bus service could not perform the action")
-))]
+#[utoipa::path(put,
+    path = "/software/config",
+    context_path = "/api/software",
+    operation_id = "set_software_config",
+    responses(
+        (status = 200, description = "Set the software configuration"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn set_config(
     State(state): State<SoftwareState<'_>>,
     Json(config): Json<SoftwareConfig>,
@@ -362,10 +392,16 @@ async fn set_config(
 /// Returns the software configuration.
 ///
 /// * `state` : service state.
-#[utoipa::path(get, path = "/software/config", responses(
-    (status = 200, description = "Software configuration", body = SoftwareConfig),
-    (status = 400, description = "The D-Bus service could not perform the action")
-))]
+#[utoipa::path(
+    get,
+    path = "/software/config",
+    context_path = "/api/software",
+    operation_id = "get_software_config",
+    responses(
+        (status = 200, description = "Software configuration", body = SoftwareConfig),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<SoftwareConfig>, Error> {
     let product = state.product.product().await?;
     let product = if product.is_empty() {
@@ -402,9 +438,13 @@ pub struct SoftwareProposal {
 ///
 /// At this point, only the required space is reported.
 #[utoipa::path(
-    get, path = "/software/proposal", responses(
+    get,
+    path = "/software/proposal",
+    context_path = "/api/software",
+    responses(
         (status = 200, description = "Software proposal", body = SoftwareProposal)
-))]
+    )
+)]
 async fn proposal(State(state): State<SoftwareState<'_>>) -> Result<Json<SoftwareProposal>, Error> {
     let size = state.software.used_disk_space().await?;
     let patterns = state.software.selected_patterns().await?;
@@ -416,11 +456,15 @@ async fn proposal(State(state): State<SoftwareState<'_>>) -> Result<Json<Softwar
 ///
 /// At this point, only the required space is reported.
 #[utoipa::path(
-    post, path = "/software/probe", responses(
+    post,
+    path = "/software/probe",
+    context_path = "/api/software",
+    responses(
         (status = 200, description = "Read repositories data"),
         (status = 400, description = "The D-Bus service could not perform the action
 ")
-))]
+    )
+)]
 async fn probe(State(state): State<SoftwareState<'_>>) -> Result<Json<()>, Error> {
     state.software.probe().await?;
     Ok(Json(()))

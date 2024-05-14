@@ -109,9 +109,14 @@ pub async fn network_service<T: Adapter + Send + Sync + 'static>(
         .with_state(state))
 }
 
-#[utoipa::path(get, path = "/network/state", responses(
-  (status = 200, description = "Get general network config", body = GenereralState)
-))]
+#[utoipa::path(
+    get,
+    path = "/state",
+    context_path = "/api/network",
+    responses(
+      (status = 200, description = "Get general network config", body = GenereralState)
+    )
+)]
 async fn general_state(
     State(state): State<NetworkServiceState>,
 ) -> Result<Json<GeneralState>, NetworkError> {
@@ -119,9 +124,14 @@ async fn general_state(
     Ok(Json(general_state))
 }
 
-#[utoipa::path(put, path = "/network/state", responses(
-  (status = 200, description = "Update general network config", body = GenereralState)
-))]
+#[utoipa::path(
+    put,
+    path = "/state",
+    context_path = "/api/network",
+    responses(
+      (status = 200, description = "Update general network config", body = GenereralState)
+    )
+)]
 async fn update_general_state(
     State(state): State<NetworkServiceState>,
     Json(value): Json<GeneralState>,
@@ -131,9 +141,14 @@ async fn update_general_state(
     Ok(Json(state))
 }
 
-#[utoipa::path(get, path = "/network/wifi", responses(
-  (status = 200, description = "List of wireless networks", body = Vec<AccessPoint>)
-))]
+#[utoipa::path(
+    get,
+    path = "/wifi",
+    context_path = "/api/network",
+    responses(
+      (status = 200, description = "List of wireless networks", body = Vec<AccessPoint>)
+    )
+)]
 async fn wifi_networks(
     State(state): State<NetworkServiceState>,
 ) -> Result<Json<Vec<AccessPoint>>, NetworkError> {
@@ -150,18 +165,69 @@ async fn wifi_networks(
     Ok(Json(networks))
 }
 
-#[utoipa::path(get, path = "/network/devices", responses(
-  (status = 200, description = "List of devices", body = Vec<Device>)
-))]
+#[utoipa::path(
+    get,
+    path = "/devices",
+    context_path = "/api/network",
+    responses(
+      (status = 200, description = "List of devices", body = Vec<Device>)
+    )
+)]
 async fn devices(
     State(state): State<NetworkServiceState>,
 ) -> Result<Json<Vec<Device>>, NetworkError> {
     Ok(Json(state.network.get_devices().await?))
 }
 
-#[utoipa::path(get, path = "/network/connections/:id", responses(
-  (status = 200, description = "Get connection given by its ID", body = NetworkConnection)
-))]
+#[utoipa::path(
+    get,
+    path = "/connections",
+    context_path = "/api/network",
+    responses(
+      (status = 200, description = "List of known connections", body = Vec<NetworkConnection>)
+    )
+)]
+async fn connections(
+    State(state): State<NetworkServiceState>,
+) -> Result<Json<Vec<NetworkConnection>>, NetworkError> {
+    let connections = state.network.get_connections().await?;
+    let connections = connections
+        .iter()
+        .map(|c| NetworkConnection::try_from(c.clone()).unwrap())
+        .collect();
+
+    Ok(Json(connections))
+}
+
+#[utoipa::path(
+    post,
+    path = "/connections",
+    context_path = "/api/network",
+    responses(
+      (status = 200, description = "Add a new connection", body = Connection)
+    )
+)]
+async fn add_connection(
+    State(state): State<NetworkServiceState>,
+    Json(conn): Json<NetworkConnection>,
+) -> Result<Json<Connection>, NetworkError> {
+    let conn = Connection::try_from(conn)?;
+    let id = conn.id.clone();
+
+    state.network.add_connection(conn).await?;
+    match state.network.get_connection(&id).await? {
+        None => Err(NetworkError::CannotAddConnection(id.clone())),
+        Some(conn) => Ok(Json(conn)),
+    }
+}
+
+#[utoipa::path(
+    get,
+    path = "/network/connections/:id",
+    responses(
+      (status = 200, description = "Get connection given by its ID", body = NetworkConnection)
+  )
+)]
 async fn connection(
     State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
@@ -177,41 +243,14 @@ async fn connection(
     Ok(Json(conn))
 }
 
-#[utoipa::path(get, path = "/network/connections", responses(
-  (status = 200, description = "List of known connections", body = Vec<NetworkConnection>)
-))]
-async fn connections(
-    State(state): State<NetworkServiceState>,
-) -> Result<Json<Vec<NetworkConnection>>, NetworkError> {
-    let connections = state.network.get_connections().await?;
-    let connections = connections
-        .iter()
-        .map(|c| NetworkConnection::try_from(c.clone()).unwrap())
-        .collect();
-
-    Ok(Json(connections))
-}
-
-#[utoipa::path(post, path = "/network/connections", responses(
-  (status = 200, description = "Add a new connection", body = Connection)
-))]
-async fn add_connection(
-    State(state): State<NetworkServiceState>,
-    Json(conn): Json<NetworkConnection>,
-) -> Result<Json<Connection>, NetworkError> {
-    let conn = Connection::try_from(conn)?;
-    let id = conn.id.clone();
-
-    state.network.add_connection(conn).await?;
-    match state.network.get_connection(&id).await? {
-        None => Err(NetworkError::CannotAddConnection(id.clone())),
-        Some(conn) => Ok(Json(conn)),
-    }
-}
-
-#[utoipa::path(delete, path = "/network/connections/:id", responses(
-  (status = 200, description = "Delete connection", body = Connection)
-))]
+#[utoipa::path(
+    delete,
+    path = "/connections/:id",
+    context_path = "/api/network",
+    responses(
+      (status = 200, description = "Delete connection", body = Connection)
+    )
+)]
 async fn delete_connection(
     State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
@@ -223,9 +262,14 @@ async fn delete_connection(
     }
 }
 
-#[utoipa::path(put, path = "/network/connections/:id", responses(
-  (status = 204, description = "Update connection", body = Connection)
-))]
+#[utoipa::path(
+    put,
+    path = "/connections/:id",
+    context_path = "/api/network",
+    responses(
+      (status = 204, description = "Update connection", body = Connection)
+    )
+)]
 async fn update_connection(
     State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
@@ -248,9 +292,14 @@ async fn update_connection(
     Ok(StatusCode::NO_CONTENT)
 }
 
-#[utoipa::path(get, path = "/network/connections/:id/connect", responses(
-  (status = 204, description = "Connect to the given connection", body = String)
-))]
+#[utoipa::path(
+    get,
+    path = "/connections/:id/connect",
+    context_path = "/api/network",
+    responses(
+      (status = 204, description = "Connect to the given connection", body = String)
+    )
+)]
 async fn connect(
     State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
@@ -269,9 +318,14 @@ async fn connect(
     Ok(StatusCode::NO_CONTENT)
 }
 
-#[utoipa::path(get, path = "/network/connections/:id/disconnect", responses(
-  (status = 204, description = "Connect to the given connection", body = String)
-))]
+#[utoipa::path(
+    get,
+    path = "/connections/:id/disconnect",
+    context_path = "/api/network",
+    responses(
+      (status = 204, description = "Connect to the given connection", body = String)
+    )
+)]
 async fn disconnect(
     State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
@@ -290,9 +344,14 @@ async fn disconnect(
     Ok(StatusCode::NO_CONTENT)
 }
 
-#[utoipa::path(put, path = "/network/system/apply", responses(
-  (status = 204, description = "Apply configuration")
-))]
+#[utoipa::path(
+    put,
+    path = "/system/apply",
+    context_path = "/api/network",
+    responses(
+      (status = 204, description = "Apply configuration")
+    )
+)]
 async fn apply(
     State(state): State<NetworkServiceState>,
 ) -> Result<impl IntoResponse, NetworkError> {

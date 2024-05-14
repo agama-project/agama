@@ -74,7 +74,7 @@ pub struct NetworkDevice {
     pub state: DeviceState,
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct NetworkConnection {
     pub id: String,
     #[serde(skip_serializing_if = "Option::is_none")]

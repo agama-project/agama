@@ -76,18 +76,28 @@ pub struct LocaleConfig {
     ui_keymap: Option<String>,
 }
 
-#[utoipa::path(get, path = "/l10n/timezones", responses(
-    (status = 200, description = "List of known timezones")
-))]
+#[utoipa::path(
+    get,
+    path = "/timezones",
+    context_path = "/api/l10n",
+    responses(
+      (status = 200, description = "List of known timezones", body = Vec<TimezoneEntry>)
+  )
+)]
 async fn timezones(State(state): State<LocaleState<'_>>) -> Json<Vec<TimezoneEntry>> {
     let data = state.locale.read().await;
     let timezones = data.timezones_db.entries().to_vec();
     Json(timezones)
 }
 
-#[utoipa::path(get, path = "/l10n/keymaps", responses(
-    (status = 200, description = "List of known keymaps", body = Vec<Keymap>)
-))]
+#[utoipa::path(
+    get,
+    path = "/keymaps",
+    context_path = "/api/l10n",
+    responses(
+      (status = 200, description = "List of known keymaps", body = Vec<Keymap>)
+    )
+)]
 async fn keymaps(State(state): State<LocaleState<'_>>) -> Json<Vec<Keymap>> {
     let data = state.locale.read().await;
     let keymaps = data.keymaps_db.entries().to_vec();
@@ -96,9 +106,15 @@ async fn keymaps(State(state): State<LocaleState<'_>>) -> Json<Vec<Keymap>> {
 
 // TODO: update all or nothing
 // TODO: send only the attributes that have changed
-#[utoipa::path(patch, path = "/l10n/config", responses(
-    (status = 204, description = "Set the locale configuration", body = LocaleConfig)
-))]
+#[utoipa::path(
+    patch,
+    path = "/config",
+    context_path = "/api/l10n",
+    operation_id = "set_l10n_config",
+    responses(
+      (status = 204, description = "Set the locale configuration", body = LocaleConfig)
+    )
+)]
 async fn set_config(
     State(state): State<LocaleState<'_>>,
     Json(value): Json<LocaleConfig>,
@@ -148,9 +164,15 @@ async fn set_config(
     Ok(StatusCode::NO_CONTENT)
 }
 
-#[utoipa::path(get, path = "/l10n/config", responses(
-    (status = 200, description = "Localization configuration", body = LocaleConfig)
-))]
+#[utoipa::path(
+    get,
+    path = "/config",
+    context_path = "/api/l10n",
+    operation_id = "get_l10n_config",
+    responses(
+        (status = 200, description = "Localization configuration", body = LocaleConfig)
+    )
+)]
 async fn get_config(State(state): State<LocaleState<'_>>) -> Json<LocaleConfig> {
     let data = state.locale.read().await;
     Json(LocaleConfig {

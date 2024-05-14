@@ -96,36 +96,56 @@ pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
 }
 
 /// Starts the probing process.
-#[utoipa::path(get, path = "/api/manager/probe", responses(
-  (status = 200, description = "The probing process was started.")
-))]
+#[utoipa::path(
+    get,
+    path = "/probe",
+    context_path = "/api/manager",
+    responses(
+      (status = 200, description = "The probing process was started.")
+    )
+)]
 async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
     state.manager.probe().await?;
     Ok(())
 }
 
 /// Starts the probing process.
-#[utoipa::path(get, path = "/api/manager/install", responses(
-  (status = 200, description = "The installation process was started.")
-))]
+#[utoipa::path(
+    get,
+    path = "/install",
+    context_path = "/api/manager",
+    responses(
+      (status = 200, description = "The installation process was started.")
+    )
+)]
 async fn install_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
     state.manager.install().await?;
     Ok(())
 }
 
 /// Executes the post installation tasks (e.g., rebooting the system).
-#[utoipa::path(get, path = "/api/manager/install", responses(
-  (status = 200, description = "The installation tasks are executed.")
-))]
+#[utoipa::path(
+    get,
+    path = "/install",
+    context_path = "/api/manager",
+    responses(
+      (status = 200, description = "The installation tasks are executed.")
+    )
+)]
 async fn finish_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
     state.manager.finish().await?;
     Ok(())
 }
 
 /// Returns the manager status.
-#[utoipa::path(get, path = "/api/manager/installer", responses(
-  (status = 200, description = "Installation status.", body = ManagerStatus)
-))]
+#[utoipa::path(
+    get,
+    path = "/installer",
+    context_path = "/api/manager",
+    responses(
+      (status = 200, description = "Installation status.", body = InstallerStatus)
+    )
+)]
 async fn installer_status(
     State(state): State<ManagerState<'_>>,
 ) -> Result<Json<InstallerStatus>, Error> {
