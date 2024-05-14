@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 14 10:48:42 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Dropped the network D-Bus service as it is not needed anymore
+  (gh#openSUSE/agama#1199).
+
+-------------------------------------------------------------------
 Mon May 13 09:01:21 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Extend the storage HTTP API to support handling the iSCSI
