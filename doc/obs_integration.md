@@ -162,7 +162,7 @@ The GitHub Actions needs some configuration to allow the automatic submission.
    ("home:$OBS_USER:branches:systemsmanagement:Agama:Staging"). If the variable
    is not created or is empty the autosubmission is disabled.
 
-3. Enable the GitHub Actions in the "Actions" tab
+3. Enable the GitHub Actions in the "Actions" tab.
 
 #### Triggering the Rebuild
 
