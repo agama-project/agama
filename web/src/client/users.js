@@ -115,7 +115,7 @@ class UsersBaseClient {
    * @return {Promise<boolean>} whether the operation was successful or not
    */
   async setRootPassword(password) {
-    const response = await this.client.patch("/users/root", { password, password_encrypted: false });
+    const response = await this.client.patch("/users/root", { password, passwordEncrypted: false });
     return response.ok;
   }
 
