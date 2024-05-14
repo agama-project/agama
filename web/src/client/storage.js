@@ -26,12 +26,11 @@ import { compact, hex, uniq } from "~/utils";
 import { WithIssues, WithProgress, WithStatus } from "./mixins";
 import { HTTPClient } from "./http";
 
+const SERVICE_NAME = "org.opensuse.Agama.Storage1";
 const STORAGE_OBJECT = "/org/opensuse/Agama/Storage1";
 const STORAGE_JOBS_NAMESPACE = "/org/opensuse/Agama/Storage1/jobs";
 const STORAGE_JOB_IFACE = "org.opensuse.Agama.Storage1.Job";
-const ISCSI_INITIATOR_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Initiator";
 const ISCSI_NODES_NAMESPACE = "/storage/iscsi/nodes";
-const ISCSI_NODE_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Node";
 const DASD_MANAGER_IFACE = "org.opensuse.Agama.Storage1.DASD.Manager";
 const DASD_DEVICES_NAMESPACE = "/org/opensuse/Agama/Storage1/dasds";
 const DASD_DEVICE_IFACE = "org.opensuse.Agama.Storage1.DASD.Device";
@@ -1589,8 +1588,8 @@ class StorageBaseClient {
  */
 class StorageClient extends WithIssues(
   WithProgress(
-    WithStatus(StorageBaseClient, "/storage/status", STORAGE_OBJECT), "/storage/progress", STORAGE_OBJECT
-  ), "/storage/issues", STORAGE_OBJECT
+    WithStatus(StorageBaseClient, "/storage/status", SERVICE_NAME), "/storage/progress", SERVICE_NAME
+  ), "/storage/issues", SERVICE_NAME
 ) { }
 
 export { StorageClient, EncryptionMethods };
