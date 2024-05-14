@@ -388,10 +388,10 @@ class ProposalManager {
    * @returns {Promise<StorageDevice[]>}
    */
   async getAvailableDevices() {
-    const findDevice = (devices, name) => {
-      const device = devices.find(d => d.name === name);
+    const findDevice = (devices, sid) => {
+      const device = devices.find(d => d.sid === sid);
 
-      if (device === undefined) console.warn("Device not found: ", name);
+      if (device === undefined) console.warn("Device not found: ", sid);
 
       return device;
     };
@@ -404,7 +404,7 @@ class ProposalManager {
       return [];
     }
     const usable_devices = await response.json();
-    return usable_devices.map(name => findDevice(systemDevices, name)).filter(d => d);
+    return usable_devices.map(sid => findDevice(systemDevices, sid)).filter(d => d);
   }
 
   /**

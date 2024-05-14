@@ -555,7 +555,7 @@ const contexts = {
       actions: [{ device: 2, text: "Mount /dev/sdb1 as root", subvol: false, delete: false }]
     };
   },
-  withAvailableDevices: () => ["/dev/sda", "/dev/sdb"],
+  withAvailableDevices: () => [59, 62],
   withIssues: () => [
     { description: "Issue 1", details: "", source: 1, severity: 1 },
     { description: "Issue 2", details: "", source: 1, severity: 0 },
