@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 14 12:39:49 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- If present, read the locales list from the /etc/agama.d/locales
+  file (gh#openSUSE/agama#1205).
+
+-------------------------------------------------------------------
 Tue May 14 10:48:42 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
 - Dropped the network D-Bus service as it is not needed anymore

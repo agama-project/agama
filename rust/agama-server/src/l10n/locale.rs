@@ -5,7 +5,7 @@ use agama_locale_data::{InvalidLocaleCode, LocaleId};
 use anyhow::Context;
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
-use std::process::Command;
+use std::{fs, process::Command};
 
 /// Represents a locale, including the localized language and territory.
 #[serde_as]
@@ -37,15 +37,12 @@ impl LocalesDatabase {
 
     /// Loads the list of locales.
     ///
+    /// It checks for a file in /etc/agama.d/locales containing the list of supported locales (one per line).
+    /// It it does not exists, calls `localectl list-locales`.
+    ///
     /// * `ui_language`: language to translate the descriptions (e.g., "en").
     pub fn read(&mut self, ui_language: &str) -> Result<(), Error> {
-        let result = Command::new("localectl")
-            .args(["list-locales"])
-            .output()
-            .context("Failed to get the list of locales")?;
-        let output =
-            String::from_utf8(result.stdout).context("Invalid UTF-8 sequence from list-locales")?;
-        self.known_locales = output
+        self.known_locales = Self::get_locales_list()?
             .lines()
             .filter_map(|line| TryInto::<LocaleId>::try_into(line).ok())
             .collect();
@@ -109,6 +106,20 @@ impl LocalesDatabase {
         }
 
         Ok(result)
+    }
+
+    fn get_locales_list() -> Result<String, Error> {
+        const LOCALES_LIST_PATH: &str = "/etc/agama.d/locales";
+
+        if let Ok(locales) = fs::read_to_string(LOCALES_LIST_PATH) {
+            return Ok(locales);
+        }
+
+        let result = Command::new("localectl")
+            .args(["list-locales"])
+            .output()
+            .context("Failed to get the list of locales")?;
+        Ok(String::from_utf8(result.stdout).context("Invalid UTF-8 sequence from list-locales")?)
     }
 }
 
