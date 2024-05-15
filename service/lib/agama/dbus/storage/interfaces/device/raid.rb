@@ -44,17 +44,19 @@ module Agama
             RAID_INTERFACE = "org.opensuse.Agama.Storage1.RAID"
             private_constant :RAID_INTERFACE
 
-            # Paths of the D-Bus objects representing the devices used by the DM RAID.
+            # Name of the devices used by the DM RAID.
+            #
+            # @note: The devices used by a DM RAID are not exported in D-Bus yet.
             #
             # @return [Array<String>]
             def raid_devices
-              storage_device.parents.map { |p| tree.path_for(p) }
+              storage_device.parents.map(&:name)
             end
 
             def self.included(base)
               base.class_eval do
                 dbus_interface RAID_INTERFACE do
-                  dbus_reader :raid_devices, "ao", dbus_name: "Devices"
+                  dbus_reader :raid_devices, "as", dbus_name: "Devices"
                 end
               end
             end

@@ -28,12 +28,9 @@ shared_examples "RAID interface" do
     let(:device) { devicegraph.dm_raids.first }
 
     describe "#raid_devices" do
-      it "returns the D-Bus path of the RAID devices" do
-        sdb = devicegraph.find_by_name("/dev/sdb")
-        sdc = devicegraph.find_by_name("/dev/sdc")
-
+      it "returns the name of the RAID devices" do
         expect(subject.raid_devices)
-          .to contain_exactly(tree.path_for(sdb), tree.path_for(sdc))
+          .to contain_exactly("/dev/sdb", "/dev/sdc")
       end
     end
   end
