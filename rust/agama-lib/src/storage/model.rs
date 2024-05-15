@@ -476,6 +476,7 @@ impl TryFrom<HashMap<String, OwnedValue>> for Volume {
 }
 
 /// Information about system device created by composition to reflect different devices on system
+// FIXME Device schema is not generated because it collides with the network Device.
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Device {
