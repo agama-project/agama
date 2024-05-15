@@ -44,17 +44,19 @@ module Agama
             MULTIPATH_INTERFACE = "org.opensuse.Agama.Storage1.Multipath"
             private_constant :MULTIPATH_INTERFACE
 
-            # Paths of the D-Bus objects representing the multipath wires.
+            # Name of the multipath wires.
+            #
+            # @note: The multipath wires are not exported in D-Bus yet.
             #
             # @return [Array<String>]
             def multipath_wires
-              storage_device.parents.map { |p| tree.path_for(p) }
+              storage_device.parents.map(&:name)
             end
 
             def self.included(base)
               base.class_eval do
                 dbus_interface MULTIPATH_INTERFACE do
-                  dbus_reader :multipath_wires, "ao", dbus_name: "Wires"
+                  dbus_reader :multipath_wires, "as", dbus_name: "Wires"
                 end
               end
             end

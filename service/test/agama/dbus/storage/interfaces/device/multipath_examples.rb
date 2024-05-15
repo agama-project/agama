@@ -28,12 +28,9 @@ shared_examples "Multipath interface" do
     let(:device) { devicegraph.multipaths.first }
 
     describe "#multipath_wires" do
-      it "returns the D-Bus path of the Multipath wires" do
-        sda = devicegraph.find_by_name("/dev/sda")
-        sdb = devicegraph.find_by_name("/dev/sdb")
-
+      it "returns the name of the Multipath wires" do
         expect(subject.multipath_wires)
-          .to contain_exactly(tree.path_for(sda), tree.path_for(sdb))
+          .to contain_exactly("/dev/sda", "/dev/sdb")
       end
     end
   end
