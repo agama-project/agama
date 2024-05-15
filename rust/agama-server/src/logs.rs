@@ -12,7 +12,12 @@ pub fn start_logging() -> anyhow::Result<()> {
         let journald = tracing_journald::layer().context("could not connect to journald")?;
         tracing_subscriber::registry().with(journald).init();
     } else {
-        tracing_subscriber::fmt::init();
+        let subscriber = tracing_subscriber::fmt()
+            .with_file(true)
+            .with_line_number(true)
+            .compact()
+            .finish();
+        tracing::subscriber::set_global_default(subscriber)?;
     }
     Ok(())
 }
