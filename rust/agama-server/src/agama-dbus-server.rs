@@ -1,6 +1,6 @@
 use agama_server::{
     l10n::{self, helpers},
-    logs::start_logging,
+    logs::init_logging,
     questions,
 };
 
@@ -14,7 +14,7 @@ const SERVICE_NAME: &str = "org.opensuse.Agama1";
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let locale = helpers::init_locale()?;
-    start_logging().context("Could not initialize the logger")?;
+    init_logging().context("Could not initialize the logger")?;
 
     let connection = connection_to(ADDRESS)
         .await

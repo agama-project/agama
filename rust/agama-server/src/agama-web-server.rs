@@ -10,7 +10,7 @@ use std::{
 use agama_lib::connection_to;
 use agama_server::{
     l10n::helpers,
-    logs::start_logging,
+    logs::init_logging,
     web::{self, generate_token, run_monitor},
 };
 use anyhow::Context;
@@ -292,7 +292,7 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
 /// Start serving the API.
 /// `options`: command-line arguments.
 async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
-    start_logging().context("Could not initialize the logger")?;
+    init_logging().context("Could not initialize the logger")?;
 
     let (tx, _) = channel(16);
     run_monitor(tx.clone()).await?;
