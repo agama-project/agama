@@ -23,7 +23,6 @@ import React, { useEffect, useReducer } from "react";
 
 import { _ } from "~/i18n";
 import { If } from "~/components/core";
-import { DASDFormatProgress, DASDTable } from "~/components/storage";
 import DASDFormatProgress from "~/components/storage/DASDFormatProgress";
 import DASDTable from "~/components/storage/DASDTable";
 import { useCancellablePromise } from "~/utils";
