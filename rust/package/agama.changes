@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 15 14:08:26 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not crash if the /etc/agama.d/locales file does not contain
+  any valid locale (gh#openSUSE/agama#1213).
+
+-------------------------------------------------------------------
 Tue May 14 12:39:49 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - If present, read the locales list from the /etc/agama.d/locales

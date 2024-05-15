@@ -42,10 +42,7 @@ impl LocalesDatabase {
     ///
     /// * `ui_language`: language to translate the descriptions (e.g., "en").
     pub fn read(&mut self, ui_language: &str) -> Result<(), Error> {
-        self.known_locales = Self::get_locales_list()?
-            .lines()
-            .filter_map(|line| TryInto::<LocaleId>::try_into(line).ok())
-            .collect();
+        self.known_locales = Self::get_locales_list()?;
         self.locales = self.get_locales(ui_language)?;
         Ok(())
     }
@@ -108,18 +105,35 @@ impl LocalesDatabase {
         Ok(result)
     }
 
-    fn get_locales_list() -> Result<String, Error> {
+    fn get_locales_list() -> Result<Vec<LocaleId>, Error> {
         const LOCALES_LIST_PATH: &str = "/etc/agama.d/locales";
 
-        if let Ok(locales) = fs::read_to_string(LOCALES_LIST_PATH) {
-            return Ok(locales);
+        let locales = fs::read_to_string(LOCALES_LIST_PATH)
+            .map(|content| Self::get_locales_from_string(content));
+
+        if let Ok(locales) = locales {
+            if !locales.is_empty() {
+                return Ok(locales);
+            }
         }
 
         let result = Command::new("localectl")
             .args(["list-locales"])
             .output()
             .context("Failed to get the list of locales")?;
-        Ok(String::from_utf8(result.stdout).context("Invalid UTF-8 sequence from list-locales")?)
+
+        let locales = String::from_utf8(result.stdout)
+            .map(|content| Self::get_locales_from_string(content))
+            .context("Invalid UTF-8 sequence from list-locales")?;
+
+        Ok(locales)
+    }
+
+    fn get_locales_from_string(locales: String) -> Vec<LocaleId> {
+        locales
+            .lines()
+            .filter_map(|line| TryInto::<LocaleId>::try_into(line).ok())
+            .collect()
     }
 }
 
