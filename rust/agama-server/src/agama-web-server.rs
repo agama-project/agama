@@ -28,7 +28,6 @@ use openssl::ssl::{Ssl, SslAcceptor, SslFiletype, SslMethod};
 use tokio::sync::broadcast::channel;
 use tokio_openssl::SslStream;
 use tower::Service;
-use tracing_subscriber::prelude::*;
 use utoipa::OpenApi;
 
 const DEFAULT_WEB_UI_DIR: &str = "/usr/share/agama/web_ui";
@@ -294,8 +293,6 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
 /// `options`: command-line arguments.
 async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
     start_logging().context("Could not initialize the logger")?;
-    let journald = tracing_journald::layer().context("could not connect to journald")?;
-    tracing_subscriber::registry().with(journald).init();
 
     let (tx, _) = channel(16);
     run_monitor(tx.clone()).await?;
