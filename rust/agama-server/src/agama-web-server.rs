@@ -10,6 +10,7 @@ use std::{
 use agama_lib::connection_to;
 use agama_server::{
     l10n::helpers,
+    logs::init_logging,
     web::{self, generate_token, run_monitor},
 };
 use anyhow::Context;
@@ -27,7 +28,6 @@ use openssl::ssl::{Ssl, SslAcceptor, SslFiletype, SslMethod};
 use tokio::sync::broadcast::channel;
 use tokio_openssl::SslStream;
 use tower::Service;
-use tracing_subscriber::prelude::*;
 use utoipa::OpenApi;
 
 const DEFAULT_WEB_UI_DIR: &str = "/usr/share/agama/web_ui";
@@ -292,8 +292,7 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
 /// Start serving the API.
 /// `options`: command-line arguments.
 async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
-    let journald = tracing_journald::layer().context("could not connect to journald")?;
-    tracing_subscriber::registry().with(journald).init();
+    init_logging().context("Could not initialize the logger")?;
 
     let (tx, _) = channel(16);
     run_monitor(tx.clone()).await?;

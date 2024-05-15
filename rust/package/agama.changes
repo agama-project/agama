@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed May 15 15:21:30 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve logging in the D-Bus and web servers
+  (gh#openSUSE/agama#1215):
+  - Write to the stdout if they are not connected to
+    systemd-journald.
+  - The stdout logger includes the file/line (it was already
+    included when logging to systemd-journald).
+
+-------------------------------------------------------------------
 Wed May 15 14:08:26 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not crash if the /etc/agama.d/locales file does not contain
