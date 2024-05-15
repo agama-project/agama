@@ -421,9 +421,39 @@ sdf1.component = {
 
 md0.devices = [sda1, sda2];
 
-raid.devices = [sdb, sdc];
+raid.devices = [
+  {
+    sid: 0,
+    name: "/dev/sdb",
+    description: "",
+    isDrive: false,
+    type: ""
+  },
+  {
+    sid: 0,
+    name: "/dev/sdc",
+    description: "",
+    isDrive: false,
+    type: ""
+  }
+];
 
-multipath.wires = [sdd, sde];
+multipath.wires = [
+  {
+    sid: 0,
+    name: "/dev/sdd",
+    description: "",
+    isDrive: false,
+    type: ""
+  },
+  {
+    sid: 0,
+    name: "/dev/sde",
+    description: "",
+    isDrive: false,
+    type: ""
+  }
+];
 
 lvmVg.logicalVolumes = [lvmLv1];
 lvmVg.physicalVolumes = [sdf1];
@@ -905,7 +935,7 @@ const contexts = {
         }
       },
       raid: {
-        devices: [62, 63]
+        devices: ["/dev/sdb", "/dev/sdc"]
       }
     },
     {
@@ -938,7 +968,7 @@ const contexts = {
         }
       },
       multipath: {
-        wires: [64, 65]
+        wires: ["/dev/sdd", "/dev/sde"]
       }
     },
     {

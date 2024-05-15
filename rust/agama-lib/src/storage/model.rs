@@ -611,7 +611,7 @@ pub struct Md {
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Multipath {
-    pub wires: Vec<DeviceSid>,
+    pub wires: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
@@ -653,5 +653,5 @@ impl TryFrom<zbus::zvariant::Value<'_>> for UnusedSlot {
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Raid {
-    pub devices: Vec<DeviceSid>,
+    pub devices: Vec<String>,
 }

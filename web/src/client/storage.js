@@ -228,6 +228,22 @@ class DevicesManager {
    */
   async getDevices() {
     const buildDevice = (jsonDevice, jsonDevices) => {
+      /** @type {() => StorageDevice} */
+      const buildDefaultDevice = () => {
+        return {
+          sid: 0,
+          name: "",
+          description: "",
+          isDrive: false,
+          type: ""
+        };
+      };
+
+      /** @type {(names: string[]) => StorageDevice[]} */
+      const buildCollectionFromNames = (names) => {
+        return names.map(name => ({ ...buildDefaultDevice(), name }));
+      };
+
       /** @type {(sids: String[], jsonDevices: object[]) => StorageDevice[]} */
       const buildCollection = (sids, jsonDevices) => {
         if (sids === null || sids === undefined) return [];
@@ -251,12 +267,12 @@ class DevicesManager {
 
       /** @type {(device: StorageDevice, info: object) => void} */
       const addRaidInfo = (device, info) => {
-        device.devices = buildCollection(info.devices, jsonDevices);
+        device.devices = buildCollectionFromNames(info.devices);
       };
 
       /** @type {(device: StorageDevice, info: object) => void} */
       const addMultipathInfo = (device, info) => {
-        device.wires = buildCollection(info.wires, jsonDevices);
+        device.wires = buildCollectionFromNames(info.wires);
       };
 
       /** @type {(device: StorageDevice, info: object) => void} */
@@ -264,7 +280,7 @@ class DevicesManager {
         device.type = "md";
         device.level = info.level;
         device.uuid = info.uuid;
-        addRaidInfo(device, info);
+        device.devices = buildCollection(info.devices, jsonDevices);
       };
 
       /** @type {(device: StorageDevice, info: object) => void} */
@@ -282,7 +298,7 @@ class DevicesManager {
       };
 
       /** @type {(device: StorageDevice, info: object) => void} */
-      const addLvInfo = (device, info) => {
+      const addLvInfo = (device, _info) => {
         device.type = "lvmLv";
       };
 
@@ -317,14 +333,7 @@ class DevicesManager {
         };
       };
 
-      /** @type {StorageDevice} */
-      const device = {
-        sid: 0,
-        name: "",
-        description: "",
-        isDrive: false,
-        type: ""
-      };
+      const device = buildDefaultDevice();
 
       /** @type {(jsonProperty: String, info: function) => void} */
       const process = (jsonProperty, method) => {
