@@ -1,11 +1,11 @@
 use agama_server::{
     l10n::{self, helpers},
+    logs::start_logging,
     questions,
 };
 
 use agama_lib::connection_to;
 use anyhow::Context;
-use log::{self, LevelFilter};
 use std::future::pending;
 
 const ADDRESS: &str = "unix:path=/run/agama/bus";
@@ -14,23 +14,7 @@ const SERVICE_NAME: &str = "org.opensuse.Agama1";
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let locale = helpers::init_locale()?;
-
-    // be smart with logging and log directly to journal if connected to it
-    if systemd_journal_logger::connected_to_journal() {
-        // unwrap here is intentional as we are sure no other logger is active yet
-        systemd_journal_logger::JournalLog::default()
-            .install()
-            .unwrap();
-        log::set_max_level(LevelFilter::Info); // log only info for journal logger
-    } else {
-        simplelog::TermLogger::init(
-            LevelFilter::Info, // lets use info, trace provides too much output from libraries
-            simplelog::Config::default(),
-            simplelog::TerminalMode::Stderr, // only stderr output for easier filtering
-            simplelog::ColorChoice::Auto,
-        )
-        .unwrap(); // unwrap here as we are sure no other logger active
-    }
+    start_logging().context("Could not initialize the logger")?;
 
     let connection = connection_to(ADDRESS)
         .await

@@ -10,6 +10,7 @@ use std::{
 use agama_lib::connection_to;
 use agama_server::{
     l10n::helpers,
+    logs::start_logging,
     web::{self, generate_token, run_monitor},
 };
 use anyhow::Context;
@@ -292,6 +293,7 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
 /// Start serving the API.
 /// `options`: command-line arguments.
 async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
+    start_logging().context("Could not initialize the logger")?;
     let journald = tracing_journald::layer().context("could not connect to journald")?;
     tracing_subscriber::registry().with(journald).init();
 
