@@ -108,11 +108,6 @@ module.exports = {
         secure: false,
       }
     ],
-    server: "http",
-    // hot replacement does not support wss:// transport when running over https://,
-    // as a workaround use sockjs (which uses standard https:// protocol)
-    webSocketServer: "sockjs",
-
     // special handling for the "po.js" requests specially
     setupMiddlewares: (middlewares, devServer) => {
       devServer.app.get("/po.js", po_handler);
