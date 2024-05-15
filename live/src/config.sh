@@ -67,6 +67,7 @@ du -h -s /usr/{share,lib}/locale/
 # locales is saved to a file before deleting the locales not supported by Agama.
 # Agama then reads this file instead of running the "localectl list-locales"
 # command.
+mkdir -p /etc/agama.d
 localectl list-locales > /etc/agama.d/locales
 
 # delete translations and unusupported languages (makes ISO about 22MiB smaller)
