@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu May 16 15:36:16 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Do not probe devices implictly (gh#openSUSE/agama#1226).
+
+-------------------------------------------------------------------
 Wed May 15 12:52:42 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Export the device name of the Multipath wires and RAID devices
