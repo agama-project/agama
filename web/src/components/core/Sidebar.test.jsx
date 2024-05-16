@@ -27,6 +27,8 @@ import { If, Sidebar } from "~/components/core";
 // Mock some components
 jest.mock("~/components/core/About", () => () => <div>About link mock</div>);
 jest.mock("~/components/core/LogsButton", () => () => <div>LogsButton mock</div>);
+jest.mock("~/components/core/ShowLogButton", () => () => <div>ShowLogButton mock</div>);
+jest.mock("~/components/core/ShowTerminalButton", () => () => <div>ShowTerminalButton mock</div>);
 jest.mock("~/components/l10n/InstallerKeymapSwitcher", () => () => <div>Installer keymap switcher mock</div>);
 jest.mock("~/components/l10n/InstallerLocaleSwitcher", () => () => <div>Installer locale switcher mock</div>);
 
@@ -49,6 +51,8 @@ it("renders expected options", () => {
   screen.getByText("Installer keymap switcher mock");
   screen.getByText("Installer locale switcher mock");
   screen.getByText("LogsButton mock");
+  screen.getByText("ShowLogButton mock");
+  screen.getByText("ShowTerminalButton mock");
   screen.getByText("About link mock");
 });
 

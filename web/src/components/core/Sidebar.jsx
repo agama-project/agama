@@ -25,7 +25,10 @@ import { InstallerKeymapSwitcher, InstallerLocaleSwitcher } from "~/components/l
 import {
   About,
   Disclosure,
+  // FIXME: unify names here by renaming LogsButton -> LogButton or ShowLogButton -> ShowLogsButton
   LogsButton,
+  ShowLogButton,
+  ShowTerminalButton,
 } from "~/components/core";
 import { noop } from "~/utils";
 import { _ } from "~/i18n";
@@ -44,7 +47,7 @@ import useNodeSiblings from "~/hooks/useNodeSiblings";
  *
  * @param {SidebarProps}
  */
-export default function Sidebar({ isOpen, onClose = noop, children }) {
+export default function Sidebar ({ isOpen, onClose = noop, children }) {
   const asideRef = useRef(null);
   const closeButtonRef = useRef(null);
   const [addAttribute, removeAttribute] = useNodeSiblings(asideRef.current);
@@ -133,7 +136,11 @@ export default function Sidebar({ isOpen, onClose = noop, children }) {
 
       <div className="flex-stack justify-between" onClick={onClick}>
         <div className="flex-stack">
-          <LogsButton data-keep-sidebar-open="true" />
+          <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
+            <ShowLogButton />
+            <LogsButton data-keep-sidebar-open="true" />
+            <ShowTerminalButton />
+          </Disclosure>
           {children}
           <About />
         </div>
