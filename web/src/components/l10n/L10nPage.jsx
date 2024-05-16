@@ -27,7 +27,7 @@ import { sprintf } from "sprintf-js";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
 import { If, Popup, Section } from "~/components/core";
-import { KeymapSelector, TimezoneSelector } from "~/components/l10n";
+import { TimezoneSelector } from "~/components/l10n";
 import { noop } from "~/utils";
 import { useL10n } from "~/context/l10n";
 import { useProduct } from "~/context/product";
@@ -167,112 +167,20 @@ const LocaleSection = () => {
 };
 
 /**
- * Popup for selecting a keymap.
- * @component
- *
- * @param {object} props
- * @param {function} props.onFinish - Callback to be called when the keymap is correctly selected.
- * @param {function} props.onCancel - Callback to be called when the keymap selection is canceled.
- */
-const KeymapPopup = ({ onFinish = noop, onCancel = noop }) => {
-  const { l10n } = useInstallerClient();
-  const { keymaps, selectedKeymap } = useL10n();
-  const { selectedProduct } = useProduct();
-  const [keymapId, setKeymapId] = useState(selectedKeymap?.id);
-
-  const sortedKeymaps = keymaps.sort((k1, k2) => k1.name > k2.name ? 1 : -1);
-
-  const onSubmit = async (e) => {
-    e.preventDefault();
-
-    if (keymapId !== selectedKeymap?.id) {
-      await l10n.setKeymap(keymapId);
-    }
-
-    onFinish();
-  };
-
-  return (
-    <Popup
-      isOpen
-      title={_("Select keyboard")}
-      description={sprintf(_("%s will use the selected keyboard."), selectedProduct.name)}
-      blockSize="large"
-    >
-      <Form id="keymapForm" onSubmit={onSubmit}>
-        <KeymapSelector value={keymapId} keymaps={sortedKeymaps} onChange={setKeymapId} />
-      </Form>
-      <Popup.Actions>
-        <Popup.Confirm form="keymapForm" type="submit">
-          {_("Accept")}
-        </Popup.Confirm>
-        <Popup.Cancel onClick={onCancel} />
-      </Popup.Actions>
-    </Popup>
-  );
-};
-
-/**
- * Button for opening the selection of keymaps.
- * @component
- *
- * @param {object} props
- * @param {React.ReactNode} props.children - Button children.
- */
-const KeymapButton = ({ children }) => {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  const openPopup = () => setIsPopupOpen(true);
-  const closePopup = () => setIsPopupOpen(false);
-
-  return (
-    <>
-      <Button
-        variant="link"
-        className="p-0"
-        onClick={openPopup}
-      >
-        {children}
-      </Button>
-
-      <If
-        condition={isPopupOpen}
-        then={
-          <KeymapPopup
-            isOpen
-            onFinish={closePopup}
-            onCancel={closePopup}
-          />
-        }
-      />
-    </>
-  );
-};
-
-/**
  * Section for configuring keymaps.
  * @component
  */
 const KeymapSection = () => {
-  const { selectedKeymap } = useL10n();
+  const { keymap } = useL10n();
 
   return (
     <Section title={_("Keyboard")} icon="keyboard">
-      <If
-        condition={selectedKeymap}
-        then={
-          <>
-            <p>{selectedKeymap?.name}</p>
-            <KeymapButton>{_("Change keyboard")}</KeymapButton>
-          </>
-        }
-        else={
-          <>
-            <p>{_("Keyboard not selected yet")}</p>
-            <KeymapButton>{_("Select keyboard")}</KeymapButton>
-          </>
-        }
-      />
+      <p>
+        {keymap ? keymap.name : _("Keyboard not selected yet")}
+      </p>
+      <Link to="keymap/select">
+        {keymap ? _("Change keyboard") : _("Select keyboard")}
+      </Link>
     </Section>
   );
 };
