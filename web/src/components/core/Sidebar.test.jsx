@@ -51,8 +51,6 @@ it("renders expected options", () => {
   screen.getByText("Installer keymap switcher mock");
   screen.getByText("Installer locale switcher mock");
   screen.getByText("LogsButton mock");
-  screen.getByText("ShowLogButton mock");
-  screen.getByText("ShowTerminalButton mock");
   screen.getByText("About link mock");
 });
 

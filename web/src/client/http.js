@@ -108,15 +108,6 @@ class HTTPClient {
 
   /**
    * @param {string} url - Endpoint URL (e.g., "/l10n/config").
-   * @return {Promise<Response>} Server response.
-   */
-  async getRaw(url) {
-    const response = await fetch(`${this.baseUrl}${url}`);
-    return response;
-  }
-
-  /**
-   * @param {string} url - Endpoint URL (e.g., "/l10n/config").
    * @param {object} data - Data to submit
    * @return {Promise<Response>} Server response.
    */

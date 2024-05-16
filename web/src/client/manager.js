@@ -85,7 +85,8 @@ class ManagerBaseClient {
    * @return {Promise<Response>}
    */
   async fetchLogs() {
-    return this.client.getRaw("/manager/logs");
+    const response = await fetch(`${this.client.baseUrl}/manager/logs`);
+    return response;
   }
 
   /**

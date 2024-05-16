@@ -195,7 +195,7 @@ async fn generate_logs() -> Result<String, Error> {
     Command::new("agama")
         .args(["logs", "store", "-d", path.as_str()])
         .status()
-        .expect("Cannot generate logs");
+        .map_err(|e| ServiceError::CannotGenerateLogs(e.to_string()))?;
 
     let full_path = format!("{path}.tar.bz2");
     Ok(full_path)
