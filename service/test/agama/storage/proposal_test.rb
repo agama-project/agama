@@ -155,6 +155,34 @@ describe Agama::Storage::Proposal do
         end
       end
     end
+
+    context "if the system has not been probed yet" do
+      before do
+        allow(Y2Storage::StorageManager.instance).to receive(:probed?).and_return(false)
+      end
+
+      it "does not calculate a proposal" do
+        subject.calculate(achievable_settings)
+        expect(Y2Storage::StorageManager.instance.proposal).to be_nil
+      end
+
+      it "does not run the callbacks" do
+        callback1 = proc {}
+        callback2 = proc {}
+
+        subject.on_calculate(&callback1)
+        subject.on_calculate(&callback2)
+
+        expect(callback1).to_not receive(:call)
+        expect(callback2).to_not receive(:call)
+
+        subject.calculate(achievable_settings)
+      end
+
+      it "returns false" do
+        expect(subject.calculate(achievable_settings)).to eq(false)
+      end
+    end
   end
 
   describe "#settings" do
