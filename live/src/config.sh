@@ -68,7 +68,9 @@ du -h -s /usr/{share,lib}/locale/
 # Agama then reads this file instead of running the "localectl list-locales"
 # command.
 mkdir -p /etc/agama.d
-localectl list-locales > /etc/agama.d/locales
+# emulate "localectl list-locales" call, it cannot be used here because it
+# insists on running systemd as PID 1 :-/
+ls -1 -d /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8#" > /etc/agama.d/locales
 
 # delete translations and unusupported languages (makes ISO about 22MiB smaller)
 # build list of ignore options for "ls" with supported languages like "-I cs* -I de* -I es* ..."
