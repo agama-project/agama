@@ -30,7 +30,7 @@ import { ProductPage, ProductSelectionPage, ProductRegistrationPage } from "~/co
 import { SoftwarePage } from "~/components/software";
 import { ProposalPage, ISCSIPage, DASDPage, ZFCPPage } from "~/components/storage";
 import { UsersPage } from "~/components/users";
-import { L10nPage } from "~/components/l10n";
+import { L10nPage, LocaleSelection } from "~/components/l10n";
 import { NetworkPage } from "~/components/network";
 import { _ } from "~/i18n";
 
@@ -54,7 +54,10 @@ const productRoutes = createRoute(_("Product"), "product", <Page title={_("Produ
   createRoute(_("Change selected product"), "change", <ProductSelectionPage />),
   createRoute(_("Register"), "register", <ProductRegistrationPage />),
 ], "inventory_2");
-const l10nRoutes = createRoute(_("Localization"), "l10n", <L10nPage />, [], "globe");
+const l10nRoutes = createRoute(_("Localization"), "l10n", <Page title={(_("Localization"))} />, [
+  { index: true, element: <L10nPage /> },
+  createRoute(_("Select language"), "language/select", <LocaleSelection />),
+], "globe");
 const softwareRoutes = createRoute(_("Software"), "software", <SoftwarePage />, [], "apps");
 const storagePages = [
   { index: true, element: <ProposalPage /> },

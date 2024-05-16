@@ -19,8 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-
+import React, { useState } from "react";
+import { SearchInput } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { noop, useDebounce } from "~/utils";
 
@@ -38,6 +38,7 @@ const search = (elements, term) => {
 };
 
 /**
+ * TODO: Rename
  * Input field for searching in a given list of elements.
  * @component
  *
@@ -51,11 +52,26 @@ export default function ListSearch({
   elements = [],
   onChange: onChangeProp = noop
 }) {
-  const searchHandler = useDebounce(term => onChangeProp(search(elements, term)), 500);
+  const [value, setValue] = useState("");
+  const [resultSize, setResultSize] = useState(elements.length);
+  const searchHandler = useDebounce(term => {
+    const result = search(elements, term);
+    setResultSize(result.length);
+    onChangeProp(result);
+  }, 500);
 
-  const onChange = (e) => searchHandler(e.target.value);
+  const onChange = (value) => {
+    setValue(value);
+    searchHandler(value);
+  };
 
   return (
-    <input role="search" type="text" placeholder={placeholder} onChange={onChange} />
+    <SearchInput
+      placeholder={placeholder}
+      value={value}
+      onChange={(_, value) => onChange(value)}
+      onClear={() => onChangeProp(elements)}
+      resultsCount={resultSize}
+    />
   );
 }

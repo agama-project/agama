@@ -20,13 +20,14 @@
  */
 
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button, Form } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
-import { If, Page, Popup, Section } from "~/components/core";
-import { KeymapSelector, LocaleSelector, TimezoneSelector } from "~/components/l10n";
+import { If, Popup, Section } from "~/components/core";
+import { KeymapSelector, TimezoneSelector } from "~/components/l10n";
 import { noop } from "~/utils";
 import { useL10n } from "~/context/l10n";
 import { useProduct } from "~/context/product";
@@ -146,119 +147,21 @@ const TimezoneSection = () => {
 };
 
 /**
- * Popup for selecting a locale.
- * @component
- *
- * @param {object} props
- * @param {function} props.onFinish - Callback to be called when the locale is correctly selected.
- * @param {function} props.onCancel - Callback to be called when the locale selection is canceled.
- */
-const LocalePopup = ({ onFinish = noop, onCancel = noop }) => {
-  const { l10n } = useInstallerClient();
-  const { locales, selectedLocales } = useL10n();
-  const { selectedProduct } = useProduct();
-  const [localeId, setLocaleId] = useState(selectedLocales[0]?.id);
-
-  const sortedLocales = locales.sort((locale1, locale2) => {
-    const localeText = l => [l.name, l.territory].join('').toLowerCase();
-    return localeText(locale1) > localeText(locale2) ? 1 : -1;
-  });
-
-  const onSubmit = async (e) => {
-    e.preventDefault();
-
-    const [locale] = selectedLocales;
-
-    if (localeId !== locale?.id) {
-      await l10n.setLocales([localeId]);
-    }
-
-    onFinish();
-  };
-
-  return (
-    <Popup
-      isOpen
-      title={_("Select language")}
-      description={sprintf(_("%s will use the selected language."), selectedProduct.name)}
-      blockSize="large"
-    >
-      <Form id="localeForm" onSubmit={onSubmit}>
-        <LocaleSelector value={localeId} locales={sortedLocales} onChange={setLocaleId} />
-      </Form>
-      <Popup.Actions>
-        <Popup.Confirm form="localeForm" type="submit">
-          {_("Accept")}
-        </Popup.Confirm>
-        <Popup.Cancel onClick={onCancel} />
-      </Popup.Actions>
-    </Popup>
-  );
-};
-
-/**
- * Button for opening the selection of locales.
- * @component
- *
- * @param {object} props
- * @param {React.ReactNode} props.children - Button children.
- */
-const LocaleButton = ({ children }) => {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  const openPopup = () => setIsPopupOpen(true);
-  const closePopup = () => setIsPopupOpen(false);
-
-  return (
-    <>
-      <Button
-        variant="link"
-        className="p-0"
-        onClick={openPopup}
-      >
-        {children}
-      </Button>
-
-      <If
-        condition={isPopupOpen}
-        then={
-          <LocalePopup
-            isOpen
-            onFinish={closePopup}
-            onCancel={closePopup}
-          />
-        }
-      />
-    </>
-  );
-};
-
-/**
  * Section for configuring locales.
  * @component
  */
 const LocaleSection = () => {
   const { selectedLocales } = useL10n();
-
   const [locale] = selectedLocales;
 
   return (
     <Section title={_("Language")} icon="translate">
-      <If
-        condition={locale}
-        then={
-          <>
-            <p>{locale?.name} - {locale?.territory}</p>
-            <LocaleButton>{_("Change language")}</LocaleButton>
-          </>
-        }
-        else={
-          <>
-            <p>{_("Language not selected yet")}</p>
-            <LocaleButton>{_("Select language")}</LocaleButton>
-          </>
-        }
-      />
+      <p>
+        {locale ? `${locale.name} - ${locale.territory}` : _("Language not selected yet")}
+      </p>
+      <Link to="language/select">
+        {locale ? _("Change language") : _("Select language")}
+      </Link>
     </Section>
   );
 };
@@ -380,11 +283,10 @@ const KeymapSection = () => {
  */
 export default function L10nPage() {
   return (
-    // TRANSLATORS: page title
-    <Page icon="globe" title={_("Localization")}>
+    <>
       <LocaleSection />
       <KeymapSection />
       <TimezoneSection />
-    </Page>
+    </>
   );
 }
