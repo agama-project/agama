@@ -52,7 +52,7 @@ jobs:
         run: cd web && npm ci
 
       - name: Build Web UI documentation
-        run: cd web && npm run typedoc && mv typedoc.out/ ../doc/dist/web-ui
+        run: cd web && npm run typedoc:client && mv typedoc.out/ ../doc/dist/web-ui
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
