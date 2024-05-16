@@ -66,7 +66,7 @@ module Agama
       #
       # @return [Array<Y2Storage::Device>]
       def available_devices
-        disk_analyzer.candidate_disks
+        disk_analyzer&.candidate_disks || []
       end
 
       # Calculates a new proposal.
@@ -74,6 +74,8 @@ module Agama
       # @param settings [Agamal::Storage::ProposalSettings] settings to calculate the proposal.
       # @return [Boolean] whether the proposal was correctly calculated.
       def calculate(settings)
+        return false unless storage_manager.probed?
+
         select_target_device(settings) if missing_target_device?(settings)
 
         calculate_proposal(settings)
@@ -170,15 +172,19 @@ module Agama
         storage_manager.proposal = proposal
       end
 
-      # @return [Y2Storage::DiskAnalyzer]
+      # @return [Y2Storage::DiskAnalyzer, nil]
       def disk_analyzer
+        return nil unless storage_manager.probed?
+
         storage_manager.probed_disk_analyzer
       end
 
       # Devicegraph representing the system
       #
-      # @return [Y2Storage::Devicegraph]
+      # @return [Y2Storage::Devicegraph, nil]
       def probed_devicegraph
+        return nil unless storage_manager.probed?
+
         storage_manager.probed
       end
 
