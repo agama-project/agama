@@ -38,7 +38,7 @@ const search = (elements, term) => {
 };
 
 /**
- * TODO: Rename
+ * TODO: Rename and/or refactor?
  * Input field for searching in a given list of elements.
  * @component
  *
@@ -54,10 +54,14 @@ export default function ListSearch({
 }) {
   const [value, setValue] = useState("");
   const [resultSize, setResultSize] = useState(elements.length);
-  const searchHandler = useDebounce(term => {
-    const result = search(elements, term);
+
+  const updateResult = (result) => {
     setResultSize(result.length);
     onChangeProp(result);
+  };
+
+  const searchHandler = useDebounce(term => {
+    updateResult(search(elements, term));
   }, 500);
 
   const onChange = (value) => {
@@ -65,12 +69,17 @@ export default function ListSearch({
     searchHandler(value);
   };
 
+  const onClear = () => {
+    setValue("");
+    updateResult(elements);
+  };
+
   return (
     <SearchInput
       placeholder={placeholder}
       value={value}
       onChange={(_, value) => onChange(value)}
-      onClear={() => onChangeProp(elements)}
+      onClear={onClear}
       resultsCount={resultSize}
     />
   );
