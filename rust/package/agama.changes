@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 16 06:19:36 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Change the web server to listen on port 80 by default
+  (gh#openSUSE/agama#1217).
+
+-------------------------------------------------------------------
 Wed May 15 15:21:30 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve logging in the D-Bus and web servers
