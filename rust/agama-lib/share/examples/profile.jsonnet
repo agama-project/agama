@@ -20,8 +20,13 @@ local findBiggestDisk(disks) =
   sorted[0].logicalname;
 
 {
+  product: {
+    id: 'Tumbleweed'
+  },
   software: {
-    product: 'ALP-Bedrock',
+    patterns: [
+      'gnome'
+    ],
   },
   user: {
     fullName: 'Jane Doe',
@@ -35,7 +40,7 @@ local findBiggestDisk(disks) =
   // look ma, there are comments!
   localization: {
     language: 'en_US',
-    keyboard: 'en_US',
+    keyboard: 'us',
   },
   storage: {
     bootDevice: findBiggestDisk(agama.disks),
@@ -56,7 +61,7 @@ local findBiggestDisk(disks) =
         method4: 'manual',
         gateway4: '192.168.122.1',
         addresses: [
-          '192.168.122.100/24,'
+          '192.168.122.100/24'
         ],
         nameservers: [
           '1.2.3.4'
