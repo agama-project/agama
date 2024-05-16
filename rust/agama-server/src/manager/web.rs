@@ -176,7 +176,7 @@ async fn installer_status(
 pub async fn download_logs() -> impl IntoResponse {
     let path = generate_logs().await;
     let Ok(path) = path else {
-        return (StatusCode::NOT_FOUND).into_response();
+        return (StatusCode::INTERNAL_SERVER_ERROR).into_response();
     };
 
     match ServeFile::new(path)
@@ -184,7 +184,7 @@ pub async fn download_logs() -> impl IntoResponse {
         .await
     {
         Ok(res) => res.into_response(),
-        Err(_) => (StatusCode::NOT_FOUND).into_response(),
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR).into_response(),
     }
 }
 
