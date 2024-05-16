@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May 16 10:31:38 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- The CLI does not fail when the storage proposal is missing
+  (gh#openSUSE/agama#1220).
+- Properly detect whether LVM is activated.
+
+-------------------------------------------------------------------
 Thu May 16 06:19:36 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Change the web server to listen on port 80 by default

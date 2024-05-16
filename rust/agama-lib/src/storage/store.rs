@@ -17,7 +17,11 @@ impl<'a> StorageStore<'a> {
     }
 
     pub async fn load(&self) -> Result<StorageSettings, ServiceError> {
-        let boot_device = self.storage_client.boot_device().await?;
+        // If it is not possible to get the settings (e.g., there are no settings yet), return
+        // the default.
+        let Ok(boot_device) = self.storage_client.boot_device().await else {
+            return Ok(StorageSettings::default());
+        };
         let lvm = self.storage_client.lvm().await?;
         let encryption_password = self.storage_client.encryption_password().await?;
 
