@@ -600,6 +600,7 @@ impl TryFrom<NetworkConnection> for Connection {
         connection.ip_config.gateway4 = conn.gateway4;
         connection.ip_config.gateway6 = conn.gateway6;
         connection.interface = conn.interface;
+        connection.mtu = conn.mtu;
 
         Ok(connection)
     }
@@ -620,6 +621,7 @@ impl TryFrom<Connection> for NetworkConnection {
         let gateway6 = conn.ip_config.gateway6;
         let interface = conn.interface;
         let status = Some(conn.status);
+        let mtu = conn.mtu;
 
         let mut connection = NetworkConnection {
             id,
@@ -632,6 +634,7 @@ impl TryFrom<Connection> for NetworkConnection {
             mac_address,
             interface,
             addresses,
+            mtu,
             ..Default::default()
         };
 
