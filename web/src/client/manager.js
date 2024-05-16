@@ -82,10 +82,10 @@ class ManagerBaseClient {
    * Returns the binary content of the YaST logs file
    *
    * @todo Implement a mechanism to get the logs.
-   * @return {Promise<void>}
+   * @return {Promise<Response>}
    */
   async fetchLogs() {
-    // TODO
+    return this.client.getRaw("/manager/logs");
   }
 
   /**
@@ -147,6 +147,6 @@ class ManagerClient extends WithProgress(
   WithStatus(ManagerBaseClient, "/manager/status", MANAGER_SERVICE),
   "/manager/progress",
   MANAGER_SERVICE,
-) {}
+) { }
 
 export { ManagerClient };
