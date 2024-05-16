@@ -28,7 +28,6 @@ import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
 const FILENAME = "agama-installation-logs.tar.bzip2";
-const FILETYPE = "application/x-xz";
 
 /**
  * Button for collecting and downloading YaST logs
@@ -43,16 +42,14 @@ const LogsButton = ({ ...props }) => {
   const [error, setError] = useState(null);
 
   /**
-   * Helper function for creating the blob and triggering the download automatically
+   * Helper function for triggering the download automatically
    *
    * @note Based on the article "Programmatic file downloads in the browser" found at
    *       https://blog.logrocket.com/programmatic-file-downloads-in-the-browser-9a5186298d5c
    *
-   * @param {Uint8Array} data - binary data for creating a {@link https://developer.mozilla.org/en-US/docs/Web/API/Blob Blob}
+   * @param {string} url - the file location to download from
    */
-  const download = (data) => {
-    const blob = new Blob([data], { type: FILETYPE });
-    const url = URL.createObjectURL(blob);
+  const autoDownload = (url) => {
     const a = document.createElement('a');
     a.href = url;
     a.download = FILENAME;
@@ -79,8 +76,8 @@ const LogsButton = ({ ...props }) => {
   const collectAndDownload = () => {
     setError(null);
     setIsCollecting(true);
-    cancellablePromise(client.manager.fetchLogs())
-      .then(download)
+    cancellablePromise(client.manager.fetchLogs().then(response => URL.createObjectURL(response.blob())))
+      .then(autoDownload)
       .catch(setError)
       .finally(() => setIsCollecting(false));
   };
@@ -98,21 +95,21 @@ const LogsButton = ({ ...props }) => {
         {isCollecting ? _("Collecting logs...") : _("Download logs")}
       </Button>
 
-      { isCollecting &&
+      {isCollecting &&
         <Alert
           isInline
           isPlain
           variant="info"
           title={_("The browser will run the logs download as soon as they are ready. Please, be patient.")}
-        /> }
+        />}
 
-      { error &&
+      {error &&
         <Alert
           isInline
           isPlain
           variant="warning"
           title={_("Something went wrong while collecting logs. Please, try again.")}
-        /> }
+        />}
     </>
   );
 };

@@ -88,9 +88,9 @@ describe("LogsButton", () => {
 
     describe("and logs are collected successfully", () => {
       beforeEach(() => {
-        // new TextEncoder().encode("Hello logs!")
-        const data = new Uint8Array([72, 101, 108, 108, 111, 32, 108, 111, 103, 115, 33]);
-        fetchLogsFn.mockResolvedValue(data);
+        fetchLogsFn.mockResolvedValue({
+          blob: jest.fn().mockResolvedValue(new Blob(["testing"]))
+        });
       });
 
       it("triggers the download", async () => {

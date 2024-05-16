@@ -5,20 +5,23 @@
 //! * `manager_service` which returns the Axum service.
 //! * `manager_stream` which offers an stream that emits the manager events coming from D-Bus.
 
-use std::pin::Pin;
-
 use agama_lib::{
     error::ServiceError,
     manager::{InstallationPhase, ManagerClient},
     proxies::Manager1Proxy,
 };
 use axum::{
-    extract::State,
+    extract::{Request, State},
+    http::StatusCode,
+    response::IntoResponse,
     routing::{get, post},
     Json, Router,
 };
+use rand::distributions::{Alphanumeric, DistString};
 use serde::Serialize;
+use std::{pin::Pin, process::Command};
 use tokio_stream::{Stream, StreamExt};
+use tower_http::services::ServeFile;
 
 use crate::{
     error::Error,
@@ -90,6 +93,7 @@ pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
         .route("/install", post(install_action))
         .route("/finish", post(finish_action))
         .route("/installer", get(installer_status))
+        .route("/logs", get(download_logs))
         .merge(status_router)
         .merge(progress_router)
         .with_state(state))
@@ -162,4 +166,37 @@ async fn installer_status(
         iguana: state.manager.use_iguana().await?,
     };
     Ok(Json(status))
+}
+
+/// Returns agama logs
+#[utoipa::path(get, path = "/api/manager/logs", responses(
+  (status = 200, description = "Download logs blob.")
+))]
+
+pub async fn download_logs() -> impl IntoResponse {
+    let path = generate_logs().await;
+    let Ok(path) = path else {
+        return (StatusCode::INTERNAL_SERVER_ERROR).into_response();
+    };
+
+    match ServeFile::new(path)
+        .try_call(Request::new(axum::body::Body::empty()))
+        .await
+    {
+        Ok(res) => res.into_response(),
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR).into_response(),
+    }
+}
+
+async fn generate_logs() -> Result<String, Error> {
+    let random_name: String = Alphanumeric.sample_string(&mut rand::thread_rng(), 8);
+    let path = format!("/run/agama/logs_{random_name}");
+
+    Command::new("agama")
+        .args(["logs", "store", "-d", path.as_str()])
+        .status()
+        .map_err(|e| ServiceError::CannotGenerateLogs(e.to_string()))?;
+
+    let full_path = format!("{path}.tar.bz2");
+    Ok(full_path)
 }

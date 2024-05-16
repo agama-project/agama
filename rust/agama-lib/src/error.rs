@@ -6,6 +6,8 @@ use zbus::{self, zvariant};
 
 #[derive(Error, Debug)]
 pub enum ServiceError {
+    #[error("Cannot generate Agama logs: {0}")]
+    CannotGenerateLogs(String),
     #[error("D-Bus service error: {0}")]
     DBus(#[from] zbus::Error),
     #[error("Could not connect to Agama bus at '{0}': {1}")]
