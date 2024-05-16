@@ -158,4 +158,12 @@ const createDefaultClient = async () => {
   return createClient(httpUrl);
 };
 
+// workaround for broken hot module replacement (HMR): if this file or any
+// dependant imported client module is changed then do a full page reload,
+// changing any other files still uses HMR
+// see https://webpack.js.org/api/hot-module-replacement/#decline-self
+if (module.hot) {
+  module.hot.decline();
+}
+
 export { createClient, createDefaultClient, phase };
