@@ -5,23 +5,20 @@
 //! * `storage_service` which returns the Axum service.
 //! * `storage_stream` which offers an stream that emits the storage events coming from D-Bus.
 
-use std::collections::HashMap;
-
 use agama_lib::{
     error::ServiceError,
     storage::{
-        model::{Action, Device, ProposalSettings, ProposalSettingsPatch, Volume},
+        model::{Action, Device, DeviceSid, ProposalSettings, ProposalSettingsPatch, Volume},
         proxies::Storage1Proxy,
         StorageClient,
     },
 };
-use anyhow::anyhow;
 use axum::{
     extract::{Query, State},
     routing::{get, post},
     Json, Router,
 };
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use tokio_stream::{Stream, StreamExt};
 
 pub mod iscsi;
@@ -66,15 +63,6 @@ struct StorageState<'a> {
     client: StorageClient<'a>,
 }
 
-#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct ProductParams {
-    /// List of mount points defined in product
-    mount_points: Vec<String>,
-    /// list of encryption methods defined in product
-    encryption_methods: Vec<String>,
-}
-
 /// Sets up and returns the axum service for the software module.
 pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Storage1";
@@ -108,38 +96,107 @@ pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     Ok(router)
 }
 
+/// Probes the storage devices.
+#[utoipa::path(
+    post,
+    path = "/probe",
+    context_path = "/api/storage",
+    responses(
+        (status = 200, description = "Devices were probed and an initial proposal were performed"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn probe(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
     Ok(Json(state.client.probe().await?))
 }
 
+/// Gets whether the system is in a deprecated status.
+///
+/// The system is usually set as deprecated as effect of managing some kind of devices, for example,
+/// when iSCSI sessions are created or when a zFCP disk is activated.
+///
+/// A deprecated system means that the probed system could not match with the current system.
+///
+/// It is expected that clients probe devices again if the system is deprecated.
+#[utoipa::path(
+    get,
+    path = "/devices/dirty",
+    context_path = "/api/storage",
+    responses(
+        (status = 200, description = "Whether the devices have changed", body = bool),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn devices_dirty(State(state): State<StorageState<'_>>) -> Result<Json<bool>, Error> {
     Ok(Json(state.client.devices_dirty_bit().await?))
 }
 
+/// Gets the probed devices.
+#[utoipa::path(
+    get,
+    path = "/devices/system",
+    context_path = "/api/storage",
+    responses(
+        (status = 200, description = "List of devices", body = Vec<Device>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn system_devices(State(state): State<StorageState<'_>>) -> Result<Json<Vec<Device>>, Error> {
     Ok(Json(state.client.system_devices().await?))
 }
 
+/// Gets the resulting devices of applying the requested actions.
+#[utoipa::path(
+    get,
+    path = "/devices/result",
+    context_path = "/api/storage",
+    responses(
+        (status = 200, description = "List of devices", body = Vec<Device>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn staging_devices(
     State(state): State<StorageState<'_>>,
 ) -> Result<Json<Vec<Device>>, Error> {
     Ok(Json(state.client.staging_devices().await?))
 }
 
-async fn actions(State(state): State<StorageState<'_>>) -> Result<Json<Vec<Action>>, Error> {
-    Ok(Json(state.client.actions().await?))
-}
-
+/// Gets the default values for a volume with the given mount path.
+#[utoipa::path(
+    get,
+    path = "/product/volume_for",
+    context_path = "/api/storage",
+    params(VolumeForQuery),
+    responses(
+        (status = 200, description = "Volume specification", body = Volume),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn volume_for(
     State(state): State<StorageState<'_>>,
-    Query(params): Query<HashMap<String, String>>,
+    query: Query<VolumeForQuery>,
 ) -> Result<Json<Volume>, Error> {
-    let mount_path = params
-        .get("mount_path")
-        .ok_or(anyhow!("Missing mount_path parameter"))?;
-    Ok(Json(state.client.volume_for(mount_path).await?))
+    Ok(Json(
+        state.client.volume_for(query.mount_path.as_str()).await?,
+    ))
 }
 
+#[derive(Deserialize, utoipa::IntoParams)]
+struct VolumeForQuery {
+    /// Mount path of the volume (empty for an arbitrary volume).
+    mount_path: String,
+}
+
+/// Gets information about the selected product.
+#[utoipa::path(
+    get,
+    path = "/product/params",
+    context_path = "/api/storage",
+    responses(
+        (status = 200, description = "Product information", body = ProductParams),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn product_params(
     State(state): State<StorageState<'_>>,
 ) -> Result<Json<ProductParams>, Error> {
@@ -150,24 +207,79 @@ async fn product_params(
     Ok(Json(params))
 }
 
-async fn usable_devices(State(state): State<StorageState<'_>>) -> Result<Json<Vec<String>>, Error> {
-    let devices = state.client.available_devices().await?;
-    let devices_names = devices.into_iter().map(|d| d.name).collect();
-
-    Ok(Json(devices_names))
+#[derive(Debug, Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct ProductParams {
+    /// Mount points defined by the product.
+    mount_points: Vec<String>,
+    /// Encryption methods allowed by the product.
+    encryption_methods: Vec<String>,
 }
 
+/// Gets the actions to perform in the storage devices.
+#[utoipa::path(
+    get,
+    path = "/proposal/actions",
+    context_path = "/api/storage",
+    responses(
+        (status = 200, description = "List of actions", body = Vec<Action>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn actions(State(state): State<StorageState<'_>>) -> Result<Json<Vec<Action>>, Error> {
+    Ok(Json(state.client.actions().await?))
+}
+
+/// Gets the SID (Storage ID) of the devices usable for the installation.
+///
+/// Note that not all the existing devices can be selected as target device for the installation.
+#[utoipa::path(
+    get,
+    path = "/proposal/usable_devices",
+    context_path = "/api/storage",
+    responses(
+        (status = 200, description = "Lis of SIDs", body = Vec<DeviceSid>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn usable_devices(
+    State(state): State<StorageState<'_>>,
+) -> Result<Json<Vec<DeviceSid>>, Error> {
+    let sids = state.client.available_devices().await?;
+    Ok(Json(sids))
+}
+
+/// Gets the settings that were used for calculating the current proposal.
+#[utoipa::path(
+    get,
+    path = "/proposal/settings",
+    context_path = "/api/storage",
+    responses(
+        (status = 200, description = "Settings", body = ProposalSettings),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn get_proposal_settings(
     State(state): State<StorageState<'_>>,
 ) -> Result<Json<ProposalSettings>, Error> {
     Ok(Json(state.client.proposal_settings().await?))
 }
 
+/// Tries to calculates a new proposal with the given settings.
+#[utoipa::path(
+    put,
+    path = "/proposal/settings",
+    context_path = "/api/storage",
+    request_body(content = ProposalSettingsPatch, description = "Proposal settings", content_type = "application/json"),
+    responses(
+        (status = 200, description = "Whether the proposal was successfully calculated", body = bool),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
 async fn set_proposal_settings(
     State(state): State<StorageState<'_>>,
     Json(config): Json<ProposalSettingsPatch>,
-) -> Result<(), Error> {
-    state.client.calculate2(config).await?;
-
-    Ok(())
+) -> Result<Json<bool>, Error> {
+    let result = state.client.calculate2(config).await?;
+    Ok(Json(result == 0))
 }

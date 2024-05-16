@@ -555,7 +555,7 @@ const contexts = {
       actions: [{ device: 2, text: "Mount /dev/sdb1 as root", subvol: false, delete: false }]
     };
   },
-  withAvailableDevices: () => ["/dev/sda", "/dev/sdb"],
+  withAvailableDevices: () => [59, 62],
   withIssues: () => [
     { description: "Issue 1", details: "", source: 1, severity: 1 },
     { description: "Issue 2", details: "", source: 1, severity: 0 },
@@ -1848,7 +1848,15 @@ describe("#proposal", () => {
   });
 
   describe("#calculate", () => {
+    let response = { ok: true, json: jest.fn().mockResolvedValue(true) };
+
     beforeEach(() => {
+      mockPutFn.mockImplementation(path => {
+        if (path === "/storage/proposal/settings") return response;
+
+        return { ok: true };
+      });
+
       client = new StorageClient(http);
     });
 
@@ -1914,6 +1922,27 @@ describe("#proposal", () => {
       });
 
       expect(mockPutFn).toHaveBeenCalledWith("/storage/proposal/settings", { spacePolicy: "delete" });
+    });
+
+    it("returns false if the call fails", async () => {
+      response = { ok: false, json: undefined };
+
+      const result = await client.proposal.calculate({});
+      expect(result).toEqual(false);
+    });
+
+    it("returns false if a proposal was not calculated", async () => {
+      response = { ok: true, json: jest.fn().mockResolvedValue(false) };
+
+      const result = await client.proposal.calculate({});
+      expect(result).toEqual(false);
+    });
+
+    it("returns true if a proposal was calculated", async () => {
+      response = { ok: true, json: jest.fn().mockResolvedValue(true) };
+
+      const result = await client.proposal.calculate({});
+      expect(result).toEqual(true);
     });
   });
 });

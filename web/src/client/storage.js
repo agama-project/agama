@@ -388,10 +388,10 @@ class ProposalManager {
    * @returns {Promise<StorageDevice[]>}
    */
   async getAvailableDevices() {
-    const findDevice = (devices, name) => {
-      const device = devices.find(d => d.name === name);
+    const findDevice = (devices, sid) => {
+      const device = devices.find(d => d.sid === sid);
 
-      if (device === undefined) console.warn("Device not found: ", name);
+      if (device === undefined) console.warn("Device not found: ", sid);
 
       return device;
     };
@@ -404,7 +404,7 @@ class ProposalManager {
       return [];
     }
     const usable_devices = await response.json();
-    return usable_devices.map(name => findDevice(systemDevices, name)).filter(d => d);
+    return usable_devices.map(sid => findDevice(systemDevices, sid)).filter(d => d);
   }
 
   /**
@@ -584,7 +584,7 @@ class ProposalManager {
    * Calculates a new proposal
    *
    * @param {ProposalSettings} settings
-   * @returns {Promise<number>} 0 on success, 1 on failure
+   * @returns {Promise<boolean>} true on success
    */
   async calculate(settings) {
     const buildHttpVolume = (volume) => {
@@ -623,10 +623,16 @@ class ProposalManager {
     const response = await this.client.put("/storage/proposal/settings", httpSettings);
 
     if (!response.ok) {
-      console.warn("Failed to set proposal settings: ", response);
+      console.warn("Failed to set the proposal settings: ", response);
+      return false;
     }
 
-    return response.ok ? 0 : 1;
+    if (!response.json) {
+      console.warn("A proposal cannot be calculated with the given settings: ", response);
+      return false;
+    }
+
+    return response.json();
   }
 
   /**

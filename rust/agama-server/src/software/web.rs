@@ -298,7 +298,7 @@ pub struct FailureDetails {
     context_path = "/api/software",
     responses(
         (status = 204, description = "registration successfull"),
-        (status = 422, description = "Registration failed. Details are in body", body=FailureDetails),
+        (status = 422, description = "Registration failed. Details are in body", body = FailureDetails),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
@@ -327,7 +327,7 @@ async fn register(
     context_path = "/api/software",
     responses(
         (status = 200, description = "deregistration successfull"),
-        (status = 422, description = "De-registration failed. Details are in body", body=FailureDetails),
+        (status = 422, description = "De-registration failed. Details are in body", body = FailureDetails),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
@@ -349,7 +349,7 @@ async fn deregister(State(state): State<SoftwareState<'_>>) -> Result<impl IntoR
 /// * `state`: service state.
 #[utoipa::path(
     get,
-    path = "patterns",
+    path = "/patterns",
     context_path = "/api/software",
     responses(
         (status = 200, description = "List of known software patterns", body = Vec<Pattern>),
@@ -365,8 +365,9 @@ async fn patterns(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Pat
 ///
 /// * `state`: service state.
 /// * `config`: software configuration.
-#[utoipa::path(put,
-    path = "/software/config",
+#[utoipa::path(
+    put,
+    path = "/config",
     context_path = "/api/software",
     operation_id = "set_software_config",
     responses(
@@ -394,7 +395,7 @@ async fn set_config(
 /// * `state` : service state.
 #[utoipa::path(
     get,
-    path = "/software/config",
+    path = "/config",
     context_path = "/api/software",
     operation_id = "get_software_config",
     responses(
@@ -439,7 +440,7 @@ pub struct SoftwareProposal {
 /// At this point, only the required space is reported.
 #[utoipa::path(
     get,
-    path = "/software/proposal",
+    path = "/proposal",
     context_path = "/api/software",
     responses(
         (status = 200, description = "Software proposal", body = SoftwareProposal)
@@ -457,7 +458,7 @@ async fn proposal(State(state): State<SoftwareState<'_>>) -> Result<Json<Softwar
 /// At this point, only the required space is reported.
 #[utoipa::path(
     post,
-    path = "/software/probe",
+    path = "/probe",
     context_path = "/api/software",
     responses(
         (status = 200, description = "Read repositories data"),

@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu May 16 12:24:26 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Small changes in the storage HTTP API (gh#openSUSE/agama#1208):
+  - /storage/proposal/usable_devices (get): returns a list of SIDs
+    instead of device names.
+  - /storage/proposal/settings (put): returns whether the proposal
+    was successfully calculated.
+
+-------------------------------------------------------------------
 Thu May 16 10:31:38 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - The CLI does not fail when the storage proposal is missing
