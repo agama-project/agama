@@ -191,6 +191,7 @@ storage:
     - filesystem: xfs
       size:
         auto: false
+        min: 1 GiB
       outline:
         required: false
         filesystems:
