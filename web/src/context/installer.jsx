@@ -87,10 +87,27 @@ function InstallerClientProvider({
         return;
       }
 
-      console.warn(`Failed to connect to D-Bus (attempt ${attempt + 1})`);
+      console.warn(`Failed to connect to Agama API (attempt ${attempt + 1})`);
       await new Promise(resolve => setTimeout(resolve, interval));
       setAttempt(attempt + 1);
     };
+
+    // allow hot replacement for the clients code
+    if (module.hot) {
+      // if anything coming from `import ... from "~/client"` is updated then this hook is called
+      module.hot.accept("~/client", async function() {
+        console.log("[Agama HMR] A client module has been updated");
+
+        const updated_client = await createDefaultClient();
+        if (await updated_client.isConnected()) {
+          console.log("[Agama HMR] Using new clients");
+          setValue(updated_client);
+        } else {
+          console.warn("[Agama HMR] Updating clients failed, using full page reload");
+          window.location.reload();
+        }
+      });
+    }
 
     if (!value) connectClient();
   }, [setValue, value, setAttempt, attempt, interval]);
