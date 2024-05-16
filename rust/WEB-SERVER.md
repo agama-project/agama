@@ -51,7 +51,7 @@ $ sudo ./target/debug/agama-web-server serve
 
 If it fails to compile, please check whether `clang-devel` and `pam-devel` are installed.
 
-By default the server uses port 3000 and listens on all network interfaces. You
+By default the server uses port 80 and listens on all network interfaces. You
 can use the `--address` option if you want to use a different port or a specific
 network interface:
 
@@ -76,7 +76,7 @@ option for that.
 You can check whether the server is up and running by just performing a ping:
 
 ```
-$ curl http://localhost:3000/ping
+$ curl http://localhost/ping
 ```
 
 ### Authentication
@@ -85,7 +85,7 @@ The web server uses a bearer token for HTTP authentication. You can get the toke
 password to the `/auth` endpoint.
 
 ```
-$ curl http://localhost:3000/api/auth \
+$ curl http://localhost/api/auth \
     -H "Content-Type: application/json" \
     -d '{"password": "your-password"}' 
 {"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MDg1MTA5MzB9.3HmKAC5u4H_FigMqEa9e74OFAq40UldjlaExrOGqE0U"}⏎
@@ -94,7 +94,7 @@ $ curl http://localhost:3000/api/auth \
 Now you can access protected routes by including the token in the header:
 
 ```
-$ curl -X GET http://localhost:3000/protected \
+$ curl -X GET http://localhost/protected \
     -H "Accept: application/json" \
     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MDg1MTA5MzB9.3HmKAC5u4H_FigMqEa9e74OFAq40UldjlaExrOGqE0U"
 ```
@@ -116,7 +116,7 @@ $ cargo install websocat
 Now, you can use the following command to connect:
 
 ```
-$ websocat ws://localhost:3000/ws
+$ websocat ws://localhost/ws
     -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MDg1MTA5MzB9.3HmKAC5u4H_FigMqEa9e74OFAq40UldjlaExrOGqE0U"
 ```
 

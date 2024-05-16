@@ -3,36 +3,36 @@ const path = require("path");
 
 const Copy = require("copy-webpack-plugin");
 const Extract = require("mini-css-extract-plugin");
-const TerserJSPlugin = require('terser-webpack-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const TerserJSPlugin = require("terser-webpack-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
-const ESLintPlugin = require('eslint-webpack-plugin');
+const ESLintPlugin = require("eslint-webpack-plugin");
 const CockpitPoPlugin = require("./src/lib/cockpit-po-plugin");
-const StylelintPlugin = require('stylelint-webpack-plugin');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const webpack = require('webpack');
+const StylelintPlugin = require("stylelint-webpack-plugin");
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const webpack = require("webpack");
 const po_handler = require("./src/lib/webpack-po-handler");
 
 /* A standard nodejs and webpack pattern */
-const production = process.env.NODE_ENV === 'production';
+const production = process.env.NODE_ENV === "production";
 const development = !production;
 
 /* development options for faster iteration */
-const eslint = process.env.ESLINT !== '0';
+const eslint = process.env.ESLINT !== "0";
 
 /* Default to disable csslint for faster production builds */
-const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== '0') : development;
+const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== "0") : development;
 
 // Agama API server. By default it connects to a local development server.
-let agamaServer = process.env.AGAMA_SERVER || "localhost:3000";
+let agamaServer = process.env.AGAMA_SERVER || "localhost";
 if (!agamaServer.startsWith("http")) {
   agamaServer = "http://" + agamaServer;
 }
 
 // Obtain package name from package.json
-const packageJson = JSON.parse(fs.readFileSync('package.json'));
+const packageJson = JSON.parse(fs.readFileSync("package.json"));
 
 // Non-JS files which are copied verbatim to dist/
 const copy_files = [
@@ -56,32 +56,36 @@ const plugins = [
 ].filter(Boolean);
 
 if (eslint) {
-  plugins.push(new ESLintPlugin({ extensions: ["js", "jsx"], failOnWarning: true, }));
+  plugins.push(new ESLintPlugin({ extensions: ["js", "jsx"], failOnWarning: true }));
 }
 
 if (stylelint) {
-  plugins.push(new StylelintPlugin({
-    context: "src/",
-  }));
+  plugins.push(
+    new StylelintPlugin({
+      context: "src/",
+    }),
+  );
 }
 
 /* Only minimize when in production mode */
 if (production) {
-  plugins.unshift(new CompressionPlugin({
-    test: /\.(js|html|css)$/,
-    deleteOriginalAssets: false
-  }));
+  plugins.unshift(
+    new CompressionPlugin({
+      test: /\.(js|html|css)$/,
+      deleteOriginalAssets: false,
+    }),
+  );
 }
 
 module.exports = {
-  mode: production ? 'production' : 'development',
+  mode: production ? "production" : "development",
   resolve: {
-    modules: ["node_modules", path.resolve(__dirname, 'src/lib')],
+    modules: ["node_modules", path.resolve(__dirname, "src/lib")],
     plugins: [new TsconfigPathsPlugin({ extensions: [".js", ".jsx", ".json"] })],
-    extensions: ['', '.js', '.json', '.jsx']
+    extensions: ["", ".js", ".json", ".jsx"],
   },
   resolveLoader: {
-    modules: ["node_modules", path.resolve(__dirname, 'src/lib')],
+    modules: ["node_modules", path.resolve(__dirname, "src/lib")],
   },
   watchOptions: {
     ignored: /node_modules/,
@@ -106,13 +110,13 @@ module.exports = {
         context: ["/api"],
         target: agamaServer,
         secure: false,
-      }
+      },
     ],
     // special handling for the "po.js" requests specially
     setupMiddlewares: (middlewares, devServer) => {
       devServer.app.get("/po.js", po_handler);
       return middlewares;
-    }
+    },
   },
   devtool: "source-map",
   stats: "errors-warnings",
@@ -139,7 +143,7 @@ module.exports = {
       }),
       // remove also the spaces between the tags
       new HtmlMinimizerPlugin({ minimizerOptions: { conservativeCollapse: false } }),
-      new CssMinimizerPlugin()
+      new CssMinimizerPlugin(),
     ],
   },
 
@@ -152,58 +156,58 @@ module.exports = {
           {
             loader: "babel-loader",
             options: {
-              plugins: [development && require.resolve('react-refresh/babel')].filter(Boolean),
+              plugins: [development && require.resolve("react-refresh/babel")].filter(Boolean),
             },
-          }
-        ]
+          },
+        ],
       },
       {
         test: /\.s?css$/,
         use: [
           Extract.loader,
           {
-            loader: 'css-loader',
+            loader: "css-loader",
             options: {
               sourceMap: true,
               url: {
                 // Only follow the Agama fonts links to be processed by the next rule and place
                 // them in dist/fonts
-                filter: (url) => url.includes("./fonts/")
-              }
-            }
+                filter: (url) => url.includes("./fonts/"),
+              },
+            },
           },
           {
-            loader: 'sass-loader',
+            loader: "sass-loader",
             options: {
               sourceMap: development,
               sassOptions: {
                 includePaths: ["node_modules"],
-                outputStyle: production ? 'compressed' : undefined,
+                outputStyle: production ? "compressed" : undefined,
               },
             },
           },
-        ]
+        ],
       },
       {
         test: /\.(eot|ttf|woff|woff2)$/,
-        type: 'asset/resource',
+        type: "asset/resource",
         generator: {
-          filename: 'fonts/[name][ext]',
-        }
+          filename: "fonts/[name][ext]",
+        },
       },
       // Load SVG files
       {
         test: /\.svg$/i,
-        type: 'asset',
-        resourceQuery: { not: [/component/] } // exclude file import includes ""?component"
+        type: "asset",
+        resourceQuery: { not: [/component/] }, // exclude file import includes ""?component"
       },
       {
         test: /\.svg$/i,
         issuer: /\.jsx?$/,
         resourceQuery: /component/, // *.svg?component
-        use: ['@svgr/webpack']
-      }
-    ]
+        use: ["@svgr/webpack"],
+      },
+    ],
   },
-  plugins: plugins
+  plugins: plugins,
 };

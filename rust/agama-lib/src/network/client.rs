@@ -3,7 +3,7 @@ use crate::error::ServiceError;
 use reqwest::{Client, Response};
 use serde_json;
 
-const API_URL: &str = "http://localhost:3000/api/network";
+const API_URL: &str = "http://localhost/api/network";
 
 /// HTTP/JSON client for the network service
 pub struct NetworkClient {

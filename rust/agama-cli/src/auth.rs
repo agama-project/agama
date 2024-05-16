@@ -10,7 +10,7 @@ use std::path::{Path, PathBuf};
 
 const DEFAULT_JWT_FILE: &str = ".agama/agama-jwt";
 const DEFAULT_AGAMA_TOKEN_FILE: &str = "/run/agama/token";
-const DEFAULT_AUTH_URL: &str = "http://localhost:3000/api/auth";
+const DEFAULT_AUTH_URL: &str = "http://localhost/api/auth";
 const DEFAULT_FILE_MODE: u32 = 0o600;
 
 #[derive(Subcommand, Debug)]

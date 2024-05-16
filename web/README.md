@@ -21,7 +21,7 @@ use this command:
 
 The extra `--open` option automatically opens the server page in your default
 web browser. In this case the server will use the `https://localhost:8080` URL
-and expects a running `agama-web-server` at `https://localhost:3000`.
+and expects a running `agama-web-server` at `https://localhost`.
 
 This can work also remotely, with a Agama instance running in a different
 machine (a virtual machine as well). In that case run
@@ -41,11 +41,11 @@ Example of running from different machine:
   # backend machine
   # using ip of machine instead of localhost is important to be network accessible
   # second address is needed for SSL which is mandatory for remote access
-  agama-web-server serve --address :::3000 --address2 :::443
+  agama-web-server serve --address :::80 --address2 :::443
 
   # frontend machine
   # ESLINT=0 is useful to ignore linter problems during development
-  ESLINT=0 AGAMA_SERVER=https://10.100.1.1:3000 npm run server
+  ESLINT=0 AGAMA_SERVER=https://10.100.1.1 npm run server
 ```
 
 ### Debugging Hints
