@@ -133,7 +133,7 @@ impl<'a> StorageClient<'a> {
     /// DEPRECATED, use proposal_settings instead
     pub async fn lvm(&self) -> Result<Option<bool>, ServiceError> {
         let settings = self.proposal_settings().await?;
-        Ok(Some(matches!(settings.target, ProposalTarget::Disk)))
+        Ok(Some(!matches!(settings.target, ProposalTarget::Disk)))
     }
 
     /// Returns the encryption password proposal setting
