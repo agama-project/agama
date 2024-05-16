@@ -51,10 +51,12 @@ impl<'a> StorageClient<'a> {
         })
     }
 
+    /// Whether the devices have changed.
     pub async fn devices_dirty_bit(&self) -> Result<bool, ServiceError> {
         Ok(self.storage_proxy.deprecated_system().await?)
     }
 
+    /// Actions to perform in the storage devices.
     pub async fn actions(&self) -> Result<Vec<Action>, ServiceError> {
         let actions = self.proposal_proxy.actions().await?;
         let mut result: Vec<Action> = Vec::with_capacity(actions.len());
@@ -66,6 +68,7 @@ impl<'a> StorageClient<'a> {
         Ok(result)
     }
 
+    /// SIDs of the devices available for the installation.
     pub async fn available_devices(&self) -> Result<Vec<DeviceSid>, ServiceError> {
         let paths: Vec<zbus::zvariant::ObjectPath> = self
             .calculator_proxy
@@ -80,20 +83,24 @@ impl<'a> StorageClient<'a> {
         Ok(result?)
     }
 
+    /// Default values for a volume with the given mount path.
     pub async fn volume_for(&self, mount_path: &str) -> Result<Volume, ServiceError> {
         let volume_hash = self.calculator_proxy.default_volume(mount_path).await?;
 
         Ok(volume_hash.try_into()?)
     }
 
+    /// Mount points of the volumes pre-defined by the product.
     pub async fn product_mount_points(&self) -> Result<Vec<String>, ServiceError> {
         Ok(self.calculator_proxy.product_mount_points().await?)
     }
 
+    /// Encryption methods allowed by the product.
     pub async fn encryption_methods(&self) -> Result<Vec<String>, ServiceError> {
         Ok(self.calculator_proxy.encryption_methods().await?)
     }
 
+    /// Settings used for calculating the proposal.
     pub async fn proposal_settings(&self) -> Result<ProposalSettings, ServiceError> {
         Ok(self.proposal_proxy.settings().await?.try_into()?)
     }
@@ -141,6 +148,7 @@ impl<'a> StorageClient<'a> {
         Ok(self.calculator_proxy.calculate(settings.into()).await?)
     }
 
+    /// Calculates a new proposal with the given settings.
     pub async fn calculate(&self, settings: &StorageSettings) -> Result<u32, ServiceError> {
         let mut dbus_settings: HashMap<&str, zbus::zvariant::Value<'_>> = HashMap::new();
 
@@ -162,6 +170,7 @@ impl<'a> StorageClient<'a> {
         Ok(self.calculator_proxy.calculate(dbus_settings).await?)
     }
 
+    /// Probed devices.
     pub async fn system_devices(&self) -> Result<Vec<Device>, ServiceError> {
         let objects = self.object_manager_proxy.get_managed_objects().await?;
         let mut result = vec![];
@@ -177,6 +186,7 @@ impl<'a> StorageClient<'a> {
         Ok(result)
     }
 
+    /// Resulting devices after calculating a proposal.
     pub async fn staging_devices(&self) -> Result<Vec<Device>, ServiceError> {
         let objects = self.object_manager_proxy.get_managed_objects().await?;
         let mut result = vec![];
