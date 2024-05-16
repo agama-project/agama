@@ -64,9 +64,9 @@ fn find_web_ui_dir() -> PathBuf {
 
 #[derive(Args, Debug)]
 struct ServeArgs {
-    // Address/port to listen on (":::3000" listens for both IPv6 and IPv4
+    // Address/port to listen on (":::80" listens for both IPv6 and IPv4
     // connections unless manually disabled in /proc/sys/net/ipv6/bindv6only)
-    #[arg(long, default_value = ":::3000", help = "Primary address to listen on")]
+    #[arg(long, default_value = ":::80", help = "Primary address to listen on")]
     address: String,
     #[arg(
         long,
