@@ -584,7 +584,7 @@ class ProposalManager {
    * Calculates a new proposal
    *
    * @param {ProposalSettings} settings
-   * @returns {Promise<number>} 0 on success, 1 on failure
+   * @returns {Promise<boolean>} true on success
    */
   async calculate(settings) {
     const buildHttpVolume = (volume) => {
@@ -623,10 +623,16 @@ class ProposalManager {
     const response = await this.client.put("/storage/proposal/settings", httpSettings);
 
     if (!response.ok) {
-      console.warn("Failed to set proposal settings: ", response);
+      console.warn("Failed to set the proposal settings: ", response);
+      return false;
     }
 
-    return response.ok ? 0 : 1;
+    if (!response.json) {
+      console.warn("A proposal cannot be calculated with the given settings: ", response);
+      return false;
+    }
+
+    return response.json();
   }
 
   /**
