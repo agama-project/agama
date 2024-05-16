@@ -78,25 +78,6 @@ trait Proposal {
 }
 
 #[dbus_proxy(
-    interface = "org.opensuse.Agama.Storage1.Device",
-    default_service = "org.opensuse.Agama.Storage1",
-    default_path = "/org/opensuse/Agama/Storage1"
-)]
-trait Device {
-    /// Description property
-    #[dbus_proxy(property)]
-    fn description(&self) -> zbus::Result<String>;
-
-    /// Name property
-    #[dbus_proxy(property)]
-    fn name(&self) -> zbus::Result<String>;
-
-    /// SID property
-    #[dbus_proxy(property, name = "SID")]
-    fn sid(&self) -> zbus::Result<u32>;
-}
-
-#[dbus_proxy(
     interface = "org.opensuse.Agama.Storage1.ISCSI.Initiator",
     default_service = "org.opensuse.Agama.Storage1",
     assume_defaults = true

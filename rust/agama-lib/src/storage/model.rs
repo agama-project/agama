@@ -5,15 +5,6 @@ use zbus::zvariant::{OwnedValue, Value};
 
 use crate::dbus::{get_optional_property, get_property};
 
-/// Represents a storage device
-/// Just for backward compatibility with CLI.
-/// See struct Device
-#[derive(Serialize, Debug)]
-pub struct StorageDevice {
-    pub name: String,
-    pub description: String,
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct DeviceSid(u32);
 
@@ -485,6 +476,7 @@ impl TryFrom<HashMap<String, OwnedValue>> for Volume {
 }
 
 /// Information about system device created by composition to reflect different devices on system
+// FIXME Device schema is not generated because it collides with the network Device.
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Device {
