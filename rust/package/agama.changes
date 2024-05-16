@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 16 12:34:43 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Restarting agama.service causes agama-web-server.service to be
+  restarted too (gh#openSUSE/agama#1222).
+
+-------------------------------------------------------------------
 Thu May 16 10:31:38 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - The CLI does not fail when the storage proposal is missing
