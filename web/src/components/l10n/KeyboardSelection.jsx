@@ -82,7 +82,7 @@ export default function KeyboardSelection() {
                     </>
                   }
                   value={JSON.stringify(keymap)}
-                  checked={keymap === selected}
+                  defaultChecked={keymap === selected}
                 />
               ))}
             </FormGroup>

@@ -171,7 +171,7 @@ const LocaleSection = () => {
  * @component
  */
 const KeymapSection = () => {
-  const { keymap } = useL10n();
+  const { selectedKeymap: keymap } = useL10n();
 
   return (
     <Section title={_("Keyboard")} icon="keyboard">
