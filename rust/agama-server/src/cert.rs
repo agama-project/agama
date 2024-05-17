@@ -1,4 +1,5 @@
 use anyhow;
+use gethostname::gethostname;
 use openssl::asn1::Asn1Time;
 use openssl::bn::{BigNum, MsbOption};
 use openssl::error::ErrorStack;
@@ -26,12 +27,15 @@ use openssl::x509::{X509NameBuilder, X509};
 //     pub write(...)
 // }
 
-const DEFAULT_CERT_FILE: &str = "/run/agama/certificate.pem";
+const DEFAULT_CERT_FILE: &str = "/run/agama/cert.pem";
 const DEFAULT_KEY_FILE: &str = "/run/agama/key.pem";
 
 pub fn write_certificate(cert: X509, key: PKey<Private>) {
     if let Ok(bytes) = cert.to_pem() {
         fs::write(Path::new(DEFAULT_CERT_FILE), bytes);
+    }
+    if let Ok(bytes) = key.public_key_to_pem() {
+        fs::write(Path::new(DEFAULT_KEY_FILE), bytes);
     }
 }
 
@@ -41,9 +45,10 @@ pub fn create_certificate() -> Result<(X509, PKey<Private>), ErrorStack> {
     let rsa = Rsa::generate(2048)?;
     let key = PKey::from_rsa(rsa)?;
 
+    let hostname = gethostname().into_string().map_err(|e| openssl::ssl::into_io_error()?)?;
     let mut x509_name = X509NameBuilder::new()?;
     x509_name.append_entry_by_text("O", "Agama")?;
-    x509_name.append_entry_by_text("CN", "localhost")?;
+    x509_name.append_entry_by_text("CN", hostname)?;
     let x509_name = x509_name.build();
 
     let mut builder = X509::builder()?;
