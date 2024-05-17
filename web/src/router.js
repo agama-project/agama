@@ -30,7 +30,7 @@ import { ProductPage, ProductSelectionPage, ProductRegistrationPage } from "~/co
 import { SoftwarePage } from "~/components/software";
 import { ProposalPage, ISCSIPage, DASDPage, ZFCPPage } from "~/components/storage";
 import { UsersPage } from "~/components/users";
-import { L10nPage, LocaleSelection, KeymapSelection } from "~/components/l10n";
+import { L10nPage, LocaleSelection, KeymapSelection, TimezoneSelection } from "~/components/l10n";
 import { NetworkPage } from "~/components/network";
 import { _ } from "~/i18n";
 
@@ -58,6 +58,7 @@ const l10nRoutes = createRoute(_("Localization"), "l10n", <Page title={(_("Local
   { index: true, element: <L10nPage /> },
   createRoute(_("Select language"), "language/select", <LocaleSelection />),
   createRoute(_("Select keymap"), "keymap/select", <KeymapSelection />),
+  createRoute(_("Select timezone"), "timezone/select", <TimezoneSelection />),
 ], "globe");
 const softwareRoutes = createRoute(_("Software"), "software", <SoftwarePage />, [], "apps");
 const storagePages = [
