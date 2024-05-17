@@ -21,7 +21,6 @@
 
 export { default as InstallerKeymapSwitcher } from "./InstallerKeymapSwitcher";
 export { default as InstallerLocaleSwitcher } from "./InstallerLocaleSwitcher";
-export { default as KeymapSelector } from "./KeymapSelector";
 export { default as L10nPage } from "./L10nPage";
 export { default as LocaleSelection } from "./LocaleSelection";
 export { default as KeymapSelection } from "./KeyboardSelection";
