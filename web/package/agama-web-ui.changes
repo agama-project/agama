@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri May 17 09:52:26 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 8
+
+-------------------------------------------------------------------
 Thu May 16 12:48:27 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix the download logs action in the web UI and drop the broken

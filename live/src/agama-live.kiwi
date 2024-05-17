@@ -13,7 +13,7 @@
         <profile name="openSUSE-Playwright" description="openSUSE image with Playwright integration tests" arch="aarch64,x86_64" />
     </profiles>
     <preferences>
-        <version>7.0.0</version>
+        <version>8.0.0</version>
         <packagemanager>zypper</packagemanager>
         <locale>en_US</locale>
         <keytable>us</keytable>
