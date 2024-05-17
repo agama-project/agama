@@ -114,7 +114,8 @@ impl ServeArgs {
             // create a self-signed certificate if needed and store it for later use
             let (cert, key) = agama_server::cert::create_certificate()?;
 
-            agama_server::cert::write_certificate(cert.clone(), key.clone());
+            // tries to write generated self-signed certificate. Nobody cares if it fails
+            let _ = agama_server::cert::write_certificate(cert.clone(), key.clone());
 
             tls_builder.set_private_key(&key)?;
             tls_builder.set_certificate(&cert)?;

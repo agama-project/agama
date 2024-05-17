@@ -31,13 +31,15 @@ const DEFAULT_CERT_FILE: &str = "/run/agama/cert.pem";
 const DEFAULT_KEY_FILE: &str = "/run/agama/key.pem";
 
 /// Writes the certificate and the key to the well known location
-pub fn write_certificate(cert: X509, key: PKey<Private>) {
+pub fn write_certificate(cert: X509, key: PKey<Private>) -> anyhow::Result<()> {
     if let Ok(bytes) = cert.to_pem() {
-        fs::write(Path::new(DEFAULT_CERT_FILE), bytes);
+        fs::write(Path::new(DEFAULT_CERT_FILE), bytes)?;
     }
     if let Ok(bytes) = key.public_key_to_pem() {
-        fs::write(Path::new(DEFAULT_KEY_FILE), bytes);
+        fs::write(Path::new(DEFAULT_KEY_FILE), bytes)?;
     }
+
+    Ok(())
 }
 
 /// Generates a self-signed SSL certificate
