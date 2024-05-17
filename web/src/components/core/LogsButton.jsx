@@ -77,18 +77,12 @@ const LogsButton = ({ ...props }) => {
     setError(null);
     setIsCollecting(true);
     cancellablePromise(
-      client.manager.fetchLogs().then((response) => {
-        if (!response.ok) {
-          setError(true);
-        }
-        response.blob().then((blob) => {
-          const url = URL.createObjectURL(blob);
-          autoDownload(url);
-        });
-      }),
+      client.manager.fetchLogs().then((response) => response.blob()),
     )
-      .catch((e) => {
-        console.error(e);
+      .then(URL.createObjectURL)
+      .then(autoDownload)
+      .catch((error) => {
+        console.error(error);
         setError(true);
       })
       .finally(() => setIsCollecting(false));

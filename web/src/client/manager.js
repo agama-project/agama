@@ -86,6 +86,10 @@ class ManagerBaseClient {
    */
   async fetchLogs() {
     const response = await fetch(`${this.client.baseUrl}/manager/logs`);
+    if (!response.ok) {
+      throw new Error("Could not fetch the logs");
+    }
+
     return response;
   }
 
