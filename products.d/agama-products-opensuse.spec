@@ -28,18 +28,6 @@ Source0:        agama.tar
 %description
 Products definition for Agama installer. This one is for opensuse products.
 
-%package -n agama-products-ALP-Dolomite
-#               This will be set by osc services, that will run after this.
-Version:        0
-Release:        0
-Summary:        Definition of Dolomite product for the Agama installer
-License:        GPL-2.0-only
-Url:            https://github.com/opensuse/agama
-BuildArch:      noarch
-
-%description -n agama-products-ALP-Dolomite
-Products definition for Agama installer. This one is for ALP Dolomite product.
-
 %prep
 %autosetup -a0 -n agama
 
@@ -55,10 +43,5 @@ install -m 0644 *.yaml %{buildroot}%{_datadir}/agama/products.d
 %{_datadir}/agama/products.d/microos.yaml
 %{_datadir}/agama/products.d/microos-desktop.yaml
 %{_datadir}/agama/products.d/tumbleweed.yaml
-
-%files -n agama-products-ALP-Dolomite
-%dir %{_datadir}/agama
-%dir %{_datadir}/agama/products.d
-%{_datadir}/agama/products.d/ALP-Dolomite.yaml
 
 %changelog
