@@ -172,7 +172,7 @@ module Agama
         storage_manager.proposal = proposal
       end
 
-      # @return [Y2Storage::DiskAnalyzer, nil]
+      # @return [Y2Storage::DiskAnalyzer, nil] nil if the system is not probed yet.
       def disk_analyzer
         return nil unless storage_manager.probed?
 
@@ -181,7 +181,7 @@ module Agama
 
       # Devicegraph representing the system
       #
-      # @return [Y2Storage::Devicegraph, nil]
+      # @return [Y2Storage::Devicegraph, nil] nil if the system is not probed yet.
       def probed_devicegraph
         return nil unless storage_manager.probed?
 
