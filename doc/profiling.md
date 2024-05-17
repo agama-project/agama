@@ -11,7 +11,9 @@ TODO: add tower middleware to automatically log slow responses.
 ### Rust Code
 
 When checking either web-server, cli or dbus-server part written in rust, it is recommended to use debug output ( or at least modify release target to include debugging symbols ).
-Then it is possible to use e.g. `perf` or `valgrind --tool callgrind` to get hot places where the most time is spend. But often majority of time is waiting for dbus answers, so see next section.
+Then it is possible to use e.g. `perf` or `valgrind --tool callgrind` to get hot places where the most time is spend. For viewing result, it is usually useful to use annotated list like `callgrind_annotate <file>`.
+
+But often majority of time is waiting for dbus answers, so see next section.
 
 ### DBus
 
