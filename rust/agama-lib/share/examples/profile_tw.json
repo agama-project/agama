@@ -1,6 +1,6 @@
 {
   "localization": {
-    "keyboard": "en_US",
+    "keyboard": "us",
     "language": "en_US"
   },
   "software": {
@@ -39,7 +39,7 @@
         "nameservers": [
           "192.168.122.1",
           "2001:4860:4860::8888"
-        ],
+        ]
       }
     ]
   }
