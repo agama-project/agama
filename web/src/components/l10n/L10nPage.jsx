@@ -26,73 +26,32 @@ import { Section } from "~/components/core";
 import { useL10n } from "~/context/l10n";
 
 /**
- * Section for configuring timezone.
- * @component
- */
-const TimezoneSection = () => {
-  const { selectedTimezone: timezone } = useL10n();
-
-  return (
-    <Section title={_("Time zone")} icon="schedule">
-      <p>
-        {timezone ? (timezone.parts || []).join(' - ') : _("Time zone not selected yet")}
-      </p>
-      <Link to="timezone/select">
-        {timezone ? _("Change time zone") : _("Select time zone")}
-      </Link>
-    </Section>
-  );
-};
-
-/**
- * Section for configuring locales.
- * @component
- */
-const LocaleSection = () => {
-  const { selectedLocales } = useL10n();
-  const [locale] = selectedLocales;
-
-  return (
-    <Section title={_("Language")} icon="translate">
-      <p>
-        {locale ? `${locale.name} - ${locale.territory}` : _("Language not selected yet")}
-      </p>
-      <Link to="language/select">
-        {locale ? _("Change language") : _("Select language")}
-      </Link>
-    </Section>
-  );
-};
-
-/**
- * Section for configuring keymaps.
- * @component
- */
-const KeymapSection = () => {
-  const { selectedKeymap: keymap } = useL10n();
-
-  return (
-    <Section title={_("Keyboard")} icon="keyboard">
-      <p>
-        {keymap ? keymap.name : _("Keyboard not selected yet")}
-      </p>
-      <Link to="keymap/select">
-        {keymap ? _("Change keyboard") : _("Select keyboard")}
-      </Link>
-    </Section>
-  );
-};
-
-/**
  * Page for configuring localization.
  * @component
  */
 export default function L10nPage() {
+  const {
+    selectedKeymap: keymap,
+    selectedTimezone: timezone,
+    selectedLocales: [locale]
+  } = useL10n();
+
   return (
     <>
-      <LocaleSection />
-      <KeymapSection />
-      <TimezoneSection />
+      <Section title={_("Language")} icon="translate">
+        <p>{locale ? `${locale.name} - ${locale.territory}` : _("Language not selected yet")}</p>
+        <Link to="language/select">{locale ? _("Change language") : _("Select language")}</Link>
+      </Section>
+
+      <Section title={_("Keyboard")} icon="keyboard">
+        <p>{keymap ? keymap.name : _("Keyboard not selected yet")}</p>
+        <Link to="keymap/select">{keymap ? _("Change keyboard") : _("Select keyboard")}</Link>
+      </Section>
+
+      <Section title={_("Time zone")} icon="schedule">
+        <p>{timezone ? (timezone.parts || []).join(' - ') : _("Time zone not selected yet")}</p>
+        <Link to="timezone/select">{timezone ? _("Change time zone") : _("Select time zone")}</Link>
+      </Section>
     </>
   );
 }
