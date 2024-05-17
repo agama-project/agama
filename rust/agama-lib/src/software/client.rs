@@ -92,7 +92,7 @@ impl<'a> SoftwareClient<'a> {
             .await?
             .into_iter()
             .filter_map(|(id, reason)| match SelectedBy::try_from(reason) {
-                Ok(reason) if reason == SelectedBy::User => Some(id),
+                Ok(SelectedBy::User) => Some(id),
                 Ok(_reason) => None,
                 Err(e) => {
                     log::warn!("Ignoring pattern {}. Error: {}", &id, e);

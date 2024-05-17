@@ -163,7 +163,7 @@ impl<'a> ISCSIClient<'a> {
 
         let result = self
             .initiator_proxy
-            .discover(address, port as u32, options_ref)
+            .discover(address, port, options_ref)
             .await?;
         Ok(result == 0)
     }

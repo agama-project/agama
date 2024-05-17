@@ -214,8 +214,8 @@ impl<'a> ActionDispatcher<'a> {
         connection: &zbus::Connection,
         proxy: DeviceProxy<'_>,
     ) -> Result<Device, ServiceError> {
-        let builder = DeviceFromProxyBuilder::new(&connection, &proxy);
-        Ok(builder.build().await?)
+        let builder = DeviceFromProxyBuilder::new(connection, &proxy);
+        builder.build().await
     }
 }
 
@@ -255,7 +255,6 @@ impl DeviceChangedStream {
         let interfaces: Vec<String> = args
             .interfaces_and_properties()
             .keys()
-            .into_iter()
             .map(|i| i.to_string())
             .collect();
 
@@ -364,7 +363,7 @@ async fn build_added_and_removed_stream(
         .path("/org/freedesktop")?
         .interface("org.freedesktop.DBus.ObjectManager")?
         .build();
-    let stream = MessageStream::for_match_rule(rule, &connection, Some(1)).await?;
+    let stream = MessageStream::for_match_rule(rule, connection, Some(1)).await?;
     Ok(stream)
 }
 
@@ -379,7 +378,7 @@ async fn build_properties_changed_stream(
         .interface("org.freedesktop.DBus.Properties")?
         .member("PropertiesChanged")?
         .build();
-    let stream = MessageStream::for_match_rule(rule, &connection, Some(1)).await?;
+    let stream = MessageStream::for_match_rule(rule, connection, Some(1)).await?;
     Ok(stream)
 }
 
@@ -433,7 +432,7 @@ impl<'a> ProxiesRegistry<'a> {
     ///
     /// * `path`: D-Bus object path.
     pub fn remove_device(&mut self, path: &OwnedObjectPath) -> Option<(String, DeviceProxy)> {
-        self.devices.remove(&path)
+        self.devices.remove(path)
     }
 
     //// Updates a device name.
@@ -453,10 +452,10 @@ impl<'a> ProxiesRegistry<'a> {
         &self,
         ip4_config_path: &OwnedObjectPath,
     ) -> Option<&(String, DeviceProxy<'_>)> {
-        for (_, device) in &self.devices {
+        for device in self.devices.values() {
             if let Ok(path) = device.1.ip4_config().await {
                 if path == *ip4_config_path {
-                    return Some(&device);
+                    return Some(device);
                 }
             }
         }
@@ -470,10 +469,10 @@ impl<'a> ProxiesRegistry<'a> {
         &self,
         ip4_config_path: &OwnedObjectPath,
     ) -> Option<&(String, DeviceProxy<'_>)> {
-        for (_, device) in &self.devices {
+        for device in self.devices.values() {
             if let Ok(path) = device.1.ip4_config().await {
                 if path == *ip4_config_path {
-                    return Some(&device);
+                    return Some(device);
                 }
             }
         }

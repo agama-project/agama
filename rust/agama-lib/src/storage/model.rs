@@ -18,12 +18,10 @@ impl TryFrom<i32> for DeviceSid {
     type Error = zbus::zvariant::Error;
 
     fn try_from(value: i32) -> Result<Self, Self::Error> {
-        u32::try_from(value).map(|v| v.into()).or_else(|_| {
-            Err(Self::Error::Message(format!(
+        u32::try_from(value).map(|v| v.into()).map_err(|_| Self::Error::Message(format!(
                 "Cannot convert sid from {}",
                 value
             )))
-        })
     }
 }
 
@@ -48,7 +46,7 @@ impl TryFrom<zbus::zvariant::ObjectPath<'_>> for DeviceSid {
 
     fn try_from(path: zbus::zvariant::ObjectPath) -> Result<Self, Self::Error> {
         path.as_str()
-            .rsplit_once("/")
+            .rsplit_once('/')
             .and_then(|(_, sid)| sid.parse::<u32>().ok())
             .ok_or_else(|| Self::Error::Message(format!("Cannot parse sid from {}", path)))
             .map(DeviceSid)
@@ -68,12 +66,10 @@ impl TryFrom<i64> for DeviceSize {
     type Error = zbus::zvariant::Error;
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
-        u64::try_from(value).map(|v| v.into()).or_else(|_| {
-            Err(Self::Error::Message(format!(
+        u64::try_from(value).map(|v| v.into()).map_err(|_| Self::Error::Message(format!(
                 "Cannot convert size from {}",
                 value
             )))
-        })
     }
 }
 
@@ -94,9 +90,9 @@ impl TryFrom<zbus::zvariant::Value<'_>> for DeviceSize {
     }
 }
 
-impl<'a> Into<zbus::zvariant::Value<'a>> for DeviceSize {
-    fn into(self) -> Value<'a> {
-        Value::new(self.0)
+impl<'a> From<DeviceSize> for zbus::zvariant::Value<'a> {
+    fn from(val: DeviceSize) -> Self {
+        Value::new(val.0)
     }
 }
 
@@ -188,11 +184,11 @@ impl TryFrom<zbus::zvariant::Value<'_>> for SpaceActionSettings {
     }
 }
 
-impl<'a> Into<zbus::zvariant::Value<'a>> for SpaceActionSettings {
-    fn into(self) -> zbus::zvariant::Value<'a> {
+impl<'a> From<SpaceActionSettings> for zbus::zvariant::Value<'a> {
+    fn from(val: SpaceActionSettings) -> Self {
         let result: HashMap<&str, Value> = HashMap::from([
-            ("Device", Value::new(self.device)),
-            ("Action", Value::new(self.action.as_dbus_string())),
+            ("Device", Value::new(val.device)),
+            ("Action", Value::new(val.action.as_dbus_string())),
         ]);
 
         Value::new(result)
@@ -218,41 +214,41 @@ pub struct ProposalSettingsPatch {
     pub volumes: Option<Vec<Volume>>,
 }
 
-impl<'a> Into<HashMap<&'static str, Value<'a>>> for ProposalSettingsPatch {
-    fn into(self) -> HashMap<&'static str, Value<'a>> {
+impl<'a> From<ProposalSettingsPatch> for HashMap<&'static str, Value<'a>> {
+    fn from(val: ProposalSettingsPatch) -> Self {
         let mut result = HashMap::new();
-        if let Some(target) = self.target {
+        if let Some(target) = val.target {
             result.insert("Target", Value::new(target.as_dbus_string()));
         }
-        if let Some(dev) = self.target_device {
+        if let Some(dev) = val.target_device {
             result.insert("TargetDevice", Value::new(dev));
         }
-        if let Some(devs) = self.target_pv_devices {
+        if let Some(devs) = val.target_pv_devices {
             result.insert("TargetPVDevices", Value::new(devs));
         }
-        if let Some(value) = self.configure_boot {
+        if let Some(value) = val.configure_boot {
             result.insert("ConfigureBoot", Value::new(value));
         }
-        if let Some(value) = self.boot_device {
+        if let Some(value) = val.boot_device {
             result.insert("BootDevice", Value::new(value));
         }
-        if let Some(value) = self.encryption_password {
+        if let Some(value) = val.encryption_password {
             result.insert("EncryptionPassword", Value::new(value));
         }
-        if let Some(value) = self.encryption_method {
+        if let Some(value) = val.encryption_method {
             result.insert("EncryptionMethod", Value::new(value));
         }
-        if let Some(value) = self.encryption_pbkd_function {
+        if let Some(value) = val.encryption_pbkd_function {
             result.insert("EncryptionPBKDFunction", Value::new(value));
         }
-        if let Some(value) = self.space_policy {
+        if let Some(value) = val.space_policy {
             result.insert("SpacePolicy", Value::new(value));
         }
-        if let Some(value) = self.space_actions {
+        if let Some(value) = val.space_actions {
             let list: Vec<Value> = value.into_iter().map(|a| a.into()).collect();
             result.insert("SpaceActions", Value::new(list));
         }
-        if let Some(value) = self.volumes {
+        if let Some(value) = val.volumes {
             let list: Vec<Value> = value.into_iter().map(|a| a.into()).collect();
             result.insert("Volumes", Value::new(list));
         }
@@ -338,14 +334,14 @@ pub enum VolumeTarget {
     Filesystem,
 }
 
-impl<'a> Into<zbus::zvariant::Value<'a>> for VolumeTarget {
-    fn into(self) -> zbus::zvariant::Value<'a> {
-        let str = match self {
-            Self::Default => "default",
-            Self::NewPartition => "new_partition",
-            Self::NewVg => "new_vg",
-            Self::Device => "device",
-            Self::Filesystem => "filesystem",
+impl<'a> From<VolumeTarget> for zbus::zvariant::Value<'a> {
+    fn from(val: VolumeTarget) -> Self {
+        let str = match val {
+            VolumeTarget::Default => "default",
+            VolumeTarget::NewPartition => "new_partition",
+            VolumeTarget::NewVg => "new_vg",
+            VolumeTarget::Device => "device",
+            VolumeTarget::Filesystem => "filesystem",
         };
 
         Value::new(str)
@@ -419,23 +415,23 @@ pub struct Volume {
     outline: Option<VolumeOutline>,
 }
 
-impl<'a> Into<zbus::zvariant::Value<'a>> for Volume {
-    fn into(self) -> zbus::zvariant::Value<'a> {
+impl<'a> From<Volume> for zbus::zvariant::Value<'a> {
+    fn from(val: Volume) -> Self {
         let mut result: HashMap<&str, Value> = HashMap::from([
-            ("MountPath", Value::new(self.mount_path)),
-            ("MountOptions", Value::new(self.mount_options)),
-            ("Target", self.target.into()),
-            ("FsType", Value::new(self.fs_type)),
-            ("AutoSize", Value::new(self.auto_size)),
-            ("Snapshots", Value::new(self.snapshots)),
+            ("MountPath", Value::new(val.mount_path)),
+            ("MountOptions", Value::new(val.mount_options)),
+            ("Target", val.target.into()),
+            ("FsType", Value::new(val.fs_type)),
+            ("AutoSize", Value::new(val.auto_size)),
+            ("Snapshots", Value::new(val.snapshots)),
         ]);
-        if let Some(dev) = self.target_device {
+        if let Some(dev) = val.target_device {
             result.insert("TargetDevice", Value::new(dev));
         }
-        if let Some(value) = self.min_size {
+        if let Some(value) = val.min_size {
             result.insert("MinSize", value.into());
         }
-        if let Some(value) = self.max_size {
+        if let Some(value) = val.max_size {
             result.insert("MaxSize", value.into());
         }
         // intentionally skip outline as it is not send to dbus and act as read only parameter

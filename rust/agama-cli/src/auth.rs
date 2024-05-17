@@ -199,7 +199,7 @@ async fn get_jwt(url: String, password: String) -> anyhow::Result<String> {
     let body = response
         .json::<std::collections::HashMap<String, String>>()
         .await?;
-    let value = body.get(&"token".to_string());
+    let value = body.get("token");
 
     if let Some(token) = value {
         return Ok(token.clone());

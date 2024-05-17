@@ -351,6 +351,7 @@ fn write_token(path: &str, secret: &str) -> io::Result<()> {
     let token = generate_token(secret);
     let mut file = fs::OpenOptions::new()
         .create(true)
+        .truncate(true)
         .write(true)
         .mode(0o400)
         .open(path)?;

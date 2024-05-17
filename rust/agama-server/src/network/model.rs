@@ -180,7 +180,7 @@ impl NetworkState {
     }
 
     pub fn remove_device(&mut self, name: &str) -> Result<(), NetworkStateError> {
-        let Some(position) = self.devices.iter().position(|d| &d.name == name) else {
+        let Some(position) = self.devices.iter().position(|d| d.name == name) else {
             return Err(NetworkStateError::UnknownDevice(name.to_string()));
         };
 
