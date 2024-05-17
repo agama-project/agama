@@ -82,7 +82,7 @@ ls -1 "${IGNORE_OPTS[@]}" -I en_US /usr/share/locale/ | xargs -I% sh -c "echo 'R
 ls -1 "${IGNORE_OPTS[@]}" -I "en_US*" -I "C.*" /usr/lib/locale/ | xargs -I% sh -c "echo 'Removing locale %...' && rm -rf /usr/lib/locale/%"
 
 # delete unused translations (MO files)
-for t in zypper gettext-runtime p11-kit polkit-1 xkeyboard-config; do
+for t in zypper gettext-runtime p11-kit; do
     rm /usr/share/locale/*/LC_MESSAGES/$t.mo
 done
 du -h -s /usr/{share,lib}/locale/
