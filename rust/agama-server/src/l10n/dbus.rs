@@ -25,9 +25,9 @@ impl L10nInterface {
                 "The locales list cannot be empty".to_string(),
             ));
         }
-        backend.set_locales(&locales).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("Could not set the locales: {}", e))
-        })?;
+        backend
+            .set_locales(&locales)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("Could not set the locales: {}", e)))?;
         Ok(())
     }
 
@@ -59,9 +59,9 @@ impl L10nInterface {
             .parse()
             .map_err(|_e| zbus::fdo::Error::InvalidArgs("Cannot parse keymap ID".to_string()))?;
 
-        backend.set_keymap(keymap_id).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("Could not set the keymap: {}", e))
-        })?;
+        backend
+            .set_keymap(keymap_id)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("Could not set the keymap: {}", e)))?;
 
         Ok(())
     }
@@ -76,9 +76,9 @@ impl L10nInterface {
     pub fn set_timezone(&mut self, timezone: &str) -> Result<(), zbus::fdo::Error> {
         let mut backend = self.backend.write().unwrap();
 
-        backend.set_timezone(timezone).map_err(|e| {
-            zbus::fdo::Error::Failed(format!("Could not set the timezone: {}", e))
-        })?;
+        backend
+            .set_timezone(timezone)
+            .map_err(|e| zbus::fdo::Error::Failed(format!("Could not set the timezone: {}", e)))?;
         Ok(())
     }
 

@@ -108,8 +108,7 @@ impl LocalesDatabase {
     fn get_locales_list() -> Result<Vec<LocaleId>, Error> {
         const LOCALES_LIST_PATH: &str = "/etc/agama.d/locales";
 
-        let locales = fs::read_to_string(LOCALES_LIST_PATH)
-            .map(Self::get_locales_from_string);
+        let locales = fs::read_to_string(LOCALES_LIST_PATH).map(Self::get_locales_from_string);
 
         if let Ok(locales) = locales {
             if !locales.is_empty() {

@@ -18,10 +18,9 @@ impl TryFrom<i32> for DeviceSid {
     type Error = zbus::zvariant::Error;
 
     fn try_from(value: i32) -> Result<Self, Self::Error> {
-        u32::try_from(value).map(|v| v.into()).map_err(|_| Self::Error::Message(format!(
-                "Cannot convert sid from {}",
-                value
-            )))
+        u32::try_from(value)
+            .map(|v| v.into())
+            .map_err(|_| Self::Error::Message(format!("Cannot convert sid from {}", value)))
     }
 }
 
@@ -66,10 +65,9 @@ impl TryFrom<i64> for DeviceSize {
     type Error = zbus::zvariant::Error;
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
-        u64::try_from(value).map(|v| v.into()).map_err(|_| Self::Error::Message(format!(
-                "Cannot convert size from {}",
-                value
-            )))
+        u64::try_from(value)
+            .map(|v| v.into())
+            .map_err(|_| Self::Error::Message(format!("Cannot convert size from {}", value)))
     }
 }
 

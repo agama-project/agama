@@ -102,16 +102,14 @@ mod tests {
 
     #[test]
     fn test_get_property_wrong_type() {
-        let data: HashMap<String, OwnedValue> =
-            HashMap::from([("Id".to_string(), 1_u8.into())]);
+        let data: HashMap<String, OwnedValue> = HashMap::from([("Id".to_string(), 1_u8.into())]);
         let result: Result<u16, _> = get_property(&data, "Id");
         assert_eq!(result, Err(zvariant::Error::IncorrectType));
     }
 
     #[test]
     fn test_get_optional_property() {
-        let data: HashMap<String, OwnedValue> =
-            HashMap::from([("Id".to_string(), 1_u8.into())]);
+        let data: HashMap<String, OwnedValue> = HashMap::from([("Id".to_string(), 1_u8.into())]);
         let id: Option<u8> = get_optional_property(&data, "Id").unwrap();
         assert_eq!(id, Some(1));
 
