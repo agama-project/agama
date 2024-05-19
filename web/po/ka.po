@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-08 01:57+0000\n"
+"POT-Creation-Date: 2024-05-19 02:19+0000\n"
 "PO-Revision-Date: 2024-04-17 18:43+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -41,7 +41,7 @@ msgstr ""
 
 #. TRANSLATORS: button label
 #: src/components/core/About.jsx:92 src/components/core/FileViewer.jsx:81
-#: src/components/core/IssuesDialog.jsx:119 src/components/core/Sidebar.jsx:160
+#: src/components/core/IssuesDialog.jsx:117 src/components/core/Sidebar.jsx:152
 #: src/components/network/WifiSelector.jsx:148
 #: src/components/product/ProductPage.jsx:239
 #: src/components/software/SoftwarePage.jsx:90
@@ -239,21 +239,21 @@ msgstr ""
 msgid "What is this?"
 msgstr ""
 
-#: src/components/core/LogsButton.jsx:98
+#: src/components/core/LogsButton.jsx:101
 msgid "Collecting logs..."
 msgstr "ჟურნალის შეგროვება..."
 
-#: src/components/core/LogsButton.jsx:98
+#: src/components/core/LogsButton.jsx:101
 msgid "Download logs"
 msgstr "ჟურნალის გადმოწერა"
 
-#: src/components/core/LogsButton.jsx:106
+#: src/components/core/LogsButton.jsx:109
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
 msgstr ""
 
-#: src/components/core/LogsButton.jsx:114
+#: src/components/core/LogsButton.jsx:117
 msgid "Something went wrong while collecting logs. Please, try again."
 msgstr ""
 
@@ -329,17 +329,13 @@ msgid "Open Terminal"
 msgstr "ტერმინალის გახსნა"
 
 #. TRANSLATORS: sidebar header
-#: src/components/core/Sidebar.jsx:116 src/components/core/Sidebar.jsx:124
+#: src/components/core/Sidebar.jsx:112 src/components/core/Sidebar.jsx:120
 msgid "Installer Options"
 msgstr "დაყენების პროგრამის მორგება"
 
-#: src/components/core/Sidebar.jsx:131
+#: src/components/core/Sidebar.jsx:127
 msgid "Hide installer options"
 msgstr "დაყენების პროგრამის პარამეტრების დამალვა"
-
-#: src/components/core/Sidebar.jsx:139
-msgid "Diagnostic tools"
-msgstr "დიაგნოსტიკის პროგრამები"
 
 #. TRANSLATORS: Titles used for the popup displaying found section issues
 #: src/components/core/ValidationErrors.jsx:53
@@ -395,7 +391,7 @@ msgstr ""
 #. TRANSLATORS: page title
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:55
 #: src/components/l10n/L10nPage.jsx:384
-#: src/components/overview/L10nSection.jsx:52
+#: src/components/overview/L10nSection.jsx:54
 msgid "Localization"
 msgstr "ლოკალიზაცია"
 
@@ -529,8 +525,8 @@ msgstr "მისამართები"
 msgid "Addresses data list"
 msgstr "მისამართის მონაცემების სია"
 
-#. TRANSLATORS: table header
 #. TRANSLATORS: input field for the iSCSI initiator name
+#. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:66
 #: src/components/network/ConnectionsTable.jsx:95
 #: src/components/storage/ZFCPPage.jsx:360
@@ -663,8 +659,8 @@ msgstr ""
 msgid "Connect to a Wi-Fi network"
 msgstr ""
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/network/NetworkPage.jsx:178
 #: src/components/overview/NetworkSection.jsx:117
 msgid "Network"
@@ -695,7 +691,7 @@ msgstr "WPA & WPA2 პერსონალური"
 #: src/components/product/ProductPage.jsx:128
 #: src/components/product/ProductPage.jsx:194
 #: src/components/storage/ZFCPDiskForm.jsx:112
-#: src/components/storage/iscsi/DiscoverForm.jsx:108
+#: src/components/storage/iscsi/DiscoverForm.jsx:110
 #: src/components/storage/iscsi/LoginForm.jsx:72
 #: src/components/users/FirstUser.jsx:280
 msgid "Something went wrong"
@@ -752,8 +748,8 @@ msgstr "გათიშვა"
 msgid "Failed"
 msgstr ""
 
-#. TRANSLATORS: Wifi network status
 #. TRANSLATORS: iSCSI connection status
+#. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:52
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -791,7 +787,7 @@ msgstr[0] "მომხმარებლის მოწყობილობ�
 msgstr[1] "მომხმარებლის მოწყობილობები"
 
 #. TRANSLATORS: page title
-#: src/components/overview/OverviewPage.jsx:58
+#: src/components/overview/OverviewPage.jsx:48
 msgid "Installation Summary"
 msgstr "ჩადგმის შეჯამება"
 
@@ -801,8 +797,8 @@ msgstr "ჩადგმის შეჯამება"
 msgid "%s (registered)"
 msgstr "%s (რეგისტრირებულია)"
 
-#. TRANSLATORS: page section
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section
 #: src/components/overview/ProductSection.jsx:71
 #: src/components/product/ProductPage.jsx:435
 msgid "Product"
@@ -817,8 +813,8 @@ msgstr "პროგრამის რეპოზიტორიების �
 msgid "Refresh the repositories"
 msgstr "რეპოზიტორიების განახლება"
 
-#. TRANSLATORS: page section
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section
 #: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:216
 msgid "Software"
@@ -925,8 +921,8 @@ msgstr ""
 msgid "Probing storage devices"
 msgstr "საცავის მოწყობილობების ზონდირება"
 
-#. TRANSLATORS: Storage page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: Storage page title
 #: src/components/overview/StorageSection.jsx:293
 #: src/components/storage/ProposalPage.jsx:267
 msgid "Storage"
@@ -1186,7 +1182,7 @@ msgid "Formatting DASD devices"
 msgstr "DASD მოწყობილობების დაფორმატება"
 
 #. TRANSLATORS: DASD = Direct Access Storage Device, IBM mainframe storage technology
-#: src/components/storage/DASDPage.jsx:181
+#: src/components/storage/DASDPage.jsx:182
 msgid "Storage DASD"
 msgstr "DASD საცავი"
 
@@ -2297,37 +2293,37 @@ msgid "Target Password"
 msgstr "სამიზნე პაროლი"
 
 #. TRANSLATORS: popup title
-#: src/components/storage/iscsi/DiscoverForm.jsx:101
+#: src/components/storage/iscsi/DiscoverForm.jsx:102
 msgid "Discover iSCSI Targets"
 msgstr ""
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:110
+#: src/components/storage/iscsi/DiscoverForm.jsx:112
 #: src/components/storage/iscsi/LoginForm.jsx:73
 msgid "Make sure you provide the correct values"
 msgstr ""
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:115
+#: src/components/storage/iscsi/DiscoverForm.jsx:118
 msgid "IP address"
 msgstr "IP-მისამართი"
 
 #. TRANSLATORS: network address
-#: src/components/storage/iscsi/DiscoverForm.jsx:122
-#: src/components/storage/iscsi/DiscoverForm.jsx:124
+#: src/components/storage/iscsi/DiscoverForm.jsx:125
+#: src/components/storage/iscsi/DiscoverForm.jsx:127
 msgid "Address"
 msgstr "მისამართი"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:129
+#: src/components/storage/iscsi/DiscoverForm.jsx:132
 msgid "Incorrect IP address"
 msgstr ""
 
 #. TRANSLATORS: network port number
-#: src/components/storage/iscsi/DiscoverForm.jsx:133
-#: src/components/storage/iscsi/DiscoverForm.jsx:140
-#: src/components/storage/iscsi/DiscoverForm.jsx:142
+#: src/components/storage/iscsi/DiscoverForm.jsx:136
+#: src/components/storage/iscsi/DiscoverForm.jsx:143
+#: src/components/storage/iscsi/DiscoverForm.jsx:145
 msgid "Port"
 msgstr "პორტი"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:147
+#: src/components/storage/iscsi/DiscoverForm.jsx:150
 msgid "Incorrect port"
 msgstr "არასწორი პორტი"
 
@@ -2355,7 +2351,7 @@ msgid "Offload card"
 msgstr "განტვირთვის ბარათი"
 
 #. TRANSLATORS: iSCSI initiator section name
-#: src/components/storage/iscsi/InitiatorSection.jsx:50
+#: src/components/storage/iscsi/InitiatorSection.jsx:49
 msgid "Initiator"
 msgstr "ინიციატორი"
 
@@ -2399,27 +2395,27 @@ msgstr "პორტალი"
 msgid "Interface"
 msgstr "ინტერფეისი"
 
-#: src/components/storage/iscsi/TargetsSection.jsx:139
+#: src/components/storage/iscsi/TargetsSection.jsx:142
 msgid "No iSCSI targets found."
 msgstr ""
 
-#: src/components/storage/iscsi/TargetsSection.jsx:140
+#: src/components/storage/iscsi/TargetsSection.jsx:143
 msgid ""
 "Please, perform an iSCSI discovery in order to find available iSCSI targets."
 msgstr ""
 
 #. TRANSLATORS: button label, starts iSCSI discovery
-#: src/components/storage/iscsi/TargetsSection.jsx:142
+#: src/components/storage/iscsi/TargetsSection.jsx:145
 msgid "Discover iSCSI targets"
 msgstr ""
 
 #. TRANSLATORS: button label, starts iSCSI discovery
-#: src/components/storage/iscsi/TargetsSection.jsx:153
+#: src/components/storage/iscsi/TargetsSection.jsx:156
 msgid "Discover"
 msgstr "აღმოაჩინეთ"
 
 #. TRANSLATORS: iSCSI targets section title
-#: src/components/storage/iscsi/TargetsSection.jsx:167
+#: src/components/storage/iscsi/TargetsSection.jsx:170
 msgid "Targets"
 msgstr "სამიზნეები"
 
@@ -2680,6 +2676,9 @@ msgstr "მომხმარებელი"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "Root-ით ავთენტიკაცია"
+
+#~ msgid "Diagnostic tools"
+#~ msgstr "დიაგნოსტიკის პროგრამები"
 
 #~ msgid "Try Again"
 #~ msgstr "კიდევ სცადეთ"

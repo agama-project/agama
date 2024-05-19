@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-08 01:57+0000\n"
-"PO-Revision-Date: 2024-05-04 17:43+0000\n"
-"Last-Translator: Victor hck <victorhck@opensuse.org>\n"
+"POT-Creation-Date: 2024-05-19 02:19+0000\n"
+"PO-Revision-Date: 2024-05-12 20:43+0000\n"
+"Last-Translator: Alejandro Jiménez <ale-jimenez1@hotmail.es>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "es/>\n"
 "Language: es\n"
@@ -46,7 +46,7 @@ msgstr ""
 
 #. TRANSLATORS: button label
 #: src/components/core/About.jsx:92 src/components/core/FileViewer.jsx:81
-#: src/components/core/IssuesDialog.jsx:119 src/components/core/Sidebar.jsx:160
+#: src/components/core/IssuesDialog.jsx:117 src/components/core/Sidebar.jsx:152
 #: src/components/network/WifiSelector.jsx:148
 #: src/components/product/ProductPage.jsx:239
 #: src/components/software/SoftwarePage.jsx:90
@@ -227,7 +227,7 @@ msgstr "Buscar"
 #: src/components/core/LoginPage.jsx:56
 #, c-format
 msgid "Log in as %s"
-msgstr ""
+msgstr "Iniciar sesión como %s"
 
 #. TRANSLATORS: An explanation about required privileges for login into the installer. %s
 #. will be replaced by "root"
@@ -237,38 +237,40 @@ msgid ""
 "The installer requires %s user privileges. Please, provide its password to "
 "log in to the system."
 msgstr ""
+"El instalador requiere privilegios del usuario %s. Por favor, introduce su "
+"contraseña para iniciar sesión en el sistema."
 
 #: src/components/core/LoginPage.jsx:72
-#, fuzzy
 msgid "Login form"
-msgstr "Iniciar sesión %s"
+msgstr "Formulario de inicio de sesión"
 
 #: src/components/core/LoginPage.jsx:78
-#, fuzzy
 msgid "Password input"
-msgstr "Contraseña"
+msgstr "Entrada de contraseña"
 
 #: src/components/core/LoginPage.jsx:86
 msgid "Could not log in. Please, make sure that the password is correct."
 msgstr ""
+"No se ha podido iniciar sesión. Por favor, asegúrese de que la contraseña es "
+"correcta."
 
 #: src/components/core/LoginPage.jsx:93
 msgid "Log in"
-msgstr ""
+msgstr "Iniciar sesión"
 
 #: src/components/core/LoginPage.jsx:104
 msgid "What is this?"
-msgstr ""
+msgstr "¿Qué es esto?"
 
-#: src/components/core/LogsButton.jsx:98
+#: src/components/core/LogsButton.jsx:101
 msgid "Collecting logs..."
 msgstr "Recolectando registros..."
 
-#: src/components/core/LogsButton.jsx:98
+#: src/components/core/LogsButton.jsx:101
 msgid "Download logs"
 msgstr "Descargar los registros"
 
-#: src/components/core/LogsButton.jsx:106
+#: src/components/core/LogsButton.jsx:109
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
@@ -276,7 +278,7 @@ msgstr ""
 "El navegador ejecutará la descarga de registros tan pronto como estén "
 "listos. Por favor tenga paciencia."
 
-#: src/components/core/LogsButton.jsx:114
+#: src/components/core/LogsButton.jsx:117
 msgid "Something went wrong while collecting logs. Please, try again."
 msgstr "Algo salió mal al recolectar los registros. Inténtelo de nuevo."
 
@@ -318,9 +320,8 @@ msgstr "Confirmar"
 
 #. TRANSLATORS: progress message
 #: src/components/core/Popup.jsx:210
-#, fuzzy
 msgid "Loading data..."
-msgstr "Leyendo el archivo..."
+msgstr "Cargando los datos..."
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:457
@@ -332,9 +333,8 @@ msgid "Waiting"
 msgstr "Esperar"
 
 #: src/components/core/Selector.jsx:126
-#, fuzzy
 msgid "auto selected"
-msgstr "no seleccionado"
+msgstr "seleccionado automáticamente"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
@@ -352,17 +352,13 @@ msgid "Open Terminal"
 msgstr "Abrir una terminal"
 
 #. TRANSLATORS: sidebar header
-#: src/components/core/Sidebar.jsx:116 src/components/core/Sidebar.jsx:124
+#: src/components/core/Sidebar.jsx:112 src/components/core/Sidebar.jsx:120
 msgid "Installer Options"
 msgstr "Opciones del instalador"
 
-#: src/components/core/Sidebar.jsx:131
+#: src/components/core/Sidebar.jsx:127
 msgid "Hide installer options"
 msgstr "Ocultar las opciones del instalador"
-
-#: src/components/core/Sidebar.jsx:139
-msgid "Diagnostic tools"
-msgstr "Herramientas de diagnóstico"
 
 #. TRANSLATORS: Titles used for the popup displaying found section issues
 #: src/components/core/ValidationErrors.jsx:53
@@ -421,7 +417,7 @@ msgstr ""
 #. TRANSLATORS: page title
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:55
 #: src/components/l10n/L10nPage.jsx:384
-#: src/components/overview/L10nSection.jsx:52
+#: src/components/overview/L10nSection.jsx:54
 msgid "Localization"
 msgstr "Localización"
 
@@ -555,8 +551,8 @@ msgstr "Direcciones"
 msgid "Addresses data list"
 msgstr "Lista de datos de direcciones"
 
-#. TRANSLATORS: table header
 #. TRANSLATORS: input field for the iSCSI initiator name
+#. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:66
 #: src/components/network/ConnectionsTable.jsx:95
 #: src/components/storage/ZFCPPage.jsx:360
@@ -691,8 +687,8 @@ msgstr "No se encontraron conexiones WiFi."
 msgid "Connect to a Wi-Fi network"
 msgstr "Conectado a una red WIFI"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/network/NetworkPage.jsx:178
 #: src/components/overview/NetworkSection.jsx:117
 msgid "Network"
@@ -723,7 +719,7 @@ msgstr "WPA y WPA2 personales"
 #: src/components/product/ProductPage.jsx:128
 #: src/components/product/ProductPage.jsx:194
 #: src/components/storage/ZFCPDiskForm.jsx:112
-#: src/components/storage/iscsi/DiscoverForm.jsx:108
+#: src/components/storage/iscsi/DiscoverForm.jsx:110
 #: src/components/storage/iscsi/LoginForm.jsx:72
 #: src/components/users/FirstUser.jsx:280
 msgid "Something went wrong"
@@ -779,10 +775,10 @@ msgstr "Desconectando"
 
 #: src/components/network/WifiNetworkListItem.jsx:49
 msgid "Failed"
-msgstr ""
+msgstr "Fallido"
 
-#. TRANSLATORS: Wifi network status
 #. TRANSLATORS: iSCSI connection status
+#. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:52
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -807,21 +803,20 @@ msgid "The system will use %s as its default language."
 msgstr "El sistema utilizará %s como su idioma predeterminado."
 
 #: src/components/overview/NetworkSection.jsx:96
-#, fuzzy
 msgid "No network devices detected"
-msgstr "No se detectaron conexiones de red"
+msgstr "No se detectaron dispositivos de red"
 
 #. TRANSLATORS: header for the list of connected devices,
 #. %d is replaced by the number of active devices
 #: src/components/overview/NetworkSection.jsx:103
-#, fuzzy, c-format
+#, c-format
 msgid "%d device set:"
 msgid_plural "%d devices set:"
-msgstr[0] "Dispositivo usado"
-msgstr[1] "Dispositivo usado"
+msgstr[0] "%d dispositivo configurado:"
+msgstr[1] "%d dispositivos configurados:"
 
 #. TRANSLATORS: page title
-#: src/components/overview/OverviewPage.jsx:58
+#: src/components/overview/OverviewPage.jsx:48
 msgid "Installation Summary"
 msgstr "Resumen de la instalación"
 
@@ -831,8 +826,8 @@ msgstr "Resumen de la instalación"
 msgid "%s (registered)"
 msgstr "%s (registrado)"
 
-#. TRANSLATORS: page section
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section
 #: src/components/overview/ProductSection.jsx:71
 #: src/components/product/ProductPage.jsx:435
 msgid "Product"
@@ -847,8 +842,8 @@ msgstr "Leer repositorios de software"
 msgid "Refresh the repositories"
 msgstr "Refrescar los repositorios"
 
-#. TRANSLATORS: page section
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section
 #: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:216
 msgid "Software"
@@ -979,8 +974,8 @@ msgstr ""
 msgid "Probing storage devices"
 msgstr "Explorando dispositivos de almacenamiento"
 
-#. TRANSLATORS: Storage page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: Storage page title
 #: src/components/overview/StorageSection.jsx:293
 #: src/components/storage/ProposalPage.jsx:267
 msgid "Storage"
@@ -1139,22 +1134,21 @@ msgstr "Resumen de software y opciones de filtro"
 #. TRANSLATORS: page title
 #: src/components/software/SoftwarePage.jsx:80
 #: src/components/software/SoftwarePage.jsx:218
-#, fuzzy
 msgid "Software selection"
-msgstr "Software %s"
+msgstr "Selección de software"
 
 #: src/components/software/SoftwarePage.jsx:109
-#, fuzzy
 msgid "Change selection"
-msgstr "Cambiar ubicación"
+msgstr "Cambiar selección"
 
 #: src/components/software/SoftwarePage.jsx:138
 msgid "No additional software was selected."
-msgstr ""
+msgstr "No se seleccionó software adicional."
 
 #: src/components/software/SoftwarePage.jsx:144
 msgid "The following software patterns are selected for installation:"
 msgstr ""
+"Los siguientes patrones de software están seleccionados para la instalación:"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
@@ -1246,7 +1240,7 @@ msgid "Formatting DASD devices"
 msgstr "Formatear dispositivos DASD"
 
 #. TRANSLATORS: DASD = Direct Access Storage Device, IBM mainframe storage technology
-#: src/components/storage/DASDPage.jsx:181
+#: src/components/storage/DASDPage.jsx:182
 msgid "Storage DASD"
 msgstr "Almacenamiento DASD"
 
@@ -1739,9 +1733,8 @@ msgid "Partition at installation disk"
 msgstr "Partición en el disco de instalación"
 
 #: src/components/storage/PartitionsField.jsx:316
-#, fuzzy
 msgid "Reset location"
-msgstr "Registro"
+msgstr "Reiniciar localización"
 
 #: src/components/storage/PartitionsField.jsx:317
 msgid "Change location"
@@ -1854,9 +1847,8 @@ msgid "Check all planned actions"
 msgstr "Comprueba todas las acciones planeadas"
 
 #: src/components/storage/ProposalResultSection.jsx:107
-#, fuzzy
 msgid "Waiting for information about storage configuration"
-msgstr "Esperando información sobre la configuración de arranque"
+msgstr "Esperando información sobre la configuración de almacenamiento"
 
 #: src/components/storage/ProposalResultSection.jsx:167
 #, c-format
@@ -1990,9 +1982,8 @@ msgstr "Editar sistema de archivos"
 
 #. TRANSLATORS: Warning when editing a file system.
 #: src/components/storage/VolumeDialog.jsx:99
-#, fuzzy
 msgid "The type and size of the file system cannot be edited."
-msgstr "la presencia del sistema de archivos para %s"
+msgstr "El tipo y el tamaño del sistema de archivos no puede ser editado."
 
 #. TRANSLATORS: Description of a warning. The first %s is replaced by a device name (e.g.,
 #. /dev/vda) and the second %s is replaced by a mount path (e.g., /home).
@@ -2000,20 +1991,18 @@ msgstr "la presencia del sistema de archivos para %s"
 #, c-format
 msgid "The current file system on %s is selected to be mounted at %s."
 msgstr ""
+"El actual sistema de archivos en %s está seleccionado para ser montado en %s."
 
 #. TRANSLATORS: Warning when editing a file system.
 #: src/components/storage/VolumeDialog.jsx:108
-#, fuzzy
 msgid "The size of the file system cannot be edited"
-msgstr "la presencia del sistema de archivos para %s"
+msgstr "El tamaño del sistema de archivos no puede ser editado"
 
 #. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
 #: src/components/storage/VolumeDialog.jsx:110
-#, fuzzy, c-format
+#, c-format
 msgid "The file system is allocated at the device %s."
-msgstr ""
-"El sistema de archivos se asignará como una nueva partición en el disco "
-"seleccionado."
+msgstr "El sistema de archivos está asignado en el dispositivo %s."
 
 #: src/components/storage/VolumeDialog.jsx:155
 msgid "A mount point is required"
@@ -2182,6 +2171,9 @@ msgid ""
 "The file systems are allocated at the installation device by default. "
 "Indicate a custom location to create the file system at a specific device."
 msgstr ""
+"Los sistemas de archivos son asignados por defecto en el dispositivo de "
+"instalación. Indique una ubicación personalizada para crear el sistema de "
+"archivos en un dispositivo específico."
 
 #. TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
 #. by a mount path (e.g., /home).
@@ -2191,28 +2183,22 @@ msgid "Location for %s file system"
 msgstr "Ubicación del sistema de archivos %s"
 
 #: src/components/storage/VolumeLocationDialog.jsx:146
-#, fuzzy
 msgid "Select in which device to allocate the file system"
-msgstr ""
-"Seleccione cómo liberar espacio en los discos seleccionados para asignar los "
-"sistemas de archivos."
+msgstr "Seleccione en qué dispositivo asignar el sistema de archivos"
 
 #: src/components/storage/VolumeLocationDialog.jsx:149
-#, fuzzy
 msgid "Select a location"
-msgstr "Seleccionar un disco"
+msgstr "Seleccionar una ubicación"
 
 #: src/components/storage/VolumeLocationDialog.jsx:161
-#, fuzzy
 msgid "Select how to allocate the file system"
-msgstr "Tamaño exacto para el sistema de archivos."
+msgstr "Seleccionar cómo asignar el sistema de archivos"
 
 #: src/components/storage/VolumeLocationDialog.jsx:166
 msgid "Create a new partition"
-msgstr ""
+msgstr "Crear una nueva partición"
 
 #: src/components/storage/VolumeLocationDialog.jsx:167
-#, fuzzy
 msgid ""
 "The file system will be allocated as a new partition at the selected   disk."
 msgstr ""
@@ -2224,7 +2210,6 @@ msgid "Create a dedicated LVM volume group"
 msgstr "Crear un grupo de volúmenes LVM dedicado"
 
 #: src/components/storage/VolumeLocationDialog.jsx:177
-#, fuzzy
 msgid ""
 "A new volume group will be allocated in the selected disk and the   file "
 "system will be created as a logical volume."
@@ -2233,30 +2218,31 @@ msgstr ""
 "sistema de archivos se creará como un volumen lógico."
 
 #: src/components/storage/VolumeLocationDialog.jsx:186
-#, fuzzy
 msgid "Format the device"
-msgstr "Formatear dispositivos DASD"
+msgstr "Formatear el dispositivo"
 
 #. TRANSLATORS: %s is replaced by a file system type (e.g., Ext4).
 #: src/components/storage/VolumeLocationDialog.jsx:189
 #, c-format
 msgid "The selected device will be formatted as %s file system."
 msgstr ""
+"El dispositivo seleccionado se formateará como un sistema de archivos %s."
 
 #: src/components/storage/VolumeLocationDialog.jsx:199
-#, fuzzy
 msgid "Mount the file system"
-msgstr "Editar sistema de archivos"
+msgstr "Montar el sistema de archivos"
 
 #: src/components/storage/VolumeLocationDialog.jsx:200
 msgid ""
 "The current file system on the selected device will be mounted   without "
 "formatting the device."
 msgstr ""
+"El actual sistema de archivos en el dispositivo seleccionado se montará sin "
+"formatear el dispositivo."
 
 #: src/components/storage/VolumeLocationSelectorTable.jsx:102
 msgid "Usage"
-msgstr ""
+msgstr "Uso"
 
 #: src/components/storage/ZFCPDiskForm.jsx:113
 msgid "The zFCP disk was not activated."
@@ -2394,37 +2380,37 @@ msgid "Target Password"
 msgstr "Contraseña de destino"
 
 #. TRANSLATORS: popup title
-#: src/components/storage/iscsi/DiscoverForm.jsx:101
+#: src/components/storage/iscsi/DiscoverForm.jsx:102
 msgid "Discover iSCSI Targets"
 msgstr "Descubrir los objetivos iSCSI"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:110
+#: src/components/storage/iscsi/DiscoverForm.jsx:112
 #: src/components/storage/iscsi/LoginForm.jsx:73
 msgid "Make sure you provide the correct values"
 msgstr "Asegúrese de proporcionar los valores correctos"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:115
+#: src/components/storage/iscsi/DiscoverForm.jsx:118
 msgid "IP address"
 msgstr "Dirección IP"
 
 #. TRANSLATORS: network address
-#: src/components/storage/iscsi/DiscoverForm.jsx:122
-#: src/components/storage/iscsi/DiscoverForm.jsx:124
+#: src/components/storage/iscsi/DiscoverForm.jsx:125
+#: src/components/storage/iscsi/DiscoverForm.jsx:127
 msgid "Address"
 msgstr "Dirección"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:129
+#: src/components/storage/iscsi/DiscoverForm.jsx:132
 msgid "Incorrect IP address"
 msgstr "Dirección IP incorrecta"
 
 #. TRANSLATORS: network port number
-#: src/components/storage/iscsi/DiscoverForm.jsx:133
-#: src/components/storage/iscsi/DiscoverForm.jsx:140
-#: src/components/storage/iscsi/DiscoverForm.jsx:142
+#: src/components/storage/iscsi/DiscoverForm.jsx:136
+#: src/components/storage/iscsi/DiscoverForm.jsx:143
+#: src/components/storage/iscsi/DiscoverForm.jsx:145
 msgid "Port"
 msgstr "Puerto"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:147
+#: src/components/storage/iscsi/DiscoverForm.jsx:150
 msgid "Incorrect port"
 msgstr "Puerto incorrecto"
 
@@ -2452,7 +2438,7 @@ msgid "Offload card"
 msgstr "Descargar tarjeta"
 
 #. TRANSLATORS: iSCSI initiator section name
-#: src/components/storage/iscsi/InitiatorSection.jsx:50
+#: src/components/storage/iscsi/InitiatorSection.jsx:49
 msgid "Initiator"
 msgstr "Iniciador"
 
@@ -2496,28 +2482,28 @@ msgstr "Portal"
 msgid "Interface"
 msgstr "Interfaz"
 
-#: src/components/storage/iscsi/TargetsSection.jsx:139
+#: src/components/storage/iscsi/TargetsSection.jsx:142
 msgid "No iSCSI targets found."
 msgstr "No se encontraron objetivos iSCSI."
 
-#: src/components/storage/iscsi/TargetsSection.jsx:140
+#: src/components/storage/iscsi/TargetsSection.jsx:143
 msgid ""
 "Please, perform an iSCSI discovery in order to find available iSCSI targets."
 msgstr ""
 "Realice una exploación de iSCSI para encontrar objetivos iSCSI disponibles."
 
 #. TRANSLATORS: button label, starts iSCSI discovery
-#: src/components/storage/iscsi/TargetsSection.jsx:142
+#: src/components/storage/iscsi/TargetsSection.jsx:145
 msgid "Discover iSCSI targets"
 msgstr "Descubrir objetivos iSCSI"
 
 #. TRANSLATORS: button label, starts iSCSI discovery
-#: src/components/storage/iscsi/TargetsSection.jsx:153
+#: src/components/storage/iscsi/TargetsSection.jsx:156
 msgid "Discover"
 msgstr "Descubrir"
 
 #. TRANSLATORS: iSCSI targets section title
-#: src/components/storage/iscsi/TargetsSection.jsx:167
+#: src/components/storage/iscsi/TargetsSection.jsx:170
 msgid "Targets"
 msgstr "Objetivos"
 
@@ -2787,6 +2773,9 @@ msgstr "Usuario"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "Autenticación de root"
+
+#~ msgid "Diagnostic tools"
+#~ msgstr "Herramientas de diagnóstico"
 
 #, c-format
 #~ msgid "The server at %s is not reachable."
