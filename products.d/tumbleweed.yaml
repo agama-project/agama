@@ -51,6 +51,10 @@ translations:
       innehåller de senaste "stabila" versionerna av all programvara istället
       för att förlita sig på stela periodiska utgivningscykler. Projektet gör
       detta för användare som vill ha den senaste stabila programvaran.
+    tr: Tumbleweed dağıtımı, katı periyodik sürüm döngülerine dayanmak yerine, tüm
+      yazılımların en son "kararlı" sürümlerini içeren, openSUSE'nin saf bir
+      sürekli sürüm sürümüdür. Proje bunu en yeni kararlı yazılımı isteyen
+      kullanıcılar için yapıyor.
     zh_Hans: Tumbleweed 发行版是 openSUSE
       的纯滚动发布版本，其并不依赖于严格的定时发布周期，而是持续包含所有最新“稳定”版本的软件。该项目为追求最新稳定软件的用户而生。
 software:
