@@ -46,6 +46,10 @@ translations:
       patchning. openSUSE MicroOS tillhandahåller transaktionella (atomära)
       uppdateringar på ett skrivskyddat btrfs-rootfilsystem. Som rullande
       releasedistribution är mjukvaran alltid uppdaterad.
+    tr: Otomatik yönetim ve yama uygulamayla konteyner iş yüklerini barındırmak için
+      tasarlanmış hızlı, küçük bir dağıtım. openSUSE MicroOS, salt okunur bir
+      btrfs kök dosya sistemi üzerinde işlemsel (atomik) güncellemeler sağlar.
+      Sürekli sürüm dağıtımı olarak yazılım her zaman günceldir.
     zh_Hans: 一个快速、小型的发行版，旨在通过自动化管理和修补来托管容器工作负载。openSUSE MicroOS 提供基于只读 Btrfs
       根文件系统之上的事务性（原子）更新。作为滚动发行版，它的软件始终保持最新。
 software:

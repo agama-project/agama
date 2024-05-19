@@ -34,6 +34,10 @@ translations:
       möjligheten att rulla tillbaka byggt ovanpå grunden av openSUSE MicroOS.
       Inkluderar Podman behållarkörtid och gör det möjligt att hantera
       programvara med Gnome Programvara eller KDE Discover.
+    tr: OpenSUSE MicroOS'un temellerine ek olarak otomatik güncellemeler ve geri
+      alma sunan, masaüstüne yönelik bir dağıtım. Podman Container Runtime'ı
+      içerir ve yazılımın Gnome Yazılımını veya KDE Discover'ı kullanarak
+      yönetilmesine olanak tanır.
     zh_Hans: 在 openSUSE MicroOS 基础上提供自动更新和回滚的桌面设备发行版。包含 Podman 容器运行时，且允许透过 GNOME
       Software 或 KDE Discover 管理软件。
 software:
