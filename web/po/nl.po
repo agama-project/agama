@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-08 01:57+0000\n"
+"POT-Creation-Date: 2024-05-19 02:19+0000\n"
 "PO-Revision-Date: 2024-03-13 09:42+0000\n"
 "Last-Translator: Natasha Ament <stacheldrahtje@gmail.com>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-web/nl/"
@@ -47,7 +47,7 @@ msgstr ""
 
 #. TRANSLATORS: button label
 #: src/components/core/About.jsx:92 src/components/core/FileViewer.jsx:81
-#: src/components/core/IssuesDialog.jsx:119 src/components/core/Sidebar.jsx:160
+#: src/components/core/IssuesDialog.jsx:117 src/components/core/Sidebar.jsx:152
 #: src/components/network/WifiSelector.jsx:148
 #: src/components/product/ProductPage.jsx:239
 #: src/components/software/SoftwarePage.jsx:90
@@ -261,15 +261,15 @@ msgstr ""
 msgid "What is this?"
 msgstr ""
 
-#: src/components/core/LogsButton.jsx:98
+#: src/components/core/LogsButton.jsx:101
 msgid "Collecting logs..."
 msgstr "Verzamelen logs..."
 
-#: src/components/core/LogsButton.jsx:98
+#: src/components/core/LogsButton.jsx:101
 msgid "Download logs"
 msgstr "Download logs"
 
-#: src/components/core/LogsButton.jsx:106
+#: src/components/core/LogsButton.jsx:109
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
@@ -277,7 +277,7 @@ msgstr ""
 "De browser zal de logs downloaden wanneer ze klaar zijn. Heb geduld "
 "alstublieft."
 
-#: src/components/core/LogsButton.jsx:114
+#: src/components/core/LogsButton.jsx:117
 msgid "Something went wrong while collecting logs. Please, try again."
 msgstr ""
 "Iets is verkeerd gegaan bij het verzamelen van de logs. Probeer het opnieuw."
@@ -354,17 +354,13 @@ msgid "Open Terminal"
 msgstr "Open terminal"
 
 #. TRANSLATORS: sidebar header
-#: src/components/core/Sidebar.jsx:116 src/components/core/Sidebar.jsx:124
+#: src/components/core/Sidebar.jsx:112 src/components/core/Sidebar.jsx:120
 msgid "Installer Options"
 msgstr "Installatie opties"
 
-#: src/components/core/Sidebar.jsx:131
+#: src/components/core/Sidebar.jsx:127
 msgid "Hide installer options"
 msgstr "Verberg installer opties"
-
-#: src/components/core/Sidebar.jsx:139
-msgid "Diagnostic tools"
-msgstr "Diagnostische hulpmiddelen"
 
 #. TRANSLATORS: Titles used for the popup displaying found section issues
 #: src/components/core/ValidationErrors.jsx:53
@@ -423,7 +419,7 @@ msgstr ""
 #. TRANSLATORS: page title
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:55
 #: src/components/l10n/L10nPage.jsx:384
-#: src/components/overview/L10nSection.jsx:52
+#: src/components/overview/L10nSection.jsx:54
 msgid "Localization"
 msgstr "Lokalisatie"
 
@@ -567,8 +563,8 @@ msgstr "Adressen"
 msgid "Addresses data list"
 msgstr "Adressen data lijst"
 
-#. TRANSLATORS: table header
 #. TRANSLATORS: input field for the iSCSI initiator name
+#. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:66
 #: src/components/network/ConnectionsTable.jsx:95
 #: src/components/storage/ZFCPPage.jsx:360
@@ -707,8 +703,8 @@ msgstr "Geen WiFi verbindingen gevonden"
 msgid "Connect to a Wi-Fi network"
 msgstr "Verbind met een WiFi netwerk"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/network/NetworkPage.jsx:178
 #: src/components/overview/NetworkSection.jsx:117
 msgid "Network"
@@ -739,7 +735,7 @@ msgstr "WPA & WPA2 Personal"
 #: src/components/product/ProductPage.jsx:128
 #: src/components/product/ProductPage.jsx:194
 #: src/components/storage/ZFCPDiskForm.jsx:112
-#: src/components/storage/iscsi/DiscoverForm.jsx:108
+#: src/components/storage/iscsi/DiscoverForm.jsx:110
 #: src/components/storage/iscsi/LoginForm.jsx:72
 #: src/components/users/FirstUser.jsx:280
 msgid "Something went wrong"
@@ -796,8 +792,8 @@ msgstr "Verbinding verbreken"
 msgid "Failed"
 msgstr ""
 
-#. TRANSLATORS: Wifi network status
 #. TRANSLATORS: iSCSI connection status
+#. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:52
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -836,7 +832,7 @@ msgstr[0] "Lees zFCP apparaten"
 msgstr[1] "Lees zFCP apparaten"
 
 #. TRANSLATORS: page title
-#: src/components/overview/OverviewPage.jsx:58
+#: src/components/overview/OverviewPage.jsx:48
 #, fuzzy
 msgid "Installation Summary"
 msgstr "Installatie apparaat"
@@ -847,8 +843,8 @@ msgstr "Installatie apparaat"
 msgid "%s (registered)"
 msgstr ""
 
-#. TRANSLATORS: page section
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section
 #: src/components/overview/ProductSection.jsx:71
 #: src/components/product/ProductPage.jsx:435
 msgid "Product"
@@ -863,8 +859,8 @@ msgstr "Lezen van software opslagruimtes"
 msgid "Refresh the repositories"
 msgstr "Ververs de opslagruimtes"
 
-#. TRANSLATORS: page section
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section
 #: src/components/overview/SoftwareSection.jsx:143
 #: src/components/software/SoftwarePage.jsx:216
 msgid "Software"
@@ -972,8 +968,8 @@ msgstr "Installeer op apparaat %s en verwijder alle daarop opgeslagen inhoud"
 msgid "Probing storage devices"
 msgstr "Onderzoeken van opslagapparaten"
 
-#. TRANSLATORS: Storage page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: Storage page title
 #: src/components/overview/StorageSection.jsx:293
 #: src/components/storage/ProposalPage.jsx:267
 msgid "Storage"
@@ -1237,7 +1233,7 @@ msgid "Formatting DASD devices"
 msgstr "Formatteren DASD apparaten"
 
 #. TRANSLATORS: DASD = Direct Access Storage Device, IBM mainframe storage technology
-#: src/components/storage/DASDPage.jsx:181
+#: src/components/storage/DASDPage.jsx:182
 msgid "Storage DASD"
 msgstr "DASD opslag"
 
@@ -2365,37 +2361,37 @@ msgid "Target Password"
 msgstr "Doel wachtwoord"
 
 #. TRANSLATORS: popup title
-#: src/components/storage/iscsi/DiscoverForm.jsx:101
+#: src/components/storage/iscsi/DiscoverForm.jsx:102
 msgid "Discover iSCSI Targets"
 msgstr "Ontdek iSCSI doelen"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:110
+#: src/components/storage/iscsi/DiscoverForm.jsx:112
 #: src/components/storage/iscsi/LoginForm.jsx:73
 msgid "Make sure you provide the correct values"
 msgstr "Controleer of de juiste waardes zijn ingevuld"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:115
+#: src/components/storage/iscsi/DiscoverForm.jsx:118
 msgid "IP address"
 msgstr "IP adres"
 
 #. TRANSLATORS: network address
-#: src/components/storage/iscsi/DiscoverForm.jsx:122
-#: src/components/storage/iscsi/DiscoverForm.jsx:124
+#: src/components/storage/iscsi/DiscoverForm.jsx:125
+#: src/components/storage/iscsi/DiscoverForm.jsx:127
 msgid "Address"
 msgstr "Adres"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:129
+#: src/components/storage/iscsi/DiscoverForm.jsx:132
 msgid "Incorrect IP address"
 msgstr "Onjuist IP adres"
 
 #. TRANSLATORS: network port number
-#: src/components/storage/iscsi/DiscoverForm.jsx:133
-#: src/components/storage/iscsi/DiscoverForm.jsx:140
-#: src/components/storage/iscsi/DiscoverForm.jsx:142
+#: src/components/storage/iscsi/DiscoverForm.jsx:136
+#: src/components/storage/iscsi/DiscoverForm.jsx:143
+#: src/components/storage/iscsi/DiscoverForm.jsx:145
 msgid "Port"
 msgstr "Poort"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:147
+#: src/components/storage/iscsi/DiscoverForm.jsx:150
 msgid "Incorrect port"
 msgstr "Onjuiste poort"
 
@@ -2423,7 +2419,7 @@ msgid "Offload card"
 msgstr "Offload kaart"
 
 #. TRANSLATORS: iSCSI initiator section name
-#: src/components/storage/iscsi/InitiatorSection.jsx:50
+#: src/components/storage/iscsi/InitiatorSection.jsx:49
 msgid "Initiator"
 msgstr "Initiator"
 
@@ -2467,28 +2463,28 @@ msgstr "Portaal"
 msgid "Interface"
 msgstr "Interface"
 
-#: src/components/storage/iscsi/TargetsSection.jsx:139
+#: src/components/storage/iscsi/TargetsSection.jsx:142
 #, fuzzy
 msgid "No iSCSI targets found."
 msgstr "Geen iSCSI doelen gevonden"
 
-#: src/components/storage/iscsi/TargetsSection.jsx:140
+#: src/components/storage/iscsi/TargetsSection.jsx:143
 msgid ""
 "Please, perform an iSCSI discovery in order to find available iSCSI targets."
 msgstr "Voer een iSCSI-detectie uit om beschikbare iSCSI-doelen te vinden."
 
 #. TRANSLATORS: button label, starts iSCSI discovery
-#: src/components/storage/iscsi/TargetsSection.jsx:142
+#: src/components/storage/iscsi/TargetsSection.jsx:145
 msgid "Discover iSCSI targets"
 msgstr "Detecteer iSCSI doelen"
 
 #. TRANSLATORS: button label, starts iSCSI discovery
-#: src/components/storage/iscsi/TargetsSection.jsx:153
+#: src/components/storage/iscsi/TargetsSection.jsx:156
 msgid "Discover"
 msgstr "Detecteer"
 
 #. TRANSLATORS: iSCSI targets section title
-#: src/components/storage/iscsi/TargetsSection.jsx:167
+#: src/components/storage/iscsi/TargetsSection.jsx:170
 msgid "Targets"
 msgstr "Doelen"
 
@@ -2757,6 +2753,9 @@ msgstr "Gebruiker"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "Root authenticatie"
+
+#~ msgid "Diagnostic tools"
+#~ msgstr "Diagnostische hulpmiddelen"
 
 #, c-format
 #~ msgid "The server at %s is not reachable."

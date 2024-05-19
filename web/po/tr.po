@@ -8,21 +8,20 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-19 02:19+0000\n"
-"PO-Revision-Date: 2023-12-31 20:39+0000\n"
-"Last-Translator: Milachew <milachew@mail.lv>\n"
-"Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-web/"
-"uk/>\n"
-"Language: uk\n"
+"PO-Revision-Date: 2024-05-16 14:46+0000\n"
+"Last-Translator: Özgür Arslan <ozgurarslln@gmail.com>\n"
+"Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-web/"
+"tr/>\n"
+"Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.9.1\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.5.5\n"
 
 #: src/components/core/About.jsx:49 src/components/core/About.jsx:69
 msgid "About Agama"
-msgstr ""
+msgstr "Agama Hakkında"
 
 #. TRANSLATORS: content of the "About" popup (1/2)
 #: src/components/core/About.jsx:74
@@ -32,6 +31,10 @@ msgid ""
 "want to give it a try, we recommend using a virtual machine to prevent any "
 "possible data loss."
 msgstr ""
+"Agama, (open)SUSE sistemleri için deneysel bir yükleyicidir. Hala "
+"geliştirilme aşamasında olduğundan lütfen üretim ortamlarında kullanmayın. "
+"Denemek istiyorsanız olası veri kayıplarını önlemek için sanal makine "
+"kullanmanızı öneririz."
 
 #. TRANSLATORS: content of the "About" popup (2/2)
 #. %s is replaced by the project URL
@@ -39,6 +42,7 @@ msgstr ""
 #, c-format
 msgid "For more information, please visit the project's repository at %s."
 msgstr ""
+"Daha fazla bilgi için lütfen %s adresindeki proje deposunu ziyaret edin."
 
 #. TRANSLATORS: button label
 #: src/components/core/About.jsx:92 src/components/core/FileViewer.jsx:81
@@ -48,75 +52,82 @@ msgstr ""
 #: src/components/software/SoftwarePage.jsx:90
 #: src/components/storage/ProposalActionsDialog.jsx:98
 msgid "Close"
-msgstr "Закрити"
+msgstr "Kapat"
 
 #. TRANSLATORS: page title
 #: src/components/core/DBusError.jsx:34
 msgid "D-Bus Error"
-msgstr ""
+msgstr "D-Bus Hata"
 
 #: src/components/core/DBusError.jsx:38
 msgid "Cannot connect to D-Bus"
-msgstr ""
+msgstr "D-Bus'a bağlanılamıyor"
 
 #: src/components/core/DBusError.jsx:43
 msgid ""
 "Could not connect to the D-Bus service. Please, check whether it is running."
 msgstr ""
+"D-Bus hizmetine bağlanılamadı. Lütfen çalışıp çalışmadığını kontrol edin."
 
 #. TRANSLATORS: button label
 #: src/components/core/DBusError.jsx:51
 msgid "Reload"
-msgstr ""
+msgstr "Yenile"
 
 #: src/components/core/FileViewer.jsx:66
 msgid "Reading file..."
-msgstr "Читання файлу..."
+msgstr "Dosya Okunuyor..."
 
 #: src/components/core/FileViewer.jsx:72
 msgid "Cannot read the file"
-msgstr "Неможливо прочитати файл"
+msgstr "Dosya okunamıyor"
 
 #: src/components/core/InstallButton.jsx:37
 msgid ""
 "There are some reported issues. Please review them in the previous steps "
 "before proceeding with the installation."
 msgstr ""
+"Bildirilen bazı sorunlar var. Kuruluma devam etmeden önce lütfen önceki "
+"adımlarda bunları inceleyin."
 
 #: src/components/core/InstallButton.jsx:49
 msgid "Confirm Installation"
-msgstr ""
+msgstr "Kurulumu Onaylayın"
 
 #: src/components/core/InstallButton.jsx:55
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
 msgstr ""
+"Devam ederseniz sabit diskinizdeki bölümler, sağlanan kurulum ayarlarına "
+"göre değiştirilecektir."
 
 #: src/components/core/InstallButton.jsx:59
 msgid "Please, cancel and check the settings if you are unsure."
-msgstr ""
+msgstr "Emin değilseniz lütfen iptal edin ve ayarları kontrol edin."
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:65 src/components/core/Popup.jsx:136
 #: src/components/network/WifiConnectionForm.jsx:136
 msgid "Cancel"
-msgstr ""
+msgstr "İptal"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:69
 msgid "Continue"
-msgstr ""
+msgstr "İleri"
 
 #: src/components/core/InstallButton.jsx:78
 msgid "Problems Found"
-msgstr ""
+msgstr "Problem bulundu"
 
 #: src/components/core/InstallButton.jsx:82
 msgid ""
 "Some problems were found when trying to start the installation. Please, have "
 "a look to the reported errors and try again."
 msgstr ""
+"Kurulumu başlatmaya çalışırken bazı sorunlar bulundu. Lütfen bildirilen "
+"hatalara göz atın ve tekrar deneyin."
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:89 src/components/l10n/L10nPage.jsx:75
@@ -128,30 +139,32 @@ msgstr ""
 #: src/components/storage/VolumeDialog.jsx:787
 #: src/components/storage/ZFCPPage.jsx:511
 msgid "Accept"
-msgstr ""
+msgstr "Kabul Et"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:140
 msgid "Install"
-msgstr ""
+msgstr "Yükle"
 
 #: src/components/core/InstallationFinished.jsx:41
 msgid "TPM sealing requires the new system to be booted directly."
-msgstr ""
+msgstr "TPM yalıtımıyla yeni sistemin doğrudan başlatılması gerekir."
 
 #: src/components/core/InstallationFinished.jsx:46
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
 msgstr ""
+"Bu yükleyiciyi çalıştırmak için yerel medya kullanıldıysa bir sonraki "
+"önyüklemeden önce bunu kaldırın."
 
 #: src/components/core/InstallationFinished.jsx:50
 msgid "Hide details"
-msgstr ""
+msgstr "Detayları gizle"
 
 #: src/components/core/InstallationFinished.jsx:50
 msgid "See more details"
-msgstr ""
+msgstr "Daha fazla ayrıntı görün"
 
 #. TRANSLATORS: "Trusted Platform Module" is the name of the technology and "TPM" its abbreviation
 #: src/components/core/InstallationFinished.jsx:54
@@ -161,53 +174,58 @@ msgid ""
 "of the new system. For that to work, the machine needs to boot directly to "
 "the new boot loader."
 msgstr ""
+"Güvenilir Platform Modülünü (Trusted Platform Module) (TPM) şifrelenmiş "
+"cihazları otomatik olarak açacak şekilde yapılandırmanın son adımı, yeni "
+"sistemin ilk önyüklemesi sırasında gerçekleştirilecektir. Bunun çalışması "
+"için makinenin doğrudan yeni önyükleyiciye önyükleme yapması gerekir."
 
 #. TRANSLATORS: page title
 #: src/components/core/InstallationFinished.jsx:91
 msgid "Installation Finished"
-msgstr ""
+msgstr "Kurulum Tamamlandı"
 
 #: src/components/core/InstallationFinished.jsx:94
 msgid "Congratulations!"
-msgstr ""
+msgstr "Tebrikler!"
 
 #: src/components/core/InstallationFinished.jsx:99
 msgid "The installation on your machine is complete."
-msgstr ""
+msgstr "Makinenize kurulum tamamlanmıştır."
 
 #: src/components/core/InstallationFinished.jsx:103
 msgid "At this point you can power off the machine."
-msgstr ""
+msgstr "Bu noktada makineyi kapatabilirsiniz."
 
 #: src/components/core/InstallationFinished.jsx:104
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr ""
+"Bu noktada yeni sisteme giriş yapmak için makineyi yeniden başlatabilirsiniz."
 
 #: src/components/core/InstallationFinished.jsx:116
 msgid "Finish"
-msgstr ""
+msgstr "Bitti"
 
 #: src/components/core/InstallationFinished.jsx:116
 msgid "Reboot"
-msgstr ""
+msgstr "Yeniden Başlat"
 
 #: src/components/core/InstallationProgress.jsx:32
 msgid "Installing"
-msgstr ""
+msgstr "Kurulum"
 
 #. TRANSLATORS: search field placeholder text
 #: src/components/core/ListSearch.jsx:50
 #: src/components/software/PatternSelector.jsx:174
 #: src/components/software/PatternSelector.jsx:175
 msgid "Search"
-msgstr ""
+msgstr "Arama"
 
 #. TRANSLATORS: Title for a form to provide the password for the root user. %s
 #. will be replaced by "root"
 #: src/components/core/LoginPage.jsx:56
 #, c-format
 msgid "Log in as %s"
-msgstr ""
+msgstr "%s olarak oturum açın"
 
 #. TRANSLATORS: An explanation about required privileges for login into the installer. %s
 #. will be replaced by "root"
@@ -217,60 +235,64 @@ msgid ""
 "The installer requires %s user privileges. Please, provide its password to "
 "log in to the system."
 msgstr ""
+"Yükleyici %s kullanıcı ayrıcalıklarına ihtiyaç duyuyor. Lütfen sisteme giriş "
+"yapabilmek için şifrenizi giriniz."
 
 #: src/components/core/LoginPage.jsx:72
 msgid "Login form"
-msgstr ""
+msgstr "Giriş Formu"
 
 #: src/components/core/LoginPage.jsx:78
 msgid "Password input"
-msgstr ""
+msgstr "Şifre girişi"
 
 #: src/components/core/LoginPage.jsx:86
 msgid "Could not log in. Please, make sure that the password is correct."
-msgstr ""
+msgstr "Giriş yapılamadı. Lütfen şifrenin doğru olduğundan emin olun."
 
 #: src/components/core/LoginPage.jsx:93
 msgid "Log in"
-msgstr ""
+msgstr "Giriş Yap"
 
 #: src/components/core/LoginPage.jsx:104
 msgid "What is this?"
-msgstr ""
+msgstr "Bu nedir?"
 
 #: src/components/core/LogsButton.jsx:101
 msgid "Collecting logs..."
-msgstr ""
+msgstr "Günlükler toplanıyor..."
 
 #: src/components/core/LogsButton.jsx:101
 msgid "Download logs"
-msgstr ""
+msgstr "Günlükleri indir"
 
 #: src/components/core/LogsButton.jsx:109
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
 msgstr ""
+"Tarayıcı, hazır olur olmaz günlükleri indirmeyi çalıştıracaktır. Lütfen "
+"sabırlı olun."
 
 #: src/components/core/LogsButton.jsx:117
 msgid "Something went wrong while collecting logs. Please, try again."
-msgstr ""
+msgstr "Günlükler toplanırken bir şeyler ters gitti. Lütfen tekrar deneyin."
 
 #: src/components/core/Page.jsx:102 src/components/users/UsersPage.jsx:30
 msgid "Back"
-msgstr ""
+msgstr "Geri"
 
 #: src/components/core/Page.jsx:218
 msgid "Show global options"
-msgstr ""
+msgstr "Genel seçenekleri göster"
 
 #: src/components/core/Page.jsx:234
 msgid "Page Actions"
-msgstr ""
+msgstr "Sayfa Eylemleri"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:41
 msgid "Passwords do not match"
-msgstr ""
+msgstr "Parolalar uyuşmuyor"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:62
 #: src/components/network/WifiConnectionForm.jsx:125
@@ -278,104 +300,102 @@ msgstr ""
 #: src/components/storage/iscsi/AuthFields.jsx:100
 #: src/components/users/RootAuthMethods.jsx:163
 msgid "Password"
-msgstr ""
+msgstr "Parola"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:74
 msgid "Password confirmation"
-msgstr ""
+msgstr "Parola onayı"
 
 #: src/components/core/PasswordInput.jsx:63
 msgid "Password visibility button"
-msgstr ""
+msgstr "Parola görünürlük düğmesi"
 
 #: src/components/core/Popup.jsx:100
 msgid "Confirm"
-msgstr ""
+msgstr "Onayla"
 
 #. TRANSLATORS: progress message
 #: src/components/core/Popup.jsx:210
-#, fuzzy
 msgid "Loading data..."
-msgstr "Читання файлу..."
+msgstr "Veri yükleniyor..."
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:457
 msgid "Actions"
-msgstr ""
+msgstr "Eylemler"
 
 #: src/components/core/SectionSkeleton.jsx:29
 msgid "Waiting"
-msgstr ""
+msgstr "Bekleyin"
 
 #: src/components/core/Selector.jsx:126
 msgid "auto selected"
-msgstr ""
+msgstr "otomatik seçildi"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
 msgid "Show Logs"
-msgstr ""
+msgstr "Günlükleri Göster"
 
 #. TRANSLATORS: popup dialog title
 #: src/components/core/ShowLogButton.jsx:53
 msgid "YaST Logs"
-msgstr ""
+msgstr "YaST Günlükleri"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowTerminalButton.jsx:46
 msgid "Open Terminal"
-msgstr ""
+msgstr "Terminali Aç"
 
 #. TRANSLATORS: sidebar header
 #: src/components/core/Sidebar.jsx:112 src/components/core/Sidebar.jsx:120
 msgid "Installer Options"
-msgstr ""
+msgstr "Kurulum Seçenekleri"
 
 #: src/components/core/Sidebar.jsx:127
 msgid "Hide installer options"
-msgstr ""
+msgstr "Yükleyici seçeneklerini gizle"
 
 #. TRANSLATORS: Titles used for the popup displaying found section issues
 #: src/components/core/ValidationErrors.jsx:53
 msgid "Software issues"
-msgstr ""
+msgstr "Yazılım sorunları"
 
 #: src/components/core/ValidationErrors.jsx:54
 msgid "Product issues"
-msgstr ""
+msgstr "Ürün sorunları"
 
 #: src/components/core/ValidationErrors.jsx:55
 msgid "Storage issues"
-msgstr ""
+msgstr "Depolama sorunları"
 
 #: src/components/core/ValidationErrors.jsx:57
 msgid "Found Issues"
-msgstr ""
+msgstr "Bulunan Sorunlar"
 
 #. TRANSLATORS: %d is replaced with the number of errors found
 #: src/components/core/ValidationErrors.jsx:77
 #, c-format
 msgid "%d error found"
 msgid_plural "%d errors found"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%d hata bulundu"
+msgstr[1] "%d hata bulundu"
 
 #. TRANSLATORS: label for keyboard layout selection
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:53
 #: src/components/l10n/L10nPage.jsx:357
 msgid "Keyboard"
-msgstr ""
+msgstr "Klavye"
 
 #. TRANSLATORS: label for keyboard layout selection
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:61
 msgid "keyboard"
-msgstr ""
+msgstr "Klavye"
 
 #. TRANSLATORS:
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:70
 msgid "Keyboard layout cannot be changed in remote installation"
-msgstr ""
+msgstr "Uzaktan kurulumda klavye düzeni değiştirilemez"
 
 #. TRANSLATORS: help text for the language selector in the sidebar,
 #. %s will be replaced by the "Localization" page link
@@ -385,6 +405,8 @@ msgid ""
 "The language used by the installer. The language for the installed system "
 "can be set in the %s page."
 msgstr ""
+"Yükleyici tarafından kullanılan dil. Kurulu sistemin dili %s sayfasında "
+"ayarlanabilir."
 
 #. TRANSLATORS: page section
 #. TRANSLATORS: page title
@@ -392,133 +414,133 @@ msgstr ""
 #: src/components/l10n/L10nPage.jsx:384
 #: src/components/overview/L10nSection.jsx:54
 msgid "Localization"
-msgstr ""
+msgstr "Yerelleştirme"
 
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:65
 #: src/components/l10n/L10nPage.jsx:246
 msgid "Language"
-msgstr ""
+msgstr "Dil"
 
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:73
 msgid "language"
-msgstr ""
+msgstr "dil"
 
 #. TRANSLATORS: placeholder text for search input in the keyboard selector.
 #: src/components/l10n/KeymapSelector.jsx:53
 msgid "Filter by description or keymap code"
-msgstr ""
+msgstr "Açıklamaya veya tuş haritası koduna göre filtreleyin"
 
 #: src/components/l10n/KeymapSelector.jsx:64
 msgid "Available keymaps"
-msgstr ""
+msgstr "Kullanılabilir tuş haritaları"
 
 #: src/components/l10n/L10nPage.jsx:66 src/components/l10n/L10nPage.jsx:140
 msgid "Select time zone"
-msgstr ""
+msgstr "Saat dilimini seçin"
 
 #: src/components/l10n/L10nPage.jsx:67
 #, c-format
 msgid "%s will use the selected time zone."
-msgstr ""
+msgstr "%s seçilen saat dilimini kullanacak."
 
 #: src/components/l10n/L10nPage.jsx:128
 msgid "Time zone"
-msgstr ""
+msgstr "Saat dilimi"
 
 #: src/components/l10n/L10nPage.jsx:134
 msgid "Change time zone"
-msgstr ""
+msgstr "Saat dilimini değiştir"
 
 #: src/components/l10n/L10nPage.jsx:139
 msgid "Time zone not selected yet"
-msgstr ""
+msgstr "Saat dilimi henüz seçilmedi"
 
 #: src/components/l10n/L10nPage.jsx:182 src/components/l10n/L10nPage.jsx:258
 msgid "Select language"
-msgstr ""
+msgstr "Dil Seçin"
 
 #: src/components/l10n/L10nPage.jsx:183
 #, c-format
 msgid "%s will use the selected language."
-msgstr ""
+msgstr "%s seçilen dili kullanacak."
 
 #: src/components/l10n/L10nPage.jsx:252
 msgid "Change language"
-msgstr ""
+msgstr "Dili değiştir"
 
 #: src/components/l10n/L10nPage.jsx:257
 msgid "Language not selected yet"
-msgstr ""
+msgstr "Dil henüz seçilmedi"
 
 #: src/components/l10n/L10nPage.jsx:295 src/components/l10n/L10nPage.jsx:369
 msgid "Select keyboard"
-msgstr ""
+msgstr "Klavyeyi seçin"
 
 #: src/components/l10n/L10nPage.jsx:296
 #, c-format
 msgid "%s will use the selected keyboard."
-msgstr ""
+msgstr "%s seçilen klavyeyi kullanacak."
 
 #: src/components/l10n/L10nPage.jsx:363
 msgid "Change keyboard"
-msgstr ""
+msgstr "Klavyeyi değiştir"
 
 #: src/components/l10n/L10nPage.jsx:368
 msgid "Keyboard not selected yet"
-msgstr ""
+msgstr "Klavye henüz seçilmedi"
 
 #: src/components/l10n/LocaleSelector.jsx:53
 msgid "Filter by language, territory or locale code"
-msgstr ""
+msgstr "Dile, bölgeye veya yerel ayar koduna göre filtreleyin"
 
 #: src/components/l10n/LocaleSelector.jsx:64
 msgid "Available locales"
-msgstr ""
+msgstr "Kullanılabilir Yerel(locale) Ayarlar"
 
 #. TRANSLATORS: placeholder text for search input in the timezone selector.
 #: src/components/l10n/TimezoneSelector.jsx:75
 msgid "Filter by territory, time zone code or UTC offset"
-msgstr ""
+msgstr "Bölgeye, saat dilimi koduna veya UTC farkına göre filtreleyin"
 
 #: src/components/l10n/TimezoneSelector.jsx:86
 msgid "Available time zones"
-msgstr ""
+msgstr "Kullanılabilir saat dilimleri"
 
 #: src/components/layout/Loading.jsx:30
 msgid "Loading installation environment, please wait."
-msgstr ""
+msgstr "Kurulum ortamı yükleniyor, lütfen bekleyin."
 
 #. TRANSLATORS: button label
 #: src/components/network/AddressesDataList.jsx:81
 #: src/components/network/DnsDataList.jsx:87
 msgid "Remove"
-msgstr ""
+msgstr "Kaldır"
 
 #. TRANSLATORS: input field name
 #: src/components/network/AddressesDataList.jsx:93
 #: src/components/network/AddressesDataList.jsx:94
 #: src/components/network/IpAddressInput.jsx:33
 msgid "IP Address"
-msgstr ""
+msgstr "IP Adres"
 
 #. TRANSLATORS: input field name
 #: src/components/network/AddressesDataList.jsx:102
 #: src/components/network/AddressesDataList.jsx:103
 msgid "Prefix length or netmask"
-msgstr ""
+msgstr "Önek uzunluğu veya ağ maskesi"
 
 #: src/components/network/AddressesDataList.jsx:119
 msgid "Add an address"
-msgstr ""
+msgstr "Adres ekle"
 
 #. TRANSLATORS: button label
 #: src/components/network/AddressesDataList.jsx:119
 msgid "Add another address"
-msgstr ""
+msgstr "Başka Bir Adres Ekle"
 
 #: src/components/network/AddressesDataList.jsx:124
 msgid "Addresses"
-msgstr ""
+msgstr "Adresler"
 
 #: src/components/network/AddressesDataList.jsx:129
 msgid "Addresses data list"
@@ -784,7 +806,6 @@ msgid "%d device set:"
 msgid_plural "%d devices set:"
 msgstr[0] ""
 msgstr[1] ""
-msgstr[2] ""
 
 #. TRANSLATORS: page title
 #: src/components/overview/OverviewPage.jsx:48
@@ -919,7 +940,7 @@ msgstr ""
 
 #: src/components/overview/StorageSection.jsx:167
 msgid "Probing storage devices"
-msgstr ""
+msgstr "Depolama aygıtları araştırılıyor"
 
 #. TRANSLATORS: page section title
 #. TRANSLATORS: Storage page title
@@ -1714,7 +1735,6 @@ msgid "Hide %d subvolume action"
 msgid_plural "Hide %d subvolume actions"
 msgstr[0] ""
 msgstr[1] ""
-msgstr[2] ""
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsDialog.jsx:69
@@ -1723,7 +1743,6 @@ msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
 msgstr[0] ""
 msgstr[1] ""
-msgstr[2] ""
 
 #. TRANSLATORS: The storage "Planned Actions" dialog's title. The
 #. dialog shows a list of planned actions for the selected device, e.g.
@@ -1758,7 +1777,6 @@ msgid "There is %d destructive action planned"
 msgid_plural "There are %d destructive actions planned"
 msgstr[0] ""
 msgstr[1] ""
-msgstr[2] ""
 
 #: src/components/storage/ProposalResultSection.jsx:73
 msgid "Affecting"
@@ -1782,7 +1800,6 @@ msgid_plural ""
 "displayed below"
 msgstr[0] ""
 msgstr[1] ""
-msgstr[2] ""
 
 #. TRANSLATORS: The storage "Result" section's title
 #: src/components/storage/ProposalResultSection.jsx:175
@@ -2651,3 +2668,6 @@ msgstr ""
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr ""
+
+#~ msgid "Diagnostic tools"
+#~ msgstr "Tanı araçları"
