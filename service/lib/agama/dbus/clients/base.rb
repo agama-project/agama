@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -68,24 +68,37 @@ module Agama
         # @return [Logger]
         attr_reader :logger
 
-        # Registers callback to be called when the properties of the given object changes
+        # Registers a callback to be called when the properties of the given object changes.
+        #
+        # @param dbus_object [::DBus::Object]
+        # @param block [Proc]
+        def on_properties_change(dbus_object, &block)
+          subscribe(dbus_object, "org.freedesktop.DBus.Properties", "PropertiesChanged", &block)
+        end
+
+        # Subscribes to a D-Bus signal.
         #
         # @note Signal subscription is done only once. Otherwise, the latest subscription overrides
         #   the previous one.
         #
         # @param dbus_object [::DBus::Object]
+        # @param interface [String]
+        # @param signal [String]
         # @param block [Proc]
-        def on_properties_change(dbus_object, &block)
-          @on_properties_change_callbacks ||= {}
-          @on_properties_change_callbacks[dbus_object.path] ||= []
-          @on_properties_change_callbacks[dbus_object.path] << block
+        def subscribe(dbus_object, interface, signal, &block)
+          @signal_handlers ||= {}
+          @signal_handlers[dbus_object.path] ||= {}
+          @signal_handlers[dbus_object.path][interface] ||= {}
+          @signal_handlers[dbus_object.path][interface][signal] ||= []
+          @signal_handlers[dbus_object.path][interface][signal] << block
 
-          return if @on_properties_change_callbacks[dbus_object.path].size > 1
+          callbacks = @signal_handlers.dig(dbus_object.path, interface, signal)
 
-          dbus_properties = dbus_object["org.freedesktop.DBus.Properties"]
-          dbus_properties.on_signal("PropertiesChanged") do |interface, changes, invalid|
-            callbacks = @on_properties_change_callbacks[dbus_object.path]
-            callbacks.each { |c| c.call(interface, changes, invalid) }
+          return if callbacks.size > 1
+
+          interface_proxy = dbus_object[interface]
+          interface_proxy.on_signal(signal) do |iface, changes, invalid|
+            callbacks.each { |c| c.call(iface, changes, invalid) }
           end
         end
 
