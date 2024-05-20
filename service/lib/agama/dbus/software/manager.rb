@@ -107,6 +107,8 @@ module Agama
 
           dbus_method(:UsedDiskSpace, "out SpaceSize:s") { backend.used_disk_space }
 
+          dbus_signal(:ProbeFinished)
+
           dbus_method(:Probe) { probe }
           dbus_method(:Propose) { propose }
           dbus_method(:Install) { install }
@@ -115,6 +117,7 @@ module Agama
 
         def probe
           busy_while { backend.probe }
+          self.ProbeFinished
         end
 
         def propose

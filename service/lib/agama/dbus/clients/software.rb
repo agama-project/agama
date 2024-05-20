@@ -169,15 +169,19 @@ module Agama
 
         # Registers a callback to run when the product changes
         #
-        # @note Signal subscription is done only once. Otherwise, the latest subscription overrides
-        #   the previous one.
-        #
         # @param block [Proc] Callback to run when a product is selected
         def on_product_selected(&block)
           on_properties_change(dbus_product) do |_, changes, _|
             product = changes["SelectedProduct"]
             block.call(product) unless product.nil?
           end
+        end
+
+        # Registers a callback to run when the software is probed.
+        #
+        # @param block [Proc]
+        def on_probe_finished(&block)
+          subscribe(dbus_object, "org.opensuse.Agama.Software1", "ProbeFinished", &block)
         end
 
       private
