@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -157,7 +157,7 @@ module Agama
       #
       # @return [Agama::DBus::Clients::Software]
       def software
-        @software ||= DBus::Clients::Software.new
+        @software ||= DBus::Clients::Software.instance
       end
 
     private

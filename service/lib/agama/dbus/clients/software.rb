@@ -36,17 +36,10 @@ module Agama
         TYPES = [:package, :pattern].freeze
         private_constant :TYPES
 
-        def initialize
-          super
-
-          @dbus_object = service["/org/opensuse/Agama/Software1"]
-          @dbus_object.introspect
-
-          @dbus_product = service["/org/opensuse/Agama/Software1/Product"]
-          @dbus_product.introspect
-
-          @dbus_proposal = service["/org/opensuse/Agama/Software1/Proposal"]
-          @dbus_proposal.introspect
+        # @note This client is sigleton because ruby-dbus does not work properly with several
+        #   instances of the same client.
+        def self.instance
+          @instance ||= new
         end
 
         # @return [String]
@@ -197,6 +190,19 @@ module Agama
 
         # @return [::DBus::Object]
         attr_reader :dbus_proposal
+
+        def initialize
+          super
+
+          @dbus_object = service["/org/opensuse/Agama/Software1"]
+          @dbus_object.introspect
+
+          @dbus_product = service["/org/opensuse/Agama/Software1/Product"]
+          @dbus_product.introspect
+
+          @dbus_proposal = service["/org/opensuse/Agama/Software1/Proposal"]
+          @dbus_proposal.introspect
+        end
       end
     end
   end

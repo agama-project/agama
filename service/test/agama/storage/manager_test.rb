@@ -44,10 +44,8 @@ describe Agama::Storage::Manager do
 
   before do
     allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
-    allow(Agama::DBus::Clients::Software).to receive(:new)
-      .and_return(software)
-    allow(Bootloader::FinishClient).to receive(:new)
-      .and_return(bootloader_finish)
+    allow(Agama::DBus::Clients::Software).to receive(:instance).and_return(software)
+    allow(Bootloader::FinishClient).to receive(:new).and_return(bootloader_finish)
     allow(Agama::Security).to receive(:new).and_return(security)
   end
 
