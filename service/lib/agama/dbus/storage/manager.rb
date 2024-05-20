@@ -60,11 +60,15 @@ module Agama
         def initialize(backend, logger)
           super(PATH, logger: logger)
           @backend = backend
+          @product_mount_points = read_product_mount_points
+          @encryption_methods = read_encryption_methods
+
           register_storage_callbacks
           register_proposal_callbacks
           register_progress_callbacks
           register_service_status_callbacks
           register_iscsi_callbacks
+          register_software_callbacks
 
           add_s390_interfaces if Yast::Arch.s390
         end
@@ -118,18 +122,23 @@ module Agama
           proposal.available_devices.map { |d| system_devices_tree.path_for(d) }
         end
 
-        # List of meaningful mount points for the current product.
+        # Reads the list of meaningful mount points for the current product.
         #
         # @return [Array<String>]
-        def product_mount_points
-          volume_templates_builder.all.map(&:mount_path).reject(&:empty?)
+        def read_product_mount_points
+          volume_templates_builder
+            .all
+            .map(&:mount_path)
+            .reject(&:empty?)
         end
 
-        # List of possible encryption methods for the current system and product
+        # Reads the list of possible encryption methods for the current system and product.
         #
         # @return [Array<String>]
-        def encryption_methods
-          Agama::Storage::EncryptionSettings.available_methods.map { |m| m.id.to_s }
+        def read_encryption_methods
+          Agama::Storage::EncryptionSettings
+            .available_methods
+            .map { |m| m.id.to_s }
         end
 
         # Path of the D-Bus object containing the calculated proposal
@@ -169,9 +178,11 @@ module Agama
         dbus_interface PROPOSAL_CALCULATOR_INTERFACE do
           dbus_reader :available_devices, "ao"
 
-          dbus_reader :product_mount_points, "as"
+          # PropertiesChanged signal if the product changes, see {#register_software_callbacks}.
+          dbus_reader_attr_accessor :product_mount_points, "as"
 
-          dbus_reader :encryption_methods, "as"
+          # PropertiesChanged signal if software is probed, see {#register_software_callbacks}.
+          dbus_reader_attr_accessor :encryption_methods, "as"
 
           dbus_reader :result, "o"
 
@@ -307,6 +318,18 @@ module Agama
 
           backend.iscsi.on_sessions_change do
             deprecate_system
+          end
+        end
+
+        def register_software_callbacks
+          backend.software.on_product_selected do
+            # A PropertiesChanged signal is emitted (see ::DBus::Object.dbus_reader_attr_accessor).
+            self.product_mount_points = read_product_mount_points
+          end
+
+          backend.software.on_probe_finished do
+            # A PropertiesChanged signal is emitted (see ::DBus::Object.dbus_reader_attr_accessor).
+            self.encryption_methods = read_encryption_methods
           end
         end
 
