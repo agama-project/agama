@@ -27,8 +27,8 @@ import Root from "~/Root";
 import { Page, LoginPage, ProgressText } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
 import { ProductPage, ProductSelectionPage, ProductRegistrationPage } from "~/components/product";
-import { ProposalPage, ISCSIPage, DASDPage, ZFCPPage } from "~/components/storage";
 import { SoftwarePage, SoftwarePatternsSelection } from "~/components/software";
+import { ProposalPage, ISCSIPage, DASDPage, ZFCPPage, DeviceSelection } from "~/components/storage";
 import { UsersPage } from "~/components/users";
 import { L10nPage, LocaleSelection, KeymapSelection, TimezoneSelection } from "~/components/l10n";
 import { NetworkPage } from "~/components/network";
@@ -73,6 +73,7 @@ const storagePages = [
 ];
 const storageRoutes = createRoute(_("Storage"), "storage", <Page title={_("Storage")} routes={storagePages} />, [
   ...storagePages,
+  createRoute(_("Installation device"), "target-device", <DeviceSelection />),
 ], "hard_drive");
 const networkRoutes = createRoute(_("Network"), "network", <NetworkPage />, [], "settings_ethernet");
 const usersRoutes = createRoute(_("Users"), "users", <UsersPage />, [], "manage_accounts");

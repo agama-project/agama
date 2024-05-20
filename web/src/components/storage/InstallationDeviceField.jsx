@@ -21,13 +21,14 @@
 
 // @ts-check
 
-import React, { useState } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
-import { DeviceSelectionDialog, ProposalPageMenu } from "~/components/storage";
+import { ProposalPageMenu } from "~/components/storage";
 import { deviceLabel } from '~/components/storage/utils';
-import { If, Field } from "~/components/core";
+import { Field } from "~/components/core";
 import { sprintf } from "sprintf-js";
 
 /**
@@ -92,20 +93,9 @@ export default function InstallationDeviceField({
   target,
   targetDevice,
   targetPVDevices,
-  devices,
   isLoading,
-  onChange
 }) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const openDialog = () => setIsDialogOpen(true);
-
-  const closeDialog = () => setIsDialogOpen(false);
-
-  const onAccept = ({ target, targetDevice, targetPVDevices }) => {
-    closeDialog();
-    onChange({ target, targetDevice, targetPVDevices });
-  };
+  const navigate = useNavigate();
 
   let value;
   if (isLoading || !target)
@@ -119,24 +109,10 @@ export default function InstallationDeviceField({
       label={LABEL}
       value={value}
       description={DESCRIPTION}
-      onClick={openDialog}
+      onClick={() => navigate("target-device")}
     >
+      { /** FIXME: drop StorageTechSelector */}
       {_("Prepare more devices by configuring advanced")} <StorageTechSelector />
-      <If
-        condition={isDialogOpen}
-        then={
-          <DeviceSelectionDialog
-            isOpen
-            isLoading={isLoading}
-            target={target}
-            targetDevice={targetDevice}
-            targetPVDevices={targetPVDevices}
-            devices={devices}
-            onAccept={onAccept}
-            onCancel={closeDialog}
-          />
-        }
-      />
     </Field>
   );
 }
