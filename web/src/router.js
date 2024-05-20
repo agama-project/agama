@@ -27,8 +27,8 @@ import Root from "~/Root";
 import { Page, LoginPage, ProgressText } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
 import { ProductPage, ProductSelectionPage, ProductRegistrationPage } from "~/components/product";
-import { SoftwarePage } from "~/components/software";
 import { ProposalPage, ISCSIPage, DASDPage, ZFCPPage } from "~/components/storage";
+import { SoftwarePage, SoftwarePatternsSelection } from "~/components/software";
 import { UsersPage } from "~/components/users";
 import { L10nPage, LocaleSelection, KeymapSelection, TimezoneSelection } from "~/components/l10n";
 import { NetworkPage } from "~/components/network";
@@ -54,13 +54,16 @@ const productRoutes = createRoute(_("Product"), "product", <Page title={_("Produ
   createRoute(_("Change selected product"), "change", <ProductSelectionPage />),
   createRoute(_("Register"), "register", <ProductRegistrationPage />),
 ], "inventory_2");
-const l10nRoutes = createRoute(_("Localization"), "l10n", <Page title={(_("Localization"))} />, [
+const l10nRoutes = createRoute(_("Localization"), "l10n", <Page title={_("Localization")} />, [
   { index: true, element: <L10nPage /> },
   createRoute(_("Select language"), "language/select", <LocaleSelection />),
   createRoute(_("Select keymap"), "keymap/select", <KeymapSelection />),
   createRoute(_("Select timezone"), "timezone/select", <TimezoneSelection />),
 ], "globe");
-const softwareRoutes = createRoute(_("Software"), "software", <SoftwarePage />, [], "apps");
+const softwareRoutes = createRoute(_("Software"), "software", <Page title={_("Software")} />, [
+  { index: true, element: <SoftwarePage /> },
+  createRoute(_("Select patterns"), "patterns/select", <SoftwarePatternsSelection />),
+], "apps");
 const storagePages = [
   { index: true, element: <ProposalPage /> },
   createRoute(_("Storage"), "proposal", <ProposalPage />),

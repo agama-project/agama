@@ -20,12 +20,23 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { SearchInput } from "@patternfly/react-core";
+import {
+  Badge,
+  DataList,
+  DataListCell,
+  DataListCheck,
+  DataListItem,
+  DataListItemCells,
+  DataListItemRow,
+  SearchInput,
+  Stack
+} from "@patternfly/react-core";
 
-import { Section, Selector } from "~/components/core";
+import { Section, Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { SelectedBy } from "~/client/software";
-import { noop } from "~/utils";
+import { useInstallerClient } from "~/context/installer";
+import { useCancellablePromise } from "~/utils";
 
 /**
  * @typedef {Object} Pattern
@@ -89,16 +100,47 @@ function sortGroups(groups) {
 }
 
 /**
- * Pattern selector component
- * @component
- * @param {object} props
- * @param {import("~/components/software/SoftwarePage").Pattern[]} props.patterns - list of patterns
- * @param {function} [props.onSelectionChanged] - Callback to be called when the selection changes
- * @returns {JSX.Element}
+ * Builds a list of patterns include its selection status
+ *
+ * @param {import("~/client/software").Pattern[]} patterns - Patterns from the HTTP API
+ * @param {Object.<string, number>} selection - Patterns selection
+ * @return {Pattern[]} List of patterns including its selection status
  */
-function PatternSelector({ patterns, onSelectionChanged = noop }) {
+function buildPatterns(patterns, selection) {
+  return patterns.map((pattern) => {
+    const selectedBy = (selection[pattern.name] !== undefined) ? selection[pattern.name] : 2;
+    return {
+      ...pattern,
+      selectedBy,
+    };
+  }).sort((a, b) => a.order - b.order);
+}
+
+/**
+ * Pattern selector component
+ */
+function SoftwarePatternsSelection() {
+  const client = useInstallerClient();
+  const [patterns, setPatterns] = useState([]);
+  const [proposal, setProposal] = useState({ patterns: {}, size: "" });
+  const [isLoading, setIsLoading] = useState(true);
   const [visiblePatterns, setVisiblePatterns] = useState(patterns);
   const [searchValue, setSearchValue] = useState("");
+  const { cancellablePromise } = useCancellablePromise();
+
+  useEffect(() => {
+    if (patterns.length !== 0) return;
+
+    const loadPatterns = async () => {
+      const patterns = await cancellablePromise(client.software.getPatterns());
+      const proposal = await cancellablePromise(client.software.getProposal());
+      setPatterns(buildPatterns(patterns, proposal.patterns));
+      setProposal(proposal);
+      setIsLoading(false);
+    };
+
+    loadPatterns();
+  }, [client.software, patterns, cancellablePromise]);
 
   useEffect(() => {
     if (!patterns) return;
@@ -115,7 +157,12 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
     } else {
       setVisiblePatterns(patterns);
     }
-  }, [patterns, searchValue]);
+
+    return client.software.onSelectedPatternsChanged((selection) => {
+      client.software.getProposal().then((proposal) => setProposal(proposal));
+      setPatterns(buildPatterns(patterns, selection));
+    });
+  }, [patterns, searchValue, client.software]);
 
   const onToggle = useCallback((name) => {
     const selected = patterns.filter((p) => p.selectedBy === SelectedBy.USER)
@@ -126,23 +173,20 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
     const pattern = patterns.find((p) => p.name === name);
     selected[name] = pattern.selectedBy === SelectedBy.NONE;
 
-    onSelectionChanged(selected);
-  }, [patterns, onSelectionChanged]);
+    client.software.selectPatterns(selected);
+  }, [patterns, client.software]);
+
+  // FIXME: use loading indicator when busy, we cannot know if it will be
+  // quickly or not in advance.
 
   // initial empty screen, the patterns are loaded very quickly, no need for any progress
   if (visiblePatterns.length === 0 && searchValue === "") return null;
 
   const groups = groupPatterns(visiblePatterns);
 
-  const renderPatternOption = (pattern) => (
-    <div>
-      <div>
-        <b>{pattern.summary}</b>
-      </div>
-      <div>{pattern.description}</div>
-    </div>
-  );
-
+  // FIXME: use a switch instead of a checkbox since these patterns are going to
+  // be selected/deselected immediately.
+  // TODO: extract to a DataListSelector component or so.
   const selector = sortGroups(groups).map((groupName) => {
     const selectedIds = groups[groupName].filter((p) => p.selectedBy !== SelectedBy.NONE).map((p) =>
       p.name
@@ -152,16 +196,29 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
         key={groupName}
         title={groupName}
       >
-        <Selector
-          isMultiple
-          renderOption={renderPatternOption}
-          options={groups[groupName]}
-          onOptionClick={onToggle}
-          optionIdKey="name"
-          selectedIds={selectedIds}
-          autoSelectionCheck={pattern => pattern.selectedBy === SelectedBy.AUTO}
-          data-items-type="agama/patterns"
-        />
+        <DataList isCompact>
+          {
+            groups[groupName].map(option => (
+              <DataListItem key={option.name}>
+                <DataListItemRow>
+                  <DataListCheck onChange={() => onToggle(option.name)} aria-labelledby="check-action-item1" name="check-action-check1" isChecked={selectedIds.includes(option.name)} />
+                  <DataListItemCells
+                    dataListCells={[
+                      <DataListCell key="summary">
+                        <Stack hasGutter>
+                          <div>
+                            <b>{option.summary}</b> {option.selectedBy === SelectedBy.AUTO && <Badge>{_("auto selected")}</Badge>}
+                          </div>
+                          <div>{option.description}</div>
+                        </Stack>
+                      </DataListCell>,
+                    ]}
+                  />
+                </DataListItemRow>
+              </DataListItem>
+            ))
+          }
+        </DataList>
       </Section>
     );
   });
@@ -182,8 +239,11 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
       </Section>
 
       {selector}
+      <Page.NextActions>
+        <Page.Action navigateTo="..">{_("Close")}</Page.Action>
+      </Page.NextActions>
     </>
   );
 }
 
-export default PatternSelector;
+export default SoftwarePatternsSelection;

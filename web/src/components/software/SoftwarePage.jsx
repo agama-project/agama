@@ -22,12 +22,12 @@
 // @ts-check
 
 import React, { useEffect, useState } from "react";
-import { Button } from "@patternfly/react-core";
+import { Link } from "react-router-dom";
 
-import { If, Page, Popup, Section, SectionSkeleton } from "~/components/core";
-import { PatternSelector, UsedSize } from "~/components/software";
+import { Section, SectionSkeleton } from "~/components/core";
+import { UsedSize } from "~/components/software";
 import { useInstallerClient } from "~/context/installer";
-import { noop, useCancellablePromise } from "~/utils";
+import { useCancellablePromise } from "~/utils";
 import { BUSY } from "~/client/status";
 import { _ } from "~/i18n";
 import { SelectedBy } from "~/client/software";
@@ -60,75 +60,13 @@ function buildPatterns(patterns, selection) {
 }
 
 /**
- * Popup for selecting software patterns.
- * @component
- *
- * @param {object} props
- * @param {Pattern[]} props.patterns - List of patterns
- * @param {import("~/client/software").SoftwareProposal} props.proposal - Software proposal
- * @param {boolean} props.isOpen - Whether the pop-up should be open
- * @param {function} props.onFinish - Callback to be called when the selection is finished
- * @param {function} props.onSelectionChanged - Callback to be called when the selection changes
- */
-const PatternsSelectorPopup = ({
-  patterns,
-  isOpen = false,
-  onSelectionChanged = noop,
-  onFinish = noop,
-}) => {
-  return (
-    <Popup className="large" title={_("Software selection")} isOpen={isOpen}>
-      <PatternSelector
-        patterns={patterns}
-        onSelectionChanged={onSelectionChanged}
-      />
-
-      <Popup.Actions>
-        <Popup.PrimaryAction
-          onClick={() => onFinish()}
-        >
-          {_("Close")}
-        </Popup.PrimaryAction>
-      </Popup.Actions>
-    </Popup>
-  );
-};
-
-const SelectPatternsButton = ({ patterns, proposal, onSelectionChanged }) => {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  const openPopup = () => setIsPopupOpen(true);
-  const closePopup = () => setIsPopupOpen(false);
-
-  return (
-    <>
-      <Button
-        variant="link"
-        onClick={openPopup}
-      >
-        {_("Change selection")}
-      </Button>
-      <PatternsSelectorPopup
-        patterns={patterns}
-        proposal={proposal}
-        isOpen={isPopupOpen}
-        onFinish={closePopup}
-        onSelectionChanged={onSelectionChanged}
-      />
-    </>
-  );
-};
-
-/**
  * List of selected patterns.
  * @component
  * @param {object} props
  * @param {Pattern[]} props.patterns - List of patterns, including selected and unselected ones.
- * @param {import("~/client/software").SoftwareProposal} props.proposal - Software proposal
- * @param {function} props.onSelectionChanged - Callback to be called when the selection changes
  * @return {JSX.Element}
  */
-const SelectedPatternsList = ({ patterns, proposal, onSelectionChanged }) => {
+const SelectedPatternsList = ({ patterns }) => {
   const selected = patterns.filter((p) => p.selectedBy !== SelectedBy.NONE);
   let description;
 
@@ -155,19 +93,18 @@ const SelectedPatternsList = ({ patterns, proposal, onSelectionChanged }) => {
       </>
     );
   }
+
   return (
     <>
       {description}
-      <div>
-        <SelectPatternsButton
-          patterns={patterns}
-          proposal={proposal}
-          onSelectionChanged={onSelectionChanged}
-        />
-      </div>
+      <Link to="patterns/select">
+        {_("Change selection")}
+      </Link>
     </>
   );
 };
+
+// FIXME: move build patterns to utils
 
 /**
  * Software page component
@@ -211,30 +148,20 @@ function SoftwarePage() {
     loadPatterns();
   }, [client.software, patterns, cancellablePromise]);
 
-  return (
-    // TRANSLATORS: page title
-    <Page icon="apps" title={_("Software")}>
-      {/* TRANSLATORS: page title */}
-      <Section title={_("Software selection")}>
-        <If
-          condition={status === BUSY || isLoading}
-          then={<SectionSkeleton numRows={5} />}
-          else={
-            <>
-              <SelectedPatternsList
-                patterns={patterns}
-                proposal={proposal}
-                onSelectionChanged={(selected) => client.software.selectPatterns(selected)}
-              />
+  if (status === BUSY || isLoading) {
+    <SectionSkeleton numRows={5} />;
+  }
 
-              <div>
-                <UsedSize size={proposal.size} />
-              </div>
-            </>
-          }
-        />
+  return (
+    <>
+      <Section>
+        <SelectedPatternsList patterns={patterns} />
       </Section>
-    </Page>
+
+      <Section>
+        <UsedSize size={proposal.size} />
+      </Section>
+    </>
   );
 }
 
