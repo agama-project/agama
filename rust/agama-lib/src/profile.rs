@@ -162,11 +162,11 @@ impl ProfileEvaluator {
     // out of the box.
     fn write_hwinfo(&self, path: &Path) -> anyhow::Result<()> {
         let result = Command::new("/usr/sbin/lshw")
-            .args(["-json", "-class", "disk"])
+            .args(["-json"])
             .output()
             .context("Failed to run lshw")?;
         let mut file = fs::File::create(path)?;
-        file.write_all(b"{ \"disks\":\n")?;
+        file.write_all(b"{ \"lshw\":\n")?;
         file.write_all(&result.stdout)?;
         file.write_all(b"\n}")?;
         Ok(())

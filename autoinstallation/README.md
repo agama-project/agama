@@ -84,6 +84,17 @@ local findBiggestDisk(disks) =
   local sizedDisks = std.filter(function(d) std.objectHas(d, 'size'), disks);
   local sorted = std.sort(sizedDisks, function(x) x.size);
   sorted[0].logicalname;
+local selectClass(lshw, class) =
+  local selectClass_(parent, class) =
+    if std.objectHas(parent, 'class') && parent.class == class then
+      [ parent ]
+    else if std.objectHas(parent, 'children') then
+      std.flattenArrays(std.prune(std.map(function(x) selectClass_(x, class), parent.children )))
+    else
+      [];
+
+  local result = selectClass_(lshw, class);
+  result;
 
 {
   software: {
@@ -97,13 +108,13 @@ local findBiggestDisk(disks) =
     language: 'en_US',
   },
   storage: {
-    bootDevice: findBiggestDisk(agama.disks),
+    bootDevice: findBiggestDisk(selectClass(agama.lshw, 'disk')),
   },
 }
 ```
 
-**:warning: At this point, only the storage information is injected. You can inspect the available
-data by installing the `lshw` package and running the following command: `lshw -json -class disk`.**
+**You can inspect the available
+data by installing the `lshw` package and running the following command: `lshw -json`.**
 
 ### Validating and evaluating a profile
 
