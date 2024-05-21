@@ -166,7 +166,7 @@ impl ProfileEvaluator {
             .output()
             .context("Failed to run lshw")?;
         let helpers = fs::read_to_string("agama.libsonnet")
-            .or_else( |_| fs::read_to_string("/usr/share/agama-cli/agama.libsonnet"))
+            .or_else(|_| fs::read_to_string("/usr/share/agama-cli/agama.libsonnet"))
             .context("Failed to read agama.libsonnet")?;
         let mut file = fs::File::create(path)?;
         file.write_all(b"{\n")?;
