@@ -213,6 +213,31 @@ describe Agama::DBus::Clients::Software do
     end
   end
 
+  describe "#on_probe_finished" do
+    before do
+      allow(dbus_object).to receive(:path).and_return("/org/opensuse/Agama/Test")
+      allow(software_iface).to receive(:on_signal)
+    end
+
+    context "if there are no callbacks for the signal" do
+      it "subscribes to the signal" do
+        expect(software_iface).to receive(:on_signal)
+        subject.on_probe_finished { "test" }
+      end
+    end
+
+    context "if there already are callbacks for the signal" do
+      before do
+        subject.on_probe_finished { "test" }
+      end
+
+      it "does not subscribe to the signal again" do
+        expect(software_iface).to_not receive(:on_signal)
+        subject.on_probe_finished { "test" }
+      end
+    end
+  end
+
   include_examples "issues"
   include_examples "service status"
   include_examples "progress"

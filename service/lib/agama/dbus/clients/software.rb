@@ -36,17 +36,10 @@ module Agama
         TYPES = [:package, :pattern].freeze
         private_constant :TYPES
 
-        def initialize
-          super
-
-          @dbus_object = service["/org/opensuse/Agama/Software1"]
-          @dbus_object.introspect
-
-          @dbus_product = service["/org/opensuse/Agama/Software1/Product"]
-          @dbus_product.introspect
-
-          @dbus_proposal = service["/org/opensuse/Agama/Software1/Proposal"]
-          @dbus_proposal.introspect
+        # @note This client is singleton because ruby-dbus does not work properly with several
+        #   instances of the same client.
+        def self.instance
+          @instance ||= new
         end
 
         # @return [String]
@@ -176,15 +169,19 @@ module Agama
 
         # Registers a callback to run when the product changes
         #
-        # @note Signal subscription is done only once. Otherwise, the latest subscription overrides
-        #   the previous one.
-        #
         # @param block [Proc] Callback to run when a product is selected
         def on_product_selected(&block)
           on_properties_change(dbus_product) do |_, changes, _|
             product = changes["SelectedProduct"]
             block.call(product) unless product.nil?
           end
+        end
+
+        # Registers a callback to run when the software is probed.
+        #
+        # @param block [Proc]
+        def on_probe_finished(&block)
+          subscribe(dbus_object, "org.opensuse.Agama.Software1", "ProbeFinished", &block)
         end
 
       private
@@ -197,6 +194,19 @@ module Agama
 
         # @return [::DBus::Object]
         attr_reader :dbus_proposal
+
+        def initialize
+          super
+
+          @dbus_object = service["/org/opensuse/Agama/Software1"]
+          @dbus_object.introspect
+
+          @dbus_product = service["/org/opensuse/Agama/Software1/Product"]
+          @dbus_product.introspect
+
+          @dbus_proposal = service["/org/opensuse/Agama/Software1/Proposal"]
+          @dbus_proposal.introspect
+        end
       end
     end
   end

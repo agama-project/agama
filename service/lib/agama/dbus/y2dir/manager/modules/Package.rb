@@ -26,7 +26,7 @@ module Yast
   class PackageClass < Module
     def main
       puts "Loading mocked module #{__FILE__}"
-      @client = Agama::DBus::Clients::Software.new
+      @client = Agama::DBus::Clients::Software.instance
     end
 
     # Determines whether a package is available.

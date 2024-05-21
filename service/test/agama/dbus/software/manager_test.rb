@@ -87,10 +87,11 @@ describe Agama::DBus::Software::Manager do
   end
 
   describe "#probe" do
-    it "runs the probing, setting the service as busy meanwhile" do
+    it "runs the probing, setting the service as busy meanwhile, and emits a signal" do
       expect(subject.service_status).to receive(:busy)
       expect(backend).to receive(:probe)
       expect(subject.service_status).to receive(:idle)
+      expect(subject).to receive(:ProbeFinished)
 
       subject.probe
     end
