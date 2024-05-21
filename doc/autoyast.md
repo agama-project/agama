@@ -174,6 +174,21 @@ Only the product and the list of products or patterns are available for Agama. W
 adding support for the packages list and the `install_recommended` setting, although none are in the
 web UI.
 
+| AutoYaST            | Supported | Agama             | Comment                           |
+| ------------------- | --------- | ----------------- | --------------------------------- |
+| do_online_update    | Never     |                   | No 2nd stage                      |
+| install_recommended | No        |                   |                                   |
+| instsource          | No        |                   |                                   |
+| kernel              | No        |                   |                                   |
+| packages            | No        |                   |                                   |
+| patterns            | Partial   | software.patterns | No support for regular expresions |
+| post-packages       | Never     |                   | No 2nd stage                      |
+| post-patterns       | Never     |                   | No 2nd stage                      |
+| products            | Yes       | software.id       |                                   |
+| remove-packages     | Never     |                   | No upgrade                        |
+| remove-patterns     | Never     |                   | No upgrade                        |
+| remove-products     | Never     |                   | No upgrade                        |
+
 ### `suse_register`
 
 Basic support for registering in the SUSE Customer Center is already in place, although there is no
