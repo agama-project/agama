@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue May 21 05:32:46 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Emit a PropertiesChanged signal for ProductMountPoints and
+  EncryptionMethods properties when the product changes
+  (gh#openSUSE/agama#1236).
+
+-------------------------------------------------------------------
 Fri May 17 09:52:25 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 8
