@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue May 21 10:38:39 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the procps4 package to the image (gh#openSUSE/agama#1245).
+
+-------------------------------------------------------------------
 Fri May 17 09:52:27 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 8
