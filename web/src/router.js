@@ -28,7 +28,7 @@ import { Page, LoginPage, ProgressText } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
 import { ProductPage, ProductSelectionPage, ProductRegistrationPage } from "~/components/product";
 import { SoftwarePage, SoftwarePatternsSelection } from "~/components/software";
-import { ProposalPage, ISCSIPage, DASDPage, ZFCPPage, DeviceSelection } from "~/components/storage";
+import { ProposalPage, ISCSIPage, DASDPage, ZFCPPage, DeviceSelection, BootSelection } from "~/components/storage";
 import { UsersPage } from "~/components/users";
 import { L10nPage, LocaleSelection, KeymapSelection, TimezoneSelection } from "~/components/l10n";
 import { NetworkPage } from "~/components/network";
@@ -74,6 +74,7 @@ const storagePages = [
 const storageRoutes = createRoute(_("Storage"), "storage", <Page title={_("Storage")} routes={storagePages} />, [
   ...storagePages,
   createRoute(_("Installation device"), "target-device", <DeviceSelection />),
+  createRoute(_("Partitions for booting"), "booting-partitions", <BootSelection />),
 ], "hard_drive");
 const networkRoutes = createRoute(_("Network"), "network", <NetworkPage />, [], "settings_ethernet");
 const usersRoutes = createRoute(_("Users"), "users", <UsersPage />, [], "manage_accounts");
