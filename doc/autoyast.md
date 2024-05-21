@@ -99,6 +99,33 @@ groups plus some authentication settings. We have at least two options here:
   This behavior is already implemented.
 - Import these sections as given because they are handled by the YaST code in Agama.
 
+| AutoYaST | Supported | Agama | Comment                                      |
+| -------- | --------- | ----- | -------------------------------------------- |
+| groups   | No        |       | It is not planned, but we should consider    |
+| users    | No        |       | It is not planned, but we should consider    |
+|          |           | root  | Root user (only password and SSH public key) |
+|          |           | user  | First non-system user from "users"           |
+
+For the first user, the following elements are supported:
+
+| AutoYaST             | Supported | Agama    | Comment                |
+| -------------------- | --------- | -------- | ---------------------- |
+| authorized_keys      | No        |          | Only for the root user |
+| encrypted            | No        |          |                        |
+| forename             | No        |          |                        |
+| fullname             | Yes       | fullName |                        |
+| gid                  | No        |          |                        |
+| group                | No        |          |                        |
+| groups               | No        |          |                        |
+| home                 | No        |          |                        |
+| home_btrfs_subvolume | No        |          |                        |
+| password_settings    | No        |          |                        |
+| shell                | No        |          |                        |
+| surname              | No        |          |                        |
+| uid                  | No        |          |                        |
+| user_password        | Yes       | password |                        |
+| username             | Yes       | userName |                        |
+
 ### `keyboard`, `language` and `timezone`
 
 These sections are rather simple, but we need to do some mapping between AutoYaST and Agama values.
