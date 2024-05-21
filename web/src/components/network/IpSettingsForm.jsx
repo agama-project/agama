@@ -20,11 +20,11 @@
  */
 
 import React, { useState } from "react";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import { HelperText, HelperTextItem, Form, FormGroup, FormSelect, FormSelectOption, TextInput } from "@patternfly/react-core";
-import { sprintf } from "sprintf-js";
 
 import { useInstallerClient } from "~/context/installer";
-import { Popup } from "~/components/core";
+import { Page } from "~/components/core";
 import { AddressesDataList, DnsDataList } from "~/components/network";
 import { _ } from "~/i18n";
 
@@ -35,8 +35,10 @@ const METHODS = {
 
 const usingDHCP = (method) => method === METHODS.AUTO;
 
-export default function IpSettingsForm({ connection, onClose, onSubmit }) {
+export default function IpSettingsForm() {
   const client = useInstallerClient();
+  const connection = useLoaderData();
+  const navigate = useNavigate();
   const [addresses, setAddresses] = useState(connection.addresses);
   const [nameservers, setNameservers] = useState(connection.nameservers.map(a => {
     return { address: a };
@@ -109,8 +111,7 @@ export default function IpSettingsForm({ connection, onClose, onSubmit }) {
     };
 
     client.network.updateConnection(updatedConnection)
-      .then(onSubmit)
-      .then(onClose)
+      .then(navigate(".."))
       // TODO: better error reporting. By now, it sets an error for the whole connection.
       .catch(({ message }) => setErrors({ object: message }));
   };
@@ -128,57 +129,57 @@ export default function IpSettingsForm({ connection, onClose, onSubmit }) {
   // TRANSLATORS: manual network configuration mode with a static IP address
   // %s is replaced by the connection name
   return (
-    <Popup
-      isOpen
-      title={sprintf(_("Edit %s"), connection.id)}
-      blockSize="medium"
-    >
-      {renderError("object")}
-      <Form id="edit-connection" onSubmit={onSubmitForm}>
-        <FormGroup fieldId="method" label={_("Mode")} isRequired>
-          <FormSelect
-            id="method"
-            name="method"
-            // TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
-            aria-label={_("Mode")}
-            value={method}
-            label={_("Mode")}
-            onChange={onMethodChange}
-            validated={validatedAttrValue("method")}
-          >
-            <FormSelectOption key="auto" value={METHODS.AUTO} label={_("Automatic (DHCP)")} />
-            {/* TRANSLATORS: manual network configuration mode with a static IP address */}
-            <FormSelectOption key="manual" value={METHODS.MANUAL} label={_("Manual")} />
-          </FormSelect>
-          {renderError("method")}
-        </FormGroup>
+    <>
+      <Page.MainContent>
+        {renderError("object")}
+        <Form id="editConnectionForm" onSubmit={onSubmitForm}>
+          <FormGroup fieldId="method" label={_("Mode")} isRequired>
+            <FormSelect
+              id="method"
+              name="method"
+              // TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
+              aria-label={_("Mode")}
+              value={method}
+              label={_("Mode")}
+              onChange={onMethodChange}
+              validated={validatedAttrValue("method")}
+            >
+              <FormSelectOption key="auto" value={METHODS.AUTO} label={_("Automatic (DHCP)")} />
+              {/* TRANSLATORS: manual network configuration mode with a static IP address */}
+              <FormSelectOption key="manual" value={METHODS.MANUAL} label={_("Manual")} />
+            </FormSelect>
+            {renderError("method")}
+          </FormGroup>
 
-        <AddressesDataList
-          addresses={addresses}
-          updateAddresses={setAddresses}
-          allowEmpty={usingDHCP(method)}
-        />
-
-        <FormGroup fieldId="gateway" label="Gateway">
-          <TextInput
-            id="gateway"
-            name="gateway"
-            aria-label={_("Gateway")}
-            value={gateway}
-            // TRANSLATORS: network gateway configuration
-            label={_("Gateway")}
-            isDisabled={addresses.length === 0}
-            onChange={(_, value) => setGateway(value)}
+          <AddressesDataList
+            addresses={addresses}
+            updateAddresses={setAddresses}
+            allowEmpty={usingDHCP(method)}
           />
-        </FormGroup>
 
-        <DnsDataList servers={nameservers} updateDnsServers={setNameservers} />
-      </Form>
+          <FormGroup fieldId="gateway" label="Gateway">
+            <TextInput
+              id="gateway"
+              name="gateway"
+              aria-label={_("Gateway")}
+              value={gateway}
+              // TRANSLATORS: network gateway configuration
+              label={_("Gateway")}
+              isDisabled={addresses.length === 0}
+              onChange={(_, value) => setGateway(value)}
+            />
+          </FormGroup>
 
-      <Popup.Actions>
-        <Popup.Confirm form="edit-connection" type="submit" />
-        <Popup.Cancel onClick={onClose} />
-      </Popup.Actions>
-    </Popup>
+          <DnsDataList servers={nameservers} updateDnsServers={setNameservers} />
+        </Form>
+      </Page.MainContent>
+
+      <Page.NextActions>
+        <Page.CancelAction />
+        <Page.Action type="submit" form="editConnectionForm">
+          {_("Accept")}
+        </Page.Action>
+      </Page.NextActions>
+    </>
   );
 }

@@ -22,12 +22,13 @@
 // @ts-check
 
 import React, { useEffect, useState } from "react";
+import { useLoaderData } from "react-router-dom";
 import { Button, Skeleton } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
-import { If, Page, Section } from "~/components/core";
-import { ConnectionsTable, IpSettingsForm, NetworkPageMenu, WifiSelector } from "~/components/network";
-import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
+import { If, Section } from "~/components/core";
+import { ConnectionsTable, NetworkPageMenu, WifiSelector } from "~/components/network";
+import { NetworkEventTypes } from "~/client/network";
 import { _ } from "~/i18n";
 
 /**
@@ -84,7 +85,8 @@ const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
  */
 export default function NetworkPage() {
   const { network: client } = useInstallerClient();
-  const [connections, setConnections] = useState(undefined);
+  const initialConnections = useLoaderData();
+  const [connections, setConnections] = useState(initialConnections);
   const [devices, setDevices] = useState(undefined);
   const [selectedConnection, setSelectedConnection] = useState(null);
   const [wifiScanSupported, setWifiScanSupported] = useState(false);
@@ -126,7 +128,7 @@ export default function NetworkPage() {
     if (connections !== undefined) return;
 
     client.settings().then((s) => setWifiScanSupported(s.wireless_enabled));
-    client.connections().then(setConnections);
+    // client.connections().then(setConnections);
   }, [client, connections]);
 
   useEffect(() => {
@@ -174,15 +176,12 @@ export default function NetworkPage() {
   };
 
   return (
-    // TRANSLATORS: page title
-    <Page icon="settings_ethernet" title={_("Network")}>
-      { /* TRANSLATORS: page section */}
-      <Section title={_("Wired networks")} icon="lan">
+    <>
+      <Section title={_("Wired connections")} icon="lan">
         {ready ? <WiredConnections /> : <Skeleton />}
       </Section>
 
-      { /* TRANSLATORS: page section */}
-      <Section title={_("WiFi networks")} icon="wifi">
+      <Section title={_("WiFi connections")} icon="wifi">
         {ready ? <WifiConnections /> : <Skeleton />}
       </Section>
 
@@ -192,12 +191,6 @@ export default function NetworkPage() {
         condition={wifiScanSupported}
         then={<WifiSelector isOpen={wifiSelectorOpen} onClose={closeWifiSelector} />}
       />
-
-      { /* TODO: improve the connections edition */}
-      <If
-        condition={selectedConnection}
-        then={<IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} onSubmit={updateConnections} />}
-      />
-    </Page>
+    </>
   );
 }

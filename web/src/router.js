@@ -31,8 +31,8 @@ import { SoftwarePage, SoftwarePatternsSelection } from "~/components/software";
 import { ProposalPage, ISCSIPage, DASDPage, ZFCPPage, DeviceSelection, BootSelection } from "~/components/storage";
 import { UsersPage } from "~/components/users";
 import { L10nPage, LocaleSelection, KeymapSelection, TimezoneSelection } from "~/components/l10n";
-import { NetworkPage } from "~/components/network";
 import { _ } from "~/i18n";
+import networkRoutes from "~/components/network/routes";
 
 // FIXME: think in a better apprach for routes, if any.
 // FIXME: think if it worth it to have the routes ready for work with them
@@ -76,7 +76,6 @@ const storageRoutes = createRoute(_("Storage"), "storage", <Page title={_("Stora
   createRoute(_("Installation device"), "target-device", <DeviceSelection />),
   createRoute(_("Partitions for booting"), "booting-partitions", <BootSelection />),
 ], "hard_drive");
-const networkRoutes = createRoute(_("Network"), "network", <NetworkPage />, [], "settings_ethernet");
 const usersRoutes = createRoute(_("Users"), "users", <UsersPage />, [], "manage_accounts");
 
 const rootRoutes = [
