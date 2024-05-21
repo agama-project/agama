@@ -41,7 +41,6 @@ install -m 0644 *.yaml %{buildroot}%{_datadir}/agama/products.d
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/products.d
 %{_datadir}/agama/products.d/microos.yaml
-%{_datadir}/agama/products.d/microos-desktop.yaml
 %{_datadir}/agama/products.d/tumbleweed.yaml
 
 %changelog
