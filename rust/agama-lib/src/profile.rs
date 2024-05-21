@@ -156,7 +156,7 @@ impl ProfileEvaluator {
         Ok(())
     }
 
-    // Write the hardware information in JSON format to a given path
+    // Write the hardware information in JSON format to a given path and also helpers to help with it
     //
     // TODO: we need a better way to generate this information, as lshw and hwinfo are not usable
     // out of the box.
@@ -165,8 +165,13 @@ impl ProfileEvaluator {
             .args(["-json"])
             .output()
             .context("Failed to run lshw")?;
+        let helpers = fs::read_to_string("agama.libsonnet")
+            .or_else( |_| fs::read_to_string("/usr/share/agama-cli/agama.libsonnet"))
+            .context("Failed to read agama.libsonnet")?;
         let mut file = fs::File::create(path)?;
-        file.write_all(b"{ \"lshw\":\n")?;
+        file.write_all(b"{\n")?;
+        file.write_all(helpers.as_bytes())?;
+        file.write_all(b"\n\"lshw\":\n")?;
         file.write_all(&result.stdout)?;
         file.write_all(b"\n}")?;
         Ok(())

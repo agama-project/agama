@@ -84,21 +84,11 @@ local findBiggestDisk(disks) =
   local sizedDisks = std.filter(function(d) std.objectHas(d, 'size'), disks);
   local sorted = std.sort(sizedDisks, function(x) x.size);
   sorted[0].logicalname;
-local selectClass(lshw, class) =
-  local selectClass_(parent, class) =
-    if std.objectHas(parent, 'class') && parent.class == class then
-      [ parent ]
-    else if std.objectHas(parent, 'children') then
-      std.flattenArrays(std.prune(std.map(function(x) selectClass_(x, class), parent.children )))
-    else
-      [];
-
-  local result = selectClass_(lshw, class);
-  result;
+local memory = agama.findID(agama.lshw, 'memory').size;
 
 {
   software: {
-    product: 'ALP-Dolomite',
+    product: if memory < 8000000000 then 'MicroOS' else 'Tumbleweed',
   },
   root: {
     password: 'nots3cr3t',
@@ -108,7 +98,7 @@ local selectClass(lshw, class) =
     language: 'en_US',
   },
   storage: {
-    bootDevice: findBiggestDisk(selectClass(agama.lshw, 'disk')),
+    bootDevice: findBiggestDisk(agama.selectClass(agama.lshw, 'disk')),
   },
 }
 ```
