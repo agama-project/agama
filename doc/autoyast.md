@@ -126,10 +126,28 @@ For the first user, the following elements are supported:
 | user_password        | Yes       | password |                        |
 | username             | Yes       | userName |                        |
 
-### `keyboard`, `language` and `timezone`
+### `keyboard`
 
-These sections are rather simple, but we need to do some mapping between AutoYaST and Agama values.
-Additionally, the `hwclock` element is not present in Agama.
+Only the `keymap` element is translated. The rest of options are ignored in YaST and they are not
+even documented in the AutoYaST handbook.
+
+| AutoYaST | Supported  | Agama         | Comment                        |
+| -------- | ---------- | ------------- | ------------------------------ |
+| keymap   | Yes        | l10n.keyboard | Should we rename it to keymap? |
+| capslock | Deprecated |               |                                |
+| delay    | Deprecated |               |                                |
+| discaps  | Deprecated |               |                                |
+| numlock  | Deprecated |               |                                |
+| rate     | Deprecated |               |                                |
+| scrlock  | Deprecated |               |                                |
+| tty      | Deprecated |               |                                |
+
+### `language`
+
+| AutoYaST  | Supported | Agama          | Comment                   |
+| --------- | --------- | -------------- | ------------------------- |
+| language  | Yes       | l10n.languages | First element of the list |
+| languages | Yes       | l10n.languages |                           |
 
 ### `networking`
 
@@ -227,6 +245,13 @@ It is arguable whether we should offer a `install_updates` element instead of ju
 About the `slp_discoverty` element, Agama does not support [SLP] at all?
 
 [SLP]: https://documentation.suse.com/sles/15-SP5/single-html/SLES-administration/#cha-slp
+
+### `timezone`
+
+| AutoYaST | Supported | Agama         | Comment |
+| -------- | --------- | ------------- | ------- |
+| timezone | Yes       | l10n.timezone |         |
+| hwclock  | No        |               |         |
 
 ## Unsupported sections
 
