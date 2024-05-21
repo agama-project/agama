@@ -36,7 +36,7 @@ module Agama
         TYPES = [:package, :pattern].freeze
         private_constant :TYPES
 
-        # @note This client is sigleton because ruby-dbus does not work properly with several
+        # @note This client is singleton because ruby-dbus does not work properly with several
         #   instances of the same client.
         def self.instance
           @instance ||= new
