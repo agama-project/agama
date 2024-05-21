@@ -32,11 +32,12 @@ sudosed() {
 
 # if agama is already running -> stop it
 $SUDO systemctl list-unit-files agama.service &>/dev/null && $SUDO systemctl stop agama.service
+$SUDO systemctl list-unit-files agama-web-server.service &>/dev/null && $SUDO systemctl stop agama-web-server.service
 
 # Ruby services
 
 # Packages required for Ruby development (i.e., bundle install).
-$SUDO zypper --non-interactive --gpg-auto-import-keys install \
+$SUDO zypper --non-interactive install \
   gcc \
   gcc-c++ \
   make \
@@ -46,7 +47,7 @@ $SUDO zypper --non-interactive --gpg-auto-import-keys install \
 
 # Packages required by Agama Ruby services (see ./service/package/gem2rpm.yml).
 # TODO extract list from gem2rpm.yml
-$SUDO zypper --non-interactive --gpg-auto-import-keys install \
+$SUDO zypper --non-interactive install \
   dbus-1-common \
   suseconnect-ruby-bindings \
   autoyast2-installation \
@@ -88,13 +89,13 @@ $SUDO zypper --non-interactive --gpg-auto-import-keys install \
 
 # Install x86_64 packages
 if [ $(uname -m) == "x86_64" ]; then
-  $SUDO zypper --non-interactive --gpg-auto-import-keys install \
+  $SUDO zypper --non-interactive install \
     fde-tools
 fi
 
 # Install s390 packages
 if [ $(uname -m) == "s390x" ]; then
-  $SUDO zypper --non-interactive --gpg-auto-import-keys install \
+  $SUDO zypper --non-interactive install \
     yast2-s390 \
     yast2-reipl \
     yast2-cio
@@ -168,15 +169,24 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
     # it is intention to use debug here to get more useful debugging output
     sudosed "s@\(Exec\)=/usr/bin/@\1=$MYDIR/rust/target/debug/@" $SVC $DBUSDIR/$SVC
   done
+
+  sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/rust/target/debug/@" \
+    agama-web-server.service /usr/lib/systemd/system/agama-web-server.service
+
+  cp -f agama.pam /usr/lib/pam.d/agama
 )
+
+# copy the product files
+mkdir -p /usr/share/agama/products.d
+cp -f $MYDIR/products.d/*.yaml /usr/share/agama/products.d
 
 # systemd reload and start of service
 (
   $SUDO systemctl daemon-reload
   # Start the separate dbus-daemon for Agama
-  # (in CI we run a custom cockpit-ws which replaces the cockpit.socket
-  # dependency, continue in that case)
-  $SUDO systemctl start agama.service || pgrep cockpit-ws
+  $SUDO systemctl start agama.service
+  # Start the web server
+  $SUDO systemctl start agama-web-server.service
 )
 
 # - Make sure NetworkManager is running
