@@ -50,6 +50,7 @@
         <package name="patterns-openSUSE-base"/>
         <package name="systemd"/>
         <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
+        <package name="procps4"/>
         <package name="iputils"/>
         <package name="vim"/>
         <package name="grub2"/>
