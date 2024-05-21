@@ -97,8 +97,8 @@ module Agama
           return if callbacks.size > 1
 
           interface_proxy = dbus_object[interface]
-          interface_proxy.on_signal(signal) do |iface, changes, invalid|
-            callbacks.each { |c| c.call(iface, changes, invalid) }
+          interface_proxy.on_signal(signal) do |*args|
+            callbacks.each { |c| c.call(*args) }
           end
         end
 
