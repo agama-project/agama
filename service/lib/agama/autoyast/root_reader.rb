@@ -28,33 +28,21 @@ require "y2users/autoinst/reader"
 module Agama
   module AutoYaST
     # Extracts the users information from an AutoYaST profile.
-    class UsersConverter
+    class RootReader
       # @param profile [ProfileHash] AutoYaST profile
       def initialize(profile)
         @profile = profile
       end
 
       # @return [Hash] Agama "root" section
-      def root
+      def read
         root_user = config.users.find { |u| u.name == "root" }
         return {} unless root_user
 
         hsh = { "password" => root_user.password.value.to_s }
         public_key = root_user.authorized_keys.first
         hsh["sshPublicKey"] = public_key if public_key
-        hsh
-      end
-
-      # @return [Hash] Agama "user" section
-      def user
-        user = config.users.find { |u| !u.system? && !u.root? }
-        return {} unless user
-
-        {
-          "userName" => user.name,
-          "fullName" => user.gecos.first.to_s,
-          "password" => user.password.value.to_s
-        }
+        { "root" => hsh }
       end
 
     private

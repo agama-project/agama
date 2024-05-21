@@ -85,14 +85,14 @@ describe Agama::AutoYaST::Converter do
 
       it "runs the script" do
         subject.to_agama(workdir)
-        expect(result["software"]).to include("product" => "Tumbleweed")
+        expect(result["product"]).to include("id" => "Tumbleweed")
       end
     end
 
     context "when a product is selected" do
       it "exports the selected product" do
         subject.to_agama(workdir)
-        expect(result["software"]).to include("product" => "Tumbleweed")
+        expect(result["product"]).to include("id" => "Tumbleweed")
       end
     end
 

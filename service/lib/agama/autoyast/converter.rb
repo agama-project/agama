@@ -23,7 +23,11 @@
 require "yast"
 require "autoinstall/script_runner"
 require "autoinstall/script"
-require "agama/autoyast/users_converter"
+require "agama/autoyast/product_reader"
+require "agama/autoyast/root_reader"
+require "agama/autoyast/software_reader"
+require "agama/autoyast/storage_reader"
+require "agama/autoyast/user_reader"
 require "json"
 require "fileutils"
 require "pathname"
@@ -111,41 +115,17 @@ module Agama
 
       # @return [Hash] Agama profile
       def export_profile(profile)
-        users = Agama::AutoYaST::UsersConverter.new(profile)
-        {
-          "software" => export_software(profile.fetch_as_hash("software")),
-          "storage"  => export_storage(profile.fetch_as_array("partitioning")),
-          "root"     => users.root,
-          "user"     => users.user
-        }
-      end
+        user = Agama::AutoYaST::UserReader.new(profile)
+        root = Agama::AutoYaST::RootReader.new(profile)
+        software = Agama::AutoYaST::SoftwareReader.new(profile)
+        product = Agama::AutoYaST::ProductReader.new(profile)
+        storage = Agama::AutoYaST::StorageReader.new(profile)
 
-      # @param drives [Array<Hash>] Array of drives in the AutoYaST partitioning section
-      def export_storage(drives)
-        # TODO: rely on AutoinstProfile classes
-        devices = drives.each_with_object([]) do |d, all|
-          next unless d["device"]
-
-          all << d["device"]
-        end
-        return {} if devices.empty?
-
-        { "bootDevice" => devices.first }
-      end
-
-      # @param profile [Hash] Software section from the AutoYaST profile
-      def export_software(profile)
-        product = profile.fetch_as_array("products").first
-        patterns = profile.fetch_as_array("patterns")
-        return {} unless product
-
-        { "product" => product, "patterns" => patterns }
-      end
-
-      # @param profile [Hash] Users section from the AutoYaST profile
-      def export_root(profile)
-        users = Agama::AutoYaST::UsersConverter.new(profile)
-        users.root
+        user.read
+          .merge(root.read)
+          .merge(software.read)
+          .merge(product.read)
+          .merge(storage.read)
       end
 
       def import_yast
