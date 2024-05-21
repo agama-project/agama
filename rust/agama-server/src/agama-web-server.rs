@@ -79,12 +79,15 @@ struct ServeArgs {
     #[arg(long, default_value = None)]
     address2: Option<String>,
 
-    /// Path to the SSL private key file in PEM format
-    #[arg(long, default_value = None)]
+    #[arg(
+        long,
+        default_value = "/run/agama/ssl/key.pem",
+    )]
     key: Option<String>,
-
-    /// Path to the SSL certificate file in PEM format
-    #[arg(long, default_value = None)]
+    #[arg(
+        long,
+        default_value = "/run/agama/ssl/cert.pem",
+    )]
     cert: Option<String>,
 
     /// The D-Bus address for connecting to the Agama service
