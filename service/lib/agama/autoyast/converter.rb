@@ -23,6 +23,7 @@
 require "yast"
 require "autoinstall/script_runner"
 require "autoinstall/script"
+require "agama/autoyast/l10n_reader"
 require "agama/autoyast/product_reader"
 require "agama/autoyast/root_reader"
 require "agama/autoyast/software_reader"
@@ -119,6 +120,7 @@ module Agama
         root = Agama::AutoYaST::RootReader.new(profile)
         software = Agama::AutoYaST::SoftwareReader.new(profile)
         product = Agama::AutoYaST::ProductReader.new(profile)
+        l10n = Agama::AutoYaST::L10nReader.new(profile)
         storage = Agama::AutoYaST::StorageReader.new(profile)
 
         user.read
@@ -126,6 +128,7 @@ module Agama
           .merge(software.read)
           .merge(product.read)
           .merge(storage.read)
+          .merge(l10n.read)
       end
 
       def import_yast

@@ -118,6 +118,15 @@ describe Agama::AutoYaST::Converter do
           "password" => "12345678", "fullName" => "Jane Doe")
       end
     end
+
+    it "exports l10n settings" do
+      subject.to_agama(workdir)
+      expect(result["l10n"]).to include(
+        "languages" => ["en_US.UTF-8"],
+        "timezone"  => "Atlantic/Canary",
+        "keyboard"  => "us"
+      )
+    end
   end
 
   context "when an invalid profile is given" do

@@ -15,6 +15,14 @@
     <languages>en_US</languages>
   </language>
 
+  <timezone>
+    <timezone>Atlantic/Canary</timezone>
+  </timezone>
+
+  <keyboard>
+    <keymap>us</keymap>
+  </keyboard>
+
   <partitioning config:type="list">
    <drive>
      <device>/dev/vda</device>
