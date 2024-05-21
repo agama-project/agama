@@ -26,6 +26,8 @@ import { FormGroup } from "@patternfly/react-core";
 import { FormValidationError, PasswordInput } from "~/components/core";
 import { _ } from "~/i18n";
 
+// FIXME: allow to make it uncontrolled. use defaultValue and refs for
+// triggering validation only on blur.
 const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisabled = false }) => {
   const [confirmation, setConfirmation] = useState(value || "");
   const [error, setError] = useState("");

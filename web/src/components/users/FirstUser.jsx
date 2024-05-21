@@ -276,10 +276,10 @@ export default function FirstUser() {
           inlineSize="small"
         >
           <Form id="createUser" onSubmit={(e) => accept("createUser", e)}>
-            { showErrors() &&
+            {showErrors() &&
               <Alert variant="warning" isInline title={_("Something went wrong")}>
-                { errors.map((e, i) => <p key={`error_${i}`}>{e}</p>) }
-              </Alert> }
+                {errors.map((e, i) => <p key={`error_${i}`}>{e}</p>)}
+              </Alert>}
 
             <FormGroup fieldId="userFullName" label={_("Full name")}>
               <TextInput
@@ -324,7 +324,7 @@ export default function FirstUser() {
               />
             </FormGroup>
 
-            { isEditing &&
+            {isEditing &&
               <Checkbox
                 aria-label={_("Edit password too")}
                 id="edit-password"
@@ -333,14 +333,14 @@ export default function FirstUser() {
                 label={_("Edit password too")}
                 isChecked={isSettingPassword}
                 onChange={toggleShowPasswordField}
-              /> }
+              />}
 
-            { isSettingPassword &&
+            {isSettingPassword &&
               <PasswordAndConfirmationInput
                 value={formValues.password}
                 onChange={handleInputChange}
                 onValidation={isValid => setIsValidPassword(isValid)}
-              /> }
+              />}
 
             <Checkbox
               aria-label={_("user autologin")}
@@ -361,7 +361,7 @@ export default function FirstUser() {
             />
             <Popup.Cancel onClick={closeForm} />
           </Popup.Actions>
-        </Popup> }
+        </Popup>}
     </>
   );
 }
