@@ -24,8 +24,6 @@ require "yast"
 require "y2network/autoinst_profile/interface_section"
 require "agama/autoyast/bond_reader"
 
-Yast.import "Profile"
-
 describe Agama::AutoYaST::BondReader do
   let(:profile) do
     {
