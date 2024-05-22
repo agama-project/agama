@@ -1,9 +1,13 @@
+use std::env;
+use std::ffi::OsStr;
 use std::io;
 use std::process::Command;
+use std::time::Duration;
 
 use crate::error::Error;
 use agama_locale_data::{KeymapId, LocaleId};
 use regex::Regex;
+use subprocess::{Popen, PopenConfig, PopenError, Redirection};
 
 use super::keyboard::KeymapsDatabase;
 use super::locale::LocalesDatabase;
@@ -19,6 +23,60 @@ pub struct L10n {
     pub keymaps_db: KeymapsDatabase,
     pub ui_locale: LocaleId,
     pub ui_keymap: KeymapId,
+}
+
+// timeout for the setxkbmap call (in seconds), when there is an authentication
+// problem when accessing the X server then it enters an infinite loop
+const SETXKBMAP_TIMEOUT: u64 = 3;
+
+// helper function which runs a command with timeout and collects it's standard
+// output
+fn run_with_timeout(cmd: &[impl AsRef<OsStr>], timeout: u64) -> Result<Option<String>, PopenError> {
+    // start the subprocess
+    let mut process = Popen::create(
+        cmd,
+        PopenConfig {
+            stdout: Redirection::Pipe,
+            stderr: Redirection::Pipe,
+            ..Default::default()
+        },
+    )?;
+
+    // wait for it to finish or until the timeout is reached
+    if process
+        .wait_timeout(Duration::from_secs(timeout))?
+        .is_none()
+    {
+        tracing::warn!("Command timed out!");
+        // if the process is still running after the timeout then terminate it,
+        // ignore errors, there is another attempt later to kill the process
+        let _ = process.terminate();
+
+        // give the process some time to react to SIGTERM
+        if process.wait_timeout(Duration::from_secs(1))?.is_none() {
+            // process still running, kill it with SIGKILL
+            process.kill()?;
+        }
+
+        return Err(PopenError::LogicError("Timeout reached"));
+    }
+
+    // get the collected stdout/stderr
+    let (out, err) = process.communicate(None)?;
+
+    if let Some(err_str) = err {
+        if err_str.len() > 0 {
+            tracing::warn!("Error output size: {}", err_str.len());
+        }
+    }
+
+    return Ok(out);
+}
+
+// helper function to get the X display name, if not set it returns the ":0"
+// default value
+fn display() -> String {
+    env::var("DISPLAY").unwrap_or(String::from(":0"))
 }
 
 impl L10n {
@@ -112,11 +170,15 @@ impl L10n {
             .args(["set-x11-keymap", &keymap])
             .output()
             .map_err(LocaleError::Commit)?;
-        Command::new("/usr/bin/setxkbmap")
-            .arg(keymap)
-            .env("DISPLAY", ":0")
-            .output()
-            .map_err(LocaleError::Commit)?;
+
+        let output = run_with_timeout(
+            &["setxkbmap", "-display", &display(), &keymap],
+            SETXKBMAP_TIMEOUT,
+        );
+        output.map_err(|e| {
+            LocaleError::Commit(io::Error::new(io::ErrorKind::Other, e.to_string()))
+        })?;
+
         Ok(())
     }
 
@@ -141,12 +203,12 @@ impl L10n {
     }
 
     fn x11_keymap() -> Result<String, io::Error> {
-        let output = Command::new("setxkbmap")
-            .arg("-query")
-            .env("DISPLAY", ":0")
-            .output()?;
-        let output = String::from_utf8(output.stdout)
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
+        let output = run_with_timeout(
+            &["setxkbmap", "-query", "-display", &display()],
+            SETXKBMAP_TIMEOUT,
+        );
+        let output = output.map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
+        let output = output.unwrap_or(String::new());
 
         let keymap_regexp = Regex::new(r"(?m)^layout: (.+)$").unwrap();
         let captures = keymap_regexp.captures(&output);

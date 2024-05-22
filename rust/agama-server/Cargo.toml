@@ -55,6 +55,7 @@ futures-util = { version = "0.3.30", default-features = false, features = [
   "alloc",
 ] }
 libsystemd = "0.7.0"
+subprocess = "0.2.9"
 
 [[bin]]
 name = "agama-dbus-server"
