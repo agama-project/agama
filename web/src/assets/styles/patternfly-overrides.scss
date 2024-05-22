@@ -280,6 +280,10 @@ table td > .pf-v5-c-empty-state {
   fill: var(--pf-v5-c-nav__link--Color);
 }
 
+.pf-v5-c-page__sidebar-body{
+  fill: white;
+}
+
 // center alignment and a bit of gap makes links with icons looks better
 .pf-v5-c-nav__link {
   align-items: center;

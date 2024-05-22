@@ -26,8 +26,11 @@ import {
   Masthead, MastheadToggle, MastheadMain, MastheadBrand,
   Nav, NavItem, NavList,
   Page, PageSidebar, PageSidebarBody, PageToggleButton,
+  Stack
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
+import { About, LogsButton } from "~/components/core";
+import { InstallerKeymapSwitcher, InstallerLocaleSwitcher } from "~/components/l10n";
 import { _ } from "~/i18n";
 import { rootRoutes } from "~/router";
 
@@ -68,10 +71,18 @@ const Sidebar = () => {
 
   return (
     <PageSidebar id="uncontrolled-sidebar">
-      <PageSidebarBody>
+      <PageSidebarBody isFilled>
         <Nav>
           <NavList>{links}</NavList>
         </Nav>
+      </PageSidebarBody>
+      <PageSidebarBody usePageInsets isFilled={false}>
+        <Stack hasGutter>
+          <InstallerLocaleSwitcher />
+          <InstallerKeymapSwitcher />
+          <About buttonVariant="tertiary" />
+          <LogsButton />
+        </Stack>
       </PageSidebarBody>
     </PageSidebar>
   );
