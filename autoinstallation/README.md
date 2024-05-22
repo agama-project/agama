@@ -76,7 +76,9 @@ running. For such use cases, Agama injects the hardware information into the pro
 using Jsonnet.
 
 In the following example, the profile is adapted to install the system on the biggest disk on the
-system. The hardware information (from `lshw`) is available as a JSON object in the `hw.libsonnet`.
+system. It also selects product based on amount of available RAM memory. The hardware information
+(from `lshw`) is available as a JSON object in the `hw.libsonnet`.
+There is also a set of helpers as part of hw. For documentation of those helpers see agama.libsonnet file.
 
 ```jsonnet
 local agama = import 'hw.libsonnet';
