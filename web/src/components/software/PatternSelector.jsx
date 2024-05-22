@@ -130,7 +130,7 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
   }, [patterns, onSelectionChanged]);
 
   // initial empty screen, the patterns are loaded very quickly, no need for any progress
-  if (visiblePatterns.length === 0) return null;
+  if (visiblePatterns.length === 0 && searchValue === "") return null;
 
   const groups = groupPatterns(visiblePatterns);
 
