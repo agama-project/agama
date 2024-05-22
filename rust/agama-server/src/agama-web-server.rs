@@ -106,12 +106,16 @@ impl ServeArgs {
         let mut tls_builder = SslAcceptor::mozilla_modern_v5(SslMethod::tls_server())?;
 
         // use default or explicitly provided certificate if any
-        if let (Some(cert), Some(key)) = (self.cert.clone(), self.key.clone()) {
-            tracing::info!("Loading PEM certificate: {}", cert);
-            tls_builder.set_certificate_file(PathBuf::from(cert), SslFiletype::PEM)?;
+        if self.cert.clone().is_some_and(|c| Path::new(&c).exists()) && self.key.clone().is_some_and(|k| Path::new(&k).exists()) {
+            if let Some(cert) = &self.cert {
+                tracing::info!("Loading PEM certificate: {}", cert);
+                tls_builder.set_certificate_file(PathBuf::from(cert), SslFiletype::PEM)?;
+            }
 
-            tracing::info!("Loading PEM key: {}", key);
-            tls_builder.set_private_key_file(PathBuf::from(key), SslFiletype::PEM)?;
+            if let Some(key) = &self.key {
+                tracing::info!("Loading PEM key: {}", key);
+                tls_builder.set_private_key_file(PathBuf::from(key), SslFiletype::PEM)?;
+            }
         } else {
             tracing::info!("Creating self-signed certificate");
 
