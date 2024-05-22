@@ -152,14 +152,140 @@ even documented in the AutoYaST handbook.
 ### `networking`
 
 The `networking` section in AutoYaST is composed of several sections: `dns`, `interfaces`,
-`net-udev`, `routing` and `s390-devices`. Additionally, other elements like `ipv6` or
-`keep_install_network` might need some level of support.
+`net-udev`, `routing` and `s390-devices`. At this point, Agama only supports defining a list of
+connections that could correspond with the AutoYaST interfaces list. We might need to extend Agama
+to support `dns`, `net-udev`, etc.
 
-At this point, Agama only supports defining a list of connections that could correspond with the
-AutoYaST interfaces list. We might need to extend Agama to support `dns`, `net-udev`, etc.
+| AutoYaST                | Supported | Agama       | Comment                           |
+| ----------------------- | --------- | ----------- | --------------------------------- |
+| backend                 | No        |             | No plan for additional backends   |
+| dhcp_options            | No        |             |                                   |
+| dns                     | Partial   |             | Included in connections           |
+| interfaces              | Partial   | connections | Check the connections table below |
+| ipv6                    | Never     |             |                                   |
+| keep_install_network    | Never     |             |                                   |
+| managed                 | Never     |             |                                   |
+| modules                 | No        |             |                                   |
+| net-udev                | No        |             |                                   |
+| routing                 | Partial   |             | Included in connections           |
+| s390-devices            | No        |             |                                   |
+| setup_before_proposal   | Never     |             |                                   |
+| strict_IP_check_timeout | Never     |             |                                   |
+| virt_brige_proposal     | No        |             |                                   |
 
-About `keep_install_network` and `setup_before_proposal`, we should not implement them to keep
-things simple.
+As seen in the table above, AutoYaST `interfaces` corresponds with Agama `connections`, but the
+format is not exactly the same.
+
+| AutoYaST                   | Supported  | Agama      | Comment                                 |
+| -------------------------- | ---------- | ---------- | --------------------------------------- |
+| device                     | Yes        | interface  |                                         |
+| name                       | Yes        | id         |                                         |
+| description                | Deprecated |            |                                         |
+| bootproto                  | Yes        | method4    |                                         |
+| startmode                  | Never      |            | Do not set up connections you won't use |
+| lladdr                     | Yes        | macAddress |                                         |
+| ifplugd_priority           | Never      |            | Not relevant (no ifplugd support)       |
+| usercontrol                | Never      |            |                                         |
+| dhclient_set_hostname      | No         |            |                                         |
+| ipaddr                     | Yes        | addresses  |                                         |
+| prefixlen                  | Yes        | addresses  | Part of `addresses`                     |
+| remote_ipaddr              | No         |            |                                         |
+| netmask                    | Yes        | addresses  | Part of `addresses`                     |
+| bonding_*                  | Yes        | bond       | Use a different format to define bonds  |
+| aliases                    | Yes        |            | Part of `addresses`                     |
+| broadcast                  | Deprecated |            | Part of `addresses`                     |
+| network                    | Deprecated |            | Part of `addresses`                     |
+| mtu                        | No         |            |                                         |
+| ethtool_options            | No         |            |                                         |
+| wireless                   | Yes        | wireless   | It uses a different format              |
+| wifi_settings              | Partial    | wireless   | It uses a different format              |
+| bridge_settings            | Planned    |            |                                         |
+| vlan_settings              | Planned    |            |                                         |
+| dhclient_set_down_link     | No         |            |                                         |
+| dhclient_set_default_route | No         |            |                                         |
+| zone                       | No         |            |                                         |
+| firewall                   | No         |            |                                         |
+
+#### Wireless connections
+
+Setting up a wireless connection in AutoYaST is not even documented, although it is possible. In
+Agama, the options are placed under a `wireless` key.
+
+| AutoYaST                     | Supported | Agama    | Comment                 |
+| ---------------------------- | --------- | -------- | ----------------------- |
+| wireless_auth_mode           | Partial   | security | Different set of values |
+| wireless_ap                  | No        |          |                         |
+| wireless_bitrate             | No        |          |                         |
+| wireless_ca_cert             | No        |          |                         |
+| wireless_channel             | No        |          |                         |
+| wireless_client_cert         | No        |          |                         |
+| wireless_client_key          | No        |          |                         |
+| wireless_client_key_password | No        |          |                         |
+| wireless_default_key         | No        |          |                         |
+| wireless_eap_auth            | No        |          |                         |
+| wireless_eap_mode            | No        |          |                         |
+| wireless_essid               | Yes       | ssid     |                         |
+| wireless_frequency           | No        |          |                         |
+| wireless_key                 | No        |          |                         |
+| wireless_key_0               | No        |          |                         |
+| wireless_key_1               | No        |          |                         |
+| wireless_key_2               | No        |          |                         |
+| wireless_key_3               | No        |          |                         |
+| wireless_key_length          | No        |          |                         |
+| wireless_mode                | Partial   | mode     | Different set of values |
+| wireless_nick                | No        |          |                         |
+| wireless_nwid                | No        |          |                         |
+| wireless_peap_version        | No        |          |                         |
+| wireless_power               | No        |          |                         |
+| wireless_wpa_anonid          | No        |          |                         |
+| wireless_wpa_identity        | No        |          |                         |
+| wireless_wpa_password        | Yes       | password |                         |
+| wireless_wpa_psk             | Yes       | password |                         |
+
+#### Bonding connections
+
+The AutoYaST `bonding*` elements allow setting up a bonding interface. In Agama, those settings are
+placed under a `bond` key in the `connection` structure.
+
+| AutoYaST            | Supported | Agama   | Comment                       |
+| ------------------- | --------- | ------- | ----------------------------- |
+| bonding_master      | Yes       |         | The master defines the `bond` |
+| bonding_slaveX      | Yes       | ports   |                               |
+| bonding_module_opts | Yes       | options |                               |
+| -                   |           | mode    | Specific key to set the mode  |
+
+Agama includes an specific `mode` options to set the mode, instead of abusing the
+`bonding_module_opts`.
+
+### Bridge connections
+
+> [!WARNING]
+> Bridge support is not implemented yet, although we have support at model level.
+
+The AutoYaST `bridge*` elements allow setting up a bridge. In Agama, those settings are placed under
+a `bridge` key in the `connection` structure.
+
+| AutoYaST             | Supported | Agama         | Comment                                 |
+| -------------------- | --------- | ------------- | --------------------------------------- |
+| bridge               | Planned   |               | An existing `bridge` key means the same |
+| bridge_ports         | Planned   | ports         |                                         |
+| bridge_stp           | Planned   | stp           |                                         |
+| bridge_forward_delay | Planned   | forward_delay |                                         |
+| bridge_forwarddelay  | Planned   | forward_delay | Compatibility bsc#1180944               |
+
+### VLAN
+
+> [!WARNING]
+> VLAN support is not implemented yet, although we have support at model level.
+
+The AutoYaST `vlan_settings` elements allow setting up a bridge. In Agama, those settings are placed
+under a `vlan` key in the `connection` structure.
+
+| AutoYaST    | Supported | Agama    | Comment |
+| ----------- | --------- | -------- | ------- |
+| vlan_id     | Planned   | id       |         |
+| etherdevice | Planned   | parent   |         |
+| -           | Planned   | protocol |         |
 
 ### `partitioning`
 
