@@ -27,7 +27,6 @@ import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import {
   Alert,
-  Button,
   Checkbox,
   Form,
   FormGroup,
@@ -54,7 +53,6 @@ const UserNotDefined = ({ actionCb }) => {
           {_("Please, be aware that a user must be defined before installing the system to be able to log into it.")}
         </strong>
       </div>
-      {/* TRANSLATORS: push button label */}
       <Link to="first">{_("Define a user now")}</Link>
     </div>
   );

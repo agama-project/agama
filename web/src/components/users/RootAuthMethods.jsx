@@ -181,14 +181,14 @@ export default function RootAuthMethods() {
   return (
     <>
       <Content />
-      { isPasswordFormOpen &&
+      {isPasswordFormOpen &&
         <RootPasswordPopup
           isOpen
           title={isPasswordDefined ? _("Change the root password") : _("Set a root password")}
           onClose={closePasswordForm}
-        /> }
+        />}
 
-      { isSSHKeyFormOpen &&
+      {isSSHKeyFormOpen &&
         <RootSSHKeyPopup
           isOpen
           title={isSSHKeyDefined ? _("Edit the SSH Public Key for root") : _("Add a SSH Public Key for root")}
