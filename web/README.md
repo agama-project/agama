@@ -20,8 +20,8 @@ use this command:
 ```
 
 The extra `--open` option automatically opens the server page in your default
-web browser. In this case the server will use the `https://localhost:8080` URL
-and expects a running `agama-web-server` at `https://localhost`.
+web browser. In this case the server will use the `http://localhost:8080` URL
+and expects a running `agama-web-server` at `http://localhost`.
 
 This can work also remotely, with a Agama instance running in a different
 machine (a virtual machine as well). In that case run
@@ -46,6 +46,13 @@ Example of running from different machine:
   # frontend machine
   # ESLINT=0 is useful to ignore linter problems during development
   ESLINT=0 AGAMA_SERVER=https://10.100.1.1 npm run server
+```
+
+If you are using the Live ISO then you can use the predefined `agama` host name
+configured via mDNS:
+
+```
+   AGAMA_SERVER=https://agama.local npm run server
 ```
 
 ### Debugging Hints

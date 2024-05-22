@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# This script sets up the development environment without installing Agama packages. This script is
-# supposed to run within a repository clone.
+# This script sets up the development environment without installing Agama
+# packages. This script is supposed to run within a git repository clone.
 
 # Exit on error; unset variables are an error.
 set -eu
@@ -39,8 +39,14 @@ fi;
 
 # Start the installer.
 echo
-echo "D-Bus will start the services, see journalctl for their logs."
-echo "To start the services manually, logging to the terminal:"
-echo "  $SUDO systemctl start agama.service"
+echo "The configured Agama services can be manually started with these commands:"
 echo
-echo "Visit http://localhost:9090/cockpit/@localhost/agama/index.html"
+echo "  $SUDO systemctl start agama.service"
+echo "  $SUDO systemctl start agama-web-server.service"
+echo
+echo "Visit http://localhost"
+echo
+echo "Note: If the firewall is running and you want to access the Agama installer"
+echo "remotely then you need to open the firewall port with:"
+echo
+echo "  $SUDO firewall-cmd --zone=public --add-service=https"
