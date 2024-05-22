@@ -114,12 +114,6 @@ export default function FirstUserForm() {
     setErrors([]);
 
     const passwordInput = passwordRef.current;
-
-    if (!passwordInput?.validity.valid) {
-      setErrors([passwordInput?.validationMessage]);
-      return;
-    }
-
     const user = {};
     const formData = new FormData(e.target);
 
@@ -133,6 +127,17 @@ export default function FirstUserForm() {
     if (state.isEditing && user.password === "") delete user.password;
     delete user.passwordConfirmation;
     user.autologin = !!user.autologin;
+
+    if (!passwordInput?.validity.valid) {
+      setErrors([passwordInput?.validationMessage]);
+      return;
+    }
+
+    // FIXME: improve validations
+    if (Object.values(user).some(v => v === "")) {
+      setErrors([_("All fields are required")]);
+      return;
+    }
 
     const { result, issues = [] } = await client.users.setUser({ ...state.user, ...user });
     if (!result || issues.length) {

@@ -20,6 +20,7 @@
  */
 
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
@@ -54,7 +55,7 @@ const UserNotDefined = ({ actionCb }) => {
         </strong>
       </div>
       {/* TRANSLATORS: push button label */}
-      <Button variant="primary" onClick={actionCb}>{_("Define a user now")}</Button>
+      <Link to="first">{_("Define a user now")}</Link>
     </div>
   );
 };
