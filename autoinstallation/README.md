@@ -86,7 +86,7 @@ local findBiggestDisk(disks) =
   local sizedDisks = std.filter(function(d) std.objectHas(d, 'size'), disks);
   local sorted = std.sort(sizedDisks, function(x) x.size);
   sorted[0].logicalname;
-local memory = agama.findID(agama.lshw, 'memory').size;
+local memory = agama.findByID(agama.lshw, 'memory').size;
 
 {
   software: {
@@ -100,7 +100,7 @@ local memory = agama.findID(agama.lshw, 'memory').size;
     language: 'en_US',
   },
   storage: {
-    bootDevice: findBiggestDisk(agama.selectClass(agama.lshw, 'disk')),
+    bootDevice: findBiggestDisk(agama.selectByClass(agama.lshw, 'disk')),
   },
 }
 ```
