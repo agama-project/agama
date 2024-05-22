@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 22 12:31:25 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- autoinstallation jsonnet: Inject complete lshw json output and
+  provide helper functions for filtering it (gh#openSUSE/agama#1242)
+
+-------------------------------------------------------------------
 Fri May 17 09:52:25 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 8
@@ -6,8 +12,8 @@ Fri May 17 09:52:25 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Tue May 16 12:48:42 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
-- Allow to download Agama los throgh the manager HTTP API
-  (gh#openSUSE/1216).
+- Allow to download Agama logs through the manager HTTP API
+  (gh#openSUSE/agama#1216).
 
 -------------------------------------------------------------------
 Thu May 16 12:34:43 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
