@@ -28,13 +28,12 @@ import FirstUserForm from "./FirstUserForm";
 const routes = {
   path: "/users",
   element: <Page />,
-  // element: <UsersPage />,
   handle: {
     name: _("Users"),
     icon: "manage_accounts"
   },
   children: [
-    // { index: true, element: <UsersPage /> },
+    { index: true, element: <UsersPage /> },
     {
       path: "first",
       element: <FirstUserForm />,

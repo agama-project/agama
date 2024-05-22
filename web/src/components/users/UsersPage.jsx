@@ -20,46 +20,20 @@
  */
 
 import React from "react";
-import { useOutlet } from "react-router-dom";
-import {
-  Drawer,
-  DrawerPanelContent,
-  DrawerContent,
-  DrawerContentBody,
-  DrawerHead,
-  DrawerActions,
-  DrawerCloseButton,
-  Button
-} from '@patternfly/react-core';
 
 import { _ } from "~/i18n";
 import { Section } from "~/components/core";
 import { FirstUser, RootAuthMethods } from "~/components/users";
 
 export default function UsersPage() {
-  const outlet = useOutlet();
-
   return (
-    <Drawer isExpanded={outlet !== null}>
-      <DrawerContent
-        panelContent={
-          <DrawerPanelContent>
-            {outlet}
-            <DrawerActions>
-              <DrawerCloseButton />
-            </DrawerActions>
-          </DrawerPanelContent>
-        }
-      >
-        <DrawerContentBody>
-          <Section title={_("User")} icon="person">
-            <FirstUser />
-          </Section>
-          <Section title={_("Root authentication")} icon="badge">
-            <RootAuthMethods />
-          </Section>
-        </DrawerContentBody>
-      </DrawerContent>
-    </Drawer>
+    <>
+      <Section title={_("User")} icon="person">
+        <FirstUser />
+      </Section>
+      <Section title={_("Root authentication")} icon="badge">
+        <RootAuthMethods />
+      </Section>
+    </>
   );
 }
