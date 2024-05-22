@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 22 14:26:18 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix disappeared search box when no pattern match search expression
+  (gh#openSUSE/agama#1241)
+
+-------------------------------------------------------------------
 Fri May 17 09:52:26 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 8
