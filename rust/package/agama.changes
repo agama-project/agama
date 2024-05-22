@@ -12,7 +12,7 @@ Fri May 17 09:52:25 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Tue May 16 12:48:42 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
-- Allow to download Agama los throgh the manager HTTP API
+- Allow to download Agama logs through the manager HTTP API
   (gh#openSUSE/agama#1216).
 
 -------------------------------------------------------------------
