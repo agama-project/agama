@@ -27,7 +27,7 @@ use openssl::x509::{X509NameBuilder, X509};
 //     pub write(...)
 // }
 
-pub const DEFAULT_CERT_DIR: &str = "/run/agama/ssl";
+pub const DEFAULT_CERT_DIR: &str = "/etc/agama.d/ssl";
 
 /// Writes the certificate and the key to the well known location
 pub fn write_certificate(cert: X509, key: PKey<Private>) -> anyhow::Result<()> {

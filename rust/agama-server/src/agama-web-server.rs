@@ -81,12 +81,13 @@ struct ServeArgs {
 
     #[arg(
         long,
-        default_value = "/run/agama/ssl/key.pem",
+        default_value = "/etc/agama.d/ssl/key.pem",
     )]
     key: Option<String>,
+
     #[arg(
         long,
-        default_value = "/run/agama/ssl/cert.pem",
+        default_value = "/etc/agama.d/ssl/cert.pem",
     )]
     cert: Option<String>,
 
