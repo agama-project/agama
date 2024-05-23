@@ -1,2 +1,2 @@
 ---
-jwt_key: "replace-me"
+jwt_secret: "replace-me"
