@@ -132,9 +132,9 @@ const Navigation = ({ routes }) => {
     <PageSection variant="light" type="tabs" stickyOnBreakpoint={{ default: "top" }}>
       <nav className={tabsStyles.tabs}>
         <ul className={tabsStyles.tabsList}>
-          {routes.filter(r => !r.index && r.handle?.name).map((r) => (
-            <li className={tabsStyles.tabsItem} key={r.path}>
-              <NavLink to={r.path} className={({ isActive }) => [tabsStyles.tabsLink, isActive ? "pf-m-current" : ""].join(" ")}>
+          {routes.filter(r => r.handle?.name).map((r, i) => (
+            <li className={tabsStyles.tabsItem} key={r.path || i}>
+              <NavLink end to={r.path} className={({ isActive }) => [tabsStyles.tabsLink, isActive ? "pf-m-current" : ""].join(" ")}>
                 {r.handle?.name}
               </NavLink>
             </li>

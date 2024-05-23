@@ -28,12 +28,11 @@ import { Page, LoginPage, ProgressText } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
 import { ProductPage, ProductSelectionPage, ProductRegistrationPage } from "~/components/product";
 import { SoftwarePage, SoftwarePatternsSelection } from "~/components/software";
-import { ProposalPage, ISCSIPage, DASDPage, ZFCPPage, DeviceSelection, BootSelection } from "~/components/storage";
-import { UsersPage } from "~/components/users";
 import { L10nPage, LocaleSelection, KeymapSelection, TimezoneSelection } from "~/components/l10n";
 import { _ } from "~/i18n";
 import networkRoutes from "~/components/network/routes";
 import usersRoutes from "~/components/users/routes";
+import storageRoutes from "~/components/storage/routes";
 
 // FIXME: think in a better apprach for routes, if any.
 // FIXME: think if it worth it to have the routes ready for work with them
@@ -65,18 +64,6 @@ const softwareRoutes = createRoute(_("Software"), "software", <Page title={_("So
   { index: true, element: <SoftwarePage /> },
   createRoute(_("Select patterns"), "patterns/select", <SoftwarePatternsSelection />),
 ], "apps");
-const storagePages = [
-  { index: true, element: <ProposalPage /> },
-  createRoute(_("Storage"), "proposal", <ProposalPage />),
-  createRoute(_("iSCSI"), "iscsi", <ISCSIPage />),
-  createRoute(_("DASD"), "dasd", <DASDPage />),
-  createRoute(_("ZFCP"), "zfcp", <ZFCPPage />)
-];
-const storageRoutes = createRoute(_("Storage"), "storage", <Page title={_("Storage")} routes={storagePages} />, [
-  ...storagePages,
-  createRoute(_("Installation device"), "target-device", <DeviceSelection />),
-  createRoute(_("Partitions for booting"), "booting-partitions", <BootSelection />),
-], "hard_drive");
 
 const rootRoutes = [
   overviewRoutes,
