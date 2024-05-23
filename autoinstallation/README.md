@@ -76,7 +76,9 @@ running. For such use cases, Agama injects the hardware information into the pro
 using Jsonnet.
 
 In the following example, the profile is adapted to install the system on the biggest disk on the
-system. The hardware information (from `lshw`) is available as a JSON object in the `hw.libsonnet`.
+system. It also selects product based on amount of available RAM memory. The hardware information
+(from `lshw`) is available as a JSON object in the `hw.libsonnet`.
+There is also a set of helpers as part of hw. For documentation of those helpers see agama.libsonnet file.
 
 ```jsonnet
 local agama = import 'hw.libsonnet';
@@ -84,10 +86,11 @@ local findBiggestDisk(disks) =
   local sizedDisks = std.filter(function(d) std.objectHas(d, 'size'), disks);
   local sorted = std.sort(sizedDisks, function(x) x.size);
   sorted[0].logicalname;
+local memory = agama.findByID(agama.lshw, 'memory').size;
 
 {
   software: {
-    product: 'ALP-Dolomite',
+    product: if memory < 8000000000 then 'MicroOS' else 'Tumbleweed',
   },
   root: {
     password: 'nots3cr3t',
@@ -97,13 +100,13 @@ local findBiggestDisk(disks) =
     language: 'en_US',
   },
   storage: {
-    bootDevice: findBiggestDisk(agama.disks),
+    bootDevice: findBiggestDisk(agama.selectByClass(agama.lshw, 'disk')),
   },
 }
 ```
 
-**:warning: At this point, only the storage information is injected. You can inspect the available
-data by installing the `lshw` package and running the following command: `lshw -json -class disk`.**
+**You can inspect the available
+data by installing the `lshw` package and running the following command: `lshw -json`.**
 
 ### Validating and evaluating a profile
 

@@ -18,12 +18,18 @@ else
   SUDO=""
 fi
 
-$SUDO zypper --non-interactive --gpg-auto-import-keys install \
-  make \
-  'npm>=18' \
-  cockpit || exit 1
+$SUDO zypper --non-interactive install \
+  'npm>=18'
 
-$SUDO systemctl start cockpit
+cd web
 
-cd web; make devel-install; cd -
-$SUDO ln -snf `pwd`/web/dist /usr/share/cockpit/agama
+if [ ! -e node_modules ]; then
+  npm install
+fi
+
+npm run build
+
+cd -
+
+$SUDO mkdir -p /usr/share/agama
+$SUDO ln -snf `pwd`/web/dist /usr/share/agama/web_ui

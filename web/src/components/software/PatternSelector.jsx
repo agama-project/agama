@@ -130,7 +130,7 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
   }, [patterns, onSelectionChanged]);
 
   // initial empty screen, the patterns are loaded very quickly, no need for any progress
-  if (visiblePatterns.length === 0) return null;
+  if (visiblePatterns.length === 0 && searchValue === "") return null;
 
   const groups = groupPatterns(visiblePatterns);
 
@@ -143,7 +143,7 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
     </div>
   );
 
-  const selector = sortGroups(groups).map((groupName) => {
+  let selector = sortGroups(groups).map((groupName) => {
     const selectedIds = groups[groupName].filter((p) => p.selectedBy !== SelectedBy.NONE).map((p) =>
       p.name
     );
@@ -166,6 +166,12 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
     );
   });
 
+  if (selector.length === 0) {
+    selector = (
+      <b>{_("None of the patterns match the filter.")}</b>
+    );
+  }
+
   return (
     <>
       <Section aria-label={_("Software summary and filter options")}>
@@ -176,8 +182,7 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
           value={searchValue}
           onChange={(_event, value) => setSearchValue(value)}
           onClear={() => setSearchValue("")}
-          // do not display the counter when search filter is empty
-          resultsCount={searchValue === "" ? 0 : groups.length}
+          resultsCount={visiblePatterns.length}
         />
       </Section>
 
