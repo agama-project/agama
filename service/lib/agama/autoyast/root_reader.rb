@@ -27,7 +27,7 @@ require "y2users/autoinst/reader"
 # :nodoc:
 module Agama
   module AutoYaST
-    # Builds the Agama "root" section from an AutoYaST profile. 
+    # Builds the Agama "root" section from an AutoYaST profile.
     class RootReader
       # @param profile [ProfileHash] AutoYaST profile
       def initialize(profile)
