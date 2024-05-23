@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 23 07:28:44 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix showing count in pattern search and also improve visuals
+  when there are no matching text (gh#openSUSE/agama#1248)
+
+-------------------------------------------------------------------
 Wed May 22 14:26:18 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix disappeared search box when no pattern match search expression
