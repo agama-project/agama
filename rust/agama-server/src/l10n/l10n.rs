@@ -93,7 +93,7 @@ fn display() -> String {
                 default_display()
             }
         }
-        Err(_) => default_display()
+        Err(_) => default_display(),
     }
 }
 
