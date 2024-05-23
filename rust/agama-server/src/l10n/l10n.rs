@@ -30,7 +30,7 @@ const SETXKBMAP_TIMEOUT: u64 = 3;
 
 // helper function which runs a command with timeout and collects it's standard
 // output
-fn run_with_timeout(cmd: &[&String], timeout: u64) -> Result<Option<String>, PopenError> {
+fn run_with_timeout(cmd: &[&str], timeout: u64) -> Result<Option<String>, PopenError> {
     // start the subprocess
     let mut process = Popen::create(
         cmd,
@@ -190,12 +190,7 @@ impl L10n {
             .map_err(LocaleError::Commit)?;
 
         let output = run_with_timeout(
-            &[
-                &"setxkbmap".to_string(),
-                &"-display".to_string(),
-                &display(),
-                &keymap,
-            ],
+            &["setxkbmap", "-display", &display(), &keymap],
             SETXKBMAP_TIMEOUT,
         );
         output.map_err(|e| {
@@ -227,12 +222,7 @@ impl L10n {
 
     fn x11_keymap() -> Result<String, io::Error> {
         let output = run_with_timeout(
-            &[
-                &"setxkbmap".to_string(),
-                &"-query".to_string(),
-                &"-display".to_string(),
-                &display(),
-            ],
+            &["setxkbmap", "-query", "-display", &display()],
             SETXKBMAP_TIMEOUT,
         );
         let output = output.map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
