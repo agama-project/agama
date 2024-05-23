@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE profile>
+<profile xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+  <software>
+    <products config:type="list">
+      <product>Tumbleweed</product>
+    </products>
+    <patterns config:type="list">
+      <pattern>enhanced_base</pattern>
+    </patterns>
+  </software>
+</profile>
+
+
