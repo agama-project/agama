@@ -28,7 +28,7 @@ Yast.import "Profile"
 describe Agama::AutoYaST::ProductReader do
   let(:profile) do
     {
-      "software" => software_section,
+      "software"      => software_section,
       "suse_register" => suse_register_section
     }
   end
