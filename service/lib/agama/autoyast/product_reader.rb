@@ -40,15 +40,42 @@ module Agama
       def read
         return {} if profile["software"].nil?
 
-        product = profile["software"].fetch_as_array("products").first
-        return {} unless product
+        software = profile.fetch_as_hash("software")
+        suse_register = profile.fetch_as_hash("suse_register")
 
-        { "product" => { "id" => product } }
+        product = from_software(software)
+          .merge(from_suse_register(suse_register))
+        return {} if product.empty?
+
+        { "product" => product }
       end
 
     private
 
       attr_reader :profile
+
+      # @param section [ProfileHash] AutoYaST profile
+      def from_software(section)
+        product = section.fetch_as_array("products").first
+        return {} if product.nil?
+
+        { "id" => product }
+      end
+
+      # @param section [ProfileHash] AutoYaST profile
+      def from_suse_register(section)
+        return {} unless section.fetch("do_registration", true)
+
+        result = {}
+
+        code = section["reg_code"].to_s
+        result["registrationCode"] = code unless code.empty?
+
+        email = section["email"].to_s
+        result["registrationEmail"] = email unless email.empty?
+
+        result
+      end
     end
   end
 end

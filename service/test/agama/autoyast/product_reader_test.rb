@@ -28,11 +28,17 @@ Yast.import "Profile"
 describe Agama::AutoYaST::ProductReader do
   let(:profile) do
     {
-      "software" => {
-        "products" => ["SLE"],
-        "patterns" => ["base", "gnome"]
-      }
+      "software" => software_section,
+      "suse_register" => suse_register_section
     }
+  end
+
+  let(:software_section) do
+    { "products" => ["SLE"], "patterns" => ["base", "gnome"] }
+  end
+
+  let(:suse_register_section) do
+    { "reg_code" => "123456", "email" => "test@opensuse.org" }
   end
 
   subject do
@@ -52,6 +58,14 @@ describe Agama::AutoYaST::ProductReader do
       it "includes the product ID as 'product.id'" do
         product_id = subject.read.dig("product", "id")
         expect(product_id).to eq("SLE")
+      end
+    end
+
+    context "when there is registration information" do
+      it "includes the registration code" do
+        product = subject.read["product"]
+        expect(product["registrationCode"]).to eq("123456")
+        expect(product["registrationEmail"]).to eq("test@opensuse.org")
       end
     end
   end
