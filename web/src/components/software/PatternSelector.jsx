@@ -20,7 +20,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { SearchInput, Label } from "@patternfly/react-core";
+import { SearchInput } from "@patternfly/react-core";
 
 import { Section, Selector } from "~/components/core";
 import { _ } from "~/i18n";
@@ -168,7 +168,7 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
 
   if (selector.length === 0) {
     selector = (
-      <Label>{_("No results")}</Label>
+      <b>{_("None of the patterns match the text.")}</b>
     );
   }
 
