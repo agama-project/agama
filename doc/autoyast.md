@@ -372,6 +372,18 @@ About the `slp_discoverty` element, Agama does not support [SLP] at all?
 
 [SLP]: https://documentation.suse.com/sles/15-SP5/single-html/SLES-administration/#cha-slp
 
+| AutoYaST                         | Supported | Agama                     | Comment                                         |
+| -------------------------------- | --------- | ------------------------- | ----------------------------------------------- |
+| do_registration                  | Never     |                           | The system is registered if there is a reg code |
+| email                            | Yes       | product.registrationEmail |                                                 |
+| install_updates                  | Never     |                           |                                                 |
+| reg_code                         | Yes       | product.registrationCode  |                                                 |
+| reg_server                       | Planned   |                           |                                                 |
+| reg_server_cert                  | Undecided |                           | It is not clear how addons will work            |
+| reg_server_cert_fingerprint      | Planned   |                           |                                                 |
+| reg_server_cert_fingerprint_type | Planned   |                           |                                                 |
+| slp_discovery                    | Never     |                           |                                                 |
+
 ### `timezone`
 
 | AutoYaST | Supported | Agama         | Comment |
