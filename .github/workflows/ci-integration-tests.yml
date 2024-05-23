@@ -37,42 +37,36 @@ jobs:
     - name: Environment
       run:  podman exec agama bash -c "env | sort"
 
+    - name: Set a testing Agama configuration
+      # delete all products except TW to skip the product selection at the beginning
+      run:  podman exec agama bash -c "ls /checkout/products.d/*.yaml | grep -v tumbleweed.yaml | xargs rm"
+
     - name: Build the frontend
-      run:  podman exec agama bash -c "cd /checkout/web && npm install && make"
-
-    - name: Install the frontend
-      run:  podman exec agama bash -c "ln -snfv /checkout/web/dist /usr/share/cockpit/agama"
-
-    # ./setup-services.sh will try setting up cockpit.socket
-    # which has a login page, so this local-session needs to be first
-    - name: Start Cockpit service
-      run:  podman exec --detach agama /usr/libexec/cockpit-ws --local-session=/usr/bin/cockpit-bridge
-
-    - name: Remove Cockpit dependency
-      # Cockpit has been already started manually, starting it again as a unit dependency would fail
-      # remove the "Requires=cockpit.socket" line
-      run:  podman exec agama bash -c "sed -i /Requires=cockpit.socket/d /checkout/service/share/agama.service"
+      run:  podman exec agama bash -c "cd /checkout; ./setup-web.sh"
 
     - name: Setup service
       run:  podman exec agama bash -c "cd /checkout; ./setup-services.sh"
 
-    - name: Set a testing Agama configuration
-      # delete all products except TW to skip the product selection at the beginning
-      run:  podman exec agama bash -c "ls /checkout/products.d/*.yaml | grep -v tumbleweed.yaml | xargs rm"
+    - name: Wait for the server to start
+      # wait until the server is up and accepting the connections
+      run:  podman exec agama bash -c 'for i in $(seq 30); do curl -s -o /dev/null http://localhost && exit 0; echo -n .; sleep 1; done'
 
     - name: Show NetworkManager log
       run:  podman exec agama journalctl -u NetworkManager
 
     - name: Show the D-Bus services log
       run:  |
-          podman exec agama journalctl -u agama
           podman exec agama systemctl status agama
+          podman exec agama journalctl -u agama
+
+    - name: Show the Web service log
+      run:  podman exec agama journalctl -u agama-web-server
 
     - name: Inspect D-Bus services
       run:  podman exec agama busctl --address unix:path=/run/agama/bus
 
     - name: Run the Agama smoke test
-      run:  podman exec agama curl http://localhost:9090/cockpit/@localhost/agama/index.html
+      run:  podman exec agama curl http://localhost
 
     - name: Check Playwright version
       run:  podman exec agama playwright --version
