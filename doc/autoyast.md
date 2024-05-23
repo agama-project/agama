@@ -1,11 +1,10 @@
 # AutoYaST Support
 
 Agama offers a mechanism to perform [unattended installations](../autoinstallation/). However, we
-would like AutoYaST users to be able to use their AutoYaST profiles in Agama. This document
-describes how Agama could support, to some extent, such profiles.
+would like AutoYaST users to be able to use their profiles in Agama. This document describes how
+Agama could support, to some extent, such profiles.
 
-Bear in mind that this document is just a draft and our plans could change once we start working on
-the implementation.
+Bear in mind that it is a living document and our plans could change as we progress.
 
 ## What to support
 
@@ -74,6 +73,18 @@ About "ask lists", there might need more work. Fortunately, the code to [parse][
 
 ## Supported sections
 
+Let's describe which sections and elements from an AutoYaST profile are (or will be) supported in
+Agama. In some cases, you might find a table with the following columns:
+
+- AutoYaST: name of the AutoYaST element.
+- Supported: whether it is (or will be) supported. The meaning of each value is:
+  - Yes: fully supported.
+  - Planned: not supported yet, but there are plans to support it.
+  - Undecided: no decision about whether it should be supported.
+  - No: there are not plans for supporting that element.
+- Agama: name of the Agama element.
+- Comment: any comment or reason about the element.
+
 ### `dasd` and `iscsi-client`
 
 Support for iSCSI and DASD devices is missing in Agama profiles. Let's work on that when adding the
@@ -110,8 +121,8 @@ For the first user, the following elements are supported:
 
 | AutoYaST             | Supported | Agama    | Comment                |
 | -------------------- | --------- | -------- | ---------------------- |
-| authorized_keys      | No        |          | Only for the root user |
-| encrypted            | No        |          |                        |
+| authorized_keys      | Planned   |          | Only for the root user |
+| encrypted            | Planned   |          |                        |
 | forename             | No        |          |                        |
 | fullname             | Yes       | fullName |                        |
 | gid                  | No        |          |                        |
@@ -131,16 +142,16 @@ For the first user, the following elements are supported:
 Only the `keymap` element is translated. The rest of options are ignored in YaST and they are not
 even documented in the AutoYaST handbook.
 
-| AutoYaST | Supported  | Agama         | Comment                        |
-| -------- | ---------- | ------------- | ------------------------------ |
-| keymap   | Yes        | l10n.keyboard | Should we rename it to keymap? |
-| capslock | Deprecated |               |                                |
-| delay    | Deprecated |               |                                |
-| discaps  | Deprecated |               |                                |
-| numlock  | Deprecated |               |                                |
-| rate     | Deprecated |               |                                |
-| scrlock  | Deprecated |               |                                |
-| tty      | Deprecated |               |                                |
+| AutoYaST | Supported | Agama         | Comment                        |
+| -------- | --------- | ------------- | ------------------------------ |
+| keymap   | Yes       | l10n.keyboard | Should we rename it to keymap? |
+| capslock | No        |               | Deprecated                     |
+| delay    | No        |               | Deprecated                     |
+| discaps  | No        |               | Deprecated                     |
+| numlock  | No        |               | Deprecated                     |
+| rate     | No        |               | Deprecated                     |
+| scrlock  | No        |               | Deprecated                     |
+| tty      | No        |               | Deprecated                     |
 
 ### `language`
 
@@ -156,55 +167,55 @@ The `networking` section in AutoYaST is composed of several sections: `dns`, `in
 connections that could correspond with the AutoYaST interfaces list. We might need to extend Agama
 to support `dns`, `net-udev`, etc.
 
-| AutoYaST                | Supported | Agama       | Comment                           |
-| ----------------------- | --------- | ----------- | --------------------------------- |
-| backend                 | No        |             | No plan for additional backends   |
-| dhcp_options            | No        |             |                                   |
-| dns                     | Partial   |             | Included in connections           |
-| interfaces              | Partial   | connections | Check the connections table below |
-| ipv6                    | Never     |             |                                   |
-| keep_install_network    | Never     |             |                                   |
-| managed                 | Never     |             |                                   |
-| modules                 | No        |             |                                   |
-| net-udev                | No        |             |                                   |
-| routing                 | Partial   |             | Included in connections           |
-| s390-devices            | No        |             |                                   |
-| setup_before_proposal   | Never     |             |                                   |
-| strict_IP_check_timeout | Never     |             |                                   |
-| virt_brige_proposal     | No        |             |                                   |
+| AutoYaST                | Supported | Agama       | Comment                            |
+| ----------------------- | --------- | ----------- | ---------------------------------- |
+| backend                 | No        |             | No plan for additional backends    |
+| dhcp_options            | No        |             |                                    |
+| dns                     | Partial   |             | Included in connections            |
+| interfaces              | Partial   | connections | Check the connections table below  |
+| ipv6                    | Yes       |             | It affects `method4` and `method6` |
+| keep_install_network    | No        |             |                                    |
+| managed                 | No        |             |                                    |
+| modules                 | No        |             |                                    |
+| net-udev                | No        |             |                                    |
+| routing                 | Planned   |             |                                    |
+| s390-devices            | Planned   |             |                                    |
+| setup_before_proposal   | No        |             |                                    |
+| strict_IP_check_timeout | No        |             |                                    |
+| virt_brige_proposal     | No        |             |                                    |
 
 As seen in the table above, AutoYaST `interfaces` corresponds with Agama `connections`, but the
 format is not exactly the same.
 
-| AutoYaST                   | Supported  | Agama      | Comment                                 |
-| -------------------------- | ---------- | ---------- | --------------------------------------- |
-| device                     | Yes        | interface  |                                         |
-| name                       | Yes        | id         |                                         |
-| description                | Deprecated |            |                                         |
-| bootproto                  | Yes        | method4    |                                         |
-| startmode                  | Never      |            | Do not set up connections you won't use |
-| lladdr                     | Yes        | macAddress |                                         |
-| ifplugd_priority           | Never      |            | Not relevant (no ifplugd support)       |
-| usercontrol                | Never      |            |                                         |
-| dhclient_set_hostname      | No         |            |                                         |
-| ipaddr                     | Yes        | addresses  |                                         |
-| prefixlen                  | Yes        | addresses  | Part of `addresses`                     |
-| remote_ipaddr              | No         |            |                                         |
-| netmask                    | Yes        | addresses  | Part of `addresses`                     |
-| bonding_*                  | Yes        | bond       | Use a different format to define bonds  |
-| aliases                    | Yes        |            | Part of `addresses`                     |
-| broadcast                  | Deprecated |            | Part of `addresses`                     |
-| network                    | Deprecated |            | Part of `addresses`                     |
-| mtu                        | No         |            |                                         |
-| ethtool_options            | No         |            |                                         |
-| wireless                   | Yes        | wireless   | It uses a different format              |
-| wifi_settings              | Partial    | wireless   | It uses a different format              |
-| bridge_settings            | Planned    |            |                                         |
-| vlan_settings              | Planned    |            |                                         |
-| dhclient_set_down_link     | No         |            |                                         |
-| dhclient_set_default_route | No         |            |                                         |
-| zone                       | No         |            |                                         |
-| firewall                   | No         |            |                                         |
+| AutoYaST                   | Supported | Agama       | Comment                                 |
+| -------------------------- | --------- | ----------- | --------------------------------------- |
+| device                     | Yes       | interface   |                                         |
+| name                       | Yes       | id          |                                         |
+| description                | No        |             |                                         |
+| bootproto                  | Partial   | method{4,6} | Different set of values                 |
+| startmode                  | No        |             | Do not set up connections you won't use |
+| lladdr                     | Yes       | macAddress  |                                         |
+| ifplugd_priority           | No        |             | Not relevant (no ifplugd support)       |
+| usercontrol                | No        |             |                                         |
+| dhclient_set_hostname      | No        |             |                                         |
+| ipaddr                     | Yes       | addresses   |                                         |
+| prefixlen                  | Yes       | addresses   | Part of `addresses`                     |
+| remote_ipaddr              | Undecided |             |                                         |
+| netmask                    | Yes       | addresses   | Part of `addresses`                     |
+| bonding_*                  | Yes       | bond        | Use a different format to define bonds  |
+| aliases                    | Yes       |             | Part of `addresses`                     |
+| broadcast                  | No        |             | Part of `addresses`                     |
+| network                    | No        |             | Part of `addresses`                     |
+| mtu                        | Undecided |             |                                         |
+| ethtool_options            | Undecided |             |                                         |
+| wireless                   | Yes       | wireless    | It uses a different format              |
+| wifi_settings              | Partial   | wireless    | It uses a different format              |
+| bridge_settings            | Planned   |             |                                         |
+| vlan_settings              | Planned   |             |                                         |
+| dhclient_set_down_link     | No        |             |                                         |
+| dhclient_set_default_route | No        |             |                                         |
+| zone                       | No        |             |                                         |
+| firewall                   | No        |             |                                         |
 
 #### Wireless connections
 
@@ -214,24 +225,24 @@ Agama, the options are placed under a `wireless` key.
 | AutoYaST                     | Supported | Agama    | Comment                 |
 | ---------------------------- | --------- | -------- | ----------------------- |
 | wireless_auth_mode           | Partial   | security | Different set of values |
-| wireless_ap                  | No        |          |                         |
-| wireless_bitrate             | No        |          |                         |
-| wireless_ca_cert             | No        |          |                         |
-| wireless_channel             | No        |          |                         |
-| wireless_client_cert         | No        |          |                         |
-| wireless_client_key          | No        |          |                         |
-| wireless_client_key_password | No        |          |                         |
-| wireless_default_key         | No        |          |                         |
-| wireless_eap_auth            | No        |          |                         |
-| wireless_eap_mode            | No        |          |                         |
+| wireless_ap                  | Undecided |          |                         |
+| wireless_bitrate             | Undecided |          |                         |
+| wireless_ca_cert             | Undecided |          |                         |
+| wireless_channel             | Undecided |          |                         |
+| wireless_client_cert         | Undecided |          |                         |
+| wireless_client_key          | Undecided |          |                         |
+| wireless_client_key_password | Undecided |          |                         |
+| wireless_default_key         | Undecided |          |                         |
+| wireless_eap_auth            | Undecided |          |                         |
+| wireless_eap_mode            | Undecided |          |                         |
 | wireless_essid               | Yes       | ssid     |                         |
-| wireless_frequency           | No        |          |                         |
-| wireless_key                 | No        |          |                         |
-| wireless_key_0               | No        |          |                         |
-| wireless_key_1               | No        |          |                         |
-| wireless_key_2               | No        |          |                         |
-| wireless_key_3               | No        |          |                         |
-| wireless_key_length          | No        |          |                         |
+| wireless_frequency           | Undecided |          |                         |
+| wireless_key                 | Undecided |          |                         |
+| wireless_key_0               | Undecided |          |                         |
+| wireless_key_1               | Undecided |          |                         |
+| wireless_key_2               | Undecided |          |                         |
+| wireless_key_3               | Undecided |          |                         |
+| wireless_key_length          | Undecided |          |                         |
 | wireless_mode                | Partial   | mode     | Different set of values |
 | wireless_nick                | No        |          |                         |
 | wireless_nwid                | No        |          |                         |
@@ -347,18 +358,18 @@ web UI.
 
 | AutoYaST            | Supported | Agama             | Comment                           |
 | ------------------- | --------- | ----------------- | --------------------------------- |
-| do_online_update    | Never     |                   | No 2nd stage                      |
+| do_online_update    | No        |                   | No 2nd stage                      |
 | install_recommended | No        |                   |                                   |
 | instsource          | No        |                   |                                   |
 | kernel              | No        |                   |                                   |
 | packages            | No        |                   |                                   |
 | patterns            | Partial   | software.patterns | No support for regular expresions |
-| post-packages       | Never     |                   | No 2nd stage                      |
-| post-patterns       | Never     |                   | No 2nd stage                      |
+| post-packages       | No        |                   | No 2nd stage                      |
+| post-patterns       | No        |                   | No 2nd stage                      |
 | products            | Yes       | software.id       |                                   |
-| remove-packages     | Never     |                   | No upgrade                        |
-| remove-patterns     | Never     |                   | No upgrade                        |
-| remove-products     | Never     |                   | No upgrade                        |
+| remove-packages     | No        |                   | No upgrade                        |
+| remove-patterns     | No        |                   | No upgrade                        |
+| remove-products     | No        |                   | No upgrade                        |
 
 ### `suse_register`
 
@@ -372,17 +383,17 @@ About the `slp_discoverty` element, Agama does not support [SLP] at all?
 
 [SLP]: https://documentation.suse.com/sles/15-SP5/single-html/SLES-administration/#cha-slp
 
-| AutoYaST                         | Supported | Agama                     | Comment                                         |
-| -------------------------------- | --------- | ------------------------- | ----------------------------------------------- |
-| do_registration                  | Never     |                           | The system is registered if there is a reg code |
-| email                            | Yes       | product.registrationEmail |                                                 |
-| install_updates                  | Never     |                           |                                                 |
-| reg_code                         | Yes       | product.registrationCode  |                                                 |
-| reg_server                       | Planned   |                           |                                                 |
-| reg_server_cert                  | Undecided |                           | It is not clear how addons will work            |
-| reg_server_cert_fingerprint      | Planned   |                           |                                                 |
-| reg_server_cert_fingerprint_type | Planned   |                           |                                                 |
-| slp_discovery                    | Never     |                           |                                                 |
+| AutoYaST                         | Supported | Agama                     | Comment                              |
+| -------------------------------- | --------- | ------------------------- | ------------------------------------ |
+| do_registration                  | Yes       |                           | The section is ignored if `false`    |
+| email                            | Yes       | product.registrationEmail |                                      |
+| install_updates                  | Never     |                           |                                      |
+| reg_code                         | Yes       | product.registrationCode  |                                      |
+| reg_server                       | Planned   |                           |                                      |
+| reg_server_cert                  | Undecided |                           | It is not clear how addons will work |
+| reg_server_cert_fingerprint      | Planned   |                           |                                      |
+| reg_server_cert_fingerprint_type | Planned   |                           |                                      |
+| slp_discovery                    | No        |                           |                                      |
 
 ### `timezone`
 
