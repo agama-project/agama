@@ -31,7 +31,7 @@ impl ServiceConfig {
             .set_default("jwt_secret", jwt_secret)?
             .add_source(File::with_name("/usr/etc/agama.d/server").required(false))
             .add_source(File::with_name("/etc/agama.d/server").required(false))
-            .add_source(File::with_name("agama-dbus-server/share/server").required(false))
+            .add_source(File::with_name("etc/agama.d/server").required(false))
             .build()?;
         config.try_deserialize()
     }
