@@ -168,7 +168,7 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
 
   if (selector.length === 0) {
     selector = (
-      <b>{_("None of the patterns match the text.")}</b>
+      <b>{_("None of the patterns match the filter.")}</b>
     );
   }
 
