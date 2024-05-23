@@ -27,14 +27,16 @@ require "y2network/wireless_mode"
 # :nodoc:
 module Agama
   module AutoYaST
-    # Extracts the wireless information from an AutoYaST interface section.
+    # Builds an Agama "wireless" section from an AutoYaST InterfaceSection.
     class WirelessReader
-      # @param section [Y2Network::AutoinstProfile::InterfaceSection]
+      # @param section [Y2Network::AutoinstProfile::InterfaceSection] Interface section
       def initialize(section)
         @section = section
       end
 
-      # Return a hash that corresponds to Agama's wireless section
+      # Returns a hash that corresponds to Agama's "wireless" section
+      #
+      # If there is no wireless information, it returns an empty hash.
       #
       # @return [Hash]
       def read
@@ -63,7 +65,7 @@ module Agama
 
       # Returns the security protocol according to the given WirelessAuthMode
       #
-      # @param [String] Name of the YaST's wireless authentication mode
+      # @param auth_mode [String] Name of the YaST's wireless authentication mode
       # @return [String, nil] Name of Agama's security protocol
       def security_from(auth_mode)
         case auth_mode
@@ -76,10 +78,10 @@ module Agama
         end
       end
 
-      # Returns the wireless mode according to the given WirelessMode.
+      # Returns the wireless mode according to the given WirelessMode
       #
-      # @param [Y2Network::WirelessMode] YaST's wireless mode
-      # @return [String, nil] Name of Agama's wireless mode.
+      # @param mode [Y2Network::WirelessMode] YaST's wireless mode
+      # @return [String, nil] Name of Agama's wireless mode
       def mode_from(mode)
         case mode
         when Y2Network::WirelessMode::AD_HOC

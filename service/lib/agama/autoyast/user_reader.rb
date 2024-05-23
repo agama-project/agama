@@ -27,13 +27,15 @@ require "y2users/autoinst/reader"
 # :nodoc:
 module Agama
   module AutoYaST
-    # Extracts the first user information from an AutoYaST profile.
+    # Builds the Agama "user" section from an AutoYaST profile.
     class UserReader
       # @param profile [ProfileHash] AutoYaST profile
       def initialize(profile)
         @profile = profile
       end
 
+      # Returns a hash that corresponds to Agama "user" section.
+      #
       # @return [Hash] Agama "user" section
       def read
         user = config.users.find { |u| !u.system? && !u.root? }

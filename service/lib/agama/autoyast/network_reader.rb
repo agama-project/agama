@@ -27,7 +27,7 @@ require "agama/autoyast/connections_reader"
 # :nodoc:
 module Agama
   module AutoYaST
-    # Extracts the network information from an AutoYaST profile.
+    # Builds the Agama "network" section from an AutoYaST profile.
     class NetworkReader
       # @param profile [ProfileHash] AutoYaST profile
       def initialize(profile)

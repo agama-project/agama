@@ -25,15 +25,17 @@ require "yast"
 # :nodoc:
 module Agama
   module AutoYaST
-    # Extracts the users information from an AutoYaST profile.
+    # Builds the Agama "product" section from an AutoYaST profile.
     class ProductReader
-      attr_reader :profile
-
       # @param profile [ProfileHash] AutoYaST profile
       def initialize(profile)
         @profile = profile
       end
 
+      # Returns a hash corresponding to Agama "product" section.
+      #
+      # If there is no product-related information, it returns an empty hash.
+      #
       # @return [Hash] Agama "product" section
       def read
         return {} if profile["software"].nil?
@@ -43,6 +45,10 @@ module Agama
 
         { "product" => { "id" => product } }
       end
+
+    private
+
+      attr_reader :profile
     end
   end
 end

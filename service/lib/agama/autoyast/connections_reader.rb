@@ -30,17 +30,18 @@ require "ipaddr"
 # :nodoc:
 module Agama
   module AutoYaST
-    # Extracts the network information from an AutoYaST profile.
+    # Builds the Agama "network.connections" section from an AutoYaST profile.
     class ConnectionsReader
-      # @param section [Y2Network::AutoinstProfile::Interfaces]
+      # @param section [Y2Network::AutoinstProfile::Interfaces] AutoYaST interfaces section.
+      # @param ipv6 [boolean] Whether IPv6 is wanted or not.
       def initialize(section, ipv6: false)
         @section = section
         @ipv6 = ipv6
       end
 
-      # Converts an AutoYaST interfaces into Agama network connections.
+      # Returns a hash that contains the list of Agama connections
       #
-      # @return [Hash] Agama "user" section
+      # @return [Hash] Agama "network.connections" section
       def read
         interfaces = section.interfaces
         return {} if interfaces.empty?
@@ -59,7 +60,8 @@ module Agama
 
       # Reads an AutoYaST interface entry and builds its corresponding connection.
       #
-      # @return [Y2Network::AutoinstProfile::InterfaceSection]
+      # @param interface [Y2Network::AutoinstProfile::InterfaceSection] Interface section.
+      # @return [Hash]
       def read_connection(interface)
         conn = {}
         conn["device"] = interface.device if interface.device
@@ -78,7 +80,9 @@ module Agama
         conn
       end
 
-      # @param networking [Y2Network::AutoinstProfile::NetworkingSection]
+      # Reads the addresses from an AutoYaST interface section.
+      #
+      # @param interface [Y2Network::AutoinstProfile::InterfaceSection] Interface section.
       # @return [Array<Hash>]
       def read_addresses(interface)
         addresses = []
@@ -91,19 +95,8 @@ module Agama
         addresses.concat(secondary)
       end
 
-      # @return [IPAddress]
-      def ipaddress_from(address, prefix, netmask)
-        ipaddr = Y2Network::IPAddress.from_string(address)
-
-        # Assign first netmask, as prefix has precedence so it will overwrite it
-        ipaddr.prefix = prefix_for(netmask) if !netmask.to_s.empty?
-        ipaddr.prefix = prefix_for(prefix) if !prefix.to_s.empty?
-
-        ipaddr
-      rescue IPAddr::InvalidAddressError, IPAddr::AddressFamilyError
-        nil
-      end
-
+      # Converts AutoYaST's boot protocol to Agama methods (method4, method6)
+      #
       # @param interface [Y2Network::AutoinstProfile::InterfaceSection]
       # @return [String, String] method4 and method6 values
       def read_methods(interface)
@@ -120,6 +113,23 @@ module Agama
         else
           ["auto", ipv6? ? "auto" : "disabled"]
         end
+      end
+
+      # Builds an IPAddress
+      #
+      # If defined, "prefix" has precedence over "netmask".
+      #
+      # @return [IPAddress]
+      def ipaddress_from(address, prefix, netmask)
+        ipaddr = Y2Network::IPAddress.from_string(address)
+
+        # Assign first netmask, as prefix has precedence so it will overwrite it
+        ipaddr.prefix = prefix_for(netmask) if !netmask.to_s.empty?
+        ipaddr.prefix = prefix_for(prefix) if !prefix.to_s.empty?
+
+        ipaddr
+      rescue IPAddr::InvalidAddressError, IPAddr::AddressFamilyError
+        nil
       end
 
       # Converts a given IP Address netmask or prefix length in different

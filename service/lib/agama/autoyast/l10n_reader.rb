@@ -26,13 +26,17 @@ require "yast"
 module Agama
   # :nodoc:
   module AutoYaST
-    # Extracts the localization information from an AutoYaST profile.
+    # Builds an Agama "l10n" section from an AutoYaST profile.
     class L10nReader
       # @param profile [ProfileHash] AutoYaST profile
       def initialize(profile)
         @profile = profile
       end
 
+      # Returns a hash to corresponds to Agama "l10n" section
+      #
+      # If there is no l10n information, it returns an empty hash.
+      #
       # @return [Hash] Agama "l10n" section
       def read
         l10n = keyboard
