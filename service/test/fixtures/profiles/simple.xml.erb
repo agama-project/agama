@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE profile>
+<profile xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+  <software>
+    <products config:type="list">
+      <product>Tumbleweed</product>
+    </products>
+  </software>
+
+  <language>
+    <language><%= "en_US" %></language>
+    <languages><%= ["en_US", "es_ES"].join(",") %></languages>
+  </language>
+
+  <timezone>
+    <timezone>Atlantic/Canary</timezone>
+  </timezone>
+
+  <keyboard>
+    <keymap>us</keymap>
+  </keyboard>
+
+  <partitioning config:type="list">
+   <drive>
+     <device>/dev/vda</device>
+     <use>all</use>
+   </drive>
+  </partitioning>
+
+  <users config:type="list">
+    <user>
+      <username>root</username>
+      <encrypted config:type="boolean">false</encrypted>
+      <user_password>nots3cr3t</user_password>
+      <authorized_keys config:type="list">
+        <listentry>ssh-rsa ...</listentry>
+      </authorized_keys>
+    </user>
+    <user>
+      <username>jane</username>
+      <uid>1000</uid>
+      <fullname>Jane Doe</fullname>
+      <encrypted config:type="boolean">false</encrypted>
+      <user_password>12345678</user_password>
+    </user>
+  </users>
+</profile>

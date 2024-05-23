@@ -89,6 +89,17 @@ describe Agama::AutoYaST::Converter do
       end
     end
 
+    context "when the profile contains some ERB" do
+      let(:profile_name) { "simple.xml.erb" }
+
+      it "evaluates the ERB code" do
+        subject.to_agama(workdir)
+        expect(result["l10n"]).to include(
+          "languages" => ["en_US.UTF-8", "es_ES.UTF-8"]
+        )
+      end
+    end
+
     context "when a product is selected" do
       it "exports the selected product" do
         subject.to_agama(workdir)
