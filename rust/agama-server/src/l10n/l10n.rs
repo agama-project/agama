@@ -1,5 +1,4 @@
 use std::env;
-use std::ffi::OsStr;
 use std::io;
 use std::process::Command;
 use std::time::Duration;
@@ -31,7 +30,7 @@ const SETXKBMAP_TIMEOUT: u64 = 3;
 
 // helper function which runs a command with timeout and collects it's standard
 // output
-fn run_with_timeout(cmd: &[impl AsRef<OsStr>], timeout: u64) -> Result<Option<String>, PopenError> {
+fn run_with_timeout(cmd: &[&String], timeout: u64) -> Result<Option<String>, PopenError> {
     // start the subprocess
     let mut process = Popen::create(
         cmd,
@@ -47,7 +46,7 @@ fn run_with_timeout(cmd: &[impl AsRef<OsStr>], timeout: u64) -> Result<Option<St
         .wait_timeout(Duration::from_secs(timeout))?
         .is_none()
     {
-        tracing::warn!("Command timed out!");
+        tracing::warn!("Command {:?} timed out!", cmd);
         // if the process is still running after the timeout then terminate it,
         // ignore errors, there is another attempt later to kill the process
         let _ = process.terminate();
@@ -65,7 +64,7 @@ fn run_with_timeout(cmd: &[impl AsRef<OsStr>], timeout: u64) -> Result<Option<St
     let (out, err) = process.communicate(None)?;
 
     if let Some(err_str) = err {
-        if err_str.len() > 0 {
+        if !err_str.is_empty() {
             tracing::warn!("Error output size: {}", err_str.len());
         }
     }
@@ -73,10 +72,29 @@ fn run_with_timeout(cmd: &[impl AsRef<OsStr>], timeout: u64) -> Result<Option<St
     return Ok(out);
 }
 
-// helper function to get the X display name, if not set it returns the ":0"
-// default value
+// the default X display to use if not configured or when X forwarding is used
+fn default_display() -> String {
+    String::from(":0")
+}
+
+// helper function to get the X display name, if not set it returns the default display
 fn display() -> String {
-    env::var("DISPLAY").unwrap_or(String::from(":0"))
+    let display = env::var("DISPLAY");
+
+    match display {
+        Ok(display) => {
+            // use the $DISPLAY value only when it is a local X server
+            if display.starts_with(":") {
+                display
+            } else {
+                // when using SSH X forwarding (e.g. "localhost:10.0") we could
+                // accidentally change the configuration of the remote X server,
+                // in that case try using the local X server if it is available
+                default_display()
+            }
+        }
+        Err(_) => default_display()
+    }
 }
 
 impl L10n {
@@ -172,7 +190,12 @@ impl L10n {
             .map_err(LocaleError::Commit)?;
 
         let output = run_with_timeout(
-            &["setxkbmap", "-display", &display(), &keymap],
+            &[
+                &"setxkbmap".to_string(),
+                &"-display".to_string(),
+                &display(),
+                &keymap,
+            ],
             SETXKBMAP_TIMEOUT,
         );
         output.map_err(|e| {
@@ -204,7 +227,12 @@ impl L10n {
 
     fn x11_keymap() -> Result<String, io::Error> {
         let output = run_with_timeout(
-            &["setxkbmap", "-query", "-display", &display()],
+            &[
+                &"setxkbmap".to_string(),
+                &"-query".to_string(),
+                &"-display".to_string(),
+                &display(),
+            ],
             SETXKBMAP_TIMEOUT,
         );
         let output = output.map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
