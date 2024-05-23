@@ -19,11 +19,35 @@
  * find language contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
+import {
+  Card, CardHeader, CardTitle, CardBody, CardFooter,
+  Gallery, GalleryItem,
+  PageSection,
+  Text,
+} from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 import { _ } from "~/i18n";
-import { Section } from "~/components/core";
+import { Icon } from "~/components/layout";
 import { useL10n } from "~/context/l10n";
+
+const Section = ({ title, icon, action, children }) => {
+  return (
+    <Card isLarge>
+      <CardHeader>
+        <CardTitle component="h2">
+          <Icon name={icon} /> {title}
+        </CardTitle>
+      </CardHeader>
+      <CardBody isFilled>
+        {children}
+      </CardBody>
+      <CardFooter>
+        {action}
+      </CardFooter>
+    </Card>
+  );
+};
 
 /**
  * Page for configuring localization.
@@ -37,21 +61,45 @@ export default function L10nPage() {
   } = useL10n();
 
   return (
-    <>
-      <Section title={_("Language")} icon="translate">
-        <p>{locale ? `${locale.name} - ${locale.territory}` : _("Language not selected yet")}</p>
-        <Link to="language/select">{locale ? _("Change language") : _("Select language")}</Link>
-      </Section>
+    <PageSection>
+      <Gallery hasGutter>
+        <GalleryItem>
+          <Section
+            icon="translate"
+            title={_("Language")}
+            action={
+              <Link to="language/select">{locale ? _("Change") : _("Select")}</Link>
+            }
+          >
+            <Text>{locale ? `${locale.name} - ${locale.territory}` : _("Language not selected yet")}</Text>
+          </Section>
+        </GalleryItem>
 
-      <Section title={_("Keyboard")} icon="keyboard">
-        <p>{keymap ? keymap.name : _("Keyboard not selected yet")}</p>
-        <Link to="keymap/select">{keymap ? _("Change keyboard") : _("Select keyboard")}</Link>
-      </Section>
+        <GalleryItem>
+          <Section
+            icon="keyboard"
+            title={_("Keyboard")}
+            action={
+              <Link to="keymap/select">{keymap ? _("Change") : _("Select")}</Link>
+            }
+          >
+            <Text>{keymap ? keymap.name : _("Keyboard not selected yet")}</Text>
+          </Section>
+        </GalleryItem>
 
-      <Section title={_("Time zone")} icon="schedule">
-        <p>{timezone ? (timezone.parts || []).join(' - ') : _("Time zone not selected yet")}</p>
-        <Link to="timezone/select">{timezone ? _("Change time zone") : _("Select time zone")}</Link>
-      </Section>
-    </>
+        <GalleryItem>
+          <Section
+            icon="schedule"
+            title={_("Time zone")}
+            action={
+              <Link to="timezone/select">{timezone ? _("Change") : _("Select")}</Link>
+
+            }
+          >
+            <Text>{timezone ? (timezone.parts || []).join(' - ') : _("Time zone not selected yet")}</Text>
+          </Section>
+        </GalleryItem>
+      </Gallery>
+    </PageSection>
   );
 }
