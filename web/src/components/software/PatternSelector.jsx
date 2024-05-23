@@ -20,7 +20,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { SearchInput } from "@patternfly/react-core";
+import { SearchInput, Label } from "@patternfly/react-core";
 
 import { Section, Selector } from "~/components/core";
 import { _ } from "~/i18n";
@@ -143,7 +143,7 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
     </div>
   );
 
-  const selector = sortGroups(groups).map((groupName) => {
+  let selector = sortGroups(groups).map((groupName) => {
     const selectedIds = groups[groupName].filter((p) => p.selectedBy !== SelectedBy.NONE).map((p) =>
       p.name
     );
@@ -166,6 +166,12 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
     );
   });
 
+  if (selector.length === 0) {
+    selector = (
+      <Label>{_("No results")}</Label>
+    );
+  }
+
   return (
     <>
       <Section aria-label={_("Software summary and filter options")}>
@@ -176,8 +182,7 @@ function PatternSelector({ patterns, onSelectionChanged = noop }) {
           value={searchValue}
           onChange={(_event, value) => setSearchValue(value)}
           onClear={() => setSearchValue("")}
-          // do not display the counter when search filter is empty
-          resultsCount={searchValue === "" ? 0 : groups.length}
+          resultsCount={visiblePatterns.length}
         />
       </Section>
 
