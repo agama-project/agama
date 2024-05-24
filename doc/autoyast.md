@@ -35,7 +35,7 @@ to install different systems. For that reason, we need Agama to support these fe
 - [Rules and classes][rules-classes].
 - [Embedded Ruby (ERB)][erb].
 - [Pre-installation scripts][pre-scripts].
-- [Ask lists]().
+- Ask lists.
 
 The most realistic way to support those features in the mid-term is to use the AutoYaST code with
 some adaptations. The [import-autoyast-profiles branch][autoyast-branch] contains a proof-of-concept

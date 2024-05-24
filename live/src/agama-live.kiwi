@@ -98,6 +98,7 @@
         <package name="agama"/>
         <package name="agama-web-ui"/>
         <package name="agama-cli"/>
+        <package name="agama-auto"/>
         <package name="microos-tools"/>
         <package name="staging-build-key"/>
         <package name="icewm-lite"/>

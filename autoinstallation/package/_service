@@ -1,0 +1,21 @@
+<services>
+  <service name="obs_scm" mode="manual">
+    <param name="url">https://github.com/openSUSE/agama.git</param>
+    <param name="versionformat">@PARENT_TAG@+@TAG_OFFSET@</param>
+    <param name="versionrewrite-pattern">v(.*)</param>    
+    <param name="scm">git</param>
+    <param name="revision">master</param>
+    <param name="subdir">autoinstallation</param>
+    <param name="without-version">enable</param>
+    <param name="extract">package/agama-auto.changes</param>
+    <param name="extract">package/agama-auto.spec</param>
+  </service>
+  <service mode="buildtime" name="tar">
+    <param name="obsinfo">agama.obsinfo</param>
+    <param name="filename">agama</param>
+  </service>
+  <service mode="buildtime" name="set_version">
+    <param name="basename">agama</param>
+  </service>
+</services>
+
