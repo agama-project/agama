@@ -27,7 +27,7 @@ import { useProduct } from "./context/product";
 import { INSTALL, STARTUP } from "~/client/phase";
 import { BUSY } from "~/client/status";
 
-import { WebSocketError, If, Installation } from "~/components/core";
+import { ServerError, If, Installation } from "~/components/core";
 import { Loading } from "./components/layout";
 import { useInstallerL10n } from "./context/installerL10n";
 
@@ -40,7 +40,7 @@ import { useInstallerL10n } from "./context/installerL10n";
  */
 function App() {
   const client = useInstallerClient();
-  const { connected, error } = useInstallerClientStatus();
+  const { error } = useInstallerClientStatus();
   const { products } = useProduct();
   const { language } = useInstallerL10n();
   const [status, setStatus] = useState(undefined);
@@ -72,7 +72,7 @@ function App() {
   }, [client, setPhase, setStatus]);
 
   const Content = () => {
-    if (error) return <WebSocketError />;
+    if (error) return <ServerError />;
     if (!products) return <Loading />;
 
     if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {

@@ -28,19 +28,19 @@ import { locationReload } from "~/utils";
 
 const ErrorIcon = () => <Icon name="error" className="icon-xxxl" />;
 
-function WebSocketError() {
+function ServerError() {
   return (
     // TRANSLATORS: page title
-    <Page icon="problem" title={_("Websocket Error")}>
+    <Page icon="problem" title={_("Agama Error")}>
       <Center>
         <EmptyState variant="xl">
           <EmptyStateHeader
-            titleText={_("Cannot connect to HTTP server")}
+            titleText={_("Cannot connect to Agama server")}
             headingLevel="h2"
             icon={<EmptyStateIcon icon={ErrorIcon} />}
           />
           <EmptyStateBody>
-            {_("Could not connect to the HTTP server. Please, check whether it is running.")}
+            {_("Could not connect to the Agama server. Please, check whether it is running.")}
           </EmptyStateBody>
         </EmptyState>
       </Center>
@@ -55,4 +55,4 @@ function WebSocketError() {
   );
 }
 
-export default WebSocketError;
+export default ServerError;

@@ -21,7 +21,6 @@
 
 export { default as About } from "./About";
 export { default as PageMenu } from "./PageMenu";
-export { default as WebSocketError } from "./WebSocketError";
 export { default as Description } from "./Description";
 export { default as Disclosure } from "./Disclosure";
 export { default as Sidebar } from "./Sidebar";
@@ -56,6 +55,7 @@ export { default as ShowTerminalButton } from "./ShowTerminalButton";
 export { default as NumericTextInput } from "./NumericTextInput";
 export { default as PasswordInput } from "./PasswordInput";
 export { default as Selector } from "./Selector";
+export { default as ServerError } from "./ServerError";
 export { default as ExpandableSelector } from "./ExpandableSelector";
 export { default as OptionsPicker } from "./OptionsPicker";
 export { default as Reminder } from "./Reminder";

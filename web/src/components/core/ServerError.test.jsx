@@ -24,19 +24,19 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 
 import * as utils from "~/utils";
-import { WebSocketError } from "~/components/core";
+import { ServerError } from "~/components/core";
 
 jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
-describe("WebSocketError", () => {
-  it("includes a generic websocket connection problem message", () => {
-    plainRender(<WebSocketError />);
-    screen.getByText(/Could not connect to the HTTP server/i);
+describe("ServerError", () => {
+  it("includes a generic server problem message", () => {
+    plainRender(<ServerError />);
+    screen.getByText(/Could not connect to the Agama server/i);
   });
 
   it("calls location.reload when user clicks on 'Reload'", async () => {
     jest.spyOn(utils, "locationReload").mockImplementation(utils.noop);
-    const { user } = plainRender(<WebSocketError />);
+    const { user } = plainRender(<ServerError />);
     const reloadButton = await screen.findByRole("button", { name: /Reload/i });
     await user.click(reloadButton);
     expect(utils.locationReload).toHaveBeenCalled();
