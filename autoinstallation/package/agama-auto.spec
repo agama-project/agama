@@ -20,8 +20,6 @@ Name:           agama-auto
 Version:        0
 Release:        0
 Summary:        Agama auto-installation service
-#               If you know the license, put it's SPDX string here.
-#               Alternately, you can use cargo lock2rpmprovides to help generate this.
 License:        GPL-2.0-only
 Url:            https://github.com/opensuse/agama
 Source0:        agama.tar
