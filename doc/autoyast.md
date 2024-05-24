@@ -390,9 +390,10 @@ About the `slp_discoverty` element, Agama does not support [SLP] at all?
 | install_updates                  | Never     |                           |                                      |
 | reg_code                         | Yes       | product.registrationCode  |                                      |
 | reg_server                       | Planned   |                           |                                      |
-| reg_server_cert                  | Undecided |                           | It is not clear how addons will work |
+| reg_server_cert                  | Planned   |                           |                                      |
 | reg_server_cert_fingerprint      | Planned   |                           |                                      |
 | reg_server_cert_fingerprint_type | Planned   |                           |                                      |
+| addons                           | Undecided |                           | It is not clear how addons will work |
 | slp_discovery                    | No        |                           |                                      |
 
 ### `timezone`
