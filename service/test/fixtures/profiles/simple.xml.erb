@@ -5,14 +5,11 @@
     <products config:type="list">
       <product>Tumbleweed</product>
     </products>
-    <patterns config:type="list">
-      <pattern>enhanced_base</pattern>
-    </patterns>
   </software>
 
   <language>
-    <language>en_US</language>
-    <languages>en_US</languages>
+    <language><%= "en_US" %></language>
+    <languages><%= ["en_US", "es_ES"].join(",") %></languages>
   </language>
 
   <timezone>
