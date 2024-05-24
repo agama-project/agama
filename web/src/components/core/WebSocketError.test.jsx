@@ -24,19 +24,19 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 
 import * as utils from "~/utils";
-import { DBusError } from "~/components/core";
+import { WebSocketError } from "~/components/core";
 
 jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
-describe("DBusError", () => {
-  it("includes a generic D-Bus connection problem message", () => {
-    plainRender(<DBusError />);
-    screen.getByText(/Could not connect to the D-Bus service/i);
+describe("WebSocketError", () => {
+  it("includes a generic websocket connection problem message", () => {
+    plainRender(<WebSocketError />);
+    screen.getByText(/Could not connect to the HTTP server/i);
   });
 
   it("calls location.reload when user clicks on 'Reload'", async () => {
     jest.spyOn(utils, "locationReload").mockImplementation(utils.noop);
-    const { user } = plainRender(<DBusError />);
+    const { user } = plainRender(<WebSocketError />);
     const reloadButton = await screen.findByRole("button", { name: /Reload/i });
     await user.click(reloadButton);
     expect(utils.locationReload).toHaveBeenCalled();

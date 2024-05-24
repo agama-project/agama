@@ -27,7 +27,7 @@ import { createDefaultClient } from "~/client";
 const InstallerClientContext = React.createContext(null);
 // TODO: we use a separate context to avoid changing all the codes to
 // `useInstallerClient`. We should merge them in the future.
-const InstallerClientStatusContext = React.createContext({ connected: false, attempt: 0 });
+const InstallerClientStatusContext = React.createContext({ connected: false });
 
 /**
  * Returns the D-Bus installer client
@@ -48,7 +48,6 @@ function useInstallerClient() {
  *
  * @typedef {object} ClientStatus
  * @property {boolean} connected - whether the client is connected
- * @property {number} attempt - number of attempt to connect
  *
  * @return {ClientStatus} installer client status
  */
@@ -61,8 +60,6 @@ function useInstallerClientStatus() {
   return context;
 }
 
-const INTERVAL = 2000;
-
 /**
   * @param {object} props
   * @param {import("~/client").InstallerClient|undefined} [props.client] client to connect to
@@ -73,23 +70,14 @@ const INTERVAL = 2000;
   * @param {React.ReactNode} [props.children] - content to display within the provider
   */
 function InstallerClientProvider({
-  children, client = null, interval = INTERVAL
+  children, client = null
 }) {
   const [value, setValue] = useState(client);
-  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     const connectClient = async () => {
       const client = await createDefaultClient();
-      if (await client.isConnected()) {
-        setValue(client);
-        setAttempt(0);
-        return;
-      }
-
-      console.warn(`Failed to connect to Agama API (attempt ${attempt + 1})`);
-      await new Promise(resolve => setTimeout(resolve, interval));
-      setAttempt(attempt + 1);
+      setValue(client);
     };
 
     // allow hot replacement for the clients code
@@ -99,28 +87,23 @@ function InstallerClientProvider({
         console.log("[Agama HMR] A client module has been updated");
 
         const updated_client = await createDefaultClient();
-        if (await updated_client.isConnected()) {
-          console.log("[Agama HMR] Using new clients");
-          setValue(updated_client);
-        } else {
-          console.warn("[Agama HMR] Updating clients failed, using full page reload");
-          window.location.reload();
-        }
+        console.log("[Agama HMR] Using new clients");
+        setValue(updated_client);
       });
     }
 
     if (!value) connectClient();
-  }, [setValue, value, setAttempt, attempt, interval]);
+  }, [setValue, value]);
 
-  useEffect(() => {
-    if (!value) return;
+  const connected = () => {
+    if (!value) return false;
 
-    return value.onDisconnect(() => setValue(null));
-  }, [value]);
+    return value.isConnected();
+  };
 
   return (
     <InstallerClientContext.Provider value={value}>
-      <InstallerClientStatusContext.Provider value={{ attempt, connected: !!value }}>
+      <InstallerClientStatusContext.Provider value={{ connected: connected() }}>
         {children}
       </InstallerClientStatusContext.Provider>
     </InstallerClientContext.Provider>
