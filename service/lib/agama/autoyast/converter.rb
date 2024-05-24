@@ -114,21 +114,22 @@ module Agama
         )
       end
 
+      # Sections which have a corresponding reader. The reader is expected to be
+      # named in Pascal case and adding "Reader" as suffix (e.g., "L10nReader").
+      SECTIONS = ["l10n", "product", "root", "software", "storage", "user"].freeze
+
+      # Builds the Agama profile
+      #
+      # It goes through the list of READERS and merges the results of all of them.
+      #
       # @return [Hash] Agama profile
       def export_profile(profile)
-        user = Agama::AutoYaST::UserReader.new(profile)
-        root = Agama::AutoYaST::RootReader.new(profile)
-        software = Agama::AutoYaST::SoftwareReader.new(profile)
-        product = Agama::AutoYaST::ProductReader.new(profile)
-        l10n = Agama::AutoYaST::L10nReader.new(profile)
-        storage = Agama::AutoYaST::StorageReader.new(profile)
-
-        user.read
-          .merge(root.read)
-          .merge(software.read)
-          .merge(product.read)
-          .merge(storage.read)
-          .merge(l10n.read)
+        SECTIONS.reduce({}) do |result, section|
+          require "agama/autoyast/#{section}_reader"
+          klass = "#{section}_reader".split("_").map(&:capitalize).join
+          reader = Agama::AutoYaST.const_get(klass).new(profile)
+          result.merge(reader.read)
+        end
       end
 
       def import_yast
