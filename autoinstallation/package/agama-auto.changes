@@ -1,4 +1,5 @@
 -------------------------------------------------------------------
 Fri May 24 08:15:21 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Initial package containing the agama-auto systemd service.
+- Initial package containing the agama-auto systemd service
+  (gh#openSUSE/agama#1252).
