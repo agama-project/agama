@@ -27,6 +27,23 @@
  */
 
 /**
+ * Enum for the WebSocket states.
+ *
+ *
+ */
+
+const SocketStates = Object.freeze({
+  CONNECTED: 0,
+  CONNECTING: 1,
+  CLOSING: 2,
+  CLOSED: 3,
+  UNRECOVERABLE: 4,
+});
+
+const MAX_ATTEMPTS = 10;
+const ATTEMPT_INTERVAL = 2000;
+
+/**
  * Agama WebSocket client.
  *
  * Connects to the Agama WebSocket server and reacts on the events.
@@ -38,11 +55,65 @@ class WSClient {
    * @param {URL} url - Websocket URL.
    */
   constructor(url) {
-    this.client = new WebSocket(url.toString());
+    this.url = url.toString();
+
+    this.event_handlers = [];
+    this.close_handlers = [];
+    this.error_handlers = [];
+    this.open_handlers = [];
+    this.reconnectAttempts = 0;
+    this.connect();
+  }
+
+  wsState() {
+    const state = this.client.readyState;
+    if ((state !== SocketStates.CONNECTED) && (this.reconnectAttempts >= MAX_ATTEMPTS)) return SocketStates.UNRECOVERABLE;
+
+    return state;
+  }
+
+  isRecoverable() {
+    return (this.wsState() !== SocketStates.UNRECOVERABLE);
+  }
+
+  isConnected() {
+    return (this.wsState() === SocketStates.CONNECTED);
+  }
+
+  subscribe_to_events() {
+    this.client.onopen = () => {
+      console.log("Connected websocket");
+      this.reconnectAttempts = 0;
+      if (this.timeout !== undefined) clearTimeout(this.timeout);
+
+      return this.dispatchOpenEvent();
+    };
+
     this.client.onmessage = (event) => {
       this.dispatchEvent(event);
     };
-    this.handlers = [];
+
+    this.client.onclose = () => {
+      console.log(`Closed WebSocket`);
+      this.dispatchCloseEvent();
+      this.timeout = setTimeout(() => this.connect(this.reconnectAttempts + 1), ATTEMPT_INTERVAL);
+    };
+
+    this.client.onerror = (e) => {
+      console.error("WebSocket error:", e);
+      this.dispatchErrorEvent();
+    };
+  }
+
+  connect(attempt = 0) {
+    this.reconnectAttempts = attempt;
+    if (attempt > 10) {
+      console.log("Max number of WebSocket connection attempts reached.");
+      return;
+    }
+    console.log(`Reconnecting WebSocket(attempt: ${attempt})`);
+    this.client = new WebSocket(this.url);
+    this.subscribe_to_events();
   }
 
   /**
@@ -55,10 +126,60 @@ class WSClient {
    * @return {RemoveFn}
    */
   onEvent(func) {
-    this.handlers.push(func);
+    this.event_handlers.push(func);
     return () => {
-      const position = this.handlers.indexOf(func);
-      if (position > -1) this.handlers.splice(position, 1);
+      const position = this.event_handlers.indexOf(func);
+      if (position > -1) this.event_handlers.splice(position, 1);
+    };
+  }
+
+  /**
+   * Registers a handler for close socket.
+   *
+   * The handler is executed when the socket is close.
+   *
+   * @param {(object) => void} func - Handler function to register.
+   * @return {RemoveFn}
+   */
+  onClose(func) {
+    this.close_handlers.push(func);
+
+    return () => {
+      const position = this.close_handlers.indexOf(func);
+      if (position > -1) this.close_handlers.splice(position, 1);
+    };
+  }
+
+  /**
+   * Registers a handler for open socket.
+   *
+   * The handler is executed when the socket is open.
+   * @param {(object) => void} func - Handler function to register.
+   * @return {RemoveFn}
+   */
+  onOpen(func) {
+    this.open_handlers.push(func);
+
+    return () => {
+      const position = this.open_handlers.indexOf(func);
+      if (position > -1) this.open_handlers.splice(position, 1);
+    };
+  }
+
+  /**
+   * Registers a handler for socket errors.
+   *
+   * The handler is executed when an error is reported by the socket.
+   *
+   * @param {(object) => void} func - Handler function to register.
+   * @return {RemoveFn}
+   */
+  onError(func) {
+    this.error_handlers.push(func);
+
+    return () => {
+      const position = this.error_handlers.indexOf(func);
+      if (position > -1) this.error_handlers.splice(position, 1);
     };
   }
 
@@ -71,7 +192,34 @@ class WSClient {
    */
   dispatchEvent(event) {
     const eventObject = JSON.parse(event.data);
-    this.handlers.forEach((f) => f(eventObject));
+    this.event_handlers.forEach((f) => f(eventObject));
+  }
+
+  /**
+   * @private
+   *
+   * Dispatchs a close event by running all its handlers.
+   */
+  dispatchCloseEvent() {
+    this.close_handlers.forEach((f) => f());
+  }
+
+  /**
+   * @private
+   *
+   * Dispatchs an error event by running all its handlers.
+   */
+  dispatchErrorEvent() {
+    this.error_handlers.forEach((f) => f());
+  }
+
+  /**
+   * @private
+   *
+   * Dispatchs a close event by running all its handlers.
+   */
+  dispatchOpenEvent() {
+    this.open_handlers.forEach((f) => f());
   }
 }
 
@@ -167,6 +315,43 @@ class HTTPClient {
     });
 
     return response;
+  }
+
+  /**
+   * Registers a handler for being called when the socket is closed
+   *
+   * @param {() => void} func - Handler function to register.
+   * @return {RemoveFn} - Function to remove the handler.
+   */
+  onClose(func) {
+    return this.ws.onClose(() => {
+      func();
+    });
+  }
+
+  /**
+   *
+   * Registers a handler for being called when there is some error in the socket
+   *
+   * @param {(event: Object) => void} func - Handler function to register.
+   * @return {RemoveFn} - Function to remove the handler.
+   */
+  onError(func) {
+    return this.ws.onError((event) => {
+      func(event);
+    });
+  }
+
+  /**
+   * Registers a handler for being called when the socket is opened
+   *
+   * @param {(event: Object) => void} func - Handler function to register.
+   * @return {RemoveFn} - Function to remove the handler.
+   */
+  onOpen(func) {
+    return this.ws.onOpen((event) => {
+      func(event);
+    });
   }
 
   /**
