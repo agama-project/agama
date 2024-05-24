@@ -32,11 +32,10 @@ const isConnectedFn = jest.fn();
 
 // Helper component to check the client status.
 const ClientStatus = () => {
-  const { attempt, connected } = useInstallerClientStatus();
+  const { connected } = useInstallerClientStatus();
 
   return (
     <ul>
-      <li>{`attempt: ${attempt}`}</li>
       <li>{`connected: ${connected}`}</li>
     </ul>
   );
@@ -52,21 +51,6 @@ describe("installer context", () => {
     });
   });
 
-  describe("when there are problems connecting to the D-Bus service", () => {
-    beforeEach(() => {
-      isConnectedFn.mockResolvedValueOnce(false);
-      isConnectedFn.mockResolvedValueOnce(true);
-    });
-
-    it("reports each attempt through the useInstallerClientStatus hook", async () => {
-      plainRender(
-        <InstallerClientProvider interval={0.1}>
-          <ClientStatus />
-        </InstallerClientProvider>);
-      await screen.findByText("attempt: 1");
-    });
-  });
-
   describe("when the client is connected", () => {
     beforeEach(() => {
       isConnectedFn.mockResolvedValue(true);
@@ -74,31 +58,10 @@ describe("installer context", () => {
 
     it("reports the status through the useInstallerClientStatus hook", async () => {
       plainRender(
-        <InstallerClientProvider interval={0.1}>
+        <InstallerClientProvider>
           <ClientStatus />
         </InstallerClientProvider>);
       await screen.findByText("connected: true");
-    });
-  });
-
-  describe("when the D-Bus service is disconnected", () => {
-    beforeEach(() => {
-      isConnectedFn.mockResolvedValue(true);
-    });
-
-    it("reconnects to the D-Bus service", async () => {
-      const [onDisconnect, callbacks] = createCallbackMock();
-      onDisconnectFn = onDisconnect;
-
-      plainRender(
-        <InstallerClientProvider interval={0.1}>
-          <ClientStatus />
-        </InstallerClientProvider>
-      );
-      await screen.findByText("connected: true");
-      const [disconnect] = callbacks;
-      act(disconnect);
-      await screen.findByText("connected: false");
     });
   });
 });

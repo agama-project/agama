@@ -27,7 +27,7 @@ import { createDefaultClient } from "~/client";
 const InstallerClientContext = React.createContext(null);
 // TODO: we use a separate context to avoid changing all the codes to
 // `useInstallerClient`. We should merge them in the future.
-const InstallerClientStatusContext = React.createContext({ connected: false });
+const InstallerClientStatusContext = React.createContext({ connected: false, error: false });
 
 /**
  * Returns the D-Bus installer client
@@ -48,6 +48,8 @@ function useInstallerClient() {
  *
  * @typedef {object} ClientStatus
  * @property {boolean} connected - whether the client is connected
+ * @property {boolean} error - whether the client present an error and cannot
+ *  reconnect
  *
  * @return {ClientStatus} installer client status
  */
@@ -73,6 +75,8 @@ function InstallerClientProvider({
   children, client = null
 }) {
   const [value, setValue] = useState(client);
+  const [connected, setConnected] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const connectClient = async () => {
@@ -95,15 +99,23 @@ function InstallerClientProvider({
     if (!value) connectClient();
   }, [setValue, value]);
 
-  const connected = () => {
-    if (!value) return false;
+  useEffect(() => {
+    if (!value) return;
 
-    return value.isConnected();
-  };
+    value.onConnect(() => {
+      setConnected(true);
+      setError(false);
+    });
+
+    value.onDisconnect(() => {
+      setConnected(false);
+      setError(!value.isRecoverable());
+    });
+  }, [value]);
 
   return (
     <InstallerClientContext.Provider value={value}>
-      <InstallerClientStatusContext.Provider value={{ connected: connected() }}>
+      <InstallerClientStatusContext.Provider value={{ connected, error }}>
         {children}
       </InstallerClientStatusContext.Provider>
     </InstallerClientContext.Provider>

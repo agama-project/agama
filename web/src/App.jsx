@@ -40,6 +40,7 @@ import { useInstallerL10n } from "./context/installerL10n";
  */
 function App() {
   const client = useInstallerClient();
+  const { connected, error } = useInstallerClientStatus();
   const { products } = useProduct();
   const { language } = useInstallerL10n();
   const [status, setStatus] = useState(undefined);
@@ -71,7 +72,7 @@ function App() {
   }, [client, setPhase, setStatus]);
 
   const Content = () => {
-    if (!client || !client.isRecoverable()) return <WebSocketError />;
+    if (error) return <WebSocketError />;
     if (!products) return <Loading />;
 
     if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {

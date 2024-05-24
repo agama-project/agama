@@ -40,8 +40,8 @@ const SocketStates = Object.freeze({
   UNRECOVERABLE: 4,
 });
 
-const MAX_ATTEMPTS = 10;
-const ATTEMPT_INTERVAL = 2000;
+const MAX_ATTEMPTS = 15;
+const ATTEMPT_INTERVAL = 1000;
 
 /**
  * Agama WebSocket client.
@@ -57,12 +57,15 @@ class WSClient {
   constructor(url) {
     this.url = url.toString();
 
-    this.event_handlers = [];
-    this.close_handlers = [];
-    this.error_handlers = [];
-    this.open_handlers = [];
+    this.handlers = {
+      error: [],
+      close: [],
+      open: [],
+      events: []
+    };
+
     this.reconnectAttempts = 0;
-    this.connect();
+    this.client = this.buildClient();
   }
 
   wsState() {
@@ -80,8 +83,9 @@ class WSClient {
     return (this.wsState() === SocketStates.CONNECTED);
   }
 
-  subscribe_to_events() {
-    this.client.onopen = () => {
+  buildClient() {
+    const client = new WebSocket(this.url);
+    client.onopen = () => {
       console.log("Connected websocket");
       this.reconnectAttempts = 0;
       if (this.timeout !== undefined) clearTimeout(this.timeout);
@@ -89,31 +93,32 @@ class WSClient {
       return this.dispatchOpenEvent();
     };
 
-    this.client.onmessage = (event) => {
+    client.onmessage = (event) => {
       this.dispatchEvent(event);
     };
 
-    this.client.onclose = () => {
+    client.onclose = () => {
       console.log(`Closed WebSocket`);
       this.dispatchCloseEvent();
       this.timeout = setTimeout(() => this.connect(this.reconnectAttempts + 1), ATTEMPT_INTERVAL);
     };
 
-    this.client.onerror = (e) => {
+    client.onerror = (e) => {
       console.error("WebSocket error:", e);
       this.dispatchErrorEvent();
     };
+
+    return client;
   }
 
   connect(attempt = 0) {
     this.reconnectAttempts = attempt;
-    if (attempt > 10) {
+    if (attempt > MAX_ATTEMPTS) {
       console.log("Max number of WebSocket connection attempts reached.");
       return;
     }
     console.log(`Reconnecting WebSocket(attempt: ${attempt})`);
-    this.client = new WebSocket(this.url);
-    this.subscribe_to_events();
+    this.client = this.buildClient();
   }
 
   /**
@@ -126,10 +131,10 @@ class WSClient {
    * @return {RemoveFn}
    */
   onEvent(func) {
-    this.event_handlers.push(func);
+    this.handlers.events.push(func);
     return () => {
-      const position = this.event_handlers.indexOf(func);
-      if (position > -1) this.event_handlers.splice(position, 1);
+      const position = this.handlers.events.indexOf(func);
+      if (position > -1) this.handlers.events.splice(position, 1);
     };
   }
 
@@ -142,11 +147,11 @@ class WSClient {
    * @return {RemoveFn}
    */
   onClose(func) {
-    this.close_handlers.push(func);
+    this.handlers.close.push(func);
 
     return () => {
-      const position = this.close_handlers.indexOf(func);
-      if (position > -1) this.close_handlers.splice(position, 1);
+      const position = this.handlers.close.indexOf(func);
+      if (position > -1) this.handlers.close.splice(position, 1);
     };
   }
 
@@ -158,11 +163,11 @@ class WSClient {
    * @return {RemoveFn}
    */
   onOpen(func) {
-    this.open_handlers.push(func);
+    this.handlers.open.push(func);
 
     return () => {
-      const position = this.open_handlers.indexOf(func);
-      if (position > -1) this.open_handlers.splice(position, 1);
+      const position = this.handlers.open.indexOf(func);
+      if (position > -1) this.handlers.open.splice(position, 1);
     };
   }
 
@@ -175,11 +180,11 @@ class WSClient {
    * @return {RemoveFn}
    */
   onError(func) {
-    this.error_handlers.push(func);
+    this.handlers.error.push(func);
 
     return () => {
-      const position = this.error_handlers.indexOf(func);
-      if (position > -1) this.error_handlers.splice(position, 1);
+      const position = this.handlers.error.indexOf(func);
+      if (position > -1) this.handlers.error.splice(position, 1);
     };
   }
 
@@ -192,7 +197,7 @@ class WSClient {
    */
   dispatchEvent(event) {
     const eventObject = JSON.parse(event.data);
-    this.event_handlers.forEach((f) => f(eventObject));
+    this.handlers.events.forEach((f) => f(eventObject));
   }
 
   /**
@@ -201,7 +206,7 @@ class WSClient {
    * Dispatchs a close event by running all its handlers.
    */
   dispatchCloseEvent() {
-    this.close_handlers.forEach((f) => f());
+    this.handlers.close.forEach((f) => f());
   }
 
   /**
@@ -210,7 +215,7 @@ class WSClient {
    * Dispatchs an error event by running all its handlers.
    */
   dispatchErrorEvent() {
-    this.error_handlers.forEach((f) => f());
+    this.handlers.error.forEach((f) => f());
   }
 
   /**
@@ -219,7 +224,7 @@ class WSClient {
    * Dispatchs a close event by running all its handlers.
    */
   dispatchOpenEvent() {
-    this.open_handlers.forEach((f) => f());
+    this.handlers.open.forEach((f) => f());
   }
 }
 
