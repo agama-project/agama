@@ -1,0 +1,24 @@
+name: Submit agama-auto
+
+on:
+  # runs on pushes targeting the default branch
+  push:
+    branches:
+      - master
+    paths:
+      # run only when an autoinstallation source is changed
+      - autoinstallation/**
+      # except the Markdown documentation, it is not packaged
+      - "!autoinstallation/README.md"
+
+  # allow running manually
+  workflow_dispatch:
+
+jobs:
+  update_staging:
+    uses: ./.github/workflows/obs-staging-shared.yml
+    # pass all secrets
+    secrets: inherit
+    with:
+      package_name: agama-auto
+      service_file: autoinstallation/package/_service
