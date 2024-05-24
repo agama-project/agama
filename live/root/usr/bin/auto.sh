@@ -26,17 +26,14 @@ case "$url" in
     /usr/bin/agama profile validate "${tmpdir}/profile.json" || echo "Validation failed"
     /usr/bin/agama config load "${tmpdir}/profile.json"
     /usr/bin/agama install;;
-*.json )
-    /usr/bin/agama profile download "$url" > "${tmpdir}/profile.json"
-    /usr/bin/agama profile validate "${tmpdir}/profile.json" || echo "Validation failed"
-    /usr/bin/agama config load "${tmpdir}/profile.json"
-    /usr/bin/agama install;;
 *.sh )
     /usr/bin/agama profile download "$url" > "${tmpdir}/profile.sh"
     exec $SHELL "/${tmpdir}/profile.sh";;
 *)
-    echo "Unrecognized suffix ${url}"
-    exit 1
+    /usr/bin/agama profile download "$url" > "${tmpdir}/profile.json"
+    /usr/bin/agama profile validate "${tmpdir}/profile.json" || echo "Validation failed"
+    /usr/bin/agama config load "${tmpdir}/profile.json"
+    /usr/bin/agama install;;
 esac
 
 rm -r "$tmpdir"
