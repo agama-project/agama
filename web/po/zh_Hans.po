@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-19 02:19+0000\n"
-"PO-Revision-Date: 2024-04-13 18:43+0000\n"
+"POT-Creation-Date: 2024-05-26 02:22+0000\n"
+"PO-Revision-Date: 2024-05-21 19:46+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
 "agama/agama-web/zh_Hans/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 5.5.5\n"
 
 #: src/components/core/About.jsx:49 src/components/core/About.jsx:69
 msgid "About Agama"
@@ -156,15 +156,14 @@ msgstr "查看更多细节"
 
 #. TRANSLATORS: "Trusted Platform Module" is the name of the technology and "TPM" its abbreviation
 #: src/components/core/InstallationFinished.jsx:54
-#, fuzzy
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
 "of the new system. For that to work, the machine needs to boot directly to "
 "the new boot loader."
 msgstr ""
-"配置 <abbr title='Trusted Platform Module'>TPM</abbr> 自动开启加密设备的最后"
-"一步将在新系统首次启动时进行。为此，本机需要直接启动到新的引导加载程序。"
+"配置可信平台模块 (TPM) 以自动开启加密设备的最后一步将在新系统首次启动时进行。"
+"为此，本机需要直接启动到新的引导加载程序。"
 
 #. TRANSLATORS: page title
 #: src/components/core/InstallationFinished.jsx:91
@@ -201,8 +200,8 @@ msgstr "正在安装"
 
 #. TRANSLATORS: search field placeholder text
 #: src/components/core/ListSearch.jsx:50
-#: src/components/software/PatternSelector.jsx:174
-#: src/components/software/PatternSelector.jsx:175
+#: src/components/software/PatternSelector.jsx:180
+#: src/components/software/PatternSelector.jsx:181
 msgid "Search"
 msgstr "搜索"
 
@@ -211,7 +210,7 @@ msgstr "搜索"
 #: src/components/core/LoginPage.jsx:56
 #, c-format
 msgid "Log in as %s"
-msgstr ""
+msgstr "登录为 %s"
 
 #. TRANSLATORS: An explanation about required privileges for login into the installer. %s
 #. will be replaced by "root"
@@ -220,29 +219,27 @@ msgstr ""
 msgid ""
 "The installer requires %s user privileges. Please, provide its password to "
 "log in to the system."
-msgstr ""
+msgstr "安装程序需要 %s 用户权限。请提供其密码以登录系统。"
 
 #: src/components/core/LoginPage.jsx:72
-#, fuzzy
 msgid "Login form"
-msgstr "登录 %s"
+msgstr "登录表单"
 
 #: src/components/core/LoginPage.jsx:78
-#, fuzzy
 msgid "Password input"
-msgstr "密码"
+msgstr "密码输入"
 
 #: src/components/core/LoginPage.jsx:86
 msgid "Could not log in. Please, make sure that the password is correct."
-msgstr ""
+msgstr "无法登录。请确保密码输入正确。"
 
 #: src/components/core/LoginPage.jsx:93
 msgid "Log in"
-msgstr ""
+msgstr "登录"
 
 #: src/components/core/LoginPage.jsx:104
 msgid "What is this?"
-msgstr ""
+msgstr "这是什么？"
 
 #: src/components/core/LogsButton.jsx:101
 msgid "Collecting logs..."
@@ -300,9 +297,8 @@ msgstr "确认"
 
 #. TRANSLATORS: progress message
 #: src/components/core/Popup.jsx:210
-#, fuzzy
 msgid "Loading data..."
-msgstr "正在读取文件……"
+msgstr "正在读取数据……"
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:457
@@ -314,9 +310,8 @@ msgid "Waiting"
 msgstr "正在等候"
 
 #: src/components/core/Selector.jsx:126
-#, fuzzy
 msgid "auto selected"
-msgstr "未选择"
+msgstr "自动选择"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
@@ -750,7 +745,7 @@ msgstr "正在断开连接"
 
 #: src/components/network/WifiNetworkListItem.jsx:49
 msgid "Failed"
-msgstr ""
+msgstr "失败"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
@@ -778,17 +773,16 @@ msgid "The system will use %s as its default language."
 msgstr "系统会使用 %s 作为默认语言。"
 
 #: src/components/overview/NetworkSection.jsx:96
-#, fuzzy
 msgid "No network devices detected"
-msgstr "未检测到网络连接"
+msgstr "未检测到网络设备"
 
 #. TRANSLATORS: header for the list of connected devices,
 #. %d is replaced by the number of active devices
 #: src/components/overview/NetworkSection.jsx:103
-#, fuzzy, c-format
+#, c-format
 msgid "%d device set:"
 msgid_plural "%d devices set:"
-msgstr[0] "已使用的设备"
+msgstr[0] "%d 个设备已配置："
 
 #. TRANSLATORS: page title
 #: src/components/overview/OverviewPage.jsx:48
@@ -826,18 +820,17 @@ msgstr "软件"
 
 #. TRANSLATORS: installing on an LVM with multiple physical partitions/disks
 #: src/components/overview/StorageSection.jsx:53
-#, fuzzy
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group shrinking "
 "existing partitions at the underlying devices as needed"
-msgstr "在新建的 %1$s 上进行安装并在需要时缩小磁盘中现有的分区"
+msgstr "安装在新的逻辑卷管理器 (LVM) 卷组中， 按需缩小底层设备上的现有分区"
 
 #. TRANSLATORS: installing on an LVM with multiple physical partitions/disks
 #: src/components/overview/StorageSection.jsx:56
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group without modifying "
 "the partitions at the underlying devices"
-msgstr ""
+msgstr "安装在新的逻辑卷管理器（LVM）卷组中，不更改底层设备上的现有分区"
 
 #. TRANSLATORS: installing on an LVM with multiple physical partitions/disks
 #: src/components/overview/StorageSection.jsx:59
@@ -1079,6 +1072,10 @@ msgid "Encryption Password"
 msgstr "加密密码"
 
 #: src/components/software/PatternSelector.jsx:171
+msgid "None of the patterns match the filter."
+msgstr ""
+
+#: src/components/software/PatternSelector.jsx:177
 msgid "Software summary and filter options"
 msgstr "软件概述与过滤选项"
 

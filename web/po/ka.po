@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-19 02:19+0000\n"
+"POT-Creation-Date: 2024-05-26 02:22+0000\n"
 "PO-Revision-Date: 2024-04-17 18:43+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -196,8 +196,8 @@ msgstr "დაყენება"
 
 #. TRANSLATORS: search field placeholder text
 #: src/components/core/ListSearch.jsx:50
-#: src/components/software/PatternSelector.jsx:174
-#: src/components/software/PatternSelector.jsx:175
+#: src/components/software/PatternSelector.jsx:180
+#: src/components/software/PatternSelector.jsx:181
 msgid "Search"
 msgstr "ძებნა"
 
@@ -1074,6 +1074,10 @@ msgid "Encryption Password"
 msgstr "დაშიფვრის პაროლი"
 
 #: src/components/software/PatternSelector.jsx:171
+msgid "None of the patterns match the filter."
+msgstr ""
+
+#: src/components/software/PatternSelector.jsx:177
 msgid "Software summary and filter options"
 msgstr ""
 
