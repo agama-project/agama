@@ -69,9 +69,9 @@ const rootRoutes = [
   overviewRoutes,
   productRoutes,
   l10nRoutes,
-  softwareRoutes,
-  storageRoutes,
   networkRoutes,
+  storageRoutes,
+  softwareRoutes,
   usersRoutes,
 ];
 
@@ -115,8 +115,8 @@ const router = createHashRouter(routes);
 
 export {
   overviewRoutes,
-  productRoutes,
   l10nRoutes,
+  productRoutes,
   softwareRoutes,
   storageRoutes,
   networkRoutes,

@@ -59,6 +59,16 @@
   inline-size: var(--icon-size-s);
 }
 
+.icon-xl {
+  block-size: var(--icon-size-xl);
+  inline-size: var(--icon-size-xl);
+}
+
+.icon-xxl {
+  block-size: var(--icon-size-xxl);
+  inline-size: var(--icon-size-xxl);
+}
+
 .icon-xxxl {
   block-size: var(--icon-size-xxxl);
   inline-size: var(--icon-size-xxxl);

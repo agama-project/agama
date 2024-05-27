@@ -49,6 +49,7 @@ const Section = ({ title, icon, action, children }) => {
   );
 };
 
+// FIXME: re-evaluate the need of "Thing not selected yet"
 /**
  * Page for configuring localization.
  * @component
