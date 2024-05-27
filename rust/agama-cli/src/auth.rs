@@ -1,4 +1,4 @@
-use clap::{arg, Args, Subcommand};
+use clap::Subcommand;
 
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
 use std::fs;
@@ -18,7 +18,7 @@ const DEFAULT_FILE_MODE: u32 = 0o600;
 #[derive(Subcommand, Debug)]
 pub enum AuthCommands {
     /// Authenticate with Agama's server and store the credentials
-    Login(LoginArgs),
+    Login,
     /// Deauthenticate by removing the credentials
     Logout,
     /// Prints currently stored credentials to the standard output
@@ -28,7 +28,7 @@ pub enum AuthCommands {
 /// Main entry point called from agama CLI main loop
 pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
     match subcommand {
-        AuthCommands::Login(_options) => login(read_password()?).await,
+        AuthCommands::Login => login(read_password()?).await,
         AuthCommands::Logout => logout(),
         AuthCommands::Show => show(),
     }
@@ -70,15 +70,6 @@ fn read_password() -> Result<String, CliError> {
         buffer
     };
     Ok(password)
-}
-
-/// Stores user provided configuration for login command
-#[derive(Args, Debug)]
-pub struct LoginArgs {
-    #[arg(long, short = 'p')]
-    password: Option<String>,
-    #[arg(long, short = 'f')]
-    file: Option<PathBuf>,
 }
 
 /// Path to file where JWT is stored
