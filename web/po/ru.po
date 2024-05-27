@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-19 02:19+0000\n"
-"PO-Revision-Date: 2024-05-19 00:46+0000\n"
+"POT-Creation-Date: 2024-05-26 02:22+0000\n"
+"PO-Revision-Date: 2024-05-21 22:46+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ru/>\n"
@@ -219,8 +219,8 @@ msgstr "Установка"
 
 #. TRANSLATORS: search field placeholder text
 #: src/components/core/ListSearch.jsx:50
-#: src/components/software/PatternSelector.jsx:174
-#: src/components/software/PatternSelector.jsx:175
+#: src/components/software/PatternSelector.jsx:180
+#: src/components/software/PatternSelector.jsx:181
 msgid "Search"
 msgstr "Поиск"
 
@@ -431,7 +431,7 @@ msgstr "Язык"
 
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:73
 msgid "language"
-msgstr "Язык"
+msgstr "язык"
 
 #. TRANSLATORS: placeholder text for search input in the keyboard selector.
 #: src/components/l10n/KeymapSelector.jsx:53
@@ -579,7 +579,7 @@ msgstr "IP-адреса"
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
 #: src/components/users/FirstUser.jsx:212
 msgid "Edit"
-msgstr "Редактировать"
+msgstr "Изменить"
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:79
@@ -711,7 +711,7 @@ msgstr "Сети WiFi"
 #: src/components/network/WifiConnectionForm.jsx:43
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 msgid "None"
-msgstr "отсутствует"
+msgstr "Отсутствует"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:45
@@ -920,7 +920,7 @@ msgid ""
 "all its content"
 msgstr ""
 "Установка в новую группу томов Logical Volume Manager (LVM) на %s, удалив "
-"все ее содержимое"
+"все её содержимое"
 
 #. TRANSLATORS: installing on an LVM with a single physical partition/disk,
 #. %s will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
@@ -974,7 +974,7 @@ msgstr ""
 
 #: src/components/overview/StorageSection.jsx:167
 msgid "Probing storage devices"
-msgstr "Исследование устройств хранения данных"
+msgstr "Поиск устройств хранения"
 
 #. TRANSLATORS: page section title
 #. TRANSLATORS: Storage page title
@@ -1130,6 +1130,10 @@ msgid "Encryption Password"
 msgstr "Пароль шифрования"
 
 #: src/components/software/PatternSelector.jsx:171
+msgid "None of the patterns match the filter."
+msgstr ""
+
+#: src/components/software/PatternSelector.jsx:177
 msgid "Software summary and filter options"
 msgstr "Сводка по программному обеспечению и параметры фильтрации"
 
@@ -1957,7 +1961,7 @@ msgstr ""
 #: src/components/storage/SpacePolicyDialog.jsx:149
 #: src/components/storage/SpacePolicyField.jsx:87
 msgid "Find space"
-msgstr "Найти место"
+msgstr "Поиск места"
 
 #: src/components/storage/SpacePolicyField.jsx:89
 msgid ""

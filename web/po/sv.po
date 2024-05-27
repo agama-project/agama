@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-19 02:19+0000\n"
+"POT-Creation-Date: 2024-05-26 02:22+0000\n"
 "PO-Revision-Date: 2024-05-07 14:43+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -215,8 +215,8 @@ msgstr "Installerar"
 
 #. TRANSLATORS: search field placeholder text
 #: src/components/core/ListSearch.jsx:50
-#: src/components/software/PatternSelector.jsx:174
-#: src/components/software/PatternSelector.jsx:175
+#: src/components/software/PatternSelector.jsx:180
+#: src/components/software/PatternSelector.jsx:181
 msgid "Search"
 msgstr "Sök"
 
@@ -1118,6 +1118,10 @@ msgid "Encryption Password"
 msgstr "Krypteringslösenord"
 
 #: src/components/software/PatternSelector.jsx:171
+msgid "None of the patterns match the filter."
+msgstr ""
+
+#: src/components/software/PatternSelector.jsx:177
 msgid "Software summary and filter options"
 msgstr "Programsammanfattning och filteralternativ"
 
