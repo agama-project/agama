@@ -22,13 +22,23 @@
 // @ts-check
 
 import React, { useState } from "react";
-import { Button, Skeleton } from "@patternfly/react-core";
+import {
+  Alert,
+  Button,
+  Card, CardHeader, CardTitle, CardBody, CardFooter,
+  Drawer, DrawerPanelContent, DrawerContent, DrawerContentBody, DrawerHead, DrawerActions, DrawerCloseButton,
+  EmptyState, EmptyStateHeader, EmptyStateBody,
+  Skeleton,
+  Stack,
+  DrawerPanelBody
+} from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 import DevicesManager from "~/components/storage/DevicesManager";
-import { If, Section, Reminder } from "~/components/core";
+import { Icon } from "~/components/layout";
 import { ProposalActionsDialog } from "~/components/storage";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
+import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
 /**
  * @typedef {import ("~/client/storage").Action} Action
@@ -61,20 +71,16 @@ const DeletionsInfo = ({ actions, systems }) => {
   // Most probably, a `listFormat` or similar wrapper should live in src/i18n.js or so.
   // Read https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat
   return (
-    <Reminder title={warningTitle} variant="subtle">
-      <If
-        condition={systems.length > 0}
-        then={
-          <p>
-            {
-              // TRANSLATORS: This is part of a sentence to hint the user about affected systems.
-              // Eg. "Affecting Windows 11, openSUSE Leap 15, and Ubuntu 22.04"
-            }
-            {_("Affecting")} <strong>{systems.join(", ")}</strong>
-          </p>
-        }
-      />
-    </Reminder>
+    <Alert isInline isPlain variant="warning" title={warningTitle}>
+      {systems.length > 0 &&
+        <p>
+          {
+            // TRANSLATORS: This is part of a sentence to hint the user about affected systems.
+            // Eg. "Affecting Windows 11, openSUSE Leap 15, and Ubuntu 22.04"
+          }
+          {_("Affecting")} <strong>{systems.join(", ")}</strong>
+        </p>}
+    </Alert>
   );
 };
 
@@ -85,16 +91,9 @@ const DeletionsInfo = ({ actions, systems }) => {
  * @param {object} props
  * @param {Action[]} props.actions
  */
-const ActionsInfo = ({ actions }) => {
-  const [showActions, setShowActions] = useState(false);
-  const onOpen = () => setShowActions(true);
-  const onClose = () => setShowActions(false);
-
+const ActionsInfo = ({ onClick }) => {
   return (
-    <>
-      <Button onClick={onOpen} variant="link" isInline>{_("Check all planned actions")}</Button>
-      <ProposalActionsDialog actions={actions} isOpen={showActions} onClose={onClose} />
-    </>
+    <Button onClick={onClick} variant="link" isInline>{_("Check all planned actions")}</Button>
   );
 };
 
@@ -103,11 +102,26 @@ const ActionsInfo = ({ actions }) => {
  */
 const ResultSkeleton = () => {
   return (
-    <>
+    <Stack hasGutter>
       <Skeleton screenreaderText={_("Waiting for information about storage configuration")} width="80%" />
       <Skeleton width="65%" />
       <Skeleton width="70%" />
-    </>
+    </Stack>
+  );
+};
+
+const SectionErrors = ({ errors }) => {
+  if (errors.length === 0) return;
+  console.log("errors", errors);
+
+  return (
+    <EmptyState variant="lg">
+      <EmptyStateHeader headingLevel="h4" color="green" titleText={_("Storage proposal not possible")} icon={<Icon name="error" size="xxl" />} />
+
+      <EmptyStateBody>
+        {errors.map((e, i) => <div key={i}>{e.message}</div>)}
+      </EmptyStateBody>
+    </EmptyState>
   );
 };
 
@@ -120,21 +134,33 @@ const ResultSkeleton = () => {
  * @param {StorageDevice[]} props.staging
  * @param {Action[]} props.actions
  * @param {ValidationError[]} props.errors
+ * @param {boolean} props.isLoading
  */
-const SectionContent = ({ system, staging, actions, errors }) => {
+const SectionContent = ({ system, staging, actions, errors, isLoading, onActionsClick }) => {
+  if (isLoading) return <ResultSkeleton />;
   if (errors.length) return;
+
+  const totalActions = actions.length;
+  // TRANSLATORS: The description for the Result section in storage proposal
+  // page. %d will be replaced by the number of proposal actions.
+  const description = sprintf(n_(
+    "During installation, %d action will be performed to configure the system as displayed below",
+    "During installation, %d actions will be performed to configure the system as displayed below",
+    totalActions
+  ), totalActions);
 
   const devicesManager = new DevicesManager(system, staging, actions);
 
   return (
-    <>
+    <Stack hasGutter>
+      <div>{description}</div>
       <DeletionsInfo
         actions={devicesManager.actions.filter(a => a.delete && !a.subvol)}
         systems={devicesManager.deletedSystems()}
       />
-      <ActionsInfo actions={actions} />
+      <ActionsInfo onClick={onActionsClick} />
       <ProposalResultTable devicesManager={devicesManager} />
-    </>
+    </Stack>
   );
 };
 
@@ -158,37 +184,51 @@ export default function ProposalResultSection({
   errors = [],
   isLoading = false
 }) {
+  const [drawerOpen, setDrawerOpen] = useState(false);
   if (isLoading) errors = [];
-  const totalActions = actions.length;
-
-  // TRANSLATORS: The description for the Result section in storage proposal
-  // page. %d will be replaced by the number of proposal actions.
-  const description = sprintf(n_(
-    "During installation, %d action will be performed to configure the system as displayed below",
-    "During installation, %d actions will be performed to configure the system as displayed below",
-    totalActions
-  ), totalActions);
+  const openDrawer = () => setDrawerOpen(true);
+  const closeDrawer = () => setDrawerOpen(false);
 
   return (
-    <Section
-      // TRANSLATORS: The storage "Result" section's title
-      title={_("Result")}
-      description={!isLoading && errors.length === 0 && description}
-      id="storage-result"
-      errors={errors}
-    >
-      <If
-        condition={isLoading}
-        then={<ResultSkeleton />}
-        else={
-          <SectionContent
-            system={system}
-            staging={staging}
-            actions={actions}
-            errors={errors}
-          />
+    <Card isCompact isRounded isFullHeight>
+      <Drawer isExpanded={drawerOpen}>
+        <DrawerContent panelContent={
+          <DrawerPanelContent focusTrap={{ enabled: true }}>
+            <DrawerHead>
+              <h4>{_("Planned Actions")}</h4>
+              <DrawerActions>
+                <DrawerCloseButton onClick={closeDrawer} />
+              </DrawerActions>
+            </DrawerHead>
+            <DrawerPanelBody>
+              <ProposalActionsDialog actions={actions} />
+            </DrawerPanelBody>
+          </DrawerPanelContent>
         }
-      />
-    </Section>
+        >
+          <DrawerContentBody>
+            <CardHeader>
+              <CardTitle>
+                <h3>{_("Result")}</h3>
+              </CardTitle>
+            </CardHeader>
+            <CardBody>
+              <div className={textStyles.color_200}>{_("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")}</div>
+            </CardBody>
+            <CardBody>
+              <SectionErrors errors={errors} />
+              <SectionContent
+                system={system}
+                staging={staging}
+                actions={actions}
+                errors={errors}
+                isLoading={isLoading}
+                onActionsClick={openDrawer}
+              />
+            </CardBody>
+          </DrawerContentBody>
+        </DrawerContent>
+      </Drawer>
+    </Card>
   );
 }

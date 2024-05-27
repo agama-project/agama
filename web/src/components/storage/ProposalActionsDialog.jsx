@@ -24,7 +24,7 @@ import { List, ListItem, ExpandableSection, } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 import { partition } from "~/utils";
-import { If, Popup } from "~/components/core";
+import { If } from "~/components/core";
 
 const ActionsList = ({ actions }) => {
   // Some actions (e.g., deleting a LV) are reported as several actions joined by a line break
@@ -52,12 +52,8 @@ const ActionsList = ({ actions }) => {
  * @param {boolean} [props.isOpen=false] - Whether the dialog is visible or not.
  * @param {() => void} props.onClose - Whether the dialog is visible or not.
  */
-export default function ProposalActionsDialog({ actions = [], isOpen = false, onClose }) {
+export default function ProposalActionsDialog({ actions = [] }) {
   const [isExpanded, setIsExpanded] = useState(false);
-
-  if (typeof onClose !== 'function') {
-    console.error("Missing ProposalActionsDialog#onClose callback");
-  }
 
   if (actions.length === 0) return null;
 
@@ -68,17 +64,8 @@ export default function ProposalActionsDialog({ actions = [], isOpen = false, on
     // TRANSLATORS: show/hide toggle action, this is a clickable link
     : sprintf(n_("Show %d subvolume action", "Show %d subvolume actions", subvolActions.length), subvolActions.length);
 
-  const blockSize = actions.length < 15 ? "medium" : "large";
-
   return (
-    <Popup
-      // TRANSLATORS: The storage "Planned Actions" dialog's title. The
-      // dialog shows a list of planned actions for the selected device, e.g.
-      // "delete partition A", "create partition B with filesystem C", ...
-      title={_("Planned Actions")}
-      isOpen={isOpen}
-      blockSize={subvolActions.length === 0 ? "auto" : blockSize}
-    >
+    <>
       <ActionsList actions={generalActions} />
       <If
         condition={subvolActions.length > 0}
@@ -94,9 +81,6 @@ export default function ProposalActionsDialog({ actions = [], isOpen = false, on
           </ExpandableSection>
         }
       />
-      <Popup.Actions>
-        <Popup.SecondaryAction onClick={onClose}>{_("Close")}</Popup.SecondaryAction>
-      </Popup.Actions>
-    </Popup>
+    </>
   );
 }

@@ -22,12 +22,12 @@
 // @ts-check
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Skeleton } from "@patternfly/react-core";
-import { _ } from "~/i18n";
-import { noop } from "~/utils";
-import { If, Field } from "~/components/core";
+import { Button, Skeleton } from "@patternfly/react-core";
+import { CardField } from "~/components/core";
 import { EncryptionMethods } from "~/client/storage";
 import EncryptionSettingsDialog from "~/components/storage/EncryptionSettingsDialog";
+import { _ } from "~/i18n";
+import { noop } from "~/utils";
 
 /**
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
@@ -36,13 +36,32 @@ import EncryptionSettingsDialog from "~/components/storage/EncryptionSettingsDia
 // Field texts at root level to avoid redefinitions every time the component
 // is rendered.
 const LABEL = _("Encryption");
-const DESCRIPTION = _("Full Disk Encryption (FDE) allows to protect the information stored at \
+const DESCRIPTION = _("Protection for the information stored at \
 the device, including data, programs, and system files.");
 const VALUES = {
-  loading: <Skeleton width="150px" />,
   disabled: _("disabled"),
   [EncryptionMethods.LUKS2]: _("enabled"),
   [EncryptionMethods.TPM]: _("using TPM unlocking")
+};
+
+const Value = ({ isLoading, isEnabled, method }) => {
+  if (isLoading) return <Skeleton fontSize="sm" width="75%" />;
+  if (isEnabled) return VALUES[method];
+
+  return VALUES.disabled;
+};
+
+const Action = ({ isEnabled, isLoading, onClick }) => {
+  if (isLoading) return <Skeleton fontSize="sm" width="100px" />;
+
+  const variant = isEnabled ? "secondary" : "primary";
+  const label = isEnabled ? _("Modify") : _("Enable");
+
+  return (
+    <Button variant={variant} onClick={onClick}>
+      {label}
+    </Button>
+  );
 };
 
 /**
@@ -91,27 +110,22 @@ export default function EncryptionField({
   };
 
   return (
-    <Field
-      icon="shield_lock"
+    <CardField
       label={LABEL}
+      value={<Value isLoading={isLoading} isEnabled={isEnabled} method={method} />}
       description={DESCRIPTION}
-      value={isLoading ? VALUES.loading : VALUES[isEnabled ? method : "disabled"]}
-      onClick={openDialog}
+      actions={<Action isEnabled={isEnabled} isLoading={isLoading} onClick={openDialog} />}
     >
-      <If
-        condition={isDialogOpen}
-        then={
-          <EncryptionSettingsDialog
-            password={password}
-            method={method}
-            methods={methods}
-            isOpen={isDialogOpen}
-            isLoading={isLoading}
-            onCancel={closeDialog}
-            onAccept={onAccept}
-          />
-        }
-      />
-    </Field>
+      {isDialogOpen &&
+        <EncryptionSettingsDialog
+          isOpen
+          password={password}
+          method={method}
+          methods={methods}
+          isLoading={isLoading}
+          onCancel={closeDialog}
+          onAccept={onAccept}
+        />}
+    </CardField>
   );
 }

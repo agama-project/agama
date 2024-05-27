@@ -22,13 +22,11 @@
 // @ts-check
 
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Skeleton } from "@patternfly/react-core";
-
+import { CardField } from "~/components/core";
 import { _ } from "~/i18n";
-import { ProposalPageMenu } from "~/components/storage";
 import { deviceLabel } from '~/components/storage/utils';
-import { Field } from "~/components/core";
 import { sprintf } from "sprintf-js";
 
 /**
@@ -38,7 +36,7 @@ import { sprintf } from "sprintf-js";
 
 const LABEL = _("Installation device");
 // TRANSLATORS: The storage "Installation device" field's description.
-const DESCRIPTION = _("Select the main disk or LVM Volume Group for installation.");
+const DESCRIPTION = _("Main disk or LVM Volume Group for installation.");
 
 /**
  * Generates the target value.
@@ -61,12 +59,6 @@ const targetValue = (target, targetDevice, targetPVDevices) => {
   }
 
   return _("No device selected yet");
-};
-
-const StorageTechSelector = () => {
-  return (
-    <ProposalPageMenu label={_("storage technologies")} />
-  );
 };
 
 /**
@@ -95,24 +87,20 @@ export default function InstallationDeviceField({
   targetPVDevices,
   isLoading,
 }) {
-  const navigate = useNavigate();
-
   let value;
   if (isLoading || !target)
-    value = <Skeleton width="25%" />;
+    value = <Skeleton fontSize="sm" width="75%" />;
   else
     value = targetValue(target, targetDevice, targetPVDevices);
 
   return (
-    <Field
-      icon="hard_drive"
+    <CardField
       label={LABEL}
-      value={value}
       description={DESCRIPTION}
-      onClick={() => navigate("target-device")}
-    >
-      { /** FIXME: drop StorageTechSelector */}
-      {_("Prepare more devices by configuring advanced")} <StorageTechSelector />
-    </Field>
+      value={value}
+      actions={
+        isLoading ? <Skeleton fontSize="sm" width="100px" /> : <Link to="target-device">{_("Change")}</Link>
+      }
+    />
   );
 }

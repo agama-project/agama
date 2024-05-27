@@ -43,7 +43,7 @@ const Link = ({ isBold = false }) => {
   const text = _("Change boot options");
 
   return (
-    <RouterLink to="booting-partitions">
+    <RouterLink to="booting-partition">
       {isBold ? <b>{text}</b> : text}
     </RouterLink>
   );

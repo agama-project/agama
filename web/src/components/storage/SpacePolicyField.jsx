@@ -22,11 +22,11 @@
 // @ts-check
 
 import React, { useState } from "react";
-import { Skeleton } from "@patternfly/react-core";
+import { Button, CardBody, Skeleton } from "@patternfly/react-core";
 
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
-import { If, Field } from "~/components/core";
+import { CardField } from "~/components/core";
 import SpacePolicyDialog from "~/components/storage/SpacePolicyDialog";
 
 /**
@@ -72,7 +72,7 @@ export default function SpacePolicyField({
 
   let value;
   if (isLoading || !policy) {
-    value = <Skeleton width="25%" />;
+    value = <Skeleton fontSize="sm" width="65%" />;
   } else if (policy.summaryLabels.length === 1) {
     // eslint-disable-next-line agama-i18n/string-literals
     value = _(policy.summaryLabels[0]);
@@ -82,17 +82,17 @@ export default function SpacePolicyField({
   }
 
   return (
-    <Field
-      icon="frame_inspect"
+    <CardField
       label={_("Find space")}
       value={value}
       description={_("Allocating the file systems might need to find free space \
 in the installation device(s).")}
-      onClick={openDialog}
+      actions={
+        isLoading ? <Skeleton fontSize="sm" width="100px" /> : <Button variant="secondary" onClick={openDialog}>{_("Change space policy")}</Button>
+      }
     >
-      <If
-        condition={isDialogOpen}
-        then={
+      {isDialogOpen &&
+        <CardBody>
           <SpacePolicyDialog
             isOpen
             isLoading={isLoading}
@@ -102,8 +102,7 @@ in the installation device(s).")}
             onAccept={onAccept}
             onCancel={closeDialog}
           />
-        }
-      />
-    </Field>
+        </CardBody>}
+    </CardField>
   );
 }

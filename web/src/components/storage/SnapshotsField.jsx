@@ -22,11 +22,11 @@
 // @ts-check
 
 import React from "react";
-
+import { Split, Switch } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { noop } from "~/utils";
 import { hasFS } from "~/components/storage/utils";
-import { SwitchField } from "~/components/core";
+import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
 /**
  * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
@@ -61,12 +61,17 @@ export default function SnapshotsField({
   };
 
   return (
-    <SwitchField
-      label={LABEL}
-      description={DESCRIPTION}
-      isChecked={isChecked}
-      onClick={switchState}
-      textWrapper="span"
-    />
+    <Split hasGutter>
+      <Switch
+        id="snapshots"
+        isChecked={isChecked}
+        onChange={switchState}
+        hasCheckIcon
+      />
+      <div>
+        <div>{LABEL}</div>
+        <div className={textStyles.color_200}>{DESCRIPTION}</div>
+      </div>
+    </Split>
   );
 }

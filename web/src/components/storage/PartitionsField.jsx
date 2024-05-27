@@ -23,7 +23,13 @@
 
 import React, { useState } from "react";
 import {
-  Button, Divider, Dropdown, DropdownList, DropdownItem, List, ListItem, MenuToggle, Skeleton
+  Button,
+  CardBody, CardExpandableContent,
+  Divider,
+  Dropdown, DropdownList, DropdownItem,
+  List, ListItem,
+  MenuToggle,
+  Skeleton
 } from '@patternfly/react-core';
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sprintf } from "sprintf-js";
@@ -33,7 +39,8 @@ import BootConfigField from "~/components/storage/BootConfigField";
 import {
   deviceSize, hasSnapshots, isTransactionalRoot, isTransactionalSystem, reuseDevice
 } from '~/components/storage/utils';
-import { If, ExpandableField, RowActions, Tip } from '~/components/core';
+import { Icon } from '~/components/layout';
+import { If, CardField, RowActions, Tip } from '~/components/core';
 import { noop } from "~/utils";
 import SnapshotsField from "~/components/storage/SnapshotsField";
 import VolumeDialog from '~/components/storage/VolumeDialog';
@@ -805,18 +812,35 @@ export default function PartitionsField({
   onBootChange
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const onExpand = () => setIsExpanded(!isExpanded);
 
   return (
-    <ExpandableField
-      icon="storage"
-      isExpanded={isExpanded}
+    <CardField
       label={_("Partitions and file systems")}
-      description={_("Structure of the new system, including any additional partition needed for booting,")}
-      onClick={() => setIsExpanded(!isExpanded)}
+      description={_("Structure of the new system, including any additional partition needed for booting")}
+      cardProps={{ isExpanded }}
+      cardHeaderProps={{
+        onExpand,
+        toggleButtonProps: {
+          id: 'toggle-partitions-and-file-systems-view',
+          'aria-label': _("Show partitions and file-systems actions"),
+          'aria-expanded': isExpanded
+        },
+        isToggleRightAligned: true
+      }}
     >
-      <If
-        condition={isExpanded}
-        then={
+      {!isExpanded &&
+        <CardBody>
+          <Basic
+            volumes={volumes}
+            configureBoot={configureBoot}
+            bootDevice={bootDevice}
+            target={target}
+            isLoading={isLoading}
+          />
+        </CardBody>}
+      <CardExpandableContent>
+        <CardBody>
           <Advanced
             volumes={volumes}
             templates={templates}
@@ -831,17 +855,8 @@ export default function PartitionsField({
             onBootChange={onBootChange}
             isLoading={isLoading}
           />
-        }
-        else={
-          <Basic
-            volumes={volumes}
-            configureBoot={configureBoot}
-            bootDevice={bootDevice}
-            target={target}
-            isLoading={isLoading}
-          />
-        }
-      />
-    </ExpandableField>
+        </CardBody>
+      </CardExpandableContent>
+    </CardField>
   );
 }

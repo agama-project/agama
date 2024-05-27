@@ -29,6 +29,7 @@ import {
   ProposalResultSection
 } from "~/components/storage";
 import { IDLE } from "~/client/status";
+import { Grid, GridItem, PageSection, Divider } from "@patternfly/react-core";
 
 const initialState = {
   loading: true,
@@ -261,27 +262,33 @@ export default function ProposalPage() {
 
   return (
     // TRANSLATORS: Storage page title
-    <>
+    <PageSection>
       <ProposalTransactionalInfo
         settings={state.settings}
       />
-      <ProposalSettingsSection
-        availableDevices={state.availableDevices}
-        volumeDevices={state.volumeDevices}
-        encryptionMethods={state.encryptionMethods}
-        volumeTemplates={state.volumeTemplates}
-        settings={state.settings}
-        onChange={changeSettings}
-        isLoading={state.loading}
-        changing={state.changing}
-      />
-      <ProposalResultSection
-        system={state.system}
-        staging={state.staging}
-        actions={state.actions}
-        errors={state.errors}
-        isLoading={state.loading}
-      />
-    </>
+      <Grid hasGutter>
+        <GridItem sm={12} xl={6}>
+          <ProposalSettingsSection
+            availableDevices={state.availableDevices}
+            volumeDevices={state.volumeDevices}
+            encryptionMethods={state.encryptionMethods}
+            volumeTemplates={state.volumeTemplates}
+            settings={state.settings}
+            onChange={changeSettings}
+            isLoading={state.loading}
+            changing={state.changing}
+          />
+        </GridItem>
+        <GridItem sm={12} xl={6}>
+          <ProposalResultSection
+            system={state.system}
+            staging={state.staging}
+            actions={state.actions}
+            errors={state.errors}
+            isLoading={state.loading}
+          />
+        </GridItem>
+      </Grid>
+    </PageSection>
   );
 }

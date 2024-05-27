@@ -59,3 +59,4 @@ export { default as Tag } from "./Tag";
 export { default as TreeTable } from "./TreeTable";
 export { default as Field } from "./Field";
 export { ExpandableField, SwitchField } from "./Field";
+export { default as CardField } from "./CardField";

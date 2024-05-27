@@ -30,6 +30,7 @@ import { router } from "~/router";
  * import styles dependent on variables and rules previously defined there.
  */
 import "@patternfly/patternfly/patternfly-base.scss";
+import "@patternfly/patternfly/patternfly-addons.scss";
 
 /**
  * As JSX components might import CSS stylesheets, our styles must be imported
