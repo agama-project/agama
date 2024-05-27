@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May 27 12:43:49 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Update product mount points as part of the probing (bsc#1225348).
+
+-------------------------------------------------------------------
 Tue May 21 05:32:46 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Emit a PropertiesChanged signal for ProductMountPoints and
