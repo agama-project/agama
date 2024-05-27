@@ -27,7 +27,7 @@ import { InstallerClientProvider, useInstallerClientStatus } from "./installer";
 
 jest.mock("~/client");
 
-let onDisconnectFn = jest.fn();
+const onDisconnectFn = jest.fn();
 const isConnectedFn = jest.fn();
 
 // Helper component to check the client status.

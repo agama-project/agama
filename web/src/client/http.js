@@ -86,9 +86,9 @@ class WSClient {
   buildClient() {
     const client = new WebSocket(this.url);
     client.onopen = () => {
-      console.log("Connected websocket");
+      console.log("Websocket connected");
       this.reconnectAttempts = 0;
-      if (this.timeout !== undefined) clearTimeout(this.timeout);
+      clearTimeout(this.timeout);
 
       return this.dispatchOpenEvent();
     };
@@ -98,7 +98,7 @@ class WSClient {
     };
 
     client.onclose = () => {
-      console.log(`Closed WebSocket`);
+      console.log(`WebSocket closed`);
       this.dispatchCloseEvent();
       this.timeout = setTimeout(() => this.connect(this.reconnectAttempts + 1), ATTEMPT_INTERVAL);
     };
