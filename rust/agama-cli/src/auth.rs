@@ -3,10 +3,12 @@ use clap::{arg, Args, Subcommand};
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
 use std::fs;
 use std::fs::File;
-use std::io;
+use std::io::{self, IsTerminal};
 use std::io::{BufRead, BufReader};
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
+
+use crate::error::CliError;
 
 const DEFAULT_JWT_FILE: &str = ".agama/agama-jwt";
 const DEFAULT_AGAMA_TOKEN_FILE: &str = "/run/agama/token";
@@ -15,20 +17,18 @@ const DEFAULT_FILE_MODE: u32 = 0o600;
 
 #[derive(Subcommand, Debug)]
 pub enum AuthCommands {
-    /// Login with defined server. Result is JWT stored locally and made available to
-    /// further use. Password can be provided by commandline option, from a file or it fallbacks
-    /// into an interactive prompt.
+    /// Authenticate with Agama's server and store the credentials
     Login(LoginArgs),
-    /// Release currently stored JWT
+    /// Deauthenticate by removing the credentials
     Logout,
-    /// Prints currently stored JWT to stdout
+    /// Prints currently stored credentials to the standard output
     Show,
 }
 
 /// Main entry point called from agama CLI main loop
 pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
     match subcommand {
-        AuthCommands::Login(options) => login(LoginArgs::proceed(options).password()?).await,
+        AuthCommands::Login(_options) => login(read_password()?).await,
         AuthCommands::Logout => logout(),
         AuthCommands::Show => show(),
     }
@@ -56,6 +56,22 @@ pub fn jwt() -> anyhow::Result<String> {
     Err(anyhow::anyhow!("Authentication token not available"))
 }
 
+/// Reads the password
+///
+/// It reads the password from stdin if available; otherwise, it asks the
+/// user.
+fn read_password() -> Result<String, CliError> {
+    let stdin = io::stdin();
+    let password = if stdin.is_terminal() {
+        rpassword::prompt_password("Please, introduce the root password: ")?
+    } else {
+        let mut buffer = String::new();
+        stdin.read_line(&mut buffer)?;
+        buffer
+    };
+    Ok(password)
+}
+
 /// Stores user provided configuration for login command
 #[derive(Args, Debug)]
 pub struct LoginArgs {
@@ -63,58 +79,6 @@ pub struct LoginArgs {
     password: Option<String>,
     #[arg(long, short = 'f')]
     file: Option<PathBuf>,
-}
-
-impl LoginArgs {
-    /// Transforms user provided options into internal representation
-    /// See Credentials trait
-    fn proceed(options: LoginArgs) -> Box<dyn Credentials> {
-        if let Some(password) = options.password {
-            Box::new(KnownCredentials { password })
-        } else if let Some(path) = options.file {
-            Box::new(FileCredentials { path })
-        } else {
-            Box::new(MissingCredentials {})
-        }
-    }
-}
-
-/// Placeholder for no configuration provided by user
-struct MissingCredentials;
-
-/// Stores whatever is needed for reading credentials from a file
-struct FileCredentials {
-    path: PathBuf,
-}
-
-/// Stores credentials as provided by the user directly
-struct KnownCredentials {
-    password: String,
-}
-
-/// Transforms credentials from user's input into format used internaly
-trait Credentials {
-    fn password(&self) -> io::Result<String>;
-}
-
-impl Credentials for KnownCredentials {
-    fn password(&self) -> io::Result<String> {
-        Ok(self.password.clone())
-    }
-}
-
-impl Credentials for FileCredentials {
-    fn password(&self) -> io::Result<String> {
-        read_line_from_file(self.path.as_path())
-    }
-}
-
-impl Credentials for MissingCredentials {
-    fn password(&self) -> io::Result<String> {
-        let password = read_credential("Password".to_string())?;
-
-        Ok(password)
-    }
 }
 
 /// Path to file where JWT is stored
@@ -149,20 +113,6 @@ fn read_line_from_file(path: &Path) -> io::Result<String> {
         io::ErrorKind::Other,
         "Failed to open the file",
     ))
-}
-
-/// Asks user to provide a line of input. Displays a prompt.
-fn read_credential(caption: String) -> io::Result<String> {
-    let caption = format!("{}: ", caption);
-    let cred = rpassword::prompt_password(caption.clone()).unwrap();
-    if cred.is_empty() {
-        return Err(io::Error::new(
-            io::ErrorKind::Other,
-            format!("Failed to read {}", caption),
-        ));
-    }
-
-    Ok(cred)
 }
 
 /// Sets the archive owner to root:root. Also sets the file permissions to read/write for the
