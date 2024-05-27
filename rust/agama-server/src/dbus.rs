@@ -150,7 +150,7 @@ impl DBusObjectChangesStream {
             .path(manager_path.clone())?
             .interface("org.freedesktop.DBus.ObjectManager")?
             .build();
-        let stream = MessageStream::for_match_rule(rule, &connection, None).await?;
+        let stream = MessageStream::for_match_rule(rule, connection, None).await?;
         Ok(stream)
     }
 
@@ -168,7 +168,7 @@ impl DBusObjectChangesStream {
             .interface("org.freedesktop.DBus.Properties")?
             .member("PropertiesChanged")?
             .build();
-        let stream = MessageStream::for_match_rule(rule, &connection, None).await?;
+        let stream = MessageStream::for_match_rule(rule, connection, None).await?;
         Ok(stream)
     }
 }
@@ -182,10 +182,10 @@ impl Stream for DBusObjectChangesStream {
             let item = ready!(pinned.inner.as_mut().poll_next(cx));
             let next_value = match item {
                 Some((PROPERTIES_CHANGED, message)) => {
-                    Self::handle_properties_changed(message, &pinned.interface)
+                    Self::handle_properties_changed(message, pinned.interface)
                 }
                 Some((OBJECTS_MANAGER, message)) => {
-                    Self::handle_added_or_removed(message, &pinned.interface)
+                    Self::handle_added_or_removed(message, pinned.interface)
                 }
                 _ => None,
             };
@@ -216,7 +216,7 @@ where
     }
 
     pub fn remove(&mut self, path: &OwnedObjectPath) -> Option<T> {
-        self.objects.remove(&path)
+        self.objects.remove(path)
     }
 }
 

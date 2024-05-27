@@ -38,7 +38,7 @@ async fn build_state() -> NetworkState {
 async fn build_service(state: NetworkState) -> Result<Router, ServiceError> {
     let adapter = NetworkTestAdapter(state);
     let (tx, _rx) = broadcast::channel(16);
-    Ok(network_service(adapter, tx).await?)
+    network_service(adapter, tx).await
 }
 
 #[derive(Default)]

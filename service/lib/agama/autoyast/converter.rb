@@ -23,7 +23,12 @@
 require "yast"
 require "autoinstall/script_runner"
 require "autoinstall/script"
-require "agama/autoyast/users_converter"
+require "agama/autoyast/l10n_reader"
+require "agama/autoyast/product_reader"
+require "agama/autoyast/root_reader"
+require "agama/autoyast/software_reader"
+require "agama/autoyast/storage_reader"
+require "agama/autoyast/user_reader"
 require "json"
 require "fileutils"
 require "pathname"
@@ -109,43 +114,22 @@ module Agama
         )
       end
 
+      # Sections which have a corresponding reader. The reader is expected to be
+      # named in Pascal case and adding "Reader" as suffix (e.g., "L10nReader").
+      SECTIONS = ["l10n", "product", "root", "software", "storage", "user"].freeze
+
+      # Builds the Agama profile
+      #
+      # It goes through the list of READERS and merges the results of all of them.
+      #
       # @return [Hash] Agama profile
       def export_profile(profile)
-        users = Agama::AutoYaST::UsersConverter.new(profile)
-        {
-          "software" => export_software(profile.fetch_as_hash("software")),
-          "storage"  => export_storage(profile.fetch_as_array("partitioning")),
-          "root"     => users.root,
-          "user"     => users.user
-        }
-      end
-
-      # @param drives [Array<Hash>] Array of drives in the AutoYaST partitioning section
-      def export_storage(drives)
-        # TODO: rely on AutoinstProfile classes
-        devices = drives.each_with_object([]) do |d, all|
-          next unless d["device"]
-
-          all << d["device"]
+        SECTIONS.reduce({}) do |result, section|
+          require "agama/autoyast/#{section}_reader"
+          klass = "#{section}_reader".split("_").map(&:capitalize).join
+          reader = Agama::AutoYaST.const_get(klass).new(profile)
+          result.merge(reader.read)
         end
-        return {} if devices.empty?
-
-        { "bootDevice" => devices.first }
-      end
-
-      # @param profile [Hash] Software section from the AutoYaST profile
-      def export_software(profile)
-        product = profile.fetch_as_array("products").first
-        patterns = profile.fetch_as_array("patterns")
-        return {} unless product
-
-        { "product" => product, "patterns" => patterns }
-      end
-
-      # @param profile [Hash] Users section from the AutoYaST profile
-      def export_root(profile)
-        users = Agama::AutoYaST::UsersConverter.new(profile)
-        users.root
       end
 
       def import_yast

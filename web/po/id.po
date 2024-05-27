@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-19 02:19+0000\n"
+"POT-Creation-Date: 2024-05-26 02:22+0000\n"
 "PO-Revision-Date: 2024-04-09 17:43+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -218,8 +218,8 @@ msgstr "Menginstal"
 
 #. TRANSLATORS: search field placeholder text
 #: src/components/core/ListSearch.jsx:50
-#: src/components/software/PatternSelector.jsx:174
-#: src/components/software/PatternSelector.jsx:175
+#: src/components/software/PatternSelector.jsx:180
+#: src/components/software/PatternSelector.jsx:181
 msgid "Search"
 msgstr "Cari"
 
@@ -1117,6 +1117,10 @@ msgid "Encryption Password"
 msgstr "Kata Sandi Enkripsi"
 
 #: src/components/software/PatternSelector.jsx:171
+msgid "None of the patterns match the filter."
+msgstr ""
+
+#: src/components/software/PatternSelector.jsx:177
 msgid "Software summary and filter options"
 msgstr "Rangkuman perangkat lunak dan opsi filter"
 

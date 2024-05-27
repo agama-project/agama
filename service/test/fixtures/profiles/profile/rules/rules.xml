@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE autoinstall>
+<autoinstall xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+  <rules config:type="list">
+    <rule>
+      <custom1>
+        <script>
+echo -n testing.xml
+        </script>
+        <match>*</match>
+        <match_type>exact</match_type>
+      </custom1>
+      <result>
+        <profile>@custom1@</profile>
+        <continue config:type="boolean">false</continue>
+      </result>
+    </rule>
+  </rules>
+</autoinstall>

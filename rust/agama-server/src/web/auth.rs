@@ -57,14 +57,19 @@ impl TokenClaims {
     /// * `secret`: secret to decode the token.
     pub fn from_token(token: &str, secret: &str) -> Result<Self, AuthError> {
         let decoding = DecodingKey::from_secret(secret.as_ref());
-        let token_data = jsonwebtoken::decode(&token, &decoding, &Validation::default())?;
+        let token_data = jsonwebtoken::decode(token, &decoding, &Validation::default())?;
         Ok(token_data.claims)
     }
 }
 
 impl Default for TokenClaims {
     fn default() -> Self {
-        let exp = Utc::now() + Duration::days(1);
+        let mut exp = Utc::now();
+
+        if let Some(days) = Duration::try_days(1) {
+            exp += days;
+        }
+
         Self {
             exp: exp.timestamp(),
         }

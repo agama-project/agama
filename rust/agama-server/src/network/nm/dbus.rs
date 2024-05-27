@@ -155,17 +155,17 @@ pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
         return Some(connection);
     }
 
-    if conn.get(DUMMY_KEY).is_some() {
+    if conn.contains_key(DUMMY_KEY) {
         connection.config = ConnectionConfig::Dummy;
         return Some(connection);
     };
 
-    if conn.get(LOOPBACK_KEY).is_some() {
+    if conn.contains_key(LOOPBACK_KEY) {
         connection.config = ConnectionConfig::Loopback;
         return Some(connection);
     };
 
-    if conn.get(ETHERNET_KEY).is_some() {
+    if conn.contains_key(ETHERNET_KEY) {
         return Some(connection);
     };
 
@@ -240,9 +240,7 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
 
 /// Ancillary function to get the controller for a given interface.
 pub fn controller_from_dbus(conn: &OwnedNestedHash) -> Option<String> {
-    let Some(connection) = conn.get("connection") else {
-        return None;
-    };
+    let connection = conn.get("connection")?;
 
     let master: &str = connection.get("master")?.downcast_ref()?;
     Some(master.to_string())
@@ -424,13 +422,9 @@ fn bridge_config_to_dbus(bridge: &BridgeConfig) -> HashMap<&str, zvariant::Value
 }
 
 fn bridge_config_from_dbus(conn: &OwnedNestedHash) -> Option<BridgeConfig> {
-    let Some(bridge) = conn.get(BRIDGE_KEY) else {
-        return None;
-    };
+    let bridge = conn.get(BRIDGE_KEY)?;
 
-    let Some(stp) = bridge.get("stp") else {
-        return None;
-    };
+    let stp = bridge.get("stp")?;
 
     let mut bc = BridgeConfig {
         stp: *stp.downcast_ref::<bool>()?,
@@ -474,9 +468,7 @@ fn bridge_port_config_to_dbus(bridge_port: &BridgePortConfig) -> HashMap<&str, z
 }
 
 fn bridge_port_config_from_dbus(conn: &OwnedNestedHash) -> Option<BridgePortConfig> {
-    let Some(bridge_port) = conn.get(BRIDGE_PORT_KEY) else {
-        return None;
-    };
+    let bridge_port = conn.get(BRIDGE_PORT_KEY)?;
 
     let mut bpc = BridgePortConfig::default();
 
@@ -508,9 +500,7 @@ fn infiniband_config_to_dbus(config: &InfinibandConfig) -> HashMap<&str, zvarian
 }
 
 fn infiniband_config_from_dbus(conn: &OwnedNestedHash) -> Option<InfinibandConfig> {
-    let Some(infiniband) = conn.get(INFINIBAND_KEY) else {
-        return None;
-    };
+    let infiniband = conn.get(INFINIBAND_KEY)?;
 
     let mut infiniband_config = InfinibandConfig::default();
 
@@ -551,9 +541,7 @@ fn match_config_to_dbus(match_config: &MatchConfig) -> HashMap<&str, zvariant::V
 }
 
 fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<Connection> {
-    let Some(connection) = conn.get("connection") else {
-        return None;
-    };
+    let connection = conn.get("connection")?;
 
     let id: &str = connection.get("id")?.downcast_ref()?;
     let uuid: &str = connection.get("uuid")?.downcast_ref()?;
@@ -751,9 +739,7 @@ fn nameservers_from_dbus(dns_data: &OwnedValue) -> Option<Vec<IpAddr>> {
 }
 
 fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
-    let Some(wireless) = conn.get(WIRELESS_KEY) else {
-        return None;
-    };
+    let wireless = conn.get(WIRELESS_KEY)?;
 
     let mode: &str = wireless.get("mode")?.downcast_ref()?;
     let ssid = wireless.get("ssid")?;
@@ -832,9 +818,7 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
 }
 
 fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Option<BondConfig> {
-    let Some(bond) = conn.get(BOND_KEY) else {
-        return None;
-    };
+    let bond = conn.get(BOND_KEY)?;
 
     let dict: &zvariant::Dict = bond.get("options")?.downcast_ref()?;
 
@@ -864,18 +848,12 @@ fn vlan_config_to_dbus(cfg: &VlanConfig) -> NestedHash {
 }
 
 fn vlan_config_from_dbus(conn: &OwnedNestedHash) -> Option<VlanConfig> {
-    let Some(vlan) = conn.get(VLAN_KEY) else {
-        return None;
-    };
+    let vlan = conn.get(VLAN_KEY)?;
 
-    let Some(id) = vlan.get("id") else {
-        return None;
-    };
+    let id = vlan.get("id")?;
     let id = id.downcast_ref::<u32>()?;
 
-    let Some(parent) = vlan.get("parent") else {
-        return None;
-    };
+    let parent = vlan.get("parent")?;
     let parent: &str = parent.downcast_ref()?;
 
     let protocol = match vlan.get("protocol") {
@@ -1152,7 +1130,7 @@ mod test {
         ]);
 
         let infiniband_section = HashMap::from([
-            ("p-key".to_string(), Value::new(0x8001 as i32).to_owned()),
+            ("p-key".to_string(), Value::new(0x8001_i32).to_owned()),
             ("parent".to_string(), Value::new("ib0").to_owned()),
             (
                 "transport-mode".to_string(),

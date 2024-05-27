@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Mon May 27 14:11:55 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- The "agama auth" command reads the password from the standard
+  input (gh#openSUSE/agama#1265).
+
+-------------------------------------------------------------------
+Mon May 27 05:49:46 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add agama.libssonnet to the spec file (gh#openSUSE/agama#1261).
+
+-------------------------------------------------------------------
+Thu May 23 15:47:28 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Avoid deadlock when "setxkbmap" call gets stucked, use a timeout
+  (gh#openSUSE/agama#1249)
+
+-------------------------------------------------------------------
 Wed May 22 12:31:25 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - autoinstallation jsonnet: Inject complete lshw json output and

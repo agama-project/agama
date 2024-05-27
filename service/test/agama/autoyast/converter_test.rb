@@ -24,6 +24,7 @@ require "agama/autoyast/converter"
 require "json"
 require "tmpdir"
 require "autoinstall/xml_checks"
+require "y2storage"
 
 describe Agama::AutoYaST::Converter do
   let(:profile) { File.join(FIXTURES_PATH, "profiles", profile_name) }
@@ -43,6 +44,19 @@ describe Agama::AutoYaST::Converter do
     content = File.read(File.join(workdir, "autoinst.json"))
     JSON.parse(content)
   end
+  let(:storage_manager) do
+    instance_double(
+      Y2Storage::StorageManager,
+      probed:               storage_probed,
+      probed_disk_analyzer: disk_analyzer
+    )
+  end
+  let(:storage_probed) do
+    instance_double(Y2Storage::Devicegraph, disks: [])
+  end
+  let(:disk_analyzer) do
+    instance_double(Y2Storage::DiskAnalyzer, windows_partitions: [], linux_partitions: [])
+  end
 
   before do
     stub_const("Y2Autoinstallation::XmlChecks::ERRORS_PATH", File.join(tmpdir, "errors"))
@@ -55,6 +69,7 @@ describe Agama::AutoYaST::Converter do
     allow(Yast::AutoinstConfig).to receive(:modified_profile)
       .and_return(File.join(tmpdir, "profile", "modified.xml"))
     allow(Y2Autoinstallation::XmlValidator).to receive(:new).and_return(xml_validator)
+    allow(Y2Storage::StorageManager).to receive(:instance).and_return(storage_manager)
   end
 
   after do
@@ -85,14 +100,34 @@ describe Agama::AutoYaST::Converter do
 
       it "runs the script" do
         subject.to_agama(workdir)
-        expect(result["software"]).to include("product" => "Tumbleweed")
+        expect(result["product"]).to include("id" => "Tumbleweed")
+      end
+    end
+
+    context "when the profile contains some ERB" do
+      let(:profile_name) { "simple.xml.erb" }
+
+      it "evaluates the ERB code" do
+        subject.to_agama(workdir)
+        expect(result["l10n"]).to include(
+          "languages" => ["en_US.UTF-8", "es_ES.UTF-8"]
+        )
+      end
+    end
+
+    context "when the profile uses rules" do
+      let(:profile_name) { "profile/" }
+
+      it "evaluates the rules" do
+        subject.to_agama(workdir)
+        expect(result["product"]).to include("id" => "Tumbleweed")
       end
     end
 
     context "when a product is selected" do
       it "exports the selected product" do
         subject.to_agama(workdir)
-        expect(result["software"]).to include("product" => "Tumbleweed")
+        expect(result["product"]).to include("id" => "Tumbleweed")
       end
     end
 
@@ -117,6 +152,15 @@ describe Agama::AutoYaST::Converter do
         expect(result["user"]).to include("userName" => "jane",
           "password" => "12345678", "fullName" => "Jane Doe")
       end
+    end
+
+    it "exports l10n settings" do
+      subject.to_agama(workdir)
+      expect(result["l10n"]).to include(
+        "languages" => ["en_US.UTF-8"],
+        "timezone"  => "Atlantic/Canary",
+        "keyboard"  => "us"
+      )
     end
   end
 

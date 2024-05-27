@@ -173,12 +173,12 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
   sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/rust/target/debug/@" \
     agama-web-server.service /usr/lib/systemd/system/agama-web-server.service
 
-  cp -f agama.pam /usr/lib/pam.d/agama
+  $SUDO cp -f agama.pam /usr/lib/pam.d/agama
 )
 
 # copy the product files
-mkdir -p /usr/share/agama/products.d
-cp -f $MYDIR/products.d/*.yaml /usr/share/agama/products.d
+$SUDO mkdir -p /usr/share/agama/products.d
+$SUDO cp -f $MYDIR/products.d/*.yaml /usr/share/agama/products.d
 
 # systemd reload and start of service
 (

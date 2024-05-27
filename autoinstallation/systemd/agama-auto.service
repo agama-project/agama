@@ -8,7 +8,7 @@ After=NetworkManager.service
 After=agama-web-server.service
 
 [Service]
-ExecStart=/usr/bin/auto.sh
+ExecStart=/usr/bin/agama-auto
 # it has to be simple and not one shot as install can take time and we need to
 # display web ui
 Type=simple
