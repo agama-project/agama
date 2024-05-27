@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May 27 05:49:46 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add agama.libssonnet to the spec file (gh#openSUSE/agama#1261).
+
+-------------------------------------------------------------------
 Thu May 23 15:47:28 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Avoid deadlock when "setxkbmap" call gets stucked, use a timeout
