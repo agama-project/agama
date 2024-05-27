@@ -69,9 +69,7 @@ describe Agama::DBus::Storage::Manager do
   end
 
   let(:software) do
-    instance_double(Agama::DBus::Clients::Software,
-      on_product_selected: nil,
-      on_probe_finished:   nil)
+    instance_double(Agama::DBus::Clients::Software, on_probe_finished: nil)
   end
 
   before do

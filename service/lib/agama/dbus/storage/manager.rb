@@ -60,7 +60,6 @@ module Agama
         def initialize(backend, logger)
           super(PATH, logger: logger)
           @backend = backend
-          @product_mount_points = read_product_mount_points
           @encryption_methods = read_encryption_methods
 
           register_storage_callbacks
@@ -122,10 +121,10 @@ module Agama
           proposal.available_devices.map { |d| system_devices_tree.path_for(d) }
         end
 
-        # Reads the list of meaningful mount points for the current product.
+        # Meaningful mount points for the current product.
         #
         # @return [Array<String>]
-        def read_product_mount_points
+        def product_mount_points
           volume_templates_builder
             .all
             .map(&:mount_path)
@@ -178,8 +177,7 @@ module Agama
         dbus_interface PROPOSAL_CALCULATOR_INTERFACE do
           dbus_reader :available_devices, "ao"
 
-          # PropertiesChanged signal if the product changes, see {#register_software_callbacks}.
-          dbus_reader_attr_accessor :product_mount_points, "as"
+          dbus_reader :product_mount_points, "as"
 
           # PropertiesChanged signal if software is probed, see {#register_software_callbacks}.
           dbus_reader_attr_accessor :encryption_methods, "as"
@@ -322,11 +320,6 @@ module Agama
         end
 
         def register_software_callbacks
-          backend.software.on_product_selected do
-            # A PropertiesChanged signal is emitted (see ::DBus::Object.dbus_reader_attr_accessor).
-            self.product_mount_points = read_product_mount_points
-          end
-
           backend.software.on_probe_finished do
             # A PropertiesChanged signal is emitted (see ::DBus::Object.dbus_reader_attr_accessor).
             self.encryption_methods = read_encryption_methods
