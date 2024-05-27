@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May 27 14:11:55 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- The "agama auth" command reads the password from the standard
+  input (gh#openSUSE/agama#1265).
+
+-------------------------------------------------------------------
 Mon May 27 05:49:46 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add agama.libssonnet to the spec file (gh#openSUSE/agama#1261).
