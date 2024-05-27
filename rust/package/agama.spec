@@ -125,6 +125,7 @@ echo $PATH
 %files -n agama-cli
 %{_bindir}/agama
 %dir %{_datadir}/agama-cli
+%{_datadir}/agama-cli/agama.libsonnet
 %{_datadir}/agama-cli/profile.schema.json
 
 %changelog
