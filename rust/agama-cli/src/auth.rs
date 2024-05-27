@@ -18,6 +18,9 @@ const DEFAULT_FILE_MODE: u32 = 0o600;
 #[derive(Subcommand, Debug)]
 pub enum AuthCommands {
     /// Authenticate with Agama's server and store the credentials
+    ///
+    /// It reads the password from the standard input. If it is not available,
+    /// it asks the user.
     Login,
     /// Deauthenticate by removing the credentials
     Logout,
