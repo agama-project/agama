@@ -108,8 +108,7 @@ impl LocalesDatabase {
     fn get_locales_list() -> Result<Vec<LocaleId>, Error> {
         const LOCALES_LIST_PATH: &str = "/etc/agama.d/locales";
 
-        let locales = fs::read_to_string(LOCALES_LIST_PATH)
-            .map(|content| Self::get_locales_from_string(content));
+        let locales = fs::read_to_string(LOCALES_LIST_PATH).map(Self::get_locales_from_string);
 
         if let Ok(locales) = locales {
             if !locales.is_empty() {
@@ -123,7 +122,7 @@ impl LocalesDatabase {
             .context("Failed to get the list of locales")?;
 
         let locales = String::from_utf8(result.stdout)
-            .map(|content| Self::get_locales_from_string(content))
+            .map(Self::get_locales_from_string)
             .context("Invalid UTF-8 sequence from list-locales")?;
 
         Ok(locales)

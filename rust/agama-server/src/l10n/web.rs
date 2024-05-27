@@ -123,19 +123,19 @@ async fn set_config(
     let mut changes = LocaleConfig::default();
 
     if let Some(locales) = &value.locales {
-        data.set_locales(&locales)?;
-        changes.locales = value.locales.clone();
+        data.set_locales(locales)?;
+        changes.locales.clone_from(&value.locales);
     }
 
     if let Some(timezone) = &value.timezone {
         data.set_timezone(timezone)?;
-        changes.timezone = value.timezone.clone();
+        changes.timezone.clone_from(&value.timezone);
     }
 
     if let Some(keymap_id) = &value.keymap {
         let keymap_id = keymap_id.parse().map_err(LocaleError::InvalidKeymap)?;
         data.set_keymap(keymap_id)?;
-        changes.keymap = value.keymap.clone();
+        changes.keymap.clone_from(&value.keymap);
     }
 
     if let Some(ui_locale) = &value.ui_locale {
@@ -198,7 +198,7 @@ pub async fn update_dbus(
     }
 
     if let Some(timezone) = &config.timezone {
-        client.set_timezone(&timezone).await?;
+        client.set_timezone(timezone).await?;
     }
 
     if let Some(ui_locale) = &config.ui_locale {

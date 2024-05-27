@@ -144,7 +144,7 @@ impl L10n {
                 return Err(LocaleError::UnknownLocale(loc.to_string()))?;
             }
         }
-        self.locales = locales.clone();
+        self.locales.clone_from(locales);
         Ok(())
     }
 
@@ -153,7 +153,7 @@ impl L10n {
         if !self.timezones_db.exists(&timezone.to_string()) {
             return Err(LocaleError::UnknownTimezone(timezone.to_string()))?;
         }
-        self.timezone = timezone.to_owned();
+        timezone.clone_into(&mut self.timezone);
         Ok(())
     }
 
@@ -168,7 +168,7 @@ impl L10n {
 
     // TODO: use LocaleError
     pub fn translate(&mut self, locale: &LocaleId) -> Result<(), Error> {
-        helpers::set_service_locale(&locale);
+        helpers::set_service_locale(locale);
         self.timezones_db.read(&locale.language)?;
         self.locales_db.read(&locale.language)?;
         self.ui_locale = locale.clone();

@@ -62,9 +62,7 @@ macro_rules! property_from_dbus {
 pub fn to_owned_hash(source: &HashMap<&str, Value<'_>>) -> HashMap<String, OwnedValue> {
     let mut owned = HashMap::new();
     for (key, value) in source.iter() {
-        if let Ok(owned_value) = value.try_into() {
-            owned.insert(key.to_string(), owned_value);
-        }
+        owned.insert(key.to_string(), value.into());
     }
     owned
 }
@@ -74,7 +72,7 @@ pub fn to_owned_hash(source: &HashMap<&str, Value<'_>>) -> HashMap<String, Owned
 /// TODO: should we merge this feature with the "DeviceSid"?
 pub fn extract_id_from_path(path: &OwnedObjectPath) -> Result<u32, zvariant::Error> {
     path.as_str()
-        .rsplit_once("/")
+        .rsplit_once('/')
         .and_then(|(_, id)| id.parse::<u32>().ok())
         .ok_or_else(|| {
             zvariant::Error::Message(format!("Could not extract the ID from {}", path.as_str()))
@@ -92,7 +90,7 @@ mod tests {
     #[test]
     fn test_get_property() {
         let data: HashMap<String, OwnedValue> = HashMap::from([
-            ("Id".to_string(), (1 as u8).into()),
+            ("Id".to_string(), 1_u8.into()),
             ("Device".to_string(), Str::from_static("/dev/sda").into()),
         ]);
         let id: u8 = get_property(&data, "Id").unwrap();
@@ -104,16 +102,14 @@ mod tests {
 
     #[test]
     fn test_get_property_wrong_type() {
-        let data: HashMap<String, OwnedValue> =
-            HashMap::from([("Id".to_string(), (1 as u8).into())]);
+        let data: HashMap<String, OwnedValue> = HashMap::from([("Id".to_string(), 1_u8.into())]);
         let result: Result<u16, _> = get_property(&data, "Id");
         assert_eq!(result, Err(zvariant::Error::IncorrectType));
     }
 
     #[test]
     fn test_get_optional_property() {
-        let data: HashMap<String, OwnedValue> =
-            HashMap::from([("Id".to_string(), (1 as u8).into())]);
+        let data: HashMap<String, OwnedValue> = HashMap::from([("Id".to_string(), 1_u8.into())]);
         let id: Option<u8> = get_optional_property(&data, "Id").unwrap();
         assert_eq!(id, Some(1));
 

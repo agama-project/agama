@@ -50,7 +50,7 @@ impl ISCSINodeStream {
 
         let (tx, rx) = unbounded_channel();
         let mut stream = DBusObjectChangesStream::new(
-            &dbus,
+            dbus,
             &ObjectPath::from_str_unchecked(MANAGER_PATH),
             &ObjectPath::from_str_unchecked(NAMESPACE),
             "org.opensuse.Agama.Storage1.ISCSI.Node",
@@ -84,8 +84,8 @@ impl ISCSINodeStream {
         path: &OwnedObjectPath,
         values: &HashMap<String, OwnedValue>,
     ) -> Result<&'a ISCSINode, ServiceError> {
-        let node = cache.find_or_create(&path);
-        node.id = extract_id_from_path(&path)?;
+        let node = cache.find_or_create(path);
+        node.id = extract_id_from_path(path)?;
         property_from_dbus!(node, target, "Target", values, str);
         property_from_dbus!(node, address, "Address", values, str);
         property_from_dbus!(node, interface, "Interface", values, str);
@@ -100,7 +100,7 @@ impl ISCSINodeStream {
         path: &OwnedObjectPath,
     ) -> Result<ISCSINode, ISCSINodeStreamError> {
         cache
-            .remove(&path)
+            .remove(path)
             .ok_or_else(|| ISCSINodeStreamError::UnknownNode(path.clone()))
     }
 
@@ -110,11 +110,11 @@ impl ISCSINodeStream {
     ) -> Result<Event, ISCSINodeStreamError> {
         match change {
             DBusObjectChange::Added(path, values) => {
-                let node = Self::update_node(cache, path, &values)?;
+                let node = Self::update_node(cache, path, values)?;
                 Ok(Event::ISCSINodeAdded { node: node.clone() })
             }
             DBusObjectChange::Changed(path, updated) => {
-                let node = Self::update_node(cache, path, &updated)?;
+                let node = Self::update_node(cache, path, updated)?;
                 Ok(Event::ISCSINodeChanged { node: node.clone() })
             }
             DBusObjectChange::Removed(path) => {
