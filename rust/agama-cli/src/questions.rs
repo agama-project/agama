@@ -10,7 +10,7 @@ pub enum QuestionsCommands {
 
     /// Load predefined answers.
     ///
-    /// It allows predifining answers for specific questions in order to skip them in interactive
+    /// It allows predefining answers for specific questions in order to skip them in interactive
     /// mode or change the answer in automatic mode.
     ///
     /// Please check Agama documentation for more details and examples:
