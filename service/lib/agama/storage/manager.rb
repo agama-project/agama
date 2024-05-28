@@ -206,7 +206,7 @@ module Agama
       # Calculates the proposal using the settings from the config file.
       def calculate_proposal
         settings = ProposalSettingsReader.new(config).read
-        proposal.calculate(settings)
+        proposal.calculate_guided(settings)
       end
 
       # Adds the required packages to the list of resolvables to install

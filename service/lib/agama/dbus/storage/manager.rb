@@ -193,8 +193,8 @@ module Agama
         end
 
         module ProposalStrategy
-          GUIDED = "guided".freeze
-          AUTOYAST = "autoyast".freeze
+          GUIDED = "guided"
+          AUTOYAST = "autoyast"
         end
 
         # Calculates a guided proposal.
@@ -211,7 +211,7 @@ module Agama
             "Agama settings: #{settings.inspect}"
           )
 
-          success = proposal.calculate(settings)
+          success = proposal.calculate_guided(settings)
           success ? 0 : 1
         end
 
@@ -228,9 +228,7 @@ module Agama
             "AutoYaST settings: #{settings.inspect}"
           )
 
-          # @todo Call to expected backend method.
-          # success = autoyast_proposal.calculate(settings)
-          success = false
+          success = proposal.calculate_autoyast(settings)
           success ? 0 : 1
         end
 
@@ -241,12 +239,19 @@ module Agama
         def proposal_result
           return {} unless proposal.calculated?
 
-          {
-            "success"  => proposal.success?,
-            # @todo Return proper strategy.
-            "strategy" => ProposalStrategy::GUIDED,
-            "settings" => ProposalSettingsConversion.to_dbus(proposal.settings)
-          }
+          if proposal.strategy?(ProposalStrategy::GUIDED)
+            {
+              "success"  => proposal.success?,
+              "strategy" => ProposalStrategy::GUIDED,
+              "settings" => ProposalSettingsConversion.to_dbus(proposal.settings)
+            }
+          else
+            {
+              "success"  => proposal.success?,
+              "strategy" => ProposalStrategy::AUTOYAST,
+              "settings" => proposal.settings.to_json
+            }
+          end
         end
 
         dbus_interface PROPOSAL_CALCULATOR_INTERFACE do
