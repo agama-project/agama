@@ -50,6 +50,13 @@ module Agama
         @on_calculate_callbacks = []
       end
 
+      # Whether the proposal was already calculated.
+      #
+      # @return [Boolean]
+      def calculated?
+        !proposal.nil?
+      end
+
       # Whether the proposal was successfully calculated.
       #
       # @return [Boolean]
@@ -119,13 +126,6 @@ module Agama
       # @return [Y2Storage::MinGuidedProposal, nil]
       def proposal
         storage_manager.proposal
-      end
-
-      # Whether the proposal was already calculated.
-      #
-      # @return [Boolean]
-      def calculated?
-        !proposal.nil?
       end
 
       # Selects the first available device as target device for installation.
