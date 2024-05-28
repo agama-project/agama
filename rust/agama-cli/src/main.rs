@@ -130,7 +130,7 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
             wait_for_services(&manager).await?;
             probe().await
         }
-        Commands::Profile(subcommand) => Ok(run_profile_cmd(subcommand)?),
+        Commands::Profile(subcommand) => Ok(run_profile_cmd(subcommand).await?),
         Commands::Install => {
             let manager = build_manager().await?;
             install(&manager, 3).await

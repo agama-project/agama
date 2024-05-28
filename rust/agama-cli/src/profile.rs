@@ -2,7 +2,7 @@ use agama_lib::profile::{ProfileEvaluator, ProfileReader, ProfileValidator, Vali
 use anyhow::Context;
 use clap::Subcommand;
 use tempfile::TempDir;
-use std::{fs::File, io::Write, path::{Path, PathBuf}, process::Command};
+use std::{fs::File, io::{stdout, Write}, path::{Path, PathBuf}, process::Command};
 use std::os::unix::process::CommandExt;
 
 #[derive(Subcommand, Debug)]
@@ -56,24 +56,26 @@ fn validate(path: String) -> anyhow::Result<()> {
 fn evaluate(path: String) -> anyhow::Result<()> {
     let evaluator = ProfileEvaluator {};
     evaluator
-        .evaluate(Path::new(&path))
+        .evaluate(Path::new(&path), stdout())
         .context("Could not evaluate the profile".to_string())?;
     Ok(())
 }
 
-fn import(url: String, dir: Option<PathBuf>) -> anyhow::Result<()> {
+async fn import(url: String, dir: Option<PathBuf>) -> anyhow::Result<()> {
     let tmpdir = TempDir::new()?; // TODO: create it only if dir is not passed
     let output_file = if url.ends_with(".sh") {
         "profile.sh"
+    } else if url.ends_with(".jsonnet"){
+        "profile.jsonnet"
     } else {
         "profile.json"
     };
-    let output_dir = dir.map_or(tmpdir.path(), |dir| dir.as_ref());
+    let output_dir = dir.unwrap_or_else(|| tmpdir.into_path());
     let reader = ProfileReader::new(url.as_str())?;
     let contents = reader.read()?;
-    let output_path = output_dir.join(output_file);
-    let mut output_fd = File::create(output_dir.join(output_file))?;
-    output_fd.write_all(contents.as_bytes());
+    let mut output_path = output_dir.join(output_file);
+    let mut output_fd = File::create(output_path.clone())?;
+    output_fd.write_all(contents.as_bytes())?;
     if output_file.ends_with(".sh") {
         let err = Command::new("bash")
         .args([output_path.to_str().context("Wrong path to shell script")?])
@@ -81,14 +83,28 @@ fn import(url: String, dir: Option<PathBuf>) -> anyhow::Result<()> {
         println!("Error: {}", err);
     }
     
+    if output_file.ends_with(".jsonnet") {
+        let fd = File::create(output_dir.join("profile.json"))?;
+        let evaluator = ProfileEvaluator {};
+        evaluator
+            .evaluate(&output_path, fd)
+            .context("Could not evaluate the profile".to_string())?;
+        output_path = output_dir.join("profile.json");
+    }
+
+    let output_path_str = output_path.to_str().context("Failed to get output path")?.to_string();
+    // TODO: optional skip of validation
+    validate(output_path_str.clone())?;
+    crate::config::run(crate::config::ConfigCommands::Load { path: output_path_str }, crate::printers::Format::Json).await?;
+
     Ok(())
 }
 
-pub fn run(subcommand: ProfileCommands) -> anyhow::Result<()> {
+pub async fn run(subcommand: ProfileCommands) -> anyhow::Result<()> {
     match subcommand {
         ProfileCommands::Download { url } => download(&url),
         ProfileCommands::Validate { path } => validate(path),
         ProfileCommands::Evaluate { path } => evaluate(path),
-        ProfileCommands::Import { url, dir } => import(url, dir),
+        ProfileCommands::Import { url, dir } => import(url, dir).await,
     }
 }

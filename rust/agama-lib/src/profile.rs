@@ -132,7 +132,7 @@ impl ProfileValidator {
 pub struct ProfileEvaluator {}
 
 impl ProfileEvaluator {
-    pub fn evaluate(&self, profile_path: &Path) -> anyhow::Result<()> {
+    pub fn evaluate(&self, profile_path: &Path, mut out_fd: impl Write) -> anyhow::Result<()> {
         let dir = tempdir()?;
 
         let working_path = dir.path().join("profile.jsonnet");
@@ -152,7 +152,7 @@ impl ProfileEvaluator {
                 String::from_utf8(result.stderr).context("Invalid UTF-8 sequence from jsonnet")?;
             return Err(ProfileError::EvaluationError(message).into());
         }
-        io::stdout().write_all(&result.stdout)?;
+        out_fd.write_all(&result.stdout)?;
         Ok(())
     }
 
