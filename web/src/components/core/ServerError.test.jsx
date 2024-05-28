@@ -31,7 +31,7 @@ jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 describe("ServerError", () => {
   it("includes a generic server problem message", () => {
     plainRender(<ServerError />);
-    screen.getByText(/Could not connect to the Agama server/i);
+    screen.getByText(/Cannot connect to Agama server/i);
   });
 
   it("calls location.reload when user clicks on 'Reload'", async () => {
