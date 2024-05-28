@@ -25,6 +25,7 @@ require "y2storage/storage_manager"
 require "y2storage/clients/inst_prepdisk"
 require "agama/storage/actions"
 require "agama/storage/proposal"
+require "agama/storage/autoyast_proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/callbacks"
 require "agama/storage/iscsi/manager"
@@ -145,6 +146,13 @@ module Agama
       # @return [Storage::Proposal]
       def proposal
         @proposal ||= Proposal.new(config, logger: logger)
+      end
+
+      # Manager for the legacy AutoYaST storage proposal
+      #
+      # @return [Storage::AutoyastProposal]
+      def autoyast_proposal
+        @autoyast_proposal ||= AutoyastProposal.new(config, logger: logger)
       end
 
       # iSCSI manager
