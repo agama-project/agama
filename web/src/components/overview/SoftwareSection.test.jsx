@@ -45,6 +45,8 @@ let getIssuesFn = jest.fn().mockResolvedValue([]);
 beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
+      onConnect: jest.fn(),
+      onDisconnect: jest.fn(),
       software: {
         getStatus: getStatusFn,
         getProgress: getProgressFn,
