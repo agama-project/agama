@@ -17,14 +17,15 @@ const DEFAULT_FILE_MODE: u32 = 0o600;
 
 #[derive(Subcommand, Debug)]
 pub enum AuthCommands {
-    /// Authenticate with Agama's server and store the credentials
+    /// Authenticate with Agama's server and store the token.
     ///
-    /// It reads the password from the standard input. If it is not available,
-    /// it asks the user.
+    /// This command tries to get the password from the standard input. If it is not there, it asks
+    /// the user interactively. Upon successful login, it stores the token in .agama/agama-jwt. The
+    /// token will be automatically sent to authenticate the following requests.
     Login,
-    /// Deauthenticate by removing the credentials
+    /// Deauthenticate by removing the token.
     Logout,
-    /// Prints currently stored credentials to the standard output
+    /// Print the used token to the standard output.
     Show,
 }
 

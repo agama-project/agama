@@ -28,8 +28,14 @@ use std::{
     time::Duration,
 };
 
+/// Agama's command-line interface
+///
+/// This program allows inspecting or changing Agama's configuration, handling installation
+/// profiles, starting the installation, monitoring the process, etc.
+///
+/// Please, use the "help" command to learn more.
 #[derive(Parser)]
-#[command(name = "agama", version, about, long_about = None)]
+#[command(name = "agama", about, long_about, max_term_width = 100)]
 struct Cli {
     #[command(subcommand)]
     pub command: Commands,
@@ -138,7 +144,6 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
         Commands::Questions(subcommand) => run_questions_cmd(subcommand).await,
         Commands::Logs(subcommand) => run_logs_cmd(subcommand).await,
         Commands::Auth(subcommand) => run_auth_cmd(subcommand).await,
-        _ => unimplemented!(),
     }
 }
 
