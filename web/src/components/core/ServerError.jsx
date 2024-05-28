@@ -40,7 +40,7 @@ function ServerError() {
             icon={<EmptyStateIcon icon={ErrorIcon} />}
           />
           <EmptyStateBody>
-            {_("Could not connect to the Agama server. Please, check whether it is running.")}
+            {_("Please, check whether it is running.")}
           </EmptyStateBody>
         </EmptyState>
       </Center>
