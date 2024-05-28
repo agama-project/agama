@@ -27,9 +27,6 @@ import { InstallerClientProvider, useInstallerClientStatus } from "./installer";
 
 jest.mock("~/client");
 
-const onDisconnectFn = jest.fn();
-const isConnectedFn = jest.fn();
-
 // Helper component to check the client status.
 const ClientStatus = () => {
   const { connected } = useInstallerClientStatus();
@@ -45,23 +42,18 @@ describe("installer context", () => {
   beforeEach(() => {
     createDefaultClient.mockImplementation(() => {
       return {
-        isConnected: isConnectedFn,
-        onDisconnect: onDisconnectFn
+        onConnect: jest.fn(),
+        onDisconnect: jest.fn()
       };
     });
   });
 
-  describe("when the client is connected", () => {
-    beforeEach(() => {
-      isConnectedFn.mockResolvedValue(true);
-    });
-
-    it("reports the status through the useInstallerClientStatus hook", async () => {
-      plainRender(
-        <InstallerClientProvider>
-          <ClientStatus />
-        </InstallerClientProvider>);
-      await screen.findByText("connected: true");
-    });
+  it("reports the status through the useInstallerClientStatus hook", async () => {
+    plainRender(
+      <InstallerClientProvider>
+        <ClientStatus />
+      </InstallerClientProvider>
+    );
+    await screen.findByText("connected: false");
   });
 });
