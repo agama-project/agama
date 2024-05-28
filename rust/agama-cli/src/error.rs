@@ -6,6 +6,6 @@ pub enum CliError {
     ValidationError,
     #[error("Could not start the installation")]
     InstallationError,
-    #[error("Could not read the password: {0}")]
-    MissingPassword(#[from] std::io::Error),
+    #[error("No password was provided")]
+    MissingPassword,
 }
