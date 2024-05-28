@@ -36,7 +36,7 @@ import { HTTPClient } from "./http";
  * @typedef {object} InstallerClient
  * @property {L10nClient} l10n - localization client.
  * @property {ManagerClient} manager - manager client.
- * @property {Monitor} monitor - service monitor.
+ * property {Monitor} monitor - service monitor. (FIXME)
  * @property {NetworkClient} network - network client.
  * @property {ProductClient} product - product client.
  * @property {SoftwareClient} software - software client.
@@ -46,7 +46,9 @@ import { HTTPClient } from "./http";
  * @property {() => Promise<Issues>} issues - issues from all contexts.
  * @property {(handler: IssuesHandler) => (() => void)} onIssuesChange - registers a handler to run
  *  when issues from any context change. It returns a function to deregister the handler.
- * @property {() => Promise<boolean>} isConnected - determines whether the client is connected
+ * @property {() => boolean} isConnected - determines whether the client is connected
+ * @property {() => boolean} isRecoverable - determines whether the client is recoverable after disconnected
+ * @property {(handler: () => void) => (() => void)} onConnect - registers a handler to run
  * @property {(handler: () => void) => (() => void)} onDisconnect - registers a handler to run
  *   when the connection is lost. It returns a function to deregister the
  *   handler.
@@ -122,15 +124,8 @@ const createClient = (url) => {
     };
   };
 
-  const isConnected = async () => {
-    // try {
-    //   await manager.getStatus();
-    //   return true;
-    // } catch (e) {
-    //   return false;
-    // }
-    return true;
-  };
+  const isConnected = () => client.ws?.isConnected() || false;
+  const isRecoverable = () => !!client.ws?.isRecoverable();
 
   return {
     l10n,
@@ -145,10 +140,9 @@ const createClient = (url) => {
     issues,
     onIssuesChange,
     isConnected,
-    onDisconnect: (handler) => {
-      return () => { };
-    },
-    // onDisconnect: (handler) => monitor.onDisconnect(handler),
+    isRecoverable,
+    onConnect: (handler) => client.ws.onOpen(handler),
+    onDisconnect: (handler) => client.ws.onClose(handler),
   };
 };
 
