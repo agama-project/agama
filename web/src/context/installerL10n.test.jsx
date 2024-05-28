@@ -40,7 +40,6 @@ const client = {
     setUILocale: setUILocaleFn,
     getUIKeymap: jest.fn().mockResolvedValue("en"),
   },
-  onDisconnect: jest.fn(),
 };
 
 jest.mock("~/languages.json", () => ({
