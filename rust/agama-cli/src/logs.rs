@@ -14,17 +14,17 @@ use tempfile::TempDir;
 // definition of "agama logs" subcommands, see clap crate for details
 #[derive(Subcommand, Debug)]
 pub enum LogsCommands {
-    /// Collects and stores logs in a tar archive
+    /// Collect and store the logs in a tar archive.
     Store {
         #[clap(long, short = 'v')]
         /// Verbose output
         verbose: bool,
         #[clap(long, short = 'd')]
-        /// Path to destination directory. Optionally with the archive file name at the end.
-        /// An extension will be appended automatically depending on used compression.
+        /// Path to destination directory and, optionally, the archive file name. The extension will
+        /// be added automatically.
         destination: Option<PathBuf>,
     },
-    /// List logs which will be collected
+    /// List the logs to collect
     List,
 }
 

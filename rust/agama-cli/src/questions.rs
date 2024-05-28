@@ -5,20 +5,18 @@ use clap::{Args, Subcommand, ValueEnum};
 
 #[derive(Subcommand, Debug)]
 pub enum QuestionsCommands {
-    /// Sets the mode for answering questions.
-    ///
-    /// It allows to decide if questions will be interactive or
-    /// if they should not block installation.
+    /// Set the mode for answering questions.
     Mode(ModesArgs),
-    /// Loads predefined answers to questions.
+
+    /// Load predefined answers.
     ///
-    /// It allows to predefine answers for certain questions to skip
-    /// them in interactive mode or change answer in automatic mode.
+    /// It allows predefining answers for specific questions in order to skip them in interactive
+    /// mode or change the answer in automatic mode.
     ///
-    /// For more details and examples see official Agama documentation.
+    /// Please check Agama documentation for more details and examples:
     /// https://github.com/openSUSE/agama/blob/master/doc/questions.md
     Answers {
-        /// Local path to file with answers in YAML format
+        /// Path to a file containing the answers in YAML format.
         path: String,
     },
 }
@@ -31,7 +29,9 @@ pub struct ModesArgs {
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 pub enum Modes {
+    /// Ask the user and block the installation.
     Interactive,
+    /// Do not block the installation.
     NonInteractive,
 }
 
