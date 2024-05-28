@@ -109,6 +109,8 @@ module Agama
           dbus_reader(:deprecated_system, "b")
         end
 
+        # @todo Move device related properties here, for example, the list of system and staging
+        #   devices, dirty, etc.
         STORAGE_DEVICES = "org.opensuse.Agama.Storage1.Devices"
         private_constant :STORAGE_DEVICES
 
