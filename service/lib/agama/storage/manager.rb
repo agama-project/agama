@@ -23,6 +23,7 @@ require "yast"
 require "bootloader/proposal_client"
 require "y2storage/storage_manager"
 require "y2storage/clients/inst_prepdisk"
+require "agama/storage/actions"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/callbacks"
@@ -158,6 +159,16 @@ module Agama
       # @return [Agama::DBus::Clients::Software]
       def software
         @software ||= DBus::Clients::Software.instance
+      end
+
+      # Storage actions.
+      #
+      # @return [Array<Y2Storage::CompoundAction>]
+      def actions
+        return [] unless Y2Storage::StorageManager.instance.probed?
+
+        staging = Y2Storage::StorageManager.instance.staging
+        Actions.new(logger, staging.actiongraph).all
       end
 
     private
