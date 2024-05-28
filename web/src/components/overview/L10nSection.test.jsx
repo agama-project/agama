@@ -50,8 +50,6 @@ beforeEach(() => {
   // if defined outside, the mock is cleared automatically
   createClient.mockImplementation(() => {
     return {
-      onConnect: jest.fn(),
-      onDisconnect: jest.fn(),
       l10n: l10nClientMock,
     };
   });

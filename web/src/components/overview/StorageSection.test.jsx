@@ -47,7 +47,6 @@ const proposalResult = {
 };
 
 const storageMock = {
-
   probe: jest.fn().mockResolvedValue(0),
   proposal: {
     getAvailableDevices: jest.fn().mockResolvedValue(availableDevices),
@@ -71,7 +70,7 @@ let storage;
 beforeEach(() => {
   storage = { ...storageMock, proposal: { ...storageMock.proposal } };
 
-  createClient.mockImplementation(() => ({ storage, onConnect: jest.fn(), onDisconnect: jest.fn() }));
+  createClient.mockImplementation(() => ({ storage }));
 });
 
 it("probes storage if the storage devices are deprecated", async () => {

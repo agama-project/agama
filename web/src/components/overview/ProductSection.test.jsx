@@ -49,8 +49,6 @@ beforeEach(() => {
 
   createClient.mockImplementation(() => {
     return {
-      onConnect: jest.fn(),
-      onDisconnect: jest.fn(),
       product: {
         getIssues: jest.fn().mockResolvedValue(issues),
         onIssuesChange: jest.fn()
