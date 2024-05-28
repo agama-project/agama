@@ -61,6 +61,7 @@ module Agama
           super(PATH, logger: logger)
           @backend = backend
           @encryption_methods = read_encryption_methods
+          @actions = read_actions
 
           register_storage_callbacks
           register_proposal_callbacks
@@ -106,6 +107,38 @@ module Agama
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
           dbus_reader(:deprecated_system, "b")
+        end
+
+        STORAGE_DEVICES = "org.opensuse.Agama.Storage1.Devices"
+        private_constant :STORAGE_DEVICES
+
+        # List of sorted actions.
+        #
+        # @return [Hash<String, Object>]
+        #   * "Device" [Integer]
+        #   * "Text" [String]
+        #   * "Subvol" [Boolean]
+        #   * "Delete" [Boolean]
+        def read_actions
+          backend.actions.map do |action|
+            {
+              "Device" => action.target_device.sid,
+              "Text"   => action.sentence,
+              "Subvol" => action.device_is?(:btrfs_subvolume),
+              "Delete" => action.delete?
+            }
+          end
+        end
+
+        # A PropertiesChanged signal is emitted (see ::DBus::Object.dbus_reader_attr_accessor).
+        def update_actions
+          self.actions = read_actions
+        end
+
+        dbus_interface STORAGE_DEVICES do
+          # PropertiesChanged signal if a proposal is calculated, see
+          # {#register_proposal_callbacks}.
+          dbus_reader_attr_accessor :actions, "aa{sv}"
         end
 
         PROPOSAL_CALCULATOR_INTERFACE = "org.opensuse.Agama.Storage1.Proposal.Calculator"
@@ -301,6 +334,7 @@ module Agama
             export_proposal
             proposal_properties_changed
             refresh_staging_devices
+            update_actions
           end
         end
 
