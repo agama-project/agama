@@ -3,45 +3,15 @@
 To test complex change that affects multiple parts of Agama it is possible to
 run from sources using container that is used to run CI.
 
-Below is shell script that start container, provides web UI on port 9090 and
-also gives root access to container for more testing.
+Use the [testing_using_container.sh](../testing_using_container.sh) shell
+script. That scripts does several steps:
 
-```sh
-# https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-testing
-CIMAGE=registry.opensuse.org/systemsmanagement/agama/staging/containers/opensuse/agama-testing:latest
-# rename this if you test multiple things
-CNAME=agama
-# the '?' here will report a shell error
-# if you accidentally paste a command without setting the variable first
-echo ${CNAME?}
-
-test -f service/agama.gemspec || echo "You should run this from a checkout of agama"
-
-# destroy the previous instance, can fail if there is no previous instance
-podman stop ${CNAME?}
-podman rm ${CNAME?}
-
-# Update our image
-podman pull ${CIMAGE?}
-
-podman run --name ${CNAME?} \
-  --privileged --detach --ipc=host \
-  -v .:/checkout \
-  -p 9090:9090 \
-  ${CIMAGE?}
-
-# shortcut for the following
-CEXEC="podman exec ${CNAME?} bash -c"
-
-${CEXEC?} "cd /checkout && ./setup.sh"
-
-# Now the CLI is in the same repo, just symlink it
-${CEXEC?} "ln -sfv /checkout/./rust/target/debug/agama /usr/bin/agama"
-
-# Manually start cockpit as socket activation does not work with port forwarding
-${CEXEC?} "systemctl start cockpit"
-
-# Optional: Interactive shell in the container
-podman exec --tty --interactive ${CNAME?} bash
-
-```
+- Starts the container
+- Installs the needed packages, compiles the sources and starts the servers
+  (using the [setup.sh](../setup.sh) script)
+- It asks for the new root password to allow logging in (by default there is
+  no root password set in containers)
+- It provides web UI on default host HTTP/HTTPS ports (connect to
+  `http://localhost`, port forwarding does not work for some reason)
+- Starts a shell inside the container with root access for more testing or
+  debugging.
