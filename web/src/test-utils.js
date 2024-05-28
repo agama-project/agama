@@ -74,6 +74,10 @@ jest.mock('react-router-dom', () => ({
 const Providers = ({ children, withL10n }) => {
   const client = createClient(new URL("https://localhost"));
 
+  if (!client.onConnect) {
+    client.onConnect = noop;
+  }
+
   // FIXME: workaround to fix the tests. We should inject
   // the client instead of mocking `createClient`.
   if (!client.onDisconnect) {
