@@ -22,14 +22,16 @@
 require_relative "../../test_helper"
 require_relative "storage_helpers"
 require "agama/config"
-require "agama/storage/autoyast_proposal"
+require "agama/storage/proposal"
 require "y2storage"
 
-describe Agama::Storage::AutoyastProposal do
+describe Agama::Storage::Proposal do
   include Agama::RSpec::StorageHelpers
   using Y2Storage::Refinements::SizeCasts
 
   subject(:proposal) { described_class.new(config, logger: logger) }
+
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   before do
     mock_storage(devicegraph: scenario)
@@ -42,14 +44,12 @@ describe Agama::Storage::AutoyastProposal do
     instance_double(Y2Storage::Arch, efiboot?: true, ram_size: 4.GiB.to_i)
   end
 
-  let(:logger) { Logger.new($stdout, level: :warn) }
-
   let(:config_path) do
     File.join(FIXTURES_PATH, "storage.yaml")
   end
   let(:config) { Agama::Config.from_file(config_path) }
 
-  describe "#calculate" do
+  describe "#calculate_autoyast" do
     def staging
       Y2Storage::StorageManager.instance.proposal.devices
     end
@@ -77,12 +77,12 @@ describe Agama::Storage::AutoyastProposal do
         end
 
         it "returns true and stores a successful proposal" do
-          expect(subject.calculate(partitioning)).to eq true
+          expect(subject.calculate_autoyast(partitioning)).to eq true
           expect(Y2Storage::StorageManager.instance.proposal.failed?).to eq false
         end
 
         it "proposes a layout including specified partitions" do
-          subject.calculate(partitioning)
+          subject.calculate_autoyast(partitioning)
 
           sda_partitions = staging.find_by_name("/dev/sda").partitions.sort_by(&:number)
           expect(sda_partitions.size).to eq(3)
@@ -120,7 +120,7 @@ describe Agama::Storage::AutoyastProposal do
           expect(callback1).to receive(:call)
           expect(callback2).to receive(:call)
 
-          subject.calculate(partitioning)
+          subject.calculate_autoyast(partitioning)
         end
       end
 
@@ -130,12 +130,12 @@ describe Agama::Storage::AutoyastProposal do
         end
 
         it "returns true and stores a successful proposal" do
-          expect(subject.calculate(partitioning)).to eq true
+          expect(subject.calculate_autoyast(partitioning)).to eq true
           expect(Y2Storage::StorageManager.instance.proposal.failed?).to eq false
         end
 
         it "proposes a layout including only the specified partitions" do
-          subject.calculate(partitioning)
+          subject.calculate_autoyast(partitioning)
 
           sda_partitions = staging.find_by_name("/dev/sda").partitions
           # Only /boot/efi and /home, no root filesystem
@@ -155,7 +155,7 @@ describe Agama::Storage::AutoyastProposal do
           expect(callback1).to receive(:call)
           expect(callback2).to receive(:call)
 
-          subject.calculate(partitioning)
+          subject.calculate_autoyast(partitioning)
         end
       end
     end
@@ -169,7 +169,7 @@ describe Agama::Storage::AutoyastProposal do
         let(:disk) { "sdb" }
 
         it "proposes a layout including previous and new partitions" do
-          subject.calculate(partitioning)
+          subject.calculate_autoyast(partitioning)
           sdb_partitions = staging.find_by_name("/dev/sdb").partitions
           expect(sdb_partitions.size).to eq 3
         end
@@ -189,7 +189,7 @@ describe Agama::Storage::AutoyastProposal do
       end
 
       it "keeps all partitions except Linux ones" do
-        subject.calculate(partitioning)
+        subject.calculate_autoyast(partitioning)
         partitions = staging.find_by_name("/dev/sda").partitions
         expect(partitions.map(&:filesystem_label)).to contain_exactly("windows", "", "new_root")
       end
@@ -205,7 +205,7 @@ describe Agama::Storage::AutoyastProposal do
       end
 
       it "reuses the indicated partition" do
-        subject.calculate(partitioning)
+        subject.calculate_autoyast(partitioning)
         root, efi = staging.find_by_name("/dev/sdb").partitions.sort_by(&:number)
         expect(root).to have_attributes(
           filesystem_type:       Y2Storage::Filesystems::Type::XFS,
@@ -230,7 +230,7 @@ describe Agama::Storage::AutoyastProposal do
         end
 
         it "does not create the boot partitions" do
-          subject.calculate(partitioning)
+          subject.calculate_autoyast(partitioning)
           partitions = staging.find_by_name("/dev/sda").partitions
           expect(partitions.size).to eq 3
           expect(partitions.map(&:id)).to_not include Y2Storage::PartitionId::ESP
@@ -254,7 +254,7 @@ describe Agama::Storage::AutoyastProposal do
         let(:skip_device) { "sdc" }
 
         it "does not skip any disk" do
-          subject.calculate(partitioning)
+          subject.calculate_autoyast(partitioning)
           sda = staging.find_by_name("/dev/sda")
           expect(root_filesystem(sda)).to_not be_nil
         end
@@ -264,7 +264,7 @@ describe Agama::Storage::AutoyastProposal do
         let(:skip_device) { "sda" }
 
         it "skips the given disk" do
-          subject.calculate(partitioning)
+          subject.calculate_autoyast(partitioning)
           sda = staging.find_by_name("/dev/sda")
           sdb = staging.find_by_name("/dev/sdb")
           expect(root_filesystem(sda)).to be_nil
@@ -279,7 +279,7 @@ describe Agama::Storage::AutoyastProposal do
         end
 
         it "returns false and stores a failed proposal" do
-          expect(subject.calculate(partitioning)).to eq false
+          expect(subject.calculate_autoyast(partitioning)).to eq false
           expect(Y2Storage::StorageManager.instance.proposal.failed?).to eq true
         end
 
@@ -309,7 +309,7 @@ describe Agama::Storage::AutoyastProposal do
       let(:snapshots) { true }
 
       it "falls back to the initial guided proposal with the given disk" do
-        subject.calculate(partitioning)
+        subject.calculate_autoyast(partitioning)
 
         partitions = staging.find_by_name("/dev/sda").partitions.sort_by(&:number)
         expect(partitions.size).to eq(3)
@@ -323,7 +323,7 @@ describe Agama::Storage::AutoyastProposal do
 
         # Since we use :bigger_resize, there is no compatibility with "use"
         it "keeps partitions that should not be removed" do
-          subject.calculate(partitioning)
+          subject.calculate_autoyast(partitioning)
 
           partitions = staging.find_by_name("/dev/sda").partitions
           partitions.reject! { |p| p.type.is?(:extended) }
@@ -335,7 +335,7 @@ describe Agama::Storage::AutoyastProposal do
         let(:snapshots) { true }
 
         it "configures snapshots for root" do
-          subject.calculate(partitioning)
+          subject.calculate_autoyast(partitioning)
 
           sda = staging.find_by_name("/dev/sda")
           root = root_filesystem(sda)
@@ -347,7 +347,7 @@ describe Agama::Storage::AutoyastProposal do
         let(:snapshots) { false }
 
         it "does not configure snapshots for root" do
-          subject.calculate(partitioning)
+          subject.calculate_autoyast(partitioning)
 
           sda = staging.find_by_name("/dev/sda")
           root = root_filesystem(sda)
@@ -365,7 +365,7 @@ describe Agama::Storage::AutoyastProposal do
         expect(callback1).to receive(:call)
         expect(callback2).to receive(:call)
 
-        subject.calculate(partitioning)
+        subject.calculate_autoyast(partitioning)
       end
     end
   end
