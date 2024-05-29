@@ -21,7 +21,7 @@ pub enum ProfileCommands {
     /// Evaluate a profile, injecting the hardware information from D-Bus
     Evaluate { path: String },
 
-    /// Import autoinstallation profile from given location into agama configuration
+    /// Process autoinstallation profile and loads it into agama
     ///
     /// This is top level command that do all autoinstallation processing beside starting
     /// installation. Unless there is a need to inject additional commands between processing
@@ -31,7 +31,7 @@ pub enum ProfileCommands {
     Import { url: String, dir: Option<PathBuf> },
 }
 
-fn download(url: &str) -> anyhow::Result<()> {
+fn download(url: &str, mut out_fd: impl Write) -> anyhow::Result<()> {
     let reader = ProfileReader::new(url)?;
     let contents = reader.read()?;
     print!("{}", contents);
@@ -76,18 +76,19 @@ async fn import(url: String, dir: Option<PathBuf>) -> anyhow::Result<()> {
         "profile.json"
     };
     let output_dir = dir.unwrap_or_else(|| tmpdir.into_path());
-    let reader = ProfileReader::new(url.as_str())?;
-    let contents = reader.read()?;
     let mut output_path = output_dir.join(output_file);
-    let mut output_fd = File::create(output_path.clone())?;
-    output_fd.write_all(contents.as_bytes())?;
+    let output_fd = File::create(output_path.clone())?;
+    //download profile
+    download(&url, output_fd)?;
+    // exec shell scripts
     if output_file.ends_with(".sh") {
         let err = Command::new("bash")
             .args([output_path.to_str().context("Wrong path to shell script")?])
             .exec();
-        println!("Error: {}", err);
+        eprintln!("Exec failed: {}", err);
     }
 
+    // evaluate jsonnet profiles
     if output_file.ends_with(".jsonnet") {
         let fd = File::create(output_dir.join("profile.json"))?;
         let evaluator = ProfileEvaluator {};
@@ -97,15 +98,17 @@ async fn import(url: String, dir: Option<PathBuf>) -> anyhow::Result<()> {
         output_path = output_dir.join("profile.json");
     }
 
-    let output_path_str = output_path
+    let output_path_string = output_path
         .to_str()
         .context("Failed to get output path")?
         .to_string();
+    // Validate json profile
     // TODO: optional skip of validation
-    validate(output_path_str.clone())?;
+    validate(output_path_string.clone())?;
+    // load resulting json config
     crate::config::run(
         crate::config::ConfigCommands::Load {
-            path: output_path_str,
+            path: output_path_string,
         },
         crate::printers::Format::Json,
     )
@@ -116,7 +119,7 @@ async fn import(url: String, dir: Option<PathBuf>) -> anyhow::Result<()> {
 
 pub async fn run(subcommand: ProfileCommands) -> anyhow::Result<()> {
     match subcommand {
-        ProfileCommands::Download { url } => download(&url),
+        ProfileCommands::Download { url } => download(&url, std::io::stdout()),
         ProfileCommands::Validate { path } => validate(path),
         ProfileCommands::Evaluate { path } => evaluate(path),
         ProfileCommands::Import { url, dir } => import(url, dir).await,
