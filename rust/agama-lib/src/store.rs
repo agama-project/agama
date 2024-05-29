@@ -5,7 +5,8 @@ use crate::error::ServiceError;
 use crate::install_settings::{InstallSettings, Scope};
 use crate::{
     localization::LocalizationStore, network::NetworkStore, product::ProductStore,
-    software::SoftwareStore, storage::StorageStore, users::UsersStore,
+    software::SoftwareStore, storage::StorageAutoyastStore, storage::StorageStore,
+    users::UsersStore,
 };
 use zbus::Connection;
 
@@ -21,6 +22,7 @@ pub struct Store<'a> {
     product: ProductStore<'a>,
     software: SoftwareStore<'a>,
     storage: StorageStore<'a>,
+    storage_autoyast: StorageAutoyastStore<'a>,
     localization: LocalizationStore<'a>,
 }
 
@@ -35,11 +37,16 @@ impl<'a> Store<'a> {
             network: NetworkStore::new(http_client).await?,
             product: ProductStore::new(connection.clone()).await?,
             software: SoftwareStore::new(connection.clone()).await?,
-            storage: StorageStore::new(connection).await?,
+            storage: StorageStore::new(connection.clone()).await?,
+            storage_autoyast: StorageAutoyastStore::new(connection).await?,
         })
     }
 
-    /// Loads the installation settings from the D-Bus service
+    /// Loads the installation settings from the D-Bus service.
+    ///
+    /// NOTE: The storage AutoYaST settings cannot be loaded because they cannot be modified. The
+    /// ability of using the storage AutoYaST settings from a json config file is temporary and it
+    /// will be removed in the future.
     pub async fn load(&self, only: Option<Vec<Scope>>) -> Result<InstallSettings, ServiceError> {
         let scopes = match only {
             Some(scopes) => scopes,
@@ -50,6 +57,7 @@ impl<'a> Store<'a> {
         if scopes.contains(&Scope::Network) {
             settings.network = Some(self.network.load().await?);
         }
+
         if scopes.contains(&Scope::Storage) {
             settings.storage = Some(self.storage.load().await?);
         }
@@ -96,6 +104,12 @@ impl<'a> Store<'a> {
         }
         if let Some(storage) = &settings.storage {
             self.storage.store(storage).await?;
+        }
+        if let Some(storage_autoyast) = &settings.storage_autoyast {
+            // Storage scope has precedence.
+            if settings.storage.is_none() {
+                self.storage_autoyast.store(storage_autoyast.get()).await?;
+            }
         }
         Ok(())
     }
