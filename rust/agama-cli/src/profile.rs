@@ -25,7 +25,7 @@ pub enum ProfileCommands {
     ///
     /// This is top level command that do all autoinstallation processing beside starting
     /// installation. Unless there is a need to inject additional commands between processing
-    /// use this command instead of set of underlaying commands.
+    /// use this command instead of set of underlying commands.
     /// Optional dir argument is location where profile is processed. Useful for debugging
     /// if something goes wrong.
     Import { url: String, dir: Option<PathBuf> },
