@@ -111,7 +111,7 @@ pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
     responses(
       (
           status = 200,
-          description = "The probing was requested but there is no way to know whether it succeed."
+          description = "The probing was requested but there is no way to know whether it succeeded."
        )
     )
 )]
