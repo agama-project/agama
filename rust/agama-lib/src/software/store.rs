@@ -1,4 +1,4 @@
-//! Implements the store for the storage settings.
+//! Implements the store for the software settings.
 
 use std::collections::HashMap;
 
