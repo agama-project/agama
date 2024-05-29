@@ -1,10 +1,9 @@
 //! Representation of the product settings
 
-use agama_settings::Settings;
 use serde::{Deserialize, Serialize};
 
 /// Software settings for installation
-#[derive(Debug, Default, Settings, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ProductSettings {
     /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)

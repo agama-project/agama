@@ -8,29 +8,12 @@ use agama_lib::{
     install_settings::{InstallSettings, Scope},
     Store as SettingsStore,
 };
-use agama_settings::{settings::Settings, SettingObject, SettingValue};
 use clap::Subcommand;
 use convert_case::{Case, Casing};
 use std::{collections::HashMap, error::Error, io, str::FromStr};
 
 #[derive(Subcommand, Debug)]
 pub enum ConfigCommands {
-    /// Add an element to a collection.
-    ///
-    /// In case of collections, this command allows adding a new element. For instance, let's add a
-    /// new item to the list of software patterns:
-    ///
-    /// $ agama config add software.patterns value=gnome
-    Add { key: String, values: Vec<String> },
-
-    /// Set one or many installation settings
-    ///
-    /// For scalar values, this command allows setting a new value. For instance, let's change the
-    /// product to install:
-    ///
-    /// $ agama config set product.id=Tumbleweed
-    Set { values: Vec<String> },
-
     /// Shows the value of the configuration settings.
     ///
     /// It is possible that many configuration settings do not have a value. Those settings
@@ -47,8 +30,6 @@ pub enum ConfigCommands {
 }
 
 pub enum ConfigAction {
-    Add(String, HashMap<String, String>),
-    Set(HashMap<String, String>),
     Show,
     Load(String),
 }
@@ -64,46 +45,26 @@ pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<(
 
     let command = parse_config_command(subcommand)?;
     match command {
-        ConfigAction::Set(changes) => {
-            let scopes = changes
-                .keys()
-                .filter_map(|k| key_to_scope(k).ok())
-                .collect();
-            let mut model = store.load(Some(scopes)).await?;
-            for (key, value) in changes {
-                model.set(&key.to_case(Case::Snake), SettingValue(value))?;
-            }
-            Ok(store.store(&model).await?)
-        }
         ConfigAction::Show => {
             let model = store.load(None).await?;
             print(model, io::stdout(), format)?;
             Ok(())
         }
-        ConfigAction::Add(key, values) => {
-            let scope = key_to_scope(&key).unwrap();
-            let mut model = store.load(Some(vec![scope])).await?;
-            model.add(&key.to_case(Case::Snake), SettingObject::from(values))?;
-            Ok(store.store(&model).await?)
-        }
         ConfigAction::Load(path) => {
             let contents = std::fs::read_to_string(path)?;
             let result: InstallSettings = serde_json::from_str(&contents)?;
             let scopes = result.defined_scopes();
-            let mut model = store.load(Some(scopes)).await?;
-            model.merge(&result);
-            Ok(store.store(&model).await?)
+            // FIXME: merging should be implemented
+            // let mut model = store.load(Some(scopes)).await?;
+            // model.merge(&result);
+            Ok(store.store(&result).await?)
         }
     }
 }
 
 fn parse_config_command(subcommand: ConfigCommands) -> Result<ConfigAction, CliError> {
     match subcommand {
-        ConfigCommands::Add { key, values } => {
-            Ok(ConfigAction::Add(key, parse_keys_values(values)?))
-        }
         ConfigCommands::Show => Ok(ConfigAction::Show),
-        ConfigCommands::Set { values } => Ok(ConfigAction::Set(parse_keys_values(values)?)),
         ConfigCommands::Load { path } => Ok(ConfigAction::Load(path)),
     }
 }

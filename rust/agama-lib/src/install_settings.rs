@@ -5,7 +5,6 @@ use crate::{
     localization::LocalizationSettings, network::NetworkSettings, product::ProductSettings,
     software::SoftwareSettings, storage::StorageSettings, users::UserSettings,
 };
-use agama_settings::Settings;
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 use std::default::Default;
@@ -73,29 +72,22 @@ impl FromStr for Scope {
 ///
 /// This struct represents installation settings. It serves as an entry point and it is composed of
 /// other structs which hold the settings for each area ("users", "software", etc.).
-#[derive(Debug, Default, Settings, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InstallSettings {
     #[serde(default, flatten)]
-    #[settings(nested, flatten, alias = "root")]
     pub user: Option<UserSettings>,
     #[serde(default)]
-    #[settings(nested)]
     pub software: Option<SoftwareSettings>,
     #[serde(default)]
-    #[settings(nested)]
     pub product: Option<ProductSettings>,
     #[serde(default)]
-    #[settings(nested)]
     pub storage: Option<StorageSettings>,
     #[serde(default, rename = "legacyAutoyastStorage")]
-    #[settings(ignored)]
     pub storage_autoyast: Option<Box<RawValue>>,
     #[serde(default)]
-    #[settings(nested)]
     pub network: Option<NetworkSettings>,
     #[serde(default)]
-    #[settings(nested)]
     pub localization: Option<LocalizationSettings>,
 }
 
