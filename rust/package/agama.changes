@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed May 29 12:15:37 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI: Add new command "agama profile import" that does the whole
+  autoinstallation processing and loads the configuration
+  (gh#openSUSE/agama#1270).
+
+-------------------------------------------------------------------
 Wed May 29 11:16:11 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve command-line interface help (gh#openSUSE/agama#1269 and
