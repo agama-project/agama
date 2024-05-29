@@ -41,6 +41,7 @@ enum SettingKind {
     Collection,
     /// The value is another FooSettings, use `#[settings(nested)]`.
     Nested,
+    Ignored,
 }
 
 /// Represents a setting and its configuration
@@ -190,6 +191,7 @@ fn expand_merge_fn(settings: &SettingFieldsList) -> TokenStream2 {
             SettingKind::Collection => quote! {
                     self.#field_name = other.#field_name.clone();
             },
+            _ => quote! {},
         }
     });
 
@@ -272,6 +274,10 @@ fn parse_setting_fields(fields: Vec<&syn::Field>) -> SettingFieldsList {
 
                 if meta.path.is_ident("nested") {
                     setting.kind = SettingKind::Nested;
+                }
+
+                if meta.path.is_ident("ignored") {
+                    setting.kind = SettingKind::Ignored;
                 }
 
                 if meta.path.is_ident("flatten") {
