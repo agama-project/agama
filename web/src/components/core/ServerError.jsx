@@ -28,19 +28,19 @@ import { locationReload } from "~/utils";
 
 const ErrorIcon = () => <Icon name="error" className="icon-xxxl" />;
 
-function DBusError() {
+function ServerError() {
   return (
     // TRANSLATORS: page title
-    <Page icon="problem" title={_("D-Bus Error")}>
+    <Page icon="problem" title={_("Agama Error")}>
       <Center>
         <EmptyState variant="xl">
           <EmptyStateHeader
-            titleText={_("Cannot connect to D-Bus")}
+            titleText={_("Cannot connect to Agama server")}
             headingLevel="h2"
             icon={<EmptyStateIcon icon={ErrorIcon} />}
           />
           <EmptyStateBody>
-            {_("Could not connect to the D-Bus service. Please, check whether it is running.")}
+            {_("Please, check whether it is running.")}
           </EmptyStateBody>
         </EmptyState>
       </Center>
@@ -55,4 +55,4 @@ function DBusError() {
   );
 }
 
-export default DBusError;
+export default ServerError;
