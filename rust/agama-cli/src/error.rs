@@ -10,4 +10,6 @@ pub enum CliError {
     InstallationError,
     #[error("Missing the '=' separator in '{0}'")]
     MissingSeparator(String),
+    #[error("Could not read the password: {0}")]
+    MissingPassword(#[from] std::io::Error),
 }
