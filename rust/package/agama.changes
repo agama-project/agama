@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 29 10:40:21 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- The HTTP request to perform a probing is not blocking anymore
+  (gh#openSUSE/agama#1272).
+
+-------------------------------------------------------------------
 Mon May 27 14:11:55 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - The "agama auth" command reads the password from the standard

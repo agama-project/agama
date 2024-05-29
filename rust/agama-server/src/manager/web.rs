@@ -33,6 +33,7 @@ use crate::{
 
 #[derive(Clone)]
 pub struct ManagerState<'a> {
+    dbus: zbus::Connection,
     manager: ManagerClient<'a>,
 }
 
@@ -86,8 +87,8 @@ pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
 
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
-    let manager = ManagerClient::new(dbus).await?;
-    let state = ManagerState { manager };
+    let manager = ManagerClient::new(dbus.clone()).await?;
+    let state = ManagerState { manager, dbus };
     Ok(Router::new()
         .route("/probe", post(probe_action))
         .route("/install", post(install_action))
@@ -100,16 +101,36 @@ pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
 }
 
 /// Starts the probing process.
+// The Probe D-Bus method is blocking and will not return until the probing is finished. To avoid a
+// long-lived HTTP connection, this method returns immediately (with a 200) and runs the request on
+// a separate task.
 #[utoipa::path(
     get,
     path = "/probe",
     context_path = "/api/manager",
     responses(
-      (status = 200, description = "The probing process was started.")
+      (
+          status = 200,
+          description = "The probing was requested but there is no way to know whether it succeeded."
+       )
     )
 )]
-async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
-    state.manager.probe().await?;
+async fn probe_action<'a>(State(state): State<ManagerState<'a>>) -> Result<(), Error> {
+    let dbus = state.dbus.clone();
+    tokio::spawn(async move {
+        let result = dbus
+            .call_method(
+                Some("org.opensuse.Agama.Manager1"),
+                "/org/opensuse/Agama/Manager1",
+                Some("org.opensuse.Agama.Manager1"),
+                "Probe",
+                &(),
+            )
+            .await;
+        if let Err(error) = result {
+            tracing::error!("Could not start probing: {:?}", error);
+        }
+    });
     Ok(())
 }
 
