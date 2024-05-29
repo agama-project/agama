@@ -293,6 +293,7 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
 /// Start serving the API.
 /// `options`: command-line arguments.
 async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
+    _ = helpers::init_locale();
     init_logging().context("Could not initialize the logger")?;
 
     let (tx, _) = channel(16);
@@ -377,7 +378,6 @@ impl Termination for CliResult {
 #[tokio::main]
 async fn main() -> CliResult {
     let cli = Cli::parse();
-    _ = helpers::init_locale();
 
     if let Err(error) = run_command(cli).await {
         eprintln!("{:?}", error);
