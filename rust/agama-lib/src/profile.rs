@@ -4,7 +4,7 @@ use curl::easy::Easy;
 use jsonschema::JSONSchema;
 use log::info;
 use serde_json;
-use std::{fs, io, io::Write, path::Path, process::Command};
+use std::{fs, io::Write, path::Path, process::Command};
 use tempfile::{tempdir, TempDir};
 use url::Url;
 

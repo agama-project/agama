@@ -34,7 +34,7 @@ pub enum ProfileCommands {
 fn download(url: &str, mut out_fd: impl Write) -> anyhow::Result<()> {
     let reader = ProfileReader::new(url)?;
     let contents = reader.read()?;
-    print!("{}", contents);
+    out_fd.write_all(contents.as_bytes())?;
     Ok(())
 }
 
