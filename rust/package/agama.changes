@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 29 07:15:37 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI: Add new command "agama profile import" that do whole
+  autoinstallation processing and loads configuration.
+
+-------------------------------------------------------------------
 Mon May 27 14:11:55 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - The "agama auth" command reads the password from the standard
