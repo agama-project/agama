@@ -1,6 +1,8 @@
-use agama_lib::profile::{ProfileEvaluator, ProfileReader, ProfileValidator, ValidationResult};
+use agama_lib::profile::{ProfileEvaluator, AutoyastProfile, ProfileValidator, ValidationResult};
 use anyhow::Context;
 use clap::Subcommand;
+use curl::easy::Easy;
+use url::Url;
 use std::os::unix::process::CommandExt;
 use std::{
     fs::File,
@@ -12,8 +14,8 @@ use tempfile::TempDir;
 
 #[derive(Subcommand, Debug)]
 pub enum ProfileCommands {
-    /// Download the profile from a given location
-    Download { url: String },
+    /// Download the autoyast profile and convert it to json
+    Autoyast { url: String },
 
     /// Validate a profile using JSON Schema
     Validate { path: String },
@@ -36,10 +38,17 @@ pub enum ProfileCommands {
     },
 }
 
-fn download(url: &str, mut out_fd: impl Write) -> anyhow::Result<()> {
-    let reader = ProfileReader::new(url)?;
-    let contents = reader.read()?;
-    out_fd.write_all(contents.as_bytes())?;
+
+pub fn download(url: &str, mut out_fd: impl Write) -> anyhow::Result<()> {
+    let mut handle = Easy::new();
+    handle.url(url)?;
+
+    let mut transfer = handle.transfer();
+    transfer.write_function(|buf|
+        // unwrap here is ok, as we want to kill download if we failed to write content
+        Ok(out_fd.write(buf).unwrap()))?;
+    transfer.perform()?;
+
     Ok(())
 }
 
@@ -71,11 +80,13 @@ fn evaluate(path: String) -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn import(url: String, dir: Option<PathBuf>) -> anyhow::Result<()> {
+async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> {
+    let url = Url::parse(&url_string)?;
     let tmpdir = TempDir::new()?; // TODO: create it only if dir is not passed
-    let output_file = if url.ends_with(".sh") {
+    let path = url.path();
+    let output_file = if path.ends_with(".sh") {
         "profile.sh"
-    } else if url.ends_with(".jsonnet") {
+    } else if path.ends_with(".jsonnet") {
         "profile.jsonnet"
     } else {
         "profile.json"
@@ -83,8 +94,14 @@ async fn import(url: String, dir: Option<PathBuf>) -> anyhow::Result<()> {
     let output_dir = dir.unwrap_or_else(|| tmpdir.into_path());
     let mut output_path = output_dir.join(output_file);
     let output_fd = File::create(output_path.clone())?;
-    //download profile
-    download(&url, output_fd)?;
+    if path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/') {
+        // autoyast specific download and convert to json
+        AutoyastProfile::new(&url)?.read(output_fd)?;
+    } else {
+        // just download profile
+        download(&url_string, output_fd)?;
+    }
+    
     // exec shell scripts
     if output_file.ends_with(".sh") {
         let err = Command::new("bash")
@@ -122,9 +139,16 @@ async fn import(url: String, dir: Option<PathBuf>) -> anyhow::Result<()> {
     Ok(())
 }
 
+fn autoyast(url_string: String) -> anyhow::Result<()>{
+    let url = Url::parse(&url_string)?;
+    let reader = AutoyastProfile::new(&url)?;
+    reader.read(std::io::stdout())?;
+    Ok(())
+}
+
 pub async fn run(subcommand: ProfileCommands) -> anyhow::Result<()> {
     match subcommand {
-        ProfileCommands::Download { url } => download(&url, std::io::stdout()),
+        ProfileCommands::Autoyast { url } => autoyast(url),
         ProfileCommands::Validate { path } => validate(path),
         ProfileCommands::Evaluate { path } => evaluate(path),
         ProfileCommands::Import { url, dir } => import(url, dir).await,

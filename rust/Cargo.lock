@@ -42,6 +42,7 @@ dependencies = [
  "tempfile",
  "thiserror",
  "tokio",
+ "url",
  "zbus",
 ]
 
