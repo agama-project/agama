@@ -72,4 +72,16 @@ pub enum Commands {
     /// not affect the root user.
     #[command(subcommand)]
     Auth(AuthCommands),
+
+    /// Download file from given URL
+    ///
+    /// Purpose of this command is to allow download from all supported schemas.
+    /// It can be used to download additional scripts, configuration files and so on.
+    /// For agama autoinstallation profiles it can be also used, but unless additional processing is required
+    /// the "agama profile import" is recommended.
+    /// For autoyast conversion use directly "agama profile autoyast".
+    Download {
+        /// URL pointing to file for download
+        url: String,
+    },
 }

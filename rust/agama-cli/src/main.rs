@@ -17,12 +17,14 @@ use agama_lib::progress::ProgressMonitor;
 use auth::run as run_auth_cmd;
 use commands::Commands;
 use config::run as run_config_cmd;
+use curl::easy::Easy;
 use logs::run as run_logs_cmd;
 use printers::Format;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
 use questions::run as run_questions_cmd;
 use std::{
+    io::Write,
     process::{ExitCode, Termination},
     thread::sleep,
     time::Duration,
@@ -119,6 +121,19 @@ async fn wait_for_services(manager: &ManagerClient<'_>) -> Result<(), ServiceErr
     Ok(())
 }
 
+fn read_from_url(url: &str) -> anyhow::Result<()> {
+    let mut handle = Easy::new();
+    handle.url(url)?;
+
+    let mut transfer = handle.transfer();
+    transfer.write_function(|buf|
+        // unwrap here is ok, as we want to kill download if we failed to write to stdout for whatever reason
+        Ok(std::io::stdout().write(buf).unwrap()))?;
+    transfer.perform()?;
+
+    Ok(())
+}
+
 async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
     let conn = agama_lib::connection().await?;
     Ok(ManagerClient::new(conn).await?)
@@ -144,6 +159,7 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
         Commands::Questions(subcommand) => run_questions_cmd(subcommand).await,
         Commands::Logs(subcommand) => run_logs_cmd(subcommand).await,
         Commands::Auth(subcommand) => run_auth_cmd(subcommand).await,
+        Commands::Download { url } => read_from_url(&url),
     }
 }
 

@@ -28,6 +28,7 @@ dependencies = [
  "clap",
  "console",
  "convert_case",
+ "curl",
  "fs_extra",
  "home",
  "indicatif",
