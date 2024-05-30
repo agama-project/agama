@@ -26,9 +26,14 @@ pub enum ProfileCommands {
     /// This is top level command that do all autoinstallation processing beside starting
     /// installation. Unless there is a need to inject additional commands between processing
     /// use this command instead of set of underlying commands.
-    /// Optional dir argument is location where profile is processed. Useful for debugging
-    /// if something goes wrong.
-    Import { url: String, dir: Option<PathBuf> },
+    Import {
+        /// URL where profile is located. Supported schemas are all that download supports and additionally
+        /// autoyast specific ones. Supported files are json, jsonnet, sh for agama profiles and erb, xml, directory
+        /// for autoyast support.
+        url: String,
+        /// Specific directory where all processing happens. If not specific temporary directory is used
+        dir: Option<PathBuf>,
+    },
 }
 
 fn download(url: &str, mut out_fd: impl Write) -> anyhow::Result<()> {
