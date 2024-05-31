@@ -14,14 +14,29 @@ use url::Url;
 
 #[derive(Subcommand, Debug)]
 pub enum ProfileCommands {
-    /// Download the autoyast profile and convert it to json
-    Autoyast { url: String },
+    /// Download the autoyast profile and print resulting json
+    Autoyast {
+        /// URL to autoyast XML, erb or rules&classes dir. Supports
+        /// all schemas that autoyast supports.
+        url: String,
+    },
 
     /// Validate a profile using JSON Schema
-    Validate { path: String },
+    ///
+    /// Schema is available at /usr/share/agama-cli/profile.schema.json
+    Validate {
+        /// Local path to json file
+        path: String,
+    },
 
     /// Evaluate a profile, injecting the hardware information from D-Bus
-    Evaluate { path: String },
+    ///
+    /// For example of jsonnet profile see
+    /// https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet
+    Evaluate {
+        /// Path to jsonnet file.
+        path: String,
+    },
 
     /// Process autoinstallation profile and loads it into agama
     ///
