@@ -150,7 +150,7 @@ describe Agama::Storage::Manager do
       allow(proposal).to receive(:issues).and_return(proposal_issues)
       allow(proposal).to receive(:available_devices).and_return(devices)
       allow(proposal).to receive(:settings).and_return(settings)
-      allow(proposal).to receive(:calculate)
+      allow(proposal).to receive(:calculate_guided)
 
       allow(config).to receive(:pick_product)
       allow(iscsi).to receive(:activate)
@@ -192,7 +192,7 @@ describe Agama::Storage::Manager do
       end
       expect(iscsi).to receive(:probe)
       expect(y2storage_manager).to receive(:probe)
-      expect(proposal).to receive(:calculate).with(config_settings)
+      expect(proposal).to receive(:calculate_guided).with(config_settings)
       storage.probe
     end
 
@@ -377,7 +377,7 @@ describe Agama::Storage::Manager do
 
       context "if a proposal was successfully calculated" do
         before do
-          subject.proposal.calculate(settings)
+          subject.proposal.calculate_guided(settings)
         end
 
         let(:settings) do

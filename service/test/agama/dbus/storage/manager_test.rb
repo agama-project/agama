@@ -316,7 +316,7 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#calculate_proposal" do
+  describe "#calculate_guided_proposal" do
     let(:dbus_settings) do
       {
         "Target"             => "disk",
@@ -335,7 +335,7 @@ describe Agama::DBus::Storage::Manager do
     end
 
     it "calculates a proposal with settings having values from D-Bus" do
-      expect(proposal).to receive(:calculate) do |settings|
+      expect(proposal).to receive(:calculate_guided) do |settings|
         expect(settings).to be_a(Agama::Storage::ProposalSettings)
         expect(settings.device).to be_a(Agama::Storage::DeviceSettings::Disk)
         expect(settings.device.name).to eq "/dev/vda"
@@ -348,14 +348,14 @@ describe Agama::DBus::Storage::Manager do
         )
       end
 
-      subject.calculate_proposal(dbus_settings)
+      subject.calculate_guided_proposal(dbus_settings)
     end
 
     context "when the D-Bus settings does not include some values" do
       let(:dbus_settings) { {} }
 
       it "calculates a proposal with default values for the missing settings" do
-        expect(proposal).to receive(:calculate) do |settings|
+        expect(proposal).to receive(:calculate_guided) do |settings|
           expect(settings).to be_a(Agama::Storage::ProposalSettings)
           expect(settings.device).to be_a(Agama::Storage::DeviceSettings::Disk)
           expect(settings.device.name).to be_nil
@@ -365,7 +365,7 @@ describe Agama::DBus::Storage::Manager do
           expect(settings.volumes).to eq([])
         end
 
-        subject.calculate_proposal(dbus_settings)
+        subject.calculate_guided_proposal(dbus_settings)
       end
     end
 
@@ -374,11 +374,11 @@ describe Agama::DBus::Storage::Manager do
 
       # This is likely a temporary behavior
       it "calculates a proposal ignoring the unknown attributes" do
-        expect(proposal).to receive(:calculate) do |settings|
+        expect(proposal).to receive(:calculate_guided) do |settings|
           expect(settings).to be_a(Agama::Storage::ProposalSettings)
         end
 
-        subject.calculate_proposal(dbus_settings)
+        subject.calculate_guided_proposal(dbus_settings)
       end
     end
 
@@ -412,7 +412,7 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "calculates a proposal with settings having a volume with values from D-Bus" do
-        expect(proposal).to receive(:calculate) do |settings|
+        expect(proposal).to receive(:calculate_guided) do |settings|
           volume = settings.volumes.first
 
           expect(volume.mount_path).to eq("/")
@@ -422,7 +422,7 @@ describe Agama::DBus::Storage::Manager do
           expect(volume.btrfs.snapshots).to eq(true)
         end
 
-        subject.calculate_proposal(dbus_settings)
+        subject.calculate_guided_proposal(dbus_settings)
       end
 
       context "and the D-Bus volume does not include some values" do
@@ -441,7 +441,7 @@ describe Agama::DBus::Storage::Manager do
         end
 
         it "calculates a proposal with a volume completed with its default settings" do
-          expect(proposal).to receive(:calculate) do |settings|
+          expect(proposal).to receive(:calculate_guided) do |settings|
             volume = settings.volumes.first
 
             expect(volume.mount_path).to eq("/")
@@ -452,7 +452,7 @@ describe Agama::DBus::Storage::Manager do
             expect(volume.btrfs.snapshots).to eq(false)
           end
 
-          subject.calculate_proposal(dbus_settings)
+          subject.calculate_guided_proposal(dbus_settings)
         end
       end
     end
