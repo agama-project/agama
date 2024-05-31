@@ -1,8 +1,7 @@
-use agama_lib::profile::{ProfileEvaluator, AutoyastProfile, ProfileValidator, ValidationResult};
+use agama_lib::profile::{AutoyastProfile, ProfileEvaluator, ProfileValidator, ValidationResult};
 use anyhow::Context;
 use clap::Subcommand;
 use curl::easy::Easy;
-use url::Url;
 use std::os::unix::process::CommandExt;
 use std::{
     fs::File,
@@ -11,6 +10,7 @@ use std::{
     process::Command,
 };
 use tempfile::TempDir;
+use url::Url;
 
 #[derive(Subcommand, Debug)]
 pub enum ProfileCommands {
@@ -37,7 +37,6 @@ pub enum ProfileCommands {
         dir: Option<PathBuf>,
     },
 }
-
 
 pub fn download(url: &str, mut out_fd: impl Write) -> anyhow::Result<()> {
     let mut handle = Easy::new();
@@ -101,7 +100,7 @@ async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> 
         // just download profile
         download(&url_string, output_fd)?;
     }
-    
+
     // exec shell scripts
     if output_file.ends_with(".sh") {
         let err = Command::new("bash")
@@ -139,7 +138,7 @@ async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> 
     Ok(())
 }
 
-fn autoyast(url_string: String) -> anyhow::Result<()>{
+fn autoyast(url_string: String) -> anyhow::Result<()> {
     let url = Url::parse(&url_string)?;
     let reader = AutoyastProfile::new(&url)?;
     reader.read(std::io::stdout())?;
