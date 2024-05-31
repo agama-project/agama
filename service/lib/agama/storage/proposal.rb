@@ -114,7 +114,7 @@ module Agama
       def strategy?(id)
         return false unless calculated?
 
-        name.downcase.to_sym == strategy_object.id
+        id.downcase.to_sym == strategy_object.id
       end
 
     private

@@ -59,7 +59,7 @@ module Agama
         #
         # @return [Array<Issue>]
         def issues
-          [ target_device_issue, missing_devices_issue ].compact
+          [target_device_issue, missing_devices_issue].compact
         end
 
       private

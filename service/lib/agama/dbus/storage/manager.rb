@@ -193,8 +193,8 @@ module Agama
         end
 
         module ProposalStrategy
-          GUIDED = "guided".freeze
-          AUTOYAST = "autoyast".freeze
+          GUIDED = "guided"
+          AUTOYAST = "autoyast"
         end
 
         # Calculates a guided proposal.

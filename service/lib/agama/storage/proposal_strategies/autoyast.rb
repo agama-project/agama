@@ -66,6 +66,7 @@ module Agama
         end
 
       private
+
         # Default proposal settings, potentially used to calculate omitted information
         #
         # @return [Y2Storage::ProposalSettings]
