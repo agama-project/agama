@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-26 02:22+0000\n"
-"PO-Revision-Date: 2024-04-27 03:43+0000\n"
+"POT-Creation-Date: 2024-05-29 02:21+0000\n"
+"PO-Revision-Date: 2024-06-01 12:46+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-web/de/"
 ">\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 5.5.5\n"
 
 #: src/components/core/About.jsx:49 src/components/core/About.jsx:69
 msgid "About Agama"
@@ -55,27 +55,6 @@ msgstr ""
 #: src/components/storage/ProposalActionsDialog.jsx:98
 msgid "Close"
 msgstr "Schließen"
-
-#. TRANSLATORS: page title
-#: src/components/core/DBusError.jsx:34
-msgid "D-Bus Error"
-msgstr "D-Bus-Fehler"
-
-#: src/components/core/DBusError.jsx:38
-msgid "Cannot connect to D-Bus"
-msgstr "Verbindung zum D-Bus nicht möglich"
-
-#: src/components/core/DBusError.jsx:43
-msgid ""
-"Could not connect to the D-Bus service. Please, check whether it is running."
-msgstr ""
-"Es konnte keine Verbindung mit dem D-Bus-Dienst hergestellt werden. Bitte "
-"prüfen Sie, ob er läuft."
-
-#. TRANSLATORS: button label
-#: src/components/core/DBusError.jsx:51
-msgid "Reload"
-msgstr "Neu laden"
 
 #: src/components/core/FileViewer.jsx:66
 msgid "Reading file..."
@@ -233,7 +212,7 @@ msgstr "Suchen"
 #: src/components/core/LoginPage.jsx:56
 #, c-format
 msgid "Log in as %s"
-msgstr ""
+msgstr "Als %s anmelden"
 
 #. TRANSLATORS: An explanation about required privileges for login into the installer. %s
 #. will be replaced by "root"
@@ -243,28 +222,30 @@ msgid ""
 "The installer requires %s user privileges. Please, provide its password to "
 "log in to the system."
 msgstr ""
+"Das Installationsprogramm benötigt %s Benutzerrechte. Bitte geben Sie das "
+"Passwort ein, um sich am System anzumelden."
 
 #: src/components/core/LoginPage.jsx:72
-#, fuzzy
 msgid "Login form"
-msgstr "Anmelden"
+msgstr "Anmeldeformular"
 
 #: src/components/core/LoginPage.jsx:78
-#, fuzzy
 msgid "Password input"
-msgstr "Passwort"
+msgstr "Passworteingabe"
 
 #: src/components/core/LoginPage.jsx:86
 msgid "Could not log in. Please, make sure that the password is correct."
 msgstr ""
+"Die Anmeldung ist fehlgeschlagen. Bitte stellen Sie sicher, dass das "
+"Passwort korrekt ist."
 
 #: src/components/core/LoginPage.jsx:93
 msgid "Log in"
-msgstr ""
+msgstr "Anmelden"
 
 #: src/components/core/LoginPage.jsx:104
 msgid "What is this?"
-msgstr ""
+msgstr "Was ist das?"
 
 #: src/components/core/LogsButton.jsx:101
 msgid "Collecting logs..."
@@ -326,9 +307,8 @@ msgstr "Bestätigen"
 
 #. TRANSLATORS: progress message
 #: src/components/core/Popup.jsx:210
-#, fuzzy
 msgid "Loading data..."
-msgstr "Datei wird gelesen ..."
+msgstr "Daten werden gelesen ..."
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:457
@@ -340,9 +320,29 @@ msgid "Waiting"
 msgstr "Warten"
 
 #: src/components/core/Selector.jsx:126
-#, fuzzy
 msgid "auto selected"
-msgstr "nicht ausgewählt"
+msgstr "automatisch ausgewählt"
+
+#. TRANSLATORS: page title
+#: src/components/core/ServerError.jsx:34
+msgid "Agama Error"
+msgstr "Agama-Fehler"
+
+#: src/components/core/ServerError.jsx:38
+msgid "Cannot connect to Agama server"
+msgstr "Verbindung zum Agama-Server nicht möglich"
+
+#: src/components/core/ServerError.jsx:43
+#, fuzzy
+msgid "Please, check whether it is running."
+msgstr ""
+"Es konnte keine Verbindung mit dem D-Bus-Dienst hergestellt werden. Bitte "
+"prüfen Sie, ob er läuft."
+
+#. TRANSLATORS: button label
+#: src/components/core/ServerError.jsx:51
+msgid "Reload"
+msgstr "Neu laden"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
@@ -793,7 +793,7 @@ msgstr "Wird getrennt"
 
 #: src/components/network/WifiNetworkListItem.jsx:49
 msgid "Failed"
-msgstr ""
+msgstr "Fehlgeschlagen"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
@@ -1155,7 +1155,7 @@ msgstr "Verschlüsselungspasswort"
 
 #: src/components/software/PatternSelector.jsx:171
 msgid "None of the patterns match the filter."
-msgstr ""
+msgstr "Keines der Muster entspricht dem Filter."
 
 #: src/components/software/PatternSelector.jsx:177
 msgid "Software summary and filter options"
@@ -1175,11 +1175,11 @@ msgstr "Ort ändern"
 
 #: src/components/software/SoftwarePage.jsx:138
 msgid "No additional software was selected."
-msgstr ""
+msgstr "Es wurde keine zusätzliche Software ausgewählt."
 
 #: src/components/software/SoftwarePage.jsx:144
 msgid "The following software patterns are selected for installation:"
-msgstr ""
+msgstr "Die folgenden Softwaremuster werden für die Installation ausgewählt:"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
@@ -1597,8 +1597,11 @@ msgid "storage technologies"
 msgstr "Speichertechnologien"
 
 #: src/components/storage/InstallationDeviceField.jsx:124
+#, fuzzy
 msgid "Prepare more devices by configuring advanced"
 msgstr ""
+"Bereiten Sie weitere Geräte vor, indem Sie erweiterte Konfigurationen "
+"vornehmen"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/PartitionsField.jsx:65
@@ -1814,8 +1817,9 @@ msgid "Add file system"
 msgstr "Dateisystem hinzufügen"
 
 #: src/components/storage/PartitionsField.jsx:599
+#, fuzzy
 msgid "Other"
-msgstr ""
+msgstr "Sonstige"
 
 #: src/components/storage/PartitionsField.jsx:738
 msgid "Reset to defaults"
@@ -1977,7 +1981,7 @@ msgstr "Nicht verändern"
 
 #: src/components/storage/SpaceActionsTable.jsx:111
 msgid "The content may be deleted"
-msgstr ""
+msgstr "Der Inhalt kann gelöscht werden"
 
 #: src/components/storage/SpaceActionsTable.jsx:144
 msgid "Shrinkable"
@@ -2039,6 +2043,8 @@ msgstr "das Vorhandensein des Dateisystems für %s"
 #, c-format
 msgid "The current file system on %s is selected to be mounted at %s."
 msgstr ""
+"Das aktuelle Dateisystem auf %s wurde ausgewählt, um in %s eingehängt zu "
+"werden."
 
 #. TRANSLATORS: Warning when editing a file system.
 #: src/components/storage/VolumeDialog.jsx:108
@@ -2225,6 +2231,9 @@ msgid ""
 "The file systems are allocated at the installation device by default. "
 "Indicate a custom location to create the file system at a specific device."
 msgstr ""
+"Die Dateisysteme werden standardmäßig dem Installationsgerät zugeordnet. "
+"Geben Sie einen benutzerdefinierten Speicherort an, um das Dateisystem auf "
+"einem bestimmten Gerät zu erstellen."
 
 #. TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
 #. by a mount path (e.g., /home).
@@ -2236,6 +2245,7 @@ msgstr "Speicherort für Dateisystem %s"
 #: src/components/storage/VolumeLocationDialog.jsx:146
 msgid "Select in which device to allocate the file system"
 msgstr ""
+"Wählen Sie aus, auf welchem Gerät das Dateisystem zugewiesen werden soll"
 
 #: src/components/storage/VolumeLocationDialog.jsx:149
 #, fuzzy
@@ -2249,7 +2259,7 @@ msgstr "Exakte Größe des Dateisystems."
 
 #: src/components/storage/VolumeLocationDialog.jsx:166
 msgid "Create a new partition"
-msgstr ""
+msgstr "Eine neue Partition erstellen"
 
 #: src/components/storage/VolumeLocationDialog.jsx:167
 #, fuzzy
@@ -2282,7 +2292,7 @@ msgstr "DASD-Geräte formatieren"
 #: src/components/storage/VolumeLocationDialog.jsx:189
 #, c-format
 msgid "The selected device will be formatted as %s file system."
-msgstr ""
+msgstr "Das ausgewählte Gerät wird als Dateisystem %s formatiert."
 
 #: src/components/storage/VolumeLocationDialog.jsx:199
 #, fuzzy
@@ -2294,10 +2304,13 @@ msgid ""
 "The current file system on the selected device will be mounted   without "
 "formatting the device."
 msgstr ""
+"Das aktuelle Dateisystem auf dem ausgewählten Gerät wird eingehängt,   ohne "
+"das Gerät zu formatieren."
 
 #: src/components/storage/VolumeLocationSelectorTable.jsx:102
+#, fuzzy
 msgid "Usage"
-msgstr ""
+msgstr "Belegung"
 
 #: src/components/storage/ZFCPDiskForm.jsx:113
 msgid "The zFCP disk was not activated."
@@ -2828,15 +2841,18 @@ msgstr "Benutzer"
 msgid "Root authentication"
 msgstr "Root-Authentifizierung"
 
+#~ msgid "D-Bus Error"
+#~ msgstr "D-Bus-Fehler"
+
+#~ msgid "Cannot connect to D-Bus"
+#~ msgstr "Verbindung zum D-Bus nicht möglich"
+
 #~ msgid "Diagnostic tools"
 #~ msgstr "Diagnosewerkzeuge"
 
 #, c-format
 #~ msgid "The server at %s is not reachable."
 #~ msgstr "Der Server unter %s ist nicht erreichbar."
-
-#~ msgid "Cannot connect to the Cockpit server"
-#~ msgstr "Verbindung zum Cockpit-Server nicht möglich"
 
 #~ msgid "Try Again"
 #~ msgstr "Erneut versuchen"

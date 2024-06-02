@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-26 02:22+0000\n"
-"PO-Revision-Date: 2024-05-19 20:46+0000\n"
+"POT-Creation-Date: 2024-05-29 02:21+0000\n"
+"PO-Revision-Date: 2024-05-31 06:46+0000\n"
 "Last-Translator: Martin Hansen <mh306602@gmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://l10n.opensuse.org/projects/agama/"
 "agama-web/nb_NO/>\n"
@@ -52,25 +52,6 @@ msgstr "For mer informasjon, vennligst besøk prosjektets pakkebrønn på %s."
 #: src/components/storage/ProposalActionsDialog.jsx:98
 msgid "Close"
 msgstr "Lukk"
-
-#. TRANSLATORS: page title
-#: src/components/core/DBusError.jsx:34
-msgid "D-Bus Error"
-msgstr "D-Bus Feil"
-
-#: src/components/core/DBusError.jsx:38
-msgid "Cannot connect to D-Bus"
-msgstr "Kan ikke koble til D-Bus"
-
-#: src/components/core/DBusError.jsx:43
-msgid ""
-"Could not connect to the D-Bus service. Please, check whether it is running."
-msgstr "Kunne ikke koble til D-Bus tjenesten. Vennligst, sjekk om den kjører."
-
-#. TRANSLATORS: button label
-#: src/components/core/DBusError.jsx:51
-msgid "Reload"
-msgstr "Last på nytt"
 
 #: src/components/core/FileViewer.jsx:66
 msgid "Reading file..."
@@ -330,6 +311,24 @@ msgstr "Venter"
 #: src/components/core/Selector.jsx:126
 msgid "auto selected"
 msgstr "Automatisk valgt"
+
+#. TRANSLATORS: page title
+#: src/components/core/ServerError.jsx:34
+msgid "Agama Error"
+msgstr "Agama Feil"
+
+#: src/components/core/ServerError.jsx:38
+msgid "Cannot connect to Agama server"
+msgstr "Kan ikke koble til Agama server"
+
+#: src/components/core/ServerError.jsx:43
+msgid "Please, check whether it is running."
+msgstr "Vennligst, sjekk om den kjører."
+
+#. TRANSLATORS: button label
+#: src/components/core/ServerError.jsx:51
+msgid "Reload"
+msgstr "Last på nytt"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
@@ -1118,7 +1117,7 @@ msgstr "Krypteringspassord"
 
 #: src/components/software/PatternSelector.jsx:171
 msgid "None of the patterns match the filter."
-msgstr ""
+msgstr "Ingen av mønstrene passer sammen med filteret."
 
 #: src/components/software/PatternSelector.jsx:177
 msgid "Software summary and filter options"
@@ -2751,3 +2750,6 @@ msgstr "Bruker"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "Root autentisering"
+
+#~ msgid "D-Bus Error"
+#~ msgstr "D-Bus Feil"

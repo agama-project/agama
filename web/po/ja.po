@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-26 02:22+0000\n"
-"PO-Revision-Date: 2024-05-07 04:43+0000\n"
+"POT-Creation-Date: 2024-05-29 02:21+0000\n"
+"PO-Revision-Date: 2024-05-30 06:46+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 5.5.5\n"
 
 #: src/components/core/About.jsx:49 src/components/core/About.jsx:69
 msgid "About Agama"
@@ -51,27 +51,6 @@ msgstr "詳しくは %s にあるプロジェクトのリポジトリをご覧�
 #: src/components/storage/ProposalActionsDialog.jsx:98
 msgid "Close"
 msgstr "閉じる"
-
-#. TRANSLATORS: page title
-#: src/components/core/DBusError.jsx:34
-msgid "D-Bus Error"
-msgstr "D-Bus エラー"
-
-#: src/components/core/DBusError.jsx:38
-msgid "Cannot connect to D-Bus"
-msgstr "D-Bus に接続できません"
-
-#: src/components/core/DBusError.jsx:43
-msgid ""
-"Could not connect to the D-Bus service. Please, check whether it is running."
-msgstr ""
-"D-Bus サービスに接続できませんでした。 D-Bus サービスが動作中かどうかをご確認"
-"ください。"
-
-#. TRANSLATORS: button label
-#: src/components/core/DBusError.jsx:51
-msgid "Reload"
-msgstr "再読み込み"
 
 #: src/components/core/FileViewer.jsx:66
 msgid "Reading file..."
@@ -333,6 +312,24 @@ msgstr "お待ちください"
 #: src/components/core/Selector.jsx:126
 msgid "auto selected"
 msgstr "自動選択済み"
+
+#. TRANSLATORS: page title
+#: src/components/core/ServerError.jsx:34
+msgid "Agama Error"
+msgstr "Agama エラー"
+
+#: src/components/core/ServerError.jsx:38
+msgid "Cannot connect to Agama server"
+msgstr "Agama サーバに接続できません"
+
+#: src/components/core/ServerError.jsx:43
+msgid "Please, check whether it is running."
+msgstr "問題なく動作しているかどうかご確認ください。"
+
+#. TRANSLATORS: button label
+#: src/components/core/ServerError.jsx:51
+msgid "Reload"
+msgstr "再読み込み"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
@@ -1117,7 +1114,7 @@ msgstr "暗号化パスワード"
 
 #: src/components/software/PatternSelector.jsx:171
 msgid "None of the patterns match the filter."
-msgstr ""
+msgstr "フィルタに該当するパターンがありません。"
 
 #: src/components/software/PatternSelector.jsx:177
 msgid "Software summary and filter options"
@@ -2745,15 +2742,18 @@ msgstr "ユーザ"
 msgid "Root authentication"
 msgstr "root の認証"
 
+#~ msgid "D-Bus Error"
+#~ msgstr "D-Bus エラー"
+
+#~ msgid "Cannot connect to D-Bus"
+#~ msgstr "D-Bus に接続できません"
+
 #~ msgid "Diagnostic tools"
 #~ msgstr "診断ツール"
 
 #, c-format
 #~ msgid "The server at %s is not reachable."
 #~ msgstr "%s のサーバに到達できません。"
-
-#~ msgid "Cannot connect to the Cockpit server"
-#~ msgstr "Cockpit サーバに接続できません"
 
 #~ msgid "Try Again"
 #~ msgstr "再試行"
