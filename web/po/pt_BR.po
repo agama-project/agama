@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-26 02:22+0000\n"
+"POT-Creation-Date: 2024-05-29 02:21+0000\n"
 "PO-Revision-Date: 2023-12-31 20:39+0000\n"
 "Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Portuguese (Brazil) <https://l10n.opensuse.org/projects/agama/"
@@ -53,27 +53,6 @@ msgstr "Para mais informações, visite o repositório do projeto em %s."
 #: src/components/storage/ProposalActionsDialog.jsx:98
 msgid "Close"
 msgstr "Fechar"
-
-#. TRANSLATORS: page title
-#: src/components/core/DBusError.jsx:34
-msgid "D-Bus Error"
-msgstr "Erro do D-Bus"
-
-#: src/components/core/DBusError.jsx:38
-msgid "Cannot connect to D-Bus"
-msgstr "Não foi possível conectar ao D-Bus"
-
-#: src/components/core/DBusError.jsx:43
-msgid ""
-"Could not connect to the D-Bus service. Please, check whether it is running."
-msgstr ""
-"Não foi possível conectar-se ao serviço D-Bus. Verifique se ele está "
-"funcionando."
-
-#. TRANSLATORS: button label
-#: src/components/core/DBusError.jsx:51
-msgid "Reload"
-msgstr "Recarregar"
 
 #: src/components/core/FileViewer.jsx:66
 msgid "Reading file..."
@@ -329,6 +308,28 @@ msgstr "Aguardando"
 #, fuzzy
 msgid "auto selected"
 msgstr "não selecionado"
+
+#. TRANSLATORS: page title
+#: src/components/core/ServerError.jsx:34
+msgid "Agama Error"
+msgstr ""
+
+#: src/components/core/ServerError.jsx:38
+#, fuzzy
+msgid "Cannot connect to Agama server"
+msgstr "Não foi possível conectar ao servidor Cockpit"
+
+#: src/components/core/ServerError.jsx:43
+#, fuzzy
+msgid "Please, check whether it is running."
+msgstr ""
+"Não foi possível conectar-se ao serviço D-Bus. Verifique se ele está "
+"funcionando."
+
+#. TRANSLATORS: button label
+#: src/components/core/ServerError.jsx:51
+msgid "Reload"
+msgstr "Recarregar"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
@@ -2718,15 +2719,18 @@ msgstr "Usuário"
 msgid "Root authentication"
 msgstr ""
 
+#~ msgid "D-Bus Error"
+#~ msgstr "Erro do D-Bus"
+
+#~ msgid "Cannot connect to D-Bus"
+#~ msgstr "Não foi possível conectar ao D-Bus"
+
 #~ msgid "Diagnostic tools"
 #~ msgstr "Ferramentas de diagnóstico"
 
 #, c-format
 #~ msgid "The server at %s is not reachable."
 #~ msgstr "O servidor em %s não está acessível."
-
-#~ msgid "Cannot connect to the Cockpit server"
-#~ msgstr "Não foi possível conectar ao servidor Cockpit"
 
 #~ msgid "Try Again"
 #~ msgstr "Tentar novamente"

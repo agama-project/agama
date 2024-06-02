@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-26 02:22+0000\n"
-"PO-Revision-Date: 2024-05-07 10:43+0000\n"
+"POT-Creation-Date: 2024-05-29 02:21+0000\n"
+"PO-Revision-Date: 2024-05-30 10:46+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ca/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 5.5.5\n"
 
 #: src/components/core/About.jsx:49 src/components/core/About.jsx:69
 msgid "About Agama"
@@ -53,27 +53,6 @@ msgstr ""
 #: src/components/storage/ProposalActionsDialog.jsx:98
 msgid "Close"
 msgstr "Tanca"
-
-#. TRANSLATORS: page title
-#: src/components/core/DBusError.jsx:34
-msgid "D-Bus Error"
-msgstr "Error de D-Bus"
-
-#: src/components/core/DBusError.jsx:38
-msgid "Cannot connect to D-Bus"
-msgstr "No es pot connectar a D-Bus."
-
-#: src/components/core/DBusError.jsx:43
-msgid ""
-"Could not connect to the D-Bus service. Please, check whether it is running."
-msgstr ""
-"No s'ha pogut connectar amb el servei D-Bus. Si us plau, comproveu si "
-"s'executa."
-
-#. TRANSLATORS: button label
-#: src/components/core/DBusError.jsx:51
-msgid "Reload"
-msgstr "Torna a carregar"
 
 #: src/components/core/FileViewer.jsx:66
 msgid "Reading file..."
@@ -336,6 +315,24 @@ msgstr "Escrivint"
 #: src/components/core/Selector.jsx:126
 msgid "auto selected"
 msgstr "seleccionat automàticament"
+
+#. TRANSLATORS: page title
+#: src/components/core/ServerError.jsx:34
+msgid "Agama Error"
+msgstr "Error de l'Agama"
+
+#: src/components/core/ServerError.jsx:38
+msgid "Cannot connect to Agama server"
+msgstr "No es pot connectar amb el servidor d'Agama."
+
+#: src/components/core/ServerError.jsx:43
+msgid "Please, check whether it is running."
+msgstr "Si us plau, comproveu si s'executa."
+
+#. TRANSLATORS: button label
+#: src/components/core/ServerError.jsx:51
+msgid "Reload"
+msgstr "Torna a carregar"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
@@ -1127,7 +1124,7 @@ msgstr "Contrasenya d'encriptació"
 
 #: src/components/software/PatternSelector.jsx:171
 msgid "None of the patterns match the filter."
-msgstr ""
+msgstr "Cap dels patrons coincideix amb el filtre."
 
 #: src/components/software/PatternSelector.jsx:177
 msgid "Software summary and filter options"
@@ -2767,15 +2764,18 @@ msgstr "Usuari"
 msgid "Root authentication"
 msgstr "Autenticació d'arrel"
 
+#~ msgid "D-Bus Error"
+#~ msgstr "Error de D-Bus"
+
+#~ msgid "Cannot connect to D-Bus"
+#~ msgstr "No es pot connectar a D-Bus."
+
 #~ msgid "Diagnostic tools"
 #~ msgstr "Eines de diagnòstic"
 
 #, c-format
 #~ msgid "The server at %s is not reachable."
 #~ msgstr "No es pot accedir al servidor a %s."
-
-#~ msgid "Cannot connect to the Cockpit server"
-#~ msgstr "No es pot connectar amb el servidor Cockpit."
 
 #~ msgid "Try Again"
 #~ msgstr "Torna-ho a provar"

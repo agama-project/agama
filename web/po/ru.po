@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-26 02:22+0000\n"
-"PO-Revision-Date: 2024-05-21 22:46+0000\n"
+"POT-Creation-Date: 2024-05-29 02:21+0000\n"
+"PO-Revision-Date: 2024-05-29 13:46+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ru/>\n"
@@ -55,27 +55,6 @@ msgstr ""
 #: src/components/storage/ProposalActionsDialog.jsx:98
 msgid "Close"
 msgstr "Закрыть"
-
-#. TRANSLATORS: page title
-#: src/components/core/DBusError.jsx:34
-msgid "D-Bus Error"
-msgstr "Ошибка D-Bus"
-
-#: src/components/core/DBusError.jsx:38
-msgid "Cannot connect to D-Bus"
-msgstr "Не удалось подключиться к службе D-Bus"
-
-#: src/components/core/DBusError.jsx:43
-msgid ""
-"Could not connect to the D-Bus service. Please, check whether it is running."
-msgstr ""
-"Не удалось подключиться к службе D-Bus. Пожалуйста, проверьте, запущена ли "
-"она."
-
-#. TRANSLATORS: button label
-#: src/components/core/DBusError.jsx:51
-msgid "Reload"
-msgstr "Обновить"
 
 #: src/components/core/FileViewer.jsx:66
 msgid "Reading file..."
@@ -338,6 +317,24 @@ msgstr "Ожидание"
 #: src/components/core/Selector.jsx:126
 msgid "auto selected"
 msgstr "автоматический выбор"
+
+#. TRANSLATORS: page title
+#: src/components/core/ServerError.jsx:34
+msgid "Agama Error"
+msgstr "Сбой Agama"
+
+#: src/components/core/ServerError.jsx:38
+msgid "Cannot connect to Agama server"
+msgstr "Не удалось подключиться к серверу Agama"
+
+#: src/components/core/ServerError.jsx:43
+msgid "Please, check whether it is running."
+msgstr "Пожалуйста, проверьте, запущен ли он."
+
+#. TRANSLATORS: button label
+#: src/components/core/ServerError.jsx:51
+msgid "Reload"
+msgstr "Обновить"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
@@ -1131,7 +1128,7 @@ msgstr "Пароль шифрования"
 
 #: src/components/software/PatternSelector.jsx:171
 msgid "None of the patterns match the filter."
-msgstr ""
+msgstr "Ни один из шаблонов не соответствует фильтру."
 
 #: src/components/software/PatternSelector.jsx:177
 msgid "Software summary and filter options"
@@ -2772,12 +2769,14 @@ msgstr "Пользователь"
 msgid "Root authentication"
 msgstr "Аутентификация root"
 
+#~ msgid "D-Bus Error"
+#~ msgstr "Ошибка D-Bus"
+
+#~ msgid "Cannot connect to D-Bus"
+#~ msgstr "Не удалось подключиться к службе D-Bus"
+
 #~ msgid "Diagnostic tools"
 #~ msgstr "Утилиты диагностики"
-
-#, fuzzy
-#~ msgid "Cannot connect to the Cockpit server"
-#~ msgstr "Не удалось подключиться к службе D-Bus"
 
 #, fuzzy
 #~ msgid "Content"

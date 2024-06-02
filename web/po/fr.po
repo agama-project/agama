@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-26 02:22+0000\n"
-"PO-Revision-Date: 2024-04-19 23:43+0000\n"
+"POT-Creation-Date: 2024-05-29 02:21+0000\n"
+"PO-Revision-Date: 2024-05-30 20:46+0000\n"
 "Last-Translator: faila fail <yassadmi@proton.me>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-web/fr/"
 ">\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 5.5.5\n"
 
 #: src/components/core/About.jsx:49 src/components/core/About.jsx:69
 msgid "About Agama"
@@ -53,27 +53,6 @@ msgstr "Pour plus d'informations, veuillez consulter le dépôt du projet à %s.
 #: src/components/storage/ProposalActionsDialog.jsx:98
 msgid "Close"
 msgstr "Fermer"
-
-#. TRANSLATORS: page title
-#: src/components/core/DBusError.jsx:34
-msgid "D-Bus Error"
-msgstr "Erreur D-Bus"
-
-#: src/components/core/DBusError.jsx:38
-msgid "Cannot connect to D-Bus"
-msgstr "Connexion au D-Bus impossible"
-
-#: src/components/core/DBusError.jsx:43
-msgid ""
-"Could not connect to the D-Bus service. Please, check whether it is running."
-msgstr ""
-"Impossible de se connecter au service D-Bus. Veuillez vérifier s'il est en "
-"cours d'exécution."
-
-#. TRANSLATORS: button label
-#: src/components/core/DBusError.jsx:51
-msgid "Reload"
-msgstr "Recharger"
 
 #: src/components/core/FileViewer.jsx:66
 msgid "Reading file..."
@@ -228,7 +207,7 @@ msgstr "Rechercher"
 #: src/components/core/LoginPage.jsx:56
 #, c-format
 msgid "Log in as %s"
-msgstr ""
+msgstr "Se connecter en tant que %s"
 
 #. TRANSLATORS: An explanation about required privileges for login into the installer. %s
 #. will be replaced by "root"
@@ -238,6 +217,8 @@ msgid ""
 "The installer requires %s user privileges. Please, provide its password to "
 "log in to the system."
 msgstr ""
+"Le programme d'installation requiert les privilèges de l'utilisateur %s. "
+"Veuillez fournir son mot de passe pour vous connecter au système."
 
 #: src/components/core/LoginPage.jsx:72
 #, fuzzy
@@ -252,14 +233,15 @@ msgstr "Mot de passe"
 #: src/components/core/LoginPage.jsx:86
 msgid "Could not log in. Please, make sure that the password is correct."
 msgstr ""
+"Connexion impossible. Veuillez vous assurer que le mot de passe soit correct."
 
 #: src/components/core/LoginPage.jsx:93
 msgid "Log in"
-msgstr ""
+msgstr "Se connecter"
 
 #: src/components/core/LoginPage.jsx:104
 msgid "What is this?"
-msgstr ""
+msgstr "De quoi s'agit-il ?"
 
 #: src/components/core/LogsButton.jsx:101
 msgid "Collecting logs..."
@@ -338,6 +320,28 @@ msgstr "En attente"
 #, fuzzy
 msgid "auto selected"
 msgstr "non sélectionné"
+
+#. TRANSLATORS: page title
+#: src/components/core/ServerError.jsx:34
+msgid "Agama Error"
+msgstr "Erreur d'Agama"
+
+#: src/components/core/ServerError.jsx:38
+#, fuzzy
+msgid "Cannot connect to Agama server"
+msgstr "Connexion au serveur Cockpit impossible"
+
+#: src/components/core/ServerError.jsx:43
+#, fuzzy
+msgid "Please, check whether it is running."
+msgstr ""
+"Impossible de se connecter au service D-Bus. Veuillez vérifier s'il est en "
+"cours d'exécution."
+
+#. TRANSLATORS: button label
+#: src/components/core/ServerError.jsx:51
+msgid "Reload"
+msgstr "Recharger"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
@@ -779,7 +783,7 @@ msgstr "Déconnexion"
 
 #: src/components/network/WifiNetworkListItem.jsx:49
 msgid "Failed"
-msgstr ""
+msgstr "Échec"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
@@ -870,6 +874,8 @@ msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group without modifying "
 "the partitions at the underlying devices"
 msgstr ""
+"Installation dans un nouveau groupe de volumes LVM (Gestionnaire de Volumes "
+"Logiques) sans modifier les partitions des périphériques sous-jacents"
 
 #. TRANSLATORS: installing on an LVM with multiple physical partitions/disks
 #: src/components/overview/StorageSection.jsx:59
@@ -877,6 +883,8 @@ msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group deleting all the "
 "content of the underlying devices"
 msgstr ""
+"Installation dans un nouveau groupe de volumes LVM (Gestionnaire de Volumes "
+"Logiques) en supprimant tout le contenu des périphériques sous-jacents"
 
 #. TRANSLATORS: installing on an LVM with multiple physical partitions/disks
 #: src/components/overview/StorageSection.jsx:62
@@ -884,6 +892,9 @@ msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group using a custom "
 "strategy to find the needed space at the underlying devices"
 msgstr ""
+"Installation dans un nouveau groupe de volumes LVM (Gestionnaire de volumes "
+"logiques) à l'aide d'une stratégie personnalisée pour trouver l'espace "
+"nécessaire sur les périphériques sous-jacents"
 
 #. TRANSLATORS: installing on an LVM with a single physical partition/disk,
 #. %s will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
@@ -1128,7 +1139,7 @@ msgstr "Mot de passe de chiffrement"
 
 #: src/components/software/PatternSelector.jsx:171
 msgid "None of the patterns match the filter."
-msgstr ""
+msgstr "Aucun des schémas ne correspond au filtre."
 
 #: src/components/software/PatternSelector.jsx:177
 msgid "Software summary and filter options"
@@ -1148,11 +1159,11 @@ msgstr "Changer de fuseau horaire"
 
 #: src/components/software/SoftwarePage.jsx:138
 msgid "No additional software was selected."
-msgstr ""
+msgstr "Aucun logiciel supplémentaire n'a été sélectionné."
 
 #: src/components/software/SoftwarePage.jsx:144
 msgid "The following software patterns are selected for installation:"
-msgstr ""
+msgstr "Les schémas logiciels suivants sont sélectionnés pour l'installation :"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
@@ -1168,7 +1179,7 @@ msgstr "Changer de fuseau horaire"
 
 #: src/components/storage/BootConfigField.jsx:99
 msgid "Installation will not configure partitions for booting."
-msgstr ""
+msgstr "L'installation ne configure pas les partitions de démarrage."
 
 #: src/components/storage/BootConfigField.jsx:101
 #, fuzzy
@@ -1180,23 +1191,30 @@ msgstr "réduction des partitions du périphérique d'installation"
 #: src/components/storage/BootConfigField.jsx:104
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
-msgstr ""
+msgstr "L'installation configurera les partitions pour amorçer à partir de %s."
 
 #: src/components/storage/BootSelectionDialog.jsx:117
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
 msgstr ""
+"Pour s'assurer que le nouveau système puisse démarrer, le programme "
+"d'installation peut avoir besoin de créer ou de configurer certaines "
+"partitions sur le disque approprié."
 
 #: src/components/storage/BootSelectionDialog.jsx:123
 msgid "Partitions to boot will be allocated at the installation disk."
 msgstr ""
+"Les partitions pour le démarrage seront allouées sur le disque "
+"d'installation."
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
 #: src/components/storage/BootSelectionDialog.jsx:128
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
 msgstr ""
+"Les partitions de démarrage seront allouées sur le disque d'installation "
+"(%s)."
 
 #: src/components/storage/BootSelectionDialog.jsx:135
 #, fuzzy
@@ -1216,11 +1234,11 @@ msgstr "Sélectionner une valeur"
 
 #: src/components/storage/BootSelectionDialog.jsx:161
 msgid "Partitions to boot will be allocated at the following device."
-msgstr ""
+msgstr "Les partitions à amorcer seront attribuées au périphérique suivant."
 
 #: src/components/storage/BootSelectionDialog.jsx:164
 msgid "Choose a disk for placing the boot loader"
-msgstr ""
+msgstr "Choisir un disque pour placer le chargeur d'amorçage"
 
 #: src/components/storage/BootSelectionDialog.jsx:176
 #, fuzzy
@@ -1231,6 +1249,8 @@ msgstr "Ne pas modifier"
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr ""
+"Aucune partition ne sera automatiquement configurée pour le démarrage. À "
+"utiliser avec précaution."
 
 #: src/components/storage/DASDFormatProgress.jsx:61
 msgid "Waiting for progress report"
@@ -1292,7 +1312,7 @@ msgstr "Type"
 #. usually keep untranslated
 #: src/components/storage/DASDTable.jsx:71
 msgid "DIAG"
-msgstr ""
+msgstr "DIAG"
 
 #: src/components/storage/DASDTable.jsx:72
 msgid "Formatted"
@@ -1373,6 +1393,10 @@ msgid ""
 "LVM Volume Group]. The corresponding physical volumes will be created on "
 "demand as new partitions at the selected devices."
 msgstr ""
+"Les systèmes de fichiers seront alloués par défaut en tant que [volumes "
+"logiques d'un nouveau groupe de volumes LVM]. Les volumes physiques "
+"correspondants seront créés à la demande en tant que nouvelles partitions "
+"sur les périphériques sélectionnés."
 
 #: src/components/storage/DeviceSelectionDialog.jsx:123
 #, fuzzy
@@ -1386,7 +1410,7 @@ msgstr "Groupe de volume système"
 
 #: src/components/storage/DeviceSelectionDialog.jsx:159
 msgid "Device selector for target disk"
-msgstr ""
+msgstr "Sélecteur de périphérique pour le disque cible"
 
 #: src/components/storage/DeviceSelectionDialog.jsx:175
 #, fuzzy
@@ -1418,7 +1442,7 @@ msgstr "Carte SD"
 #: src/components/storage/DeviceSelectorTable.jsx:78
 #, c-format
 msgid "%s disk"
-msgstr ""
+msgstr "Disque %s"
 
 #: src/components/storage/DeviceSelectorTable.jsx:79
 #, fuzzy
@@ -1486,18 +1510,21 @@ msgid ""
 "Full Disk Encryption (FDE) allows to protect the information stored at the "
 "device, including data, programs, and system files."
 msgstr ""
+"Le chiffrement intégral du disque (FDE) permet de protéger les informations "
+"stockées sur l'appareil, y compris les données, les programmes et les "
+"fichiers système."
 
 #: src/components/storage/EncryptionField.jsx:43
 msgid "disabled"
-msgstr ""
+msgstr "désactivé"
 
 #: src/components/storage/EncryptionField.jsx:44
 msgid "enabled"
-msgstr ""
+msgstr "activée"
 
 #: src/components/storage/EncryptionField.jsx:45
 msgid "using TPM unlocking"
-msgstr ""
+msgstr "utiliser le déverrouillage TPM"
 
 #. TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
 #: src/components/storage/EncryptionSettingsDialog.jsx:40
@@ -1552,11 +1579,11 @@ msgstr "Groupe de volume système"
 #: src/components/storage/InstallationDeviceField.jsx:58
 #, c-format
 msgid "new LVM volume group on %s"
-msgstr ""
+msgstr "nouveau groupe de volume LVM sur %s"
 
 #: src/components/storage/InstallationDeviceField.jsx:67
 msgid "storage technologies"
-msgstr ""
+msgstr "technologies de stockage"
 
 #: src/components/storage/InstallationDeviceField.jsx:124
 msgid "Prepare more devices by configuring advanced"
@@ -1597,7 +1624,7 @@ msgstr "avec des clichés"
 #: src/components/storage/PartitionsField.jsx:107
 #, c-format
 msgid "Mount %1$s at %2$s (%3$s)"
-msgstr ""
+msgstr "Monter %1$s à %2$s (%3$s)"
 
 #. TRANSLATORS: This results in something like "Swap at /dev/sda3 (2 GiB)" since
 #. %1$s is replaced by the device name, and %2$s by the size
@@ -1699,7 +1726,7 @@ msgstr "Présence d'autres volumes (%s)"
 #. file system; eg. adjusting the size of the swap
 #: src/components/storage/PartitionsField.jsx:204
 msgid "The amount of RAM in the system"
-msgstr ""
+msgstr "La quantité de RAM dans le système"
 
 #: src/components/storage/PartitionsField.jsx:257
 msgid "auto"
@@ -1709,7 +1736,7 @@ msgstr "auto"
 #: src/components/storage/PartitionsField.jsx:274
 #, c-format
 msgid "Reused %s"
-msgstr ""
+msgstr "%s Réutilisé"
 
 #: src/components/storage/PartitionsField.jsx:276
 #, fuzzy
@@ -1731,7 +1758,7 @@ msgstr "Informations sur la partition"
 #: src/components/storage/PartitionsField.jsx:295
 #, c-format
 msgid "Separate LVM at %s"
-msgstr ""
+msgstr "Séparer le LVM à %s"
 
 #: src/components/storage/PartitionsField.jsx:299
 #, fuzzy
@@ -1784,7 +1811,7 @@ msgstr "Ajouter un système de fichiers"
 
 #: src/components/storage/PartitionsField.jsx:599
 msgid "Other"
-msgstr ""
+msgstr "Autre"
 
 #: src/components/storage/PartitionsField.jsx:738
 msgid "Reset to defaults"
@@ -1800,6 +1827,8 @@ msgid ""
 "Structure of the new system, including any additional partition needed for "
 "booting,"
 msgstr ""
+"Structure du nouveau système, incluant toute partition supplémentaire "
+"nécessaire au démarrage,"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsDialog.jsx:67
@@ -1848,8 +1877,8 @@ msgstr "iSCSI"
 #, c-format
 msgid "There is %d destructive action planned"
 msgid_plural "There are %d destructive actions planned"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Il y a %d action destructrice prévue"
+msgstr[1] "Il y a %d actions destructrices prévues"
 
 #: src/components/storage/ProposalResultSection.jsx:73
 #, fuzzy
@@ -1875,12 +1904,16 @@ msgid_plural ""
 "During installation, %d actions will be performed to configure the system as "
 "displayed below"
 msgstr[0] ""
+"Pendant de l'installation, %d action sera effectuée pour configurer le "
+"système comme indiqué ci-dessous"
 msgstr[1] ""
+"Pendant l'installation, %d actions seront effectuées pour configurer le "
+"système comme indiqué ci-dessous"
 
 #. TRANSLATORS: The storage "Result" section's title
 #: src/components/storage/ProposalResultSection.jsx:175
 msgid "Result"
-msgstr ""
+msgstr "Résultat"
 
 #: src/components/storage/ProposalResultTable.jsx:73
 #, fuzzy
@@ -1947,7 +1980,7 @@ msgstr "Ne pas modifier"
 
 #: src/components/storage/SpaceActionsTable.jsx:111
 msgid "The content may be deleted"
-msgstr ""
+msgstr "Le contenu pourrait être supprimé"
 
 #: src/components/storage/SpaceActionsTable.jsx:144
 #, fuzzy
@@ -2011,6 +2044,7 @@ msgstr "la présence du système de fichiers pour %s"
 #, c-format
 msgid "The current file system on %s is selected to be mounted at %s."
 msgstr ""
+"Le système de fichiers actuel sur %s est sélectionné pour être monté sur %s."
 
 #. TRANSLATORS: Warning when editing a file system.
 #: src/components/storage/VolumeDialog.jsx:108
@@ -2106,7 +2140,7 @@ msgstr ", "
 #. TRANSLATORS: item which affects the final computed partition size
 #: src/components/storage/VolumeFields.jsx:268
 msgid "the amount of RAM in the system"
-msgstr ""
+msgstr "la quantité de RAM du système"
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
 #: src/components/storage/VolumeFields.jsx:271
@@ -2198,6 +2232,9 @@ msgid ""
 "The file systems are allocated at the installation device by default. "
 "Indicate a custom location to create the file system at a specific device."
 msgstr ""
+"Les systèmes de fichiers sont alloués par défaut sur le périphérique "
+"d'installation. Indiquez un emplacement personnalisé pour créer le système "
+"de fichiers sur un périphérique spécifique."
 
 #. TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
 #. by a mount path (e.g., /home).
@@ -2225,7 +2262,7 @@ msgstr "Taille exacte du système de fichiers."
 
 #: src/components/storage/VolumeLocationDialog.jsx:166
 msgid "Create a new partition"
-msgstr ""
+msgstr "Créer une nouvelle partition"
 
 #: src/components/storage/VolumeLocationDialog.jsx:167
 #, fuzzy
@@ -2245,6 +2282,8 @@ msgid ""
 "A new volume group will be allocated in the selected disk and the   file "
 "system will be created as a logical volume."
 msgstr ""
+"Un nouveau groupe de volumes sera attribué au disque sélectionné et le "
+"système de fichiers sera créé en tant que volume logique."
 
 #: src/components/storage/VolumeLocationDialog.jsx:186
 #, fuzzy
@@ -2256,6 +2295,7 @@ msgstr "Formatage des périphériques DASD"
 #, c-format
 msgid "The selected device will be formatted as %s file system."
 msgstr ""
+"Le périphérique sélectionné sera formaté en tant que système de fichiers %s."
 
 #: src/components/storage/VolumeLocationDialog.jsx:199
 #, fuzzy
@@ -2267,10 +2307,12 @@ msgid ""
 "The current file system on the selected device will be mounted   without "
 "formatting the device."
 msgstr ""
+"Le système de fichiers actuel sur le périphérique sélectionné sera monté "
+"sans formater le périphérique."
 
 #: src/components/storage/VolumeLocationSelectorTable.jsx:102
 msgid "Usage"
-msgstr ""
+msgstr "Utilisation"
 
 #: src/components/storage/ZFCPDiskForm.jsx:113
 msgid "The zFCP disk was not activated."
@@ -2633,7 +2675,7 @@ msgstr "Sélectionnez ce qu'il faut faire pour chaque partition."
 #. would read as "Find space performing a custom set of actions".
 #: src/components/storage/utils.js:118
 msgid "performing a custom set of actions"
-msgstr ""
+msgstr "réalisation d'une suite d'actions personnalisées"
 
 #: src/components/users/FirstUser.jsx:50
 msgid "No user defined yet."
@@ -2805,15 +2847,18 @@ msgstr "Utilisateur"
 msgid "Root authentication"
 msgstr "Authentification root"
 
+#~ msgid "D-Bus Error"
+#~ msgstr "Erreur D-Bus"
+
+#~ msgid "Cannot connect to D-Bus"
+#~ msgstr "Connexion au D-Bus impossible"
+
 #~ msgid "Diagnostic tools"
 #~ msgstr "Outils de diagnostic"
 
 #, c-format
 #~ msgid "The server at %s is not reachable."
 #~ msgstr "Le serveur %s n'est pas joignable."
-
-#~ msgid "Cannot connect to the Cockpit server"
-#~ msgstr "Connexion au serveur Cockpit impossible"
 
 #~ msgid "Try Again"
 #~ msgstr "Réessayer"

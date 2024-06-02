@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-26 02:22+0000\n"
+"POT-Creation-Date: 2024-05-29 02:21+0000\n"
 "PO-Revision-Date: 2024-03-13 09:42+0000\n"
 "Last-Translator: Natasha Ament <stacheldrahtje@gmail.com>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-web/nl/"
@@ -54,26 +54,6 @@ msgstr ""
 #: src/components/storage/ProposalActionsDialog.jsx:98
 msgid "Close"
 msgstr "Sluiten"
-
-#. TRANSLATORS: page title
-#: src/components/core/DBusError.jsx:34
-msgid "D-Bus Error"
-msgstr "D-Bus fout"
-
-#: src/components/core/DBusError.jsx:38
-msgid "Cannot connect to D-Bus"
-msgstr "Kan niet verbinden met D-Bus"
-
-#: src/components/core/DBusError.jsx:43
-msgid ""
-"Could not connect to the D-Bus service. Please, check whether it is running."
-msgstr ""
-"Kan niet verbinden met de D-Bus service. Controleer of deze gestart is."
-
-#. TRANSLATORS: button label
-#: src/components/core/DBusError.jsx:51
-msgid "Reload"
-msgstr "Herladen"
 
 #: src/components/core/FileViewer.jsx:66
 msgid "Reading file..."
@@ -337,6 +317,27 @@ msgstr "Wachten"
 #, fuzzy
 msgid "auto selected"
 msgstr "Niet ingesteld"
+
+#. TRANSLATORS: page title
+#: src/components/core/ServerError.jsx:34
+msgid "Agama Error"
+msgstr ""
+
+#: src/components/core/ServerError.jsx:38
+#, fuzzy
+msgid "Cannot connect to Agama server"
+msgstr "Kan niet verbinden met de Cockpit server"
+
+#: src/components/core/ServerError.jsx:43
+#, fuzzy
+msgid "Please, check whether it is running."
+msgstr ""
+"Kan niet verbinden met de D-Bus service. Controleer of deze gestart is."
+
+#. TRANSLATORS: button label
+#: src/components/core/ServerError.jsx:51
+msgid "Reload"
+msgstr "Herladen"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
@@ -2758,15 +2759,18 @@ msgstr "Gebruiker"
 msgid "Root authentication"
 msgstr "Root authenticatie"
 
+#~ msgid "D-Bus Error"
+#~ msgstr "D-Bus fout"
+
+#~ msgid "Cannot connect to D-Bus"
+#~ msgstr "Kan niet verbinden met D-Bus"
+
 #~ msgid "Diagnostic tools"
 #~ msgstr "Diagnostische hulpmiddelen"
 
 #, c-format
 #~ msgid "The server at %s is not reachable."
 #~ msgstr "De server op %s is niet bereikbaar."
-
-#~ msgid "Cannot connect to the Cockpit server"
-#~ msgstr "Kan niet verbinden met de Cockpit server"
 
 #~ msgid "Try Again"
 #~ msgstr "Probeer opnieuw"
