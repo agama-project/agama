@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.1.4", features = ["derive", "wrap_help"] }
+curl = { version = "0.4.44", features = ["protocol-ftp"] }
 agama-lib = { path="../agama-lib" }
 agama-settings = { path="../agama-settings" }
 serde = { version = "1.0.152" }
@@ -28,6 +29,7 @@ async-trait = "0.1.77"
 reqwest = { version = "0.11", features = ["json"] }
 home = "0.5.9"
 rpassword = "7.3.1"
+url = "2.5.0"
 
 [[bin]]
 name = "agama"

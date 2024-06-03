@@ -35,10 +35,15 @@ pub enum ConfigCommands {
     ///
     /// It is possible that many configuration settings do not have a value. Those settings
     /// are not included in the output.
+    ///
+    /// The output of command can be used as file content for `agama config load`.
     Show,
 
     /// Loads the configuration from a JSON file.
-    Load { path: String },
+    Load {
+        /// Local path to file with configuration. For schema see /usr/share/agama-cli/profile.json.schema
+        path: String,
+    },
 }
 
 pub enum ConfigAction {

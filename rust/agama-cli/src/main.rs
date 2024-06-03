@@ -144,6 +144,7 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
         Commands::Questions(subcommand) => run_questions_cmd(subcommand).await,
         Commands::Logs(subcommand) => run_logs_cmd(subcommand).await,
         Commands::Auth(subcommand) => run_auth_cmd(subcommand).await,
+        Commands::Download { url } => crate::profile::download(&url, std::io::stdout()),
     }
 }
 

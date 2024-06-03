@@ -104,12 +104,12 @@ this scenario, it is expected to use the CLI to interact with Agama. In addition
 any other tool available in the installation media. What's more, when using the Live ISO, you could
 install your own tools.
 
-Below there is a minimal working example to install ALP Dolomite:
+Below there is a minimal working example to install Tumbleweed:
 
 ```sh
 set -ex
 
-/usr/bin/agama config set software.product=ALP-Dolomite
+/usr/bin/agama config set product.id=Tumbleweed
 /usr/bin/agama config set user.userName=joe user.password=doe
 /usr/bin/agama install
 ```
@@ -133,9 +133,9 @@ internal network.
 ```sh
 set -ex
 
-/usr/bin/agama profile download ftp://my.server/tricky_hardware_setup.sh
+/usr/bin/agama download ftp://my.server/tricky_hardware_setup.sh > tricky_hardware_setup.sh
 sh tricky_hardware_setup.sh
-/usr/bin/agama config set software.product=Tumbleweed
+/usr/bin/agama config set product.id=Tumbleweed
 /usr/bin/agama config set user.userName=joe user.password=doe
 /usr/bin/agama install
 ```
@@ -147,13 +147,11 @@ Jsonnet may be unable to handle all of the profile changes that users wish to ma
 ```
 set -ex
 
-/usr/bin/agama profile download ftp://my.server/profile.json
+/usr/bin/agama download ftp://my.server/profile.json > /root/profile.json
 
 # modify profile.json here
 
-/usr/bin/agama profile validate profile.json
-/usr/bin/agama config load profile.json
-
+/usr/bin/agama profile import file:///root/profile.json
 /usr/bin/agama install
 ```
 
@@ -169,7 +167,7 @@ Agama and before installing RPMs, such as changing the fstab and mount an extra 
 ```sh
 set -ex
 
-/usr/bin/agama config set software.product=Tumbleweed
+/usr/bin/agama config set product.id=Tumbleweed
 /usr/bin/agama config set user.userName=joe user.password=doe
 
 /usr/bin/agama install --until partitioning # install till the partitioning step
@@ -191,9 +189,9 @@ software for internal network, then it must be modified before umount.
 ```sh
 set -ex
 
-/usr/bin/agama profile download ftp://my.server/velociraptor.config
+/usr/bin/agama download ftp://my.server/velociraptor.config
 
-/usr/bin/agama config set software.product=Tumbleweed
+/usr/bin/agama config set product.id=Tumbleweed
 /usr/bin/agama config set user.userName=joe user.password=doe
 
 /usr/bin/agama install --until deploy # do partitioning, rpm installation and configuration step
@@ -218,7 +216,7 @@ some kernel tuning or adding some remote storage that needs to be mounted during
 ```sh
 set -ex
 
-/usr/bin/agama config set software.product=Tumbleweed
+/usr/bin/agama config set product.id=Tumbleweed
 /usr/bin/agama config set user.userName=joe user.password=doe
 
 /usr/bin/agama install --until deploy # do partitioning, rpm installation and configuration step

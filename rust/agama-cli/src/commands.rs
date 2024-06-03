@@ -72,4 +72,16 @@ pub enum Commands {
     /// not affect the root user.
     #[command(subcommand)]
     Auth(AuthCommands),
+
+    /// Download file from given URL
+    ///
+    /// The purpose of this command is to download files using AutoYaST supported schemas (e.g. device:// or relurl://).
+    /// It can be used to download additional scripts, configuration files and so on.
+    /// You can use it for downloading Agama autoinstallation profiles. However, unless you need additional processing,
+    /// the "agama profile import" is recommended.
+    /// If you want to convert an AutoYaST profile, use "agama profile autoyast".
+    Download {
+        /// URL pointing to file for download
+        url: String,
+    },
 }
