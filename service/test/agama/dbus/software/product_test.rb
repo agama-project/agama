@@ -24,6 +24,8 @@ require "agama/dbus/software/product"
 require "agama/config"
 require "agama/registration"
 require "agama/software/manager"
+require "agama/ui_locale"
+require "agama/dbus/clients/locale"
 require "suse/connect"
 
 describe Agama::DBus::Software::Product do
@@ -37,8 +39,16 @@ describe Agama::DBus::Software::Product do
 
   let(:target_dir) { Dir.mktmpdir }
 
+  let(:locale_client) do
+     instance_double(
+       Agama::DBus::Clients::Locale,
+       ui_locale: "en_US.UTF-8", on_ui_locale_change: nil
+     )
+  end
+
   before do
     stub_const("Agama::Software::Manager::TARGET_DIR", target_dir)
+    allow(Agama::DBus::Clients::Locale).to receive(:instance).and_return(locale_client)
     allow(config).to receive(:products).and_return(products)
     allow(subject).to receive(:dbus_properties_changed)
     allow(Agama::ProductReader).to receive(:new).and_call_original
@@ -49,7 +59,7 @@ describe Agama::DBus::Software::Product do
   end
 
   let(:products) do
-    { "Tumbleweed" => {}, "ALP-Dolomite" => {} }
+    { "Tumbleweed" => {}, "MicroOS" => {} }
   end
 
   it "defines Product D-Bus interface" do
@@ -83,7 +93,7 @@ describe Agama::DBus::Software::Product do
 
     context "if the current product is registered" do
       before do
-        subject.select_product("Leap16")
+        subject.select_product("MicroOS")
         allow(backend.registration).to receive(:reg_code).and_return("123XX432")
       end
 
