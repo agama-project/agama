@@ -23,6 +23,7 @@ require_relative "../../test_helper"
 require_relative "storage_helpers"
 require "agama/config"
 require "agama/storage/proposal"
+require "agama/issue"
 require "y2storage"
 
 describe Agama::Storage::Proposal do
@@ -49,6 +50,50 @@ describe Agama::Storage::Proposal do
   end
   let(:config) { Agama::Config.from_file(config_path) }
 
+  ROOT_PART = {
+    "filesystem" => :ext4, "mount" => "/", "size" => "25%", "label" => "new_root"
+  }.freeze
+
+  let(:root) { ROOT_PART.merge("create" => true) }
+  let(:home) do
+    { "filesystem" => :xfs, "mount" => "/home", "size" => "50%", "create" => true }
+  end
+  let(:swap) do
+    { "filesystem" => :swap, "mount" => "swap", "size" => "1GB", "create" => true }
+  end
+
+  describe "#success?" do
+    it "returns false if no calculate has been called yet" do
+      expect(subject.success?).to eq(false)
+    end
+
+    context "if calculate_autoyast was already called" do
+      let(:partitioning) do
+        [{ "device" => "/dev/#{disk}", "use" => "free", "partitions" => [root] }]
+      end
+
+      before do
+        subject.calculate_autoyast(partitioning)
+      end
+
+      context "and the proposal was successful" do
+        let(:disk) { "sdb" }
+
+        it "returns true" do
+          expect(subject.success?).to eq(true)
+        end
+      end
+
+      context "and the proposal failed" do
+        let(:disk) { "sda" }
+
+        it "returns false" do
+          expect(subject.success?).to eq(false)
+        end
+      end
+    end
+  end
+
   describe "#calculate_autoyast" do
     def staging
       Y2Storage::StorageManager.instance.proposal.devices
@@ -56,18 +101,6 @@ describe Agama::Storage::Proposal do
 
     def root_filesystem(disk)
       disk.partitions.map(&:filesystem).compact.find(&:root?)
-    end
-
-    ROOT_PART = {
-      "filesystem" => :ext4, "mount" => "/", "size" => "25%", "label" => "new_root"
-    }.freeze
-
-    let(:root) { ROOT_PART.merge("create" => true) }
-    let(:home) do
-      { "filesystem" => :xfs, "mount" => "/home", "size" => "50%", "create" => true }
-    end
-    let(:swap) do
-      { "filesystem" => :swap, "mount" => "swap", "size" => "1GB", "create" => true }
     end
 
     describe "when partitions are specified" do
@@ -107,7 +140,9 @@ describe Agama::Storage::Proposal do
           )
         end
 
-        xit "registers no issues" do
+        it "registers no issues" do
+          subject.calculate_autoyast(partitioning)
+          expect(subject.issues).to be_empty
         end
 
         it "runs all the callbacks" do
@@ -129,6 +164,7 @@ describe Agama::Storage::Proposal do
           [{ "device" => "/dev/sda", "use" => "all", "partitions" => [home] }]
         end
 
+        # FIXME: Is it correct the store a successful proposal with fatal errors?
         it "returns true and stores a successful proposal" do
           expect(subject.calculate_autoyast(partitioning)).to eq true
           expect(Y2Storage::StorageManager.instance.proposal.failed?).to eq false
@@ -142,7 +178,13 @@ describe Agama::Storage::Proposal do
           expect(sda_partitions.size).to eq(2)
         end
 
-        xit "registers an issue" do
+        it "registers an issue" do
+          subject.calculate_autoyast(partitioning)
+          expect(subject.issues).to include(
+            an_object_having_attributes(
+              description: /No root/, severity: Agama::Issue::Severity::ERROR
+            )
+          )
         end
 
         it "runs all the callbacks" do
@@ -178,7 +220,12 @@ describe Agama::Storage::Proposal do
       context "if there is no available space" do
         let(:disk) { "sda" }
 
-        xit "todo: what is expected?" do
+        it "returns false and stores a failed proposal" do
+          expect(subject.calculate_autoyast(partitioning)).to eq false
+          expect(Y2Storage::StorageManager.instance.proposal.failed?).to eq true
+        end
+
+        xit "register issues" do
         end
       end
     end

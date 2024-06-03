@@ -59,6 +59,8 @@ module Agama
         #
         # @return [Array<Issue>]
         def issues
+          return [] unless storage_manager.proposal.failed?
+
           [target_device_issue, missing_devices_issue].compact
         end
 

@@ -105,7 +105,7 @@ module Agama
       #
       # @return [Array<Issue>]
       def issues
-        return [] if !calculated? || success?
+        return [] if !calculated?
 
         # This part depends on the strategy
         strategy_object.issues + [proposal_issue].compact
