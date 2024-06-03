@@ -75,11 +75,11 @@ pub enum Commands {
 
     /// Download file from given URL
     ///
-    /// Purpose of this command is to allow download from all supported schemas.
+    /// The purpose of this command is to download files using AutoYaST supported schemas (e.g. device:// or relurl://).
     /// It can be used to download additional scripts, configuration files and so on.
-    /// For agama autoinstallation profiles it can be also used, but unless additional processing is required
+    /// You can use it for downloading Agama autoinstallation profiles. However, unless you need additional processing,
     /// the "agama profile import" is recommended.
-    /// For autoyast conversion use directly "agama profile autoyast".
+    /// If you want to convert an AutoYaST profile, use "agama profile autoyast".
     Download {
         /// URL pointing to file for download
         url: String,

@@ -24,7 +24,7 @@ impl AutoyastProfile {
             out_fd.write_all(content.as_bytes())?;
             Ok(())
         } else {
-            let msg = format!("Unsupported autoyast format at {}", self.url);
+            let msg = format!("Unsupported AutoYaST format at {}", self.url);
             Err(anyhow::Error::msg(msg))
         }
     }

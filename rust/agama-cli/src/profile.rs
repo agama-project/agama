@@ -16,7 +16,7 @@ use url::Url;
 pub enum ProfileCommands {
     /// Download the autoyast profile and print resulting json
     Autoyast {
-        /// URL to autoyast XML, erb or rules&classes dir. Supports
+        /// AutoYaST profile's URL. Any AutoYaST scheme, ERB and rules/classes are supported.
         /// all schemas that autoyast supports.
         url: String,
     },
@@ -31,7 +31,7 @@ pub enum ProfileCommands {
 
     /// Evaluate a profile, injecting the hardware information from D-Bus
     ///
-    /// For example of jsonnet profile see
+    /// For an example of Jsonnet-based profile, see
     /// https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet
     Evaluate {
         /// Path to jsonnet file.
@@ -44,11 +44,11 @@ pub enum ProfileCommands {
     /// installation. Unless there is a need to inject additional commands between processing
     /// use this command instead of set of underlying commands.
     Import {
-        /// URL where profile is located. Supported schemas are all that download supports and additionally
-        /// autoyast specific ones. Supported files are json, jsonnet, sh for agama profiles and erb, xml, directory
-        /// for autoyast support.
+        /// Profile's URL. Supports the same schemas than te "download" command plus
+        /// AutoYaST specific ones. Supported files are json, jsonnet, sh for Agama profiles and ERB, XML, and rules/classes directories
+        /// for AutoYaST support.
         url: String,
-        /// Specific directory where all processing happens. If not specific temporary directory is used
+        /// Specific directory where all processing happens. By default it uses a temporary directory
         dir: Option<PathBuf>,
     },
 }
