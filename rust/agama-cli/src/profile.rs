@@ -110,7 +110,7 @@ async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> 
     let output_fd = File::create(output_path.clone())?;
     if path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/') {
         // autoyast specific download and convert to json
-        AutoyastProfile::new(&url)?.read(output_fd)?;
+        AutoyastProfile::new(&url)?.read_into(output_fd)?;
     } else {
         // just download profile
         download(&url_string, output_fd)?;
@@ -156,7 +156,7 @@ async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> 
 fn autoyast(url_string: String) -> anyhow::Result<()> {
     let url = Url::parse(&url_string)?;
     let reader = AutoyastProfile::new(&url)?;
-    reader.read(std::io::stdout())?;
+    reader.read_into(std::io::stdout())?;
     Ok(())
 }
 

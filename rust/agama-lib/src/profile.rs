@@ -17,7 +17,7 @@ impl AutoyastProfile {
         Ok(Self { url: url.clone() })
     }
 
-    pub fn read(&self, mut out_fd: impl Write) -> anyhow::Result<()> {
+    pub fn read_into(&self, mut out_fd: impl Write) -> anyhow::Result<()> {
         let path = self.url.path();
         if path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/') {
             let content = self.read_from_autoyast()?;
