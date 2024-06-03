@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Jun  3 07:49:16 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI: Add new commands "agama download" and
+  "agama profile autoyast" and remove "agama profile download" to
+  separate common curl-like download and autoyast specific one
+  which do conversion to json (gh#openSUSE/agama#1279)
+
+-------------------------------------------------------------------
 Wed May 29 12:15:37 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - CLI: Add new command "agama profile import" that does the whole
