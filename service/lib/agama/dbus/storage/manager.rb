@@ -215,9 +215,9 @@ module Agama
           success ? 0 : 1
         end
 
-        # Calculates a AutoYaST proposal.
+        # Calculates an AutoYaST proposal.
         #
-        # @param dbus_settings [Hash]
+        # @param dbus_settings [String]
         # @return [Integer] 0 success; 1 error
         def calculate_autoyast_proposal(dbus_settings)
           settings = JSON.parse(dbus_settings)
@@ -430,9 +430,16 @@ module Agama
           backend.deprecated_system = true
         end
 
+        # @todo Do not export a separate proposal object. For now, the guided proposal is still
+        #   exported to keep the current UI working.
         def export_proposal
-          @service.unexport(dbus_proposal) if dbus_proposal
-          # @todo Only export if strategy is guided.
+          if dbus_proposal
+            @service.unexport(dbus_proposal)
+            @dbus_proposal = nil
+          end
+
+          return unless proposal.strategy?(ProposalStrategy::GUIDED)
+
           @dbus_proposal = DBus::Storage::Proposal.new(proposal, logger)
           @service.export(@dbus_proposal)
         end
