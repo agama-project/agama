@@ -177,7 +177,7 @@ fn expand_merge_fn(settings: &SettingFieldsList) -> TokenStream2 {
     let arms = settings.all().iter().map(|s| {
         let field_name = &s.ident;
         match s.kind {
-            SettingKind::Scalar => quote! {
+            SettingKind::Scalar | SettingKind::Ignored => quote! {
                 if let Some(value) = &other.#field_name {
                     self.#field_name = Some(value.clone())
                 }
@@ -191,7 +191,6 @@ fn expand_merge_fn(settings: &SettingFieldsList) -> TokenStream2 {
             SettingKind::Collection => quote! {
                     self.#field_name = other.#field_name.clone();
             },
-            _ => quote! {},
         }
     });
 
