@@ -177,13 +177,6 @@ module Agama
             .map { |m| m.id.to_s }
         end
 
-        # Path of the D-Bus object containing the calculated proposal
-        #
-        # @return [::DBus::ObjectPath] Proposal object path or root path if no exported proposal yet
-        def result
-          dbus_proposal&.path || ::DBus::ObjectPath.new("/")
-        end
-
         # Default volume used as template
         #
         # @return [Hash]
