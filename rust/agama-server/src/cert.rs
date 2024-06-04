@@ -5,9 +5,9 @@ use openssl::bn::{BigNum, MsbOption};
 use openssl::hash::MessageDigest;
 use openssl::pkey::{PKey, Private};
 use openssl::rsa::Rsa;
-use std::{fs, path::Path};
 use openssl::x509::extension::{BasicConstraints, SubjectAlternativeName, SubjectKeyIdentifier};
 use openssl::x509::{X509NameBuilder, X509};
+use std::{fs, path::Path};
 
 const DEFAULT_CERT_DIR: &str = "/etc/agama.d/ssl";
 
@@ -20,7 +20,7 @@ impl Certificate {
     /// Writes cert, key to (for now well known) location(s)
     pub fn write(&self) -> anyhow::Result<()> {
         // check and create default dir if needed
-        if ! Path::new(DEFAULT_CERT_DIR).is_dir() {
+        if !Path::new(DEFAULT_CERT_DIR).is_dir() {
             std::fs::create_dir_all(DEFAULT_CERT_DIR)?;
         }
 
@@ -42,11 +42,8 @@ impl Certificate {
         let cert = X509::from_pem(&cert_bytes.as_slice());
         let key = PKey::private_key_from_pem(&key_bytes.as_slice());
 
-        if let (Ok(c),Ok(k)) = (cert, key) {
-            Ok(Certificate {
-                cert: c,
-                key: k,
-            })
+        if let (Ok(c), Ok(k)) = (cert, key) {
+            Ok(Certificate { cert: c, key: k })
         } else {
             Err(anyhow::anyhow!("Failed to read certificate"))
         }
@@ -57,7 +54,9 @@ impl Certificate {
         let rsa = Rsa::generate(2048)?;
         let key = PKey::from_rsa(rsa)?;
 
-        let hostname = gethostname().into_string().unwrap_or(String::from("localhost"));
+        let hostname = gethostname()
+            .into_string()
+            .unwrap_or(String::from("localhost"));
         let mut x509_name = X509NameBuilder::new()?;
         x509_name.append_entry_by_text("O", "Agama")?;
         x509_name.append_entry_by_text("CN", hostname.as_str())?;
@@ -103,7 +102,7 @@ impl Certificate {
 
         Ok(Certificate {
             cert: cert,
-            key: key
+            key: key,
         })
     }
 }

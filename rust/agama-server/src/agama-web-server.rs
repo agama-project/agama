@@ -79,23 +79,14 @@ struct ServeArgs {
     #[arg(long, default_value = None)]
     address2: Option<String>,
 
-    #[arg(
-        long,
-        default_value = "/etc/agama.d/ssl/key.pem",
-    )]
+    #[arg(long, default_value = "/etc/agama.d/ssl/key.pem")]
     key: Option<PathBuf>,
 
-    #[arg(
-        long,
-        default_value = "/etc/agama.d/ssl/cert.pem",
-    )]
+    #[arg(long, default_value = "/etc/agama.d/ssl/cert.pem")]
     cert: Option<PathBuf>,
 
     // Agama D-Bus address
-    #[arg(
-        long,
-        default_value = "unix:path=/run/agama/bus",
-    )]
+    #[arg(long, default_value = "unix:path=/run/agama/bus")]
     dbus_address: String,
 
     // Directory containing the web UI code
@@ -132,12 +123,14 @@ impl ServeArgs {
             let _ = certificate.write();
 
             Ok(certificate)
-        }
+        };
     }
 }
 
 /// Builds an SSL acceptor using a provided SSL certificate or generates a self-signed one
-fn ssl_acceptor(certificate: &agama_server::cert::Certificate) -> Result<SslAcceptor, openssl::error::ErrorStack> {
+fn ssl_acceptor(
+    certificate: &agama_server::cert::Certificate,
+) -> Result<SslAcceptor, openssl::error::ErrorStack> {
     let mut tls_builder = SslAcceptor::mozilla_modern_v5(SslMethod::tls_server())?;
 
     tls_builder.set_private_key(&certificate.key)?;
