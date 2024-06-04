@@ -83,13 +83,13 @@ struct ServeArgs {
         long,
         default_value = "/etc/agama.d/ssl/key.pem",
     )]
-    key: Option<String>,
+    key: Option<PathBuf>,
 
     #[arg(
         long,
         default_value = "/etc/agama.d/ssl/cert.pem",
     )]
-    cert: Option<String>,
+    cert: Option<PathBuf>,
 
     // Agama D-Bus address
     #[arg(
