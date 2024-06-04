@@ -26,7 +26,6 @@ dependencies = [
  "async-trait",
  "clap",
  "console",
- "convert_case",
  "curl",
  "fs_extra",
  "indicatif",

@@ -9,7 +9,6 @@ use agama_lib::{
     Store as SettingsStore,
 };
 use clap::Subcommand;
-use convert_case::{Case, Casing};
 use std::{collections::HashMap, error::Error, io, str::FromStr};
 
 #[derive(Subcommand, Debug)]
