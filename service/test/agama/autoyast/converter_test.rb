@@ -131,10 +131,13 @@ describe Agama::AutoYaST::Converter do
       end
     end
 
-    context "when a storage device is selected" do
-      it "exports the device" do
+    context "when partitioning is defined" do
+      it "exports the drives information" do
         subject.to_agama(workdir)
-        expect(result["storage"]).to include("bootDevice" => "/dev/vda")
+        expect(result["legacyAutoyastStorage"]).to include({
+          "device" => "/dev/vda",
+          "use"    => "all"
+        })
       end
     end
 
