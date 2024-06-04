@@ -38,8 +38,14 @@ module Agama
 
         @config = config
         @logger = logger || Logger.new($stdout)
+        @issues = []
         @on_calculate_callbacks = []
       end
+
+      # List of issues.
+      #
+      # @return [Array<Issue>]
+      attr_reader :issues
 
       # Whether the proposal was already calculated.
       #
@@ -52,10 +58,10 @@ module Agama
       #
       # @return [Boolean]
       def success?
-        calculated? && !proposal.failed?
+        calculated? && !proposal.failed? && issues.none?(&:error?)
       end
 
-      # Stores callbacks to be call after calculating a proposal.
+      # Stores callbacks to be called after calculating a proposal.
       def on_calculate(&block)
         @on_calculate_callbacks << block
       end
@@ -67,6 +73,11 @@ module Agama
         disk_analyzer&.candidate_disks || []
       end
 
+      # Settings used to calculate the current proposal.
+      #
+      # The type depends on the kind of proposal, see {#calculate_guided} and {#calculate_autoyast}.
+      #
+      # @return [Agama::Storage::ProposalSettings, Array<Hash>]
       def settings
         return unless calculated?
 
@@ -101,16 +112,10 @@ module Agama
         Actions.new(logger, proposal.devices.actiongraph).all
       end
 
-      # List of issues.
+      # Whether the current proposal was calculated the given strategy (:autoyast or :guided).
       #
-      # @return [Array<Issue>]
-      def issues
-        return [] if !calculated?
-
-        # This part depends on the strategy
-        strategy_object.issues + [proposal_issue].compact
-      end
-
+      # @param id [#downcase]
+      # @return [Boolean]
       def strategy?(id)
         return false unless calculated?
 
@@ -133,7 +138,16 @@ module Agama
       def calculate
         return false unless storage_manager.probed?
 
-        @strategy_object.calculate
+        @issues = []
+
+        begin
+          strategy_object.calculate
+          @issues << failed_issue if proposal.failed?
+        rescue Y2Storage::Error => e
+          handle_exception(e)
+        end
+
+        @issues.concat(strategy_object.issues)
         @on_calculate_callbacks.each(&:call)
         success?
       end
@@ -155,15 +169,39 @@ module Agama
         Y2Storage::StorageManager.instance
       end
 
-      # Returns an issue if the proposal is not valid.
-      #
-      # @return [Issue, nil]
-      def proposal_issue
-        return if success?
+      # Handle Y2Storage exceptions
+      def handle_exception(error)
+        case error
+        when Y2Storage::NoDiskSpaceError
+          @issues << failed_issue
+        when Y2Storage::Error
+          @issues << exception_issue(error)
+        else
+          raise error
+        end
+      end
 
-        Issue.new(_("Cannot accommodate the required file systems for installation"),
+      # Issue representing the proposal is not valid.
+      #
+      # @return [Issue]
+      def failed_issue
+        Issue.new(
+          _("Cannot accommodate the required file systems for installation"),
           source:   Issue::Source::CONFIG,
-          severity: Issue::Severity::ERROR)
+          severity: Issue::Severity::ERROR
+        )
+      end
+
+      # Issue to communicate a generic Y2Storage error.
+      #
+      # @return [Issue]
+      def exception_issue(error)
+        Issue.new(
+          _("A problem ocurred while calculating the storage setup"),
+          details:  error.message,
+          source:   Issue::Source::CONFIG,
+          severity: Issue::Severity::ERROR
+        )
       end
     end
   end

@@ -26,12 +26,13 @@ require "agama/storage/proposal_settings_conversion"
 module Agama
   module Storage
     module ProposalStrategies
-      # Backend class to calculate a storage proposal.
+      # Main strategy for the Agama proposal.
       class Guided < Base
         include Yast::I18n
 
         # @param config [Config] Agama config
         # @param logger [Logger]
+        # @param input_settings [ProposalSettings]
         def initialize(config, logger, input_settings)
           textdomain "agama"
 
@@ -47,17 +48,17 @@ module Agama
         # @return [ProposalSettings]
         attr_reader :settings
 
-        # Calculates a new proposal.
+        # @see Base#calculate
         def calculate
           select_target_device(input_settings) if missing_target_device?(input_settings)
-          calculate_proposal(input_settings)
-          used_settings = storage_manager.proposal.settings
-          @settings = ProposalSettingsConversion.from_y2storage(used_settings, input_settings)
+          proposal = guided_proposal(input_settings)
+          proposal.propose
+        ensure
+          storage_manager.proposal = proposal
+          @settings = ProposalSettingsConversion.from_y2storage(proposal.settings, input_settings)
         end
 
-        # List of issues.
-        #
-        # @return [Array<Issue>]
+        # @see Base#issues
         def issues
           return [] unless storage_manager.proposal.failed?
 
@@ -66,6 +67,8 @@ module Agama
 
       private
 
+        # Initial set of proposal settings
+        # @return [ProposalSettings]
         attr_reader :input_settings
 
         # Selects the first available device as target device for installation.
@@ -98,18 +101,16 @@ module Agama
           end
         end
 
-        # Instantiates and executes a Y2Storage proposal with the given settings
+        # Instance of the Y2Storage proposal to be used to run the calculation.
         #
         # @param settings [Y2Storage::ProposalSettings]
         # @return [Y2Storage::GuidedProposal]
-        def calculate_proposal(settings)
-          proposal = Y2Storage::MinGuidedProposal.new(
+        def guided_proposal(settings)
+          Y2Storage::MinGuidedProposal.new(
             settings:      ProposalSettingsConversion.to_y2storage(settings, config: config),
             devicegraph:   probed_devicegraph,
             disk_analyzer: disk_analyzer
           )
-          proposal.propose
-          storage_manager.proposal = proposal
         end
 
         # Returns an issue if there is no target device.

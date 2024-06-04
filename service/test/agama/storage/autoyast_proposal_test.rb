@@ -58,9 +58,6 @@ describe Agama::Storage::Proposal do
   let(:home) do
     { "filesystem" => :xfs, "mount" => "/home", "size" => "50%", "create" => true }
   end
-  let(:swap) do
-    { "filesystem" => :swap, "mount" => "swap", "size" => "1GB", "create" => true }
-  end
 
   describe "#success?" do
     it "returns false if no calculate has been called yet" do
@@ -164,9 +161,10 @@ describe Agama::Storage::Proposal do
           [{ "device" => "/dev/sda", "use" => "all", "partitions" => [home] }]
         end
 
-        # FIXME: Is it correct the store a successful proposal with fatal errors?
-        it "returns true and stores a successful proposal" do
-          expect(subject.calculate_autoyast(partitioning)).to eq true
+        it "returns false and stores the resulting proposal" do
+          expect(subject.calculate_autoyast(partitioning)).to eq false
+          # From the AutoinstProposal POV, a proposal without root is not an error
+          # if root was not requested
           expect(Y2Storage::StorageManager.instance.proposal.failed?).to eq false
         end
 
@@ -178,7 +176,7 @@ describe Agama::Storage::Proposal do
           expect(sda_partitions.size).to eq(2)
         end
 
-        it "registers an issue" do
+        it "registers a fatal issue due to the lack of root" do
           subject.calculate_autoyast(partitioning)
           expect(subject.issues).to include(
             an_object_having_attributes(
@@ -202,11 +200,31 @@ describe Agama::Storage::Proposal do
       end
     end
 
+    context "when the profile does not specify what to do with existing partitions" do
+      let(:partitioning) do
+        [{ "device" => "/dev/sda", "partitions" => [root] }]
+      end
+
+      it "returns false and stores a failed proposal" do
+        expect(subject.calculate_autoyast(partitioning)).to eq false
+        expect(Y2Storage::StorageManager.instance.proposal.failed?).to eq true
+      end
+
+      it "register a fatal issue about the missing 'use' element" do
+        subject.calculate_autoyast(partitioning)
+        expect(subject.issues).to include(
+          an_object_having_attributes(
+            description: /Missing element 'use'/, severity: Agama::Issue::Severity::ERROR
+          )
+        )
+      end
+    end
+
     describe "when existing partitions should be kept" do
       let(:partitioning) do
         [{ "device" => "/dev/#{disk}", "use" => "free", "partitions" => [root] }]
       end
-      
+
       context "if the requested partitions fit into the available space" do
         let(:disk) { "sdb" }
 
@@ -225,7 +243,13 @@ describe Agama::Storage::Proposal do
           expect(Y2Storage::StorageManager.instance.proposal.failed?).to eq true
         end
 
-        xit "register issues" do
+        it "register issues" do
+          subject.calculate_autoyast(partitioning)
+          expect(subject.issues).to include(
+            an_object_having_attributes(
+              description: /Cannot accommodate/, severity: Agama::Issue::Severity::ERROR
+            )
+          )
         end
       end
     end
@@ -242,13 +266,18 @@ describe Agama::Storage::Proposal do
       end
     end
 
-    describe "reusing partitions" do 
+    describe "reusing partitions" do
       let(:partitioning) do
-        [{ "device" => "/dev/sdb", "partitions" => [root] }]
+        [{ "device" => "/dev/sdb", "use" => "free", "partitions" => [root] }]
       end
 
       let(:root) do
         { "mount" => "/", "partition_nr" => 1, "create" => false }
+      end
+
+      it "returns true and registers no issues" do
+        expect(subject.calculate_autoyast(partitioning)).to eq true
+        expect(subject.issues).to be_empty
       end
 
       it "reuses the indicated partition" do
@@ -269,11 +298,16 @@ describe Agama::Storage::Proposal do
 
       context "if the partitions needed for booting do not fit" do
         let(:partitioning) do
-          [{ "device" => "/dev/sda", "partitions" => [root] }]
+          [{ "device" => "/dev/sda", "use" => "free", "partitions" => [root] }]
         end
 
         let(:root) do
           { "mount" => "/", "partition_nr" => 3, "create" => false }
+        end
+
+        it "returns true and stores a successful proposal" do
+          expect(subject.calculate_autoyast(partitioning)).to eq true
+          expect(Y2Storage::StorageManager.instance.proposal.failed?).to eq false
         end
 
         it "does not create the boot partitions" do
@@ -283,7 +317,14 @@ describe Agama::Storage::Proposal do
           expect(partitions.map(&:id)).to_not include Y2Storage::PartitionId::ESP
         end
 
-        xit "registers an issue" do
+        it "register a non-fatal issue" do
+          subject.calculate_autoyast(partitioning)
+          expect(subject.issues).to include(
+            an_object_having_attributes(
+              description: /partitions recommended for booting/,
+              severity:    Agama::Issue::Severity::WARN
+            )
+          )
         end
       end
     end
@@ -330,15 +371,101 @@ describe Agama::Storage::Proposal do
           expect(Y2Storage::StorageManager.instance.proposal.failed?).to eq true
         end
 
-        xit "registers an issue" do
+        it "register issues" do
+          subject.calculate_autoyast(partitioning)
+          expect(subject.issues).to include(
+            an_object_having_attributes(
+              description: /Cannot accommodate/, severity: Agama::Issue::Severity::ERROR
+            )
+          )
         end
       end
     end
 
-    xdescribe "LVM on RAID" do
+    describe "LVM on RAID" do
+      let(:partitioning) do
+        [
+          { "device" => "/dev/sda", "use" => "all", "partitions" => [raid_spec] },
+          { "device" => "/dev/sdb", "use" => "all", "partitions" => [raid_spec] },
+          { "device" => "/dev/md", "partitions" => [md_spec] },
+          { "device" => "/dev/vg0", "partitions" => [root_spec, home_spec], "type" => :CT_LVM }
+        ]
+      end
+
+      let(:md_spec) do
+        {
+          "partition_nr" => 1, "raid_options" => raid_options, "lvm_group" => "vg0"
+        }
+      end
+
+      let(:raid_options) do
+        { "raid_type" => "raid0" }
+      end
+
+      let(:root_spec) do
+        { "mount" => "/", "filesystem" => :ext4, "lv_name" => "root", "size" => "5G" }
+      end
+
+      let(:home_spec) do
+        { "mount" => "/home", "filesystem" => :xfs, "lv_name" => "home", "size" => "5G" }
+      end
+
+      let(:raid_spec) do
+        { "raid_name" => "/dev/md1", "size" => "20GB", "partition_id" => 253 }
+      end
+
+      it "returns true and registers no issues" do
+        expect(subject.calculate_autoyast(partitioning)).to eq true
+        expect(subject.issues).to be_empty
+      end
+
+      it "creates the expected layout" do
+        subject.calculate_autoyast(partitioning)
+        expect(staging.md_raids).to contain_exactly(
+          an_object_having_attributes(
+            "number"   => 1,
+            "md_level" => Y2Storage::MdLevel::RAID0
+          )
+        )
+        raid = staging.md_raids.first
+        expect(raid.lvm_pv.lvm_vg.vg_name).to eq "vg0"
+        expect(staging.lvm_vgs).to contain_exactly(
+          an_object_having_attributes("vg_name" => "vg0")
+        )
+        vg = staging.lvm_vgs.first.lvm_pvs.first
+        expect(vg.blk_device).to be_a(Y2Storage::Md)
+        expect(staging.lvm_lvs).to contain_exactly(
+          an_object_having_attributes("lv_name" => "root", "filesystem_mountpoint" => "/"),
+          an_object_having_attributes("lv_name" => "home", "filesystem_mountpoint" => "/home")
+        )
+      end
     end
 
-    xdescribe "using 'auto' for the size of some partitions" do
+    describe "using 'auto' for the size of some partitions" do
+      let(:partitioning) do
+        [{ "device" => "/dev/sda", "use" => "all", "partitions" => [root, swap] }]
+      end
+      let(:swap) do
+        { "filesystem" => :swap, "mount" => "swap", "size" => "auto" }
+      end
+
+      it "returns true and stores a successful proposal" do
+        expect(subject.calculate_autoyast(partitioning)).to eq true
+        expect(Y2Storage::StorageManager.instance.proposal.failed?).to eq false
+      end
+
+      # To prevent this fallback, we would need either to:
+      #  - Fix AutoinstProposal to honor the passed ProposalSettings everywhere
+      #  - Mock ProposalSettings.new_for_current_product to return settings obtained from Agama
+      it "fallbacks to legacy settings hardcoded at YaST" do
+        subject.calculate_autoyast(partitioning)
+        partitions = staging.find_by_name("/dev/sda").partitions.sort_by(&:number)
+        expect(partitions.size).to eq(3)
+        expect(partitions[0].id.is?(:esp)).to eq(true)
+        expect(partitions[1].filesystem.root?).to eq(true)
+        expect(partitions[2].filesystem.mount_path).to eq("swap")
+        expect(partitions[2].size).to eq 1.GiB
+      end
     end
 
     describe "automatic partitioning" do

@@ -26,7 +26,7 @@ require "y2storage"
 module Agama
   module Storage
     module ProposalStrategies
-      # Backend class to calculate a storage proposal.
+      # Base class for the strategies used by the Agama proposal.
       class Base
         # @param config [Config] Agama config
         # @param logger [Logger]
@@ -40,11 +40,17 @@ module Agama
           raise NotImplementedError
         end
 
-        # Calculates a new proposal.
+        # Calculates a new proposal, storing the result at the storage manager.
+        #
+        # @raise [Y2Storage::NoDiskSpaceError] if it was not possible to calculate the proposal
+        # @raise [Y2Storage::Error] if something went wrong while calculating the proposal
         def calculate
           raise NotImplementedError
         end
 
+        # Identifier for the strategy.
+        #
+        # @return [Symbol]
         def id
           self.class.name.split("::").last.downcase.to_sym
         end

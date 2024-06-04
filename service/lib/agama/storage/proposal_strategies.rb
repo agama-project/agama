@@ -21,7 +21,7 @@
 
 module Agama
   module Storage
-    # Bla
+    # Namespace for the different strategies potentially used by Storage::Proposal.
     module ProposalStrategies
     end
   end
