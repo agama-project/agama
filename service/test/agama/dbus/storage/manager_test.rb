@@ -292,30 +292,6 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#result" do
-    before do
-      allow(subject).to receive(:dbus_proposal).and_return(dbus_proposal)
-    end
-
-    context "when there is no exported proposal object yet" do
-      let(:dbus_proposal) { nil }
-
-      it "returns root path" do
-        expect(subject.result.to_s).to eq("/")
-      end
-    end
-
-    context "when there is an exported proposal object" do
-      let(:dbus_proposal) do
-        instance_double(Agama::DBus::Storage::Proposal, path: ::DBus::ObjectPath.new("/test"))
-      end
-
-      it "returns the proposal object path" do
-        expect(subject.result.to_s).to eq("/test")
-      end
-    end
-  end
-
   describe "#calculate_guided_proposal" do
     let(:dbus_settings) do
       {
