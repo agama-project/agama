@@ -43,7 +43,7 @@ module Agama
   module DBus
     module Storage
       # D-Bus object to manage storage installation
-      class Manager < BaseObject
+      class Manager < BaseObject # rubocop:disable Metrics/ClassLength
         include WithISCSIAuth
         include WithServiceStatus
         include ::DBus::ObjectManager
@@ -232,10 +232,16 @@ module Agama
           success ? 0 : 1
         end
 
+        # Whether a proposal was calculated.
+        #
+        # @return [Boolean]
         def proposal_calculated?
           proposal.calculated?
         end
 
+        # Proposal result, including information about success, strategy and settings.
+        #
+        # @return [Hash] Empty if there is no proposal yet.
         def proposal_result
           return {} unless proposal.calculated?
 
