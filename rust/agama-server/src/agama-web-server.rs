@@ -21,7 +21,7 @@ use futures_util::pin_mut;
 use hyper::body::Incoming;
 use hyper_util::rt::{TokioExecutor, TokioIo};
 use hyper_util::server::conn::auto::Builder;
-use openssl::ssl::{Ssl, SslAcceptor, SslFiletype, SslMethod};
+use openssl::ssl::{Ssl, SslAcceptor, SslMethod};
 use tokio::sync::broadcast::channel;
 use tokio_openssl::SslStream;
 use tower::Service;
@@ -91,8 +91,11 @@ struct ServeArgs {
     )]
     cert: Option<String>,
 
-    /// The D-Bus address for connecting to the Agama service
-    #[arg(long, default_value = "unix:path=/run/agama/bus")]
+    // Agama D-Bus address
+    #[arg(
+        long,
+        default_value = "unix:path=/run/agama/bus",
+    )]
     dbus_address: String,
 
     // Directory containing the web UI code
@@ -101,39 +104,49 @@ struct ServeArgs {
 }
 
 impl ServeArgs {
-    /// Builds an SSL acceptor using a provided SSL certificate or generates a self-signed one
-    fn ssl_acceptor(&self) -> Result<SslAcceptor, openssl::error::ErrorStack> {
-        let mut tls_builder = SslAcceptor::mozilla_modern_v5(SslMethod::tls_server())?;
-
-        // use default or explicitly provided certificate if any
-        if self.cert.clone().is_some_and(|c| Path::new(&c).exists()) && self.key.clone().is_some_and(|k| Path::new(&k).exists()) {
-            if let Some(cert) = &self.cert {
-                tracing::info!("Loading PEM certificate: {}", cert);
-                tls_builder.set_certificate_file(PathBuf::from(cert), SslFiletype::PEM)?;
-            }
-
-            if let Some(key) = &self.key {
-                tracing::info!("Loading PEM key: {}", key);
-                tls_builder.set_private_key_file(PathBuf::from(key), SslFiletype::PEM)?;
-            }
-        } else {
-            tracing::info!("Creating self-signed certificate");
-
-            // create a self-signed certificate if needed and store it for later use
-            let (cert, key) = agama_server::cert::create_certificate()?;
-
-            // tries to write generated self-signed certificate. Nobody cares if it fails
-            let _ = agama_server::cert::write_certificate(cert.clone(), key.clone());
-
-            tls_builder.set_private_key(&key)?;
-            tls_builder.set_certificate(&cert)?;
-        }
-
-        // check that the key belongs to the certificate
-        tls_builder.check_private_key()?;
-
-        Ok(tls_builder.build())
+    /// Returns true of given path to certificate points to an existing file
+    fn valid_cert_path(&self) -> bool {
+        self.cert.clone().is_some_and(|c| Path::new(&c).exists())
     }
+
+    /// Returns true of given path to key points to an existing file
+    fn valid_key_path(&self) -> bool {
+        self.key.clone().is_some_and(|k| Path::new(&k).exists())
+    }
+
+    /// Takes options provided by user and loads / creates Certificate struct according to them
+    fn to_certificate(&self) -> anyhow::Result<agama_server::cert::Certificate> {
+        return if self.valid_cert_path() && self.valid_key_path() {
+            let cert = self.cert.clone().unwrap();
+            let key = self.key.clone().unwrap();
+
+            // read the provided certificate
+            agama_server::cert::Certificate::read(cert.as_path(), key.as_path())
+        } else {
+            // ask for self-signed certificate
+            let certificate = agama_server::cert::Certificate::new()?;
+
+            // write the certificate for the later use
+            // for now do not care if writing self generated certificate failed or not, in the
+            // worst case we will generate new one ... which will surely be better
+            let _ = certificate.write();
+
+            Ok(certificate)
+        }
+    }
+}
+
+/// Builds an SSL acceptor using a provided SSL certificate or generates a self-signed one
+fn ssl_acceptor(certificate: &agama_server::cert::Certificate) -> Result<SslAcceptor, openssl::error::ErrorStack> {
+    let mut tls_builder = SslAcceptor::mozilla_modern_v5(SslMethod::tls_server())?;
+
+    tls_builder.set_private_key(&certificate.key)?;
+    tls_builder.set_certificate(&certificate.cert)?;
+
+    // check that the key belongs to the certificate
+    tls_builder.check_private_key()?;
+
+    Ok(tls_builder.build())
 }
 
 /// Checks whether the connection uses SSL or not
@@ -320,7 +333,7 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
     let service = web::service(config, tx, dbus, web_ui_dir).await?;
     // TODO: Move elsewhere? Use a singleton? (It would be nice to use the same
     // generated self-signed certificate on both ports.)
-    let ssl_acceptor = if let Ok(ssl_acceptor) = args.ssl_acceptor() {
+    let ssl_acceptor = if let Ok(ssl_acceptor) = ssl_acceptor(&args.to_certificate()?) {
         ssl_acceptor
     } else {
         return Err(anyhow::anyhow!("SSL initialization failed"));
