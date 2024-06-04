@@ -1,17 +1,14 @@
 use std::{
-    fs,
-    io::{self, Write},
-    os::unix::fs::OpenOptionsExt,
     path::{Path, PathBuf},
     pin::Pin,
     process::{ExitCode, Termination},
 };
 
-use agama_lib::connection_to;
+use agama_lib::{auth::AuthToken, connection_to};
 use agama_server::{
     l10n::helpers,
     logs::init_logging,
-    web::{self, generate_token, run_monitor},
+    web::{self, run_monitor},
 };
 use anyhow::Context;
 use axum::{
@@ -349,16 +346,9 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
     }
 }
 
-fn write_token(path: &str, secret: &str) -> io::Result<()> {
-    let token = generate_token(secret);
-    let mut file = fs::OpenOptions::new()
-        .create(true)
-        .truncate(true)
-        .write(true)
-        .mode(0o400)
-        .open(path)?;
-    file.write_all(token.as_bytes())?;
-    Ok(())
+fn write_token(path: &str, secret: &str) -> anyhow::Result<()> {
+    let token = AuthToken::generate(secret)?;
+    Ok(token.write(path)?)
 }
 
 /// Represents the result of execution.
