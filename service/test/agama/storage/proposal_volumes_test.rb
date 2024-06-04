@@ -149,13 +149,13 @@ describe Agama::Storage::Proposal do
           { mount_point: "swap", proposed: false },
           { mount_point: "/two", proposed: false, fallback_for_min_size: "/" }
         )
-        proposal.calculate(settings)
+        proposal.calculate_guided(settings)
       end
     end
 
     describe "#settings" do
       it "returns settings with a set of volumes with adjusted sizes" do
-        proposal.calculate(settings)
+        proposal.calculate_guided(settings)
 
         expect(proposal.settings.volumes).to contain_exactly(
           an_object_having_attributes(
@@ -190,13 +190,13 @@ describe Agama::Storage::Proposal do
           { mount_point: "swap", proposed: false },
           { mount_point: "/two", proposed: true, fallback_for_min_size: "/" }
         )
-        proposal.calculate(settings)
+        proposal.calculate_guided(settings)
       end
     end
 
     describe "#settings" do
       it "returns settings with a set of volumes with adjusted sizes" do
-        proposal.calculate(settings)
+        proposal.calculate_guided(settings)
 
         expect(proposal.settings.volumes).to contain_exactly(
           an_object_having_attributes(
@@ -232,13 +232,13 @@ describe Agama::Storage::Proposal do
           { mount_point: "swap", proposed: false },
           { mount_point: "/two", proposed: false, fallback_for_min_size: "/" }
         )
-        proposal.calculate(settings)
+        proposal.calculate_guided(settings)
       end
     end
 
     describe "#settings" do
       it "returns settings with a set of volumes with fixed limits and adjusted sizes" do
-        proposal.calculate(settings)
+        proposal.calculate_guided(settings)
 
         expect(proposal.settings.volumes).to contain_exactly(
           an_object_having_attributes(
@@ -273,13 +273,13 @@ describe Agama::Storage::Proposal do
             min_size: Y2Storage::DiskSize.GiB(1)
           }
         )
-        proposal.calculate(settings)
+        proposal.calculate_guided(settings)
       end
     end
 
     describe "#settings" do
       it "returns settings with a set of volumes with adjusted sizes" do
-        proposal.calculate(settings)
+        proposal.calculate_guided(settings)
 
         expect(proposal.settings.volumes).to contain_exactly(
           an_object_having_attributes(mount_path: "/", auto_size: true),
@@ -322,13 +322,13 @@ describe Agama::Storage::Proposal do
           },
           { mount_point: "/two", proposed: false, fallback_for_min_size: "/" }
         )
-        proposal.calculate(settings)
+        proposal.calculate_guided(settings)
       end
     end
 
     describe "#settings" do
       it "returns settings with a set of volumes with fixed limits and adjusted sizes" do
-        proposal.calculate(settings)
+        proposal.calculate_guided(settings)
 
         expect(proposal.settings.volumes).to contain_exactly(
           an_object_having_attributes(
