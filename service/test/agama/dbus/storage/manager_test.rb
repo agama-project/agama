@@ -434,6 +434,94 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
+  describe "#calculate_autoyast_proposal" do
+    let(:dbus_settings) { '[{ "device": "/dev/vda" }]' }
+
+    it "calculates an AutoYaST proposal with the settings from D-Bus" do
+      expect(proposal).to receive(:calculate_autoyast) do |settings|
+        expect(settings).to eq([{ "device" => "/dev/vda" }])
+      end
+
+      subject.calculate_autoyast_proposal(dbus_settings)
+    end
+  end
+
+  describe "#proposal_calculated?" do
+    before do
+      allow(proposal).to receive(:calculated?).and_return(calculated)
+    end
+
+    context "if the proposal is not calculated yet" do
+      let(:calculated) { false }
+
+      it "returns false" do
+        expect(subject.proposal_calculated?).to eq(false)
+      end
+    end
+
+    context "if the proposal is calculated" do
+      let(:calculated) { true }
+
+      it "returns true" do
+        expect(subject.proposal_calculated?).to eq(true)
+      end
+    end
+  end
+
+  describe "#proposal_result" do
+    before do
+      allow(proposal).to receive(:calculated?).and_return(calculated)
+    end
+
+    context "if the proposal is not calculated yet" do
+      let(:calculated) { false }
+
+      it "returns an empty hash" do
+        expect(subject.proposal_result).to eq({})
+      end
+    end
+
+    context "if the proposal is calculated" do
+      let(:calculated) { true }
+      let(:guided) { Agama::DBus::Storage::Manager::ProposalStrategy::GUIDED }
+      let(:autoyast) { Agama::DBus::Storage::Manager::ProposalStrategy::AUTOYAST }
+
+      context "and it is a guided proposal" do
+        before do
+          allow(proposal).to receive(:strategy?).with(guided).and_return(true)
+          allow(proposal).to receive(:success?).and_return(true)
+          allow(proposal).to receive(:settings).and_return(Agama::Storage::ProposalSettings.new)
+        end
+
+        it "returns a Hash with success, strategy and settings" do
+          result = subject.proposal_result
+
+          expect(result.keys).to contain_exactly("success", "strategy", "settings")
+          expect(result["success"]).to eq(true)
+          expect(result["strategy"]).to eq(guided)
+          expect(result["settings"]).to be_a(Hash)
+        end
+      end
+
+      context "and it is an autoyast proposal" do
+        before do
+          allow(proposal).to receive(:strategy?).with(guided).and_return(false)
+          allow(proposal).to receive(:success?).and_return(true)
+          allow(proposal).to receive(:settings).and_return({})
+        end
+
+        it "returns a Hash with success, strategy and settings" do
+          result = subject.proposal_result
+
+          expect(result.keys).to contain_exactly("success", "strategy", "settings")
+          expect(result["success"]).to eq(true)
+          expect(result["strategy"]).to eq(autoyast)
+          expect(result["settings"]).to be_a(String)
+        end
+      end
+    end
+  end
+
   describe "#iscsi_discover" do
     it "performs an iSCSI discovery" do
       expect(iscsi).to receive(:discover_send_targets) do |address, port, auth|
