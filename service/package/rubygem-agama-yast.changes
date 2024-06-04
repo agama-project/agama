@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun  4 14:16:02 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Convert AutoYaST partitioning section to JSON
+  (gh#openSUSE/agama#1285).
+
+-------------------------------------------------------------------
 Mon May 27 12:43:49 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Update product mount points as part of the probing (bsc#1225348).
