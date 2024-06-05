@@ -6,6 +6,7 @@ use std::{
 
 use agama_lib::{auth::AuthToken, connection_to};
 use agama_server::{
+    cert::Certificate,
     l10n::helpers,
     logs::init_logging,
     web::{self, run_monitor},
@@ -97,25 +98,25 @@ struct ServeArgs {
 impl ServeArgs {
     /// Returns true of given path to certificate points to an existing file
     fn valid_cert_path(&self) -> bool {
-        self.cert.clone().is_some_and(|c| Path::new(&c).exists())
+        self.cert.as_ref().is_some_and(|c| Path::new(&c).exists())
     }
 
     /// Returns true of given path to key points to an existing file
     fn valid_key_path(&self) -> bool {
-        self.key.clone().is_some_and(|k| Path::new(&k).exists())
+        self.key.as_ref().is_some_and(|k| Path::new(&k).exists())
     }
 
     /// Takes options provided by user and loads / creates Certificate struct according to them
-    fn to_certificate(&self) -> anyhow::Result<agama_server::cert::Certificate> {
-        return if self.valid_cert_path() && self.valid_key_path() {
+    fn to_certificate(&self) -> anyhow::Result<Certificate> {
+        if self.valid_cert_path() && self.valid_key_path() {
             let cert = self.cert.clone().unwrap();
             let key = self.key.clone().unwrap();
 
             // read the provided certificate
-            agama_server::cert::Certificate::read(cert.as_path(), key.as_path())
+            Certificate::read(cert.as_path(), key.as_path())
         } else {
             // ask for self-signed certificate
-            let certificate = agama_server::cert::Certificate::new()?;
+            let certificate = Certificate::new()?;
 
             // write the certificate for the later use
             // for now do not care if writing self generated certificate failed or not, in the
@@ -123,13 +124,13 @@ impl ServeArgs {
             let _ = certificate.write();
 
             Ok(certificate)
-        };
+        }
     }
 }
 
 /// Builds an SSL acceptor using a provided SSL certificate or generates a self-signed one
 fn ssl_acceptor(
-    certificate: &agama_server::cert::Certificate,
+    certificate: &Certificate,
 ) -> Result<SslAcceptor, openssl::error::ErrorStack> {
     let mut tls_builder = SslAcceptor::mozilla_modern_v5(SslMethod::tls_server())?;
 
