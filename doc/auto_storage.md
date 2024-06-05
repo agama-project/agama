@@ -251,12 +251,9 @@ Matching is performed using a `search` subsection. The format is still under hea
 may look similar to this.
 
 ```
-Search <string|complexSearch>
-
-ComplexSearch
+Search
   condition [<Condition>]
   sort [<Sort>]
-  min [<number>]
   max [<number>]
   ifNotFound [<NotFoundAction='skip'>]
 
@@ -279,11 +276,13 @@ Sort
   property <string>
   order <'asc'|'desc'>
 
-NotFoundAction <'continue'|'skip'|'error'>
+NotFoundAction <'create'|'skip'|'error'>
 ```
 
-For example, `search` sections could be used to find the three biggest disks in the system, delete
-all linux partitions bigger than 1 GiB within them and create new partitions of type RAID.
+By default, all devices in the scope fitting the conditions will be matched. The number of device
+matches can be limited using `max`. The following example shows how several `search` sections could
+be used to find the three biggest disks in the system, delete all linux partitions bigger than 1 GiB
+within them and create new partitions of type RAID.
 
 ```json
 "storage": {
@@ -316,30 +315,11 @@ all linux partitions bigger than 1 GiB within them and create new partitions of 
 }
 ```
 
-The example serves to illustrate several aspects of the searching mechanism.
-
-**FIXME:** The case of "drives" is special because they can only be matched to existing devices,
-not created. That makes searching different from other kind of devices at several levels. For
-example, the reasonable default values for `min` and `max` or the exact meaning of `ifNotFound`
-(which could be a way to implement find-or-create) would be affected.
-
-First of all, the scope of each search. That is, the devices from the system that are considered as
-possible candidates. That obviously depends on the place in the profile of the `search` section.
-A `search` section inside the description of an MD RAID will only match MD devices and a `search`
-section inside the `partitions` subsection of that RAID description will only match partitions of
-RAIDs that have matched the conditions of the most external `search`.
-
-Another aspect that may need some clarification is the usage of `min` and `ifNotFound`. The former
-can be combined with `max` to specify how many real devices are expected to match the definition and
-a value of 0 implies that is perfectly fine if no device is found. The latter defines what to do
-with the section if the minimum amount of devices is not reached...
-
-**FIXME:** how to handle all scenarios. For example, if defining volume groups with a min of 3
-but one is found? Should we create two more to reach the min or process the one we found? There are
-many combinations to discuss.
-
-**FIXME:** crazy idea: having min and max out of `search` (that is, also for new, non-searched,
-devices) in order to create several VGs or partitions or whatever at once.
+The example also serves to illustrate the scope of each search. That is, the devices from the system
+that are considered as possible candidates. That obviously depends on the place in the profile of
+the `search` section.  A `search` section inside the description of an MD RAID will only match MD
+devices and a `search` section inside the `partitions` subsection of that RAID description will only
+match partitions of RAIDs that have matched the conditions of the most external `search`.
 
 A given device can never match two different sections of the Agama profile. When several sections
 at the same level contain a search subsection, devices are matched in the order the sections appear
@@ -369,8 +349,6 @@ on the profile.
 An empty search will match all devices in the scope, so the following example would delete all the
 partitions of the chosen disk.
 
-**FIXME:** that actually depends on what we consider to be the default values for min and max.
-
 ```json
 "storage": {
     "drives": [
@@ -382,6 +360,28 @@ partitions of the chosen disk.
 }
 ```
 
+If there is not a single system device matching the scope and the conditions of a given search, then
+`ifNotFound` comes into play. If the value is "skip", the device definition is ignored. If it's
+"error" the whole process is aborted. The value "create", which cannot be used for a drive, will
+cause the `search` section to be ignored if no device matches. As a consequence, a new logical
+device (partition, LVM, etc.) will be created.
+
+Entries on `drives` are different to all other subsections describing devices because drives can
+only be matched to existing devices, they cannot be simply created. If `search` is omitted for a
+drive, it will be considered to contain the following one.
+
+```json
+{
+    "search": {
+        "sort": { "property": "name" },
+        "max": 1,
+        "ifNotFound": "error"
+    }
+}
+```
+
+### Under Discussion
+
 Very often, `search` will be used to find a device by its name. In that case, the syntax could be
 simplified to just contain the device name as string.
 
@@ -389,24 +389,17 @@ simplified to just contain the device name as string.
 { "search": "/dev/sda" }
 ```
 
-Special values like the empty string or "\*" can then be used as an alias to match all devices.
+Using a string as value for `search` may also be useful in other situations. Special values could be
+used as aliases for typical cases:
 
-### Under Discussion
+  - Empty string or "\*" to match all devices (the same than an empty section)
+  - Something like "next" to represent the default search for drives (see above)
 
-As mentioned above, there are several aspects of the exact syntax of `search` that are still under
-discussion. For example, the format to specify conditions could use the key as name of the property,
-resulting in something like this.
+If a simple string like "next" could be used to specify the standard search entry for drives, it
+would make sense to simply make `search` mandatory for all drives instead of assuming a default one.
 
-```json
-{
-    "search": {
-        "condition": { "sizeGib": 1, "operator": "greater" }
-    }
-}
-```
-
-Another possible improvement would be to support regular expressions in the string-based form. That
-would make it possible to use searchers like this.
+Another possible improvement for that string-based format would be supporting regular expressions.
+That would make it possible to use searchers like this.
 
 ```json
 { "search": ".*" }
@@ -415,6 +408,17 @@ would make it possible to use searchers like this.
 But regular expressions would not play well with libstorage-ng. Since not all device names are
 stored in the devicegraph, it is is necessary to use functions like `find_by_any_name` in order to
 perform an exhaustive search by name.
+
+Another apect under discussion is the format to specify conditions. Instead of the format described
+above, it would be possible to use the key as name of the property, resulting in something like this.
+
+```json
+{
+    "search": {
+        "condition": { "sizeGib": 1, "operator": "greater" }
+    }
+}
+```
 
 ## Referencing Other Devices
 
@@ -452,7 +456,6 @@ to be a reference to all the devices. As a consequence, this two examples are eq
             "search": {
                 "sort": { "property": "sizeKib", "order": "desc" },
                 "max": 1,
-                "min": 1
             },
             "alias": "biggest"
         },
@@ -460,7 +463,6 @@ to be a reference to all the devices. As a consequence, this two examples are eq
             "search": {
                 "sort": { "property": "sizeKib", "order": "desc" },
                 "max": 1,
-                "min": 1
             },
             "alias": "secondBiggest"
         }
@@ -493,9 +495,12 @@ to be a reference to all the devices. As a consequence, this two examples are eq
 }
 ```
 
-In addition to aliases, a `search` section can appear in all the places in which an alias can be
-used. In that case, the scope of the search is always the whole set of devices in the system (so
-the same conditions can be matched by a disk, a partition, an LVM device, etc.).
+### Under Discussion
+
+In addition to aliases, a `search` section could be accepted in all the places in which an alias can
+be used. In that case, the scope of the search would always be the whole set of devices in the
+system (so the same conditions can be matched by a disk, a partition, an LVM device, etc.) and
+`ifNotFound` could not be set to "create" (similar to what happens for drives in general).
 
 ```json
 "storage": {
@@ -601,34 +606,40 @@ And this will do the same, but creating a new LVM volume group on that first can
 }
 ```
 
-It's also possible to use a search section to specify a concrete disk...
+It's also possible to use an alias to specify a concrete disk...
 
 ```json
 "storage": {
+    "drives": [
+        { "alias": "target" }
+    ],
     "guided": {
         "device": {
-            "disk": { "search": "/dev/sda" }
+            "disk": "target"
         }
     }
 }
 ```
 
-or a set of disks where the LVM physical volumes can be created.
+or to specify the set of disks where the LVM physical volumes can be created.
 
 ```json
 "storage": {
+    "drives": [
+        {
+            "alias": "nvme",
+            "search": { "condition": { "property": "driver", "value": "nvme" } }
+        }
+    ],
     "guided": {
         "device": {
-            "newLvmVg": [
-                { "search": { "condition": { "property": "driver", "value": "nvme" } } }
-            ]
+            "newLvmVg": ["nvme"]
         }
     }
 }
 ```
 
-Of course, it's also possible to uss an alias. In that case, the aliases can correspond to devices
-that are created by Agama itself.
+The alias can correspond to devices that are created by Agama itself.
 
 ```json
 "storage": {
@@ -645,8 +656,8 @@ that are created by Agama itself.
 }
 ```
 
-Apart from specifying the main target device, both aliases and search sections can be used wherever
-a device is expected, eg. when indicating a special target for a given volume.
+Apart from specifying the main target device, aliases can be used wherever a device is expected, eg.
+when indicating a special target for a given volume.
 
 In principle, the list of volumes will have the same format than the existing HTTP API used by
 the UI for calculating the storage proposal. That is, if the list is not provided the default
@@ -661,3 +672,31 @@ allows to indicate that a given set of partitions can be resized if needed to al
 without actually indicating how much those partitions should be resized. The Guided Proposal
 algorithm decides whether to resize and how much based on the other settings. Currently there is no
 way to express that in the auto-installation profile.
+
+### Under Discussion
+
+It could also be possible to accept a `search` element in all places in which an alias can be used.
+
+```json
+"storage": {
+    "guided": {
+        "device": {
+            "newLvmVg": [
+                { "search": { "condition": { "property": "driver", "value": "nvme" } } }
+            ]
+        }
+    }
+}
+```
+
+Even combining that with the string-based syntax suggested for `search`.
+
+```json
+"storage": {
+    "guided": {
+        "device": {
+            "disk": { "search": "/dev/sda" }
+        }
+    }
+}
+```
