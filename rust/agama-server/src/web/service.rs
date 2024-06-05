@@ -42,7 +42,9 @@ impl MainServiceBuilder {
     where
         P: AsRef<Path>,
     {
-        let api_router = Router::new().route("/ws", get(super::ws::ws_handler));
+        let api_router = Router::new()
+            .route("/ws", get(super::ws::ws_handler))
+            .route("/terminal", get(super::terminal_ws::handler));
         let config = ServiceConfig::default();
 
         Self {

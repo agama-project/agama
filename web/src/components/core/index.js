@@ -61,6 +61,7 @@ export { default as OptionsPicker } from "./OptionsPicker";
 export { default as Reminder } from "./Reminder";
 export { default as Tag } from "./Tag";
 export { default as TreeTable } from "./TreeTable";
+export { default as TerminalPage } from "./TerminalPage";
 export { default as ControlledPanels } from "./ControlledPanels";
 export { default as Field } from "./Field";
 export { ExpandableField, SwitchField } from "./Field";

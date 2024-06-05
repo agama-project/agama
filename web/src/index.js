@@ -42,6 +42,7 @@ import { UsersPage } from "~/components/users";
 import { L10nPage } from "~/components/l10n";
 import { LoginPage } from "./components/core";
 import { NetworkPage } from "~/components/network";
+import { TerminalPage } from "~/components/core";
 
 /**
  * As JSX components might import CSS stylesheets, our styles must be imported
@@ -79,6 +80,7 @@ root.render(
               <Route path="/users" element={<UsersPage />} />
             </Route>
             <Route path="products" element={<ProductSelectionPage />} />
+            <Route path="terminal" element={<TerminalPage />} />
           </Route>
         </Route>
       </Routes>

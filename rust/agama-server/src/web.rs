@@ -26,6 +26,7 @@ mod http;
 mod service;
 mod state;
 mod ws;
+mod terminal_ws;
 
 use agama_lib::{connection, error::ServiceError};
 pub use auth::generate_token;
