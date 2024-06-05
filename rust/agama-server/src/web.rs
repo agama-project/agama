@@ -28,7 +28,6 @@ mod state;
 mod ws;
 
 use agama_lib::{connection, error::ServiceError};
-pub use auth::generate_token;
 pub use config::ServiceConfig;
 pub use docs::ApiDoc;
 pub use event::{Event, EventsReceiver, EventsSender};

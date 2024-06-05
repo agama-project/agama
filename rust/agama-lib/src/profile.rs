@@ -1,47 +1,32 @@
 use crate::error::ProfileError;
 use anyhow::Context;
-use curl::easy::Easy;
 use jsonschema::JSONSchema;
 use log::info;
 use serde_json;
-use std::{fs, io, io::Write, path::Path, process::Command};
+use std::{fs, io::Write, path::Path, process::Command};
 use tempfile::{tempdir, TempDir};
 use url::Url;
 
-/// Downloads a profile for a given location.
-pub struct ProfileReader {
+/// Downloads and converts autoyast profile.
+pub struct AutoyastProfile {
     url: Url,
 }
 
-impl ProfileReader {
-    pub fn new(url: &str) -> anyhow::Result<Self> {
-        let url = Url::parse(url)?;
-        Ok(Self { url })
+impl AutoyastProfile {
+    pub fn new(url: &Url) -> anyhow::Result<Self> {
+        Ok(Self { url: url.clone() })
     }
 
-    pub fn read(&self) -> anyhow::Result<String> {
+    pub fn read_into(&self, mut out_fd: impl Write) -> anyhow::Result<()> {
         let path = self.url.path();
         if path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/') {
-            self.read_from_autoyast()
+            let content = self.read_from_autoyast()?;
+            out_fd.write_all(content.as_bytes())?;
+            Ok(())
         } else {
-            self.read_from_url()
+            let msg = format!("Unsupported AutoYaST format at {}", self.url);
+            Err(anyhow::Error::msg(msg))
         }
-    }
-
-    fn read_from_url(&self) -> anyhow::Result<String> {
-        let mut buf = Vec::new();
-        {
-            let mut handle = Easy::new();
-            handle.url(self.url.as_str())?;
-
-            let mut transfer = handle.transfer();
-            transfer.write_function(|data| {
-                buf.extend(data);
-                Ok(data.len())
-            })?;
-            transfer.perform().unwrap();
-        }
-        Ok(String::from_utf8(buf)?)
     }
 
     fn read_from_autoyast(&self) -> anyhow::Result<String> {
@@ -132,7 +117,7 @@ impl ProfileValidator {
 pub struct ProfileEvaluator {}
 
 impl ProfileEvaluator {
-    pub fn evaluate(&self, profile_path: &Path) -> anyhow::Result<()> {
+    pub fn evaluate(&self, profile_path: &Path, mut out_fd: impl Write) -> anyhow::Result<()> {
         let dir = tempdir()?;
 
         let working_path = dir.path().join("profile.jsonnet");
@@ -152,7 +137,7 @@ impl ProfileEvaluator {
                 String::from_utf8(result.stderr).context("Invalid UTF-8 sequence from jsonnet")?;
             return Err(ProfileError::EvaluationError(message).into());
         }
-        io::stdout().write_all(&result.stdout)?;
+        out_fd.write_all(&result.stdout)?;
         Ok(())
     }
 

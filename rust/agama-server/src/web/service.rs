@@ -1,5 +1,6 @@
 use super::http::{login, login_from_query, logout, session};
-use super::{auth::TokenClaims, config::ServiceConfig, state::ServiceState, EventsSender};
+use super::{config::ServiceConfig, state::ServiceState, EventsSender};
+use agama_lib::auth::TokenClaims;
 use axum::{
     body::Body,
     extract::Request,

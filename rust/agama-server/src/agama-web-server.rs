@@ -1,17 +1,14 @@
 use std::{
-    fs,
-    io::{self, Write},
-    os::unix::fs::OpenOptionsExt,
     path::{Path, PathBuf},
     pin::Pin,
     process::{ExitCode, Termination},
 };
 
-use agama_lib::connection_to;
+use agama_lib::{auth::AuthToken, connection_to};
 use agama_server::{
     l10n::helpers,
     logs::init_logging,
-    web::{self, generate_token, run_monitor},
+    web::{self, run_monitor},
 };
 use anyhow::Context;
 use axum::{
@@ -35,17 +32,25 @@ const TOKEN_FILE: &str = "/run/agama/token";
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    /// Start the API server.
+    /// Starts the API server.
+    ///
+    /// This command starts the server in the given ports. The secondary port, if enabled, uses SSL.
+    /// If no certificate is specified, agama-web-server generates a self-signed one.
     Serve(ServeArgs),
-    /// Display the API documentation in OpenAPI format.
+    /// Generates the API documentation in OpenAPI format.
     Openapi,
 }
 
+/// Manage Agama's HTTP/JSON API.
+///
+/// Agama's public interface is composed by an HTTP/JSON API and a WebSocket. Using this API is
+/// possible to inspect or change the configuration, start the installation process and monitor
+/// changes and progress. This program, agama-web-server, implements such an API.
+///
+/// To start the API, use the "serve" command. If you want to get an OpenAPI representation, just go
+/// for the "doc" command.
 #[derive(Parser, Debug)]
-#[command(
-    version,
-    about = "Starts the Agama web-based API.",
-    long_about = None)]
+#[command(max_term_width = 100)]
 struct Cli {
     #[command(subcommand)]
     pub command: Commands,
@@ -64,36 +69,29 @@ fn find_web_ui_dir() -> PathBuf {
 
 #[derive(Args, Debug)]
 struct ServeArgs {
-    // Address/port to listen on (":::80" listens for both IPv6 and IPv4
-    // connections unless manually disabled in /proc/sys/net/ipv6/bindv6only)
-    #[arg(long, default_value = ":::80", help = "Primary address to listen on")]
+    // Address/port to listen on. ":::80" listens for both IPv6 and IPv4
+    // connections unless manually disabled in /proc/sys/net/ipv6/bindv6only.
+    /// Primary port to listen on
+    #[arg(long, default_value = ":::80")]
     address: String,
-    #[arg(
-        long,
-        default_value = None,
-        help = "Optional secondary address to listen on"
-    )]
+
+    /// Optional secondary address to listen on
+    #[arg(long, default_value = None)]
     address2: Option<String>,
-    #[arg(
-        long,
-        default_value = None,
-        help = "Path to the SSL private key file in PEM format"
-    )]
+
+    /// Path to the SSL private key file in PEM format
+    #[arg(long, default_value = None)]
     key: Option<String>,
-    #[arg(
-        long,
-        default_value = None,
-        help = "Path to the SSL certificate file in PEM format"
-    )]
+
+    /// Path to the SSL certificate file in PEM format
+    #[arg(long, default_value = None)]
     cert: Option<String>,
-    // Agama D-Bus address
-    #[arg(
-        long,
-        default_value = "unix:path=/run/agama/bus",
-        help = "The D-Bus address for connecting to the Agama service"
-    )]
+
+    /// The D-Bus address for connecting to the Agama service
+    #[arg(long, default_value = "unix:path=/run/agama/bus")]
     dbus_address: String,
-    // Directory containing the web UI code.
+
+    // Directory containing the web UI code
     #[arg(long)]
     web_ui_dir: Option<PathBuf>,
 }
@@ -292,6 +290,7 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
 /// Start serving the API.
 /// `options`: command-line arguments.
 async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
+    _ = helpers::init_locale();
     init_logging().context("Could not initialize the logger")?;
 
     let (tx, _) = channel(16);
@@ -347,16 +346,9 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
     }
 }
 
-fn write_token(path: &str, secret: &str) -> io::Result<()> {
-    let token = generate_token(secret);
-    let mut file = fs::OpenOptions::new()
-        .create(true)
-        .truncate(true)
-        .write(true)
-        .mode(0o400)
-        .open(path)?;
-    file.write_all(token.as_bytes())?;
-    Ok(())
+fn write_token(path: &str, secret: &str) -> anyhow::Result<()> {
+    let token = AuthToken::generate(secret)?;
+    Ok(token.write(path)?)
 }
 
 /// Represents the result of execution.
@@ -376,7 +368,6 @@ impl Termination for CliResult {
 #[tokio::main]
 async fn main() -> CliResult {
     let cli = Cli::parse();
-    _ = helpers::init_locale();
 
     if let Err(error) = run_command(cli).await {
         eprintln!("{:?}", error);

@@ -21,7 +21,6 @@
 
 export { default as About } from "./About";
 export { default as PageMenu } from "./PageMenu";
-export { default as DBusError } from "./DBusError";
 export { default as Description } from "./Description";
 export { default as Section } from "./Section";
 export { default as FormLabel } from "./FormLabel";
@@ -52,6 +51,7 @@ export { default as Tip } from "./Tip";
 export { default as NumericTextInput } from "./NumericTextInput";
 export { default as PasswordInput } from "./PasswordInput";
 export { default as Selector } from "./Selector";
+export { default as ServerError } from "./ServerError";
 export { default as ExpandableSelector } from "./ExpandableSelector";
 export { default as OptionsPicker } from "./OptionsPicker";
 export { default as Reminder } from "./Reminder";

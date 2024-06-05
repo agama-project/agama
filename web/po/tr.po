@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-26 02:22+0000\n"
+"POT-Creation-Date: 2024-05-29 02:21+0000\n"
 "PO-Revision-Date: 2024-05-16 14:46+0000\n"
 "Last-Translator: Özgür Arslan <ozgurarslln@gmail.com>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -53,26 +53,6 @@ msgstr ""
 #: src/components/storage/ProposalActionsDialog.jsx:98
 msgid "Close"
 msgstr "Kapat"
-
-#. TRANSLATORS: page title
-#: src/components/core/DBusError.jsx:34
-msgid "D-Bus Error"
-msgstr "D-Bus Hata"
-
-#: src/components/core/DBusError.jsx:38
-msgid "Cannot connect to D-Bus"
-msgstr "D-Bus'a bağlanılamıyor"
-
-#: src/components/core/DBusError.jsx:43
-msgid ""
-"Could not connect to the D-Bus service. Please, check whether it is running."
-msgstr ""
-"D-Bus hizmetine bağlanılamadı. Lütfen çalışıp çalışmadığını kontrol edin."
-
-#. TRANSLATORS: button label
-#: src/components/core/DBusError.jsx:51
-msgid "Reload"
-msgstr "Yenile"
 
 #: src/components/core/FileViewer.jsx:66
 msgid "Reading file..."
@@ -331,6 +311,27 @@ msgstr "Bekleyin"
 #: src/components/core/Selector.jsx:126
 msgid "auto selected"
 msgstr "otomatik seçildi"
+
+#. TRANSLATORS: page title
+#: src/components/core/ServerError.jsx:34
+msgid "Agama Error"
+msgstr ""
+
+#: src/components/core/ServerError.jsx:38
+#, fuzzy
+msgid "Cannot connect to Agama server"
+msgstr "D-Bus'a bağlanılamıyor"
+
+#: src/components/core/ServerError.jsx:43
+#, fuzzy
+msgid "Please, check whether it is running."
+msgstr ""
+"D-Bus hizmetine bağlanılamadı. Lütfen çalışıp çalışmadığını kontrol edin."
+
+#. TRANSLATORS: button label
+#: src/components/core/ServerError.jsx:51
+msgid "Reload"
+msgstr "Yenile"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
@@ -2672,6 +2673,9 @@ msgstr ""
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr ""
+
+#~ msgid "D-Bus Error"
+#~ msgstr "D-Bus Hata"
 
 #~ msgid "Diagnostic tools"
 #~ msgstr "Tanı araçları"

@@ -10,7 +10,6 @@ agama-settings = { path="../agama-settings" }
 anyhow = "1.0"
 async-trait = "0.1.77"
 cidr = { version = "0.2.2", features = ["serde"] }
-curl = { version = "0.4.44", features = ["protocol-ftp"] }
 futures-util = "0.3.29"
 jsonschema = { version = "0.16.1", default-features = false }
 log = "0.4"
@@ -25,3 +24,8 @@ tokio-stream = "0.1.14"
 url = "2.5.0"
 utoipa = "4.2.0"
 zbus = { version = "3", default-features = false, features = ["tokio"] }
+# Needed to define curl error in profile errors
+curl = { version = "0.4.44", features = ["protocol-ftp"] }
+jsonwebtoken = "9.3.0"
+chrono = { version = "0.4.38", default-features = false, features = ["now", "std", "alloc", "clock"] }
+home = "0.5.9"

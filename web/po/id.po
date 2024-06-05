@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-26 02:22+0000\n"
+"POT-Creation-Date: 2024-05-29 02:21+0000\n"
 "PO-Revision-Date: 2024-04-09 17:43+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -53,27 +53,6 @@ msgstr ""
 #: src/components/storage/ProposalActionsDialog.jsx:98
 msgid "Close"
 msgstr "Tutup"
-
-#. TRANSLATORS: page title
-#: src/components/core/DBusError.jsx:34
-msgid "D-Bus Error"
-msgstr "Kesalahan D-Bus"
-
-#: src/components/core/DBusError.jsx:38
-msgid "Cannot connect to D-Bus"
-msgstr "Tidak dapat tersambung ke D-Bus"
-
-#: src/components/core/DBusError.jsx:43
-msgid ""
-"Could not connect to the D-Bus service. Please, check whether it is running."
-msgstr ""
-"Tidak dapat tersambung ke layanan D-Bus. Silakan periksa apakah sudah "
-"berjalan."
-
-#. TRANSLATORS: button label
-#: src/components/core/DBusError.jsx:51
-msgid "Reload"
-msgstr "Muat ulang"
 
 #: src/components/core/FileViewer.jsx:66
 msgid "Reading file..."
@@ -335,6 +314,28 @@ msgstr "Menunggu"
 #, fuzzy
 msgid "auto selected"
 msgstr "tidak dipilih"
+
+#. TRANSLATORS: page title
+#: src/components/core/ServerError.jsx:34
+msgid "Agama Error"
+msgstr ""
+
+#: src/components/core/ServerError.jsx:38
+#, fuzzy
+msgid "Cannot connect to Agama server"
+msgstr "Tidak dapat tersambung ke server Cockpit"
+
+#: src/components/core/ServerError.jsx:43
+#, fuzzy
+msgid "Please, check whether it is running."
+msgstr ""
+"Tidak dapat tersambung ke layanan D-Bus. Silakan periksa apakah sudah "
+"berjalan."
+
+#. TRANSLATORS: button label
+#: src/components/core/ServerError.jsx:51
+msgid "Reload"
+msgstr "Muat ulang"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
@@ -2781,15 +2782,18 @@ msgstr "Pengguna"
 msgid "Root authentication"
 msgstr "Autentikasi root"
 
+#~ msgid "D-Bus Error"
+#~ msgstr "Kesalahan D-Bus"
+
+#~ msgid "Cannot connect to D-Bus"
+#~ msgstr "Tidak dapat tersambung ke D-Bus"
+
 #~ msgid "Diagnostic tools"
 #~ msgstr "Alat bantu diagnostik"
 
 #, c-format
 #~ msgid "The server at %s is not reachable."
 #~ msgstr "Server di %s tidak dapat dijangkau."
-
-#~ msgid "Cannot connect to the Cockpit server"
-#~ msgstr "Tidak dapat tersambung ke server Cockpit"
 
 #~ msgid "Try Again"
 #~ msgstr "Coba lagi"

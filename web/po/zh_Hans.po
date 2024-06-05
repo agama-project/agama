@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-26 02:22+0000\n"
+"POT-Creation-Date: 2024-05-29 02:21+0000\n"
 "PO-Revision-Date: 2024-05-21 19:46+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
@@ -50,25 +50,6 @@ msgstr "若想了解更多信息，请从 %s 访问项目仓库。"
 #: src/components/storage/ProposalActionsDialog.jsx:98
 msgid "Close"
 msgstr "关闭"
-
-#. TRANSLATORS: page title
-#: src/components/core/DBusError.jsx:34
-msgid "D-Bus Error"
-msgstr "D-Bus 错误"
-
-#: src/components/core/DBusError.jsx:38
-msgid "Cannot connect to D-Bus"
-msgstr "无法连接到 D-Bus"
-
-#: src/components/core/DBusError.jsx:43
-msgid ""
-"Could not connect to the D-Bus service. Please, check whether it is running."
-msgstr "无法连接到 D-Bus 服务，请检查它是否在运行。"
-
-#. TRANSLATORS: button label
-#: src/components/core/DBusError.jsx:51
-msgid "Reload"
-msgstr "重载"
 
 #: src/components/core/FileViewer.jsx:66
 msgid "Reading file..."
@@ -312,6 +293,26 @@ msgstr "正在等候"
 #: src/components/core/Selector.jsx:126
 msgid "auto selected"
 msgstr "自动选择"
+
+#. TRANSLATORS: page title
+#: src/components/core/ServerError.jsx:34
+msgid "Agama Error"
+msgstr ""
+
+#: src/components/core/ServerError.jsx:38
+#, fuzzy
+msgid "Cannot connect to Agama server"
+msgstr "无法连接到 Cockpit 服务器"
+
+#: src/components/core/ServerError.jsx:43
+#, fuzzy
+msgid "Please, check whether it is running."
+msgstr "无法连接到 D-Bus 服务，请检查它是否在运行。"
+
+#. TRANSLATORS: button label
+#: src/components/core/ServerError.jsx:51
+msgid "Reload"
+msgstr "重载"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
@@ -2691,15 +2692,18 @@ msgstr "用户"
 msgid "Root authentication"
 msgstr "Root 认证"
 
+#~ msgid "D-Bus Error"
+#~ msgstr "D-Bus 错误"
+
+#~ msgid "Cannot connect to D-Bus"
+#~ msgstr "无法连接到 D-Bus"
+
 #~ msgid "Diagnostic tools"
 #~ msgstr "诊断工具"
 
 #, c-format
 #~ msgid "The server at %s is not reachable."
 #~ msgstr "无法访问位于 %s 上的服务器。"
-
-#~ msgid "Cannot connect to the Cockpit server"
-#~ msgstr "无法连接到 Cockpit 服务器"
 
 #~ msgid "Try Again"
 #~ msgstr "再试一次"

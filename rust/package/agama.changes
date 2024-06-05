@@ -1,4 +1,33 @@
 -------------------------------------------------------------------
+Mon Jun  3 07:49:16 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI: Add new commands "agama download" and
+  "agama profile autoyast" and remove "agama profile download" to
+  separate common curl-like download and autoyast specific one
+  which do conversion to json (gh#openSUSE/agama#1279)
+
+-------------------------------------------------------------------
+Wed May 29 12:15:37 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI: Add new command "agama profile import" that does the whole
+  autoinstallation processing and loads the configuration
+  (gh#openSUSE/agama#1270).
+
+-------------------------------------------------------------------
+Wed May 29 11:16:11 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve command-line interface help (gh#openSUSE/agama#1269 and
+  (gh#openSUSE/agama#1273).
+- agama-web-server connects to D-Bus only when needed
+  (gh#openSUSE/agama#1273).
+
+-------------------------------------------------------------------
+Wed May 29 10:40:21 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- The HTTP request to perform a probing is not blocking anymore
+  (gh#openSUSE/agama#1272).
+
+-------------------------------------------------------------------
 Mon May 27 14:11:55 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - The "agama auth" command reads the password from the standard

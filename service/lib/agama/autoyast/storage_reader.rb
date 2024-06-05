@@ -34,20 +34,12 @@ module Agama
         @profile = profile
       end
 
-      # @return [Hash] Agama "storage" section
+      # @return [Hash] Agama "legacyAutoyastStorage" section
       def read
         drives = profile.fetch_as_array("partitioning")
-        return {} if drives.nil?
+        return {} if drives.empty?
 
-        # TODO: rely on AutoinstProfile classes
-        devices = drives.each_with_object([]) do |d, all|
-          next unless d["device"]
-
-          all << d["device"]
-        end
-        return {} if devices.empty?
-
-        { "storage" => { "bootDevice" => devices.first } }
+        { "legacyAutoyastStorage" => drives }
       end
     end
   end

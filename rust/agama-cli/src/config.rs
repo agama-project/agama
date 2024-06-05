@@ -1,9 +1,9 @@
 use crate::{
-    auth,
     error::CliError,
     printers::{print, Format},
 };
 use agama_lib::{
+    auth::AuthToken,
     connection,
     install_settings::{InstallSettings, Scope},
     Store as SettingsStore,
@@ -15,17 +15,35 @@ use std::{collections::HashMap, error::Error, io, str::FromStr};
 
 #[derive(Subcommand, Debug)]
 pub enum ConfigCommands {
-    /// Add an element to a collection
+    /// Add an element to a collection.
+    ///
+    /// In case of collections, this command allows adding a new element. For instance, let's add a
+    /// new item to the list of software patterns:
+    ///
+    /// $ agama config add software.patterns value=gnome
     Add { key: String, values: Vec<String> },
+
     /// Set one or many installation settings
-    Set {
-        /// key-value pairs (e.g., user.name="Jane Doe")
-        values: Vec<String>,
-    },
-    /// Shows the value of one or many configuration settings
+    ///
+    /// For scalar values, this command allows setting a new value. For instance, let's change the
+    /// product to install:
+    ///
+    /// $ agama config set product.id=Tumbleweed
+    Set { values: Vec<String> },
+
+    /// Shows the value of the configuration settings.
+    ///
+    /// It is possible that many configuration settings do not have a value. Those settings
+    /// are not included in the output.
+    ///
+    /// The output of command can be used as file content for `agama config load`.
     Show,
-    /// Loads the configuration from a JSON file
-    Load { path: String },
+
+    /// Loads the configuration from a JSON file.
+    Load {
+        /// Local path to file with configuration. For schema see /usr/share/agama-cli/profile.json.schema
+        path: String,
+    },
 }
 
 pub enum ConfigAction {
@@ -35,17 +53,13 @@ pub enum ConfigAction {
     Load(String),
 }
 
-fn token() -> Option<String> {
-    auth::jwt().or_else(|_| auth::agama_token()).ok()
-}
-
 pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<()> {
-    let Some(token) = token() else {
+    let Some(token) = AuthToken::find() else {
         println!("You need to login for generating a valid token");
         return Ok(());
     };
 
-    let client = agama_lib::http_client(token)?;
+    let client = agama_lib::http_client(token.as_str())?;
     let store = SettingsStore::new(connection().await?, client).await?;
 
     let command = parse_config_command(subcommand)?;
