@@ -51,10 +51,17 @@ describe Agama::AutoYaST::StorageReader do
       end
     end
 
+    context "when there are no drives" do
+      let(:profile) { { "partitioning" => [] } }
+
+      it "returns an empty hash" do
+        expect(subject.read).to be_empty
+      end
+    end
+
     context "when there is a list of drives" do
-      it "uses the first 'device' key as 'bootDevice'" do
-        boot_device = subject.read.dig("storage", "bootDevice")
-        expect(boot_device).to eq("/dev/vda")
+      it "returns the list as 'legacyAutoyastStorage'" do
+        expect(subject.read["legacyAutoyastStorage"]).to eq(profile["partitioning"])
       end
     end
   end
