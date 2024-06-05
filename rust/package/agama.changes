@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun  5 13:53:59 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Process the legacyAutoyastStorage section of the profile
+  (gh#openSUSE/agama#1284).
+
+-------------------------------------------------------------------
 Mon Jun  3 07:49:16 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - CLI: Add new commands "agama download" and
