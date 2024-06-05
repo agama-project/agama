@@ -10,7 +10,7 @@ The Agama profile can contain either a `storage` section or a `legacyAutoyastSto
 The rest of this document describes the `storage` section.
 
 That `legacyAutoyastStorage` is a 1:1 representation of the XML specification of AutoYaST. No
-json validation will be performed for it.
+JSON validation will be performed for it.
 
 ### Implementation Considerations for AutoYaST Specification
 
