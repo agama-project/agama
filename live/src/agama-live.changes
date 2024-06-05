@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun 11 21:39:51 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the jq package to the image (gh#openSUSE/agama#1314).
+
+-------------------------------------------------------------------
 Thu Jun  6 14:30:19 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Automatically generate the root password (gh#openSUSE/agama#1292)

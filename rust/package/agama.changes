@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Jun 11 21:35:00 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- CLI: use the master token /run/agama/token if available and
+  readable (gh#openSUSE/agama#1287).
+- CLI: remove the "config add/set" subcommands
+  (gh#openSUSE/agama#1314).
+
+-------------------------------------------------------------------
 Mon Jun 10 14:24:33 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Add mtu property for network connections
