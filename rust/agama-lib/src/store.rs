@@ -45,7 +45,7 @@ impl<'a> Store<'a> {
     /// Loads the installation settings from the D-Bus service.
     ///
     /// NOTE: The storage AutoYaST settings cannot be loaded because they cannot be modified. The
-    /// ability of using the storage AutoYaST settings from a json config file is temporary and it
+    /// ability of using the storage AutoYaST settings from a JSON config file is temporary and it
     /// will be removed in the future.
     pub async fn load(&self, only: Option<Vec<Scope>>) -> Result<InstallSettings, ServiceError> {
         let scopes = match only {

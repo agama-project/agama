@@ -7,7 +7,7 @@ use zbus::Connection;
 /// Stores the storage AutoYaST settings to the D-Bus service.
 ///
 /// NOTE: The AutoYaST settings are not loaded from D-Bus because they cannot be modified. The only
-/// way of using the storage AutoYaST settings is by loading a json config file.
+/// way of using the storage AutoYaST settings is by loading a JSON config file.
 pub struct StorageAutoyastStore<'a> {
     storage_client: StorageClient<'a>,
 }

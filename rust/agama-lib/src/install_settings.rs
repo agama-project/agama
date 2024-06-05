@@ -54,7 +54,7 @@ impl FromStr for Scope {
     type Err = &'static str;
 
     // Do not generate the StorageAutoyast scope. Note that storage AutoYaST settings will only be
-    // temporary availble for importing an AutoYaST profile. But CLI should not allow modifying the
+    // temporary available for importing an AutoYaST profile. But CLI should not allow modifying the
     // storate AutoYaST settings.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
