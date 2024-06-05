@@ -1,6 +1,6 @@
 #! /bin/bash
 
-set -x
+set -ex
 
 # KIWI functions
 test -f /.kconfig && . /.kconfig
@@ -18,23 +18,29 @@ systemctl enable NetworkManager.service
 systemctl enable avahi-daemon.service
 systemctl enable agama.service
 systemctl enable agama-web-server.service
+systemctl enable agama-password-cmdline.service
+systemctl enable agama-password-dialog.service
+systemctl enable agama-password-systemd.service
 systemctl enable agama-auto.service
 systemctl enable agama-hostname.service
 systemctl enable agama-proxy-setup.service
 systemctl enable setup-systemd-proxy-env.path
 systemctl enable x11-autologin.service
-systemctl enable spice-vdagent.service
+systemctl enable spice-vdagentd.service
 systemctl enable zramswap
 
 # default target
 systemctl set-default graphical.target
 
-# adjust owner of extracted files
-chown -R root:root /root
-find /etc -user 1000 | xargs chown root:root
+# disable snapshot cleanup
+systemctl disable snapper-cleanup.timer
+systemctl disable snapper-timeline.timer
+
+# disable unused services
+systemctl disable YaST2-Firstboot.service
+systemctl disable YaST2-Second-Stage.service
 
 ### setup dracut for live system
-
 label=${kiwi_install_volid:-$kiwi_iname}
 arch=$(uname -m)
 
