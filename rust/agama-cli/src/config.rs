@@ -1,9 +1,9 @@
 use crate::{
-    auth,
     error::CliError,
     printers::{print, Format},
 };
 use agama_lib::{
+    auth::AuthToken,
     connection,
     install_settings::{InstallSettings, Scope},
     Store as SettingsStore,
@@ -53,17 +53,13 @@ pub enum ConfigAction {
     Load(String),
 }
 
-fn token() -> Option<String> {
-    auth::jwt().or_else(|_| auth::agama_token()).ok()
-}
-
 pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<()> {
-    let Some(token) = token() else {
+    let Some(token) = AuthToken::find() else {
         println!("You need to login for generating a valid token");
         return Ok(());
     };
 
-    let client = agama_lib::http_client(token)?;
+    let client = agama_lib::http_client(token.as_str())?;
     let store = SettingsStore::new(connection().await?, client).await?;
 
     let command = parse_config_command(subcommand)?;

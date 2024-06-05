@@ -1,9 +1,7 @@
 //! Implements the basic handlers for the HTTP-based API (login, logout, ping, etc.).
 
-use super::{
-    auth::{generate_token, AuthError, TokenClaims},
-    state::ServiceState,
-};
+use super::{auth::AuthError, state::ServiceState};
+use agama_lib::auth::{AuthToken, TokenClaims};
 use axum::{
     body::Body,
     extract::{Query, State},
@@ -56,9 +54,9 @@ pub async fn login(
         .set_credentials("root", login.password);
     pam_client.authenticate()?;
 
-    let token = generate_token(&state.config.jwt_secret);
+    let token = AuthToken::generate(&state.config.jwt_secret)?;
     let content = Json(AuthResponse {
-        token: token.to_owned(),
+        token: token.to_string(),
     });
 
     let mut headers = HeaderMap::new();
@@ -86,8 +84,9 @@ pub async fn login_from_query(
 ) -> impl IntoResponse {
     let mut headers = HeaderMap::new();
 
-    if TokenClaims::from_token(&params.token, &state.config.jwt_secret).is_ok() {
-        let cookie = auth_cookie_from_token(&params.token);
+    let token = AuthToken::new(&params.token);
+    if token.claims(&state.config.jwt_secret).is_ok() {
+        let cookie = auth_cookie_from_token(&token);
         headers.insert(
             header::SET_COOKIE,
             cookie.parse().expect("could not build a valid cookie"),
@@ -129,8 +128,8 @@ pub async fn session(_claims: TokenClaims) -> Result<(), AuthError> {
 /// for further information.
 ///
 /// * `token`: authentication token.
-fn auth_cookie_from_token(token: &str) -> String {
-    format!("agamaToken={}; HttpOnly", &token)
+fn auth_cookie_from_token(token: &AuthToken) -> String {
+    format!("agamaToken={}; HttpOnly", &token.to_string())
 }
 
 // builds a response tuple for translation redirection

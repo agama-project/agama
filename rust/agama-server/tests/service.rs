@@ -1,6 +1,7 @@
 pub mod common;
 
-use agama_server::web::{generate_token, MainServiceBuilder, ServiceConfig};
+use agama_lib::auth::AuthToken;
+use agama_server::web::{MainServiceBuilder, ServiceConfig};
 use axum::{
     body::Body,
     http::{Method, Request, StatusCode},
@@ -65,8 +66,8 @@ async fn access_protected_route(token: &str, jwt_secret: &str) -> Response {
 // TODO: The following test should belong to `auth.rs`
 #[test]
 async fn test_access_protected_route() -> Result<(), Box<dyn Error>> {
-    let token = generate_token("nots3cr3t");
-    let response = access_protected_route(&token, "nots3cr3t").await;
+    let token = AuthToken::generate("nots3cr3t")?;
+    let response = access_protected_route(token.as_str(), "nots3cr3t").await;
     assert_eq!(response.status(), StatusCode::OK);
 
     let body = body_to_string(response.into_body()).await;
@@ -77,8 +78,8 @@ async fn test_access_protected_route() -> Result<(), Box<dyn Error>> {
 // TODO: The following test should belong to `auth.rs`.
 #[test]
 async fn test_access_protected_route_failed() -> Result<(), Box<dyn Error>> {
-    let token = generate_token("nots3cr3t");
-    let response = access_protected_route(&token, "wrong").await;
+    let token = AuthToken::generate("nots3cr3t")?;
+    let response = access_protected_route(token.as_str(), "wrong").await;
     assert_eq!(response.status(), StatusCode::BAD_REQUEST);
     Ok(())
 }

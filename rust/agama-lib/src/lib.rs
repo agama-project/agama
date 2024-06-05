@@ -23,6 +23,7 @@
 //!
 //! As said, those modules might implement additional stuff, like specific types, clients, etc.
 
+pub mod auth;
 pub mod error;
 pub mod install_settings;
 pub mod localization;
@@ -57,7 +58,7 @@ pub async fn connection_to(address: &str) -> Result<zbus::Connection, ServiceErr
     Ok(connection)
 }
 
-pub fn http_client(token: String) -> Result<reqwest::Client, ServiceError> {
+pub fn http_client(token: &str) -> Result<reqwest::Client, ServiceError> {
     let mut headers = header::HeaderMap::new();
     let value = header::HeaderValue::from_str(format!("Bearer {}", token).as_str())
         .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
