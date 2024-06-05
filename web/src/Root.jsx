@@ -32,8 +32,13 @@ import { About, LogsButton } from "~/components/core";
 import { InstallerKeymapSwitcher, InstallerLocaleSwitcher } from "~/components/l10n";
 import { _ } from "~/i18n";
 import { rootRoutes } from "~/router";
+import { useProduct } from "~/context/product";
 
 const Header = () => {
+  const { selectedProduct } = useProduct();
+  // NOTE: Agama is a name, do not translate
+  const title = selectedProduct?.name || _("Agama");
+
   return (
     <Masthead>
       <MastheadToggle>
@@ -46,7 +51,7 @@ const Header = () => {
         </PageToggleButton>
       </MastheadToggle>
       <MastheadMain>
-        <MastheadBrand component="h1"><NavLink to="/">{_("Agama")}</NavLink></MastheadBrand>
+        <MastheadBrand component="h1"><NavLink to="/">{title}</NavLink></MastheadBrand>
       </MastheadMain>
     </Masthead>
   );
