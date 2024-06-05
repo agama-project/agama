@@ -96,7 +96,7 @@ BtrfsRaid
   search: [<Search>]
   alias [<string>]
   dataRaidLevel <string>
-  metadata_raid_level <string>
+  metadataRaidLevel <string>
   devices [<<string|Search>[]>]
   label [<string>]
   mkfsOptions [<string[]>]
@@ -299,7 +299,7 @@ all linux partitions bigger than 1 GiB within them and create new partitions of 
                         "condition": {
                             "and": [
                                 { "property": "id", "value": "linux" },
-                                { "property": "sizeGib", "value": 1, "operator": "bigger" }
+                                { "property": "sizeGib", "value": 1, "operator": "greater" }
                             ]
                         }
                     },
@@ -400,7 +400,7 @@ resulting in something like this.
 ```json
 {
     "search": {
-        "condition": { "sizeGib": 1, "operator": "bigger" }
+        "condition": { "sizeGib": 1, "operator": "greater" }
     }
 }
 ```
@@ -535,7 +535,7 @@ Guided
   boot [BootSettings]
   encryption [EncryptionSettings]
   space <'delete'|'resize'|'keep'>
-  volumes [Volumes[]]
+  volumes [Volume[]]
 
 TargetDevice <string|TargetDisk|TargetNewLvm|TargetReusedLvm>
 
