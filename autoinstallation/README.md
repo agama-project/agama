@@ -7,10 +7,9 @@ provide a file, known as a "profile", that includes a description of the system 
 approach might sound familiar to AutoYaST users. On the other hand, Agama can accept just a plain
 shell script, enabling custom pre-installation workflows.
 
-If you are interested in using your AutoYaST profiles, Agama is not there yet. However, there are
-plans to partially support them.
-
-By now, let's have a closer look at Agama's approaches.
+Although Agama defines its own [profile format](../rust/agama-lib/share/profile.schema.json), it is
+able to partially handle AutoYaST profiles. Please, check the [AutoYaST support document](../doc/
+autoyast.md) for further information.
 
 ## Profile-based installation
 
@@ -65,23 +64,24 @@ Please, check [the example profile](../rust/agama-lib/share/examples/profile.jso
 information.
 
 > [!NOTE]
-> You can inspect the available data by installing the `lshw` package and running the
-> following command: `lshw -json`.
+> You can inspect the available data by installing the `lshw` package and running the following
+> command: `lshw -json`.
 
 ### Validating and evaluating a profile
 
-Agama includes a handy command-line interface available in the `agama-cli` package. Among many other
-things, it allows for downloading, validating and evaluating profiles. For instance, we could check
-the result of the previous profile by running the following command:
+Agama includes a handy command-line interface available in the `agama` package. Among many other
+things, it allows downloading, validating and evaluating profiles. For instance, we could check the
+result of the previous profile by running the following command:
 
 ```
 $ sudo agama profile evaluate my-profile.jsonnet
 ```
 
-> [!WARNING] You need to use `sudo` to access the hardware information.
+> [!WARNING]
+ You need to use `sudo` to access the hardware information.
 
-Do you want to check whether your profile is valid? `agama-cli` have you covered. Bear in mind that
-you can only validate JSON profiles (a Jsonnet profile must be evaluated first).
+Do you want to check whether your profile is valid? `agama` have you covered. Bear in mind that you
+can only validate JSON profiles (a Jsonnet profile must be evaluated first).
 
 ```
 $ agama profile validate my-profile.json
@@ -109,8 +109,7 @@ Below there is a minimal working example to install Tumbleweed:
 ```sh
 set -ex
 
-/usr/bin/agama config set product.id=Tumbleweed
-/usr/bin/agama config set user.userName=joe user.password=doe
+/usr/bin/agama profile import ftp://my.server/profile.json
 /usr/bin/agama install
 ```
 
@@ -135,8 +134,7 @@ set -ex
 
 /usr/bin/agama download ftp://my.server/tricky_hardware_setup.sh > tricky_hardware_setup.sh
 sh tricky_hardware_setup.sh
-/usr/bin/agama config set product.id=Tumbleweed
-/usr/bin/agama config set user.userName=joe user.password=doe
+/usr/bin/agama profile import ftp://my.server/profile.json
 /usr/bin/agama install
 ```
 
@@ -167,9 +165,7 @@ Agama and before installing RPMs, such as changing the fstab and mount an extra 
 ```sh
 set -ex
 
-/usr/bin/agama config set product.id=Tumbleweed
-/usr/bin/agama config set user.userName=joe user.password=doe
-
+/usr/bin/agama profile import http://my.server/profile.json
 /usr/bin/agama install --until partitioning # install till the partitioning step
 
 # Place for specific changes to /dev
@@ -190,10 +186,7 @@ software for internal network, then it must be modified before umount.
 set -ex
 
 /usr/bin/agama download ftp://my.server/velociraptor.config
-
-/usr/bin/agama config set product.id=Tumbleweed
-/usr/bin/agama config set user.userName=joe user.password=doe
-
+/usr/bin/agama profile import http://my.server/profile.json
 /usr/bin/agama install --until deploy # do partitioning, rpm installation and configuration step
 
 # Example of enabling velociraptor
@@ -216,9 +209,7 @@ some kernel tuning or adding some remote storage that needs to be mounted during
 ```sh
 set -ex
 
-/usr/bin/agama config set product.id=Tumbleweed
-/usr/bin/agama config set user.userName=joe user.password=doe
-
+/usr/bin/agama profile import http://my.server/profile.json
 /usr/bin/agama install --until deploy # do partitioning, rpm installation and configuration step
 
 # Do custom modification of /mnt including call to dracut
