@@ -20,9 +20,8 @@
  */
 
 import React from "react";
-import { Outlet, NavLink, useMatches } from "react-router-dom";
+import { Outlet, NavLink } from "react-router-dom";
 import {
-  Breadcrumb, BreadcrumbItem,
   Masthead, MastheadToggle, MastheadMain, MastheadBrand,
   Nav, NavItem, NavList,
   Page, PageSidebar, PageSidebarBody, PageToggleButton,
@@ -92,36 +91,11 @@ const Sidebar = () => {
  * Root application component for laying out the content.
  */
 export default function Root() {
-  const Breadcrumbs = () => {
-    const matches = useMatches();
-    const breadcrumbs = matches.filter(m => m.handle);
-
-    if (breadcrumbs.length < 2) return;
-
-    return (
-      <Breadcrumb>
-        {matches.filter(m => m.handle).slice(0, -1)
-          .map(m => (
-            <BreadcrumbItem
-              key={m.pathname}
-              to={m.pathname}
-              render={({ className }) => (
-                <NavLink end to={m.pathname} className={({ isActive }) => [className, isActive ? "pf-m-current" : ""].join(" ")}>
-                  {m.handle.name}
-                </NavLink>
-              )}
-            />
-          ))}
-      </Breadcrumb>
-    );
-  };
-
   return (
     <Page
       isManagedSidebar
       header={<Header />}
       sidebar={<Sidebar />}
-      breadcrumb={<Breadcrumbs />}
     >
       <Outlet />
     </Page>
