@@ -116,7 +116,7 @@ const NextActions = ({ children }) => (
 );
 
 const MainContent = ({ children }) => (
-  <PageSection variant="light" isFilled>{children}</PageSection>
+  <PageSection isFilled>{children}</PageSection>
 );
 
 const Navigation = ({ routes }) => {
