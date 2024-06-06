@@ -21,9 +21,8 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Card, CardBody, CardFooter, CardHeader, CardTitle,
   Form, FormGroup,
-  Gallery, GalleryItem,
+  Radio,
   Stack,
   Text
 } from "@patternfly/react-core";
@@ -39,7 +38,7 @@ import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 export default function LocaleSelection() {
   const { l10n } = useInstallerClient();
   const { locales, selectedLocales } = useL10n();
-  const [selected, setSelected] = useState(selectedLocales[0].id);
+  const [selected, setSelected] = useState(selectedLocales[0]);
   const [filteredLocales, setFilteredLocales] = useState(locales);
   const navigate = useNavigate();
 
@@ -52,11 +51,7 @@ export default function LocaleSelection() {
   const onSubmit = async (e) => {
     e.preventDefault();
     const dataForm = new FormData(e.target);
-    // FIXME: Card does not set the `value` attribute to the hidden input radio
-    // Thus, is not possible to get the selected value here, it returns "on"
-    // instead
-    // See https://github.com/patternfly/patternfly-react/blob/ee4a3f28526995396892ef364d483da9c846c160/packages/react-core/src/components/Card/Card.tsx#L188-L197
-    const nextLocaleId = dataForm.get("locale");
+    const nextLocaleId = JSON.parse(dataForm.get("locale"))?.id;
 
     if (nextLocaleId !== selectedLocales[0]?.id) {
       await l10n.setLocales([nextLocaleId]);
@@ -72,32 +67,28 @@ export default function LocaleSelection() {
           <ListSearch placeholder={searchHelp} elements={locales} onChange={setFilteredLocales} />
           <Form id="localeSelection" onSubmit={onSubmit}>
             <FormGroup isStack>
-              {/* <Gallery hasGutter minWidths={{ default: "180px" }}> */}
-              <Gallery hasGutter>
-                {filteredLocales.map((locale) => (
-                  <GalleryItem key={locale.id}>
-                    <Card isRounded isCompact isFullHeight id={`option-${locale.id}`} isSelectable isSelected={locale.id === selected}>
-                      <CardHeader
-                        selectableActions={{
-                          name: "locale",
-                          variant: "single",
-                          selectableActionId: locale.id,
-                          onChange: (event) => setSelected(event.currentTarget.id)
-                        }}
-                      >
-                        <CardTitle>
-                          <span className={textStyles.fontSizeLg}>
-                            <b>{locale.name}</b>
-                          </span> <span className={[textStyles.fontSizeMd, textStyles.color_300].join(" ")}>{locale.territory}</span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardBody>
-                        <div className={[textStyles.fontSizeXs, textStyles.color_400].join(" ")}>{locale.id}</div>
-                      </CardBody>
-                    </Card>
-                  </GalleryItem>
-                ))}
-              </Gallery>
+              {filteredLocales.map((locale) => (
+                <Radio
+                  key={locale.id}
+                  name="locale"
+                  id={locale.id}
+                  onChange={() => setSelected(locale)}
+                  label={
+                    <>
+                      <span className={`${textStyles.fontSizeLg}`}>
+                        <b>{locale.name}</b>
+                      </span> <Text component="small">{locale.id}</Text>
+                    </>
+                  }
+                  description={
+                    <>
+                      <span className={textStyles.fontSizeMd}>{locale.territory}</span>
+                    </>
+                  }
+                  value={JSON.stringify(locale)}
+                  checked={locale === selected}
+                />
+              ))}
             </FormGroup>
           </Form>
         </Stack>
