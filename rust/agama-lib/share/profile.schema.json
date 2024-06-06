@@ -256,22 +256,194 @@
       }
     },
     "storage": {
-      "description": "Storage settings",
+      "title": "Storage settings",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "bootDevice": {
-          "description": "Device used for booting (e.g., '/dev/sda'). By default, all file systems are created in the boot device.",
-          "type": "string"
-        },
-        "lvm": {
-          "description": "Whether LVM is used.",
-          "type": "boolean"
-        },
-        "encryptionPassword": {
-          "description": "If set, the devices are encrypted using the given password.",
-          "type": "string"
+        "guided": {
+          "title": "Settings to execute a Guided Proposal",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "target": {
+              "title": "Target device",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": ["disk", "newLvmVg"]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": { "disk": { "type": "string" } },
+                  "required": ["disk"]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "newLvmVg": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  },
+                  "required": ["newLvmVg"] 
+                }
+              ]
+            },
+            "boot": {
+              "title": "Configuration of the boot settings",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "configure": {
+                  "title": "Whether to configure partitions for booting",
+                  "type": "boolean"
+                },
+                "device": {
+                  "title": "Device to use for booting",
+                  "type": "string"
+                }
+              }
+            },
+            "encryption": {
+              "title": "Encryption settings",
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["password"],
+              "properties": {
+                "password": {
+                  "title": "Passphrase to use when creating new encryption devices",
+                  "type": "string"
+                },
+                "method": {
+                  "title": "Method used to create the encryption devices",
+                  "type": "string",
+                  "enum": ["luks2", "tpm_fde"]
+                },
+                "pbkdFunction": {
+                  "title": "Password-based key derivation function to use for LUKS2",
+                  "type": "string",
+                  "enum": ["pbkdf2", "argon2i", "argon2id"]
+                }
+              }
+            },
+            "space": {
+              "title": "Policy to find space for the new partitions",
+              "type": "string",
+              "enum": [ "delete", "resize", "keep" ]
+            },
+            "volumes": {
+              "title": "Set of volumes (file systems) to create",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["mount"],
+                "properties": {
+                  "mount": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["path"],
+                    "properties": {
+                      "path": {
+                      "title": "Mount path",
+                      "type": "string"
+                      },
+                      "options": {
+                        "title": "Options to add to the fourth field of fstab",
+                        "type": "array",
+                        "items": { "type": "string" }
+                      }
+                    }
+                  },
+                  "filesystem": {
+                    "title": "File system of the volume",
+                    "type": ["string", "object"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "btrfs": {
+                        "title": "Specification of a Btrfs file system",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "snapshots": {
+                            "title": "Whether Btrfs snapshots should be configured",
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "size": {
+                    "title": "Size limits",
+                    "description": "It can be 'auto', a fixed size (as string or integer) or a set of size limits",
+                    "type": ["string", "integer", "array", "object"],
+                    "prefixItems": [
+                      {
+                        "title": "Mandatory lower size limit",
+                        "type": ["integer", "string"]
+                      },
+                      { 
+                        "title": "Optional upper size limit",
+                        "type": ["integer", "string"]
+                      }
+                    ],
+                    "additionalProperties": false,
+                    "required": ["min"],
+                    "properties": {
+                      "min": {
+                        "title": "Mandatory lower size limit",
+                        "type": ["integer", "string"]
+                      },
+                      "max": {
+                        "title": "Optional upper size limit",
+                        "type": ["integer", "string"]
+                      }
+                    }
+                  },
+                  "target": {
+                    "title": "Location of the resulting file system",
+                    "oneOf": [
+                      {
+                        "const": "default"
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": { "newPartition": { "type": "string" } },
+                        "required": ["newPartition"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": { "newVg": { "type": "string" } },
+                        "required": ["newVg"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": { "device": { "type": "string" } },
+                        "required": ["device"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": { "filesystem": { "type": "string" } },
+                        "required": ["filesystem"]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
         }
       }
+    },
+    "legacyAutoyastStorage": {
+      "title": "Legacy AutoYaST storage settings",
+      "type": "object"
     }
   }
 }
