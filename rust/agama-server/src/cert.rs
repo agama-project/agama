@@ -1,9 +1,11 @@
+use anyhow;
 use openssl::asn1::Asn1Time;
 use openssl::bn::{BigNum, MsbOption};
 use openssl::error::ErrorStack;
 use openssl::hash::MessageDigest;
 use openssl::pkey::{PKey, Private};
 use openssl::rsa::Rsa;
+use std::{ fs, path::Path };
 use openssl::x509::extension::{BasicConstraints, SubjectAlternativeName, SubjectKeyIdentifier};
 use openssl::x509::{X509NameBuilder, X509};
 
@@ -23,6 +25,15 @@ use openssl::x509::{X509NameBuilder, X509};
 //     // dump to file
 //     pub write(...)
 // }
+
+const DEFAULT_CERT_FILE: &str = "/run/agama/certificate.pem";
+const DEFAULT_KEY_FILE: &str = "/run/agama/key.pem";
+
+pub fn write_certificate(cert: X509, key: PKey<Private>) {
+    if let Ok(bytes) = cert.to_pem() {
+        fs::write(Path::new(DEFAULT_CERT_FILE), bytes);
+    }
+}
 
 /// Generates a self-signed SSL certificate
 /// see https://github.com/sfackler/rust-openssl/blob/master/openssl/examples/mk_certs.rs

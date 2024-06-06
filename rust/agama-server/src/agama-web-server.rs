@@ -101,6 +101,7 @@ impl ServeArgs {
     fn ssl_acceptor(&self) -> Result<SslAcceptor, openssl::error::ErrorStack> {
         let mut tls_builder = SslAcceptor::mozilla_modern_v5(SslMethod::tls_server())?;
 
+        // use default or explicitly provided certificate if any
         if let (Some(cert), Some(key)) = (self.cert.clone(), self.key.clone()) {
             tracing::info!("Loading PEM certificate: {}", cert);
             tls_builder.set_certificate_file(PathBuf::from(cert), SslFiletype::PEM)?;
@@ -108,7 +109,12 @@ impl ServeArgs {
             tracing::info!("Loading PEM key: {}", key);
             tls_builder.set_private_key_file(PathBuf::from(key), SslFiletype::PEM)?;
         } else {
+            tracing::info!("Creating self-signed certificate");
+
+            // create a self-signed certificate if needed and store it for later use
             let (cert, key) = agama_server::cert::create_certificate()?;
+
+            agama_server::cert::write_certificate(cert.clone(), key.clone());
 
             tls_builder.set_private_key(&key)?;
             tls_builder.set_certificate(&cert)?;
