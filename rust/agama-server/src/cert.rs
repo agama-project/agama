@@ -7,7 +7,12 @@ use openssl::pkey::{PKey, Private};
 use openssl::rsa::Rsa;
 use openssl::x509::extension::{BasicConstraints, SubjectAlternativeName, SubjectKeyIdentifier};
 use openssl::x509::{X509NameBuilder, X509};
-use std::{fs, io::Write, os::unix::fs::OpenOptionsExt, path::Path};
+use std::{
+    fs,
+    io::{self, Write},
+    os::unix::fs::OpenOptionsExt,
+    path::Path,
+};
 
 const DEFAULT_CERT_DIR: &str = "/etc/agama.d/ssl";
 
@@ -27,17 +32,10 @@ impl Certificate {
         }
 
         if let Ok(bytes) = self.cert.to_pem() {
-            fs::write(Path::new(DEFAULT_CERT_DIR).join("cert.pem"), bytes)?;
+            write_and_restrict(Path::new(DEFAULT_CERT_DIR).join("cert.pem"), &bytes)?;
         }
         if let Ok(bytes) = self.key.private_key_to_pem_pkcs8() {
-            let path = Path::new(DEFAULT_CERT_DIR).join("key.pem");
-            let mut file = fs::OpenOptions::new()
-                .create(true)
-                .truncate(true)
-                .write(true)
-                .mode(0o400)
-                .open(path)?;
-            file.write_all(&bytes)?;
+            write_and_restrict(Path::new(DEFAULT_CERT_DIR).join("key.pem"), &bytes)?;
         }
 
         Ok(())
@@ -113,4 +111,18 @@ impl Certificate {
             key: key,
         })
     }
+}
+
+/// Writes buf into a file at path and sets the file permissions for the root only access
+fn write_and_restrict<T: AsRef<Path>>(path: T, buf: &[u8]) -> io::Result<()> {
+    let mut file = fs::OpenOptions::new()
+        .create(true)
+        .truncate(true)
+        .write(true)
+        .mode(0o400)
+        .open(path)?;
+
+    file.write_all(buf)?;
+
+    Ok(())
 }
