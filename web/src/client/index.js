@@ -97,6 +97,7 @@ const createClient = (url) => {
       product: await product.getIssues(),
       storage: await storage.getIssues(),
       software: await software.getIssues(),
+      users: await users.getIssues()
     };
   };
 

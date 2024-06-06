@@ -21,7 +21,9 @@
 
 // @ts-check
 
-import { WithValidation } from "./mixins";
+import { WithIssues } from "./mixins";
+
+const SERVICE_NAME = "org.opensuse.Agama.Manager1";
 
 /**
 * @typedef {object} UserResult
@@ -184,6 +186,6 @@ class UsersBaseClient {
 /**
  * Client to interact with the Agama users service
  */
-class UsersClient extends WithValidation(UsersBaseClient, "/users/validation", "/org/opensuse/Agama/Users1") { }
+class UsersClient extends WithIssues(UsersBaseClient, "/users/issues", SERVICE_NAME) {}
 
 export { UsersClient };

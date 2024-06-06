@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
+require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/service_status"
 require "agama/dbus/users"
 require "agama/users"
@@ -29,7 +30,9 @@ describe Agama::DBus::Users do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:backend) { instance_double(Agama::Users) }
+  let(:backend) { instance_double(Agama::Users, on_issues_change: nil) }
+
+  let(:issues_interface) { Agama::DBus::Interfaces::Issues::ISSUES_INTERFACE }
 
   before do
     allow_any_instance_of(described_class).to receive(:register_service_status_callbacks)
@@ -41,15 +44,18 @@ describe Agama::DBus::Users do
     )
   end
 
-  it "defines Validation D-Bus interface" do
-    expect(subject.intfs.keys).to include(
-      Agama::DBus::Interfaces::Validation::VALIDATION_INTERFACE
-    )
+  it "defines Issues D-Bus interface" do
+    expect(subject.intfs.keys).to include(issues_interface)
   end
 
   describe ".new" do
     it "configures callbacks from ServiceStatus interface" do
       expect_any_instance_of(described_class).to receive(:register_service_status_callbacks)
+      subject
+    end
+
+    it "configures callbacks from Issues interface" do
+      expect(backend).to receive(:on_issues_change)
       subject
     end
   end
