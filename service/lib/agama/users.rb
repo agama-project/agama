@@ -66,6 +66,7 @@ module Agama
         Y2Users::Password.create_plain(value)
       end
 
+      logger.info "Updating the user password"
       root_user.password = value.empty? ? nil : pwd
       update_issues
     end

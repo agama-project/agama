@@ -71,7 +71,6 @@ Service for managing storage devices.
   .ObjectManager
   .Agama1.ServiceStatus
   .Agama1.Progress
-  .Agama1.Validation
   .Agama.Storage1
   .Agama.Storage1.Proposal.Calculator
   .Agama.Storage1.ISCSI.Initiator
@@ -96,7 +95,6 @@ Service for managing storage devices.
   .ObjectManager
   .Agama1.ServiceStatus
   .Agama1.Progress
-  .Agama1.Validation
   .Agama.Storage1
   .Agama.Storage1.Proposal.Calculator
   .Agama.Storage1.ISCSI.Initiator
