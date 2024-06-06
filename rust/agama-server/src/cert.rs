@@ -11,6 +11,8 @@ use std::{fs, path::Path};
 
 const DEFAULT_CERT_DIR: &str = "/etc/agama.d/ssl";
 
+/// Structure to handle and store certificate and private key which is later
+/// used for establishing HTTPS connection
 pub struct Certificate {
     pub cert: X509,
     pub key: PKey<Private>,
@@ -34,18 +36,17 @@ impl Certificate {
         Ok(())
     }
 
-    /// Reads cert from given path
-    pub fn read(cert: &Path, key: &Path) -> anyhow::Result<Self> {
+    /// Reads certificate and corresponding private key from given paths
+    pub fn read<T: AsRef<Path>>(cert: T, key: T) -> anyhow::Result<Self> {
         let cert_bytes = std::fs::read(cert)?;
         let key_bytes = std::fs::read(key)?;
 
         let cert = X509::from_pem(&cert_bytes.as_slice());
         let key = PKey::private_key_from_pem(&key_bytes.as_slice());
 
-        if let (Ok(c), Ok(k)) = (cert, key) {
-            Ok(Certificate { cert: c, key: k })
-        } else {
-            Err(anyhow::anyhow!("Failed to read certificate"))
+        match (cert, key) {
+            (Ok(c), Ok(k)) => Ok(Certificate { cert: c, key: k }),
+            _ => Err(anyhow::anyhow!("Failed to read certificate")),
         }
     }
 

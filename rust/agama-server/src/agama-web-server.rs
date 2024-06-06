@@ -129,9 +129,7 @@ impl ServeArgs {
 }
 
 /// Builds an SSL acceptor using a provided SSL certificate or generates a self-signed one
-fn ssl_acceptor(
-    certificate: &Certificate,
-) -> Result<SslAcceptor, openssl::error::ErrorStack> {
+fn ssl_acceptor(certificate: &Certificate) -> Result<SslAcceptor, openssl::error::ErrorStack> {
     let mut tls_builder = SslAcceptor::mozilla_modern_v5(SslMethod::tls_server())?;
 
     tls_builder.set_private_key(&certificate.key)?;
