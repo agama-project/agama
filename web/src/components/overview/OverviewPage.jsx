@@ -20,9 +20,15 @@
  */
 
 import React from "react";
+import {
+  CardBody,
+  Grid, GridItem,
+  Hint, HintBody,
+  Stack
+} from "@patternfly/react-core";
 import { useProduct } from "~/context/product";
 import { Navigate } from "react-router-dom";
-import { Page, InstallButton } from "~/components/core";
+import { CardField, Page, InstallButton } from "~/components/core";
 import { _ } from "~/i18n";
 
 export default function OverviewPage() {
@@ -36,17 +42,32 @@ export default function OverviewPage() {
   return (
     <Page title={_("Installation Summary")}>
       <Page.MainContent>
-        <p>
-          {_("This page should have a reasonable overview about the target system before proceeding with installation.")}
-        </p>
-        <p>
-          {_("It's also a good place for telling/reminder the user the minimum required steps to have a valid installation setup.")}
-        </p>
+        <Grid hasGutter>
+          <GridItem sm={12}>
+            <Hint>
+              <HintBody>{_("A brief summary about this page")}</HintBody>
+            </Hint>
+          </GridItem>
+          <GridItem sm={12} xl={6}>
+            <CardField label="Overview" description={_("Lorem ipsum dolor")}>
+              <CardBody>
+                <p>{_("Content")}</p>
+              </CardBody>
+            </CardField>
+          </GridItem>
+          <GridItem sm={12} xl={6}>
+            <CardField label="Result" description={_("Lorem ipsum")}>
+              <CardBody>
+                <Stack hasGutter>
+                  <p>{_("The idea is to show here a list of blocking issues and warnings if any to let the user know why the installation cannot be performed yet.")}</p>
+                  <p>{_("Once the installation is possible, we're going to use an empty state with a check mark and an informative message along the Install button as primary action")}</p>
+                  <InstallButton />
+                </Stack>
+              </CardBody>
+            </CardField>
+          </GridItem>
+        </Grid>
       </Page.MainContent>
-
-      <Page.NextActions>
-        <InstallButton />
-      </Page.NextActions>
     </Page>
   );
 }
