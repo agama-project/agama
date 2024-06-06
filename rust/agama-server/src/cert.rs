@@ -7,7 +7,7 @@ use openssl::pkey::{PKey, Private};
 use openssl::rsa::Rsa;
 use openssl::x509::extension::{BasicConstraints, SubjectAlternativeName, SubjectKeyIdentifier};
 use openssl::x509::{X509NameBuilder, X509};
-use std::{fs, path::Path};
+use std::{fs, io::Write, os::unix::fs::OpenOptionsExt, path::Path};
 
 const DEFAULT_CERT_DIR: &str = "/etc/agama.d/ssl";
 
@@ -30,7 +30,14 @@ impl Certificate {
             fs::write(Path::new(DEFAULT_CERT_DIR).join("cert.pem"), bytes)?;
         }
         if let Ok(bytes) = self.key.private_key_to_pem_pkcs8() {
-            fs::write(Path::new(DEFAULT_CERT_DIR).join("key.pem"), bytes)?;
+            let path = Path::new(DEFAULT_CERT_DIR).join("key.pem");
+            let mut file = fs::OpenOptions::new()
+                .create(true)
+                .truncate(true)
+                .write(true)
+                .mode(0o400)
+                .open(path)?;
+            file.write_all(&bytes)?;
         }
 
         Ok(())
