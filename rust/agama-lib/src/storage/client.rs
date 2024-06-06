@@ -148,6 +148,10 @@ impl<'a> StorageClient<'a> {
         Ok(self.calculator_proxy.calculate(settings.into()).await?)
     }
 
+    pub async fn calculate_autoyast(&self, settings: &str) -> Result<u32, ServiceError> {
+        Ok(self.calculator_proxy.calculate_autoyast(settings).await?)
+    }
+
     /// Calculates a new proposal with the given settings.
     pub async fn calculate(&self, settings: &StorageSettings) -> Result<u32, ServiceError> {
         let mut dbus_settings: HashMap<&str, zbus::zvariant::Value<'_>> = HashMap::new();

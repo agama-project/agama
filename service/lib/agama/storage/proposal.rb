@@ -21,8 +21,7 @@
 
 require "agama/issue"
 require "agama/storage/actions"
-require "agama/storage/device_settings"
-require "agama/storage/proposal_settings_conversion"
+require "agama/storage/proposal_strategies"
 require "yast"
 require "y2storage"
 
@@ -32,14 +31,6 @@ module Agama
     class Proposal
       include Yast::I18n
 
-      # Settings used for calculating the proposal.
-      #
-      # @note Some values are recoverd from Y2Storage, see
-      #   {ProposalSettingsConversion::FromY2Storage}
-      #
-      # @return [ProposalSettings, nil] nil if no proposal has been calculated yet.
-      attr_reader :settings
-
       # @param config [Config] Agama config
       # @param logger [Logger]
       def initialize(config, logger: nil)
@@ -47,17 +38,30 @@ module Agama
 
         @config = config
         @logger = logger || Logger.new($stdout)
+        @issues = []
         @on_calculate_callbacks = []
+      end
+
+      # List of issues.
+      #
+      # @return [Array<Issue>]
+      attr_reader :issues
+
+      # Whether the proposal was already calculated.
+      #
+      # @return [Boolean]
+      def calculated?
+        !proposal.nil?
       end
 
       # Whether the proposal was successfully calculated.
       #
       # @return [Boolean]
       def success?
-        calculated? && !proposal.failed?
+        calculated? && !proposal.failed? && issues.none?(&:error?)
       end
 
-      # Stores callbacks to be call after calculating a proposal.
+      # Stores callbacks to be called after calculating a proposal.
       def on_calculate(&block)
         @on_calculate_callbacks << block
       end
@@ -69,21 +73,34 @@ module Agama
         disk_analyzer&.candidate_disks || []
       end
 
-      # Calculates a new proposal.
+      # Settings used to calculate the current proposal.
       #
-      # @param settings [Agamal::Storage::ProposalSettings] settings to calculate the proposal.
+      # The type depends on the kind of proposal, see {#calculate_guided} and {#calculate_autoyast}.
+      #
+      # @return [Agama::Storage::ProposalSettings, Array<Hash>]
+      def settings
+        return unless calculated?
+
+        strategy_object.settings
+      end
+
+      # Calculates a new guided proposal.
+      #
+      # @param settings [Agama::Storage::ProposalSettings] settings to calculate the proposal.
       # @return [Boolean] whether the proposal was correctly calculated.
-      def calculate(settings)
-        return false unless storage_manager.probed?
+      def calculate_guided(settings)
+        @strategy_object = ProposalStrategies::Guided.new(config, logger, settings)
+        calculate
+      end
 
-        select_target_device(settings) if missing_target_device?(settings)
-
-        calculate_proposal(settings)
-
-        @settings = ProposalSettingsConversion.from_y2storage(proposal.settings, settings)
-        @on_calculate_callbacks.each(&:call)
-
-        success?
+      # Calculates a new legacy AutoYaST proposal.
+      #
+      # @param partitioning [Array<Hash>] Hash-based representation of the <partitioning> section
+      #   of the AutoYaST profile
+      # @return [Boolean] whether the proposal was correctly calculated.
+      def calculate_autoyast(partitioning)
+        @strategy_object = ProposalStrategies::Autoyast.new(config, logger, partitioning)
+        calculate
       end
 
       # Storage actions.
@@ -95,17 +112,14 @@ module Agama
         Actions.new(logger, proposal.devices.actiongraph).all
       end
 
-      # List of issues.
+      # Whether the current proposal was calculated the given strategy (:autoyast or :guided).
       #
-      # @return [Array<Issue>]
-      def issues
-        return [] if !calculated? || success?
+      # @param id [#downcase]
+      # @return [Boolean]
+      def strategy?(id)
+        return false unless calculated?
 
-        [
-          target_device_issue,
-          missing_devices_issue,
-          proposal_issue
-        ].compact
+        id.downcase.to_sym == strategy_object.id
       end
 
     private
@@ -116,125 +130,78 @@ module Agama
       # @return [Logger]
       attr_reader :logger
 
-      # @return [Y2Storage::MinGuidedProposal, nil]
+      attr_reader :strategy_object
+
+      # Calculates a new proposal.
+      #
+      # @return [Boolean] whether the proposal was correctly calculated.
+      def calculate
+        return false unless storage_manager.probed?
+
+        @issues = []
+
+        begin
+          strategy_object.calculate
+          @issues << failed_issue if proposal.failed?
+        rescue Y2Storage::Error => e
+          handle_exception(e)
+        end
+
+        @issues.concat(strategy_object.issues)
+        @on_calculate_callbacks.each(&:call)
+        success?
+      end
+
+      # @return [Y2Storage::Proposal::Base, nil]
       def proposal
         storage_manager.proposal
       end
 
-      # Whether the proposal was already calculated.
-      #
-      # @return [Boolean]
-      def calculated?
-        !proposal.nil?
-      end
-
-      # Selects the first available device as target device for installation.
-      #
-      # @param settings [ProposalSettings]
-      def select_target_device(settings)
-        device = available_devices.first&.name
-        return unless device
-
-        case settings.device
-        when DeviceSettings::Disk
-          settings.device.name = device
-        when DeviceSettings::NewLvmVg
-          settings.device.candidate_pv_devices = [device]
-        when DeviceSettings::ReusedLvmVg
-          # TODO: select an existing VG?
-        end
-      end
-
-      # Whether the given settings has no target device for the installation.
-      #
-      # @param settings [ProposalSettings]
-      # @return [Boolean]
-      def missing_target_device?(settings)
-        case settings.device
-        when DeviceSettings::Disk, DeviceSettings::ReusedLvmVg
-          settings.device.name.nil?
-        when DeviceSettings::NewLvmVg
-          settings.device.candidate_pv_devices.empty?
-        end
-      end
-
-      # Instantiates and executes a Y2Storage proposal with the given settings
-      #
-      # @param settings [Y2Storage::ProposalSettings]
-      # @return [Y2Storage::GuidedProposal]
-      def calculate_proposal(settings)
-        proposal = Y2Storage::MinGuidedProposal.new(
-          settings:      ProposalSettingsConversion.to_y2storage(settings, config: config),
-          devicegraph:   probed_devicegraph,
-          disk_analyzer: disk_analyzer
-        )
-        proposal.propose
-        storage_manager.proposal = proposal
-      end
-
       # @return [Y2Storage::DiskAnalyzer, nil] nil if the system is not probed yet.
       def disk_analyzer
-        return nil unless storage_manager.probed?
+        return unless storage_manager.probed?
 
         storage_manager.probed_disk_analyzer
       end
 
-      # Devicegraph representing the system
-      #
-      # @return [Y2Storage::Devicegraph, nil] nil if the system is not probed yet.
-      def probed_devicegraph
-        return nil unless storage_manager.probed?
-
-        storage_manager.probed
-      end
-
+      # @return [Y2Storage::StorageManager]
       def storage_manager
         Y2Storage::StorageManager.instance
       end
 
-      # Returns an issue if there is no target device.
-      #
-      # @return [Issue, nil]
-      def target_device_issue
-        return unless missing_target_device?(settings)
-
-        Issue.new(_("No device selected for installation"),
-          source:   Issue::Source::CONFIG,
-          severity: Issue::Severity::ERROR)
+      # Handle Y2Storage exceptions
+      def handle_exception(error)
+        case error
+        when Y2Storage::NoDiskSpaceError
+          @issues << failed_issue
+        when Y2Storage::Error
+          @issues << exception_issue(error)
+        else
+          raise error
+        end
       end
 
-      # Returns an issue if any of the devices required for the proposal is not found
+      # Issue representing the proposal is not valid.
       #
-      # @return [Issue, nil]
-      def missing_devices_issue
-        available = available_devices.map(&:name)
-        missing = settings.installation_devices.reject { |d| available.include?(d) }
-
-        return if missing.none?
-
+      # @return [Issue]
+      def failed_issue
         Issue.new(
-          format(
-            n_(
-              "The following selected device is not found in the system: %{devices}",
-              "The following selected devices are not found in the system: %{devices}",
-              missing.size
-            ),
-            devices: missing.join(", ")
-          ),
+          _("Cannot accommodate the required file systems for installation"),
           source:   Issue::Source::CONFIG,
           severity: Issue::Severity::ERROR
         )
       end
 
-      # Returns an issue if the proposal is not valid.
+      # Issue to communicate a generic Y2Storage error.
       #
-      # @return [Issue, nil]
-      def proposal_issue
-        return if success?
-
-        Issue.new(_("Cannot accommodate the required file systems for installation"),
+      # @return [Issue]
+      def exception_issue(error)
+        Issue.new(
+          _("A problem ocurred while calculating the storage setup"),
+          details:  error.message,
           source:   Issue::Source::CONFIG,
-          severity: Issue::Severity::ERROR)
+          severity: Issue::Severity::ERROR
+        )
       end
     end
   end

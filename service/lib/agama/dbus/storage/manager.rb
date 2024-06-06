@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "json"
 require "yast"
 require "y2storage/storage_manager"
 require "agama/dbus/base_object"
@@ -42,7 +43,7 @@ module Agama
   module DBus
     module Storage
       # D-Bus object to manage storage installation
-      class Manager < BaseObject
+      class Manager < BaseObject # rubocop:disable Metrics/ClassLength
         include WithISCSIAuth
         include WithServiceStatus
         include ::DBus::ObjectManager
@@ -61,6 +62,7 @@ module Agama
           super(PATH, logger: logger)
           @backend = backend
           @encryption_methods = read_encryption_methods
+          @actions = read_actions
 
           register_storage_callbacks
           register_proposal_callbacks
@@ -108,6 +110,41 @@ module Agama
           dbus_reader(:deprecated_system, "b")
         end
 
+        # @todo Move device related properties here, for example, the list of system and staging
+        #   devices, dirty, etc.
+        STORAGE_DEVICES_INTERFACE = "org.opensuse.Agama.Storage1.Devices"
+        private_constant :STORAGE_DEVICES_INTERFACE
+
+        # List of sorted actions.
+        #
+        # @return [Hash<String, Object>]
+        #   * "Device" [Integer]
+        #   * "Text" [String]
+        #   * "Subvol" [Boolean]
+        #   * "Delete" [Boolean]
+        def read_actions
+          backend.actions.map do |action|
+            {
+              "Device" => action.target_device.sid,
+              "Text"   => action.sentence,
+              "Subvol" => action.device_is?(:btrfs_subvolume),
+              "Delete" => action.delete?
+            }
+          end
+        end
+
+        # A PropertiesChanged signal is emitted (see ::DBus::Object.dbus_reader_attr_accessor).
+        def update_actions
+          self.actions = read_actions
+        end
+
+        dbus_interface STORAGE_DEVICES_INTERFACE do
+          # PropertiesChanged signal if a proposal is calculated, see
+          # {#register_proposal_callbacks}.
+          dbus_reader_attr_accessor :actions, "aa{sv}"
+        end
+
+        # @todo Rename as "org.opensuse.Agama.Storage1.Proposal".
         PROPOSAL_CALCULATOR_INTERFACE = "org.opensuse.Agama.Storage1.Proposal.Calculator"
         private_constant :PROPOSAL_CALCULATOR_INTERFACE
 
@@ -140,13 +177,6 @@ module Agama
             .map { |m| m.id.to_s }
         end
 
-        # Path of the D-Bus object containing the calculated proposal
-        #
-        # @return [::DBus::ObjectPath] Proposal object path or root path if no exported proposal yet
-        def result
-          dbus_proposal&.path || ::DBus::ObjectPath.new("/")
-        end
-
         # Default volume used as template
         #
         # @return [Hash]
@@ -155,23 +185,72 @@ module Agama
           VolumeConversion.to_dbus(volume)
         end
 
-        # Calculates a new proposal
+        module ProposalStrategy
+          GUIDED = "guided"
+          AUTOYAST = "autoyast"
+        end
+
+        # Calculates a guided proposal.
         #
         # @param dbus_settings [Hash]
         # @return [Integer] 0 success; 1 error
-        def calculate_proposal(dbus_settings)
+        def calculate_guided_proposal(dbus_settings)
           settings = ProposalSettingsConversion.from_dbus(dbus_settings,
             config: config, logger: logger)
 
           logger.info(
-            "Calculating storage proposal from D-Bus.\n " \
+            "Calculating guided storage proposal from D-Bus.\n " \
             "D-Bus settings: #{dbus_settings}\n" \
             "Agama settings: #{settings.inspect}"
           )
 
-          success = proposal.calculate(settings)
-
+          success = proposal.calculate_guided(settings)
           success ? 0 : 1
+        end
+
+        # Calculates an AutoYaST proposal.
+        #
+        # @param dbus_settings [String]
+        # @return [Integer] 0 success; 1 error
+        def calculate_autoyast_proposal(dbus_settings)
+          settings = JSON.parse(dbus_settings)
+
+          logger.info(
+            "Calculating AutoYaST storage proposal from D-Bus.\n " \
+            "D-Bus settings: #{dbus_settings}\n" \
+            "AutoYaST settings: #{settings.inspect}"
+          )
+
+          success = proposal.calculate_autoyast(settings)
+          success ? 0 : 1
+        end
+
+        # Whether a proposal was calculated.
+        #
+        # @return [Boolean]
+        def proposal_calculated?
+          proposal.calculated?
+        end
+
+        # Proposal result, including information about success, strategy and settings.
+        #
+        # @return [Hash] Empty if there is no proposal yet.
+        def proposal_result
+          return {} unless proposal.calculated?
+
+          if proposal.strategy?(ProposalStrategy::GUIDED)
+            {
+              "success"  => proposal.success?,
+              "strategy" => ProposalStrategy::GUIDED,
+              "settings" => ProposalSettingsConversion.to_dbus(proposal.settings)
+            }
+          else
+            {
+              "success"  => proposal.success?,
+              "strategy" => ProposalStrategy::AUTOYAST,
+              "settings" => proposal.settings.to_json
+            }
+          end
         end
 
         dbus_interface PROPOSAL_CALCULATOR_INTERFACE do
@@ -182,16 +261,25 @@ module Agama
           # PropertiesChanged signal if software is probed, see {#register_software_callbacks}.
           dbus_reader_attr_accessor :encryption_methods, "as"
 
-          dbus_reader :result, "o"
-
           dbus_method :DefaultVolume, "in mount_path:s, out volume:a{sv}" do |mount_path|
             [default_volume(mount_path)]
           end
 
+          # @todo Rename as CalculateGuided
+          #
           # result: 0 success; 1 error
-          dbus_method :Calculate, "in settings:a{sv}, out result:u" do |settings|
-            busy_while { calculate_proposal(settings) }
+          dbus_method(:Calculate, "in settings:a{sv}, out result:u") do |settings|
+            busy_while { calculate_guided_proposal(settings) }
           end
+
+          # result: 0 success; 1 error
+          dbus_method(:CalculateAutoyast, "in settings:s, out result:u") do |settings|
+            busy_while { calculate_autoyast_proposal(settings) }
+          end
+
+          dbus_reader :proposal_calculated?, "b", dbus_name: "Calculated"
+
+          dbus_reader :proposal_result, "a{sv}", dbus_name: "Result"
         end
 
         ISCSI_INITIATOR_INTERFACE = "org.opensuse.Agama.Storage1.ISCSI.Initiator"
@@ -301,6 +389,7 @@ module Agama
             export_proposal
             proposal_properties_changed
             refresh_staging_devices
+            update_actions
           end
         end
 
@@ -340,8 +429,16 @@ module Agama
           backend.deprecated_system = true
         end
 
+        # @todo Do not export a separate proposal object. For now, the guided proposal is still
+        #   exported to keep the current UI working.
         def export_proposal
-          @service.unexport(dbus_proposal) if dbus_proposal
+          if dbus_proposal
+            @service.unexport(dbus_proposal)
+            @dbus_proposal = nil
+          end
+
+          return unless proposal.strategy?(ProposalStrategy::GUIDED)
+
           @dbus_proposal = DBus::Storage::Proposal.new(proposal, logger)
           @service.export(@dbus_proposal)
         end
