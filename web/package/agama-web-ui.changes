@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jun  6 07:43:50 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Try to reconnect silently when the WebSocket is closed displaying
+  a page error if it is not possible (gh#openSUSE/agama#1254).
+- Display a different login error message depending on the request
+  response (gh@openSUSE/agama#1274).
+
+-------------------------------------------------------------------
 Thu May 23 07:28:44 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix showing count in pattern search and also improve visuals
