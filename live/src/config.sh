@@ -103,7 +103,7 @@ rm -rf /usr/share/man/*
 ## removing drivers and firmware makes the Live ISO about 370MiB smaller
 #
 # Agama does not use sound, added by icewm dependencies
-rpm -e --nodeps alsa alsa-utils alsa-ucm-conf
+rpm -e --nodeps alsa alsa-utils alsa-ucm-conf || true
 
 # driver and firmware cleanup
 # Note: openSUSE Tumbleweed Live completely removes firmware for some server
@@ -134,7 +134,7 @@ for s in purge-kernels; do
 done
 
 # Only used for OpenCL and X11 acceleration on vmwgfx (?), saves ~50MiB
-rpm -e --nodeps Mesa-gallium
+rpm -e --nodeps Mesa-gallium || true
 # Too big and will have to be dropped anyway (unmaintained, known security issues)
 rm -rf /usr/lib*/libmfxhw*.so.* /usr/lib*/mfx/
 
