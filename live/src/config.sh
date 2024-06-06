@@ -21,6 +21,7 @@ systemctl enable agama-web-server.service
 systemctl enable agama-password-cmdline.service
 systemctl enable agama-password-dialog.service
 systemctl enable agama-password-iso.service
+systemctl enable agama-password-random.service
 systemctl enable agama-password-systemd.service
 systemctl enable agama-auto.service
 systemctl enable agama-hostname.service
