@@ -159,6 +159,8 @@ dd status=none if=$boot_dir/linux of=$boot_dir/cd.ikr
 dd status=none conv=notrunc obs=1 seek=$((initrd_ofs_ofs)) if=$boot_dir/initrd.off of=$boot_dir/cd.ikr
 dd status=none conv=notrunc obs=1 seek=$((initrd_siz_ofs)) if=$boot_dir/initrd.siz of=$boot_dir/cd.ikr
 dd status=none conv=notrunc obs=4096 seek=$((initrd_ofs/4096)) if=$boot_dir/initrd of=$boot_dir/cd.ikr
+# clear kernel cmdline area; it's actually 4 kiB, but 1 block should be more than enough
+dd status=none conv=notrunc bs=1 count=512 seek=$((parmfile_ofs)) if=/dev/zero of=$boot_dir/cd.ikr
 echo -n "$parmfile_content" | dd status=none conv=notrunc obs=1 seek=$((parmfile_ofs)) of=$boot_dir/cd.ikr
 
 # S390 Magic?

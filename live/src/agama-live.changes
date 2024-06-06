@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun  5 15:40:43 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix the cd.ikr content for booting the s390x iso 
+  (gh#openSUSE/agama#1289).
+
+-------------------------------------------------------------------
 Tue May 21 10:38:39 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add the procps4 package to the image (gh#openSUSE/agama#1245).

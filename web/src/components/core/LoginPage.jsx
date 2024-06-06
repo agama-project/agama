@@ -26,7 +26,7 @@ import { Navigate } from "react-router-dom";
 import { ActionGroup, Button, Form, FormGroup } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { useAuth } from "~/context/auth";
+import { AuthErrors, useAuth } from "~/context/auth";
 import { About, FormValidationError, If, Page, PasswordInput, Section } from "~/components/core";
 import { Center } from "~/components/layout";
 
@@ -39,14 +39,21 @@ import { Center } from "~/components/layout";
 export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
-  const { isLoggedIn, login: loginFn } = useAuth();
+  const { isLoggedIn, login: loginFn, error: loginError } = useAuth();
 
   const login = async (e) => {
     e.preventDefault();
     const result = await loginFn(password);
-    setError(!result);
+
+    setError(result.status !== 200);
   };
 
+  const errorMessage = (authError) => {
+    if (authError === AuthErrors.AUTH)
+      return _("Could not log in. Please, make sure that the password is correct.");
+
+    return _("Could not authenticate against the server, please check it.");
+  };
   if (isLoggedIn) {
     return <Navigate to="/" />;
   }
@@ -83,7 +90,7 @@ export default function LoginPage() {
               condition={error}
               then={
                 <FormValidationError
-                  message={_("Could not log in. Please, make sure that the password is correct.")}
+                  message={errorMessage(loginError)}
                 />
               }
             />

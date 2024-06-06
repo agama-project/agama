@@ -1,6 +1,6 @@
 #! /bin/bash
 
-set -x
+set -ex
 
 # KIWI functions
 test -f /.kconfig && . /.kconfig
@@ -18,23 +18,30 @@ systemctl enable NetworkManager.service
 systemctl enable avahi-daemon.service
 systemctl enable agama.service
 systemctl enable agama-web-server.service
+systemctl enable agama-password-cmdline.service
+systemctl enable agama-password-dialog.service
+systemctl enable agama-password-iso.service
+systemctl enable agama-password-systemd.service
 systemctl enable agama-auto.service
 systemctl enable agama-hostname.service
 systemctl enable agama-proxy-setup.service
 systemctl enable setup-systemd-proxy-env.path
 systemctl enable x11-autologin.service
-systemctl enable spice-vdagent.service
+systemctl enable spice-vdagentd.service
 systemctl enable zramswap
 
 # default target
 systemctl set-default graphical.target
 
-# adjust owner of extracted files
-chown -R root:root /root
-find /etc -user 1000 | xargs chown root:root
+# disable snapshot cleanup
+systemctl disable snapper-cleanup.timer
+systemctl disable snapper-timeline.timer
+
+# disable unused services
+systemctl disable YaST2-Firstboot.service
+systemctl disable YaST2-Second-Stage.service
 
 ### setup dracut for live system
-
 label=${kiwi_install_volid:-$kiwi_iname}
 arch=$(uname -m)
 
@@ -97,7 +104,7 @@ rm -rf /usr/share/man/*
 ## removing drivers and firmware makes the Live ISO about 370MiB smaller
 #
 # Agama does not use sound, added by icewm dependencies
-rpm -e --nodeps alsa alsa-utils alsa-ucm-conf
+rpm -e --nodeps alsa alsa-utils alsa-ucm-conf || true
 
 # driver and firmware cleanup
 # Note: openSUSE Tumbleweed Live completely removes firmware for some server
@@ -128,7 +135,7 @@ for s in purge-kernels; do
 done
 
 # Only used for OpenCL and X11 acceleration on vmwgfx (?), saves ~50MiB
-rpm -e --nodeps Mesa-gallium
+rpm -e --nodeps Mesa-gallium || true
 # Too big and will have to be dropped anyway (unmaintained, known security issues)
 rm -rf /usr/lib*/libmfxhw*.so.* /usr/lib*/mfx/
 
