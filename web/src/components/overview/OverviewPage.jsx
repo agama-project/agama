@@ -19,20 +19,72 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   CardBody,
-  Grid, GridItem,
-  Hint, HintBody,
+  EmptyState,
+  EmptyStateHeader,
+  EmptyStateBody,
+  Grid,
+  GridItem,
+  Hint,
+  HintBody,
+  Icon,
+  List,
+  ListItem,
   Stack
 } from "@patternfly/react-core";
 import { useProduct } from "~/context/product";
-import { Navigate } from "react-router-dom";
+import { useInstallerClient } from "~/context/installer";
+import { Navigate, Link } from "react-router-dom";
 import { CardField, Page, InstallButton } from "~/components/core";
 import { _ } from "~/i18n";
 
+const ReadyForInstallation = () => (
+  <EmptyState variant="lg">
+    <EmptyStateHeader
+      headingLevel="h4"
+      color="green"
+      titleText={_("Ready for installation")}
+      icon={<Icon name="error" size="xxl" />}
+    />
+
+    <EmptyStateBody>
+      <InstallButton />
+    </EmptyStateBody>
+  </EmptyState>
+);
+
+const IssuesList = ({ issues }) => {
+  const { isEmpty, ...scopes } = issues;
+  const list = [];
+  Object.entries(scopes).forEach(([scope, issues]) => {
+    issues.forEach((issue, idx) => {
+      const link = (
+        <ListItem key={idx}>
+          <Link to={scope}>{issue.description}</Link>
+        </ListItem>
+      );
+      list.push(link);
+    });
+  });
+
+  return (
+    <>
+      <p>{_("Before installing the system, you may need to solve the following issues:")}</p>
+      <List>{list}</List>
+    </>
+  );
+};
+
 export default function OverviewPage() {
   const { selectedProduct } = useProduct();
+  const [issues, setIssues] = useState([]);
+  const client = useInstallerClient();
+
+  useEffect(() => {
+    client.issues().then(setIssues);
+  }, [client]);
 
   // FIXME: this check could be no longer needed
   if (selectedProduct === null) {
@@ -59,9 +111,7 @@ export default function OverviewPage() {
             <CardField label="Result" description={_("Lorem ipsum")}>
               <CardBody>
                 <Stack hasGutter>
-                  <p>{_("The idea is to show here a list of blocking issues and warnings if any to let the user know why the installation cannot be performed yet.")}</p>
-                  <p>{_("Once the installation is possible, we're going to use an empty state with a check mark and an informative message along the Install button as primary action")}</p>
-                  <InstallButton />
+                  {issues.isEmpty ? <ReadyForInstallation /> : <IssuesList issues={issues} />}
                 </Stack>
               </CardBody>
             </CardField>
