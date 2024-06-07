@@ -90,9 +90,9 @@ be suitable for a different use case.
 You can define the password directly on the boot command line. There are two
 options:
 
-* Use `agama.password=<password>` with a plain text password.
+* Use `live.password=<password>` with a plain text password.
 
-* Use `agama.password_hash=<password_hash>` with a hashed password. This is more
+* Use `live.password_hash=<password_hash>` with a hashed password. This is more
   secure than using a plaintext password.
 
   The disadvantage is that the hashed password is quite long and is not easy to
@@ -108,14 +108,14 @@ options:
 You can enter your password during boot in an interactive session. Again, there
 are two options:
 
-* Use `agama.password_dialog` boot option to start an interactive dialog during
+* Use `live.password_dialog` boot option to start an interactive dialog during
   the boot process. This uses a nice dialog for entering and confirming the
   password. However, in some situations the full screen dialog might not be
   displayed correctly or some messages might be displayed over it. In that case
   you might use the `Ctrl+L` key shortcut to refresh the screen. If it still
   does not work then try using the other option below.
 
-* Use `agama.password_systemd` boot option to ask for the password in a simple
+* Use `live.password_systemd` boot option to ask for the password in a simple
   prompt. This is similar to the option above, but the advantage is that this
   solution does not use a full screen dialog but a single line prompt so it
   should work better in special environments like a serial console.
@@ -133,7 +133,7 @@ To inject a new password into the ISO run:
 
 ```sh
 # replace the agama.iso name with your image name
-tagmedia --add-tag "agama_password=$((openssl passwd -6) | base64 -w 0)" agama.iso
+tagmedia --add-tag "live_password=$((openssl passwd -6) | base64 -w 0)" agama.iso
 ```
 
 It will interactively ask for a password then it will be hashed using the SHA512
@@ -155,7 +155,7 @@ If you want to remove the password setting from the ISO image then run:
 
 ```sh
 # replace the agama.iso name with your image name
-tagmedia --remove-tag agama_password agama.iso
+tagmedia --remove-tag live_password agama.iso
 ```
 
 > [!CAUTION]
