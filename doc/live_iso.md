@@ -90,15 +90,10 @@ be suitable for a different use case.
 You can define the password directly on the boot command line. There are two
 options:
 
-* Use `agama.password=<password>` with a plain text password. This is the
-  easiest way but on the other hand it is not secure as every process running on
-  the machine can read the password from the `/proc/cmdline` file. But for
-  testing deployments this might be good enough.
+* Use `agama.password=<password>` with a plain text password.
 
-* Use `agama.password_hash=<password_hash>` with a hashed password. The
-  advantage is that if a strong encryption and a strong password is used then it
-  is very difficult (almost impossible) to obtain the original plain text
-  password although the has can be read from the `/proc/cmdline` file.
+* Use `agama.password_hash=<password_hash>` with a hashed password. This is more
+  secure than using a plaintext password.
 
   The disadvantage is that the hashed password is quite long and is not easy to
   type it into the boot prompt manually. It makes sense in environments where
@@ -113,7 +108,7 @@ options:
 You can enter your password during boot in an interactive session. Again, there
 are two options:
 
-* Use `agama.password_dialog` boot option to start and interactive dialog during
+* Use `agama.password_dialog` boot option to start an interactive dialog during
   the boot process. This uses a nice dialog for entering and confirming the
   password. However, in some situations the full screen dialog might not be
   displayed correctly or some messages might be displayed over it. In that case
@@ -163,12 +158,13 @@ If you want to remove the password setting from the ISO image then run:
 tagmedia --remove-tag agama_password agama.iso
 ```
 
-:information_source: *Note: The image usually already contains some other tags,
-like the checksums for verifying the medium integrity. Do not touch them!*
+> [!CAUTION]
+> The image usually already contains some other tags, like the checksums for
+> verifying the medium integrity. Do not touch them!
 
 ### Random Password as a Fallback
 
-When no password is specified or the entering the password interactively was
+When no password is specified or entering the password interactively was
 canceled by the user then Agama generates a random password and prints it on the
 console.
 
@@ -211,9 +207,10 @@ Alternatively you can use the `openssl passwd` command from the openSSL package.
 It offers less encryption methods but on the other hand it should be basically
 installed in every system.
 
-:warning: *Warning: By default it uses a weak encryption method (DES or MD5
-depending on the openSSL version) so you should always provide an additional
-encryption method parameter to select a stronger encryption!*
+> [!WARNING]
+> By default it uses a weak encryption method (DES or MD5 depending on the OpenSSL
+> version) so you should always provide an additional encryption method parameter
+> to select a stronger encryption!
 
 To create a SHA512 hash for your password run
 
