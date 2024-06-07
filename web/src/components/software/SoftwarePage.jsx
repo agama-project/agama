@@ -24,13 +24,24 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { Section, SectionSkeleton } from "~/components/core";
+import { ButtonLink, Page, Section, SectionSkeleton } from "~/components/core";
 import { UsedSize } from "~/components/software";
 import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
 import { BUSY } from "~/client/status";
 import { _ } from "~/i18n";
 import { SelectedBy } from "~/client/software";
+import {
+  Card,
+  CardBody,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
+  Grid,
+  GridItem,
+  Stack
+} from "@patternfly/react-core";
 
 /**
  * @typedef {Object} Pattern
@@ -50,13 +61,15 @@ import { SelectedBy } from "~/client/software";
  * @return {Pattern[]} List of patterns including its selection status
  */
 function buildPatterns(patterns, selection) {
-  return patterns.map((pattern) => {
-    const selectedBy = (selection[pattern.name] !== undefined) ? selection[pattern.name] : 2;
-    return {
-      ...pattern,
-      selectedBy,
-    };
-  }).sort((a, b) => a.order - b.order);
+  return patterns
+    .map(pattern => {
+      const selectedBy = selection[pattern.name] !== undefined ? selection[pattern.name] : 2;
+      return {
+        ...pattern,
+        selectedBy
+      };
+    })
+    .sort((a, b) => a.order - b.order);
 }
 
 /**
@@ -67,39 +80,35 @@ function buildPatterns(patterns, selection) {
  * @return {JSX.Element}
  */
 const SelectedPatternsList = ({ patterns }) => {
-  const selected = patterns.filter((p) => p.selectedBy !== SelectedBy.NONE);
+  const selected = patterns.filter(p => p.selectedBy !== SelectedBy.NONE);
   let description;
 
   if (selected.length === 0) {
-    description = (
-      <>
-        {_("No additional software was selected.")}
-      </>
-    );
+    description = <>{_("No additional software was selected.")}</>;
   } else {
     description = (
       <>
         <p>{_("The following software patterns are selected for installation:")}</p>
-        <ul>
-          {selected.map((pattern) => (
-            <li key={pattern.name}>
-              <div>
-                <b>{pattern.summary}</b>
-              </div>
-              <div>{pattern.description}</div>
-            </li>
+        <DescriptionList>
+          {selected.map(pattern => (
+            <DescriptionListGroup key={pattern.name}>
+              <DescriptionListTerm>{pattern.summary}</DescriptionListTerm>
+              <DescriptionListDescription>{pattern.description}</DescriptionListDescription>
+            </DescriptionListGroup>
           ))}
-        </ul>
+        </DescriptionList>
       </>
     );
   }
 
   return (
     <>
-      {description}
-      <Link to="patterns/select">
-        {_("Change selection")}
-      </Link>
+      <Stack hasGutter>
+        {description}
+        <ButtonLink to="patterns/select" isPrimary={selected.length === 0}>
+          {_("Change selection")}
+        </ButtonLink>
+      </Stack>
     </>
   );
 };
@@ -128,8 +137,8 @@ function SoftwarePage() {
   useEffect(() => {
     if (!patterns) return;
 
-    return client.software.onSelectedPatternsChanged((selection) => {
-      client.software.getProposal().then((proposal) => setProposal(proposal));
+    return client.software.onSelectedPatternsChanged(selection => {
+      client.software.getProposal().then(proposal => setProposal(proposal));
       setPatterns(buildPatterns(patterns, selection));
     });
   }, [client.software, patterns]);
@@ -154,13 +163,29 @@ function SoftwarePage() {
 
   return (
     <>
-      <Section>
-        <SelectedPatternsList patterns={patterns} />
-      </Section>
+      <Page.Header>
+        <h2>{_("Software selection")}</h2>
+      </Page.Header>
 
-      <Section>
-        <UsedSize size={proposal.size} />
-      </Section>
+      <Page.MainContent>
+        <Grid hasGutter>
+          <GridItem sm={12} xl={6}>
+            <Card isRounded>
+              <CardBody>
+                <SelectedPatternsList patterns={patterns} />
+              </CardBody>
+            </Card>
+          </GridItem>
+
+          <GridItem sm={12} xl={6}>
+            <Card isRounded>
+              <CardBody>
+                <UsedSize size={proposal.size} />
+              </CardBody>
+            </Card>
+          </GridItem>
+        </Grid>
+      </Page.MainContent>
     </>
   );
 }

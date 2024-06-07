@@ -21,6 +21,8 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import {
+  Card,
+  CardBody,
   Badge,
   DataList,
   DataListCell,
@@ -231,19 +233,29 @@ function SoftwarePatternsSelection() {
 
   return (
     <>
-      <Section aria-label={_("Software summary and filter options")}>
-        <SearchInput
-          // TRANSLATORS: search field placeholder text
-          placeholder={_("Search")}
-          aria-label={_("Search")}
-          value={searchValue}
-          onChange={(_event, value) => setSearchValue(value)}
-          onClear={() => setSearchValue("")}
-          resultsCount={visiblePatterns.length}
-        />
-      </Section>
+      <Page.Header>
+        <Stack hasGutter>
+          <h2>{_("Software selection")}</h2>
+          <SearchInput
+            // TRANSLATORS: search field placeholder text
+            placeholder={_("Search")}
+            aria-label={_("Search")}
+            value={searchValue}
+            onChange={(_event, value) => setSearchValue(value)}
+            onClear={() => setSearchValue("")}
+            resultsCount={visiblePatterns.length}
+          />
+        </Stack>
+      </Page.Header>
 
-      {selector}
+      <Page.MainContent>
+        <Card isRounded>
+          <CardBody>
+            {selector}
+          </CardBody>
+        </Card>
+      </Page.MainContent>
+
       <Page.NextActions>
         <Page.Action navigateTo="..">{_("Close")}</Page.Action>
       </Page.NextActions>
