@@ -7,55 +7,56 @@
   "additionalProperties": false,
   "properties": {
     "software": {
-      "description": "Software settings (e.g., product to install)",
+      "title": "Software settings",
       "type": "object",
       "properties": {
         "patterns": {
-          "description": "List of patterns to install",
+          "title": "List of patterns to install",
           "type": "array"
         }
       }
     },
     "product": {
-      "description": "Software settings (e.g., product to install)",
+      "title": "Product to install",
       "type": "object",
       "properties": {
         "id": {
-          "description": "Product identifier",
+          "title": "Product identifier",
           "type": "string"
         },
         "registrationCode": {
-          "description": "Product registration code",
+          "title": "Product registration code",
           "type": "string"
         },
         "registrationEmail": {
-          "description": "Product registration email",
+          "title": "Product registration email",
           "type": "string"
         }
       }
     },
     "network": {
-      "description": "Network settings",
+      "title": "Network settings",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "connections": {
-          "description": "Network connections to be defined",
+          "title": "Network connections to be defined",
           "type": "array",
           "items": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
               "id": {
-                "description": "Connection ID",
+                "title": "Connection ID",
                 "type": "string"
               },
               "interface": {
-                "description": "The name of the network interface bound to this connection",
+                "title": "The name of the network interface bound to this connection",
                 "type": "string"
               },
               "mac-address": {
-                "description": "Custom mac-address (can also be 'preserve', 'permanent', 'random' or 'stable')",
+                "title": "Custom mac-address",
+                "description": "Can also be 'preserve', 'permanent', 'random' or 'stable'.",
                 "type": "string"
               },
               "mtu": {
@@ -64,7 +65,7 @@
                 "minimum": 0
               },
               "method4": {
-                "description": "IPv4 configuration method (e.g., 'auto')",
+                "title": "IPv4 configuration method (e.g., 'auto')",
                 "type": "string",
                 "enum": [
                   "auto",
@@ -74,7 +75,7 @@
                 ]
               },
               "method6": {
-                "description": "IPv6 configuration method (e.g., 'auto')",
+                "title": "IPv6 configuration method (e.g., 'auto')",
                 "type": "string",
                 "enum": [
                   "auto",
@@ -84,17 +85,17 @@
                 ]
               },
               "gateway4": {
-                "description": "Connection gateway address (e.g., '192.168.122.1')",
+                "title": "Connection gateway address (e.g., '192.168.122.1')",
                 "type": "string"
               },
               "gateway6": {
-                "description": "Connection gateway address (e.g., '::ffff:c0a8:7a01')",
+                "title": "Connection gateway address (e.g., '::ffff:c0a8:7a01')",
                 "type": "string"
               },
               "addresses": {
                 "type": "array",
                 "items": {
-                  "description": "Connection addresses",
+                  "title": "Connection addresses",
                   "type": "string",
                   "additionalProperties": false
                 }
@@ -102,14 +103,15 @@
               "nameservers": {
                 "type": "array",
                 "items": {
-                  "description": "Nameservers (IPv4 and/or IPv6 are allowed)",
+                  "title": "Nameservers",
+                  "description": "IPv4 and/or IPv6 are allowed.",
                   "type": "string",
                   "additionalProperties": false
                 }
               },
               "wireless": {
                 "type": "object",
-                "description": "Wireless configuration",
+                "title": "Wireless configuration",
                 "additionalProperties": false,
                 "properties": {
                   "password": {
@@ -134,7 +136,7 @@
               },
               "bond": {
                 "type": "object",
-                "description": "Bonding configuration",
+                "title": "Bonding configuration",
                 "additionalProperties": false,
                 "properties": {
                   "mode": {
@@ -146,7 +148,7 @@
                   "ports": {
                     "type": "array",
                     "items": {
-                      "description": "A list of the interfaces or connections to be bonded",
+                      "title": "A list of the interfaces or connections to be bonded",
                       "type": "string",
                       "additionalProperties": false
                     }
@@ -155,13 +157,13 @@
               },
               "match": {
                 "type": "object",
-                "description": "Match settings",
+                "title": "Match settings",
                 "additionalProperties": false,
                 "properties": {
                   "kernel": {
                     "type": "array",
                     "items": {
-                      "description": "A list of kernel command line arguments to match",
+                      "title": "A list of kernel command line arguments to match",
                       "type": "string",
                       "additionalProperties": false
                     }
@@ -169,7 +171,7 @@
                   "interface": {
                     "type": "array",
                     "items": {
-                      "description": "A list of interface names to match",
+                      "title": "A list of interface names to match",
                       "type": "string",
                       "additionalProperties": false
                     }
@@ -177,7 +179,7 @@
                   "driver": {
                     "type": "array",
                     "items": {
-                      "description": "A list of driver names to match",
+                      "title": "A list of driver names to match",
                       "type": "string",
                       "additionalProperties": false
                     }
@@ -185,7 +187,7 @@
                   "path": {
                     "type": "array",
                     "items": {
-                      "description": "A list of paths to match against the ID_PATH udev property of devices",
+                      "title": "A list of paths to match against the ID_PATH udev property of devices",
                       "type": "string",
                       "additionalProperties": false
                     }
@@ -201,19 +203,19 @@
       }
     },
     "user": {
-      "description": "First user settings",
+      "title": "First user settings",
       "type": "object",
       "properties": {
         "fullName": {
-          "description": "Full name (e.g., 'Jane Doe')",
+          "title": "Full name (e.g., 'Jane Doe')",
           "type": "string"
         },
         "userName": {
-          "description": "User login name (e.g., 'jane.doe')",
+          "title": "User login name (e.g., 'jane.doe')",
           "type": "string"
         },
         "password": {
-          "description": "User password (e.g., 'nots3cr3t')",
+          "title": "User password (e.g., 'nots3cr3t')",
           "type": "string"
         }
       },
@@ -224,33 +226,33 @@
       ]
     },
     "root": {
-      "description": "Root authentication settings",
+      "title": "Root authentication settings",
       "type": "object",
       "properties": {
         "password": {
-          "description": "Root password",
+          "title": "Root password",
           "type": "string"
         },
         "sshPublicKey": {
-          "description": "SSH public key",
+          "title": "SSH public key",
           "type": "string"
         }
       }
     },
     "localization": {
-      "description": "Localization settings",
+      "title": "Localization settings",
       "type": "object",
       "properties": {
         "language": {
-          "description": "System language ID (e.g., 'en_US')",
+          "title": "System language ID (e.g., 'en_US')",
           "type": "string"
         },
         "keyboard": {
-          "description": "Keyboard layout ID",
+          "title": "Keyboard layout ID",
           "type": "string"
         },
         "timezone": {
-          "description": "Time zone identifier such as 'Europe/Berlin'",
+          "title": "Time zone identifier such as 'Europe/Berlin'",
           "type": "string"
         }
       }
