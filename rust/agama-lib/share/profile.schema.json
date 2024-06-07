@@ -357,46 +357,85 @@
                   },
                   "filesystem": {
                     "title": "File system of the volume",
-                    "type": ["string", "object"],
-                    "additionalProperties": false,
-                    "properties": {
-                      "btrfs": {
-                        "title": "Specification of a Btrfs file system",
+                    "oneOf": [
+                      {
+                        "description": "File system type",
+                        "enum": [
+                          "bcachefs", "btrfs", "exfat", "ext2", "ext3", "ext4", "f2fs", "jfs",
+                          "nfs", "nilfs2", "ntfs", "reiserfs", "swap", "tmpfs", "vfat", "xfs"
+                        ]
+                      },
+                      {
                         "type": "object",
                         "additionalProperties": false,
                         "properties": {
-                          "snapshots": {
-                            "title": "Whether Btrfs snapshots should be configured",
-                            "type": "boolean"
+                          "btrfs": {
+                            "title": "Specification of a Btrfs file system",
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "snapshots": {
+                                "title": "Whether Btrfs snapshots should be configured",
+                                "type": "boolean"
+                              }
+                            }
                           }
-                        }
+                        },
+                        "required": ["btrfs"]
                       }
-                    }
+                    ]
                   },
                   "size": {
                     "title": "Size limits",
-                    "description": "It can be 'auto', a fixed size (as string or integer) or a set of size limits",
-                    "type": ["string", "integer", "array", "object"],
-                    "prefixItems": [
+                    "oneOf": [
+                      { "const": "auto" },
+                      { "$ref": "#/$defs/sizeString" },
+                      { "$ref": "#/$defs/sizeInteger" },
                       {
-                        "title": "Mandatory lower size limit",
-                        "type": ["integer", "string"]
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 2,
+                        "prefixItems": [
+                          {
+                            "title": "Mandatory lower size limit",
+                            "$ref": "#/$defs/sizeValue"
+                          },
+                          {
+                            "title": "Optional upper size limit",
+                            "$ref": "#/$defs/sizeValue"
+                          }
+                        ]
                       },
-                      { 
-                        "title": "Optional upper size limit",
-                        "type": ["integer", "string"]
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "min": {
+                            "title": "Mandatory lower size limit",
+                            "$ref": "#/$defs/sizeValue"
+                          },
+                          "max": {
+                            "title": "Optional upper size limit",
+                            "$ref": "#/$defs/sizeValue"
+                          }
+                        },
+                        "required": ["min"]
                       }
                     ],
-                    "additionalProperties": false,
-                    "required": ["min"],
-                    "properties": {
-                      "min": {
-                        "title": "Mandatory lower size limit",
-                        "type": ["integer", "string"]
+                    "$defs": {
+                      "sizeString": {
+                        "type": "string",
+                        "pattern": "^[0-9]+(\\.[0-9]+)?(\\s*([KkMmGgTtPpEeZzYy][iI]?)?[Bb])?"
                       },
-                      "max": {
-                        "title": "Optional upper size limit",
-                        "type": ["integer", "string"]
+                      "sizeInteger": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "sizeValue": {
+                        "oneOf": [
+                          { "$ref": "#/$defs/sizeString" },
+                          { "$ref": "#/$defs/sizeInteger" }
+                        ]
                       }
                     }
                   },
