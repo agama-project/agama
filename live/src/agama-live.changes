@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Jun  6 14:30:19 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Automatically generate the root password (gh#openSUSE/agama#1292)
+- Allow setting the default root password in ISO metadata
+  (gh#openSUSE/agama#1290)
+- Alloe setting teh root password from boot command line or set
+  it interactively during boot (gh#openSUSE/agama#1288)
+
+-------------------------------------------------------------------
 Wed Jun  5 15:40:43 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix the cd.ikr content for booting the s390x iso 

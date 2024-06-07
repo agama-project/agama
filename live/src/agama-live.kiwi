@@ -39,7 +39,8 @@
         </type>
     </preferences>
     <users>
-        <user password="$1$wYJUgpM5$RXMMeASDc035eX.NbYWFl0" home="/root" name="root" groups="root"/>
+        <!-- the password is configured during boot -->
+        <user password="!*" home="/root" name="root" groups="root"/>
     </users>
     <repository type="rpm-md">
         <source path="obsrepositories:/"/>
