@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -29,15 +29,18 @@ import {
   GridItem,
   Hint,
   HintBody,
-  Icon,
   List,
   ListItem,
-  Stack
+  Stack,
+  Text,
+  TextVariants,
+  TextContent
 } from "@patternfly/react-core";
 import { useProduct } from "~/context/product";
 import { useInstallerClient } from "~/context/installer";
 import { Navigate, Link } from "react-router-dom";
-import { CardField, Page, InstallButton } from "~/components/core";
+import { CardField, Em, Page, InstallButton } from "~/components/core";
+import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
 const ReadyForInstallation = () => (
@@ -46,7 +49,7 @@ const ReadyForInstallation = () => (
       headingLevel="h4"
       color="green"
       titleText={_("Ready for installation")}
-      icon={<Icon name="error" size="xxl" />}
+      icon={<Icon name="check_circle" size="xxl" className="color-success" />}
     />
 
     <EmptyStateBody>
@@ -71,11 +74,36 @@ const IssuesList = ({ issues }) => {
 
   return (
     <>
-      <p>{_("Before installing the system, you may need to solve the following issues:")}</p>
+      <p>{_("Before installing the system, you need to pay attention to the following tasks:")}</p>
       <List>{list}</List>
     </>
   );
 };
+
+const SoftwareSummary = () => (
+  <TextContent>
+    <Text component={TextVariants.h3}>{_("Software")}</Text>
+    <Text>{_("The installation will take 5 GiB including:")}</Text>
+    <List>
+      <ListItem>{_("GNOME Desktop")}</ListItem>
+      <ListItem>{_("YaST Basic")}</ListItem>
+    </List>
+  </TextContent>
+);
+
+const StorageSummary = () => (
+  <TextContent>
+    <Text component={TextVariants.h3}>{_("Storage")}</Text>
+    <Text>{_("The system will be installed on /dev/vda deleting all its content.")}</Text>
+  </TextContent>
+);
+
+const LocalizationSummary = () => (
+  <TextContent>
+    <Text component={TextVariants.h3}>{_("Localization")}</Text>
+    <Text>{_("The system will use English (United States).")}</Text>
+  </TextContent>
+);
 
 export default function OverviewPage() {
   const { selectedProduct } = useProduct();
@@ -97,18 +125,31 @@ export default function OverviewPage() {
         <Grid hasGutter>
           <GridItem sm={12}>
             <Hint>
-              <HintBody>{_("A brief summary about this page")}</HintBody>
+              <HintBody>
+                {_(
+                  "Take your time to check your configuration before starting the installation process."
+                )}
+              </HintBody>
             </Hint>
           </GridItem>
           <GridItem sm={12} xl={6}>
-            <CardField label="Overview" description={_("Lorem ipsum dolor")}>
+            <CardField
+              label="Overview"
+              description={_(
+                "These are the most relevant installation settings. Fell free to browse the sections in the menu for further details."
+              )}
+            >
               <CardBody>
-                <p>{_("Content")}</p>
+                <Stack hasGutter>
+                  <LocalizationSummary />
+                  <StorageSummary />
+                  <SoftwareSummary />
+                </Stack>
               </CardBody>
             </CardField>
           </GridItem>
           <GridItem sm={12} xl={6}>
-            <CardField label="Result" description={_("Lorem ipsum")}>
+            <CardField label="Installation">
               <CardBody>
                 <Stack hasGutter>
                   {issues.isEmpty ? <ReadyForInstallation /> : <IssuesList issues={issues} />}
