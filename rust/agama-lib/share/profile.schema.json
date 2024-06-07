@@ -271,7 +271,6 @@
               "title": "Target device",
               "oneOf": [
                 {
-                  "type": "string",
                   "enum": ["disk", "newLvmVg"]
                 },
                 {
@@ -320,19 +319,16 @@
                 },
                 "method": {
                   "title": "Method used to create the encryption devices",
-                  "type": "string",
                   "enum": ["luks2", "tpm_fde"]
                 },
                 "pbkdFunction": {
                   "title": "Password-based key derivation function to use for LUKS2",
-                  "type": "string",
                   "enum": ["pbkdf2", "argon2i", "argon2id"]
                 }
               }
             },
             "space": {
               "title": "Policy to find space for the new partitions",
-              "type": "string",
               "enum": [ "delete", "resize", "keep" ]
             },
             "volumes": {
