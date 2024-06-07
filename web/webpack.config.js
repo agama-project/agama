@@ -101,7 +101,7 @@ module.exports = {
     watchFiles: ["./po/*.po"],
     proxy: [
       {
-        context: ["/api/ws"],
+        context: ["/api/ws", "/api/terminal"],
         target: agamaServer.replace(/^http/, "ws"),
         ws: true,
         secure: false,

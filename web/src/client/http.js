@@ -54,7 +54,7 @@ class WSClient {
   /**
    * @param {URL} url - Websocket URL.
    */
-  constructor(url) {
+  constructor(url, json = true) {
     this.url = url.toString();
 
     this.handlers = {
@@ -66,6 +66,7 @@ class WSClient {
 
     this.reconnectAttempts = 0;
     this.client = this.buildClient();
+    this.json = json;
   }
 
   wsState() {
@@ -196,7 +197,7 @@ class WSClient {
    * @param {object} event - Event object, which is basically a websocket message.
    */
   dispatchEvent(event) {
-    const eventObject = JSON.parse(event.data);
+    const eventObject = this.json ? JSON.parse(event.data) : event.data;
     this.handlers.events.forEach((f) => f(eventObject));
   }
 

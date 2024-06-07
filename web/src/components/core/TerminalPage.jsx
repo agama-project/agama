@@ -23,7 +23,6 @@
 
 import React, { useEffect } from "react";
 import { WSClient } from "~/client/http";
-import { noop, useCancellablePromise } from "~/utils";
 import { Terminal } from "@xterm/xterm";
 import { AttachAddon } from "@xterm/addon-attach";
 import { FitAddon } from "@xterm/addon-fit";
@@ -31,27 +30,40 @@ import { FitAddon } from "@xterm/addon-fit";
 /**
  * Simple component that displayes terminal.
  * @component
- * @param {URL} url - URL of the HTTP API.
+ * @param {object} props
+ * @param {Location} props.url url of websocket answering terminal
  */
-export default function TerminalPage(url) {
-  const { cancellablePromise } = useCancellablePromise();
-
+export default function TerminalPage({ url = window.location }) {
   useEffect(() => {
     const wsUrl = new URL(url.toString());
-    wsUrl.pathname = wsUrl.pathname.concat("api/terminal_socket");
+    wsUrl.hash = "";
+    wsUrl.pathname = wsUrl.pathname.concat("api/terminal");
     wsUrl.protocol = (url.protocol === "http:") ? "ws" : "wss";
-    const ws = new WSClient(wsUrl);
-    const term = new Terminal();
-    const attachAddon = new AttachAddon(ws.client);
-    // Attach the socket to term
-    term.loadAddon(attachAddon);
-    const fitAddon = new FitAddon();
-    term.loadAddon(fitAddon);
-    term.open(document.getElementById('terminal'));
-    fitAddon.fit();
+    console.info(wsUrl);
+    const ws = new WSClient(wsUrl, false);
+    ws.onOpen(() => {
+      const term = new Terminal({
+        rows: 22,
+        cols: 100,
+      });
+      const attachAddon = new AttachAddon(ws.client);
+      // Attach the socket to term
+      term.loadAddon(attachAddon);
+      const fitAddon = new FitAddon();
+      term.loadAddon(fitAddon);
+      term.open(document.getElementById('terminal'));
+      term.writeln("Welcome to agama shell\n");
+      fitAddon.fit();
+      ws.onClose(() => {
+        if (term.element !== undefined) {
+          term.dispose();
+        }
+      });
+    });
+    ws.connect();
   }, [url]);
 
   return (
-    <div id="terminal" />
+    <div id="terminal" style={{ height: "22em", width: "100em" }} />
   );
 }

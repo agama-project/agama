@@ -1,4 +1,4 @@
-use axum::{extract::{ws::WebSocket, WebSocketUpgrade}, response::IntoResponse};
+use axum::{extract::{ws::{Message, WebSocket}, WebSocketUpgrade}, response::IntoResponse};
 use log::info;
 
 pub(crate) async fn handler(
@@ -13,11 +13,19 @@ async fn handle_socket(mut socket: WebSocket) {
     loop {
         let message = socket.recv().await;
         match message {
-            Some(Ok(message)) => {
-                println!("websocket {:?}", message);
+            Some(Ok(Message::Text(s))) => {
+                println!("websocket text {:?}", s);
+                socket.send(Message::Binary(s.into_bytes())).await; // TODO: error handling
                 continue;
-            }
-            _ => continue,
+            },
+            Some(Ok(Message::Close(_))) => {
+                println!("websocket close {:?}", message);
+                break;  
+            },
+            _ => {
+                println!("websocket other {:?}", message);
+                continue
+            },
         }
     }
 
