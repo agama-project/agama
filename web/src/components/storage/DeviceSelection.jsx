@@ -26,7 +26,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  Card,
+  CardBody,
   Form, FormGroup,
+  PageSection,
   Radio,
   Stack
 } from "@patternfly/react-core";
@@ -140,76 +143,87 @@ devices.").split(/[[\]]/);
 
   return (
     <>
+      <PageSection variant="light" stickyOnBreakpoint={{ sm: "top" }}>
+        <h2>{_("Select installation device")}</h2>
+      </PageSection>
       <Page.MainContent>
         <Form id="targetSelection" onSubmit={onSubmit}>
-          <FormGroup label={_("Install new system on")} isInline role="radiogroup">
-            <Radio
-              name="target"
-              label={_("An existing disk")}
-              onChange={selectTargetDisk}
-              isLabelWrapped
-              id={SELECT_DISK_ID}
-              aria-controls={SELECT_DISK_PANEL_ID}
-              isChecked={isTargetDisk}
-            />
-            <Radio
-              name="target"
-              label={_("A new LVM Volume Group")}
-              onChange={selectTargetNewLvmVG}
-              isLabelWrapped
-              id={CREATE_LVM_ID}
-              aria-controls={CREATE_LVM_PANEL_ID}
-              isChecked={isTargetNewLvmVg}
-            />
-          </FormGroup>
-          <FormGroup>
-            <Stack
-              id={SELECT_DISK_PANEL_ID}
-              aria-expanded={isTargetDisk}
-              className={!isTargetDisk && a11y.hidden}
-            >
-              <div>
-                {msgStart1}
-                <b>{msgBold1}</b>
-                {msgEnd1}
-              </div>
-
-              <DeviceSelectorTable
-                aria-label={_("Device selector for target disk")}
-                devices={state.availableDevices}
-                selectedDevices={compact([state.targetDevice])}
-                itemChildren={deviceChildren}
-                itemSelectable={isDeviceSelectable}
-                onSelectionChange={selectTargetDevice}
-                variant="compact"
-              />
-            </Stack>
-
-            <Stack
-              id={CREATE_LVM_PANEL_ID}
-              aria-expanded={isTargetNewLvmVg}
-              className={!isTargetNewLvmVg && a11y.hidden}
-            >
-              <div>
-                {msgStart2}
-                <b>{msgBold2}</b>
-                {msgEnd2}
-              </div>
-
-              <div>
-                <DeviceSelectorTable
-                  aria-label={_("Device selector for new LVM volume group")}
-                  isMultiple
-                  devices={state.availableDevices}
-                  selectedDevices={state.targetPVDevices}
-                  itemChildren={deviceChildren}
-                  itemSelectable={isDeviceSelectable}
-                  onSelectionChange={selectTargetPVDevices}
-                  variant="compact"
+          <Card isRounded>
+            <CardBody>
+              <FormGroup label={_("Install new system on")} isInline role="radiogroup">
+                <Radio
+                  name="target"
+                  label={_("An existing disk")}
+                  onChange={selectTargetDisk}
+                  isLabelWrapped
+                  id={SELECT_DISK_ID}
+                  aria-controls={SELECT_DISK_PANEL_ID}
+                  isChecked={isTargetDisk}
                 />
-              </div>
-            </Stack>
-          </FormGroup>
+                <Radio
+                  name="target"
+                  label={_("A new LVM Volume Group")}
+                  onChange={selectTargetNewLvmVG}
+                  isLabelWrapped
+                  id={CREATE_LVM_ID}
+                  aria-controls={CREATE_LVM_PANEL_ID}
+                  isChecked={isTargetNewLvmVg}
+                />
+              </FormGroup>
+            </CardBody>
+          </Card>
+          <Card isRounded>
+            <CardBody>
+              <FormGroup>
+                <Stack
+                  id={SELECT_DISK_PANEL_ID}
+                  aria-expanded={isTargetDisk}
+                  className={!isTargetDisk && a11y.hidden}
+                >
+                  <div>
+                    {msgStart1}
+                    <b>{msgBold1}</b>
+                    {msgEnd1}
+                  </div>
+
+                  <DeviceSelectorTable
+                    aria-label={_("Device selector for target disk")}
+                    devices={state.availableDevices}
+                    selectedDevices={compact([state.targetDevice])}
+                    itemChildren={deviceChildren}
+                    itemSelectable={isDeviceSelectable}
+                    onSelectionChange={selectTargetDevice}
+                    variant="compact"
+                  />
+                </Stack>
+
+                <Stack
+                  id={CREATE_LVM_PANEL_ID}
+                  aria-expanded={isTargetNewLvmVg}
+                  className={!isTargetNewLvmVg && a11y.hidden}
+                >
+                  <div>
+                    {msgStart2}
+                    <b>{msgBold2}</b>
+                    {msgEnd2}
+                  </div>
+
+                  <div>
+                    <DeviceSelectorTable
+                      aria-label={_("Device selector for new LVM volume group")}
+                      isMultiple
+                      devices={state.availableDevices}
+                      selectedDevices={state.targetPVDevices}
+                      itemChildren={deviceChildren}
+                      itemSelectable={isDeviceSelectable}
+                      onSelectionChange={selectTargetPVDevices}
+                      variant="compact"
+                    />
+                  </div>
+                </Stack>
+              </FormGroup>
+            </CardBody>
+          </Card>
         </Form>
       </Page.MainContent>
 

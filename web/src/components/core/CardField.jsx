@@ -37,7 +37,7 @@ import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
  *
  * @todo write documentation
  */
-export default function CardField({
+const CardField = ({
   label,
   value,
   description,
@@ -46,7 +46,7 @@ export default function CardField({
   cardProps = {},
   cardHeaderProps = {},
 
-}) {
+}) => {
   return (
     <Card isCompact isFullHeight isRounded {...cardProps}>
       <CardHeader {...cardHeaderProps}>
@@ -61,13 +61,12 @@ export default function CardField({
           </Flex>
         </CardTitle>
       </CardHeader>
-      <CardBody>
-        {description && <div className={textStyles.color_200}>{description}</div>}
-      </CardBody>
+      {description && <CardBody><div className={textStyles.color_200}>{description}</div></CardBody>}
       {children}
-      <CardFooter>
-        {actions}
-      </CardFooter>
+      {actions && <CardFooter>{actions}</CardFooter>}
     </Card>
   );
-}
+};
+
+CardField.Content = CardBody;
+export default CardField;

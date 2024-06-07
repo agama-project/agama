@@ -24,7 +24,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@patternfly/react-core";
-import { CardField } from "~/components/core";
+import { ButtonLink, CardField } from "~/components/core";
 import { _ } from "~/i18n";
 import { deviceLabel } from '~/components/storage/utils';
 import { sprintf } from "sprintf-js";
@@ -99,7 +99,9 @@ export default function InstallationDeviceField({
       description={DESCRIPTION}
       value={value}
       actions={
-        isLoading ? <Skeleton fontSize="sm" width="100px" /> : <Link to="target-device">{_("Change")}</Link>
+        isLoading
+          ? <Skeleton fontSize="sm" width="100px" />
+          : <ButtonLink to="target-device" isPrimary={false}>{_("Change")}</ButtonLink>
       }
     />
   );

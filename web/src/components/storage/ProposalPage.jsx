@@ -20,16 +20,16 @@
  */
 
 import React, { useCallback, useReducer, useEffect } from "react";
-
+import { Grid, GridItem } from "@patternfly/react-core";
+import { Page } from "~/components/core/";
+import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
+import ProposalSettingsSection from "./ProposalSettingsSection";
+import ProposalResultSection from "./ProposalResultSection";
+import { _ } from "~/i18n";
+import { IDLE } from "~/client/status";
 import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
-import {
-  ProposalTransactionalInfo,
-  ProposalSettingsSection,
-  ProposalResultSection
-} from "~/components/storage";
-import { IDLE } from "~/client/status";
-import { Grid, GridItem, PageSection, Divider } from "@patternfly/react-core";
+import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
 const initialState = {
   loading: true,
@@ -261,34 +261,39 @@ export default function ProposalPage() {
    */
 
   return (
-    // TRANSLATORS: Storage page title
-    <PageSection>
-      <ProposalTransactionalInfo
-        settings={state.settings}
-      />
-      <Grid hasGutter>
-        <GridItem sm={12} xl={6}>
-          <ProposalSettingsSection
-            availableDevices={state.availableDevices}
-            volumeDevices={state.volumeDevices}
-            encryptionMethods={state.encryptionMethods}
-            volumeTemplates={state.volumeTemplates}
-            settings={state.settings}
-            onChange={changeSettings}
-            isLoading={state.loading}
-            changing={state.changing}
-          />
-        </GridItem>
-        <GridItem sm={12} xl={6}>
-          <ProposalResultSection
-            system={state.system}
-            staging={state.staging}
-            actions={state.actions}
-            errors={state.errors}
-            isLoading={state.loading}
-          />
-        </GridItem>
-      </Grid>
-    </PageSection>
+    <>
+      <Page.Header>
+        <h2>{_("Storage")}</h2>
+        <p className={textStyles.color_400}>{_("Lorem ipsum dolor")}</p>
+        <ProposalTransactionalInfo
+          settings={state.settings}
+        />
+      </Page.Header>
+      <Page.MainContent>
+        <Grid hasGutter>
+          <GridItem sm={12} xl={6}>
+            <ProposalSettingsSection
+              availableDevices={state.availableDevices}
+              volumeDevices={state.volumeDevices}
+              encryptionMethods={state.encryptionMethods}
+              volumeTemplates={state.volumeTemplates}
+              settings={state.settings}
+              onChange={changeSettings}
+              isLoading={state.loading}
+              changing={state.changing}
+            />
+          </GridItem>
+          <GridItem sm={12} xl={6}>
+            <ProposalResultSection
+              system={state.system}
+              staging={state.staging}
+              actions={state.actions}
+              errors={state.errors}
+              isLoading={state.loading}
+            />
+          </GridItem>
+        </Grid>
+      </Page.MainContent>
+    </>
   );
 }

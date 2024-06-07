@@ -62,7 +62,7 @@ export default function LoginPage() {
   // will be replaced by "root"
   const sectionTitle = sprintf(_("Log in as %s"), "root");
   return (
-    <Page mountSidebar={false} title="Agama">
+    <>
       <Center>
         <Section title={sectionTitle}>
           <p
@@ -112,6 +112,6 @@ export default function LoginPage() {
           buttonVariant="link"
         />
       </Page.Actions>
-    </Page>
+    </>
   );
 }

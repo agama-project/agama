@@ -92,7 +92,7 @@ export default function OverviewPage() {
   }
 
   return (
-    <Page title={_("Installation Summary")}>
+    <>
       <Page.MainContent>
         <Grid hasGutter>
           <GridItem sm={12}>
@@ -118,6 +118,6 @@ export default function OverviewPage() {
           </GridItem>
         </Grid>
       </Page.MainContent>
-    </Page>
+    </>
   );
 }

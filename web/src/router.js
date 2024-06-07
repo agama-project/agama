@@ -54,7 +54,7 @@ const productRoutes = createRoute(_("Product"), "product", <Page title={_("Produ
   createRoute(_("Change selected product"), "change", <ProductSelectionPage />),
   createRoute(_("Register"), "register", <ProductRegistrationPage />),
 ], "inventory_2");
-const l10nRoutes = createRoute(_("Localization"), "l10n", <Page title={_("Localization")} />, [
+const l10nRoutes = createRoute(_("Localization"), "l10n", <Page />, [
   { index: true, element: <L10nPage /> },
   createRoute(_("Select language"), "language/select", <LocaleSelection />),
   createRoute(_("Select keymap"), "keymap/select", <KeymapSelection />),
@@ -102,7 +102,13 @@ const routes = [
   {
     path: "/login",
     exact: true,
-    element: <LoginPage />
+    element: <Page />,
+    children: [
+      {
+        index: true,
+        element: <LoginPage />
+      }
+    ]
   },
   {
     path: "/",

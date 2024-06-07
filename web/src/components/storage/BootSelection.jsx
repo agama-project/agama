@@ -23,7 +23,12 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Form, FormGroup, Radio } from "@patternfly/react-core";
+import {
+  Card, CardBody,
+  Form, FormGroup,
+  Radio,
+  Stack
+} from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { DevicesFormSelect } from "~/components/storage";
 import { Page } from "~/components/core";
@@ -32,6 +37,7 @@ import { deviceLabel } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
+import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
 /**
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
@@ -144,56 +150,63 @@ partitions in the appropriate disk."
 
   return (
     <>
+      <Page.Header>
+        <h2>{_("Select booting partition")}</h2>
+        <p className={textStyles.color_400}>{description}</p>
+      </Page.Header>
       <Page.MainContent>
         <Form id="bootSelectionForm" onSubmit={onSubmit}>
-          {description}
-          <FormGroup isStack>
-            <Radio
-              name="bootMode"
-              id={BOOT_AUTO_ID}
-              value={BOOT_AUTO_ID}
-              defaultChecked={state.selectedOption === BOOT_AUTO_ID}
-              onChange={updateSelectedOption}
-              label={_("Automatic")}
-              body={automaticText()}
-            />
-            <Radio
-              name="bootMode"
-              id={BOOT_MANUAL_ID}
-              value={BOOT_MANUAL_ID}
-              defaultChecked={state.selectedOption === BOOT_MANUAL_ID}
-              onChange={updateSelectedOption}
-              label={_("Select a disk")}
-              body={
-                <div className="stack">
-                  <div>
-                    {_("Partitions to boot will be allocated at the following device.")}
-                  </div>
-                  <DevicesFormSelect
-                    aria-label={_("Choose a disk for placing the boot loader")}
-                    name="bootDevice"
-                    devices={state?.availableDevices || []}
-                    selectedDevice={state.bootDevice}
-                    onChange={setBootDevice}
-                    isDisabled={state.selectedOption !== BOOT_MANUAL_ID}
-                  />
-                </div>
-              }
-            />
-            <Radio
-              name="bootMode"
-              id={BOOT_DISABLED_ID}
-              value={BOOT_DISABLED_ID}
-              defaultChecked={state.selectedOption === BOOT_DISABLED_ID}
-              onChange={updateSelectedOption}
-              label={_("Do not configure")}
-              body={
-                <div>
-                  {_("No partitions will be automatically configured for booting. Use with caution.")}
-                </div>
-              }
-            />
-          </FormGroup>
+          <Card isRounded>
+            <CardBody>
+              <FormGroup isStack>
+                <Radio
+                  name="bootMode"
+                  id={BOOT_AUTO_ID}
+                  value={BOOT_AUTO_ID}
+                  defaultChecked={state.selectedOption === BOOT_AUTO_ID}
+                  onChange={updateSelectedOption}
+                  label={_("Automatic")}
+                  body={automaticText()}
+                />
+                <Radio
+                  name="bootMode"
+                  id={BOOT_MANUAL_ID}
+                  value={BOOT_MANUAL_ID}
+                  defaultChecked={state.selectedOption === BOOT_MANUAL_ID}
+                  onChange={updateSelectedOption}
+                  label={_("Select a disk")}
+                  body={
+                    <Stack hasGutter>
+                      <div>
+                        {_("Partitions to boot will be allocated at the following device.")}
+                      </div>
+                      <DevicesFormSelect
+                        aria-label={_("Choose a disk for placing the boot loader")}
+                        name="bootDevice"
+                        devices={state?.availableDevices || []}
+                        selectedDevice={state.bootDevice}
+                        onChange={setBootDevice}
+                        isDisabled={state.selectedOption !== BOOT_MANUAL_ID}
+                      />
+                    </Stack>
+                  }
+                />
+                <Radio
+                  name="bootMode"
+                  id={BOOT_DISABLED_ID}
+                  value={BOOT_DISABLED_ID}
+                  defaultChecked={state.selectedOption === BOOT_DISABLED_ID}
+                  onChange={updateSelectedOption}
+                  label={_("Do not configure")}
+                  body={
+                    <div>
+                      {_("No partitions will be automatically configured for booting. Use with caution.")}
+                    </div>
+                  }
+                />
+              </FormGroup>
+            </CardBody>
+          </Card>
         </Form>
       </Page.MainContent>
 

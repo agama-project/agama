@@ -26,14 +26,12 @@ import { NavLink, Outlet, useNavigate, useMatches, useLocation } from "react-rou
 import {
   Button,
   Flex,
-  PageGroup, PageSection, PageSectionVariants,
+  PageGroup, PageSection
 } from "@patternfly/react-core";
+import { PageMenu } from "~/components/core";
+import { _ } from "~/i18n";
 import tabsStyles from '@patternfly/react-styles/css/components/Tabs/tabs';
 import flexStyles from '@patternfly/react-styles/css/utilities/Flex/flex';
-
-import { _ } from "~/i18n";
-import { Icon } from "~/components/layout";
-import { If, PageMenu } from "~/components/core";
 
 /**
  * @typedef {import("@patternfly/react-core").ButtonProps} ButtonProps
@@ -115,8 +113,8 @@ const NextActions = ({ children }) => (
   </PageGroup>
 );
 
-const MainContent = ({ children }) => (
-  <PageSection variant="light" isFilled>{children}</PageSection>
+const MainContent = ({ children, ...props }) => (
+  <PageSection isFilled {...props}>{children}</PageSection>
 );
 
 const Navigation = ({ routes }) => {
@@ -141,6 +139,18 @@ const Navigation = ({ routes }) => {
           ))}
         </ul>
       </nav>
+    </PageSection>
+  );
+};
+
+const Header = ({ children, ...props }) => {
+  return (
+    <PageSection
+      variant="light"
+      stickyOnBreakpoint={{ default: "top" }}
+      {...props}
+    >
+      {children}
     </PageSection>
   );
 };
@@ -205,7 +215,7 @@ const Navigation = ({ routes }) => {
  * @param {boolean} [props.mountSidebar=true] - Whether include the core/Sidebar component.
  * @param {React.ReactNode} [props.children] - The page content.
  */
-const Page = ({ icon, title = "Agama", routes = [], children }) => {
+const Page = () => {
   const location = useLocation();
   const matches = useMatches();
   const currentRoute = matches.find(r => r.pathname === location.pathname);
@@ -213,14 +223,7 @@ const Page = ({ icon, title = "Agama", routes = [], children }) => {
 
   return (
     <PageGroup>
-      <PageSection variant={PageSectionVariants.light}>
-        <h2 className="split">
-          <If condition={icon} then={<Icon name={icon} />} />
-          <span>{titleFromRoute || title}</span>
-        </h2>
-      </PageSection>
-      <Navigation routes={routes} />
-      {children || <Outlet />}
+      <Outlet />
     </PageGroup>
   );
 };
@@ -231,5 +234,6 @@ Page.Action = Action;
 Page.Menu = Menu;
 Page.MainContent = MainContent;
 Page.CancelAction = CancelAction;
+Page.Header = Header;
 
 export default Page;

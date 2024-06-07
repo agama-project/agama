@@ -21,6 +21,7 @@
 
 import React, { useEffect, useState } from "react";
 import {
+  Card, CardBody,
   Form, FormGroup,
   Radio,
   Stack,
@@ -43,7 +44,7 @@ export default function KeyboardSelection() {
   const navigate = useNavigate();
 
   const sortedKeymaps = keymaps.sort((k1, k2) => k1.name > k2.name ? 1 : -1);
-  const searchHelp = _("Filter by language, territory or locale code");
+  const searchHelp = _("Filter by description or keymap code");
 
   useEffect(() => {
     setFilteredKeymaps(sortedKeymaps);
@@ -63,31 +64,38 @@ export default function KeyboardSelection() {
 
   return (
     <>
-      <Page.MainContent>
+      <Page.Header>
         <Stack hasGutter>
+          <h2>{_("Keyboard selection")}</h2>
           <ListSearch placeholder={searchHelp} elements={keymaps} onChange={setFilteredKeymaps} />
-          <Form id="keymapSelection" onSubmit={onSubmit}>
-            <FormGroup isStack>
-              {filteredKeymaps.map((keymap) => (
-                <Radio
-                  key={keymap.id}
-                  name="keymap"
-                  id={keymap.id}
-                  onChange={() => setSelected(keymap)}
-                  label={
-                    <>
-                      <span className={`${textStyles.fontSizeLg}`}>
-                        <b>{keymap.name}</b>
-                      </span> <Text component="small">{keymap.id}</Text>
-                    </>
-                  }
-                  value={JSON.stringify(keymap)}
-                  defaultChecked={keymap === selected}
-                />
-              ))}
-            </FormGroup>
-          </Form>
         </Stack>
+      </Page.Header>
+      <Page.MainContent>
+        <Card isRounded>
+          <CardBody>
+            <Form id="keymapSelection" onSubmit={onSubmit}>
+              <FormGroup isStack>
+                {filteredKeymaps.map((keymap) => (
+                  <Radio
+                    key={keymap.id}
+                    name="keymap"
+                    id={keymap.id}
+                    onChange={() => setSelected(keymap)}
+                    label={
+                      <>
+                        <span className={`${textStyles.fontSizeLg}`}>
+                          <b>{keymap.name}</b>
+                        </span> <Text component="small">{keymap.id}</Text>
+                      </>
+                    }
+                    value={JSON.stringify(keymap)}
+                    defaultChecked={keymap === selected}
+                  />
+                ))}
+              </FormGroup>
+            </Form>
+          </CardBody>
+        </Card>
       </Page.MainContent>
       <Page.NextActions>
         <Page.CancelAction />

@@ -21,6 +21,9 @@
 
 import React, { useEffect, useState } from "react";
 import {
+  Card,
+  CardBody,
+  Flex,
   Form, FormGroup,
   Radio,
   Stack,
@@ -62,36 +65,38 @@ export default function LocaleSelection() {
 
   return (
     <>
-      <Page.MainContent>
+      <Page.Header>
         <Stack hasGutter>
+          <h2>{_("Locale selection")}</h2>
           <ListSearch placeholder={searchHelp} elements={locales} onChange={setFilteredLocales} />
-          <Form id="localeSelection" onSubmit={onSubmit}>
-            <FormGroup isStack>
-              {filteredLocales.map((locale) => (
-                <Radio
-                  key={locale.id}
-                  name="locale"
-                  id={locale.id}
-                  onChange={() => setSelected(locale)}
-                  label={
-                    <>
-                      <span className={`${textStyles.fontSizeLg}`}>
-                        <b>{locale.name}</b>
-                      </span> <Text component="small">{locale.id}</Text>
-                    </>
-                  }
-                  description={
-                    <>
-                      <span className={textStyles.fontSizeMd}>{locale.territory}</span>
-                    </>
-                  }
-                  value={JSON.stringify(locale)}
-                  checked={locale === selected}
-                />
-              ))}
-            </FormGroup>
-          </Form>
         </Stack>
+      </Page.Header>
+      <Page.MainContent>
+        <Card isRounded>
+          <CardBody>
+            <Form id="localeSelection" onSubmit={onSubmit}>
+              <FormGroup isStack>
+                {filteredLocales.map((locale) => (
+                  <Radio
+                    key={locale.id}
+                    name="locale"
+                    id={locale.id}
+                    onChange={() => setSelected(locale)}
+                    label={
+                      <Flex gap={{ default: "gapSm" }}>
+                        <span className={textStyles.fontSizeLg}><b>{locale.name}</b></span>
+                        <span className={[textStyles.fontSizeMd, textStyles.color_100].join(" ")}>{locale.territory}</span>
+                        <span className={[textStyles.fontSizeXs, textStyles.color_400].join(" ")}>{locale.id}</span>
+                      </Flex>
+                    }
+                    value={JSON.stringify(locale)}
+                    checked={locale === selected}
+                  />
+                ))}
+              </FormGroup>
+            </Form>
+          </CardBody>
+        </Card>
       </Page.MainContent>
       <Page.NextActions>
         <Page.CancelAction />

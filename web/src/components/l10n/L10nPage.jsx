@@ -21,31 +21,24 @@
 
 import React from "react";
 import {
-  Card, CardHeader, CardTitle, CardBody, CardFooter,
   Gallery, GalleryItem,
-  PageSection,
-  Text,
 } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
+import { ButtonLink, CardField, Page } from "~/components/core";
 import { _ } from "~/i18n";
-import { Icon } from "~/components/layout";
 import { useL10n } from "~/context/l10n";
+import buttonStyles from '@patternfly/react-styles/css/components/Button/button';
 
-const Section = ({ title, icon, action, children }) => {
+const Section = ({ label, value, children }) => {
   return (
-    <Card isLarge>
-      <CardHeader>
-        <CardTitle component="h2">
-          <Icon name={icon} /> {title}
-        </CardTitle>
-      </CardHeader>
-      <CardBody isFilled>
+    <CardField
+      label={label}
+      value={value}
+    >
+      <CardField.Content>
         {children}
-      </CardBody>
-      <CardFooter>
-        {action}
-      </CardFooter>
-    </Card>
+      </CardField.Content>
+    </CardField>
   );
 };
 
@@ -62,45 +55,47 @@ export default function L10nPage() {
   } = useL10n();
 
   return (
-    <PageSection>
-      <Gallery hasGutter>
-        <GalleryItem>
-          <Section
-            icon="translate"
-            title={_("Language")}
-            action={
-              <Link to="language/select">{locale ? _("Change") : _("Select")}</Link>
-            }
-          >
-            <Text>{locale ? `${locale.name} - ${locale.territory}` : _("Language not selected yet")}</Text>
-          </Section>
-        </GalleryItem>
+    <>
+      <Page.Header>
+        <h2>{_("Localization")}</h2>
+      </Page.Header>
 
-        <GalleryItem>
-          <Section
-            icon="keyboard"
-            title={_("Keyboard")}
-            action={
-              <Link to="keymap/select">{keymap ? _("Change") : _("Select")}</Link>
-            }
-          >
-            <Text>{keymap ? keymap.name : _("Keyboard not selected yet")}</Text>
-          </Section>
-        </GalleryItem>
+      <Page.MainContent>
+        <Gallery hasGutter minWidths={{ default: "300px" }}>
+          <GalleryItem>
+            <Section
+              label={_("Language")}
+              value={locale ? `${locale.name} - ${locale.territory}` : _("Not selected yet")}
+            >
+              <ButtonLink to="language/select" isPrimary={!locale}>
+                {locale ? _("Change") : _("Select")}
+              </ButtonLink>
+            </Section>
+          </GalleryItem>
 
-        <GalleryItem>
-          <Section
-            icon="schedule"
-            title={_("Time zone")}
-            action={
-              <Link to="timezone/select">{timezone ? _("Change") : _("Select")}</Link>
+          <GalleryItem>
+            <Section
+              label={_("Keyboard")}
+              value={keymap ? keymap.name : _("Not selected yet")}
+            >
+              <ButtonLink to="keymap/select" isPrimary={!keymap}>
+                {keymap ? _("Change") : _("Select")}
+              </ButtonLink>
+            </Section>
+          </GalleryItem>
 
-            }
-          >
-            <Text>{timezone ? (timezone.parts || []).join(' - ') : _("Time zone not selected yet")}</Text>
-          </Section>
-        </GalleryItem>
-      </Gallery>
-    </PageSection>
+          <GalleryItem>
+            <Section
+              label={_("Time zone")}
+              value={timezone ? (timezone.parts || []).join(' - ') : _("Not selected yet")}
+            >
+              <ButtonLink to="timezone/select" isPrimary={!timezone}>
+                {timezone ? _("Change") : _("Select")}
+              </ButtonLink>
+            </Section>
+          </GalleryItem>
+        </Gallery>
+      </Page.MainContent>
+    </>
   );
 }

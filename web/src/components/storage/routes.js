@@ -21,7 +21,7 @@
 
 import React from "react";
 import { _ } from "~/i18n";
-
+import { Page } from "~/components/core";
 import StoragePage from "./StoragePage";
 import BootSelection from "./BootSelection";
 import DASDPage from "./DASDPage";
@@ -52,7 +52,7 @@ const selectors = [
 
 const routes = {
   path: "/storage",
-  element: <StoragePage />,
+  element: <Page />,
   handle: {
     name: _("Storage"),
     icon: "hard_drive"
