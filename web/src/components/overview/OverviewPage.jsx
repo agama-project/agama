@@ -22,9 +22,6 @@
 import React, { useEffect, useState } from "react";
 import {
   CardBody,
-  EmptyState,
-  EmptyStateHeader,
-  EmptyStateBody,
   Grid,
   GridItem,
   Hint,
@@ -39,25 +36,20 @@ import {
 import { useProduct } from "~/context/product";
 import { useInstallerClient } from "~/context/installer";
 import { Navigate, Link } from "react-router-dom";
-import { CardField, Em, Page, InstallButton } from "~/components/core";
-import { Icon } from "~/components/layout";
+import { CardField, EmptyState, Page, InstallButton } from "~/components/core";
 import { _ } from "~/i18n";
 
 const ReadyForInstallation = () => (
-  <EmptyState variant="lg">
-    <EmptyStateHeader
-      headingLevel="h4"
-      color="green"
-      titleText={_("Ready for installation")}
-      icon={<Icon name="check_circle" size="xxl" className="color-success" />}
-    />
-
-    <EmptyStateBody>
-      <InstallButton />
-    </EmptyStateBody>
+  <EmptyState
+    title={_("Ready for installation")}
+    icon="check_circle"
+    color="success-color-100"
+  >
+    <InstallButton />
   </EmptyState>
 );
 
+// FIXME: improve
 const IssuesList = ({ issues }) => {
   const { isEmpty, ...scopes } = issues;
   const list = [];
@@ -73,10 +65,15 @@ const IssuesList = ({ issues }) => {
   });
 
   return (
-    <>
-      <p>{_("Before installing the system, you need to pay attention to the following tasks:")}</p>
-      <List>{list}</List>
-    </>
+    <EmptyState
+      title={_("Before installing the system, you need to pay attention to the following tasks:")}
+      icon="error"
+      color="danger-color-100"
+    >
+      <List isPlain>
+        {list}
+      </List>
+    </EmptyState>
   );
 };
 

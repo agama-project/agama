@@ -179,19 +179,25 @@ const PREDEFINED_SIZES = [
  *
  * @returns {JSX.Element|null} null if requested icon is not available or given a falsy value as name; JSX block otherwise.
  */
-export default function Icon({ name, size, ...otherProps }) {
+export default function Icon({ name, size, color, ...otherProps }) {
   // NOTE: Reaching this is unlikely, but let's be safe.
   if (!name || !icons[name]) {
     console.error(`Icon '${name}' not found.`);
     return null;
   }
 
+  let classes = otherProps.className || "";
+
   if (size && PREDEFINED_SIZES.includes(size)) {
-    otherProps.className = [otherProps.className, `icon-${size}`].join(" ").trim();
+    classes += ` icon-${size}`;
   } else if (size) {
     otherProps.width = size;
     otherProps.height = size;
   }
+
+  if (color) classes += ` pf-v5-u-${color}`;
+
+  otherProps.className = classes.trim();
 
   const IconComponent = icons[name];
 
@@ -199,6 +205,7 @@ export default function Icon({ name, size, ...otherProps }) {
     <IconComponent
       aria-hidden="true"
       data-icon-name={name}
+      style={{ fill: "currentColor" }}
       {...otherProps}
     />
   );

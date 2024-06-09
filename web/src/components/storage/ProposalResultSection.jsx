@@ -25,9 +25,8 @@ import React, { useState } from "react";
 import {
   Alert,
   Button,
-  Card, CardHeader, CardTitle, CardBody, CardFooter,
+  Card, CardHeader, CardTitle, CardBody,
   Drawer, DrawerPanelContent, DrawerContent, DrawerContentBody, DrawerHead, DrawerActions, DrawerCloseButton,
-  EmptyState, EmptyStateHeader, EmptyStateBody,
   Skeleton,
   Stack,
   DrawerPanelBody
@@ -35,7 +34,7 @@ import {
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 import DevicesManager from "~/components/storage/DevicesManager";
-import { Icon } from "~/components/layout";
+import { EmptyState } from "~/components/core";
 import { ProposalActionsDialog } from "~/components/storage";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
@@ -115,12 +114,12 @@ const SectionErrors = ({ errors }) => {
   console.log("errors", errors);
 
   return (
-    <EmptyState variant="lg">
-      <EmptyStateHeader headingLevel="h4" color="green" titleText={_("Storage proposal not possible")} icon={<Icon name="error" size="xxl" />} />
-
-      <EmptyStateBody>
-        {errors.map((e, i) => <div key={i}>{e.message}</div>)}
-      </EmptyStateBody>
+    <EmptyState
+      title={_("Storage proposal not possible")}
+      icon="error"
+      color="danger-color-100"
+    >
+      {errors.map((e, i) => <div key={i}>{e.message}</div>)}
     </EmptyState>
   );
 };
