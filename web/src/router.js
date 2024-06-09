@@ -24,55 +24,30 @@ import { createHashRouter } from "react-router-dom";
 import App from "~/App";
 import Protected from "~/Protected";
 import Root from "~/Root";
-import { Page, LoginPage, ProgressText } from "~/components/core";
+import SimpleLayout from "./SimpleLayout";
+import { Page, LoginPage } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
-import { ProductPage, ProductSelectionPage, ProductRegistrationPage } from "~/components/product";
-import { SoftwarePage, SoftwarePatternsSelection } from "~/components/software";
-import { L10nPage, LocaleSelection, KeymapSelection, TimezoneSelection } from "~/components/l10n";
+import { ProductRegistrationPage, ProductSelectionPage } from "~/components/product";
 import { _ } from "~/i18n";
+import overviewRoutes from "~/components/overview/routes";
+import l10nRoutes from "~/components/l10n/routes";
 import networkRoutes from "~/components/network/routes";
-import usersRoutes from "~/components/users/routes";
 import storageRoutes from "~/components/storage/routes";
-
-// FIXME: think in a better apprach for routes, if any.
-// FIXME: think if it worth it to have the routes ready for work with them
-// dinamically of would be better to go for an explicit use of them (see
-// Root#Sidebar navigation)
-
-const createRoute = (name, path, element, children = [], icon) => (
-  {
-    path,
-    element,
-    handle: { name, icon },
-    children
-  }
-);
-
-const overviewRoutes = createRoute(_("Overview"), "overview", <OverviewPage />, [], "list_alt");
-const productRoutes = createRoute(_("Product"), "product", <Page title={_("Product")} />, [
-  { index: true, element: <ProductPage /> },
-  createRoute(_("Change selected product"), "change", <ProductSelectionPage />),
-  createRoute(_("Register"), "register", <ProductRegistrationPage />),
-], "inventory_2");
-const l10nRoutes = createRoute(_("Localization"), "l10n", <Page />, [
-  { index: true, element: <L10nPage /> },
-  createRoute(_("Select language"), "language/select", <LocaleSelection />),
-  createRoute(_("Select keymap"), "keymap/select", <KeymapSelection />),
-  createRoute(_("Select timezone"), "timezone/select", <TimezoneSelection />),
-], "globe");
-const softwareRoutes = createRoute(_("Software"), "software", <Page title={_("Software")} />, [
-  { index: true, element: <SoftwarePage /> },
-  createRoute(_("Select patterns"), "patterns/select", <SoftwarePatternsSelection />),
-], "apps");
+import softwareRoutes from "~/components/software/routes";
+import usersRoutes from "~/components/users/routes";
+import {
+  registerRoute as productRegistrationRoute,
+  selectionRoute as productSelectionRoute
+} from "~/components/product/routes";
 
 const rootRoutes = [
   overviewRoutes,
-  productRoutes,
   l10nRoutes,
   networkRoutes,
   storageRoutes,
   softwareRoutes,
   usersRoutes,
+  productRegistrationRoute
 ];
 
 const protectedRoutes = [
@@ -91,8 +66,14 @@ const protectedRoutes = [
         ]
       },
       {
-        path: "products",
-        element: <ProductSelectionPage />
+        element: <SimpleLayout />,
+        children: [
+          {
+            path: "products",
+            element: <ProductSelectionPage />
+          },
+          productSelectionRoute
+        ]
       }
     ]
   }
@@ -102,7 +83,7 @@ const routes = [
   {
     path: "/login",
     exact: true,
-    element: <Page />,
+    element: <SimpleLayout />,
     children: [
       {
         index: true,
@@ -120,14 +101,6 @@ const routes = [
 const router = createHashRouter(routes);
 
 export {
-  overviewRoutes,
-  l10nRoutes,
-  productRoutes,
-  softwareRoutes,
-  storageRoutes,
-  networkRoutes,
-  usersRoutes,
-  rootRoutes,
-  routes,
-  router
+  router,
+  rootRoutes
 };

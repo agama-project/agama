@@ -23,12 +23,20 @@
 
 import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
-import { ActionGroup, Button, Form, FormGroup } from "@patternfly/react-core";
+import {
+  ActionGroup,
+  Button,
+  Card,
+  Flex, FlexItem,
+  Form, FormGroup,
+  Grid, GridItem,
+  Stack
+} from "@patternfly/react-core";
+import { About, EmptyState, FormValidationError, If, Page, PasswordInput } from "~/components/core";
+import { Center } from "~/components/layout";
+import { AuthErrors, useAuth } from "~/context/auth";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { AuthErrors, useAuth } from "~/context/auth";
-import { About, FormValidationError, If, Page, PasswordInput, Section } from "~/components/core";
-import { Center } from "~/components/layout";
 
 // @ts-check
 
@@ -61,57 +69,73 @@ export default function LoginPage() {
   // TRANSLATORS: Title for a form to provide the password for the root user. %s
   // will be replaced by "root"
   const sectionTitle = sprintf(_("Log in as %s"), "root");
+
+  // TRANSLATORS: description why root password is needed. The text in the
+  // square brackets [] is displayed in bold, use only please, do not translate
+  // it and keep the brackets.
+  const [rootExplanationStart, rootUser, rootExplanationEnd] = _("The installer requires [root] \
+user privileges.").split(/[[\]]/);
+
   return (
-    <>
+    <Page.MainContent>
       <Center>
-        <Section title={sectionTitle}>
-          <p
-            dangerouslySetInnerHTML={{
-              __html: sprintf(
-                // TRANSLATORS: An explanation about required privileges for login into the installer. %s
-                // will be replaced by "root"
-                _("The installer requires %s user privileges. Please, provide its password to log in to the system."),
-                "<b>root</b>",
-              ),
-            }}
-          />
+        <Grid>
+          <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
+            <Card component="section" isRounded>
+              <EmptyState
+                title={sectionTitle}
+                icon="lock"
+                color="color-info-200"
+                variant="xl"
+              >
+                <p>
+                  {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
+                </p>
+                <p>
+                  {_("Please, provide its password to log in to the system.")}
+                </p>
+                <Stack hasGutter>
+                  <Form id="login" onSubmit={login} aria-label={_("Login form")}>
+                    <FormGroup fieldId="password">
+                      <PasswordInput
+                        id="password"
+                        name="password"
+                        value={password}
+                        aria-label={_("Password input")}
+                        onChange={(_, v) => setPassword(v)}
+                      />
+                    </FormGroup>
+                    <If
+                      condition={error}
+                      then={
+                        <FormValidationError
+                          message={errorMessage(loginError)}
+                        />
+                      }
+                    />
 
-          <Form id="login" onSubmit={login} aria-label={_("Login form")}>
-            <FormGroup fieldId="password">
-              <PasswordInput
-                id="password"
-                name="password"
-                value={password}
-                aria-label={_("Password input")}
-                onChange={(_, v) => setPassword(v)}
-              />
-            </FormGroup>
-            <If
-              condition={error}
-              then={
-                <FormValidationError
-                  message={errorMessage(loginError)}
-                />
-              }
-            />
-
-            <ActionGroup>
-              <Button type="submit" variant="primary">
-                {_("Log in")}
-              </Button>
-            </ActionGroup>
-          </Form>
-        </Section>
+                    <ActionGroup>
+                      <Button type="submit" variant="primary">
+                        {_("Log in")}
+                      </Button>
+                    </ActionGroup>
+                  </Form>
+                </Stack>
+              </EmptyState>
+              <Flex>
+                <FlexItem align={{ default: "alignRight" }}>
+                  <About
+                    showIcon={false}
+                    iconSize="xs"
+                    buttonText={_("More about this")}
+                    buttonVariant="link"
+                  />
+                </FlexItem>
+              </Flex>
+            </Card>
+          </GridItem>
+        </Grid>
       </Center>
-
-      <Page.Actions>
-        <About
-          showIcon={false}
-          iconSize="xs"
-          buttonText={_("What is this?")}
-          buttonVariant="link"
-        />
-      </Page.Actions>
-    </>
+    </Page.MainContent>
   );
 }
