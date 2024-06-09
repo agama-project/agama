@@ -39,6 +39,8 @@ const Header = () => {
   // NOTE: Agama is a name, do not translate
   const title = selectedProduct?.name || _("Agama");
 
+  // FIXME: do not use the style prop, find another way to play with the icon
+  // color.
   return (
     <Masthead>
       <MastheadToggle>
@@ -47,7 +49,7 @@ const Header = () => {
           aria-label="Global navigation"
           id="uncontrolled-nav-toggle"
         >
-          <Icon name="menu" />
+          <Icon name="menu" style={{ color: "white" }} />
         </PageToggleButton>
       </MastheadToggle>
       <MastheadMain>

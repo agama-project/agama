@@ -195,6 +195,7 @@ export default function Icon({ name, size, color, ...otherProps }) {
     otherProps.height = size;
   }
 
+  // FIXME: Allow more colors, not only PF text utils
   if (color) classes += ` pf-v5-u-${color}`;
 
   otherProps.className = classes.trim();
