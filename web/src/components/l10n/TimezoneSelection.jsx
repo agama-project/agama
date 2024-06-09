@@ -25,15 +25,14 @@ import {
   Flex,
   Form, FormGroup,
   Radio,
-  Stack,
   Text
 } from "@patternfly/react-core";
+import { ListSearch, Page } from "~/components/core";
 import { useNavigate } from "react-router-dom";
 import { _ } from "~/i18n";
 import { timezoneTime } from "~/utils";
 import { useL10n } from "~/context/l10n";
 import { useInstallerClient } from "~/context/installer";
-import { ListSearch, Page } from "~/components/core";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
 let date;
@@ -93,9 +92,13 @@ export default function TimezoneSelection() {
 
   return (
     <>
+      <Page.Header>
+        <h2>{_(" Timezone selection")}</h2>
+        <ListSearch placeholder={searchHelp} elements={displayTimezones} onChange={setFilteredTimezones} />
+      </Page.Header>
+
       <Page.MainContent>
-        <Stack hasGutter>
-          <ListSearch placeholder={searchHelp} elements={displayTimezones} onChange={setFilteredTimezones} />
+        <Page.CardSection>
           <Form id="timezoneSelection" onSubmit={onSubmit}>
             <FormGroup isStack>
               {filteredTimezones.map((timezone) => (
@@ -124,7 +127,7 @@ export default function TimezoneSelection() {
               ))}
             </FormGroup>
           </Form>
-        </Stack>
+        </Page.CardSection>
       </Page.MainContent>
       <Page.NextActions>
         <Page.CancelAction />

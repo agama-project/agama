@@ -21,10 +21,8 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Card, CardBody,
   Form, FormGroup,
   Radio,
-  Stack,
   Text
 } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
@@ -65,37 +63,33 @@ export default function KeyboardSelection() {
   return (
     <>
       <Page.Header>
-        <Stack hasGutter>
-          <h2>{_("Keyboard selection")}</h2>
-          <ListSearch placeholder={searchHelp} elements={keymaps} onChange={setFilteredKeymaps} />
-        </Stack>
+        <h2>{_("Keyboard selection")}</h2>
+        <ListSearch placeholder={searchHelp} elements={keymaps} onChange={setFilteredKeymaps} />
       </Page.Header>
       <Page.MainContent>
-        <Card isRounded>
-          <CardBody>
-            <Form id="keymapSelection" onSubmit={onSubmit}>
-              <FormGroup isStack>
-                {filteredKeymaps.map((keymap) => (
-                  <Radio
-                    key={keymap.id}
-                    name="keymap"
-                    id={keymap.id}
-                    onChange={() => setSelected(keymap)}
-                    label={
-                      <>
-                        <span className={`${textStyles.fontSizeLg}`}>
-                          <b>{keymap.name}</b>
-                        </span> <Text component="small">{keymap.id}</Text>
-                      </>
-                    }
-                    value={JSON.stringify(keymap)}
-                    defaultChecked={keymap === selected}
-                  />
-                ))}
-              </FormGroup>
-            </Form>
-          </CardBody>
-        </Card>
+        <Page.CardSection>
+          <Form id="keymapSelection" onSubmit={onSubmit}>
+            <FormGroup isStack>
+              {filteredKeymaps.map((keymap) => (
+                <Radio
+                  key={keymap.id}
+                  name="keymap"
+                  id={keymap.id}
+                  onChange={() => setSelected(keymap)}
+                  label={
+                    <>
+                      <span className={`${textStyles.fontSizeLg}`}>
+                        <b>{keymap.name}</b>
+                      </span> <Text component="small">{keymap.id}</Text>
+                    </>
+                  }
+                  value={JSON.stringify(keymap)}
+                  defaultChecked={keymap === selected}
+                />
+              ))}
+            </FormGroup>
+          </Form>
+        </Page.CardSection>
       </Page.MainContent>
       <Page.NextActions>
         <Page.CancelAction />

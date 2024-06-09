@@ -25,8 +25,10 @@ import React from "react";
 import { NavLink, Outlet, useNavigate, useMatches, useLocation } from "react-router-dom";
 import {
   Button,
+  Card, CardBody, CardHeader,
   Flex,
-  PageGroup, PageSection
+  PageGroup, PageSection,
+  Stack
 } from "@patternfly/react-core";
 import { PageMenu } from "~/components/core";
 import { _ } from "~/i18n";
@@ -143,15 +145,26 @@ const Navigation = ({ routes }) => {
   );
 };
 
-const Header = ({ children, ...props }) => {
+const Header = ({ hasGutter = true, children, ...props }) => {
   return (
     <PageSection
       variant="light"
       stickyOnBreakpoint={{ default: "top" }}
       {...props}
     >
-      {children}
+      <Stack hasGutter={hasGutter}>
+        {children}
+      </Stack>
     </PageSection>
+  );
+};
+
+const CardSection = ({ title, children, ...props }) => {
+  return (
+    <Card isRounded isCompact {...props}>
+      {title && <CardHeader> {title} </CardHeader>}
+      {children && <CardBody>{children}</CardBody>}
+    </Card>
   );
 };
 
@@ -228,6 +241,7 @@ const Page = () => {
   );
 };
 
+Page.CardSection = CardSection;
 Page.Actions = Actions;
 Page.NextActions = NextActions;
 Page.Action = Action;
