@@ -23,7 +23,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   Card,
   CardBody,
-  Badge,
+  Label,
   DataList,
   DataListCell,
   DataListCheck,
@@ -209,7 +209,7 @@ function SoftwarePatternsSelection() {
                       <DataListCell key="summary">
                         <Stack hasGutter>
                           <div>
-                            <b>{option.summary}</b> {option.selectedBy === SelectedBy.AUTO && <Badge>{_("auto selected")}</Badge>}
+                            <b>{option.summary}</b> {option.selectedBy === SelectedBy.AUTO && <Label color="blue" isCompact>{_("auto selected")}</Label>}
                           </div>
                           <div>{option.description}</div>
                         </Stack>

@@ -22,6 +22,7 @@
 // @ts-check
 
 import React from "react";
+import { Label, Flex } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import {
@@ -30,7 +31,7 @@ import {
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import DevicesManager from "~/components/storage/DevicesManager";
-import { If, Tag, TreeTable } from "~/components/core";
+import { If, TreeTable } from "~/components/core";
 
 /**
  * @typedef {import("~/client/storage").PartitionSlot} PartitionSlot
@@ -68,12 +69,12 @@ const DeviceCustomDetails = ({ item, devicesManager }) => {
   };
 
   return (
-    <>
-      <div>
-        <If condition={isNew()} then={<Tag variant="teal">{_("New")}</Tag>} />
-      </div>
+    <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
       <DeviceDetails item={item} />
-    </>
+      <div>
+        <If condition={isNew()} then={<Label color="green" isCompact>{_("New")}</Label>} />
+      </div>
+    </Flex>
   );
 };
 
@@ -89,21 +90,21 @@ const DeviceCustomSize = ({ item, devicesManager }) => {
   const sizeBefore = isResized ? devicesManager.systemDevice(device.sid).size : item.size;
 
   return (
-    <div className="split">
+    <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
+      <DeviceSize item={item} />
       <If
         condition={isResized}
         then={
-          <Tag variant="orange">
+          <Label color="orange" isCompact>
             {
               // TRANSLATORS: Label to indicate the device size before resizing, where %s is
               // replaced by the original size (e.g., 3.00 GiB).
               sprintf(_("Before %s"), deviceSize(sizeBefore))
             }
-          </Tag>
+          </Label>
         }
       />
-      <DeviceSize item={item} />
-    </div>
+    </Flex>
   );
 };
 
@@ -124,7 +125,7 @@ const columns = (devicesManager) => {
   return [
     { name: _("Device"), value: renderDevice },
     { name: _("Mount Point"), value: renderMountPoint },
-    { name: _("Details"), value: renderDetails, classNames: "details-column" },
+    { name: _("Details"), value: renderDetails },
     { name: _("Size"), value: renderSize, classNames: "sizes-column" }
   ];
 };
