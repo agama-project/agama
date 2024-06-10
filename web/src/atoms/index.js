@@ -65,7 +65,7 @@ const keymapsEffectAtom = atom((_get, set) => {
   client.l10n.onKeymapChange(id => set(keymapIdAtom, id));
 });
 
-const localesAtom = atom(async () => client.l10n.locales());
+const localesAtom = atom(async () => await client.l10n.locales());
 const localeIdsAtom = atom(undefined);
 const fetchLocalesAtom = atom(
   (get) => get(localeIdsAtom),
@@ -84,6 +84,75 @@ const localesEffectAtom = atomEffect((_get, set) => {
   client.l10n.onLocalesChange(ids => set(localeIdsAtom, ids));
 });
 
+const storageDevicesAtom = atom([]);
+const fetchStorageDevicesAtom = atom(
+  (get) => get(storageDevicesAtom),
+  (_get, set) => {
+    client.storage.proposal.getAvailableDevices().then(devices => set(storageDevicesAtom, devices));
+  }
+);
+
+const storageProposalAtom = atom({ settings: {} });
+const fetchStorageProposalAtom = atom(
+  (get) => get(storageProposalAtom),
+  (_get, set) => {
+    client.storage.proposal.getResult().then(result => {
+      set(storageProposalAtom, result);
+    });
+  }
+);
+const storageProposalEffectAtom = atomEffect((_get, set) => {
+  return client.storage.onDeprecate(deprecated => {
+    console.log("deprecated)");
+    if (deprecated) {
+      set(fetchStorageProposalAtom);
+    }
+  });
+});
+
+const storageStatusEffectAtom = atomEffect((_get, set) => {
+  return client.storage.onStatusChange(status => {
+    set(fetchStorageProposalAtom);
+  });
+});
+
+const patternsAtom = atom([]);
+const fetchPatternsAtom = atom(
+  (get) => get(patternsAtom),
+  (_get, set) => {
+    client.software.getPatterns().then(patterns => {
+      set(patternsAtom, patterns);
+    });
+  }
+);
+
+const softwareProposalAtom = atom({ patterns: [], size: null });
+const fetchSoftwareProposalAtom = atom(
+  (get) => get(softwareProposalAtom),
+  (_get, set) => {
+    client.software.getProposal().then(proposal => set(softwareProposalAtom, proposal));
+  }
+);
+const softwareProposalEffectAtom = atomEffect((get, set) => {
+  return client.software.onSelectedPatternsChanged(patterns => {
+    const proposal = get(softwareProposalAtom);
+    set(softwareProposalAtom, { ...proposal, patterns });
+  });
+});
+const selectedPatternsAtom = atom(
+  async (get) => {
+    const { patterns: selected } = get(softwareProposalAtom);
+    const patterns = get(patternsAtom);
+    if (!selected || !patterns) return [];
+    const names = Object.keys(selected);
+
+    return patterns.filter(({ name }) => names.includes(name));
+  }
+);
+const installationSizeAtom = atom(
+  (get) => get(softwareProposalAtom).size
+);
+
 export {
   selectedTimezoneAtom,
   fetchTimezoneAtom,
@@ -95,5 +164,18 @@ export {
   localesAtom,
   fetchLocalesAtom,
   selectedLocalesAtom,
-  localesEffectAtom
+  localesEffectAtom,
+  fetchStorageDevicesAtom,
+  storageDevicesAtom,
+  fetchStorageProposalAtom,
+  storageProposalAtom,
+  storageProposalEffectAtom,
+  storageStatusEffectAtom,
+  patternsAtom,
+  softwareProposalAtom,
+  fetchPatternsAtom,
+  fetchSoftwareProposalAtom,
+  softwareProposalEffectAtom,
+  selectedPatternsAtom,
+  installationSizeAtom
 };

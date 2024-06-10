@@ -22,14 +22,13 @@
 // @ts-check
 
 import React, { useReducer, useEffect } from "react";
-import { Text } from "@patternfly/react-core";
+import { Text, TextContent, TextVariants } from "@patternfly/react-core";
 
-import { toValidationError, useCancellablePromise } from "~/utils";
-import { useInstallerClient } from "~/context/installer";
-import { BUSY } from "~/client/status";
 import { deviceLabel } from "~/components/storage/utils";
-import { Em, ProgressText, Section } from "~/components/core";
+import { Em } from "~/components/core";
 import { _ } from "~/i18n";
+import { useAtom } from "jotai";
+import { storageDevicesAtom, storageProposalAtom } from "~/atoms";
 
 /**
  * @typedef {import ("~/client/storage").ProposalResult} ProposalResult
@@ -91,6 +90,13 @@ const msgLvmSingleDisk = (policy) => {
   }
 };
 
+const Content = ({ children }) => (
+  <TextContent>
+    <Text component={TextVariants.h3}>{_("Storage")}</Text>
+    {children}
+  </TextContent>
+);
+
 /**
  * Text explaining the storage proposal
  *
@@ -100,8 +106,9 @@ const msgLvmSingleDisk = (policy) => {
  * @param {object} props
  * @param {Proposal} props.proposal
  */
-const ProposalSummary = ({ proposal }) => {
-  const { availableDevices, result } = proposal;
+export default function StorageSection() {
+  const [availableDevices] = useAtom(storageDevicesAtom);
+  const [result] = useAtom(storageProposalAtom);
 
   const label = (deviceName) => {
     const device = availableDevices.find(d => d.name === deviceName);
@@ -117,11 +124,13 @@ const ProposalSummary = ({ proposal }) => {
       const [msg1, msg2] = msgLvmSingleDisk(result.settings.spacePolicy).split("%s");
 
       return (
-        <Text>
-          <span>{msg1}</span>
-          <Em>{label(pvDevices[0])}</Em>
-          <span>{msg2}</span>
-        </Text>
+        <Content>
+          <Text>
+            <span>{msg1}</span>
+            <Em>{label(pvDevices[0])}</Em>
+            <span>{msg2}</span>
+          </Text>
+        </Content>
       );
     }
   }
@@ -153,151 +162,10 @@ const ProposalSummary = ({ proposal }) => {
   const [msg1, msg2] = fullMsg(result.settings.spacePolicy).split("%s");
 
   return (
-    <Text>
-      {msg1}<Em>{label(targetDevice)}</Em>{msg2}
-    </Text>
-  );
-};
-
-const initialState = {
-  busy: true,
-  deprecated: false,
-  proposal: undefined,
-  errors: [],
-  progress: { message: _("Probing storage devices"), current: 0, total: 0 }
-};
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "UPDATE_PROGRESS": {
-      const { message, current, total } = action.payload;
-      return { ...state, progress: { message, current, total } };
-    }
-
-    case "UPDATE_STATUS": {
-      return { ...initialState, busy: action.payload.status === BUSY };
-    }
-
-    case "UPDATE_DEPRECATED": {
-      return { ...state, deprecated: action.payload.deprecated };
-    }
-
-    case "UPDATE_PROPOSAL": {
-      if (state.busy) return state;
-
-      const { proposal, errors } = action.payload;
-
-      return { ...state, proposal, errors };
-    }
-
-    default: {
-      return state;
-    }
-  }
-};
-
-/**
- * Section for storage config
- * @component
- *
- * @param {object} props
- * @param {boolean} [props.showErrors=false]
- */
-export default function StorageSection({ showErrors = false }) {
-  const { storage: client } = useInstallerClient();
-  const { cancellablePromise } = useCancellablePromise();
-  /** @type {[object, (action: object) => void]} */
-  const [state, dispatch] = useReducer(reducer, initialState);
-
-  useEffect(() => {
-    const updateStatus = (status) => {
-      dispatch({ type: "UPDATE_STATUS", payload: { status } });
-    };
-
-    cancellablePromise(client.getStatus()).then(updateStatus);
-
-    return client.onStatusChange(updateStatus);
-  }, [client, cancellablePromise]);
-
-  useEffect(() => {
-    const updateDeprecated = async (deprecated) => {
-      dispatch({ type: "UPDATE_DEPRECATED", payload: { deprecated } });
-
-      if (deprecated) {
-        const result = await cancellablePromise(client.proposal.getResult());
-        await cancellablePromise(client.probe());
-        if (result.settings) await cancellablePromise(client.proposal.calculate(result.settings));
-        dispatch({ type: "UPDATE_DEPRECATED", payload: { deprecated: false } });
-      }
-    };
-
-    cancellablePromise(client.isDeprecated()).then(updateDeprecated);
-
-    return client.onDeprecate(() => updateDeprecated(true));
-  }, [client, cancellablePromise]);
-
-  useEffect(() => {
-    const updateProposal = async () => {
-      const proposal = {
-        availableDevices: await cancellablePromise(client.proposal.getAvailableDevices()),
-        result: await cancellablePromise(client.proposal.getResult())
-      };
-      const issues = await cancellablePromise(client.getErrors());
-      const errors = issues.map(toValidationError);
-
-      dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal, errors } });
-    };
-
-    if (!state.busy && !state.deprecated) updateProposal();
-  }, [client, cancellablePromise, state.busy, state.deprecated]);
-
-  useEffect(() => {
-    cancellablePromise(client.getProgress()).then(({ message, current, total }) => {
-      dispatch({
-        type: "UPDATE_PROGRESS",
-        payload: { message, current, total }
-      });
-    });
-  }, [client, cancellablePromise]);
-
-  useEffect(() => {
-    return client.onProgressChange(({ message, current, total }) => {
-      dispatch({
-        type: "UPDATE_PROGRESS",
-        payload: { message, current, total }
-      });
-    });
-  }, [client, cancellablePromise]);
-
-  const errors = showErrors ? state.errors : [];
-
-  const busy = state.busy || !state.proposal?.result;
-
-  const SectionContent = () => {
-    if (busy) {
-      const { message, current, total } = state.progress;
-      return (
-        <ProgressText message={message} current={current} total={total} />
-      );
-    }
-
-    return (
-      <ProposalSummary proposal={state.proposal} />
-    );
-  };
-
-  return (
-    <Section
-      key="storage-section"
-      // TRANSLATORS: page section title
-      title={_("Storage")}
-      path="/storage"
-      icon="hard_drive"
-      loading={busy}
-      errors={errors}
-      id="storage"
-    >
-      <SectionContent />
-    </Section>
+    <Content>
+      <Text>
+        {msg1}<Em>{label(targetDevice)}</Em>{msg2}
+      </Text>
+    </Content>
   );
 }

@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import {
   CardBody,
@@ -30,16 +30,15 @@ import {
   List,
   ListItem,
   Stack,
-  Text,
-  TextVariants,
-  TextContent
 } from "@patternfly/react-core";
 import { useProduct } from "~/context/product";
 import { useInstallerClient } from "~/context/installer";
 import { Navigate, Link } from "react-router-dom";
-import { CardField, EmptyState, Page, InstallButton } from "~/components/core";
+import { CardField, EmptyState, Page, InstallButton, Em } from "~/components/core";
 import L10nSection from "./L10nSection";
-import { fetchLocalesAtom, localesEffectAtom } from "~/atoms";
+import StorageSection from "./StorageSection";
+import SoftwareSummary from "./SoftwareSummary";
+import { fetchLocalesAtom, fetchPatternsAtom, fetchSoftwareProposalAtom, fetchStorageDevicesAtom, fetchStorageProposalAtom, installationSizeAtom, localesEffectAtom, patternsAtom, selectedPatternsAtom, softwareProposalEffectAtom, storageProposalEffectAtom, storageStatusEffectAtom } from "~/atoms";
 import { _ } from "~/i18n";
 
 const ReadyForInstallation = () => (
@@ -80,35 +79,28 @@ const IssuesList = ({ issues }) => {
   );
 };
 
-const SoftwareSummary = () => (
-  <TextContent>
-    <Text component={TextVariants.h3}>{_("Software")}</Text>
-    <Text>{_("The installation will take 5 GiB including:")}</Text>
-    <List>
-      <ListItem>{_("GNOME Desktop")}</ListItem>
-      <ListItem>{_("YaST Basic")}</ListItem>
-    </List>
-  </TextContent>
-);
-
-const StorageSummary = () => (
-  <TextContent>
-    <Text component={TextVariants.h3}>{_("Storage")}</Text>
-    <Text>{_("The system will be installed on /dev/vda deleting all its content.")}</Text>
-  </TextContent>
-);
-
 export default function OverviewPage() {
   const { selectedProduct } = useProduct();
   const [issues, setIssues] = useState([]);
   const client = useInstallerClient();
   const [, fetchLocales] = useAtom(fetchLocalesAtom);
+  const [, fetchStorageDevices] = useAtom(fetchStorageDevicesAtom);
+  const [, fetchStorageProposal] = useAtom(fetchStorageProposalAtom);
+  const [, fetchPatterns] = useAtom(fetchPatternsAtom);
+  const [, fetchSoftwareProposal] = useAtom(fetchSoftwareProposalAtom);
   useAtom(localesEffectAtom);
+  useAtom(storageProposalEffectAtom);
+  useAtom(storageStatusEffectAtom);
+  useAtom(softwareProposalEffectAtom);
 
   useEffect(() => {
     client.issues().then(setIssues);
     fetchLocales();
-  }, [client, fetchLocales]);
+    fetchStorageDevices();
+    fetchStorageProposal();
+    fetchPatterns();
+    fetchSoftwareProposal();
+  }, [client, fetchLocales, fetchStorageDevices, fetchStorageProposal, fetchPatterns, fetchSoftwareProposal]);
 
   // FIXME: this check could be no longer needed
   if (selectedProduct === null) {
@@ -132,13 +124,13 @@ export default function OverviewPage() {
             <CardField
               label="Overview"
               description={_(
-                "These are the most relevant installation settings. Fell free to browse the sections in the menu for further details."
+                "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details."
               )}
             >
               <CardBody>
                 <Stack hasGutter>
                   <L10nSection />
-                  <StorageSummary />
+                  <StorageSection />
                   <SoftwareSummary />
                 </Stack>
               </CardBody>
