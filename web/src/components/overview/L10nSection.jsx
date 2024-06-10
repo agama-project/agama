@@ -20,18 +20,18 @@
  */
 
 import React from "react";
-import { useAtom } from "jotai";
-import { selectedLocalesAtom } from "~/atoms";
 import { TextContent, Text, TextVariants } from "@patternfly/react-core";
 import { Em } from "~/components/core";
 import { _ } from "~/i18n";
+import { useL10n } from "~/context/l10n";
 
 export default function L10nSection() {
-  const [locales] = useAtom(selectedLocalesAtom);
-  if (locales === undefined || locales[0] === undefined) {
+  const { selectedLocales } = useL10n();
+
+  const locale = selectedLocales[0];
+  if (locale === undefined) {
     return;
   }
-  const locale = locales[0];
 
   // TRANSLATORS: %s will be replaced by a language name and territory, example:
   // "English (United States)".

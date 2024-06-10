@@ -19,16 +19,40 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { useAtom } from "jotai";
+import React, { useEffect, useState } from "react";
 import { _ } from "~/i18n";
-import { installationSizeAtom, selectedPatternsAtom } from "~/atoms";
+import { useInstallerClient } from "~/context/installer";
 import { List, ListItem, Text, TextContent, TextVariants } from "@patternfly/react-core";
 import { Em } from "~/components/core";
 
-export default function SoftwareSection() {
-  const [selectedPatterns] = useAtom(selectedPatternsAtom);
-  const [installationSize] = useAtom(installationSizeAtom);
+export default function SoftwareSummary() {
+  const [proposal, setProposal] = useState({});
+  const [patterns, setPatterns] = useState([]);
+  const [selectedPatterns, setSelectedPatterns] = useState(undefined);
+  const client = useInstallerClient();
+
+  useEffect(() => {
+    client.software.getProposal().then(setProposal);
+    client.software.getPatterns().then(setPatterns);
+  }, [client]);
+
+  useEffect(() => {
+    return client.software.onSelectedPatternsChanged(() => {
+      client.software.getProposal().then(setProposal);
+    });
+  }, [client, setProposal]);
+
+  useEffect(() => {
+    if (proposal.patterns === undefined) return;
+
+    const ids = Object.keys(proposal.patterns);
+    const selected = patterns.filter(p => ids.includes(p.name)).sort((a, b) => a.order - b.order);
+    setSelectedPatterns(selected);
+  }, [client, proposal, patterns]);
+
+  if (selectedPatterns === undefined) {
+    return;
+  }
 
   // TRANSLATORS: %s will be replaced with the installation size, example:
   // "5GiB".
@@ -39,11 +63,13 @@ export default function SoftwareSection() {
       <Text component={TextVariants.h3}>{_("Software")}</Text>
       <Text>
         {msg1}
-        <Em>{`${installationSize}`}</Em>
+        <Em>{`${proposal.size}`}</Em>
         {msg2}
       </Text>
       <List>
-        {selectedPatterns.map((p) => <ListItem key={p.name}>{p.description}</ListItem>)}
+        {selectedPatterns.map(p => (
+          <ListItem key={p.name}>{p.description}</ListItem>
+        ))}
       </List>
     </TextContent>
   );

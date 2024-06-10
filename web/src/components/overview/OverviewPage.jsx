@@ -19,8 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { Suspense, useEffect, useState } from "react";
-import { useAtom } from "jotai";
+import React, { useEffect, useState } from "react";
 import {
   CardBody,
   Grid,
@@ -29,24 +28,19 @@ import {
   HintBody,
   List,
   ListItem,
-  Stack,
+  Stack
 } from "@patternfly/react-core";
 import { useProduct } from "~/context/product";
 import { useInstallerClient } from "~/context/installer";
 import { Navigate, Link } from "react-router-dom";
-import { CardField, EmptyState, Page, InstallButton, Em } from "~/components/core";
+import { CardField, EmptyState, Page, InstallButton } from "~/components/core";
 import L10nSection from "./L10nSection";
 import StorageSection from "./StorageSection";
 import SoftwareSummary from "./SoftwareSummary";
-import { fetchLocalesAtom, fetchPatternsAtom, fetchSoftwareProposalAtom, fetchStorageDevicesAtom, fetchStorageProposalAtom, installationSizeAtom, localesEffectAtom, patternsAtom, selectedPatternsAtom, softwareProposalEffectAtom, storageProposalEffectAtom, storageStatusEffectAtom } from "~/atoms";
 import { _ } from "~/i18n";
 
 const ReadyForInstallation = () => (
-  <EmptyState
-    title={_("Ready for installation")}
-    icon="check_circle"
-    color="success-color-100"
-  >
+  <EmptyState title={_("Ready for installation")} icon="check_circle" color="success-color-100">
     <InstallButton />
   </EmptyState>
 );
@@ -72,9 +66,7 @@ const IssuesList = ({ issues }) => {
       icon="error"
       color="danger-color-100"
     >
-      <List isPlain>
-        {list}
-      </List>
+      <List isPlain>{list}</List>
     </EmptyState>
   );
 };
@@ -83,24 +75,10 @@ export default function OverviewPage() {
   const { selectedProduct } = useProduct();
   const [issues, setIssues] = useState([]);
   const client = useInstallerClient();
-  const [, fetchLocales] = useAtom(fetchLocalesAtom);
-  const [, fetchStorageDevices] = useAtom(fetchStorageDevicesAtom);
-  const [, fetchStorageProposal] = useAtom(fetchStorageProposalAtom);
-  const [, fetchPatterns] = useAtom(fetchPatternsAtom);
-  const [, fetchSoftwareProposal] = useAtom(fetchSoftwareProposalAtom);
-  useAtom(localesEffectAtom);
-  useAtom(storageProposalEffectAtom);
-  useAtom(storageStatusEffectAtom);
-  useAtom(softwareProposalEffectAtom);
 
   useEffect(() => {
     client.issues().then(setIssues);
-    fetchLocales();
-    fetchStorageDevices();
-    fetchStorageProposal();
-    fetchPatterns();
-    fetchSoftwareProposal();
-  }, [client, fetchLocales, fetchStorageDevices, fetchStorageProposal, fetchPatterns, fetchSoftwareProposal]);
+  }, [client]);
 
   // FIXME: this check could be no longer needed
   if (selectedProduct === null) {

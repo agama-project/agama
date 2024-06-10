@@ -105,8 +105,6 @@
     "@patternfly/react-table": "^5.1.1",
     "fast-sort": "^3.4.0",
     "ipaddr.js": "^2.1.0",
-    "jotai": "^2.8.3",
-    "jotai-effect": "^1.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
