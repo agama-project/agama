@@ -238,8 +238,8 @@ function SoftwarePatternsSelection() {
           <h2>{_("Software selection")}</h2>
           <SearchInput
             // TRANSLATORS: search field placeholder text
-            placeholder={_("Search")}
-            aria-label={_("Search")}
+            placeholder={_("Filter by pattern title or description")}
+            aria-label={_("Filter by pattern title or description")}
             value={searchValue}
             onChange={(_event, value) => setSearchValue(value)}
             onClear={() => setSearchValue("")}
