@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -36,12 +36,6 @@ module Agama
         STORAGE_IFACE = "org.opensuse.Agama.Storage1"
         private_constant :STORAGE_IFACE
 
-        PROPOSAL_CALCULATOR_IFACE = "org.opensuse.Agama.Storage1.Proposal.Calculator"
-        private_constant :PROPOSAL_CALCULATOR_IFACE
-
-        PROPOSAL_IFACE = "org.opensuse.Agama.Storage1.Proposal"
-        private_constant :PROPOSAL_IFACE
-
         def service_name
           @service_name ||= "org.opensuse.Agama.Storage1"
         end
@@ -66,55 +60,11 @@ module Agama
           dbus_object.Finish
         end
 
-        # Devices available for the installation
-        #
-        # @return [Array<String>] name of the devices
-        def available_devices
-          dbus_object[PROPOSAL_CALCULATOR_IFACE]["AvailableDevices"]
-            .map(&:first)
-        end
-
-        # Devices selected for the installation
-        #
-        # @return [Array<String>] name of the devices
-        def candidate_devices
-          return [] unless dbus_proposal
-
-          dbus_proposal[PROPOSAL_IFACE]["CandidateDevices"]
-        end
-
-        # Actions to perform in the storage devices
-        #
-        # @return [Array<String>]
-        def actions
-          return [] unless dbus_proposal
-
-          dbus_proposal[PROPOSAL_IFACE]["Actions"].map do |a|
-            a["Text"]
-          end
-        end
-
-        # Calculates the storage proposal with the given devices
-        #
-        # @param candidate_devices [Array<String>] name of the new candidate devices
-        def calculate(candidate_devices)
-          calculator_iface = dbus_object[PROPOSAL_CALCULATOR_IFACE]
-          calculator_iface.Calculate({ "CandidateDevices" => candidate_devices })
-        end
-
       private
 
         # @return [::DBus::Object]
         def dbus_object
           @dbus_object ||= service["/org/opensuse/Agama/Storage1"].tap(&:introspect)
-        end
-
-        # @return [::DBus::Object, nil]
-        def dbus_proposal
-          path = dbus_object["org.opensuse.Agama.Storage1.Proposal.Calculator"]["Result"]
-          return nil if path == "/"
-
-          service.object(path).tap(&:introspect)
         end
       end
     end

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-19 02:19+0000\n"
+"POT-Creation-Date: 2024-06-09 02:25+0000\n"
 "PO-Revision-Date: 2023-12-15 16:52+0000\n"
 "Last-Translator: Ladislav Slezák <lslezak@suse.com>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-service-"
@@ -157,52 +157,66 @@ msgid "Found %s dependency issues."
 msgstr "Nalezeno %s problémů v závislostech."
 
 #. Probes storage devices and performs an initial proposal
-#: service/lib/agama/storage/manager.rb:112
+#: service/lib/agama/storage/manager.rb:113
 msgid "Activating storage devices"
 msgstr ""
 
-#: service/lib/agama/storage/manager.rb:113
+#: service/lib/agama/storage/manager.rb:114
 msgid "Probing storage devices"
 msgstr ""
 
-#: service/lib/agama/storage/manager.rb:114
+#: service/lib/agama/storage/manager.rb:115
 #, fuzzy
 msgid "Calculating the storage proposal"
 msgstr "Probíhá návrh softwaru"
 
-#: service/lib/agama/storage/manager.rb:115
+#: service/lib/agama/storage/manager.rb:116
 msgid "Selecting Linux Security Modules"
 msgstr ""
 
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:123
+#: service/lib/agama/storage/manager.rb:124
 msgid "Preparing bootloader proposal"
 msgstr ""
 
 #. first make bootloader proposal to be sure that required packages are installed
-#: service/lib/agama/storage/manager.rb:128
+#: service/lib/agama/storage/manager.rb:129
 msgid "Adding storage-related packages"
 msgstr ""
 
-#: service/lib/agama/storage/manager.rb:129
+#: service/lib/agama/storage/manager.rb:130
 msgid "Preparing the storage devices"
 msgstr ""
 
-#: service/lib/agama/storage/manager.rb:130
+#: service/lib/agama/storage/manager.rb:131
 msgid "Writing bootloader sysconfig"
+msgstr ""
+
+#. Issue representing the proposal is not valid.
+#.
+#. @return [Issue]
+#: service/lib/agama/storage/proposal.rb:189
+msgid "Cannot accommodate the required file systems for installation"
+msgstr ""
+
+#. Issue to communicate a generic Y2Storage error.
+#.
+#. @return [Issue]
+#: service/lib/agama/storage/proposal.rb:200
+msgid "A problem ocurred while calculating the storage setup"
 msgstr ""
 
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal.rb:201
+#: service/lib/agama/storage/proposal_strategies/guided.rb:122
 msgid "No device selected for installation"
 msgstr ""
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal.rb:217
+#: service/lib/agama/storage/proposal_strategies/guided.rb:138
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
@@ -210,10 +224,3 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
-
-#. Returns an issue if the proposal is not valid.
-#.
-#. @return [Issue, nil]
-#: service/lib/agama/storage/proposal.rb:235
-msgid "Cannot accommodate the required file systems for installation"
-msgstr ""

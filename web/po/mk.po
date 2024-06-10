@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-29 02:21+0000\n"
+"POT-Creation-Date: 2024-06-09 02:25+0000\n"
 "PO-Revision-Date: 2024-05-09 06:43+0000\n"
 "Last-Translator: Kristijan Fremen Velkovski <me@krisfremen.com>\n"
 "Language-Team: Macedonian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -198,39 +198,43 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
+#: src/components/core/LoginPage.jsx:53
+msgid "Could not log in. Please, make sure that the password is correct."
+msgstr ""
+
+#: src/components/core/LoginPage.jsx:55
+msgid "Could not authenticate against the server, please check it."
+msgstr ""
+
 #. TRANSLATORS: Title for a form to provide the password for the root user. %s
 #. will be replaced by "root"
-#: src/components/core/LoginPage.jsx:56
+#: src/components/core/LoginPage.jsx:63
 #, c-format
 msgid "Log in as %s"
 msgstr ""
 
 #. TRANSLATORS: An explanation about required privileges for login into the installer. %s
 #. will be replaced by "root"
-#: src/components/core/LoginPage.jsx:66
+#: src/components/core/LoginPage.jsx:73
 #, c-format
 msgid ""
 "The installer requires %s user privileges. Please, provide its password to "
 "log in to the system."
 msgstr ""
 
-#: src/components/core/LoginPage.jsx:72
+#: src/components/core/LoginPage.jsx:79
 msgid "Login form"
 msgstr ""
 
-#: src/components/core/LoginPage.jsx:78
+#: src/components/core/LoginPage.jsx:85
 msgid "Password input"
 msgstr ""
 
-#: src/components/core/LoginPage.jsx:86
-msgid "Could not log in. Please, make sure that the password is correct."
-msgstr ""
-
-#: src/components/core/LoginPage.jsx:93
+#: src/components/core/LoginPage.jsx:100
 msgid "Log in"
 msgstr ""
 
-#: src/components/core/LoginPage.jsx:104
+#: src/components/core/LoginPage.jsx:111
 msgid "What is this?"
 msgstr ""
 

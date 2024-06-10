@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun  5 13:56:54 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Allow to execute the legacy AutoYaST storage proposal
+  (gh#openSUSE/agama#1284).
+
+-------------------------------------------------------------------
 Tue Jun  4 14:16:02 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Convert AutoYaST partitioning section to JSON

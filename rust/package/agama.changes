@@ -1,4 +1,20 @@
 -------------------------------------------------------------------
+Fri Jun  7 05:58:48 UTC 2024 - Michal Filka <mfilka@suse.com>
+
+- Improvements in HTTPS setup
+  - self-signed certificate contains hostname
+  - self-signed certificate is stored into default location
+  - before creating new self-signed certificate a default location
+    (/etc/agama.d/ssl) is checked for a certificate 
+  - gh#openSUSE/agama#1228
+
+-------------------------------------------------------------------
+Wed Jun  5 13:53:59 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Process the legacyAutoyastStorage section of the profile
+  (gh#openSUSE/agama#1284).
+
+-------------------------------------------------------------------
 Mon Jun  3 07:49:16 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - CLI: Add new commands "agama download" and

@@ -18,13 +18,14 @@ systemctl enable NetworkManager.service
 systemctl enable avahi-daemon.service
 systemctl enable agama.service
 systemctl enable agama-web-server.service
-systemctl enable agama-password-cmdline.service
-systemctl enable agama-password-dialog.service
-systemctl enable agama-password-iso.service
-systemctl enable agama-password-systemd.service
 systemctl enable agama-auto.service
 systemctl enable agama-hostname.service
 systemctl enable agama-proxy-setup.service
+systemctl enable live-password-cmdline.service
+systemctl enable live-password-dialog.service
+systemctl enable live-password-iso.service
+systemctl enable live-password-random.service
+systemctl enable live-password-systemd.service
 systemctl enable setup-systemd-proxy-env.path
 systemctl enable x11-autologin.service
 systemctl enable spice-vdagentd.service
@@ -58,6 +59,9 @@ if [ "${arch}" = "s390x" ];then
     # workaround for custom bootloader setting
     touch /config.bootoptions
 fi
+
+# replace the @@LIVE_MEDIUM_LABEL@@ with the real Live partition label name from KIWI
+sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/live-password
 
 ################################################################################
 # Reducing the used space

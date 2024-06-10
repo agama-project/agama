@@ -7,6 +7,7 @@ use crate::{
 };
 use agama_settings::Settings;
 use serde::{Deserialize, Serialize};
+use serde_json::value::RawValue;
 use std::default::Default;
 use std::str::FromStr;
 
@@ -22,6 +23,8 @@ pub enum Scope {
     Software,
     /// Storage settings
     Storage,
+    /// Storage AutoYaST settings (for backward compatibility with AutoYaST profiles)
+    StorageAutoyast,
     /// Network settings
     Network,
     /// Product settings
@@ -34,13 +37,14 @@ impl Scope {
     /// Returns known scopes
     ///
     // TODO: we can rely on strum so we do not forget to add them
-    pub fn all() -> [Scope; 6] {
+    pub fn all() -> [Scope; 7] {
         [
             Scope::Localization,
             Scope::Network,
             Scope::Product,
             Scope::Software,
             Scope::Storage,
+            Scope::StorageAutoyast,
             Scope::Users,
         ]
     }
@@ -49,6 +53,9 @@ impl Scope {
 impl FromStr for Scope {
     type Err = &'static str;
 
+    // Do not generate the StorageAutoyast scope. Note that storage AutoYaST settings will only be
+    // temporary available for importing an AutoYaST profile. But CLI should not allow modifying the
+    // storate AutoYaST settings.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "users" => Ok(Self::Users),
@@ -81,6 +88,9 @@ pub struct InstallSettings {
     #[serde(default)]
     #[settings(nested)]
     pub storage: Option<StorageSettings>,
+    #[serde(default, rename = "legacyAutoyastStorage")]
+    #[settings(ignored)]
+    pub storage_autoyast: Option<Box<RawValue>>,
     #[serde(default)]
     #[settings(nested)]
     pub network: Option<NetworkSettings>,
@@ -95,11 +105,12 @@ impl InstallSettings {
         if self.user.is_some() {
             scopes.push(Scope::Users);
         }
-
         if self.storage.is_some() {
             scopes.push(Scope::Storage);
         }
-
+        if self.storage_autoyast.is_some() {
+            scopes.push(Scope::StorageAutoyast);
+        }
         if self.software.is_some() {
             scopes.push(Scope::Software);
         }

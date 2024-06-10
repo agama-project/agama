@@ -271,7 +271,7 @@ export default function StorageSection({ showErrors = false }) {
 
   const errors = showErrors ? state.errors : [];
 
-  const busy = state.busy || !state.proposal;
+  const busy = state.busy || !state.proposal?.result;
 
   const SectionContent = () => {
     if (busy) {

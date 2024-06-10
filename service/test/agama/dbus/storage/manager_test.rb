@@ -41,6 +41,7 @@ describe Agama::DBus::Storage::Manager do
 
   let(:backend) do
     instance_double(Agama::Storage::Manager,
+      actions:                     [],
       proposal:                    proposal,
       iscsi:                       iscsi,
       software:                    software,
@@ -94,6 +95,59 @@ describe Agama::DBus::Storage::Manager do
 
       it "returns false" do
         expect(subject.deprecated_system).to eq(false)
+      end
+    end
+  end
+
+  describe "#read_actions" do
+    before do
+      allow(backend).to receive(:actions).and_return(actions)
+    end
+
+    context "if there are no actions" do
+      let(:actions) { [] }
+
+      it "returns an empty list" do
+        expect(subject.actions).to eq([])
+      end
+    end
+
+    context "if there are actions" do
+      let(:actions) { [action1, action2] }
+
+      let(:action1) do
+        instance_double(Y2Storage::CompoundAction,
+          sentence: "test1", target_device: device1, device_is?: false, delete?: false)
+      end
+
+      let(:action2) do
+        instance_double(Y2Storage::CompoundAction,
+          sentence: "test2", target_device: device2, device_is?: true, delete?: true)
+      end
+
+      let(:device1) { instance_double(Y2Storage::Device, sid: 1) }
+
+      let(:device2) { instance_double(Y2Storage::Device, sid: 2) }
+
+      it "returns a list with a hash for each action" do
+        expect(subject.actions.size).to eq(2)
+        expect(subject.actions).to all(be_a(Hash))
+
+        action1, action2 = subject.actions
+
+        expect(action1).to eq({
+          "Device" => 1,
+          "Text"   => "test1",
+          "Subvol" => false,
+          "Delete" => false
+        })
+
+        expect(action2).to eq({
+          "Device" => 2,
+          "Text"   => "test2",
+          "Subvol" => true,
+          "Delete" => true
+        })
       end
     end
   end
@@ -238,31 +292,7 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#result" do
-    before do
-      allow(subject).to receive(:dbus_proposal).and_return(dbus_proposal)
-    end
-
-    context "when there is no exported proposal object yet" do
-      let(:dbus_proposal) { nil }
-
-      it "returns root path" do
-        expect(subject.result.to_s).to eq("/")
-      end
-    end
-
-    context "when there is an exported proposal object" do
-      let(:dbus_proposal) do
-        instance_double(Agama::DBus::Storage::Proposal, path: ::DBus::ObjectPath.new("/test"))
-      end
-
-      it "returns the proposal object path" do
-        expect(subject.result.to_s).to eq("/test")
-      end
-    end
-  end
-
-  describe "#calculate_proposal" do
+  describe "#calculate_guided_proposal" do
     let(:dbus_settings) do
       {
         "Target"             => "disk",
@@ -281,7 +311,7 @@ describe Agama::DBus::Storage::Manager do
     end
 
     it "calculates a proposal with settings having values from D-Bus" do
-      expect(proposal).to receive(:calculate) do |settings|
+      expect(proposal).to receive(:calculate_guided) do |settings|
         expect(settings).to be_a(Agama::Storage::ProposalSettings)
         expect(settings.device).to be_a(Agama::Storage::DeviceSettings::Disk)
         expect(settings.device.name).to eq "/dev/vda"
@@ -294,14 +324,14 @@ describe Agama::DBus::Storage::Manager do
         )
       end
 
-      subject.calculate_proposal(dbus_settings)
+      subject.calculate_guided_proposal(dbus_settings)
     end
 
     context "when the D-Bus settings does not include some values" do
       let(:dbus_settings) { {} }
 
       it "calculates a proposal with default values for the missing settings" do
-        expect(proposal).to receive(:calculate) do |settings|
+        expect(proposal).to receive(:calculate_guided) do |settings|
           expect(settings).to be_a(Agama::Storage::ProposalSettings)
           expect(settings.device).to be_a(Agama::Storage::DeviceSettings::Disk)
           expect(settings.device.name).to be_nil
@@ -311,7 +341,7 @@ describe Agama::DBus::Storage::Manager do
           expect(settings.volumes).to eq([])
         end
 
-        subject.calculate_proposal(dbus_settings)
+        subject.calculate_guided_proposal(dbus_settings)
       end
     end
 
@@ -320,11 +350,11 @@ describe Agama::DBus::Storage::Manager do
 
       # This is likely a temporary behavior
       it "calculates a proposal ignoring the unknown attributes" do
-        expect(proposal).to receive(:calculate) do |settings|
+        expect(proposal).to receive(:calculate_guided) do |settings|
           expect(settings).to be_a(Agama::Storage::ProposalSettings)
         end
 
-        subject.calculate_proposal(dbus_settings)
+        subject.calculate_guided_proposal(dbus_settings)
       end
     end
 
@@ -358,7 +388,7 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "calculates a proposal with settings having a volume with values from D-Bus" do
-        expect(proposal).to receive(:calculate) do |settings|
+        expect(proposal).to receive(:calculate_guided) do |settings|
           volume = settings.volumes.first
 
           expect(volume.mount_path).to eq("/")
@@ -368,7 +398,7 @@ describe Agama::DBus::Storage::Manager do
           expect(volume.btrfs.snapshots).to eq(true)
         end
 
-        subject.calculate_proposal(dbus_settings)
+        subject.calculate_guided_proposal(dbus_settings)
       end
 
       context "and the D-Bus volume does not include some values" do
@@ -387,7 +417,7 @@ describe Agama::DBus::Storage::Manager do
         end
 
         it "calculates a proposal with a volume completed with its default settings" do
-          expect(proposal).to receive(:calculate) do |settings|
+          expect(proposal).to receive(:calculate_guided) do |settings|
             volume = settings.volumes.first
 
             expect(volume.mount_path).to eq("/")
@@ -398,7 +428,95 @@ describe Agama::DBus::Storage::Manager do
             expect(volume.btrfs.snapshots).to eq(false)
           end
 
-          subject.calculate_proposal(dbus_settings)
+          subject.calculate_guided_proposal(dbus_settings)
+        end
+      end
+    end
+  end
+
+  describe "#calculate_autoyast_proposal" do
+    let(:dbus_settings) { '[{ "device": "/dev/vda" }]' }
+
+    it "calculates an AutoYaST proposal with the settings from D-Bus" do
+      expect(proposal).to receive(:calculate_autoyast) do |settings|
+        expect(settings).to eq([{ "device" => "/dev/vda" }])
+      end
+
+      subject.calculate_autoyast_proposal(dbus_settings)
+    end
+  end
+
+  describe "#proposal_calculated?" do
+    before do
+      allow(proposal).to receive(:calculated?).and_return(calculated)
+    end
+
+    context "if the proposal is not calculated yet" do
+      let(:calculated) { false }
+
+      it "returns false" do
+        expect(subject.proposal_calculated?).to eq(false)
+      end
+    end
+
+    context "if the proposal is calculated" do
+      let(:calculated) { true }
+
+      it "returns true" do
+        expect(subject.proposal_calculated?).to eq(true)
+      end
+    end
+  end
+
+  describe "#proposal_result" do
+    before do
+      allow(proposal).to receive(:calculated?).and_return(calculated)
+    end
+
+    context "if the proposal is not calculated yet" do
+      let(:calculated) { false }
+
+      it "returns an empty hash" do
+        expect(subject.proposal_result).to eq({})
+      end
+    end
+
+    context "if the proposal is calculated" do
+      let(:calculated) { true }
+      let(:guided) { Agama::DBus::Storage::Manager::ProposalStrategy::GUIDED }
+      let(:autoyast) { Agama::DBus::Storage::Manager::ProposalStrategy::AUTOYAST }
+
+      context "and it is a guided proposal" do
+        before do
+          allow(proposal).to receive(:strategy?).with(guided).and_return(true)
+          allow(proposal).to receive(:success?).and_return(true)
+          allow(proposal).to receive(:settings).and_return(Agama::Storage::ProposalSettings.new)
+        end
+
+        it "returns a Hash with success, strategy and settings" do
+          result = subject.proposal_result
+
+          expect(result.keys).to contain_exactly("success", "strategy", "settings")
+          expect(result["success"]).to eq(true)
+          expect(result["strategy"]).to eq(guided)
+          expect(result["settings"]).to be_a(Hash)
+        end
+      end
+
+      context "and it is an autoyast proposal" do
+        before do
+          allow(proposal).to receive(:strategy?).with(guided).and_return(false)
+          allow(proposal).to receive(:success?).and_return(true)
+          allow(proposal).to receive(:settings).and_return({})
+        end
+
+        it "returns a Hash with success, strategy and settings" do
+          result = subject.proposal_result
+
+          expect(result.keys).to contain_exactly("success", "strategy", "settings")
+          expect(result["success"]).to eq(true)
+          expect(result["strategy"]).to eq(autoyast)
+          expect(result["settings"]).to be_a(String)
         end
       end
     end
