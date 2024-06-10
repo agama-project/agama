@@ -26,6 +26,7 @@ import { useInstallerClient, useInstallerClientStatus } from "~/context/installe
 import { useProduct } from "./context/product";
 import { INSTALL, STARTUP } from "~/client/phase";
 import { BUSY } from "~/client/status";
+import { Questions } from "~/components/questions";
 
 import { ServerError, If, Installation } from "~/components/core";
 import { Loading } from "./components/layout";
@@ -86,8 +87,13 @@ function App() {
     return <Outlet />;
   };
 
+  if (!language) return null;
+
   return (
-    <If condition={language} then={<Content />} />
+    <>
+      <Content />
+      <Questions />
+    </>
   );
 }
 
