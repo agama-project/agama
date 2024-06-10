@@ -20,6 +20,7 @@
  */
 
 import React, { useEffect, useState } from "react";
+import { useAtom } from "jotai";
 import {
   CardBody,
   Grid,
@@ -37,6 +38,8 @@ import { useProduct } from "~/context/product";
 import { useInstallerClient } from "~/context/installer";
 import { Navigate, Link } from "react-router-dom";
 import { CardField, EmptyState, Page, InstallButton } from "~/components/core";
+import L10nSection from "./L10nSection";
+import { fetchLocalesAtom, localesEffectAtom } from "~/atoms";
 import { _ } from "~/i18n";
 
 const ReadyForInstallation = () => (
@@ -95,21 +98,17 @@ const StorageSummary = () => (
   </TextContent>
 );
 
-const LocalizationSummary = () => (
-  <TextContent>
-    <Text component={TextVariants.h3}>{_("Localization")}</Text>
-    <Text>{_("The system will use English (United States).")}</Text>
-  </TextContent>
-);
-
 export default function OverviewPage() {
   const { selectedProduct } = useProduct();
   const [issues, setIssues] = useState([]);
   const client = useInstallerClient();
+  const [, fetchLocales] = useAtom(fetchLocalesAtom);
+  useAtom(localesEffectAtom);
 
   useEffect(() => {
     client.issues().then(setIssues);
-  }, [client]);
+    fetchLocales();
+  }, [client, fetchLocales]);
 
   // FIXME: this check could be no longer needed
   if (selectedProduct === null) {
@@ -138,7 +137,7 @@ export default function OverviewPage() {
             >
               <CardBody>
                 <Stack hasGutter>
-                  <LocalizationSummary />
+                  <L10nSection />
                   <StorageSummary />
                   <SoftwareSummary />
                 </Stack>
