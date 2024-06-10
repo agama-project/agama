@@ -22,9 +22,9 @@
 // @ts-check
 
 import React from "react";
+import { Label } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
-import { Tag } from "~/components/core";
 import { deviceBaseName, deviceSize } from "~/components/storage/utils";
 
 /**
@@ -59,7 +59,7 @@ const FilesystemLabel = ({ item }) => {
   const label = device.filesystem?.label;
   if (!label) return null;
 
-  return <Tag variant="gray-highlight"><b>{label}</b></Tag>;
+  return <Label isCompact><b>{label}</b></Label>;
 };
 
 /**
@@ -96,7 +96,7 @@ const DeviceDetails = ({ item }) => {
 
   const renderPTableType = (device) => {
     const type = device.partitionTable?.type;
-    if (type) return <Tag><b>{type.toUpperCase()}</b></Tag>;
+    if (type) return <Label isCompact>{type.toUpperCase()}</Label>;
   };
 
   return (
