@@ -11,9 +11,10 @@ pub(crate) async fn handler(
 }
 
 fn start_shell() -> Result<(OwnedReadPty, OwnedWritePty), pty_process::Error> {
-    let mut pty = pty_process::Pty::new()?;
+    let pty = pty_process::Pty::new()?;
     pty.resize(pty_process::Size::new(24, 80))?;
     let mut cmd = pty_process::Command::new("bash");
+    // TODO: check if children exit
     let child = cmd.spawn(&pty.pts()?)?;
     let (pty_out, pty_in) = pty.into_split();
     Ok((pty_out, pty_in))
@@ -32,7 +33,9 @@ async fn handle_socket(mut socket: WebSocket) {
                 match message {
                     Some(Ok(Message::Text(s))) => {
                         println!("websocket text {:?}", s);
-                        pty_in.write(s.as_bytes());
+                        let res = pty_in.write_all(s.as_bytes()).await;
+                        println!("write result {:?}", res);
+
                         continue;
                     },
                     Some(Ok(Message::Close(_))) => {
@@ -46,6 +49,7 @@ async fn handle_socket(mut socket: WebSocket) {
                 }
             },
             shell_output = reader_stream.next() => {
+                println!("shell output {:?}", shell_output);
                 if let Some(some_output) = shell_output {
                     match some_output {
                         Ok(output_bytes) => socket.send(Message::Binary(output_bytes.into())).await.unwrap(),
