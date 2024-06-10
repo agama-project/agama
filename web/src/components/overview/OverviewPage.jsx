@@ -72,18 +72,12 @@ const IssuesList = ({ issues }) => {
 };
 
 export default function OverviewPage() {
-  const { selectedProduct } = useProduct();
   const [issues, setIssues] = useState([]);
   const client = useInstallerClient();
 
   useEffect(() => {
     client.issues().then(setIssues);
   }, [client]);
-
-  // FIXME: this check could be no longer needed
-  if (selectedProduct === null) {
-    return <Navigate to="/products" />;
-  }
 
   return (
     <>
