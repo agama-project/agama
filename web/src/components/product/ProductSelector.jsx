@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { Radio } from "@patternfly/react-core";
+import { Card, CardBody, Grid, GridItem, Radio } from "@patternfly/react-core";
 import styles from '@patternfly/react-styles/css/utilities/Text/text';
 import { _ } from "~/i18n";
 
@@ -33,15 +33,25 @@ const Label = ({ children }) => (
 export default function ProductSelector({ products, defaultChecked }) {
   if (products?.length === 0) return <p>{_("No products available for selection")}</p>;
 
-  return products.map((product, index) => (
-    <Radio
-      key={index}
-      name="product"
-      id={product.name}
-      label={<Label>{product.name}</Label>}
-      body={product.description}
-      value={JSON.stringify(product)}
-      defaultChecked={defaultChecked === product}
-    />
-  ));
+  return (
+    <Grid hasGutter>
+      {products.map((product, index) => (
+        <GridItem key={index} sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
+          <Card key={index} isRounded>
+            <CardBody>
+              <Radio
+                key={index}
+                name="product"
+                id={product.name}
+                label={<Label>{product.name}</Label>}
+                body={product.description}
+                value={JSON.stringify(product)}
+                defaultChecked={defaultChecked === product}
+              />
+            </CardBody>
+          </Card>
+        </GridItem>
+      ))}
+    </Grid>
+  );
 }
