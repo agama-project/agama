@@ -60,6 +60,32 @@ export default function KeyboardSelection() {
     navigate("..");
   };
 
+  let keymapsList = filteredKeymaps.map((keymap) => {
+    return (
+      <Radio
+        key={keymap.id}
+        name="keymap"
+        id={keymap.id}
+        onChange={() => setSelected(keymap)}
+        label={
+          <>
+            <span className={`${textStyles.fontSizeLg}`}>
+              <b>{keymap.name}</b>
+            </span> <Text component="small">{keymap.id}</Text>
+          </>
+        }
+        value={JSON.stringify(keymap)}
+        defaultChecked={keymap === selected}
+      />
+    );
+  });
+
+  if (keymapsList.length === 0) {
+    keymapsList = (
+      <b>{_("None of the keymaps match the filter.")}</b>
+    );
+  }
+
   return (
     <>
       <Page.Header>
@@ -70,23 +96,7 @@ export default function KeyboardSelection() {
         <Page.CardSection>
           <Form id="keymapSelection" onSubmit={onSubmit}>
             <FormGroup isStack>
-              {filteredKeymaps.map((keymap) => (
-                <Radio
-                  key={keymap.id}
-                  name="keymap"
-                  id={keymap.id}
-                  onChange={() => setSelected(keymap)}
-                  label={
-                    <>
-                      <span className={`${textStyles.fontSizeLg}`}>
-                        <b>{keymap.name}</b>
-                      </span> <Text component="small">{keymap.id}</Text>
-                    </>
-                  }
-                  value={JSON.stringify(keymap)}
-                  defaultChecked={keymap === selected}
-                />
-              ))}
+              {keymapsList}
             </FormGroup>
           </Form>
         </Page.CardSection>

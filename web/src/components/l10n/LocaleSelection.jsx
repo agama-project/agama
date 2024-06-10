@@ -59,6 +59,32 @@ export default function LocaleSelection() {
     navigate("..");
   };
 
+  let localesList = filteredLocales.map((locale) => {
+    return (
+      <Radio
+        key={locale.id}
+        name="locale"
+        id={locale.id}
+        onChange={() => setSelected(locale)}
+        label={
+          <Flex gap={{ default: "gapSm" }}>
+            <span className={textStyles.fontSizeLg}><b>{locale.name}</b></span>
+            <span className={[textStyles.fontSizeMd, textStyles.color_100].join(" ")}>{locale.territory}</span>
+            <span className={[textStyles.fontSizeXs, textStyles.color_400].join(" ")}>{locale.id}</span>
+          </Flex>
+        }
+        value={JSON.stringify(locale)}
+        checked={locale === selected}
+      />
+    );
+  });
+
+  if (localesList.length === 0) {
+    localesList = (
+      <b>{_("None of the locales match the filter.")}</b>
+    );
+  }
+
   return (
     <>
       <Page.Header>
@@ -70,23 +96,7 @@ export default function LocaleSelection() {
         <Page.CardSection>
           <Form id="localeSelection" onSubmit={onSubmit}>
             <FormGroup isStack>
-              {filteredLocales.map((locale) => (
-                <Radio
-                  key={locale.id}
-                  name="locale"
-                  id={locale.id}
-                  onChange={() => setSelected(locale)}
-                  label={
-                    <Flex gap={{ default: "gapSm" }}>
-                      <span className={textStyles.fontSizeLg}><b>{locale.name}</b></span>
-                      <span className={[textStyles.fontSizeMd, textStyles.color_100].join(" ")}>{locale.territory}</span>
-                      <span className={[textStyles.fontSizeXs, textStyles.color_400].join(" ")}>{locale.id}</span>
-                    </Flex>
-                  }
-                  value={JSON.stringify(locale)}
-                  checked={locale === selected}
-                />
-              ))}
+              {localesList}
             </FormGroup>
           </Form>
         </Page.CardSection>

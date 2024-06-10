@@ -90,6 +90,39 @@ export default function TimezoneSelection() {
     navigate("..");
   };
 
+  let timezonesList = filteredTimezones.map((timezone) => {
+    return (
+      <Radio
+        key={timezone.id}
+        name="timezone"
+        id={timezone.id}
+        onChange={() => setSelected(timezone)}
+        label={
+          <>
+            <span className={`${textStyles.fontSizeLg}`}>
+              <b>{timezone.parts.join('-')}</b>
+            </span> <Text component="small">{timezone.country}</Text>
+          </>
+        }
+        description={
+          <Flex columnGap={{ default: "columnGapXs" }}>
+            <Text component="small">{timezoneTime(timezone.id, { date }) || ""}</Text>
+            <Divider orientation={{ default: "vertical" }} />
+            <div>{timezone.details}</div>
+          </Flex>
+        }
+        value={JSON.stringify(timezone)}
+        defaultChecked={timezone === selected}
+      />
+    );
+  });
+
+  if (timezonesList.length === 0) {
+    timezonesList = (
+      <b>{_("None of the time zones match the filter.")}</b>
+    );
+  }
+
   return (
     <>
       <Page.Header>
@@ -101,30 +134,7 @@ export default function TimezoneSelection() {
         <Page.CardSection>
           <Form id="timezoneSelection" onSubmit={onSubmit}>
             <FormGroup isStack>
-              {filteredTimezones.map((timezone) => (
-                <Radio
-                  key={timezone.id}
-                  name="timezone"
-                  id={timezone.id}
-                  onChange={() => setSelected(timezone)}
-                  label={
-                    <>
-                      <span className={`${textStyles.fontSizeLg}`}>
-                        <b>{timezone.parts.join('-')}</b>
-                      </span> <Text component="small">{timezone.country}</Text>
-                    </>
-                  }
-                  description={
-                    <Flex columnGap={{ default: "columnGapXs" }}>
-                      <Text component="small">{timezoneTime(timezone.id, { date }) || ""}</Text>
-                      <Divider orientation={{ default: "vertical" }} />
-                      <div>{timezone.details}</div>
-                    </Flex>
-                  }
-                  value={JSON.stringify(timezone)}
-                  defaultChecked={timezone === selected}
-                />
-              ))}
+              {timezonesList}
             </FormGroup>
           </Form>
         </Page.CardSection>
