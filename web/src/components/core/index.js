@@ -60,3 +60,4 @@ export { default as TreeTable } from "./TreeTable";
 export { default as CardField } from "./CardField";
 export { default as ButtonLink } from "./ButtonLink";
 export { default as EmptyState } from "./EmptyState";
+export { default as InstallerOptions } from "./InstallerOptions";

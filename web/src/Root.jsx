@@ -22,14 +22,13 @@
 import React from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import {
-  Masthead, MastheadToggle, MastheadMain, MastheadBrand,
+  Masthead, MastheadContent, MastheadToggle, MastheadMain, MastheadBrand,
   Nav, NavItem, NavList,
   Page, PageSidebar, PageSidebarBody, PageToggleButton,
-  Stack
+  Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
-import { About, LogsButton } from "~/components/core";
-import { InstallerKeymapSwitcher, InstallerLocaleSwitcher } from "~/components/l10n";
+import { About, InstallerOptions } from "~/components/core";
 import { _ } from "~/i18n";
 import { rootRoutes } from "~/router";
 import { useProduct } from "~/context/product";
@@ -55,6 +54,17 @@ const Header = () => {
       <MastheadMain>
         <MastheadBrand component="h1"><NavLink to="/">{title}</NavLink></MastheadBrand>
       </MastheadMain>
+      <MastheadContent>
+        <Toolbar>
+          <ToolbarContent>
+            <ToolbarGroup align={{ default: "alignRight" }}>
+              <ToolbarItem>
+                <InstallerOptions />
+              </ToolbarItem>
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
+      </MastheadContent>
     </Masthead>
   );
 };
@@ -84,13 +94,8 @@ const Sidebar = () => {
           <NavList>{links}</NavList>
         </Nav>
       </PageSidebarBody>
-      <PageSidebarBody usePageInsets isFilled={false}>
-        <Stack hasGutter>
-          <InstallerLocaleSwitcher />
-          <InstallerKeymapSwitcher />
-          <About buttonVariant="tertiary" />
-          <LogsButton />
-        </Stack>
+      <PageSidebarBody isFilled={false}>
+        <About buttonVariant="plain" style={{ color: "white" }} />
       </PageSidebarBody>
     </PageSidebar>
   );

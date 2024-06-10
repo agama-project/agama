@@ -21,7 +21,12 @@
 
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { Page } from "@patternfly/react-core";
+import {
+  Masthead, MastheadContent,
+  Page,
+  Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
+} from "@patternfly/react-core";
+import { InstallerOptions } from "~/components/core";
 import { _ } from "~/i18n";
 
 /**
@@ -31,6 +36,19 @@ import { _ } from "~/i18n";
 export default function SimpleLayout() {
   return (
     <Page>
+      <Masthead backgroundColor="light200">
+        <MastheadContent>
+          <Toolbar>
+            <ToolbarContent>
+              <ToolbarGroup align={{ default: "alignRight" }}>
+                <ToolbarItem>
+                  <InstallerOptions />
+                </ToolbarItem>
+              </ToolbarGroup>
+            </ToolbarContent>
+          </Toolbar>
+        </MastheadContent>
+      </Masthead>
       <Outlet />
     </Page>
   );

@@ -21,11 +21,15 @@
 
 import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Form, FormGroup } from "@patternfly/react-core";
+import {
+  Card, CardBody,
+  Form, FormGroup,
+  Grid, GridItem
+} from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
 import { Page } from "~/components/core";
-import { Loading } from "~/components/layout";
+import { Loading, Center } from "~/components/layout";
 import { ProductSelector } from "~/components/product";
 import { useInstallerClient } from "~/context/installer";
 import { useProduct } from "~/context/product";
@@ -71,11 +75,11 @@ function ProductSelectionPage() {
   return (
     <>
       <Page.MainContent>
-        <Form id="productSelectionForm" onSubmit={onSubmit}>
-          <FormGroup isStack>
+        <Center>
+          <Form id="productSelectionForm" onSubmit={onSubmit}>
             <ProductSelector defaultChecked={selectedProduct} products={products} />
-          </FormGroup>
-        </Form>
+          </Form>
+        </Center>
       </Page.MainContent>
 
       <Page.NextActions>
