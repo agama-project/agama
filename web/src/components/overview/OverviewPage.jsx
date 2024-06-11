@@ -114,7 +114,7 @@ export default function OverviewPage() {
             </CardField>
           </GridItem>
           <GridItem sm={12} xl={6}>
-            <CardField label="Installation">
+            <CardField>
               <CardBody>
                 <Stack hasGutter>
                   {issues.isEmpty ? <ReadyForInstallation /> : <IssuesList issues={issues} />}

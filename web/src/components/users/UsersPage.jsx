@@ -22,11 +22,14 @@
 import React from "react";
 
 import { _ } from "~/i18n";
-import { CardField, Page } from "~/components/core";
+import { CardField, IssuesHint, Page } from "~/components/core";
 import { FirstUser, RootAuthMethods } from "~/components/users";
-import { Card, CardBody, Grid, GridItem, Stack } from "@patternfly/react-core";
+import { CardBody, Grid, GridItem, Stack } from "@patternfly/react-core";
+import { useIssues } from "~/context/issues";
 
 export default function UsersPage() {
+  const { users: issues } = useIssues();
+
   return (
     <>
       <Page.Header>
@@ -35,6 +38,9 @@ export default function UsersPage() {
 
       <Page.MainContent>
         <Grid hasGutter>
+          <GridItem sm={12}>
+            <IssuesHint issues={issues} />
+          </GridItem>
           <GridItem sm={12} xl={6}>
             <CardField label={_("First user")}>
               <CardBody>

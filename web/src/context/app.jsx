@@ -26,6 +26,7 @@ import { InstallerClientProvider } from "./installer";
 import { InstallerL10nProvider } from "./installerL10n";
 import { L10nProvider } from "./l10n";
 import { ProductProvider } from "./product";
+import { IssuesProvider } from "./issues";
 
 /**
  * Combines all application providers.
@@ -39,7 +40,9 @@ function AppProviders({ children }) {
       <InstallerL10nProvider>
         <L10nProvider>
           <ProductProvider>
-            {children}
+            <IssuesProvider>
+              {children}
+            </IssuesProvider>
           </ProductProvider>
         </L10nProvider>
       </InstallerL10nProvider>

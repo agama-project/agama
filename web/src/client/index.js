@@ -67,7 +67,7 @@ import { HTTPClient } from "./http";
  * @typedef {(issues: Issues) => void} IssuesHandler
  */
 
-const createIssuesList = (product, software, storage, users) => {
+const createIssuesList = (product = [], software = [], storage = [], users = []) => {
   const list = { product, storage, software, users };
   list.isEmpty = !Object.values(list).some(v => v.length > 0);
   return list;
@@ -155,4 +155,4 @@ const createDefaultClient = async () => {
   return createClient(httpUrl);
 };
 
-export { createClient, createDefaultClient, phase };
+export { createClient, createDefaultClient, phase, createIssuesList };
