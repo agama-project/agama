@@ -25,8 +25,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { PageSection, Stack } from "@patternfly/react-core";
 import { Icon } from '~/components/layout';
-import { ValidationErrors } from "~/components/core";
-
 /**
  * @typedef {import("~/components/layout/Icon").IconName} IconName
  */
@@ -105,8 +103,6 @@ export default function Section({
     <PageSection className={className} variant="light">
       <Header />
       <Stack hasGutter>
-        {errors?.length > 0 &&
-          <ValidationErrors errors={errors} sectionId={id} />}
         {children}
       </Stack>
     </PageSection>
