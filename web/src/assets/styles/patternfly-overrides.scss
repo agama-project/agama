@@ -304,7 +304,9 @@ table td > .pf-v5-c-empty-state {
   fill: white;
 }
 
-.pf-v5-c-masthead .pf-v5-c-button.pf-m-link,
-.pf-v5-c-masthead .pf-v5-c-button.pf-m-plain {
-  color: white;
+:not(.pf-m-light-200).pf-v5-c-masthead {
+  .pf-v5-c-button.pf-m-link,
+  .pf-v5-c-button.pf-m-plain {
+    color: white;
+  }
 }
