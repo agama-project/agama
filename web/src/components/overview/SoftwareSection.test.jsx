@@ -32,7 +32,7 @@ const gnomePattern = {
   name: "gnome",
   category: "Graphical Environments",
   icon: "./pattern-gnome",
-  description: "GNOME Desktop Environment (Wayland)",
+  summary: "GNOME Desktop Environment (Wayland)",
   order: 1120
 };
 
@@ -40,7 +40,7 @@ const kdePattern = {
   name: "kde",
   category: "Graphical Environments",
   icon: "./pattern-kde",
-  description: "KDE Applications and Plasma Desktop",
+  summary: "KDE Applications and Plasma Desktop",
   order: 1110
 };
 
@@ -50,7 +50,7 @@ beforeEach(() => {
       software: {
         onSelectedPatternsChanged: noop,
         getProposal: jest.fn().mockResolvedValue({ size: "500 MiB", patterns: { kde: 1 } }),
-        getPatterns: jest.fn().mockResolvedValue([kdePattern])
+        getPatterns: jest.fn().mockResolvedValue([gnomePattern, kdePattern])
       }
     };
   });
@@ -59,5 +59,5 @@ beforeEach(() => {
 it("renders the required space and the selected patterns", async () => {
   installerRender(<SoftwareSection />);
   await screen.findByText("500 MiB");
-  await screen.findByText(kdePattern.description);
+  await screen.findByText(kdePattern.summary);
 });

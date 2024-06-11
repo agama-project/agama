@@ -68,7 +68,7 @@ export default function SoftwareSection() {
       </Text>
       <List>
         {selectedPatterns.map(p => (
-          <ListItem key={p.name}>{p.description}</ListItem>
+          <ListItem key={p.name}>{p.summary}</ListItem>
         ))}
       </List>
     </TextContent>
