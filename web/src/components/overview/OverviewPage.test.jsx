@@ -30,7 +30,7 @@ const startInstallationFn = jest.fn();
 jest.mock("~/client");
 jest.mock("~/components/overview/L10nSection", () => () => <div>Localization Section</div>);
 jest.mock("~/components/overview/StorageSection", () => () => <div>Storage Section</div>);
-jest.mock("~/components/overview/SoftwareSummary", () => () => <div>Software Section</div>);
+jest.mock("~/components/overview/SoftwareSection", () => () => <div>Software Section</div>);
 jest.mock("~/components/core/InstallButton", () => () => <div>Install Button</div>);
 
 beforeEach(() => {

@@ -36,7 +36,7 @@ import { Navigate, Link } from "react-router-dom";
 import { CardField, EmptyState, Page, InstallButton } from "~/components/core";
 import L10nSection from "./L10nSection";
 import StorageSection from "./StorageSection";
-import SoftwareSummary from "./SoftwareSummary";
+import SoftwareSection from "./SoftwareSection";
 import { _ } from "~/i18n";
 
 const ReadyForInstallation = () => (
@@ -103,7 +103,7 @@ export default function OverviewPage() {
                 <Stack hasGutter>
                   <L10nSection />
                   <StorageSection />
-                  <SoftwareSummary />
+                  <SoftwareSection />
                 </Stack>
               </CardBody>
             </CardField>

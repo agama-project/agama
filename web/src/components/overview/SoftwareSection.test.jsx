@@ -24,74 +24,40 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { noop } from "~/utils";
 import { createClient } from "~/client";
-import { BUSY, IDLE } from "~/client/status";
-import { SoftwareSection } from "~/components/overview";
+import SoftwareSection from "~/components/overview/SoftwareSection";
 
 jest.mock("~/client");
+
+const gnomePattern = {
+  name: "gnome",
+  category: "Graphical Environments",
+  icon: "./pattern-gnome",
+  summary: "GNOME Desktop Environment (Wayland)",
+  order: 1120
+};
 
 const kdePattern = {
   name: "kde",
   category: "Graphical Environments",
   icon: "./pattern-kde",
-  description: "Packages providing the Plasma desktop environment and applications from KDE.",
   summary: "KDE Applications and Plasma Desktop",
-  order: "1110",
+  order: 1110
 };
-
-let getStatusFn = jest.fn().mockResolvedValue(IDLE);
-let getProgressFn = jest.fn().mockResolvedValue({});
-let getIssuesFn = jest.fn().mockResolvedValue([]);
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       software: {
-        getStatus: getStatusFn,
-        getProgress: getProgressFn,
-        getIssues: getIssuesFn,
-        onStatusChange: noop,
-        onProgressChange: noop,
-        getProposal: jest.fn().mockResolvedValue({ size: "500 MiB" }),
-      },
+        onSelectedPatternsChanged: noop,
+        getProposal: jest.fn().mockResolvedValue({ size: "500 MiB", patterns: { kde: 1 } }),
+        getPatterns: jest.fn().mockResolvedValue([gnomePattern, kdePattern])
+      }
     };
   });
 });
 
-describe("when the proposal is calculated", () => {
-  beforeEach(() => {
-    getStatusFn = jest.fn().mockResolvedValue(IDLE);
-  });
-
-  it("renders the required space", async () => {
-    installerRender(<SoftwareSection showErrors />);
-    await screen.findByText("Installation will take");
-    await screen.findByText("500 MiB");
-  });
-
-  describe("and there are errors", () => {
-    beforeEach(() => {
-      getIssuesFn = jest.fn().mockResolvedValue([{ description: "Could not install..." }]);
-    });
-
-    it("renders a button to refresh the repositories", async () => {
-      installerRender(<SoftwareSection showErrors />);
-      await screen.findByRole("button", { name: /Refresh/ });
-    });
-  });
-});
-
-describe("when the proposal is being calculated", () => {
-  beforeEach(() => {
-    getStatusFn = jest.fn().mockResolvedValue(BUSY);
-    getProgressFn = jest.fn().mockResolvedValue(
-      { message: "Initializing target repositories", current: 1, total: 4, finished: false },
-    );
-  });
-
-  it("just displays the progress", async () => {
-    installerRender(<SoftwareSection showErrors />);
-    await screen.findByText("Initializing target repositories (1/4)");
-    expect(screen.queryByText(/Installation will take/)).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Refresh/ })).not.toBeInTheDocument();
-  });
+it("renders the required space and the selected patterns", async () => {
+  installerRender(<SoftwareSection />);
+  await screen.findByText("500 MiB");
+  await screen.findByText(kdePattern.summary);
 });

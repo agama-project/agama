@@ -21,7 +21,8 @@
 
 import React from "react";
 
-import { Em } from "~/components/core";
+import { EmptyState } from "~/components/core";
+import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
 export default function UsedSize({ size }) {
@@ -29,12 +30,13 @@ export default function UsedSize({ size }) {
 
   // TRANSLATORS: %s will be replaced by the estimated installation size,
   // example: "728.8 MiB"
-  const [msg1, msg2] = _("Installation will take %s").split("%s");
+  const message = sprintf(_("Installation will take %s."), size);
+
   return (
-    <>
-      {msg1}
-      <Em>{size}</Em>
-      {msg2}
-    </>
+    <EmptyState title={message} icon="info" color="success-color-100">
+      <p>
+        {_("This space includes the base system and the selected software patterns.")}
+      </p>
+    </EmptyState>
   );
 }
