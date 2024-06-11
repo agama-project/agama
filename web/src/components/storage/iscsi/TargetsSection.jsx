@@ -149,7 +149,7 @@ export default function TargetsSection() {
 
     return (
       <>
-        <Toolbar className="no-stack-gutter">
+        <Toolbar>
           <ToolbarContent>
             <ToolbarItem align={{ default: "alignRight" }}>
               {/* TRANSLATORS: button label, starts iSCSI discovery */}

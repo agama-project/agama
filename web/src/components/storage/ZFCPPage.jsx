@@ -553,7 +553,7 @@ const DisksSection = ({ client, manager, isLoading = false }) => {
 
     return (
       <>
-        <Toolbar className="no-stack-gutter">
+        <Toolbar>
           <ToolbarContent>
             <ToolbarItem align={{ default: "alignRight" }}>
               {/* TRANSLATORS: button label */}
