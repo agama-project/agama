@@ -1,5 +1,5 @@
-use axum::{extract::{ws::{Message, WebSocket}, WebSocketUpgrade}, response::IntoResponse};
-use log::info;
+use std::borrow::Cow;
+use axum::{extract::{ws::{close_code, CloseFrame, Message, WebSocket}, WebSocketUpgrade}, response::IntoResponse};
 use pty_process::{OwnedReadPty, OwnedWritePty};
 use tokio::io::AsyncWriteExt;
 use tokio_stream::StreamExt;
@@ -10,21 +10,21 @@ pub(crate) async fn handler(
     ws.on_upgrade(move |socket| handle_socket(socket))
 }
 
-fn start_shell() -> Result<(OwnedReadPty, OwnedWritePty), pty_process::Error> {
+fn start_shell() -> Result<(OwnedReadPty, OwnedWritePty, tokio::process::Child), pty_process::Error> {
     let pty = pty_process::Pty::new()?;
     pty.resize(pty_process::Size::new(24, 80))?;
     let mut cmd = pty_process::Command::new("bash");
     // TODO: check if children exit
     let child = cmd.spawn(&pty.pts()?)?;
     let (pty_out, pty_in) = pty.into_split();
-    Ok((pty_out, pty_in))
+    Ok((pty_out, pty_in, child))
 }
 
 async fn handle_socket(mut socket: WebSocket) {
-    info!("Terminal connected");
+    log::info!("Terminal connected");
 
     // TODO: handle failed start of shell
-    let (pty_out, mut pty_in) = start_shell().unwrap();
+    let (pty_out, mut pty_in, mut child) = start_shell().unwrap();
     let mut reader_stream = tokio_util::io::ReaderStream::new(pty_out);
 
     loop {
@@ -32,18 +32,23 @@ async fn handle_socket(mut socket: WebSocket) {
             message = socket.recv() => {
                 match message {
                     Some(Ok(Message::Text(s))) => {
-                        println!("websocket text {:?}", s);
                         let res = pty_in.write_all(s.as_bytes()).await;
-                        println!("write result {:?}", res);
+                        if res.is_err() {
+                            log::warn!("Failed to write to pty: {:?}", res);
+                        }
 
                         continue;
                     },
                     Some(Ok(Message::Close(_))) => {
-                        println!("websocket close {:?}", message);
+                        log::info!("websocket close {:?}", message);
                         break;  
                     },
+                    None => {
+                        log::info!("Socket closed");
+                        break;
+                    }
                     _ => {
-                        println!("websocket other {:?}", message);
+                        log::info!("websocket other {:?}", message);
                         continue
                     },
                 }
@@ -57,9 +62,26 @@ async fn handle_socket(mut socket: WebSocket) {
                     }
                     
                 }
+            },
+            status = child.wait() => {
+                match status {
+                    Err(err) => log::warn!("Child status error: {}", err),
+                    Ok(status) => {
+                        let code = status.code().unwrap_or(0);
+                        let msg = format!("Bash exited with code: {code}");
+                        let res = socket.send(Message::Close(Some(CloseFrame {
+                            code: close_code::NORMAL,
+                            reason: Cow::from(msg),
+                        }))).await;
+                        if res.is_err() {
+                            log::warn!("Failed to send close message: {:?}", res);
+                        }
+                        break;
+                    }
+                }
             }      
         }
     }
 
-    info!("Terminal disconnected.");
+    log::info!("Terminal disconnected.");
 }
