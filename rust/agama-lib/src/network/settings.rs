@@ -3,7 +3,6 @@
 use super::types::{DeviceState, DeviceType, Status};
 use cidr::IpInet;
 use serde::{Deserialize, Serialize};
-use std::convert::TryFrom;
 use std::default::Default;
 use std::net::IpAddr;
 

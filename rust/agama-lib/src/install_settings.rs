@@ -8,6 +8,9 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 use std::default::Default;
+use std::fs::File;
+use std::io::BufReader;
+use std::path::Path;
 use std::str::FromStr;
 
 /// Settings scopes
@@ -92,6 +95,13 @@ pub struct InstallSettings {
 }
 
 impl InstallSettings {
+    pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Self, std::io::Error> {
+        let file = File::open(path)?;
+        let reader = BufReader::new(file);
+        let data = serde_json::from_reader(reader)?;
+        Ok(data)
+    }
+
     pub fn defined_scopes(&self) -> Vec<Scope> {
         let mut scopes = vec![];
         if self.user.is_some() {

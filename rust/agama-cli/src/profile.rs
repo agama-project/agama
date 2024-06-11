@@ -1,4 +1,10 @@
-use agama_lib::profile::{AutoyastProfile, ProfileEvaluator, ProfileValidator, ValidationResult};
+use agama_lib::{
+    auth::AuthToken,
+    connection,
+    install_settings::InstallSettings,
+    profile::{AutoyastProfile, ProfileEvaluator, ProfileValidator, ValidationResult},
+    Store as SettingsStore,
+};
 use anyhow::Context;
 use clap::Subcommand;
 use curl::easy::Easy;
@@ -25,8 +31,8 @@ pub enum ProfileCommands {
     ///
     /// Schema is available at /usr/share/agama-cli/profile.schema.json
     Validate {
-        /// Local path to json file
-        path: String,
+        /// Local path to the JSON file to validate
+        path: PathBuf,
     },
 
     /// Evaluate a profile, injecting the hardware information from D-Bus
@@ -35,7 +41,7 @@ pub enum ProfileCommands {
     /// https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet
     Evaluate {
         /// Path to jsonnet file.
-        path: String,
+        path: PathBuf,
     },
 
     /// Process autoinstallation profile and loads it into agama
@@ -66,9 +72,9 @@ pub fn download(url: &str, mut out_fd: impl Write) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn validate(path: String) -> anyhow::Result<()> {
+fn validate(path: &PathBuf) -> anyhow::Result<()> {
     let validator = ProfileValidator::default_schema()?;
-    let path = Path::new(&path);
+    // let path = Path::new(&path);
     let result = validator
         .validate_file(path)
         .context(format!("Could not validate the profile {:?}", path))?;
@@ -86,10 +92,10 @@ fn validate(path: String) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn evaluate(path: String) -> anyhow::Result<()> {
+fn evaluate(path: &PathBuf) -> anyhow::Result<()> {
     let evaluator = ProfileEvaluator {};
     evaluator
-        .evaluate(Path::new(&path), stdout())
+        .evaluate(&path, stdout())
         .context("Could not evaluate the profile".to_string())?;
     Ok(())
 }
@@ -134,22 +140,18 @@ async fn import(url_string: String, dir: Option<PathBuf>) -> anyhow::Result<()> 
         output_path = output_dir.join("profile.json");
     }
 
-    let output_path_string = output_path
-        .to_str()
-        .context("Failed to get output path")?
-        .to_string();
-    // Validate json profile
-    // TODO: optional skip of validation
-    validate(output_path_string.clone())?;
-    // load resulting json config
-    crate::config::run(
-        crate::config::ConfigCommands::Load {
-            path: output_path_string,
-        },
-        crate::printers::Format::Json,
-    )
-    .await?;
+    validate(&output_path)?;
+    store_settings(&output_path).await?;
 
+    Ok(())
+}
+
+async fn store_settings<P: AsRef<Path>>(path: P) -> anyhow::Result<()> {
+    let token = AuthToken::find().context("You are not logged in")?;
+    let client = agama_lib::http_client(token.as_str())?;
+    let store = SettingsStore::new(connection().await?, client).await?;
+    let settings = InstallSettings::from_file(&path)?;
+    store.store(&settings).await?;
     Ok(())
 }
 
@@ -163,8 +165,8 @@ fn autoyast(url_string: String) -> anyhow::Result<()> {
 pub async fn run(subcommand: ProfileCommands) -> anyhow::Result<()> {
     match subcommand {
         ProfileCommands::Autoyast { url } => autoyast(url),
-        ProfileCommands::Validate { path } => validate(path),
-        ProfileCommands::Evaluate { path } => evaluate(path),
+        ProfileCommands::Validate { path } => validate(&path),
+        ProfileCommands::Evaluate { path } => evaluate(&path),
         ProfileCommands::Import { url, dir } => import(url, dir).await,
     }
 }
