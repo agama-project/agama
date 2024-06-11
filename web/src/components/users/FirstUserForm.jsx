@@ -142,11 +142,6 @@ export default function FirstUserForm() {
       return;
     }
 
-    if (state.isEditing && changePassword && !user.password) {
-      setErrors([_("Password is required")]);
-      return;
-    }
-
     // FIXME: improve validations
     if (Object.values(user).some(v => v === "")) {
       setErrors([_("All fields are required")]);
