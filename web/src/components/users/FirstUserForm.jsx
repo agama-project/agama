@@ -133,11 +133,7 @@ export default function FirstUserForm() {
 
     if (!changePassword) {
       delete user.password;
-      delete user.passwordConfirmation;
     }
-
-    // Preserve current password value if the user was not editing it.
-    if (state.isEditing && user.password === "") delete user.password;
     delete user.passwordConfirmation;
     user.autologin = !!user.autologin;
 
