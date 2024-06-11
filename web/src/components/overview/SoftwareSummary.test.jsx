@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,32 +22,42 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
+import { noop } from "~/utils";
 import { createClient } from "~/client";
-import { OverviewPage } from "~/components/overview";
-
-const startInstallationFn = jest.fn();
+import SoftwareSummary from "~/components/overview/SoftwareSummary";
 
 jest.mock("~/client");
-jest.mock("~/components/overview/L10nSection", () => () => <div>Localization Section</div>);
-jest.mock("~/components/overview/StorageSection", () => () => <div>Storage Section</div>);
-jest.mock("~/components/overview/SoftwareSummary", () => () => <div>Software Section</div>);
-jest.mock("~/components/core/InstallButton", () => () => <div>Install Button</div>);
+
+const gnomePattern = {
+  name: "gnome",
+  category: "Graphical Environments",
+  icon: "./pattern-gnome",
+  description: "GNOME Desktop Environment (Wayland)",
+  order: 1120
+};
+
+const kdePattern = {
+  name: "kde",
+  category: "Graphical Environments",
+  icon: "./pattern-kde",
+  description: "KDE Applications and Plasma Desktop",
+  order: 1110
+};
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
-      manager: {
-        startInstallation: startInstallationFn
-      },
-      issues: jest.fn().mockResolvedValue({ isEmpty: true })
+      software: {
+        onSelectedPatternsChanged: noop,
+        getProposal: jest.fn().mockResolvedValue({ size: "500 MiB", patterns: { kde: 1 } }),
+        getPatterns: jest.fn().mockResolvedValue([kdePattern])
+      }
     };
   });
 });
 
-it("renders the overview page content and the Install button", async () => {
-  installerRender(<OverviewPage />);
-  screen.getByText("Localization Section");
-  screen.getByText("Storage Section");
-  screen.getByText("Software Section");
-  screen.findByText("Install Button");
+it("renders the required space and the selected patterns", async () => {
+  installerRender(<SoftwareSummary />);
+  await screen.findByText("500 MiB");
+  await screen.findByText(kdePattern.description);
 });

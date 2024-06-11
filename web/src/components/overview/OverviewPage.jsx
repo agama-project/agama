@@ -28,23 +28,19 @@ import {
   HintBody,
   List,
   ListItem,
-  Stack,
-  Text,
-  TextVariants,
-  TextContent
+  Stack
 } from "@patternfly/react-core";
 import { useProduct } from "~/context/product";
 import { useInstallerClient } from "~/context/installer";
 import { Navigate, Link } from "react-router-dom";
 import { CardField, EmptyState, Page, InstallButton } from "~/components/core";
+import L10nSection from "./L10nSection";
+import StorageSection from "./StorageSection";
+import SoftwareSummary from "./SoftwareSummary";
 import { _ } from "~/i18n";
 
 const ReadyForInstallation = () => (
-  <EmptyState
-    title={_("Ready for installation")}
-    icon="check_circle"
-    color="success-color-100"
-  >
+  <EmptyState title={_("Ready for installation")} icon="check_circle" color="success-color-100">
     <InstallButton />
   </EmptyState>
 );
@@ -70,51 +66,18 @@ const IssuesList = ({ issues }) => {
       icon="error"
       color="danger-color-100"
     >
-      <List isPlain>
-        {list}
-      </List>
+      <List isPlain>{list}</List>
     </EmptyState>
   );
 };
 
-const SoftwareSummary = () => (
-  <TextContent>
-    <Text component={TextVariants.h3}>{_("Software")}</Text>
-    <Text>{_("The installation will take 5 GiB including:")}</Text>
-    <List>
-      <ListItem>{_("GNOME Desktop")}</ListItem>
-      <ListItem>{_("YaST Basic")}</ListItem>
-    </List>
-  </TextContent>
-);
-
-const StorageSummary = () => (
-  <TextContent>
-    <Text component={TextVariants.h3}>{_("Storage")}</Text>
-    <Text>{_("The system will be installed on /dev/vda deleting all its content.")}</Text>
-  </TextContent>
-);
-
-const LocalizationSummary = () => (
-  <TextContent>
-    <Text component={TextVariants.h3}>{_("Localization")}</Text>
-    <Text>{_("The system will use English (United States).")}</Text>
-  </TextContent>
-);
-
 export default function OverviewPage() {
-  const { selectedProduct } = useProduct();
   const [issues, setIssues] = useState([]);
   const client = useInstallerClient();
 
   useEffect(() => {
     client.issues().then(setIssues);
   }, [client]);
-
-  // FIXME: this check could be no longer needed
-  if (selectedProduct === null) {
-    return <Navigate to="/products" />;
-  }
 
   return (
     <>
@@ -133,13 +96,13 @@ export default function OverviewPage() {
             <CardField
               label="Overview"
               description={_(
-                "These are the most relevant installation settings. Fell free to browse the sections in the menu for further details."
+                "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details."
               )}
             >
               <CardBody>
                 <Stack hasGutter>
-                  <LocalizationSummary />
-                  <StorageSummary />
+                  <L10nSection />
+                  <StorageSection />
                   <SoftwareSummary />
                 </Stack>
               </CardBody>
