@@ -35,7 +35,6 @@ jest.mock("@patternfly/react-core", () => {
 
   };
 });
-jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const controllers = [
   { id: "1", channel: "0.0.fa00", active: false, lunScan: false },

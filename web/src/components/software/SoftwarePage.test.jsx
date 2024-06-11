@@ -63,8 +63,6 @@ jest.mock("@patternfly/react-core", () => {
   };
 });
 
-jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
-
 describe.skip("SoftwarePage", () => {
   it("displays a progress when the backend in busy", async () => {
     getStatusFn.mockResolvedValue(BUSY);

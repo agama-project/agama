@@ -46,7 +46,6 @@ jest.mock("@patternfly/react-core", () => {
 
   };
 });
-jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 jest.mock("~/components/storage/ProposalPageMenu", () => () => <div>ProposalPage Options</div>);
 
 jest.mock("~/context/product", () => ({

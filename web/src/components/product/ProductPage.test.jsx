@@ -57,7 +57,6 @@ jest.mock("~/context/product", () => ({
   ...jest.requireActual("~/context/product"),
   useProduct: () => ({ products: mockProducts, selectedProduct, registration: mockRegistration })
 }));
-jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 beforeEach(() => {
   mockManager = {

@@ -48,7 +48,6 @@ jest.mock("~/context/product", () => ({
     };
   }
 }));
-jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const managerMock = {
   startProbing: jest.fn()

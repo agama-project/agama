@@ -26,8 +26,6 @@ import { plainRender } from "~/test-utils";
 import * as utils from "~/utils";
 import { ServerError } from "~/components/core";
 
-jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
-
 describe.skip("ServerError", () => {
   it("includes a generic server problem message", () => {
     plainRender(<ServerError />);

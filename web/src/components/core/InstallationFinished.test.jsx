@@ -29,7 +29,6 @@ import { EncryptionMethods } from "~/client/storage";
 import InstallationFinished from "./InstallationFinished";
 
 jest.mock("~/client");
-jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const finishInstallationFn = jest.fn();
 let encryptionPassword;

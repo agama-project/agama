@@ -76,8 +76,6 @@ createClient.mockImplementation(() => (
   }
 ));
 
-jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
-
 beforeEach(() => {
   mockL10nClient = {
     setLocales: jest.fn().mockResolvedValue(),

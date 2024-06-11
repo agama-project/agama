@@ -32,7 +32,6 @@ jest.mock("@patternfly/react-core", () => {
     Skeleton: () => <div>PFSkeleton</div>
   };
 });
-jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
 const issues = {
   product: [],
