@@ -23,13 +23,30 @@
 
 import React, { useEffect, useState } from "react";
 import { useLoaderData } from "react-router-dom";
-import { Button, CardBody, Flex, FlexItem, Grid, GridItem, Skeleton } from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
+import { Button, CardBody, Flex, Grid, GridItem, Skeleton } from "@patternfly/react-core";
 import { useInstallerClient } from "~/context/installer";
-import { If, CardField, Page } from "~/components/core";
+import { CardField, Page } from "~/components/core";
 import { ConnectionsTable, WifiSelector } from "~/components/network";
 import { NetworkEventTypes } from "~/client/network";
 import { _ } from "~/i18n";
+
+const WifiSelection = ({ wifiScanSupported }) => {
+  const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
+
+  if (!wifiScanSupported) return;
+
+  const openWifiSelector = () => setWifiSelectorOpen(true);
+  const closeWifiSelector = () => setWifiSelectorOpen(false);
+
+  return (
+    <>
+      <Button variant="secondary" onClick={openWifiSelector}>
+        {_("Connect to a Wi-Fi network")}
+      </Button>
+      <WifiSelector isOpen={wifiSelectorOpen} onClose={closeWifiSelector} />
+    </>
+  );
+};
 
 /**
  * Internal component for displaying info when none wire connection is found
@@ -51,7 +68,7 @@ const NoWiredConnections = () => {
  * @param {boolean} props.supported - whether the system supports scanning WiFi networks
  * @param {boolean} props.openWifiSelector - the function for opening the WiFi selector
  */
-const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
+const NoWifiConnections = ({ wifiScanSupported }) => {
   const message = wifiScanSupported
     ? _("The system has not been configured for connecting to a WiFi network yet.")
     : _("The system does not support WiFi connections, probably because of missing or disabled hardware.");
@@ -60,21 +77,6 @@ const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
     <div className="stack">
       <div>{_("No WiFi connections found.")}</div>
       <div>{message}</div>
-      <If
-        condition={wifiScanSupported}
-        then={
-          <>
-            <Button
-              variant="primary"
-              onClick={openWifiSelector}
-              icon={<Icon name="wifi_find" size="s" />}
-            >
-              {/* TRANSLATORS: button label */}
-              {_("Connect to a Wi-Fi network")}
-            </Button>
-          </>
-        }
-      />
     </div>
   );
 };
@@ -89,10 +91,6 @@ export default function NetworkPage() {
   const [connections, setConnections] = useState(initialConnections);
   const [devices, setDevices] = useState(undefined);
   const [selectedConnection, setSelectedConnection] = useState(null);
-  const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
-
-  const openWifiSelector = () => setWifiSelectorOpen(true);
-  const closeWifiSelector = () => setWifiSelectorOpen(false);
 
   useEffect(() => {
     return client.onNetworkChange(({ type, payload }) => {
@@ -150,7 +148,7 @@ export default function NetworkPage() {
 
     if (wifiConnections.length === 0) {
       return (
-        <NoWifiConnections wifiScanSupported={settings.wireless_enabled} openWifiSelector={openWifiSelector} />
+        <NoWifiConnections wifiScanSupported={settings.wireless_enabled} />
       );
     }
 
@@ -170,20 +168,9 @@ export default function NetworkPage() {
   return (
     <>
       <Page.Header>
-        <Flex>
-          <FlexItem>
-            <h2>{_("Network")}</h2>
-          </FlexItem>
-          <If
-            condition={settings.wireless_enabled}
-            then={
-              <FlexItem align={{ default: "alignRight" }}>
-                <Button variant="secondary" onClick={openWifiSelector}>
-                  {_("Connect to a Wi-Fi network")}
-                </Button>
-              </FlexItem>
-            }
-          />
+        <Flex justifyContent={{ default: "justifyContentSpaceBetween" }}>
+          <h2>{_("Network")}</h2>
+          <WifiSelection wifiScanSupported={settings.wireless_enabled} />
         </Flex>
       </Page.Header>
 
@@ -205,11 +192,6 @@ export default function NetworkPage() {
           </GridItem>
         </Grid>
       </Page.MainContent>
-
-      <If
-        condition={settings.wireless_enabled}
-        then={<WifiSelector isOpen={wifiSelectorOpen} onClose={closeWifiSelector} />}
-      />
     </>
   );
 }
