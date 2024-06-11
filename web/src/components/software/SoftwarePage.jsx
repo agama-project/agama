@@ -25,7 +25,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { ButtonLink, CardField, Page, Section, SectionSkeleton } from "~/components/core";
-import { UsedSize } from "~/components/software";
+import UsedSize from "./UsedSize";
 import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
 import { BUSY } from "~/client/status";
