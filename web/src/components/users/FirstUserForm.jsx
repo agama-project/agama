@@ -131,6 +131,11 @@ export default function FirstUserForm() {
       return user;
     }, user);
 
+    if (!changePassword) {
+      delete user.password;
+      delete user.passwordConfirmation;
+    }
+
     // Preserve current password value if the user was not editing it.
     if (state.isEditing && user.password === "") delete user.password;
     delete user.passwordConfirmation;
@@ -144,6 +149,11 @@ export default function FirstUserForm() {
     // FIXME: improve validations
     if (Object.values(user).some(v => v === "")) {
       setErrors([_("All fields are required")]);
+      return;
+    }
+
+    if (state.isEditing && changePassword && !user.password) {
+      setErrors([_("Password is required")]);
       return;
     }
 
