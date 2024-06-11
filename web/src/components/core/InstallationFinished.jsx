@@ -29,12 +29,11 @@ import {
   EmptyStateIcon,
   ExpandableSection,
 } from "@patternfly/react-core";
-
-import { If, Page } from "~/components/core";
+import { Page } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { useInstallerClient } from "~/context/installer";
 import { EncryptionMethods } from "~/client/storage";
 import { _ } from "~/i18n";
+import { useInstallerClient } from "~/context/installer";
 
 const TpmHint = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -98,16 +97,11 @@ function InstallationFinished() {
         <EmptyStateBody>
           <Text>{_("The installation on your machine is complete.")}</Text>
           <Text>
-            <If
-              condition={usingIguana}
-              then={_("At this point you can power off the machine.")}
-              else={_("At this point you can reboot the machine to log in to the new system.")}
-            />
+            {usingIguana
+              ? _("At this point you can power off the machine.")
+              : _("At this point you can reboot the machine to log in to the new system.")}
           </Text>
-          <If
-            condition={usingTpm}
-            then={<TpmHint />}
-          />
+          {usingTpm && <TpmHint />}
         </EmptyStateBody>
       </EmptyState>
 

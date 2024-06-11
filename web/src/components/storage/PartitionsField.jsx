@@ -32,16 +32,14 @@ import {
   Skeleton
 } from '@patternfly/react-core';
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
-import { sprintf } from "sprintf-js";
-
+import { CardField, RowActions, Tip } from '~/components/core';
+import { noop } from "~/utils";
 import { _ } from "~/i18n";
-import BootConfigField from "~/components/storage/BootConfigField";
+import { sprintf } from "sprintf-js";
 import {
   deviceSize, hasSnapshots, isTransactionalRoot, isTransactionalSystem, reuseDevice
 } from '~/components/storage/utils';
-import { Icon } from '~/components/layout';
-import { If, CardField, RowActions, Tip } from '~/components/core';
-import { noop } from "~/utils";
+import BootConfigField from "~/components/storage/BootConfigField";
 import SnapshotsField from "~/components/storage/SnapshotsField";
 import VolumeDialog from '~/components/storage/VolumeDialog';
 import VolumeLocationDialog from '~/components/storage/VolumeLocationDialog';
@@ -259,10 +257,7 @@ const VolumeSizeLimits = ({ volume }) => {
     <div className="split">
       <span>{SizeText({ volume })}</span>
       {/* TRANSLATORS: device flag, the partition size is automatically computed */}
-      <If
-        condition={isAuto && !reuseDevice(volume)}
-        then={<Tip description={AutoCalculatedHint({ volume })}>{_("auto")}</Tip>}
-      />
+      {isAuto && !reuseDevice(volume) && <Tip description={AutoCalculatedHint({ volume })}>{_("auto")}</Tip>}
     </div>
   );
 };
@@ -402,33 +397,25 @@ const VolumeRow = ({
           />
         </Td>
       </Tr>
-      <If
-        condition={isEditDialogOpen}
-        then={
-          <VolumeDialog
-            isOpen
-            volume={volume}
-            volumes={volumes}
-            templates={templates}
-            onAccept={acceptForm}
-            onCancel={closeDialog}
-          />
-        }
-      />
-      <If
-        condition={isLocationDialogOpen}
-        then={
-          <VolumeLocationDialog
-            isOpen
-            volume={volume}
-            volumes={volumes}
-            volumeDevices={volumeDevices}
-            targetDevices={targetDevices}
-            onAccept={acceptForm}
-            onCancel={closeDialog}
-          />
-        }
-      />
+      {isEditDialogOpen &&
+        <VolumeDialog
+          isOpen
+          volume={volume}
+          volumes={volumes}
+          templates={templates}
+          onAccept={acceptForm}
+          onCancel={closeDialog}
+        />}
+      {isLocationDialogOpen &&
+        <VolumeLocationDialog
+          isOpen
+          volume={volume}
+          volumes={volumes}
+          volumeDevices={volumeDevices}
+          targetDevices={targetDevices}
+          onAccept={acceptForm}
+          onCancel={closeDialog}
+        />}
     </>
   );
 };
@@ -722,12 +709,11 @@ const Advanced = ({
     onVolumesChange(volumes);
   };
 
+  const showSnapshotsField = rootVolume?.outline.snapshotsConfigurable;
+
   return (
     <div className="stack">
-      <If
-        condition={rootVolume?.outline.snapshotsConfigurable}
-        then={<SnapshotsField rootVolume={rootVolume} onChange={changeBtrfsSnapshots} />}
-      />
+      {showSnapshotsField && <SnapshotsField rootVolume={rootVolume} onChange={changeBtrfsSnapshots} />}
       <VolumesTable
         volumes={volumes}
         templates={templates}
@@ -738,26 +724,19 @@ const Advanced = ({
         isLoading={isLoading}
       />
       <div className="split" style={{ flexDirection: "row-reverse" }}>
-        <If
-          condition={showAddVolume()}
-          then={<AddVolumeButton options={mountPathOptions()} onClick={addVolume} />}
-        />
+        {showAddVolume() && <AddVolumeButton options={mountPathOptions()} onClick={addVolume} />}
         <Button variant="plain" onClick={resetVolumes}>{_("Reset to defaults")}</Button>
       </div>
-      <If
-        condition={isVolumeDialogOpen}
-        then={
-          <VolumeDialog
-            isOpen
-            volume={template}
-            volumes={volumes}
-            templates={templates}
-            onAccept={onAcceptVolumeDialog}
-            onCancel={closeVolumeDialog}
-          />
-        }
-      />
-      <hr />
+      {isVolumeDialogOpen &&
+        <VolumeDialog
+          isOpen
+          volume={template}
+          volumes={volumes}
+          templates={templates}
+          onAccept={onAcceptVolumeDialog}
+          onCancel={closeVolumeDialog}
+        />}
+      <Divider />
       <BootConfigField
         configureBoot={configureBoot}
         bootDevice={bootDevice}

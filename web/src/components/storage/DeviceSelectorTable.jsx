@@ -22,15 +22,14 @@
 // @ts-check
 
 import React from "react";
-import { sprintf } from "sprintf-js";
-
-import { _ } from "~/i18n";
-import { deviceBaseName } from "~/components/storage/utils";
 import {
   DeviceName, DeviceDetails, DeviceSize, FilesystemLabel, toStorageDevice
 } from "~/components/storage/device-utils";
-import { ExpandableSelector, If } from "~/components/core";
+import { ExpandableSelector } from "~/components/core";
 import { Icon } from "~/components/layout";
+import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
+import { deviceBaseName } from "~/components/storage/utils";
 
 /**
  * @typedef {import("../core/ExpandableSelector").ExpandableSelectorColumn} ExpandableSelectorColumn
@@ -81,7 +80,7 @@ const DeviceInfo = ({ item }) => {
       }
     }
 
-    return <If condition={type} then={<div>{type}</div>} />;
+    return type && <div>{type}</div>;
   };
 
   const DeviceModel = () => {

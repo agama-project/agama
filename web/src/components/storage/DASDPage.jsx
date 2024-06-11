@@ -20,11 +20,9 @@
  */
 
 import React, { useEffect, useReducer } from "react";
-
-import { _ } from "~/i18n";
-import { If } from "~/components/core";
-import DASDFormatProgress from "~/components/storage/DASDFormatProgress";
 import DASDTable from "~/components/storage/DASDTable";
+import DASDFormatProgress from "~/components/storage/DASDFormatProgress";
+import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 
@@ -180,10 +178,7 @@ export default function DASDPage() {
   return (
     <>
       <DASDTable state={state} dispatch={dispatch} />
-      <If
-        condition={state.formatJob.running}
-        then={<DASDFormatProgress job={state.formatJob} devices={state.devices} />}
-      />
+      {state.formatJob.running && <DASDFormatProgress job={state.formatJob} devices={state.devices} />}
     </>
   );
 }

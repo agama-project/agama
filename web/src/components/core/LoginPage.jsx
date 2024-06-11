@@ -32,11 +32,11 @@ import {
   Grid, GridItem,
   Stack
 } from "@patternfly/react-core";
-import { About, EmptyState, FormValidationError, If, Page, PasswordInput } from "~/components/core";
+import { About, EmptyState, FormValidationError, Page, PasswordInput } from "~/components/core";
 import { Center } from "~/components/layout";
 import { AuthErrors, useAuth } from "~/context/auth";
-import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 
 // @ts-check
 
@@ -105,14 +105,8 @@ user privileges.").split(/[[\]]/);
                         onChange={(_, v) => setPassword(v)}
                       />
                     </FormGroup>
-                    <If
-                      condition={error}
-                      then={
-                        <FormValidationError
-                          message={errorMessage(loginError)}
-                        />
-                      }
-                    />
+
+                    {error && <FormValidationError message={errorMessage(loginError)} />}
 
                     <ActionGroup>
                       <Button type="submit" variant="primary">

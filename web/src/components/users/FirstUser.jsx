@@ -20,28 +20,19 @@
  */
 
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
-
-import { _ } from "~/i18n";
-import { useCancellablePromise } from "~/utils";
-import { useInstallerClient } from "~/context/installer";
 import {
   Alert,
   Checkbox,
-  Form,
-  FormGroup,
-  TextInput,
+  Form, FormGroup, TextInput,
   Skeleton,
-  Menu,
-  MenuContent,
-  MenuList,
-  MenuItem
+  Menu, MenuContent, MenuList, MenuItem
 } from "@patternfly/react-core";
-
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
-
-import { RowActions, PasswordAndConfirmationInput, Popup, If, ButtonLink } from '~/components/core';
-
+import { useNavigate } from "react-router-dom";
+import { RowActions, PasswordAndConfirmationInput, Popup, ButtonLink } from '~/components/core';
+import { _ } from "~/i18n";
+import { useCancellablePromise } from "~/utils";
+import { useInstallerClient } from "~/context/installer";
 import { suggestUsernames } from '~/components/users/utils';
 
 const UserNotDefined = ({ actionCb }) => {
@@ -81,7 +72,9 @@ const UserData = ({ user, actions }) => {
   );
 };
 
-const UsernameSuggestions = ({ entries, onSelect, setInsideDropDown, focusedIndex = -1 }) => {
+const UsernameSuggestions = ({ isOpen = false, entries, onSelect, setInsideDropDown, focusedIndex = -1 }) => {
+  if (!isOpen) return;
+
   return (
     <Menu
       aria-label={_("Username suggestion dropdown")}
@@ -311,16 +304,12 @@ export default function FirstUser() {
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
               />
-              <If
-                condition={displaySuggestions && suggestions.length > 0}
-                then={
-                  <UsernameSuggestions
-                    entries={suggestions}
-                    onSelect={onSuggestionSelected}
-                    setInsideDropDown={setInsideDropDown}
-                    focusedIndex={focusedIndex}
-                  />
-                }
+              <UsernameSuggestions
+                isOpen={displaySuggestions && suggestions.length > 0}
+                entries={suggestions}
+                onSelect={onSuggestionSelected}
+                setInsideDropDown={setInsideDropDown}
+                focusedIndex={focusedIndex}
               />
             </FormGroup>
 

@@ -23,15 +23,15 @@
 
 import React from "react";
 import { Label, Flex } from "@patternfly/react-core";
-import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
 import {
   DeviceName, DeviceDetails, DeviceSize, toStorageDevice
 } from "~/components/storage/device-utils";
-import { deviceChildren, deviceSize } from "~/components/storage/utils";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import DevicesManager from "~/components/storage/DevicesManager";
-import { If, TreeTable } from "~/components/core";
+import { TreeTable } from "~/components/core";
+import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
+import { deviceChildren, deviceSize } from "~/components/storage/utils";
 
 /**
  * @typedef {import("~/client/storage").PartitionSlot} PartitionSlot
@@ -71,9 +71,7 @@ const DeviceCustomDetails = ({ item, devicesManager }) => {
   return (
     <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
       <DeviceDetails item={item} />
-      <div>
-        <If condition={isNew()} then={<Label color="green" isCompact>{_("New")}</Label>} />
-      </div>
+      {isNew() && <Label color="green" isCompact>{_("New")}</Label>}
     </Flex>
   );
 };
@@ -92,18 +90,14 @@ const DeviceCustomSize = ({ item, devicesManager }) => {
   return (
     <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
       <DeviceSize item={item} />
-      <If
-        condition={isResized}
-        then={
-          <Label color="orange" isCompact>
-            {
-              // TRANSLATORS: Label to indicate the device size before resizing, where %s is
-              // replaced by the original size (e.g., 3.00 GiB).
-              sprintf(_("Before %s"), deviceSize(sizeBefore))
-            }
-          </Label>
-        }
-      />
+      {isResized &&
+        <Label color="orange" isCompact>
+          {
+            // TRANSLATORS: Label to indicate the device size before resizing, where %s is
+            // replaced by the original size (e.g., 3.00 GiB).
+            sprintf(_("Before %s"), deviceSize(sizeBefore))
+          }
+        </Label>}
     </Flex>
   );
 };

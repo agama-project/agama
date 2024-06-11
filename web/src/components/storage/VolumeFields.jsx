@@ -26,11 +26,10 @@ import {
   InputGroup, InputGroupItem, FormGroup, FormSelect, FormSelectOption, MenuToggle, Popover, Radio,
   Select, SelectOption, SelectList, TextInput
 } from "@patternfly/react-core";
-import { sprintf } from "sprintf-js";
-
-import { _, N_ } from "~/i18n";
-import { FormValidationError, FormReadOnlyField, If, NumericTextInput } from '~/components/core';
+import { FormValidationError, FormReadOnlyField, NumericTextInput } from '~/components/core';
 import { Icon } from "~/components/layout";
+import { _, N_ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 import { SIZE_METHODS, SIZE_UNITS } from '~/components/storage/utils';
 
 /**
@@ -487,9 +486,9 @@ const SizeOptionsField = ({ volume, formData, isDisabled = false, errors = {}, o
         </div>
 
         <div aria-live="polite" className="highlighted-live-region">
-          <If condition={sizeMethod === SIZE_METHODS.AUTO} then={<SizeAuto {...sizeWidgetProps} />} />
-          <If condition={sizeMethod === SIZE_METHODS.RANGE} then={<SizeRange {...sizeWidgetProps} />} />
-          <If condition={sizeMethod === SIZE_METHODS.MANUAL} then={<SizeManual {...sizeWidgetProps} />} />
+          {sizeMethod === SIZE_METHODS.AUTO && <SizeAuto {...sizeWidgetProps} />}
+          {sizeMethod === SIZE_METHODS.RANGE && <SizeRange {...sizeWidgetProps} />}
+          {sizeMethod === SIZE_METHODS.MANUAL && <SizeManual {...sizeWidgetProps} />}
         </div>
       </div>
     </FormGroup>

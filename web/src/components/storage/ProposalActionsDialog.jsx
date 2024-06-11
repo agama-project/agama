@@ -21,10 +21,9 @@
 
 import React, { useState } from "react";
 import { List, ListItem, ExpandableSection, } from "@patternfly/react-core";
-import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 import { partition } from "~/utils";
-import { If } from "~/components/core";
 
 const ActionsList = ({ actions }) => {
   // Some actions (e.g., deleting a LV) are reported as several actions joined by a line break
@@ -67,20 +66,16 @@ export default function ProposalActionsDialog({ actions = [] }) {
   return (
     <>
       <ActionsList actions={generalActions} />
-      <If
-        condition={subvolActions.length > 0}
-        then={
-          <ExpandableSection
-            isIndented
-            isExpanded={isExpanded}
-            onToggle={() => setIsExpanded(!isExpanded)}
-            toggleText={toggleText}
-            className="expandable-actions"
-          >
-            <ActionsList actions={subvolActions} />
-          </ExpandableSection>
-        }
-      />
+      {subvolActions.length > 0 &&
+        <ExpandableSection
+          isIndented
+          isExpanded={isExpanded}
+          onToggle={() => setIsExpanded(!isExpanded)}
+          toggleText={toggleText}
+          className="expandable-actions"
+        >
+          <ActionsList actions={subvolActions} />
+        </ExpandableSection>}
     </>
   );
 }
