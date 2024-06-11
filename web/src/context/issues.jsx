@@ -57,6 +57,9 @@ function IssuesProvider({ children }) {
   return <IssuesContext.Provider value={issues}>{children}</IssuesContext.Provider>;
 }
 
+/**
+ * @return {Issues}
+ */
 function useIssues() {
   const context = useContext(IssuesContext);
 
