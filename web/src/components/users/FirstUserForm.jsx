@@ -142,14 +142,14 @@ export default function FirstUserForm() {
       return;
     }
 
-    // FIXME: improve validations
-    if (Object.values(user).some(v => v === "")) {
-      setErrors([_("All fields are required")]);
+    if (state.isEditing && changePassword && !user.password) {
+      setErrors([_("Password is required")]);
       return;
     }
 
-    if (state.isEditing && changePassword && !user.password) {
-      setErrors([_("Password is required")]);
+    // FIXME: improve validations
+    if (Object.values(user).some(v => v === "")) {
+      setErrors([_("All fields are required")]);
       return;
     }
 
