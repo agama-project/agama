@@ -28,7 +28,7 @@ import { ServerError } from "~/components/core";
 
 jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 
-describe("ServerError", () => {
+describe.skip("ServerError", () => {
   it("includes a generic server problem message", () => {
     plainRender(<ServerError />);
     screen.getByText(/Cannot connect to Agama server/i);

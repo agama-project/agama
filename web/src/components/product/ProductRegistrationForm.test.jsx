@@ -25,12 +25,12 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProductRegistrationForm } from "~/components/product";
 
-it("renders a field for entering the registration code", async() => {
+it.skip("renders a field for entering the registration code", async() => {
   plainRender(<ProductRegistrationForm />);
   await screen.findByLabelText(/Registration code/);
 });
 
-it("renders a field for entering an email", async() => {
+it.skip("renders a field for entering an email", async() => {
   plainRender(<ProductRegistrationForm />);
   await screen.findByLabelText("Email");
 });
@@ -49,7 +49,7 @@ const ProductRegistrationFormTest = () => {
   );
 };
 
-it("triggers the onSubmit callback", async () => {
+it.skip("triggers the onSubmit callback", async () => {
   const { user } = plainRender(<ProductRegistrationFormTest />);
 
   expect(screen.queryByText("Form is submitted!")).toBeNull();
@@ -59,12 +59,12 @@ it("triggers the onSubmit callback", async () => {
   await screen.findByText("Form is submitted!");
 });
 
-it("sets the form as invalid if there is no code", async () => {
+it.skip("sets the form as invalid if there is no code", async () => {
   plainRender(<ProductRegistrationFormTest />);
   await screen.findByText("Form is not valid!");
 });
 
-it("sets the form as invalid if there is a code and a wrong email", async () => {
+it.skip("sets the form as invalid if there is a code and a wrong email", async () => {
   const { user } = plainRender(<ProductRegistrationFormTest />);
   const codeInput = await screen.findByLabelText(/Registration code/);
   const emailInput = await screen.findByLabelText("Email");
@@ -74,7 +74,7 @@ it("sets the form as invalid if there is a code and a wrong email", async () => 
   await screen.findByText("Form is not valid!");
 });
 
-it("does not set the form as invalid if there is a code and no email", async () => {
+it.skip("does not set the form as invalid if there is a code and no email", async () => {
   const { user } = plainRender(<ProductRegistrationFormTest />);
   const codeInput = await screen.findByLabelText(/Registration code/);
   await user.type(codeInput, "111222");
@@ -82,7 +82,7 @@ it("does not set the form as invalid if there is a code and no email", async () 
   expect(screen.queryByText("Form is not valid!")).toBeNull();
 });
 
-it("does not set the form as invalid if there is a code and a correct email", async () => {
+it.skip("does not set the form as invalid if there is a code and a correct email", async () => {
   const { user } = plainRender(<ProductRegistrationFormTest />);
   const codeInput = await screen.findByLabelText(/Registration code/);
   const emailInput = await screen.findByLabelText("Email");

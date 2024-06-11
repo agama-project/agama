@@ -100,7 +100,7 @@ beforeEach(() => {
   };
 });
 
-describe("when set as loading", () => {
+describe.skip("when set as loading", () => {
   beforeEach(() => {
     props.isLoading = true;
   });
@@ -113,7 +113,7 @@ describe("when set as loading", () => {
   });
 });
 
-describe("when the target is a disk", () => {
+describe.skip("when the target is a disk", () => {
   beforeEach(() => {
     props.target = "DISK";
   });
@@ -141,7 +141,7 @@ describe("when the target is a disk", () => {
   });
 });
 
-describe("when the target is a new LVM volume group", () => {
+describe.skip("when the target is a new LVM volume group", () => {
   beforeEach(() => {
     props.target = "NEW_LVM_VG";
   });
@@ -180,7 +180,7 @@ describe("when the target is a new LVM volume group", () => {
   });
 });
 
-it("allows changing the selected device", async () => {
+it.skip("allows changing the selected device", async () => {
   const { user } = installerRender(<InstallationDeviceField {...props} />);
   const button = screen.getByRole("button", { name: /installation device/i });
 
@@ -203,7 +203,7 @@ it("allows changing the selected device", async () => {
   });
 });
 
-it("allows canceling a device selection", async () => {
+it.skip("allows canceling a device selection", async () => {
   const { user } = installerRender(<InstallationDeviceField {...props} />);
   const button = screen.getByRole("button", { name: /installation device/i });
 

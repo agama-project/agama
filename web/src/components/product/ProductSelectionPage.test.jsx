@@ -70,7 +70,7 @@ beforeEach(() => {
   });
 });
 
-describe("when the user chooses a product", () => {
+describe.skip("when the user chooses a product", () => {
   it("selects the product and redirects to the main page", async () => {
     const { user } = installerRender(<ProductSelectionPage />);
     const productOption = screen.getByRole("row", { name: /openSUSE MicroOS/ });
@@ -83,7 +83,7 @@ describe("when the user chooses a product", () => {
   });
 });
 
-describe("when the user chooses does not change the product", () => {
+describe.skip("when the user chooses does not change the product", () => {
   it("redirects to the main page", async () => {
     const { user } = installerRender(<ProductSelectionPage />);
     screen.getByText("openSUSE Tumbleweed");

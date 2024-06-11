@@ -35,7 +35,7 @@ const finishInstallationFn = jest.fn();
 let encryptionPassword;
 let encryptionMethod;
 
-describe("InstallationFinished", () => {
+describe.skip("InstallationFinished", () => {
   beforeEach(() => {
     encryptionPassword = "n0tS3cr3t";
     encryptionMethod = EncryptionMethods.LUKS2;

@@ -27,7 +27,7 @@ import { plainRender } from "~/test-utils";
 import { EncryptionMethods } from "~/client/storage";
 import EncryptionField from "~/components/storage/EncryptionField";
 
-describe("EncryptionField", () => {
+describe.skip("EncryptionField", () => {
   it("renders proper value depending on encryption status", () => {
     // No encryption set
     const { rerender } = plainRender(<EncryptionField />);

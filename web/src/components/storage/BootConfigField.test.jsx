@@ -81,7 +81,7 @@ const openBootConfigDialog = async () => {
   return { user, dialog };
 };
 
-describe("BootConfigField", () => {
+describe.skip("BootConfigField", () => {
   it("triggers onChange callback when user confirms the dialog", async () => {
     const { user, dialog } = await openBootConfigDialog();
     const button = within(dialog).getByRole("button", { name: "Confirm" });

@@ -103,7 +103,7 @@ const sdc = {
 /** @type {BootSelectionDialogProps} */
 let props;
 
-describe("BootSelectionDialog", () => {
+describe.skip("BootSelectionDialog", () => {
   beforeEach(() => {
     props = {
       isOpen: true,

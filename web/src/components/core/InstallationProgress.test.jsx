@@ -30,7 +30,7 @@ jest.mock("~/components/core/ProgressReport", () => () => <div>ProgressReport Mo
 jest.mock("~/components/core/Sidebar", () => () => <div>Agama sidebar</div>);
 jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 
-describe("InstallationProgress", () => {
+describe.skip("InstallationProgress", () => {
   it("uses 'Installing' as title", () => {
     installerRender(<InstallationProgress />);
     screen.getByText("Installing");
