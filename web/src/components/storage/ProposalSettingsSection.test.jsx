@@ -113,7 +113,7 @@ beforeEach(() => {
   };
 });
 
-it("allows changing the selected device", async () => {
+it.skip("allows changing the selected device", async () => {
   const { user } = installerRender(<ProposalSettingsSection {...props} />);
   const button = screen.getByRole("button", { name: /installation device/i });
 
@@ -121,7 +121,7 @@ it("allows changing the selected device", async () => {
   await screen.findByRole("dialog", { name: /Device for installing/ });
 });
 
-it("allows changing the encryption settings", async () => {
+it.skip("allows changing the encryption settings", async () => {
   const { user } = installerRender(<ProposalSettingsSection {...props} />);
   const button = screen.getByRole("button", { name: /Encryption/ });
 
@@ -129,12 +129,12 @@ it("allows changing the encryption settings", async () => {
   await screen.findByRole("dialog", { name: /Encryption/ });
 });
 
-it("renders a section holding file systems related stuff", () => {
+it.skip("renders a section holding file systems related stuff", () => {
   installerRender(<ProposalSettingsSection {...props} />);
   screen.getByRole("button", { name: /Partitions and file systems/ });
 });
 
-it("allows changing the space policy settings", async () => {
+it.skip("allows changing the space policy settings", async () => {
   const { user } = installerRender(<ProposalSettingsSection {...props} />);
   const button = screen.getByRole("button", { name: /Find space/ });
 

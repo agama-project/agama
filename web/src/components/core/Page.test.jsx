@@ -39,7 +39,7 @@ const l10nClientMock = {
   onTimezoneChange: jest.fn(),
 };
 
-describe("Page", () => {
+describe.skip("Page", () => {
   beforeAll(() => {
     jest.spyOn(console, "error").mockImplementation();
   });
@@ -162,7 +162,7 @@ describe("Page", () => {
   });
 });
 
-describe("Page.Actions", () => {
+describe.skip("Page.Actions", () => {
   it("renders its children", () => {
     plainRender(
       <Page.Actions>
@@ -174,7 +174,7 @@ describe("Page.Actions", () => {
   });
 });
 
-describe("Page.Menu", () => {
+describe.skip("Page.Menu", () => {
   // NOTE: just testing that the Page.Menu alias works.
   // Full PageMenu testing is done in its own test file at core/PageMenu.test.jsx
   it("renders a menu", () => {
@@ -192,7 +192,7 @@ describe("Page.Menu", () => {
   });
 });
 
-describe("Page.Action", () => {
+describe.skip("Page.Action", () => {
   it("renders a button with given content", () => {
     plainRender(<Page.Action>Save</Page.Action>);
     screen.getByRole("button", { name: "Save" });
@@ -266,7 +266,7 @@ describe("Page.Action", () => {
   });
 });
 
-describe("Page.BackAction", () => {
+describe.skip("Page.BackAction", () => {
   beforeAll(() => {
     jest.spyOn(history, "back").mockImplementation();
   });

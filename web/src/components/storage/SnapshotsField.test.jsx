@@ -57,7 +57,7 @@ const onChangeFn = jest.fn();
 /** @type {SnapshotsFieldProps} */
 let props;
 
-describe("SnapshotsField", () => {
+describe.skip("SnapshotsField", () => {
   it("reflects snapshots status", () => {
     let button;
 

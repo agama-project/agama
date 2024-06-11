@@ -52,7 +52,7 @@ describe("About", () => {
 
   it("allows setting its button variant", () => {
     plainRender(<About buttonVariant="tertiary" />);
-    const button = screen.getByRole("button", { name: "About Agama" });
+    const button = screen.getByRole("button", { name: "About" });
     expect(button.classList.contains("pf-m-tertiary")).toBe(true);
   });
 

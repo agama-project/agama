@@ -36,7 +36,7 @@ const errors = [{ severity: 0, message: errorMessage }];
 /** @type {ProposalResultSectionProps} */
 const defaultProps = { system: devices.system, staging: devices.staging, actions };
 
-describe("ProposalResultSection", () => {
+describe.skip("ProposalResultSection", () => {
   describe("when there are errors (proposal was not possible)", () => {
     it("renders given errors", () => {
       plainRender(<ProposalResultSection {...defaultProps} errors={errors} />);

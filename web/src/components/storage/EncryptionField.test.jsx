@@ -44,7 +44,7 @@ describe("EncryptionField", () => {
 
   it("allows opening the encryption settings dialog", async () => {
     const { user } = plainRender(<EncryptionField />);
-    const button = screen.getByRole("button", { name: /Encryption/ });
+    const button = screen.getByRole("button", { name: /Enable/ });
     await user.click(button);
     const dialog = await screen.findByRole("dialog");
     within(dialog).getByRole("heading", { name: "Encryption" });
