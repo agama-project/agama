@@ -23,10 +23,9 @@
 
 import React, { useEffect, useState } from "react";
 import { useHref } from "react-router-dom";
-
+import { Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
-import { If, Page } from "~/components/core";
 
 /**
  * Internal component for building the link to Storage/DASD page
@@ -91,7 +90,7 @@ const ISCSILink = () => {
  *
  * @param {ProposalMenuProps} props
  */
-export default function ProposalPageMenu ({ label }) {
+export default function ProposalPageMenu({ label }) {
   const [showDasdLink, setShowDasdLink] = useState(false);
   const [showZFCPLink, setShowZFCPLink] = useState(false);
   const { storage: client } = useInstallerClient();
@@ -104,9 +103,9 @@ export default function ProposalPageMenu ({ label }) {
   return (
     <Page.Menu label={label}>
       <Page.Menu.Options>
-        <If condition={showDasdLink} then={<DASDLink />} />
+        {showDasdLink && <DASDLink />}
         <ISCSILink />
-        <If condition={showZFCPLink} then={<ZFCPLink />} />
+        {showZFCPLink && <ZFCPLink />}
       </Page.Menu.Options>
     </Page.Menu>
   );

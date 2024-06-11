@@ -20,12 +20,11 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-
-import { partition, useCancellablePromise } from "~/utils";
-import { If, Popup } from "~/components/core";
+import { Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
+import { useInstallerClient } from "~/context/installer";
+import { partition, useCancellablePromise } from "~/utils";
 
 /**
  * Item representing an issue.
@@ -38,10 +37,7 @@ const IssueItem = ({ issue }) => {
   return (
     <li>
       {issue.description}
-      <If
-        condition={issue.details}
-        then={<pre>{issue.details}</pre>}
-      />
+      {issue.details && <pre>{issue.details}</pre>}
     </li>
   );
 };
@@ -108,11 +104,7 @@ export default function IssuesDialog({ isOpen = false, onClose, sectionId, title
       title={title}
       data-content="issues-summary"
     >
-      <If
-        condition={isLoading}
-        then={<Icon name="loading" className="icon-xxxl" />}
-        else={<IssueItems issues={issues} />}
-      />
+      {isLoading ? <Icon name="loading" className="icon-xxxl" /> : <IssueItems issues={issues} />}
       <Popup.Actions>
         <Popup.Confirm onClick={onClose} autoFocus>{_("Close")}</Popup.Confirm>
       </Popup.Actions>

@@ -23,7 +23,7 @@ import React from "react";
 import { createHashRouter } from "react-router-dom";
 import App from "~/App";
 import Protected from "~/Protected";
-import Root from "~/Root";
+import MainLayout from "~/MainLayout";
 import SimpleLayout from "./SimpleLayout";
 import { Page, LoginPage } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
@@ -56,7 +56,7 @@ const protectedRoutes = [
     element: <App />,
     children: [
       {
-        element: <Root />,
+        element: <MainLayout />,
         children: [
           {
             index: true,

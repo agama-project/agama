@@ -20,14 +20,13 @@
  */
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Alert, Form, FormGroup } from "@patternfly/react-core";
-
-import { _ } from "~/i18n";
-import { sprintf } from "sprintf-js";
-import { If, EmailInput, Page, PasswordInput } from "~/components/core";
+import { useNavigate } from "react-router-dom";
+import { EmailInput, Page, PasswordInput } from "~/components/core";
 import { useProduct } from "~/context/product";
 import { useInstallerClient } from "~/context/installer";
+import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 
 /**
  * Form for registering a product.
@@ -65,14 +64,12 @@ export default function ProductRegistrationPage() {
     <>
       <Page.MainContent>
         <h3>{sprintf(_("Register %s"), selectedProduct.name)}</h3>
-        <If
-          condition={error}
-          then={
-            <Alert variant="warning" isInline title={_("Something went wrong")}>
-              <p>{error}</p>
-            </Alert>
-          }
-        />
+        {
+          error &&
+          <Alert variant="warning" isInline title={_("Something went wrong")}>
+            <p>{error}</p>
+          </Alert>
+        }
         <Form id="productRegistrationForm" onSubmit={onSubmit}>
           <FormGroup fieldId="regCode" label={_("Registration code")} isRequired>
             <PasswordInput id="regCode" value={code} onChange={(_, v) => setCode(v)} />

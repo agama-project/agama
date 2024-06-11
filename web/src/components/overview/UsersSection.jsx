@@ -20,7 +20,7 @@
  */
 
 import React, { useReducer, useEffect } from "react";
-import { If, Em, Section, SectionSkeleton } from "~/components/core";
+import { Em, Section, SectionSkeleton } from "~/components/core";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
@@ -81,11 +81,11 @@ export default function UsersSection({ showErrors }) {
   const UserSummary = () => {
     return (
       <div>
-        <If
-          condition={user?.userName !== ""}
-          then={<>{msg1}<Em>{state.user.userName}</Em>{msg2}</>}
-          else={<>{_("No user defined yet")}</>}
-        />
+        {
+          user?.userName !== ""
+            ? <>{msg1}<Em>{state.user.userName}</Em>{msg2}</>
+            : _("No user defined yet")
+        }
       </div>
     );
   };
@@ -98,10 +98,10 @@ export default function UsersSection({ showErrors }) {
 
     return (
       <div>
-        <If condition={both} then={<>{_("Root authentication set for using both, password and public SSH Key")}</>} />
-        <If condition={none} then={<>{_("No root authentication method defined")}</>} />
-        <If condition={onlyPassword} then={<>{_("Root authentication set for using password")}</>} />
-        <If condition={onlySSHKey} then={<>{_("Root authentication set for using public SSH Key")}</>} />
+        {both && _("Root authentication set for using both, password and public SSH Key")}
+        {none && _("No root authentication method defined")}
+        {onlyPassword && _("Root authentication set for using password")}
+        {onlySSHKey && _("Root authentication set for using public SSH Key")}
       </div>
     );
   };
@@ -124,7 +124,7 @@ export default function UsersSection({ showErrors }) {
       path="/users"
       id="users"
     >
-      { state.busy ? <SectionSkeleton /> : <Summary /> }
+      {state.busy ? <SectionSkeleton /> : <Summary />}
     </Section>
   );
 }

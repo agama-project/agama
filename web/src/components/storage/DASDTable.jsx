@@ -29,12 +29,11 @@ import {
   Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
 } from '@patternfly/react-core';
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
-import { sort } from 'fast-sort';
-
-import { _ } from "~/i18n";
 import { Icon } from "~/components/layout";
-import { If, SectionSkeleton } from "~/components/core";
+import { SectionSkeleton } from "~/components/core";
+import { _ } from "~/i18n";
 import { hex } from "~/utils";
+import { sort } from 'fast-sort';
 import { useInstallerClient } from "~/context/installer";
 
 // FIXME: please, note that this file still requiring refinements until reach a
@@ -110,17 +109,17 @@ const Actions = ({ devices, isDisabled }) => {
       )}
     >
       <DropdownList>
-        { /** TRANSLATORS: drop down menu action, activate the device */ }
+        { /** TRANSLATORS: drop down menu action, activate the device */}
         <Action key="activate" onClick={activate}>{_("Activate")}</Action>
-        { /** TRANSLATORS: drop down menu action, deactivate the device */ }
+        { /** TRANSLATORS: drop down menu action, deactivate the device */}
         <Action key="deactivate" onClick={deactivate}>{_("Deactivate")}</Action>
         <Divider key="first-separator" />
-        { /** TRANSLATORS: drop down menu action, enable DIAG access method */ }
+        { /** TRANSLATORS: drop down menu action, enable DIAG access method */}
         <Action key="set_diag_on" onClick={setDiagOn}>{_("Set DIAG On")}</Action>
-        { /** TRANSLATORS: drop down menu action, disable DIAG access method */ }
+        { /** TRANSLATORS: drop down menu action, disable DIAG access method */}
         <Action key="set_diag_off" onClick={setDiagOff}>{_("Set DIAG Off")}</Action>
         <Divider key="second-separator" />
-        { /** TRANSLATORS: drop down menu action, format the disk */ }
+        { /** TRANSLATORS: drop down menu action, format the disk */}
         <Action key="format" onClick={format}>{_("Format")}</Action>
       </DropdownList>
     </Dropdown>
@@ -188,6 +187,29 @@ export default function DASDTable({ state, dispatch }) {
     dispatch({ type: "SET_MAX_CHANNEL", payload: { maxChannel: "" } });
   };
 
+  const Content = () => {
+    if (state.isLoading) return <SectionSkeleton />;
+
+    return (
+      <Table variant="compact">
+        <Thead>
+          <Tr>
+            <Th select={{ onSelect: (_event, isSelecting) => selectAll(isSelecting), isSelected: filteredDevices.length === state.selectedDevices.length }} />
+            {columns.map((column, index) => <Th key={column.id} sort={getSortParams(index)}>{column.label}</Th>)}
+          </Tr>
+        </Thead>
+        <Tbody>
+          {sortedDevices.map((device, rowIndex) => (
+            <Tr key={device.id}>
+              <Td select={{ rowIndex, onSelect: (_event, isSelecting) => selectDevice(device, isSelecting), isSelected: selectedDevicesIds.includes(device.id), isDisabled: false }} />
+              {columns.map(column => <Td key={column.id} dataLabel={column.label}>{columnData(device, column)}</Td>)}
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+    );
+  };
+
   return (
     <>
       <Toolbar>
@@ -202,7 +224,7 @@ export default function DASDTable({ state, dispatch }) {
                   placeholder={_("Filter by min channel")}
                   onChange={onMinChannelFilterChange}
                 />
-                { state.minChannel !== "" &&
+                {state.minChannel !== "" &&
                   <TextInputGroupUtilities>
                     <Button
                       variant="plain"
@@ -211,7 +233,7 @@ export default function DASDTable({ state, dispatch }) {
                     >
                       <Icon name="backspace" size="s" />
                     </Button>
-                  </TextInputGroupUtilities> }
+                  </TextInputGroupUtilities>}
               </TextInputGroup>
             </ToolbarItem>
             <ToolbarItem>
@@ -223,7 +245,7 @@ export default function DASDTable({ state, dispatch }) {
                   placeholder={_("Filter by max channel")}
                   onChange={onMaxChannelFilterChange}
                 />
-                { state.maxChannel !== "" &&
+                {state.maxChannel !== "" &&
                   <TextInputGroupUtilities>
                     <Button
                       variant="plain"
@@ -232,7 +254,7 @@ export default function DASDTable({ state, dispatch }) {
                     >
                       <Icon name="backspace" size="s" />
                     </Button>
-                  </TextInputGroupUtilities> }
+                  </TextInputGroupUtilities>}
               </TextInputGroup>
             </ToolbarItem>
 
@@ -245,28 +267,7 @@ export default function DASDTable({ state, dispatch }) {
         </ToolbarContent>
       </Toolbar>
 
-      <If
-        condition={state.isLoading}
-        then={<SectionSkeleton />}
-        else={
-          <Table variant="compact">
-            <Thead>
-              <Tr>
-                <Th select={{ onSelect: (_event, isSelecting) => selectAll(isSelecting), isSelected: filteredDevices.length === state.selectedDevices.length }} />
-                { columns.map((column, index) => <Th key={column.id} sort={getSortParams(index)}>{column.label}</Th>) }
-              </Tr>
-            </Thead>
-            <Tbody>
-              { sortedDevices.map((device, rowIndex) => (
-                <Tr key={device.id}>
-                  <Td select={{ rowIndex, onSelect: (_event, isSelecting) => selectDevice(device, isSelecting), isSelected: selectedDevicesIds.includes(device.id), isDisabled: false }} />
-                  { columns.map(column => <Td key={column.id} dataLabel={column.label}>{columnData(device, column)}</Td>) }
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        }
-      />
+      <Content />
     </>
   );
 }

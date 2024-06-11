@@ -28,12 +28,8 @@
 import React from "react";
 import {
   Button,
-  DataList,
-  DataListItem,
-  DataListItemRow,
-  DataListItemCells,
-  DataListCell,
-  DataListAction,
+  DataList, DataListItem, DataListItemRow, DataListItemCells, DataListCell, DataListAction,
+  Flex
 } from "@patternfly/react-core";
 
 import { FormLabel } from "~/components/core";
@@ -120,12 +116,12 @@ export default function AddressesDataList({
 
   return (
     <>
-      <div className="split justify-between">
+      <Flex justifyContent={{ default: "justifyContentSpaceBetween" }}>
         <FormLabel isRequired={!allowEmpty}>{_("Addresses")}</FormLabel>
         <Button size="sm" variant="secondary" onClick={addAddress}>
           {newAddressButtonText}
         </Button>
-      </div>
+      </Flex>
       <DataList isCompact gridBreakpoint="none" title={_("Addresses data list")}>
         {addresses.map(address => renderAddress(address))}
       </DataList>

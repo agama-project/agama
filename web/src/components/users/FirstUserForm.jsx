@@ -20,32 +20,27 @@
  */
 
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { _ } from "~/i18n";
-import { useCancellablePromise } from "~/utils";
-import { useInstallerClient } from "~/context/installer";
 import {
   Alert,
   Checkbox,
-  Form,
-  FormGroup,
+  Form, FormGroup,
   TextInput,
-  Menu,
-  MenuContent,
-  MenuList,
-  MenuItem,
-  Card,
-  Grid,
-  GridItem,
+  Menu, MenuContent, MenuList, MenuItem,
+  Grid, GridItem,
   Stack,
   Switch
 } from "@patternfly/react-core";
-
+import { useNavigate } from "react-router-dom";
 import { Loading } from "~/components/layout";
-import { PasswordAndConfirmationInput, If, Page } from '~/components/core';
+import { PasswordAndConfirmationInput, Page } from '~/components/core';
+import { _ } from "~/i18n";
+import { useCancellablePromise } from "~/utils";
+import { useInstallerClient } from "~/context/installer";
 import { suggestUsernames } from '~/components/users/utils';
 
-const UsernameSuggestions = ({ entries, onSelect, setInsideDropDown, focusedIndex = -1 }) => {
+const UsernameSuggestions = ({ isOpen = false, entries, onSelect, setInsideDropDown, focusedIndex = -1 }) => {
+  if (!isOpen) return;
+
   return (
     <Menu
       aria-label={_("Username suggestion dropdown")}
@@ -243,16 +238,12 @@ export default function FirstUserForm() {
                       onKeyDown={handleKeyDown}
                       onBlur={() => !insideDropDown && setShowSuggestions(false)}
                     />
-                    <If
-                      condition={showSuggestions}
-                      then={
-                        <UsernameSuggestions
-                          entries={suggestions}
-                          onSelect={onSuggestionSelected}
-                          setInsideDropDown={setInsideDropDown}
-                          focusedIndex={focusedIndex}
-                        />
-                      }
+                    <UsernameSuggestions
+                      isOpen={showSuggestions}
+                      entries={suggestions}
+                      onSelect={onSuggestionSelected}
+                      setInsideDropDown={setInsideDropDown}
+                      focusedIndex={focusedIndex}
                     />
                   </FormGroup>
                 </Stack>
