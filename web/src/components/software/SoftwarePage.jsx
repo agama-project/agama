@@ -24,7 +24,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { ButtonLink, Page, Section, SectionSkeleton } from "~/components/core";
+import { ButtonLink, CardField, Page, Section, SectionSkeleton } from "~/components/core";
 import { UsedSize } from "~/components/software";
 import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
@@ -81,35 +81,23 @@ function buildPatterns(patterns, selection) {
  */
 const SelectedPatternsList = ({ patterns }) => {
   const selected = patterns.filter(p => p.selectedBy !== SelectedBy.NONE);
-  let description;
 
   if (selected.length === 0) {
-    description = <>{_("No additional software was selected.")}</>;
-  } else {
-    description = (
-      <>
-        <p>{_("The following software patterns are selected for installation:")}</p>
-        <DescriptionList>
-          {selected.map(pattern => (
-            <DescriptionListGroup key={pattern.name}>
-              <DescriptionListTerm>{pattern.summary}</DescriptionListTerm>
-              <DescriptionListDescription>{pattern.description}</DescriptionListDescription>
-            </DescriptionListGroup>
-          ))}
-        </DescriptionList>
-      </>
-    );
+    return <>{_("No additional software was selected.")}</>;
   }
 
   return (
-    <>
-      <Stack hasGutter>
-        {description}
-        <ButtonLink to="patterns/select" isPrimary={selected.length === 0}>
-          {_("Change selection")}
-        </ButtonLink>
-      </Stack>
-    </>
+    <Stack hasGutter>
+      <p>{_("The following software patterns are selected for installation:")}</p>
+      <DescriptionList>
+        {selected.map(pattern => (
+          <DescriptionListGroup key={pattern.name}>
+            <DescriptionListTerm>{pattern.summary}</DescriptionListTerm>
+            <DescriptionListDescription>{pattern.description}</DescriptionListDescription>
+          </DescriptionListGroup>
+        ))}
+      </DescriptionList>
+    </Stack>
   );
 };
 
@@ -164,25 +152,32 @@ function SoftwarePage() {
   return (
     <>
       <Page.Header>
-        <h2>{_("Software selection")}</h2>
+        <h2>{_("Software")}</h2>
       </Page.Header>
 
       <Page.MainContent>
         <Grid hasGutter>
           <GridItem sm={12} xl={6}>
-            <Card isRounded>
+            <CardField
+               label={_("Selected patterns")}
+               actions={
+                 <ButtonLink to="patterns/select" isPrimary={patterns.length === 0}>
+                   {_("Change selection")}
+                 </ButtonLink>
+               }
+            >
               <CardBody>
                 <SelectedPatternsList patterns={patterns} />
               </CardBody>
-            </Card>
+            </CardField>
           </GridItem>
 
           <GridItem sm={12} xl={6}>
-            <Card isRounded>
+            <CardField>
               <CardBody>
                 <UsedSize size={proposal.size} />
               </CardBody>
-            </Card>
+            </CardField>
           </GridItem>
         </Grid>
       </Page.MainContent>
