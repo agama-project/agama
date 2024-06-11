@@ -28,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Card,
   CardBody,
+  Flex,
   Form, FormGroup,
   PageSection,
   Radio,
@@ -40,6 +41,7 @@ import { deviceChildren } from "~/components/storage/utils";
 import { Loading } from "~/components/layout";
 import { Page } from "~/components/core";
 import { DeviceSelectorTable } from "~/components/storage";
+import DevicesTechMenu from "./DevicesTechMenu";
 import { compact, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 
@@ -174,7 +176,7 @@ devices.").split(/[[\]]/);
           </Card>
           <Card isRounded>
             <CardBody>
-              <FormGroup>
+              <FormGroup isStack>
                 <Stack
                   id={SELECT_DISK_PANEL_ID}
                   aria-expanded={isTargetDisk}
@@ -221,6 +223,11 @@ devices.").split(/[[\]]/);
                     />
                   </div>
                 </Stack>
+
+                <Flex gap={{ default: "gapXs" }} justifyContent={{ default: "justifyContentCenter" }}>
+                  {_("Prepare more devices by configuring advanced")}
+                  <DevicesTechMenu label={_("storage techs")} />
+                </Flex>
               </FormGroup>
             </CardBody>
           </Card>
