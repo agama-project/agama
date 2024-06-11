@@ -298,6 +298,7 @@ fn ip_config_to_ipv4_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
         ("address-data", address_data),
         ("dns-data", dns_data),
         ("dns-search", ip_config.dns_searchlist.clone().into()),
+        ("ignore-auto-dns", ip_config.ignore_auto_dns.into()),
         ("method", ip_config.method4.to_string().into()),
     ]);
 
@@ -344,6 +345,7 @@ fn ip_config_to_ipv6_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
         ("address-data", address_data),
         ("dns-data", dns_data),
         ("dns-search", ip_config.dns_searchlist.clone().into()),
+        ("ignore-auto-dns", ip_config.ignore_auto_dns.into()),
         ("method", ip_config.method6.to_string().into()),
     ]);
 
@@ -734,6 +736,10 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Option<IpConfig> {
             }
         }
 
+        if let Some(ignore_auto_dns) = ipv4.get("ignore-auto-dns") {
+            ip_config.ignore_auto_dns = ignore_auto_dns.try_into().ok()?;
+        }
+
         if let Some(route_data) = ipv4.get("route-data") {
             ip_config.routes4 = routes_from_dbus(route_data);
         }
@@ -770,6 +776,10 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Option<IpConfig> {
                     ip_config.dns_searchlist.push(searchdomain);
                 }
             }
+        }
+
+        if let Some(ignore_auto_dns) = ipv6.get("ignore-auto-dns") {
+            ip_config.ignore_auto_dns = ignore_auto_dns.try_into().ok()?;
         }
 
         if let Some(route_data) = ipv6.get("route-data") {
@@ -1039,6 +1049,7 @@ mod test {
                 "dns-search".to_string(),
                 Value::new(vec!["suse.com", "example.com"]).to_owned(),
             ),
+            ("ignore-auto-dns".to_string(), Value::new(true).to_owned()),
             (
                 "route-data".to_string(),
                 Value::new(route_v4_data).to_owned(),
@@ -1125,6 +1136,7 @@ mod test {
         assert!(ip_config
             .dns_searchlist
             .contains(&"example.com".to_string()));
+        assert!(ip_config.ignore_auto_dns);
         assert_eq!(ip_config.method4, Ipv4Method::Auto);
         assert_eq!(ip_config.method6, Ipv6Method::Auto);
         assert_eq!(
@@ -1622,6 +1634,11 @@ mod test {
         assert_eq!(dns_searchlist.len(), 2);
         assert!(dns_searchlist.contains(&"suse.com".to_string()));
         assert!(dns_searchlist.contains(&"suse.de".to_string()));
+        assert!(!ipv4_dbus
+            .get("ignore-auto-dns")
+            .unwrap()
+            .downcast_ref::<bool>()
+            .unwrap());
 
         let ipv6_dbus = conn_dbus.get("ipv6").unwrap();
         let gateway6: &str = ipv6_dbus.get("gateway").unwrap().downcast_ref().unwrap();
@@ -1660,5 +1677,10 @@ mod test {
         assert_eq!(dns_searchlist.len(), 2);
         assert!(dns_searchlist.contains(&"suse.com".to_string()));
         assert!(dns_searchlist.contains(&"suse.de".to_string()));
+        assert!(!ipv6_dbus
+            .get("ignore-auto-dns")
+            .unwrap()
+            .downcast_ref::<bool>()
+            .unwrap());
     }
 }
