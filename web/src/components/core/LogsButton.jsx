@@ -91,7 +91,8 @@ const LogsButton = ({ ...props }) => {
   return (
     <>
       <Button
-        variant="tertiary"
+        variant="link"
+        isInline
         onClick={collectAndDownload}
         isLoading={isCollecting}
         isDisabled={isCollecting}

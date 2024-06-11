@@ -23,7 +23,7 @@
 
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Button, Stack } from "@patternfly/react-core";
+import { Button, Card, CardBody, Flex } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { LogsButton, Popup } from "~/components/core";
 import { InstallerLocaleSwitcher, InstallerKeymapSwitcher } from "~/components/l10n";
@@ -61,11 +61,11 @@ export default function InstallerOptions() {
         isOpen={isOpen}
         title={_("Installer options")}
       >
-        <Stack hasGutter>
+        <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
           <InstallerLocaleSwitcher />
           <InstallerKeymapSwitcher />
           <LogsButton />
-        </Stack>
+        </Flex>
         <Popup.Actions>
           <Popup.Confirm onClick={close} autoFocus>{_("Close")}</Popup.Confirm>
         </Popup.Actions>
