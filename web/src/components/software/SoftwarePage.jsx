@@ -22,17 +22,16 @@
 // @ts-check
 
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
-import { ButtonLink, CardField, Page, Section, SectionSkeleton } from "~/components/core";
-import UsedSize from "./UsedSize";
 import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
+import { useIssues } from "~/context/issues";
 import { BUSY } from "~/client/status";
 import { _ } from "~/i18n";
+import { ButtonLink, CardField, IssuesHint, Page, SectionSkeleton } from "~/components/core";
+import UsedSize from "./UsedSize";
 import { SelectedBy } from "~/client/software";
 import {
-  Card,
   CardBody,
   DescriptionList,
   DescriptionListDescription,
@@ -109,6 +108,7 @@ const SelectedPatternsList = ({ patterns }) => {
  * @returns {JSX.Element}
  */
 function SoftwarePage() {
+  const { software: issues } = useIssues();
   const [status, setStatus] = useState(BUSY);
   const [patterns, setPatterns] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -157,6 +157,9 @@ function SoftwarePage() {
 
       <Page.MainContent>
         <Grid hasGutter>
+          <GridItem sm={12}>
+            <IssuesHint issues={issues} />
+          </GridItem>
           <GridItem sm={12} xl={6}>
             <CardField
                label={_("Selected patterns")}
