@@ -85,11 +85,10 @@ const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
  */
 export default function NetworkPage() {
   const { network: client } = useInstallerClient();
-  const initialConnections = useLoaderData();
+  const { connections: initialConnections, settings } = useLoaderData();
   const [connections, setConnections] = useState(initialConnections);
   const [devices, setDevices] = useState(undefined);
   const [selectedConnection, setSelectedConnection] = useState(null);
-  const [wifiScanSupported, setWifiScanSupported] = useState(false);
   const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
 
   const openWifiSelector = () => setWifiSelectorOpen(true);
@@ -125,13 +124,6 @@ export default function NetworkPage() {
   }, [client, devices]);
 
   useEffect(() => {
-    if (connections !== undefined) return;
-
-    client.settings().then((s) => setWifiScanSupported(s.wireless_enabled));
-    // client.connections().then(setConnections);
-  }, [client, connections]);
-
-  useEffect(() => {
     if (devices !== undefined) return;
 
     client.devices().then(setDevices);
@@ -158,7 +150,7 @@ export default function NetworkPage() {
 
     if (wifiConnections.length === 0) {
       return (
-        <NoWifiConnections wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
+        <NoWifiConnections wifiScanSupported={settings.wireless_enabled} openWifiSelector={openWifiSelector} />
       );
     }
 
@@ -183,7 +175,7 @@ export default function NetworkPage() {
             <h2>{_("Network")}</h2>
           </FlexItem>
           <If
-            condition={wifiScanSupported}
+            condition={settings.wireless_enabled}
             then={
               <FlexItem align={{ default: "alignRight" }}>
                 <Button variant="secondary" onClick={openWifiSelector}>
@@ -215,7 +207,7 @@ export default function NetworkPage() {
       </Page.MainContent>
 
       <If
-        condition={wifiScanSupported}
+        condition={settings.wireless_enabled}
         then={<WifiSelector isOpen={wifiSelectorOpen} onClose={closeWifiSelector} />}
       />
     </>

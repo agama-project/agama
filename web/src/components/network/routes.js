@@ -31,9 +31,10 @@ import { createDefaultClient } from "~/client";
 const client = await createDefaultClient();
 
 const loaders = {
-  connections: async () => {
+  all: async () => {
     const connections = await client.network.connections();
-    return connections;
+    const settings = await client.network.settings();
+    return { connections, settings };
   },
   connection: async ({ params }) => {
     const connections = await client.network.connections();
@@ -49,7 +50,7 @@ const routes = {
     icon: "settings_ethernet"
   },
   children: [
-    { index: true, element: <NetworkPage />, loader: loaders.connections },
+    { index: true, element: <NetworkPage />, loader: loaders.all },
     {
       path: "connections/:id/edit",
       element: <IpSettingsForm />,
