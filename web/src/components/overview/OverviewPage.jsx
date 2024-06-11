@@ -53,7 +53,7 @@ const IssuesList = ({ issues }) => {
     issues.forEach((issue, idx) => {
       const link = (
         <ListItem key={idx}>
-          <Link to={scope}>{issue.description}</Link>
+          <Link to={`/${scope}`}>{issue.description}</Link>
         </ListItem>
       );
       list.push(link);
