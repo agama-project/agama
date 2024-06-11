@@ -32,7 +32,7 @@ import {
 } from "@patternfly/react-core";
 import { useProduct } from "~/context/product";
 import { useInstallerClient } from "~/context/installer";
-import { Navigate, Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { CardField, EmptyState, Page, InstallButton } from "~/components/core";
 import L10nSection from "./L10nSection";
 import StorageSection from "./StorageSection";
@@ -72,12 +72,17 @@ const IssuesList = ({ issues }) => {
 };
 
 export default function OverviewPage() {
+  const { selectedProduct } = useProduct();
   const [issues, setIssues] = useState([]);
   const client = useInstallerClient();
 
   useEffect(() => {
     client.issues().then(setIssues);
   }, [client]);
+
+  if (selectedProduct === null) {
+    return <Navigate to="/products" />;
+  }
 
   return (
     <>
