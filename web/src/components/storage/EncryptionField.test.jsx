@@ -27,7 +27,7 @@ import { plainRender } from "~/test-utils";
 import { EncryptionMethods } from "~/client/storage";
 import EncryptionField from "~/components/storage/EncryptionField";
 
-describe.skip("EncryptionField", () => {
+describe("EncryptionField", () => {
   it("renders proper value depending on encryption status", () => {
     // No encryption set
     const { rerender } = plainRender(<EncryptionField />);
@@ -44,7 +44,7 @@ describe.skip("EncryptionField", () => {
 
   it("allows opening the encryption settings dialog", async () => {
     const { user } = plainRender(<EncryptionField />);
-    const button = screen.getByRole("button", { name: /Encryption/ });
+    const button = screen.getByRole("button", { name: /Enable/ });
     await user.click(button);
     const dialog = await screen.findByRole("dialog");
     within(dialog).getByRole("heading", { name: "Encryption" });
