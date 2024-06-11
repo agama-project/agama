@@ -186,7 +186,9 @@ export default function NetworkPage() {
             condition={wifiScanSupported}
             then={
               <FlexItem align={{ default: "alignRight" }}>
-                <Button onClick={openWifiSelector}>{_("Connect to a Wi-Fi network")}</Button>
+                <Button variant="secondary" onClick={openWifiSelector}>
+                  {_("Connect to a Wi-Fi network")}
+                </Button>
               </FlexItem>
             }
           />
