@@ -80,7 +80,7 @@ impl TryFrom<NmDeviceType> for DeviceType {
 
     fn try_from(value: NmDeviceType) -> Result<Self, Self::Error> {
         match value {
-            NmDeviceType(0) => Ok(DeviceType::Loopback),
+            NmDeviceType(32) => Ok(DeviceType::Loopback),
             NmDeviceType(1) => Ok(DeviceType::Ethernet),
             NmDeviceType(2) => Ok(DeviceType::Wireless),
             NmDeviceType(22) => Ok(DeviceType::Dummy),
