@@ -40,7 +40,7 @@ pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<(
     let command = parse_config_command(subcommand)?;
     match command {
         ConfigAction::Show => {
-            let model = store.load(None).await?;
+            let model = store.load().await?;
             print(model, std::io::stdout(), format)?;
             Ok(())
         }

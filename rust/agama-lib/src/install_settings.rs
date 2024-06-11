@@ -11,65 +11,6 @@ use std::default::Default;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::Path;
-use std::str::FromStr;
-
-/// Settings scopes
-///
-/// They are used to limit the reading/writing of settings. For instance, if the Scope::Users is
-/// given, only the data related to users (UsersStore) are read/written.
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum Scope {
-    /// User settings
-    Users,
-    /// Software settings
-    Software,
-    /// Storage settings
-    Storage,
-    /// Storage AutoYaST settings (for backward compatibility with AutoYaST profiles)
-    StorageAutoyast,
-    /// Network settings
-    Network,
-    /// Product settings
-    Product,
-    /// Localization settings
-    Localization,
-}
-
-impl Scope {
-    /// Returns known scopes
-    ///
-    // TODO: we can rely on strum so we do not forget to add them
-    pub fn all() -> [Scope; 7] {
-        [
-            Scope::Localization,
-            Scope::Network,
-            Scope::Product,
-            Scope::Software,
-            Scope::Storage,
-            Scope::StorageAutoyast,
-            Scope::Users,
-        ]
-    }
-}
-
-impl FromStr for Scope {
-    type Err = &'static str;
-
-    // Do not generate the StorageAutoyast scope. Note that storage AutoYaST settings will only be
-    // temporary available for importing an AutoYaST profile. But CLI should not allow modifying the
-    // storate AutoYaST settings.
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "users" => Ok(Self::Users),
-            "software" => Ok(Self::Software),
-            "storage" => Ok(Self::Storage),
-            "network" => Ok(Self::Network),
-            "product" => Ok(Self::Product),
-            "localization" => Ok(Self::Localization),
-            _ => Err("Unknown section"),
-        }
-    }
-}
 
 /// Installation settings
 ///
@@ -100,31 +41,5 @@ impl InstallSettings {
         let reader = BufReader::new(file);
         let data = serde_json::from_reader(reader)?;
         Ok(data)
-    }
-
-    pub fn defined_scopes(&self) -> Vec<Scope> {
-        let mut scopes = vec![];
-        if self.user.is_some() {
-            scopes.push(Scope::Users);
-        }
-        if self.storage.is_some() {
-            scopes.push(Scope::Storage);
-        }
-        if self.storage_autoyast.is_some() {
-            scopes.push(Scope::StorageAutoyast);
-        }
-        if self.software.is_some() {
-            scopes.push(Scope::Software);
-        }
-        if self.network.is_some() {
-            scopes.push(Scope::Network);
-        }
-        if self.product.is_some() {
-            scopes.push(Scope::Product);
-        }
-        if self.localization.is_some() {
-            scopes.push(Scope::Localization);
-        }
-        scopes
     }
 }
