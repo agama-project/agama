@@ -759,6 +759,8 @@ pub struct IpConfig {
     pub addresses: Vec<IpInet>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub nameservers: Vec<IpAddr>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub dns_searchlist: Vec<String>,
     pub gateway4: Option<IpAddr>,
     pub gateway6: Option<IpAddr>,
     pub routes4: Option<Vec<IpRoute>>,
