@@ -22,7 +22,7 @@
 // @ts-check
 
 import React from "react";
-import { Chip } from '@patternfly/react-core';
+import { Chip, Split } from '@patternfly/react-core';
 
 import { _ } from "~/i18n";
 import {
@@ -68,9 +68,9 @@ const deviceUsers = (item, targetDevices, volumes) => {
  */
 const DeviceUsage = ({ users }) => {
   return (
-    <div className="wrapped split">
+    <Split hasGutter isWrappable>
       {users.map((user, index) => <Chip key={index} isReadOnly>{user}</Chip>)}
-    </div>
+    </Split>
   );
 };
 
