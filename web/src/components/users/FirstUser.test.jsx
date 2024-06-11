@@ -44,9 +44,9 @@ let onUsersChangeFn = jest.fn();
 const openUserForm = async () => {
   const { user } = installerRender(<FirstUser />);
   await screen.findByText("No user defined yet.");
-  const button = await screen.findByRole("button", { name: "Define a user now" });
+  const button = await screen.findByText("Define a user now");
   await user.click(button);
-  const dialog = await screen.findByRole("dialog");
+  const dialog = await screen.findByLabelText("Username");
 
   return { user, dialog };
 };
@@ -68,10 +68,10 @@ beforeEach(() => {
 it.skip("allows defining a new user", async () => {
   const { user } = installerRender(<FirstUser />);
   await screen.findByText("No user defined yet.");
-  const button = await screen.findByRole("button", { name: "Define a user now" });
+  const button = await screen.findByText("Define a user now");
   await user.click(button);
 
-  const dialog = await screen.findByRole("dialog");
+  const dialog = await screen.findByRole("form");
 
   const fullNameInput = within(dialog).getByLabelText("Full name");
   await user.type(fullNameInput, "Jane Doe");
@@ -103,7 +103,7 @@ it.skip("allows defining a new user", async () => {
 
 it.skip("doest not allow to confirm the settings if the user name and the password are not provided", async () => {
   const { user } = installerRender(<FirstUser />);
-  const button = await screen.findByRole("button", { name: "Define a user now" });
+  const button = await screen.findByText("Define a user now");
   await user.click(button);
 
   const dialog = await screen.findByRole("dialog");

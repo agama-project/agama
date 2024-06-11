@@ -33,7 +33,12 @@ import {
   Menu,
   MenuContent,
   MenuList,
-  MenuItem
+  MenuItem,
+  Card,
+  Grid,
+  GridItem,
+  Stack,
+  Switch
 } from "@patternfly/react-core";
 
 import { Loading } from "~/components/layout";
@@ -79,17 +84,20 @@ export default function FirstUserForm() {
   const [insideDropDown, setInsideDropDown] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [suggestions, setSuggestions] = useState([]);
+  const [changePassword, setChangePassword] = useState(true);
   const usernameInputRef = useRef();
   const navigate = useNavigate();
   const passwordRef = useRef();
 
   useEffect(() => {
     cancellablePromise(client.users.getUser()).then(userValues => {
+      const editing = userValues.userName !== "";
       setState({
         load: true,
         user: userValues,
-        isEditing: userValues.username !== ""
+        isEditing: editing
       });
+      setChangePassword(!editing);
     });
   }, [client.users, cancellablePromise]);
 
@@ -123,8 +131,9 @@ export default function FirstUserForm() {
       return user;
     }, user);
 
-    // Preserve current password value if the user was not editing it.
-    if (state.isEditing && user.password === "") delete user.password;
+    if (!changePassword) {
+      delete user.password;
+    }
     delete user.passwordConfirmation;
     user.autologin = !!user.autologin;
 
@@ -191,68 +200,94 @@ export default function FirstUserForm() {
 
   return (
     <>
+      <Page.Header>
+        <h2>{state.isEditing ? _("Edit user") : _("Create user")}</h2>
+      </Page.Header>
+
       <Page.MainContent>
         <Form id="firstUserForm" onSubmit={onSubmit}>
           {errors.length > 0 &&
             <Alert variant="warning" isInline title={_("Something went wrong")}>
               {errors.map((e, i) => <p key={`error_${i}`}>{e}</p>)}
             </Alert>}
+          <Grid hasGutter>
+            <GridItem sm={12} xl={6} rowSpan={2}>
+              <Page.CardSection isFullHeight>
+                <Stack hasGutter>
+                  <FormGroup fieldId="userFullName" label={_("Full name")}>
+                    <TextInput
+                      id="userFullName"
+                      name="fullName"
+                      aria-label={_("User full name")}
+                      defaultValue={state.user.fullName}
+                      label={_("User full name")}
+                      onBlur={(e) => setSuggestions(suggestUsernames(e.target.value))}
+                    />
+                  </FormGroup>
 
-          <FormGroup fieldId="userFullName" label={_("Full name")}>
-            <TextInput
-              id="userFullName"
-              name="fullName"
-              aria-label={_("User full name")}
-              defaultValue={state.user.fullName}
-              label={_("User full name")}
-              onBlur={(e) => setSuggestions(suggestUsernames(e.target.value))}
-            />
-          </FormGroup>
-
-          <FormGroup
-            className="first-username-wrapper"
-            fieldId="userName"
-            label={_("Username")}
-            isRequired
-          >
-            <TextInput
-              id="userName"
-              name="userName"
-              aria-label={_("Username")}
-              ref={usernameInputRef}
-              defaultValue={state.user.userName}
-              label={_("Username")}
-              isRequired
-              onFocus={renderSuggestions}
-              onKeyDown={handleKeyDown}
-              onBlur={() => !insideDropDown && setShowSuggestions(false)}
-            />
-            <If
-              condition={showSuggestions}
-              then={
-                <UsernameSuggestions
-                  entries={suggestions}
-                  onSelect={onSuggestionSelected}
-                  setInsideDropDown={setInsideDropDown}
-                  focusedIndex={focusedIndex}
+                  <FormGroup
+                    className="first-username-wrapper"
+                    fieldId="userName"
+                    label={_("Username")}
+                    isRequired
+                  >
+                    <TextInput
+                      id="userName"
+                      name="userName"
+                      aria-label={_("Username")}
+                      ref={usernameInputRef}
+                      defaultValue={state.user.userName}
+                      label={_("Username")}
+                      isRequired
+                      onFocus={renderSuggestions}
+                      onKeyDown={handleKeyDown}
+                      onBlur={() => !insideDropDown && setShowSuggestions(false)}
+                    />
+                    <If
+                      condition={showSuggestions}
+                      then={
+                        <UsernameSuggestions
+                          entries={suggestions}
+                          onSelect={onSuggestionSelected}
+                          setInsideDropDown={setInsideDropDown}
+                          focusedIndex={focusedIndex}
+                        />
+                      }
+                    />
+                  </FormGroup>
+                </Stack>
+              </Page.CardSection>
+            </GridItem>
+            <GridItem sm={12} xl={6}>
+              <Page.CardSection>
+                <Stack hasGutter>
+                  {state.isEditing &&
+                    <Switch
+                      label={_("Change password")}
+                      isChecked={changePassword}
+                      onChange={() => setChangePassword(!changePassword)}
+                    />}
+                  <PasswordAndConfirmationInput
+                    inputRef={passwordRef}
+                    isDisabled={!changePassword}
+                    showErrors={false}
+                  />
+                </Stack>
+              </Page.CardSection>
+            </GridItem>
+            <GridItem sm={12} xl={6}>
+              <Page.CardSection>
+                <Checkbox
+                  aria-label={_("user autologin")}
+                  id="autologin"
+                  name="autologin"
+                  // TRANSLATORS: check box label
+                  label={_("Auto-login")}
+                  defaultChecked={state.user.autologin}
                 />
-              }
-            />
-          </FormGroup>
-
-          <PasswordAndConfirmationInput
-            inputRef={passwordRef}
-            showErrors={false}
-          />
-
-          <Checkbox
-            aria-label={_("user autologin")}
-            id="autologin"
-            name="autologin"
-            // TRANSLATORS: check box label
-            label={_("Auto-login")}
-            defaultChecked={state.user.autologin}
-          />
+              </Page.CardSection>
+            </GridItem>
+          </Grid>
         </Form>
       </Page.MainContent>
 
