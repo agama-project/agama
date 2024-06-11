@@ -1,15 +1,13 @@
+use std::io::{self, Read};
+
 use crate::{
     error::CliError,
     printers::{print, Format},
 };
 use agama_lib::{
-    auth::AuthToken,
-    connection,
-    install_settings::{InstallSettings, Scope},
-    Store as SettingsStore,
+    auth::AuthToken, connection, install_settings::InstallSettings, Store as SettingsStore,
 };
 use clap::Subcommand;
-use std::{collections::HashMap, error::Error, io, str::FromStr};
 
 #[derive(Subcommand, Debug)]
 pub enum ConfigCommands {
@@ -22,15 +20,12 @@ pub enum ConfigCommands {
     Show,
 
     /// Loads the configuration from a JSON file.
-    Load {
-        /// Local path to file with configuration. For schema see /usr/share/agama-cli/profile.json.schema
-        path: String,
-    },
+    Load,
 }
 
 pub enum ConfigAction {
     Show,
-    Load(String),
+    Load,
 }
 
 pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<()> {
@@ -46,16 +41,14 @@ pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<(
     match command {
         ConfigAction::Show => {
             let model = store.load(None).await?;
-            print(model, io::stdout(), format)?;
+            print(model, std::io::stdout(), format)?;
             Ok(())
         }
-        ConfigAction::Load(path) => {
-            let contents = std::fs::read_to_string(path)?;
+        ConfigAction::Load => {
+            let mut stdin = io::stdin();
+            let mut contents = String::new();
+            stdin.read_to_string(&mut contents)?;
             let result: InstallSettings = serde_json::from_str(&contents)?;
-            let scopes = result.defined_scopes();
-            // FIXME: merging should be implemented
-            // let mut model = store.load(Some(scopes)).await?;
-            // model.merge(&result);
             Ok(store.store(&result).await?)
         }
     }
@@ -64,54 +57,6 @@ pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<(
 fn parse_config_command(subcommand: ConfigCommands) -> Result<ConfigAction, CliError> {
     match subcommand {
         ConfigCommands::Show => Ok(ConfigAction::Show),
-        ConfigCommands::Load { path } => Ok(ConfigAction::Load(path)),
+        ConfigCommands::Load => Ok(ConfigAction::Load),
     }
-}
-
-/// Split the elements on '=' to make a hash of them.
-fn parse_keys_values(keys_values: Vec<String>) -> Result<HashMap<String, String>, CliError> {
-    let mut changes = HashMap::new();
-    for s in keys_values {
-        let Some((key, value)) = s.split_once('=') else {
-            return Err(CliError::MissingSeparator(s));
-        };
-        changes.insert(key.to_string(), value.to_string());
-    }
-    Ok(changes)
-}
-
-#[test]
-fn test_parse_keys_values() {
-    // happy path, make a hash out of the vec
-    let happy_in = vec!["one=first".to_string(), "two=second".to_string()];
-    let happy_out = HashMap::from([
-        ("one".to_string(), "first".to_string()),
-        ("two".to_string(), "second".to_string()),
-    ]);
-    let r = parse_keys_values(happy_in);
-    assert!(r.is_ok());
-    assert_eq!(r.unwrap(), happy_out);
-
-    // an empty list is fine
-    let empty_vec = Vec::<String>::new();
-    let empty_hash = HashMap::<String, String>::new();
-    let r = parse_keys_values(empty_vec);
-    assert!(r.is_ok());
-    assert_eq!(r.unwrap(), empty_hash);
-
-    // an empty member fails
-    let empty_string = vec!["".to_string(), "two=second".to_string()];
-    let r = parse_keys_values(empty_string);
-    assert!(r.is_err());
-    assert_eq!(
-        format!("{}", r.unwrap_err()),
-        "Missing the '=' separator in ''"
-    );
-}
-
-fn key_to_scope(key: &str) -> Result<Scope, Box<dyn Error>> {
-    if let Some((name, _)) = key.split_once('.') {
-        return Ok(Scope::from_str(name)?);
-    }
-    Err(Box::new(CliError::InvalidKeyName(key.to_string())))
 }
