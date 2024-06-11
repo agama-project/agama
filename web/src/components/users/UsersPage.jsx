@@ -22,18 +22,39 @@
 import React from "react";
 
 import { _ } from "~/i18n";
-import { Section } from "~/components/core";
+import { CardField, Page } from "~/components/core";
 import { FirstUser, RootAuthMethods } from "~/components/users";
+import { Card, CardBody, Grid, GridItem, Stack } from "@patternfly/react-core";
 
 export default function UsersPage() {
   return (
     <>
-      <Section title={_("User")} icon="person">
-        <FirstUser />
-      </Section>
-      <Section title={_("Root authentication")} icon="badge">
-        <RootAuthMethods />
-      </Section>
+      <Page.Header>
+        <h2>{_("Users")}</h2>
+      </Page.Header>
+
+      <Page.MainContent>
+        <Grid hasGutter>
+          <GridItem sm={12} xl={6}>
+            <CardField label={_("First user")}>
+              <CardBody>
+                <Stack hasGutter>
+                  <FirstUser />
+                </Stack>
+              </CardBody>
+            </CardField>
+          </GridItem>
+          <GridItem sm={12} xl={6}>
+            <CardField label={_("Root authentication")}>
+              <CardBody>
+                <Stack hasGutter>
+                  <RootAuthMethods />
+                </Stack>
+              </CardBody>
+            </CardField>
+          </GridItem>
+        </Grid>
+      </Page.MainContent>
     </>
   );
 }

@@ -20,7 +20,7 @@
  */
 
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
@@ -40,7 +40,7 @@ import {
 
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 
-import { RowActions, PasswordAndConfirmationInput, Popup, If } from '~/components/core';
+import { RowActions, PasswordAndConfirmationInput, Popup, If, ButtonLink } from '~/components/core';
 
 import { suggestUsernames } from '~/components/users/utils';
 
@@ -53,7 +53,7 @@ const UserNotDefined = ({ actionCb }) => {
           {_("Please, be aware that a user must be defined before installing the system to be able to log into it.")}
         </strong>
       </div>
-      <Link to="first">{_("Define a user now")}</Link>
+      <ButtonLink to="first" isPrimary>{_("Define a user now")}</ButtonLink>
     </div>
   );
 };
@@ -205,11 +205,12 @@ export default function FirstUser() {
 
   const isUserDefined = user?.userName && user?.userName !== "";
   const showErrors = () => ((errors || []).length > 0);
+  const navigate = useNavigate();
 
   const actions = [
     {
       title: _("Edit"),
-      onClick: (e) => openForm(e, EDIT_MODE)
+      onClick: () => navigate('/users/first/edit')
     },
     {
       title: _("Discard"),

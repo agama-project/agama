@@ -40,6 +40,13 @@ const routes = {
       handle: {
         name: _("Create or edit the first user")
       }
+    },
+    {
+      path: "first/edit",
+      element: <FirstUserForm />,
+      handle: {
+        name: _("Edit first user")
+      }
     }
   ]
 };
