@@ -23,11 +23,11 @@
 
 import React, { useEffect, useState } from "react";
 import { useLoaderData } from "react-router-dom";
-import { Button, Skeleton } from "@patternfly/react-core";
+import { Button, CardBody, Flex, FlexItem, Grid, GridItem, Skeleton } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
-import { If, Section } from "~/components/core";
-import { ConnectionsTable, NetworkPageMenu, WifiSelector } from "~/components/network";
+import { If, CardField, Page } from "~/components/core";
+import { ConnectionsTable, WifiSelector } from "~/components/network";
 import { NetworkEventTypes } from "~/client/network";
 import { _ } from "~/i18n";
 
@@ -177,15 +177,42 @@ export default function NetworkPage() {
 
   return (
     <>
-      <Section title={_("Wired connections")} icon="lan">
-        {ready ? <WiredConnections /> : <Skeleton />}
-      </Section>
+      <Page.Header>
+        <Flex>
+          <FlexItem>
+            <h2>{_("Network")}</h2>
+          </FlexItem>
+          <If
+            condition={wifiScanSupported}
+            then={
+              <FlexItem align={{ default: "alignRight" }}>
+                <Button variant="secondary" onClick={openWifiSelector}>
+                  {_("Connect to a Wi-Fi network")}
+                </Button>
+              </FlexItem>
+            }
+          />
+        </Flex>
+      </Page.Header>
 
-      <Section title={_("WiFi connections")} icon="wifi">
-        {ready ? <WifiConnections /> : <Skeleton />}
-      </Section>
-
-      <NetworkPageMenu wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
+      <Page.MainContent>
+        <Grid hasGutter>
+          <GridItem sm={12}>
+            <CardField label={_("Wired connections")}>
+              <CardBody>
+                {ready ? <WiredConnections /> : <Skeleton />}
+              </CardBody>
+            </CardField>
+          </GridItem>
+          <GridItem sm={12}>
+            <CardField label={_("WiFi connections")}>
+              <CardBody>
+                {ready ? <WifiConnections /> : <Skeleton />}
+              </CardBody>
+            </CardField>
+          </GridItem>
+        </Grid>
+      </Page.MainContent>
 
       <If
         condition={wifiScanSupported}
