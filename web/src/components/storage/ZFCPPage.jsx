@@ -22,7 +22,7 @@
 // cspell:ignore wwpns npiv
 
 import React, { useCallback, useEffect, useReducer, useState } from "react";
-import { Button, Skeleton, Toolbar, ToolbarContent, ToolbarItem } from "@patternfly/react-core";
+import { Button, Skeleton, Stack, Toolbar, ToolbarContent, ToolbarItem } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { Popup, RowActions, Section, SectionSkeleton } from "~/components/core";
 import { ZFCPDiskForm } from "~/components/storage";
@@ -414,12 +414,12 @@ const ControllersSection = ({ client, manager, load = noop, isLoading = false })
 
   const EmptyState = () => {
     return (
-      <div className="stack">
+      <Stack hasGutter>
         <div>{_("No zFCP controllers found.")}</div>
         <div>{_("Please, try to read the zFCP devices again.")}</div>
         {/* TRANSLATORS: button label */}
         <Button variant="primary" onClick={load}>{_("Read zFCP devices")}</Button>
-      </div>
+      </Stack>
     );
   };
 
@@ -541,10 +541,10 @@ const DisksSection = ({ client, manager, isLoading = false }) => {
     };
 
     return (
-      <div className="stack">
+      <Stack hasGutter>
         <div>{_("No zFCP disks found.")}</div>
         {manager.getActiveControllers().length === 0 ? <NoActiveControllers /> : <NoActiveDisks />}
-      </div>
+      </Stack>
     );
   };
 

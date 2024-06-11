@@ -22,13 +22,12 @@
 // @ts-check
 
 import React, { useState } from "react";
-import { Radio, Form, FormGroup } from "@patternfly/react-core";
-import { sprintf } from "sprintf-js";
-
-import { _ } from "~/i18n";
-import { deviceChildren, volumeLabel } from "~/components/storage/utils";
+import { Form, FormGroup, Radio, Stack } from "@patternfly/react-core";
 import { FormReadOnlyField, Popup } from "~/components/core";
 import VolumeLocationSelectorTable from "~/components/storage/VolumeLocationSelectorTable";
+import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
+import { deviceChildren, volumeLabel } from "~/components/storage/utils";
 
 /**
  * @typedef {"auto"|"device"|"reuse"} LocationOption
@@ -159,7 +158,7 @@ export default function VolumeLocationDialog({
           />
         </div>
         <FormGroup label={_("Select how to allocate the file system")}>
-          <div className="stack">
+          <Stack hasGutter>
             <Radio
               id="new_partition"
               name="target"
@@ -203,7 +202,7 @@ export default function VolumeLocationDialog({
               isDisabled={!targets.includes("FILESYSTEM")}
               onChange={() => setTarget("FILESYSTEM")}
             />
-          </div>
+          </Stack>
         </FormGroup>
       </Form>
       <Popup.Actions>

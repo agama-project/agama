@@ -23,13 +23,13 @@ import React, { useEffect, useReducer } from "react";
 import {
   Button,
   Toolbar, ToolbarItem, ToolbarContent,
+  Stack
 } from "@patternfly/react-core";
-
-import { _ } from "~/i18n";
 import { Section, SectionSkeleton } from "~/components/core";
 import { NodesPresenter, DiscoverForm } from "~/components/storage/iscsi";
 import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
+import { _ } from "~/i18n";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -138,12 +138,12 @@ export default function TargetsSection() {
 
     if (state.nodes.length === 0) {
       return (
-        <div className="stack">
+        <Stack hasGutter>
           <div>{_("No iSCSI targets found.")}</div>
           <div>{_("Please, perform an iSCSI discovery in order to find available iSCSI targets.")}</div>
           {/* TRANSLATORS: button label, starts iSCSI discovery */}
           <Button variant="primary" onClick={openDiscoverForm}>{_("Discover iSCSI targets")}</Button>
-        </div>
+        </Stack>
       );
     }
 
@@ -169,11 +169,11 @@ export default function TargetsSection() {
     // TRANSLATORS: iSCSI targets section title
     <Section title={_("Targets")}>
       <SectionContent />
-      { state.isDiscoverFormOpen &&
+      {state.isDiscoverFormOpen &&
         <DiscoverForm
           onSubmit={submitDiscoverForm}
           onCancel={closeDiscoverForm}
-        /> }
+        />}
     </Section>
   );
 }

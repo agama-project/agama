@@ -27,9 +27,12 @@ import {
   CardBody, CardExpandableContent,
   Divider,
   Dropdown, DropdownList, DropdownItem,
+  Flex,
   List, ListItem,
   MenuToggle,
-  Skeleton
+  Skeleton,
+  Split,
+  Stack
 } from '@patternfly/react-core';
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { CardField, RowActions, Tip } from '~/components/core';
@@ -221,9 +224,9 @@ const AutoCalculatedHint = ({ volume }) => {
  */
 const VolumeLabel = ({ volume, target }) => {
   return (
-    <div className="split" style={{ background: "var(--color-gray)", padding: "var(--spacer-smaller) var(--spacer-small)", borderRadius: "var(--spacer-smaller)" }}>
+    <Split hasGutter style={{ background: "var(--color-gray)", padding: "var(--spacer-smaller) var(--spacer-small)", borderRadius: "var(--spacer-smaller)" }}>
       <span>{BasicVolumeText({ volume, target })}</span>
-    </div>
+    </Split>
   );
 };
 
@@ -236,9 +239,9 @@ const VolumeLabel = ({ volume, target }) => {
  */
 const BootLabel = ({ bootDevice, configureBoot }) => {
   return (
-    <div className="split" style={{ background: "var(--color-gray)", padding: "var(--spacer-smaller) var(--spacer-small)", borderRadius: "var(--spacer-smaller)" }}>
+    <Split hasGutter style={{ background: "var(--color-gray)", padding: "var(--spacer-smaller) var(--spacer-small)", borderRadius: "var(--spacer-smaller)" }}>
       <span>{BootLabelText({ configure: configureBoot, device: bootDevice })}</span>
-    </div>
+    </Split>
   );
 };
 
@@ -254,11 +257,11 @@ const VolumeSizeLimits = ({ volume }) => {
   const isAuto = volume.autoSize;
 
   return (
-    <div className="split">
+    <Split hasGutter>
       <span>{SizeText({ volume })}</span>
       {/* TRANSLATORS: device flag, the partition size is automatically computed */}
       {isAuto && !reuseDevice(volume) && <Tip description={AutoCalculatedHint({ volume })}>{_("auto")}</Tip>}
-    </div>
+    </Split>
   );
 };
 
@@ -520,18 +523,18 @@ const VolumesTable = ({
 const Basic = ({ volumes, configureBoot, bootDevice, target, isLoading }) => {
   if (isLoading)
     return (
-      <div className="wrapped split">
+      <Split hasGutter isWrappable>
         <Skeleton width="30%" />
         <Skeleton width="20%" />
         <Skeleton width="15%" />
-      </div>
+      </Split>
     );
 
   return (
-    <div className="wrapped split">
+    <Split hasGutter isWrappable>
       {volumes.map((v, i) => <VolumeLabel key={i} volume={v} target={target} />)}
       <BootLabel bootDevice={bootDevice} configureBoot={configureBoot} />
-    </div>
+    </Split>
   );
 };
 
@@ -712,7 +715,7 @@ const Advanced = ({
   const showSnapshotsField = rootVolume?.outline.snapshotsConfigurable;
 
   return (
-    <div className="stack">
+    <Stack hasGutter>
       {showSnapshotsField && <SnapshotsField rootVolume={rootVolume} onChange={changeBtrfsSnapshots} />}
       <VolumesTable
         volumes={volumes}
@@ -723,10 +726,10 @@ const Advanced = ({
         onVolumesChange={onVolumesChange}
         isLoading={isLoading}
       />
-      <div className="split" style={{ flexDirection: "row-reverse" }}>
+      <Flex direction={{ default: "rowReverse" }}>
         {showAddVolume() && <AddVolumeButton options={mountPathOptions()} onClick={addVolume} />}
         <Button variant="plain" onClick={resetVolumes}>{_("Reset to defaults")}</Button>
-      </div>
+      </Flex>
       {isVolumeDialogOpen &&
         <VolumeDialog
           isOpen
@@ -745,7 +748,7 @@ const Advanced = ({
         isLoading={isLoading}
         onChange={onBootChange}
       />
-    </div>
+    </Stack>
   );
 };
 

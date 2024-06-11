@@ -22,12 +22,9 @@
 import React, { useState, useEffect } from "react";
 import {
   Alert,
-  Text,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateHeader,
-  EmptyStateIcon,
-  ExpandableSection,
+  EmptyState, EmptyStateBody, EmptyStateHeader, EmptyStateIcon, ExpandableSection,
+  Stack,
+  Text
 } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { Icon } from "~/components/layout";
@@ -41,7 +38,7 @@ const TpmHint = () => {
 
   return (
     <Alert isInline variant="info" className="tpm-hint" title={<strong>{title}</strong>}>
-      <div className="stack">
+      <Stack hasGutter>
         {_("If a local media was used to run this installer, remove it before the next boot.")}
         <ExpandableSection
           isExpanded={isExpanded}
@@ -55,7 +52,7 @@ open encrypted devices will take place during the first boot of the new system. 
 the machine needs to boot directly to the new boot loader.")
           }
         </ExpandableSection>
-      </div>
+      </Stack>
     </Alert>
   );
 };

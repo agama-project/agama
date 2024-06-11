@@ -23,8 +23,15 @@
 
 import React, { useState } from "react";
 import {
-  InputGroup, InputGroupItem, FormGroup, FormSelect, FormSelectOption, MenuToggle, Popover, Radio,
-  Select, SelectOption, SelectList, TextInput
+  FormGroup, FormSelect, FormSelectOption,
+  InputGroup, InputGroupItem,
+  MenuToggle,
+  Popover,
+  Radio,
+  Select, SelectOption, SelectList,
+  Split,
+  Stack,
+  TextInput
 } from "@patternfly/react-core";
 import { FormValidationError, FormReadOnlyField, NumericTextInput } from '~/components/core';
 import { Icon } from "~/components/layout";
@@ -291,7 +298,7 @@ const SizeAuto = ({ volume }) => {
  */
 const SizeManual = ({ errors, formData, isDisabled, onChange }) => {
   return (
-    <div className="stack">
+    <Stack hasGutter>
       <p>
         {_("Exact size for the file system.")}
       </p>
@@ -333,7 +340,7 @@ const SizeManual = ({ errors, formData, isDisabled, onChange }) => {
         </InputGroup>
         <FormValidationError message={errors.size} />
       </FormGroup>
-    </div>
+    </Stack>
   );
 };
 
@@ -349,12 +356,12 @@ const SizeManual = ({ errors, formData, isDisabled, onChange }) => {
  */
 const SizeRange = ({ errors, formData, isDisabled, onChange }) => {
   return (
-    <div className="stack">
+    <Stack hasGutter>
       <p>
         {_("Limits for the file system size. The final size will be a value between the given minimum \
 and maximum. If no maximum is given then the file system will be as big as possible.")}
       </p>
-      <div className="split" data-items-alignment="start">
+      <Split hasGutter>
         <FormGroup
           isRequired
           // TRANSLATORS: the minimal partition size
@@ -424,8 +431,8 @@ and maximum. If no maximum is given then the file system will be as big as possi
           </InputGroup>
           <FormValidationError message={errors.maxSize} />
         </FormGroup>
-      </div>
-    </div>
+      </Split>
+    </Stack>
   );
 };
 
@@ -464,7 +471,7 @@ const SizeOptionsField = ({ volume, formData, isDisabled = false, errors = {}, o
   return (
     <FormGroup role="radiogroup" fieldId="size" label={_("Size")} isRequired>
       <div>
-        <div className="split radio-group">
+        <Split hasGutter className="radio-group">
           {sizeOptions.map((value) => {
             const isSelected = sizeMethod === value;
 
@@ -483,7 +490,7 @@ const SizeOptionsField = ({ volume, formData, isDisabled = false, errors = {}, o
               />
             );
           })}
-        </div>
+        </Split>
 
         <div aria-live="polite" className="highlighted-live-region">
           {sizeMethod === SIZE_METHODS.AUTO && <SizeAuto {...sizeWidgetProps} />}

@@ -23,7 +23,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useLoaderData } from "react-router-dom";
-import { Button, CardBody, Flex, Grid, GridItem, Skeleton } from "@patternfly/react-core";
+import { Button, CardBody, Flex, Grid, GridItem, Skeleton, Stack } from "@patternfly/react-core";
 import { useInstallerClient } from "~/context/installer";
 import { CardField, Page } from "~/components/core";
 import { ConnectionsTable, WifiSelector } from "~/components/network";
@@ -54,9 +54,7 @@ const WifiSelection = ({ wifiScanSupported }) => {
  */
 const NoWiredConnections = () => {
   return (
-    <div className="stack">
-      <div>{_("No wired connections found.")}</div>
-    </div>
+    <div>{_("No wired connections found.")}</div>
   );
 };
 
@@ -74,10 +72,10 @@ const NoWifiConnections = ({ wifiScanSupported }) => {
     : _("The system does not support WiFi connections, probably because of missing or disabled hardware.");
 
   return (
-    <div className="stack">
+    <Stack hasGutter>
       <div>{_("No WiFi connections found.")}</div>
       <div>{message}</div>
-    </div>
+    </Stack>
   );
 };
 

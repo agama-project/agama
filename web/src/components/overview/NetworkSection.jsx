@@ -20,13 +20,13 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { sprintf } from "sprintf-js";
-
+import { Split } from "@patternfly/react-core";
 import { Em, Section, SectionSkeleton } from "~/components/core";
 import { useInstallerClient } from "~/context/installer";
 import { NetworkEventTypes } from "~/client/network";
 import { formatIp } from "~/client/network/utils";
 import { _, n_ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 
 export default function NetworkSection() {
   const { network: client } = useInstallerClient();
@@ -106,7 +106,7 @@ export default function NetworkSection() {
     return (
       <>
         <div>{msg}</div>
-        <div className="split wrapped">{summary}</div>
+        <Split hasGutter isWrappable>{summary}</Split>
       </>
     );
   };

@@ -24,8 +24,9 @@ import {
   Alert,
   Checkbox,
   Form, FormGroup, TextInput,
+  Menu, MenuContent, MenuList, MenuItem,
   Skeleton,
-  Menu, MenuContent, MenuList, MenuItem
+  Stack
 } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { useNavigate } from "react-router-dom";
@@ -37,7 +38,7 @@ import { suggestUsernames } from '~/components/users/utils';
 
 const UserNotDefined = ({ actionCb }) => {
   return (
-    <div className="stack">
+    <Stack hasGutter>
       <div>{_("No user defined yet.")}</div>
       <div>
         <strong>
@@ -45,7 +46,7 @@ const UserNotDefined = ({ actionCb }) => {
         </strong>
       </div>
       <ButtonLink to="first" isPrimary>{_("Define a user now")}</ButtonLink>
-    </div>
+    </Stack>
   );
 };
 
