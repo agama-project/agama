@@ -58,6 +58,11 @@
                 "description": "Custom mac-address (can also be 'preserve', 'permanent', 'random' or 'stable')",
                 "type": "string"
               },
+              "mtu": {
+                "description": "Connection MTU",
+                "type": "integer",
+                "minimum": 0
+              },
               "method4": {
                 "description": "IPv4 configuration method (e.g., 'auto')",
                 "type": "string",

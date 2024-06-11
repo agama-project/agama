@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 10 14:24:33 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add mtu property for network connections
+  (gh#openSUSE/agama#1101).
+
+-------------------------------------------------------------------
 Fri Jun  7 05:58:48 UTC 2024 - Michal Filka <mfilka@suse.com>
 
 - Improvements in HTTPS setup

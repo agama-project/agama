@@ -103,6 +103,12 @@ pub struct NetworkConnection {
     pub mac_address: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<Status>,
+    #[serde(skip_serializing_if = "is_zero", default)]
+    pub mtu: u32,
+}
+
+fn is_zero(u: &u32) -> bool {
+    *u == 0
 }
 
 impl NetworkConnection {
