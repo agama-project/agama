@@ -23,11 +23,14 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Skeleton } from "@patternfly/react-core";
+import {
+  Card, CardHeader, CardTitle, CardBody, CardFooter, Skeleton
+} from "@patternfly/react-core";
 import { ButtonLink, CardField } from "~/components/core";
 import { _ } from "~/i18n";
 import { deviceLabel } from '~/components/storage/utils';
 import { sprintf } from "sprintf-js";
+import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
 /**
  * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
@@ -48,13 +51,16 @@ const DESCRIPTION = _("Main disk or LVM Volume Group for installation.");
  * @returns {string}
  */
 const targetValue = (target, targetDevice, targetPVDevices) => {
-  if (target === "DISK" && targetDevice) return deviceLabel(targetDevice);
+  if (target === "DISK" && targetDevice) {
+    // TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
+    return sprintf(_("File systems created as new partitions at %s"), deviceLabel(targetDevice));
+  }
   if (target === "NEW_LVM_VG" && targetPVDevices.length > 0) {
-    if (targetPVDevices.length > 1) return _("new LVM volume group");
+    if (targetPVDevices.length > 1) return _("File systems created at a new LVM volume group");
 
     if (targetPVDevices.length === 1) {
       // TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
-      return sprintf(_("new LVM volume group on %s"), deviceLabel(targetPVDevices[0]));
+      return sprintf(_("File systems created at a new LVM volume group on %s"), deviceLabel(targetPVDevices[0]));
     }
   }
 
@@ -94,15 +100,20 @@ export default function InstallationDeviceField({
     value = targetValue(target, targetDevice, targetPVDevices);
 
   return (
-    <CardField
-      label={LABEL}
-      description={DESCRIPTION}
-      value={value}
-      actions={
-        isLoading
-          ? <Skeleton fontSize="sm" width="100px" />
-          : <ButtonLink to="target-device" isPrimary={false}>{_("Change")}</ButtonLink>
-      }
-    />
+    <Card isCompact isFullHeight isRounded>
+      <CardHeader>
+        <CardTitle>
+          <h3>{LABEL}</h3>
+        </CardTitle>
+      </CardHeader>
+      <CardBody>
+        <div className={textStyles.color_200}>{DESCRIPTION}</div>
+      </CardBody>
+      <CardBody>{value}</CardBody>
+      <CardFooter>{ isLoading
+        ? <Skeleton fontSize="sm" width="100px" />
+        : <ButtonLink to="target-device" isPrimary={false}>{_("Change")}</ButtonLink>}
+      </CardFooter>
+    </Card>
   );
 }
