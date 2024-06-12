@@ -83,7 +83,7 @@ const Progress = ({ selectedProduct, storageProgress, softwareProgress }) => {
         titleId="storage-step-title"
         {...stepProperties(storageProgress)}
       >
-        {_("Prepare disk")}
+        {_("Analyze disks")}
       </ProgressStep>
       <ProgressStep
         id="software-step"
