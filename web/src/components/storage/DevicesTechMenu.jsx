@@ -23,7 +23,10 @@
 
 import React, { useEffect, useState } from "react";
 import { useHref } from "react-router-dom";
-import { Page } from "~/components/core";
+import {
+  MenuToggle,
+  Select, SelectList, SelectOption
+} from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
 
@@ -35,13 +38,13 @@ const DASDLink = () => {
   const href = useHref("/storage/dasd");
 
   return (
-    <Page.Menu.Option
+    <SelectOption
       key="dasd-link"
       to={href}
       description={_("Manage and format")}
     >
       DASD
-    </Page.Menu.Option>
+    </SelectOption>
   );
 };
 
@@ -53,13 +56,13 @@ const ZFCPLink = () => {
   const href = useHref("/storage/zfcp");
 
   return (
-    <Page.Menu.Option
+    <SelectOption
       key="zfcp-link"
       to={href}
       description={_("Activate disks")}
     >
       {_("zFCP")}
-    </Page.Menu.Option>
+    </SelectOption>
   );
 };
 
@@ -71,13 +74,13 @@ const ISCSILink = () => {
   const href = useHref("/storage/iscsi");
 
   return (
-    <Page.Menu.Option
+    <SelectOption
       key="iscsi-link"
       to={href}
       description={_("Connect to iSCSI targets")}
     >
       {_("iSCSI")}
-    </Page.Menu.Option>
+    </SelectOption>
   );
 };
 
@@ -90,7 +93,8 @@ const ISCSILink = () => {
  *
  * @param {ProposalMenuProps} props
  */
-export default function ProposalPageMenu({ label }) {
+export default function DevicesTechMenu({ label }) {
+  const [isOpen, setIsOpen] = useState(false);
   const [showDasdLink, setShowDasdLink] = useState(false);
   const [showZFCPLink, setShowZFCPLink] = useState(false);
   const { storage: client } = useInstallerClient();
@@ -100,13 +104,30 @@ export default function ProposalPageMenu({ label }) {
     client.zfcp.isSupported().then(setShowZFCPLink);
   }, [client.dasd, client.zfcp]);
 
+  const toggle = toggleRef => (
+    <MenuToggle ref={toggleRef} onClick={() => setIsOpen(!isOpen)} isExpanded={isOpen}>
+      {label}
+    </MenuToggle>
+  );
+
+  const onSelect = (_event, value) => {
+    setIsOpen(false);
+  };
+
   return (
-    <Page.Menu label={label}>
-      <Page.Menu.Options>
+    <Select
+      id="storage-tech-menu"
+      isScrollable
+      isOpen={isOpen}
+      onSelect={onSelect}
+      onOpenChange={(isOpen) => setIsOpen(isOpen)}
+      toggle={toggle}
+    >
+      <SelectList>
         {showDasdLink && <DASDLink />}
         <ISCSILink />
         {showZFCPLink && <ZFCPLink />}
-      </Page.Menu.Options>
-    </Page.Menu>
+      </SelectList>
+    </Select>
   );
 }

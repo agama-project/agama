@@ -25,7 +25,7 @@ a {
   color: currentcolor;
 }
 
-a:not(.pf-v5-c-button,.pf-v5-c-nav__link),
+a:not(.pf-v5-c-button,.pf-v5-c-nav__link,.pf-v5-c-menu__item),
 // TODO: make it better, using PatternFly custom properties for overriding it
 button.pf-m-plain,
 button.pf-m-link {
