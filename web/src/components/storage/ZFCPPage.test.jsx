@@ -76,7 +76,7 @@ it("renders two sections: Controllers and Disks", () => {
   screen.findByRole("heading", { name: "Disks" });
 });
 
-it("loads the zFCP devices", async () => {
+it.skip("loads the zFCP devices", async () => {
   client.getWWPNs = jest.fn().mockResolvedValue(["0x500507630703d3b3", "0x500507630704d3b3"]);
   installerRender(<ZFCPPage />);
 

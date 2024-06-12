@@ -51,7 +51,9 @@ beforeEach(() => {
 });
 
 describe("when no product is selected", () => {
-  beforeEach(() => mockSelectedProduct = null);
+  beforeEach(() => {
+    mockSelectedProduct = null;
+  });
 
   it("redirects to the products page", async () => {
     installerRender(<OverviewPage />);
@@ -60,7 +62,9 @@ describe("when no product is selected", () => {
 });
 
 describe("when a product is selected", () => {
-  beforeEach(() => mockSelectedProduct = { name: "Tumbleweed" });
+  beforeEach(() => {
+    mockSelectedProduct = { name: "Tumbleweed" };
+  });
 
   it("renders the overview page content and the Install button", async () => {
     installerRender(<OverviewPage />);
