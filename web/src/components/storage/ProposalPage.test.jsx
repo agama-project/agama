@@ -46,12 +46,12 @@ jest.mock("@patternfly/react-core", () => {
 
   };
 });
-jest.mock("~/components/storage/ProposalPageMenu", () => () => <div>ProposalPage Options</div>);
+jest.mock("./DevicesTechMenu", () => () => <div>Devices Tech Menu</div>);
 
 jest.mock("~/context/product", () => ({
   ...jest.requireActual("~/context/product"),
   useProduct: () => ({
-    selectedProduct : { name: "Test" }
+    selectedProduct: { name: "Test" }
   })
 }));
 
@@ -73,7 +73,7 @@ const vda = {
   active: true,
   name: "/dev/vda",
   size: 1e+12,
-  systems : ["Windows 11", "openSUSE Leap 15.2"],
+  systems: ["Windows 11", "openSUSE Leap 15.2"],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
