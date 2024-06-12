@@ -24,7 +24,7 @@ import React from "react";
 import { _ } from "~/i18n";
 import { CardField, IssuesHint, Page } from "~/components/core";
 import { FirstUser, RootAuthMethods } from "~/components/users";
-import { CardBody, Grid, GridItem, Stack } from "@patternfly/react-core";
+import { CardBody, Grid, GridItem } from "@patternfly/react-core";
 import { useIssues } from "~/context/issues";
 
 export default function UsersPage() {
@@ -44,18 +44,14 @@ export default function UsersPage() {
           <GridItem sm={12} xl={6}>
             <CardField label={_("First user")}>
               <CardBody>
-                <Stack hasGutter>
-                  <FirstUser />
-                </Stack>
+                <FirstUser />
               </CardBody>
             </CardField>
           </GridItem>
           <GridItem sm={12} xl={6}>
             <CardField label={_("Root authentication")}>
               <CardBody>
-                <Stack hasGutter>
-                  <RootAuthMethods />
-                </Stack>
+                <RootAuthMethods />
               </CardBody>
             </CardField>
           </GridItem>

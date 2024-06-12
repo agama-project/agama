@@ -20,7 +20,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { Skeleton, Stack } from "@patternfly/react-core";
+import { Skeleton, Split, Stack } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { useNavigate } from "react-router-dom";
 import { RowActions, ButtonLink } from '~/components/core';
@@ -30,15 +30,19 @@ import { useInstallerClient } from "~/context/installer";
 
 const UserNotDefined = ({ actionCb }) => {
   return (
-    <Stack hasGutter>
-      <div>{_("No user defined yet.")}</div>
-      <div>
-        <strong>
-          {_("Please, be aware that a user must be defined before installing the system to be able to log into it.")}
-        </strong>
-      </div>
-      <ButtonLink to="first" isPrimary>{_("Define a user now")}</ButtonLink>
-    </Stack>
+    <>
+      <Stack hasGutter>
+        <div>{_("No user defined yet.")}</div>
+        <div>
+          <strong>
+            {_("Please, be aware that a user must be defined before installing the system to be able to log into it.")}
+          </strong>
+        </div>
+        <Split hasGutter>
+          <ButtonLink to="first" isPrimary>{_("Define a user now")}</ButtonLink>
+        </Split>
+      </Stack>
+    </>
   );
 };
 
