@@ -31,7 +31,7 @@ export default function IssuesHint({ issues }) {
       <HintBody>
         <Stack hasGutter>
           <p>
-            {_("Please, pay attention to the following tasks:")}
+            {_("Before starting the installation, you need to address the following problems:")}
           </p>
           <List>
             {issues.map((i, idx) => <ListItem key={idx}>{i.description}</ListItem>)}
