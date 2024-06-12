@@ -90,9 +90,15 @@ const DeletionsInfo = ({ actions, systems }) => {
  * @param {object} props
  * @param {Action[]} props.actions
  */
-const ActionsInfo = ({ onClick }) => {
+const ActionsInfo = ({ numActions, onClick }) => {
+  // TRANSLATORS: %d will be replaced by the number of proposal actions.
+  const text = sprintf(
+    n_("Check the planned action", "Check the %d planned actions", numActions),
+    numActions
+  );
+
   return (
-    <Button onClick={onClick} variant="link" isInline>{_("Check all planned actions")}</Button>
+    <Button onClick={onClick} variant="link" isInline>{text}</Button>
   );
 };
 
@@ -140,24 +146,15 @@ const SectionContent = ({ system, staging, actions, errors, isLoading, onActions
   if (errors.length) return;
 
   const totalActions = actions.length;
-  // TRANSLATORS: The description for the Result section in storage proposal
-  // page. %d will be replaced by the number of proposal actions.
-  const description = sprintf(n_(
-    "During installation, %d action will be performed to configure the system as displayed below",
-    "During installation, %d actions will be performed to configure the system as displayed below",
-    totalActions
-  ), totalActions);
-
   const devicesManager = new DevicesManager(system, staging, actions);
 
   return (
     <Stack hasGutter>
-      <div>{description}</div>
       <DeletionsInfo
         actions={devicesManager.actions.filter(a => a.delete && !a.subvol)}
         systems={devicesManager.deletedSystems()}
       />
-      <ActionsInfo onClick={onActionsClick} />
+      <ActionsInfo numActions={totalActions} onClick={onActionsClick} />
       <ProposalResultTable devicesManager={devicesManager} />
     </Stack>
   );
@@ -188,6 +185,8 @@ export default function ProposalResultSection({
   const openDrawer = () => setDrawerOpen(true);
   const closeDrawer = () => setDrawerOpen(false);
 
+  const description = _("During installation, some actions will be performed to configure the system as displayed below.");
+
   return (
     <Card isCompact isRounded isFullHeight>
       <Drawer isExpanded={drawerOpen}>
@@ -212,7 +211,7 @@ export default function ProposalResultSection({
               </CardTitle>
             </CardHeader>
             <CardBody>
-              <div className={textStyles.color_200}>{_("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")}</div>
+              <div className={textStyles.color_200}>{description}</div>
             </CardBody>
             <CardBody>
               <SectionErrors errors={errors} />
