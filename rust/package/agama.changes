@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 12 10:15:33 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Allow writing to loopback connection in agama-server
+  (gh#openSUSE/agama#1318).
+
+-------------------------------------------------------------------
 Tue Jun 11 21:35:00 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - CLI: use the master token /run/agama/token if available and
