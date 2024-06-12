@@ -33,7 +33,7 @@ import { _ } from "~/i18n";
  * Simple layout for displaying content that comes before product configuration
  * TODO: improve documentation
  */
-export default function SimpleLayout() {
+export default function SimpleLayout({ showOutlet = true, children }) {
   return (
     <Page>
       <Masthead backgroundColor="light200">
@@ -49,7 +49,7 @@ export default function SimpleLayout() {
           </Toolbar>
         </MastheadContent>
       </Masthead>
-      <Outlet />
+      {showOutlet ? <Outlet /> : children}
     </Page>
   );
 }
