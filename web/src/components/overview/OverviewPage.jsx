@@ -21,14 +21,11 @@
 
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
   CardBody,
-  Grid,
-  GridItem,
-  Hint,
-  HintBody,
-  List,
-  ListItem,
-  Stack
+  Grid, GridItem,
+  Hint, HintBody,
+  Stack,
 } from "@patternfly/react-core";
 import { useProduct } from "~/context/product";
 import { useInstallerClient } from "~/context/installer";
@@ -52,9 +49,12 @@ const IssuesList = ({ issues }) => {
   Object.entries(scopes).forEach(([scope, issues]) => {
     issues.forEach((issue, idx) => {
       const link = (
-        <ListItem key={idx}>
-          <Link to={`/${scope}`}>{issue.description}</Link>
-        </ListItem>
+        <Alert
+          key={idx}
+          isInline
+          variant={issue.severity === "error" ? "warning" : "info"}
+          title={<Link to={`/${scope}`}>{issue.description}</Link>}
+        />
       );
       list.push(link);
     });
@@ -62,11 +62,11 @@ const IssuesList = ({ issues }) => {
 
   return (
     <EmptyState
-      title={_("Before installing the system, you need to pay attention to the following tasks:")}
+      title={_("Before installing the system, you need to pay attention to the following tasks")}
       icon="error"
       color="danger-color-100"
     >
-      <List isPlain>{list}</List>
+      <Stack hasGutter>{list}</Stack>
     </EmptyState>
   );
 };
