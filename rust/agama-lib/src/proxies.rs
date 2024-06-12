@@ -178,4 +178,3 @@ trait Issues {
     #[dbus_proxy(property)]
     fn all(&self) -> zbus::Result<Vec<(String, String, u32, u32)>>;
 }
-
