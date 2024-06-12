@@ -40,7 +40,7 @@ import { BUSY } from "~/client/status";
  */
 function App() {
   const client = useInstallerClient();
-  const { error } = useInstallerClientStatus();
+  const { connected, error } = useInstallerClientStatus();
   const { products } = useProduct();
   const { language } = useInstallerL10n();
   const [status, setStatus] = useState(undefined);
@@ -78,7 +78,7 @@ function App() {
       return <Installation status={status} />;
     }
 
-    if (!products) return <Loading />;
+    if (!products || !connected) return <Loading />;
 
     if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
       return <Loading />;
