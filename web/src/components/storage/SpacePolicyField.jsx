@@ -88,7 +88,7 @@ export default function SpacePolicyField({
       description={_("Allocating the file systems might need to find free space \
 in the installation device(s).")}
       actions={
-        isLoading ? <Skeleton fontSize="sm" width="100px" /> : <Button variant="secondary" onClick={openDialog}>{_("Change space policy")}</Button>
+        isLoading ? <Skeleton fontSize="sm" width="100px" /> : <Button variant="secondary" onClick={openDialog}>{_("Change")}</Button>
       }
     >
       {isDialogOpen &&
