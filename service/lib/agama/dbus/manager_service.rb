@@ -125,7 +125,7 @@ module Agama
       end
 
       def users_dbus
-        @users_dbus ||= Agama::DBus::Users.new(users, logger)
+        @users_dbus ||= Agama::DBus::Users.new(manager.users, logger)
       end
     end
   end
