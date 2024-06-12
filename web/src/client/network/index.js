@@ -225,7 +225,7 @@ class NetworkClient {
    * @param {Connection} connection - connection to be activated
    */
   async connectTo(connection) {
-    return this.client.get(`/network/${connection.id}/connect`);
+    return this.client.get(`/network/connections/${connection.id}/connect`);
   }
 
   /**
@@ -234,7 +234,7 @@ class NetworkClient {
    * @param {Connection} connection - connection to be activated
    */
   async disconnect(connection) {
-    return this.client.get(`/network/${connection.id}/disconnect`);
+    return this.client.get(`/network/connections/${connection.id}/disconnect`);
   }
 
   /**
