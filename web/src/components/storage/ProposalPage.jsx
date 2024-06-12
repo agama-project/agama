@@ -264,7 +264,6 @@ export default function ProposalPage() {
     <>
       <Page.Header>
         <h2>{_("Storage")}</h2>
-        <p className={textStyles.color_400}>{_("Lorem ipsum dolor")}</p>
         <ProposalTransactionalInfo
           settings={state.settings}
         />
