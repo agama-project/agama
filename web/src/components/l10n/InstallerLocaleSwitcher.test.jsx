@@ -47,10 +47,9 @@ beforeEach(() => {
 
 it("InstallerLocaleSwitcher", async () => {
   const { user } = plainRender(<InstallerLocaleSwitcher />);
-  expect(screen.getByRole("option", { name: "Español" }).selected).toBe(true);
-  await user.selectOptions(
-    screen.getByRole("combobox", { label: "Display Language" }),
-    screen.getByRole("option", { name: "English (US)" })
-  );
+  const button = screen.getByRole("button", { name: "Español" });
+  await user.click(button);
+  const option = screen.getByRole("option", { name: "English (US)" });
+  await user.click(option);
   expect(mockChangeLanguageFn).toHaveBeenCalledWith("en-us");
 });
