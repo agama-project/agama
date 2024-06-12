@@ -20,8 +20,9 @@
  */
 
 import React from "react";
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import {
+  Button,
   Masthead, MastheadContent, MastheadToggle, MastheadMain, MastheadBrand,
   Nav, NavItem, NavList,
   Page, PageSidebar, PageSidebarBody, PageToggleButton,
@@ -69,6 +70,21 @@ const Header = () => {
   );
 };
 
+const ChangeProductButton = () => {
+  const navigate = useNavigate();
+  const { products } = useProduct();
+
+  if (!products.length) return null;
+
+  return (
+    <PageSidebarBody isFilled={false}>
+      <Button variant="plain" style={{ color: "white" }} onClick={() => navigate("/products")}>
+        {_("Change product")}
+      </Button>
+    </PageSidebarBody>
+  );
+};
+
 const Sidebar = () => {
   // TODO: Improve this and/or extract the NavItem to a wrapper component.
   const links = rootRoutes.map(r => {
@@ -94,6 +110,7 @@ const Sidebar = () => {
           <NavList>{links}</NavList>
         </Nav>
       </PageSidebarBody>
+      <ChangeProductButton />
       <PageSidebarBody isFilled={false}>
         <About buttonVariant="plain" style={{ color: "white" }} />
       </PageSidebarBody>
