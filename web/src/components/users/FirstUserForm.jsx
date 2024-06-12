@@ -117,14 +117,12 @@ export default function FirstUserForm() {
     setErrors([]);
 
     const passwordInput = passwordRef.current;
-    const user = {};
     const formData = new FormData(e.target);
-
+    const user = {};
     // FIXME: have a look to https://www.patternfly.org/components/forms/form#form-state
-    formData.entries().reduce((user, [key, value]) => {
+    formData.forEach((value, key) => {
       user[key] = value;
-      return user;
-    }, user);
+    });
 
     if (!changePassword) {
       delete user.password;
