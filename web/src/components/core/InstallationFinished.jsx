@@ -23,13 +23,14 @@ import React, { useState, useEffect } from "react";
 import {
   Alert,
   Button,
+  Card, CardBody,
   EmptyState, EmptyStateBody, EmptyStateHeader, EmptyStateIcon, ExpandableSection,
-  Grid,
-  GridItem,
+  Flex,
+  Grid, GridItem,
   Stack,
   Text
 } from "@patternfly/react-core";
-import { Page } from "~/components/core";
+import SimpleLayout from "~/SimpleLayout";
 import { Center, Icon } from "~/components/layout";
 import { EncryptionMethods } from "~/client/storage";
 import { _ } from "~/i18n";
@@ -86,34 +87,41 @@ function InstallationFinished() {
   });
 
   return (
-    // TRANSLATORS: page title
-    <Center style={{ blockSize: "100vh" }}>
-      <Grid hasGutter>
-        <GridItem sm={8} smOffset={2}>
-          <Stack hasGutter>
-            <EmptyState variant="xl">
-              <EmptyStateHeader
-                titleText={_("Congratulations!")}
-                headingLevel="h2"
-                icon={<EmptyStateIcon icon={SuccessIcon} />}
-              />
-              <EmptyStateBody>
-                <Text>{_("The installation on your machine is complete.")}</Text>
-                <Text>
-                  {usingIguana
-                    ? _("At this point you can power off the machine.")
-                    : _("At this point you can reboot the machine to log in to the new system.")}
-                </Text>
-                {usingTpm && <TpmHint />}
-              </EmptyStateBody>
-            </EmptyState>
-            <Button size="lg" variant="primary" onClick={closingAction}>
-              {usingIguana ? _("Finish") : _("Reboot")}
-            </Button>
-          </Stack>
-        </GridItem>
-      </Grid>
-    </Center>
+    <SimpleLayout showOutlet={false}>
+      <Center>
+        <Grid hasGutter>
+          <GridItem sm={8} smOffset={2}>
+            <Card isRounded>
+              <CardBody>
+                <Stack hasGutter>
+                  <EmptyState variant="xl">
+                    <EmptyStateHeader
+                      titleText={_("Congratulations!")}
+                      headingLevel="h2"
+                      icon={<EmptyStateIcon icon={SuccessIcon} />}
+                    />
+                    <EmptyStateBody>
+                      <Text>{_("The installation on your machine is complete.")}</Text>
+                      <Text>
+                        {usingIguana
+                          ? _("At this point you can power off the machine.")
+                          : _("At this point you can reboot the machine to log in to the new system.")}
+                      </Text>
+                      {!usingTpm && <TpmHint />}
+                    </EmptyStateBody>
+                  </EmptyState>
+                  <Flex direction={{ default: "rowReverse" }}>
+                    <Button size="lg" variant="primary" onClick={closingAction}>
+                      {usingIguana ? _("Finish") : _("Reboot")}
+                    </Button>
+                  </Flex>
+                </Stack>
+              </CardBody>
+            </Card>
+          </GridItem>
+        </Grid>
+      </Center>
+    </SimpleLayout>
   );
 }
 

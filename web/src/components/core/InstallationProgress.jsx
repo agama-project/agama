@@ -20,27 +20,29 @@
  */
 
 import React from "react";
-
+import { Card, CardBody, Grid, GridItem } from "@patternfly/react-core";
+import SimpleLayout from "~/SimpleLayout";
 import ProgressReport from "./ProgressReport";
 import { Center } from "~/components/layout";
 import { Questions } from "~/components/questions";
 import { _ } from "~/i18n";
-import { Card, Grid, GridItem } from "@patternfly/react-core";
 
 function InstallationProgress() {
   return (
-    <>
-      <Center style={{ blockSize: "100vh" }}>
+    <SimpleLayout showOutlet={false}>
+      <Center>
         <Grid hasGutter>
           <GridItem sm={8} smOffset={2}>
             <Card>
-              <ProgressReport />
+              <CardBody>
+                <ProgressReport />
+              </CardBody>
             </Card>
           </GridItem>
         </Grid>
       </Center>
       <Questions />
-    </>
+    </SimpleLayout>
   );
 }
 
