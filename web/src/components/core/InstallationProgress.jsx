@@ -24,7 +24,6 @@ import { Card, CardBody, Grid, GridItem } from "@patternfly/react-core";
 import SimpleLayout from "~/SimpleLayout";
 import ProgressReport from "./ProgressReport";
 import { Center } from "~/components/layout";
-import { Questions } from "~/components/questions";
 import { _ } from "~/i18n";
 
 function InstallationProgress() {
@@ -41,7 +40,6 @@ function InstallationProgress() {
           </GridItem>
         </Grid>
       </Center>
-      <Questions />
     </SimpleLayout>
   );
 }
