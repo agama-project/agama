@@ -19,75 +19,102 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Card, CardBody,
-  Form, FormGroup,
-  Grid, GridItem
+  Flex, FlexItem,
+  Form,
+  Grid, GridItem,
+  Radio
 } from "@patternfly/react-core";
+import styles from '@patternfly/react-styles/css/utilities/Text/text';
 
 import { _ } from "~/i18n";
 import { Page } from "~/components/core";
 import { Loading, Center } from "~/components/layout";
-import { ProductSelector } from "~/components/product";
 import { useInstallerClient } from "~/context/installer";
 import { useProduct } from "~/context/product";
 
+const Label = ({ children }) => (
+  <span className={`${styles.fontSizeLg} ${styles.fontWeightBold}`}>
+    {children}
+  </span>
+);
+
 function ProductSelectionPage() {
-  const location = useLocation();
   const navigate = useNavigate();
   const { manager, product } = useInstallerClient();
   const { products, selectedProduct } = useProduct();
-
-  // FIXME: Review below useEffect.
-  useEffect(() => {
-    // TODO: display a notification in the UI to emphasizes that
-    // selected product has changed
-    return product.onChange(() => navigate("/"));
-  }, [product, navigate]);
+  const [nextProduct, setNextProduct] = useState(selectedProduct || products[0]);
 
   const onSubmit = async (e) => {
-    // NOTE: Using FormData here allows having a not controlled selector,
-    // removing small pieces of internal state and simplifying components.
-    // We should evaluate to use it or to use a ReactRouterDom/Form.
-    // Also, to have into consideration React 19 Actions, https://react.dev/blog/2024/04/25/react-19#actions
-    // FIXME: re-evaluate if we should work with the entire product object or
-    // just the id in the form (the latest avoids the need of JSON.stringify &
-    // JSON.parse)
     e.preventDefault();
-    const dataForm = new FormData(e.target);
-    const nextProductId = JSON.parse(dataForm.get("product"))?.id;
 
-    if (nextProductId !== selectedProduct?.id) {
+    if (nextProduct) {
       // TODO: handle errors
-      await product.select(nextProductId);
+      await product.select(nextProduct.id);
       manager.startProbing();
     }
 
-    navigate(location?.state?.from?.pathname || "/");
+    navigate("/");
   };
 
   if (!products) return (
     <Loading text={_("Loading available products, please wait...")} />
   );
 
+  const Item = ({ children }) => {
+    return (
+      <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
+        {children}
+      </GridItem>
+    );
+  };
+
   return (
     <>
       <Page.MainContent>
         <Center>
           <Form id="productSelectionForm" onSubmit={onSubmit}>
-            <ProductSelector defaultChecked={selectedProduct} products={products} />
+            <Grid hasGutter>
+              {products.map((product, index) => (
+                <Item key={index}>
+                  <Card key={index} isRounded>
+                    <CardBody>
+                      <Radio
+                        key={index}
+                        name="product"
+                        id={product.name}
+                        label={<Label>{product.name}</Label>}
+                        body={product.description}
+                        isChecked={nextProduct === product}
+                        onChange={() => setNextProduct(product)}
+                      />
+                    </CardBody>
+                  </Card>
+                </Item>
+              ))}
+              <Item>
+                <Flex>
+                  <FlexItem align={{ default: 'alignRight' }}>
+                    {selectedProduct && <Page.CancelAction navigateTo={-1} />}
+                  </FlexItem>
+                  <FlexItem>
+                    <Page.Action
+                      type="submit"
+                      form="productSelectionForm"
+                      isDisabled={selectedProduct === nextProduct}
+                    >
+                      {_("Select")}
+                    </Page.Action>
+                  </FlexItem>
+                </Flex>
+              </Item>
+            </Grid>
           </Form>
         </Center>
       </Page.MainContent>
-
-      <Page.NextActions>
-        <Page.CancelAction />
-        <Page.Action type="submit" form="productSelectionForm">
-          {_("Select")}
-        </Page.Action>
-      </Page.NextActions>
     </>
   );
 }
