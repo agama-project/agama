@@ -309,3 +309,12 @@ table td > .pf-v5-c-empty-state {
     color: white;
   }
 }
+
+// Force sidebar to only use needed width plus an extra padding at the end.
+.pf-v5-c-page__sidebar.pf-m-expanded {
+  --pf-v5-c-page__sidebar--Width: fit-content;
+
+  .pf-v5-c-nav__link {
+    padding-inline-end: calc(var(--pf-v5-global--spacer--xl) * 1.2);
+  }
+}
