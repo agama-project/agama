@@ -149,7 +149,7 @@ module Agama
       unless root_password? || root_ssh_key? || first_user?
         new_issues << Issue.new(
           _("Defining a user, setting the root password or a SSH public key is required"),
-          source: Issue::Source::CONFIG,
+          source:   Issue::Source::CONFIG,
           severity: Issue::Severity::ERROR
         )
       end
