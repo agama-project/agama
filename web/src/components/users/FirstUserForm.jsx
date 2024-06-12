@@ -254,7 +254,7 @@ export default function FirstUserForm() {
                 <Stack hasGutter>
                   {state.isEditing &&
                     <Switch
-                      label={_("Change password")}
+                      label={_("Edit password too")}
                       isChecked={changePassword}
                       onChange={() => setChangePassword(!changePassword)}
                     />}
