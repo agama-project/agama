@@ -33,7 +33,7 @@ import { _ } from "~/i18n";
  * Simple layout for displaying content that comes before product configuration
  * TODO: improve documentation
  */
-export default function SimpleLayout({ showOutlet = true, children }) {
+export default function SimpleLayout({ showOutlet = true, showInstallerOptions = true, children }) {
   return (
     <Page>
       <Masthead backgroundColor="light200">
@@ -42,7 +42,7 @@ export default function SimpleLayout({ showOutlet = true, children }) {
             <ToolbarContent>
               <ToolbarGroup align={{ default: "alignRight" }}>
                 <ToolbarItem>
-                  <InstallerOptions />
+                  {showInstallerOptions && <InstallerOptions />}
                 </ToolbarItem>
               </ToolbarGroup>
             </ToolbarContent>
