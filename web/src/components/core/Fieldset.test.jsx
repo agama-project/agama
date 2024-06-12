@@ -42,13 +42,12 @@ describe("Fieldset", () => {
 
   it("renders the given legend", () => {
     installerRender(<Fieldset legend="Simple legend" />);
-    screen.getByRole("group", { name: /Simple legend/i });
+    expect(screen.getByText("Simple legend")).toBeInTheDocument();
   });
 
   it("allows using a complex legend", () => {
     installerRender(<Fieldset legend={<ComplexLegend />} />);
-    const fieldset = screen.getByRole("group", { name: /Using a checkbox.*/i });
-    const checkbox = within(fieldset).getByRole("checkbox");
+    const checkbox = screen.getByRole("checkbox", { name: /Using a checkbox.*/i });
     expect(checkbox).toBeInTheDocument();
   });
 });

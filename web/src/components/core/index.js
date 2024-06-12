@@ -33,7 +33,6 @@ export { default as Installation } from "./Installation";
 export { default as InstallationFinished } from "./InstallationFinished";
 export { default as InstallationProgress } from "./InstallationProgress";
 export { default as InstallButton } from "./InstallButton";
-export { default as IssuesDialog } from "./IssuesDialog";
 export { default as IssuesHint } from "./IssuesHint";
 export { default as SectionSkeleton } from "./SectionSkeleton";
 export { default as ListSearch } from "./ListSearch";
@@ -46,7 +45,6 @@ export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmati
 export { default as Popup } from "./Popup";
 export { default as ProgressReport } from "./ProgressReport";
 export { default as ProgressText } from "./ProgressText";
-export { default as ValidationErrors } from "./ValidationErrors";
 export { default as Tip } from "./Tip";
 export { default as NumericTextInput } from "./NumericTextInput";
 export { default as PasswordInput } from "./PasswordInput";

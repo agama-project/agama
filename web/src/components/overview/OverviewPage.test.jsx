@@ -26,8 +26,14 @@ import { createClient } from "~/client";
 import { OverviewPage } from "~/components/overview";
 
 const startInstallationFn = jest.fn();
+let mockSelectedProduct = { id: "Tumbleweed" };
 
 jest.mock("~/client");
+jest.mock("~/context/product", () => ({
+  ...jest.requireActual("~/context/product"),
+  useProduct: () => ({ selectedProduct: mockSelectedProduct })
+}));
+
 jest.mock("~/components/overview/L10nSection", () => () => <div>Localization Section</div>);
 jest.mock("~/components/overview/StorageSection", () => () => <div>Storage Section</div>);
 jest.mock("~/components/overview/SoftwareSection", () => () => <div>Software Section</div>);
@@ -44,10 +50,27 @@ beforeEach(() => {
   });
 });
 
-it("renders the overview page content and the Install button", async () => {
-  installerRender(<OverviewPage />);
-  screen.getByText("Localization Section");
-  screen.getByText("Storage Section");
-  screen.getByText("Software Section");
-  screen.findByText("Install Button");
+describe("when no product is selected", () => {
+  beforeEach(() => {
+    mockSelectedProduct = null;
+  });
+
+  it("redirects to the products page", async () => {
+    installerRender(<OverviewPage />);
+    screen.getByText("Navigating to /products");
+  });
+});
+
+describe("when a product is selected", () => {
+  beforeEach(() => {
+    mockSelectedProduct = { name: "Tumbleweed" };
+  });
+
+  it("renders the overview page content and the Install button", async () => {
+    installerRender(<OverviewPage />);
+    screen.getByText("Localization Section");
+    screen.getByText("Storage Section");
+    screen.getByText("Software Section");
+    screen.findByText("Install Button");
+  });
 });
