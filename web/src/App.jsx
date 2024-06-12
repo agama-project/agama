@@ -20,14 +20,15 @@
  */
 
 import React, { useEffect, useState } from "react";
+import { Loading } from "./components/layout";
 import { Outlet } from "react-router-dom";
+import { ProductSelectionProgress } from "~/components/product";
 import { Questions } from "~/components/questions";
 import { ServerError, Installation } from "~/components/core";
-import { Loading } from "./components/layout";
 import { useInstallerL10n } from "./context/installerL10n";
 import { useInstallerClient, useInstallerClientStatus } from "~/context/installer";
 import { useProduct } from "./context/product";
-import { INSTALL, STARTUP } from "~/client/phase";
+import { CONFIG, INSTALL, STARTUP } from "~/client/phase";
 import { BUSY } from "~/client/status";
 
 /**
@@ -76,6 +77,10 @@ function App() {
 
     if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
       return <Loading />;
+    }
+
+    if (phase === CONFIG && status === BUSY) {
+      return <ProductSelectionProgress />;
     }
 
     if (phase === INSTALL) {
