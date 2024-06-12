@@ -73,6 +73,11 @@ function App() {
 
   const Content = () => {
     if (error) return <ServerError />;
+
+    if (phase === INSTALL) {
+      return <Installation status={status} />;
+    }
+
     if (!products) return <Loading />;
 
     if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
@@ -81,10 +86,6 @@ function App() {
 
     if (phase === CONFIG && status === BUSY) {
       return <ProductSelectionProgress />;
-    }
-
-    if (phase === INSTALL) {
-      return <Installation status={status} />;
     }
 
     return <Outlet />;

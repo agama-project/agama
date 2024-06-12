@@ -23,16 +23,24 @@ import React from "react";
 
 import ProgressReport from "./ProgressReport";
 import { Center } from "~/components/layout";
-import { Page } from "~/components/core";
 import { Questions } from "~/components/questions";
 import { _ } from "~/i18n";
+import { Card, Grid, GridItem } from "@patternfly/react-core";
 
 function InstallationProgress() {
   return (
-    <Page icon="downloading" title={_("Installing")}>
-      <Center><ProgressReport /></Center>
+    <>
+      <Center style={{ blockSize: "100vh" }}>
+        <Grid hasGutter>
+          <GridItem sm={8} smOffset={2}>
+            <Card>
+              <ProgressReport />
+            </Card>
+          </GridItem>
+        </Grid>
+      </Center>
       <Questions />
-    </Page>
+    </>
   );
 }
 
