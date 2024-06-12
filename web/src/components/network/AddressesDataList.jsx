@@ -29,7 +29,8 @@ import React from "react";
 import {
   Button,
   DataList, DataListItem, DataListItemRow, DataListItemCells, DataListCell, DataListAction,
-  Flex
+  Flex,
+  Stack
 } from "@patternfly/react-core";
 
 import { FormLabel } from "~/components/core";
@@ -115,16 +116,18 @@ export default function AddressesDataList({
   const newAddressButtonText = addresses.length ? _("Add another address") : _("Add an address");
 
   return (
-    <>
+    <Stack hasGutter>
       <Flex justifyContent={{ default: "justifyContentSpaceBetween" }}>
         <FormLabel isRequired={!allowEmpty}>{_("Addresses")}</FormLabel>
-        <Button size="sm" variant="secondary" onClick={addAddress}>
-          {newAddressButtonText}
-        </Button>
       </Flex>
       <DataList isCompact gridBreakpoint="none" title={_("Addresses data list")}>
         {addresses.map(address => renderAddress(address))}
       </DataList>
-    </>
+      <Flex>
+        <Button size="sm" variant="secondary" onClick={addAddress}>
+          {newAddressButtonText}
+        </Button>
+      </Flex>
+    </Stack>
   );
 }
