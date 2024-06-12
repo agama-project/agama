@@ -42,6 +42,16 @@ jest.mock("~/context/product", () => ({
   }
 }));
 
+jest.mock("~/context/installer", () => ({
+  ...jest.requireActual("~/context/installer"),
+  useInstallerClientStatus: () => {
+    return {
+      connected: true,
+      error: false
+    };
+  }
+}));
+
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
 jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
@@ -55,8 +65,12 @@ const getStatusFn = jest.fn();
 const getPhaseFn = jest.fn();
 
 // capture the latest subscription to the manager#onPhaseChange for triggering it manually
-const onPhaseChangeFn = cb => { callbacks.onPhaseChange = cb };
-const onStatusChangeFn = cb => { callbacks.onStatusChange = cb };
+const onPhaseChangeFn = cb => {
+  callbacks.onPhaseChange = cb;
+};
+const onStatusChangeFn = cb => {
+  callbacks.onStatusChange = cb;
+};
 const changePhaseTo = phase => act(() => callbacks.onPhaseChange(phase));
 
 describe("App", () => {
@@ -69,7 +83,7 @@ describe("App", () => {
           getStatus: getStatusFn,
           getPhase: getPhaseFn,
           onPhaseChange: onPhaseChangeFn,
-          onStatusChange: onStatusChangeFn,
+          onStatusChange: onStatusChangeFn
         },
         l10n: {
           locales: jest.fn().mockResolvedValue([["en_us", "English", "United States"]]),
