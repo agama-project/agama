@@ -20,24 +20,27 @@
  */
 
 import React from "react";
-import { EmptyState, EmptyStateIcon, EmptyStateHeader } from "@patternfly/react-core";
+import { EmptyState, EmptyStateIcon, EmptyStateHeader, Spinner } from "@patternfly/react-core";
 
+import SimpleLayout from "~/SimpleLayout";
 import { Center, Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
-const LoadingIcon = () => <Icon name="loading" size="xxxl" />;
+const LoadingIcon = () => <Spinner size="xl" />;
 
 function Loading({ text = _("Loading installation environment, please wait.") }) {
   return (
-    <Center>
-      <EmptyState variant="xl">
-        <EmptyStateHeader
-          titleText={text}
-          headingLevel="h2"
-          icon={<EmptyStateIcon icon={LoadingIcon} />}
-        />
-      </EmptyState>
-    </Center>
+    <SimpleLayout showOutlet={false}>
+      <Center>
+        <EmptyState variant="xl">
+          <EmptyStateHeader
+            titleText={text}
+            headingLevel="h1"
+            icon={<EmptyStateIcon icon={LoadingIcon} />}
+          />
+        </EmptyState>
+      </Center>
+    </SimpleLayout>
   );
 }
 
