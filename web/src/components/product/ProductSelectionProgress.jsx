@@ -70,7 +70,7 @@ const Progress = ({ selectedProduct, storageProgress, softwareProgress }) => {
 
   /** @todo Add aria-label to steps, describing its status and variant. */
   return (
-    <ProgressStepper isCenterAligned aria-label="Preparing selected product, please wait">
+    <ProgressStepper isCenterAligned>
       <ProgressStep
         id="product-step"
         titleId="product-step-title"
@@ -139,11 +139,11 @@ function ProductSelectionProgress() {
     <Center style={{ blockSize: "100vh" }}>
       <Grid hasGutter>
         <GridItem sm={8} smOffset={2}>
-          <Card>
+          <Card isPlain>
             <CardBody>
               <Stack hasGutter>
                 <h1 style={{ textAlign: "center" }}>
-                  {_("Configuring the selected product, please wait ...")}
+                  {_("Configuring the product, please wait ...")}
                 </h1>
                 <Progress
                   selectedProduct={selectedProduct}
