@@ -109,6 +109,7 @@
         <package name="checkmedia"/>
         <package name="spice-vdagent"/>
         <package name="libtss2-tcti-device0"/>
+        <package name="jq"/>
         <archive name="root.tar.xz"/>
     </packages>
     <!-- additional packages for the openSUSE flavors -->

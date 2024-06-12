@@ -1,10 +1,9 @@
 //! Representation of the storage settings
 
-use agama_settings::Settings;
 use serde::{Deserialize, Serialize};
 
 /// Storage settings for installation
-#[derive(Debug, Default, Settings, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct StorageSettings {
     /// Whether LVM should be enabled

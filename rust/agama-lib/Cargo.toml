@@ -6,7 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-agama-settings = { path="../agama-settings" }
 anyhow = "1.0"
 async-trait = "0.1.77"
 cidr = { version = "0.2.2", features = ["serde"] }

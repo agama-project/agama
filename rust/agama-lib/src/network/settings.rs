@@ -1,20 +1,16 @@
 //! Representation of the network settings
 
 use super::types::{DeviceState, DeviceType, Status};
-use agama_settings::error::ConversionError;
-use agama_settings::{SettingObject, SettingValue, Settings};
 use cidr::IpInet;
 use serde::{Deserialize, Serialize};
-use std::convert::TryFrom;
 use std::default::Default;
 use std::net::IpAddr;
 
 /// Network settings for installation
-#[derive(Debug, Default, Settings, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NetworkSettings {
     /// Connections to use in the installation
-    #[settings(collection)]
     pub connections: Vec<NetworkConnection>,
 }
 
@@ -124,92 +120,5 @@ impl NetworkConnection {
         } else {
             DeviceType::Ethernet
         }
-    }
-}
-
-impl TryFrom<SettingObject> for NetworkConnection {
-    type Error = ConversionError;
-
-    fn try_from(value: SettingObject) -> Result<Self, Self::Error> {
-        let Some(id) = value.get("id") else {
-            return Err(ConversionError::MissingKey("id".to_string()));
-        };
-
-        let default_method = SettingValue("disabled".to_string());
-        let method4 = value.get("method4").unwrap_or(&default_method);
-        let method6 = value.get("method6").unwrap_or(&default_method);
-
-        let conn = NetworkConnection {
-            id: id.clone().try_into()?,
-            method4: method4.clone().try_into()?,
-            method6: method6.clone().try_into()?,
-            ..Default::default()
-        };
-
-        Ok(conn)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use agama_settings::{settings::Settings, SettingObject, SettingValue};
-    use std::collections::HashMap;
-
-    #[test]
-    fn test_device_type() {
-        let eth = NetworkConnection::default();
-        assert_eq!(eth.device_type(), DeviceType::Ethernet);
-
-        let wlan = NetworkConnection {
-            wireless: Some(WirelessSettings::default()),
-            ..Default::default()
-        };
-
-        let bond = NetworkConnection {
-            bond: Some(BondSettings::default()),
-            ..Default::default()
-        };
-
-        assert_eq!(wlan.device_type(), DeviceType::Wireless);
-        assert_eq!(bond.device_type(), DeviceType::Bond);
-    }
-
-    #[test]
-    fn test_bonding_defaults() {
-        let bond = BondSettings::default();
-
-        assert_eq!(bond.mode, "balance-rr".to_string());
-        assert_eq!(bond.ports.len(), 0);
-        assert_eq!(bond.options, None);
-    }
-
-    #[test]
-    fn test_add_connection_to_setting() {
-        let name = SettingValue("Ethernet 1".to_string());
-        let method = SettingValue("auto".to_string());
-        let conn = HashMap::from([("id".to_string(), name), ("method".to_string(), method)]);
-        let conn = SettingObject(conn);
-
-        let mut settings = NetworkSettings::default();
-        settings.add("connections", conn).unwrap();
-        assert_eq!(settings.connections.len(), 1);
-    }
-
-    #[test]
-    fn test_setting_object_to_network_connection() {
-        let name = SettingValue("Ethernet 1".to_string());
-        let method_auto = SettingValue("auto".to_string());
-        let method_disabled = SettingValue("disabled".to_string());
-        let settings = HashMap::from([
-            ("id".to_string(), name),
-            ("method4".to_string(), method_auto),
-            ("method6".to_string(), method_disabled),
-        ]);
-        let settings = SettingObject(settings);
-        let conn: NetworkConnection = settings.try_into().unwrap();
-        assert_eq!(conn.id, "Ethernet 1");
-        assert_eq!(conn.method4, Some("auto".to_string()));
-        assert_eq!(conn.method6, Some("disabled".to_string()));
     }
 }

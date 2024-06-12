@@ -2,7 +2,7 @@
 // TODO: quickly explain difference between FooSettings and FooStore, with an example
 
 use crate::error::ServiceError;
-use crate::install_settings::{InstallSettings, Scope};
+use crate::install_settings::InstallSettings;
 use crate::{
     localization::LocalizationStore, network::NetworkStore, product::ProductStore,
     software::SoftwareStore, storage::StorageAutoyastStore, storage::StorageStore,
@@ -42,41 +42,19 @@ impl<'a> Store<'a> {
         })
     }
 
-    /// Loads the installation settings from the D-Bus service.
+    /// Loads the installation settings from the HTTP interface.
     ///
     /// NOTE: The storage AutoYaST settings cannot be loaded because they cannot be modified. The
     /// ability of using the storage AutoYaST settings from a JSON config file is temporary and it
     /// will be removed in the future.
-    pub async fn load(&self, only: Option<Vec<Scope>>) -> Result<InstallSettings, ServiceError> {
-        let scopes = match only {
-            Some(scopes) => scopes,
-            None => Scope::all().to_vec(),
-        };
-
+    pub async fn load(&self) -> Result<InstallSettings, ServiceError> {
         let mut settings: InstallSettings = Default::default();
-        if scopes.contains(&Scope::Network) {
-            settings.network = Some(self.network.load().await?);
-        }
-
-        if scopes.contains(&Scope::Storage) {
-            settings.storage = Some(self.storage.load().await?);
-        }
-
-        if scopes.contains(&Scope::Software) {
-            settings.software = Some(self.software.load().await?);
-        }
-
-        if scopes.contains(&Scope::Users) {
-            settings.user = Some(self.users.load().await?);
-        }
-
-        if scopes.contains(&Scope::Product) {
-            settings.product = Some(self.product.load().await?);
-        }
-
-        if scopes.contains(&Scope::Localization) {
-            settings.localization = Some(self.localization.load().await?);
-        }
+        settings.network = Some(self.network.load().await?);
+        settings.storage = Some(self.storage.load().await?);
+        settings.software = Some(self.software.load().await?);
+        settings.user = Some(self.users.load().await?);
+        settings.product = Some(self.product.load().await?);
+        settings.localization = Some(self.localization.load().await?);
 
         // TODO: use try_join here
         Ok(settings)

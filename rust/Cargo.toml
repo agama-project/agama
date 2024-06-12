@@ -2,10 +2,8 @@
 members = [
   "agama-cli",
   "agama-server",
-  "agama-derive",
   "agama-lib",
   "agama-locale-data",
-  "agama-settings",
 ]
 resolver = "2"
 
