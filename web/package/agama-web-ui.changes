@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jun 13 16:05:53 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Fix redirection to products selector (gh#openSUSE/agama#1333).
+
+-------------------------------------------------------------------
 Thu Jun 13 10:52:22 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Remake the user interface to follow a streamlined approach
