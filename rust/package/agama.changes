@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 17 11:15:33 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add dns search domains and ignore-auto-dns to network settings
+  (gh#openSUSE/agama#1330).
+
+-------------------------------------------------------------------
 Tue Jul 16 11:56:29 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - CLI:
