@@ -62,7 +62,7 @@ const IssuesList = ({ issues }) => {
 
   return (
     <EmptyState
-      title={_("Before installing the system, you need to pay attention to the following tasks:")}
+      title={_("Before starting the installation, you need to address the following problems:")}
       icon="error"
       color="danger-color-100"
     >
