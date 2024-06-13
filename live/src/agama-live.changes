@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 13 16:07:08 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Added Tumbleweed OSS and Agama Staging repositories to the Live
+  system itself (gh#openSUSE/agama#1332)
+
+-------------------------------------------------------------------
 Tue Jun 11 21:39:51 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add the jq package to the image (gh#openSUSE/agama#1314).
