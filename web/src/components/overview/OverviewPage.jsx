@@ -66,7 +66,7 @@ const IssuesList = ({ issues }) => {
 
       const link = (
         <NotificationDrawerListItem key={idx} variant={variant} isHoverable={false}>
-          <NotificationDrawerListItemHeader title={SCOPE_HEADERS[scope]} variant={variant} />
+          <NotificationDrawerListItemHeader title={SCOPE_HEADERS[scope]} variant={variant} headingLevel="h4" />
           <NotificationDrawerListItemBody>
             <Link to={`/${scope}`}>{issue.description}</Link>
           </NotificationDrawerListItemBody>
