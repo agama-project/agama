@@ -20,37 +20,13 @@
  */
 
 import React from "react";
-import { Page } from "~/components/core";
 import ProductSelectionPage from "./ProductSelectionPage";
-import ProductRegistrationPage from "./ProductRegistrationPage";
-import { _ } from "~/i18n";
 
-const registerRoute = {
-  path: "/product/register",
-  element: <Page />,
-  handle: {
-    name: _("Product registration"),
-    icon: "inventory_2",
-    hidden: true
-  },
-  children: [
-    {
-      index: true,
-      element: <ProductRegistrationPage />
-    }
-  ]
-};
-
-const selectionRoute = {
-  path: "/product/select",
-  element: <ProductSelectionPage />,
-  handle: {
-    name: _("Product selection"),
-    icon: "inventory_2"
-  }
+const productsRoute = {
+  path: "/products",
+  element: <ProductSelectionPage />
 };
 
 export {
-  registerRoute,
-  selectionRoute,
+  productsRoute
 };

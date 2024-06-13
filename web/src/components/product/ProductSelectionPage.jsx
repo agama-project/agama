@@ -23,7 +23,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Card, CardBody,
-  Flex, FlexItem,
+  Flex,
   Form,
   Grid, GridItem,
   Radio
@@ -75,45 +75,41 @@ function ProductSelectionPage() {
   const isSelectionDisabled = !nextProduct || (nextProduct === selectedProduct);
 
   return (
-    <>
-      <Page.MainContent>
-        <Center>
-          <Form id="productSelectionForm" onSubmit={onSubmit}>
-            <Grid hasGutter>
-              {products.map((product, index) => (
-                <Item key={index}>
-                  <Card key={index} isRounded>
-                    <CardBody>
-                      <Radio
-                        key={index}
-                        name="product"
-                        id={product.name}
-                        label={<Label>{product.name}</Label>}
-                        body={product.description}
-                        isChecked={nextProduct === product}
-                        onChange={() => setNextProduct(product)}
-                      />
-                    </CardBody>
-                  </Card>
-                </Item>
-              ))}
-              <Item>
-                <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
-                  {selectedProduct && <Page.CancelAction navigateTo={-1} />}
-                  <Page.Action
-                    type="submit"
-                    form="productSelectionForm"
-                    isDisabled={isSelectionDisabled}
-                  >
-                    {_("Select")}
-                  </Page.Action>
-                </Flex>
-              </Item>
-            </Grid>
-          </Form>
-        </Center>
-      </Page.MainContent>
-    </>
+    <Center>
+      <Form id="productSelectionForm" onSubmit={onSubmit}>
+        <Grid hasGutter>
+          {products.map((product, index) => (
+            <Item key={index}>
+              <Card key={index} isRounded>
+                <CardBody>
+                  <Radio
+                    key={index}
+                    name="product"
+                    id={product.name}
+                    label={<Label>{product.name}</Label>}
+                    body={product.description}
+                    isChecked={nextProduct === product}
+                    onChange={() => setNextProduct(product)}
+                  />
+                </CardBody>
+              </Card>
+            </Item>
+          ))}
+          <Item>
+            <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
+              {selectedProduct && <Page.CancelAction navigateTo={-1} />}
+              <Page.Action
+                type="submit"
+                form="productSelectionForm"
+                isDisabled={isSelectionDisabled}
+              >
+                {_("Select")}
+              </Page.Action>
+            </Flex>
+          </Item>
+        </Grid>
+      </Form>
+    </Center>
   );
 }
 

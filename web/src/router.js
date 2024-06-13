@@ -25,20 +25,16 @@ import App from "~/App";
 import Protected from "~/Protected";
 import MainLayout from "~/MainLayout";
 import SimpleLayout from "./SimpleLayout";
-import { Page, LoginPage } from "~/components/core";
+import { LoginPage } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
-import { ProductRegistrationPage, ProductSelectionPage } from "~/components/product";
 import { _ } from "~/i18n";
 import overviewRoutes from "~/components/overview/routes";
 import l10nRoutes from "~/components/l10n/routes";
 import networkRoutes from "~/components/network/routes";
+import { productsRoute } from "~/components/product/routes";
 import storageRoutes from "~/components/storage/routes";
 import softwareRoutes from "~/components/software/routes";
 import usersRoutes from "~/components/users/routes";
-import {
-  registerRoute as productRegistrationRoute,
-  selectionRoute as productSelectionRoute
-} from "~/components/product/routes";
 
 const rootRoutes = [
   overviewRoutes,
@@ -46,8 +42,7 @@ const rootRoutes = [
   networkRoutes,
   storageRoutes,
   softwareRoutes,
-  usersRoutes,
-  productRegistrationRoute
+  usersRoutes
 ];
 
 const protectedRoutes = [
@@ -67,13 +62,7 @@ const protectedRoutes = [
       },
       {
         element: <SimpleLayout />,
-        children: [
-          {
-            path: "products",
-            element: <ProductSelectionPage />
-          },
-          productSelectionRoute
-        ]
+        children: [productsRoute]
       }
     ]
   }
