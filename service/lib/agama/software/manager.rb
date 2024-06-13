@@ -39,7 +39,6 @@ Yast.import "Package"
 Yast.import "Packages"
 Yast.import "PackageCallbacks"
 Yast.import "Pkg"
-Yast.import "Stage"
 
 module Agama
   module Software
@@ -72,6 +71,11 @@ module Agama
       PROPOSAL_ID = "agama-user-software-selection"
       private_constant :PROPOSAL_ID
 
+      # create the libzypp lock and the zypp caches in a special directory to
+      # not be affected by the Live system package management
+      TARGET_DIR = "/run/agama/zypp"
+      private_constant :TARGET_DIR
+
       attr_accessor :languages
 
       # Available products for installation.
@@ -97,6 +101,7 @@ module Agama
         @user_patterns = []
         @selected_patterns_change_callbacks = []
         on_progress_change { logger.info(progress.to_s) }
+        initialize_target
       end
 
       # Selects a product with the given id.
@@ -112,8 +117,10 @@ module Agama
 
         raise ArgumentError unless new_product
 
+        update_repositories(new_product)
+
         @product = new_product
-        repositories.delete_all
+
         update_issues
         true
       end
@@ -124,14 +131,9 @@ module Agama
 
         logger.info "Probing software"
 
-        # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
-        Yast::Stage.Set("normal")
-
         if repositories.empty?
-          start_progress(4)
-          store_original_repos
+          start_progress(3)
           Yast::PackageCallbacks.InitPackageCallbacks(logger)
-          progress.step(_("Initializing target repositories")) { initialize_target_repos }
           progress.step(_("Initializing sources")) { add_base_repos }
         else
           start_progress(2)
@@ -140,12 +142,16 @@ module Agama
         progress.step(_("Refreshing repositories metadata")) { repositories.load }
         progress.step(_("Calculating the software proposal")) { propose }
 
-        Yast::Stage.Set("initial")
         update_issues
       end
 
-      def initialize_target_repos
-        Yast::Pkg.TargetInitialize("/")
+      def initialize_target
+        # create the zypp lock also in the target directory
+        ENV["ZYPP_LOCKFILE_ROOT"] = TARGET_DIR
+        # cleanup the previous content (after service restart or crash)
+        FileUtils.rm_rf(TARGET_DIR)
+        FileUtils.mkdir_p(TARGET_DIR)
+        Yast::Pkg.TargetInitialize(TARGET_DIR)
         import_gpg_keys
       end
 
@@ -186,14 +192,13 @@ module Agama
 
       # Writes the repositories information to the installed system
       def finish
-        start_progress(2)
+        start_progress(1)
         progress.step(_("Writing repositories to the target system")) do
           Yast::Pkg.SourceSaveAll
           Yast::Pkg.TargetFinish
           Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
           registration.finish
         end
-        progress.step(_("Restoring original repositories")) { restore_original_repos }
       end
 
       # Determine whether the given tag is provided by the selected packages
@@ -415,31 +420,6 @@ module Agama
         product.repositories.each { |url| repositories.add(url) }
       end
 
-      REPOS_BACKUP = "/etc/zypp/repos.d.agama.backup"
-      private_constant :REPOS_BACKUP
-
-      REPOS_DIR = "/etc/zypp/repos.d"
-      private_constant :REPOS_DIR
-
-      # ensure that repos backup is there and repos.d is empty
-      def store_original_repos
-        # Backup was already created, so just remove all repos
-        if File.directory?(REPOS_BACKUP)
-          logger.info "removing #{REPOS_DIR}"
-          FileUtils.rm_rf(REPOS_DIR)
-        else # move repos to backup
-          logger.info "moving #{REPOS_DIR} to #{REPOS_BACKUP}"
-          FileUtils.mv(REPOS_DIR, REPOS_BACKUP)
-        end
-      end
-
-      def restore_original_repos
-        logger.info "removing #{REPOS_DIR}"
-        FileUtils.rm_rf(REPOS_DIR)
-        logger.info "moving #{REPOS_BACKUP} to #{REPOS_DIR}"
-        FileUtils.mv(REPOS_BACKUP, REPOS_DIR)
-      end
-
       # Adds resolvables for selected product
       def select_resolvables
         proposal.set_resolvables("agama", :pattern, product.mandatory_patterns)
@@ -513,6 +493,24 @@ module Agama
 
       def pattern_exist?(pattern_name)
         !Y2Packager::Resolvable.find(kind: :pattern, name: pattern_name).empty?
+      end
+
+      # update the zypp repositories for the new product, either delete them
+      # or keep them untouched
+      # @param new_product [Agama::Software::Product] the new selected product
+      def update_repositories(new_product)
+        # reuse the repositories when they are the same as for the previously
+        # selected product
+        # TODO: what about registered products?
+        # TODO: allow a partial match? i.e. keep the same repositories, delete
+        # additional repositories and add missing ones
+        if product&.repositories&.sort == new_product.repositories.sort
+          # the same repositories, we just needed to reset the package selection
+          Yast::Pkg.PkgReset()
+        else
+          # delete all, the #probe call will add the new repos
+          repositories.delete_all
+        end
       end
     end
   end
