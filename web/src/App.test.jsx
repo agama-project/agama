@@ -37,7 +37,9 @@ jest.mock("~/context/product", () => ({
   useProduct: () => {
     return {
       products: mockProducts,
-      selectedProduct: null
+      // FIXME: test that it redirects to products selector if no product
+      // selected yet
+      selectedProduct: {}
     };
   }
 }));
