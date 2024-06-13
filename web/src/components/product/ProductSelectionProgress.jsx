@@ -137,7 +137,7 @@ function ProductSelectionProgress() {
   }, [cancellablePromise, setSoftwareProgress, software]);
 
   return (
-    <SimpleLayout showOutlet={false} showInstallerOptions={false}>
+    <SimpleLayout showOutlet={false}>
       <Center>
         <Grid hasGutter>
           <GridItem sm={8} smOffset={2}>
