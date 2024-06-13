@@ -84,9 +84,6 @@ import WifiFind from "@icons/wifi_find.svg?component";
 
 import { SiLinux, SiWindows } from "@icons-pack/react-simple-icons";
 
-// Icons from SVG
-import Loading from "./three-dots-loader-icon.svg?component";
-
 /**
  * @typedef {string|number} IconSize
  * @typedef {keyof icons} IconName
@@ -120,7 +117,6 @@ const icons = {
   inventory_2: Inventory,
   keyboard: Keyboard,
   lan: Lan,
-  loading: Loading,
   list_alt: ListAlt,
   lock: Lock,
   manage_accounts: ManageAccounts,

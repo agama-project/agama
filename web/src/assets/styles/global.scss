@@ -39,6 +39,11 @@ button.pf-m-link {
   }
 }
 
+// Do not reserve space for empty nodes.
+div:empty {
+  display: none;
+}
+
 fieldset {
   padding: var(--fs-base);
   border: 0;

@@ -309,3 +309,28 @@ table td > .pf-v5-c-empty-state {
     color: white;
   }
 }
+
+// Force sidebar to only use needed width plus an extra padding at the end.
+.pf-v5-c-page__sidebar.pf-m-expanded {
+  --pf-v5-c-page__sidebar--Width: fit-content;
+
+  .pf-v5-c-nav__link {
+    padding-inline-end: calc(var(--pf-v5-global--spacer--xl) * 1.2);
+  }
+}
+
+// Makes the NotificationDrawerHeader "plain"
+.pf-v5-c-notification-drawer {
+  --pf-v5-c-notification-drawer--BackgroundColor: white;
+}
+
+.pf-v5-c-notification-drawer__list-item {
+  --pf-v5-c-notification-drawer__list-item--PaddingBottom: 0;
+  --pf-v5-c-notification-drawer__list-item--BoxShadow: none;
+}
+
+.pf-v5-c-notification-drawer__list-item-description {
+  padding-inline-start: calc(
+    1em + var(--pf-v5-c-notification-drawer__list-item-header-icon--MarginRight)
+  );
+}
