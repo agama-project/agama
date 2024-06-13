@@ -54,23 +54,37 @@ export default function SoftwareSection() {
     return;
   }
 
-  // TRANSLATORS: %s will be replaced with the installation size, example:
-  // "5GiB".
-  const [msg1, msg2] = _("The installation will take %s including:").split("%s");
+  const TextWithoutList = () => {
+    return (
+      <>
+        {_("The installation will take")} <Em>{proposal.size}</Em>
+      </>
+    );
+  };
+
+  const TextWithList = () => {
+    // TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
+    const [msg1, msg2] = _("The installation will take %s including:").split("%s");
+    return (
+      <>
+        <Text>
+          {msg1}
+          <Em>{proposal.size}</Em>
+          {msg2}
+        </Text>
+        <List>
+          {selectedPatterns.map(p => (
+            <ListItem key={p.name}>{p.summary}</ListItem>
+          ))}
+        </List>
+      </>
+    );
+  };
 
   return (
     <TextContent>
       <Text component={TextVariants.h3}>{_("Software")}</Text>
-      <Text>
-        {msg1}
-        <Em>{`${proposal.size}`}</Em>
-        {msg2}
-      </Text>
-      <List>
-        {selectedPatterns.map(p => (
-          <ListItem key={p.name}>{p.summary}</ListItem>
-        ))}
-      </List>
+      {selectedPatterns.length ? <TextWithList /> : <TextWithoutList />}
     </TextContent>
   );
 }
