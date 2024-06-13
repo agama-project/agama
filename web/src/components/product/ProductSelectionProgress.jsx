@@ -30,6 +30,7 @@ import {
 
 import { _ } from "~/i18n";
 import { Center } from "~/components/layout";
+import SimpleLayout from "~/SimpleLayout";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { useProduct } from "~/context/product";
@@ -136,26 +137,28 @@ function ProductSelectionProgress() {
   }, [cancellablePromise, setSoftwareProgress, software]);
 
   return (
-    <Center style={{ blockSize: "100vh" }}>
-      <Grid hasGutter>
-        <GridItem sm={8} smOffset={2}>
-          <Card isPlain>
-            <CardBody>
-              <Stack hasGutter>
-                <h1 style={{ textAlign: "center" }}>
-                  {_("Configuring the product, please wait ...")}
-                </h1>
-                <Progress
-                  selectedProduct={selectedProduct}
-                  storageProgress={storageProgress}
-                  softwareProgress={softwareProgress}
-                />
-              </Stack>
-            </CardBody>
-          </Card>
-        </GridItem>
-      </Grid>
-    </Center>
+    <SimpleLayout showOutlet={false}>
+      <Center>
+        <Grid hasGutter>
+          <GridItem sm={8} smOffset={2}>
+            <Card isPlain>
+              <CardBody>
+                <Stack hasGutter>
+                  <h1 style={{ textAlign: "center" }}>
+                    {_("Configuring the product, please wait ...")}
+                  </h1>
+                  <Progress
+                    selectedProduct={selectedProduct}
+                    storageProgress={storageProgress}
+                    softwareProgress={softwareProgress}
+                  />
+                </Stack>
+              </CardBody>
+            </Card>
+          </GridItem>
+        </Grid>
+      </Center>
+    </SimpleLayout>
   );
 }
 

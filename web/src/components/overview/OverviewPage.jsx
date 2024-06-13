@@ -43,7 +43,7 @@ import SoftwareSection from "./SoftwareSection";
 import { _ } from "~/i18n";
 
 const SCOPE_HEADERS = {
-  user: _("Users"),
+  users: _("Users"),
   storage: _("Storage"),
   software: _("Software")
 };
