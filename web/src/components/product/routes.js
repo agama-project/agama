@@ -20,11 +20,23 @@
  */
 
 import React from "react";
+import { Page } from "~/components/core";
 import ProductSelectionPage from "./ProductSelectionPage";
+import ProductSelectionProgress from "./ProductSelectionProgress";
 
 const productsRoute = {
   path: "/products",
-  element: <ProductSelectionPage />
+  element: <Page />,
+  children: [
+    {
+      index: true,
+      element: <ProductSelectionPage />
+    },
+    {
+      path: "progress",
+      element: <ProductSelectionProgress />
+    }
+  ]
 };
 
 export {

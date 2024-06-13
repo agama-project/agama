@@ -137,28 +137,26 @@ function ProductSelectionProgress() {
   }, [cancellablePromise, setSoftwareProgress, software]);
 
   return (
-    <SimpleLayout showOutlet={false}>
-      <Center>
-        <Grid hasGutter>
-          <GridItem sm={8} smOffset={2}>
-            <Card isPlain>
-              <CardBody>
-                <Stack hasGutter>
-                  <h1 style={{ textAlign: "center" }}>
-                    {_("Configuring the product, please wait ...")}
-                  </h1>
-                  <Progress
-                    selectedProduct={selectedProduct}
-                    storageProgress={storageProgress}
-                    softwareProgress={softwareProgress}
-                  />
-                </Stack>
-              </CardBody>
-            </Card>
-          </GridItem>
-        </Grid>
-      </Center>
-    </SimpleLayout>
+    <Center>
+      <Grid hasGutter>
+        <GridItem sm={8} smOffset={2}>
+          <Card isPlain>
+            <CardBody>
+              <Stack hasGutter>
+                <h1 style={{ textAlign: "center" }}>
+                  {_("Configuring the product, please wait ...")}
+                </h1>
+                <Progress
+                  selectedProduct={selectedProduct}
+                  storageProgress={storageProgress}
+                  softwareProgress={softwareProgress}
+                />
+              </Stack>
+            </CardBody>
+          </Card>
+        </GridItem>
+      </Grid>
+    </Center>
   );
 }
 

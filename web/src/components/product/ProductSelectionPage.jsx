@@ -57,7 +57,7 @@ function ProductSelectionPage() {
       manager.startProbing();
     }
 
-    navigate("/");
+    navigate("/products/progress");
   };
 
   if (!products) return (
