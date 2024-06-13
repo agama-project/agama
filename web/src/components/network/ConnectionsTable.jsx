@@ -20,6 +20,7 @@
  */
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sprintf } from "sprintf-js";
 
@@ -45,9 +46,9 @@ import { _ } from "~/i18n";
 export default function ConnectionsTable({
   connections,
   devices,
-  onEdit,
   onForget
 }) {
+  const navigate = useNavigate();
   if (connections.length === 0) return null;
 
   const connectionDevice = ({ id }) => devices.find(({ connection }) => id === connection);
@@ -74,16 +75,15 @@ export default function ConnectionsTable({
           const actions = [
             {
               title: _("Edit"),
-              "aria-label":
-                // TRANSLATORS: %s is replaced by a network connection name
-                sprintf(_("Edit connection %s"), connection.id),
-              onClick: () => onEdit(connection)
+              role: "link",
+              // TRANSLATORS: %s is replaced by a network connection name
+              "aria-label": sprintf(_("Edit connection %s"), connection.id),
+              onClick: () => navigate(`connections/${connection.id}/edit`)
             },
             typeof onForget === 'function' && {
               title: _("Forget"),
-              "aria-label":
-                // TRANSLATORS: %s is replaced by a network connection name
-                sprintf(_("Forget connection %s"), connection.id),
+              // TRANSLATORS: %s is replaced by a network connection name
+              "aria-label": sprintf(_("Forget connection %s"), connection.id),
               icon: <Icon name="delete" size="s" />,
               onClick: () => onForget(connection),
               isDanger: true

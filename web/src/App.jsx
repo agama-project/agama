@@ -20,16 +20,16 @@
  */
 
 import React, { useEffect, useState } from "react";
+import { Loading } from "./components/layout";
 import { Outlet } from "react-router-dom";
-
+import { ProductSelectionProgress } from "~/components/product";
+import { Questions } from "~/components/questions";
+import { ServerError, Installation } from "~/components/core";
+import { useInstallerL10n } from "./context/installerL10n";
 import { useInstallerClient, useInstallerClientStatus } from "~/context/installer";
 import { useProduct } from "./context/product";
-import { INSTALL, STARTUP } from "~/client/phase";
+import { CONFIG, INSTALL, STARTUP } from "~/client/phase";
 import { BUSY } from "~/client/status";
-
-import { ServerError, If, Installation } from "~/components/core";
-import { Loading } from "./components/layout";
-import { useInstallerL10n } from "./context/installerL10n";
 
 /**
  * Main application component.
@@ -40,7 +40,7 @@ import { useInstallerL10n } from "./context/installerL10n";
  */
 function App() {
   const client = useInstallerClient();
-  const { error } = useInstallerClientStatus();
+  const { connected, error } = useInstallerClientStatus();
   const { products } = useProduct();
   const { language } = useInstallerL10n();
   const [status, setStatus] = useState(undefined);
@@ -73,21 +73,31 @@ function App() {
 
   const Content = () => {
     if (error) return <ServerError />;
-    if (!products) return <Loading />;
-
-    if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
-      return <Loading />;
-    }
 
     if (phase === INSTALL) {
       return <Installation status={status} />;
     }
 
+    if (!products || !connected) return <Loading />;
+
+    if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
+      return <Loading />;
+    }
+
+    if (phase === CONFIG && status === BUSY) {
+      return <ProductSelectionProgress />;
+    }
+
     return <Outlet />;
   };
 
+  if (!language) return null;
+
   return (
-    <If condition={language} then={<Content />} />
+    <>
+      <Content />
+      <Questions />
+    </>
   );
 }
 

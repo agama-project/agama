@@ -23,12 +23,11 @@
 
 import React, { useEffect, useState } from "react";
 import { Form } from "@patternfly/react-core";
-
+import { OptionsPicker, Popup } from "~/components/core";
+import { SpaceActionsTable } from '~/components/storage';
 import { _ } from "~/i18n";
 import { SPACE_POLICIES } from '~/components/storage/utils';
-import { If, OptionsPicker, Popup } from "~/components/core";
 import { noop } from "~/utils";
-import { SpaceActionsTable } from '~/components/storage';
 
 /**
  * @typedef {import ("~/client/storage").SpaceAction} SpaceAction
@@ -156,18 +155,14 @@ in the devices listed below. Choose how to do it.");
     >
       <Form id="space-policy-form" onSubmit={onSubmit}>
         <SpacePolicyPicker currentPolicy={policy} onChange={setPolicy} />
-        <If
-          condition={devices.length > 0}
-          then={
-            <SpaceActionsTable
-              devices={devices}
-              expandedDevices={expandedDevices}
-              deviceAction={deviceAction}
-              isActionDisabled={policy?.id !== "custom"}
-              onActionChange={changeActions}
-            />
-          }
-        />
+        {devices.length > 0 &&
+          <SpaceActionsTable
+            devices={devices}
+            expandedDevices={expandedDevices}
+            deviceAction={deviceAction}
+            isActionDisabled={policy?.id !== "custom"}
+            onActionChange={changeActions}
+          />}
       </Form>
       <Popup.Actions>
         <Popup.Confirm form="space-policy-form" type="submit" />

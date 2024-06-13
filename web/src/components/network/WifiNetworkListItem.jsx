@@ -20,19 +20,12 @@
  */
 
 import React from "react";
-
-import {
-  Radio,
-  Spinner,
-  Text
-} from "@patternfly/react-core";
-import { sprintf } from "sprintf-js";
-
-import { DeviceState } from "~/client/network/model";
-
+import { Flex, Radio, Spinner, Split, Text } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { WifiNetworkMenu, WifiConnectionForm } from "~/components/network";
+import { DeviceState } from "~/client/network/model";
 import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 
 const networkState = (state) => {
   switch (state) {
@@ -81,7 +74,7 @@ function WifiNetworkListItem({ network, isSelected, isActive, onSelect, onCancel
       key={network.ssid}
       data-state={(isSelected && !network.settings && "focused") || null}
     >
-      <div className="header split justify-between">
+      <Flex justifyContent={{ default: "justifyContentSpaceBetween" }}>
         <Radio
           id={network.ssid}
           label={network.ssid}
@@ -94,7 +87,7 @@ function WifiNetworkListItem({ network, isSelected, isActive, onSelect, onCancel
           isChecked={isSelected || isActive || false}
           onClick={onSelect}
         />
-        <div className="split">
+        <Split hasGutter>
           {/* TRANSLATORS: %s is replaced by a WiFi network name */}
           {showSpinner && <Spinner size="md" aria-label={sprintf(_("%s connection is waiting for an state change"), network.ssid)} />}
           <Text component="small" className="keep-words">
@@ -102,9 +95,9 @@ function WifiNetworkListItem({ network, isSelected, isActive, onSelect, onCancel
             {networkState(network.device?.state)}
           </Text>
           {network.settings &&
-            <WifiNetworkMenu settings={network.settings} />}
-        </div>
-      </div>
+            <WifiNetworkMenu settings={network.settings} device={network.device} onConnect={onSelect} />}
+        </Split>
+      </Flex>
       {isSelected && (!network.settings || network.error) &&
         <div className="content">
           <WifiConnectionForm network={network} onCancel={onCancel} />

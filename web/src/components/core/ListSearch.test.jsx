@@ -47,7 +47,7 @@ const FruitList = ({ fruits }) => {
 it("searches for elements matching the given term (case-insensitive)", async () => {
   const { user } = plainRender(<FruitList fruits={fruits} />);
 
-  const searchInput = screen.getByRole("search");
+  const searchInput = screen.getByRole("textbox");
 
   // Search for "medium" size fruit
   await user.type(searchInput, "medium");

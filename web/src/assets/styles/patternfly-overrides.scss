@@ -123,7 +123,6 @@ table td > .pf-v5-c-empty-state {
 }
 
 .pf-v5-c-toolbar {
-  --stack-gutter: 0;
   --pf-v5-c-toolbar--PaddingTop: 0;
   --pf-v5-c-toolbar--PaddingBottom: 0;
 }
@@ -238,15 +237,6 @@ table td > .pf-v5-c-empty-state {
   padding-inline: 0;
 }
 
-ul {
-  list-style: initial;
-  margin-inline: var(--spacer-normal);
-
-  li:not(:last-child) {
-    margin-block-end: var(--spacer-small);
-  }
-}
-
 // Styles for tree table used by storage page.
 
 .pf-v5-c-table tbody {
@@ -266,11 +256,6 @@ ul {
   border-block-end: 0;
 }
 
-.pf-v5-c-table tr:where(.pf-v5-c-table__tr) > th {
-  white-space: normal;
-  vertical-align: middle;
-}
-
 .pf-v5-c-radio {
   align-items: center;
 }
@@ -283,4 +268,69 @@ ul {
   .pf-m-grid-md.pf-v5-c-table tr:where(.pf-v5-c-table__tr):not(.pf-v5-c-table__expandable-row) {
     padding-inline: 0;
   }
+}
+
+
+// New-ui overrides
+// ================
+
+// For using icons, set fill as color.
+.pf-v5-c-nav__link {
+  fill: var(--pf-v5-c-nav__link--Color);
+}
+
+.pf-v5-c-page__sidebar-body{
+  fill: white;
+}
+
+// center alignment and a bit of gap makes links with icons looks better
+.pf-v5-c-nav__link {
+  align-items: center;
+  gap: calc(var(--pf-v5-c-nav__link--FontSize) / 2);
+}
+
+// Allows the pf-m-current directly in the a element instead of li.
+// Needed because setting the pf-m-current in ReactRouter/NavLink (the one
+// that knowst that link "isActive")
+
+.pf-v5-c-tabs__link.pf-m-current {
+  --pf-v5-c-tabs__link--after--BorderColor: var(--pf-v5-c-tabs__item--m-current__link--after--BorderColor);
+  --pf-v5-c-tabs__link--after--BorderWidth: var(--pf-v5-c-tabs__item--m-current__link--after--BorderWidth);
+}
+
+// Color for icons in Masthead
+.pf-v5-c-masthead {
+  fill: white;
+}
+
+:not(.pf-m-light-200).pf-v5-c-masthead {
+  .pf-v5-c-button.pf-m-link,
+  .pf-v5-c-button.pf-m-plain {
+    color: white;
+  }
+}
+
+// Force sidebar to only use needed width plus an extra padding at the end.
+.pf-v5-c-page__sidebar.pf-m-expanded {
+  --pf-v5-c-page__sidebar--Width: fit-content;
+
+  .pf-v5-c-nav__link {
+    padding-inline-end: calc(var(--pf-v5-global--spacer--xl) * 1.2);
+  }
+}
+
+// Makes the NotificationDrawerHeader "plain"
+.pf-v5-c-notification-drawer {
+  --pf-v5-c-notification-drawer--BackgroundColor: white;
+}
+
+.pf-v5-c-notification-drawer__list-item {
+  --pf-v5-c-notification-drawer__list-item--PaddingBottom: 0;
+  --pf-v5-c-notification-drawer__list-item--BoxShadow: none;
+}
+
+.pf-v5-c-notification-drawer__list-item-description {
+  padding-inline-start: calc(
+    1em + var(--pf-v5-c-notification-drawer__list-item-header-icon--MarginRight)
+  );
 }

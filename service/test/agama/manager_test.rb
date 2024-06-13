@@ -23,6 +23,7 @@ require_relative "../test_helper"
 require_relative "./with_progress_examples"
 require "agama/manager"
 require "agama/config"
+require "agama/issue"
 require "agama/question"
 require "agama/dbus/service_status"
 require "agama/users"
@@ -48,7 +49,7 @@ describe Agama::Manager do
   end
   let(:users) do
     instance_double(
-      Agama::Users, write: nil, valid?: true
+      Agama::Users, write: nil, issues: []
     )
   end
   let(:locale) { instance_double(Agama::DBus::Clients::Locale, finish: nil) }
@@ -183,7 +184,7 @@ describe Agama::Manager do
 
     context "when the users configuration is not valid" do
       before do
-        allow(users).to receive(:valid?).and_return(false)
+        allow(users).to receive(:issues).and_return([instance_double(Agama::Issue)])
       end
 
       it "returns false" do

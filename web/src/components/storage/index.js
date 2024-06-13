@@ -20,7 +20,6 @@
  */
 
 export { default as ProposalPage } from "./ProposalPage";
-export { default as ProposalPageMenu } from "./ProposalPageMenu";
 export { default as ProposalSettingsSection } from "./ProposalSettingsSection";
 export { default as ProposalTransactionalInfo } from "./ProposalTransactionalInfo";
 export { default as ProposalActionsDialog } from "./ProposalActionsDialog";
@@ -31,9 +30,9 @@ export { default as DASDFormatProgress } from "./DASDFormatProgress";
 export { default as ZFCPPage } from "./ZFCPPage";
 export { default as ZFCPDiskForm } from "./ZFCPDiskForm";
 export { default as ISCSIPage } from "./ISCSIPage";
-export { default as BootSelectionDialog } from "./BootSelectionDialog";
-export { default as DeviceSelectionDialog } from "./DeviceSelectionDialog";
+export { default as BootSelection } from "./BootSelection";
 export { default as DeviceSelectorTable } from "./DeviceSelectorTable";
 export { default as DevicesFormSelect } from "./DevicesFormSelect";
 export { default as SpacePolicyDialog } from "./SpacePolicyDialog";
 export { default as SpaceActionsTable } from "./SpaceActionsTable";
+export { default as DeviceSelection } from "./DeviceSelection";

@@ -22,12 +22,11 @@
 // cspell:ignore wwpns npiv
 
 import React, { useCallback, useEffect, useReducer, useState } from "react";
-import { Button, Skeleton, Toolbar, ToolbarContent, ToolbarItem } from "@patternfly/react-core";
+import { Button, Skeleton, Stack, Toolbar, ToolbarContent, ToolbarItem } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
-
-import { _ } from "~/i18n";
-import { If, Page, Popup, RowActions, Section, SectionSkeleton } from "~/components/core";
+import { Popup, RowActions, Section, SectionSkeleton } from "~/components/core";
 import { ZFCPDiskForm } from "~/components/storage";
+import { _ } from "~/i18n";
 import { noop, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 
@@ -261,26 +260,28 @@ const DevicesTable = ({ devices = [], columns = [], columnValue = noop, actions 
     <Table variant="compact">
       <Thead>
         <Tr>
-          { columns.map((column) => <Th key={column.id}>{column.label}</Th>) }
+          {columns.map((column) => <Th key={column.id}>{column.label}</Th>)}
         </Tr>
       </Thead>
       <Tbody>
-        { sortedDevices().map((device) => (
-          <Tr key={device.id}>
-            <If
-              condition={loadingRow === device.id}
-              then={<Td colSpan={columns.length + 1}><Skeleton /></Td>}
-              else={
-                <>
-                  { columns.map(column => <Td key={column.id} dataLabel={column.label}>{columnValue(device, column)}</Td>) }
-                  <Td isActionCell key="device-actions">
-                    <Actions device={device} />
-                  </Td>
-                </>
-              }
-            />
-          </Tr>
-        ))}
+        {sortedDevices().map((device) => {
+          const RowContent = () => {
+            if (loadingRow === device.id) {
+              return <Td colSpan={columns.length + 1}><Skeleton /></Td>;
+            }
+
+            return (
+              <>
+                {columns.map(column => <Td key={column.id} dataLabel={column.label}>{columnValue(device, column)}</Td>)}
+                <Td isActionCell key="device-actions">
+                  <Actions device={device} />
+                </Td>
+              </>
+            );
+          };
+
+          return <Tr key={device.id}><RowContent /></Tr>;
+        })}
       </Tbody>
     </Table>
   );
@@ -413,12 +414,12 @@ const ControllersSection = ({ client, manager, load = noop, isLoading = false })
 
   const EmptyState = () => {
     return (
-      <div className="stack">
+      <Stack hasGutter>
         <div>{_("No zFCP controllers found.")}</div>
         <div>{_("Please, try to read the zFCP devices again.")}</div>
         {/* TRANSLATORS: button label */}
         <Button variant="primary" onClick={load}>{_("Read zFCP devices")}</Button>
-      </div>
+      </Stack>
     );
   };
 
@@ -451,17 +452,8 @@ configured after activating a controller.");
 
   return (
     <Section title="Controllers">
-      <If
-        condition={isLoading}
-        then={<SectionSkeleton />}
-        else={
-          <If
-            condition={manager.controllers.length === 0}
-            then={<EmptyState />}
-            else={<Content />}
-          />
-        }
-      />
+      {isLoading && <SectionSkeleton />}
+      {!isLoading && manager.controllers.length === 0 ? <EmptyState /> : <Content />}
     </Section>
   );
 };
@@ -549,14 +541,10 @@ const DisksSection = ({ client, manager, isLoading = false }) => {
     };
 
     return (
-      <div className="stack">
+      <Stack hasGutter>
         <div>{_("No zFCP disks found.")}</div>
-        <If
-          condition={manager.getActiveControllers().length === 0}
-          then={<NoActiveControllers />}
-          else={<NoActiveDisks />}
-        />
-      </div>
+        {manager.getActiveControllers().length === 0 ? <NoActiveControllers /> : <NoActiveDisks />}
+      </Stack>
     );
   };
 
@@ -565,7 +553,7 @@ const DisksSection = ({ client, manager, isLoading = false }) => {
 
     return (
       <>
-        <Toolbar className="no-stack-gutter">
+        <Toolbar>
           <ToolbarContent>
             <ToolbarItem align={{ default: "alignRight" }}>
               {/* TRANSLATORS: button label */}
@@ -582,27 +570,14 @@ const DisksSection = ({ client, manager, isLoading = false }) => {
   return (
     // TRANSLATORS: section title
     <Section title={_("Disks")}>
-      <If
-        condition={isLoading}
-        then={<SectionSkeleton />}
-        else={
-          <If
-            condition={manager.disks.length === 0}
-            then={<EmptyState />}
-            else={<Content />}
-          />
-        }
-      />
-      <If
-        condition={isActivateOpen}
-        then={
-          <DiskPopup
-            client={client}
-            manager={manager}
-            onClose={closeActivate}
-          />
-        }
-      />
+      {isLoading && <SectionSkeleton />}
+      {!isLoading && manager.disks.length === 0 ? <EmptyState /> : <Content />}
+      {isActivateOpen &&
+        <DiskPopup
+          client={client}
+          manager={manager}
+          onClose={closeActivate}
+        />}
     </Section>
   );
 };
@@ -727,8 +702,7 @@ export default function ZFCPPage() {
   }, [client.zfcp, cancellablePromise, getLUNs]);
 
   return (
-    // TRANSLATORS: page title
-    <Page icon="hard_drive" title={_("Storage zFCP")}>
+    <>
       <ControllersSection
         client={client.zfcp}
         manager={state.manager}
@@ -740,6 +714,6 @@ export default function ZFCPPage() {
         manager={state.manager}
         isLoading={state.isLoading}
       />
-    </Page>
+    </>
   );
 }

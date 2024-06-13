@@ -22,9 +22,9 @@
 // @ts-check
 
 import React, { useEffect, useState } from "react";
-import { Checkbox, Form } from "@patternfly/react-core";
+import { Checkbox, Form, Switch, Stack } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import { If, SwitchField, PasswordAndConfirmationInput, Popup } from "~/components/core";
+import { PasswordAndConfirmationInput, Popup } from "~/components/core";
 import { EncryptionMethods } from "~/client/storage";
 
 /**
@@ -105,15 +105,16 @@ export default function EncryptionSettingsDialog({
     }
   };
 
+  const tpmAvailable = methods.includes(EncryptionMethods.TPM);
+
   return (
     <Popup title={DIALOG_TITLE} description={DIALOG_DESCRIPTION} isOpen={isOpen} isLoading={isLoading}>
-      <SwitchField
-        highlightContent
-        isChecked={isEnabled}
-        onClick={() => setIsEnabled(!isEnabled)}
-        label={_("Encrypt the system")}
-        textWrapper="span"
-      >
+      <Stack hasGutter>
+        <Switch
+          label={_("Encrypt the system")}
+          isChecked={isEnabled}
+          onChange={() => setIsEnabled(!isEnabled)}
+        />
         <Form id={formId} onSubmit={submitSettings}>
           <PasswordAndConfirmationInput
             value={password}
@@ -121,21 +122,17 @@ export default function EncryptionSettingsDialog({
             onValidation={setPasswordsMatch}
             isDisabled={!isEnabled}
           />
-          <If
-            condition={methods.includes(EncryptionMethods.TPM)}
-            then={
-              <Checkbox
-                id="tpm_encryption_method"
-                label={TPM_LABEL}
-                description={TPM_EXPLANATION}
-                isChecked={method === EncryptionMethods.TPM}
-                isDisabled={!isEnabled}
-                onChange={changeMethod}
-              />
-            }
-          />
+          {tpmAvailable &&
+            <Checkbox
+              id="tpm_encryption_method"
+              label={TPM_LABEL}
+              description={TPM_EXPLANATION}
+              isChecked={method === EncryptionMethods.TPM}
+              isDisabled={!isEnabled}
+              onChange={changeMethod}
+            />}
         </Form>
-      </SwitchField>
+      </Stack>
       <Popup.Actions>
         <Popup.Confirm form={formId} type="submit" isDisabled={!validSettings}>
           {_("Accept")}

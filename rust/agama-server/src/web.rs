@@ -178,6 +178,15 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
         )
         .await?,
     );
+    stream.insert(
+        "users-issues",
+        issues_stream(
+            dbus.clone(),
+            "org.opensuse.Agama.Manager1",
+            "/org/opensuse/Agama/Users1",
+        )
+        .await?,
+    );
 
     tokio::pin!(stream);
     let e = events.clone();

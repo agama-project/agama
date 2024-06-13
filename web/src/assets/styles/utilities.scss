@@ -59,6 +59,16 @@
   inline-size: var(--icon-size-s);
 }
 
+.icon-xl {
+  block-size: var(--icon-size-xl);
+  inline-size: var(--icon-size-xl);
+}
+
+.icon-xxl {
+  block-size: var(--icon-size-xxl);
+  inline-size: var(--icon-size-xxl);
+}
+
 .icon-xxxl {
   block-size: var(--icon-size-xxxl);
   inline-size: var(--icon-size-xxxl);
@@ -151,10 +161,6 @@
   padding: 0;
 }
 
-.no-stack-gutter {
-  --stack-gutter: 0;
-}
-
 .block-size-auto {
   block-size: auto;
 }
@@ -243,4 +249,8 @@
 .label-tip .pf-v5-c-label__text {
   display: flex;
   gap: var(--spacer-smaller);
+}
+
+.no-padding {
+  padding: 0;
 }

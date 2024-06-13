@@ -20,13 +20,14 @@
  */
 
 import React, { useState } from "react";
-import { HelperText, HelperTextItem, Form, FormGroup, FormSelect, FormSelectOption, TextInput } from "@patternfly/react-core";
-import { sprintf } from "sprintf-js";
+import { useLoaderData, useNavigate } from "react-router-dom";
+import { HelperText, HelperTextItem, Form, FormGroup, FormSelect, FormSelectOption, Grid, GridItem, TextInput, Stack, FormHelperText } from "@patternfly/react-core";
 
 import { useInstallerClient } from "~/context/installer";
-import { Popup } from "~/components/core";
+import { Page } from "~/components/core";
 import { AddressesDataList, DnsDataList } from "~/components/network";
 import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 
 const METHODS = {
   MANUAL: "manual",
@@ -35,8 +36,10 @@ const METHODS = {
 
 const usingDHCP = (method) => method === METHODS.AUTO;
 
-export default function IpSettingsForm({ connection, onClose, onSubmit }) {
+export default function IpSettingsForm() {
   const client = useInstallerClient();
+  const connection = useLoaderData();
+  const navigate = useNavigate();
   const [addresses, setAddresses] = useState(connection.addresses);
   const [nameservers, setNameservers] = useState(connection.nameservers.map(a => {
     return { address: a };
@@ -46,6 +49,7 @@ export default function IpSettingsForm({ connection, onClose, onSubmit }) {
   const [errors, setErrors] = useState({});
 
   const isSetAsInvalid = field => Object.keys(errors).includes(field);
+  const isGatewayDisabled = addresses.length === 0;
 
   const validatedAttrValue = (field) => {
     if (isSetAsInvalid(field)) return "error";
@@ -109,8 +113,7 @@ export default function IpSettingsForm({ connection, onClose, onSubmit }) {
     };
 
     client.network.updateConnection(updatedConnection)
-      .then(onSubmit)
-      .then(onClose)
+      .then(navigate(".."))
       // TODO: better error reporting. By now, it sets an error for the whole connection.
       .catch(({ message }) => setErrors({ object: message }));
   };
@@ -128,57 +131,85 @@ export default function IpSettingsForm({ connection, onClose, onSubmit }) {
   // TRANSLATORS: manual network configuration mode with a static IP address
   // %s is replaced by the connection name
   return (
-    <Popup
-      isOpen
-      title={sprintf(_("Edit %s"), connection.id)}
-      blockSize="medium"
-    >
-      {renderError("object")}
-      <Form id="edit-connection" onSubmit={onSubmitForm}>
-        <FormGroup fieldId="method" label={_("Mode")} isRequired>
-          <FormSelect
-            id="method"
-            name="method"
-            // TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
-            aria-label={_("Mode")}
-            value={method}
-            label={_("Mode")}
-            onChange={onMethodChange}
-            validated={validatedAttrValue("method")}
-          >
-            <FormSelectOption key="auto" value={METHODS.AUTO} label={_("Automatic (DHCP)")} />
-            {/* TRANSLATORS: manual network configuration mode with a static IP address */}
-            <FormSelectOption key="manual" value={METHODS.MANUAL} label={_("Manual")} />
-          </FormSelect>
-          {renderError("method")}
-        </FormGroup>
+    <>
+      <Page.Header>
+        <h2>{sprintf(_("Edit connection %s"), connection.id)}</h2>
+      </Page.Header>
+      <Page.MainContent>
+        {renderError("object")}
+        <Form id="editConnectionForm" onSubmit={onSubmitForm}>
+          <Grid hasGutter>
+            <GridItem sm={12} xl={6} rowSpan={2}>
+              <Page.CardSection isFullHeight>
+                <Stack hasGutter>
+                  <FormGroup fieldId="method" label={_("Mode")} isRequired>
+                    <FormSelect
+                      id="method"
+                      name="method"
+                      // TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
+                      aria-label={_("Mode")}
+                      value={method}
+                      label={_("Mode")}
+                      onChange={onMethodChange}
+                      validated={validatedAttrValue("method")}
+                    >
+                      <FormSelectOption key="auto" value={METHODS.AUTO} label={_("Automatic (DHCP)")} />
+                      {/* TRANSLATORS: manual network configuration mode with a static IP address */}
+                      <FormSelectOption key="manual" value={METHODS.MANUAL} label={_("Manual")} />
+                    </FormSelect>
+                    {renderError("method")}
+                  </FormGroup>
+                  <FormGroup fieldId="gateway" label="Gateway">
+                    <TextInput
+                      id="gateway"
+                      name="gateway"
+                      aria-label={_("Gateway")}
+                      value={gateway}
+                      // TRANSLATORS: network gateway configuration
+                      label={_("Gateway")}
+                      isDisabled={isGatewayDisabled}
+                      onChange={(_, value) => setGateway(value)}
+                    />
+                    {
+                      isGatewayDisabled &&
+                      <FormHelperText>
+                        <HelperText>
+                          <HelperTextItem variant="indeterminate">
+                            {_("Gateway can be defined only in 'Manual' mode")}
+                          </HelperTextItem>
+                        </HelperText>
+                      </FormHelperText>
+                    }
+                  </FormGroup>
+                </Stack>
+              </Page.CardSection>
+            </GridItem>
 
-        <AddressesDataList
-          addresses={addresses}
-          updateAddresses={setAddresses}
-          allowEmpty={usingDHCP(method)}
-        />
+            <GridItem sm={12} xl={6}>
+              <Page.CardSection>
+                <AddressesDataList
+                  addresses={addresses}
+                  updateAddresses={setAddresses}
+                  allowEmpty={usingDHCP(method)}
+                />
+              </Page.CardSection>
+            </GridItem>
 
-        <FormGroup fieldId="gateway" label="Gateway">
-          <TextInput
-            id="gateway"
-            name="gateway"
-            aria-label={_("Gateway")}
-            value={gateway}
-            // TRANSLATORS: network gateway configuration
-            label={_("Gateway")}
-            isDisabled={addresses.length === 0}
-            onChange={(_, value) => setGateway(value)}
-          />
-        </FormGroup>
+            <GridItem sm={12} xl={6}>
+              <Page.CardSection>
+                <DnsDataList servers={nameservers} updateDnsServers={setNameservers} />
+              </Page.CardSection>
+            </GridItem>
+          </Grid>
+        </Form>
+      </Page.MainContent>
 
-        <DnsDataList servers={nameservers} updateDnsServers={setNameservers} />
-      </Form>
-
-      <Popup.Actions>
-        <Popup.Confirm form="edit-connection" type="submit" />
-        <Popup.Cancel onClick={onClose} />
-      </Popup.Actions>
-    </Popup>
+      <Page.NextActions>
+        <Page.CancelAction />
+        <Page.Action type="submit" form="editConnectionForm">
+          {_("Accept")}
+        </Page.Action>
+      </Page.NextActions>
+    </>
   );
 }

@@ -104,7 +104,7 @@ function WifiSelector({ isOpen = false, onClose }) {
 
         case NetworkEventTypes.DEVICE_UPDATED: {
           const [name, data] = payload;
-          if (data.state === "failed") {
+          if (data.state === "failed" && selectedNetwork) {
             selectedNetwork.error = "Failed";
           }
           setDevices(devs => {
@@ -139,7 +139,7 @@ function WifiSelector({ isOpen = false, onClose }) {
         onSelectionCallback={(network) => {
           switchSelectedNetwork(network);
           if (network.settings && !network.device) {
-            client.network.connectTo(network.settings);
+            client.connectTo(network.settings);
           }
         }}
         onCancelSelectionCallback={() => switchSelectedNetwork(activeNetwork)}

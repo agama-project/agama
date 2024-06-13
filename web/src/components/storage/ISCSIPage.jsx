@@ -20,17 +20,13 @@
  */
 
 import React from "react";
-
-import { _ } from "~/i18n";
-import { Page } from "~/components/core";
 import { InitiatorSection, TargetsSection } from "~/components/storage/iscsi";
 
 export default function ISCSIPage() {
   return (
-    // TRANSLATORS: page title for iSCSI configuration
-    <Page title={_("Storage iSCSI")}>
+    <>
       <InitiatorSection />
       <TargetsSection />
-    </Page>
+    </>
   );
 }

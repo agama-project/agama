@@ -78,11 +78,8 @@ const SPACE_POLICIES = [
     description: N_("All partitions will be removed and any data in the disks will be lost."),
     summaryLabels: [
       // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space deleting all content[...]"
-      N_("deleting all content of the installation device"),
-      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space deleting all content[...]"
-      N_("deleting all content of the %d selected disks")
+      // would read as "Find space deleting current content". Keep it short
+      N_("deleting current content")
     ]
   },
   {
@@ -91,11 +88,8 @@ const SPACE_POLICIES = [
     description: N_("The data is kept, but the current partitions will be resized as needed."),
     summaryLabels: [
       // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space shrinking partitions[...]"
-      N_("shrinking partitions of the installation device"),
-      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space shrinking partitions[...]"
-      N_("shrinking partitions of the %d selected disks")
+      // would read as "Find space shrinking partitions". Keep it short.
+      N_("shrinking partitions")
     ]
   },
   {
@@ -104,7 +98,7 @@ const SPACE_POLICIES = [
     description: N_("The data is kept. Only the space not assigned to any partition will be used."),
     summaryLabels: [
       // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space without modifying any partition".
+      // would read as "Find space without modifying any partition". Keep it short.
       N_("without modifying any partition")
     ]
   },
@@ -114,8 +108,8 @@ const SPACE_POLICIES = [
     description: N_("Select what to do with each partition."),
     summaryLabels: [
       // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space performing a custom set of actions".
-      N_("performing a custom set of actions")
+      // would read as "Find space with custom actions". Keep it short.
+      N_("with custom actions")
     ]
   }
 ];

@@ -1,27 +1,31 @@
 // Global CSS starts
-body {
-  line-height: var(--lh-normal);
-  font-size: var(--fs-base);
-  color: var(--color-text-primary);
-  background: var(--color-gray);
-  text-align: start;
-  overflow-x: hidden;
-}
-
 h1, h2, h3, h4, h5, h6 {
-  margin: 0;
+  // margin: 0;
   font-family: var(--ff-headlines);
   font-weight: var(--fw-bold);
 }
 
-h1 { font-size: var(--fs-h1); }
-h2 { font-size: var(--fs-h2); }
+h1 {
+  font-size: var(--pf-v5-global--FontSize--2xl)
+}
+
+h2 {
+  font-size: var(--pf-v5-global--FontSize--xl)
+}
+
+h3 {
+  font-size: var(--pf-v5-global--FontSize--lg)
+}
+
+h4 {
+  font-size: var(--pf-v5-global--FontSize--md)
+}
 
 a {
   color: currentcolor;
 }
 
-a,
+a:not(.pf-v5-c-button,.pf-v5-c-nav__link,.pf-v5-c-menu__item),
 // TODO: make it better, using PatternFly custom properties for overriding it
 button.pf-m-plain,
 button.pf-m-link {
@@ -33,6 +37,11 @@ button.pf-m-link {
   &:hover {
     color: var(--color-link-hover);
   }
+}
+
+// Do not reserve space for empty nodes.
+div:empty {
+  display: none;
 }
 
 fieldset {

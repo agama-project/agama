@@ -61,9 +61,17 @@ import { HTTPClient } from "./http";
  * @property {Issue[]} [product] - Issues from product.
  * @property {Issue[]} [storage] - Issues from storage.
  * @property {Issue[]} [software] - Issues from software.
+ * @property {Issue[]} [users] - Issues from users.
+ * @property {boolean} [isEmpty] - Whether the list is empty
  *
  * @typedef {(issues: Issues) => void} IssuesHandler
  */
+
+const createIssuesList = (product = [], software = [], storage = [], users = []) => {
+  const list = { product, storage, software, users };
+  list.isEmpty = !Object.values(list).some(v => v.length > 0);
+  return list;
+};
 
 /**
  * Creates the Agama client
@@ -71,7 +79,7 @@ import { HTTPClient } from "./http";
  * @param {URL} url - URL of the HTTP API.
  * @return {InstallerClient}
  */
-const createClient = (url) => {
+const createClient = url => {
   const client = new HTTPClient(url);
   const l10n = new L10nClient(client);
   // TODO: unify with the manager client
@@ -93,11 +101,11 @@ const createClient = (url) => {
    * @returns {Promise<Issues>}
    */
   const issues = async () => {
-    return {
-      product: await product.getIssues(),
-      storage: await storage.getIssues(),
-      software: await software.getIssues(),
-    };
+    const productIssues = await product.getIssues();
+    const storageIssues = await storage.getIssues();
+    const softwareIssues = await software.getIssues();
+    const usersIssues = await users.getIssues();
+    return createIssuesList(productIssues, softwareIssues, storageIssues, usersIssues);
   };
 
   /**
@@ -106,21 +114,16 @@ const createClient = (url) => {
    * @param {IssuesHandler} handler - Callback function.
    * @return {() => void} - Function to deregister the callback.
    */
-  const onIssuesChange = (handler) => {
+  const onIssuesChange = handler => {
     const unsubscribeCallbacks = [];
 
-    unsubscribeCallbacks.push(
-      product.onIssuesChange((i) => handler({ product: i })),
-    );
-    unsubscribeCallbacks.push(
-      storage.onIssuesChange((i) => handler({ storage: i })),
-    );
-    unsubscribeCallbacks.push(
-      software.onIssuesChange((i) => handler({ software: i })),
-    );
+    unsubscribeCallbacks.push(product.onIssuesChange(i => handler({ product: i })));
+    unsubscribeCallbacks.push(storage.onIssuesChange(i => handler({ storage: i })));
+    unsubscribeCallbacks.push(software.onIssuesChange(i => handler({ software: i })));
+    unsubscribeCallbacks.push(users.onIssuesChange(i => handler({ users: i })));
 
     return () => {
-      unsubscribeCallbacks.forEach((cb) => cb());
+      unsubscribeCallbacks.forEach(cb => cb());
     };
   };
 
@@ -141,8 +144,8 @@ const createClient = (url) => {
     onIssuesChange,
     isConnected,
     isRecoverable,
-    onConnect: (handler) => client.ws.onOpen(handler),
-    onDisconnect: (handler) => client.ws.onClose(handler),
+    onConnect: handler => client.ws.onOpen(handler),
+    onDisconnect: handler => client.ws.onClose(handler)
   };
 };
 
@@ -152,4 +155,4 @@ const createDefaultClient = async () => {
   return createClient(httpUrl);
 };
 
-export { createClient, createDefaultClient, phase };
+export { createClient, createDefaultClient, phase, createIssuesList };

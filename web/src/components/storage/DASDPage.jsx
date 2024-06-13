@@ -20,11 +20,9 @@
  */
 
 import React, { useEffect, useReducer } from "react";
-
-import { _ } from "~/i18n";
-import { If, Page } from "~/components/core";
-import DASDFormatProgress from "~/components/storage/DASDFormatProgress";
 import DASDTable from "~/components/storage/DASDTable";
+import DASDFormatProgress from "~/components/storage/DASDFormatProgress";
+import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 
@@ -178,15 +176,9 @@ export default function DASDPage() {
   }, [client.dasd]);
 
   return (
-    // TRANSLATORS: DASD = Direct Access Storage Device, IBM mainframe storage technology
-    <Page title={_("Storage DASD")} icon="hard_drive">
-
+    <>
       <DASDTable state={state} dispatch={dispatch} />
-
-      <If
-        condition={state.formatJob.running}
-        then={<DASDFormatProgress job={state.formatJob} devices={state.devices} />}
-      />
-    </Page>
+      {state.formatJob.running && <DASDFormatProgress job={state.formatJob} devices={state.devices} />}
+    </>
   );
 }

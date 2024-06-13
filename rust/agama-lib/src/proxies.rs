@@ -178,14 +178,3 @@ trait Issues {
     #[dbus_proxy(property)]
     fn all(&self) -> zbus::Result<Vec<(String, String, u32, u32)>>;
 }
-
-#[dbus_proxy(interface = "org.opensuse.Agama1.Validation", assume_defaults = true)]
-trait Validation {
-    /// Errors property
-    #[dbus_proxy(property)]
-    fn errors(&self) -> zbus::Result<Vec<String>>;
-
-    /// Valid property
-    #[dbus_proxy(property)]
-    fn valid(&self) -> zbus::Result<bool>;
-}

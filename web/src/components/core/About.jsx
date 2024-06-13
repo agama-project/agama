@@ -39,15 +39,16 @@ import { Popup } from "~/components/core";
  * @param {object} props
  * @param {boolean} [props.showIcon=true] - Whether render a "help" icon into the button.
  * @param {string} [props.iconSize="s"] - The size for the button icon.
- * @param {string} [props.buttonText="About Agama"] - The text for the button.
+ * @param {string} [props.buttonText="About"] - The text for the button.
  * @param {ButtonProps["variant"]} [props.buttonVariant="link"] - The button variant.
  *   See {@link https://www.patternfly.org/components/button#variant-examples PF/Button}.
  */
 export default function About({
   showIcon = true,
   iconSize = "s",
-  buttonText = _("About Agama"),
-  buttonVariant = "link"
+  buttonText = _("About"),
+  buttonVariant = "link",
+  ...props
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -60,8 +61,9 @@ export default function About({
         variant={buttonVariant}
         icon={showIcon && <Icon name="help" size={iconSize} />}
         onClick={open}
+        {...props}
       >
-        { buttonText }
+        {buttonText}
       </Button>
 
       <Popup

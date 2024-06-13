@@ -19,17 +19,18 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { FormSelect, FormSelectOption } from "@patternfly/react-core";
-
-import agama from "~/agama";
-
+import React, { useState } from "react";
+import {
+  Flex,
+  Select, SelectList, SelectOption,
+  MenuToggle
+} from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
+import agama from "~/agama";
 import { _ } from "~/i18n";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { useL10n } from "~/context/l10n";
 import { localConnection } from "~/utils";
-import { If } from "~/components/core";
 
 const sort = (keymaps) => {
   // sort the keymap names using the current locale
@@ -38,38 +39,53 @@ const sort = (keymaps) => {
 };
 
 export default function InstallerKeymapSwitcher() {
-  const { keymap, changeKeymap } = useInstallerL10n();
+  const { keymap: keymapId, changeKeymap } = useInstallerL10n();
   const { keymaps } = useL10n();
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedKeymap = keymaps.find(k => k.id === keymapId);
 
-  const onChange = (_, id) => changeKeymap(id);
+  const onSelect = (_, id) => {
+    setIsOpen(false);
+    changeKeymap(id);
+  };
+
+  const toggle = toggleRef => (
+    <MenuToggle ref={toggleRef} onClick={() => setIsOpen(!isOpen)} isExpanded={isOpen}>
+      {selectedKeymap?.name}
+    </MenuToggle>
+  );
 
   const options = sort(keymaps)
-    .map((keymap, index) => <FormSelectOption key={index} value={keymap.id} label={keymap.name} />);
+    .map((keymap, index) => (
+      <SelectOption key={index} value={keymap.id}>{keymap.name}</SelectOption>
+    ));
 
   return (
-    <>
-      <h3>
-        {/* TRANSLATORS: label for keyboard layout selection */}
-        <Icon name="keyboard" size="24" />{_("Keyboard")}
-      </h3>
-      <If
-        condition={localConnection()}
-        then={
-          <FormSelect
-            id="keyboard"
-            // TRANSLATORS: label for keyboard layout selection
-            aria-label={_("keyboard")}
-            value={keymap}
-            onChange={onChange}
-          >
-            {options}
-          </FormSelect>
-        }
-        else={
-          // TRANSLATORS:
-          _("Keyboard layout cannot be changed in remote installation")
-        }
-      />
-    </>
+    <Flex gap={{ default: "gapMd" }} alignItems={{ default: "alignItemsCenter" }}>
+      <div>
+        <Icon name="keyboard" size="s" /> <b>{_("Keyboard")}</b>
+      </div>
+      {
+        localConnection()
+          ? (
+            <Select
+              id="keyboard"
+              isScrollable
+              isOpen={isOpen}
+              aria-label={_("Choose a keyboard layout")}
+              selected={keymapId}
+              onSelect={onSelect}
+              onOpenChange={(isOpen) => setIsOpen(isOpen)}
+              toggle={toggle}
+            >
+              <SelectList>
+                {options}
+              </SelectList>
+            </Select>
+          )
+          : _("Cannot be changed in remote installation")
+
+      }
+    </Flex>
   );
 }

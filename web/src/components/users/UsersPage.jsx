@@ -22,18 +22,41 @@
 import React from "react";
 
 import { _ } from "~/i18n";
-import { Page, Section } from "~/components/core";
+import { CardField, IssuesHint, Page } from "~/components/core";
 import { FirstUser, RootAuthMethods } from "~/components/users";
+import { CardBody, Grid, GridItem } from "@patternfly/react-core";
+import { useIssues } from "~/context/issues";
 
 export default function UsersPage() {
+  const { users: issues } = useIssues();
+
   return (
-    <Page title={_("Users")} icon="manage_accounts" actionLabel={_("Back")} actionVariant="secondary">
-      <Section title={_("User")} icon="person">
-        <FirstUser />
-      </Section>
-      <Section title={_("Root authentication")} icon="badge">
-        <RootAuthMethods />
-      </Section>
-    </Page>
+    <>
+      <Page.Header>
+        <h2>{_("Users")}</h2>
+      </Page.Header>
+
+      <Page.MainContent>
+        <Grid hasGutter>
+          <GridItem sm={12}>
+            <IssuesHint issues={issues} />
+          </GridItem>
+          <GridItem sm={12} xl={6}>
+            <CardField label={_("First user")}>
+              <CardBody>
+                <FirstUser />
+              </CardBody>
+            </CardField>
+          </GridItem>
+          <GridItem sm={12} xl={6}>
+            <CardField label={_("Root authentication")}>
+              <CardBody>
+                <RootAuthMethods />
+              </CardBody>
+            </CardField>
+          </GridItem>
+        </Grid>
+      </Page.MainContent>
+    </>
   );
 }

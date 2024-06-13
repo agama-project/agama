@@ -29,7 +29,7 @@ jest.mock("~/client");
 
 const locales = [
   { id: "en_US", name: "English", territory: "United States" },
-  { id: "de_DE", name: "German", territory: "Germany" },
+  { id: "de_DE", name: "German", territory: "Germany" }
 ];
 
 const l10nClientMock = {
@@ -43,14 +43,14 @@ const l10nClientMock = {
   getTimezone: jest.fn().mockResolvedValue(undefined),
   onLocalesChange: jest.fn(),
   onKeymapChange: jest.fn(),
-  onTimezoneChange: jest.fn(),
+  onTimezoneChange: jest.fn()
 };
 
 beforeEach(() => {
   // if defined outside, the mock is cleared automatically
   createClient.mockImplementation(() => {
     return {
-      l10n: l10nClientMock,
+      l10n: l10nClientMock
     };
   });
 });

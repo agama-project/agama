@@ -20,18 +20,16 @@
  */
 
 import React, { useCallback, useReducer, useEffect } from "react";
-
+import { Grid, GridItem } from "@patternfly/react-core";
+import { Page } from "~/components/core/";
+import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
+import ProposalSettingsSection from "./ProposalSettingsSection";
+import ProposalResultSection from "./ProposalResultSection";
 import { _ } from "~/i18n";
+import { IDLE } from "~/client/status";
 import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
-import { Page } from "~/components/core";
-import {
-  ProposalPageMenu,
-  ProposalTransactionalInfo,
-  ProposalSettingsSection,
-  ProposalResultSection
-} from "~/components/storage";
-import { IDLE } from "~/client/status";
+import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
 const initialState = {
   loading: true,
@@ -50,11 +48,11 @@ const initialState = {
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "START_LOADING" : {
+    case "START_LOADING": {
       return { ...state, loading: true };
     }
 
-    case "STOP_LOADING" : {
+    case "STOP_LOADING": {
       // reset the changing value after the refresh is finished
       return { ...state, loading: false, changing: undefined };
     }
@@ -263,29 +261,38 @@ export default function ProposalPage() {
    */
 
   return (
-    // TRANSLATORS: Storage page title
-    <Page icon="hard_drive" title={_("Storage")}>
-      <ProposalPageMenu />
-      <ProposalTransactionalInfo
-        settings={state.settings}
-      />
-      <ProposalSettingsSection
-        availableDevices={state.availableDevices}
-        volumeDevices={state.volumeDevices}
-        encryptionMethods={state.encryptionMethods}
-        volumeTemplates={state.volumeTemplates}
-        settings={state.settings}
-        onChange={changeSettings}
-        isLoading={state.loading}
-        changing={state.changing}
-      />
-      <ProposalResultSection
-        system={state.system}
-        staging={state.staging}
-        actions={state.actions}
-        errors={state.errors}
-        isLoading={state.loading}
-      />
-    </Page>
+    <>
+      <Page.Header>
+        <h2>{_("Storage")}</h2>
+        <ProposalTransactionalInfo
+          settings={state.settings}
+        />
+      </Page.Header>
+      <Page.MainContent>
+        <Grid hasGutter>
+          <GridItem sm={12} xl={6}>
+            <ProposalSettingsSection
+              availableDevices={state.availableDevices}
+              volumeDevices={state.volumeDevices}
+              encryptionMethods={state.encryptionMethods}
+              volumeTemplates={state.volumeTemplates}
+              settings={state.settings}
+              onChange={changeSettings}
+              isLoading={state.loading}
+              changing={state.changing}
+            />
+          </GridItem>
+          <GridItem sm={12} xl={6}>
+            <ProposalResultSection
+              system={state.system}
+              staging={state.staging}
+              actions={state.actions}
+              errors={state.errors}
+              isLoading={state.loading}
+            />
+          </GridItem>
+        </Grid>
+      </Page.MainContent>
+    </>
   );
 }

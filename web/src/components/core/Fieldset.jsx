@@ -22,6 +22,7 @@
 // @ts-check
 
 import React from "react";
+import { Stack } from "@patternfly/react-core";
 
 /**
  * Convenient component for grouping form fields in "sections"
@@ -47,9 +48,11 @@ export default function Fieldset({
   ...otherProps
 }) {
   return (
-    <fieldset className="stack" {...otherProps}>
-      {legend && <legend>{legend}</legend>}
-      {children}
+    <fieldset {...otherProps}>
+      <Stack hasGutter>
+        {legend && <legend>{legend}</legend>}
+        {children}
+      </Stack>
     </fieldset>
   );
 }

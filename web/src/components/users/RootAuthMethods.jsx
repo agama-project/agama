@@ -20,7 +20,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { Button, Skeleton, Truncate } from "@patternfly/react-core";
+import { Button, Skeleton, Split, Stack, Truncate } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { Em, RowActions } from '~/components/core';
 import { RootPasswordPopup, RootSSHKeyPopup } from '~/components/users';
@@ -31,20 +31,20 @@ import { useInstallerClient } from "~/context/installer";
 
 const MethodsNotDefined = ({ setPassword, setSSHKey }) => {
   return (
-    <div className="stack">
+    <Stack hasGutter>
       <div>{_("No root authentication method defined yet.")}</div>
       <div>
         <strong>
           {_("Please, define at least one authentication method for logging into the system as root.")}
         </strong>
       </div>
-      <div className="split">
+      <Split hasGutter>
         {/* TRANSLATORS: push button label */}
         <Button variant="primary" onClick={setPassword}>{_("Set a password")}</Button>
         {/* TRANSLATORS: push button label */}
         <Button variant="secondary" onClick={setSSHKey}>{_("Upload a SSH Public Key")}</Button>
-      </div>
-    </div>
+      </Split>
+    </Stack>
   );
 };
 export default function RootAuthMethods() {
@@ -181,14 +181,14 @@ export default function RootAuthMethods() {
   return (
     <>
       <Content />
-      { isPasswordFormOpen &&
+      {isPasswordFormOpen &&
         <RootPasswordPopup
           isOpen
           title={isPasswordDefined ? _("Change the root password") : _("Set a root password")}
           onClose={closePasswordForm}
-        /> }
+        />}
 
-      { isSSHKeyFormOpen &&
+      {isSSHKeyFormOpen &&
         <RootSSHKeyPopup
           isOpen
           title={isSSHKeyDefined ? _("Edit the SSH Public Key for root") : _("Add a SSH Public Key for root")}

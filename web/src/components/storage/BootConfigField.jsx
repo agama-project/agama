@@ -21,34 +21,31 @@
 
 // @ts-check
 
-import React, { useState } from "react";
+import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { Skeleton } from "@patternfly/react-core";
-
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "~/components/storage/utils";
-import { If } from "~/components/core";
 import { Icon } from "~/components/layout";
-import BootSelectionDialog from "~/components/storage/BootSelectionDialog";
 
 /**
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
 
 /**
- * Internal component for building the button that opens the dialog
+ * Internal component for building the link that navigates to selector
  *
  * @param {object} props
  * @param {boolean} [props.isBold=false] - Whether text should be wrapped by <b>.
- * @param {() => void} props.onClick - Callback to trigger when user clicks.
  */
-const Button = ({ isBold = false, onClick }) => {
+const Link = ({ isBold = false }) => {
   const text = _("Change boot options");
 
   return (
-    <button onClick={onClick} className="inline-flex-button">
+    <RouterLink to="booting-partition">
       {isBold ? <b>{text}</b> : text}
-    </button>
+    </RouterLink>
   );
 };
 
@@ -73,19 +70,10 @@ const Button = ({ isBold = false, onClick }) => {
 export default function BootConfigField({
   configureBoot,
   bootDevice,
-  defaultBootDevice,
-  availableDevices,
   isLoading,
   onChange
 }) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const openDialog = () => setIsDialogOpen(true);
-
-  const closeDialog = () => setIsDialogOpen(false);
-
   const onAccept = ({ configureBoot, bootDevice }) => {
-    closeDialog();
     onChange({ configureBoot, bootDevice });
   };
 
@@ -106,21 +94,7 @@ export default function BootConfigField({
 
   return (
     <div>
-      {value} <Button onClick={openDialog} isBold={!configureBoot} />
-      <If
-        condition={isDialogOpen}
-        then={
-          <BootSelectionDialog
-            isOpen
-            configureBoot={configureBoot}
-            bootDevice={bootDevice}
-            defaultBootDevice={defaultBootDevice}
-            availableDevices={availableDevices}
-            onAccept={onAccept}
-            onCancel={closeDialog}
-          />
-        }
-      />
+      {value} <Link isBold={!configureBoot} />
     </div>
   );
 }

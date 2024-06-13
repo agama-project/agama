@@ -111,8 +111,8 @@ describe Agama::Users do
 
     context "when the given arguments presents some critical error" do
       it "does not add the user to the config" do
-        subject.assign_first_user("Root user", "root", "12345", false, {})
-        user = users_config.users.by_name("root")
+        subject.assign_first_user("Jonh Doe", "john", "", false, {})
+        user = users_config.users.by_name("john")
         expect(user).to be_nil
         subject.assign_first_user("Ldap user", "ldap", "12345", false, {})
         user = users_config.users.by_name("ldap")
@@ -183,14 +183,14 @@ describe Agama::Users do
       subject.write
     end
 
-    describe "#validate" do
+    describe "#issues" do
       context "when a root password is set" do
         before do
           subject.assign_root_password("123456", true)
         end
 
         it "returns an empty list" do
-          expect(subject.validate).to be_empty
+          expect(subject.issues).to be_empty
         end
       end
 
@@ -200,7 +200,7 @@ describe Agama::Users do
         end
 
         it "returns an empty list" do
-          expect(subject.validate).to be_empty
+          expect(subject.issues).to be_empty
         end
       end
 
@@ -210,14 +210,14 @@ describe Agama::Users do
         end
 
         it "returns an empty list" do
-          expect(subject.validate).to be_empty
+          expect(subject.issues).to be_empty
         end
       end
 
       context "when neither a first user is defined nor the root password/SSH key is set" do
         it "returns the problem" do
-          error = subject.validate.first
-          expect(error.message).to match(/Defining a user/)
+          error = subject.issues.first
+          expect(error.description).to match(/Defining a user/)
         end
       end
     end

@@ -7,7 +7,7 @@
 use crate::{
     error::Error,
     web::{
-        common::{service_status_router, validation_router, EventStreams},
+        common::{issues_router, service_status_router, EventStreams},
         Event,
     },
 };
@@ -125,7 +125,7 @@ pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceErro
 
     let users = UsersClient::new(dbus.clone()).await?;
     let state = UsersState { users };
-    let validation_router = validation_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
+    let issues_router = issues_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let router = Router::new()
         .route(
@@ -135,8 +135,8 @@ pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceErro
                 .delete(remove_first_user),
         )
         .route("/root", get(get_root_config).patch(patch_root))
-        .merge(validation_router)
         .merge(status_router)
+        .nest("/issues", issues_router)
         .with_state(state);
     Ok(router)
 }

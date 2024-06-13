@@ -22,6 +22,7 @@
 // @ts-check
 
 import React from "react";
+import { Grid, GridItem, PageSection } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { compact } from "~/utils";
 import { Section } from "~/components/core";
@@ -141,8 +142,8 @@ export default function ProposalSettingsSection({
   const targetDevices = compact([targetDevice, ...targetPVDevices]);
 
   return (
-    <>
-      <Section title={_("Settings")}>
+    <Grid hasGutter>
+      <GridItem sm={12} xl2={6}>
         <InstallationDeviceField
           target={settings.target}
           targetDevice={targetDevice}
@@ -151,6 +152,8 @@ export default function ProposalSettingsSection({
           isLoading={showSkeleton(isLoading, "InstallationDeviceField", changing)}
           onChange={changeTarget}
         />
+      </GridItem>
+      <GridItem sm={12} xl2={6}>
         <EncryptionField
           password={settings.encryptionPassword || ""}
           method={settings.encryptionMethod}
@@ -158,6 +161,8 @@ export default function ProposalSettingsSection({
           isLoading={settings.encryptionPassword === undefined}
           onChange={changeEncryption}
         />
+      </GridItem>
+      <GridItem>
         <PartitionsField
           volumes={volumes}
           templates={volumeTemplates}
@@ -172,6 +177,8 @@ export default function ProposalSettingsSection({
           onVolumesChange={changeVolumes}
           onBootChange={changeBoot}
         />
+      </GridItem>
+      <GridItem>
         <SpacePolicyField
           policy={spacePolicy}
           actions={spaceActions}
@@ -179,7 +186,7 @@ export default function ProposalSettingsSection({
           isLoading={showSkeleton(isLoading, "SpacePolicyField", changing)}
           onChange={changeSpacePolicy}
         />
-      </Section>
-    </>
+      </GridItem>
+    </Grid>
   );
 }

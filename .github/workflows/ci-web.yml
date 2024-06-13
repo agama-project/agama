@@ -74,7 +74,7 @@ jobs:
       run: npm run stylelint
 
     - name: Run the tests and generate coverage report
-      run: npm test -- --coverage
+      run: npm test -- --coverage --silent
 #
 #    # send the code coverage for the web part to the coveralls.io
 #    - name: Coveralls GitHub Action

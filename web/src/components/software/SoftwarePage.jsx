@@ -22,15 +22,25 @@
 // @ts-check
 
 import React, { useEffect, useState } from "react";
-import { Button } from "@patternfly/react-core";
 
-import { If, Page, Popup, Section, SectionSkeleton } from "~/components/core";
-import { PatternSelector, UsedSize } from "~/components/software";
 import { useInstallerClient } from "~/context/installer";
-import { noop, useCancellablePromise } from "~/utils";
+import { useCancellablePromise } from "~/utils";
+import { useIssues } from "~/context/issues";
 import { BUSY } from "~/client/status";
 import { _ } from "~/i18n";
+import { ButtonLink, CardField, IssuesHint, Page, SectionSkeleton } from "~/components/core";
+import UsedSize from "./UsedSize";
 import { SelectedBy } from "~/client/software";
+import {
+  CardBody,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
+  Grid,
+  GridItem,
+  Stack
+} from "@patternfly/react-core";
 
 /**
  * @typedef {Object} Pattern
@@ -50,124 +60,47 @@ import { SelectedBy } from "~/client/software";
  * @return {Pattern[]} List of patterns including its selection status
  */
 function buildPatterns(patterns, selection) {
-  return patterns.map((pattern) => {
-    const selectedBy = (selection[pattern.name] !== undefined) ? selection[pattern.name] : 2;
-    return {
-      ...pattern,
-      selectedBy,
-    };
-  }).sort((a, b) => a.order - b.order);
+  return patterns
+    .map(pattern => {
+      const selectedBy = selection[pattern.name] !== undefined ? selection[pattern.name] : 2;
+      return {
+        ...pattern,
+        selectedBy
+      };
+    })
+    .sort((a, b) => a.order - b.order);
 }
-
-/**
- * Popup for selecting software patterns.
- * @component
- *
- * @param {object} props
- * @param {Pattern[]} props.patterns - List of patterns
- * @param {import("~/client/software").SoftwareProposal} props.proposal - Software proposal
- * @param {boolean} props.isOpen - Whether the pop-up should be open
- * @param {function} props.onFinish - Callback to be called when the selection is finished
- * @param {function} props.onSelectionChanged - Callback to be called when the selection changes
- */
-const PatternsSelectorPopup = ({
-  patterns,
-  isOpen = false,
-  onSelectionChanged = noop,
-  onFinish = noop,
-}) => {
-  return (
-    <Popup className="large" title={_("Software selection")} isOpen={isOpen}>
-      <PatternSelector
-        patterns={patterns}
-        onSelectionChanged={onSelectionChanged}
-      />
-
-      <Popup.Actions>
-        <Popup.PrimaryAction
-          onClick={() => onFinish()}
-        >
-          {_("Close")}
-        </Popup.PrimaryAction>
-      </Popup.Actions>
-    </Popup>
-  );
-};
-
-const SelectPatternsButton = ({ patterns, proposal, onSelectionChanged }) => {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  const openPopup = () => setIsPopupOpen(true);
-  const closePopup = () => setIsPopupOpen(false);
-
-  return (
-    <>
-      <Button
-        variant="link"
-        onClick={openPopup}
-      >
-        {_("Change selection")}
-      </Button>
-      <PatternsSelectorPopup
-        patterns={patterns}
-        proposal={proposal}
-        isOpen={isPopupOpen}
-        onFinish={closePopup}
-        onSelectionChanged={onSelectionChanged}
-      />
-    </>
-  );
-};
 
 /**
  * List of selected patterns.
  * @component
  * @param {object} props
  * @param {Pattern[]} props.patterns - List of patterns, including selected and unselected ones.
- * @param {import("~/client/software").SoftwareProposal} props.proposal - Software proposal
- * @param {function} props.onSelectionChanged - Callback to be called when the selection changes
  * @return {JSX.Element}
  */
-const SelectedPatternsList = ({ patterns, proposal, onSelectionChanged }) => {
-  const selected = patterns.filter((p) => p.selectedBy !== SelectedBy.NONE);
-  let description;
+const SelectedPatternsList = ({ patterns }) => {
+  const selected = patterns.filter(p => p.selectedBy !== SelectedBy.NONE);
 
   if (selected.length === 0) {
-    description = (
-      <>
-        {_("No additional software was selected.")}
-      </>
-    );
-  } else {
-    description = (
-      <>
-        <p>{_("The following software patterns are selected for installation:")}</p>
-        <ul>
-          {selected.map((pattern) => (
-            <li key={pattern.name}>
-              <div>
-                <b>{pattern.summary}</b>
-              </div>
-              <div>{pattern.description}</div>
-            </li>
-          ))}
-        </ul>
-      </>
-    );
+    return <>{_("No additional software was selected.")}</>;
   }
+
   return (
-    <>
-      {description}
-      <div>
-        <SelectPatternsButton
-          patterns={patterns}
-          proposal={proposal}
-          onSelectionChanged={onSelectionChanged}
-        />
-      </div>
-    </>
+    <Stack hasGutter>
+      <p>{_("The following software patterns are selected for installation:")}</p>
+      <DescriptionList>
+        {selected.map(pattern => (
+          <DescriptionListGroup key={pattern.name}>
+            <DescriptionListTerm>{pattern.summary}</DescriptionListTerm>
+            <DescriptionListDescription>{pattern.description}</DescriptionListDescription>
+          </DescriptionListGroup>
+        ))}
+      </DescriptionList>
+    </Stack>
   );
 };
+
+// FIXME: move build patterns to utils
 
 /**
  * Software page component
@@ -175,6 +108,7 @@ const SelectedPatternsList = ({ patterns, proposal, onSelectionChanged }) => {
  * @returns {JSX.Element}
  */
 function SoftwarePage() {
+  const { software: issues } = useIssues();
   const [status, setStatus] = useState(BUSY);
   const [patterns, setPatterns] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -191,8 +125,8 @@ function SoftwarePage() {
   useEffect(() => {
     if (!patterns) return;
 
-    return client.software.onSelectedPatternsChanged((selection) => {
-      client.software.getProposal().then((proposal) => setProposal(proposal));
+    return client.software.onSelectedPatternsChanged(selection => {
+      client.software.getProposal().then(proposal => setProposal(proposal));
       setPatterns(buildPatterns(patterns, selection));
     });
   }, [client.software, patterns]);
@@ -211,30 +145,46 @@ function SoftwarePage() {
     loadPatterns();
   }, [client.software, patterns, cancellablePromise]);
 
-  return (
-    // TRANSLATORS: page title
-    <Page icon="apps" title={_("Software")}>
-      {/* TRANSLATORS: page title */}
-      <Section title={_("Software selection")}>
-        <If
-          condition={status === BUSY || isLoading}
-          then={<SectionSkeleton numRows={5} />}
-          else={
-            <>
-              <SelectedPatternsList
-                patterns={patterns}
-                proposal={proposal}
-                onSelectionChanged={(selected) => client.software.selectPatterns(selected)}
-              />
+  if (status === BUSY || isLoading) {
+    <SectionSkeleton numRows={5} />;
+  }
 
-              <div>
+  return (
+    <>
+      <Page.Header>
+        <h2>{_("Software")}</h2>
+      </Page.Header>
+
+      <Page.MainContent>
+        <Grid hasGutter>
+          <GridItem sm={12}>
+            <IssuesHint issues={issues} />
+          </GridItem>
+          <GridItem sm={12} xl={6}>
+            <CardField
+               label={_("Selected patterns")}
+               actions={
+                 <ButtonLink to="patterns/select" isPrimary={patterns.length === 0}>
+                   {_("Change selection")}
+                 </ButtonLink>
+               }
+            >
+              <CardBody>
+                <SelectedPatternsList patterns={patterns} />
+              </CardBody>
+            </CardField>
+          </GridItem>
+
+          <GridItem sm={12} xl={6}>
+            <CardField>
+              <CardBody>
                 <UsedSize size={proposal.size} />
-              </div>
-            </>
-          }
-        />
-      </Section>
-    </Page>
+              </CardBody>
+            </CardField>
+          </GridItem>
+        </Grid>
+      </Page.MainContent>
+    </>
   );
 }
 

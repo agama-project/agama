@@ -26,9 +26,7 @@ import {
   Alert,
   Form, FormGroup, FormSelect, FormSelectOption
 } from "@patternfly/react-core";
-
 import { _ } from "~/i18n";
-import { If } from "~/components/core";
 import { noop } from "~/utils";
 
 /**
@@ -106,14 +104,10 @@ export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onLoading
 
   return (
     <>
-      <If
-        condition={isFailed}
-        then={
-          <Alert variant="warning" isInline title={_("Something went wrong")}>
-            <p>{_("The zFCP disk was not activated.")}</p>
-          </Alert>
-        }
-      />
+      {isFailed &&
+        <Alert variant="warning" isInline title={_("Something went wrong")}>
+          <p>{_("The zFCP disk was not activated.")}</p>
+        </Alert>}
       <Form id={id} name="ZFCPDisk" onSubmit={submit}>
         <FormGroup fieldId="channelId" label={_("Channel ID")}>
           <FormSelect
