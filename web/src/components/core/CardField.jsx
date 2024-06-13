@@ -61,7 +61,7 @@ const CardField = ({
           </Flex>
         </CardTitle>
       </CardHeader>
-      {description && <CardBody><div className={textStyles.color_200}>{description}</div></CardBody>}
+      {description && <CardBody isFilled={false}><div className={textStyles.color_200}>{description}</div></CardBody>}
       {children}
       {actions && <CardFooter>{actions}</CardFooter>}
     </Card>

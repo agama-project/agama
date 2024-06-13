@@ -21,25 +21,39 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Alert,
   CardBody,
   Grid, GridItem,
   Hint, HintBody,
+  NotificationDrawer,
+  NotificationDrawerBody,
+  NotificationDrawerList,
+  NotificationDrawerListItem,
+  NotificationDrawerListItemBody,
+  NotificationDrawerListItemHeader,
   Stack,
 } from "@patternfly/react-core";
 import { useProduct } from "~/context/product";
 import { useInstallerClient } from "~/context/installer";
 import { Link, Navigate } from "react-router-dom";
+import { Center } from "~/components/layout";
 import { CardField, EmptyState, Page, InstallButton } from "~/components/core";
 import L10nSection from "./L10nSection";
 import StorageSection from "./StorageSection";
 import SoftwareSection from "./SoftwareSection";
 import { _ } from "~/i18n";
 
+const SCOPE_HEADERS = {
+  user: _("Users"),
+  storage: _("Storage"),
+  software: _("Software")
+};
+
 const ReadyForInstallation = () => (
-  <EmptyState title={_("Ready for installation")} icon="check_circle" color="success-color-100">
-    <InstallButton />
-  </EmptyState>
+  <Center>
+    <EmptyState title={_("Ready for installation")} icon="check_circle" color="success-color-100">
+      <InstallButton />
+    </EmptyState>
+  </Center>
 );
 
 // FIXME: improve
@@ -48,26 +62,28 @@ const IssuesList = ({ issues }) => {
   const list = [];
   Object.entries(scopes).forEach(([scope, issues]) => {
     issues.forEach((issue, idx) => {
+      const variant = issue.severity === "error" ? "warning" : "info";
+
       const link = (
-        <Alert
-          key={idx}
-          isInline
-          variant={issue.severity === "error" ? "warning" : "info"}
-          title={<Link to={`/${scope}`}>{issue.description}</Link>}
-        />
+        <NotificationDrawerListItem key={idx} variant={variant} isHoverable={false}>
+          <NotificationDrawerListItemHeader title={SCOPE_HEADERS[scope]} variant={variant} />
+          <NotificationDrawerListItemBody>
+            <Link to={`/${scope}`}>{issue.description}</Link>
+          </NotificationDrawerListItemBody>
+        </NotificationDrawerListItem>
       );
       list.push(link);
     });
   });
 
   return (
-    <EmptyState
-      title={_("Before starting the installation, you need to address the following problems:")}
-      icon="error"
-      color="danger-color-100"
-    >
-      <Stack hasGutter>{list}</Stack>
-    </EmptyState>
+    <NotificationDrawer>
+      <NotificationDrawerBody>
+        <NotificationDrawerList>
+          {list}
+        </NotificationDrawerList>
+      </NotificationDrawerBody>
+    </NotificationDrawer>
   );
 };
 
@@ -83,6 +99,15 @@ export default function OverviewPage() {
   if (selectedProduct === null) {
     return <Navigate to="/products" />;
   }
+
+  const resultSectionProps =
+    issues.isEmpty
+      ? {}
+      : {
+
+        label: _("Installation"),
+        description: _("Before installing, please check the following problems.")
+      };
 
   return (
     <>
@@ -114,11 +139,9 @@ export default function OverviewPage() {
             </CardField>
           </GridItem>
           <GridItem sm={12} xl={6}>
-            <CardField>
+            <CardField {...resultSectionProps}>
               <CardBody>
-                <Stack hasGutter>
-                  {issues.isEmpty ? <ReadyForInstallation /> : <IssuesList issues={issues} />}
-                </Stack>
+                {issues.isEmpty ? <ReadyForInstallation /> : <IssuesList issues={issues} />}
               </CardBody>
             </CardField>
           </GridItem>
