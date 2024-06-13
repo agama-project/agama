@@ -12,6 +12,26 @@ Thu Jun 13 10:39:57 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 - Drop the old validations API.
 
 -------------------------------------------------------------------
+Wed Jun 12 10:15:33 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Allow writing to loopback connection in agama-server
+  (gh#openSUSE/agama#1318).
+
+-------------------------------------------------------------------
+Tue Jun 11 21:35:00 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- CLI: use the master token /run/agama/token if available and
+  readable (gh#openSUSE/agama#1287).
+- CLI: remove the "config add/set" subcommands
+  (gh#openSUSE/agama#1314).
+
+-------------------------------------------------------------------
+Mon Jun 10 14:24:33 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add mtu property for network connections
+  (gh#openSUSE/agama#1101).
+
+-------------------------------------------------------------------
 Fri Jun  7 05:58:48 UTC 2024 - Michal Filka <mfilka@suse.com>
 
 - Improvements in HTTPS setup

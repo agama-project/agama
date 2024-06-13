@@ -22,12 +22,10 @@ name = "agama-cli"
 version = "1.0.0"
 dependencies = [
  "agama-lib",
- "agama-settings",
  "anyhow",
  "async-trait",
  "clap",
  "console",
- "convert_case",
  "curl",
  "fs_extra",
  "indicatif",
@@ -46,19 +44,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "agama-derive"
-version = "1.0.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.53",
-]
-
-[[package]]
 name = "agama-lib"
 version = "1.0.0"
 dependencies = [
- "agama-settings",
  "anyhow",
  "async-trait",
  "chrono",
@@ -144,14 +132,6 @@ dependencies = [
  "uuid",
  "zbus",
  "zbus_macros",
-]
-
-[[package]]
-name = "agama-settings"
-version = "1.0.0"
-dependencies = [
- "agama-derive",
- "thiserror",
 ]
 
 [[package]]

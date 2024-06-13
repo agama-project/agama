@@ -23,13 +23,6 @@ impl<'a> NetworkManagerAdapter<'a> {
         let client = NetworkManagerClient::new(connection.clone()).await?;
         Ok(Self { client, connection })
     }
-
-    /// Determines whether the write operation is supported for a connection
-    ///
-    /// * `conn`: connection
-    fn is_writable(conn: &Connection) -> bool {
-        !conn.is_loopback()
-    }
 }
 
 #[async_trait]
@@ -118,10 +111,6 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
         }
 
         for conn in ordered_connections(network) {
-            if !Self::is_writable(conn) {
-                continue;
-            }
-
             if let Some(old_conn) = old_state.get_connection_by_uuid(conn.uuid) {
                 if old_conn == conn {
                     continue;
