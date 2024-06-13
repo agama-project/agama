@@ -85,6 +85,10 @@ function App() {
       return <Loading />;
     }
 
+    if (selectedProduct === null && !location.pathname.includes("products")) {
+      return <Navigate to="/products" />;
+    }
+
     if (phase === CONFIG && status === BUSY && !location.pathname.includes("progress")) {
       return <Navigate to="/products/progress" />;
     }
@@ -93,10 +97,6 @@ function App() {
   };
 
   if (!language) return null;
-
-  if (selectedProduct === null && !location.pathname.includes("products")) {
-    return <Navigate to="/products" />;
-  }
 
   return (
     <>
