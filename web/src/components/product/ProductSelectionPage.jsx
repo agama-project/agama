@@ -46,7 +46,7 @@ function ProductSelectionPage() {
   const navigate = useNavigate();
   const { manager, product } = useInstallerClient();
   const { products, selectedProduct } = useProduct();
-  const [nextProduct, setNextProduct] = useState(selectedProduct || products[0]);
+  const [nextProduct, setNextProduct] = useState(selectedProduct);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -72,6 +72,8 @@ function ProductSelectionPage() {
     );
   };
 
+  const isSelectionDisabled = !nextProduct || (nextProduct === selectedProduct);
+
   return (
     <>
       <Page.MainContent>
@@ -96,19 +98,15 @@ function ProductSelectionPage() {
                 </Item>
               ))}
               <Item>
-                <Flex>
-                  <FlexItem align={{ default: 'alignRight' }}>
-                    {selectedProduct && <Page.CancelAction navigateTo={-1} />}
-                  </FlexItem>
-                  <FlexItem>
-                    <Page.Action
-                      type="submit"
-                      form="productSelectionForm"
-                      isDisabled={selectedProduct === nextProduct}
-                    >
-                      {_("Select")}
-                    </Page.Action>
-                  </FlexItem>
+                <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
+                  {selectedProduct && <Page.CancelAction navigateTo={-1} />}
+                  <Page.Action
+                    type="submit"
+                    form="productSelectionForm"
+                    isDisabled={isSelectionDisabled}
+                  >
+                    {_("Select")}
+                  </Page.Action>
                 </Flex>
               </Item>
             </Grid>
