@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Thu Jun 13 10:50:44 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Apply network changes when connecting or disconnecting
+  (gh#openSUSE/agama#1320).
+
+-------------------------------------------------------------------
+Thu Jun 13 10:39:57 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Expose Issues API in users-related interface
+  (gh#openSUSE/agama#1202).
+- Drop the old validations API.
+
+-------------------------------------------------------------------
 Fri Jun  7 05:58:48 UTC 2024 - Michal Filka <mfilka@suse.com>
 
 - Improvements in HTTPS setup
