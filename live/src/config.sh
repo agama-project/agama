@@ -12,6 +12,13 @@ echo "Configure image: [$kiwi_iname]..."
 # setup baseproduct link
 suseSetupProduct
 
+# configure the repositories in the Live system
+# import the OBS key for the systemsmanagement OBS project
+rpm --import /tmp/systemsmanagement_key.gpg
+rm /tmp/systemsmanagement_key.gpg
+# import the openSUSE keys
+rpm --import /usr/lib/rpm/gnupg/keys/*.asc
+
 # activate services
 systemctl enable sshd.service
 systemctl enable NetworkManager.service
