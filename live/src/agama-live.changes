@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jun 14 10:36:52 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Experimental Agama self-update (gh#openSUSE/agama#1341)
+
+-------------------------------------------------------------------
 Thu Jun 13 16:07:08 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Added Tumbleweed OSS and Agama Staging repositories to the Live

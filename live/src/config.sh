@@ -32,6 +32,7 @@ systemctl enable agama-certificate-issue.path
 systemctl enable agama-welcome-issue.service
 systemctl enable agama-avahi-issue.service
 systemctl enable agama-ssh-issue.service
+systemctl enable agama-self-update.service
 systemctl enable live-password-cmdline.service
 systemctl enable live-password-dialog.service
 systemctl enable live-password-iso.service
