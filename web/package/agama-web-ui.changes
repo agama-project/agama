@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 14 05:34:52 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not redirect to the products selection page again after
+  selecting a product (gh#openSUSE/agama#1334).
+
+-------------------------------------------------------------------
 Thu Jun 13 10:52:22 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Remake the user interface to follow a streamlined approach
