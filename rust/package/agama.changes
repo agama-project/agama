@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 14 06:17:52 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Remove references to the old "config add/set" subcommands
+  (gh#openSUSE/agama/#1338).
+
+-------------------------------------------------------------------
 Thu Jun 13 10:50:44 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
 - Apply network changes when connecting or disconnecting

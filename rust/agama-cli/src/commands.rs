@@ -7,13 +7,14 @@ use clap::Subcommand;
 
 #[derive(Subcommand, Debug)]
 pub enum Commands {
-    /// Change or show the installation settings.
+    /// Inspect or change the installation settings.
     ///
-    /// You can set any Agama configuration value from the command-line. You can change individual
-    /// values the "add" or "set" commands. Or modify many of them at a time by loading a so-called
-    /// profile through the "load" command.
+    /// You can inspect and change installation settings from the command-line. The "show"
+    /// subcommand generates a "profile" which is a JSON document describing the current
+    /// configuration.
     ///
-    /// Use "show" to display the current configuration in JSON format.
+    /// If you want to change any configuration value, you can load a profile (complete or partial)
+    /// using the "load" subcommand.
     #[command(subcommand)]
     Config(ConfigCommands),
 
