@@ -8,6 +8,7 @@
 - [Agama Live ISO (*only for development and testing*)](#agama-live-iso-only-for-development-and-testing)
   - [Description](#description)
   - [Hardware Requirements](#hardware-requirements)
+- [Experimental Self-update](#experimental-self-update)
 - [The Access Password](#the-access-password)
   - [Using Custom Password](#using-custom-password)
   - [Boot Command Line](#boot-command-line)
@@ -70,6 +71,22 @@ Notes:
 * 2 GiB of RAM memory
 * Internet connection to download packages of the product to install.
 * Around 10 GiB of disk size, although it depends on the selected product to install.
+
+## Experimental Self-update
+
+> [!WARNING]
+> This feature is experimental and untested!
+
+The Agama packages on the Live ISO can be automatically updated from the OBS
+Staging project.
+
+* Use the `agama.self_update` boot parameter to run the self-update
+automatically during boot.
+* Or run the `agama-self-update` script anytime later in a running Live system.
+
+> [!NOTE]
+> After updating the packages the Agama servers need to be restarted. This will
+> reset all you current Agama settings, you will need to start from scratch!
 
 ## The Access Password
 
