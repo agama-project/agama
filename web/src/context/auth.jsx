@@ -48,7 +48,7 @@ const AuthErrors = Object.freeze({
  * @param {React.ReactNode} [props.children] - content to display within the provider
  */
 function AuthProvider({ children }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(undefined);
   const [error, setError] = useState(null);
 
   const login = useCallback(async (password) => {

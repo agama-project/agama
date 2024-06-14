@@ -11,15 +11,15 @@ use clap::Subcommand;
 
 #[derive(Subcommand, Debug)]
 pub enum ConfigCommands {
-    /// Shows the value of the configuration settings.
+    /// Generates an installation profile with the current settings.
     ///
     /// It is possible that many configuration settings do not have a value. Those settings
     /// are not included in the output.
     ///
-    /// The output of command can be used as file content for `agama config load`.
+    /// The output of command can be used as input for the "agama config load".
     Show,
 
-    /// Loads the configuration from a JSON file.
+    /// Reads and loads a profile from the standard input.
     Load,
 }
 
