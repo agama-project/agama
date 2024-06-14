@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 14 07:37:58 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Do not redirect to login page until really needed
+  (gh#openSUSE/agama#1340).
+
+-------------------------------------------------------------------
 Fri Jun 14 05:34:52 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not redirect to the products selection page again after
