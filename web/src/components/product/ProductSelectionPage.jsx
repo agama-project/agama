@@ -20,7 +20,6 @@
  */
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Card, CardBody,
   Flex,
@@ -42,18 +41,17 @@ const Label = ({ children }) => (
 );
 
 function ProductSelectionPage() {
-  const navigate = useNavigate();
   const { products, selectedProduct, selectProduct } = useProduct();
   const [nextProduct, setNextProduct] = useState(selectedProduct);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (e) => {
     e.preventDefault();
 
     if (nextProduct) {
       await selectProduct(nextProduct.id);
+      setIsLoading(true);
     }
-
-    navigate("/products/progress");
   };
 
   if (!products) return (
@@ -93,11 +91,12 @@ function ProductSelectionPage() {
           ))}
           <Item>
             <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
-              {selectedProduct && <Page.CancelAction navigateTo={-1} />}
+              {selectedProduct && !isLoading && <Page.CancelAction navigateTo={-1} />}
               <Page.Action
                 type="submit"
                 form="productSelectionForm"
                 isDisabled={isSelectionDisabled}
+                isLoading={isLoading}
               >
                 {_("Select")}
               </Page.Action>

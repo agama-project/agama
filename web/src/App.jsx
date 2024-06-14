@@ -22,7 +22,6 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { Loading } from "./components/layout";
-import { ProductSelectionProgress } from "~/components/product";
 import { Questions } from "~/components/questions";
 import { ServerError, Installation } from "~/components/core";
 import { useInstallerL10n } from "./context/installerL10n";
@@ -85,11 +84,11 @@ function App() {
       return <Loading />;
     }
 
-    if (selectedProduct === null && !location.pathname.includes("products")) {
+    if (selectedProduct === null && location.pathname !== "/products") {
       return <Navigate to="/products" />;
     }
 
-    if (phase === CONFIG && status === BUSY && !location.pathname.includes("progress")) {
+    if (phase === CONFIG && status === BUSY && location.pathname !== "/products/progress") {
       return <Navigate to="/products/progress" />;
     }
 
