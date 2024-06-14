@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 14 13:55:27 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Do not render the overview page when selecting a product
+  (gh#openSUSE/agama#1331).
+
+-------------------------------------------------------------------
 Fri Jun 14 07:37:58 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Do not redirect to login page until really needed
