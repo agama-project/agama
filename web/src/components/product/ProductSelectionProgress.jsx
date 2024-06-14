@@ -20,6 +20,7 @@
  */
 
 import React, { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
 import {
   Card, CardBody,
   Grid, GridItem,
@@ -30,10 +31,10 @@ import {
 
 import { _ } from "~/i18n";
 import { Center } from "~/components/layout";
-import SimpleLayout from "~/SimpleLayout";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { useProduct } from "~/context/product";
+import { IDLE } from "~/client/status";
 
 const Progress = ({ selectedProduct, storageProgress, softwareProgress }) => {
   const variant = (progress) => {
@@ -107,10 +108,16 @@ const Progress = ({ selectedProduct, storageProgress, softwareProgress }) => {
  */
 function ProductSelectionProgress() {
   const { cancellablePromise } = useCancellablePromise();
-  const { storage, software } = useInstallerClient();
+  const { manager, storage, software } = useInstallerClient();
   const { selectedProduct } = useProduct();
   const [storageProgress, setStorageProgress] = useState({});
   const [softwareProgress, setSoftwareProgress] = useState({});
+  const [status, setStatus] = useState();
+
+  useEffect(() => {
+    manager.getStatus().then(setStatus);
+    return manager.onStatusChange(setStatus);
+  }, [manager, setStatus]);
 
   useEffect(() => {
     const updateProgress = (progress) => {
@@ -136,29 +143,30 @@ function ProductSelectionProgress() {
     return software.onProgressChange(updateProgress);
   }, [cancellablePromise, setSoftwareProgress, software]);
 
+  if (status === IDLE) return <Navigate to="/" replace />;
+
   return (
-    <SimpleLayout showOutlet={false}>
-      <Center>
-        <Grid hasGutter>
-          <GridItem sm={8} smOffset={2}>
-            <Card isPlain>
-              <CardBody>
-                <Stack hasGutter>
-                  <h1 style={{ textAlign: "center" }}>
-                    {_("Configuring the product, please wait ...")}
-                  </h1>
-                  <Progress
-                    selectedProduct={selectedProduct}
-                    storageProgress={storageProgress}
-                    softwareProgress={softwareProgress}
-                  />
-                </Stack>
-              </CardBody>
-            </Card>
-          </GridItem>
-        </Grid>
-      </Center>
-    </SimpleLayout>
+    <Center>
+      <Grid hasGutter>
+        <GridItem sm={8} smOffset={2}>
+          <Card isPlain>
+            <CardBody>
+              <Stack hasGutter>
+                <h1 style={{ textAlign: "center" }}>
+                  {_("Configuring the product, please wait ...")}
+                </h1>
+                { status &&
+                <Progress
+                  selectedProduct={selectedProduct}
+                  storageProgress={storageProgress}
+                  softwareProgress={softwareProgress}
+                />}
+              </Stack>
+            </CardBody>
+          </Card>
+        </GridItem>
+      </Grid>
+    </Center>
   );
 }
 

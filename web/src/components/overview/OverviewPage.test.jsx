@@ -50,17 +50,6 @@ beforeEach(() => {
   });
 });
 
-describe("when no product is selected", () => {
-  beforeEach(() => {
-    mockSelectedProduct = null;
-  });
-
-  it("redirects to the products page", async () => {
-    installerRender(<OverviewPage />);
-    screen.getByText("Navigating to /products");
-  });
-});
-
 describe("when a product is selected", () => {
   beforeEach(() => {
     mockSelectedProduct = { name: "Tumbleweed" };

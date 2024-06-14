@@ -20,9 +20,8 @@
  */
 
 import React, { useEffect, useState } from "react";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { Loading } from "./components/layout";
-import { Outlet } from "react-router-dom";
-import { ProductSelectionProgress } from "~/components/product";
 import { Questions } from "~/components/questions";
 import { ServerError, Installation } from "~/components/core";
 import { useInstallerL10n } from "./context/installerL10n";
@@ -40,8 +39,9 @@ import { BUSY } from "~/client/status";
  */
 function App() {
   const client = useInstallerClient();
+  const location = useLocation();
   const { connected, error } = useInstallerClientStatus();
-  const { products } = useProduct();
+  const { selectedProduct, products } = useProduct();
   const { language } = useInstallerL10n();
   const [status, setStatus] = useState(undefined);
   const [phase, setPhase] = useState(undefined);
@@ -84,8 +84,12 @@ function App() {
       return <Loading />;
     }
 
-    if (phase === CONFIG && status === BUSY) {
-      return <ProductSelectionProgress />;
+    if (selectedProduct === null && location.pathname !== "/products") {
+      return <Navigate to="/products" />;
+    }
+
+    if (phase === CONFIG && status === BUSY && location.pathname !== "/products/progress") {
+      return <Navigate to="/products/progress" />;
     }
 
     return <Outlet />;

@@ -32,12 +32,14 @@ jest.mock("~/client");
 
 // list of available products
 let mockProducts;
+let mockSelectedProduct;
+
 jest.mock("~/context/product", () => ({
   ...jest.requireActual("~/context/product"),
   useProduct: () => {
     return {
       products: mockProducts,
-      selectedProduct: null
+      selectedProduct: mockSelectedProduct
     };
   }
 }));
@@ -158,9 +160,9 @@ describe("App", () => {
         getStatusFn.mockResolvedValue(BUSY);
       });
 
-      it("renders the product selection progress", async () => {
+      it("redirects to product selection progress", async () => {
         installerRender(<App />, { withL10n: true });
-        await screen.findByText(/Product progress/);
+        await screen.findByText("Navigating to /products/progress");
       });
     });
 
@@ -179,6 +181,7 @@ describe("App", () => {
   describe("on the INSTALL phase", () => {
     beforeEach(() => {
       getPhaseFn.mockResolvedValue(INSTALL);
+      mockSelectedProduct = { id: "Fake product" };
     });
 
     it("renders the application content", async () => {

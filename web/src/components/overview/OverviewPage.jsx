@@ -32,9 +32,8 @@ import {
   NotificationDrawerListItemHeader,
   Stack,
 } from "@patternfly/react-core";
-import { useProduct } from "~/context/product";
 import { useInstallerClient } from "~/context/installer";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Center } from "~/components/layout";
 import { CardField, EmptyState, Page, InstallButton } from "~/components/core";
 import L10nSection from "./L10nSection";
@@ -88,17 +87,12 @@ const IssuesList = ({ issues }) => {
 };
 
 export default function OverviewPage() {
-  const { selectedProduct } = useProduct();
   const [issues, setIssues] = useState([]);
   const client = useInstallerClient();
 
   useEffect(() => {
     client.issues().then(setIssues);
   }, [client]);
-
-  if (selectedProduct === null) {
-    return <Navigate to="/products" />;
-  }
 
   const resultSectionProps =
     issues.isEmpty
