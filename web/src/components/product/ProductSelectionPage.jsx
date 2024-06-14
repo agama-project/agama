@@ -33,7 +33,6 @@ import styles from '@patternfly/react-styles/css/utilities/Text/text';
 import { _ } from "~/i18n";
 import { Page } from "~/components/core";
 import { Loading, Center } from "~/components/layout";
-import { useInstallerClient } from "~/context/installer";
 import { useProduct } from "~/context/product";
 
 const Label = ({ children }) => (
@@ -44,17 +43,14 @@ const Label = ({ children }) => (
 
 function ProductSelectionPage() {
   const navigate = useNavigate();
-  const { manager, product } = useInstallerClient();
-  const { products, selectedProduct } = useProduct();
+  const { products, selectedProduct, selectProduct } = useProduct();
   const [nextProduct, setNextProduct] = useState(selectedProduct);
 
   const onSubmit = async (e) => {
     e.preventDefault();
 
     if (nextProduct) {
-      // TODO: handle errors
-      await product.select(nextProduct.id);
-      manager.startProbing();
+      await selectProduct(nextProduct.id);
     }
 
     navigate("/");
