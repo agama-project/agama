@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-09 02:25+0000\n"
-"PO-Revision-Date: 2024-04-10 09:43+0000\n"
+"PO-Revision-Date: 2024-06-10 19:24+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
-"Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/sv/>\n"
+"Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 5.5.5\n"
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:88
@@ -201,7 +201,7 @@ msgstr "Kan inte ta emot de filsystem som krävs för installation"
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:200
 msgid "A problem ocurred while calculating the storage setup"
-msgstr ""
+msgstr "Ett problem uppstod vid beräkning av lagringskonfigurationen"
 
 #. Returns an issue if there is no target device.
 #.
