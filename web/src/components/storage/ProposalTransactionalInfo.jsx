@@ -20,12 +20,11 @@
  */
 
 import React from "react";
-
-import { sprintf } from "sprintf-js";
+import { Alert } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import { Reminder } from "~/components/core";
-import { isTransactionalSystem } from "~/components/storage/utils";
+import { sprintf } from "sprintf-js";
 import { useProduct } from "~/context/product";
+import { isTransactionalSystem } from "~/components/storage/utils";
 
 /**
  * @typedef {import ("~/client/storage").ProposalManager.ProposalSettings} ProposalSettings
@@ -50,5 +49,5 @@ export default function ProposalTransactionalInfo({ settings }) {
     selectedProduct.name
   );
 
-  return <Reminder title={title}>{description}</Reminder>;
+  return <Alert isInline title={title}>{description}</Alert>;
 }
