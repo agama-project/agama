@@ -17,6 +17,11 @@ translations:
       MicroSO proporciona actualitzacions transaccionals (atòmiques) en un
       sistema de fitxers d'arrel btrfs només de lectura. Com a distribució
       contínua, el programari està sempre actualitzat.
+    cs: Rychlá, malá distribuce určená pro úlohy hostitelského kontejneru s
+      automatizovanou správou a záplatováním. openSUSE MicroOS poskytuje
+      transakční (atomické) aktualizace na kořenovém souborovém systému btrfs
+      určeném pouze pro čtení. Jako distribuce s průběžným vydáváním je software
+      vždy aktuální.
     de: Eine schnelle, kleine Distribution, die für den Betrieb von
       Container-Arbeitslasten mit automatischer Verwaltung und automatisiertem
       Patching entwickelt wurde. openSUSE MicroOS bietet transaktionale
