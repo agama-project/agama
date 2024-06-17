@@ -172,6 +172,11 @@ module Agama
 
       # Installs the packages to the target system
       def install
+        # move the target from the Live ISO to the installed system (/mnt)
+        Yast::Pkg.TargetFinish
+        Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
+        Yast::Pkg.TargetLoad
+
         steps = proposal.packages_count
         start_progress(steps)
         Callbacks::Progress.setup(steps, progress)
@@ -196,7 +201,10 @@ module Agama
         progress.step(_("Writing repositories to the target system")) do
           Yast::Pkg.SourceSaveAll
           Yast::Pkg.TargetFinish
-          Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
+          # FIXME: Pkg.SourceCacheCopyTo works correctly only from the inst-sys
+          # (original target "/"), it does not work correctly when using
+          # "chroot" /run/agama/zypp, it needs to be reimplemented :-(
+          # Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
           registration.finish
         end
       end

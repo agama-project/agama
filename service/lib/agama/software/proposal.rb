@@ -153,12 +153,8 @@ module Agama
 
       # Initializes the target, closing the previous one
       def initialize_target
-        Yast::Pkg.TargetFinish # ensure that previous target is closed
-        Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
-        Yast::Pkg.TargetLoad
-
         preferred, *additional = languages
-        Yast::Pkg.SetPackageLocale(preferred) if preferred
+        Yast::Pkg.SetPackageLocale(preferred || "")
         Yast::Pkg.SetAdditionalLocales(additional)
 
         Yast::Pkg.SetSolverFlags("ignoreAlreadyRecommended" => false, "onlyRequires" => false)
