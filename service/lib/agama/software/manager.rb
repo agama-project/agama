@@ -510,6 +510,9 @@ module Agama
         else
           # delete all, the #probe call will add the new repos
           repositories.delete_all
+          # deleting happens only in memory, to really delete the caches we need
+          # to write the repository setup to the disk
+          Yast::Pkg.SourceSaveAll
         end
       end
     end
