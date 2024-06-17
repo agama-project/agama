@@ -83,6 +83,8 @@ describe Agama::Software::Manager do
 
   before do
     allow(Yast::Pkg).to receive(:TargetInitialize)
+    allow(Yast::Pkg).to receive(:TargetFinish)
+    allow(Yast::Pkg).to receive(:TargetLoad)
     allow(Yast::Pkg).to receive(:SourceSaveAll)
     allow(Yast::Pkg).to receive(:ImportGPGKey)
     # allow glob to work for other calls
@@ -339,14 +341,19 @@ describe Agama::Software::Manager do
         expect { subject.install }.to raise_error(RuntimeError)
       end
     end
+
+    it "moves the packaging target to /mnt" do
+      expect(Yast::Pkg).to receive(:TargetFinish)
+      expect(Yast::Pkg).to receive(:TargetInitialize).with(destdir)
+      expect(Yast::Pkg).to receive(:TargetLoad)
+      subject.install
+    end
   end
 
   describe "#finish" do
     it "releases the packaging system" do
       expect(Yast::Pkg).to receive(:SourceSaveAll)
       expect(Yast::Pkg).to receive(:TargetFinish)
-      expect(Yast::Pkg).to receive(:SourceCacheCopyTo)
-        .with(Yast::Installation.destdir)
 
       subject.finish
     end
