@@ -35,13 +35,14 @@ import { Center, Icon } from "~/components/layout";
 import { EncryptionMethods } from "~/client/storage";
 import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
+import alignmentStyles from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 
 const TpmHint = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const title = _("TPM sealing requires the new system to be booted directly.");
 
   return (
-    <Alert isInline variant="info" className="tpm-hint" title={<strong>{title}</strong>}>
+    <Alert isInline className={alignmentStyles.textAlignLeft} title={<strong>{title}</strong>}>
       <Stack hasGutter>
         {_("If a local media was used to run this installer, remove it before the next boot.")}
         <ExpandableSection
