@@ -53,7 +53,7 @@ const Header = () => {
         </PageToggleButton>
       </MastheadToggle>
       <MastheadMain>
-        <MastheadBrand component="h1"><NavLink to="/">{title}</NavLink></MastheadBrand>
+        <MastheadBrand component="h1">{title}</MastheadBrand>
       </MastheadMain>
       <MastheadContent>
         <Toolbar>
