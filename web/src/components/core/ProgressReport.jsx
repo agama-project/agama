@@ -20,10 +20,9 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { Flex, Progress, Spinner, Text } from "@patternfly/react-core";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
-
-import { Grid, GridItem, Progress, Text } from "@patternfly/react-core";
 
 const ProgressReport = () => {
   const client = useInstallerClient();
@@ -54,34 +53,45 @@ const ProgressReport = () => {
     });
   }, [client.software]);
 
-  if (!progress.steps) return <Text>Waiting for progress status...</Text>;
+  if (!progress.steps) {
+    return (
+      <Flex
+        direction={{ default: "column" }}
+        rowGap={{ default: "rowGapXl" }}
+        alignItems={{ default: "alignItemsCenter" }}
+        justifyContent={{ default: "justifyContentCenter" }}
+      >
+        <Spinner />
+        <Text component="h1">Waiting for progress status...</Text>
+      </Flex>
+    );
+  }
 
   return (
-    <Grid hasGutter>
-      <GridItem sm={12}>
-        <Progress
-          min={0}
-          max={progress.steps}
-          value={progress.step}
-          title={progress.message}
-          label={" "}
-          aria-label={progress.message}
-        />
+    <Flex
+      direction={{ default: "column" }}
+      rowGap={{ default: "rowGapMd" }}
+    >
+      <Progress
+        min={0}
+        max={progress.steps}
+        value={progress.step}
+        title={progress.message}
+        measureLocation="none"
+      />
 
+      {
+        subProgress &&
         <Progress
-          size="sm"
           min={0}
-          max={subProgress?.steps}
-          value={subProgress?.step}
-          title={subProgress?.message}
-          label={" "}
+          max={subProgress.steps}
+          value={subProgress.step}
+          title={subProgress.message}
           measureLocation="none"
-          className={!subProgress && 'hidden'}
-          aria-label={subProgress?.message || " "}
-          aria-hidden={!subProgress}
+          size="sm"
         />
-      </GridItem>
-    </Grid>
+      }
+    </Flex>
   );
 };
 

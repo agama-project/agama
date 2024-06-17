@@ -32,15 +32,14 @@ jest.mock("~/client");
 let callbacks;
 let onManagerProgressChange = jest.fn();
 let onSoftwareProgressChange = jest.fn();
+const getProgressFn = jest.fn();
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       manager: {
         onProgressChange: onManagerProgressChange,
-        getProgress: jest.fn().mockResolvedValue(
-          { message: "Reading repositories", current: 1, total: 10 }
-        )
+        getProgress: getProgressFn
       },
       software: {
         onProgressChange: onSoftwareProgressChange
@@ -51,10 +50,13 @@ beforeEach(() => {
 
 describe("ProgressReport", () => {
   describe("when there is not progress information available", () => {
-    it.skip("renders a waiting message", () => {
-      installerRender(<ProgressReport />);
+    beforeEach(() => {
+      getProgressFn.mockResolvedValue({});
+    });
 
-      expect(screen.findByText(/Waiting for/i)).toBeInTheDocument();
+    it("renders a waiting message", async () => {
+      installerRender(<ProgressReport />);
+      await screen.findByText(/Waiting for progress status/i);
     });
   });
 
@@ -64,13 +66,15 @@ describe("ProgressReport", () => {
       const [onSoftwareProgress, softwareCallbacks] = createCallbackMock();
       onManagerProgressChange = onManagerProgress;
       onSoftwareProgressChange = onSoftwareProgress;
+      getProgressFn.mockResolvedValue(
+        { message: "Reading repositories", current: 1, total: 10 }
+      );
       callbacks = { manager: managerCallbacks, software: softwareCallbacks };
     });
 
     it("shows the main progress bar", async () => {
       installerRender(<ProgressReport />);
 
-      await screen.findByText(/Waiting/i);
       await screen.findByText(/Reading/i);
 
       // NOTE: there can be more than one subscriptions to the
@@ -80,43 +84,30 @@ describe("ProgressReport", () => {
         cb({ message: "Partitioning", current: 1, total: 10 });
       });
 
-      await screen.findByLabelText("Partitioning");
+      await screen.findByRole("progressbar", { name: "Partitioning" });
     });
 
-    it("does not show secondary progress bar", async () => {
+    it("shows secondary progress bar when there is information from software service ", async () => {
       installerRender(<ProgressReport />);
 
-      await screen.findByText(/Waiting/i);
+      const managerCallback = callbacks.manager[callbacks.manager.length - 1];
+      const softwareCallback = callbacks.software[callbacks.software.length - 1];
 
-      const cb = callbacks.manager[callbacks.manager.length - 1];
       act(() => {
-        cb({ message: "Partitioning", current: 1, total: 10 });
+        managerCallback({ message: "Partitioning", current: 1, total: 10 });
       });
 
-      await screen.findAllByRole("progressbar", { hidden: true });
-    });
+      await screen.findByRole("progressbar", { name: "Partitioning" });
+      const bars = await screen.findAllByRole("progressbar");
+      expect(bars.length).toBe(1);
 
-    describe("when there is progress information from the software service", () => {
-      it("shows the secondary progress bar", async () => {
-        installerRender(<ProgressReport />);
-
-        await screen.findByText(/Waiting/i);
-
-        // NOTE: there can be more than one subscriptions to the
-        // manager#onChange. We're interested in the latest one here.
-        const cb0 = callbacks.manager[callbacks.manager.length - 1];
-        act(() => {
-          cb0({ message: "Installing software", current: 4, total: 10 });
-        });
-
-        const cb1 = callbacks.software[callbacks.software.length - 1];
-        act(() => {
-          cb1({ message: "Installing YaST2", current: 256, total: 500, finished: false });
-        });
-
-        const bars = screen.queryAllByRole("progressbar", { hidden: false });
-        expect(bars.length).toEqual(2);
+      act(() => {
+        managerCallback({ message: "Installing software", current: 4, total: 10 });
+        softwareCallback({ message: "Installing YaST2", current: 256, total: 500, finished: false });
       });
+
+      await screen.findByRole("progressbar", { name: "Installing software" });
+      await screen.findByRole("progressbar", { name: "Installing YaST2" });
     });
   });
 });
