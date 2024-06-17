@@ -83,6 +83,7 @@ describe Agama::Software::Manager do
 
   before do
     allow(Yast::Pkg).to receive(:TargetInitialize)
+    allow(Yast::Pkg).to receive(:SourceSaveAll)
     allow(Yast::Pkg).to receive(:ImportGPGKey)
     # allow glob to work for other calls
     allow(Dir).to receive(:glob).and_call_original
