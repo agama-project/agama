@@ -550,6 +550,10 @@ table.proposal-result {
   input {
     text-align: end;
   }
+
+  select {
+    min-inline-size: fit-content;
+  }
 }
 
 [data-type="agama/options-picker"] {
