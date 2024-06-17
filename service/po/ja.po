@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-09 02:25+0000\n"
-"PO-Revision-Date: 2024-04-08 00:53+0000\n"
+"PO-Revision-Date: 2024-06-10 02:24+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
-"Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/ja/>\n"
+"Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 5.5.5\n"
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:88
@@ -201,7 +201,7 @@ msgstr "インストール先となる必要なファイルシステムを調整
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:200
 msgid "A problem ocurred while calculating the storage setup"
-msgstr ""
+msgstr "ストレージ設定を作成する際に問題が発生しました"
 
 #. Returns an issue if there is no target device.
 #.
