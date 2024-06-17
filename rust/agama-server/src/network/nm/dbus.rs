@@ -24,6 +24,7 @@ const VLAN_KEY: &str = "vlan";
 const BRIDGE_KEY: &str = "bridge";
 const BRIDGE_PORT_KEY: &str = "bridge-port";
 const INFINIBAND_KEY: &str = "infiniband";
+const TUN_KEY: &str = "tun";
 
 /// Converts a connection struct into a HashMap that can be sent over D-Bus.
 ///
@@ -122,6 +123,10 @@ pub fn connection_to_dbus<'a>(
         ConnectionConfig::Loopback => {
             connection_dbus.insert("type", LOOPBACK_KEY.into());
         }
+        ConnectionConfig::Tun(tun) => {
+            connection_dbus.insert("type", TUN_KEY.into());
+            result.insert(TUN_KEY, tun_config_to_dbus(tun));
+        }
         _ => {}
     }
 
@@ -168,6 +173,11 @@ pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
 
     if let Some(infiniband_config) = infiniband_config_from_dbus(&conn) {
         connection.config = ConnectionConfig::Infiniband(infiniband_config);
+        return Some(connection);
+    }
+
+    if let Some(tun_config) = tun_config_from_dbus(&conn) {
+        connection.config = ConnectionConfig::Tun(tun_config);
         return Some(connection);
     }
 
@@ -530,6 +540,46 @@ fn infiniband_config_from_dbus(conn: &OwnedNestedHash) -> Option<InfinibandConfi
     }
 
     Some(infiniband_config)
+}
+
+fn tun_config_to_dbus(config: &TunConfig) -> HashMap<&str, zvariant::Value> {
+    let mut tun_config: HashMap<&str, zvariant::Value> = HashMap::from([
+        ("mode", Value::new(config.mode.clone() as u32)),
+    ]);
+
+    if let Some(group) = &config.group {
+        tun_config.insert("group", group.into());
+    }
+
+    if let Some(owner) = &config.owner {
+        tun_config.insert("owner", owner.into());
+    }
+
+    tun_config
+}
+
+fn tun_config_from_dbus(conn: &OwnedNestedHash) -> Option<TunConfig> {
+    let tun = conn.get(TUN_KEY)?;
+
+    let mut tun_config = TunConfig::default();
+
+
+    if let Some(mode) = tun.get("mode") {
+        tun_config.mode = match mode.downcast_ref::<u32>()? {
+            2 => TunMode::Tap,
+            _ => TunMode::Tun,
+        }
+    }
+
+    if let Some(group) = tun.get("group") {
+        tun_config.group = Some(group.downcast_ref::<str>()?.to_string());
+    }
+
+    if let Some(owner) = tun.get("owner") {
+        tun_config.owner = Some(owner.downcast_ref::<str>()?.to_string());
+    }
+
+    Some(tun_config)
 }
 
 /// Converts a MatchConfig struct into a HashMap that can be sent over D-Bus.
