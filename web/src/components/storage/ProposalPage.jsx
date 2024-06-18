@@ -20,7 +20,7 @@
  */
 
 import React, { useCallback, useReducer, useEffect, useRef } from "react";
-import { Grid, GridItem } from "@patternfly/react-core";
+import { Grid, GridItem, Stack } from "@patternfly/react-core";
 import { Page, Drawer } from "~/components/core/";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import ProposalSettingsSection from "./ProposalSettingsSection";
@@ -323,27 +323,23 @@ export default function ProposalPage() {
               panelHeader={<h4>{_("Planned Actions")}</h4>}
               panelContent={<ProposalActionsDialog actions={state.actions} />}
             >
-              <Grid sm={12} hasGutter>
-                <GridItem>
-                  <SpacePolicyField
-                    policy={spacePolicy}
-                    actions={state.settings.spaceActions}
-                    devices={state.settings.installationDevices}
-                    isLoading={showSkeleton(state.loading, "SpacePolicyField", state.changing)}
-                    onChange={changeSpacePolicy}
-                  />
-                </GridItem>
-                <GridItem>
-                  <ProposalResultSection
-                    system={state.system}
-                    staging={state.staging}
-                    actions={state.actions}
-                    errors={state.errors}
-                    isLoading={state.loading}
-                    onActionsClick={drawerRef.current?.open}
-                  />
-                </GridItem>
-              </Grid>
+              <Stack hasGutter>
+                <SpacePolicyField
+                  policy={spacePolicy}
+                  actions={state.settings.spaceActions}
+                  devices={state.settings.installationDevices}
+                  isLoading={showSkeleton(state.loading, "SpacePolicyField", state.changing)}
+                  onChange={changeSpacePolicy}
+                />
+                <ProposalResultSection
+                  system={state.system}
+                  staging={state.staging}
+                  actions={state.actions}
+                  errors={state.errors}
+                  isLoading={state.loading}
+                  onActionsClick={drawerRef.current?.open}
+                />
+              </Stack>
             </Drawer>
           </GridItem>
         </Grid>

@@ -25,19 +25,15 @@ import React, { useState } from "react";
 import {
   Alert,
   Button,
-  Card, CardHeader, CardTitle, CardBody,
-  Drawer, DrawerPanelContent, DrawerContent, DrawerContentBody, DrawerHead, DrawerActions, DrawerCloseButton,
+  CardBody,
   Skeleton,
   Stack,
-  DrawerPanelBody
 } from "@patternfly/react-core";
-import { sprintf } from "sprintf-js";
-import { _, n_ } from "~/i18n";
+import { CardField, EmptyState } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
-import { EmptyState } from "~/components/core";
-import { ProposalActionsDialog } from "~/components/storage";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
-import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
+import { _, n_ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 
 /**
  * @typedef {import ("~/client/storage").Action} Action
@@ -189,15 +185,10 @@ export default function ProposalResultSection({
   const description = _("During installation, some actions will be performed to configure the system as displayed below.");
 
   return (
-    <Card isCompact isRounded isFullHeight>
-      <CardHeader>
-        <CardTitle>
-          <h3>{_("Result")}</h3>
-        </CardTitle>
-      </CardHeader>
-      <CardBody>
-        <div className={textStyles.color_200}>{description}</div>
-      </CardBody>
+    <CardField
+      label={_("Result")}
+      description={description}
+    >
       <CardBody>
         <SectionErrors errors={errors} />
         <SectionContent
@@ -209,6 +200,6 @@ export default function ProposalResultSection({
           onActionsClick={onActionsClick}
         />
       </CardBody>
-    </Card>
+    </CardField>
   );
 }

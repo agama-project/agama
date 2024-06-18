@@ -22,15 +22,11 @@
 // @ts-check
 
 import React from "react";
-import { Link } from "react-router-dom";
-import {
-  Card, CardHeader, CardTitle, CardBody, CardFooter, Skeleton
-} from "@patternfly/react-core";
+import { Skeleton } from "@patternfly/react-core";
 import { ButtonLink, CardField } from "~/components/core";
-import { _ } from "~/i18n";
 import { deviceLabel } from '~/components/storage/utils';
+import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
 /**
  * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
@@ -100,20 +96,16 @@ export default function InstallationDeviceField({
     value = targetValue(target, targetDevice, targetPVDevices);
 
   return (
-    <Card isCompact isFullHeight isRounded>
-      <CardHeader>
-        <CardTitle>
-          <h3>{LABEL}</h3>
-        </CardTitle>
-      </CardHeader>
-      <CardBody>
-        <div className={textStyles.color_200}>{DESCRIPTION}</div>
-      </CardBody>
-      <CardBody>{value}</CardBody>
-      <CardFooter>{ isLoading
-        ? <Skeleton fontSize="sm" width="100px" />
-        : <ButtonLink to="target-device" isPrimary={false}>{_("Change")}</ButtonLink>}
-      </CardFooter>
-    </Card>
+    <CardField
+      label={LABEL}
+      description={DESCRIPTION}
+      actions={
+        isLoading
+          ? <Skeleton fontSize="sm" width="100px" />
+          : <ButtonLink to="target-device" isPrimary={false}>{_("Change")}</ButtonLink>
+      }
+    >
+      <CardField.Content isFilled={false}>{value}</CardField.Content>
+    </CardField>
   );
 }

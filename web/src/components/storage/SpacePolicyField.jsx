@@ -23,11 +23,10 @@
 
 import React, { useState } from "react";
 import { Button, CardBody, Skeleton } from "@patternfly/react-core";
-
-import { sprintf } from "sprintf-js";
-import { _, n_ } from "~/i18n";
 import { CardField } from "~/components/core";
 import SpacePolicyDialog from "~/components/storage/SpacePolicyDialog";
+import { _, n_ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 
 /**
  * @typedef {import ("~/client/storage").SpaceAction} SpaceAction
@@ -90,19 +89,18 @@ in the installation device(s).")}
       actions={
         isLoading ? <Skeleton fontSize="sm" width="100px" /> : <Button variant="secondary" onClick={openDialog}>{_("Change")}</Button>
       }
+      cardProps={{ isFullHeight: false }}
     >
       {isDialogOpen &&
-        <CardBody>
-          <SpacePolicyDialog
-            isOpen
-            isLoading={isLoading}
-            policy={policy}
-            actions={actions}
-            devices={devices}
-            onAccept={onAccept}
-            onCancel={closeDialog}
-          />
-        </CardBody>}
+        <SpacePolicyDialog
+          isOpen
+          isLoading={isLoading}
+          policy={policy}
+          actions={actions}
+          devices={devices}
+          onAccept={onAccept}
+          onCancel={closeDialog}
+        />}
     </CardField>
   );
 }
