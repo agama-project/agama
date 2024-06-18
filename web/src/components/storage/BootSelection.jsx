@@ -85,11 +85,13 @@ export default function BootSelectionDialog() {
         selectedOption = BOOT_MANUAL_ID;
       }
 
+      const findDevice = (name) => availableDevices.find(d => d.name === name);
+
       setState({
         load: true,
-        bootDevice: availableDevices.find(d => d.name === bootDevice) || availableDevices[0],
+        bootDevice: findDevice(bootDevice) || findDevice(defaultBootDevice) || availableDevices[0],
         configureBoot,
-        defaultBootDevice,
+        defaultBootDevice: findDevice(defaultBootDevice),
         availableDevices,
         selectedOption
       });
