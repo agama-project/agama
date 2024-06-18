@@ -264,6 +264,7 @@ pub struct ProposalSettings {
     pub target_pv_devices: Option<Vec<String>>,
     pub configure_boot: bool,
     pub boot_device: String,
+    pub default_boot_device: String,
     pub encryption_password: String,
     pub encryption_method: String,
     #[serde(rename = "encryptionPBKDFunction")]
@@ -283,6 +284,7 @@ impl TryFrom<HashMap<String, OwnedValue>> for ProposalSettings {
             target_pv_devices: get_optional_property(&hash, "TargetPVDevices")?,
             configure_boot: get_property(&hash, "ConfigureBoot")?,
             boot_device: get_property(&hash, "BootDevice")?,
+            default_boot_device: get_property(&hash, "DefaultBootDevice")?,
             encryption_password: get_property(&hash, "EncryptionPassword")?,
             encryption_method: get_property(&hash, "EncryptionMethod")?,
             encryption_pbkd_function: get_property(&hash, "EncryptionPBKDFunction")?,
