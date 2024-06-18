@@ -78,6 +78,15 @@ module Agama
           backend.progress.finished?
         end
 
+        # Returns the known step descriptions
+        #
+        # @return [Array<String>]
+        def progress_steps
+          return [] unless backend.progress
+
+          backend.progress.descriptions
+        end
+
         # D-Bus properties of the Progress interface
         #
         # @return [Hash]
@@ -104,6 +113,7 @@ module Agama
               dbus_reader :progress_total_steps, "u", dbus_name: "TotalSteps"
               dbus_reader :progress_current_step, "(us)", dbus_name: "CurrentStep"
               dbus_reader :progress_finished, "b", dbus_name: "Finished"
+              dbus_reader :progress_steps, "as", dbus_name: "Steps"
             end
           end
         end

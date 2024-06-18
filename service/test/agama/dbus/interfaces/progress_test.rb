@@ -59,7 +59,7 @@ describe DBusObjectWithProgressInterface do
 
     context " if there is a progress" do
       before do
-        subject.backend.start_progress(2)
+        subject.backend.start_progress_with_size(2)
       end
 
       it "returns the total number of steps of the progress" do
@@ -77,7 +77,7 @@ describe DBusObjectWithProgressInterface do
 
     context " if there is a progress" do
       before do
-        subject.backend.start_progress(2)
+        subject.backend.start_progress_with_size(2)
       end
 
       before do
@@ -99,7 +99,7 @@ describe DBusObjectWithProgressInterface do
 
     context " if there is a progress" do
       before do
-        subject.backend.start_progress(2)
+        subject.backend.start_progress_with_size(2)
       end
 
       context "and the progress is not started" do
@@ -133,7 +133,7 @@ describe DBusObjectWithProgressInterface do
 
   describe "#progress_properties" do
     before do
-      subject.backend.start_progress(2)
+      subject.backend.start_progress_with_size(2)
       progress.step("step 1")
     end
 
@@ -141,7 +141,8 @@ describe DBusObjectWithProgressInterface do
       expected_properties = {
         "TotalSteps"  => 2,
         "CurrentStep" => [1, "step 1"],
-        "Finished"    => false
+        "Finished"    => false,
+        "Steps"       => []
       }
       expect(subject.progress_properties).to eq(expected_properties)
     end
@@ -150,7 +151,7 @@ describe DBusObjectWithProgressInterface do
   describe "#register_progress_callbacks" do
     it "register callbacks to be called when the progress changes" do
       subject.register_progress_callbacks
-      subject.backend.start_progress(2)
+      subject.backend.start_progress_with_size(2)
 
       expect(subject).to receive(:dbus_properties_changed)
         .with(progress_interface, anything, anything)
@@ -160,7 +161,7 @@ describe DBusObjectWithProgressInterface do
 
     it "register callbacks to be called when the progress finishes" do
       subject.register_progress_callbacks
-      subject.backend.start_progress(2)
+      subject.backend.start_progress_with_size(2)
 
       expect(subject).to receive(:dbus_properties_changed)
         .with(progress_interface, anything, anything)

@@ -30,18 +30,34 @@ module Agama
     # @return [Progress, nil]
     attr_reader :progress
 
+    # Creates a new progress with a give number of steps
+    #
+    # @param size [Integer] Number of steps
+    def start_progress_with_size(size)
+      start_progress(size: size)
+    end
+
+    # Creates a new progress with a given set of steps
+    #
+    # @param descriptions [Array<String>] Steps descriptions
+    def start_progress_with_descriptions(*descriptions)
+      start_progress(descriptions: descriptions)
+    end
+
     # Creates a new progress
+    #
+    # Prefer using #start_progress_with_Size or #start_progress_with_descriptions.
     #
     # @raise [RuntimeError] if there is an unfinished progress.
     #
-    # @param total_steps [Integer] total number of the steps for the progress.
-    def start_progress(total_steps)
+    # @param args [*Hash] Progress constructor arguments.
+    def start_progress(args)
       raise NotFinishedProgress if progress && !progress.finished?
 
       on_change_callbacks = @on_progress_change_callbacks || []
       on_finish_callbacks = @on_progress_finish_callbacks || []
 
-      @progress = Progress.new(total_steps).tap do |progress|
+      @progress = Progress.new(**args).tap do |progress|
         progress.on_change { on_change_callbacks.each(&:call) }
         progress.on_finish { on_finish_callbacks.each(&:call) }
       end

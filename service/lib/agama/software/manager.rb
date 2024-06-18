@@ -132,11 +132,11 @@ module Agama
         logger.info "Probing software"
 
         if repositories.empty?
-          start_progress(3)
+          start_progress_with_size(3)
           Yast::PackageCallbacks.InitPackageCallbacks(logger)
           progress.step(_("Initializing sources")) { add_base_repos }
         else
-          start_progress(2)
+          start_progress_with_size(2)
         end
 
         progress.step(_("Refreshing repositories metadata")) { repositories.load }
@@ -178,7 +178,7 @@ module Agama
         Yast::Pkg.TargetLoad
 
         steps = proposal.packages_count
-        start_progress(steps)
+        start_progress_with_size(steps)
         Callbacks::Progress.setup(steps, progress)
 
         # TODO: error handling
@@ -197,16 +197,13 @@ module Agama
 
       # Writes the repositories information to the installed system
       def finish
-        start_progress(1)
-        progress.step(_("Writing repositories to the target system")) do
-          Yast::Pkg.SourceSaveAll
-          Yast::Pkg.TargetFinish
-          # FIXME: Pkg.SourceCacheCopyTo works correctly only from the inst-sys
-          # (original target "/"), it does not work correctly when using
-          # "chroot" /run/agama/zypp, it needs to be reimplemented :-(
-          # Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
-          registration.finish
-        end
+        Yast::Pkg.SourceSaveAll
+        Yast::Pkg.TargetFinish
+        # FIXME: Pkg.SourceCacheCopyTo works correctly only from the inst-sys
+        # (original target "/"), it does not work correctly when using
+        # "chroot" /run/agama/zypp, it needs to be reimplemented :-(
+        # Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
+        registration.finish
       end
 
       # Determine whether the given tag is provided by the selected packages

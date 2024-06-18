@@ -24,9 +24,15 @@ module Agama
   #
   # It allows to configure callbacks to be called on each step and also when the progress finishes.
   #
+  # In most cases all steps are known in advance (e.g., "probing software", "probing storage", etc.)
+  # but, in some situations, only the number of steps is known (e.g., "Installing package X").
+  #
+  # Use the Progress.with_descriptions to initialize a progress with known step descriptions and
+  # Progress.with_size when only the number of steps is known
+  #
   # @example
   #
-  #   progress = Progress.new(3)                    # 3 steps
+  #   progress = Progress.with_size(3)              # 3 steps
   #   progress.on_change { puts progress.message }  # configures callbacks
   #   progress.on_finish { puts "finished"  }       # configures callbacks
   #
@@ -45,6 +51,14 @@ module Agama
   #
   #   progress.finished?                            #=> true
   #   progress.current_step                         #=> nil
+  #
+  # @example Progress with known step descriptions
+  #
+  #   progress = Progress.with_descriptions(["Partitioning", "Installing", "Finishing"])
+  #   progress.step { partitioning }                      # next step
+  #   progress.current_step.description                   #=> "Partitioning"
+  #   progress.step("Installing packages") { installing } # overwrite the description
+  #   progress.current_step.description                   # "Installing packages"
   class Progress
     # Step of the progress
     class Step
@@ -73,11 +87,30 @@ module Agama
     # @return [Integer]
     attr_reader :total_steps
 
+    # Step descriptions in case they are known
+    #
+    # @return [Array<String>]
+    attr_reader :descriptions
+
+    class << self
+      def with_size(size)
+        new(size: size)
+      end
+
+      def with_descriptions(descriptions)
+        new(descriptions: descriptions)
+      end
+    end
+
     # Constructor
     #
-    # @param total_steps [Integer] total number of steps
-    def initialize(total_steps)
-      @total_steps = total_steps
+    # @param descriptions [Array<String>] Steps of the progress sequence. This argument
+    #   has precedence over the `size`
+    # @param size [Integer] total number of steps of the progress sequence
+    def initialize(descriptions: [], size: nil)
+      @descriptions = descriptions || []
+      @total_steps = descriptions.size unless descriptions.empty?
+      @total_steps ||= size
       @current_step = nil
       @counter = 0
       @finished = false
@@ -99,15 +132,16 @@ module Agama
     # It calls the `on_change` callbacks and then runs the given block, if any. It also calls
     # `on_finish` callbacks after the last step.
     #
-    # @param description [String] description of the step
+    # @param description [String, nil] description of the step
     # @param block [Proc]
     #
     # @return [Object, nil] result of the given block or nil if no block is given
-    def step(description, &block)
+    def step(description = nil, &block)
       return if finished?
 
       @counter += 1
-      @current_step = Step.new(@counter, description)
+      step_description = description || description_for(@counter)
+      @current_step = Step.new(@counter, step_description)
       @on_change_callbacks.each(&:call)
 
       result = block_given? ? block.call : nil
@@ -153,6 +187,12 @@ module Agama
       return "Finished" if finished?
 
       "#{current_step.description} (#{@counter}/#{total_steps})"
+    end
+
+  private
+
+    def description_for(step)
+      @descriptions[step - 1] || format(_("Step %s/%s"), step, total_steps)
     end
   end
 end
