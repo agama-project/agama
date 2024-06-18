@@ -23,6 +23,10 @@ trait Progress {
     /// TotalSteps property
     #[dbus_proxy(property)]
     fn total_steps(&self) -> zbus::Result<u32>;
+
+    /// Steps property
+    #[dbus_proxy(property)]
+    fn steps(&self) -> zbus::Result<Vec<String>>;
 }
 
 #[dbus_proxy(

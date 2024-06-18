@@ -165,10 +165,21 @@ struct ProgressState<'a> {
     proxy: ProgressProxy<'a>,
 }
 
-async fn progress(State(state): State<ProgressState<'_>>) -> Result<Json<Progress>, Error> {
+/// Information about the current progress sequence.
+#[derive(Clone, Default, Serialize)]
+pub struct ProgressSequence {
+    /// Sequence steps if known in advance
+    steps: Vec<String>,
+    #[serde(flatten)]
+    progress: Progress,
+}
+
+async fn progress(State(state): State<ProgressState<'_>>) -> Result<Json<ProgressSequence>, Error> {
     let proxy = state.proxy;
     let progress = Progress::from_proxy(&proxy).await?;
-    Ok(Json(progress))
+    let steps = proxy.steps().await?;
+    let sequence = ProgressSequence { steps, progress };
+    Ok(Json(sequence))
 }
 
 #[pin_project]
