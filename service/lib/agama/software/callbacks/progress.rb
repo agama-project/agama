@@ -41,8 +41,8 @@ module Agama
         end
 
         def setup
-          Yast::Pkg.CallbackDonePackage(
-            fun_ref(method(:package_installed), "string (integer, string)")
+          Yast::Pkg.CallbackStartPackage(
+            fun_ref(method(:start_package), "void (string, string, string, integer, boolean)")
           )
         end
 
@@ -55,12 +55,8 @@ module Agama
           Yast::FunRef.new(method, signature)
         end
 
-        # TODO: error handling
-        def package_installed(_error, _reason)
-          @installed += 1
-          progress.step(msg)
-
-          ""
+        def start_package(package, _file, _summary, _size, _other)
+          progress.step("Installing #{package}")
         end
 
         def msg
