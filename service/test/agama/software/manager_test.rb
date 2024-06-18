@@ -81,7 +81,10 @@ describe Agama::Software::Manager do
     instance_double(Agama::DBus::Clients::Questions)
   end
 
+  let(:target_dir) { Dir.mktmpdir }
+
   before do
+    stub_const("Agama::Software::Manager::TARGET_DIR", target_dir)
     allow(Yast::Pkg).to receive(:TargetInitialize)
     allow(Yast::Pkg).to receive(:TargetFinish)
     allow(Yast::Pkg).to receive(:TargetLoad)
@@ -99,6 +102,10 @@ describe Agama::Software::Manager do
     allow(Agama::Software::RepositoriesManager).to receive(:new).and_return(repositories)
     allow(Agama::Software::Proposal).to receive(:new).and_return(proposal)
     allow(Agama::ProductReader).to receive(:new).and_call_original
+  end
+
+  after do
+    FileUtils.rm_r(target_dir)
   end
 
   describe "#new" do

@@ -35,9 +35,17 @@ describe Agama::DBus::Software::Product do
 
   let(:config) { Agama::Config.new }
 
+  let(:target_dir) { Dir.mktmpdir }
+
   before do
+    stub_const("Agama::Software::Manager::TARGET_DIR", target_dir)
     allow(config).to receive(:products).and_return(products)
     allow(subject).to receive(:dbus_properties_changed)
+    allow(Agama::ProductReader).to receive(:new).and_call_original
+  end
+
+  after do
+    FileUtils.rm_r(target_dir)
   end
 
   let(:products) do
