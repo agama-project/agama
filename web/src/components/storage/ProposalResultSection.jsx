@@ -178,7 +178,8 @@ export default function ProposalResultSection({
   staging = [],
   actions = [],
   errors = [],
-  isLoading = false
+  isLoading = false,
+  onActionsClick
 }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   if (isLoading) errors = [];
@@ -189,44 +190,25 @@ export default function ProposalResultSection({
 
   return (
     <Card isCompact isRounded isFullHeight>
-      <Drawer isExpanded={drawerOpen}>
-        <DrawerContent panelContent={
-          <DrawerPanelContent focusTrap={{ enabled: true }}>
-            <DrawerHead>
-              <h4>{_("Planned Actions")}</h4>
-              <DrawerActions>
-                <DrawerCloseButton onClick={closeDrawer} />
-              </DrawerActions>
-            </DrawerHead>
-            <DrawerPanelBody>
-              <ProposalActionsDialog actions={actions} />
-            </DrawerPanelBody>
-          </DrawerPanelContent>
-        }
-        >
-          <DrawerContentBody>
-            <CardHeader>
-              <CardTitle>
-                <h3>{_("Result")}</h3>
-              </CardTitle>
-            </CardHeader>
-            <CardBody>
-              <div className={textStyles.color_200}>{description}</div>
-            </CardBody>
-            <CardBody>
-              <SectionErrors errors={errors} />
-              <SectionContent
-                system={system}
-                staging={staging}
-                actions={actions}
-                errors={errors}
-                isLoading={isLoading}
-                onActionsClick={openDrawer}
-              />
-            </CardBody>
-          </DrawerContentBody>
-        </DrawerContent>
-      </Drawer>
+      <CardHeader>
+        <CardTitle>
+          <h3>{_("Result")}</h3>
+        </CardTitle>
+      </CardHeader>
+      <CardBody>
+        <div className={textStyles.color_200}>{description}</div>
+      </CardBody>
+      <CardBody>
+        <SectionErrors errors={errors} />
+        <SectionContent
+          system={system}
+          staging={staging}
+          actions={actions}
+          errors={errors}
+          isLoading={isLoading}
+          onActionsClick={onActionsClick}
+        />
+      </CardBody>
     </Card>
   );
 }

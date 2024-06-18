@@ -19,17 +19,23 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useReducer, useEffect } from "react";
+import React, { useCallback, useReducer, useEffect, useRef } from "react";
 import { Grid, GridItem } from "@patternfly/react-core";
-import { Page } from "~/components/core/";
+import { Page, Drawer } from "~/components/core/";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import ProposalSettingsSection from "./ProposalSettingsSection";
 import ProposalResultSection from "./ProposalResultSection";
+import SpacePolicyField from "~/components/storage/SpacePolicyField";
+import { ProposalActionsDialog } from "~/components/storage";
 import { _ } from "~/i18n";
 import { IDLE } from "~/client/status";
+import { SPACE_POLICIES } from "~/components/storage/utils";
 import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
-import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
+
+/**
+ * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
+ */
 
 const initialState = {
   loading: true,
@@ -127,10 +133,26 @@ export const NOT_AFFECTED = {
   SpacePolicyField: [CHANGING.ENCRYPTION, CHANGING.TARGET],
 };
 
+/**
+ * A helper function to decide whether to show the progress skeletons or not
+ * for the specified component
+ *
+ * FIXME: remove duplication
+ *
+ * @param {boolean} loading loading status
+ * @param {string} component name of the component
+ * @param {symbol} changing the item which is being changed
+ * @returns {boolean} true if the skeleton should be displayed, false otherwise
+ */
+const showSkeleton = (loading, component, changing) => {
+  return loading && !NOT_AFFECTED[component].includes(changing);
+};
+
 export default function ProposalPage() {
   const { storage: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const drawerRef = useRef();
 
   const loadAvailableDevices = useCallback(async () => {
     return await cancellablePromise(client.proposal.getAvailableDevices());
@@ -253,6 +275,19 @@ export default function ProposalPage() {
     calculate(newSettings).catch(console.error);
   };
 
+  /** @param {import("~/components/storage/SpacePolicyField").SpacePolicyConfig} spacePolicyConfig */
+  const changeSpacePolicy = ({ spacePolicy, spaceActions }) => {
+    changeSettings(
+      CHANGING.POLICY,
+      {
+        spacePolicy: spacePolicy.id,
+        spaceActions
+      }
+    );
+  };
+
+  const spacePolicy = SPACE_POLICIES.find(p => p.id === state.settings.spacePolicy);
+
   /**
    * @todo Enable type checking and ensure the components are called with the correct props.
    *
@@ -283,13 +318,33 @@ export default function ProposalPage() {
             />
           </GridItem>
           <GridItem sm={12} xl={6}>
-            <ProposalResultSection
-              system={state.system}
-              staging={state.staging}
-              actions={state.actions}
-              errors={state.errors}
-              isLoading={state.loading}
-            />
+            <Drawer
+              ref={drawerRef}
+              panelHeader={<h4>{_("Planned Actions")}</h4>}
+              panelContent={<ProposalActionsDialog actions={state.actions} />}
+            >
+              <Grid sm={12} hasGutter>
+                <GridItem>
+                  <SpacePolicyField
+                    policy={spacePolicy}
+                    actions={state.settings.spaceActions}
+                    devices={state.settings.installationDevices}
+                    isLoading={showSkeleton(state.loading, "SpacePolicyField", state.changing)}
+                    onChange={changeSpacePolicy}
+                  />
+                </GridItem>
+                <GridItem>
+                  <ProposalResultSection
+                    system={state.system}
+                    staging={state.staging}
+                    actions={state.actions}
+                    errors={state.errors}
+                    isLoading={state.loading}
+                    onActionsClick={drawerRef.current?.open}
+                  />
+                </GridItem>
+              </Grid>
+            </Drawer>
           </GridItem>
         </Grid>
       </Page.MainContent>
