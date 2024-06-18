@@ -375,7 +375,7 @@ pub struct VolumeOutline {
     support_auto_size: bool,
     adjust_by_ram: bool,
     snapshots_configurable: bool,
-    snaphosts_affect_sizes: bool,
+    snapshots_affect_sizes: bool,
     size_relevant_volumes: Vec<String>,
 }
 
@@ -390,7 +390,7 @@ impl TryFrom<zbus::zvariant::Value<'_>> for VolumeOutline {
             support_auto_size: get_property(&mvalue, "SupportAutoSize")?,
             adjust_by_ram: get_property(&mvalue, "AdjustByRam")?,
             snapshots_configurable: get_property(&mvalue, "SnapshotsConfigurable")?,
-            snaphosts_affect_sizes: get_property(&mvalue, "SnapshotsAffectSizes")?,
+            snapshots_affect_sizes: get_property(&mvalue, "SnapshotsAffectSizes")?,
             size_relevant_volumes: get_property(&mvalue, "SizeRelevantVolumes")?,
         };
 
