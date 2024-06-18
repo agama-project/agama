@@ -369,29 +369,21 @@ describe Agama::Storage::Manager do
     context "if the system was probed" do
       before do
         mock_storage(devicegraph: "partitioned_md.yml")
+
+        subject.proposal.calculate_guided(settings)
       end
 
-      it "returns an empty list if a proposal has not been calculated yet" do
-        expect(subject.actions).to eq([])
+      let(:settings) do
+        Agama::Storage::ProposalSettings.new.tap do |settings|
+          settings.device.name = "/dev/sdb"
+          settings.volumes = [Agama::Storage::Volume.new("/")]
+        end
       end
 
-      context "if a proposal was successfully calculated" do
-        before do
-          subject.proposal.calculate_guided(settings)
-        end
-
-        let(:settings) do
-          Agama::Storage::ProposalSettings.new.tap do |settings|
-            settings.device.name = "/dev/sdb"
-            settings.volumes = [Agama::Storage::Volume.new("/")]
-          end
-        end
-
-        it "returns the list of actions" do
-          expect(subject.actions).to include(
-            an_object_having_attributes(sentence: /Create partition \/dev\/sdb1/)
-          )
-        end
+      it "returns the list of actions" do
+        expect(subject.actions).to include(
+          an_object_having_attributes(text: /Create partition \/dev\/sdb1/)
+        )
       end
     end
   end

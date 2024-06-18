@@ -113,40 +113,84 @@ describe Agama::DBus::Storage::Manager do
     end
 
     context "if there are actions" do
-      let(:actions) { [action1, action2] }
+      let(:actions) { [action1, action2, action3, action4] }
 
       let(:action1) do
-        instance_double(Y2Storage::CompoundAction,
-          sentence: "test1", target_device: device1, device_is?: false, delete?: false)
+        instance_double(Agama::Storage::Action,
+          text:                "test1",
+          device:              device1,
+          on_btrfs_subvolume?: false,
+          delete?:             false,
+          resize?:             false)
       end
 
       let(:action2) do
-        instance_double(Y2Storage::CompoundAction,
-          sentence: "test2", target_device: device2, device_is?: true, delete?: true)
+        instance_double(Agama::Storage::Action,
+          text:                "test2",
+          device:              device2,
+          on_btrfs_subvolume?: false,
+          delete?:             true,
+          resize?:             false)
+      end
+
+      let(:action3) do
+        instance_double(Agama::Storage::Action,
+          text:                "test3",
+          device:              device3,
+          on_btrfs_subvolume?: false,
+          delete?:             false,
+          resize?:             true)
+      end
+
+      let(:action4) do
+        instance_double(Agama::Storage::Action,
+          text:                "test4",
+          device:              device4,
+          on_btrfs_subvolume?: true,
+          delete?:             false,
+          resize?:             false)
       end
 
       let(:device1) { instance_double(Y2Storage::Device, sid: 1) }
-
       let(:device2) { instance_double(Y2Storage::Device, sid: 2) }
+      let(:device3) { instance_double(Y2Storage::Device, sid: 3) }
+      let(:device4) { instance_double(Y2Storage::Device, sid: 4) }
 
       it "returns a list with a hash for each action" do
-        expect(subject.actions.size).to eq(2)
+        expect(subject.actions.size).to eq(4)
         expect(subject.actions).to all(be_a(Hash))
 
-        action1, action2 = subject.actions
+        action1, action2, action3, action4 = subject.actions
 
         expect(action1).to eq({
           "Device" => 1,
           "Text"   => "test1",
           "Subvol" => false,
-          "Delete" => false
+          "Delete" => false,
+          "Resize" => false
         })
 
         expect(action2).to eq({
           "Device" => 2,
           "Text"   => "test2",
+          "Subvol" => false,
+          "Delete" => true,
+          "Resize" => false
+        })
+
+        expect(action3).to eq({
+          "Device" => 3,
+          "Text"   => "test3",
+          "Subvol" => false,
+          "Delete" => false,
+          "Resize" => true
+        })
+        expect(action4).to eq({
+          "Device" => 4,
+          "Text"   => "test4",
           "Subvol" => true,
-          "Delete" => true
+          "Delete" => false,
+          "Resize" => false
         })
       end
     end

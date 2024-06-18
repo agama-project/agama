@@ -230,7 +230,7 @@ describe Agama::Storage::Proposal do
 
       it "returns the actions from the actiongraph" do
         expect(proposal.actions).to include(
-          an_object_having_attributes(sentence: /Create partition \/dev\/sdb1/)
+          an_object_having_attributes(text: /Create partition \/dev\/sdb1/)
         )
       end
     end
