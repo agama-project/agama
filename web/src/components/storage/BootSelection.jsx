@@ -87,7 +87,7 @@ export default function BootSelectionDialog() {
 
       setState({
         load: true,
-        bootDevice: availableDevices.find(d => d.name === bootDevice) || defaultBootDevice || availableDevices[0],
+        bootDevice: availableDevices.find(d => d.name === bootDevice) || availableDevices[0],
         configureBoot,
         defaultBootDevice,
         availableDevices,
