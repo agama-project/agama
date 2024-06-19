@@ -85,7 +85,7 @@ module Agama
       installation_phase.config
 
       start_progress_with_descriptions(
-        _("Probing Storage"), _("Probing Software")
+        _("Analyze disks"), _("Configure software")
       )
       progress.step { storage.probe }
       progress.step { software.probe }
@@ -105,9 +105,9 @@ module Agama
       service_status.busy
       installation_phase.install
       start_progress_with_descriptions(
-        _("Partitioning"),
-        _("Installing software"),
-        _("Configuring the system")
+        _("Prepare disks"),
+        _("Install software"),
+        _("Configure the system")
       )
 
       Yast::Installation.destdir = "/mnt"
