@@ -1,6 +1,5 @@
 use std::io::{self, Read};
 
-use crate::error::CliError;
 use agama_lib::{
     auth::AuthToken, connection, install_settings::InstallSettings, Store as SettingsStore,
 };
@@ -20,11 +19,6 @@ pub enum ConfigCommands {
     Load,
 }
 
-pub enum ConfigAction {
-    Show,
-    Load,
-}
-
 pub async fn run(subcommand: ConfigCommands) -> anyhow::Result<()> {
     let Some(token) = AuthToken::find() else {
         println!("You need to login for generating a valid token");
@@ -34,27 +28,19 @@ pub async fn run(subcommand: ConfigCommands) -> anyhow::Result<()> {
     let client = agama_lib::http_client(token.as_str())?;
     let store = SettingsStore::new(connection().await?, client).await?;
 
-    let command = parse_config_command(subcommand)?;
-    match command {
-        ConfigAction::Show => {
+    match subcommand {
+        ConfigCommands::Show => {
             let model = store.load().await?;
             let json = serde_json::to_string_pretty(&model)?;
             println!("{}", json);
             Ok(())
         }
-        ConfigAction::Load => {
+        ConfigCommands::Load => {
             let mut stdin = io::stdin();
             let mut contents = String::new();
             stdin.read_to_string(&mut contents)?;
             let result: InstallSettings = serde_json::from_str(&contents)?;
             Ok(store.store(&result).await?)
         }
-    }
-}
-
-fn parse_config_command(subcommand: ConfigCommands) -> Result<ConfigAction, CliError> {
-    match subcommand {
-        ConfigCommands::Show => Ok(ConfigAction::Show),
-        ConfigCommands::Load => Ok(ConfigAction::Load),
     }
 }
