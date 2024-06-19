@@ -44,7 +44,7 @@ const sda = {
   name: "/dev/sda",
   size: 1024,
   recoverableSize: 0,
-  systems : [],
+  systems: [],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
@@ -64,8 +64,10 @@ const props = {
 describe("SpacePolicyField", () => {
   it("renders a button for opening the space policy dialog", async () => {
     const { user } = plainRender(<SpacePolicyField {...props} />);
-    const button = screen.getByRole("button");
+    const button = screen.getByRole("button", { name: "Change" });
     await user.click(button);
     screen.getByRole("dialog", { name: "Find space" });
   });
+
+  it.todo("test the actions and drawer behaviour");
 });

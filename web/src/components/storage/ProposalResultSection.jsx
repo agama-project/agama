@@ -21,19 +21,12 @@
 
 // @ts-check
 
-import React, { useState } from "react";
-import {
-  Alert,
-  Button,
-  CardBody,
-  Skeleton,
-  Stack,
-} from "@patternfly/react-core";
+import React from "react";
+import { Skeleton, Stack } from "@patternfly/react-core";
 import { CardField, EmptyState } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
-import { _, n_ } from "~/i18n";
-import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
 /**
  * @typedef {import ("~/client/storage").Action} Action
@@ -42,119 +35,15 @@ import { sprintf } from "sprintf-js";
  */
 
 /**
- * Renders information about planned actions, allowing to check all of them and warning with a
- * summary about the deletion ones, if any.
- * @component
- *
- * @param {object} props
- * @param {Action[]} props.actions
- * @param {string[]} props.systems
- */
-const DeletionsInfo = ({ actions, systems }) => {
-  const total = actions.length;
-
-  if (total === 0) return;
-
-  // TRANSLATORS: %d will be replaced by the amount of destructive actions
-  const warningTitle = sprintf(n_(
-    "There is %d destructive action planned",
-    "There are %d destructive actions planned",
-    total
-  ), total);
-
-  // FIXME: Use the Intl.ListFormat instead of the `join(", ")` used below.
-  // Most probably, a `listFormat` or similar wrapper should live in src/i18n.js or so.
-  // Read https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat
-  return (
-    <Alert isInline isPlain variant="warning" title={warningTitle}>
-      {systems.length > 0 &&
-        <p>
-          {
-            // TRANSLATORS: This is part of a sentence to hint the user about affected systems.
-            // Eg. "Affecting Windows 11, openSUSE Leap 15, and Ubuntu 22.04"
-          }
-          {_("Affecting")} <strong>{systems.join(", ")}</strong>
-        </p>}
-    </Alert>
-  );
-};
-
-/**
- * Renders needed UI elements to allow user check the proposal planned actions
- * @component
- *
- * @param {object} props
- * @param {Action[]} props.actions
- */
-const ActionsInfo = ({ numActions, onClick }) => {
-  // TRANSLATORS: %d will be replaced by the number of proposal actions.
-  const text = sprintf(
-    n_("Check the planned action", "Check the %d planned actions", numActions),
-    numActions
-  );
-
-  return (
-    <Button onClick={onClick} variant="link" isInline>{text}</Button>
-  );
-};
-
-/**
  * @todo Create a component for rendering a customized skeleton
  */
-const ResultSkeleton = () => {
-  return (
-    <Stack hasGutter>
-      <Skeleton screenreaderText={_("Waiting for information about storage configuration")} width="80%" />
-      <Skeleton width="65%" />
-      <Skeleton width="70%" />
-    </Stack>
-  );
-};
-
-const SectionErrors = ({ errors }) => {
-  if (errors.length === 0) return;
-  console.log("errors", errors);
-
-  return (
-    <EmptyState
-      title={_("Storage proposal not possible")}
-      icon="error"
-      color="danger-color-100"
-    >
-      {errors.map((e, i) => <div key={i}>{e.message}</div>)}
-    </EmptyState>
-  );
-};
-
-/**
- * Content of the section.
- * @component
- *
- * @param {object} props
- * @param {StorageDevice[]} props.system
- * @param {StorageDevice[]} props.staging
- * @param {Action[]} props.actions
- * @param {ValidationError[]} props.errors
- * @param {boolean} props.isLoading
- */
-const SectionContent = ({ system, staging, actions, errors, isLoading, onActionsClick }) => {
-  if (isLoading) return <ResultSkeleton />;
-  if (errors.length) return;
-
-  const totalActions = actions.length;
-  const devicesManager = new DevicesManager(system, staging, actions);
-
-  return (
-    <Stack hasGutter>
-      <DeletionsInfo
-        actions={devicesManager.actions.filter(a => a.delete && !a.subvol)}
-        systems={devicesManager.deletedSystems()}
-      />
-      <ActionsInfo numActions={totalActions} onClick={onActionsClick} />
-      <ProposalResultTable devicesManager={devicesManager} />
-    </Stack>
-  );
-};
+const ResultSkeleton = () => (
+  <Stack hasGutter>
+    <Skeleton screenreaderText={_("Waiting for information about storage configuration")} width="80%" />
+    <Skeleton width="65%" />
+    <Skeleton width="70%" />
+  </Stack>
+);
 
 /**
  * Section holding the proposal result and actions to perform in the system
@@ -175,31 +64,22 @@ export default function ProposalResultSection({
   actions = [],
   errors = [],
   isLoading = false,
-  onActionsClick
 }) {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  if (isLoading) errors = [];
-  const openDrawer = () => setDrawerOpen(true);
-  const closeDrawer = () => setDrawerOpen(false);
-
-  const description = _("During installation, some actions will be performed to configure the system as displayed below.");
-
   return (
     <CardField
-      label={_("Result")}
-      description={description}
+      label={_("Final layout")}
+      description={_("The systems will be configured as displayed below.")}
     >
-      <CardBody>
-        <SectionErrors errors={errors} />
-        <SectionContent
-          system={system}
-          staging={staging}
-          actions={actions}
-          errors={errors}
-          isLoading={isLoading}
-          onActionsClick={onActionsClick}
-        />
-      </CardBody>
+      <CardField.Content>
+        {isLoading && <ResultSkeleton />}
+        {errors.length === 0
+          ? <ProposalResultTable devicesManager={new DevicesManager(system, staging, actions)} />
+          : (
+            <EmptyState icon="error" title={_("Storage proposal not possible")} color="danger-color-100">
+              {errors.map((e, i) => <div key={i}>{e.message}</div>)}
+            </EmptyState>
+          )}
+      </CardField.Content>
     </CardField>
   );
 }

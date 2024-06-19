@@ -22,27 +22,180 @@
 // @ts-check
 
 import React, { useState } from "react";
-import { Button, CardBody, Skeleton } from "@patternfly/react-core";
+import { Button, Skeleton, Stack, List, ListItem } from "@patternfly/react-core";
 import { CardField } from "~/components/core";
 import SpacePolicyDialog from "~/components/storage/SpacePolicyDialog";
+import DevicesManager from "~/components/storage/DevicesManager";
 import { _, n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
 /**
+ * @typedef {import ("~/client/storage").Action} Action
  * @typedef {import ("~/client/storage").SpaceAction} SpaceAction
- * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
+ * @typedef {import("~/client/mixins").ValidationError} ValidationError
  */
+
+/**
+ * Renders information about delete actions
+ *
+ * @param {object} props
+ * @param {SpacePolicy|undefined} props.policy
+ * @param {DevicesManager} props.manager
+ * @param {SpaceAction[]} props.spaceActions
+ */
+const DeletionsInfo = ({ policy, manager, spaceActions }) => {
+  let label;
+  let systemsLabel;
+  const deleteActions = manager.actions.filter(a => a.delete && !a.subvol).length;
+  const isDeletePolicy = policy?.id === "delete";
+  const hasDeleteActions = deleteActions !== 0;
+
+  if (!isDeletePolicy && spaceActions.length === 0) {
+    label = _("Destructive actions are not allowed");
+  } else if ((isDeletePolicy || spaceActions.length > 0) && !hasDeleteActions) {
+    label = _("Destructive actions are allowed");
+  } else if (hasDeleteActions) {
+    // TRANSLATORS: %d will be replaced by the amount of destructive actions
+    label = (
+      <strong className={textStyles.warningColor_200}>
+        {
+          sprintf(n_(
+            "There is %d destructive action planned",
+            "There are %d destructive actions planned",
+            deleteActions
+          ), deleteActions)
+        }
+      </strong>
+    );
+  }
+
+  if (manager.deletedSystems()?.length) {
+    // FIXME: Use the Intl.ListFormat instead of the `join(", ")` used below.
+    // Most probably, a `listFormat` or similar wrapper should live in src/i18n.js or so.
+    // Read https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat
+    systemsLabel = <>{_("affecting")} <strong>{manager.deletedSystems.join(", ")}</strong></>;
+  }
+
+  return (
+    <ListItem key="destructive">
+      {label} {systemsLabel}
+    </ListItem>
+  );
+};
+
+/**
+ * Renders information about resize actions
+ *
+ * @param {object} props
+ * @param {SpacePolicy|undefined} props.policy
+ * @param {DevicesManager} props.manager
+ * @param {boolean} props.validProposal
+ * @param {SpaceAction[]} props.spaceActions
+ */
+const ResizesInfo = ({ policy, manager, validProposal, spaceActions }) => {
+  let label;
+  let systemsLabel;
+  const systems = manager.resizedSystems();
+  const resizeActions = manager.actions.filter(a => a.resize).length;
+  const isResizePolicy = policy?.id === "resize";
+  const hasResizeActions = resizeActions !== 0;
+
+  if (!isResizePolicy && spaceActions.length === 0) {
+    label = _("Shrinking partitions is not allowed");
+  }
+
+  if (!validProposal && (isResizePolicy || spaceActions.length > 0)) {
+    label = _("Shrinking partitions is allowed");
+  } else if (validProposal && (isResizePolicy || spaceActions.length > 0) && !hasResizeActions) {
+    label = _("Shrinking some partitions is allowed but not needed");
+  } else if (hasResizeActions) {
+    label = sprintf(n_(
+      "%d partition will be shrunk",
+      "%d partitions will be shrunk",
+      resizeActions
+    ), resizeActions);
+  }
+
+  if (systems.length) {
+    // FIXME: Use the Intl.ListFormat instead of the `join(", ")` used below.
+    // Most probably, a `listFormat` or similar wrapper should live in src/i18n.js or so.
+    // Read https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat
+    systemsLabel = <>{_("affecting")} <strong>{systems.join(", ")}</strong></>;
+  }
+
+  return (
+    <ListItem key="resize">
+      {label} {systemsLabel}
+    </ListItem>
+  );
+};
+
+/**
+ * Renders needed UI elements to allow user check the proposal planned actions
+ * @component
+ *
+ * @param {object} props
+ * @param {Action[]} props.actions
+ * @param {boolean} props.validProposal
+ * @param {() => void} props.onClick
+ */
+const ActionsInfo = ({ actions, validProposal, onClick }) => {
+  let label;
+
+  if (!validProposal) {
+    label = (
+      <span className={textStyles.dangerColor_200}>
+        {_("Cannot accommodate the required file systems for installation")}
+      </span>
+    );
+  } else {
+    // TRANSLATORS: %d will be replaced by the number of proposal actions.
+    label = (
+      <Button onClick={onClick} variant="link" isInline>
+        {sprintf(
+          n_(
+            "Check the planned action",
+            "Check the %d planned actions",
+            actions.length
+          ),
+          actions.length
+        )}
+      </Button>
+    );
+  }
+
+  return (
+    <ListItem key="actions">
+      {label}
+    </ListItem>
+  );
+};
+
+const ActionsSkeleton = () => (
+  <Stack hasGutter>
+    <Skeleton fontSize="sm" width="65%" screenreaderText={_("Waiting for actions information...")} />
+    <Skeleton fontSize="sm" width="55%" />
+    <Skeleton fontSize="sm" width="75%" />
+  </Stack>
+);
 
 /**
  * Allows to select the space policy.
  * @component
  *
  * @typedef {object} SpacePolicyFieldProps
- * @property {SpacePolicy|undefined} policy
- * @property {SpaceAction[]} actions
- * @property {StorageDevice[]} devices
  * @property {boolean} isLoading
+ * @property {ValidationError[]} [errors=[]] - Validation errors
+ * @property {SpacePolicy|undefined} policy
+ * @property {StorageDevice[]} [system=[]]
+ * @property {StorageDevice[]} [staging=[]]
+ * @property {Action[]} actions
+ * @property {SpaceAction[]} spaceActions
+ * @property {StorageDevice[]} devices
+ * @property {() => void} onActionsClick
  * @property {(config: SpacePolicyConfig) => void} onChange
  *
  * @typedef {object} SpacePolicyConfig
@@ -52,18 +205,20 @@ import { sprintf } from "sprintf-js";
  * @param {SpacePolicyFieldProps} props
  */
 export default function SpacePolicyField({
-  policy,
-  actions,
-  devices,
   isLoading,
+  errors = [],
+  policy,
+  system = [],
+  staging = [],
+  actions = [],
+  spaceActions = [],
+  devices,
+  onActionsClick,
   onChange
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
   const openDialog = () => setIsDialogOpen(true);
-
   const closeDialog = () => setIsDialogOpen(false);
-
   const onAccept = ({ spacePolicy, spaceActions }) => {
     closeDialog();
     onChange({ spacePolicy, spaceActions });
@@ -80,23 +235,48 @@ export default function SpacePolicyField({
     value = sprintf(n_(policy.summaryLabels[0], policy.summaryLabels[1], devices.length), devices.length);
   }
 
+  const devicesManager = new DevicesManager(system, staging, actions);
+
   return (
     <CardField
-      label={_("Find space")}
-      value={value}
-      description={_("Allocating the file systems might need to find free space \
-in the installation device(s).")}
+      label={_("Actions")}
       actions={
         isLoading ? <Skeleton fontSize="sm" width="100px" /> : <Button variant="secondary" onClick={openDialog}>{_("Change")}</Button>
       }
       cardProps={{ isFullHeight: false }}
     >
+      <CardField.Content>
+        {
+          isLoading
+            ? <ActionsSkeleton />
+            : (
+              <List>
+                <DeletionsInfo
+                  policy={policy}
+                  manager={devicesManager}
+                  spaceActions={spaceActions.filter(a => a.action === "force_delete")}
+                />
+                <ResizesInfo
+                  policy={policy}
+                  manager={devicesManager}
+                  validProposal={errors.length === 0}
+                  spaceActions={spaceActions.filter(a => a.action === "resize")}
+                />
+                <ActionsInfo
+                  actions={actions}
+                  validProposal={errors.length === 0}
+                  onClick={onActionsClick}
+                />
+              </List>
+            )
+        }
+      </CardField.Content>
       {isDialogOpen &&
         <SpacePolicyDialog
           isOpen
           isLoading={isLoading}
           policy={policy}
-          actions={actions}
+          actions={spaceActions}
           devices={devices}
           onAccept={onAccept}
           onCancel={closeDialog}

@@ -326,8 +326,13 @@ export default function ProposalPage() {
               <Stack hasGutter>
                 <SpacePolicyField
                   policy={spacePolicy}
-                  actions={state.settings.spaceActions}
+                  system={state.system}
+                  staging={state.staging}
+                  errors={state.errors}
+                  actions={state.actions}
+                  spaceActions={state.settings.spaceActions}
                   devices={state.settings.installationDevices}
+                  onActionsClick={drawerRef.current?.open}
                   isLoading={showSkeleton(state.loading, "SpacePolicyField", state.changing)}
                   onChange={changeSpacePolicy}
                 />
@@ -337,7 +342,6 @@ export default function ProposalPage() {
                   actions={state.actions}
                   errors={state.errors}
                   isLoading={state.loading}
-                  onActionsClick={drawerRef.current?.open}
                 />
               </Stack>
             </Drawer>
