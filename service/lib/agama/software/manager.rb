@@ -199,10 +199,8 @@ module Agama
       def finish
         Yast::Pkg.SourceSaveAll
         Yast::Pkg.TargetFinish
-        # FIXME: Pkg.SourceCacheCopyTo works correctly only from the inst-sys
-        # (original target "/"), it does not work correctly when using
-        # "chroot" /run/agama/zypp, it needs to be reimplemented :-(
-        # Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
+        # copy the libzypp caches to the target
+        copy_zypp_to_target
         registration.finish
       end
 
@@ -498,6 +496,46 @@ module Agama
 
       def pattern_exist?(pattern_name)
         !Y2Packager::Resolvable.find(kind: :pattern, name: pattern_name).empty?
+      end
+
+      # this reimplements the Pkg.SourceCacheCopyTo call which works correctly
+      # only from the inst-sys (it copies the data from "/" where is actually
+      # the Live system package manager)
+      # @see https://github.com/yast/yast-pkg-bindings/blob/3d314480b70070299f90da4c6e87a5574e9c890c/src/Source_Installation.cc#L213-L267
+      def copy_zypp_to_target
+        # copy the zypp "raw" cache
+        cache = File.join(TARGET_DIR, "/var/cache/zypp/raw")
+        if Dir.exist?(cache)
+          target_cache = File.join(Yast::Installation.destdir, "/var/cache/zypp")
+          FileUtils.mkdir_p(target_cache)
+          FileUtils.cp_r(cache, target_cache)
+        end
+
+        # copy the "solv" cache but skip the "@System" directory because it
+        # contains empty installed packages (there were no installed packages
+        # before moving the target to "/mnt")
+        solv_cache = File.join(TARGET_DIR, "/var/cache/zypp/solv")
+        target_solv = File.join(Yast::Installation.destdir, "/var/cache/zypp/solv")
+        solvs = Dir.entries(solv_cache) - [".", "..", "@System"]
+        solvs.each do |s|
+          FileUtils.cp_r(File.join(solv_cache, s), target_solv)
+        end
+
+        # copy the zypp credentials if present
+        credentials = File.join(TARGET_DIR, "/etc/zypp/credentials.d")
+        if Dir.exist?(credentials)
+          target_credentials = File.join(Yast::Installation.destdir, "/etc/zypp")
+          FileUtils.mkdir_p(target_credentials)
+          FileUtils.cp_r(credentials, target_credentials)
+        end
+
+        # copy the global credentials if present
+        glob_credentials = File.join(TARGET_DIR, "/etc/zypp/credentials.cat")
+        return unless File.exist?(glob_credentials)
+
+        target_dir = File.join(Yast::Installation.destdir, "/etc/zypp")
+        FileUtils.mkdir_p(target_dir)
+        FileUtils.copy(glob_credentials, target_dir)
       end
 
       # update the zypp repositories for the new product, either delete them
