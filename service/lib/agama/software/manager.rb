@@ -506,9 +506,7 @@ module Agama
       # the Live system package manager)
       # @see https://github.com/yast/yast-pkg-bindings/blob/3d314480b70070299f90da4c6e87a5574e9c890c/src/Source_Installation.cc#L213-L267
       def copy_zypp_to_target
-        # copy the zypp "raw" cache (the "solv" cache will be rebuilt
-        # automatically from the "raw" when calling zypper/YaST in the installed
-        # system for the first time)
+        # copy the zypp "raw" cache 
         cache = File.join(TARGET_DIR, "/var/cache/zypp/raw")
         if Dir.exist?(cache)
           target_cache = File.join(Yast::Installation.destdir, "/var/cache/zypp")
