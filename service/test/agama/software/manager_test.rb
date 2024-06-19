@@ -372,40 +372,54 @@ describe Agama::Software::Manager do
 
     it "copies the libzypp cache and credentials to the target system" do
       allow(Dir).to receive(:exist?).and_call_original
+      allow(Dir).to receive(:entries).and_call_original
 
       # copying the raw cache
-      expect(Dir).to receive(:exist?).with("/run/agama/zypp/var/cache/zypp/raw").and_return(true)
-      expect(FileUtils).to receive(:mkdir_p).with("/mnt/var/cache/zypp")
-      expect(FileUtils).to receive(:cp_r).with("/run/agama/zypp/var/cache/zypp/raw",
-        "/mnt/var/cache/zypp")
+      expect(Dir).to receive(:exist?).with(
+        File.join(target_dir, "/var/cache/zypp/raw")
+      ).and_return(true)
+      expect(FileUtils).to receive(:mkdir_p).with(
+        File.join(Yast::Installation.destdir, "/var/cache/zypp")
+      )
+      expect(FileUtils).to receive(:cp_r).with(
+        File.join(target_dir, "/var/cache/zypp/raw"),
+        File.join(Yast::Installation.destdir, "/var/cache/zypp")
+      )
 
       # copy the solv cache
       repo_alias = "https-download.opensuse.org-94cc89aa"
-      expect(Dir).to receive(:entries).with("/run/agama/zypp/var/cache/zypp/solv")
+      expect(Dir).to receive(:entries)
+        .with(File.join(target_dir, "/var/cache/zypp/solv"))
         .and_return([".", "..", "@System", repo_alias])
       expect(FileUtils).to receive(:cp_r).with(
-        File.join("/run/agama/zypp/var/cache/zypp/solv/", repo_alias),
-        "/mnt/var/cache/zypp/solv"
+        File.join(target_dir, "/var/cache/zypp/solv/", repo_alias),
+        File.join(Yast::Installation.destdir, "/var/cache/zypp/solv")
       )
       # ensure the @System cache is not copied
       expect(FileUtils).to_not receive(:cp_r).with(
-        "/run/agama/zypp/var/cache/zypp/solv/@System",
-        "/mnt/var/cache/zypp/solv"
+        File.join(target_dir, "/var/cache/zypp/solv/@System"),
+        File.join(Yast::Installation.destdir, "/var/cache/zypp/solv")
       )
 
       # copying the credentials.d directory
-      expect(Dir).to receive(:exist?).with("/run/agama/zypp/etc/zypp/credentials.d")
+      expect(Dir).to receive(:exist?)
+        .with(File.join(target_dir, "/etc/zypp/credentials.d"))
         .and_return(true)
-      expect(FileUtils).to receive(:mkdir_p).with("/mnt/etc/zypp")
-      expect(FileUtils).to receive(:cp_r).with("/run/agama/zypp/etc/zypp/credentials.d",
-        "/mnt/etc/zypp")
+      expect(FileUtils).to receive(:mkdir_p)
+        .with(File.join(Yast::Installation.destdir, "/etc/zypp"))
+      expect(FileUtils).to receive(:cp_r).with(
+        File.join(target_dir, "/etc/zypp/credentials.d"),
+        File.join(Yast::Installation.destdir, "/etc/zypp")
+      )
 
       # copying the global credentials file
-      expect(File).to receive(:exist?).with("/run/agama/zypp/etc/zypp/credentials.cat")
+      expect(File).to receive(:exist?)
+        .with(File.join(target_dir, "/etc/zypp/credentials.cat"))
         .and_return(true)
-      expect(FileUtils).to receive(:mkdir_p).with("/mnt/etc/zypp")
-      expect(FileUtils).to receive(:copy).with("/run/agama/zypp/etc/zypp/credentials.cat",
-        "/mnt/etc/zypp")
+      expect(FileUtils).to receive(:copy).with(
+        File.join(target_dir, "/etc/zypp/credentials.cat"),
+        File.join(Yast::Installation.destdir, "/etc/zypp")
+      )
 
       subject.finish
     end
