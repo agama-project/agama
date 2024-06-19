@@ -1,9 +1,6 @@
 use std::io::{self, Read};
 
-use crate::{
-    error::CliError,
-    printers::{print, Format},
-};
+use crate::error::CliError;
 use agama_lib::{
     auth::AuthToken, connection, install_settings::InstallSettings, Store as SettingsStore,
 };
@@ -28,7 +25,7 @@ pub enum ConfigAction {
     Load,
 }
 
-pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<()> {
+pub async fn run(subcommand: ConfigCommands) -> anyhow::Result<()> {
     let Some(token) = AuthToken::find() else {
         println!("You need to login for generating a valid token");
         return Ok(());
@@ -41,7 +38,8 @@ pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<(
     match command {
         ConfigAction::Show => {
             let model = store.load().await?;
-            print(model, std::io::stdout(), format)?;
+            let json = serde_json::to_string_pretty(&model)?;
+            println!("{}", json);
             Ok(())
         }
         ConfigAction::Load => {
