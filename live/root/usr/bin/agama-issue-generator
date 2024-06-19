@@ -149,6 +149,14 @@ generate_network_url() {
   fi
 }
 
+# wait until the SSL fingreprint issue is create, but at most 10 seconds
+wait_for_ssl_issue() {
+  for i in $(seq 1 "$1"); do
+    [ -f "$CERT_ISSUE" ] && exit 0
+    sleep 1
+  done
+}
+
 # make sure the parent directory for the issues exists
 mkdir -p /run/issue.d
 
@@ -159,6 +167,8 @@ elif [ "$1" = "--ssh" ]; then
   generate_ssh_fingerprints
 elif [ "$1" = "--ssl" ]; then
   generate_certificate_fingerprints
+elif [ "$1" = "--wait-for-ssl" ]; then
+  wait_for_ssl_issue "$2"
 elif [ "$1" = "--network" ]; then
   generate_network_url "$2" "$3"
 elif [ "$1" = "--watch-avahi" ]; then
