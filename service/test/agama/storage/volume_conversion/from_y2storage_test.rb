@@ -89,8 +89,50 @@ describe Agama::Storage::VolumeConversion::FromY2Storage do
         instance_double(Y2Storage::MinGuidedProposal, planned_devices: planned_devices)
       end
 
-      context "if there is a planned device for the volume" do
-        let(:planned_devices) { [planned_volume] }
+      let(:planned_devices) { [planned_volume] }
+
+      context "if the volume is configured with auto size" do
+        before do
+          volume.auto_size = true
+        end
+
+        context "if there is a planned device for the volume" do
+          let(:planned_volume) do
+            Y2Storage::Planned::LvmLv.new("/").tap do |planned|
+              planned.min = Y2Storage::DiskSize.GiB(10)
+              planned.max = Y2Storage::DiskSize.GiB(40)
+            end
+          end
+
+          it "sets the min and max sizes according to the planned device" do
+            result = subject.convert
+
+            expect(result.min_size).to eq(Y2Storage::DiskSize.GiB(10))
+            expect(result.max_size).to eq(Y2Storage::DiskSize.GiB(40))
+          end
+        end
+
+        context "if there is no planned device for the volume" do
+          let(:planned_volume) do
+            Y2Storage::Planned::LvmLv.new("/home").tap do |planned|
+              planned.min = Y2Storage::DiskSize.GiB(10)
+              planned.max = Y2Storage::DiskSize.GiB(40)
+            end
+          end
+
+          it "keeps the sizes of the given volume" do
+            result = subject.convert
+
+            expect(result.min_size).to eq(Y2Storage::DiskSize.GiB(5))
+            expect(result.max_size).to eq(Y2Storage::DiskSize.GiB(20))
+          end
+        end
+      end
+
+      context "if the volume is not configured with auto size" do
+        before do
+          volume.auto_size = false
+        end
 
         let(:planned_volume) do
           Y2Storage::Planned::LvmLv.new("/").tap do |planned|
@@ -99,25 +141,7 @@ describe Agama::Storage::VolumeConversion::FromY2Storage do
           end
         end
 
-        it "sets the min and max sizes according to the planned device" do
-          result = subject.convert
-
-          expect(result.min_size).to eq(Y2Storage::DiskSize.GiB(10))
-          expect(result.max_size).to eq(Y2Storage::DiskSize.GiB(40))
-        end
-      end
-
-      context "if there is no planned device for the volume" do
-        let(:planned_devices) { [planned_volume] }
-
-        let(:planned_volume) do
-          Y2Storage::Planned::LvmLv.new("/home").tap do |planned|
-            planned.min = Y2Storage::DiskSize.GiB(10)
-            planned.max = Y2Storage::DiskSize.GiB(40)
-          end
-        end
-
-        it "sets the sizes of the given volume" do
+        it "keeps the sizes of the given volume" do
           result = subject.convert
 
           expect(result.min_size).to eq(Y2Storage::DiskSize.GiB(5))
