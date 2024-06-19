@@ -25,7 +25,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { SPACE_POLICIES } from "~/components/storage/utils";
-import SpacePolicyField from "~/components/storage/SpacePolicyField";
+import ProposalActionsSummary from "~/components/storage/ProposalActionsSummary";
 
 const sda = {
   sid: 59,
@@ -52,18 +52,19 @@ const sda = {
 const keepPolicy = SPACE_POLICIES.find(p => p.id === "keep");
 
 const props = {
-  devices: [sda],
-  policy: keepPolicy,
   isLoading: false,
-  onChange: jest.fn(),
+  policy: keepPolicy,
+  devices: [sda],
   actions: [
     { device: "/dev/sda", action: "force_delete" },
-  ]
+  ],
+  onActionsClick: jest.fn(),
+  onChange: jest.fn()
 };
 
-describe("SpacePolicyField", () => {
+describe("ProposalActionsSummary", () => {
   it("renders a button for opening the space policy dialog", async () => {
-    const { user } = plainRender(<SpacePolicyField {...props} />);
+    const { user } = plainRender(<ProposalActionsSummary {...props} />);
     const button = screen.getByRole("button", { name: "Change" });
     await user.click(button);
     screen.getByRole("dialog", { name: "Find space" });

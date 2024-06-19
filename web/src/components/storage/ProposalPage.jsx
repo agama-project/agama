@@ -25,7 +25,7 @@ import { Page, Drawer } from "~/components/core/";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import ProposalSettingsSection from "./ProposalSettingsSection";
 import ProposalResultSection from "./ProposalResultSection";
-import SpacePolicyField from "~/components/storage/SpacePolicyField";
+import ProposalActionsSummary from "~/components/storage/ProposalActionsSummary";
 import { ProposalActionsDialog } from "~/components/storage";
 import { _ } from "~/i18n";
 import { IDLE } from "~/client/status";
@@ -130,7 +130,7 @@ export const NOT_AFFECTED = {
   // the ProposalResultSection is refreshed always
   InstallationDeviceField: [CHANGING.ENCRYPTION, CHANGING.BOOT, CHANGING.POLICY, CHANGING.VOLUMES],
   PartitionsField: [CHANGING.ENCRYPTION, CHANGING.POLICY],
-  SpacePolicyField: [CHANGING.ENCRYPTION, CHANGING.TARGET],
+  ProposalActionsSummary: [CHANGING.ENCRYPTION, CHANGING.TARGET],
 };
 
 /**
@@ -324,7 +324,7 @@ export default function ProposalPage() {
               panelContent={<ProposalActionsDialog actions={state.actions} />}
             >
               <Stack hasGutter>
-                <SpacePolicyField
+                <ProposalActionsSummary
                   policy={spacePolicy}
                   system={state.system}
                   staging={state.staging}
@@ -333,7 +333,7 @@ export default function ProposalPage() {
                   spaceActions={state.settings.spaceActions}
                   devices={state.settings.installationDevices}
                   onActionsClick={drawerRef.current?.open}
-                  isLoading={showSkeleton(state.loading, "SpacePolicyField", state.changing)}
+                  isLoading={showSkeleton(state.loading, "ProposalActionsSummary", state.changing)}
                   onChange={changeSpacePolicy}
                 />
                 <ProposalResultSection

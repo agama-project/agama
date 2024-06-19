@@ -186,25 +186,23 @@ const ActionsSkeleton = () => (
  * Allows to select the space policy.
  * @component
  *
- * @typedef {object} SpacePolicyFieldProps
- * @property {boolean} isLoading
- * @property {ValidationError[]} [errors=[]] - Validation errors
- * @property {SpacePolicy|undefined} policy
- * @property {StorageDevice[]} [system=[]]
- * @property {StorageDevice[]} [staging=[]]
- * @property {Action[]} actions
- * @property {SpaceAction[]} spaceActions
- * @property {StorageDevice[]} devices
- * @property {() => void} onActionsClick
- * @property {(config: SpacePolicyConfig) => void} onChange
- *
  * @typedef {object} SpacePolicyConfig
  * @property {SpacePolicy} spacePolicy
  * @property {SpaceAction[]} spaceActions
  *
- * @param {SpacePolicyFieldProps} props
+ * @param {object} props
+ * @param {boolean} props.isLoading
+ * @param {ValidationError[]} [props.errors=[]] - Validation errors
+ * @param {SpacePolicy|undefined} props.policy
+ * @param {StorageDevice[]} [props.system=[]]
+ * @param {StorageDevice[]} [props.staging=[]]
+ * @param {Action[]} [props.actions=[]]
+ * @param {SpaceAction[]} [props.spaceActions=[]]
+ * @param {StorageDevice[]} props.devices
+ * @param {() => void} props.onActionsClick
+ * @param {(config: SpacePolicyConfig) => void} props.onChange
  */
-export default function SpacePolicyField({
+export default function ProposalActionsSummary({
   isLoading,
   errors = [],
   policy,
