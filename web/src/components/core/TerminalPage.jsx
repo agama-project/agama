@@ -26,6 +26,7 @@ import { WSClient } from "~/client/http";
 import { Terminal as Term } from "@xterm/xterm";
 import { AttachAddon } from "@xterm/addon-attach";
 import { FitAddon } from "@xterm/addon-fit";
+import "@xterm/xterm/css/xterm.css";
 
 /**
  * Simple component that displayes terminal.
@@ -34,8 +35,8 @@ import { FitAddon } from "@xterm/addon-fit";
  * @param {Location} props.url url of websocket answering terminal
  */
 export class Terminal extends React.Component {
-  constructor({ url = window.location }) {
-    super({});
+  constructor({ url = window.location, ...props }) {
+    super(props);
     this.terminalRef = React.createRef();
     const wsUrl = new URL(url.toString());
     wsUrl.hash = "";
@@ -46,27 +47,26 @@ export class Terminal extends React.Component {
     this.term = new Term({
       rows: 22,
       cols: 100,
-      title: "Agama terminal",
       theme: {
         background: "#ffffff",
         foreground: "#000000",
         cursor: "#000000",
       },
     });
-    const attachAddon = new AttachAddon(this.ws.client);
-    // Attach the socket to term
-    this.term.loadAddon(attachAddon);
-    this.fitAddon = new FitAddon();
-    this.term.loadAddon(this.fitAddon);
-  };
+    this.ws.onOpen(() => {
+      if (this.attachAddon === undefined) {
+        this.attachAddon = new AttachAddon(this.ws.client);
+        // Attach the socket to term
+        this.term.loadAddon(this.attachAddon);
+      }
+    });
+    this.ws.connect();
+  }
 
   componentDidMount() {
     this.term.open(this.terminalRef.current);
-    this.term.clear();
-    this.term.writeln("Welcome to agama shell\n");
-    this.fitAddon.fit();
-    this.ws.connect();
-    this.term.input("agetty --show-issue");
+    this.term.input("agetty --show-issue/n");
+    this.term.writeln("Welcome to agama shell");
     this.term.focus();
   }
 
