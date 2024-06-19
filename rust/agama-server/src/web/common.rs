@@ -167,6 +167,7 @@ struct ProgressState<'a> {
 
 /// Information about the current progress sequence.
 #[derive(Clone, Default, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ProgressSequence {
     /// Sequence steps if known in advance
     steps: Vec<String>,

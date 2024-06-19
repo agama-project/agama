@@ -219,12 +219,13 @@ const WithProgress = (superclass, progress_path, service_name) =>
           finished: false,
         };
       } else {
-        const { steps, current_step, max_steps, current_title, finished } = await response.json();
+        const { steps, currentStep, maxSteps, currentTitle, finished } =
+          await response.json();
         return {
           steps,
-          total: max_steps,
-          current: current_step,
-          message: current_title,
+          total: maxSteps,
+          current: currentStep,
+          message: currentTitle,
           finished,
         };
       }
@@ -239,11 +240,11 @@ const WithProgress = (superclass, progress_path, service_name) =>
     onProgressChange(handler) {
       return this.client.onEvent("Progress", ({ service, ...progress }) => {
         if (service === service_name) {
-          const { current_step, max_steps, current_title, finished } = progress;
+          const { currentStep, maxSteps, currentTitle, finished } = progress;
           handler({
-            total: max_steps,
-            current: current_step,
-            message: current_title,
+            total: maxSteps,
+            current: currentStep,
+            message: currentTitle,
             finished,
           });
         }
