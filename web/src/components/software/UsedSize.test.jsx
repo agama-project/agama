@@ -42,9 +42,7 @@ describe("UsedSize", () => {
   });
 
   it("returns summary text with the size", () => {
-    const size = "1.4 GiB";
-    plainRender(<UsedSize size={size} />);
-
-    screen.getByText(size);
+    plainRender(<UsedSize size="1.4 GiB" />);
+    screen.getByText("Installation will take 1.4 GiB.");
   });
 });

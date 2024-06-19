@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Button, InputGroup, TextInput } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { Icon } from "~/components/layout";
@@ -31,7 +31,7 @@ import { Icon } from "~/components/layout";
  *
  * Props matching the {@link https://www.patternfly.org/components/forms/text-input PF/TextInput},
  * except `type` that will be forced to 'password'.
- * @typedef {Omit<TextInputProps, 'type'>} PasswordInputProps
+ * @typedef {Omit<TextInputProps, 'type'> & { inputRef?: React.Ref<HTMLInputElement> }} PasswordInputProps
  */
 
 /**
@@ -41,7 +41,7 @@ import { Icon } from "~/components/layout";
  *
  * @param {PasswordInputProps} props
  */
-export default function PasswordInput({ id, ...props }) {
+export default function PasswordInput({ id, inputRef, ...props }) {
   const [showPassword, setShowPassword] = useState(false);
   const visibilityIconName = showPassword ? "visibility_off" : "visibility";
 
@@ -54,6 +54,7 @@ export default function PasswordInput({ id, ...props }) {
     <InputGroup>
       <TextInput
         {...props}
+        ref={inputRef}
         id={id}
         type={showPassword ? 'text' : 'password'}
       />

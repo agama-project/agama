@@ -1,4 +1,26 @@
+<!-- omit in toc -->
 # Agama ISO Installer
+
+**Table of Contents**
+
+- [Sources](#sources)
+- [Live ISO Requirements](#live-iso-requirements)
+- [Agama Live ISO (*only for development and testing*)](#agama-live-iso-only-for-development-and-testing)
+  - [Description](#description)
+  - [Hardware Requirements](#hardware-requirements)
+- [Experimental Self-update](#experimental-self-update)
+- [The Access Password](#the-access-password)
+  - [Using Custom Password](#using-custom-password)
+  - [Boot Command Line](#boot-command-line)
+  - [Interactive Input](#interactive-input)
+  - [Injecting the Default Password Into the ISO Image](#injecting-the-default-password-into-the-iso-image)
+  - [Random Password as a Fallback](#random-password-as-a-fallback)
+  - [Password Priority](#password-priority)
+  - [Creating a Hashed Password](#creating-a-hashed-password)
+    - [Mkpasswd](#mkpasswd)
+    - [OpenSSL](#openssl)
+
+---
 
 Agama installer is deployed as a regular application which can be installed and run on a local system. However, the most expected way of using Agama is by running it on a live ISO image.
 
@@ -49,3 +71,171 @@ Notes:
 * 2 GiB of RAM memory
 * Internet connection to download packages of the product to install.
 * Around 10 GiB of disk size, although it depends on the selected product to install.
+
+## Experimental Self-update
+
+> [!WARNING]
+> This feature is experimental and untested!
+
+The Agama packages on the Live ISO can be automatically updated from the OBS
+Staging project.
+
+* Use the `agama.self_update` boot parameter to run the self-update
+automatically during boot.
+* Or run the `agama-self-update` script anytime later in a running Live system.
+
+> [!NOTE]
+> After updating the packages the Agama servers need to be restarted. This will
+> reset all you current Agama settings, you will need to start from scratch!
+
+## The Access Password
+
+Because the ISO image is built publicly we cannot use any predefined password as
+everybody would know that and for attackers it would be really trivial to hack
+your running installer.
+
+That means you have to provide our own password. If none is specified then Agama
+generates a random password and prints it on the console after boot.
+
+### Using Custom Password
+
+There are several ways how to specify your custom password, each of them might
+be suitable for a different use case.
+
+### Boot Command Line
+
+You can define the password directly on the boot command line. There are two
+options:
+
+* Use `live.password=<password>` with a plain text password.
+
+* Use `live.password_hash=<password_hash>` with a hashed password. This is more
+  secure than using a plaintext password.
+
+  The disadvantage is that the hashed password is quite long and is not easy to
+  type it into the boot prompt manually. It makes sense in environments where
+  you can prepare the boot parameters in advance like in PXE boot or some
+  virtual machines.
+
+  See more details about creating a hashed password [below](
+  #creating-a-hashed-password).
+
+### Interactive Input
+
+You can enter your password during boot in an interactive session. Again, there
+are two options:
+
+* Use `live.password_dialog` boot option to start an interactive dialog during
+  the boot process. This uses a nice dialog for entering and confirming the
+  password. However, in some situations the full screen dialog might not be
+  displayed correctly or some messages might be displayed over it. In that case
+  you might use the `Ctrl+L` key shortcut to refresh the screen. If it still
+  does not work then try using the other option below.
+
+* Use `live.password_systemd` boot option to ask for the password in a simple
+  prompt. This is similar to the option above, but the advantage is that this
+  solution does not use a full screen dialog but a single line prompt so it
+  should work better in special environments like a serial console.
+
+The Agama and the SSH server are not started until a password is configured.
+This avoid using the default password from the medium accidentally.
+
+### Injecting the Default Password Into the ISO Image
+
+Another option is to inject your custom hashed password directly into the ISO
+image. The advantage is than you can easily use the same image for installing
+multiple machines and you do not need to configure anything during the boot.
+
+To inject a new password into the ISO run:
+
+```sh
+# replace the agama.iso name with your image name
+tagmedia --add-tag "live_password=$((openssl passwd -6) | base64 -w 0)" agama.iso
+```
+
+It will interactively ask for a password then it will be hashed using the SHA512
+algorithm, encoded to the Base64 encoding and appended to the application area
+in the ISO file. If you want to update the password then just the same command
+again, it will overwrite the existing password.
+
+See the [Creating a Hashed Password](#creating-a-hashed-password) section below
+if you want to use a different hashing algorithm than SHA512.
+
+To check all tags present in an ISO file use this command:
+
+```sh
+# replace the agama.iso name with your image name
+tagmedia agama.iso
+```
+
+If you want to remove the password setting from the ISO image then run:
+
+```sh
+# replace the agama.iso name with your image name
+tagmedia --remove-tag live_password agama.iso
+```
+
+> [!CAUTION]
+> The image usually already contains some other tags, like the checksums for
+> verifying the medium integrity. Do not touch them!
+
+### Random Password as a Fallback
+
+When no password is specified or entering the password interactively was
+canceled by the user then Agama generates a random password and prints it on the
+console.
+
+### Password Priority
+
+The password setting priority is following (from highest priority to the
+lowest):
+
+1. Password entered interactively during the boot process
+2. Password entered on the boot command line
+3. Default password from the ISO image meta data
+4. A random password is generated as a fallback
+
+### Creating a Hashed Password
+
+There are several ways how to create a password hash, here we will mention two
+tools.
+
+Each tool allows to select the encryption method to use. To check the details
+about all encryption methods see `man 5 crypt`, it lists the encryption methods
+sorted by their strength so you can check which methods are recommended and
+which ones should be avoided.
+
+#### Mkpasswd
+
+You can use the `mkpasswd` tool from the `whois` package. It offers a lot of
+encryption methods, see the `mkpasswd -m help` for the list.
+
+By default it uses the strongest method available so in most cases you just run
+
+```sh
+mkpasswd
+```
+
+and then enter the password on the command line prompt.
+
+#### OpenSSL
+
+Alternatively you can use the `openssl passwd` command from the openSSL package.
+It offers less encryption methods but on the other hand it should be basically
+installed in every system.
+
+> [!WARNING]
+> By default it uses a weak encryption method (DES or MD5 depending on the OpenSSL
+> version) so you should always provide an additional encryption method parameter
+> to select a stronger encryption!
+
+To create a SHA512 hash for your password run
+
+```sh
+openssl passwd -6
+```
+
+and then enter the password on the command line prompt.
+
+For less strong SHA256 hash use the `-5` option, the other encryption methods
+should be avoided.

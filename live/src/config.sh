@@ -1,6 +1,6 @@
 #! /bin/bash
 
-set -x
+set -ex
 
 # KIWI functions
 test -f /.kconfig && . /.kconfig
@@ -12,6 +12,13 @@ echo "Configure image: [$kiwi_iname]..."
 # setup baseproduct link
 suseSetupProduct
 
+# configure the repositories in the Live system
+# import the OBS key for the systemsmanagement OBS project
+rpm --import /tmp/systemsmanagement_key.gpg
+rm /tmp/systemsmanagement_key.gpg
+# import the openSUSE keys
+rpm --import /usr/lib/rpm/gnupg/keys/*.asc
+
 # activate services
 systemctl enable sshd.service
 systemctl enable NetworkManager.service
@@ -21,20 +28,33 @@ systemctl enable agama-web-server.service
 systemctl enable agama-auto.service
 systemctl enable agama-hostname.service
 systemctl enable agama-proxy-setup.service
+systemctl enable agama-certificate-issue.path
+systemctl enable agama-welcome-issue.service
+systemctl enable agama-avahi-issue.service
+systemctl enable agama-ssh-issue.service
+systemctl enable agama-self-update.service
+systemctl enable live-password-cmdline.service
+systemctl enable live-password-dialog.service
+systemctl enable live-password-iso.service
+systemctl enable live-password-random.service
+systemctl enable live-password-systemd.service
 systemctl enable setup-systemd-proxy-env.path
 systemctl enable x11-autologin.service
-systemctl enable spice-vdagent.service
+systemctl enable spice-vdagentd.service
 systemctl enable zramswap
 
 # default target
 systemctl set-default graphical.target
 
-# adjust owner of extracted files
-chown -R root:root /root
-find /etc -user 1000 | xargs chown root:root
+# disable snapshot cleanup
+systemctl disable snapper-cleanup.timer
+systemctl disable snapper-timeline.timer
+
+# disable unused services
+systemctl disable YaST2-Firstboot.service
+systemctl disable YaST2-Second-Stage.service
 
 ### setup dracut for live system
-
 label=${kiwi_install_volid:-$kiwi_iname}
 arch=$(uname -m)
 
@@ -51,6 +71,9 @@ if [ "${arch}" = "s390x" ];then
     # workaround for custom bootloader setting
     touch /config.bootoptions
 fi
+
+# replace the @@LIVE_MEDIUM_LABEL@@ with the real Live partition label name from KIWI
+sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/live-password
 
 ################################################################################
 # Reducing the used space
@@ -97,7 +120,7 @@ rm -rf /usr/share/man/*
 ## removing drivers and firmware makes the Live ISO about 370MiB smaller
 #
 # Agama does not use sound, added by icewm dependencies
-rpm -e --nodeps alsa alsa-utils alsa-ucm-conf
+rpm -e --nodeps alsa alsa-utils alsa-ucm-conf || true
 
 # driver and firmware cleanup
 # Note: openSUSE Tumbleweed Live completely removes firmware for some server
@@ -128,7 +151,7 @@ for s in purge-kernels; do
 done
 
 # Only used for OpenCL and X11 acceleration on vmwgfx (?), saves ~50MiB
-rpm -e --nodeps Mesa-gallium
+rpm -e --nodeps Mesa-gallium || true
 # Too big and will have to be dropped anyway (unmaintained, known security issues)
 rm -rf /usr/lib*/libmfxhw*.so.* /usr/lib*/mfx/
 

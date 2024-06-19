@@ -20,7 +20,6 @@
  */
 
 export { default as NetworkPage } from "./NetworkPage";
-export { default as NetworkPageMenu } from "./NetworkPageMenu";
 export { default as AddressesDataList } from "./AddressesDataList";
 export { default as ConnectionsTable } from "./ConnectionsTable";
 export { default as DnsDataList } from "./DnsDataList";

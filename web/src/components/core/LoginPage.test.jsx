@@ -23,23 +23,28 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { LoginPage } from "~/components/core";
+import { AuthErrors } from "~/context/auth";
 
 let mockIsAuthenticated;
 const mockLoginFn = jest.fn();
+let mockLoginError;
 
 jest.mock("~/context/auth", () => ({
   ...jest.requireActual("~/context/auth"),
   useAuth: () => {
     return {
       isAuthenticated: mockIsAuthenticated,
-      login: mockLoginFn
+      login: mockLoginFn,
+      error: mockLoginError
     };
   }
 }));
 
-describe("LoginPage", () => {
+describe.skip("LoginPage", () => {
   beforeAll(() => {
     mockIsAuthenticated = false;
+    mockLoginError = null;
+    mockLoginFn.mockResolvedValue({ status: 200 });
     jest.spyOn(console, "error").mockImplementation();
   });
 
@@ -63,6 +68,48 @@ describe("LoginPage", () => {
       await user.click(loginButton);
 
       expect(mockLoginFn).toHaveBeenCalledWith("s3cr3t");
+    });
+
+    describe("and the entered password is wrong", () => {
+      beforeAll(() => {
+        mockLoginFn.mockResolvedValue({ status: 400 });
+        mockLoginError = AuthErrors.AUTH;
+      });
+
+      it("renders an authentication error", async () => {
+        const { user } = plainRender(<LoginPage />);
+        const form = screen.getByRole("form", { name: "Login form" });
+        const passwordInput = within(form).getByLabelText("Password input");
+        const loginButton = within(form).getByRole("button", { name: "Log in" });
+
+        await user.type(passwordInput, "s3cr3t");
+        await user.click(loginButton);
+
+        expect(mockLoginFn).toHaveBeenCalledWith("s3cr3t");
+        const form_error = screen.getByRole("form", { name: "Login form" });
+        within(form_error).getByText(/Could not log in/);
+      });
+    });
+
+    describe("and the server is down", () => {
+      beforeAll(() => {
+        mockLoginFn.mockResolvedValue({ status: 504 });
+        mockLoginError = AuthErrors.SERVER;
+      });
+
+      it("renders a server error text", async () => {
+        const { user } = plainRender(<LoginPage />);
+        const form = screen.getByRole("form", { name: "Login form" });
+        const passwordInput = within(form).getByLabelText("Password input");
+        const loginButton = within(form).getByRole("button", { name: "Log in" });
+
+        await user.type(passwordInput, "s3cr3t");
+        await user.click(loginButton);
+
+        expect(mockLoginFn).toHaveBeenCalledWith("s3cr3t");
+        const form_error = screen.getByRole("form", { name: "Login form" });
+        within(form_error).getByText(/Could not authenticate/);
+      });
     });
 
     it("renders a button to know more about the project", async () => {

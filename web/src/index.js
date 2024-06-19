@@ -21,28 +21,16 @@
 
 import React from "react";
 import { createRoot } from "react-dom/client";
-
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { RouterProvider } from "react-router-dom";
 import { RootProviders } from "~/context/root";
+import { router } from "~/router";
 
 /**
  * Import PF base styles before any JSX since components coming from PF may
  * import styles dependent on variables and rules previously defined there.
  */
 import "@patternfly/patternfly/patternfly-base.scss";
-
-import App from "~/App";
-import Main from "~/Main";
-import Protected from "~/Protected";
-import { OverviewPage } from "~/components/overview";
-import { ProductPage, ProductSelectionPage } from "~/components/product";
-import { SoftwarePage } from "~/components/software";
-import { ProposalPage as StoragePage, ISCSIPage, DASDPage, ZFCPPage } from "~/components/storage";
-import { UsersPage } from "~/components/users";
-import { L10nPage } from "~/components/l10n";
-import { LoginPage } from "./components/core";
-import { NetworkPage } from "~/components/network";
-import { Terminal } from "~/components/core";
+import "@patternfly/patternfly/patternfly-addons.scss";
 
 /**
  * As JSX components might import CSS stylesheets, our styles must be imported
@@ -61,29 +49,6 @@ const root = createRoot(container);
 
 root.render(
   <RootProviders>
-    <HashRouter>
-      <Routes>
-        <Route path="/login" exact element={<LoginPage />} />
-        <Route path="/" element={<Protected />}>
-          <Route path="/" element={<App />}>
-            <Route path="/" element={<Main />}>
-              <Route index element={<OverviewPage />} />
-              <Route path="/overview" element={<OverviewPage />} />
-              <Route path="/product" element={<ProductPage />} />
-              <Route path="/l10n" element={<L10nPage />} />
-              <Route path="/software" element={<SoftwarePage />} />
-              <Route path="/storage" element={<StoragePage />} />
-              <Route path="/storage/iscsi" element={<ISCSIPage />} />
-              <Route path="/storage/dasd" element={<DASDPage />} />
-              <Route path="/storage/zfcp" element={<ZFCPPage />} />
-              <Route path="/network" element={<NetworkPage />} />
-              <Route path="/users" element={<UsersPage />} />
-            </Route>
-            <Route path="products" element={<ProductSelectionPage />} />
-            <Route path="terminal" element={<Terminal />} />
-          </Route>
-        </Route>
-      </Routes>
-    </HashRouter>
+    <RouterProvider router={router} />
   </RootProviders>
 );

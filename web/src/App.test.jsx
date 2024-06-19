@@ -32,12 +32,24 @@ jest.mock("~/client");
 
 // list of available products
 let mockProducts;
+let mockSelectedProduct;
+
 jest.mock("~/context/product", () => ({
   ...jest.requireActual("~/context/product"),
   useProduct: () => {
     return {
       products: mockProducts,
-      selectedProduct: null
+      selectedProduct: mockSelectedProduct
+    };
+  }
+}));
+
+jest.mock("~/context/installer", () => ({
+  ...jest.requireActual("~/context/installer"),
+  useInstallerClientStatus: () => {
+    return {
+      connected: true,
+      error: false
     };
   }
 }));
@@ -47,6 +59,7 @@ jest.mock("~/context/product", () => ({
 jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 jest.mock("~/components/core/Installation", () => () => <div>Installation Mock</div>);
 jest.mock("~/components/layout/Loading", () => () => <div>Loading Mock</div>);
+jest.mock("~/components/product/ProductSelectionProgress", () => () => <div>Product progress</div>);
 
 // this object holds the mocked callbacks
 const callbacks = {};
@@ -54,8 +67,12 @@ const getStatusFn = jest.fn();
 const getPhaseFn = jest.fn();
 
 // capture the latest subscription to the manager#onPhaseChange for triggering it manually
-const onPhaseChangeFn = cb => { callbacks.onPhaseChange = cb };
-const onStatusChangeFn = cb => { callbacks.onStatusChange = cb };
+const onPhaseChangeFn = cb => {
+  callbacks.onPhaseChange = cb;
+};
+const onStatusChangeFn = cb => {
+  callbacks.onStatusChange = cb;
+};
 const changePhaseTo = phase => act(() => callbacks.onPhaseChange(phase));
 
 describe("App", () => {
@@ -68,7 +85,7 @@ describe("App", () => {
           getStatus: getStatusFn,
           getPhase: getPhaseFn,
           onPhaseChange: onPhaseChangeFn,
-          onStatusChange: onStatusChangeFn,
+          onStatusChange: onStatusChangeFn
         },
         l10n: {
           locales: jest.fn().mockResolvedValue([["en_us", "English", "United States"]]),
@@ -121,7 +138,7 @@ describe("App", () => {
     });
   });
 
-  describe("when the D-Bus service is busy during startup", () => {
+  describe("when the service is busy during startup", () => {
     beforeEach(() => {
       getPhaseFn.mockResolvedValue(STARTUP);
       getStatusFn.mockResolvedValue(BUSY);
@@ -138,15 +155,33 @@ describe("App", () => {
       getPhaseFn.mockResolvedValue(CONFIG);
     });
 
-    it("renders the application content", async () => {
-      installerRender(<App />, { withL10n: true });
-      await screen.findByText(/Outlet Content/);
+    describe("if the service is busy", () => {
+      beforeEach(() => {
+        getStatusFn.mockResolvedValue(BUSY);
+      });
+
+      it("redirects to product selection progress", async () => {
+        installerRender(<App />, { withL10n: true });
+        await screen.findByText("Navigating to /products/progress");
+      });
+    });
+
+    describe("if the service is not busy", () => {
+      beforeEach(() => {
+        getStatusFn.mockResolvedValue(IDLE);
+      });
+
+      it("renders the application content", async () => {
+        installerRender(<App />, { withL10n: true });
+        await screen.findByText(/Outlet Content/);
+      });
     });
   });
 
   describe("on the INSTALL phase", () => {
     beforeEach(() => {
       getPhaseFn.mockResolvedValue(INSTALL);
+      mockSelectedProduct = { id: "Fake product" };
     });
 
     it("renders the application content", async () => {
@@ -155,7 +190,7 @@ describe("App", () => {
     });
   });
 
-  describe("when D-Bus service phase changes", () => {
+  describe("when service phase changes", () => {
     beforeEach(() => {
       getPhaseFn.mockResolvedValue(CONFIG);
     });
@@ -165,18 +200,6 @@ describe("App", () => {
       await screen.findByText(/Outlet Content/);
       changePhaseTo(INSTALL);
       await screen.findByText("Installation Mock");
-    });
-  });
-
-  describe("when the config phase is done", () => {
-    beforeEach(() => {
-      getPhaseFn.mockResolvedValue(CONFIG);
-      getStatusFn.mockResolvedValue(IDLE);
-    });
-
-    it("renders the application's content", async () => {
-      installerRender(<App />, { withL10n: true });
-      await screen.findByText(/Outlet Content/);
     });
   });
 });

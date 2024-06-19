@@ -45,13 +45,6 @@ describe Agama::Software::Proposal do
   end
 
   describe "#calculate" do
-    it "initializes the packaging target" do
-      expect(Yast::Pkg).to receive(:TargetFinish)
-      expect(Yast::Pkg).to receive(:TargetInitialize).with(destdir)
-      expect(Yast::Pkg).to receive(:TargetLoad)
-      subject.calculate
-    end
-
     it "makes a proposal" do
       expect(Yast::Packages).to receive(:Proposal).and_return(result)
       expect(Yast::Pkg).to receive(:PkgSolve)

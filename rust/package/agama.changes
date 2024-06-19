@@ -1,4 +1,59 @@
 -------------------------------------------------------------------
+Fri Jun 14 06:17:52 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Remove references to the old "config add/set" subcommands
+  (gh#openSUSE/agama/#1338).
+
+-------------------------------------------------------------------
+Thu Jun 13 10:50:44 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Apply network changes when connecting or disconnecting
+  (gh#openSUSE/agama#1320).
+
+-------------------------------------------------------------------
+Thu Jun 13 10:39:57 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Expose Issues API in users-related interface
+  (gh#openSUSE/agama#1202).
+- Drop the old validations API.
+
+-------------------------------------------------------------------
+Wed Jun 12 10:15:33 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Allow writing to loopback connection in agama-server
+  (gh#openSUSE/agama#1318).
+
+-------------------------------------------------------------------
+Tue Jun 11 21:35:00 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- CLI: use the master token /run/agama/token if available and
+  readable (gh#openSUSE/agama#1287).
+- CLI: remove the "config add/set" subcommands
+  (gh#openSUSE/agama#1314).
+
+-------------------------------------------------------------------
+Mon Jun 10 14:24:33 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add mtu property for network connections
+  (gh#openSUSE/agama#1101).
+
+-------------------------------------------------------------------
+Fri Jun  7 05:58:48 UTC 2024 - Michal Filka <mfilka@suse.com>
+
+- Improvements in HTTPS setup
+  - self-signed certificate contains hostname
+  - self-signed certificate is stored into default location
+  - before creating new self-signed certificate a default location
+    (/etc/agama.d/ssl) is checked for a certificate 
+  - gh#openSUSE/agama#1228
+
+-------------------------------------------------------------------
+Wed Jun  5 13:53:59 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Process the legacyAutoyastStorage section of the profile
+  (gh#openSUSE/agama#1284).
+
+-------------------------------------------------------------------
 Mon Jun  3 07:49:16 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - CLI: Add new commands "agama download" and

@@ -28,12 +28,9 @@
 import React from "react";
 import {
   Button,
-  DataList,
-  DataListItem,
-  DataListItemRow,
-  DataListItemCells,
-  DataListCell,
-  DataListAction
+  DataList, DataListItem, DataListItemRow, DataListItemCells, DataListCell, DataListAction,
+  Flex,
+  Stack
 } from "@patternfly/react-core";
 
 import { FormLabel } from "~/components/core";
@@ -96,16 +93,18 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
   const newDnsButtonText = servers.length ? _("Add another DNS") : _("Add DNS");
 
   return (
-    <>
-      <div className="split justify-between">
+    <Stack hasGutter>
+      <Flex justifyContent={{ default: "justifyContentSpaceBetween" }}>
         <FormLabel>{_("DNS")}</FormLabel>
+      </Flex>
+      <DataList isCompact title="Addresses data list">
+        {servers.map(server => renderDns(server))}
+      </DataList>
+      <Flex>
         <Button size="sm" variant="secondary" onClick={addServer}>
           {newDnsButtonText}
         </Button>
-      </div>
-      <DataList isCompact gridBreakpoint="none" title="Addresses data list">
-        {servers.map(server => renderDns(server))}
-      </DataList>
-    </>
+      </Flex>
+    </Stack>
   );
 }

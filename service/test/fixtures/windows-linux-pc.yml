@@ -1,0 +1,40 @@
+---
+- disk:
+    name: /dev/sda
+    size: 500 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         250 GiB
+        name:         /dev/sda1
+        id:           0x7
+        file_system:  ntfs
+        label:        windows
+
+    - partition:
+        size:         2 GiB
+        name:         /dev/sda2
+        id:           swap
+        file_system:  swap
+        label:        swap
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda3
+        file_system:  ext4
+        label:        root
+        uuid:         sda3-uuid
+
+- disk:
+    name: /dev/sdb
+    size: 500 GiB
+    partition_table: gpt
+    partitions:
+
+    - partition:
+        size:         113 GiB
+        name:         /dev/sdb1
+        file_system:  xfs
+        label:        data
+        uuid:         sda1-uuid

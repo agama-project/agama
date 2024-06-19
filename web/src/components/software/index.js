@@ -19,6 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as PatternSelector } from "./PatternSelector";
 export { default as UsedSize } from "./UsedSize";
 export { default as SoftwarePage } from "./SoftwarePage";
+export { default as SoftwarePatternsSelection } from "./SoftwarePatternsSelection";

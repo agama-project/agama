@@ -29,7 +29,6 @@ mod ws;
 mod terminal_ws;
 
 use agama_lib::{connection, error::ServiceError};
-pub use auth::generate_token;
 pub use config::ServiceConfig;
 pub use docs::ApiDoc;
 pub use event::{Event, EventsReceiver, EventsSender};
@@ -177,6 +176,15 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
             dbus.clone(),
             "org.opensuse.Agama.Software1",
             "/org/opensuse/Agama/Software1/Product",
+        )
+        .await?,
+    );
+    stream.insert(
+        "users-issues",
+        issues_stream(
+            dbus.clone(),
+            "org.opensuse.Agama.Manager1",
+            "/org/opensuse/Agama/Users1",
         )
         .await?,
     );

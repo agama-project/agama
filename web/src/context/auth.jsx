@@ -37,12 +37,19 @@ function useAuth() {
   return context;
 }
 
+const AuthErrors = Object.freeze({
+  SERVER: "server",
+  AUTH: "auth",
+  OTHER: "other"
+});
+
 /**
  * @param {object} props
  * @param {React.ReactNode} [props.children] - content to display within the provider
  */
 function AuthProvider({ children }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(undefined);
+  const [error, setError] = useState(null);
 
   const login = useCallback(async (password) => {
     const response = await fetch("/api/auth", {
@@ -50,9 +57,17 @@ function AuthProvider({ children }) {
       body: JSON.stringify({ password }),
       headers: { "Content-Type": "application/json" },
     });
+
     const result = response.status === 200;
+    if ((response.status >= 500) && (response.status < 600)) {
+      setError(AuthErrors.SERVER);
+    }
+    if ((response.status >= 400) && (response.status < 500)) {
+      setError(AuthErrors.AUTH);
+    }
     setIsLoggedIn(result);
-    return result;
+
+    return response;
   }, []);
 
   const logout = useCallback(async () => {
@@ -68,15 +83,21 @@ function AuthProvider({ children }) {
     })
       .then((response) => {
         setIsLoggedIn(response.status === 200);
+        if ((response.status >= 500) && (response.status < 600)) {
+          setError(AuthErrors.SERVER);
+        }
+        if ((response.status >= 400) && (response.status < 500)) {
+          setError(AuthErrors.AUTH);
+        }
       })
       .catch(() => setIsLoggedIn(false));
   }, []);
 
   return (
-    <AuthContext.Provider value={{ login, logout, isLoggedIn }}>
+    <AuthContext.Provider value={{ login, logout, isLoggedIn, error }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-export { AuthProvider, useAuth };
+export { AuthProvider, useAuth, AuthErrors };

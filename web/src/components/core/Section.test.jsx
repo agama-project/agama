@@ -28,7 +28,7 @@ import { Section } from "~/components/core";
 
 let consoleErrorSpy;
 
-describe("Section", () => {
+describe.skip("Section", () => {
   beforeAll(() => {
     consoleErrorSpy = jest.spyOn(console, "error");
     consoleErrorSpy.mockImplementation();

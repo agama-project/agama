@@ -50,6 +50,7 @@ describe Agama::Software::Manager do
       disabled:   disabled_repos
     )
   end
+  let(:products) { [] }
 
   let(:proposal) do
     instance_double(
@@ -80,8 +81,14 @@ describe Agama::Software::Manager do
     instance_double(Agama::DBus::Clients::Questions)
   end
 
+  let(:target_dir) { Dir.mktmpdir }
+
   before do
+    stub_const("Agama::Software::Manager::TARGET_DIR", target_dir)
     allow(Yast::Pkg).to receive(:TargetInitialize)
+    allow(Yast::Pkg).to receive(:TargetFinish)
+    allow(Yast::Pkg).to receive(:TargetLoad)
+    allow(Yast::Pkg).to receive(:SourceSaveAll)
     allow(Yast::Pkg).to receive(:ImportGPGKey)
     # allow glob to work for other calls
     allow(Dir).to receive(:glob).and_call_original
@@ -95,6 +102,10 @@ describe Agama::Software::Manager do
     allow(Agama::Software::RepositoriesManager).to receive(:new).and_return(repositories)
     allow(Agama::Software::Proposal).to receive(:new).and_return(proposal)
     allow(Agama::ProductReader).to receive(:new).and_call_original
+  end
+
+  after do
+    FileUtils.rm_r(target_dir)
   end
 
   describe "#new" do
@@ -125,6 +136,20 @@ describe Agama::Software::Manager do
 
         expect(manager.product.id).to eq("test1")
       end
+    end
+
+    context "when GPG keys are available at /" do
+      let(:gpg_keys) { ["/usr/lib/gnupg/keys/gpg-key.asc"] }
+
+      it "imports the GPG keys" do
+        expect(Yast::Pkg).to receive(:ImportGPGKey).with(gpg_keys.first, true)
+        described_class.new(config, logger)
+      end
+    end
+
+    it "initializes the package system" do
+      expect(Yast::Pkg).to receive(:TargetInitialize)
+      described_class.new(config, logger)
     end
   end
 
@@ -184,33 +209,8 @@ describe Agama::Software::Manager do
   end
 
   describe "#probe" do
-    let(:rootdir) { Dir.mktmpdir }
-    let(:repos_dir) { File.join(rootdir, "etc", "zypp", "repos.d") }
-    let(:backup_repos_dir) { File.join(rootdir, "etc", "zypp", "repos.d.backup") }
-
     before do
-      stub_const("Agama::Software::Manager::REPOS_DIR", repos_dir)
-      stub_const("Agama::Software::Manager::REPOS_BACKUP", backup_repos_dir)
-      FileUtils.mkdir_p(repos_dir)
       subject.select_product("Tumbleweed")
-    end
-
-    after do
-      FileUtils.remove_entry(rootdir)
-    end
-
-    it "initializes the package system" do
-      expect(Yast::Pkg).to receive(:TargetInitialize).with("/")
-      subject.probe
-    end
-
-    context "when GPG keys are available at /" do
-      let(:gpg_keys) { ["/usr/lib/gnupg/keys/gpg-key.asc"] }
-
-      it "imports the GPG keys" do
-        expect(Yast::Pkg).to receive(:ImportGPGKey).with(gpg_keys.first, true)
-        subject.probe
-      end
     end
 
     it "creates a packages proposal" do
@@ -348,34 +348,21 @@ describe Agama::Software::Manager do
         expect { subject.install }.to raise_error(RuntimeError)
       end
     end
+
+    it "moves the packaging target to /mnt" do
+      expect(Yast::Pkg).to receive(:TargetFinish)
+      expect(Yast::Pkg).to receive(:TargetInitialize).with(destdir)
+      expect(Yast::Pkg).to receive(:TargetLoad)
+      subject.install
+    end
   end
 
   describe "#finish" do
-    let(:rootdir) { Dir.mktmpdir }
-    let(:repos_dir) { File.join(rootdir, "etc", "zypp", "repos.d") }
-    let(:backup_repos_dir) { File.join(rootdir, "etc", "zypp", "repos.d.backup") }
-
-    before do
-      stub_const("Agama::Software::Manager::REPOS_DIR", repos_dir)
-      stub_const("Agama::Software::Manager::REPOS_BACKUP", backup_repos_dir)
-      FileUtils.mkdir_p(repos_dir)
-      FileUtils.mkdir_p(backup_repos_dir)
-      FileUtils.touch(File.join(backup_repos_dir, "example.repo"))
-      puts Dir[File.join(repos_dir, "**", "*")]
-    end
-
-    after do
-      FileUtils.remove_entry(rootdir)
-    end
-
-    it "releases the packaging system and restores the backup" do
+    it "releases the packaging system" do
       expect(Yast::Pkg).to receive(:SourceSaveAll)
       expect(Yast::Pkg).to receive(:TargetFinish)
-      expect(Yast::Pkg).to receive(:SourceCacheCopyTo)
-        .with(Yast::Installation.destdir)
 
       subject.finish
-      expect(File).to exist(File.join(repos_dir, "example.repo"))
     end
   end
 

@@ -84,3 +84,8 @@
     %{_datadir}/agama/conf.d\n
     %dir /usr/share/YaST2\n
     /usr/share/YaST2/locale\n"
+:scripts:
+  :pre: "%service_add_pre agama.service"
+  :post: "%service_add_post agama.service"
+  :preun: "%service_del_preun agama.service"
+  :postun: "%service_del_postun_with_restart agama.service"

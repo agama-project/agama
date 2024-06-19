@@ -22,17 +22,16 @@
 // @ts-check
 
 import React, { useReducer } from "react";
-import { Alert, Button, Form } from "@patternfly/react-core";
-import { sprintf } from "sprintf-js";
-
+import { Alert, Button, Form, Split } from "@patternfly/react-core";
+import { Popup } from '~/components/core';
+import { FsField, MountPathField, SizeOptionsField } from "~/components/storage/VolumeFields";
 import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 import { compact, useDebounce } from "~/utils";
 import {
   DEFAULT_SIZE_UNIT, SIZE_METHODS, mountFilesystem, parseToBytes, reuseDevice, splitSize,
   volumeLabel
 } from '~/components/storage/utils';
-import { FsField, MountPathField, SizeOptionsField } from "~/components/storage/VolumeFields";
-import { Popup } from '~/components/core';
 
 /**
  * @typedef {import ("~/client/storage").Volume} Volume
@@ -308,12 +307,12 @@ class ExistingVolumeError {
     const path = this.mountPath === "/" ? "root" : this.mountPath;
 
     return (
-      <div className="split">
+      <Split hasGutter>
         <span>{sprintf(_("There is already a file system for %s."), path)}</span>
         <Button variant="link" isInline onClick={() => onClick(volume)}>
           {_("Do you want to edit it?")}
         </Button>
-      </div>
+      </Split>
     );
   }
 }
@@ -355,12 +354,12 @@ class ExistingTemplateError {
     const path = this.mountPath === "/" ? "root" : this.mountPath;
 
     return (
-      <div className="split">
+      <Split hasGutter>
         <span>{sprintf(_("There is a predefined file system for %s."), path)}</span>
         <Button variant="link" isInline onClick={() => onClick(template)}>
           {_("Do you want to add it?")}
         </Button>
-      </div>
+      </Split>
     );
   }
 }

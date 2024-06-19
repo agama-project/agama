@@ -113,7 +113,7 @@ echo $PATH
 %service_del_preun agama-web-server.service
 
 %postun
-%service_del_preun agama-web-server.service
+%service_del_postun_with_restart agama-web-server.service
 
 %files
 %{_bindir}/agama-dbus-server

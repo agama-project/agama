@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-19 02:19+0000\n"
-"PO-Revision-Date: 2024-04-07 11:43+0000\n"
+"POT-Creation-Date: 2024-06-09 02:25+0000\n"
+"PO-Revision-Date: 2024-06-10 08:10+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
-"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/ca/>\n"
+"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/ca/>\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 5.5.5\n"
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:88
@@ -155,51 +155,68 @@ msgid "Found %s dependency issues."
 msgstr "S'han trobat %s problemes de dependències."
 
 #. Probes storage devices and performs an initial proposal
-#: service/lib/agama/storage/manager.rb:112
+#: service/lib/agama/storage/manager.rb:113
 msgid "Activating storage devices"
 msgstr "Activant els dispositius d'emmagatzematge"
 
-#: service/lib/agama/storage/manager.rb:113
+#: service/lib/agama/storage/manager.rb:114
 msgid "Probing storage devices"
 msgstr "Sondant els dispositius d'emmagatzematge"
 
-#: service/lib/agama/storage/manager.rb:114
+#: service/lib/agama/storage/manager.rb:115
 msgid "Calculating the storage proposal"
 msgstr "Calculant la proposta d'emmagatzematge"
 
-#: service/lib/agama/storage/manager.rb:115
+#: service/lib/agama/storage/manager.rb:116
 msgid "Selecting Linux Security Modules"
 msgstr "Seleccionant els mòduls de seguretat de Linux"
 
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:123
+#: service/lib/agama/storage/manager.rb:124
 msgid "Preparing bootloader proposal"
 msgstr "Preparant la proposta de carregador d'arrencada"
 
 #. first make bootloader proposal to be sure that required packages are installed
-#: service/lib/agama/storage/manager.rb:128
+#: service/lib/agama/storage/manager.rb:129
 msgid "Adding storage-related packages"
 msgstr "Afegint paquets relacionats amb l'emmagatzematge"
 
-#: service/lib/agama/storage/manager.rb:129
+#: service/lib/agama/storage/manager.rb:130
 msgid "Preparing the storage devices"
 msgstr "Preparant els dispositius d'emmagatzematge"
 
-#: service/lib/agama/storage/manager.rb:130
+#: service/lib/agama/storage/manager.rb:131
 msgid "Writing bootloader sysconfig"
 msgstr "Escrivint la configuració de sistema del carregador d'arrencada"
+
+#. Issue representing the proposal is not valid.
+#.
+#. @return [Issue]
+#: service/lib/agama/storage/proposal.rb:189
+msgid "Cannot accommodate the required file systems for installation"
+msgstr ""
+"No es poden acomodar els sistemes de fitxers necessaris per a la "
+"instal·lació."
+
+#. Issue to communicate a generic Y2Storage error.
+#.
+#. @return [Issue]
+#: service/lib/agama/storage/proposal.rb:200
+msgid "A problem ocurred while calculating the storage setup"
+msgstr ""
+"Hi ha hagut un problema en calcular la configuració de l'emmagatzematge."
 
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal.rb:201
+#: service/lib/agama/storage/proposal_strategies/guided.rb:122
 msgid "No device selected for installation"
 msgstr "No s'ha seleccionat cap dispositiu per a la instal·lació."
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal.rb:217
+#: service/lib/agama/storage/proposal_strategies/guided.rb:138
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
@@ -208,12 +225,3 @@ msgstr[0] ""
 "El dispositiu seleccionat següent no es troba al sistema: %{devices}"
 msgstr[1] ""
 "Els dispositius seleccionats següents no es troben al sistema: %{devices}"
-
-#. Returns an issue if the proposal is not valid.
-#.
-#. @return [Issue, nil]
-#: service/lib/agama/storage/proposal.rb:235
-msgid "Cannot accommodate the required file systems for installation"
-msgstr ""
-"No es poden acomodar els sistemes de fitxers necessaris per a la "
-"instal·lació."

@@ -31,18 +31,13 @@ jest.mock("~/client", () => ({
   createClient: jest.fn()
 }));
 
-let issues;
-
 describe("when the button is clicked and there are not errors", () => {
   beforeEach(() => {
-    issues = {};
     createClient.mockImplementation(() => {
       return {
         manager: {
-          startInstallation: startInstallationFn,
-          canInstall: () => Promise.resolve(true),
-        },
-        issues: jest.fn().mockResolvedValue({ ...issues })
+          startInstallation: startInstallationFn
+        }
       };
     });
   });
@@ -68,40 +63,6 @@ describe("when the button is clicked and there are not errors", () => {
 
     await waitFor(() => {
       expect(screen.queryByRole("button", { name: "Continue" })).not.toBeInTheDocument();
-    });
-  });
-
-  describe("if there are issues", () => {
-    beforeEach(() => {
-      issues = {
-        product: [],
-        storage: [
-          { description: "storage issue 1", details: "Details 1", source: "system", severity: "warn" },
-          { description: "storage issue 2", details: "Details 2", source: "config", severity: "error" }
-        ],
-        software: [
-          { description: "software issue 1", details: "Details 1", source: "system", severity: "warn" }
-        ]
-      };
-    });
-
-    it("shows a message encouraging the user to review them", async () => {
-      const { user } = installerRender(<InstallButton />);
-      const button = await screen.findByRole("button", { name: "Install" });
-      await user.click(button);
-      await screen.findByText(/There are some reported issues/);
-    });
-  });
-
-  describe("if there are not issues", () => {
-    it("doest not show the message encouraging the user to review them", async () => {
-      const { user } = installerRender(<InstallButton />);
-      const button = await screen.findByRole("button", { name: "Install" });
-      await user.click(button);
-      await waitFor(() => {
-        const text = screen.queryByText(/There are some reported issues/);
-        expect(text).toBeNull();
-      });
     });
   });
 });

@@ -1,0 +1,8 @@
+[agama-staging]
+name=Agama-Staging
+type=rpm-md
+enabled=1
+autorefresh=1
+gpgcheck=1
+baseurl=https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Staging/openSUSE_Tumbleweed/
+gpgkey=https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Staging/openSUSE_Tumbleweed/repodata/repomd.xml.key

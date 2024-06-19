@@ -65,7 +65,13 @@ function ProductProvider({ children }) {
     return client.product.onRegistrationChange(setRegistration);
   }, [client, setRegistration]);
 
-  const value = { products, selectedId, registration };
+  const selectProduct = async (id) => {
+    await client.product.select(id);
+    client.manager.startProbing();
+    setSelectedId(id);
+  };
+
+  const value = { products, selectedId, registration, selectProduct };
   return <ProductContext.Provider value={value}>{children}</ProductContext.Provider>;
 }
 

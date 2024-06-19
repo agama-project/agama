@@ -58,14 +58,9 @@ beforeEach(() => {
 
 it("InstallerKeymapSwitcher", async () => {
   const { user } = plainRender(<InstallerKeymapSwitcher />);
-
-  // the current keyboard is correctly selected
-  expect(screen.getByRole("option", { name: "English (US)" }).selected).toBe(true);
-
-  // change the keyboard
-  await user.selectOptions(
-    screen.getByRole("combobox", { label: "Keyboard" }),
-    screen.getByRole("option", { name: "Czech" })
-  );
+  const button = screen.getByRole("button", { name: "English (US)" });
+  await user.click(button);
+  const option = screen.getByRole("option", { name: "Czech" });
+  await user.click(option);
   expect(mockChangeKeyboardFn).toHaveBeenCalledWith("cz");
 });

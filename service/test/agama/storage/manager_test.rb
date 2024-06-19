@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -24,8 +24,10 @@ require_relative "../with_progress_examples"
 require_relative "../with_issues_examples"
 require_relative "storage_helpers"
 require "agama/storage/manager"
+require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/iscsi/manager"
+require "agama/storage/volume"
 require "agama/config"
 require "agama/issue"
 require "agama/dbus/clients/questions"
@@ -148,7 +150,7 @@ describe Agama::Storage::Manager do
       allow(proposal).to receive(:issues).and_return(proposal_issues)
       allow(proposal).to receive(:available_devices).and_return(devices)
       allow(proposal).to receive(:settings).and_return(settings)
-      allow(proposal).to receive(:calculate)
+      allow(proposal).to receive(:calculate_guided)
 
       allow(config).to receive(:pick_product)
       allow(iscsi).to receive(:activate)
@@ -190,7 +192,7 @@ describe Agama::Storage::Manager do
       end
       expect(iscsi).to receive(:probe)
       expect(y2storage_manager).to receive(:probe)
-      expect(proposal).to receive(:calculate).with(config_settings)
+      expect(proposal).to receive(:calculate_guided).with(config_settings)
       storage.probe
     end
 
@@ -354,6 +356,41 @@ describe Agama::Storage::Manager do
           expect(file).to receive(:puts).with "/dev/mapper/cr_root /sysroot ro"
 
           storage.finish
+        end
+      end
+    end
+  end
+
+  describe "#actions" do
+    it "return an empty list if the system has not been probed yet" do
+      expect(subject.actions).to eq([])
+    end
+
+    context "if the system was probed" do
+      before do
+        mock_storage(devicegraph: "partitioned_md.yml")
+      end
+
+      it "returns an empty list if a proposal has not been calculated yet" do
+        expect(subject.actions).to eq([])
+      end
+
+      context "if a proposal was successfully calculated" do
+        before do
+          subject.proposal.calculate_guided(settings)
+        end
+
+        let(:settings) do
+          Agama::Storage::ProposalSettings.new.tap do |settings|
+            settings.device.name = "/dev/sdb"
+            settings.volumes = [Agama::Storage::Volume.new("/")]
+          end
+        end
+
+        it "returns the list of actions" do
+          expect(subject.actions).to include(
+            an_object_having_attributes(sentence: /Create partition \/dev\/sdb1/)
+          )
         end
       end
     end

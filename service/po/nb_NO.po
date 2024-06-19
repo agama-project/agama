@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-19 02:19+0000\n"
-"PO-Revision-Date: 2024-05-19 13:46+0000\n"
+"POT-Creation-Date: 2024-06-09 02:25+0000\n"
+"PO-Revision-Date: 2024-06-12 01:46+0000\n"
 "Last-Translator: Martin Hansen <mh306602@gmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://l10n.opensuse.org/projects/agama/"
 "agama-service-master/nb_NO/>\n"
@@ -77,8 +77,8 @@ msgstr "Filen %{filename}"
 #: service/lib/agama/software/callbacks/signature.rb:71
 #, perl-brace-format
 msgid ""
-"%{source} is not digitally signed. The origin and integrity of the file cannot"
-" be verified. Use it anyway?"
+"%{source} is not digitally signed. The origin and integrity of the file "
+"cannot be verified. Use it anyway?"
 msgstr ""
 "%{source} er ikke digitalt signert. Opphavet og integriteten av filen kan "
 "ikke bli verifisert. Bruk den uansett?"
@@ -90,8 +90,8 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:94
 #, perl-brace-format
 msgid ""
-"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you wan"
-"t to trust this key?"
+"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
+"want to trust this key?"
 msgstr ""
 "Nøkkelen %{id} (%{name}) med fingeravtrykk %{fingerprint} er ukjent. Vil du "
 "stole på denne nøkkelen?"
@@ -155,60 +155,68 @@ msgid "Found %s dependency issues."
 msgstr "Fant %s avhengighetsproblemer."
 
 #. Probes storage devices and performs an initial proposal
-#: service/lib/agama/storage/manager.rb:112
+#: service/lib/agama/storage/manager.rb:113
 msgid "Activating storage devices"
 msgstr "Aktiverer lagringsenheter"
 
-#: service/lib/agama/storage/manager.rb:113
+#: service/lib/agama/storage/manager.rb:114
 msgid "Probing storage devices"
 msgstr "Undersøker lagringsenheter"
 
-#: service/lib/agama/storage/manager.rb:114
+#: service/lib/agama/storage/manager.rb:115
 msgid "Calculating the storage proposal"
 msgstr "Kalkulerer lagringsforslaget"
 
-#: service/lib/agama/storage/manager.rb:115
+#: service/lib/agama/storage/manager.rb:116
 msgid "Selecting Linux Security Modules"
 msgstr "Velger Linux Sikkerhetsmoduler"
 
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:123
+#: service/lib/agama/storage/manager.rb:124
 msgid "Preparing bootloader proposal"
 msgstr "Forbereder forslag til oppstartslaster"
 
 #. first make bootloader proposal to be sure that required packages are installed
-#: service/lib/agama/storage/manager.rb:128
+#: service/lib/agama/storage/manager.rb:129
 msgid "Adding storage-related packages"
 msgstr "Legger til lagringsrelaterte pakker"
 
-#: service/lib/agama/storage/manager.rb:129
+#: service/lib/agama/storage/manager.rb:130
 msgid "Preparing the storage devices"
 msgstr "Forbereder lagringsenheter"
 
-#: service/lib/agama/storage/manager.rb:130
+#: service/lib/agama/storage/manager.rb:131
 msgid "Writing bootloader sysconfig"
 msgstr "Skriver oppstartslasterens sysconfig"
+
+#. Issue representing the proposal is not valid.
+#.
+#. @return [Issue]
+#: service/lib/agama/storage/proposal.rb:189
+msgid "Cannot accommodate the required file systems for installation"
+msgstr "Kan ikke legge til rette for filsystemene som kreves for installasjon"
+
+#. Issue to communicate a generic Y2Storage error.
+#.
+#. @return [Issue]
+#: service/lib/agama/storage/proposal.rb:200
+msgid "A problem ocurred while calculating the storage setup"
+msgstr "Ett problem oppsto under kalkulering av lagringsoppsettet"
 
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal.rb:201
+#: service/lib/agama/storage/proposal_strategies/guided.rb:122
 msgid "No device selected for installation"
 msgstr "Ingen enhet valgt for installasjon"
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal.rb:217
+#: service/lib/agama/storage/proposal_strategies/guided.rb:138
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
-msgid_plural "The following selected devices are not found in the system: %{devices}"
+msgid_plural ""
+"The following selected devices are not found in the system: %{devices}"
 msgstr[0] "Følgende valgte enhet ble ikke funnet i systemet: %{devices}"
 msgstr[1] "Følgende valgte enheter ble ikke funnet i systemet: %{devices}"
-
-#. Returns an issue if the proposal is not valid.
-#.
-#. @return [Issue, nil]
-#: service/lib/agama/storage/proposal.rb:235
-msgid "Cannot accommodate the required file systems for installation"
-msgstr "Kan ikke legge til rette for filsystemene som kreves for installasjon"

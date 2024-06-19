@@ -9,13 +9,11 @@ edition = "2021"
 clap = { version = "4.1.4", features = ["derive", "wrap_help"] }
 curl = { version = "0.4.44", features = ["protocol-ftp"] }
 agama-lib = { path="../agama-lib" }
-agama-settings = { path="../agama-settings" }
 serde = { version = "1.0.152" }
 serde_json = "1.0.91"
 serde_yaml = "0.9.17"
 indicatif= "0.17.3"
 thiserror = "1.0.39"
-convert_case = "0.6.0"
 console = "0.15.7"
 anyhow = "1.0.71"
 log = "0.4"
@@ -27,7 +25,6 @@ zbus = { version = "3", default-features = false, features = ["tokio"] }
 tokio = { version = "1.33.0", features = ["macros", "rt-multi-thread"] }
 async-trait = "0.1.77"
 reqwest = { version = "0.11", features = ["json"] }
-home = "0.5.9"
 rpassword = "7.3.1"
 url = "2.5.0"
 

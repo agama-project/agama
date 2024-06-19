@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,6 +21,7 @@
 
 require_relative "../../../test_helper"
 require_relative "with_issues_examples"
+require_relative "with_progress_examples"
 require "agama/dbus/clients/storage"
 require "dbus"
 
@@ -28,22 +29,9 @@ describe Agama::DBus::Clients::Storage do
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
     allow(bus).to receive(:service).with("org.opensuse.Agama.Storage1").and_return(service)
-
-    allow(service).to receive(:[]).with("/org/opensuse/Agama/Storage1")
-      .and_return(dbus_object)
+    allow(service).to receive(:[]).with("/org/opensuse/Agama/Storage1").and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Storage1")
-      .and_return(storage_iface)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Storage1.Proposal.Calculator")
-      .and_return(proposal_calculator_iface)
-
-    allow(service).to receive(:object).with("/org/opensuse/Agama/Storage1/Proposal")
-      .and_return(dbus_proposal)
-    allow(dbus_proposal).to receive(:introspect)
-    allow(dbus_proposal).to receive(:[]).with("org.opensuse.Agama.Storage1.Proposal")
-      .and_return(proposal_iface)
-
-    allow(proposal_calculator_iface).to receive(:[]).with("Result").and_return(proposal_path)
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Storage1").and_return(storage_iface)
   end
 
   let(:bus) { instance_double(Agama::DBus::Bus) }
@@ -51,12 +39,6 @@ describe Agama::DBus::Clients::Storage do
 
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
   let(:storage_iface) { instance_double(::DBus::ProxyObjectInterface) }
-  let(:proposal_calculator_iface) { instance_double(::DBus::ProxyObjectInterface) }
-
-  let(:dbus_proposal) { instance_double(::DBus::ProxyObject) }
-  let(:proposal_iface) { instance_double(::DBus::ProxyObjectInterface) }
-
-  let(:proposal_path) { "/" }
 
   subject { described_class.new }
 
@@ -101,98 +83,6 @@ describe Agama::DBus::Clients::Storage do
     end
   end
 
-  describe "#available_devices" do
-    before do
-      allow(proposal_calculator_iface).to receive(:[]).with("AvailableDevices").and_return(
-        [
-          ["/dev/sda", "/dev/sda (50 GiB)"],
-          ["/dev/sdb", "/dev/sda (20 GiB)"]
-        ]
-      )
-    end
-
-    it "returns the name of all available devices for the installation" do
-      expect(subject.available_devices).to contain_exactly("/dev/sda", "/dev/sdb")
-    end
-  end
-
-  describe "#candidate_devices" do
-    context "if a proposal object is not exported yet" do
-      let(:proposal_path) { "/" }
-
-      it "returns an empty list" do
-        expect(subject.candidate_devices).to eq([])
-      end
-    end
-
-    context "if a proposal object is already exported" do
-      let(:proposal_path) { "/org/opensuse/Agama/Storage1/Proposal" }
-
-      before do
-        allow(proposal_iface).to receive(:[]).with("CandidateDevices").and_return(["/dev/sda"])
-      end
-
-      it "returns the name of the candidate devices for the installation" do
-        expect(subject.candidate_devices).to contain_exactly("/dev/sda")
-      end
-    end
-  end
-
-  describe "#calculate" do
-    # Using partial double because methods are dynamically added to the proxy object
-    let(:proposal_calculator_iface) { double(::DBus::ProxyObjectInterface) }
-
-    it "calculates the proposal with the given devices" do
-      expect(proposal_calculator_iface)
-        .to receive(:Calculate).with({ "CandidateDevices" => ["/dev/sdb"] })
-
-      subject.calculate(["/dev/sdb"])
-    end
-  end
-
-  describe "#actions" do
-    context "if a proposal object is not exported yet" do
-      let(:proposal_path) { "/" }
-
-      it "returns an empty list" do
-        expect(subject.actions).to eq([])
-      end
-    end
-
-    context "if a proposal object is already exported" do
-      let(:proposal_path) { "/org/opensuse/Agama/Storage1/Proposal" }
-
-      before do
-        allow(proposal_iface).to receive(:[]).with("Actions").and_return(
-          [
-            {
-              "Text"      => "Create GPT on /dev/vdc",
-              "Subvolume" => false
-            },
-            {
-              "Text"      => "Create partition /dev/vdc1 (8.00 MiB) as BIOS Boot Partition",
-              "Subvolume" => false
-            },
-            {
-              "Text"      => "Create partition /dev/vdc2 (27.99 GiB) for / with btrfs",
-              "Subvolume" => false
-            },
-            {
-              "Text"      => "Create partition /dev/vdc3 (2.00 GiB) for swap",
-              "Subvolume" => false
-            }
-          ]
-        )
-      end
-
-      it "returns the actions to perform" do
-        expect(subject.actions).to include(/Create GPT/)
-        expect(subject.actions).to include(/Create partition \/dev\/vdc1/)
-        expect(subject.actions).to include(/Create partition \/dev\/vdc2/)
-        expect(subject.actions).to include(/Create partition \/dev\/vdc3/)
-      end
-    end
-  end
-
   include_examples "issues"
+  include_examples "progress"
 end

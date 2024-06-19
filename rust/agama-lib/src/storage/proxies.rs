@@ -29,11 +29,14 @@ trait Storage1 {
     default_path = "/org/opensuse/Agama/Storage1"
 )]
 trait ProposalCalculator {
-    /// Calculate method
+    /// Calculate guided proposal
     fn calculate(
         &self,
         settings: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
     ) -> zbus::Result<u32>;
+
+    /// Calculate AutoYaST proposal
+    fn calculate_autoyast(&self, settings: &str) -> zbus::Result<u32>;
 
     /// DefaultVolume method
     fn default_volume(
@@ -53,9 +56,9 @@ trait ProposalCalculator {
     #[dbus_proxy(property)]
     fn product_mount_points(&self) -> zbus::Result<Vec<String>>;
 
-    /// Result property
-    #[dbus_proxy(property)]
-    fn result(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+    /// Proposal result
+    fn result(&self)
+        -> zbus::Result<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>;
 }
 
 #[dbus_proxy(

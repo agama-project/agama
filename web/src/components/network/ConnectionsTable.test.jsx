@@ -61,7 +61,7 @@ const secondDevice = {
 const conns = [firstConnection, secondConnection];
 const devices = [firstDevice, secondDevice];
 
-describe("ConnectionsTable", () => {
+describe.skip("ConnectionsTable", () => {
   describe("when there are no connections", () => {
     it("renders nothing", async () => {
       const { container } = plainRender(<ConnectionsTable connections={[]} devices={[]} />);

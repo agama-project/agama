@@ -54,6 +54,8 @@ jobs:
       - name: Git Checkout
         uses: actions/checkout@v4
         with:
+          # fetch all history with tags, we need to find the latest version tag
+          fetch-depth: 0
           fetch-tags: true
 
       - name: Configure osc

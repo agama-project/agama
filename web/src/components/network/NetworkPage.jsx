@@ -22,13 +22,31 @@
 // @ts-check
 
 import React, { useEffect, useState } from "react";
-import { Button, Skeleton } from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
+import { useLoaderData } from "react-router-dom";
+import { Button, CardBody, Flex, Grid, GridItem, Skeleton, Stack } from "@patternfly/react-core";
 import { useInstallerClient } from "~/context/installer";
-import { If, Page, Section } from "~/components/core";
-import { ConnectionsTable, IpSettingsForm, NetworkPageMenu, WifiSelector } from "~/components/network";
-import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
+import { CardField, Page } from "~/components/core";
+import { ConnectionsTable, WifiSelector } from "~/components/network";
+import { NetworkEventTypes } from "~/client/network";
 import { _ } from "~/i18n";
+
+const WifiSelection = ({ wifiScanSupported }) => {
+  const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
+
+  if (!wifiScanSupported) return;
+
+  const openWifiSelector = () => setWifiSelectorOpen(true);
+  const closeWifiSelector = () => setWifiSelectorOpen(false);
+
+  return (
+    <>
+      <Button variant="secondary" onClick={openWifiSelector}>
+        {_("Connect to a Wi-Fi network")}
+      </Button>
+      <WifiSelector isOpen={wifiSelectorOpen} onClose={closeWifiSelector} />
+    </>
+  );
+};
 
 /**
  * Internal component for displaying info when none wire connection is found
@@ -36,9 +54,7 @@ import { _ } from "~/i18n";
  */
 const NoWiredConnections = () => {
   return (
-    <div className="stack">
-      <div>{_("No wired connections found.")}</div>
-    </div>
+    <div>{_("No wired connections found.")}</div>
   );
 };
 
@@ -50,31 +66,16 @@ const NoWiredConnections = () => {
  * @param {boolean} props.supported - whether the system supports scanning WiFi networks
  * @param {boolean} props.openWifiSelector - the function for opening the WiFi selector
  */
-const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
+const NoWifiConnections = ({ wifiScanSupported }) => {
   const message = wifiScanSupported
     ? _("The system has not been configured for connecting to a WiFi network yet.")
     : _("The system does not support WiFi connections, probably because of missing or disabled hardware.");
 
   return (
-    <div className="stack">
+    <Stack hasGutter>
       <div>{_("No WiFi connections found.")}</div>
       <div>{message}</div>
-      <If
-        condition={wifiScanSupported}
-        then={
-          <>
-            <Button
-              variant="primary"
-              onClick={openWifiSelector}
-              icon={<Icon name="wifi_find" size="s" />}
-            >
-              {/* TRANSLATORS: button label */}
-              {_("Connect to a Wi-Fi network")}
-            </Button>
-          </>
-        }
-      />
-    </div>
+    </Stack>
   );
 };
 
@@ -84,14 +85,10 @@ const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
  */
 export default function NetworkPage() {
   const { network: client } = useInstallerClient();
-  const [connections, setConnections] = useState(undefined);
+  const { connections: initialConnections, settings } = useLoaderData();
+  const [connections, setConnections] = useState(initialConnections);
   const [devices, setDevices] = useState(undefined);
   const [selectedConnection, setSelectedConnection] = useState(null);
-  const [wifiScanSupported, setWifiScanSupported] = useState(false);
-  const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
-
-  const openWifiSelector = () => setWifiSelectorOpen(true);
-  const closeWifiSelector = () => setWifiSelectorOpen(false);
 
   useEffect(() => {
     return client.onNetworkChange(({ type, payload }) => {
@@ -123,13 +120,6 @@ export default function NetworkPage() {
   }, [client, devices]);
 
   useEffect(() => {
-    if (connections !== undefined) return;
-
-    client.settings().then((s) => setWifiScanSupported(s.wireless_enabled));
-    client.connections().then(setConnections);
-  }, [client, connections]);
-
-  useEffect(() => {
     if (devices !== undefined) return;
 
     client.devices().then(setDevices);
@@ -156,7 +146,7 @@ export default function NetworkPage() {
 
     if (wifiConnections.length === 0) {
       return (
-        <NoWifiConnections wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
+        <NoWifiConnections wifiScanSupported={settings.wireless_enabled} />
       );
     }
 
@@ -174,30 +164,32 @@ export default function NetworkPage() {
   };
 
   return (
-    // TRANSLATORS: page title
-    <Page icon="settings_ethernet" title={_("Network")}>
-      { /* TRANSLATORS: page section */}
-      <Section title={_("Wired networks")} icon="lan">
-        {ready ? <WiredConnections /> : <Skeleton />}
-      </Section>
+    <>
+      <Page.Header>
+        <Flex justifyContent={{ default: "justifyContentSpaceBetween" }}>
+          <h2>{_("Network")}</h2>
+          <WifiSelection wifiScanSupported={settings.wireless_enabled} />
+        </Flex>
+      </Page.Header>
 
-      { /* TRANSLATORS: page section */}
-      <Section title={_("WiFi networks")} icon="wifi">
-        {ready ? <WifiConnections /> : <Skeleton />}
-      </Section>
-
-      <NetworkPageMenu wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
-
-      <If
-        condition={wifiScanSupported}
-        then={<WifiSelector isOpen={wifiSelectorOpen} onClose={closeWifiSelector} />}
-      />
-
-      { /* TODO: improve the connections edition */}
-      <If
-        condition={selectedConnection}
-        then={<IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} onSubmit={updateConnections} />}
-      />
-    </Page>
+      <Page.MainContent>
+        <Grid hasGutter>
+          <GridItem sm={12}>
+            <CardField label={_("Wired connections")}>
+              <CardBody>
+                {ready ? <WiredConnections /> : <Skeleton />}
+              </CardBody>
+            </CardField>
+          </GridItem>
+          <GridItem sm={12}>
+            <CardField label={_("WiFi connections")}>
+              <CardBody>
+                {ready ? <WifiConnections /> : <Skeleton />}
+              </CardBody>
+            </CardField>
+          </GridItem>
+        </Grid>
+      </Page.MainContent>
+    </>
   );
 }

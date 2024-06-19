@@ -19,60 +19,92 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Form, FormGroup } from "@patternfly/react-core";
+import React, { useState } from "react";
+import {
+  Card, CardBody,
+  Flex,
+  Form,
+  Grid, GridItem,
+  Radio
+} from "@patternfly/react-core";
+import styles from '@patternfly/react-styles/css/utilities/Text/text';
 
 import { _ } from "~/i18n";
 import { Page } from "~/components/core";
-import { Loading } from "~/components/layout";
-import { ProductSelector } from "~/components/product";
-import { useInstallerClient } from "~/context/installer";
+import { Loading, Center } from "~/components/layout";
 import { useProduct } from "~/context/product";
 
-function ProductSelectionPage() {
-  const { manager, product } = useInstallerClient();
-  const navigate = useNavigate();
-  const { products, selectedProduct } = useProduct();
-  const [newProductId, setNewProductId] = useState(selectedProduct?.id);
+const Label = ({ children }) => (
+  <span className={`${styles.fontSizeLg} ${styles.fontWeightBold}`}>
+    {children}
+  </span>
+);
 
-  useEffect(() => {
-    // TODO: display a notification in the UI to emphasizes that
-    // selected product has changed
-    return product.onChange(() => navigate("/"));
-  }, [product, navigate]);
+function ProductSelectionPage() {
+  const { products, selectedProduct, selectProduct } = useProduct();
+  const [nextProduct, setNextProduct] = useState(selectedProduct);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    if (newProductId !== selectedProduct?.id) {
-      // TODO: handle errors
-      await product.select(newProductId);
-      manager.startProbing();
+    if (nextProduct) {
+      await selectProduct(nextProduct.id);
+      setIsLoading(true);
     }
-
-    navigate("/");
   };
 
   if (!products) return (
     <Loading text={_("Loading available products, please wait...")} />
   );
 
-  return (
-    // TRANSLATORS: page title
-    <Page icon="home_storage" title={_("Product selection")}>
-      <Form id="productSelectionForm" onSubmit={onSubmit}>
-        <FormGroup isStack label={_("Choose a product")}>
-          <ProductSelector value={newProductId} products={products} onChange={setNewProductId} />
-        </FormGroup>
-      </Form>
+  const Item = ({ children }) => {
+    return (
+      <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
+        {children}
+      </GridItem>
+    );
+  };
 
-      <Page.Actions>
-        <Page.Action type="submit" form="productSelectionForm">
-          { _("Select") }
-        </Page.Action>
-      </Page.Actions>
-    </Page>
+  const isSelectionDisabled = !nextProduct || (nextProduct === selectedProduct);
+
+  return (
+    <Center>
+      <Form id="productSelectionForm" onSubmit={onSubmit}>
+        <Grid hasGutter>
+          {products.map((product, index) => (
+            <Item key={index}>
+              <Card key={index} isRounded>
+                <CardBody>
+                  <Radio
+                    key={index}
+                    name="product"
+                    id={product.name}
+                    label={<Label>{product.name}</Label>}
+                    body={product.description}
+                    isChecked={nextProduct === product}
+                    onChange={() => setNextProduct(product)}
+                  />
+                </CardBody>
+              </Card>
+            </Item>
+          ))}
+          <Item>
+            <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
+              {selectedProduct && !isLoading && <Page.CancelAction navigateTo={-1} />}
+              <Page.Action
+                type="submit"
+                form="productSelectionForm"
+                isDisabled={isSelectionDisabled}
+                isLoading={isLoading}
+              >
+                {_("Select")}
+              </Page.Action>
+            </Flex>
+          </Item>
+        </Grid>
+      </Form>
+    </Center>
   );
 }
 

@@ -22,90 +22,42 @@
 import React, { useState } from "react";
 import { useInstallerClient } from "~/context/installer";
 
-import { Button } from "@patternfly/react-core";
+import { Button, Stack } from "@patternfly/react-core";
 
-import { If, Popup } from "~/components/core";
+import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
 
-const InstallConfirmationPopup = ({ hasIssues, onAccept, onClose }) => {
-  const IssuesWarning = () => {
-    // TRANSLATORS: the installer reports some errors,
-
-    return (
-      <p>
-        <strong>
-          { _("There are some reported issues. \
-Please review them in the previous steps before proceeding with the installation.") }
-        </strong>
-      </p>
-    );
-  };
-
-  const Cancel = hasIssues ? Popup.PrimaryAction : Popup.SecondaryAction;
-  const Continue = hasIssues ? Popup.SecondaryAction : Popup.PrimaryAction;
-
+const InstallConfirmationPopup = ({ onAccept, onClose }) => {
   return (
-    <Popup
-      title={_("Confirm Installation")}
-      isOpen
-    >
-      <div className="stack">
-        <If condition={hasIssues} then={<IssuesWarning />} />
+    <Popup title={_("Confirm Installation")} isOpen>
+      <Stack hasGutter>
         <p>
-          { _("If you continue, partitions on your hard disk will be modified \
-according to the provided installation settings.") }
+          {_(
+            "If you continue, partitions on your hard disk will be modified \
+according to the provided installation settings."
+          )}
         </p>
-        <p>
-          {_("Please, cancel and check the settings if you are unsure.")}
-        </p>
-      </div>
+        <p>{_("Please, cancel and check the settings if you are unsure.")}</p>
+      </Stack>
       <Popup.Actions>
-        <Cancel key="cancel" onClick={onClose} autoFocus={hasIssues}>
-          {/* TRANSLATORS: button label */}
-          {_("Cancel")}
-        </Cancel>
-        <Continue key="confirm" onClick={onAccept} autoFocus={!hasIssues}>
+        <Popup.Confirm onClick={onAccept}>
           {/* TRANSLATORS: button label */}
           {_("Continue")}
-        </Continue>
+        </Popup.Confirm>
+        <Popup.Cancel onClick={onClose}>
+          {/* TRANSLATORS: button label */}
+          {_("Cancel")}
+        </Popup.Cancel>
       </Popup.Actions>
     </Popup>
   );
 };
 
-const CannotInstallPopup = ({ onClose }) => (
-  <Popup
-    title={_("Problems Found")}
-    isOpen
-  >
-    <p>
-      {_("Some problems were found when trying to start the installation. \
-Please, have a look to the reported errors and try again.")}
-    </p>
-
-    <Popup.Actions>
-      <Popup.Cancel onClick={onClose} autoFocus>
-        {/* TRANSLATORS: button label */}
-        {_("Accept")}
-      </Popup.Cancel>
-    </Popup.Actions>
-  </Popup>
-);
-
-const renderPopup = (error, hasIssues, { onAccept, onClose }) => {
-  if (error) {
-    return <CannotInstallPopup onClose={onClose} />;
-  } else {
-    return <InstallConfirmationPopup onClose={onClose} onAccept={onAccept} hasIssues={hasIssues} />;
-  }
-};
-
 /**
  * Installation button
  *
- * It starts the installation if there are not validation errors. Otherwise,
- * it displays a pop-up asking the user to fix the errors.
-*
+ * It starts the installation after asking for confirmation.
+ *
  * @component
  *
  * @example
@@ -117,18 +69,10 @@ const renderPopup = (error, hasIssues, { onAccept, onClose }) => {
 const InstallButton = ({ onClick }) => {
   const client = useInstallerClient();
   const [isOpen, setIsOpen] = useState(false);
-  const [error, setError] = useState(false);
-  const [hasIssues, setHasIssues] = useState(false);
 
   const open = async () => {
     if (onClick) onClick();
-    const canInstall = await client.manager.canInstall();
     setIsOpen(true);
-    setError(!canInstall);
-    if (canInstall) {
-      const issues = await client.issues();
-      setHasIssues(Object.values(issues).some(n => n.length > 0));
-    }
   };
   const close = () => setIsOpen(false);
   const install = () => client.manager.startInstallation();
@@ -140,7 +84,7 @@ const InstallButton = ({ onClick }) => {
         {_("Install")}
       </Button>
 
-      { isOpen && renderPopup(error, hasIssues, { onAccept: install, onClose: close }) }
+      {isOpen && <InstallConfirmationPopup onAccept={install} onClose={close} />}
     </>
   );
 };

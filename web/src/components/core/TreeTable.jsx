@@ -136,7 +136,7 @@ export default function TreeTable({
       isTreeTable
       data-type="agama/tree-table"
     >
-      <Thead>
+      <Thead noWrap>
         <Tr>
           { columns.map((c, i) => <Th key={i} className={c.classNames}>{c.name}</Th>) }
         </Tr>

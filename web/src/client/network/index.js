@@ -123,7 +123,7 @@ class NetworkClient {
     const { ipConfig = {}, ...dev } = device;
     const routes4 = (ipConfig.routes4 || []).map((route) => {
       const [ip, netmask] = route.destination.split("/");
-      const destination = { address: ip, prefix: ipPrefixFor(netmask) };
+      const destination = (netmask !== undefined) ? { address: ip, prefix: ipPrefixFor(netmask) } : { address: ip };
 
       return { ...route, destination };
     });
@@ -225,7 +225,7 @@ class NetworkClient {
    * @param {Connection} connection - connection to be activated
    */
   async connectTo(connection) {
-    return this.client.get(`/network/${connection.id}/connect`);
+    return this.client.get(`/network/connections/${connection.id}/connect`);
   }
 
   /**
@@ -234,7 +234,7 @@ class NetworkClient {
    * @param {Connection} connection - connection to be activated
    */
   async disconnect(connection) {
-    return this.client.get(`/network/${connection.id}/disconnect`);
+    return this.client.get(`/network/connections/${connection.id}/disconnect`);
   }
 
   /**

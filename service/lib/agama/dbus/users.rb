@@ -23,16 +23,16 @@ require "dbus"
 require "agama/users"
 require "agama/dbus/base_object"
 require "agama/dbus/with_service_status"
+require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/service_status"
-require "agama/dbus/interfaces/validation"
 
 module Agama
   module DBus
     # YaST D-Bus object (/org/opensuse/Agama/Users1)
     class Users < BaseObject
       include WithServiceStatus
+      include Interfaces::Issues
       include Interfaces::ServiceStatus
-      include Interfaces::Validation
 
       PATH = "/org/opensuse/Agama/Users1"
       private_constant :PATH
@@ -45,6 +45,14 @@ module Agama
         super(PATH, logger: logger)
         @backend = backend
         register_service_status_callbacks
+        register_users_callbacks
+      end
+
+      # List of issues, see {DBus::Interfaces::Issues}
+      #
+      # @return [Array<Agama::Issue>]
+      def issues
+        backend.issues
       end
 
       USERS_INTERFACE = "org.opensuse.Agama.Users1"
@@ -66,7 +74,6 @@ module Agama
           backend.assign_root_password(value, encrypted)
 
           dbus_properties_changed(USERS_INTERFACE, { "RootPasswordSet" => !value.empty? }, [])
-          update_validation
           0
         end
 
@@ -76,7 +83,6 @@ module Agama
 
           dbus_properties_changed(USERS_INTERFACE, { "RootPasswordSet" => backend.root_password? },
             [])
-          update_validation
           0
         end
 
@@ -85,7 +91,6 @@ module Agama
           backend.root_ssh_key = (value)
 
           dbus_properties_changed(USERS_INTERFACE, { "RootSSHKey" => value }, [])
-          update_validation
           0
         end
 
@@ -94,16 +99,15 @@ module Agama
           # and the second parameter as an array of issues found in case of failure
           FUSER_SIG + ", out result:(bas)" do |full_name, user_name, password, auto_login, data|
           logger.info "Setting first user #{full_name}"
-          issues = backend.assign_first_user(full_name, user_name, password, auto_login, data)
+          user_issues = backend.assign_first_user(full_name, user_name, password, auto_login, data)
 
-          if issues.empty?
+          if user_issues.empty?
             dbus_properties_changed(USERS_INTERFACE, { "FirstUser" => first_user }, [])
-            update_validation
           else
             logger.info "First user fatal issues detected: #{issues}"
           end
 
-          [[issues.empty?, issues]]
+          [[user_issues.empty?, user_issues]]
         end
 
         dbus_method :RemoveFirstUser, "out result:u" do
@@ -111,7 +115,6 @@ module Agama
           backend.remove_first_user
 
           dbus_properties_changed(USERS_INTERFACE, { "FirstUser" => first_user }, [])
-          update_validation
           0
         end
 
@@ -149,6 +152,10 @@ module Agama
 
       # @return [Agama::Users]
       attr_reader :backend
+
+      def register_users_callbacks
+        backend.on_issues_change { issues_properties_changed }
+      end
     end
   end
 end

@@ -26,7 +26,12 @@ import { FormGroup } from "@patternfly/react-core";
 import { FormValidationError, PasswordInput } from "~/components/core";
 import { _ } from "~/i18n";
 
-const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisabled = false }) => {
+// TODO: improve the component to allow working only in uncontrlled mode if
+// needed.
+// TODO: improve the showErrors thingy
+const PasswordAndConfirmationInput = ({ inputRef, showErrors = true, value, onChange, onValidation, isDisabled = false }) => {
+  const passwordInput = inputRef?.current;
+  const [password, setPassword] = useState(value || "");
   const [confirmation, setConfirmation] = useState(value || "");
   const [error, setError] = useState("");
 
@@ -36,37 +41,43 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
 
   const validate = (password, passwordConfirmation) => {
     let newError = "";
+    showErrors && setError(newError);
+    passwordInput?.setCustomValidity(newError);
 
     if (password !== passwordConfirmation) {
       newError = _("Passwords do not match");
     }
 
-    setError(newError);
+    showErrors && setError(newError);
+    passwordInput?.setCustomValidity(newError);
+
     if (typeof onValidation === "function") {
       onValidation(newError === "");
     }
   };
 
   const onValueChange = (event, value) => {
+    setPassword(value);
     validate(value, confirmation);
     if (typeof onChange === "function") onChange(event, value);
   };
 
   const onConfirmationChange = (_, confirmationValue) => {
     setConfirmation(confirmationValue);
-    validate(value, confirmationValue);
+    validate(password, confirmationValue);
   };
 
   return (
     <>
       <FormGroup fieldId="password" label={_("Password")}>
         <PasswordInput
+          inputRef={inputRef}
           id="password"
           name="password"
-          value={value}
+          value={password}
           isDisabled={isDisabled}
           onChange={onValueChange}
-          onBlur={() => validate(value, confirmation)}
+          onBlur={() => validate(password, confirmation)}
         />
       </FormGroup>
       <FormGroup
@@ -79,7 +90,7 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
           value={confirmation}
           isDisabled={isDisabled}
           onChange={onConfirmationChange}
-          onBlur={() => validate(value, confirmation)}
+          onBlur={() => validate(password, confirmation)}
           validated={error === "" ? "default" : "error"}
         />
         <FormValidationError message={error} />

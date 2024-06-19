@@ -1,6 +1,7 @@
 //! Contains the code to handle access authorization.
 
 use super::state::ServiceState;
+use agama_lib::auth::{AuthToken, AuthTokenError, TokenClaims};
 use async_trait::async_trait;
 use axum::{
     extract::FromRequestParts,
@@ -12,10 +13,7 @@ use axum_extra::{
     headers::{self, authorization::Bearer},
     TypedHeader,
 };
-use chrono::{Duration, Utc};
-use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation};
 use pam::PamError;
-use serde::{Deserialize, Serialize};
 use serde_json::json;
 use thiserror::Error;
 
@@ -27,7 +25,7 @@ pub enum AuthError {
     MissingToken,
     /// The authentication error is invalid.
     #[error("Invalid authentication token: {0}")]
-    InvalidToken(#[from] jsonwebtoken::errors::Error),
+    InvalidToken(#[from] AuthTokenError),
     /// The authentication failed (most probably the password is wrong)
     #[error("Authentication via PAM failed: {0}")]
     Failed(#[from] PamError),
@@ -39,40 +37,6 @@ impl IntoResponse for AuthError {
             "error": self.to_string()
         });
         (StatusCode::BAD_REQUEST, Json(body)).into_response()
-    }
-}
-
-/// Claims that are included in the token.
-///
-/// See https://datatracker.ietf.org/doc/html/rfc7519 for reference.
-#[derive(Debug, Serialize, Deserialize)]
-pub struct TokenClaims {
-    exp: i64,
-}
-
-impl TokenClaims {
-    /// Builds claims for a given token.
-    ///
-    /// * `token`: token to extract the claims from.
-    /// * `secret`: secret to decode the token.
-    pub fn from_token(token: &str, secret: &str) -> Result<Self, AuthError> {
-        let decoding = DecodingKey::from_secret(secret.as_ref());
-        let token_data = jsonwebtoken::decode(token, &decoding, &Validation::default())?;
-        Ok(token_data.claims)
-    }
-}
-
-impl Default for TokenClaims {
-    fn default() -> Self {
-        let mut exp = Utc::now();
-
-        if let Some(days) = Duration::try_days(1) {
-            exp += days;
-        }
-
-        Self {
-            exp: exp.timestamp(),
-        }
     }
 }
 
@@ -101,19 +65,7 @@ impl FromRequestParts<ServiceState> for TokenClaims {
             }
         };
 
-        TokenClaims::from_token(&token, &state.config.jwt_secret)
+        let token = AuthToken::new(&token);
+        Ok(token.claims(&state.config.jwt_secret)?)
     }
-}
-
-/// Generates a JWT.
-///
-/// - `secret`: secret to encrypt/sign the token.
-pub fn generate_token(secret: &str) -> String {
-    let claims = TokenClaims::default();
-    jsonwebtoken::encode(
-        &Header::default(),
-        &claims,
-        &EncodingKey::from_secret(secret.as_ref()),
-    )
-    .unwrap()
 }

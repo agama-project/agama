@@ -24,7 +24,8 @@ require "y2users"
 require "y2users/linux" # FIXME: linux is not in y2users file
 require "yast2/execute"
 require "agama/helpers"
-require "agama/validation_error"
+require "agama/issue"
+require "agama/with_issues"
 
 module Agama
   # Backend class using YaST code.
@@ -32,9 +33,12 @@ module Agama
   # {Agama::DBus::Users} wraps it with a D-Bus interface and
   class Users
     include Helpers
+    include WithIssues
+    include Yast::I18n
 
     def initialize(logger)
       @logger = logger
+      update_issues
     end
 
     def root_ssh_key
@@ -43,8 +47,10 @@ module Agama
 
     def root_ssh_key=(value)
       root_user.authorized_keys = [value] # just one supported for now
+      update_issues
     end
 
+    # NOTE: the root user is created if it does not exist
     def root_password?
       !!root_user.password_content
     end
@@ -60,7 +66,9 @@ module Agama
         Y2Users::Password.create_plain(value)
       end
 
+      logger.info "Updating the user password"
       root_user.password = value.empty? ? nil : pwd
+      update_issues
     end
 
     # Whether the given user is configured for autologin
@@ -81,6 +89,7 @@ module Agama
     # Clears the root password
     def remove_root_password
       root_user.password = nil
+      update_issues
     end
 
     # It adds the user with the given parameters to the login config only if there are no error
@@ -104,6 +113,7 @@ module Agama
       config.attach(user)
       config.login ||= Y2Users::LoginConfig.new
       config.login.autologin_user = auto_login ? user : nil
+      update_issues
       []
     end
 
@@ -111,6 +121,7 @@ module Agama
     def remove_first_user
       old_users = config.users.reject(&:root?)
       config.detach(old_users) unless old_users.empty?
+      update_issues
     end
 
     def write
@@ -127,29 +138,24 @@ module Agama
       end
     end
 
-    # Validates the users configuration
-    #
-    # @return [Array<ValidationError>] List of validation errors
-    def validate
-      return [] if root_password? || root_ssh_key? || first_user?
-
-      [
-        ValidationError.new(
-          "Defining a user, setting the root password or a SSH public key is required"
-        )
-      ]
-    end
-
-    # Determines whether the users configuration is valid
-    #
-    # @return [Boolean]
-    def valid?
-      validate.empty?
-    end
-
   private
 
     attr_reader :logger
+
+    # Recalculates the list of issues
+    def update_issues
+      new_issues = []
+
+      unless root_password? || root_ssh_key? || first_user?
+        new_issues << Issue.new(
+          _("Defining a user, setting the root password or a SSH public key is required"),
+          source:   Issue::Source::CONFIG,
+          severity: Issue::Severity::ERROR
+        )
+      end
+
+      self.issues = new_issues
+    end
 
     # Determines whether a first user is defined or not
     #

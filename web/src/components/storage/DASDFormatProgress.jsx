@@ -20,10 +20,9 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Progress, Skeleton } from '@patternfly/react-core';
-
+import { Progress, Skeleton, Stack } from '@patternfly/react-core';
+import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
-import { If, Popup } from "~/components/core";
 import { useInstallerClient } from "~/context/installer";
 
 export default function DASDFormatProgress({ job, devices, isOpen = true }) {
@@ -36,8 +35,8 @@ export default function DASDFormatProgress({ job, devices, isOpen = true }) {
 
   const ProgressContent = ({ progress }) => {
     return (
-      <div className="stack dasd-format-progress">
-        { Object.entries(progress).map(([path, [total, step, done]]) => {
+      <Stack hasGutter className="dasd-format-progress">
+        {Object.entries(progress).map(([path, [total, step, done]]) => {
           const device = devices.find(d => d.id === path.split("/").slice(-1)[0]);
 
           return (
@@ -52,16 +51,16 @@ export default function DASDFormatProgress({ job, devices, isOpen = true }) {
             />
           );
         })}
-      </div>
+      </Stack>
     );
   };
 
   const WaitingProgress = () => (
-    <div className="stack">
+    <Stack hasGutter>
       <div>{_("Waiting for progress report")}</div>
       <Skeleton height="10px" />
       <Skeleton height="10px" />
-    </div>
+    </Stack>
   );
 
   return (
@@ -70,12 +69,7 @@ export default function DASDFormatProgress({ job, devices, isOpen = true }) {
       isOpen={isOpen}
       disableFocusTrap
     >
-
-      <If
-        condition={progress}
-        then={<ProgressContent progress={progress} />}
-        else={<WaitingProgress />}
-      />
+      {progress ? <ProgressContent progress={progress} /> : <WaitingProgress />}
     </Popup>
   );
 }

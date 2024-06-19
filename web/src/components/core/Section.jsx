@@ -23,9 +23,8 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
+import { PageSection, Stack } from "@patternfly/react-core";
 import { Icon } from '~/components/layout';
-import { If, ValidationErrors } from "~/components/core";
-
 /**
  * @typedef {import("~/components/layout/Icon").IconName} IconName
  */
@@ -95,26 +94,17 @@ export default function Section({
     return (
       <header>
         <h2 id={headerId}>{headerIcon}<span>{headerText}</span></h2>
-        <If condition={renderDescription} then={<p>{description}</p>} />
+        {renderDescription && <p>{description}</p>}
       </header>
     );
   };
 
   return (
-    <section
-      className={className}
-      aria-live="polite"
-      aria-busy={loading}
-      aria-label={ariaLabel || undefined}
-      aria-labelledby={title && !ariaLabel ? headerId : undefined}
-      data-type="agama/section"
-    >
+    <PageSection className={className} variant="light">
       <Header />
-      <div className="stack">
-        {errors?.length > 0 &&
-          <ValidationErrors errors={errors} sectionId={id} />}
+      <Stack hasGutter>
         {children}
-      </div>
-    </section>
+      </Stack>
+    </PageSection>
   );
 }

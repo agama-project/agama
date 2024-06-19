@@ -22,15 +22,16 @@
 // @ts-check
 
 import React from "react";
-import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
+import { Label, Flex } from "@patternfly/react-core";
 import {
   DeviceName, DeviceDetails, DeviceSize, toStorageDevice
 } from "~/components/storage/device-utils";
-import { deviceChildren, deviceSize } from "~/components/storage/utils";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import DevicesManager from "~/components/storage/DevicesManager";
-import { If, Tag, TreeTable } from "~/components/core";
+import { TreeTable } from "~/components/core";
+import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
+import { deviceChildren, deviceSize } from "~/components/storage/utils";
 
 /**
  * @typedef {import("~/client/storage").PartitionSlot} PartitionSlot
@@ -68,12 +69,10 @@ const DeviceCustomDetails = ({ item, devicesManager }) => {
   };
 
   return (
-    <>
-      <div>
-        <If condition={isNew()} then={<Tag variant="teal">{_("New")}</Tag>} />
-      </div>
+    <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
       <DeviceDetails item={item} />
-    </>
+      {isNew() && <Label color="green" isCompact>{_("New")}</Label>}
+    </Flex>
   );
 };
 
@@ -89,21 +88,17 @@ const DeviceCustomSize = ({ item, devicesManager }) => {
   const sizeBefore = isResized ? devicesManager.systemDevice(device.sid).size : item.size;
 
   return (
-    <div className="split">
-      <If
-        condition={isResized}
-        then={
-          <Tag variant="orange">
-            {
-              // TRANSLATORS: Label to indicate the device size before resizing, where %s is
-              // replaced by the original size (e.g., 3.00 GiB).
-              sprintf(_("Before %s"), deviceSize(sizeBefore))
-            }
-          </Tag>
-        }
-      />
+    <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
       <DeviceSize item={item} />
-    </div>
+      {isResized &&
+        <Label color="orange" isCompact>
+          {
+            // TRANSLATORS: Label to indicate the device size before resizing, where %s is
+            // replaced by the original size (e.g., 3.00 GiB).
+            sprintf(_("Before %s"), deviceSize(sizeBefore))
+          }
+        </Label>}
+    </Flex>
   );
 };
 
@@ -124,7 +119,7 @@ const columns = (devicesManager) => {
   return [
     { name: _("Device"), value: renderDevice },
     { name: _("Mount Point"), value: renderMountPoint },
-    { name: _("Details"), value: renderDetails, classNames: "details-column" },
+    { name: _("Details"), value: renderDetails },
     { name: _("Size"), value: renderSize, classNames: "sizes-column" }
   ];
 };

@@ -57,12 +57,7 @@
     <property type="s" name="RootSSHKey" access="read"/>
     <property type="(sssba{sv})" name="FirstUser" access="read"/>
   </interface>
-  <interface name="org.opensuse.Agama1.ServiceStatus">
-    <property type="aa{sv}" name="All" access="read"/>
-    <property type="u" name="Current" access="read"/>
-  </interface>
-  <interface name="org.opensuse.Agama1.Validation">
-    <property type="as" name="Errors" access="read"/>
-    <property type="b" name="Valid" access="read"/>
+  <interface name="org.opensuse.Agama1.Issues">
+    <property type="a(ssuu)" name="All" access="read"/>
   </interface>
 </node>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,44 +19,128 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
-import { useProduct } from "~/context/product";
-import { Navigate } from "react-router-dom";
-import { InstallButton, Page } from "~/components/core";
+import React, { useEffect, useState } from "react";
 import {
-  L10nSection,
-  NetworkSection,
-  ProductSection,
-  SoftwareSection,
-  StorageSection,
-  UsersSection,
-} from "~/components/overview";
+  CardBody,
+  Grid, GridItem,
+  Hint, HintBody,
+  NotificationDrawer,
+  NotificationDrawerBody,
+  NotificationDrawerList,
+  NotificationDrawerListItem,
+  NotificationDrawerListItemBody,
+  NotificationDrawerListItemHeader,
+  Stack,
+} from "@patternfly/react-core";
+import { useInstallerClient } from "~/context/installer";
+import { Link } from "react-router-dom";
+import { Center } from "~/components/layout";
+import { CardField, EmptyState, Page, InstallButton } from "~/components/core";
+import L10nSection from "./L10nSection";
+import StorageSection from "./StorageSection";
+import SoftwareSection from "./SoftwareSection";
 import { _ } from "~/i18n";
 
-export default function OverviewPage() {
-  const { selectedProduct } = useProduct();
-  const [showErrors, setShowErrors] = useState(false);
+const SCOPE_HEADERS = {
+  users: _("Users"),
+  storage: _("Storage"),
+  software: _("Software")
+};
 
-  if (selectedProduct === null) {
-    return <Navigate to="/products" />;
-  }
+const ReadyForInstallation = () => (
+  <Center>
+    <EmptyState title={_("Ready for installation")} icon="check_circle" color="success-color-100">
+      <InstallButton />
+    </EmptyState>
+  </Center>
+);
+
+// FIXME: improve
+const IssuesList = ({ issues }) => {
+  const { isEmpty, ...scopes } = issues;
+  const list = [];
+  Object.entries(scopes).forEach(([scope, issues]) => {
+    issues.forEach((issue, idx) => {
+      const variant = issue.severity === "error" ? "warning" : "info";
+
+      const link = (
+        <NotificationDrawerListItem key={idx} variant={variant} isHoverable={false}>
+          <NotificationDrawerListItemHeader title={SCOPE_HEADERS[scope]} variant={variant} headingLevel="h4" />
+          <NotificationDrawerListItemBody>
+            <Link to={`/${scope}`}>{issue.description}</Link>
+          </NotificationDrawerListItemBody>
+        </NotificationDrawerListItem>
+      );
+      list.push(link);
+    });
+  });
 
   return (
-    <Page
-      icon="list_alt"
-      // TRANSLATORS: page title
-      title={_("Installation Summary")}
-    >
-      <ProductSection />
-      <L10nSection />
-      <NetworkSection />
-      <StorageSection showErrors />
-      <SoftwareSection showErrors />
-      <UsersSection showErrors={showErrors} />
+    <NotificationDrawer>
+      <NotificationDrawerBody>
+        <NotificationDrawerList>
+          {list}
+        </NotificationDrawerList>
+      </NotificationDrawerBody>
+    </NotificationDrawer>
+  );
+};
 
-      <Page.Actions>
-        <InstallButton onClick={() => setShowErrors(true)} />
-      </Page.Actions>
-    </Page>
+export default function OverviewPage() {
+  const [issues, setIssues] = useState([]);
+  const client = useInstallerClient();
+
+  useEffect(() => {
+    client.issues().then(setIssues);
+  }, [client]);
+
+  const resultSectionProps =
+    issues.isEmpty
+      ? {}
+      : {
+
+        label: _("Installation"),
+        description: _("Before installing, please check the following problems.")
+      };
+
+  return (
+    <>
+      <Page.MainContent>
+        <Grid hasGutter>
+          <GridItem sm={12}>
+            <Hint>
+              <HintBody>
+                {_(
+                  "Take your time to check your configuration before starting the installation process."
+                )}
+              </HintBody>
+            </Hint>
+          </GridItem>
+          <GridItem sm={12} xl={6}>
+            <CardField
+              label="Overview"
+              description={_(
+                "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details."
+              )}
+            >
+              <CardBody>
+                <Stack hasGutter>
+                  <L10nSection />
+                  <StorageSection />
+                  <SoftwareSection />
+                </Stack>
+              </CardBody>
+            </CardField>
+          </GridItem>
+          <GridItem sm={12} xl={6}>
+            <CardField {...resultSectionProps}>
+              <CardBody>
+                {issues.isEmpty ? <ReadyForInstallation /> : <IssuesList issues={issues} />}
+              </CardBody>
+            </CardField>
+          </GridItem>
+        </Grid>
+      </Page.MainContent>
+    </>
   );
 }

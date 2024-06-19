@@ -22,15 +22,12 @@ name = "agama-cli"
 version = "1.0.0"
 dependencies = [
  "agama-lib",
- "agama-settings",
  "anyhow",
  "async-trait",
  "clap",
  "console",
- "convert_case",
  "curl",
  "fs_extra",
- "home",
  "indicatif",
  "log",
  "nix 0.27.1",
@@ -47,25 +44,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "agama-derive"
-version = "1.0.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.53",
-]
-
-[[package]]
 name = "agama-lib"
 version = "1.0.0"
 dependencies = [
- "agama-settings",
  "anyhow",
  "async-trait",
+ "chrono",
  "cidr",
  "curl",
  "futures-util",
+ "home",
  "jsonschema",
+ "jsonwebtoken",
  "log",
  "reqwest 0.12.4",
  "serde",
@@ -108,6 +98,7 @@ dependencies = [
  "clap",
  "config",
  "futures-util",
+ "gethostname",
  "gettext-rs",
  "http-body-util",
  "hyper 1.2.0",
@@ -143,14 +134,6 @@ dependencies = [
  "uuid",
  "zbus",
  "zbus_macros",
-]
-
-[[package]]
-name = "agama-settings"
-version = "1.0.0"
-dependencies = [
- "agama-derive",
- "thiserror",
 ]
 
 [[package]]
@@ -715,9 +698,9 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "chrono"
-version = "0.4.35"
+version = "0.4.38"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8eaf5903dcbc0a39312feb77df2ff4c76387d591b9fc7b04a238dcf8bb62639a"
+checksum = "a21f936df1771bf62b77f047b726c4625ff2e8aa607c01ec06e5a05bd8463401"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
@@ -1382,6 +1365,16 @@ checksum = "85649ca51fd72272d7821adaf274ad91c288277713d9c18820d8499a7ff69e9a"
 dependencies = [
  "typenum",
  "version_check",
+]
+
+[[package]]
+name = "gethostname"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0176e0459c2e4a1fe232f984bca6890e681076abb9934f6cea7c326f3fc47818"
+dependencies = [
+ "libc",
+ "windows-targets 0.48.5",
 ]
 
 [[package]]

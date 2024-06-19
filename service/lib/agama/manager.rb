@@ -203,7 +203,7 @@ module Agama
     #
     # @return [Boolean]
     def valid?
-      users.valid? && !software.errors? && !storage.errors?
+      users.issues.empty? && !software.errors? && !storage.errors?
     end
 
     # Collects the logs and stores them into an archive

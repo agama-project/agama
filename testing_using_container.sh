@@ -6,7 +6,7 @@
 #
 # Details:
 # - container name: agama
-# - port 9091 is exposed and forwarded to the container
+# - SSL port is exposed at https://localhost:10443 so that web UI works
 # - 'WITH_RUBY_DBUS=1 $0' will prefer ../ruby-dbus to any ruby-dbus.gem
 
 set -x
@@ -34,12 +34,11 @@ if [ "${WITH_RUBY_DBUS-}" = 1 ]; then
   MORE_VOLUMES=(-v ../ruby-dbus:/checkout-ruby-dbus)
 fi
 
-# use the host networking, port forwarding does not work for some reason :-/
 podman run --name ${CNAME?} \
   --privileged --detach \
   -v .:/checkout \
   ${MORE_VOLUMES[@]} \
-  --network=host \
+  -p 10443:443 \
   ${CIMAGE?}
 
 # shortcut for the following
@@ -50,11 +49,15 @@ ${CEXEC?} "cd /checkout && ./setup.sh"
 echo "Set the Agama (root) password:"
 podman exec -it ${CNAME?} passwd
 
-# Interactive shell in the container
-podman exec --tty --interactive ${CNAME?} bash
-
+set +x
+echo "agama-web-server forwarded to https://localhost:10443/"
 echo "To attach again to the Agama container run:"
 echo "    podman exec --tty --interactive ${CNAME?} bash"
 echo "To stop and remove the Agama container run:"
 echo "    podman stop ${CNAME?}"
 echo "    podman rm ${CNAME?}"
+set -x
+
+# Interactive shell in the container
+podman exec --tty --interactive ${CNAME?} bash
+
