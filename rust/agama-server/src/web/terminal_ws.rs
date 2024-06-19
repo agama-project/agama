@@ -1,16 +1,21 @@
-use std::borrow::Cow;
-use axum::{extract::{ws::{close_code, CloseFrame, Message, WebSocket}, WebSocketUpgrade}, response::IntoResponse};
+use axum::{
+    extract::{
+        ws::{close_code, CloseFrame, Message, WebSocket},
+        WebSocketUpgrade,
+    },
+    response::IntoResponse,
+};
 use pty_process::{OwnedReadPty, OwnedWritePty};
+use std::borrow::Cow;
 use tokio::io::AsyncWriteExt;
 use tokio_stream::StreamExt;
 
-pub(crate) async fn handler(
-    ws: WebSocketUpgrade,
-) -> impl IntoResponse {
+pub(crate) async fn handler(ws: WebSocketUpgrade) -> impl IntoResponse {
     ws.on_upgrade(move |socket| handle_socket(socket))
 }
 
-fn start_shell() -> Result<(OwnedReadPty, OwnedWritePty, tokio::process::Child), pty_process::Error> {
+fn start_shell() -> Result<(OwnedReadPty, OwnedWritePty, tokio::process::Child), pty_process::Error>
+{
     let pty = pty_process::Pty::new()?;
     pty.resize(pty_process::Size::new(24, 80))?;
     let mut cmd = pty_process::Command::new("bash");
@@ -40,7 +45,7 @@ async fn handle_socket(mut socket: WebSocket) {
                     },
                     Some(Ok(Message::Close(_))) => {
                         tracing::info!("websocket close {:?}", message);
-                        break;  
+                        break;
                     },
                     None => {
                         tracing::info!("Socket closed");
@@ -58,7 +63,7 @@ async fn handle_socket(mut socket: WebSocket) {
                         Ok(output_bytes) => socket.send(Message::Binary(output_bytes.into())).await.unwrap(),
                         Err(e) => tracing::warn!("Shell error {}", e),
                     }
-                    
+
                 }
             },
             status = child.wait() => {
@@ -77,7 +82,7 @@ async fn handle_socket(mut socket: WebSocket) {
                         break;
                     }
                 }
-            }      
+            }
         }
     }
 
