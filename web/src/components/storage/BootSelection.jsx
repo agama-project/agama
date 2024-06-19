@@ -39,6 +39,8 @@ import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
+// FIXME: improve and rename to BootSelectionDialog
+
 /**
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
@@ -46,7 +48,6 @@ import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 const BOOT_AUTO_ID = "boot-auto";
 const BOOT_MANUAL_ID = "boot-manual";
 const BOOT_DISABLED_ID = "boot-disabled";
-const OPTIONS_NAME = "boot-mode";
 
 /**
  * Allows the user to select the boot configuration.
@@ -76,8 +77,6 @@ export default function BootSelectionDialog() {
       const availableDevices = await loadAvailableDevices();
       const { bootDevice, configureBoot, defaultBootDevice } = settings;
 
-      console.log(settings);
-
       if (!configureBoot) {
         selectedOption = BOOT_DISABLED_ID;
       } else if (configureBoot && bootDevice === "") {
@@ -86,11 +85,13 @@ export default function BootSelectionDialog() {
         selectedOption = BOOT_MANUAL_ID;
       }
 
+      const findDevice = (name) => availableDevices.find(d => d.name === name);
+
       setState({
         load: true,
-        bootDevice: availableDevices.find(d => d.name === bootDevice),
+        bootDevice: findDevice(bootDevice) || findDevice(defaultBootDevice) || availableDevices[0],
         configureBoot,
-        defaultBootDevice,
+        defaultBootDevice: findDevice(defaultBootDevice),
         availableDevices,
         selectedOption
       });
@@ -112,8 +113,6 @@ export default function BootSelectionDialog() {
       configureBoot: state.selectedOption !== BOOT_DISABLED_ID,
       bootDevice: state.selectedOption === BOOT_MANUAL_ID ? state.bootDevice.name : undefined,
     };
-
-    console.log("newSettings", newSettings);
 
     await client.proposal.calculate({ ...settings, ...newSettings });
     navigate("..");

@@ -264,12 +264,14 @@ export default function ProposalPage() {
     <>
       <Page.Header>
         <h2>{_("Storage")}</h2>
-        <ProposalTransactionalInfo
-          settings={state.settings}
-        />
       </Page.Header>
       <Page.MainContent>
         <Grid hasGutter>
+          <GridItem sm={12}>
+            <ProposalTransactionalInfo
+              settings={state.settings}
+            />
+          </GridItem>
           <GridItem sm={12} xl={6}>
             <ProposalSettingsSection
               availableDevices={state.availableDevices}
