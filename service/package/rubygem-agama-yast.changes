@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 20 05:25:49 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for progress sequences with pre-defined descriptions
+  (gh#openSUSE/agama#1356).
+
+-------------------------------------------------------------------
 Wed Jun 19 06:04:46 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Use a different libzypp target for Agama, do not use the Live
