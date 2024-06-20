@@ -21,38 +21,48 @@
 
 // @ts-check
 
-import React, { useEffect } from "react";
+import React from "react";
 import { WSClient } from "~/client/http";
 import { Terminal as Term } from "@xterm/xterm";
 import { AttachAddon } from "@xterm/addon-attach";
-import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
+
+const buildWs = () => {
+  const url = new URL(window.location.toString());
+  url.hash = "";
+  url.pathname += "api/terminal";
+  url.protocol = url.protocol === "http:" ? "ws" : "wss";
+
+  return new WSClient(url, false);
+};
+
+const buildTerm = () => {
+  return new Term({
+    rows: 22,
+    cols: 100,
+    theme: {
+      background: "#ffffff",
+      foreground: "#000000",
+      cursor: "#000000",
+    }
+  });
+};
 
 /**
  * Simple component that displayes terminal.
  * @component
+ *
+ * // FIXME: if possible, convert to a functional component
+ *
  * @param {object} props
  * @param {Location} props.url url of websocket answering terminal
  */
 export class Terminal extends React.Component {
-  constructor({ url = window.location, ...props }) {
-    super(props);
+  constructor() {
+    super();
     this.terminalRef = React.createRef();
-    const wsUrl = new URL(url.toString());
-    wsUrl.hash = "";
-    wsUrl.pathname = wsUrl.pathname.concat("api/terminal");
-    wsUrl.protocol = (url.protocol === "http:") ? "ws" : "wss";
-    console.info(wsUrl);
-    this.ws = new WSClient(wsUrl, false);
-    this.term = new Term({
-      rows: 22,
-      cols: 100,
-      theme: {
-        background: "#ffffff",
-        foreground: "#000000",
-        cursor: "#000000",
-      },
-    });
+    this.ws = buildWs();
+    this.term = buildTerm();
     this.ws.onOpen(() => {
       if (this.attachAddon === undefined) {
         this.attachAddon = new AttachAddon(this.ws.client);
@@ -70,11 +80,7 @@ export class Terminal extends React.Component {
     this.term.focus();
   }
 
-  render () {
-    return (
-      <div
-        ref={this.terminalRef}
-      />
-    );
+  render() {
+    return <div ref={this.terminalRef} />;
   }
 }
