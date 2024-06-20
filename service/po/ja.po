@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-09 02:25+0000\n"
+"POT-Creation-Date: 2024-06-20 09:58+0000\n"
 "PO-Revision-Date: 2024-06-10 02:24+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
-"Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/ja/>\n"
+"Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-"
+"service-master/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -96,38 +96,30 @@ msgstr ""
 "鍵 %{id} (%{name}) (指紋 %{fingerprint}) の発行元が不明です。この鍵を信頼して"
 "よろしいですか？"
 
-#. as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
-#: service/lib/agama/software/manager.rb:134
-msgid "Initializing target repositories"
-msgstr "目的のリポジトリを準備しています"
-
-#: service/lib/agama/software/manager.rb:135
+#. Should an error be raised?
+#: service/lib/agama/software/manager.rb:137
 msgid "Initializing sources"
 msgstr "ソースを準備しています"
 
-#: service/lib/agama/software/manager.rb:140
+#: service/lib/agama/software/manager.rb:142
 msgid "Refreshing repositories metadata"
 msgstr "リポジトリのメタデータを更新しています"
 
-#: service/lib/agama/software/manager.rb:141
+#: service/lib/agama/software/manager.rb:143
 msgid "Calculating the software proposal"
 msgstr "ソフトウエアの提案内容を作成しています"
 
 #. Writes the repositories information to the installed system
-#: service/lib/agama/software/manager.rb:190
+#: service/lib/agama/software/manager.rb:201
 msgid "Writing repositories to the target system"
 msgstr "インストール先のシステムにリポジトリ情報を書き込んでいます"
-
-#: service/lib/agama/software/manager.rb:196
-msgid "Restoring original repositories"
-msgstr "元のリポジトリを復元しています"
 
 #. Issues related to the software proposal.
 #.
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:482
+#: service/lib/agama/software/manager.rb:468
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "リポジトリ\"%s\" を読み込むことができませんでした"
@@ -135,21 +127,21 @@ msgstr "リポジトリ\"%s\" を読み込むことができませんでした"
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:492
+#: service/lib/agama/software/manager.rb:478
 msgid "Product not selected yet"
 msgstr "まだ製品を選択していません"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:501
+#: service/lib/agama/software/manager.rb:487
 msgid "Product must be registered"
 msgstr "製品を登録しなければなりません"
 
 #. Returns solver error messages from the last attempt
 #.
 #. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:227
+#: service/lib/agama/software/proposal.rb:223
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "%s 個の依存関係の問題が見つかりました。"
@@ -219,3 +211,15 @@ msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
 "The following selected devices are not found in the system: %{devices}"
 msgstr[0] "システム内には下記のデバイスが見つかりません: %{devices}"
+
+#. Recalculates the list of issues
+#: service/lib/agama/users.rb:152
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+
+#~ msgid "Initializing target repositories"
+#~ msgstr "目的のリポジトリを準備しています"
+
+#~ msgid "Restoring original repositories"
+#~ msgstr "元のリポジトリを復元しています"

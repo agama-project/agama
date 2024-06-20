@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-09 02:25+0000\n"
+"POT-Creation-Date: 2024-06-20 09:58+0000\n"
 "PO-Revision-Date: 2024-06-10 08:10+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
-"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/ca/>\n"
+"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-"
+"service-master/ca/>\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -96,38 +96,30 @@ msgstr ""
 "La clau %{id} (%{name}) amb l'empremta digital %{fingerprint} és "
 "desconeguda. Voleu confiar en aquesta clau?"
 
-#. as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
-#: service/lib/agama/software/manager.rb:134
-msgid "Initializing target repositories"
-msgstr "Iniciant els repositoris de destinació"
-
-#: service/lib/agama/software/manager.rb:135
+#. Should an error be raised?
+#: service/lib/agama/software/manager.rb:137
 msgid "Initializing sources"
 msgstr "Iniciant les fonts"
 
-#: service/lib/agama/software/manager.rb:140
+#: service/lib/agama/software/manager.rb:142
 msgid "Refreshing repositories metadata"
 msgstr "Refrescant les metadades dels repositoris"
 
-#: service/lib/agama/software/manager.rb:141
+#: service/lib/agama/software/manager.rb:143
 msgid "Calculating the software proposal"
 msgstr "Calculant la proposta de programari"
 
 #. Writes the repositories information to the installed system
-#: service/lib/agama/software/manager.rb:190
+#: service/lib/agama/software/manager.rb:201
 msgid "Writing repositories to the target system"
 msgstr "Escrivint els repositoris al sistema de destinació"
-
-#: service/lib/agama/software/manager.rb:196
-msgid "Restoring original repositories"
-msgstr "Restaurant els repositoris originals"
 
 #. Issues related to the software proposal.
 #.
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:482
+#: service/lib/agama/software/manager.rb:468
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "No s'ha pogut llegir el repositori %s."
@@ -135,21 +127,21 @@ msgstr "No s'ha pogut llegir el repositori %s."
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:492
+#: service/lib/agama/software/manager.rb:478
 msgid "Product not selected yet"
 msgstr "Encara no s'ha seleccionat el producte."
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:501
+#: service/lib/agama/software/manager.rb:487
 msgid "Product must be registered"
 msgstr "El producte ha d'estar registrat."
 
 #. Returns solver error messages from the last attempt
 #.
 #. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:227
+#: service/lib/agama/software/proposal.rb:223
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "S'han trobat %s problemes de dependències."
@@ -225,3 +217,15 @@ msgstr[0] ""
 "El dispositiu seleccionat següent no es troba al sistema: %{devices}"
 msgstr[1] ""
 "Els dispositius seleccionats següents no es troben al sistema: %{devices}"
+
+#. Recalculates the list of issues
+#: service/lib/agama/users.rb:152
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+
+#~ msgid "Initializing target repositories"
+#~ msgstr "Iniciant els repositoris de destinació"
+
+#~ msgid "Restoring original repositories"
+#~ msgstr "Restaurant els repositoris originals"
