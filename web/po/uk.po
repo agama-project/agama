@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-16 02:26+0000\n"
+"POT-Creation-Date: 2024-06-20 02:20+0000\n"
 "PO-Revision-Date: 2023-12-31 20:39+0000\n"
 "Last-Translator: Milachew <milachew@mail.lv>\n"
 "Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -98,26 +98,26 @@ msgstr ""
 msgid "Install"
 msgstr ""
 
-#: src/components/core/InstallationFinished.jsx:41
+#: src/components/core/InstallationFinished.jsx:42
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr ""
 
-#: src/components/core/InstallationFinished.jsx:46
+#: src/components/core/InstallationFinished.jsx:47
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
 msgstr ""
 
-#: src/components/core/InstallationFinished.jsx:50
+#: src/components/core/InstallationFinished.jsx:51
 msgid "Hide details"
 msgstr ""
 
-#: src/components/core/InstallationFinished.jsx:50
+#: src/components/core/InstallationFinished.jsx:51
 msgid "See more details"
 msgstr ""
 
 #. TRANSLATORS: "Trusted Platform Module" is the name of the technology and "TPM" its abbreviation
-#: src/components/core/InstallationFinished.jsx:54
+#: src/components/core/InstallationFinished.jsx:55
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
@@ -125,27 +125,27 @@ msgid ""
 "the new boot loader."
 msgstr ""
 
-#: src/components/core/InstallationFinished.jsx:99
+#: src/components/core/InstallationFinished.jsx:97
 msgid "Congratulations!"
 msgstr ""
 
-#: src/components/core/InstallationFinished.jsx:104
+#: src/components/core/InstallationFinished.jsx:102
 msgid "The installation on your machine is complete."
 msgstr ""
 
-#: src/components/core/InstallationFinished.jsx:107
+#: src/components/core/InstallationFinished.jsx:105
 msgid "At this point you can power off the machine."
 msgstr ""
 
-#: src/components/core/InstallationFinished.jsx:108
+#: src/components/core/InstallationFinished.jsx:106
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr ""
 
-#: src/components/core/InstallationFinished.jsx:115
+#: src/components/core/InstallationFinished.jsx:113
 msgid "Finish"
 msgstr ""
 
-#: src/components/core/InstallationFinished.jsx:115
+#: src/components/core/InstallationFinished.jsx:113
 msgid "Reboot"
 msgstr ""
 
@@ -527,7 +527,7 @@ msgstr ""
 
 #: src/components/network/IpSettingsForm.jsx:210
 #: src/components/product/ProductRegistrationPage.jsx:89
-#: src/components/storage/BootSelection.jsx:216
+#: src/components/storage/BootSelection.jsx:215
 #: src/components/storage/DeviceSelection.jsx:240
 #: src/components/storage/EncryptionSettingsDialog.jsx:138
 #: src/components/storage/VolumeDialog.jsx:786
@@ -927,48 +927,48 @@ msgstr ""
 msgid "Installation will configure partitions for booting at %s."
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:127
+#: src/components/storage/BootSelection.jsx:126
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:133
+#: src/components/storage/BootSelection.jsx:132
 msgid "Partitions to boot will be allocated at the installation disk."
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelection.jsx:138
+#: src/components/storage/BootSelection.jsx:137
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:154
+#: src/components/storage/BootSelection.jsx:153
 msgid "Select booting partition"
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:168
+#: src/components/storage/BootSelection.jsx:167
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:177
+#: src/components/storage/BootSelection.jsx:176
 msgid "Select a disk"
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:181
+#: src/components/storage/BootSelection.jsx:180
 msgid "Partitions to boot will be allocated at the following device."
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:184
+#: src/components/storage/BootSelection.jsx:183
 msgid "Choose a disk for placing the boot loader"
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:200
+#: src/components/storage/BootSelection.jsx:199
 msgid "Do not configure"
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:203
+#: src/components/storage/BootSelection.jsx:202
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr ""
@@ -1218,7 +1218,7 @@ msgstr ""
 #: src/components/storage/PartitionsField.jsx:451
 #: src/components/storage/ProposalResultTable.jsx:123
 #: src/components/storage/SpaceActionsTable.jsx:143
-#: src/components/storage/VolumeFields.jsx:472
+#: src/components/storage/VolumeFields.jsx:474
 #: src/components/storage/VolumeLocationSelectorTable.jsx:103
 msgid "Size"
 msgstr ""
@@ -1517,9 +1517,9 @@ msgid "Delete"
 msgstr ""
 
 #: src/components/storage/PartitionsField.jsx:449
-#: src/components/storage/VolumeFields.jsx:59
-#: src/components/storage/VolumeFields.jsx:68
-#: src/components/storage/VolumeFields.jsx:73
+#: src/components/storage/VolumeFields.jsx:61
+#: src/components/storage/VolumeFields.jsx:70
+#: src/components/storage/VolumeFields.jsx:75
 msgid "Mount point"
 msgstr ""
 
@@ -1635,11 +1635,11 @@ msgstr ""
 msgid "Mount Point"
 msgstr ""
 
-#: src/components/storage/ProposalTransactionalInfo.jsx:46
+#: src/components/storage/ProposalTransactionalInfo.jsx:45
 msgid "Transactional root file system"
 msgstr ""
 
-#: src/components/storage/ProposalTransactionalInfo.jsx:49
+#: src/components/storage/ProposalTransactionalInfo.jsx:48
 #, c-format
 msgid ""
 "%s is an immutable system with atomic updates. It uses a read-only Btrfs "
@@ -1779,74 +1779,74 @@ msgid "Do you want to add it?"
 msgstr ""
 
 #. TRANSLATORS: info about possible file system types.
-#: src/components/storage/VolumeFields.jsx:215
+#: src/components/storage/VolumeFields.jsx:217
 msgid ""
 "The options for the file system type depends on the product and the mount "
 "point."
 msgstr ""
 
-#: src/components/storage/VolumeFields.jsx:221
+#: src/components/storage/VolumeFields.jsx:223
 msgid "More info for file system types"
 msgstr ""
 
 #. TRANSLATORS: label for the file system selector.
-#: src/components/storage/VolumeFields.jsx:232
+#: src/components/storage/VolumeFields.jsx:234
 msgid "File system type"
 msgstr ""
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:263
+#: src/components/storage/VolumeFields.jsx:265
 msgid "the configuration of snapshots"
 msgstr ""
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
-#: src/components/storage/VolumeFields.jsx:268
+#: src/components/storage/VolumeFields.jsx:270
 #, c-format
 msgid "the presence of the file system for %s"
 msgstr ""
 
 #. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeFields.jsx:270
+#: src/components/storage/VolumeFields.jsx:272
 msgid ", "
 msgstr ""
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:274
+#: src/components/storage/VolumeFields.jsx:276
 msgid "the amount of RAM in the system"
 msgstr ""
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeFields.jsx:277
+#: src/components/storage/VolumeFields.jsx:279
 #, c-format
 msgid "The final size depends on %s."
 msgstr ""
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeFields.jsx:279
+#: src/components/storage/VolumeFields.jsx:281
 msgid " and "
 msgstr ""
 
 #. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeFields.jsx:284
+#: src/components/storage/VolumeFields.jsx:286
 msgid "Automatically calculated size according to the selected product."
 msgstr ""
 
-#: src/components/storage/VolumeFields.jsx:303
+#: src/components/storage/VolumeFields.jsx:305
 msgid "Exact size for the file system."
 msgstr ""
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeFields.jsx:316
+#: src/components/storage/VolumeFields.jsx:318
 msgid "Exact size"
 msgstr ""
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeFields.jsx:333
+#: src/components/storage/VolumeFields.jsx:335
 msgid "Size unit"
 msgstr ""
 
-#: src/components/storage/VolumeFields.jsx:361
+#: src/components/storage/VolumeFields.jsx:363
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1854,45 +1854,45 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeFields.jsx:368
+#: src/components/storage/VolumeFields.jsx:370
 msgid "Minimum"
 msgstr ""
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeFields.jsx:379
+#: src/components/storage/VolumeFields.jsx:381
 msgid "Minimum desired size"
 msgstr ""
 
-#: src/components/storage/VolumeFields.jsx:390
+#: src/components/storage/VolumeFields.jsx:392
 msgid "Unit for the minimum size"
 msgstr ""
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:402
+#: src/components/storage/VolumeFields.jsx:404
 msgid "Maximum"
 msgstr ""
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:414
+#: src/components/storage/VolumeFields.jsx:416
 msgid "Maximum desired size"
 msgstr ""
 
-#: src/components/storage/VolumeFields.jsx:424
+#: src/components/storage/VolumeFields.jsx:426
 msgid "Unit for the maximum size"
 msgstr ""
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeFields.jsx:442
+#: src/components/storage/VolumeFields.jsx:444
 msgid "Auto"
 msgstr ""
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeFields.jsx:444
+#: src/components/storage/VolumeFields.jsx:446
 msgid "Fixed"
 msgstr ""
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeFields.jsx:446
+#: src/components/storage/VolumeFields.jsx:448
 msgid "Range"
 msgstr ""
 

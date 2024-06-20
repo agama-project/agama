@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-16 02:26+0000\n"
-"PO-Revision-Date: 2024-06-10 19:24+0000\n"
+"POT-Creation-Date: 2024-06-20 02:20+0000\n"
+"PO-Revision-Date: 2024-06-17 06:46+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "sv/>\n"
@@ -20,18 +20,16 @@ msgstr ""
 "X-Generator: Weblate 5.5.5\n"
 
 #: src/MainLayout.jsx:40
-#, fuzzy
 msgid "Agama"
-msgstr "Om Agama"
+msgstr "Agama"
 
 #: src/MainLayout.jsx:82
 msgid "Change product"
 msgstr "Ändra produkt"
 
 #: src/components/core/About.jsx:49
-#, fuzzy
 msgid "About"
-msgstr "Om Agama"
+msgstr "Om"
 
 #: src/components/core/About.jsx:71
 msgid "About Agama"
@@ -105,11 +103,11 @@ msgstr "Avbryt"
 msgid "Install"
 msgstr "Installera"
 
-#: src/components/core/InstallationFinished.jsx:41
+#: src/components/core/InstallationFinished.jsx:42
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr "TPM-försegling kräver att det nya systemet startas upp direkt."
 
-#: src/components/core/InstallationFinished.jsx:46
+#: src/components/core/InstallationFinished.jsx:47
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
@@ -117,16 +115,16 @@ msgstr ""
 "Om ett lokalt media användes för att köra det här installationsprogrammet, "
 "ta bort det före nästa uppstart."
 
-#: src/components/core/InstallationFinished.jsx:50
+#: src/components/core/InstallationFinished.jsx:51
 msgid "Hide details"
 msgstr "Dölj detaljer"
 
-#: src/components/core/InstallationFinished.jsx:50
+#: src/components/core/InstallationFinished.jsx:51
 msgid "See more details"
 msgstr "Se mer detaljer"
 
 #. TRANSLATORS: "Trusted Platform Module" is the name of the technology and "TPM" its abbreviation
-#: src/components/core/InstallationFinished.jsx:54
+#: src/components/core/InstallationFinished.jsx:55
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
@@ -138,46 +136,44 @@ msgstr ""
 "uppstarten av det nya systemet. För att det ska fungera måste maskinen "
 "startas direkt till den nya uppstartshanteraren."
 
-#: src/components/core/InstallationFinished.jsx:99
+#: src/components/core/InstallationFinished.jsx:97
 msgid "Congratulations!"
 msgstr "Grattis!"
 
-#: src/components/core/InstallationFinished.jsx:104
+#: src/components/core/InstallationFinished.jsx:102
 msgid "The installation on your machine is complete."
 msgstr "Installationen på din maskin har slutförts."
 
-#: src/components/core/InstallationFinished.jsx:107
+#: src/components/core/InstallationFinished.jsx:105
 msgid "At this point you can power off the machine."
 msgstr "Vid det här laget kan du stänga av maskinen."
 
-#: src/components/core/InstallationFinished.jsx:108
+#: src/components/core/InstallationFinished.jsx:106
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr ""
 "Vid det här laget kan du starta om maskinen för att logga in till det nya "
 "systemet."
 
-#: src/components/core/InstallationFinished.jsx:115
+#: src/components/core/InstallationFinished.jsx:113
 msgid "Finish"
 msgstr "Slutför"
 
-#: src/components/core/InstallationFinished.jsx:115
+#: src/components/core/InstallationFinished.jsx:113
 msgid "Reboot"
 msgstr "Starta om"
 
 #: src/components/core/InstallerOptions.jsx:57
-#, fuzzy
 msgid "Show installer options"
-msgstr "Dölj installationsalternativ"
+msgstr "Visa installationsalternativ"
 
 #: src/components/core/InstallerOptions.jsx:62
-#, fuzzy
 msgid "Installer options"
 msgstr "Installationsalternativ"
 
 #: src/components/core/IssuesHint.jsx:34
 msgid ""
 "Before starting the installation, you need to address the following problems:"
-msgstr ""
+msgstr "Innan du startar installationen måste du åtgärda följande problem:"
 
 #: src/components/core/ListSearch.jsx:51
 msgid "Search"
@@ -203,14 +199,11 @@ msgstr "Logga in som %s"
 #. it and keep the brackets.
 #: src/components/core/LoginPage.jsx:76
 msgid "The installer requires [root] user privileges."
-msgstr ""
+msgstr "Installationsprogrammet kräver [root] användarrättigheter."
 
 #: src/components/core/LoginPage.jsx:95
-#, fuzzy
 msgid "Please, provide its password to log in to the system."
-msgstr ""
-"Installationsprogrammet kräver %s användarrättigheter. Vänligen ange "
-"lösenordet för att logga in på systemet."
+msgstr "Vänligen ange lösenordet för att logga in på systemet."
 
 #: src/components/core/LoginPage.jsx:98
 msgid "Login form"
@@ -226,7 +219,7 @@ msgstr "Logga in"
 
 #: src/components/core/LoginPage.jsx:124
 msgid "More about this"
-msgstr ""
+msgstr "Mer om detta"
 
 #: src/components/core/LogsButton.jsx:102
 msgid "Collecting logs..."
@@ -315,14 +308,12 @@ msgid "Keyboard"
 msgstr "Tangentbord"
 
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:75
-#, fuzzy
 msgid "Choose a keyboard layout"
-msgstr "Välj en produkt"
+msgstr "Välj en tangentbordslayout"
 
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:86
-#, fuzzy
 msgid "Cannot be changed in remote installation"
-msgstr "Tangentbordslayout kan inte ändras vid fjärrinstallation"
+msgstr "Kan inte ändras i fjärrinstallation"
 
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:57
 #: src/components/l10n/L10nPage.jsx:67
@@ -330,23 +321,20 @@ msgid "Language"
 msgstr "Språk"
 
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:63
-#, fuzzy
 msgid "Choose a language"
-msgstr "Ändra språk"
+msgstr "Välj ett språk"
 
 #: src/components/l10n/KeyboardSelection.jsx:45
 msgid "Filter by description or keymap code"
 msgstr "Filtrera efter beskrivning eller tangentbordskod"
 
 #: src/components/l10n/KeyboardSelection.jsx:85
-#, fuzzy
 msgid "None of the keymaps match the filter."
-msgstr "Inget av mönstren matchar filtret."
+msgstr "Ingen av tangentmapparna matchar filtret."
 
 #: src/components/l10n/KeyboardSelection.jsx:92
-#, fuzzy
 msgid "Keyboard selection"
-msgstr "Val av programvara"
+msgstr "Tangentbordsval"
 
 #: src/components/l10n/KeyboardSelection.jsx:107
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
@@ -364,9 +352,8 @@ msgstr "Lokalisering"
 
 #: src/components/l10n/L10nPage.jsx:68 src/components/l10n/L10nPage.jsx:79
 #: src/components/l10n/L10nPage.jsx:90
-#, fuzzy
 msgid "Not selected yet"
-msgstr "Ingen enhet vald ännu"
+msgstr "Inte valt ännu"
 
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
 #: src/components/l10n/L10nPage.jsx:93
@@ -386,28 +373,24 @@ msgid "Filter by language, territory or locale code"
 msgstr "Filtrera efter språk, territorium eller lokalkod"
 
 #: src/components/l10n/LocaleSelection.jsx:84
-#, fuzzy
 msgid "None of the locales match the filter."
-msgstr "Inget av mönstren matchar filtret."
+msgstr "Inget av lokalerna matchar filtret."
 
 #: src/components/l10n/LocaleSelection.jsx:91
-#, fuzzy
 msgid "Locale selection"
-msgstr "Val av programvara"
+msgstr "Lokal val"
 
 #: src/components/l10n/TimezoneSelection.jsx:71
 msgid "Filter by territory, time zone code or UTC offset"
 msgstr "Filtrera efter område, tidszonskod eller UTC-förskjutning"
 
 #: src/components/l10n/TimezoneSelection.jsx:122
-#, fuzzy
 msgid "None of the time zones match the filter."
-msgstr "Inget av mönstren matchar filtret."
+msgstr "Inget av tidszonerna matchar filtret."
 
 #: src/components/l10n/TimezoneSelection.jsx:129
-#, fuzzy
 msgid " Timezone selection"
-msgstr "Ändra val"
+msgstr " Tidszon val"
 
 #: src/components/layout/Loading.jsx:31
 msgid "Loading installation environment, please wait."
@@ -554,11 +537,11 @@ msgstr "Gateway"
 
 #: src/components/network/IpSettingsForm.jsx:178
 msgid "Gateway can be defined only in 'Manual' mode"
-msgstr ""
+msgstr "Gateway kan endast definieras i \"Manuellt\" läge"
 
 #: src/components/network/IpSettingsForm.jsx:210
 #: src/components/product/ProductRegistrationPage.jsx:89
-#: src/components/storage/BootSelection.jsx:216
+#: src/components/storage/BootSelection.jsx:215
 #: src/components/storage/DeviceSelection.jsx:240
 #: src/components/storage/EncryptionSettingsDialog.jsx:138
 #: src/components/storage/VolumeDialog.jsx:786
@@ -600,14 +583,12 @@ msgid "Network"
 msgstr "Nätverk"
 
 #: src/components/network/NetworkPage.jsx:178
-#, fuzzy
 msgid "Wired connections"
-msgstr "Glöm anslutning %s"
+msgstr "Trådanslutna anslutningar"
 
 #: src/components/network/NetworkPage.jsx:185
-#, fuzzy
 msgid "WiFi connections"
-msgstr "Redigera anslutning %s"
+msgstr "WiFi anslutningar"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:43
@@ -697,9 +678,8 @@ msgstr "%s anslutningen väntar på en tillståndsändring"
 
 #. TRANSLATORS: menu label, disconnect from the selected WiFi network
 #: src/components/network/WifiNetworkMenu.jsx:67
-#, fuzzy
 msgid "Disconnect"
-msgstr "Frånkopplad"
+msgstr "Koppla ifrån"
 
 #. TRANSLATORS: menu label, remove the selected WiFi network settings
 #: src/components/network/WifiNetworkMenu.jsx:76
@@ -734,44 +714,42 @@ msgid "Software"
 msgstr "Programvara"
 
 #: src/components/overview/OverviewPage.jsx:52
-#, fuzzy
 msgid "Ready for installation"
-msgstr "Bekräfta Installation"
+msgstr "Redo för installation"
 
 #: src/components/overview/OverviewPage.jsx:102
-#, fuzzy
 msgid "Installation"
-msgstr "Installerar"
+msgstr "Installation"
 
 #: src/components/overview/OverviewPage.jsx:103
 msgid "Before installing, please check the following problems."
-msgstr ""
+msgstr "Innan du installerar, vänligen kontrollera följande problem."
 
 #: src/components/overview/OverviewPage.jsx:114
-#, fuzzy
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
 msgstr ""
-"Installationen kommer att konfigurera partitioner för uppstart på "
-"installationsdisken."
+"Ta dig tid att kontrollera din konfiguration innan du startar "
+"installationsprocessen."
 
 #: src/components/overview/OverviewPage.jsx:123
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
 msgstr ""
+"Dessa är de mest relevanta installationsinställningarna. Bläddra gärna "
+"igenom avsnitten i menyn för ytterligare detaljer."
 
 #: src/components/overview/SoftwareSection.jsx:60
-#, fuzzy
 msgid "The installation will take"
-msgstr "Installationen kommer att ta upp %s"
+msgstr "Installationen kommer att ta"
 
 #. TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
 #: src/components/overview/SoftwareSection.jsx:67
-#, fuzzy, c-format
+#, c-format
 msgid "The installation will take %s including:"
-msgstr "Installationen kommer att ta upp %s"
+msgstr "Installationen kommer att ta upp %s inklusive:"
 
 #: src/components/overview/StorageSection.jsx:53
 msgid ""
@@ -879,7 +857,7 @@ msgstr ""
 
 #: src/components/overview/routes.js:30
 msgid "Overview"
-msgstr ""
+msgstr "Översikt"
 
 #: src/components/product/ProductRegistrationPage.jsx:66
 #, c-format
@@ -899,18 +877,16 @@ msgid "Loading available products, please wait..."
 msgstr "Laddar tillgängliga produkter, vänligen vänta..."
 
 #: src/components/product/ProductSelectionProgress.jsx:88
-#, fuzzy
 msgid "Analyze disks"
-msgstr "Aktivera diskar"
+msgstr "Analysera diskar"
 
 #: src/components/product/ProductSelectionProgress.jsx:95
 msgid "Configure software"
-msgstr ""
+msgstr "Konfigurera programvara"
 
 #: src/components/product/ProductSelectionProgress.jsx:156
-#, fuzzy
 msgid "Configuring the product, please wait ..."
-msgstr "Laddar tillgängliga produkter, vänligen vänta..."
+msgstr "Konfigurerar produkten, vänta..."
 
 #: src/components/questions/GenericQuestion.jsx:35
 #: src/components/questions/LuksActivationQuestion.jsx:60
@@ -940,9 +916,8 @@ msgid "The following software patterns are selected for installation:"
 msgstr "Följande programvarumönster är valda för installation:"
 
 #: src/components/software/SoftwarePage.jsx:165
-#, fuzzy
 msgid "Selected patterns"
-msgstr "Välj tidszon"
+msgstr "Valda mönster"
 
 #: src/components/software/SoftwarePage.jsx:168
 msgid "Change selection"
@@ -960,18 +935,19 @@ msgstr "Val av programvara"
 #: src/components/software/SoftwarePatternsSelection.jsx:241
 #: src/components/software/SoftwarePatternsSelection.jsx:242
 msgid "Filter by pattern title or description"
-msgstr ""
+msgstr "Filtrera efter mönstertitel eller beskrivning"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
 #: src/components/software/UsedSize.jsx:33
-#, fuzzy, c-format
+#, c-format
 msgid "Installation will take %s."
-msgstr "Installationen kommer att ta upp %s"
+msgstr "Installationen kommer att ta %s"
 
 #: src/components/software/UsedSize.jsx:38
 msgid "This space includes the base system and the selected software patterns."
 msgstr ""
+"Detta utrymme inkluderar bassystemet och de valda programvarumönsterna."
 
 #: src/components/storage/BootConfigField.jsx:43
 msgid "Change boot options"
@@ -994,7 +970,7 @@ msgstr ""
 msgid "Installation will configure partitions for booting at %s."
 msgstr "Installationen kommer att konfigurera partitioner för uppstart på %s."
 
-#: src/components/storage/BootSelection.jsx:127
+#: src/components/storage/BootSelection.jsx:126
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
@@ -1003,46 +979,45 @@ msgstr ""
 "installationsprogrammet behöva skapa eller konfigurera vissa partitioner på "
 "lämplig disk."
 
-#: src/components/storage/BootSelection.jsx:133
+#: src/components/storage/BootSelection.jsx:132
 msgid "Partitions to boot will be allocated at the installation disk."
 msgstr ""
 "Partitioner som ska startas upp kommer att tilldelas på installationsdisken."
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelection.jsx:138
+#: src/components/storage/BootSelection.jsx:137
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
 msgstr ""
 "Partitioner som ska startas upp kommer att tilldelas på installationsdisken "
 "(%s)."
 
-#: src/components/storage/BootSelection.jsx:154
-#, fuzzy
+#: src/components/storage/BootSelection.jsx:153
 msgid "Select booting partition"
-msgstr "Välj vad som ska göras med varje partition."
+msgstr "Välj uppstartspartition"
 
-#: src/components/storage/BootSelection.jsx:168
+#: src/components/storage/BootSelection.jsx:167
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
 msgstr "Automatisk"
 
-#: src/components/storage/BootSelection.jsx:177
+#: src/components/storage/BootSelection.jsx:176
 msgid "Select a disk"
 msgstr "Välj en disk"
 
-#: src/components/storage/BootSelection.jsx:181
+#: src/components/storage/BootSelection.jsx:180
 msgid "Partitions to boot will be allocated at the following device."
 msgstr "Partitioner för att uppstart kommer att tilldelas på följande enhet."
 
-#: src/components/storage/BootSelection.jsx:184
+#: src/components/storage/BootSelection.jsx:183
 msgid "Choose a disk for placing the boot loader"
 msgstr "Välj en disk för att placera uppstartsladdaren"
 
-#: src/components/storage/BootSelection.jsx:200
+#: src/components/storage/BootSelection.jsx:199
 msgid "Do not configure"
 msgstr "Konfigurera inte"
 
-#: src/components/storage/BootSelection.jsx:203
+#: src/components/storage/BootSelection.jsx:202
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr ""
@@ -1165,9 +1140,8 @@ msgid "Remove max channel filter"
 msgstr "Ta bort maximum kanal filter"
 
 #: src/components/storage/DeviceSelection.jsx:101
-#, fuzzy
 msgid "Loading data, please wait a second..."
-msgstr "Laddar tillgängliga produkter, vänligen vänta..."
+msgstr "Laddar data, vänligen vänta en sekund..."
 
 #. TRANSLATORS: description for using plain partitions for installing the
 #. system, the text in the square brackets [] is displayed in bold, use only
@@ -1194,24 +1168,20 @@ msgstr ""
 "som nya partitioner på de valda enheterna."
 
 #: src/components/storage/DeviceSelection.jsx:149
-#, fuzzy
 msgid "Select installation device"
-msgstr "på installationsenheten"
+msgstr "Välj installationsenhet"
 
 #: src/components/storage/DeviceSelection.jsx:155
-#, fuzzy
 msgid "Install new system on"
-msgstr "Installationsalternativ"
+msgstr "Installera nytt system på"
 
 #: src/components/storage/DeviceSelection.jsx:158
-#, fuzzy
 msgid "An existing disk"
-msgstr "Krymp existerande partitioner"
+msgstr "En existerande disk"
 
 #: src/components/storage/DeviceSelection.jsx:167
-#, fuzzy
 msgid "A new LVM Volume Group"
-msgstr "ny LVM volymgrupp"
+msgstr "En ny LVM volymgrupp"
 
 #: src/components/storage/DeviceSelection.jsx:192
 msgid "Device selector for target disk"
@@ -1226,7 +1196,6 @@ msgid "Prepare more devices by configuring advanced"
 msgstr "Förbered fler enheter genom att använda avancerad konfiguration"
 
 #: src/components/storage/DeviceSelection.jsx:229
-#, fuzzy
 msgid "storage techs"
 msgstr "lagringsteknologier"
 
@@ -1305,7 +1274,7 @@ msgstr "Detaljer"
 #: src/components/storage/PartitionsField.jsx:451
 #: src/components/storage/ProposalResultTable.jsx:123
 #: src/components/storage/SpaceActionsTable.jsx:143
-#: src/components/storage/VolumeFields.jsx:472
+#: src/components/storage/VolumeFields.jsx:474
 #: src/components/storage/VolumeLocationSelectorTable.jsx:103
 msgid "Size"
 msgstr "Storlek"
@@ -1337,13 +1306,12 @@ msgid "Encryption"
 msgstr "Kryptering"
 
 #: src/components/storage/EncryptionField.jsx:39
-#, fuzzy
 msgid ""
 "Protection for the information stored at the device, including data, "
 "programs, and system files."
 msgstr ""
-"Heldiskkryptering (FDE) gör det möjligt att skydda informationen som lagras "
-"på enheten, inklusive data, program och systemfiler."
+"Skydd för informationen som lagras på enheten, inklusive data, program och "
+"systemfiler."
 
 #: src/components/storage/EncryptionField.jsx:42
 msgid "disabled"
@@ -1358,13 +1326,12 @@ msgid "using TPM unlocking"
 msgstr "med hjälp av TPM-upplåsning"
 
 #: src/components/storage/EncryptionField.jsx:58
-#, fuzzy
 msgid "Enable"
-msgstr "aktiverad"
+msgstr "Aktivera"
 
 #: src/components/storage/EncryptionField.jsx:58
 msgid "Modify"
-msgstr ""
+msgstr "Modifera"
 
 #: src/components/storage/EncryptionSettingsDialog.jsx:37
 msgid ""
@@ -1405,26 +1372,24 @@ msgstr "Installationsenhet"
 
 #. TRANSLATORS: The storage "Installation device" field's description.
 #: src/components/storage/InstallationDeviceField.jsx:42
-#, fuzzy
 msgid "Main disk or LVM Volume Group for installation."
-msgstr "Välj huvuddisk eller LVM volymgrupp för installation."
+msgstr "Huvuddisk eller LVM volymgrupp för installation."
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
 #: src/components/storage/InstallationDeviceField.jsx:56
-#, fuzzy, c-format
+#, c-format
 msgid "File systems created as new partitions at %s"
-msgstr "Skapa en ny partition"
+msgstr "Filsystem skapade som nya partitioner på %s"
 
 #: src/components/storage/InstallationDeviceField.jsx:59
-#, fuzzy
 msgid "File systems created at a new LVM volume group"
-msgstr "Enhetsväljare för ny LVM volymgrupp"
+msgstr "Filsystem skapade som en ny LVM-volymgrupp"
 
 #. TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
 #: src/components/storage/InstallationDeviceField.jsx:63
-#, fuzzy, c-format
+#, c-format
 msgid "File systems created at a new LVM volume group on %s"
-msgstr "ny LVM volymgrupp på %s"
+msgstr "Filsystem skapade som en ny LVM-volymgrupp på %s"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/PartitionsField.jsx:73
@@ -1617,9 +1582,9 @@ msgid "Delete"
 msgstr "Ta bort"
 
 #: src/components/storage/PartitionsField.jsx:449
-#: src/components/storage/VolumeFields.jsx:59
-#: src/components/storage/VolumeFields.jsx:68
-#: src/components/storage/VolumeFields.jsx:73
+#: src/components/storage/VolumeFields.jsx:61
+#: src/components/storage/VolumeFields.jsx:70
+#: src/components/storage/VolumeFields.jsx:75
 msgid "Mount point"
 msgstr "Monteringspunkt"
 
@@ -1651,18 +1616,16 @@ msgid "Partitions and file systems"
 msgstr "Partitioner och filsystem"
 
 #: src/components/storage/PartitionsField.jsx:802
-#, fuzzy
 msgid ""
 "Structure of the new system, including any additional partition needed for "
 "booting"
 msgstr ""
 "Strukturen för det nya systemet, inklusive eventuell ytterligare partition "
-"som behövs för uppstart,"
+"som behövs för uppstart"
 
 #: src/components/storage/PartitionsField.jsx:808
-#, fuzzy
 msgid "Show partitions and file-systems actions"
-msgstr "Partitioner och filsystem"
+msgstr "Visa partitioner och filsystemåtgärder"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsDialog.jsx:62
@@ -1692,11 +1655,11 @@ msgid "Affecting"
 msgstr "Påverkar"
 
 #: src/components/storage/ProposalResultSection.jsx:96
-#, fuzzy, c-format
+#, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
-msgstr[0] "Kontrollera alla planerade åtgärder"
-msgstr[1] "Kontrollera alla planerade åtgärder"
+msgstr[0] "Kontrollera den planerade åtgärden"
+msgstr[1] "Kontrollera de %d planerade åtgärderna"
 
 #: src/components/storage/ProposalResultSection.jsx:111
 msgid "Waiting for information about storage configuration"
@@ -1704,16 +1667,15 @@ msgstr "Väntar på information om lagringskonfiguration"
 
 #: src/components/storage/ProposalResultSection.jsx:124
 msgid "Storage proposal not possible"
-msgstr ""
+msgstr "Lagringsförslag är inte möjligt"
 
 #: src/components/storage/ProposalResultSection.jsx:188
-#, fuzzy
 msgid ""
 "During installation, some actions will be performed to configure the system "
 "as displayed below."
 msgstr ""
-"Under installationen kommer %d åtgärd att utföras för att konfigurera "
-"systemet som visas nedan"
+"Under installationen kommer vissa åtgärder att utföras för att konfigurera "
+"systemet som visas nedan."
 
 #: src/components/storage/ProposalResultSection.jsx:196
 msgid "Planned Actions"
@@ -1738,11 +1700,11 @@ msgstr "Före %s"
 msgid "Mount Point"
 msgstr "Monteringspunkt"
 
-#: src/components/storage/ProposalTransactionalInfo.jsx:46
+#: src/components/storage/ProposalTransactionalInfo.jsx:45
 msgid "Transactional root file system"
 msgstr "Transaktionellt root filsystem"
 
-#: src/components/storage/ProposalTransactionalInfo.jsx:49
+#: src/components/storage/ProposalTransactionalInfo.jsx:48
 #, c-format
 msgid ""
 "%s is an immutable system with atomic updates. It uses a read-only Btrfs "
@@ -1890,75 +1852,75 @@ msgid "Do you want to add it?"
 msgstr "Vill du lägga till det?"
 
 #. TRANSLATORS: info about possible file system types.
-#: src/components/storage/VolumeFields.jsx:215
+#: src/components/storage/VolumeFields.jsx:217
 msgid ""
 "The options for the file system type depends on the product and the mount "
 "point."
 msgstr ""
 "Alternativen för filsystemstypen beror på produkten och monteringspunkten."
 
-#: src/components/storage/VolumeFields.jsx:221
+#: src/components/storage/VolumeFields.jsx:223
 msgid "More info for file system types"
 msgstr "Mer information om filsystemtyper"
 
 #. TRANSLATORS: label for the file system selector.
-#: src/components/storage/VolumeFields.jsx:232
+#: src/components/storage/VolumeFields.jsx:234
 msgid "File system type"
 msgstr "Filsystem typ"
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:263
+#: src/components/storage/VolumeFields.jsx:265
 msgid "the configuration of snapshots"
 msgstr "konfigurationen av ögonblicksavbilder"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
-#: src/components/storage/VolumeFields.jsx:268
+#: src/components/storage/VolumeFields.jsx:270
 #, c-format
 msgid "the presence of the file system for %s"
 msgstr "närvaron av filsystemet för %s"
 
 #. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeFields.jsx:270
+#: src/components/storage/VolumeFields.jsx:272
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:274
+#: src/components/storage/VolumeFields.jsx:276
 msgid "the amount of RAM in the system"
 msgstr "mängden RAM i systemet"
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeFields.jsx:277
+#: src/components/storage/VolumeFields.jsx:279
 #, c-format
 msgid "The final size depends on %s."
 msgstr "Den slutliga storleken beror på %s."
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeFields.jsx:279
+#: src/components/storage/VolumeFields.jsx:281
 msgid " and "
 msgstr " och "
 
 #. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeFields.jsx:284
+#: src/components/storage/VolumeFields.jsx:286
 msgid "Automatically calculated size according to the selected product."
 msgstr "Automatiskt beräknad storlek enligt vald produkt."
 
-#: src/components/storage/VolumeFields.jsx:303
+#: src/components/storage/VolumeFields.jsx:305
 msgid "Exact size for the file system."
 msgstr "Exakt storlek för filsystemet."
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeFields.jsx:316
+#: src/components/storage/VolumeFields.jsx:318
 msgid "Exact size"
 msgstr "Exakt storlek"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeFields.jsx:333
+#: src/components/storage/VolumeFields.jsx:335
 msgid "Size unit"
 msgstr "Storleksenhet"
 
-#: src/components/storage/VolumeFields.jsx:361
+#: src/components/storage/VolumeFields.jsx:363
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1969,45 +1931,45 @@ msgstr ""
 "filsystemet att vara så stort som möjligt."
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeFields.jsx:368
+#: src/components/storage/VolumeFields.jsx:370
 msgid "Minimum"
 msgstr "Minst"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeFields.jsx:379
+#: src/components/storage/VolumeFields.jsx:381
 msgid "Minimum desired size"
 msgstr "Minsta önskade storlek"
 
-#: src/components/storage/VolumeFields.jsx:390
+#: src/components/storage/VolumeFields.jsx:392
 msgid "Unit for the minimum size"
 msgstr "Enhet för minsta storlek"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:402
+#: src/components/storage/VolumeFields.jsx:404
 msgid "Maximum"
 msgstr "Maximal"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:414
+#: src/components/storage/VolumeFields.jsx:416
 msgid "Maximum desired size"
 msgstr "Maximal önskad storlek"
 
-#: src/components/storage/VolumeFields.jsx:424
+#: src/components/storage/VolumeFields.jsx:426
 msgid "Unit for the maximum size"
 msgstr "Enhet för maximal storlek"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeFields.jsx:442
+#: src/components/storage/VolumeFields.jsx:444
 msgid "Auto"
 msgstr "Auto"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeFields.jsx:444
+#: src/components/storage/VolumeFields.jsx:446
 msgid "Fixed"
 msgstr "Fast"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeFields.jsx:446
+#: src/components/storage/VolumeFields.jsx:448
 msgid "Range"
 msgstr "Räckvidd"
 
@@ -2351,7 +2313,7 @@ msgstr "Mål"
 
 #: src/components/storage/routes.js:36
 msgid "Proposal"
-msgstr ""
+msgstr "Förslag"
 
 #: src/components/storage/utils.js:64
 msgid "KiB"
@@ -2386,9 +2348,8 @@ msgstr ""
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space deleting current content". Keep it short
 #: src/components/storage/utils.js:82
-#, fuzzy
 msgid "deleting current content"
-msgstr "Radera nuvarande innehåll"
+msgstr "raderar nuvarande innehåll"
 
 #: src/components/storage/utils.js:87
 msgid "Shrink existing partitions"
@@ -2403,9 +2364,8 @@ msgstr ""
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space shrinking partitions". Keep it short.
 #: src/components/storage/utils.js:92
-#, fuzzy
 msgid "shrinking partitions"
-msgstr "Krymp existerande partitioner"
+msgstr "krymper partitioner"
 
 #: src/components/storage/utils.js:97
 msgid "Use available space"
@@ -2435,9 +2395,8 @@ msgstr "Välj vad som ska göras med varje partition."
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space with custom actions". Keep it short.
 #: src/components/storage/utils.js:112
-#, fuzzy
 msgid "with custom actions"
-msgstr "utför en anpassad uppsättning åtgärder"
+msgstr "med anpassade åtgärder"
 
 #: src/components/users/FirstUser.jsx:35
 msgid "No user defined yet."
@@ -2483,23 +2442,20 @@ msgid "Use suggested username"
 msgstr "Använd föreslaget användarnamn"
 
 #: src/components/users/FirstUserForm.jsx:140
-#, fuzzy
 msgid "All fields are required"
-msgstr "Ett storleksvärde krävs"
+msgstr "Alla fält krävs"
 
 #: src/components/users/FirstUserForm.jsx:147
 msgid "Please, try again."
-msgstr ""
+msgstr "Vänligen försök igen."
 
 #: src/components/users/FirstUserForm.jsx:197
-#, fuzzy
 msgid "Create user"
-msgstr "Skapa anändarkonto"
+msgstr "Skapa användare"
 
 #: src/components/users/FirstUserForm.jsx:197
-#, fuzzy
 msgid "Edit user"
-msgstr "Redigera %s"
+msgstr "Redigera användare"
 
 #: src/components/users/FirstUserForm.jsx:214
 #: src/components/users/FirstUserForm.jsx:216
@@ -2608,21 +2564,19 @@ msgstr "Rensa"
 
 #: src/components/users/UsersPage.jsx:45
 msgid "First user"
-msgstr ""
+msgstr "Första användare"
 
 #: src/components/users/UsersPage.jsx:52
 msgid "Root authentication"
 msgstr "Rootautentisering"
 
 #: src/components/users/routes.js:41
-#, fuzzy
 msgid "Create or edit the first user"
-msgstr "Kan inte läsa fil"
+msgstr "Skapa eller redigera den första användaren"
 
 #: src/components/users/routes.js:48
-#, fuzzy
 msgid "Edit first user"
-msgstr "Redigera filsystem"
+msgstr "Redigera första användare"
 
 #~ msgid ""
 #~ "There are some reported issues. Please review them in the previous steps "

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-16 02:26+0000\n"
-"PO-Revision-Date: 2024-06-10 03:46+0000\n"
+"POT-Creation-Date: 2024-06-20 02:20+0000\n"
+"PO-Revision-Date: 2024-06-20 00:46+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -20,18 +20,16 @@ msgstr ""
 "X-Generator: Weblate 5.5.5\n"
 
 #: src/MainLayout.jsx:40
-#, fuzzy
 msgid "Agama"
-msgstr "Agama について"
+msgstr "Agama"
 
 #: src/MainLayout.jsx:82
 msgid "Change product"
 msgstr "製品の変更"
 
 #: src/components/core/About.jsx:49
-#, fuzzy
 msgid "About"
-msgstr "Agama について"
+msgstr "バージョン情報"
 
 #: src/components/core/About.jsx:71
 msgid "About Agama"
@@ -105,12 +103,12 @@ msgstr "キャンセル"
 msgid "Install"
 msgstr "インストール"
 
-#: src/components/core/InstallationFinished.jsx:41
+#: src/components/core/InstallationFinished.jsx:42
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr ""
 "TPM シーリングを使用するには、新しいシステムを直接起動する必要があります。"
 
-#: src/components/core/InstallationFinished.jsx:46
+#: src/components/core/InstallationFinished.jsx:47
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
@@ -118,16 +116,16 @@ msgstr ""
 "このインストーラの起動に際してローカルメディアを使用している場合は、次回の再"
 "起動までの間にメディアを取り出しておいてください。"
 
-#: src/components/core/InstallationFinished.jsx:50
+#: src/components/core/InstallationFinished.jsx:51
 msgid "Hide details"
 msgstr "詳細を隠す"
 
-#: src/components/core/InstallationFinished.jsx:50
+#: src/components/core/InstallationFinished.jsx:51
 msgid "See more details"
 msgstr "さらに詳細を表示する"
 
 #. TRANSLATORS: "Trusted Platform Module" is the name of the technology and "TPM" its abbreviation
-#: src/components/core/InstallationFinished.jsx:54
+#: src/components/core/InstallationFinished.jsx:55
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
@@ -139,44 +137,42 @@ msgstr ""
 "は、マシンが新しいブートローダを直接起動するように設定しておく必要がありま"
 "す。"
 
-#: src/components/core/InstallationFinished.jsx:99
+#: src/components/core/InstallationFinished.jsx:97
 msgid "Congratulations!"
 msgstr "おめでとうございます！"
 
-#: src/components/core/InstallationFinished.jsx:104
+#: src/components/core/InstallationFinished.jsx:102
 msgid "The installation on your machine is complete."
 msgstr "お使いのマシンへのインストールが完了しました。"
 
-#: src/components/core/InstallationFinished.jsx:107
+#: src/components/core/InstallationFinished.jsx:105
 msgid "At this point you can power off the machine."
 msgstr "マシンの電源を切って問題ありません。"
 
-#: src/components/core/InstallationFinished.jsx:108
+#: src/components/core/InstallationFinished.jsx:106
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr "あとはマシンを再起動して新しいシステムにログインするだけです。"
 
-#: src/components/core/InstallationFinished.jsx:115
+#: src/components/core/InstallationFinished.jsx:113
 msgid "Finish"
 msgstr "完了"
 
-#: src/components/core/InstallationFinished.jsx:115
+#: src/components/core/InstallationFinished.jsx:113
 msgid "Reboot"
 msgstr "再起動"
 
 #: src/components/core/InstallerOptions.jsx:57
-#, fuzzy
 msgid "Show installer options"
-msgstr "インストーラのオプションを隠す"
+msgstr "インストーラのオプションを表示"
 
 #: src/components/core/InstallerOptions.jsx:62
-#, fuzzy
 msgid "Installer options"
 msgstr "インストーラのオプション"
 
 #: src/components/core/IssuesHint.jsx:34
 msgid ""
 "Before starting the installation, you need to address the following problems:"
-msgstr ""
+msgstr "インストールを開始する前に、下記の問題に対応する必要があります:"
 
 #: src/components/core/ListSearch.jsx:51
 msgid "Search"
@@ -204,14 +200,11 @@ msgstr "%s としてログイン"
 #. it and keep the brackets.
 #: src/components/core/LoginPage.jsx:76
 msgid "The installer requires [root] user privileges."
-msgstr ""
+msgstr "インストーラを使用するには [root] 権限が必要です。"
 
 #: src/components/core/LoginPage.jsx:95
-#, fuzzy
 msgid "Please, provide its password to log in to the system."
-msgstr ""
-"インストーラは %s ユーザ権限を必要としています。システムにログインするため、"
-"パスワードを入力してください。"
+msgstr "システムにログインするためのパスワードを入力してください。"
 
 #: src/components/core/LoginPage.jsx:98
 msgid "Login form"
@@ -227,7 +220,7 @@ msgstr "ログイン"
 
 #: src/components/core/LoginPage.jsx:124
 msgid "More about this"
-msgstr ""
+msgstr "こちらについて詳しく"
 
 #: src/components/core/LogsButton.jsx:102
 msgid "Collecting logs..."
@@ -316,14 +309,12 @@ msgid "Keyboard"
 msgstr "キーボード"
 
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:75
-#, fuzzy
 msgid "Choose a keyboard layout"
-msgstr "製品を選択してください"
+msgstr "キーボードレイアウトを選択してください"
 
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:86
-#, fuzzy
 msgid "Cannot be changed in remote installation"
-msgstr "リモートインストールの場合、キーボードレイアウトは変更できません"
+msgstr "リモートインストールの場合は変更できません"
 
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:57
 #: src/components/l10n/L10nPage.jsx:67
@@ -331,23 +322,20 @@ msgid "Language"
 msgstr "言語"
 
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:63
-#, fuzzy
 msgid "Choose a language"
-msgstr "言語の変更"
+msgstr "言語の選択"
 
 #: src/components/l10n/KeyboardSelection.jsx:45
 msgid "Filter by description or keymap code"
 msgstr "説明またはキーマップコードでフィルタ"
 
 #: src/components/l10n/KeyboardSelection.jsx:85
-#, fuzzy
 msgid "None of the keymaps match the filter."
-msgstr "フィルタに該当するパターンがありません。"
+msgstr "フィルタに該当するキーマップがありません。"
 
 #: src/components/l10n/KeyboardSelection.jsx:92
-#, fuzzy
 msgid "Keyboard selection"
-msgstr "ソフトウエア選択"
+msgstr "キーボードの選択"
 
 #: src/components/l10n/KeyboardSelection.jsx:107
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
@@ -365,9 +353,8 @@ msgstr "ローカライゼーション"
 
 #: src/components/l10n/L10nPage.jsx:68 src/components/l10n/L10nPage.jsx:79
 #: src/components/l10n/L10nPage.jsx:90
-#, fuzzy
 msgid "Not selected yet"
-msgstr "まだ何もデバイスを選択していません"
+msgstr "まだ何も選択していません"
 
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
 #: src/components/l10n/L10nPage.jsx:93
@@ -387,28 +374,24 @@ msgid "Filter by language, territory or locale code"
 msgstr "言語／地域／ロケールコードでフィルタ"
 
 #: src/components/l10n/LocaleSelection.jsx:84
-#, fuzzy
 msgid "None of the locales match the filter."
-msgstr "フィルタに該当するパターンがありません。"
+msgstr "フィルタに該当するロケールがありません。"
 
 #: src/components/l10n/LocaleSelection.jsx:91
-#, fuzzy
 msgid "Locale selection"
-msgstr "ソフトウエア選択"
+msgstr "ロケールの選択"
 
 #: src/components/l10n/TimezoneSelection.jsx:71
 msgid "Filter by territory, time zone code or UTC offset"
 msgstr "地域／タイムゾーンコード／UTC オフセット値でフィルタ"
 
 #: src/components/l10n/TimezoneSelection.jsx:122
-#, fuzzy
 msgid "None of the time zones match the filter."
-msgstr "フィルタに該当するパターンがありません。"
+msgstr "フィルタに該当するタイムゾーンがありません。"
 
 #: src/components/l10n/TimezoneSelection.jsx:129
-#, fuzzy
 msgid " Timezone selection"
-msgstr "選択の変更"
+msgstr " タイムゾーンの選択"
 
 #: src/components/layout/Loading.jsx:31
 msgid "Loading installation environment, please wait."
@@ -556,11 +539,11 @@ msgstr "ゲートウエイ"
 
 #: src/components/network/IpSettingsForm.jsx:178
 msgid "Gateway can be defined only in 'Manual' mode"
-msgstr ""
+msgstr "'手動' モードの場合にのみゲートウエイを設定できます"
 
 #: src/components/network/IpSettingsForm.jsx:210
 #: src/components/product/ProductRegistrationPage.jsx:89
-#: src/components/storage/BootSelection.jsx:216
+#: src/components/storage/BootSelection.jsx:215
 #: src/components/storage/DeviceSelection.jsx:240
 #: src/components/storage/EncryptionSettingsDialog.jsx:138
 #: src/components/storage/VolumeDialog.jsx:786
@@ -602,14 +585,12 @@ msgid "Network"
 msgstr "ネットワーク"
 
 #: src/components/network/NetworkPage.jsx:178
-#, fuzzy
 msgid "Wired connections"
-msgstr "接続 %s の削除"
+msgstr "有線接続"
 
 #: src/components/network/NetworkPage.jsx:185
-#, fuzzy
 msgid "WiFi connections"
-msgstr "接続 %s の編集"
+msgstr "無線接続"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:43
@@ -699,9 +680,8 @@ msgstr "接続 %s は状態の変化を待っています"
 
 #. TRANSLATORS: menu label, disconnect from the selected WiFi network
 #: src/components/network/WifiNetworkMenu.jsx:67
-#, fuzzy
 msgid "Disconnect"
-msgstr "切断済み"
+msgstr "切断"
 
 #. TRANSLATORS: menu label, remove the selected WiFi network settings
 #: src/components/network/WifiNetworkMenu.jsx:76
@@ -736,44 +716,40 @@ msgid "Software"
 msgstr "ソフトウエア"
 
 #: src/components/overview/OverviewPage.jsx:52
-#, fuzzy
 msgid "Ready for installation"
-msgstr "インストールの確認"
+msgstr "インストールの準備完了"
 
 #: src/components/overview/OverviewPage.jsx:102
-#, fuzzy
 msgid "Installation"
-msgstr "インストールしています"
+msgstr "インストール"
 
 #: src/components/overview/OverviewPage.jsx:103
 msgid "Before installing, please check the following problems."
-msgstr ""
+msgstr "インストールを行う前に、下記の問題点をご確認ください。"
 
 #: src/components/overview/OverviewPage.jsx:114
-#, fuzzy
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
-msgstr ""
-"インストール作業でインストール先のディスクに起動用のパーティションを設定しま"
-"す。"
+msgstr "インストール処理を開始する前に、設定内容をよくご確認ください。"
 
 #: src/components/overview/OverviewPage.jsx:123
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
 msgstr ""
+"インストールにあたっての主要な項目のみを表示しています。さらに詳しい設定を確"
+"認したい場合は、それぞれのセクションを開いてください。"
 
 #: src/components/overview/SoftwareSection.jsx:60
-#, fuzzy
 msgid "The installation will take"
-msgstr "インストールを行うには %s が必要です"
+msgstr "インストールで占有する容量は"
 
 #. TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
 #: src/components/overview/SoftwareSection.jsx:67
-#, fuzzy, c-format
+#, c-format
 msgid "The installation will take %s including:"
-msgstr "インストールを行うには %s が必要です"
+msgstr "インストールを行うには、下記を含めた %s が必要です:"
 
 #: src/components/overview/StorageSection.jsx:53
 msgid ""
@@ -880,7 +856,7 @@ msgstr ""
 
 #: src/components/overview/routes.js:30
 msgid "Overview"
-msgstr ""
+msgstr "概要"
 
 #: src/components/product/ProductRegistrationPage.jsx:66
 #, c-format
@@ -900,18 +876,16 @@ msgid "Loading available products, please wait..."
 msgstr "利用可能な製品を読み込んでいます。しばらくお待ちください..."
 
 #: src/components/product/ProductSelectionProgress.jsx:88
-#, fuzzy
 msgid "Analyze disks"
-msgstr "ディスクの有効化"
+msgstr "ディスクの分析"
 
 #: src/components/product/ProductSelectionProgress.jsx:95
 msgid "Configure software"
-msgstr ""
+msgstr "ソフトウエアの設定"
 
 #: src/components/product/ProductSelectionProgress.jsx:156
-#, fuzzy
 msgid "Configuring the product, please wait ..."
-msgstr "利用可能な製品を読み込んでいます。しばらくお待ちください..."
+msgstr "製品を設定しています。しばらくお待ちください..."
 
 #: src/components/questions/GenericQuestion.jsx:35
 #: src/components/questions/LuksActivationQuestion.jsx:60
@@ -941,9 +915,8 @@ msgid "The following software patterns are selected for installation:"
 msgstr "下記のソフトウエアパターンをインストールするよう選択しています:"
 
 #: src/components/software/SoftwarePage.jsx:165
-#, fuzzy
 msgid "Selected patterns"
-msgstr "タイムゾーンの選択"
+msgstr "パターンの選択"
 
 #: src/components/software/SoftwarePage.jsx:168
 msgid "Change selection"
@@ -961,18 +934,19 @@ msgstr "ソフトウエア選択"
 #: src/components/software/SoftwarePatternsSelection.jsx:241
 #: src/components/software/SoftwarePatternsSelection.jsx:242
 msgid "Filter by pattern title or description"
-msgstr ""
+msgstr "パターンタイトルまたは説明でフィルタ"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
 #: src/components/software/UsedSize.jsx:33
-#, fuzzy, c-format
+#, c-format
 msgid "Installation will take %s."
-msgstr "インストールを行うには %s が必要です"
+msgstr "インストールを行うには %s が必要です。"
 
 #: src/components/software/UsedSize.jsx:38
 msgid "This space includes the base system and the selected software patterns."
 msgstr ""
+"この容量はシステムの基本部分のほか、選択したソフトウエアパターンを含みます。"
 
 #: src/components/storage/BootConfigField.jsx:43
 msgid "Change boot options"
@@ -995,7 +969,7 @@ msgstr ""
 msgid "Installation will configure partitions for booting at %s."
 msgstr "インストール作業で %s に起動用のパーティションを設定します。"
 
-#: src/components/storage/BootSelection.jsx:127
+#: src/components/storage/BootSelection.jsx:126
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
@@ -1003,44 +977,43 @@ msgstr ""
 "システムを起動できるようにするため、インストーラはディスク内にいくつかの追加"
 "パーティションを作成もしくは設定する必要があるかもしれません。"
 
-#: src/components/storage/BootSelection.jsx:133
+#: src/components/storage/BootSelection.jsx:132
 msgid "Partitions to boot will be allocated at the installation disk."
 msgstr "インストール先のディスク内に起動用のパーティションを割り当てます。"
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelection.jsx:138
+#: src/components/storage/BootSelection.jsx:137
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
 msgstr ""
 "インストール先のディスク (%s) 内に起動用のパーティションを割り当てます。"
 
-#: src/components/storage/BootSelection.jsx:154
-#, fuzzy
+#: src/components/storage/BootSelection.jsx:153
 msgid "Select booting partition"
-msgstr "パーティションの設定作業を独自に実施します。"
+msgstr "起動パーティションの選択"
 
-#: src/components/storage/BootSelection.jsx:168
+#: src/components/storage/BootSelection.jsx:167
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
 msgstr "自動"
 
-#: src/components/storage/BootSelection.jsx:177
+#: src/components/storage/BootSelection.jsx:176
 msgid "Select a disk"
 msgstr "ディスクの選択"
 
-#: src/components/storage/BootSelection.jsx:181
+#: src/components/storage/BootSelection.jsx:180
 msgid "Partitions to boot will be allocated at the following device."
 msgstr "下記のデバイス内に起動用パーティションを割り当てます。"
 
-#: src/components/storage/BootSelection.jsx:184
+#: src/components/storage/BootSelection.jsx:183
 msgid "Choose a disk for placing the boot loader"
 msgstr "ブートローダを配置するディスクを選択してください"
 
-#: src/components/storage/BootSelection.jsx:200
+#: src/components/storage/BootSelection.jsx:199
 msgid "Do not configure"
 msgstr "設定しない"
 
-#: src/components/storage/BootSelection.jsx:203
+#: src/components/storage/BootSelection.jsx:202
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr "起動用のパーティションを自動設定しません。注意してお使いください。"
@@ -1161,9 +1134,8 @@ msgid "Remove max channel filter"
 msgstr "最大チャネルのフィルタを削除"
 
 #: src/components/storage/DeviceSelection.jsx:101
-#, fuzzy
 msgid "Loading data, please wait a second..."
-msgstr "利用可能な製品を読み込んでいます。しばらくお待ちください..."
+msgstr "データを読み込んでいます。しばらくお待ちください..."
 
 #. TRANSLATORS: description for using plain partitions for installing the
 #. system, the text in the square brackets [] is displayed in bold, use only
@@ -1190,22 +1162,18 @@ msgstr ""
 "新規パーティションとして作成します。"
 
 #: src/components/storage/DeviceSelection.jsx:149
-#, fuzzy
 msgid "Select installation device"
-msgstr "インストール先のデバイスに設定する"
+msgstr "インストール先デバイスの選択"
 
 #: src/components/storage/DeviceSelection.jsx:155
-#, fuzzy
 msgid "Install new system on"
-msgstr "インストーラのオプション"
+msgstr "新しいシステムのインストール先"
 
 #: src/components/storage/DeviceSelection.jsx:158
-#, fuzzy
 msgid "An existing disk"
-msgstr "既存のパーティションの縮小"
+msgstr "既存のディスク"
 
 #: src/components/storage/DeviceSelection.jsx:167
-#, fuzzy
 msgid "A new LVM Volume Group"
 msgstr "新規 LVM ボリュームグループ"
 
@@ -1222,7 +1190,6 @@ msgid "Prepare more devices by configuring advanced"
 msgstr "高度な設定でさらにデバイスを検出"
 
 #: src/components/storage/DeviceSelection.jsx:229
-#, fuzzy
 msgid "storage techs"
 msgstr "ストレージ技術"
 
@@ -1301,7 +1268,7 @@ msgstr "詳細"
 #: src/components/storage/PartitionsField.jsx:451
 #: src/components/storage/ProposalResultTable.jsx:123
 #: src/components/storage/SpaceActionsTable.jsx:143
-#: src/components/storage/VolumeFields.jsx:472
+#: src/components/storage/VolumeFields.jsx:474
 #: src/components/storage/VolumeLocationSelectorTable.jsx:103
 msgid "Size"
 msgstr "サイズ"
@@ -1333,13 +1300,12 @@ msgid "Encryption"
 msgstr "暗号化"
 
 #: src/components/storage/EncryptionField.jsx:39
-#, fuzzy
 msgid ""
 "Protection for the information stored at the device, including data, "
 "programs, and system files."
 msgstr ""
-"完全ディスク暗号化 (Full Disk Encryption; FDE) を使用することで、データやプロ"
-"グラム、システムファイルを含むデバイス内の情報保護を行うことができます。"
+"データやプログラム、システムファイルを含むデバイス内の情報を保護する仕組みで"
+"す。"
 
 #: src/components/storage/EncryptionField.jsx:42
 msgid "disabled"
@@ -1354,13 +1320,12 @@ msgid "using TPM unlocking"
 msgstr "TPM 解錠を使用"
 
 #: src/components/storage/EncryptionField.jsx:58
-#, fuzzy
 msgid "Enable"
 msgstr "有効"
 
 #: src/components/storage/EncryptionField.jsx:58
 msgid "Modify"
-msgstr ""
+msgstr "修正"
 
 #: src/components/storage/EncryptionSettingsDialog.jsx:37
 msgid ""
@@ -1401,7 +1366,6 @@ msgstr "インストール先のデバイス"
 
 #. TRANSLATORS: The storage "Installation device" field's description.
 #: src/components/storage/InstallationDeviceField.jsx:42
-#, fuzzy
 msgid "Main disk or LVM Volume Group for installation."
 msgstr ""
 "インストール先のメインディスクもしくは LVM ボリュームグループを選択してくださ"
@@ -1409,20 +1373,19 @@ msgstr ""
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
 #: src/components/storage/InstallationDeviceField.jsx:56
-#, fuzzy, c-format
+#, c-format
 msgid "File systems created as new partitions at %s"
-msgstr "新しいパーティションの作成"
+msgstr "%s に新規のパーティションを作成し、そこにファイルシステムを作成"
 
 #: src/components/storage/InstallationDeviceField.jsx:59
-#, fuzzy
 msgid "File systems created at a new LVM volume group"
-msgstr "新規 LVM ボリュームグループのデバイス選択"
+msgstr "新規 LVM ボリュームグループにファイルシステムを作成"
 
 #. TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
 #: src/components/storage/InstallationDeviceField.jsx:63
-#, fuzzy, c-format
+#, c-format
 msgid "File systems created at a new LVM volume group on %s"
-msgstr "%s 内の新規 LVM ボリュームグループ"
+msgstr "%s 内の新規 LVM ボリュームグループにファイルシステムを作成"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/PartitionsField.jsx:73
@@ -1615,9 +1578,9 @@ msgid "Delete"
 msgstr "削除"
 
 #: src/components/storage/PartitionsField.jsx:449
-#: src/components/storage/VolumeFields.jsx:59
-#: src/components/storage/VolumeFields.jsx:68
-#: src/components/storage/VolumeFields.jsx:73
+#: src/components/storage/VolumeFields.jsx:61
+#: src/components/storage/VolumeFields.jsx:70
+#: src/components/storage/VolumeFields.jsx:75
 msgid "Mount point"
 msgstr "マウントポイント"
 
@@ -1649,16 +1612,14 @@ msgid "Partitions and file systems"
 msgstr "パーティションとファイルシステム"
 
 #: src/components/storage/PartitionsField.jsx:802
-#, fuzzy
 msgid ""
 "Structure of the new system, including any additional partition needed for "
 "booting"
-msgstr "起動時に必要な追加パーティションを含む、新しいシステムの構造設定です。"
+msgstr "起動時に必要な追加パーティションを含む、新しいシステムの構造設定です"
 
 #: src/components/storage/PartitionsField.jsx:808
-#, fuzzy
 msgid "Show partitions and file-systems actions"
-msgstr "パーティションとファイルシステム"
+msgstr "パーティションとファイルシステムの処理を表示"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsDialog.jsx:62
@@ -1685,10 +1646,10 @@ msgid "Affecting"
 msgstr "下記に影響があります:"
 
 #: src/components/storage/ProposalResultSection.jsx:96
-#, fuzzy, c-format
+#, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
-msgstr[0] "全ての処理計画を確認する"
+msgstr[0] "%d 個の処理計画を確認する"
 
 #: src/components/storage/ProposalResultSection.jsx:111
 msgid "Waiting for information about storage configuration"
@@ -1696,16 +1657,14 @@ msgstr "ストレージ設定に関する情報を待機しています"
 
 #: src/components/storage/ProposalResultSection.jsx:124
 msgid "Storage proposal not possible"
-msgstr ""
+msgstr "ストレージの提案が実施できません"
 
 #: src/components/storage/ProposalResultSection.jsx:188
-#, fuzzy
 msgid ""
 "During installation, some actions will be performed to configure the system "
 "as displayed below."
 msgstr ""
-"インストールの際、システムの設定にあたって下記に示す %d 個の処理が実行されま"
-"す"
+"インストールの際、システムの設定にあたって下記に示す処理が実行されます。"
 
 #: src/components/storage/ProposalResultSection.jsx:196
 msgid "Planned Actions"
@@ -1730,11 +1689,11 @@ msgstr "変更前: %s"
 msgid "Mount Point"
 msgstr "マウントポイント"
 
-#: src/components/storage/ProposalTransactionalInfo.jsx:46
+#: src/components/storage/ProposalTransactionalInfo.jsx:45
 msgid "Transactional root file system"
 msgstr "トランザクション型のルートファイルシステム"
 
-#: src/components/storage/ProposalTransactionalInfo.jsx:49
+#: src/components/storage/ProposalTransactionalInfo.jsx:48
 #, c-format
 msgid ""
 "%s is an immutable system with atomic updates. It uses a read-only Btrfs "
@@ -1883,75 +1842,75 @@ msgid "Do you want to add it?"
 msgstr "追加してよろしいですか？"
 
 #. TRANSLATORS: info about possible file system types.
-#: src/components/storage/VolumeFields.jsx:215
+#: src/components/storage/VolumeFields.jsx:217
 msgid ""
 "The options for the file system type depends on the product and the mount "
 "point."
 msgstr ""
 "ファイルシステムに対する選択肢は、製品とマウントポイントごとに異なります。"
 
-#: src/components/storage/VolumeFields.jsx:221
+#: src/components/storage/VolumeFields.jsx:223
 msgid "More info for file system types"
 msgstr "ファイルシステムの種類に関する詳細"
 
 #. TRANSLATORS: label for the file system selector.
-#: src/components/storage/VolumeFields.jsx:232
+#: src/components/storage/VolumeFields.jsx:234
 msgid "File system type"
 msgstr "ファイルシステムの種類"
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:263
+#: src/components/storage/VolumeFields.jsx:265
 msgid "the configuration of snapshots"
 msgstr "スナップショットの設定"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
-#: src/components/storage/VolumeFields.jsx:268
+#: src/components/storage/VolumeFields.jsx:270
 #, c-format
 msgid "the presence of the file system for %s"
 msgstr "%s に対するファイルシステムの存在"
 
 #. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeFields.jsx:270
+#: src/components/storage/VolumeFields.jsx:272
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:274
+#: src/components/storage/VolumeFields.jsx:276
 msgid "the amount of RAM in the system"
 msgstr "システムに搭載された RAM の量"
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeFields.jsx:277
+#: src/components/storage/VolumeFields.jsx:279
 #, c-format
 msgid "The final size depends on %s."
 msgstr "最終的なサイズは %s に依存します。"
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeFields.jsx:279
+#: src/components/storage/VolumeFields.jsx:281
 msgid " and "
 msgstr " および "
 
 #. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeFields.jsx:284
+#: src/components/storage/VolumeFields.jsx:286
 msgid "Automatically calculated size according to the selected product."
 msgstr "選択した製品に合わせてサイズを自動計算します。"
 
-#: src/components/storage/VolumeFields.jsx:303
+#: src/components/storage/VolumeFields.jsx:305
 msgid "Exact size for the file system."
 msgstr "ファイルシステムに対して正確なサイズを設定します。"
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeFields.jsx:316
+#: src/components/storage/VolumeFields.jsx:318
 msgid "Exact size"
 msgstr "正確なサイズ"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeFields.jsx:333
+#: src/components/storage/VolumeFields.jsx:335
 msgid "Size unit"
 msgstr "サイズの単位"
 
-#: src/components/storage/VolumeFields.jsx:361
+#: src/components/storage/VolumeFields.jsx:363
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1962,45 +1921,45 @@ msgstr ""
 "きくなるように設定されます。"
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeFields.jsx:368
+#: src/components/storage/VolumeFields.jsx:370
 msgid "Minimum"
 msgstr "最小"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeFields.jsx:379
+#: src/components/storage/VolumeFields.jsx:381
 msgid "Minimum desired size"
 msgstr "最小必須サイズ"
 
-#: src/components/storage/VolumeFields.jsx:390
+#: src/components/storage/VolumeFields.jsx:392
 msgid "Unit for the minimum size"
 msgstr "最小サイズの単位"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:402
+#: src/components/storage/VolumeFields.jsx:404
 msgid "Maximum"
 msgstr "最大"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:414
+#: src/components/storage/VolumeFields.jsx:416
 msgid "Maximum desired size"
 msgstr "最大要求サイズ"
 
-#: src/components/storage/VolumeFields.jsx:424
+#: src/components/storage/VolumeFields.jsx:426
 msgid "Unit for the maximum size"
 msgstr "最大サイズの単位"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeFields.jsx:442
+#: src/components/storage/VolumeFields.jsx:444
 msgid "Auto"
 msgstr "自動"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeFields.jsx:444
+#: src/components/storage/VolumeFields.jsx:446
 msgid "Fixed"
 msgstr "固定値"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeFields.jsx:446
+#: src/components/storage/VolumeFields.jsx:448
 msgid "Range"
 msgstr "範囲"
 
@@ -2345,7 +2304,7 @@ msgstr "ターゲット"
 
 #: src/components/storage/routes.js:36
 msgid "Proposal"
-msgstr ""
+msgstr "提案"
 
 #: src/components/storage/utils.js:64
 msgid "KiB"
@@ -2380,9 +2339,8 @@ msgstr ""
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space deleting current content". Keep it short
 #: src/components/storage/utils.js:82
-#, fuzzy
 msgid "deleting current content"
-msgstr "現在の内容を全て削除"
+msgstr "現在の内容を削除"
 
 #: src/components/storage/utils.js:87
 msgid "Shrink existing partitions"
@@ -2397,9 +2355,8 @@ msgstr ""
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space shrinking partitions". Keep it short.
 #: src/components/storage/utils.js:92
-#, fuzzy
 msgid "shrinking partitions"
-msgstr "既存のパーティションの縮小"
+msgstr "パーティションの縮小"
 
 #: src/components/storage/utils.js:97
 msgid "Use available space"
@@ -2429,9 +2386,8 @@ msgstr "パーティションの設定作業を独自に実施します。"
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space with custom actions". Keep it short.
 #: src/components/storage/utils.js:112
-#, fuzzy
 msgid "with custom actions"
-msgstr "独自の処理を実行します"
+msgstr "独自の処理"
 
 #: src/components/users/FirstUser.jsx:35
 msgid "No user defined yet."
@@ -2477,23 +2433,20 @@ msgid "Use suggested username"
 msgstr "提案されたユーザ名を使用する"
 
 #: src/components/users/FirstUserForm.jsx:140
-#, fuzzy
 msgid "All fields are required"
-msgstr "サイズを指定する必要があります"
+msgstr "全ての項目に入力する必要があります"
 
 #: src/components/users/FirstUserForm.jsx:147
 msgid "Please, try again."
-msgstr ""
+msgstr "やり直してください。"
 
 #: src/components/users/FirstUserForm.jsx:197
-#, fuzzy
 msgid "Create user"
-msgstr "ユーザアカウントの作成"
+msgstr "ユーザの作成"
 
 #: src/components/users/FirstUserForm.jsx:197
-#, fuzzy
 msgid "Edit user"
-msgstr "%s の編集"
+msgstr "ユーザの編集"
 
 #: src/components/users/FirstUserForm.jsx:214
 #: src/components/users/FirstUserForm.jsx:216
@@ -2600,21 +2553,19 @@ msgstr "消去"
 
 #: src/components/users/UsersPage.jsx:45
 msgid "First user"
-msgstr ""
+msgstr "最初のユーザ"
 
 #: src/components/users/UsersPage.jsx:52
 msgid "Root authentication"
 msgstr "root の認証"
 
 #: src/components/users/routes.js:41
-#, fuzzy
 msgid "Create or edit the first user"
-msgstr "ファイルを読み込めません"
+msgstr "最初のユーザの作成または編集"
 
 #: src/components/users/routes.js:48
-#, fuzzy
 msgid "Edit first user"
-msgstr "ファイルシステムの編集"
+msgstr "最初のユーザの編集"
 
 #~ msgid ""
 #~ "There are some reported issues. Please review them in the previous steps "
