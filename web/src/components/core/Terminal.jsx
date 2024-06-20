@@ -57,7 +57,7 @@ const buildTerm = () => {
  * @param {object} props
  * @param {Location} props.url url of websocket answering terminal
  */
-export class Terminal extends React.Component {
+export default class Terminal extends React.Component {
   constructor() {
     super();
     this.terminalRef = React.createRef();
