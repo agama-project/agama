@@ -54,6 +54,7 @@ use zbus::Connection;
 
 /// Represents the progress for an Agama service.
 #[derive(Clone, Default, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Progress {
     /// Current step
     pub current_step: u32,

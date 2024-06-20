@@ -32,82 +32,83 @@ jest.mock("~/client");
 let callbacks;
 let onManagerProgressChange = jest.fn();
 let onSoftwareProgressChange = jest.fn();
-const getProgressFn = jest.fn();
+let onStorageProgressChange = jest.fn();
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       manager: {
         onProgressChange: onManagerProgressChange,
-        getProgress: getProgressFn
+        getProgress: jest.fn().mockResolvedValue({
+          message: "Partition disks",
+          current: 1,
+          total: 10,
+          steps: ["Partition disks", "Install software"],
+        }),
       },
       software: {
-        onProgressChange: onSoftwareProgressChange
-      }
+        onProgressChange: onSoftwareProgressChange,
+      },
+      storage: {
+        onProgressChange: onStorageProgressChange,
+      },
     };
   });
 });
 
 describe("ProgressReport", () => {
-  describe("when there is not progress information available", () => {
-    beforeEach(() => {
-      getProgressFn.mockResolvedValue({});
-    });
-
-    it("renders a waiting message", async () => {
-      installerRender(<ProgressReport />);
-      await screen.findByText(/Waiting for progress status/i);
-    });
-  });
-
   describe("when there is progress information available", () => {
     beforeEach(() => {
       const [onManagerProgress, managerCallbacks] = createCallbackMock();
       const [onSoftwareProgress, softwareCallbacks] = createCallbackMock();
+      const [onStorageProgress, storageCallbacks] = createCallbackMock();
       onManagerProgressChange = onManagerProgress;
       onSoftwareProgressChange = onSoftwareProgress;
-      getProgressFn.mockResolvedValue(
-        { message: "Reading repositories", current: 1, total: 10 }
-      );
-      callbacks = { manager: managerCallbacks, software: softwareCallbacks };
+      onStorageProgressChange = onStorageProgress;
+      callbacks = {
+        manager: managerCallbacks,
+        software: softwareCallbacks,
+        storage: storageCallbacks,
+      };
     });
 
-    it("shows the main progress bar", async () => {
+    it("shows the progress including the details from the storage service", async () => {
       installerRender(<ProgressReport />);
 
-      await screen.findByText(/Reading/i);
+      await screen.findByText(/Waiting/i);
+      await screen.findByText(/Partition disks/i);
+      await screen.findByText(/Install software/i);
 
-      // NOTE: there can be more than one subscriptions to the
-      // manager#onProgressChange. We're interested in the latest one here.
-      const cb = callbacks.manager[callbacks.manager.length - 1];
+      const cb = callbacks.storage[callbacks.storage.length - 1];
       act(() => {
-        cb({ message: "Partitioning", current: 1, total: 10 });
+        cb({
+          message: "Doing some partitioning",
+          current: 1,
+          total: 10,
+          finished: false,
+        });
       });
 
-      await screen.findByRole("progressbar", { name: "Partitioning" });
+      await screen.findByText("Doing some partitioning (1/10)");
     });
 
-    it("shows secondary progress bar when there is information from software service ", async () => {
+    it("shows the progress including the details from the software service", async () => {
       installerRender(<ProgressReport />);
 
-      const managerCallback = callbacks.manager[callbacks.manager.length - 1];
-      const softwareCallback = callbacks.software[callbacks.software.length - 1];
+      await screen.findByText(/Waiting/i);
+      await screen.findByText(/Install software/i);
 
+      const cb = callbacks.software[callbacks.software.length - 1];
       act(() => {
-        managerCallback({ message: "Partitioning", current: 1, total: 10 });
+        cb({
+          message: "Installing packages",
+          current: 495,
+          total: 500,
+          finished: false,
+        });
       });
 
-      await screen.findByRole("progressbar", { name: "Partitioning" });
-      const bars = await screen.findAllByRole("progressbar");
-      expect(bars.length).toBe(1);
-
-      act(() => {
-        managerCallback({ message: "Installing software", current: 4, total: 10 });
-        softwareCallback({ message: "Installing YaST2", current: 256, total: 500, finished: false });
-      });
-
-      await screen.findByRole("progressbar", { name: "Installing software" });
-      await screen.findByRole("progressbar", { name: "Installing YaST2" });
+      await screen.findByText("Installing packages (495/500)");
     });
   });
 });

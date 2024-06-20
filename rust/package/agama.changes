@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jun 20 05:32:42 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for progress sequences with pre-defined descriptions
+  (gh#openSUSE/agama#1356).
+- Fix the "Progress" signal to use camelCase
+  (gh#openSUSE/agama#1356).
+
+-------------------------------------------------------------------
 Fri Jun 14 06:17:52 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Remove references to the old "config add/set" subcommands
