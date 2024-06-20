@@ -51,7 +51,6 @@ export default function NetworkPage() {
   const { connections: initialConnections, settings } = useLoaderData();
   const [connections, setConnections] = useState(initialConnections);
   const [devices, setDevices] = useState(undefined);
-  const [selectedConnection, setSelectedConnection] = useState(null);
 
   useEffect(() => {
     return client.onNetworkChange(({ type, payload }) => {
@@ -87,20 +86,6 @@ export default function NetworkPage() {
 
     client.devices().then(setDevices);
   }, [client, devices]);
-
-  const selectConnection = ({ id }) => {
-    client.getConnection(id).then(setSelectedConnection);
-  };
-
-  const forgetConnection = async ({ id }) => {
-    await client.deleteConnection(id);
-    setConnections(undefined);
-  };
-
-  const updateConnections = async () => {
-    setConnections(undefined);
-    setDevices(undefined);
-  };
 
   const connectionDevice = ({ id }) => devices?.find(({ connection }) => id === connection);
   const connectionAddresses = (connection) => {
@@ -171,7 +156,7 @@ export default function NetworkPage() {
 
     if (wiredConnections.length === 0) return <NoWiredConnections />;
 
-    return <ConnectionsTable connections={wiredConnections} devices={devices} onEdit={selectConnection} />;
+    return <ConnectionsTable connections={wiredConnections} devices={devices} />;
   };
 
   return (
