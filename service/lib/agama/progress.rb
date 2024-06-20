@@ -192,7 +192,7 @@ module Agama
   private
 
     def description_for(step)
-      @descriptions[step - 1] || format(_("Step %s/%s"), step, total_steps)
+      @descriptions[step - 1] || ""
     end
   end
 end
