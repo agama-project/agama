@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-09 02:25+0000\n"
+"POT-Creation-Date: 2024-06-20 09:58+0000\n"
 "PO-Revision-Date: 2024-04-27 03:43+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-"
@@ -96,38 +96,30 @@ msgstr ""
 "Der Schlüssel %{id} (%{name}) mit dem Fingerabdruck %{fingerprint} ist "
 "unbekannt. Möchten Sie diesem Schlüssel vertrauen?"
 
-#. as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
-#: service/lib/agama/software/manager.rb:134
-msgid "Initializing target repositories"
-msgstr "Ziel-Repositorien werden initialisiert"
-
-#: service/lib/agama/software/manager.rb:135
+#. Should an error be raised?
+#: service/lib/agama/software/manager.rb:137
 msgid "Initializing sources"
 msgstr "Quellen werden initialisiert"
 
-#: service/lib/agama/software/manager.rb:140
+#: service/lib/agama/software/manager.rb:142
 msgid "Refreshing repositories metadata"
 msgstr "Repositorien-Metadaten werden aufgefrischt"
 
-#: service/lib/agama/software/manager.rb:141
+#: service/lib/agama/software/manager.rb:143
 msgid "Calculating the software proposal"
 msgstr "Software-Vorschlag wird berechnet"
 
 #. Writes the repositories information to the installed system
-#: service/lib/agama/software/manager.rb:190
+#: service/lib/agama/software/manager.rb:201
 msgid "Writing repositories to the target system"
 msgstr "Repositorien werden auf das Zielsystem geschrieben"
-
-#: service/lib/agama/software/manager.rb:196
-msgid "Restoring original repositories"
-msgstr "Ursprüngliche Repositorien werden wiederhergestellt"
 
 #. Issues related to the software proposal.
 #.
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:482
+#: service/lib/agama/software/manager.rb:468
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "Repositorium „%s“ konnte nicht gelesen werden"
@@ -135,21 +127,21 @@ msgstr "Repositorium „%s“ konnte nicht gelesen werden"
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:492
+#: service/lib/agama/software/manager.rb:478
 msgid "Product not selected yet"
 msgstr "Produkt noch nicht ausgewählt"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:501
+#: service/lib/agama/software/manager.rb:487
 msgid "Product must be registered"
 msgstr "Produkt muss registriert sein"
 
 #. Returns solver error messages from the last attempt
 #.
 #. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:227
+#: service/lib/agama/software/proposal.rb:223
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "%s Abhängigkeitsprobleme gefunden."
@@ -224,3 +216,15 @@ msgstr[0] ""
 "Das folgende ausgewählte Gerät wird im System nicht gefunden: %{devices}"
 msgstr[1] ""
 "Die folgenden ausgewählten Geräte werden im System nicht gefunden: %{devices}"
+
+#. Recalculates the list of issues
+#: service/lib/agama/users.rb:152
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+
+#~ msgid "Initializing target repositories"
+#~ msgstr "Ziel-Repositorien werden initialisiert"
+
+#~ msgid "Restoring original repositories"
+#~ msgstr "Ursprüngliche Repositorien werden wiederhergestellt"
