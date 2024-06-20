@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun 20 12:58:32 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a new "config edit" command allows editing installation
+  settings using an external editor (gh#openSUSE/agama#1360).
+- Remove the "--format" option (gh#openSUSE/agama#1360).
+
+-------------------------------------------------------------------
 Thu Jun 20 05:32:42 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for progress sequences with pre-defined descriptions
