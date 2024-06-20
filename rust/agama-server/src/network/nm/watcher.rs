@@ -282,7 +282,13 @@ impl DeviceChangedStream {
 
     fn handle_changed(message: PropertiesChanged) -> Option<DeviceChange> {
         const IP_CONFIG_PROPS: &[&str] = &["AddressData", "Gateway", "NameserverData", "RouteData"];
-        const DEVICE_PROPS: &[&str] = &["DeviceType", "HwAddress", "Interface", "State"];
+        const DEVICE_PROPS: &[&str] = &[
+            "DeviceType",
+            "HwAddress",
+            "Interface",
+            "State",
+            "StateReason",
+        ];
 
         let path = OwnedObjectPath::from(message.path()?);
         let args = message.args().ok()?;

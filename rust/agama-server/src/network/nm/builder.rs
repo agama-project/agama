@@ -38,6 +38,7 @@ impl<'a> DeviceFromProxyBuilder<'a> {
             .context("Unsupported device type: {device_type}")?;
 
         let state = self.proxy.state().await? as u8;
+        let (_, state_reason) = self.proxy.state_reason().await?;
         let state: DeviceState = state
             .try_into()
             .context("Unsupported device state: {state}")?;
@@ -46,6 +47,7 @@ impl<'a> DeviceFromProxyBuilder<'a> {
             name: self.proxy.interface().await?,
             type_,
             state,
+            state_reason: state_reason as u8,
             ..Default::default()
         };
 
