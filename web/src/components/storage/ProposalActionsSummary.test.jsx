@@ -23,7 +23,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 import ProposalActionsSummary from "~/components/storage/ProposalActionsSummary";
 
@@ -59,15 +59,12 @@ const props = {
     { device: "/dev/sda", action: "force_delete" },
   ],
   onActionsClick: jest.fn(),
-  onChange: jest.fn()
 };
 
 describe("ProposalActionsSummary", () => {
-  it("renders a button for opening the space policy dialog", async () => {
-    const { user } = plainRender(<ProposalActionsSummary {...props} />);
-    const button = screen.getByRole("button", { name: "Change" });
-    await user.click(button);
-    screen.getByRole("dialog", { name: "Find space" });
+  it("renders a button for navigating to the space policy selection", async () => {
+    const { user } = installerRender(<ProposalActionsSummary {...props} />);
+    const button = screen.getByRole("link", { name: "Change" });
   });
 
   it.todo("test the actions and drawer behaviour");
