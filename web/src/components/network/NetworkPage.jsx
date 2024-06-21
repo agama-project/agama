@@ -24,8 +24,8 @@
 import React, { useEffect, useState } from "react";
 import { Button, CardBody, Grid, GridItem, Split, Skeleton, Stack } from "@patternfly/react-core";
 import { useLoaderData } from "react-router-dom";
-import { CardField, EmptyState, Page } from "~/components/core";
-import { ConnectionsTable, WifiSelector } from "~/components/network";
+import { ButtonLink, CardField, EmptyState, Page } from "~/components/core";
+import { ConnectionsTable } from "~/components/network";
 import { NetworkEventTypes } from "~/client/network";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
@@ -106,9 +106,9 @@ export default function NetworkPage() {
       if (!wifiAvailable) return;
 
       return (
-        <Button variant={activeConnection ? "primary" : "secondary"}>
+        <ButtonLink isPrimary={activeConnection} to="wifis">
           {activeConnection ? _("Change") : _("Connect")}
-        </Button>
+        </ButtonLink>
       );
     };
 
