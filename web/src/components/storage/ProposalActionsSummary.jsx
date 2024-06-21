@@ -21,10 +21,9 @@
 
 // @ts-check
 
-import React, { useState } from "react";
+import React from "react";
 import { Button, Skeleton, Stack, List, ListItem } from "@patternfly/react-core";
-import { CardField } from "~/components/core";
-import SpacePolicyDialog from "~/components/storage/SpacePolicyDialog";
+import { CardField, ButtonLink } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
 import { _, n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
@@ -186,10 +185,6 @@ const ActionsSkeleton = () => (
  * Allows to select the space policy.
  * @component
  *
- * @typedef {object} SpacePolicyConfig
- * @property {SpacePolicy} spacePolicy
- * @property {SpaceAction[]} spaceActions
- *
  * @param {object} props
  * @param {boolean} props.isLoading
  * @param {ValidationError[]} [props.errors=[]] - Validation errors
@@ -200,7 +195,6 @@ const ActionsSkeleton = () => (
  * @param {SpaceAction[]} [props.spaceActions=[]]
  * @param {StorageDevice[]} props.devices
  * @param {() => void} props.onActionsClick
- * @param {(config: SpacePolicyConfig) => void} props.onChange
  */
 export default function ProposalActionsSummary({
   isLoading,
@@ -212,16 +206,7 @@ export default function ProposalActionsSummary({
   spaceActions = [],
   devices,
   onActionsClick,
-  onChange
 }) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const openDialog = () => setIsDialogOpen(true);
-  const closeDialog = () => setIsDialogOpen(false);
-  const onAccept = ({ spacePolicy, spaceActions }) => {
-    closeDialog();
-    onChange({ spacePolicy, spaceActions });
-  };
-
   let value;
   if (isLoading || !policy) {
     value = <Skeleton fontSize="sm" width="65%" />;
@@ -239,7 +224,7 @@ export default function ProposalActionsSummary({
     <CardField
       label={_("Actions")}
       actions={
-        isLoading ? <Skeleton fontSize="sm" width="100px" /> : <Button variant="secondary" onClick={openDialog}>{_("Change")}</Button>
+        isLoading ? <Skeleton fontSize="sm" width="100px" /> : <ButtonLink to="space-policy">{_("Change")}</ButtonLink>
       }
       cardProps={{ isFullHeight: false }}
     >
@@ -269,16 +254,6 @@ export default function ProposalActionsSummary({
             )
         }
       </CardField.Content>
-      {isDialogOpen &&
-        <SpacePolicyDialog
-          isOpen
-          isLoading={isLoading}
-          policy={policy}
-          actions={spaceActions}
-          devices={devices}
-          onAccept={onAccept}
-          onCancel={closeDialog}
-        />}
     </CardField>
   );
 }

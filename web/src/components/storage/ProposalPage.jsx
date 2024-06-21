@@ -275,17 +275,6 @@ export default function ProposalPage() {
     calculate(newSettings).catch(console.error);
   };
 
-  /** @param {import("~/components/storage/SpacePolicyField").SpacePolicyConfig} spacePolicyConfig */
-  const changeSpacePolicy = ({ spacePolicy, spaceActions }) => {
-    changeSettings(
-      CHANGING.POLICY,
-      {
-        spacePolicy: spacePolicy.id,
-        spaceActions
-      }
-    );
-  };
-
   const spacePolicy = SPACE_POLICIES.find(p => p.id === state.settings.spacePolicy);
 
   /**
@@ -334,7 +323,6 @@ export default function ProposalPage() {
                   devices={state.settings.installationDevices}
                   onActionsClick={drawerRef.current?.open}
                   isLoading={showSkeleton(state.loading, "ProposalActionsSummary", state.changing)}
-                  onChange={changeSpacePolicy}
                 />
                 <ProposalResultSection
                   system={state.system}
