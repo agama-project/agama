@@ -7,7 +7,9 @@ use crate::{
     error::Error,
     web::{Event, EventsSender},
 };
-use agama_lib::{error::ServiceError, localization::LocaleProxy};
+use agama_lib::{
+    error::ServiceError, localization::LocaleProxy, proxies::LocaleProxy as ManagerLocaleProxy,
+};
 use agama_locale_data::LocaleId;
 use axum::{
     extract::State,
@@ -24,6 +26,7 @@ use tokio::sync::RwLock;
 struct LocaleState<'a> {
     locale: Arc<RwLock<L10n>>,
     proxy: LocaleProxy<'a>,
+    manager_proxy: ManagerLocaleProxy<'a>,
     events: EventsSender,
 }
 
@@ -37,9 +40,11 @@ pub async fn l10n_service(
     let id = LocaleId::default();
     let locale = L10n::new_with_locale(&id).unwrap();
     let proxy = LocaleProxy::new(&dbus).await?;
+    let manager_proxy = ManagerLocaleProxy::new(&dbus).await?;
     let state = LocaleState {
         locale: Arc::new(RwLock::new(locale)),
         proxy,
+        manager_proxy,
         events,
     };
 
@@ -144,7 +149,9 @@ async fn set_config(
             .try_into()
             .map_err(|_e| LocaleError::UnknownLocale(ui_locale.to_string()))?;
         data.translate(&locale)?;
-        changes.ui_locale = Some(locale.to_string());
+        let locale_string = locale.to_string();
+        state.manager_proxy.set_locale(&locale_string).await?;
+        changes.ui_locale = Some(locale_string);
 
         _ = state.events.send(Event::LocaleChanged {
             locale: locale.to_string(),
