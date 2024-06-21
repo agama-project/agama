@@ -663,6 +663,7 @@ pub enum ConnectionConfig {
     Vlan(VlanConfig),
     Bridge(BridgeConfig),
     Infiniband(InfinibandConfig),
+    Tun(TunConfig),
 }
 
 #[derive(Default, Debug, PartialEq, Clone, Serialize)]
@@ -1312,6 +1313,22 @@ impl fmt::Display for InfinibandTransportMode {
         write!(f, "{}", name)
     }
 }
+
+
+#[derive(Default, Debug, PartialEq, Clone, Serialize)]
+pub enum TunMode {
+    #[default]
+    Tun = 1,
+    Tap = 2,
+}
+
+#[derive(Default, Debug, PartialEq, Clone, Serialize)]
+pub struct TunConfig {
+    pub mode: TunMode,
+    pub group: Option<String>,
+    pub owner: Option<String>,
+}
+
 
 /// Represents a network change.
 #[derive(Debug, Clone, Serialize)]

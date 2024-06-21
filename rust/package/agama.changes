@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jun 21 15:00:00 UTC 2024 - Clemens Famulla-Conrad <cfamullaconrad@suse.de>
+
+- Add tun/tap model (gh#openSUSE/agama#1353)
+
+-------------------------------------------------------------------
 Thu Jun 20 12:58:32 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add a new "config edit" command allows editing installation
