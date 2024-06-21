@@ -46,7 +46,8 @@ import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 const BOOT_AUTO_ID = "boot-auto";
 const BOOT_MANUAL_ID = "boot-manual";
 const BOOT_DISABLED_ID = "boot-disabled";
-const OPTIONS_NAME = "boot-mode";
+
+// FIXME: improve classNames
 
 /**
  * Allows the user to select the boot configuration.
@@ -75,8 +76,6 @@ export default function BootSelectionDialog() {
       const { settings } = await loadProposalResult();
       const availableDevices = await loadAvailableDevices();
       const { bootDevice, configureBoot, defaultBootDevice } = settings;
-
-      console.log(settings);
 
       if (!configureBoot) {
         selectedOption = BOOT_DISABLED_ID;
@@ -112,8 +111,6 @@ export default function BootSelectionDialog() {
       configureBoot: state.selectedOption !== BOOT_DISABLED_ID,
       bootDevice: state.selectedOption === BOOT_MANUAL_ID ? state.bootDevice.name : undefined,
     };
-
-    console.log("newSettings", newSettings);
 
     await client.proposal.calculate({ ...settings, ...newSettings });
     navigate("..");
@@ -165,7 +162,11 @@ partitions in the appropriate disk."
                   value={BOOT_AUTO_ID}
                   defaultChecked={state.selectedOption === BOOT_AUTO_ID}
                   onChange={updateSelectedOption}
-                  label={_("Automatic")}
+                  label={
+                    <span className={[textStyles.fontSizeLg, state.selectedOption === BOOT_AUTO_ID && textStyles.fontWeightBold].join(" ")}>
+                      {_("Automatic")}
+                    </span>
+                  }
                   body={automaticText()}
                 />
                 <Radio
@@ -174,7 +175,11 @@ partitions in the appropriate disk."
                   value={BOOT_MANUAL_ID}
                   defaultChecked={state.selectedOption === BOOT_MANUAL_ID}
                   onChange={updateSelectedOption}
-                  label={_("Select a disk")}
+                  label={
+                    <span className={[textStyles.fontSizeLg, state.selectedOption === BOOT_MANUAL_ID && textStyles.fontWeightBold].join(" ")}>
+                      {_("Select a disk")}
+                    </span>
+                  }
                   body={
                     <Stack hasGutter>
                       <div>
@@ -197,7 +202,11 @@ partitions in the appropriate disk."
                   value={BOOT_DISABLED_ID}
                   defaultChecked={state.selectedOption === BOOT_DISABLED_ID}
                   onChange={updateSelectedOption}
-                  label={_("Do not configure")}
+                  label={
+                    <span className={[textStyles.fontSizeLg, state.selectedOption === BOOT_DISABLED_ID && textStyles.fontWeightBold].join(" ")}>
+                      {_("Do not configure")}
+                    </span>
+                  }
                   body={
                     <div>
                       {_("No partitions will be automatically configured for booting. Use with caution.")}
