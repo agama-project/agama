@@ -25,7 +25,7 @@ import App from "~/App";
 import Protected from "~/Protected";
 import MainLayout from "~/MainLayout";
 import SimpleLayout from "./SimpleLayout";
-import { LoginPage, Page, Terminal } from "~/components/core";
+import { LoginPage } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
 import { _ } from "~/i18n";
 import overviewRoutes from "~/components/overview/routes";
@@ -45,17 +45,6 @@ const rootRoutes = [
   usersRoutes
 ];
 
-const terminal_route = {
-  path: "/terminal",
-  element: <Page />,
-  children: [
-    {
-      index: true,
-      element: <Terminal />
-    }
-  ]
-};
-
 const protectedRoutes = [
   {
     path: "/",
@@ -73,7 +62,7 @@ const protectedRoutes = [
       },
       {
         element: <SimpleLayout />,
-        children: [productsRoute, terminal_route]
+        children: [productsRoute]
       }
     ]
   }
