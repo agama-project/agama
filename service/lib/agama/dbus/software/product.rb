@@ -91,7 +91,9 @@ module Agama
         private_constant :PRODUCT_INTERFACE
 
         dbus_interface PRODUCT_INTERFACE do
-          dbus_reader :available_products, "a(ssa{sv})"
+          dbus_method :AvailableProducts, "out result:a(ssa{sv})" do
+            [available_products]
+          end
 
           dbus_reader :selected_product, "s"
 
