@@ -27,6 +27,8 @@ import { AppProviders } from "./context/app";
 export default function Protected() {
   const { isLoggedIn } = useAuth();
 
+  if (isLoggedIn === undefined) return;
+
   if (isLoggedIn === false) {
     return <Navigate to="/login" />;
   }

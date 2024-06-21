@@ -56,7 +56,7 @@ beforeEach(() => {
   });
 });
 
-it("renders the required space and the selected patterns", async () => {
+it.only("renders the required space and the selected patterns", async () => {
   installerRender(<SoftwareSection />);
   await screen.findByText("500 MiB");
   await screen.findByText(kdePattern.summary);

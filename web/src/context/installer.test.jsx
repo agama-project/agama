@@ -24,16 +24,20 @@ import { act, screen } from "@testing-library/react";
 import { createDefaultClient } from "~/client";
 import { plainRender, createCallbackMock } from "~/test-utils";
 import { InstallerClientProvider, useInstallerClientStatus } from "./installer";
+import { STARTUP } from "~/client/phase";
+import { BUSY } from "~/client/status";
 
 jest.mock("~/client");
 
 // Helper component to check the client status.
 const ClientStatus = () => {
-  const { connected } = useInstallerClientStatus();
+  const { connected, phase, status } = useInstallerClientStatus();
 
   return (
     <ul>
       <li>{`connected: ${connected}`}</li>
+      <li>{`phase: ${phase}`}</li>
+      <li>{`status: ${status}`}</li>
     </ul>
   );
 };
@@ -43,7 +47,13 @@ describe("installer context", () => {
     createDefaultClient.mockImplementation(() => {
       return {
         onConnect: jest.fn(),
-        onDisconnect: jest.fn()
+        onDisconnect: jest.fn(),
+        manager: {
+          getPhase: jest.fn().mockResolvedValue(STARTUP),
+          getStatus: jest.fn().mockResolvedValue(BUSY),
+          onPhaseChange: jest.fn(),
+          onStatusChange: jest.fn()
+        }
       };
     });
   });
@@ -55,5 +65,7 @@ describe("installer context", () => {
       </InstallerClientProvider>
     );
     await screen.findByText("connected: false");
+    await screen.findByText("phase: 0");
+    await screen.findByText("status: 1");
   });
 });
