@@ -38,8 +38,10 @@ const buildWs = () => {
 
 const buildTerm = () => {
   return new Term({
-    rows: 22,
+    rows: 25,
     cols: 100,
+    cursorBlink: true,
+    screenReaderMode: true,
     theme: {
       background: "#ffffff",
       foreground: "#000000",
