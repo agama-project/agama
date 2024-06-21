@@ -24,7 +24,6 @@ require "agama/dbus/software/product"
 require "agama/config"
 require "agama/registration"
 require "agama/software/manager"
-require "agama/ui_locale"
 require "agama/dbus/clients/locale"
 require "suse/connect"
 
@@ -40,10 +39,10 @@ describe Agama::DBus::Software::Product do
   let(:target_dir) { Dir.mktmpdir }
 
   let(:locale_client) do
-     instance_double(
-       Agama::DBus::Clients::Locale,
-       ui_locale: "en_US.UTF-8", on_ui_locale_change: nil
-     )
+    instance_double(
+      Agama::DBus::Clients::Locale,
+      ui_locale: "en_US.UTF-8", on_ui_locale_change: nil
+    )
   end
 
   before do

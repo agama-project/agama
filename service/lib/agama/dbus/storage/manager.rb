@@ -25,6 +25,7 @@ require "yast"
 require "y2storage/storage_manager"
 require "agama/dbus/base_object"
 require "agama/dbus/interfaces/issues"
+require "agama/dbus/interfaces/locale"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
 require "agama/dbus/storage/devices_tree"
@@ -48,6 +49,7 @@ module Agama
         include WithServiceStatus
         include ::DBus::ObjectManager
         include DBus::Interfaces::Issues
+        include DBus::Interfaces::Locale
         include DBus::Interfaces::Progress
         include DBus::Interfaces::ServiceStatus
 
@@ -352,6 +354,10 @@ module Agama
           end
 
           dbus_method(:Delete, "in node:o, out result:u") { |n| iscsi_delete(n) }
+        end
+
+        def locale=(locale)
+          backend.locale = locale
         end
 
       private

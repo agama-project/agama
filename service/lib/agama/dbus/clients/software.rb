@@ -21,6 +21,7 @@
 
 require "agama/dbus/clients/base"
 require "agama/dbus/clients/with_issues"
+require "agama/dbus/clients/with_locale"
 require "agama/dbus/clients/with_progress"
 require "agama/dbus/clients/with_service_status"
 
@@ -29,6 +30,7 @@ module Agama
     module Clients
       # D-Bus client for software configuration
       class Software < Base
+        include WithLocale
         include WithIssues
         include WithProgress
         include WithServiceStatus

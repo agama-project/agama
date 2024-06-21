@@ -24,6 +24,7 @@ require "agama/dbus/base_object"
 require "agama/dbus/clients/locale"
 require "agama/dbus/clients/network"
 require "agama/dbus/interfaces/issues"
+require "agama/dbus/interfaces/locale"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
 require "agama/dbus/with_service_status"
@@ -37,6 +38,7 @@ module Agama
         include Interfaces::Progress
         include Interfaces::ServiceStatus
         include Interfaces::Issues
+        include Interfaces::Locale
 
         PATH = "/org/opensuse/Agama/Software1"
         private_constant :PATH
@@ -132,6 +134,12 @@ module Agama
 
         def finish
           busy_while { backend.finish }
+        end
+
+        def locale=(locale)
+          busy_while do
+            backend.locale = locale
+          end
         end
 
       private
