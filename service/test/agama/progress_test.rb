@@ -23,7 +23,27 @@ require_relative "../test_helper"
 require "agama/progress"
 
 describe Agama::Progress do
-  subject { described_class.new(steps) }
+  subject { described_class.with_size(steps) }
+
+  describe "when the steps are known in advance" do
+    subject do
+      described_class.with_descriptions(
+        ["Partitioning", "Installing", "Configuring"]
+      )
+    end
+
+    it "sets the total_steps to the number of steps" do
+      expect(subject.total_steps).to eq(3)
+    end
+
+    it "uses the given descriptions" do
+      subject.step
+      expect(subject.current_step.description).to eq("Partitioning")
+
+      subject.step
+      expect(subject.current_step.description).to eq("Installing")
+    end
+  end
 
   describe "#current_step" do
     let(:steps) { 3 }
@@ -56,8 +76,28 @@ describe Agama::Progress do
         subject.step("step 3")
       end
 
-      it "returns nil" do
+      it "returns the last step" do
         expect(subject.current_step).to be_nil
+      end
+    end
+
+    context "if the descriptions are known in advance" do
+      subject do
+        described_class.with_descriptions(
+          ["Partitioning", "Installing", "Configuring"]
+        )
+      end
+
+      it "uses the descriptions" do
+        subject.step
+        expect(subject.current_step.description).to eq("Partitioning")
+      end
+
+      context "but a description is given" do
+        it "uses the given descriptions" do
+          subject.step("Finishing")
+          expect(subject.current_step.description).to eq("Finishing")
+        end
       end
     end
   end

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,70 +19,125 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect } from "react";
-import { useCancellablePromise } from "~/utils";
+import React, { useEffect, useState } from "react";
+import {
+  Card,
+  CardBody,
+  Grid,
+  GridItem,
+  ProgressStepper,
+  ProgressStep,
+  Spinner,
+  Stack,
+} from "@patternfly/react-core";
+
+import { _ } from "~/i18n";
+import { Center } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 
-import { Grid, GridItem, Progress, Text } from "@patternfly/react-core";
+const Progress = ({ steps, step, firstStep, detail }) => {
+  const variant = (index) => {
+    if (index < step.current) return "success";
+    if (index === step.current) return "info";
+    if (index > step.current) return "pending";
+  };
 
-const ProgressReport = () => {
-  const client = useInstallerClient();
-  const { cancellablePromise } = useCancellablePromise();
-  // progress and subprogress are basically objects containing { message, step, steps }
-  const [progress, setProgress] = useState({});
-  const [subProgress, setSubProgress] = useState(undefined);
+  const stepProperties = (stepNumber) => {
+    const properties = {
+      variant: variant(stepNumber),
+      isCurrent: stepNumber === step.current,
+      id: `step-${stepNumber}-id`,
+      titleId: `step-${stepNumber}-title`,
+    };
 
-  useEffect(() => {
-    cancellablePromise(client.manager.getProgress()).then(({ message, current, total }) => {
-      setProgress({ message, step: current, steps: total });
-    });
-  }, [client.manager, cancellablePromise]);
-
-  useEffect(() => {
-    return client.manager.onProgressChange(({ message, current, total, finished }) => {
-      if (!finished) setProgress({ message, step: current, steps: total });
-    });
-  }, [client.manager]);
-
-  useEffect(() => {
-    return client.software.onProgressChange(({ message, current, total, finished }) => {
-      if (finished) {
-        setSubProgress(undefined);
-      } else {
-        setSubProgress({ message, step: current, steps: total });
+    if (properties.isCurrent) {
+      properties.icon = <Spinner />;
+      if (detail && detail.message !== "") {
+        const { message, current, total } = detail;
+        properties.description = `${message} (${current}/${total})`;
       }
-    });
-  }, [client.software]);
+    }
 
-  if (!progress.steps) return <Text>Waiting for progress status...</Text>;
+    return properties;
+  };
 
   return (
-    <Grid hasGutter>
-      <GridItem sm={12}>
-        <Progress
-          min={0}
-          max={progress.steps}
-          value={progress.step}
-          title={progress.message}
-          label={" "}
-          aria-label={progress.message}
-        />
-
-        <Progress
-          size="sm"
-          min={0}
-          max={subProgress?.steps}
-          value={subProgress?.step}
-          title={subProgress?.message}
-          label={" "}
-          measureLocation="none"
-          className={!subProgress && 'hidden'}
-          aria-label={subProgress?.message || " "}
-          aria-hidden={!subProgress}
-        />
-      </GridItem>
-    </Grid>
+    <ProgressStepper isCenterAligned>
+      {firstStep && (
+        <ProgressStep key="initial" variant="success">
+          {firstStep}
+        </ProgressStep>
+      )}
+      {steps.map((description, idx) => {
+        return (
+          <ProgressStep key={idx} {...stepProperties(idx + 1)}>
+            {description}
+          </ProgressStep>
+        );
+      })}
+    </ProgressStepper>
   );
 };
+
+/**
+ * @component
+ *
+ * Shows progress steps when a product is selected.
+ */
+function ProgressReport({ title, firstStep }) {
+  const { manager, storage, software } = useInstallerClient();
+  const [steps, setSteps] = useState();
+  const [step, setStep] = useState();
+  const [detail, setDetail] = useState();
+
+  useEffect(() => software.onProgressChange(setDetail), [software, setDetail]);
+  useEffect(() => storage.onProgressChange(setDetail), [storage, setDetail]);
+
+  useEffect(() => {
+    manager.getProgress().then((progress) => {
+      setSteps(progress.steps);
+      setStep(progress);
+    });
+
+    return manager.onProgressChange(setStep);
+  }, [manager, setSteps]);
+
+  const Content = () => {
+    if (!steps) {
+      return;
+    }
+
+    return (
+      <Progress
+        titleId="progress-title"
+        steps={steps}
+        step={step}
+        detail={detail}
+        firstStep={firstStep}
+        currentStep={false}
+      />
+    );
+  };
+
+  const progressTitle = !steps ? _("Waiting for progress status...") : title;
+  return (
+    <Center>
+      <Grid hasGutter>
+        <GridItem sm={8} smOffset={2}>
+          <Card isPlain>
+            <CardBody>
+              <Stack hasGutter>
+                <h1 id="progress-title" style={{ textAlign: "center" }}>
+                  {progressTitle}
+                </h1>
+                <Content />
+              </Stack>
+            </CardBody>
+          </Card>
+        </GridItem>
+      </Grid>
+    </Center>
+  );
+}
 
 export default ProgressReport;

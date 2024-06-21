@@ -132,11 +132,11 @@ module Agama
         logger.info "Probing software"
 
         if repositories.empty?
-          start_progress(3)
+          start_progress_with_size(3)
           Yast::PackageCallbacks.InitPackageCallbacks(logger)
           progress.step(_("Initializing sources")) { add_base_repos }
         else
-          start_progress(2)
+          start_progress_with_size(2)
         end
 
         progress.step(_("Refreshing repositories metadata")) { repositories.load }
@@ -178,7 +178,7 @@ module Agama
         Yast::Pkg.TargetLoad
 
         steps = proposal.packages_count
-        start_progress(steps)
+        start_progress_with_size(steps)
         Callbacks::Progress.setup(steps, progress)
 
         # TODO: error handling
@@ -197,16 +197,11 @@ module Agama
 
       # Writes the repositories information to the installed system
       def finish
-        start_progress(1)
-        progress.step(_("Writing repositories to the target system")) do
-          Yast::Pkg.SourceSaveAll
-          Yast::Pkg.TargetFinish
-          # FIXME: Pkg.SourceCacheCopyTo works correctly only from the inst-sys
-          # (original target "/"), it does not work correctly when using
-          # "chroot" /run/agama/zypp, it needs to be reimplemented :-(
-          # Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
-          registration.finish
-        end
+        Yast::Pkg.SourceSaveAll
+        Yast::Pkg.TargetFinish
+        # copy the libzypp caches to the target
+        copy_zypp_to_target
+        registration.finish
       end
 
       # Determine whether the given tag is provided by the selected packages
@@ -501,6 +496,46 @@ module Agama
 
       def pattern_exist?(pattern_name)
         !Y2Packager::Resolvable.find(kind: :pattern, name: pattern_name).empty?
+      end
+
+      # this reimplements the Pkg.SourceCacheCopyTo call which works correctly
+      # only from the inst-sys (it copies the data from "/" where is actually
+      # the Live system package manager)
+      # @see https://github.com/yast/yast-pkg-bindings/blob/3d314480b70070299f90da4c6e87a5574e9c890c/src/Source_Installation.cc#L213-L267
+      def copy_zypp_to_target
+        # copy the zypp "raw" cache
+        cache = File.join(TARGET_DIR, "/var/cache/zypp/raw")
+        if Dir.exist?(cache)
+          target_cache = File.join(Yast::Installation.destdir, "/var/cache/zypp")
+          FileUtils.mkdir_p(target_cache)
+          FileUtils.cp_r(cache, target_cache)
+        end
+
+        # copy the "solv" cache but skip the "@System" directory because it
+        # contains empty installed packages (there were no installed packages
+        # before moving the target to "/mnt")
+        solv_cache = File.join(TARGET_DIR, "/var/cache/zypp/solv")
+        target_solv = File.join(Yast::Installation.destdir, "/var/cache/zypp/solv")
+        solvs = Dir.entries(solv_cache) - [".", "..", "@System"]
+        solvs.each do |s|
+          FileUtils.cp_r(File.join(solv_cache, s), target_solv)
+        end
+
+        # copy the zypp credentials if present
+        credentials = File.join(TARGET_DIR, "/etc/zypp/credentials.d")
+        if Dir.exist?(credentials)
+          target_credentials = File.join(Yast::Installation.destdir, "/etc/zypp")
+          FileUtils.mkdir_p(target_credentials)
+          FileUtils.cp_r(credentials, target_credentials)
+        end
+
+        # copy the global credentials if present
+        glob_credentials = File.join(TARGET_DIR, "/etc/zypp/credentials.cat")
+        return unless File.exist?(glob_credentials)
+
+        target_dir = File.join(Yast::Installation.destdir, "/etc/zypp")
+        FileUtils.mkdir_p(target_dir)
+        FileUtils.copy(glob_credentials, target_dir)
       end
 
       # update the zypp repositories for the new product, either delete them

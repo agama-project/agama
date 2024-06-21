@@ -35,13 +35,14 @@ import { Center, Icon } from "~/components/layout";
 import { EncryptionMethods } from "~/client/storage";
 import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
+import alignmentStyles from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 
 const TpmHint = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const title = _("TPM sealing requires the new system to be booted directly.");
 
   return (
-    <Alert isInline variant="info" className="tpm-hint" title={<strong>{title}</strong>}>
+    <Alert isInline className={alignmentStyles.textAlignLeft} title={<strong>{title}</strong>}>
       <Stack hasGutter>
         {_("If a local media was used to run this installer, remove it before the next boot.")}
         <ExpandableSection
@@ -74,12 +75,9 @@ function InstallationFinished() {
       const iguana = await client.manager.useIguana();
       // FIXME: This logic should likely not be placed here, it's too coupled to storage internals.
       // Something to fix when this whole page is refactored in a (hopefully near) future.
-      // const { settings: { encryptionPassword, encryptionMethod } } = await client.storage.proposal.getResult();
-      // TODO: The storage client is not adapted to the HTTP API yet.
-      const encryptionPassword = null;
-      const encryptionMethod = null;
+      const { settings: { encryptionPassword, encryptionMethod } } = await client.storage.proposal.getResult();
       setUsingIguana(iguana);
-      setUsingTpm(encryptionPassword?.length && encryptionMethod === EncryptionMethods.TPM);
+      setUsingTpm(encryptionPassword?.length > 0 && encryptionMethod === EncryptionMethods.TPM);
     }
 
     // TODO: display the page in a loading mode while needed data is being fetched.
@@ -107,7 +105,7 @@ function InstallationFinished() {
                           ? _("At this point you can power off the machine.")
                           : _("At this point you can reboot the machine to log in to the new system.")}
                       </Text>
-                      {!usingTpm && <TpmHint />}
+                      {usingTpm && <TpmHint />}
                     </EmptyStateBody>
                   </EmptyState>
                   <Flex direction={{ default: "rowReverse" }}>

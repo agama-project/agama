@@ -1,4 +1,18 @@
 -------------------------------------------------------------------
+Thu Jun 20 05:25:49 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for progress sequences with pre-defined descriptions
+  (gh#openSUSE/agama#1356).
+
+-------------------------------------------------------------------
+Wed Jun 19 06:04:46 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Use a different libzypp target for Agama, do not use the Live
+  system package management (gh#openSUSE/agama#1329)
+- Properly delete the libzypp cache when changing the products
+  (gh#openSUSE/agama#1349)
+
+-------------------------------------------------------------------
 Thu Jun 13 10:53:27 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Replace the Validations with the Issues API in the users-related

@@ -50,7 +50,7 @@ module Agama
       # Execute the final storage actions, reporting the progress
       def run
         steps = possible_steps.select(&:run?)
-        start_progress(steps.size)
+        start_progress_with_size(steps.size)
 
         on_target do
           steps.each do |step|

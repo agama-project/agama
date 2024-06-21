@@ -213,3 +213,4 @@ storage:
           - ext3
           - ext4
           - xfs
+          - vfat

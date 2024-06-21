@@ -177,6 +177,15 @@ const WithStatus = (superclass, status_path, service_name) =>
  */
 
 /**
+ * @typedef {object} ProgressSequence
+ * @property {string[]} steps - sequence steps if known in advance
+ * @property {number} total - number of steps
+ * @property {number} current - current step
+ * @property {string} message - message of the current step
+ * @property {boolean} finished - whether the progress already finished
+ */
+
+/**
  * @callback ProgressHandler
  * @param {Progress} progress - progress status
  * @return {void}
@@ -195,7 +204,7 @@ const WithProgress = (superclass, progress_path, service_name) =>
     /**
      * Returns the service progress
      *
-     * @return {Promise<Progress>} an object containing the total steps,
+     * @return {Promise<ProgressSequence>} an object containing the total steps,
      *   the current step and whether the service finished or not.
      */
     async getProgress() {
@@ -203,17 +212,20 @@ const WithProgress = (superclass, progress_path, service_name) =>
       if (!response.ok) {
         console.log("get progress failed with:", response);
         return {
+          steps: [],
           total: 0,
           current: 0,
           message: "Failed to get progress",
           finished: false,
         };
       } else {
-        const { current_step, max_steps, current_title, finished } = await response.json();
+        const { steps, currentStep, maxSteps, currentTitle, finished } =
+          await response.json();
         return {
-          total: max_steps,
-          current: current_step,
-          message: current_title,
+          steps,
+          total: maxSteps,
+          current: currentStep,
+          message: currentTitle,
           finished,
         };
       }
@@ -228,11 +240,11 @@ const WithProgress = (superclass, progress_path, service_name) =>
     onProgressChange(handler) {
       return this.client.onEvent("Progress", ({ service, ...progress }) => {
         if (service === service_name) {
-          const { current_step, max_steps, current_title, finished } = progress;
+          const { currentStep, maxSteps, currentTitle, finished } = progress;
           handler({
-            total: max_steps,
-            current: current_step,
-            message: current_title,
+            total: maxSteps,
+            current: currentStep,
+            message: currentTitle,
             finished,
           });
         }

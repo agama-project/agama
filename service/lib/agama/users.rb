@@ -37,6 +37,7 @@ module Agama
     include Yast::I18n
 
     def initialize(logger)
+      textdomain "agama"
       @logger = logger
       update_issues
     end
