@@ -25,7 +25,6 @@ require "agama/dbus/base_object"
 require "agama/dbus/interfaces/issues"
 require "agama/dbus/clients/locale"
 require "agama/registration"
-require "agama/ui_locale"
 
 module Agama
   module DBus
@@ -243,7 +242,6 @@ module Agama
           #   software related issues.
           backend.registration.on_change { issues_properties_changed }
           backend.registration.on_change { registration_properties_changed }
-          UILocale.new(Clients::Locale.instance) { product_properties_changed }
         end
 
         def registration_properties_changed

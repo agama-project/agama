@@ -24,7 +24,6 @@ require "agama/dbus/software/product"
 require "agama/config"
 require "agama/registration"
 require "agama/software/manager"
-require "agama/ui_locale"
 require "agama/dbus/clients/locale"
 require "suse/connect"
 
