@@ -80,8 +80,7 @@ trait SoftwareProduct {
     /// SelectProduct method
     fn select_product(&self, id: &str) -> zbus::Result<(u32, String)>;
 
-    /// AvailableProducts property
-    #[dbus_proxy(property)]
+    /// AvailableProducts method
     fn available_products(&self) -> zbus::Result<Vec<Product>>;
 
     /// SelectedProduct property
