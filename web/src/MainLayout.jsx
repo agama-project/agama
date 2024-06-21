@@ -19,23 +19,22 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import {
   Button,
-  Drawer, DrawerActions, DrawerCloseButton, DrawerContent, DrawerHead, DrawerPanelBody, DrawerPanelContent,
   Masthead, MastheadContent, MastheadToggle, MastheadMain, MastheadBrand,
   Nav, NavItem, NavList,
   Page, PageSidebar, PageSidebarBody, PageToggleButton,
-  Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem,
+  Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
-import { About, InstallerOptions, TerminalDialog, Terminal } from "~/components/core";
+import { About, InstallerOptions } from "~/components/core";
 import { _ } from "~/i18n";
 import { rootRoutes } from "~/router";
 import { useProduct } from "~/context/product";
 
-const Header = ({ onTerminalClick }) => {
+const Header = () => {
   const { selectedProduct } = useProduct();
   // NOTE: Agama is a name, do not translate
   const title = selectedProduct?.name || _("Agama");
@@ -61,12 +60,6 @@ const Header = ({ onTerminalClick }) => {
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignRight" }}>
               <ToolbarItem>
-                <Button
-                  variant="plain"
-                  icon={<Icon name="terminal" />}
-                  onClick={onTerminalClick}
-                  aria-label={_("Show terminal")}
-                />
                 <InstallerOptions />
               </ToolbarItem>
             </ToolbarGroup>
@@ -129,40 +122,13 @@ const Sidebar = () => {
  * Root application component for laying out the content.
  */
 export default function Root() {
-  const [showTerminal, setShowTerminal] = useState();
-
-  const openTerminal = () => setShowTerminal(true);
-  const closeTerminal = () => setShowTerminal(false);
-
   return (
     <Page
       isManagedSidebar
-      header={<Header onTerminalClick={openTerminal} />}
+      header={<Header />}
       sidebar={<Sidebar />}
     >
-      <Drawer isExpanded={showTerminal} position="bottom">
-        <DrawerContent
-          panelContent={
-            <DrawerPanelContent
-              isResizable
-              minSize="66%"
-              colorVariant="dark-200"
-            >
-              <DrawerHead>
-                <h2>{_("Terminal")}</h2>
-                <DrawerActions>
-                  <DrawerCloseButton onClick={closeTerminal} />
-                </DrawerActions>
-              </DrawerHead>
-              <DrawerPanelBody>
-                <Terminal />
-              </DrawerPanelBody>
-            </DrawerPanelContent>
-          }
-        >
-          <Outlet />
-        </DrawerContent>
-      </Drawer>
+      <Outlet />
     </Page>
   );
 }
