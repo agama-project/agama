@@ -29,7 +29,7 @@ import {
   Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
-import { About, InstallerOptions } from "~/components/core";
+import { About, InstallerOptions, TerminalDialog } from "~/components/core";
 import { _ } from "~/i18n";
 import { rootRoutes } from "~/router";
 import { useProduct } from "~/context/product";
@@ -60,6 +60,7 @@ const Header = () => {
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignRight" }}>
               <ToolbarItem>
+                <TerminalDialog />
                 <InstallerOptions />
               </ToolbarItem>
             </ToolbarGroup>

@@ -26,7 +26,7 @@ import {
   Page,
   Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
 } from "@patternfly/react-core";
-import { InstallerOptions } from "~/components/core";
+import { InstallerOptions, TerminalDialog } from "~/components/core";
 import { _ } from "~/i18n";
 
 /**
@@ -42,6 +42,7 @@ export default function SimpleLayout({ showOutlet = true, showInstallerOptions =
             <ToolbarContent>
               <ToolbarGroup align={{ default: "alignRight" }}>
                 <ToolbarItem>
+                  {showInstallerOptions && <TerminalDialog />}
                   {showInstallerOptions && <InstallerOptions />}
                 </ToolbarItem>
               </ToolbarGroup>

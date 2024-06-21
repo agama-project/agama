@@ -55,6 +55,7 @@ export { default as OptionsPicker } from "./OptionsPicker";
 export { default as Reminder } from "./Reminder";
 export { default as TreeTable } from "./TreeTable";
 export { default as Terminal } from "./Terminal";
+export { default as TerminalDialog } from "./TerminalDialog";
 export { default as CardField } from "./CardField";
 export { default as ButtonLink } from "./ButtonLink";
 export { default as EmptyState } from "./EmptyState";
