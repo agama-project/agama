@@ -334,3 +334,7 @@ table td > .pf-v5-c-empty-state {
     1em + var(--pf-v5-c-notification-drawer__list-item-header-icon--MarginRight)
   );
 }
+
+.pf-v5-c-spinner.light {
+  --pf-v5-c-spinner--Color: white;
+}

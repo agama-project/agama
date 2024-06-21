@@ -20,8 +20,8 @@
  */
 
 import React, { useCallback, useReducer, useEffect, useRef } from "react";
-import { Grid, GridItem, Stack } from "@patternfly/react-core";
-import { Page, Drawer } from "~/components/core/";
+import { Grid, GridItem, Flex, Stack, Backdrop, Bullseye, Spinner } from "@patternfly/react-core";
+import { Page, Drawer } from "~/components/core";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import ProposalSettingsSection from "./ProposalSettingsSection";
 import ProposalResultSection from "./ProposalResultSection";
@@ -32,6 +32,20 @@ import { IDLE } from "~/client/status";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
+import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
+
+const LoadingBackdrop = () => {
+  return (
+    <Backdrop>
+      <Bullseye>
+        <Flex direction={{ default: "column" }} rowGap={{ default: "rowGapXl" }} alignItems={{ default: "alignItemsCenter" }} alignContent={{ default: "alignContentCenter" }}>
+          <Spinner className="light" />
+          <p className={textStyles.colorLight_200}>{_("Preparing data, please wait...")}</p>
+        </Flex>
+      </Bullseye>
+    </Backdrop>
+  );
+};
 
 /**
  * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
@@ -293,48 +307,54 @@ export default function ProposalPage() {
         />
       </Page.Header>
       <Page.MainContent>
-        <Grid hasGutter>
-          <GridItem sm={12} xl={6}>
-            <ProposalSettingsSection
-              availableDevices={state.availableDevices}
-              volumeDevices={state.volumeDevices}
-              encryptionMethods={state.encryptionMethods}
-              volumeTemplates={state.volumeTemplates}
-              settings={state.settings}
-              onChange={changeSettings}
-              isLoading={state.loading}
-              changing={state.changing}
-            />
-          </GridItem>
-          <GridItem sm={12} xl={6}>
-            <Drawer
-              ref={drawerRef}
-              panelHeader={<h4>{_("Planned Actions")}</h4>}
-              panelContent={<ProposalActionsDialog actions={state.actions} />}
-            >
-              <Stack hasGutter>
-                <ProposalActionsSummary
-                  policy={spacePolicy}
-                  system={state.system}
-                  staging={state.staging}
-                  errors={state.errors}
-                  actions={state.actions}
-                  spaceActions={state.settings.spaceActions}
-                  devices={state.settings.installationDevices}
-                  onActionsClick={drawerRef.current?.open}
-                  isLoading={showSkeleton(state.loading, "ProposalActionsSummary", state.changing)}
-                />
-                <ProposalResultSection
-                  system={state.system}
-                  staging={state.staging}
-                  actions={state.actions}
-                  errors={state.errors}
-                  isLoading={state.loading}
-                />
-              </Stack>
-            </Drawer>
-          </GridItem>
-        </Grid>
+        {
+          state.loading
+            ? <LoadingBackdrop />
+            : (
+              <Grid hasGutter>
+                <GridItem sm={12} xl={6}>
+                  <ProposalSettingsSection
+                    availableDevices={state.availableDevices}
+                    volumeDevices={state.volumeDevices}
+                    encryptionMethods={state.encryptionMethods}
+                    volumeTemplates={state.volumeTemplates}
+                    settings={state.settings}
+                    onChange={changeSettings}
+                    isLoading={state.loading}
+                    changing={state.changing}
+                  />
+                </GridItem>
+                <GridItem sm={12} xl={6}>
+                  <Drawer
+                    ref={drawerRef}
+                    panelHeader={<h4>{_("Planned Actions")}</h4>}
+                    panelContent={<ProposalActionsDialog actions={state.actions} />}
+                  >
+                    <Stack hasGutter>
+                      <ProposalActionsSummary
+                        policy={spacePolicy}
+                        system={state.system}
+                        staging={state.staging}
+                        errors={state.errors}
+                        actions={state.actions}
+                        spaceActions={state.settings.spaceActions}
+                        devices={state.settings.installationDevices}
+                        onActionsClick={drawerRef.current?.open}
+                        isLoading={showSkeleton(state.loading, "ProposalActionsSummary", state.changing)}
+                      />
+                      <ProposalResultSection
+                        system={state.system}
+                        staging={state.staging}
+                        actions={state.actions}
+                        errors={state.errors}
+                        isLoading={state.loading}
+                      />
+                    </Stack>
+                  </Drawer>
+                </GridItem>
+              </Grid>
+            )
+        }
       </Page.MainContent>
     </>
   );
