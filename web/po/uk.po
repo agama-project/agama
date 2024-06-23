@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-20 02:20+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
 "PO-Revision-Date: 2023-12-31 20:39+0000\n"
 "Last-Translator: Milachew <milachew@mail.lv>\n"
 "Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -149,6 +149,12 @@ msgstr ""
 msgid "Reboot"
 msgstr ""
 
+#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
+#: src/components/core/InstallationProgress.jsx:37
+#, c-format
+msgid "Installing %s, please wait ..."
+msgstr ""
+
 #: src/components/core/InstallerOptions.jsx:57
 msgid "Show installer options"
 msgstr ""
@@ -255,6 +261,10 @@ msgstr ""
 #, fuzzy
 msgid "Loading data..."
 msgstr "Читання файлу..."
+
+#: src/components/core/ProgressReport.jsx:122
+msgid "Waiting for progress status..."
+msgstr ""
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
@@ -836,15 +846,7 @@ msgstr ""
 msgid "Loading available products, please wait..."
 msgstr ""
 
-#: src/components/product/ProductSelectionProgress.jsx:88
-msgid "Analyze disks"
-msgstr ""
-
-#: src/components/product/ProductSelectionProgress.jsx:95
-msgid "Configure software"
-msgstr ""
-
-#: src/components/product/ProductSelectionProgress.jsx:156
+#: src/components/product/ProductSelectionProgress.jsx:53
 msgid "Configuring the product, please wait ..."
 msgstr ""
 

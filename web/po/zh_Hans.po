@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-20 02:20+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
 "PO-Revision-Date: 2024-05-21 19:46+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
@@ -154,6 +154,12 @@ msgstr "完成"
 msgid "Reboot"
 msgstr "重启"
 
+#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
+#: src/components/core/InstallationProgress.jsx:37
+#, fuzzy, c-format
+msgid "Installing %s, please wait ..."
+msgstr "正在载入可用产品，请稍候……"
+
 #: src/components/core/InstallerOptions.jsx:57
 #, fuzzy
 msgid "Show installer options"
@@ -262,6 +268,11 @@ msgstr "确认"
 #: src/components/core/Popup.jsx:210
 msgid "Loading data..."
 msgstr "正在读取数据……"
+
+#: src/components/core/ProgressReport.jsx:122
+#, fuzzy
+msgid "Waiting for progress status..."
+msgstr "正在等待进度报告"
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
@@ -860,16 +871,7 @@ msgstr "电子邮件"
 msgid "Loading available products, please wait..."
 msgstr "正在载入可用产品，请稍候……"
 
-#: src/components/product/ProductSelectionProgress.jsx:88
-#, fuzzy
-msgid "Analyze disks"
-msgstr "激活磁盘"
-
-#: src/components/product/ProductSelectionProgress.jsx:95
-msgid "Configure software"
-msgstr ""
-
-#: src/components/product/ProductSelectionProgress.jsx:156
+#: src/components/product/ProductSelectionProgress.jsx:53
 #, fuzzy
 msgid "Configuring the product, please wait ..."
 msgstr "正在载入可用产品，请稍候……"
@@ -2561,6 +2563,10 @@ msgstr "无法读取文件"
 #, fuzzy
 msgid "Edit first user"
 msgstr "编辑文件系统"
+
+#, fuzzy
+#~ msgid "Analyze disks"
+#~ msgstr "激活磁盘"
 
 #~ msgid ""
 #~ "There are some reported issues. Please review them in the previous steps "

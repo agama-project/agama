@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-20 02:20+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
 "PO-Revision-Date: 2024-06-17 06:46+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -162,6 +162,12 @@ msgstr "Slutför"
 msgid "Reboot"
 msgstr "Starta om"
 
+#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
+#: src/components/core/InstallationProgress.jsx:37
+#, fuzzy, c-format
+msgid "Installing %s, please wait ..."
+msgstr "Laddar data, vänligen vänta en sekund..."
+
 #: src/components/core/InstallerOptions.jsx:57
 msgid "Show installer options"
 msgstr "Visa installationsalternativ"
@@ -269,6 +275,11 @@ msgstr "Bekräfta"
 #: src/components/core/Popup.jsx:210
 msgid "Loading data..."
 msgstr "Laddar data..."
+
+#: src/components/core/ProgressReport.jsx:122
+#, fuzzy
+msgid "Waiting for progress status..."
+msgstr "Väntar på lägesrapport"
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
@@ -876,15 +887,7 @@ msgstr "E-post"
 msgid "Loading available products, please wait..."
 msgstr "Laddar tillgängliga produkter, vänligen vänta..."
 
-#: src/components/product/ProductSelectionProgress.jsx:88
-msgid "Analyze disks"
-msgstr "Analysera diskar"
-
-#: src/components/product/ProductSelectionProgress.jsx:95
-msgid "Configure software"
-msgstr "Konfigurera programvara"
-
-#: src/components/product/ProductSelectionProgress.jsx:156
+#: src/components/product/ProductSelectionProgress.jsx:53
 msgid "Configuring the product, please wait ..."
 msgstr "Konfigurerar produkten, vänta..."
 
@@ -2577,6 +2580,12 @@ msgstr "Skapa eller redigera den första användaren"
 #: src/components/users/routes.js:48
 msgid "Edit first user"
 msgstr "Redigera första användare"
+
+#~ msgid "Analyze disks"
+#~ msgstr "Analysera diskar"
+
+#~ msgid "Configure software"
+#~ msgstr "Konfigurera programvara"
 
 #~ msgid ""
 #~ "There are some reported issues. Please review them in the previous steps "

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-20 02:20+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
 "PO-Revision-Date: 2024-05-30 20:46+0000\n"
 "Last-Translator: faila fail <yassadmi@proton.me>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-web/fr/"
@@ -166,6 +166,12 @@ msgstr "Terminer"
 msgid "Reboot"
 msgstr "Redémarrer"
 
+#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
+#: src/components/core/InstallationProgress.jsx:37
+#, fuzzy, c-format
+msgid "Installing %s, please wait ..."
+msgstr "Chargement des produits disponibles, veuillez patienter..."
+
 #: src/components/core/InstallerOptions.jsx:57
 #, fuzzy
 msgid "Show installer options"
@@ -284,6 +290,11 @@ msgstr "Confirmer"
 #, fuzzy
 msgid "Loading data..."
 msgstr "Lecture du fichier..."
+
+#: src/components/core/ProgressReport.jsx:122
+#, fuzzy
+msgid "Waiting for progress status..."
+msgstr "En attente d'un rapport d'avancement"
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
@@ -916,16 +927,7 @@ msgstr "E-mail"
 msgid "Loading available products, please wait..."
 msgstr "Chargement des produits disponibles, veuillez patienter..."
 
-#: src/components/product/ProductSelectionProgress.jsx:88
-#, fuzzy
-msgid "Analyze disks"
-msgstr "Activer les disques"
-
-#: src/components/product/ProductSelectionProgress.jsx:95
-msgid "Configure software"
-msgstr ""
-
-#: src/components/product/ProductSelectionProgress.jsx:156
+#: src/components/product/ProductSelectionProgress.jsx:53
 #, fuzzy
 msgid "Configuring the product, please wait ..."
 msgstr "Chargement des produits disponibles, veuillez patienter..."
@@ -2703,6 +2705,10 @@ msgstr "Lecture du fichier impossible"
 #, fuzzy
 msgid "Edit first user"
 msgstr "Modifier le système de fichiers"
+
+#, fuzzy
+#~ msgid "Analyze disks"
+#~ msgstr "Activer les disques"
 
 #~ msgid ""
 #~ "There are some reported issues. Please review them in the previous steps "

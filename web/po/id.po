@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-20 02:20+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
 "PO-Revision-Date: 2024-04-09 17:43+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -166,6 +166,12 @@ msgstr "Selesai"
 msgid "Reboot"
 msgstr "Maut ulang"
 
+#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
+#: src/components/core/InstallationProgress.jsx:37
+#, fuzzy, c-format
+msgid "Installing %s, please wait ..."
+msgstr "Memuat produk yang tersedia, mohon tunggu..."
+
 #: src/components/core/InstallerOptions.jsx:57
 #, fuzzy
 msgid "Show installer options"
@@ -277,6 +283,11 @@ msgstr "Konfirmasi"
 #, fuzzy
 msgid "Loading data..."
 msgstr "Membaca berkas..."
+
+#: src/components/core/ProgressReport.jsx:122
+#, fuzzy
+msgid "Waiting for progress status..."
+msgstr "Menunggu laporan kemajuan"
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
@@ -895,16 +906,7 @@ msgstr "Email"
 msgid "Loading available products, please wait..."
 msgstr "Memuat produk yang tersedia, mohon tunggu..."
 
-#: src/components/product/ProductSelectionProgress.jsx:88
-#, fuzzy
-msgid "Analyze disks"
-msgstr "Mengaktifkan disk"
-
-#: src/components/product/ProductSelectionProgress.jsx:95
-msgid "Configure software"
-msgstr ""
-
-#: src/components/product/ProductSelectionProgress.jsx:156
+#: src/components/product/ProductSelectionProgress.jsx:53
 #, fuzzy
 msgid "Configuring the product, please wait ..."
 msgstr "Memuat produk yang tersedia, mohon tunggu..."
@@ -2640,6 +2642,10 @@ msgstr "Tidak dapat membaca berkas"
 #, fuzzy
 msgid "Edit first user"
 msgstr "Edit sistem berkas"
+
+#, fuzzy
+#~ msgid "Analyze disks"
+#~ msgstr "Mengaktifkan disk"
 
 #~ msgid ""
 #~ "There are some reported issues. Please review them in the previous steps "
