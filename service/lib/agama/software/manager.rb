@@ -99,7 +99,9 @@ module Agama
         @logger = logger
         @languages = DEFAULT_LANGUAGES
         @products = build_products
-        @product = @products.first if @products.size == 1
+        # Simple hack to preload repo metadata and reduce UX latency,
+        # at cost of reducing user choice
+        @product = @products.first
         @repositories = RepositoriesManager.new
         # patterns selected by user
         @user_patterns = []
