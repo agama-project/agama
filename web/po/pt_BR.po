@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-20 02:20+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
 "PO-Revision-Date: 2024-06-14 00:46+0000\n"
 "Last-Translator: Rodrigo Macedo <sottomaiormacedotec@sottomaiormacedo.tech>\n"
 "Language-Team: Portuguese (Brazil) <https://l10n.opensuse.org/projects/agama/"
@@ -162,6 +162,12 @@ msgstr "Concluir"
 msgid "Reboot"
 msgstr "Reiniciar"
 
+#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
+#: src/components/core/InstallationProgress.jsx:37
+#, fuzzy, c-format
+msgid "Installing %s, please wait ..."
+msgstr "Carregando produtos disponíveis, aguarde..."
+
 #: src/components/core/InstallerOptions.jsx:57
 #, fuzzy
 msgid "Show installer options"
@@ -273,6 +279,11 @@ msgstr "Confirmar"
 #: src/components/core/Popup.jsx:210
 msgid "Loading data..."
 msgstr "Carregando dados..."
+
+#: src/components/core/ProgressReport.jsx:122
+#, fuzzy
+msgid "Waiting for progress status..."
+msgstr "Aguardando o relatório do progresso"
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
@@ -896,16 +907,7 @@ msgstr "Email"
 msgid "Loading available products, please wait..."
 msgstr "Carregando produtos disponíveis, aguarde..."
 
-#: src/components/product/ProductSelectionProgress.jsx:88
-#, fuzzy
-msgid "Analyze disks"
-msgstr "Ativar discos"
-
-#: src/components/product/ProductSelectionProgress.jsx:95
-msgid "Configure software"
-msgstr ""
-
-#: src/components/product/ProductSelectionProgress.jsx:156
+#: src/components/product/ProductSelectionProgress.jsx:53
 #, fuzzy
 msgid "Configuring the product, please wait ..."
 msgstr "Carregando produtos disponíveis, aguarde..."
@@ -2624,6 +2626,10 @@ msgstr "Não foi possível ler o arquivo"
 #, fuzzy
 msgid "Edit first user"
 msgstr "Editar sistema de arquivos"
+
+#, fuzzy
+#~ msgid "Analyze disks"
+#~ msgstr "Ativar discos"
 
 #~ msgid ""
 #~ "There are some reported issues. Please review them in the previous steps "

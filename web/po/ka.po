@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-20 02:20+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
 "PO-Revision-Date: 2024-06-01 03:46+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -150,6 +150,12 @@ msgstr "დასრულება"
 msgid "Reboot"
 msgstr "გადატვირთვა"
 
+#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
+#: src/components/core/InstallationProgress.jsx:37
+#, c-format
+msgid "Installing %s, please wait ..."
+msgstr ""
+
 #: src/components/core/InstallerOptions.jsx:57
 #, fuzzy
 msgid "Show installer options"
@@ -260,6 +266,10 @@ msgstr "დადასტურება"
 #, fuzzy
 msgid "Loading data..."
 msgstr "ფაილის წაკითხვა..."
+
+#: src/components/core/ProgressReport.jsx:122
+msgid "Waiting for progress status..."
+msgstr ""
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
@@ -855,16 +865,7 @@ msgstr "ელფოსტა"
 msgid "Loading available products, please wait..."
 msgstr ""
 
-#: src/components/product/ProductSelectionProgress.jsx:88
-#, fuzzy
-msgid "Analyze disks"
-msgstr "დისკების გააქტიურება"
-
-#: src/components/product/ProductSelectionProgress.jsx:95
-msgid "Configure software"
-msgstr ""
-
-#: src/components/product/ProductSelectionProgress.jsx:156
+#: src/components/product/ProductSelectionProgress.jsx:53
 msgid "Configuring the product, please wait ..."
 msgstr ""
 
@@ -2530,6 +2531,10 @@ msgstr ""
 #: src/components/users/routes.js:48
 msgid "Edit first user"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Analyze disks"
+#~ msgstr "დისკების გააქტიურება"
 
 #~ msgid "Problems Found"
 #~ msgstr "აღმოჩენილია პრობლემები"

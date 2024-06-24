@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-20 02:20+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
 "PO-Revision-Date: 2024-06-17 09:46+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -163,6 +163,12 @@ msgstr "Acaba"
 msgid "Reboot"
 msgstr "Reinicia"
 
+#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
+#: src/components/core/InstallationProgress.jsx:37
+#, fuzzy, c-format
+msgid "Installing %s, please wait ..."
+msgstr "Carregant dades. Espereu, si us plau..."
+
 #: src/components/core/InstallerOptions.jsx:57
 msgid "Show installer options"
 msgstr "Mostra les opcions de l'instal·lador"
@@ -275,6 +281,11 @@ msgstr "Confirmeu-ho"
 #: src/components/core/Popup.jsx:210
 msgid "Loading data..."
 msgstr "Carregant dades..."
+
+#: src/components/core/ProgressReport.jsx:122
+#, fuzzy
+msgid "Waiting for progress status..."
+msgstr "Esperant l'informe de progrés"
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
@@ -885,15 +896,7 @@ msgstr "Adreça electrònica"
 msgid "Loading available products, please wait..."
 msgstr "Carregant els productes disponibles. Espereu, si us plau..."
 
-#: src/components/product/ProductSelectionProgress.jsx:88
-msgid "Analyze disks"
-msgstr "Analitza els discs"
-
-#: src/components/product/ProductSelectionProgress.jsx:95
-msgid "Configure software"
-msgstr "Configuració de programari"
-
-#: src/components/product/ProductSelectionProgress.jsx:156
+#: src/components/product/ProductSelectionProgress.jsx:53
 msgid "Configuring the product, please wait ..."
 msgstr "Configurant el producte. Espereu, si us plau..."
 
@@ -2586,6 +2589,12 @@ msgstr "Creeu o editeu l'usuari primer"
 #: src/components/users/routes.js:48
 msgid "Edit first user"
 msgstr "Edita l'usuari primer"
+
+#~ msgid "Analyze disks"
+#~ msgstr "Analitza els discs"
+
+#~ msgid "Configure software"
+#~ msgstr "Configuració de programari"
 
 #~ msgid ""
 #~ "There are some reported issues. Please review them in the previous steps "

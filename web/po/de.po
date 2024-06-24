@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-20 02:20+0000\n"
-"PO-Revision-Date: 2024-06-01 12:46+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
+"PO-Revision-Date: 2024-06-22 21:46+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-web/de/"
 ">\n"
@@ -17,21 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.6\n"
 
 #: src/MainLayout.jsx:40
-#, fuzzy
 msgid "Agama"
-msgstr "Über Agama"
+msgstr "Agama"
 
 #: src/MainLayout.jsx:82
 msgid "Change product"
 msgstr "Produkt ändern"
 
 #: src/components/core/About.jsx:49
-#, fuzzy
 msgid "About"
-msgstr "Über Agama"
+msgstr "Über"
 
 #: src/components/core/About.jsx:71
 msgid "About Agama"
@@ -169,13 +167,17 @@ msgstr "Fertigstellen"
 msgid "Reboot"
 msgstr "Neustart"
 
+#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
+#: src/components/core/InstallationProgress.jsx:37
+#, fuzzy, c-format
+msgid "Installing %s, please wait ..."
+msgstr "Daten werden geladen, bitte warten Sie eine Sekunde ..."
+
 #: src/components/core/InstallerOptions.jsx:57
-#, fuzzy
 msgid "Show installer options"
-msgstr "Installationsprogrammoptionen ausblenden"
+msgstr "Installationsprogrammoptionen anzeigen"
 
 #: src/components/core/InstallerOptions.jsx:62
-#, fuzzy
 msgid "Installer options"
 msgstr "Installationsprogrammoptionen"
 
@@ -183,6 +185,8 @@ msgstr "Installationsprogrammoptionen"
 msgid ""
 "Before starting the installation, you need to address the following problems:"
 msgstr ""
+"Bevor Sie mit der Installation beginnen, müssen Sie sich mit folgenden "
+"Problemen befassen:"
 
 #: src/components/core/ListSearch.jsx:51
 msgid "Search"
@@ -197,6 +201,7 @@ msgstr ""
 #: src/components/core/LoginPage.jsx:63
 msgid "Could not authenticate against the server, please check it."
 msgstr ""
+"Der Server konnte nicht authentifiziert werden, bitte überprüfen Sie dies."
 
 #. TRANSLATORS: Title for a form to provide the password for the root user. %s
 #. will be replaced by "root"
@@ -210,14 +215,11 @@ msgstr "Als %s anmelden"
 #. it and keep the brackets.
 #: src/components/core/LoginPage.jsx:76
 msgid "The installer requires [root] user privileges."
-msgstr ""
+msgstr "Das Installationsprogramm erfordert [root]-Benutzerrechte."
 
 #: src/components/core/LoginPage.jsx:95
-#, fuzzy
 msgid "Please, provide its password to log in to the system."
-msgstr ""
-"Das Installationsprogramm benötigt %s Benutzerrechte. Bitte geben Sie das "
-"Passwort ein, um sich am System anzumelden."
+msgstr "Bitte geben Sie das Passwort für die Anmeldung am System an."
 
 #: src/components/core/LoginPage.jsx:98
 msgid "Login form"
@@ -233,7 +235,7 @@ msgstr "Anmelden"
 
 #: src/components/core/LoginPage.jsx:124
 msgid "More about this"
-msgstr ""
+msgstr "Mehr dazu"
 
 #: src/components/core/LogsButton.jsx:102
 msgid "Collecting logs..."
@@ -286,6 +288,11 @@ msgstr "Bestätigen"
 msgid "Loading data..."
 msgstr "Daten werden gelesen ..."
 
+#: src/components/core/ProgressReport.jsx:122
+#, fuzzy
+msgid "Waiting for progress status..."
+msgstr "Warten auf den Fortschrittsbericht"
+
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
 msgid "Actions"
@@ -310,11 +317,8 @@ msgid "Cannot connect to Agama server"
 msgstr "Verbindung zum Agama-Server nicht möglich"
 
 #: src/components/core/ServerError.jsx:43
-#, fuzzy
 msgid "Please, check whether it is running."
-msgstr ""
-"Es konnte keine Verbindung mit dem D-Bus-Dienst hergestellt werden. Bitte "
-"prüfen Sie, ob er läuft."
+msgstr "Bitte prüfen Sie, ob es läuft."
 
 #. TRANSLATORS: button label
 #: src/components/core/ServerError.jsx:51
@@ -327,15 +331,12 @@ msgid "Keyboard"
 msgstr "Tastatur"
 
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:75
-#, fuzzy
 msgid "Choose a keyboard layout"
-msgstr "Produkt auswählen"
+msgstr "Wählen Sie eine Tastaturbelegung aus"
 
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:86
-#, fuzzy
 msgid "Cannot be changed in remote installation"
-msgstr ""
-"Die Tastaturbelegung kann bei der Ferninstallation nicht geändert werden"
+msgstr "Kann bei der Ferninstallation nicht geändert werden"
 
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:57
 #: src/components/l10n/L10nPage.jsx:67
@@ -343,9 +344,8 @@ msgid "Language"
 msgstr "Sprache"
 
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:63
-#, fuzzy
 msgid "Choose a language"
-msgstr "Sprache ändern"
+msgstr "Wählen Sie eine Sprache aus"
 
 #: src/components/l10n/KeyboardSelection.jsx:45
 msgid "Filter by description or keymap code"
@@ -357,9 +357,8 @@ msgid "None of the keymaps match the filter."
 msgstr "Keines der Muster entspricht dem Filter."
 
 #: src/components/l10n/KeyboardSelection.jsx:92
-#, fuzzy
 msgid "Keyboard selection"
-msgstr "Software %s"
+msgstr "Tastaturauswahl"
 
 #: src/components/l10n/KeyboardSelection.jsx:107
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
@@ -377,9 +376,8 @@ msgstr "Lokalisierung"
 
 #: src/components/l10n/L10nPage.jsx:68 src/components/l10n/L10nPage.jsx:79
 #: src/components/l10n/L10nPage.jsx:90
-#, fuzzy
 msgid "Not selected yet"
-msgstr "Noch kein Gerät ausgewählt"
+msgstr "Noch nicht ausgewählt"
 
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
 #: src/components/l10n/L10nPage.jsx:93
@@ -399,28 +397,24 @@ msgid "Filter by language, territory or locale code"
 msgstr "Nach Sprache, Gebiet oder Sprachumgebungscode filtern"
 
 #: src/components/l10n/LocaleSelection.jsx:84
-#, fuzzy
 msgid "None of the locales match the filter."
-msgstr "Keines der Muster entspricht dem Filter."
+msgstr "Keines der Gebietsschemata entspricht dem Filter."
 
 #: src/components/l10n/LocaleSelection.jsx:91
-#, fuzzy
 msgid "Locale selection"
-msgstr "Software %s"
+msgstr "Gebietsschema-Auswahl"
 
 #: src/components/l10n/TimezoneSelection.jsx:71
 msgid "Filter by territory, time zone code or UTC offset"
 msgstr "Nach Gebiet, Zeitzonencode oder UTC-Abweichung filtern"
 
 #: src/components/l10n/TimezoneSelection.jsx:122
-#, fuzzy
 msgid "None of the time zones match the filter."
-msgstr "Keines der Muster entspricht dem Filter."
+msgstr "Keine der Zeitzonen entspricht dem Filter."
 
 #: src/components/l10n/TimezoneSelection.jsx:129
-#, fuzzy
 msgid " Timezone selection"
-msgstr "Ort ändern"
+msgstr " Zeitzonenauswahl"
 
 #: src/components/layout/Loading.jsx:31
 msgid "Loading installation environment, please wait."
@@ -619,14 +613,13 @@ msgid "Network"
 msgstr "Netzwerk"
 
 #: src/components/network/NetworkPage.jsx:178
-#, fuzzy
 msgid "Wired connections"
-msgstr "Verbindung %s vergessen"
+msgstr "Kabelgebundene Verbindungen"
 
 #: src/components/network/NetworkPage.jsx:185
 #, fuzzy
 msgid "WiFi connections"
-msgstr "Verbindung %s bearbeiten"
+msgstr "WiFi-Verbindungen"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:43
@@ -718,9 +711,8 @@ msgstr "Verbindung %s wartet auf eine Zustandsänderung"
 
 #. TRANSLATORS: menu label, disconnect from the selected WiFi network
 #: src/components/network/WifiNetworkMenu.jsx:67
-#, fuzzy
 msgid "Disconnect"
-msgstr "Getrennt"
+msgstr "Trennen"
 
 #. TRANSLATORS: menu label, remove the selected WiFi network settings
 #: src/components/network/WifiNetworkMenu.jsx:76
@@ -755,53 +747,48 @@ msgid "Software"
 msgstr "Software"
 
 #: src/components/overview/OverviewPage.jsx:52
-#, fuzzy
 msgid "Ready for installation"
-msgstr "Installation bestätigen"
+msgstr "Bereit zur Installation"
 
 #: src/components/overview/OverviewPage.jsx:102
-#, fuzzy
 msgid "Installation"
-msgstr "Wird installiert"
+msgstr "Installation"
 
 #: src/components/overview/OverviewPage.jsx:103
 msgid "Before installing, please check the following problems."
-msgstr ""
+msgstr "Bitte überprüfen Sie vor der Installation die folgenden Probleme."
 
 #: src/components/overview/OverviewPage.jsx:114
-#, fuzzy
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
 msgstr ""
-"Bei der Installation werden die Partitionen für das Booten von der "
-"Installationsfestplatte konfiguriert."
+"Nehmen Sie sich die Zeit, Ihre Konfiguration zu überprüfen, bevor Sie mit "
+"der Installation beginnen."
 
 #: src/components/overview/OverviewPage.jsx:123
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
 msgstr ""
+"Dies sind die wichtigsten Installationseinstellungen. Weitere Einzelheiten "
+"finden Sie in den Abschnitten des Menüs."
 
 #: src/components/overview/SoftwareSection.jsx:60
-#, fuzzy
 msgid "The installation will take"
-msgstr "Installation wird %s in Anspruch nehmen"
+msgstr "Die Installation benötigt"
 
 #. TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
 #: src/components/overview/SoftwareSection.jsx:67
-#, fuzzy, c-format
+#, c-format
 msgid "The installation will take %s including:"
-msgstr "Installation wird %s in Anspruch nehmen"
+msgstr "Die Installation dauert %s einschließlich:"
 
 #: src/components/overview/StorageSection.jsx:53
-#, fuzzy
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group shrinking "
 "existing partitions at the underlying devices as needed"
 msgstr ""
-"Installation unter Verwendung des Geräts %s und Verkleinerung vorhandener "
-"Partitionen nach Bedarf"
 
 #: src/components/overview/StorageSection.jsx:58
 msgid ""
@@ -847,13 +834,11 @@ msgstr ""
 "Änderung der vorhandenen Partitionen"
 
 #: src/components/overview/StorageSection.jsx:98
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s deleting "
 "all its content"
 msgstr ""
-"Installation in einem neuen logischen Volume Manager (LVM) Volume-Gruppe auf "
-"%s, wobei der gesamte Inhalt gelöscht wird"
 
 #: src/components/overview/StorageSection.jsx:104
 #, fuzzy, c-format
@@ -908,7 +893,7 @@ msgstr ""
 
 #: src/components/overview/routes.js:30
 msgid "Overview"
-msgstr ""
+msgstr "Übersicht"
 
 #: src/components/product/ProductRegistrationPage.jsx:66
 #, c-format
@@ -927,19 +912,9 @@ msgstr "E-Mail"
 msgid "Loading available products, please wait..."
 msgstr "Verfügbare Produkte werden geladen, bitte warten ..."
 
-#: src/components/product/ProductSelectionProgress.jsx:88
-#, fuzzy
-msgid "Analyze disks"
-msgstr "Festplatten aktivieren"
-
-#: src/components/product/ProductSelectionProgress.jsx:95
-msgid "Configure software"
-msgstr ""
-
-#: src/components/product/ProductSelectionProgress.jsx:156
-#, fuzzy
+#: src/components/product/ProductSelectionProgress.jsx:53
 msgid "Configuring the product, please wait ..."
-msgstr "Verfügbare Produkte werden geladen, bitte warten ..."
+msgstr "Produkt wird konfiguriert, bitte warten ..."
 
 #: src/components/questions/GenericQuestion.jsx:35
 #: src/components/questions/LuksActivationQuestion.jsx:60
@@ -969,40 +944,38 @@ msgid "The following software patterns are selected for installation:"
 msgstr "Die folgenden Softwaremuster werden für die Installation ausgewählt:"
 
 #: src/components/software/SoftwarePage.jsx:165
-#, fuzzy
 msgid "Selected patterns"
-msgstr "Zeitzone auswählen"
+msgstr "Ausgewählte Muster"
 
 #: src/components/software/SoftwarePage.jsx:168
-#, fuzzy
 msgid "Change selection"
-msgstr "Ort ändern"
+msgstr "Auswahl ändern"
 
 #: src/components/software/SoftwarePatternsSelection.jsx:230
 msgid "None of the patterns match the filter."
 msgstr "Keines der Muster entspricht dem Filter."
 
 #: src/components/software/SoftwarePatternsSelection.jsx:238
-#, fuzzy
 msgid "Software selection"
-msgstr "Software %s"
+msgstr "Softwareauswahl"
 
 #. TRANSLATORS: search field placeholder text
 #: src/components/software/SoftwarePatternsSelection.jsx:241
 #: src/components/software/SoftwarePatternsSelection.jsx:242
 msgid "Filter by pattern title or description"
-msgstr ""
+msgstr "Nach Mustertitel oder Beschreibung filtern"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
 #: src/components/software/UsedSize.jsx:33
-#, fuzzy, c-format
+#, c-format
 msgid "Installation will take %s."
-msgstr "Installation wird %s in Anspruch nehmen"
+msgstr "Installation wird %s in Anspruch nehmen."
 
 #: src/components/software/UsedSize.jsx:38
 msgid "This space includes the base system and the selected software patterns."
 msgstr ""
+"Dieser Bereich umfasst das Basissystem und die ausgewählten Softwaremuster."
 
 #: src/components/storage/BootConfigField.jsx:43
 msgid "Change boot options"
@@ -1050,9 +1023,8 @@ msgstr ""
 "zugewiesen."
 
 #: src/components/storage/BootSelection.jsx:153
-#, fuzzy
 msgid "Select booting partition"
-msgstr "Wählen Sie aus, was mit jeder Partition gemacht werden soll."
+msgstr "Boot-Partition auswählen"
 
 #: src/components/storage/BootSelection.jsx:167
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
@@ -1199,9 +1171,8 @@ msgid "Remove max channel filter"
 msgstr ""
 
 #: src/components/storage/DeviceSelection.jsx:101
-#, fuzzy
 msgid "Loading data, please wait a second..."
-msgstr "Verfügbare Produkte werden geladen, bitte warten ..."
+msgstr "Daten werden geladen, bitte warten Sie eine Sekunde ..."
 
 #. TRANSLATORS: description for using plain partitions for installing the
 #. system, the text in the square brackets [] is displayed in bold, use only
@@ -1229,24 +1200,20 @@ msgstr ""
 "Bedarf als neue Partitionen auf den ausgewählten Geräten erstellt."
 
 #: src/components/storage/DeviceSelection.jsx:149
-#, fuzzy
 msgid "Select installation device"
-msgstr "Installationsgerät"
+msgstr "Installationsgerät auswählen"
 
 #: src/components/storage/DeviceSelection.jsx:155
-#, fuzzy
 msgid "Install new system on"
-msgstr "Installationsprogrammoptionen"
+msgstr "Neues System installieren auf"
 
 #: src/components/storage/DeviceSelection.jsx:158
-#, fuzzy
 msgid "An existing disk"
-msgstr "Vorhandene Partitionen verkleinern"
+msgstr "Eine vorhandene Festplatte"
 
 #: src/components/storage/DeviceSelection.jsx:167
-#, fuzzy
 msgid "A new LVM Volume Group"
-msgstr "neue LVM-Volume-Gruppe"
+msgstr "Eine neue LVM-Volume-Gruppe"
 
 #: src/components/storage/DeviceSelection.jsx:192
 msgid "Device selector for target disk"
@@ -1398,13 +1365,12 @@ msgid "using TPM unlocking"
 msgstr "TPM-Entsperrung verwenden"
 
 #: src/components/storage/EncryptionField.jsx:58
-#, fuzzy
 msgid "Enable"
-msgstr "aktiviert"
+msgstr "Aktivieren"
 
 #: src/components/storage/EncryptionField.jsx:58
 msgid "Modify"
-msgstr ""
+msgstr "Ändern"
 
 #: src/components/storage/EncryptionSettingsDialog.jsx:37
 msgid ""
@@ -1450,26 +1416,24 @@ msgstr "Installationsgerät"
 #: src/components/storage/InstallationDeviceField.jsx:42
 #, fuzzy
 msgid "Main disk or LVM Volume Group for installation."
-msgstr ""
-"Wählen Sie die Hauptfestplatte oder LVM-Volume-Gruppe für die Installation "
-"aus."
+msgstr "Hauptfestplatte oder LVM-Volume-Gruppe für die Installation."
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
 #: src/components/storage/InstallationDeviceField.jsx:56
-#, fuzzy, c-format
+#, c-format
 msgid "File systems created as new partitions at %s"
-msgstr "Eine neue Partition erstellen"
+msgstr "Dateisysteme als neue Partitionen bei %s erstellt"
 
 #: src/components/storage/InstallationDeviceField.jsx:59
 #, fuzzy
 msgid "File systems created at a new LVM volume group"
-msgstr "Geräteselektor für neue LVM-Volume-Gruppe"
+msgstr "Dateisysteme bei einer neuen LVM-Volume-Gruppe erstellt"
 
 #. TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
 #: src/components/storage/InstallationDeviceField.jsx:63
 #, fuzzy, c-format
 msgid "File systems created at a new LVM volume group on %s"
-msgstr "neue LVM-Volume-Gruppe auf %s"
+msgstr "Dateisysteme bei einer neuen LVM-Volume-Gruppe auf %s erstellt"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/PartitionsField.jsx:73
@@ -1649,9 +1613,8 @@ msgid "Partition at installation disk"
 msgstr "Partition auf der Installationsfestplatte"
 
 #: src/components/storage/PartitionsField.jsx:321
-#, fuzzy
 msgid "Reset location"
-msgstr "Registrierung"
+msgstr "Ort zurücksetzen"
 
 #: src/components/storage/PartitionsField.jsx:322
 msgid "Change location"
@@ -1699,18 +1662,16 @@ msgid "Partitions and file systems"
 msgstr "Partitionen und Dateisysteme"
 
 #: src/components/storage/PartitionsField.jsx:802
-#, fuzzy
 msgid ""
 "Structure of the new system, including any additional partition needed for "
 "booting"
 msgstr ""
 "Struktur des neuen Systems, einschließlich aller zusätzlichen Partitionen, "
-"die zum Booten benötigt werden,"
+"die zum Booten benötigt werden"
 
 #: src/components/storage/PartitionsField.jsx:808
-#, fuzzy
 msgid "Show partitions and file-systems actions"
-msgstr "Partitionen und Dateisysteme"
+msgstr "Partitionen- und Dateisystemaktionen anzeigen"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsDialog.jsx:62
@@ -1740,29 +1701,27 @@ msgid "Affecting"
 msgstr "Beeinflusst"
 
 #: src/components/storage/ProposalResultSection.jsx:96
-#, fuzzy, c-format
+#, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
-msgstr[0] "Alle geplanten Aktionen überprüfen"
-msgstr[1] "Alle geplanten Aktionen überprüfen"
+msgstr[0] "Geplante Aktion überprüfen"
+msgstr[1] "Geplante %d Aktionen überprüfen"
 
 #: src/components/storage/ProposalResultSection.jsx:111
-#, fuzzy
 msgid "Waiting for information about storage configuration"
-msgstr "Warten auf Informationen über Boot-Konfiguration"
+msgstr "Warten auf Informationen zur Speicherkonfiguration"
 
 #: src/components/storage/ProposalResultSection.jsx:124
 msgid "Storage proposal not possible"
-msgstr ""
+msgstr "Speichervorschlag nicht möglich"
 
 #: src/components/storage/ProposalResultSection.jsx:188
-#, fuzzy
 msgid ""
 "During installation, some actions will be performed to configure the system "
 "as displayed below."
 msgstr ""
-"Während der Installation wird %d Aktion durchgeführt, um das System wie "
-"unten dargestellt zu konfigurieren"
+"Während der Installation werden einige Aktionen durchgeführt, um das System "
+"wie unten dargestellt zu konfigurieren."
 
 #: src/components/storage/ProposalResultSection.jsx:196
 msgid "Planned Actions"
@@ -1866,14 +1825,14 @@ msgstr ""
 "auf dem/den Installationsgerät(en) gefunden werden."
 
 #: src/components/storage/VolumeDialog.jsx:80
-#, fuzzy, c-format
+#, c-format
 msgid "Add %s file system"
-msgstr "Dateisystem hinzufügen"
+msgstr "Dateisystem %s hinzufügen"
 
 #: src/components/storage/VolumeDialog.jsx:81
-#, fuzzy, c-format
+#, c-format
 msgid "Edit %s file system"
-msgstr "Dateisystem bearbeiten"
+msgstr "Dateisystem %s bearbeiten"
 
 #: src/components/storage/VolumeDialog.jsx:83
 msgid "Edit file system"
@@ -1881,9 +1840,8 @@ msgstr "Dateisystem bearbeiten"
 
 #. TRANSLATORS: Warning when editing a file system.
 #: src/components/storage/VolumeDialog.jsx:98
-#, fuzzy
 msgid "The type and size of the file system cannot be edited."
-msgstr "das Vorhandensein des Dateisystems für %s"
+msgstr "Der Typ und die Größe des Dateisystems können nicht bearbeitet werden."
 
 #. TRANSLATORS: Description of a warning. The first %s is replaced by a device name (e.g.,
 #. /dev/vda) and the second %s is replaced by a mount path (e.g., /home).
@@ -1896,27 +1854,22 @@ msgstr ""
 
 #. TRANSLATORS: Warning when editing a file system.
 #: src/components/storage/VolumeDialog.jsx:107
-#, fuzzy
 msgid "The size of the file system cannot be edited"
-msgstr "das Vorhandensein des Dateisystems für %s"
+msgstr "Die Größe des Dateisystems kann nicht bearbeitet werden"
 
 #. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
 #: src/components/storage/VolumeDialog.jsx:109
-#, fuzzy, c-format
+#, c-format
 msgid "The file system is allocated at the device %s."
-msgstr ""
-"Das Dateisystem wird als neue Partition auf der ausgewählten Festplatte "
-"zugewiesen."
+msgstr "Das Dateisystem ist dem Gerät %s zugewiesen."
 
 #: src/components/storage/VolumeDialog.jsx:154
-#, fuzzy
 msgid "A mount point is required"
-msgstr "Mindestgröße ist erforderlich"
+msgstr "Ein Einhängepunkt ist erforderlich"
 
 #: src/components/storage/VolumeDialog.jsx:181
-#, fuzzy
 msgid "The mount point is invalid"
-msgstr "Tabelle mit Einhängepunkten"
+msgstr "Der Einhängepunkt ist ungültig"
 
 #: src/components/storage/VolumeDialog.jsx:209
 msgid "A size value is required"
@@ -1931,24 +1884,22 @@ msgid "Maximum must be greater than minimum"
 msgstr "Das Maximum muss größer sein als das Minimum"
 
 #: src/components/storage/VolumeDialog.jsx:311
-#, fuzzy, c-format
+#, c-format
 msgid "There is already a file system for %s."
-msgstr "das Vorhandensein des Dateisystems für %s"
+msgstr "Es gibt bereits ein Dateisystem für %s."
 
 #: src/components/storage/VolumeDialog.jsx:313
-#, fuzzy
 msgid "Do you want to edit it?"
-msgstr "Möchten Sie %s deregistrieren?"
+msgstr "Möchten Sie es bearbeiten?"
 
 #: src/components/storage/VolumeDialog.jsx:358
-#, fuzzy, c-format
+#, c-format
 msgid "There is a predefined file system for %s."
-msgstr "das Vorhandensein des Dateisystems für %s"
+msgstr "Es gibt ein vordefiniertes Dateisystem für %s."
 
 #: src/components/storage/VolumeDialog.jsx:360
-#, fuzzy
 msgid "Do you want to add it?"
-msgstr "Möchten Sie %s deregistrieren?"
+msgstr "Möchten Sie es hinzufügen?"
 
 #. TRANSLATORS: info about possible file system types.
 #: src/components/storage/VolumeFields.jsx:217
@@ -2096,14 +2047,12 @@ msgstr ""
 "Wählen Sie aus, auf welchem Gerät das Dateisystem zugewiesen werden soll"
 
 #: src/components/storage/VolumeLocationDialog.jsx:148
-#, fuzzy
 msgid "Select a location"
-msgstr "Festplatte auswählen"
+msgstr "Ort auswählen"
 
 #: src/components/storage/VolumeLocationDialog.jsx:160
-#, fuzzy
 msgid "Select how to allocate the file system"
-msgstr "Exakte Größe des Dateisystems."
+msgstr "Wählen Sie aus, wie das Dateisystem zugewiesen werden soll"
 
 #: src/components/storage/VolumeLocationDialog.jsx:165
 msgid "Create a new partition"
@@ -2132,9 +2081,8 @@ msgstr ""
 "das Dateisystem wird als logisches Volume erstellt."
 
 #: src/components/storage/VolumeLocationDialog.jsx:185
-#, fuzzy
 msgid "Format the device"
-msgstr "DASD-Geräte formatieren"
+msgstr "Gerät formatieren"
 
 #. TRANSLATORS: %s is replaced by a file system type (e.g., Ext4).
 #: src/components/storage/VolumeLocationDialog.jsx:188
@@ -2143,9 +2091,8 @@ msgid "The selected device will be formatted as %s file system."
 msgstr "Das ausgewählte Gerät wird als Dateisystem %s formatiert."
 
 #: src/components/storage/VolumeLocationDialog.jsx:198
-#, fuzzy
 msgid "Mount the file system"
-msgstr "Dateisystem bearbeiten"
+msgstr "Dateisystem einhängen"
 
 #: src/components/storage/VolumeLocationDialog.jsx:199
 msgid ""
@@ -2425,7 +2372,7 @@ msgstr "Ziele"
 
 #: src/components/storage/routes.js:36
 msgid "Proposal"
-msgstr ""
+msgstr "Vorschlag"
 
 #: src/components/storage/utils.js:64
 msgid "KiB"
@@ -2460,9 +2407,8 @@ msgstr ""
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space deleting current content". Keep it short
 #: src/components/storage/utils.js:82
-#, fuzzy
 msgid "deleting current content"
-msgstr "Aktuellen Inhalt löschen"
+msgstr "aktuellen Inhalt löschen"
 
 #: src/components/storage/utils.js:87
 msgid "Shrink existing partitions"
@@ -2477,9 +2423,8 @@ msgstr ""
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space shrinking partitions". Keep it short.
 #: src/components/storage/utils.js:92
-#, fuzzy
 msgid "shrinking partitions"
-msgstr "Vorhandene Partitionen verkleinern"
+msgstr "Partitionen verkleinern"
 
 #: src/components/storage/utils.js:97
 msgid "Use available space"
@@ -2509,9 +2454,8 @@ msgstr "Wählen Sie aus, was mit jeder Partition gemacht werden soll."
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space with custom actions". Keep it short.
 #: src/components/storage/utils.js:112
-#, fuzzy
 msgid "with custom actions"
-msgstr "durchführen einer benutzerdefinierten Reihe von Aktionen"
+msgstr "mit benutzerdefinierten Aktionen"
 
 #: src/components/users/FirstUser.jsx:35
 msgid "No user defined yet."
@@ -2557,23 +2501,20 @@ msgid "Use suggested username"
 msgstr "Vorgeschlagenen Benutzernamen verwenden"
 
 #: src/components/users/FirstUserForm.jsx:140
-#, fuzzy
 msgid "All fields are required"
-msgstr "Ein Größenwert ist erforderlich"
+msgstr "Alle Felder sind erforderlich"
 
 #: src/components/users/FirstUserForm.jsx:147
 msgid "Please, try again."
-msgstr ""
+msgstr "Bitte versuchen Sie es erneut."
 
 #: src/components/users/FirstUserForm.jsx:197
-#, fuzzy
 msgid "Create user"
-msgstr "Benutzerkonto erstellen"
+msgstr "Benutzer erstellen"
 
 #: src/components/users/FirstUserForm.jsx:197
-#, fuzzy
 msgid "Edit user"
-msgstr "%s bearbeiten"
+msgstr "Benutzer bearbeiten"
 
 #: src/components/users/FirstUserForm.jsx:214
 #: src/components/users/FirstUserForm.jsx:216
@@ -2682,21 +2623,25 @@ msgstr "Leeren"
 
 #: src/components/users/UsersPage.jsx:45
 msgid "First user"
-msgstr ""
+msgstr "Erster Benutzer"
 
 #: src/components/users/UsersPage.jsx:52
 msgid "Root authentication"
 msgstr "Root-Authentifizierung"
 
 #: src/components/users/routes.js:41
-#, fuzzy
 msgid "Create or edit the first user"
-msgstr "Die Datei kann nicht gelesen werden"
+msgstr "Ersten Benutzer erstellen oder bearbeiten"
 
 #: src/components/users/routes.js:48
-#, fuzzy
 msgid "Edit first user"
-msgstr "Dateisystem bearbeiten"
+msgstr "Ersten Benutzer bearbeiten"
+
+#~ msgid "Analyze disks"
+#~ msgstr "Festplatten analysieren"
+
+#~ msgid "Configure software"
+#~ msgstr "Software konfigurieren"
 
 #~ msgid ""
 #~ "There are some reported issues. Please review them in the previous steps "

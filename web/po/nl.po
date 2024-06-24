@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-20 02:20+0000\n"
-"PO-Revision-Date: 2024-03-13 09:42+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
+"PO-Revision-Date: 2024-06-20 21:46+0000\n"
 "Last-Translator: Natasha Ament <stacheldrahtje@gmail.com>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-web/nl/"
 ">\n"
@@ -17,21 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 5.6\n"
 
 #: src/MainLayout.jsx:40
-#, fuzzy
 msgid "Agama"
-msgstr "Over Agama"
+msgstr "Agama"
 
 #: src/MainLayout.jsx:82
 msgid "Change product"
 msgstr "Wijzig product"
 
 #: src/components/core/About.jsx:49
-#, fuzzy
 msgid "About"
-msgstr "Over Agama"
+msgstr "Over"
 
 #: src/components/core/About.jsx:71
 msgid "About Agama"
@@ -130,18 +128,16 @@ msgstr "Meer details"
 
 #. TRANSLATORS: "Trusted Platform Module" is the name of the technology and "TPM" its abbreviation
 #: src/components/core/InstallationFinished.jsx:55
-#, fuzzy
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
 "of the new system. For that to work, the machine needs to boot directly to "
 "the new boot loader."
 msgstr ""
-"De laatste stap om <abbr title='Trusted Platform Module'>TPM</abbr> te "
-"configureren zodat versleutelde apparaten automatisch worden geopend zal "
-"plaatsvinden bij de eerste opstart van het nieuwe systeem. Om dat te laten "
-"werken is het nodig om de machine direct te laten starten naar de nieuwe "
-"boot loader."
+"De laatste stap om Trusted Platform Module (TPM) te configureren zodat "
+"versleutelde apparaten automatisch worden geopend zal plaatsvinden bij de "
+"eerste opstart van het nieuwe systeem. Om dat te laten werken is het nodig "
+"om de machine direct te laten starten naar de nieuwe boot loader."
 
 #: src/components/core/InstallationFinished.jsx:97
 msgid "Congratulations!"
@@ -167,6 +163,12 @@ msgstr "Voltooien"
 msgid "Reboot"
 msgstr "Herstarten"
 
+#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
+#: src/components/core/InstallationProgress.jsx:37
+#, fuzzy, c-format
+msgid "Installing %s, please wait ..."
+msgstr "Laad verschillende producten, wacht alstublieft..."
+
 #: src/components/core/InstallerOptions.jsx:57
 #, fuzzy
 msgid "Show installer options"
@@ -181,6 +183,8 @@ msgstr "Installatie opties"
 msgid ""
 "Before starting the installation, you need to address the following problems:"
 msgstr ""
+"Voordat het starten van de installatie, moeten de volgende problemen zijn "
+"opgelost:"
 
 #: src/components/core/ListSearch.jsx:51
 msgid "Search"
@@ -189,28 +193,29 @@ msgstr "Zoeken"
 #: src/components/core/LoginPage.jsx:61
 msgid "Could not log in. Please, make sure that the password is correct."
 msgstr ""
+"Kan niet inloggen. Zorg er alstublieft voor dat het wachtwoord juist is."
 
 #: src/components/core/LoginPage.jsx:63
 msgid "Could not authenticate against the server, please check it."
-msgstr ""
+msgstr "Kon niet authenticeren met de server, controleer het alstublieft."
 
 #. TRANSLATORS: Title for a form to provide the password for the root user. %s
 #. will be replaced by "root"
 #: src/components/core/LoginPage.jsx:71
 #, c-format
 msgid "Log in as %s"
-msgstr ""
+msgstr "Inloggen als %s"
 
 #. TRANSLATORS: description why root password is needed. The text in the
 #. square brackets [] is displayed in bold, use only please, do not translate
 #. it and keep the brackets.
 #: src/components/core/LoginPage.jsx:76
 msgid "The installer requires [root] user privileges."
-msgstr ""
+msgstr "De installer vereist [root] gebruiker privileges."
 
 #: src/components/core/LoginPage.jsx:95
 msgid "Please, provide its password to log in to the system."
-msgstr ""
+msgstr "Voer alstublieft het wachtwoord in om u aan te melden op het systeem."
 
 #: src/components/core/LoginPage.jsx:98
 #, fuzzy
@@ -224,11 +229,11 @@ msgstr "Wachtwoord"
 
 #: src/components/core/LoginPage.jsx:113
 msgid "Log in"
-msgstr ""
+msgstr "Inloggen"
 
 #: src/components/core/LoginPage.jsx:124
 msgid "More about this"
-msgstr ""
+msgstr "Meer over dit"
 
 #: src/components/core/LogsButton.jsx:102
 msgid "Collecting logs..."
@@ -281,6 +286,11 @@ msgstr "Bevestigen"
 msgid "Loading data..."
 msgstr "Leest bestand..."
 
+#: src/components/core/ProgressReport.jsx:122
+#, fuzzy
+msgid "Waiting for progress status..."
+msgstr "Wacht op voortgangs rapport"
+
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
 msgid "Actions"
@@ -299,7 +309,7 @@ msgstr "Niet ingesteld"
 #. TRANSLATORS: page title
 #: src/components/core/ServerError.jsx:34
 msgid "Agama Error"
-msgstr ""
+msgstr "Agama Fout"
 
 #: src/components/core/ServerError.jsx:38
 #, fuzzy
@@ -345,11 +355,11 @@ msgstr "taal"
 
 #: src/components/l10n/KeyboardSelection.jsx:45
 msgid "Filter by description or keymap code"
-msgstr ""
+msgstr "Filter middels omschrijving of toetsenbord layout"
 
 #: src/components/l10n/KeyboardSelection.jsx:85
 msgid "None of the keymaps match the filter."
-msgstr ""
+msgstr "Geen van de indelingen komt overeen met het filter."
 
 #: src/components/l10n/KeyboardSelection.jsx:92
 #, fuzzy
@@ -387,15 +397,15 @@ msgstr "Verander"
 
 #: src/components/l10n/L10nPage.jsx:89
 msgid "Time zone"
-msgstr ""
+msgstr "Tijdzone"
 
 #: src/components/l10n/LocaleSelection.jsx:44
 msgid "Filter by language, territory or locale code"
-msgstr ""
+msgstr "Filter middels taal, territorium of locale code"
 
 #: src/components/l10n/LocaleSelection.jsx:84
 msgid "None of the locales match the filter."
-msgstr ""
+msgstr "Geen van de locales komt overeen met het filter."
 
 #: src/components/l10n/LocaleSelection.jsx:91
 #, fuzzy
@@ -404,11 +414,11 @@ msgstr "Software %s"
 
 #: src/components/l10n/TimezoneSelection.jsx:71
 msgid "Filter by territory, time zone code or UTC offset"
-msgstr ""
+msgstr "Filter middels territorium, tijdzone code of gecompenseerde UTC"
 
 #: src/components/l10n/TimezoneSelection.jsx:122
 msgid "None of the time zones match the filter."
-msgstr ""
+msgstr "Geen van de tijdzones komt overeen met het filter."
 
 #: src/components/l10n/TimezoneSelection.jsx:129
 #, fuzzy
@@ -560,7 +570,7 @@ msgstr "Gateway"
 
 #: src/components/network/IpSettingsForm.jsx:178
 msgid "Gateway can be defined only in 'Manual' mode"
-msgstr ""
+msgstr "Gateway kan alleen in 'Handmatig' modus worden gedefinieerd"
 
 #: src/components/network/IpSettingsForm.jsx:210
 #: src/components/product/ProductRegistrationPage.jsx:89
@@ -689,7 +699,7 @@ msgstr "Verbinding verbreken"
 
 #: src/components/network/WifiNetworkListItem.jsx:42
 msgid "Failed"
-msgstr ""
+msgstr "Mislukt"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
@@ -754,7 +764,7 @@ msgstr "Installeren"
 
 #: src/components/overview/OverviewPage.jsx:103
 msgid "Before installing, please check the following problems."
-msgstr ""
+msgstr "Voor het installeren, check het volgende probleem alstublieft."
 
 #: src/components/overview/OverviewPage.jsx:114
 msgid ""
@@ -767,6 +777,8 @@ msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
 msgstr ""
+"Dit zijn de meest relevante installatie instellingen. Twijfel niet en "
+"controleer de onderdelen in het menu voor meer details."
 
 #: src/components/overview/SoftwareSection.jsx:60
 #, fuzzy
@@ -791,18 +803,25 @@ msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group without modifying "
 "the partitions at the underlying devices"
 msgstr ""
+"Installeer in een nieuwe Logical Volume Manager (LVM) volume groep zonder de "
+"partities aan te passen van onderliggende apparaten"
 
 #: src/components/overview/StorageSection.jsx:63
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group deleting all the "
 "content of the underlying devices"
 msgstr ""
+"Installleer in een nieuwe Logical Volume Manager (LVM) volume groep en wis "
+"alle inhoud van onderliggende apparaten"
 
 #: src/components/overview/StorageSection.jsx:68
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group using a custom "
 "strategy to find the needed space at the underlying devices"
 msgstr ""
+"Installeer in een nieuwe Logical Volume Manager (LVM) volume groep met een "
+"gepersonaliseerde strategie om de benodigde ruimte te vinden in de "
+"onderliggende apparaten"
 
 #: src/components/overview/StorageSection.jsx:86
 #, fuzzy, c-format
@@ -867,35 +886,26 @@ msgstr "Installeer op apparaat %s en verwijder alle daarop opgeslagen inhoud"
 
 #: src/components/overview/routes.js:30
 msgid "Overview"
-msgstr ""
+msgstr "Overzicht"
 
 #: src/components/product/ProductRegistrationPage.jsx:66
 #, c-format
 msgid "Register %s"
-msgstr ""
+msgstr "Registreer %s"
 
 #: src/components/product/ProductRegistrationPage.jsx:74
 msgid "Registration code"
-msgstr ""
+msgstr "Registratie code"
 
 #: src/components/product/ProductRegistrationPage.jsx:77
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
 #: src/components/product/ProductSelectionPage.jsx:58
 msgid "Loading available products, please wait..."
 msgstr "Laad verschillende producten, wacht alstublieft..."
 
-#: src/components/product/ProductSelectionProgress.jsx:88
-#, fuzzy
-msgid "Analyze disks"
-msgstr "Activeer disks"
-
-#: src/components/product/ProductSelectionProgress.jsx:95
-msgid "Configure software"
-msgstr ""
-
-#: src/components/product/ProductSelectionProgress.jsx:156
+#: src/components/product/ProductSelectionProgress.jsx:53
 #, fuzzy
 msgid "Configuring the product, please wait ..."
 msgstr "Laad verschillende producten, wacht alstublieft..."
@@ -921,11 +931,11 @@ msgstr "Encryptie wachtwoord"
 
 #: src/components/software/SoftwarePage.jsx:85
 msgid "No additional software was selected."
-msgstr ""
+msgstr "Er werd geen extra software geselecteerd."
 
 #: src/components/software/SoftwarePage.jsx:90
 msgid "The following software patterns are selected for installation:"
-msgstr ""
+msgstr "De volgende software patronen zijn geselecteerd voor installatie:"
 
 #: src/components/software/SoftwarePage.jsx:165
 #, fuzzy
@@ -939,7 +949,7 @@ msgstr "Wijzig product"
 
 #: src/components/software/SoftwarePatternsSelection.jsx:230
 msgid "None of the patterns match the filter."
-msgstr ""
+msgstr "Geen van de patronen komt overeen met het filter."
 
 #: src/components/software/SoftwarePatternsSelection.jsx:238
 #, fuzzy
@@ -950,7 +960,7 @@ msgstr "Software %s"
 #: src/components/software/SoftwarePatternsSelection.jsx:241
 #: src/components/software/SoftwarePatternsSelection.jsx:242
 msgid "Filter by pattern title or description"
-msgstr ""
+msgstr "Filter middels patroon titel of beschrijving"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
@@ -962,6 +972,7 @@ msgstr "De installatie zal %s in beslag nemen"
 #: src/components/software/UsedSize.jsx:38
 msgid "This space includes the base system and the selected software patterns."
 msgstr ""
+"Deze ruimte omvat het basis systeem en de geselecteerde software patronen."
 
 #: src/components/storage/BootConfigField.jsx:43
 #, fuzzy
@@ -970,7 +981,7 @@ msgstr "Wijzig product"
 
 #: src/components/storage/BootConfigField.jsx:87
 msgid "Installation will not configure partitions for booting."
-msgstr ""
+msgstr "De installatie zal niet de partities configureren voor het opstarten."
 
 #: src/components/storage/BootConfigField.jsx:89
 msgid ""
@@ -2593,6 +2604,13 @@ msgstr "Kan het bestand niet lezen"
 #, fuzzy
 msgid "Edit first user"
 msgstr "Wijzig bestandssysteem"
+
+#, fuzzy
+#~ msgid "Analyze disks"
+#~ msgstr "Activeer disks"
+
+#~ msgid "Configure software"
+#~ msgstr "Configureer software"
 
 #~ msgid ""
 #~ "There are some reported issues. Please review them in the previous steps "

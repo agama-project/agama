@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-20 02:20+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
 "PO-Revision-Date: 2024-06-20 00:46+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -161,6 +161,12 @@ msgstr "完了"
 msgid "Reboot"
 msgstr "再起動"
 
+#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
+#: src/components/core/InstallationProgress.jsx:37
+#, fuzzy, c-format
+msgid "Installing %s, please wait ..."
+msgstr "データを読み込んでいます。しばらくお待ちください..."
+
 #: src/components/core/InstallerOptions.jsx:57
 msgid "Show installer options"
 msgstr "インストーラのオプションを表示"
@@ -270,6 +276,11 @@ msgstr "確認"
 #: src/components/core/Popup.jsx:210
 msgid "Loading data..."
 msgstr "データを読み込んでいます..."
+
+#: src/components/core/ProgressReport.jsx:122
+#, fuzzy
+msgid "Waiting for progress status..."
+msgstr "経過レポートを待機しています"
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
@@ -875,15 +886,7 @@ msgstr "電子メール"
 msgid "Loading available products, please wait..."
 msgstr "利用可能な製品を読み込んでいます。しばらくお待ちください..."
 
-#: src/components/product/ProductSelectionProgress.jsx:88
-msgid "Analyze disks"
-msgstr "ディスクの分析"
-
-#: src/components/product/ProductSelectionProgress.jsx:95
-msgid "Configure software"
-msgstr "ソフトウエアの設定"
-
-#: src/components/product/ProductSelectionProgress.jsx:156
+#: src/components/product/ProductSelectionProgress.jsx:53
 msgid "Configuring the product, please wait ..."
 msgstr "製品を設定しています。しばらくお待ちください..."
 
@@ -2566,6 +2569,12 @@ msgstr "最初のユーザの作成または編集"
 #: src/components/users/routes.js:48
 msgid "Edit first user"
 msgstr "最初のユーザの編集"
+
+#~ msgid "Analyze disks"
+#~ msgstr "ディスクの分析"
+
+#~ msgid "Configure software"
+#~ msgstr "ソフトウエアの設定"
 
 #~ msgid ""
 #~ "There are some reported issues. Please review them in the previous steps "
