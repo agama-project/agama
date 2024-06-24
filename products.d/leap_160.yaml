@@ -23,7 +23,6 @@ software:
   user_patterns:
     - basic_desktop
     - xfce
-    - kde
     - gnome
     - yast2_basis
     - yast2_desktop
