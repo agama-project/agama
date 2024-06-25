@@ -58,7 +58,6 @@ function WifiSelectorPage() {
   };
 
   const fetchNetworks = useCallback(async () => {
-    console.log("Redefining fetchNetworks");
     const devices = await client.devices();
     const connections = await client.connections();
     const networks = await client.loadNetworks(devices, connections, accessPoints);
@@ -72,12 +71,23 @@ function WifiSelectorPage() {
   }, [data, saveData]);
 
   useEffect(() => {
+    // Let's keep the selected network up to date after networks information is
+    // updated (e.g., if the network status change);
+    if (networks) {
+      setSelected(prev => {
+        return networksFromValues(networks).find(n => n.ssid === prev?.ssid);
+      });
+    }
+  }, [networks]);
+
+  useEffect(() => {
     setActiveNetwork(networksFromValues(networks).find(d => d.device));
   }, [networks]);
 
   useEffect(() => {
     fetchNetworks();
-  }, [fetchNetworks]);
+    setUpdateNetworks(false);
+  }, [fetchNetworks, updateNetworks]);
 
   useEffect(() => {
     return client.onNetworkChange(({ type, payload }) => {
@@ -126,13 +136,13 @@ function WifiSelectorPage() {
               activeNetwork={activeNetwork}
               showHiddenForm={showHiddenForm}
               availableNetworks={networks}
-              onSelectionCallback={(network) => {
-                switchSelectedNetwork(network);
-                if (network.settings && !network.device) {
-                  client.connectTo(network.settings);
-                }
-              }}
-              onCancelSelectionCallback={() => switchSelectedNetwork(activeNetwork)}
+            // onSelectionCallback={(network) => {
+            //   switchSelectedNetwork(network);
+            //   if (network.settings && !network.device) {
+            //     client.connectTo(network.settings);
+            //   }
+            // }}
+            // onCancelSelectionCallback={() => switchSelectedNetwork(activeNetwork)}
             />
           </GridItem>
         </Grid>

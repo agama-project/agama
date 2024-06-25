@@ -104,6 +104,7 @@ const Forget = ({ network }) => {
 };
 
 const IpsAndOtherSettings = (network) => {
+  // FIXME: show the connection details/settings
   return ("");
 };
 
@@ -161,7 +162,6 @@ function WifiNetworksListPage({
   onSelectionCallback,
   showHiddenForm,
 }) {
-
   const selectNetwork = (ssid) => {
     onSelectionChange(networks.find(n => n.ssid === ssid));
   };
@@ -171,7 +171,8 @@ function WifiNetworksListPage({
   };
 
   const NetworkName = ({ network }) => {
-    if (!network) return;
+    console.log("NetworkName for", network);
+    if (!network) return _("Connect to hidden network");
 
     const state = networkState(network.device?.state);
 
@@ -224,7 +225,7 @@ function WifiNetworksListPage({
                   {
                     selected
                       ? <WifiConnectionOptions network={selected} onCancel={unselectNetwork} />
-                      : <WifiHiddenNetworkForm network={hiddenNetwork} />
+                      : <WifiHiddenNetworkForm visible />
                   }
                 </DrawerPanelBody>
               </DrawerPanelContent>
@@ -239,19 +240,10 @@ function WifiNetworksListPage({
                 >
                   {renderElements()}
                 </DataList>
-                <ul className="selection-list" data-type="agama/list">
-                  <li data-state={showHiddenForm ? "focused" : "unstyled"}>
-                    <div className="content">
-                      <WifiHiddenNetworkForm
-                        network={hiddenNetwork}
-                        visible={showHiddenForm}
-                        beforeDisplaying={() => onSelectionCallback(hiddenNetwork)}
-                        beforeHiding={() => onSelectionCallback(activeNetwork)}
-                        onSubmitCallback={onSelectionCallback}
-                      />
-                    </div>
-                  </li>
-                </ul>
+                <Button variant="link" onClick={() => setConnetToHidden()}>
+                  {_("Connect to hidden network")}
+                </Button>
+                <WifiHiddenNetworkForm visible={connectToHidden} onSubmitCallback={onSelectionChange} />
               </Stack>
             </DrawerContentBody>
           </DrawerContent>
