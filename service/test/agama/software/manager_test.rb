@@ -234,11 +234,11 @@ describe Agama::Software::Manager do
   describe "#products" do
     it "returns the list of known products" do
       products = subject.products
-      expect(products.size).to eq(2)
       expect(products).to all(be_a(Agama::Software::Product))
       expect(products).to contain_exactly(
         an_object_having_attributes(id: "Tumbleweed"),
-        an_object_having_attributes(id: "MicroOS")
+        an_object_having_attributes(id: "MicroOS"),
+        an_object_having_attributes(id: "Leap_16.0")
       )
     end
   end
