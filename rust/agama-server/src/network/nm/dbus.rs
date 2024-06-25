@@ -543,9 +543,8 @@ fn infiniband_config_from_dbus(conn: &OwnedNestedHash) -> Option<InfinibandConfi
 }
 
 fn tun_config_to_dbus(config: &TunConfig) -> HashMap<&str, zvariant::Value> {
-    let mut tun_config: HashMap<&str, zvariant::Value> = HashMap::from([
-        ("mode", Value::new(config.mode.clone() as u32)),
-    ]);
+    let mut tun_config: HashMap<&str, zvariant::Value> =
+        HashMap::from([("mode", Value::new(config.mode.clone() as u32))]);
 
     if let Some(group) = &config.group {
         tun_config.insert("group", group.into());
@@ -562,7 +561,6 @@ fn tun_config_from_dbus(conn: &OwnedNestedHash) -> Option<TunConfig> {
     let tun = conn.get(TUN_KEY)?;
 
     let mut tun_config = TunConfig::default();
-
 
     if let Some(mode) = tun.get("mode") {
         tun_config.mode = match mode.downcast_ref::<u32>()? {
