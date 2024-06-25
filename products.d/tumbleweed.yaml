@@ -91,6 +91,15 @@ software:
       archs: s390
     - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/oss/
       archs: ppc
+  installation_labels:
+    - label: openSUSE-Tumbleweed-DVD-x86_64
+      archs: x86_64
+    - label: openSUSE-Tumbleweed-DVD-aarch64
+      archs: aarch64
+    - label: openSUSE-Tumbleweed-DVD-s390x
+      archs: s390
+    - label: openSUSE-Tumbleweed-DVD-ppc64le
+      archs: ppc
   mandatory_patterns:
     - enhanced_base # only pattern that is shared among all roles on TW
   optional_patterns: null # no optional pattern shared

@@ -53,6 +53,11 @@ module Agama
       # @return [Array<String>] Empty if the product requires registration.
       attr_accessor :repositories
 
+      # List of disk labels used for installation repository.
+      #
+      # @return [Array<String>] Empty if the product does not support offline installation.
+      attr_accessor :labels
+
       # Mandatory packages.
       #
       # @return [Array<String>]
@@ -95,6 +100,7 @@ module Agama
       def initialize(id)
         @id = id
         @repositories = []
+        @labels = []
         @mandatory_packages = []
         @optional_packages = []
         @mandatory_patterns = []

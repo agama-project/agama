@@ -98,6 +98,15 @@ software:
       archs: s390
     - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/oss/
       archs: ppc
+  installation_labels:
+    - label: openSUSE-MicroOS-DVD-x86_64
+      archs: x86_64
+    - label: openSUSE-MicroOS-DVD-aarch64
+      archs: aarch64
+    - label: openSUSE-MicroOS-DVD-s390x
+      archs: s390
+    - label: openSUSE-MicroOS-DVD-ppc64le
+      archs: ppc
   mandatory_patterns:
     - microos_base
     - microos_base_zypper
