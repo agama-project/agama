@@ -440,6 +440,9 @@ module Agama
         product.repositories.each { |url| repositories.add(url) }
       end
 
+      # find all devices with the required disk label
+      # @return [Array<String>] returns list of devices, e.g. `["/dev/sr1"]`,
+      # returns empty list if there is no device with the required label
       def disks_with_label(label)
         data = list_disks
         disks = data["blockdevices"].map { |device| device["kname"] if device["label"] == label }
@@ -448,13 +451,16 @@ module Agama
         disks
       end
 
-      # get list of disks
+      # get list of disks, returns parsed data from the `lsblk` call
+      # @return [Hash] parsed data
       def list_disks
         # we need only the kernel device name and the label
         output = `lsblk --paths --json --output kname,label`
         JSON.parse(output)
       end
 
+      # find the installation device with the required label
+      # @return [String,nil] Device name (`/dev/sr1`) or `nil` if not found
       def installation_device(label)
         disks = disks_with_label(label)
 

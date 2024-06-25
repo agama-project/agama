@@ -91,6 +91,7 @@ software:
       archs: s390
     - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/oss/
       archs: ppc
+  # device labels for offline installation media
   installation_labels:
     - label: openSUSE-Tumbleweed-DVD-x86_64
       archs: x86_64
