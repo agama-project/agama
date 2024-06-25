@@ -222,7 +222,6 @@ export default function FirstUserForm() {
                     className="first-username-wrapper"
                     fieldId="userName"
                     label={_("Username")}
-                    isRequired
                   >
                     <TextInput
                       id="userName"
