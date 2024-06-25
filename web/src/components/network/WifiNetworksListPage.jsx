@@ -80,6 +80,9 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
         <ButtonLink onClick={async () => await client.network.connectTo(network.settings)}>
           {_("Connect")}
         </ButtonLink>
+        <ButtonLink to={`/network/connections/${network.settings.id}/edit`}>
+          {_("Edit")}
+        </ButtonLink>
         <Button variant="secondary" isDanger onClick={async () => await client.network.deleteConnection(network.settings.id)}>
           {_("Forget")}
         </Button>
@@ -100,6 +103,9 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
           <Split hasGutter>
             <ButtonLink onClick={async () => await client.network.disconnect(network.settings)}>
               {_("Disconnect")}
+            </ButtonLink>
+            <ButtonLink to={`/network/connections/${network.settings.id}/edit`}>
+              {_("Edit")}
             </ButtonLink>
             <Button variant="secondary" isDanger onClick={async () => await client.network.deleteConnection(network.settings.id)}>
               {_("Forget")}

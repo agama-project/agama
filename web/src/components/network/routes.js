@@ -33,10 +33,9 @@ const client = await createDefaultClient();
 
 const loaders = {
   all: async () => {
-    const connections = await client.network.connections();
     const devices = await client.network.devices();
+    const connections = await client.network.connections();
     const settings = await client.network.settings();
-    console.log("loaders.all", connections, devices, settings);
     return { connections, devices, settings };
   },
   connection: async ({ params }) => {
@@ -45,7 +44,6 @@ const loaders = {
   },
   wifis: async () => {
     const connections = await client.network.connections();
-    console.log("Obtaining devices");
     const devices = await client.network.devices();
     const accessPoints = await client.network.accessPoints();
     const networks = await client.network.loadNetworks(devices, connections, accessPoints);

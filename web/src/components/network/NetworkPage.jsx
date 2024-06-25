@@ -48,9 +48,9 @@ const NoWiredConnections = () => {
  */
 export default function NetworkPage() {
   const { network: client } = useInstallerClient();
-  const { connections: initialConnections, settings } = useLoaderData();
+  const { connections: initialConnections, devices: initialDevices, settings } = useLoaderData();
   const [connections, setConnections] = useState(initialConnections);
-  const [devices, setDevices] = useState(undefined);
+  const [devices, setDevices] = useState(initialDevices);
 
   useEffect(() => {
     return client.onNetworkChange(({ type, payload }) => {
@@ -69,6 +69,7 @@ export default function NetworkPage() {
             const newDevices = devs.filter((d) => d.name !== name);
             return [...newDevices, client.fromApiDevice(data)];
           });
+
           break;
         }
 
@@ -79,12 +80,6 @@ export default function NetworkPage() {
       }
       client.connections().then(setConnections);
     });
-  }, [client, devices]);
-
-  useEffect(() => {
-    if (devices !== undefined) return;
-
-    client.devices().then(setDevices);
   }, [client, devices]);
 
   const connectionDevice = ({ id }) => devices?.find(({ connection }) => id === connection);
@@ -106,9 +101,11 @@ export default function NetworkPage() {
       if (!wifiAvailable) return;
 
       return (
-        <ButtonLink isPrimary={activeConnection} to="wifis">
-          {activeConnection ? _("Change") : _("Connect")}
-        </ButtonLink>
+        <Split hasGutter>
+          <ButtonLink isPrimary to="wifis">
+            {_("Change")}
+          </ButtonLink>
+        </Split>
       );
     };
 
@@ -116,7 +113,9 @@ export default function NetworkPage() {
       if (!wifiAvailable || !activeConnection) return;
 
       return (
-        <Button variant="secondary">{_("Disconnect")}</Button>
+        <ButtonLink onClick={async () => await client.disconnect(activeConnection)}>
+          {_("Disconnect")}
+        </ButtonLink>
       );
     };
 
@@ -126,7 +125,6 @@ export default function NetworkPage() {
         actions={
           <Split hasGutter>
             <ConnectionButton />
-            <DisconnectionButton />
           </Split>
         }
       >
