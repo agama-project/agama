@@ -47,11 +47,13 @@ import {
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 
-import { WifiNetworkListItemPage, WifiHiddenNetworkForm, WifiConnectionForm } from "~/components/network";
+import { WifiConnectionForm } from "~/components/network";
 import { DeviceState } from "~/client/network/model";
 import { _ } from "~/i18n";
 import { ButtonLink } from "../core";
 import { useInstallerClient } from "~/context/installer";
+
+const HIDDEN_NETWORK = Object.freeze({ hidden: true });
 
 // FIXME: Move to the model and stop using translations for checking the state
 const networkState = (state) => {
@@ -108,7 +110,13 @@ const IpsAndOtherSettings = (network) => {
   return ("");
 };
 
-const WifiConnectionOptions = ({ network, onCancel, onConnect }) => {
+const WifiDrawerPanelBody = ({ network, onCancel, onConnect }) => {
+  if (!network) return;
+
+  const Form = () => <WifiConnectionForm network={network} onCancel={onCancel} />;
+
+  if (network === HIDDEN_NETWORK) return <Form />;
+
   if (network.settings && !network.device) {
     return (
       <Split hasGutter>
@@ -118,12 +126,8 @@ const WifiConnectionOptions = ({ network, onCancel, onConnect }) => {
     );
   }
 
-  const state = networkState(network.device?.state);
-
-  const Form = () => <WifiConnectionForm network={network} onCancel={onCancel} onAccept={onConnect} />;
-  console.log("state is", network, state);
-
-  switch (state) {
+  // FIXME: stop using translations
+  switch (networkState(network.device?.state)) {
     case _("Connecting"):
       return <Spinner />;
     case _("Disconnected"):
@@ -143,6 +147,27 @@ const WifiConnectionOptions = ({ network, onCancel, onConnect }) => {
   }
 };
 
+const NetworkFormName = ({ network }) => {
+  if (!network) return;
+
+  return (
+    <h3>
+      {network === HIDDEN_NETWORK ? _("Connect to a hidden network") : network.ssid}
+    </h3>
+  );
+};
+
+const NetworkListName = ({ network }) => {
+  const state = networkState(network.device?.state);
+
+  return (
+    <Flex columnGap={{ default: "columnGapSm" }}>
+      <b>{network.ssid}</b>
+      {state === _("Connected") && <Label isCompact color="blue">{state}</Label>}
+    </Flex>
+  );
+};
+
 /**
  * Component for displaying a list of available Wi-Fi networks
  *
@@ -157,31 +182,17 @@ function WifiNetworksListPage({
   selected,
   onSelectionChange,
   networks = [],
-  hiddenNetwork,
-  activeNetwork,
-  onSelectionCallback,
-  showHiddenForm,
 }) {
+  const selectHiddenNetwork = () => {
+    onSelectionChange(HIDDEN_NETWORK);
+  };
+
   const selectNetwork = (ssid) => {
     onSelectionChange(networks.find(n => n.ssid === ssid));
   };
 
   const unselectNetwork = () => {
     onSelectionChange(undefined);
-  };
-
-  const NetworkName = ({ network }) => {
-    console.log("NetworkName for", network);
-    if (!network) return _("Connect to hidden network");
-
-    const state = networkState(network.device?.state);
-
-    return (
-      <Flex columnGap={{ default: "columnGapSm" }}>
-        <b>{network.ssid}</b>
-        {state === _("Connected") && <Label isCompact color="blue">{state}</Label>}
-      </Flex>
-    );
   };
 
   const renderElements = () => {
@@ -193,7 +204,7 @@ function WifiNetworksListPage({
               dataListCells={[
                 <DataListCell key="ssid">
                   <Flex direction={{ default: "column" }} rowGap={{ default: "rowGapSm" }}>
-                    <NetworkName network={n} />
+                    <NetworkListName network={n} />
                     <Flex alignItems={{ default: "alignItemsCenter" }} columnGap={{ default: "columnGapSm" }}>
                       <div><Icon name="lock" size="10" fill="grey" /> {n.security.join(", ")}</div>
                       <div><Icon name="signal_cellular_alt" size="10" fill="grey" /> {n.strength}</div>
@@ -216,17 +227,16 @@ function WifiNetworksListPage({
             panelContent={
               <DrawerPanelContent>
                 <DrawerHead>
-                  <NetworkName network={selected} />
+                  <NetworkFormName network={selected} />
                   <DrawerActions>
                     <DrawerCloseButton onClick={unselectNetwork} />
                   </DrawerActions>
                 </DrawerHead>
                 <DrawerPanelBody>
-                  {
-                    selected
-                      ? <WifiConnectionOptions network={selected} onCancel={unselectNetwork} />
-                      : <WifiHiddenNetworkForm visible />
-                  }
+                  <WifiDrawerPanelBody
+                    network={selected}
+                    onCancel={unselectNetwork}
+                  />
                 </DrawerPanelBody>
               </DrawerPanelContent>
             }
@@ -240,10 +250,9 @@ function WifiNetworksListPage({
                 >
                   {renderElements()}
                 </DataList>
-                <Button variant="link" onClick={() => setConnetToHidden()}>
+                <Button variant="link" onClick={selectHiddenNetwork}>
                   {_("Connect to hidden network")}
                 </Button>
-                <WifiHiddenNetworkForm visible={connectToHidden} onSubmitCallback={onSelectionChange} />
               </Stack>
             </DrawerContentBody>
           </DrawerContent>
