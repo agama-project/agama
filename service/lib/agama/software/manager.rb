@@ -445,7 +445,7 @@ module Agama
       # returns empty list if there is no device with the required label
       def disks_with_label(label)
         data = list_disks
-        disks = data["blockdevices"].map { |device| device["kname"] if device["label"] == label }
+        disks = data.fetch("blockdevices", []).map { |device| device["kname"] if device["label"] == label }
         disks.compact!
         logger.info "Disks with the installation label: #{disks.inspect}"
         disks
@@ -457,6 +457,9 @@ module Agama
         # we need only the kernel device name and the label
         output = `lsblk --paths --json --output kname,label`
         JSON.parse(output)
+      rescue RuntimeError e
+        logger.error "ERROR: Cannot read disk devices: #{e}"
+        {}
       end
 
       # find the installation device with the required label
