@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 25 15:03:05 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Add support for retrieving the storage resize actions
+  (gh#openSUSE/agama#1354).
+
+-------------------------------------------------------------------
 Thu Jun 20 05:25:49 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for progress sequences with pre-defined descriptions

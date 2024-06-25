@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun 25 15:04:20 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Add resize actions to storage model (gh#openSUSE/agama#1354).
+
+-------------------------------------------------------------------
 Thu Jun 21 15:00:00 UTC 2024 - Clemens Famulla-Conrad <cfamullaconrad@suse.de>
 
 - Add tun/tap model (gh#openSUSE/agama#1353)
