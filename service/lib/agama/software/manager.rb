@@ -459,7 +459,7 @@ module Agama
         # we need only the kernel device name and the label
         output = `lsblk --paths --json --output kname,label`
         JSON.parse(output)
-      rescue RuntimeError => e
+      rescue StandardError => e
         logger.error "ERROR: Cannot read disk devices: #{e}"
         {}
       end
