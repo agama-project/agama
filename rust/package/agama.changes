@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jun 24 20:35:00 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add Leap 16 (gh#openSUSE/agama#1371)
+
+-------------------------------------------------------------------
 Thu Jun 21 15:00:00 UTC 2024 - Clemens Famulla-Conrad <cfamullaconrad@suse.de>
 
 - Add tun/tap model (gh#openSUSE/agama#1353)
