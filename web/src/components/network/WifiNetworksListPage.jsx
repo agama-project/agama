@@ -19,39 +19,24 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import {
-  Card,
-  CardBody,
+  Button,
+  Card, CardBody,
+  DataList, DataListCell, DataListItem, DataListItemCells, DataListItemRow,
+  Drawer, DrawerActions, DrawerCloseButton, DrawerContent, DrawerContentBody, DrawerHead, DrawerPanelBody, DrawerPanelContent,
   Flex,
-  Form,
   Label,
-  DataList,
-  DataListCell,
-  DataListCheck,
-  DataListItem,
-  DataListItemCells,
-  DataListItemRow,
   Spinner,
   Split,
-  Stack,
-  Drawer,
-  DrawerPanelContent,
-  DrawerPanelBody,
-  DrawerContent,
-  DrawerContentBody,
-  DrawerHead,
-  DrawerActions,
-  DrawerCloseButton,
-  Button
+  Stack
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
-
 import { WifiConnectionForm } from "~/components/network";
+import { ButtonLink } from "~/components/core";
 import { DeviceState } from "~/client/network/model";
-import { _ } from "~/i18n";
-import { ButtonLink } from "../core";
 import { useInstallerClient } from "~/context/installer";
+import { _ } from "~/i18n";
 
 const HIDDEN_NETWORK = Object.freeze({ hidden: true });
 
@@ -75,42 +60,14 @@ const networkState = (state) => {
   }
 };
 
-const Connect = ({ network }) => {
-  const client = useInstallerClient();
-
-  return (
-    <ButtonLink onClick={async () => await client.network.connectTo(network.settings)}>
-      {_("Connect")}
-    </ButtonLink>
-  );
-};
-
-const Disconnect = ({ network }) => {
-  const client = useInstallerClient();
-
-  return (
-    <ButtonLink onClick={async () => await client.network.disconnect(network.settings)}>
-      {_("Disconnect")}
-    </ButtonLink>
-  );
-};
-
-const Forget = ({ network }) => {
-  const client = useInstallerClient();
-
-  return (
-    <Button variant="secondary" isDanger onClick={async () => await client.network.deleteConnection(network.settings.id)}>
-      {_("Forget")}
-    </Button>
-  );
-};
-
-const IpsAndOtherSettings = (network) => {
-  // FIXME: show the connection details/settings
+const ConnectionData = (network) => {
+  // TODO: show the connection details/settings
   return ("");
 };
 
-const WifiDrawerPanelBody = ({ network, onCancel, onConnect }) => {
+const WifiDrawerPanelBody = ({ network, onCancel }) => {
+  const client = useInstallerClient();
+
   if (!network) return;
 
   const Form = () => <WifiConnectionForm network={network} onCancel={onCancel} />;
@@ -120,8 +77,12 @@ const WifiDrawerPanelBody = ({ network, onCancel, onConnect }) => {
   if (network.settings && !network.device) {
     return (
       <Split hasGutter>
-        <Connect network={network} />
-        <Forget network={network} />
+        <ButtonLink onClick={async () => await client.network.connectTo(network.settings)}>
+          {_("Connect")}
+        </ButtonLink>
+        <Button variant="secondary" isDanger onClick={async () => await client.network.deleteConnection(network.settings.id)}>
+          {_("Forget")}
+        </Button>
       </Split>
     );
   }
@@ -135,10 +96,14 @@ const WifiDrawerPanelBody = ({ network, onCancel, onConnect }) => {
     case _("Connected"):
       return (
         <Stack>
-          <IpsAndOtherSettings />
+          <ConnectionData />
           <Split hasGutter>
-            <Disconnect network={network} />
-            <Forget network={network} />
+            <ButtonLink onClick={async () => await client.network.disconnect(network.settings)}>
+              {_("Disconnect")}
+            </ButtonLink>
+            <Button variant="secondary" isDanger onClick={async () => await client.network.deleteConnection(network.settings.id)}>
+              {_("Forget")}
+            </Button>
           </Split>
         </Stack>
       );
@@ -161,9 +126,10 @@ const NetworkListName = ({ network }) => {
   const state = networkState(network.device?.state);
 
   return (
-    <Flex columnGap={{ default: "columnGapSm" }}>
+    <Flex columnGap={{ default: "columnGapXs" }}>
       <b>{network.ssid}</b>
-      {state === _("Connected") && <Label isCompact color="blue">{state}</Label>}
+      {network.settings && <Label isCompact color="cyan" variant="outline">{_("configured")}</Label>}
+      {state === _("Connected") && <Label isCompact color="green">{state}</Label>}
     </Flex>
   );
 };
