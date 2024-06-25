@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 25 14:23:37 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use a D-Bus method instead of a signal to change the language and
+  the keyboard layout (gh#openSUSE/agama#1375).
+
+-------------------------------------------------------------------
 Thu Jun 20 05:25:49 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for progress sequences with pre-defined descriptions
