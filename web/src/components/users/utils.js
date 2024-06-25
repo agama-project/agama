@@ -28,6 +28,8 @@
  * @returns {string[]} An array of username suggestions.
  */
 const suggestUsernames = (fullName) => {
+  if (!fullName) return [];
+
   // Cleaning the name.
   const cleanedName = fullName
     .normalize('NFD')
