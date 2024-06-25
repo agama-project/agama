@@ -153,25 +153,21 @@ const WifiConnectionOptions = ({ network, onCancel, onConnect }) => {
  * @param {function} props.onCancelCallback - the function to trigger when user cancel dismiss before connecting to a network
  */
 function WifiNetworksListPage({
+  selected,
+  onSelectionChange,
   networks = [],
   hiddenNetwork,
   activeNetwork,
-  selectedNetwork,
   onSelectionCallback,
-  onCancelSelectionCallback,
   showHiddenForm,
 }) {
-  const [selected, setSelected] = useState();
-  const [drawIsExpanded, setDrawIsExpanded] = useState(false);
 
   const selectNetwork = (ssid) => {
-    setSelected(networks.find(n => n.ssid === ssid));
-    setDrawIsExpanded(true);
+    onSelectionChange(networks.find(n => n.ssid === ssid));
   };
 
   const unselectNetwork = () => {
-    setSelected(undefined);
-    setDrawIsExpanded(false);
+    onSelectionChange(undefined);
   };
 
   const NetworkName = ({ network }) => {
@@ -214,7 +210,7 @@ function WifiNetworksListPage({
   return (
     <Card isRounded isCompact>
       <CardBody>
-        <Drawer isExpanded={drawIsExpanded}>
+        <Drawer isExpanded={selected}>
           <DrawerContent
             panelContent={
               <DrawerPanelContent>

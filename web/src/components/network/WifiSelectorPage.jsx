@@ -19,15 +19,16 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useInstallerClient } from "~/context/installer";
 import { NetworkEventTypes } from "~/client/network";
-import { About, Page } from "~/components/core";
+import { Page } from "~/components/core";
 import { WifiNetworksListPage } from "~/components/network";
 import { _ } from "~/i18n";
 import { DeviceState } from "~/client/network/model";
 import { Grid, GridItem, Timestamp } from "@patternfly/react-core";
 import { useLoaderData } from "react-router-dom";
+import { useLocalStorage } from "~/utils";
 
 const networksFromValues = (networks) => Object.values(networks).flat();
 const baseHiddenNetwork = { ssid: undefined, hidden: true };
@@ -37,37 +38,46 @@ const baseHiddenNetwork = { ssid: undefined, hidden: true };
 function WifiSelectorPage() {
   const { network: client } = useInstallerClient();
   const { connections: initialConnections, devices: initialDevices, accessPoints, networks: initialNetworks } = useLoaderData();
+  const [data, saveData] = useLocalStorage("agama-network", { selectedWifi: null });
+  const [selected, setSelected] = useState(data.selectedWifi);
   const [networks, setNetworks] = useState(initialNetworks);
   const [showHiddenForm, setShowHiddenForm] = useState(false);
   const [devices, setDevices] = useState(initialDevices);
   const [connections, setConnections] = useState(initialConnections);
-  const [selectedNetwork, setSelectedNetwork] = useState(null);
   const [activeNetwork, setActiveNetwork] = useState(null);
   const [updateNetworks, setUpdateNetworks] = useState(false);
   const [needAuth, setNeedAuth] = useState(null);
 
-  const switchSelectedNetwork = (network) => {
-    setShowHiddenForm(network === baseHiddenNetwork);
-    setSelectedNetwork(network);
+  const selectNetwork = (network) => {
+    saveData({ selectedWifi: network });
+    setSelected(network);
   };
+
+  const switchSelectedNetwork = (network) => {
+    setSelected(network === baseHiddenNetwork);
+  };
+
+  const fetchNetworks = useCallback(async () => {
+    console.log("Redefining fetchNetworks");
+    const devices = await client.devices();
+    const connections = await client.connections();
+    const networks = await client.loadNetworks(devices, connections, accessPoints);
+    setDevices(devices);
+    setConnections(connections);
+    setNetworks(networks);
+  }, [client, accessPoints]);
+
+  useEffect(() => {
+    saveData(data);
+  }, [data, saveData]);
 
   useEffect(() => {
     setActiveNetwork(networksFromValues(networks).find(d => d.device));
   }, [networks]);
 
   useEffect(() => {
-    async function fetchNetworks() {
-      const devices = await client.devices();
-      const connections = await client.connections();
-      const networks = await client.loadNetworks(devices, connections, accessPoints);
-      setDevices(devices);
-      setConnections(connections);
-      setNetworks(networks);
-    }
-
     fetchNetworks();
-    setUpdateNetworks(false);
-  }, [updateNetworks, devices, connections, accessPoints, client]);
+  }, [fetchNetworks]);
 
   useEffect(() => {
     return client.onNetworkChange(({ type, payload }) => {
@@ -109,11 +119,12 @@ function WifiSelectorPage() {
         <Grid hasGutter>
           <GridItem sm={12}>
             <WifiNetworksListPage
+              selected={selected}
+              onSelectionChange={selectNetwork}
               networks={networksFromValues(networks)}
               hiddenNetwork={baseHiddenNetwork}
               activeNetwork={activeNetwork}
               showHiddenForm={showHiddenForm}
-              selectedNetwork={selectedNetwork}
               availableNetworks={networks}
               onSelectionCallback={(network) => {
                 switchSelectedNetwork(network);
