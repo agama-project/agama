@@ -22,25 +22,28 @@
 import React, { useEffect, useState } from "react";
 import { useInstallerClient } from "~/context/installer";
 import { NetworkEventTypes } from "~/client/network";
-import { Page } from "~/components/core";
+import { About, Page } from "~/components/core";
 import { WifiNetworksListPage } from "~/components/network";
 import { _ } from "~/i18n";
 import { DeviceState } from "~/client/network/model";
-import { Grid, GridItem } from "@patternfly/react-core";
+import { Grid, GridItem, Timestamp } from "@patternfly/react-core";
 import { useLoaderData } from "react-router-dom";
 
 const networksFromValues = (networks) => Object.values(networks).flat();
 const baseHiddenNetwork = { ssid: undefined, hidden: true };
 
+// FIXME: use a reducer
+
 function WifiSelectorPage() {
   const { network: client } = useInstallerClient();
-  const { connections: initialConnections, devices: initialDevices, accessPoints } = useLoaderData();
-  const [networks, setNetworks] = useState([]);
+  const { connections: initialConnections, devices: initialDevices, accessPoints, networks: initialNetworks } = useLoaderData();
+  const [networks, setNetworks] = useState(initialNetworks);
   const [showHiddenForm, setShowHiddenForm] = useState(false);
   const [devices, setDevices] = useState(initialDevices);
   const [connections, setConnections] = useState(initialConnections);
   const [selectedNetwork, setSelectedNetwork] = useState(null);
   const [activeNetwork, setActiveNetwork] = useState(null);
+  const [updateNetworks, setUpdateNetworks] = useState(false);
   const [needAuth, setNeedAuth] = useState(null);
 
   const switchSelectedNetwork = (network) => {
@@ -49,81 +52,51 @@ function WifiSelectorPage() {
   };
 
   useEffect(() => {
-    const loadNetworks = async () => {
-      const knownSsids = [];
-      console.log("Current devices es: ", devices);
+    setActiveNetwork(networksFromValues(networks).find(d => d.device));
+  }, [networks]);
 
-      return accessPoints
-        .sort((a, b) => b.strength - a.strength)
-        .reduce((networks, ap) => {
-          // Do not include networks without SSID
-          if (!ap.ssid || ap.ssid === "") return networks;
-          // Do not include "duplicates"
-          if (knownSsids.includes(ap.ssid)) return networks;
+  useEffect(() => {
+    async function fetchNetworks() {
+      const devices = await client.devices();
+      const connections = await client.connections();
+      const networks = await client.loadNetworks(devices, connections, accessPoints);
+      setDevices(devices);
+      setConnections(connections);
+      setNetworks(networks);
+    }
 
-          const network = {
-            ...ap,
-            settings: connections.find(c => c.wireless?.ssid === ap.ssid),
-            device: devices.find(c => c.connection === ap.ssid),
-            needAuth: needAuth === ap.ssid
-          };
-
-          // Group networks
-          if (network.device) {
-            networks.connected.push(network);
-          } else if (network.settings) {
-            networks.configured.push(network);
-          } else {
-            networks.others.push(network);
-          }
-
-          knownSsids.push(network.ssid);
-
-          return networks;
-        }, { connected: [], configured: [], others: [] });
-    };
-
-    loadNetworks().then((data) => {
-      setNetworks(data);
-      setActiveNetwork(networksFromValues(data).find(d => d.device));
-    });
-  }, [client, connections, devices, accessPoints, needAuth]);
+    fetchNetworks();
+    setUpdateNetworks(false);
+  }, [updateNetworks, devices, connections, accessPoints, client]);
 
   useEffect(() => {
     return client.onNetworkChange(({ type, payload }) => {
       switch (type) {
         case NetworkEventTypes.DEVICE_ADDED: {
-          setDevices((devs) => {
-            const newDevices = devs.filter((d) => d.name !== payload.name);
-            return [...newDevices, client.fromApiDevice(payload)];
-          });
+          setUpdateNetworks(true);
           break;
         }
 
         case NetworkEventTypes.DEVICE_UPDATED: {
           const [name, data] = payload;
           const current_device = devices.find((d) => d.name === name);
-          console.log("Data ", data);
-          console.log("Name ", name);
+
           if (data.state === DeviceState.FAILED) {
             if (current_device && (data.stateReason === 7)) {
-              // setNeedAuth(current_device.connection);
+              console.log(`FAILED Device ${name} updated' with data`, data);
+              setNeedAuth(current_device.connection);
             }
           }
-          setDevices(devs => {
-            const newDevices = devs.filter((d) => d.name !== name);
-            return [...newDevices, client.fromApiDevice(data)];
-          });
+
+          setUpdateNetworks(true);
           break;
         }
 
         case NetworkEventTypes.DEVICE_REMOVED: {
-          console.log("REMOVED DEVICE");
-          setDevices(devs => devs.filter((d) => d.name !== payload));
+          setUpdateNetworks(true);
           break;
         }
       }
-      client.connections().then(setConnections);
     });
   });
 
