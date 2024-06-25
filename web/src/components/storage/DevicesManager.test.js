@@ -368,6 +368,70 @@ describe("usedDevices", () => {
   });
 });
 
+describe("resizedDevices", () => {
+  beforeEach(() => {
+    system = [
+      { sid: 60 },
+      { sid: 62 },
+      { sid: 63 },
+      { sid: 64 },
+      { sid: 65, isDrive: true }
+    ];
+    actions = [
+      { device: 60, delete: true },
+      // This device does not exist in system.
+      { device: 61, delete: true },
+      { device: 62, delete: false, resize: true },
+      { device: 63, delete: false, resize: true },
+      { device: 65, delete: true }
+    ];
+  });
+
+  it("includes all resized devices", () => {
+    const manager = new DevicesManager(system, staging, actions);
+    const sids = manager.resizedDevices().map(d => d.sid)
+      .sort();
+    expect(sids).toEqual([62, 63]);
+  });
+});
+
+describe("resizedSystems", () => {
+  beforeEach(() => {
+    system = [
+      { sid: 60, systems: ["Windows XP"] },
+      { sid: 62, systems: ["Ubuntu"] },
+      {
+        sid: 63,
+        systems: ["openSUSE Leap", "openSUSE Tumbleweed"],
+        partitionTable: {
+          partitions: [{ sid: 65 }, { sid: 66 }]
+        }
+      },
+      { sid: 64 },
+      { sid: 65, systems: ["openSUSE Leap"] },
+      { sid: 66, systems: ["openSUSE Tumbleweed"] }
+    ];
+    actions = [
+      { device: 60, delete: false, resize: true },
+      // This device does not exist in system.
+      { device: 61, delete: true },
+      { device: 62, delete: false },
+      { device: 63, delete: false, resize: true },
+      { device: 65, delete: true, resize: true },
+      { device: 66, delete: false, resize: true }
+    ];
+  });
+
+  it("includes all resized systems", () => {
+    const manager = new DevicesManager(system, staging, actions);
+    const systems = manager.resizedSystems();
+    expect(systems.length).toEqual(3);
+    expect(systems).toContain("Windows XP");
+    expect(systems).toContain("openSUSE Leap");
+    expect(systems).toContain("openSUSE Tumbleweed");
+  });
+});
+
 describe("deletedDevices", () => {
   beforeEach(() => {
     system = [

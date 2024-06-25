@@ -168,6 +168,18 @@ export default class DevicesManager {
   }
 
   /**
+   * Devices resized.
+   * @method
+   *
+   * @note The devices are extracted from the actions.
+   *
+   * @returns {StorageDevice[]}
+   */
+  resizedDevices() {
+    return this.#resizeActionsDevice().filter(d => !d.isDrive);
+  }
+
+  /**
    * Systems deleted.
    * @method
    *
@@ -175,6 +187,20 @@ export default class DevicesManager {
    */
   deletedSystems() {
     const systems = this.#deleteActionsDevice()
+      .filter(d => !d.partitionTable)
+      .map(d => d.systems)
+      .flat();
+    return compact(systems);
+  }
+
+  /**
+   * Systems resized.
+   * @method
+   *
+   * @returns {string[]}
+   */
+  resizedSystems() {
+    const systems = this.#resizeActionsDevice()
       .filter(d => !d.partitionTable)
       .map(d => d.systems)
       .flat();
@@ -220,6 +246,17 @@ export default class DevicesManager {
   #deleteActionsDevice() {
     const sids = this.actions
       .filter(a => a.delete)
+      .map(a => a.device);
+    const devices = sids.map(sid => this.systemDevice(sid));
+    return compact(devices);
+  }
+
+  /**
+   * @returns {StorageDevice[]}
+   */
+  #resizeActionsDevice() {
+    const sids = this.actions
+      .filter(a => a.resize)
       .map(a => a.device);
     const devices = sids.map(sid => this.systemDevice(sid));
     return compact(devices);

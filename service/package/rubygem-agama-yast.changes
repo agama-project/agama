@@ -1,8 +1,14 @@
 -------------------------------------------------------------------
-Tue Jun 25 14:23:37 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Tue Jun 25 15:15:53 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use a D-Bus method instead of a signal to change the language and
   the keyboard layout (gh#openSUSE/agama#1375).
+
+-------------------------------------------------------------------
+Tue Jun 25 15:03:05 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Add support for retrieving the storage resize actions
+  (gh#openSUSE/agama#1354).
 
 -------------------------------------------------------------------
 Thu Jun 20 05:25:49 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

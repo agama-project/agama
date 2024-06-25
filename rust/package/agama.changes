@@ -1,8 +1,13 @@
 -------------------------------------------------------------------
-Tue Jun 25 14:25:26 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Tue Jun 25 15:16:33 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the new SetLocale D-Bus method to change the language and the
   keyboard layout (gh#openSUSE/agama#1375).
+
+-------------------------------------------------------------------
+Tue Jun 25 15:04:20 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Add resize actions to storage model (gh#openSUSE/agama#1354).
 
 -------------------------------------------------------------------
 Thu Jun 21 15:00:00 UTC 2024 - Clemens Famulla-Conrad <cfamullaconrad@suse.de>

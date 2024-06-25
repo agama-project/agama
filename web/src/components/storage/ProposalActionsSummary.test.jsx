@@ -23,9 +23,9 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { SPACE_POLICIES } from "~/components/storage/utils";
-import SpacePolicyField from "~/components/storage/SpacePolicyField";
+import ProposalActionsSummary from "~/components/storage/ProposalActionsSummary";
 
 const sda = {
   sid: 59,
@@ -44,7 +44,7 @@ const sda = {
   name: "/dev/sda",
   size: 1024,
   recoverableSize: 0,
-  systems : [],
+  systems: [],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
@@ -52,20 +52,20 @@ const sda = {
 const keepPolicy = SPACE_POLICIES.find(p => p.id === "keep");
 
 const props = {
-  devices: [sda],
-  policy: keepPolicy,
   isLoading: false,
-  onChange: jest.fn(),
+  policy: keepPolicy,
+  devices: [sda],
   actions: [
     { device: "/dev/sda", action: "force_delete" },
-  ]
+  ],
+  onActionsClick: jest.fn(),
 };
 
-describe("SpacePolicyField", () => {
-  it("renders a button for opening the space policy dialog", async () => {
-    const { user } = plainRender(<SpacePolicyField {...props} />);
-    const button = screen.getByRole("button");
-    await user.click(button);
-    screen.getByRole("dialog", { name: "Find space" });
+describe("ProposalActionsSummary", () => {
+  it("renders a button for navigating to the space policy selection", async () => {
+    const { user } = installerRender(<ProposalActionsSummary {...props} />);
+    const button = screen.getByRole("link", { name: "Change" });
   });
+
+  it.todo("test the actions and drawer behaviour");
 });

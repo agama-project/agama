@@ -305,6 +305,7 @@ pub struct Action {
     text: String,
     subvol: bool,
     delete: bool,
+    resize: bool,
 }
 
 impl TryFrom<HashMap<String, OwnedValue>> for Action {
@@ -316,6 +317,7 @@ impl TryFrom<HashMap<String, OwnedValue>> for Action {
             text: get_property(&hash, "Text")?,
             subvol: get_property(&hash, "Subvol")?,
             delete: get_property(&hash, "Delete")?,
+            resize: get_property(&hash, "Resize")?,
         };
 
         Ok(res)

@@ -20,15 +20,15 @@
  */
 
 import React from "react";
-import { _ } from "~/i18n";
 import { Page } from "~/components/core";
-import StoragePage from "./StoragePage";
 import BootSelection from "./BootSelection";
-import DASDPage from "./DASDPage";
 import DeviceSelection from "./DeviceSelection";
+import SpacePolicySelection from "./SpacePolicySelection";
+import DASDPage from "./DASDPage";
 import ISCSIPage from "./ISCSIPage";
 import ProposalPage from "./ProposalPage";
 import ZFCPPage from "./ZFCPPage";
+import { _ } from "~/i18n";
 
 // FIXME: Choose a better name
 const navigation = [
@@ -47,7 +47,8 @@ const navigation = [
 
 const selectors = [
   { path: "target-device", element: <DeviceSelection /> },
-  { path: "booting-partition", element: <BootSelection /> }
+  { path: "booting-partition", element: <BootSelection /> },
+  { path: "space-policy", element: <SpacePolicySelection /> }
 ];
 
 const routes = {

@@ -24,6 +24,11 @@
 import { suggestUsernames } from "./utils";
 
 describe('suggestUsernames', () => {
+  test('returns empty collection if fullName not defined', () => {
+    expect(suggestUsernames(undefined)).toEqual([]);
+    expect(suggestUsernames(null)).toEqual([]);
+  });
+
   test('handles basic single name', () => {
     expect(suggestUsernames('John')).toEqual(expect.arrayContaining(['john']));
   });

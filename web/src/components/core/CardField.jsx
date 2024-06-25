@@ -45,6 +45,7 @@ const CardField = ({
   children = [],
   cardProps = {},
   cardHeaderProps = {},
+  cardDescriptionProps = {}
 
 }) => {
   return (
@@ -61,7 +62,7 @@ const CardField = ({
           </Flex>
         </CardTitle>
       </CardHeader>
-      {description && <CardBody isFilled={false}><div className={textStyles.color_200}>{description}</div></CardBody>}
+      {description && <CardBody isFilled={false} {...cardDescriptionProps}><div className={textStyles.color_200}>{description}</div></CardBody>}
       {children}
       {actions && <CardFooter>{actions}</CardFooter>}
     </Card>

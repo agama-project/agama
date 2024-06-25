@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/issue"
-require "agama/storage/actions"
+require "agama/storage/actions_generator"
 require "agama/storage/proposal_strategies"
 require "yast"
 require "y2storage"
@@ -109,7 +109,10 @@ module Agama
       def actions
         return [] unless proposal&.devices
 
-        Actions.new(logger, proposal.devices.actiongraph).all
+        probed = storage_manager.probed
+        target = proposal.devices
+
+        ActionsGenerator.new(probed, target).generate
       end
 
       # Whether the current proposal was calculated the given strategy (:autoyast or :guided).

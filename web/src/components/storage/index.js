@@ -33,6 +33,5 @@ export { default as ISCSIPage } from "./ISCSIPage";
 export { default as BootSelection } from "./BootSelection";
 export { default as DeviceSelectorTable } from "./DeviceSelectorTable";
 export { default as DevicesFormSelect } from "./DevicesFormSelect";
-export { default as SpacePolicyDialog } from "./SpacePolicyDialog";
 export { default as SpaceActionsTable } from "./SpaceActionsTable";
 export { default as DeviceSelection } from "./DeviceSelection";

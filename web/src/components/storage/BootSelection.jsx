@@ -39,6 +39,7 @@ import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
+// FIXME: improve classNames
 // FIXME: improve and rename to BootSelectionDialog
 
 /**
@@ -164,7 +165,11 @@ partitions in the appropriate disk."
                   value={BOOT_AUTO_ID}
                   defaultChecked={state.selectedOption === BOOT_AUTO_ID}
                   onChange={updateSelectedOption}
-                  label={_("Automatic")}
+                  label={
+                    <span className={[textStyles.fontSizeLg, state.selectedOption === BOOT_AUTO_ID && textStyles.fontWeightBold].join(" ")}>
+                      {_("Automatic")}
+                    </span>
+                  }
                   body={automaticText()}
                 />
                 <Radio
@@ -173,7 +178,11 @@ partitions in the appropriate disk."
                   value={BOOT_MANUAL_ID}
                   defaultChecked={state.selectedOption === BOOT_MANUAL_ID}
                   onChange={updateSelectedOption}
-                  label={_("Select a disk")}
+                  label={
+                    <span className={[textStyles.fontSizeLg, state.selectedOption === BOOT_MANUAL_ID && textStyles.fontWeightBold].join(" ")}>
+                      {_("Select a disk")}
+                    </span>
+                  }
                   body={
                     <Stack hasGutter>
                       <div>
@@ -196,7 +205,11 @@ partitions in the appropriate disk."
                   value={BOOT_DISABLED_ID}
                   defaultChecked={state.selectedOption === BOOT_DISABLED_ID}
                   onChange={updateSelectedOption}
-                  label={_("Do not configure")}
+                  label={
+                    <span className={[textStyles.fontSizeLg, state.selectedOption === BOOT_DISABLED_ID && textStyles.fontWeightBold].join(" ")}>
+                      {_("Do not configure")}
+                    </span>
+                  }
                   body={
                     <div>
                       {_("No partitions will be automatically configured for booting. Use with caution.")}
