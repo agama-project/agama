@@ -36,7 +36,7 @@ function InstallationProgress() {
   // TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
   const title = sprintf(_("Installing %s, please wait ..."), selectedProduct.name);
   return (
-    <SimpleLayout showOutlet={false} showInstallerOptions>
+    <SimpleLayout showOutlet={false}>
       <ProgressReport title={title} />
     </SimpleLayout>
   );
