@@ -421,7 +421,7 @@ module Agama
       end
 
       def add_base_repos
-        # support multiple labels/installation media?
+        # NOTE: support multiple labels/installation media?
         label = product.labels.first
 
         if label
