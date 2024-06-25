@@ -27,6 +27,7 @@ import { Button, Flex, Form, FormGroup, FormSelect, FormSelectOption } from "@pa
 import { Icon } from "~/components/layout";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
+import { localConnection } from "~/utils";
 import { useInstallerL10n } from "~/context/installerL10n";
 import supportedLanguages from "~/languages.json";
 import { useL10n } from "~/context/l10n";
@@ -108,17 +109,21 @@ export default function InstallerOptions() {
               fieldId="keymap"
               label={_("Keyboard layout")}
             >
-              <FormSelect
-                id="keymap"
-                name="keymap"
-                label={_("Keyboard layout")}
-                value={keymap}
-                onChange={(_e, value) => setKeymap(value)}
-              >
-                {keymaps.map((keymap, index) => (
-                  <FormSelectOption key={index} value={keymap.id} label={keymap.name} />)
-                )}
-              </FormSelect>
+              { localConnection()
+                ? (
+                  <FormSelect
+                    id="keymap"
+                    name="keymap"
+                    label={_("Keyboard layout")}
+                    value={keymap}
+                    onChange={(_e, value) => setKeymap(value)}
+                  >
+                    {keymaps.map((keymap, index) => (
+                      <FormSelectOption key={index} value={keymap.id} label={keymap.name} />)
+                    )}
+                  </FormSelect>
+                )
+                : _("Cannot be changed in remote installation") }
             </FormGroup>
           </Form>
         </Flex>
