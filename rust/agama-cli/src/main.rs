@@ -5,7 +5,6 @@ mod commands;
 mod config;
 mod error;
 mod logs;
-mod printers;
 mod profile;
 mod progress;
 mod questions;
@@ -18,7 +17,6 @@ use auth::run as run_auth_cmd;
 use commands::Commands;
 use config::run as run_config_cmd;
 use logs::run as run_logs_cmd;
-use printers::Format;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
 use questions::run as run_questions_cmd;
@@ -39,10 +37,6 @@ use std::{
 struct Cli {
     #[command(subcommand)]
     pub command: Commands,
-
-    /// Format output
-    #[arg(value_enum, short, long, default_value_t = Format::Json)]
-    pub format: Format,
 }
 
 async fn probe() -> anyhow::Result<()> {
@@ -129,7 +123,7 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
         Commands::Config(subcommand) => {
             let manager = build_manager().await?;
             wait_for_services(&manager).await?;
-            run_config_cmd(subcommand, cli.format).await
+            run_config_cmd(subcommand).await
         }
         Commands::Probe => {
             let manager = build_manager().await?;

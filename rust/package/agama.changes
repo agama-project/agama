@@ -1,4 +1,24 @@
 -------------------------------------------------------------------
+Thu Jun 21 15:00:00 UTC 2024 - Clemens Famulla-Conrad <cfamullaconrad@suse.de>
+
+- Add tun/tap model (gh#openSUSE/agama#1353)
+
+-------------------------------------------------------------------
+Thu Jun 20 12:58:32 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a new "config edit" command allows editing installation
+  settings using an external editor (gh#openSUSE/agama#1360).
+- Remove the "--format" option (gh#openSUSE/agama#1360).
+
+-------------------------------------------------------------------
+Thu Jun 20 05:32:42 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for progress sequences with pre-defined descriptions
+  (gh#openSUSE/agama#1356).
+- Fix the "Progress" signal to use camelCase
+  (gh#openSUSE/agama#1356).
+
+-------------------------------------------------------------------
 Fri Jun 14 06:17:52 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Remove references to the old "config add/set" subcommands

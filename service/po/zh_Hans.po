@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-09 02:25+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
 "PO-Revision-Date: 2024-04-10 09:43+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
@@ -21,44 +21,28 @@ msgstr ""
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:88
-msgid "Probing Storage"
-msgstr "正在探测存储"
+msgid "Analyze disks"
+msgstr ""
 
-#: service/lib/agama/manager.rb:89
-msgid "Probing Software"
+#: service/lib/agama/manager.rb:88
+#, fuzzy
+msgid "Configure software"
 msgstr "正在探测软件"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:109
-msgid "Partitioning"
-msgstr "正在分区"
+#: service/lib/agama/manager.rb:108
+msgid "Prepare disks"
+msgstr ""
 
-#. propose software after /mnt is already separated, so it uses proper
-#. target
-#: service/lib/agama/manager.rb:117
-msgid "Installing Software"
+#: service/lib/agama/manager.rb:109
+#, fuzzy
+msgid "Install software"
 msgstr "正在安装软件"
 
-#: service/lib/agama/manager.rb:120
-msgid "Writing Users"
-msgstr "正在写入用户"
-
-#: service/lib/agama/manager.rb:121
-msgid "Writing Network Configuration"
-msgstr "正在写入网络配置"
-
-#: service/lib/agama/manager.rb:122
-msgid "Saving Language Settings"
-msgstr "正在保存语言设置"
-
-#: service/lib/agama/manager.rb:123
-msgid "Writing repositories information"
-msgstr "正在写入软件仓库信息"
-
-#: service/lib/agama/manager.rb:124
-msgid "Finishing storage configuration"
-msgstr "正在完成存储配置"
+#: service/lib/agama/manager.rb:110
+msgid "Configure the system"
+msgstr ""
 
 #. Callback to handle unsigned files
 #.
@@ -94,38 +78,25 @@ msgid ""
 msgstr ""
 "密钥 %{id} （%{name}）（指纹为 %{fingerprint})）未知。您想要信任该密钥吗？"
 
-#. as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
-#: service/lib/agama/software/manager.rb:134
-msgid "Initializing target repositories"
-msgstr "正在初始化目标仓库"
-
-#: service/lib/agama/software/manager.rb:135
+#. Should an error be raised?
+#: service/lib/agama/software/manager.rb:137
 msgid "Initializing sources"
 msgstr "正在初始化软件源"
 
-#: service/lib/agama/software/manager.rb:140
+#: service/lib/agama/software/manager.rb:142
 msgid "Refreshing repositories metadata"
 msgstr "正在刷新软件仓库元数据"
 
-#: service/lib/agama/software/manager.rb:141
+#: service/lib/agama/software/manager.rb:143
 msgid "Calculating the software proposal"
 msgstr "正在计算软件提案"
-
-#. Writes the repositories information to the installed system
-#: service/lib/agama/software/manager.rb:190
-msgid "Writing repositories to the target system"
-msgstr "正在将软件仓库写入目标系统"
-
-#: service/lib/agama/software/manager.rb:196
-msgid "Restoring original repositories"
-msgstr "正在还原初始软件仓库"
 
 #. Issues related to the software proposal.
 #.
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:482
+#: service/lib/agama/software/manager.rb:465
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "无法读取仓库 “ %s”"
@@ -133,21 +104,21 @@ msgstr "无法读取仓库 “ %s”"
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:492
+#: service/lib/agama/software/manager.rb:475
 msgid "Product not selected yet"
 msgstr "尚未选择产品"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:501
+#: service/lib/agama/software/manager.rb:484
 msgid "Product must be registered"
 msgstr "产品必须注册"
 
 #. Returns solver error messages from the last attempt
 #.
 #. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:227
+#: service/lib/agama/software/proposal.rb:223
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "找到 %s 个依赖问题。"
@@ -217,3 +188,39 @@ msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
 "The following selected devices are not found in the system: %{devices}"
 msgstr[0] "未在系统中找到下列已选择的设备： %{devices}"
+
+#. Recalculates the list of issues
+#: service/lib/agama/users.rb:152
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+
+#~ msgid "Probing Storage"
+#~ msgstr "正在探测存储"
+
+#~ msgid "Partitioning"
+#~ msgstr "正在分区"
+
+#~ msgid "Writing Users"
+#~ msgstr "正在写入用户"
+
+#~ msgid "Writing Network Configuration"
+#~ msgstr "正在写入网络配置"
+
+#~ msgid "Saving Language Settings"
+#~ msgstr "正在保存语言设置"
+
+#~ msgid "Writing repositories information"
+#~ msgstr "正在写入软件仓库信息"
+
+#~ msgid "Finishing storage configuration"
+#~ msgstr "正在完成存储配置"
+
+#~ msgid "Writing repositories to the target system"
+#~ msgstr "正在将软件仓库写入目标系统"
+
+#~ msgid "Initializing target repositories"
+#~ msgstr "正在初始化目标仓库"
+
+#~ msgid "Restoring original repositories"
+#~ msgstr "正在还原初始软件仓库"

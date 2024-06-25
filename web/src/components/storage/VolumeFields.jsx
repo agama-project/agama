@@ -39,6 +39,8 @@ import { _, N_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { SIZE_METHODS, SIZE_UNITS } from '~/components/storage/utils';
 
+const { K, ...MAX_SIZE_UNITS } = SIZE_UNITS;
+
 /**
  * @typedef {import ("~/client/storage").Volume} Volume
  */
@@ -422,7 +424,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
                 /** @ts-expect-error: for some reason using id makes TS complain */
                 id="maxSizeUnit"
                 aria-label={_("Unit for the maximum size")}
-                units={Object.values(SIZE_UNITS)}
+                units={Object.values(MAX_SIZE_UNITS)}
                 value={formData.maxSizeUnit || formData.minSizeUnit}
                 onChange={(_, maxSizeUnit) => onChange({ maxSizeUnit })}
                 isDisabled={isDisabled}

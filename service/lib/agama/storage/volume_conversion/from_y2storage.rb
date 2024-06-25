@@ -48,14 +48,22 @@ module Agama
         # @return [Agama::Storage::ProposalSettings]
         attr_reader :volume
 
+        # Recovers the range of sizes used by the Y2Storage proposal, if needed.
+        #
+        # If the volume is configured to use auto sizes, then the final range of sizes used by the
+        # Y2Storage proposal depends on the fallback sizes (if this volume is fallback for other
+        # volume) and the size for snapshots (if snapshots is active). The planned device contains
+        # the real range of sizes used by the Y2Storage proposal.
+        #
+        # FIXME: Recovering the sizes from the planned device is done to know the range of sizes
+        #   assigned to the volume and to present that information in the UI. But such information
+        #   should be provided in a different way, for example as part of the proposal result
+        #   reported on D-Bus: { success:, settings:, strategy:, computed_sizes: }.
+        #
         # @param target [Agama::Storage::Volume]
         def sizes_conversion(target)
-          # The final range of sizes used by the Y2Storage proposal depends on the fallback sizes
-          # (if this volume is fallback for other volume) and the size for snapshots (if snapshots
-          # is active). The planned device contains the real range of sizes used by the proposal.
-          #
-          # From Agama point of view, this is the way of recovering the range of sizes used by
-          # Y2Storage when a volume is set to have auto size.
+          return unless target.auto_size?
+
           planned = planned_device_for(target.mount_path)
           return unless planned
 

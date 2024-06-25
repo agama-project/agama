@@ -31,7 +31,7 @@ shared_examples "progress" do
 
     context "if a progress was started" do
       before do
-        subject.start_progress(1)
+        subject.start_progress_with_size(1)
       end
 
       it "returns the progress object" do
@@ -40,27 +40,27 @@ shared_examples "progress" do
     end
   end
 
-  describe "#start_progress" do
+  describe "#start_progress_with_size" do
     context "if there is an unfinished progress" do
       before do
-        subject.start_progress(1)
+        subject.start_progress_with_size(1)
       end
 
       it "raises an error" do
-        expect { subject.start_progress(1) }
+        expect { subject.start_progress_with_size(1) }
           .to raise_error(Agama::WithProgress::NotFinishedProgress)
       end
     end
 
     context "if there is no unfinished progress" do
       before do
-        subject.start_progress(1)
+        subject.start_progress_with_size(1)
         subject.progress.finish
       end
 
       it "creates a new progress" do
         previous_progress = subject.progress
-        subject.start_progress(1)
+        subject.start_progress_with_size(1)
         expect(subject.progress).to_not eq(previous_progress)
         expect(subject.progress.finished?).to eq(false)
       end
@@ -71,7 +71,7 @@ shared_examples "progress" do
 
         expect(callback).to receive(:call)
 
-        subject.start_progress(1)
+        subject.start_progress_with_size(1)
         subject.progress.step("step 1")
       end
 
@@ -81,7 +81,7 @@ shared_examples "progress" do
 
         expect(callback).to receive(:call)
 
-        subject.start_progress(1)
+        subject.start_progress_with_size(1)
         subject.progress.finish
       end
     end
@@ -90,7 +90,7 @@ shared_examples "progress" do
   describe "#finish" do
     context "when the current progress is not finished" do
       before do
-        subject.start_progress(1)
+        subject.start_progress_with_size(1)
       end
 
       it "finishes the current progress" do
@@ -102,7 +102,7 @@ shared_examples "progress" do
 
     context "when the current progress is already finished" do
       before do
-        subject.start_progress(1)
+        subject.start_progress_with_size(1)
         subject.progress.step("") { nil }
       end
 

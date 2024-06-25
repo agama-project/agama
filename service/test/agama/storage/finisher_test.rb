@@ -53,7 +53,7 @@ describe Agama::Storage::Finisher do
     end
 
     it "runs the possible steps that must be run" do
-      expect(subject).to receive(:start_progress).with(1)
+      expect(subject).to receive(:start_progress_with_size).with(1)
       expect(subject.progress).to receive(:step) do |label, &block|
         expect(label).to eql(copy_files.label)
         expect(copy_files).to receive(:run)

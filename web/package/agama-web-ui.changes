@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Fri Jun 21 14:32:11 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Avoid connection attempts when the user is not logged in
+  (gh#openSUSE/agama#1366).
+
+-------------------------------------------------------------------
+Thu Jun 20 05:33:29 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt the installation progress screen to look like the
+  product selection one (gh#openSUSE/agama#1356).
+
+-------------------------------------------------------------------
 Fri Jun 14 13:55:27 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Do not render the overview page when selecting a product

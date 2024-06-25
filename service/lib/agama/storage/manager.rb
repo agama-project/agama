@@ -107,7 +107,7 @@ module Agama
 
       # Probes storage devices and performs an initial proposal
       def probe
-        start_progress(4)
+        start_progress_with_size(4)
         config.pick_product(software.selected_product)
         check_multipath
         progress.step(_("Activating storage devices")) { activate_devices }
@@ -120,7 +120,7 @@ module Agama
 
       # Prepares the partitioning to install the system
       def install
-        start_progress(4)
+        start_progress_with_size(4)
         progress.step(_("Preparing bootloader proposal")) do
           # first make bootloader proposal to be sure that required packages are installed
           proposal = ::Bootloader::ProposalClient.new.make_proposal({})

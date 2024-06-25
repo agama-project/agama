@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-09 02:25+0000\n"
-"PO-Revision-Date: 2023-12-15 16:52+0000\n"
-"Last-Translator: Ladislav Slezák <lslezak@suse.com>\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
+"PO-Revision-Date: 2024-06-20 18:46+0000\n"
+"Last-Translator: Aleš Kastner <alkas@volny.cz>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-service-"
 "master/cs/>\n"
 "Language: cs\n"
@@ -17,49 +17,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 5.6\n"
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:88
-msgid "Probing Storage"
+msgid "Analyze disks"
 msgstr ""
 
-#: service/lib/agama/manager.rb:89
-msgid "Probing Software"
-msgstr ""
+#: service/lib/agama/manager.rb:88
+#, fuzzy
+msgid "Configure software"
+msgstr "Sondážní software"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
+#: service/lib/agama/manager.rb:108
+msgid "Prepare disks"
+msgstr ""
+
 #: service/lib/agama/manager.rb:109
-msgid "Partitioning"
-msgstr ""
-
-#. propose software after /mnt is already separated, so it uses proper
-#. target
-#: service/lib/agama/manager.rb:117
 #, fuzzy
-msgid "Installing Software"
-msgstr "Inicializuji zdroje"
+msgid "Install software"
+msgstr "Instaluji software"
 
-#: service/lib/agama/manager.rb:120
-msgid "Writing Users"
-msgstr ""
-
-#: service/lib/agama/manager.rb:121
-msgid "Writing Network Configuration"
-msgstr ""
-
-#: service/lib/agama/manager.rb:122
-msgid "Saving Language Settings"
-msgstr ""
-
-#: service/lib/agama/manager.rb:123
-#, fuzzy
-msgid "Writing repositories information"
-msgstr "Repozitáře se zapisují do cílového systému"
-
-#: service/lib/agama/manager.rb:124
-msgid "Finishing storage configuration"
+#: service/lib/agama/manager.rb:110
+msgid "Configure the system"
 msgstr ""
 
 #. Callback to handle unsigned files
@@ -98,38 +80,25 @@ msgstr ""
 "Klíč %{id} (%{name}) s otiskem %{fingerprint} není známý. Důvěřujete tomuto "
 "klíči?"
 
-#. as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
-#: service/lib/agama/software/manager.rb:134
-msgid "Initializing target repositories"
-msgstr "Inicializuji cílové repozitáře"
-
-#: service/lib/agama/software/manager.rb:135
+#. Should an error be raised?
+#: service/lib/agama/software/manager.rb:137
 msgid "Initializing sources"
 msgstr "Inicializuji zdroje"
 
-#: service/lib/agama/software/manager.rb:140
+#: service/lib/agama/software/manager.rb:142
 msgid "Refreshing repositories metadata"
 msgstr "Obnovování metadat repozitáře"
 
-#: service/lib/agama/software/manager.rb:141
+#: service/lib/agama/software/manager.rb:143
 msgid "Calculating the software proposal"
 msgstr "Probíhá návrh softwaru"
-
-#. Writes the repositories information to the installed system
-#: service/lib/agama/software/manager.rb:190
-msgid "Writing repositories to the target system"
-msgstr "Repozitáře se zapisují do cílového systému"
-
-#: service/lib/agama/software/manager.rb:196
-msgid "Restoring original repositories"
-msgstr "Obnovují se původní repozitáře"
 
 #. Issues related to the software proposal.
 #.
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:482
+#: service/lib/agama/software/manager.rb:465
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "Nelze načíst repozitář \"%s\""
@@ -137,21 +106,21 @@ msgstr "Nelze načíst repozitář \"%s\""
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:492
+#: service/lib/agama/software/manager.rb:475
 msgid "Product not selected yet"
 msgstr "Není vybrán žádný produkt"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:501
+#: service/lib/agama/software/manager.rb:484
 msgid "Product must be registered"
 msgstr "Produkt musí být zaregistrován"
 
 #. Returns solver error messages from the last attempt
 #.
 #. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:227
+#: service/lib/agama/software/proposal.rb:223
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "Nalezeno %s problémů v závislostech."
@@ -159,59 +128,58 @@ msgstr "Nalezeno %s problémů v závislostech."
 #. Probes storage devices and performs an initial proposal
 #: service/lib/agama/storage/manager.rb:113
 msgid "Activating storage devices"
-msgstr ""
+msgstr "Aktivuji paměťová zařízení"
 
 #: service/lib/agama/storage/manager.rb:114
 msgid "Probing storage devices"
-msgstr ""
+msgstr "Sonduji paměťová zařízení"
 
 #: service/lib/agama/storage/manager.rb:115
-#, fuzzy
 msgid "Calculating the storage proposal"
-msgstr "Probíhá návrh softwaru"
+msgstr "Sestavuji návrh paměti"
 
 #: service/lib/agama/storage/manager.rb:116
 msgid "Selecting Linux Security Modules"
-msgstr ""
+msgstr "Vybírám bezpečnostní moduly Linuxu"
 
 #. Prepares the partitioning to install the system
 #: service/lib/agama/storage/manager.rb:124
 msgid "Preparing bootloader proposal"
-msgstr ""
+msgstr "Připravuji návrh boot zavaděče"
 
 #. first make bootloader proposal to be sure that required packages are installed
 #: service/lib/agama/storage/manager.rb:129
 msgid "Adding storage-related packages"
-msgstr ""
+msgstr "Přidávám balíčky pracující s pamětí"
 
 #: service/lib/agama/storage/manager.rb:130
 msgid "Preparing the storage devices"
-msgstr ""
+msgstr "Připravuji paměťová zařízení"
 
 #: service/lib/agama/storage/manager.rb:131
 msgid "Writing bootloader sysconfig"
-msgstr ""
+msgstr "Zapisuji konfiguraci boot zavaděče v sysconfig"
 
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:189
 msgid "Cannot accommodate the required file systems for installation"
-msgstr ""
+msgstr "Nemohu zajistit systémy souborů pro instalaci"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:200
 msgid "A problem ocurred while calculating the storage setup"
-msgstr ""
+msgstr "Nastal problém při výpočtu nastavení paměti"
 
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
 #: service/lib/agama/storage/proposal_strategies/guided.rb:122
 msgid "No device selected for installation"
-msgstr ""
+msgstr "Není vybráno zařízení pro instalaci"
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
@@ -221,6 +189,43 @@ msgstr ""
 msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
 "The following selected devices are not found in the system: %{devices}"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Toto zvolené zařízení není v systému: %{devices}"
+msgstr[1] "Tato zvolená zařízení nejsou v systému: %{devices}"
+msgstr[2] "Tato zvolená zařízení nejsou v systému: %{devices}"
+
+#. Recalculates the list of issues
+#: service/lib/agama/users.rb:152
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+"Definuji uživatele, nastavuji heslo roota nebo potřebuji veřejný klíč SSH"
+
+#~ msgid "Probing Storage"
+#~ msgstr "Sondážní úložiště"
+
+#~ msgid "Partitioning"
+#~ msgstr "Rozdělení na oddíly"
+
+#~ msgid "Writing Users"
+#~ msgstr "Zapisuji uživatele"
+
+#~ msgid "Writing Network Configuration"
+#~ msgstr "Zapisuji konfiguraci sítě"
+
+#~ msgid "Saving Language Settings"
+#~ msgstr "Ukládám nastavení jazyka"
+
+#~ msgid "Writing repositories information"
+#~ msgstr "Zapisuji údaje repozitářů"
+
+#~ msgid "Finishing storage configuration"
+#~ msgstr "Dokončuji konfiguraci paměti"
+
+#~ msgid "Writing repositories to the target system"
+#~ msgstr "Repozitáře se zapisují do cílového systému"
+
+#~ msgid "Initializing target repositories"
+#~ msgstr "Inicializuji cílové repozitáře"
+
+#~ msgid "Restoring original repositories"
+#~ msgstr "Obnovují se původní repozitáře"

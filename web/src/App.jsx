@@ -19,13 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { Loading } from "./components/layout";
 import { Questions } from "~/components/questions";
 import { ServerError, Installation } from "~/components/core";
 import { useInstallerL10n } from "./context/installerL10n";
-import { useInstallerClient, useInstallerClientStatus } from "~/context/installer";
+import { useInstallerClientStatus } from "~/context/installer";
 import { useProduct } from "./context/product";
 import { CONFIG, INSTALL, STARTUP } from "~/client/phase";
 import { BUSY } from "~/client/status";
@@ -38,38 +38,10 @@ import { BUSY } from "~/client/status";
  *   error (3 by default). The component will keep trying to connect.
  */
 function App() {
-  const client = useInstallerClient();
   const location = useLocation();
-  const { connected, error } = useInstallerClientStatus();
+  const { connected, error, phase, status } = useInstallerClientStatus();
   const { selectedProduct, products } = useProduct();
   const { language } = useInstallerL10n();
-  const [status, setStatus] = useState(undefined);
-  const [phase, setPhase] = useState(undefined);
-
-  useEffect(() => {
-    if (client) {
-      return client.manager.onPhaseChange(setPhase);
-    }
-  }, [client, setPhase]);
-
-  useEffect(() => {
-    if (client) {
-      return client.manager.onStatusChange(setStatus);
-    }
-  }, [client, setStatus]);
-
-  useEffect(() => {
-    const loadPhase = async () => {
-      const phase = await client.manager.getPhase();
-      const status = await client.manager.getStatus();
-      setPhase(phase);
-      setStatus(status);
-    };
-
-    if (client) {
-      loadPhase().catch(console.error);
-    }
-  }, [client, setPhase, setStatus]);
 
   const Content = () => {
     if (error) return <ServerError />;

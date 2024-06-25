@@ -51,7 +51,6 @@ export { default as PasswordInput } from "./PasswordInput";
 export { default as Selector } from "./Selector";
 export { default as ServerError } from "./ServerError";
 export { default as ExpandableSelector } from "./ExpandableSelector";
-export { default as Reminder } from "./Reminder";
 export { default as TreeTable } from "./TreeTable";
 export { default as CardField } from "./CardField";
 export { default as ButtonLink } from "./ButtonLink";

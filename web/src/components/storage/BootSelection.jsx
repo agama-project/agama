@@ -39,6 +39,9 @@ import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
+// FIXME: improve classNames
+// FIXME: improve and rename to BootSelectionDialog
+
 /**
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
@@ -46,8 +49,6 @@ import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 const BOOT_AUTO_ID = "boot-auto";
 const BOOT_MANUAL_ID = "boot-manual";
 const BOOT_DISABLED_ID = "boot-disabled";
-
-// FIXME: improve classNames
 
 /**
  * Allows the user to select the boot configuration.
@@ -85,11 +86,13 @@ export default function BootSelectionDialog() {
         selectedOption = BOOT_MANUAL_ID;
       }
 
+      const findDevice = (name) => availableDevices.find(d => d.name === name);
+
       setState({
         load: true,
-        bootDevice: availableDevices.find(d => d.name === bootDevice),
+        bootDevice: findDevice(bootDevice) || findDevice(defaultBootDevice) || availableDevices[0],
         configureBoot,
-        defaultBootDevice,
+        defaultBootDevice: findDevice(defaultBootDevice),
         availableDevices,
         selectedOption
       });

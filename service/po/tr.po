@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-09 02:25+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
 "PO-Revision-Date: 2024-05-16 15:46+0000\n"
 "Last-Translator: Özgür Arslan <ozgurarslln@gmail.com>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-"
@@ -21,44 +21,28 @@ msgstr ""
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:88
-msgid "Probing Storage"
-msgstr "Depolama inceleniyor"
+msgid "Analyze disks"
+msgstr ""
 
-#: service/lib/agama/manager.rb:89
-msgid "Probing Software"
+#: service/lib/agama/manager.rb:88
+#, fuzzy
+msgid "Configure software"
 msgstr "Yazılım İnceleniyor"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:109
-msgid "Partitioning"
-msgstr "Bölümleme"
+#: service/lib/agama/manager.rb:108
+msgid "Prepare disks"
+msgstr ""
 
-#. propose software after /mnt is already separated, so it uses proper
-#. target
-#: service/lib/agama/manager.rb:117
-msgid "Installing Software"
+#: service/lib/agama/manager.rb:109
+#, fuzzy
+msgid "Install software"
 msgstr "Yazılımı Yükleme"
 
-#: service/lib/agama/manager.rb:120
-msgid "Writing Users"
-msgstr "Kullanıcılar Yazılıyor"
-
-#: service/lib/agama/manager.rb:121
-msgid "Writing Network Configuration"
-msgstr "Ağ Yapılandırmasını Yazılıyor"
-
-#: service/lib/agama/manager.rb:122
-msgid "Saving Language Settings"
-msgstr "Dil Ayarlarını Kaydediliyor"
-
-#: service/lib/agama/manager.rb:123
-msgid "Writing repositories information"
-msgstr "Depo bilgilerinin yazılıyor"
-
-#: service/lib/agama/manager.rb:124
-msgid "Finishing storage configuration"
-msgstr "Depolama yapılandırmasını tamamlandı"
+#: service/lib/agama/manager.rb:110
+msgid "Configure the system"
+msgstr ""
 
 #. Callback to handle unsigned files
 #.
@@ -96,38 +80,25 @@ msgstr ""
 "%{fingerprint} parmak izine sahip %{id} (%{name}) anahtarı bilinmiyor. Bu "
 "anahtara güvenmek istiyor musunuz?"
 
-#. as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
-#: service/lib/agama/software/manager.rb:134
-msgid "Initializing target repositories"
-msgstr "Hedef depolar başlatılıyor"
-
-#: service/lib/agama/software/manager.rb:135
+#. Should an error be raised?
+#: service/lib/agama/software/manager.rb:137
 msgid "Initializing sources"
 msgstr "Kaynaklar başlatılıyor"
 
-#: service/lib/agama/software/manager.rb:140
+#: service/lib/agama/software/manager.rb:142
 msgid "Refreshing repositories metadata"
 msgstr "Depo meta verileri yenileniyor"
 
-#: service/lib/agama/software/manager.rb:141
+#: service/lib/agama/software/manager.rb:143
 msgid "Calculating the software proposal"
 msgstr "Yazılım önerisi hesaplanıyor"
-
-#. Writes the repositories information to the installed system
-#: service/lib/agama/software/manager.rb:190
-msgid "Writing repositories to the target system"
-msgstr "Depolar hedef sisteme yazılıyor"
-
-#: service/lib/agama/software/manager.rb:196
-msgid "Restoring original repositories"
-msgstr "Orijinal depoları geri yükleniyor"
 
 #. Issues related to the software proposal.
 #.
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:482
+#: service/lib/agama/software/manager.rb:465
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "\"%s\" deposu okunamadı"
@@ -135,21 +106,21 @@ msgstr "\"%s\" deposu okunamadı"
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:492
+#: service/lib/agama/software/manager.rb:475
 msgid "Product not selected yet"
 msgstr "Ürün henüz seçilmedi"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:501
+#: service/lib/agama/software/manager.rb:484
 msgid "Product must be registered"
 msgstr "Ürün kayıtlı olmalı"
 
 #. Returns solver error messages from the last attempt
 #.
 #. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:227
+#: service/lib/agama/software/proposal.rb:223
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "%s bağımlılık sorunu bulundu."
@@ -220,3 +191,39 @@ msgid_plural ""
 "The following selected devices are not found in the system: %{devices}"
 msgstr[0] "Aşağıdaki seçilen cihaz sistemde bulunamadı: %{devices}"
 msgstr[1] "Aşağıdaki seçilen cihazlar sistemde bulunamadı: %{devices}"
+
+#. Recalculates the list of issues
+#: service/lib/agama/users.rb:152
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+
+#~ msgid "Probing Storage"
+#~ msgstr "Depolama inceleniyor"
+
+#~ msgid "Partitioning"
+#~ msgstr "Bölümleme"
+
+#~ msgid "Writing Users"
+#~ msgstr "Kullanıcılar Yazılıyor"
+
+#~ msgid "Writing Network Configuration"
+#~ msgstr "Ağ Yapılandırmasını Yazılıyor"
+
+#~ msgid "Saving Language Settings"
+#~ msgstr "Dil Ayarlarını Kaydediliyor"
+
+#~ msgid "Writing repositories information"
+#~ msgstr "Depo bilgilerinin yazılıyor"
+
+#~ msgid "Finishing storage configuration"
+#~ msgstr "Depolama yapılandırmasını tamamlandı"
+
+#~ msgid "Writing repositories to the target system"
+#~ msgstr "Depolar hedef sisteme yazılıyor"
+
+#~ msgid "Initializing target repositories"
+#~ msgstr "Hedef depolar başlatılıyor"
+
+#~ msgid "Restoring original repositories"
+#~ msgstr "Orijinal depoları geri yükleniyor"

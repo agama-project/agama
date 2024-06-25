@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-16 02:26+0000\n"
-"PO-Revision-Date: 2024-06-10 08:19+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
+"PO-Revision-Date: 2024-06-17 09:46+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
 "Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ca/>\n"
@@ -20,18 +20,16 @@ msgstr ""
 "X-Generator: Weblate 5.5.5\n"
 
 #: src/MainLayout.jsx:40
-#, fuzzy
 msgid "Agama"
-msgstr "Quant a Agama"
+msgstr "Agama"
 
 #: src/MainLayout.jsx:82
 msgid "Change product"
 msgstr "Canvia el producte"
 
 #: src/components/core/About.jsx:49
-#, fuzzy
 msgid "About"
-msgstr "Quant a Agama"
+msgstr "Quant a"
 
 #: src/components/core/About.jsx:71
 msgid "About Agama"
@@ -107,11 +105,11 @@ msgstr "Cancel·la"
 msgid "Install"
 msgstr "Instal·la"
 
-#: src/components/core/InstallationFinished.jsx:41
+#: src/components/core/InstallationFinished.jsx:42
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr "El segellament TPM requereix que el sistema nou s'iniciï directament."
 
-#: src/components/core/InstallationFinished.jsx:46
+#: src/components/core/InstallationFinished.jsx:47
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
@@ -119,16 +117,16 @@ msgstr ""
 "Si s'ha usat un mitjà local per executar aquest instal·lador, traieu-lo "
 "abans de la propera arrencada."
 
-#: src/components/core/InstallationFinished.jsx:50
+#: src/components/core/InstallationFinished.jsx:51
 msgid "Hide details"
 msgstr "Amaga els detalls"
 
-#: src/components/core/InstallationFinished.jsx:50
+#: src/components/core/InstallationFinished.jsx:51
 msgid "See more details"
 msgstr "Mostra'n més detalls"
 
 #. TRANSLATORS: "Trusted Platform Module" is the name of the technology and "TPM" its abbreviation
-#: src/components/core/InstallationFinished.jsx:54
+#: src/components/core/InstallationFinished.jsx:55
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
@@ -140,38 +138,42 @@ msgstr ""
 "arrencada del nou sistema. Perquè això funcioni, la màquina ha d'arrencar "
 "directament amb el carregador d'arrencada nou."
 
-#: src/components/core/InstallationFinished.jsx:99
+#: src/components/core/InstallationFinished.jsx:97
 msgid "Congratulations!"
 msgstr "Enhorabona!"
 
-#: src/components/core/InstallationFinished.jsx:104
+#: src/components/core/InstallationFinished.jsx:102
 msgid "The installation on your machine is complete."
 msgstr "La instal·lació a la màquina s'ha completat."
 
-#: src/components/core/InstallationFinished.jsx:107
+#: src/components/core/InstallationFinished.jsx:105
 msgid "At this point you can power off the machine."
 msgstr "En aquest punt, podeu aturar la màquina."
 
-#: src/components/core/InstallationFinished.jsx:108
+#: src/components/core/InstallationFinished.jsx:106
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr ""
 "En aquest punt, podeu reiniciar la màquina per iniciar sessió al sistema nou."
 
-#: src/components/core/InstallationFinished.jsx:115
+#: src/components/core/InstallationFinished.jsx:113
 msgid "Finish"
 msgstr "Acaba"
 
-#: src/components/core/InstallationFinished.jsx:115
+#: src/components/core/InstallationFinished.jsx:113
 msgid "Reboot"
 msgstr "Reinicia"
 
+#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
+#: src/components/core/InstallationProgress.jsx:37
+#, fuzzy, c-format
+msgid "Installing %s, please wait ..."
+msgstr "Carregant dades. Espereu, si us plau..."
+
 #: src/components/core/InstallerOptions.jsx:57
-#, fuzzy
 msgid "Show installer options"
-msgstr "Amaga les opcions de l'instal·lador"
+msgstr "Mostra les opcions de l'instal·lador"
 
 #: src/components/core/InstallerOptions.jsx:62
-#, fuzzy
 msgid "Installer options"
 msgstr "Opcions de l'instal·lador"
 
@@ -179,6 +181,7 @@ msgstr "Opcions de l'instal·lador"
 msgid ""
 "Before starting the installation, you need to address the following problems:"
 msgstr ""
+"Abans de començar la instal·lació, heu de resoldre els problemes següents:"
 
 #: src/components/core/ListSearch.jsx:51
 msgid "Search"
@@ -206,14 +209,12 @@ msgstr "Inicieu sessió com a %s"
 #. it and keep the brackets.
 #: src/components/core/LoginPage.jsx:76
 msgid "The installer requires [root] user privileges."
-msgstr ""
+msgstr "L'instal·lador requereix privilegis de l'usuari [root]."
 
 #: src/components/core/LoginPage.jsx:95
-#, fuzzy
 msgid "Please, provide its password to log in to the system."
 msgstr ""
-"L'instal·lador requereix privilegis de l'usuari %s. Si us plau, proporcioneu-"
-"ne la contrasenya per iniciar sessió al sistema."
+"Si us plau, proporcioneu-ne la contrasenya per iniciar sessió al sistema."
 
 #: src/components/core/LoginPage.jsx:98
 msgid "Login form"
@@ -229,7 +230,7 @@ msgstr "Inicia la sessió"
 
 #: src/components/core/LoginPage.jsx:124
 msgid "More about this"
-msgstr ""
+msgstr "Més sobre això"
 
 #: src/components/core/LogsButton.jsx:102
 msgid "Collecting logs..."
@@ -281,6 +282,11 @@ msgstr "Confirmeu-ho"
 msgid "Loading data..."
 msgstr "Carregant dades..."
 
+#: src/components/core/ProgressReport.jsx:122
+#, fuzzy
+msgid "Waiting for progress status..."
+msgstr "Esperant l'informe de progrés"
+
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
 msgid "Actions"
@@ -319,14 +325,12 @@ msgid "Keyboard"
 msgstr "Teclat"
 
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:75
-#, fuzzy
 msgid "Choose a keyboard layout"
-msgstr "Trieu un producte"
+msgstr "Trieu una disposició de teclat"
 
 #: src/components/l10n/InstallerKeymapSwitcher.jsx:86
-#, fuzzy
 msgid "Cannot be changed in remote installation"
-msgstr "La disposició del teclat no es pot canviar a la instal·lació remota."
+msgstr "No es pot canviar a la instal·lació remota."
 
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:57
 #: src/components/l10n/L10nPage.jsx:67
@@ -334,23 +338,20 @@ msgid "Language"
 msgstr "Llengua"
 
 #: src/components/l10n/InstallerLocaleSwitcher.jsx:63
-#, fuzzy
 msgid "Choose a language"
-msgstr "Canvia la llengua"
+msgstr "Trieu la llengua"
 
 #: src/components/l10n/KeyboardSelection.jsx:45
 msgid "Filter by description or keymap code"
 msgstr "Filtra per descripció o codi de mapa de tecles"
 
 #: src/components/l10n/KeyboardSelection.jsx:85
-#, fuzzy
 msgid "None of the keymaps match the filter."
-msgstr "Cap dels patrons coincideix amb el filtre."
+msgstr "Cap dels mapes de tecles coincideix amb el filtre."
 
 #: src/components/l10n/KeyboardSelection.jsx:92
-#, fuzzy
 msgid "Keyboard selection"
-msgstr "Selecció de programari"
+msgstr "Selecció del teclat"
 
 #: src/components/l10n/KeyboardSelection.jsx:107
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
@@ -368,9 +369,8 @@ msgstr "Localització"
 
 #: src/components/l10n/L10nPage.jsx:68 src/components/l10n/L10nPage.jsx:79
 #: src/components/l10n/L10nPage.jsx:90
-#, fuzzy
 msgid "Not selected yet"
-msgstr "Encara no s'ha seleccionat cap dispositiu."
+msgstr "Encara no s'ha seleccionat."
 
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
 #: src/components/l10n/L10nPage.jsx:93
@@ -390,28 +390,24 @@ msgid "Filter by language, territory or locale code"
 msgstr "Filtra per llengua, territori o codi local"
 
 #: src/components/l10n/LocaleSelection.jsx:84
-#, fuzzy
 msgid "None of the locales match the filter."
-msgstr "Cap dels patrons coincideix amb el filtre."
+msgstr "Cap de les llengües coincideix amb el filtre."
 
 #: src/components/l10n/LocaleSelection.jsx:91
-#, fuzzy
 msgid "Locale selection"
-msgstr "Selecció de programari"
+msgstr "Selecció de la llengua"
 
 #: src/components/l10n/TimezoneSelection.jsx:71
 msgid "Filter by territory, time zone code or UTC offset"
 msgstr "Filtra per territori, codi de zona horària o desplaçament d'UTC"
 
 #: src/components/l10n/TimezoneSelection.jsx:122
-#, fuzzy
 msgid "None of the time zones match the filter."
-msgstr "Cap dels patrons coincideix amb el filtre."
+msgstr "Cap de les zones horàries coincideix amb el filtre."
 
 #: src/components/l10n/TimezoneSelection.jsx:129
-#, fuzzy
 msgid " Timezone selection"
-msgstr "Canvia la selecció"
+msgstr " Selecció de la zona horària"
 
 #: src/components/layout/Loading.jsx:31
 msgid "Loading installation environment, please wait."
@@ -558,11 +554,11 @@ msgstr "Passarel·la"
 
 #: src/components/network/IpSettingsForm.jsx:178
 msgid "Gateway can be defined only in 'Manual' mode"
-msgstr ""
+msgstr "La passarel·la només es pot definir en mode manual."
 
 #: src/components/network/IpSettingsForm.jsx:210
 #: src/components/product/ProductRegistrationPage.jsx:89
-#: src/components/storage/BootSelection.jsx:216
+#: src/components/storage/BootSelection.jsx:215
 #: src/components/storage/DeviceSelection.jsx:240
 #: src/components/storage/EncryptionSettingsDialog.jsx:138
 #: src/components/storage/VolumeDialog.jsx:786
@@ -604,14 +600,12 @@ msgid "Network"
 msgstr "Xarxa"
 
 #: src/components/network/NetworkPage.jsx:178
-#, fuzzy
 msgid "Wired connections"
-msgstr "Oblida la connexió %s"
+msgstr "Connexions amb fil"
 
 #: src/components/network/NetworkPage.jsx:185
-#, fuzzy
 msgid "WiFi connections"
-msgstr "Edita la connexió %s"
+msgstr "Connexions WiFi"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:43
@@ -702,9 +696,8 @@ msgstr "La connexió %s espera un canvi d'estat."
 
 #. TRANSLATORS: menu label, disconnect from the selected WiFi network
 #: src/components/network/WifiNetworkMenu.jsx:67
-#, fuzzy
 msgid "Disconnect"
-msgstr "Desconnectat"
+msgstr "Desconnecta"
 
 #. TRANSLATORS: menu label, remove the selected WiFi network settings
 #: src/components/network/WifiNetworkMenu.jsx:76
@@ -739,44 +732,42 @@ msgid "Software"
 msgstr "Programari"
 
 #: src/components/overview/OverviewPage.jsx:52
-#, fuzzy
 msgid "Ready for installation"
-msgstr "Confirmeu la instal·lació"
+msgstr "A punt per a la instal·lació"
 
 #: src/components/overview/OverviewPage.jsx:102
-#, fuzzy
 msgid "Installation"
-msgstr "Instal·lant"
+msgstr "Instal·lació"
 
 #: src/components/overview/OverviewPage.jsx:103
 msgid "Before installing, please check the following problems."
-msgstr ""
+msgstr "Abans d'instal·lar, comproveu els problemes següents."
 
 #: src/components/overview/OverviewPage.jsx:114
-#, fuzzy
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
 msgstr ""
-"La instal·lació configurarà les particions per arrencar al disc "
-"d'instal·lació."
+"Dediqueu el temps que calgui a comprovar la configuració abans de començar "
+"el procés d'instal·lació."
 
 #: src/components/overview/OverviewPage.jsx:123
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
 msgstr ""
+"Aquests són els paràmetres d'instal·lació més rellevants. No dubteu a "
+"navegar per les seccions del menú per a més detalls."
 
 #: src/components/overview/SoftwareSection.jsx:60
-#, fuzzy
 msgid "The installation will take"
-msgstr "La instal·lació necessitarà %s"
+msgstr "La instal·lació necessitarà"
 
 #. TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
 #: src/components/overview/SoftwareSection.jsx:67
-#, fuzzy, c-format
+#, c-format
 msgid "The installation will take %s including:"
-msgstr "La instal·lació necessitarà %s"
+msgstr "La instal·lació necessitarà %s, incloent-hi el següent:"
 
 #: src/components/overview/StorageSection.jsx:53
 msgid ""
@@ -886,7 +877,7 @@ msgstr ""
 
 #: src/components/overview/routes.js:30
 msgid "Overview"
-msgstr ""
+msgstr "Resum"
 
 #: src/components/product/ProductRegistrationPage.jsx:66
 #, c-format
@@ -905,19 +896,9 @@ msgstr "Adreça electrònica"
 msgid "Loading available products, please wait..."
 msgstr "Carregant els productes disponibles. Espereu, si us plau..."
 
-#: src/components/product/ProductSelectionProgress.jsx:88
-#, fuzzy
-msgid "Analyze disks"
-msgstr "Activa els discs"
-
-#: src/components/product/ProductSelectionProgress.jsx:95
-msgid "Configure software"
-msgstr ""
-
-#: src/components/product/ProductSelectionProgress.jsx:156
-#, fuzzy
+#: src/components/product/ProductSelectionProgress.jsx:53
 msgid "Configuring the product, please wait ..."
-msgstr "Carregant els productes disponibles. Espereu, si us plau..."
+msgstr "Configurant el producte. Espereu, si us plau..."
 
 #: src/components/questions/GenericQuestion.jsx:35
 #: src/components/questions/LuksActivationQuestion.jsx:60
@@ -948,9 +929,8 @@ msgstr ""
 "S'han seleccionat els patrons de programari següents per a la instal·lació:"
 
 #: src/components/software/SoftwarePage.jsx:165
-#, fuzzy
 msgid "Selected patterns"
-msgstr "Seleccioneu la zona horària"
+msgstr "Patrons seleccionats"
 
 #: src/components/software/SoftwarePage.jsx:168
 msgid "Change selection"
@@ -968,18 +948,20 @@ msgstr "Selecció de programari"
 #: src/components/software/SoftwarePatternsSelection.jsx:241
 #: src/components/software/SoftwarePatternsSelection.jsx:242
 msgid "Filter by pattern title or description"
-msgstr ""
+msgstr "Filtra per títol o descripció del patró"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
 #: src/components/software/UsedSize.jsx:33
-#, fuzzy, c-format
+#, c-format
 msgid "Installation will take %s."
-msgstr "La instal·lació necessitarà %s"
+msgstr "La instal·lació necessitarà %s."
 
 #: src/components/software/UsedSize.jsx:38
 msgid "This space includes the base system and the selected software patterns."
 msgstr ""
+"Aquest espai inclou el sistema de base i els patrons de programari "
+"seleccionats."
 
 #: src/components/storage/BootConfigField.jsx:43
 msgid "Change boot options"
@@ -1002,7 +984,7 @@ msgstr ""
 msgid "Installation will configure partitions for booting at %s."
 msgstr "La instal·lació configurarà les particions per arrencar a %s."
 
-#: src/components/storage/BootSelection.jsx:127
+#: src/components/storage/BootSelection.jsx:126
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
@@ -1010,44 +992,43 @@ msgstr ""
 "Per garantir que el sistema nou pugui arrencar, és possible que "
 "l'instal·lador hagi de crear o configurar algunes particions al disc adequat."
 
-#: src/components/storage/BootSelection.jsx:133
+#: src/components/storage/BootSelection.jsx:132
 msgid "Partitions to boot will be allocated at the installation disk."
 msgstr "Les particions per a l'arrencada s'assignaran al disc d'instal·lació."
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelection.jsx:138
+#: src/components/storage/BootSelection.jsx:137
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
 msgstr ""
 "Les particions per a l'arrencada s'assignaran al disc d'instal·lació (%s)."
 
-#: src/components/storage/BootSelection.jsx:154
-#, fuzzy
+#: src/components/storage/BootSelection.jsx:153
 msgid "Select booting partition"
-msgstr "Seleccioneu què voleu fer amb cada partició."
+msgstr "Seleccioneu la partició d'arrencada"
 
-#: src/components/storage/BootSelection.jsx:168
+#: src/components/storage/BootSelection.jsx:167
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
 msgstr "Automàtica"
 
-#: src/components/storage/BootSelection.jsx:177
+#: src/components/storage/BootSelection.jsx:176
 msgid "Select a disk"
 msgstr "Seleccioneu un disc"
 
-#: src/components/storage/BootSelection.jsx:181
+#: src/components/storage/BootSelection.jsx:180
 msgid "Partitions to boot will be allocated at the following device."
 msgstr "Les particions per a l'arrencada s'assignaran al dispositiu següent."
 
-#: src/components/storage/BootSelection.jsx:184
+#: src/components/storage/BootSelection.jsx:183
 msgid "Choose a disk for placing the boot loader"
 msgstr "Trieu un disc per posar-hi el carregador d'arrencada"
 
-#: src/components/storage/BootSelection.jsx:200
+#: src/components/storage/BootSelection.jsx:199
 msgid "Do not configure"
 msgstr "No ho configuris"
 
-#: src/components/storage/BootSelection.jsx:203
+#: src/components/storage/BootSelection.jsx:202
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr ""
@@ -1170,9 +1151,8 @@ msgid "Remove max channel filter"
 msgstr "Suprimeix el filtre de canal màxim"
 
 #: src/components/storage/DeviceSelection.jsx:101
-#, fuzzy
 msgid "Loading data, please wait a second..."
-msgstr "Carregant els productes disponibles. Espereu, si us plau..."
+msgstr "Carregant dades. Espereu, si us plau..."
 
 #. TRANSLATORS: description for using plain partitions for installing the
 #. system, the text in the square brackets [] is displayed in bold, use only
@@ -1199,24 +1179,20 @@ msgstr ""
 "demanda com a particions noves als dispositius seleccionats."
 
 #: src/components/storage/DeviceSelection.jsx:149
-#, fuzzy
 msgid "Select installation device"
-msgstr "al dispositiu d'instal·lació"
+msgstr "Seleccioneu el dispositiu d'instal·lació"
 
 #: src/components/storage/DeviceSelection.jsx:155
-#, fuzzy
 msgid "Install new system on"
-msgstr "Opcions de l'instal·lador"
+msgstr "Instal·la el sistema nou"
 
 #: src/components/storage/DeviceSelection.jsx:158
-#, fuzzy
 msgid "An existing disk"
-msgstr "Encongeix les particions existents"
+msgstr "un disc existent"
 
 #: src/components/storage/DeviceSelection.jsx:167
-#, fuzzy
 msgid "A new LVM Volume Group"
-msgstr "grup de volums LVM nou"
+msgstr "un grup de volums d'LVM nou"
 
 #: src/components/storage/DeviceSelection.jsx:192
 msgid "Device selector for target disk"
@@ -1231,7 +1207,6 @@ msgid "Prepare more devices by configuring advanced"
 msgstr "Prepareu més dispositius mitjançant la configuració avançada"
 
 #: src/components/storage/DeviceSelection.jsx:229
-#, fuzzy
 msgid "storage techs"
 msgstr "tecnologies d'emmagatzematge"
 
@@ -1310,7 +1285,7 @@ msgstr "Detalls"
 #: src/components/storage/PartitionsField.jsx:451
 #: src/components/storage/ProposalResultTable.jsx:123
 #: src/components/storage/SpaceActionsTable.jsx:143
-#: src/components/storage/VolumeFields.jsx:472
+#: src/components/storage/VolumeFields.jsx:474
 #: src/components/storage/VolumeLocationSelectorTable.jsx:103
 msgid "Size"
 msgstr "Mida"
@@ -1342,13 +1317,12 @@ msgid "Encryption"
 msgstr "Encriptació"
 
 #: src/components/storage/EncryptionField.jsx:39
-#, fuzzy
 msgid ""
 "Protection for the information stored at the device, including data, "
 "programs, and system files."
 msgstr ""
-"L'encriptació de disc complet (FDE) permet protegir la informació "
-"emmagatzemada al dispositiu, incloses dades, programes i fitxers del sistema."
+"Protecció per a la informació emmagatzemada al dispositiu, incloses les "
+"dades, els programes i els fitxers del sistema."
 
 #: src/components/storage/EncryptionField.jsx:42
 msgid "disabled"
@@ -1363,13 +1337,12 @@ msgid "using TPM unlocking"
 msgstr "usant el desblocatge de TPM"
 
 #: src/components/storage/EncryptionField.jsx:58
-#, fuzzy
 msgid "Enable"
-msgstr "habilitada"
+msgstr "Habilita"
 
 #: src/components/storage/EncryptionField.jsx:58
 msgid "Modify"
-msgstr ""
+msgstr "Modifica"
 
 #: src/components/storage/EncryptionSettingsDialog.jsx:37
 msgid ""
@@ -1410,28 +1383,24 @@ msgstr "Dispositiu d'instal·lació"
 
 #. TRANSLATORS: The storage "Installation device" field's description.
 #: src/components/storage/InstallationDeviceField.jsx:42
-#, fuzzy
 msgid "Main disk or LVM Volume Group for installation."
-msgstr ""
-"Seleccioneu el disc principal o el grup de volums d'LVM per a la "
-"instal·lació."
+msgstr "Disc principal o grup de volums d'LVM per a la instal·lació."
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
 #: src/components/storage/InstallationDeviceField.jsx:56
-#, fuzzy, c-format
+#, c-format
 msgid "File systems created as new partitions at %s"
-msgstr "Crea una partició nova"
+msgstr "Sistemes de fitxers creats com a particions noves a %s"
 
 #: src/components/storage/InstallationDeviceField.jsx:59
-#, fuzzy
 msgid "File systems created at a new LVM volume group"
-msgstr "Selector de dispositius per al grup de volums LVM nou"
+msgstr "Sistemes de fitxers creats en un nou grup de volums d'LVM"
 
 #. TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
 #: src/components/storage/InstallationDeviceField.jsx:63
-#, fuzzy, c-format
+#, c-format
 msgid "File systems created at a new LVM volume group on %s"
-msgstr "grup de volums LVM nou a %s"
+msgstr "Sistemes de fitxers creats en un nou grup de volums d'LVM a %s"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/PartitionsField.jsx:73
@@ -1624,9 +1593,9 @@ msgid "Delete"
 msgstr "Suprimeix"
 
 #: src/components/storage/PartitionsField.jsx:449
-#: src/components/storage/VolumeFields.jsx:59
-#: src/components/storage/VolumeFields.jsx:68
-#: src/components/storage/VolumeFields.jsx:73
+#: src/components/storage/VolumeFields.jsx:61
+#: src/components/storage/VolumeFields.jsx:70
+#: src/components/storage/VolumeFields.jsx:75
 msgid "Mount point"
 msgstr "Punt de muntatge"
 
@@ -1658,18 +1627,16 @@ msgid "Partitions and file systems"
 msgstr "Particions i sistemes de fitxers"
 
 #: src/components/storage/PartitionsField.jsx:802
-#, fuzzy
 msgid ""
 "Structure of the new system, including any additional partition needed for "
 "booting"
 msgstr ""
 "Estructura del sistema nou, inclosa qualsevol partició addicional necessària "
-"per a arrencar,"
+"per a arrencar"
 
 #: src/components/storage/PartitionsField.jsx:808
-#, fuzzy
 msgid "Show partitions and file-systems actions"
-msgstr "Particions i sistemes de fitxers"
+msgstr "Mostra les particions i les accions dels sistemes de fitxers"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsDialog.jsx:62
@@ -1699,11 +1666,11 @@ msgid "Affecting"
 msgstr "Això afecta"
 
 #: src/components/storage/ProposalResultSection.jsx:96
-#, fuzzy, c-format
+#, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
-msgstr[0] "Marca totes les accions planificades"
-msgstr[1] "Marca totes les accions planificades"
+msgstr[0] "Marca l'acció planificada"
+msgstr[1] "Marca les %d accions planificades"
 
 #: src/components/storage/ProposalResultSection.jsx:111
 msgid "Waiting for information about storage configuration"
@@ -1711,16 +1678,15 @@ msgstr "Esperant informació sobre la configuració de l'emmagatzematge"
 
 #: src/components/storage/ProposalResultSection.jsx:124
 msgid "Storage proposal not possible"
-msgstr ""
+msgstr "La proposta d'emmagatzematge no és possible."
 
 #: src/components/storage/ProposalResultSection.jsx:188
-#, fuzzy
 msgid ""
 "During installation, some actions will be performed to configure the system "
 "as displayed below."
 msgstr ""
-"Durant la instal·lació, es farà %d acció per configurar el sistema tal com "
-"es mostra a continuació."
+"Durant la instal·lació, es faran algunes accions per configurar el sistema "
+"tal com es mostra a continuació."
 
 #: src/components/storage/ProposalResultSection.jsx:196
 msgid "Planned Actions"
@@ -1745,11 +1711,11 @@ msgstr "Abans: %s"
 msgid "Mount Point"
 msgstr "Punt de muntatge"
 
-#: src/components/storage/ProposalTransactionalInfo.jsx:46
+#: src/components/storage/ProposalTransactionalInfo.jsx:45
 msgid "Transactional root file system"
 msgstr "Sistema de fitxers d'arrel transaccional"
 
-#: src/components/storage/ProposalTransactionalInfo.jsx:49
+#: src/components/storage/ProposalTransactionalInfo.jsx:48
 #, c-format
 msgid ""
 "%s is an immutable system with atomic updates. It uses a read-only Btrfs "
@@ -1897,7 +1863,7 @@ msgid "Do you want to add it?"
 msgstr "L'hi voleu afegir?"
 
 #. TRANSLATORS: info about possible file system types.
-#: src/components/storage/VolumeFields.jsx:215
+#: src/components/storage/VolumeFields.jsx:217
 msgid ""
 "The options for the file system type depends on the product and the mount "
 "point."
@@ -1905,68 +1871,68 @@ msgstr ""
 "Les opcions per al tipus de sistema de fitxers depenen del producte i del "
 "punt de muntatge."
 
-#: src/components/storage/VolumeFields.jsx:221
+#: src/components/storage/VolumeFields.jsx:223
 msgid "More info for file system types"
 msgstr "Més informació sobre els tipus de sistemes de fitxers"
 
 #. TRANSLATORS: label for the file system selector.
-#: src/components/storage/VolumeFields.jsx:232
+#: src/components/storage/VolumeFields.jsx:234
 msgid "File system type"
 msgstr "Tipus de sistema de fitxers"
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:263
+#: src/components/storage/VolumeFields.jsx:265
 msgid "the configuration of snapshots"
 msgstr "la configuració de les instantànies"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
-#: src/components/storage/VolumeFields.jsx:268
+#: src/components/storage/VolumeFields.jsx:270
 #, c-format
 msgid "the presence of the file system for %s"
 msgstr "la presència del sistema de fitxers per a %s"
 
 #. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeFields.jsx:270
+#: src/components/storage/VolumeFields.jsx:272
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:274
+#: src/components/storage/VolumeFields.jsx:276
 msgid "the amount of RAM in the system"
 msgstr "la quantitat de RAM del sistema"
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeFields.jsx:277
+#: src/components/storage/VolumeFields.jsx:279
 #, c-format
 msgid "The final size depends on %s."
 msgstr "La mida final depèn de %s."
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeFields.jsx:279
+#: src/components/storage/VolumeFields.jsx:281
 msgid " and "
 msgstr " i "
 
 #. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeFields.jsx:284
+#: src/components/storage/VolumeFields.jsx:286
 msgid "Automatically calculated size according to the selected product."
 msgstr "Mida calculada automàticament segons el producte seleccionat."
 
-#: src/components/storage/VolumeFields.jsx:303
+#: src/components/storage/VolumeFields.jsx:305
 msgid "Exact size for the file system."
 msgstr "Mida exacta per al sistema de fitxers."
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeFields.jsx:316
+#: src/components/storage/VolumeFields.jsx:318
 msgid "Exact size"
 msgstr "Mida exacta"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeFields.jsx:333
+#: src/components/storage/VolumeFields.jsx:335
 msgid "Size unit"
 msgstr "Unitat de mida"
 
-#: src/components/storage/VolumeFields.jsx:361
+#: src/components/storage/VolumeFields.jsx:363
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1977,45 +1943,45 @@ msgstr ""
 "de fitxers serà el més gros possible."
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeFields.jsx:368
+#: src/components/storage/VolumeFields.jsx:370
 msgid "Minimum"
 msgstr "Mínim"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeFields.jsx:379
+#: src/components/storage/VolumeFields.jsx:381
 msgid "Minimum desired size"
 msgstr "Mida mínima desitjada"
 
-#: src/components/storage/VolumeFields.jsx:390
+#: src/components/storage/VolumeFields.jsx:392
 msgid "Unit for the minimum size"
 msgstr "Unitat per a la mida mínima"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:402
+#: src/components/storage/VolumeFields.jsx:404
 msgid "Maximum"
 msgstr "Màxim"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:414
+#: src/components/storage/VolumeFields.jsx:416
 msgid "Maximum desired size"
 msgstr "Mida màxima desitjada"
 
-#: src/components/storage/VolumeFields.jsx:424
+#: src/components/storage/VolumeFields.jsx:426
 msgid "Unit for the maximum size"
 msgstr "Unitat per a la mida màxima"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeFields.jsx:442
+#: src/components/storage/VolumeFields.jsx:444
 msgid "Auto"
 msgstr "Automàtica"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeFields.jsx:444
+#: src/components/storage/VolumeFields.jsx:446
 msgid "Fixed"
 msgstr "Fixa"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeFields.jsx:446
+#: src/components/storage/VolumeFields.jsx:448
 msgid "Range"
 msgstr "Interval"
 
@@ -2362,7 +2328,7 @@ msgstr "Destinacions"
 
 #: src/components/storage/routes.js:36
 msgid "Proposal"
-msgstr ""
+msgstr "Proposta"
 
 #: src/components/storage/utils.js:64
 msgid "KiB"
@@ -2395,9 +2361,8 @@ msgstr "Totes les particions se suprimiran i es perdran les dades dels discs."
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space deleting current content". Keep it short
 #: src/components/storage/utils.js:82
-#, fuzzy
 msgid "deleting current content"
-msgstr "Suprimeix el contingut actual"
+msgstr "suprimint contingut actual."
 
 #: src/components/storage/utils.js:87
 msgid "Shrink existing partitions"
@@ -2412,9 +2377,8 @@ msgstr ""
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space shrinking partitions". Keep it short.
 #: src/components/storage/utils.js:92
-#, fuzzy
 msgid "shrinking partitions"
-msgstr "Encongeix les particions existents"
+msgstr "encongint particions existents."
 
 #: src/components/storage/utils.js:97
 msgid "Use available space"
@@ -2443,9 +2407,8 @@ msgstr "Seleccioneu què voleu fer amb cada partició."
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space with custom actions". Keep it short.
 #: src/components/storage/utils.js:112
-#, fuzzy
 msgid "with custom actions"
-msgstr "fent un conjunt d'accions personalitzades."
+msgstr "amb accions personalitzades."
 
 #: src/components/users/FirstUser.jsx:35
 msgid "No user defined yet."
@@ -2491,23 +2454,20 @@ msgid "Use suggested username"
 msgstr "Usa el nom d'usuari suggerit"
 
 #: src/components/users/FirstUserForm.jsx:140
-#, fuzzy
 msgid "All fields are required"
-msgstr "Cal un valor de mida"
+msgstr "Tots els camps són obligatoris."
 
 #: src/components/users/FirstUserForm.jsx:147
 msgid "Please, try again."
-msgstr ""
+msgstr "Si us plau, torneu-ho a provar."
 
 #: src/components/users/FirstUserForm.jsx:197
-#, fuzzy
 msgid "Create user"
-msgstr "Crea un compte d'usuari"
+msgstr "Crea un usuari"
 
 #: src/components/users/FirstUserForm.jsx:197
-#, fuzzy
 msgid "Edit user"
-msgstr "Edita %s"
+msgstr "Edita l'usuari"
 
 #: src/components/users/FirstUserForm.jsx:214
 #: src/components/users/FirstUserForm.jsx:216
@@ -2616,21 +2576,25 @@ msgstr "Neteja"
 
 #: src/components/users/UsersPage.jsx:45
 msgid "First user"
-msgstr ""
+msgstr "Usuari primer"
 
 #: src/components/users/UsersPage.jsx:52
 msgid "Root authentication"
 msgstr "Autenticació d'arrel"
 
 #: src/components/users/routes.js:41
-#, fuzzy
 msgid "Create or edit the first user"
-msgstr "No es pot llegir el fitxer."
+msgstr "Creeu o editeu l'usuari primer"
 
 #: src/components/users/routes.js:48
-#, fuzzy
 msgid "Edit first user"
-msgstr "Edita el sistema de fitxers"
+msgstr "Edita l'usuari primer"
+
+#~ msgid "Analyze disks"
+#~ msgstr "Analitza els discs"
+
+#~ msgid "Configure software"
+#~ msgstr "Configuració de programari"
 
 #~ msgid ""
 #~ "There are some reported issues. Please review them in the previous steps "

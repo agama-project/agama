@@ -7,58 +7,42 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-09 02:25+0000\n"
-"PO-Revision-Date: 2024-06-10 08:10+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
+"PO-Revision-Date: 2024-06-21 10:46+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
-"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/ca/>\n"
+"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-"
+"service-master/ca/>\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.6\n"
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:88
-msgid "Probing Storage"
-msgstr "Sondant l'emmagatzematge"
+msgid "Analyze disks"
+msgstr ""
 
-#: service/lib/agama/manager.rb:89
-msgid "Probing Software"
+#: service/lib/agama/manager.rb:88
+#, fuzzy
+msgid "Configure software"
 msgstr "Sondant el programari"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:109
-msgid "Partitioning"
-msgstr "Particions"
+#: service/lib/agama/manager.rb:108
+msgid "Prepare disks"
+msgstr ""
 
-#. propose software after /mnt is already separated, so it uses proper
-#. target
-#: service/lib/agama/manager.rb:117
-msgid "Installing Software"
+#: service/lib/agama/manager.rb:109
+#, fuzzy
+msgid "Install software"
 msgstr "Instal·lant programari"
 
-#: service/lib/agama/manager.rb:120
-msgid "Writing Users"
-msgstr "Escrivint els usuaris"
-
-#: service/lib/agama/manager.rb:121
-msgid "Writing Network Configuration"
-msgstr "Escrivint la configuració de la xarxa"
-
-#: service/lib/agama/manager.rb:122
-msgid "Saving Language Settings"
-msgstr "Desant els paràmetres de llengua"
-
-#: service/lib/agama/manager.rb:123
-msgid "Writing repositories information"
-msgstr "Escrivint la informació dels repositoris"
-
-#: service/lib/agama/manager.rb:124
-msgid "Finishing storage configuration"
-msgstr "Acabant la configuració de l'emmagatzematge"
+#: service/lib/agama/manager.rb:110
+msgid "Configure the system"
+msgstr ""
 
 #. Callback to handle unsigned files
 #.
@@ -96,38 +80,25 @@ msgstr ""
 "La clau %{id} (%{name}) amb l'empremta digital %{fingerprint} és "
 "desconeguda. Voleu confiar en aquesta clau?"
 
-#. as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
-#: service/lib/agama/software/manager.rb:134
-msgid "Initializing target repositories"
-msgstr "Iniciant els repositoris de destinació"
-
-#: service/lib/agama/software/manager.rb:135
+#. Should an error be raised?
+#: service/lib/agama/software/manager.rb:137
 msgid "Initializing sources"
 msgstr "Iniciant les fonts"
 
-#: service/lib/agama/software/manager.rb:140
+#: service/lib/agama/software/manager.rb:142
 msgid "Refreshing repositories metadata"
 msgstr "Refrescant les metadades dels repositoris"
 
-#: service/lib/agama/software/manager.rb:141
+#: service/lib/agama/software/manager.rb:143
 msgid "Calculating the software proposal"
 msgstr "Calculant la proposta de programari"
-
-#. Writes the repositories information to the installed system
-#: service/lib/agama/software/manager.rb:190
-msgid "Writing repositories to the target system"
-msgstr "Escrivint els repositoris al sistema de destinació"
-
-#: service/lib/agama/software/manager.rb:196
-msgid "Restoring original repositories"
-msgstr "Restaurant els repositoris originals"
 
 #. Issues related to the software proposal.
 #.
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:482
+#: service/lib/agama/software/manager.rb:465
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "No s'ha pogut llegir el repositori %s."
@@ -135,21 +106,21 @@ msgstr "No s'ha pogut llegir el repositori %s."
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:492
+#: service/lib/agama/software/manager.rb:475
 msgid "Product not selected yet"
 msgstr "Encara no s'ha seleccionat el producte."
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:501
+#: service/lib/agama/software/manager.rb:484
 msgid "Product must be registered"
 msgstr "El producte ha d'estar registrat."
 
 #. Returns solver error messages from the last attempt
 #.
 #. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:227
+#: service/lib/agama/software/proposal.rb:223
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "S'han trobat %s problemes de dependències."
@@ -225,3 +196,41 @@ msgstr[0] ""
 "El dispositiu seleccionat següent no es troba al sistema: %{devices}"
 msgstr[1] ""
 "Els dispositius seleccionats següents no es troben al sistema: %{devices}"
+
+#. Recalculates the list of issues
+#: service/lib/agama/users.rb:152
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+"Cal definir un usuari, establir la contrasenya d'arrel o una clau pública "
+"SSH."
+
+#~ msgid "Probing Storage"
+#~ msgstr "Sondant l'emmagatzematge"
+
+#~ msgid "Partitioning"
+#~ msgstr "Particions"
+
+#~ msgid "Writing Users"
+#~ msgstr "Escrivint els usuaris"
+
+#~ msgid "Writing Network Configuration"
+#~ msgstr "Escrivint la configuració de la xarxa"
+
+#~ msgid "Saving Language Settings"
+#~ msgstr "Desant els paràmetres de llengua"
+
+#~ msgid "Writing repositories information"
+#~ msgstr "Escrivint la informació dels repositoris"
+
+#~ msgid "Finishing storage configuration"
+#~ msgstr "Acabant la configuració de l'emmagatzematge"
+
+#~ msgid "Writing repositories to the target system"
+#~ msgstr "Escrivint els repositoris al sistema de destinació"
+
+#~ msgid "Initializing target repositories"
+#~ msgstr "Iniciant els repositoris de destinació"
+
+#~ msgid "Restoring original repositories"
+#~ msgstr "Restaurant els repositoris originals"

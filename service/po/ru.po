@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-09 02:25+0000\n"
+"POT-Creation-Date: 2024-06-23 02:24+0000\n"
 "PO-Revision-Date: 2024-06-10 12:46+0000\n"
 "Last-Translator: Alex Minton <alex239@gmail.com>\n"
-"Language-Team: Russian <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/ru/>\n"
+"Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-"
+"service-master/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,44 +22,28 @@ msgstr ""
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:88
-msgid "Probing Storage"
-msgstr "Поиск хранилища"
+msgid "Analyze disks"
+msgstr ""
 
-#: service/lib/agama/manager.rb:89
-msgid "Probing Software"
+#: service/lib/agama/manager.rb:88
+#, fuzzy
+msgid "Configure software"
 msgstr "Поиск программного обеспечения"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:109
-msgid "Partitioning"
-msgstr "Настройка разделов"
+#: service/lib/agama/manager.rb:108
+msgid "Prepare disks"
+msgstr ""
 
-#. propose software after /mnt is already separated, so it uses proper
-#. target
-#: service/lib/agama/manager.rb:117
-msgid "Installing Software"
+#: service/lib/agama/manager.rb:109
+#, fuzzy
+msgid "Install software"
 msgstr "Установка программного обеспечения"
 
-#: service/lib/agama/manager.rb:120
-msgid "Writing Users"
-msgstr "Запись пользователей"
-
-#: service/lib/agama/manager.rb:121
-msgid "Writing Network Configuration"
-msgstr "Запись конфигурации сети"
-
-#: service/lib/agama/manager.rb:122
-msgid "Saving Language Settings"
-msgstr "Сохранение языковых настроек"
-
-#: service/lib/agama/manager.rb:123
-msgid "Writing repositories information"
-msgstr "Запись информации о репозиториях"
-
-#: service/lib/agama/manager.rb:124
-msgid "Finishing storage configuration"
-msgstr "Завершение конфигурации хранилища"
+#: service/lib/agama/manager.rb:110
+msgid "Configure the system"
+msgstr ""
 
 #. Callback to handle unsigned files
 #.
@@ -97,38 +81,25 @@ msgstr ""
 "Ключ %{id} (%{name}) с отпечатком %{fingerprint} неизвестен. Хотите ли вы "
 "доверять этому ключу?"
 
-#. as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
-#: service/lib/agama/software/manager.rb:134
-msgid "Initializing target repositories"
-msgstr "Инициализация целевых репозиториев"
-
-#: service/lib/agama/software/manager.rb:135
+#. Should an error be raised?
+#: service/lib/agama/software/manager.rb:137
 msgid "Initializing sources"
 msgstr "Инициализация источников"
 
-#: service/lib/agama/software/manager.rb:140
+#: service/lib/agama/software/manager.rb:142
 msgid "Refreshing repositories metadata"
 msgstr "Обновление метаданных репозиториев"
 
-#: service/lib/agama/software/manager.rb:141
+#: service/lib/agama/software/manager.rb:143
 msgid "Calculating the software proposal"
 msgstr "Расчет предложения по программному обеспечению"
-
-#. Writes the repositories information to the installed system
-#: service/lib/agama/software/manager.rb:190
-msgid "Writing repositories to the target system"
-msgstr "Запись репозиториев в целевую систему"
-
-#: service/lib/agama/software/manager.rb:196
-msgid "Restoring original repositories"
-msgstr "Восстановление исходных репозиториев"
 
 #. Issues related to the software proposal.
 #.
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:482
+#: service/lib/agama/software/manager.rb:465
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "Не удалось прочитать репозиторий \"%s\""
@@ -136,21 +107,21 @@ msgstr "Не удалось прочитать репозиторий \"%s\""
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:492
+#: service/lib/agama/software/manager.rb:475
 msgid "Product not selected yet"
 msgstr "Продукт еще не выбран"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:501
+#: service/lib/agama/software/manager.rb:484
 msgid "Product must be registered"
 msgstr "Продукт должен быть зарегистрирован"
 
 #. Returns solver error messages from the last attempt
 #.
 #. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:227
+#: service/lib/agama/software/proposal.rb:223
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "Найдено %s проблем с зависимостями."
@@ -222,3 +193,39 @@ msgid_plural ""
 msgstr[0] "Следующее выбранное устройство не найдено в системе: %{devices}"
 msgstr[1] "Следующие выбранные устройства не найдены в системе: %{devices}"
 msgstr[2] "Следующие выбранные устройства не найдены в системе: %{devices}"
+
+#. Recalculates the list of issues
+#: service/lib/agama/users.rb:152
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+
+#~ msgid "Probing Storage"
+#~ msgstr "Поиск хранилища"
+
+#~ msgid "Partitioning"
+#~ msgstr "Настройка разделов"
+
+#~ msgid "Writing Users"
+#~ msgstr "Запись пользователей"
+
+#~ msgid "Writing Network Configuration"
+#~ msgstr "Запись конфигурации сети"
+
+#~ msgid "Saving Language Settings"
+#~ msgstr "Сохранение языковых настроек"
+
+#~ msgid "Writing repositories information"
+#~ msgstr "Запись информации о репозиториях"
+
+#~ msgid "Finishing storage configuration"
+#~ msgstr "Завершение конфигурации хранилища"
+
+#~ msgid "Writing repositories to the target system"
+#~ msgstr "Запись репозиториев в целевую систему"
+
+#~ msgid "Initializing target repositories"
+#~ msgstr "Инициализация целевых репозиториев"
+
+#~ msgid "Restoring original repositories"
+#~ msgstr "Восстановление исходных репозиториев"

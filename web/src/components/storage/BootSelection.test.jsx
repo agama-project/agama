@@ -24,10 +24,9 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { BootSelectionDialog } from "~/components/storage";
+import BootSelection from "./BootSelection";
 
 /**
- * @typedef {import("./BootSelectionDialog").BootSelectionDialogProps} BootSelectionDialogProps
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
 
@@ -49,7 +48,7 @@ const sda = {
   description: "",
   size: 1024,
   recoverableSize: 0,
-  systems : [],
+  systems: [],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
@@ -72,7 +71,7 @@ const sdb = {
   description: "",
   size: 2048,
   recoverableSize: 0,
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: ["pci-0000:00-19"]
 };
@@ -95,15 +94,14 @@ const sdc = {
   description: "",
   size: 2048,
   recoverableSize: 0,
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: ["pci-0000:00-19"]
 };
 
-/** @type {BootSelectionDialogProps} */
 let props;
 
-describe.skip("BootSelectionDialog", () => {
+describe.skip("BootSelection", () => {
   beforeEach(() => {
     props = {
       isOpen: true,
@@ -122,18 +120,18 @@ describe.skip("BootSelectionDialog", () => {
   const diskSelector = () => screen.queryByRole("combobox", { name: /choose a disk/i });
 
   it("offers an option to configure boot in the installation disk", () => {
-    plainRender(<BootSelectionDialog {...props} />);
+    plainRender(<BootSelection {...props} />);
     expect(automaticOption()).toBeInTheDocument();
   });
 
   it("offers an option to configure boot in a selected disk", () => {
-    plainRender(<BootSelectionDialog {...props} />);
+    plainRender(<BootSelection {...props} />);
     expect(selectDiskOption()).toBeInTheDocument();
     expect(diskSelector()).toBeInTheDocument();
   });
 
   it("offers an option to not configure boot", () => {
-    plainRender(<BootSelectionDialog {...props} />);
+    plainRender(<BootSelection {...props} />);
     expect(notConfigureOption()).toBeInTheDocument();
   });
 
@@ -144,7 +142,7 @@ describe.skip("BootSelectionDialog", () => {
     });
 
     it("selects 'Automatic' option by default", () => {
-      plainRender(<BootSelectionDialog {...props} />);
+      plainRender(<BootSelection {...props} />);
       expect(automaticOption()).toBeChecked();
       expect(selectDiskOption()).not.toBeChecked();
       expect(diskSelector()).toBeDisabled();
@@ -159,7 +157,7 @@ describe.skip("BootSelectionDialog", () => {
     });
 
     it("selects 'Select a disk' option by default", () => {
-      plainRender(<BootSelectionDialog {...props} />);
+      plainRender(<BootSelection {...props} />);
       expect(automaticOption()).not.toBeChecked();
       expect(selectDiskOption()).toBeChecked();
       expect(diskSelector()).toBeEnabled();
@@ -174,7 +172,7 @@ describe.skip("BootSelectionDialog", () => {
     });
 
     it("selects 'Do not configure' option by default", () => {
-      plainRender(<BootSelectionDialog {...props} />);
+      plainRender(<BootSelection {...props} />);
       expect(automaticOption()).not.toBeChecked();
       expect(selectDiskOption()).not.toBeChecked();
       expect(diskSelector()).toBeDisabled();
@@ -183,7 +181,7 @@ describe.skip("BootSelectionDialog", () => {
   });
 
   it("does not call onAccept on cancel", async () => {
-    const { user } = plainRender(<BootSelectionDialog {...props} />);
+    const { user } = plainRender(<BootSelection {...props} />);
     const cancel = screen.getByRole("button", { name: "Cancel" });
 
     await user.click(cancel);
@@ -198,7 +196,7 @@ describe.skip("BootSelectionDialog", () => {
     });
 
     it("calls onAccept with the selected options on accept", async () => {
-      const { user } = plainRender(<BootSelectionDialog {...props} />);
+      const { user } = plainRender(<BootSelection {...props} />);
 
       await user.click(automaticOption());
 
@@ -219,7 +217,7 @@ describe.skip("BootSelectionDialog", () => {
     });
 
     it("calls onAccept with the selected options on accept", async () => {
-      const { user } = plainRender(<BootSelectionDialog {...props} />);
+      const { user } = plainRender(<BootSelection {...props} />);
 
       await user.click(selectDiskOption());
       const selector = diskSelector();
@@ -243,7 +241,7 @@ describe.skip("BootSelectionDialog", () => {
     });
 
     it("calls onAccept with the selected options on accept", async () => {
-      const { user } = plainRender(<BootSelectionDialog {...props} />);
+      const { user } = plainRender(<BootSelection {...props} />);
 
       await user.click(notConfigureOption());
 

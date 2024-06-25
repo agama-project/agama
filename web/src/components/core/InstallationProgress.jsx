@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,26 +20,24 @@
  */
 
 import React from "react";
-import { Card, CardBody, Grid, GridItem } from "@patternfly/react-core";
-import SimpleLayout from "~/SimpleLayout";
-import ProgressReport from "./ProgressReport";
-import { Center } from "~/components/layout";
+import { useProduct } from "~/context/product";
+import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import ProgressReport from "./ProgressReport";
+import SimpleLayout from "~/SimpleLayout";
 
 function InstallationProgress() {
+  const { selectedProduct } = useProduct();
+
+  if (!selectedProduct) {
+    return;
+  }
+
+  // TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
+  const title = sprintf(_("Installing %s, please wait ..."), selectedProduct.name);
   return (
-    <SimpleLayout showOutlet={false}>
-      <Center>
-        <Grid hasGutter>
-          <GridItem sm={8} smOffset={2}>
-            <Card>
-              <CardBody>
-                <ProgressReport />
-              </CardBody>
-            </Card>
-          </GridItem>
-        </Grid>
-      </Center>
+    <SimpleLayout showOutlet={false} showInstallerOptions>
+      <ProgressReport title={title} />
     </SimpleLayout>
   );
 }

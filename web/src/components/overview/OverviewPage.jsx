@@ -59,12 +59,12 @@ const ReadyForInstallation = () => (
 const IssuesList = ({ issues }) => {
   const { isEmpty, ...scopes } = issues;
   const list = [];
-  Object.entries(scopes).forEach(([scope, issues]) => {
-    issues.forEach((issue, idx) => {
+  Object.entries(scopes).forEach(([scope, issues], idx) => {
+    issues.forEach((issue, subIdx) => {
       const variant = issue.severity === "error" ? "warning" : "info";
 
       const link = (
-        <NotificationDrawerListItem key={idx} variant={variant} isHoverable={false}>
+        <NotificationDrawerListItem key={`${idx}-${subIdx}`} variant={variant} isHoverable={false}>
           <NotificationDrawerListItemHeader title={SCOPE_HEADERS[scope]} variant={variant} headingLevel="h4" />
           <NotificationDrawerListItemBody>
             <Link to={`/${scope}`}>{issue.description}</Link>
