@@ -23,11 +23,13 @@
 
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Button, Card, CardBody, Flex } from "@patternfly/react-core";
+import { Button, Flex, Form, FormGroup, FormSelect, FormSelectOption } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { Popup } from "~/components/core";
-import { InstallerLocaleSwitcher, InstallerKeymapSwitcher } from "~/components/l10n";
 import { _ } from "~/i18n";
+import { useInstallerL10n } from "~/context/installerL10n";
+import supportedLanguages from "~/languages.json";
+import { useL10n } from "~/context/l10n";
 
 /**
  * @typedef {import("@patternfly/react-core").ButtonProps} ButtonProps
@@ -39,14 +41,33 @@ import { _ } from "~/i18n";
  * @todo Write documentation
  */
 export default function InstallerOptions() {
+  const {
+    language: initialLanguage,
+    keymap: initialKeymap,
+    changeLanguage,
+    changeKeymap
+  } = useInstallerL10n();
+  const [language, setLanguage] = useState(initialLanguage);
+  const [keymap, setKeymap] = useState(initialKeymap);
+  const { keymaps } = useL10n();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [inProgress, setInProgress] = useState(false);
 
   // FIXME: Installer options should be available in the login too.
   if (location.pathname.includes("login")) return;
 
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setInProgress(true);
+    changeKeymap(keymap);
+    changeLanguage(language)
+      .then(close)
+      .catch(() => setInProgress(false));
+  };
 
   return (
     <>
@@ -62,11 +83,48 @@ export default function InstallerOptions() {
         title={_("Installer options")}
       >
         <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
-          <InstallerLocaleSwitcher />
-          <InstallerKeymapSwitcher />
+          <Form id="installer-l10n" onSubmit={onSubmit}>
+            <FormGroup
+              fieldId="language"
+              label={_("Language")}
+            >
+              <FormSelect
+                id="language"
+                name="language"
+                aria-label={_("Language")}
+                label={_("Language")}
+                value={language}
+                onChange={(_e, value) => setLanguage(value)}
+              >
+                {Object.keys(supportedLanguages)
+                  .sort()
+                  .map((id, index) => (
+                    <FormSelectOption key={index} value={id} label={supportedLanguages[id]} />)
+                  )}
+              </FormSelect>
+            </FormGroup>
+
+            <FormGroup
+              fieldId="keymap"
+              label={_("Keyboard layout")}
+            >
+              <FormSelect
+                id="keymap"
+                name="keymap"
+                label={_("Keyboard layout")}
+                value={keymap}
+                onChange={(_e, value) => setKeymap(value)}
+              >
+                {keymaps.map((keymap, index) => (
+                  <FormSelectOption key={index} value={keymap.id} label={keymap.name} />)
+                )}
+              </FormSelect>
+            </FormGroup>
+          </Form>
         </Flex>
         <Popup.Actions>
-          <Popup.Confirm onClick={close} autoFocus>{_("Close")}</Popup.Confirm>
+          <Popup.Confirm form="installer-l10n" type="submit" autoFocus isDisabled={inProgress}>{_("Accept")}</Popup.Confirm>
+          <Popup.Cancel onClick={close} isDisabled={inProgress} />
         </Popup.Actions>
       </Popup>
     </>
