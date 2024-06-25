@@ -24,7 +24,7 @@ import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
 
 import { Alert, Button } from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
+import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
 
 const FILENAME = "agama-installation-logs.tar.bzip2";
@@ -88,35 +88,41 @@ const LogsButton = ({ ...props }) => {
       .finally(() => setIsCollecting(false));
   };
 
+  const close = () => setError(false);
+
   return (
     <>
       <Button
-        variant="link"
-        isInline
+        variant="plain"
+        style={{ color: "white" }}
         onClick={collectAndDownload}
         isLoading={isCollecting}
         isDisabled={isCollecting}
-        icon={isCollecting ? null : <Icon name="download" size="s" />}
         {...props}
       >
         {isCollecting ? _("Collecting logs...") : _("Download logs")}
       </Button>
 
-      {isCollecting &&
-        <Alert
-          isInline
-          isPlain
-          variant="info"
-          title={_("The browser will run the logs download as soon as they are ready. Please, be patient.")}
-        />}
+      <Popup title={_("Download logs")} isOpen={isCollecting || error}>
+        {isCollecting &&
+          <Alert
+            isInline
+            isPlain
+            variant="info"
+            title={_("The browser will run the logs download as soon as they are ready. Please, be patient.")}
+          />}
 
-      {error &&
-        <Alert
-          isInline
-          isPlain
-          variant="warning"
-          title={_("Something went wrong while collecting logs. Please, try again.")}
-        />}
+        {error &&
+          <Alert
+            isInline
+            isPlain
+            variant="warning"
+            title={_("Something went wrong while collecting logs. Please, try again.")}
+          />}
+        <Popup.Actions>
+          <Popup.Confirm onClick={close} autoFocus>{_("Close")}</Popup.Confirm>
+        </Popup.Actions>
+      </Popup>
     </>
   );
 };

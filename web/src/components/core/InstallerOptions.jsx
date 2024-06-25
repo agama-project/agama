@@ -25,7 +25,7 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Button, Card, CardBody, Flex } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
-import { LogsButton, Popup } from "~/components/core";
+import { Popup } from "~/components/core";
 import { InstallerLocaleSwitcher, InstallerKeymapSwitcher } from "~/components/l10n";
 import { _ } from "~/i18n";
 
@@ -64,7 +64,6 @@ export default function InstallerOptions() {
         <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
           <InstallerLocaleSwitcher />
           <InstallerKeymapSwitcher />
-          <LogsButton />
         </Flex>
         <Popup.Actions>
           <Popup.Confirm onClick={close} autoFocus>{_("Close")}</Popup.Confirm>

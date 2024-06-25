@@ -29,7 +29,7 @@ import {
   Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
-import { About, InstallerOptions } from "~/components/core";
+import { About, InstallerOptions, LogsButton } from "~/components/core";
 import { _ } from "~/i18n";
 import { rootRoutes } from "~/router";
 import { useProduct } from "~/context/product";
@@ -81,6 +81,9 @@ const ChangeProductButton = () => {
       <Button variant="plain" style={{ color: "white" }} onClick={() => navigate("/products")}>
         {_("Change product")}
       </Button>
+      <PageSidebarBody isFilled={false}>
+        <LogsButton />
+      </PageSidebarBody>
     </PageSidebarBody>
   );
 };
