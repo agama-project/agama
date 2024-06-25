@@ -122,13 +122,15 @@ module Agama
         #   * "Text" [String]
         #   * "Subvol" [Boolean]
         #   * "Delete" [Boolean]
+        #   * "Resize" [Boolean]
         def read_actions
           backend.actions.map do |action|
             {
-              "Device" => action.target_device.sid,
-              "Text"   => action.sentence,
-              "Subvol" => action.device_is?(:btrfs_subvolume),
-              "Delete" => action.delete?
+              "Device" => action.device.sid,
+              "Text"   => action.text,
+              "Subvol" => action.on_btrfs_subvolume?,
+              "Delete" => action.delete?,
+              "Resize" => action.resize?
             }
           end
         end

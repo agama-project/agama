@@ -111,6 +111,7 @@ class DBusClient {
  * @property {string} text
  * @property {boolean} subvol
  * @property {boolean} delete
+ * @property {boolean} resize
  *
  * @todo Define an enum for space policies.
  *

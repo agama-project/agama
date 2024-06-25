@@ -114,6 +114,7 @@ export default function EncryptionField({
       label={LABEL}
       value={<Value isLoading={isLoading} isEnabled={isEnabled} method={method} />}
       description={DESCRIPTION}
+      cardDescriptionProps={{ isFilled: true }}
       actions={<Action isEnabled={isEnabled} isLoading={isLoading} onClick={openDialog} />}
     >
       {isDialogOpen &&

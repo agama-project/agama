@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 25 15:05:05 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Integrate actions with space policy in storage proposal page
+  (gh#openSUSE/agama#1354).
+
+-------------------------------------------------------------------
 Fri Jun 21 14:32:11 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Avoid connection attempts when the user is not logged in

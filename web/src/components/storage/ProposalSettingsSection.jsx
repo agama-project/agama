@@ -22,22 +22,18 @@
 // @ts-check
 
 import React from "react";
-import { Grid, GridItem, PageSection } from "@patternfly/react-core";
-import { _ } from "~/i18n";
-import { compact } from "~/utils";
-import { Section } from "~/components/core";
-import { SPACE_POLICIES } from "~/components/storage/utils";
-import { CHANGING, NOT_AFFECTED } from "~/components/storage/ProposalPage";
+import { Grid, GridItem } from "@patternfly/react-core";
 import EncryptionField from "~/components/storage/EncryptionField";
 import InstallationDeviceField from "~/components/storage/InstallationDeviceField";
 import PartitionsField from "~/components/storage/PartitionsField";
-import SpacePolicyField from "~/components/storage/SpacePolicyField";
+import { _ } from "~/i18n";
+import { compact } from "~/utils";
+import { CHANGING, NOT_AFFECTED } from "~/components/storage/ProposalPage";
 
 /**
  * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
  * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
  * @typedef {import ("~/client/storage").SpaceAction} SpaceAction
- * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  * @typedef {import ("~/client/storage").Volume} Volume
  */
@@ -102,17 +98,6 @@ export default function ProposalSettingsSection({
     onChange(CHANGING.VOLUMES, { volumes });
   };
 
-  /** @param {import("~/components/storage/SpacePolicyField").SpacePolicyConfig} spacePolicyConfig */
-  const changeSpacePolicy = ({ spacePolicy, spaceActions }) => {
-    onChange(
-      CHANGING.POLICY,
-      {
-        spacePolicy: spacePolicy.id,
-        spaceActions
-      }
-    );
-  };
-
   /** @param {import("~/components/storage/PartitionsField").BootConfig} bootConfig */
   const changeBoot = ({ configureBoot, bootDevice }) => {
     onChange(
@@ -137,8 +122,6 @@ export default function ProposalSettingsSection({
   const { volumes = [], installationDevices = [], spaceActions = [] } = settings;
   const bootDevice = findDevice(settings.bootDevice);
   const defaultBootDevice = findDevice(settings.defaultBootDevice);
-  const spacePolicy = SPACE_POLICIES.find(p => p.id === settings.spacePolicy);
-
   const targetDevices = compact([targetDevice, ...targetPVDevices]);
 
   return (
@@ -176,15 +159,6 @@ export default function ProposalSettingsSection({
           isLoading={showSkeleton(isLoading, "PartitionsField", changing) || settings.volumes === undefined}
           onVolumesChange={changeVolumes}
           onBootChange={changeBoot}
-        />
-      </GridItem>
-      <GridItem>
-        <SpacePolicyField
-          policy={spacePolicy}
-          actions={spaceActions}
-          devices={installationDevices}
-          isLoading={showSkeleton(isLoading, "SpacePolicyField", changing)}
-          onChange={changeSpacePolicy}
         />
       </GridItem>
     </Grid>

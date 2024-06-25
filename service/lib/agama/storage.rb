@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -27,4 +27,4 @@ end
 
 require "agama/storage/manager"
 require "agama/storage/proposal"
-require "agama/storage/actions"
+require "agama/storage/actions_generator"
