@@ -47,4 +47,30 @@ describe Agama::Storage::ProposalSettingsConversion do
       expect(result).to be_a(Y2Storage::ProposalSettings)
     end
   end
+
+  describe "#from_schema" do
+    let(:config) { Agama::Config.new }
+
+    let(:schema_settings) do
+      {
+        target: {
+          disk: "/dev/vda"
+        }
+      }
+    end
+
+    it "generates proposal settings from settings according to the JSON schema" do
+      result = described_class.from_schema(schema_settings, config: config)
+      expect(result).to be_a(Agama::Storage::ProposalSettings)
+    end
+  end
+
+  describe "#to_schema" do
+    let(:proposal_settings) { Agama::Storage::ProposalSettings.new }
+
+    it "generates settings according to the JSON schema from the proposal settings" do
+      result = described_class.to_schema(proposal_settings)
+      expect(result).to be_a(Hash)
+    end
+  end
 end

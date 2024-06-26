@@ -44,4 +44,30 @@ describe Agama::Storage::VolumeConversion do
       expect(result).to be_a(Y2Storage::VolumeSpecification)
     end
   end
+
+  describe "#from_schema" do
+    let(:config) { Agama::Config.new }
+
+    let(:volume_schema) do
+      {
+        mount: {
+          path: "/test"
+        }
+      }
+    end
+
+    it "generates a volume from settings according to the JSON schema" do
+      result = described_class.from_schema(volume_schema, config: config)
+      expect(result).to be_a(Agama::Storage::Volume)
+    end
+  end
+
+  describe "#to_schema" do
+    let(:volume) { Agama::Storage::Volume.new("/test") }
+
+    it "generates volume settings according to the JSON schema from a volume" do
+      result = described_class.to_schema(volume)
+      expect(result).to be_a(Hash)
+    end
+  end
 end
