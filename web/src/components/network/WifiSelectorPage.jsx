@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -39,6 +39,7 @@ function WifiSelectorPage() {
   const { network: client } = useInstallerClient();
   const { connections: initialConnections, devices: initialDevices, accessPoints, networks: initialNetworks } = useLoaderData();
   const [data, saveData] = useLocalStorage("agama-network", { selectedWifi: null });
+  // Reevaluate how to keep the state in the future
   const [selected, setSelected] = useState(data.selectedWifi);
   const [networks, setNetworks] = useState(initialNetworks);
   const [showHiddenForm, setShowHiddenForm] = useState(false);
@@ -139,13 +140,6 @@ function WifiSelectorPage() {
               showHiddenForm={showHiddenForm}
               availableNetworks={networks}
               forceUpdateNetworksCallback={reloadNetworks}
-            // onSelectionCallback={(network) => {
-            //   switchSelectedNetwork(network);
-            //   if (network.settings && !network.device) {
-            //     client.connectTo(network.settings);
-            //   }
-            // }}
-            // onCancelSelectionCallback={() => switchSelectedNetwork(activeNetwork)}
             />
           </GridItem>
         </Grid>

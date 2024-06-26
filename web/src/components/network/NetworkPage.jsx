@@ -92,7 +92,7 @@ export default function NetworkPage() {
         <CardField>
           <CardField.Content>
             <EmptyState title={_("Not supported")} icon="error">
-              {_("The system does not support WiFi connections, probably because of missing or disabled hardware.")}
+              {_("The system does not support Wi-Fi connections, probably because of missing or disabled hardware.")}
             </EmptyState>
           </CardField.Content>
         </CardField>
@@ -121,7 +121,7 @@ export default function NetworkPage() {
             )
             : (
               <EmptyState title={_("No connected yet")} icon="wifi_off" color="color-300">
-                {_("The system has not been configured for connecting to a WiFi network yet.")}
+                {_("The system has not been configured for connecting to a Wi-Fi network yet.")}
               </EmptyState>
             )}
         </CardField.Content>
