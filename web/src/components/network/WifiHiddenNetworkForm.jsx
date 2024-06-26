@@ -35,20 +35,15 @@ import { _ } from "~/i18n";
  * @param {function} props.beforeDisplaying - callback to trigger before displaying the form
  * @param {function} props.beforeHiding - callback to trigger before hiding the form
  */
-function WifiHiddenNetworkForm({ network, visible, beforeDisplaying, beforeHiding, onSubmitCallback }) {
+function WifiHiddenNetworkForm({ network, visible, beforeHiding, onSubmitCallback }) {
   return (
     <>
-      { visible &&
+      {visible &&
         <WifiConnectionForm
           network={network}
           onCancel={beforeHiding}
           onSubmitCallback={onSubmitCallback}
-        /> }
-      { !visible &&
-        <Button variant="link" className="horizontally-centered" onClick={beforeDisplaying}>
-          {/* TRANSLATORS: button label */}
-          {_("Connect to hidden network")}
-        </Button> }
+        />}
     </>
   );
 }

@@ -79,6 +79,7 @@ import Visibility from "@icons/visibility.svg?component";
 import VisibilityOff from "@icons/visibility_off.svg?component";
 import Wifi from "@icons/wifi.svg?component";
 import WifiFind from "@icons/wifi_find.svg?component";
+import WifiOff from "@icons/wifi_off.svg?component";
 
 // Icons from react-simple-icons
 
@@ -146,6 +147,7 @@ const icons = {
   warning: Warning,
   wifi: Wifi,
   wifi_find: WifiFind,
+  wifi_off: WifiOff,
   // brand icons
   linux_logo: SiLinux,
   windows_logo: SiWindows

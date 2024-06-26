@@ -140,7 +140,7 @@ impl<'a> NetworkManagerClient<'a> {
     /// Returns the list of network devices.
     pub async fn devices(&self) -> Result<Vec<Device>, ServiceError> {
         let mut devs = vec![];
-        for path in &self.nm_proxy.get_devices().await? {
+        for path in &self.nm_proxy.get_all_devices().await? {
             let proxy = DeviceProxy::builder(&self.connection)
                 .path(path.as_str())?
                 .build()
@@ -172,6 +172,12 @@ impl<'a> NetworkManagerClient<'a> {
                 .path(path.as_str())?
                 .build()
                 .await?;
+            let flags = proxy.flags().await?;
+            if flags > 0 {
+                log::warn!("Skipped connection because of flags: {}", flags);
+                continue;
+            }
+
             let settings = proxy.get_settings().await?;
 
             if let Some(mut connection) = connection_from_dbus(settings.clone()) {

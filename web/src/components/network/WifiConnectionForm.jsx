@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   ActionGroup,
   Alert,
@@ -59,17 +59,12 @@ const securityFrom = (supported) => {
 
 export default function WifiConnectionForm({ network, onCancel, onSubmitCallback }) {
   const { network: client } = useInstallerClient();
-  const formRef = useRef();
   const [error, setError] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [ssid, setSsid] = useState(network?.ssid || "");
   const [password, setPassword] = useState(network?.password || "");
   const [security, setSecurity] = useState(securityFrom(network?.security || []));
   const hidden = network?.hidden || false;
-
-  useEffect(() => {
-    setTimeout(() => { formRef.current?.scrollIntoView({ behavior: "smooth" }) }, 200);
-  }, []);
 
   const accept = async e => {
     e.preventDefault();
@@ -86,7 +81,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
   };
 
   return (
-    <Form id={`${ssid}-connection-form`} onSubmit={accept} innerRef={formRef}>
+    <Form id={`${ssid}-connection-form`} onSubmit={accept}>
       {error &&
         <Alert variant="warning" isInline title={_("Something went wrong")}>
           <p>{_("Please, review provided settings and try again.")}</p>

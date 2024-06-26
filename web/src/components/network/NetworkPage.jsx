@@ -21,32 +21,17 @@
 
 // @ts-check
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { Button, CardBody, Grid, GridItem, Split, Skeleton, Stack } from "@patternfly/react-core";
 import { useLoaderData } from "react-router-dom";
-import { Button, CardBody, Flex, Grid, GridItem, Skeleton, Stack } from "@patternfly/react-core";
-import { useInstallerClient } from "~/context/installer";
-import { CardField, Page } from "~/components/core";
-import { ConnectionsTable, WifiSelector } from "~/components/network";
+import { ButtonLink, CardField, EmptyState, Page } from "~/components/core";
+import { ConnectionsTable } from "~/components/network";
 import { NetworkEventTypes } from "~/client/network";
+import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
-
-const WifiSelection = ({ wifiScanSupported }) => {
-  const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
-
-  if (!wifiScanSupported) return;
-
-  const openWifiSelector = () => setWifiSelectorOpen(true);
-  const closeWifiSelector = () => setWifiSelectorOpen(false);
-
-  return (
-    <>
-      <Button variant="secondary" onClick={openWifiSelector}>
-        {_("Connect to a Wi-Fi network")}
-      </Button>
-      <WifiSelector isOpen={wifiSelectorOpen} onClose={closeWifiSelector} />
-    </>
-  );
-};
+import { formatIp } from "~/client/network/utils";
+import { sprintf } from "sprintf-js";
+import { DeviceState } from "~/client/network/model";
 
 /**
  * Internal component for displaying info when none wire connection is found
@@ -59,134 +44,118 @@ const NoWiredConnections = () => {
 };
 
 /**
- * Internal component for displaying info when none WiFi connection is found
- * @component
- *
- * @param {object} props
- * @param {boolean} props.supported - whether the system supports scanning WiFi networks
- * @param {boolean} props.openWifiSelector - the function for opening the WiFi selector
- */
-const NoWifiConnections = ({ wifiScanSupported }) => {
-  const message = wifiScanSupported
-    ? _("The system has not been configured for connecting to a WiFi network yet.")
-    : _("The system does not support WiFi connections, probably because of missing or disabled hardware.");
-
-  return (
-    <Stack hasGutter>
-      <div>{_("No WiFi connections found.")}</div>
-      <div>{message}</div>
-    </Stack>
-  );
-};
-
-/**
  * Page component holding Network settings
  * @component
  */
 export default function NetworkPage() {
   const { network: client } = useInstallerClient();
-  const { connections: initialConnections, settings } = useLoaderData();
+  const { connections: initialConnections, devices: initialDevices, settings } = useLoaderData();
   const [connections, setConnections] = useState(initialConnections);
-  const [devices, setDevices] = useState(undefined);
-  const [selectedConnection, setSelectedConnection] = useState(null);
+  const [devices, setDevices] = useState(initialDevices);
+  const [updateState, setUpdateState] = useState(false);
+
+  const fetchState = useCallback(async () => {
+    const devices = await client.devices();
+    const connections = await client.connections();
+    setDevices(devices);
+    setConnections(connections);
+  }, [client]);
 
   useEffect(() => {
-    return client.onNetworkChange(({ type, payload }) => {
-      switch (type) {
-        case NetworkEventTypes.DEVICE_ADDED: {
-          setDevices((devs) => {
-            const newDevices = devs.filter((d) => d.name !== payload.name);
-            return [...newDevices, client.fromApiDevice(payload)];
-          });
-          break;
-        }
+    if (!updateState) return;
 
-        case NetworkEventTypes.DEVICE_UPDATED: {
-          const [name, data] = payload;
-          setDevices(devs => {
-            const newDevices = devs.filter((d) => d.name !== name);
-            return [...newDevices, client.fromApiDevice(data)];
-          });
-          break;
-        }
+    setUpdateState(false);
+    fetchState();
+  }, [fetchState, updateState]);
 
-        case NetworkEventTypes.DEVICE_REMOVED: {
-          setDevices(devs => devs.filter((d) => d.name !== payload));
-          break;
-        }
+  useEffect(() => {
+    return client.onNetworkChange(({ type }) => {
+      if ([NetworkEventTypes.DEVICE_ADDED, NetworkEventTypes.DEVICE_UPDATED, NetworkEventTypes.DEVICE_REMOVED].includes(type)) {
+        setUpdateState(true);
       }
-      client.connections().then(setConnections);
     });
-  }, [client, devices]);
+  });
 
-  useEffect(() => {
-    if (devices !== undefined) return;
+  const connectionDevice = ({ id }) => devices?.find(({ connection }) => id === connection);
+  const connectionAddresses = (connection) => {
+    const device = connectionDevice(connection);
+    const addresses = device ? device.addresses : connection.addresses;
 
-    client.devices().then(setDevices);
-  }, [client, devices]);
-
-  const selectConnection = ({ id }) => {
-    client.getConnection(id).then(setSelectedConnection);
-  };
-
-  const forgetConnection = async ({ id }) => {
-    await client.deleteConnection(id);
-    setConnections(undefined);
-  };
-
-  const updateConnections = async () => {
-    setConnections(undefined);
-    setDevices(undefined);
+    return addresses?.map(formatIp).join(", ");
   };
 
   const ready = (connections !== undefined) && (devices !== undefined);
 
   const WifiConnections = () => {
-    const wifiConnections = connections.filter(c => c.wireless);
+    const { wireless_enabled: wifiAvailable } = settings;
 
-    if (wifiConnections.length === 0) {
+    if (!wifiAvailable) {
       return (
-        <NoWifiConnections wifiScanSupported={settings.wireless_enabled} />
+        <CardField>
+          <CardField.Content>
+            <EmptyState title={_("Not supported")} icon="error">
+              {_("The system does not support Wi-Fi connections, probably because of missing or disabled hardware.")}
+            </EmptyState>
+          </CardField.Content>
+        </CardField>
       );
     }
 
+    const wifiConnections = connections.filter(c => c.wireless);
+    const activeWifiDevice = devices.find(d => d.type === "wireless" && d.state === "activated");
+    const activeConnection = wifiConnections.find(c => c.id === activeWifiDevice?.connection);
+
     return (
-      <ConnectionsTable connections={wifiConnections} devices={devices} onEdit={selectConnection} onForget={forgetConnection} />
+      <CardField
+        label={_("Wi-Fi")}
+        actions={
+          <ButtonLink isPrimary={!activeConnection} to="wifis">
+            {activeConnection ? _("Change") : _("Connect")}
+          </ButtonLink>
+        }
+      >
+        <CardField.Content>
+          {activeConnection
+            ? (
+              <EmptyState title={sprintf(_("Conected to %s"), activeConnection.id)} icon="wifi" color="success-color-100">
+                {connectionAddresses(activeConnection)}
+              </EmptyState>
+            )
+            : (
+              <EmptyState title={_("No connected yet")} icon="wifi_off" color="color-300">
+                {_("The system has not been configured for connecting to a Wi-Fi network yet.")}
+              </EmptyState>
+            )}
+        </CardField.Content>
+      </CardField>
     );
   };
 
   const WiredConnections = () => {
-    const wiredConnections = connections.filter(c => !c.wireless && (c.id !== "lo"));
+    const wiredConnections = connections.filter(c => !c.wireless);
 
     if (wiredConnections.length === 0) return <NoWiredConnections />;
 
-    return <ConnectionsTable connections={wiredConnections} devices={devices} onEdit={selectConnection} />;
+    return <ConnectionsTable connections={wiredConnections} devices={devices} />;
   };
 
   return (
     <>
       <Page.Header>
-        <Flex justifyContent={{ default: "justifyContentSpaceBetween" }}>
-          <h2>{_("Network")}</h2>
-          <WifiSelection wifiScanSupported={settings.wireless_enabled} />
-        </Flex>
+        <h2>{_("Network")}</h2>
       </Page.Header>
 
       <Page.MainContent>
         <Grid hasGutter>
-          <GridItem sm={12}>
-            <CardField label={_("Wired connections")}>
+          <GridItem sm={12} xl={6}>
+            <CardField label={_("Wired")}>
               <CardBody>
                 {ready ? <WiredConnections /> : <Skeleton />}
               </CardBody>
             </CardField>
           </GridItem>
-          <GridItem sm={12}>
-            <CardField label={_("WiFi connections")}>
-              <CardBody>
-                {ready ? <WifiConnections /> : <Skeleton />}
-              </CardBody>
-            </CardField>
+          <GridItem sm={12} xl={6}>
+            <WifiConnections />
           </GridItem>
         </Grid>
       </Page.MainContent>
