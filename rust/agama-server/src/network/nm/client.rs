@@ -173,7 +173,7 @@ impl<'a> NetworkManagerClient<'a> {
                 .build()
                 .await?;
             let flags = proxy.flags().await?;
-            if flags > 0 {
+            if flags >= 8 {
                 log::warn!("Skipped connection because of flags: {}", flags);
                 continue;
             }
