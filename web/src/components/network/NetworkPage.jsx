@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button, CardBody, Grid, GridItem, Split, Skeleton, Stack } from "@patternfly/react-core";
 import { useLoaderData } from "react-router-dom";
 import { ButtonLink, CardField, EmptyState, Page } from "~/components/core";
@@ -31,6 +31,7 @@ import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
 import { formatIp } from "~/client/network/utils";
 import { sprintf } from "sprintf-js";
+import { DeviceState } from "~/client/network/model";
 
 /**
  * Internal component for displaying info when none wire connection is found
@@ -51,36 +52,27 @@ export default function NetworkPage() {
   const { connections: initialConnections, devices: initialDevices, settings } = useLoaderData();
   const [connections, setConnections] = useState(initialConnections);
   const [devices, setDevices] = useState(initialDevices);
+  const [updateState, setUpdateState] = useState(false);
+
+  const fetchState = useCallback(async () => {
+    const devices = await client.devices();
+    const connections = await client.connections();
+    setDevices(devices);
+    setConnections(connections);
+  }, [client]);
 
   useEffect(() => {
-    return client.onNetworkChange(({ type, payload }) => {
-      switch (type) {
-        case NetworkEventTypes.DEVICE_ADDED: {
-          setDevices((devs) => {
-            const newDevices = devs.filter((d) => d.name !== payload.name);
-            return [...newDevices, client.fromApiDevice(payload)];
-          });
-          break;
-        }
+    fetchState();
+    setUpdateState(false);
+  }, [fetchState, updateState]);
 
-        case NetworkEventTypes.DEVICE_UPDATED: {
-          const [name, data] = payload;
-          setDevices(devs => {
-            const newDevices = devs.filter((d) => d.name !== name);
-            return [...newDevices, client.fromApiDevice(data)];
-          });
-
-          break;
-        }
-
-        case NetworkEventTypes.DEVICE_REMOVED: {
-          setDevices(devs => devs.filter((d) => d.name !== payload));
-          break;
-        }
+  useEffect(() => {
+    return client.onNetworkChange(({ type }) => {
+      if ([NetworkEventTypes.DEVICE_ADDED, NetworkEventTypes.DEVICE_UPDATED, NetworkEventTypes.DEVICE_REMOVED].includes(type)) {
+        setUpdateState(true);
       }
-      client.connections().then(setConnections);
     });
-  }, [client, devices]);
+  });
 
   const connectionDevice = ({ id }) => devices?.find(({ connection }) => id === connection);
   const connectionAddresses = (connection) => {
@@ -94,6 +86,7 @@ export default function NetworkPage() {
 
   const WifiConnections = () => {
     const wifiConnections = connections.filter(c => c.wireless);
+    console.log(wifiConnections);
     const { wireless_enabled: wifiAvailable } = settings;
     const activeConnection = wifiAvailable && wifiConnections.find(c => c.status === "up");
 
