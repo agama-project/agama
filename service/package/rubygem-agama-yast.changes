@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 26 10:32:08 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Extend D-Bus storage API to set and get storage config using
+  settings according to the JSON schema (gh#openSUSE/agama#1293).
+
+-------------------------------------------------------------------
 Wed Jun 26 09:53:23 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use a D-Bus method instead of a signal to change the language and

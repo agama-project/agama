@@ -31,7 +31,7 @@ module Agama
 
       # Device to use for booting.
       #
-      # @return [String, nil]
+      # @return [String, nil] nil means use installation device.
       attr_accessor :device
 
       def initialize
