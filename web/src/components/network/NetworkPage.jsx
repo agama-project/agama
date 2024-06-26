@@ -91,7 +91,7 @@ export default function NetworkPage() {
       return (
         <CardField>
           <CardField.Content>
-            <EmptyState title={_("No WiFi support")} icon="wifi_off" color="warning-color-200">
+            <EmptyState title={_("Not supported")} icon="error">
               {_("The system does not support WiFi connections, probably because of missing or disabled hardware.")}
             </EmptyState>
           </CardField.Content>
