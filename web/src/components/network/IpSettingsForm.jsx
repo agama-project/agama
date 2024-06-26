@@ -113,7 +113,7 @@ export default function IpSettingsForm() {
     };
 
     client.network.updateConnection(updatedConnection)
-      .then(navigate(".."))
+      .then(navigate("-1"))
       // TODO: better error reporting. By now, it sets an error for the whole connection.
       .catch(({ message }) => setErrors({ object: message }));
   };
@@ -205,7 +205,7 @@ export default function IpSettingsForm() {
       </Page.MainContent>
 
       <Page.NextActions>
-        <Page.CancelAction />
+        <Page.CancelAction navigateTo={-1} />
         <Page.Action type="submit" form="editConnectionForm">
           {_("Accept")}
         </Page.Action>
