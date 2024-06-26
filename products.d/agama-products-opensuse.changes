@@ -5,6 +5,11 @@ Wed Jun 26 08:25:00 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
   (gh#openSUSE/agama#1381)
 
 -------------------------------------------------------------------
+Mon Jun 24 20:35:00 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add Leap 16 (gh#openSUSE/agama#1371)
+
+-------------------------------------------------------------------
 Tue May 21 11:35:51 UTC 2024 - Richard Brown <rbrown@suse.com>
 
 - Remove definitions for MicroOS Desktop (gh#openSUSE/agama#1243).

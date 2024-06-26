@@ -24,6 +24,7 @@ require "agama/manager"
 require "agama/dbus/base_object"
 require "agama/dbus/with_service_status"
 require "agama/dbus/interfaces/progress"
+require "agama/dbus/interfaces/locale"
 require "agama/dbus/interfaces/service_status"
 require "agama/autoyast/converter"
 
@@ -34,6 +35,7 @@ module Agama
       include WithServiceStatus
       include Interfaces::Progress
       include Interfaces::ServiceStatus
+      include Interfaces::Locale
 
       PATH = "/org/opensuse/Agama/Manager1"
       private_constant :PATH
@@ -139,6 +141,12 @@ module Agama
       # @return [DBus::ServiceStatus]
       def service_status
         backend.service_status
+      end
+
+      def locale=(locale)
+        safe_run do
+          busy_while { backend.locale = locale }
+        end
       end
 
     private

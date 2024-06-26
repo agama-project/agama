@@ -36,7 +36,9 @@ const L10nContext = React.createContext(null);
  *
  * @typedef {object} L10nContext
  * @property {string|undefined} language - Current language.
- * @property {(language: string) => void} changeLanguage - Function to change the current language.
+ * @property {string|undefined} keymap - Current keymap.
+ * @property {(language: string) => Promise<void>} changeLanguage - Function to change the current language.
+ * @property {(keymap: string) => Promise<void>} changeKeymap - Function to change the current keymap.
  *
  * @return {L10nContext}
  */

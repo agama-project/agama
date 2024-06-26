@@ -1314,7 +1314,6 @@ impl fmt::Display for InfinibandTransportMode {
     }
 }
 
-
 #[derive(Default, Debug, PartialEq, Clone, Serialize)]
 pub enum TunMode {
     #[default]
@@ -1328,7 +1327,6 @@ pub struct TunConfig {
     pub group: Option<String>,
     pub owner: Option<String>,
 }
-
 
 /// Represents a network change.
 #[derive(Debug, Clone, Serialize)]

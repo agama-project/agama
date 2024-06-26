@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 26 09:53:23 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use a D-Bus method instead of a signal to change the language and
+  the keyboard layout (gh#openSUSE/agama#1375).
+
+-------------------------------------------------------------------
 Wed Jun 26 09:12:33 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Fix segmentation fault in the storage actions

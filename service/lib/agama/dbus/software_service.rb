@@ -24,7 +24,6 @@ require "agama/dbus/bus"
 require "agama/dbus/clients/locale"
 require "agama/dbus/software"
 require "agama/software"
-require "agama/ui_locale"
 
 require "yast"
 Yast.import "Pkg"
@@ -58,10 +57,6 @@ module Agama
         # for some reason the the "export" method must be called before
         # registering the language change callback to work properly
         export
-        @ui_locale = UILocale.new(Clients::Locale.instance) do |locale|
-          # call the language change handler
-          locale_handler(locale)
-        end
       end
 
       # Exports the software object through the D-Bus service
@@ -93,41 +88,6 @@ module Agama
           Agama::DBus::Software::Product.new(@backend, logger),
           Agama::DBus::Software::Proposal.new(logger)
         ]
-      end
-
-      # Language change callback handler, activate new locale in the libzypp backend
-      # @param locale [String] the new locale
-      def locale_handler(locale)
-        language, = locale.split(".")
-
-        # set the locale in the Language module, when changing the repository
-        # (product) it calls Pkg.SetTextLocale(Language.language) internally
-        Yast::Language.Set(language)
-
-        # set libzypp locale (for communication only, Pkg.SetPackageLocale
-        # call can be used for *installing* the language packages)
-        Yast::Pkg.SetTextLocale(language)
-
-        # refresh all enabled repositories to download the missing translation files
-        Yast::Pkg.SourceGetCurrent(true).each do |src|
-          Yast::Pkg.SourceForceRefreshNow(src)
-        end
-
-        # remember the currently selected packages and patterns by YaST
-        # (ignore the automatic selections done by the solver)
-        #
-        # NOTE: we will need to handle also the tabooed and soft-locked objects
-        # when we allow to set them via UI or CLI
-        selected = Y2Packager::Resolvable.find(status: :selected, transact_by: :appl_high)
-
-        # save and reload all repositories to activate the new translations
-        Yast::Pkg.SourceSaveAll
-        Yast::Pkg.SourceFinishAll
-        Yast::Pkg.SourceRestore
-        Yast::Pkg.SourceLoad
-
-        # restore back the selected objects
-        selected.each { |s| Yast::Pkg.ResolvableInstall(s.name, s.kind) }
       end
     end
   end

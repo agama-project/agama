@@ -182,3 +182,13 @@ trait Issues {
     #[dbus_proxy(property)]
     fn all(&self) -> zbus::Result<Vec<(String, String, u32, u32)>>;
 }
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama1.Locale",
+    default_service = "org.opensuse.Agama.Manager1",
+    default_path = "/org/opensuse/Agama/Manager1"
+)]
+trait Locale {
+    /// SetLocale method
+    fn set_locale(&self, locale: &str) -> zbus::Result<()>;
+}
