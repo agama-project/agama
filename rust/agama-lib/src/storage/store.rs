@@ -1,7 +1,6 @@
 //! Implements the store for the storage settings.
 
-use super::StorageClient;
-use super::StorageSettings;
+use super::{StorageClient, StorageSettings};
 use crate::error::ServiceError;
 use zbus::Connection;
 
