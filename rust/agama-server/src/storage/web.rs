@@ -280,6 +280,6 @@ async fn set_proposal_settings(
     State(state): State<StorageState<'_>>,
     Json(config): Json<ProposalSettingsPatch>,
 ) -> Result<Json<bool>, Error> {
-    let result = state.client.calculate2(config).await?;
+    let result = state.client.calculate(config).await?;
     Ok(Json(result == 0))
 }
