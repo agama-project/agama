@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 26 13:54:28 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Generate JSON storage settings using pretty format
+  (gh#openSUSE/agama#1387).
+
+-------------------------------------------------------------------
 Wed Jun 26 10:32:08 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Extend D-Bus storage API to set and get storage config using

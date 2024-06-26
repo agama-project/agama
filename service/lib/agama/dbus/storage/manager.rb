@@ -115,7 +115,7 @@ module Agama
         #
         # @return [String]
         def serialized_storage_config
-          @serialized_storage_config || generate_storage_config.to_json
+          @serialized_storage_config || JSON.pretty_generate(generate_storage_config)
         end
 
         def install
