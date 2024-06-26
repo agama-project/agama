@@ -108,7 +108,7 @@ export default function IpSettingsForm() {
       ...connection,
       addresses: sanitizedAddresses,
       method4: method,
-      gatewa4: gateway,
+      gateway4: gateway,
       nameservers: sanitizedNameservers.map(s => s.address)
     };
 
