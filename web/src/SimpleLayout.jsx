@@ -21,16 +21,34 @@
 
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { Page } from "@patternfly/react-core";
+import {
+  Masthead, MastheadContent,
+  Page,
+  Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
+} from "@patternfly/react-core";
+import { InstallerOptions } from "./components/core";
 import { _ } from "~/i18n";
 
 /**
  * Simple layout for displaying content that comes before product configuration
  * TODO: improve documentation
  */
-export default function SimpleLayout({ showOutlet = true, children }) {
+export default function SimpleLayout({ showOutlet = true, showInstallerOptions = false, children }) {
   return (
     <Page>
+      <Masthead backgroundColor="light200">
+        <MastheadContent>
+          <Toolbar>
+            <ToolbarContent>
+              <ToolbarGroup align={{ default: "alignRight" }}>
+                <ToolbarItem>
+                  {showInstallerOptions && <InstallerOptions />}
+                </ToolbarItem>
+              </ToolbarGroup>
+            </ToolbarContent>
+          </Toolbar>
+        </MastheadContent>
+      </Masthead>
       {showOutlet ? <Outlet /> : children}
     </Page>
   );

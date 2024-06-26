@@ -61,7 +61,7 @@ const protectedRoutes = [
         ]
       },
       {
-        element: <SimpleLayout />,
+        element: <SimpleLayout showInstallerOptions />,
         children: [productsRoute]
       }
     ]
