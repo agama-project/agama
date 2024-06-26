@@ -522,10 +522,14 @@ describe Agama::DBus::Storage::Manager do
   end
 
   describe "#serialized_storage_config" do
+    def pretty_json(value)
+      JSON.pretty_generate(value)
+    end
+
     context "if the storage config has not been set yet" do
       context "and a proposal has not been calculated" do
         it "returns serialized empty storage config" do
-          expect(subject.serialized_storage_config).to eq({}.to_json)
+          expect(subject.serialized_storage_config).to eq(pretty_json({}))
         end
       end
 
@@ -547,7 +551,7 @@ describe Agama::DBus::Storage::Manager do
             }
           }
 
-          expect(subject.serialized_storage_config).to eq(expected_config.to_json)
+          expect(subject.serialized_storage_config).to eq(pretty_json(expected_config))
         end
       end
     end
