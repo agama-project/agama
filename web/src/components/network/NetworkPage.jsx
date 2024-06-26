@@ -22,7 +22,7 @@
 // @ts-check
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Button, CardBody, Grid, GridItem, Split, Skeleton, Stack } from "@patternfly/react-core";
+import { CardBody, Grid, GridItem, Skeleton, Split, Stack } from "@patternfly/react-core";
 import { useLoaderData } from "react-router-dom";
 import { ButtonLink, CardField, EmptyState, Page } from "~/components/core";
 import { ConnectionsTable } from "~/components/network";
@@ -31,17 +31,6 @@ import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
 import { formatIp } from "~/client/network/utils";
 import { sprintf } from "sprintf-js";
-import { DeviceState } from "~/client/network/model";
-
-/**
- * Internal component for displaying info when none wire connection is found
- * @component
- */
-const NoWiredConnections = () => {
-  return (
-    <div>{_("No wired connections found.")}</div>
-  );
-};
 
 /**
  * Page component holding Network settings
@@ -93,7 +82,7 @@ export default function NetworkPage() {
       return (
         <CardField>
           <CardField.Content>
-            <EmptyState title={_("Not supported")} icon="error">
+            <EmptyState title={_("No Wi-Fi supported")} icon="error">
               {_("The system does not support Wi-Fi connections, probably because of missing or disabled hardware.")}
             </EmptyState>
           </CardField.Content>
@@ -131,12 +120,27 @@ export default function NetworkPage() {
     );
   };
 
+  const SectionSkeleton = () => (
+    <Stack hasGutter>
+      <Skeleton width="45%" />
+      <Split hasGutter><Skeleton width="30%" height="10px" /><Skeleton width="30%" height="10px" /><Skeleton width="30%" height="10px" /></Split>
+      <Split hasGutter><Skeleton width="30%" height="10px" /><Skeleton width="30%" height="10px" /><Skeleton width="30%" height="10px" /></Split>
+    </Stack>
+  );
+
   const WiredConnections = () => {
     const wiredConnections = connections.filter(c => !c.wireless);
+    const total = wiredConnections.length;
 
-    if (wiredConnections.length === 0) return <NoWiredConnections />;
-
-    return <ConnectionsTable connections={wiredConnections} devices={devices} />;
+    return (
+      <CardField label={total > 0 && _("Wired")}>
+        <CardBody>
+          {!ready && <SectionSkeleton />}
+          {ready && total === 0 && <EmptyState title={_("No wired connections found")} icon="warning" />}
+          {ready && total !== 0 && <ConnectionsTable connections={wiredConnections} devices={devices} />}
+        </CardBody>
+      </CardField>
+    );
   };
 
   return (
@@ -148,11 +152,7 @@ export default function NetworkPage() {
       <Page.MainContent>
         <Grid hasGutter>
           <GridItem sm={12} xl={6}>
-            <CardField label={_("Wired")}>
-              <CardBody>
-                {ready ? <WiredConnections /> : <Skeleton />}
-              </CardBody>
-            </CardField>
+            <WiredConnections />
           </GridItem>
           <GridItem sm={12} xl={6}>
             <WifiConnections />

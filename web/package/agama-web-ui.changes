@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 26 14:17:30 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Use similar look&feel for sections at network page
+  (gh#openSUSE/agama#1389).
+
+-------------------------------------------------------------------
 Wed Jun 26 14:04:53 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add status information to each steps in the progress report
