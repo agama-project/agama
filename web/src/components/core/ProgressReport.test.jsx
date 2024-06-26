@@ -89,7 +89,9 @@ describe("ProgressReport", () => {
         });
       });
 
-      await screen.findByText("Doing some partitioning (1/10)");
+      // NOTE: not finding the whole text because it is now split in two <span> because of PF/Truncate
+      await screen.findByText(/Doing some/);
+      await screen.findByText(/\(1\/10\)/);
     });
 
     it("shows the progress including the details from the software service", async () => {
@@ -108,7 +110,10 @@ describe("ProgressReport", () => {
         });
       });
 
-      await screen.findByText("Installing packages (495/500)");
+      // NOTE: not finding the whole "Intalling packages (495/500)" because it
+      // is now split in two <span> because of PF/Truncate
+      await screen.findByText(/Installing/);
+      await screen.findByText(/.*\(495\/500\)/);
     });
   });
 });

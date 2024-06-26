@@ -336,10 +336,8 @@ table td > .pf-v5-c-empty-state {
 }
 
 .pf-v5-c-progress-stepper.progress-report {
+  .pf-v5-c-progress-stepper__step-connector,
   .pf-v5-c-progress-stepper__step-main {
-    inline-size: 220px;
-    display: flex;
-    flex-direction: column;
-    row-gap: 1em;
+    inline-size: 250px;
   }
 }

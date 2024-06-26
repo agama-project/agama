@@ -23,14 +23,14 @@ import React, { useEffect, useState } from "react";
 import {
   Card,
   CardBody,
+  Flex,
   Grid,
   GridItem,
-  ProgressStepper,
   ProgressStep,
+  ProgressStepper,
   Spinner,
-  Text,
-  TextVariants,
-  Flex,
+  Stack,
+  Truncate
 } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
@@ -47,7 +47,7 @@ const Progress = ({ steps, step, firstStep, detail }) => {
 
     if (stepNumber < step.current) {
       properties.variant = "success";
-      properties.description = <Text component={TextVariants.p}>{_("Finished")}</Text>;
+      properties.description = <div>{_("Finished")}</div>;
     }
 
     if (properties.isCurrent) {
@@ -55,17 +55,19 @@ const Progress = ({ steps, step, firstStep, detail }) => {
       if (detail && detail.message !== "") {
         const { message, current, total } = detail;
         properties.description = (
-          <>
-            <Text component={TextVariants.p}>{_("In progress")}</Text>
-            <Text component={TextVariants.p}>{`${message} (${current}/${total})`}</Text>
-          </>
+          <Stack hasGutter>
+            <div>{_("In progress")}</div>
+            <div>
+              <Truncate content={`${message} (${current}/${total})`} trailingNumChars={12} position="middle" />
+            </div>
+          </Stack>
         );
       }
     }
 
     if (stepNumber > step.current) {
       properties.variant = "pending";
-      properties.description = <Text component={TextVariants.p}>{_("Pending")}</Text>;
+      properties.description = <div>{_("Pending")}</div>;
     }
 
     return properties;
@@ -133,7 +135,7 @@ function ProgressReport({ title, firstStep }) {
   return (
     <Center>
       <Grid hasGutter>
-        <GridItem sm={8} smOffset={2}>
+        <GridItem sm={10} smOffset={1}>
           <Card isPlain>
             <CardBody>
               <Flex direction={{ default: "column" }} rowGap={{ default: "rowGap2xl" }} alignItems={{ default: "alignItemsCenter" }}>
