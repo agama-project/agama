@@ -26,6 +26,7 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 import ProposalActionsSummary from "~/components/storage/ProposalActionsSummary";
+import { devices, actions } from "./test-data/full-result-example";
 
 const sda = {
   sid: 59,
@@ -50,21 +51,52 @@ const sda = {
 };
 
 const keepPolicy = SPACE_POLICIES.find(p => p.id === "keep");
+const deletePolicy = SPACE_POLICIES.find(p => p.id === "delete");
+const resizePolicy = SPACE_POLICIES.find(p => p.id === "resize");
 
-const props = {
+const defaultProps = {
   isLoading: false,
   policy: keepPolicy,
-  devices: [sda],
-  actions: [
-    { device: "/dev/sda", action: "force_delete" },
-  ],
   onActionsClick: jest.fn(),
+  system: devices.system,
+  staging: devices.staging,
+  actions
 };
 
 describe("ProposalActionsSummary", () => {
   it("renders a button for navigating to the space policy selection", async () => {
-    const { user } = installerRender(<ProposalActionsSummary {...props} />);
-    const button = screen.getByRole("link", { name: "Change" });
+    installerRender(<ProposalActionsSummary {...defaultProps} />);
+    screen.getByRole("link", { name: "Change" });
+  });
+
+  it("renders the affected systems in the deletion reminder, if any", () => {
+    // NOTE: simulate the deletion of vdc2 (sid: 79) for checking that
+    // affected systems are rendered in the warning summary
+    const props = {
+      ...defaultProps,
+      policy: deletePolicy,
+      actions: [{ device: 79, subvol: false, delete: true, text: "" }]
+    };
+
+    installerRender(<ProposalActionsSummary {...props} />);
+    screen.getByText(/destructive/);
+    screen.getByText(/affecting/);
+    screen.getByText(/openSUSE/);
+  });
+
+  it("renders the affected systems in the resize reminder, if any", () => {
+    // NOTE: simulate the deletion of vdc2 (sid: 79) for checking that
+    // affected systems are rendered in the warning summary
+    const props = {
+      ...defaultProps,
+      policy: resizePolicy,
+      actions: [{ device: 79, subvol: false, delete: false, resize: true, text: "" }]
+    };
+
+    installerRender(<ProposalActionsSummary {...props} />);
+    screen.getByText(/shrunk/);
+    screen.getByText(/affecting/);
+    screen.getByText(/openSUSE/);
   });
 
   it.todo("test the actions and drawer behaviour");

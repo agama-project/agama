@@ -48,6 +48,7 @@ import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 const DeletionsInfo = ({ policy, manager, spaceActions }) => {
   let label;
   let systemsLabel;
+  const systems = manager.deletedSystems();
   const deleteActions = manager.actions.filter(a => a.delete && !a.subvol).length;
   const isDeletePolicy = policy?.id === "delete";
   const hasDeleteActions = deleteActions !== 0;
@@ -71,11 +72,11 @@ const DeletionsInfo = ({ policy, manager, spaceActions }) => {
     );
   }
 
-  if (manager.deletedSystems()?.length) {
+  if (systems.length) {
     // FIXME: Use the Intl.ListFormat instead of the `join(", ")` used below.
     // Most probably, a `listFormat` or similar wrapper should live in src/i18n.js or so.
     // Read https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat
-    systemsLabel = <>{_("affecting")} <strong>{manager.deletedSystems.join(", ")}</strong></>;
+    systemsLabel = <>{_("affecting")} <strong>{systems.join(", ")}</strong></>;
   }
 
   return (
