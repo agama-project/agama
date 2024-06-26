@@ -23,13 +23,13 @@ import React from "react";
 import { Page } from "~/components/core";
 import SoftwarePage from "./SoftwarePage";
 import SoftwarePatternsSelection from "./SoftwarePatternsSelection";
-import { _ } from "~/i18n";
+import { N_ } from "~/i18n";
 
 const routes = {
   path: "/software",
   element: <Page />,
   handle: {
-    name: _("Software"),
+    name: N_("Software"),
     icon: "apps"
   },
   children: [

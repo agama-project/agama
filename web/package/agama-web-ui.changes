@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jun 26 13:38:32 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Fix routes translations (gh#openSUSE/agama#1385).
+
+-------------------------------------------------------------------
 Wed Jun 26 13:14:06 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Bring back installer options when selecting a product

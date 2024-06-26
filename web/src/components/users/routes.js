@@ -20,33 +20,27 @@
  */
 
 import React from "react";
-import { _ } from "~/i18n";
 import { Page } from "~/components/core";
 import UsersPage from "./UsersPage";
 import FirstUserForm from "./FirstUserForm";
+import { N_ } from "~/i18n";
 
 const routes = {
   path: "/users",
   element: <Page />,
   handle: {
-    name: _("Users"),
+    name: N_("Users"),
     icon: "manage_accounts"
   },
   children: [
     { index: true, element: <UsersPage /> },
     {
       path: "first",
-      element: <FirstUserForm />,
-      handle: {
-        name: _("Create or edit the first user")
-      }
+      element: <FirstUserForm />
     },
     {
       path: "first/edit",
-      element: <FirstUserForm />,
-      handle: {
-        name: _("Edit first user")
-      }
+      element: <FirstUserForm />
     }
   ]
 };

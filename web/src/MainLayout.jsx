@@ -93,13 +93,16 @@ const Sidebar = () => {
   const links = rootRoutes.map(r => {
     if (!r.handle || r.handle.hidden) return null;
 
+    // eslint-disable-next-line agama-i18n/string-literals
+    const name = _(r.handle?.name);
+
     return (
       <NavItem
         key={r.path}
         component={
           ({ className }) =>
             <NavLink to={r.path} className={({ isActive }) => [className, isActive ? "pf-m-current" : ""].join(" ")}>
-              <Icon size="s" name={r.handle?.icon} /> {r.handle?.name}
+              <Icon size="s" name={r.handle?.icon} /> {name}
             </NavLink>
         }
       />
