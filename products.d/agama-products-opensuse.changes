@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 26 15:23:55 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Temporarily remove Leap 16.0 Alpha from the list of products
+  (gh#openSUSE/agama#1390).
+
+-------------------------------------------------------------------
 Wed Jun 26 08:25:00 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Remove the "32bit" pattern from openSUSE MicroOS
