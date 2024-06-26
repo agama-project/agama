@@ -28,13 +28,13 @@ import DASDPage from "./DASDPage";
 import ISCSIPage from "./ISCSIPage";
 import ProposalPage from "./ProposalPage";
 import ZFCPPage from "./ZFCPPage";
-import { _ } from "~/i18n";
+import { N_ } from "~/i18n";
 
 // FIXME: Choose a better name
 const navigation = [
   // FIXME: use index: true
-  { path: "/storage", element: <ProposalPage />, handle: { name: _("Proposal") } },
-  { path: "iscsi", element: <ISCSIPage />, handle: { name: _("iSCSI") } }
+  { path: "/storage", element: <ProposalPage />, handle: { name: N_("Proposal") } },
+  { path: "iscsi", element: <ISCSIPage />, handle: { name: N_("iSCSI") } }
 ];
 
 // if (something) {
@@ -55,7 +55,7 @@ const routes = {
   path: "/storage",
   element: <Page />,
   handle: {
-    name: _("Storage"),
+    name: N_("Storage"),
     icon: "hard_drive"
   },
   children: [

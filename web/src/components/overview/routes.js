@@ -21,13 +21,13 @@
 
 import React from "react";
 import OverviewPage from "./OverviewPage";
-import { _ } from "~/i18n";
+import { N_ } from "~/i18n";
 
 const routes = {
   path: "/overview",
   element: <OverviewPage />,
   handle: {
-    name: _("Overview"),
+    name: N_("Overview"),
     icon: "list_alt"
   }
 };

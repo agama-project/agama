@@ -25,13 +25,13 @@ import L10nPage from "./L10nPage";
 import LocaleSelection from "./LocaleSelection";
 import KeymapSelection from "./KeyboardSelection";
 import TimezoneSelection from "./TimezoneSelection";
-import { _ } from "~/i18n";
+import { N_ } from "~/i18n";
 
 const routes = {
   path: "/l10n",
   element: <Page />,
   handle: {
-    name: _("Localization"),
+    name: N_("Localization"),
     icon: "globe"
   },
   children: [
