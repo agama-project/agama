@@ -31,6 +31,7 @@ require "agama/storage/iscsi/manager"
 require "agama/storage/finisher"
 require "agama/storage/proposal_settings_reader"
 require "agama/issue"
+require "agama/with_locale"
 require "agama/with_issues"
 require "agama/with_progress"
 require "agama/security"
@@ -43,6 +44,7 @@ module Agama
   module Storage
     # Manager to handle storage configuration
     class Manager
+      include WithLocale
       include WithIssues
       include WithProgress
       include Yast::I18n
@@ -170,6 +172,13 @@ module Agama
         probed = Y2Storage::StorageManager.instance.probed
         staging = Y2Storage::StorageManager.instance.staging
         ActionsGenerator.new(probed, staging).generate
+      end
+
+      # Changes the service's locale
+      #
+      # @param locale [String] new locale
+      def locale=(locale)
+        change_process_locale(locale)
       end
 
     private

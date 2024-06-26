@@ -28,7 +28,6 @@ require "agama/dbus/clients/locale"
 require "agama/dbus/manager"
 require "agama/dbus/users"
 require "agama/dbus/storage/proposal"
-require "agama/ui_locale"
 
 module Agama
   module DBus
@@ -74,8 +73,6 @@ module Agama
         export
         # We need locale for data from users
         locale_client = Clients::Locale.instance
-        # TODO: test if we need to pass block with additional actions
-        @ui_locale = UILocale.new(locale_client)
         manager.on_progress_change { dispatch } # make single thread more responsive
         manager.startup_phase
       end

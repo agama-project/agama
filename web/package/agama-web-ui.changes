@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Jun 26 08:31:31 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the new SetLocale D-Bus method to change the language and the
+  keyboard layout (gh#openSUSE/agama#1375).
+- Move the "Download logs" to the sidebar (gh#openSUSE/agama#1375).
+- Improve the behavior when changing the installer language
+  (gh#openSUSE/agama#1375, gh#openSUSE/agama#1235).
+
+-------------------------------------------------------------------
 Wed Jun 26 07:52:22 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Do not crash when trying to render affected systems by deletion

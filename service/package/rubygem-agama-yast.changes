@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Wed Jun 26 09:53:23 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use a D-Bus method instead of a signal to change the language and
+  the keyboard layout (gh#openSUSE/agama#1375).
+
+-------------------------------------------------------------------
+Wed Jun 26 09:12:33 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Fix segmentation fault in the storage actions
+  (gh#openSUSE/agama#1377).
+
+-------------------------------------------------------------------
 Wed Jun 26 08:25:56 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Optionally use the local DVD installation source if it is present
@@ -142,7 +154,7 @@ Wed Feb  7 11:49:02 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Thu Feb  1 13:08:39 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
-- Log if multipath probing is misconfigured (bsc#1215598) 
+- Log if multipath probing is misconfigured (bsc#1215598)
 
 -------------------------------------------------------------------
 Mon Jan 29 13:51:30 UTC 2024 - José Iván López González <jlopez@suse.com>
@@ -165,7 +177,7 @@ Thu Jan 18 08:35:01 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
 Tue Jan 16 10:49:14 UTC 2024 - Michal Filka <mfilka@suse.com>
 
 - bsc#1210541, gh#openSUSE/agama#516
-  - copy NM's runtime config created on dracut's request to the target 
+  - copy NM's runtime config created on dracut's request to the target
 -------------------------------------------------------------------
 Thu Jan 11 15:32:44 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 

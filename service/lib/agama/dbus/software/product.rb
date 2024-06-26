@@ -23,6 +23,7 @@ require "dbus"
 require "suse/connect"
 require "agama/dbus/base_object"
 require "agama/dbus/interfaces/issues"
+require "agama/dbus/clients/locale"
 require "agama/registration"
 
 module Agama
@@ -90,7 +91,9 @@ module Agama
         private_constant :PRODUCT_INTERFACE
 
         dbus_interface PRODUCT_INTERFACE do
-          dbus_reader :available_products, "a(ssa{sv})"
+          dbus_method :AvailableProducts, "out result:a(ssa{sv})" do
+            [available_products]
+          end
 
           dbus_reader :selected_product, "s"
 
@@ -246,6 +249,11 @@ module Agama
         def registration_properties_changed
           dbus_properties_changed(REGISTRATION_INTERFACE,
             interfaces_and_properties[REGISTRATION_INTERFACE], [])
+        end
+
+        def product_properties_changed
+          dbus_properties_changed(PRODUCT_INTERFACE,
+            interfaces_and_properties[PRODUCT_INTERFACE], [])
         end
 
         # Result from calling to SUSE connect.

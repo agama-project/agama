@@ -29,7 +29,10 @@ module Agama
       # param target_graph [Y2Storage::Devicegraph]
       def initialize(system_graph, target_graph)
         @system_graph = system_graph
-        @target_graph = target_graph
+        # It is important to keep a reference to the actiongraph. Otherwise, the gargabe collector
+        # could kill the actiongraph, leaving the compound actions orphan.
+        # See https://github.com/openSUSE/agama/issues/1377.
+        @actiongraph = target_graph.actiongraph
       end
 
       # All actions properly sorted.
@@ -44,8 +47,8 @@ module Agama
       # @return [Y2Storage::Devicegraph]
       attr_reader :system_graph
 
-      # @return [Y2Storage::Devicegraph]
-      attr_reader :target_graph
+      # @return [Y2Storage::Actiongraph]
+      attr_reader :actiongraph
 
       # Sorted main actions (everything except subvolume actions).
       #
@@ -67,7 +70,7 @@ module Agama
       #
       # @return [Array<Action>]
       def actions
-        @actions ||= target_graph.actiongraph.compound_actions.map do |action|
+        @actions ||= actiongraph.compound_actions.map do |action|
           Action.new(action, system_graph)
         end
       end

@@ -30,7 +30,7 @@ const LoadingIcon = () => <Spinner size="xl" />;
 
 function Loading({ text = _("Loading installation environment, please wait.") }) {
   return (
-    <SimpleLayout showOutlet={false} showInstallerOptions={false}>
+    <SimpleLayout showOutlet={false}>
       <Center>
         <EmptyState variant="xl">
           <EmptyStateHeader

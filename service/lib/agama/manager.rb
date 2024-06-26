@@ -23,6 +23,7 @@ require "yast"
 require "agama/config"
 require "agama/network"
 require "agama/proxy_setup"
+require "agama/with_locale"
 require "agama/with_progress"
 require "agama/installation_phase"
 require "agama/service_status_recorder"
@@ -43,6 +44,7 @@ module Agama
   # other services via D-Bus (e.g., `org.opensuse.Agama.Software1`).
   class Manager
     include WithProgress
+    include WithLocale
     include Helpers
     include Yast::I18n
 
@@ -77,6 +79,20 @@ module Agama
 
       logger.info("Startup phase done")
       service_status.idle
+    end
+
+    def locale=(locale)
+      service_status.busy
+      change_process_locale(locale)
+      start_progress_with_descriptions(
+        _("Load software translations"),
+        _("Load storage translations")
+      )
+      progress.step { software.locale = locale }
+      progress.step { storage.locale = locale }
+    ensure
+      service_status.idle
+      finish_progress
     end
 
     # Runs the config phase
