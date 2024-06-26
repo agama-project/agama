@@ -113,8 +113,6 @@ software:
     - microos_base_zypper
     - microos_defaults
     - microos_hardware
-    - pattern: 32bit
-      archs: x86_64
   optional_patterns: null
   user_patterns:
     - container_runtime

@@ -1,8 +1,14 @@
 -------------------------------------------------------------------
-Tue Jun 25 15:15:53 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Wed Jun 26 08:37:16 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use a D-Bus method instead of a signal to change the language and
   the keyboard layout (gh#openSUSE/agama#1375).
+
+-------------------------------------------------------------------
+Wed Jun 26 08:25:56 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Optionally use the local DVD installation source if it is present
+  (gh#openSUSE/agama#1372)
 
 -------------------------------------------------------------------
 Tue Jun 25 15:03:05 UTC 2024 - David Diaz <dgonzalez@suse.com>
