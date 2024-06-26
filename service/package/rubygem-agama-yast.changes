@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 26 08:25:56 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Optionally use the local DVD installation source if it is present
+  (gh#openSUSE/agama#1372)
+
+-------------------------------------------------------------------
 Tue Jun 25 15:03:05 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Add support for retrieving the storage resize actions
