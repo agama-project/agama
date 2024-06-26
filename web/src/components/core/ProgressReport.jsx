@@ -72,7 +72,7 @@ const Progress = ({ steps, step, firstStep, detail }) => {
   };
 
   return (
-    <ProgressStepper isCenterAligned>
+    <ProgressStepper isCenterAligned className="progress-report">
       {firstStep && (
         <ProgressStep key="initial" variant="success">
           {firstStep}
@@ -136,7 +136,7 @@ function ProgressReport({ title, firstStep }) {
         <GridItem sm={8} smOffset={2}>
           <Card isPlain>
             <CardBody>
-              <Flex direction={{ default: "column" }} rowGap={{ default: "rowGapMd" }} alignItems={{ default: "alignItemsCenter" }}>
+              <Flex direction={{ default: "column" }} rowGap={{ default: "rowGap2xl" }} alignItems={{ default: "alignItemsCenter" }}>
                 <Spinner size="xl" />
                 <h1 id="progress-title" style={{ textAlign: "center" }}>
                   {progressTitle}
