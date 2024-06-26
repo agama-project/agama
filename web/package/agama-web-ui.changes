@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jun 26 14:04:53 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add status information to each steps in the progress report
+  and do not reset the progress icon animation
+  (gh#openSUSE/agama#1373 and gh#openSUSE/agama#1388).
+
+-------------------------------------------------------------------
 Wed Jun 26 13:45:36 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Reset installer options to its initial values before closing
