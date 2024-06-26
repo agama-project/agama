@@ -16,6 +16,12 @@ Wed Jun 26 13:14:06 UTC 2024 - David Diaz <dgonzalez@suse.com>
   (gh#openSUSE/agama#1384).
 
 -------------------------------------------------------------------
+Wed Jun 26 11:54:41 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Adapt the network page to the new UI guidelines
+  (gh#openSUSE/agama#1365).
+
+-------------------------------------------------------------------
 Wed Jun 26 08:31:31 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the new SetLocale D-Bus method to change the language and the

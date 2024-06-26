@@ -173,7 +173,8 @@ impl<'a> NetworkManagerClient<'a> {
                 .build()
                 .await?;
             let flags = proxy.flags().await?;
-            if flags > 0 {
+            // https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMSettingsConnectionFlags
+            if flags & 8 != 0 {
                 log::warn!("Skipped connection because of flags: {}", flags);
                 continue;
             }
