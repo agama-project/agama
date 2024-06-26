@@ -40,6 +40,7 @@ module Agama
         def self.included(base)
           base.class_eval do
             dbus_interface LOCALE_INTERFACE do
+              # It expects a locale (en_US.UTF-8) as argument.
               dbus_method :SetLocale, "in locale:s" do |locale|
                 self.locale = locale
               end
