@@ -253,8 +253,7 @@ describe Agama::Software::Manager do
       expect(products).to all(be_a(Agama::Software::Product))
       expect(products).to contain_exactly(
         an_object_having_attributes(id: "Tumbleweed"),
-        an_object_having_attributes(id: "MicroOS"),
-        an_object_having_attributes(id: "Leap_16.0")
+        an_object_having_attributes(id: "MicroOS")
       )
     end
   end
