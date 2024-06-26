@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jun 26 13:38:32 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Fix routes translations (gh#openSUSE/agama#1385).
+
+-------------------------------------------------------------------
 Wed Jun 26 08:31:31 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the new SetLocale D-Bus method to change the language and the
