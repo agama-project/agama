@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 26 13:45:36 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Reset installer options to its initial values before closing
+  the dialog on cancel (gh#openSUSE/agama#1386).
+
+-------------------------------------------------------------------
 Wed Jun 26 13:38:32 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Fix routes translations (gh#openSUSE/agama#1385).
