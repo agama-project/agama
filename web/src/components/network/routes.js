@@ -20,12 +20,12 @@
  */
 
 import React from "react";
-import { _ } from "~/i18n";
 import { Page } from "~/components/core";
 import NetworkPage from "./NetworkPage";
 import IpSettingsForm from "./IpSettingsForm";
 import { createDefaultClient } from "~/client";
 import WifiSelectorPage from "./WifiSelectorPage";
+import { N_ } from "~/i18n";
 
 // FIXME: just to be discussed, most probably we should reading data directly in
 // the component in order to get it subscribed to changes.
@@ -56,7 +56,7 @@ const routes = {
   path: "/network",
   element: <Page />,
   handle: {
-    name: _("Network"),
+    name: N_("Network"),
     icon: "settings_ethernet"
   },
   children: [
@@ -64,10 +64,7 @@ const routes = {
     {
       path: "connections/:id/edit",
       element: <IpSettingsForm />,
-      loader: loaders.connection,
-      handle: {
-        name: _("Edit connection %s")
-      }
+      loader: loaders.connection
     },
     {
       path: "wifis",

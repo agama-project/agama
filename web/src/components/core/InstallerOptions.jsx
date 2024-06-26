@@ -56,7 +56,7 @@ export default function InstallerOptions() {
   const [inProgress, setInProgress] = useState(false);
 
   // FIXME: Installer options should be available in the login too.
-  if (location.pathname.includes("login")) return;
+  if (["/login", "/products/progress"].includes(location.pathname)) return;
 
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
@@ -109,7 +109,7 @@ export default function InstallerOptions() {
               fieldId="keymap"
               label={_("Keyboard layout")}
             >
-              { localConnection()
+              {localConnection()
                 ? (
                   <FormSelect
                     id="keymap"
@@ -123,12 +123,12 @@ export default function InstallerOptions() {
                     )}
                   </FormSelect>
                 )
-                : _("Cannot be changed in remote installation") }
+                : _("Cannot be changed in remote installation")}
             </FormGroup>
           </Form>
         </Flex>
         <Popup.Actions>
-          <Popup.Confirm form="installer-l10n" type="submit" autoFocus isDisabled={inProgress}>{_("Accept")}</Popup.Confirm>
+          <Popup.Confirm form="installer-l10n" type="submit" autoFocus isDisabled={inProgress} isLoading={inProgress}>{_("Accept")}</Popup.Confirm>
           <Popup.Cancel onClick={close} isDisabled={inProgress} />
         </Popup.Actions>
       </Popup>
