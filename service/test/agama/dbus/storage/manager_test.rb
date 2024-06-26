@@ -20,12 +20,14 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
+require_relative "../../storage/storage_helpers"
 require "agama/dbus/storage/manager"
 require "agama/dbus/storage/proposal"
 require "agama/storage/device_settings"
 require "agama/storage/manager"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
+require "agama/storage/proposal_settings_conversion"
 require "agama/storage/volume"
 require "agama/storage/iscsi/manager"
 require "agama/storage/dasd/manager"
@@ -35,6 +37,8 @@ require "y2storage"
 require "dbus"
 
 describe Agama::DBus::Storage::Manager do
+  include Agama::RSpec::StorageHelpers
+
   subject(:manager) { described_class.new(backend, logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
@@ -56,11 +60,7 @@ describe Agama::DBus::Storage::Manager do
   let(:config) { Agama::Config.new(config_data) }
   let(:config_data) { {} }
 
-  let(:proposal) do
-    instance_double(Agama::Storage::Proposal, on_calculate: nil, settings: settings)
-  end
-
-  let(:settings) { nil }
+  let(:proposal) { Agama::Storage::Proposal.new(config) }
 
   let(:iscsi) do
     instance_double(Agama::Storage::ISCSI::Manager,
@@ -75,6 +75,8 @@ describe Agama::DBus::Storage::Manager do
 
   before do
     allow(Yast::Arch).to receive(:s390).and_return false
+    allow(proposal).to receive(:on_calculate)
+    mock_storage(devicegraph: "empty-hd-50GiB.yaml")
   end
 
   describe "#deprecated_system" do
@@ -336,157 +338,238 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#calculate_guided_proposal" do
-    let(:dbus_settings) do
-      {
-        "Target"             => "disk",
-        "TargetDevice"       => "/dev/vda",
-        "BootDevice"         => "/dev/vdb",
-        "EncryptionPassword" => "n0ts3cr3t",
-        "Volumes"            => dbus_volumes
-      }
-    end
-
-    let(:dbus_volumes) do
-      [
-        { "MountPath" => "/" },
-        { "MountPath" => "swap" }
-      ]
-    end
-
-    it "calculates a proposal with settings having values from D-Bus" do
-      expect(proposal).to receive(:calculate_guided) do |settings|
-        expect(settings).to be_a(Agama::Storage::ProposalSettings)
-        expect(settings.device).to be_a(Agama::Storage::DeviceSettings::Disk)
-        expect(settings.device.name).to eq "/dev/vda"
-        expect(settings.boot.device).to eq "/dev/vdb"
-        expect(settings.encryption).to be_a(Agama::Storage::EncryptionSettings)
-        expect(settings.encryption.password).to eq("n0ts3cr3t")
-        expect(settings.volumes).to contain_exactly(
-          an_object_having_attributes(mount_path: "/"),
-          an_object_having_attributes(mount_path: "swap")
-        )
-      end
-
-      subject.calculate_guided_proposal(dbus_settings)
-    end
-
-    context "when the D-Bus settings does not include some values" do
-      let(:dbus_settings) { {} }
-
-      it "calculates a proposal with default values for the missing settings" do
-        expect(proposal).to receive(:calculate_guided) do |settings|
-          expect(settings).to be_a(Agama::Storage::ProposalSettings)
-          expect(settings.device).to be_a(Agama::Storage::DeviceSettings::Disk)
-          expect(settings.device.name).to be_nil
-          expect(settings.boot.device).to be_nil
-          expect(settings.encryption).to be_a(Agama::Storage::EncryptionSettings)
-          expect(settings.encryption.password).to be_nil
-          expect(settings.volumes).to eq([])
-        end
-
-        subject.calculate_guided_proposal(dbus_settings)
-      end
-    end
-
-    context "when the D-Bus settings include some unexpected attribute" do
-      let(:dbus_settings) { { "CandidateDevices" => ["/dev/vda"] } }
-
-      # This is likely a temporary behavior
-      it "calculates a proposal ignoring the unknown attributes" do
-        expect(proposal).to receive(:calculate_guided) do |settings|
-          expect(settings).to be_a(Agama::Storage::ProposalSettings)
-        end
-
-        subject.calculate_guided_proposal(dbus_settings)
-      end
-    end
-
-    context "when the D-Bus settings includes a volume" do
-      let(:dbus_volumes) { [dbus_volume1] }
-
-      let(:dbus_volume1) do
+  describe "#apply_storage_config" do
+    context "if the serialized config contains guided proposal settings" do
+      let(:storage_config) do
         {
-          "MountPath" => "/",
-          "AutoSize"  => false,
-          "MinSize"   => 1024,
-          "MaxSize"   => 2048,
-          "FsType"    => "Btrfs",
-          "Snapshots" => true
+          storage: {
+            guided: {
+              target:     {
+                disk: "/dev/vda"
+              },
+              boot:       {
+                device: "/dev/vdb"
+              },
+              encryption: {
+                password: "notsecret"
+              },
+              volumes:    volumes_settings
+            }
+          }
         }
       end
 
-      let(:config_data) do
-        { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
-      end
-
-      let(:cfg_templates) do
+      let(:volumes_settings) do
         [
           {
-            "mount_path" => "/",
-            "outline"    => {
-              "snapshots_configurable" => true
+            mount: {
+              path: "/"
+            }
+          },
+          {
+            mount: {
+              path: "swap"
             }
           }
         ]
       end
 
-      it "calculates a proposal with settings having a volume with values from D-Bus" do
+      it "calculates a guided proposal with the given settings" do
         expect(proposal).to receive(:calculate_guided) do |settings|
-          volume = settings.volumes.first
-
-          expect(volume.mount_path).to eq("/")
-          expect(volume.auto_size).to eq(false)
-          expect(volume.min_size.to_i).to eq(1024)
-          expect(volume.max_size.to_i).to eq(2048)
-          expect(volume.btrfs.snapshots).to eq(true)
+          expect(settings).to be_a(Agama::Storage::ProposalSettings)
+          expect(settings.device).to be_a(Agama::Storage::DeviceSettings::Disk)
+          expect(settings.device.name).to eq "/dev/vda"
+          expect(settings.boot.device).to eq "/dev/vdb"
+          expect(settings.encryption).to be_a(Agama::Storage::EncryptionSettings)
+          expect(settings.encryption.password).to eq("notsecret")
+          expect(settings.volumes).to contain_exactly(
+            an_object_having_attributes(mount_path: "/"),
+            an_object_having_attributes(mount_path: "swap")
+          )
         end
 
-        subject.calculate_guided_proposal(dbus_settings)
+        subject.apply_storage_config(storage_config.to_json)
       end
 
-      context "and the D-Bus volume does not include some values" do
-        let(:dbus_volume1) { { "MountPath" => "/" } }
+      context "when the serialized config omits some settings" do
+        let(:storage_config) do
+          {
+            storage: {
+              guided: {}
+            }
+          }
+        end
+
+        it "calculates a proposal with default values for the missing settings" do
+          expect(proposal).to receive(:calculate_guided) do |settings|
+            expect(settings).to be_a(Agama::Storage::ProposalSettings)
+            expect(settings.device).to be_a(Agama::Storage::DeviceSettings::Disk)
+            expect(settings.device.name).to be_nil
+            expect(settings.boot.device).to be_nil
+            expect(settings.encryption).to be_a(Agama::Storage::EncryptionSettings)
+            expect(settings.encryption.password).to be_nil
+            expect(settings.volumes).to eq([])
+          end
+
+          subject.apply_storage_config(storage_config.to_json)
+        end
+      end
+
+      context "when the serialized config includes a volume" do
+        let(:volumes_settings) { [volume1_settings] }
+
+        let(:volume1_settings) do
+          {
+            mount:      {
+              path: "/"
+            },
+            size:       {
+              min: 1024,
+              max: 2048
+            },
+            filesystem: {
+              btrfs: {
+                snapshots: true
+              }
+            }
+          }
+        end
+
+        let(:config_data) do
+          { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
+        end
 
         let(:cfg_templates) do
           [
             {
-              "mount_path" => "/", "filesystem" => "btrfs",
-              "size" => { "auto" => false, "min" => "5 GiB", "max" => "20 GiB" },
-              "outline" => {
-                "filesystems" => ["btrfs"]
+              "mount_path" => "/",
+              "outline"    => {
+                "snapshots_configurable" => true
               }
             }
           ]
         end
 
-        it "calculates a proposal with a volume completed with its default settings" do
+        it "calculates a proposal with the given volume settings" do
           expect(proposal).to receive(:calculate_guided) do |settings|
             volume = settings.volumes.first
 
             expect(volume.mount_path).to eq("/")
             expect(volume.auto_size).to eq(false)
-            expect(volume.min_size.to_i).to eq(5 * (1024**3))
-            # missing maximum value means unlimited size
-            expect(volume.max_size.to_i).to eq(-1)
-            expect(volume.btrfs.snapshots).to eq(false)
+            expect(volume.min_size.to_i).to eq(1024)
+            expect(volume.max_size.to_i).to eq(2048)
+            expect(volume.btrfs.snapshots).to eq(true)
           end
 
-          subject.calculate_guided_proposal(dbus_settings)
+          subject.apply_storage_config(storage_config.to_json)
         end
+
+        context "and the volume settings omits some values" do
+          let(:volume1_settings) do
+            {
+              mount: {
+                path: "/"
+              }
+            }
+          end
+
+          let(:cfg_templates) do
+            [
+              {
+                "mount_path" => "/", "filesystem" => "btrfs",
+                "size" => { "auto" => false, "min" => "5 GiB", "max" => "20 GiB" },
+                "outline" => {
+                  "filesystems" => ["btrfs"]
+                }
+              }
+            ]
+          end
+
+          it "calculates a proposal with default settings for the missing volume settings" do
+            expect(proposal).to receive(:calculate_guided) do |settings|
+              volume = settings.volumes.first
+
+              expect(volume.mount_path).to eq("/")
+              expect(volume.auto_size).to eq(false)
+              expect(volume.min_size.to_i).to eq(5 * (1024**3))
+              expect(volume.max_size.to_i).to eq(20 * (1024**3))
+              expect(volume.btrfs.snapshots).to eq(false)
+            end
+
+            subject.apply_storage_config(storage_config.to_json)
+          end
+        end
+      end
+    end
+
+    context "if the serialized config contains legacy AutoYaST settings" do
+      let(:storage_config) do
+        {
+          legacyAutoyastStorage: [
+            { device: "/dev/vda" }
+          ]
+        }
+      end
+
+      it "calculates an AutoYaST proposal with the given settings" do
+        expect(proposal).to receive(:calculate_autoyast) do |settings|
+          expect(settings).to eq([{ "device" => "/dev/vda" }])
+        end
+
+        subject.apply_storage_config(storage_config.to_json)
       end
     end
   end
 
-  describe "#calculate_autoyast_proposal" do
-    let(:dbus_settings) { '[{ "device": "/dev/vda" }]' }
-
-    it "calculates an AutoYaST proposal with the settings from D-Bus" do
-      expect(proposal).to receive(:calculate_autoyast) do |settings|
-        expect(settings).to eq([{ "device" => "/dev/vda" }])
+  describe "#serialized_storage_config" do
+    context "if the storage config has not been set yet" do
+      context "and a proposal has not been calculated" do
+        it "returns serialized empty storage config" do
+          expect(subject.serialized_storage_config).to eq({}.to_json)
+        end
       end
 
-      subject.calculate_autoyast_proposal(dbus_settings)
+      context "and a proposal has been calculated" do
+        before do
+          proposal.calculate_guided(settings)
+        end
+
+        let(:settings) do
+          Agama::Storage::ProposalSettings.new.tap do |settings|
+            settings.device = Agama::Storage::DeviceSettings::Disk.new("/dev/vda")
+          end
+        end
+
+        it "returns serialized storage config including guided proposal settings" do
+          expected_config = {
+            storage: {
+              guided: Agama::Storage::ProposalSettingsConversion.to_schema(settings)
+            }
+          }
+
+          expect(subject.serialized_storage_config).to eq(expected_config.to_json)
+        end
+      end
+    end
+
+    context "if the storage config has been set" do
+      before do
+        subject.apply_storage_config(storage_config.to_json)
+      end
+
+      let(:storage_config) do
+        {
+          storage: {
+            guided: {
+              disk: "/dev/vdc"
+            }
+          }
+        }
+      end
+
+      it "returns the serialized storage config" do
+        expect(subject.serialized_storage_config).to eq(storage_config.to_json)
+      end
     end
   end
 
@@ -539,11 +622,14 @@ describe Agama::DBus::Storage::Manager do
 
         it "returns a Hash with success, strategy and settings" do
           result = subject.proposal_result
+          serialized_settings = Agama::Storage::ProposalSettingsConversion
+            .to_schema(proposal.settings)
+            .to_json
 
           expect(result.keys).to contain_exactly("success", "strategy", "settings")
           expect(result["success"]).to eq(true)
           expect(result["strategy"]).to eq(guided)
-          expect(result["settings"]).to be_a(Hash)
+          expect(result["settings"]).to eq(serialized_settings)
         end
       end
 
@@ -556,11 +642,12 @@ describe Agama::DBus::Storage::Manager do
 
         it "returns a Hash with success, strategy and settings" do
           result = subject.proposal_result
+          serialized_settings = proposal.settings.to_json
 
           expect(result.keys).to contain_exactly("success", "strategy", "settings")
           expect(result["success"]).to eq(true)
           expect(result["strategy"]).to eq(autoyast)
-          expect(result["settings"]).to be_a(String)
+          expect(result["settings"]).to eq(serialized_settings)
         end
       end
     end

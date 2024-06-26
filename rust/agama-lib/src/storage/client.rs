@@ -2,8 +2,8 @@
 
 use super::model::{
     Action, BlockDevice, Component, Device, DeviceInfo, DeviceSid, Drive, Filesystem, LvmLv, LvmVg,
-    Md, Multipath, Partition, PartitionTable, ProposalSettings, ProposalSettingsPatch,
-    ProposalTarget, Raid, Volume,
+    Md, Multipath, Partition, PartitionTable, ProposalSettings, ProposalSettingsPatch, Raid,
+    Volume,
 };
 use super::proxies::{ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
 use super::StorageSettings;
@@ -105,73 +105,28 @@ impl<'a> StorageClient<'a> {
         Ok(self.proposal_proxy.settings().await?.try_into()?)
     }
 
-    /// Returns the boot device proposal setting
-    /// DEPRECATED, use proposal_settings instead
-    pub async fn boot_device(&self) -> Result<Option<String>, ServiceError> {
-        let settings = self.proposal_settings().await?;
-        let boot_device = settings.boot_device;
-
-        if boot_device.is_empty() {
-            Ok(None)
-        } else {
-            Ok(Some(boot_device))
-        }
-    }
-
-    /// Returns the lvm proposal setting
-    /// DEPRECATED, use proposal_settings instead
-    pub async fn lvm(&self) -> Result<Option<bool>, ServiceError> {
-        let settings = self.proposal_settings().await?;
-        Ok(Some(!matches!(settings.target, ProposalTarget::Disk)))
-    }
-
-    /// Returns the encryption password proposal setting
-    /// DEPRECATED, use proposal_settings instead
-    pub async fn encryption_password(&self) -> Result<Option<String>, ServiceError> {
-        let settings = self.proposal_settings().await?;
-        let value = settings.encryption_password;
-
-        if value.is_empty() {
-            Ok(None)
-        } else {
-            Ok(Some(value))
-        }
-    }
-
     /// Runs the probing process
     pub async fn probe(&self) -> Result<(), ServiceError> {
         Ok(self.storage_proxy.probe().await?)
     }
 
-    /// TODO: remove calculate when CLI will be adapted
-    pub async fn calculate2(&self, settings: ProposalSettingsPatch) -> Result<u32, ServiceError> {
+    /// Set the storage config according to the JSON schema
+    pub async fn set_config(&self, settings: StorageSettings) -> Result<u32, ServiceError> {
+        Ok(self
+            .storage_proxy
+            .set_config(serde_json::to_string(&settings).unwrap().as_str())
+            .await?)
+    }
+
+    /// Get the storage config according to the JSON schema
+    pub async fn get_config(&self) -> Result<StorageSettings, ServiceError> {
+        let serialized_settings = self.storage_proxy.get_config().await?;
+        let settings = serde_json::from_str(serialized_settings.as_str()).unwrap();
+        Ok(settings)
+    }
+
+    pub async fn calculate(&self, settings: ProposalSettingsPatch) -> Result<u32, ServiceError> {
         Ok(self.calculator_proxy.calculate(settings.into()).await?)
-    }
-
-    pub async fn calculate_autoyast(&self, settings: &str) -> Result<u32, ServiceError> {
-        Ok(self.calculator_proxy.calculate_autoyast(settings).await?)
-    }
-
-    /// Calculates a new proposal with the given settings.
-    pub async fn calculate(&self, settings: &StorageSettings) -> Result<u32, ServiceError> {
-        let mut dbus_settings: HashMap<&str, zbus::zvariant::Value<'_>> = HashMap::new();
-
-        if let Some(boot_device) = settings.boot_device.clone() {
-            dbus_settings.insert("BootDevice", zbus::zvariant::Value::new(boot_device));
-        }
-
-        if let Some(encryption_password) = settings.encryption_password.clone() {
-            dbus_settings.insert(
-                "EncryptionPassword",
-                zbus::zvariant::Value::new(encryption_password),
-            );
-        }
-
-        if let Some(lvm) = settings.lvm {
-            dbus_settings.insert("LVM", zbus::zvariant::Value::new(lvm));
-        }
-
-        Ok(self.calculator_proxy.calculate(dbus_settings).await?)
     }
 
     /// Probed devices.

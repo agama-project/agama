@@ -19,7 +19,9 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/volume_conversion/from_schema"
 require "agama/storage/volume_conversion/from_y2storage"
+require "agama/storage/volume_conversion/to_schema"
 require "agama/storage/volume_conversion/to_y2storage"
 
 module Agama
@@ -40,6 +42,24 @@ module Agama
       # @return [Y2Storage::VolumeSpecification]
       def self.to_y2storage(volume)
         ToY2Storage.new(volume).convert
+      end
+
+      # Performs conversion from Hash according to the JSON schema.
+      #
+      # @param volume_schema [Hash]
+      # @param config [Agama::Config]
+      #
+      # @return [Agama::Storage::Volume]
+      def self.from_schema(volume_schema, config:)
+        FromSchema.new(volume_schema, config: config).convert
+      end
+
+      # Performs conversion according to the JSON schema.
+      #
+      # @param volume [Agama::Storage::Volume]
+      # @return [Hash]
+      def self.to_schema(volume)
+        ToSchema.new(volume).convert
       end
     end
   end

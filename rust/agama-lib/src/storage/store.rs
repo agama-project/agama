@@ -17,23 +17,11 @@ impl<'a> StorageStore<'a> {
     }
 
     pub async fn load(&self) -> Result<StorageSettings, ServiceError> {
-        // If it is not possible to get the settings (e.g., there are no settings yet), return
-        // the default.
-        let Ok(boot_device) = self.storage_client.boot_device().await else {
-            return Ok(StorageSettings::default());
-        };
-        let lvm = self.storage_client.lvm().await?;
-        let encryption_password = self.storage_client.encryption_password().await?;
-
-        Ok(StorageSettings {
-            boot_device,
-            lvm,
-            encryption_password,
-        })
+        Ok(self.storage_client.get_config().await?)
     }
 
-    pub async fn store(&self, settings: &StorageSettings) -> Result<(), ServiceError> {
-        self.storage_client.calculate(settings).await?;
+    pub async fn store(&self, settings: StorageSettings) -> Result<(), ServiceError> {
+        self.storage_client.set_config(settings).await?;
         Ok(())
     }
 }

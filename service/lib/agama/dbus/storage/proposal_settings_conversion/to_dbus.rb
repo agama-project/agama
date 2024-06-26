@@ -37,8 +37,8 @@ module Agama
           #
           # @return [Hash<String, Object>]
           #   * "Target" [String]
-          #   * "Device" [String] Optional
-          #   * "CandidatePVDevices" [Array<String>] Optional
+          #   * "TargetDevice" [String] Optional
+          #   * "TargetPVDevices" [Array<String>] Optional
           #   * "ConfigureBoot" [Boolean]
           #   * "BootDevice" [String]
           #   * "DefaultBootDevice" [String]

@@ -5,8 +5,7 @@ use crate::error::ServiceError;
 use crate::install_settings::InstallSettings;
 use crate::{
     localization::LocalizationStore, network::NetworkStore, product::ProductStore,
-    software::SoftwareStore, storage::StorageAutoyastStore, storage::StorageStore,
-    users::UsersStore,
+    software::SoftwareStore, storage::StorageStore, users::UsersStore,
 };
 use zbus::Connection;
 
@@ -22,7 +21,6 @@ pub struct Store<'a> {
     product: ProductStore<'a>,
     software: SoftwareStore<'a>,
     storage: StorageStore<'a>,
-    storage_autoyast: StorageAutoyastStore<'a>,
     localization: LocalizationStore<'a>,
 }
 
@@ -37,24 +35,22 @@ impl<'a> Store<'a> {
             network: NetworkStore::new(http_client).await?,
             product: ProductStore::new(connection.clone()).await?,
             software: SoftwareStore::new(connection.clone()).await?,
-            storage: StorageStore::new(connection.clone()).await?,
-            storage_autoyast: StorageAutoyastStore::new(connection).await?,
+            storage: StorageStore::new(connection).await?,
         })
     }
 
     /// Loads the installation settings from the HTTP interface.
-    ///
-    /// NOTE: The storage AutoYaST settings cannot be loaded because they cannot be modified. The
-    /// ability of using the storage AutoYaST settings from a JSON config file is temporary and it
-    /// will be removed in the future.
     pub async fn load(&self) -> Result<InstallSettings, ServiceError> {
         let mut settings: InstallSettings = Default::default();
         settings.network = Some(self.network.load().await?);
-        settings.storage = Some(self.storage.load().await?);
         settings.software = Some(self.software.load().await?);
         settings.user = Some(self.users.load().await?);
         settings.product = Some(self.product.load().await?);
         settings.localization = Some(self.localization.load().await?);
+
+        let storage_settings = self.storage.load().await?;
+        settings.storage = storage_settings.storage.clone();
+        settings.storage_autoyast = storage_settings.storage_autoyast.clone();
 
         // TODO: use try_join here
         Ok(settings)
@@ -80,14 +76,8 @@ impl<'a> Store<'a> {
         if let Some(user) = &settings.user {
             self.users.store(user).await?;
         }
-        if let Some(storage) = &settings.storage {
-            self.storage.store(storage).await?;
-        }
-        if let Some(storage_autoyast) = &settings.storage_autoyast {
-            // Storage scope has precedence.
-            if settings.storage.is_none() {
-                self.storage_autoyast.store(storage_autoyast.get()).await?;
-            }
+        if settings.storage.is_some() || settings.storage_autoyast.is_some() {
+            self.storage.store(settings.into()).await?
         }
         Ok(())
     }

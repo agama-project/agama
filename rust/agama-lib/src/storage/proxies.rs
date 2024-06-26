@@ -18,6 +18,12 @@ trait Storage1 {
     /// Probe method
     fn probe(&self) -> zbus::Result<()>;
 
+    /// Set the storage config according to the JSON schema
+    fn set_config(&self, settings: &str) -> zbus::Result<u32>;
+
+    /// Get the current storage config according to the JSON schema
+    fn get_config(&self) -> zbus::Result<String>;
+
     /// DeprecatedSystem property
     #[dbus_proxy(property)]
     fn deprecated_system(&self) -> zbus::Result<bool>;
@@ -34,9 +40,6 @@ trait ProposalCalculator {
         &self,
         settings: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
     ) -> zbus::Result<u32>;
-
-    /// Calculate AutoYaST proposal
-    fn calculate_autoyast(&self, settings: &str) -> zbus::Result<u32>;
 
     /// DefaultVolume method
     fn default_volume(

@@ -3,7 +3,7 @@
 //! This module implements the mechanisms to load and store the installation settings.
 use crate::{
     localization::LocalizationSettings, network::NetworkSettings, product::ProductSettings,
-    software::SoftwareSettings, storage::StorageSettings, users::UserSettings,
+    software::SoftwareSettings, users::UserSettings,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
@@ -26,8 +26,10 @@ pub struct InstallSettings {
     #[serde(default)]
     pub product: Option<ProductSettings>,
     #[serde(default)]
-    pub storage: Option<StorageSettings>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub storage: Option<Box<RawValue>>,
     #[serde(default, rename = "legacyAutoyastStorage")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub storage_autoyast: Option<Box<RawValue>>,
     #[serde(default)]
     pub network: Option<NetworkSettings>,

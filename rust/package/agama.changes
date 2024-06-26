@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jun 26 10:29:05 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Set and get storage config (gh#openSUSE/agama#1293).
+
+-------------------------------------------------------------------
 Tue Jun 25 15:16:33 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the new SetLocale D-Bus method to change the language and the
