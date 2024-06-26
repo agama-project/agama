@@ -128,7 +128,7 @@ export default function InstallerOptions() {
           </Form>
         </Flex>
         <Popup.Actions>
-          <Popup.Confirm form="installer-l10n" type="submit" autoFocus isDisabled={inProgress}>{_("Accept")}</Popup.Confirm>
+          <Popup.Confirm form="installer-l10n" type="submit" autoFocus isDisabled={inProgress} isLoading={inProgress}>{_("Accept")}</Popup.Confirm>
           <Popup.Cancel onClick={close} isDisabled={inProgress} />
         </Popup.Actions>
       </Popup>
