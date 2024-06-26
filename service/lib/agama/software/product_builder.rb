@@ -36,20 +36,7 @@ module Agama
       def build
         config.products.map do |id, attrs|
           data = product_data_from_config(id)
-
-          Agama::Software::Product.new(id).tap do |product|
-            product.display_name = attrs["name"]
-            product.description = attrs["description"]
-            product.name = data[:name]
-            product.version = data[:version]
-            product.repositories = data[:repositories]
-            product.mandatory_packages = data[:mandatory_packages]
-            product.optional_packages = data[:optional_packages]
-            product.mandatory_patterns = data[:mandatory_patterns]
-            product.optional_patterns = data[:optional_patterns]
-            product.user_patterns = data[:user_patterns]
-            product.translations = attrs["translations"] || {}
-          end
+          create_product(id, data, attrs)
         end
       end
 
@@ -57,6 +44,23 @@ module Agama
 
       # @return [Agama::Config]
       attr_reader :config
+
+      def create_product(id, data, attrs)
+        Agama::Software::Product.new(id).tap do |product|
+          product.display_name = attrs["name"]
+          product.description = attrs["description"]
+          product.name = data[:name]
+          product.version = data[:version]
+          product.repositories = data[:repositories]
+          product.labels = data[:labels]
+          product.mandatory_packages = data[:mandatory_packages]
+          product.optional_packages = data[:optional_packages]
+          product.mandatory_patterns = data[:mandatory_patterns]
+          product.optional_patterns = data[:optional_patterns]
+          product.user_patterns = data[:user_patterns]
+          product.translations = attrs["translations"] || {}
+        end
+      end
 
       # Data from config, filtering by arch.
       #
@@ -66,6 +70,9 @@ module Agama
         {
           name:               config.products.dig(id, "software", "base_product"),
           version:            config.products.dig(id, "software", "version"),
+          labels:             config.arch_elements_from(
+            id, "software", "installation_labels", property: :label
+          ),
           repositories:       config.arch_elements_from(
             id, "software", "installation_repositories", property: :url
           ),

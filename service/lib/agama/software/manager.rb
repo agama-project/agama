@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "fileutils"
+require "json"
 require "yast"
 require "y2packager/product"
 require "y2packager/resolvable"
@@ -420,7 +421,64 @@ module Agama
       end
 
       def add_base_repos
+        # NOTE: support multiple labels/installation media?
+        label = product.labels.first
+
+        if label
+          logger.info "Installation repository label: #{label.inspect}"
+          # we cannot use the simple /dev/disk/by-label/* device file as there
+          # might be multiple devices with the same label
+          device = installation_device(label)
+          if device
+            logger.info "Installation device: #{device}"
+            repositories.add("hd:/?device=" + device)
+            return
+          end
+        end
+
+        # disk label not found or not configured, use the online repositories
         product.repositories.each { |url| repositories.add(url) }
+      end
+
+      # find all devices with the required disk label
+      # @return [Array<String>] returns list of devices, e.g. `["/dev/sr1"]`,
+      # returns empty list if there is no device with the required label
+      def disks_with_label(label)
+        data = list_disks
+        disks = data.fetch("blockdevices", []).map do |device|
+          device["kname"] if device["label"] == label
+        end
+        disks.compact!
+        logger.info "Disks with the installation label: #{disks.inspect}"
+        disks
+      end
+
+      # get list of disks, returns parsed data from the `lsblk` call
+      # @return [Hash] parsed data
+      def list_disks
+        # we need only the kernel device name and the label
+        output = `lsblk --paths --json --output kname,label`
+        JSON.parse(output)
+      rescue StandardError => e
+        logger.error "ERROR: Cannot read disk devices: #{e}"
+        {}
+      end
+
+      # find the installation device with the required label
+      # @return [String,nil] Device name (`/dev/sr1`) or `nil` if not found
+      def installation_device(label)
+        disks = disks_with_label(label)
+
+        # multiple installation media?
+        if disks.size > 1
+          # prefer optical media (/dev/srX) to disk so the disk can be used as
+          # the installation target
+          optical = disks.find { |d| d.match(/\A\/dev\/sr[0-9]+\z/) }
+          optical || disks.first
+        else
+          # none or just one disk
+          disks.first
+        end
       end
 
       # Adds resolvables for selected product
@@ -538,16 +596,23 @@ module Agama
         FileUtils.copy(glob_credentials, target_dir)
       end
 
+      # Is any local repository (CD/DVD, disk) currently used?
+      # @return [Boolean] true if any local repository is used
+      def local_repo?
+        Agama::Software::Repository.all.any?(&:local?)
+      end
+
       # update the zypp repositories for the new product, either delete them
       # or keep them untouched
       # @param new_product [Agama::Software::Product] the new selected product
       def update_repositories(new_product)
         # reuse the repositories when they are the same as for the previously
-        # selected product
+        # selected product and no local repository is currently used
+        # (local repositories are usually product specific)
         # TODO: what about registered products?
         # TODO: allow a partial match? i.e. keep the same repositories, delete
         # additional repositories and add missing ones
-        if product&.repositories&.sort == new_product.repositories.sort
+        if product&.repositories&.sort == new_product.repositories.sort && !local_repo?
           # the same repositories, we just needed to reset the package selection
           Yast::Pkg.PkgReset()
         else
