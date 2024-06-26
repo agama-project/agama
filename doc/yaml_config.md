@@ -30,6 +30,16 @@ Array of url for installation repositories. Map can be used instead of string.
 In such case map should contain url and archs keys. Archs key is used to limit
 usage of repository on matching hardware architectures.
 
+#### installation\_labels
+
+Array of disk labels used for finding the local installation repository. Instead
+of array of strings it is possible to use an array of maps with `label` and
+`archs` keys where `archs` is a string with comma separated list of supported
+hardware architectures.
+
+If the matching disk label is not found then the online installation repository
+from the `installation_repositories` section is used.
+
 #### mandatory\_patterns
 
 Array of patterns that have to be selected.

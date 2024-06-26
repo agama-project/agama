@@ -215,6 +215,7 @@ describe Agama::Software::Manager do
   describe "#probe" do
     before do
       subject.select_product("Tumbleweed")
+      allow(subject).to receive(:list_disks).and_return({})
     end
 
     it "creates a packages proposal" do
@@ -228,17 +229,32 @@ describe Agama::Software::Manager do
       subject.probe
     end
 
+    it "uses the offline medium if available" do
+      device = "/dev/sr1"
+      expect(subject).to receive(:list_disks).and_return({
+        "blockdevices" => [
+          {
+            "kname" => device,
+            "label" => "openSUSE-Tumbleweed-DVD-x86_64"
+          }
+        ]
+      })
+
+      expect(repositories).to receive(:add).with("hd:/?device=" + device)
+      subject.probe
+    end
+
     include_examples "software issues", "probe"
   end
 
   describe "#products" do
     it "returns the list of known products" do
       products = subject.products
-      expect(products.size).to eq(2)
       expect(products).to all(be_a(Agama::Software::Product))
       expect(products).to contain_exactly(
         an_object_having_attributes(id: "Tumbleweed"),
-        an_object_having_attributes(id: "MicroOS")
+        an_object_having_attributes(id: "MicroOS"),
+        an_object_having_attributes(id: "Leap_16.0")
       )
     end
   end

@@ -49,7 +49,7 @@ module Agama
     def load_products
       glob = File.join(default_path, "*.{yaml,yml}")
       Dir.glob(glob).each_with_object([]) do |path, result|
-        products = YAML.safe_load_file(path)
+        products = YAML.safe_load(File.read(path))
         products = [products] unless products.is_a?(Array)
         result.concat(products)
       end
