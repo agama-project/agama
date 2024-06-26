@@ -25,12 +25,9 @@ import ProgressReport from "./ProgressReport";
 import SimpleLayout from "~/SimpleLayout";
 
 function InstallationProgress() {
-  console.log("INSTALATION ISSUE");
-
-  const title = _("Installing the system, please wait ...");
   return (
     <SimpleLayout showOutlet={false}>
-      <ProgressReport title={title} />
+      <ProgressReport title={_("Installing the system, please wait ...")} />
     </SimpleLayout>
   );
 }
