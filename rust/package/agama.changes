@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 26 11:56:27 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Expose more details about devices status in the API
+  (gh#openSUSE/agama#1365).
+
+-------------------------------------------------------------------
 Wed Jun 26 10:29:05 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Set and get storage config (gh#openSUSE/agama#1293).
