@@ -88,8 +88,10 @@ function WifiSelectorPage() {
   }, [networks]);
 
   useEffect(() => {
-    fetchNetworks();
+    if (!updateNetworks) return;
+
     setUpdateNetworks(false);
+    fetchNetworks();
   }, [fetchNetworks, updateNetworks]);
 
   useEffect(() => {

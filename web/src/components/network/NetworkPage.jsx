@@ -62,8 +62,10 @@ export default function NetworkPage() {
   }, [client]);
 
   useEffect(() => {
-    fetchState();
+    if (!updateState) return;
+
     setUpdateState(false);
+    fetchState();
   }, [fetchState, updateState]);
 
   useEffect(() => {
