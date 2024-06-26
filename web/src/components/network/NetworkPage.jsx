@@ -85,47 +85,34 @@ export default function NetworkPage() {
   const ready = (connections !== undefined) && (devices !== undefined);
 
   const WifiConnections = () => {
-    const wifiConnections = connections.filter(c => c.wireless);
-    console.log(wifiConnections);
     const { wireless_enabled: wifiAvailable } = settings;
-    const activeConnection = wifiAvailable && wifiConnections.find(c => c.status === "up");
 
-    const ConnectionButton = () => {
-      if (!wifiAvailable) return;
-
+    if (!wifiAvailable) {
       return (
-        <Split hasGutter>
-          <ButtonLink isPrimary to="wifis">
-            {_("Change")}
-          </ButtonLink>
-        </Split>
+        <CardField>
+          <CardField.Content>
+            <EmptyState title={_("No WiFi support")} icon="wifi_off" color="warning-color-200">
+              {_("The system does not support WiFi connections, probably because of missing or disabled hardware.")}
+            </EmptyState>
+          </CardField.Content>
+        </CardField>
       );
-    };
+    }
 
-    const DisconnectionButton = () => {
-      if (!wifiAvailable || !activeConnection) return;
-
-      return (
-        <ButtonLink onClick={async () => await client.disconnect(activeConnection)}>
-          {_("Disconnect")}
-        </ButtonLink>
-      );
-    };
+    const wifiConnections = connections.filter(c => c.wireless);
+    const activeWifiDevice = devices.find(d => d.type === "wireless" && d.state === "activated");
+    const activeConnection = wifiConnections.find(c => c.id === activeWifiDevice?.connection);
 
     return (
       <CardField
         label={_("Wi-Fi")}
         actions={
-          <Split hasGutter>
-            <ConnectionButton />
-          </Split>
+          <ButtonLink isPrimary={!activeConnection} to="wifis">
+            {activeConnection ? _("Change") : _("Connect")}
+          </ButtonLink>
         }
       >
         <CardField.Content>
-          {!wifiAvailable &&
-            <EmptyState title={_("No WiFi support")} icon="wifi_off" color="warning-color-200">
-              {_("The system does not support WiFi connections, probably because of missing or disabled hardware.")}
-            </EmptyState>}
           {activeConnection
             ? (
               <EmptyState title={sprintf(_("Conected to %s"), activeConnection.id)} icon="wifi" color="success-color-100">
@@ -143,7 +130,7 @@ export default function NetworkPage() {
   };
 
   const WiredConnections = () => {
-    const wiredConnections = connections.filter(c => !c.wireless && (c.id !== "lo"));
+    const wiredConnections = connections.filter(c => !c.wireless);
 
     if (wiredConnections.length === 0) return <NoWiredConnections />;
 

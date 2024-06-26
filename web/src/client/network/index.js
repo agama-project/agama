@@ -251,7 +251,7 @@ class NetworkClient {
         const network = {
           ...ap,
           settings: connections.find(c => c.wireless?.ssid === ap.ssid),
-          device: devices.find(c => c.connection === ap.ssid),
+          device: devices.find(c => c.connection === ap.ssid)
         };
 
         // Group networks

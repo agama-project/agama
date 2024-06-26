@@ -48,6 +48,8 @@ function WifiSelectorPage() {
   const [updateNetworks, setUpdateNetworks] = useState(false);
   const [needAuth, setNeedAuth] = useState(null);
 
+  const reloadNetworks = () => setUpdateNetworks(true);
+
   const selectNetwork = (network) => {
     saveData({ selectedWifi: network });
     setSelected(network);
@@ -93,7 +95,7 @@ function WifiSelectorPage() {
     return client.onNetworkChange(({ type, payload }) => {
       switch (type) {
         case NetworkEventTypes.DEVICE_ADDED: {
-          setUpdateNetworks(true);
+          reloadNetworks();
           break;
         }
 
@@ -108,12 +110,12 @@ function WifiSelectorPage() {
             }
           }
 
-          setUpdateNetworks(true);
+          reloadNetworks();
           break;
         }
 
         case NetworkEventTypes.DEVICE_REMOVED: {
-          setUpdateNetworks(true);
+          reloadNetworks();
           break;
         }
       }
@@ -136,6 +138,7 @@ function WifiSelectorPage() {
               activeNetwork={activeNetwork}
               showHiddenForm={showHiddenForm}
               availableNetworks={networks}
+              forceUpdateNetworksCallback={reloadNetworks}
             // onSelectionCallback={(network) => {
             //   switchSelectedNetwork(network);
             //   if (network.settings && !network.device) {

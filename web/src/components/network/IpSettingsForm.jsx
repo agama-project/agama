@@ -113,7 +113,7 @@ export default function IpSettingsForm() {
     };
 
     client.network.updateConnection(updatedConnection)
-      .then(navigate("-1"))
+      .then(navigate(-1))
       // TODO: better error reporting. By now, it sets an error for the whole connection.
       .catch(({ message }) => setErrors({ object: message }));
   };

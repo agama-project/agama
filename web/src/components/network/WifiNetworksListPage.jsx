@@ -33,10 +33,12 @@ import {
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { WifiConnectionForm } from "~/components/network";
-import { ButtonLink } from "~/components/core";
+import { ButtonLink, EmptyState } from "~/components/core";
 import { DeviceState } from "~/client/network/model";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
+import { formatIp } from "~/client/network/utils";
+import { sprintf } from "sprintf-js";
 
 const HIDDEN_NETWORK = Object.freeze({ hidden: true });
 
@@ -60,13 +62,27 @@ const networkState = (state) => {
   }
 };
 
-const ConnectionData = (network) => {
-  // TODO: show the connection details/settings
-  return ("");
+const connectionAddresses = (network) => {
+  const { device, settings } = network;
+  const addresses = device ? device.addresses : settings?.addresses;
+
+  return addresses?.map(formatIp).join(", ");
 };
 
-const WifiDrawerPanelBody = ({ network, onCancel }) => {
+const ConnectionData = ({ network }) => {
+  return (
+    <Stack hasGutter>
+      {connectionAddresses(network)}
+    </Stack>
+  );
+};
+
+const WifiDrawerPanelBody = ({ network, onCancel, onForget }) => {
   const client = useInstallerClient();
+  const forgetNetwork = async () => {
+    await client.network.deleteConnection(network.settings.id);
+    onForget();
+  };
 
   if (!network) return;
 
@@ -83,7 +99,7 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
         <ButtonLink to={`/network/connections/${network.settings.id}/edit`}>
           {_("Edit")}
         </ButtonLink>
-        <Button variant="secondary" isDanger onClick={async () => await client.network.deleteConnection(network.settings.id)}>
+        <Button variant="secondary" isDanger onClick={forgetNetwork}>
           {_("Forget")}
         </Button>
       </Split>
@@ -99,7 +115,7 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
     case _("Connected"):
       return (
         <Stack>
-          <ConnectionData />
+          <ConnectionData network={network} />
           <Split hasGutter>
             <ButtonLink onClick={async () => await client.network.disconnect(network.settings)}>
               {_("Disconnect")}
@@ -154,6 +170,7 @@ function WifiNetworksListPage({
   selected,
   onSelectionChange,
   networks = [],
+  forceUpdateNetworksCallback = () => { }
 }) {
   const selectHiddenNetwork = () => {
     onSelectionChange(HIDDEN_NETWORK);
@@ -208,6 +225,7 @@ function WifiNetworksListPage({
                   <WifiDrawerPanelBody
                     network={selected}
                     onCancel={unselectNetwork}
+                    onForget={forceUpdateNetworksCallback}
                   />
                 </DrawerPanelBody>
               </DrawerPanelContent>
