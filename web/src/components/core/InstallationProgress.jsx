@@ -20,24 +20,14 @@
  */
 
 import React from "react";
-import { useProduct } from "~/context/product";
-import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import ProgressReport from "./ProgressReport";
 import SimpleLayout from "~/SimpleLayout";
 
 function InstallationProgress() {
-  const { selectedProduct } = useProduct();
-
-  if (!selectedProduct) {
-    return;
-  }
-
-  // TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
-  const title = sprintf(_("Installing %s, please wait ..."), selectedProduct.name);
   return (
     <SimpleLayout showOutlet={false}>
-      <ProgressReport title={title} />
+      <ProgressReport title={_("Installing the system, please wait ...")} />
     </SimpleLayout>
   );
 }

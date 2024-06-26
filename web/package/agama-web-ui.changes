@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 26 15:57:52 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Display the installation progress when connecting in the middle
+  of the process (gh#openSUSE/agama#1394).
+
+-------------------------------------------------------------------
 Wed Jun 26 14:17:30 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Use similar look&feel for sections at network page
