@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jun 26 16:46:58 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Reduce progress report flickering (gh#openSUSE/agama#1395).
+
+-------------------------------------------------------------------
 Wed Jun 26 15:57:52 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Display the installation progress when connecting in the middle
