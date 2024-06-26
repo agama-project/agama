@@ -59,7 +59,11 @@ export default function InstallerOptions() {
   if (["/login", "/products/progress"].includes(location.pathname)) return;
 
   const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
+  const close = () => {
+    setLanguage(initialLanguage);
+    setKeymap(initialKeymap);
+    setIsOpen(false);
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
