@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 26 07:52:22 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Do not crash when trying to render affected systems by deletion
+  actions (gh#/openSUSE/agama#1380).
+
+-------------------------------------------------------------------
 Tue Jun 25 15:05:05 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Integrate actions with space policy in storage proposal page
