@@ -28,7 +28,9 @@ import {
   ProgressStepper,
   ProgressStep,
   Spinner,
-  Stack,
+  Text,
+  TextVariants,
+  Flex,
 } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
@@ -36,26 +38,34 @@ import { Center } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 
 const Progress = ({ steps, step, firstStep, detail }) => {
-  const variant = (index) => {
-    if (index < step.current) return "success";
-    if (index === step.current) return "info";
-    if (index > step.current) return "pending";
-  };
-
   const stepProperties = (stepNumber) => {
     const properties = {
-      variant: variant(stepNumber),
       isCurrent: stepNumber === step.current,
       id: `step-${stepNumber}-id`,
       titleId: `step-${stepNumber}-title`,
     };
 
+    if (stepNumber < step.current) {
+      properties.variant = "success";
+      properties.description = <Text component={TextVariants.p}>{_("Finished")}</Text>;
+    }
+
     if (properties.isCurrent) {
-      properties.icon = <Spinner />;
+      properties.variant = "info";
       if (detail && detail.message !== "") {
         const { message, current, total } = detail;
-        properties.description = `${message} (${current}/${total})`;
+        properties.description = (
+          <>
+            <Text component={TextVariants.p}>{_("In progress")}</Text>
+            <Text component={TextVariants.p}>{`${message} (${current}/${total})`}</Text>
+          </>
+        );
       }
+    }
+
+    if (stepNumber > step.current) {
+      properties.variant = "pending";
+      properties.description = <Text component={TextVariants.p}>{_("Pending")}</Text>;
     }
 
     return properties;
@@ -126,12 +136,13 @@ function ProgressReport({ title, firstStep }) {
         <GridItem sm={8} smOffset={2}>
           <Card isPlain>
             <CardBody>
-              <Stack hasGutter>
+              <Flex direction={{ default: "column" }} rowGap={{ default: "rowGapMd" }} alignItems={{ default: "alignItemsCenter" }}>
+                <Spinner size="xl" />
                 <h1 id="progress-title" style={{ textAlign: "center" }}>
                   {progressTitle}
                 </h1>
                 <Content />
-              </Stack>
+              </Flex>
             </CardBody>
           </Card>
         </GridItem>
