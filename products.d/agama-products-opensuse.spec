@@ -42,6 +42,6 @@ install -m 0644 *.yaml %{buildroot}%{_datadir}/agama/products.d
 %dir %{_datadir}/agama/products.d
 %{_datadir}/agama/products.d/microos.yaml
 %{_datadir}/agama/products.d/tumbleweed.yaml
-%{_datadir}/agama/products.d/leap_160.yaml
+# %{_datadir}/agama/products.d/leap_160.yaml
 
 %changelog
