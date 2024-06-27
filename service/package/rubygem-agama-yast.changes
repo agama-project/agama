@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 27 08:36:13 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Avoid error in storage actions (hot-fix)
+  (gh#openSUSE/agama#1400).
+
+-------------------------------------------------------------------
 Wed Jun 26 13:54:28 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Generate JSON storage settings using pretty format
