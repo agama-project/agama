@@ -53,7 +53,6 @@ fn read_password() -> Result<String, CliError> {
 fn ask_password() -> Result<String, CliError> {
     Password::new("Please enter the root password:")
         .without_confirmation()
-        .with_help_message("Press <esc> to exit.")
         .prompt()
         .map_err(CliError::InteractivePassword)
 }
