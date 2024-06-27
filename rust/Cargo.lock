@@ -28,7 +28,6 @@ dependencies = [
  "console",
  "curl",
  "fs_extra",
- "home",
  "indicatif",
  "inquire",
  "log",
