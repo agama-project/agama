@@ -2,6 +2,7 @@ use agama_lib::auth::AuthToken;
 use clap::Subcommand;
 
 use crate::error::CliError;
+use inquire::Password;
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
 use std::io::{self, IsTerminal};
 
@@ -37,13 +38,23 @@ pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
 fn read_password() -> Result<String, CliError> {
     let stdin = io::stdin();
     let password = if stdin.is_terminal() {
-        rpassword::prompt_password("Please, introduce the root password: ")?
+        ask_password()?
     } else {
         let mut buffer = String::new();
-        stdin.read_line(&mut buffer)?;
+        stdin
+            .read_line(&mut buffer)
+            .map_err(CliError::StdinPassword)?;
         buffer
     };
     Ok(password)
+}
+
+/// Asks interactively for the password. (For authentication, not for changing it)
+fn ask_password() -> Result<String, CliError> {
+    Password::new("Please enter the root password:")
+        .without_confirmation()
+        .prompt()
+        .map_err(CliError::InteractivePassword)
 }
 
 /// Necessary http request header for authenticate
