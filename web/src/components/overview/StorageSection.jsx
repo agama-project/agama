@@ -155,7 +155,7 @@ export default function StorageSection() {
     const pvDevices = result.settings.targetPVDevices;
 
     if (pvDevices.length > 1) {
-      return <span>{msgLvmMultipleDisks(result.settings.spacePolicy)}</span>;
+      return <Content><span>{msgLvmMultipleDisks(result.settings.spacePolicy)}</span></Content>;
     } else {
       const [msg1, msg2] = msgLvmSingleDisk(result.settings.spacePolicy).split("%s");
 
