@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jun 27 13:22:06 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 9
+
+-------------------------------------------------------------------
 Thu Jun 27 08:36:13 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Avoid error in storage actions (hot-fix)
