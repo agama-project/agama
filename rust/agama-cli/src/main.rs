@@ -63,7 +63,7 @@ async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> anyhow::Resul
     manager.wait().await?;
 
     if !manager.can_install().await? {
-        return Err(CliError::ValidationError)?;
+        return Err(CliError::Validation)?;
     }
 
     let progress = tokio::spawn(async { show_progress().await });
@@ -81,7 +81,7 @@ async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> anyhow::Resul
         }
         if attempts == max_attempts {
             eprintln!("Giving up.");
-            return Err(CliError::InstallationError)?;
+            return Err(CliError::Installation)?;
         }
         attempts += 1;
         sleep(Duration::from_secs(1));
