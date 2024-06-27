@@ -34,7 +34,7 @@
         </type>
     </preferences>
     <preferences arch="s390x" profiles="openSUSE">
-        <type image="iso" flags="dmsquash" volid="agama" editbootconfig="fix_bootconfig">
+        <type image="iso" flags="dmsquash" mediacheck="true" volid="agama" editbootconfig="fix_bootconfig">
             <bootloader name="custom" />
         </type>
     </preferences>
