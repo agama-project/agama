@@ -49,7 +49,7 @@ fn read_password() -> Result<String, CliError> {
     Ok(password)
 }
 
-/// Asks interactively for the password.
+/// Asks interactively for the password. (For authentication, not for changing it)
 fn ask_password() -> Result<String, CliError> {
     let validator = |input: &str| {
         if input.is_empty() {
@@ -59,7 +59,7 @@ fn ask_password() -> Result<String, CliError> {
         }
     };
 
-    Password::new("Please, introduce the root password:")
+    Password::new("Please enter the root password:")
         .with_validator(validator)
         .without_confirmation()
         .with_help_message("Press <esc> to exit.")
