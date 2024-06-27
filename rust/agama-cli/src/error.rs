@@ -1,3 +1,4 @@
+use inquire::InquireError;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -6,6 +7,8 @@ pub enum CliError {
     ValidationError,
     #[error("Could not start the installation")]
     InstallationError,
-    #[error("No password was provided")]
-    MissingPassword,
+    #[error("Could not read the password")]
+    InteractivePassword(#[source] InquireError),
+    #[error("Could not read the password from the standard input")]
+    StdinPassword(#[source] std::io::Error),
 }

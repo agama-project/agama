@@ -2,7 +2,7 @@ use agama_lib::auth::AuthToken;
 use clap::Subcommand;
 
 use crate::error::CliError;
-use inquire::{validator::Validation, Password};
+use inquire::Password;
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
 use std::io::{self, IsTerminal};
 
@@ -43,7 +43,7 @@ fn read_password() -> Result<String, CliError> {
         let mut buffer = String::new();
         stdin
             .read_line(&mut buffer)
-            .map_err(|_| CliError::MissingPassword)?;
+            .map_err(CliError::StdinPassword)?;
         buffer
     };
     Ok(password)
@@ -51,20 +51,11 @@ fn read_password() -> Result<String, CliError> {
 
 /// Asks interactively for the password. (For authentication, not for changing it)
 fn ask_password() -> Result<String, CliError> {
-    let validator = |input: &str| {
-        if input.is_empty() {
-            Ok(Validation::Invalid("The password cannot be blank.".into()))
-        } else {
-            Ok(Validation::Valid)
-        }
-    };
-
     Password::new("Please enter the root password:")
-        .with_validator(validator)
         .without_confirmation()
         .with_help_message("Press <esc> to exit.")
         .prompt()
-        .map_err(|_| CliError::MissingPassword)
+        .map_err(CliError::InteractivePassword)
 }
 
 /// Necessary http request header for authenticate
