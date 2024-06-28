@@ -160,7 +160,7 @@ module Agama
         def read_actions
           backend.actions.map do |action|
             {
-              "Device" => action.device.sid,
+              "Device" => action.device_sid,
               "Text"   => action.text,
               "Subvol" => action.on_btrfs_subvolume?,
               "Delete" => action.delete?,

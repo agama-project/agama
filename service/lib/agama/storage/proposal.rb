@@ -105,7 +105,7 @@ module Agama
 
       # Storage actions.
       #
-      # @return [Array<Y2Storage::CompoundAction>]
+      # @return [Array<Action>]
       def actions
         return [] unless proposal&.devices
 

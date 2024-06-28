@@ -23,49 +23,51 @@ module Agama
   module Storage
     # Represents an action to perform in the storage devices.
     class Action
-      # @param action [Y2Storage::CompoundAction]
-      # @param system_graph [Y2Storage::Devicegraph]
-      def initialize(action, system_graph)
-        @action = action
-        @system_graph = system_graph
-      end
-
-      # Affected device
+      # SID of the affected device
       #
-      # @return [Y2Storage::Device]
-      def device
-        action.target_device
-      end
+      # @return [Integer]
+      attr_reader :device_sid
 
       # Text describing the action.
       #
       # @return [String]
-      def text
-        action.sentence
+      attr_reader :text
+
+      # @note Do not keep a reference to the compound action. Accessing to the compound action could
+      #   raise a segmentation fault if the source actiongraph object was killed by the ruby GC.
+      #
+      # See https://github.com/openSUSE/agama/issues/1396.
+      #
+      # @param action [Y2Storage::CompoundAction]
+      # @param system_graph [Y2Storage::Devicegraph]
+      def initialize(action, system_graph)
+        @system_graph = system_graph
+        @device_sid = action.target_device.sid
+        @text = action.sentence
+        @delete = action.delete?
+        @resize = resize_action?(action.target_device, system_graph)
+        @on_btrfs_subvolume = action.device_is?(:btrfs_subvolume)
       end
 
       # Whether the action affects to a Btrfs subvolume.
       #
       # @return [Boolean]
       def on_btrfs_subvolume?
-        action.device_is?(:btrfs_subvolume)
+        @on_btrfs_subvolume
       end
 
       # Whether the action deletes the device.
       #
       # @return [Boolean]
       def delete?
-        action.delete?
+        @delete
       end
 
       # Whether the action resizes the device.
       #
       # @return [Boolean]
       def resize?
-        return false unless device.exists_in_devicegraph?(system_graph)
-        return false unless device.respond_to?(:size)
-
-        system_graph.find_device(device.sid).size != device.size
+        @resize
       end
 
     private
@@ -75,6 +77,17 @@ module Agama
 
       # @return [Y2Storage::Devicegraph]
       attr_reader :system_graph
+
+      # @param device [Y2Storage::Device]
+      # @param system_graph [Y2Storage::Devicegraph]
+      #
+      # @return [Boolean]
+      def resize_action?(device, system_graph)
+        return false unless device.exists_in_devicegraph?(system_graph)
+        return false unless device.respond_to?(:size)
+
+        system_graph.find_device(device.sid).size != device.size
+      end
     end
   end
 end
