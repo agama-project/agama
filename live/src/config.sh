@@ -82,6 +82,11 @@ sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/live-password
 # Clean-up logs
 rm /var/log/zypper.log /var/log/zypp/history
 
+# reduce the "vim-data" content, this package is huge (37MB unpacked!), keep only
+# support for JSON (for "agama config edit") and Ruby (fixing/debugging the Ruby
+# service)
+rpm -ql vim-data | grep -v -e '/ruby.vim$' -e '/json.vim$' -e colors | xargs rm 2> /dev/null || true
+
 du -h -s /usr/{share,lib}/locale/
 
 # Agama expects that the same locales available in the installation system can
