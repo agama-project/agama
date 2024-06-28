@@ -59,17 +59,17 @@ describe Agama::Storage::Action do
     described_class.new(action, system_graph)
   end
 
-  describe "#device" do
-    it "returns the affected device" do
+  describe "#device_sid" do
+    it "returns the SID of the affected device" do
       sda2 = system_graph.find_by_name("/dev/sda2")
-      expect(sda2_action.device.sid).to eq(sda2.sid)
+      expect(sda2_action.device_sid).to eq(sda2.sid)
 
       home_subvol = sda2
         .filesystem
         .btrfs_subvolumes
         .find { |s| s.path == "home" }
 
-      expect(subvol_action.device.sid).to eq(home_subvol.sid)
+      expect(subvol_action.device_sid).to eq(home_subvol.sid)
     end
   end
 

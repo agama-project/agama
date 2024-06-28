@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 28 11:57:39 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Proper solution to avoid error in storage actions
+  (gh#openSUSE/agama#1410).
+
+-------------------------------------------------------------------
 Thu Jun 27 13:22:06 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 9

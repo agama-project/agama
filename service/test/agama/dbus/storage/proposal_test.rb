@@ -114,7 +114,7 @@ describe Agama::DBus::Storage::Proposal do
       let(:action1) do
         instance_double(Agama::Storage::Action,
           text:                "test1",
-          device:              device1,
+          device_sid:          1,
           on_btrfs_subvolume?: false,
           delete?:             false,
           resize?:             false)
@@ -123,7 +123,7 @@ describe Agama::DBus::Storage::Proposal do
       let(:action2) do
         instance_double(Agama::Storage::Action,
           text:                "test2",
-          device:              device2,
+          device_sid:          2,
           on_btrfs_subvolume?: false,
           delete?:             true,
           resize?:             false)
@@ -132,7 +132,7 @@ describe Agama::DBus::Storage::Proposal do
       let(:action3) do
         instance_double(Agama::Storage::Action,
           text:                "test3",
-          device:              device3,
+          device_sid:          3,
           on_btrfs_subvolume?: false,
           delete?:             false,
           resize?:             true)
@@ -141,16 +141,11 @@ describe Agama::DBus::Storage::Proposal do
       let(:action4) do
         instance_double(Agama::Storage::Action,
           text:                "test4",
-          device:              device4,
+          device_sid:          4,
           on_btrfs_subvolume?: true,
           delete?:             false,
           resize?:             false)
       end
-
-      let(:device1) { instance_double(Y2Storage::Device, sid: 1) }
-      let(:device2) { instance_double(Y2Storage::Device, sid: 2) }
-      let(:device3) { instance_double(Y2Storage::Device, sid: 3) }
-      let(:device4) { instance_double(Y2Storage::Device, sid: 4) }
 
       it "returns a list with a hash for each action" do
         expect(subject.actions.size).to eq(4)

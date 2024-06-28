@@ -165,32 +165,13 @@ module Agama
 
       # Storage actions.
       #
-      # @return [Array<Y2Storage::CompoundAction>]
+      # @return [Array<Action>]
       def actions
         return [] unless Y2Storage::StorageManager.instance.probed?
 
         probed = Y2Storage::StorageManager.instance.probed
         staging = Y2Storage::StorageManager.instance.staging
-        # FIXME: This is a hot-fix to avoid segmentation fault in the actions, see
-        #   https://github.com/openSUSE/agama/issues/1396.
-        #
-        #   Source of the problem:
-        #   * An actiongraph is generated from the target devicegraph.
-        #   * The list of compound actions is recovered from the actiongraph.
-        #   * No refrence to the actiongraph is kept, so the object is a candidate to be cleaned by
-        #     the ruby GC.
-        #   * Accessing to the generated actions raises a segmentation fault if the actiongraph was
-        #     cleaned.
-        #
-        #   There was a previous attempt of fixing the issue by keeping a reference to the
-        #   actiongraph in the ActionsGenerator object. But that solution is not enough because
-        #   the ActionGenerator object is also cleaned up.
-        #
-        #   As a hot-fix, the generator is kept in an instance variable to avoid the GC to kill it.
-        #   A better solution is needed, for example, by avoiding to store an instance of a compound
-        #   action in the Action object.
-        @generator = ActionsGenerator.new(probed, staging)
-        @generator.generate
+        ActionsGenerator.new(probed, staging).generate
       end
 
       # Changes the service's locale

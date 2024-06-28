@@ -85,7 +85,7 @@ module Agama
         #   * "Resize" [Boolean]
         def to_dbus_action(action)
           {
-            "Device" => action.device.sid,
+            "Device" => action.device_sid,
             "Text"   => action.text,
             "Subvol" => action.on_btrfs_subvolume?,
             "Delete" => action.delete?,
