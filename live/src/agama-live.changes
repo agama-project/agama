@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 28 13:40:35 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Syntax highlighting for "agama config edit"
+  (gh#openSUSE/agama#1411)
+
+-------------------------------------------------------------------
 Thu Jun 27 14:33:24 UTC 2024 -Steffen Winterfeldt <snwint@suse.com>
 
 - Enable checksum generation for s390x agama live images
