@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
   "$id": "https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/profile.schema.json",
   "title": "Profile",
   "description": "Profile definition for automated installation",
@@ -96,8 +96,7 @@
                 "type": "array",
                 "items": {
                   "title": "Connection addresses",
-                  "type": "string",
-                  "additionalProperties": false
+                  "type": "string"
                 }
               },
               "nameservers": {
@@ -105,8 +104,7 @@
                 "items": {
                   "title": "Nameservers",
                   "description": "IPv4 and/or IPv6 are allowed.",
-                  "type": "string",
-                  "additionalProperties": false
+                  "type": "string"
                 }
               },
               "wireless": {
@@ -149,8 +147,7 @@
                     "type": "array",
                     "items": {
                       "title": "A list of the interfaces or connections to be bonded",
-                      "type": "string",
-                      "additionalProperties": false
+                      "type": "string"
                     }
                   }
                 }
@@ -164,32 +161,28 @@
                     "type": "array",
                     "items": {
                       "title": "A list of kernel command line arguments to match",
-                      "type": "string",
-                      "additionalProperties": false
+                      "type": "string"
                     }
                   },
                   "interface": {
                     "type": "array",
                     "items": {
                       "title": "A list of interface names to match",
-                      "type": "string",
-                      "additionalProperties": false
+                      "type": "string"
                     }
                   },
                   "driver": {
                     "type": "array",
                     "items": {
                       "title": "A list of driver names to match",
-                      "type": "string",
-                      "additionalProperties": false
+                      "type": "string"
                     }
                   },
                   "path": {
                     "type": "array",
                     "items": {
                       "title": "A list of paths to match against the ID_PATH udev property of devices",
-                      "type": "string",
-                      "additionalProperties": false
+                      "type": "string"
                     }
                   }
                 }
@@ -288,7 +281,7 @@
                       "items": { "type": "string" }
                     }
                   },
-                  "required": ["newLvmVg"] 
+                  "required": ["newLvmVg"]
                 }
               ]
             },
@@ -329,7 +322,64 @@
             },
             "space": {
               "title": "Policy to find space for the new partitions",
-              "enum": [ "delete", "resize", "keep" ]
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "policy": {
+                  "enum": ["delete", "resize", "keep", "custom"]
+                },
+                "actions": {
+                  "type": "array"
+                }
+              },
+              "if": {
+                "properties": {
+                  "policy": { "const": "custom" }
+                }
+              },
+              "then": {
+                "required": ["policy", "actions"],
+                "properties": {
+                  "actions": {
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": ["forceDelete"],
+                          "additionalProperties": false,
+                          "properties": {
+                            "forceDelete": {
+                              "title": "Device to delete",
+                              "type": "string"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "required": ["resize"],
+                          "additionalProperties": false,
+                          "properties": {
+                            "resize": {
+                              "title": "Device to allow resizing",
+                              "type": "string"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "else": {
+                "required": ["policy"],
+                "properties": {
+                  "actions": {
+                    "type": "array",
+                    "maxItems": 0
+                  }
+                }
+              }
             },
             "volumes": {
               "title": "Set of volumes (file systems) to create",
@@ -345,8 +395,8 @@
                     "required": ["path"],
                     "properties": {
                       "path": {
-                      "title": "Mount path",
-                      "type": "string"
+                        "title": "Mount path",
+                        "type": "string"
                       },
                       "options": {
                         "title": "Options to add to the fourth field of fstab",
@@ -392,19 +442,13 @@
                       { "$ref": "#/$defs/sizeString" },
                       { "$ref": "#/$defs/sizeInteger" },
                       {
+                        "description": "Lower size limit and optionally upper size limit",
                         "type": "array",
+                        "items": {
+                          "$ref": "#/$defs/sizeValue"
+                        },
                         "minItems": 1,
-                        "maxItems": 2,
-                        "prefixItems": [
-                          {
-                            "title": "Mandatory lower size limit",
-                            "$ref": "#/$defs/sizeValue"
-                          },
-                          {
-                            "title": "Optional upper size limit",
-                            "$ref": "#/$defs/sizeValue"
-                          }
-                        ]
+                        "maxItems": 2
                       },
                       {
                         "type": "object",
@@ -421,23 +465,7 @@
                         },
                         "required": ["min"]
                       }
-                    ],
-                    "$defs": {
-                      "sizeString": {
-                        "type": "string",
-                        "pattern": "^[0-9]+(\\.[0-9]+)?(\\s*([KkMmGgTtPpEeZzYy][iI]?)?[Bb])?"
-                      },
-                      "sizeInteger": {
-                        "type": "integer",
-                        "minimum": 0
-                      },
-                      "sizeValue": {
-                        "oneOf": [
-                          { "$ref": "#/$defs/sizeString" },
-                          { "$ref": "#/$defs/sizeInteger" }
-                        ]
-                      }
-                    }
+                    ]
                   },
                   "target": {
                     "title": "Location of the resulting file system",
@@ -481,6 +509,24 @@
     "legacyAutoyastStorage": {
       "title": "Legacy AutoYaST storage settings",
       "type": "object"
+    }
+  },
+  "$defs": {
+    "sizeString": {
+      "title": "Human readable size (e.g., '2 GiB')",
+      "type": "string",
+      "pattern": "^[0-9]+(\\.[0-9]+)?(\\s*([KkMmGgTtPpEeZzYy][iI]?)?[Bb])?$"
+    },
+    "sizeInteger": {
+      "title": "Size in bytes",
+      "type": "integer",
+      "minimum": 0
+    },
+    "sizeValue": {
+      "oneOf": [
+        { "$ref": "#/$defs/sizeString" },
+        { "$ref": "#/$defs/sizeInteger" }
+      ]
     }
   }
 }
