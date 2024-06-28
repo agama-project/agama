@@ -20,10 +20,10 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
-require "agama/storage/volume_conversion/to_y2storage"
+require "agama/storage/volume_conversions/to_y2storage"
 require "y2storage"
 
-describe Agama::Storage::VolumeConversion::ToY2Storage do
+describe Agama::Storage::VolumeConversions::ToY2Storage do
   subject { described_class.new(volume) }
 
   describe "#convert" do

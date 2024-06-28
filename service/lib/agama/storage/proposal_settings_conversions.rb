@@ -20,7 +20,9 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/proposal_settings_conversions/from_json"
+require "agama/storage/proposal_settings_conversions/from_y2storage"
 require "agama/storage/proposal_settings_conversions/to_json"
+require "agama/storage/proposal_settings_conversions/to_y2storage"
 
 module Agama
   module Storage

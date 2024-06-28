@@ -103,6 +103,14 @@ module Agama
         Storage::ProposalSettingsConversions::ToJSON.new(self).convert
       end
 
+      # Generates Y2Storage proposal settings.
+      #
+      # @param config [Config]
+      # @return [Y2Storage::ProposalSettings]
+      def to_y2storage(config:)
+        Storage::ProposalSettingsConversions::ToY2Storage.new(self, config: config).convert
+      end
+
     private
 
       # Device used for booting.

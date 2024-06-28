@@ -24,6 +24,7 @@ require "agama/config"
 require "agama/storage/device_settings"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume"
+require "y2storage/proposal_settings"
 
 describe Agama::Storage::ProposalSettings do
   describe "#default_boot_device" do
@@ -195,6 +196,17 @@ describe Agama::Storage::ProposalSettings do
     it "generates a JSON hash according to schema" do
       result = proposal_settings.to_json_settings
       expect(result).to be_a(Hash)
+    end
+  end
+
+  describe "#to_y2storage" do
+    let(:config) { Agama::Config.new }
+
+    let(:settings) { Agama::Storage::ProposalSettings.new }
+
+    it "generates Y2Storage settings from proposal settings" do
+      result = subject.to_y2storage(config: config)
+      expect(result).to be_a(Y2Storage::ProposalSettings)
     end
   end
 end

@@ -22,7 +22,6 @@
 require "agama/storage/proposal_strategies/base"
 require "agama/storage/proposal_settings"
 require "agama/storage/proposal_settings_reader"
-require "agama/storage/proposal_settings_conversion"
 
 module Agama
   module Storage
@@ -78,7 +77,7 @@ module Agama
         # @return [Y2Storage::ProposalSettings]
         def proposal_settings
           agama_default = ProposalSettingsReader.new(config).read
-          ProposalSettingsConversion.to_y2storage(agama_default, config: config)
+          agama_default.to_y2storage(config: config)
         end
 
         # Agama issue equivalent to the given AutoYaST issue

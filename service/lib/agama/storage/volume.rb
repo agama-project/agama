@@ -30,9 +30,6 @@ require "agama/storage/volume_outline"
 module Agama
   module Storage
     # A volume represents the characteristics of a file system to create in the system.
-    #
-    # A volume is converted to D-Bus and to Y2Storage formats in order to provide the volume
-    # information with the expected representation, see {VolumeConversion}.
     class Volume
       extend Forwardable
 
@@ -129,6 +126,13 @@ module Agama
       # @return [Hash]
       def to_json_settings
         Storage::VolumeConversions::ToJSON.new(self).convert
+      end
+
+      # Generates a Y2Storage volume.
+      #
+      # @return [Y2Storage::VolumeSpecification]
+      def to_y2storage
+        Storage::VolumeConversions::ToY2Storage.new(self).convert
       end
     end
   end

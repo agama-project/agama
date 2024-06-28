@@ -21,7 +21,7 @@
 
 require "agama/storage/proposal_strategies/base"
 require "agama/storage/device_settings"
-require "agama/storage/proposal_settings_conversion"
+require "agama/storage/proposal_settings_conversions/from_y2storage"
 
 module Agama
   module Storage
@@ -43,7 +43,7 @@ module Agama
         # Settings used for calculating the proposal.
         #
         # @note Some values are recoverd from Y2Storage, see
-        #   {ProposalSettingsConversion::FromY2Storage}
+        #   {ProposalSettingsConversions::FromY2Storage}
         #
         # @return [ProposalSettings]
         attr_reader :settings
@@ -55,7 +55,9 @@ module Agama
           proposal.propose
         ensure
           storage_manager.proposal = proposal
-          @settings = ProposalSettingsConversion.from_y2storage(proposal.settings, input_settings)
+          @settings = ProposalSettingsConversions::FromY2Storage
+            .new(proposal.settings, input_settings)
+            .convert
         end
 
         # @see Base#issues
@@ -107,7 +109,7 @@ module Agama
         # @return [Y2Storage::GuidedProposal]
         def guided_proposal(settings)
           Y2Storage::MinGuidedProposal.new(
-            settings:      ProposalSettingsConversion.to_y2storage(settings, config: config),
+            settings:      settings.to_y2storage(config: config),
             devicegraph:   probed_devicegraph,
             disk_analyzer: disk_analyzer
           )

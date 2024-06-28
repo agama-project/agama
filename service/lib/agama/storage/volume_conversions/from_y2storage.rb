@@ -23,7 +23,7 @@ require "y2storage/storage_manager"
 
 module Agama
   module Storage
-    module VolumeConversion
+    module VolumeConversions
       # Volume conversion from Y2Storage.
       #
       # @note This class does not perform a real conversion from Y2Storage. Instead of that, it

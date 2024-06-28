@@ -24,7 +24,7 @@ require "agama/storage/volume"
 
 module Agama
   module Storage
-    module VolumeConversion
+    module VolumeConversions
       # Volume conversion to Y2Storage.
       class ToY2Storage
         # @param volume [Agama::Storage::Volume]
