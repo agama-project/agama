@@ -20,15 +20,15 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
-require "agama/storage/proposal_settings_conversion/from_schema"
+require "agama/storage/proposal_settings_conversions/from_json"
 require "agama/config"
 require "agama/storage/device_settings"
 require "agama/storage/proposal_settings"
 require "y2storage/encryption_method"
 require "y2storage/pbkd_function"
 
-describe Agama::Storage::ProposalSettingsConversion::FromSchema do
-  subject { described_class.new(settings_schema, config: config) }
+describe Agama::Storage::ProposalSettingsConversions::FromJSON do
+  subject { described_class.new(settings_json, config: config) }
 
   let(:config) { Agama::Config.new(config_data) }
 
@@ -71,7 +71,7 @@ describe Agama::Storage::ProposalSettingsConversion::FromSchema do
   end
 
   describe "#convert" do
-    let(:settings_schema) do
+    let(:settings_json) do
       {
         target:     {
           disk: "/dev/sda"
@@ -107,7 +107,7 @@ describe Agama::Storage::ProposalSettingsConversion::FromSchema do
       }
     end
 
-    it "generates settings with the values provided from hash according to the JSON schema" do
+    it "generates settings with the values provided from JSON" do
       settings = subject.convert
 
       expect(settings).to be_a(Agama::Storage::ProposalSettings)
@@ -127,8 +127,8 @@ describe Agama::Storage::ProposalSettingsConversion::FromSchema do
       )
     end
 
-    context "when the hash settings is missing some values" do
-      let(:settings_schema) { {} }
+    context "when the JSON is missing some values" do
+      let(:settings_json) { {} }
 
       it "completes the missing values with default values from the config" do
         settings = subject.convert
@@ -148,8 +148,8 @@ describe Agama::Storage::ProposalSettingsConversion::FromSchema do
       end
     end
 
-    context "when the hash settings does not indicate the target" do
-      let(:settings_schema) { {} }
+    context "when the JSON does not indicate the target" do
+      let(:settings_json) { {} }
 
       it "generates settings with disk target and without specific device" do
         settings = subject.convert
@@ -159,8 +159,8 @@ describe Agama::Storage::ProposalSettingsConversion::FromSchema do
       end
     end
 
-    context "when the hash settings indicates disk target without device" do
-      let(:settings_schema) do
+    context "when the JSON indicates disk target without device" do
+      let(:settings_json) do
         {
           target: "disk"
         }
@@ -174,8 +174,8 @@ describe Agama::Storage::ProposalSettingsConversion::FromSchema do
       end
     end
 
-    context "when the hash settings indicates disk target with a device" do
-      let(:settings_schema) do
+    context "when the JSON indicates disk target with a device" do
+      let(:settings_json) do
         {
           target: {
             disk: "/dev/vda"
@@ -191,8 +191,8 @@ describe Agama::Storage::ProposalSettingsConversion::FromSchema do
       end
     end
 
-    context "when the hash settings indicates newLvmVg target without devices" do
-      let(:settings_schema) do
+    context "when the JSON indicates newLvmVg target without devices" do
+      let(:settings_json) do
         {
           target: "newLvmVg"
         }
@@ -206,8 +206,8 @@ describe Agama::Storage::ProposalSettingsConversion::FromSchema do
       end
     end
 
-    context "when the hash settings indicates newLvmVg target with devices" do
-      let(:settings_schema) do
+    context "when the JSON indicates newLvmVg target with devices" do
+      let(:settings_json) do
         {
           target: {
             newLvmVg: ["/dev/vda", "/dev/vdb"]
@@ -223,8 +223,8 @@ describe Agama::Storage::ProposalSettingsConversion::FromSchema do
       end
     end
 
-    context "when the hash settings does not indicate volumes" do
-      let(:settings_schema) { { volumes: [] } }
+    context "when the JSON does not indicate volumes" do
+      let(:settings_json) { { volumes: [] } }
 
       it "generates settings with the default volumes from config" do
         settings = subject.convert
@@ -244,8 +244,8 @@ describe Agama::Storage::ProposalSettingsConversion::FromSchema do
       end
     end
 
-    context "when the hash settings does not contain a required volume" do
-      let(:settings_schema) do
+    context "when the JSON does not contain a required volume" do
+      let(:settings_json) do
         {
           volumes: [
             {

@@ -20,19 +20,18 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/device_settings"
-require "agama/storage/volume_conversion"
 
 module Agama
   module Storage
-    module ProposalSettingsConversion
-      # Proposal settings conversion according to the JSON schema.
-      class ToSchema
+    module ProposalSettingsConversions
+      # Proposal settings conversion to JSON hash according to schema.
+      class ToJSON
         # @param settings [ProposalSettings]
         def initialize(settings)
           @settings = settings
         end
 
-        # Performs the conversion according to the JSON schema.
+        # Performs the conversion to JSON.
         #
         # @return [Hash]
         def convert
@@ -41,9 +40,9 @@ module Agama
             boot:    boot_conversion,
             space:   space_conversion,
             volumes: volumes_conversion
-          }.tap do |schema|
-            encryption_schema = encryption_conversion
-            schema[:encryption] = encryption_schema if encryption_schema
+          }.tap do |settings_json|
+            encryption_json = encryption_conversion
+            settings_json[:encryption] = encryption_json if encryption_json
           end
         end
 
@@ -68,9 +67,9 @@ module Agama
         def boot_conversion
           {
             configure: settings.boot.configure?
-          }.tap do |schema|
+          }.tap do |boot_json|
             device = settings.boot.device
-            schema[:device] = device if device
+            boot_json[:device] = device if device
           end
         end
 
@@ -80,9 +79,9 @@ module Agama
           {
             password: settings.encryption.password,
             method:   settings.encryption.method.id.to_s
-          }.tap do |schema|
+          }.tap do |encryption_json|
             function = settings.encryption.pbkd_function
-            schema[:pbkdFunction] = function.value if function
+            encryption_json[:pbkdFunction] = function.value if function
           end
         end
 
@@ -100,7 +99,7 @@ module Agama
         end
 
         def volumes_conversion
-          settings.volumes.map { |v| VolumeConversion.to_schema(v) }
+          settings.volumes.map(&:to_json_settings)
         end
       end
     end

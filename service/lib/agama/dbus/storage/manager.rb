@@ -30,13 +30,13 @@ require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
 require "agama/dbus/storage/devices_tree"
 require "agama/dbus/storage/iscsi_nodes_tree"
-require "agama/dbus/storage/proposal_settings_conversion"
 require "agama/dbus/storage/proposal"
+require "agama/dbus/storage/proposal_settings_conversion"
 require "agama/dbus/storage/volume_conversion"
 require "agama/dbus/storage/with_iscsi_auth"
 require "agama/dbus/with_service_status"
 require "agama/storage/encryption_settings"
-require "agama/storage/proposal_settings_conversion"
+require "agama/storage/proposal_settings"
 require "agama/storage/volume_templates_builder"
 
 Yast.import "Arch"
@@ -99,12 +99,12 @@ module Agama
         #   AutoYaST settings: { "storage": ... } vs { "legacyAutoyastStorage": ... }.
         def apply_storage_config(serialized_config)
           @serialized_storage_config = serialized_config
-          storage_config = JSON.parse(serialized_config, symbolize_names: true)
+          config_json = JSON.parse(serialized_config, symbolize_names: true)
 
-          if (guided_settings = storage_config.dig(:storage, :guided))
-            calculate_guided_proposal(guided_settings)
-          elsif (autoyast_settings = storage_config[:legacyAutoyastStorage])
-            calculate_autoyast_proposal(autoyast_settings)
+          if (settings_json = config_json.dig(:storage, :guided))
+            calculate_guided_proposal(settings_json)
+          elsif (settings_json = config_json[:legacyAutoyastStorage])
+            calculate_autoyast_proposal(settings_json)
           else
             raise "Invalid config: #{serialized_config}"
           end
@@ -259,11 +259,10 @@ module Agama
           return {} unless proposal.calculated?
 
           if proposal.strategy?(ProposalStrategy::GUIDED)
-            settings = Agama::Storage::ProposalSettingsConversion.to_schema(proposal.settings)
             {
               "success"  => proposal.success?,
               "strategy" => ProposalStrategy::GUIDED,
-              "settings" => settings.to_json
+              "settings" => proposal.settings.to_json_settings.to_json
             }
           else
             {
@@ -400,16 +399,15 @@ module Agama
 
         # Calculates a guided proposal.
         #
-        # @param settings [Hash] Settings according to the JSON schema.
+        # @param settings_json [Hash] JSON settings according to schema.
         # @return [Integer] 0 success; 1 error
-        def calculate_guided_proposal(settings)
-          proposal_settings = Agama::Storage::ProposalSettingsConversion.from_schema(
-            settings, config: config
-          )
+        def calculate_guided_proposal(settings_json)
+          proposal_settings = Agama::Storage::ProposalSettings
+            .new_from_json(settings_json, config: config)
 
           logger.info(
             "Calculating guided storage proposal from D-Bus.\n" \
-            "Input settings: #{settings}\n" \
+            "Input settings: #{settings_json}\n" \
             "Agama settings: #{proposal_settings.inspect}"
           )
 
@@ -419,15 +417,15 @@ module Agama
 
         # Calculates an AutoYaST proposal.
         #
-        # @param settings [Hash] AutoYaST settings.
+        # @param settings_json [Hash] AutoYaST settings.
         # @return [Integer] 0 success; 1 error
-        def calculate_autoyast_proposal(settings)
+        def calculate_autoyast_proposal(settings_json)
           # Ensures keys are strings.
-          autoyast_settings = JSON.parse(settings.to_json)
+          autoyast_settings = JSON.parse(settings_json.to_json)
 
           logger.info(
             "Calculating AutoYaST storage proposal from D-Bus.\n" \
-            "Input settings: #{settings}\n" \
+            "Input settings: #{settings_json}\n" \
             "AutoYaST settings: #{autoyast_settings}"
           )
 
@@ -437,12 +435,12 @@ module Agama
 
         # Generates the storage config from the current proposal, if any.
         #
-        # @return [Hash] Storage config according to the JSON schema.
+        # @return [Hash] Storage config according to JSON schema.
         def generate_storage_config
           if proposal.strategy?(ProposalStrategy::GUIDED)
             {
               storage: {
-                guided: Agama::Storage::ProposalSettingsConversion.to_schema(proposal.settings)
+                guided: proposal.settings.to_json_settings
               }
             }
           elsif proposal.strategy?(ProposalStrategy::AUTOYAST)

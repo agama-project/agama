@@ -20,12 +20,12 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
-require "agama/storage/volume_conversion/to_schema"
+require "agama/storage/volume_conversions/to_json"
 require "agama/storage/volume"
 require "y2storage/filesystems/type"
 require "y2storage/disk_size"
 
-describe Agama::Storage::VolumeConversion::ToSchema do
+describe Agama::Storage::VolumeConversions::ToJSON do
   let(:default_volume) { Agama::Storage::Volume.new("/test") }
 
   let(:custom_volume1) do
@@ -48,7 +48,7 @@ describe Agama::Storage::VolumeConversion::ToSchema do
   end
 
   describe "#convert" do
-    it "converts the volume to the proper hash according to the JSON schema" do
+    it "converts the volume to a JSON hash according to schema" do
       # @todo Check whether the result matches the JSON schema.
 
       expect(described_class.new(default_volume).convert).to eq(

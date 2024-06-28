@@ -27,7 +27,6 @@ require "agama/storage/device_settings"
 require "agama/storage/manager"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
-require "agama/storage/proposal_settings_conversion"
 require "agama/storage/volume"
 require "agama/storage/iscsi/manager"
 require "agama/storage/dasd/manager"
@@ -547,7 +546,7 @@ describe Agama::DBus::Storage::Manager do
         it "returns serialized storage config including guided proposal settings" do
           expected_config = {
             storage: {
-              guided: Agama::Storage::ProposalSettingsConversion.to_schema(settings)
+              guided: settings.to_json_settings
             }
           }
 
@@ -626,9 +625,7 @@ describe Agama::DBus::Storage::Manager do
 
         it "returns a Hash with success, strategy and settings" do
           result = subject.proposal_result
-          serialized_settings = Agama::Storage::ProposalSettingsConversion
-            .to_schema(proposal.settings)
-            .to_json
+          serialized_settings = proposal.settings.to_json_settings.to_json
 
           expect(result.keys).to contain_exactly("success", "strategy", "settings")
           expect(result["success"]).to eq(true)

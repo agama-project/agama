@@ -19,9 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/proposal_settings_conversion/from_schema"
 require "agama/storage/proposal_settings_conversion/from_y2storage"
-require "agama/storage/proposal_settings_conversion/to_schema"
 require "agama/storage/proposal_settings_conversion/to_y2storage"
 
 module Agama
@@ -46,24 +44,6 @@ module Agama
       # @return [Y2Storage::ProposalSettings]
       def self.to_y2storage(settings, config:)
         ToY2Storage.new(settings, config: config).convert
-      end
-
-      # Performs conversion from Hash according to the JSON schema.
-      #
-      # @param schema_settings [Hash]
-      # @param config [Agama::Config]
-      #
-      # @return [Agama::Storage::ProposalSettings]
-      def self.from_schema(schema_settings, config:)
-        FromSchema.new(schema_settings, config: config).convert
-      end
-
-      # Performs conversion according to the JSON schema.
-      #
-      # @param settings [Agama::Storage::ProposalSettings]
-      # @return [Hash]
-      def self.to_schema(settings)
-        ToSchema.new(settings).convert
       end
     end
   end

@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
-require "agama/config"
 require "agama/storage/proposal_settings"
 require "agama/storage/proposal_settings_conversion"
 require "y2storage"
@@ -45,32 +44,6 @@ describe Agama::Storage::ProposalSettingsConversion do
     it "generates Y2Storage settings from proposal settings" do
       result = described_class.to_y2storage(settings, config: config)
       expect(result).to be_a(Y2Storage::ProposalSettings)
-    end
-  end
-
-  describe "#from_schema" do
-    let(:config) { Agama::Config.new }
-
-    let(:schema_settings) do
-      {
-        target: {
-          disk: "/dev/vda"
-        }
-      }
-    end
-
-    it "generates proposal settings from settings according to the JSON schema" do
-      result = described_class.from_schema(schema_settings, config: config)
-      expect(result).to be_a(Agama::Storage::ProposalSettings)
-    end
-  end
-
-  describe "#to_schema" do
-    let(:proposal_settings) { Agama::Storage::ProposalSettings.new }
-
-    it "generates settings according to the JSON schema from the proposal settings" do
-      result = described_class.to_schema(proposal_settings)
-      expect(result).to be_a(Hash)
     end
   end
 end

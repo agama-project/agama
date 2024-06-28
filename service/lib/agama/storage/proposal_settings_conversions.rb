@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2024] SUSE LLC
+# Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,28 +19,13 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/volume_conversion/from_y2storage"
-require "agama/storage/volume_conversion/to_y2storage"
+require "agama/storage/proposal_settings_conversions/from_json"
+require "agama/storage/proposal_settings_conversions/to_json"
 
 module Agama
   module Storage
-    # Conversions for a volume
-    module VolumeConversion
-      # Performs conversion from Y2Storage.
-      #
-      # @param volume [Agama::Storage::Volume]
-      # @return [Agama::Storage::Volume]
-      def self.from_y2storage(volume)
-        FromY2Storage.new(volume).convert
-      end
-
-      # Performs conversion to Y2Storage.
-      #
-      # @param volume [Agama::Storage::Volume]
-      # @return [Y2Storage::VolumeSpecification]
-      def self.to_y2storage(volume)
-        ToY2Storage.new(volume).convert
-      end
+    # Conversions for the proposal settings.
+    module ProposalSettingsConversions
     end
   end
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2024] SUSE LLC
+# Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,26 +20,34 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
+require "agama/config"
 require "agama/storage/volume"
-require "agama/storage/volume_conversion"
-require "y2storage"
 
-describe Agama::Storage::VolumeConversion do
-  describe "#from_y2storage" do
-    let(:volume) { Agama::Storage::Volume.new("/test") }
+describe Agama::Storage::Volume do
+  describe ".new_from_json" do
+    let(:config) { Agama::Config.new }
 
-    it "generates a volume" do
-      result = described_class.from_y2storage(volume)
+    let(:volume_json) do
+      {
+        mount: {
+          path: "/test"
+        }
+      }
+    end
+
+    it "generates a volume from JSON according to schema" do
+      result = described_class.new_from_json(volume_json, config: config)
       expect(result).to be_a(Agama::Storage::Volume)
+      expect(result.mount_path).to eq("/test")
     end
   end
 
-  describe "#to_y2storage" do
+  describe "#to_json_settngs" do
     let(:volume) { Agama::Storage::Volume.new("/test") }
 
-    it "generates a Y2Storage volume spec" do
-      result = described_class.to_y2storage(volume)
-      expect(result).to be_a(Y2Storage::VolumeSpecification)
+    it "generates a JSON hash according to schema" do
+      result = volume.to_json_settings
+      expect(result).to be_a(Hash)
     end
   end
 end

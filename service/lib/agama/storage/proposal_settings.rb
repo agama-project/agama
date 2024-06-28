@@ -22,6 +22,7 @@
 require "agama/storage/boot_settings"
 require "agama/storage/device_settings"
 require "agama/storage/encryption_settings"
+require "agama/storage/proposal_settings_conversions"
 require "agama/storage/space_settings"
 
 module Agama
@@ -83,6 +84,23 @@ module Agama
         when DeviceSettings::ReusedLvmVg
           # TODO: Decide what device to use.
         end
+      end
+
+      # Creates a new proposal settings object from JSON hash according to schema.
+      #
+      # @param settings_json [Hash]
+      # @param config [Config]
+      #
+      # @return [ProposalSettings]
+      def self.new_from_json(settings_json, config:)
+        Storage::ProposalSettingsConversions::FromJSON.new(settings_json, config: config).convert
+      end
+
+      # Generates a JSON hash according to schema.
+      #
+      # @return [Hash]
+      def to_json_settings
+        Storage::ProposalSettingsConversions::ToJSON.new(self).convert
       end
 
     private

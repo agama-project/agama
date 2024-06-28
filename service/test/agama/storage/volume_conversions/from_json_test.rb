@@ -24,15 +24,15 @@ require_relative "../../rspec/matchers/storage"
 require "agama/config"
 require "agama/storage/volume"
 require "agama/storage/volume_templates_builder"
-require "agama/storage/volume_conversion/from_schema"
+require "agama/storage/volume_conversions/from_json"
 require "y2storage/disk_size"
 
 def default_volume(mount_path)
   Agama::Storage::VolumeTemplatesBuilder.new_from_config(config).for(mount_path)
 end
 
-describe Agama::Storage::VolumeConversion::FromSchema do
-  subject { described_class.new(volume_schema, config: config) }
+describe Agama::Storage::VolumeConversions::FromJSON do
+  subject { described_class.new(volume_json, config: config) }
 
   let(:config) { Agama::Config.new(config_data) }
 
@@ -67,7 +67,7 @@ describe Agama::Storage::VolumeConversion::FromSchema do
   end
 
   describe "#convert" do
-    let(:volume_schema) do
+    let(:volume_json) do
       {
         mount:      {
           path:    "/test",
@@ -84,13 +84,13 @@ describe Agama::Storage::VolumeConversion::FromSchema do
       }
     end
 
-    it "generates a volume with the expected outline from the config" do
+    it "generates a volume with the expected outline from JSON" do
       volume = subject.convert
 
       expect(volume.outline).to eq_outline(default_volume("/test").outline)
     end
 
-    it "generates a volume with the values provided from hash according to the JSON schema" do
+    it "generates a volume with the values provided from JSON" do
       volume = subject.convert
 
       expect(volume).to be_a(Agama::Storage::Volume)
@@ -105,8 +105,8 @@ describe Agama::Storage::VolumeConversion::FromSchema do
       expect(volume.btrfs.snapshots).to eq(false)
     end
 
-    context "when the hash settings is missing some values" do
-      let(:volume_schema) do
+    context "when the JSON is missing some values" do
+      let(:volume_json) do
         {
           mount: {
             path: "/test"
@@ -129,8 +129,8 @@ describe Agama::Storage::VolumeConversion::FromSchema do
       end
     end
 
-    context "when the hash settings does not indicate max size" do
-      let(:volume_schema) do
+    context "when the JSON does not indicate max size" do
+      let(:volume_json) do
         {
           mount: {
             path: "/test"
@@ -148,7 +148,7 @@ describe Agama::Storage::VolumeConversion::FromSchema do
       end
     end
 
-    context "when the hash settings indicates auto size for a supported volume" do
+    context "when the JSON indicates auto size for a supported volume" do
       let(:outline) do
         {
           "auto_size" => {
@@ -157,7 +157,7 @@ describe Agama::Storage::VolumeConversion::FromSchema do
         }
       end
 
-      let(:volume_schema) do
+      let(:volume_json) do
         {
           mount: {
             path: "/test"
@@ -173,10 +173,10 @@ describe Agama::Storage::VolumeConversion::FromSchema do
       end
     end
 
-    context "when the hash settings indicates auto size for an unsupported volume" do
+    context "when the JSON indicates auto size for an unsupported volume" do
       let(:outline) { {} }
 
-      let(:volume_schema) do
+      let(:volume_json) do
         {
           mount: {
             path: "/test"
@@ -192,10 +192,10 @@ describe Agama::Storage::VolumeConversion::FromSchema do
       end
     end
 
-    context "when the hash settings indicates a filesystem included in the outline" do
+    context "when the JSON indicates a filesystem included in the outline" do
       let(:outline) { { "filesystems" => ["btrfs", "ext4"] } }
 
-      let(:volume_schema) do
+      let(:volume_json) do
         {
           mount:      {
             path: "/test"
@@ -211,10 +211,10 @@ describe Agama::Storage::VolumeConversion::FromSchema do
       end
     end
 
-    context "when the hash settings indicates a filesystem not included in the outline" do
+    context "when the JSON indicates a filesystem not included in the outline" do
       let(:outline) { { "filesystems" => ["btrfs"] } }
 
-      let(:volume_schema) do
+      let(:volume_json) do
         {
           mount:      {
             path: "/test"
@@ -230,10 +230,10 @@ describe Agama::Storage::VolumeConversion::FromSchema do
       end
     end
 
-    context "when the hash settings indicates snapshots for a supported volume" do
+    context "when the JSON indicates snapshots for a supported volume" do
       let(:outline) { { "snapshots_configurable" => true } }
 
-      let(:volume_schema) do
+      let(:volume_json) do
         {
           mount:      {
             path: "/test"
@@ -253,10 +253,10 @@ describe Agama::Storage::VolumeConversion::FromSchema do
       end
     end
 
-    context "when the D-Bus settings provide Snapshots for an unsupported volume" do
+    context "when the JSON indicates snapshots for an unsupported volume" do
       let(:outline) { { "snapshots_configurable" => false } }
 
-      let(:volume_schema) do
+      let(:volume_json) do
         {
           mount:      {
             path: "/test"

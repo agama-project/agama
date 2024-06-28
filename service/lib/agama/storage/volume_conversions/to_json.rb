@@ -25,15 +25,15 @@ require "y2storage"
 
 module Agama
   module Storage
-    module VolumeConversion
-      # Volume conversion according to the JSON schema.
-      class ToSchema
+    module VolumeConversions
+      # Volume conversion to JSON hash according to schema.
+      class ToJSON
         # @param volume [Volume]
         def initialize(volume)
           @volume = volume
         end
 
-        # Performs the conversion according to the JSON schema.
+        # Performs the conversion to JSON.
         #
         # @return [Hash]
         def convert
@@ -41,9 +41,9 @@ module Agama
             mount:  mount_conversion,
             size:   size_conversion,
             target: target_conversion
-          }.tap do |schema|
-            filesystem_schema = filesystem_conversion
-            schema[:filesystem] = filesystem_schema if filesystem_schema
+          }.tap do |volume_json|
+            filesystem_json = filesystem_conversion
+            volume_json[:filesystem] = filesystem_json if filesystem_json
           end
         end
 

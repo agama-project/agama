@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
+require "agama/config"
 require "agama/storage/device_settings"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume"
@@ -168,6 +169,32 @@ describe Agama::Storage::ProposalSettings do
       include_examples "boot device"
 
       include_examples "volume devices"
+    end
+  end
+
+  describe ".new_from_json" do
+    let(:config) { Agama::Config.new }
+
+    let(:settings_json) do
+      {
+        target: {
+          disk: "/dev/vda"
+        }
+      }
+    end
+
+    it "generates a proposal settings from JSON according to schema" do
+      result = described_class.new_from_json(settings_json, config: config)
+      expect(result).to be_a(Agama::Storage::ProposalSettings)
+    end
+  end
+
+  describe "#to_json_settings" do
+    let(:proposal_settings) { Agama::Storage::ProposalSettings.new }
+
+    it "generates a JSON hash according to schema" do
+      result = proposal_settings.to_json_settings
+      expect(result).to be_a(Hash)
     end
   end
 end

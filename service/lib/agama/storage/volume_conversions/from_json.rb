@@ -26,21 +26,22 @@ require "y2storage"
 
 module Agama
   module Storage
-    module VolumeConversion
-      # Volume conversion from Hash according to the JSON schema.
-      class FromSchema
-        # @param volume_schema [Hash]
+    module VolumeConversions
+      # Volume conversion from JSON hash according schema.
+      class FromJSON
+        # @param volume_json [Hash]
         # @param config [Config]
-        def initialize(volume_schema, config:)
-          # @todo Raise error if volume_schema does not match the JSON schema.
-          @volume_schema = volume_schema
+        def initialize(volume_json, config:)
+          @volume_json = volume_json
           @config = config
         end
 
-        # Performs the conversion from Hash according to the JSON schema.
+        # Performs the conversion from JSON Hash according to schema.
         #
         # @return [Volume]
         def convert
+          # @todo Raise error if volume_json does not match the JSON schema.
+
           default_volume.tap do |volume|
             mount_conversion(volume)
             filesystem_conversion(volume)
@@ -52,15 +53,15 @@ module Agama
       private
 
         # @return [Hash]
-        attr_reader :volume_schema
+        attr_reader :volume_json
 
         # @return [Agama::Config]
         attr_reader :config
 
         # @param volume [Volume]
         def mount_conversion(volume)
-          path_value = volume_schema.dig(:mount, :path)
-          options_value = volume_schema.dig(:mount, :options)
+          path_value = volume_json.dig(:mount, :path)
+          options_value = volume_json.dig(:mount, :options)
 
           volume.mount_path = path_value
           volume.mount_options = options_value if options_value
@@ -68,31 +69,31 @@ module Agama
 
         # @param volume [Volume]
         def filesystem_conversion(volume)
-          filesystem_schema = volume_schema[:filesystem]
-          return unless filesystem_schema
+          filesystem_json = volume_json[:filesystem]
+          return unless filesystem_json
 
-          if filesystem_schema.is_a?(String)
-            filesystem_string_conversion(volume, filesystem_schema)
+          if filesystem_json.is_a?(String)
+            filesystem_string_conversion(volume, filesystem_json)
           else
-            filesystem_hash_conversion(volume, filesystem_schema)
+            filesystem_hash_conversion(volume, filesystem_json)
           end
         end
 
         # @param volume [Volume]
-        # @param filesystem [String]
-        def filesystem_string_conversion(volume, filesystem)
+        # @param filesystem_json [String]
+        def filesystem_string_conversion(volume, filesystem_json)
           filesystems = volume.outline.filesystems
 
-          fs_type = filesystems.find { |t| t.to_s == filesystem }
+          fs_type = filesystems.find { |t| t.to_s == filesystem_json }
           volume.fs_type = fs_type if fs_type
         end
 
         # @param volume [Volume]
-        # @param filesystem [Hash]
-        def filesystem_hash_conversion(volume, filesystem)
+        # @param filesystem_json [Hash]
+        def filesystem_hash_conversion(volume, filesystem_json)
           filesystem_string_conversion(volume, "btrfs")
 
-          snapshots_value = filesystem.dig(:btrfs, :snapshots)
+          snapshots_value = filesystem_json.dig(:btrfs, :snapshots)
           return if !volume.outline.snapshots_configurable? || snapshots_value.nil?
 
           volume.btrfs.snapshots = snapshots_value
@@ -101,16 +102,16 @@ module Agama
         # @todo Support array format ([min, max]) and string format ("2 GiB")
         # @param volume [Volume]
         def size_conversion(volume)
-          size_schema = volume_schema[:size]
-          return unless size_schema
+          size_json = volume_json[:size]
+          return unless size_json
 
-          if size_schema == "auto"
+          if size_json == "auto"
             volume.auto_size = true if volume.auto_size_supported?
           else
             volume.auto_size = false
 
-            min_value = size_schema[:min]
-            max_value = size_schema[:max]
+            min_value = size_json[:min]
+            max_value = size_json[:max]
 
             volume.min_size = Y2Storage::DiskSize.new(min_value)
             volume.max_size = if max_value
@@ -122,22 +123,22 @@ module Agama
         end
 
         def target_conversion(volume)
-          target_schema = volume_schema[:target]
-          return unless target_schema
+          target_json = volume_json[:target]
+          return unless target_json
 
-          if target_schema == "default"
+          if target_json == "default"
             volume.location.target = :default
             volume.location.device = nil
-          elsif (device = target_schema[:newPartition])
+          elsif (device = target_json[:newPartition])
             volume.location.target = :new_partition
             volume.location.device = device
-          elsif (device = target_schema[:newVg])
+          elsif (device = target_json[:newVg])
             volume.location.target = :new_vg
             volume.location.device = device
-          elsif (device = target_schema[:device])
+          elsif (device = target_json[:device])
             volume.location.target = :device
             volume.location.device = device
-          elsif (device = target_schema[:filesystem])
+          elsif (device = target_json[:filesystem])
             volume.location.target = :filesystem
             volume.location.device = device
           end
@@ -146,7 +147,7 @@ module Agama
         def default_volume
           Agama::Storage::VolumeTemplatesBuilder
             .new_from_config(config)
-            .for(volume_schema.dig(:mount, :path))
+            .for(volume_json.dig(:mount, :path))
         end
       end
     end
