@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jun 28 06:56:02 UTC 2024 - Martin Vidner <mvidner@suse.com>
+
+- Use gzip (.gz) instead of bzip2 (.bz2) to compress logs
+  so that they can be attached to GitHub issues
+  (gh#openSUSE/agama#1378)
+
+-------------------------------------------------------------------
 Thu Jun 27 13:22:51 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 9

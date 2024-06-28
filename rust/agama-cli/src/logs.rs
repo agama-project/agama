@@ -115,7 +115,7 @@ const DEFAULT_PATHS: [&str; 14] = [
 const DEFAULT_RESULT: &str = "/tmp/agama-logs";
 // what compression is used by default:
 // (<compression as distinguished by tar>, <an extension for resulting archive>)
-const DEFAULT_COMPRESSION: (&str, &str) = ("bzip2", "tar.bz2");
+const DEFAULT_COMPRESSION: (&str, &str) = ("gzip", "tar.gz");
 const TMP_DIR_PREFIX: &str = "agama-logs.";
 
 /// A wrapper around println which shows (or not) the text depending on the boolean variable

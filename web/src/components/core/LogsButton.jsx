@@ -27,7 +27,7 @@ import { Alert, Button } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
 
-const FILENAME = "agama-installation-logs.tar.bzip2";
+const FILENAME = "agama-installation-logs.tar.gz";
 
 /**
  * Button for collecting and downloading YaST logs

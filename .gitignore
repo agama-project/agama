@@ -4,3 +4,6 @@
 /*.pot
 *.mo
 *.bz2
+# Do NOT ignore .github: for git this is a no-op
+# but it helps ripgrep (rg) which would otherwise ignore dotfiles and dotdirs
+!/.github/

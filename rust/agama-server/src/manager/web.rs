@@ -218,6 +218,6 @@ async fn generate_logs() -> Result<String, Error> {
         .status()
         .map_err(|e| ServiceError::CannotGenerateLogs(e.to_string()))?;
 
-    let full_path = format!("{path}.tar.bz2");
+    let full_path = format!("{path}.tar.gz");
     Ok(full_path)
 }

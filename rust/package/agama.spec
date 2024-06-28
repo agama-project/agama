@@ -40,7 +40,7 @@ BuildRequires:  pkgconfig(pam)
 Requires:       jsonnet
 Requires:       lshw
 # required by "agama logs store"
-Requires:       bzip2
+Requires:       gzip
 Requires:       tar
 # required for translating the keyboards descriptions
 BuildRequires:  xkeyboard-config-lang
