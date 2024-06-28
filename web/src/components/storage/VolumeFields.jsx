@@ -321,9 +321,9 @@ const SizeManual = ({ errors, formData, isDisabled, onChange }) => {
               //   (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toLocaleString)
               // or use the "globalize" JS library which can also parse the localized string back
               //   (https://github.com/globalizejs/globalize#number-module)
-              value={formData.size}
-              onChange={(size) => onChange({ size })}
-              validated={errors.size && 'error'}
+              value={formData.minSize}
+              onChange={(minSize) => onChange({ minSize })}
+              validated={errors.minSize && 'error'}
               isDisabled={isDisabled}
             />
           </InputGroupItem>
@@ -334,8 +334,8 @@ const SizeManual = ({ errors, formData, isDisabled, onChange }) => {
               // TRANSLATORS: units selector (like KiB, MiB, GiB...)
               aria-label={_("Size unit")}
               units={Object.values(SIZE_UNITS)}
-              value={formData.sizeUnit}
-              onChange={(_, sizeUnit) => onChange({ sizeUnit })}
+              value={formData.minSizeUnit}
+              onChange={(_, minSizeUnit) => onChange({ minSizeUnit })}
               isDisabled={isDisabled}
             />
           </InputGroupItem>

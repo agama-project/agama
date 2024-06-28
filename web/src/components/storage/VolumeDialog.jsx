@@ -43,8 +43,6 @@ import {
  * @property {VolumeFormErrors} errors
  *
  * @typedef {object} VolumeFormData
- * @property {number|string} [size]
- * @property {string} [sizeUnit]
  * @property {number|string} [minSize]
  * @property {string} [minSizeUnit]
  * @property {number|string} [maxSize]
@@ -490,7 +488,6 @@ const sanitizeMountPath = (mountPath) => {
  */
 const createUpdatedVolume = (volume, formData) => {
   let sizeAttrs = {};
-  const size = parseToBytes(`${formData.size} ${formData.sizeUnit}`);
   const minSize = parseToBytes(`${formData.minSize} ${formData.minSizeUnit}`);
   const maxSize = parseToBytes(`${formData.maxSize} ${formData.maxSizeUnit}`);
 
@@ -499,7 +496,7 @@ const createUpdatedVolume = (volume, formData) => {
       sizeAttrs = { minSize: undefined, maxSize: undefined, autoSize: true };
       break;
     case SIZE_METHODS.MANUAL:
-      sizeAttrs = { minSize: size, maxSize: size, autoSize: false };
+      sizeAttrs = { minSize, maxSize: minSize, autoSize: false };
       break;
     case SIZE_METHODS.RANGE:
       sizeAttrs = { minSize, maxSize: formData.maxSize ? maxSize : undefined, autoSize: false };
@@ -543,8 +540,6 @@ const prepareFormData = (volume) => {
   const { size: maxSize = "", unit: maxSizeUnit = minSizeUnit || DEFAULT_SIZE_UNIT } = splitSize(volume.maxSize);
 
   return {
-    size: minSize,
-    sizeUnit: minSizeUnit,
     minSize,
     minSizeUnit,
     maxSize,

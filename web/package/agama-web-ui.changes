@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 28 13:49:54 UTC 2024 - Martin Vidner <mvidner@suse.com>
+
+- In Add/Edit file system dialog (VolumeDialog), keep the numeric value
+  when switching between Fixed and Range sizing (gh#openSUSE/agama#1277)
+
+-------------------------------------------------------------------
 Fri Jun 28 06:56:02 UTC 2024 - Martin Vidner <mvidner@suse.com>
 
 - Use gzip (.gz) instead of bzip2 (.bz2) to compress logs
