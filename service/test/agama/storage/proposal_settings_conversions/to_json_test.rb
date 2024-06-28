@@ -20,14 +20,14 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
-require "agama/storage/proposal_settings_conversion/to_schema"
+require "agama/storage/proposal_settings_conversions/to_json"
 require "agama/storage/device_settings"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume"
 require "y2storage/encryption_method"
 require "y2storage/pbkd_function"
 
-describe Agama::Storage::ProposalSettingsConversion::ToSchema do
+describe Agama::Storage::ProposalSettingsConversions::ToJSON do
   let(:default_settings) { Agama::Storage::ProposalSettings.new }
 
   let(:custom_settings) do
@@ -44,7 +44,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToSchema do
   end
 
   describe "#convert" do
-    it "converts the settings to the proper hash according to the JSON schema" do
+    it "converts the settings to a JSON hash according to schema" do
       # @todo Check whether the result matches the JSON schema.
 
       expect(described_class.new(default_settings).convert).to eq(
@@ -101,7 +101,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToSchema do
         end
       end
 
-      it "converts the settings to the proper hash according to the JSON schema" do
+      it "converts the settings to a JSON hash according to schema" do
         expect(described_class.new(settings).convert).to eq(
           target:  {
             newLvmVg: ["/dev/vda"]

@@ -19,11 +19,11 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/volume_conversion"
+require "agama/storage/volume_conversions/from_y2storage"
 
 module Agama
   module Storage
-    module ProposalSettingsConversion
+    module ProposalSettingsConversions
       # Proposal settings conversion from Y2Storage.
       #
       # @note This class does not perform a real conversion from Y2Storage settings. Instead of
@@ -60,7 +60,7 @@ module Agama
         # Recovers space actions.
         #
         # @note Space actions are generated in the conversion of the settings to Y2Storage format,
-        #   see {ProposalSettingsConversion::ToY2Storage}.
+        #   see {ProposalSettingsConversions::ToY2Storage}.
         #
         # @param target [Agama::Storage::ProposalSettings]
         def space_actions_conversion(target)
@@ -77,7 +77,7 @@ module Agama
         # @param volume [Agama::Storage::Volume]
         # @return [Agama::Storage::Volume]
         def volume_conversion(volume)
-          VolumeConversion.from_y2storage(volume)
+          VolumeConversions::FromY2Storage.new(volume).convert
         end
       end
     end

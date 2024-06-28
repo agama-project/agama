@@ -22,10 +22,10 @@
 require_relative "../../../test_helper"
 require "agama/config"
 require "agama/storage/proposal_settings"
-require "agama/storage/proposal_settings_conversion/from_y2storage"
+require "agama/storage/proposal_settings_conversions/from_y2storage"
 require "y2storage"
 
-describe Agama::Storage::ProposalSettingsConversion::FromY2Storage do
+describe Agama::Storage::ProposalSettingsConversions::FromY2Storage do
   subject { described_class.new(y2storage_settings, original_settings) }
 
   let(:y2storage_settings) do

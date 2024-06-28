@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2024] SUSE LLC
+# Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,34 +21,14 @@
 
 require_relative "../../test_helper"
 require "agama/config"
-require "agama/storage/proposal_settings"
 require "agama/storage/volume"
-require "agama/storage/volume_conversion"
-require "y2storage"
+require "y2storage/volume_specification"
 
-describe Agama::Storage::VolumeConversion do
-  describe "#from_y2storage" do
-    let(:volume) { Agama::Storage::Volume.new("/test") }
-
-    it "generates a volume" do
-      result = described_class.from_y2storage(volume)
-      expect(result).to be_a(Agama::Storage::Volume)
-    end
-  end
-
-  describe "#to_y2storage" do
-    let(:volume) { Agama::Storage::Volume.new("/test") }
-
-    it "generates a Y2Storage volume spec" do
-      result = described_class.to_y2storage(volume)
-      expect(result).to be_a(Y2Storage::VolumeSpecification)
-    end
-  end
-
-  describe "#from_schema" do
+describe Agama::Storage::Volume do
+  describe ".new_from_json" do
     let(:config) { Agama::Config.new }
 
-    let(:volume_schema) do
+    let(:volume_json) do
       {
         mount: {
           path: "/test"
@@ -56,18 +36,28 @@ describe Agama::Storage::VolumeConversion do
       }
     end
 
-    it "generates a volume from settings according to the JSON schema" do
-      result = described_class.from_schema(volume_schema, config: config)
+    it "generates a volume from JSON according to schema" do
+      result = described_class.new_from_json(volume_json, config: config)
       expect(result).to be_a(Agama::Storage::Volume)
+      expect(result.mount_path).to eq("/test")
     end
   end
 
-  describe "#to_schema" do
+  describe "#to_json_settngs" do
     let(:volume) { Agama::Storage::Volume.new("/test") }
 
-    it "generates volume settings according to the JSON schema from a volume" do
-      result = described_class.to_schema(volume)
+    it "generates a JSON hash according to schema" do
+      result = volume.to_json_settings
       expect(result).to be_a(Hash)
+    end
+  end
+
+  describe "#to_y2storage" do
+    let(:volume) { Agama::Storage::Volume.new("/test") }
+
+    it "generates a Y2Storage volume spec" do
+      result = volume.to_y2storage
+      expect(result).to be_a(Y2Storage::VolumeSpecification)
     end
   end
 end

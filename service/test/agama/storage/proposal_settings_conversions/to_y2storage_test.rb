@@ -24,10 +24,10 @@ require_relative "../storage_helpers"
 require "agama/config"
 require "agama/storage/device_settings"
 require "agama/storage/proposal_settings"
-require "agama/storage/proposal_settings_conversion/to_y2storage"
+require "agama/storage/proposal_settings_conversions/to_y2storage"
 require "y2storage"
 
-describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
+describe Agama::Storage::ProposalSettingsConversions::ToY2Storage do
   include Agama::RSpec::StorageHelpers
 
   subject { described_class.new(settings, config: config) }

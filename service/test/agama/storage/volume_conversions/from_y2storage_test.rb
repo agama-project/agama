@@ -23,10 +23,10 @@ require_relative "../../../test_helper"
 require_relative "../storage_helpers"
 require_relative "../../rspec/matchers/storage"
 require "agama/storage/volume"
-require "agama/storage/volume_conversion/from_y2storage"
+require "agama/storage/volume_conversions/from_y2storage"
 require "y2storage"
 
-describe Agama::Storage::VolumeConversion::FromY2Storage do
+describe Agama::Storage::VolumeConversions::FromY2Storage do
   include Agama::RSpec::StorageHelpers
 
   before { mock_storage }

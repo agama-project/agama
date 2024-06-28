@@ -24,20 +24,19 @@ require "agama/storage/device_settings"
 require "agama/storage/encryption_settings"
 require "agama/storage/proposal_settings_reader"
 require "agama/storage/space_settings"
-require "agama/storage/volume_conversion"
+require "agama/storage/volume"
 require "y2storage/encryption_method"
 require "y2storage/pbkd_function"
 
 module Agama
   module Storage
-    module ProposalSettingsConversion
-      # Proposal settings conversion from Hash according to the JSON schema.
-      class FromSchema
-        # @param schema_settings [Hash]
+    module ProposalSettingsConversions
+      # Proposal settings conversion from JSON hash according to schema.
+      class FromJSON
+        # @param settings_json [Hash]
         # @param config [Config]
-        def initialize(schema_settings, config:)
-          # @todo Raise error if schema_settings does not match the JSON schema.
-          @schema_settings = schema_settings
+        def initialize(settings_json, config:)
+          @settings_json = settings_json
           @config = config
         end
 
@@ -45,6 +44,7 @@ module Agama
         #
         # @return [ProposalSettings]
         def convert
+          # @todo Raise error if settings_json does not match the JSON schema.
           device_settings = target_conversion
           boot_settings = boot_conversion
           encryption_settings = encryption_conversion
@@ -63,49 +63,49 @@ module Agama
       private
 
         # @return [Hash]
-        attr_reader :schema_settings
+        attr_reader :settings_json
 
         # @return [Config]
         attr_reader :config
 
         def target_conversion
-          target_schema = schema_settings[:target]
-          return unless target_schema
+          target_json = settings_json[:target]
+          return unless target_json
 
-          if target_schema == "disk"
+          if target_json == "disk"
             Agama::Storage::DeviceSettings::Disk.new
-          elsif target_schema == "newLvmVg"
+          elsif target_json == "newLvmVg"
             Agama::Storage::DeviceSettings::NewLvmVg.new
-          elsif (device = target_schema[:disk])
+          elsif (device = target_json[:disk])
             Agama::Storage::DeviceSettings::Disk.new(device)
-          elsif (devices = target_schema[:newLvmVg])
+          elsif (devices = target_json[:newLvmVg])
             Agama::Storage::DeviceSettings::NewLvmVg.new(devices)
           end
         end
 
         def boot_conversion
-          boot_schema = schema_settings[:boot]
-          return unless boot_schema
+          boot_json = settings_json[:boot]
+          return unless boot_json
 
           Agama::Storage::BootSettings.new.tap do |boot_settings|
-            boot_settings.configure = boot_schema[:configure]
-            boot_settings.device = boot_schema[:device]
+            boot_settings.configure = boot_json[:configure]
+            boot_settings.device = boot_json[:device]
           end
         end
 
         def encryption_conversion
-          encryption_schema = schema_settings[:encryption]
-          return unless encryption_schema
+          encryption_json = settings_json[:encryption]
+          return unless encryption_json
 
           Agama::Storage::EncryptionSettings.new.tap do |encryption_settings|
-            encryption_settings.password = encryption_schema[:password]
+            encryption_settings.password = encryption_json[:password]
 
-            if (method_value = encryption_schema[:method])
+            if (method_value = encryption_json[:method])
               method = Y2Storage::EncryptionMethod.find(method_value.to_sym)
               encryption_settings.method = method
             end
 
-            if (function_value = encryption_schema[:pbkdFunction])
+            if (function_value = encryption_json[:pbkdFunction])
               function = Y2Storage::PbkdFunction.find(function_value)
               encryption_settings.pbkd_function = function
             end
@@ -113,13 +113,13 @@ module Agama
         end
 
         def space_conversion
-          space_schema = schema_settings[:space]
-          return unless space_schema
+          space_json = settings_json[:space]
+          return unless space_json
 
           Agama::Storage::SpaceSettings.new.tap do |space_settings|
-            space_settings.policy = space_schema[:policy].to_sym
+            space_settings.policy = space_json[:policy].to_sym
 
-            actions_value = space_schema[:actions] || []
+            actions_value = space_json[:actions] || []
             space_settings.actions = actions_value.map { |a| action_conversion(a) }.inject(:merge)
           end
         end
@@ -132,11 +132,11 @@ module Agama
         end
 
         def volumes_conversion
-          volumes_schema = schema_settings[:volumes]
-          return [] unless volumes_schema
+          volumes_json = settings_json[:volumes]
+          return [] unless volumes_json
 
-          volumes_schema.map do |volume_schema|
-            VolumeConversion.from_schema(volume_schema, config: config)
+          volumes_json.map do |volume_json|
+            Volume.new_from_json(volume_json, config: config)
           end
         end
 

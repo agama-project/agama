@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,17 +20,16 @@
 # find current contact information at www.suse.com.
 
 require "forwardable"
+require "json"
 require "y2storage/disk_size"
 require "agama/storage/btrfs_settings"
-require "agama/storage/volume_outline"
+require "agama/storage/volume_conversions"
 require "agama/storage/volume_location"
+require "agama/storage/volume_outline"
 
 module Agama
   module Storage
     # A volume represents the characteristics of a file system to create in the system.
-    #
-    # A volume is converted to D-Bus and to Y2Storage formats in order to provide the volume
-    # information with the expected representation, see {VolumeConversion}.
     class Volume
       extend Forwardable
 
@@ -110,6 +109,30 @@ module Agama
         # need to have such a senseless scenario into account (a product that contains size rules
         # for the snapshots but does not allow to enable them).
         outline.adaptive_sizes?
+      end
+
+      # Creates a new volume object from a JSON hash according to schema.
+      #
+      # @param volume_json [Hash]
+      # @param config [Config]
+      #
+      # @return [Volume]
+      def self.new_from_json(volume_json, config:)
+        Storage::VolumeConversions::FromJSON.new(volume_json, config: config).convert
+      end
+
+      # Generates a JSON hash according to schema.
+      #
+      # @return [Hash]
+      def to_json_settings
+        Storage::VolumeConversions::ToJSON.new(self).convert
+      end
+
+      # Generates a Y2Storage volume.
+      #
+      # @return [Y2Storage::VolumeSpecification]
+      def to_y2storage
+        Storage::VolumeConversions::ToY2Storage.new(self).convert
       end
     end
   end

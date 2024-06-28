@@ -21,12 +21,11 @@
 
 require "y2storage"
 require "agama/storage/device_settings"
-require "agama/storage/volume_conversion"
 require "agama/storage/volume_templates_builder"
 
 module Agama
   module Storage
-    module ProposalSettingsConversion
+    module ProposalSettingsConversions
       # Proposal settings conversion to Y2Storage.
       class ToY2Storage
         # @param settings [Agama::Storage::ProposalSettings]
@@ -142,10 +141,10 @@ module Agama
         def volumes_conversion(target)
           target.swap_reuse = :none
 
-          volumes = settings.volumes.map { |v| VolumeConversion.to_y2storage(v) }
+          volumes = settings.volumes.map(&:to_y2storage)
 
           disabled_volumes = missing_volumes.map do |volume|
-            VolumeConversion.to_y2storage(volume).tap { |v| v.proposed = false }
+            volume.to_y2storage.tap { |v| v.proposed = false }
           end
 
           target.volumes = volumes + disabled_volumes
