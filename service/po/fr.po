@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-23 02:24+0000\n"
+"POT-Creation-Date: 2024-06-30 02:27+0000\n"
 "PO-Revision-Date: 2024-04-19 23:43+0000\n"
 "Last-Translator: faila fail <yassadmi@proton.me>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-"
@@ -19,28 +19,37 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 4.9.1\n"
 
-#. Runs the config phase
+#. Runs the startup phase
 #: service/lib/agama/manager.rb:88
+msgid "Load software translations"
+msgstr ""
+
+#: service/lib/agama/manager.rb:89
+msgid "Load storage translations"
+msgstr ""
+
+#. Runs the config phase
+#: service/lib/agama/manager.rb:104
 msgid "Analyze disks"
 msgstr ""
 
-#: service/lib/agama/manager.rb:88
+#: service/lib/agama/manager.rb:104
 #, fuzzy
 msgid "Configure software"
 msgstr "Sonde les logiciels"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:108
+#: service/lib/agama/manager.rb:124
 msgid "Prepare disks"
 msgstr ""
 
-#: service/lib/agama/manager.rb:109
+#: service/lib/agama/manager.rb:125
 #, fuzzy
 msgid "Install software"
 msgstr "Installation des logiciels"
 
-#: service/lib/agama/manager.rb:110
+#: service/lib/agama/manager.rb:126
 msgid "Configure the system"
 msgstr ""
 
@@ -81,15 +90,15 @@ msgstr ""
 "inconnue. Voulez-vous faire confiance à cette clé ?"
 
 #. Should an error be raised?
-#: service/lib/agama/software/manager.rb:137
+#: service/lib/agama/software/manager.rb:141
 msgid "Initializing sources"
 msgstr "Initialisation des sources"
 
-#: service/lib/agama/software/manager.rb:142
+#: service/lib/agama/software/manager.rb:146
 msgid "Refreshing repositories metadata"
 msgstr "Actualisation des métadonnées des dépôts"
 
-#: service/lib/agama/software/manager.rb:143
+#: service/lib/agama/software/manager.rb:147
 msgid "Calculating the software proposal"
 msgstr "Calcul de l'offre de logiciel"
 
@@ -98,7 +107,7 @@ msgstr "Calcul de l'offre de logiciel"
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:465
+#: service/lib/agama/software/manager.rb:563
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "Impossible de lire le dépôt \"%s\""
@@ -106,14 +115,14 @@ msgstr "Impossible de lire le dépôt \"%s\""
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:475
+#: service/lib/agama/software/manager.rb:573
 msgid "Product not selected yet"
 msgstr "Le produit n'est pas encore sélectionné"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:484
+#: service/lib/agama/software/manager.rb:582
 msgid "Product must be registered"
 msgstr "Le produit doit être enregistré"
 
@@ -126,44 +135,44 @@ msgid "Found %s dependency issues."
 msgstr "%s problème(s) de dépendance trouvé(s)."
 
 #. Probes storage devices and performs an initial proposal
-#: service/lib/agama/storage/manager.rb:113
+#: service/lib/agama/storage/manager.rb:115
 msgid "Activating storage devices"
 msgstr "Activation des périphériques de stockage"
 
-#: service/lib/agama/storage/manager.rb:114
+#: service/lib/agama/storage/manager.rb:116
 msgid "Probing storage devices"
 msgstr "Sonde les périphériques de stockage"
 
-#: service/lib/agama/storage/manager.rb:115
+#: service/lib/agama/storage/manager.rb:117
 msgid "Calculating the storage proposal"
 msgstr "Calcul de la proposition de stockage"
 
-#: service/lib/agama/storage/manager.rb:116
+#: service/lib/agama/storage/manager.rb:118
 msgid "Selecting Linux Security Modules"
 msgstr "Sélection des modules de sécurité Linux"
 
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:124
+#: service/lib/agama/storage/manager.rb:126
 msgid "Preparing bootloader proposal"
 msgstr "Préparation du chargeur d'amorçage envisagé"
 
 #. first make bootloader proposal to be sure that required packages are installed
-#: service/lib/agama/storage/manager.rb:129
+#: service/lib/agama/storage/manager.rb:131
 msgid "Adding storage-related packages"
 msgstr "Ajout des paquets relatifs au stockage"
 
-#: service/lib/agama/storage/manager.rb:130
+#: service/lib/agama/storage/manager.rb:132
 msgid "Preparing the storage devices"
 msgstr "Préparation des périphériques de stockage"
 
-#: service/lib/agama/storage/manager.rb:131
+#: service/lib/agama/storage/manager.rb:133
 msgid "Writing bootloader sysconfig"
 msgstr "Écriture du sysconfig du chargeur d'amorçage"
 
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:189
+#: service/lib/agama/storage/proposal.rb:192
 msgid "Cannot accommodate the required file systems for installation"
 msgstr ""
 "Impossible d'accommoder les systèmes de fichiers requis pour l'installation"
@@ -171,21 +180,21 @@ msgstr ""
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:200
+#: service/lib/agama/storage/proposal.rb:203
 msgid "A problem ocurred while calculating the storage setup"
 msgstr ""
 
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:122
+#: service/lib/agama/storage/proposal_strategies/guided.rb:124
 msgid "No device selected for installation"
 msgstr "Aucun périphérique n'a été sélectionné pour l'installation"
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:138
+#: service/lib/agama/storage/proposal_strategies/guided.rb:140
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""

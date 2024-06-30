@@ -8,11 +8,11 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-30 02:27+0000\n"
-"PO-Revision-Date: 2024-06-22 21:46+0000\n"
-"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
-"Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/de/>\n"
-"Language: de\n"
+"PO-Revision-Date: 2024-06-28 16:46+0000\n"
+"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
+"Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-"
+"service-master/ka/>\n"
+"Language: ka\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -31,23 +31,21 @@ msgstr ""
 #. Runs the config phase
 #: service/lib/agama/manager.rb:104
 msgid "Analyze disks"
-msgstr ""
+msgstr "დისკების ანალიზი"
 
 #: service/lib/agama/manager.rb:104
-#, fuzzy
 msgid "Configure software"
-msgstr "Software wird untersucht"
+msgstr "პროგრამების მორგება"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
 #: service/lib/agama/manager.rb:124
 msgid "Prepare disks"
-msgstr ""
+msgstr "დისკების მომზადება"
 
 #: service/lib/agama/manager.rb:125
-#, fuzzy
 msgid "Install software"
-msgstr "Software wird installiert"
+msgstr "პროგრამების დაყენება"
 
 #: service/lib/agama/manager.rb:126
 msgid "Configure the system"
@@ -60,12 +58,12 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:63
 #, perl-brace-format
 msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
-msgstr "Die Datei %{filename} aus dem Repositorium %{repo_name} (%{repo_url})"
+msgstr ""
 
 #: service/lib/agama/software/callbacks/signature.rb:67
 #, perl-brace-format
 msgid "The file %{filename}"
-msgstr "Die Datei %{filename}"
+msgstr ""
 
 #: service/lib/agama/software/callbacks/signature.rb:71
 #, perl-brace-format
@@ -73,8 +71,6 @@ msgid ""
 "%{source} is not digitally signed. The origin and integrity of the file "
 "cannot be verified. Use it anyway?"
 msgstr ""
-"%{source} ist nicht digital signiert. Der Ursprung und die Integrität der "
-"Datei können nicht überprüft werden. Trotzdem verwenden?"
 
 #. Callback to handle signature verification failures
 #.
@@ -86,21 +82,19 @@ msgid ""
 "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
 "want to trust this key?"
 msgstr ""
-"Der Schlüssel %{id} (%{name}) mit dem Fingerabdruck %{fingerprint} ist "
-"unbekannt. Möchten Sie diesem Schlüssel vertrauen?"
 
 #. Should an error be raised?
 #: service/lib/agama/software/manager.rb:141
 msgid "Initializing sources"
-msgstr "Quellen werden initialisiert"
+msgstr "წყაროების ინიციალიზაცია"
 
 #: service/lib/agama/software/manager.rb:146
 msgid "Refreshing repositories metadata"
-msgstr "Repositorien-Metadaten werden aufgefrischt"
+msgstr ""
 
 #: service/lib/agama/software/manager.rb:147
 msgid "Calculating the software proposal"
-msgstr "Software-Vorschlag wird berechnet"
+msgstr ""
 
 #. Issues related to the software proposal.
 #.
@@ -110,21 +104,21 @@ msgstr "Software-Vorschlag wird berechnet"
 #: service/lib/agama/software/manager.rb:563
 #, c-format
 msgid "Could not read repository \"%s\""
-msgstr "Repositorium „%s“ konnte nicht gelesen werden"
+msgstr ""
 
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:573
 msgid "Product not selected yet"
-msgstr "Produkt noch nicht ausgewählt"
+msgstr ""
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:582
 msgid "Product must be registered"
-msgstr "Produkt muss registriert sein"
+msgstr ""
 
 #. Returns solver error messages from the last attempt
 #.
@@ -132,65 +126,63 @@ msgstr "Produkt muss registriert sein"
 #: service/lib/agama/software/proposal.rb:223
 #, c-format
 msgid "Found %s dependency issues."
-msgstr "%s Abhängigkeitsprobleme gefunden."
+msgstr ""
 
 #. Probes storage devices and performs an initial proposal
 #: service/lib/agama/storage/manager.rb:115
 msgid "Activating storage devices"
-msgstr "Speichergeräte werden aktiviert"
+msgstr ""
 
 #: service/lib/agama/storage/manager.rb:116
 msgid "Probing storage devices"
-msgstr "Speichergeräte werden untersucht"
+msgstr ""
 
 #: service/lib/agama/storage/manager.rb:117
 msgid "Calculating the storage proposal"
-msgstr "Speichervorschlag wird berechnet"
+msgstr ""
 
 #: service/lib/agama/storage/manager.rb:118
 msgid "Selecting Linux Security Modules"
-msgstr "Linux-Sicherheitsmodule werden ausgewählt"
+msgstr ""
 
 #. Prepares the partitioning to install the system
 #: service/lib/agama/storage/manager.rb:126
 msgid "Preparing bootloader proposal"
-msgstr "Bootloader-Vorschlag wird vorbereitet"
+msgstr ""
 
 #. first make bootloader proposal to be sure that required packages are installed
 #: service/lib/agama/storage/manager.rb:131
 msgid "Adding storage-related packages"
-msgstr "Speicherbezogene Pakete werden hinzugefügt"
+msgstr ""
 
 #: service/lib/agama/storage/manager.rb:132
 msgid "Preparing the storage devices"
-msgstr "Speichergeräte werden vorbereitet"
+msgstr ""
 
 #: service/lib/agama/storage/manager.rb:133
 msgid "Writing bootloader sysconfig"
-msgstr "Bootloader-Systemkonfiguration wird geschrieben"
+msgstr ""
 
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:192
 msgid "Cannot accommodate the required file systems for installation"
-msgstr ""
-"Die für die Installation erforderlichen Dateisysteme können nicht "
-"untergebracht werden"
+msgstr "დაყენებისთვის საჭირო ფაილური სისტემების შეგროვება შეუძლებელია"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:203
 msgid "A problem ocurred while calculating the storage setup"
-msgstr "Bei der Berechnung der Speichereinrichtung ist ein Problem aufgetreten"
+msgstr ""
 
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
 #: service/lib/agama/storage/proposal_strategies/guided.rb:124
 msgid "No device selected for installation"
-msgstr "Kein Gerät für die Installation ausgewählt"
+msgstr ""
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
@@ -201,44 +193,10 @@ msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
 "The following selected devices are not found in the system: %{devices}"
 msgstr[0] ""
-"Das folgende ausgewählte Gerät wird im System nicht gefunden: %{devices}"
 msgstr[1] ""
-"Die folgenden ausgewählten Geräte werden im System nicht gefunden: %{devices}"
 
 #. Recalculates the list of issues
 #: service/lib/agama/users.rb:152
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Die Definition eines Benutzers, das Festlegen des Root-Passworts oder eines "
-"öffentlichen SSH-Schlüssels ist erforderlich"
-
-#~ msgid "Probing Storage"
-#~ msgstr "Speicher wird untersucht"
-
-#~ msgid "Partitioning"
-#~ msgstr "Partitionierung"
-
-#~ msgid "Writing Users"
-#~ msgstr "Benutzer werden geschrieben"
-
-#~ msgid "Writing Network Configuration"
-#~ msgstr "Netzwerkkonfiguration wird geschrieben"
-
-#~ msgid "Saving Language Settings"
-#~ msgstr "Spracheinstellungen werden gespeichert"
-
-#~ msgid "Writing repositories information"
-#~ msgstr "Repositorien-Informationen werden geschrieben"
-
-#~ msgid "Finishing storage configuration"
-#~ msgstr "Speicherkonfiguration wird abgeschlossen"
-
-#~ msgid "Writing repositories to the target system"
-#~ msgstr "Repositorien werden auf das Zielsystem geschrieben"
-
-#~ msgid "Initializing target repositories"
-#~ msgstr "Ziel-Repositorien werden initialisiert"
-
-#~ msgid "Restoring original repositories"
-#~ msgstr "Ursprüngliche Repositorien werden wiederhergestellt"

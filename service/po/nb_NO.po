@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-23 02:24+0000\n"
-"PO-Revision-Date: 2024-06-12 01:46+0000\n"
+"POT-Creation-Date: 2024-06-30 02:27+0000\n"
+"PO-Revision-Date: 2024-06-29 13:46+0000\n"
 "Last-Translator: Martin Hansen <mh306602@gmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://l10n.opensuse.org/projects/agama/"
 "agama-service-master/nb_NO/>\n"
@@ -17,32 +17,39 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.6\n"
+
+#. Runs the startup phase
+#: service/lib/agama/manager.rb:88
+msgid "Load software translations"
+msgstr "Last inn oversettelser for programvare"
+
+#: service/lib/agama/manager.rb:89
+msgid "Load storage translations"
+msgstr "Last inn oversettelser for lagring"
 
 #. Runs the config phase
-#: service/lib/agama/manager.rb:88
+#: service/lib/agama/manager.rb:104
 msgid "Analyze disks"
-msgstr ""
+msgstr "Analyser disker"
 
-#: service/lib/agama/manager.rb:88
-#, fuzzy
+#: service/lib/agama/manager.rb:104
 msgid "Configure software"
-msgstr "Undersøker Programvare"
+msgstr "Konfigurer programvare"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:108
+#: service/lib/agama/manager.rb:124
 msgid "Prepare disks"
-msgstr ""
+msgstr "Klargjør disker"
 
-#: service/lib/agama/manager.rb:109
-#, fuzzy
+#: service/lib/agama/manager.rb:125
 msgid "Install software"
-msgstr "Installerer Programvare"
+msgstr "Installer programvare"
 
-#: service/lib/agama/manager.rb:110
+#: service/lib/agama/manager.rb:126
 msgid "Configure the system"
-msgstr ""
+msgstr "Konfigurer systemet"
 
 #. Callback to handle unsigned files
 #.
@@ -81,15 +88,15 @@ msgstr ""
 "stole på denne nøkkelen?"
 
 #. Should an error be raised?
-#: service/lib/agama/software/manager.rb:137
+#: service/lib/agama/software/manager.rb:141
 msgid "Initializing sources"
 msgstr "Initialiserer kilder"
 
-#: service/lib/agama/software/manager.rb:142
+#: service/lib/agama/software/manager.rb:146
 msgid "Refreshing repositories metadata"
 msgstr "Oppdaterer pakkebrønn metadata"
 
-#: service/lib/agama/software/manager.rb:143
+#: service/lib/agama/software/manager.rb:147
 msgid "Calculating the software proposal"
 msgstr "Kalkulerer programvareforslaget"
 
@@ -98,7 +105,7 @@ msgstr "Kalkulerer programvareforslaget"
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:465
+#: service/lib/agama/software/manager.rb:563
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "Kunne ikke lese pakkebrønn \"%s\""
@@ -106,14 +113,14 @@ msgstr "Kunne ikke lese pakkebrønn \"%s\""
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:475
+#: service/lib/agama/software/manager.rb:573
 msgid "Product not selected yet"
 msgstr "Produkt har ikke blitt valgt ennå"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:484
+#: service/lib/agama/software/manager.rb:582
 msgid "Product must be registered"
 msgstr "Produkt må bli registrert"
 
@@ -126,65 +133,65 @@ msgid "Found %s dependency issues."
 msgstr "Fant %s avhengighetsproblemer."
 
 #. Probes storage devices and performs an initial proposal
-#: service/lib/agama/storage/manager.rb:113
+#: service/lib/agama/storage/manager.rb:115
 msgid "Activating storage devices"
 msgstr "Aktiverer lagringsenheter"
 
-#: service/lib/agama/storage/manager.rb:114
+#: service/lib/agama/storage/manager.rb:116
 msgid "Probing storage devices"
 msgstr "Undersøker lagringsenheter"
 
-#: service/lib/agama/storage/manager.rb:115
+#: service/lib/agama/storage/manager.rb:117
 msgid "Calculating the storage proposal"
 msgstr "Kalkulerer lagringsforslaget"
 
-#: service/lib/agama/storage/manager.rb:116
+#: service/lib/agama/storage/manager.rb:118
 msgid "Selecting Linux Security Modules"
 msgstr "Velger Linux Sikkerhetsmoduler"
 
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:124
+#: service/lib/agama/storage/manager.rb:126
 msgid "Preparing bootloader proposal"
 msgstr "Forbereder forslag til oppstartslaster"
 
 #. first make bootloader proposal to be sure that required packages are installed
-#: service/lib/agama/storage/manager.rb:129
+#: service/lib/agama/storage/manager.rb:131
 msgid "Adding storage-related packages"
 msgstr "Legger til lagringsrelaterte pakker"
 
-#: service/lib/agama/storage/manager.rb:130
+#: service/lib/agama/storage/manager.rb:132
 msgid "Preparing the storage devices"
 msgstr "Forbereder lagringsenheter"
 
-#: service/lib/agama/storage/manager.rb:131
+#: service/lib/agama/storage/manager.rb:133
 msgid "Writing bootloader sysconfig"
 msgstr "Skriver oppstartslasterens sysconfig"
 
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:189
+#: service/lib/agama/storage/proposal.rb:192
 msgid "Cannot accommodate the required file systems for installation"
-msgstr "Kan ikke legge til rette for filsystemene som kreves for installasjon"
+msgstr "Kan ikke håndtere de nødvendige filsystemene for installasjon"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:200
+#: service/lib/agama/storage/proposal.rb:203
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "Ett problem oppsto under kalkulering av lagringsoppsettet"
 
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:122
+#: service/lib/agama/storage/proposal_strategies/guided.rb:124
 msgid "No device selected for installation"
 msgstr "Ingen enhet valgt for installasjon"
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:138
+#: service/lib/agama/storage/proposal_strategies/guided.rb:140
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
@@ -197,6 +204,8 @@ msgstr[1] "Følgende valgte enheter ble ikke funnet i systemet: %{devices}"
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
+"Det er nødvendig å definere en bruker, angi root-passordet eller en "
+"offentlig SSH nøkkel"
 
 #~ msgid "Probing Storage"
 #~ msgstr "Undersøker Lagring"
