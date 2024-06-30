@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-23 02:24+0000\n"
+"POT-Creation-Date: 2024-06-30 02:27+0000\n"
 "PO-Revision-Date: 2023-12-28 21:02+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -19,28 +19,37 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 4.9.1\n"
 
-#. Runs the config phase
+#. Runs the startup phase
 #: service/lib/agama/manager.rb:88
+msgid "Load software translations"
+msgstr ""
+
+#: service/lib/agama/manager.rb:89
+msgid "Load storage translations"
+msgstr ""
+
+#. Runs the config phase
+#: service/lib/agama/manager.rb:104
 msgid "Analyze disks"
 msgstr ""
 
-#: service/lib/agama/manager.rb:88
+#: service/lib/agama/manager.rb:104
 #, fuzzy
 msgid "Configure software"
 msgstr "Memeriksa Perangkat Lunak"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
-#: service/lib/agama/manager.rb:108
+#: service/lib/agama/manager.rb:124
 msgid "Prepare disks"
 msgstr ""
 
-#: service/lib/agama/manager.rb:109
+#: service/lib/agama/manager.rb:125
 #, fuzzy
 msgid "Install software"
 msgstr "Menginstal Perangkat Lunak"
 
-#: service/lib/agama/manager.rb:110
+#: service/lib/agama/manager.rb:126
 msgid "Configure the system"
 msgstr ""
 
@@ -81,15 +90,15 @@ msgstr ""
 "Apakah Anda ingin mempercayai kunci ini?"
 
 #. Should an error be raised?
-#: service/lib/agama/software/manager.rb:137
+#: service/lib/agama/software/manager.rb:141
 msgid "Initializing sources"
 msgstr "Menginisialisasi sumber"
 
-#: service/lib/agama/software/manager.rb:142
+#: service/lib/agama/software/manager.rb:146
 msgid "Refreshing repositories metadata"
 msgstr "Menyegarkan metadata repositori"
 
-#: service/lib/agama/software/manager.rb:143
+#: service/lib/agama/software/manager.rb:147
 msgid "Calculating the software proposal"
 msgstr "Menghitung proposal perangkat lunak"
 
@@ -98,7 +107,7 @@ msgstr "Menghitung proposal perangkat lunak"
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:465
+#: service/lib/agama/software/manager.rb:563
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "Tidak dapat membaca repositori \"%s\""
@@ -106,14 +115,14 @@ msgstr "Tidak dapat membaca repositori \"%s\""
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:475
+#: service/lib/agama/software/manager.rb:573
 msgid "Product not selected yet"
 msgstr "Produk belum dipilih"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:484
+#: service/lib/agama/software/manager.rb:582
 msgid "Product must be registered"
 msgstr "Produk harus didaftarkan"
 
@@ -126,65 +135,65 @@ msgid "Found %s dependency issues."
 msgstr "Ditemukan %s masalah ketergantungan."
 
 #. Probes storage devices and performs an initial proposal
-#: service/lib/agama/storage/manager.rb:113
+#: service/lib/agama/storage/manager.rb:115
 msgid "Activating storage devices"
 msgstr "Mengaktifkan perangkat penyimpanan"
 
-#: service/lib/agama/storage/manager.rb:114
+#: service/lib/agama/storage/manager.rb:116
 msgid "Probing storage devices"
 msgstr "Memeriksa perangkat penyimpanan"
 
-#: service/lib/agama/storage/manager.rb:115
+#: service/lib/agama/storage/manager.rb:117
 msgid "Calculating the storage proposal"
 msgstr "Menghitung proposal penyimpanan"
 
-#: service/lib/agama/storage/manager.rb:116
+#: service/lib/agama/storage/manager.rb:118
 msgid "Selecting Linux Security Modules"
 msgstr "Memilih Modul Keamanan Linux"
 
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:124
+#: service/lib/agama/storage/manager.rb:126
 msgid "Preparing bootloader proposal"
 msgstr "Mempersiapkan proposal bootloader"
 
 #. first make bootloader proposal to be sure that required packages are installed
-#: service/lib/agama/storage/manager.rb:129
+#: service/lib/agama/storage/manager.rb:131
 msgid "Adding storage-related packages"
 msgstr "Menambahkan paket terkait penyimpanan"
 
-#: service/lib/agama/storage/manager.rb:130
+#: service/lib/agama/storage/manager.rb:132
 msgid "Preparing the storage devices"
 msgstr "Mempersiapkan perangkat penyimpanan"
 
-#: service/lib/agama/storage/manager.rb:131
+#: service/lib/agama/storage/manager.rb:133
 msgid "Writing bootloader sysconfig"
 msgstr "Menulis sysconfig bootloader"
 
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:189
+#: service/lib/agama/storage/proposal.rb:192
 msgid "Cannot accommodate the required file systems for installation"
 msgstr ""
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:200
+#: service/lib/agama/storage/proposal.rb:203
 msgid "A problem ocurred while calculating the storage setup"
 msgstr ""
 
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:122
+#: service/lib/agama/storage/proposal_strategies/guided.rb:124
 msgid "No device selected for installation"
 msgstr ""
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:138
+#: service/lib/agama/storage/proposal_strategies/guided.rb:140
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
