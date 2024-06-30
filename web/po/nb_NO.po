@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-23 02:24+0000\n"
-"PO-Revision-Date: 2024-06-20 07:46+0000\n"
+"POT-Creation-Date: 2024-06-30 02:27+0000\n"
+"PO-Revision-Date: 2024-06-29 13:46+0000\n"
 "Last-Translator: Martin Hansen <mh306602@gmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://l10n.opensuse.org/projects/agama/"
 "agama-web/nb_NO/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.6\n"
 
 #: src/MainLayout.jsx:40
 msgid "Agama"
@@ -56,8 +56,7 @@ msgid "For more information, please visit the project's repository at %s."
 msgstr "For mer informasjon, vennligst besøk prosjektets pakkebrønn på %s."
 
 #: src/components/core/About.jsx:94 src/components/core/FileViewer.jsx:81
-#: src/components/core/InstallerOptions.jsx:70
-#: src/components/network/WifiSelector.jsx:148
+#: src/components/core/LogsButton.jsx:123
 #: src/components/software/SoftwarePatternsSelection.jsx:260
 msgid "Close"
 msgstr "Lukk"
@@ -94,7 +93,7 @@ msgstr "Fortsett"
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:97
 #: src/components/core/Popup.jsx:136
-#: src/components/network/WifiConnectionForm.jsx:136
+#: src/components/network/WifiConnectionForm.jsx:131
 msgid "Cancel"
 msgstr "Avbryt"
 
@@ -156,25 +155,52 @@ msgstr ""
 
 #: src/components/core/InstallationFinished.jsx:113
 msgid "Finish"
-msgstr "Fullført"
+msgstr "Fullfør"
 
 #: src/components/core/InstallationFinished.jsx:113
 msgid "Reboot"
 msgstr "Start om"
 
-#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
-#: src/components/core/InstallationProgress.jsx:37
-#, fuzzy, c-format
-msgid "Installing %s, please wait ..."
-msgstr "Laster inn data, vennligst vent et sekund..."
+#: src/components/core/InstallationProgress.jsx:30
+msgid "Installing the system, please wait ..."
+msgstr "Installerer systemet, vennligst vent ..."
 
-#: src/components/core/InstallerOptions.jsx:57
+#: src/components/core/InstallerOptions.jsx:83
 msgid "Show installer options"
 msgstr "Vis installasjonsalternativer"
 
-#: src/components/core/InstallerOptions.jsx:62
+#: src/components/core/InstallerOptions.jsx:88
 msgid "Installer options"
 msgstr "Installasjonsalternativer"
+
+#: src/components/core/InstallerOptions.jsx:94
+#: src/components/core/InstallerOptions.jsx:99
+#: src/components/core/InstallerOptions.jsx:100
+#: src/components/l10n/L10nPage.jsx:67
+msgid "Language"
+msgstr "Språk"
+
+#: src/components/core/InstallerOptions.jsx:114
+#: src/components/core/InstallerOptions.jsx:121
+msgid "Keyboard layout"
+msgstr "Tastaturoppsett"
+
+#: src/components/core/InstallerOptions.jsx:130
+msgid "Cannot be changed in remote installation"
+msgstr "Kan ikke endres i fjerninstallasjonen"
+
+#: src/components/core/InstallerOptions.jsx:135
+#: src/components/network/IpSettingsForm.jsx:210
+#: src/components/product/ProductRegistrationPage.jsx:89
+#: src/components/storage/BootSelection.jsx:228
+#: src/components/storage/DeviceSelection.jsx:240
+#: src/components/storage/EncryptionSettingsDialog.jsx:138
+#: src/components/storage/SpacePolicySelection.jsx:198
+#: src/components/storage/VolumeDialog.jsx:781
+#: src/components/storage/ZFCPPage.jsx:503
+#: src/components/users/FirstUserForm.jsx:285
+msgid "Accept"
+msgstr "Aksepter"
 
 #: src/components/core/IssuesHint.jsx:34
 msgid ""
@@ -227,15 +253,16 @@ msgstr "Logg inn"
 msgid "More about this"
 msgstr "Mer om dette"
 
-#: src/components/core/LogsButton.jsx:102
+#: src/components/core/LogsButton.jsx:103
 msgid "Collecting logs..."
 msgstr "Samler loggfiler..."
 
-#: src/components/core/LogsButton.jsx:102
+#: src/components/core/LogsButton.jsx:103
+#: src/components/core/LogsButton.jsx:106
 msgid "Download logs"
 msgstr "Last ned loggfiler"
 
-#: src/components/core/LogsButton.jsx:110
+#: src/components/core/LogsButton.jsx:112
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
@@ -243,7 +270,7 @@ msgstr ""
 "Nettleseren vil kjøre nedlastingen av loggfilene så snart de er klare. "
 "Vennligst, vær tålmodig."
 
-#: src/components/core/LogsButton.jsx:118
+#: src/components/core/LogsButton.jsx:120
 msgid "Something went wrong while collecting logs. Please, try again."
 msgstr "Noe gikk galt når loggfilene ble samlet. Vennligst, prøv igjen."
 
@@ -252,7 +279,7 @@ msgid "Passwords do not match"
 msgstr "Passordene er ikke like"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:72
-#: src/components/network/WifiConnectionForm.jsx:125
+#: src/components/network/WifiConnectionForm.jsx:120
 #: src/components/storage/iscsi/AuthFields.jsx:95
 #: src/components/storage/iscsi/AuthFields.jsx:100
 #: src/components/users/RootAuthMethods.jsx:163
@@ -276,13 +303,25 @@ msgstr "Bekreft"
 msgid "Loading data..."
 msgstr "Laster data..."
 
-#: src/components/core/ProgressReport.jsx:122
-#, fuzzy
+#: src/components/core/ProgressReport.jsx:50
+msgid "Finished"
+msgstr "Fullført"
+
+#: src/components/core/ProgressReport.jsx:59
+msgid "In progress"
+msgstr "Pågår"
+
+#: src/components/core/ProgressReport.jsx:70
+msgid "Pending"
+msgstr "Avventer"
+
+#: src/components/core/ProgressReport.jsx:134
 msgid "Waiting for progress status..."
-msgstr "Venter på progresjons rapport"
+msgstr "Venter på progresjons rapport..."
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
+#: src/components/storage/ProposalActionsSummary.jsx:226
 msgid "Actions"
 msgstr "Handlinger"
 
@@ -312,28 +351,6 @@ msgstr "Vennligst, sjekk om den kjører."
 #: src/components/core/ServerError.jsx:51
 msgid "Reload"
 msgstr "Last på nytt"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:66
-#: src/components/l10n/L10nPage.jsx:78
-msgid "Keyboard"
-msgstr "Tastatur"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:75
-msgid "Choose a keyboard layout"
-msgstr "Velg et tastaturoppsett"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:86
-msgid "Cannot be changed in remote installation"
-msgstr "Kan ikke endres i fjerninstallasjonen"
-
-#: src/components/l10n/InstallerLocaleSwitcher.jsx:57
-#: src/components/l10n/L10nPage.jsx:67
-msgid "Language"
-msgstr "Språk"
-
-#: src/components/l10n/InstallerLocaleSwitcher.jsx:63
-msgid "Choose a language"
-msgstr "Velg et språk"
 
 #: src/components/l10n/KeyboardSelection.jsx:45
 msgid "Filter by description or keymap code"
@@ -368,12 +385,17 @@ msgstr "Ikke valgt ennå"
 
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
 #: src/components/l10n/L10nPage.jsx:93
-#: src/components/storage/InstallationDeviceField.jsx:115
-#: src/components/storage/SpacePolicyField.jsx:91
+#: src/components/network/NetworkPage.jsx:102
+#: src/components/storage/InstallationDeviceField.jsx:105
+#: src/components/storage/ProposalActionsSummary.jsx:228
 #: src/components/users/RootAuthMethods.jsx:94
 #: src/components/users/RootAuthMethods.jsx:107
 msgid "Change"
 msgstr "Endre"
+
+#: src/components/l10n/L10nPage.jsx:78
+msgid "Keyboard"
+msgstr "Tastatur"
 
 #: src/components/l10n/L10nPage.jsx:89
 msgid "Time zone"
@@ -463,6 +485,8 @@ msgid "IP addresses"
 msgstr "IP addresser"
 
 #: src/components/network/ConnectionsTable.jsx:77
+#: src/components/network/WifiNetworksListPage.jsx:100
+#: src/components/network/WifiNetworksListPage.jsx:124
 #: src/components/storage/PartitionsField.jsx:320
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
@@ -473,12 +497,13 @@ msgstr "Redigere"
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:80
 #: src/components/network/IpSettingsForm.jsx:136
-#: src/components/network/routes.js:59
 #, c-format
 msgid "Edit connection %s"
 msgstr "Rediger tilkobling %s"
 
 #: src/components/network/ConnectionsTable.jsx:84
+#: src/components/network/WifiNetworksListPage.jsx:103
+#: src/components/network/WifiNetworksListPage.jsx:127
 msgid "Forget"
 msgstr "Glem"
 
@@ -550,56 +575,56 @@ msgstr "Gateway"
 msgid "Gateway can be defined only in 'Manual' mode"
 msgstr "Gateway kan bare defineres i 'Manuelt' modus"
 
-#: src/components/network/IpSettingsForm.jsx:210
-#: src/components/product/ProductRegistrationPage.jsx:89
-#: src/components/storage/BootSelection.jsx:215
-#: src/components/storage/DeviceSelection.jsx:240
-#: src/components/storage/EncryptionSettingsDialog.jsx:138
-#: src/components/storage/VolumeDialog.jsx:786
-#: src/components/storage/ZFCPPage.jsx:503
-#: src/components/users/FirstUserForm.jsx:286
-msgid "Accept"
-msgstr "Aksepter"
+#: src/components/network/NetworkPage.jsx:85
+msgid "No Wi-Fi supported"
+msgstr "Ingen Wi-Fi støttes"
 
-#: src/components/network/NetworkPage.jsx:44
-#: src/components/network/WifiSelector.jsx:129
-msgid "Connect to a Wi-Fi network"
-msgstr "Koble til et Wi-Fi nettverk"
-
-#: src/components/network/NetworkPage.jsx:57
-msgid "No wired connections found."
-msgstr "Ingen kablet tilkoblinger ble funnet."
-
-#: src/components/network/NetworkPage.jsx:71
+#: src/components/network/NetworkPage.jsx:86
 msgid ""
-"The system has not been configured for connecting to a WiFi network yet."
+"The system does not support Wi-Fi connections, probably because of missing "
+"or disabled hardware."
 msgstr ""
-"Systemet har ikke blitt konfigurert for å koble til et WiFi nettverk ennå."
+"Systemet støtter ikke Wi-Fi tilkoblinger, sannsynligvis på grunn av "
+"manglende eller deaktivert maskinvare."
 
-#: src/components/network/NetworkPage.jsx:72
+#: src/components/network/NetworkPage.jsx:99
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#. TRANSLATORS: button label, connect to a WiFi network
+#: src/components/network/NetworkPage.jsx:102
+#: src/components/network/WifiConnectionForm.jsx:128
+#: src/components/network/WifiNetworksListPage.jsx:97
+msgid "Connect"
+msgstr "Koble til"
+
+#: src/components/network/NetworkPage.jsx:109
+#, c-format
+msgid "Conected to %s"
+msgstr "Koblet til %s"
+
+#: src/components/network/NetworkPage.jsx:114
+msgid "No connected yet"
+msgstr "Ikke koblet til ennå"
+
+#: src/components/network/NetworkPage.jsx:115
 msgid ""
-"The system does not support WiFi connections, probably because of missing or "
-"disabled hardware."
+"The system has not been configured for connecting to a Wi-Fi network yet."
 msgstr ""
-"Systemet støtter ikke WiFi tilkoblinger, sannsynligvis på grunn av manglende "
-"eller deaktivert maskinvare."
+"Systemet har ikke blitt konfigurert for å koble til et Wi-Fi nettverk ennå."
 
-#: src/components/network/NetworkPage.jsx:76
-msgid "No WiFi connections found."
-msgstr "Ingen WiFi tilkoblinger funnet."
+#: src/components/network/NetworkPage.jsx:136
+msgid "Wired"
+msgstr "Kablet"
 
-#: src/components/network/NetworkPage.jsx:170
-#: src/components/network/routes.js:49
+#: src/components/network/NetworkPage.jsx:139
+msgid "No wired connections found"
+msgstr "Ingen kablede tilkoblinger funnet"
+
+#: src/components/network/NetworkPage.jsx:149
+#: src/components/network/routes.js:59
 msgid "Network"
 msgstr "Nettverk"
-
-#: src/components/network/NetworkPage.jsx:178
-msgid "Wired connections"
-msgstr "Kablede tilkoblinger"
-
-#: src/components/network/NetworkPage.jsx:185
-msgid "WiFi connections"
-msgstr "WiFi tilkoblinger"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:43
@@ -612,7 +637,7 @@ msgstr "Ingen"
 msgid "WPA & WPA2 Personal"
 msgstr "WPA & WPA2 Personlig"
 
-#: src/components/network/WifiConnectionForm.jsx:91
+#: src/components/network/WifiConnectionForm.jsx:86
 #: src/components/product/ProductRegistrationPage.jsx:69
 #: src/components/storage/ZFCPDiskForm.jsx:108
 #: src/components/storage/iscsi/DiscoverForm.jsx:110
@@ -621,81 +646,67 @@ msgstr "WPA & WPA2 Personlig"
 msgid "Something went wrong"
 msgstr "Noe gikk galt"
 
-#: src/components/network/WifiConnectionForm.jsx:92
+#: src/components/network/WifiConnectionForm.jsx:87
 msgid "Please, review provided settings and try again."
 msgstr "Vennligst, sjekk de angitte innstillingene og prøv igjen."
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.jsx:97
-#: src/components/network/WifiConnectionForm.jsx:101
+#: src/components/network/WifiConnectionForm.jsx:92
+#: src/components/network/WifiConnectionForm.jsx:96
 msgid "SSID"
 msgstr "SSID"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.jsx:109
-#: src/components/network/WifiConnectionForm.jsx:112
+#: src/components/network/WifiConnectionForm.jsx:104
+#: src/components/network/WifiConnectionForm.jsx:107
 msgid "Security"
 msgstr "Sikkerhet"
 
 #. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.jsx:121
+#: src/components/network/WifiConnectionForm.jsx:116
 msgid "WPA Password"
 msgstr "WPA Passord"
 
-#. TRANSLATORS: button label, connect to a WiFi network
-#. TRANSLATORS: menu label, connect to the selected WiFi network
-#: src/components/network/WifiConnectionForm.jsx:133
-#: src/components/network/WifiNetworkMenu.jsx:58
-msgid "Connect"
-msgstr "Koble til"
-
-#. TRANSLATORS: button label
-#: src/components/network/WifiHiddenNetworkForm.jsx:50
-msgid "Connect to hidden network"
-msgstr "Koble til skjult nettverk"
-
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:34
-#: src/components/network/WifiNetworkListItem.jsx:94
+#: src/components/network/WifiNetworksListPage.jsx:51
+#: src/components/network/WifiNetworksListPage.jsx:111
 msgid "Connecting"
 msgstr "Kobler til"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:37
+#: src/components/network/WifiNetworksListPage.jsx:54
+#: src/components/network/WifiNetworksListPage.jsx:115
+#: src/components/network/WifiNetworksListPage.jsx:154
 msgid "Connected"
 msgstr "Tilkoblet"
 
-#. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:40
-msgid "Disconnecting"
-msgstr "Kobler fra"
-
-#: src/components/network/WifiNetworkListItem.jsx:42
-msgid "Failed"
-msgstr "Mislyktes"
-
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:45
+#: src/components/network/WifiNetworksListPage.jsx:59
+#: src/components/network/WifiNetworksListPage.jsx:113
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr "Koblet fra"
 
-#. TRANSLATORS: %s is replaced by a WiFi network name
-#: src/components/network/WifiNetworkListItem.jsx:92
-#, c-format
-msgid "%s connection is waiting for an state change"
-msgstr "%s koblingen venter på en tilstands endring"
-
-#. TRANSLATORS: menu label, disconnect from the selected WiFi network
-#: src/components/network/WifiNetworkMenu.jsx:67
+#: src/components/network/WifiNetworksListPage.jsx:121
 msgid "Disconnect"
 msgstr "Koble fra"
 
-#. TRANSLATORS: menu label, remove the selected WiFi network settings
-#: src/components/network/WifiNetworkMenu.jsx:76
-msgid "Forget network"
-msgstr "Glem nettverket"
+#: src/components/network/WifiNetworksListPage.jsx:142
+msgid "Connect to a hidden network"
+msgstr "Koble til et skjult nettverk"
+
+#: src/components/network/WifiNetworksListPage.jsx:153
+msgid "configured"
+msgstr "konfigurert"
+
+#: src/components/network/WifiNetworksListPage.jsx:244
+msgid "Connect to hidden network"
+msgstr "Koble til skjult nettverk"
+
+#: src/components/network/WifiSelectorPage.jsx:131
+msgid "Connect to a Wi-Fi network"
+msgstr "Koble til et Wi-Fi nettverk"
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
@@ -711,9 +722,9 @@ msgstr "Brukere"
 
 #: src/components/overview/OverviewPage.jsx:46
 #: src/components/overview/StorageSection.jsx:111
-#: src/components/storage/ProposalPage.jsx:266
+#: src/components/storage/ProposalPage.jsx:290
 #: src/components/storage/StoragePage.jsx:30
-#: src/components/storage/routes.js:57
+#: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr "Lagring"
 
@@ -832,7 +843,7 @@ msgstr ""
 "en tilpasset strategi for å finne nødvendig plass"
 
 #: src/components/overview/StorageSection.jsx:175
-#: src/components/storage/InstallationDeviceField.jsx:67
+#: src/components/storage/InstallationDeviceField.jsx:63
 msgid "No device selected yet"
 msgstr "Ingen enhet er valgt ennå"
 
@@ -974,7 +985,7 @@ msgstr ""
 msgid "Installation will configure partitions for booting at %s."
 msgstr "Installasjonen vil konfigurere partisjoner for oppstart på %s."
 
-#: src/components/storage/BootSelection.jsx:126
+#: src/components/storage/BootSelection.jsx:127
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
@@ -983,42 +994,42 @@ msgstr ""
 "installasjonsprogrammet opprette eller konfigurere noen partisjoner på "
 "riktig disk."
 
-#: src/components/storage/BootSelection.jsx:132
+#: src/components/storage/BootSelection.jsx:133
 msgid "Partitions to boot will be allocated at the installation disk."
 msgstr "Partisjoner for oppstart vil bli tildelt på installasjonsdisken."
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelection.jsx:137
+#: src/components/storage/BootSelection.jsx:138
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
 msgstr "Partisjoner for oppstart vil bli tildelt på installasjonsdisken (%s)."
 
-#: src/components/storage/BootSelection.jsx:153
+#: src/components/storage/BootSelection.jsx:154
 msgid "Select booting partition"
 msgstr "Velg oppstartspartisjon"
 
-#: src/components/storage/BootSelection.jsx:167
+#: src/components/storage/BootSelection.jsx:170
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
 msgstr "Automatisk"
 
-#: src/components/storage/BootSelection.jsx:176
+#: src/components/storage/BootSelection.jsx:183
 msgid "Select a disk"
 msgstr "Velg en disk"
 
-#: src/components/storage/BootSelection.jsx:180
+#: src/components/storage/BootSelection.jsx:189
 msgid "Partitions to boot will be allocated at the following device."
 msgstr "Partisjoner for oppstart vil bli tildelt på følgende enhet."
 
-#: src/components/storage/BootSelection.jsx:183
+#: src/components/storage/BootSelection.jsx:192
 msgid "Choose a disk for placing the boot loader"
 msgstr "Velg en disk for å plassere oppstartslasteren"
 
-#: src/components/storage/BootSelection.jsx:199
+#: src/components/storage/BootSelection.jsx:210
 msgid "Do not configure"
 msgstr "Ikke konfigurer"
 
-#: src/components/storage/BootSelection.jsx:202
+#: src/components/storage/BootSelection.jsx:215
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr ""
@@ -1366,28 +1377,28 @@ msgstr ""
 msgid "Encrypt the system"
 msgstr "Krypter systemet"
 
-#: src/components/storage/InstallationDeviceField.jsx:40
+#: src/components/storage/InstallationDeviceField.jsx:36
 #: src/components/storage/VolumeLocationSelectorTable.jsx:58
 msgid "Installation device"
 msgstr "Installasjons enhet"
 
 #. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.jsx:42
+#: src/components/storage/InstallationDeviceField.jsx:38
 msgid "Main disk or LVM Volume Group for installation."
 msgstr "Hoveddisken eller LVM Volumgruppe for installasjon."
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:56
+#: src/components/storage/InstallationDeviceField.jsx:52
 #, c-format
 msgid "File systems created as new partitions at %s"
 msgstr "Filsystemer opprettes som nye partisjoner på %s"
 
-#: src/components/storage/InstallationDeviceField.jsx:59
+#: src/components/storage/InstallationDeviceField.jsx:55
 msgid "File systems created at a new LVM volume group"
 msgstr "Filsystemer opprettet i en ny LVM volumgruppe"
 
 #. TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:63
+#: src/components/storage/InstallationDeviceField.jsx:59
 #, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr "Filsystemer opprettet i en ny LVM volumgruppe på %s"
@@ -1600,7 +1611,7 @@ msgstr "Tabell med monteringspunkter"
 
 #: src/components/storage/PartitionsField.jsx:566
 #: src/components/storage/PartitionsField.jsx:585
-#: src/components/storage/VolumeDialog.jsx:83
+#: src/components/storage/VolumeDialog.jsx:81
 msgid "Add file system"
 msgstr "Legg til filsystem"
 
@@ -1644,47 +1655,79 @@ msgid_plural "Show %d subvolume actions"
 msgstr[0] "Vis %d undervolum handling"
 msgstr[1] "Vis %d undervolum handlinger"
 
-#: src/components/storage/ProposalResultSection.jsx:64
+#: src/components/storage/ProposalActionsSummary.jsx:57
+msgid "Destructive actions are not allowed"
+msgstr "Destruktive handlinger er ikke tillatt"
+
+#: src/components/storage/ProposalActionsSummary.jsx:59
+msgid "Destructive actions are allowed"
+msgstr "Destruktive handlinger er tillatt"
+
+#: src/components/storage/ProposalActionsSummary.jsx:66
 #, c-format
 msgid "There is %d destructive action planned"
 msgid_plural "There are %d destructive actions planned"
 msgstr[0] "Det er en %d destruktiv handling planlagt"
 msgstr[1] "Det er flere %d destruktive handlinger planlagt"
 
-#: src/components/storage/ProposalResultSection.jsx:80
-msgid "Affecting"
-msgstr "Påvirker"
+#: src/components/storage/ProposalActionsSummary.jsx:79
+#: src/components/storage/ProposalActionsSummary.jsx:126
+msgid "affecting"
+msgstr "påvirker"
 
-#: src/components/storage/ProposalResultSection.jsx:96
+#: src/components/storage/ProposalActionsSummary.jsx:107
+msgid "Shrinking partitions is not allowed"
+msgstr "Krymping av partisjoner er ikke tillatt"
+
+#: src/components/storage/ProposalActionsSummary.jsx:111
+msgid "Shrinking partitions is allowed"
+msgstr "Krymping av partisjoner er tillatt"
+
+#: src/components/storage/ProposalActionsSummary.jsx:113
+msgid "Shrinking some partitions is allowed but not needed"
+msgstr "Krymping av noen partisjoner er tillatt men ikke nødvendig"
+
+#: src/components/storage/ProposalActionsSummary.jsx:116
+#, c-format
+msgid "%d partition will be shrunk"
+msgid_plural "%d partitions will be shrunk"
+msgstr[0] "%d partisjonen vil bli krympet"
+msgstr[1] "%d partisjoner vil bli krympet"
+
+#: src/components/storage/ProposalActionsSummary.jsx:151
+msgid "Cannot accommodate the required file systems for installation"
+msgstr "Kan ikke håndtere de nødvendige filsystemene for installasjon"
+
+#: src/components/storage/ProposalActionsSummary.jsx:160
 #, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
 msgstr[0] "Sjekk den planlagte handlingen"
 msgstr[1] "Sjekk de %d planlagte handlingene"
 
-#: src/components/storage/ProposalResultSection.jsx:111
-msgid "Waiting for information about storage configuration"
-msgstr "Venter på informasjon om lagringskonfigurasjon"
+#: src/components/storage/ProposalActionsSummary.jsx:179
+msgid "Waiting for actions information..."
+msgstr "Venter på handlingsinformasjon..."
 
-#: src/components/storage/ProposalResultSection.jsx:124
-msgid "Storage proposal not possible"
-msgstr "Lagringsforslag er ikke mulig"
-
-#: src/components/storage/ProposalResultSection.jsx:188
-msgid ""
-"During installation, some actions will be performed to configure the system "
-"as displayed below."
-msgstr ""
-"Under installasjonen, vil noen handlinger bli utført for å konfigurere "
-"systemet som vist nedenfor."
-
-#: src/components/storage/ProposalResultSection.jsx:196
+#: src/components/storage/ProposalPage.jsx:314
 msgid "Planned Actions"
 msgstr "Planlagt Handlinger"
 
-#: src/components/storage/ProposalResultSection.jsx:210
-msgid "Result"
-msgstr "Resultat"
+#: src/components/storage/ProposalResultSection.jsx:42
+msgid "Waiting for information about storage configuration"
+msgstr "Venter på informasjon om lagringskonfigurasjon"
+
+#: src/components/storage/ProposalResultSection.jsx:70
+msgid "Final layout"
+msgstr "Sluttoppsett"
+
+#: src/components/storage/ProposalResultSection.jsx:71
+msgid "The systems will be configured as displayed below."
+msgstr "Systemene vil bli konfigurert som vist nedenfor."
+
+#: src/components/storage/ProposalResultSection.jsx:78
+msgid "Storage proposal not possible"
+msgstr "Lagringsforslag er ikke mulig"
 
 #: src/components/storage/ProposalResultTable.jsx:74
 msgid "New"
@@ -1756,99 +1799,82 @@ msgstr "Handling"
 msgid "Actions to find space"
 msgstr "Handling for å finne plass"
 
-#: src/components/storage/SpacePolicyDialog.jsx:143
-msgid ""
-"Allocating the file systems might need to find free space in the devices "
-"listed below. Choose how to do it."
-msgstr ""
-"Tildeling av filsystemene må kanskje finne ledig plass på enhetene oppført "
-"nedenfor. Velg hvordan du gjør det."
+#: src/components/storage/SpacePolicySelection.jsx:170
+msgid "Space policy"
+msgstr "Plass retningslinjer"
 
-#: src/components/storage/SpacePolicyDialog.jsx:148
-#: src/components/storage/SpacePolicyField.jsx:86
-msgid "Find space"
-msgstr "Finn plass"
-
-#: src/components/storage/SpacePolicyField.jsx:88
-msgid ""
-"Allocating the file systems might need to find free space in the "
-"installation device(s)."
-msgstr ""
-"Tildeling av filsystemene må kanskje finne ledig plass i "
-"installasjonsenheten(e)."
-
-#: src/components/storage/VolumeDialog.jsx:80
+#: src/components/storage/VolumeDialog.jsx:78
 #, c-format
 msgid "Add %s file system"
 msgstr "Legg til %s filsystemet"
 
-#: src/components/storage/VolumeDialog.jsx:81
+#: src/components/storage/VolumeDialog.jsx:79
 #, c-format
 msgid "Edit %s file system"
 msgstr "Rediger %s filsystemet"
 
-#: src/components/storage/VolumeDialog.jsx:83
+#: src/components/storage/VolumeDialog.jsx:81
 msgid "Edit file system"
 msgstr "Rediger filsystemet"
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:98
+#: src/components/storage/VolumeDialog.jsx:96
 msgid "The type and size of the file system cannot be edited."
 msgstr "Typen og størrelsen av filsystemet kan ikke bli redigert."
 
 #. TRANSLATORS: Description of a warning. The first %s is replaced by a device name (e.g.,
 #. /dev/vda) and the second %s is replaced by a mount path (e.g., /home).
-#: src/components/storage/VolumeDialog.jsx:101
+#: src/components/storage/VolumeDialog.jsx:99
 #, c-format
 msgid "The current file system on %s is selected to be mounted at %s."
 msgstr "Det nåværende filsystemet på %s er valgt for å monteres på %s."
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:107
+#: src/components/storage/VolumeDialog.jsx:105
 msgid "The size of the file system cannot be edited"
 msgstr "Størrelsen på filsystemet kan ikke bli redigert"
 
 #. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
-#: src/components/storage/VolumeDialog.jsx:109
+#: src/components/storage/VolumeDialog.jsx:107
 #, c-format
 msgid "The file system is allocated at the device %s."
 msgstr "Filsystemet er allokert på enheten %s."
 
-#: src/components/storage/VolumeDialog.jsx:154
+#: src/components/storage/VolumeDialog.jsx:152
 msgid "A mount point is required"
 msgstr "Et monteringspunkt er nødvendig"
 
-#: src/components/storage/VolumeDialog.jsx:181
+#: src/components/storage/VolumeDialog.jsx:179
 msgid "The mount point is invalid"
 msgstr "Monteringspunktet er ugyldig"
 
-#: src/components/storage/VolumeDialog.jsx:209
+#: src/components/storage/VolumeDialog.jsx:207
 msgid "A size value is required"
 msgstr "En størrelsesverdi er nødvendig"
 
-#: src/components/storage/VolumeDialog.jsx:237
+#: src/components/storage/VolumeDialog.jsx:235
 msgid "Minimum size is required"
 msgstr "Minstestørrelse er nødvendig"
 
-#: src/components/storage/VolumeDialog.jsx:269
+#: src/components/storage/VolumeDialog.jsx:267
 msgid "Maximum must be greater than minimum"
 msgstr "Maksimum må være større enn minimum"
 
-#: src/components/storage/VolumeDialog.jsx:311
+#: src/components/storage/VolumeDialog.jsx:309
 #, c-format
 msgid "There is already a file system for %s."
 msgstr "Det er allerede et filsystem for %s."
 
-#: src/components/storage/VolumeDialog.jsx:313
+#: src/components/storage/VolumeDialog.jsx:311
 msgid "Do you want to edit it?"
 msgstr "Vil du redigere den?"
 
-#: src/components/storage/VolumeDialog.jsx:358
+#: src/components/storage/VolumeDialog.jsx:356
 #, c-format
 msgid "There is a predefined file system for %s."
 msgstr "Det er et forhåndsdefinert filsystem for %s."
 
-#: src/components/storage/VolumeDialog.jsx:360
+#: src/components/storage/VolumeDialog.jsx:358
 msgid "Do you want to add it?"
 msgstr "Vil du legge til den?"
 
@@ -2420,8 +2446,8 @@ msgstr "Fullt navn"
 
 #: src/components/users/FirstUser.jsx:55
 #: src/components/users/FirstUserForm.jsx:224
-#: src/components/users/FirstUserForm.jsx:230
-#: src/components/users/FirstUserForm.jsx:233
+#: src/components/users/FirstUserForm.jsx:229
+#: src/components/users/FirstUserForm.jsx:232
 msgid "Username"
 msgstr "Brukernavn"
 
@@ -2461,16 +2487,16 @@ msgstr "Rediger bruker"
 msgid "User full name"
 msgstr "Brukerens fulle navn"
 
-#: src/components/users/FirstUserForm.jsx:255
+#: src/components/users/FirstUserForm.jsx:254
 msgid "Edit password too"
 msgstr "Rediger passord også"
 
-#: src/components/users/FirstUserForm.jsx:270
+#: src/components/users/FirstUserForm.jsx:269
 msgid "user autologin"
 msgstr "bruker automatisk innlogging"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:274
+#: src/components/users/FirstUserForm.jsx:273
 msgid "Auto-login"
 msgstr "Automatisk-innlogging"
 
@@ -2569,13 +2595,63 @@ msgstr "Første bruker"
 msgid "Root authentication"
 msgstr "Root autentisering"
 
-#: src/components/users/routes.js:41
-msgid "Create or edit the first user"
-msgstr "Opprett eller rediger den første brukeren"
+#~ msgid "Choose a language"
+#~ msgstr "Velg et språk"
 
-#: src/components/users/routes.js:48
-msgid "Edit first user"
-msgstr "Rediger første bruker"
+#~ msgid "No WiFi connections found."
+#~ msgstr "Ingen WiFi tilkoblinger funnet."
+
+#~ msgid "Wired connections"
+#~ msgstr "Kablede tilkoblinger"
+
+#~ msgid "WiFi connections"
+#~ msgstr "WiFi tilkoblinger"
+
+#~ msgid "Disconnecting"
+#~ msgstr "Kobler fra"
+
+#~ msgid "Failed"
+#~ msgstr "Mislyktes"
+
+#, c-format
+#~ msgid "%s connection is waiting for an state change"
+#~ msgstr "%s koblingen venter på en tilstands endring"
+
+#~ msgid "Forget network"
+#~ msgstr "Glem nettverket"
+
+#~ msgid "Create or edit the first user"
+#~ msgstr "Opprett eller rediger den første brukeren"
+
+#~ msgid "Edit first user"
+#~ msgstr "Rediger første bruker"
+
+#~ msgid ""
+#~ "During installation, some actions will be performed to configure the "
+#~ "system as displayed below."
+#~ msgstr ""
+#~ "Under installasjonen, vil noen handlinger bli utført for å konfigurere "
+#~ "systemet som vist nedenfor."
+
+#~ msgid "Result"
+#~ msgstr "Resultat"
+
+#~ msgid ""
+#~ "Allocating the file systems might need to find free space in the devices "
+#~ "listed below. Choose how to do it."
+#~ msgstr ""
+#~ "Tildeling av filsystemene må kanskje finne ledig plass på enhetene "
+#~ "oppført nedenfor. Velg hvordan du gjør det."
+
+#~ msgid "Find space"
+#~ msgstr "Finn plass"
+
+#~ msgid ""
+#~ "Allocating the file systems might need to find free space in the "
+#~ "installation device(s)."
+#~ msgstr ""
+#~ "Tildeling av filsystemene må kanskje finne ledig plass i "
+#~ "installasjonsenheten(e)."
 
 #~ msgid "Analyze disks"
 #~ msgstr "Analyser disker"
@@ -2828,9 +2904,6 @@ msgstr "Rediger første bruker"
 #, c-format
 #~ msgid "deleting all content of the %d selected disks"
 #~ msgstr "sletter all innhold på de %d valgte diskene"
-
-#~ msgid "shrinking partitions of the installation device"
-#~ msgstr "krymper partisjoner av installasjonsenheten"
 
 #, c-format
 #~ msgid "shrinking partitions of the %d selected disks"

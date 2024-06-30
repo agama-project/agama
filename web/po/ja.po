@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-23 02:24+0000\n"
+"POT-Creation-Date: 2024-06-30 02:27+0000\n"
 "PO-Revision-Date: 2024-06-20 00:46+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -55,8 +55,7 @@ msgid "For more information, please visit the project's repository at %s."
 msgstr "詳しくは %s にあるプロジェクトのリポジトリをご覧ください。"
 
 #: src/components/core/About.jsx:94 src/components/core/FileViewer.jsx:81
-#: src/components/core/InstallerOptions.jsx:70
-#: src/components/network/WifiSelector.jsx:148
+#: src/components/core/LogsButton.jsx:123
 #: src/components/software/SoftwarePatternsSelection.jsx:260
 msgid "Close"
 msgstr "閉じる"
@@ -94,7 +93,7 @@ msgstr "続行"
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:97
 #: src/components/core/Popup.jsx:136
-#: src/components/network/WifiConnectionForm.jsx:136
+#: src/components/network/WifiConnectionForm.jsx:131
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -161,19 +160,48 @@ msgstr "完了"
 msgid "Reboot"
 msgstr "再起動"
 
-#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
-#: src/components/core/InstallationProgress.jsx:37
-#, fuzzy, c-format
-msgid "Installing %s, please wait ..."
+#: src/components/core/InstallationProgress.jsx:30
+#, fuzzy
+msgid "Installing the system, please wait ..."
 msgstr "データを読み込んでいます。しばらくお待ちください..."
 
-#: src/components/core/InstallerOptions.jsx:57
+#: src/components/core/InstallerOptions.jsx:83
 msgid "Show installer options"
 msgstr "インストーラのオプションを表示"
 
-#: src/components/core/InstallerOptions.jsx:62
+#: src/components/core/InstallerOptions.jsx:88
 msgid "Installer options"
 msgstr "インストーラのオプション"
+
+#: src/components/core/InstallerOptions.jsx:94
+#: src/components/core/InstallerOptions.jsx:99
+#: src/components/core/InstallerOptions.jsx:100
+#: src/components/l10n/L10nPage.jsx:67
+msgid "Language"
+msgstr "言語"
+
+#: src/components/core/InstallerOptions.jsx:114
+#: src/components/core/InstallerOptions.jsx:121
+#, fuzzy
+msgid "Keyboard layout"
+msgstr "キーボードレイアウトを選択してください"
+
+#: src/components/core/InstallerOptions.jsx:130
+msgid "Cannot be changed in remote installation"
+msgstr "リモートインストールの場合は変更できません"
+
+#: src/components/core/InstallerOptions.jsx:135
+#: src/components/network/IpSettingsForm.jsx:210
+#: src/components/product/ProductRegistrationPage.jsx:89
+#: src/components/storage/BootSelection.jsx:228
+#: src/components/storage/DeviceSelection.jsx:240
+#: src/components/storage/EncryptionSettingsDialog.jsx:138
+#: src/components/storage/SpacePolicySelection.jsx:198
+#: src/components/storage/VolumeDialog.jsx:781
+#: src/components/storage/ZFCPPage.jsx:503
+#: src/components/users/FirstUserForm.jsx:285
+msgid "Accept"
+msgstr "受け入れる"
 
 #: src/components/core/IssuesHint.jsx:34
 msgid ""
@@ -228,15 +256,16 @@ msgstr "ログイン"
 msgid "More about this"
 msgstr "こちらについて詳しく"
 
-#: src/components/core/LogsButton.jsx:102
+#: src/components/core/LogsButton.jsx:103
 msgid "Collecting logs..."
 msgstr "ログを収集しています..."
 
-#: src/components/core/LogsButton.jsx:102
+#: src/components/core/LogsButton.jsx:103
+#: src/components/core/LogsButton.jsx:106
 msgid "Download logs"
 msgstr "ログのダウンロード"
 
-#: src/components/core/LogsButton.jsx:110
+#: src/components/core/LogsButton.jsx:112
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
@@ -244,7 +273,7 @@ msgstr ""
 "ログの収集が完了すると、ブラウザ側でダウンロード処理が始まります。しばらくお"
 "待ちください。"
 
-#: src/components/core/LogsButton.jsx:118
+#: src/components/core/LogsButton.jsx:120
 msgid "Something went wrong while collecting logs. Please, try again."
 msgstr "ログの収集時に何らかの問題が発生しました。再試行してみてください。"
 
@@ -253,7 +282,7 @@ msgid "Passwords do not match"
 msgstr "パスワードが合致しません"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:72
-#: src/components/network/WifiConnectionForm.jsx:125
+#: src/components/network/WifiConnectionForm.jsx:120
 #: src/components/storage/iscsi/AuthFields.jsx:95
 #: src/components/storage/iscsi/AuthFields.jsx:100
 #: src/components/users/RootAuthMethods.jsx:163
@@ -277,13 +306,27 @@ msgstr "確認"
 msgid "Loading data..."
 msgstr "データを読み込んでいます..."
 
-#: src/components/core/ProgressReport.jsx:122
+#: src/components/core/ProgressReport.jsx:50
+#, fuzzy
+msgid "Finished"
+msgstr "完了"
+
+#: src/components/core/ProgressReport.jsx:59
+msgid "In progress"
+msgstr ""
+
+#: src/components/core/ProgressReport.jsx:70
+msgid "Pending"
+msgstr ""
+
+#: src/components/core/ProgressReport.jsx:134
 #, fuzzy
 msgid "Waiting for progress status..."
 msgstr "経過レポートを待機しています"
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
+#: src/components/storage/ProposalActionsSummary.jsx:226
 msgid "Actions"
 msgstr "処理"
 
@@ -313,28 +356,6 @@ msgstr "問題なく動作しているかどうかご確認ください。"
 #: src/components/core/ServerError.jsx:51
 msgid "Reload"
 msgstr "再読み込み"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:66
-#: src/components/l10n/L10nPage.jsx:78
-msgid "Keyboard"
-msgstr "キーボード"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:75
-msgid "Choose a keyboard layout"
-msgstr "キーボードレイアウトを選択してください"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:86
-msgid "Cannot be changed in remote installation"
-msgstr "リモートインストールの場合は変更できません"
-
-#: src/components/l10n/InstallerLocaleSwitcher.jsx:57
-#: src/components/l10n/L10nPage.jsx:67
-msgid "Language"
-msgstr "言語"
-
-#: src/components/l10n/InstallerLocaleSwitcher.jsx:63
-msgid "Choose a language"
-msgstr "言語の選択"
 
 #: src/components/l10n/KeyboardSelection.jsx:45
 msgid "Filter by description or keymap code"
@@ -369,12 +390,17 @@ msgstr "まだ何も選択していません"
 
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
 #: src/components/l10n/L10nPage.jsx:93
-#: src/components/storage/InstallationDeviceField.jsx:115
-#: src/components/storage/SpacePolicyField.jsx:91
+#: src/components/network/NetworkPage.jsx:102
+#: src/components/storage/InstallationDeviceField.jsx:105
+#: src/components/storage/ProposalActionsSummary.jsx:228
 #: src/components/users/RootAuthMethods.jsx:94
 #: src/components/users/RootAuthMethods.jsx:107
 msgid "Change"
 msgstr "変更"
+
+#: src/components/l10n/L10nPage.jsx:78
+msgid "Keyboard"
+msgstr "キーボード"
 
 #: src/components/l10n/L10nPage.jsx:89
 msgid "Time zone"
@@ -464,6 +490,8 @@ msgid "IP addresses"
 msgstr "IP アドレス"
 
 #: src/components/network/ConnectionsTable.jsx:77
+#: src/components/network/WifiNetworksListPage.jsx:100
+#: src/components/network/WifiNetworksListPage.jsx:124
 #: src/components/storage/PartitionsField.jsx:320
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
@@ -474,12 +502,13 @@ msgstr "編集"
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:80
 #: src/components/network/IpSettingsForm.jsx:136
-#: src/components/network/routes.js:59
 #, c-format
 msgid "Edit connection %s"
 msgstr "接続 %s の編集"
 
 #: src/components/network/ConnectionsTable.jsx:84
+#: src/components/network/WifiNetworksListPage.jsx:103
+#: src/components/network/WifiNetworksListPage.jsx:127
 msgid "Forget"
 msgstr "削除"
 
@@ -552,56 +581,60 @@ msgstr "ゲートウエイ"
 msgid "Gateway can be defined only in 'Manual' mode"
 msgstr "'手動' モードの場合にのみゲートウエイを設定できます"
 
-#: src/components/network/IpSettingsForm.jsx:210
-#: src/components/product/ProductRegistrationPage.jsx:89
-#: src/components/storage/BootSelection.jsx:215
-#: src/components/storage/DeviceSelection.jsx:240
-#: src/components/storage/EncryptionSettingsDialog.jsx:138
-#: src/components/storage/VolumeDialog.jsx:786
-#: src/components/storage/ZFCPPage.jsx:503
-#: src/components/users/FirstUserForm.jsx:286
-msgid "Accept"
-msgstr "受け入れる"
-
-#: src/components/network/NetworkPage.jsx:44
-#: src/components/network/WifiSelector.jsx:129
-msgid "Connect to a Wi-Fi network"
-msgstr "Wi-Fi ネットワークへの接続"
-
-#: src/components/network/NetworkPage.jsx:57
-msgid "No wired connections found."
-msgstr "有線接続が見つかりませんでした。"
-
-#: src/components/network/NetworkPage.jsx:71
-msgid ""
-"The system has not been configured for connecting to a WiFi network yet."
+#: src/components/network/NetworkPage.jsx:85
+msgid "No Wi-Fi supported"
 msgstr ""
-"このシステムでは、まだ WiFi ネットワークへの接続設定を実施していません。"
 
-#: src/components/network/NetworkPage.jsx:72
+#: src/components/network/NetworkPage.jsx:86
+#, fuzzy
 msgid ""
-"The system does not support WiFi connections, probably because of missing or "
-"disabled hardware."
+"The system does not support Wi-Fi connections, probably because of missing "
+"or disabled hardware."
 msgstr ""
 "このシステムは WiFi 接続には対応していません。無線ハードウエアが存在していな"
 "いか、無効化されているものと思われます。"
 
-#: src/components/network/NetworkPage.jsx:76
-msgid "No WiFi connections found."
-msgstr "WiFi 接続が見つかりませんでした。"
+#: src/components/network/NetworkPage.jsx:99
+msgid "Wi-Fi"
+msgstr ""
 
-#: src/components/network/NetworkPage.jsx:170
-#: src/components/network/routes.js:49
+#. TRANSLATORS: button label, connect to a WiFi network
+#: src/components/network/NetworkPage.jsx:102
+#: src/components/network/WifiConnectionForm.jsx:128
+#: src/components/network/WifiNetworksListPage.jsx:97
+msgid "Connect"
+msgstr "接続"
+
+#: src/components/network/NetworkPage.jsx:109
+#, fuzzy, c-format
+msgid "Conected to %s"
+msgstr "接続済み (%s)"
+
+#: src/components/network/NetworkPage.jsx:114
+#, fuzzy
+msgid "No connected yet"
+msgstr "まだ何も選択していません"
+
+#: src/components/network/NetworkPage.jsx:115
+#, fuzzy
+msgid ""
+"The system has not been configured for connecting to a Wi-Fi network yet."
+msgstr ""
+"このシステムでは、まだ WiFi ネットワークへの接続設定を実施していません。"
+
+#: src/components/network/NetworkPage.jsx:136
+msgid "Wired"
+msgstr ""
+
+#: src/components/network/NetworkPage.jsx:139
+#, fuzzy
+msgid "No wired connections found"
+msgstr "有線接続が見つかりませんでした。"
+
+#: src/components/network/NetworkPage.jsx:149
+#: src/components/network/routes.js:59
 msgid "Network"
 msgstr "ネットワーク"
-
-#: src/components/network/NetworkPage.jsx:178
-msgid "Wired connections"
-msgstr "有線接続"
-
-#: src/components/network/NetworkPage.jsx:185
-msgid "WiFi connections"
-msgstr "無線接続"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:43
@@ -614,7 +647,7 @@ msgstr "無し"
 msgid "WPA & WPA2 Personal"
 msgstr "WPA および WPA2 Personal"
 
-#: src/components/network/WifiConnectionForm.jsx:91
+#: src/components/network/WifiConnectionForm.jsx:86
 #: src/components/product/ProductRegistrationPage.jsx:69
 #: src/components/storage/ZFCPDiskForm.jsx:108
 #: src/components/storage/iscsi/DiscoverForm.jsx:110
@@ -623,81 +656,69 @@ msgstr "WPA および WPA2 Personal"
 msgid "Something went wrong"
 msgstr "何らかの問題が発生しました"
 
-#: src/components/network/WifiConnectionForm.jsx:92
+#: src/components/network/WifiConnectionForm.jsx:87
 msgid "Please, review provided settings and try again."
 msgstr "設定をご確認のうえやり直してください。"
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.jsx:97
-#: src/components/network/WifiConnectionForm.jsx:101
+#: src/components/network/WifiConnectionForm.jsx:92
+#: src/components/network/WifiConnectionForm.jsx:96
 msgid "SSID"
 msgstr "SSID"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.jsx:109
-#: src/components/network/WifiConnectionForm.jsx:112
+#: src/components/network/WifiConnectionForm.jsx:104
+#: src/components/network/WifiConnectionForm.jsx:107
 msgid "Security"
 msgstr "セキュリティ"
 
 #. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.jsx:121
+#: src/components/network/WifiConnectionForm.jsx:116
 msgid "WPA Password"
 msgstr "WPA パスワード"
 
-#. TRANSLATORS: button label, connect to a WiFi network
-#. TRANSLATORS: menu label, connect to the selected WiFi network
-#: src/components/network/WifiConnectionForm.jsx:133
-#: src/components/network/WifiNetworkMenu.jsx:58
-msgid "Connect"
-msgstr "接続"
-
-#. TRANSLATORS: button label
-#: src/components/network/WifiHiddenNetworkForm.jsx:50
-msgid "Connect to hidden network"
-msgstr "ステルスネットワークへの接続"
-
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:34
-#: src/components/network/WifiNetworkListItem.jsx:94
+#: src/components/network/WifiNetworksListPage.jsx:51
+#: src/components/network/WifiNetworksListPage.jsx:111
 msgid "Connecting"
 msgstr "接続しています"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:37
+#: src/components/network/WifiNetworksListPage.jsx:54
+#: src/components/network/WifiNetworksListPage.jsx:115
+#: src/components/network/WifiNetworksListPage.jsx:154
 msgid "Connected"
 msgstr "接続済み"
 
-#. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:40
-msgid "Disconnecting"
-msgstr "切断中"
-
-#: src/components/network/WifiNetworkListItem.jsx:42
-msgid "Failed"
-msgstr "失敗"
-
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:45
+#: src/components/network/WifiNetworksListPage.jsx:59
+#: src/components/network/WifiNetworksListPage.jsx:113
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr "切断済み"
 
-#. TRANSLATORS: %s is replaced by a WiFi network name
-#: src/components/network/WifiNetworkListItem.jsx:92
-#, c-format
-msgid "%s connection is waiting for an state change"
-msgstr "接続 %s は状態の変化を待っています"
-
-#. TRANSLATORS: menu label, disconnect from the selected WiFi network
-#: src/components/network/WifiNetworkMenu.jsx:67
+#: src/components/network/WifiNetworksListPage.jsx:121
 msgid "Disconnect"
 msgstr "切断"
 
-#. TRANSLATORS: menu label, remove the selected WiFi network settings
-#: src/components/network/WifiNetworkMenu.jsx:76
-msgid "Forget network"
-msgstr "ネットワークの削除"
+#: src/components/network/WifiNetworksListPage.jsx:142
+#, fuzzy
+msgid "Connect to a hidden network"
+msgstr "ステルスネットワークへの接続"
+
+#: src/components/network/WifiNetworksListPage.jsx:153
+#, fuzzy
+msgid "configured"
+msgstr "設定しない"
+
+#: src/components/network/WifiNetworksListPage.jsx:244
+msgid "Connect to hidden network"
+msgstr "ステルスネットワークへの接続"
+
+#: src/components/network/WifiSelectorPage.jsx:131
+msgid "Connect to a Wi-Fi network"
+msgstr "Wi-Fi ネットワークへの接続"
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
@@ -713,9 +734,9 @@ msgstr "ユーザ"
 
 #: src/components/overview/OverviewPage.jsx:46
 #: src/components/overview/StorageSection.jsx:111
-#: src/components/storage/ProposalPage.jsx:266
+#: src/components/storage/ProposalPage.jsx:290
 #: src/components/storage/StoragePage.jsx:30
-#: src/components/storage/routes.js:57
+#: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr "ストレージ"
 
@@ -831,7 +852,7 @@ msgstr ""
 "ジャのボリュームグループを作成してインストールします"
 
 #: src/components/overview/StorageSection.jsx:175
-#: src/components/storage/InstallationDeviceField.jsx:67
+#: src/components/storage/InstallationDeviceField.jsx:63
 msgid "No device selected yet"
 msgstr "まだ何もデバイスを選択していません"
 
@@ -972,7 +993,7 @@ msgstr ""
 msgid "Installation will configure partitions for booting at %s."
 msgstr "インストール作業で %s に起動用のパーティションを設定します。"
 
-#: src/components/storage/BootSelection.jsx:126
+#: src/components/storage/BootSelection.jsx:127
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
@@ -980,43 +1001,43 @@ msgstr ""
 "システムを起動できるようにするため、インストーラはディスク内にいくつかの追加"
 "パーティションを作成もしくは設定する必要があるかもしれません。"
 
-#: src/components/storage/BootSelection.jsx:132
+#: src/components/storage/BootSelection.jsx:133
 msgid "Partitions to boot will be allocated at the installation disk."
 msgstr "インストール先のディスク内に起動用のパーティションを割り当てます。"
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelection.jsx:137
+#: src/components/storage/BootSelection.jsx:138
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
 msgstr ""
 "インストール先のディスク (%s) 内に起動用のパーティションを割り当てます。"
 
-#: src/components/storage/BootSelection.jsx:153
+#: src/components/storage/BootSelection.jsx:154
 msgid "Select booting partition"
 msgstr "起動パーティションの選択"
 
-#: src/components/storage/BootSelection.jsx:167
+#: src/components/storage/BootSelection.jsx:170
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
 msgstr "自動"
 
-#: src/components/storage/BootSelection.jsx:176
+#: src/components/storage/BootSelection.jsx:183
 msgid "Select a disk"
 msgstr "ディスクの選択"
 
-#: src/components/storage/BootSelection.jsx:180
+#: src/components/storage/BootSelection.jsx:189
 msgid "Partitions to boot will be allocated at the following device."
 msgstr "下記のデバイス内に起動用パーティションを割り当てます。"
 
-#: src/components/storage/BootSelection.jsx:183
+#: src/components/storage/BootSelection.jsx:192
 msgid "Choose a disk for placing the boot loader"
 msgstr "ブートローダを配置するディスクを選択してください"
 
-#: src/components/storage/BootSelection.jsx:199
+#: src/components/storage/BootSelection.jsx:210
 msgid "Do not configure"
 msgstr "設定しない"
 
-#: src/components/storage/BootSelection.jsx:202
+#: src/components/storage/BootSelection.jsx:215
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr "起動用のパーティションを自動設定しません。注意してお使いください。"
@@ -1362,30 +1383,30 @@ msgstr ""
 msgid "Encrypt the system"
 msgstr "システムの暗号化"
 
-#: src/components/storage/InstallationDeviceField.jsx:40
+#: src/components/storage/InstallationDeviceField.jsx:36
 #: src/components/storage/VolumeLocationSelectorTable.jsx:58
 msgid "Installation device"
 msgstr "インストール先のデバイス"
 
 #. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.jsx:42
+#: src/components/storage/InstallationDeviceField.jsx:38
 msgid "Main disk or LVM Volume Group for installation."
 msgstr ""
 "インストール先のメインディスクもしくは LVM ボリュームグループを選択してくださ"
 "い。"
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:56
+#: src/components/storage/InstallationDeviceField.jsx:52
 #, c-format
 msgid "File systems created as new partitions at %s"
 msgstr "%s に新規のパーティションを作成し、そこにファイルシステムを作成"
 
-#: src/components/storage/InstallationDeviceField.jsx:59
+#: src/components/storage/InstallationDeviceField.jsx:55
 msgid "File systems created at a new LVM volume group"
 msgstr "新規 LVM ボリュームグループにファイルシステムを作成"
 
 #. TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:63
+#: src/components/storage/InstallationDeviceField.jsx:59
 #, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr "%s 内の新規 LVM ボリュームグループにファイルシステムを作成"
@@ -1598,7 +1619,7 @@ msgstr "マウントポイントの一覧"
 
 #: src/components/storage/PartitionsField.jsx:566
 #: src/components/storage/PartitionsField.jsx:585
-#: src/components/storage/VolumeDialog.jsx:83
+#: src/components/storage/VolumeDialog.jsx:81
 msgid "Add file system"
 msgstr "ファイルシステムの追加"
 
@@ -1638,44 +1659,84 @@ msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
 msgstr[0] "%d 個のサブボリューム処理を表示"
 
-#: src/components/storage/ProposalResultSection.jsx:64
+#: src/components/storage/ProposalActionsSummary.jsx:57
+#, fuzzy
+msgid "Destructive actions are not allowed"
+msgstr "%d 個の破壊的な処理が提案されています"
+
+#: src/components/storage/ProposalActionsSummary.jsx:59
+#, fuzzy
+msgid "Destructive actions are allowed"
+msgstr "%d 個の破壊的な処理が提案されています"
+
+#: src/components/storage/ProposalActionsSummary.jsx:66
 #, c-format
 msgid "There is %d destructive action planned"
 msgid_plural "There are %d destructive actions planned"
 msgstr[0] "%d 個の破壊的な処理が提案されています"
 
-#: src/components/storage/ProposalResultSection.jsx:80
-msgid "Affecting"
+#: src/components/storage/ProposalActionsSummary.jsx:79
+#: src/components/storage/ProposalActionsSummary.jsx:126
+#, fuzzy
+msgid "affecting"
 msgstr "下記に影響があります:"
 
-#: src/components/storage/ProposalResultSection.jsx:96
+#: src/components/storage/ProposalActionsSummary.jsx:107
+#, fuzzy
+msgid "Shrinking partitions is not allowed"
+msgstr "パーティションの縮小"
+
+#: src/components/storage/ProposalActionsSummary.jsx:111
+#, fuzzy
+msgid "Shrinking partitions is allowed"
+msgstr "パーティションの縮小"
+
+#: src/components/storage/ProposalActionsSummary.jsx:113
+#, fuzzy
+msgid "Shrinking some partitions is allowed but not needed"
+msgstr "インストール先のディスクのパーティションを縮小します"
+
+#: src/components/storage/ProposalActionsSummary.jsx:116
+#, fuzzy, c-format
+msgid "%d partition will be shrunk"
+msgid_plural "%d partitions will be shrunk"
+msgstr[0] "%s パーティションテーブル"
+
+#: src/components/storage/ProposalActionsSummary.jsx:151
+#, fuzzy
+msgid "Cannot accommodate the required file systems for installation"
+msgstr "リモートインストールの場合は変更できません"
+
+#: src/components/storage/ProposalActionsSummary.jsx:160
 #, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
 msgstr[0] "%d 個の処理計画を確認する"
 
-#: src/components/storage/ProposalResultSection.jsx:111
-msgid "Waiting for information about storage configuration"
+#: src/components/storage/ProposalActionsSummary.jsx:179
+#, fuzzy
+msgid "Waiting for actions information..."
 msgstr "ストレージ設定に関する情報を待機しています"
 
-#: src/components/storage/ProposalResultSection.jsx:124
-msgid "Storage proposal not possible"
-msgstr "ストレージの提案が実施できません"
-
-#: src/components/storage/ProposalResultSection.jsx:188
-msgid ""
-"During installation, some actions will be performed to configure the system "
-"as displayed below."
-msgstr ""
-"インストールの際、システムの設定にあたって下記に示す処理が実行されます。"
-
-#: src/components/storage/ProposalResultSection.jsx:196
+#: src/components/storage/ProposalPage.jsx:314
 msgid "Planned Actions"
 msgstr "処理の計画"
 
-#: src/components/storage/ProposalResultSection.jsx:210
-msgid "Result"
-msgstr "結果"
+#: src/components/storage/ProposalResultSection.jsx:42
+msgid "Waiting for information about storage configuration"
+msgstr "ストレージ設定に関する情報を待機しています"
+
+#: src/components/storage/ProposalResultSection.jsx:70
+msgid "Final layout"
+msgstr ""
+
+#: src/components/storage/ProposalResultSection.jsx:71
+msgid "The systems will be configured as displayed below."
+msgstr ""
+
+#: src/components/storage/ProposalResultSection.jsx:78
+msgid "Storage proposal not possible"
+msgstr "ストレージの提案が実施できません"
 
 #: src/components/storage/ProposalResultTable.jsx:74
 msgid "New"
@@ -1747,100 +1808,84 @@ msgstr "処理"
 msgid "Actions to find space"
 msgstr "領域の検出処理"
 
-#: src/components/storage/SpacePolicyDialog.jsx:143
-msgid ""
-"Allocating the file systems might need to find free space in the devices "
-"listed below. Choose how to do it."
-msgstr ""
-"ファイルシステムを割り当てるには、下記のデバイス内に空き領域を確保する必要が"
-"あるかもしれません。ここではその方法を選択します。"
+#: src/components/storage/SpacePolicySelection.jsx:170
+#, fuzzy
+msgid "Space policy"
+msgstr "領域ポリシー"
 
-#: src/components/storage/SpacePolicyDialog.jsx:148
-#: src/components/storage/SpacePolicyField.jsx:86
-msgid "Find space"
-msgstr "領域の検出"
-
-#: src/components/storage/SpacePolicyField.jsx:88
-msgid ""
-"Allocating the file systems might need to find free space in the "
-"installation device(s)."
-msgstr ""
-"ファイルシステムを割り当てるには、下記のデバイス内に空き領域を確保する必要が"
-"あるかもしれません。"
-
-#: src/components/storage/VolumeDialog.jsx:80
+#: src/components/storage/VolumeDialog.jsx:78
 #, c-format
 msgid "Add %s file system"
 msgstr "%s ファイルシステムの追加"
 
-#: src/components/storage/VolumeDialog.jsx:81
+#: src/components/storage/VolumeDialog.jsx:79
 #, c-format
 msgid "Edit %s file system"
 msgstr "%s ファイルシステムの編集"
 
-#: src/components/storage/VolumeDialog.jsx:83
+#: src/components/storage/VolumeDialog.jsx:81
 msgid "Edit file system"
 msgstr "ファイルシステムの編集"
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:98
+#: src/components/storage/VolumeDialog.jsx:96
 msgid "The type and size of the file system cannot be edited."
 msgstr "ファイルシステムの種類とサイズは編集できません。"
 
 #. TRANSLATORS: Description of a warning. The first %s is replaced by a device name (e.g.,
 #. /dev/vda) and the second %s is replaced by a mount path (e.g., /home).
-#: src/components/storage/VolumeDialog.jsx:101
+#: src/components/storage/VolumeDialog.jsx:99
 #, c-format
 msgid "The current file system on %s is selected to be mounted at %s."
 msgstr ""
 "%s 内にある現在のファイルシステムを %s にマウントするよう選択しています。"
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:107
+#: src/components/storage/VolumeDialog.jsx:105
 msgid "The size of the file system cannot be edited"
 msgstr "ファイルシステムのサイズは編集できません"
 
 #. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
-#: src/components/storage/VolumeDialog.jsx:109
+#: src/components/storage/VolumeDialog.jsx:107
 #, c-format
 msgid "The file system is allocated at the device %s."
 msgstr "ファイルシステムはデバイス %s 内から割り当てます。"
 
-#: src/components/storage/VolumeDialog.jsx:154
+#: src/components/storage/VolumeDialog.jsx:152
 msgid "A mount point is required"
 msgstr "マウントポイントを指定する必要があります"
 
-#: src/components/storage/VolumeDialog.jsx:181
+#: src/components/storage/VolumeDialog.jsx:179
 msgid "The mount point is invalid"
 msgstr "マウントポイントが正しくありません"
 
-#: src/components/storage/VolumeDialog.jsx:209
+#: src/components/storage/VolumeDialog.jsx:207
 msgid "A size value is required"
 msgstr "サイズを指定する必要があります"
 
-#: src/components/storage/VolumeDialog.jsx:237
+#: src/components/storage/VolumeDialog.jsx:235
 msgid "Minimum size is required"
 msgstr "最小サイズを指定する必要があります"
 
-#: src/components/storage/VolumeDialog.jsx:269
+#: src/components/storage/VolumeDialog.jsx:267
 msgid "Maximum must be greater than minimum"
 msgstr "最大サイズは最小サイズより大きくなければなりません"
 
-#: src/components/storage/VolumeDialog.jsx:311
+#: src/components/storage/VolumeDialog.jsx:309
 #, c-format
 msgid "There is already a file system for %s."
 msgstr "%s に対するファイルシステムが既に存在しています。"
 
-#: src/components/storage/VolumeDialog.jsx:313
+#: src/components/storage/VolumeDialog.jsx:311
 msgid "Do you want to edit it?"
 msgstr "編集してよろしいですか？"
 
-#: src/components/storage/VolumeDialog.jsx:358
+#: src/components/storage/VolumeDialog.jsx:356
 #, c-format
 msgid "There is a predefined file system for %s."
 msgstr "%s に対して事前設定されたファイルシステムが既に存在しています。"
 
-#: src/components/storage/VolumeDialog.jsx:360
+#: src/components/storage/VolumeDialog.jsx:358
 msgid "Do you want to add it?"
 msgstr "追加してよろしいですか？"
 
@@ -2415,8 +2460,8 @@ msgstr "フルネーム"
 
 #: src/components/users/FirstUser.jsx:55
 #: src/components/users/FirstUserForm.jsx:224
-#: src/components/users/FirstUserForm.jsx:230
-#: src/components/users/FirstUserForm.jsx:233
+#: src/components/users/FirstUserForm.jsx:229
+#: src/components/users/FirstUserForm.jsx:232
 msgid "Username"
 msgstr "ユーザ名"
 
@@ -2456,16 +2501,16 @@ msgstr "ユーザの編集"
 msgid "User full name"
 msgstr "ユーザのフルネーム"
 
-#: src/components/users/FirstUserForm.jsx:255
+#: src/components/users/FirstUserForm.jsx:254
 msgid "Edit password too"
 msgstr "パスワードも編集する"
 
-#: src/components/users/FirstUserForm.jsx:270
+#: src/components/users/FirstUserForm.jsx:269
 msgid "user autologin"
 msgstr "ユーザの自動ログイン"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:274
+#: src/components/users/FirstUserForm.jsx:273
 msgid "Auto-login"
 msgstr "自動ログイン"
 
@@ -2562,13 +2607,62 @@ msgstr "最初のユーザ"
 msgid "Root authentication"
 msgstr "root の認証"
 
-#: src/components/users/routes.js:41
-msgid "Create or edit the first user"
-msgstr "最初のユーザの作成または編集"
+#~ msgid "Choose a language"
+#~ msgstr "言語の選択"
 
-#: src/components/users/routes.js:48
-msgid "Edit first user"
-msgstr "最初のユーザの編集"
+#~ msgid "No WiFi connections found."
+#~ msgstr "WiFi 接続が見つかりませんでした。"
+
+#~ msgid "Wired connections"
+#~ msgstr "有線接続"
+
+#~ msgid "WiFi connections"
+#~ msgstr "無線接続"
+
+#~ msgid "Disconnecting"
+#~ msgstr "切断中"
+
+#~ msgid "Failed"
+#~ msgstr "失敗"
+
+#, c-format
+#~ msgid "%s connection is waiting for an state change"
+#~ msgstr "接続 %s は状態の変化を待っています"
+
+#~ msgid "Forget network"
+#~ msgstr "ネットワークの削除"
+
+#~ msgid "Create or edit the first user"
+#~ msgstr "最初のユーザの作成または編集"
+
+#~ msgid "Edit first user"
+#~ msgstr "最初のユーザの編集"
+
+#~ msgid ""
+#~ "During installation, some actions will be performed to configure the "
+#~ "system as displayed below."
+#~ msgstr ""
+#~ "インストールの際、システムの設定にあたって下記に示す処理が実行されます。"
+
+#~ msgid "Result"
+#~ msgstr "結果"
+
+#~ msgid ""
+#~ "Allocating the file systems might need to find free space in the devices "
+#~ "listed below. Choose how to do it."
+#~ msgstr ""
+#~ "ファイルシステムを割り当てるには、下記のデバイス内に空き領域を確保する必要"
+#~ "があるかもしれません。ここではその方法を選択します。"
+
+#~ msgid "Find space"
+#~ msgstr "領域の検出"
+
+#~ msgid ""
+#~ "Allocating the file systems might need to find free space in the "
+#~ "installation device(s)."
+#~ msgstr ""
+#~ "ファイルシステムを割り当てるには、下記のデバイス内に空き領域を確保する必要"
+#~ "があるかもしれません。"
 
 #~ msgid "Analyze disks"
 #~ msgstr "ディスクの分析"
@@ -2819,9 +2913,6 @@ msgstr "最初のユーザの編集"
 #~ msgid "deleting all content of the %d selected disks"
 #~ msgstr "選択した %d 個のディスクの全内容を削除します"
 
-#~ msgid "shrinking partitions of the installation device"
-#~ msgstr "インストール先のディスクのパーティションを縮小します"
-
 #, c-format
 #~ msgid "shrinking partitions of the %d selected disks"
 #~ msgstr "選択した %d 個のディスクのパーティションを縮小します"
@@ -2995,10 +3086,6 @@ msgstr "最初のユーザの編集"
 #~ msgid "Current content"
 #~ msgstr "現在の内容"
 
-#, c-format
-#~ msgid "%s partition table"
-#~ msgstr "%s パーティションテーブル"
-
 #~ msgid "EFI system partition"
 #~ msgstr "EFI システムパーティション"
 
@@ -3029,9 +3116,6 @@ msgstr "最初のユーザの編集"
 
 #~ msgid "Devices will not be modified until installation starts."
 #~ msgstr "インストールを開始するまではデバイスへの書き込みは行われません。"
-
-#~ msgid "Space Policy"
-#~ msgstr "領域ポリシー"
 
 #~ msgid "Select a mechanism to make space"
 #~ msgstr "領域の確保方法を選択してください"
