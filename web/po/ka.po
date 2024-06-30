@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-23 02:24+0000\n"
-"PO-Revision-Date: 2024-06-01 03:46+0000\n"
+"POT-Creation-Date: 2024-06-30 02:27+0000\n"
+"PO-Revision-Date: 2024-06-28 16:46+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ka/>\n"
@@ -17,21 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.6\n"
 
 #: src/MainLayout.jsx:40
-#, fuzzy
 msgid "Agama"
-msgstr "Agama-ის შესახებ"
+msgstr "Agama"
 
 #: src/MainLayout.jsx:82
 msgid "Change product"
 msgstr "პროდუქტის შეცვლა"
 
 #: src/components/core/About.jsx:49
-#, fuzzy
 msgid "About"
-msgstr "Agama-ის შესახებ"
+msgstr "შესახებ"
 
 #: src/components/core/About.jsx:71
 msgid "About Agama"
@@ -54,8 +52,7 @@ msgid "For more information, please visit the project's repository at %s."
 msgstr ""
 
 #: src/components/core/About.jsx:94 src/components/core/FileViewer.jsx:81
-#: src/components/core/InstallerOptions.jsx:70
-#: src/components/network/WifiSelector.jsx:148
+#: src/components/core/LogsButton.jsx:123
 #: src/components/software/SoftwarePatternsSelection.jsx:260
 msgid "Close"
 msgstr "დახურვა"
@@ -90,7 +87,7 @@ msgstr "გაგრძელება"
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:97
 #: src/components/core/Popup.jsx:136
-#: src/components/network/WifiConnectionForm.jsx:136
+#: src/components/network/WifiConnectionForm.jsx:131
 msgid "Cancel"
 msgstr "გაუქმება"
 
@@ -150,21 +147,46 @@ msgstr "დასრულება"
 msgid "Reboot"
 msgstr "გადატვირთვა"
 
-#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
-#: src/components/core/InstallationProgress.jsx:37
-#, c-format
-msgid "Installing %s, please wait ..."
+#: src/components/core/InstallationProgress.jsx:30
+msgid "Installing the system, please wait ..."
 msgstr ""
 
-#: src/components/core/InstallerOptions.jsx:57
-#, fuzzy
+#: src/components/core/InstallerOptions.jsx:83
 msgid "Show installer options"
-msgstr "დაყენების პროგრამის პარამეტრების დამალვა"
+msgstr "დაყენების პროგრამის პარამეტრების ჩვენება"
 
-#: src/components/core/InstallerOptions.jsx:62
-#, fuzzy
+#: src/components/core/InstallerOptions.jsx:88
 msgid "Installer options"
 msgstr "დაყენების პროგრამის მორგება"
+
+#: src/components/core/InstallerOptions.jsx:94
+#: src/components/core/InstallerOptions.jsx:99
+#: src/components/core/InstallerOptions.jsx:100
+#: src/components/l10n/L10nPage.jsx:67
+msgid "Language"
+msgstr "ენა"
+
+#: src/components/core/InstallerOptions.jsx:114
+#: src/components/core/InstallerOptions.jsx:121
+msgid "Keyboard layout"
+msgstr "კლავიატურის განლაგება"
+
+#: src/components/core/InstallerOptions.jsx:130
+msgid "Cannot be changed in remote installation"
+msgstr "ვერ შეიცვლება დაშორებული დაყენებისას"
+
+#: src/components/core/InstallerOptions.jsx:135
+#: src/components/network/IpSettingsForm.jsx:210
+#: src/components/product/ProductRegistrationPage.jsx:89
+#: src/components/storage/BootSelection.jsx:228
+#: src/components/storage/DeviceSelection.jsx:240
+#: src/components/storage/EncryptionSettingsDialog.jsx:138
+#: src/components/storage/SpacePolicySelection.jsx:198
+#: src/components/storage/VolumeDialog.jsx:781
+#: src/components/storage/ZFCPPage.jsx:503
+#: src/components/users/FirstUserForm.jsx:285
+msgid "Accept"
+msgstr "დასტური"
 
 #: src/components/core/IssuesHint.jsx:34
 msgid ""
@@ -202,38 +224,37 @@ msgid "Please, provide its password to log in to the system."
 msgstr ""
 
 #: src/components/core/LoginPage.jsx:98
-#, fuzzy
 msgid "Login form"
-msgstr "%s-ზე შესვლა"
+msgstr "შესვლის ფორმა"
 
 #: src/components/core/LoginPage.jsx:104
-#, fuzzy
 msgid "Password input"
-msgstr "პაროლი"
+msgstr "პაროლის შეყვანა"
 
 #: src/components/core/LoginPage.jsx:113
 msgid "Log in"
-msgstr ""
+msgstr "შესვლა"
 
 #: src/components/core/LoginPage.jsx:124
 msgid "More about this"
 msgstr ""
 
-#: src/components/core/LogsButton.jsx:102
+#: src/components/core/LogsButton.jsx:103
 msgid "Collecting logs..."
 msgstr "ჟურნალის შეგროვება..."
 
-#: src/components/core/LogsButton.jsx:102
+#: src/components/core/LogsButton.jsx:103
+#: src/components/core/LogsButton.jsx:106
 msgid "Download logs"
 msgstr "ჟურნალის გადმოწერა"
 
-#: src/components/core/LogsButton.jsx:110
+#: src/components/core/LogsButton.jsx:112
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
 msgstr ""
 
-#: src/components/core/LogsButton.jsx:118
+#: src/components/core/LogsButton.jsx:120
 msgid "Something went wrong while collecting logs. Please, try again."
 msgstr ""
 
@@ -242,7 +263,7 @@ msgid "Passwords do not match"
 msgstr "პაროლები არ ემთხვევა"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:72
-#: src/components/network/WifiConnectionForm.jsx:125
+#: src/components/network/WifiConnectionForm.jsx:120
 #: src/components/storage/iscsi/AuthFields.jsx:95
 #: src/components/storage/iscsi/AuthFields.jsx:100
 #: src/components/users/RootAuthMethods.jsx:163
@@ -263,16 +284,28 @@ msgstr "დადასტურება"
 
 #. TRANSLATORS: progress message
 #: src/components/core/Popup.jsx:210
-#, fuzzy
 msgid "Loading data..."
-msgstr "ფაილის წაკითხვა..."
+msgstr "მონაცემების ჩატვირთვა..."
 
-#: src/components/core/ProgressReport.jsx:122
+#: src/components/core/ProgressReport.jsx:50
+msgid "Finished"
+msgstr "დასრულებულია"
+
+#: src/components/core/ProgressReport.jsx:59
+msgid "In progress"
+msgstr "მიმდინარეობს"
+
+#: src/components/core/ProgressReport.jsx:70
+msgid "Pending"
+msgstr "დარჩენილია"
+
+#: src/components/core/ProgressReport.jsx:134
 msgid "Waiting for progress status..."
 msgstr ""
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
+#: src/components/storage/ProposalActionsSummary.jsx:226
 msgid "Actions"
 msgstr "ქმედებები"
 
@@ -282,14 +315,13 @@ msgstr "მოლოდინი"
 
 #: src/components/core/Selector.jsx:126
 #: src/components/software/SoftwarePatternsSelection.jsx:212
-#, fuzzy
 msgid "auto selected"
-msgstr "არჩეული არაა"
+msgstr "ავტომატურად არჩეული"
 
 #. TRANSLATORS: page title
 #: src/components/core/ServerError.jsx:34
 msgid "Agama Error"
-msgstr ""
+msgstr "Agama-ის შეცდომა"
 
 #: src/components/core/ServerError.jsx:38
 msgid "Cannot connect to Agama server"
@@ -304,31 +336,6 @@ msgstr ""
 msgid "Reload"
 msgstr "თავიდან ჩატვირთვა"
 
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:66
-#: src/components/l10n/L10nPage.jsx:78
-msgid "Keyboard"
-msgstr "კლავიატურა"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:75
-#, fuzzy
-msgid "Choose a keyboard layout"
-msgstr "არჩიეთ პროდუქტი"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:86
-#, fuzzy
-msgid "Cannot be changed in remote installation"
-msgstr "დაყენების დადასტურება"
-
-#: src/components/l10n/InstallerLocaleSwitcher.jsx:57
-#: src/components/l10n/L10nPage.jsx:67
-msgid "Language"
-msgstr "ენა"
-
-#: src/components/l10n/InstallerLocaleSwitcher.jsx:63
-#, fuzzy
-msgid "Choose a language"
-msgstr "ენის შეცვლა"
-
 #: src/components/l10n/KeyboardSelection.jsx:45
 msgid "Filter by description or keymap code"
 msgstr ""
@@ -338,9 +345,8 @@ msgid "None of the keymaps match the filter."
 msgstr ""
 
 #: src/components/l10n/KeyboardSelection.jsx:92
-#, fuzzy
 msgid "Keyboard selection"
-msgstr "პროგრამული %s"
+msgstr "კლავიატურის არჩევანი"
 
 #: src/components/l10n/KeyboardSelection.jsx:107
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
@@ -358,18 +364,22 @@ msgstr "ლოკალიზაცია"
 
 #: src/components/l10n/L10nPage.jsx:68 src/components/l10n/L10nPage.jsx:79
 #: src/components/l10n/L10nPage.jsx:90
-#, fuzzy
 msgid "Not selected yet"
-msgstr "არჩეული არაა"
+msgstr "ჯერ არჩეული არაა"
 
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
 #: src/components/l10n/L10nPage.jsx:93
-#: src/components/storage/InstallationDeviceField.jsx:115
-#: src/components/storage/SpacePolicyField.jsx:91
+#: src/components/network/NetworkPage.jsx:102
+#: src/components/storage/InstallationDeviceField.jsx:105
+#: src/components/storage/ProposalActionsSummary.jsx:228
 #: src/components/users/RootAuthMethods.jsx:94
 #: src/components/users/RootAuthMethods.jsx:107
 msgid "Change"
 msgstr "შეცვლა"
+
+#: src/components/l10n/L10nPage.jsx:78
+msgid "Keyboard"
+msgstr "კლავიატურა"
 
 #: src/components/l10n/L10nPage.jsx:89
 msgid "Time zone"
@@ -384,9 +394,8 @@ msgid "None of the locales match the filter."
 msgstr ""
 
 #: src/components/l10n/LocaleSelection.jsx:91
-#, fuzzy
 msgid "Locale selection"
-msgstr "პროგრამული %s"
+msgstr "ლოკალის არჩევანი"
 
 #: src/components/l10n/TimezoneSelection.jsx:71
 msgid "Filter by territory, time zone code or UTC offset"
@@ -397,9 +406,8 @@ msgid "None of the time zones match the filter."
 msgstr ""
 
 #: src/components/l10n/TimezoneSelection.jsx:129
-#, fuzzy
 msgid " Timezone selection"
-msgstr "დროის სარტყელის შეცვლა"
+msgstr " დროის სარტყლის არჩევანი"
 
 #: src/components/layout/Loading.jsx:31
 msgid "Loading installation environment, please wait."
@@ -461,6 +469,8 @@ msgid "IP addresses"
 msgstr "IP მისამართები"
 
 #: src/components/network/ConnectionsTable.jsx:77
+#: src/components/network/WifiNetworksListPage.jsx:100
+#: src/components/network/WifiNetworksListPage.jsx:124
 #: src/components/storage/PartitionsField.jsx:320
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
@@ -471,12 +481,13 @@ msgstr "ჩასწორება"
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:80
 #: src/components/network/IpSettingsForm.jsx:136
-#: src/components/network/routes.js:59
 #, c-format
 msgid "Edit connection %s"
 msgstr "%s მიერთების ჩასწორება"
 
 #: src/components/network/ConnectionsTable.jsx:84
+#: src/components/network/WifiNetworksListPage.jsx:103
+#: src/components/network/WifiNetworksListPage.jsx:127
 msgid "Forget"
 msgstr "დავიწყება"
 
@@ -548,55 +559,53 @@ msgstr "ნაგულისხმევი რაუტერი"
 msgid "Gateway can be defined only in 'Manual' mode"
 msgstr ""
 
-#: src/components/network/IpSettingsForm.jsx:210
-#: src/components/product/ProductRegistrationPage.jsx:89
-#: src/components/storage/BootSelection.jsx:215
-#: src/components/storage/DeviceSelection.jsx:240
-#: src/components/storage/EncryptionSettingsDialog.jsx:138
-#: src/components/storage/VolumeDialog.jsx:786
-#: src/components/storage/ZFCPPage.jsx:503
-#: src/components/users/FirstUserForm.jsx:286
-msgid "Accept"
-msgstr "დასტური"
-
-#: src/components/network/NetworkPage.jsx:44
-#: src/components/network/WifiSelector.jsx:129
-msgid "Connect to a Wi-Fi network"
+#: src/components/network/NetworkPage.jsx:85
+msgid "No Wi-Fi supported"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:57
-msgid "No wired connections found."
-msgstr ""
-
-#: src/components/network/NetworkPage.jsx:71
+#: src/components/network/NetworkPage.jsx:86
 msgid ""
-"The system has not been configured for connecting to a WiFi network yet."
+"The system does not support Wi-Fi connections, probably because of missing "
+"or disabled hardware."
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:72
+#: src/components/network/NetworkPage.jsx:99
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#. TRANSLATORS: button label, connect to a WiFi network
+#: src/components/network/NetworkPage.jsx:102
+#: src/components/network/WifiConnectionForm.jsx:128
+#: src/components/network/WifiNetworksListPage.jsx:97
+msgid "Connect"
+msgstr "დაკავშირება"
+
+#: src/components/network/NetworkPage.jsx:109
+#, c-format
+msgid "Conected to %s"
+msgstr "მიერთებულია %s-ზე"
+
+#: src/components/network/NetworkPage.jsx:114
+msgid "No connected yet"
+msgstr "ჯერ მიერთებული არაა"
+
+#: src/components/network/NetworkPage.jsx:115
 msgid ""
-"The system does not support WiFi connections, probably because of missing or "
-"disabled hardware."
+"The system has not been configured for connecting to a Wi-Fi network yet."
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:76
-msgid "No WiFi connections found."
-msgstr ""
+#: src/components/network/NetworkPage.jsx:136
+msgid "Wired"
+msgstr "მავთულიანი"
 
-#: src/components/network/NetworkPage.jsx:170
-#: src/components/network/routes.js:49
+#: src/components/network/NetworkPage.jsx:139
+msgid "No wired connections found"
+msgstr "მავთულიანი მიერთება აღმოჩენილი არაა"
+
+#: src/components/network/NetworkPage.jsx:149
+#: src/components/network/routes.js:59
 msgid "Network"
 msgstr "ქსელი"
-
-#: src/components/network/NetworkPage.jsx:178
-#, fuzzy
-msgid "Wired connections"
-msgstr "%s მიერთების დავიწყება"
-
-#: src/components/network/NetworkPage.jsx:185
-#, fuzzy
-msgid "WiFi connections"
-msgstr "%s მიერთების ჩასწორება"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:43
@@ -609,7 +618,7 @@ msgstr "არაფერი"
 msgid "WPA & WPA2 Personal"
 msgstr "WPA & WPA2 პერსონალური"
 
-#: src/components/network/WifiConnectionForm.jsx:91
+#: src/components/network/WifiConnectionForm.jsx:86
 #: src/components/product/ProductRegistrationPage.jsx:69
 #: src/components/storage/ZFCPDiskForm.jsx:108
 #: src/components/storage/iscsi/DiscoverForm.jsx:110
@@ -618,82 +627,67 @@ msgstr "WPA & WPA2 პერსონალური"
 msgid "Something went wrong"
 msgstr "რაღაც არასწორია"
 
-#: src/components/network/WifiConnectionForm.jsx:92
+#: src/components/network/WifiConnectionForm.jsx:87
 msgid "Please, review provided settings and try again."
 msgstr ""
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.jsx:97
-#: src/components/network/WifiConnectionForm.jsx:101
+#: src/components/network/WifiConnectionForm.jsx:92
+#: src/components/network/WifiConnectionForm.jsx:96
 msgid "SSID"
 msgstr "SSID"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.jsx:109
-#: src/components/network/WifiConnectionForm.jsx:112
+#: src/components/network/WifiConnectionForm.jsx:104
+#: src/components/network/WifiConnectionForm.jsx:107
 msgid "Security"
 msgstr "უსაფრთხოება"
 
 #. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.jsx:121
+#: src/components/network/WifiConnectionForm.jsx:116
 msgid "WPA Password"
 msgstr "WPA პაროლი"
 
-#. TRANSLATORS: button label, connect to a WiFi network
-#. TRANSLATORS: menu label, connect to the selected WiFi network
-#: src/components/network/WifiConnectionForm.jsx:133
-#: src/components/network/WifiNetworkMenu.jsx:58
-msgid "Connect"
-msgstr "დაკავშირება"
-
-#. TRANSLATORS: button label
-#: src/components/network/WifiHiddenNetworkForm.jsx:50
-msgid "Connect to hidden network"
-msgstr "დამალულ ქსელთან მიერთება"
-
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:34
-#: src/components/network/WifiNetworkListItem.jsx:94
+#: src/components/network/WifiNetworksListPage.jsx:51
+#: src/components/network/WifiNetworksListPage.jsx:111
 msgid "Connecting"
 msgstr "დაკავშირება"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:37
+#: src/components/network/WifiNetworksListPage.jsx:54
+#: src/components/network/WifiNetworksListPage.jsx:115
+#: src/components/network/WifiNetworksListPage.jsx:154
 msgid "Connected"
 msgstr "დაკავშირებულია"
 
-#. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:40
-msgid "Disconnecting"
-msgstr "გათიშვა"
-
-#: src/components/network/WifiNetworkListItem.jsx:42
-msgid "Failed"
-msgstr ""
-
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:45
+#: src/components/network/WifiNetworksListPage.jsx:59
+#: src/components/network/WifiNetworksListPage.jsx:113
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr "გამოერთებული"
 
-#. TRANSLATORS: %s is replaced by a WiFi network name
-#: src/components/network/WifiNetworkListItem.jsx:92
-#, c-format
-msgid "%s connection is waiting for an state change"
-msgstr ""
-
-#. TRANSLATORS: menu label, disconnect from the selected WiFi network
-#: src/components/network/WifiNetworkMenu.jsx:67
-#, fuzzy
+#: src/components/network/WifiNetworksListPage.jsx:121
 msgid "Disconnect"
-msgstr "გამოერთებული"
+msgstr "გამოერთება"
 
-#. TRANSLATORS: menu label, remove the selected WiFi network settings
-#: src/components/network/WifiNetworkMenu.jsx:76
-msgid "Forget network"
-msgstr "ქსელის დავიწყება"
+#: src/components/network/WifiNetworksListPage.jsx:142
+msgid "Connect to a hidden network"
+msgstr "დამალულ ქსელთან მიერთება"
+
+#: src/components/network/WifiNetworksListPage.jsx:153
+msgid "configured"
+msgstr "მორგებულია"
+
+#: src/components/network/WifiNetworksListPage.jsx:244
+msgid "Connect to hidden network"
+msgstr "დამალულ ქსელთან მიერთება"
+
+#: src/components/network/WifiSelectorPage.jsx:131
+msgid "Connect to a Wi-Fi network"
+msgstr ""
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
@@ -709,9 +703,9 @@ msgstr "მომხმარებლები"
 
 #: src/components/overview/OverviewPage.jsx:46
 #: src/components/overview/StorageSection.jsx:111
-#: src/components/storage/ProposalPage.jsx:266
+#: src/components/storage/ProposalPage.jsx:290
 #: src/components/storage/StoragePage.jsx:30
-#: src/components/storage/routes.js:57
+#: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr "საცავი"
 
@@ -723,12 +717,10 @@ msgid "Software"
 msgstr "პროგრამები"
 
 #: src/components/overview/OverviewPage.jsx:52
-#, fuzzy
 msgid "Ready for installation"
-msgstr "დაყენების დადასტურება"
+msgstr "მზადაა დასაყენებლად"
 
 #: src/components/overview/OverviewPage.jsx:102
-#, fuzzy
 msgid "Installation"
 msgstr "დაყენება"
 
@@ -749,9 +741,8 @@ msgid ""
 msgstr ""
 
 #: src/components/overview/SoftwareSection.jsx:60
-#, fuzzy
 msgid "The installation will take"
-msgstr "დაყენების მოწყობილობა"
+msgstr "დაყენებას დასჭირდება"
 
 #. TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
 #: src/components/overview/SoftwareSection.jsx:67
@@ -812,7 +803,7 @@ msgid ""
 msgstr ""
 
 #: src/components/overview/StorageSection.jsx:175
-#: src/components/storage/InstallationDeviceField.jsx:67
+#: src/components/storage/InstallationDeviceField.jsx:63
 msgid "No device selected yet"
 msgstr ""
 
@@ -846,7 +837,7 @@ msgstr ""
 
 #: src/components/overview/routes.js:30
 msgid "Overview"
-msgstr ""
+msgstr "გადახედვა"
 
 #: src/components/product/ProductRegistrationPage.jsx:66
 #, c-format
@@ -897,23 +888,20 @@ msgid "The following software patterns are selected for installation:"
 msgstr ""
 
 #: src/components/software/SoftwarePage.jsx:165
-#, fuzzy
 msgid "Selected patterns"
-msgstr "აირჩიეთ დროის სარტყელი"
+msgstr "მონიშნული ნიმუშები"
 
 #: src/components/software/SoftwarePage.jsx:168
-#, fuzzy
 msgid "Change selection"
-msgstr "დროის სარტყელის შეცვლა"
+msgstr "მონიშნულის შეცვლა"
 
 #: src/components/software/SoftwarePatternsSelection.jsx:230
 msgid "None of the patterns match the filter."
 msgstr ""
 
 #: src/components/software/SoftwarePatternsSelection.jsx:238
-#, fuzzy
 msgid "Software selection"
-msgstr "პროგრამული %s"
+msgstr "პროგრამების არჩევანი"
 
 #. TRANSLATORS: search field placeholder text
 #: src/components/software/SoftwarePatternsSelection.jsx:241
@@ -924,18 +912,17 @@ msgstr ""
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
 #: src/components/software/UsedSize.jsx:33
-#, fuzzy, c-format
+#, c-format
 msgid "Installation will take %s."
-msgstr "დაყენების მოწყობილობა"
+msgstr "დაყენებას დასჭირდება %s."
 
 #: src/components/software/UsedSize.jsx:38
 msgid "This space includes the base system and the selected software patterns."
 msgstr ""
 
 #: src/components/storage/BootConfigField.jsx:43
-#, fuzzy
 msgid "Change boot options"
-msgstr "დროის სარტყელის შეცვლა"
+msgstr "ჩატვირთვის პარამეტრების შეცვლა"
 
 #: src/components/storage/BootConfigField.jsx:87
 msgid "Installation will not configure partitions for booting."
@@ -952,50 +939,48 @@ msgstr ""
 msgid "Installation will configure partitions for booting at %s."
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:126
+#: src/components/storage/BootSelection.jsx:127
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:132
+#: src/components/storage/BootSelection.jsx:133
 msgid "Partitions to boot will be allocated at the installation disk."
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelection.jsx:137
+#: src/components/storage/BootSelection.jsx:138
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:153
-#, fuzzy
+#: src/components/storage/BootSelection.jsx:154
 msgid "Select booting partition"
-msgstr "აირჩიეთ კლავიატურა"
+msgstr "აირჩიეთ ჩატვირთვადი დანაყოფი"
 
-#: src/components/storage/BootSelection.jsx:167
+#: src/components/storage/BootSelection.jsx:170
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
 msgstr "ავტომატური"
 
-#: src/components/storage/BootSelection.jsx:176
-#, fuzzy
+#: src/components/storage/BootSelection.jsx:183
 msgid "Select a disk"
-msgstr "აირჩიეთ კლავიატურა"
+msgstr "აირჩიეთ დისკი"
 
-#: src/components/storage/BootSelection.jsx:180
+#: src/components/storage/BootSelection.jsx:189
 msgid "Partitions to boot will be allocated at the following device."
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:183
+#: src/components/storage/BootSelection.jsx:192
 msgid "Choose a disk for placing the boot loader"
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:199
+#: src/components/storage/BootSelection.jsx:210
 msgid "Do not configure"
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:202
+#: src/components/storage/BootSelection.jsx:215
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr ""
@@ -1055,7 +1040,7 @@ msgstr "ტიპი"
 #. usually keep untranslated
 #: src/components/storage/DASDTable.jsx:70
 msgid "DIAG"
-msgstr ""
+msgstr "დიაგ"
 
 #: src/components/storage/DASDTable.jsx:71
 msgid "Formatted"
@@ -1139,14 +1124,12 @@ msgid ""
 msgstr ""
 
 #: src/components/storage/DeviceSelection.jsx:149
-#, fuzzy
 msgid "Select installation device"
-msgstr "დაყენების მოწყობილობა"
+msgstr "აირჩიეთ დაყენების მოწყობილობა"
 
 #: src/components/storage/DeviceSelection.jsx:155
-#, fuzzy
 msgid "Install new system on"
-msgstr "დაყენების პროგრამის მორგება"
+msgstr "ახალი სისტემის დაყენება დისკზე"
 
 #: src/components/storage/DeviceSelection.jsx:158
 msgid "An existing disk"
@@ -1169,9 +1152,8 @@ msgid "Prepare more devices by configuring advanced"
 msgstr ""
 
 #: src/components/storage/DeviceSelection.jsx:229
-#, fuzzy
 msgid "storage techs"
-msgstr "საცავის პრობლემები"
+msgstr "საცავის ტექნოლოგიები"
 
 #. TRANSLATORS: multipath device type
 #: src/components/storage/DeviceSelectorTable.jsx:57
@@ -1198,12 +1180,11 @@ msgstr "SD ბარათი"
 #: src/components/storage/DeviceSelectorTable.jsx:77
 #, c-format
 msgid "%s disk"
-msgstr ""
+msgstr "%s დისკი"
 
 #: src/components/storage/DeviceSelectorTable.jsx:78
-#, fuzzy
 msgid "Disk"
-msgstr "დისკები"
+msgstr "დისკი"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
 #: src/components/storage/DeviceSelectorTable.jsx:98
@@ -1235,7 +1216,7 @@ msgstr ""
 #: src/components/storage/DeviceSelectorTable.jsx:158
 #: src/components/storage/SpaceActionsTable.jsx:114
 msgid "No content found"
-msgstr ""
+msgstr "შემცველობა აღმოჩენილი არაა"
 
 #: src/components/storage/DeviceSelectorTable.jsx:187
 #: src/components/storage/PartitionsField.jsx:450
@@ -1277,9 +1258,8 @@ msgstr "iSCSI"
 
 #: src/components/storage/EncryptionField.jsx:38
 #: src/components/storage/EncryptionSettingsDialog.jsx:36
-#, fuzzy
 msgid "Encryption"
-msgstr "დაშიფვრის გამოყენება"
+msgstr "დაშიფვრა"
 
 #: src/components/storage/EncryptionField.jsx:39
 msgid ""
@@ -1289,11 +1269,11 @@ msgstr ""
 
 #: src/components/storage/EncryptionField.jsx:42
 msgid "disabled"
-msgstr ""
+msgstr "გათიშულია"
 
 #: src/components/storage/EncryptionField.jsx:43
 msgid "enabled"
-msgstr ""
+msgstr "ჩართულია"
 
 #: src/components/storage/EncryptionField.jsx:44
 msgid "using TPM unlocking"
@@ -1301,11 +1281,11 @@ msgstr ""
 
 #: src/components/storage/EncryptionField.jsx:58
 msgid "Enable"
-msgstr ""
+msgstr "ჩართვა"
 
 #: src/components/storage/EncryptionField.jsx:58
 msgid "Modify"
-msgstr ""
+msgstr "შეცვლა"
 
 #: src/components/storage/EncryptionSettingsDialog.jsx:37
 msgid ""
@@ -1332,35 +1312,35 @@ msgstr ""
 msgid "Encrypt the system"
 msgstr ""
 
-#: src/components/storage/InstallationDeviceField.jsx:40
+#: src/components/storage/InstallationDeviceField.jsx:36
 #: src/components/storage/VolumeLocationSelectorTable.jsx:58
 msgid "Installation device"
 msgstr "დაყენების მოწყობილობა"
 
 #. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.jsx:42
+#: src/components/storage/InstallationDeviceField.jsx:38
 msgid "Main disk or LVM Volume Group for installation."
 msgstr ""
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:56
+#: src/components/storage/InstallationDeviceField.jsx:52
 #, c-format
 msgid "File systems created as new partitions at %s"
 msgstr ""
 
-#: src/components/storage/InstallationDeviceField.jsx:59
+#: src/components/storage/InstallationDeviceField.jsx:55
 msgid "File systems created at a new LVM volume group"
 msgstr ""
 
 #. TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:63
+#: src/components/storage/InstallationDeviceField.jsx:59
 #, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr ""
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/PartitionsField.jsx:73
-#, fuzzy, c-format
+#, c-format
 msgid "at least %s"
 msgstr "%s მაინც"
 
@@ -1459,14 +1439,12 @@ msgid "%1$s %2$s partition (%3$s)"
 msgstr ""
 
 #: src/components/storage/PartitionsField.jsx:172
-#, fuzzy
 msgid "Do not configure partitions for booting"
-msgstr "დანაყოფის ინფორმაცია"
+msgstr "ჩატვირთვადი დანაყოფები მორგებული არ იქნება"
 
 #: src/components/storage/PartitionsField.jsx:175
-#, fuzzy
 msgid "Boot partitions at installation disk"
-msgstr "დაყენების მოწყობილობა"
+msgstr "ჩატვირთვადი დანაყოფები დაყენების დისკზე"
 
 #. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
 #: src/components/storage/PartitionsField.jsx:178
@@ -1506,17 +1484,15 @@ msgstr "ავტომატური"
 #: src/components/storage/PartitionsField.jsx:279
 #, c-format
 msgid "Reused %s"
-msgstr ""
+msgstr "თავიდან გამოიყენება %s"
 
 #: src/components/storage/PartitionsField.jsx:281
-#, fuzzy
 msgid "Transactional Btrfs"
-msgstr "ტრანზაქციული"
+msgstr "ტრანზაქციული Btrfs"
 
 #: src/components/storage/PartitionsField.jsx:283
-#, fuzzy
 msgid "Btrfs with snapshots"
-msgstr "სწრაფი ასლებით"
+msgstr "Btrfs სწრაფი ასლებით"
 
 #. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
 #: src/components/storage/PartitionsField.jsx:297
@@ -1531,23 +1507,20 @@ msgid "Separate LVM at %s"
 msgstr ""
 
 #: src/components/storage/PartitionsField.jsx:304
-#, fuzzy
 msgid "Logical volume at system LVM"
-msgstr "ლოგიკური ტომი"
+msgstr "ლოგიკური ტომი სისტემურ LVM-ზე"
 
 #: src/components/storage/PartitionsField.jsx:306
 msgid "Partition at installation disk"
 msgstr ""
 
 #: src/components/storage/PartitionsField.jsx:321
-#, fuzzy
 msgid "Reset location"
-msgstr "რეგისტრაცია"
+msgstr "მდებარეობის ჩამოყრა"
 
 #: src/components/storage/PartitionsField.jsx:322
-#, fuzzy
 msgid "Change location"
-msgstr "დროის სარტყელის შეცვლა"
+msgstr "მდებარეობის შეცვლა"
 
 #: src/components/storage/PartitionsField.jsx:323
 #: src/components/storage/SpaceActionsTable.jsx:78
@@ -1564,9 +1537,8 @@ msgstr "მიმაგრების წერტილი"
 
 #. TRANSLATORS: where (and how) the file-system is going to be created
 #: src/components/storage/PartitionsField.jsx:453
-#, fuzzy
 msgid "Location"
-msgstr "ლოკალიზაცია"
+msgstr "მდებარეობა"
 
 #: src/components/storage/PartitionsField.jsx:495
 msgid "Table with mount points"
@@ -1574,22 +1546,21 @@ msgstr ""
 
 #: src/components/storage/PartitionsField.jsx:566
 #: src/components/storage/PartitionsField.jsx:585
-#: src/components/storage/VolumeDialog.jsx:83
+#: src/components/storage/VolumeDialog.jsx:81
 msgid "Add file system"
-msgstr ""
+msgstr "ფაილური სისტემის დამატება"
 
 #: src/components/storage/PartitionsField.jsx:596
 msgid "Other"
-msgstr ""
+msgstr "სხვა"
 
 #: src/components/storage/PartitionsField.jsx:731
 msgid "Reset to defaults"
 msgstr "ნაგულისხმები პარამეტრების დაყენება"
 
 #: src/components/storage/PartitionsField.jsx:801
-#, fuzzy
 msgid "Partitions and file systems"
-msgstr "ტრანზაქციული"
+msgstr "დანაყოფები და ფაილური სისტემები"
 
 #: src/components/storage/PartitionsField.jsx:802
 msgid ""
@@ -1598,9 +1569,8 @@ msgid ""
 msgstr ""
 
 #: src/components/storage/PartitionsField.jsx:808
-#, fuzzy
 msgid "Show partitions and file-systems actions"
-msgstr "ტრანზაქციული"
+msgstr "დანაყოფების და ფაილური სისტემის ქმედებების ჩვენება"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsDialog.jsx:62
@@ -1618,68 +1588,98 @@ msgid_plural "Show %d subvolume actions"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/components/storage/ProposalResultSection.jsx:64
+#: src/components/storage/ProposalActionsSummary.jsx:57
+msgid "Destructive actions are not allowed"
+msgstr ""
+
+#: src/components/storage/ProposalActionsSummary.jsx:59
+msgid "Destructive actions are allowed"
+msgstr ""
+
+#: src/components/storage/ProposalActionsSummary.jsx:66
 #, c-format
 msgid "There is %d destructive action planned"
 msgid_plural "There are %d destructive actions planned"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/components/storage/ProposalResultSection.jsx:80
-#, fuzzy
-msgid "Affecting"
-msgstr "დაკავშირება"
+#: src/components/storage/ProposalActionsSummary.jsx:79
+#: src/components/storage/ProposalActionsSummary.jsx:126
+msgid "affecting"
+msgstr "გავლენა"
 
-#: src/components/storage/ProposalResultSection.jsx:96
-#, fuzzy, c-format
+#: src/components/storage/ProposalActionsSummary.jsx:107
+msgid "Shrinking partitions is not allowed"
+msgstr "დანაყოფების დაპატარავება დაშვებული არაა"
+
+#: src/components/storage/ProposalActionsSummary.jsx:111
+msgid "Shrinking partitions is allowed"
+msgstr "დანაყოფების დაპატარავება დაშვებულია"
+
+#: src/components/storage/ProposalActionsSummary.jsx:113
+msgid "Shrinking some partitions is allowed but not needed"
+msgstr ""
+
+#: src/components/storage/ProposalActionsSummary.jsx:116
+#, c-format
+msgid "%d partition will be shrunk"
+msgid_plural "%d partitions will be shrunk"
+msgstr[0] "შემცირდება %d დანაყოფი"
+msgstr[1] "შემცირდება %d დანაყოფი"
+
+#: src/components/storage/ProposalActionsSummary.jsx:151
+msgid "Cannot accommodate the required file systems for installation"
+msgstr "დაყენებისთვის საჭირო ფაილური სისტემების შეგროვება შეუძლებელია"
+
+#: src/components/storage/ProposalActionsSummary.jsx:160
+#, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
-msgstr[0] "დაგეგმილი ქმედებები"
-msgstr[1] "დაგეგმილი ქმედებები"
+msgstr[0] "დაგეგმილი ქმედების შემოწმება"
+msgstr[1] "%d დაგეგმილი ქმედების შემოწმება"
 
-#: src/components/storage/ProposalResultSection.jsx:111
-msgid "Waiting for information about storage configuration"
+#: src/components/storage/ProposalActionsSummary.jsx:179
+msgid "Waiting for actions information..."
 msgstr ""
 
-#: src/components/storage/ProposalResultSection.jsx:124
-msgid "Storage proposal not possible"
-msgstr ""
-
-#: src/components/storage/ProposalResultSection.jsx:188
-msgid ""
-"During installation, some actions will be performed to configure the system "
-"as displayed below."
-msgstr ""
-
-#: src/components/storage/ProposalResultSection.jsx:196
+#: src/components/storage/ProposalPage.jsx:314
 msgid "Planned Actions"
 msgstr "დაგეგმილი ქმედებები"
 
-#: src/components/storage/ProposalResultSection.jsx:210
-msgid "Result"
+#: src/components/storage/ProposalResultSection.jsx:42
+msgid "Waiting for information about storage configuration"
+msgstr ""
+
+#: src/components/storage/ProposalResultSection.jsx:70
+msgid "Final layout"
+msgstr "საბოლოო განლაგება"
+
+#: src/components/storage/ProposalResultSection.jsx:71
+msgid "The systems will be configured as displayed below."
+msgstr ""
+
+#: src/components/storage/ProposalResultSection.jsx:78
+msgid "Storage proposal not possible"
 msgstr ""
 
 #: src/components/storage/ProposalResultTable.jsx:74
-#, fuzzy
 msgid "New"
-msgstr "ქსელი"
+msgstr "ახალი"
 
 #. TRANSLATORS: Label to indicate the device size before resizing, where %s is
 #. replaced by the original size (e.g., 3.00 GiB).
 #: src/components/storage/ProposalResultTable.jsx:98
-#, fuzzy, c-format
+#, c-format
 msgid "Before %s"
-msgstr "პროგრამული %s"
+msgstr "%s-მდე"
 
 #: src/components/storage/ProposalResultTable.jsx:121
-#, fuzzy
 msgid "Mount Point"
 msgstr "მიმაგრების წერტილი"
 
 #: src/components/storage/ProposalTransactionalInfo.jsx:45
-#, fuzzy
 msgid "Transactional root file system"
-msgstr "ტრანზაქციული"
+msgstr "ტრანზაქციული საწყისი ფაილური სისტემა"
 
 #: src/components/storage/ProposalTransactionalInfo.jsx:48
 #, c-format
@@ -1706,11 +1706,11 @@ msgstr ""
 
 #: src/components/storage/SpaceActionsTable.jsx:79
 msgid "Allow resize"
-msgstr ""
+msgstr "ზომის შეცვლის დაშვება"
 
 #: src/components/storage/SpaceActionsTable.jsx:80
 msgid "Do not modify"
-msgstr ""
+msgstr "არ შეცვალო"
 
 #: src/components/storage/SpaceActionsTable.jsx:111
 msgid "The content may be deleted"
@@ -1718,107 +1718,92 @@ msgstr ""
 
 #: src/components/storage/SpaceActionsTable.jsx:144
 msgid "Shrinkable"
-msgstr ""
+msgstr "დაპატარავებადი"
 
 #: src/components/storage/SpaceActionsTable.jsx:146
-#, fuzzy
 msgid "Action"
-msgstr "ქმედებები"
+msgstr "ქმედება"
 
 #: src/components/storage/SpaceActionsTable.jsx:162
 msgid "Actions to find space"
 msgstr ""
 
-#: src/components/storage/SpacePolicyDialog.jsx:143
-msgid ""
-"Allocating the file systems might need to find free space in the devices "
-"listed below. Choose how to do it."
-msgstr ""
+#: src/components/storage/SpacePolicySelection.jsx:170
+msgid "Space policy"
+msgstr "ადგილის პოლიტიკა"
 
-#: src/components/storage/SpacePolicyDialog.jsx:148
-#: src/components/storage/SpacePolicyField.jsx:86
-#, fuzzy
-msgid "Find space"
-msgstr "ადგილის პოვნა"
-
-#: src/components/storage/SpacePolicyField.jsx:88
-msgid ""
-"Allocating the file systems might need to find free space in the "
-"installation device(s)."
-msgstr ""
-
-#: src/components/storage/VolumeDialog.jsx:80
-#, fuzzy, c-format
+#: src/components/storage/VolumeDialog.jsx:78
+#, c-format
 msgid "Add %s file system"
-msgstr "მდებარეობა %s ფაილური სისტემისთვის"
+msgstr "%s ფაილური სისტემის დამატება"
+
+#: src/components/storage/VolumeDialog.jsx:79
+#, c-format
+msgid "Edit %s file system"
+msgstr "%s ფაილური სისტემის ჩასწორება"
 
 #: src/components/storage/VolumeDialog.jsx:81
-#, fuzzy, c-format
-msgid "Edit %s file system"
-msgstr "მდებარეობა %s ფაილური სისტემისთვის"
-
-#: src/components/storage/VolumeDialog.jsx:83
 msgid "Edit file system"
-msgstr ""
+msgstr "ფაილური სისტემის ჩასწორება"
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:98
+#: src/components/storage/VolumeDialog.jsx:96
 msgid "The type and size of the file system cannot be edited."
 msgstr ""
 
 #. TRANSLATORS: Description of a warning. The first %s is replaced by a device name (e.g.,
 #. /dev/vda) and the second %s is replaced by a mount path (e.g., /home).
-#: src/components/storage/VolumeDialog.jsx:101
+#: src/components/storage/VolumeDialog.jsx:99
 #, c-format
 msgid "The current file system on %s is selected to be mounted at %s."
 msgstr ""
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:107
+#: src/components/storage/VolumeDialog.jsx:105
 msgid "The size of the file system cannot be edited"
 msgstr ""
 
 #. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
-#: src/components/storage/VolumeDialog.jsx:109
+#: src/components/storage/VolumeDialog.jsx:107
 #, c-format
 msgid "The file system is allocated at the device %s."
 msgstr ""
 
-#: src/components/storage/VolumeDialog.jsx:154
+#: src/components/storage/VolumeDialog.jsx:152
 msgid "A mount point is required"
 msgstr ""
 
-#: src/components/storage/VolumeDialog.jsx:181
+#: src/components/storage/VolumeDialog.jsx:179
 msgid "The mount point is invalid"
 msgstr ""
 
-#: src/components/storage/VolumeDialog.jsx:209
+#: src/components/storage/VolumeDialog.jsx:207
 msgid "A size value is required"
 msgstr ""
 
-#: src/components/storage/VolumeDialog.jsx:237
+#: src/components/storage/VolumeDialog.jsx:235
 msgid "Minimum size is required"
 msgstr ""
 
-#: src/components/storage/VolumeDialog.jsx:269
+#: src/components/storage/VolumeDialog.jsx:267
 msgid "Maximum must be greater than minimum"
 msgstr ""
 
-#: src/components/storage/VolumeDialog.jsx:311
+#: src/components/storage/VolumeDialog.jsx:309
 #, c-format
 msgid "There is already a file system for %s."
 msgstr ""
 
-#: src/components/storage/VolumeDialog.jsx:313
+#: src/components/storage/VolumeDialog.jsx:311
 msgid "Do you want to edit it?"
 msgstr ""
 
-#: src/components/storage/VolumeDialog.jsx:358
+#: src/components/storage/VolumeDialog.jsx:356
 #, c-format
 msgid "There is a predefined file system for %s."
 msgstr ""
 
-#: src/components/storage/VolumeDialog.jsx:360
+#: src/components/storage/VolumeDialog.jsx:358
 msgid "Do you want to add it?"
 msgstr ""
 
@@ -1836,7 +1821,7 @@ msgstr ""
 #. TRANSLATORS: label for the file system selector.
 #: src/components/storage/VolumeFields.jsx:234
 msgid "File system type"
-msgstr ""
+msgstr "ფაილური სისტემის ტიპი"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #: src/components/storage/VolumeFields.jsx:265
@@ -1905,7 +1890,7 @@ msgstr "მინიმუმი"
 #. TRANSLATORS: the minium partition size
 #: src/components/storage/VolumeFields.jsx:381
 msgid "Minimum desired size"
-msgstr ""
+msgstr "მინიმალური სასურველი ზომა"
 
 #: src/components/storage/VolumeFields.jsx:392
 msgid "Unit for the minimum size"
@@ -1919,7 +1904,7 @@ msgstr "მაქსიმუმი"
 #. TRANSLATORS: the maximum partition size
 #: src/components/storage/VolumeFields.jsx:416
 msgid "Maximum desired size"
-msgstr ""
+msgstr "მაქსიმალური სასურველი ზომა"
 
 #: src/components/storage/VolumeFields.jsx:426
 msgid "Unit for the maximum size"
@@ -1959,9 +1944,8 @@ msgid "Select in which device to allocate the file system"
 msgstr ""
 
 #: src/components/storage/VolumeLocationDialog.jsx:148
-#, fuzzy
 msgid "Select a location"
-msgstr "აირჩიეთ კლავიატურა"
+msgstr "აირჩიეთ მდებარეობა"
 
 #: src/components/storage/VolumeLocationDialog.jsx:160
 msgid "Select how to allocate the file system"
@@ -1987,9 +1971,8 @@ msgid ""
 msgstr ""
 
 #: src/components/storage/VolumeLocationDialog.jsx:185
-#, fuzzy
 msgid "Format the device"
-msgstr "DASD მოწყობილობების დაფორმატება"
+msgstr "მოწყობილობების დაფორმატება"
 
 #. TRANSLATORS: %s is replaced by a file system type (e.g., Ext4).
 #: src/components/storage/VolumeLocationDialog.jsx:188
@@ -1998,9 +1981,8 @@ msgid "The selected device will be formatted as %s file system."
 msgstr ""
 
 #: src/components/storage/VolumeLocationDialog.jsx:198
-#, fuzzy
 msgid "Mount the file system"
-msgstr "მდებარეობა %s ფაილური სისტემისთვის"
+msgstr "ფაილური სისტემის მიმაგრება"
 
 #: src/components/storage/VolumeLocationDialog.jsx:199
 msgid ""
@@ -2010,7 +1992,7 @@ msgstr ""
 
 #: src/components/storage/VolumeLocationSelectorTable.jsx:102
 msgid "Usage"
-msgstr ""
+msgstr "გამოყენება"
 
 #: src/components/storage/ZFCPDiskForm.jsx:109
 msgid "The zFCP disk was not activated."
@@ -2030,7 +2012,7 @@ msgstr "LUN"
 
 #: src/components/storage/ZFCPPage.jsx:304
 msgid "Auto LUNs Scan"
-msgstr ""
+msgstr "LUN-ების ავტომატური სკანირება"
 
 #: src/components/storage/ZFCPPage.jsx:315
 msgid "Activated"
@@ -2091,7 +2073,7 @@ msgstr ""
 #. TRANSLATORS: button label
 #: src/components/storage/ZFCPPage.jsx:560
 msgid "Activate new disk"
-msgstr ""
+msgstr "ახალი დისკის გააქტიურება"
 
 #. TRANSLATORS: section title
 #: src/components/storage/ZFCPPage.jsx:572
@@ -2099,9 +2081,8 @@ msgid "Disks"
 msgstr "დისკები"
 
 #: src/components/storage/device-utils.jsx:88
-#, fuzzy
 msgid "Unused space"
-msgstr "ადგილის პოვნა"
+msgstr "გამოუყენებელი ადგილი"
 
 #: src/components/storage/iscsi/AuthFields.jsx:70
 msgid "Only available if authentication by target is provided"
@@ -2109,7 +2090,7 @@ msgstr ""
 
 #: src/components/storage/iscsi/AuthFields.jsx:77
 msgid "Authentication by target"
-msgstr ""
+msgstr "ავთენტიკაცია სამიზნით"
 
 #: src/components/storage/iscsi/AuthFields.jsx:80
 #: src/components/storage/iscsi/AuthFields.jsx:85
@@ -2123,7 +2104,7 @@ msgstr "მომხმარებლის სახელი"
 #: src/components/storage/iscsi/AuthFields.jsx:91
 #: src/components/storage/iscsi/AuthFields.jsx:124
 msgid "Incorrect user name"
-msgstr ""
+msgstr "არასწორი მომხმარებლის სახელი"
 
 #: src/components/storage/iscsi/AuthFields.jsx:105
 #: src/components/storage/iscsi/AuthFields.jsx:139
@@ -2132,7 +2113,7 @@ msgstr "არასწორი პაროლი"
 
 #: src/components/storage/iscsi/AuthFields.jsx:108
 msgid "Authentication by initiator"
-msgstr ""
+msgstr "ავთენტიკაცია ინიციატორით"
 
 #: src/components/storage/iscsi/AuthFields.jsx:133
 msgid "Target Password"
@@ -2160,7 +2141,7 @@ msgstr "მისამართი"
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:132
 msgid "Incorrect IP address"
-msgstr ""
+msgstr "არასწორი IP მისამართი"
 
 #. TRANSLATORS: network port number
 #: src/components/storage/iscsi/DiscoverForm.jsx:136
@@ -2273,7 +2254,7 @@ msgstr "სამიზნეები"
 
 #: src/components/storage/routes.js:36
 msgid "Proposal"
-msgstr ""
+msgstr "შეთავაზება"
 
 #: src/components/storage/utils.js:64
 msgid "KiB"
@@ -2297,7 +2278,7 @@ msgstr "პიბ"
 
 #: src/components/storage/utils.js:77
 msgid "Delete current content"
-msgstr ""
+msgstr "მიმდინარე შემცველობის წაშლა"
 
 #: src/components/storage/utils.js:78
 msgid "All partitions will be removed and any data in the disks will be lost."
@@ -2311,7 +2292,7 @@ msgstr ""
 
 #: src/components/storage/utils.js:87
 msgid "Shrink existing partitions"
-msgstr ""
+msgstr "არსებული დანაყოფების დაპატარავება"
 
 #: src/components/storage/utils.js:88
 msgid "The data is kept, but the current partitions will be resized as needed."
@@ -2320,13 +2301,12 @@ msgstr ""
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space shrinking partitions". Keep it short.
 #: src/components/storage/utils.js:92
-#, fuzzy
 msgid "shrinking partitions"
-msgstr "დანაყოფი"
+msgstr "დანაყოფების შემცირება"
 
 #: src/components/storage/utils.js:97
 msgid "Use available space"
-msgstr ""
+msgstr "ხელმისაწვდომი ადგილის გამოყენება"
 
 #: src/components/storage/utils.js:98
 msgid ""
@@ -2340,9 +2320,8 @@ msgid "without modifying any partition"
 msgstr ""
 
 #: src/components/storage/utils.js:107
-#, fuzzy
 msgid "Custom"
-msgstr "მომხმარებლის მოწყობილობები"
+msgstr "მორგებული"
 
 #: src/components/storage/utils.js:108
 msgid "Select what to do with each partition."
@@ -2375,8 +2354,8 @@ msgstr "სრული სახელი"
 
 #: src/components/users/FirstUser.jsx:55
 #: src/components/users/FirstUserForm.jsx:224
-#: src/components/users/FirstUserForm.jsx:230
-#: src/components/users/FirstUserForm.jsx:233
+#: src/components/users/FirstUserForm.jsx:229
+#: src/components/users/FirstUserForm.jsx:232
 msgid "Username"
 msgstr "მომხმარებლის სახელი"
 
@@ -2404,30 +2383,28 @@ msgid "Please, try again."
 msgstr ""
 
 #: src/components/users/FirstUserForm.jsx:197
-#, fuzzy
 msgid "Create user"
-msgstr "მომხმარებლის ანგარიშის შექმნა"
+msgstr "მომხმარებლის შექმნა"
 
 #: src/components/users/FirstUserForm.jsx:197
-#, fuzzy
 msgid "Edit user"
-msgstr "%s-ის ჩასწორება"
+msgstr "მომხმარებლის ჩასწორება"
 
 #: src/components/users/FirstUserForm.jsx:214
 #: src/components/users/FirstUserForm.jsx:216
 msgid "User full name"
-msgstr ""
+msgstr "მომხმარებლის სრული სახელი"
 
-#: src/components/users/FirstUserForm.jsx:255
+#: src/components/users/FirstUserForm.jsx:254
 msgid "Edit password too"
 msgstr ""
 
-#: src/components/users/FirstUserForm.jsx:270
+#: src/components/users/FirstUserForm.jsx:269
 msgid "user autologin"
 msgstr "მომხმარებლის ავტოშესვლა"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:274
+#: src/components/users/FirstUserForm.jsx:273
 msgid "Auto-login"
 msgstr "ავტომატური შესვლა"
 
@@ -2444,7 +2421,7 @@ msgstr ""
 #. TRANSLATORS: push button label
 #: src/components/users/RootAuthMethods.jsx:43
 msgid "Set a password"
-msgstr ""
+msgstr "პაროლის დაყენება"
 
 #. TRANSLATORS: push button label
 #: src/components/users/RootAuthMethods.jsx:45
@@ -2518,19 +2495,29 @@ msgstr "გაწმენდა"
 
 #: src/components/users/UsersPage.jsx:45
 msgid "First user"
-msgstr ""
+msgstr "პირველი მომხმარებელი"
 
 #: src/components/users/UsersPage.jsx:52
 msgid "Root authentication"
 msgstr "Root-ით ავთენტიკაცია"
 
-#: src/components/users/routes.js:41
-msgid "Create or edit the first user"
-msgstr ""
+#, fuzzy
+#~ msgid "Choose a language"
+#~ msgstr "ენის შეცვლა"
 
-#: src/components/users/routes.js:48
-msgid "Edit first user"
-msgstr ""
+#, fuzzy
+#~ msgid "WiFi connections"
+#~ msgstr "%s მიერთების ჩასწორება"
+
+#~ msgid "Disconnecting"
+#~ msgstr "გათიშვა"
+
+#~ msgid "Forget network"
+#~ msgstr "ქსელის დავიწყება"
+
+#, fuzzy
+#~ msgid "Find space"
+#~ msgstr "ადგილის პოვნა"
 
 #, fuzzy
 #~ msgid "Analyze disks"
@@ -2763,10 +2750,6 @@ msgstr ""
 #~ msgid "Transport %s"
 #~ msgstr "ტრანსპორტი %s"
 
-#, fuzzy, c-format
-#~ msgid "%s partition table"
-#~ msgstr "დანაყოფი"
-
 #, fuzzy
 #~ msgid "EFI system partition"
 #~ msgstr "დანაყოფი"
@@ -2774,6 +2757,3 @@ msgstr ""
 #, fuzzy, c-format
 #~ msgid "Member of RAID %s"
 #~ msgstr "წევრები: %s"
-
-#~ msgid "Space Policy"
-#~ msgstr "ადგილის პოლიტიკა"

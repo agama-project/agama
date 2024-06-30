@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-23 02:24+0000\n"
+"POT-Creation-Date: 2024-06-30 02:27+0000\n"
 "PO-Revision-Date: 2024-05-12 20:43+0000\n"
 "Last-Translator: Alejandro Jiménez <ale-jimenez1@hotmail.es>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -59,8 +59,7 @@ msgstr ""
 "Para obtener más información, visite el repositorio del proyecto en %s."
 
 #: src/components/core/About.jsx:94 src/components/core/FileViewer.jsx:81
-#: src/components/core/InstallerOptions.jsx:70
-#: src/components/network/WifiSelector.jsx:148
+#: src/components/core/LogsButton.jsx:123
 #: src/components/software/SoftwarePatternsSelection.jsx:260
 msgid "Close"
 msgstr "Cerrar"
@@ -97,7 +96,7 @@ msgstr "Continuar"
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:97
 #: src/components/core/Popup.jsx:136
-#: src/components/network/WifiConnectionForm.jsx:136
+#: src/components/network/WifiConnectionForm.jsx:131
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -165,21 +164,52 @@ msgstr "Finalizar"
 msgid "Reboot"
 msgstr "Reiniciar"
 
-#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
-#: src/components/core/InstallationProgress.jsx:37
-#, fuzzy, c-format
-msgid "Installing %s, please wait ..."
+#: src/components/core/InstallationProgress.jsx:30
+#, fuzzy
+msgid "Installing the system, please wait ..."
 msgstr "Cargando productos disponibles, por favor espere..."
 
-#: src/components/core/InstallerOptions.jsx:57
+#: src/components/core/InstallerOptions.jsx:83
 #, fuzzy
 msgid "Show installer options"
 msgstr "Ocultar las opciones del instalador"
 
-#: src/components/core/InstallerOptions.jsx:62
+#: src/components/core/InstallerOptions.jsx:88
 #, fuzzy
 msgid "Installer options"
 msgstr "Opciones del instalador"
+
+#: src/components/core/InstallerOptions.jsx:94
+#: src/components/core/InstallerOptions.jsx:99
+#: src/components/core/InstallerOptions.jsx:100
+#: src/components/l10n/L10nPage.jsx:67
+msgid "Language"
+msgstr "Idioma"
+
+#: src/components/core/InstallerOptions.jsx:114
+#: src/components/core/InstallerOptions.jsx:121
+#, fuzzy
+msgid "Keyboard layout"
+msgstr "Escoger un producto"
+
+#: src/components/core/InstallerOptions.jsx:130
+#, fuzzy
+msgid "Cannot be changed in remote installation"
+msgstr ""
+"La distribución del teclado no se puede cambiar en la instalación remota"
+
+#: src/components/core/InstallerOptions.jsx:135
+#: src/components/network/IpSettingsForm.jsx:210
+#: src/components/product/ProductRegistrationPage.jsx:89
+#: src/components/storage/BootSelection.jsx:228
+#: src/components/storage/DeviceSelection.jsx:240
+#: src/components/storage/EncryptionSettingsDialog.jsx:138
+#: src/components/storage/SpacePolicySelection.jsx:198
+#: src/components/storage/VolumeDialog.jsx:781
+#: src/components/storage/ZFCPPage.jsx:503
+#: src/components/users/FirstUserForm.jsx:285
+msgid "Accept"
+msgstr "Aceptar"
 
 #: src/components/core/IssuesHint.jsx:34
 msgid ""
@@ -237,15 +267,16 @@ msgstr "Iniciar sesión"
 msgid "More about this"
 msgstr ""
 
-#: src/components/core/LogsButton.jsx:102
+#: src/components/core/LogsButton.jsx:103
 msgid "Collecting logs..."
 msgstr "Recolectando registros..."
 
-#: src/components/core/LogsButton.jsx:102
+#: src/components/core/LogsButton.jsx:103
+#: src/components/core/LogsButton.jsx:106
 msgid "Download logs"
 msgstr "Descargar los registros"
 
-#: src/components/core/LogsButton.jsx:110
+#: src/components/core/LogsButton.jsx:112
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
@@ -253,7 +284,7 @@ msgstr ""
 "El navegador ejecutará la descarga de registros tan pronto como estén "
 "listos. Por favor tenga paciencia."
 
-#: src/components/core/LogsButton.jsx:118
+#: src/components/core/LogsButton.jsx:120
 msgid "Something went wrong while collecting logs. Please, try again."
 msgstr "Algo salió mal al recolectar los registros. Inténtelo de nuevo."
 
@@ -262,7 +293,7 @@ msgid "Passwords do not match"
 msgstr "Las contraseñas no coinciden"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:72
-#: src/components/network/WifiConnectionForm.jsx:125
+#: src/components/network/WifiConnectionForm.jsx:120
 #: src/components/storage/iscsi/AuthFields.jsx:95
 #: src/components/storage/iscsi/AuthFields.jsx:100
 #: src/components/users/RootAuthMethods.jsx:163
@@ -286,13 +317,27 @@ msgstr "Confirmar"
 msgid "Loading data..."
 msgstr "Cargando los datos..."
 
-#: src/components/core/ProgressReport.jsx:122
+#: src/components/core/ProgressReport.jsx:50
+#, fuzzy
+msgid "Finished"
+msgstr "Finalizar"
+
+#: src/components/core/ProgressReport.jsx:59
+msgid "In progress"
+msgstr ""
+
+#: src/components/core/ProgressReport.jsx:70
+msgid "Pending"
+msgstr ""
+
+#: src/components/core/ProgressReport.jsx:134
 #, fuzzy
 msgid "Waiting for progress status..."
 msgstr "Esperando el informe de progreso"
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
+#: src/components/storage/ProposalActionsSummary.jsx:226
 msgid "Actions"
 msgstr "Acciones"
 
@@ -326,32 +371,6 @@ msgstr ""
 #: src/components/core/ServerError.jsx:51
 msgid "Reload"
 msgstr "Recargar"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:66
-#: src/components/l10n/L10nPage.jsx:78
-msgid "Keyboard"
-msgstr "Teclado"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:75
-#, fuzzy
-msgid "Choose a keyboard layout"
-msgstr "Escoger un producto"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:86
-#, fuzzy
-msgid "Cannot be changed in remote installation"
-msgstr ""
-"La distribución del teclado no se puede cambiar en la instalación remota"
-
-#: src/components/l10n/InstallerLocaleSwitcher.jsx:57
-#: src/components/l10n/L10nPage.jsx:67
-msgid "Language"
-msgstr "Idioma"
-
-#: src/components/l10n/InstallerLocaleSwitcher.jsx:63
-#, fuzzy
-msgid "Choose a language"
-msgstr "Cambiar idioma"
 
 #: src/components/l10n/KeyboardSelection.jsx:45
 msgid "Filter by description or keymap code"
@@ -388,12 +407,17 @@ msgstr "Ningún dispositivo seleccionado todavía"
 
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
 #: src/components/l10n/L10nPage.jsx:93
-#: src/components/storage/InstallationDeviceField.jsx:115
-#: src/components/storage/SpacePolicyField.jsx:91
+#: src/components/network/NetworkPage.jsx:102
+#: src/components/storage/InstallationDeviceField.jsx:105
+#: src/components/storage/ProposalActionsSummary.jsx:228
 #: src/components/users/RootAuthMethods.jsx:94
 #: src/components/users/RootAuthMethods.jsx:107
 msgid "Change"
 msgstr "Cambiar"
+
+#: src/components/l10n/L10nPage.jsx:78
+msgid "Keyboard"
+msgstr "Teclado"
 
 #: src/components/l10n/L10nPage.jsx:89
 msgid "Time zone"
@@ -485,6 +509,8 @@ msgid "IP addresses"
 msgstr "Direcciones IP"
 
 #: src/components/network/ConnectionsTable.jsx:77
+#: src/components/network/WifiNetworksListPage.jsx:100
+#: src/components/network/WifiNetworksListPage.jsx:124
 #: src/components/storage/PartitionsField.jsx:320
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
@@ -495,12 +521,13 @@ msgstr "Editar"
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:80
 #: src/components/network/IpSettingsForm.jsx:136
-#: src/components/network/routes.js:59
 #, c-format
 msgid "Edit connection %s"
 msgstr "Editar conexión %s"
 
 #: src/components/network/ConnectionsTable.jsx:84
+#: src/components/network/WifiNetworksListPage.jsx:103
+#: src/components/network/WifiNetworksListPage.jsx:127
 msgid "Forget"
 msgstr "Olvidar"
 
@@ -572,57 +599,59 @@ msgstr "Puerta de enlace"
 msgid "Gateway can be defined only in 'Manual' mode"
 msgstr ""
 
-#: src/components/network/IpSettingsForm.jsx:210
-#: src/components/product/ProductRegistrationPage.jsx:89
-#: src/components/storage/BootSelection.jsx:215
-#: src/components/storage/DeviceSelection.jsx:240
-#: src/components/storage/EncryptionSettingsDialog.jsx:138
-#: src/components/storage/VolumeDialog.jsx:786
-#: src/components/storage/ZFCPPage.jsx:503
-#: src/components/users/FirstUserForm.jsx:286
-msgid "Accept"
-msgstr "Aceptar"
+#: src/components/network/NetworkPage.jsx:85
+msgid "No Wi-Fi supported"
+msgstr ""
 
-#: src/components/network/NetworkPage.jsx:44
-#: src/components/network/WifiSelector.jsx:129
-msgid "Connect to a Wi-Fi network"
-msgstr "Conectado a una red WIFI"
-
-#: src/components/network/NetworkPage.jsx:57
-msgid "No wired connections found."
-msgstr "No se encontraron conexiones por cable."
-
-#: src/components/network/NetworkPage.jsx:71
+#: src/components/network/NetworkPage.jsx:86
+#, fuzzy
 msgid ""
-"The system has not been configured for connecting to a WiFi network yet."
-msgstr "El sistema aún no se ha configurado para conectarse a una red WiFi."
-
-#: src/components/network/NetworkPage.jsx:72
-msgid ""
-"The system does not support WiFi connections, probably because of missing or "
-"disabled hardware."
+"The system does not support Wi-Fi connections, probably because of missing "
+"or disabled hardware."
 msgstr ""
 "El sistema no admite conexiones WiFi, probablemente debido a que falta "
 "hardware o está deshabilitado."
 
-#: src/components/network/NetworkPage.jsx:76
-msgid "No WiFi connections found."
-msgstr "No se encontraron conexiones WiFi."
+#: src/components/network/NetworkPage.jsx:99
+msgid "Wi-Fi"
+msgstr ""
 
-#: src/components/network/NetworkPage.jsx:170
-#: src/components/network/routes.js:49
+#. TRANSLATORS: button label, connect to a WiFi network
+#: src/components/network/NetworkPage.jsx:102
+#: src/components/network/WifiConnectionForm.jsx:128
+#: src/components/network/WifiNetworksListPage.jsx:97
+msgid "Connect"
+msgstr "Conectar"
+
+#: src/components/network/NetworkPage.jsx:109
+#, fuzzy, c-format
+msgid "Conected to %s"
+msgstr "Conectado (%s)"
+
+#: src/components/network/NetworkPage.jsx:114
+#, fuzzy
+msgid "No connected yet"
+msgstr "Ningún dispositivo seleccionado todavía"
+
+#: src/components/network/NetworkPage.jsx:115
+#, fuzzy
+msgid ""
+"The system has not been configured for connecting to a Wi-Fi network yet."
+msgstr "El sistema aún no se ha configurado para conectarse a una red WiFi."
+
+#: src/components/network/NetworkPage.jsx:136
+msgid "Wired"
+msgstr ""
+
+#: src/components/network/NetworkPage.jsx:139
+#, fuzzy
+msgid "No wired connections found"
+msgstr "No se encontraron conexiones por cable."
+
+#: src/components/network/NetworkPage.jsx:149
+#: src/components/network/routes.js:59
 msgid "Network"
 msgstr "Red"
-
-#: src/components/network/NetworkPage.jsx:178
-#, fuzzy
-msgid "Wired connections"
-msgstr "Olvidar conexión %s"
-
-#: src/components/network/NetworkPage.jsx:185
-#, fuzzy
-msgid "WiFi connections"
-msgstr "Editar conexión %s"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:43
@@ -635,7 +664,7 @@ msgstr "Ninguno"
 msgid "WPA & WPA2 Personal"
 msgstr "WPA y WPA2 personales"
 
-#: src/components/network/WifiConnectionForm.jsx:91
+#: src/components/network/WifiConnectionForm.jsx:86
 #: src/components/product/ProductRegistrationPage.jsx:69
 #: src/components/storage/ZFCPDiskForm.jsx:108
 #: src/components/storage/iscsi/DiscoverForm.jsx:110
@@ -644,83 +673,71 @@ msgstr "WPA y WPA2 personales"
 msgid "Something went wrong"
 msgstr "Algo salió mal"
 
-#: src/components/network/WifiConnectionForm.jsx:92
+#: src/components/network/WifiConnectionForm.jsx:87
 msgid "Please, review provided settings and try again."
 msgstr ""
 "Por favor, revise la configuración proporcionada y vuelva a intentarlo."
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.jsx:97
-#: src/components/network/WifiConnectionForm.jsx:101
+#: src/components/network/WifiConnectionForm.jsx:92
+#: src/components/network/WifiConnectionForm.jsx:96
 msgid "SSID"
 msgstr "SSID"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.jsx:109
-#: src/components/network/WifiConnectionForm.jsx:112
+#: src/components/network/WifiConnectionForm.jsx:104
+#: src/components/network/WifiConnectionForm.jsx:107
 msgid "Security"
 msgstr "Seguridad"
 
 #. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.jsx:121
+#: src/components/network/WifiConnectionForm.jsx:116
 msgid "WPA Password"
 msgstr "Contraseña WPA"
 
-#. TRANSLATORS: button label, connect to a WiFi network
-#. TRANSLATORS: menu label, connect to the selected WiFi network
-#: src/components/network/WifiConnectionForm.jsx:133
-#: src/components/network/WifiNetworkMenu.jsx:58
-msgid "Connect"
-msgstr "Conectar"
-
-#. TRANSLATORS: button label
-#: src/components/network/WifiHiddenNetworkForm.jsx:50
-msgid "Connect to hidden network"
-msgstr "Conectar a una red oculta"
-
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:34
-#: src/components/network/WifiNetworkListItem.jsx:94
+#: src/components/network/WifiNetworksListPage.jsx:51
+#: src/components/network/WifiNetworksListPage.jsx:111
 msgid "Connecting"
 msgstr "Conectando"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:37
+#: src/components/network/WifiNetworksListPage.jsx:54
+#: src/components/network/WifiNetworksListPage.jsx:115
+#: src/components/network/WifiNetworksListPage.jsx:154
 msgid "Connected"
 msgstr "Conectado"
 
-#. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:40
-msgid "Disconnecting"
-msgstr "Desconectando"
-
-#: src/components/network/WifiNetworkListItem.jsx:42
-msgid "Failed"
-msgstr "Fallido"
-
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:45
+#: src/components/network/WifiNetworksListPage.jsx:59
+#: src/components/network/WifiNetworksListPage.jsx:113
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr "Desconectado"
 
-#. TRANSLATORS: %s is replaced by a WiFi network name
-#: src/components/network/WifiNetworkListItem.jsx:92
-#, c-format
-msgid "%s connection is waiting for an state change"
-msgstr "%s conexión está esperando un cambio de estado"
-
-#. TRANSLATORS: menu label, disconnect from the selected WiFi network
-#: src/components/network/WifiNetworkMenu.jsx:67
+#: src/components/network/WifiNetworksListPage.jsx:121
 #, fuzzy
 msgid "Disconnect"
 msgstr "Desconectado"
 
-#. TRANSLATORS: menu label, remove the selected WiFi network settings
-#: src/components/network/WifiNetworkMenu.jsx:76
-msgid "Forget network"
-msgstr "Olvidar red"
+#: src/components/network/WifiNetworksListPage.jsx:142
+#, fuzzy
+msgid "Connect to a hidden network"
+msgstr "Conectar a una red oculta"
+
+#: src/components/network/WifiNetworksListPage.jsx:153
+#, fuzzy
+msgid "configured"
+msgstr "No configurar"
+
+#: src/components/network/WifiNetworksListPage.jsx:244
+msgid "Connect to hidden network"
+msgstr "Conectar a una red oculta"
+
+#: src/components/network/WifiSelectorPage.jsx:131
+msgid "Connect to a Wi-Fi network"
+msgstr "Conectado a una red WIFI"
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
@@ -736,9 +753,9 @@ msgstr "Usuarios"
 
 #: src/components/overview/OverviewPage.jsx:46
 #: src/components/overview/StorageSection.jsx:111
-#: src/components/storage/ProposalPage.jsx:266
+#: src/components/storage/ProposalPage.jsx:290
 #: src/components/storage/StoragePage.jsx:30
-#: src/components/storage/routes.js:57
+#: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr "Almacenamiento"
 
@@ -860,7 +877,7 @@ msgstr ""
 "%s usando una estrategia personalizada para encontrar el espacio necesario"
 
 #: src/components/overview/StorageSection.jsx:175
-#: src/components/storage/InstallationDeviceField.jsx:67
+#: src/components/storage/InstallationDeviceField.jsx:63
 msgid "No device selected yet"
 msgstr "Ningún dispositivo seleccionado todavía"
 
@@ -1007,7 +1024,7 @@ msgstr ""
 msgid "Installation will configure partitions for booting at %s."
 msgstr "La instalación configurará las particiones para arrancar en %s."
 
-#: src/components/storage/BootSelection.jsx:126
+#: src/components/storage/BootSelection.jsx:127
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
@@ -1015,45 +1032,45 @@ msgstr ""
 "Para garantizar que el nuevo sistema pueda iniciarse, es posible que el "
 "instalador deba crear o configurar algunas particiones en el disco apropiado."
 
-#: src/components/storage/BootSelection.jsx:132
+#: src/components/storage/BootSelection.jsx:133
 msgid "Partitions to boot will be allocated at the installation disk."
 msgstr "Las particiones para arrancar se asignarán en el disco de instalación."
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelection.jsx:137
+#: src/components/storage/BootSelection.jsx:138
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
 msgstr ""
 "Las particiones para arrancar se asignarán en el disco de instalación (%s)."
 
-#: src/components/storage/BootSelection.jsx:153
+#: src/components/storage/BootSelection.jsx:154
 #, fuzzy
 msgid "Select booting partition"
 msgstr "Seleccione qué hacer con cada partición."
 
-#: src/components/storage/BootSelection.jsx:167
+#: src/components/storage/BootSelection.jsx:170
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
 msgstr "Automático"
 
-#: src/components/storage/BootSelection.jsx:176
+#: src/components/storage/BootSelection.jsx:183
 msgid "Select a disk"
 msgstr "Seleccionar un disco"
 
-#: src/components/storage/BootSelection.jsx:180
+#: src/components/storage/BootSelection.jsx:189
 msgid "Partitions to boot will be allocated at the following device."
 msgstr ""
 "Las particiones para arrancar se asignarán en el siguiente dispositivo."
 
-#: src/components/storage/BootSelection.jsx:183
+#: src/components/storage/BootSelection.jsx:192
 msgid "Choose a disk for placing the boot loader"
 msgstr "Escoger un disco para colocar el cargador de arranque"
 
-#: src/components/storage/BootSelection.jsx:199
+#: src/components/storage/BootSelection.jsx:210
 msgid "Do not configure"
 msgstr "No configurar"
 
-#: src/components/storage/BootSelection.jsx:202
+#: src/components/storage/BootSelection.jsx:215
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr ""
@@ -1410,13 +1427,13 @@ msgstr ""
 msgid "Encrypt the system"
 msgstr "Cifrar el sistema"
 
-#: src/components/storage/InstallationDeviceField.jsx:40
+#: src/components/storage/InstallationDeviceField.jsx:36
 #: src/components/storage/VolumeLocationSelectorTable.jsx:58
 msgid "Installation device"
 msgstr "Dispositivo de instalación"
 
 #. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.jsx:42
+#: src/components/storage/InstallationDeviceField.jsx:38
 #, fuzzy
 msgid "Main disk or LVM Volume Group for installation."
 msgstr ""
@@ -1424,18 +1441,18 @@ msgstr ""
 "instalación."
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:56
+#: src/components/storage/InstallationDeviceField.jsx:52
 #, fuzzy, c-format
 msgid "File systems created as new partitions at %s"
 msgstr "Crear una nueva partición"
 
-#: src/components/storage/InstallationDeviceField.jsx:59
+#: src/components/storage/InstallationDeviceField.jsx:55
 #, fuzzy
 msgid "File systems created at a new LVM volume group"
 msgstr "Selector de dispositivo para nuevo grupo de volúmenes LVM"
 
 #. TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:63
+#: src/components/storage/InstallationDeviceField.jsx:59
 #, fuzzy, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr "nuevo grupo de volúmenes LVM en %s"
@@ -1648,7 +1665,7 @@ msgstr "Tabla con puntos de montaje"
 
 #: src/components/storage/PartitionsField.jsx:566
 #: src/components/storage/PartitionsField.jsx:585
-#: src/components/storage/VolumeDialog.jsx:83
+#: src/components/storage/VolumeDialog.jsx:81
 msgid "Add file system"
 msgstr "Agregar sistema de archivos"
 
@@ -1694,48 +1711,88 @@ msgid_plural "Show %d subvolume actions"
 msgstr[0] "Mostrar %d acción de subvolumen"
 msgstr[1] "Mostrar %d acciones de subvolumen"
 
-#: src/components/storage/ProposalResultSection.jsx:64
+#: src/components/storage/ProposalActionsSummary.jsx:57
+#, fuzzy
+msgid "Destructive actions are not allowed"
+msgstr "Hay %d acción destructiva planeada"
+
+#: src/components/storage/ProposalActionsSummary.jsx:59
+#, fuzzy
+msgid "Destructive actions are allowed"
+msgstr "Hay %d acción destructiva planeada"
+
+#: src/components/storage/ProposalActionsSummary.jsx:66
 #, c-format
 msgid "There is %d destructive action planned"
 msgid_plural "There are %d destructive actions planned"
 msgstr[0] "Hay %d acción destructiva planeada"
 msgstr[1] "Hay %d acciones destructivas planeadas"
 
-#: src/components/storage/ProposalResultSection.jsx:80
-msgid "Affecting"
+#: src/components/storage/ProposalActionsSummary.jsx:79
+#: src/components/storage/ProposalActionsSummary.jsx:126
+#, fuzzy
+msgid "affecting"
 msgstr "Sistemas afectados"
 
-#: src/components/storage/ProposalResultSection.jsx:96
+#: src/components/storage/ProposalActionsSummary.jsx:107
+#, fuzzy
+msgid "Shrinking partitions is not allowed"
+msgstr "Reducir las particiones existentes"
+
+#: src/components/storage/ProposalActionsSummary.jsx:111
+#, fuzzy
+msgid "Shrinking partitions is allowed"
+msgstr "Reducir las particiones existentes"
+
+#: src/components/storage/ProposalActionsSummary.jsx:113
+#, fuzzy
+msgid "Shrinking some partitions is allowed but not needed"
+msgstr "reducir las particiones del dispositivo de instalación"
+
+#: src/components/storage/ProposalActionsSummary.jsx:116
+#, fuzzy, c-format
+msgid "%d partition will be shrunk"
+msgid_plural "%d partitions will be shrunk"
+msgstr[0] "%s tabla de partición"
+msgstr[1] "%s tabla de partición"
+
+#: src/components/storage/ProposalActionsSummary.jsx:151
+#, fuzzy
+msgid "Cannot accommodate the required file systems for installation"
+msgstr ""
+"La distribución del teclado no se puede cambiar en la instalación remota"
+
+#: src/components/storage/ProposalActionsSummary.jsx:160
 #, fuzzy, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
 msgstr[0] "Comprueba todas las acciones planeadas"
 msgstr[1] "Comprueba todas las acciones planeadas"
 
-#: src/components/storage/ProposalResultSection.jsx:111
-msgid "Waiting for information about storage configuration"
+#: src/components/storage/ProposalActionsSummary.jsx:179
+#, fuzzy
+msgid "Waiting for actions information..."
 msgstr "Esperando información sobre la configuración de almacenamiento"
 
-#: src/components/storage/ProposalResultSection.jsx:124
-msgid "Storage proposal not possible"
-msgstr ""
-
-#: src/components/storage/ProposalResultSection.jsx:188
-#, fuzzy
-msgid ""
-"During installation, some actions will be performed to configure the system "
-"as displayed below."
-msgstr ""
-"Durante la instalación, se realizará %d acción para configurar el sistema "
-"como se muestra a continuación"
-
-#: src/components/storage/ProposalResultSection.jsx:196
+#: src/components/storage/ProposalPage.jsx:314
 msgid "Planned Actions"
 msgstr "Acciones planeadas"
 
-#: src/components/storage/ProposalResultSection.jsx:210
-msgid "Result"
-msgstr "Resultado"
+#: src/components/storage/ProposalResultSection.jsx:42
+msgid "Waiting for information about storage configuration"
+msgstr "Esperando información sobre la configuración de almacenamiento"
+
+#: src/components/storage/ProposalResultSection.jsx:70
+msgid "Final layout"
+msgstr ""
+
+#: src/components/storage/ProposalResultSection.jsx:71
+msgid "The systems will be configured as displayed below."
+msgstr ""
+
+#: src/components/storage/ProposalResultSection.jsx:78
+msgid "Storage proposal not possible"
+msgstr ""
 
 #: src/components/storage/ProposalResultTable.jsx:74
 msgid "New"
@@ -1807,101 +1864,84 @@ msgstr "Acción"
 msgid "Actions to find space"
 msgstr "Acciones para encontrar espacio"
 
-#: src/components/storage/SpacePolicyDialog.jsx:143
-msgid ""
-"Allocating the file systems might need to find free space in the devices "
-"listed below. Choose how to do it."
-msgstr ""
-"Es posible que para asignar los sistemas de archivos sea necesario encontrar "
-"espacio libre en los dispositivos que se enumeran a continuación. Elige cómo "
-"hacerlo."
+#: src/components/storage/SpacePolicySelection.jsx:170
+#, fuzzy
+msgid "Space policy"
+msgstr "Política de espacio"
 
-#: src/components/storage/SpacePolicyDialog.jsx:148
-#: src/components/storage/SpacePolicyField.jsx:86
-msgid "Find space"
-msgstr "Encontrar espacio"
-
-#: src/components/storage/SpacePolicyField.jsx:88
-msgid ""
-"Allocating the file systems might need to find free space in the "
-"installation device(s)."
-msgstr ""
-"Es posible que para asignar los sistemas de archivos sea necesario encontrar "
-"espacio libre en el (los) dispositivo(s) de instalación."
-
-#: src/components/storage/VolumeDialog.jsx:80
+#: src/components/storage/VolumeDialog.jsx:78
 #, c-format
 msgid "Add %s file system"
 msgstr "Agregar %s sistema de archivos"
 
-#: src/components/storage/VolumeDialog.jsx:81
+#: src/components/storage/VolumeDialog.jsx:79
 #, c-format
 msgid "Edit %s file system"
 msgstr "Editar %s sistema de archivos"
 
-#: src/components/storage/VolumeDialog.jsx:83
+#: src/components/storage/VolumeDialog.jsx:81
 msgid "Edit file system"
 msgstr "Editar sistema de archivos"
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:98
+#: src/components/storage/VolumeDialog.jsx:96
 msgid "The type and size of the file system cannot be edited."
 msgstr "El tipo y el tamaño del sistema de archivos no puede ser editado."
 
 #. TRANSLATORS: Description of a warning. The first %s is replaced by a device name (e.g.,
 #. /dev/vda) and the second %s is replaced by a mount path (e.g., /home).
-#: src/components/storage/VolumeDialog.jsx:101
+#: src/components/storage/VolumeDialog.jsx:99
 #, c-format
 msgid "The current file system on %s is selected to be mounted at %s."
 msgstr ""
 "El actual sistema de archivos en %s está seleccionado para ser montado en %s."
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:107
+#: src/components/storage/VolumeDialog.jsx:105
 msgid "The size of the file system cannot be edited"
 msgstr "El tamaño del sistema de archivos no puede ser editado"
 
 #. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
-#: src/components/storage/VolumeDialog.jsx:109
+#: src/components/storage/VolumeDialog.jsx:107
 #, c-format
 msgid "The file system is allocated at the device %s."
 msgstr "El sistema de archivos está asignado en el dispositivo %s."
 
-#: src/components/storage/VolumeDialog.jsx:154
+#: src/components/storage/VolumeDialog.jsx:152
 msgid "A mount point is required"
 msgstr "Se requiere un punto de montaje"
 
-#: src/components/storage/VolumeDialog.jsx:181
+#: src/components/storage/VolumeDialog.jsx:179
 msgid "The mount point is invalid"
 msgstr "El punto de montaje no es válido"
 
-#: src/components/storage/VolumeDialog.jsx:209
+#: src/components/storage/VolumeDialog.jsx:207
 msgid "A size value is required"
 msgstr "Se requiere un valor de tamaño"
 
-#: src/components/storage/VolumeDialog.jsx:237
+#: src/components/storage/VolumeDialog.jsx:235
 msgid "Minimum size is required"
 msgstr "Se requiere un tamaño mínimo"
 
-#: src/components/storage/VolumeDialog.jsx:269
+#: src/components/storage/VolumeDialog.jsx:267
 msgid "Maximum must be greater than minimum"
 msgstr "El máximo debe ser mayor que el mínimo"
 
-#: src/components/storage/VolumeDialog.jsx:311
+#: src/components/storage/VolumeDialog.jsx:309
 #, c-format
 msgid "There is already a file system for %s."
 msgstr "Ya existe un sistema de archivos para %s."
 
-#: src/components/storage/VolumeDialog.jsx:313
+#: src/components/storage/VolumeDialog.jsx:311
 msgid "Do you want to edit it?"
 msgstr "¿Quieres editarlo?"
 
-#: src/components/storage/VolumeDialog.jsx:358
+#: src/components/storage/VolumeDialog.jsx:356
 #, c-format
 msgid "There is a predefined file system for %s."
 msgstr "Hay un sistema de archivos predefinido para %s."
 
-#: src/components/storage/VolumeDialog.jsx:360
+#: src/components/storage/VolumeDialog.jsx:358
 msgid "Do you want to add it?"
 msgstr "¿Quieres añadirlo?"
 
@@ -2484,8 +2524,8 @@ msgstr "Nombre completo"
 
 #: src/components/users/FirstUser.jsx:55
 #: src/components/users/FirstUserForm.jsx:224
-#: src/components/users/FirstUserForm.jsx:230
-#: src/components/users/FirstUserForm.jsx:233
+#: src/components/users/FirstUserForm.jsx:229
+#: src/components/users/FirstUserForm.jsx:232
 msgid "Username"
 msgstr "Nombre de usuario"
 
@@ -2528,16 +2568,16 @@ msgstr "Editar %s"
 msgid "User full name"
 msgstr "Nombre completo del usuario"
 
-#: src/components/users/FirstUserForm.jsx:255
+#: src/components/users/FirstUserForm.jsx:254
 msgid "Edit password too"
 msgstr "Editar contraseña también"
 
-#: src/components/users/FirstUserForm.jsx:270
+#: src/components/users/FirstUserForm.jsx:269
 msgid "user autologin"
 msgstr "inicio de sesión automático del usuario"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:274
+#: src/components/users/FirstUserForm.jsx:273
 msgid "Auto-login"
 msgstr "Inicio de sesión automático"
 
@@ -2636,15 +2676,70 @@ msgstr ""
 msgid "Root authentication"
 msgstr "Autenticación de root"
 
-#: src/components/users/routes.js:41
 #, fuzzy
-msgid "Create or edit the first user"
-msgstr "No se puede leer el archivo"
+#~ msgid "Choose a language"
+#~ msgstr "Cambiar idioma"
 
-#: src/components/users/routes.js:48
+#~ msgid "No WiFi connections found."
+#~ msgstr "No se encontraron conexiones WiFi."
+
 #, fuzzy
-msgid "Edit first user"
-msgstr "Editar sistema de archivos"
+#~ msgid "Wired connections"
+#~ msgstr "Olvidar conexión %s"
+
+#, fuzzy
+#~ msgid "WiFi connections"
+#~ msgstr "Editar conexión %s"
+
+#~ msgid "Disconnecting"
+#~ msgstr "Desconectando"
+
+#~ msgid "Failed"
+#~ msgstr "Fallido"
+
+#, c-format
+#~ msgid "%s connection is waiting for an state change"
+#~ msgstr "%s conexión está esperando un cambio de estado"
+
+#~ msgid "Forget network"
+#~ msgstr "Olvidar red"
+
+#, fuzzy
+#~ msgid "Create or edit the first user"
+#~ msgstr "No se puede leer el archivo"
+
+#, fuzzy
+#~ msgid "Edit first user"
+#~ msgstr "Editar sistema de archivos"
+
+#, fuzzy
+#~ msgid ""
+#~ "During installation, some actions will be performed to configure the "
+#~ "system as displayed below."
+#~ msgstr ""
+#~ "Durante la instalación, se realizará %d acción para configurar el sistema "
+#~ "como se muestra a continuación"
+
+#~ msgid "Result"
+#~ msgstr "Resultado"
+
+#~ msgid ""
+#~ "Allocating the file systems might need to find free space in the devices "
+#~ "listed below. Choose how to do it."
+#~ msgstr ""
+#~ "Es posible que para asignar los sistemas de archivos sea necesario "
+#~ "encontrar espacio libre en los dispositivos que se enumeran a "
+#~ "continuación. Elige cómo hacerlo."
+
+#~ msgid "Find space"
+#~ msgstr "Encontrar espacio"
+
+#~ msgid ""
+#~ "Allocating the file systems might need to find free space in the "
+#~ "installation device(s)."
+#~ msgstr ""
+#~ "Es posible que para asignar los sistemas de archivos sea necesario "
+#~ "encontrar espacio libre en el (los) dispositivo(s) de instalación."
 
 #, fuzzy
 #~ msgid "Analyze disks"
@@ -2896,9 +2991,6 @@ msgstr "Editar sistema de archivos"
 #~ msgid "deleting all content of the %d selected disks"
 #~ msgstr "eliminar todo el contenido de %d discos seleccionados"
 
-#~ msgid "shrinking partitions of the installation device"
-#~ msgstr "reducir las particiones del dispositivo de instalación"
-
 #, c-format
 #~ msgid "shrinking partitions of the %d selected disks"
 #~ msgstr "reducir las particiones de los %d discos seleccionados"
@@ -3065,10 +3157,6 @@ msgstr "Editar sistema de archivos"
 #~ msgid "Current content"
 #~ msgstr "Contenido actual"
 
-#, c-format
-#~ msgid "%s partition table"
-#~ msgstr "%s tabla de partición"
-
 #~ msgid "EFI system partition"
 #~ msgstr "partición del sistema EFI"
 
@@ -3097,9 +3185,6 @@ msgstr "Editar sistema de archivos"
 #~ msgid "Devices will not be modified until installation starts."
 #~ msgstr ""
 #~ "Los dispositivos no se modificarán hasta que comience la instalación."
-
-#~ msgid "Space Policy"
-#~ msgstr "Política de espacio"
 
 #~ msgid "Select a mechanism to make space"
 #~ msgstr "Seleccione un mecanismo para hacer espacio"

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-23 02:24+0000\n"
-"PO-Revision-Date: 2024-06-17 06:46+0000\n"
+"POT-Creation-Date: 2024-06-30 02:27+0000\n"
+"PO-Revision-Date: 2024-06-27 09:46+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "sv/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.6\n"
 
 #: src/MainLayout.jsx:40
 msgid "Agama"
@@ -56,8 +56,7 @@ msgid "For more information, please visit the project's repository at %s."
 msgstr "För mer information, var vänlig och besök projektets arkiv på %s."
 
 #: src/components/core/About.jsx:94 src/components/core/FileViewer.jsx:81
-#: src/components/core/InstallerOptions.jsx:70
-#: src/components/network/WifiSelector.jsx:148
+#: src/components/core/LogsButton.jsx:123
 #: src/components/software/SoftwarePatternsSelection.jsx:260
 msgid "Close"
 msgstr "Stäng"
@@ -94,7 +93,7 @@ msgstr "Fortsätt"
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:97
 #: src/components/core/Popup.jsx:136
-#: src/components/network/WifiConnectionForm.jsx:136
+#: src/components/network/WifiConnectionForm.jsx:131
 msgid "Cancel"
 msgstr "Avbryt"
 
@@ -162,19 +161,46 @@ msgstr "Slutför"
 msgid "Reboot"
 msgstr "Starta om"
 
-#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
-#: src/components/core/InstallationProgress.jsx:37
-#, fuzzy, c-format
-msgid "Installing %s, please wait ..."
-msgstr "Laddar data, vänligen vänta en sekund..."
+#: src/components/core/InstallationProgress.jsx:30
+msgid "Installing the system, please wait ..."
+msgstr "Installerar systemet, vänligen vänta ..."
 
-#: src/components/core/InstallerOptions.jsx:57
+#: src/components/core/InstallerOptions.jsx:83
 msgid "Show installer options"
 msgstr "Visa installationsalternativ"
 
-#: src/components/core/InstallerOptions.jsx:62
+#: src/components/core/InstallerOptions.jsx:88
 msgid "Installer options"
 msgstr "Installationsalternativ"
+
+#: src/components/core/InstallerOptions.jsx:94
+#: src/components/core/InstallerOptions.jsx:99
+#: src/components/core/InstallerOptions.jsx:100
+#: src/components/l10n/L10nPage.jsx:67
+msgid "Language"
+msgstr "Språk"
+
+#: src/components/core/InstallerOptions.jsx:114
+#: src/components/core/InstallerOptions.jsx:121
+msgid "Keyboard layout"
+msgstr "Tangentbordslayout"
+
+#: src/components/core/InstallerOptions.jsx:130
+msgid "Cannot be changed in remote installation"
+msgstr "Kan inte ändras i fjärrinstallation"
+
+#: src/components/core/InstallerOptions.jsx:135
+#: src/components/network/IpSettingsForm.jsx:210
+#: src/components/product/ProductRegistrationPage.jsx:89
+#: src/components/storage/BootSelection.jsx:228
+#: src/components/storage/DeviceSelection.jsx:240
+#: src/components/storage/EncryptionSettingsDialog.jsx:138
+#: src/components/storage/SpacePolicySelection.jsx:198
+#: src/components/storage/VolumeDialog.jsx:781
+#: src/components/storage/ZFCPPage.jsx:503
+#: src/components/users/FirstUserForm.jsx:285
+msgid "Accept"
+msgstr "Acceptera"
 
 #: src/components/core/IssuesHint.jsx:34
 msgid ""
@@ -227,15 +253,16 @@ msgstr "Logga in"
 msgid "More about this"
 msgstr "Mer om detta"
 
-#: src/components/core/LogsButton.jsx:102
+#: src/components/core/LogsButton.jsx:103
 msgid "Collecting logs..."
 msgstr "Samlar loggar..."
 
-#: src/components/core/LogsButton.jsx:102
+#: src/components/core/LogsButton.jsx:103
+#: src/components/core/LogsButton.jsx:106
 msgid "Download logs"
 msgstr "Ladda ner loggar"
 
-#: src/components/core/LogsButton.jsx:110
+#: src/components/core/LogsButton.jsx:112
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
@@ -243,7 +270,7 @@ msgstr ""
 "Webbläsaren kommer att köra nedladdningen av loggarna så snart de är klara. "
 "ha tålamod."
 
-#: src/components/core/LogsButton.jsx:118
+#: src/components/core/LogsButton.jsx:120
 msgid "Something went wrong while collecting logs. Please, try again."
 msgstr "Något gick fel när loggar samlades in. Var god försök igen."
 
@@ -252,7 +279,7 @@ msgid "Passwords do not match"
 msgstr "Lösenorden matchar inte"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:72
-#: src/components/network/WifiConnectionForm.jsx:125
+#: src/components/network/WifiConnectionForm.jsx:120
 #: src/components/storage/iscsi/AuthFields.jsx:95
 #: src/components/storage/iscsi/AuthFields.jsx:100
 #: src/components/users/RootAuthMethods.jsx:163
@@ -276,13 +303,25 @@ msgstr "Bekräfta"
 msgid "Loading data..."
 msgstr "Laddar data..."
 
-#: src/components/core/ProgressReport.jsx:122
-#, fuzzy
+#: src/components/core/ProgressReport.jsx:50
+msgid "Finished"
+msgstr "Slutförd"
+
+#: src/components/core/ProgressReport.jsx:59
+msgid "In progress"
+msgstr "Pågår"
+
+#: src/components/core/ProgressReport.jsx:70
+msgid "Pending"
+msgstr "Väntar"
+
+#: src/components/core/ProgressReport.jsx:134
 msgid "Waiting for progress status..."
-msgstr "Väntar på lägesrapport"
+msgstr "Väntar på lägesrapport..."
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
+#: src/components/storage/ProposalActionsSummary.jsx:226
 msgid "Actions"
 msgstr "Åtgärder"
 
@@ -312,28 +351,6 @@ msgstr "Vänligen kontrollera om den är igång."
 #: src/components/core/ServerError.jsx:51
 msgid "Reload"
 msgstr "Ladda om"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:66
-#: src/components/l10n/L10nPage.jsx:78
-msgid "Keyboard"
-msgstr "Tangentbord"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:75
-msgid "Choose a keyboard layout"
-msgstr "Välj en tangentbordslayout"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:86
-msgid "Cannot be changed in remote installation"
-msgstr "Kan inte ändras i fjärrinstallation"
-
-#: src/components/l10n/InstallerLocaleSwitcher.jsx:57
-#: src/components/l10n/L10nPage.jsx:67
-msgid "Language"
-msgstr "Språk"
-
-#: src/components/l10n/InstallerLocaleSwitcher.jsx:63
-msgid "Choose a language"
-msgstr "Välj ett språk"
 
 #: src/components/l10n/KeyboardSelection.jsx:45
 msgid "Filter by description or keymap code"
@@ -368,12 +385,17 @@ msgstr "Inte valt ännu"
 
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
 #: src/components/l10n/L10nPage.jsx:93
-#: src/components/storage/InstallationDeviceField.jsx:115
-#: src/components/storage/SpacePolicyField.jsx:91
+#: src/components/network/NetworkPage.jsx:102
+#: src/components/storage/InstallationDeviceField.jsx:105
+#: src/components/storage/ProposalActionsSummary.jsx:228
 #: src/components/users/RootAuthMethods.jsx:94
 #: src/components/users/RootAuthMethods.jsx:107
 msgid "Change"
 msgstr "Ändra"
+
+#: src/components/l10n/L10nPage.jsx:78
+msgid "Keyboard"
+msgstr "Tangentbord"
 
 #: src/components/l10n/L10nPage.jsx:89
 msgid "Time zone"
@@ -463,6 +485,8 @@ msgid "IP addresses"
 msgstr "IP adresser"
 
 #: src/components/network/ConnectionsTable.jsx:77
+#: src/components/network/WifiNetworksListPage.jsx:100
+#: src/components/network/WifiNetworksListPage.jsx:124
 #: src/components/storage/PartitionsField.jsx:320
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
@@ -473,12 +497,13 @@ msgstr "Redigera"
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:80
 #: src/components/network/IpSettingsForm.jsx:136
-#: src/components/network/routes.js:59
 #, c-format
 msgid "Edit connection %s"
 msgstr "Redigera anslutning %s"
 
 #: src/components/network/ConnectionsTable.jsx:84
+#: src/components/network/WifiNetworksListPage.jsx:103
+#: src/components/network/WifiNetworksListPage.jsx:127
 msgid "Forget"
 msgstr "Glöm"
 
@@ -550,56 +575,56 @@ msgstr "Gateway"
 msgid "Gateway can be defined only in 'Manual' mode"
 msgstr "Gateway kan endast definieras i \"Manuellt\" läge"
 
-#: src/components/network/IpSettingsForm.jsx:210
-#: src/components/product/ProductRegistrationPage.jsx:89
-#: src/components/storage/BootSelection.jsx:215
-#: src/components/storage/DeviceSelection.jsx:240
-#: src/components/storage/EncryptionSettingsDialog.jsx:138
-#: src/components/storage/VolumeDialog.jsx:786
-#: src/components/storage/ZFCPPage.jsx:503
-#: src/components/users/FirstUserForm.jsx:286
-msgid "Accept"
-msgstr "Acceptera"
+#: src/components/network/NetworkPage.jsx:85
+msgid "No Wi-Fi supported"
+msgstr "Inget Wi-Fi stöds"
 
-#: src/components/network/NetworkPage.jsx:44
-#: src/components/network/WifiSelector.jsx:129
-msgid "Connect to a Wi-Fi network"
-msgstr "Anslut till ett Wi-Fi nätverk"
-
-#: src/components/network/NetworkPage.jsx:57
-msgid "No wired connections found."
-msgstr "Inga trådbundna anslutningar hittades."
-
-#: src/components/network/NetworkPage.jsx:71
+#: src/components/network/NetworkPage.jsx:86
 msgid ""
-"The system has not been configured for connecting to a WiFi network yet."
-msgstr ""
-"Systemet har inte konfigurerats för att ansluta till ett WiFi-nätverk ännu."
-
-#: src/components/network/NetworkPage.jsx:72
-msgid ""
-"The system does not support WiFi connections, probably because of missing or "
-"disabled hardware."
+"The system does not support Wi-Fi connections, probably because of missing "
+"or disabled hardware."
 msgstr ""
 "Systemet stöder inte WiFi-anslutningar, förmodligen på grund av saknad eller "
 "inaktiverad hårdvara."
 
-#: src/components/network/NetworkPage.jsx:76
-msgid "No WiFi connections found."
-msgstr "Inga WiFi-anslutningar hittades."
+#: src/components/network/NetworkPage.jsx:99
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
 
-#: src/components/network/NetworkPage.jsx:170
-#: src/components/network/routes.js:49
+#. TRANSLATORS: button label, connect to a WiFi network
+#: src/components/network/NetworkPage.jsx:102
+#: src/components/network/WifiConnectionForm.jsx:128
+#: src/components/network/WifiNetworksListPage.jsx:97
+msgid "Connect"
+msgstr "Anslut"
+
+#: src/components/network/NetworkPage.jsx:109
+#, c-format
+msgid "Conected to %s"
+msgstr "Ansluten till %s"
+
+#: src/components/network/NetworkPage.jsx:114
+msgid "No connected yet"
+msgstr "Inte ansluten ännu"
+
+#: src/components/network/NetworkPage.jsx:115
+msgid ""
+"The system has not been configured for connecting to a Wi-Fi network yet."
+msgstr ""
+"Systemet har inte konfigurerats för att ansluta till ett WiFi-nätverk än."
+
+#: src/components/network/NetworkPage.jsx:136
+msgid "Wired"
+msgstr "Trådbunden"
+
+#: src/components/network/NetworkPage.jsx:139
+msgid "No wired connections found"
+msgstr "Inga trådbundna anslutningar hittades"
+
+#: src/components/network/NetworkPage.jsx:149
+#: src/components/network/routes.js:59
 msgid "Network"
 msgstr "Nätverk"
-
-#: src/components/network/NetworkPage.jsx:178
-msgid "Wired connections"
-msgstr "Trådanslutna anslutningar"
-
-#: src/components/network/NetworkPage.jsx:185
-msgid "WiFi connections"
-msgstr "WiFi anslutningar"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:43
@@ -612,7 +637,7 @@ msgstr "Ingen"
 msgid "WPA & WPA2 Personal"
 msgstr "WPA & WPA2 Personal"
 
-#: src/components/network/WifiConnectionForm.jsx:91
+#: src/components/network/WifiConnectionForm.jsx:86
 #: src/components/product/ProductRegistrationPage.jsx:69
 #: src/components/storage/ZFCPDiskForm.jsx:108
 #: src/components/storage/iscsi/DiscoverForm.jsx:110
@@ -621,81 +646,67 @@ msgstr "WPA & WPA2 Personal"
 msgid "Something went wrong"
 msgstr "Något gick fel"
 
-#: src/components/network/WifiConnectionForm.jsx:92
+#: src/components/network/WifiConnectionForm.jsx:87
 msgid "Please, review provided settings and try again."
 msgstr "Granska de angivna inställningarna och försök igen."
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.jsx:97
-#: src/components/network/WifiConnectionForm.jsx:101
+#: src/components/network/WifiConnectionForm.jsx:92
+#: src/components/network/WifiConnectionForm.jsx:96
 msgid "SSID"
 msgstr "SSID"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.jsx:109
-#: src/components/network/WifiConnectionForm.jsx:112
+#: src/components/network/WifiConnectionForm.jsx:104
+#: src/components/network/WifiConnectionForm.jsx:107
 msgid "Security"
 msgstr "Säkerhet"
 
 #. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.jsx:121
+#: src/components/network/WifiConnectionForm.jsx:116
 msgid "WPA Password"
 msgstr "WPA lösenord"
 
-#. TRANSLATORS: button label, connect to a WiFi network
-#. TRANSLATORS: menu label, connect to the selected WiFi network
-#: src/components/network/WifiConnectionForm.jsx:133
-#: src/components/network/WifiNetworkMenu.jsx:58
-msgid "Connect"
-msgstr "Anslut"
-
-#. TRANSLATORS: button label
-#: src/components/network/WifiHiddenNetworkForm.jsx:50
-msgid "Connect to hidden network"
-msgstr "Anslut till ett dolt nätverk"
-
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:34
-#: src/components/network/WifiNetworkListItem.jsx:94
+#: src/components/network/WifiNetworksListPage.jsx:51
+#: src/components/network/WifiNetworksListPage.jsx:111
 msgid "Connecting"
 msgstr "Ansluter"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:37
+#: src/components/network/WifiNetworksListPage.jsx:54
+#: src/components/network/WifiNetworksListPage.jsx:115
+#: src/components/network/WifiNetworksListPage.jsx:154
 msgid "Connected"
 msgstr "Ansluten"
 
-#. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:40
-msgid "Disconnecting"
-msgstr "Kopplar från"
-
-#: src/components/network/WifiNetworkListItem.jsx:42
-msgid "Failed"
-msgstr "Misslyckades"
-
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:45
+#: src/components/network/WifiNetworksListPage.jsx:59
+#: src/components/network/WifiNetworksListPage.jsx:113
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr "Frånkopplad"
 
-#. TRANSLATORS: %s is replaced by a WiFi network name
-#: src/components/network/WifiNetworkListItem.jsx:92
-#, c-format
-msgid "%s connection is waiting for an state change"
-msgstr "%s anslutningen väntar på en tillståndsändring"
-
-#. TRANSLATORS: menu label, disconnect from the selected WiFi network
-#: src/components/network/WifiNetworkMenu.jsx:67
+#: src/components/network/WifiNetworksListPage.jsx:121
 msgid "Disconnect"
 msgstr "Koppla ifrån"
 
-#. TRANSLATORS: menu label, remove the selected WiFi network settings
-#: src/components/network/WifiNetworkMenu.jsx:76
-msgid "Forget network"
-msgstr "Glöm nätverk"
+#: src/components/network/WifiNetworksListPage.jsx:142
+msgid "Connect to a hidden network"
+msgstr "Anslut till ett dolt nätverk"
+
+#: src/components/network/WifiNetworksListPage.jsx:153
+msgid "configured"
+msgstr "konfigurerad"
+
+#: src/components/network/WifiNetworksListPage.jsx:244
+msgid "Connect to hidden network"
+msgstr "Anslut till ett dolt nätverk"
+
+#: src/components/network/WifiSelectorPage.jsx:131
+msgid "Connect to a Wi-Fi network"
+msgstr "Anslut till ett Wi-Fi nätverk"
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
@@ -711,9 +722,9 @@ msgstr "Användare"
 
 #: src/components/overview/OverviewPage.jsx:46
 #: src/components/overview/StorageSection.jsx:111
-#: src/components/storage/ProposalPage.jsx:266
+#: src/components/storage/ProposalPage.jsx:290
 #: src/components/storage/StoragePage.jsx:30
-#: src/components/storage/routes.js:57
+#: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr "Lagring"
 
@@ -832,7 +843,7 @@ msgstr ""
 "anpassad strategi för att hitta det nödvändiga utrymmet"
 
 #: src/components/overview/StorageSection.jsx:175
-#: src/components/storage/InstallationDeviceField.jsx:67
+#: src/components/storage/InstallationDeviceField.jsx:63
 msgid "No device selected yet"
 msgstr "Ingen enhet vald ännu"
 
@@ -973,7 +984,7 @@ msgstr ""
 msgid "Installation will configure partitions for booting at %s."
 msgstr "Installationen kommer att konfigurera partitioner för uppstart på %s."
 
-#: src/components/storage/BootSelection.jsx:126
+#: src/components/storage/BootSelection.jsx:127
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
@@ -982,45 +993,45 @@ msgstr ""
 "installationsprogrammet behöva skapa eller konfigurera vissa partitioner på "
 "lämplig disk."
 
-#: src/components/storage/BootSelection.jsx:132
+#: src/components/storage/BootSelection.jsx:133
 msgid "Partitions to boot will be allocated at the installation disk."
 msgstr ""
 "Partitioner som ska startas upp kommer att tilldelas på installationsdisken."
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelection.jsx:137
+#: src/components/storage/BootSelection.jsx:138
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
 msgstr ""
 "Partitioner som ska startas upp kommer att tilldelas på installationsdisken "
 "(%s)."
 
-#: src/components/storage/BootSelection.jsx:153
+#: src/components/storage/BootSelection.jsx:154
 msgid "Select booting partition"
 msgstr "Välj uppstartspartition"
 
-#: src/components/storage/BootSelection.jsx:167
+#: src/components/storage/BootSelection.jsx:170
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
 msgstr "Automatisk"
 
-#: src/components/storage/BootSelection.jsx:176
+#: src/components/storage/BootSelection.jsx:183
 msgid "Select a disk"
 msgstr "Välj en disk"
 
-#: src/components/storage/BootSelection.jsx:180
+#: src/components/storage/BootSelection.jsx:189
 msgid "Partitions to boot will be allocated at the following device."
 msgstr "Partitioner för att uppstart kommer att tilldelas på följande enhet."
 
-#: src/components/storage/BootSelection.jsx:183
+#: src/components/storage/BootSelection.jsx:192
 msgid "Choose a disk for placing the boot loader"
 msgstr "Välj en disk för att placera uppstartsladdaren"
 
-#: src/components/storage/BootSelection.jsx:199
+#: src/components/storage/BootSelection.jsx:210
 msgid "Do not configure"
 msgstr "Konfigurera inte"
 
-#: src/components/storage/BootSelection.jsx:202
+#: src/components/storage/BootSelection.jsx:215
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr ""
@@ -1368,28 +1379,28 @@ msgstr ""
 msgid "Encrypt the system"
 msgstr "Kryptera systemet"
 
-#: src/components/storage/InstallationDeviceField.jsx:40
+#: src/components/storage/InstallationDeviceField.jsx:36
 #: src/components/storage/VolumeLocationSelectorTable.jsx:58
 msgid "Installation device"
 msgstr "Installationsenhet"
 
 #. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.jsx:42
+#: src/components/storage/InstallationDeviceField.jsx:38
 msgid "Main disk or LVM Volume Group for installation."
 msgstr "Huvuddisk eller LVM volymgrupp för installation."
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:56
+#: src/components/storage/InstallationDeviceField.jsx:52
 #, c-format
 msgid "File systems created as new partitions at %s"
 msgstr "Filsystem skapade som nya partitioner på %s"
 
-#: src/components/storage/InstallationDeviceField.jsx:59
+#: src/components/storage/InstallationDeviceField.jsx:55
 msgid "File systems created at a new LVM volume group"
 msgstr "Filsystem skapade som en ny LVM-volymgrupp"
 
 #. TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:63
+#: src/components/storage/InstallationDeviceField.jsx:59
 #, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr "Filsystem skapade som en ny LVM-volymgrupp på %s"
@@ -1602,7 +1613,7 @@ msgstr "Tabell med monteringspunkter"
 
 #: src/components/storage/PartitionsField.jsx:566
 #: src/components/storage/PartitionsField.jsx:585
-#: src/components/storage/VolumeDialog.jsx:83
+#: src/components/storage/VolumeDialog.jsx:81
 msgid "Add file system"
 msgstr "Lägg till filsystem"
 
@@ -1646,47 +1657,79 @@ msgid_plural "Show %d subvolume actions"
 msgstr[0] "Visa %d undervolym åtgärd"
 msgstr[1] "Visa %d undervolymer åtgärder"
 
-#: src/components/storage/ProposalResultSection.jsx:64
+#: src/components/storage/ProposalActionsSummary.jsx:57
+msgid "Destructive actions are not allowed"
+msgstr "Destruktiv åtgärder är inte tillåtna"
+
+#: src/components/storage/ProposalActionsSummary.jsx:59
+msgid "Destructive actions are allowed"
+msgstr "Destruktiv åtgärder är tillåtna"
+
+#: src/components/storage/ProposalActionsSummary.jsx:66
 #, c-format
 msgid "There is %d destructive action planned"
 msgid_plural "There are %d destructive actions planned"
 msgstr[0] "Det finns en %d destruktiv åtgärd planerad"
 msgstr[1] "Det finns flera %d destruktiva åtgärder planerade"
 
-#: src/components/storage/ProposalResultSection.jsx:80
-msgid "Affecting"
-msgstr "Påverkar"
+#: src/components/storage/ProposalActionsSummary.jsx:79
+#: src/components/storage/ProposalActionsSummary.jsx:126
+msgid "affecting"
+msgstr "påverkar"
 
-#: src/components/storage/ProposalResultSection.jsx:96
+#: src/components/storage/ProposalActionsSummary.jsx:107
+msgid "Shrinking partitions is not allowed"
+msgstr "Att krympa partitioner är inte tillåtet"
+
+#: src/components/storage/ProposalActionsSummary.jsx:111
+msgid "Shrinking partitions is allowed"
+msgstr "Att krympa partitioner är tillåtet"
+
+#: src/components/storage/ProposalActionsSummary.jsx:113
+msgid "Shrinking some partitions is allowed but not needed"
+msgstr "Att krympa vissa partitioner är tillåtet men behövs inte"
+
+#: src/components/storage/ProposalActionsSummary.jsx:116
+#, c-format
+msgid "%d partition will be shrunk"
+msgid_plural "%d partitions will be shrunk"
+msgstr[0] "%d partition kommer att krympa"
+msgstr[1] "%d partitioner kommer att krympas"
+
+#: src/components/storage/ProposalActionsSummary.jsx:151
+msgid "Cannot accommodate the required file systems for installation"
+msgstr "Kan inte ta emot de filsystem som krävs för installation"
+
+#: src/components/storage/ProposalActionsSummary.jsx:160
 #, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
 msgstr[0] "Kontrollera den planerade åtgärden"
 msgstr[1] "Kontrollera de %d planerade åtgärderna"
 
-#: src/components/storage/ProposalResultSection.jsx:111
-msgid "Waiting for information about storage configuration"
-msgstr "Väntar på information om lagringskonfiguration"
+#: src/components/storage/ProposalActionsSummary.jsx:179
+msgid "Waiting for actions information..."
+msgstr "Väntar på åtgärdsinformation..."
 
-#: src/components/storage/ProposalResultSection.jsx:124
-msgid "Storage proposal not possible"
-msgstr "Lagringsförslag är inte möjligt"
-
-#: src/components/storage/ProposalResultSection.jsx:188
-msgid ""
-"During installation, some actions will be performed to configure the system "
-"as displayed below."
-msgstr ""
-"Under installationen kommer vissa åtgärder att utföras för att konfigurera "
-"systemet som visas nedan."
-
-#: src/components/storage/ProposalResultSection.jsx:196
+#: src/components/storage/ProposalPage.jsx:314
 msgid "Planned Actions"
 msgstr "Planerade åtgärder"
 
-#: src/components/storage/ProposalResultSection.jsx:210
-msgid "Result"
-msgstr "Resultat"
+#: src/components/storage/ProposalResultSection.jsx:42
+msgid "Waiting for information about storage configuration"
+msgstr "Väntar på information om lagringskonfiguration"
+
+#: src/components/storage/ProposalResultSection.jsx:70
+msgid "Final layout"
+msgstr "Slutgiltig layout"
+
+#: src/components/storage/ProposalResultSection.jsx:71
+msgid "The systems will be configured as displayed below."
+msgstr "System kommer att konfigureras som det visas nedan."
+
+#: src/components/storage/ProposalResultSection.jsx:78
+msgid "Storage proposal not possible"
+msgstr "Lagringsförslag är inte möjligt"
 
 #: src/components/storage/ProposalResultTable.jsx:74
 msgid "New"
@@ -1758,99 +1801,82 @@ msgstr "Åtgärd"
 msgid "Actions to find space"
 msgstr "Åtgärder för att hitta utrymme"
 
-#: src/components/storage/SpacePolicyDialog.jsx:143
-msgid ""
-"Allocating the file systems might need to find free space in the devices "
-"listed below. Choose how to do it."
-msgstr ""
-"Att allokera filsystemen kan behöva hitta ledigt utrymme i enheterna som "
-"anges nedan. Välj hur du vill göra det."
+#: src/components/storage/SpacePolicySelection.jsx:170
+msgid "Space policy"
+msgstr "Utrymmespolicy"
 
-#: src/components/storage/SpacePolicyDialog.jsx:148
-#: src/components/storage/SpacePolicyField.jsx:86
-msgid "Find space"
-msgstr "Hitta utrymme"
-
-#: src/components/storage/SpacePolicyField.jsx:88
-msgid ""
-"Allocating the file systems might need to find free space in the "
-"installation device(s)."
-msgstr ""
-"Allokering av filsystemen kan behövas för att hitta ledigt utrymme i "
-"installationsenheten(er)."
-
-#: src/components/storage/VolumeDialog.jsx:80
+#: src/components/storage/VolumeDialog.jsx:78
 #, c-format
 msgid "Add %s file system"
 msgstr "Lägg %s filsystem"
 
-#: src/components/storage/VolumeDialog.jsx:81
+#: src/components/storage/VolumeDialog.jsx:79
 #, c-format
 msgid "Edit %s file system"
 msgstr "Redigera %s filsystem"
 
-#: src/components/storage/VolumeDialog.jsx:83
+#: src/components/storage/VolumeDialog.jsx:81
 msgid "Edit file system"
 msgstr "Redigera filsystem"
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:98
+#: src/components/storage/VolumeDialog.jsx:96
 msgid "The type and size of the file system cannot be edited."
 msgstr "Filsystemets typ och storlek kan inte redigeras."
 
 #. TRANSLATORS: Description of a warning. The first %s is replaced by a device name (e.g.,
 #. /dev/vda) and the second %s is replaced by a mount path (e.g., /home).
-#: src/components/storage/VolumeDialog.jsx:101
+#: src/components/storage/VolumeDialog.jsx:99
 #, c-format
 msgid "The current file system on %s is selected to be mounted at %s."
 msgstr "Det nuvarande filsystemet på %s är valt att monteras på %s."
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:107
+#: src/components/storage/VolumeDialog.jsx:105
 msgid "The size of the file system cannot be edited"
 msgstr "Storleken på filsystemet kan inte redigeras"
 
 #. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
-#: src/components/storage/VolumeDialog.jsx:109
+#: src/components/storage/VolumeDialog.jsx:107
 #, c-format
 msgid "The file system is allocated at the device %s."
 msgstr "Filsystemet är allokerat på enhet %s."
 
-#: src/components/storage/VolumeDialog.jsx:154
+#: src/components/storage/VolumeDialog.jsx:152
 msgid "A mount point is required"
 msgstr "En monteringspunkt krävs"
 
-#: src/components/storage/VolumeDialog.jsx:181
+#: src/components/storage/VolumeDialog.jsx:179
 msgid "The mount point is invalid"
 msgstr "Monteringspunkten är ogiltig"
 
-#: src/components/storage/VolumeDialog.jsx:209
+#: src/components/storage/VolumeDialog.jsx:207
 msgid "A size value is required"
 msgstr "Ett storleksvärde krävs"
 
-#: src/components/storage/VolumeDialog.jsx:237
+#: src/components/storage/VolumeDialog.jsx:235
 msgid "Minimum size is required"
 msgstr "Minsta storlek krävs"
 
-#: src/components/storage/VolumeDialog.jsx:269
+#: src/components/storage/VolumeDialog.jsx:267
 msgid "Maximum must be greater than minimum"
 msgstr "Maximalt måste vara större än minimalt"
 
-#: src/components/storage/VolumeDialog.jsx:311
+#: src/components/storage/VolumeDialog.jsx:309
 #, c-format
 msgid "There is already a file system for %s."
 msgstr "Det finns redan ett filsystemet för %s."
 
-#: src/components/storage/VolumeDialog.jsx:313
+#: src/components/storage/VolumeDialog.jsx:311
 msgid "Do you want to edit it?"
 msgstr "Vill du redigera det?"
 
-#: src/components/storage/VolumeDialog.jsx:358
+#: src/components/storage/VolumeDialog.jsx:356
 #, c-format
 msgid "There is a predefined file system for %s."
 msgstr "Det finns ett fördefinierat filsystem för %s."
 
-#: src/components/storage/VolumeDialog.jsx:360
+#: src/components/storage/VolumeDialog.jsx:358
 msgid "Do you want to add it?"
 msgstr "Vill du lägga till det?"
 
@@ -2424,8 +2450,8 @@ msgstr "Fullständigt namn"
 
 #: src/components/users/FirstUser.jsx:55
 #: src/components/users/FirstUserForm.jsx:224
-#: src/components/users/FirstUserForm.jsx:230
-#: src/components/users/FirstUserForm.jsx:233
+#: src/components/users/FirstUserForm.jsx:229
+#: src/components/users/FirstUserForm.jsx:232
 msgid "Username"
 msgstr "Användarnamn"
 
@@ -2465,16 +2491,16 @@ msgstr "Redigera användare"
 msgid "User full name"
 msgstr "Användarens fullständiga namn"
 
-#: src/components/users/FirstUserForm.jsx:255
+#: src/components/users/FirstUserForm.jsx:254
 msgid "Edit password too"
 msgstr "Redigera lösenord också"
 
-#: src/components/users/FirstUserForm.jsx:270
+#: src/components/users/FirstUserForm.jsx:269
 msgid "user autologin"
 msgstr "användare automatisk inloggning"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:274
+#: src/components/users/FirstUserForm.jsx:273
 msgid "Auto-login"
 msgstr "Automatisk-inloggning"
 
@@ -2573,13 +2599,63 @@ msgstr "Första användare"
 msgid "Root authentication"
 msgstr "Rootautentisering"
 
-#: src/components/users/routes.js:41
-msgid "Create or edit the first user"
-msgstr "Skapa eller redigera den första användaren"
+#~ msgid "Choose a language"
+#~ msgstr "Välj ett språk"
 
-#: src/components/users/routes.js:48
-msgid "Edit first user"
-msgstr "Redigera första användare"
+#~ msgid "No WiFi connections found."
+#~ msgstr "Inga WiFi-anslutningar hittades."
+
+#~ msgid "Wired connections"
+#~ msgstr "Trådanslutna anslutningar"
+
+#~ msgid "WiFi connections"
+#~ msgstr "WiFi anslutningar"
+
+#~ msgid "Disconnecting"
+#~ msgstr "Kopplar från"
+
+#~ msgid "Failed"
+#~ msgstr "Misslyckades"
+
+#, c-format
+#~ msgid "%s connection is waiting for an state change"
+#~ msgstr "%s anslutningen väntar på en tillståndsändring"
+
+#~ msgid "Forget network"
+#~ msgstr "Glöm nätverk"
+
+#~ msgid "Create or edit the first user"
+#~ msgstr "Skapa eller redigera den första användaren"
+
+#~ msgid "Edit first user"
+#~ msgstr "Redigera första användare"
+
+#~ msgid ""
+#~ "During installation, some actions will be performed to configure the "
+#~ "system as displayed below."
+#~ msgstr ""
+#~ "Under installationen kommer vissa åtgärder att utföras för att "
+#~ "konfigurera systemet som visas nedan."
+
+#~ msgid "Result"
+#~ msgstr "Resultat"
+
+#~ msgid ""
+#~ "Allocating the file systems might need to find free space in the devices "
+#~ "listed below. Choose how to do it."
+#~ msgstr ""
+#~ "Att allokera filsystemen kan behöva hitta ledigt utrymme i enheterna som "
+#~ "anges nedan. Välj hur du vill göra det."
+
+#~ msgid "Find space"
+#~ msgstr "Hitta utrymme"
+
+#~ msgid ""
+#~ "Allocating the file systems might need to find free space in the "
+#~ "installation device(s)."
+#~ msgstr ""
+#~ "Allokering av filsystemen kan behövas för att hitta ledigt utrymme i "
+#~ "installationsenheten(er)."
 
 #~ msgid "Analyze disks"
 #~ msgstr "Analysera diskar"
@@ -2834,9 +2910,6 @@ msgstr "Redigera första användare"
 #~ msgid "deleting all content of the %d selected disks"
 #~ msgstr "raderar allt innehåll på de %d valda diskarna"
 
-#~ msgid "shrinking partitions of the installation device"
-#~ msgstr "krymper partitioner på installationsenheten"
-
 #, c-format
 #~ msgid "shrinking partitions of the %d selected disks"
 #~ msgstr "krymper partitioner på de %d valda diskarna"
@@ -3013,10 +3086,6 @@ msgstr "Redigera första användare"
 #~ msgid "Current content"
 #~ msgstr "Nuvarande innehåll"
 
-#, c-format
-#~ msgid "%s partition table"
-#~ msgstr "%s partitionstabell"
-
 #~ msgid "EFI system partition"
 #~ msgstr "EFI-systempartition"
 
@@ -3047,9 +3116,6 @@ msgstr "Redigera första användare"
 
 #~ msgid "Devices will not be modified until installation starts."
 #~ msgstr "Enheter kommer inte att modifieras förrän installationen startar."
-
-#~ msgid "Space Policy"
-#~ msgstr "Utrymmespolicy"
 
 #~ msgid "Select a mechanism to make space"
 #~ msgstr "Välj en mekanism för att skapa utrymme"

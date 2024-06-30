@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-23 02:24+0000\n"
-"PO-Revision-Date: 2024-05-21 19:46+0000\n"
+"POT-Creation-Date: 2024-06-30 02:27+0000\n"
+"PO-Revision-Date: 2024-06-24 12:46+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
 "agama/agama-web/zh_Hans/>\n"
@@ -17,21 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.6\n"
 
 #: src/MainLayout.jsx:40
-#, fuzzy
 msgid "Agama"
-msgstr "关于 Agama"
+msgstr "Agama"
 
 #: src/MainLayout.jsx:82
 msgid "Change product"
 msgstr "更改产品"
 
 #: src/components/core/About.jsx:49
-#, fuzzy
 msgid "About"
-msgstr "关于 Agama"
+msgstr "关于"
 
 #: src/components/core/About.jsx:71
 msgid "About Agama"
@@ -56,8 +54,7 @@ msgid "For more information, please visit the project's repository at %s."
 msgstr "若想了解更多信息，请从 %s 访问项目仓库。"
 
 #: src/components/core/About.jsx:94 src/components/core/FileViewer.jsx:81
-#: src/components/core/InstallerOptions.jsx:70
-#: src/components/network/WifiSelector.jsx:148
+#: src/components/core/LogsButton.jsx:123
 #: src/components/software/SoftwarePatternsSelection.jsx:260
 msgid "Close"
 msgstr "关闭"
@@ -92,7 +89,7 @@ msgstr "继续"
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:97
 #: src/components/core/Popup.jsx:136
-#: src/components/network/WifiConnectionForm.jsx:136
+#: src/components/network/WifiConnectionForm.jsx:131
 msgid "Cancel"
 msgstr "取消"
 
@@ -154,26 +151,53 @@ msgstr "完成"
 msgid "Reboot"
 msgstr "重启"
 
-#. TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed)
-#: src/components/core/InstallationProgress.jsx:37
-#, fuzzy, c-format
-msgid "Installing %s, please wait ..."
-msgstr "正在载入可用产品，请稍候……"
-
-#: src/components/core/InstallerOptions.jsx:57
+#: src/components/core/InstallationProgress.jsx:30
 #, fuzzy
+msgid "Installing the system, please wait ..."
+msgstr "正在安装 %s，请稍候……"
+
+#: src/components/core/InstallerOptions.jsx:83
 msgid "Show installer options"
-msgstr "隐藏安装程序选项"
+msgstr "显示安装程序选项"
 
-#: src/components/core/InstallerOptions.jsx:62
-#, fuzzy
+#: src/components/core/InstallerOptions.jsx:88
 msgid "Installer options"
 msgstr "安装程序选项"
+
+#: src/components/core/InstallerOptions.jsx:94
+#: src/components/core/InstallerOptions.jsx:99
+#: src/components/core/InstallerOptions.jsx:100
+#: src/components/l10n/L10nPage.jsx:67
+msgid "Language"
+msgstr "语言"
+
+#: src/components/core/InstallerOptions.jsx:114
+#: src/components/core/InstallerOptions.jsx:121
+#, fuzzy
+msgid "Keyboard layout"
+msgstr "选择键盘布局"
+
+#: src/components/core/InstallerOptions.jsx:130
+msgid "Cannot be changed in remote installation"
+msgstr "无法在远程安装中更改"
+
+#: src/components/core/InstallerOptions.jsx:135
+#: src/components/network/IpSettingsForm.jsx:210
+#: src/components/product/ProductRegistrationPage.jsx:89
+#: src/components/storage/BootSelection.jsx:228
+#: src/components/storage/DeviceSelection.jsx:240
+#: src/components/storage/EncryptionSettingsDialog.jsx:138
+#: src/components/storage/SpacePolicySelection.jsx:198
+#: src/components/storage/VolumeDialog.jsx:781
+#: src/components/storage/ZFCPPage.jsx:503
+#: src/components/users/FirstUserForm.jsx:285
+msgid "Accept"
+msgstr "接受"
 
 #: src/components/core/IssuesHint.jsx:34
 msgid ""
 "Before starting the installation, you need to address the following problems:"
-msgstr ""
+msgstr "在开始安装前，您需要解决下列问题："
 
 #: src/components/core/ListSearch.jsx:51
 msgid "Search"
@@ -185,7 +209,7 @@ msgstr "无法登录。请确保密码输入正确。"
 
 #: src/components/core/LoginPage.jsx:63
 msgid "Could not authenticate against the server, please check it."
-msgstr ""
+msgstr "无法对服务器进行身份验证，请检查。"
 
 #. TRANSLATORS: Title for a form to provide the password for the root user. %s
 #. will be replaced by "root"
@@ -199,12 +223,11 @@ msgstr "登录为 %s"
 #. it and keep the brackets.
 #: src/components/core/LoginPage.jsx:76
 msgid "The installer requires [root] user privileges."
-msgstr ""
+msgstr "安装程序要求 [root] 用户权限。"
 
 #: src/components/core/LoginPage.jsx:95
-#, fuzzy
 msgid "Please, provide its password to log in to the system."
-msgstr "安装程序需要 %s 用户权限。请提供其密码以登录系统。"
+msgstr "请提供其密码以登录系统。"
 
 #: src/components/core/LoginPage.jsx:98
 msgid "Login form"
@@ -220,23 +243,24 @@ msgstr "登录"
 
 #: src/components/core/LoginPage.jsx:124
 msgid "More about this"
-msgstr ""
+msgstr "更多有关信息"
 
-#: src/components/core/LogsButton.jsx:102
+#: src/components/core/LogsButton.jsx:103
 msgid "Collecting logs..."
 msgstr "正在收集日志……"
 
-#: src/components/core/LogsButton.jsx:102
+#: src/components/core/LogsButton.jsx:103
+#: src/components/core/LogsButton.jsx:106
 msgid "Download logs"
 msgstr "下载日志"
 
-#: src/components/core/LogsButton.jsx:110
+#: src/components/core/LogsButton.jsx:112
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
 msgstr "浏览器将会在日志收集完毕后启动下载过程，请耐心等待。"
 
-#: src/components/core/LogsButton.jsx:118
+#: src/components/core/LogsButton.jsx:120
 msgid "Something went wrong while collecting logs. Please, try again."
 msgstr "收集日志时出现问题，请重试。"
 
@@ -245,7 +269,7 @@ msgid "Passwords do not match"
 msgstr "密码不匹配"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:72
-#: src/components/network/WifiConnectionForm.jsx:125
+#: src/components/network/WifiConnectionForm.jsx:120
 #: src/components/storage/iscsi/AuthFields.jsx:95
 #: src/components/storage/iscsi/AuthFields.jsx:100
 #: src/components/users/RootAuthMethods.jsx:163
@@ -269,13 +293,26 @@ msgstr "确认"
 msgid "Loading data..."
 msgstr "正在读取数据……"
 
-#: src/components/core/ProgressReport.jsx:122
+#: src/components/core/ProgressReport.jsx:50
 #, fuzzy
+msgid "Finished"
+msgstr "完成"
+
+#: src/components/core/ProgressReport.jsx:59
+msgid "In progress"
+msgstr ""
+
+#: src/components/core/ProgressReport.jsx:70
+msgid "Pending"
+msgstr ""
+
+#: src/components/core/ProgressReport.jsx:134
 msgid "Waiting for progress status..."
-msgstr "正在等待进度报告"
+msgstr "正在等待进度状态…"
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
+#: src/components/storage/ProposalActionsSummary.jsx:226
 msgid "Actions"
 msgstr "操作"
 
@@ -291,47 +328,20 @@ msgstr "自动选择"
 #. TRANSLATORS: page title
 #: src/components/core/ServerError.jsx:34
 msgid "Agama Error"
-msgstr ""
+msgstr "Agama 错误"
 
 #: src/components/core/ServerError.jsx:38
-#, fuzzy
 msgid "Cannot connect to Agama server"
-msgstr "无法连接到 Cockpit 服务器"
+msgstr "无法连接到 Agama 服务器"
 
 #: src/components/core/ServerError.jsx:43
-#, fuzzy
 msgid "Please, check whether it is running."
-msgstr "无法连接到 D-Bus 服务，请检查它是否在运行。"
+msgstr "请检查它是否在运行。"
 
 #. TRANSLATORS: button label
 #: src/components/core/ServerError.jsx:51
 msgid "Reload"
 msgstr "重载"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:66
-#: src/components/l10n/L10nPage.jsx:78
-msgid "Keyboard"
-msgstr "键盘"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:75
-#, fuzzy
-msgid "Choose a keyboard layout"
-msgstr "选择产品"
-
-#: src/components/l10n/InstallerKeymapSwitcher.jsx:86
-#, fuzzy
-msgid "Cannot be changed in remote installation"
-msgstr "无法在远程安装中更改键盘布局"
-
-#: src/components/l10n/InstallerLocaleSwitcher.jsx:57
-#: src/components/l10n/L10nPage.jsx:67
-msgid "Language"
-msgstr "语言"
-
-#: src/components/l10n/InstallerLocaleSwitcher.jsx:63
-#, fuzzy
-msgid "Choose a language"
-msgstr "更改语言"
 
 #: src/components/l10n/KeyboardSelection.jsx:45
 msgid "Filter by description or keymap code"
@@ -339,12 +349,11 @@ msgstr "按描述或键盘映射代码过滤"
 
 #: src/components/l10n/KeyboardSelection.jsx:85
 msgid "None of the keymaps match the filter."
-msgstr ""
+msgstr "没有符合此过滤器的键位映射。"
 
 #: src/components/l10n/KeyboardSelection.jsx:92
-#, fuzzy
 msgid "Keyboard selection"
-msgstr "软件 %s"
+msgstr "键盘选择"
 
 #: src/components/l10n/KeyboardSelection.jsx:107
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
@@ -362,18 +371,22 @@ msgstr "本地化"
 
 #: src/components/l10n/L10nPage.jsx:68 src/components/l10n/L10nPage.jsx:79
 #: src/components/l10n/L10nPage.jsx:90
-#, fuzzy
 msgid "Not selected yet"
-msgstr "尚未选择设备"
+msgstr "尚未选择"
 
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
 #: src/components/l10n/L10nPage.jsx:93
-#: src/components/storage/InstallationDeviceField.jsx:115
-#: src/components/storage/SpacePolicyField.jsx:91
+#: src/components/network/NetworkPage.jsx:102
+#: src/components/storage/InstallationDeviceField.jsx:105
+#: src/components/storage/ProposalActionsSummary.jsx:228
 #: src/components/users/RootAuthMethods.jsx:94
 #: src/components/users/RootAuthMethods.jsx:107
 msgid "Change"
 msgstr "更改"
+
+#: src/components/l10n/L10nPage.jsx:78
+msgid "Keyboard"
+msgstr "键盘"
 
 #: src/components/l10n/L10nPage.jsx:89
 msgid "Time zone"
@@ -385,12 +398,11 @@ msgstr "按语言、地区或区域设定代码过滤"
 
 #: src/components/l10n/LocaleSelection.jsx:84
 msgid "None of the locales match the filter."
-msgstr ""
+msgstr "没有符合过滤器的区域设置。"
 
 #: src/components/l10n/LocaleSelection.jsx:91
-#, fuzzy
 msgid "Locale selection"
-msgstr "软件 %s"
+msgstr "区域选择"
 
 #: src/components/l10n/TimezoneSelection.jsx:71
 msgid "Filter by territory, time zone code or UTC offset"
@@ -398,12 +410,11 @@ msgstr "按地区、时区代码或 UTC 偏移量过滤"
 
 #: src/components/l10n/TimezoneSelection.jsx:122
 msgid "None of the time zones match the filter."
-msgstr ""
+msgstr "没有符合过滤器的时区。"
 
 #: src/components/l10n/TimezoneSelection.jsx:129
-#, fuzzy
 msgid " Timezone selection"
-msgstr "更改时区"
+msgstr " 时区选择"
 
 #: src/components/layout/Loading.jsx:31
 msgid "Loading installation environment, please wait."
@@ -465,6 +476,8 @@ msgid "IP addresses"
 msgstr "IP 地址"
 
 #: src/components/network/ConnectionsTable.jsx:77
+#: src/components/network/WifiNetworksListPage.jsx:100
+#: src/components/network/WifiNetworksListPage.jsx:124
 #: src/components/storage/PartitionsField.jsx:320
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
@@ -475,12 +488,13 @@ msgstr "编辑"
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:80
 #: src/components/network/IpSettingsForm.jsx:136
-#: src/components/network/routes.js:59
 #, c-format
 msgid "Edit connection %s"
 msgstr "编辑连接 %s"
 
 #: src/components/network/ConnectionsTable.jsx:84
+#: src/components/network/WifiNetworksListPage.jsx:103
+#: src/components/network/WifiNetworksListPage.jsx:127
 msgid "Forget"
 msgstr "忘掉"
 
@@ -550,57 +564,59 @@ msgstr "网关"
 
 #: src/components/network/IpSettingsForm.jsx:178
 msgid "Gateway can be defined only in 'Manual' mode"
+msgstr "网关只能在“手动”模式下配置"
+
+#: src/components/network/NetworkPage.jsx:85
+msgid "No Wi-Fi supported"
 msgstr ""
 
-#: src/components/network/IpSettingsForm.jsx:210
-#: src/components/product/ProductRegistrationPage.jsx:89
-#: src/components/storage/BootSelection.jsx:215
-#: src/components/storage/DeviceSelection.jsx:240
-#: src/components/storage/EncryptionSettingsDialog.jsx:138
-#: src/components/storage/VolumeDialog.jsx:786
-#: src/components/storage/ZFCPPage.jsx:503
-#: src/components/users/FirstUserForm.jsx:286
-msgid "Accept"
-msgstr "接受"
-
-#: src/components/network/NetworkPage.jsx:44
-#: src/components/network/WifiSelector.jsx:129
-msgid "Connect to a Wi-Fi network"
-msgstr "连接到 Wi-Fi 网络"
-
-#: src/components/network/NetworkPage.jsx:57
-msgid "No wired connections found."
-msgstr "未找到有线连接。"
-
-#: src/components/network/NetworkPage.jsx:71
+#: src/components/network/NetworkPage.jsx:86
+#, fuzzy
 msgid ""
-"The system has not been configured for connecting to a WiFi network yet."
-msgstr "系统尚未配置为连接到 WiFi 网络。"
-
-#: src/components/network/NetworkPage.jsx:72
-msgid ""
-"The system does not support WiFi connections, probably because of missing or "
-"disabled hardware."
+"The system does not support Wi-Fi connections, probably because of missing "
+"or disabled hardware."
 msgstr "系统不支持 WiFi 连接，可能由于硬件缺失或已被禁用。"
 
-#: src/components/network/NetworkPage.jsx:76
-msgid "No WiFi connections found."
-msgstr "未找到 WiFi 连接。"
+#: src/components/network/NetworkPage.jsx:99
+msgid "Wi-Fi"
+msgstr ""
 
-#: src/components/network/NetworkPage.jsx:170
-#: src/components/network/routes.js:49
+#. TRANSLATORS: button label, connect to a WiFi network
+#: src/components/network/NetworkPage.jsx:102
+#: src/components/network/WifiConnectionForm.jsx:128
+#: src/components/network/WifiNetworksListPage.jsx:97
+msgid "Connect"
+msgstr "连接"
+
+#: src/components/network/NetworkPage.jsx:109
+#, fuzzy, c-format
+msgid "Conected to %s"
+msgstr "已连接（%s）"
+
+#: src/components/network/NetworkPage.jsx:114
+#, fuzzy
+msgid "No connected yet"
+msgstr "尚未选择"
+
+#: src/components/network/NetworkPage.jsx:115
+#, fuzzy
+msgid ""
+"The system has not been configured for connecting to a Wi-Fi network yet."
+msgstr "系统尚未配置为连接到 WiFi 网络。"
+
+#: src/components/network/NetworkPage.jsx:136
+msgid "Wired"
+msgstr ""
+
+#: src/components/network/NetworkPage.jsx:139
+#, fuzzy
+msgid "No wired connections found"
+msgstr "未找到有线连接。"
+
+#: src/components/network/NetworkPage.jsx:149
+#: src/components/network/routes.js:59
 msgid "Network"
 msgstr "网络"
-
-#: src/components/network/NetworkPage.jsx:178
-#, fuzzy
-msgid "Wired connections"
-msgstr "忘掉连接 %s"
-
-#: src/components/network/NetworkPage.jsx:185
-#, fuzzy
-msgid "WiFi connections"
-msgstr "编辑连接 %s"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:43
@@ -613,7 +629,7 @@ msgstr "无"
 msgid "WPA & WPA2 Personal"
 msgstr "WPA 与 WPA2 个人版"
 
-#: src/components/network/WifiConnectionForm.jsx:91
+#: src/components/network/WifiConnectionForm.jsx:86
 #: src/components/product/ProductRegistrationPage.jsx:69
 #: src/components/storage/ZFCPDiskForm.jsx:108
 #: src/components/storage/iscsi/DiscoverForm.jsx:110
@@ -622,82 +638,69 @@ msgstr "WPA 与 WPA2 个人版"
 msgid "Something went wrong"
 msgstr "出了点问题"
 
-#: src/components/network/WifiConnectionForm.jsx:92
+#: src/components/network/WifiConnectionForm.jsx:87
 msgid "Please, review provided settings and try again."
 msgstr "请回顾之前提供的设定后再试。"
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.jsx:97
-#: src/components/network/WifiConnectionForm.jsx:101
+#: src/components/network/WifiConnectionForm.jsx:92
+#: src/components/network/WifiConnectionForm.jsx:96
 msgid "SSID"
 msgstr "SSID"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.jsx:109
-#: src/components/network/WifiConnectionForm.jsx:112
+#: src/components/network/WifiConnectionForm.jsx:104
+#: src/components/network/WifiConnectionForm.jsx:107
 msgid "Security"
 msgstr "安全性"
 
 #. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.jsx:121
+#: src/components/network/WifiConnectionForm.jsx:116
 msgid "WPA Password"
 msgstr "WPA 密码"
 
-#. TRANSLATORS: button label, connect to a WiFi network
-#. TRANSLATORS: menu label, connect to the selected WiFi network
-#: src/components/network/WifiConnectionForm.jsx:133
-#: src/components/network/WifiNetworkMenu.jsx:58
-msgid "Connect"
-msgstr "连接"
-
-#. TRANSLATORS: button label
-#: src/components/network/WifiHiddenNetworkForm.jsx:50
-msgid "Connect to hidden network"
-msgstr "连接到隐藏网络"
-
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:34
-#: src/components/network/WifiNetworkListItem.jsx:94
+#: src/components/network/WifiNetworksListPage.jsx:51
+#: src/components/network/WifiNetworksListPage.jsx:111
 msgid "Connecting"
 msgstr "正在连接"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:37
+#: src/components/network/WifiNetworksListPage.jsx:54
+#: src/components/network/WifiNetworksListPage.jsx:115
+#: src/components/network/WifiNetworksListPage.jsx:154
 msgid "Connected"
 msgstr "已连接"
 
-#. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:40
-msgid "Disconnecting"
-msgstr "正在断开连接"
-
-#: src/components/network/WifiNetworkListItem.jsx:42
-msgid "Failed"
-msgstr "失败"
-
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworkListItem.jsx:45
+#: src/components/network/WifiNetworksListPage.jsx:59
+#: src/components/network/WifiNetworksListPage.jsx:113
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr "已断开连接"
 
-#. TRANSLATORS: %s is replaced by a WiFi network name
-#: src/components/network/WifiNetworkListItem.jsx:92
-#, c-format
-msgid "%s connection is waiting for an state change"
-msgstr "连接 %s 正等待状态更改"
-
-#. TRANSLATORS: menu label, disconnect from the selected WiFi network
-#: src/components/network/WifiNetworkMenu.jsx:67
-#, fuzzy
+#: src/components/network/WifiNetworksListPage.jsx:121
 msgid "Disconnect"
-msgstr "已断开连接"
+msgstr "断开连接"
 
-#. TRANSLATORS: menu label, remove the selected WiFi network settings
-#: src/components/network/WifiNetworkMenu.jsx:76
-msgid "Forget network"
-msgstr "忘掉网络"
+#: src/components/network/WifiNetworksListPage.jsx:142
+#, fuzzy
+msgid "Connect to a hidden network"
+msgstr "连接到隐藏网络"
+
+#: src/components/network/WifiNetworksListPage.jsx:153
+#, fuzzy
+msgid "configured"
+msgstr "不要配置"
+
+#: src/components/network/WifiNetworksListPage.jsx:244
+msgid "Connect to hidden network"
+msgstr "连接到隐藏网络"
+
+#: src/components/network/WifiSelectorPage.jsx:131
+msgid "Connect to a Wi-Fi network"
+msgstr "连接到 Wi-Fi 网络"
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
@@ -713,9 +716,9 @@ msgstr "用户"
 
 #: src/components/overview/OverviewPage.jsx:46
 #: src/components/overview/StorageSection.jsx:111
-#: src/components/storage/ProposalPage.jsx:266
+#: src/components/storage/ProposalPage.jsx:290
 #: src/components/storage/StoragePage.jsx:30
-#: src/components/storage/routes.js:57
+#: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr "存储"
 
@@ -727,42 +730,38 @@ msgid "Software"
 msgstr "软件"
 
 #: src/components/overview/OverviewPage.jsx:52
-#, fuzzy
 msgid "Ready for installation"
-msgstr "确认安装"
+msgstr "准备好安装"
 
 #: src/components/overview/OverviewPage.jsx:102
-#, fuzzy
 msgid "Installation"
-msgstr "正在安装"
+msgstr "安装"
 
 #: src/components/overview/OverviewPage.jsx:103
 msgid "Before installing, please check the following problems."
-msgstr ""
+msgstr "进行安装之前，请检查下列问题。"
 
 #: src/components/overview/OverviewPage.jsx:114
-#, fuzzy
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
-msgstr "缩小安装设备上的分区"
+msgstr "开始安装进程前，请花些时间检查您的配置。"
 
 #: src/components/overview/OverviewPage.jsx:123
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
-msgstr ""
+msgstr "这些是最主要的安装设置。如需获取更详细的信息，请随意浏览菜单中的各节。"
 
 #: src/components/overview/SoftwareSection.jsx:60
-#, fuzzy
 msgid "The installation will take"
-msgstr "安装将会占用 %s"
+msgstr "安装将会占用"
 
 #. TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
 #: src/components/overview/SoftwareSection.jsx:67
-#, fuzzy, c-format
+#, c-format
 msgid "The installation will take %s including:"
-msgstr "安装将会占用 %s"
+msgstr "安装将会占用 %s ，包括："
 
 #: src/components/overview/StorageSection.jsx:53
 msgid ""
@@ -780,21 +779,22 @@ msgstr "安装在新的逻辑卷管理器（LVM）卷组中，不更改底层设
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group deleting all the "
 "content of the underlying devices"
-msgstr ""
+msgstr "安装到新的逻辑卷管理器 (LVM) 卷组中，并删除现有设备的全部内容"
 
 #: src/components/overview/StorageSection.jsx:68
-#, fuzzy
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group using a custom "
 "strategy to find the needed space at the underlying devices"
-msgstr "在新建的 %1$s 上进行安装，采用自定义策略寻找磁盘上的所需空间"
+msgstr ""
+"安装到新建的逻辑卷管理器 (LVM) 卷组中，采用自定义策略在当前磁盘上寻找所需空间"
 
 #: src/components/overview/StorageSection.jsx:86
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s shrinking "
 "existing partitions as needed"
-msgstr "在新建的 %1$s 上进行安装并在需要时缩小磁盘中现有的分区"
+msgstr ""
+"安装到 %s 上新建的逻辑卷管理器 (LVM) 卷组中，并在需要时缩小磁盘中现有的分区"
 
 #: src/components/overview/StorageSection.jsx:92
 #, fuzzy, c-format
@@ -818,7 +818,7 @@ msgid ""
 msgstr "在新建的 %1$s 上进行安装，采用自定义策略寻找磁盘上的所需空间"
 
 #: src/components/overview/StorageSection.jsx:175
-#: src/components/storage/InstallationDeviceField.jsx:67
+#: src/components/storage/InstallationDeviceField.jsx:63
 msgid "No device selected yet"
 msgstr "尚未选择设备"
 
@@ -960,49 +960,49 @@ msgstr "缩小安装设备上的分区"
 msgid "Installation will configure partitions for booting at %s."
 msgstr ""
 
-#: src/components/storage/BootSelection.jsx:126
+#: src/components/storage/BootSelection.jsx:127
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
 msgstr "为确保新系统能够启动，安装程序将需要在适当的磁盘中创建或配置一些分区。"
 
-#: src/components/storage/BootSelection.jsx:132
+#: src/components/storage/BootSelection.jsx:133
 msgid "Partitions to boot will be allocated at the installation disk."
 msgstr "引导分区将会分配在安装磁盘上。"
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelection.jsx:137
+#: src/components/storage/BootSelection.jsx:138
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
 msgstr "引导分区将在安装磁盘（%s）上进行分配。"
 
-#: src/components/storage/BootSelection.jsx:153
+#: src/components/storage/BootSelection.jsx:154
 #, fuzzy
 msgid "Select booting partition"
 msgstr "选择对每个分区执行的操作。"
 
-#: src/components/storage/BootSelection.jsx:167
+#: src/components/storage/BootSelection.jsx:170
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
 msgstr "自动"
 
-#: src/components/storage/BootSelection.jsx:176
+#: src/components/storage/BootSelection.jsx:183
 msgid "Select a disk"
 msgstr "选择一个磁盘"
 
-#: src/components/storage/BootSelection.jsx:180
+#: src/components/storage/BootSelection.jsx:189
 msgid "Partitions to boot will be allocated at the following device."
 msgstr "引导分区将在以下设备上分配。"
 
-#: src/components/storage/BootSelection.jsx:183
+#: src/components/storage/BootSelection.jsx:192
 msgid "Choose a disk for placing the boot loader"
 msgstr "选择一个放置引导加载器的磁盘"
 
-#: src/components/storage/BootSelection.jsx:199
+#: src/components/storage/BootSelection.jsx:210
 msgid "Do not configure"
 msgstr "不要配置"
 
-#: src/components/storage/BootSelection.jsx:202
+#: src/components/storage/BootSelection.jsx:215
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr "不会自动配置任何用于启动的分区。请谨慎使用。"
@@ -1351,31 +1351,31 @@ msgstr ""
 msgid "Encrypt the system"
 msgstr "编辑文件系统"
 
-#: src/components/storage/InstallationDeviceField.jsx:40
+#: src/components/storage/InstallationDeviceField.jsx:36
 #: src/components/storage/VolumeLocationSelectorTable.jsx:58
 msgid "Installation device"
 msgstr "安装设备"
 
 #. TRANSLATORS: The storage "Installation device" field's description.
-#: src/components/storage/InstallationDeviceField.jsx:42
+#: src/components/storage/InstallationDeviceField.jsx:38
 #, fuzzy
 msgid "Main disk or LVM Volume Group for installation."
 msgstr ""
 "选择主磁盘或 <abbr title='Logical Volume Manager'>LVM</abbr> 卷组进行安装。"
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:56
+#: src/components/storage/InstallationDeviceField.jsx:52
 #, fuzzy, c-format
 msgid "File systems created as new partitions at %s"
 msgstr "默认情况下，文件系统将被分配为<b>所选设备上的新分区</b>。"
 
-#: src/components/storage/InstallationDeviceField.jsx:59
+#: src/components/storage/InstallationDeviceField.jsx:55
 #, fuzzy
 msgid "File systems created at a new LVM volume group"
 msgstr "新建 LVM 卷组的设备选择器"
 
 #. TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:63
+#: src/components/storage/InstallationDeviceField.jsx:59
 #, fuzzy, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr "在 %s 上新建的 LVM 卷组"
@@ -1592,7 +1592,7 @@ msgstr "挂载点列表"
 
 #: src/components/storage/PartitionsField.jsx:566
 #: src/components/storage/PartitionsField.jsx:585
-#: src/components/storage/VolumeDialog.jsx:83
+#: src/components/storage/VolumeDialog.jsx:81
 msgid "Add file system"
 msgstr "添加文件系统"
 
@@ -1634,45 +1634,85 @@ msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
 msgstr[0] "显示 %d 个子卷操作"
 
-#: src/components/storage/ProposalResultSection.jsx:64
+#: src/components/storage/ProposalActionsSummary.jsx:57
+#, fuzzy
+msgid "Destructive actions are not allowed"
+msgstr "已计划执行 %d 个具有破坏性的操作"
+
+#: src/components/storage/ProposalActionsSummary.jsx:59
+#, fuzzy
+msgid "Destructive actions are allowed"
+msgstr "已计划执行 %d 个具有破坏性的操作"
+
+#: src/components/storage/ProposalActionsSummary.jsx:66
 #, c-format
 msgid "There is %d destructive action planned"
 msgid_plural "There are %d destructive actions planned"
 msgstr[0] "已计划执行 %d 个具有破坏性的操作"
 
-#: src/components/storage/ProposalResultSection.jsx:80
-msgid "Affecting"
+#: src/components/storage/ProposalActionsSummary.jsx:79
+#: src/components/storage/ProposalActionsSummary.jsx:126
+#, fuzzy
+msgid "affecting"
 msgstr "影响到"
 
-#: src/components/storage/ProposalResultSection.jsx:96
+#: src/components/storage/ProposalActionsSummary.jsx:107
+#, fuzzy
+msgid "Shrinking partitions is not allowed"
+msgstr "缩小现有分区"
+
+#: src/components/storage/ProposalActionsSummary.jsx:111
+#, fuzzy
+msgid "Shrinking partitions is allowed"
+msgstr "缩小现有分区"
+
+#: src/components/storage/ProposalActionsSummary.jsx:113
+#, fuzzy
+msgid "Shrinking some partitions is allowed but not needed"
+msgstr "缩小安装设备上的分区"
+
+#: src/components/storage/ProposalActionsSummary.jsx:116
+#, fuzzy, c-format
+msgid "%d partition will be shrunk"
+msgid_plural "%d partitions will be shrunk"
+msgstr[0] "%s 分区表"
+
+#: src/components/storage/ProposalActionsSummary.jsx:151
+#, fuzzy
+msgid "Cannot accommodate the required file systems for installation"
+msgstr "无法在远程安装中更改"
+
+#: src/components/storage/ProposalActionsSummary.jsx:160
 #, fuzzy, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
 msgstr[0] "检查所有已计划的操作"
 
-#: src/components/storage/ProposalResultSection.jsx:111
+#: src/components/storage/ProposalActionsSummary.jsx:179
+#, fuzzy
+msgid "Waiting for actions information..."
+msgstr "正在等待引导配置信息"
+
+#: src/components/storage/ProposalPage.jsx:314
+msgid "Planned Actions"
+msgstr "计划执行的操作"
+
+#: src/components/storage/ProposalResultSection.jsx:42
 #, fuzzy
 msgid "Waiting for information about storage configuration"
 msgstr "正在等待引导配置信息"
 
-#: src/components/storage/ProposalResultSection.jsx:124
-msgid "Storage proposal not possible"
+#: src/components/storage/ProposalResultSection.jsx:70
+msgid "Final layout"
 msgstr ""
 
-#: src/components/storage/ProposalResultSection.jsx:188
-#, fuzzy
-msgid ""
-"During installation, some actions will be performed to configure the system "
-"as displayed below."
-msgstr "安装期间，将执行 %d 个操作以进行系统配置，如下所示"
+#: src/components/storage/ProposalResultSection.jsx:71
+msgid "The systems will be configured as displayed below."
+msgstr ""
 
-#: src/components/storage/ProposalResultSection.jsx:196
-msgid "Planned Actions"
-msgstr "计划执行的操作"
-
-#: src/components/storage/ProposalResultSection.jsx:210
-msgid "Result"
-msgstr "结果"
+#: src/components/storage/ProposalResultSection.jsx:78
+msgid "Storage proposal not possible"
+msgstr ""
 
 #: src/components/storage/ProposalResultTable.jsx:74
 msgid "New"
@@ -1746,101 +1786,87 @@ msgstr "操作"
 msgid "Actions to find space"
 msgstr "查找空间的操作"
 
-#: src/components/storage/SpacePolicyDialog.jsx:143
-msgid ""
-"Allocating the file systems might need to find free space in the devices "
-"listed below. Choose how to do it."
-msgstr "若要分配文件系统，或许需要在下列设备中找到可用空间。选择如何操作。"
+#: src/components/storage/SpacePolicySelection.jsx:170
+msgid "Space policy"
+msgstr ""
 
-#: src/components/storage/SpacePolicyDialog.jsx:148
-#: src/components/storage/SpacePolicyField.jsx:86
-msgid "Find space"
-msgstr "查找空间"
-
-#: src/components/storage/SpacePolicyField.jsx:88
-#, fuzzy
-msgid ""
-"Allocating the file systems might need to find free space in the "
-"installation device(s)."
-msgstr "若要分配文件系统，或许需要在下列设备中找到可用空间。选择如何操作。"
-
-#: src/components/storage/VolumeDialog.jsx:80
+#: src/components/storage/VolumeDialog.jsx:78
 #, fuzzy, c-format
 msgid "Add %s file system"
 msgstr "添加文件系统"
 
-#: src/components/storage/VolumeDialog.jsx:81
+#: src/components/storage/VolumeDialog.jsx:79
 #, fuzzy, c-format
 msgid "Edit %s file system"
 msgstr "编辑文件系统"
 
-#: src/components/storage/VolumeDialog.jsx:83
+#: src/components/storage/VolumeDialog.jsx:81
 msgid "Edit file system"
 msgstr "编辑文件系统"
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:98
+#: src/components/storage/VolumeDialog.jsx:96
 #, fuzzy
 msgid "The type and size of the file system cannot be edited."
 msgstr "在 %s 上存在文件系统"
 
 #. TRANSLATORS: Description of a warning. The first %s is replaced by a device name (e.g.,
 #. /dev/vda) and the second %s is replaced by a mount path (e.g., /home).
-#: src/components/storage/VolumeDialog.jsx:101
+#: src/components/storage/VolumeDialog.jsx:99
 #, c-format
 msgid "The current file system on %s is selected to be mounted at %s."
 msgstr ""
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:107
+#: src/components/storage/VolumeDialog.jsx:105
 #, fuzzy
 msgid "The size of the file system cannot be edited"
 msgstr "在 %s 上存在文件系统"
 
 #. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
-#: src/components/storage/VolumeDialog.jsx:109
+#: src/components/storage/VolumeDialog.jsx:107
 #, fuzzy, c-format
 msgid "The file system is allocated at the device %s."
 msgstr "默认情况下，文件系统将被分配为<b>所选设备上的新分区</b>。"
 
-#: src/components/storage/VolumeDialog.jsx:154
+#: src/components/storage/VolumeDialog.jsx:152
 #, fuzzy
 msgid "A mount point is required"
 msgstr "需要指定最小尺寸"
 
-#: src/components/storage/VolumeDialog.jsx:181
+#: src/components/storage/VolumeDialog.jsx:179
 #, fuzzy
 msgid "The mount point is invalid"
 msgstr "挂载点列表"
 
-#: src/components/storage/VolumeDialog.jsx:209
+#: src/components/storage/VolumeDialog.jsx:207
 msgid "A size value is required"
 msgstr "必须输入尺寸值"
 
-#: src/components/storage/VolumeDialog.jsx:237
+#: src/components/storage/VolumeDialog.jsx:235
 msgid "Minimum size is required"
 msgstr "需要指定最小尺寸"
 
-#: src/components/storage/VolumeDialog.jsx:269
+#: src/components/storage/VolumeDialog.jsx:267
 msgid "Maximum must be greater than minimum"
 msgstr "最大值必须高于最小值"
 
-#: src/components/storage/VolumeDialog.jsx:311
+#: src/components/storage/VolumeDialog.jsx:309
 #, fuzzy, c-format
 msgid "There is already a file system for %s."
 msgstr "在 %s 上存在文件系统"
 
-#: src/components/storage/VolumeDialog.jsx:313
+#: src/components/storage/VolumeDialog.jsx:311
 #, fuzzy
 msgid "Do you want to edit it?"
 msgstr "您想要取消注册 %s 吗？"
 
-#: src/components/storage/VolumeDialog.jsx:358
+#: src/components/storage/VolumeDialog.jsx:356
 #, fuzzy, c-format
 msgid "There is a predefined file system for %s."
 msgstr "在 %s 上存在文件系统"
 
-#: src/components/storage/VolumeDialog.jsx:360
+#: src/components/storage/VolumeDialog.jsx:358
 #, fuzzy
 msgid "Do you want to add it?"
 msgstr "您想要取消注册 %s 吗？"
@@ -2404,8 +2430,8 @@ msgstr "全名"
 
 #: src/components/users/FirstUser.jsx:55
 #: src/components/users/FirstUserForm.jsx:224
-#: src/components/users/FirstUserForm.jsx:230
-#: src/components/users/FirstUserForm.jsx:233
+#: src/components/users/FirstUserForm.jsx:229
+#: src/components/users/FirstUserForm.jsx:232
 msgid "Username"
 msgstr "用户名"
 
@@ -2448,16 +2474,16 @@ msgstr "编辑 %s"
 msgid "User full name"
 msgstr "用户全名"
 
-#: src/components/users/FirstUserForm.jsx:255
+#: src/components/users/FirstUserForm.jsx:254
 msgid "Edit password too"
 msgstr "同时编辑密码"
 
-#: src/components/users/FirstUserForm.jsx:270
+#: src/components/users/FirstUserForm.jsx:269
 msgid "user autologin"
 msgstr "用户自动登录"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:274
+#: src/components/users/FirstUserForm.jsx:273
 msgid "Auto-login"
 msgstr "自动登录"
 
@@ -2554,15 +2580,61 @@ msgstr ""
 msgid "Root authentication"
 msgstr "Root 认证"
 
-#: src/components/users/routes.js:41
-#, fuzzy
-msgid "Create or edit the first user"
-msgstr "无法读取文件"
+#~ msgid "Choose a language"
+#~ msgstr "选择语言"
 
-#: src/components/users/routes.js:48
+#~ msgid "No WiFi connections found."
+#~ msgstr "未找到 WiFi 连接。"
+
+#~ msgid "Wired connections"
+#~ msgstr "有线连接"
+
+#~ msgid "WiFi connections"
+#~ msgstr "无线连接"
+
+#~ msgid "Disconnecting"
+#~ msgstr "正在断开连接"
+
+#~ msgid "Failed"
+#~ msgstr "失败"
+
+#, c-format
+#~ msgid "%s connection is waiting for an state change"
+#~ msgstr "连接 %s 正等待状态更改"
+
+#~ msgid "Forget network"
+#~ msgstr "忘掉网络"
+
 #, fuzzy
-msgid "Edit first user"
-msgstr "编辑文件系统"
+#~ msgid "Create or edit the first user"
+#~ msgstr "无法读取文件"
+
+#, fuzzy
+#~ msgid "Edit first user"
+#~ msgstr "编辑文件系统"
+
+#, fuzzy
+#~ msgid ""
+#~ "During installation, some actions will be performed to configure the "
+#~ "system as displayed below."
+#~ msgstr "安装期间，将执行 %d 个操作以进行系统配置，如下所示"
+
+#~ msgid "Result"
+#~ msgstr "结果"
+
+#~ msgid ""
+#~ "Allocating the file systems might need to find free space in the devices "
+#~ "listed below. Choose how to do it."
+#~ msgstr "若要分配文件系统，或许需要在下列设备中找到可用空间。选择如何操作。"
+
+#~ msgid "Find space"
+#~ msgstr "查找空间"
+
+#, fuzzy
+#~ msgid ""
+#~ "Allocating the file systems might need to find free space in the "
+#~ "installation device(s)."
+#~ msgstr "若要分配文件系统，或许需要在下列设备中找到可用空间。选择如何操作。"
 
 #, fuzzy
 #~ msgid "Analyze disks"
@@ -2801,9 +2873,6 @@ msgstr "编辑文件系统"
 #~ msgid "deleting all content of the %d selected disks"
 #~ msgstr "删除选定的 %d 个磁盘上的所有内容"
 
-#~ msgid "shrinking partitions of the installation device"
-#~ msgstr "缩小安装设备上的分区"
-
 #, c-format
 #~ msgid "shrinking partitions of the %d selected disks"
 #~ msgstr "缩小选定的 %d 个磁盘上的分区"
@@ -2971,10 +3040,6 @@ msgstr "编辑文件系统"
 
 #~ msgid "Current content"
 #~ msgstr "当前内容"
-
-#, c-format
-#~ msgid "%s partition table"
-#~ msgstr "%s 分区表"
 
 #~ msgid "EFI system partition"
 #~ msgstr "EFI 系统分区"
