@@ -91,14 +91,13 @@ module Agama
           busy_while { backend.probe }
         end
 
-        # Sets the storage config and calculates a proposal (guided or AutoYaST).
+        # Calculates a proposal (guided or AutoYaST) from a given storage config.
         #
         # @raise If config is not valid.
         #
         # @param serialized_config [String] Serialized storage config. It can be storage or legacy
         #   AutoYaST settings: { "storage": ... } vs { "legacyAutoyastStorage": ... }.
         def apply_storage_config(serialized_config)
-          @serialized_storage_config = serialized_config
           config_json = JSON.parse(serialized_config, symbolize_names: true)
 
           if (settings_json = config_json.dig(:storage, :guided))
@@ -115,7 +114,7 @@ module Agama
         #
         # @return [String]
         def serialized_storage_config
-          @serialized_storage_config || JSON.pretty_generate(generate_storage_config)
+          JSON.pretty_generate(storage_config)
         end
 
         def install
@@ -433,10 +432,10 @@ module Agama
           success ? 0 : 1
         end
 
-        # Generates the storage config from the current proposal, if any.
+        # Storage config from the current proposal, if any.
         #
         # @return [Hash] Storage config according to JSON schema.
-        def generate_storage_config
+        def storage_config
           if proposal.strategy?(ProposalStrategy::GUIDED)
             {
               storage: {
