@@ -35,6 +35,7 @@ software:
     - office
   mandatory_packages:
     - NetworkManager
+    - openSUSE-repos
   optional_packages: null
   base_product: openSUSE
 
