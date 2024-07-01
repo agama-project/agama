@@ -19,7 +19,7 @@ software:
     - url: https://download.opensuse.org/repositories/openSUSE:/Leap:/16.0/product/repo/Leap-Packages-16.0-x86_64
       archs: x86_64
     - url: https://download.opensuse.org/repositories/openSUSE:/Leap:/16.0/product/repo/Leap-Packages-16.0-aarch64
-      arches: aarch64
+      archs: aarch64
     
   mandatory_patterns:
     - enhanced_base # only pattern that is shared among all roles on Leap
