@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul  1 10:36:18 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Add yet another fix to avoid error when generating the storage
+  actions (gh#openSUSE/agama#1419).
+
+-------------------------------------------------------------------
 Fri Jun 28 11:57:39 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Proper solution to avoid error in storage actions
