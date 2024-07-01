@@ -86,10 +86,16 @@ module Agama
         end
 
         def space_conversion
-          {
-            policy:  settings.space.policy.to_s,
-            actions: settings.space.actions.map { |d, a| { action_key(a) => d } }
-          }
+          if settings.space.policy == :custom
+            {
+              policy:  "custom",
+              actions: settings.space.actions.map { |d, a| { action_key(a) => d } }
+            }
+          else
+            {
+              policy: settings.space.policy.to_s
+            }
+          end
         end
 
         def action_key(action)
