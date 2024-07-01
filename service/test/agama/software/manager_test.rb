@@ -335,7 +335,7 @@ describe Agama::Software::Manager do
       expect(proposal).to receive(:set_resolvables)
         .with("agama", :pattern, [], { optional: true })
       expect(proposal).to receive(:set_resolvables)
-        .with("agama", :package, ["NetworkManager"])
+        .with("agama", :package, ["NetworkManager", "openSUSE-repos"])
       expect(proposal).to receive(:set_resolvables)
         .with("agama", :package, [], { optional: true })
       subject.propose
