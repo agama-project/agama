@@ -73,10 +73,10 @@ function App() {
   if (!language) return null;
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       <Content />
       <Questions />
-    </QueryClientProvider>
+    </>
   );
 }
 
