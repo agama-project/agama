@@ -29,6 +29,9 @@ import { useInstallerClientStatus } from "~/context/installer";
 import { useProduct } from "./context/product";
 import { CONFIG, INSTALL, STARTUP } from "~/client/phase";
 import { BUSY } from "~/client/status";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 /**
  * Main application component.
@@ -70,10 +73,10 @@ function App() {
   if (!language) return null;
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <Content />
       <Questions />
-    </>
+    </QueryClientProvider>
   );
 }
 
