@@ -1,4 +1,4 @@
-name: Submit agama-live
+name: Submit agama-installer-openSUSE
 
 on:
   # runs on pushes targeting the default branch
@@ -43,8 +43,8 @@ jobs:
           OBS_USER:     ${{ secrets.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Checkout ${{ vars.OBS_PROJECT }} agama-live
-        run: osc co -o dist ${{ vars.OBS_PROJECT }} agama-live
+      - name: Checkout ${{ vars.OBS_PROJECT }} agama-installer-openSUSE
+        run: osc co -o dist ${{ vars.OBS_PROJECT }} agama-installer-openSUSE
         working-directory: ./live
 
       - name: Build sources
@@ -59,6 +59,6 @@ jobs:
         run: osc diff && osc status
         working-directory: ./live/dist
 
-      - name: Commit agama-live to ${{ vars.OBS_PROJECT }}
+      - name: Commit agama-installer-openSUSE to ${{ vars.OBS_PROJECT }}
         run:  osc commit -m "Updated to Agama $GITHUB_SHA"
         working-directory: ./live/dist
