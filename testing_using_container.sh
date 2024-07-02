@@ -1,7 +1,7 @@
 #!/bin/bash
 # Run checked-out Agama in a podman container.
 # This is meant to be run from a working copy of the git repo.
-# It uses the systemsmanagement:Agama:Staging/agama-testing image as
+# It uses the systemsmanagement:Agama:Devel/agama-testing image as
 # a platform and runs /setup.sh
 #
 # Details:
@@ -12,7 +12,7 @@
 set -x
 set -eu
 
-# https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-testing
+# https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/agama-testing
 CIMAGE=registry.opensuse.org/systemsmanagement/agama/staging/containers/opensuse/agama-testing:latest
 # rename this if you test multiple things
 CNAME=agama
