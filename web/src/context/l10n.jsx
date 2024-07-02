@@ -45,7 +45,7 @@ function L10nProvider({ children }) {
     const load = async () => {
       const timezones = await cancellablePromise(client.l10n.timezones());
       const selectedTimezone = await cancellablePromise(client.l10n.getTimezone());
-      const locales = await cancellablePromise(client.l10n.locales());
+      const locales = [];
       const selectedLocales = await cancellablePromise(client.l10n.getLocales());
       const keymaps = await cancellablePromise(client.l10n.keymaps());
       const selectedKeymap = await cancellablePromise(client.l10n.getKeymap());

@@ -27,37 +27,52 @@ import {
 } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { _ } from "~/i18n";
-import { useL10n } from "~/context/l10n";
-import { useInstallerClient } from "~/context/installer";
 import { ListSearch, Page } from "~/components/core";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
+import { useLocales, useConfig, useConfigMutation } from "../../queries/l10n";
 
 // TODO: Add documentation and typechecking
 // TODO: Evaluate if worth it extracting the selector
 export default function LocaleSelection() {
-  const { l10n } = useInstallerClient();
-  const { locales, selectedLocales } = useL10n();
-  const [selected, setSelected] = useState(selectedLocales[0]);
-  const [filteredLocales, setFilteredLocales] = useState(locales);
+  const { isPending, data: locales } = useLocales();
+  const { data: config } = useConfig();
+  const setConfig = useConfigMutation();
+  const [initial, setInitial] = useState();
+  const [selected, setSelected] = useState();
+  const [filteredLocales, setFilteredLocales] = useState([]);
   const navigate = useNavigate();
 
   const searchHelp = _("Filter by language, territory or locale code");
 
   useEffect(() => {
+    if (isPending) return;
+
     setFilteredLocales(locales);
-  }, [locales, setFilteredLocales]);
+  }, [locales, isPending, setFilteredLocales]);
+
+  useEffect(() => {
+    if (!config) return;
+
+    const initialLocale = config.locales[0];
+    setInitial(initialLocale);
+    setSelected(initialLocale);
+  }, [config, setInitial, setSelected]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
     const dataForm = new FormData(e.target);
     const nextLocaleId = JSON.parse(dataForm.get("locale"))?.id;
 
-    if (nextLocaleId !== selectedLocales[0]?.id) {
-      await l10n.setLocales([nextLocaleId]);
+    if (nextLocaleId !== initial?.id) {
+      setConfig.mutate({ locales: [nextLocaleId] });
     }
 
     navigate("..");
   };
+
+  if (isPending) {
+    return <span>{_("Loading")}</span>;
+  }
 
   let localesList = filteredLocales.map((locale) => {
     return (
@@ -65,7 +80,7 @@ export default function LocaleSelection() {
         key={locale.id}
         name="locale"
         id={locale.id}
-        onChange={() => setSelected(locale)}
+        onChange={() => setSelected(locale.id)}
         label={
           <Flex gap={{ default: "gapSm" }}>
             <span className={textStyles.fontSizeLg}><b>{locale.name}</b></span>
@@ -74,7 +89,7 @@ export default function LocaleSelection() {
           </Flex>
         }
         value={JSON.stringify(locale)}
-        checked={locale === selected}
+        checked={locale.id === selected}
       />
     );
   });

@@ -19,7 +19,7 @@
  * find language contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Gallery, GalleryItem,
 } from "@patternfly/react-core";
@@ -28,6 +28,7 @@ import { ButtonLink, CardField, Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { useL10n } from "~/context/l10n";
 import buttonStyles from '@patternfly/react-styles/css/components/Button/button';
+import { useConfig, useLocales } from "../../queries/l10n";
 
 const Section = ({ label, value, children }) => {
   return (
@@ -51,8 +52,22 @@ export default function L10nPage() {
   const {
     selectedKeymap: keymap,
     selectedTimezone: timezone,
-    selectedLocales: [locale]
   } = useL10n();
+
+  const [locale, setLocale] = useState();
+  const { data: locales } = useLocales();
+  const { isPending, data: localeId } = useConfig((i) => i.locales[0]);
+
+  useEffect(() => {
+    if (!locales) return;
+
+    const found = locales.find((l) => l.id === localeId);
+    if (found) {
+      setLocale(found);
+    }
+  }, [locales, localeId]);
+
+  if (isPending) return;
 
   return (
     <>

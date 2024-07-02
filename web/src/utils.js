@@ -48,6 +48,11 @@ const isObject = (value) => (
 const noop = () => undefined;
 
 /**
+ * @return {function} identity function
+ */
+const identity = (i) => i;
+
+/**
  * Returns a new array with a given collection split into two groups, the first holding elements
  * satisfying the filter and the second with those which do not.
  *
@@ -373,6 +378,7 @@ const timezoneUTCOffset = (timezone) => {
 
 export {
   noop,
+  identity,
   isObject,
   partition,
   compact,
