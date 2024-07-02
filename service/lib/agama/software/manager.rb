@@ -131,22 +131,31 @@ module Agama
         true
       end
 
+      # @param actions [Array<Array(String,Proc)>]
+      def execute_progress(actions)
+        start_progress_with_size(actions.size)
+
+        actions.each do |description, proc|
+          progress.step(description, &proc)
+        end
+      end
+
       def probe
         # Should an error be raised?
         return unless product
 
         logger.info "Probing software"
 
+        actions = []
         if repositories.empty?
-          start_progress_with_size(3)
           Yast::PackageCallbacks.InitPackageCallbacks(logger)
-          progress.step(_("Initializing sources")) { add_base_repos }
-        else
-          start_progress_with_size(2)
+          actions << [_("Initializing sources"), ->() { add_base_repos }]
         end
 
-        progress.step(_("Refreshing repositories metadata")) { repositories.load }
-        progress.step(_("Calculating the software proposal")) { propose }
+        actions << [_("Refreshing repositories metadata"), ->() { repositories.load }]
+        actions << [_("Calculating the software proposal"), ->() { propose }]
+
+        execute_progress(actions)
 
         update_issues
       end
