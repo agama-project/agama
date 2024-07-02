@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
 Tue Jul  2 13:54:15 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
-- Use specific flavor of openSUSE-repos for each distro 
+- Use specific flavor of openSUSE-repos for each distro
+  (gh#openSUSE/agama#1424).
 
 -------------------------------------------------------------------
 Tue Jul  2 11:33:36 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
