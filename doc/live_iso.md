@@ -78,7 +78,7 @@ Notes:
 > This feature is experimental and untested!
 
 The Agama packages on the Live ISO can be automatically updated from the OBS
-Staging project.
+Devel project.
 
 * Use the `agama.self_update` boot parameter to run the self-update
 automatically during boot.

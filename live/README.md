@@ -82,14 +82,14 @@ make build FLAVOR=ALP
 See the [_multibuild](src/_multibuild) file for the list of available build flavors.
 
 By default it will use the
-[systemsmanagement:Agama:Staging](https://build.opensuse.org/project/show/systemsmanagement:Agama:Staging)
+[systemsmanagement:Agama:Devel](https://build.opensuse.org/project/show/systemsmanagement:Agama:Devel)
 OBS project. If you want to build using another project, like your fork, then delete the `dist`
 directory and checkout the OBS project manually and run the build:
 
 ```shell
 rm -rf dist
 # replace <USER> with your OBS account name
-osc co -o dist home:<USER>:branches:systemsmanagement:Agama:Staging agama-live
+osc co -o dist home:<USER>:branches:systemsmanagement:Agama:Devel agama-installer-openSUSE
 make build
 ```
 
