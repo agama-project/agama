@@ -99,9 +99,7 @@ module Agama
         @logger = logger
         @languages = DEFAULT_LANGUAGES
         @products = build_products
-        # Simple hack to preload repo metadata and reduce UX latency,
-        # at cost of reducing user choice
-        @product = @products.first
+        @product = @products.first if @products.size == 1
         @repositories = RepositoriesManager.new
         # patterns selected by user
         @user_patterns = []
@@ -140,11 +138,19 @@ module Agama
         end
       end
 
-      def probe
-        # Should an error be raised?
-        return unless product
+      def cache_repositories
+        old_product = @product
+        @product = @products.first
 
-        logger.info "Probing software"
+        @product = old_product
+      end
+
+      def probe
+        if product
+          logger.info "Probing software"
+        else
+          logger.info "Preloading repositories"
+        end
 
         actions = []
         if repositories.empty?
@@ -153,7 +159,10 @@ module Agama
         end
 
         actions << [_("Refreshing repositories metadata"), ->() { repositories.load }]
-        actions << [_("Calculating the software proposal"), ->() { propose }]
+
+        if product
+          actions << [_("Calculating the software proposal"), ->() { propose }]
+        end
 
         execute_progress(actions)
 
