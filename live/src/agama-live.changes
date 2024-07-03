@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul  3 10:41:32 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Set agama as a transient hostname instead of an static one
+  (gh#openSUSE/agama#1432).
+
+-------------------------------------------------------------------
 Fri Jun 28 13:40:35 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Syntax highlighting for "agama config edit"
