@@ -23,11 +23,12 @@ import React from "react";
 import { TextContent, Text, TextVariants } from "@patternfly/react-core";
 import { Em } from "~/components/core";
 import { _ } from "~/i18n";
-import { useLocales, useConfig } from "~/queries/l10n";
+import { localesQuery, configQuery } from "~/queries/l10n";
+import { useQuery } from "@tanstack/react-query";
 
 export default function L10nSection() {
-  const { isPending: isLocalesPending, data: locales } = useLocales();
-  const { isPending: isConfigPending, data: config } = useConfig();
+  const { isPending: isLocalesPending, data: locales } = useQuery(localesQuery());
+  const { isPending: isConfigPending, data: config } = useQuery(configQuery());
 
   if (isLocalesPending || isConfigPending) return;
 

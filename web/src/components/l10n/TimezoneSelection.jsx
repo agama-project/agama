@@ -28,10 +28,11 @@ import {
   Text
 } from "@patternfly/react-core";
 import { ListSearch, Page } from "~/components/core";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { _ } from "~/i18n";
 import { timezoneTime } from "~/utils";
-import { useTimezones, useConfig, useConfigMutation } from "~/queries/l10n";
+import { timezonesQuery, configQuery, useConfigMutation } from "~/queries/l10n";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
 let date;
@@ -60,8 +61,8 @@ const sortedTimezones = (timezones) => {
 // TODO: Refactor timezones/extendedTimezones thingy
 export default function TimezoneSelection() {
   date = new Date();
-  const { data: timezones } = useTimezones();
-  const { data: config } = useConfig();
+  const { data: timezones } = useQuery(timezonesQuery());
+  const { data: config } = useQuery(configQuery());
   const setConfig = useConfigMutation();
   const [initial, setInitial] = useState();
   const [selected, setSelected] = useState();

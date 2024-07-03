@@ -29,13 +29,14 @@ import { useNavigate } from "react-router-dom";
 import { _ } from "~/i18n";
 import { ListSearch, Page } from "~/components/core";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
-import { useKeymaps, useConfig, useConfigMutation } from "~/queries/l10n";
+import { keymapsQuery, configQuery, useConfigMutation } from "~/queries/l10n";
+import { useQuery } from "@tanstack/react-query";
 
 // TODO: Add documentation and typechecking
 // TODO: Evaluate if worth it extracting the selector
 export default function KeyboardSelection() {
-  const { isPending, data: keymaps } = useKeymaps();
-  const { data: config } = useConfig();
+  const { isPending, data: keymaps } = useQuery(keymapsQuery());
+  const { data: config } = useQuery(configQuery());
   const setConfig = useConfigMutation();
   const [initial, setInitial] = useState();
   const [selected, setSelected] = useState();

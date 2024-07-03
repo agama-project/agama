@@ -19,13 +19,20 @@
  * find language contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Gallery, GalleryItem,
 } from "@patternfly/react-core";
 import { ButtonLink, CardField, Page } from "~/components/core";
 import { _ } from "~/i18n";
-import { useConfig, useLocales, useKeymaps, useTimezones, useL10nConfigChanges } from "../../queries/l10n";
+import { useQuery } from "@tanstack/react-query";
+import {
+  configQuery,
+  localesQuery,
+  keymapsQuery,
+  timezonesQuery,
+  useL10nConfigChanges
+} from "~/queries/l10n";
 
 const Section = ({ label, value, children }) => {
   return (
@@ -48,10 +55,10 @@ const Section = ({ label, value, children }) => {
 export default function L10nPage() {
   useL10nConfigChanges();
 
-  const { isPending: localesPending, data: locales } = useLocales();
-  const { isPending: timezonesPending, data: timezones } = useTimezones();
-  const { isPending: keymapsPending, data: keymaps } = useKeymaps();
-  const { isPending: configPending, data: config } = useConfig();
+  const { isPending: localesPending, data: locales } = useQuery(localesQuery());
+  const { isPending: timezonesPending, data: timezones } = useQuery(timezonesQuery());
+  const { isPending: keymapsPending, data: keymaps } = useQuery(keymapsQuery());
+  const { isPending: configPending, data: config } = useQuery(configQuery());
 
   if (localesPending || timezonesPending || keymapsPending || configPending) {
     return;

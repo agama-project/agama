@@ -20,19 +20,18 @@
  */
 
 import React from "react";
-import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { timezoneUTCOffset, identity } from "~/utils";
+import { timezoneUTCOffset } from "~/utils";
 
-const useConfig = (select = identity) => {
-  return useQuery({
+const configQuery = () => {
+  return {
     queryKey: ["l10n", "config"],
     queryFn: () => fetch("/api/l10n/config").then((res) => res.json()),
-    select
-  });
+  };
 };
 
-const useLocales = () => useQuery({
+const localesQuery = () => ({
   queryKey: ["l10n", "locales"],
   queryFn: async () => {
     const response = await fetch("/api/l10n/locales");
@@ -43,7 +42,7 @@ const useLocales = () => useQuery({
   }
 });
 
-const useTimezones = () => useQuery({
+const timezonesQuery = () => ({
   queryKey: ["l10n", "timezones"],
   queryFn: async () => {
     const response = await fetch("/api/l10n/timezones");
@@ -55,7 +54,7 @@ const useTimezones = () => useQuery({
   }
 });
 
-const useKeymaps = () => useQuery({
+const keymapsQuery = () => ({
   queryKey: ["l10n", "keymaps"],
   queryFn: async () => {
     const response = await fetch("/api/l10n/keymaps");
@@ -101,10 +100,10 @@ const useL10nConfigChanges = () => {
 };
 
 export {
+  configQuery,
+  keymapsQuery,
+  localesQuery,
+  timezonesQuery,
   useConfigMutation,
-  useLocales,
-  useTimezones,
-  useKeymaps,
-  useConfig,
   useL10nConfigChanges
 };

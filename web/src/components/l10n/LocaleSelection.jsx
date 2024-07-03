@@ -29,13 +29,14 @@ import { useNavigate } from "react-router-dom";
 import { _ } from "~/i18n";
 import { ListSearch, Page } from "~/components/core";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
-import { useLocales, useConfig, useConfigMutation } from "~/queries/l10n";
+import { useQuery } from "@tanstack/react-query";
+import { localesQuery, configQuery, useConfigMutation } from "~/queries/l10n";
 
 // TODO: Add documentation and typechecking
 // TODO: Evaluate if worth it extracting the selector
 export default function LocaleSelection() {
-  const { isPending, data: locales } = useLocales();
-  const { data: config } = useConfig();
+  const { isPending, data: locales } = useQuery(localesQuery());
+  const { data: config } = useQuery(configQuery());
   const setConfig = useConfigMutation();
   const [initial, setInitial] = useState();
   const [selected, setSelected] = useState();
