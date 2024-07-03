@@ -71,12 +71,6 @@ function L10nProvider({ children }) {
   useEffect(() => {
     if (!client) return;
 
-    return client.l10n.onLocalesChange(setSelectedLocales);
-  }, [client, setSelectedLocales]);
-
-  useEffect(() => {
-    if (!client) return;
-
     return client.l10n.onKeymapChange(setSelectedKeymap);
   }, [client, setSelectedKeymap]);
 

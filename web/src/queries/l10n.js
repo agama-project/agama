@@ -19,7 +19,9 @@
  * find current contact information at www.suse.com.
  */
 
+import React from "react";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useInstallerClient } from "~/context/installer";
 import { timezoneUTCOffset, identity } from "~/utils";
 
 const useConfig = (select = identity) => {
@@ -83,10 +85,26 @@ const useConfigMutation = () => {
   return useMutation(query);
 };
 
+const useL10nConfigChanges = () => {
+  const queryClient = useQueryClient();
+  const client = useInstallerClient();
+
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.ws().onEvent(event => {
+      if (event.type === "L10nConfigChanged") {
+        queryClient.invalidateQueries({ queryKey: ["l10n", "config"] });
+      }
+    });
+  }, [queryClient, client]);
+};
+
 export {
   useConfigMutation,
   useLocales,
   useTimezones,
   useKeymaps,
-  useConfig
+  useConfig,
+  useL10nConfigChanges
 };

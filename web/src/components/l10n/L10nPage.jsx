@@ -28,7 +28,7 @@ import { ButtonLink, CardField, Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { useL10n } from "~/context/l10n";
 import buttonStyles from '@patternfly/react-styles/css/components/Button/button';
-import { useConfig, useLocales } from "../../queries/l10n";
+import { useConfig, useLocales, useL10nConfigChanges } from "../../queries/l10n";
 
 const Section = ({ label, value, children }) => {
   return (
@@ -53,6 +53,7 @@ export default function L10nPage() {
     selectedKeymap: keymap,
     selectedTimezone: timezone,
   } = useL10n();
+  useL10nConfigChanges();
 
   const [locale, setLocale] = useState();
   const { data: locales } = useLocales();
