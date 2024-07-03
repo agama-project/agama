@@ -41,3 +41,5 @@ install -D -m 0644 %{_builddir}/agama/systemd/agama-auto.service %{buildroot}%{_
 %files
 %{_bindir}/agama-auto
 %{_unitdir}/agama-auto.service
+
+%changelog
