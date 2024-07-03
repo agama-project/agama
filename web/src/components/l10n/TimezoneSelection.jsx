@@ -31,8 +31,7 @@ import { ListSearch, Page } from "~/components/core";
 import { useNavigate } from "react-router-dom";
 import { _ } from "~/i18n";
 import { timezoneTime } from "~/utils";
-import { useL10n } from "~/context/l10n";
-import { useInstallerClient } from "~/context/installer";
+import { useTimezones, useConfig, useConfigMutation } from "../../queries/l10n";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
 let date;
@@ -40,7 +39,7 @@ let date;
 const timezoneWithDetails = (timezone) => {
   const offset = timezone.utcOffset;
 
-  if (offset === undefined) return timezone.id;
+  if (offset === undefined) return { ...timezone, details: timezone.id };
 
   let utc = "UTC";
   if (offset > 0) utc += `+${offset}`;
@@ -61,34 +60,53 @@ const sortedTimezones = (timezones) => {
 // TODO: Refactor timezones/extendedTimezones thingy
 export default function TimezoneSelection() {
   date = new Date();
-  const { l10n } = useInstallerClient();
-  const { timezones, selectedTimezone: currentTimezone } = useL10n();
+  const { data: timezones } = useTimezones();
+  const { data: config } = useConfig();
+  const setConfig = useConfigMutation();
+  const [initial, setInitial] = useState();
+  const [selected, setSelected] = useState();
   const [displayTimezones, setDisplayTimezones] = useState([]);
-  const [selected, setSelected] = useState(currentTimezone);
   const [filteredTimezones, setFilteredTimezones] = useState([]);
   const navigate = useNavigate();
 
   const searchHelp = _("Filter by territory, time zone code or UTC offset");
 
   useEffect(() => {
+    if (timezones === undefined) return;
+
+    const mapped = timezones.map(timezoneWithDetails);
     setDisplayTimezones(timezones.map(timezoneWithDetails));
   }, [setDisplayTimezones, timezones]);
 
   useEffect(() => {
+    if (displayTimezones === undefined) return;
+
     setFilteredTimezones(sortedTimezones(displayTimezones));
   }, [setFilteredTimezones, displayTimezones]);
+
+  useEffect(() => {
+    if (!config) return;
+
+    const initialTimezone = config.timezone;
+    setInitial(initialTimezone);
+    setSelected(initialTimezone);
+  }, [config, setInitial, setSelected]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
     const dataForm = new FormData(e.target);
     const nextTimezoneId = JSON.parse(dataForm.get("timezone"))?.id;
 
-    if (nextTimezoneId !== currentTimezone?.id) {
-      await l10n.setTimezone(nextTimezoneId);
+    if (nextTimezoneId !== initial) {
+      setConfig.mutate({ timezone: nextTimezoneId });
     }
 
     navigate("..");
   };
+
+  if (filteredTimezones === undefined) {
+    return <span>{_("Loading")}</span>;
+  }
 
   let timezonesList = filteredTimezones.map((timezone) => {
     return (
@@ -112,7 +130,7 @@ export default function TimezoneSelection() {
           </Flex>
         }
         value={JSON.stringify(timezone)}
-        defaultChecked={timezone === selected}
+        defaultChecked={timezone.id === selected}
       />
     );
   });

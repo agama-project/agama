@@ -23,12 +23,9 @@ import React, { useEffect, useState } from "react";
 import {
   Gallery, GalleryItem,
 } from "@patternfly/react-core";
-import { Link } from "react-router-dom";
 import { ButtonLink, CardField, Page } from "~/components/core";
 import { _ } from "~/i18n";
-import { useL10n } from "~/context/l10n";
-import buttonStyles from '@patternfly/react-styles/css/components/Button/button';
-import { useConfig, useLocales, useL10nConfigChanges } from "../../queries/l10n";
+import { useConfig, useLocales, useKeymaps, useTimezones, useL10nConfigChanges } from "../../queries/l10n";
 
 const Section = ({ label, value, children }) => {
   return (
@@ -49,26 +46,22 @@ const Section = ({ label, value, children }) => {
  * @component
  */
 export default function L10nPage() {
-  const {
-    selectedKeymap: keymap,
-    selectedTimezone: timezone,
-  } = useL10n();
   useL10nConfigChanges();
 
-  const [locale, setLocale] = useState();
-  const { data: locales } = useLocales();
-  const { isPending, data: localeId } = useConfig((i) => i.locales[0]);
+  const { isPending: localesPending, data: locales } = useLocales();
+  const { isPending: timezonesPending, data: timezones } = useTimezones();
+  const { isPending: keymapsPending, data: keymaps } = useKeymaps();
+  const { isPending: configPending, data: config } = useConfig();
 
-  useEffect(() => {
-    if (!locales) return;
+  if (localesPending || timezonesPending || keymapsPending || configPending) {
+    return;
+  }
 
-    const found = locales.find((l) => l.id === localeId);
-    if (found) {
-      setLocale(found);
-    }
-  }, [locales, localeId]);
+  const { locales: [localeId], keymap: keymapId, timezone: timezoneId } = config;
 
-  if (isPending) return;
+  const locale = locales.find((l) => l.id === localeId);
+  const keymap = keymaps.find((k) => k.id === keymapId);
+  const timezone = timezones.find((t) => t.id === timezoneId);
 
   return (
     <>

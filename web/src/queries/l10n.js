@@ -33,7 +33,7 @@ const useConfig = (select = identity) => {
 };
 
 const useLocales = () => useQuery({
-  queryKey: ["locales"],
+  queryKey: ["l10n", "locales"],
   queryFn: async () => {
     const response = await fetch("/api/l10n/locales");
     const locales = await response.json();
@@ -44,19 +44,19 @@ const useLocales = () => useQuery({
 });
 
 const useTimezones = () => useQuery({
-  queryKey: ["timezones"],
+  queryKey: ["l10n", "timezones"],
   queryFn: async () => {
     const response = await fetch("/api/l10n/timezones");
     const timezones = await response.json();
     return timezones.map(({ code, parts, country }) => {
       const offset = timezoneUTCOffset(code);
-      return { id: code, parts, country, offset };
+      return { id: code, parts, country, utcOffset: offset };
     });
   }
 });
 
 const useKeymaps = () => useQuery({
-  queryKey: ["keymaps"],
+  queryKey: ["l10n", "keymaps"],
   queryFn: async () => {
     const response = await fetch("/api/l10n/keymaps");
     const keymaps = await response.json();

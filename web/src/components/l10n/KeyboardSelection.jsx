@@ -27,38 +27,53 @@ import {
 } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { _ } from "~/i18n";
-import { useL10n } from "~/context/l10n";
-import { useInstallerClient } from "~/context/installer";
 import { ListSearch, Page } from "~/components/core";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
+import { useKeymaps, useConfig, useConfigMutation } from "../../queries/l10n";
 
 // TODO: Add documentation and typechecking
 // TODO: Evaluate if worth it extracting the selector
 export default function KeyboardSelection() {
-  const { l10n } = useInstallerClient();
-  const { keymaps, selectedKeymap: currentKeymap } = useL10n();
-  const [selected, setSelected] = useState(currentKeymap);
+  const { isPending, data: keymaps } = useKeymaps();
+  const { data: config } = useConfig();
+  const setConfig = useConfigMutation();
+  const [initial, setInitial] = useState();
+  const [selected, setSelected] = useState();
   const [filteredKeymaps, setFilteredKeymaps] = useState(keymaps);
   const navigate = useNavigate();
 
-  const sortedKeymaps = keymaps.sort((k1, k2) => k1.name > k2.name ? 1 : -1);
   const searchHelp = _("Filter by description or keymap code");
 
   useEffect(() => {
+    if (isPending) return;
+
+    const sortedKeymaps = keymaps.sort((k1, k2) => k1.name > k2.name ? 1 : -1);
     setFilteredKeymaps(sortedKeymaps);
-  }, [sortedKeymaps, setFilteredKeymaps]);
+  }, [isPending, keymaps, setFilteredKeymaps]);
+
+  useEffect(() => {
+    if (!config) return;
+
+    const initialKeymap = config.keymap;
+    setInitial(initialKeymap);
+    setSelected(initialKeymap);
+  }, [config, setInitial, setSelected]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
     const dataForm = new FormData(e.target);
     const nextKeymapId = JSON.parse(dataForm.get("keymap"))?.id;
 
-    if (nextKeymapId !== currentKeymap?.id) {
-      await l10n.setKeymap(nextKeymapId);
+    if (nextKeymapId !== initial) {
+      setConfig.mutate({ keymap: nextKeymapId });
     }
 
     navigate("..");
   };
+
+  if (filteredKeymaps === undefined) {
+    return <span>{_("Loading")}</span>;
+  }
 
   let keymapsList = filteredKeymaps.map((keymap) => {
     return (
@@ -66,7 +81,7 @@ export default function KeyboardSelection() {
         key={keymap.id}
         name="keymap"
         id={keymap.id}
-        onChange={() => setSelected(keymap)}
+        onChange={() => setSelected(keymap.id)}
         label={
           <>
             <span className={`${textStyles.fontSizeLg}`}>
@@ -75,7 +90,7 @@ export default function KeyboardSelection() {
           </>
         }
         value={JSON.stringify(keymap)}
-        defaultChecked={keymap === selected}
+        defaultChecked={keymap.id === selected}
       />
     );
   });

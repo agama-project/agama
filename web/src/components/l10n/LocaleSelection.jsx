@@ -48,7 +48,7 @@ export default function LocaleSelection() {
     if (isPending) return;
 
     setFilteredLocales(locales);
-  }, [locales, isPending, setFilteredLocales]);
+  }, [isPending, locales, setFilteredLocales]);
 
   useEffect(() => {
     if (!config) return;
@@ -63,14 +63,14 @@ export default function LocaleSelection() {
     const dataForm = new FormData(e.target);
     const nextLocaleId = JSON.parse(dataForm.get("locale"))?.id;
 
-    if (nextLocaleId !== initial?.id) {
+    if (nextLocaleId !== initial) {
       setConfig.mutate({ locales: [nextLocaleId] });
     }
 
     navigate("..");
   };
 
-  if (isPending) {
+  if (filteredLocales === undefined) {
     return <span>{_("Loading")}</span>;
   }
 
