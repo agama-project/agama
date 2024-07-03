@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jul  3 07:17:55 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the files list in the spec file (gh#openSUSE/agama#1429).
+
+-------------------------------------------------------------------
 Fri Jun 28 13:49:54 UTC 2024 - Martin Vidner <mvidner@suse.com>
 
 - In Add/Edit file system dialog (VolumeDialog), keep the numeric value
