@@ -23,15 +23,15 @@ import React from "react";
 import { TextContent, Text, TextVariants } from "@patternfly/react-core";
 import { Em } from "~/components/core";
 import { _ } from "~/i18n";
-import { useL10n } from "~/context/l10n";
+import { useLocales, useConfig } from "~/queries/l10n";
 
 export default function L10nSection() {
-  const { selectedLocales } = useL10n();
+  const { isPending: isLocalesPending, data: locales } = useLocales();
+  const { isPending: isConfigPending, data: config } = useConfig();
 
-  const locale = selectedLocales[0];
-  if (locale === undefined) {
-    return;
-  }
+  if (isLocalesPending || isConfigPending) return;
+
+  const locale = locales.find((l) => l.id === config?.locales[0]);
 
   // TRANSLATORS: %s will be replaced by a language name and territory, example:
   // "English (United States)".
