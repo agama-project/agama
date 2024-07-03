@@ -21,13 +21,9 @@
 
 import React from "react";
 import { Gallery, GalleryItem, } from "@patternfly/react-core";
-import { useQuery } from "@tanstack/react-query";
+import { useLoaderData } from "react-router-dom";
 import { ButtonLink, CardField, Page } from "~/components/core";
 import {
-  configQuery,
-  localesQuery,
-  keymapsQuery,
-  timezonesQuery,
   useL10nConfigChanges
 } from "~/queries/l10n";
 import { LOCALE_SELECTION_PATH, KEYMAP_SELECTION_PATH, TIMEZONE_SELECTION_PATH } from "~/routes/l10n";
@@ -53,21 +49,7 @@ const Section = ({ label, value, children }) => {
  */
 export default function L10nPage() {
   useL10nConfigChanges();
-
-  const { isPending: localesPending, data: locales } = useQuery(localesQuery());
-  const { isPending: timezonesPending, data: timezones } = useQuery(timezonesQuery());
-  const { isPending: keymapsPending, data: keymaps } = useQuery(keymapsQuery());
-  const { isPending: configPending, data: config } = useQuery(configQuery());
-
-  if (localesPending || timezonesPending || keymapsPending || configPending) {
-    return;
-  }
-
-  const { locales: [localeId], keymap: keymapId, timezone: timezoneId } = config;
-
-  const locale = locales.find((l) => l.id === localeId);
-  const keymap = keymaps.find((k) => k.id === keymapId);
-  const timezone = timezones.find((t) => t.id === timezoneId);
+  const { locale, timezone, keymap } = useLoaderData();
 
   return (
     <>
@@ -93,7 +75,7 @@ export default function L10nPage() {
               label={_("Keyboard")}
               value={keymap ? keymap.name : _("Not selected yet")}
             >
-              <ButtonLink to={TIMEZONE_SELECTION_PATH} isPrimary={!keymap}>
+              <ButtonLink to={KEYMAP_SELECTION_PATH} isPrimary={!keymap}>
                 {keymap ? _("Change") : _("Select")}
               </ButtonLink>
             </Section>
@@ -104,7 +86,7 @@ export default function L10nPage() {
               label={_("Time zone")}
               value={timezone ? (timezone.parts || []).join(' - ') : _("Not selected yet")}
             >
-              <ButtonLink to={KEYMAP_SELECTION_PATH} isPrimary={!timezone}>
+              <ButtonLink to={TIMEZONE_SELECTION_PATH} isPrimary={!timezone}>
                 {timezone ? _("Change") : _("Select")}
               </ButtonLink>
             </Section>

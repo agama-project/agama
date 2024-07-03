@@ -19,79 +19,49 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
-import {
-  Form, FormGroup,
-  Radio,
-  Text
-} from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
-import { _ } from "~/i18n";
+import React, { useState } from "react";
+import { Form, FormGroup, Radio, Text } from "@patternfly/react-core";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
+import { _ } from "~/i18n";
+import { useConfigMutation } from "~/queries/l10n";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
-import { keymapsQuery, configQuery, useConfigMutation } from "~/queries/l10n";
-import { useQuery } from "@tanstack/react-query";
 
 // TODO: Add documentation and typechecking
 // TODO: Evaluate if worth it extracting the selector
 export default function KeyboardSelection() {
-  const { isPending, data: keymaps } = useQuery(keymapsQuery());
-  const { data: config } = useQuery(configQuery());
-  const setConfig = useConfigMutation();
-  const [initial, setInitial] = useState();
-  const [selected, setSelected] = useState();
-  const [filteredKeymaps, setFilteredKeymaps] = useState(keymaps);
   const navigate = useNavigate();
+  const setConfig = useConfigMutation();
+  const { keymaps, keymap: currentKeymap } = useLoaderData();
+  const [selected, setSelected] = useState(currentKeymap.id);
+  const [filteredKeymaps, setFilteredKeymaps] = useState(
+    keymaps.sort((k1, k2) => k1.name > k2.name ? 1 : -1)
+  );
 
   const searchHelp = _("Filter by description or keymap code");
 
-  useEffect(() => {
-    if (isPending) return;
-
-    const sortedKeymaps = keymaps.sort((k1, k2) => k1.name > k2.name ? 1 : -1);
-    setFilteredKeymaps(sortedKeymaps);
-  }, [isPending, keymaps, setFilteredKeymaps]);
-
-  useEffect(() => {
-    if (!config) return;
-
-    const initialKeymap = config.keymap;
-    setInitial(initialKeymap);
-    setSelected(initialKeymap);
-  }, [config, setInitial, setSelected]);
-
   const onSubmit = async (e) => {
     e.preventDefault();
-    const dataForm = new FormData(e.target);
-    const nextKeymapId = JSON.parse(dataForm.get("keymap"))?.id;
-
-    if (nextKeymapId !== initial) {
-      setConfig.mutate({ keymap: nextKeymapId });
-    }
-
-    navigate("..");
+    setConfig.mutate({ keymap: selected });
+    navigate(-1);
   };
 
-  if (filteredKeymaps === undefined) {
-    return <span>{_("Loading")}</span>;
-  }
-
-  let keymapsList = filteredKeymaps.map((keymap) => {
+  let keymapsList = filteredKeymaps.map(({ id, name }) => {
     return (
       <Radio
-        key={keymap.id}
+        id={id}
+        key={id}
         name="keymap"
-        id={keymap.id}
-        onChange={() => setSelected(keymap.id)}
+        onChange={() => setSelected(id)}
         label={
           <>
             <span className={`${textStyles.fontSizeLg}`}>
-              <b>{keymap.name}</b>
-            </span> <Text component="small">{keymap.id}</Text>
+              <b>{name}</b>
+            </span> <Text component="small">{id}</Text>
           </>
         }
-        value={JSON.stringify(keymap)}
-        defaultChecked={keymap.id === selected}
+        value={id}
+        isChecked={id === selected}
       />
     );
   });

@@ -19,20 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
-import {
-  Divider,
-  Flex,
-  Form, FormGroup,
-  Radio,
-  Text
-} from "@patternfly/react-core";
+import React, { useState } from "react";
+import { Divider, Flex, Form, FormGroup, Radio, Text } from "@patternfly/react-core";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
-import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { _ } from "~/i18n";
 import { timezoneTime } from "~/utils";
-import { timezonesQuery, configQuery, useConfigMutation } from "~/queries/l10n";
+import { useConfigMutation } from "~/queries/l10n";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
 let date;
@@ -61,77 +54,44 @@ const sortedTimezones = (timezones) => {
 // TODO: Refactor timezones/extendedTimezones thingy
 export default function TimezoneSelection() {
   date = new Date();
-  const { data: timezones } = useQuery(timezonesQuery());
-  const { data: config } = useQuery(configQuery());
-  const setConfig = useConfigMutation();
-  const [initial, setInitial] = useState();
-  const [selected, setSelected] = useState();
-  const [displayTimezones, setDisplayTimezones] = useState([]);
-  const [filteredTimezones, setFilteredTimezones] = useState([]);
   const navigate = useNavigate();
+  const setConfig = useConfigMutation();
+  const { timezones, timezone: currentTimezone } = useLoaderData();
+  const displayTimezones = timezones.map(timezoneWithDetails);
+  const [selected, setSelected] = useState(currentTimezone.id);
+  const [filteredTimezones, setFilteredTimezones] = useState(sortedTimezones(displayTimezones));
 
   const searchHelp = _("Filter by territory, time zone code or UTC offset");
 
-  useEffect(() => {
-    if (timezones === undefined) return;
-
-    const mapped = timezones.map(timezoneWithDetails);
-    setDisplayTimezones(timezones.map(timezoneWithDetails));
-  }, [setDisplayTimezones, timezones]);
-
-  useEffect(() => {
-    if (displayTimezones === undefined) return;
-
-    setFilteredTimezones(sortedTimezones(displayTimezones));
-  }, [setFilteredTimezones, displayTimezones]);
-
-  useEffect(() => {
-    if (!config) return;
-
-    const initialTimezone = config.timezone;
-    setInitial(initialTimezone);
-    setSelected(initialTimezone);
-  }, [config, setInitial, setSelected]);
-
   const onSubmit = async (e) => {
     e.preventDefault();
-    const dataForm = new FormData(e.target);
-    const nextTimezoneId = JSON.parse(dataForm.get("timezone"))?.id;
-
-    if (nextTimezoneId !== initial) {
-      setConfig.mutate({ timezone: nextTimezoneId });
-    }
-
-    navigate("..");
+    setConfig.mutate({ timezone: selected });
+    navigate(-1);
   };
 
-  if (filteredTimezones === undefined) {
-    return <span>{_("Loading")}</span>;
-  }
-
-  let timezonesList = filteredTimezones.map((timezone) => {
+  let timezonesList = filteredTimezones.map(({ id, country, details, parts }) => {
     return (
       <Radio
-        key={timezone.id}
+        id={id}
+        key={id}
         name="timezone"
-        id={timezone.id}
-        onChange={() => setSelected(timezone)}
+        onChange={() => setSelected(id)}
         label={
           <>
             <span className={`${textStyles.fontSizeLg}`}>
-              <b>{timezone.parts.join('-')}</b>
-            </span> <Text component="small">{timezone.country}</Text>
+              <b>{parts.join('-')}</b>
+            </span> <Text component="small">{country}</Text>
           </>
         }
         description={
           <Flex columnGap={{ default: "columnGapXs" }}>
-            <Text component="small">{timezoneTime(timezone.id, { date }) || ""}</Text>
+            <Text component="small">{timezoneTime(id, { date }) || ""}</Text>
             <Divider orientation={{ default: "vertical" }} />
-            <div>{timezone.details}</div>
+            <div>{details}</div>
           </Flex>
         }
-        value={JSON.stringify(timezone)}
-        defaultChecked={timezone.id === selected}
+        value={id}
+        isChecked={id === selected}
       />
     );
   });

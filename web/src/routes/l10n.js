@@ -28,7 +28,6 @@ import {
   localesQuery,
   keymapsQuery,
   timezonesQuery,
-  useL10nConfigChanges
 } from "~/queries/l10n";
 import { N_ } from "~/i18n";
 
@@ -48,13 +47,12 @@ const l10nLoader = async () => {
   const keymap = keymaps.find((k) => k.id === keymapId);
   const timezone = timezones.find((t) => t.id === timezoneId);
 
-  return { locale, keymap, timezone };
+  return { locales, locale, keymaps, keymap, timezones, timezone };
 };
 
 const routes = {
   path: L10N_PATH,
   element: <Page />,
-  loader: l10nLoader,
   handle: {
     name: N_("Localization"),
     icon: "globe"
@@ -62,18 +60,22 @@ const routes = {
   children: [
     {
       index: true,
+      loader: l10nLoader,
       element: <L10nPage />
     },
     {
       path: LOCALE_SELECTION_PATH,
+      loader: l10nLoader,
       element: <LocaleSelection />,
     },
     {
       path: KEYMAP_SELECTION_PATH,
+      loader: l10nLoader,
       element: <KeymapSelection />,
     },
     {
       path: TIMEZONE_SELECTION_PATH,
+      loader: l10nLoader,
       element: <TimezoneSelection />,
     }
   ]

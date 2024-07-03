@@ -19,78 +19,47 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
-import {
-  Flex,
-  Form, FormGroup,
-  Radio,
-} from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
-import { _ } from "~/i18n";
+import React, { useState } from "react";
+import { Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
+import { _ } from "~/i18n";
+import { useConfigMutation } from "~/queries/l10n";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
-import { useQuery } from "@tanstack/react-query";
-import { localesQuery, configQuery, useConfigMutation } from "~/queries/l10n";
 
 // TODO: Add documentation and typechecking
 // TODO: Evaluate if worth it extracting the selector
 export default function LocaleSelection() {
-  const { isPending, data: locales } = useQuery(localesQuery());
-  const { data: config } = useQuery(configQuery());
-  const setConfig = useConfigMutation();
-  const [initial, setInitial] = useState();
-  const [selected, setSelected] = useState();
-  const [filteredLocales, setFilteredLocales] = useState([]);
   const navigate = useNavigate();
+  const setConfig = useConfigMutation();
+  const { locales, locale: currentLocale } = useLoaderData();
+  const [selected, setSelected] = useState(currentLocale.id);
+  const [filteredLocales, setFilteredLocales] = useState(locales);
 
   const searchHelp = _("Filter by language, territory or locale code");
 
-  useEffect(() => {
-    if (isPending) return;
-
-    setFilteredLocales(locales);
-  }, [isPending, locales, setFilteredLocales]);
-
-  useEffect(() => {
-    if (!config) return;
-
-    const initialLocale = config.locales[0];
-    setInitial(initialLocale);
-    setSelected(initialLocale);
-  }, [config, setInitial, setSelected]);
-
   const onSubmit = async (e) => {
     e.preventDefault();
-    const dataForm = new FormData(e.target);
-    const nextLocaleId = JSON.parse(dataForm.get("locale"))?.id;
-
-    if (nextLocaleId !== initial) {
-      setConfig.mutate({ locales: [nextLocaleId] });
-    }
-
-    navigate("..");
+    setConfig.mutate({ locales: selected });
+    navigate(-1);
   };
 
-  if (filteredLocales === undefined) {
-    return <span>{_("Loading")}</span>;
-  }
-
-  let localesList = filteredLocales.map((locale) => {
+  let localesList = filteredLocales.map(({ id, name, territory }) => {
     return (
       <Radio
-        key={locale.id}
+        id={id}
+        key={id}
         name="locale"
-        id={locale.id}
-        onChange={() => setSelected(locale.id)}
+        onChange={() => setSelected(id)}
         label={
           <Flex gap={{ default: "gapSm" }}>
-            <span className={textStyles.fontSizeLg}><b>{locale.name}</b></span>
-            <span className={[textStyles.fontSizeMd, textStyles.color_100].join(" ")}>{locale.territory}</span>
-            <span className={[textStyles.fontSizeXs, textStyles.color_400].join(" ")}>{locale.id}</span>
+            <span className={textStyles.fontSizeLg}><b>{name}</b></span>
+            <span className={[textStyles.fontSizeMd, textStyles.color_100].join(" ")}>{territory}</span>
+            <span className={[textStyles.fontSizeXs, textStyles.color_400].join(" ")}>{id}</span>
           </Flex>
         }
-        value={JSON.stringify(locale)}
-        checked={locale.id === selected}
+        value={id}
+        isChecked={id === selected}
       />
     );
   });
