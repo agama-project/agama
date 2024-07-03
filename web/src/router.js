@@ -29,7 +29,7 @@ import { LoginPage } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
 import { _ } from "~/i18n";
 import overviewRoutes from "~/components/overview/routes";
-import l10nRoutes from "~/components/l10n/routes";
+import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/components/network/routes";
 import { productsRoute } from "~/components/product/routes";
 import storageRoutes from "~/components/storage/routes";
