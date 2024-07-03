@@ -39,7 +39,8 @@ const localesQuery = () => ({
     return locales.map(({ id, language, territory }) => {
       return { id, name: language, territory };
     });
-  }
+  },
+  staleTime: Infinity
 });
 
 const timezonesQuery = () => ({
@@ -51,7 +52,8 @@ const timezonesQuery = () => ({
       const offset = timezoneUTCOffset(code);
       return { id: code, parts, country, utcOffset: offset };
     });
-  }
+  },
+  staleTime: Infinity
 });
 
 const keymapsQuery = () => ({
@@ -62,7 +64,8 @@ const keymapsQuery = () => ({
     return keymaps.map(({ id, description }) => {
       return { id, name: description };
     });
-  }
+  },
+  staleTime: Infinity
 });
 
 const useConfigMutation = () => {
