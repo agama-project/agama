@@ -35,7 +35,6 @@ import { InstallerClientProvider } from "~/context/installer";
 import { noop, isObject } from "./utils";
 import cockpit from "./lib/cockpit";
 import { InstallerL10nProvider } from "./context/installerL10n";
-import { L10nProvider } from "./context/l10n";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default
@@ -100,9 +99,7 @@ const Providers = ({ children, withL10n }) => {
     return (
       <InstallerClientProvider client={client}>
         <InstallerL10nProvider>
-          <L10nProvider>
-            {children}
-          </L10nProvider>
+          {children}
         </InstallerL10nProvider>
       </InstallerClientProvider>
     );
