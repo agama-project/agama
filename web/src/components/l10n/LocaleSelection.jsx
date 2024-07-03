@@ -40,7 +40,7 @@ export default function LocaleSelection() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setConfig.mutate({ locales: selected });
+    setConfig.mutate({ locales: [selected] });
     navigate(-1);
   };
 
