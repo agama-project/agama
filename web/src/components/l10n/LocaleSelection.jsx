@@ -29,7 +29,7 @@ import { useNavigate } from "react-router-dom";
 import { _ } from "~/i18n";
 import { ListSearch, Page } from "~/components/core";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
-import { useLocales, useConfig, useConfigMutation } from "../../queries/l10n";
+import { useLocales, useConfig, useConfigMutation } from "~/queries/l10n";
 
 // TODO: Add documentation and typechecking
 // TODO: Evaluate if worth it extracting the selector

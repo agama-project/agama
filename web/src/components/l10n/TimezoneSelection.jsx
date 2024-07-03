@@ -31,7 +31,7 @@ import { ListSearch, Page } from "~/components/core";
 import { useNavigate } from "react-router-dom";
 import { _ } from "~/i18n";
 import { timezoneTime } from "~/utils";
-import { useTimezones, useConfig, useConfigMutation } from "../../queries/l10n";
+import { useTimezones, useConfig, useConfigMutation } from "~/queries/l10n";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
 let date;
