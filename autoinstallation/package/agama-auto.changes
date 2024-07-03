@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul  3 08:04:57 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the %changelog section to the spec file
+  (gh#openSUSE/agama#1431).
+
+-------------------------------------------------------------------
 Wed Jul  3 07:14:39 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Remove scriptlets section from the spec file
