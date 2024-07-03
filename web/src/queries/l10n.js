@@ -60,10 +60,11 @@ const keymapsQuery = () => ({
   queryKey: ["l10n", "keymaps"],
   queryFn: async () => {
     const response = await fetch("/api/l10n/keymaps");
-    const keymaps = await response.json();
-    return keymaps.map(({ id, description }) => {
+    const json = await response.json();
+    const keymaps = json.map(({ id, description }) => {
       return { id, name: description };
     });
+    return keymaps.sort((a, b) => (a.name < b.name) ? -1 : 1);
   },
   staleTime: Infinity
 });
