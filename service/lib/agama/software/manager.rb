@@ -138,18 +138,13 @@ module Agama
         end
       end
 
-      def cache_repositories
-        old_product = @product
-        @product = @products.first
-
-        @product = old_product
-      end
-
       def probe
+        old_product = @product
         if product
           logger.info "Probing software"
         else
           logger.info "Preloading repositories"
+          @product = @products.first
         end
 
         actions = []
@@ -167,6 +162,7 @@ module Agama
         execute_progress(actions)
 
         update_issues
+        @product = old_product
       end
 
       def initialize_target

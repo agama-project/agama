@@ -76,6 +76,8 @@ module Agama
       service_status.busy
       installation_phase.startup
       config_phase if software.selected_product
+      # preload repos
+      software.probe
 
       logger.info("Startup phase done")
       service_status.idle
