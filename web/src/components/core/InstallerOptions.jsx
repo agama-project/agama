@@ -30,7 +30,6 @@ import { _ } from "~/i18n";
 import { localConnection } from "~/utils";
 import { useInstallerL10n } from "~/context/installerL10n";
 import supportedLanguages from "~/languages.json";
-import { useL10n } from "~/context/l10n";
 import { useQuery } from "@tanstack/react-query";
 import { keymapsQuery } from "~/queries/l10n";
 

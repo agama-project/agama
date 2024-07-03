@@ -20,11 +20,13 @@
  */
 
 import React from "react";
-import { screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 
-import { installerRender, plainRender } from "~/test-utils";
-import { L10nPage } from "~/components/l10n";
-import { createClient } from "~/client";
+import { installerRender, plainRender, queryRender } from "~/test-utils";
+import L10nPage from "~/components/l10n/L10nPage";
+import { QueryClient } from "@tanstack/query-core";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { MemoryRouter } from "react-router";
 
 const locales = [
   { id: "de_DE.UTF8", name: "German", territory: "Germany" },
@@ -44,53 +46,44 @@ const timezones = [
   { id: "america/new_york", parts: ["Americas", "New York"] }
 ];
 
+jest.mock("~/queries/l10n", () => ({
+  localesQuery: () => ({
+    queryKey: ["l10n", "locales"],
+    queryFn: jest.fn().mockResolvedValue(locales)
+  }),
+  timezonesQuery: () => ({
+    queryKey: ["l10n", "timezones"],
+    queryFn: jest.fn().mockResolvedValue(timezones)
+  }),
+  keymapsQuery: () => ({
+    queryKey: ["l10n", "keymaps"],
+    queryFn: jest.fn().mockResolvedValue(keymaps)
+  }),
+  configQuery: () => ({
+    queryKey: ["l10n", "config"],
+    queryFn: jest.fn().mockResolvedValue({
+      locales: mockSelectedLocales,
+      timezone: mockSelectedTimezone,
+      keymap: mockSelectedKeymap
+    })
+  }),
+  useL10nConfigChanges: jest.fn()
+}));
+
 let mockL10nClient;
 let mockSelectedLocales;
 let mockSelectedKeymap;
 let mockSelectedTimezone;
 
-jest.mock("~/client");
-
-jest.mock("~/context/l10n", () => ({
-  ...jest.requireActual("~/context/l10n"),
-  useL10n: () => ({
-    locales,
-    selectedLocales: mockSelectedLocales,
-    keymaps,
-    selectedKeymap: mockSelectedKeymap,
-    timezones,
-    selectedTimezone: mockSelectedTimezone
-  })
-}));
-
-jest.mock("~/context/product", () => ({
-  ...jest.requireActual("~/context/product"),
-  useProduct: () => ({
-    selectedProduct : { name: "Test" }
-  })
-}));
-
-createClient.mockImplementation(() => (
-  {
-    l10n: mockL10nClient
-  }
-));
-
 beforeEach(() => {
-  mockL10nClient = {
-    setLocales: jest.fn().mockResolvedValue(),
-    setKeymap: jest.fn().mockResolvedValue(),
-    setTimezone: jest.fn().mockResolvedValue()
-  };
-
   mockSelectedLocales = [];
   mockSelectedKeymap = undefined;
   mockSelectedTimezone = undefined;
 });
 
-it.skip("renders a section for configuring the language", () => {
-  plainRender(<L10nPage />);
-  screen.getByText("Language");
+it.only("renders a section for configuring the language", async () => {
+  queryRender(<L10nPage />);
+  await screen.findByText("Language");
 });
 
 describe.skip("if there is no selected language", () => {
