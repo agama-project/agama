@@ -23,9 +23,6 @@ import React from "react";
 import { Gallery, GalleryItem, } from "@patternfly/react-core";
 import { useLoaderData } from "react-router-dom";
 import { ButtonLink, CardField, Page } from "~/components/core";
-import {
-  useL10nConfigChanges
-} from "~/queries/l10n";
 import { LOCALE_SELECTION_PATH, KEYMAP_SELECTION_PATH, TIMEZONE_SELECTION_PATH } from "~/routes/l10n";
 import { _ } from "~/i18n";
 
@@ -48,7 +45,6 @@ const Section = ({ label, value, children }) => {
  * @component
  */
 export default function L10nPage() {
-  useL10nConfigChanges();
   const { locale, timezone, keymap } = useLoaderData();
 
   return (
