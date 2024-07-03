@@ -35,6 +35,7 @@ import { InstallerClientProvider } from "~/context/installer";
 import { noop, isObject } from "./utils";
 import cockpit from "./lib/cockpit";
 import { InstallerL10nProvider } from "./context/installerL10n";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default
@@ -119,10 +120,14 @@ const Providers = ({ children, withL10n }) => {
  * @see #plainRender for rendering without installer providers
  */
 const installerRender = (ui, options = {}) => {
+  const queryClient = new QueryClient({});
+
   const Wrapper = ({ children }) => (
     <Providers withL10n={options.withL10n}>
       <MemoryRouter initialEntries={initialRoutes()}>
-        {children}
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
       </MemoryRouter>
     </Providers>
   );
@@ -155,6 +160,25 @@ const plainRender = (ui, options = {}) => {
     }
   );
 };
+
+/**
+ * Wrapper around react-testing-library#render for rendering components with the
+ * QueryClientProvider from TanStack Query.
+ *
+ * @todo Unify the render functions once the HTTP client has been replaced with
+ * TanStack Query.
+ */
+const queryRender = (ui, options = {}) => {
+  const queryClient = new QueryClient({});
+
+  const wrapper = ({ children }) => (
+    <MemoryRouter>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </MemoryRouter>
+  );
+
+  return plainRender(ui, {...options, wrapper});
+}
 
 /**
  * Creates a function to register callbacks
@@ -208,6 +232,7 @@ const resetLocalStorage = (initialState) => {
 export {
   plainRender,
   installerRender,
+  queryRender,
   createCallbackMock,
   mockGettext,
   mockNavigateFn,
