@@ -2,7 +2,7 @@
 
 This document summarizes the process we follow to build the Agama packages.
 
-The Agama packages are available the
+The Agama packages are available in the
 [systemsmanagement:Agama:Devel](https://build.opensuse.org/project/show/systemsmanagement:Agama:Devel)
 OBS project. These packages are automatically updated whenever the master branch is changed or when
 a new version is released.
@@ -11,7 +11,7 @@ You can find more details the automatic OBS synchronization in the
 [obs_integration.md](doc/obs_integration.md) file.
 
 The process to build each package is slightly different depending on the technology we are using.
-While the Ruby-based one (`rubygem-agama-yast`) is built as any other YaST package, Agama server
+While the Ruby-based one (`rubygem-agama-yast`) is built as any other YaST package, the Agama server
 (`agama`), the CLI (`agama-cli`), and the web UI (`agama-web-ui`) rely on
 [OBS source services](https://openbuildservice.org/help/manuals/obs-user-guide/cha.obs.source_service.html).
 

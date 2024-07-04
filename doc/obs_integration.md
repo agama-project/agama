@@ -47,7 +47,7 @@ the definition is shared in the [obs-staging-shared.yml](
 The packages in the devel project are updated only when a respective source
 file is changed. That saves some resources for rebuilding and makes
 synchronization faster. But that also means the packages might not have exactly
-same version.
+the same version.
 
 The project to which the packages are submitted is configured in the
 `OBS_PROJECT` GitHub Actions variable.
