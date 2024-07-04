@@ -20,9 +20,9 @@
  */
 
 import React from "react";
-import { useRevalidator } from "react-router-dom";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
+import { useDataInvalidator } from "~/queries/hooks";
 import { timezoneUTCOffset } from "~/utils";
 
 /**
@@ -113,20 +113,18 @@ const useConfigMutation = () => {
  * revalidate its data (executing the loaders again).
  */
 const useL10nConfigChanges = () => {
-  const queryClient = useQueryClient();
+  const dataInvalidator = useDataInvalidator();
   const client = useInstallerClient();
-  const revalidator = useRevalidator();
 
   React.useEffect(() => {
     if (!client) return;
 
     return client.ws().onEvent(event => {
       if (event.type === "L10nConfigChanged") {
-        queryClient.invalidateQueries({ queryKey: ["l10n", "config"] });
-        revalidator.revalidate();
+        dataInvalidator({ queryKey: ["l10n", "config"] });
       }
     });
-  }, [queryClient, client, revalidator]);
+  }, [client, dataInvalidator]);
 };
 
 export {
