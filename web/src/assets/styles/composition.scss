@@ -32,10 +32,6 @@
   }
 }
 
-[data-state="reversed"] {
-  flex-direction: row-reverse;
-}
-
 body > div[inert],
 body > div[aria-hidden="true"],
 div[data-type="agama/page"] > [inert],

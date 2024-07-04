@@ -22,13 +22,6 @@ button.remove-link:hover {
   color: var(--pf-v5-c-button--m-danger--BackgroundColor);
 }
 
-.locale-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 1em;
-  width: 100%;
-}
-
 .first-username-dropdown {
   position: absolute;
   width: 100%;
