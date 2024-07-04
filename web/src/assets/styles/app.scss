@@ -22,62 +22,6 @@ button.remove-link:hover {
   color: var(--pf-v5-c-button--m-danger--BackgroundColor);
 }
 
-.pattern-container {
-  display: grid;
-  grid-template-columns: 16px auto;
-  grid-template-rows: auto auto;
-  gap: 0.2em 1em;
-  grid-auto-flow: row;
-  grid-template-areas:
-    "checkbox label"
-    "empty summary";
-  margin-bottom: 1em;
-  padding: 0.5em;
-  border-radius: 5px;
-}
-
-.pattern-container:hover {
-  background-color: #eee;
-}
-
-.pattern-label {
-  display: grid;
-  grid-template-columns: 32px auto;
-  grid-template-rows: auto;
-  gap: 0 1em;
-  grid-auto-flow: row;
-  grid-template-areas: "label-icon label-text";
-  grid-area: label;
-}
-
-.pattern-label-icon {
-  grid-area: label-icon;
-  align-self: center;
-}
-
-.pattern-label-text {
-  grid-area: label-text;
-  font-size: 110%;
-  font-weight: bold;
-  justify-self: start;
-  align-self: center;
-}
-
-.pattern-summary {
-  grid-area: summary;
-  color: #666;
-}
-
-.pattern-checkbox {
-  grid-area: checkbox;
-  justify-self: center;
-  align-self: center;
-}
-
-.pattern-group-name {
-  font-size: 120%;
-}
-
 .locale-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
