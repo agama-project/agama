@@ -113,6 +113,7 @@ dependencies = [
  "pin-project",
  "rand",
  "regex",
+ "reqwest 0.12.4",
  "serde",
  "serde_json",
  "serde_with",

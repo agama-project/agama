@@ -15,7 +15,14 @@ use agama_lib::{
     error::ServiceError,
     users::{proxies::Users1Proxy, FirstUser, UsersClient},
 };
-use axum::{extract::State, routing::get, Json, Router};
+use axum::{
+    extract::State,
+    http::StatusCode,
+    response::IntoResponse,
+    routing::get,
+    Json, Router,
+};
+//use reqwest;
 use serde::{Deserialize, Serialize};
 use tokio_stream::{Stream, StreamExt};
 
@@ -152,15 +159,28 @@ async fn remove_first_user(State(state): State<UsersState<'_>>) -> Result<(), Er
 }
 
 #[utoipa::path(put, path = "/users/first", responses(
+    // TODO 204 empty response
     (status = 200, description = "Sets the first user"),
     (status = 400, description = "The D-Bus service could not perform the action"),
+    (status = 422, description = "Invalid first user. Details are in body", body = Vec<String>),
 ))]
 async fn set_first_user(
     State(state): State<UsersState<'_>>,
     Json(config): Json<FirstUser>,
-) -> Result<(), Error> {
-    state.users.set_first_user(&config).await?;
-    Ok(())
+) -> Result<impl IntoResponse, Error> {
+    // TODO: web ui not ready to handle this?
+    // issues: for example, trying to use a system user id; empty password
+    // success: simply !issues.is_empty()
+    let (_success, issues) = state.users.set_first_user(&config).await?;
+    if issues.is_empty() {
+        Ok((StatusCode::NO_CONTENT, ().into_response()))
+    }
+    else {
+        Ok((
+            StatusCode::UNPROCESSABLE_ENTITY,
+            Json(issues).into_response(),
+        ))
+    }
 }
 
 #[utoipa::path(get, path = "/users/first", responses(

@@ -16,7 +16,7 @@ use zbus::Connection;
 ///
 /// This struct uses the default connection built by [connection function](super::connection).
 pub struct Store<'a> {
-    users: UsersStore<'a>,
+    users: UsersStore,
     network: NetworkStore,
     product: ProductStore<'a>,
     software: SoftwareStore<'a>,
@@ -31,7 +31,8 @@ impl<'a> Store<'a> {
     ) -> Result<Store<'a>, ServiceError> {
         Ok(Self {
             localization: LocalizationStore::new(connection.clone()).await?,
-            users: UsersStore::new(connection.clone()).await?,
+            // FIXME: http clone ok? ref better?
+            users: UsersStore::new(http_client.clone()).await?,
             network: NetworkStore::new(http_client).await?,
             product: ProductStore::new(connection.clone()).await?,
             software: SoftwareStore::new(connection.clone()).await?,

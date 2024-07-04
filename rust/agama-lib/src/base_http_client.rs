@@ -54,10 +54,13 @@ impl BaseHTTPClient {
     /// Arguments:
     ///
     /// * `path`: path relative to HTTP API like `/questions`
-    pub async fn get<T: DeserializeOwned>(&self, path: &str) -> Result<T, ServiceError> {
+    pub async fn get<T: DeserializeOwned + std::fmt::Debug>(&self, path: &str) -> Result<T, ServiceError> {
         let response = self.get_response(path).await?;
+        println!("GET response: {:?}", response);
         if response.status().is_success() {
-            response.json::<T>().await.map_err(|e| e.into())
+            let ret = response.json::<T>().await.map_err(|e| e.into());
+            println!("GET value: {:#?}", ret);
+            ret
         } else {
             Err(self.build_backend_error(response).await)
         }
@@ -114,6 +117,43 @@ impl BaseHTTPClient {
     ) -> Result<Response, ServiceError> {
         self.client
             .post(self.url(path))
+            .json(object)
+            .send()
+            .await
+            .map_err(|e| e.into())
+    }
+
+    /// put object to given path and report error if response is not success
+    ///
+    /// Arguments:
+    ///
+    /// * `path`: path relative to HTTP API like `/users/first`
+    /// * `object`: Object that can be serialiazed to JSON as body of request.
+    pub async fn put(&self, path: &str, object: &impl Serialize) -> Result<(), ServiceError> {
+        let response = self.put_response(path, object).await?;
+        if response.status().is_success() {
+            Ok(())
+        } else {
+            Err(self.build_backend_error(response).await)
+        }
+    }
+
+    /// post object to given path and returns server response. Reports error only if failed to send
+    /// request, but if server returns e.g. 500, it will be in Ok result.
+    ///
+    /// In general unless specific response handling is needed, simple post should be used.
+    ///
+    /// Arguments:
+    ///
+    /// * `path`: path relative to HTTP API like `/questions`
+    /// * `object`: Object that can be serialiazed to JSON as body of request.
+    pub async fn put_response(
+        &self,
+        path: &str,
+        object: &impl Serialize,
+    ) -> Result<Response, ServiceError> {
+        self.client
+            .put(self.url(path))
             .json(object)
             .send()
             .await

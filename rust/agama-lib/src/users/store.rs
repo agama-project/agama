@@ -1,16 +1,16 @@
-use super::{FirstUser, FirstUserSettings, RootUserSettings, UserSettings, UsersClient};
+use super::{FirstUser, FirstUserSettings, RootUserSettings, UserSettings, UsersHttpClient};
 use crate::error::ServiceError;
-use zbus::Connection;
+use reqwest;
 
 /// Loads and stores the users settings from/to the D-Bus service.
-pub struct UsersStore<'a> {
-    users_client: UsersClient<'a>,
+pub struct UsersStore {
+    users_client: UsersHttpClient,
 }
 
-impl<'a> UsersStore<'a> {
-    pub async fn new(connection: Connection) -> Result<UsersStore<'a>, ServiceError> {
+impl UsersStore {
+    pub async fn new(_client: reqwest::Client) -> Result<Self, ServiceError> {
         Ok(Self {
-            users_client: UsersClient::new(connection).await?,
+            users_client: UsersHttpClient::new().await?,
         })
     }
 
