@@ -25,6 +25,9 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { timezoneUTCOffset } from "~/utils";
 
+/**
+ * Returns a query for retrieving the localization configuration
+ */
 const configQuery = () => {
   return {
     queryKey: ["l10n", "config"],
@@ -32,6 +35,9 @@ const configQuery = () => {
   };
 };
 
+/**
+ * Returns a query for retrieving the list of known locales
+ */
 const localesQuery = () => ({
   queryKey: ["l10n", "locales"],
   queryFn: async () => {
@@ -44,6 +50,9 @@ const localesQuery = () => ({
   staleTime: Infinity
 });
 
+/**
+ * Returns a query for retrieving the list of known timezones
+ */
 const timezonesQuery = () => ({
   queryKey: ["l10n", "timezones"],
   queryFn: async () => {
@@ -57,6 +66,9 @@ const timezonesQuery = () => ({
   staleTime: Infinity
 });
 
+/**
+ * Returns a query for retrieving the list of known keymaps
+ */
 const keymapsQuery = () => ({
   queryKey: ["l10n", "keymaps"],
   queryFn: async () => {
@@ -70,6 +82,11 @@ const keymapsQuery = () => ({
   staleTime: Infinity
 });
 
+/**
+ * Hook that builds a mutation to update the l10n configuration
+ *
+ * It does not require to call `useMutation`.
+ */
 const useConfigMutation = () => {
   const queryClient = useQueryClient();
 
@@ -89,6 +106,13 @@ const useConfigMutation = () => {
   return useMutation(query);
 };
 
+
+/**
+ * Hook that returns a useEffect to listen for L10nConfigChanged events
+ *
+ * When the configuration changes, it invalidates the config query and forces the router to
+ * revalidate its data (executing the loaders again).
+ */
 const useL10nConfigChanges = () => {
   const queryClient = useQueryClient();
   const client = useInstallerClient();
