@@ -1,21 +1,12 @@
-// Make proposal actions compact
-.proposal-actions li + li {
-  margin-block-start: 0;
-}
+// Better alignment for expandable section with a sibling list
+ul.pf-v5-c-list + div.pf-v5-c-expandable-section {
+  > button {
+    margin-inline-start: calc(var(--pf-v5-global--spacer--lg) - var(--pf-v5-global--spacer--sm) - var(--pf-v5-global--icon--FontSize--sm));
+  }
 
-.proposal-action--delete {
-  font-weight: bold;
-}
-
-// Align the expandable-actions with the actions list
-// See https://www.patternfly.org/components/list#css-variables
-.expandable-actions {
-  // --pf-v5-c-list--PaddingLeft - --pf-v5-c-list--nested--MarginLeft - --pf-v5-c-list--m-icon-lg__item-icon-MinWidth
-  margin-inline-start: calc(var(--pf-v5-global--spacer--lg) - var(--pf-v5-global--spacer--sm) - var(--pf-v5-global--icon--FontSize--sm));
-}
-
-.expandable-actions > div {
-  margin-block-start: 0;
+  > div {
+    margin-block-start: 0;
+  }
 }
 
 // Using a "selected-product" CSS class because sadly we cannot use
