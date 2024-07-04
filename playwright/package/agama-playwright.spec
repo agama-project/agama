@@ -46,6 +46,7 @@ mv %{buildroot}%{_datadir}/agama %{buildroot}%{_datadir}/agama-playwright
 %files
 %defattr(-,root,root,-)
 %doc README.md
+%license LICENSE
 %{_datadir}/agama-playwright
 
 %changelog
