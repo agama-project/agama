@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul  1 15:50:40 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Schema definition for guided and AutoYaST storage proposals
+  (gh#openSUSE/agama#1263).
+
+-------------------------------------------------------------------
 Fri Jun 28 06:56:02 UTC 2024 - Martin Vidner <mvidner@suse.com>
 
 - Use gzip (.gz) instead of bzip2 (.bz2) to compress logs
