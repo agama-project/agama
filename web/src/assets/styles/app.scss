@@ -22,18 +22,6 @@ button.remove-link:hover {
   color: var(--pf-v5-c-button--m-danger--BackgroundColor);
 }
 
-.keep-words {
-  word-break: keep-all;
-}
-
-button.kebab-toggler {
-  padding-right: 0;
-
-  svg {
-    vertical-align: middle;
-  }
-}
-
 .volumes-list {
   .pf-v5-c-label {
     margin-inline-end: 5px;
