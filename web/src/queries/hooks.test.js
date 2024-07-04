@@ -42,7 +42,7 @@ describe("useDataInvalidator", () => {
   it("forces a data/cache refresh", () => {
     const { result } = renderHook(() => useDataInvalidator(), { wrapper });
     const { current: dataInvalidator } = result;
-    dataInvalidator({ queryKey: "fakeQuery" })
+    dataInvalidator({ queryKey: "fakeQuery" });
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: "fakeQuery" });
     expect(mockRevalidateFn).toHaveBeenCalled();
   });
