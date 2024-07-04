@@ -52,7 +52,7 @@ $(DESTDIR)/%.tar.xz: % $$(shell find % -type f,l)
 
 # build the ISO locally
 build: $(DESTDIR)
-	if [ ! -e  $(DESTDIR)/.osc ]; then make clean; osc co -o $(DESTDIR) $(OBS_PROJECT) agama-live; fi
+	if [ ! -e  $(DESTDIR)/.osc ]; then make clean; osc co -o $(DESTDIR) $(OBS_PROJECT) agama-installer-openSUSE; fi
 	$(MAKE) all
 	(cd $(DESTDIR) && osc build -M $(FLAVOR) images)
 

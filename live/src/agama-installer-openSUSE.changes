@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Thu Jul  4 11:24:47 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Update src/live to match rename to agama-installer-openSUSE
+  fixes issue that bot updates wrong spec/changes file
+
+- Update README and PXE to reference to agama-installer-openSUSE
+
+- Update PXE instructions to create 25GB image instead of 20
+  Current agama can't deploy e.g. Leap 16 on 20GB disk image
+  with default layout including swap
+
+-------------------------------------------------------------------
 Wed Jul  3 10:41:32 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
 - Set agama as a transient hostname instead of an static one
