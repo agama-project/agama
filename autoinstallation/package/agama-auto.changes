@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul  3 15:24:48 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Bring back the service scriptlets but using the right service
+  name (gh#openSUSE/agama#1433).
+
+-------------------------------------------------------------------
 Wed Jul  3 08:04:57 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add the %changelog section to the spec file
