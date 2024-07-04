@@ -13,16 +13,23 @@
       "properties": {
         "patterns": {
           "title": "List of patterns to install",
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "string",
+            "examples": ["minimal_base"]
+          }
         }
       }
     },
     "product": {
       "title": "Product to install",
       "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
       "properties": {
         "id": {
           "title": "Product identifier",
+          "description": "The id field from a products.d/foo.yaml file",
           "type": "string"
         },
         "registrationCode": {
@@ -46,6 +53,9 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
+            "required": [
+              "id"
+            ],
             "properties": {
               "id": {
                 "title": "Connection ID",
@@ -117,7 +127,8 @@
                     "type": "string"
                   },
                   "security": {
-                    "type": "string"
+                    "type": "string",
+                    "examples": ["? maybe this is actually an enum"]
                   },
                   "ssid": {
                     "type": "string"
@@ -139,7 +150,8 @@
                 "additionalProperties": false,
                 "properties": {
                   "mode": {
-                    "type": "string"
+                    "type": "string",
+                    "examples": ["? maybe this is actually an enum"]
                   },
                   "options": {
                     "type": "string"
@@ -156,6 +168,7 @@
               "match": {
                 "type": "object",
                 "title": "Match settings",
+                "description": "Identifies the network interface to apply the connection settings to",
                 "additionalProperties": false,
                 "properties": {
                   "kernel": {
@@ -188,10 +201,7 @@
                   }
                 }
               }
-            },
-            "required": [
-              "id"
-            ]
+            }
           }
         }
       }
@@ -199,6 +209,7 @@
     "user": {
       "title": "First user settings",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "fullName": {
           "title": "Full name (e.g., 'Jane Doe')",
@@ -222,6 +233,7 @@
     "root": {
       "title": "Root authentication settings",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "password": {
           "title": "Root password",
