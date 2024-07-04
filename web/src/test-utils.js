@@ -162,25 +162,6 @@ const plainRender = (ui, options = {}) => {
 };
 
 /**
- * Wrapper around react-testing-library#render for rendering components with the
- * QueryClientProvider from TanStack Query.
- *
- * @todo Unify the render functions once the HTTP client has been replaced with
- * TanStack Query.
- */
-const queryRender = (ui, options = {}) => {
-  const queryClient = new QueryClient({});
-
-  const wrapper = ({ children }) => (
-    <MemoryRouter>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </MemoryRouter>
-  );
-
-  return plainRender(ui, {...options, wrapper});
-}
-
-/**
  * Creates a function to register callbacks
  *
  * It can be useful to mock functions that might receive a callback that you can
@@ -232,7 +213,6 @@ const resetLocalStorage = (initialState) => {
 export {
   plainRender,
   installerRender,
-  queryRender,
   createCallbackMock,
   mockGettext,
   mockNavigateFn,
