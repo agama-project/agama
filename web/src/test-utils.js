@@ -52,6 +52,14 @@ const initialRoutes = jest.fn().mockReturnValue(["/"]);
 const mockNavigateFn = jest.fn();
 
 /**
+ * Allows checking when the useRevalidator function has been called
+ *
+ * @example
+ *   expect(mockUseRevalidator).toHaveBeenCalled()
+ */
+const mockUseRevalidator = jest.fn();
+
+/**
  * Allows manipulating MemoryRouter routes for testing purpose
  *
  * NOTE: on purpose, it will take effect only once.
@@ -68,7 +76,8 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockNavigateFn,
   Navigate: ({ to: route }) => <>Navigating to {route}</>,
-  Outlet: () => <>Outlet Content</>
+  Outlet: () => <>Outlet Content</>,
+  useRevalidator: () => mockUseRevalidator
 }));
 
 const Providers = ({ children, withL10n }) => {
@@ -217,5 +226,6 @@ export {
   mockGettext,
   mockNavigateFn,
   mockRoutes,
+  mockUseRevalidator,
   resetLocalStorage
 };
