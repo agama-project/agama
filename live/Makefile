@@ -13,7 +13,7 @@ FLAVOR = openSUSE
 
 # the default OBS project,
 # to use a different project run "make build OBS_PROJECT=<project>"
-OBS_PROJECT = "systemsmanagement:Agama:Staging"
+OBS_PROJECT = "systemsmanagement:Agama:Devel"
 
 # files to copy from src/
 COPY_FILES = $(patsubst $(SRCDIR)/%,$(DESTDIR)/%,$(wildcard $(SRCDIR)/*))
