@@ -20,377 +20,82 @@
  */
 
 import React from "react";
-import { render, screen, waitFor, within } from "@testing-library/react";
-
-import { installerRender, plainRender, queryRender } from "~/test-utils";
+import { render, screen, within } from "@testing-library/react";
 import L10nPage from "~/components/l10n/L10nPage";
-import { QueryClient } from "@tanstack/query-core";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { MemoryRouter } from "react-router";
 
-const locales = [
-  { id: "de_DE.UTF8", name: "German", territory: "Germany" },
-  { id: "en_US.UTF8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF8", name: "Spanish", territory: "Spain" }
-];
+let mockLoadedData;
 
-const keymaps = [
-  { id: "de", name: "German" },
-  { id: "us", name: "English" },
-  { id: "es", name: "Spanish" }
-];
-
-const timezones = [
-  { id: "asia/bangkok", parts: ["Asia", "Bangkok"] },
-  { id: "atlantic/canary", parts: ["Atlantic", "Canary"] },
-  { id: "america/new_york", parts: ["Americas", "New York"] }
-];
-
-jest.mock("~/queries/l10n", () => ({
-  localesQuery: () => ({
-    queryKey: ["l10n", "locales"],
-    queryFn: jest.fn().mockResolvedValue(locales)
-  }),
-  timezonesQuery: () => ({
-    queryKey: ["l10n", "timezones"],
-    queryFn: jest.fn().mockResolvedValue(timezones)
-  }),
-  keymapsQuery: () => ({
-    queryKey: ["l10n", "keymaps"],
-    queryFn: jest.fn().mockResolvedValue(keymaps)
-  }),
-  configQuery: () => ({
-    queryKey: ["l10n", "config"],
-    queryFn: jest.fn().mockResolvedValue({
-      locales: mockSelectedLocales,
-      timezone: mockSelectedTimezone,
-      keymap: mockSelectedKeymap
-    })
-  }),
-  useL10nConfigChanges: jest.fn()
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual("react-router-dom"),
+  useLoaderData: () => mockLoadedData,
+  // TODO: mock the link because it needs a working router.
+  Link: ({ children }) => <button>{children}</button>
 }));
 
-let mockL10nClient;
-let mockSelectedLocales;
-let mockSelectedKeymap;
-let mockSelectedTimezone;
-
 beforeEach(() => {
-  mockSelectedLocales = [];
-  mockSelectedKeymap = undefined;
-  mockSelectedTimezone = undefined;
+  mockLoadedData = {
+    locale:   { id: "en_US.UTF-8", name: "English", territory: "United States" },
+    keymap:   { id: "us", name: "English" },
+    timezone: { id: "Europe/Berlin", parts: ["Europe", "Berlin"]}
+  };
 });
 
-it.only("renders a section for configuring the language", async () => {
-  queryRender(<L10nPage />);
-  await screen.findByText("Language");
+it("renders a section for configuring the language", () => {
+  render(<L10nPage />);
+  const region = screen.getByRole("region", { name: "Language" })
+  within(region).getByText("English - United States"),
+  within(region).getByText("Change");
 });
 
-describe.skip("if there is no selected language", () => {
+describe("if there is no selected language", () => {
   beforeEach(() => {
-    mockSelectedLocales = [];
+    mockLoadedData.locale = undefined;
   });
 
   it("renders a button for selecting a language", () => {
-    plainRender(<L10nPage />);
-    screen.getByText("Language not selected yet");
-    screen.getByRole("button", { name: "Select language" });
+    render(<L10nPage />);
+    const region = screen.getByRole("region", { name: "Language" })
+    within(region).getByText("Not selected yet");
+    within(region).getByText("Select");
   });
 });
 
-describe.skip("if there is a selected language", () => {
+it("renders a section for configuring the keyboard", () => {
+  render(<L10nPage />);
+  const region = screen.getByRole("region", { name: "Keyboard" })
+  within(region).getByText("English"),
+  within(region).getByText("Change");
+});
+
+describe("if there is no selected keyboard", () => {
   beforeEach(() => {
-    mockSelectedLocales = [{ id: "es_ES.UTF8", name: "Spanish", territory: "Spain" }];
-  });
-
-  it("renders a button for changing the language", () => {
-    plainRender(<L10nPage />);
-    screen.getByText("Spanish - Spain");
-    screen.getByRole("button", { name: "Change language" });
-  });
-});
-
-describe.skip("when the button for changing the language is clicked", () => {
-  beforeEach(() => {
-    mockSelectedLocales = [{ id: "es_ES.UTF8", name: "Spanish", territory: "Spain" }];
-  });
-
-  it("opens a popup for selecting the language", async () => {
-    const { user } = installerRender(<L10nPage />);
-
-    const button = screen.getByRole("button", { name: "Change language" });
-    await user.click(button);
-
-    const popup = await screen.findByRole("dialog");
-    within(popup).getByText("Select language");
-    within(popup).getByRole("row", { name: /German/ });
-    within(popup).getByRole("row", { name: /English/ });
-    within(popup).getByRole("row", { name: /Spanish/, selected: true });
-  });
-
-  it("allows filtering languages", async () => {
-    const { user } = installerRender(<L10nPage />);
-
-    const button = screen.getByRole("button", { name: "Change language" });
-    await user.click(button);
-
-    const popup = await screen.findByRole("dialog");
-    const searchInput = within(popup).getByRole("search");
-
-    await user.type(searchInput, "ish");
-
-    await waitFor(() => (
-      expect(within(popup).queryByRole("row", { name: /German/ })).not.toBeInTheDocument())
-    );
-    within(popup).getByRole("row", { name: /English/ });
-    within(popup).getByRole("row", { name: /Spanish/ });
-  });
-
-  describe("if the popup is canceled", () => {
-    it("closes the popup without selecting a new language", async () => {
-      const { user } = installerRender(<L10nPage />);
-
-      const button = screen.getByRole("button", { name: "Change language" });
-      await user.click(button);
-
-      const popup = await screen.findByRole("dialog");
-      const option = within(popup).getByRole("row", { name: /English/ });
-
-      await user.click(option);
-      const cancel = within(popup).getByRole("button", { name: "Cancel" });
-      await user.click(cancel);
-
-      expect(mockL10nClient.setLocales).not.toHaveBeenCalled();
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    });
-  });
-
-  describe("if the popup is accepted", () => {
-    it("closes the popup selecting the new language", async () => {
-      const { user } = installerRender(<L10nPage />);
-
-      const button = screen.getByRole("button", { name: "Change language" });
-      await user.click(button);
-
-      const popup = await screen.findByRole("dialog");
-      const option = within(popup).getByRole("row", { name: /English/ });
-
-      await user.click(option);
-      const accept = within(popup).getByRole("button", { name: "Accept" });
-      await user.click(accept);
-
-      expect(mockL10nClient.setLocales).toHaveBeenCalledWith(["en_US.UTF8"]);
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    });
-  });
-});
-
-it.skip("renders a section for configuring the keyboard", () => {
-  plainRender(<L10nPage />);
-  screen.getByText("Keyboard");
-});
-
-describe.skip("if there is no selected keyboard", () => {
-  beforeEach(() => {
-    mockSelectedKeymap = undefined;
+    mockLoadedData.keymap = undefined;
   });
 
   it("renders a button for selecting a keyboard", () => {
-    plainRender(<L10nPage />);
-    screen.getByText("Keyboard not selected yet");
-    screen.getByRole("button", { name: "Select keyboard" });
+    render(<L10nPage />);
+    const region = screen.getByRole("region", { name: "Keyboard" })
+    within(region).getByText("Not selected yet");
+    within(region).getByText("Select");
   });
 });
 
-describe.skip("if there is a selected keyboard", () => {
+it("renders a section for configuring the time zone", () => {
+  render(<L10nPage />);
+  const region = screen.getByRole("region", { name: "Time zone" })
+  within(region).getByText("Europe - Berlin"),
+  within(region).getByText("Change");
+});
+
+describe("if there is no selected time zone", () => {
   beforeEach(() => {
-    mockSelectedKeymap = { id: "es", name: "Spanish" };
-  });
-
-  it("renders a button for changing the keyboard", () => {
-    plainRender(<L10nPage />);
-    screen.getByText("Spanish");
-    screen.getByRole("button", { name: "Change keyboard" });
-  });
-});
-
-describe.skip("when the button for changing the keyboard is clicked", () => {
-  beforeEach(() => {
-    mockSelectedKeymap = { id: "es", name: "Spanish" };
-  });
-
-  it("opens a popup for selecting the keyboard", async () => {
-    const { user } = installerRender(<L10nPage />);
-
-    const button = screen.getByRole("button", { name: "Change keyboard" });
-    await user.click(button);
-
-    const popup = await screen.findByRole("dialog");
-    within(popup).getByText("Select keyboard");
-    within(popup).getByRole("row", { name: /German/ });
-    within(popup).getByRole("row", { name: /English/ });
-    within(popup).getByRole("row", { name: /Spanish/, selected: true });
-  });
-
-  it("allows filtering keyboards", async () => {
-    const { user } = installerRender(<L10nPage />);
-
-    const button = screen.getByRole("button", { name: "Change keyboard" });
-    await user.click(button);
-
-    const popup = await screen.findByRole("dialog");
-    const searchInput = within(popup).getByRole("search");
-
-    await user.type(searchInput, "ish");
-
-    await waitFor(() => (
-      expect(within(popup).queryByRole("row", { name: /German/ })).not.toBeInTheDocument())
-    );
-    within(popup).getByRole("row", { name: /English/ });
-    within(popup).getByRole("row", { name: /Spanish/ });
-  });
-
-  describe("if the popup is canceled", () => {
-    it("closes the popup without selecting a new keyboard", async () => {
-      const { user } = installerRender(<L10nPage />);
-
-      const button = screen.getByRole("button", { name: "Change keyboard" });
-      await user.click(button);
-
-      const popup = await screen.findByRole("dialog");
-      const option = within(popup).getByRole("row", { name: /English/ });
-
-      await user.click(option);
-      const cancel = within(popup).getByRole("button", { name: "Cancel" });
-      await user.click(cancel);
-
-      expect(mockL10nClient.setKeymap).not.toHaveBeenCalled();
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    });
-  });
-
-  describe("if the popup is accepted", () => {
-    it("closes the popup selecting the new keyboard", async () => {
-      const { user } = installerRender(<L10nPage />);
-
-      const button = screen.getByRole("button", { name: "Change keyboard" });
-      await user.click(button);
-
-      const popup = await screen.findByRole("dialog");
-      const option = within(popup).getByRole("row", { name: /English/ });
-
-      await user.click(option);
-      const accept = within(popup).getByRole("button", { name: "Accept" });
-      await user.click(accept);
-
-      expect(mockL10nClient.setKeymap).toHaveBeenCalledWith("us");
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    });
-  });
-});
-
-it.skip("renders a section for configuring the time zone", () => {
-  plainRender(<L10nPage />);
-  screen.getByText("Time zone");
-});
-
-describe.skip("if there is no selected time zone", () => {
-  beforeEach(() => {
-    mockSelectedTimezone = undefined;
+    mockLoadedData.timezone = undefined;
   });
 
   it("renders a button for selecting a time zone", () => {
-    plainRender(<L10nPage />);
-    screen.getByText("Time zone not selected yet");
-    screen.getByRole("button", { name: "Select time zone" });
-  });
-});
-
-describe.skip("if there is a selected time zone", () => {
-  beforeEach(() => {
-    mockSelectedTimezone = { id: "atlantic/canary", parts: ["Atlantic", "Canary"] };
-  });
-
-  it("renders a button for changing the time zone", () => {
-    plainRender(<L10nPage />);
-    screen.getByText("Atlantic - Canary");
-    screen.getByRole("button", { name: "Change time zone" });
-  });
-});
-
-describe.skip("when the button for changing the time zone is clicked", () => {
-  beforeEach(() => {
-    mockSelectedTimezone = { id: "atlantic/canary", parts: ["Atlantic", "Canary"] };
-  });
-
-  it("opens a popup for selecting the time zone", async () => {
-    const { user } = installerRender(<L10nPage />);
-
-    const button = screen.getByRole("button", { name: "Change time zone" });
-    await user.click(button);
-
-    const popup = await screen.findByRole("dialog");
-    within(popup).getByText("Select time zone");
-    within(popup).getByRole("row", { name: /Bangkok/ });
-    within(popup).getByRole("row", { name: /Canary/, selected: true });
-    within(popup).getByRole("row", { name: /New York/ });
-  });
-
-  it("allows filtering time zones", async () => {
-    const { user } = installerRender(<L10nPage />);
-
-    const button = screen.getByRole("button", { name: "Change time zone" });
-    await user.click(button);
-
-    const popup = await screen.findByRole("dialog");
-    const searchInput = within(popup).getByRole("search");
-
-    await user.type(searchInput, "new");
-
-    await waitFor(() => (
-      expect(within(popup).queryByRole("row", { name: /Bangkok/ })).not.toBeInTheDocument())
-    );
-    await waitFor(() => (
-      expect(within(popup).queryByRole("row", { name: /Canary/ })).not.toBeInTheDocument())
-    );
-    within(popup).getByRole("row", { name: /New York/ });
-  });
-
-  describe("if the popup is canceled", () => {
-    it("closes the popup without selecting a new time zone", async () => {
-      const { user } = installerRender(<L10nPage />);
-
-      const button = screen.getByRole("button", { name: "Change time zone" });
-      await user.click(button);
-
-      const popup = await screen.findByRole("dialog");
-      const option = within(popup).getByRole("row", { name: /New York/ });
-
-      await user.click(option);
-      const cancel = within(popup).getByRole("button", { name: "Cancel" });
-      await user.click(cancel);
-
-      expect(mockL10nClient.setTimezone).not.toHaveBeenCalled();
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    });
-  });
-
-  describe("if the popup is accepted", () => {
-    it("closes the popup selecting the new time zone", async () => {
-      const { user } = installerRender(<L10nPage />);
-
-      const button = screen.getByRole("button", { name: "Change time zone" });
-      await user.click(button);
-
-      const popup = await screen.findByRole("dialog");
-      const option = within(popup).getByRole("row", { name: /Bangkok/ });
-
-      await user.click(option);
-      const accept = within(popup).getByRole("button", { name: "Accept" });
-      await user.click(accept);
-
-      expect(mockL10nClient.setTimezone).toHaveBeenCalledWith("asia/bangkok");
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    });
+    render(<L10nPage />);
+    const region = screen.getByRole("region", { name: "Time zone" })
+    within(region).getByText("Not selected yet");
+    within(region).getByText("Select");
   });
 });
