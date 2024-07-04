@@ -24,7 +24,10 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { L10nSection } from "~/components/overview";
 
-jest.mock("~/client");
+const locales = [
+  { id: "en_US.UTF-8", name: "English", territory: "United States" },
+  { id: "de_DE.UTF-8", name: "German", territory: "Germany" }
+];
 
 jest.mock("~/queries/l10n", () => ({
   localesQuery: () => ({
@@ -33,14 +36,9 @@ jest.mock("~/queries/l10n", () => ({
   }),
   configQuery: () => ({
     queryKey: ["l10n", "config"],
-    queryFn: jest.fn().mockResolvedValue({ locales: ["en_US.UTF-8"]})
+    queryFn: jest.fn().mockResolvedValue({ locales: ["en_US.UTF-8"] })
   })
 }));
-
-const locales = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "de_DE.UTF-8", name: "German", territory: "Germany" }
-];
 
 it("displays the selected locale", async () => {
   plainRender(<L10nSection />, { withL10n: true });
