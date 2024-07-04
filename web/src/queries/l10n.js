@@ -106,7 +106,6 @@ const useConfigMutation = () => {
   return useMutation(query);
 };
 
-
 /**
  * Hook that returns a useEffect to listen for L10nConfigChanged events
  *
