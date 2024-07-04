@@ -162,10 +162,17 @@ const installerRender = (ui, options = {}) => {
  * core/Sidebar as part of the layout.
  */
 const plainRender = (ui, options = {}) => {
+  const queryClient = new QueryClient({});
+
+  const Wrapper = ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  );
   return (
     {
       user: userEvent.setup(),
-      ...render(ui, options)
+      ...render(ui, { wrapper: Wrapper, ...options })
     }
   );
 };
