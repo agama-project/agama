@@ -1,4 +1,5 @@
 {
+  "$comment": "based on doc/auto_storage.md",
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "$id": "https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/profile.schema.json",
   "title": "Profile",
