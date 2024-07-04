@@ -262,26 +262,37 @@
           "properties": {
             "target": {
               "title": "Target device",
-              "oneOf": [
+              "anyOf": [
                 {
                   "enum": ["disk", "newLvmVg"]
                 },
                 {
+                  "title": "Disk device for installing",
                   "type": "object",
                   "additionalProperties": false,
-                  "properties": { "disk": { "type": "string" } },
-                  "required": ["disk"]
+                  "required": ["disk"],
+                  "properties": {
+                    "disk": {
+                      "title": "Disk device name (e.g., '/dev/vda')",
+                      "type": "string"
+                    }
+                  }
                 },
                 {
+                  "title": "New LVM for installing",
                   "type": "object",
                   "additionalProperties": false,
+                  "required": ["newLvmVg"],
                   "properties": {
                     "newLvmVg": {
+                      "title": "Devices in which to create the physical volumes",
                       "type": "array",
-                      "items": { "type": "string" }
+                      "items": {
+                        "title": "Disk device name (e.g., '/dev/vda')",
+                        "type": "string"
+                      }
                     }
-                  },
-                  "required": ["newLvmVg"]
+                  }
                 }
               ]
             },
@@ -289,13 +300,15 @@
               "title": "Configuration of the boot settings",
               "type": "object",
               "additionalProperties": false,
+              "required": ["configure"],
               "properties": {
                 "configure": {
                   "title": "Whether to configure partitions for booting",
                   "type": "boolean"
                 },
                 "device": {
-                  "title": "Device to use for booting",
+                  "title": "Device to use for booting (e.g., '/dev/vda')",
+                  "description": "The installation device is used by default for booting",
                   "type": "string"
                 }
               }
@@ -341,27 +354,32 @@
                 "required": ["policy", "actions"],
                 "properties": {
                   "actions": {
+                    "title": "Actions to find space if policy is 'custom'",
                     "type": "array",
                     "items": {
                       "anyOf": [
                         {
+                          "title": "Delete device",
+                          "description": "Force device deletion",
                           "type": "object",
                           "required": ["forceDelete"],
                           "additionalProperties": false,
                           "properties": {
                             "forceDelete": {
-                              "title": "Device to delete",
+                              "title": "Device to delete (e.g., '/dev/vda')",
                               "type": "string"
                             }
                           }
                         },
                         {
+                          "title": "Allow shinking",
+                          "description": "Indicate the device can be shrunk in needed",
                           "type": "object",
                           "required": ["resize"],
                           "additionalProperties": false,
                           "properties": {
                             "resize": {
-                              "title": "Device to allow resizing",
+                              "title": "Device to allow resizing (e.g., '/dev/vda')",
                               "type": "string"
                             }
                           }
@@ -390,6 +408,7 @@
                 "required": ["mount"],
                 "properties": {
                   "mount": {
+                    "title": "Mount point",
                     "type": "object",
                     "additionalProperties": false,
                     "required": ["path"],
@@ -407,17 +426,20 @@
                   },
                   "filesystem": {
                     "title": "File system of the volume",
-                    "oneOf": [
+                    "anyOf": [
                       {
-                        "description": "File system type",
+                        "title": "File system type",
                         "enum": [
                           "bcachefs", "btrfs", "exfat", "ext2", "ext3", "ext4", "f2fs", "jfs",
                           "nfs", "nilfs2", "ntfs", "reiserfs", "swap", "tmpfs", "vfat", "xfs"
                         ]
                       },
                       {
+                        "title": "Btrfs file system",
+                        "description": "Indicates properties of the Btrfs file system",
                         "type": "object",
                         "additionalProperties": false,
+                        "required": ["btrfs"],
                         "properties": {
                           "btrfs": {
                             "title": "Specification of a Btrfs file system",
@@ -430,18 +452,25 @@
                               }
                             }
                           }
-                        },
-                        "required": ["btrfs"]
+                        }
                       }
                     ]
                   },
                   "size": {
                     "title": "Size limits",
-                    "oneOf": [
-                      { "const": "auto" },
-                      { "$ref": "#/$defs/sizeString" },
-                      { "$ref": "#/$defs/sizeInteger" },
+                    "description": "Options to indicate the size of a device",
+                    "anyOf": [
                       {
+                        "title": "Automatic size",
+                        "description": "The size is auto calculated according to the product",
+                        "const": "auto"
+                      },
+                      {
+                        "title": "Size unit",
+                        "$ref": "#/$defs/sizeValue"
+                      },
+                      {
+                        "title": "Size range (e.g., [1024, '2 GiB'])",
                         "description": "Lower size limit and optionally upper size limit",
                         "type": "array",
                         "items": {
@@ -451,6 +480,7 @@
                         "maxItems": 2
                       },
                       {
+                        "title": "Size range",
                         "type": "object",
                         "additionalProperties": false,
                         "properties": {
@@ -468,34 +498,63 @@
                     ]
                   },
                   "target": {
-                    "title": "Location of the resulting file system",
-                    "oneOf": [
+                    "title": "Location of the file system",
+                    "description": "Options to indicate the location of a file system",
+                    "anyOf": [
                       {
                         "const": "default"
                       },
                       {
+                        "title": "New partition",
+                        "description": "The file system is created over a new partition",
                         "type": "object",
+                        "required": ["newPartition"],
                         "additionalProperties": false,
-                        "properties": { "newPartition": { "type": "string" } },
-                        "required": ["newPartition"]
+                        "properties": {
+                          "newPartition": {
+                            "title": "Name of a disk device (e.g., '/dev/vda')",
+                            "type": "string"
+                            }
+                        }
                       },
                       {
+                        "title": "Dedicated LVM volume group",
+                        "description": "The file system is created over a dedicated LVM",
                         "type": "object",
                         "additionalProperties": false,
-                        "properties": { "newVg": { "type": "string" } },
-                        "required": ["newVg"]
+                        "required": ["newVg"],
+                        "properties": {
+                          "newVg": {
+                            "title": "Name of a disk device (e.g., '/dev/vda')",
+                            "type": "string"
+                          }
+                        }
                       },
                       {
+                        "title": "Re-used existing device",
+                        "description": "The file system is created over an existing device",
                         "type": "object",
                         "additionalProperties": false,
-                        "properties": { "device": { "type": "string" } },
-                        "required": ["device"]
+                        "required": ["device"],
+                        "properties": {
+                          "device": {
+                            "title": "Name of a device (e.g., '/dev/vda1')",
+                            "type": "string"
+                          }
+                        }
                       },
                       {
+                        "title": "Re-used existing file system",
+                        "description": "An existing file system is reused (without formatting)",
                         "type": "object",
                         "additionalProperties": false,
-                        "properties": { "filesystem": { "type": "string" } },
-                        "required": ["filesystem"]
+                        "required": ["filesystem"],
+                        "properties": {
+                          "filesystem": {
+                            "title": "Name of a device containing the file system (e.g., '/dev/vda1')",
+                            "type": "string"
+                          }
+                        }
                       }
                     ]
                   }
@@ -508,6 +567,7 @@
     },
     "legacyAutoyastStorage": {
       "title": "Legacy AutoYaST storage settings",
+      "description": "Accepts all options of the AutoYaST profile (XML to JSON)",
       "type": "object"
     }
   },
@@ -523,7 +583,7 @@
       "minimum": 0
     },
     "sizeValue": {
-      "oneOf": [
+      "anyOf": [
         { "$ref": "#/$defs/sizeString" },
         { "$ref": "#/$defs/sizeInteger" }
       ]
