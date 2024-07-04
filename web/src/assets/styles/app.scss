@@ -9,31 +9,6 @@ ul.pf-v5-c-list + div.pf-v5-c-expandable-section {
   }
 }
 
-// Using a "selected-product" CSS class because sadly we cannot use
-// ".pf-v5-c-card:has(> input[type="radio"]:checked)" yet
-//
-// See:
-//   - https://drafts.csswg.org/selectors/#relational
-//   - https://caniuse.com/css-has
-.pf-v5-c-card.selected-product {
-  --pf-v5-c-card--BoxShadow: var(--pf-v5-global--BoxShadow--md);
-
-  .pf-v5-c-radio {
-    // https://drafts.csswg.org/css-ui/#widget-accent
-    // https://caniuse.com/mdn-css_properties_accent-color
-    accent-color: var(--color-primary-darkest);
-  }
-
-  .pf-v5-c-radio__label {
-    color: var(--color-primary);
-    font-weight: bold;
-  }
-
-  .pf-v5-c-radio__description {
-    color: var(--color-primary-darkest);
-  }
-}
-
 // *DataLists custom styles
 li.pf-v5-c-data-list__item {
   border-block-end-width: thin;
