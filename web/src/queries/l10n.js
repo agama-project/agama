@@ -20,6 +20,7 @@
  */
 
 import React from "react";
+import { useRevalidator } from "react-router-dom";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { timezoneUTCOffset } from "~/utils";
@@ -91,6 +92,7 @@ const useConfigMutation = () => {
 const useL10nConfigChanges = () => {
   const queryClient = useQueryClient();
   const client = useInstallerClient();
+  const revalidator = useRevalidator();
 
   React.useEffect(() => {
     if (!client) return;
@@ -98,9 +100,10 @@ const useL10nConfigChanges = () => {
     return client.ws().onEvent(event => {
       if (event.type === "L10nConfigChanged") {
         queryClient.invalidateQueries({ queryKey: ["l10n", "config"] });
+        revalidator.revalidate();
       }
     });
-  }, [queryClient, client]);
+  }, [queryClient, client, revalidator]);
 };
 
 export {
