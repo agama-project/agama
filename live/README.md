@@ -103,7 +103,7 @@ build workflow and the `.kiwi` file format.
 
 The main Kiwi source files are located in the [src](src) subdirectory:
 
-- [agama-live.kiwi](src/agama-live.kiwi) is the main KIWI file which drives the ISO image build.
+- [agama-installer-openSUSE.kiwi](src/agama-installer-openSUSE.kiwi) is the main KIWI file which drives the ISO image build.
 - [config.sh](src/config.sh) is a KIWI hook script which is called and the end of the build process,
   after all packages are installed but before compressing and building the image. The script runs in
   the image chroot and is usually used to adjust the system configuration (enable/disable services,
