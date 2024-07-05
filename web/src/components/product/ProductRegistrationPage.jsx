@@ -23,7 +23,7 @@ import React, { useState } from "react";
 import { Alert, Form, FormGroup } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { EmailInput, Page, PasswordInput } from "~/components/core";
-import { useProduct } from "~/context/product";
+import { useProduct } from "~/queries/software";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";

@@ -29,9 +29,10 @@ const startInstallationFn = jest.fn();
 let mockSelectedProduct = { id: "Tumbleweed" };
 
 jest.mock("~/client");
-jest.mock("~/context/product", () => ({
-  ...jest.requireActual("~/context/product"),
-  useProduct: () => ({ selectedProduct: mockSelectedProduct })
+jest.mock("~/queries/software", () => ({
+  ...jest.requireActual("~/queries/software"),
+  useProduct: () => ({ selectedProduct: mockSelectedProduct }),
+  useProductChanges: () => jest.fn()
 }));
 
 jest.mock("~/components/overview/L10nSection", () => () => <div>Localization Section</div>);

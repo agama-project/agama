@@ -39,14 +39,15 @@ const products = [
 ];
 
 jest.mock("~/client");
-jest.mock("~/context/product", () => ({
-  ...jest.requireActual("~/context/product"),
+jest.mock("~/queries/software", () => ({
+  ...jest.requireActual("~/queries/software"),
   useProduct: () => {
     return {
       products,
       selectedProduct: products[0]
     };
-  }
+  },
+  useProductChanges: () => jest.fn()
 }));
 
 const managerMock = {

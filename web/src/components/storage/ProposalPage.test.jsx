@@ -48,11 +48,12 @@ jest.mock("@patternfly/react-core", () => {
 });
 jest.mock("./DevicesTechMenu", () => () => <div>Devices Tech Menu</div>);
 
-jest.mock("~/context/product", () => ({
-  ...jest.requireActual("~/context/product"),
+jest.mock("~/queries/software", () => ({
+  ...jest.requireActual("~/queries/software"),
   useProduct: () => ({
     selectedProduct: { name: "Test" }
-  })
+  }),
+  useProductChanges: () => jest.fn()
 }));
 
 const createClientMock = /** @type {jest.Mock} */(createClient);

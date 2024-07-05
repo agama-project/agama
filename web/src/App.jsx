@@ -26,7 +26,7 @@ import { Questions } from "~/components/questions";
 import { ServerError, Installation } from "~/components/core";
 import { useInstallerL10n } from "./context/installerL10n";
 import { useInstallerClientStatus } from "~/context/installer";
-import { useProduct } from "./context/product";
+import { useProduct, useProductChanges } from "./queries/software";
 import { CONFIG, INSTALL, STARTUP } from "~/client/phase";
 import { BUSY } from "~/client/status";
 import { useL10nConfigChanges } from "~/queries/l10n";
@@ -44,6 +44,7 @@ function App() {
   const { selectedProduct, products } = useProduct();
   const { language } = useInstallerL10n();
   useL10nConfigChanges();
+  useProductChanges();
 
   const Content = () => {
     if (error) return <ServerError />;
@@ -58,7 +59,7 @@ function App() {
       return <Loading />;
     }
 
-    if (selectedProduct === null && location.pathname !== "/products") {
+    if ((selectedProduct === undefined) & (location.pathname !== "/products")) {
       return <Navigate to="/products" />;
     }
 
