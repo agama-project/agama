@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul  8 11:12:13 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Improve storage UI for configuring the space policy actions
+  (gh#openSUSE/agama#1428).
+
+-------------------------------------------------------------------
 Mon Jul  8 10:56:14 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Introduce TanStack Query for data fetching and state management
