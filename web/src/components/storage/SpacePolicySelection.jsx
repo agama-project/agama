@@ -183,7 +183,6 @@ export default function SpacePolicySelection() {
                       devices={devices}
                       expandedDevices={expandedDevices}
                       deviceAction={deviceAction}
-                      isActionDisabled={policy?.id !== "custom"}
                       onActionChange={changeActions}
                     />
                   </CardBody>
