@@ -15,19 +15,6 @@
   inline-size: 100%;
 }
 
-.title {
-  font-size: var(--fs-large);
-  font-weight: var(--fw-bold);
-}
-
-.bold {
-  font-weight: bold;
-}
-
-.fs-small {
-  font-size: var(--fs-small);
-}
-
 // Utility classes for sizing icons
 .icon-xxxs {
   block-size: var(--icon-size-xxxs);
@@ -62,10 +49,6 @@
 .icon-xxxl {
   block-size: var(--icon-size-xxxl);
   inline-size: var(--icon-size-xxxl);
-}
-
-.color-warn {
-  color: var(--color-warn);
 }
 
 .color-success {
