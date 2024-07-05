@@ -86,7 +86,7 @@ export const settings = {
       "encrypted": false,
       "start": 0,
       "size": 32212254720,
-      "recoverableSize": 0,
+      "shrinking": { "unsupported": ["Resizing is not supported"] },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -105,7 +105,7 @@ export const settings = {
             "encrypted": false,
             "start": 2048,
             "size": 5368709120,
-            "recoverableSize": 0,
+            "shrinking": { "unsupported": ["Resizing is not supported"] },
             "systems": [],
             "udevIds": [],
             "udevPaths": [
@@ -129,7 +129,7 @@ export const settings = {
             "encrypted": false,
             "start": 10487808,
             "size": 5368709120,
-            "recoverableSize": 0,
+            "shrinking": { "unsupported": ["Resizing is not supported"] },
             "systems": [
               "openSUSE Leap 15.2",
               "Fedora 10.30"
@@ -156,7 +156,7 @@ export const settings = {
             "encrypted": false,
             "start": 20973568,
             "size": 1073741824,
-            "recoverableSize": 0,
+            "shrinking": { "unsupported": ["Resizing is not supported"] },
             "systems": [],
             "udevIds": [],
             "udevPaths": [
@@ -178,7 +178,7 @@ export const settings = {
             "encrypted": false,
             "start": 23070720,
             "size": 2147483648,
-            "recoverableSize": 2147483136,
+            "shrinking": { "supported": 2147483136 },
             "systems": [],
             "udevIds": [],
             "udevPaths": [
@@ -222,7 +222,7 @@ export const devices = {
       "encrypted": false,
       "start": 0,
       "size": 53687091200,
-      "recoverableSize": 0,
+      "shrinking": { "unsupported": ["Resizing is not supported"] },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -241,7 +241,7 @@ export const devices = {
             "encrypted": false,
             "start": 2048,
             "size": 8388608,
-            "recoverableSize": 8388096,
+            "shrinking": { "supported": 8388096 },
             "systems": [],
             "udevIds": [],
             "udevPaths": [
@@ -259,7 +259,7 @@ export const devices = {
             "encrypted": false,
             "start": 18432,
             "size": 53677637120,
-            "recoverableSize": 0,
+            "shrinking": { "unsupported": ["Resizing is not supported"] },
             "systems": [],
             "udevIds": [],
             "udevPaths": [
@@ -299,7 +299,7 @@ export const devices = {
       "encrypted": false,
       "start": 0,
       "size": 5368709120,
-      "recoverableSize": 0,
+      "shrinking": { "unsupported": ["Resizing is not supported"] },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -331,7 +331,7 @@ export const devices = {
       "encrypted": false,
       "start": 0,
       "size": 32212254720,
-      "recoverableSize": 0,
+      "shrinking": { "unsupported": ["Resizing is not supported"] },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -350,7 +350,7 @@ export const devices = {
             "encrypted": false,
             "start": 2048,
             "size": 5368709120,
-            "recoverableSize": 0,
+            "shrinking": { "unsupported": ["Resizing is not supported"] },
             "systems": [],
             "udevIds": [],
             "udevPaths": [
@@ -374,7 +374,7 @@ export const devices = {
             "encrypted": false,
             "start": 10487808,
             "size": 5368709120,
-            "recoverableSize": 0,
+            "shrinking": { "unsupported": ["Resizing is not supported"] },
             "systems": [
               "openSUSE Leap 15.2",
               "Fedora 10.30"
@@ -401,7 +401,7 @@ export const devices = {
             "encrypted": false,
             "start": 20973568,
             "size": 1073741824,
-            "recoverableSize": 0,
+            "shrinking": { "unsupported": ["Resizing is not supported"] },
             "systems": [],
             "udevIds": [],
             "udevPaths": [
@@ -423,7 +423,7 @@ export const devices = {
             "encrypted": false,
             "start": 23070720,
             "size": 2147483648,
-            "recoverableSize": 2147483136,
+            "shrinking": { "supported": 2147483136 },
             "systems": [],
             "udevIds": [],
             "udevPaths": [
@@ -460,7 +460,7 @@ export const devices = {
           "encrypted": false,
           "start": 2048,
           "size": 5368709120,
-          "recoverableSize": 0,
+          "shrinking": { "unsupported": ["Resizing is not supported"] },
           "systems": [],
           "udevIds": [],
           "udevPaths": [
@@ -484,7 +484,7 @@ export const devices = {
           "encrypted": false,
           "start": 10487808,
           "size": 5368709120,
-          "recoverableSize": 0,
+          "shrinking": { "unsupported": ["Resizing is not supported"] },
           "systems": [
             "openSUSE Leap 15.2",
             "Fedora 10.30"
@@ -506,7 +506,7 @@ export const devices = {
       "encrypted": false,
       "start": 0,
       "size": 10737287168,
-      "recoverableSize": 0,
+      "shrinking": { "unsupported": ["Resizing is not supported"] },
       "systems": [],
       "udevIds": [
         "md-uuid-644aeee1:5f5b946a:4da99758:3f85b3ea"
@@ -525,7 +525,7 @@ export const devices = {
             "encrypted": false,
             "start": 2048,
             "size": 2147483648,
-            "recoverableSize": 2040147968,
+            "shrinking": { "supported": 2040147968 },
             "systems": [],
             "udevIds": [
               "md-uuid-644aeee1:5f5b946a:4da99758:3f85b3ea-part1"
@@ -565,7 +565,7 @@ export const devices = {
           "encrypted": false,
           "start": 18432,
           "size": 53677637120,
-          "recoverableSize": 0,
+          "shrinking": { "unsupported": ["Resizing is not supported"] },
           "systems": [],
           "udevIds": [],
           "udevPaths": [
@@ -591,7 +591,7 @@ export const devices = {
           "encrypted": false,
           "start": 0,
           "size": 51527024640,
-          "recoverableSize": 30647779328,
+          "shrinking": { "supported": 30647779328 },
           "systems": [],
           "udevIds": [],
           "udevPaths": [],
@@ -611,7 +611,7 @@ export const devices = {
           "encrypted": false,
           "start": 0,
           "size": 2147483648,
-          "recoverableSize": 2143289344,
+          "shrinking": { "supported": 2143289344 },
           "systems": [],
           "udevIds": [],
           "udevPaths": [],
@@ -633,7 +633,7 @@ export const devices = {
       "encrypted": false,
       "start": 0,
       "size": 51527024640,
-      "recoverableSize": 30647779328,
+      "shrinking": { "supported": 30647779328 },
       "systems": [],
       "udevIds": [],
       "udevPaths": [],
@@ -653,7 +653,7 @@ export const devices = {
       "encrypted": false,
       "start": 0,
       "size": 2147483648,
-      "recoverableSize": 2143289344,
+      "shrinking": { "supported": 2143289344 },
       "systems": [],
       "udevIds": [],
       "udevPaths": [],
@@ -673,7 +673,7 @@ export const devices = {
       "encrypted": false,
       "start": 2048,
       "size": 8388608,
-      "recoverableSize": 8388096,
+      "shrinking": { "supported": 8388096 },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -691,7 +691,7 @@ export const devices = {
       "encrypted": false,
       "start": 18432,
       "size": 53677637120,
-      "recoverableSize": 0,
+      "shrinking": { "unsupported": ["Resizing is not supported"] },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -715,7 +715,7 @@ export const devices = {
       "encrypted": false,
       "start": 2048,
       "size": 5368709120,
-      "recoverableSize": 0,
+      "shrinking": { "unsupported": ["Resizing is not supported"] },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -739,7 +739,7 @@ export const devices = {
       "encrypted": false,
       "start": 10487808,
       "size": 5368709120,
-      "recoverableSize": 0,
+      "shrinking": { "unsupported": ["Resizing is not supported"] },
       "systems": [
         "openSUSE Leap 15.2",
         "Fedora 10.30"
@@ -766,7 +766,7 @@ export const devices = {
       "encrypted": false,
       "start": 20973568,
       "size": 1073741824,
-      "recoverableSize": 0,
+      "shrinking": { "unsupported": ["Resizing is not supported"] },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -788,7 +788,7 @@ export const devices = {
       "encrypted": false,
       "start": 23070720,
       "size": 2147483648,
-      "recoverableSize": 2147483136,
+      "shrinking": { "supported": 2147483136 },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -806,7 +806,7 @@ export const devices = {
       "encrypted": false,
       "start": 2048,
       "size": 2147483648,
-      "recoverableSize": 2040147968,
+      "shrinking": { "supported": 2040147968 },
       "systems": [],
       "udevIds": [
         "md-uuid-644aeee1:5f5b946a:4da99758:3f85b3ea-part1"
@@ -841,7 +841,7 @@ export const devices = {
       "encrypted": false,
       "start": 0,
       "size": 53687091200,
-      "recoverableSize": 0,
+      "shrinking": { "unsupported": ["Resizing is not supported"] },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -860,7 +860,7 @@ export const devices = {
             "encrypted": false,
             "start": 2048,
             "size": 8388608,
-            "recoverableSize": 8388096,
+            "shrinking": { "supported": 8388096 },
             "systems": [],
             "udevIds": [],
             "udevPaths": [
@@ -878,7 +878,7 @@ export const devices = {
             "encrypted": false,
             "start": 18432,
             "size": 53677637120,
-            "recoverableSize": 0,
+            "shrinking": { "unsupported": ["Resizing is not supported"] },
             "systems": [],
             "udevIds": [],
             "udevPaths": [
@@ -918,7 +918,7 @@ export const devices = {
       "encrypted": false,
       "start": 0,
       "size": 5368709120,
-      "recoverableSize": 0,
+      "shrinking": { "unsupported": ["Resizing is not supported"] },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -950,7 +950,7 @@ export const devices = {
       "encrypted": false,
       "start": 0,
       "size": 32212254720,
-      "recoverableSize": 0,
+      "shrinking": { "unsupported": ["Resizing is not supported"] },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -969,7 +969,7 @@ export const devices = {
             "encrypted": false,
             "start": 10487808,
             "size": 5368709120,
-            "recoverableSize": 5368708608,
+            "shrinking": { "supported": 5368708608 },
             "systems": [
               "openSUSE Leap 15.2",
               "Fedora 10.30"
@@ -990,7 +990,7 @@ export const devices = {
             "encrypted": false,
             "start": 23070720,
             "size": 1608515584,
-            "recoverableSize": 1608515072,
+            "shrinking": { "supported": 1608515072 },
             "systems": [],
             "udevIds": [],
             "udevPaths": [
@@ -1008,7 +1008,7 @@ export const devices = {
             "encrypted": false,
             "start": 2048,
             "size": 8388608,
-            "recoverableSize": 8388096,
+            "shrinking": { "supported": 8388096 },
             "systems": [],
             "udevIds": [],
             "udevPaths": [
@@ -1026,7 +1026,7 @@ export const devices = {
             "encrypted": false,
             "start": 18432,
             "size": 1610612736,
-            "recoverableSize": 1610571776,
+            "shrinking": { "supported": 1610571776 },
             "systems": [],
             "udevIds": [],
             "udevPaths": [
@@ -1049,7 +1049,7 @@ export const devices = {
             "encrypted": false,
             "start": 26212352,
             "size": 18791513600,
-            "recoverableSize": 18523078144,
+            "shrinking": { "supported": 18523078144 },
             "systems": [],
             "udevIds": [],
             "udevPaths": [
@@ -1094,7 +1094,7 @@ export const devices = {
           "encrypted": false,
           "start": 18432,
           "size": 53677637120,
-          "recoverableSize": 0,
+          "shrinking": { "unsupported": ["Resizing is not supported"] },
           "systems": [],
           "udevIds": [],
           "udevPaths": [
@@ -1120,7 +1120,7 @@ export const devices = {
           "encrypted": false,
           "start": 0,
           "size": 51527024640,
-          "recoverableSize": 30647779328,
+          "shrinking": { "supported": 30647779328 },
           "systems": [],
           "udevIds": [],
           "udevPaths": [],
@@ -1140,7 +1140,7 @@ export const devices = {
           "encrypted": false,
           "start": 0,
           "size": 2147483648,
-          "recoverableSize": 2143289344,
+          "shrinking": { "supported": 2143289344 },
           "systems": [],
           "udevIds": [],
           "udevPaths": [],
@@ -1162,7 +1162,7 @@ export const devices = {
       "encrypted": false,
       "start": 0,
       "size": 51527024640,
-      "recoverableSize": 30647779328,
+      "shrinking": { "supported": 30647779328 },
       "systems": [],
       "udevIds": [],
       "udevPaths": [],
@@ -1182,7 +1182,7 @@ export const devices = {
       "encrypted": false,
       "start": 0,
       "size": 2147483648,
-      "recoverableSize": 2143289344,
+      "shrinking": { "supported": 2143289344 },
       "systems": [],
       "udevIds": [],
       "udevPaths": [],
@@ -1202,7 +1202,7 @@ export const devices = {
       "encrypted": false,
       "start": 2048,
       "size": 8388608,
-      "recoverableSize": 8388096,
+      "shrinking": { "supported": 8388096 },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -1220,7 +1220,7 @@ export const devices = {
       "encrypted": false,
       "start": 18432,
       "size": 53677637120,
-      "recoverableSize": 0,
+      "shrinking": { "unsupported": ["Resizing is not supported"] },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -1244,7 +1244,7 @@ export const devices = {
       "encrypted": false,
       "start": 10487808,
       "size": 5368709120,
-      "recoverableSize": 5368708608,
+      "shrinking": { "supported": 5368708608 },
       "systems": [
         "openSUSE Leap 15.2",
         "Fedora 10.30"
@@ -1265,7 +1265,7 @@ export const devices = {
       "encrypted": false,
       "start": 23070720,
       "size": 1608515584,
-      "recoverableSize": 1608515072,
+      "shrinking": { "supported": 1608515072 },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -1283,7 +1283,7 @@ export const devices = {
       "encrypted": false,
       "start": 2048,
       "size": 8388608,
-      "recoverableSize": 8388096,
+      "shrinking": { "supported": 8388096 },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -1301,7 +1301,7 @@ export const devices = {
       "encrypted": false,
       "start": 18432,
       "size": 1610612736,
-      "recoverableSize": 1610571776,
+      "shrinking": { "supported": 1610571776 },
       "systems": [],
       "udevIds": [],
       "udevPaths": [
@@ -1324,7 +1324,7 @@ export const devices = {
       "encrypted": false,
       "start": 26212352,
       "size": 18791513600,
-      "recoverableSize": 18523078144,
+      "shrinking": { "supported": 18523078144 },
       "systems": [],
       "udevIds": [],
       "udevPaths": [

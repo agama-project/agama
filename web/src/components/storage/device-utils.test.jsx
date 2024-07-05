@@ -68,7 +68,7 @@ const vda1 = {
   size: 512,
   start: 123,
   encrypted: false,
-  recoverableSize: 128,
+  shrinking: { supported: 128 },
   systems : [],
   udevIds: [],
   udevPaths: [],
@@ -87,7 +87,7 @@ const lvmLv1 = {
   size: 512,
   start: 0,
   encrypted: false,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems : [],
   udevIds: [],
   udevPaths: []

@@ -47,7 +47,7 @@ const sda = {
   name: "/dev/sda",
   description: "",
   size: 1024,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems: [],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
@@ -70,7 +70,7 @@ const sdb = {
   name: "/dev/sdb",
   description: "",
   size: 2048,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems: [],
   udevIds: [],
   udevPaths: ["pci-0000:00-19"]
@@ -93,7 +93,7 @@ const sdc = {
   name: "/dev/sdc",
   description: "",
   size: 2048,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems: [],
   udevIds: [],
   udevPaths: ["pci-0000:00-19"]
