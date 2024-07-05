@@ -116,17 +116,6 @@
   }
 }
 
-.large {
-  /** block-size fallbacks **/
-  height: 95dvh;
-  width: 95dvw;
-  max-width: calc(var(--ui-max-inline-size) + var(--spacer-large));
-  /** END block-size fallbacks **/
-  block-size: 95dvh;
-  inline-size: 95dvw;
-  max-inline-size: calc(var(--ui-max-inline-size) + var(--spacer-large))
-}
-
 .scrollbox {
   background:
     linear-gradient(#fff 33%, rgb(255 255 255 / 0%)),
