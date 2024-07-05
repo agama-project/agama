@@ -2,36 +2,6 @@
 // In the future we might add different section layouts by using data-variant attribute
 // or similar strategy
 
-// Custom selection list
-.selection-list > * {
-  border: 1px solid #eee;
-  transition:
-    font-size 0.15s ease-in-out,
-    font-weight 0.25s ease-in-out,
-    margin-block 0.15s ease-in-out,
-    box-shadow 0.35s ease-in-out;
-
-  margin-block-start: -2px;
-}
-
-.selection-list .header {
-  border-block-end: 1px solid #eee;
-  padding: var(--spacer-normal);
-}
-
-.selection-list .content {
-  padding: var(--spacer-normal);
-}
-
-.selection-list [data-state="focused"] {
-  margin-block: 20px;
-  box-shadow: 0 0 6px rgb(0 0 0 / 16%), 0 6px 12px rgb(0 0 0 / 32%);
-}
-
-.selection-list [data-state="unstyled"] {
-  border: 0;
-}
-
 // raw file content with formatting similar to <pre>
 .filecontent {
   font-family: var(--ff-code);
