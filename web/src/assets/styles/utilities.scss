@@ -60,29 +60,6 @@
   inline-size: 100%;
 }
 
-.plain-control {
-  position: relative;
-  background: none;
-  border: none;
-}
-
-.plain-button {
-  border: none;
-  background: none;
-  color: inherit;
-  font: inherit;
-  padding: 0;
-  text-align: start;
-}
-
-.inline-flex-button{
-  @extend .plain-button;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.7ch;
-  text-decoration: underline;
-}
-
 .p-0 {
   padding: 0;
 }
