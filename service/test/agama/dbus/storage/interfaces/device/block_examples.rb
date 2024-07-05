@@ -89,15 +89,11 @@ shared_examples "Block interface" do
       end
     end
 
-    describe "#block_recoverable_size" do
-      before do
-        allow(device).to receive(:recoverable_size).and_return(size)
-      end
-
-      let(:size) { Y2Storage::DiskSize.new(1024) }
-
-      it "returns the recoverable size in bytes" do
-        expect(subject.block_recoverable_size).to eq(1024)
+    describe "#block_shrinking" do
+      it "returns the shrinking info" do
+        expect(subject.block_shrinking).to eq(
+          { "Unsupported"=>["Resizing is not supported by this device."] }
+        )
       end
     end
 
