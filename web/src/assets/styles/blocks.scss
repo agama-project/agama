@@ -367,20 +367,6 @@ table.proposal-result {
   }
 }
 
-.tpm-hint {
-  container-type: inline-size;
-  container-name: tpm-info;
-  text-align: start;
-
-  .pf-v5-c-alert__title {
-    margin-block-end: var(--spacer-small);
-  }
-
-  .pf-v5-c-alert__description {
-    max-inline-size: 100%;
-  }
-}
-
 [data-type="agama/expandable-selector"] {
   // The expandable selector is built on top of PF/Table#expandable
   // Let's tweak some styles
