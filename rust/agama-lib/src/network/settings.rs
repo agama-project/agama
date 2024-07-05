@@ -27,14 +27,14 @@ use std::default::Default;
 use std::net::IpAddr;
 
 /// Network settings for installation
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct NetworkSettings {
     /// Connections to use in the installation
     pub connections: Vec<NetworkConnection>,
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct MatchSettings {
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub driver: Vec<String>,
@@ -56,7 +56,7 @@ impl MatchSettings {
 }
 
 /// Wireless configuration
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct WirelessSettings {
     /// Password of the wireless network

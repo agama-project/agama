@@ -80,6 +80,7 @@ dependencies = [
  "regex",
  "serde",
  "thiserror",
+ "utoipa",
 ]
 
 [[package]]
