@@ -1,7 +1,3 @@
-.justify-between {
-  justify-content: space-between;
-}
-
 // Sadly, Firefox does not support :has pseudo-selector yet.
 // See @components/layout/Center documentation.
 //
@@ -17,12 +13,6 @@
   place-items: center;
   block-size: 100%;
   inline-size: 100%;
-}
-
-.horizontally-centered {
-  inline-size: 100%;
-  margin-inline: 0 auto;
-  text-align: center;
 }
 
 .title {
