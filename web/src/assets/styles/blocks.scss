@@ -223,51 +223,6 @@ ul[data-items-type="agama/patterns"] {
   }
 }
 
-[data-type="agama/controlled-panels"] {
-  [data-type="agama/option"] {
-    label, input {
-      cursor: pointer;
-    }
-
-    label {
-      display: flex;
-      gap: var(--spacer-smaller);
-    }
-  }
-
-  [data-variant="buttons"] {
-    input { position: absolute; opacity: 0 }
-
-    label {
-      border: 1px solid var(--color-primary);
-      padding: var(--spacer-small);
-      gap: var(--spacer-small);
-      border-radius: var(--spacer-smaller);
-      position: relative;
-
-      &:has(input:checked) {
-        background: var(--color-primary);
-        color: white;
-      }
-
-      &:has(input:focus-visible) {
-        // outline: 1px dotted;
-        // outline-offset: 0.25rem;
-        box-shadow: 0 0 0 3px var(--focus-color);
-      }
-    }
-
-    [data-type="agama/option"]:not(:last-child) {
-      border-inline-end: 2px solid var(--color-gray-darker);
-      padding-inline-end: var(--spacer-small);
-    }
-  }
-
-  > div[aria-expanded="false"] {
-    display: none;
-  }
-}
-
 table[data-type="agama/tree-table"] {
   th:first-child {
     padding-inline-end: var(--spacer-normal);
