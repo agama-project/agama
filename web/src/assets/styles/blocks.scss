@@ -354,44 +354,6 @@ table.proposal-result {
   }
 }
 
-[data-type="agama/reminder"] {
-  --accent-color: var(--color-primary-lighter);
-  --inline-margin: calc(var(--header-icon-size) + var(--spacer-small));
-
-  display: flex;
-  gap: var(--spacer-small);
-  margin-inline: var(--inline-margin);
-  margin-block-end: var(--spacer-normal);
-  padding: var(--spacer-smaller) var(--spacer-small);
-  border-inline-start: 3px solid var(--accent-color);
-
-  svg {
-    fill: var(--accent-color);
-  }
-
-  h4 {
-    color: var(--accent-color);
-  }
-
-  h4 ~ * {
-    margin-block-start: var(--spacer-small);
-  }
-}
-
-section [data-type="agama/reminder"] {
-  margin-inline: 0;
-}
-
-[data-type="agama/reminder"][data-variant="subtle"] {
-  --accent-color: var(--color-primary);
-  padding-block: 0;
-  border-inline-start-width: 1px;
-
-  h4 {
-    font-size: var(--fs-normal);
-  }
-}
-
 [role="dialog"] {
   section:not([class^="pf-c"]) {
     > svg:first-child {
