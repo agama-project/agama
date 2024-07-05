@@ -60,24 +60,6 @@
   inline-size: 100%;
 }
 
-.transform-on-hover {
-  transition: all 0.2s ease-in-out;
-
-  &:hover {
-    transform: scale(1.4);
-    color: var(--color-primary-darkest);
-  }
-}
-
-.gradient-border-bottom {
-  border-bottom: 1px solid #efefef;
-  border-image: linear-gradient(
-    var(--gradient-border-angle),
-    var(--gradient-border-start-color),
-    var(--gradient-border-end-color)
-  ) 1;
-}
-
 .visually-hidden {
   border: 0;
   clip: rect(0 0 0 0);
