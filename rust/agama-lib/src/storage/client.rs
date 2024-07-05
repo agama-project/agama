@@ -218,8 +218,8 @@ impl<'a> StorageClient<'a> {
         Ok(Some(BlockDevice {
             active: get_property(properties, "Active")?,
             encrypted: get_property(properties, "Encrypted")?,
-            recoverable_size: get_property(properties, "RecoverableSize")?,
             size: get_property(properties, "Size")?,
+            shrinking: get_property(properties, "Shrinking")?,
             start: get_property(properties, "Start")?,
             systems: get_property(properties, "Systems")?,
             udev_ids: get_property(properties, "UdevIds")?,
