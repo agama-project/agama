@@ -8,25 +8,25 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-30 02:27+0000\n"
-"PO-Revision-Date: 2024-06-24 17:46+0000\n"
+"PO-Revision-Date: 2024-07-05 16:46+0000\n"
 "Last-Translator: Aleš Kastner <alkas@volny.cz>\n"
-"Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-service-"
-"master/cs/>\n"
+"Language-Team: Czech <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.6\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #. Runs the startup phase
 #: service/lib/agama/manager.rb:88
 msgid "Load software translations"
-msgstr ""
+msgstr "Načíst překlady softwaru"
 
 #: service/lib/agama/manager.rb:89
 msgid "Load storage translations"
-msgstr ""
+msgstr "Načíst překlady paměti"
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:104

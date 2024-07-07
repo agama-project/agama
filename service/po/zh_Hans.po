@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-30 02:27+0000\n"
-"PO-Revision-Date: 2024-04-10 09:43+0000\n"
+"PO-Revision-Date: 2024-07-03 14:46+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
 "agama/agama-service-master/zh_Hans/>\n"
@@ -17,41 +17,39 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #. Runs the startup phase
 #: service/lib/agama/manager.rb:88
 msgid "Load software translations"
-msgstr ""
+msgstr "载入软件翻译"
 
 #: service/lib/agama/manager.rb:89
 msgid "Load storage translations"
-msgstr ""
+msgstr "载入存储翻译"
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:104
 msgid "Analyze disks"
-msgstr ""
+msgstr "分析磁盘"
 
 #: service/lib/agama/manager.rb:104
-#, fuzzy
 msgid "Configure software"
-msgstr "正在探测软件"
+msgstr "配置软件"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
 #: service/lib/agama/manager.rb:124
 msgid "Prepare disks"
-msgstr ""
+msgstr "准备磁盘"
 
 #: service/lib/agama/manager.rb:125
-#, fuzzy
 msgid "Install software"
-msgstr "正在安装软件"
+msgstr "安装软件"
 
 #: service/lib/agama/manager.rb:126
 msgid "Configure the system"
-msgstr ""
+msgstr "配置系统"
 
 #. Callback to handle unsigned files
 #.
@@ -172,14 +170,14 @@ msgstr "正在写入引导加载程序 sysconfig"
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:192
 msgid "Cannot accommodate the required file systems for installation"
-msgstr "无法调整进行安装所需的文件系统"
+msgstr "无法容纳安装所需的文件系统"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:203
 msgid "A problem ocurred while calculating the storage setup"
-msgstr ""
+msgstr "计算存储设置时发生问题"
 
 #. Returns an issue if there is no target device.
 #.
@@ -202,7 +200,7 @@ msgstr[0] "未在系统中找到下列已选择的设备： %{devices}"
 #: service/lib/agama/users.rb:152
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
-msgstr ""
+msgstr "必须定义一个用户、设置 root 密码或者配置 SSH 公钥"
 
 #~ msgid "Probing Storage"
 #~ msgstr "正在探测存储"
