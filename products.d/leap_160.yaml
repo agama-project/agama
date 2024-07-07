@@ -5,11 +5,25 @@ name: Leap 16.0 Alpha
 # at the at translations/description key below to avoid using obsolete
 # translations!!
 # ------------------------------------------------------------------------------
-description: 'Leap 16.0 is the latest version of a community distribution based on the latest SUSE Linux Enterprise Server.'
+description: 'Leap 16.0 is the latest version of a community distribution based
+  on the latest SUSE Linux Enterprise Server.'
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
-   
+    ca: El Leap 16.0 és la darrera versió d'una distribució comunitària basada en
+      l'últim SUSE Linux Enterprise Server.
+    cs: Leap 16.0 je nejnovější verze komunitní distribuce založené na nejnovějším
+      SUSE Linux Enterprise Serveru.
+    ja: Leap 16.0 は最新のSUSE Linux Enterprise Server をベースにしたコミュニティディストリビューションの最新版です。
+    nb_NO: Leap 16.0 er den nyeste versjonen av den fellesskapte distribusjon basert
+      på den nyeste SUSE Linux Enterprise Server.
+    pt_BR: Leap 16.0 é a versão mais recente de uma distribuição comunitária baseada
+      no mais recente SUSE Linux Enterprise Server.
+    ru: Leap 16.0 - это последняя версия дистрибутива от сообщества, основанного на
+      последней версии SUSE Linux Enterprise Server.
+    sv: Leap 16.0 är den senaste versionen av en distribution skapad av gemenskapen
+      som baseras på den senaste SUSE Linux Enterprise Server.
+    zh_Hans: Leap 16.0 是基于 SUSE Linux Enterprise Server 构建的社区发行版的最新版本。
 software:
   installation_repositories:
     - url: https://download.opensuse.org/repositories/openSUSE:/Leap:/16.0/standard
@@ -20,7 +34,7 @@ software:
       archs: x86_64
     - url: https://download.opensuse.org/repositories/openSUSE:/Leap:/16.0/product/repo/Leap-Packages-16.0-aarch64
       archs: aarch64
-    
+
   mandatory_patterns:
     - enhanced_base # only pattern that is shared among all roles on Leap
   optional_patterns: null # no optional pattern shared
