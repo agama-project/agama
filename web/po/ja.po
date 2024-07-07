@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-30 02:27+0000\n"
-"PO-Revision-Date: 2024-06-20 00:46+0000\n"
+"PO-Revision-Date: 2024-07-04 00:46+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #: src/MainLayout.jsx:40
 msgid "Agama"
@@ -161,9 +161,8 @@ msgid "Reboot"
 msgstr "再起動"
 
 #: src/components/core/InstallationProgress.jsx:30
-#, fuzzy
 msgid "Installing the system, please wait ..."
-msgstr "データを読み込んでいます。しばらくお待ちください..."
+msgstr "システムをインストールしています。しばらくお待ちください..."
 
 #: src/components/core/InstallerOptions.jsx:83
 msgid "Show installer options"
@@ -182,9 +181,8 @@ msgstr "言語"
 
 #: src/components/core/InstallerOptions.jsx:114
 #: src/components/core/InstallerOptions.jsx:121
-#, fuzzy
 msgid "Keyboard layout"
-msgstr "キーボードレイアウトを選択してください"
+msgstr "キーボードレイアウト"
 
 #: src/components/core/InstallerOptions.jsx:130
 msgid "Cannot be changed in remote installation"
@@ -307,22 +305,20 @@ msgid "Loading data..."
 msgstr "データを読み込んでいます..."
 
 #: src/components/core/ProgressReport.jsx:50
-#, fuzzy
 msgid "Finished"
 msgstr "完了"
 
 #: src/components/core/ProgressReport.jsx:59
 msgid "In progress"
-msgstr ""
+msgstr "処理中"
 
 #: src/components/core/ProgressReport.jsx:70
 msgid "Pending"
-msgstr ""
+msgstr "保留中"
 
 #: src/components/core/ProgressReport.jsx:134
-#, fuzzy
 msgid "Waiting for progress status..."
-msgstr "経過レポートを待機しています"
+msgstr "進捗状態を待機しています..."
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
@@ -583,20 +579,18 @@ msgstr "'手動' モードの場合にのみゲートウエイを設定できま
 
 #: src/components/network/NetworkPage.jsx:85
 msgid "No Wi-Fi supported"
-msgstr ""
+msgstr "Wi-Fi サポートがありません"
 
 #: src/components/network/NetworkPage.jsx:86
-#, fuzzy
 msgid ""
 "The system does not support Wi-Fi connections, probably because of missing "
 "or disabled hardware."
-msgstr ""
-"このシステムは WiFi 接続には対応していません。無線ハードウエアが存在していな"
+msgstr "このシステムは WiFi 接続には対応していません。無線ハードウエアが存在していな"
 "いか、無効化されているものと思われます。"
 
 #: src/components/network/NetworkPage.jsx:99
 msgid "Wi-Fi"
-msgstr ""
+msgstr "Wi-Fi"
 
 #. TRANSLATORS: button label, connect to a WiFi network
 #: src/components/network/NetworkPage.jsx:102
@@ -606,30 +600,26 @@ msgid "Connect"
 msgstr "接続"
 
 #: src/components/network/NetworkPage.jsx:109
-#, fuzzy, c-format
+#, c-format
 msgid "Conected to %s"
-msgstr "接続済み (%s)"
+msgstr "%s に接続済み"
 
 #: src/components/network/NetworkPage.jsx:114
-#, fuzzy
 msgid "No connected yet"
-msgstr "まだ何も選択していません"
+msgstr "まだ接続していません"
 
 #: src/components/network/NetworkPage.jsx:115
-#, fuzzy
 msgid ""
 "The system has not been configured for connecting to a Wi-Fi network yet."
-msgstr ""
-"このシステムでは、まだ WiFi ネットワークへの接続設定を実施していません。"
+msgstr "このシステムでは、まだ WiFi ネットワークへの接続設定を実施していません。"
 
 #: src/components/network/NetworkPage.jsx:136
 msgid "Wired"
-msgstr ""
+msgstr "有線"
 
 #: src/components/network/NetworkPage.jsx:139
-#, fuzzy
 msgid "No wired connections found"
-msgstr "有線接続が見つかりませんでした。"
+msgstr "有線接続が見つかりませんでした"
 
 #: src/components/network/NetworkPage.jsx:149
 #: src/components/network/routes.js:59
@@ -703,14 +693,12 @@ msgid "Disconnect"
 msgstr "切断"
 
 #: src/components/network/WifiNetworksListPage.jsx:142
-#, fuzzy
 msgid "Connect to a hidden network"
 msgstr "ステルスネットワークへの接続"
 
 #: src/components/network/WifiNetworksListPage.jsx:153
-#, fuzzy
 msgid "configured"
-msgstr "設定しない"
+msgstr "設定済み"
 
 #: src/components/network/WifiNetworksListPage.jsx:244
 msgid "Connect to hidden network"
@@ -1660,14 +1648,12 @@ msgid_plural "Show %d subvolume actions"
 msgstr[0] "%d 個のサブボリューム処理を表示"
 
 #: src/components/storage/ProposalActionsSummary.jsx:57
-#, fuzzy
 msgid "Destructive actions are not allowed"
-msgstr "%d 個の破壊的な処理が提案されています"
+msgstr "破壊的な処理は許可しません"
 
 #: src/components/storage/ProposalActionsSummary.jsx:59
-#, fuzzy
 msgid "Destructive actions are allowed"
-msgstr "%d 個の破壊的な処理が提案されています"
+msgstr "破壊的な処理を許可します"
 
 #: src/components/storage/ProposalActionsSummary.jsx:66
 #, c-format
@@ -1677,35 +1663,30 @@ msgstr[0] "%d 個の破壊的な処理が提案されています"
 
 #: src/components/storage/ProposalActionsSummary.jsx:79
 #: src/components/storage/ProposalActionsSummary.jsx:126
-#, fuzzy
 msgid "affecting"
-msgstr "下記に影響があります:"
+msgstr "下記に影響があります"
 
 #: src/components/storage/ProposalActionsSummary.jsx:107
-#, fuzzy
 msgid "Shrinking partitions is not allowed"
-msgstr "パーティションの縮小"
+msgstr "パーティションの縮小を許可しません"
 
 #: src/components/storage/ProposalActionsSummary.jsx:111
-#, fuzzy
 msgid "Shrinking partitions is allowed"
-msgstr "パーティションの縮小"
+msgstr "パーティションの縮小を許可します"
 
 #: src/components/storage/ProposalActionsSummary.jsx:113
-#, fuzzy
 msgid "Shrinking some partitions is allowed but not needed"
-msgstr "インストール先のディスクのパーティションを縮小します"
+msgstr "パーティションの縮小を許可していますが不要です"
 
 #: src/components/storage/ProposalActionsSummary.jsx:116
-#, fuzzy, c-format
+#, c-format
 msgid "%d partition will be shrunk"
 msgid_plural "%d partitions will be shrunk"
-msgstr[0] "%s パーティションテーブル"
+msgstr[0] "%d 個のパーティションを縮小します"
 
 #: src/components/storage/ProposalActionsSummary.jsx:151
-#, fuzzy
 msgid "Cannot accommodate the required file systems for installation"
-msgstr "リモートインストールの場合は変更できません"
+msgstr "インストールに必要なファイルシステムを調整できません"
 
 #: src/components/storage/ProposalActionsSummary.jsx:160
 #, c-format
@@ -1714,9 +1695,8 @@ msgid_plural "Check the %d planned actions"
 msgstr[0] "%d 個の処理計画を確認する"
 
 #: src/components/storage/ProposalActionsSummary.jsx:179
-#, fuzzy
 msgid "Waiting for actions information..."
-msgstr "ストレージ設定に関する情報を待機しています"
+msgstr "処理に関する情報を待機しています..."
 
 #: src/components/storage/ProposalPage.jsx:314
 msgid "Planned Actions"
@@ -1728,11 +1708,11 @@ msgstr "ストレージ設定に関する情報を待機しています"
 
 #: src/components/storage/ProposalResultSection.jsx:70
 msgid "Final layout"
-msgstr ""
+msgstr "最終形態"
 
 #: src/components/storage/ProposalResultSection.jsx:71
 msgid "The systems will be configured as displayed below."
-msgstr ""
+msgstr "システムは下記に表示されているとおりに設定されます。"
 
 #: src/components/storage/ProposalResultSection.jsx:78
 msgid "Storage proposal not possible"
@@ -1809,7 +1789,6 @@ msgid "Actions to find space"
 msgstr "領域の検出処理"
 
 #: src/components/storage/SpacePolicySelection.jsx:170
-#, fuzzy
 msgid "Space policy"
 msgstr "領域ポリシー"
 
