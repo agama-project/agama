@@ -8,21 +8,21 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-30 02:27+0000\n"
-"PO-Revision-Date: 2024-06-22 21:46+0000\n"
+"PO-Revision-Date: 2024-07-06 01:46+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
-"Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/de/>\n"
+"Language-Team: German <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #. Runs the startup phase
 #: service/lib/agama/manager.rb:88
 msgid "Load software translations"
-msgstr ""
+msgstr "Softwareübersetzungen laden"
 
 #: service/lib/agama/manager.rb:89
 msgid "Load storage translations"
@@ -31,27 +31,25 @@ msgstr ""
 #. Runs the config phase
 #: service/lib/agama/manager.rb:104
 msgid "Analyze disks"
-msgstr ""
+msgstr "Festplatten analysieren"
 
 #: service/lib/agama/manager.rb:104
-#, fuzzy
 msgid "Configure software"
-msgstr "Software wird untersucht"
+msgstr "Software konfigurieren"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize
 #: service/lib/agama/manager.rb:124
 msgid "Prepare disks"
-msgstr ""
+msgstr "Festplatten vorbereiten"
 
 #: service/lib/agama/manager.rb:125
-#, fuzzy
 msgid "Install software"
-msgstr "Software wird installiert"
+msgstr "Software installieren"
 
 #: service/lib/agama/manager.rb:126
 msgid "Configure the system"
-msgstr ""
+msgstr "System konfigurieren"
 
 #. Callback to handle unsigned files
 #.
