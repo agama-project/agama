@@ -94,7 +94,7 @@ describe Agama::Storage::DeviceShrinking do
           end
         end
 
-        context "and there is not reasons" do
+        context "and there is no reason" do
           let(:reasons) { [] }
 
           it "returns true" do
