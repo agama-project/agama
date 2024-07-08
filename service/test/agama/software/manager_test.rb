@@ -253,7 +253,8 @@ describe Agama::Software::Manager do
       expect(products).to all(be_a(Agama::Software::Product))
       expect(products).to contain_exactly(
         an_object_having_attributes(id: "Tumbleweed"),
-        an_object_having_attributes(id: "MicroOS")
+        an_object_having_attributes(id: "MicroOS"),
+        an_object_having_attributes(id: "Leap_16.0")
       )
     end
   end
@@ -335,7 +336,7 @@ describe Agama::Software::Manager do
       expect(proposal).to receive(:set_resolvables)
         .with("agama", :pattern, [], { optional: true })
       expect(proposal).to receive(:set_resolvables)
-        .with("agama", :package, ["NetworkManager", "openSUSE-repos"])
+        .with("agama", :package, ["NetworkManager", "openSUSE-repos-Tumbleweed"])
       expect(proposal).to receive(:set_resolvables)
         .with("agama", :package, [], { optional: true })
       subject.propose

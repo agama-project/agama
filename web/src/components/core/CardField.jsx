@@ -48,8 +48,9 @@ const CardField = ({
   cardDescriptionProps = {}
 
 }) => {
+  // TODO: replace aria-label with the proper aria-labelledby
   return (
-    <Card isCompact isFullHeight isRounded {...cardProps}>
+    <Card isCompact isFullHeight isRounded role="region" aria-label={label} {...cardProps}>
       <CardHeader {...cardHeaderProps}>
         <CardTitle>
           <Flex alignItems={{ default: "alignItemsCenter" }}>

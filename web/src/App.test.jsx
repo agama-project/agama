@@ -20,13 +20,14 @@
  */
 
 import React from "react";
-import { act, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 
 import App from "./App";
 import { createClient } from "~/client";
 import { STARTUP, CONFIG, INSTALL } from "~/client/phase";
 import { IDLE, BUSY } from "~/client/status";
+import { useL10nConfigChanges } from "./queries/l10n";
 
 jest.mock("~/client");
 
@@ -42,6 +43,11 @@ jest.mock("~/context/product", () => ({
       selectedProduct: mockSelectedProduct
     };
   }
+}));
+
+jest.mock("~/queries/l10n", () => ({
+  ...jest.requireActual("~/queries/l10n"),
+  useL10nConfigChanges: () => jest.fn()
 }));
 
 const mockClientStatus = {
@@ -70,18 +76,9 @@ describe("App", () => {
     createClient.mockImplementation(() => {
       return {
         l10n: {
-          locales: jest.fn().mockResolvedValue([["en_us", "English", "United States"]]),
-          getLocales: jest.fn().mockResolvedValue(["en_us"]),
-          timezones: jest.fn().mockResolvedValue([]),
-          getTimezone: jest.fn().mockResolvedValue("Europe/Berlin"),
-          keymaps: jest.fn().mockResolvedValue([]),
-          getKeymap: jest.fn().mockResolvedValue(undefined),
           getUIKeymap: jest.fn().mockResolvedValue("en"),
           getUILocale: jest.fn().mockResolvedValue("en_us"),
           setUILocale: jest.fn().mockResolvedValue("en_us"),
-          onTimezoneChange: jest.fn(),
-          onLocalesChange: jest.fn(),
-          onKeymapChange: jest.fn()
         }
       };
     });

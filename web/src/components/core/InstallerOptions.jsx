@@ -30,7 +30,8 @@ import { _ } from "~/i18n";
 import { localConnection } from "~/utils";
 import { useInstallerL10n } from "~/context/installerL10n";
 import supportedLanguages from "~/languages.json";
-import { useL10n } from "~/context/l10n";
+import { useQuery } from "@tanstack/react-query";
+import { keymapsQuery } from "~/queries/l10n";
 
 /**
  * @typedef {import("@patternfly/react-core").ButtonProps} ButtonProps
@@ -50,13 +51,14 @@ export default function InstallerOptions() {
   } = useInstallerL10n();
   const [language, setLanguage] = useState(initialLanguage);
   const [keymap, setKeymap] = useState(initialKeymap);
-  const { keymaps } = useL10n();
+  const { isPending, data: keymaps } = useQuery(keymapsQuery());
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [inProgress, setInProgress] = useState(false);
 
   // FIXME: Installer options should be available in the login too.
   if (["/login", "/products/progress"].includes(location.pathname)) return;
+  if (isPending) return;
 
   const open = () => setIsOpen(true);
   const close = () => {

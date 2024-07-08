@@ -29,6 +29,10 @@ import { useInstallerClientStatus } from "~/context/installer";
 import { useProduct } from "./context/product";
 import { CONFIG, INSTALL, STARTUP } from "~/client/phase";
 import { BUSY } from "~/client/status";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useL10nConfigChanges } from "~/queries/l10n";
+
+const queryClient = new QueryClient();
 
 /**
  * Main application component.
@@ -42,6 +46,7 @@ function App() {
   const { connected, error, phase, status } = useInstallerClientStatus();
   const { selectedProduct, products } = useProduct();
   const { language } = useInstallerL10n();
+  useL10nConfigChanges();
 
   const Content = () => {
     if (error) return <ServerError />;
