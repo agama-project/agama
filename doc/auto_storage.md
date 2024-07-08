@@ -37,8 +37,8 @@ Storage
   volumeGroups <VolumeGroup[]>
   mdRaids <MdRaid[]>
   btrfsRaids <BtrfsRaid[]>
-  bcacheDevices <BCache[]>
   nfsMounts <NFS[]>
+  boot [BootSettings]
   guided <Guided>
 ```
 
@@ -67,6 +67,7 @@ Drive
   format [<FormatAction>]
   mount [<MountAction>]
   ptableType [<string>]
+  space <'delete'|'resize'|'keep'>
   partitions [<Partition[]>]
 
 VolumeGroup
@@ -89,6 +90,7 @@ MdRaid
   format [<FormatAction>]
   mount [<MountAction>]
   ptableType [<string>]
+  space <'delete'|'resize'|'keep'>
   partitions [<Partition[]>]
   delete [<boolean=false>]
 
@@ -162,6 +164,10 @@ Size <'default'|string|SizeRange>
 SizeRange
   min <string>
   max <string>
+
+BootSettings
+  configure <boolean>
+  device <string|Search>
 ```
 
 To illustrate how all that fits together, let's see the following example in which the first disk of
@@ -420,6 +426,41 @@ above, it would be possible to use the key as name of the property, resulting in
 }
 ```
 
+## Making Space and Specifying what to do with Existing Partitions (under discussion)
+
+The `space` subsection of each drive or RAID can be used to specify what to do with existing
+partitions, if any. That can also be combined with more specific actions indicated by "searching" a
+given partition within the `partitions` subsection.
+
+Theoretically, we could do the following actions for each given partition during the algorithm
+execution. We just need to decide how to define all that using `space` and `partitions`.
+
+- Delete the partition (mandatory action executed as soon as we process the disk)
+- Shrink the partition to a given size (same than above, note we need to clearly define the way to
+  specify a partition must be resized or grown and likely both things will happen at different
+  stages of the algorithm).
+- Shrink the partition if needed (optional action done if needed and with a calculated target size).
+- Delete the partition if needed (optional action done if needed).
+- Shrink or delete if needed (first an optional resize will be attemped, deleting if it's not
+  enough).
+
+Note also we may need to consider which resize actions are possible depending on the content of the
+partition, the filesystem type, etc.
+
+Maybe a `space` action is not needed since the same behavior can be specified only using something
+like this:
+
+```json
+"storage": {
+    "drives": [
+        {
+            "partitions":
+                { "search": {}, "delete": true }
+        }
+     ]
+}
+```
+
 ## Referencing Other Devices
 
 Sometimes is necessary to reference other devices as part of the specification of an LVM volume
@@ -518,28 +559,21 @@ system (so the same conditions can be matched by a disk, a partition, an LVM dev
 
 ## Partitions needed for Booting
 
-When relying on the Agama proposal (see below), there are some options to configure whether (and
-where) Agama should calculate and create the extra partitions needed for booting.
-
-If the proposal is not used, Agama will always try to calculate and create those partitions taking
-the location of the root file system as a reference. That's the same approach that AutoYaST has
-followed for years.
+The `boot` section can be used to configure whether (and where) Agama should calculate and create
+the extra partitions needed for booting. If the device is not specified, Agama will take the
+location of the root file system as a reference.
 
 ## Using the Automatic Proposal
 
 Agama can rely on the process known as Guided Proposal to calculate all the needed partitions, LVM
-devices and file systems based on some general product settings and some user preferences. That
-mechanism can also be used as part of the profile and will be executed as a last step, after
-processing all the explicit sections that describe devices.
+devices and file systems based on some general product settings and some user preferences.
 
 The `guided` section conforms to the following specification.
 
 ```
 Guided
   device [TargetDevice]
-  boot [BootSettings]
   encryption [EncryptionSettings]
-  space <'delete'|'resize'|'keep'>
   volumes [Volume[]]
 
 TargetDevice <string|TargetDisk|TargetNewLvm|TargetReusedLvm>
@@ -552,10 +586,6 @@ TargetNewLvm
 
 TargetReusedLvm
   reusedLvmVg <string|Search>
-
-BootSettings
-  configure <boolean>
-  device <string|Search>
 
 EncryptionSettings
   password <string>
