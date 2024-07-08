@@ -21,6 +21,7 @@
 
 require "y2storage"
 require "agama/storage/device_settings"
+require "agama/storage/device_shrinking"
 require "agama/storage/volume_templates_builder"
 
 module Agama
@@ -134,7 +135,7 @@ module Agama
             settings.space.actions
           end
 
-          target.space_settings.actions = actions
+          target.space_settings.actions = remove_unsupported_actions(actions)
         end
 
         # @param target [Y2Storage::ProposalSettings]
@@ -220,6 +221,25 @@ module Agama
           return [] unless device_object
 
           device_object.partitions.map(&:name)
+        end
+
+        # Removes the unsupported actions.
+        #
+        # @param actions [Hash]
+        # @return [Hash]
+        def remove_unsupported_actions(actions)
+          actions.reject { |d, a| a == :resize && !support_shrinking?(d) }
+        end
+
+        # Whether the device supports shrinking.
+        #
+        # @param device_name [String]
+        # @return [Boolean]
+        def support_shrinking?(device_name)
+          device = devicegraph.find_by_name(device_name)
+          return false unless device
+
+          DeviceShrinking.new(device).supported?
         end
 
         # @return [Y2Storage::Devicegraph]
