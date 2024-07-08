@@ -29,7 +29,20 @@ module Agama
       # param target_graph [Y2Storage::Devicegraph]
       def initialize(system_graph, target_graph)
         @system_graph = system_graph
-        @target_graph = target_graph
+
+        # Keep a reference to the actiongraph. Otherwise, accessing to the compound actions could
+        # raise a segmentation fault if the actiongraph object was killed by the ruby GC.
+        #
+        # Source of the problem:
+        #   * An actiongraph is generated from the target devicegraph.
+        #   * The list of compound actions is recovered from the actiongraph.
+        #   * If there is no refrence to the actiongraph, then the actiongraph object is a candidate
+        #     to be cleaned by the ruby GC.
+        #   * Accessing to the generated compound actions raises a segmentation fault if the
+        #     actiongraph was cleaned.
+        #
+        # See https://github.com/openSUSE/agama/issues/1396.
+        @actiongraph = target_graph.actiongraph
       end
 
       # All actions properly sorted.
@@ -44,8 +57,8 @@ module Agama
       # @return [Y2Storage::Devicegraph]
       attr_reader :system_graph
 
-      # @return [Y2Storage::Devicegraph]
-      attr_reader :target_graph
+      # @return [Y2Storage::Actiongraph]
+      attr_reader :actiongraph
 
       # Sorted main actions (everything except subvolume actions).
       #
@@ -67,7 +80,7 @@ module Agama
       #
       # @return [Array<Action>]
       def actions
-        @actions ||= target_graph.actiongraph.compound_actions.map do |action|
+        @actions ||= actiongraph.compound_actions.map do |action|
           Action.new(action, system_graph)
         end
       end

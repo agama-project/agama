@@ -53,8 +53,7 @@ describe Agama::Storage::ProposalSettingsConversions::ToJSON do
           configure: true
         },
         space:   {
-          policy:  "keep",
-          actions: []
+          policy: "keep"
         },
         volumes: []
       )
@@ -110,8 +109,7 @@ describe Agama::Storage::ProposalSettingsConversions::ToJSON do
             configure: true
           },
           space:   {
-            policy:  "keep",
-            actions: []
+            policy: "keep"
           },
           volumes: []
         )

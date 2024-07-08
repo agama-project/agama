@@ -120,6 +120,7 @@ software:
     - microos_ra_verifier
   mandatory_packages:
     - NetworkManager
+    - openSUSE-repos-MicroOS
   optional_packages: null
   base_product: MicroOS
 

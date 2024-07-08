@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-30 02:27+0000\n"
-"PO-Revision-Date: 2024-06-22 21:46+0000\n"
+"PO-Revision-Date: 2024-07-06 01:47+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-web/de/"
 ">\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #: src/MainLayout.jsx:40
 msgid "Agama"
@@ -167,9 +167,8 @@ msgid "Reboot"
 msgstr "Neustart"
 
 #: src/components/core/InstallationProgress.jsx:30
-#, fuzzy
 msgid "Installing the system, please wait ..."
-msgstr "Daten werden geladen, bitte warten Sie eine Sekunde ..."
+msgstr "Das System wird installiert, bitte warten ..."
 
 #: src/components/core/InstallerOptions.jsx:83
 msgid "Show installer options"
@@ -188,9 +187,8 @@ msgstr "Sprache"
 
 #: src/components/core/InstallerOptions.jsx:114
 #: src/components/core/InstallerOptions.jsx:121
-#, fuzzy
 msgid "Keyboard layout"
-msgstr "Wählen Sie eine Tastaturbelegung aus"
+msgstr "Tastaturbelegung"
 
 #: src/components/core/InstallerOptions.jsx:130
 msgid "Cannot be changed in remote installation"
@@ -318,22 +316,20 @@ msgid "Loading data..."
 msgstr "Daten werden gelesen ..."
 
 #: src/components/core/ProgressReport.jsx:50
-#, fuzzy
 msgid "Finished"
-msgstr "Fertigstellen"
+msgstr "Fertiggestellt"
 
 #: src/components/core/ProgressReport.jsx:59
 msgid "In progress"
-msgstr ""
+msgstr "In Bearbeitung"
 
 #: src/components/core/ProgressReport.jsx:70
 msgid "Pending"
-msgstr ""
+msgstr "Ausstehend"
 
 #: src/components/core/ProgressReport.jsx:134
-#, fuzzy
 msgid "Waiting for progress status..."
-msgstr "Warten auf den Fortschrittsbericht"
+msgstr "Warten auf den Fortschrittsstatus ..."
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
@@ -373,9 +369,8 @@ msgid "Filter by description or keymap code"
 msgstr "Nach Beschreibung oder Tastenzuordnungscode filtern"
 
 #: src/components/l10n/KeyboardSelection.jsx:85
-#, fuzzy
 msgid "None of the keymaps match the filter."
-msgstr "Keines der Muster entspricht dem Filter."
+msgstr "Keine der Tastenzuordnungen entspricht dem Filter."
 
 #: src/components/l10n/KeyboardSelection.jsx:92
 msgid "Keyboard selection"
@@ -591,11 +586,11 @@ msgstr "Gateway"
 
 #: src/components/network/IpSettingsForm.jsx:178
 msgid "Gateway can be defined only in 'Manual' mode"
-msgstr ""
+msgstr "Gateway kann nur im Modus ‚Manuell‘ definiert werden"
 
 #: src/components/network/NetworkPage.jsx:85
 msgid "No Wi-Fi supported"
-msgstr ""
+msgstr "Kein Wi-Fi unterstützt"
 
 #: src/components/network/NetworkPage.jsx:86
 #, fuzzy
@@ -607,8 +602,9 @@ msgstr ""
 "fehlender oder deaktivierter Hardware."
 
 #: src/components/network/NetworkPage.jsx:99
+#, fuzzy
 msgid "Wi-Fi"
-msgstr ""
+msgstr "Wi-Fi"
 
 #. TRANSLATORS: button label, connect to a WiFi network
 #: src/components/network/NetworkPage.jsx:102
@@ -618,14 +614,13 @@ msgid "Connect"
 msgstr "Verbinden"
 
 #: src/components/network/NetworkPage.jsx:109
-#, fuzzy, c-format
+#, c-format
 msgid "Conected to %s"
-msgstr "Verbunden (%s)"
+msgstr "Verbunden mit %s"
 
 #: src/components/network/NetworkPage.jsx:114
-#, fuzzy
 msgid "No connected yet"
-msgstr "Noch nicht ausgewählt"
+msgstr "Noch nicht verbunden"
 
 #: src/components/network/NetworkPage.jsx:115
 #, fuzzy
@@ -636,8 +631,9 @@ msgstr ""
 "konfiguriert."
 
 #: src/components/network/NetworkPage.jsx:136
+#, fuzzy
 msgid "Wired"
-msgstr ""
+msgstr "Kabelgebunden"
 
 #: src/components/network/NetworkPage.jsx:139
 #, fuzzy
@@ -720,12 +716,11 @@ msgstr "Trennen"
 #: src/components/network/WifiNetworksListPage.jsx:142
 #, fuzzy
 msgid "Connect to a hidden network"
-msgstr "Mit verborgenem Netzwerk verbinden"
+msgstr "Mit einem verborgenem Netzwerk verbinden"
 
 #: src/components/network/WifiNetworksListPage.jsx:153
-#, fuzzy
 msgid "configured"
-msgstr "Nicht konfigurieren"
+msgstr "konfiguriert"
 
 #: src/components/network/WifiNetworksListPage.jsx:244
 msgid "Connect to hidden network"
@@ -1707,14 +1702,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: src/components/storage/ProposalActionsSummary.jsx:57
-#, fuzzy
 msgid "Destructive actions are not allowed"
-msgstr "Es ist %d zerstörerische Aktion geplant"
+msgstr "Destruktive Aktionen sind nicht erlaubt"
 
 #: src/components/storage/ProposalActionsSummary.jsx:59
-#, fuzzy
 msgid "Destructive actions are allowed"
-msgstr "Es ist %d zerstörerische Aktion geplant"
+msgstr "Destruktive Aktionen sind erlaubt"
 
 #: src/components/storage/ProposalActionsSummary.jsx:66
 #, c-format
@@ -1727,34 +1720,33 @@ msgstr[1] "Es sind %d zerstörerische Aktionen geplant"
 #: src/components/storage/ProposalActionsSummary.jsx:126
 #, fuzzy
 msgid "affecting"
-msgstr "Beeinflusst"
+msgstr "beeinflusst"
 
 #: src/components/storage/ProposalActionsSummary.jsx:107
-#, fuzzy
 msgid "Shrinking partitions is not allowed"
-msgstr "Partitionen verkleinern"
+msgstr "Verkleinern von Partitionen ist nicht erlaubt"
 
 #: src/components/storage/ProposalActionsSummary.jsx:111
-#, fuzzy
 msgid "Shrinking partitions is allowed"
-msgstr "Partitionen verkleinern"
+msgstr "Verkleinern von Partitionen ist erlaubt"
 
 #: src/components/storage/ProposalActionsSummary.jsx:113
-#, fuzzy
 msgid "Shrinking some partitions is allowed but not needed"
-msgstr "und Partitionen des Installationsgeräts verkleinern"
+msgstr ""
+"Das Verkleinern einiger Partitionen ist erlaubt, aber nicht erforderlich"
 
 #: src/components/storage/ProposalActionsSummary.jsx:116
-#, fuzzy, c-format
+#, c-format
 msgid "%d partition will be shrunk"
 msgid_plural "%d partitions will be shrunk"
-msgstr[0] "%s-Partitionstabelle"
-msgstr[1] "%s-Partitionstabelle"
+msgstr[0] "%d Partition wird verkleinert"
+msgstr[1] "%d Partitionen werden verkleinert"
 
 #: src/components/storage/ProposalActionsSummary.jsx:151
-#, fuzzy
 msgid "Cannot accommodate the required file systems for installation"
-msgstr "Kann bei der Ferninstallation nicht geändert werden"
+msgstr ""
+"Die für die Installation erforderlichen Dateisysteme können nicht "
+"untergebracht werden"
 
 #: src/components/storage/ProposalActionsSummary.jsx:160
 #, c-format
@@ -1764,9 +1756,8 @@ msgstr[0] "Geplante Aktion überprüfen"
 msgstr[1] "Geplante %d Aktionen überprüfen"
 
 #: src/components/storage/ProposalActionsSummary.jsx:179
-#, fuzzy
 msgid "Waiting for actions information..."
-msgstr "Warten auf Informationen zur Speicherkonfiguration"
+msgstr "Warten auf Informationen zu Aktionen ..."
 
 #: src/components/storage/ProposalPage.jsx:314
 msgid "Planned Actions"
@@ -1778,11 +1769,11 @@ msgstr "Warten auf Informationen zur Speicherkonfiguration"
 
 #: src/components/storage/ProposalResultSection.jsx:70
 msgid "Final layout"
-msgstr ""
+msgstr "Endgültige Anordnung"
 
 #: src/components/storage/ProposalResultSection.jsx:71
 msgid "The systems will be configured as displayed below."
-msgstr ""
+msgstr "Die Systeme werden wie unten dargestellt konfiguriert."
 
 #: src/components/storage/ProposalResultSection.jsx:78
 msgid "Storage proposal not possible"
@@ -1831,9 +1822,9 @@ msgstr ""
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., /dev/sda)
 #: src/components/storage/SpaceActionsTable.jsx:75
-#, c-format
+#, c-format, fuzzy
 msgid "Space action selector for %s"
-msgstr ""
+msgstr "Speicherplatz-Aktionsselektor für %s"
 
 #: src/components/storage/SpaceActionsTable.jsx:79
 msgid "Allow resize"
@@ -1860,8 +1851,9 @@ msgid "Actions to find space"
 msgstr "Aktionen, um Platz zu finden"
 
 #: src/components/storage/SpacePolicySelection.jsx:170
+#, fuzzy
 msgid "Space policy"
-msgstr ""
+msgstr "Speicherplatzrichtlinie"
 
 #: src/components/storage/VolumeDialog.jsx:78
 #, c-format

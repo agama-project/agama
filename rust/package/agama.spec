@@ -116,6 +116,8 @@ echo $PATH
 %service_del_postun_with_restart agama-web-server.service
 
 %files
+%doc README.md
+%license LICENSE
 %{_bindir}/agama-dbus-server
 %{_bindir}/agama-web-server
 %{_datadir}/dbus-1/agama-services

@@ -116,6 +116,7 @@ software:
     - office
   mandatory_packages:
     - NetworkManager
+    - openSUSE-repos-Tumbleweed
   optional_packages: null
   base_product: openSUSE
 

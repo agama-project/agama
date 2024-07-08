@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-30 02:27+0000\n"
-"PO-Revision-Date: 2024-06-14 00:46+0000\n"
+"PO-Revision-Date: 2024-07-05 14:47+0000\n"
 "Last-Translator: Rodrigo Macedo <sottomaiormacedotec@sottomaiormacedo.tech>\n"
 "Language-Team: Portuguese (Brazil) <https://l10n.opensuse.org/projects/agama/"
 "agama-web/pt_BR/>\n"
@@ -17,21 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #: src/MainLayout.jsx:40
-#, fuzzy
 msgid "Agama"
-msgstr "Sobre o Agama"
+msgstr "Agama"
 
 #: src/MainLayout.jsx:82
 msgid "Change product"
 msgstr "Alterar produto"
 
 #: src/components/core/About.jsx:49
-#, fuzzy
 msgid "About"
-msgstr "Sobre o Agama"
+msgstr "Sobre"
 
 #: src/components/core/About.jsx:71
 msgid "About Agama"
@@ -162,17 +160,14 @@ msgid "Reboot"
 msgstr "Reiniciar"
 
 #: src/components/core/InstallationProgress.jsx:30
-#, fuzzy
 msgid "Installing the system, please wait ..."
-msgstr "Carregando produtos disponíveis, aguarde..."
+msgstr "Instalando o sistema, aguarde..."
 
 #: src/components/core/InstallerOptions.jsx:83
-#, fuzzy
 msgid "Show installer options"
-msgstr "Ocultar opções do instalador"
+msgstr "Mostrar opções do instalador"
 
 #: src/components/core/InstallerOptions.jsx:88
-#, fuzzy
 msgid "Installer options"
 msgstr "Opções do instalador"
 
@@ -185,14 +180,12 @@ msgstr "Idioma"
 
 #: src/components/core/InstallerOptions.jsx:114
 #: src/components/core/InstallerOptions.jsx:121
-#, fuzzy
 msgid "Keyboard layout"
-msgstr "Escolha um produto"
+msgstr "Layout do teclado"
 
 #: src/components/core/InstallerOptions.jsx:130
-#, fuzzy
 msgid "Cannot be changed in remote installation"
-msgstr "O layout do teclado não pode ser alterado na instalação remota"
+msgstr "Não pode ser alterado na instalação remota"
 
 #: src/components/core/InstallerOptions.jsx:135
 #: src/components/network/IpSettingsForm.jsx:210
@@ -211,6 +204,7 @@ msgstr "Aceitar"
 msgid ""
 "Before starting the installation, you need to address the following problems:"
 msgstr ""
+"Antes de iniciar a instalação, você precisa resolver os seguintes problemas:"
 
 #: src/components/core/ListSearch.jsx:51
 msgid "Search"
@@ -236,14 +230,11 @@ msgstr "Faça login como %s"
 #. it and keep the brackets.
 #: src/components/core/LoginPage.jsx:76
 msgid "The installer requires [root] user privileges."
-msgstr ""
+msgstr "O instalador requer privilégios de usuário [root]."
 
 #: src/components/core/LoginPage.jsx:95
-#, fuzzy
 msgid "Please, provide its password to log in to the system."
-msgstr ""
-"O instalador requer privilégios de usuário %s. Por favor, forneça sua senha "
-"para fazer login no sistema."
+msgstr "Por favor, forneça sua senha para fazer login no sistema."
 
 #: src/components/core/LoginPage.jsx:98
 msgid "Login form"
@@ -259,7 +250,7 @@ msgstr "Faça login"
 
 #: src/components/core/LoginPage.jsx:124
 msgid "More about this"
-msgstr ""
+msgstr "Mais sobre isso"
 
 #: src/components/core/LogsButton.jsx:103
 msgid "Collecting logs..."
@@ -311,22 +302,20 @@ msgid "Loading data..."
 msgstr "Carregando dados..."
 
 #: src/components/core/ProgressReport.jsx:50
-#, fuzzy
 msgid "Finished"
-msgstr "Concluir"
+msgstr "Concluído"
 
 #: src/components/core/ProgressReport.jsx:59
 msgid "In progress"
-msgstr ""
+msgstr "Em progresso"
 
 #: src/components/core/ProgressReport.jsx:70
 msgid "Pending"
-msgstr ""
+msgstr "Pendente"
 
 #: src/components/core/ProgressReport.jsx:134
-#, fuzzy
 msgid "Waiting for progress status..."
-msgstr "Aguardando o relatório do progresso"
+msgstr "Aguardando status de progresso..."
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:454
@@ -366,14 +355,12 @@ msgid "Filter by description or keymap code"
 msgstr "Filtrar por descrição ou código do mapa de teclado"
 
 #: src/components/l10n/KeyboardSelection.jsx:85
-#, fuzzy
 msgid "None of the keymaps match the filter."
-msgstr "Nenhum dos padrões corresponde ao filtro."
+msgstr "Nenhum dos mapas de teclado corresponde ao filtro."
 
 #: src/components/l10n/KeyboardSelection.jsx:92
-#, fuzzy
 msgid "Keyboard selection"
-msgstr "Seleção de software"
+msgstr "Seleção de teclado"
 
 #: src/components/l10n/KeyboardSelection.jsx:107
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
@@ -391,9 +378,8 @@ msgstr "Localização"
 
 #: src/components/l10n/L10nPage.jsx:68 src/components/l10n/L10nPage.jsx:79
 #: src/components/l10n/L10nPage.jsx:90
-#, fuzzy
 msgid "Not selected yet"
-msgstr "Nenhum dispositivo selecionado ainda"
+msgstr "Ainda não selecionado"
 
 #: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
 #: src/components/l10n/L10nPage.jsx:93
@@ -418,28 +404,24 @@ msgid "Filter by language, territory or locale code"
 msgstr "Filtrar por idioma, território ou código de localidade"
 
 #: src/components/l10n/LocaleSelection.jsx:84
-#, fuzzy
 msgid "None of the locales match the filter."
-msgstr "Nenhum dos padrões corresponde ao filtro."
+msgstr "Nenhum dos locais corresponde ao filtro."
 
 #: src/components/l10n/LocaleSelection.jsx:91
-#, fuzzy
 msgid "Locale selection"
-msgstr "Seleção de software"
+msgstr "Seleção local"
 
 #: src/components/l10n/TimezoneSelection.jsx:71
 msgid "Filter by territory, time zone code or UTC offset"
 msgstr "Filtrar por território, código de fuso horário ou deslocamento UTC"
 
 #: src/components/l10n/TimezoneSelection.jsx:122
-#, fuzzy
 msgid "None of the time zones match the filter."
-msgstr "Nenhum dos padrões corresponde ao filtro."
+msgstr "Nenhum dos fusos horários corresponde ao filtro."
 
 #: src/components/l10n/TimezoneSelection.jsx:129
-#, fuzzy
 msgid " Timezone selection"
-msgstr "Alterar seleção"
+msgstr " Seleção de fuso horário"
 
 #: src/components/layout/Loading.jsx:31
 msgid "Loading installation environment, please wait."
@@ -589,24 +571,23 @@ msgstr "Gateway"
 
 #: src/components/network/IpSettingsForm.jsx:178
 msgid "Gateway can be defined only in 'Manual' mode"
-msgstr ""
+msgstr "O gateway só pode ser definido no modo 'Manual'"
 
 #: src/components/network/NetworkPage.jsx:85
 msgid "No Wi-Fi supported"
-msgstr ""
+msgstr "Não há suporte para Wi-Fi"
 
 #: src/components/network/NetworkPage.jsx:86
-#, fuzzy
 msgid ""
 "The system does not support Wi-Fi connections, probably because of missing "
 "or disabled hardware."
 msgstr ""
-"O sistema não suporta conexões WiFi, provavelmente devido a hardware ausente "
-"ou desativado."
+"O sistema não suporta conexões Wi-Fi, provavelmente devido a hardware "
+"ausente ou desativado."
 
 #: src/components/network/NetworkPage.jsx:99
 msgid "Wi-Fi"
-msgstr ""
+msgstr "Wi-Fi"
 
 #. TRANSLATORS: button label, connect to a WiFi network
 #: src/components/network/NetworkPage.jsx:102
@@ -616,29 +597,26 @@ msgid "Connect"
 msgstr "Conectar"
 
 #: src/components/network/NetworkPage.jsx:109
-#, fuzzy, c-format
+#, c-format
 msgid "Conected to %s"
-msgstr "Conectado (%s)"
+msgstr "Conectado a (%s)"
 
 #: src/components/network/NetworkPage.jsx:114
-#, fuzzy
 msgid "No connected yet"
-msgstr "Nenhum dispositivo selecionado ainda"
+msgstr "Ainda não conectado"
 
 #: src/components/network/NetworkPage.jsx:115
-#, fuzzy
 msgid ""
 "The system has not been configured for connecting to a Wi-Fi network yet."
-msgstr "O sistema ainda não foi configurado para se conectar a uma rede WiFi."
+msgstr "O sistema ainda não foi configurado para se conectar a uma rede Wi-Fi."
 
 #: src/components/network/NetworkPage.jsx:136
 msgid "Wired"
-msgstr ""
+msgstr "Cabeada"
 
 #: src/components/network/NetworkPage.jsx:139
-#, fuzzy
 msgid "No wired connections found"
-msgstr "Nenhuma conexão com fio encontrada."
+msgstr "Nenhuma conexão com fio encontrada"
 
 #: src/components/network/NetworkPage.jsx:149
 #: src/components/network/routes.js:59
@@ -708,19 +686,16 @@ msgid "Disconnected"
 msgstr "Desconectado"
 
 #: src/components/network/WifiNetworksListPage.jsx:121
-#, fuzzy
 msgid "Disconnect"
-msgstr "Desconectado"
+msgstr "Desconectar"
 
 #: src/components/network/WifiNetworksListPage.jsx:142
-#, fuzzy
 msgid "Connect to a hidden network"
-msgstr "Conectar-se à rede oculta"
+msgstr "Conecte-se a uma rede oculta"
 
 #: src/components/network/WifiNetworksListPage.jsx:153
-#, fuzzy
 msgid "configured"
-msgstr "Não configurar"
+msgstr "Configurado"
 
 #: src/components/network/WifiNetworksListPage.jsx:244
 msgid "Connect to hidden network"
@@ -758,43 +733,42 @@ msgid "Software"
 msgstr "Software"
 
 #: src/components/overview/OverviewPage.jsx:52
-#, fuzzy
 msgid "Ready for installation"
-msgstr "Confirmar instalação"
+msgstr "Pronto para instalação"
 
 #: src/components/overview/OverviewPage.jsx:102
-#, fuzzy
 msgid "Installation"
-msgstr "Instalando"
+msgstr "Instalação"
 
 #: src/components/overview/OverviewPage.jsx:103
 msgid "Before installing, please check the following problems."
-msgstr ""
+msgstr "Antes de instalar, verifique os seguintes problemas."
 
 #: src/components/overview/OverviewPage.jsx:114
-#, fuzzy
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
 msgstr ""
-"A instalação configurará partições para inicialização no disco de instalação."
+"Reserve um tempo para verificar sua configuração antes de iniciar o processo "
+"de instalação."
 
 #: src/components/overview/OverviewPage.jsx:123
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
 msgstr ""
+"Estas são as configurações de instalação mais relevantes. Sinta-se à vontade "
+"para navegar pelas seções do menu para obter mais detalhes."
 
 #: src/components/overview/SoftwareSection.jsx:60
-#, fuzzy
 msgid "The installation will take"
-msgstr "A instalação levará %s"
+msgstr "A instalação levará"
 
 #. TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
 #: src/components/overview/SoftwareSection.jsx:67
-#, fuzzy, c-format
+#, c-format
 msgid "The installation will take %s including:"
-msgstr "A instalação levará %s"
+msgstr "A instalação levará %s incluindo:"
 
 #: src/components/overview/StorageSection.jsx:53
 msgid ""
@@ -905,7 +879,7 @@ msgstr ""
 
 #: src/components/overview/routes.js:30
 msgid "Overview"
-msgstr ""
+msgstr "Visão geral"
 
 #: src/components/product/ProductRegistrationPage.jsx:66
 #, c-format
@@ -925,9 +899,8 @@ msgid "Loading available products, please wait..."
 msgstr "Carregando produtos disponíveis, aguarde..."
 
 #: src/components/product/ProductSelectionProgress.jsx:53
-#, fuzzy
 msgid "Configuring the product, please wait ..."
-msgstr "Carregando produtos disponíveis, aguarde..."
+msgstr "Configurando o produto, aguarde..."
 
 #: src/components/questions/GenericQuestion.jsx:35
 #: src/components/questions/LuksActivationQuestion.jsx:60
@@ -957,9 +930,8 @@ msgid "The following software patterns are selected for installation:"
 msgstr "Os seguintes padrões de software são selecionados para instalação:"
 
 #: src/components/software/SoftwarePage.jsx:165
-#, fuzzy
 msgid "Selected patterns"
-msgstr "Selecionar fuso horário"
+msgstr "Selecionar padrões"
 
 #: src/components/software/SoftwarePage.jsx:168
 msgid "Change selection"
@@ -977,18 +949,19 @@ msgstr "Seleção de software"
 #: src/components/software/SoftwarePatternsSelection.jsx:241
 #: src/components/software/SoftwarePatternsSelection.jsx:242
 msgid "Filter by pattern title or description"
-msgstr ""
+msgstr "Filtrar por título ou descrição do padrão"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
 #: src/components/software/UsedSize.jsx:33
-#, fuzzy, c-format
+#, c-format
 msgid "Installation will take %s."
-msgstr "A instalação levará %s"
+msgstr "A instalação levará %s."
 
 #: src/components/software/UsedSize.jsx:38
 msgid "This space includes the base system and the selected software patterns."
 msgstr ""
+"Este espaço inclui o sistema base e os padrões de software selecionados."
 
 #: src/components/storage/BootConfigField.jsx:43
 msgid "Change boot options"
@@ -1030,9 +1003,8 @@ msgstr ""
 "As partições para inicialização serão alocadas no disco de instalação (%s)."
 
 #: src/components/storage/BootSelection.jsx:154
-#, fuzzy
 msgid "Select booting partition"
-msgstr "Selecione o que fazer com cada partição."
+msgstr "Selecione a partição de inicialização"
 
 #: src/components/storage/BootSelection.jsx:170
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
@@ -1179,9 +1151,8 @@ msgid "Remove max channel filter"
 msgstr "Remover filtro de canal máximo"
 
 #: src/components/storage/DeviceSelection.jsx:101
-#, fuzzy
 msgid "Loading data, please wait a second..."
-msgstr "Carregando produtos disponíveis, aguarde..."
+msgstr "Carregando dados, aguarde um segundo..."
 
 #. TRANSLATORS: description for using plain partitions for installing the
 #. system, the text in the square brackets [] is displayed in bold, use only
@@ -1208,24 +1179,20 @@ msgstr ""
 "sob demanda como novas partições nos dispositivos selecionados."
 
 #: src/components/storage/DeviceSelection.jsx:149
-#, fuzzy
 msgid "Select installation device"
-msgstr "Dispositivo de instalação"
+msgstr "Selecione o dispositivo de instalação"
 
 #: src/components/storage/DeviceSelection.jsx:155
-#, fuzzy
 msgid "Install new system on"
-msgstr "Opções do instalador"
+msgstr "Instalar novo sistema em"
 
 #: src/components/storage/DeviceSelection.jsx:158
-#, fuzzy
 msgid "An existing disk"
-msgstr "Diminuir partições existentes"
+msgstr "Um disco existente"
 
 #: src/components/storage/DeviceSelection.jsx:167
-#, fuzzy
 msgid "A new LVM Volume Group"
-msgstr "novo grupo de volume LVM"
+msgstr "Um novo grupo de volume LVM"
 
 #: src/components/storage/DeviceSelection.jsx:192
 msgid "Device selector for target disk"
@@ -1240,7 +1207,6 @@ msgid "Prepare more devices by configuring advanced"
 msgstr "Prepare mais dispositivos configurando o avançado"
 
 #: src/components/storage/DeviceSelection.jsx:229
-#, fuzzy
 msgid "storage techs"
 msgstr "tecnologias de armazenamento"
 
@@ -1351,13 +1317,12 @@ msgid "Encryption"
 msgstr "Criptografia"
 
 #: src/components/storage/EncryptionField.jsx:39
-#, fuzzy
 msgid ""
 "Protection for the information stored at the device, including data, "
 "programs, and system files."
 msgstr ""
-"A Criptografia Completa de Disco (FDE) permite proteger as informações "
-"armazenadas no dispositivo, incluindo dados, programas e arquivos de sistema."
+"Proteção para as informações armazenadas no dispositivo, incluindo dados, "
+"programas e arquivos de sistema."
 
 #: src/components/storage/EncryptionField.jsx:42
 msgid "disabled"
@@ -1372,13 +1337,12 @@ msgid "using TPM unlocking"
 msgstr "usando desbloqueio TPM"
 
 #: src/components/storage/EncryptionField.jsx:58
-#, fuzzy
 msgid "Enable"
-msgstr "ativado"
+msgstr "Ativado"
 
 #: src/components/storage/EncryptionField.jsx:58
 msgid "Modify"
-msgstr ""
+msgstr "Modificar"
 
 #: src/components/storage/EncryptionSettingsDialog.jsx:37
 msgid ""
@@ -1419,26 +1383,24 @@ msgstr "Dispositivo de instalação"
 
 #. TRANSLATORS: The storage "Installation device" field's description.
 #: src/components/storage/InstallationDeviceField.jsx:38
-#, fuzzy
 msgid "Main disk or LVM Volume Group for installation."
-msgstr "Selecione o disco principal ou o grupo de volumes LVM para instalação."
+msgstr "Disco principal ou o grupo de volumes LVM para instalação."
 
 #. TRANSLATORS: %s is the installation disk (eg. "/dev/sda, 80 GiB)
 #: src/components/storage/InstallationDeviceField.jsx:52
-#, fuzzy, c-format
+#, c-format
 msgid "File systems created as new partitions at %s"
-msgstr "Criar uma nova partição"
+msgstr "Sistemas de arquivos criados como novas partições em %s"
 
 #: src/components/storage/InstallationDeviceField.jsx:55
-#, fuzzy
 msgid "File systems created at a new LVM volume group"
-msgstr "Seletor de dispositivo para novo grupo de volume LVM"
+msgstr "Sistemas de arquivos criados em um novo grupo de volumes LVM"
 
 #. TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
 #: src/components/storage/InstallationDeviceField.jsx:59
-#, fuzzy, c-format
+#, c-format
 msgid "File systems created at a new LVM volume group on %s"
-msgstr "novo grupo de volume LVM em %s"
+msgstr "Sistemas de arquivos criados em um novo grupo de volumes LVM em %s"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/PartitionsField.jsx:73
@@ -1665,18 +1627,16 @@ msgid "Partitions and file systems"
 msgstr "Partições e sistemas de arquivos"
 
 #: src/components/storage/PartitionsField.jsx:802
-#, fuzzy
 msgid ""
 "Structure of the new system, including any additional partition needed for "
 "booting"
 msgstr ""
 "Estrutura do novo sistema, incluindo qualquer partição adicional necessária "
-"para inicialização,"
+"para inicialização"
 
 #: src/components/storage/PartitionsField.jsx:808
-#, fuzzy
 msgid "Show partitions and file-systems actions"
-msgstr "Partições e sistemas de arquivos"
+msgstr "Mostrar partições e ações de sistemas de arquivos"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsDialog.jsx:62
@@ -1695,14 +1655,12 @@ msgstr[0] "Mostrar ação do subvolume %d"
 msgstr[1] "Mostrar %d ações de subvolume"
 
 #: src/components/storage/ProposalActionsSummary.jsx:57
-#, fuzzy
 msgid "Destructive actions are not allowed"
-msgstr "Há %d ação destrutiva planejada"
+msgstr "Ações destrutivas não são permitidas"
 
 #: src/components/storage/ProposalActionsSummary.jsx:59
-#, fuzzy
 msgid "Destructive actions are allowed"
-msgstr "Há %d ação destrutiva planejada"
+msgstr "Ações destrutivas são permitidas"
 
 #: src/components/storage/ProposalActionsSummary.jsx:66
 #, c-format
@@ -1713,48 +1671,43 @@ msgstr[1] "Há %d ações destrutivas planejadas"
 
 #: src/components/storage/ProposalActionsSummary.jsx:79
 #: src/components/storage/ProposalActionsSummary.jsx:126
-#, fuzzy
 msgid "affecting"
-msgstr "Afetando"
+msgstr "afetando"
 
 #: src/components/storage/ProposalActionsSummary.jsx:107
-#, fuzzy
 msgid "Shrinking partitions is not allowed"
-msgstr "Diminuir partições existentes"
+msgstr "Não é permitido reduzir partições"
 
 #: src/components/storage/ProposalActionsSummary.jsx:111
-#, fuzzy
 msgid "Shrinking partitions is allowed"
-msgstr "Diminuir partições existentes"
+msgstr "Reduzir partições é permitido"
 
 #: src/components/storage/ProposalActionsSummary.jsx:113
-#, fuzzy
 msgid "Shrinking some partitions is allowed but not needed"
-msgstr "diminuindo partições do dispositivo de instalação"
+msgstr "Reduzir algumas partições é permitido, mas não é necessário"
 
 #: src/components/storage/ProposalActionsSummary.jsx:116
-#, fuzzy, c-format
+#, c-format
 msgid "%d partition will be shrunk"
 msgid_plural "%d partitions will be shrunk"
-msgstr[0] "partição"
-msgstr[1] "partição"
+msgstr[0] "%d partição será reduzida"
+msgstr[1] "%d partições serão reduzidas"
 
 #: src/components/storage/ProposalActionsSummary.jsx:151
-#, fuzzy
 msgid "Cannot accommodate the required file systems for installation"
-msgstr "O layout do teclado não pode ser alterado na instalação remota"
+msgstr ""
+"Não é possível acomodar os sistemas de arquivos necessários para instalação"
 
 #: src/components/storage/ProposalActionsSummary.jsx:160
-#, fuzzy, c-format
+#, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
-msgstr[0] "Verifique todas as ações planejadas"
-msgstr[1] "Verifique todas as ações planejadas"
+msgstr[0] "Confira a ação planejada"
+msgstr[1] "Verifique as %d ações planejadas"
 
 #: src/components/storage/ProposalActionsSummary.jsx:179
-#, fuzzy
 msgid "Waiting for actions information..."
-msgstr "Aguardando informações sobre configuração de armazenamento"
+msgstr "Aguardando informações sobre ações..."
 
 #: src/components/storage/ProposalPage.jsx:314
 msgid "Planned Actions"
@@ -1766,15 +1719,15 @@ msgstr "Aguardando informações sobre configuração de armazenamento"
 
 #: src/components/storage/ProposalResultSection.jsx:70
 msgid "Final layout"
-msgstr ""
+msgstr "Layout final"
 
 #: src/components/storage/ProposalResultSection.jsx:71
 msgid "The systems will be configured as displayed below."
-msgstr ""
+msgstr "Os sistemas serão configurados conforme mostrado abaixo."
 
 #: src/components/storage/ProposalResultSection.jsx:78
 msgid "Storage proposal not possible"
-msgstr ""
+msgstr "Proposta de armazenamento não é possível"
 
 #: src/components/storage/ProposalResultTable.jsx:74
 msgid "New"
@@ -1848,7 +1801,7 @@ msgstr "Ações para encontrar espaço"
 
 #: src/components/storage/SpacePolicySelection.jsx:170
 msgid "Space policy"
-msgstr ""
+msgstr "Política espacial"
 
 #: src/components/storage/VolumeDialog.jsx:78
 #, c-format
@@ -2393,7 +2346,7 @@ msgstr "Destinos"
 
 #: src/components/storage/routes.js:36
 msgid "Proposal"
-msgstr ""
+msgstr "Proposta"
 
 #: src/components/storage/utils.js:64
 msgid "KiB"
@@ -2428,9 +2381,8 @@ msgstr ""
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space deleting current content". Keep it short
 #: src/components/storage/utils.js:82
-#, fuzzy
 msgid "deleting current content"
-msgstr "Excluir conteúdo atual"
+msgstr "Excluindo o conteúdo atual"
 
 #: src/components/storage/utils.js:87
 msgid "Shrink existing partitions"
@@ -2445,9 +2397,8 @@ msgstr ""
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space shrinking partitions". Keep it short.
 #: src/components/storage/utils.js:92
-#, fuzzy
 msgid "shrinking partitions"
-msgstr "Diminuir partições existentes"
+msgstr "Diminuindo partições"
 
 #: src/components/storage/utils.js:97
 msgid "Use available space"
@@ -2477,9 +2428,8 @@ msgstr "Selecione o que fazer com cada partição."
 #. TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
 #. would read as "Find space with custom actions". Keep it short.
 #: src/components/storage/utils.js:112
-#, fuzzy
 msgid "with custom actions"
-msgstr "executando um conjunto personalizado de ações"
+msgstr "com ações personalizadas"
 
 #: src/components/users/FirstUser.jsx:35
 msgid "No user defined yet."
@@ -2525,23 +2475,20 @@ msgid "Use suggested username"
 msgstr "Use o nome de usuário sugerido"
 
 #: src/components/users/FirstUserForm.jsx:140
-#, fuzzy
 msgid "All fields are required"
-msgstr "Um valor de tamanho é necessário"
+msgstr "Todos os campos são necessários"
 
 #: src/components/users/FirstUserForm.jsx:147
 msgid "Please, try again."
-msgstr ""
+msgstr "Por favor, tente de novo."
 
 #: src/components/users/FirstUserForm.jsx:197
-#, fuzzy
 msgid "Create user"
-msgstr "Criar conta de usuário"
+msgstr "Criar usuário"
 
 #: src/components/users/FirstUserForm.jsx:197
-#, fuzzy
 msgid "Edit user"
-msgstr "Editar %s"
+msgstr "Editar usuário"
 
 #: src/components/users/FirstUserForm.jsx:214
 #: src/components/users/FirstUserForm.jsx:216
@@ -2650,7 +2597,7 @@ msgstr "Limpar"
 
 #: src/components/users/UsersPage.jsx:45
 msgid "First user"
-msgstr ""
+msgstr "Primeiro usuário"
 
 #: src/components/users/UsersPage.jsx:52
 msgid "Root authentication"

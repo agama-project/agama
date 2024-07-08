@@ -50,8 +50,8 @@ install -D -m 0644 --target-directory=%{buildroot}%{_datadir}/agama/web_ui/fonts
 
 %files
 %doc README.md
-%{_datadir}/agama
+%license LICENSE
+%dir %{_datadir}/agama
 %{_datadir}/agama/web_ui
-%{_datadir}/agama/web_ui/fonts
 
 %changelog

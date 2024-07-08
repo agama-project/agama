@@ -520,53 +520,31 @@ describe Agama::DBus::Storage::Manager do
       JSON.pretty_generate(value)
     end
 
-    context "if the storage config has not been set yet" do
-      context "and a proposal has not been calculated" do
-        it "returns serialized empty storage config" do
-          expect(subject.serialized_storage_config).to eq(pretty_json({}))
-        end
-      end
-
-      context "and a proposal has been calculated" do
-        before do
-          proposal.calculate_guided(settings)
-        end
-
-        let(:settings) do
-          Agama::Storage::ProposalSettings.new.tap do |settings|
-            settings.device = Agama::Storage::DeviceSettings::Disk.new("/dev/vda")
-          end
-        end
-
-        it "returns serialized storage config including guided proposal settings" do
-          expected_config = {
-            storage: {
-              guided: settings.to_json_settings
-            }
-          }
-
-          expect(subject.serialized_storage_config).to eq(pretty_json(expected_config))
-        end
+    context "if a proposal has not been calculated" do
+      it "returns serialized empty storage config" do
+        expect(subject.serialized_storage_config).to eq(pretty_json({}))
       end
     end
 
-    context "if the storage config has been set" do
+    context "if a proposal has been calculated" do
       before do
-        subject.apply_storage_config(storage_config.to_json)
+        proposal.calculate_guided(settings)
       end
 
-      let(:storage_config) do
-        {
+      let(:settings) do
+        Agama::Storage::ProposalSettings.new.tap do |settings|
+          settings.device = Agama::Storage::DeviceSettings::Disk.new("/dev/vda")
+        end
+      end
+
+      it "returns serialized storage config including guided proposal settings" do
+        expected_config = {
           storage: {
-            guided: {
-              disk: "/dev/vdc"
-            }
+            guided: settings.to_json_settings
           }
         }
-      end
 
-      it "returns the serialized storage config" do
-        expect(subject.serialized_storage_config).to eq(storage_config.to_json)
+        expect(subject.serialized_storage_config).to eq(pretty_json(expected_config))
       end
     end
   end

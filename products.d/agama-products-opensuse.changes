@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Tue Jul  2 13:54:15 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Use specific flavor of openSUSE-repos for each distro
+  (gh#openSUSE/agama#1424).
+
+-------------------------------------------------------------------
+Tue Jul  2 11:33:36 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Enable Leap 16.0 Alpha (gh#openSUSE/agama#1423).
+
+-------------------------------------------------------------------
 Wed Jun 26 15:23:55 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Temporarily remove Leap 16.0 Alpha from the list of products
