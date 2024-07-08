@@ -25,6 +25,7 @@ require "y2storage"
 module Agama
   module Storage
     # Generates information about shrinking a block device.
+    # See doc/shrinking_devices.md.
     class DeviceShrinking
       include Yast::I18n
 
