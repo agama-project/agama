@@ -88,8 +88,6 @@ const keymapsQuery = () => ({
  * It does not require to call `useMutation`.
  */
 const useConfigMutation = () => {
-  const queryClient = useQueryClient();
-
   const query = {
     mutationFn: (newConfig) =>
       fetch("/api/l10n/config", {
@@ -98,10 +96,7 @@ const useConfigMutation = () => {
         headers: {
           "Content-Type": "application/json",
         },
-      }),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["l10n", "config"] })
-    ,
+      })
   };
   return useMutation(query);
 };
