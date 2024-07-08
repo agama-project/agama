@@ -533,13 +533,10 @@ impl TryFrom<zbus::zvariant::Value<'_>> for ShrinkingInfo {
             info = Some(Self::Unsupported(reasons));
         }
 
-        if let Some(info_value) = info {
-            Ok(info_value)
-        } else {
-            Err(Self::Error::Message(
-                format!("Wrong value for Shrinking: {}", value).to_string(),
-            ))
-        }
+        info.ok_or(Self::Error::Message(format!(
+            "Wrong value for Shrinking: {}",
+            value
+        )))
     }
 }
 
