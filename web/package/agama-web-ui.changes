@@ -1,8 +1,8 @@
 -------------------------------------------------------------------
 Mon Jul  8 10:56:14 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Introduce TanStack Query to handle for data fetching and state
-  management (gh#openSUSE/agama#1439).
+- Introduce TanStack Query for data fetching and state management
+  (gh#openSUSE/agama#1439).
 - Replace the l10n context with a solution based on TanStack
   Query.
 
