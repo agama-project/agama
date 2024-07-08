@@ -23,6 +23,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
+import { gib } from "~/components/storage/utils";
 import { plainRender } from "~/test-utils";
 import SpaceActionsTable from "~/components/storage/SpaceActionsTable";
 
@@ -31,12 +32,6 @@ import SpaceActionsTable from "~/components/storage/SpaceActionsTable";
  * @typedef {import ("~/client/storage").Volume} Volume
  * @typedef {import ("~/components/storage/SpaceActionsTable").SpaceActionsTableProps} SpaceActionsTableProps
  */
-
-/**
- * GiB to Bytes.
- *
- * @type {(value: number) => number } */
-const gib = (value) => value * (1024 ** 3);
 
 /** @type {StorageDevice} */
 const sda = {
