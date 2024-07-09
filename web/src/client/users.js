@@ -163,7 +163,7 @@ class UsersBaseClient {
    * @return {import ("./dbus").RemoveFn} function to disable the callback
    */
   onUsersChange(handler) {
-    return this.client.ws.onEvent((event) => {
+    return this.client.ws().onEvent((event) => {
       if (event.type === "RootChanged") {
         const res = {};
         if (event.password !== null) {
