@@ -239,11 +239,24 @@ class HTTPClient {
     const httpUrl = new URL(url.toString());
     httpUrl.pathname = url.pathname.concat("api");
     this.baseUrl = httpUrl.toString();
+    this.url = url;
+  }
 
-    const wsUrl = new URL(url.toString());
+  /**
+   * Return the websocket client
+   *
+   * The WSClient is lazily created in the first call of this method.
+   *
+   * @return {WSClient}
+   */
+  ws() {
+    if (this._ws) return this._ws;
+
+    const wsUrl = new URL(this.url.toString());
     wsUrl.pathname = wsUrl.pathname.concat("api/ws");
-    wsUrl.protocol = (url.protocol === "http:") ? "ws" : "wss";
-    this.ws = new WSClient(wsUrl);
+    wsUrl.protocol = (this.url.protocol === "http:") ? "ws" : "wss";
+    this._ws = new WSClient(wsUrl);
+    return this._ws;
   }
 
   /**
@@ -329,7 +342,7 @@ class HTTPClient {
    * @return {RemoveFn} - Function to remove the handler.
    */
   onClose(func) {
-    return this.ws.onClose(() => {
+    return this.ws().onClose(() => {
       func();
     });
   }
@@ -342,7 +355,7 @@ class HTTPClient {
    * @return {RemoveFn} - Function to remove the handler.
    */
   onError(func) {
-    return this.ws.onError((event) => {
+    return this.ws().onError((event) => {
       func(event);
     });
   }
@@ -354,7 +367,7 @@ class HTTPClient {
    * @return {RemoveFn} - Function to remove the handler.
    */
   onOpen(func) {
-    return this.ws.onOpen((event) => {
+    return this.ws().onOpen((event) => {
       func(event);
     });
   }
@@ -367,7 +380,7 @@ class HTTPClient {
    * @return {RemoveFn} - Function to remove the handler.
    */
   onEvent(type, func) {
-    return this.ws.onEvent((event) => {
+    return this.ws().onEvent((event) => {
       if (event.type === type) {
         func(event);
       }

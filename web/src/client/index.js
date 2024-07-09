@@ -127,9 +127,8 @@ const createClient = url => {
     };
   };
 
-  const isConnected = () => client.ws?.isConnected() || false;
-  const isRecoverable = () => !!client.ws?.isRecoverable();
-  const ws = () => client.ws;
+  const isConnected = () => client.ws().isConnected() || false;
+  const isRecoverable = () => !!client.ws().isRecoverable();
 
   return {
     l10n,
@@ -145,9 +144,9 @@ const createClient = url => {
     onIssuesChange,
     isConnected,
     isRecoverable,
-    onConnect: handler => client.ws.onOpen(handler),
-    onDisconnect: handler => client.ws.onClose(handler),
-    ws: () => client.ws
+    onConnect: handler => client.ws().onOpen(handler),
+    onDisconnect: handler => client.ws().onClose(handler),
+    ws: () => client.ws()
   };
 };
 

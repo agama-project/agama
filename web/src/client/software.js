@@ -328,7 +328,7 @@ class ProductBaseClient {
    * @param {(registration: Registration) => void} handler - Callback function.
    */
   onRegistrationChange(handler) {
-    return this.client.ws.onEvent((event) => {
+    return this.client.ws().onEvent((event) => {
       if (event.type === "RegistrationChanged" || event.type === "RegistrationRequirementChanged") {
         this.getRegistration().then(handler);
       }
