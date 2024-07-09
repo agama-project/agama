@@ -300,15 +300,13 @@ describe Agama::Storage::ProposalSettingsConversions::ToY2Storage do
           settings.space.policy = :resize
         end
 
-        it "generates resize actions for all the partitions at the used devices" do
+        it "generates resize actions for the partitions that support shrinking" do
           y2storage_settings = subject.convert
 
           expect(y2storage_settings.space_settings).to have_attributes(
             strategy: :bigger_resize,
             actions:  {
-              "/dev/sda1" => :resize,
-              "/dev/sda2" => :resize,
-              "/dev/sda3" => :resize
+              "/dev/sda2" => :resize
             }
           )
         end

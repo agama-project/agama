@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "agama/storage/device_shrinking"
 
 module Agama
   module DBus
@@ -86,11 +87,17 @@ module Agama
               storage_device.size.to_i
             end
 
-            # Size of the space that could be theoretically reclaimed by shrinking the device.
+            # Shrinking information.
             #
-            # @return [Integer]
-            def block_recoverable_size
-              storage_device.recoverable_size.to_i
+            # @return [Hash]
+            def block_shrinking
+              shrinking = Agama::Storage::DeviceShrinking.new(storage_device)
+
+              if shrinking.supported?
+                { "Supported" => shrinking.min_size.to_i }
+              else
+                { "Unsupported" => shrinking.unsupported_reasons }
+              end
             end
 
             # Name of the currently installed systems
@@ -112,7 +119,7 @@ module Agama
                   dbus_reader :block_udev_ids, "as", dbus_name: "UdevIds"
                   dbus_reader :block_udev_paths, "as", dbus_name: "UdevPaths"
                   dbus_reader :block_size, "t", dbus_name: "Size"
-                  dbus_reader :block_recoverable_size, "t", dbus_name: "RecoverableSize"
+                  dbus_reader :block_shrinking, "a{sv}", dbus_name: "Shrinking"
                   dbus_reader :block_systems, "as", dbus_name: "Systems"
                 end
               end

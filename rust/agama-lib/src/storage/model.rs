@@ -504,12 +504,40 @@ pub struct DeviceInfo {
 pub struct BlockDevice {
     pub active: bool,
     pub encrypted: bool,
-    pub recoverable_size: DeviceSize,
     pub size: DeviceSize,
+    pub shrinking: ShrinkingInfo,
     pub start: u64,
     pub systems: Vec<String>,
     pub udev_ids: Vec<String>,
     pub udev_paths: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum ShrinkingInfo {
+    Supported(DeviceSize),
+    Unsupported(Vec<String>),
+}
+
+impl TryFrom<zbus::zvariant::Value<'_>> for ShrinkingInfo {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(value: zbus::zvariant::Value) -> Result<Self, zbus::zvariant::Error> {
+        let hash: HashMap<String, OwnedValue> = value.clone().try_into()?;
+        let mut info: Option<Self> = None;
+
+        if let Some(size) = get_optional_property(&hash, "Supported")? {
+            info = Some(Self::Supported(size));
+        }
+        if let Some(reasons) = get_optional_property(&hash, "Unsupported")? {
+            info = Some(Self::Unsupported(reasons));
+        }
+
+        info.ok_or(Self::Error::Message(format!(
+            "Wrong value for Shrinking: {}",
+            value
+        )))
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]

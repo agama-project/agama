@@ -72,7 +72,7 @@ class DBusClient {
  * @property {boolean} [encrypted] - Whether the device is encrypted (only for block devices)
  * @property {boolean} [isEFI] - Whether the device is an EFI partition (only for partition)
  * @property {number} [size]
- * @property {number} [recoverableSize]
+ * @property {ShrinkingInfo} [shrinking]
  * @property {string[]} [systems] - Name of the installed systems
  * @property {string[]} [udevIds]
  * @property {string[]} [udevPaths]
@@ -101,6 +101,10 @@ class DBusClient {
  * @property {string} type
  * @property {string} [mountPath]
  * @property {string} [label]
+ *
+ * @typedef {object} ShrinkingInfo
+ * @property {number} [supported] - Min size the device can be shrunk to.
+ * @property {string[]} [unsupported] - Reasons why the device cannot be shrunk.
  *
  * @typedef {object} ProposalResult
  * @property {ProposalSettings} settings

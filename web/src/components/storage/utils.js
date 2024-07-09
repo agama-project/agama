@@ -313,6 +313,12 @@ const reuseDevice = (volume) => volume.target === "FILESYSTEM" || volume.target 
  */
 const volumeLabel = (volume) => volume.mountPath === "/" ? "root" : volume.mountPath;
 
+/**
+ * GiB to Bytes.
+ *
+ * @type {(value: number) => number } */
+const gib = (value) => value * (1024 ** 3);
+
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
@@ -322,6 +328,7 @@ export {
   deviceLabel,
   deviceChildren,
   deviceSize,
+  gib,
   parseToBytes,
   splitSize,
   hasFS,

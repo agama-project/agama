@@ -59,7 +59,7 @@ const sda = {
   size: 1024,
   start: 0,
   encrypted: false,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems : [],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
@@ -76,7 +76,7 @@ const sda1 = {
   size: 512,
   start: 123,
   encrypted: false,
-  recoverableSize: 128,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems : [],
   udevIds: [],
   udevPaths: [],
@@ -94,7 +94,7 @@ const sda2 = {
   size: 256,
   start: 1789,
   encrypted: false,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems : [],
   udevIds: [],
   udevPaths: [],
@@ -120,7 +120,7 @@ const sdb = {
   size: 2048,
   start: 0,
   encrypted: false,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems : [],
   udevIds: [],
   udevPaths: ["pci-0000:00-19"]
@@ -145,7 +145,7 @@ const sdc = {
   size: 2048,
   start: 0,
   encrypted: false,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems : [],
   udevIds: [],
   udevPaths: []
@@ -170,7 +170,7 @@ const sdd = {
   size: 2048,
   start: 0,
   encrypted: false,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems : [],
   udevIds: [],
   udevPaths: []
@@ -195,7 +195,7 @@ const sde = {
   size: 2048,
   start: 0,
   encrypted: false,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems : [],
   udevIds: [],
   udevPaths: []
@@ -214,7 +214,7 @@ const md0 = {
   size: 2048,
   start: 0,
   encrypted: false,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   devices: [],
   systems : ["openSUSE Leap 15.2"],
   udevIds: [],
@@ -241,7 +241,7 @@ const raid = {
   size: 2048,
   start: 0,
   encrypted: false,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   devices: [],
   systems : [],
   udevIds: [],
@@ -267,7 +267,7 @@ const multipath = {
   size: 2048,
   start: 0,
   encrypted: false,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems : [],
   udevIds: [],
   udevPaths: []
@@ -292,7 +292,7 @@ const dasd = {
   size: 2048,
   start: 0,
   encrypted: false,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems : [],
   udevIds: [],
   udevPaths: []
@@ -317,7 +317,7 @@ const sdf = {
   size: 2048,
   start: 0,
   encrypted: false,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems : [],
   udevIds: [],
   udevPaths: []
@@ -334,7 +334,7 @@ const sdf1 = {
   size: 512,
   start: 1024,
   encrypted: true,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems : [],
   udevIds: [],
   udevPaths: [],
@@ -362,7 +362,7 @@ const lvmLv1 = {
   size: 512,
   start: 0,
   encrypted: false,
-  recoverableSize: 0,
+  shrinking: { supported: 128 },
   systems : [],
   udevIds: [],
   udevPaths: []
@@ -485,7 +485,7 @@ const sdbStaging = {
   size: 2048,
   start: 0,
   encrypted: false,
-  recoverableSize: 0,
+  shrinking: { unsupported: ["Resizing is not supported"] },
   systems : [],
   udevIds: [],
   udevPaths: ["pci-0000:00-19"]
@@ -667,7 +667,7 @@ const contexts = {
         encrypted: false,
         size: 1024,
         start: 0,
-        recoverableSize: 0,
+        shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
         udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"]
@@ -703,7 +703,7 @@ const contexts = {
         encrypted: false,
         size: 512,
         start: 123,
-        recoverableSize: 128,
+        shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
         udevPaths: []
@@ -726,7 +726,7 @@ const contexts = {
         encrypted: false,
         size: 256,
         start: 1789,
-        recoverableSize: 0,
+        shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
         udevPaths: []
@@ -748,7 +748,7 @@ const contexts = {
         encrypted: false,
         size: 2048,
         start: 0,
-        recoverableSize: 0,
+        shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
         udevPaths: ["pci-0000:00-19"]
@@ -783,7 +783,7 @@ const contexts = {
         encrypted: false,
         size: 2048,
         start: 0,
-        recoverableSize: 0,
+        shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
         udevPaths: []
@@ -818,7 +818,7 @@ const contexts = {
         encrypted: false,
         size: 2048,
         start: 0,
-        recoverableSize: 0,
+        shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
         udevPaths: []
@@ -853,7 +853,7 @@ const contexts = {
         encrypted: false,
         size: 2048,
         start: 0,
-        recoverableSize: 0,
+        shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
         udevPaths: []
@@ -888,7 +888,7 @@ const contexts = {
         encrypted: false,
         size: 2048,
         start: 0,
-        recoverableSize: 0,
+        shrinking: { unsupported: ["Resizing is not supported"] },
         systems: ["openSUSE Leap 15.2"],
         udevIds: [],
         udevPaths: []
@@ -916,7 +916,7 @@ const contexts = {
         encrypted: false,
         size: 2048,
         start: 0,
-        recoverableSize: 0,
+        shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
         udevPaths: []
@@ -949,7 +949,7 @@ const contexts = {
         encrypted: false,
         size: 2048,
         start: 0,
-        recoverableSize: 0,
+        shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
         udevPaths: []
@@ -982,7 +982,7 @@ const contexts = {
         encrypted: false,
         size: 2048,
         start: 0,
-        recoverableSize: 0,
+        shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
         udevPaths: []
@@ -1012,7 +1012,7 @@ const contexts = {
         encrypted: false,
         size: 2048,
         start: 0,
-        recoverableSize: 0,
+        shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
         udevPaths: []
@@ -1048,7 +1048,7 @@ const contexts = {
         encrypted: true,
         size: 512,
         start: 1024,
-        recoverableSize: 0,
+        shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
         udevPaths: []
@@ -1083,7 +1083,7 @@ const contexts = {
         encrypted: false,
         size: 512,
         start: 0,
-        recoverableSize: 0,
+        shrinking: { supported: 128 },
         systems: [],
         udevIds: [],
         udevPaths: []
@@ -1118,7 +1118,7 @@ const contexts = {
         encrypted: false,
         size: 2048,
         start: 0,
-        recoverableSize: 0,
+        shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
         udevPaths: ["pci-0000:00-19"]

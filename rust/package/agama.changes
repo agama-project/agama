@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul  5 13:17:17 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Adapt storage model to changes in D-Bus API
+  (gh#openSUSE/agama#1428).
+
+-------------------------------------------------------------------
 Mon Jul  1 15:50:40 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Schema definition for guided and AutoYaST storage proposals
