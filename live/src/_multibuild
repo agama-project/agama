@@ -1,4 +1,5 @@
 <multibuild>
   <flavor>openSUSE</flavor>
   <flavor>openSUSE-Playwright</flavor>
+  <flavor>openSUSE-PXE</flavor>
 </multibuild>

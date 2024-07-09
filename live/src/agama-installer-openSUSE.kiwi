@@ -11,6 +11,7 @@
     <profiles>
         <profile name="openSUSE" description="openSUSE multiproduct image" import="true" />
         <profile name="openSUSE-Playwright" description="openSUSE image with Playwright integration tests" arch="aarch64,x86_64" />
+        <profile name="openSUSE-PXE" description="openSUSE OEM image for remote instalaltion" import="true" />
     </profiles>
     <preferences>
         <version>9.0.0</version>
@@ -38,6 +39,46 @@
             <bootloader name="custom" />
         </type>
     </preferences>
+    <preferences arch="ppc64le" profiles="openSUSE-PXE">
+        <!-- For some reason the compression results on ppc64le are not as good as on the other archs -->
+        <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="ofw" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=3174400" volid="agama">
+            <bootloader name="grub2" console="serial" timeout="1"/>
+            <oemconfig>
+                <oem-skip-verify>true</oem-skip-verify>
+                <oem-unattended>true</oem-unattended>
+                <oem-unattended-id>/dev/ram1</oem-unattended-id>
+                <oem-swap>false</oem-swap>
+                <oem-multipath-scan>false</oem-multipath-scan>
+            </oemconfig>
+            <size unit="M">3000</size>
+        </type>
+    </preferences>
+    <preferences arch="s390x" profiles="openSUSE-PXE">
+        <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152" volid="agama">
+            <bootloader name="custom"/>
+            <oemconfig>
+                <oem-skip-verify>true</oem-skip-verify>
+                <oem-unattended>true</oem-unattended>
+                <oem-unattended-id>/dev/ram1</oem-unattended-id>
+                <oem-swap>false</oem-swap>
+                <oem-multipath-scan>false</oem-multipath-scan>
+            </oemconfig>
+            <size unit="M">1900</size>
+        </type>
+    </preferences>
+    <preferences arch="aarch64,x86_64" profiles="openSUSE-PXE">
+        <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="uefi" installiso="true" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152" volid="agama">
+            <bootloader name="grub2" timeout="1"/>
+            <oemconfig>
+                <oem-skip-verify>true</oem-skip-verify>
+                <oem-unattended>true</oem-unattended>
+                <oem-unattended-id>/dev/ram1</oem-unattended-id>
+                <oem-swap>false</oem-swap>
+                <oem-multipath-scan>false</oem-multipath-scan>
+            </oemconfig>
+            <size unit="M">1900</size>
+        </type>
+    </preferences>
     <users>
         <!-- the password is configured during boot -->
         <user password="!*" home="/root" name="root" groups="root"/>
@@ -45,6 +86,11 @@
     <repository type="rpm-md">
         <source path="obsrepositories:/"/>
     </repository>
+    <packages type="image" profiles="openSUSE-PXE">
+        <package name="dracut-kiwi-oem-repart"/>
+        <package name="dracut-kiwi-oem-dump"/>
+        <archive name="root-openSUSE-PXE.tar.xz"/>
+    </packages>
     <packages type="image">
         <package name="avahi"/>
         <package name="bind-utils"/>
