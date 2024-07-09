@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul  9 08:51:34 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not try to connect to the WebSocket until the user is
+  logged in (gh#openSUSE/agama#).
+
+-------------------------------------------------------------------
 Mon Jul  8 11:12:13 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Improve storage UI for configuring the space policy actions
