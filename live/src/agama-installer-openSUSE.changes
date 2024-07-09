@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul  9 13:26:38 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Added agama-installer-openSUSE PXE images
+  (gh#openSUSE/agama#1450).
+
+-------------------------------------------------------------------
 Thu Jul  4 11:24:47 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Update src/live to match rename to agama-installer-openSUSE
