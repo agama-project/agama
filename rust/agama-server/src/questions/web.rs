@@ -8,7 +8,7 @@
 use crate::{error::Error, web::Event};
 use agama_lib::{
     error::ServiceError,
-    proxies::{GenericQuestionProxy, QuestionWithPasswordProxy},
+    proxies::{GenericQuestionProxy, QuestionWithPasswordProxy, Questions1Proxy},
 };
 use anyhow::Context;
 use axum::{
@@ -16,6 +16,7 @@ use axum::{
     routing::{get, put},
     Json, Router,
 };
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, pin::Pin};
 use tokio_stream::{Stream, StreamExt};
@@ -25,11 +26,12 @@ use zbus::{
     zvariant::{ObjectPath, OwnedObjectPath},
 };
 
-// TODO: move to lib
+// TODO: move to lib or maybe not and just have in lib client for http API?
 #[derive(Clone)]
 struct QuestionsClient<'a> {
     connection: zbus::Connection,
     objects_proxy: ObjectManagerProxy<'a>,
+    questions_proxy: Questions1Proxy<'a>,
 }
 
 impl<'a> QuestionsClient<'a> {
@@ -38,12 +40,53 @@ impl<'a> QuestionsClient<'a> {
             OwnedObjectPath::from(ObjectPath::try_from("/org/opensuse/Agama1/Questions")?);
         Ok(Self {
             connection: dbus.clone(),
+            questions_proxy: Questions1Proxy::new(&dbus).await?,
             objects_proxy: ObjectManagerProxy::builder(&dbus)
                 .path(question_path)?
                 .destination("org.opensuse.Agama1")?
                 .build()
                 .await?,
         })
+    }
+
+    pub async fn create_question(&self, question: Question) -> Result<Question, ServiceError> {
+        // TODO: ugly API is caused by dbus method to create question. It can be changed in future as DBus is internal only API
+        let generic = &question.generic;
+        let options: Vec<&str> = generic.options.iter().map(String::as_ref).collect();
+        let data: HashMap<&str, &str> = generic
+            .data
+            .iter()
+            .map(|(k, v)| (k.as_str(), v.as_str()))
+            .collect();
+        let path = if question.with_password.is_some() {
+            self.questions_proxy
+                .new_with_password(
+                    &generic.class,
+                    &generic.text,
+                    &options,
+                    &generic.default_option,
+                    data,
+                )
+                .await?
+        } else {
+            self.questions_proxy
+                .new_question(
+                    &generic.class,
+                    &generic.text,
+                    &options,
+                    &generic.default_option,
+                    data,
+                )
+                .await?
+        };
+        let mut res = question.clone();
+        // we are sure that regexp is correct, so use unwrap
+        let id_matcher = Regex::new(r"/(?<id>\d+)$").unwrap();
+        let Some(id_cap) = id_matcher.captures(path.as_str()) else {
+            panic!("Id not in path")
+        }; // TODO: better error if path does not contain id
+        res.generic.id = id_cap["id"].parse::<u32>().unwrap();
+        Ok(question)
     }
 
     pub async fn questions(&self) -> Result<Vec<Question>, ServiceError> {
@@ -59,15 +102,15 @@ impl<'a> QuestionsClient<'a> {
         );
         for (path, interfaces_hash) in objects.iter() {
             if interfaces_hash.contains_key(&password_interface) {
-                result.push(self.create_question_with_password(path).await?)
+                result.push(self.build_question_with_password(path).await?)
             } else {
-                result.push(self.create_generic_question(path).await?)
+                result.push(self.build_generic_question(path).await?)
             }
         }
         Ok(result)
     }
 
-    async fn create_generic_question(
+    async fn build_generic_question(
         &self,
         path: &OwnedObjectPath,
     ) -> Result<Question, ServiceError> {
@@ -91,19 +134,12 @@ impl<'a> QuestionsClient<'a> {
         Ok(result)
     }
 
-    async fn create_question_with_password(
+    async fn build_question_with_password(
         &self,
         path: &OwnedObjectPath,
     ) -> Result<Question, ServiceError> {
-        let dbus_question = QuestionWithPasswordProxy::builder(&self.connection)
-            .path(path)?
-            .cache_properties(zbus::CacheProperties::No)
-            .build()
-            .await?;
-        let mut result = self.create_generic_question(path).await?;
-        result.with_password = Some(QuestionWithPassword {
-            password: dbus_question.password().await?,
-        });
+        let mut result = self.build_generic_question(path).await?;
+        result.with_password = Some(QuestionWithPassword {});
 
         Ok(result)
     }
@@ -171,12 +207,13 @@ pub struct GenericQuestion {
 /// is that it is not composition as used here, but more like
 /// child of generic question and contain reference to Base.
 /// Here for web API we want to have in json that separation that would
-/// allow to compose any possible future specialization of question
+/// allow to compose any possible future specialization of question.
+/// Also note that question is empty as QuestionWithPassword does not
+/// provide more details for question, but require additional answer.
+/// Can be potentionally extended in future e.g. with list of allowed characters?
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct QuestionWithPassword {
-    password: String,
-}
+pub struct QuestionWithPassword {}
 
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
@@ -204,7 +241,7 @@ pub async fn questions_service(dbus: zbus::Connection) -> Result<Router, Service
     let questions = QuestionsClient::new(dbus.clone()).await?;
     let state = QuestionsState { questions };
     let router = Router::new()
-        .route("/", get(list_questions))
+        .route("/", get(list_questions).post(create_question))
         .route("/:id/answer", put(answer))
         .with_state(state);
     Ok(router)
@@ -265,4 +302,20 @@ async fn answer(
 ) -> Result<(), Error> {
     state.questions.answer(question_id, answer).await?;
     Ok(())
+}
+
+/// Create new question.
+///
+/// * `state`: service state.
+/// * `question`: struct with question where id of question is ignored and will be assigned
+#[utoipa::path(post, path = "/questions", responses(
+    (status = 200, description = "answer question"),
+    (status = 400, description = "The D-Bus service could not perform the action")
+))]
+async fn create_question(
+    State(state): State<QuestionsState<'_>>,
+    Json(question): Json<Question>,
+) -> Result<Json<Question>, Error> {
+    let res = state.questions.create_question(question).await?;
+    Ok(Json(res))
 }
