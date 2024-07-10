@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 10 10:01:18 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Add to HTTP API method POST for question to ask new question
+  (gh#openSUSE/agama#1451) 
+
+-------------------------------------------------------------------
 Fri Jul  5 13:17:17 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Adapt storage model to changes in D-Bus API
