@@ -26,19 +26,19 @@ import L10nPage from "~/components/l10n/L10nPage";
 let mockLoadedData;
 
 const locales = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },  
+  { id: "en_US.UTF-8", name: "English", territory: "United States" },
   { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" }
 ];
 
 const keymaps = [
-  { id: "us", name: "English" },  
+  { id: "us", name: "English" },
   { id: "es", name: "Spanish" }
 ];
 
 const timezones = [
   { id: "Europe/Berlin", parts: ["Europe", "Berlin"] },
   { id: "Europe/Madrid", parts: ["Europe", "Madrid"] }
-]
+];
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual("react-router-dom"),
