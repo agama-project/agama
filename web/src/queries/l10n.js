@@ -29,7 +29,7 @@ import { timezoneUTCOffset } from "~/utils";
  */
 const configQuery = () => {
   return {
-    queryKey: ["l10n", "config"],
+    queryKey: ["l10n/config"],
     queryFn: () => fetch("/api/l10n/config").then((res) => res.json()),
   };
 };
@@ -38,7 +38,7 @@ const configQuery = () => {
  * Returns a query for retrieving the list of known locales
  */
 const localesQuery = () => ({
-  queryKey: ["l10n", "locales"],
+  queryKey: ["l10n/locales"],
   queryFn: async () => {
     const response = await fetch("/api/l10n/locales");
     const locales = await response.json();
@@ -53,7 +53,7 @@ const localesQuery = () => ({
  * Returns a query for retrieving the list of known timezones
  */
 const timezonesQuery = () => ({
-  queryKey: ["l10n", "timezones"],
+  queryKey: ["l10n/timezones"],
   queryFn: async () => {
     const response = await fetch("/api/l10n/timezones");
     const timezones = await response.json();
@@ -69,7 +69,7 @@ const timezonesQuery = () => ({
  * Returns a query for retrieving the list of known keymaps
  */
 const keymapsQuery = () => ({
-  queryKey: ["l10n", "keymaps"],
+  queryKey: ["l10n/keymaps"],
   queryFn: async () => {
     const response = await fetch("/api/l10n/keymaps");
     const json = await response.json();
@@ -115,7 +115,7 @@ const useL10nConfigChanges = () => {
 
     return client.ws().onEvent(event => {
       if (event.type === "L10nConfigChanged") {
-        queryClient.invalidateQueries({ queryKey });
+        queryClient.invalidateQueries({ queryKey: ["l10n/config"] });
       }
     });
   }, [client, queryClient]);
