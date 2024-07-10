@@ -13,7 +13,7 @@ use agama_lib::{
 use anyhow::Context;
 use axum::{
     extract::{Path, State},
-    routing::{get, put},
+    routing::{delete, get, put},
     Json, Router,
 };
 use regex::Regex;
@@ -145,6 +145,18 @@ impl<'a> QuestionsClient<'a> {
         Ok(result)
     }
 
+    pub async fn delete(&self, id: u32) -> Result<(), ServiceError> {
+        let question_path = ObjectPath::from(
+            ObjectPath::try_from(format!("/org/opensuse/Agama1/Questions/{}", id))
+                .context("Failed to create dbus path")?,
+        );
+
+        self.questions_proxy
+            .delete(&question_path)
+            .await
+            .map_err(|e| e.into())
+    }
+
     pub async fn answer(&self, id: u32, answer: Answer) -> Result<(), ServiceError> {
         let question_path = OwnedObjectPath::from(
             ObjectPath::try_from(format!("/org/opensuse/Agama1/Questions/{}", id))
@@ -243,6 +255,7 @@ pub async fn questions_service(dbus: zbus::Connection) -> Result<Router, Service
     let state = QuestionsState { questions };
     let router = Router::new()
         .route("/", get(list_questions).post(create_question))
+        .route("/:id", delete(delete_question))
         .route("/:id/answer", put(answer))
         .with_state(state);
     Ok(router)
@@ -301,8 +314,24 @@ async fn answer(
     Path(question_id): Path<u32>,
     Json(answer): Json<Answer>,
 ) -> Result<(), Error> {
-    state.questions.answer(question_id, answer).await?;
-    Ok(())
+    let res = state.questions.answer(question_id, answer).await;
+    Ok(res?)
+}
+
+/// Deletes question.
+///
+/// * `state`: service state.
+/// * `questions_id`: id of question
+#[utoipa::path(delete, path = "/questions/:id", responses(
+    (status = 200, description = "question deleted"),
+    (status = 400, description = "The D-Bus service could not perform the action")
+))]
+async fn delete_question(
+    State(state): State<QuestionsState<'_>>,
+    Path(question_id): Path<u32>,
+) -> Result<(), Error> {
+    let res = state.questions.delete(question_id).await;
+    Ok(res?)
 }
 
 /// Create new question.
