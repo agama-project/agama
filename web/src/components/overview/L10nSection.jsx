@@ -23,16 +23,10 @@ import React from "react";
 import { TextContent, Text, TextVariants } from "@patternfly/react-core";
 import { Em } from "~/components/core";
 import { _ } from "~/i18n";
-import { localesQuery, configQuery } from "~/queries/l10n";
-import { useQuery } from "@tanstack/react-query";
+import { useL10n } from "~/queries/l10n";
 
 export default function L10nSection() {
-  const { isPending: isLocalesPending, data: locales } = useQuery(localesQuery());
-  const { isPending: isConfigPending, data: config } = useQuery(configQuery());
-
-  if (isLocalesPending || isConfigPending) return;
-
-  const locale = locales.find((l) => l.id === config?.locales[0]);
+  const { selectedLocale: locale } = useL10n();
 
   // TRANSLATORS: %s will be replaced by a language name and territory, example:
   // "English (United States)".
