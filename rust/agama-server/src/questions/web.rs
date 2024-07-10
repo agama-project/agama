@@ -84,7 +84,7 @@ impl<'a> QuestionsClient<'a> {
         let id_matcher = Regex::new(r"/(?<id>\d+)$").unwrap();
         let Some(id_cap) = id_matcher.captures(path.as_str()) else {
             let msg = format!("Failed to get ID for new question: {}", path.as_str()).to_string();
-            return Err(ServiceError::UnsuccessfulAction(msg))
+            return Err(ServiceError::UnsuccessfulAction(msg));
         }; // TODO: better error if path does not contain id
         res.generic.id = id_cap["id"].parse::<u32>().unwrap();
         Ok(question)
