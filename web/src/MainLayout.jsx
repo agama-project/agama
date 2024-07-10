@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { Suspense } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import {
   Button,
@@ -28,7 +28,7 @@ import {
   Page, PageSidebar, PageSidebarBody, PageToggleButton,
   Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
 } from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
+import { Icon, Loading } from "~/components/layout";
 import { About, InstallerOptions, LogsButton } from "~/components/core";
 import { _ } from "~/i18n";
 import { rootRoutes } from "~/router";
@@ -134,7 +134,9 @@ export default function Root() {
       header={<Header />}
       sidebar={<Sidebar />}
     >
-      <Outlet />
+      <Suspense fallback={<Loading />}>
+        <Outlet />
+      </Suspense>
     </Page>
   );
 }

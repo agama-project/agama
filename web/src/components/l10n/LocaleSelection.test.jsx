@@ -36,13 +36,13 @@ const mockConfigMutation = {
 
 jest.mock("~/queries/l10n", () => ({
   ...jest.requireActual("~/queries/l10n"),
+  useL10n: () => ({ locales, selectedLocale: locales[0] }),
   useConfigMutation: () => mockConfigMutation
 }));
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockNavigateFn,
-  useLoaderData: () => ({ locales, locale: locales[0] })
+  useNavigate: () => mockNavigateFn
 }));
 
 it("allows changing the keyboard", async () => {

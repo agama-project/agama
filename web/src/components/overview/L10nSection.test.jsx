@@ -30,14 +30,7 @@ const locales = [
 ];
 
 jest.mock("~/queries/l10n", () => ({
-  localesQuery: () => ({
-    queryKey: ["l10n", "locales"],
-    queryFn: jest.fn().mockResolvedValue(locales)
-  }),
-  configQuery: () => ({
-    queryKey: ["l10n", "config"],
-    queryFn: jest.fn().mockResolvedValue({ locales: ["en_US.UTF-8"] })
-  })
+  useL10n: () => ({ locales, selectedLocale: locales[0] }),
 }));
 
 it("displays the selected locale", async () => {

@@ -36,20 +36,6 @@ const LOCALE_SELECTION_PATH = "locale/select";
 const KEYMAP_SELECTION_PATH = "keymap/select";
 const TIMEZONE_SELECTION_PATH = "timezone/select";
 
-const l10nLoader = async () => {
-  const config = await queryClient.fetchQuery(configQuery());
-  const locales = await queryClient.fetchQuery(localesQuery());
-  const keymaps = await queryClient.fetchQuery(keymapsQuery());
-  const timezones = await queryClient.fetchQuery(timezonesQuery());
-
-  const { locales: [localeId], keymap: keymapId, timezone: timezoneId } = config;
-  const locale = locales.find((l) => l.id === localeId);
-  const keymap = keymaps.find((k) => k.id === keymapId);
-  const timezone = timezones.find((t) => t.id === timezoneId);
-
-  return { locales, locale, keymaps, keymap, timezones, timezone };
-};
-
 const routes = {
   path: L10N_PATH,
   element: <Page />,
@@ -60,22 +46,18 @@ const routes = {
   children: [
     {
       index: true,
-      loader: l10nLoader,
       element: <L10nPage />
     },
     {
       path: LOCALE_SELECTION_PATH,
-      loader: l10nLoader,
       element: <LocaleSelection />,
     },
     {
       path: KEYMAP_SELECTION_PATH,
-      loader: l10nLoader,
       element: <KeymapSelection />,
     },
     {
       path: TIMEZONE_SELECTION_PATH,
-      loader: l10nLoader,
       element: <TimezoneSelection />,
     }
   ]

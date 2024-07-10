@@ -25,18 +25,39 @@ import L10nPage from "~/components/l10n/L10nPage";
 
 let mockLoadedData;
 
+const locales = [
+  { id: "en_US.UTF-8", name: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" }
+];
+
+const keymaps = [
+  { id: "us", name: "English" },
+  { id: "es", name: "Spanish" }
+];
+
+const timezones = [
+  { id: "Europe/Berlin", parts: ["Europe", "Berlin"] },
+  { id: "Europe/Madrid", parts: ["Europe", "Madrid"] }
+];
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual("react-router-dom"),
-  useLoaderData: () => mockLoadedData,
   // TODO: mock the link because it needs a working router.
   Link: ({ children }) => <button>{children}</button>
 }));
 
+jest.mock("~/queries/l10n", () => ({
+  useL10n: () => mockLoadedData
+}));
+
 beforeEach(() => {
   mockLoadedData = {
-    locale:   { id: "en_US.UTF-8", name: "English", territory: "United States" },
-    keymap:   { id: "us", name: "English" },
-    timezone: { id: "Europe/Berlin", parts: ["Europe", "Berlin"] }
+    locales,
+    keymaps,
+    timezones,
+    selectedLocale: locales[0],
+    selectedKeymap: keymaps[0],
+    selectedTimezone: timezones[0],
   };
 });
 
@@ -49,7 +70,7 @@ it("renders a section for configuring the language", () => {
 
 describe("if there is no selected language", () => {
   beforeEach(() => {
-    mockLoadedData.locale = undefined;
+    mockLoadedData.selectedLocale = undefined;
   });
 
   it("renders a button for selecting a language", () => {
@@ -69,7 +90,7 @@ it("renders a section for configuring the keyboard", () => {
 
 describe("if there is no selected keyboard", () => {
   beforeEach(() => {
-    mockLoadedData.keymap = undefined;
+    mockLoadedData.selectedKeymap = undefined;
   });
 
   it("renders a button for selecting a keyboard", () => {
@@ -89,7 +110,7 @@ it("renders a section for configuring the time zone", () => {
 
 describe("if there is no selected time zone", () => {
   beforeEach(() => {
-    mockLoadedData.timezone = undefined;
+    mockLoadedData.selectedTimezone = undefined;
   });
 
   it("renders a button for selecting a time zone", () => {
