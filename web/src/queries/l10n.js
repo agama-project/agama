@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation, useSuspenseQuery, useSuspenseQueries } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { useDataInvalidator } from "~/queries/hooks";
 import { timezoneUTCOffset } from "~/utils";
@@ -122,11 +122,37 @@ const useL10nConfigChanges = () => {
   }, [client, dataInvalidator]);
 };
 
+/// Returns the l10n data.
+const useL10n = () => {
+  const [
+    { data: config },
+    { data: locales },
+    { data: keymaps },
+    { data: timezones }
+  ] = useSuspenseQueries({
+    queries: [
+      configQuery(),
+      localesQuery(),
+      keymapsQuery(),
+      timezonesQuery()
+    ]
+  });
+
+  const selectedLocale = locales.find((l) => l.id === config.locales[0]);
+  const selectedKeymap = keymaps.find((k) => k.id === config.keymap);
+  const selectedTimezone = timezones.find((t) => t.id === config.timezone);
+
+  return {
+    locales, keymaps, timezones, selectedLocale, selectedKeymap, selectedTimezone
+  };
+};
+
 export {
   configQuery,
   keymapsQuery,
   localesQuery,
   timezonesQuery,
   useConfigMutation,
+  useL10n,
   useL10nConfigChanges
 };
