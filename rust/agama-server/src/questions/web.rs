@@ -13,7 +13,9 @@ use agama_lib::{
 use anyhow::Context;
 use axum::{
     extract::{Path, State},
-    routing::{delete, get, put},
+    http::StatusCode,
+    response::{IntoResponse, Response},
+    routing::{delete, get},
     Json, Router,
 };
 use regex::Regex;
@@ -157,6 +159,42 @@ impl<'a> QuestionsClient<'a> {
             .map_err(|e| e.into())
     }
 
+    pub async fn get_answer(&self, id: u32) -> Result<Option<Answer>, ServiceError> {
+        let question_path = OwnedObjectPath::from(
+            ObjectPath::try_from(format!("/org/opensuse/Agama1/Questions/{}", id))
+                .context("Failed to create dbus path")?,
+        );
+        let mut result = Answer {
+            generic: GenericAnswer {
+                answer: String::new(),
+            },
+            with_password: None,
+        };
+        let dbus_password_res = QuestionWithPasswordProxy::builder(&self.connection)
+            .path(&question_path)?
+            .cache_properties(zbus::CacheProperties::No)
+            .build()
+            .await;
+        if let Ok(dbus_password) = dbus_password_res {
+            result.with_password = Some(PasswordAnswer {
+                password: dbus_password.password().await?,
+            });
+        }
+
+        let dbus_generic = GenericQuestionProxy::builder(&self.connection)
+            .path(&question_path)?
+            .cache_properties(zbus::CacheProperties::No)
+            .build()
+            .await?;
+        let answer = dbus_generic.answer().await?;
+        if answer.is_empty() {
+            Ok(None)
+        } else {
+            result.generic.answer = answer;
+            Ok(Some(result))
+        }
+    }
+
     pub async fn answer(&self, id: u32, answer: Answer) -> Result<(), ServiceError> {
         let question_path = OwnedObjectPath::from(
             ObjectPath::try_from(format!("/org/opensuse/Agama1/Questions/{}", id))
@@ -256,7 +294,7 @@ pub async fn questions_service(dbus: zbus::Connection) -> Result<Router, Service
     let router = Router::new()
         .route("/", get(list_questions).post(create_question))
         .route("/:id", delete(delete_question))
-        .route("/:id/answer", put(answer))
+        .route("/:id/answer", get(get_answer).put(answer_question))
         .with_state(state);
     Ok(router)
 }
@@ -300,6 +338,27 @@ async fn list_questions(
     Ok(Json(state.questions.questions().await?))
 }
 
+/// Get answer to question.
+///
+/// * `state`: service state.
+/// * `questions_id`: id of question
+#[utoipa::path(put, path = "/questions/:id/answer", responses(
+    (status = 200, description = "Answer"),
+    (status = 400, description = "The D-Bus service could not perform the action"),
+    (status = 404, description = "Answer was not yet provided"),
+))]
+async fn get_answer(
+    State(state): State<QuestionsState<'_>>,
+    Path(question_id): Path<u32>,
+) -> Result<Response, Error> {
+    let res = state.questions.get_answer(question_id).await?;
+    if let Some(answer) = res {
+        Ok(Json(answer).into_response())
+    } else {
+        Ok(StatusCode::NOT_FOUND.into_response())
+    }
+}
+
 /// Provide answer to question.
 ///
 /// * `state`: service state.
@@ -309,7 +368,7 @@ async fn list_questions(
     (status = 200, description = "answer question"),
     (status = 400, description = "The D-Bus service could not perform the action")
 ))]
-async fn answer(
+async fn answer_question(
     State(state): State<QuestionsState<'_>>,
     Path(question_id): Path<u32>,
     Json(answer): Json<Answer>,
