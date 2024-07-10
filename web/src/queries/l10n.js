@@ -20,9 +20,8 @@
  */
 
 import React from "react";
-import { useQueryClient, useMutation, useSuspenseQuery, useSuspenseQueries } from "@tanstack/react-query";
+import { useQueryClient, useMutation, useSuspenseQueries } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { useDataInvalidator } from "~/queries/hooks";
 import { timezoneUTCOffset } from "~/utils";
 
 /**
@@ -108,7 +107,7 @@ const useConfigMutation = () => {
  * revalidate its data (executing the loaders again).
  */
 const useL10nConfigChanges = () => {
-  const dataInvalidator = useDataInvalidator();
+  const queryClient = useQueryClient();
   const client = useInstallerClient();
 
   React.useEffect(() => {
@@ -116,10 +115,10 @@ const useL10nConfigChanges = () => {
 
     return client.ws().onEvent(event => {
       if (event.type === "L10nConfigChanged") {
-        dataInvalidator({ queryKey: ["l10n", "config"] });
+        queryClient.invalidateQueries({ queryKey });
       }
     });
-  }, [client, dataInvalidator]);
+  }, [client, queryClient]);
 };
 
 /// Returns the l10n data.
