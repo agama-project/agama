@@ -52,4 +52,4 @@ function AppProviders({ children }) {
   );
 }
 
-export { AppProviders, queryClient };
+export { AppProviders };

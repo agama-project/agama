@@ -36,13 +36,13 @@ const mockConfigMutation = {
 
 jest.mock("~/queries/l10n", () => ({
   ...jest.requireActual("~/queries/l10n"),
-  useConfigMutation: () => mockConfigMutation
+  useConfigMutation: () => mockConfigMutation,
+  useL10n: () => ({ timezones, selectedTimezone: timezones[0] })
 }));
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockNavigateFn,
-  useLoaderData: () => ({ timezones, timezone: timezones[0] })
+  useNavigate: () => mockNavigateFn
 }));
 
 it("allows changing the keyboard", async () => {

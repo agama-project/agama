@@ -21,11 +21,11 @@
 
 import React, { useState } from "react";
 import { Divider, Flex, Form, FormGroup, Radio, Text } from "@patternfly/react-core";
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { timezoneTime } from "~/utils";
-import { useConfigMutation } from "~/queries/l10n";
+import { useConfigMutation, useL10n } from "~/queries/l10n";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
 let date;
@@ -56,7 +56,7 @@ export default function TimezoneSelection() {
   date = new Date();
   const navigate = useNavigate();
   const setConfig = useConfigMutation();
-  const { timezones, timezone: currentTimezone } = useLoaderData();
+  const { timezones, selectedTimezone: currentTimezone } = useL10n();
   const displayTimezones = timezones.map(timezoneWithDetails);
   const [selected, setSelected] = useState(currentTimezone.id);
   const [filteredTimezones, setFilteredTimezones] = useState(sortedTimezones(displayTimezones));

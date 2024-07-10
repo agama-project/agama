@@ -20,9 +20,8 @@
  */
 
 import React from "react";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation, useSuspenseQueries } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { useDataInvalidator } from "~/queries/hooks";
 import { timezoneUTCOffset } from "~/utils";
 
 /**
@@ -30,7 +29,7 @@ import { timezoneUTCOffset } from "~/utils";
  */
 const configQuery = () => {
   return {
-    queryKey: ["l10n", "config"],
+    queryKey: ["l10n/config"],
     queryFn: () => fetch("/api/l10n/config").then((res) => res.json()),
   };
 };
@@ -39,7 +38,7 @@ const configQuery = () => {
  * Returns a query for retrieving the list of known locales
  */
 const localesQuery = () => ({
-  queryKey: ["l10n", "locales"],
+  queryKey: ["l10n/locales"],
   queryFn: async () => {
     const response = await fetch("/api/l10n/locales");
     const locales = await response.json();
@@ -54,7 +53,7 @@ const localesQuery = () => ({
  * Returns a query for retrieving the list of known timezones
  */
 const timezonesQuery = () => ({
-  queryKey: ["l10n", "timezones"],
+  queryKey: ["l10n/timezones"],
   queryFn: async () => {
     const response = await fetch("/api/l10n/timezones");
     const timezones = await response.json();
@@ -70,7 +69,7 @@ const timezonesQuery = () => ({
  * Returns a query for retrieving the list of known keymaps
  */
 const keymapsQuery = () => ({
-  queryKey: ["l10n", "keymaps"],
+  queryKey: ["l10n/keymaps"],
   queryFn: async () => {
     const response = await fetch("/api/l10n/keymaps");
     const json = await response.json();
@@ -108,7 +107,7 @@ const useConfigMutation = () => {
  * revalidate its data (executing the loaders again).
  */
 const useL10nConfigChanges = () => {
-  const dataInvalidator = useDataInvalidator();
+  const queryClient = useQueryClient();
   const client = useInstallerClient();
 
   React.useEffect(() => {
@@ -116,10 +115,35 @@ const useL10nConfigChanges = () => {
 
     return client.ws().onEvent(event => {
       if (event.type === "L10nConfigChanged") {
-        dataInvalidator({ queryKey: ["l10n", "config"] });
+        queryClient.invalidateQueries({ queryKey: ["l10n/config"] });
       }
     });
-  }, [client, dataInvalidator]);
+  }, [client, queryClient]);
+};
+
+/// Returns the l10n data.
+const useL10n = () => {
+  const [
+    { data: config },
+    { data: locales },
+    { data: keymaps },
+    { data: timezones }
+  ] = useSuspenseQueries({
+    queries: [
+      configQuery(),
+      localesQuery(),
+      keymapsQuery(),
+      timezonesQuery()
+    ]
+  });
+
+  const selectedLocale = locales.find((l) => l.id === config.locales[0]);
+  const selectedKeymap = keymaps.find((k) => k.id === config.keymap);
+  const selectedTimezone = timezones.find((t) => t.id === config.timezone);
+
+  return {
+    locales, keymaps, timezones, selectedLocale, selectedKeymap, selectedTimezone
+  };
 };
 
 export {
@@ -128,5 +152,6 @@ export {
   localesQuery,
   timezonesQuery,
   useConfigMutation,
+  useL10n,
   useL10nConfigChanges
 };

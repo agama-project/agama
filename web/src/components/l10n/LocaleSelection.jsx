@@ -21,10 +21,10 @@
 
 import React, { useState } from "react";
 import { Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
 import { _ } from "~/i18n";
-import { useConfigMutation } from "~/queries/l10n";
+import { useConfigMutation, useL10n } from "~/queries/l10n";
 import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 
 // TODO: Add documentation and typechecking
@@ -32,7 +32,7 @@ import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
 export default function LocaleSelection() {
   const navigate = useNavigate();
   const setConfig = useConfigMutation();
-  const { locales, locale: currentLocale } = useLoaderData();
+  const { locales, selectedLocale: currentLocale } = useL10n();
   const [selected, setSelected] = useState(currentLocale.id);
   const [filteredLocales, setFilteredLocales] = useState(locales);
 
