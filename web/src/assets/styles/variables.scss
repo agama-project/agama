@@ -40,49 +40,19 @@
   --icon-size-xxl: 5rem;
   --icon-size-xxxl: 10rem;
 
-  --wrapper-padding: var(--spacer-small);
-  --wrapper-background: white;
-
   --color-primary: #0c322c;
-  --color-primary-lighter: #30ba78;
   --color-gray-light: #fcfcfc;
   --color-gray: #f2f2f2;
   --color-gray-dark: #efefef; // Fog
-  --color-gray-darker: #999;
-  --color-gray-darkest: #333;
   --color-gray-dimmed: #888;
-  --color-gray-dimmest: #666;
-  --color-teal: #279c9c;
-  --color-blue: #0d4ea6;
-  --color-orange: #e86427;
+  --color-success: #30ba78;
 
   --color-link: #0c322c;
   --color-link-hover: #30ba78;
-
   --color-button-primary: var(--color-link);
   --color-button-primary-hover: var(--color-link-hover);
-
   --color-button-plain-link: var(--color-link);
   --color-button-plain-link-hover: var(--color-link-hover);
 
-  --color-background-primary: var(--color-primary);
-  --color-background-secondary: var(--color-gray-dark);
-
-  --color-text-primary: var(--color-primary);
-  --color-text-secondary: var(--color-gray-dark);
-
-  --color-success: #30ba78;
-  --color-warn: #d4351c; // #FE7C3F; // Persimmon
-
   --focus-color: #00b2e2; //cerulean 500
-
-  --gradient-border-angle: 45deg;
-  --gradient-border-start-color: var(--color-gray);
-  --gradient-border-end-color: transparent;
-
-  --header-icon-size: var(--icon-size-m);
-  --section-icon-size: var(--icon-size);
-
-  --header-block-size: auto;
-  --footer-block-size: auto;
 }
