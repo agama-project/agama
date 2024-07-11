@@ -46,7 +46,6 @@ export { default as ProgressText } from "./ProgressText";
 export { default as Tip } from "./Tip";
 export { default as NumericTextInput } from "./NumericTextInput";
 export { default as PasswordInput } from "./PasswordInput";
-export { default as Selector } from "./Selector";
 export { default as ServerError } from "./ServerError";
 export { default as ExpandableSelector } from "./ExpandableSelector";
 export { default as TreeTable } from "./TreeTable";
