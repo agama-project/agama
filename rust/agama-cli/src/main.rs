@@ -118,28 +118,28 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
     Ok(ManagerClient::new(conn).await?)
 }
 
-async fn run_command(cli: Cli) -> anyhow::Result<()> {
-    match cli.command {
+async fn run_command(cli: Cli) -> Result<(), ServiceError> {
+    Ok(match cli.command {
         Commands::Config(subcommand) => {
             let manager = build_manager().await?;
             wait_for_services(&manager).await?;
-            run_config_cmd(subcommand).await
+            run_config_cmd(subcommand).await?
         }
         Commands::Probe => {
             let manager = build_manager().await?;
             wait_for_services(&manager).await?;
-            probe().await
+            probe().await?
         }
-        Commands::Profile(subcommand) => Ok(run_profile_cmd(subcommand).await?),
+        Commands::Profile(subcommand) => run_profile_cmd(subcommand).await?,
         Commands::Install => {
             let manager = build_manager().await?;
-            install(&manager, 3).await
+            install(&manager, 3).await?
         }
-        Commands::Questions(subcommand) => run_questions_cmd(subcommand).await,
-        Commands::Logs(subcommand) => run_logs_cmd(subcommand).await,
-        Commands::Auth(subcommand) => run_auth_cmd(subcommand).await,
-        Commands::Download { url } => crate::profile::download(&url, std::io::stdout()),
-    }
+        Commands::Questions(subcommand) => run_questions_cmd(subcommand).await?,
+        Commands::Logs(subcommand) => run_logs_cmd(subcommand).await?,
+        Commands::Auth(subcommand) => run_auth_cmd(subcommand).await?,
+        Commands::Download { url } => crate::profile::download(&url, std::io::stdout())?,
+    })
 }
 
 /// Represents the result of execution.

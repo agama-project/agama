@@ -1,6 +1,5 @@
-use agama_lib::connection;
+use agama_lib::{connection, error::ServiceError};
 use agama_lib::proxies::Questions1Proxy;
-use anyhow::Context;
 use clap::{Args, Subcommand, ValueEnum};
 
 #[derive(Subcommand, Debug)]
@@ -19,6 +18,8 @@ pub enum QuestionsCommands {
         /// Path to a file containing the answers in YAML format.
         path: String,
     },
+    /// prints list of questions that is waiting for answer in YAML format
+    List,
 }
 
 #[derive(Args, Debug)]
@@ -35,30 +36,32 @@ pub enum Modes {
     NonInteractive,
 }
 
-async fn set_mode(proxy: Questions1Proxy<'_>, value: Modes) -> anyhow::Result<()> {
-    // TODO: how to print dbus error in that anyhow?
+async fn set_mode(proxy: Questions1Proxy<'_>, value: Modes) -> Result<(), ServiceError> {
     proxy
         .set_interactive(value == Modes::Interactive)
         .await
-        .context("Failed to set mode for answering questions.")
+        .map_err(|e| e.into())
 }
 
-async fn set_answers(proxy: Questions1Proxy<'_>, path: String) -> anyhow::Result<()> {
-    // TODO: how to print dbus error in that anyhow?
+async fn set_answers(proxy: Questions1Proxy<'_>, path: String) -> Result<(), ServiceError> {
     proxy
         .add_answer_file(path.as_str())
         .await
-        .context("Failed to set answers from answers file")
+        .map_err(|e| e.into())
 }
 
-pub async fn run(subcommand: QuestionsCommands) -> anyhow::Result<()> {
+async fn list_questions() -> Result<(), ServiceError> {
+    Ok(())
+}
+
+pub async fn run(subcommand: QuestionsCommands) -> Result<(), ServiceError> {
     let connection = connection().await?;
     let proxy = Questions1Proxy::new(&connection)
-        .await
-        .context("Failed to connect to Questions service")?;
+        .await?;
 
     match subcommand {
         QuestionsCommands::Mode(value) => set_mode(proxy, value.value).await,
         QuestionsCommands::Answers { path } => set_answers(proxy, path).await,
+        QuestionsCommands::List => list_questions().await,
     }
 }

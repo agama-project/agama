@@ -16,6 +16,8 @@ pub enum ServiceError {
     DBusProtocol(#[from] zbus::fdo::Error),
     #[error("Unexpected type on D-Bus '{0}'")]
     ZVariant(#[from] zvariant::Error),
+    #[error("Failed to communicate with HTTP backend '{0}'")]
+    HTTPError(#[from] reqwest::Error),
     // it's fine to say only "Error" because the original
     // specific error will be printed too
     #[error("Error: {0}")]

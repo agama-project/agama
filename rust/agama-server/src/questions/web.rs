@@ -8,7 +8,7 @@
 use crate::{error::Error, web::Event};
 use agama_lib::{
     error::ServiceError,
-    proxies::{GenericQuestionProxy, QuestionWithPasswordProxy, Questions1Proxy},
+    proxies::{GenericQuestionProxy, QuestionWithPasswordProxy, Questions1Proxy}, questions::model::{Answer, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
 };
 use anyhow::Context;
 use axum::{
@@ -19,7 +19,6 @@ use axum::{
     Json, Router,
 };
 use regex::Regex;
-use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, pin::Pin};
 use tokio_stream::{Stream, StreamExt};
 use zbus::{
@@ -220,66 +219,6 @@ impl<'a> QuestionsClient<'a> {
 #[derive(Clone)]
 struct QuestionsState<'a> {
     questions: QuestionsClient<'a>,
-}
-
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct Question {
-    generic: GenericQuestion,
-    with_password: Option<QuestionWithPassword>,
-}
-
-/// Facade of agama_lib::questions::GenericQuestion
-/// For fields details see it.
-/// Reason why it does not use directly GenericQuestion from lib
-/// is that it contain both question and answer. It works for dbus
-/// API which has both as attributes, but web API separate
-/// question and its answer. So here it is split into GenericQuestion
-/// and GenericAnswer
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct GenericQuestion {
-    id: u32,
-    class: String,
-    text: String,
-    options: Vec<String>,
-    default_option: String,
-    data: HashMap<String, String>,
-}
-
-/// Facade of agama_lib::questions::WithPassword
-/// For fields details see it.
-/// Reason why it does not use directly WithPassword from lib
-/// is that it is not composition as used here, but more like
-/// child of generic question and contain reference to Base.
-/// Here for web API we want to have in json that separation that would
-/// allow to compose any possible future specialization of question.
-/// Also note that question is empty as QuestionWithPassword does not
-/// provide more details for question, but require additional answer.
-/// Can be potentionally extended in future e.g. with list of allowed characters?
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct QuestionWithPassword {}
-
-#[derive(Default, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct Answer {
-    generic: GenericAnswer,
-    with_password: Option<PasswordAnswer>,
-}
-
-/// Answer needed for GenericQuestion
-#[derive(Default, Clone, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct GenericAnswer {
-    answer: String,
-}
-
-/// Answer needed for Password specific questions.
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct PasswordAnswer {
-    password: String,
 }
 
 /// Sets up and returns the axum service for the questions module.
