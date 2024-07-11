@@ -30,7 +30,6 @@ import {
   PageGroup, PageSection,
   Stack
 } from "@patternfly/react-core";
-import { PageMenu } from "~/components/core";
 import { _ } from "~/i18n";
 import tabsStyles from '@patternfly/react-styles/css/components/Tabs/tabs';
 import flexStyles from '@patternfly/react-styles/css/utilities/Flex/flex';
@@ -51,16 +50,6 @@ import flexStyles from '@patternfly/react-styles/css/utilities/Flex/flex';
  * @param {React.ReactNode} props.children - Components to be rendered as actions.
  */
 const Actions = ({ children }) => <>{children}</>;
-
-/**
- * Component for rendering options related to the page. I.e., a menu.
- *
- * @note it is defined in its own file and then included here under Page.Menu
- * "alias".
- *
- * @see core/PageMenu to know more.
- */
-const Menu = PageMenu;
 
 /**
  * A convenient component representing a Page action
@@ -180,47 +169,6 @@ const CardSection = ({ title, children, ...props }) => {
  *     <UserSectionContent />
  *   </Page>
  *
- * @example <caption>Using custom actions</caption>
- *   <Page icon="manage_accounts" title="Users settings">
- *     <UserSectionContent />
- *
- *     <Page.Actions>
- *       <Page.Action onClick={() => alert("Are you sure?")}>
- *         Reset to defaults
- *       </Page.Action>
- *       <Page.Action callToAction>Accept</Page.Action>
- *     </Page.Actions>
- *   </Page>
- *
- * @example <caption>Using custom actions and a page menu</caption>
- *   <Page icon="manage_accounts" title="Users settings">
- *     <UserSectionContent />
- *
- *     <Page.Menu>
- *       <Page.Menu.Options>
- *         <Page.Menu.Option>Expert mode</Page.Menu.Option>
- *         <Page.Menu.Option>Help</Page.Menu.Option>
- *       </Page.Menu.Options>
- *     </Page.Menu>
- *
- *     <Page.Actions>
- *       <Page.Action onClick={() => alert("Are you sure?")}>
- *         Reset to defaults
- *       </Page.Action>
- *       <Page.Action callToAction>Accept</Page.Action>
- *     </Page.Actions>
- *   </Page>
- *
- * @example <caption>Using a page menu from external component</caption>
- *   ...
- *   import { UserPageMenu } from "somewhere";
- *   ...
- *   <Page icon="manage_accounts" title="Users settings">
- *     <UserSectionContent />
- *
- *     <UserPageMenu />
- *   </Page>
- *
  * @param {object} props
  * @param {string} [props.icon] - The icon for the page.
  * @param {string} [props.title="Agama"] - The title for the page. By default it
@@ -245,7 +193,6 @@ Page.CardSection = CardSection;
 Page.Actions = Actions;
 Page.NextActions = NextActions;
 Page.Action = Action;
-Page.Menu = Menu;
 Page.MainContent = MainContent;
 Page.CancelAction = CancelAction;
 Page.Header = Header;
