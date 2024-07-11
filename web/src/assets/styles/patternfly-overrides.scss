@@ -67,19 +67,6 @@
   --pf-v5-c-button--m-secondary--Color: var(--color-link-hover);
 }
 
-// Force a separation between PF/EmptyStateBody paragraph without needing
-// either: add the .pf-v5-c-content class nor wrapping PF/Text into
-// PF/TextContent
-.pf-v5-c-empty-state__body p:not(:last-child) {
-  margin-block-end: var(--pf-v5-global--spacer--md);
-}
-
-// Do not add block padding to empty state inside a table/column
-table td > .pf-v5-c-empty-state {
-  --pf-v5-c-empty-state--PaddingTop: 0;
-  --pf-v5-c-empty-state--PaddingBottom: 0;
-}
-
 // Fix single-line sub-progress miss-alignment
 .pf-v5-c-progress.pf-m-singleline .pf-v5-c-progress__bar {
   grid-row: 1/3;

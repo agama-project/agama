@@ -99,13 +99,15 @@ function InstallationFinished() {
                       icon={<EmptyStateIcon icon={SuccessIcon} />}
                     />
                     <EmptyStateBody>
-                      <Text>{_("The installation on your machine is complete.")}</Text>
-                      <Text>
-                        {usingIguana
-                          ? _("At this point you can power off the machine.")
-                          : _("At this point you can reboot the machine to log in to the new system.")}
-                      </Text>
-                      {usingTpm && <TpmHint />}
+                      <Flex rowGap={{ default: "rowGapMd" }} justifyContent={{ default: "justifyContentCenter" }}>
+                        <Text>{_("The installation on your machine is complete.")}</Text>
+                        <Text>
+                          {usingIguana
+                            ? _("At this point you can power off the machine.")
+                            : _("At this point you can reboot the machine to log in to the new system.")}
+                        </Text>
+                        {usingTpm && <TpmHint />}
+                      </Flex>
                     </EmptyStateBody>
                   </EmptyState>
                   <Flex direction={{ default: "rowReverse" }}>
