@@ -1,7 +1,3 @@
-.justify-between {
-  justify-content: space-between;
-}
-
 // Sadly, Firefox does not support :has pseudo-selector yet.
 // See @components/layout/Center documentation.
 //
@@ -17,25 +13,6 @@
   place-items: center;
   block-size: 100%;
   inline-size: 100%;
-}
-
-.horizontally-centered {
-  inline-size: 100%;
-  margin-inline: 0 auto;
-  text-align: center;
-}
-
-.title {
-  font-size: var(--fs-large);
-  font-weight: var(--fw-bold);
-}
-
-.bold {
-  font-weight: bold;
-}
-
-.fs-small {
-  font-size: var(--fs-small);
 }
 
 // Utility classes for sizing icons
@@ -74,10 +51,6 @@
   inline-size: var(--icon-size-xxxl);
 }
 
-.color-warn {
-  color: var(--color-warn);
-}
-
 .color-success {
   color: var(--color-success);
   fill: var(--color-success);
@@ -87,84 +60,9 @@
   inline-size: 100%;
 }
 
-.full-size {
-  width: 100%;
-  height: 100%;
-}
-
-.transform-on-hover {
-  transition: all 0.2s ease-in-out;
-
-  &:hover {
-    transform: scale(1.4);
-    color: var(--color-primary-darkest);
-  }
-}
-
-.gradient-border-bottom {
-  border-bottom: 1px solid #efefef;
-  border-image: linear-gradient(
-    var(--gradient-border-angle),
-    var(--gradient-border-start-color),
-    var(--gradient-border-end-color)
-  ) 1;
-}
-
-.visually-hidden {
-  border: 0;
-  clip: rect(0 0 0 0);
-  height: auto;
-  margin: 0;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  width: 1px;
-  white-space: nowrap;
-}
-
-.shadow {
-  box-shadow: 0 0 10px 0 var(--color-gray-darker);
-}
-
-.top-shadow {
-  box-shadow: 0 5px 10px 0 var(--color-gray-darker);
-}
-
-.bottom-shadow {
-  box-shadow: 0 -3px 10px 0 var(--color-gray-darker);
-}
-
-.plain-control {
-  position: relative;
-  background: none;
-  border: none;
-}
-
-.plain-button {
-  border: none;
-  background: none;
-  color: inherit;
-  font: inherit;
-  padding: 0;
-  text-align: start;
-}
-
-.inline-flex-button{
-  @extend .plain-button;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.7ch;
-  text-decoration: underline;
-}
-
-.p-0 {
-  padding: 0;
-}
-
 .block-size-auto {
   block-size: auto;
 }
-
 
 .inline-size-auto {
   inline-size: auto;
@@ -218,17 +116,6 @@
   }
 }
 
-.large {
-  /** block-size fallbacks **/
-  height: 95dvh;
-  width: 95dvw;
-  max-width: calc(var(--ui-max-inline-size) + var(--spacer-large));
-  /** END block-size fallbacks **/
-  block-size: 95dvh;
-  inline-size: 95dvw;
-  max-inline-size: calc(var(--ui-max-inline-size) + var(--spacer-large))
-}
-
 .scrollbox {
   background:
     linear-gradient(#fff 33%, rgb(255 255 255 / 0%)),
@@ -239,10 +126,6 @@
   background-repeat: no-repeat;
   background-attachment: local, local, scroll, scroll;
   background-size: 100% 48px, 100% 48px, 100% 16px, 100% 16px;
-}
-
-.height-75 {
-  height: 75dvh;
 }
 
 // FIXME: drop as soon as Tip component gets rethought / refactored

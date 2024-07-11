@@ -171,6 +171,8 @@ const PREDEFINED_SIZES = [
  * @param {IconName} props.name - Name of the desired icon.
  * @param {string} [props.className=""] - CSS classes.
  * @param {IconSize} [props.size] - Size used for both, width and height.
+ * @param {string} [props.color] - Color for the icon, currently based on PF
+ * text utils
  *   It can be a CSS unit or one of PREDEFINED_SIZES.
  * @param {object} [props.otherProps] Other props sent to SVG icon. Please, note
  *   that width and height will be overwritten by the size value if it was given.

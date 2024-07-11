@@ -22,7 +22,7 @@
 // @ts-check
 
 import React from "react";
-import { EmptyState, EmptyStateHeader, EmptyStateBody } from "@patternfly/react-core";
+import { EmptyState, EmptyStateHeader, EmptyStateBody, Flex } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 
 /**
@@ -42,10 +42,10 @@ import { Icon } from "~/components/layout";
  * @param {string} props.title
  * @param {IconName} props.icon
  * @param {string} props.color
- * @param {Pick<EmptyStateHeaderProps, "headingLevel">} [props.headingLevel="h4"]
+ * @param {EmptyStateHeaderProps["headingLevel"]} [props.headingLevel="h4"]
  * @param {boolean} [props.noPadding=false]
  * @param {React.ReactNode} props.children
- * @param {EmptyStateProps} [props.props]
+ * @param {EmptyStateProps} [props.rest]
  * @todo write documentation
  */
 export default function EmptyStateWrapper({
@@ -55,12 +55,12 @@ export default function EmptyStateWrapper({
   headingLevel = "h4",
   noPadding = false,
   children,
-  ...props
+  ...rest
 }) {
-  if (noPadding) props.className = [props.className, 'no-padding'].join(" ").trim();
+  if (noPadding) rest.className = [rest.className, 'no-padding'].join(" ").trim();
 
   return (
-    <EmptyState variant="lg" {...props}>
+    <EmptyState variant="lg" {...rest}>
       <EmptyStateHeader
         headingLevel={headingLevel}
         titleText={title}
@@ -68,7 +68,9 @@ export default function EmptyStateWrapper({
         icon={<Icon name={icon} size="xxl" color={color} />}
       />
       <EmptyStateBody>
-        {children}
+        <Flex rowGap={{ default: "rowGapMd" }} justifyContent={{ default: "justifyContentCenter" }}>
+          {children}
+        </Flex>
       </EmptyStateBody>
     </EmptyState>
   );

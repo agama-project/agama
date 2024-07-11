@@ -20,7 +20,6 @@
  */
 
 export { default as About } from "./About";
-export { default as PageMenu } from "./PageMenu";
 export { default as Description } from "./Description";
 export { default as Section } from "./Section";
 export { default as FormLabel } from "./FormLabel";
@@ -38,7 +37,6 @@ export { default as SectionSkeleton } from "./SectionSkeleton";
 export { default as ListSearch } from "./ListSearch";
 export { default as LoginPage } from "./LoginPage";
 export { default as LogsButton } from "./LogsButton";
-export { default as FileViewer } from "./FileViewer";
 export { default as RowActions } from "./RowActions";
 export { default as Page } from "./Page";
 export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmationInput";
@@ -48,7 +46,6 @@ export { default as ProgressText } from "./ProgressText";
 export { default as Tip } from "./Tip";
 export { default as NumericTextInput } from "./NumericTextInput";
 export { default as PasswordInput } from "./PasswordInput";
-export { default as Selector } from "./Selector";
 export { default as ServerError } from "./ServerError";
 export { default as ExpandableSelector } from "./ExpandableSelector";
 export { default as TreeTable } from "./TreeTable";

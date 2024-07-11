@@ -23,15 +23,9 @@
 
 import React from "react";
 import { Button, Modal } from "@patternfly/react-core";
+import { Loading } from "~/components/layout";
 import { _ } from "~/i18n";
 import { partition } from "~/utils";
-import { Loading } from "~/components/layout";
-
-/**
- * @typedef {import("@patternfly/react-core").ModalProps} ModalProps
- * @typedef {import("@patternfly/react-core").ButtonProps} ButtonProps
- * @typedef {Omit<ButtonProps, 'variant'>} ButtonWithoutVariantProps
- */
 
 /**
  * @typedef {import("@patternfly/react-core").ModalProps} ModalProps

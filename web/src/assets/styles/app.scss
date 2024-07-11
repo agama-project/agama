@@ -1,45 +1,11 @@
-// Make proposal actions compact
-.proposal-actions li + li {
-  margin-block-start: 0;
-}
-
-.proposal-action--delete {
-  font-weight: bold;
-}
-
-// Align the expandable-actions with the actions list
-// See https://www.patternfly.org/components/list#css-variables
-.expandable-actions {
-  // --pf-v5-c-list--PaddingLeft - --pf-v5-c-list--nested--MarginLeft - --pf-v5-c-list--m-icon-lg__item-icon-MinWidth
-  margin-inline-start: calc(var(--pf-v5-global--spacer--lg) - var(--pf-v5-global--spacer--sm) - var(--pf-v5-global--icon--FontSize--sm));
-}
-
-.expandable-actions > div {
-  margin-block-start: 0;
-}
-
-// Using a "selected-product" CSS class because sadly we cannot use
-// ".pf-v5-c-card:has(> input[type="radio"]:checked)" yet
-//
-// See:
-//   - https://drafts.csswg.org/selectors/#relational
-//   - https://caniuse.com/css-has
-.pf-v5-c-card.selected-product {
-  --pf-v5-c-card--BoxShadow: var(--pf-v5-global--BoxShadow--md);
-
-  .pf-v5-c-radio {
-    // https://drafts.csswg.org/css-ui/#widget-accent
-    // https://caniuse.com/mdn-css_properties_accent-color
-    accent-color: var(--color-primary-darkest);
+// Better alignment for expandable section with a sibling list
+ul.pf-v5-c-list + div.pf-v5-c-expandable-section {
+  > button {
+    margin-inline-start: calc(var(--pf-v5-global--spacer--lg) - var(--pf-v5-global--spacer--sm) - var(--pf-v5-global--icon--FontSize--sm));
   }
 
-  .pf-v5-c-radio__label {
-    color: var(--color-primary);
-    font-weight: bold;
-  }
-
-  .pf-v5-c-radio__description {
-    color: var(--color-primary-darkest);
+  > div {
+    margin-block-start: 0;
   }
 }
 
@@ -54,97 +20,6 @@ div.pf-v5-c-data-list__item-row:has(button.remove-link:hover) {
 
 button.remove-link:hover {
   color: var(--pf-v5-c-button--m-danger--BackgroundColor);
-}
-
-
-button.hidden-popover-button {
-  visibility: hidden;
-  display: inline;
-}
-
-.wifi-network-menu button.pf-v5-c-dropdown__toggle {
-  padding-right: 0;
-}
-
-.keep-words {
-  word-break: keep-all;
-}
-
-button.kebab-toggler {
-  padding-right: 0;
-
-  svg {
-    vertical-align: middle;
-  }
-}
-
-.volumes-list {
-  .pf-v5-c-label {
-    margin-inline-end: 5px;
-  }
-}
-
-.pattern-container {
-  display: grid;
-  grid-template-columns: 16px auto;
-  grid-template-rows: auto auto;
-  gap: 0.2em 1em;
-  grid-auto-flow: row;
-  grid-template-areas:
-    "checkbox label"
-    "empty summary";
-  margin-bottom: 1em;
-  padding: 0.5em;
-  border-radius: 5px;
-}
-
-.pattern-container:hover {
-  background-color: #eee;
-}
-
-.pattern-label {
-  display: grid;
-  grid-template-columns: 32px auto;
-  grid-template-rows: auto;
-  gap: 0 1em;
-  grid-auto-flow: row;
-  grid-template-areas: "label-icon label-text";
-  grid-area: label;
-}
-
-.pattern-label-icon {
-  grid-area: label-icon;
-  align-self: center;
-}
-
-.pattern-label-text {
-  grid-area: label-text;
-  font-size: 110%;
-  font-weight: bold;
-  justify-self: start;
-  align-self: center;
-}
-
-.pattern-summary {
-  grid-area: summary;
-  color: #666;
-}
-
-.pattern-checkbox {
-  grid-area: checkbox;
-  justify-self: center;
-  align-self: center;
-}
-
-.pattern-group-name {
-  font-size: 120%;
-}
-
-.locale-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 1em;
-  width: 100%;
 }
 
 .first-username-dropdown {
