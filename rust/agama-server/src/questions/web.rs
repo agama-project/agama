@@ -164,12 +164,7 @@ impl<'a> QuestionsClient<'a> {
             ObjectPath::try_from(format!("/org/opensuse/Agama1/Questions/{}", id))
                 .context("Failed to create dbus path")?,
         );
-        let mut result = Answer {
-            generic: GenericAnswer {
-                answer: String::new(),
-            },
-            with_password: None,
-        };
+        let mut result = Answer::default();
         let dbus_password_res = QuestionWithPasswordProxy::builder(&self.connection)
             .path(&question_path)?
             .cache_properties(zbus::CacheProperties::No)
@@ -266,7 +261,7 @@ pub struct GenericQuestion {
 #[serde(rename_all = "camelCase")]
 pub struct QuestionWithPassword {}
 
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Answer {
     generic: GenericAnswer,
@@ -274,7 +269,7 @@ pub struct Answer {
 }
 
 /// Answer needed for GenericQuestion
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct GenericAnswer {
     answer: String,
