@@ -31,7 +31,7 @@ import { _ } from "~/i18n";
 import overviewRoutes from "~/components/overview/routes";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/components/network/routes";
-import { productsRoute } from "~/components/product/routes";
+import productsRoutes from "~/routes/products";
 import storageRoutes from "~/components/storage/routes";
 import softwareRoutes from "~/components/software/routes";
 import usersRoutes from "~/components/users/routes";
@@ -62,7 +62,7 @@ const protectedRoutes = [
       },
       {
         element: <SimpleLayout showInstallerOptions />,
-        children: [productsRoute]
+        children: [productsRoutes]
       }
     ]
   }

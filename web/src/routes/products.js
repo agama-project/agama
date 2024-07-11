@@ -21,11 +21,13 @@
 
 import React from "react";
 import { Page } from "~/components/core";
-import ProductSelectionPage from "./ProductSelectionPage";
-import ProductSelectionProgress from "./ProductSelectionProgress";
+import ProductSelectionPage from "~/components/product/ProductSelectionPage";
+import ProductSelectionProgress from "~/components/product/ProductSelectionProgress";
 
-const productsRoute = {
-  path: "/products",
+const PRODUCTS_PATH = "/products";
+
+const productsRoutes = {
+  path: PRODUCTS_PATH,
   element: <Page />,
   children: [
     {
@@ -39,6 +41,4 @@ const productsRoute = {
   ]
 };
 
-export {
-  productsRoute
-};
+export default productsRoutes;

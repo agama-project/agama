@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import {
   Masthead, MastheadContent,
@@ -28,6 +28,7 @@ import {
 } from "@patternfly/react-core";
 import { InstallerOptions } from "./components/core";
 import { _ } from "~/i18n";
+import { Loading } from "./components/layout";
 
 /**
  * Simple layout for displaying content that comes before product configuration
@@ -49,7 +50,9 @@ export default function SimpleLayout({ showOutlet = true, showInstallerOptions =
           </Toolbar>
         </MastheadContent>
       </Masthead>
-      {showOutlet ? <Outlet /> : children}
+      <Suspense fallback={<Loading />}>
+        {showOutlet ? <Outlet /> : children}
+      </Suspense>
     </Page>
   );
 }

@@ -23,7 +23,7 @@ import React from "react";
 import { Alert } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { useProduct } from "~/context/product";
+import { useProduct } from "~/queries/software";
 import { isTransactionalSystem } from "~/components/storage/utils";
 
 /**

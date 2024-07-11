@@ -28,6 +28,7 @@ import { createClient } from "~/client";
 import { STARTUP, CONFIG, INSTALL } from "~/client/phase";
 import { IDLE, BUSY } from "~/client/status";
 import { useL10nConfigChanges } from "./queries/l10n";
+import { useProductChanges } from "./queries/software";
 
 jest.mock("~/client");
 
@@ -35,14 +36,15 @@ jest.mock("~/client");
 let mockProducts;
 let mockSelectedProduct;
 
-jest.mock("~/context/product", () => ({
-  ...jest.requireActual("~/context/product"),
+jest.mock("~/queries/software", () => ({
+  ...jest.requireActual("~/queries/software"),
   useProduct: () => {
     return {
       products: mockProducts,
       selectedProduct: mockSelectedProduct
     };
-  }
+  },
+  useProductChanges: () => jest.fn()
 }));
 
 jest.mock("~/queries/l10n", () => ({
@@ -78,7 +80,7 @@ describe("App", () => {
         l10n: {
           getUIKeymap: jest.fn().mockResolvedValue("en"),
           getUILocale: jest.fn().mockResolvedValue("en_us"),
-          setUILocale: jest.fn().mockResolvedValue("en_us"),
+          setUILocale: jest.fn().mockResolvedValue("en_us")
         }
       };
     });
@@ -125,6 +127,7 @@ describe("App", () => {
     describe("if the service is busy", () => {
       beforeEach(() => {
         mockClientStatus.status = BUSY;
+        mockSelectedProduct = { id: "Tumbleweed" };
       });
 
       it("redirects to product selection progress", async () => {

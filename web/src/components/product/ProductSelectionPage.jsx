@@ -32,7 +32,7 @@ import styles from '@patternfly/react-styles/css/utilities/Text/text';
 import { _ } from "~/i18n";
 import { Page } from "~/components/core";
 import { Loading, Center } from "~/components/layout";
-import { useProduct } from "~/context/product";
+import { useConfigMutation, useProduct } from "~/queries/software";
 
 const Label = ({ children }) => (
   <span className={`${styles.fontSizeLg} ${styles.fontWeightBold}`}>
@@ -41,7 +41,8 @@ const Label = ({ children }) => (
 );
 
 function ProductSelectionPage() {
-  const { products, selectedProduct, selectProduct } = useProduct();
+  const { products, selectedProduct } = useProduct();
+  const setConfig = useConfigMutation();
   const [nextProduct, setNextProduct] = useState(selectedProduct);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -49,14 +50,10 @@ function ProductSelectionPage() {
     e.preventDefault();
 
     if (nextProduct) {
-      await selectProduct(nextProduct.id);
+      setConfig.mutate({ product: nextProduct.id });
       setIsLoading(true);
     }
   };
-
-  if (!products) return (
-    <Loading text={_("Loading available products, please wait...")} />
-  );
 
   const Item = ({ children }) => {
     return (

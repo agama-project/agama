@@ -22,7 +22,7 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { _ } from "~/i18n";
-import { useProduct } from "~/context/product";
+import { useProduct } from "~/queries/software";
 import { ProgressReport } from "~/components/core";
 import { IDLE } from "~/client/status";
 import { useInstallerClient } from "~/context/installer";
@@ -41,10 +41,6 @@ function ProductSelectionProgress() {
     manager.getStatus().then(setStatus);
     return manager.onStatusChange(setStatus);
   }, [manager, setStatus]);
-
-  if (!selectedProduct) {
-    return;
-  }
 
   if (status === IDLE) return <Navigate to="/" replace />;
 

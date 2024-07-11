@@ -32,7 +32,7 @@ import { Icon, Loading } from "~/components/layout";
 import { About, InstallerOptions, LogsButton } from "~/components/core";
 import { _ } from "~/i18n";
 import { rootRoutes } from "~/router";
-import { useProduct } from "~/context/product";
+import { useProduct } from "./queries/software";
 
 const Header = () => {
   const { selectedProduct } = useProduct();
