@@ -1,8 +1,8 @@
 -------------------------------------------------------------------
 Wed Jul 10 20:11:39 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
-- Add to HTTP API method DELETE for question to remove question
-- Add to HTTP API method GET for answer to get answer for question
+- Add to HTTP API a method to remove questions
+- Add to HTTP API method to get the answer to a question
   (gh#openSUSE/agama#1453)
 
 -------------------------------------------------------------------
