@@ -12,6 +12,7 @@ const CockpitPoPlugin = require("./src/lib/cockpit-po-plugin");
 const StylelintPlugin = require("stylelint-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const ReactRefreshTypeScript = require("react-refresh-typescript");
 const webpack = require("webpack");
 const po_handler = require("./src/lib/webpack-po-handler");
 
@@ -81,8 +82,8 @@ module.exports = {
   mode: production ? "production" : "development",
   resolve: {
     modules: ["node_modules", path.resolve(__dirname, "src/lib")],
-    plugins: [new TsconfigPathsPlugin({ extensions: [".js", ".jsx", ".json"] })],
-    extensions: ["", ".js", ".json", ".jsx"],
+    plugins: [new TsconfigPathsPlugin({ extensions: [".ts", ".tsx", ".js", ".jsx", ".json"] })],
+    extensions: [".ts", ".tsx", ".js", ".jsx", ".json"]
   },
   resolveLoader: {
     modules: ["node_modules", path.resolve(__dirname, "src/lib")],
@@ -131,24 +132,39 @@ module.exports = {
         // Thus, it's needed not mangling function names ending in PageMenu to keep it working in production
         // until adopting a better solution, if any.
         terserOptions: {
-          keep_fnames: /PageMenu$/,
+          keep_fnames: /PageMenu$/
         },
         extractComments: {
           condition: true,
           filename: `[file].LICENSE.txt?query=[query]&filebase=[base]`,
           banner(licenseFile) {
             return `License information can be found in ${licenseFile}`;
-          },
-        },
+          }
+        }
       }),
       // remove also the spaces between the tags
       new HtmlMinimizerPlugin({ minimizerOptions: { conservativeCollapse: false } }),
-      new CssMinimizerPlugin(),
-    ],
+      new CssMinimizerPlugin()
+    ]
   },
 
   module: {
     rules: [
+      {
+        test: /\.[jt]sx?$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: require.resolve("ts-loader"),
+            options: {
+              getCustomTransformers: () => ({
+                before: [development && ReactRefreshTypeScript()].filter(Boolean)
+              }),
+              transpileOnly: development
+            }
+          }
+        ]
+      },
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
