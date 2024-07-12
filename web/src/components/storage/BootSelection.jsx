@@ -49,9 +49,19 @@ const BOOT_DISABLED_ID = "boot-disabled";
  * Allows the user to select the boot configuration.
  */
 export default function BootSelectionDialog() {
+  /**
+   * @typedef {object} BootSelectionState
+   * @property {boolean} load
+   * @property {string} [selectedOption]
+   * @property {boolean} [configureBoot]
+   * @property {StorageDevice} [bootDevice]
+   * @property {StorageDevice} [defaultBootDevice]
+   * @property {StorageDevice[]} [availableDevices]
+   */
   const { cancellablePromise } = useCancellablePromise();
   const { storage: client } = useInstallerClient();
-  const [state, setState] = useState({});
+  /** @type ReturnType<typeof useState<BootSelectionState>> */
+  const [state, setState] = useState({ load: false });
   const navigate = useNavigate();
 
   // FIXME: Repeated code, see DeviceSelection. Use a context/hook or whatever
