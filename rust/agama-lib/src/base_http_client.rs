@@ -1,6 +1,6 @@
 use anyhow::Context;
 use reqwest::{header, Client, Response};
-use serde::de::DeserializeOwned;
+use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{auth::AuthToken, error::ServiceError};
 
@@ -56,12 +56,7 @@ impl BaseHTTPClient {
         if response.status().is_success() {
             response.json::<T>().await.map_err(|e| e.into())
         } else {
-            let code = response.status().as_u16();
-            let text = response
-                .text()
-                .await
-                .unwrap_or_else(|_| Self::NO_TEXT.to_string());
-            Err(ServiceError::BackendError(code, text))
+            Err(self.build_backend_error(response).await)
         }        
     }
 
@@ -77,5 +72,36 @@ impl BaseHTTPClient {
 
     fn url(&self, path: &str) -> String {
         self.base_url.clone() + path
+    }
+
+    /// post object to given path and report error if post
+    pub async fn post(&self, path: &str, object: &impl Serialize) -> Result<(), ServiceError> {
+        let response = self.post_response(path, object).await?;
+        if response.status().is_success() {
+            Ok(())
+        } else {
+            Err(self.build_backend_error(response).await)
+        }
+    }
+
+    /// post object to given path and returns server response. Reports error only if failed to send
+    /// request, but if server returns e.g. 500, it will be in Ok result.
+    /// In general unless specific response handling is needed, simple post should be used.
+    pub async fn post_response(&self, path: &str, object: &impl Serialize) -> Result<Response, ServiceError> {
+        self.client
+            .post(self.url(path))
+            .json(object)
+            .send()
+            .await
+            .map_err(|e| e.into())
+    }
+
+    pub async fn build_backend_error(&self, response: Response) -> ServiceError {
+        let code = response.status().as_u16();
+        let text = response
+            .text()
+            .await
+            .unwrap_or_else(|_| Self::NO_TEXT.to_string());
+        ServiceError::BackendError(code, text)
     }
 }
