@@ -30,7 +30,7 @@ import { UsersClient } from "./users";
 import phase from "./phase";
 import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
-import { HTTPClient } from "./http";
+import { HTTPClient, WSClient } from "./http";
 
 /**
  * @typedef {object} InstallerClient
@@ -43,6 +43,7 @@ import { HTTPClient } from "./http";
  * @property {StorageClient} storage - storage client.
  * @property {UsersClient} users - users client.
  * @property {QuestionsClient} questions - questions client.
+ * @property {() => WSClient} ws - Agama WebSocket client.
  * @property {() => Promise<Issues>} issues - issues from all contexts.
  * @property {(handler: IssuesHandler) => (() => void)} onIssuesChange - registers a handler to run
  *  when issues from any context change. It returns a function to deregister the handler.
