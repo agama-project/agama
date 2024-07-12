@@ -1,1 +1,5 @@
-src/lib/cockpit.js
+dist
+po
+public
+share
+src/lib
