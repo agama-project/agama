@@ -43,7 +43,32 @@ const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
 
 /** @fixme Adapt code depending on D-Bus */
 class DBusClient {
-  proxy() {
+  /**
+   * @param {string} service
+   * @param {string|undefined} address
+   */
+  constructor(service, address) {
+    console.warn(`FIXME: Adapt code depending on D-Bus ${service} ${address}`);
+  }
+
+  /**
+   * @param {string} iface
+   * @param {string} [path]
+   * @return {Promise<object,undefined>}
+   */
+  async proxy(iface, path) {
+    console.warn(`FIXME: Adapt code depending on D-Bus ${iface} ${path}`);
+    return Promise.resolve(undefined);
+  }
+
+  /**
+   * @param {string|undefined} iface
+   * @param {string|undefined} path_namespace
+   * @param {object|undefined} options
+   * @return {Promise<any>}
+   */
+  async proxies(iface, path_namespace, options) {
+    console.warn(`FIXME: Adapt code depending on D-Bus ${iface} ${path_namespace} ${options}`);
     return Promise.resolve(undefined);
   }
 }
@@ -1576,7 +1601,9 @@ class StorageBaseClient {
     this.staging = new DevicesManager(this.client, "result");
     this.proposal = new ProposalManager(this.client, this.system);
     this.iscsi = new ISCSIManager(this.client);
+    // @ts-ignore
     this.dasd = new DASDManager(StorageBaseClient.SERVICE, client);
+    // @ts-ignore
     this.zfcp = new ZFCPManager(StorageBaseClient.SERVICE, client);
   }
 
