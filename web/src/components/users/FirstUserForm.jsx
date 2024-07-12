@@ -23,22 +23,33 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   Alert,
   Checkbox,
-  Form, FormGroup,
+  Form,
+  FormGroup,
   TextInput,
-  Menu, MenuContent, MenuList, MenuItem,
-  Grid, GridItem,
+  Menu,
+  MenuContent,
+  MenuList,
+  MenuItem,
+  Grid,
+  GridItem,
   Stack,
-  Switch
+  Switch,
 } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { Loading } from "~/components/layout";
-import { PasswordAndConfirmationInput, Page } from '~/components/core';
+import { PasswordAndConfirmationInput, Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
-import { suggestUsernames } from '~/components/users/utils';
+import { suggestUsernames } from "~/components/users/utils";
 
-const UsernameSuggestions = ({ isOpen = false, entries, onSelect, setInsideDropDown, focusedIndex = -1 }) => {
+const UsernameSuggestions = ({
+  isOpen = false,
+  entries,
+  onSelect,
+  setInsideDropDown,
+  focusedIndex = -1,
+}) => {
   if (!isOpen) return;
 
   return (
@@ -57,7 +68,7 @@ const UsernameSuggestions = ({ isOpen = false, entries, onSelect, setInsideDropD
               isFocused={focusedIndex === index}
               onClick={() => onSelect(suggestion)}
             >
-              { /* TRANSLATORS: dropdown username suggestions */}
+              {/* TRANSLATORS: dropdown username suggestions */}
               {_("Use suggested username")} <b>{suggestion}</b>
             </MenuItem>
           ))}
@@ -85,12 +96,12 @@ export default function FirstUserForm() {
   const passwordRef = useRef();
 
   useEffect(() => {
-    cancellablePromise(client.users.getUser()).then(userValues => {
+    cancellablePromise(client.users.getUser()).then((userValues) => {
       const editing = userValues.userName !== "";
       setState({
         load: true,
         user: userValues,
-        isEditing: editing
+        isEditing: editing,
       });
       setChangePassword(!editing);
     });
@@ -136,7 +147,7 @@ export default function FirstUserForm() {
     }
 
     // FIXME: improve validations
-    if (Object.values(user).some(v => v === "")) {
+    if (Object.values(user).some((v) => v === "")) {
       setErrors([_("All fields are required")]);
       return;
     }
@@ -165,24 +176,27 @@ export default function FirstUserForm() {
 
   const handleKeyDown = (e) => {
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault(); // Prevent page scrolling
         renderSuggestions(e);
         setFocusedIndex((prevIndex) => (prevIndex + 1) % suggestions.length);
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault(); // Prevent page scrolling
         renderSuggestions(e);
-        setFocusedIndex((prevIndex) => (prevIndex - (prevIndex === -1 ? 0 : 1) + suggestions.length) % suggestions.length);
+        setFocusedIndex(
+          (prevIndex) =>
+            (prevIndex - (prevIndex === -1 ? 0 : 1) + suggestions.length) % suggestions.length,
+        );
         break;
-      case 'Enter':
+      case "Enter":
         if (focusedIndex >= 0) {
           e.preventDefault();
           onSuggestionSelected(suggestions[focusedIndex]);
         }
         break;
-      case 'Escape':
-      case 'Tab':
+      case "Escape":
+      case "Tab":
         setShowSuggestions(false);
         break;
       default:
@@ -199,10 +213,13 @@ export default function FirstUserForm() {
 
       <Page.MainContent>
         <Form id="firstUserForm" onSubmit={onSubmit}>
-          {errors.length > 0 &&
+          {errors.length > 0 && (
             <Alert variant="warning" isInline title={_("Something went wrong")}>
-              {errors.map((e, i) => <p key={`error_${i}`}>{e}</p>)}
-            </Alert>}
+              {errors.map((e, i) => (
+                <p key={`error_${i}`}>{e}</p>
+              ))}
+            </Alert>
+          )}
           <Grid hasGutter>
             <GridItem sm={12} xl={6} rowSpan={2}>
               <Page.CardSection isFullHeight>
@@ -249,12 +266,13 @@ export default function FirstUserForm() {
             <GridItem sm={12} xl={6}>
               <Page.CardSection>
                 <Stack hasGutter>
-                  {state.isEditing &&
+                  {state.isEditing && (
                     <Switch
                       label={_("Edit password too")}
                       isChecked={changePassword}
                       onChange={() => setChangePassword(!changePassword)}
-                    />}
+                    />
+                  )}
                   <PasswordAndConfirmationInput
                     inputRef={passwordRef}
                     isDisabled={!changePassword}

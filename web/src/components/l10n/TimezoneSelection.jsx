@@ -26,7 +26,7 @@ import { ListSearch, Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { timezoneTime } from "~/utils";
 import { useConfigMutation, useL10n } from "~/queries/l10n";
-import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 let date;
 
@@ -44,7 +44,7 @@ const timezoneWithDetails = (timezone) => {
 
 const sortedTimezones = (timezones) => {
   return timezones.sort((timezone1, timezone2) => {
-    const timezoneText = t => t.parts.join('').toLowerCase();
+    const timezoneText = (t) => t.parts.join("").toLowerCase();
     return timezoneText(timezone1) > timezoneText(timezone2) ? 1 : -1;
   });
 };
@@ -79,8 +79,9 @@ export default function TimezoneSelection() {
         label={
           <>
             <span className={`${textStyles.fontSizeLg}`}>
-              <b>{parts.join('-')}</b>
-            </span> <Text component="small">{country}</Text>
+              <b>{parts.join("-")}</b>
+            </span>{" "}
+            <Text component="small">{country}</Text>
           </>
         }
         description={
@@ -97,24 +98,24 @@ export default function TimezoneSelection() {
   });
 
   if (timezonesList.length === 0) {
-    timezonesList = (
-      <b>{_("None of the time zones match the filter.")}</b>
-    );
+    timezonesList = <b>{_("None of the time zones match the filter.")}</b>;
   }
 
   return (
     <>
       <Page.Header>
         <h2>{_(" Timezone selection")}</h2>
-        <ListSearch placeholder={searchHelp} elements={displayTimezones} onChange={setFilteredTimezones} />
+        <ListSearch
+          placeholder={searchHelp}
+          elements={displayTimezones}
+          onChange={setFilteredTimezones}
+        />
       </Page.Header>
 
       <Page.MainContent>
         <Page.CardSection>
           <Form id="timezoneSelection" onSubmit={onSubmit}>
-            <FormGroup isStack>
-              {timezonesList}
-            </FormGroup>
+            <FormGroup isStack>{timezonesList}</FormGroup>
           </Form>
         </Page.CardSection>
       </Page.MainContent>

@@ -34,7 +34,7 @@ jest.mock("@patternfly/react-core", () => {
 
   return {
     ...original,
-    Skeleton: () => <div>PFSkeleton</div>
+    Skeleton: () => <div>PFSkeleton</div>,
   };
 });
 
@@ -56,8 +56,8 @@ beforeEach(() => {
         getRootSSHKey: getRootSSHKeyFn,
         setRootSSHKey: setRootSSHKeyFn,
         onUsersChange: onUsersChangeFn,
-        removeRootPassword: removeRootPasswordFn
-      }
+        removeRootPassword: removeRootPasswordFn,
+      },
     };
   });
 });
@@ -123,8 +123,7 @@ describe("when ready", () => {
       installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
-      const passwordRow = within(table).getByText("Password")
-        .closest("tr");
+      const passwordRow = within(table).getByText("Password").closest("tr");
       within(passwordRow).getByText("Already set");
     });
 
@@ -132,8 +131,7 @@ describe("when ready", () => {
       const { user } = installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
-      const passwordRow = within(table).getByText("Password")
-        .closest("tr");
+      const passwordRow = within(table).getByText("Password").closest("tr");
       const actionsToggler = within(passwordRow).getByRole("button", { name: "Actions" });
       await user.click(actionsToggler);
       const setAction = within(passwordRow).queryByRole("menuitem", { name: "Set" });
@@ -144,8 +142,7 @@ describe("when ready", () => {
       const { user } = installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
-      const passwordRow = within(table).getByText("Password")
-        .closest("tr");
+      const passwordRow = within(table).getByText("Password").closest("tr");
       const actionsToggler = within(passwordRow).getByRole("button", { name: "Actions" });
       await user.click(actionsToggler);
       const changeAction = await within(passwordRow).queryByRole("menuitem", { name: "Change" });
@@ -158,8 +155,7 @@ describe("when ready", () => {
       const { user } = installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
-      const passwordRow = within(table).getByText("Password")
-        .closest("tr");
+      const passwordRow = within(table).getByText("Password").closest("tr");
       const actionsToggler = within(passwordRow).getByRole("button", { name: "Actions" });
       await user.click(actionsToggler);
       const discardAction = await within(passwordRow).queryByRole("menuitem", { name: "Discard" });
@@ -177,8 +173,7 @@ describe("when ready", () => {
       installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
-      const passwordRow = within(table).getByText("Password")
-        .closest("tr");
+      const passwordRow = within(table).getByText("Password").closest("tr");
       within(passwordRow).getByText("Not set");
     });
 
@@ -186,8 +181,7 @@ describe("when ready", () => {
       const { user } = installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
-      const passwordRow = within(table).getByText("Password")
-        .closest("tr");
+      const passwordRow = within(table).getByText("Password").closest("tr");
       const actionsToggler = within(passwordRow).getByRole("button", { name: "Actions" });
       await user.click(actionsToggler);
       const setAction = within(passwordRow).getByRole("menuitem", { name: "Set" });
@@ -199,8 +193,7 @@ describe("when ready", () => {
       const { user } = installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
-      const passwordRow = within(table).getByText("Password")
-        .closest("tr");
+      const passwordRow = within(table).getByText("Password").closest("tr");
       const actionsToggler = within(passwordRow).getByRole("button", { name: "Actions" });
       await user.click(actionsToggler);
 
@@ -219,8 +212,7 @@ describe("when ready", () => {
       installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
-      const sshKeyRow = within(table).getByText("SSH Key")
-        .closest("tr");
+      const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
       within(sshKeyRow).getByText("ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+");
       within(sshKeyRow).getByText("test@example");
     });
@@ -229,8 +221,7 @@ describe("when ready", () => {
       const { user } = installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
-      const sshKeyRow = within(table).getByText("SSH Key")
-        .closest("tr");
+      const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
       const actionsToggler = within(sshKeyRow).getByRole("button", { name: "Actions" });
       await user.click(actionsToggler);
       const setAction = within(sshKeyRow).queryByRole("menuitem", { name: "Set" });
@@ -241,8 +232,7 @@ describe("when ready", () => {
       const { user } = installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
-      const sshKeyRow = within(table).getByText("SSH Key")
-        .closest("tr");
+      const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
       const actionsToggler = within(sshKeyRow).getByRole("button", { name: "Actions" });
       await user.click(actionsToggler);
       const changeAction = await within(sshKeyRow).queryByRole("menuitem", { name: "Change" });
@@ -255,8 +245,7 @@ describe("when ready", () => {
       const { user } = installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
-      const sshKeyRow = within(table).getByText("SSH Key")
-        .closest("tr");
+      const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
       const actionsToggler = within(sshKeyRow).getByRole("button", { name: "Actions" });
       await user.click(actionsToggler);
       const discardAction = await within(sshKeyRow).queryByRole("menuitem", { name: "Discard" });
@@ -274,8 +263,7 @@ describe("when ready", () => {
       installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
-      const sshKeyRow = within(table).getByText("SSH Key")
-        .closest("tr");
+      const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
       within(sshKeyRow).getByText("Not set");
     });
 
@@ -283,8 +271,7 @@ describe("when ready", () => {
       const { user } = installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
-      const sshKeyRow = within(table).getByText("SSH Key")
-        .closest("tr");
+      const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
       const actionsToggler = within(sshKeyRow).getByRole("button", { name: "Actions" });
       await user.click(actionsToggler);
       const setAction = within(sshKeyRow).getByRole("menuitem", { name: "Set" });
@@ -296,8 +283,7 @@ describe("when ready", () => {
       const { user } = installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
-      const sshKeyRow = within(table).getByText("SSH Key")
-        .closest("tr");
+      const sshKeyRow = within(table).getByText("SSH Key").closest("tr");
       const actionsToggler = within(sshKeyRow).getByRole("button", { name: "Actions" });
       await user.click(actionsToggler);
 

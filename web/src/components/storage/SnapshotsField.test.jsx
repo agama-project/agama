@@ -48,8 +48,8 @@ const rootVolume = {
     snapshotsAffectSizes: true,
     adjustByRam: false,
     sizeRelevantVolumes: ["/home"],
-    productDefined: true
-  }
+    productDefined: true,
+  },
 };
 
 const onChangeFn = jest.fn();

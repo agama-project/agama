@@ -61,7 +61,7 @@ class WSClient {
       error: [],
       close: [],
       open: [],
-      events: []
+      events: [],
     };
 
     this.reconnectAttempts = 0;
@@ -70,17 +70,18 @@ class WSClient {
 
   wsState() {
     const state = this.client.readyState;
-    if ((state !== SocketStates.CONNECTED) && (this.reconnectAttempts >= MAX_ATTEMPTS)) return SocketStates.UNRECOVERABLE;
+    if (state !== SocketStates.CONNECTED && this.reconnectAttempts >= MAX_ATTEMPTS)
+      return SocketStates.UNRECOVERABLE;
 
     return state;
   }
 
   isRecoverable() {
-    return (this.wsState() !== SocketStates.UNRECOVERABLE);
+    return this.wsState() !== SocketStates.UNRECOVERABLE;
   }
 
   isConnected() {
-    return (this.wsState() === SocketStates.CONNECTED);
+    return this.wsState() === SocketStates.CONNECTED;
   }
 
   buildClient() {
@@ -254,7 +255,7 @@ class HTTPClient {
 
     const wsUrl = new URL(this.url.toString());
     wsUrl.pathname = wsUrl.pathname.concat("api/ws");
-    wsUrl.protocol = (this.url.protocol === "http:") ? "ws" : "wss";
+    wsUrl.protocol = this.url.protocol === "http:" ? "ws" : "wss";
     this._ws = new WSClient(wsUrl);
     return this._ws;
   }

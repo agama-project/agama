@@ -46,7 +46,7 @@ export default function SoftwareSection() {
     if (proposal.patterns === undefined) return;
 
     const ids = Object.keys(proposal.patterns);
-    const selected = patterns.filter(p => ids.includes(p.name)).sort((a, b) => a.order - b.order);
+    const selected = patterns.filter((p) => ids.includes(p.name)).sort((a, b) => a.order - b.order);
     setSelectedPatterns(selected);
   }, [client, proposal, patterns]);
 
@@ -73,7 +73,7 @@ export default function SoftwareSection() {
           {msg2}
         </Text>
         <List>
-          {selectedPatterns.map(p => (
+          {selectedPatterns.map((p) => (
             <ListItem key={p.name}>{p.summary}</ListItem>
           ))}
         </List>

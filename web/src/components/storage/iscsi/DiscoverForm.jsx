@@ -20,11 +20,7 @@
  */
 
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Alert,
-  Form, FormGroup,
-  TextInput,
-} from "@patternfly/react-core";
+import { Alert, Form, FormGroup, TextInput } from "@patternfly/react-core";
 
 import { FormValidationError, Popup } from "~/components/core";
 import { AuthFields } from "~/components/storage/iscsi";
@@ -38,7 +34,7 @@ const defaultData = {
   username: "",
   password: "",
   reverseUsername: "",
-  reversePassword: ""
+  reversePassword: "",
 };
 
 export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
@@ -84,11 +80,7 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
   const isValidAddress = () => isValidIp(data.address);
   const isValidPort = () => Number.isInteger(parseInt(data.port));
   const isValidForm = () => {
-    return (
-      isValidAddress() &&
-      isValidPort() &&
-      isValidAuth
-    );
+    return isValidAddress() && isValidPort() && isValidAuth;
   };
 
   const showAddressError = () => data.address.length > 0 && !isValidAddress(data.address);
@@ -101,23 +93,14 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
     // TRANSLATORS: popup title
     <Popup isOpen title={_("Discover iSCSI Targets")}>
       <Form id={id} onSubmit={onSubmit}>
-        {isFailed &&
-          (
-            <div ref={alertRef}>
-              <Alert
-                variant="warning"
-                isInline
-                title={_("Something went wrong")}
-              >
-                <p>{_("Make sure you provide the correct values")}</p>
-              </Alert>
-            </div>
-          )}
-        <FormGroup
-          fieldId="address"
-          label={_("IP address")}
-          isRequired
-        >
+        {isFailed && (
+          <div ref={alertRef}>
+            <Alert variant="warning" isInline title={_("Something went wrong")}>
+              <p>{_("Make sure you provide the correct values")}</p>
+            </Alert>
+          </div>
+        )}
+        <FormGroup fieldId="address" label={_("IP address")} isRequired>
           <TextInput
             id="address"
             name="address"
@@ -129,13 +112,9 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
             onChange={onAddressChange}
             validated={showAddressError() ? "error" : "default"}
           />
-          <FormValidationError message={showAddressError() ? _("Incorrect IP address") : "" } />
+          <FormValidationError message={showAddressError() ? _("Incorrect IP address") : ""} />
         </FormGroup>
-        <FormGroup
-          fieldId="port"
-          label={_("Port")}
-          isRequired
-        >
+        <FormGroup fieldId="port" label={_("Port")} isRequired>
           <TextInput
             id="port"
             name="port"
@@ -147,20 +126,12 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
             onChange={onPortChange}
             validated={showPortError() ? "error" : "default"}
           />
-          <FormValidationError message={showPortError() ? _("Incorrect port") : "" } />
+          <FormValidationError message={showPortError() ? _("Incorrect port") : ""} />
         </FormGroup>
-        <AuthFields
-          data={data}
-          onChange={updateData}
-          onValidate={(v) => setIsValidAuth(v)}
-        />
+        <AuthFields data={data} onChange={updateData} onValidate={(v) => setIsValidAuth(v)} />
       </Form>
       <Popup.Actions>
-        <Popup.Confirm
-          form={id}
-          type="submit"
-          isDisabled={isDisabled}
-        />
+        <Popup.Confirm form={id} type="submit" isDisabled={isDisabled} />
         <Popup.Cancel onClick={onCancel} isDisabled={isLoading} />
       </Popup.Actions>
     </Popup>

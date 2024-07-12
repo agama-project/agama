@@ -32,13 +32,13 @@ const productsRoutes = {
   children: [
     {
       index: true,
-      element: <ProductSelectionPage />
+      element: <ProductSelectionPage />,
     },
     {
       path: "progress",
-      element: <ProductSelectionProgress />
-    }
-  ]
+      element: <ProductSelectionProgress />,
+    },
+  ],
 };
 
 export default productsRoutes;

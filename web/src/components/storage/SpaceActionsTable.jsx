@@ -24,17 +24,23 @@
 import React from "react";
 import {
   Button,
-  Flex, FlexItem,
-  List, ListItem,
+  Flex,
+  FlexItem,
+  List,
+  ListItem,
   Popover,
-  ToggleGroup, ToggleGroupItem
+  ToggleGroup,
+  ToggleGroupItem,
 } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
-import { deviceChildren, deviceSize } from '~/components/storage/utils';
+import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import {
-  DeviceName, DeviceDetails, DeviceSize, toStorageDevice
+  DeviceName,
+  DeviceDetails,
+  DeviceSize,
+  toStorageDevice,
 } from "~/components/storage/device-utils";
 import { TreeTable } from "~/components/core";
 import { Icon } from "~/components/layout";
@@ -58,8 +64,9 @@ const DeviceInfoContent = ({ device }) => {
 
   if (minSize) {
     const recoverable = device.size - minSize;
-    return (
-      sprintf(_("Up to %s can be recovered by shrinking the device."), deviceSize(recoverable))
+    return sprintf(
+      _("Up to %s can be recovered by shrinking the device."),
+      deviceSize(recoverable),
     );
   }
 
@@ -69,7 +76,9 @@ const DeviceInfoContent = ({ device }) => {
     <>
       {_("The device cannot be shrunk:")}
       <List>
-        {reasons.map((reason, idx) => <ListItem key={idx}>{reason}</ListItem>)}
+        {reasons.map((reason, idx) => (
+          <ListItem key={idx}>{reason}</ListItem>
+        ))}
       </List>
     </>
   );
@@ -84,10 +93,7 @@ const DeviceInfoContent = ({ device }) => {
  */
 const DeviceInfo = ({ device }) => {
   return (
-    <Popover
-      headerContent={device.name}
-      bodyContent={<DeviceInfoContent device={device} />}
-    >
+    <Popover headerContent={device.name} bodyContent={<DeviceInfoContent device={device} />}>
       <Button
         aria-label={sprintf(_("Show information about %s"), device.name)}
         variant="plain"
@@ -137,7 +143,11 @@ const DeviceActionSelector = ({ device, action, onChange }) => {
           />
         </ToggleGroup>
       </FlexItem>
-      {hasInfo && <FlexItem><DeviceInfo device={device} /></FlexItem>}
+      {hasInfo && (
+        <FlexItem>
+          <DeviceInfo device={device} />
+        </FlexItem>
+      )}
     </Flex>
   );
 };
@@ -156,17 +166,10 @@ const DeviceAction = ({ item, action, onChange }) => {
   if (!device) return null;
 
   if (device.type === "partition") {
-    return (
-      <DeviceActionSelector
-        device={device}
-        action={action}
-        onChange={onChange}
-      />
-    );
+    return <DeviceActionSelector device={device} action={action} onChange={onChange} />;
   }
 
-  if (device.filesystem || device.component)
-    return _("The content may be deleted");
+  if (device.filesystem || device.component) return _("The content may be deleted");
 
   if (!device.partitionTable || device.partitionTable.partitions.length === 0)
     return _("No content found");
@@ -200,13 +203,9 @@ export default function SpaceActionsTable({
     {
       name: _("Action"),
       value: (item) => (
-        <DeviceAction
-          item={item}
-          action={deviceAction(item)}
-          onChange={onActionChange}
-        />
-      )
-    }
+        <DeviceAction item={item} action={deviceAction(item)} onChange={onActionChange} />
+      ),
+    },
   ];
 
   return (

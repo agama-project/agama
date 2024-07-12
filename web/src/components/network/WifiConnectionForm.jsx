@@ -28,32 +28,30 @@ import {
   FormGroup,
   FormSelect,
   FormSelectOption,
-  TextInput
+  TextInput,
 } from "@patternfly/react-core";
 import { PasswordInput } from "~/components/core";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
 
 /*
-* FIXME: it should be moved to the SecurityProtocols enum that already exists or to a class based
-* enum pattern in the network_manager adapter.
-*/
+ * FIXME: it should be moved to the SecurityProtocols enum that already exists or to a class based
+ * enum pattern in the network_manager adapter.
+ */
 const security_options = [
   // TRANSLATORS: WiFi authentication mode
   { value: "", label: _("None") },
   // TRANSLATORS: WiFi authentication mode
-  { value: "wpa-psk", label: _("WPA & WPA2 Personal") }
+  { value: "wpa-psk", label: _("WPA & WPA2 Personal") },
 ];
 
-const selectorOptions = security_options.map(security => (
+const selectorOptions = security_options.map((security) => (
   <FormSelectOption key={security.value} value={security.value} label={security.label} />
 ));
 
 const securityFrom = (supported) => {
-  if (supported.includes("WPA2"))
-    return "wpa-psk";
-  if (supported.includes("WPA1"))
-    return "wpa-psk";
+  if (supported.includes("WPA2")) return "wpa-psk";
+  if (supported.includes("WPA1")) return "wpa-psk";
   return "";
 };
 
@@ -66,7 +64,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
   const [security, setSecurity] = useState(securityFrom(network?.security || []));
   const hidden = network?.hidden || false;
 
-  const accept = async e => {
+  const accept = async (e) => {
     e.preventDefault();
     setError(false);
     setIsConnecting(true);
@@ -75,19 +73,21 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
       onSubmitCallback({ ssid, password, hidden, security: [security] });
     }
 
-    client.addAndConnectTo(ssid, { security, password, hidden })
+    client
+      .addAndConnectTo(ssid, { security, password, hidden })
       .catch(() => setError(true))
       .finally(() => setIsConnecting(false));
   };
 
   return (
     <Form id={`${ssid}-connection-form`} onSubmit={accept}>
-      {error &&
+      {error && (
         <Alert variant="warning" isInline title={_("Something went wrong")}>
           <p>{_("Please, review provided settings and try again.")}</p>
-        </Alert>}
+        </Alert>
+      )}
 
-      {network?.hidden &&
+      {network?.hidden && (
         // TRANSLATORS: SSID (Wifi network name) configuration
         <FormGroup fieldId="ssid" label={_("SSID")}>
           <TextInput
@@ -98,9 +98,10 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
             value={ssid}
             onChange={(_, value) => setSsid(value)}
           />
-        </FormGroup>}
+        </FormGroup>
+      )}
 
-      { /* TRANSLATORS: Wifi security configuration (password protected or not) */}
+      {/* TRANSLATORS: Wifi security configuration (password protected or not) */}
       <FormGroup fieldId="security" label={_("Security")}>
         <FormSelect
           id="security"
@@ -111,7 +112,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
           {selectorOptions}
         </FormSelect>
       </FormGroup>
-      {security === "wpa-psk" &&
+      {security === "wpa-psk" && (
         // TRANSLATORS: WiFi password
         <FormGroup fieldId="password" label={_("WPA Password")}>
           <PasswordInput
@@ -121,14 +122,17 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
             value={password}
             onChange={(_, value) => setPassword(value)}
           />
-        </FormGroup>}
+        </FormGroup>
+      )}
       <ActionGroup>
         <Button type="submit" variant="primary" isLoading={isConnecting} isDisabled={isConnecting}>
           {/* TRANSLATORS: button label, connect to a WiFi network */}
           {_("Connect")}
         </Button>
         {/* TRANSLATORS: button label */}
-        <Button variant="link" isDisabled={isConnecting} onClick={onCancel}>{_("Cancel")}</Button>
+        <Button variant="link" isDisabled={isConnecting} onClick={onCancel}>
+          {_("Cancel")}
+        </Button>
       </ActionGroup>
     </Form>
   );

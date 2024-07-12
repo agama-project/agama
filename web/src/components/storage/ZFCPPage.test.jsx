@@ -31,19 +31,30 @@ jest.mock("@patternfly/react-core", () => {
 
   return {
     ...original,
-    Skeleton: () => <div>PFSkeleton</div>
-
+    Skeleton: () => <div>PFSkeleton</div>,
   };
 });
 
 const controllers = [
   { id: "1", channel: "0.0.fa00", active: false, lunScan: false },
-  { id: "2", channel: "0.0.fb00", active: true, lunScan: false }
+  { id: "2", channel: "0.0.fb00", active: true, lunScan: false },
 ];
 
 const disks = [
-  { id: "1", name: "/dev/sda", channel: "0.0.fb00", wwpn: "0x500507630703d3b3", lun: "0x0000000000000001" },
-  { id: "2", name: "/dev/sdb", channel: "0.0.fb00", wwpn: "0x500507630703d3b3", lun: "0x0000000000000002" }
+  {
+    id: "1",
+    name: "/dev/sda",
+    channel: "0.0.fb00",
+    wwpn: "0x500507630703d3b3",
+    lun: "0x0000000000000001",
+  },
+  {
+    id: "2",
+    name: "/dev/sdb",
+    channel: "0.0.fb00",
+    wwpn: "0x500507630703d3b3",
+    lun: "0x0000000000000002",
+  },
 ];
 
 const defaultClient = {
@@ -59,7 +70,7 @@ const defaultClient = {
   activateController: jest.fn().mockResolvedValue(0),
   getAllowLUNScan: jest.fn().mockResolvedValue(false),
   activateDisk: jest.fn().mockResolvedValue(0),
-  deactivateDisk: jest.fn().mockResolvedValue(0)
+  deactivateDisk: jest.fn().mockResolvedValue(0),
 };
 
 let client;
@@ -83,10 +94,18 @@ it.skip("loads the zFCP devices", async () => {
   screen.getAllByText(/PFSkeleton/);
   expect(screen.queryAllByRole("grid").length).toBe(0);
   await waitFor(() => expect(client.probe).toHaveBeenCalled());
-  await waitFor(() => expect(client.getLUNs).toHaveBeenCalledWith(controllers[1], "0x500507630703d3b3"));
-  await waitFor(() => expect(client.getLUNs).toHaveBeenCalledWith(controllers[1], "0x500507630704d3b3"));
-  await waitFor(() => expect(client.getLUNs).not.toHaveBeenCalledWith(controllers[0], "0x500507630703d3b3"));
-  await waitFor(() => expect(client.getLUNs).not.toHaveBeenCalledWith(controllers[0], "0x500507630704d3b3"));
+  await waitFor(() =>
+    expect(client.getLUNs).toHaveBeenCalledWith(controllers[1], "0x500507630703d3b3"),
+  );
+  await waitFor(() =>
+    expect(client.getLUNs).toHaveBeenCalledWith(controllers[1], "0x500507630704d3b3"),
+  );
+  await waitFor(() =>
+    expect(client.getLUNs).not.toHaveBeenCalledWith(controllers[0], "0x500507630703d3b3"),
+  );
+  await waitFor(() =>
+    expect(client.getLUNs).not.toHaveBeenCalledWith(controllers[0], "0x500507630704d3b3"),
+  );
   expect(screen.getAllByRole("grid").length).toBe(2);
 });
 
@@ -177,16 +196,20 @@ describe.skip("if there are not controllers", () => {
 describe.skip("if there are disks", () => {
   beforeEach(() => {
     client.getWWPNs = jest.fn().mockResolvedValue(["0x500507630703d3b3"]);
-    client.getLUNs = jest.fn().mockResolvedValue(
-      ["0x0000000000000001", "0x0000000000000002", "0x0000000000000003"]
-    );
+    client.getLUNs = jest
+      .fn()
+      .mockResolvedValue(["0x0000000000000001", "0x0000000000000002", "0x0000000000000003"]);
   });
 
   it("renders the information for each disk", async () => {
     installerRender(<ZFCPPage />);
 
-    await screen.findByRole("row", { name: "/dev/sda 0.0.fb00 0x500507630703d3b3 0x0000000000000001" });
-    await screen.findByRole("row", { name: "/dev/sdb 0.0.fb00 0x500507630703d3b3 0x0000000000000002" });
+    await screen.findByRole("row", {
+      name: "/dev/sda 0.0.fb00 0x500507630703d3b3 0x0000000000000001",
+    });
+    await screen.findByRole("row", {
+      name: "/dev/sdb 0.0.fb00 0x500507630703d3b3 0x0000000000000002",
+    });
   });
 
   it("renders a button for activating a disk", async () => {
@@ -212,9 +235,9 @@ describe.skip("if there are disks", () => {
 
   describe("if the controller is not using auto LUN scan", () => {
     beforeEach(() => {
-      client.getControllers = jest.fn().mockResolvedValue([
-        { id: "1", channel: "0.0.fb00", active: true, lunScan: false }
-      ]);
+      client.getControllers = jest
+        .fn()
+        .mockResolvedValue([{ id: "1", channel: "0.0.fb00", active: true, lunScan: false }]);
     });
 
     it("allows deactivating a disk", async () => {
@@ -229,15 +252,17 @@ describe.skip("if there are disks", () => {
       const [controller] = await client.getControllers();
       const [disk] = await client.getDisks();
 
-      await waitFor(() => expect(client.deactivateDisk).toHaveBeenCalledWith(controller, disk.wwpn, disk.lun));
+      await waitFor(() =>
+        expect(client.deactivateDisk).toHaveBeenCalledWith(controller, disk.wwpn, disk.lun),
+      );
     });
   });
 
   describe("if the controller is using auto LUN scan", () => {
     beforeEach(() => {
-      client.getControllers = jest.fn().mockResolvedValue([
-        { id: "1", channel: "0.0.fb00", active: true, lunScan: true }
-      ]);
+      client.getControllers = jest
+        .fn()
+        .mockResolvedValue([{ id: "1", channel: "0.0.fb00", active: true, lunScan: true }]);
     });
 
     it("does not allow deactivating a disk", async () => {
@@ -278,7 +303,9 @@ describe.skip("if there are not disks", () => {
 
       await screen.findByText("No zFCP disks found.");
       await screen.findByText(/try to activate a zFCP controller/);
-      await waitFor(() => expect(screen.queryByRole("button", { name: "Activate zFCP disk" })).toBeNull());
+      await waitFor(() =>
+        expect(screen.queryByRole("button", { name: "Activate zFCP disk" })).toBeNull(),
+      );
     });
   });
 });
@@ -286,9 +313,9 @@ describe.skip("if there are not disks", () => {
 describe.skip("if the button for adding a disk is used", () => {
   beforeEach(() => {
     client.getWWPNs = jest.fn().mockResolvedValue(["0x500507630703d3b3"]);
-    client.getLUNs = jest.fn().mockResolvedValue(
-      ["0x0000000000000001", "0x0000000000000002", "0x0000000000000003"]
-    );
+    client.getLUNs = jest
+      .fn()
+      .mockResolvedValue(["0x0000000000000001", "0x0000000000000002", "0x0000000000000003"]);
   });
 
   it("opens a popup with the form for a new disk", async () => {
@@ -331,7 +358,9 @@ describe.skip("if the button for adding a disk is used", () => {
     await user.click(accept);
 
     expect(client.activateDisk).toHaveBeenCalledWith(
-      controllers[1], "0x500507630703d3b3", "0x0000000000000003"
+      controllers[1],
+      "0x500507630703d3b3",
+      "0x0000000000000003",
     );
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });

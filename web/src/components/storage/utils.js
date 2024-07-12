@@ -57,7 +57,7 @@ import { N_ } from "~/i18n";
 const SIZE_METHODS = Object.freeze({
   AUTO: "auto",
   MANUAL: "fixed",
-  RANGE: "range"
+  RANGE: "range",
 });
 
 const SIZE_UNITS = Object.freeze({
@@ -79,8 +79,8 @@ const SPACE_POLICIES = [
     summaryLabels: [
       // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
       // would read as "Find space deleting current content". Keep it short
-      N_("deleting current content")
-    ]
+      N_("deleting current content"),
+    ],
   },
   {
     id: "resize",
@@ -89,8 +89,8 @@ const SPACE_POLICIES = [
     summaryLabels: [
       // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
       // would read as "Find space shrinking partitions". Keep it short.
-      N_("shrinking partitions")
-    ]
+      N_("shrinking partitions"),
+    ],
   },
   {
     id: "keep",
@@ -99,8 +99,8 @@ const SPACE_POLICIES = [
     summaryLabels: [
       // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
       // would read as "Find space without modifying any partition". Keep it short.
-      N_("without modifying any partition")
-    ]
+      N_("without modifying any partition"),
+    ],
   },
   {
     id: "custom",
@@ -109,9 +109,9 @@ const SPACE_POLICIES = [
     summaryLabels: [
       // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
       // would read as "Find space with custom actions". Keep it short.
-      N_("with custom actions")
-    ]
-  }
+      N_("with custom actions"),
+    ],
+  },
 ];
 
 /**
@@ -130,7 +130,8 @@ const splitSize = (size) => {
   // From D-Bus, maxSize comes as undefined when set as "unlimited", but for Agama UI
   // it means "leave it empty"
   const sanitizedSize = size === undefined ? "" : size;
-  const parsedSize = typeof sanitizedSize === "string" ? sanitizedSize : xbytes(sanitizedSize, { iec: true });
+  const parsedSize =
+    typeof sanitizedSize === "string" ? sanitizedSize : xbytes(sanitizedSize, { iec: true });
   const [qty, unit] = parsedSize.split(" ");
   // `Number` will remove trailing zeroes;
   // parseFloat ensures Number does not transform "" into 0.
@@ -138,7 +139,7 @@ const splitSize = (size) => {
 
   return {
     unit,
-    size: isNaN(sanitizedQty) ? undefined : sanitizedQty
+    size: isNaN(sanitizedQty) ? undefined : sanitizedQty,
   };
 };
 
@@ -226,12 +227,12 @@ const deviceLabel = (device) => {
 const deviceChildren = (device) => {
   const partitionTableChildren = (partitionTable) => {
     const { partitions, unusedSlots } = partitionTable;
-    const children = partitions.concat(unusedSlots).filter(i => !!i);
-    return children.sort((a, b) => a.start < b.start ? -1 : 1);
+    const children = partitions.concat(unusedSlots).filter((i) => !!i);
+    return children.sort((a, b) => (a.start < b.start ? -1 : 1));
   };
 
   const lvmVgChildren = (lvmVg) => {
-    return lvmVg.logicalVolumes.sort((a, b) => a.name < b.name ? -1 : 1);
+    return lvmVg.logicalVolumes.sort((a, b) => (a.name < b.name ? -1 : 1));
   };
 
   if (device.partitionTable) return partitionTableChildren(device.partitionTable);
@@ -283,7 +284,7 @@ const isTransactionalRoot = (volume) => {
  * @returns {boolean}
  */
 const isTransactionalSystem = (volumes = []) => {
-  return volumes.find(v => isTransactionalRoot(v)) !== undefined;
+  return volumes.find((v) => isTransactionalRoot(v)) !== undefined;
 };
 
 /**
@@ -311,13 +312,13 @@ const reuseDevice = (volume) => volume.target === "FILESYSTEM" || volume.target 
  * @param {Volume} volume
  * @returns {string}
  */
-const volumeLabel = (volume) => volume.mountPath === "/" ? "root" : volume.mountPath;
+const volumeLabel = (volume) => (volume.mountPath === "/" ? "root" : volume.mountPath);
 
 /**
  * GiB to Bytes.
  *
  * @type {(value: number) => number } */
-const gib = (value) => value * (1024 ** 3);
+const gib = (value) => value * 1024 ** 3;
 
 export {
   DEFAULT_SIZE_UNIT,
@@ -337,5 +338,5 @@ export {
   isTransactionalSystem,
   mountFilesystem,
   reuseDevice,
-  volumeLabel
+  volumeLabel,
 };

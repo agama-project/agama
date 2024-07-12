@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from 'react';
+import React from "react";
 
 // NOTE: "@icons" is an alias to use a shorter path to real @material-symbols
 // icons location. Check the tsconfig.json file to see its value.
@@ -150,12 +150,10 @@ const icons = {
   wifi_off: WifiOff,
   // brand icons
   linux_logo: SiLinux,
-  windows_logo: SiWindows
+  windows_logo: SiWindows,
 };
 
-const PREDEFINED_SIZES = [
-  "xxxs", "xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl"
-];
+const PREDEFINED_SIZES = ["xxxs", "xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl"];
 
 /**
  * Agama Icon component

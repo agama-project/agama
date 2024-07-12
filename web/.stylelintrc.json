@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "stylelint-config-standard",
-    "stylelint-config-standard-scss"
-  ],
+  "extends": ["stylelint-config-standard", "stylelint-config-standard-scss"],
   "rules": {
     "at-rule-empty-line-before": null,
     "declaration-empty-line-before": null,

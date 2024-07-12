@@ -63,7 +63,7 @@ describe.skip("ProposalResultSection", () => {
     it("does not render a warning when there are not delete actions", () => {
       const props = {
         ...defaultProps,
-        actions: defaultProps.actions.filter(a => !a.delete)
+        actions: defaultProps.actions.filter((a) => !a.delete),
       };
 
       plainRender(<ProposalResultSection {...props} />);
@@ -81,7 +81,7 @@ describe.skip("ProposalResultSection", () => {
       // affected systems are rendered in the warning summary
       const props = {
         ...defaultProps,
-        actions: [{ device: 79, subvol: false, delete: true, text: "" }]
+        actions: [{ device: 79, subvol: false, delete: true, text: "" }],
       };
 
       plainRender(<ProposalResultSection {...props} />);

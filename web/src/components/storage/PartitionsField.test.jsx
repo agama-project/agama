@@ -37,7 +37,7 @@ jest.mock("@patternfly/react-core", () => {
 
   return {
     ...original,
-    Skeleton: () => <div>PFSkeleton</div>
+    Skeleton: () => <div>PFSkeleton</div>,
   };
 });
 
@@ -59,8 +59,8 @@ const rootVolume = {
     snapshotsAffectSizes: true,
     sizeRelevantVolumes: [],
     adjustByRam: false,
-    productDefined: true
-  }
+    productDefined: true,
+  },
 };
 
 /** @type {Volume} */
@@ -81,8 +81,8 @@ const swapVolume = {
     snapshotsAffectSizes: false,
     sizeRelevantVolumes: [],
     adjustByRam: false,
-    productDefined: true
-  }
+    productDefined: true,
+  },
 };
 
 /** @type {Volume} */
@@ -102,8 +102,8 @@ const homeVolume = {
     snapshotsAffectSizes: false,
     sizeRelevantVolumes: [],
     adjustByRam: false,
-    productDefined: true
-  }
+    productDefined: true,
+  },
 };
 
 /** @type {Volume} */
@@ -124,8 +124,8 @@ const arbitraryVolume = {
     snapshotsAffectSizes: false,
     adjustByRam: false,
     sizeRelevantVolumes: [],
-    productDefined: false
-  }
+    productDefined: false,
+  },
 };
 
 /** @type {StorageDevice} */
@@ -138,7 +138,7 @@ const sda = {
   vendor: "Micron",
   model: "Micron 1100 SATA",
   transport: "usb",
-  size: 1024
+  size: 1024,
 };
 
 /** @type {StorageDevice} */
@@ -151,8 +151,8 @@ const sda1 = {
   size: 256,
   filesystem: {
     sid: 169,
-    type: "Swap"
-  }
+    type: "Swap",
+  },
 };
 
 /** @type {StorageDevice} */
@@ -165,8 +165,8 @@ const sda2 = {
   size: 512,
   filesystem: {
     sid: 179,
-    type: "Ext4"
-  }
+    type: "Ext4",
+  },
 };
 
 /** @type {PartitionsFieldProps} */
@@ -191,7 +191,7 @@ beforeEach(() => {
     bootDevice: undefined,
     defaultBootDevice: undefined,
     onVolumesChange: jest.fn(),
-    onBootChange: jest.fn()
+    onBootChange: jest.fn(),
   };
 });
 
@@ -304,7 +304,9 @@ describe.skip("if there are volumes", () => {
 
     expect(within(body).queryAllByRole("row").length).toEqual(3);
     within(body).getByRole("row", { name: "/ Btrfs 1 KiB - 2 KiB Partition at installation disk" });
-    within(body).getByRole("row", { name: "/home XFS at least 1 KiB Partition at installation disk" });
+    within(body).getByRole("row", {
+      name: "/home XFS at least 1 KiB Partition at installation disk",
+    });
     within(body).getByRole("row", { name: "swap Swap 1 KiB Partition at installation disk" });
   });
 
@@ -312,7 +314,9 @@ describe.skip("if there are volumes", () => {
     const { user } = await expandField();
 
     const [, body] = await screen.findAllByRole("rowgroup");
-    const row = within(body).getByRole("row", { name: "/home XFS at least 1 KiB Partition at installation disk" });
+    const row = within(body).getByRole("row", {
+      name: "/home XFS at least 1 KiB Partition at installation disk",
+    });
     const actions = within(row).getByRole("button", { name: "Actions" });
     await user.click(actions);
     const deleteAction = within(row).queryByRole("menuitem", { name: "Delete" });
@@ -325,7 +329,9 @@ describe.skip("if there are volumes", () => {
     const { user } = await expandField();
 
     const [, body] = await screen.findAllByRole("rowgroup");
-    const row = within(body).getByRole("row", { name: "/home XFS at least 1 KiB Partition at installation disk" });
+    const row = within(body).getByRole("row", {
+      name: "/home XFS at least 1 KiB Partition at installation disk",
+    });
     const actions = within(row).getByRole("button", { name: "Actions" });
     await user.click(actions);
     const editAction = within(row).queryByRole("menuitem", { name: "Edit" });
@@ -339,7 +345,9 @@ describe.skip("if there are volumes", () => {
     const { user } = await expandField();
 
     const [, body] = await screen.findAllByRole("rowgroup");
-    const row = within(body).getByRole("row", { name: "/home XFS at least 1 KiB Partition at installation disk" });
+    const row = within(body).getByRole("row", {
+      name: "/home XFS at least 1 KiB Partition at installation disk",
+    });
     const actions = within(row).getByRole("button", { name: "Actions" });
     await user.click(actions);
     const locationAction = within(row).queryByRole("menuitem", { name: "Change location" });
@@ -354,7 +362,9 @@ describe.skip("if there are volumes", () => {
     const { user } = await expandField();
 
     const [, body] = await screen.findAllByRole("rowgroup");
-    const row = within(body).getByRole("row", { name: "/home XFS at least 1 KiB Partition at installation disk" });
+    const row = within(body).getByRole("row", {
+      name: "/home XFS at least 1 KiB Partition at installation disk",
+    });
     const actions = within(row).getByRole("button", { name: "Actions" });
     await user.click(actions);
     expect(within(row).queryByRole("menuitem", { name: "Reset location" })).toBeNull();
@@ -369,15 +379,21 @@ describe.skip("if there are volumes", () => {
       const { user } = await expandField();
 
       const [, body] = await screen.findAllByRole("rowgroup");
-      const row = within(body).getByRole("row", { name: "/home XFS at least 1 KiB Partition at /dev/sda" });
+      const row = within(body).getByRole("row", {
+        name: "/home XFS at least 1 KiB Partition at /dev/sda",
+      });
       const actions = within(row).getByRole("button", { name: "Actions" });
       await user.click(actions);
       const resetLocationAction = within(row).queryByRole("menuitem", { name: "Reset location" });
       await user.click(resetLocationAction);
       expect(props.onVolumesChange).toHaveBeenCalledWith(
         expect.arrayContaining([
-          expect.objectContaining({ mountPath: "/home", target: "DEFAULT", targetDevice: undefined })
-        ])
+          expect.objectContaining({
+            mountPath: "/home",
+            target: "DEFAULT",
+            targetDevice: undefined,
+          }),
+        ]),
       );
 
       // NOTE: sadly we cannot perform the below check because the component is
@@ -397,7 +413,9 @@ describe.skip("if there are volumes", () => {
 
       const [, volumes] = await screen.findAllByRole("rowgroup");
 
-      within(volumes).getByRole("row", { name: "/ Transactional Btrfs 1 KiB - 2 KiB Partition at installation disk" });
+      within(volumes).getByRole("row", {
+        name: "/ Transactional Btrfs 1 KiB - 2 KiB Partition at installation disk",
+      });
     });
   });
 
@@ -411,7 +429,9 @@ describe.skip("if there are volumes", () => {
 
       const [, volumes] = await screen.findAllByRole("rowgroup");
 
-      within(volumes).getByRole("row", { name: "/ Btrfs with snapshots 1 KiB - 2 KiB Partition at installation disk" });
+      within(volumes).getByRole("row", {
+        name: "/ Btrfs with snapshots 1 KiB - 2 KiB Partition at installation disk",
+      });
     });
   });
 
@@ -420,7 +440,7 @@ describe.skip("if there are volumes", () => {
       props.volumes = [
         rootVolume,
         { ...swapVolume, target: "NEW_PARTITION", targetDevice: sda },
-        { ...homeVolume, target: "NEW_VG", targetDevice: sda }
+        { ...homeVolume, target: "NEW_VG", targetDevice: sda },
       ];
     });
 
@@ -430,7 +450,9 @@ describe.skip("if there are volumes", () => {
       const [, volumes] = await screen.findAllByRole("rowgroup");
 
       within(volumes).getByRole("row", { name: "swap Swap 1 KiB Partition at /dev/sda" });
-      within(volumes).getByRole("row", { name: "/home XFS at least 1 KiB Separate LVM at /dev/sda" });
+      within(volumes).getByRole("row", {
+        name: "/home XFS at least 1 KiB Separate LVM at /dev/sda",
+      });
     });
   });
 
@@ -439,7 +461,7 @@ describe.skip("if there are volumes", () => {
       props.volumes = [
         rootVolume,
         { ...swapVolume, target: "FILESYSTEM", targetDevice: sda1 },
-        { ...homeVolume, target: "DEVICE", targetDevice: sda2 }
+        { ...homeVolume, target: "DEVICE", targetDevice: sda2 },
       ];
     });
 

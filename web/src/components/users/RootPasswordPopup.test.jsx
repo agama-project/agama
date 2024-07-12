@@ -38,7 +38,7 @@ beforeEach(() => {
     return {
       users: {
         setRootPassword: setRootPasswordFn,
-      }
+      },
     };
   });
 });

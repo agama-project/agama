@@ -36,19 +36,19 @@ const reducer = (state, action) => {
 
     case "ADD_DEVICE": {
       const { device } = payload;
-      if (state.devices.find(d => d.id === device.id)) return state;
+      if (state.devices.find((d) => d.id === device.id)) return state;
 
       return { ...state, devices: [...state.devices, device] };
     }
 
     case "UPDATE_DEVICE": {
       const { device } = payload;
-      const index = state.devices.findIndex(d => d.id === device.id);
+      const index = state.devices.findIndex((d) => d.id === device.id);
       const devices = [...state.devices];
-      index !== -1 ? devices[index] = device : devices.push(device);
+      index !== -1 ? (devices[index] = device) : devices.push(device);
 
-      const selectedDevicesIds = state.selectedDevices.map(d => d.id);
-      const selectedDevices = devices.filter(d => selectedDevicesIds.includes(d.id));
+      const selectedDevicesIds = state.selectedDevices.map((d) => d.id);
+      const selectedDevices = devices.filter((d) => selectedDevicesIds.includes(d.id));
 
       return { ...state, devices, selectedDevices };
     }
@@ -56,7 +56,7 @@ const reducer = (state, action) => {
     case "REMOVE_DEVICE": {
       const { device } = payload;
 
-      return { ...state, devices: state.devices.filter(d => d.id !== device.id) };
+      return { ...state, devices: state.devices.filter((d) => d.id !== device.id) };
     }
 
     case "SET_MIN_CHANNEL": {
@@ -76,7 +76,7 @@ const reducer = (state, action) => {
     case "UNSELECT_DEVICE": {
       const { device } = payload;
 
-      return { ...state, selectedDevices: state.selectedDevices.filter(d => d.id !== device.id) };
+      return { ...state, selectedDevices: state.selectedDevices.filter((d) => d.id !== device.id) };
     }
 
     case "SELECT_ALL_DEVICES": {
@@ -158,17 +158,21 @@ export default function DASDPage() {
       const action = (type, device) => dispatch({ type, payload: { device } });
 
       subscriptions.push(
-        await client.dasd.deviceEventListener("added", d => action("ADD_DEVICE", d)),
-        await client.dasd.deviceEventListener("removed", d => action("REMOVE_DEVICE", d)),
-        await client.dasd.deviceEventListener("changed", d => action("UPDATE_DEVICE", d))
+        await client.dasd.deviceEventListener("added", (d) => action("ADD_DEVICE", d)),
+        await client.dasd.deviceEventListener("removed", (d) => action("REMOVE_DEVICE", d)),
+        await client.dasd.deviceEventListener("changed", (d) => action("UPDATE_DEVICE", d)),
       );
 
-      await client.dasd.onJobAdded((data) => dispatch({ type: "START_FORMAT_JOB", payload: { data } }));
-      await client.dasd.onJobChanged((data) => dispatch({ type: "UPDATE_FORMAT_JOB", payload: { data } }));
+      await client.dasd.onJobAdded((data) =>
+        dispatch({ type: "START_FORMAT_JOB", payload: { data } }),
+      );
+      await client.dasd.onJobChanged((data) =>
+        dispatch({ type: "UPDATE_FORMAT_JOB", payload: { data } }),
+      );
     };
 
     const unsubscribe = () => {
-      subscriptions.forEach(fn => fn());
+      subscriptions.forEach((fn) => fn());
     };
 
     subscribe();
@@ -178,7 +182,9 @@ export default function DASDPage() {
   return (
     <>
       <DASDTable state={state} dispatch={dispatch} />
-      {state.formatJob.running && <DASDFormatProgress job={state.formatJob} devices={state.devices} />}
+      {state.formatJob.running && (
+        <DASDFormatProgress job={state.formatJob} devices={state.devices} />
+      )}
     </>
   );
 }

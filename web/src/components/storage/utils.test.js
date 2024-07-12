@@ -31,7 +31,7 @@ import {
   hasFS,
   hasSnapshots,
   isTransactionalRoot,
-  isTransactionalSystem
+  isTransactionalSystem,
 } from "./utils";
 
 /**
@@ -64,8 +64,8 @@ const volume = (properties = {}) => {
       snapshotsAffectSizes: false,
       sizeRelevantVolumes: [],
       adjustByRam: false,
-      productDefined: false
-    }
+      productDefined: false,
+    },
   };
 
   return { ...testVolume, ...properties };
@@ -87,7 +87,7 @@ const sda = {
   name: "/dev/sda",
   description: "",
   size: 1024,
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: [],
 };
@@ -104,10 +104,10 @@ const sda1 = {
   start: 123,
   encrypted: false,
   shrinking: { supported: 128 },
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: [],
-  isEFI: false
+  isEFI: false,
 };
 
 /** @type {StorageDevice} */
@@ -122,10 +122,10 @@ const sda2 = {
   start: 1789,
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: [],
-  isEFI: false
+  isEFI: false,
 };
 
 sda.partitionTable = {
@@ -134,8 +134,8 @@ sda.partitionTable = {
   unpartitionedSize: 0,
   unusedSlots: [
     { start: 1, size: 1024 },
-    { start: 2345, size: 512 }
-  ]
+    { start: 2345, size: 512 },
+  ],
 };
 
 /** @type {StorageDevice}  */
@@ -145,7 +145,7 @@ const lvmVg = {
   type: "lvmVg",
   name: "/dev/vg0",
   description: "LVM",
-  size: 512
+  size: 512,
 };
 
 /** @type {StorageDevice}  */
@@ -160,9 +160,9 @@ const lvmLv1 = {
   start: 0,
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
-  udevPaths: []
+  udevPaths: [],
 };
 
 lvmVg.logicalVolumes = [lvmLv1];
@@ -209,8 +209,8 @@ describe("deviceChildren", () => {
     it("returns the partitions and unused slots", () => {
       const children = deviceChildren(device);
       expect(children.length).toEqual(4);
-      device.partitionTable.partitions.forEach(p => expect(children).toContainEqual(p));
-      device.partitionTable.unusedSlots.forEach(s => expect(children).toContainEqual(s));
+      device.partitionTable.partitions.forEach((p) => expect(children).toContainEqual(p));
+      device.partitionTable.unusedSlots.forEach((s) => expect(children).toContainEqual(s));
     });
   });
 
@@ -222,7 +222,7 @@ describe("deviceChildren", () => {
     it("returns the logical volumes", () => {
       const children = deviceChildren(device);
       expect(children.length).toEqual(1);
-      device.logicalVolumes.forEach(l => expect(children).toContainEqual(l));
+      device.logicalVolumes.forEach((l) => expect(children).toContainEqual(l));
     });
   });
 
@@ -333,7 +333,7 @@ describe("isTransactionalSystem", () => {
 
     const volumes = [
       volume({ mountPath: "/" }),
-      volume({ mountPath: "/home", transactional: true })
+      volume({ mountPath: "/home", transactional: true }),
     ];
     expect(isTransactionalSystem(volumes)).toBe(false);
   });
@@ -341,7 +341,7 @@ describe("isTransactionalSystem", () => {
   it("returns true if volumes includes a transactional root", () => {
     const volumes = [
       volume({ mountPath: "EXT4" }),
-      volume({ mountPath: "/", transactional: true })
+      volume({ mountPath: "/", transactional: true }),
     ];
     expect(isTransactionalSystem(volumes)).toBe(true);
   });

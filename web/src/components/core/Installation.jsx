@@ -24,7 +24,7 @@ import { InstallationProgress, InstallationFinished } from "~/components/core";
 import { IDLE } from "~/client/status";
 
 function Installation({ status }) {
-  return (status === IDLE) ? <InstallationFinished /> : <InstallationProgress />;
+  return status === IDLE ? <InstallationFinished /> : <InstallationProgress />;
 }
 
 export default Installation;

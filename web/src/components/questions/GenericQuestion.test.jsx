@@ -28,14 +28,13 @@ const question = {
   id: 1,
   text: "Do you write unit tests?",
   options: ["always", "sometimes", "never"],
-  defaultOption: "sometimes"
+  defaultOption: "sometimes",
 };
 
 const answerFn = jest.fn();
 
-const renderQuestion = () => (
-  installerRender(<GenericQuestion question={question} answerCallback={answerFn} />)
-);
+const renderQuestion = () =>
+  installerRender(<GenericQuestion question={question} answerCallback={answerFn} />);
 
 describe("GenericQuestion", () => {
   it("renders the question text", async () => {
@@ -44,7 +43,7 @@ describe("GenericQuestion", () => {
     await screen.findByText(question.text);
   });
 
-  it("sets chosen option and calls the callback after user clicking an action", async() => {
+  it("sets chosen option and calls the callback after user clicking an action", async () => {
     const { user } = renderQuestion();
 
     let button = await screen.findByRole("button", { name: /Sometimes/ });

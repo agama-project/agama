@@ -27,22 +27,22 @@ import { mockNavigateFn, plainRender } from "~/test-utils";
 
 const timezones = [
   { id: "Europe/Berlin", parts: ["Europe", "Berlin"], country: "Germany", utcOffset: 1 },
-  { id: "Europe/Madrid", parts: ["Europe", "Madrid"], country: "Spain", utfOffset: 1 }
+  { id: "Europe/Madrid", parts: ["Europe", "Madrid"], country: "Spain", utfOffset: 1 },
 ];
 
 const mockConfigMutation = {
-  mutate: jest.fn()
+  mutate: jest.fn(),
 };
 
 jest.mock("~/queries/l10n", () => ({
   ...jest.requireActual("~/queries/l10n"),
   useConfigMutation: () => mockConfigMutation,
-  useL10n: () => ({ timezones, selectedTimezone: timezones[0] })
+  useL10n: () => ({ timezones, selectedTimezone: timezones[0] }),
 }));
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockNavigateFn
+  useNavigate: () => mockNavigateFn,
 }));
 
 it("allows changing the keyboard", async () => {

@@ -25,27 +25,59 @@ import { plainRender } from "~/test-utils";
 import { ProposalActionsDialog } from "~/components/storage";
 
 const actions = [
-  { text: 'Create GPT on /dev/vdc', subvol: false, delete: false },
-  { text: 'Create partition /dev/vdc1 (8.00 MiB) as BIOS Boot Partition', subvol: false, delete: false },
-  { text: 'Create encrypted partition /dev/vdc2 (29.99 GiB) as LVM physical volume', subvol: false, delete: false },
-  { text: 'Create volume group system0 (29.98 GiB) with /dev/mapper/cr_vdc2 (29.99 GiB)', subvol: false, delete: false },
-  { text: 'Create LVM logical volume /dev/system0/root (20.00 GiB) on volume group system0 for / with btrfs', subvol: false, delete: false },
+  { text: "Create GPT on /dev/vdc", subvol: false, delete: false },
+  {
+    text: "Create partition /dev/vdc1 (8.00 MiB) as BIOS Boot Partition",
+    subvol: false,
+    delete: false,
+  },
+  {
+    text: "Create encrypted partition /dev/vdc2 (29.99 GiB) as LVM physical volume",
+    subvol: false,
+    delete: false,
+  },
+  {
+    text: "Create volume group system0 (29.98 GiB) with /dev/mapper/cr_vdc2 (29.99 GiB)",
+    subvol: false,
+    delete: false,
+  },
+  {
+    text: "Create LVM logical volume /dev/system0/root (20.00 GiB) on volume group system0 for / with btrfs",
+    subvol: false,
+    delete: false,
+  },
 ];
 
 const subvolumeActions = [
-  { text: 'Create subvolume @ on /dev/system0/root (20.00 GiB)', subvol: true, delete: false },
-  { text: 'Create subvolume @/var on /dev/system0/root (20.00 GiB)', subvol: true, delete: false },
-  { text: 'Create subvolume @/usr/local on /dev/system0/root (20.00 GiB)', subvol: true, delete: false },
-  { text: 'Create subvolume @/srv on /dev/system0/root (20.00 GiB)', subvol: true, delete: false },
-  { text: 'Create subvolume @/root on /dev/system0/root (20.00 GiB)', subvol: true, delete: false },
-  { text: 'Create subvolume @/opt on /dev/system0/root (20.00 GiB)', subvol: true, delete: false },
-  { text: 'Create subvolume @/home on /dev/system0/root (20.00 GiB)', subvol: true, delete: false },
-  { text: 'Create subvolume @/boot/writable on /dev/system0/root (20.00 GiB)', subvol: true, delete: false },
-  { text: 'Create subvolume @/boot/grub2/x86_64-efi on /dev/system0/root (20.00 GiB)', subvol: true, delete: false },
-  { text: 'Create subvolume @/boot/grub2/i386-pc on /dev/system0/root (20.00 GiB)', subvol: true, delete: false }
+  { text: "Create subvolume @ on /dev/system0/root (20.00 GiB)", subvol: true, delete: false },
+  { text: "Create subvolume @/var on /dev/system0/root (20.00 GiB)", subvol: true, delete: false },
+  {
+    text: "Create subvolume @/usr/local on /dev/system0/root (20.00 GiB)",
+    subvol: true,
+    delete: false,
+  },
+  { text: "Create subvolume @/srv on /dev/system0/root (20.00 GiB)", subvol: true, delete: false },
+  { text: "Create subvolume @/root on /dev/system0/root (20.00 GiB)", subvol: true, delete: false },
+  { text: "Create subvolume @/opt on /dev/system0/root (20.00 GiB)", subvol: true, delete: false },
+  { text: "Create subvolume @/home on /dev/system0/root (20.00 GiB)", subvol: true, delete: false },
+  {
+    text: "Create subvolume @/boot/writable on /dev/system0/root (20.00 GiB)",
+    subvol: true,
+    delete: false,
+  },
+  {
+    text: "Create subvolume @/boot/grub2/x86_64-efi on /dev/system0/root (20.00 GiB)",
+    subvol: true,
+    delete: false,
+  },
+  {
+    text: "Create subvolume @/boot/grub2/i386-pc on /dev/system0/root (20.00 GiB)",
+    subvol: true,
+    delete: false,
+  },
 ];
 
-const destructiveAction = { text: 'Delete ext4 on /dev/vdc', subvol: false, delete: true };
+const destructiveAction = { text: "Delete ext4 on /dev/vdc", subvol: false, delete: true };
 
 const onCloseFn = jest.fn();
 
@@ -56,7 +88,7 @@ it.skip("renders nothing by default", () => {
 
 it.skip("renders nothing when isOpen=false", () => {
   const { container } = plainRender(
-    <ProposalActionsDialog onClose={onCloseFn} isOpen={false} actions={actions} />
+    <ProposalActionsDialog onClose={onCloseFn} isOpen={false} actions={actions} />,
   );
   expect(container).toBeEmptyDOMElement();
 });
@@ -77,11 +109,13 @@ describe.skip("when isOpen", () => {
       const dialog = screen.getByRole("dialog", { name: "Planned Actions" });
       const actionsList = within(dialog).getByRole("list");
       const actionsListItems = within(actionsList).getAllByRole("listitem");
-      expect(actionsListItems.map(i => i.textContent)).toEqual(actions.map(a => a.text));
+      expect(actionsListItems.map((i) => i.textContent)).toEqual(actions.map((a) => a.text));
     });
 
     it("triggers the onClose callback when user clicks the Close button", async () => {
-      const { user } = plainRender(<ProposalActionsDialog isOpen onClose={onCloseFn} actions={actions} />);
+      const { user } = plainRender(
+        <ProposalActionsDialog isOpen onClose={onCloseFn} actions={actions} />,
+      );
       const closeButton = screen.getByRole("button", { name: "Close" });
 
       await user.click(closeButton);
@@ -92,12 +126,18 @@ describe.skip("when isOpen", () => {
     describe("when there is a destructive action", () => {
       it("emphasizes the action", () => {
         plainRender(
-          <ProposalActionsDialog isOpen onClose={onCloseFn} actions={[destructiveAction, ...actions]} />
+          <ProposalActionsDialog
+            isOpen
+            onClose={onCloseFn}
+            actions={[destructiveAction, ...actions]}
+          />,
         );
 
         // https://stackoverflow.com/a/63080940
         const actionItems = screen.getAllByRole("listitem");
-        const destructiveActionItem = actionItems.find(item => item.textContent === destructiveAction.text);
+        const destructiveActionItem = actionItems.find(
+          (item) => item.textContent === destructiveAction.text,
+        );
 
         expect(destructiveActionItem).toHaveClass("proposal-action--delete");
       });
@@ -106,7 +146,11 @@ describe.skip("when isOpen", () => {
     describe("when there are subvolume actions", () => {
       it("does not render the subvolume actions", () => {
         plainRender(
-          <ProposalActionsDialog isOpen onClose={onCloseFn} actions={[...actions, ...subvolumeActions]} />
+          <ProposalActionsDialog
+            isOpen
+            onClose={onCloseFn}
+            actions={[...actions, ...subvolumeActions]}
+          />,
         );
 
         // For now, we know that there are two lists and the subvolume list is the second one.
@@ -120,7 +164,11 @@ describe.skip("when isOpen", () => {
 
       it("renders the subvolume actions after clicking on 'show subvolumes'", async () => {
         const { user } = plainRender(
-          <ProposalActionsDialog isOpen onClose={onCloseFn} actions={[...actions, ...subvolumeActions]} />
+          <ProposalActionsDialog
+            isOpen
+            onClose={onCloseFn}
+            actions={[...actions, ...subvolumeActions]}
+          />,
         );
 
         const link = screen.getByText(/Show.*subvolume actions/);
@@ -137,7 +185,7 @@ describe.skip("when isOpen", () => {
         const [, subvolList] = screen.getAllByRole("list");
         const subvolItems = within(subvolList).getAllByRole("listitem");
 
-        expect(subvolItems.map(i => i.textContent)).toEqual(subvolumeActions.map(a => a.text));
+        expect(subvolItems.map((i) => i.textContent)).toEqual(subvolumeActions.map((a) => a.text));
       });
     });
   });

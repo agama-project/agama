@@ -27,17 +27,17 @@ import { mockNavigateFn, plainRender } from "~/test-utils";
 
 const keymaps = [
   { id: "us", name: "English" },
-  { id: "es", name: "Spanish" }
+  { id: "es", name: "Spanish" },
 ];
 
 const mockConfigMutation = {
-  mutate: jest.fn()
+  mutate: jest.fn(),
 };
 
 jest.mock("~/queries/l10n", () => ({
   ...jest.requireActual("~/queries/l10n"),
   useConfigMutation: () => mockConfigMutation,
-  useL10n: () => ({ keymaps, selectedKeymap: keymaps[0] })
+  useL10n: () => ({ keymaps, selectedKeymap: keymaps[0] }),
 }));
 
 jest.mock("react-router-dom", () => ({

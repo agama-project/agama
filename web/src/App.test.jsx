@@ -41,27 +41,27 @@ jest.mock("~/queries/software", () => ({
   useProduct: () => {
     return {
       products: mockProducts,
-      selectedProduct: mockSelectedProduct
+      selectedProduct: mockSelectedProduct,
     };
   },
-  useProductChanges: () => jest.fn()
+  useProductChanges: () => jest.fn(),
 }));
 
 jest.mock("~/queries/l10n", () => ({
   ...jest.requireActual("~/queries/l10n"),
-  useL10nConfigChanges: () => jest.fn()
+  useL10nConfigChanges: () => jest.fn(),
 }));
 
 const mockClientStatus = {
   connected: true,
   error: false,
   phase: STARTUP,
-  status: BUSY
+  status: BUSY,
 };
 
 jest.mock("~/context/installer", () => ({
   ...jest.requireActual("~/context/installer"),
-  useInstallerClientStatus: () => mockClientStatus
+  useInstallerClientStatus: () => mockClientStatus,
 }));
 
 // Mock some components,
@@ -80,14 +80,14 @@ describe("App", () => {
         l10n: {
           getUIKeymap: jest.fn().mockResolvedValue("en"),
           getUILocale: jest.fn().mockResolvedValue("en_us"),
-          setUILocale: jest.fn().mockResolvedValue("en_us")
-        }
+          setUILocale: jest.fn().mockResolvedValue("en_us"),
+        },
       };
     });
 
     mockProducts = [
       { id: "openSUSE", name: "openSUSE Tumbleweed" },
-      { id: "Leap Micro", name: "openSUSE Micro" }
+      { id: "Leap Micro", name: "openSUSE Micro" },
     ];
   });
 

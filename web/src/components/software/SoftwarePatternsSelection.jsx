@@ -31,7 +31,7 @@ import {
   DataListItemCells,
   DataListItemRow,
   SearchInput,
-  Stack
+  Stack,
 } from "@patternfly/react-core";
 
 import { Section, Page } from "~/components/core";
@@ -109,13 +109,15 @@ function sortGroups(groups) {
  * @return {Pattern[]} List of patterns including its selection status
  */
 function buildPatterns(patterns, selection) {
-  return patterns.map((pattern) => {
-    const selectedBy = (selection[pattern.name] !== undefined) ? selection[pattern.name] : 2;
-    return {
-      ...pattern,
-      selectedBy,
-    };
-  }).sort((a, b) => a.order - b.order);
+  return patterns
+    .map((pattern) => {
+      const selectedBy = selection[pattern.name] !== undefined ? selection[pattern.name] : 2;
+      return {
+        ...pattern,
+        selectedBy,
+      };
+    })
+    .sort((a, b) => a.order - b.order);
 }
 
 /**
@@ -151,9 +153,10 @@ function SoftwarePatternsSelection() {
     if (searchValue !== "") {
       // case insensitive search
       const searchData = searchValue.toUpperCase();
-      const filtered = patterns.filter((p) =>
-        p.name.toUpperCase().indexOf(searchData) !== -1 ||
-        p.description.toUpperCase().indexOf(searchData) !== -1
+      const filtered = patterns.filter(
+        (p) =>
+          p.name.toUpperCase().indexOf(searchData) !== -1 ||
+          p.description.toUpperCase().indexOf(searchData) !== -1,
       );
       setVisiblePatterns(filtered);
     } else {
@@ -166,17 +169,21 @@ function SoftwarePatternsSelection() {
     });
   }, [patterns, searchValue, client.software]);
 
-  const onToggle = useCallback((name) => {
-    const selected = patterns.filter((p) => p.selectedBy === SelectedBy.USER)
-      .reduce((all, p) => {
-        all[p.name] = true;
-        return all;
-      }, {});
-    const pattern = patterns.find((p) => p.name === name);
-    selected[name] = pattern.selectedBy === SelectedBy.NONE;
+  const onToggle = useCallback(
+    (name) => {
+      const selected = patterns
+        .filter((p) => p.selectedBy === SelectedBy.USER)
+        .reduce((all, p) => {
+          all[p.name] = true;
+          return all;
+        }, {});
+      const pattern = patterns.find((p) => p.name === name);
+      selected[name] = pattern.selectedBy === SelectedBy.NONE;
 
-    client.software.selectPatterns(selected);
-  }, [patterns, client.software]);
+      client.software.selectPatterns(selected);
+    },
+    [patterns, client.software],
+  );
 
   // FIXME: use loading indicator when busy, we cannot know if it will be
   // quickly or not in advance.
@@ -190,45 +197,48 @@ function SoftwarePatternsSelection() {
   // be selected/deselected immediately.
   // TODO: extract to a DataListSelector component or so.
   let selector = sortGroups(groups).map((groupName) => {
-    const selectedIds = groups[groupName].filter((p) => p.selectedBy !== SelectedBy.NONE).map((p) =>
-      p.name
-    );
+    const selectedIds = groups[groupName]
+      .filter((p) => p.selectedBy !== SelectedBy.NONE)
+      .map((p) => p.name);
     return (
-      <Section
-        key={groupName}
-        title={groupName}
-      >
+      <Section key={groupName} title={groupName}>
         <DataList isCompact>
-          {
-            groups[groupName].map(option => (
-              <DataListItem key={option.name}>
-                <DataListItemRow>
-                  <DataListCheck onChange={() => onToggle(option.name)} aria-labelledby="check-action-item1" name="check-action-check1" isChecked={selectedIds.includes(option.name)} />
-                  <DataListItemCells
-                    dataListCells={[
-                      <DataListCell key="summary">
-                        <Stack hasGutter>
-                          <div>
-                            <b>{option.summary}</b> {option.selectedBy === SelectedBy.AUTO && <Label color="blue" isCompact>{_("auto selected")}</Label>}
-                          </div>
-                          <div>{option.description}</div>
-                        </Stack>
-                      </DataListCell>,
-                    ]}
-                  />
-                </DataListItemRow>
-              </DataListItem>
-            ))
-          }
+          {groups[groupName].map((option) => (
+            <DataListItem key={option.name}>
+              <DataListItemRow>
+                <DataListCheck
+                  onChange={() => onToggle(option.name)}
+                  aria-labelledby="check-action-item1"
+                  name="check-action-check1"
+                  isChecked={selectedIds.includes(option.name)}
+                />
+                <DataListItemCells
+                  dataListCells={[
+                    <DataListCell key="summary">
+                      <Stack hasGutter>
+                        <div>
+                          <b>{option.summary}</b>{" "}
+                          {option.selectedBy === SelectedBy.AUTO && (
+                            <Label color="blue" isCompact>
+                              {_("auto selected")}
+                            </Label>
+                          )}
+                        </div>
+                        <div>{option.description}</div>
+                      </Stack>
+                    </DataListCell>,
+                  ]}
+                />
+              </DataListItemRow>
+            </DataListItem>
+          ))}
         </DataList>
       </Section>
     );
   });
 
   if (selector.length === 0) {
-    selector = (
-      <b>{_("None of the patterns match the filter.")}</b>
-    );
+    selector = <b>{_("None of the patterns match the filter.")}</b>;
   }
 
   return (
@@ -250,9 +260,7 @@ function SoftwarePatternsSelection() {
 
       <Page.MainContent>
         <Card isRounded>
-          <CardBody>
-            {selector}
-          </CardBody>
+          <CardBody>{selector}</CardBody>
         </Card>
       </Page.MainContent>
 

@@ -24,7 +24,10 @@
 import React from "react";
 import { Label, Flex } from "@patternfly/react-core";
 import {
-  DeviceName, DeviceDetails, DeviceSize, toStorageDevice
+  DeviceName,
+  DeviceDetails,
+  DeviceSize,
+  toStorageDevice,
 } from "~/components/storage/device-utils";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import DevicesManager from "~/components/storage/DevicesManager";
@@ -71,7 +74,11 @@ const DeviceCustomDetails = ({ item, devicesManager }) => {
   return (
     <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
       <DeviceDetails item={item} />
-      {isNew() && <Label color="green" isCompact>{_("New")}</Label>}
+      {isNew() && (
+        <Label color="green" isCompact>
+          {_("New")}
+        </Label>
+      )}
     </Flex>
   );
 };
@@ -90,14 +97,15 @@ const DeviceCustomSize = ({ item, devicesManager }) => {
   return (
     <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
       <DeviceSize item={item} />
-      {isResized &&
+      {isResized && (
         <Label color="orange" isCompact>
           {
             // TRANSLATORS: Label to indicate the device size before resizing, where %s is
             // replaced by the original size (e.g., 3.00 GiB).
             sprintf(_("Before %s"), deviceSize(sizeBefore))
           }
-        </Label>}
+        </Label>
+      )}
     </Flex>
   );
 };
@@ -111,7 +119,9 @@ const columns = (devicesManager) => {
   const renderMountPoint = (item) => <MountPoint item={item} />;
 
   /** @type {(item: TableItem) => React.ReactNode} */
-  const renderDetails = (item) => <DeviceCustomDetails item={item} devicesManager={devicesManager} />;
+  const renderDetails = (item) => (
+    <DeviceCustomDetails item={item} devicesManager={devicesManager} />
+  );
 
   /** @type {(item: TableItem) => React.ReactNode} */
   const renderSize = (item) => <DeviceCustomSize item={item} devicesManager={devicesManager} />;
@@ -120,7 +130,7 @@ const columns = (devicesManager) => {
     { name: _("Device"), value: renderDevice },
     { name: _("Mount Point"), value: renderMountPoint },
     { name: _("Details"), value: renderDetails },
-    { name: _("Size"), value: renderSize, classNames: "sizes-column" }
+    { name: _("Size"), value: renderSize, classNames: "sizes-column" },
   ];
 };
 

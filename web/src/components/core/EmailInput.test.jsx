@@ -28,15 +28,10 @@ import { plainRender } from "~/test-utils";
 describe("EmailInput component", () => {
   it("renders an email input", () => {
     plainRender(
-      <EmailInput
-        id="email"
-        name="email"
-        aria-label="User email"
-        value="test@test.com"
-      />
+      <EmailInput id="email" name="email" aria-label="User email" value="test@test.com" />,
     );
 
-    const inputField = screen.getByRole('textbox', { name: "User email" });
+    const inputField = screen.getByRole("textbox", { name: "User email" });
     expect(inputField).toHaveAttribute("type", "email");
   });
 
@@ -63,7 +58,7 @@ describe("EmailInput component", () => {
 
   it("triggers onChange callback", async () => {
     const { user } = plainRender(<EmailInputTest id="test-email" aria-label="Test email" />);
-    const emailInput = screen.getByRole('textbox', { name: "Test email" });
+    const emailInput = screen.getByRole("textbox", { name: "Test email" });
 
     expect(screen.queryByText("Email value updated!")).toBeNull();
 
@@ -73,7 +68,7 @@ describe("EmailInput component", () => {
 
   it("triggers onValidate callback", async () => {
     const { user } = plainRender(<EmailInputTest id="test-email" aria-label="Test email" />);
-    const emailInput = screen.getByRole('textbox', { name: "Test email" });
+    const emailInput = screen.getByRole("textbox", { name: "Test email" });
 
     expect(screen.queryByText("Email is not valid!")).toBeNull();
 
@@ -83,7 +78,7 @@ describe("EmailInput component", () => {
 
   it("marks the input as invalid if the value is not a valid email", async () => {
     const { user } = plainRender(<EmailInputTest id="test-email" aria-label="Test email" />);
-    const emailInput = screen.getByRole('textbox', { name: "Test email" });
+    const emailInput = screen.getByRole("textbox", { name: "Test email" });
 
     await user.type(emailInput, "foo");
 

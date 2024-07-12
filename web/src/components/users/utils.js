@@ -32,9 +32,9 @@ const suggestUsernames = (fullName) => {
 
   // Cleaning the name.
   const cleanedName = fullName
-    .normalize('NFD')
+    .normalize("NFD")
     .trim()
-    .replace(/[\u0300-\u036f]/g, '') // Replacing accented characters with English equivalents, eg. š with s.
+    .replace(/[\u0300-\u036f]/g, "") // Replacing accented characters with English equivalents, eg. š with s.
     .replace(/[^\p{L}\p{N} ]/gu, "") // Keep only letters, numbers and spaces. Covering the whole Unicode range, not just ASCII.
     .toLowerCase();
 
@@ -42,7 +42,7 @@ const suggestUsernames = (fullName) => {
   const parts = cleanedName.split(/\s+/);
   const suggestions = new Set();
 
-  const firstLetters = parts.map(p => p[0]).join('');
+  const firstLetters = parts.map((p) => p[0]).join("");
   const lastPosition = parts.length - 1;
 
   const [firstPart, ...allExceptFirst] = parts;
@@ -52,16 +52,16 @@ const suggestUsernames = (fullName) => {
   // Just the first part of the name
   suggestions.add(firstPart);
   // The first letter of the first part plus all other parts
-  suggestions.add(firstLetter + allExceptFirst.join(''));
+  suggestions.add(firstLetter + allExceptFirst.join(""));
   // The first part plus the first letters of all other parts
-  suggestions.add(firstPart + allExceptFirstLetter.join(''));
+  suggestions.add(firstPart + allExceptFirstLetter.join(""));
   // The first letters except the last one plus the last part
   suggestions.add(firstLetters.substring(0, lastPosition) + lastPart);
   // All parts without spaces
-  suggestions.add(parts.join(''));
+  suggestions.add(parts.join(""));
 
   // let's drop suggestions with less than 3 characters
-  suggestions.forEach(s => {
+  suggestions.forEach((s) => {
     if (s.length < 3) suggestions.delete(s);
   });
 
@@ -69,6 +69,4 @@ const suggestUsernames = (fullName) => {
   return [...suggestions];
 };
 
-export {
-  suggestUsernames
-};
+export { suggestUsernames };

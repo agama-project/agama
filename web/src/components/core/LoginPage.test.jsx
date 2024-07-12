@@ -35,9 +35,9 @@ jest.mock("~/context/auth", () => ({
     return {
       isAuthenticated: mockIsAuthenticated,
       login: mockLoginFn,
-      error: mockLoginError
+      error: mockLoginError,
     };
-  }
+  },
 }));
 
 describe.skip("LoginPage", () => {

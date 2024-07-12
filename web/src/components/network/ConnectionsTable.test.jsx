@@ -32,7 +32,7 @@ const firstConnection = {
   id: "WiFi 1",
   iface: "wlan0",
   type: ConnectionTypes.WIFI,
-  addresses: [{ address: "192.168.69.200", prefix: 24 }]
+  addresses: [{ address: "192.168.69.200", prefix: 24 }],
 };
 
 const firstDevice = {
@@ -40,14 +40,14 @@ const firstDevice = {
   connection: "WiFi 1",
   type: ConnectionTypes.WIFI,
   addresses: [{ address: "192.168.69.200", prefix: 24 }],
-  macAddress: "AA:11:22:33:44::FF"
+  macAddress: "AA:11:22:33:44::FF",
 };
 
 const secondConnection = {
   id: "WiFi 2",
   iface: "wlan1",
   type: ConnectionTypes.WIFI,
-  addresses: [{ address: "192.168.69.201", prefix: 24 }]
+  addresses: [{ address: "192.168.69.201", prefix: 24 }],
 };
 
 const secondDevice = {
@@ -55,7 +55,7 @@ const secondDevice = {
   connection: "WiFi 2",
   type: ConnectionTypes.WIFI,
   addresses: [{ address: "192.168.69.201", prefix: 24 }],
-  macAddress: "AA:11:22:33:44::AA"
+  macAddress: "AA:11:22:33:44::AA",
 };
 
 const conns = [firstConnection, secondConnection];
@@ -86,7 +86,9 @@ describe.skip("ConnectionsTable", () => {
     describe("and the user clicks on the actions toggler", () => {
       it("renders a list of available actions", async () => {
         const { user } = plainRender(<ConnectionsTable connections={conns} devices={devices} />);
-        const connectionActions = screen.getByRole("button", { name: "Actions for connection WiFi 1" });
+        const connectionActions = screen.getByRole("button", {
+          name: "Actions for connection WiFi 1",
+        });
         const actionsColumn = connectionActions.parentNode;
         const menu = within(actionsColumn).queryByRole("menu");
         expect(menu).toBeNull();
@@ -97,8 +99,12 @@ describe.skip("ConnectionsTable", () => {
       describe("and then in the Edit action", () => {
         it("triggers the onEdit callback", async () => {
           const onEditFn = jest.fn();
-          const { user } = plainRender(<ConnectionsTable connections={conns} devices={devices} onEdit={onEditFn} />);
-          const connectionActions = screen.getByRole("button", { name: "Actions for connection WiFi 1" });
+          const { user } = plainRender(
+            <ConnectionsTable connections={conns} devices={devices} onEdit={onEditFn} />,
+          );
+          const connectionActions = screen.getByRole("button", {
+            name: "Actions for connection WiFi 1",
+          });
           const actionsColumn = connectionActions.parentNode;
           await user.click(connectionActions);
           const menu = await within(actionsColumn).findByRole("menu");

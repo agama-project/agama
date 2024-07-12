@@ -21,9 +21,9 @@
 
 import React, { useState, useEffect } from "react";
 import { Button, Skeleton, Split, Stack, Truncate } from "@patternfly/react-core";
-import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
-import { Em, RowActions } from '~/components/core';
-import { RootPasswordPopup, RootSSHKeyPopup } from '~/components/users';
+import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
+import { Em, RowActions } from "~/components/core";
+import { RootPasswordPopup, RootSSHKeyPopup } from "~/components/users";
 
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
@@ -35,14 +35,20 @@ const MethodsNotDefined = ({ setPassword, setSSHKey }) => {
       <div>{_("No root authentication method defined yet.")}</div>
       <div>
         <strong>
-          {_("Please, define at least one authentication method for logging into the system as root.")}
+          {_(
+            "Please, define at least one authentication method for logging into the system as root.",
+          )}
         </strong>
       </div>
       <Split hasGutter>
         {/* TRANSLATORS: push button label */}
-        <Button variant="primary" onClick={setPassword}>{_("Set a password")}</Button>
+        <Button variant="primary" onClick={setPassword}>
+          {_("Set a password")}
+        </Button>
         {/* TRANSLATORS: push button label */}
-        <Button variant="secondary" onClick={setSSHKey}>{_("Upload a SSH Public Key")}</Button>
+        <Button variant="secondary" onClick={setSSHKey}>
+          {_("Upload a SSH Public Key")}
+        </Button>
       </Split>
     </Stack>
   );
@@ -76,7 +82,7 @@ export default function RootAuthMethods() {
   }, [client, cancellablePromise]);
 
   useEffect(() => {
-    return client.onUsersChange(changes => {
+    return client.onUsersChange((changes) => {
       if (changes.rootPasswordSet !== undefined) setIsPasswordDefined(changes.rootPasswordSet);
       if (changes.rootSSHKey !== undefined) setSSHKey(changes.rootSSHKey);
     });
@@ -92,27 +98,25 @@ export default function RootAuthMethods() {
   const passwordActions = [
     {
       title: isPasswordDefined ? _("Change") : _("Set"),
-      onClick: openPasswordForm
-
+      onClick: openPasswordForm,
     },
     isPasswordDefined && {
       title: _("Discard"),
       onClick: () => client.removeRootPassword(),
-      isDanger: true
-    }
+      isDanger: true,
+    },
   ].filter(Boolean);
 
   const sshKeyActions = [
     {
       title: isSSHKeyDefined ? _("Change") : _("Set"),
-      onClick: openSSHKeyForm
+      onClick: openSSHKeyForm,
     },
     sshKey && {
       title: _("Discard"),
       onClick: () => client.setRootSSHKey(""),
-      isDanger: true
-    }
-
+      isDanger: true,
+    },
   ].filter(Boolean);
 
   if (isLoading) {
@@ -125,9 +129,7 @@ export default function RootAuthMethods() {
   }
 
   const PasswordLabel = () => {
-    return isPasswordDefined
-      ? _("Already set")
-      : _("Not set");
+    return isPasswordDefined ? _("Already set") : _("Not set");
   };
 
   const SSHKeyLabel = () => {
@@ -161,14 +163,18 @@ export default function RootAuthMethods() {
         <Tbody>
           <Tr>
             <Td dataLabel="Method">{_("Password")}</Td>
-            <Td dataLabel="Status"><PasswordLabel /></Td>
+            <Td dataLabel="Status">
+              <PasswordLabel />
+            </Td>
             <Td isActionCell>
               <RowActions actions={passwordActions} id="actions-for-root-password" />
             </Td>
           </Tr>
           <Tr>
             <Td dataLabel="Method">{_("SSH Key")}</Td>
-            <Td dataLabel="Status"><SSHKeyLabel /></Td>
+            <Td dataLabel="Status">
+              <SSHKeyLabel />
+            </Td>
             <Td isActionCell>
               <RowActions actions={sshKeyActions} id="actions-for-root-sshKey" />
             </Td>
@@ -181,20 +187,26 @@ export default function RootAuthMethods() {
   return (
     <>
       <Content />
-      {isPasswordFormOpen &&
+      {isPasswordFormOpen && (
         <RootPasswordPopup
           isOpen
           title={isPasswordDefined ? _("Change the root password") : _("Set a root password")}
           onClose={closePasswordForm}
-        />}
+        />
+      )}
 
-      {isSSHKeyFormOpen &&
+      {isSSHKeyFormOpen && (
         <RootSSHKeyPopup
           isOpen
-          title={isSSHKeyDefined ? _("Edit the SSH Public Key for root") : _("Add a SSH Public Key for root")}
+          title={
+            isSSHKeyDefined
+              ? _("Edit the SSH Public Key for root")
+              : _("Add a SSH Public Key for root")
+          }
           currentKey={sshKey}
           onClose={closeSSHKeyForm}
-        />}
+        />
+      )}
     </>
   );
 }

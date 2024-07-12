@@ -24,7 +24,7 @@ const development = !production;
 const eslint = process.env.ESLINT !== "0";
 
 /* Default to disable csslint for faster production builds */
-const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== "0") : development;
+const stylelint = process.env.STYLELINT ? process.env.STYLELINT !== "0" : development;
 
 // Agama API server. By default it connects to a local development server.
 let agamaServer = process.env.AGAMA_SERVER || "localhost";
@@ -83,7 +83,7 @@ module.exports = {
   resolve: {
     modules: ["node_modules", path.resolve(__dirname, "src/lib")],
     plugins: [new TsconfigPathsPlugin({ extensions: [".ts", ".tsx", ".js", ".jsx", ".json"] })],
-    extensions: [".ts", ".tsx", ".js", ".jsx", ".json"]
+    extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
   },
   resolveLoader: {
     modules: ["node_modules", path.resolve(__dirname, "src/lib")],
@@ -132,20 +132,20 @@ module.exports = {
         // Thus, it's needed not mangling function names ending in PageMenu to keep it working in production
         // until adopting a better solution, if any.
         terserOptions: {
-          keep_fnames: /PageMenu$/
+          keep_fnames: /PageMenu$/,
         },
         extractComments: {
           condition: true,
           filename: `[file].LICENSE.txt?query=[query]&filebase=[base]`,
           banner(licenseFile) {
             return `License information can be found in ${licenseFile}`;
-          }
-        }
+          },
+        },
       }),
       // remove also the spaces between the tags
       new HtmlMinimizerPlugin({ minimizerOptions: { conservativeCollapse: false } }),
-      new CssMinimizerPlugin()
-    ]
+      new CssMinimizerPlugin(),
+    ],
   },
 
   module: {
@@ -158,12 +158,12 @@ module.exports = {
             loader: require.resolve("ts-loader"),
             options: {
               getCustomTransformers: () => ({
-                before: [development && ReactRefreshTypeScript()].filter(Boolean)
+                before: [development && ReactRefreshTypeScript()].filter(Boolean),
               }),
-              transpileOnly: development
-            }
-          }
-        ]
+              transpileOnly: development,
+            },
+          },
+        ],
       },
       {
         test: /\.(js|jsx)$/,

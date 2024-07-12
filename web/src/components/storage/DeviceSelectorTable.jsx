@@ -23,7 +23,11 @@
 
 import React from "react";
 import {
-  DeviceName, DeviceDetails, DeviceSize, FilesystemLabel, toStorageDevice
+  DeviceName,
+  DeviceDetails,
+  DeviceSize,
+  FilesystemLabel,
+  toStorageDevice,
 } from "~/components/storage/device-utils";
 import { ExpandableSelector } from "~/components/core";
 import { Icon } from "~/components/layout";
@@ -73,8 +77,8 @@ const DeviceInfo = ({ item }) => {
         } else {
           const technology = device.transport || device.bus;
           type = technology
-            // TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
-            ? sprintf(_("%s disk"), technology)
+            ? // TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
+              sprintf(_("%s disk"), technology)
             : _("Disk");
         }
       }
@@ -137,8 +141,7 @@ const DeviceInfo = ({ item }) => {
 const DeviceExtendedDetails = ({ item }) => {
   const device = toStorageDevice(item);
 
-  if (!device || ["partition", "lvmLv"].includes(device.type))
-    return <DeviceDetails item={item} />;
+  if (!device || ["partition", "lvmLv"].includes(device.type)) return <DeviceDetails item={item} />;
 
   // TODO: there is a lot of room for improvement here, but first we would need
   // device.description (comes from YaST) to be way more granular
@@ -158,7 +161,11 @@ const DeviceExtendedDetails = ({ item }) => {
       return _("No content found");
     }
 
-    return <div>{device.description} <FilesystemLabel item={device} /></div>;
+    return (
+      <div>
+        {device.description} <FilesystemLabel item={device} />
+      </div>
+    );
   };
 
   const Systems = () => {
@@ -167,7 +174,11 @@ const DeviceExtendedDetails = ({ item }) => {
     const System = ({ system }) => {
       const logo = /windows/i.test(system) ? "windows_logo" : "linux_logo";
 
-      return <div><Icon name={logo} size="14" /> {system}</div>;
+      return (
+        <div>
+          <Icon name={logo} size="14" /> {system}
+        </div>
+      );
     };
 
     return device.systems.map((s, i) => <System key={i} system={s} />);
@@ -185,7 +196,7 @@ const DeviceExtendedDetails = ({ item }) => {
 const columns = [
   { name: _("Device"), value: (item) => <DeviceInfo item={item} /> },
   { name: _("Details"), value: (item) => <DeviceExtendedDetails item={item} /> },
-  { name: _("Size"), value: (item) => <DeviceSize item={item} />, classNames: "sizes-column" }
+  { name: _("Size"), value: (item) => <DeviceSize item={item} />, classNames: "sizes-column" },
 ];
 
 /**

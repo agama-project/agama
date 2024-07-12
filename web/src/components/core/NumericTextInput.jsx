@@ -56,7 +56,5 @@ export default function NumericTextInput({ value = "", onChange = noop, ...textI
     }
   };
 
-  return (
-    <TextInput { ...textInputProps } value={value} onChange={handleOnChange} />
-  );
+  return <TextInput {...textInputProps} value={value} onChange={handleOnChange} />;
 }

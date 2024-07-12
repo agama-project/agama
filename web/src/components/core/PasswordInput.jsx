@@ -47,17 +47,14 @@ export default function PasswordInput({ id, inputRef, ...props }) {
 
   if (!id) {
     const field = props.label || props["aria-label"] || props.name;
-    console.error(`The PasswordInput component must have an 'id' but it was not given for '${field}'`);
+    console.error(
+      `The PasswordInput component must have an 'id' but it was not given for '${field}'`,
+    );
   }
 
   return (
     <InputGroup>
-      <TextInput
-        {...props}
-        ref={inputRef}
-        id={id}
-        type={showPassword ? 'text' : 'password'}
-      />
+      <TextInput {...props} ref={inputRef} id={id} type={showPassword ? "text" : "password"} />
       <Button
         id={`toggle-${id}-visibility`}
         className="password-toggler"

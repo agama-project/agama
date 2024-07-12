@@ -36,12 +36,14 @@ import { noop } from "~/utils";
 // Field texts at root level to avoid redefinitions every time the component
 // is rendered.
 const LABEL = _("Encryption");
-const DESCRIPTION = _("Protection for the information stored at \
-the device, including data, programs, and system files.");
+const DESCRIPTION = _(
+  "Protection for the information stored at \
+the device, including data, programs, and system files.",
+);
 const VALUES = {
   disabled: _("disabled"),
   [EncryptionMethods.LUKS2]: _("enabled"),
-  [EncryptionMethods.TPM]: _("using TPM unlocking")
+  [EncryptionMethods.TPM]: _("using TPM unlocking"),
 };
 
 const Value = ({ isLoading, isEnabled, method }) => {
@@ -87,7 +89,7 @@ export default function EncryptionField({
   // FIXME: should be available methods actually a prop?
   methods = [],
   isLoading = false,
-  onChange = noop
+  onChange = noop,
 }) {
   const validPassword = useCallback(() => password?.length > 0, [password]);
   const [isEnabled, setIsEnabled] = useState(validPassword());
@@ -117,7 +119,7 @@ export default function EncryptionField({
       cardDescriptionProps={{ isFilled: true }}
       actions={<Action isEnabled={isEnabled} isLoading={isLoading} onClick={openDialog} />}
     >
-      {isDialogOpen &&
+      {isDialogOpen && (
         <EncryptionSettingsDialog
           isOpen
           password={password}
@@ -126,7 +128,8 @@ export default function EncryptionField({
           isLoading={isLoading}
           onCancel={closeDialog}
           onAccept={onAccept}
-        />}
+        />
+      )}
     </CardField>
   );
 }

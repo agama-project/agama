@@ -30,7 +30,7 @@ import { timezoneUTCOffset } from "~/utils";
 const configQuery = () => {
   return {
     queryKey: ["l10n/config"],
-    queryFn: () => fetch("/api/l10n/config").then(res => res.json())
+    queryFn: () => fetch("/api/l10n/config").then((res) => res.json()),
   };
 };
 
@@ -46,7 +46,7 @@ const localesQuery = () => ({
       return { id, name: language, territory };
     });
   },
-  staleTime: Infinity
+  staleTime: Infinity,
 });
 
 /**
@@ -62,7 +62,7 @@ const timezonesQuery = () => ({
       return { id: code, parts, country, utcOffset: offset };
     });
   },
-  staleTime: Infinity
+  staleTime: Infinity,
 });
 
 /**
@@ -78,7 +78,7 @@ const keymapsQuery = () => ({
     });
     return keymaps.sort((a, b) => (a.name < b.name ? -1 : 1));
   },
-  staleTime: Infinity
+  staleTime: Infinity,
 });
 
 /**
@@ -88,14 +88,14 @@ const keymapsQuery = () => ({
  */
 const useConfigMutation = () => {
   const query = {
-    mutationFn: newConfig =>
+    mutationFn: (newConfig) =>
       fetch("/api/l10n/config", {
         method: "PATCH",
         body: JSON.stringify(newConfig),
         headers: {
-          "Content-Type": "application/json"
-        }
-      })
+          "Content-Type": "application/json",
+        },
+      }),
   };
   return useMutation(query);
 };
@@ -113,7 +113,7 @@ const useL10nConfigChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
-    return client.ws().onEvent(event => {
+    return client.ws().onEvent((event) => {
       if (event.type === "L10nConfigChanged") {
         queryClient.invalidateQueries({ queryKey: ["l10n/config"] });
       }
@@ -125,12 +125,12 @@ const useL10nConfigChanges = () => {
 const useL10n = () => {
   const [{ data: config }, { data: locales }, { data: keymaps }, { data: timezones }] =
     useSuspenseQueries({
-      queries: [configQuery(), localesQuery(), keymapsQuery(), timezonesQuery()]
+      queries: [configQuery(), localesQuery(), keymapsQuery(), timezonesQuery()],
     });
 
-  const selectedLocale = locales.find(l => l.id === config.locales[0]);
-  const selectedKeymap = keymaps.find(k => k.id === config.keymap);
-  const selectedTimezone = timezones.find(t => t.id === config.timezone);
+  const selectedLocale = locales.find((l) => l.id === config.locales[0]);
+  const selectedKeymap = keymaps.find((k) => k.id === config.keymap);
+  const selectedTimezone = timezones.find((t) => t.id === config.timezone);
 
   return {
     locales,
@@ -138,7 +138,7 @@ const useL10n = () => {
     timezones,
     selectedLocale,
     selectedKeymap,
-    selectedTimezone
+    selectedTimezone,
   };
 };
 
@@ -149,5 +149,5 @@ export {
   timezonesQuery,
   useConfigMutation,
   useL10n,
-  useL10nConfigChanges
+  useL10nConfigChanges,
 };

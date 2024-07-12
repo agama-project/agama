@@ -59,7 +59,7 @@ function App() {
       return <Loading />;
     }
 
-    if ((selectedProduct === undefined) && (location.pathname !== "/products")) {
+    if (selectedProduct === undefined && location.pathname !== "/products") {
       return <Navigate to="/products" />;
     }
 

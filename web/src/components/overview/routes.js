@@ -28,8 +28,8 @@ const routes = {
   element: <OverviewPage />,
   handle: {
     name: N_("Overview"),
-    icon: "list_alt"
-  }
+    icon: "list_alt",
+  },
 };
 
 export default routes;

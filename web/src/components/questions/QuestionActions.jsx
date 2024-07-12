@@ -31,7 +31,7 @@ import { Popup } from "~/components/core";
  * @param {String} text - string to be capitalized
  * @return {String} capitalized text
  */
-const label = text => `${text[0].toUpperCase()}${text.slice(1)}`;
+const label = (text) => `${text[0].toUpperCase()}${text.slice(1)}`;
 
 /**
  * A component for building a Question actions, using the defaultAction
@@ -48,7 +48,7 @@ const label = text => `${text[0].toUpperCase()}${text.slice(1)}`;
  * @param {Object} [props.conditions={}] - an object holding conditions, like when an action is disabled
  */
 export default function QuestionActions({ actions, defaultAction, actionCallback, conditions }) {
-  let [[primaryAction], secondaryActions] = partition(actions, a => a === defaultAction);
+  let [[primaryAction], secondaryActions] = partition(actions, (a) => a === defaultAction);
 
   // Ensure there is always a primary action
   if (!primaryAction) [primaryAction, ...secondaryActions] = secondaryActions;
@@ -62,17 +62,15 @@ export default function QuestionActions({ actions, defaultAction, actionCallback
       >
         {label(primaryAction)}
       </Popup.PrimaryAction>
-      {
-        secondaryActions.map(action =>
-          <Popup.SecondaryAction
-            key={action}
-            onClick={() => actionCallback(action)}
-            isDisabled={conditions?.disable?.[action]}
-          >
-            {label(action)}
-          </Popup.SecondaryAction>
-        )
-      }
+      {secondaryActions.map((action) => (
+        <Popup.SecondaryAction
+          key={action}
+          onClick={() => actionCallback(action)}
+          isDisabled={conditions?.disable?.[action]}
+        >
+          {label(action)}
+        </Popup.SecondaryAction>
+      ))}
     </>
   );
 }

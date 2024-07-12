@@ -40,20 +40,20 @@ describe("Icon", () => {
   describe("mounted with a known name", () => {
     it("renders an aria-hidden SVG element", async () => {
       const { container } = plainRender(<Icon name="wifi" />);
-      const icon = container.querySelector('svg');
+      const icon = container.querySelector("svg");
       expect(icon).toHaveAttribute("aria-hidden", "true");
     });
 
     it("includes the icon name as a data attribute of the SVG", async () => {
       const { container } = plainRender(<Icon name="wifi" />);
-      const icon = container.querySelector('svg');
+      const icon = container.querySelector("svg");
       expect(icon).toHaveAttribute("data-icon-name", "wifi");
     });
 
     describe("and a predefined size", () => {
       it("adds a CSS class for given size", () => {
         const { container } = plainRender(<Icon name="wifi" size="xxxl" />);
-        const icon = container.querySelector('svg');
+        const icon = container.querySelector("svg");
         // Check that width and height are set to default (see .svgrrc for
         // production, __mocks__/svg.js for testing)
         expect(icon).toHaveAttribute("width", "28");
@@ -66,7 +66,7 @@ describe("Icon", () => {
     describe("and an arbitrary size", () => {
       it("change the width and height attributes to given value", () => {
         const { container } = plainRender(<Icon name="wifi" size="1dhv" />);
-        const icon = container.querySelector('svg');
+        const icon = container.querySelector("svg");
         expect(icon).toHaveAttribute("width", "1dhv");
         expect(icon).toHaveAttribute("height", "1dhv");
       });
@@ -77,9 +77,7 @@ describe("Icon", () => {
     it("outputs to console.error", () => {
       // @ts-expect-error: It's unlikely to happen, but let's test it anyway
       plainRender(<Icon name="apsens" />);
-      expect(console.error).toHaveBeenCalledWith(
-        expect.stringContaining("'apsens' not found")
-      );
+      expect(console.error).toHaveBeenCalledWith(expect.stringContaining("'apsens' not found"));
     });
 
     it("renders nothing", async () => {
@@ -93,9 +91,7 @@ describe("Icon", () => {
     it("outputs to console.error", () => {
       // @ts-expect-error: It's unlikely to happen, but let's test it anyway
       plainRender(<Icon name="" />);
-      expect(console.error).toHaveBeenCalledWith(
-        expect.stringContaining("not found")
-      );
+      expect(console.error).toHaveBeenCalledWith(expect.stringContaining("not found"));
     });
 
     it("renders nothing", () => {

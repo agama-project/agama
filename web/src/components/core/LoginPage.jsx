@@ -27,10 +27,13 @@ import {
   ActionGroup,
   Button,
   Card,
-  Flex, FlexItem,
-  Form, FormGroup,
-  Grid, GridItem,
-  Stack
+  Flex,
+  FlexItem,
+  Form,
+  FormGroup,
+  Grid,
+  GridItem,
+  Stack,
 } from "@patternfly/react-core";
 import { About, EmptyState, FormValidationError, Page, PasswordInput } from "~/components/core";
 import { Center } from "~/components/layout";
@@ -73,8 +76,10 @@ export default function LoginPage() {
   // TRANSLATORS: description why root password is needed. The text in the
   // square brackets [] is displayed in bold, use only please, do not translate
   // it and keep the brackets.
-  const [rootExplanationStart, rootUser, rootExplanationEnd] = _("The installer requires [root] \
-user privileges.").split(/[[\]]/);
+  const [rootExplanationStart, rootUser, rootExplanationEnd] = _(
+    "The installer requires [root] \
+user privileges.",
+  ).split(/[[\]]/);
 
   return (
     <Page.MainContent>
@@ -82,18 +87,11 @@ user privileges.").split(/[[\]]/);
         <Grid>
           <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
             <Card component="section" isRounded>
-              <EmptyState
-                title={sectionTitle}
-                icon="lock"
-                color="color-info-200"
-                variant="xl"
-              >
+              <EmptyState title={sectionTitle} icon="lock" color="color-info-200" variant="xl">
                 <p>
                   {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
                 </p>
-                <p>
-                  {_("Please, provide its password to log in to the system.")}
-                </p>
+                <p>{_("Please, provide its password to log in to the system.")}</p>
                 <Stack hasGutter>
                   <Form id="login" onSubmit={login} aria-label={_("Login form")}>
                     <FormGroup fieldId="password">

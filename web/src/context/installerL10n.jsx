@@ -62,7 +62,9 @@ function useInstallerL10n() {
 function agamaLanguage() {
   // language from cookie, empty string if not set (regexp taken from Cockpit)
   // https://github.com/cockpit-project/cockpit/blob/98a2e093c42ea8cd2431cf15c7ca0e44bb4ce3f1/pkg/shell/shell-modals.jsx#L91
-  const languageString = decodeURIComponent(document.cookie.replace(/(?:(?:^|.*;\s*)agamaLang\s*=\s*([^;]*).*$)|^.*$/, "$1"));
+  const languageString = decodeURIComponent(
+    document.cookie.replace(/(?:(?:^|.*;\s*)agamaLang\s*=\s*([^;]*).*$)|^.*$/, "$1"),
+  );
   if (languageString) {
     return languageString.toLowerCase();
   }
@@ -81,12 +83,16 @@ function storeAgamaLanguage(language) {
   if (current === language) return false;
 
   // Code taken from Cockpit.
-  const cookie = "agamaLang=" + encodeURIComponent(language) + "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
+  const cookie =
+    "agamaLang=" + encodeURIComponent(language) + "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
   document.cookie = cookie;
 
   // for backward compatibility, CockpitLang cookie is needed to load correct po.js content from Cockpit
   // TODO: remove after dropping Cockpit completely
-  const cockpit_cookie = "CockpitLang=" + encodeURIComponent(language) + "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
+  const cockpit_cookie =
+    "CockpitLang=" +
+    encodeURIComponent(language) +
+    "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
   document.cookie = cockpit_cookie;
   window.localStorage.setItem("cockpit.lang", language);
 
@@ -101,11 +107,11 @@ function storeAgamaLanguage(language) {
  * @return {string|undefined} Undefined if not set.
  */
 function languageFromQuery() {
-  const lang = (new URLSearchParams(window.location.search)).get("lang");
+  const lang = new URLSearchParams(window.location.search).get("lang");
   if (!lang) return undefined;
 
   const [language, country] = lang.toLowerCase().split(/[-_]/);
-  return (country) ? `${language}-${country}` : language;
+  return country ? `${language}-${country}` : language;
 }
 
 /**
@@ -137,7 +143,7 @@ function languageFromLocale(locale) {
  */
 function languageToLocale(language) {
   const [lang, country] = language.split("-");
-  const locale = (country) ? `${lang}_${country.toUpperCase()}` : lang;
+  const locale = country ? `${lang}_${country.toUpperCase()}` : lang;
   return `${locale}.UTF-8`;
 }
 
@@ -147,7 +153,7 @@ function languageToLocale(language) {
  * @return {Array<string>}
  */
 function navigatorLanguages() {
-  return navigator.languages.map(l => l.toLowerCase());
+  return navigator.languages.map((l) => l.toLowerCase());
 }
 
 /**
@@ -162,7 +168,7 @@ function findSupportedLanguage(languages) {
   for (const candidate of languages) {
     const [language, country] = candidate.split("-");
 
-    const match = supported.find(s => {
+    const match = supported.find((s) => {
       const [supportedLanguage, supportedCountry] = s.split("-");
       if (language === supportedLanguage) {
         return country === undefined || country === supportedCountry;
@@ -215,53 +221,62 @@ function InstallerL10nProvider({ children }) {
   const [backendPending, setBackendPending] = useState(false);
   const { cancellablePromise } = useCancellablePromise();
 
-  const storeInstallerLanguage = useCallback(async (newLanguage) => {
-    if (!client) {
-      setBackendPending(true);
+  const storeInstallerLanguage = useCallback(
+    async (newLanguage) => {
+      if (!client) {
+        setBackendPending(true);
+        return false;
+      }
+
+      const locale = await cancellablePromise(client.l10n.getUILocale());
+      const currentLanguage = languageFromLocale(locale);
+
+      if (currentLanguage !== newLanguage) {
+        // FIXME: fallback to en-US if the language is not supported.
+        await cancellablePromise(client.l10n.setUILocale(languageToLocale(newLanguage)));
+        return true;
+      }
+
       return false;
-    }
+    },
+    [client, cancellablePromise],
+  );
 
-    const locale = await cancellablePromise(client.l10n.getUILocale());
-    const currentLanguage = languageFromLocale(locale);
+  const changeLanguage = useCallback(
+    async (lang) => {
+      const wanted = lang || languageFromQuery();
 
-    if (currentLanguage !== newLanguage) {
-      // FIXME: fallback to en-US if the language is not supported.
-      await cancellablePromise(client.l10n.setUILocale(languageToLocale(newLanguage)));
-      return true;
-    }
+      if (wanted === "xx" || wanted === "xx-xx") {
+        agama.language = wanted;
+        setLanguage(wanted);
+        return;
+      }
 
-    return false;
-  }, [client, cancellablePromise]);
+      const current = agamaLanguage();
+      const candidateLanguages = [wanted, current].concat(navigatorLanguages()).filter((l) => l);
+      const newLanguage = findSupportedLanguage(candidateLanguages) || "en-us";
 
-  const changeLanguage = useCallback(async (lang) => {
-    const wanted = lang || languageFromQuery();
+      let mustReload = storeAgamaLanguage(newLanguage);
+      mustReload = (await storeInstallerLanguage(newLanguage)) || mustReload;
 
-    if (wanted === "xx" || wanted === "xx-xx") {
-      agama.language = wanted;
-      setLanguage(wanted);
-      return;
-    }
+      if (mustReload) {
+        reload(newLanguage);
+      } else {
+        setLanguage(newLanguage);
+      }
+    },
+    [storeInstallerLanguage, setLanguage],
+  );
 
-    const current = agamaLanguage();
-    const candidateLanguages = [wanted, current].concat(navigatorLanguages()).filter(l => l);
-    const newLanguage = findSupportedLanguage(candidateLanguages) || "en-us";
+  const changeKeymap = useCallback(
+    async (id) => {
+      if (!client) return;
 
-    let mustReload = storeAgamaLanguage(newLanguage);
-    mustReload = await storeInstallerLanguage(newLanguage) || mustReload;
-
-    if (mustReload) {
-      reload(newLanguage);
-    } else {
-      setLanguage(newLanguage);
-    }
-  }, [storeInstallerLanguage, setLanguage]);
-
-  const changeKeymap = useCallback(async (id) => {
-    if (!client) return;
-
-    setKeymap(id);
-    client.l10n.setUIKeymap(id);
-  }, [setKeymap, client]);
+      setKeymap(id);
+      client.l10n.setUIKeymap(id);
+    },
+    [setKeymap, client],
+  );
 
   useEffect(() => {
     if (!language) changeLanguage();
@@ -281,12 +296,7 @@ function InstallerL10nProvider({ children }) {
 
   const value = { language, changeLanguage, keymap, changeKeymap };
 
-  return (
-    <L10nContext.Provider value={value}>{children}</L10nContext.Provider>
-  );
+  return <L10nContext.Provider value={value}>{children}</L10nContext.Provider>;
 }
 
-export {
-  InstallerL10nProvider,
-  useInstallerL10n
-};
+export { InstallerL10nProvider, useInstallerL10n };

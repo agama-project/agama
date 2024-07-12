@@ -25,13 +25,13 @@ import DBusClient from "./dbus";
 import cockpit from "../lib/cockpit";
 
 const proxyObject = {
-  wait: jest.fn().mockResolvedValue(null)
+  wait: jest.fn().mockResolvedValue(null),
 };
 
 const cockpitDBusClient = {
   proxy: jest.fn().mockReturnValue(proxyObject),
   proxies: jest.fn().mockReturnValue(proxyObject),
-  call: jest.fn().mockReturnValue(true)
+  call: jest.fn().mockReturnValue(true),
 };
 
 describe("DBusClient", () => {
@@ -43,11 +43,13 @@ describe("DBusClient", () => {
     it("returns a proxy for the given iface and path", async () => {
       const client = new DBusClient("org.opensuse.Agama.Manager1");
       const proxy = await client.proxy(
-        "org.opensuse.Agama.Manager1", "/org/opensuse/Agama/Manager1"
+        "org.opensuse.Agama.Manager1",
+        "/org/opensuse/Agama/Manager1",
       );
       expect(cockpitDBusClient.proxy).toHaveBeenCalledWith(
-        "org.opensuse.Agama.Manager1", "/org/opensuse/Agama/Manager1",
-        { watch: true }
+        "org.opensuse.Agama.Manager1",
+        "/org/opensuse/Agama/Manager1",
+        { watch: true },
       );
       expect(proxy).toBe(proxyObject);
     });
@@ -71,13 +73,13 @@ describe("DBusClient", () => {
         "org.opensuse.Agama.Software1",
         "/org/opensuse/Agama/Software1",
         "SelectProduct",
-        ["alp"]
+        ["alp"],
       );
       expect(cockpitDBusClient.call).toHaveBeenCalledWith(
         "org.opensuse.Agama.Software1",
         "/org/opensuse/Agama/Software1",
         "SelectProduct",
-        ["alp"]
+        ["alp"],
       );
       expect(result).toEqual(true);
     });

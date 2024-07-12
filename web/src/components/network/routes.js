@@ -40,7 +40,7 @@ const loaders = {
   },
   connection: async ({ params }) => {
     const connections = await client.network.connections();
-    return connections.find(c => c.id === params.id);
+    return connections.find((c) => c.id === params.id);
   },
   wifis: async () => {
     const connections = await client.network.connections();
@@ -57,21 +57,21 @@ const routes = {
   element: <Page />,
   handle: {
     name: N_("Network"),
-    icon: "settings_ethernet"
+    icon: "settings_ethernet",
   },
   children: [
     { index: true, element: <NetworkPage />, loader: loaders.all },
     {
       path: "connections/:id/edit",
       element: <IpSettingsForm />,
-      loader: loaders.connection
+      loader: loaders.connection,
     },
     {
       path: "wifis",
       element: <WifiSelectorPage />,
       loader: loaders.wifis,
-    }
-  ]
+    },
+  ],
 };
 
 export default routes;

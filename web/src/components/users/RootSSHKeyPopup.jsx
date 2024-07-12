@@ -23,7 +23,7 @@ import React, { useState } from "react";
 import { Form, FormGroup, FileUpload } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
-import { Popup } from '~/components/core';
+import { Popup } from "~/components/core";
 import { useInstallerClient } from "~/context/installer";
 
 /**
@@ -43,7 +43,7 @@ export default function RootSSHKeyPopup({
   title = _("Set root SSH public key"),
   currentKey = "",
   isOpen,
-  onClose
+  onClose,
 }) {
   const client = useInstallerClient();
   const [isLoading, setIsLoading] = useState(false);

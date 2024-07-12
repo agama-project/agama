@@ -57,7 +57,7 @@ export default function EmptyStateWrapper({
   children,
   ...rest
 }) {
-  if (noPadding) rest.className = [rest.className, 'no-padding'].join(" ").trim();
+  if (noPadding) rest.className = [rest.className, "no-padding"].join(" ").trim();
 
   return (
     <EmptyState variant="lg" {...rest}>

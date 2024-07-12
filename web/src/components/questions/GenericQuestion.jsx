@@ -33,9 +33,7 @@ export default function GenericQuestion({ question, answerCallback }) {
 
   return (
     <Popup isOpen aria-label={_("Question")}>
-      <Text>
-        { question.text }
-      </Text>
+      <Text>{question.text}</Text>
       <Popup.Actions>
         <QuestionActions
           actions={question.options}

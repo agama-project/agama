@@ -29,25 +29,25 @@ jest.mock("~/client");
 
 const availableDevices = [
   { name: "/dev/sda", size: 536870912000 },
-  { name: "/dev/sdb", size: 697932185600 }
+  { name: "/dev/sdb", size: 697932185600 },
 ];
 
 const proposalResult = {
   settings: {
     target: "disk",
     targetDevice: "/dev/sda",
-    spacePolicy: "delete"
+    spacePolicy: "delete",
   },
-  actions: []
+  actions: [],
 };
 
 const storageMock = {
   probe: jest.fn().mockResolvedValue(0),
   proposal: {
     getAvailableDevices: jest.fn().mockResolvedValue(availableDevices),
-    getResult: jest.fn().mockResolvedValue(proposalResult)
+    getResult: jest.fn().mockResolvedValue(proposalResult),
   },
-  onStatusChange: jest.fn()
+  onStatusChange: jest.fn(),
 };
 
 let storage;

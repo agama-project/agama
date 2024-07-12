@@ -23,7 +23,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import buttonStyles from '@patternfly/react-styles/css/components/Button/button';
+import buttonStyles from "@patternfly/react-styles/css/components/Button/button";
 
 // TODO: Evaluate which is better, this approach or just using a
 // PF/Button with onClick callback and "component" prop sets as "a"
@@ -32,12 +32,10 @@ export default function ButtonLink({ to, isPrimary = false, children, ...props }
   return (
     <Link
       to={to}
-      className={
-        [
-          buttonStyles.button,
-          buttonStyles.modifiers[isPrimary ? "primary" : "secondary"]
-        ].join(" ")
-      }
+      className={[
+        buttonStyles.button,
+        buttonStyles.modifiers[isPrimary ? "primary" : "secondary"],
+      ].join(" ")}
       {...props}
     >
       {children}

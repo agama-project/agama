@@ -19,9 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import {
-  resetLocalStorage
-} from "./test-utils";
+import { resetLocalStorage } from "./test-utils";
 
 beforeAll(() => {
   jest.spyOn(Storage.prototype, "clear");
@@ -49,7 +47,7 @@ describe("resetLocalStorage", () => {
   it("sets an initial state if given value is an object", () => {
     resetLocalStorage({
       storage: "something",
-      for: "later"
+      for: "later",
     });
     expect(window.localStorage.setItem).toHaveBeenCalledWith("storage", "something");
     expect(window.localStorage.setItem).toHaveBeenCalledWith("for", "later");

@@ -39,7 +39,7 @@ const client = {
     getPhase: jest.fn(),
     getStatus: jest.fn(),
     onPhaseChange: jest.fn(),
-    onStatusChange: jest.fn()
+    onStatusChange: jest.fn(),
   },
   l10n: {
     getUILocale: getUILocaleFn,

@@ -39,7 +39,10 @@ import { _ } from "~/i18n";
  */
 const ResultSkeleton = () => (
   <Stack hasGutter>
-    <Skeleton screenreaderText={_("Waiting for information about storage configuration")} width="80%" />
+    <Skeleton
+      screenreaderText={_("Waiting for information about storage configuration")}
+      width="80%"
+    />
     <Skeleton width="65%" />
     <Skeleton width="70%" />
   </Stack>
@@ -72,13 +75,19 @@ export default function ProposalResultSection({
     >
       <CardField.Content>
         {isLoading && <ResultSkeleton />}
-        {errors.length === 0
-          ? <ProposalResultTable devicesManager={new DevicesManager(system, staging, actions)} />
-          : (
-            <EmptyState icon="error" title={_("Storage proposal not possible")} color="danger-color-100">
-              {errors.map((e, i) => <div key={i}>{e.message}</div>)}
-            </EmptyState>
-          )}
+        {errors.length === 0 ? (
+          <ProposalResultTable devicesManager={new DevicesManager(system, staging, actions)} />
+        ) : (
+          <EmptyState
+            icon="error"
+            title={_("Storage proposal not possible")}
+            color="danger-color-100"
+          >
+            {errors.map((e, i) => (
+              <div key={i}>{e.message}</div>
+            ))}
+          </EmptyState>
+        )}
       </CardField.Content>
     </CardField>
   );

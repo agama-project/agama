@@ -37,7 +37,7 @@ beforeEach(() => {
     return {
       users: {
         setRootSSHKey: setRootSSHKeyFn,
-      }
+      },
     };
   });
 });

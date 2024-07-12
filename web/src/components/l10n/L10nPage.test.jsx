@@ -27,27 +27,27 @@ let mockLoadedData;
 
 const locales = [
   { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" }
+  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
 ];
 
 const keymaps = [
   { id: "us", name: "English" },
-  { id: "es", name: "Spanish" }
+  { id: "es", name: "Spanish" },
 ];
 
 const timezones = [
   { id: "Europe/Berlin", parts: ["Europe", "Berlin"] },
-  { id: "Europe/Madrid", parts: ["Europe", "Madrid"] }
+  { id: "Europe/Madrid", parts: ["Europe", "Madrid"] },
 ];
 
-jest.mock('react-router-dom', () => ({
+jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   // TODO: mock the link because it needs a working router.
-  Link: ({ children }) => <button>{children}</button>
+  Link: ({ children }) => <button>{children}</button>,
 }));
 
 jest.mock("~/queries/l10n", () => ({
-  useL10n: () => mockLoadedData
+  useL10n: () => mockLoadedData,
 }));
 
 beforeEach(() => {

@@ -22,9 +22,13 @@
 import React, { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import {
-  Masthead, MastheadContent,
+  Masthead,
+  MastheadContent,
   Page,
-  Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
+  Toolbar,
+  ToolbarContent,
+  ToolbarGroup,
+  ToolbarItem,
 } from "@patternfly/react-core";
 import { InstallerOptions } from "./components/core";
 import { _ } from "~/i18n";
@@ -34,7 +38,11 @@ import { Loading } from "./components/layout";
  * Simple layout for displaying content that comes before product configuration
  * TODO: improve documentation
  */
-export default function SimpleLayout({ showOutlet = true, showInstallerOptions = false, children }) {
+export default function SimpleLayout({
+  showOutlet = true,
+  showInstallerOptions = false,
+  children,
+}) {
   return (
     <Page>
       <Masthead backgroundColor="light200">
@@ -42,17 +50,13 @@ export default function SimpleLayout({ showOutlet = true, showInstallerOptions =
           <Toolbar>
             <ToolbarContent>
               <ToolbarGroup align={{ default: "alignRight" }}>
-                <ToolbarItem>
-                  {showInstallerOptions && <InstallerOptions />}
-                </ToolbarItem>
+                <ToolbarItem>{showInstallerOptions && <InstallerOptions />}</ToolbarItem>
               </ToolbarGroup>
             </ToolbarContent>
           </Toolbar>
         </MastheadContent>
       </Masthead>
-      <Suspense fallback={<Loading />}>
-        {showOutlet ? <Outlet /> : children}
-      </Suspense>
+      <Suspense fallback={<Loading />}>{showOutlet ? <Outlet /> : children}</Suspense>
     </Page>
   );
 }

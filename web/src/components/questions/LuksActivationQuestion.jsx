@@ -60,12 +60,10 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       aria-label={_("Question")}
       titleIconVariant={() => <Icon name="lock" size="s" />}
     >
-      { renderAlert(parseInt(question.data.attempt)) }
-      <Text>
-        { question.text }
-      </Text>
+      {renderAlert(parseInt(question.data.attempt))}
+      <Text>{question.text}</Text>
       <Form onSubmit={triggerDefaultAction}>
-        { /* TRANSLATORS: field label */ }
+        {/* TRANSLATORS: field label */}
         <FormGroup label={_("Encryption Password")} fieldId="luks-password">
           <PasswordInput
             autoFocus

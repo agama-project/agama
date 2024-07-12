@@ -72,12 +72,12 @@ const mockUseRevalidator = jest.fn();
 const mockRoutes = (...routes) => initialRoutes.mockReturnValueOnce(routes);
 
 // Centralize the react-router-dom mock here
-jest.mock('react-router-dom', () => ({
+jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockNavigateFn,
   Navigate: ({ to: route }) => <>Navigating to {route}</>,
   Outlet: () => <>Outlet Content</>,
-  useRevalidator: () => mockUseRevalidator
+  useRevalidator: () => mockUseRevalidator,
 }));
 
 const Providers = ({ children, withL10n }) => {
@@ -102,24 +102,18 @@ const Providers = ({ children, withL10n }) => {
     getStatus: noop,
     onPhaseChange: noop,
     onStatusChange: noop,
-    ...client.manager
+    ...client.manager,
   };
 
   if (withL10n) {
     return (
       <InstallerClientProvider client={client}>
-        <InstallerL10nProvider>
-          {children}
-        </InstallerL10nProvider>
+        <InstallerL10nProvider>{children}</InstallerL10nProvider>
       </InstallerClientProvider>
     );
   }
 
-  return (
-    <InstallerClientProvider client={client}>
-      {children}
-    </InstallerClientProvider>
-  );
+  return <InstallerClientProvider client={client}>{children}</InstallerClientProvider>;
 };
 
 /**
@@ -134,19 +128,15 @@ const installerRender = (ui, options = {}) => {
   const Wrapper = ({ children }) => (
     <Providers withL10n={options.withL10n}>
       <MemoryRouter initialEntries={initialRoutes()}>
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
+        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
       </MemoryRouter>
     </Providers>
   );
 
-  return (
-    {
-      user: userEvent.setup(),
-      ...render(ui, { wrapper: Wrapper, ...options })
-    }
-  );
+  return {
+    user: userEvent.setup(),
+    ...render(ui, { wrapper: Wrapper, ...options }),
+  };
 };
 
 /**
@@ -165,16 +155,12 @@ const plainRender = (ui, options = {}) => {
   const queryClient = new QueryClient({});
 
   const Wrapper = ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
-  return (
-    {
-      user: userEvent.setup(),
-      ...render(ui, { wrapper: Wrapper, ...options })
-    }
-  );
+  return {
+    user: userEvent.setup(),
+    ...render(ui, { wrapper: Wrapper, ...options }),
+  };
 };
 
 /**
@@ -234,5 +220,5 @@ export {
   mockNavigateFn,
   mockRoutes,
   mockUseRevalidator,
-  resetLocalStorage
+  resetLocalStorage,
 };

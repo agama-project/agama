@@ -33,11 +33,13 @@ import { Popover, Button } from "@patternfly/react-core";
  * @param {React.ReactNode} props.children - The wrapped content.
  * @param {import("@patternfly/react-core").PopoverProps} [props.otherProps]
  */
-export default function Description ({ description, children, ...otherProps }) {
+export default function Description({ description, children, ...otherProps }) {
   if (description) {
     return (
       <Popover showClose={false} bodyContent={description} {...otherProps}>
-        <Button variant="link" isInline>{children}</Button>
+        <Button variant="link" isInline>
+          {children}
+        </Button>
       </Popover>
     );
   }

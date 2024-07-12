@@ -59,7 +59,13 @@ export default function NetworkPage() {
 
   useEffect(() => {
     return client.onNetworkChange(({ type }) => {
-      if ([NetworkEventTypes.DEVICE_ADDED, NetworkEventTypes.DEVICE_UPDATED, NetworkEventTypes.DEVICE_REMOVED].includes(type)) {
+      if (
+        [
+          NetworkEventTypes.DEVICE_ADDED,
+          NetworkEventTypes.DEVICE_UPDATED,
+          NetworkEventTypes.DEVICE_REMOVED,
+        ].includes(type)
+      ) {
         setUpdateState(true);
       }
     });
@@ -73,7 +79,7 @@ export default function NetworkPage() {
     return addresses?.map(formatIp).join(", ");
   };
 
-  const ready = (connections !== undefined) && (devices !== undefined);
+  const ready = connections !== undefined && devices !== undefined;
 
   const WifiConnections = () => {
     const { wireless_enabled: wifiAvailable } = settings;
@@ -83,16 +89,18 @@ export default function NetworkPage() {
         <CardField>
           <CardField.Content>
             <EmptyState title={_("No Wi-Fi supported")} icon="error">
-              {_("The system does not support Wi-Fi connections, probably because of missing or disabled hardware.")}
+              {_(
+                "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.",
+              )}
             </EmptyState>
           </CardField.Content>
         </CardField>
       );
     }
 
-    const wifiConnections = connections.filter(c => c.wireless);
-    const activeWifiDevice = devices.find(d => d.type === "wireless" && d.state === "activated");
-    const activeConnection = wifiConnections.find(c => c.id === activeWifiDevice?.connection);
+    const wifiConnections = connections.filter((c) => c.wireless);
+    const activeWifiDevice = devices.find((d) => d.type === "wireless" && d.state === "activated");
+    const activeConnection = wifiConnections.find((c) => c.id === activeWifiDevice?.connection);
 
     return (
       <CardField
@@ -104,17 +112,19 @@ export default function NetworkPage() {
         }
       >
         <CardField.Content>
-          {activeConnection
-            ? (
-              <EmptyState title={sprintf(_("Conected to %s"), activeConnection.id)} icon="wifi" color="success-color-100">
-                {connectionAddresses(activeConnection)}
-              </EmptyState>
-            )
-            : (
-              <EmptyState title={_("No connected yet")} icon="wifi_off" color="color-300">
-                {_("The system has not been configured for connecting to a Wi-Fi network yet.")}
-              </EmptyState>
-            )}
+          {activeConnection ? (
+            <EmptyState
+              title={sprintf(_("Conected to %s"), activeConnection.id)}
+              icon="wifi"
+              color="success-color-100"
+            >
+              {connectionAddresses(activeConnection)}
+            </EmptyState>
+          ) : (
+            <EmptyState title={_("No connected yet")} icon="wifi_off" color="color-300">
+              {_("The system has not been configured for connecting to a Wi-Fi network yet.")}
+            </EmptyState>
+          )}
         </CardField.Content>
       </CardField>
     );
@@ -123,21 +133,33 @@ export default function NetworkPage() {
   const SectionSkeleton = () => (
     <Stack hasGutter>
       <Skeleton width="45%" />
-      <Split hasGutter><Skeleton width="30%" height="10px" /><Skeleton width="30%" height="10px" /><Skeleton width="30%" height="10px" /></Split>
-      <Split hasGutter><Skeleton width="30%" height="10px" /><Skeleton width="30%" height="10px" /><Skeleton width="30%" height="10px" /></Split>
+      <Split hasGutter>
+        <Skeleton width="30%" height="10px" />
+        <Skeleton width="30%" height="10px" />
+        <Skeleton width="30%" height="10px" />
+      </Split>
+      <Split hasGutter>
+        <Skeleton width="30%" height="10px" />
+        <Skeleton width="30%" height="10px" />
+        <Skeleton width="30%" height="10px" />
+      </Split>
     </Stack>
   );
 
   const WiredConnections = () => {
-    const wiredConnections = connections.filter(c => !c.wireless);
+    const wiredConnections = connections.filter((c) => !c.wireless);
     const total = wiredConnections.length;
 
     return (
       <CardField label={total > 0 && _("Wired")}>
         <CardBody>
           {!ready && <SectionSkeleton />}
-          {ready && total === 0 && <EmptyState title={_("No wired connections found")} icon="warning" />}
-          {ready && total !== 0 && <ConnectionsTable connections={wiredConnections} devices={devices} />}
+          {ready && total === 0 && (
+            <EmptyState title={_("No wired connections found")} icon="warning" />
+          )}
+          {ready && total !== 0 && (
+            <ConnectionsTable connections={wiredConnections} devices={devices} />
+          )}
         </CardBody>
       </CardField>
     );

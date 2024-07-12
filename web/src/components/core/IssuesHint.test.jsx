@@ -28,7 +28,7 @@ it("renders a list of issues", () => {
   const issue = {
     description: "You need to create a user",
     source: "config",
-    severity: "error"
+    severity: "error",
   };
   plainRender(<IssuesHint issues={[issue]} />);
   expect(screen.getByText(issue.description)).toBeInTheDocument();

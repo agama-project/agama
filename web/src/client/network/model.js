@@ -33,7 +33,7 @@ const ConnectionState = Object.freeze({
   ACTIVATING: 1,
   ACTIVATED: 2,
   DEACTIVATING: 3,
-  DEACTIVATED: 4
+  DEACTIVATED: 4,
 });
 
 const DeviceState = Object.freeze({
@@ -46,7 +46,7 @@ const DeviceState = Object.freeze({
   NEEDAUTH: "needAuth",
   ACTIVATED: "activated",
   DEACTIVATING: "deactivating",
-  FAILED: "failed"
+  FAILED: "failed",
 });
 
 /**
@@ -72,14 +72,14 @@ const ConnectionTypes = Object.freeze({
   BOND: "bond",
   BRIDGE: "bridge",
   VLAN: "vlan",
-  UNKNOWN: "unknown"
+  UNKNOWN: "unknown",
 });
 
 const SecurityProtocols = Object.freeze({
   WEP: "WEP",
   WPA: "WPA1",
   RSN: "WPA2",
-  _8021X: "802.1X"
+  _8021X: "802.1X",
 });
 
 // security protocols
@@ -198,7 +198,17 @@ const ApSecurityFlags = Object.freeze({
  * @param {object} [options.wireless] Wireless Settings
  * @return {Connection}
  */
-const createConnection = ({ id, iface, method4, method6, gateway4, gateway6, addresses, nameservers, wireless }) => {
+const createConnection = ({
+  id,
+  iface,
+  method4,
+  method6,
+  gateway4,
+  gateway6,
+  addresses,
+  nameservers,
+  wireless,
+}) => {
   const connection = {
     id,
     iface,
@@ -207,7 +217,7 @@ const createConnection = ({ id, iface, method4, method6, gateway4, gateway6, add
     gateway4: gateway4 || "",
     gateway6: gateway6 || "",
     addresses: addresses || [],
-    nameservers: nameservers || []
+    nameservers: nameservers || [],
   };
 
   if (wireless) connection.wireless = wireless;
@@ -215,7 +225,18 @@ const createConnection = ({ id, iface, method4, method6, gateway4, gateway6, add
   return connection;
 };
 
-const createDevice = ({ name, macAddress, method4, method6, gateway4, gateway6, addresses, nameservers, routes4, routes6 }) => {
+const createDevice = ({
+  name,
+  macAddress,
+  method4,
+  method6,
+  gateway4,
+  gateway6,
+  addresses,
+  nameservers,
+  routes4,
+  routes6,
+}) => {
   return {
     name,
     macAddress,
@@ -226,7 +247,7 @@ const createDevice = ({ name, macAddress, method4, method6, gateway4, gateway6, 
     addresses: addresses || [],
     nameservers: nameservers || [],
     routes4: routes4 || [],
-    routes6: routes6 || []
+    routes6: routes6 || [],
   };
 };
 
@@ -240,14 +261,12 @@ const createDevice = ({ name, macAddress, method4, method6, gateway4, gateway6, 
  * @param {string[]} [options.security] - Supported security protocols
  * @return {AccessPoint}
  */
-const createAccessPoint = ({ ssid, hwAddress, strength, security }) => (
-  {
-    ssid,
-    hwAddress,
-    strength,
-    security: security || []
-  }
-);
+const createAccessPoint = ({ ssid, hwAddress, strength, security }) => ({
+  ssid,
+  hwAddress,
+  strength,
+  security: security || [],
+});
 
 /**
  * @param {number} flags - AP flags
@@ -258,7 +277,7 @@ const createAccessPoint = ({ ssid, hwAddress, strength, security }) => (
 const securityFromFlags = (flags, wpa_flags, rsn_flags) => {
   const security = [];
 
-  if ((flags & ApFlags.PRIVACY) && (wpa_flags === 0) && (rsn_flags === 0)) {
+  if (flags & ApFlags.PRIVACY && wpa_flags === 0 && rsn_flags === 0) {
     security.push(SecurityProtocols.WEP);
   }
 
@@ -268,9 +287,7 @@ const securityFromFlags = (flags, wpa_flags, rsn_flags) => {
   if (rsn_flags > 0) {
     security.push(SecurityProtocols.RSN);
   }
-  if (
-    (wpa_flags & ApSecurityFlags.KEY_MGMT_8021_X) || (rsn_flags & ApSecurityFlags.KEY_MGMT_8021_X)
-  ) {
+  if (wpa_flags & ApSecurityFlags.KEY_MGMT_8021_X || rsn_flags & ApSecurityFlags.KEY_MGMT_8021_X) {
     security.push(SecurityProtocols._8021X);
   }
 

@@ -23,10 +23,15 @@
 
 import React from "react";
 import {
-  Card, CardHeader, CardTitle, CardBody, CardFooter,
-  Flex, FlexItem,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardBody,
+  CardFooter,
+  Flex,
+  FlexItem,
 } from "@patternfly/react-core";
-import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 // FIXME: improve name and documentation
 // TODO: allows having a drawer, see storage/ProposalResultActions
@@ -45,8 +50,7 @@ const CardField = ({
   children = [],
   cardProps = {},
   cardHeaderProps = {},
-  cardDescriptionProps = {}
-
+  cardDescriptionProps = {},
 }) => {
   // TODO: replace aria-label with the proper aria-labelledby
   return (
@@ -63,7 +67,11 @@ const CardField = ({
           </Flex>
         </CardTitle>
       </CardHeader>
-      {description && <CardBody isFilled={false} {...cardDescriptionProps}><div className={textStyles.color_200}>{description}</div></CardBody>}
+      {description && (
+        <CardBody isFilled={false} {...cardDescriptionProps}>
+          <div className={textStyles.color_200}>{description}</div>
+        </CardBody>
+      )}
       {children}
       {actions && <CardFooter>{actions}</CardFooter>}
     </Card>
