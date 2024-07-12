@@ -85,6 +85,7 @@ const SpacePolicyPicker = ({ currentPolicy, onChange = noop }) => {
  */
 export default function SpacePolicySelection() {
   const [state, setState] = useState({ load: false, settings: {} });
+  /** @type ReturnType<typeof useState<SpacePolicy>> */
   const [policy, setPolicy] = useState();
   const [actions, setActions] = useState([]);
   const [expandedDevices, setExpandedDevices] = useState([]);
@@ -154,6 +155,7 @@ export default function SpacePolicySelection() {
 
   const onSubmit = (e) => {
     e.preventDefault();
+    // @ts-ignore
     client.proposal.calculate({
       ...state.settings,
       spacePolicy: policy.id,
