@@ -219,8 +219,8 @@ export default function ProposalActionsSummary({
     // eslint-disable-next-line agama-i18n/string-literals
     value = _(policy.summaryLabels[0]);
   } else {
-    // eslint-disable-next-line agama-i18n/string-literals
     value = sprintf(
+      // eslint-disable-next-line agama-i18n/string-literals
       n_(policy.summaryLabels[0], policy.summaryLabels[1], devices.length),
       devices.length,
     );

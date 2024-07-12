@@ -99,11 +99,11 @@ const MountPathField = ({ value = "", onChange, isReadOnly = false, error }) => 
 const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
   return (
     <FormSelect {...formSelectProps}>
-      {/* the unit values are marked for translation in the utils.js file */}
-      {/* eslint-disable-next-line agama-i18n/string-literals */}
-      {units.map((unit) => (
-        <FormSelectOption key={unit} value={unit} label={_(unit)} />
-      ))}
+      {units.map((unit) => {
+        // unit values are marked for translation in the utils.js file
+        // eslint-disable-next-line agama-i18n/string-literals
+        return <FormSelectOption key={unit} value={unit} label={_(unit)} />
+      })}
     </FormSelect>
   );
 };
