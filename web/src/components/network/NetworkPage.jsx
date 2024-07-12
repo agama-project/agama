@@ -38,6 +38,7 @@ import { sprintf } from "sprintf-js";
  */
 export default function NetworkPage() {
   const { network: client } = useInstallerClient();
+  // @ts-ignore
   const { connections: initialConnections, devices: initialDevices, settings } = useLoaderData();
   const [connections, setConnections] = useState(initialConnections);
   const [devices, setDevices] = useState(initialDevices);
@@ -64,6 +65,7 @@ export default function NetworkPage() {
           NetworkEventTypes.DEVICE_ADDED,
           NetworkEventTypes.DEVICE_UPDATED,
           NetworkEventTypes.DEVICE_REMOVED,
+          // @ts-ignore
         ].includes(type)
       ) {
         setUpdateState(true);
