@@ -24,8 +24,8 @@
 //! As said, those modules might implement additional stuff, like specific types, clients, etc.
 
 pub mod auth;
-pub mod error;
 pub mod base_http_client;
+pub mod error;
 pub mod install_settings;
 pub mod localization;
 pub mod manager;

@@ -5,17 +5,17 @@ use serde::{de::DeserializeOwned, Serialize};
 use crate::{auth::AuthToken, error::ServiceError};
 
 /// Base that all http clients should use.
-/// 
+///
 /// It provides several features including automatic base url switching,
 /// websocket events listening or object constructions.
-/// 
+///
 /// Usage should be just thin layer in domain specific client.
-/// 
+///
 /// ```no_run
 ///   use agama_lib::questions::model::Question;
 ///   use agama_lib::base_http_client::BaseHTTPClient;
 ///   use agama_lib::error::ServiceError;
-/// 
+///
 ///   async fn get_questions() -> Result<Vec<Question>, ServiceError> {
 ///     let client = BaseHTTPClient::new()?;
 ///     client.get("/questions").await
@@ -57,7 +57,7 @@ impl BaseHTTPClient {
             response.json::<T>().await.map_err(|e| e.into())
         } else {
             Err(self.build_backend_error(response).await)
-        }        
+        }
     }
 
     /// Calls GET method on given path and return Response that can be further
@@ -87,7 +87,11 @@ impl BaseHTTPClient {
     /// post object to given path and returns server response. Reports error only if failed to send
     /// request, but if server returns e.g. 500, it will be in Ok result.
     /// In general unless specific response handling is needed, simple post should be used.
-    pub async fn post_response(&self, path: &str, object: &impl Serialize) -> Result<Response, ServiceError> {
+    pub async fn post_response(
+        &self,
+        path: &str,
+        object: &impl Serialize,
+    ) -> Result<Response, ServiceError> {
         self.client
             .post(self.url(path))
             .json(object)
