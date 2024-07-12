@@ -388,4 +388,4 @@ class HTTPClient {
   }
 }
 
-export { HTTPClient };
+export { HTTPClient, WSClient };
