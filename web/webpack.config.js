@@ -155,24 +155,18 @@ module.exports = {
         exclude: /node_modules/,
         use: [
           {
+            loader: "babel-loader",
+            options: {
+              plugins: [development && require.resolve("react-refresh/babel")].filter(Boolean),
+            },
+          },
+          {
             loader: require.resolve("ts-loader"),
             options: {
               getCustomTransformers: () => ({
                 before: [development && ReactRefreshTypeScript()].filter(Boolean),
               }),
               transpileOnly: development,
-            },
-          },
-        ],
-      },
-      {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: "babel-loader",
-            options: {
-              plugins: [development && require.resolve("react-refresh/babel")].filter(Boolean),
             },
           },
         ],
