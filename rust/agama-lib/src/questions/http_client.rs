@@ -1,20 +1,19 @@
-use crate::error::ServiceError;
+use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
 
 use super::model;
 
 pub struct HTTPClient {
-    client: crate::http_client::HTTPClient,
+    client: BaseHTTPClient,
 }
 
 impl HTTPClient {
     pub async fn new() -> Result<Self, ServiceError> {
         Ok(Self {
-            client: crate::http_client::HTTPClient::new().await?,
+            client: BaseHTTPClient::new()?,
         })
     }
 
     pub async fn list_questions(&self) -> Result<Vec<model::Question>, ServiceError> {
-        let questions = self.client.get_type("/questions").await?;
-        Ok(questions)
+        self.client.get("/questions").await
     }
 }

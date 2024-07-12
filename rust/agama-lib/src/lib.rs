@@ -25,7 +25,7 @@
 
 pub mod auth;
 pub mod error;
-mod http_client;
+pub mod base_http_client;
 pub mod install_settings;
 pub mod localization;
 pub mod manager;

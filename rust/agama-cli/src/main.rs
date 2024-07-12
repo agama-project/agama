@@ -119,7 +119,7 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
 }
 
 async fn run_command(cli: Cli) -> Result<(), ServiceError> {
-    Ok(match cli.command {
+    match cli.command {
         Commands::Config(subcommand) => {
             let manager = build_manager().await?;
             wait_for_services(&manager).await?;
@@ -139,7 +139,9 @@ async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         Commands::Logs(subcommand) => run_logs_cmd(subcommand).await?,
         Commands::Auth(subcommand) => run_auth_cmd(subcommand).await?,
         Commands::Download { url } => crate::profile::download(&url, std::io::stdout())?,
-    })
+    };
+
+    Ok(())
 }
 
 /// Represents the result of execution.
