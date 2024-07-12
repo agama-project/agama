@@ -44,10 +44,10 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
  */
 const CardField = ({
   label,
-  value,
-  description,
-  actions,
-  children = [],
+  value = undefined,
+  description = undefined,
+  actions = undefined,
+  children,
   cardProps = {},
   cardHeaderProps = {},
   cardDescriptionProps = {},
@@ -61,9 +61,11 @@ const CardField = ({
             <FlexItem spacer={{ default: "spacerSm" }}>
               <h3>{label}</h3>
             </FlexItem>
-            <FlexItem grow={{ default: "grow" }} className={textStyles.fontSizeXl}>
-              {value}
-            </FlexItem>
+            {value && (
+              <FlexItem grow={{ default: "grow" }} className={textStyles.fontSizeXl}>
+                {value}
+              </FlexItem>
+            )}
           </Flex>
         </CardTitle>
       </CardHeader>
