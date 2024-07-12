@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jul  12 13:39:15 UTC 2024 - Natasha Ament <stacheldrahtje@gmail.com>
+
+- change url for leap_160.yaml to distribution
+
+-------------------------------------------------------------------
 Tue Jul  2 13:54:15 UTC 2024 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Use specific flavor of openSUSE-repos for each distro
