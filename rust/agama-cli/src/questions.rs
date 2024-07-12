@@ -1,5 +1,6 @@
-use agama_lib::{connection, error::ServiceError};
 use agama_lib::proxies::Questions1Proxy;
+use agama_lib::questions::http_client::HTTPClient;
+use agama_lib::{connection, error::ServiceError};
 use clap::{Args, Subcommand, ValueEnum};
 
 #[derive(Subcommand, Debug)]
@@ -51,13 +52,21 @@ async fn set_answers(proxy: Questions1Proxy<'_>, path: String) -> Result<(), Ser
 }
 
 async fn list_questions() -> Result<(), ServiceError> {
+    let client = HTTPClient::new().await?;
+    let questions = client.list_questions().await?;
+    // FIXME: that conversion to anyhow error is nasty, but we do not expect issue
+    // when questions are already read from json
+    // FIXME: if performance is bad, we can skip converting json from http to struct and then
+    // serialize it, but it won't be pretty string
+    let questions_json =
+        serde_json::to_string_pretty(&questions).map_err(Into::<anyhow::Error>::into)?;
+    println!("{}", questions_json);
     Ok(())
 }
 
 pub async fn run(subcommand: QuestionsCommands) -> Result<(), ServiceError> {
     let connection = connection().await?;
-    let proxy = Questions1Proxy::new(&connection)
-        .await?;
+    let proxy = Questions1Proxy::new(&connection).await?;
 
     match subcommand {
         QuestionsCommands::Mode(value) => set_mode(proxy, value.value).await,

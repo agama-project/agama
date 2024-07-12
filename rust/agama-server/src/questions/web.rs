@@ -8,7 +8,8 @@
 use crate::{error::Error, web::Event};
 use agama_lib::{
     error::ServiceError,
-    proxies::{GenericQuestionProxy, QuestionWithPasswordProxy, Questions1Proxy}, questions::model::{Answer, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
+    proxies::{GenericQuestionProxy, QuestionWithPasswordProxy, Questions1Proxy},
+    questions::model::{Answer, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
 };
 use anyhow::Context;
 use axum::{
