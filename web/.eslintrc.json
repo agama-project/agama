@@ -21,14 +21,7 @@
     },
     "sourceType": "module"
   },
-  "plugins": [
-    "agama-i18n",
-    "flowtype",
-    "i18next",
-    "react",
-    "react-hooks",
-    "@typescript-eslint"
-  ],
+  "plugins": ["agama-i18n", "flowtype", "i18next", "react", "react-hooks", "@typescript-eslint"],
   "rules": {
     "agama-i18n/string-literals": "error",
     "i18next/no-literal-string": "error",
@@ -69,19 +62,14 @@
   "overrides": [
     {
       // do not check translations in the testing or development files
-      "files": [
-        "*.test.*",
-        "test-utils.js"
-      ],
+      "files": ["*.test.*", "test-utils.js"],
       "rules": {
         "i18next/no-literal-string": "off"
       }
     },
     {
       // do not check translation arguments in the test, it checks some internals by passing variables
-      "files": [
-        "i18n.test.js"
-      ],
+      "files": ["i18n.test.js"],
       "rules": {
         "agama-i18n/string-literals": "off"
       }
