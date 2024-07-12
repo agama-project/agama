@@ -41,7 +41,7 @@ import { Icon } from "~/components/layout";
  * @param {object} props
  * @param {string} props.title
  * @param {IconName} props.icon
- * @param {string} props.color
+ * @param {string} [props.color="color-100"]
  * @param {EmptyStateHeaderProps["headingLevel"]} [props.headingLevel="h4"]
  * @param {boolean} [props.noPadding=false]
  * @param {React.ReactNode} props.children
@@ -64,6 +64,7 @@ export default function EmptyStateWrapper({
       <EmptyStateHeader
         headingLevel={headingLevel}
         titleText={title}
+        // FIXME: Allow more colors, not only PF text utils. See core/Icon.jsx too.
         titleClassName={`pf-v5-u-${color}`}
         icon={<Icon name={icon} size="xxl" color={color} />}
       />
