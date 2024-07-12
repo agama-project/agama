@@ -85,6 +85,7 @@ const Action = ({ navigateTo, children, ...props }) => {
 
 /**
  * Simple action for navigating back
+ * @param {ActionProps & { text?: string }} props
  */
 const CancelAction = ({ text = _("Cancel"), navigateTo }) => {
   const navigate = useNavigate();
