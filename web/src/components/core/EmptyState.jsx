@@ -44,7 +44,7 @@ import { Icon } from "~/components/layout";
  * @param {string} [props.color="color-100"]
  * @param {EmptyStateHeaderProps["headingLevel"]} [props.headingLevel="h4"]
  * @param {boolean} [props.noPadding=false]
- * @param {React.ReactNode} props.children
+ * @param {React.ReactNode} [props.children]
  * @param {EmptyStateProps} [props.rest]
  * @todo write documentation
  */
@@ -68,9 +68,11 @@ export default function EmptyStateWrapper({
         titleClassName={`pf-v5-u-${color}`}
         icon={<Icon name={icon} size="xxl" color={color} />}
       />
-      <EmptyStateBody>
-        <Stack hasGutter>{children}</Stack>
-      </EmptyStateBody>
+      {children && (
+        <EmptyStateBody>
+          <Stack hasGutter>{children}</Stack>
+        </EmptyStateBody>
+      )}
     </EmptyState>
   );
 }
