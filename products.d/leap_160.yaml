@@ -26,7 +26,7 @@ translations:
     zh_Hans: Leap 16.0 是基于 SUSE Linux Enterprise Server 构建的社区发行版的最新版本。
 software:
   installation_repositories:
-    - url: https://download.opensuse.org/distribution/leap/16.0/oss
+    - url: https://download.opensuse.org/distribution/leap/16.0/repo/oss
     
   mandatory_patterns:
     - enhanced_base # only pattern that is shared among all roles on Leap
