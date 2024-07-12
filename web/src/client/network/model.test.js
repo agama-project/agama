@@ -43,7 +43,7 @@ describe("createConnection", () => {
 
   it("merges given properties", () => {
     const addresses = [{ address: "192.168.0.1", prefix: 24 }];
-    const connection = createConnection({ addresses, testing: 1 });
+    const connection = createConnection({ addresses });
     expect(connection.method4).toEqual("auto");
     expect(connection.gateway4).toEqual("");
     expect(connection.addresses).toEqual(addresses);
