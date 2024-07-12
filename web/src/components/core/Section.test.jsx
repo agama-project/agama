@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
+// FIXME: Refactor or replace
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
@@ -65,7 +65,6 @@ describe.skip("Section", () => {
     });
 
     it("does not render an icon if not valid icon name is given", () => {
-      // @ts-expect-error: Creating the icon name dynamically is unlikely, but let's be safe.
       const { container } = plainRender(
         <Section title="Settings" icon={`fake-${Date.now()}-icon`} />,
       );
