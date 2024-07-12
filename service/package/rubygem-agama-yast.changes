@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jul 12 11:03:14 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Stop trying to set up Cockpit (gh#openSUSE/agama#1459).
+
+-------------------------------------------------------------------
 Fri Jul  5 13:12:36 UTC 2024 - José Iván López González <jlopez@suse.com>
 
 - Change storage D-Bus API to provide more accurate information
