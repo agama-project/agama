@@ -57,6 +57,7 @@ export default function EmptyStateWrapper({
   children,
   ...rest
 }) {
+  // @ts-ignore
   if (noPadding) rest.className = [rest.className, "no-padding"].join(" ").trim();
 
   return (
