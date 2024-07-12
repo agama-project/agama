@@ -68,7 +68,11 @@ export default function EmptyStateWrapper({
         icon={<Icon name={icon} size="xxl" color={color} />}
       />
       <EmptyStateBody>
-        <Flex rowGap={{ default: "rowGapMd" }} justifyContent={{ default: "justifyContentCenter" }}>
+        <Flex
+          direction={{ default: "column" }}
+          rowGap={{ default: "rowGapMd" }}
+          justifyContent={{ default: "justifyContentCenter" }}
+        >
           {children}
         </Flex>
       </EmptyStateBody>
