@@ -30,9 +30,9 @@ software:
       archs: x86_64
     - url: https://download.opensuse.org/repositories/openSUSE:/Leap:/16.0/standard
       archs: aarch64
-    - url: https://download.opensuse.org/repositories/openSUSE:/Leap:/16.0/product/repo/Leap-Packages-16.0-x86_64
+    - url: https://download.opensuse.org/distribution/leap/16.0/repo/oss
       archs: x86_64
-    - url: https://download.opensuse.org/repositories/openSUSE:/Leap:/16.0/product/repo/Leap-Packages-16.0-aarch64
+    - url: https://download.opensuse.org/distribution/leap/16.0/repo/oss
       archs: aarch64
 
   mandatory_patterns:
