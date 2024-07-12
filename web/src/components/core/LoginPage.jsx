@@ -92,27 +92,25 @@ user privileges.",
                   {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
                 </p>
                 <p>{_("Please, provide its password to log in to the system.")}</p>
-                <Stack hasGutter>
-                  <Form id="login" onSubmit={login} aria-label={_("Login form")}>
-                    <FormGroup fieldId="password">
-                      <PasswordInput
-                        id="password"
-                        name="password"
-                        value={password}
-                        aria-label={_("Password input")}
-                        onChange={(_, v) => setPassword(v)}
-                      />
-                    </FormGroup>
+                <Form id="login" onSubmit={login} aria-label={_("Login form")}>
+                  <FormGroup fieldId="password">
+                    <PasswordInput
+                      id="password"
+                      name="password"
+                      value={password}
+                      aria-label={_("Password input")}
+                      onChange={(_, v) => setPassword(v)}
+                    />
+                  </FormGroup>
 
-                    {error && <FormValidationError message={errorMessage(loginError)} />}
+                  {error && <FormValidationError message={errorMessage(loginError)} />}
 
-                    <ActionGroup>
-                      <Button type="submit" variant="primary">
-                        {_("Log in")}
-                      </Button>
-                    </ActionGroup>
-                  </Form>
-                </Stack>
+                  <ActionGroup>
+                    <Button type="submit" variant="primary">
+                      {_("Log in")}
+                    </Button>
+                  </ActionGroup>
+                </Form>
               </EmptyState>
               <Flex>
                 <FlexItem align={{ default: "alignRight" }}>
