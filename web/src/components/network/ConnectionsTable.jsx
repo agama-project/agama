@@ -30,6 +30,7 @@ import { formatIp } from "~/client/network/utils";
 import { _ } from "~/i18n";
 
 /**
+ * @typedef {import("~/client/network/model").Device} Device
  * @typedef {import("~/client/network/model").Connection} Connection
  */
 
@@ -40,8 +41,8 @@ import { _ } from "~/i18n";
  *
  * @param {object} props
  * @param {Connection[]} props.connections - Connections to be shown
- * @param {function} props.onEdit - function to be called for editing a connection
- * @param {function} props.onForget - function to be called for forgetting a connection
+ * @param {Device[]} props.devices - Connections to be shown
+ * @param {function} [props.onForget] - function to be called for forgetting a connection
  */
 export default function ConnectionsTable({ connections, devices, onForget }) {
   const navigate = useNavigate();

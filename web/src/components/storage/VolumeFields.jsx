@@ -102,7 +102,7 @@ const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
       {units.map((unit) => {
         // unit values are marked for translation in the utils.js file
         // eslint-disable-next-line agama-i18n/string-literals
-        return <FormSelectOption key={unit} value={unit} label={_(unit)} />
+        return <FormSelectOption key={unit} value={unit} label={_(unit)} />;
       })}
     </FormSelect>
   );

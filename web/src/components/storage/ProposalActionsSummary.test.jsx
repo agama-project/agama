@@ -60,6 +60,7 @@ const defaultProps = {
   onActionsClick: jest.fn(),
   system: devices.system,
   staging: devices.staging,
+  devices: [sda],
   actions,
 };
 
@@ -75,7 +76,7 @@ describe("ProposalActionsSummary", () => {
     const props = {
       ...defaultProps,
       policy: deletePolicy,
-      actions: [{ device: 79, subvol: false, delete: true, text: "" }],
+      actions: [{ device: 79, subvol: false, delete: true, resize: false, text: "" }],
     };
 
     installerRender(<ProposalActionsSummary {...props} />);

@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Checkbox, Form, Switch, Stack } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { PasswordAndConfirmationInput, Popup } from "~/components/core";
@@ -78,6 +78,7 @@ export default function EncryptionSettingsDialog({
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [validSettings, setValidSettings] = useState(true);
   const [wasLoading, setWasLoading] = useState(isLoading);
+  const passwordRef = useRef();
   const formId = "encryptionSettingsForm";
 
   // reset the settings only after loading is finished
@@ -131,6 +132,7 @@ export default function EncryptionSettingsDialog({
         />
         <Form id={formId} onSubmit={submitSettings}>
           <PasswordAndConfirmationInput
+            inputRef={passwordRef}
             value={password}
             onChange={changePassword}
             onValidation={setPasswordsMatch}

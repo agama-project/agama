@@ -46,10 +46,9 @@ import React from "react";
  *
  * @param {object} props
  * @param {React.ReactNode} props.children
- * @param {React.HTMLAttributes} props.htmlProps
  */
-const Center = ({ children, ...htmlProps }) => (
-  <div className="vertically-centered" {...htmlProps}>
+const Center = ({ children }) => (
+  <div className="vertically-centered">
     <div className="full-width stack">{children}</div>
   </div>
 );

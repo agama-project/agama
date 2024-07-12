@@ -87,6 +87,7 @@ user privileges.",
         <Grid>
           <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
             <Card component="section" isRounded>
+              {/** @ts-ignore */}
               <EmptyState title={sectionTitle} icon="lock" color="color-info-200" variant="xl">
                 <p>
                   {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}

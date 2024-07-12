@@ -47,8 +47,6 @@ import { compact, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 
 /**
- * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
- * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
 
@@ -56,16 +54,24 @@ const SELECT_DISK_ID = "select-disk";
 const CREATE_LVM_ID = "create-lvm";
 const SELECT_DISK_PANEL_ID = "panel-for-disk-selection";
 const CREATE_LVM_PANEL_ID = "panel-for-lvm-creation";
-const OPTIONS_NAME = "selection-mode";
 
 /**
  * Allows the user to select a target device for installation.
  * @component
  */
 export default function DeviceSelection() {
-  const [state, setState] = useState({});
+  /**
+   * @typedef {object} DeviceSelectionState
+   * @property {boolean} load
+   * @property {string} [target]
+   * @property {StorageDevice} [targetDevice]
+   * @property {StorageDevice[]} [targetPVDevices]
+   * @property {StorageDevice[]} [availableDevices]
+   */
   const navigate = useNavigate();
   const { cancellablePromise } = useCancellablePromise();
+  /** @type ReturnType<typeof useState<DeviceSelectionState>> */
+  const [state, setState] = useState({ load: false });
 
   const isTargetDisk = state.target === "DISK";
   const isTargetNewLvmVg = state.target === "NEW_LVM_VG";

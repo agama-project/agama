@@ -19,7 +19,9 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+// @ts-check
+
+import React, { useState, useRef } from "react";
 import { Form } from "@patternfly/react-core";
 import { PasswordAndConfirmationInput, Popup } from "~/components/core";
 
@@ -42,6 +44,7 @@ export default function RootPasswordPopup({ title = _("Root password"), isOpen, 
   const { users: client } = useInstallerClient();
   const [password, setPassword] = useState("");
   const [isValidPassword, setIsValidPassword] = useState(true);
+  const passwordRef = useRef();
 
   const close = () => {
     setPassword("");
@@ -63,6 +66,7 @@ export default function RootPasswordPopup({ title = _("Root password"), isOpen, 
     <Popup title={title} isOpen={isOpen} inlineSize="small">
       <Form id="root-password" onSubmit={accept}>
         <PasswordAndConfirmationInput
+          inputRef={passwordRef}
           value={password}
           onChange={onPasswordChange}
           onValidation={onPasswordValidation}

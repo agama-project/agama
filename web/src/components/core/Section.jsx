@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
+// FIXME: Refactor or replace
 
 import React from "react";
 import { Link } from "react-router-dom";

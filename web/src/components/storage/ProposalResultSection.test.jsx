@@ -81,7 +81,7 @@ describe.skip("ProposalResultSection", () => {
       // affected systems are rendered in the warning summary
       const props = {
         ...defaultProps,
-        actions: [{ device: 79, subvol: false, delete: true, text: "" }],
+        actions: [{ device: 79, subvol: false, delete: true, resize: false, text: "" }],
       };
 
       plainRender(<ProposalResultSection {...props} />);
