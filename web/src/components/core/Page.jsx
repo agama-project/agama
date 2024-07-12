@@ -22,7 +22,7 @@
 // @ts-check
 
 import React from "react";
-import { NavLink, Outlet, useNavigate, useMatches, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   Button,
   Card,
@@ -187,11 +187,6 @@ const CardSection = ({ title, children, ...props }) => {
  * @param {React.ReactNode} [props.children] - The page content.
  */
 const Page = () => {
-  const location = useLocation();
-  const matches = useMatches();
-  const currentRoute = matches.find((r) => r.pathname === location.pathname);
-  const titleFromRoute = currentRoute?.handle?.name;
-
   return (
     <PageGroup>
       <Outlet />
