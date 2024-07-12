@@ -22,7 +22,7 @@
 // @ts-check
 
 import React from "react";
-import { EmptyState, EmptyStateHeader, EmptyStateBody, Flex } from "@patternfly/react-core";
+import { EmptyState, EmptyStateHeader, EmptyStateBody, Stack } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 
 /**
@@ -68,13 +68,7 @@ export default function EmptyStateWrapper({
         icon={<Icon name={icon} size="xxl" color={color} />}
       />
       <EmptyStateBody>
-        <Flex
-          direction={{ default: "column" }}
-          rowGap={{ default: "rowGapMd" }}
-          justifyContent={{ default: "justifyContentCenter" }}
-        >
-          {children}
-        </Flex>
+        <Stack hasGutter>{children}</Stack>
       </EmptyStateBody>
     </EmptyState>
   );
