@@ -6,14 +6,17 @@
     display: flex;
     flex-direction: column;
     flex: 1 1 0;
-    gap: 0
+    gap: 0;
   }
 
   form > div:nth-child(2) {
     overflow-y: auto;
     min-block-size: 120px;
     margin-block-end: var(--spacer-medium);
-    table { background: transparent; }
+
+    table {
+      background: transparent;
+    }
   }
 
   form > div:last-child {

@@ -28,7 +28,7 @@ const fruits = [
   { name: "Apple", color: "red", size: "medium" },
   { name: "Banana", color: "yellow", size: "medium" },
   { name: "Grape", color: "green", size: "small" },
-  { name: "Pear", color: "green", size: "medium" }
+  { name: "Pear", color: "green", size: "medium" },
 ];
 
 const FruitList = ({ fruits }) => {
@@ -38,7 +38,11 @@ const FruitList = ({ fruits }) => {
     <>
       <ListSearch elements={fruits} onChange={setFilteredFruits} />
       <ul>
-        {filteredFruits.map((f, i) => <li key={i} role="option">{f.name}</li>)}
+        {filteredFruits.map((f, i) => (
+          <li key={i} role="option">
+            {f.name}
+          </li>
+        ))}
       </ul>
     </>
   );
@@ -51,8 +55,8 @@ it("searches for elements matching the given term (case-insensitive)", async () 
 
   // Search for "medium" size fruit
   await user.type(searchInput, "medium");
-  await waitFor(() => (
-    expect(screen.queryByRole("option", { name: /grape/ })).not.toBeInTheDocument())
+  await waitFor(() =>
+    expect(screen.queryByRole("option", { name: /grape/ })).not.toBeInTheDocument(),
   );
   screen.getByRole("option", { name: "Apple" });
   screen.getByRole("option", { name: "Banana" });
@@ -61,11 +65,11 @@ it("searches for elements matching the given term (case-insensitive)", async () 
   // Search for "green" fruit
   await user.clear(searchInput);
   await user.type(searchInput, "Green");
-  await waitFor(() => (
-    expect(screen.queryByRole("option", { name: "Apple" })).not.toBeInTheDocument())
+  await waitFor(() =>
+    expect(screen.queryByRole("option", { name: "Apple" })).not.toBeInTheDocument(),
   );
-  await waitFor(() => (
-    expect(screen.queryByRole("option", { name: "Banana" })).not.toBeInTheDocument())
+  await waitFor(() =>
+    expect(screen.queryByRole("option", { name: "Banana" })).not.toBeInTheDocument(),
   );
   screen.getByRole("option", { name: "Grape" });
   screen.getByRole("option", { name: "Pear" });
@@ -73,11 +77,11 @@ it("searches for elements matching the given term (case-insensitive)", async () 
   // Search for known fruit
   await user.clear(searchInput);
   await user.type(searchInput, "ap");
-  await waitFor(() => (
-    expect(screen.queryByRole("option", { name: "Banana" })).not.toBeInTheDocument())
+  await waitFor(() =>
+    expect(screen.queryByRole("option", { name: "Banana" })).not.toBeInTheDocument(),
   );
-  await waitFor(() => (
-    expect(screen.queryByRole("option", { name: "Pear" })).not.toBeInTheDocument())
+  await waitFor(() =>
+    expect(screen.queryByRole("option", { name: "Pear" })).not.toBeInTheDocument(),
   );
   screen.getByRole("option", { name: "Apple" });
   screen.getByRole("option", { name: "Grape" });
@@ -85,16 +89,16 @@ it("searches for elements matching the given term (case-insensitive)", async () 
   // Search for unknown fruit
   await user.clear(searchInput);
   await user.type(searchInput, "tomato");
-  await waitFor(() => (
-    expect(screen.queryByRole("option", { name: "Apple" })).not.toBeInTheDocument())
+  await waitFor(() =>
+    expect(screen.queryByRole("option", { name: "Apple" })).not.toBeInTheDocument(),
   );
-  await waitFor(() => (
-    expect(screen.queryByRole("option", { name: "Banana" })).not.toBeInTheDocument())
+  await waitFor(() =>
+    expect(screen.queryByRole("option", { name: "Banana" })).not.toBeInTheDocument(),
   );
-  await waitFor(() => (
-    expect(screen.queryByRole("option", { name: "Grape" })).not.toBeInTheDocument())
+  await waitFor(() =>
+    expect(screen.queryByRole("option", { name: "Grape" })).not.toBeInTheDocument(),
   );
-  await waitFor(() => (
-    expect(screen.queryByRole("option", { name: "Pear" })).not.toBeInTheDocument())
+  await waitFor(() =>
+    expect(screen.queryByRole("option", { name: "Pear" })).not.toBeInTheDocument(),
   );
 });

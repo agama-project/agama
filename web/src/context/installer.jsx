@@ -28,7 +28,10 @@ const InstallerClientContext = React.createContext(null);
 // TODO: we use a separate context to avoid changing all the codes to
 // `useInstallerClient`. We should merge them in the future.
 const InstallerClientStatusContext = React.createContext({
-  connected: false, error: false, phase: undefined, status: undefined
+  connected: false,
+  error: false,
+  phase: undefined,
+  status: undefined,
 });
 
 /**
@@ -65,17 +68,15 @@ function useInstallerClientStatus() {
 }
 
 /**
-  * @param {object} props
-  * @param {import("~/client").InstallerClient|undefined} [props.client] client to connect to
-  *   Agama service; if it is undefined, it instantiates a new one using the address
-  *   registered in /run/agama/bus.address.
-  * @param {number} [props.interval=2000] - Interval in milliseconds between connection attempt
-  *   (2000 by default).
-  * @param {React.ReactNode} [props.children] - content to display within the provider
-  */
-function InstallerClientProvider({
-  children, client = null
-}) {
+ * @param {object} props
+ * @param {import("~/client").InstallerClient|undefined} [props.client] client to connect to
+ *   Agama service; if it is undefined, it instantiates a new one using the address
+ *   registered in /run/agama/bus.address.
+ * @param {number} [props.interval=2000] - Interval in milliseconds between connection attempt
+ *   (2000 by default).
+ * @param {React.ReactNode} [props.children] - content to display within the provider
+ */
+function InstallerClientProvider({ children, client = null }) {
   const [value, setValue] = useState(client);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState(false);
@@ -91,7 +92,7 @@ function InstallerClientProvider({
     // allow hot replacement for the clients code
     if (module.hot) {
       // if anything coming from `import ... from "~/client"` is updated then this hook is called
-      module.hot.accept("~/client", async function() {
+      module.hot.accept("~/client", async function () {
         console.log("[Agama HMR] A client module has been updated");
 
         const updated_client = await createDefaultClient();
@@ -151,8 +152,4 @@ function InstallerClientProvider({
   );
 }
 
-export {
-  InstallerClientProvider,
-  useInstallerClient,
-  useInstallerClientStatus
-};
+export { InstallerClientProvider, useInstallerClient, useInstallerClientStatus };

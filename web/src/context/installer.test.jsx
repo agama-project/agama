@@ -52,8 +52,8 @@ describe("installer context", () => {
           getPhase: jest.fn().mockResolvedValue(STARTUP),
           getStatus: jest.fn().mockResolvedValue(BUSY),
           onPhaseChange: jest.fn(),
-          onStatusChange: jest.fn()
-        }
+          onStatusChange: jest.fn(),
+        },
       };
     });
   });
@@ -62,7 +62,7 @@ describe("installer context", () => {
     plainRender(
       <InstallerClientProvider>
         <ClientStatus />
-      </InstallerClientProvider>
+      </InstallerClientProvider>,
     );
     await screen.findByText("connected: false");
     await screen.findByText("phase: 0");

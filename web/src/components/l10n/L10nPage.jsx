@@ -20,22 +20,21 @@
  */
 
 import React from "react";
-import { Gallery, GalleryItem, } from "@patternfly/react-core";
+import { Gallery, GalleryItem } from "@patternfly/react-core";
 import { useLoaderData } from "react-router-dom";
 import { ButtonLink, CardField, Page } from "~/components/core";
-import { LOCALE_SELECTION_PATH, KEYMAP_SELECTION_PATH, TIMEZONE_SELECTION_PATH } from "~/routes/l10n";
+import {
+  LOCALE_SELECTION_PATH,
+  KEYMAP_SELECTION_PATH,
+  TIMEZONE_SELECTION_PATH,
+} from "~/routes/l10n";
 import { _ } from "~/i18n";
 import { useL10n } from "~/queries/l10n";
 
 const Section = ({ label, value, children }) => {
   return (
-    <CardField
-      label={label}
-      value={value}
-    >
-      <CardField.Content>
-        {children}
-      </CardField.Content>
+    <CardField label={label} value={value}>
+      <CardField.Content>{children}</CardField.Content>
     </CardField>
   );
 };
@@ -46,11 +45,7 @@ const Section = ({ label, value, children }) => {
  * @component
  */
 export default function L10nPage() {
-  const {
-    selectedLocale: locale,
-    selectedTimezone: timezone,
-    selectedKeymap: keymap
-  } = useL10n();
+  const { selectedLocale: locale, selectedTimezone: timezone, selectedKeymap: keymap } = useL10n();
 
   return (
     <>
@@ -72,10 +67,7 @@ export default function L10nPage() {
           </GalleryItem>
 
           <GalleryItem>
-            <Section
-              label={_("Keyboard")}
-              value={keymap ? keymap.name : _("Not selected yet")}
-            >
+            <Section label={_("Keyboard")} value={keymap ? keymap.name : _("Not selected yet")}>
               <ButtonLink to={KEYMAP_SELECTION_PATH} isPrimary={!keymap}>
                 {keymap ? _("Change") : _("Select")}
               </ButtonLink>
@@ -85,7 +77,7 @@ export default function L10nPage() {
           <GalleryItem>
             <Section
               label={_("Time zone")}
-              value={timezone ? (timezone.parts || []).join(' - ') : _("Not selected yet")}
+              value={timezone ? (timezone.parts || []).join(" - ") : _("Not selected yet")}
             >
               <ButtonLink to={TIMEZONE_SELECTION_PATH} isPrimary={!timezone}>
                 {timezone ? _("Change") : _("Select")}

@@ -59,7 +59,11 @@ const FilesystemLabel = ({ item }) => {
   const label = device.filesystem?.label;
   if (!label) return null;
 
-  return <Label isCompact><b>{label}</b></Label>;
+  return (
+    <Label isCompact>
+      <b>{label}</b>
+    </Label>
+  );
 };
 
 /**
@@ -88,8 +92,7 @@ const DeviceDetails = ({ item }) => {
   if (!device) return _("Unused space");
 
   const renderContent = (device) => {
-    if (!device.partitionTable && device.systems?.length > 0)
-      return device.systems.join(", ");
+    if (!device.partitionTable && device.systems?.length > 0) return device.systems.join(", ");
 
     return device.description;
   };
@@ -100,7 +103,9 @@ const DeviceDetails = ({ item }) => {
   };
 
   return (
-    <div>{renderContent(device)} <FilesystemLabel item={device} /> {renderPTableType(device)}</div>
+    <div>
+      {renderContent(device)} <FilesystemLabel item={device} /> {renderPTableType(device)}
+    </div>
   );
 };
 

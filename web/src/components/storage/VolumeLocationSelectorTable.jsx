@@ -22,11 +22,14 @@
 // @ts-check
 
 import React from "react";
-import { Chip, Split } from '@patternfly/react-core';
+import { Chip, Split } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
 import {
-  DeviceName, DeviceDetails, DeviceSize, toStorageDevice
+  DeviceName,
+  DeviceDetails,
+  DeviceSize,
+  toStorageDevice,
 } from "~/components/storage/device-utils";
 import { ExpandableSelector } from "~/components/core";
 
@@ -51,13 +54,13 @@ const deviceUsers = (item, targetDevices, volumes) => {
   const device = toStorageDevice(item);
   if (!device) return [];
 
-  const isTargetDevice = !!targetDevices.find(d => d.name === device.name);
-  const volumeUsers = volumes.filter(v => v.targetDevice?.name === device.name);
+  const isTargetDevice = !!targetDevices.find((d) => d.name === device.name);
+  const volumeUsers = volumes.filter((v) => v.targetDevice?.name === device.name);
 
   const users = [];
   if (isTargetDevice) users.push(_("Installation device"));
 
-  return users.concat(volumeUsers.map(v => v.mountPath));
+  return users.concat(volumeUsers.map((v) => v.mountPath));
 };
 
 /**
@@ -69,7 +72,11 @@ const deviceUsers = (item, targetDevices, volumes) => {
 const DeviceUsage = ({ users }) => {
   return (
     <Split hasGutter isWrappable>
-      {users.map((user, index) => <Chip key={index} isReadOnly>{user}</Chip>)}
+      {users.map((user, index) => (
+        <Chip key={index} isReadOnly>
+          {user}
+        </Chip>
+      ))}
     </Split>
   );
 };
@@ -99,8 +106,11 @@ export default function VolumeLocationSelectorTable({
   const columns = [
     { name: _("Device"), value: (item) => <DeviceName item={item} /> },
     { name: _("Details"), value: (item) => <DeviceDetails item={item} /> },
-    { name: _("Usage"), value: (item) => <DeviceUsage users={deviceUsers(item, targetDevices, volumes)} /> },
-    { name: _("Size"), value: (item) => <DeviceSize item={item} />, classNames: "sizes-column" }
+    {
+      name: _("Usage"),
+      value: (item) => <DeviceUsage users={deviceUsers(item, targetDevices, volumes)} />,
+    },
+    { name: _("Size"), value: (item) => <DeviceSize item={item} />, classNames: "sizes-column" },
   ];
 
   return (

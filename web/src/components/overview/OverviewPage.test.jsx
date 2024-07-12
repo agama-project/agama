@@ -32,7 +32,7 @@ jest.mock("~/client");
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
   useProduct: () => ({ selectedProduct: mockSelectedProduct }),
-  useProductChanges: () => jest.fn()
+  useProductChanges: () => jest.fn(),
 }));
 
 jest.mock("~/components/overview/L10nSection", () => () => <div>Localization Section</div>);
@@ -44,9 +44,9 @@ beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       manager: {
-        startInstallation: startInstallationFn
+        startInstallation: startInstallationFn,
       },
-      issues: jest.fn().mockResolvedValue({ isEmpty: true })
+      issues: jest.fn().mockResolvedValue({ isEmpty: true }),
     };
   });
 });

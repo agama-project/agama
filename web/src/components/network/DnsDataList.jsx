@@ -28,9 +28,14 @@
 import React from "react";
 import {
   Button,
-  DataList, DataListItem, DataListItemRow, DataListItemCells, DataListCell, DataListAction,
+  DataList,
+  DataListItem,
+  DataListItemRow,
+  DataListItemCells,
+  DataListCell,
+  DataListAction,
   Flex,
-  Stack
+  Stack,
 } from "@patternfly/react-core";
 
 import { FormLabel } from "~/components/core";
@@ -40,7 +45,7 @@ import { _ } from "~/i18n";
 let index = 0;
 
 export default function DnsDataList({ servers: originalServers, updateDnsServers }) {
-  const servers = originalServers.map(dns => {
+  const servers = originalServers.map((dns) => {
     if (!dns.id) dns.id = index++;
     return dns;
   });
@@ -51,13 +56,13 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
   };
 
   const updateServer = (id, field, value) => {
-    const server = servers.find(dns => dns.id === id);
+    const server = servers.find((dns) => dns.id === id);
     server[field] = value;
     updateDnsServers(servers);
   };
 
-  const deleteServer = id => {
-    const serverIdx = servers.findIndex(dns => dns.id === id);
+  const deleteServer = (id) => {
+    const serverIdx = servers.findIndex((dns) => dns.id === id);
     servers.splice(serverIdx, 1);
     updateDnsServers(servers);
   };
@@ -66,20 +71,26 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
     return (
       <DataListItem key={`address-${id}`}>
         <DataListItemRow>
-          <DataListItemCells dataListCells={[
-            <DataListCell key={`dns-${id}-address`}>
-              <IpAddressInput
-                defaultValue={address}
-                onChange={(_, value) => updateServer(id, "address", value)}
-                // TRANSLATORS: input field name
-                placeholder={_("Server IP")}
-                aria-label={_("Server IP")}
-              />
-            </DataListCell>
-          ]}
+          <DataListItemCells
+            dataListCells={[
+              <DataListCell key={`dns-${id}-address`}>
+                <IpAddressInput
+                  defaultValue={address}
+                  onChange={(_, value) => updateServer(id, "address", value)}
+                  // TRANSLATORS: input field name
+                  placeholder={_("Server IP")}
+                  aria-label={_("Server IP")}
+                />
+              </DataListCell>,
+            ]}
           />
           <DataListAction>
-            <Button size="sm" variant="link" className="remove-link" onClick={() => deleteServer(id)}>
+            <Button
+              size="sm"
+              variant="link"
+              className="remove-link"
+              onClick={() => deleteServer(id)}
+            >
               {/* TRANSLATORS: button label */}
               {_("Remove")}
             </Button>
@@ -98,7 +109,7 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
         <FormLabel>{_("DNS")}</FormLabel>
       </Flex>
       <DataList isCompact title="Addresses data list">
-        {servers.map(server => renderDns(server))}
+        {servers.map((server) => renderDns(server))}
       </DataList>
       <Flex>
         <Button size="sm" variant="secondary" onClick={addServer}>

@@ -42,9 +42,7 @@ describe.skip("SoftwarePatternsSelection", () => {
   });
 
   it("displays the patterns in a group in correct order", async () => {
-    plainRender(
-      <SoftwarePatternsSelection patterns={patterns} />,
-    );
+    plainRender(<SoftwarePatternsSelection patterns={patterns} />);
 
     // the "Base Technologies" pattern group
     const baseGroup = await screen.findByRole("region", { name: "Base Technologies" });
@@ -58,9 +56,7 @@ describe.skip("SoftwarePatternsSelection", () => {
   });
 
   it("displays only the matching patterns when using the search filter", async () => {
-    const { user } = plainRender(
-      <SoftwarePatternsSelection patterns={patterns} />,
-    );
+    const { user } = plainRender(<SoftwarePatternsSelection patterns={patterns} />);
 
     // enter "multimedia" into the search filter
     const searchFilter = await screen.findByRole("textbox", { name: "Search" });
@@ -72,17 +68,16 @@ describe.skip("SoftwarePatternsSelection", () => {
 
     const desktopGroup = screen.getByRole("region", { name: "Desktop Functions" });
     expect(within(desktopGroup).queryByRole("row", { name: /Multimedia/ })).toBeInTheDocument();
-    expect(within(desktopGroup).queryByRole("row", { name: /Office Software/ })).not
-      .toBeInTheDocument();
+    expect(
+      within(desktopGroup).queryByRole("row", { name: /Office Software/ }),
+    ).not.toBeInTheDocument();
   });
 
   it("displays the checkbox depending whether the patter is selected", async () => {
     const pattern = patterns.find((p) => p.name === "yast2_basis");
     pattern.selectedBy = SelectedBy.USER;
 
-    plainRender(
-      <SoftwarePatternsSelection patterns={patterns} />,
-    );
+    plainRender(<SoftwarePatternsSelection patterns={patterns} />);
 
     // the "Base Technologies" pattern group
     const baseGroup = await screen.findByRole("region", { name: "Base Technologies" });

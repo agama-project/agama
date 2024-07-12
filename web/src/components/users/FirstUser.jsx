@@ -21,9 +21,9 @@
 
 import React, { useState, useEffect } from "react";
 import { Skeleton, Split, Stack } from "@patternfly/react-core";
-import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { useNavigate } from "react-router-dom";
-import { RowActions, ButtonLink } from '~/components/core';
+import { RowActions, ButtonLink } from "~/components/core";
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
@@ -35,11 +35,15 @@ const UserNotDefined = ({ actionCb }) => {
         <div>{_("No user defined yet.")}</div>
         <div>
           <strong>
-            {_("Please, be aware that a user must be defined before installing the system to be able to log into it.")}
+            {_(
+              "Please, be aware that a user must be defined before installing the system to be able to log into it.",
+            )}
           </strong>
         </div>
         <Split hasGutter>
-          <ButtonLink to="first" isPrimary>{_("Define a user now")}</ButtonLink>
+          <ButtonLink to="first" isPrimary>
+            {_("Define a user now")}
+          </ButtonLink>
         </Split>
       </Stack>
     </>
@@ -83,14 +87,14 @@ export default function FirstUser() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    cancellablePromise(client.users.getUser()).then(userValues => {
+    cancellablePromise(client.users.getUser()).then((userValues) => {
       setUser(userValues);
       setIsLoading(false);
     });
   }, [client.users, cancellablePromise]);
 
   useEffect(() => {
-    return client.users.onUsersChange(changes => {
+    return client.users.onUsersChange((changes) => {
       if (changes.firstUser !== undefined) {
         setUser(changes.firstUser);
       }
@@ -114,13 +118,13 @@ export default function FirstUser() {
   const actions = [
     {
       title: _("Edit"),
-      onClick: () => navigate('/users/first/edit')
+      onClick: () => navigate("/users/first/edit"),
     },
     {
       title: _("Discard"),
       onClick: remove,
-      isDanger: true
-    }
+      isDanger: true,
+    },
   ];
 
   if (isLoading) {

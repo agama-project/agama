@@ -66,14 +66,16 @@ describe.skip("Section", () => {
 
     it("does not render an icon if not valid icon name is given", () => {
       // @ts-expect-error: Creating the icon name dynamically is unlikely, but let's be safe.
-      const { container } = plainRender(<Section title="Settings" icon={`fake-${Date.now()}-icon`} />);
+      const { container } = plainRender(
+        <Section title="Settings" icon={`fake-${Date.now()}-icon`} />,
+      );
       const icon = container.querySelector("svg");
       expect(icon).toBeNull();
     });
 
     it("renders given description as part of the header", () => {
       plainRender(
-        <Section title="Settings" description="Short explanation to help the user, if needed" />
+        <Section title="Settings" description="Short explanation to help the user, if needed" />,
       );
       const header = screen.getByRole("banner");
       within(header).getByText(/Short explanation/);
@@ -149,18 +151,18 @@ describe.skip("Section", () => {
 
   it("renders given errors", () => {
     plainRender(
-      <Section id="settings" title="Awesome settings" errors={[{ message: "Something went wrong" }]} />
+      <Section
+        id="settings"
+        title="Awesome settings"
+        errors={[{ message: "Something went wrong" }]}
+      />,
     );
 
     screen.getByText("Something went wrong");
   });
 
   it("renders given content", () => {
-    plainRender(
-      <Section title="Settings">
-        A settings summary
-      </Section>
-    );
+    plainRender(<Section title="Settings">A settings summary</Section>);
 
     screen.getByText("A settings summary");
   });

@@ -53,11 +53,7 @@ const Actions = ({ children }) => <>{children}</>;
  *
  * @param {ButtonProps} props
  */
-const Action = ({ children, ...buttonProps }) => (
-  <Button {...buttonProps}>
-    {children}
-  </Button>
-);
+const Action = ({ children, ...buttonProps }) => <Button {...buttonProps}>{children}</Button>;
 
 /**
  * A Popup primary action
@@ -77,7 +73,9 @@ const Action = ({ children, ...buttonProps }) => (
  * @param {ButtonWithoutVariantProps} props
  */
 const PrimaryAction = ({ children, ...actionProps }) => (
-  <Action {...actionProps} variant="primary">{children}</Action>
+  <Action {...actionProps} variant="primary">
+    {children}
+  </Action>
 );
 
 /**
@@ -92,7 +90,9 @@ const PrimaryAction = ({ children, ...actionProps }) => (
  * @param {ButtonWithoutVariantProps} props
  */
 const Confirm = ({ children = _("Confirm"), ...actionProps }) => (
-  <PrimaryAction key="confirm" {...actionProps}>{children}</PrimaryAction>
+  <PrimaryAction key="confirm" {...actionProps}>
+    {children}
+  </PrimaryAction>
 );
 
 /**
@@ -113,7 +113,9 @@ const Confirm = ({ children = _("Confirm"), ...actionProps }) => (
  * @param {ButtonWithoutVariantProps} props
  */
 const SecondaryAction = ({ children, ...actionProps }) => (
-  <Action {...actionProps} variant="secondary">{children}</Action>
+  <Action {...actionProps} variant="secondary">
+    {children}
+  </Action>
 );
 
 /**
@@ -128,7 +130,9 @@ const SecondaryAction = ({ children, ...actionProps }) => (
  * @param {ButtonWithoutVariantProps} props
  */
 const Cancel = ({ children = _("Cancel"), ...actionProps }) => (
-  <SecondaryAction key="cancel" {...actionProps}>{children}</SecondaryAction>
+  <SecondaryAction key="cancel" {...actionProps}>
+    {children}
+  </SecondaryAction>
 );
 
 /**
@@ -149,7 +153,9 @@ const Cancel = ({ children = _("Cancel"), ...actionProps }) => (
  * @param {ButtonWithoutVariantProps} props
  */
 const AncillaryAction = ({ children, ...actionsProps }) => (
-  <Action {...actionsProps} variant="link">{children}</Action>
+  <Action {...actionsProps} variant="link">
+    {children}
+  </Action>
 );
 
 /**

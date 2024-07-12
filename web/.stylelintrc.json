@@ -1,7 +1,11 @@
 {
+  "plugins": [
+    "stylelint-prettier"
+  ],
   "extends": [
     "stylelint-config-standard",
-    "stylelint-config-standard-scss"
+    "stylelint-config-standard-scss",
+    "stylelint-prettier/recommended"
   ],
   "rules": {
     "at-rule-empty-line-before": null,

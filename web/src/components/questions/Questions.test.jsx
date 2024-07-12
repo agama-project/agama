@@ -29,10 +29,9 @@ import { Questions } from "~/components/questions";
 
 jest.mock("~/client");
 jest.mock("~/components/questions/GenericQuestion", () => () => <div>A Generic question mock</div>);
-jest.mock(
-  "~/components/questions/LuksActivationQuestion",
-  () => () => <div>A LUKS activation question mock</div>,
-);
+jest.mock("~/components/questions/LuksActivationQuestion", () => () => (
+  <div>A LUKS activation question mock</div>
+));
 
 const handlers = {};
 const genericQuestion = { id: 1, type: "generic" };

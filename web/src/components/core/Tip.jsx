@@ -37,7 +37,7 @@ import { Icon } from "~/components/layout";
  * @param {React.ReactElement} props.description - Details displayed after clicking the label.
  * @param {React.ReactNode} props.children - The content of the label.
  */
-export default function Tip ({ description, children }) {
+export default function Tip({ description, children }) {
   if (description) {
     return (
       <Description description={description}>

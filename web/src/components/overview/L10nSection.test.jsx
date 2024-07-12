@@ -26,7 +26,7 @@ import { L10nSection } from "~/components/overview";
 
 const locales = [
   { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "de_DE.UTF-8", name: "German", territory: "Germany" }
+  { id: "de_DE.UTF-8", name: "German", territory: "Germany" },
 ];
 
 jest.mock("~/queries/l10n", () => ({

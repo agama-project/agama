@@ -30,18 +30,18 @@ const routes = {
   element: <Page />,
   handle: {
     name: N_("Software"),
-    icon: "apps"
+    icon: "apps",
   },
   children: [
     {
       index: true,
-      element: <SoftwarePage />
+      element: <SoftwarePage />,
     },
     {
       path: "patterns/select",
       element: <SoftwarePatternsSelection />,
-    }
-  ]
+    },
+  ],
 };
 
 export default routes;

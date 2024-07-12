@@ -33,7 +33,7 @@ const mockWiredConnection = {
   method6: "manual",
   addresses: ["192.168.122.100/24"],
   nameservers: ["192.168.122.1"],
-  gateway4: "192.168.122.1"
+  gateway4: "192.168.122.1",
 };
 
 const mockWirelessConnection = {
@@ -44,9 +44,9 @@ const mockWirelessConnection = {
     passworkd: "agama.test",
     security: "wpa-psk",
     ssid: "Agama",
-    mode: "infrastructure"
+    mode: "infrastructure",
   },
-  status: "down"
+  status: "down",
 };
 
 const mockConnection = {
@@ -57,14 +57,14 @@ const mockConnection = {
   method6: "manual",
   addresses: [{ address: "192.168.122.100", prefix: 24 }],
   nameservers: ["192.168.122.1"],
-  gateway4: "192.168.122.1"
+  gateway4: "192.168.122.1",
 };
 
 const mockSettings = {
   hostname: "localhost.localdomain",
   connectivity: true,
   wireless_enabled: true,
-  networking_enabled: true
+  networking_enabled: true,
 };
 
 const mockJsonFn = jest.fn();
@@ -93,7 +93,7 @@ describe("NetworkClient", () => {
       const client = new NetworkClient(http);
       mockJsonFn.mockResolvedValue([mockWiredConnection, mockWirelessConnection]);
       const connections = await client.connections();
-      const eth0 = connections.find(c => c.id === "eth0");
+      const eth0 = connections.find((c) => c.id === "eth0");
       expect(eth0).toEqual(mockConnection);
     });
   });

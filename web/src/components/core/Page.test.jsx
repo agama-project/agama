@@ -48,7 +48,7 @@ describe.skip("Page", () => {
     // if defined outside, the mock is cleared automatically
     createClient.mockImplementation(() => {
       return {
-        l10n: l10nClientMock
+        l10n: l10nClientMock,
       };
     });
   });
@@ -95,7 +95,7 @@ describe.skip("Page", () => {
       <Page>
         <section>Page content</section>
       </Page>,
-      { withL10n: true }
+      { withL10n: true },
     );
 
     screen.getByText("Page content");
@@ -112,11 +112,11 @@ describe.skip("Page", () => {
           </Page.Menu.Option>
         </Page.Menu>
       </Page>,
-      { withL10n: true }
+      { withL10n: true },
     );
 
     // Sidebar is rendering it's own header, let's ignore it
-    const [header,] = screen.getAllByRole("banner");
+    const [header] = screen.getAllByRole("banner");
     const menuButton = within(header).getByRole("button", { name: "Testing menu" });
     await user.click(menuButton);
     screen.getByRole("menuitem", { name: "Switch to advanced mode" });
@@ -130,11 +130,11 @@ describe.skip("Page", () => {
           <Page.Action>Discard</Page.Action>
         </Page.Actions>
       </Page>,
-      { withL10n: true }
+      { withL10n: true },
     );
 
     // Sidebar is rendering it's own footer, let's ignore it
-    const [footer,] = screen.getAllByRole("contentinfo");
+    const [footer] = screen.getAllByRole("contentinfo");
     within(footer).getByRole("button", { name: "Save" });
     within(footer).getByRole("button", { name: "Discard" });
   });
@@ -167,7 +167,7 @@ describe.skip("Page.Actions", () => {
     plainRender(
       <Page.Actions>
         <button>Plain action</button>
-      </Page.Actions>
+      </Page.Actions>,
     );
 
     screen.getByRole("button", { name: "Plain action" });
@@ -185,7 +185,7 @@ describe.skip("Page.Menu", () => {
             <>The menu entry</>
           </Page.Menu.Option>
         </Page.Menu.Options>
-      </Page.Menu>
+      </Page.Menu>,
     );
 
     screen.getByRole("button", { name: "Show page menu" });
@@ -223,7 +223,9 @@ describe.skip("Page.Action", () => {
     it("triggers form submission if it's a submit action and has an associated form", async () => {
       // NOTE: using preventDefault here to avoid a jsdom error
       // Error: Not implemented: HTMLFormElement.prototype.requestSubmit
-      const onSubmit = jest.fn((e) => { e.preventDefault() });
+      const onSubmit = jest.fn((e) => {
+        e.preventDefault();
+      });
 
       const { user } = plainRender(
         <>
@@ -231,7 +233,7 @@ describe.skip("Page.Action", () => {
           <Page.Action type="submit" form="fake-form">
             Send
           </Page.Action>
-        </>
+        </>,
       );
       const button = screen.getByRole("button", { name: "Send" });
       await user.click(button);
@@ -242,20 +244,17 @@ describe.skip("Page.Action", () => {
       const onClick = jest.fn();
       // NOTE: using preventDefault here to avoid a jsdom error
       // Error: Not implemented: HTMLFormElement.prototype.requestSubmit
-      const onSubmit = jest.fn((e) => { e.preventDefault() });
+      const onSubmit = jest.fn((e) => {
+        e.preventDefault();
+      });
 
       const { user } = plainRender(
         <>
           <form onSubmit={onSubmit} id="fake-form" />
-          <Page.Action
-            type="submit"
-            form="fake-form"
-            onClick={onClick}
-            navigateTo="/somewhere"
-          >
+          <Page.Action type="submit" form="fake-form" onClick={onClick} navigateTo="/somewhere">
             Send
           </Page.Action>
-        </>
+        </>,
       );
       const button = screen.getByRole("button", { name: "Send" });
       await user.click(button);

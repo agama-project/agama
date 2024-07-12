@@ -20,8 +20,15 @@
  */
 
 import {
-  classNames, partition, compact, uniq, noop, toValidationError,
-  localConnection, remoteConnection, isObject
+  classNames,
+  partition,
+  compact,
+  uniq,
+  noop,
+  toValidationError,
+  localConnection,
+  remoteConnection,
+  isObject,
 } from "./utils";
 
 describe("noop", () => {
@@ -34,7 +41,7 @@ describe("noop", () => {
 describe("partition", () => {
   it("returns two groups of elements that do and do not satisfy provided filter", () => {
     const numbers = [1, 2, 3, 4, 5, 6];
-    const [odd, even] = partition(numbers, number => number % 2);
+    const [odd, even] = partition(numbers, (number) => number % 2);
 
     expect(odd).toEqual([1, 3, 5]);
     expect(even).toEqual([2, 4, 6]);
@@ -44,28 +51,38 @@ describe("partition", () => {
 describe("compact", () => {
   it("removes null and undefined values", () => {
     expect(compact([])).toEqual([]);
-    expect(compact([undefined, null, "", 0, 1, NaN, false, true]))
-      .toEqual(["", 0, 1, NaN, false, true]);
+    expect(compact([undefined, null, "", 0, 1, NaN, false, true])).toEqual([
+      "",
+      0,
+      1,
+      NaN,
+      false,
+      true,
+    ]);
   });
 });
 
 describe("uniq", () => {
   it("removes duplicated values", () => {
     expect(uniq([])).toEqual([]);
-    expect(uniq([undefined, null, null, 0, 1, NaN, false, true, false, "test"]))
-      .toEqual([undefined, null, 0, 1, NaN, false, true, "test"]);
+    expect(uniq([undefined, null, null, 0, 1, NaN, false, true, false, "test"])).toEqual([
+      undefined,
+      null,
+      0,
+      1,
+      NaN,
+      false,
+      true,
+      "test",
+    ]);
   });
 });
 
 describe("classNames", () => {
   it("join given arguments, ignoring falsy values", () => {
-    expect(classNames(
-      "bg-yellow",
-      false && "h-24",
-      undefined,
-      null,
-      true && "w-24",
-    )).toEqual("bg-yellow w-24");
+    expect(classNames("bg-yellow", false && "h-24", undefined, null, true && "w-24")).toEqual(
+      "bg-yellow w-24",
+    );
   });
 });
 
@@ -75,7 +92,7 @@ describe("toValidationError", () => {
       description: "Issue 1",
       details: "Details issue 1",
       source: "config",
-      severity: "warn"
+      severity: "warn",
     };
     expect(toValidationError(issue)).toEqual({ message: "Issue 1" });
   });
@@ -159,9 +176,7 @@ describe("isObject", () => {
   });
 
   it("returns false when called with a map", () => {
-    const map = new Map([
-      ["dummy", "map"]
-    ]);
+    const map = new Map([["dummy", "map"]]);
     expect(isObject(map)).toBe(false);
   });
 });

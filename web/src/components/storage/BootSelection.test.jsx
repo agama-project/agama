@@ -73,7 +73,7 @@ const sdb = {
   shrinking: { unsupported: ["Resizing is not supported"] },
   systems: [],
   udevIds: [],
-  udevPaths: ["pci-0000:00-19"]
+  udevPaths: ["pci-0000:00-19"],
 };
 
 /** @type {StorageDevice} */
@@ -96,7 +96,7 @@ const sdc = {
   shrinking: { unsupported: ["Resizing is not supported"] },
   systems: [],
   udevIds: [],
-  udevPaths: ["pci-0000:00-19"]
+  udevPaths: ["pci-0000:00-19"],
 };
 
 let props;
@@ -110,7 +110,7 @@ describe.skip("BootSelection", () => {
       bootDevice: undefined,
       defaultBootDevice: undefined,
       onCancel: jest.fn(),
-      onAccept: jest.fn()
+      onAccept: jest.fn(),
     };
   });
 
@@ -205,7 +205,7 @@ describe.skip("BootSelection", () => {
 
       expect(props.onAccept).toHaveBeenCalledWith({
         configureBoot: true,
-        bootDevice: undefined
+        bootDevice: undefined,
       });
     });
   });
@@ -229,7 +229,7 @@ describe.skip("BootSelection", () => {
 
       expect(props.onAccept).toHaveBeenCalledWith({
         configureBoot: true,
-        bootDevice: sdb
+        bootDevice: sdb,
       });
     });
   });
@@ -250,7 +250,7 @@ describe.skip("BootSelection", () => {
 
       expect(props.onAccept).toHaveBeenCalledWith({
         configureBoot: false,
-        bootDevice: undefined
+        bootDevice: undefined,
       });
     });
   });

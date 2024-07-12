@@ -50,9 +50,9 @@ const sda = {
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
-const keepPolicy = SPACE_POLICIES.find(p => p.id === "keep");
-const deletePolicy = SPACE_POLICIES.find(p => p.id === "delete");
-const resizePolicy = SPACE_POLICIES.find(p => p.id === "resize");
+const keepPolicy = SPACE_POLICIES.find((p) => p.id === "keep");
+const deletePolicy = SPACE_POLICIES.find((p) => p.id === "delete");
+const resizePolicy = SPACE_POLICIES.find((p) => p.id === "resize");
 
 const defaultProps = {
   isLoading: false,
@@ -60,7 +60,7 @@ const defaultProps = {
   onActionsClick: jest.fn(),
   system: devices.system,
   staging: devices.staging,
-  actions
+  actions,
 };
 
 describe("ProposalActionsSummary", () => {
@@ -75,7 +75,7 @@ describe("ProposalActionsSummary", () => {
     const props = {
       ...defaultProps,
       policy: deletePolicy,
-      actions: [{ device: 79, subvol: false, delete: true, text: "" }]
+      actions: [{ device: 79, subvol: false, delete: true, text: "" }],
     };
 
     installerRender(<ProposalActionsSummary {...props} />);
@@ -90,7 +90,7 @@ describe("ProposalActionsSummary", () => {
     const props = {
       ...defaultProps,
       policy: resizePolicy,
-      actions: [{ device: 79, subvol: false, delete: false, resize: true, text: "" }]
+      actions: [{ device: 79, subvol: false, delete: false, resize: true, text: "" }],
     };
 
     installerRender(<ProposalActionsSummary {...props} />);

@@ -23,7 +23,14 @@
 
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Button, Flex, Form, FormGroup, FormSelect, FormSelectOption } from "@patternfly/react-core";
+import {
+  Button,
+  Flex,
+  Form,
+  FormGroup,
+  FormSelect,
+  FormSelectOption,
+} from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
@@ -47,7 +54,7 @@ export default function InstallerOptions() {
     language: initialLanguage,
     keymap: initialKeymap,
     changeLanguage,
-    changeKeymap
+    changeKeymap,
   } = useInstallerL10n();
   const [language, setLanguage] = useState(initialLanguage);
   const [keymap, setKeymap] = useState(initialKeymap);
@@ -85,16 +92,10 @@ export default function InstallerOptions() {
         aria-label={_("Show installer options")}
       />
 
-      <Popup
-        isOpen={isOpen}
-        title={_("Installer options")}
-      >
+      <Popup isOpen={isOpen} title={_("Installer options")}>
         <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
           <Form id="installer-l10n" onSubmit={onSubmit}>
-            <FormGroup
-              fieldId="language"
-              label={_("Language")}
-            >
+            <FormGroup fieldId="language" label={_("Language")}>
               <FormSelect
                 id="language"
                 name="language"
@@ -106,35 +107,40 @@ export default function InstallerOptions() {
                 {Object.keys(supportedLanguages)
                   .sort()
                   .map((id, index) => (
-                    <FormSelectOption key={index} value={id} label={supportedLanguages[id]} />)
-                  )}
+                    <FormSelectOption key={index} value={id} label={supportedLanguages[id]} />
+                  ))}
               </FormSelect>
             </FormGroup>
 
-            <FormGroup
-              fieldId="keymap"
-              label={_("Keyboard layout")}
-            >
-              {localConnection()
-                ? (
-                  <FormSelect
-                    id="keymap"
-                    name="keymap"
-                    label={_("Keyboard layout")}
-                    value={keymap}
-                    onChange={(_e, value) => setKeymap(value)}
-                  >
-                    {keymaps.map((keymap, index) => (
-                      <FormSelectOption key={index} value={keymap.id} label={keymap.name} />)
-                    )}
-                  </FormSelect>
-                )
-                : _("Cannot be changed in remote installation")}
+            <FormGroup fieldId="keymap" label={_("Keyboard layout")}>
+              {localConnection() ? (
+                <FormSelect
+                  id="keymap"
+                  name="keymap"
+                  label={_("Keyboard layout")}
+                  value={keymap}
+                  onChange={(_e, value) => setKeymap(value)}
+                >
+                  {keymaps.map((keymap, index) => (
+                    <FormSelectOption key={index} value={keymap.id} label={keymap.name} />
+                  ))}
+                </FormSelect>
+              ) : (
+                _("Cannot be changed in remote installation")
+              )}
             </FormGroup>
           </Form>
         </Flex>
         <Popup.Actions>
-          <Popup.Confirm form="installer-l10n" type="submit" autoFocus isDisabled={inProgress} isLoading={inProgress}>{_("Accept")}</Popup.Confirm>
+          <Popup.Confirm
+            form="installer-l10n"
+            type="submit"
+            autoFocus
+            isDisabled={inProgress}
+            isLoading={inProgress}
+          >
+            {_("Accept")}
+          </Popup.Confirm>
           <Popup.Cancel onClick={close} isDisabled={inProgress} />
         </Popup.Actions>
       </Popup>

@@ -47,10 +47,7 @@ export default function InitiatorSection() {
   return (
     // TRANSLATORS: iSCSI initiator section name
     <Section title={_("Initiator")}>
-      <InitiatorPresenter
-        initiator={initiator}
-        client={client}
-      />
+      <InitiatorPresenter initiator={initiator} client={client} />
     </Section>
   );
 }

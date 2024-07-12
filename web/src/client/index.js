@@ -70,7 +70,7 @@ import { HTTPClient, WSClient } from "./http";
 
 const createIssuesList = (product = [], software = [], storage = [], users = []) => {
   const list = { product, storage, software, users };
-  list.isEmpty = !Object.values(list).some(v => v.length > 0);
+  list.isEmpty = !Object.values(list).some((v) => v.length > 0);
   return list;
 };
 
@@ -80,7 +80,7 @@ const createIssuesList = (product = [], software = [], storage = [], users = [])
  * @param {URL} url - URL of the HTTP API.
  * @return {InstallerClient}
  */
-const createClient = url => {
+const createClient = (url) => {
   const client = new HTTPClient(url);
   const l10n = new L10nClient(client);
   // TODO: unify with the manager client
@@ -115,16 +115,16 @@ const createClient = url => {
    * @param {IssuesHandler} handler - Callback function.
    * @return {() => void} - Function to deregister the callback.
    */
-  const onIssuesChange = handler => {
+  const onIssuesChange = (handler) => {
     const unsubscribeCallbacks = [];
 
-    unsubscribeCallbacks.push(product.onIssuesChange(i => handler({ product: i })));
-    unsubscribeCallbacks.push(storage.onIssuesChange(i => handler({ storage: i })));
-    unsubscribeCallbacks.push(software.onIssuesChange(i => handler({ software: i })));
-    unsubscribeCallbacks.push(users.onIssuesChange(i => handler({ users: i })));
+    unsubscribeCallbacks.push(product.onIssuesChange((i) => handler({ product: i })));
+    unsubscribeCallbacks.push(storage.onIssuesChange((i) => handler({ storage: i })));
+    unsubscribeCallbacks.push(software.onIssuesChange((i) => handler({ software: i })));
+    unsubscribeCallbacks.push(users.onIssuesChange((i) => handler({ users: i })));
 
     return () => {
-      unsubscribeCallbacks.forEach(cb => cb());
+      unsubscribeCallbacks.forEach((cb) => cb());
     };
   };
 
@@ -145,9 +145,9 @@ const createClient = url => {
     onIssuesChange,
     isConnected,
     isRecoverable,
-    onConnect: handler => client.ws().onOpen(handler),
-    onDisconnect: handler => client.ws().onClose(handler),
-    ws: () => client.ws()
+    onConnect: (handler) => client.ws().onOpen(handler),
+    onDisconnect: (handler) => client.ws().onClose(handler),
+    ws: () => client.ws(),
   };
 };
 

@@ -87,22 +87,23 @@ const intToIPString = (address) => {
 };
 
 /** Convert a IP address from text to network byte-order
-*
-* FIXME: Currently it is assumed 'le' ordering which should be read from NetworkManager State
-*
-* @param {string} text - string representing an IPv4 address
-* @return {number} IP address as network byte-order
-*/
+ *
+ * FIXME: Currently it is assumed 'le' ordering which should be read from NetworkManager State
+ *
+ * @param {string} text - string representing an IPv4 address
+ * @return {number} IP address as network byte-order
+ */
 const stringToIPInt = (text) => {
-  if (text === "")
-    return 0;
+  if (text === "") return 0;
 
   const parts = text.split(".");
   const bytes = parts.map((s) => parseInt(s.trim()));
 
   let num = 0;
   const shift = (b) => 0x100 * num + b;
-  for (const n of bytes.reverse()) { num = shift(n) }
+  for (const n of bytes.reverse()) {
+    num = shift(n);
+  }
 
   return num;
 };
@@ -121,11 +122,4 @@ const formatIp = (addr) => {
   }
 };
 
-export {
-  isValidIp,
-  isValidIpPrefix,
-  intToIPString,
-  stringToIPInt,
-  formatIp,
-  ipPrefixFor
-};
+export { isValidIp, isValidIpPrefix, intToIPString, stringToIPInt, formatIp, ipPrefixFor };

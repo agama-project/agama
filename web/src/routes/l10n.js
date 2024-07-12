@@ -23,12 +23,7 @@ import React from "react";
 import { Page } from "~/components/core";
 import { L10nPage, LocaleSelection, KeymapSelection, TimezoneSelection } from "~/components/l10n";
 import { queryClient } from "~/context/app";
-import {
-  configQuery,
-  localesQuery,
-  keymapsQuery,
-  timezonesQuery,
-} from "~/queries/l10n";
+import { configQuery, localesQuery, keymapsQuery, timezonesQuery } from "~/queries/l10n";
 import { N_ } from "~/i18n";
 
 const L10N_PATH = "/l10n";
@@ -41,12 +36,12 @@ const routes = {
   element: <Page />,
   handle: {
     name: N_("Localization"),
-    icon: "globe"
+    icon: "globe",
   },
   children: [
     {
       index: true,
-      element: <L10nPage />
+      element: <L10nPage />,
     },
     {
       path: LOCALE_SELECTION_PATH,
@@ -59,14 +54,9 @@ const routes = {
     {
       path: TIMEZONE_SELECTION_PATH,
       element: <TimezoneSelection />,
-    }
-  ]
+    },
+  ],
 };
 
 export default routes;
-export {
-  L10N_PATH,
-  LOCALE_SELECTION_PATH,
-  KEYMAP_SELECTION_PATH,
-  TIMEZONE_SELECTION_PATH
-};
+export { L10N_PATH, LOCALE_SELECTION_PATH, KEYMAP_SELECTION_PATH, TIMEZONE_SELECTION_PATH };

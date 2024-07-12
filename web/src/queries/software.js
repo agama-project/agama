@@ -24,19 +24,19 @@ import {
   QueryClient,
   useMutation,
   useQueryClient,
-  useSuspenseQueries
+  useSuspenseQueries,
 } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 
 const configQuery = () => ({
   queryKey: ["software/config"],
-  queryFn: () => fetch("/api/software/config").then(res => res.json())
+  queryFn: () => fetch("/api/software/config").then((res) => res.json()),
 });
 
 const productsQuery = () => ({
   queryKey: ["software/products"],
-  queryFn: () => fetch("/api/software/products").then(res => res.json()),
-  staleTime: Infinity
+  queryFn: () => fetch("/api/software/products").then((res) => res.json()),
+  staleTime: Infinity,
 });
 
 /**
@@ -49,19 +49,19 @@ const useConfigMutation = () => {
   const client = useInstallerClient();
 
   const query = {
-    mutationFn: newConfig =>
+    mutationFn: (newConfig) =>
       fetch("/api/software/config", {
         // FIXME: use "PATCH" instead
         method: "PUT",
         body: JSON.stringify(newConfig),
         headers: {
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["software/config"] });
       client.manager.startProbing();
-    }
+    },
   };
   return useMutation(query);
 };
@@ -79,7 +79,7 @@ const useProductChanges = () => {
     if (!client) return;
     const queryClient = new QueryClient();
 
-    return client.ws().onEvent(event => {
+    return client.ws().onEvent((event) => {
       if (event.type === "ProductChanged") {
         queryClient.invalidateQueries({ queryKey: ["software/config"] });
       }
@@ -89,13 +89,13 @@ const useProductChanges = () => {
 
 const useProduct = () => {
   const [{ data: config }, { data: products }] = useSuspenseQueries({
-    queries: [configQuery(), productsQuery()]
+    queries: [configQuery(), productsQuery()],
   });
 
-  const selectedProduct = products.find(p => p.id === config.product);
+  const selectedProduct = products.find((p) => p.id === config.product);
   return {
     products,
-    selectedProduct
+    selectedProduct,
   };
 };
 

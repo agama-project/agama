@@ -42,7 +42,7 @@ beforeEach(() => {
     return {
       manager: {
         fetchLogs: fetchLogsFn,
-      }
+      },
     };
   });
 });
@@ -89,7 +89,7 @@ describe("LogsButton", () => {
     describe("and logs are collected successfully", () => {
       beforeEach(() => {
         fetchLogsFn.mockResolvedValue({
-          blob: jest.fn().mockResolvedValue(new Blob(["testing"]))
+          blob: jest.fn().mockResolvedValue(new Blob(["testing"])),
         });
       });
 
@@ -104,12 +104,12 @@ describe("LogsButton", () => {
         // "Download logs".
         document._createElement = document.createElement;
 
-        const anchorMock = document.createElement('a');
+        const anchorMock = document.createElement("a");
         anchorMock.setAttribute = jest.fn();
         anchorMock.click = jest.fn();
 
         jest.spyOn(document, "createElement").mockImplementation((tag) => {
-          return (tag === 'a') ? anchorMock : document._createElement(tag);
+          return tag === "a" ? anchorMock : document._createElement(tag);
         });
 
         // Now, let's simulate the "Download logs" user click
@@ -117,9 +117,12 @@ describe("LogsButton", () => {
         await user.click(button);
 
         // And test what we're looking for
-        expect(document.createElement).toHaveBeenCalledWith('a');
+        expect(document.createElement).toHaveBeenCalledWith("a");
         expect(anchorMock).toHaveAttribute("href", "fake-blob-url");
-        expect(anchorMock).toHaveAttribute("download", expect.stringMatching(/agama-installation-logs/));
+        expect(anchorMock).toHaveAttribute(
+          "download",
+          expect.stringMatching(/agama-installation-logs/),
+        );
         expect(anchorMock.click).toHaveBeenCalled();
 
         // Be polite and restore document.createElement function,

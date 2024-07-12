@@ -37,7 +37,12 @@ const baseHiddenNetwork = { ssid: undefined, hidden: true };
 
 function WifiSelectorPage() {
   const { network: client } = useInstallerClient();
-  const { connections: initialConnections, devices: initialDevices, accessPoints, networks: initialNetworks } = useLoaderData();
+  const {
+    connections: initialConnections,
+    devices: initialDevices,
+    accessPoints,
+    networks: initialNetworks,
+  } = useLoaderData();
   const [data, saveData] = useLocalStorage("agama-network", { selectedWifi: null });
   // Reevaluate how to keep the state in the future
   const [selected, setSelected] = useState(data.selectedWifi);
@@ -77,14 +82,14 @@ function WifiSelectorPage() {
     // Let's keep the selected network up to date after networks information is
     // updated (e.g., if the network status change);
     if (networks) {
-      setSelected(prev => {
-        return networksFromValues(networks).find(n => n.ssid === prev?.ssid);
+      setSelected((prev) => {
+        return networksFromValues(networks).find((n) => n.ssid === prev?.ssid);
       });
     }
   }, [networks]);
 
   useEffect(() => {
-    setActiveNetwork(networksFromValues(networks).find(d => d.device));
+    setActiveNetwork(networksFromValues(networks).find((d) => d.device));
   }, [networks]);
 
   useEffect(() => {
@@ -107,7 +112,7 @@ function WifiSelectorPage() {
           const current_device = devices.find((d) => d.name === name);
 
           if (data.state === DeviceState.FAILED) {
-            if (current_device && (data.stateReason === 7)) {
+            if (current_device && data.stateReason === 7) {
               console.log(`FAILED Device ${name} updated' with data`, data);
               setNeedAuth(current_device.connection);
             }

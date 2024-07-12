@@ -45,27 +45,27 @@ import { IDLE } from "~/client/status";
  * @param {String} policy Find space policy
  * @returns {String} Translated description
  */
-const msgLvmMultipleDisks = policy => {
+const msgLvmMultipleDisks = (policy) => {
   switch (policy) {
     case "resize":
       // TRANSLATORS: installing on an LVM with multiple physical partitions/disks
       return _(
-        "Install in a new Logical Volume Manager (LVM) volume group shrinking existing partitions at the underlying devices as needed"
+        "Install in a new Logical Volume Manager (LVM) volume group shrinking existing partitions at the underlying devices as needed",
       );
     case "keep":
       // TRANSLATORS: installing on an LVM with multiple physical partitions/disks
       return _(
-        "Install in a new Logical Volume Manager (LVM) volume group without modifying the partitions at the underlying devices"
+        "Install in a new Logical Volume Manager (LVM) volume group without modifying the partitions at the underlying devices",
       );
     case "delete":
       // TRANSLATORS: installing on an LVM with multiple physical partitions/disks
       return _(
-        "Install in a new Logical Volume Manager (LVM) volume group deleting all the content of the underlying devices"
+        "Install in a new Logical Volume Manager (LVM) volume group deleting all the content of the underlying devices",
       );
     case "custom":
       // TRANSLATORS: installing on an LVM with multiple physical partitions/disks
       return _(
-        "Install in a new Logical Volume Manager (LVM) volume group using a custom strategy to find the needed space at the underlying devices"
+        "Install in a new Logical Volume Manager (LVM) volume group using a custom strategy to find the needed space at the underlying devices",
       );
   }
 };
@@ -77,31 +77,31 @@ const msgLvmMultipleDisks = policy => {
  * @returns {String} Translated description with %s placeholder for the device
  * name
  */
-const msgLvmSingleDisk = policy => {
+const msgLvmSingleDisk = (policy) => {
   switch (policy) {
     case "resize":
       // TRANSLATORS: installing on an LVM with a single physical partition/disk,
       // %s will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
       return _(
-        "Install in a new Logical Volume Manager (LVM) volume group on %s shrinking existing partitions as needed"
+        "Install in a new Logical Volume Manager (LVM) volume group on %s shrinking existing partitions as needed",
       );
     case "keep":
       // TRANSLATORS: installing on an LVM with a single physical partition/disk,
       // %s will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
       return _(
-        "Install in a new Logical Volume Manager (LVM) volume group on %s without modifying existing partitions"
+        "Install in a new Logical Volume Manager (LVM) volume group on %s without modifying existing partitions",
       );
     case "delete":
       // TRANSLATORS: installing on an LVM with a single physical partition/disk,
       // %s will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
       return _(
-        "Install in a new Logical Volume Manager (LVM) volume group on %s deleting all its content"
+        "Install in a new Logical Volume Manager (LVM) volume group on %s deleting all its content",
       );
     case "custom":
       // TRANSLATORS: installing on an LVM with a single physical partition/disk,
       // %s will be replaced by a device name and its size (eg. "/dev/sda, 20 GiB")
       return _(
-        "Install in a new Logical Volume Manager (LVM) volume group on %s using a custom strategy to find the needed space"
+        "Install in a new Logical Volume Manager (LVM) volume group on %s using a custom strategy to find the needed space",
       );
   }
 };
@@ -137,7 +137,7 @@ export default function StorageSection() {
   useEffect(loadProposal, [loadProposal]);
 
   useEffect(() => {
-    return client.storage.onStatusChange(status => {
+    return client.storage.onStatusChange((status) => {
       if (status === IDLE) {
         loadProposal();
       }
@@ -146,8 +146,8 @@ export default function StorageSection() {
 
   if (result === undefined) return;
 
-  const label = deviceName => {
-    const device = availableDevices.find(d => d.name === deviceName);
+  const label = (deviceName) => {
+    const device = availableDevices.find((d) => d.name === deviceName);
     return device ? deviceLabel(device) : deviceName;
   };
 
@@ -155,7 +155,11 @@ export default function StorageSection() {
     const pvDevices = result.settings.targetPVDevices;
 
     if (pvDevices.length > 1) {
-      return <Content><span>{msgLvmMultipleDisks(result.settings.spacePolicy)}</span></Content>;
+      return (
+        <Content>
+          <span>{msgLvmMultipleDisks(result.settings.spacePolicy)}</span>
+        </Content>
+      );
     } else {
       const [msg1, msg2] = msgLvmSingleDisk(result.settings.spacePolicy).split("%s");
 
@@ -174,7 +178,7 @@ export default function StorageSection() {
   const targetDevice = result.settings.targetDevice;
   if (!targetDevice) return <Text>{_("No device selected yet")}</Text>;
 
-  const fullMsg = policy => {
+  const fullMsg = (policy) => {
     switch (policy) {
       case "resize":
         // TRANSLATORS: %s will be replaced by the device name and its size,

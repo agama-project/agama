@@ -61,11 +61,7 @@
  * @return {void}
  */
 
-const ISSUES_SOURCES = [
-  "unknown",
-  "system",
-  "config",
-];
+const ISSUES_SOURCES = ["unknown", "system", "config"];
 
 const buildIssue = ({ description, details, source, severity }) => {
   return {
@@ -219,8 +215,7 @@ const WithProgress = (superclass, progress_path, service_name) =>
           finished: false,
         };
       } else {
-        const { steps, currentStep, maxSteps, currentTitle, finished } =
-          await response.json();
+        const { steps, currentStep, maxSteps, currentTitle, finished } = await response.json();
         return {
           steps,
           total: maxSteps,
@@ -266,7 +261,7 @@ const WithProgress = (superclass, progress_path, service_name) =>
 /**
  * @param {string} message - Error message
  */
-const createError = message => {
+const createError = (message) => {
   return { message };
 };
 

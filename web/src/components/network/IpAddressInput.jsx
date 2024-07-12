@@ -19,9 +19,9 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from 'react';
-import { isValidIp } from '~/client/network/utils';
-import { TextInput, ValidatedOptions } from '@patternfly/react-core';
+import React, { useState } from "react";
+import { isValidIp } from "~/client/network/utils";
+import { TextInput, ValidatedOptions } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 
 const IpAddressInput = ({ placeholder, onError = () => null, ...props }) => {
@@ -30,10 +30,10 @@ const IpAddressInput = ({ placeholder, onError = () => null, ...props }) => {
   return (
     <TextInput
       // TRANSLATORS: input field name
-      placeholder={ placeholder || _("IP Address")}
+      placeholder={placeholder || _("IP Address")}
       validated={ValidatedOptions[validated]}
       onFocus={() => setValidated("default")}
-      onBlur={e => {
+      onBlur={(e) => {
         const value = e.target.value;
 
         if (value === "" || isValidIp(value)) {

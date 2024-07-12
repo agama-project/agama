@@ -20,7 +20,12 @@
  */
 
 import React from "react";
-import { EmptyState, EmptyStateIcon, EmptyStateBody, EmptyStateHeader } from "@patternfly/react-core";
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateBody,
+  EmptyStateHeader,
+} from "@patternfly/react-core";
 import { Center, Icon } from "~/components/layout";
 import { Page } from "~/components/core";
 import SimpleLayout from "~/SimpleLayout";
@@ -43,16 +48,12 @@ function ServerError() {
               headingLevel="h2"
               icon={<EmptyStateIcon icon={ErrorIcon} />}
             />
-            <EmptyStateBody>
-              {_("Please, check whether it is running.")}
-            </EmptyStateBody>
+            <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
           </EmptyState>
         </Center>
       </Page.MainContent>
       <Page.NextActions>
-        <Page.Action onClick={locationReload}>
-          {_("Reload")}
-        </Page.Action>
+        <Page.Action onClick={locationReload}>{_("Reload")}</Page.Action>
       </Page.NextActions>
     </SimpleLayout>
   );

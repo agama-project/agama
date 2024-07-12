@@ -27,9 +27,9 @@ import { ProposalTransactionalInfo } from "~/components/storage";
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
   useProduct: () => ({
-    selectedProduct : { name: "Test" }
+    selectedProduct: { name: "Test" },
   }),
-  useProductChanges: () => jest.fn()
+  useProductChanges: () => jest.fn(),
 }));
 
 let props;

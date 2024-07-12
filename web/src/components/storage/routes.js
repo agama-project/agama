@@ -34,7 +34,7 @@ import { N_ } from "~/i18n";
 const navigation = [
   // FIXME: use index: true
   { path: "/storage", element: <ProposalPage />, handle: { name: N_("Proposal") } },
-  { path: "iscsi", element: <ISCSIPage />, handle: { name: N_("iSCSI") } }
+  { path: "iscsi", element: <ISCSIPage />, handle: { name: N_("iSCSI") } },
 ];
 
 // if (something) {
@@ -48,7 +48,7 @@ const navigation = [
 const selectors = [
   { path: "target-device", element: <DeviceSelection /> },
   { path: "booting-partition", element: <BootSelection /> },
-  { path: "space-policy", element: <SpacePolicySelection /> }
+  { path: "space-policy", element: <SpacePolicySelection /> },
 ];
 
 const routes = {
@@ -56,12 +56,9 @@ const routes = {
   element: <Page />,
   handle: {
     name: N_("Storage"),
-    icon: "hard_drive"
+    icon: "hard_drive",
   },
-  children: [
-    ...navigation,
-    ...selectors,
-  ]
+  children: [...navigation, ...selectors],
 };
 
 export default routes;

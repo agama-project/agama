@@ -36,7 +36,7 @@ describe("createConnection", () => {
       addresses: [],
       nameservers: [],
       gateway4: "",
-      gateway6: ""
+      gateway6: "",
     });
     expect(connection.wireless).toBeUndefined();
   });
@@ -69,7 +69,7 @@ describe("createAccessPoint", () => {
       ssid: "WIFI1",
       hwAddress: "11:22:33:44:55:66",
       strength: 90,
-      security: []
+      security: [],
     });
   });
 });

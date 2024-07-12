@@ -25,7 +25,7 @@ import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { useConfigMutation, useL10n } from "~/queries/l10n";
-import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 // TODO: Add documentation and typechecking
 // TODO: Evaluate if worth it extracting the selector
@@ -35,7 +35,7 @@ export default function KeyboardSelection() {
   const { keymaps, selectedKeymap: currentKeymap } = useL10n();
   const [selected, setSelected] = useState(currentKeymap.id);
   const [filteredKeymaps, setFilteredKeymaps] = useState(
-    keymaps.sort((k1, k2) => k1.name > k2.name ? 1 : -1)
+    keymaps.sort((k1, k2) => (k1.name > k2.name ? 1 : -1)),
   );
 
   const searchHelp = _("Filter by description or keymap code");
@@ -57,7 +57,8 @@ export default function KeyboardSelection() {
           <>
             <span className={`${textStyles.fontSizeLg}`}>
               <b>{name}</b>
-            </span> <Text component="small">{id}</Text>
+            </span>{" "}
+            <Text component="small">{id}</Text>
           </>
         }
         value={id}
@@ -67,9 +68,7 @@ export default function KeyboardSelection() {
   });
 
   if (keymapsList.length === 0) {
-    keymapsList = (
-      <b>{_("None of the keymaps match the filter.")}</b>
-    );
+    keymapsList = <b>{_("None of the keymaps match the filter.")}</b>;
   }
 
   return (
@@ -81,9 +80,7 @@ export default function KeyboardSelection() {
       <Page.MainContent>
         <Page.CardSection>
           <Form id="keymapSelection" onSubmit={onSubmit}>
-            <FormGroup isStack>
-              {keymapsList}
-            </FormGroup>
+            <FormGroup isStack>{keymapsList}</FormGroup>
           </Form>
         </Page.CardSection>
       </Page.MainContent>

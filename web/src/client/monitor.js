@@ -24,7 +24,8 @@
 import DBusClient from "./dbus";
 
 const NAME_OWNER_CHANGED = {
-  interface: "org.freedesktop.DBus", member: "NameOwnerChanged"
+  interface: "org.freedesktop.DBus",
+  member: "NameOwnerChanged",
 };
 
 /**

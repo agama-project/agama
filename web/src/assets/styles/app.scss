@@ -1,7 +1,11 @@
 // Better alignment for expandable section with a sibling list
 ul.pf-v5-c-list + div.pf-v5-c-expandable-section {
   > button {
-    margin-inline-start: calc(var(--pf-v5-global--spacer--lg) - var(--pf-v5-global--spacer--sm) - var(--pf-v5-global--icon--FontSize--sm));
+    margin-inline-start: calc(
+      var(--pf-v5-global--spacer--lg) - var(--pf-v5-global--spacer--sm) - var(
+          --pf-v5-global--icon--FontSize--sm
+        )
+    );
   }
 
   > div {

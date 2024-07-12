@@ -20,10 +20,10 @@
  */
 
 import React from "react";
-import { MenuToggle } from '@patternfly/react-core';
-import { ActionsColumn } from '@patternfly/react-table';
+import { MenuToggle } from "@patternfly/react-core";
+import { ActionsColumn } from "@patternfly/react-table";
 
-import { Icon } from '~/components/layout';
+import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
 /**

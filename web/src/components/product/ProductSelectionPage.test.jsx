@@ -29,13 +29,13 @@ const products = [
   {
     id: "Tumbleweed",
     name: "openSUSE Tumbleweed",
-    description: "Tumbleweed description..."
+    description: "Tumbleweed description...",
   },
   {
     id: "MicroOS",
     name: "openSUSE MicroOS",
-    description: "MicroOS description"
-  }
+    description: "MicroOS description",
+  },
 ];
 
 jest.mock("~/client");
@@ -44,21 +44,21 @@ jest.mock("~/queries/software", () => ({
   useProduct: () => {
     return {
       products,
-      selectedProduct: products[0]
+      selectedProduct: products[0],
     };
   },
-  useProductChanges: () => jest.fn()
+  useProductChanges: () => jest.fn(),
 }));
 
 const managerMock = {
-  startProbing: jest.fn()
+  startProbing: jest.fn(),
 };
 
 const productMock = {
   getAll: () => Promise.resolve(products),
   getSelected: jest.fn(() => Promise.resolve(products[0])),
   select: jest.fn().mockResolvedValue(),
-  onChange: jest.fn()
+  onChange: jest.fn(),
 };
 
 beforeEach(() => {

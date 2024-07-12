@@ -24,7 +24,7 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { SIZE_METHODS } from '~/components/storage/utils';
+import { SIZE_METHODS } from "~/components/storage/utils";
 import { FsField, MountPathField, SizeOptionsField } from "~/components/storage/VolumeFields";
 
 /**
@@ -49,8 +49,8 @@ const volume = {
     snapshotsAffectSizes: false,
     adjustByRam: false,
     sizeRelevantVolumes: [],
-    productDefined: true
-  }
+    productDefined: true,
+  },
 };
 
 const callbackFn = jest.fn();
@@ -65,7 +65,9 @@ describe("MountPathField", () => {
   });
 
   it("renders given error", () => {
-    plainRender(<MountPathField value="/home" onChange={callbackFn} error="Something went wrong" />);
+    plainRender(
+      <MountPathField value="/home" onChange={callbackFn} error="Something went wrong" />,
+    );
     screen.getByText("Something went wrong");
   });
 
@@ -91,13 +93,15 @@ describe("MountPathField", () => {
 
 describe("SizeOptionsField", () => {
   it("renders radio group with sizing options", () => {
-    plainRender(<SizeOptionsField formData={{ sizeMethod: "fixed" }} volume={volume} onChange={callbackFn} />);
+    plainRender(
+      <SizeOptionsField formData={{ sizeMethod: "fixed" }} volume={volume} onChange={callbackFn} />,
+    );
     screen.getByRole("radiogroup", { name: "Size" });
   });
 
   it("renders 'Fixed' and 'Range' options always but 'Auto' only if volume accepts auto size", () => {
     const { rerender } = plainRender(
-      <SizeOptionsField formData={{ sizeMethod: "fixed" }} volume={volume} onChange={callbackFn} />
+      <SizeOptionsField formData={{ sizeMethod: "fixed" }} volume={volume} onChange={callbackFn} />,
     );
     const group = screen.getByRole("radiogroup", { name: "Size" });
     within(group).getByRole("radio", { name: "Fixed" });
@@ -109,7 +113,7 @@ describe("SizeOptionsField", () => {
         formData={{ sizeMethod: "fixed" }}
         volume={{ ...volume, outline: { ...volume.outline, supportAutoSize: true } }}
         onChange={callbackFn}
-      />
+      />,
     );
     within(group).getByRole("radio", { name: "Auto" });
     within(group).getByRole("radio", { name: "Fixed" });
@@ -123,16 +127,17 @@ describe("SizeOptionsField", () => {
         volume={{ ...volume, outline: { ...volume.outline, supportAutoSize: true } }}
         onChange={callbackFn}
         isDisabled
-      />
+      />,
     );
     const group = screen.getByRole("radiogroup", { name: "Size" });
-    within(group).getAllByRole("radio")
-      .forEach(option => expect(option).toBeDisabled());
+    within(group)
+      .getAllByRole("radio")
+      .forEach((option) => expect(option).toBeDisabled());
   });
 
   it("calls given callback when user changes selected option", async () => {
     const { user } = plainRender(
-      <SizeOptionsField formData={{ sizeMethod: "fixed" }} volume={volume} onChange={callbackFn} />
+      <SizeOptionsField formData={{ sizeMethod: "fixed" }} volume={volume} onChange={callbackFn} />,
     );
     const group = screen.getByRole("radiogroup", { name: "Size" });
     const rangeOption = within(group).getByRole("radio", { name: "Range" });
@@ -148,7 +153,7 @@ describe("SizeOptionsField", () => {
 describe("FsField", () => {
   it("renders control for selecting a file system, with the given value as initial selection", async () => {
     const { user, rerender } = plainRender(
-      <FsField value="XFS" volume={volume} onChange={callbackFn} />
+      <FsField value="XFS" volume={volume} onChange={callbackFn} />,
     );
     let button = screen.getByRole("button", { name: "File system type" });
     await user.click(button);
@@ -163,7 +168,7 @@ describe("FsField", () => {
         value="Ext4"
         volume={{ ...volume, outline: { ...volume.outline, fsTypes: ["Btrfs", "Ext4"] } }}
         onChange={callbackFn}
-      />
+      />,
     );
     button = screen.getByRole("button", { name: "File system type" });
     await user.click(button);
@@ -175,17 +180,13 @@ describe("FsField", () => {
   });
 
   it("renders control as disabled when isDisabled is given", () => {
-    plainRender(
-      <FsField value="XFS" volume={volume} onChange={callbackFn} isDisabled />
-    );
+    plainRender(<FsField value="XFS" volume={volume} onChange={callbackFn} isDisabled />);
     const button = screen.getByRole("button", { name: "File system type" });
     expect(button).toBeDisabled();
   });
 
   it("calls given callback when user clicks on an option", async () => {
-    const { user } = plainRender(
-      <FsField value="XFS" volume={volume} onChange={callbackFn} />
-    );
+    const { user } = plainRender(<FsField value="XFS" volume={volume} onChange={callbackFn} />);
     const button = screen.getByRole("button", { name: "File system type" });
     await user.click(button);
     const ext4Option = screen.getByRole("option", { name: "Ext4" });

@@ -64,29 +64,26 @@ export default function ProductRegistrationPage() {
     <>
       <Page.MainContent>
         <h3>{sprintf(_("Register %s"), selectedProduct.name)}</h3>
-        {
-          error &&
+        {error && (
           <Alert variant="warning" isInline title={_("Something went wrong")}>
             <p>{error}</p>
           </Alert>
-        }
+        )}
         <Form id="productRegistrationForm" onSubmit={onSubmit}>
           <FormGroup fieldId="regCode" label={_("Registration code")} isRequired>
             <PasswordInput id="regCode" value={code} onChange={(_, v) => setCode(v)} />
           </FormGroup>
           <FormGroup fieldId="email" label={_("Email")}>
-            <EmailInput
-              id="email"
-              value={email}
-              onChange={(_, v) => setEmail(v)}
-            />
+            <EmailInput id="email" value={email} onChange={(_, v) => setEmail(v)} />
           </FormGroup>
         </Form>
       </Page.MainContent>
 
       <Page.NextActions>
         <Page.CancelAction onClick={onCancel} />
-        <Page.Action type="submit" form="productRegistrationForm">{_("Accept")}</Page.Action>
+        <Page.Action type="submit" form="productRegistrationForm">
+          {_("Accept")}
+        </Page.Action>
       </Page.NextActions>
     </>
   );

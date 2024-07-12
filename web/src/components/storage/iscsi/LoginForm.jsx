@@ -20,10 +20,7 @@
  */
 
 import React, { useState } from "react";
-import {
-  Alert,
-  Form, FormGroup, FormSelect, FormSelectOption
-} from "@patternfly/react-core";
+import { Alert, Form, FormGroup, FormSelect, FormSelectOption } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
@@ -36,7 +33,7 @@ export default function LoginForm({ node, onSubmit: onSubmitProp, onCancel }) {
     password: "",
     reverseUsername: "",
     reversePassword: "",
-    startup: "onboot"
+    startup: "onboot",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -68,10 +65,11 @@ export default function LoginForm({ node, onSubmit: onSubmitProp, onCancel }) {
     // TRANSLATORS: %s is replaced by the iSCSI target name
     <Popup isOpen title={sprintf(_("Login %s"), node.target)}>
       <Form id={id} onSubmit={onSubmit}>
-        { isFailed &&
+        {isFailed && (
           <Alert variant="warning" isInline title={_("Something went wrong")}>
             <p>{_("Make sure you provide the correct values")}</p>
-          </Alert> }
+          </Alert>
+        )}
         {/* TRANSLATORS: iSCSI start up mode (on boot/manual/automatic) */}
         <FormGroup fieldId="startup" label={_("Startup")}>
           <FormSelect
@@ -83,18 +81,10 @@ export default function LoginForm({ node, onSubmit: onSubmitProp, onCancel }) {
             {startupFormOptions}
           </FormSelect>
         </FormGroup>
-        <AuthFields
-          data={data}
-          onChange={updateData}
-          onValidate={(v) => setIsValidAuth(v)}
-        />
+        <AuthFields data={data} onChange={updateData} onValidate={(v) => setIsValidAuth(v)} />
       </Form>
       <Popup.Actions>
-        <Popup.Confirm
-          form={id}
-          type="submit"
-          isDisabled={isDisabled}
-        />
+        <Popup.Confirm form={id} type="submit" isDisabled={isDisabled} />
         <Popup.Cancel onClick={onCancel} isDisabled={isLoading} />
       </Popup.Actions>
     </Popup>

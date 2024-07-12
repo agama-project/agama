@@ -27,9 +27,8 @@ import { LuksActivationQuestion } from "~/components/questions";
 let question;
 const answerFn = jest.fn();
 
-const renderQuestion = () => (
-  installerRender(<LuksActivationQuestion question={question} answerCallback={answerFn} />)
-);
+const renderQuestion = () =>
+  installerRender(<LuksActivationQuestion question={question} answerCallback={answerFn} />);
 
 describe("LuksActivationQuestion", () => {
   beforeEach(() => {
@@ -97,7 +96,7 @@ describe("LuksActivationQuestion", () => {
     });
 
     describe("by clicking on 'Skip'", () => {
-      it("calls the callback after setting both, answer and password", async() => {
+      it("calls the callback after setting both, answer and password", async () => {
         const { user } = renderQuestion();
 
         const passwordInput = await screen.findByLabelText("Encryption Password");
@@ -105,13 +104,15 @@ describe("LuksActivationQuestion", () => {
         const skipButton = await screen.findByRole("button", { name: /Skip/ });
         await user.click(skipButton);
 
-        expect(question).toEqual(expect.objectContaining({ password: "notSecret", answer: "skip" }));
+        expect(question).toEqual(
+          expect.objectContaining({ password: "notSecret", answer: "skip" }),
+        );
         expect(answerFn).toHaveBeenCalledWith(question);
       });
     });
 
     describe("by clicking on 'Decrypt'", () => {
-      it("calls the callback after setting both, answer and password", async() => {
+      it("calls the callback after setting both, answer and password", async () => {
         const { user } = renderQuestion();
 
         const passwordInput = await screen.findByLabelText("Encryption Password");
@@ -119,19 +120,23 @@ describe("LuksActivationQuestion", () => {
         const decryptButton = await screen.findByRole("button", { name: /Decrypt/ });
         await user.click(decryptButton);
 
-        expect(question).toEqual(expect.objectContaining({ password: "notSecret", answer: "decrypt" }));
+        expect(question).toEqual(
+          expect.objectContaining({ password: "notSecret", answer: "decrypt" }),
+        );
         expect(answerFn).toHaveBeenCalledWith(question);
       });
     });
 
     describe("submitting the form by pressing 'enter'", () => {
-      it("calls the callback after setting both, answer and password", async() => {
+      it("calls the callback after setting both, answer and password", async () => {
         const { user } = renderQuestion();
 
         const passwordInput = await screen.findByLabelText("Encryption Password");
         await user.type(passwordInput, "notSecret{enter}");
 
-        expect(question).toEqual(expect.objectContaining({ password: "notSecret", answer: "decrypt" }));
+        expect(question).toEqual(
+          expect.objectContaining({ password: "notSecret", answer: "decrypt" }),
+        );
         expect(answerFn).toHaveBeenCalledWith(question);
       });
     });

@@ -92,14 +92,9 @@ export default function InitiatorPresenter({ initiator, client }) {
           <Content />
         </Tbody>
       </Table>
-      {isFormOpen &&
-        (
-          <InitiatorForm
-            initiator={initiator}
-            onSubmit={submitForm}
-            onCancel={closeForm}
-          />
-        )}
+      {isFormOpen && (
+        <InitiatorForm initiator={initiator} onSubmit={submitForm} onCancel={closeForm} />
+      )}
     </>
   );
 }

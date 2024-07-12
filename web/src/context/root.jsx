@@ -31,11 +31,7 @@ import { AuthProvider } from "./auth";
  * @param {React.ReactNode} [props.children] - content to display within the provider.
  */
 function RootProviders({ children }) {
-  return (
-    <AuthProvider>
-      {children}
-    </AuthProvider>
-  );
+  return <AuthProvider>{children}</AuthProvider>;
 }
 
 export { RootProviders };

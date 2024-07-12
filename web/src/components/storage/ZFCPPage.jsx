@@ -22,8 +22,15 @@
 // cspell:ignore wwpns npiv
 
 import React, { useCallback, useEffect, useReducer, useState } from "react";
-import { Button, Skeleton, Stack, Toolbar, ToolbarContent, ToolbarItem } from "@patternfly/react-core";
-import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import {
+  Button,
+  Skeleton,
+  Stack,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
+} from "@patternfly/react-core";
+import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { Popup, RowActions, Section, SectionSkeleton } from "~/components/core";
 import { ZFCPDiskForm } from "~/components/storage";
 import { _ } from "~/i18n";
@@ -62,7 +69,7 @@ class Manager {
    * @returns {Controller[]}
    */
   getActiveControllers() {
-    return this.controllers.filter(c => c.active);
+    return this.controllers.filter((c) => c.active);
   }
 
   /**
@@ -138,7 +145,9 @@ class Manager {
    */
   addLUNs(luns) {
     for (const lun of luns) {
-      const existingLUN = this.luns.find(l => l.channel === lun.channel && l.wwpn === lun.wwpn && l.lun === lun.lun);
+      const existingLUN = this.luns.find(
+        (l) => l.channel === lun.channel && l.wwpn === lun.wwpn && l.lun === lun.lun,
+      );
       if (!existingLUN) this.luns.push(lun);
     }
   }
@@ -149,9 +158,10 @@ class Manager {
    * @returns {LUN[]}
    */
   getInactiveLUNs() {
-    const luns = this.getActiveControllers().map(controller => {
-      return this.luns.filter(l => l.channel === controller.channel &&
-        !this.isLUNActive(l.channel, l.wwpn, l.lun));
+    const luns = this.getActiveControllers().map((controller) => {
+      return this.luns.filter(
+        (l) => l.channel === controller.channel && !this.isLUNActive(l.channel, l.wwpn, l.lun),
+      );
     });
 
     return luns.flat();
@@ -178,7 +188,7 @@ class Manager {
    * @returns {number}
    */
   findController(channel) {
-    return this.controllers.findIndex(c => c.channel === channel);
+    return this.controllers.findIndex((c) => c.channel === channel);
   }
 
   /**
@@ -191,7 +201,7 @@ class Manager {
    * @returns {number}
    */
   findDisk(channel, wwpn, lun) {
-    return this.disks.findIndex(d => d.channel === channel && d.wwpn === wwpn && d.lun === lun);
+    return this.disks.findIndex((d) => d.channel === channel && d.wwpn === wwpn && d.lun === lun);
   }
 }
 
@@ -242,16 +252,14 @@ const DevicesTable = ({ devices = [], columns = [], columnValue = noop, actions 
     const deviceActions = actions(device);
     if (deviceActions.length === 0) return null;
 
-    const items = deviceActions.map((action) => (
-      {
-        title: action.label,
-        onClick: async () => {
-          setLoadingRow(device.id);
-          await action.run();
-          setLoadingRow(undefined);
-        }
-      }
-    ));
+    const items = deviceActions.map((action) => ({
+      title: action.label,
+      onClick: async () => {
+        setLoadingRow(device.id);
+        await action.run();
+        setLoadingRow(undefined);
+      },
+    }));
 
     return <RowActions actions={items} />;
   };
@@ -260,19 +268,29 @@ const DevicesTable = ({ devices = [], columns = [], columnValue = noop, actions 
     <Table variant="compact">
       <Thead>
         <Tr>
-          {columns.map((column) => <Th key={column.id}>{column.label}</Th>)}
+          {columns.map((column) => (
+            <Th key={column.id}>{column.label}</Th>
+          ))}
         </Tr>
       </Thead>
       <Tbody>
         {sortedDevices().map((device) => {
           const RowContent = () => {
             if (loadingRow === device.id) {
-              return <Td colSpan={columns.length + 1}><Skeleton /></Td>;
+              return (
+                <Td colSpan={columns.length + 1}>
+                  <Skeleton />
+                </Td>
+              );
             }
 
             return (
               <>
-                {columns.map(column => <Td key={column.id} dataLabel={column.label}>{columnValue(device, column)}</Td>)}
+                {columns.map((column) => (
+                  <Td key={column.id} dataLabel={column.label}>
+                    {columnValue(device, column)}
+                  </Td>
+                ))}
                 <Td isActionCell key="device-actions">
                   <Actions device={device} />
                 </Td>
@@ -280,7 +298,11 @@ const DevicesTable = ({ devices = [], columns = [], columnValue = noop, actions 
             );
           };
 
-          return <Tr key={device.id}><RowContent /></Tr>;
+          return (
+            <Tr key={device.id}>
+              <RowContent />
+            </Tr>
+          );
         })}
       </Tbody>
     </Table>
@@ -301,7 +323,7 @@ const ControllersTable = ({ client, manager }) => {
   const columns = [
     { id: "channel", label: _("Channel ID") },
     { id: "status", label: _("Status") },
-    { id: "lunScan", label: _("Auto LUNs Scan") }
+    { id: "lunScan", label: _("Auto LUNs Scan") },
   ];
 
   const columnValue = (controller, column) => {
@@ -315,10 +337,8 @@ const ControllersTable = ({ client, manager }) => {
         value = controller.active ? _("Activated") : _("Deactivated");
         break;
       case "lunScan":
-        if (controller.active)
-          value = controller.lunScan ? _("Yes") : _("No");
-        else
-          value = "-";
+        if (controller.active) value = controller.lunScan ? _("Yes") : _("No");
+        else value = "-";
         break;
     }
 
@@ -331,8 +351,8 @@ const ControllersTable = ({ client, manager }) => {
     return [
       {
         label: _("Activate"),
-        run: async () => await cancellablePromise(client.activateController(controller))
-      }
+        run: async () => await cancellablePromise(client.activateController(controller)),
+      },
     ];
   };
 
@@ -361,7 +381,7 @@ const DisksTable = ({ client, manager }) => {
     { id: "name", label: _("Name") },
     { id: "channel", label: _("Channel ID") },
     { id: "wwpn", label: _("WWPN") },
-    { id: "lun", label: _("LUN") }
+    { id: "lun", label: _("LUN") },
   ];
 
   const columnValue = (disk, column) => disk[column.id];
@@ -373,10 +393,9 @@ const DisksTable = ({ client, manager }) => {
     return [
       {
         label: _("Deactivate"),
-        run: async () => await cancellablePromise(
-          client.deactivateDisk(controller, disk.wwpn, disk.lun)
-        )
-      }
+        run: async () =>
+          await cancellablePromise(client.deactivateDisk(controller, disk.wwpn, disk.lun)),
+      },
     ];
   };
 
@@ -418,7 +437,9 @@ const ControllersSection = ({ client, manager, load = noop, isLoading = false })
         <div>{_("No zFCP controllers found.")}</div>
         <div>{_("Please, try to read the zFCP devices again.")}</div>
         {/* TRANSLATORS: button label */}
-        <Button variant="primary" onClick={load}>{_("Read zFCP devices")}</Button>
+        <Button variant="primary" onClick={load}>
+          {_("Read zFCP devices")}
+        </Button>
       </Stack>
     );
   };
@@ -426,18 +447,24 @@ const ControllersSection = ({ client, manager, load = noop, isLoading = false })
   const Content = () => {
     const LUNScanInfo = () => {
       const msg = allowLUNScan
-        // TRANSLATORS: the text in the square brackets [] will be displayed in bold
-        ? _("Automatic LUN scan is [enabled]. Activating a controller which is \
-running in NPIV mode will automatically configures all its LUNs.")
-        // TRANSLATORS: the text in the square brackets [] will be displayed in bold
-        : _("Automatic LUN scan is [disabled]. LUNs have to be manually \
-configured after activating a controller.");
+        ? // TRANSLATORS: the text in the square brackets [] will be displayed in bold
+          _(
+            "Automatic LUN scan is [enabled]. Activating a controller which is \
+running in NPIV mode will automatically configures all its LUNs.",
+          )
+        : // TRANSLATORS: the text in the square brackets [] will be displayed in bold
+          _(
+            "Automatic LUN scan is [disabled]. LUNs have to be manually \
+configured after activating a controller.",
+          );
 
       const [msgStart, msgBold, msgEnd] = msg.split(/[[\]]/);
 
       return (
         <p>
-          {msgStart}<b>{msgBold}</b>{msgEnd}
+          {msgStart}
+          <b>{msgBold}</b>
+          {msgEnd}
         </p>
       );
     };
@@ -474,7 +501,9 @@ const DiskPopup = ({ client, manager, onClose = noop }) => {
   const onSubmit = async (formData) => {
     setIsAcceptDisabled(true);
     const controller = manager.getController(formData.channel);
-    const result = await cancellablePromise(client.activateDisk(controller, formData.wwpn, formData.lun));
+    const result = await cancellablePromise(
+      client.activateDisk(controller, formData.wwpn, formData.lun),
+    );
     setIsAcceptDisabled(false);
 
     if (result === 0) onClose();
@@ -495,11 +524,7 @@ const DiskPopup = ({ client, manager, onClose = noop }) => {
         onLoading={onLoading}
       />
       <Popup.Actions>
-        <Popup.Confirm
-          form={formId}
-          type="submit"
-          isDisabled={isAcceptDisabled}
-        >
+        <Popup.Confirm form={formId} type="submit" isDisabled={isAcceptDisabled}>
           {_("Accept")}
         </Popup.Confirm>
         <Popup.Cancel onClick={onClose} />
@@ -525,9 +550,7 @@ const DisksSection = ({ client, manager, isLoading = false }) => {
 
   const EmptyState = () => {
     const NoActiveControllers = () => {
-      return (
-        <div>{_("Please, try to activate a zFCP controller.")}</div>
-      );
+      return <div>{_("Please, try to activate a zFCP controller.")}</div>;
     };
 
     const NoActiveDisks = () => {
@@ -535,7 +558,9 @@ const DisksSection = ({ client, manager, isLoading = false }) => {
         <>
           <div>{_("Please, try to activate a zFCP disk.")}</div>
           {/* TRANSLATORS: button label */}
-          <Button variant="primary" onClick={openActivate}>{_("Activate zFCP disk")}</Button>
+          <Button variant="primary" onClick={openActivate}>
+            {_("Activate zFCP disk")}
+          </Button>
         </>
       );
     };
@@ -557,7 +582,9 @@ const DisksSection = ({ client, manager, isLoading = false }) => {
           <ToolbarContent>
             <ToolbarItem align={{ default: "alignRight" }}>
               {/* TRANSLATORS: button label */}
-              <Button onClick={openActivate} isDisabled={isDisabled}>{_("Activate new disk")}</Button>
+              <Button onClick={openActivate} isDisabled={isDisabled}>
+                {_("Activate new disk")}
+              </Button>
             </ToolbarItem>
           </ToolbarContent>
         </Toolbar>
@@ -572,12 +599,7 @@ const DisksSection = ({ client, manager, isLoading = false }) => {
     <Section title={_("Disks")}>
       {isLoading && <SectionSkeleton />}
       {!isLoading && manager.disks.length === 0 ? <EmptyState /> : <Content />}
-      {isActivateOpen &&
-        <DiskPopup
-          client={client}
-          manager={manager}
-          onClose={closeActivate}
-        />}
+      {isActivateOpen && <DiskPopup client={client} manager={manager} onClose={closeActivate} />}
     </Section>
   );
 };
@@ -630,7 +652,7 @@ const reducer = (state, action) => {
 
 const initialState = {
   manager: new Manager(),
-  isLoading: true
+  isLoading: true,
 };
 
 /**
@@ -642,17 +664,20 @@ export default function ZFCPPage() {
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const getLUNs = useCallback(async (controller) => {
-    const luns = [];
-    const wwpns = await cancellablePromise(client.zfcp.getWWPNs(controller));
-    for (const wwpn of wwpns) {
-      const all = await cancellablePromise(client.zfcp.getLUNs(controller, wwpn));
-      for (const lun of all) {
-        luns.push({ channel: controller.channel, wwpn, lun });
+  const getLUNs = useCallback(
+    async (controller) => {
+      const luns = [];
+      const wwpns = await cancellablePromise(client.zfcp.getWWPNs(controller));
+      for (const wwpn of wwpns) {
+        const all = await cancellablePromise(client.zfcp.getLUNs(controller, wwpn));
+        for (const lun of all) {
+          luns.push({ channel: controller.channel, wwpn, lun });
+        }
       }
-    }
-    return luns;
-  }, [client.zfcp, cancellablePromise]);
+      return luns;
+    },
+    [client.zfcp, cancellablePromise],
+  );
 
   const load = useCallback(async () => {
     dispatch({ type: "START_LOADING" });
@@ -688,13 +713,13 @@ export default function ZFCPPage() {
             action("ADD_LUNS", { luns });
           }
         }),
-        await client.zfcp.onDiskAdded(d => action("ADD_DISK", { disk: d })),
-        await client.zfcp.onDiskRemoved(d => action("REMOVE_DISK", { disk: d }))
+        await client.zfcp.onDiskAdded((d) => action("ADD_DISK", { disk: d })),
+        await client.zfcp.onDiskRemoved((d) => action("REMOVE_DISK", { disk: d })),
       );
     };
 
     const unsubscribe = () => {
-      subscriptions.forEach(fn => fn());
+      subscriptions.forEach((fn) => fn());
     };
 
     subscribe();
@@ -709,11 +734,7 @@ export default function ZFCPPage() {
         load={load}
         isLoading={state.isLoading}
       />
-      <DisksSection
-        client={client.zfcp}
-        manager={state.manager}
-        isLoading={state.isLoading}
-      />
+      <DisksSection client={client.zfcp} manager={state.manager} isLoading={state.isLoading} />
     </>
   );
 }

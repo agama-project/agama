@@ -29,7 +29,14 @@ import { _ } from "~/i18n";
 // TODO: improve the component to allow working only in uncontrlled mode if
 // needed.
 // TODO: improve the showErrors thingy
-const PasswordAndConfirmationInput = ({ inputRef, showErrors = true, value, onChange, onValidation, isDisabled = false }) => {
+const PasswordAndConfirmationInput = ({
+  inputRef,
+  showErrors = true,
+  value,
+  onChange,
+  onValidation,
+  isDisabled = false,
+}) => {
   const passwordInput = inputRef?.current;
   const [password, setPassword] = useState(value || "");
   const [confirmation, setConfirmation] = useState(value || "");
@@ -80,10 +87,7 @@ const PasswordAndConfirmationInput = ({ inputRef, showErrors = true, value, onCh
           onBlur={() => validate(password, confirmation)}
         />
       </FormGroup>
-      <FormGroup
-        fieldId="passwordConfirmation"
-        label={_("Password confirmation")}
-      >
+      <FormGroup fieldId="passwordConfirmation" label={_("Password confirmation")}>
         <PasswordInput
           id="passwordConfirmation"
           name="passwordConfirmation"

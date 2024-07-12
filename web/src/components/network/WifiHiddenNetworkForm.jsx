@@ -38,12 +38,13 @@ import { _ } from "~/i18n";
 function WifiHiddenNetworkForm({ network, visible, beforeHiding, onSubmitCallback }) {
   return (
     <>
-      {visible &&
+      {visible && (
         <WifiConnectionForm
           network={network}
           onCancel={beforeHiding}
           onSubmitCallback={onSubmitCallback}
-        />}
+        />
+      )}
     </>
   );
 }

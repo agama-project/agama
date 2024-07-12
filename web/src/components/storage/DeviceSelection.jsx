@@ -29,12 +29,13 @@ import {
   Card,
   CardBody,
   Flex,
-  Form, FormGroup,
+  Form,
+  FormGroup,
   PageSection,
   Radio,
-  Stack
+  Stack,
 } from "@patternfly/react-core";
-import a11y from '@patternfly/react-styles/css/utilities/Accessibility/accessibility';
+import a11y from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 
 import { _ } from "~/i18n";
 import { deviceChildren } from "~/components/storage/utils";
@@ -88,8 +89,8 @@ export default function DeviceSelection() {
         load: true,
         availableDevices,
         target: settings.target,
-        targetDevice: availableDevices.find(d => d.name === settings.targetDevice),
-        targetPVDevices: availableDevices.filter(d => settings.targetPVDevices?.includes(d.name)),
+        targetDevice: availableDevices.find((d) => d.name === settings.targetDevice),
+        targetPVDevices: availableDevices.filter((d) => settings.targetPVDevices?.includes(d.name)),
       });
     };
 
@@ -114,7 +115,7 @@ export default function DeviceSelection() {
     const newSettings = {
       target: state.target,
       targetDevice: isTargetDisk ? state.targetDevice?.name : "",
-      targetPVDevices: isTargetNewLvmVg ? state.targetPVDevices.map(d => d.name) : []
+      targetPVDevices: isTargetNewLvmVg ? state.targetPVDevices.map((d) => d.name) : [],
     };
 
     await client.proposal.calculate({ ...settings, ...newSettings });
@@ -133,15 +134,19 @@ export default function DeviceSelection() {
   // TRANSLATORS: description for using plain partitions for installing the
   // system, the text in the square brackets [] is displayed in bold, use only
   // one pair in the translation
-  const [msgStart1, msgBold1, msgEnd1] = _("The file systems will be allocated \
-by default as [new partitions in the selected device].").split(/[[\]]/);
+  const [msgStart1, msgBold1, msgEnd1] = _(
+    "The file systems will be allocated \
+by default as [new partitions in the selected device].",
+  ).split(/[[\]]/);
   // TRANSLATORS: description for using logical volumes for installing the
   // system, the text in the square brackets [] is displayed in bold, use only
   // one pair in the translation
-  const [msgStart2, msgBold2, msgEnd2] = _("The file systems will be allocated \
+  const [msgStart2, msgBold2, msgEnd2] = _(
+    "The file systems will be allocated \
 by default as [logical volumes of a new LVM Volume Group]. The corresponding \
 physical volumes will be created on demand as new partitions at the selected \
-devices.").split(/[[\]]/);
+devices.",
+  ).split(/[[\]]/);
 
   return (
     <>
@@ -224,7 +229,10 @@ devices.").split(/[[\]]/);
                   </div>
                 </Stack>
 
-                <Flex gap={{ default: "gapXs" }} justifyContent={{ default: "justifyContentCenter" }}>
+                <Flex
+                  gap={{ default: "gapXs" }}
+                  justifyContent={{ default: "justifyContentCenter" }}
+                >
                   {_("Prepare more devices by configuring advanced")}
                   <DevicesTechMenu label={_("storage techs")} />
                 </Flex>

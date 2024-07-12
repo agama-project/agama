@@ -50,7 +50,7 @@ const LogsButton = ({ ...props }) => {
    * @param {string} url - the file location to download from
    */
   const autoDownload = (url) => {
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = FILENAME;
 
@@ -60,12 +60,12 @@ const LogsButton = ({ ...props }) => {
     const clickHandler = () => {
       setTimeout(() => {
         URL.revokeObjectURL(url);
-        a.removeEventListener('click', clickHandler);
+        a.removeEventListener("click", clickHandler);
       }, 150);
     };
 
     // Add the click event listener on the anchor element
-    a.addEventListener('click', clickHandler, false);
+    a.addEventListener("click", clickHandler, false);
 
     // Programmatically trigger a click on the anchor element
     // Needed for make the download to happen automatically without attaching the anchor element to
@@ -76,9 +76,7 @@ const LogsButton = ({ ...props }) => {
   const collectAndDownload = () => {
     setError(null);
     setIsCollecting(true);
-    cancellablePromise(
-      client.manager.fetchLogs().then((response) => response.blob()),
-    )
+    cancellablePromise(client.manager.fetchLogs().then((response) => response.blob()))
       .then(URL.createObjectURL)
       .then(autoDownload)
       .catch((error) => {
@@ -104,23 +102,29 @@ const LogsButton = ({ ...props }) => {
       </Button>
 
       <Popup title={_("Download logs")} isOpen={isCollecting || error}>
-        {isCollecting &&
+        {isCollecting && (
           <Alert
             isInline
             isPlain
             variant="info"
-            title={_("The browser will run the logs download as soon as they are ready. Please, be patient.")}
-          />}
+            title={_(
+              "The browser will run the logs download as soon as they are ready. Please, be patient.",
+            )}
+          />
+        )}
 
-        {error &&
+        {error && (
           <Alert
             isInline
             isPlain
             variant="warning"
             title={_("Something went wrong while collecting logs. Please, try again.")}
-          />}
+          />
+        )}
         <Popup.Actions>
-          <Popup.Confirm onClick={close} autoFocus>{_("Close")}</Popup.Confirm>
+          <Popup.Confirm onClick={close} autoFocus>
+            {_("Close")}
+          </Popup.Confirm>
         </Popup.Actions>
       </Popup>
     </>

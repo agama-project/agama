@@ -26,5 +26,5 @@ export const INSTALL = 2;
 export default {
   STARTUP,
   CONFIG,
-  INSTALL
+  INSTALL,
 };

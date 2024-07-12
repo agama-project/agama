@@ -22,8 +22,10 @@
 import React, { useEffect, useState } from "react";
 import {
   CardBody,
-  Grid, GridItem,
-  Hint, HintBody,
+  Grid,
+  GridItem,
+  Hint,
+  HintBody,
   NotificationDrawer,
   NotificationDrawerBody,
   NotificationDrawerList,
@@ -44,7 +46,7 @@ import { _ } from "~/i18n";
 const SCOPE_HEADERS = {
   users: _("Users"),
   storage: _("Storage"),
-  software: _("Software")
+  software: _("Software"),
 };
 
 const ReadyForInstallation = () => (
@@ -65,7 +67,11 @@ const IssuesList = ({ issues }) => {
 
       const link = (
         <NotificationDrawerListItem key={`${idx}-${subIdx}`} variant={variant} isHoverable={false}>
-          <NotificationDrawerListItemHeader title={SCOPE_HEADERS[scope]} variant={variant} headingLevel="h4" />
+          <NotificationDrawerListItemHeader
+            title={SCOPE_HEADERS[scope]}
+            variant={variant}
+            headingLevel="h4"
+          />
           <NotificationDrawerListItemBody>
             <Link to={`/${scope}`}>{issue.description}</Link>
           </NotificationDrawerListItemBody>
@@ -78,9 +84,7 @@ const IssuesList = ({ issues }) => {
   return (
     <NotificationDrawer>
       <NotificationDrawerBody>
-        <NotificationDrawerList>
-          {list}
-        </NotificationDrawerList>
+        <NotificationDrawerList>{list}</NotificationDrawerList>
       </NotificationDrawerBody>
     </NotificationDrawer>
   );
@@ -94,13 +98,11 @@ export default function OverviewPage() {
     client.issues().then(setIssues);
   }, [client]);
 
-  const resultSectionProps =
-    issues.isEmpty
-      ? {}
-      : {
-
+  const resultSectionProps = issues.isEmpty
+    ? {}
+    : {
         label: _("Installation"),
-        description: _("Before installing, please check the following problems.")
+        description: _("Before installing, please check the following problems."),
       };
 
   return (
@@ -111,7 +113,7 @@ export default function OverviewPage() {
             <Hint>
               <HintBody>
                 {_(
-                  "Take your time to check your configuration before starting the installation process."
+                  "Take your time to check your configuration before starting the installation process.",
                 )}
               </HintBody>
             </Hint>
@@ -120,7 +122,7 @@ export default function OverviewPage() {
             <CardField
               label="Overview"
               description={_(
-                "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details."
+                "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.",
               )}
             >
               <CardBody>

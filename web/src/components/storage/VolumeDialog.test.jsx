@@ -50,8 +50,8 @@ const rootVolume = {
     snapshotsAffectSizes: true,
     sizeRelevantVolumes: [],
     adjustByRam: false,
-    productDefined: true
-  }
+    productDefined: true,
+  },
 };
 
 /** @type {Volume} */
@@ -72,8 +72,8 @@ const swapVolume = {
     snapshotsAffectSizes: false,
     adjustByRam: false,
     sizeRelevantVolumes: [],
-    productDefined: true
-  }
+    productDefined: true,
+  },
 };
 
 /** @type {Volume} */
@@ -94,8 +94,8 @@ const homeVolume = {
     snapshotsAffectSizes: false,
     adjustByRam: false,
     sizeRelevantVolumes: [],
-    productDefined: true
-  }
+    productDefined: true,
+  },
 };
 
 /** @type {Volume} */
@@ -116,8 +116,8 @@ const arbitraryVolume = {
     snapshotsAffectSizes: false,
     adjustByRam: false,
     sizeRelevantVolumes: [],
-    productDefined: false
-  }
+    productDefined: false,
+  },
 };
 
 /** @type {VolumeDialogProps} */
@@ -131,7 +131,7 @@ describe("VolumeDialog", () => {
       templates: [],
       isOpen: true,
       onCancel: jest.fn(),
-      onAccept: jest.fn()
+      onAccept: jest.fn(),
     };
   });
 
@@ -150,7 +150,9 @@ describe("VolumeDialog", () => {
         const submit = screen.getByRole("button", { name: "Accept" });
         await user.type(mountPointInput, "/var/log");
         await user.click(submit);
-        expect(props.onAccept).toHaveBeenCalledWith(expect.objectContaining({ mountPath: "/var/log" }));
+        expect(props.onAccept).toHaveBeenCalledWith(
+          expect.objectContaining({ mountPath: "/var/log" }),
+        );
       });
     });
 
@@ -164,8 +166,8 @@ describe("VolumeDialog", () => {
 
     it("does not render a file system picker when it accepts only one", async () => {
       plainRender(<VolumeDialog {...props} volume={swapVolume} />);
-      await waitFor(() => (
-        expect(screen.queryByRole("button", { name: "File system type" })).not.toBeInTheDocument())
+      await waitFor(() =>
+        expect(screen.queryByRole("button", { name: "File system type" })).not.toBeInTheDocument(),
       );
     });
 
@@ -184,8 +186,12 @@ describe("VolumeDialog", () => {
     });
 
     it("uses the min size unit as max size unit when it is missing", () => {
-      plainRender(<VolumeDialog {...props} volume={{ ...homeVolume, minSize: 1.1e+12, maxSize: undefined }} />);
-      const maxSizeUnitSelector = screen.getByRole("combobox", { name: "Unit for the maximum size" });
+      plainRender(
+        <VolumeDialog {...props} volume={{ ...homeVolume, minSize: 1.1e12, maxSize: undefined }} />,
+      );
+      const maxSizeUnitSelector = screen.getByRole("combobox", {
+        name: "Unit for the maximum size",
+      });
       expect(maxSizeUnitSelector).toHaveValue("TiB");
     });
   });
@@ -212,8 +218,8 @@ describe("VolumeDialog", () => {
 
     it("does not render a file system picker when it accepts only one", async () => {
       plainRender(<VolumeDialog {...props} volume={swapVolume} />);
-      await waitFor(() => (
-        expect(screen.queryByRole("button", { name: "File system type" })).not.toBeInTheDocument())
+      await waitFor(() =>
+        expect(screen.queryByRole("button", { name: "File system type" })).not.toBeInTheDocument(),
       );
     });
 
@@ -232,8 +238,12 @@ describe("VolumeDialog", () => {
     });
 
     it("uses the min size unit as max size unit when it is missing", () => {
-      plainRender(<VolumeDialog {...props} volume={{ ...homeVolume, minSize: 1.1e+12, maxSize: undefined }} />);
-      const maxSizeUnitSelector = screen.getByRole("combobox", { name: "Unit for the maximum size" });
+      plainRender(
+        <VolumeDialog {...props} volume={{ ...homeVolume, minSize: 1.1e12, maxSize: undefined }} />,
+      );
+      const maxSizeUnitSelector = screen.getByRole("combobox", {
+        name: "Unit for the maximum size",
+      });
       expect(maxSizeUnitSelector).toHaveValue("TiB");
     });
   });
@@ -265,7 +275,7 @@ describe("VolumeDialog", () => {
       ...rootVolume,
       autoSize: false,
       minSize: parseToBytes("10 GiB"),
-      maxSize: parseToBytes("25 GiB")
+      maxSize: parseToBytes("25 GiB"),
     });
   });
 
@@ -279,7 +289,9 @@ describe("VolumeDialog", () => {
 
   describe("mount point validations", () => {
     it("warns and helps user when entered mount path included in a not existing but predefined volume", async () => {
-      const { user } = plainRender(<VolumeDialog {...props} templates={[homeVolume]} volume={arbitraryVolume} />);
+      const { user } = plainRender(
+        <VolumeDialog {...props} templates={[homeVolume]} volume={arbitraryVolume} />,
+      );
       const mountPointInput = screen.getByRole("textbox", { name: "Mount point" });
       await user.type(mountPointInput, "/home");
       await screen.findByText("There is a predefined file system for /home.");
@@ -291,7 +303,9 @@ describe("VolumeDialog", () => {
     });
 
     it("warns and helps user when entered mount path including in an existing volume", async () => {
-      const { user } = plainRender(<VolumeDialog {...props} volumes={[rootVolume, swapVolume]} volume={arbitraryVolume} />);
+      const { user } = plainRender(
+        <VolumeDialog {...props} volumes={[rootVolume, swapVolume]} volume={arbitraryVolume} />,
+      );
       const mountPointInput = screen.getByRole("textbox", { name: "Mount point" });
       await user.type(mountPointInput, "swap");
       await screen.findByText("There is already a file system for swap.");
@@ -375,10 +389,14 @@ describe("VolumeDialog", () => {
         await user.click(rangeSize);
 
         const minSizeInput = screen.getByRole("textbox", { name: "Minimum desired size" });
-        const minSizeUnitSelector = screen.getByRole("combobox", { name: "Unit for the minimum size" });
+        const minSizeUnitSelector = screen.getByRole("combobox", {
+          name: "Unit for the minimum size",
+        });
         const minSizeMiBUnit = within(minSizeUnitSelector).getByRole("option", { name: "MiB" });
         const maxSizeInput = screen.getByRole("textbox", { name: "Maximum desired size" });
-        const maxSizeUnitSelector = screen.getByRole("combobox", { name: "Unit for the maximum size" });
+        const maxSizeUnitSelector = screen.getByRole("combobox", {
+          name: "Unit for the maximum size",
+        });
         const maxSizeGiBUnit = within(maxSizeUnitSelector).getByRole("option", { name: "GiB" });
         const maxSizeMiBUnit = within(maxSizeUnitSelector).getByRole("option", { name: "MiB" });
 

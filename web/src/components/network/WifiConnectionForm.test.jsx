@@ -31,7 +31,7 @@ jest.mock("~/client");
 Element.prototype.scrollIntoView = jest.fn();
 
 const hiddenNetworkMock = {
-  hidden: true
+  hidden: true,
 };
 
 const networkMock = {
@@ -48,7 +48,7 @@ beforeEach(() => {
     return {
       network: {
         addAndConnectTo: addAndConnectToFn,
-      }
+      },
     };
   });
 });
@@ -100,7 +100,7 @@ describe("WifiConnectionForm", () => {
 
       expect(addAndConnectToFn).toHaveBeenCalledWith(
         "Wi-Fi Network",
-        expect.objectContaining({ security: "wpa-psk", password: "wifi-password" })
+        expect.objectContaining({ security: "wpa-psk", password: "wifi-password" }),
       );
     });
 

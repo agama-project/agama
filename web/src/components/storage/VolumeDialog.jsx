@@ -23,15 +23,20 @@
 
 import React, { useReducer } from "react";
 import { Alert, Button, Form, Split } from "@patternfly/react-core";
-import { Popup } from '~/components/core';
+import { Popup } from "~/components/core";
 import { FsField, MountPathField, SizeOptionsField } from "~/components/storage/VolumeFields";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { compact, useDebounce } from "~/utils";
 import {
-  DEFAULT_SIZE_UNIT, SIZE_METHODS, mountFilesystem, parseToBytes, reuseDevice, splitSize,
-  volumeLabel
-} from '~/components/storage/utils';
+  DEFAULT_SIZE_UNIT,
+  SIZE_METHODS,
+  mountFilesystem,
+  parseToBytes,
+  reuseDevice,
+  splitSize,
+  volumeLabel,
+} from "~/components/storage/utils";
 
 /**
  * @typedef {import ("~/client/storage").Volume} Volume
@@ -96,22 +101,28 @@ const VolumeAlert = ({ volume }) => {
       title: _("The type and size of the file system cannot be edited."),
       // TRANSLATORS: Description of a warning. The first %s is replaced by a device name (e.g.,
       // /dev/vda) and the second %s is replaced by a mount path (e.g., /home).
-      text: sprintf(_("The current file system on %s is selected to be mounted at %s."),
-                    volume.targetDevice.name, volume.mountPath)
+      text: sprintf(
+        _("The current file system on %s is selected to be mounted at %s."),
+        volume.targetDevice.name,
+        volume.mountPath,
+      ),
     };
   } else if (reuseDevice(volume)) {
     alert = {
       // TRANSLATORS: Warning when editing a file system.
       title: _("The size of the file system cannot be edited"),
       // TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
-      text: sprintf(_("The file system is allocated at the device %s."),
-                    volume.targetDevice.name)
+      text: sprintf(_("The file system is allocated at the device %s."), volume.targetDevice.name),
     };
   }
 
   if (!alert) return null;
 
-  return <Alert variant="warning" isInline title={alert.title}>{alert.text}</Alert>;
+  return (
+    <Alert variant="warning" isInline title={alert.title}>
+      {alert.text}
+    </Alert>
+  );
 };
 
 /** @fixme Redesign *Error classes.
@@ -125,7 +136,7 @@ const VolumeAlert = ({ volume }) => {
  *  const checker = new VolumeChecker(volume, volumes, templates);
  *  const error = checker.existingMountPathError();
  *  const message = error?.render(onClick);
-*/
+ */
 
 class MissingMountPathError {
   /**
@@ -254,9 +265,9 @@ class InvalidMaxSizeError {
    * @returns {boolean}
    */
   check() {
-    return this.sizeMethod === SIZE_METHODS.RANGE &&
-      this.maxSize !== -1 &&
-      this.maxSize <= this.minSize;
+    return (
+      this.sizeMethod === SIZE_METHODS.RANGE && this.maxSize !== -1 && this.maxSize <= this.minSize
+    );
   }
 
   /**
@@ -284,7 +295,7 @@ class ExistingVolumeError {
    * @returns {Volume|undefined}
    */
   findVolume() {
-    return this.volumes.find(t => t.mountPath === this.mountPath);
+    return this.volumes.find((t) => t.mountPath === this.mountPath);
   }
 
   /**
@@ -331,7 +342,7 @@ class ExistingTemplateError {
    * @returns {Volume|undefined}
    */
   findTemplate() {
-    return this.templates.find(t => t.mountPath === this.mountPath);
+    return this.templates.find((t) => t.mountPath === this.mountPath);
   }
 
   /**
@@ -537,7 +548,9 @@ const sizeMethodFor = (volume) => {
  */
 const prepareFormData = (volume) => {
   const { size: minSize = "", unit: minSizeUnit = DEFAULT_SIZE_UNIT } = splitSize(volume.minSize);
-  const { size: maxSize = "", unit: maxSizeUnit = minSizeUnit || DEFAULT_SIZE_UNIT } = splitSize(volume.maxSize);
+  const { size: maxSize = "", unit: maxSizeUnit = minSizeUnit || DEFAULT_SIZE_UNIT } = splitSize(
+    volume.maxSize,
+  );
 
   return {
     minSize,
@@ -547,7 +560,7 @@ const prepareFormData = (volume) => {
     sizeMethod: sizeMethodFor(volume),
     mountPath: volume.mountPath,
     fsType: volume.fsType,
-    snapshots: volume.snapshots
+    snapshots: volume.snapshots,
   };
 };
 
@@ -565,7 +578,7 @@ const prepareErrors = () => {
     existingTemplate: null,
     missingSize: null,
     missingMinSize: null,
-    invalidMaxSize: null
+    invalidMaxSize: null,
   };
 };
 
@@ -603,8 +616,8 @@ const reducer = (state, action) => {
         ...state,
         formData: {
           ...state.formData,
-          ...payload
-        }
+          ...payload,
+        },
       };
     }
 
@@ -639,13 +652,13 @@ export default function VolumeDialog({
   templates,
   isOpen,
   onCancel,
-  onAccept
+  onAccept,
 }) {
   /** @type {[VolumeFormState, (action: object) => void]} */
   const [state, dispatch] = useReducer(reducer, currentVolume, createInitialState);
 
   /** @type {Function} */
-  const delayed = useDebounce(f => f(), 1000);
+  const delayed = useDebounce((f) => f(), 1000);
 
   /** @type {(volume: Volume) => void} */
   const changeVolume = (volume) => {
@@ -669,7 +682,7 @@ export default function VolumeDialog({
     return {
       size: state.errors.missingSize,
       minSize: state.errors.missingMinSize,
-      maxSize: state.errors.invalidMaxSize
+      maxSize: state.errors.invalidMaxSize,
     };
   };
 
@@ -693,7 +706,7 @@ export default function VolumeDialog({
       missingMountPath: null,
       invalidMountPath: null,
       existingVolume: null,
-      existingTemplate: null
+      existingTemplate: null,
     };
     updateErrors(errors);
 
@@ -701,7 +714,7 @@ export default function VolumeDialog({
       // Reevaluate in a delayed way.
       const errors = {
         existingVolume: existingVolumeError(mountPath, volumes, changeVolume),
-        existingTemplate: existingTemplateError(mountPath, templates, changeVolume)
+        existingTemplate: existingTemplateError(mountPath, templates, changeVolume),
       };
       updateErrors(errors);
     });
@@ -715,7 +728,7 @@ export default function VolumeDialog({
     const errors = {
       missingSize: null,
       missingMinSize: null,
-      invalidMaxSize: null
+      invalidMaxSize: null,
     };
     updateErrors(errors);
     updateData(data);
@@ -732,11 +745,15 @@ export default function VolumeDialog({
     const errors = {
       missingMountPath: checkMountPath ? missingMountPathError(volume.mountPath) : null,
       invalidMountPath: checkMountPath ? invalidMountPathError(volume.mountPath) : null,
-      existingVolume: checkMountPath ? existingVolumeError(volume.mountPath, volumes, changeVolume) : null,
-      existingTemplate: checkMountPath ? existingTemplateError(volume.mountPath, templates, changeVolume) : null,
+      existingVolume: checkMountPath
+        ? existingVolumeError(volume.mountPath, volumes, changeVolume)
+        : null,
+      existingTemplate: checkMountPath
+        ? existingTemplateError(volume.mountPath, templates, changeVolume)
+        : null,
       missingSize: missingSizeError(formData.sizeMethod, volume.minSize),
       missingMinSize: missingMinSizeError(formData.sizeMethod, volume.minSize),
-      invalidMaxSize: invalidMaxSizeError(formData.sizeMethod, volume.minSize, volume.maxSize)
+      invalidMaxSize: invalidMaxSizeError(formData.sizeMethod, volume.minSize, volume.maxSize),
     };
 
     anyError(errors) ? updateErrors(errors) : onAccept(volume);
@@ -773,11 +790,7 @@ export default function VolumeDialog({
         />
       </Form>
       <Popup.Actions>
-        <Popup.Confirm
-          form="volume-form"
-          type="submit"
-          isDisabled={isDisabled}
-        >
+        <Popup.Confirm form="volume-form" type="submit" isDisabled={isDisabled}>
           {_("Accept")}
         </Popup.Confirm>
         <Popup.Cancel onClick={onCancel} />

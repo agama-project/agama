@@ -34,7 +34,7 @@ const InstallConfirmationPopup = ({ onAccept, onClose }) => {
         <p>
           {_(
             "If you continue, partitions on your hard disk will be modified \
-according to the provided installation settings."
+according to the provided installation settings.",
           )}
         </p>
         <p>{_("Please, cancel and check the settings if you are unsure.")}</p>

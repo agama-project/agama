@@ -25,7 +25,11 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import {
-  DeviceDetails, DeviceName, DeviceSize, FilesystemLabel, toStorageDevice
+  DeviceDetails,
+  DeviceName,
+  DeviceSize,
+  FilesystemLabel,
+  toStorageDevice,
 } from "~/components/storage/device-utils";
 
 /**
@@ -52,9 +56,9 @@ const vda = {
   name: "/dev/vda",
   description: "",
   size: 1024,
-  systems : ["Windows 11", "openSUSE Leap 15.2"],
+  systems: ["Windows 11", "openSUSE Leap 15.2"],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"]
+  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
 
 /** @type {StorageDevice} */
@@ -69,11 +73,11 @@ const vda1 = {
   start: 123,
   encrypted: false,
   shrinking: { supported: 128 },
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: [],
   isEFI: false,
-  filesystem: { sid: 100, type: "ext4", mountPath: "/test", label: "system" }
+  filesystem: { sid: 100, type: "ext4", mountPath: "/test", label: "system" },
 };
 
 /** @type {StorageDevice}  */
@@ -88,9 +92,9 @@ const lvmLv1 = {
   start: 0,
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
-  udevPaths: []
+  udevPaths: [],
 };
 
 describe("FilesystemLabel", () => {
@@ -156,7 +160,7 @@ describe("DeviceDetails", () => {
           type: "gpt",
           partitions: [],
           unpartitionedSize: 0,
-          unusedSlots: []
+          unusedSlots: [],
         };
       });
 

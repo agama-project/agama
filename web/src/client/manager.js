@@ -152,6 +152,6 @@ class ManagerClient extends WithProgress(
   WithStatus(ManagerBaseClient, "/manager/status", MANAGER_SERVICE),
   "/manager/progress",
   MANAGER_SERVICE,
-) { }
+) {}
 
 export { ManagerClient };

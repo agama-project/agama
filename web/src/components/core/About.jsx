@@ -66,32 +66,31 @@ export default function About({
         {buttonText}
       </Button>
 
-      <Popup
-        isOpen={isOpen}
-        title={_("About Agama")}
-      >
+      <Popup isOpen={isOpen} title={_("About Agama")}>
         <Text>
           {
             // TRANSLATORS: content of the "About" popup (1/2)
-            _("Agama is an experimental installer for (open)SUSE systems. It \
+            _(
+              "Agama is an experimental installer for (open)SUSE systems. It \
 is still under development so, please, do not use it in \
 production environments. If you want to give it a try, we \
 recommend using a virtual machine to prevent any possible \
-data loss.")
-          }
-        </Text>
-        <Text>
-          {
-            sprintf(
-              // TRANSLATORS: content of the "About" popup (2/2)
-              // %s is replaced by the project URL
-              _("For more information, please visit the project's repository at %s."),
-              "https://github.com/openSUSE/agama"
+data loss.",
             )
           }
         </Text>
+        <Text>
+          {sprintf(
+            // TRANSLATORS: content of the "About" popup (2/2)
+            // %s is replaced by the project URL
+            _("For more information, please visit the project's repository at %s."),
+            "https://github.com/openSUSE/agama",
+          )}
+        </Text>
         <Popup.Actions>
-          <Popup.Confirm onClick={close} autoFocus>{_("Close")}</Popup.Confirm>
+          <Popup.Confirm onClick={close} autoFocus>
+            {_("Close")}
+          </Popup.Confirm>
         </Popup.Actions>
       </Popup>
     </>
