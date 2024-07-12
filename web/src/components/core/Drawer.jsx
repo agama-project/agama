@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
+// FIXME: rewrite to .tsx
 
 import React, { forwardRef, useImperativeHandle, useState } from "react";
 import {
