@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-30 02:27+0000\n"
+"POT-Creation-Date: 2024-07-10 02:23+0000\n"
 "PO-Revision-Date: 2024-06-26 10:46+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -132,6 +132,23 @@ msgstr "Продукт должен быть зарегистрирован"
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "Найдено %s проблем с зависимостями."
+
+#. Text of the reason preventing to shrink because there is no content.
+#.
+#. @return [String, nil] nil if there is content or there is any other reasons.
+#: service/lib/agama/storage/device_shrinking.rb:151
+msgid ""
+"Neither a file system nor a storage system was detected on the device. In "
+"case the device does contain a file system or a storage system that is not "
+"supported, resizing will most likely cause data loss."
+msgstr ""
+
+#. Text of the reason preventing to shrink because there is no valid minimum size.
+#.
+#. @return [String, nil] nil if there is a minimum size or there is any other reasons.
+#: service/lib/agama/storage/device_shrinking.rb:162
+msgid "Shrinking is not supported by this device"
+msgstr ""
 
 #. Probes storage devices and performs an initial proposal
 #: service/lib/agama/storage/manager.rb:115
