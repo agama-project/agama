@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-30 02:27+0000\n"
+"POT-Creation-Date: 2024-07-14 02:32+0000\n"
 "PO-Revision-Date: 2024-07-03 14:46+0000\n"
 "Last-Translator: Monstorix <monstorix@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://l10n.opensuse.org/projects/"
@@ -19,11 +19,11 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 5.6.2\n"
 
-#: src/MainLayout.jsx:40
+#: src/MainLayout.jsx:52
 msgid "Agama"
 msgstr "Agama"
 
-#: src/MainLayout.jsx:82
+#: src/MainLayout.jsx:94
 msgid "Change product"
 msgstr "更改产品"
 
@@ -31,12 +31,11 @@ msgstr "更改产品"
 msgid "About"
 msgstr "关于"
 
-#: src/components/core/About.jsx:71
+#: src/components/core/About.jsx:69
 msgid "About Agama"
 msgstr "关于 Agama"
 
-#. TRANSLATORS: content of the "About" popup (1/2)
-#: src/components/core/About.jsx:76
+#: src/components/core/About.jsx:74
 msgid ""
 "Agama is an experimental installer for (open)SUSE systems. It is still under "
 "development so, please, do not use it in production environments. If you "
@@ -48,24 +47,15 @@ msgstr ""
 
 #. TRANSLATORS: content of the "About" popup (2/2)
 #. %s is replaced by the project URL
-#: src/components/core/About.jsx:88
+#: src/components/core/About.jsx:86
 #, c-format
 msgid "For more information, please visit the project's repository at %s."
 msgstr "若想了解更多信息，请从 %s 访问项目仓库。"
 
-#: src/components/core/About.jsx:94 src/components/core/FileViewer.jsx:81
-#: src/components/core/LogsButton.jsx:123
-#: src/components/software/SoftwarePatternsSelection.jsx:260
+#: src/components/core/About.jsx:92 src/components/core/LogsButton.jsx:126
+#: src/components/software/SoftwarePatternsSelection.jsx:268
 msgid "Close"
 msgstr "关闭"
-
-#: src/components/core/FileViewer.jsx:66
-msgid "Reading file..."
-msgstr "正在读取文件……"
-
-#: src/components/core/FileViewer.jsx:72
-msgid "Cannot read the file"
-msgstr "无法读取文件"
 
 #: src/components/core/InstallButton.jsx:32
 msgid "Confirm Installation"
@@ -87,9 +77,9 @@ msgid "Continue"
 msgstr "继续"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:97
-#: src/components/core/Popup.jsx:136
-#: src/components/network/WifiConnectionForm.jsx:131
+#: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:90
+#: src/components/core/Popup.jsx:132
+#: src/components/network/WifiConnectionForm.jsx:134
 msgid "Cancel"
 msgstr "取消"
 
@@ -98,26 +88,25 @@ msgstr "取消"
 msgid "Install"
 msgstr "安装"
 
-#: src/components/core/InstallationFinished.jsx:42
+#: src/components/core/InstallationFinished.jsx:48
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr "TPM 密封过程要求新系统直接启动。"
 
-#: src/components/core/InstallationFinished.jsx:47
+#: src/components/core/InstallationFinished.jsx:53
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
 msgstr "如果运行此次安装时使用了本地介质，请在下次启动前移除。"
 
-#: src/components/core/InstallationFinished.jsx:51
+#: src/components/core/InstallationFinished.jsx:57
 msgid "Hide details"
 msgstr "隐藏细节"
 
-#: src/components/core/InstallationFinished.jsx:51
+#: src/components/core/InstallationFinished.jsx:57
 msgid "See more details"
 msgstr "查看更多细节"
 
-#. TRANSLATORS: "Trusted Platform Module" is the name of the technology and "TPM" its abbreviation
-#: src/components/core/InstallationFinished.jsx:55
+#: src/components/core/InstallationFinished.jsx:62
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
@@ -127,27 +116,27 @@ msgstr ""
 "配置可信平台模块 (TPM) 以自动开启加密设备的最后一步将在新系统首次启动时进行。"
 "为此，本机需要直接启动到新的引导加载程序。"
 
-#: src/components/core/InstallationFinished.jsx:97
+#: src/components/core/InstallationFinished.jsx:107
 msgid "Congratulations!"
 msgstr "恭喜！"
 
-#: src/components/core/InstallationFinished.jsx:102
+#: src/components/core/InstallationFinished.jsx:116
 msgid "The installation on your machine is complete."
 msgstr "在您机器上的安装过程已完成。"
 
-#: src/components/core/InstallationFinished.jsx:105
+#: src/components/core/InstallationFinished.jsx:119
 msgid "At this point you can power off the machine."
 msgstr "现在您可以关闭机器电源了。"
 
-#: src/components/core/InstallationFinished.jsx:106
+#: src/components/core/InstallationFinished.jsx:121
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr "现在您可以重启机器并登录到新系统。"
 
-#: src/components/core/InstallationFinished.jsx:113
+#: src/components/core/InstallationFinished.jsx:130
 msgid "Finish"
 msgstr "完成"
 
-#: src/components/core/InstallationFinished.jsx:113
+#: src/components/core/InstallationFinished.jsx:130
 msgid "Reboot"
 msgstr "重启"
 
@@ -155,40 +144,40 @@ msgstr "重启"
 msgid "Installing the system, please wait ..."
 msgstr "正在安装系统，请稍候……"
 
-#: src/components/core/InstallerOptions.jsx:83
+#: src/components/core/InstallerOptions.jsx:92
 msgid "Show installer options"
 msgstr "显示安装程序选项"
 
-#: src/components/core/InstallerOptions.jsx:88
+#: src/components/core/InstallerOptions.jsx:95
 msgid "Installer options"
 msgstr "安装程序选项"
 
-#: src/components/core/InstallerOptions.jsx:94
-#: src/components/core/InstallerOptions.jsx:99
-#: src/components/core/InstallerOptions.jsx:100
-#: src/components/l10n/L10nPage.jsx:67
+#: src/components/core/InstallerOptions.jsx:98
+#: src/components/core/InstallerOptions.jsx:102
+#: src/components/core/InstallerOptions.jsx:103
+#: src/components/l10n/L10nPage.jsx:60
 msgid "Language"
 msgstr "语言"
 
-#: src/components/core/InstallerOptions.jsx:114
-#: src/components/core/InstallerOptions.jsx:121
+#: src/components/core/InstallerOptions.jsx:115
+#: src/components/core/InstallerOptions.jsx:120
 msgid "Keyboard layout"
 msgstr "键盘布局"
 
-#: src/components/core/InstallerOptions.jsx:130
+#: src/components/core/InstallerOptions.jsx:129
 msgid "Cannot be changed in remote installation"
 msgstr "无法在远程安装中更改"
 
-#: src/components/core/InstallerOptions.jsx:135
-#: src/components/network/IpSettingsForm.jsx:210
-#: src/components/product/ProductRegistrationPage.jsx:89
-#: src/components/storage/BootSelection.jsx:228
-#: src/components/storage/DeviceSelection.jsx:240
-#: src/components/storage/EncryptionSettingsDialog.jsx:138
-#: src/components/storage/SpacePolicySelection.jsx:198
-#: src/components/storage/VolumeDialog.jsx:781
-#: src/components/storage/ZFCPPage.jsx:503
-#: src/components/users/FirstUserForm.jsx:285
+#: src/components/core/InstallerOptions.jsx:142
+#: src/components/network/IpSettingsForm.jsx:228
+#: src/components/product/ProductRegistrationPage.jsx:85
+#: src/components/storage/BootSelection.jsx:250
+#: src/components/storage/DeviceSelection.jsx:254
+#: src/components/storage/EncryptionSettingsDialog.jsx:155
+#: src/components/storage/SpacePolicySelection.jsx:200
+#: src/components/storage/VolumeDialog.jsx:794
+#: src/components/storage/ZFCPPage.jsx:528
+#: src/components/users/FirstUserForm.jsx:303
 msgid "Accept"
 msgstr "接受"
 
@@ -197,29 +186,26 @@ msgid ""
 "Before starting the installation, you need to address the following problems:"
 msgstr "在开始安装前，您需要解决下列问题："
 
-#: src/components/core/ListSearch.jsx:51
+#: src/components/core/ListSearch.jsx:48
 msgid "Search"
 msgstr "搜索"
 
-#: src/components/core/LoginPage.jsx:61
+#: src/components/core/LoginPage.jsx:64
 msgid "Could not log in. Please, make sure that the password is correct."
 msgstr "无法登录。请确保密码输入正确。"
 
-#: src/components/core/LoginPage.jsx:63
+#: src/components/core/LoginPage.jsx:66
 msgid "Could not authenticate against the server, please check it."
 msgstr "无法对服务器进行身份验证，请检查。"
 
 #. TRANSLATORS: Title for a form to provide the password for the root user. %s
 #. will be replaced by "root"
-#: src/components/core/LoginPage.jsx:71
+#: src/components/core/LoginPage.jsx:74
 #, c-format
 msgid "Log in as %s"
 msgstr "登录为 %s"
 
-#. TRANSLATORS: description why root password is needed. The text in the
-#. square brackets [] is displayed in bold, use only please, do not translate
-#. it and keep the brackets.
-#: src/components/core/LoginPage.jsx:76
+#: src/components/core/LoginPage.jsx:80
 msgid "The installer requires [root] user privileges."
 msgstr "安装程序要求 [root] 用户权限。"
 
@@ -227,62 +213,62 @@ msgstr "安装程序要求 [root] 用户权限。"
 msgid "Please, provide its password to log in to the system."
 msgstr "请提供其密码以登录系统。"
 
-#: src/components/core/LoginPage.jsx:98
+#: src/components/core/LoginPage.jsx:96
 msgid "Login form"
 msgstr "登录表单"
 
-#: src/components/core/LoginPage.jsx:104
+#: src/components/core/LoginPage.jsx:102
 msgid "Password input"
 msgstr "密码输入"
 
-#: src/components/core/LoginPage.jsx:113
+#: src/components/core/LoginPage.jsx:111
 msgid "Log in"
 msgstr "登录"
 
-#: src/components/core/LoginPage.jsx:124
+#: src/components/core/LoginPage.jsx:121
 msgid "More about this"
 msgstr "更多有关信息"
 
-#: src/components/core/LogsButton.jsx:103
+#: src/components/core/LogsButton.jsx:101
 msgid "Collecting logs..."
 msgstr "正在收集日志……"
 
-#: src/components/core/LogsButton.jsx:103
-#: src/components/core/LogsButton.jsx:106
+#: src/components/core/LogsButton.jsx:101
+#: src/components/core/LogsButton.jsx:104
 msgid "Download logs"
 msgstr "下载日志"
 
-#: src/components/core/LogsButton.jsx:112
+#: src/components/core/LogsButton.jsx:111
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
 msgstr "浏览器将会在日志收集完毕后启动下载过程，请耐心等待。"
 
-#: src/components/core/LogsButton.jsx:120
+#: src/components/core/LogsButton.jsx:121
 msgid "Something went wrong while collecting logs. Please, try again."
 msgstr "收集日志时出现问题，请重试。"
 
-#: src/components/core/PasswordAndConfirmationInput.jsx:48
+#: src/components/core/PasswordAndConfirmationInput.jsx:55
 msgid "Passwords do not match"
 msgstr "密码不匹配"
 
-#: src/components/core/PasswordAndConfirmationInput.jsx:72
-#: src/components/network/WifiConnectionForm.jsx:120
-#: src/components/storage/iscsi/AuthFields.jsx:95
-#: src/components/storage/iscsi/AuthFields.jsx:100
-#: src/components/users/RootAuthMethods.jsx:163
+#: src/components/core/PasswordAndConfirmationInput.jsx:79
+#: src/components/network/WifiConnectionForm.jsx:121
+#: src/components/storage/iscsi/AuthFields.jsx:90
+#: src/components/storage/iscsi/AuthFields.jsx:94
+#: src/components/users/RootAuthMethods.jsx:165
 msgid "Password"
 msgstr "密码"
 
-#: src/components/core/PasswordAndConfirmationInput.jsx:85
+#: src/components/core/PasswordAndConfirmationInput.jsx:90
 msgid "Password confirmation"
 msgstr "确认密码"
 
-#: src/components/core/PasswordInput.jsx:64
+#: src/components/core/PasswordInput.jsx:61
 msgid "Password visibility button"
 msgstr "密码可见性按钮"
 
-#: src/components/core/Popup.jsx:100
+#: src/components/core/Popup.jsx:92
 msgid "Confirm"
 msgstr "确认"
 
@@ -299,117 +285,106 @@ msgstr "已完成"
 msgid "In progress"
 msgstr "进行中"
 
-#: src/components/core/ProgressReport.jsx:70
+#: src/components/core/ProgressReport.jsx:74
 msgid "Pending"
 msgstr "等待中"
 
-#: src/components/core/ProgressReport.jsx:134
+#: src/components/core/ProgressReport.jsx:138
 msgid "Waiting for progress status..."
 msgstr "正在等待进度状态…"
 
 #: src/components/core/RowActions.jsx:64
-#: src/components/storage/PartitionsField.jsx:454
-#: src/components/storage/ProposalActionsSummary.jsx:226
+#: src/components/storage/PartitionsField.jsx:491
+#: src/components/storage/ProposalActionsSummary.jsx:233
 msgid "Actions"
 msgstr "操作"
 
-#: src/components/core/SectionSkeleton.jsx:29
+#: src/components/core/SectionSkeleton.jsx:27
 msgid "Waiting"
 msgstr "正在等候"
 
-#: src/components/core/Selector.jsx:126
-#: src/components/software/SoftwarePatternsSelection.jsx:212
-msgid "auto selected"
-msgstr "自动选择"
-
-#. TRANSLATORS: page title
-#: src/components/core/ServerError.jsx:34
-msgid "Agama Error"
-msgstr "Agama 错误"
-
-#: src/components/core/ServerError.jsx:38
+#: src/components/core/ServerError.jsx:47
 msgid "Cannot connect to Agama server"
 msgstr "无法连接到 Agama 服务器"
 
-#: src/components/core/ServerError.jsx:43
+#: src/components/core/ServerError.jsx:51
 msgid "Please, check whether it is running."
 msgstr "请检查它是否在运行。"
 
-#. TRANSLATORS: button label
-#: src/components/core/ServerError.jsx:51
+#: src/components/core/ServerError.jsx:56
 msgid "Reload"
 msgstr "重载"
 
-#: src/components/l10n/KeyboardSelection.jsx:45
+#: src/components/l10n/KeyboardSelection.jsx:41
 msgid "Filter by description or keymap code"
 msgstr "按描述或键盘映射代码过滤"
 
-#: src/components/l10n/KeyboardSelection.jsx:85
+#: src/components/l10n/KeyboardSelection.jsx:71
 msgid "None of the keymaps match the filter."
 msgstr "没有符合此过滤器的键位映射。"
 
-#: src/components/l10n/KeyboardSelection.jsx:92
+#: src/components/l10n/KeyboardSelection.jsx:77
 msgid "Keyboard selection"
 msgstr "键盘选择"
 
-#: src/components/l10n/KeyboardSelection.jsx:107
-#: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
-#: src/components/l10n/L10nPage.jsx:93
-#: src/components/l10n/LocaleSelection.jsx:107
-#: src/components/l10n/TimezoneSelection.jsx:145
-#: src/components/product/ProductSelectionPage.jsx:101
+#: src/components/l10n/KeyboardSelection.jsx:90
+#: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
+#: src/components/l10n/L10nPage.jsx:83
+#: src/components/l10n/LocaleSelection.jsx:92
+#: src/components/l10n/TimezoneSelection.jsx:125
+#: src/components/product/ProductSelectionPage.jsx:90
 msgid "Select"
 msgstr "选择"
 
-#: src/components/l10n/L10nPage.jsx:60 src/components/l10n/routes.js:34
-#: src/components/overview/L10nSection.jsx:42
+#: src/components/l10n/L10nPage.jsx:53
+#: src/components/overview/L10nSection.jsx:37 src/routes/l10n.js:38
 msgid "Localization"
 msgstr "本地化"
 
-#: src/components/l10n/L10nPage.jsx:68 src/components/l10n/L10nPage.jsx:79
-#: src/components/l10n/L10nPage.jsx:90
+#: src/components/l10n/L10nPage.jsx:61 src/components/l10n/L10nPage.jsx:70
+#: src/components/l10n/L10nPage.jsx:80
 msgid "Not selected yet"
 msgstr "尚未选择"
 
-#: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
-#: src/components/l10n/L10nPage.jsx:93
-#: src/components/network/NetworkPage.jsx:102
-#: src/components/storage/InstallationDeviceField.jsx:105
-#: src/components/storage/ProposalActionsSummary.jsx:228
-#: src/components/users/RootAuthMethods.jsx:94
-#: src/components/users/RootAuthMethods.jsx:107
+#: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
+#: src/components/l10n/L10nPage.jsx:83
+#: src/components/network/NetworkPage.jsx:112
+#: src/components/storage/InstallationDeviceField.jsx:108
+#: src/components/storage/ProposalActionsSummary.jsx:238
+#: src/components/users/RootAuthMethods.jsx:100
+#: src/components/users/RootAuthMethods.jsx:112
 msgid "Change"
 msgstr "更改"
 
-#: src/components/l10n/L10nPage.jsx:78
+#: src/components/l10n/L10nPage.jsx:70
 msgid "Keyboard"
 msgstr "键盘"
 
-#: src/components/l10n/L10nPage.jsx:89
+#: src/components/l10n/L10nPage.jsx:79
 msgid "Time zone"
 msgstr "时区"
 
-#: src/components/l10n/LocaleSelection.jsx:44
+#: src/components/l10n/LocaleSelection.jsx:39
 msgid "Filter by language, territory or locale code"
 msgstr "按语言、地区或区域设定代码过滤"
 
-#: src/components/l10n/LocaleSelection.jsx:84
+#: src/components/l10n/LocaleSelection.jsx:72
 msgid "None of the locales match the filter."
 msgstr "没有符合过滤器的区域设置。"
 
-#: src/components/l10n/LocaleSelection.jsx:91
+#: src/components/l10n/LocaleSelection.jsx:78
 msgid "Locale selection"
 msgstr "区域选择"
 
-#: src/components/l10n/TimezoneSelection.jsx:71
+#: src/components/l10n/TimezoneSelection.jsx:64
 msgid "Filter by territory, time zone code or UTC offset"
 msgstr "按地区、时区代码或 UTC 偏移量过滤"
 
-#: src/components/l10n/TimezoneSelection.jsx:122
+#: src/components/l10n/TimezoneSelection.jsx:101
 msgid "None of the time zones match the filter."
 msgstr "没有符合过滤器的时区。"
 
-#: src/components/l10n/TimezoneSelection.jsx:129
+#: src/components/l10n/TimezoneSelection.jsx:107
 msgid " Timezone selection"
 msgstr " 时区选择"
 
@@ -418,111 +393,111 @@ msgid "Loading installation environment, please wait."
 msgstr "正在载入安装环境，请稍候。"
 
 #. TRANSLATORS: button label
-#: src/components/network/AddressesDataList.jsx:78
-#: src/components/network/DnsDataList.jsx:84
+#: src/components/network/AddressesDataList.jsx:88
+#: src/components/network/DnsDataList.jsx:95
 msgid "Remove"
 msgstr "移除"
 
 #. TRANSLATORS: input field name
-#: src/components/network/AddressesDataList.jsx:90
-#: src/components/network/AddressesDataList.jsx:91
+#: src/components/network/AddressesDataList.jsx:100
+#: src/components/network/AddressesDataList.jsx:101
 #: src/components/network/IpAddressInput.jsx:33
 msgid "IP Address"
 msgstr "IP 地址"
 
 #. TRANSLATORS: input field name
-#: src/components/network/AddressesDataList.jsx:99
-#: src/components/network/AddressesDataList.jsx:100
+#: src/components/network/AddressesDataList.jsx:109
+#: src/components/network/AddressesDataList.jsx:110
 msgid "Prefix length or netmask"
 msgstr "前缀长度或掩码"
 
-#: src/components/network/AddressesDataList.jsx:116
+#: src/components/network/AddressesDataList.jsx:126
 msgid "Add an address"
 msgstr "添加地址"
 
 #. TRANSLATORS: button label
-#: src/components/network/AddressesDataList.jsx:116
+#: src/components/network/AddressesDataList.jsx:126
 msgid "Add another address"
 msgstr "添加另一个地址"
 
-#: src/components/network/AddressesDataList.jsx:121
+#: src/components/network/AddressesDataList.jsx:131
 msgid "Addresses"
 msgstr "地址"
 
-#: src/components/network/AddressesDataList.jsx:123
+#: src/components/network/AddressesDataList.jsx:133
 msgid "Addresses data list"
 msgstr "地址数据列表"
 
 #. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
-#: src/components/network/ConnectionsTable.jsx:67
-#: src/components/network/ConnectionsTable.jsx:95
-#: src/components/storage/ZFCPPage.jsx:361
+#: src/components/network/ConnectionsTable.jsx:64
+#: src/components/network/ConnectionsTable.jsx:92
+#: src/components/storage/ZFCPPage.jsx:381
 #: src/components/storage/iscsi/InitiatorForm.jsx:52
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:68
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:85
-#: src/components/storage/iscsi/NodesPresenter.jsx:100
-#: src/components/storage/iscsi/NodesPresenter.jsx:121
+#: src/components/storage/iscsi/NodesPresenter.jsx:98
+#: src/components/storage/iscsi/NodesPresenter.jsx:119
 msgid "Name"
 msgstr "名称"
 
 #. TRANSLATORS: table header
-#: src/components/network/ConnectionsTable.jsx:69
-#: src/components/network/ConnectionsTable.jsx:96
+#: src/components/network/ConnectionsTable.jsx:66
+#: src/components/network/ConnectionsTable.jsx:93
 msgid "IP addresses"
 msgstr "IP 地址"
 
-#: src/components/network/ConnectionsTable.jsx:77
-#: src/components/network/WifiNetworksListPage.jsx:100
-#: src/components/network/WifiNetworksListPage.jsx:124
-#: src/components/storage/PartitionsField.jsx:320
+#: src/components/network/ConnectionsTable.jsx:74
+#: src/components/network/WifiNetworksListPage.jsx:107
+#: src/components/network/WifiNetworksListPage.jsx:130
+#: src/components/storage/PartitionsField.jsx:347
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:116
+#: src/components/users/FirstUser.jsx:120
 msgid "Edit"
 msgstr "编辑"
 
 #. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:80
-#: src/components/network/IpSettingsForm.jsx:136
+#: src/components/network/ConnectionsTable.jsx:77
+#: src/components/network/IpSettingsForm.jsx:151
 #, c-format
 msgid "Edit connection %s"
 msgstr "编辑连接 %s"
 
-#: src/components/network/ConnectionsTable.jsx:84
-#: src/components/network/WifiNetworksListPage.jsx:103
-#: src/components/network/WifiNetworksListPage.jsx:127
+#: src/components/network/ConnectionsTable.jsx:81
+#: src/components/network/WifiNetworksListPage.jsx:109
+#: src/components/network/WifiNetworksListPage.jsx:137
 msgid "Forget"
 msgstr "忘掉"
 
 #. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:86
+#: src/components/network/ConnectionsTable.jsx:83
 #, c-format
 msgid "Forget connection %s"
 msgstr "忘掉连接 %s"
 
 #. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:101
+#: src/components/network/ConnectionsTable.jsx:98
 #, c-format
 msgid "Actions for connection %s"
 msgstr "对连接 %s 的操作"
 
 #. TRANSLATORS: input field name
-#: src/components/network/DnsDataList.jsx:75
-#: src/components/network/DnsDataList.jsx:76
+#: src/components/network/DnsDataList.jsx:81
+#: src/components/network/DnsDataList.jsx:82
 msgid "Server IP"
 msgstr "服务器 IP"
 
-#: src/components/network/DnsDataList.jsx:93
+#: src/components/network/DnsDataList.jsx:104
 msgid "Add DNS"
 msgstr "添加 DNS"
 
 #. TRANSLATORS: button label
-#: src/components/network/DnsDataList.jsx:93
+#: src/components/network/DnsDataList.jsx:104
 msgid "Add another DNS"
 msgstr "添加另一个 DNS"
 
-#: src/components/network/DnsDataList.jsx:98
+#: src/components/network/DnsDataList.jsx:109
 msgid "DNS"
 msgstr "DNS"
 
@@ -532,81 +507,81 @@ msgid "IP prefix or netmask"
 msgstr "IP 前缀或掩码"
 
 #. TRANSLATORS: error message
-#: src/components/network/IpSettingsForm.jsx:90
+#: src/components/network/IpSettingsForm.jsx:104
 msgid "At least one address must be provided for selected mode"
 msgstr "所选模式要求至少提供一个地址"
 
 #. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
-#: src/components/network/IpSettingsForm.jsx:145
-#: src/components/network/IpSettingsForm.jsx:150
-#: src/components/network/IpSettingsForm.jsx:152
+#: src/components/network/IpSettingsForm.jsx:160
+#: src/components/network/IpSettingsForm.jsx:165
+#: src/components/network/IpSettingsForm.jsx:167
 msgid "Mode"
 msgstr "模式"
 
-#: src/components/network/IpSettingsForm.jsx:156
+#: src/components/network/IpSettingsForm.jsx:174
 msgid "Automatic (DHCP)"
 msgstr "自动（DHCP）"
 
 #. TRANSLATORS: manual network configuration mode with a static IP address
-#: src/components/network/IpSettingsForm.jsx:158
+#: src/components/network/IpSettingsForm.jsx:177
 #: src/components/storage/iscsi/NodeStartupOptions.js:25
 msgid "Manual"
 msgstr "手动"
 
 #. TRANSLATORS: network gateway configuration
-#: src/components/network/IpSettingsForm.jsx:166
-#: src/components/network/IpSettingsForm.jsx:169
+#: src/components/network/IpSettingsForm.jsx:185
+#: src/components/network/IpSettingsForm.jsx:188
 msgid "Gateway"
 msgstr "网关"
 
-#: src/components/network/IpSettingsForm.jsx:178
+#: src/components/network/IpSettingsForm.jsx:196
 msgid "Gateway can be defined only in 'Manual' mode"
 msgstr "网关只能在“手动”模式下配置"
 
-#: src/components/network/NetworkPage.jsx:85
+#: src/components/network/NetworkPage.jsx:93
 msgid "No Wi-Fi supported"
 msgstr "没有 Wi-Fi 支持"
 
-#: src/components/network/NetworkPage.jsx:86
+#: src/components/network/NetworkPage.jsx:95
 msgid ""
 "The system does not support Wi-Fi connections, probably because of missing "
 "or disabled hardware."
 msgstr "系统不支持 WiFi 连接，可能由于硬件缺失或已被禁用。"
 
-#: src/components/network/NetworkPage.jsx:99
+#: src/components/network/NetworkPage.jsx:109
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
 #. TRANSLATORS: button label, connect to a WiFi network
-#: src/components/network/NetworkPage.jsx:102
-#: src/components/network/WifiConnectionForm.jsx:128
-#: src/components/network/WifiNetworksListPage.jsx:97
+#: src/components/network/NetworkPage.jsx:112
+#: src/components/network/WifiConnectionForm.jsx:130
+#: src/components/network/WifiNetworksListPage.jsx:105
 msgid "Connect"
 msgstr "连接"
 
-#: src/components/network/NetworkPage.jsx:109
+#: src/components/network/NetworkPage.jsx:119
 #, c-format
 msgid "Conected to %s"
 msgstr "已连接到 %s"
 
-#: src/components/network/NetworkPage.jsx:114
+#: src/components/network/NetworkPage.jsx:126
 msgid "No connected yet"
 msgstr "尚未连接"
 
-#: src/components/network/NetworkPage.jsx:115
+#: src/components/network/NetworkPage.jsx:127
 msgid ""
 "The system has not been configured for connecting to a Wi-Fi network yet."
 msgstr "系统尚未配置为连接到 WiFi 网络。"
 
-#: src/components/network/NetworkPage.jsx:136
+#: src/components/network/NetworkPage.jsx:156
 msgid "Wired"
 msgstr "有线连接"
 
-#: src/components/network/NetworkPage.jsx:139
+#: src/components/network/NetworkPage.jsx:160
 msgid "No wired connections found"
 msgstr "未找到有线连接"
 
-#: src/components/network/NetworkPage.jsx:149
+#: src/components/network/NetworkPage.jsx:173
 #: src/components/network/routes.js:59
 msgid "Network"
 msgstr "网络"
@@ -622,16 +597,16 @@ msgstr "无"
 msgid "WPA & WPA2 Personal"
 msgstr "WPA 与 WPA2 个人版"
 
-#: src/components/network/WifiConnectionForm.jsx:86
-#: src/components/product/ProductRegistrationPage.jsx:69
-#: src/components/storage/ZFCPDiskForm.jsx:108
-#: src/components/storage/iscsi/DiscoverForm.jsx:110
-#: src/components/storage/iscsi/LoginForm.jsx:72
-#: src/components/users/FirstUserForm.jsx:203
+#: src/components/network/WifiConnectionForm.jsx:85
+#: src/components/product/ProductRegistrationPage.jsx:68
+#: src/components/storage/ZFCPDiskForm.jsx:105
+#: src/components/storage/iscsi/DiscoverForm.jsx:98
+#: src/components/storage/iscsi/LoginForm.jsx:69
+#: src/components/users/FirstUserForm.jsx:217
 msgid "Something went wrong"
 msgstr "出了点问题"
 
-#: src/components/network/WifiConnectionForm.jsx:87
+#: src/components/network/WifiConnectionForm.jsx:86
 msgid "Please, review provided settings and try again."
 msgstr "请回顾之前提供的设定后再试。"
 
@@ -642,103 +617,103 @@ msgid "SSID"
 msgstr "SSID"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.jsx:104
-#: src/components/network/WifiConnectionForm.jsx:107
+#: src/components/network/WifiConnectionForm.jsx:105
+#: src/components/network/WifiConnectionForm.jsx:108
 msgid "Security"
 msgstr "安全性"
 
 #. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.jsx:116
+#: src/components/network/WifiConnectionForm.jsx:117
 msgid "WPA Password"
 msgstr "WPA 密码"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:51
-#: src/components/network/WifiNetworksListPage.jsx:111
+#: src/components/network/WifiNetworksListPage.jsx:63
+#: src/components/network/WifiNetworksListPage.jsx:117
 msgid "Connecting"
 msgstr "正在连接"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:54
-#: src/components/network/WifiNetworksListPage.jsx:115
-#: src/components/network/WifiNetworksListPage.jsx:154
+#: src/components/network/WifiNetworksListPage.jsx:66
+#: src/components/network/WifiNetworksListPage.jsx:121
+#: src/components/network/WifiNetworksListPage.jsx:164
 msgid "Connected"
 msgstr "已连接"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:59
-#: src/components/network/WifiNetworksListPage.jsx:113
+#: src/components/network/WifiNetworksListPage.jsx:71
+#: src/components/network/WifiNetworksListPage.jsx:119
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr "已断开连接"
 
-#: src/components/network/WifiNetworksListPage.jsx:121
+#: src/components/network/WifiNetworksListPage.jsx:127
 msgid "Disconnect"
 msgstr "断开连接"
 
-#: src/components/network/WifiNetworksListPage.jsx:142
+#: src/components/network/WifiNetworksListPage.jsx:150
 msgid "Connect to a hidden network"
 msgstr "连接到隐藏网络"
 
-#: src/components/network/WifiNetworksListPage.jsx:153
+#: src/components/network/WifiNetworksListPage.jsx:161
 msgid "configured"
 msgstr "已配置"
 
-#: src/components/network/WifiNetworksListPage.jsx:244
+#: src/components/network/WifiNetworksListPage.jsx:265
 msgid "Connect to hidden network"
 msgstr "连接到隐藏网络"
 
-#: src/components/network/WifiSelectorPage.jsx:131
+#: src/components/network/WifiSelectorPage.jsx:136
 msgid "Connect to a Wi-Fi network"
 msgstr "连接到 Wi-Fi 网络"
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
-#: src/components/overview/L10nSection.jsx:38
+#: src/components/overview/L10nSection.jsx:33
 #, c-format
 msgid "The system will use %s as its default language."
 msgstr "系统会使用 %s 作为默认语言。"
 
-#: src/components/overview/OverviewPage.jsx:45
+#: src/components/overview/OverviewPage.jsx:47
 #: src/components/users/UsersPage.jsx:36 src/components/users/routes.js:32
 msgid "Users"
 msgstr "用户"
 
-#: src/components/overview/OverviewPage.jsx:46
+#: src/components/overview/OverviewPage.jsx:48
 #: src/components/overview/StorageSection.jsx:111
-#: src/components/storage/ProposalPage.jsx:290
+#: src/components/storage/ProposalPage.jsx:307
 #: src/components/storage/StoragePage.jsx:30
 #: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr "存储"
 
-#: src/components/overview/OverviewPage.jsx:47
+#: src/components/overview/OverviewPage.jsx:49
 #: src/components/overview/SoftwareSection.jsx:86
 #: src/components/software/SoftwarePage.jsx:155
 #: src/components/software/routes.js:32
 msgid "Software"
 msgstr "软件"
 
-#: src/components/overview/OverviewPage.jsx:52
+#: src/components/overview/OverviewPage.jsx:54
 msgid "Ready for installation"
 msgstr "准备好安装"
 
-#: src/components/overview/OverviewPage.jsx:102
+#: src/components/overview/OverviewPage.jsx:104
 msgid "Installation"
 msgstr "安装"
 
-#: src/components/overview/OverviewPage.jsx:103
+#: src/components/overview/OverviewPage.jsx:105
 msgid "Before installing, please check the following problems."
 msgstr "进行安装之前，请检查下列问题。"
 
-#: src/components/overview/OverviewPage.jsx:114
+#: src/components/overview/OverviewPage.jsx:116
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
 msgstr "开始安装进程前，请花些时间检查您的配置。"
 
-#: src/components/overview/OverviewPage.jsx:123
+#: src/components/overview/OverviewPage.jsx:125
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
@@ -806,38 +781,39 @@ msgstr "安装在 %s 上新建的逻辑卷管理 (LVM) 卷组中，并删除磁�
 msgid ""
 "Install in a new Logical Volume Manager (LVM) volume group on %s using a "
 "custom strategy to find the needed space"
-msgstr "安装在 %s 上新建的逻辑卷管理 (LVM) "
-"卷组中，并采用自定义策略寻找磁盘上的所需空间"
+msgstr ""
+"安装在 %s 上新建的逻辑卷管理 (LVM) 卷组中，并采用自定义策略寻找磁盘上的所需空"
+"间"
 
-#: src/components/overview/StorageSection.jsx:175
-#: src/components/storage/InstallationDeviceField.jsx:63
+#: src/components/overview/StorageSection.jsx:179
+#: src/components/storage/InstallationDeviceField.jsx:66
 msgid "No device selected yet"
 msgstr "尚未选择设备"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:182
+#: src/components/overview/StorageSection.jsx:186
 #, c-format
 msgid "Install using device %s shrinking existing partitions as needed"
 msgstr "使用设备 %s 进行安装，并在需要时缩小现有的分区"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:186
+#: src/components/overview/StorageSection.jsx:190
 #, c-format
 msgid "Install using device %s without modifying existing partitions"
 msgstr "使用设备 %s 进行安装且不修改已存在的分区"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:190
+#: src/components/overview/StorageSection.jsx:194
 #, c-format
 msgid "Install using device %s and deleting all its content"
 msgstr "使用设备 %s 进行安装并删除其上的现有内容"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:195
+#: src/components/overview/StorageSection.jsx:199
 #, c-format
 msgid "Install using device %s with a custom strategy to find the needed space"
 msgstr "使用设备 %s 进行安装，并采用自定义策略寻找所需空间"
@@ -851,19 +827,15 @@ msgstr "概览"
 msgid "Register %s"
 msgstr "注册 %s"
 
-#: src/components/product/ProductRegistrationPage.jsx:74
+#: src/components/product/ProductRegistrationPage.jsx:73
 msgid "Registration code"
 msgstr "注册码"
 
-#: src/components/product/ProductRegistrationPage.jsx:77
+#: src/components/product/ProductRegistrationPage.jsx:76
 msgid "Email"
 msgstr "电子邮件"
 
-#: src/components/product/ProductSelectionPage.jsx:58
-msgid "Loading available products, please wait..."
-msgstr "正在载入可用产品，请稍候……"
-
-#: src/components/product/ProductSelectionProgress.jsx:53
+#: src/components/product/ProductSelectionProgress.jsx:49
 msgid "Configuring the product, please wait ..."
 msgstr "正在配置产品，请稍候……"
 
@@ -882,7 +854,7 @@ msgid "Encrypted Device"
 msgstr "已加密设备"
 
 #. TRANSLATORS: field label
-#: src/components/questions/LuksActivationQuestion.jsx:69
+#: src/components/questions/LuksActivationQuestion.jsx:67
 msgid "Encryption Password"
 msgstr "加密密码"
 
@@ -902,17 +874,21 @@ msgstr "已选择合集"
 msgid "Change selection"
 msgstr "修改选择"
 
-#: src/components/software/SoftwarePatternsSelection.jsx:230
+#: src/components/software/SoftwarePatternsSelection.jsx:223
+msgid "auto selected"
+msgstr "自动选择"
+
+#: src/components/software/SoftwarePatternsSelection.jsx:241
 msgid "None of the patterns match the filter."
 msgstr "没有合集与筛选器匹配。"
 
-#: src/components/software/SoftwarePatternsSelection.jsx:238
+#: src/components/software/SoftwarePatternsSelection.jsx:248
 msgid "Software selection"
 msgstr "软件选择"
 
 #. TRANSLATORS: search field placeholder text
-#: src/components/software/SoftwarePatternsSelection.jsx:241
-#: src/components/software/SoftwarePatternsSelection.jsx:242
+#: src/components/software/SoftwarePatternsSelection.jsx:251
+#: src/components/software/SoftwarePatternsSelection.jsx:252
 msgid "Filter by pattern title or description"
 msgstr "按合集名称或描述筛选"
 
@@ -923,7 +899,7 @@ msgstr "按合集名称或描述筛选"
 msgid "Installation will take %s."
 msgstr "安装将会占用 %s。"
 
-#: src/components/software/UsedSize.jsx:38
+#: src/components/software/UsedSize.jsx:37
 msgid "This space includes the base system and the selected software patterns."
 msgstr "此空间占用包含基础系统以及所选的软件合集。"
 
@@ -931,63 +907,62 @@ msgstr "此空间占用包含基础系统以及所选的软件合集。"
 msgid "Change boot options"
 msgstr "更改启动选项"
 
-#: src/components/storage/BootConfigField.jsx:87
+#: src/components/storage/BootConfigField.jsx:81
 msgid "Installation will not configure partitions for booting."
 msgstr "安装程序将不会配置用于启动的分区。"
 
-#: src/components/storage/BootConfigField.jsx:89
+#: src/components/storage/BootConfigField.jsx:85
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr "安装程序将在所选安装磁盘上配置启动所需的分区。"
 
-#. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/BootConfigField.jsx:92
+#: src/components/storage/BootConfigField.jsx:89
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "安装程序将在 %s 上配置启动所需的分区。"
 
-#: src/components/storage/BootSelection.jsx:127
+#: src/components/storage/BootSelection.jsx:132
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
 msgstr "为确保新系统能够启动，安装程序将需要在适当的磁盘中创建或配置一些分区。"
 
-#: src/components/storage/BootSelection.jsx:133
+#: src/components/storage/BootSelection.jsx:138
 msgid "Partitions to boot will be allocated at the installation disk."
 msgstr "引导分区将会分配在安装磁盘上。"
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelection.jsx:138
+#: src/components/storage/BootSelection.jsx:143
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
 msgstr "引导分区将在安装磁盘（%s）上进行分配。"
 
-#: src/components/storage/BootSelection.jsx:154
+#: src/components/storage/BootSelection.jsx:159
 msgid "Select booting partition"
 msgstr "选择启动分区"
 
-#: src/components/storage/BootSelection.jsx:170
+#: src/components/storage/BootSelection.jsx:180
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
 msgstr "自动"
 
-#: src/components/storage/BootSelection.jsx:183
+#: src/components/storage/BootSelection.jsx:198
 msgid "Select a disk"
 msgstr "选择一个磁盘"
 
-#: src/components/storage/BootSelection.jsx:189
+#: src/components/storage/BootSelection.jsx:204
 msgid "Partitions to boot will be allocated at the following device."
 msgstr "引导分区将在以下设备上分配。"
 
-#: src/components/storage/BootSelection.jsx:192
+#: src/components/storage/BootSelection.jsx:207
 msgid "Choose a disk for placing the boot loader"
 msgstr "选择一个放置引导加载器的磁盘"
 
-#: src/components/storage/BootSelection.jsx:210
+#: src/components/storage/BootSelection.jsx:230
 msgid "Do not configure"
 msgstr "不要配置"
 
-#: src/components/storage/BootSelection.jsx:215
+#: src/components/storage/BootSelection.jsx:236
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr "不会自动配置任何用于启动的分区。请谨慎使用。"
@@ -996,270 +971,260 @@ msgstr "不会自动配置任何用于启动的分区。请谨慎使用。"
 msgid "Waiting for progress report"
 msgstr "正在等待进度报告"
 
-#: src/components/storage/DASDFormatProgress.jsx:68
+#: src/components/storage/DASDFormatProgress.jsx:67
 msgid "Formatting DASD devices"
 msgstr "正在格式化 DASD 设备"
 
-#: src/components/storage/DASDTable.jsx:56
-#: src/components/storage/ZFCPPage.jsx:319
+#: src/components/storage/DASDTable.jsx:62
+#: src/components/storage/ZFCPPage.jsx:340
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:103
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
 msgid "No"
 msgstr "否"
 
-#: src/components/storage/DASDTable.jsx:56
-#: src/components/storage/ZFCPPage.jsx:319
+#: src/components/storage/DASDTable.jsx:62
+#: src/components/storage/ZFCPPage.jsx:340
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:103
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
 msgid "Yes"
 msgstr "是"
 
-#: src/components/storage/DASDTable.jsx:63
-#: src/components/storage/ZFCPDiskForm.jsx:112
-#: src/components/storage/ZFCPPage.jsx:302
-#: src/components/storage/ZFCPPage.jsx:362
+#: src/components/storage/DASDTable.jsx:69
+#: src/components/storage/ZFCPDiskForm.jsx:110
+#: src/components/storage/ZFCPPage.jsx:324
+#: src/components/storage/ZFCPPage.jsx:382
 msgid "Channel ID"
 msgstr "通道 ID"
 
 #. TRANSLATORS: table header
-#: src/components/storage/DASDTable.jsx:64
-#: src/components/storage/ZFCPPage.jsx:303
-#: src/components/storage/iscsi/NodesPresenter.jsx:104
-#: src/components/storage/iscsi/NodesPresenter.jsx:125
-#: src/components/users/RootAuthMethods.jsx:157
+#: src/components/storage/DASDTable.jsx:70
+#: src/components/storage/ZFCPPage.jsx:325
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+#: src/components/storage/iscsi/NodesPresenter.jsx:123
+#: src/components/users/RootAuthMethods.jsx:159
 msgid "Status"
 msgstr "状态"
 
-#: src/components/storage/DASDTable.jsx:65
-#: src/components/storage/DeviceSelectorTable.jsx:186
-#: src/components/storage/ProposalResultTable.jsx:120
-#: src/components/storage/SpaceActionsTable.jsx:141
-#: src/components/storage/VolumeLocationSelectorTable.jsx:100
+#: src/components/storage/DASDTable.jsx:71
+#: src/components/storage/DeviceSelectorTable.jsx:197
+#: src/components/storage/ProposalResultTable.jsx:130
+#: src/components/storage/SpaceActionsTable.jsx:200
+#: src/components/storage/VolumeLocationSelectorTable.jsx:107
 msgid "Device"
 msgstr "设备"
 
-#: src/components/storage/DASDTable.jsx:66
+#: src/components/storage/DASDTable.jsx:72
 msgid "Type"
 msgstr "类型"
 
 #. TRANSLATORS: table header, the column contains "Yes"/"No" values
 #. for the DIAG access mode (special disk access mode on IBM mainframes),
 #. usually keep untranslated
-#: src/components/storage/DASDTable.jsx:70
+#: src/components/storage/DASDTable.jsx:76
 msgid "DIAG"
 msgstr "DIAG"
 
-#: src/components/storage/DASDTable.jsx:71
+#: src/components/storage/DASDTable.jsx:77
 msgid "Formatted"
 msgstr "已格式化"
 
-#: src/components/storage/DASDTable.jsx:72
+#: src/components/storage/DASDTable.jsx:78
 msgid "Partition Info"
 msgstr "分区信息"
 
 #. TRANSLATORS: drop down menu label
-#: src/components/storage/DASDTable.jsx:107
+#: src/components/storage/DASDTable.jsx:115
 msgid "Perform an action"
 msgstr "执行操作"
 
-#. TRANSLATORS: drop down menu action, activate the device
-#: src/components/storage/DASDTable.jsx:113
-#: src/components/storage/ZFCPPage.jsx:333
+#: src/components/storage/DASDTable.jsx:122
+#: src/components/storage/ZFCPPage.jsx:353
 msgid "Activate"
 msgstr "激活"
 
-#. TRANSLATORS: drop down menu action, deactivate the device
-#: src/components/storage/DASDTable.jsx:115
-#: src/components/storage/ZFCPPage.jsx:375
+#: src/components/storage/DASDTable.jsx:126
+#: src/components/storage/ZFCPPage.jsx:395
 msgid "Deactivate"
 msgstr "停用"
 
-#. TRANSLATORS: drop down menu action, enable DIAG access method
-#: src/components/storage/DASDTable.jsx:118
+#: src/components/storage/DASDTable.jsx:131
 msgid "Set DIAG On"
 msgstr "开启 DIAG"
 
-#. TRANSLATORS: drop down menu action, disable DIAG access method
-#: src/components/storage/DASDTable.jsx:120
+#: src/components/storage/DASDTable.jsx:135
 msgid "Set DIAG Off"
 msgstr "关闭 DIAG"
 
-#. TRANSLATORS: drop down menu action, format the disk
-#: src/components/storage/DASDTable.jsx:123
+#: src/components/storage/DASDTable.jsx:140
 msgid "Format"
 msgstr "格式化"
 
-#: src/components/storage/DASDTable.jsx:223
-#: src/components/storage/DASDTable.jsx:224
+#: src/components/storage/DASDTable.jsx:261
+#: src/components/storage/DASDTable.jsx:262
 msgid "Filter by min channel"
 msgstr "按最小通道过滤"
 
-#: src/components/storage/DASDTable.jsx:231
+#: src/components/storage/DASDTable.jsx:269
 msgid "Remove min channel filter"
 msgstr "移除最小通道过滤器"
 
-#: src/components/storage/DASDTable.jsx:244
-#: src/components/storage/DASDTable.jsx:245
+#: src/components/storage/DASDTable.jsx:283
+#: src/components/storage/DASDTable.jsx:284
 msgid "Filter by max channel"
 msgstr "按最大通道过滤"
 
-#: src/components/storage/DASDTable.jsx:252
+#: src/components/storage/DASDTable.jsx:291
 msgid "Remove max channel filter"
 msgstr "移除最大通道过滤器"
 
-#: src/components/storage/DeviceSelection.jsx:101
+#: src/components/storage/DeviceSelection.jsx:108
 msgid "Loading data, please wait a second..."
 msgstr "正在载入数据，请稍候……"
 
-#. TRANSLATORS: description for using plain partitions for installing the
-#. system, the text in the square brackets [] is displayed in bold, use only
-#. one pair in the translation
-#: src/components/storage/DeviceSelection.jsx:136
+#: src/components/storage/DeviceSelection.jsx:144
 msgid ""
 "The file systems will be allocated by default as [new partitions in the "
 "selected device]."
 msgstr "默认情况下，文件系统将被分配为[所选设备上的新分区]。"
 
-#. TRANSLATORS: description for using logical volumes for installing the
-#. system, the text in the square brackets [] is displayed in bold, use only
-#. one pair in the translation
-#: src/components/storage/DeviceSelection.jsx:141
+#: src/components/storage/DeviceSelection.jsx:151
 msgid ""
 "The file systems will be allocated by default as [logical volumes of a new "
 "LVM Volume Group]. The corresponding physical volumes will be created on "
 "demand as new partitions at the selected devices."
-msgstr "默认情况下，文件系统将被分配为[新建 LVM "
-"卷组中的逻辑卷]。相应的物理卷将作为新分区按需创建在所选设备上。"
+msgstr ""
+"默认情况下，文件系统将被分配为[新建 LVM 卷组中的逻辑卷]。相应的物理卷将作为新"
+"分区按需创建在所选设备上。"
 
-#: src/components/storage/DeviceSelection.jsx:149
+#: src/components/storage/DeviceSelection.jsx:160
 msgid "Select installation device"
 msgstr "选择安装设备"
 
-#: src/components/storage/DeviceSelection.jsx:155
+#: src/components/storage/DeviceSelection.jsx:166
 msgid "Install new system on"
 msgstr "安装新系统到"
 
-#: src/components/storage/DeviceSelection.jsx:158
+#: src/components/storage/DeviceSelection.jsx:169
 msgid "An existing disk"
 msgstr "现存磁盘"
 
-#: src/components/storage/DeviceSelection.jsx:167
+#: src/components/storage/DeviceSelection.jsx:178
 msgid "A new LVM Volume Group"
 msgstr "新建 LVM 卷组"
 
-#: src/components/storage/DeviceSelection.jsx:192
+#: src/components/storage/DeviceSelection.jsx:203
 msgid "Device selector for target disk"
 msgstr "目标磁盘的设备选择器"
 
-#: src/components/storage/DeviceSelection.jsx:215
+#: src/components/storage/DeviceSelection.jsx:226
 msgid "Device selector for new LVM volume group"
 msgstr "新建 LVM 卷组的设备选择器"
 
-#: src/components/storage/DeviceSelection.jsx:228
+#: src/components/storage/DeviceSelection.jsx:242
 msgid "Prepare more devices by configuring advanced"
 msgstr "通过高级配置来准备更多设备"
 
-#: src/components/storage/DeviceSelection.jsx:229
+#: src/components/storage/DeviceSelection.jsx:243
 msgid "storage techs"
 msgstr "存储技术"
 
 #. TRANSLATORS: multipath device type
-#: src/components/storage/DeviceSelectorTable.jsx:57
+#: src/components/storage/DeviceSelectorTable.jsx:61
 msgid "Multipath"
 msgstr "多路径"
 
 #. TRANSLATORS: %s is replaced by the device bus ID
-#: src/components/storage/DeviceSelectorTable.jsx:62
+#: src/components/storage/DeviceSelectorTable.jsx:66
 #, c-format
 msgid "DASD %s"
 msgstr "DASD %s"
 
 #. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
-#: src/components/storage/DeviceSelectorTable.jsx:67
+#: src/components/storage/DeviceSelectorTable.jsx:71
 #, c-format
 msgid "Software %s"
 msgstr "软件 %s"
 
-#: src/components/storage/DeviceSelectorTable.jsx:72
+#: src/components/storage/DeviceSelectorTable.jsx:76
 msgid "SD Card"
 msgstr "SD 卡"
 
 #. TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
-#: src/components/storage/DeviceSelectorTable.jsx:77
+#: src/components/storage/DeviceSelectorTable.jsx:81
 #, c-format
 msgid "%s disk"
 msgstr "%s 磁盘"
 
-#: src/components/storage/DeviceSelectorTable.jsx:78
+#: src/components/storage/DeviceSelectorTable.jsx:82
 msgid "Disk"
 msgstr "磁盘"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/DeviceSelectorTable.jsx:98
+#: src/components/storage/DeviceSelectorTable.jsx:102
 #, c-format
 msgid "Members: %s"
 msgstr "成员：%s"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/DeviceSelectorTable.jsx:107
+#: src/components/storage/DeviceSelectorTable.jsx:111
 #, c-format
 msgid "Devices: %s"
 msgstr "设备：%s"
 
 #. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
-#: src/components/storage/DeviceSelectorTable.jsx:116
+#: src/components/storage/DeviceSelectorTable.jsx:120
 #, c-format
 msgid "Wires: %s"
 msgstr "连线：%s"
 
 #. TRANSLATORS: disk partition info, %s is replaced by partition table
 #. type (MS-DOS or GPT), %d is the number of the partitions
-#: src/components/storage/DeviceSelectorTable.jsx:152
+#: src/components/storage/DeviceSelectorTable.jsx:155
 #, c-format
 msgid "%s with %d partitions"
 msgstr "%s （包含 %d 个分区）"
 
 #. TRANSLATORS: status message, no existing content was found on the disk,
 #. i.e. the disk is completely empty
-#: src/components/storage/DeviceSelectorTable.jsx:158
-#: src/components/storage/SpaceActionsTable.jsx:114
+#: src/components/storage/DeviceSelectorTable.jsx:161
+#: src/components/storage/SpaceActionsTable.jsx:175
 msgid "No content found"
 msgstr "未找到内容"
 
-#: src/components/storage/DeviceSelectorTable.jsx:187
-#: src/components/storage/PartitionsField.jsx:450
-#: src/components/storage/ProposalResultTable.jsx:122
-#: src/components/storage/SpaceActionsTable.jsx:142
-#: src/components/storage/VolumeLocationSelectorTable.jsx:101
+#: src/components/storage/DeviceSelectorTable.jsx:198
+#: src/components/storage/PartitionsField.jsx:487
+#: src/components/storage/ProposalResultTable.jsx:132
+#: src/components/storage/SpaceActionsTable.jsx:201
+#: src/components/storage/VolumeLocationSelectorTable.jsx:108
 msgid "Details"
 msgstr "细节"
 
-#: src/components/storage/DeviceSelectorTable.jsx:188
-#: src/components/storage/PartitionsField.jsx:451
-#: src/components/storage/ProposalResultTable.jsx:123
-#: src/components/storage/SpaceActionsTable.jsx:143
-#: src/components/storage/VolumeFields.jsx:474
-#: src/components/storage/VolumeLocationSelectorTable.jsx:103
+#: src/components/storage/DeviceSelectorTable.jsx:199
+#: src/components/storage/PartitionsField.jsx:488
+#: src/components/storage/ProposalResultTable.jsx:133
+#: src/components/storage/SpaceActionsTable.jsx:202
+#: src/components/storage/VolumeFields.jsx:488
+#: src/components/storage/VolumeLocationSelectorTable.jsx:113
 msgid "Size"
 msgstr "大小"
 
-#: src/components/storage/DevicesTechMenu.jsx:44
+#: src/components/storage/DevicesTechMenu.jsx:38
 msgid "Manage and format"
 msgstr "管理与格式化"
 
-#: src/components/storage/DevicesTechMenu.jsx:62
+#: src/components/storage/DevicesTechMenu.jsx:52
 msgid "Activate disks"
 msgstr "激活磁盘"
 
-#: src/components/storage/DevicesTechMenu.jsx:64
+#: src/components/storage/DevicesTechMenu.jsx:53
 msgid "zFCP"
 msgstr "zFCP"
 
-#: src/components/storage/DevicesTechMenu.jsx:80
+#: src/components/storage/DevicesTechMenu.jsx:66
 msgid "Connect to iSCSI targets"
 msgstr "连接到 iSCSI 目标"
 
-#: src/components/storage/DevicesTechMenu.jsx:82
+#: src/components/storage/DevicesTechMenu.jsx:67
 #: src/components/storage/routes.js:37
 msgid "iSCSI"
 msgstr "iSCSI"
@@ -1269,60 +1234,60 @@ msgstr "iSCSI"
 msgid "Encryption"
 msgstr "加密"
 
-#: src/components/storage/EncryptionField.jsx:39
+#: src/components/storage/EncryptionField.jsx:40
 msgid ""
 "Protection for the information stored at the device, including data, "
 "programs, and system files."
 msgstr "保护存储在设备上的信息，包括数据、程序以及系统文件。"
 
-#: src/components/storage/EncryptionField.jsx:42
+#: src/components/storage/EncryptionField.jsx:44
 msgid "disabled"
 msgstr "已禁用"
 
-#: src/components/storage/EncryptionField.jsx:43
+#: src/components/storage/EncryptionField.jsx:45
 msgid "enabled"
 msgstr "已启用"
 
-#: src/components/storage/EncryptionField.jsx:44
+#: src/components/storage/EncryptionField.jsx:46
 msgid "using TPM unlocking"
 msgstr "使用 TPM 解锁"
 
-#: src/components/storage/EncryptionField.jsx:58
+#: src/components/storage/EncryptionField.jsx:60
 msgid "Enable"
 msgstr "启用"
 
-#: src/components/storage/EncryptionField.jsx:58
+#: src/components/storage/EncryptionField.jsx:60
 msgid "Modify"
 msgstr "修改"
 
-#: src/components/storage/EncryptionSettingsDialog.jsx:37
+#: src/components/storage/EncryptionSettingsDialog.jsx:38
 msgid ""
 "Full Disk Encryption (FDE) allows to protect the information stored at the "
 "device, including data, programs, and system files."
-msgstr "全盘加密 (FDE) 允许设备上存储的信息受到保护，包括数据、程序以及系统文件。"
+msgstr ""
+"全盘加密 (FDE) 允许设备上存储的信息受到保护，包括数据、程序以及系统文件。"
 
 #. TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
-#: src/components/storage/EncryptionSettingsDialog.jsx:40
+#: src/components/storage/EncryptionSettingsDialog.jsx:42
 msgid ""
 "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot"
 msgstr "使用可信平台模块 (TPM) 在每次启动时自动解密"
 
-#. TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
-#. 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
-#: src/components/storage/EncryptionSettingsDialog.jsx:43
+#: src/components/storage/EncryptionSettingsDialog.jsx:46
 msgid ""
 "The password will not be needed to boot and access the data if the TPM can "
 "verify the integrity of the system. TPM sealing requires the new system to "
 "be booted directly on its first run."
-msgstr "若 TPM 可以验证系统的完整性，启动和访问数据的时候将无需使用密码。 TPM "
-"密封要求新系统在首次启动时直接开始引导。"
+msgstr ""
+"若 TPM 可以验证系统的完整性，启动和访问数据的时候将无需使用密码。 TPM 密封要"
+"求新系统在首次启动时直接开始引导。"
 
-#: src/components/storage/EncryptionSettingsDialog.jsx:114
+#: src/components/storage/EncryptionSettingsDialog.jsx:129
 msgid "Encrypt the system"
 msgstr "加密系统"
 
 #: src/components/storage/InstallationDeviceField.jsx:36
-#: src/components/storage/VolumeLocationSelectorTable.jsx:58
+#: src/components/storage/VolumeLocationSelectorTable.jsx:61
 msgid "Installation device"
 msgstr "安装设备"
 
@@ -1341,71 +1306,70 @@ msgstr "已在 %s 上将文件系统创建为新的分区"
 msgid "File systems created at a new LVM volume group"
 msgstr "已在新建 LVM 卷组上创建文件系统"
 
-#. TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:59
+#: src/components/storage/InstallationDeviceField.jsx:60
 #, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr "已在 %s 上新建的 LVM 卷组中创建文件系统"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:73
+#: src/components/storage/PartitionsField.jsx:84
 #, c-format
 msgid "at least %s"
 msgstr "至少 %s"
 
 #. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:97
+#: src/components/storage/PartitionsField.jsx:108
 #, c-format
 msgid "Transactional Btrfs root volume (%s)"
 msgstr "事务性 Btrfs 根卷 (%s)"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:99
+#: src/components/storage/PartitionsField.jsx:110
 #, c-format
 msgid "Transactional Btrfs root partition (%s)"
 msgstr "事务性 Btrfs 根分区 (%s)"
 
 #. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:104
+#: src/components/storage/PartitionsField.jsx:115
 #, c-format
 msgid "Btrfs root volume with snapshots (%s)"
 msgstr "带快照的 Btrfs 根卷 (%s)"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:106
+#: src/components/storage/PartitionsField.jsx:117
 #, c-format
 msgid "Btrfs root partition with snapshots (%s)"
 msgstr "带快照的 Btrfs 根分区 (%s)"
 
 #. TRANSLATORS: This results in something like "Mount /dev/sda3 at /home (25 GiB)" since
 #. %1$s is replaced by the device name, %2$s by the mount point and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:115
+#: src/components/storage/PartitionsField.jsx:126
 #, c-format
 msgid "Mount %1$s at %2$s (%3$s)"
 msgstr "挂载 %1$s 到 %2$s (%3$s)"
 
 #. TRANSLATORS: This results in something like "Swap at /dev/sda3 (2 GiB)" since
 #. %1$s is replaced by the device name, and %2$s by the size
-#: src/components/storage/PartitionsField.jsx:121
+#: src/components/storage/PartitionsField.jsx:132
 #, c-format
 msgid "Swap at %1$s (%2$s)"
 msgstr "位于 %1$s 上的 Swap (%2$s)"
 
 #. TRANSLATORS: Swap is in an LVM logical volume. %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:125
+#: src/components/storage/PartitionsField.jsx:136
 #, c-format
 msgid "Swap volume (%s)"
 msgstr "Swap 卷 (%s)"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:127
+#: src/components/storage/PartitionsField.jsx:138
 #, c-format
 msgid "Swap partition (%s)"
 msgstr "Swap 分区 (%s)"
 
 #. TRANSLATORS: This results in something like "Btrfs root at /dev/sda3 (20 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the device name, and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:136
+#: src/components/storage/PartitionsField.jsx:147
 #, c-format
 msgid "%1$s root at %2$s (%3$s)"
 msgstr "位于 %2$s 上的 %1$s 根文件系统 (%3$s)"
@@ -1413,21 +1377,21 @@ msgstr "位于 %2$s 上的 %1$s 根文件系统 (%3$s)"
 #. TRANSLATORS: "/" is in an LVM logical volume.
 #. Results in something like "Btrfs root volume (at least 20 GiB)" since
 #. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:142
+#: src/components/storage/PartitionsField.jsx:153
 #, c-format
 msgid "%1$s root volume (%2$s)"
 msgstr "%1$s 根卷 (%2$s)"
 
 #. TRANSLATORS: Results in something like "Btrfs root partition (at least 20 GiB)" since
 #. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:145
+#: src/components/storage/PartitionsField.jsx:156
 #, c-format
 msgid "%1$s root partition (%2$s)"
 msgstr "%1$s 根分区 (%2$s)"
 
 #. TRANSLATORS: This results in something like "Ext4 /home at /dev/sda3 (20 GiB)" since
 #. %1$s is replaced by filesystem type, %2$s by mount point, %3$s by device name and %4$s by size
-#: src/components/storage/PartitionsField.jsx:151
+#: src/components/storage/PartitionsField.jsx:162
 #, c-format
 msgid "%1$s %2$s at %3$s (%4$s)"
 msgstr "位于 %3$s 上的 %1$s %2$s (%4$s)"
@@ -1435,161 +1399,155 @@ msgstr "位于 %3$s 上的 %1$s %2$s (%4$s)"
 #. TRANSLATORS: The filesystem is in an LVM logical volume.
 #. Results in something like "Ext4 /home volume (at least 10 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:157
+#: src/components/storage/PartitionsField.jsx:168
 #, c-format
 msgid "%1$s %2$s volume (%3$s)"
 msgstr "%1$s %2$s 卷 (%3$s)"
 
 #. TRANSLATORS: This results in something like "Ext4 /home partition (at least 10 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:160
+#: src/components/storage/PartitionsField.jsx:171
 #, c-format
 msgid "%1$s %2$s partition (%3$s)"
 msgstr "%1$s %2$s 分区 (%3$s)"
 
-#: src/components/storage/PartitionsField.jsx:172
+#: src/components/storage/PartitionsField.jsx:182
 msgid "Do not configure partitions for booting"
 msgstr "不要配置用于启动的分区"
 
-#: src/components/storage/PartitionsField.jsx:175
+#: src/components/storage/PartitionsField.jsx:184
 msgid "Boot partitions at installation disk"
 msgstr "位于安装磁盘上的启动分区"
 
 #. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/PartitionsField.jsx:178
+#: src/components/storage/PartitionsField.jsx:187
 #, c-format
 msgid "Boot partitions at %s"
 msgstr "位于 %s 的启动分区"
 
 #. TRANSLATORS: header for a list of items referring to size limits for file systems
-#: src/components/storage/PartitionsField.jsx:200
+#: src/components/storage/PartitionsField.jsx:209
 msgid "These limits are affected by:"
 msgstr "这些限制受以下因素影响："
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
-#: src/components/storage/PartitionsField.jsx:204
+#: src/components/storage/PartitionsField.jsx:213
 msgid "The configuration of snapshots"
 msgstr "快照配置"
 
-#. TRANSLATORS: list item, this affects the computed partition size limits
-#. %s is replaced by a list of the volumes (like "/home, /boot")
-#: src/components/storage/PartitionsField.jsx:208
+#: src/components/storage/PartitionsField.jsx:219
 #, c-format
 msgid "Presence of other volumes (%s)"
 msgstr "有其他卷存在（%s）"
 
 #. TRANSLATORS: list item, describes a factor that affects the computed size of a
 #. file system; eg. adjusting the size of the swap
-#: src/components/storage/PartitionsField.jsx:212
+#: src/components/storage/PartitionsField.jsx:225
 msgid "The amount of RAM in the system"
 msgstr "系统中的 RAM 数量"
 
-#. TRANSLATORS: device flag, the partition size is automatically computed
-#: src/components/storage/PartitionsField.jsx:263
+#: src/components/storage/PartitionsField.jsx:292
 msgid "auto"
 msgstr "自动"
 
 #. TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
-#: src/components/storage/PartitionsField.jsx:279
+#: src/components/storage/PartitionsField.jsx:309
 #, c-format
 msgid "Reused %s"
 msgstr "重用 %s"
 
-#: src/components/storage/PartitionsField.jsx:281
+#: src/components/storage/PartitionsField.jsx:310
 msgid "Transactional Btrfs"
 msgstr "事务性 Btrfs"
 
-#: src/components/storage/PartitionsField.jsx:283
+#: src/components/storage/PartitionsField.jsx:311
 msgid "Btrfs with snapshots"
 msgstr "带快照的 Btrfs"
 
 #. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:297
+#: src/components/storage/PartitionsField.jsx:325
 #, c-format
 msgid "Partition at %s"
 msgstr "位于 %s 的分区"
 
 #. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:300
+#: src/components/storage/PartitionsField.jsx:328
 #, c-format
 msgid "Separate LVM at %s"
 msgstr "位于 %s 的单独 LVM"
 
-#: src/components/storage/PartitionsField.jsx:304
+#: src/components/storage/PartitionsField.jsx:331
 msgid "Logical volume at system LVM"
 msgstr "位于系统 LVM 的逻辑卷"
 
-#: src/components/storage/PartitionsField.jsx:306
+#: src/components/storage/PartitionsField.jsx:333
 msgid "Partition at installation disk"
 msgstr "安装磁盘上的分区"
 
-#: src/components/storage/PartitionsField.jsx:321
+#: src/components/storage/PartitionsField.jsx:348
 msgid "Reset location"
 msgstr "重设位置"
 
-#: src/components/storage/PartitionsField.jsx:322
+#: src/components/storage/PartitionsField.jsx:349
 msgid "Change location"
 msgstr "更改位置"
 
-#: src/components/storage/PartitionsField.jsx:323
-#: src/components/storage/SpaceActionsTable.jsx:78
+#: src/components/storage/PartitionsField.jsx:350
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
 msgid "Delete"
 msgstr "删除"
 
-#: src/components/storage/PartitionsField.jsx:449
-#: src/components/storage/VolumeFields.jsx:61
-#: src/components/storage/VolumeFields.jsx:70
+#: src/components/storage/PartitionsField.jsx:486
+#: src/components/storage/VolumeFields.jsx:66
 #: src/components/storage/VolumeFields.jsx:75
+#: src/components/storage/VolumeFields.jsx:80
 msgid "Mount point"
 msgstr "挂载点"
 
 #. TRANSLATORS: where (and how) the file-system is going to be created
-#: src/components/storage/PartitionsField.jsx:453
+#: src/components/storage/PartitionsField.jsx:490
 msgid "Location"
 msgstr "位置"
 
-#: src/components/storage/PartitionsField.jsx:495
+#: src/components/storage/PartitionsField.jsx:532
 msgid "Table with mount points"
 msgstr "挂载点列表"
 
-#: src/components/storage/PartitionsField.jsx:566
-#: src/components/storage/PartitionsField.jsx:585
-#: src/components/storage/VolumeDialog.jsx:81
+#: src/components/storage/PartitionsField.jsx:604
+#: src/components/storage/PartitionsField.jsx:624
+#: src/components/storage/VolumeDialog.jsx:86
 msgid "Add file system"
 msgstr "添加文件系统"
 
-#: src/components/storage/PartitionsField.jsx:596
+#: src/components/storage/PartitionsField.jsx:636
 msgid "Other"
 msgstr "其他"
 
-#: src/components/storage/PartitionsField.jsx:731
+#: src/components/storage/PartitionsField.jsx:777
 msgid "Reset to defaults"
 msgstr "重设为默认"
 
-#: src/components/storage/PartitionsField.jsx:801
+#: src/components/storage/PartitionsField.jsx:849
 msgid "Partitions and file systems"
 msgstr "分区与文件系统"
 
-#: src/components/storage/PartitionsField.jsx:802
+#: src/components/storage/PartitionsField.jsx:851
 msgid ""
 "Structure of the new system, including any additional partition needed for "
 "booting"
 msgstr "新文件系统的结构，包含启动所需的任何附加分区"
 
-#: src/components/storage/PartitionsField.jsx:808
+#: src/components/storage/PartitionsField.jsx:858
 msgid "Show partitions and file-systems actions"
 msgstr "显示分区与文件系统操作"
 
-#. TRANSLATORS: show/hide toggle action, this is a clickable link
-#: src/components/storage/ProposalActionsDialog.jsx:62
+#: src/components/storage/ProposalActionsDialog.jsx:65
 #, c-format
 msgid "Hide %d subvolume action"
 msgid_plural "Hide %d subvolume actions"
 msgstr[0] "隐藏 %d 个子卷操作"
 
-#. TRANSLATORS: show/hide toggle action, this is a clickable link
-#: src/components/storage/ProposalActionsDialog.jsx:64
+#: src/components/storage/ProposalActionsDialog.jsx:70
 #, c-format
 msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
@@ -1603,81 +1561,75 @@ msgstr "不允许执行具有破坏性的操作"
 msgid "Destructive actions are allowed"
 msgstr "允许执行具有破坏性的操作"
 
-#: src/components/storage/ProposalActionsSummary.jsx:66
-#, c-format
-msgid "There is %d destructive action planned"
-msgid_plural "There are %d destructive actions planned"
-msgstr[0] "已计划执行 %d 个具有破坏性的操作"
-
-#: src/components/storage/ProposalActionsSummary.jsx:79
-#: src/components/storage/ProposalActionsSummary.jsx:126
+#: src/components/storage/ProposalActionsSummary.jsx:82
+#: src/components/storage/ProposalActionsSummary.jsx:132
 msgid "affecting"
 msgstr "影响到"
 
-#: src/components/storage/ProposalActionsSummary.jsx:107
+#: src/components/storage/ProposalActionsSummary.jsx:112
 msgid "Shrinking partitions is not allowed"
 msgstr "不允许缩小分区"
 
-#: src/components/storage/ProposalActionsSummary.jsx:111
+#: src/components/storage/ProposalActionsSummary.jsx:116
 msgid "Shrinking partitions is allowed"
 msgstr "允许缩小分区"
 
-#: src/components/storage/ProposalActionsSummary.jsx:113
+#: src/components/storage/ProposalActionsSummary.jsx:118
 msgid "Shrinking some partitions is allowed but not needed"
 msgstr "允许缩小分区，但并非必需"
 
-#: src/components/storage/ProposalActionsSummary.jsx:116
+#: src/components/storage/ProposalActionsSummary.jsx:121
 #, c-format
 msgid "%d partition will be shrunk"
 msgid_plural "%d partitions will be shrunk"
 msgstr[0] "%d 个分区将被缩小"
 
-#: src/components/storage/ProposalActionsSummary.jsx:151
+#: src/components/storage/ProposalActionsSummary.jsx:159
 msgid "Cannot accommodate the required file systems for installation"
 msgstr "无法容纳安装所需的文件系统"
 
-#: src/components/storage/ProposalActionsSummary.jsx:160
+#: src/components/storage/ProposalActionsSummary.jsx:167
 #, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
 msgstr[0] "检查 %d 个已计划的操作"
 
-#: src/components/storage/ProposalActionsSummary.jsx:179
+#: src/components/storage/ProposalActionsSummary.jsx:182
 msgid "Waiting for actions information..."
 msgstr "正在等待操作信息……"
 
-#: src/components/storage/ProposalPage.jsx:314
+#: src/components/storage/ProposalPage.jsx:329
 msgid "Planned Actions"
 msgstr "计划执行的操作"
 
-#: src/components/storage/ProposalResultSection.jsx:42
+#: src/components/storage/ProposalResultSection.jsx:43
 msgid "Waiting for information about storage configuration"
 msgstr "正在等待存储配置信息"
 
-#: src/components/storage/ProposalResultSection.jsx:70
+#: src/components/storage/ProposalResultSection.jsx:73
 msgid "Final layout"
 msgstr "最终布局"
 
-#: src/components/storage/ProposalResultSection.jsx:71
+#: src/components/storage/ProposalResultSection.jsx:74
 msgid "The systems will be configured as displayed below."
 msgstr "系统将按下列选项进行配置。"
 
-#: src/components/storage/ProposalResultSection.jsx:78
+#: src/components/storage/ProposalResultSection.jsx:83
 msgid "Storage proposal not possible"
 msgstr "存储建议不可行"
 
-#: src/components/storage/ProposalResultTable.jsx:74
+#: src/components/storage/ProposalResultTable.jsx:79
 msgid "New"
 msgstr "新建"
 
 #. TRANSLATORS: Label to indicate the device size before resizing, where %s is
 #. replaced by the original size (e.g., 3.00 GiB).
-#: src/components/storage/ProposalResultTable.jsx:98
+#: src/components/storage/ProposalResultTable.jsx:105
 #, c-format
 msgid "Before %s"
 msgstr "变更前为 %s"
 
-#: src/components/storage/ProposalResultTable.jsx:121
+#: src/components/storage/ProposalResultTable.jsx:131
 msgid "Mount Point"
 msgstr "挂载点"
 
@@ -1685,7 +1637,7 @@ msgstr "挂载点"
 msgid "Transactional root file system"
 msgstr "事务性根文件系统"
 
-#: src/components/storage/ProposalTransactionalInfo.jsx:48
+#: src/components/storage/ProposalTransactionalInfo.jsx:49
 #, c-format
 msgid ""
 "%s is an immutable system with atomic updates. It uses a read-only Btrfs "
@@ -1698,190 +1650,179 @@ msgstr ""
 msgid "Use Btrfs snapshots for the root file system"
 msgstr "为根文件系统使用 Btrfs 快照"
 
-#: src/components/storage/SnapshotsField.jsx:37
+#: src/components/storage/SnapshotsField.jsx:38
 msgid ""
 "Allows to boot to a previous version of the system after configuration "
 "changes or software upgrades."
 msgstr "允许配置被改变或软件更新后，回退启动到先前版本的系统。"
 
-#. TRANSLATORS: %s is replaced by a device name (e.g., /dev/sda)
-#: src/components/storage/SpaceActionsTable.jsx:75
+#: src/components/storage/SpaceActionsTable.jsx:68
 #, c-format
-msgid "Space action selector for %s"
-msgstr "%s 的空间操作选择器"
+msgid "Up to %s can be recovered by shrinking the device."
+msgstr ""
 
-#: src/components/storage/SpaceActionsTable.jsx:79
-msgid "Allow resize"
-msgstr "允许调整大小"
+#: src/components/storage/SpaceActionsTable.jsx:77
+msgid "The device cannot be shrunk:"
+msgstr ""
 
-#: src/components/storage/SpaceActionsTable.jsx:80
-msgid "Do not modify"
-msgstr "不要修改"
+#: src/components/storage/SpaceActionsTable.jsx:98
+#, fuzzy, c-format
+msgid "Show information about %s"
+msgstr "正在等待空间策略信息"
 
-#: src/components/storage/SpaceActionsTable.jsx:111
+#: src/components/storage/SpaceActionsTable.jsx:172
 msgid "The content may be deleted"
 msgstr "内容可能会被删除"
 
-#: src/components/storage/SpaceActionsTable.jsx:144
-msgid "Shrinkable"
-msgstr "可缩小"
-
-#: src/components/storage/SpaceActionsTable.jsx:146
+#: src/components/storage/SpaceActionsTable.jsx:204
 msgid "Action"
 msgstr "操作"
 
-#: src/components/storage/SpaceActionsTable.jsx:162
+#: src/components/storage/SpaceActionsTable.jsx:215
 msgid "Actions to find space"
 msgstr "查找空间的操作"
 
-#: src/components/storage/SpacePolicySelection.jsx:170
+#: src/components/storage/SpacePolicySelection.jsx:172
 msgid "Space policy"
 msgstr "存储策略"
 
-#: src/components/storage/VolumeDialog.jsx:78
+#: src/components/storage/VolumeDialog.jsx:83
 #, c-format
 msgid "Add %s file system"
 msgstr "添加 %s 文件系统"
 
-#: src/components/storage/VolumeDialog.jsx:79
+#: src/components/storage/VolumeDialog.jsx:84
 #, c-format
 msgid "Edit %s file system"
 msgstr "编辑 %s 文件系统"
 
-#: src/components/storage/VolumeDialog.jsx:81
+#: src/components/storage/VolumeDialog.jsx:86
 msgid "Edit file system"
 msgstr "编辑文件系统"
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:96
+#: src/components/storage/VolumeDialog.jsx:101
 msgid "The type and size of the file system cannot be edited."
 msgstr "文件系统的类型与尺寸无法编辑。"
 
-#. TRANSLATORS: Description of a warning. The first %s is replaced by a device name (e.g.,
-#. /dev/vda) and the second %s is replaced by a mount path (e.g., /home).
-#: src/components/storage/VolumeDialog.jsx:99
+#: src/components/storage/VolumeDialog.jsx:105
 #, c-format
 msgid "The current file system on %s is selected to be mounted at %s."
 msgstr "当前位于 %s 上的文件系统已经被选为挂载到 %s。"
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:105
+#: src/components/storage/VolumeDialog.jsx:113
 msgid "The size of the file system cannot be edited"
 msgstr "文件系统的尺寸无法编辑"
 
 #. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
-#: src/components/storage/VolumeDialog.jsx:107
+#: src/components/storage/VolumeDialog.jsx:115
 #, c-format
 msgid "The file system is allocated at the device %s."
 msgstr "文件系统被分配在设备 %s 上。"
 
-#: src/components/storage/VolumeDialog.jsx:152
+#: src/components/storage/VolumeDialog.jsx:163
 msgid "A mount point is required"
 msgstr "需要挂载点"
 
-#: src/components/storage/VolumeDialog.jsx:179
+#: src/components/storage/VolumeDialog.jsx:190
 msgid "The mount point is invalid"
 msgstr "挂载点无效"
 
-#: src/components/storage/VolumeDialog.jsx:207
+#: src/components/storage/VolumeDialog.jsx:218
 msgid "A size value is required"
 msgstr "必须输入尺寸值"
 
-#: src/components/storage/VolumeDialog.jsx:235
+#: src/components/storage/VolumeDialog.jsx:246
 msgid "Minimum size is required"
 msgstr "需要指定最小尺寸"
 
-#: src/components/storage/VolumeDialog.jsx:267
+#: src/components/storage/VolumeDialog.jsx:278
 msgid "Maximum must be greater than minimum"
 msgstr "最大值必须高于最小值"
 
-#: src/components/storage/VolumeDialog.jsx:309
+#: src/components/storage/VolumeDialog.jsx:320
 #, c-format
 msgid "There is already a file system for %s."
 msgstr "在 %s 上已有文件系统。"
 
-#: src/components/storage/VolumeDialog.jsx:311
+#: src/components/storage/VolumeDialog.jsx:322
 msgid "Do you want to edit it?"
 msgstr "您是否想要编辑它？"
 
-#: src/components/storage/VolumeDialog.jsx:356
+#: src/components/storage/VolumeDialog.jsx:367
 #, c-format
 msgid "There is a predefined file system for %s."
 msgstr "已存在为 %s 预定义的文件系统。"
 
-#: src/components/storage/VolumeDialog.jsx:358
+#: src/components/storage/VolumeDialog.jsx:369
 msgid "Do you want to add it?"
 msgstr "您是否想要添加它？"
 
-#. TRANSLATORS: info about possible file system types.
-#: src/components/storage/VolumeFields.jsx:217
+#: src/components/storage/VolumeFields.jsx:225
 msgid ""
 "The options for the file system type depends on the product and the mount "
 "point."
 msgstr "文件系统类型的选项数量取决于产品和挂载点。"
 
-#: src/components/storage/VolumeFields.jsx:223
+#: src/components/storage/VolumeFields.jsx:232
 msgid "More info for file system types"
 msgstr "关于文件系统类型的更多信息"
 
 #. TRANSLATORS: label for the file system selector.
-#: src/components/storage/VolumeFields.jsx:234
+#: src/components/storage/VolumeFields.jsx:243
 msgid "File system type"
 msgstr "文件系统类型"
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:265
+#: src/components/storage/VolumeFields.jsx:274
 msgid "the configuration of snapshots"
 msgstr "快照配置"
 
-#. TRANSLATORS: item which affects the final computed partition size
-#. %s is replaced by a list of mount points like "/home, /boot"
-#: src/components/storage/VolumeFields.jsx:270
+#: src/components/storage/VolumeFields.jsx:281
 #, c-format
 msgid "the presence of the file system for %s"
 msgstr "在 %s 上存在文件系统"
 
 #. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeFields.jsx:272
+#: src/components/storage/VolumeFields.jsx:283
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:276
+#: src/components/storage/VolumeFields.jsx:289
 msgid "the amount of RAM in the system"
 msgstr "系统中的 RAM 数量"
 
-#. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeFields.jsx:279
+#: src/components/storage/VolumeFields.jsx:293
 #, c-format
 msgid "The final size depends on %s."
 msgstr "最终大小取决于 %s。"
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeFields.jsx:281
+#: src/components/storage/VolumeFields.jsx:295
 msgid " and "
 msgstr " 以及 "
 
-#. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeFields.jsx:286
+#: src/components/storage/VolumeFields.jsx:302
 msgid "Automatically calculated size according to the selected product."
 msgstr "根据选定的产品自动计算大小。"
 
-#: src/components/storage/VolumeFields.jsx:305
+#: src/components/storage/VolumeFields.jsx:321
 msgid "Exact size for the file system."
 msgstr "文件系统的准确大小。"
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeFields.jsx:318
+#: src/components/storage/VolumeFields.jsx:330
 msgid "Exact size"
 msgstr "准确大小"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeFields.jsx:335
+#: src/components/storage/VolumeFields.jsx:347
 msgid "Size unit"
 msgstr "大小单位"
 
-#: src/components/storage/VolumeFields.jsx:363
+#: src/components/storage/VolumeFields.jsx:376
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1891,206 +1832,200 @@ msgstr ""
 "大值，文件系统将尽可能扩大。"
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeFields.jsx:370
+#: src/components/storage/VolumeFields.jsx:384
 msgid "Minimum"
 msgstr "最小"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeFields.jsx:381
+#: src/components/storage/VolumeFields.jsx:395
 msgid "Minimum desired size"
 msgstr "所需最小尺寸"
 
-#: src/components/storage/VolumeFields.jsx:392
+#: src/components/storage/VolumeFields.jsx:406
 msgid "Unit for the minimum size"
 msgstr "最小尺寸的单位"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:404
+#: src/components/storage/VolumeFields.jsx:418
 msgid "Maximum"
 msgstr "最大"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:416
+#: src/components/storage/VolumeFields.jsx:430
 msgid "Maximum desired size"
 msgstr "所需的最大尺寸"
 
-#: src/components/storage/VolumeFields.jsx:426
+#: src/components/storage/VolumeFields.jsx:440
 msgid "Unit for the maximum size"
 msgstr "最大尺寸的单位"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeFields.jsx:444
+#: src/components/storage/VolumeFields.jsx:458
 msgid "Auto"
 msgstr "自动"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeFields.jsx:446
+#: src/components/storage/VolumeFields.jsx:460
 msgid "Fixed"
 msgstr "固定尺寸"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeFields.jsx:448
+#: src/components/storage/VolumeFields.jsx:462
 msgid "Range"
 msgstr "按范围计算"
 
-#. TRANSLATORS: Description of the dialog for changing the location of a file system.
-#: src/components/storage/VolumeLocationDialog.jsx:40
+#: src/components/storage/VolumeLocationDialog.jsx:41
 msgid ""
 "The file systems are allocated at the installation device by default. "
 "Indicate a custom location to create the file system at a specific device."
-msgstr "默认情况下，文件系统将被分配到安装设备。选择一个自定义位置以在特定设备上创建"
+msgstr ""
+"默认情况下，文件系统将被分配到安装设备。选择一个自定义位置以在特定设备上创建"
 "文件系统。"
 
 #. TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
 #. by a mount path (e.g., /home).
-#: src/components/storage/VolumeLocationDialog.jsx:135
+#: src/components/storage/VolumeLocationDialog.jsx:137
 #, c-format
 msgid "Location for %s file system"
 msgstr "%s 文件系统的位置"
 
-#: src/components/storage/VolumeLocationDialog.jsx:145
+#: src/components/storage/VolumeLocationDialog.jsx:147
 msgid "Select in which device to allocate the file system"
 msgstr "选择用于分配文件系统的设备"
 
-#: src/components/storage/VolumeLocationDialog.jsx:148
+#: src/components/storage/VolumeLocationDialog.jsx:150
 msgid "Select a location"
 msgstr "选择位置"
 
-#: src/components/storage/VolumeLocationDialog.jsx:160
+#: src/components/storage/VolumeLocationDialog.jsx:162
 msgid "Select how to allocate the file system"
 msgstr "选择如何分配文件系统"
 
-#: src/components/storage/VolumeLocationDialog.jsx:165
+#: src/components/storage/VolumeLocationDialog.jsx:167
 msgid "Create a new partition"
 msgstr "创建新分区"
 
-#: src/components/storage/VolumeLocationDialog.jsx:166
+#: src/components/storage/VolumeLocationDialog.jsx:169
 msgid ""
 "The file system will be allocated as a new partition at the selected   disk."
 msgstr "文件系统将被分配为所选   磁盘上的新分区。"
 
-#: src/components/storage/VolumeLocationDialog.jsx:175
+#: src/components/storage/VolumeLocationDialog.jsx:179
 msgid "Create a dedicated LVM volume group"
 msgstr "创建专用 LVM 卷组"
 
-#: src/components/storage/VolumeLocationDialog.jsx:176
+#: src/components/storage/VolumeLocationDialog.jsx:181
 msgid ""
 "A new volume group will be allocated in the selected disk and the   file "
 "system will be created as a logical volume."
 msgstr "新的 LVM 卷组将被分配到所选的磁盘上，文件系统将创建为逻辑卷。"
 
-#: src/components/storage/VolumeLocationDialog.jsx:185
+#: src/components/storage/VolumeLocationDialog.jsx:191
 msgid "Format the device"
 msgstr "格式化设备"
 
-#. TRANSLATORS: %s is replaced by a file system type (e.g., Ext4).
-#: src/components/storage/VolumeLocationDialog.jsx:188
+#: src/components/storage/VolumeLocationDialog.jsx:195
 #, c-format
 msgid "The selected device will be formatted as %s file system."
 msgstr "选定的设备将被格式化为 %s 文件系统。"
 
-#: src/components/storage/VolumeLocationDialog.jsx:198
+#: src/components/storage/VolumeLocationDialog.jsx:206
 msgid "Mount the file system"
 msgstr "挂载文件系统"
 
-#: src/components/storage/VolumeLocationDialog.jsx:199
+#: src/components/storage/VolumeLocationDialog.jsx:208
 msgid ""
 "The current file system on the selected device will be mounted   without "
 "formatting the device."
 msgstr "选定磁盘上的当前文件系统将被挂载，但不会被格式化。"
 
-#: src/components/storage/VolumeLocationSelectorTable.jsx:102
+#: src/components/storage/VolumeLocationSelectorTable.jsx:110
 msgid "Usage"
 msgstr "用量"
 
-#: src/components/storage/ZFCPDiskForm.jsx:109
+#: src/components/storage/ZFCPDiskForm.jsx:106
 msgid "The zFCP disk was not activated."
 msgstr "zFCP 磁盘未激活。"
 
 #. TRANSLATORS: abbrev. World Wide Port Name
 #: src/components/storage/ZFCPDiskForm.jsx:123
-#: src/components/storage/ZFCPPage.jsx:363
+#: src/components/storage/ZFCPPage.jsx:383
 msgid "WWPN"
 msgstr "WWPN"
 
 #. TRANSLATORS: abbrev. Logical Unit Number
-#: src/components/storage/ZFCPDiskForm.jsx:134
-#: src/components/storage/ZFCPPage.jsx:364
+#: src/components/storage/ZFCPDiskForm.jsx:131
+#: src/components/storage/ZFCPPage.jsx:384
 msgid "LUN"
 msgstr "LUN"
 
-#: src/components/storage/ZFCPPage.jsx:304
+#: src/components/storage/ZFCPPage.jsx:326
 msgid "Auto LUNs Scan"
 msgstr "自动扫描 LUN"
 
-#: src/components/storage/ZFCPPage.jsx:315
+#: src/components/storage/ZFCPPage.jsx:337
 msgid "Activated"
 msgstr "已激活"
 
-#: src/components/storage/ZFCPPage.jsx:315
+#: src/components/storage/ZFCPPage.jsx:337
 msgid "Deactivated"
 msgstr "已停用"
 
-#: src/components/storage/ZFCPPage.jsx:418
+#: src/components/storage/ZFCPPage.jsx:437
 msgid "No zFCP controllers found."
 msgstr "未找到 zFCP 控制器。"
 
-#: src/components/storage/ZFCPPage.jsx:419
+#: src/components/storage/ZFCPPage.jsx:438
 msgid "Please, try to read the zFCP devices again."
 msgstr "请尝试再次读取 zFCP 设备。"
 
-#. TRANSLATORS: button label
-#: src/components/storage/ZFCPPage.jsx:421
+#: src/components/storage/ZFCPPage.jsx:441
 msgid "Read zFCP devices"
 msgstr "读取 zFCP 设备"
 
-#. TRANSLATORS: the text in the square brackets [] will be displayed in bold
-#: src/components/storage/ZFCPPage.jsx:430
+#: src/components/storage/ZFCPPage.jsx:452
 msgid ""
 "Automatic LUN scan is [enabled]. Activating a controller which is running in "
 "NPIV mode will automatically configures all its LUNs."
 msgstr ""
 "自动 LUN 扫描[已启用]。激活运行在 NPIV 模式下的控制器将自动配置其所有 LUN。"
 
-#. TRANSLATORS: the text in the square brackets [] will be displayed in bold
-#: src/components/storage/ZFCPPage.jsx:433
+#: src/components/storage/ZFCPPage.jsx:457
 msgid ""
 "Automatic LUN scan is [disabled]. LUNs have to be manually configured after "
 "activating a controller."
 msgstr "自动 LUN 扫描[已停用]。激活控制器后须手动配置 LUN。"
 
-#: src/components/storage/ZFCPPage.jsx:490
+#: src/components/storage/ZFCPPage.jsx:519
 msgid "Activate a zFCP disk"
 msgstr "激活 zFCP 磁盘"
 
-#: src/components/storage/ZFCPPage.jsx:529
+#: src/components/storage/ZFCPPage.jsx:553
 msgid "Please, try to activate a zFCP controller."
 msgstr "请尝试激活 zFCP 控制器。"
 
-#: src/components/storage/ZFCPPage.jsx:536
+#: src/components/storage/ZFCPPage.jsx:559
 msgid "Please, try to activate a zFCP disk."
 msgstr "请尝试激活 zFCP 磁盘。"
 
-#. TRANSLATORS: button label
-#: src/components/storage/ZFCPPage.jsx:538
+#: src/components/storage/ZFCPPage.jsx:562
 msgid "Activate zFCP disk"
 msgstr "激活 zFCP 磁盘"
 
-#: src/components/storage/ZFCPPage.jsx:545
+#: src/components/storage/ZFCPPage.jsx:570
 msgid "No zFCP disks found."
 msgstr "未发现 zFCP 磁盘。"
 
-#. TRANSLATORS: button label
-#: src/components/storage/ZFCPPage.jsx:560
+#: src/components/storage/ZFCPPage.jsx:586
 msgid "Activate new disk"
 msgstr "激活新磁盘"
 
 #. TRANSLATORS: section title
-#: src/components/storage/ZFCPPage.jsx:572
+#: src/components/storage/ZFCPPage.jsx:599
 msgid "Disks"
 msgstr "磁盘"
 
-#: src/components/storage/device-utils.jsx:88
+#: src/components/storage/device-utils.jsx:92
 msgid "Unused space"
 msgstr "未使用的空间"
 
@@ -2102,70 +2037,70 @@ msgstr "仅当目标提供身份认证时可用"
 msgid "Authentication by target"
 msgstr "目标身份认证"
 
-#: src/components/storage/iscsi/AuthFields.jsx:80
-#: src/components/storage/iscsi/AuthFields.jsx:85
-#: src/components/storage/iscsi/AuthFields.jsx:87
-#: src/components/storage/iscsi/AuthFields.jsx:112
-#: src/components/storage/iscsi/AuthFields.jsx:117
-#: src/components/storage/iscsi/AuthFields.jsx:119
+#: src/components/storage/iscsi/AuthFields.jsx:78
+#: src/components/storage/iscsi/AuthFields.jsx:82
+#: src/components/storage/iscsi/AuthFields.jsx:84
+#: src/components/storage/iscsi/AuthFields.jsx:104
+#: src/components/storage/iscsi/AuthFields.jsx:108
+#: src/components/storage/iscsi/AuthFields.jsx:110
 msgid "User name"
 msgstr "用户名"
 
-#: src/components/storage/iscsi/AuthFields.jsx:91
-#: src/components/storage/iscsi/AuthFields.jsx:124
+#: src/components/storage/iscsi/AuthFields.jsx:88
+#: src/components/storage/iscsi/AuthFields.jsx:116
 msgid "Incorrect user name"
 msgstr "用户名不正确"
 
-#: src/components/storage/iscsi/AuthFields.jsx:105
-#: src/components/storage/iscsi/AuthFields.jsx:139
+#: src/components/storage/iscsi/AuthFields.jsx:99
+#: src/components/storage/iscsi/AuthFields.jsx:130
 msgid "Incorrect password"
 msgstr "密码不正确"
 
-#: src/components/storage/iscsi/AuthFields.jsx:108
+#: src/components/storage/iscsi/AuthFields.jsx:102
 msgid "Authentication by initiator"
 msgstr "发起者身份认证"
 
-#: src/components/storage/iscsi/AuthFields.jsx:133
+#: src/components/storage/iscsi/AuthFields.jsx:123
 msgid "Target Password"
 msgstr "目标密码"
 
 #. TRANSLATORS: popup title
-#: src/components/storage/iscsi/DiscoverForm.jsx:102
+#: src/components/storage/iscsi/DiscoverForm.jsx:94
 msgid "Discover iSCSI Targets"
 msgstr "发现 iSCSI 目标"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:112
-#: src/components/storage/iscsi/LoginForm.jsx:73
+#: src/components/storage/iscsi/DiscoverForm.jsx:99
+#: src/components/storage/iscsi/LoginForm.jsx:70
 msgid "Make sure you provide the correct values"
 msgstr "确保提供了正确的值"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:118
+#: src/components/storage/iscsi/DiscoverForm.jsx:103
 msgid "IP address"
 msgstr "IP 地址"
 
 #. TRANSLATORS: network address
-#: src/components/storage/iscsi/DiscoverForm.jsx:125
-#: src/components/storage/iscsi/DiscoverForm.jsx:127
+#: src/components/storage/iscsi/DiscoverForm.jsx:108
+#: src/components/storage/iscsi/DiscoverForm.jsx:110
 msgid "Address"
 msgstr "地址"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:132
+#: src/components/storage/iscsi/DiscoverForm.jsx:115
 msgid "Incorrect IP address"
 msgstr "不正确的 IP 地址"
 
 #. TRANSLATORS: network port number
-#: src/components/storage/iscsi/DiscoverForm.jsx:136
-#: src/components/storage/iscsi/DiscoverForm.jsx:143
-#: src/components/storage/iscsi/DiscoverForm.jsx:145
+#: src/components/storage/iscsi/DiscoverForm.jsx:117
+#: src/components/storage/iscsi/DiscoverForm.jsx:122
+#: src/components/storage/iscsi/DiscoverForm.jsx:124
 msgid "Port"
 msgstr "端口"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:150
+#: src/components/storage/iscsi/DiscoverForm.jsx:129
 msgid "Incorrect port"
 msgstr "不正确的端口"
 
 #. TRANSLATORS: %s is replaced by the iSCSI target node name
-#: src/components/storage/iscsi/EditNodeForm.jsx:50
+#: src/components/storage/iscsi/EditNodeForm.jsx:48
 #, c-format
 msgid "Edit %s"
 msgstr "编辑 %s"
@@ -2183,8 +2118,8 @@ msgstr "发起者名称"
 #. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:86
-#: src/components/storage/iscsi/NodesPresenter.jsx:103
-#: src/components/storage/iscsi/NodesPresenter.jsx:124
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:122
 msgid "iBFT"
 msgstr "iBFT"
 
@@ -2199,14 +2134,14 @@ msgid "Initiator"
 msgstr "发起者"
 
 #. TRANSLATORS: %s is replaced by the iSCSI target name
-#: src/components/storage/iscsi/LoginForm.jsx:69
+#: src/components/storage/iscsi/LoginForm.jsx:66
 #, c-format
 msgid "Login %s"
 msgstr "登录 %s"
 
 #. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
-#: src/components/storage/iscsi/LoginForm.jsx:76
-#: src/components/storage/iscsi/LoginForm.jsx:79
+#: src/components/storage/iscsi/LoginForm.jsx:74
+#: src/components/storage/iscsi/LoginForm.jsx:77
 msgid "Startup"
 msgstr "启动"
 
@@ -2228,27 +2163,26 @@ msgstr "登录"
 msgid "Logout"
 msgstr "登出"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-#: src/components/storage/iscsi/NodesPresenter.jsx:122
+#: src/components/storage/iscsi/NodesPresenter.jsx:99
+#: src/components/storage/iscsi/NodesPresenter.jsx:120
 msgid "Portal"
 msgstr "门户"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-#: src/components/storage/iscsi/NodesPresenter.jsx:123
+#: src/components/storage/iscsi/NodesPresenter.jsx:100
+#: src/components/storage/iscsi/NodesPresenter.jsx:121
 msgid "Interface"
 msgstr "界面"
 
-#: src/components/storage/iscsi/TargetsSection.jsx:142
+#: src/components/storage/iscsi/TargetsSection.jsx:138
 msgid "No iSCSI targets found."
 msgstr "未找到 iSCSI 目标。"
 
-#: src/components/storage/iscsi/TargetsSection.jsx:143
+#: src/components/storage/iscsi/TargetsSection.jsx:140
 msgid ""
 "Please, perform an iSCSI discovery in order to find available iSCSI targets."
 msgstr "请执行 iSCSI 发现以查找可用的 iSCSI 目标。"
 
-#. TRANSLATORS: button label, starts iSCSI discovery
-#: src/components/storage/iscsi/TargetsSection.jsx:145
+#: src/components/storage/iscsi/TargetsSection.jsx:144
 msgid "Discover iSCSI targets"
 msgstr "发现 iSCSI 目标"
 
@@ -2258,7 +2192,7 @@ msgid "Discover"
 msgstr "发现"
 
 #. TRANSLATORS: iSCSI targets section title
-#: src/components/storage/iscsi/TargetsSection.jsx:170
+#: src/components/storage/iscsi/TargetsSection.jsx:167
 msgid "Targets"
 msgstr "目标"
 
@@ -2347,74 +2281,74 @@ msgstr "通过自定义操作"
 msgid "No user defined yet."
 msgstr "尚未设定用户。"
 
-#: src/components/users/FirstUser.jsx:38
+#: src/components/users/FirstUser.jsx:39
 msgid ""
 "Please, be aware that a user must be defined before installing the system to "
 "be able to log into it."
 msgstr "请注意，在安装系统前必须设定用户才能登录。"
 
-#: src/components/users/FirstUser.jsx:42
+#: src/components/users/FirstUser.jsx:45
 msgid "Define a user now"
 msgstr "现在设定用户"
 
-#: src/components/users/FirstUser.jsx:54
-#: src/components/users/FirstUserForm.jsx:210
+#: src/components/users/FirstUser.jsx:58
+#: src/components/users/FirstUserForm.jsx:227
 msgid "Full name"
 msgstr "全名"
 
-#: src/components/users/FirstUser.jsx:55
-#: src/components/users/FirstUserForm.jsx:224
-#: src/components/users/FirstUserForm.jsx:229
-#: src/components/users/FirstUserForm.jsx:232
+#: src/components/users/FirstUser.jsx:59
+#: src/components/users/FirstUserForm.jsx:241
+#: src/components/users/FirstUserForm.jsx:246
+#: src/components/users/FirstUserForm.jsx:249
 msgid "Username"
 msgstr "用户名"
 
-#: src/components/users/FirstUser.jsx:120
-#: src/components/users/RootAuthMethods.jsx:99
-#: src/components/users/RootAuthMethods.jsx:111
+#: src/components/users/FirstUser.jsx:124
+#: src/components/users/RootAuthMethods.jsx:104
+#: src/components/users/RootAuthMethods.jsx:116
 msgid "Discard"
 msgstr "丢弃"
 
-#: src/components/users/FirstUserForm.jsx:46
+#: src/components/users/FirstUserForm.jsx:57
 msgid "Username suggestion dropdown"
 msgstr "建议用户名下拉列表"
 
 #. TRANSLATORS: dropdown username suggestions
-#: src/components/users/FirstUserForm.jsx:61
+#: src/components/users/FirstUserForm.jsx:72
 msgid "Use suggested username"
 msgstr "使用建议的用户名"
 
-#: src/components/users/FirstUserForm.jsx:140
+#: src/components/users/FirstUserForm.jsx:151
 msgid "All fields are required"
 msgstr "需要填写全部字段"
 
-#: src/components/users/FirstUserForm.jsx:147
+#: src/components/users/FirstUserForm.jsx:158
 msgid "Please, try again."
 msgstr "请重试。"
 
-#: src/components/users/FirstUserForm.jsx:197
+#: src/components/users/FirstUserForm.jsx:211
 msgid "Create user"
 msgstr "创建用户"
 
-#: src/components/users/FirstUserForm.jsx:197
+#: src/components/users/FirstUserForm.jsx:211
 msgid "Edit user"
 msgstr "编辑用户"
 
-#: src/components/users/FirstUserForm.jsx:214
-#: src/components/users/FirstUserForm.jsx:216
+#: src/components/users/FirstUserForm.jsx:231
+#: src/components/users/FirstUserForm.jsx:233
 msgid "User full name"
 msgstr "用户全名"
 
-#: src/components/users/FirstUserForm.jsx:254
+#: src/components/users/FirstUserForm.jsx:271
 msgid "Edit password too"
 msgstr "同时编辑密码"
 
-#: src/components/users/FirstUserForm.jsx:269
+#: src/components/users/FirstUserForm.jsx:287
 msgid "user autologin"
 msgstr "用户自动登录"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:273
+#: src/components/users/FirstUserForm.jsx:291
 msgid "Auto-login"
 msgstr "自动登录"
 
@@ -2422,62 +2356,60 @@ msgstr "自动登录"
 msgid "No root authentication method defined yet."
 msgstr "尚未设定 Root 认证方法。"
 
-#: src/components/users/RootAuthMethods.jsx:38
+#: src/components/users/RootAuthMethods.jsx:39
 msgid ""
 "Please, define at least one authentication method for logging into the "
 "system as root."
 msgstr "请至少设定一个认证方法，以使用 Root 身份登录系统。"
 
-#. TRANSLATORS: push button label
-#: src/components/users/RootAuthMethods.jsx:43
+#: src/components/users/RootAuthMethods.jsx:46
 msgid "Set a password"
 msgstr "设置密码"
 
-#. TRANSLATORS: push button label
-#: src/components/users/RootAuthMethods.jsx:45
+#: src/components/users/RootAuthMethods.jsx:50
 msgid "Upload a SSH Public Key"
 msgstr "上传 SSH 公钥"
 
-#: src/components/users/RootAuthMethods.jsx:94
-#: src/components/users/RootAuthMethods.jsx:107
+#: src/components/users/RootAuthMethods.jsx:100
+#: src/components/users/RootAuthMethods.jsx:112
 msgid "Set"
 msgstr "设置"
 
-#: src/components/users/RootAuthMethods.jsx:129
+#: src/components/users/RootAuthMethods.jsx:132
 msgid "Already set"
 msgstr "已设定"
 
-#: src/components/users/RootAuthMethods.jsx:130
-#: src/components/users/RootAuthMethods.jsx:134
+#: src/components/users/RootAuthMethods.jsx:132
+#: src/components/users/RootAuthMethods.jsx:136
 msgid "Not set"
 msgstr "未设定"
 
 #. TRANSLATORS: table header, user authentication method
-#: src/components/users/RootAuthMethods.jsx:155
+#: src/components/users/RootAuthMethods.jsx:157
 msgid "Method"
 msgstr "方法"
 
-#: src/components/users/RootAuthMethods.jsx:170
+#: src/components/users/RootAuthMethods.jsx:174
 msgid "SSH Key"
 msgstr "SSH 密钥"
 
-#: src/components/users/RootAuthMethods.jsx:187
+#: src/components/users/RootAuthMethods.jsx:193
 msgid "Change the root password"
 msgstr "修改 Root 密码"
 
-#: src/components/users/RootAuthMethods.jsx:187
+#: src/components/users/RootAuthMethods.jsx:193
 msgid "Set a root password"
 msgstr "设定 Root 密码"
 
-#: src/components/users/RootAuthMethods.jsx:194
-msgid "Add a SSH Public Key for root"
-msgstr "为 root 添加 SSH 公钥"
-
-#: src/components/users/RootAuthMethods.jsx:194
+#: src/components/users/RootAuthMethods.jsx:203
 msgid "Edit the SSH Public Key for root"
 msgstr "编辑 root 的 SSH 公钥"
 
-#: src/components/users/RootPasswordPopup.jsx:42
+#: src/components/users/RootAuthMethods.jsx:204
+msgid "Add a SSH Public Key for root"
+msgstr "为 root 添加 SSH 公钥"
+
+#: src/components/users/RootPasswordPopup.jsx:43
 msgid "Root password"
 msgstr "Root 密码"
 
@@ -2510,6 +2442,36 @@ msgstr "首个用户"
 #: src/components/users/UsersPage.jsx:52
 msgid "Root authentication"
 msgstr "Root 认证"
+
+#~ msgid "Reading file..."
+#~ msgstr "正在读取文件……"
+
+#~ msgid "Cannot read the file"
+#~ msgstr "无法读取文件"
+
+#~ msgid "Agama Error"
+#~ msgstr "Agama 错误"
+
+#~ msgid "Loading available products, please wait..."
+#~ msgstr "正在载入可用产品，请稍候……"
+
+#, c-format
+#~ msgid "There is %d destructive action planned"
+#~ msgid_plural "There are %d destructive actions planned"
+#~ msgstr[0] "已计划执行 %d 个具有破坏性的操作"
+
+#, c-format
+#~ msgid "Space action selector for %s"
+#~ msgstr "%s 的空间操作选择器"
+
+#~ msgid "Allow resize"
+#~ msgstr "允许调整大小"
+
+#~ msgid "Do not modify"
+#~ msgstr "不要修改"
+
+#~ msgid "Shrinkable"
+#~ msgstr "可缩小"
 
 #~ msgid "Choose a language"
 #~ msgstr "选择语言"
@@ -2849,9 +2811,6 @@ msgstr "Root 认证"
 
 #~ msgid "Waiting for information about selected device"
 #~ msgstr "正在等待已选择设备的信息"
-
-#~ msgid "Waiting for information about space policy"
-#~ msgstr "正在等待空间策略信息"
 
 #, fuzzy, c-format
 #~ msgid ""
