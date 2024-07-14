@@ -14,6 +14,8 @@ translations:
       l'últim SUSE Linux Enterprise Server.
     cs: Leap 16.0 je nejnovější verze komunitní distribuce založené na nejnovějším
       SUSE Linux Enterprise Serveru.
+    de: Leap 16.0 ist die neueste Version einer Community-Distribution, die auf dem
+      aktuellen SUSE Linux Enterprise Server basiert.
     ja: Leap 16.0 は最新のSUSE Linux Enterprise Server をベースにしたコミュニティディストリビューションの最新版です。
     nb_NO: Leap 16.0 er den nyeste versjonen av den fellesskapte distribusjon basert
       på den nyeste SUSE Linux Enterprise Server.
@@ -27,7 +29,7 @@ translations:
 software:
   installation_repositories:
     - url: https://download.opensuse.org/distribution/leap/16.0/repo/oss
-    
+
   mandatory_patterns:
     - enhanced_base # only pattern that is shared among all roles on Leap
   optional_patterns: null # no optional pattern shared
