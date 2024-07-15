@@ -61,4 +61,9 @@ impl HTTPClient {
             // and meanwhile start checking for events
         }
     }
+
+    pub async fn delete_question(&self, question_id: u32) -> Result<(), ServiceError> {
+        let path = format!("/questions/{}/answer", question_id);
+        self.client.delete(path.as_str()).await
+    }
 }

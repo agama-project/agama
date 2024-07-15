@@ -74,7 +74,7 @@ impl BaseHTTPClient {
         self.base_url.clone() + path
     }
 
-    /// post object to given path and report error if post
+    /// post object to given path and report error if response is not success
     pub async fn post(&self, path: &str, object: &impl Serialize) -> Result<(), ServiceError> {
         let response = self.post_response(path, object).await?;
         if response.status().is_success() {
@@ -95,6 +95,28 @@ impl BaseHTTPClient {
         self.client
             .post(self.url(path))
             .json(object)
+            .send()
+            .await
+            .map_err(|e| e.into())
+    }
+
+    /// delete call on given path and report error if failed
+    pub async fn delete(&self, path: &str) -> Result<(), ServiceError> {
+        let response = self.delete_response(path).await?;
+        if response.status().is_success() {
+            Ok(())
+        } else {
+            Err(self.build_backend_error(response).await)
+        }
+    }
+
+    /// delete call on given path and returns server response. Reports error only if failed to send
+    /// request, but if server returns e.g. 500, it will be in Ok result.
+    /// In general unless specific response handling is needed, simple delete should be used.
+    /// TODO: do not need variant with request body? if so, then create additional method.
+    pub async fn delete_response(&self, path: &str) -> Result<Response, ServiceError> {
+        self.client
+            .delete(self.url(path))
             .send()
             .await
             .map_err(|e| e.into())
