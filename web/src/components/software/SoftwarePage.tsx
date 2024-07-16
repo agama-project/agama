@@ -101,7 +101,7 @@ function SoftwarePage(): React.ReactNode {
   useProposalChanges();
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{_("Software")}</h2>
       </Page.Header>
@@ -123,7 +123,7 @@ function SoftwarePage(): React.ReactNode {
           </GridItem>
         </Grid>
       </Page.MainContent>
-    </>
+    </Page>
   );
 }
 

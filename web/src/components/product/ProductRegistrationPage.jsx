@@ -61,7 +61,7 @@ export default function ProductRegistrationPage() {
   };
 
   return (
-    <>
+    <Page>
       <Page.MainContent>
         <h3>{sprintf(_("Register %s"), selectedProduct.name)}</h3>
         {error && (
@@ -85,6 +85,6 @@ export default function ProductRegistrationPage() {
           {_("Accept")}
         </Page.Action>
       </Page.NextActions>
-    </>
+    </Page>
   );
 }

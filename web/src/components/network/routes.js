@@ -20,7 +20,6 @@
  */
 
 import React from "react";
-import { Page } from "~/components/core";
 import NetworkPage from "./NetworkPage";
 import IpSettingsForm from "./IpSettingsForm";
 import WifiSelectorPage from "./WifiSelectorPage";
@@ -28,7 +27,6 @@ import { N_ } from "~/i18n";
 
 const routes = {
   path: "/network",
-  element: <Page />,
   handle: {
     name: N_("Network"),
     icon: "settings_ethernet",

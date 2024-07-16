@@ -20,7 +20,6 @@
  */
 
 import React from "react";
-import { Page } from "~/components/core";
 import SoftwarePage from "~/components/software/SoftwarePage";
 import SoftwarePatternsSelection from "~/components/software/SoftwarePatternsSelection";
 import { N_ } from "~/i18n";
@@ -32,7 +31,6 @@ const PATHS = {
 
 const routes = () => ({
   path: PATHS.root,
-  element: <Page />,
   handle: {
     name: N_("Software"),
     icon: "apps",

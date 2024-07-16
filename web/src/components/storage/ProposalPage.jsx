@@ -290,7 +290,7 @@ export default function ProposalPage() {
    */
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{_("Storage")}</h2>
       </Page.Header>
@@ -341,6 +341,6 @@ export default function ProposalPage() {
           </GridItem>
         </Grid>
       </Page.MainContent>
-    </>
+    </Page>
   );
 }

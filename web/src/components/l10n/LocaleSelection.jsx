@@ -73,7 +73,7 @@ export default function LocaleSelection() {
   }
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{_("Locale selection")}</h2>
         <ListSearch placeholder={searchHelp} elements={locales} onChange={setFilteredLocales} />
@@ -92,6 +92,6 @@ export default function LocaleSelection() {
           {_("Select")}
         </Page.Action>
       </Page.NextActions>
-    </>
+    </Page>
   );
 }

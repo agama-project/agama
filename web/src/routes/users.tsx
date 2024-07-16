@@ -20,7 +20,6 @@
  */
 
 import React from "react";
-import { Page } from "~/components/core";
 import UsersPage from "~/components/users/UsersPage";
 import FirstUserForm from "~/components/users/FirstUserForm";
 import { N_ } from "~/i18n";
@@ -34,7 +33,6 @@ const PATHS = {
 };
 const routes = () => ({
   path: PATHS.root,
-  element: <Page />,
   handle: {
     name: N_("Users"),
     icon: "manage_accounts",

@@ -20,7 +20,6 @@
  */
 
 import React from "react";
-import { Page } from "~/components/core";
 import { L10nPage, LocaleSelection, KeymapSelection, TimezoneSelection } from "~/components/l10n";
 import { N_ } from "~/i18n";
 
@@ -33,7 +32,6 @@ const PATHS = {
 
 const routes = () => ({
   path: PATHS.root,
-  element: <Page />,
   handle: {
     name: N_("Localization"),
     icon: "globe",

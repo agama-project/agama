@@ -20,7 +20,6 @@
  */
 
 import React from "react";
-import { Page } from "~/components/core";
 import BootSelection from "~/components/storage/BootSelection";
 import DeviceSelection from "~/components/storage/DeviceSelection";
 import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
@@ -38,7 +37,6 @@ const PATHS = {
 
 const routes = () => ({
   path: PATHS.root,
-  element: <Page />,
   handle: { name: N_("Storage"), icon: "hard_drive" },
   children: [
     {

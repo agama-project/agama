@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
@@ -168,30 +166,15 @@ const CardSection = ({ title, children, ...props }) => {
 };
 
 /**
- * Displays an installation page
- * @component
- *
- * @note Sidebar is mounted as sibling of the page content to make it work
- * as expected (e.g., changing the inert attribute of its siblings according to its visibility).
+ * Wraps children in a PF/PageGroup
  *
  * @example <caption>Simple usage</caption>
- *   <Page icon="manage_accounts" title="Users settings">
+ *   <Page>
  *     <UserSectionContent />
  *   </Page>
- *
- * @param {object} props
- * @param {string} [props.icon] - The icon for the page.
- * @param {string} [props.title="Agama"] - The title for the page. By default it
- *   uses the name of the tool, do not mark it for translation.
- * @param {boolean} [props.mountSidebar=true] - Whether include the core/Sidebar component.
- * @param {React.ReactNode} [props.children] - The page content.
  */
-const Page = () => {
-  return (
-    <PageGroup>
-      <Outlet />
-    </PageGroup>
-  );
+const Page = ({ children }) => {
+  return <PageGroup>{children}</PageGroup>;
 };
 
 Page.CardSection = CardSection;

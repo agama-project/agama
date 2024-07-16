@@ -102,7 +102,7 @@ export default function TimezoneSelection() {
   }
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{_(" Timezone selection")}</h2>
         <ListSearch
@@ -125,6 +125,6 @@ export default function TimezoneSelection() {
           {_("Select")}
         </Page.Action>
       </Page.NextActions>
-    </>
+    </Page>
   );
 }

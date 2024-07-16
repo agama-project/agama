@@ -109,7 +109,7 @@ export default function NetworkPage() {
   };
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{_("Network")}</h2>
       </Page.Header>
@@ -124,6 +124,6 @@ export default function NetworkPage() {
           </GridItem>
         </Grid>
       </Page.MainContent>
-    </>
+    </Page>
   );
 }

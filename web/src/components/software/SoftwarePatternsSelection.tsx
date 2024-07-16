@@ -183,7 +183,7 @@ function SoftwarePatternsSelection(): React.ReactNode {
   });
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <Stack hasGutter>
           <h2>{_("Software selection")}</h2>
@@ -208,7 +208,7 @@ function SoftwarePatternsSelection(): React.ReactNode {
       <Page.NextActions>
         <Page.Action navigateTo="..">{_("Close")}</Page.Action>
       </Page.NextActions>
-    </>
+    </Page>
   );
 }
 

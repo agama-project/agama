@@ -21,7 +21,6 @@
 
 import React from "react";
 import { Gallery, GalleryItem } from "@patternfly/react-core";
-import { useLoaderData } from "react-router-dom";
 import { ButtonLink, CardField, Page } from "~/components/core";
 import { PATHS } from "~/routes/l10n";
 import { _ } from "~/i18n";
@@ -44,7 +43,7 @@ export default function L10nPage() {
   const { selectedLocale: locale, selectedTimezone: timezone, selectedKeymap: keymap } = useL10n();
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{_("Localization")}</h2>
       </Page.Header>
@@ -75,13 +74,13 @@ export default function L10nPage() {
               label={_("Time zone")}
               value={timezone ? (timezone.parts || []).join(" - ") : _("Not selected yet")}
             >
-              <ButtonLink to={TIMEZONE_SELECTION_PATH} isPrimary={!timezone}>
+              <ButtonLink to={PATHS.timezoneSelection} isPrimary={!timezone}>
                 {timezone ? _("Change") : _("Select")}
               </ButtonLink>
             </Section>
           </GalleryItem>
         </Gallery>
       </Page.MainContent>
-    </>
+    </Page>
   );
 }

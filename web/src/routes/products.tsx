@@ -20,7 +20,6 @@
  */
 
 import React from "react";
-import { Page } from "~/components/core";
 import { ProductSelectionPage, ProductSelectionProgress } from "~/components/product";
 
 const PATHS = {
@@ -30,7 +29,6 @@ const PATHS = {
 
 const routes = () => ({
   path: PATHS.root,
-  element: <Page />,
   children: [
     {
       index: true,

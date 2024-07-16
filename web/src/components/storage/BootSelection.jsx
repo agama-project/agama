@@ -154,7 +154,7 @@ partitions in the appropriate disk.",
   };
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{_("Select booting partition")}</h2>
         <p className={textStyles.color_400}>{description}</p>
@@ -250,6 +250,6 @@ partitions in the appropriate disk.",
           {_("Accept")}
         </Page.Action>
       </Page.NextActions>
-    </>
+    </Page>
   );
 }

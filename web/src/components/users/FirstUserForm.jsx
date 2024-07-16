@@ -196,7 +196,7 @@ export default function FirstUserForm() {
   };
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{state.isEditing ? _("Edit user") : _("Create user")}</h2>
       </Page.Header>
@@ -293,6 +293,6 @@ export default function FirstUserForm() {
           {_("Accept")}
         </Page.Action>
       </Page.NextActions>
-    </>
+    </Page>
   );
 }

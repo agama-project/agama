@@ -20,13 +20,14 @@
  */
 
 import React from "react";
+import { Page } from "~/components/core";
 import { InitiatorSection, TargetsSection } from "~/components/storage/iscsi";
 
 export default function ISCSIPage() {
   return (
-    <>
+    <Page>
       <InitiatorSection />
       <TargetsSection />
-    </>
+    </Page>
   );
 }
