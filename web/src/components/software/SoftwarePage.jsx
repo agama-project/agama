@@ -25,7 +25,7 @@ import React, { useEffect, useState } from "react";
 
 import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
-import { useIssues } from "~/context/issues";
+import { useIssues } from "~/queries/issues";
 import { BUSY } from "~/client/status";
 import { _ } from "~/i18n";
 import { ButtonLink, CardField, IssuesHint, Page, SectionSkeleton } from "~/components/core";
@@ -108,7 +108,7 @@ const SelectedPatternsList = ({ patterns }) => {
  * @returns {JSX.Element}
  */
 function SoftwarePage() {
-  const { software: issues } = useIssues();
+  const issues = useIssues("software");
   const [status, setStatus] = useState(BUSY);
   const [patterns, setPatterns] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
