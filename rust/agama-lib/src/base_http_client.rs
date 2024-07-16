@@ -6,7 +6,7 @@ use crate::{auth::AuthToken, error::ServiceError};
 
 /// Base that all http clients should use.
 ///
-/// It provides several features including automatic base url switching,
+/// It provides several features including automatic base URL switching,
 /// websocket events listening or object constructions.
 ///
 /// Usage should be just thin layer in domain specific client.
@@ -50,7 +50,7 @@ impl BaseHTTPClient {
 
     const NO_TEXT: &'static str = "No text";
     /// Simple wrapper around Response to get object from response.
-    /// If complete Response is needed use get_response method.
+    /// If a complete [`Response`] is needed, use the [`Self::get_response`] method.
     pub async fn get<T: DeserializeOwned>(&self, path: &str) -> Result<T, ServiceError> {
         let response = self.get_response(path).await?;
         if response.status().is_success() {
@@ -60,8 +60,8 @@ impl BaseHTTPClient {
         }
     }
 
-    /// Calls GET method on given path and return Response that can be further
-    /// processed. If only simple object from json is required, use method get.
+    /// Calls GET method on the given path and returns [`Response`] that can be further
+    /// processed. If only simple object from JSON is required, use method get.
     pub async fn get_response(&self, path: &str) -> Result<Response, ServiceError> {
         self.client
             .get(self.url(path))
