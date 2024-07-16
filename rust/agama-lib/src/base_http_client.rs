@@ -47,7 +47,7 @@ impl BaseHTTPClient {
         })
     }
 
-    /// Simple wrapper around Response to get object from response.
+    /// Simple wrapper around [`Response`] to get object from response.
     ///
     /// If a complete [`Response`] is needed, use the [`Self::get_response`] method.
     ///
