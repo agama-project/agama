@@ -303,6 +303,44 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "boot": {
+          "$ref": "#/$defs/boot"
+        },
+        "drives": {
+          "title": "Section describing drives (disks, BIOS RAIDs and multipath devices)",
+          "type": "array",
+          "items": {
+            "title": "Drive description",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "search": {
+                "description": "The search is applied only to drive devices",
+                "$ref": "#/$defs/search"
+              },
+              "encrypt": {
+                "description": "The device is encrypted only if the current partitions are deleted and no new partitions are created",
+                "$ref": "#/$defs/encrypt"
+              },
+              "format": {
+                "description": "The device is formatted only if the current partitions are deleted and no new partitions are created",
+                "$ref": "#/$defs/format"
+              },
+              "mount": {
+                "description": "The device is mounted only if it is formatted",
+                "$ref": "#/$defs/mount"
+              },
+              "ptableType": {
+                "title": "Partition table type",
+                "description": "The partition table is created only if all the current partitions are deleted",
+                "enum": ["gpt", "msdos", "dasd"]
+              },
+              "partitions": {
+                "$ref": "#/$defs/partitions"
+              }
+            }
+          }
+        },
         "guided": {
           "title": "Settings to execute a Guided Proposal",
           "type": "object",
@@ -347,42 +385,10 @@
               ]
             },
             "boot": {
-              "title": "Configuration of the boot settings",
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["configure"],
-              "properties": {
-                "configure": {
-                  "title": "Whether to configure partitions for booting",
-                  "type": "boolean"
-                },
-                "device": {
-                  "title": "Device to use for booting",
-                  "description": "The installation device is used by default for booting",
-                  "type": "string",
-                  "examples": ["/dev/vda"]
-                }
-              }
+              "$ref": "#/$defs/boot"
             },
             "encryption": {
-              "title": "Encryption settings",
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["password"],
-              "properties": {
-                "password": {
-                  "title": "Passphrase to use when creating new encryption devices",
-                  "type": "string"
-                },
-                "method": {
-                  "title": "Method used to create the encryption devices",
-                  "enum": ["luks2", "tpm_fde"]
-                },
-                "pbkdFunction": {
-                  "title": "Password-based key derivation function to use for LUKS2",
-                  "enum": ["pbkdf2", "argon2i", "argon2id"]
-                }
-              }
+              "$ref": "#/$defs/encrypt"
             },
             "space": {
               "title": "Policy to find space for the new partitions",
@@ -461,53 +467,11 @@
                 "required": ["mount"],
                 "properties": {
                   "mount": {
-                    "title": "Mount point",
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": ["path"],
-                    "properties": {
-                      "path": {
-                        "title": "Mount path",
-                        "type": "string"
-                      },
-                      "options": {
-                        "title": "Options to add to the fourth field of fstab",
-                        "type": "array",
-                        "items": { "type": "string" }
-                      }
-                    }
+                    "$ref": "#/$defs/mount"
                   },
                   "filesystem": {
                     "title": "File system of the volume",
-                    "anyOf": [
-                      {
-                        "title": "File system type",
-                        "enum": [
-                          "bcachefs", "btrfs", "exfat", "ext2", "ext3", "ext4", "f2fs", "jfs",
-                          "nfs", "nilfs2", "ntfs", "reiserfs", "swap", "tmpfs", "vfat", "xfs"
-                        ]
-                      },
-                      {
-                        "title": "Btrfs file system",
-                        "description": "Indicates properties of the Btrfs file system",
-                        "type": "object",
-                        "additionalProperties": false,
-                        "required": ["btrfs"],
-                        "properties": {
-                          "btrfs": {
-                            "title": "Specification of a Btrfs file system",
-                            "type": "object",
-                            "additionalProperties": false,
-                            "properties": {
-                              "snapshots": {
-                                "title": "Whether Btrfs snapshots should be configured",
-                                "type": "boolean"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ]
+                    "$ref": "#/$defs/filesystemValue"
                   },
                   "size": {
                     "title": "Size limits",
@@ -625,13 +589,16 @@
     },
     "legacyAutoyastStorage": {
       "title": "Legacy AutoYaST storage settings",
-      "description": "Accepts all options of the AutoYaST profile (XML to JSON)",
-      "type": "object"
+      "description": "Accepts all options of the AutoYaST partitioning section (XML to JSON)",
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
     }
   },
   "$defs": {
     "sizeString": {
-      "title": "Human readable size (e.g., '2 GiB')",
+      "title": "Human readable size",
       "type": "string",
       "pattern": "^[0-9]+(\\.[0-9]+)?(\\s*([KkMmGgTtPpEeZzYy][iI]?)?[Bb])?$",
       "examples": ["2 GiB", "1.5 TB", "1TIB", "1073741824 b", "1073741824"]
@@ -639,13 +606,177 @@
     "sizeInteger": {
       "title": "Size in bytes",
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "examples": [1024, 2048]
     },
     "sizeValue": {
       "anyOf": [
         { "$ref": "#/$defs/sizeString" },
         { "$ref": "#/$defs/sizeInteger" }
       ]
+    },
+    "filesystemValue": {
+      "anyOf": [
+        {
+          "title": "File system type",
+          "enum": [
+            "bcachefs", "btrfs", "exfat", "ext2", "ext3", "ext4", "f2fs", "jfs",
+            "nfs", "nilfs2", "ntfs", "reiserfs", "swap", "tmpfs", "vfat", "xfs"
+          ]
+        },
+        {
+          "title": "Btrfs file system",
+          "description": "Indicates properties of the Btrfs file system",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["btrfs"],
+          "properties": {
+            "btrfs": {
+              "title": "Specification of a Btrfs file system",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "snapshots": {
+                  "title": "Whether Btrfs snapshots should be configured",
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "boot": {
+      "title": "Boot options",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["configure"],
+      "properties": {
+        "configure": {
+          "title": "Whether to configure partitions for booting",
+          "type": "boolean"
+        },
+        "device": {
+          "title": "Device to use for booting",
+          "description": "The installation device is used by default for booting",
+          "type": "string",
+          "examples": ["/dev/vda"]
+        }
+      }
+    },
+    "search": {
+      "title": "Search options",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "title": "Device name",
+          "type": "string",
+          "examples": ["/dev/vda"]
+        }
+      }
+    },
+    "encrypt": {
+      "title": "Encryption options",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["password"],
+      "properties": {
+        "password": {
+          "title": "Passphrase to use when creating a new encryption device",
+          "type": "string"
+        },
+        "method": {
+          "title": "Method used to create the encryption device",
+          "enum": ["luks2", "tpm_fde"]
+        },
+        "pbkdFunction": {
+          "title": "Password-based key derivation function to use for LUKS2",
+          "enum": ["pbkdf2", "argon2i", "argon2id"]
+        }
+      }
+    },
+    "format": {
+      "title": "Format options",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filesystem"],
+      "properties": {
+        "filesystem": {
+          "title": "File system to use for formatting the device",
+          "$ref": "#/$defs/filesystemValue"
+        },
+        "label": {
+          "title": "File system label",
+          "type": "string"
+        },
+        "mkfsOptions": {
+          "title": "Options for creating the file system",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "mount": {
+      "title": "Mount options",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path"],
+      "properties": {
+        "path": {
+          "title": "Mount path",
+          "type": "string",
+          "examples": ["/dev/vda"]
+        },
+        "options": {
+          "title": "Options to add to the fourth field of fstab",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "partitions": {
+      "title": "Partitions to create, reuse or delete",
+      "type": "array",
+      "items": {
+        "title": "Partition options",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "search": {
+            "description": "The search is applied only to the partitions of the selected device",
+            "$ref": "#/$defs/search"
+          },
+          "create": {
+            "title": "Options to create the partition",
+            "description": "These options are ignored if the partition already exists",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "title": "Partition ID",
+                "enum": ["linux", "swap", "lvm", "raid", "esp", "prep", "biosBoot"]
+              },
+              "type": {
+                "title": "Partition type",
+                "enum": ["primary", "logical"]
+              }
+            }
+          },
+          "encrypt": {
+            "description": "The partition is encrypted only if it is going to be created",
+            "$ref": "#/$defs/encrypt"
+          },
+          "format": {
+            "$ref": "#/$defs/format"
+          },
+          "mount": {
+            "description": "The partition is mounted only if it is formatted",
+            "$ref": "#/$defs/mount"
+          }
+        }
+      }
     }
   }
 }
