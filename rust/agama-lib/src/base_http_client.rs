@@ -151,7 +151,6 @@ impl BaseHTTPClient {
             .map_err(|e| e.into())
     }
 
-
     const NO_TEXT: &'static str = "(Failed to extract error text from HTTP response)";
     /// Builds [`BackendError`] from response.
     ///
