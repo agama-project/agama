@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Tue Jul 16 11:56:29 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI:
+-- Add `agama questions list` to get list of unanswered questions
+-- Add `agama questions ask` to ask for question and wait for
+   answer
+- agama-lib:
+-- Add BaseHTTPClient that is base for clients that communicate
+   with agama-http-server
+   (gh#openSUSE/agama#1457)
+
+-------------------------------------------------------------------
 Wed Jul 10 20:11:39 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Add to HTTP API a method to remove questions
