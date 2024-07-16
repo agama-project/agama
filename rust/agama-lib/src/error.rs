@@ -16,6 +16,8 @@ pub enum ServiceError {
     DBusProtocol(#[from] zbus::fdo::Error),
     #[error("Unexpected type on D-Bus '{0}'")]
     ZVariant(#[from] zvariant::Error),
+    #[error("Failed to communicate with the HTTP backend '{0}'")]
+    HTTPError(#[from] reqwest::Error),
     // it's fine to say only "Error" because the original
     // specific error will be printed too
     #[error("Error: {0}")]
@@ -29,10 +31,16 @@ pub enum ServiceError {
     FailedRegistration(String),
     #[error("Failed to find these patterns: {0:?}")]
     UnknownPatterns(Vec<String>),
+    #[error("Passed json data is not correct: {0}")]
+    InvalidJson(#[from] serde_json::Error),
     #[error("Could not perform action '{0}'")]
     UnsuccessfulAction(String),
-    #[error("Unknown installation phase: '{0}")]
+    #[error("Unknown installation phase: {0}")]
     UnknownInstallationPhase(u32),
+    #[error("Backend call failed with status {0} and text '{1}'")]
+    BackendError(u16, String),
+    #[error("You are not logged in. Please use: agama auth login")]
+    NotAuthenticated,
 }
 
 #[derive(Error, Debug)]
