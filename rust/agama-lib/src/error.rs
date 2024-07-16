@@ -39,6 +39,8 @@ pub enum ServiceError {
     UnknownInstallationPhase(u32),
     #[error("Backend call failed with status {0} and text '{1}'")]
     BackendError(u16, String),
+    #[error("You are not logged in. Please use: agama auth login")]
+    NotAuthenticated,
 }
 
 #[derive(Error, Debug)]

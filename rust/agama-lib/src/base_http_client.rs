@@ -1,4 +1,3 @@
-use anyhow::Context;
 use reqwest::{header, Client, Response};
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -31,7 +30,7 @@ const API_URL: &str = "http://localhost/api";
 impl BaseHTTPClient {
     // if there is need for client without authorization, create new constructor for it
     pub fn new() -> Result<Self, ServiceError> {
-        let token = AuthToken::find().context("You are not logged in")?;
+        let token = AuthToken::find().ok_or(ServiceError::NotAuthenticated)?;
 
         let mut headers = header::HeaderMap::new();
         // just use generic anyhow error here as Bearer format is constructed by us, so failures can come only from token
@@ -48,14 +47,13 @@ impl BaseHTTPClient {
         })
     }
 
-    const NO_TEXT: &'static str = "No text";
     /// Simple wrapper around Response to get object from response.
     ///
     /// If a complete [`Response`] is needed, use the [`Self::get_response`] method.
     ///
     /// Arguments:
     ///
-    /// * `path`: path relative to http API like `/questions`
+    /// * `path`: path relative to HTTP API like `/questions`
     pub async fn get<T: DeserializeOwned>(&self, path: &str) -> Result<T, ServiceError> {
         let response = self.get_response(path).await?;
         if response.status().is_success() {
@@ -72,7 +70,7 @@ impl BaseHTTPClient {
     ///
     /// Arguments:
     ///
-    /// * `path`: path relative to http API like `/questions`
+    /// * `path`: path relative to HTTP API like `/questions`
     pub async fn get_response(&self, path: &str) -> Result<Response, ServiceError> {
         self.client
             .get(self.url(path))
@@ -89,7 +87,7 @@ impl BaseHTTPClient {
     ///
     /// Arguments:
     ///
-    /// * `path`: path relative to http API like `/questions`
+    /// * `path`: path relative to HTTP API like `/questions`
     /// * `object`: Object that can be serialiazed to JSON as body of request.
     pub async fn post(&self, path: &str, object: &impl Serialize) -> Result<(), ServiceError> {
         let response = self.post_response(path, object).await?;
@@ -107,7 +105,7 @@ impl BaseHTTPClient {
     ///
     /// Arguments:
     ///
-    /// * `path`: path relative to http API like `/questions`
+    /// * `path`: path relative to HTTP API like `/questions`
     /// * `object`: Object that can be serialiazed to JSON as body of request.
     pub async fn post_response(
         &self,
@@ -126,7 +124,7 @@ impl BaseHTTPClient {
     ///
     /// Arguments:
     ///
-    /// * `path`: path relative to http API like `/questions/1`    
+    /// * `path`: path relative to HTTP API like `/questions/1`    
     pub async fn delete(&self, path: &str) -> Result<(), ServiceError> {
         let response = self.delete_response(path).await?;
         if response.status().is_success() {
@@ -144,7 +142,7 @@ impl BaseHTTPClient {
     ///
     /// Arguments:
     ///
-    /// * `path`: path relative to http API like `/questions/1`    
+    /// * `path`: path relative to HTTP API like `/questions/1`    
     pub async fn delete_response(&self, path: &str) -> Result<Response, ServiceError> {
         self.client
             .delete(self.url(path))
@@ -153,6 +151,8 @@ impl BaseHTTPClient {
             .map_err(|e| e.into())
     }
 
+
+    const NO_TEXT: &'static str = "(Failed to extract error text from HTTP response)";
     /// Builds [`BackendError`] from response.
     ///
     /// It contains also processing of response body, that is why it has to be async.
