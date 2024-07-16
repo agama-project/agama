@@ -50,7 +50,12 @@ impl BaseHTTPClient {
 
     const NO_TEXT: &'static str = "No text";
     /// Simple wrapper around Response to get object from response.
+    ///
     /// If a complete [`Response`] is needed, use the [`Self::get_response`] method.
+    ///
+    /// Arguments:
+    ///
+    /// * `path`: path relative to http API like `/questions`
     pub async fn get<T: DeserializeOwned>(&self, path: &str) -> Result<T, ServiceError> {
         let response = self.get_response(path).await?;
         if response.status().is_success() {
@@ -61,7 +66,13 @@ impl BaseHTTPClient {
     }
 
     /// Calls GET method on the given path and returns [`Response`] that can be further
-    /// processed. If only simple object from JSON is required, use method get.
+    /// processed.
+    ///
+    /// If only simple object from JSON is required, use method get.
+    ///
+    /// Arguments:
+    ///
+    /// * `path`: path relative to http API like `/questions`
     pub async fn get_response(&self, path: &str) -> Result<Response, ServiceError> {
         self.client
             .get(self.url(path))
@@ -75,6 +86,11 @@ impl BaseHTTPClient {
     }
 
     /// post object to given path and report error if response is not success
+    ///
+    /// Arguments:
+    ///
+    /// * `path`: path relative to http API like `/questions`
+    /// * `object`: Object that can be serialiazed to JSON as body of request.
     pub async fn post(&self, path: &str, object: &impl Serialize) -> Result<(), ServiceError> {
         let response = self.post_response(path, object).await?;
         if response.status().is_success() {
@@ -86,7 +102,13 @@ impl BaseHTTPClient {
 
     /// post object to given path and returns server response. Reports error only if failed to send
     /// request, but if server returns e.g. 500, it will be in Ok result.
+    ///
     /// In general unless specific response handling is needed, simple post should be used.
+    ///
+    /// Arguments:
+    ///
+    /// * `path`: path relative to http API like `/questions`
+    /// * `object`: Object that can be serialiazed to JSON as body of request.
     pub async fn post_response(
         &self,
         path: &str,
@@ -101,6 +123,10 @@ impl BaseHTTPClient {
     }
 
     /// delete call on given path and report error if failed
+    ///
+    /// Arguments:
+    ///
+    /// * `path`: path relative to http API like `/questions/1`    
     pub async fn delete(&self, path: &str) -> Result<(), ServiceError> {
         let response = self.delete_response(path).await?;
         if response.status().is_success() {
@@ -112,8 +138,13 @@ impl BaseHTTPClient {
 
     /// delete call on given path and returns server response. Reports error only if failed to send
     /// request, but if server returns e.g. 500, it will be in Ok result.
+    ///
     /// In general unless specific response handling is needed, simple delete should be used.
     /// TODO: do not need variant with request body? if so, then create additional method.
+    ///
+    /// Arguments:
+    ///
+    /// * `path`: path relative to http API like `/questions/1`    
     pub async fn delete_response(&self, path: &str) -> Result<Response, ServiceError> {
         self.client
             .delete(self.url(path))
@@ -122,6 +153,13 @@ impl BaseHTTPClient {
             .map_err(|e| e.into())
     }
 
+    /// Builds [`BackendError`] from response.
+    ///
+    /// It contains also processing of response body, that is why it has to be async.
+    ///
+    /// Arguments:
+    ///
+    /// * `response`: response from which generate error
     pub async fn build_backend_error(&self, response: Response) -> ServiceError {
         let code = response.status().as_u16();
         let text = response
