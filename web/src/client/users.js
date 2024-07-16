@@ -21,8 +21,6 @@
 
 // @ts-check
 
-import { WithIssues } from "./mixins";
-
 const SERVICE_NAME = "org.opensuse.Agama.Manager1";
 
 /**
@@ -48,11 +46,11 @@ const SERVICE_NAME = "org.opensuse.Agama.Manager1";
  */
 
 /**
- * Users client
+ * Client to interact with the Agama users service
  *
  * @ignore
  */
-class UsersBaseClient {
+class UsersClient {
   /**
    * @param {import("./http").HTTPClient} client - HTTP client.
    */
@@ -182,10 +180,5 @@ class UsersBaseClient {
     });
   }
 }
-
-/**
- * Client to interact with the Agama users service
- */
-class UsersClient extends WithIssues(UsersBaseClient, "/users/issues", SERVICE_NAME) {}
 
 export { UsersClient };

@@ -24,7 +24,6 @@
 import React from "react";
 import { InstallerClientProvider } from "./installer";
 import { InstallerL10nProvider } from "./installerL10n";
-import { IssuesProvider } from "./issues";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
@@ -39,9 +38,7 @@ function AppProviders({ children }) {
   return (
     <InstallerClientProvider>
       <QueryClientProvider client={queryClient}>
-        <InstallerL10nProvider>
-          <IssuesProvider>{children}</IssuesProvider>
-        </InstallerL10nProvider>
+        <InstallerL10nProvider>{children}</InstallerL10nProvider>
       </QueryClientProvider>
     </InstallerClientProvider>
   );
