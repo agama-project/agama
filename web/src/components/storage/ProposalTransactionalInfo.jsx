@@ -45,9 +45,15 @@ export default function ProposalTransactionalInfo({ settings }) {
   const title = _("Transactional root file system");
   /* TRANSLATORS: %s is replaced by a product name (e.g., openSUSE Tumbleweed) */
   const description = sprintf(
-    _("%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots."),
-    selectedProduct.name
+    _(
+      "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.",
+    ),
+    selectedProduct.name,
   );
 
-  return <Alert isInline title={title}>{description}</Alert>;
+  return (
+    <Alert isInline title={title}>
+      {description}
+    </Alert>
+  );
 }

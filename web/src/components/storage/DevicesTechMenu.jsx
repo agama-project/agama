@@ -23,10 +23,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useHref } from "react-router-dom";
-import {
-  MenuToggle,
-  Select, SelectList, SelectOption
-} from "@patternfly/react-core";
+import { MenuToggle, Select, SelectList, SelectOption } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
 
@@ -38,11 +35,7 @@ const DASDLink = () => {
   const href = useHref("/storage/dasd");
 
   return (
-    <SelectOption
-      key="dasd-link"
-      to={href}
-      description={_("Manage and format")}
-    >
+    <SelectOption key="dasd-link" to={href} description={_("Manage and format")}>
       DASD
     </SelectOption>
   );
@@ -56,11 +49,7 @@ const ZFCPLink = () => {
   const href = useHref("/storage/zfcp");
 
   return (
-    <SelectOption
-      key="zfcp-link"
-      to={href}
-      description={_("Activate disks")}
-    >
+    <SelectOption key="zfcp-link" to={href} description={_("Activate disks")}>
       {_("zFCP")}
     </SelectOption>
   );
@@ -74,11 +63,7 @@ const ISCSILink = () => {
   const href = useHref("/storage/iscsi");
 
   return (
-    <SelectOption
-      key="iscsi-link"
-      to={href}
-      description={_("Connect to iSCSI targets")}
-    >
+    <SelectOption key="iscsi-link" to={href} description={_("Connect to iSCSI targets")}>
       {_("iSCSI")}
     </SelectOption>
   );
@@ -104,7 +89,7 @@ export default function DevicesTechMenu({ label }) {
     client.zfcp.isSupported().then(setShowZFCPLink);
   }, [client.dasd, client.zfcp]);
 
-  const toggle = toggleRef => (
+  const toggle = (toggleRef) => (
     <MenuToggle ref={toggleRef} onClick={() => setIsOpen(!isOpen)} isExpanded={isOpen}>
       {label}
     </MenuToggle>

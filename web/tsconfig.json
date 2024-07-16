@@ -2,7 +2,6 @@
   "compilerOptions": {
     "baseUrl": "./",
     "isolatedModules": true,
-    "noEmit": true,
     "target": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -10,18 +9,10 @@
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "~/*": [
-        "src/*"
-      ],
-      "~/client": [
-        "src/client/index.js"
-      ],
-      "@icons/*": [
-        "node_modules/@material-symbols/svg-400/outlined/*"
-      ]
+      "~/*": ["src/*"],
+      "~/client": ["src/client/index.js"],
+      "@icons/*": ["node_modules/@material-symbols/svg-400/outlined/*"]
     }
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

@@ -23,10 +23,15 @@
 
 import React from "react";
 import {
-  Card, CardHeader, CardTitle, CardBody, CardFooter,
-  Flex, FlexItem,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardBody,
+  CardFooter,
+  Flex,
+  FlexItem,
 } from "@patternfly/react-core";
-import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 // FIXME: improve name and documentation
 // TODO: allows having a drawer, see storage/ProposalResultActions
@@ -38,15 +43,14 @@ import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
  * @todo write documentation
  */
 const CardField = ({
-  label,
-  value,
-  description,
-  actions,
-  children = [],
+  label = undefined,
+  value = undefined,
+  description = undefined,
+  actions = undefined,
+  children,
   cardProps = {},
   cardHeaderProps = {},
-  cardDescriptionProps = {}
-
+  cardDescriptionProps = {},
 }) => {
   // TODO: replace aria-label with the proper aria-labelledby
   return (
@@ -54,16 +58,24 @@ const CardField = ({
       <CardHeader {...cardHeaderProps}>
         <CardTitle>
           <Flex alignItems={{ default: "alignItemsCenter" }}>
-            <FlexItem spacer={{ default: "spacerSm" }}>
-              <h3>{label}</h3>
-            </FlexItem>
-            <FlexItem grow={{ default: "grow" }} className={textStyles.fontSizeXl}>
-              {value}
-            </FlexItem>
+            {label && (
+              <FlexItem spacer={{ default: "spacerSm" }}>
+                <h3>{label}</h3>
+              </FlexItem>
+            )}
+            {value && (
+              <FlexItem grow={{ default: "grow" }} className={textStyles.fontSizeXl}>
+                {value}
+              </FlexItem>
+            )}
           </Flex>
         </CardTitle>
       </CardHeader>
-      {description && <CardBody isFilled={false} {...cardDescriptionProps}><div className={textStyles.color_200}>{description}</div></CardBody>}
+      {description && (
+        <CardBody isFilled={false} {...cardDescriptionProps}>
+          <div className={textStyles.color_200}>{description}</div>
+        </CardBody>
+      )}
       {children}
       {actions && <CardFooter>{actions}</CardFooter>}
     </Card>

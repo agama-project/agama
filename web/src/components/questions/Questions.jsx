@@ -40,10 +40,13 @@ export default function Questions() {
     [],
   );
 
-  const answerQuestion = useCallback((question) => {
-    client.questions.answer(question);
-    removeQuestion(question.id);
-  }, [client.questions, removeQuestion]);
+  const answerQuestion = useCallback(
+    (question) => {
+      client.questions.answer(question);
+      removeQuestion(question.id);
+    },
+    [client.questions, removeQuestion],
+  );
 
   useEffect(() => {
     client.questions.listenQuestions();

@@ -25,7 +25,7 @@ import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { useConfigMutation, useL10n } from "~/queries/l10n";
-import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 // TODO: Add documentation and typechecking
 // TODO: Evaluate if worth it extracting the selector
@@ -53,8 +53,12 @@ export default function LocaleSelection() {
         onChange={() => setSelected(id)}
         label={
           <Flex gap={{ default: "gapSm" }}>
-            <span className={textStyles.fontSizeLg}><b>{name}</b></span>
-            <span className={[textStyles.fontSizeMd, textStyles.color_100].join(" ")}>{territory}</span>
+            <span className={textStyles.fontSizeLg}>
+              <b>{name}</b>
+            </span>
+            <span className={[textStyles.fontSizeMd, textStyles.color_100].join(" ")}>
+              {territory}
+            </span>
             <span className={[textStyles.fontSizeXs, textStyles.color_400].join(" ")}>{id}</span>
           </Flex>
         }
@@ -65,9 +69,7 @@ export default function LocaleSelection() {
   });
 
   if (localesList.length === 0) {
-    localesList = (
-      <b>{_("None of the locales match the filter.")}</b>
-    );
+    localesList = <b>{_("None of the locales match the filter.")}</b>;
   }
 
   return (
@@ -80,9 +82,7 @@ export default function LocaleSelection() {
       <Page.MainContent>
         <Page.CardSection>
           <Form id="localeSelection" onSubmit={onSubmit}>
-            <FormGroup isStack>
-              {localesList}
-            </FormGroup>
+            <FormGroup isStack>{localesList}</FormGroup>
           </Form>
         </Page.CardSection>
       </Page.MainContent>

@@ -22,8 +22,8 @@
 // @ts-check
 
 import React from "react";
-import { FormSelect, FormSelectOption } from '@patternfly/react-core';
-import { deviceSize } from '~/components/storage/utils';
+import { FormSelect, FormSelectOption } from "@patternfly/react-core";
+import { deviceSize } from "~/components/storage/utils";
 
 /**
  * @typedef {import ("@patternfly/react-core").FormSelectProps} PFFormSelectProps
@@ -52,9 +52,9 @@ export default function DevicesFormSelect({ devices, selectedDevice, onChange, .
     <FormSelect
       {...otherProps}
       value={selectedDevice?.sid}
-      onChange={(_, value) => onChange(devices.find(d => d.sid === Number(value)))}
+      onChange={(_, value) => onChange(devices.find((d) => d.sid === Number(value)))}
     >
-      { devices.map(device => (
+      {devices.map((device) => (
         <FormSelectOption
           key={device.sid}
           value={device.sid}

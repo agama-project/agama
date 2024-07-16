@@ -26,12 +26,12 @@ import { Card, CardBody, Form, Grid, GridItem, Radio, Stack } from "@patternfly/
 import { useNavigate } from "react-router-dom";
 import { Loading } from "~/components/layout";
 import { Page } from "~/components/core";
-import { SpaceActionsTable } from '~/components/storage';
+import { SpaceActionsTable } from "~/components/storage";
 import { _ } from "~/i18n";
-import { SPACE_POLICIES } from '~/components/storage/utils';
+import { SPACE_POLICIES } from "~/components/storage/utils";
 import { noop, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
-import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 // FIXME: Improve and refactor
 
@@ -85,6 +85,7 @@ const SpacePolicyPicker = ({ currentPolicy, onChange = noop }) => {
  */
 export default function SpacePolicySelection() {
   const [state, setState] = useState({ load: false, settings: {} });
+  /** @type ReturnType<typeof useState<SpacePolicy>> */
   const [policy, setPolicy] = useState();
   const [actions, setActions] = useState([]);
   const [expandedDevices, setExpandedDevices] = useState([]);
@@ -104,7 +105,7 @@ export default function SpacePolicySelection() {
     // FIXME: move to a state/reducer
     const load = async () => {
       const { settings } = await loadProposalResult();
-      const policy = SPACE_POLICIES.find(p => p.id === settings.spacePolicy);
+      const policy = SPACE_POLICIES.find((p) => p.id === settings.spacePolicy);
       setPolicy(policy);
       setActions(settings.spaceActions);
       setCustomUsed(policy.id === "custom");
@@ -138,7 +139,7 @@ export default function SpacePolicySelection() {
   // Generates the action value according to the policy.
   const deviceAction = (device) => {
     if (policy?.id === "custom") {
-      return actions.find(a => a.device === device.name)?.action || "keep";
+      return actions.find((a) => a.device === device.name)?.action || "keep";
     }
 
     const policyAction = { delete: "force_delete", resize: "resize", keep: "keep" };
@@ -146,7 +147,7 @@ export default function SpacePolicySelection() {
   };
 
   const changeActions = (spaceAction) => {
-    const spaceActions = actions.filter(a => a.device !== spaceAction.device);
+    const spaceActions = actions.filter((a) => a.device !== spaceAction.device);
     if (spaceAction.action !== "keep") spaceActions.push(spaceAction);
 
     setActions(spaceActions);
@@ -154,10 +155,11 @@ export default function SpacePolicySelection() {
 
   const onSubmit = (e) => {
     e.preventDefault();
+    // @ts-ignore
     client.proposal.calculate({
       ...state.settings,
       spacePolicy: policy.id,
-      spaceActions: actions
+      spaceActions: actions,
     });
     navigate("..");
   };
@@ -175,7 +177,7 @@ export default function SpacePolicySelection() {
             <GridItem sm={12} xl2={xl2Columns}>
               <SpacePolicyPicker currentPolicy={policy} onChange={setPolicy} />
             </GridItem>
-            {policy.id === "custom" && devices.length > 0 &&
+            {policy.id === "custom" && devices.length > 0 && (
               <GridItem sm={12} xl2={xl2Columns}>
                 <Card isFullHeight isRounded>
                   <CardBody>
@@ -187,7 +189,8 @@ export default function SpacePolicySelection() {
                     />
                   </CardBody>
                 </Card>
-              </GridItem>}
+              </GridItem>
+            )}
           </Grid>
         </Form>
       </Page.MainContent>

@@ -42,7 +42,7 @@ const rootRoutes = [
   networkRoutes,
   storageRoutes,
   softwareRoutes,
-  usersRoutes
+  usersRoutes,
 ];
 
 const protectedRoutes = [
@@ -55,17 +55,17 @@ const protectedRoutes = [
         children: [
           {
             index: true,
-            element: <OverviewPage />
+            element: <OverviewPage />,
           },
-          ...rootRoutes
-        ]
+          ...rootRoutes,
+        ],
       },
       {
         element: <SimpleLayout showInstallerOptions />,
-        children: [productsRoutes]
-      }
-    ]
-  }
+        children: [productsRoutes],
+      },
+    ],
+  },
 ];
 
 const routes = [
@@ -76,20 +76,17 @@ const routes = [
     children: [
       {
         index: true,
-        element: <LoginPage />
-      }
-    ]
+        element: <LoginPage />,
+      },
+    ],
   },
   {
     path: "/",
     element: <Protected />,
-    children: [...protectedRoutes]
-  }
+    children: [...protectedRoutes],
+  },
 ];
 
 const router = createHashRouter(routes);
 
-export {
-  router,
-  rootRoutes
-};
+export { router, rootRoutes };

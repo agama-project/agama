@@ -40,7 +40,7 @@ function useAuth() {
 const AuthErrors = Object.freeze({
   SERVER: "server",
   AUTH: "auth",
-  OTHER: "other"
+  OTHER: "other",
 });
 
 /**
@@ -59,10 +59,10 @@ function AuthProvider({ children }) {
     });
 
     const result = response.status === 200;
-    if ((response.status >= 500) && (response.status < 600)) {
+    if (response.status >= 500 && response.status < 600) {
       setError(AuthErrors.SERVER);
     }
-    if ((response.status >= 400) && (response.status < 500)) {
+    if (response.status >= 400 && response.status < 500) {
       setError(AuthErrors.AUTH);
     }
     setIsLoggedIn(result);
@@ -83,10 +83,10 @@ function AuthProvider({ children }) {
     })
       .then((response) => {
         setIsLoggedIn(response.status === 200);
-        if ((response.status >= 500) && (response.status < 600)) {
+        if (response.status >= 500 && response.status < 600) {
           setError(AuthErrors.SERVER);
         }
-        if ((response.status >= 400) && (response.status < 500)) {
+        if (response.status >= 400 && response.status < 500) {
           setError(AuthErrors.AUTH);
         }
       })

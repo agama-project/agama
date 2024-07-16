@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { List, ListItem, ExpandableSection, } from "@patternfly/react-core";
+import { List, ListItem, ExpandableSection } from "@patternfly/react-core";
 import { _, n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { partition } from "~/utils";
@@ -58,17 +58,23 @@ export default function ProposalActionsDialog({ actions = [] }) {
 
   if (actions.length === 0) return null;
 
-  const [generalActions, subvolActions] = partition(actions, a => !a.subvol);
+  const [generalActions, subvolActions] = partition(actions, (a) => !a.subvol);
   const toggleText = isExpanded
-    // TRANSLATORS: show/hide toggle action, this is a clickable link
-    ? sprintf(n_("Hide %d subvolume action", "Hide %d subvolume actions", subvolActions.length), subvolActions.length)
-    // TRANSLATORS: show/hide toggle action, this is a clickable link
-    : sprintf(n_("Show %d subvolume action", "Show %d subvolume actions", subvolActions.length), subvolActions.length);
+    ? // TRANSLATORS: show/hide toggle action, this is a clickable link
+      sprintf(
+        n_("Hide %d subvolume action", "Hide %d subvolume actions", subvolActions.length),
+        subvolActions.length,
+      )
+    : // TRANSLATORS: show/hide toggle action, this is a clickable link
+      sprintf(
+        n_("Show %d subvolume action", "Show %d subvolume actions", subvolActions.length),
+        subvolActions.length,
+      );
 
   return (
     <>
       <ActionsList actions={generalActions} />
-      {subvolActions.length > 0 &&
+      {subvolActions.length > 0 && (
         <ExpandableSection
           isIndented
           isExpanded={isExpanded}
@@ -76,7 +82,8 @@ export default function ProposalActionsDialog({ actions = [] }) {
           toggleText={toggleText}
         >
           <ActionsList actions={subvolActions} />
-        </ExpandableSection>}
+        </ExpandableSection>
+      )}
     </>
   );
 }

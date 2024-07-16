@@ -30,7 +30,7 @@ machine (a virtual machine as well). In that case run
     AGAMA_SERVER=https://<IP>:<port> npm run server -- --open
 ```
 
-Where  `AGAMA_SERVER` is the IP address, the hostname or the full URL of the
+Where `AGAMA_SERVER` is the IP address, the hostname or the full URL of the
 running Agama server instance. This is especially useful if you use the Live ISO
 which does not contain any development tools, you can develop the web frontend
 easily from your workstation.

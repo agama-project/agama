@@ -35,12 +35,10 @@ import { Split, Text } from "@patternfly/react-core";
  * @param {number} [props.total] Number of steps
  */
 export default function ProgressText({ message, current, total }) {
-  const text = (current === 0) ? message : `${message} (${current}/${total})`;
+  const text = current === 0 ? message : `${message} (${current}/${total})`;
   return (
     <Split hasGutter>
-      <Text>
-        {text}
-      </Text>
+      <Text>{text}</Text>
     </Split>
   );
 }

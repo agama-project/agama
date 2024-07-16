@@ -20,11 +20,7 @@
  */
 
 import React, { useEffect, useReducer } from "react";
-import {
-  Button,
-  Toolbar, ToolbarItem, ToolbarContent,
-  Stack
-} from "@patternfly/react-core";
+import { Button, Toolbar, ToolbarItem, ToolbarContent, Stack } from "@patternfly/react-core";
 import { Section, SectionSkeleton } from "~/components/core";
 import { NodesPresenter, DiscoverForm } from "~/components/storage/iscsi";
 import { useInstallerClient } from "~/context/installer";
@@ -38,7 +34,7 @@ const reducer = (state, action) => {
     }
 
     case "ADD_NODE": {
-      if (state.nodes.find(n => n.id === action.payload.node.id)) return state;
+      if (state.nodes.find((n) => n.id === action.payload.node.id)) return state;
 
       const nodes = [...state.nodes];
       nodes.push(action.payload.node);
@@ -46,7 +42,7 @@ const reducer = (state, action) => {
     }
 
     case "UPDATE_NODE": {
-      const index = state.nodes.findIndex(n => n.id === action.payload.node.id);
+      const index = state.nodes.findIndex((n) => n.id === action.payload.node.id);
       if (index === -1) return state;
 
       const nodes = [...state.nodes];
@@ -55,7 +51,7 @@ const reducer = (state, action) => {
     }
 
     case "REMOVE_NODE": {
-      const nodes = state.nodes.filter(n => n.id !== action.payload.node.id);
+      const nodes = state.nodes.filter((n) => n.id !== action.payload.node.id);
       return { ...state, nodes };
     }
 
@@ -84,7 +80,7 @@ const reducer = (state, action) => {
 const initialState = {
   nodes: [],
   isDiscoverFormOpen: false,
-  isLoading: true
+  isLoading: true,
 };
 
 export default function TargetsSection() {
@@ -106,9 +102,9 @@ export default function TargetsSection() {
   useEffect(() => {
     const action = (type, node) => dispatch({ type, payload: { node } });
 
-    client.iscsi.onNodeAdded(n => action("ADD_NODE", n));
-    client.iscsi.onNodeChanged(n => action("UPDATE_NODE", n));
-    client.iscsi.onNodeRemoved(n => action("REMOVE_NODE", n));
+    client.iscsi.onNodeAdded((n) => action("ADD_NODE", n));
+    client.iscsi.onNodeChanged((n) => action("UPDATE_NODE", n));
+    client.iscsi.onNodeRemoved((n) => action("REMOVE_NODE", n));
   }, [client.iscsi]);
 
   const openDiscoverForm = () => {
@@ -140,9 +136,13 @@ export default function TargetsSection() {
       return (
         <Stack hasGutter>
           <div>{_("No iSCSI targets found.")}</div>
-          <div>{_("Please, perform an iSCSI discovery in order to find available iSCSI targets.")}</div>
+          <div>
+            {_("Please, perform an iSCSI discovery in order to find available iSCSI targets.")}
+          </div>
           {/* TRANSLATORS: button label, starts iSCSI discovery */}
-          <Button variant="primary" onClick={openDiscoverForm}>{_("Discover iSCSI targets")}</Button>
+          <Button variant="primary" onClick={openDiscoverForm}>
+            {_("Discover iSCSI targets")}
+          </Button>
         </Stack>
       );
     }
@@ -157,10 +157,7 @@ export default function TargetsSection() {
             </ToolbarItem>
           </ToolbarContent>
         </Toolbar>
-        <NodesPresenter
-          nodes={state.nodes}
-          client={client}
-        />
+        <NodesPresenter nodes={state.nodes} client={client} />
       </>
     );
   };
@@ -169,11 +166,9 @@ export default function TargetsSection() {
     // TRANSLATORS: iSCSI targets section title
     <Section title={_("Targets")}>
       <SectionContent />
-      {state.isDiscoverFormOpen &&
-        <DiscoverForm
-          onSubmit={submitDiscoverForm}
-          onCancel={closeDiscoverForm}
-        />}
+      {state.isDiscoverFormOpen && (
+        <DiscoverForm onSubmit={submitDiscoverForm} onCancel={closeDiscoverForm} />
+      )}
     </Section>
   );
 }

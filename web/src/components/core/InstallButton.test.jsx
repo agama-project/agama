@@ -28,7 +28,7 @@ import { InstallButton } from "~/components/core";
 const startInstallationFn = jest.fn().mockName("startInstallation");
 
 jest.mock("~/client", () => ({
-  createClient: jest.fn()
+  createClient: jest.fn(),
 }));
 
 describe("when the button is clicked and there are not errors", () => {
@@ -36,8 +36,8 @@ describe("when the button is clicked and there are not errors", () => {
     createClient.mockImplementation(() => {
       return {
         manager: {
-          startInstallation: startInstallationFn
-        }
+          startInstallation: startInstallationFn,
+        },
       };
     });
   });

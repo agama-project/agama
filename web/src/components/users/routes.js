@@ -30,19 +30,19 @@ const routes = {
   element: <Page />,
   handle: {
     name: N_("Users"),
-    icon: "manage_accounts"
+    icon: "manage_accounts",
   },
   children: [
     { index: true, element: <UsersPage /> },
     {
       path: "first",
-      element: <FirstUserForm />
+      element: <FirstUserForm />,
     },
     {
       path: "first/edit",
-      element: <FirstUserForm />
-    }
-  ]
+      element: <FirstUserForm />,
+    },
+  ],
 };
 
 export default routes;

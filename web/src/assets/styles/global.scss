@@ -1,24 +1,29 @@
 // Global CSS starts
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   // margin: 0;
   font-family: var(--ff-headlines);
   font-weight: var(--fw-bold);
 }
 
 h1 {
-  font-size: var(--pf-v5-global--FontSize--2xl)
+  font-size: var(--pf-v5-global--FontSize--2xl);
 }
 
 h2 {
-  font-size: var(--pf-v5-global--FontSize--xl)
+  font-size: var(--pf-v5-global--FontSize--xl);
 }
 
 h3 {
-  font-size: var(--pf-v5-global--FontSize--lg)
+  font-size: var(--pf-v5-global--FontSize--lg);
 }
 
 h4 {
-  font-size: var(--pf-v5-global--FontSize--md)
+  font-size: var(--pf-v5-global--FontSize--md);
 }
 
 a {

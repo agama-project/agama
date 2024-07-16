@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-30 02:27+0000\n"
-"PO-Revision-Date: 2024-06-27 09:46+0000\n"
+"POT-Creation-Date: 2024-07-10 02:23+0000\n"
+"PO-Revision-Date: 2024-07-11 10:47+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
-"Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/sv/>\n"
+"Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #. Runs the startup phase
 #: service/lib/agama/manager.rb:88
@@ -131,6 +131,26 @@ msgstr "Produkt måste registreras"
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "Hittade %s beroendeproblem."
+
+#. Text of the reason preventing to shrink because there is no content.
+#.
+#. @return [String, nil] nil if there is content or there is any other reasons.
+#: service/lib/agama/storage/device_shrinking.rb:151
+msgid ""
+"Neither a file system nor a storage system was detected on the device. In "
+"case the device does contain a file system or a storage system that is not "
+"supported, resizing will most likely cause data loss."
+msgstr ""
+"Varken ett filsystem eller ett lagringssystem upptäcktes på enheten. Om "
+"enheten innehåller ett filsystem eller ett lagringssystem som inte stöds, "
+"kommer storleksändring med största sannolikhet orsaka dataförlust."
+
+#. Text of the reason preventing to shrink because there is no valid minimum size.
+#.
+#. @return [String, nil] nil if there is a minimum size or there is any other reasons.
+#: service/lib/agama/storage/device_shrinking.rb:162
+msgid "Shrinking is not supported by this device"
+msgstr "Krympning stöds inte på den här enheten"
 
 #. Probes storage devices and performs an initial proposal
 #: service/lib/agama/storage/manager.rb:115

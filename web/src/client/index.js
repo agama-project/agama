@@ -30,7 +30,7 @@ import { UsersClient } from "./users";
 import phase from "./phase";
 import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
-import { HTTPClient } from "./http";
+import { HTTPClient, WSClient } from "./http";
 
 /**
  * @typedef {object} InstallerClient
@@ -43,6 +43,7 @@ import { HTTPClient } from "./http";
  * @property {StorageClient} storage - storage client.
  * @property {UsersClient} users - users client.
  * @property {QuestionsClient} questions - questions client.
+ * @property {() => WSClient} ws - Agama WebSocket client.
  * @property {() => Promise<Issues>} issues - issues from all contexts.
  * @property {(handler: IssuesHandler) => (() => void)} onIssuesChange - registers a handler to run
  *  when issues from any context change. It returns a function to deregister the handler.
@@ -69,7 +70,7 @@ import { HTTPClient } from "./http";
 
 const createIssuesList = (product = [], software = [], storage = [], users = []) => {
   const list = { product, storage, software, users };
-  list.isEmpty = !Object.values(list).some(v => v.length > 0);
+  list.isEmpty = !Object.values(list).some((v) => v.length > 0);
   return list;
 };
 
@@ -79,7 +80,7 @@ const createIssuesList = (product = [], software = [], storage = [], users = [])
  * @param {URL} url - URL of the HTTP API.
  * @return {InstallerClient}
  */
-const createClient = url => {
+const createClient = (url) => {
   const client = new HTTPClient(url);
   const l10n = new L10nClient(client);
   // TODO: unify with the manager client
@@ -114,16 +115,16 @@ const createClient = url => {
    * @param {IssuesHandler} handler - Callback function.
    * @return {() => void} - Function to deregister the callback.
    */
-  const onIssuesChange = handler => {
+  const onIssuesChange = (handler) => {
     const unsubscribeCallbacks = [];
 
-    unsubscribeCallbacks.push(product.onIssuesChange(i => handler({ product: i })));
-    unsubscribeCallbacks.push(storage.onIssuesChange(i => handler({ storage: i })));
-    unsubscribeCallbacks.push(software.onIssuesChange(i => handler({ software: i })));
-    unsubscribeCallbacks.push(users.onIssuesChange(i => handler({ users: i })));
+    unsubscribeCallbacks.push(product.onIssuesChange((i) => handler({ product: i })));
+    unsubscribeCallbacks.push(storage.onIssuesChange((i) => handler({ storage: i })));
+    unsubscribeCallbacks.push(software.onIssuesChange((i) => handler({ software: i })));
+    unsubscribeCallbacks.push(users.onIssuesChange((i) => handler({ users: i })));
 
     return () => {
-      unsubscribeCallbacks.forEach(cb => cb());
+      unsubscribeCallbacks.forEach((cb) => cb());
     };
   };
 
@@ -144,9 +145,9 @@ const createClient = url => {
     onIssuesChange,
     isConnected,
     isRecoverable,
-    onConnect: handler => client.ws().onOpen(handler),
-    onDisconnect: handler => client.ws().onClose(handler),
-    ws: () => client.ws()
+    onConnect: (handler) => client.ws().onOpen(handler),
+    onDisconnect: (handler) => client.ws().onClose(handler),
+    ws: () => client.ws(),
   };
 };
 

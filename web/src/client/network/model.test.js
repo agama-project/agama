@@ -36,14 +36,14 @@ describe("createConnection", () => {
       addresses: [],
       nameservers: [],
       gateway4: "",
-      gateway6: ""
+      gateway6: "",
     });
     expect(connection.wireless).toBeUndefined();
   });
 
   it("merges given properties", () => {
     const addresses = [{ address: "192.168.0.1", prefix: 24 }];
-    const connection = createConnection({ addresses, testing: 1 });
+    const connection = createConnection({ addresses });
     expect(connection.method4).toEqual("auto");
     expect(connection.gateway4).toEqual("");
     expect(connection.addresses).toEqual(addresses);
@@ -69,7 +69,7 @@ describe("createAccessPoint", () => {
       ssid: "WIFI1",
       hwAddress: "11:22:33:44:55:66",
       strength: 90,
-      security: []
+      security: [],
     });
   });
 });

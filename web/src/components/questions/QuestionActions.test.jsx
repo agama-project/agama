@@ -30,21 +30,20 @@ let question = {
   id: 1,
   text: "Should we use a component for rendering actions?",
   options: ["no", "maybe", "sure"],
-  defaultOption
+  defaultOption,
 };
 
 const actionCallback = jest.fn();
 
-const renderQuestionActions = () => (
+const renderQuestionActions = () =>
   installerRender(
     <QuestionActions
       actions={question.options}
       defaultAction={question.defaultOption}
       actionCallback={actionCallback}
-      conditions={ { disable: { no: true } } }
-    />
-  )
-);
+      conditions={{ disable: { no: true } }}
+    />,
+  );
 
 describe("QuestionActions", () => {
   describe("when question has a default option", () => {
@@ -95,10 +94,10 @@ describe("QuestionActions", () => {
     renderQuestionActions();
 
     let button = await screen.findByRole("button", { name: "No" });
-    expect(button).toHaveAttribute('disabled');
+    expect(button).toHaveAttribute("disabled");
 
     button = await screen.findByRole("button", { name: "Maybe" });
-    expect(button).not.toHaveAttribute('disabled');
+    expect(button).not.toHaveAttribute("disabled");
   });
 
   it("calls the actionCallback when user clicks on action", async () => {

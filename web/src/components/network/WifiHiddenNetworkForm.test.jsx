@@ -26,7 +26,9 @@ import { plainRender } from "~/test-utils";
 
 import { WifiHiddenNetworkForm } from "~/components/network";
 
-jest.mock("~/components/network/WifiConnectionForm", () => () => <div>WifiConnectionForm mock</div>);
+jest.mock("~/components/network/WifiConnectionForm", () => () => (
+  <div>WifiConnectionForm mock</div>
+));
 
 describe("WifiHiddenNetworkForm", () => {
   describe("when it is visible", () => {

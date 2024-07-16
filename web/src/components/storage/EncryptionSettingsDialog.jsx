@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Checkbox, Form, Switch, Stack } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { PasswordAndConfirmationInput, Popup } from "~/components/core";
@@ -34,15 +34,19 @@ import { EncryptionMethods } from "~/client/storage";
  */
 
 const DIALOG_TITLE = _("Encryption");
-const DIALOG_DESCRIPTION = _("Full Disk Encryption (FDE) allows to protect the information stored \
-at the device, including data, programs, and system files.");
+const DIALOG_DESCRIPTION = _(
+  "Full Disk Encryption (FDE) allows to protect the information stored \
+at the device, including data, programs, and system files.",
+);
 // TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
 const TPM_LABEL = _("Use the Trusted Platform Module (TPM) to decrypt automatically on each boot");
 // TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
 // 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
-const TPM_EXPLANATION = _("The password will not be needed to boot and access the data if the \
+const TPM_EXPLANATION = _(
+  "The password will not be needed to boot and access the data if the \
 TPM can verify the integrity of the system. TPM sealing requires the new system to be booted \
-directly on its first run.");
+directly on its first run.",
+);
 
 /**
  * Renders a dialog that allows the user change encryption settings
@@ -66,7 +70,7 @@ export default function EncryptionSettingsDialog({
   isOpen = false,
   isLoading = false,
   onCancel,
-  onAccept
+  onAccept,
 }) {
   const [isEnabled, setIsEnabled] = useState(passwordProp?.length > 0);
   const [password, setPassword] = useState(passwordProp);
@@ -74,14 +78,19 @@ export default function EncryptionSettingsDialog({
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [validSettings, setValidSettings] = useState(true);
   const [wasLoading, setWasLoading] = useState(isLoading);
+  const passwordRef = useRef();
   const formId = "encryptionSettingsForm";
 
   // reset the settings only after loading is finished
-  if (isLoading && !wasLoading) { setWasLoading(true) }
+  if (isLoading && !wasLoading) {
+    setWasLoading(true);
+  }
   if (!isLoading && wasLoading) {
     setWasLoading(false);
     // refresh the state when the real values are loaded
-    if (method !== methodProp) { setMethod(methodProp) }
+    if (method !== methodProp) {
+      setMethod(methodProp);
+    }
     if (password !== passwordProp) {
       setPassword(passwordProp);
       setIsEnabled(passwordProp?.length > 0);
@@ -93,7 +102,8 @@ export default function EncryptionSettingsDialog({
   }, [isEnabled, password, passwordsMatch]);
 
   const changePassword = (_, v) => setPassword(v);
-  const changeMethod = (_, useTPM) => setMethod(useTPM ? EncryptionMethods.TPM : EncryptionMethods.LUKS2);
+  const changeMethod = (_, useTPM) =>
+    setMethod(useTPM ? EncryptionMethods.TPM : EncryptionMethods.LUKS2);
 
   const submitSettings = (e) => {
     e.preventDefault();
@@ -108,7 +118,12 @@ export default function EncryptionSettingsDialog({
   const tpmAvailable = methods.includes(EncryptionMethods.TPM);
 
   return (
-    <Popup title={DIALOG_TITLE} description={DIALOG_DESCRIPTION} isOpen={isOpen} isLoading={isLoading}>
+    <Popup
+      title={DIALOG_TITLE}
+      description={DIALOG_DESCRIPTION}
+      isOpen={isOpen}
+      isLoading={isLoading}
+    >
       <Stack hasGutter>
         <Switch
           label={_("Encrypt the system")}
@@ -117,12 +132,13 @@ export default function EncryptionSettingsDialog({
         />
         <Form id={formId} onSubmit={submitSettings}>
           <PasswordAndConfirmationInput
+            inputRef={passwordRef}
             value={password}
             onChange={changePassword}
             onValidation={setPasswordsMatch}
             isDisabled={!isEnabled}
           />
-          {tpmAvailable &&
+          {tpmAvailable && (
             <Checkbox
               id="tpm_encryption_method"
               label={TPM_LABEL}
@@ -130,7 +146,8 @@ export default function EncryptionSettingsDialog({
               isChecked={method === EncryptionMethods.TPM}
               isDisabled={!isEnabled}
               onChange={changeMethod}
-            />}
+            />
+          )}
         </Form>
       </Stack>
       <Popup.Actions>

@@ -24,5 +24,5 @@ export const BUSY = 1;
 
 export default {
   BUSY,
-  IDLE
+  IDLE,
 };

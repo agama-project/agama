@@ -24,24 +24,16 @@ import { Skeleton } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 
 const WaitingSkeleton = ({ width }) => {
-  return (
-    <Skeleton
-      screenreaderText={_("Waiting")}
-      fontSize="sm"
-      width={width}
-    />
-  );
+  return <Skeleton screenreaderText={_("Waiting")} fontSize="sm" width={width} />;
 };
 
 const SectionSkeleton = ({ numRows = 2 }) => {
   return (
     <>
-      {
-        Array.from({ length: numRows }, (_, i) => {
-          const width = i % 2 === 0 ? "50%" : "25%";
-          return <WaitingSkeleton key={i} width={width} />;
-        })
-      }
+      {Array.from({ length: numRows }, (_, i) => {
+        const width = i % 2 === 0 ? "50%" : "25%";
+        return <WaitingSkeleton key={i} width={width} />;
+      })}
     </>
   );
 };

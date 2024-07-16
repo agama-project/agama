@@ -36,7 +36,7 @@ const wiredConnection = {
   method6: "manual",
   addresses: [{ address: "192.168.122.20", prefix: 24 }],
   nameservers: ["192.168.122.1"],
-  gateway4: "192.168.122.1"
+  gateway4: "192.168.122.1",
 };
 
 const wiFiConnection = {
@@ -48,11 +48,11 @@ const wiFiConnection = {
     passworkd: "agama.test",
     security: "wpa-psk",
     ssid: "Agama",
-    mode: "infrastructure"
+    mode: "infrastructure",
   },
   addresses: [{ address: "192.168.69.200", prefix: 24 }],
   nameservers: [],
-  status: "up"
+  status: "up",
 };
 
 const ethernetDevice = {
@@ -60,7 +60,7 @@ const ethernetDevice = {
   connection: "eth0",
   type: ConnectionTypes.ETHERNET,
   addresses: [{ address: "192.168.122.20", prefix: 24 }],
-  macAddress: "00:11:22:33:44::55"
+  macAddress: "00:11:22:33:44::55",
 };
 
 const wifiDevice = {
@@ -68,7 +68,7 @@ const wifiDevice = {
   connection: "AgamaNetwork",
   type: ConnectionTypes.WIFI,
   addresses: [{ address: "192.168.69.200", prefix: 24 }],
-  macAddress: "AA:11:22:33:44::FF"
+  macAddress: "AA:11:22:33:44::FF",
 };
 
 const settingsFn = jest.fn();
@@ -76,7 +76,12 @@ const connectionsFn = jest.fn();
 const onNetworChangeEventFn = jest.fn();
 const devicesFn = jest.fn();
 const activeConnections = [wiredConnection, wiFiConnection];
-const networkSettings = { wireless_enabled: false, hostname: "test", networking_enabled: true, connectivity: true };
+const networkSettings = {
+  wireless_enabled: false,
+  hostname: "test",
+  networking_enabled: true,
+  connectivity: true,
+};
 
 describe.skip("NetworkPage", () => {
   beforeEach(() => {
@@ -91,8 +96,8 @@ describe.skip("NetworkPage", () => {
           connections: () => Promise.resolve(connectionsFn()),
           accessPoints: () => Promise.resolve([]),
           onNetworkChange: onNetworChangeEventFn,
-          settings: () => Promise.resolve(settingsFn())
-        }
+          settings: () => Promise.resolve(settingsFn()),
+        },
       };
     });
   });
@@ -162,7 +167,9 @@ describe.skip("NetworkPage", () => {
         installerRender(<NetworkPage />);
 
         const section = await screen.findByRole("region", { name: "WiFi networks" });
-        const scanWifiButton = within(section).queryByRole("button", { name: "Connect to a Wi-Fi network" });
+        const scanWifiButton = within(section).queryByRole("button", {
+          name: "Connect to a Wi-Fi network",
+        });
         expect(scanWifiButton).toBeNull();
       });
     });

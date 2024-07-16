@@ -21,7 +21,19 @@
 
 import React, { useState } from "react";
 import { useLoaderData, useNavigate } from "react-router-dom";
-import { HelperText, HelperTextItem, Form, FormGroup, FormSelect, FormSelectOption, Grid, GridItem, TextInput, Stack, FormHelperText } from "@patternfly/react-core";
+import {
+  HelperText,
+  HelperTextItem,
+  Form,
+  FormGroup,
+  FormSelect,
+  FormSelectOption,
+  Grid,
+  GridItem,
+  TextInput,
+  Stack,
+  FormHelperText,
+} from "@patternfly/react-core";
 
 import { useInstallerClient } from "~/context/installer";
 import { Page } from "~/components/core";
@@ -31,7 +43,7 @@ import { sprintf } from "sprintf-js";
 
 const METHODS = {
   MANUAL: "manual",
-  AUTO: "auto"
+  AUTO: "auto",
 };
 
 const usingDHCP = (method) => method === METHODS.AUTO;
@@ -41,14 +53,16 @@ export default function IpSettingsForm() {
   const connection = useLoaderData();
   const navigate = useNavigate();
   const [addresses, setAddresses] = useState(connection.addresses);
-  const [nameservers, setNameservers] = useState(connection.nameservers.map(a => {
-    return { address: a };
-  }));
+  const [nameservers, setNameservers] = useState(
+    connection.nameservers.map((a) => {
+      return { address: a };
+    }),
+  );
   const [method, setMethod] = useState(connection.method4);
   const [gateway, setGateway] = useState(connection.gateway4);
   const [errors, setErrors] = useState({});
 
-  const isSetAsInvalid = field => Object.keys(errors).includes(field);
+  const isSetAsInvalid = (field) => Object.keys(errors).includes(field);
   const isGatewayDisabled = addresses.length === 0;
 
   const validatedAttrValue = (field) => {
@@ -57,7 +71,7 @@ export default function IpSettingsForm() {
     return "default";
   };
 
-  const cleanAddresses = (addrs) => addrs.filter(addr => addr.address !== "");
+  const cleanAddresses = (addrs) => addrs.filter((addr) => addr.address !== "");
 
   const cleanError = (field) => {
     if (isSetAsInvalid(field)) {
@@ -95,7 +109,7 @@ export default function IpSettingsForm() {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const onSubmitForm = e => {
+  const onSubmitForm = (e) => {
     e.preventDefault();
 
     const sanitizedAddresses = cleanAddresses(addresses);
@@ -109,10 +123,11 @@ export default function IpSettingsForm() {
       addresses: sanitizedAddresses,
       method4: method,
       gateway4: gateway,
-      nameservers: sanitizedNameservers.map(s => s.address)
+      nameservers: sanitizedNameservers.map((s) => s.address),
     };
 
-    client.network.updateConnection(updatedConnection)
+    client.network
+      .updateConnection(updatedConnection)
       .then(navigate(-1))
       // TODO: better error reporting. By now, it sets an error for the whole connection.
       .catch(({ message }) => setErrors({ object: message }));
@@ -153,7 +168,11 @@ export default function IpSettingsForm() {
                       onChange={onMethodChange}
                       validated={validatedAttrValue("method")}
                     >
-                      <FormSelectOption key="auto" value={METHODS.AUTO} label={_("Automatic (DHCP)")} />
+                      <FormSelectOption
+                        key="auto"
+                        value={METHODS.AUTO}
+                        label={_("Automatic (DHCP)")}
+                      />
                       {/* TRANSLATORS: manual network configuration mode with a static IP address */}
                       <FormSelectOption key="manual" value={METHODS.MANUAL} label={_("Manual")} />
                     </FormSelect>
@@ -170,8 +189,7 @@ export default function IpSettingsForm() {
                       isDisabled={isGatewayDisabled}
                       onChange={(_, value) => setGateway(value)}
                     />
-                    {
-                      isGatewayDisabled &&
+                    {isGatewayDisabled && (
                       <FormHelperText>
                         <HelperText>
                           <HelperTextItem variant="indeterminate">
@@ -179,7 +197,7 @@ export default function IpSettingsForm() {
                           </HelperTextItem>
                         </HelperText>
                       </FormHelperText>
-                    }
+                    )}
                   </FormGroup>
                 </Stack>
               </Page.CardSection>

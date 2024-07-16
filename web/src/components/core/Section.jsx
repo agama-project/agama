@@ -19,12 +19,12 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
+// FIXME: Refactor or replace
 
 import React from "react";
 import { Link } from "react-router-dom";
 import { PageSection, Stack } from "@patternfly/react-core";
-import { Icon } from '~/components/layout';
+import { Icon } from "~/components/layout";
 /**
  * @typedef {import("~/components/layout/Icon").IconName} IconName
  */
@@ -75,7 +75,7 @@ export default function Section({
   id,
   errors,
   children,
-  "aria-label": ariaLabel
+  "aria-label": ariaLabel,
 }) {
   const headerId = `${name || crypto.randomUUID()}-section-header`;
 
@@ -93,7 +93,10 @@ export default function Section({
 
     return (
       <header>
-        <h2 id={headerId}>{headerIcon}<span>{headerText}</span></h2>
+        <h2 id={headerId}>
+          {headerIcon}
+          <span>{headerText}</span>
+        </h2>
         {renderDescription && <p>{description}</p>}
       </header>
     );
@@ -102,9 +105,7 @@ export default function Section({
   return (
     <PageSection className={className} variant="light">
       <Header />
-      <Stack hasGutter>
-        {children}
-      </Stack>
+      <Stack hasGutter>{children}</Stack>
     </PageSection>
   );
 }

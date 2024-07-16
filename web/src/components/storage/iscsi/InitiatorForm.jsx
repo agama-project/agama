@@ -56,11 +56,7 @@ export default function InitiatorForm({ initiator, onSubmit: onSubmitProp, onCan
         </FormGroup>
       </Form>
       <Popup.Actions>
-        <Popup.Confirm
-          form={id}
-          type="submit"
-          isDisabled={isDisabled}
-        />
+        <Popup.Confirm form={id} type="submit" isDisabled={isDisabled} />
         <Popup.Cancel onClick={onCancel} />
       </Popup.Actions>
     </Popup>

@@ -12,6 +12,7 @@ const CockpitPoPlugin = require("./src/lib/cockpit-po-plugin");
 const StylelintPlugin = require("stylelint-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const ReactRefreshTypeScript = require("react-refresh-typescript");
 const webpack = require("webpack");
 const po_handler = require("./src/lib/webpack-po-handler");
 
@@ -23,7 +24,7 @@ const development = !production;
 const eslint = process.env.ESLINT !== "0";
 
 /* Default to disable csslint for faster production builds */
-const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== "0") : development;
+const stylelint = process.env.STYLELINT ? process.env.STYLELINT !== "0" : development;
 
 // Agama API server. By default it connects to a local development server.
 let agamaServer = process.env.AGAMA_SERVER || "localhost";
@@ -81,8 +82,8 @@ module.exports = {
   mode: production ? "production" : "development",
   resolve: {
     modules: ["node_modules", path.resolve(__dirname, "src/lib")],
-    plugins: [new TsconfigPathsPlugin({ extensions: [".js", ".jsx", ".json"] })],
-    extensions: ["", ".js", ".json", ".jsx"],
+    plugins: [new TsconfigPathsPlugin({ extensions: [".ts", ".tsx", ".js", ".jsx", ".json"] })],
+    extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
   },
   resolveLoader: {
     modules: ["node_modules", path.resolve(__dirname, "src/lib")],
@@ -150,13 +151,22 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         use: [
           {
             loader: "babel-loader",
             options: {
               plugins: [development && require.resolve("react-refresh/babel")].filter(Boolean),
+            },
+          },
+          {
+            loader: require.resolve("ts-loader"),
+            options: {
+              getCustomTransformers: () => ({
+                before: [development && ReactRefreshTypeScript()].filter(Boolean),
+              }),
+              transpileOnly: development,
             },
           },
         ],

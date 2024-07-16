@@ -22,17 +22,20 @@
 // @ts-check
 
 import React from "react";
-import { NavLink, Outlet, useNavigate, useMatches, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   Button,
-  Card, CardBody, CardHeader,
+  Card,
+  CardBody,
+  CardHeader,
   Flex,
-  PageGroup, PageSection,
-  Stack
+  PageGroup,
+  PageSection,
+  Stack,
 } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import tabsStyles from '@patternfly/react-styles/css/components/Tabs/tabs';
-import flexStyles from '@patternfly/react-styles/css/utilities/Flex/flex';
+import tabsStyles from "@patternfly/react-styles/css/components/Tabs/tabs";
+import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
 
 /**
  * @typedef {import("@patternfly/react-core").ButtonProps} ButtonProps
@@ -82,6 +85,7 @@ const Action = ({ navigateTo, children, ...props }) => {
 
 /**
  * Simple action for navigating back
+ * @param {ActionProps & { text?: string }} props
  */
 const CancelAction = ({ text = _("Cancel"), navigateTo }) => {
   const navigate = useNavigate();
@@ -95,17 +99,21 @@ const CancelAction = ({ text = _("Cancel"), navigateTo }) => {
 
 // FIXME: would replace Actions
 const NextActions = ({ children }) => (
-  <PageGroup hasShadowTop className={flexStyles.flexGrow_0} stickyOnBreakpoint={{ default: "bottom" }}>
+  <PageGroup
+    hasShadowTop
+    className={flexStyles.flexGrow_0}
+    stickyOnBreakpoint={{ default: "bottom" }}
+  >
     <PageSection variant="light">
-      <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
-        {children}
-      </Flex>
+      <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>{children}</Flex>
     </PageSection>
   </PageGroup>
 );
 
 const MainContent = ({ children, ...props }) => (
-  <PageSection isFilled {...props}>{children}</PageSection>
+  <PageSection isFilled {...props}>
+    {children}
+  </PageSection>
 );
 
 const Navigation = ({ routes }) => {
@@ -121,13 +129,21 @@ const Navigation = ({ routes }) => {
     <PageSection variant="light" type="tabs" stickyOnBreakpoint={{ default: "top" }}>
       <nav className={tabsStyles.tabs}>
         <ul className={tabsStyles.tabsList}>
-          {routes.filter(r => r.handle?.name).map((r, i) => (
-            <li className={tabsStyles.tabsItem} key={r.path || i}>
-              <NavLink end to={r.path} className={({ isActive }) => [tabsStyles.tabsLink, isActive ? "pf-m-current" : ""].join(" ")}>
-                {r.handle?.name}
-              </NavLink>
-            </li>
-          ))}
+          {routes
+            .filter((r) => r.handle?.name)
+            .map((r, i) => (
+              <li className={tabsStyles.tabsItem} key={r.path || i}>
+                <NavLink
+                  end
+                  to={r.path}
+                  className={({ isActive }) =>
+                    [tabsStyles.tabsLink, isActive ? "pf-m-current" : ""].join(" ")
+                  }
+                >
+                  {r.handle?.name}
+                </NavLink>
+              </li>
+            ))}
         </ul>
       </nav>
     </PageSection>
@@ -136,14 +152,8 @@ const Navigation = ({ routes }) => {
 
 const Header = ({ hasGutter = true, children, ...props }) => {
   return (
-    <PageSection
-      variant="light"
-      stickyOnBreakpoint={{ default: "top" }}
-      {...props}
-    >
-      <Stack hasGutter={hasGutter}>
-        {children}
-      </Stack>
+    <PageSection variant="light" stickyOnBreakpoint={{ default: "top" }} {...props}>
+      <Stack hasGutter={hasGutter}>{children}</Stack>
     </PageSection>
   );
 };
@@ -177,11 +187,6 @@ const CardSection = ({ title, children, ...props }) => {
  * @param {React.ReactNode} [props.children] - The page content.
  */
 const Page = () => {
-  const location = useLocation();
-  const matches = useMatches();
-  const currentRoute = matches.find(r => r.pathname === location.pathname);
-  const titleFromRoute = currentRoute?.handle?.name;
-
   return (
     <PageGroup>
       <Outlet />

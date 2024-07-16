@@ -40,9 +40,7 @@ function AppProviders({ children }) {
     <InstallerClientProvider>
       <QueryClientProvider client={queryClient}>
         <InstallerL10nProvider>
-          <IssuesProvider>
-            {children}
-          </IssuesProvider>
+          <IssuesProvider>{children}</IssuesProvider>
         </InstallerL10nProvider>
       </QueryClientProvider>
     </InstallerClientProvider>

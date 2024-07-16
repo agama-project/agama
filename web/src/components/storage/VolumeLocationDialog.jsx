@@ -37,8 +37,10 @@ import { deviceChildren, volumeLabel } from "~/components/storage/utils";
  */
 
 // TRANSLATORS: Description of the dialog for changing the location of a file system.
-const DIALOG_DESCRIPTION = _("The file systems are allocated at the installation device by \
-default. Indicate a custom location to create the file system at a specific device.");
+const DIALOG_DESCRIPTION = _(
+  "The file systems are allocated at the installation device by \
+default. Indicate a custom location to create the file system at a specific device.",
+);
 
 /** @type {(device: StorageDevice|undefined) => VolumeTarget} */
 const defaultTarget = (device) => {
@@ -141,7 +143,7 @@ export default function VolumeLocationDialog({
       {...props}
     >
       <Form id="volume-location-form" onSubmit={onSubmit}>
-        { /** FIXME: Rename FormReadOnlyField */}
+        {/** FIXME: Rename FormReadOnlyField */}
         <FormReadOnlyField label={_("Select in which device to allocate the file system")} />
         <div className="scrollbox">
           <VolumeLocationSelectorTable
@@ -153,7 +155,7 @@ export default function VolumeLocationDialog({
             itemChildren={deviceChildren}
             itemSelectable={isDeviceSelectable}
             onSelectionChange={changeTargetDevice}
-            initialExpandedKeys={volumeDevices.map(d => d.sid)}
+            initialExpandedKeys={volumeDevices.map((d) => d.sid)}
             variant="compact"
           />
         </div>
@@ -163,8 +165,10 @@ export default function VolumeLocationDialog({
               id="new_partition"
               name="target"
               label={_("Create a new partition")}
-              description={_("The file system will be allocated as a new partition at the selected \
-  disk.")}
+              description={_(
+                "The file system will be allocated as a new partition at the selected \
+  disk.",
+              )}
               isChecked={target === "NEW_PARTITION"}
               isDisabled={!targets.includes("NEW_PARTITION")}
               onChange={() => setTarget("NEW_PARTITION")}
@@ -173,8 +177,10 @@ export default function VolumeLocationDialog({
               id="dedicated_lvm"
               name="target"
               label={_("Create a dedicated LVM volume group")}
-              description={_("A new volume group will be allocated in the selected disk and the \
-  file system will be created as a logical volume.")}
+              description={_(
+                "A new volume group will be allocated in the selected disk and the \
+  file system will be created as a logical volume.",
+              )}
               isChecked={target === "NEW_VG"}
               isDisabled={!targets.includes("NEW_VG")}
               onChange={() => setTarget("NEW_VG")}
@@ -185,8 +191,10 @@ export default function VolumeLocationDialog({
               label={_("Format the device")}
               description={
                 // TRANSLATORS: %s is replaced by a file system type (e.g., Ext4).
-                sprintf(_("The selected device will be formatted as %s file system."),
-                        volume.fsType)
+                sprintf(
+                  _("The selected device will be formatted as %s file system."),
+                  volume.fsType,
+                )
               }
               isChecked={target === "DEVICE"}
               isDisabled={!targets.includes("DEVICE")}
@@ -196,8 +204,10 @@ export default function VolumeLocationDialog({
               id="mount"
               name="target"
               label={_("Mount the file system")}
-              description={_("The current file system on the selected device will be mounted \
-  without formatting the device.")}
+              description={_(
+                "The current file system on the selected device will be mounted \
+  without formatting the device.",
+              )}
               isChecked={target === "FILESYSTEM"}
               isDisabled={!targets.includes("FILESYSTEM")}
               onChange={() => setTarget("FILESYSTEM")}

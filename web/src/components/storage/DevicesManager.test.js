@@ -305,7 +305,7 @@ describe("usedDevices", () => {
       { sid: 63, isDrive: true, partitionTable: { partitions: [] } },
       { sid: 64, isDrive: false, type: "lvmVg", logicalVolumes: [] },
       { sid: 65, isDrive: false, type: "lvmVg", logicalVolumes: [] },
-      { sid: 66, isDrive: false, type: "lvmVg", logicalVolumes: [{ sid: 68 }] }
+      { sid: 66, isDrive: false, type: "lvmVg", logicalVolumes: [{ sid: 68 }] },
     ];
     staging = [
       { sid: 60, isDrive: false },
@@ -317,7 +317,7 @@ describe("usedDevices", () => {
       // Logical volume added
       { sid: 65, isDrive: false, type: "lvmVg", logicalVolumes: [{ sid: 70 }, { sid: 71 }] },
       // Logical volume removed
-      { sid: 66, isDrive: false, type: "lvmVg", logicalVolumes: [] }
+      { sid: 66, isDrive: false, type: "lvmVg", logicalVolumes: [] },
     ];
   });
 
@@ -348,20 +348,24 @@ describe("usedDevices", () => {
         // This logical volume was added (belongs to device 65).
         { device: 70 },
         // This logical volume was added (belongs to device 65).
-        { device: 71 }
+        { device: 71 },
       ];
     });
 
     it("does not include removed disk devices or LVM volume groups", () => {
       const manager = new DevicesManager(system, staging, actions);
-      const sids = manager.usedDevices().map(d => d.sid)
+      const sids = manager
+        .usedDevices()
+        .map((d) => d.sid)
         .sort();
       expect(sids).not.toContain(61);
     });
 
     it("includes all disk devices and LVM volume groups affected by the actions", () => {
       const manager = new DevicesManager(system, staging, actions);
-      const sids = manager.usedDevices().map(d => d.sid)
+      const sids = manager
+        .usedDevices()
+        .map((d) => d.sid)
         .sort();
       expect(sids).toEqual([62, 63, 65, 66]);
     });
@@ -370,26 +374,22 @@ describe("usedDevices", () => {
 
 describe("resizedDevices", () => {
   beforeEach(() => {
-    system = [
-      { sid: 60 },
-      { sid: 62 },
-      { sid: 63 },
-      { sid: 64 },
-      { sid: 65, isDrive: true }
-    ];
+    system = [{ sid: 60 }, { sid: 62 }, { sid: 63 }, { sid: 64 }, { sid: 65, isDrive: true }];
     actions = [
       { device: 60, delete: true },
       // This device does not exist in system.
       { device: 61, delete: true },
       { device: 62, delete: false, resize: true },
       { device: 63, delete: false, resize: true },
-      { device: 65, delete: true }
+      { device: 65, delete: true },
     ];
   });
 
   it("includes all resized devices", () => {
     const manager = new DevicesManager(system, staging, actions);
-    const sids = manager.resizedDevices().map(d => d.sid)
+    const sids = manager
+      .resizedDevices()
+      .map((d) => d.sid)
       .sort();
     expect(sids).toEqual([62, 63]);
   });
@@ -404,12 +404,12 @@ describe("resizedSystems", () => {
         sid: 63,
         systems: ["openSUSE Leap", "openSUSE Tumbleweed"],
         partitionTable: {
-          partitions: [{ sid: 65 }, { sid: 66 }]
-        }
+          partitions: [{ sid: 65 }, { sid: 66 }],
+        },
       },
       { sid: 64 },
       { sid: 65, systems: ["openSUSE Leap"] },
-      { sid: 66, systems: ["openSUSE Tumbleweed"] }
+      { sid: 66, systems: ["openSUSE Tumbleweed"] },
     ];
     actions = [
       { device: 60, delete: false, resize: true },
@@ -418,7 +418,7 @@ describe("resizedSystems", () => {
       { device: 62, delete: false },
       { device: 63, delete: false, resize: true },
       { device: 65, delete: true, resize: true },
-      { device: 66, delete: false, resize: true }
+      { device: 66, delete: false, resize: true },
     ];
   });
 
@@ -434,26 +434,22 @@ describe("resizedSystems", () => {
 
 describe("deletedDevices", () => {
   beforeEach(() => {
-    system = [
-      { sid: 60 },
-      { sid: 62 },
-      { sid: 63 },
-      { sid: 64 },
-      { sid: 65, isDrive: true }
-    ];
+    system = [{ sid: 60 }, { sid: 62 }, { sid: 63 }, { sid: 64 }, { sid: 65, isDrive: true }];
     actions = [
       { device: 60, delete: true },
       // This device does not exist in system.
       { device: 61, delete: true },
       { device: 62, delete: false },
       { device: 63, delete: true },
-      { device: 65, delete: true }
+      { device: 65, delete: true },
     ];
   });
 
   it("includes all deleted devices", () => {
     const manager = new DevicesManager(system, staging, actions);
-    const sids = manager.deletedDevices().map(d => d.sid)
+    const sids = manager
+      .deletedDevices()
+      .map((d) => d.sid)
       .sort();
     expect(sids).toEqual([60, 63]);
   });
@@ -468,12 +464,12 @@ describe("deletedSystems", () => {
         sid: 63,
         systems: ["openSUSE Leap", "openSUSE Tumbleweed"],
         partitionTable: {
-          partitions: [{ sid: 65 }, { sid: 66 }]
-        }
+          partitions: [{ sid: 65 }, { sid: 66 }],
+        },
       },
       { sid: 64 },
       { sid: 65, systems: ["openSUSE Leap"] },
-      { sid: 66, systems: ["openSUSE Tumbleweed"] }
+      { sid: 66, systems: ["openSUSE Tumbleweed"] },
     ];
     actions = [
       { device: 60, delete: true },
@@ -482,7 +478,7 @@ describe("deletedSystems", () => {
       { device: 62, delete: false },
       { device: 63, delete: true },
       { device: 65, delete: true },
-      { device: 66, delete: true }
+      { device: 66, delete: true },
     ];
   });
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-30 02:27+0000\n"
+"POT-Creation-Date: 2024-07-14 02:32+0000\n"
 "PO-Revision-Date: 2024-06-28 16:46+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -20,11 +20,11 @@ msgstr ""
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 5.6\n"
 
-#: src/MainLayout.jsx:40
+#: src/MainLayout.jsx:52
 msgid "Agama"
 msgstr "Agama"
 
-#: src/MainLayout.jsx:82
+#: src/MainLayout.jsx:94
 msgid "Change product"
 msgstr "Изменить продукт"
 
@@ -32,12 +32,11 @@ msgstr "Изменить продукт"
 msgid "About"
 msgstr "Об Agama"
 
-#: src/components/core/About.jsx:71
+#: src/components/core/About.jsx:69
 msgid "About Agama"
 msgstr "Об Agama"
 
-#. TRANSLATORS: content of the "About" popup (1/2)
-#: src/components/core/About.jsx:76
+#: src/components/core/About.jsx:74
 msgid ""
 "Agama is an experimental installer for (open)SUSE systems. It is still under "
 "development so, please, do not use it in production environments. If you "
@@ -51,26 +50,17 @@ msgstr ""
 
 #. TRANSLATORS: content of the "About" popup (2/2)
 #. %s is replaced by the project URL
-#: src/components/core/About.jsx:88
+#: src/components/core/About.jsx:86
 #, c-format
 msgid "For more information, please visit the project's repository at %s."
 msgstr ""
 "Для получения дополнительной информации посетите репозиторий проекта по "
 "адресу %s."
 
-#: src/components/core/About.jsx:94 src/components/core/FileViewer.jsx:81
-#: src/components/core/LogsButton.jsx:123
-#: src/components/software/SoftwarePatternsSelection.jsx:260
+#: src/components/core/About.jsx:92 src/components/core/LogsButton.jsx:126
+#: src/components/software/SoftwarePatternsSelection.jsx:268
 msgid "Close"
 msgstr "Закрыть"
-
-#: src/components/core/FileViewer.jsx:66
-msgid "Reading file..."
-msgstr "Чтение файла..."
-
-#: src/components/core/FileViewer.jsx:72
-msgid "Cannot read the file"
-msgstr "Невозможно прочитать файл"
 
 #: src/components/core/InstallButton.jsx:32
 msgid "Confirm Installation"
@@ -94,9 +84,9 @@ msgid "Continue"
 msgstr "Продолжить"
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:97
-#: src/components/core/Popup.jsx:136
-#: src/components/network/WifiConnectionForm.jsx:131
+#: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:90
+#: src/components/core/Popup.jsx:132
+#: src/components/network/WifiConnectionForm.jsx:134
 msgid "Cancel"
 msgstr "Отмена"
 
@@ -105,11 +95,11 @@ msgstr "Отмена"
 msgid "Install"
 msgstr "Установить"
 
-#: src/components/core/InstallationFinished.jsx:42
+#: src/components/core/InstallationFinished.jsx:48
 msgid "TPM sealing requires the new system to be booted directly."
 msgstr "Запечатывание TPM требует прямой загрузки новой системы."
 
-#: src/components/core/InstallationFinished.jsx:47
+#: src/components/core/InstallationFinished.jsx:53
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
@@ -117,16 +107,15 @@ msgstr ""
 "Если для запуска этой программы установки использовался локальный носитель, "
 "извлеките его перед следующей загрузкой."
 
-#: src/components/core/InstallationFinished.jsx:51
+#: src/components/core/InstallationFinished.jsx:57
 msgid "Hide details"
 msgstr "Скрыть подробности"
 
-#: src/components/core/InstallationFinished.jsx:51
+#: src/components/core/InstallationFinished.jsx:57
 msgid "See more details"
 msgstr "См. подробнее"
 
-#. TRANSLATORS: "Trusted Platform Module" is the name of the technology and "TPM" its abbreviation
-#: src/components/core/InstallationFinished.jsx:55
+#: src/components/core/InstallationFinished.jsx:62
 msgid ""
 "The final step to configure the Trusted Platform Module (TPM) to "
 "automatically open encrypted devices will take place during the first boot "
@@ -138,29 +127,29 @@ msgstr ""
 "первой загрузки новой системы. Чтобы это сработало, машина должна "
 "загрузиться непосредственно в новый загрузчик."
 
-#: src/components/core/InstallationFinished.jsx:97
+#: src/components/core/InstallationFinished.jsx:107
 msgid "Congratulations!"
 msgstr "Поздравляем!"
 
-#: src/components/core/InstallationFinished.jsx:102
+#: src/components/core/InstallationFinished.jsx:116
 msgid "The installation on your machine is complete."
 msgstr "Установка на ваш компьютер завершена."
 
-#: src/components/core/InstallationFinished.jsx:105
+#: src/components/core/InstallationFinished.jsx:119
 msgid "At this point you can power off the machine."
 msgstr "На этом этапе вы можете выключить устройство."
 
-#: src/components/core/InstallationFinished.jsx:106
+#: src/components/core/InstallationFinished.jsx:121
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr ""
 "На этом этапе вы можете перезагрузить устройство, чтобы войти в новую "
 "систему."
 
-#: src/components/core/InstallationFinished.jsx:113
+#: src/components/core/InstallationFinished.jsx:130
 msgid "Finish"
 msgstr "Завершить"
 
-#: src/components/core/InstallationFinished.jsx:113
+#: src/components/core/InstallationFinished.jsx:130
 msgid "Reboot"
 msgstr "Перезагрузка"
 
@@ -168,40 +157,40 @@ msgstr "Перезагрузка"
 msgid "Installing the system, please wait ..."
 msgstr "Установка системы, пожалуйста, подождите..."
 
-#: src/components/core/InstallerOptions.jsx:83
+#: src/components/core/InstallerOptions.jsx:92
 msgid "Show installer options"
 msgstr "Показать параметры установки"
 
-#: src/components/core/InstallerOptions.jsx:88
+#: src/components/core/InstallerOptions.jsx:95
 msgid "Installer options"
 msgstr "Параметры установщика"
 
-#: src/components/core/InstallerOptions.jsx:94
-#: src/components/core/InstallerOptions.jsx:99
-#: src/components/core/InstallerOptions.jsx:100
-#: src/components/l10n/L10nPage.jsx:67
+#: src/components/core/InstallerOptions.jsx:98
+#: src/components/core/InstallerOptions.jsx:102
+#: src/components/core/InstallerOptions.jsx:103
+#: src/components/l10n/L10nPage.jsx:60
 msgid "Language"
 msgstr "Язык"
 
-#: src/components/core/InstallerOptions.jsx:114
-#: src/components/core/InstallerOptions.jsx:121
+#: src/components/core/InstallerOptions.jsx:115
+#: src/components/core/InstallerOptions.jsx:120
 msgid "Keyboard layout"
 msgstr "Раскладка клавиатуры"
 
-#: src/components/core/InstallerOptions.jsx:130
+#: src/components/core/InstallerOptions.jsx:129
 msgid "Cannot be changed in remote installation"
 msgstr "Нельзя изменить при удаленной установке"
 
-#: src/components/core/InstallerOptions.jsx:135
-#: src/components/network/IpSettingsForm.jsx:210
-#: src/components/product/ProductRegistrationPage.jsx:89
-#: src/components/storage/BootSelection.jsx:228
-#: src/components/storage/DeviceSelection.jsx:240
-#: src/components/storage/EncryptionSettingsDialog.jsx:138
-#: src/components/storage/SpacePolicySelection.jsx:198
-#: src/components/storage/VolumeDialog.jsx:781
-#: src/components/storage/ZFCPPage.jsx:503
-#: src/components/users/FirstUserForm.jsx:285
+#: src/components/core/InstallerOptions.jsx:142
+#: src/components/network/IpSettingsForm.jsx:228
+#: src/components/product/ProductRegistrationPage.jsx:85
+#: src/components/storage/BootSelection.jsx:250
+#: src/components/storage/DeviceSelection.jsx:254
+#: src/components/storage/EncryptionSettingsDialog.jsx:155
+#: src/components/storage/SpacePolicySelection.jsx:200
+#: src/components/storage/VolumeDialog.jsx:794
+#: src/components/storage/ZFCPPage.jsx:528
+#: src/components/users/FirstUserForm.jsx:303
 msgid "Accept"
 msgstr "Подтвердить"
 
@@ -210,32 +199,29 @@ msgid ""
 "Before starting the installation, you need to address the following problems:"
 msgstr "До начала установки нужно устранить следующие проблемы:"
 
-#: src/components/core/ListSearch.jsx:51
+#: src/components/core/ListSearch.jsx:48
 msgid "Search"
 msgstr "Поиск"
 
-#: src/components/core/LoginPage.jsx:61
+#: src/components/core/LoginPage.jsx:64
 msgid "Could not log in. Please, make sure that the password is correct."
 msgstr ""
 "Не удалось войти в систему. Пожалуйста, убедитесь, что пароль введен "
 "правильно."
 
-#: src/components/core/LoginPage.jsx:63
+#: src/components/core/LoginPage.jsx:66
 msgid "Could not authenticate against the server, please check it."
 msgstr ""
 "Не удалось пройти аутентификацию на сервере, пожалуйста, проверьте его."
 
 #. TRANSLATORS: Title for a form to provide the password for the root user. %s
 #. will be replaced by "root"
-#: src/components/core/LoginPage.jsx:71
+#: src/components/core/LoginPage.jsx:74
 #, c-format
 msgid "Log in as %s"
 msgstr "Вход как %s"
 
-#. TRANSLATORS: description why root password is needed. The text in the
-#. square brackets [] is displayed in bold, use only please, do not translate
-#. it and keep the brackets.
-#: src/components/core/LoginPage.jsx:76
+#: src/components/core/LoginPage.jsx:80
 msgid "The installer requires [root] user privileges."
 msgstr "Программа установки требует привилегий пользователя [root]."
 
@@ -243,32 +229,32 @@ msgstr "Программа установки требует привилеги�
 msgid "Please, provide its password to log in to the system."
 msgstr "Пожалуйста, укажите его пароль для входа в систему."
 
-#: src/components/core/LoginPage.jsx:98
+#: src/components/core/LoginPage.jsx:96
 msgid "Login form"
 msgstr "Форма входа"
 
-#: src/components/core/LoginPage.jsx:104
+#: src/components/core/LoginPage.jsx:102
 msgid "Password input"
 msgstr "Ввод пароля"
 
-#: src/components/core/LoginPage.jsx:113
+#: src/components/core/LoginPage.jsx:111
 msgid "Log in"
 msgstr "Вход"
 
-#: src/components/core/LoginPage.jsx:124
+#: src/components/core/LoginPage.jsx:121
 msgid "More about this"
 msgstr "Подробнее об этом"
 
-#: src/components/core/LogsButton.jsx:103
+#: src/components/core/LogsButton.jsx:101
 msgid "Collecting logs..."
 msgstr "Сбор журналов..."
 
-#: src/components/core/LogsButton.jsx:103
-#: src/components/core/LogsButton.jsx:106
+#: src/components/core/LogsButton.jsx:101
+#: src/components/core/LogsButton.jsx:104
 msgid "Download logs"
 msgstr "Скачать журналы"
 
-#: src/components/core/LogsButton.jsx:112
+#: src/components/core/LogsButton.jsx:111
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
@@ -276,32 +262,32 @@ msgstr ""
 "Браузер запустит загрузку журналов, как только они будут готовы. Пожалуйста, "
 "подождите."
 
-#: src/components/core/LogsButton.jsx:120
+#: src/components/core/LogsButton.jsx:121
 msgid "Something went wrong while collecting logs. Please, try again."
 msgstr ""
 "Что-то пошло не так при сборе журналов. Пожалуйста, попробуйте ещё раз."
 
-#: src/components/core/PasswordAndConfirmationInput.jsx:48
+#: src/components/core/PasswordAndConfirmationInput.jsx:55
 msgid "Passwords do not match"
 msgstr "Пароли не совпадают"
 
-#: src/components/core/PasswordAndConfirmationInput.jsx:72
-#: src/components/network/WifiConnectionForm.jsx:120
-#: src/components/storage/iscsi/AuthFields.jsx:95
-#: src/components/storage/iscsi/AuthFields.jsx:100
-#: src/components/users/RootAuthMethods.jsx:163
+#: src/components/core/PasswordAndConfirmationInput.jsx:79
+#: src/components/network/WifiConnectionForm.jsx:121
+#: src/components/storage/iscsi/AuthFields.jsx:90
+#: src/components/storage/iscsi/AuthFields.jsx:94
+#: src/components/users/RootAuthMethods.jsx:165
 msgid "Password"
 msgstr "Пароль"
 
-#: src/components/core/PasswordAndConfirmationInput.jsx:85
+#: src/components/core/PasswordAndConfirmationInput.jsx:90
 msgid "Password confirmation"
 msgstr "Подтверждение пароля"
 
-#: src/components/core/PasswordInput.jsx:64
+#: src/components/core/PasswordInput.jsx:61
 msgid "Password visibility button"
 msgstr "Кнопка отображения пароля"
 
-#: src/components/core/Popup.jsx:100
+#: src/components/core/Popup.jsx:92
 msgid "Confirm"
 msgstr "Подтвердить"
 
@@ -318,117 +304,106 @@ msgstr "Завершено"
 msgid "In progress"
 msgstr "В процессе"
 
-#: src/components/core/ProgressReport.jsx:70
+#: src/components/core/ProgressReport.jsx:74
 msgid "Pending"
 msgstr "Ожидается"
 
-#: src/components/core/ProgressReport.jsx:134
+#: src/components/core/ProgressReport.jsx:138
 msgid "Waiting for progress status..."
 msgstr "Ожидание отчёта о процессе…"
 
 #: src/components/core/RowActions.jsx:64
-#: src/components/storage/PartitionsField.jsx:454
-#: src/components/storage/ProposalActionsSummary.jsx:226
+#: src/components/storage/PartitionsField.jsx:491
+#: src/components/storage/ProposalActionsSummary.jsx:233
 msgid "Actions"
 msgstr "Действия"
 
-#: src/components/core/SectionSkeleton.jsx:29
+#: src/components/core/SectionSkeleton.jsx:27
 msgid "Waiting"
 msgstr "Ожидание"
 
-#: src/components/core/Selector.jsx:126
-#: src/components/software/SoftwarePatternsSelection.jsx:212
-msgid "auto selected"
-msgstr "автоматический выбор"
-
-#. TRANSLATORS: page title
-#: src/components/core/ServerError.jsx:34
-msgid "Agama Error"
-msgstr "Сбой Agama"
-
-#: src/components/core/ServerError.jsx:38
+#: src/components/core/ServerError.jsx:47
 msgid "Cannot connect to Agama server"
 msgstr "Не удалось подключиться к серверу Agama"
 
-#: src/components/core/ServerError.jsx:43
+#: src/components/core/ServerError.jsx:51
 msgid "Please, check whether it is running."
 msgstr "Пожалуйста, проверьте, запущен ли он."
 
-#. TRANSLATORS: button label
-#: src/components/core/ServerError.jsx:51
+#: src/components/core/ServerError.jsx:56
 msgid "Reload"
 msgstr "Обновить"
 
-#: src/components/l10n/KeyboardSelection.jsx:45
+#: src/components/l10n/KeyboardSelection.jsx:41
 msgid "Filter by description or keymap code"
 msgstr "Фильтр по описанию или коду карты клавиш"
 
-#: src/components/l10n/KeyboardSelection.jsx:85
+#: src/components/l10n/KeyboardSelection.jsx:71
 msgid "None of the keymaps match the filter."
 msgstr "Ни одна из карт не соответствует фильтру."
 
-#: src/components/l10n/KeyboardSelection.jsx:92
+#: src/components/l10n/KeyboardSelection.jsx:77
 msgid "Keyboard selection"
 msgstr "Выбор клавиатуры"
 
-#: src/components/l10n/KeyboardSelection.jsx:107
-#: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
-#: src/components/l10n/L10nPage.jsx:93
-#: src/components/l10n/LocaleSelection.jsx:107
-#: src/components/l10n/TimezoneSelection.jsx:145
-#: src/components/product/ProductSelectionPage.jsx:101
+#: src/components/l10n/KeyboardSelection.jsx:90
+#: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
+#: src/components/l10n/L10nPage.jsx:83
+#: src/components/l10n/LocaleSelection.jsx:92
+#: src/components/l10n/TimezoneSelection.jsx:125
+#: src/components/product/ProductSelectionPage.jsx:90
 msgid "Select"
 msgstr "Выбор"
 
-#: src/components/l10n/L10nPage.jsx:60 src/components/l10n/routes.js:34
-#: src/components/overview/L10nSection.jsx:42
+#: src/components/l10n/L10nPage.jsx:53
+#: src/components/overview/L10nSection.jsx:37 src/routes/l10n.js:38
 msgid "Localization"
 msgstr "Локализация"
 
-#: src/components/l10n/L10nPage.jsx:68 src/components/l10n/L10nPage.jsx:79
-#: src/components/l10n/L10nPage.jsx:90
+#: src/components/l10n/L10nPage.jsx:61 src/components/l10n/L10nPage.jsx:70
+#: src/components/l10n/L10nPage.jsx:80
 msgid "Not selected yet"
 msgstr "Ещё не выбрано"
 
-#: src/components/l10n/L10nPage.jsx:71 src/components/l10n/L10nPage.jsx:82
-#: src/components/l10n/L10nPage.jsx:93
-#: src/components/network/NetworkPage.jsx:102
-#: src/components/storage/InstallationDeviceField.jsx:105
-#: src/components/storage/ProposalActionsSummary.jsx:228
-#: src/components/users/RootAuthMethods.jsx:94
-#: src/components/users/RootAuthMethods.jsx:107
+#: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
+#: src/components/l10n/L10nPage.jsx:83
+#: src/components/network/NetworkPage.jsx:112
+#: src/components/storage/InstallationDeviceField.jsx:108
+#: src/components/storage/ProposalActionsSummary.jsx:238
+#: src/components/users/RootAuthMethods.jsx:100
+#: src/components/users/RootAuthMethods.jsx:112
 msgid "Change"
 msgstr "Изменить"
 
-#: src/components/l10n/L10nPage.jsx:78
+#: src/components/l10n/L10nPage.jsx:70
 msgid "Keyboard"
 msgstr "Клавиатура"
 
-#: src/components/l10n/L10nPage.jsx:89
+#: src/components/l10n/L10nPage.jsx:79
 msgid "Time zone"
 msgstr "Часовой пояс"
 
-#: src/components/l10n/LocaleSelection.jsx:44
+#: src/components/l10n/LocaleSelection.jsx:39
 msgid "Filter by language, territory or locale code"
 msgstr "Фильтр по языку, территории или коду локали"
 
-#: src/components/l10n/LocaleSelection.jsx:84
+#: src/components/l10n/LocaleSelection.jsx:72
 msgid "None of the locales match the filter."
 msgstr "Ни одна из локалей не соответствует фильтру."
 
-#: src/components/l10n/LocaleSelection.jsx:91
+#: src/components/l10n/LocaleSelection.jsx:78
 msgid "Locale selection"
 msgstr "Выбор локали"
 
-#: src/components/l10n/TimezoneSelection.jsx:71
+#: src/components/l10n/TimezoneSelection.jsx:64
 msgid "Filter by territory, time zone code or UTC offset"
 msgstr "Фильтр по территории, коду часового пояса или смещению UTC"
 
-#: src/components/l10n/TimezoneSelection.jsx:122
+#: src/components/l10n/TimezoneSelection.jsx:101
 msgid "None of the time zones match the filter."
 msgstr "Ни один из часовых поясов не соответствует фильтру."
 
-#: src/components/l10n/TimezoneSelection.jsx:129
+#: src/components/l10n/TimezoneSelection.jsx:107
 msgid " Timezone selection"
 msgstr " Выбор часового пояса"
 
@@ -437,111 +412,111 @@ msgid "Loading installation environment, please wait."
 msgstr "Загрузка установочной среды, пожалуйста, подождите."
 
 #. TRANSLATORS: button label
-#: src/components/network/AddressesDataList.jsx:78
-#: src/components/network/DnsDataList.jsx:84
+#: src/components/network/AddressesDataList.jsx:88
+#: src/components/network/DnsDataList.jsx:95
 msgid "Remove"
 msgstr "Удалить"
 
 #. TRANSLATORS: input field name
-#: src/components/network/AddressesDataList.jsx:90
-#: src/components/network/AddressesDataList.jsx:91
+#: src/components/network/AddressesDataList.jsx:100
+#: src/components/network/AddressesDataList.jsx:101
 #: src/components/network/IpAddressInput.jsx:33
 msgid "IP Address"
 msgstr "IP-адрес"
 
 #. TRANSLATORS: input field name
-#: src/components/network/AddressesDataList.jsx:99
-#: src/components/network/AddressesDataList.jsx:100
+#: src/components/network/AddressesDataList.jsx:109
+#: src/components/network/AddressesDataList.jsx:110
 msgid "Prefix length or netmask"
 msgstr "Длина префикса или маска сети"
 
-#: src/components/network/AddressesDataList.jsx:116
+#: src/components/network/AddressesDataList.jsx:126
 msgid "Add an address"
 msgstr "Добавить адрес"
 
 #. TRANSLATORS: button label
-#: src/components/network/AddressesDataList.jsx:116
+#: src/components/network/AddressesDataList.jsx:126
 msgid "Add another address"
 msgstr "Добавить другой адрес"
 
-#: src/components/network/AddressesDataList.jsx:121
+#: src/components/network/AddressesDataList.jsx:131
 msgid "Addresses"
 msgstr "Адреса"
 
-#: src/components/network/AddressesDataList.jsx:123
+#: src/components/network/AddressesDataList.jsx:133
 msgid "Addresses data list"
 msgstr "Список данных адресов"
 
 #. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
-#: src/components/network/ConnectionsTable.jsx:67
-#: src/components/network/ConnectionsTable.jsx:95
-#: src/components/storage/ZFCPPage.jsx:361
+#: src/components/network/ConnectionsTable.jsx:64
+#: src/components/network/ConnectionsTable.jsx:92
+#: src/components/storage/ZFCPPage.jsx:381
 #: src/components/storage/iscsi/InitiatorForm.jsx:52
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:68
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:85
-#: src/components/storage/iscsi/NodesPresenter.jsx:100
-#: src/components/storage/iscsi/NodesPresenter.jsx:121
+#: src/components/storage/iscsi/NodesPresenter.jsx:98
+#: src/components/storage/iscsi/NodesPresenter.jsx:119
 msgid "Name"
 msgstr "Имя"
 
 #. TRANSLATORS: table header
-#: src/components/network/ConnectionsTable.jsx:69
-#: src/components/network/ConnectionsTable.jsx:96
+#: src/components/network/ConnectionsTable.jsx:66
+#: src/components/network/ConnectionsTable.jsx:93
 msgid "IP addresses"
 msgstr "IP-адреса"
 
-#: src/components/network/ConnectionsTable.jsx:77
-#: src/components/network/WifiNetworksListPage.jsx:100
-#: src/components/network/WifiNetworksListPage.jsx:124
-#: src/components/storage/PartitionsField.jsx:320
+#: src/components/network/ConnectionsTable.jsx:74
+#: src/components/network/WifiNetworksListPage.jsx:107
+#: src/components/network/WifiNetworksListPage.jsx:130
+#: src/components/storage/PartitionsField.jsx:347
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:116
+#: src/components/users/FirstUser.jsx:120
 msgid "Edit"
 msgstr "Изменить"
 
 #. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:80
-#: src/components/network/IpSettingsForm.jsx:136
+#: src/components/network/ConnectionsTable.jsx:77
+#: src/components/network/IpSettingsForm.jsx:151
 #, c-format
 msgid "Edit connection %s"
 msgstr "Отредактировать соединение %s"
 
-#: src/components/network/ConnectionsTable.jsx:84
-#: src/components/network/WifiNetworksListPage.jsx:103
-#: src/components/network/WifiNetworksListPage.jsx:127
+#: src/components/network/ConnectionsTable.jsx:81
+#: src/components/network/WifiNetworksListPage.jsx:109
+#: src/components/network/WifiNetworksListPage.jsx:137
 msgid "Forget"
 msgstr "Забыть"
 
 #. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:86
+#: src/components/network/ConnectionsTable.jsx:83
 #, c-format
 msgid "Forget connection %s"
 msgstr "Забыть соединение %s"
 
 #. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:101
+#: src/components/network/ConnectionsTable.jsx:98
 #, c-format
 msgid "Actions for connection %s"
 msgstr "Действия для соединения %s"
 
 #. TRANSLATORS: input field name
-#: src/components/network/DnsDataList.jsx:75
-#: src/components/network/DnsDataList.jsx:76
+#: src/components/network/DnsDataList.jsx:81
+#: src/components/network/DnsDataList.jsx:82
 msgid "Server IP"
 msgstr "IP сервера"
 
-#: src/components/network/DnsDataList.jsx:93
+#: src/components/network/DnsDataList.jsx:104
 msgid "Add DNS"
 msgstr "Добавить DNS"
 
 #. TRANSLATORS: button label
-#: src/components/network/DnsDataList.jsx:93
+#: src/components/network/DnsDataList.jsx:104
 msgid "Add another DNS"
 msgstr "Добавить другой DNS"
 
-#: src/components/network/DnsDataList.jsx:98
+#: src/components/network/DnsDataList.jsx:109
 msgid "DNS"
 msgstr "DNS"
 
@@ -551,42 +526,42 @@ msgid "IP prefix or netmask"
 msgstr "Префикс или маска сети"
 
 #. TRANSLATORS: error message
-#: src/components/network/IpSettingsForm.jsx:90
+#: src/components/network/IpSettingsForm.jsx:104
 msgid "At least one address must be provided for selected mode"
 msgstr "Для выбранного режима необходимо предоставить не менее одного адреса"
 
 #. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
-#: src/components/network/IpSettingsForm.jsx:145
-#: src/components/network/IpSettingsForm.jsx:150
-#: src/components/network/IpSettingsForm.jsx:152
+#: src/components/network/IpSettingsForm.jsx:160
+#: src/components/network/IpSettingsForm.jsx:165
+#: src/components/network/IpSettingsForm.jsx:167
 msgid "Mode"
 msgstr "Режим"
 
-#: src/components/network/IpSettingsForm.jsx:156
+#: src/components/network/IpSettingsForm.jsx:174
 msgid "Automatic (DHCP)"
 msgstr "Автоматически (DHCP)"
 
 #. TRANSLATORS: manual network configuration mode with a static IP address
-#: src/components/network/IpSettingsForm.jsx:158
+#: src/components/network/IpSettingsForm.jsx:177
 #: src/components/storage/iscsi/NodeStartupOptions.js:25
 msgid "Manual"
 msgstr "Вручную"
 
 #. TRANSLATORS: network gateway configuration
-#: src/components/network/IpSettingsForm.jsx:166
-#: src/components/network/IpSettingsForm.jsx:169
+#: src/components/network/IpSettingsForm.jsx:185
+#: src/components/network/IpSettingsForm.jsx:188
 msgid "Gateway"
 msgstr "Шлюз"
 
-#: src/components/network/IpSettingsForm.jsx:178
+#: src/components/network/IpSettingsForm.jsx:196
 msgid "Gateway can be defined only in 'Manual' mode"
 msgstr "Шлюз можно указать только в ручном режиме"
 
-#: src/components/network/NetworkPage.jsx:85
+#: src/components/network/NetworkPage.jsx:93
 msgid "No Wi-Fi supported"
 msgstr "Нет поддержки Wi-Fi"
 
-#: src/components/network/NetworkPage.jsx:86
+#: src/components/network/NetworkPage.jsx:95
 msgid ""
 "The system does not support Wi-Fi connections, probably because of missing "
 "or disabled hardware."
@@ -594,40 +569,40 @@ msgstr ""
 "Система не поддерживает соединение по WiFi, вероятно, из-за отсутствующего "
 "или отключённого оборудования."
 
-#: src/components/network/NetworkPage.jsx:99
+#: src/components/network/NetworkPage.jsx:109
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
 #. TRANSLATORS: button label, connect to a WiFi network
-#: src/components/network/NetworkPage.jsx:102
-#: src/components/network/WifiConnectionForm.jsx:128
-#: src/components/network/WifiNetworksListPage.jsx:97
+#: src/components/network/NetworkPage.jsx:112
+#: src/components/network/WifiConnectionForm.jsx:130
+#: src/components/network/WifiNetworksListPage.jsx:105
 msgid "Connect"
 msgstr "Подключиться"
 
-#: src/components/network/NetworkPage.jsx:109
+#: src/components/network/NetworkPage.jsx:119
 #, c-format
 msgid "Conected to %s"
 msgstr "Подключено к %s"
 
-#: src/components/network/NetworkPage.jsx:114
+#: src/components/network/NetworkPage.jsx:126
 msgid "No connected yet"
 msgstr "Ещё не подключено"
 
-#: src/components/network/NetworkPage.jsx:115
+#: src/components/network/NetworkPage.jsx:127
 msgid ""
 "The system has not been configured for connecting to a Wi-Fi network yet."
 msgstr "Система ещё не настроена на подключение к сети Wi-Fi."
 
-#: src/components/network/NetworkPage.jsx:136
+#: src/components/network/NetworkPage.jsx:156
 msgid "Wired"
 msgstr "Проводное"
 
-#: src/components/network/NetworkPage.jsx:139
+#: src/components/network/NetworkPage.jsx:160
 msgid "No wired connections found"
 msgstr "Проводные соединения не обнаружены"
 
-#: src/components/network/NetworkPage.jsx:149
+#: src/components/network/NetworkPage.jsx:173
 #: src/components/network/routes.js:59
 msgid "Network"
 msgstr "Сеть"
@@ -643,16 +618,16 @@ msgstr "Отсутствует"
 msgid "WPA & WPA2 Personal"
 msgstr "WPA и WPA2 Personal"
 
-#: src/components/network/WifiConnectionForm.jsx:86
-#: src/components/product/ProductRegistrationPage.jsx:69
-#: src/components/storage/ZFCPDiskForm.jsx:108
-#: src/components/storage/iscsi/DiscoverForm.jsx:110
-#: src/components/storage/iscsi/LoginForm.jsx:72
-#: src/components/users/FirstUserForm.jsx:203
+#: src/components/network/WifiConnectionForm.jsx:85
+#: src/components/product/ProductRegistrationPage.jsx:68
+#: src/components/storage/ZFCPDiskForm.jsx:105
+#: src/components/storage/iscsi/DiscoverForm.jsx:98
+#: src/components/storage/iscsi/LoginForm.jsx:69
+#: src/components/users/FirstUserForm.jsx:217
 msgid "Something went wrong"
 msgstr "Что-то пошло не так"
 
-#: src/components/network/WifiConnectionForm.jsx:87
+#: src/components/network/WifiConnectionForm.jsx:86
 msgid "Please, review provided settings and try again."
 msgstr "Пожалуйста, проверьте предоставленные настройки и попробуйте ещё раз."
 
@@ -663,103 +638,103 @@ msgid "SSID"
 msgstr "Имя сети"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.jsx:104
-#: src/components/network/WifiConnectionForm.jsx:107
+#: src/components/network/WifiConnectionForm.jsx:105
+#: src/components/network/WifiConnectionForm.jsx:108
 msgid "Security"
 msgstr "Защита"
 
 #. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.jsx:116
+#: src/components/network/WifiConnectionForm.jsx:117
 msgid "WPA Password"
 msgstr "Пароль WPA"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:51
-#: src/components/network/WifiNetworksListPage.jsx:111
+#: src/components/network/WifiNetworksListPage.jsx:63
+#: src/components/network/WifiNetworksListPage.jsx:117
 msgid "Connecting"
 msgstr "Подключение"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:54
-#: src/components/network/WifiNetworksListPage.jsx:115
-#: src/components/network/WifiNetworksListPage.jsx:154
+#: src/components/network/WifiNetworksListPage.jsx:66
+#: src/components/network/WifiNetworksListPage.jsx:121
+#: src/components/network/WifiNetworksListPage.jsx:164
 msgid "Connected"
 msgstr "Подключено"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:59
-#: src/components/network/WifiNetworksListPage.jsx:113
+#: src/components/network/WifiNetworksListPage.jsx:71
+#: src/components/network/WifiNetworksListPage.jsx:119
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr "Отключено"
 
-#: src/components/network/WifiNetworksListPage.jsx:121
+#: src/components/network/WifiNetworksListPage.jsx:127
 msgid "Disconnect"
 msgstr "Отключить"
 
-#: src/components/network/WifiNetworksListPage.jsx:142
+#: src/components/network/WifiNetworksListPage.jsx:150
 msgid "Connect to a hidden network"
 msgstr "Подключиться к скрытой сети"
 
-#: src/components/network/WifiNetworksListPage.jsx:153
+#: src/components/network/WifiNetworksListPage.jsx:161
 msgid "configured"
 msgstr "настроено"
 
-#: src/components/network/WifiNetworksListPage.jsx:244
+#: src/components/network/WifiNetworksListPage.jsx:265
 msgid "Connect to hidden network"
 msgstr "Подключиться к скрытой сети"
 
-#: src/components/network/WifiSelectorPage.jsx:131
+#: src/components/network/WifiSelectorPage.jsx:136
 msgid "Connect to a Wi-Fi network"
 msgstr "Подключиться к сети Wi-Fi"
 
 #. TRANSLATORS: %s will be replaced by a language name and territory, example:
 #. "English (United States)".
-#: src/components/overview/L10nSection.jsx:38
+#: src/components/overview/L10nSection.jsx:33
 #, c-format
 msgid "The system will use %s as its default language."
 msgstr "Система будет использовать %s в качестве языка по умолчанию."
 
-#: src/components/overview/OverviewPage.jsx:45
+#: src/components/overview/OverviewPage.jsx:47
 #: src/components/users/UsersPage.jsx:36 src/components/users/routes.js:32
 msgid "Users"
 msgstr "Пользователи"
 
-#: src/components/overview/OverviewPage.jsx:46
+#: src/components/overview/OverviewPage.jsx:48
 #: src/components/overview/StorageSection.jsx:111
-#: src/components/storage/ProposalPage.jsx:290
+#: src/components/storage/ProposalPage.jsx:307
 #: src/components/storage/StoragePage.jsx:30
 #: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr "Хранилище"
 
-#: src/components/overview/OverviewPage.jsx:47
+#: src/components/overview/OverviewPage.jsx:49
 #: src/components/overview/SoftwareSection.jsx:86
 #: src/components/software/SoftwarePage.jsx:155
 #: src/components/software/routes.js:32
 msgid "Software"
 msgstr "Программы"
 
-#: src/components/overview/OverviewPage.jsx:52
+#: src/components/overview/OverviewPage.jsx:54
 msgid "Ready for installation"
 msgstr "Готов к установке"
 
-#: src/components/overview/OverviewPage.jsx:102
+#: src/components/overview/OverviewPage.jsx:104
 msgid "Installation"
 msgstr "Установка"
 
-#: src/components/overview/OverviewPage.jsx:103
+#: src/components/overview/OverviewPage.jsx:105
 msgid "Before installing, please check the following problems."
 msgstr "Проверьте следующие проблемы перед установкой."
 
-#: src/components/overview/OverviewPage.jsx:114
+#: src/components/overview/OverviewPage.jsx:116
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
 msgstr "Проверьте свои настройки до начала процесса установки."
 
-#: src/components/overview/OverviewPage.jsx:123
+#: src/components/overview/OverviewPage.jsx:125
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
@@ -847,14 +822,14 @@ msgstr ""
 "использованием пользовательской стратегии для поиска необходимого "
 "пространства"
 
-#: src/components/overview/StorageSection.jsx:175
-#: src/components/storage/InstallationDeviceField.jsx:63
+#: src/components/overview/StorageSection.jsx:179
+#: src/components/storage/InstallationDeviceField.jsx:66
 msgid "No device selected yet"
 msgstr "Устройство ещё не выбрано"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:182
+#: src/components/overview/StorageSection.jsx:186
 #, c-format
 msgid "Install using device %s shrinking existing partitions as needed"
 msgstr ""
@@ -863,7 +838,7 @@ msgstr ""
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:186
+#: src/components/overview/StorageSection.jsx:190
 #, c-format
 msgid "Install using device %s without modifying existing partitions"
 msgstr ""
@@ -871,14 +846,14 @@ msgstr ""
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:190
+#: src/components/overview/StorageSection.jsx:194
 #, c-format
 msgid "Install using device %s and deleting all its content"
 msgstr "Установить с использованием устройства %s и удалить все его содержимое"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
-#: src/components/overview/StorageSection.jsx:195
+#: src/components/overview/StorageSection.jsx:199
 #, c-format
 msgid "Install using device %s with a custom strategy to find the needed space"
 msgstr ""
@@ -894,19 +869,15 @@ msgstr "Обзор"
 msgid "Register %s"
 msgstr "Зарегистрировать %s"
 
-#: src/components/product/ProductRegistrationPage.jsx:74
+#: src/components/product/ProductRegistrationPage.jsx:73
 msgid "Registration code"
 msgstr "Код регистрации"
 
-#: src/components/product/ProductRegistrationPage.jsx:77
+#: src/components/product/ProductRegistrationPage.jsx:76
 msgid "Email"
 msgstr "Электронная почта"
 
-#: src/components/product/ProductSelectionPage.jsx:58
-msgid "Loading available products, please wait..."
-msgstr "Загрузка доступных продуктов, пожалуйста, подождите..."
-
-#: src/components/product/ProductSelectionProgress.jsx:53
+#: src/components/product/ProductSelectionProgress.jsx:49
 msgid "Configuring the product, please wait ..."
 msgstr "Настройка продукта, пожалуйста, подождите..."
 
@@ -925,7 +896,7 @@ msgid "Encrypted Device"
 msgstr "Зашифрованное устройство"
 
 #. TRANSLATORS: field label
-#: src/components/questions/LuksActivationQuestion.jsx:69
+#: src/components/questions/LuksActivationQuestion.jsx:67
 msgid "Encryption Password"
 msgstr "Пароль шифрования"
 
@@ -945,17 +916,21 @@ msgstr "Выбранные шаблоны"
 msgid "Change selection"
 msgstr "Изменить выбор"
 
-#: src/components/software/SoftwarePatternsSelection.jsx:230
+#: src/components/software/SoftwarePatternsSelection.jsx:223
+msgid "auto selected"
+msgstr "автоматический выбор"
+
+#: src/components/software/SoftwarePatternsSelection.jsx:241
 msgid "None of the patterns match the filter."
 msgstr "Ни один из шаблонов не соответствует фильтру."
 
-#: src/components/software/SoftwarePatternsSelection.jsx:238
+#: src/components/software/SoftwarePatternsSelection.jsx:248
 msgid "Software selection"
 msgstr "Выбор программного обеспечения"
 
 #. TRANSLATORS: search field placeholder text
-#: src/components/software/SoftwarePatternsSelection.jsx:241
-#: src/components/software/SoftwarePatternsSelection.jsx:242
+#: src/components/software/SoftwarePatternsSelection.jsx:251
+#: src/components/software/SoftwarePatternsSelection.jsx:252
 msgid "Filter by pattern title or description"
 msgstr "Фильтр по названию или описанию шаблона"
 
@@ -966,7 +941,7 @@ msgstr "Фильтр по названию или описанию шаблон�
 msgid "Installation will take %s."
 msgstr "Установка займёт %s."
 
-#: src/components/software/UsedSize.jsx:38
+#: src/components/software/UsedSize.jsx:37
 msgid "This space includes the base system and the selected software patterns."
 msgstr "В этот объём входят основная система и выбранные шаблоны ПО."
 
@@ -974,22 +949,21 @@ msgstr "В этот объём входят основная система и �
 msgid "Change boot options"
 msgstr "Изменение параметров загрузки"
 
-#: src/components/storage/BootConfigField.jsx:87
+#: src/components/storage/BootConfigField.jsx:81
 msgid "Installation will not configure partitions for booting."
 msgstr "Установка не будет настраивать разделы для загрузки."
 
-#: src/components/storage/BootConfigField.jsx:89
+#: src/components/storage/BootConfigField.jsx:85
 msgid ""
 "Installation will configure partitions for booting at the installation disk."
 msgstr "Установка настроит разделы для загрузки с установочного диска."
 
-#. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/BootConfigField.jsx:92
+#: src/components/storage/BootConfigField.jsx:89
 #, c-format
 msgid "Installation will configure partitions for booting at %s."
 msgstr "Установка настроит разделы для загрузки по адресу %s."
 
-#: src/components/storage/BootSelection.jsx:127
+#: src/components/storage/BootSelection.jsx:132
 msgid ""
 "To ensure the new system is able to boot, the installer may need to create "
 "or configure some partitions in the appropriate disk."
@@ -998,42 +972,42 @@ msgstr ""
 "потребоваться создать или настроить некоторые разделы на соответствующем "
 "диске."
 
-#: src/components/storage/BootSelection.jsx:133
+#: src/components/storage/BootSelection.jsx:138
 msgid "Partitions to boot will be allocated at the installation disk."
 msgstr "Загрузочные разделы будут выделены на установочном диске."
 
 #. TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-#: src/components/storage/BootSelection.jsx:138
+#: src/components/storage/BootSelection.jsx:143
 #, c-format
 msgid "Partitions to boot will be allocated at the installation disk (%s)."
 msgstr "Загрузочные разделы будут выделены на установочном диске (%s)."
 
-#: src/components/storage/BootSelection.jsx:154
+#: src/components/storage/BootSelection.jsx:159
 msgid "Select booting partition"
 msgstr "Выберите загрузочный раздел"
 
-#: src/components/storage/BootSelection.jsx:170
+#: src/components/storage/BootSelection.jsx:180
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
 msgstr "Автоматически"
 
-#: src/components/storage/BootSelection.jsx:183
+#: src/components/storage/BootSelection.jsx:198
 msgid "Select a disk"
 msgstr "Выберите диск"
 
-#: src/components/storage/BootSelection.jsx:189
+#: src/components/storage/BootSelection.jsx:204
 msgid "Partitions to boot will be allocated at the following device."
 msgstr "Загрузочные разделы будут выделены на следующем устройстве."
 
-#: src/components/storage/BootSelection.jsx:192
+#: src/components/storage/BootSelection.jsx:207
 msgid "Choose a disk for placing the boot loader"
 msgstr "Выберите диск для размещения загрузчика"
 
-#: src/components/storage/BootSelection.jsx:210
+#: src/components/storage/BootSelection.jsx:230
 msgid "Do not configure"
 msgstr "Не настраивать"
 
-#: src/components/storage/BootSelection.jsx:215
+#: src/components/storage/BootSelection.jsx:236
 msgid ""
 "No partitions will be automatically configured for booting. Use with caution."
 msgstr ""
@@ -1044,125 +1018,117 @@ msgstr ""
 msgid "Waiting for progress report"
 msgstr "Ожидание отчёта о процессе"
 
-#: src/components/storage/DASDFormatProgress.jsx:68
+#: src/components/storage/DASDFormatProgress.jsx:67
 msgid "Formatting DASD devices"
 msgstr "Форматирование устройств DASD"
 
-#: src/components/storage/DASDTable.jsx:56
-#: src/components/storage/ZFCPPage.jsx:319
+#: src/components/storage/DASDTable.jsx:62
+#: src/components/storage/ZFCPPage.jsx:340
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:103
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
 msgid "No"
 msgstr "Нет"
 
-#: src/components/storage/DASDTable.jsx:56
-#: src/components/storage/ZFCPPage.jsx:319
+#: src/components/storage/DASDTable.jsx:62
+#: src/components/storage/ZFCPPage.jsx:340
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
-#: src/components/storage/iscsi/NodesPresenter.jsx:103
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
 msgid "Yes"
 msgstr "Да"
 
-#: src/components/storage/DASDTable.jsx:63
-#: src/components/storage/ZFCPDiskForm.jsx:112
-#: src/components/storage/ZFCPPage.jsx:302
-#: src/components/storage/ZFCPPage.jsx:362
+#: src/components/storage/DASDTable.jsx:69
+#: src/components/storage/ZFCPDiskForm.jsx:110
+#: src/components/storage/ZFCPPage.jsx:324
+#: src/components/storage/ZFCPPage.jsx:382
 msgid "Channel ID"
 msgstr "Идентификатор канала"
 
 #. TRANSLATORS: table header
-#: src/components/storage/DASDTable.jsx:64
-#: src/components/storage/ZFCPPage.jsx:303
-#: src/components/storage/iscsi/NodesPresenter.jsx:104
-#: src/components/storage/iscsi/NodesPresenter.jsx:125
-#: src/components/users/RootAuthMethods.jsx:157
+#: src/components/storage/DASDTable.jsx:70
+#: src/components/storage/ZFCPPage.jsx:325
+#: src/components/storage/iscsi/NodesPresenter.jsx:102
+#: src/components/storage/iscsi/NodesPresenter.jsx:123
+#: src/components/users/RootAuthMethods.jsx:159
 msgid "Status"
 msgstr "Состояние"
 
-#: src/components/storage/DASDTable.jsx:65
-#: src/components/storage/DeviceSelectorTable.jsx:186
-#: src/components/storage/ProposalResultTable.jsx:120
-#: src/components/storage/SpaceActionsTable.jsx:141
-#: src/components/storage/VolumeLocationSelectorTable.jsx:100
+#: src/components/storage/DASDTable.jsx:71
+#: src/components/storage/DeviceSelectorTable.jsx:197
+#: src/components/storage/ProposalResultTable.jsx:130
+#: src/components/storage/SpaceActionsTable.jsx:200
+#: src/components/storage/VolumeLocationSelectorTable.jsx:107
 msgid "Device"
 msgstr "Устройство"
 
-#: src/components/storage/DASDTable.jsx:66
+#: src/components/storage/DASDTable.jsx:72
 msgid "Type"
 msgstr "Тип"
 
 #. TRANSLATORS: table header, the column contains "Yes"/"No" values
 #. for the DIAG access mode (special disk access mode on IBM mainframes),
 #. usually keep untranslated
-#: src/components/storage/DASDTable.jsx:70
+#: src/components/storage/DASDTable.jsx:76
 msgid "DIAG"
 msgstr "Режим DIAG"
 
-#: src/components/storage/DASDTable.jsx:71
+#: src/components/storage/DASDTable.jsx:77
 msgid "Formatted"
 msgstr "Отформатированный"
 
-#: src/components/storage/DASDTable.jsx:72
+#: src/components/storage/DASDTable.jsx:78
 msgid "Partition Info"
 msgstr "Информация о разделе"
 
 #. TRANSLATORS: drop down menu label
-#: src/components/storage/DASDTable.jsx:107
+#: src/components/storage/DASDTable.jsx:115
 msgid "Perform an action"
 msgstr "Выполнить действие"
 
-#. TRANSLATORS: drop down menu action, activate the device
-#: src/components/storage/DASDTable.jsx:113
-#: src/components/storage/ZFCPPage.jsx:333
+#: src/components/storage/DASDTable.jsx:122
+#: src/components/storage/ZFCPPage.jsx:353
 msgid "Activate"
 msgstr "Активировать"
 
-#. TRANSLATORS: drop down menu action, deactivate the device
-#: src/components/storage/DASDTable.jsx:115
-#: src/components/storage/ZFCPPage.jsx:375
+#: src/components/storage/DASDTable.jsx:126
+#: src/components/storage/ZFCPPage.jsx:395
 msgid "Deactivate"
 msgstr "Деактивировать"
 
-#. TRANSLATORS: drop down menu action, enable DIAG access method
-#: src/components/storage/DASDTable.jsx:118
+#: src/components/storage/DASDTable.jsx:131
 msgid "Set DIAG On"
 msgstr "Включить DIAG"
 
-#. TRANSLATORS: drop down menu action, disable DIAG access method
-#: src/components/storage/DASDTable.jsx:120
+#: src/components/storage/DASDTable.jsx:135
 msgid "Set DIAG Off"
 msgstr "Отключить DIAG"
 
-#. TRANSLATORS: drop down menu action, format the disk
-#: src/components/storage/DASDTable.jsx:123
+#: src/components/storage/DASDTable.jsx:140
 msgid "Format"
 msgstr "Формат"
 
-#: src/components/storage/DASDTable.jsx:223
-#: src/components/storage/DASDTable.jsx:224
+#: src/components/storage/DASDTable.jsx:261
+#: src/components/storage/DASDTable.jsx:262
 msgid "Filter by min channel"
 msgstr "Фильтр по минимальному каналу"
 
-#: src/components/storage/DASDTable.jsx:231
+#: src/components/storage/DASDTable.jsx:269
 msgid "Remove min channel filter"
 msgstr "Удалить фильтр по минимальному каналу"
 
-#: src/components/storage/DASDTable.jsx:244
-#: src/components/storage/DASDTable.jsx:245
+#: src/components/storage/DASDTable.jsx:283
+#: src/components/storage/DASDTable.jsx:284
 msgid "Filter by max channel"
 msgstr "Фильтр по максимальному каналу"
 
-#: src/components/storage/DASDTable.jsx:252
+#: src/components/storage/DASDTable.jsx:291
 msgid "Remove max channel filter"
 msgstr "Удалить фильтр по максимальному каналу"
 
-#: src/components/storage/DeviceSelection.jsx:101
+#: src/components/storage/DeviceSelection.jsx:108
 msgid "Loading data, please wait a second..."
 msgstr "Загрузка данных, пожалуйста, подождите..."
 
-#. TRANSLATORS: description for using plain partitions for installing the
-#. system, the text in the square brackets [] is displayed in bold, use only
-#. one pair in the translation
-#: src/components/storage/DeviceSelection.jsx:136
+#: src/components/storage/DeviceSelection.jsx:144
 msgid ""
 "The file systems will be allocated by default as [new partitions in the "
 "selected device]."
@@ -1170,10 +1136,7 @@ msgstr ""
 "Файловые системы будут выделены по умолчанию как [новые разделы на выбранном "
 "устройстве]."
 
-#. TRANSLATORS: description for using logical volumes for installing the
-#. system, the text in the square brackets [] is displayed in bold, use only
-#. one pair in the translation
-#: src/components/storage/DeviceSelection.jsx:141
+#: src/components/storage/DeviceSelection.jsx:151
 msgid ""
 "The file systems will be allocated by default as [logical volumes of a new "
 "LVM Volume Group]. The corresponding physical volumes will be created on "
@@ -1183,135 +1146,135 @@ msgstr ""
 "группы томов LVM]. Соответствующие физические тома будут создаваться по "
 "требованию как новые разделы на выбранных устройствах."
 
-#: src/components/storage/DeviceSelection.jsx:149
+#: src/components/storage/DeviceSelection.jsx:160
 msgid "Select installation device"
 msgstr "Выберите устройство для установки"
 
-#: src/components/storage/DeviceSelection.jsx:155
+#: src/components/storage/DeviceSelection.jsx:166
 msgid "Install new system on"
 msgstr "Установить новую систему на"
 
-#: src/components/storage/DeviceSelection.jsx:158
+#: src/components/storage/DeviceSelection.jsx:169
 msgid "An existing disk"
 msgstr "существующий диск"
 
-#: src/components/storage/DeviceSelection.jsx:167
+#: src/components/storage/DeviceSelection.jsx:178
 msgid "A new LVM Volume Group"
 msgstr "новую группу томов LVM"
 
-#: src/components/storage/DeviceSelection.jsx:192
+#: src/components/storage/DeviceSelection.jsx:203
 msgid "Device selector for target disk"
 msgstr "Выбор устройств для целевого диска"
 
-#: src/components/storage/DeviceSelection.jsx:215
+#: src/components/storage/DeviceSelection.jsx:226
 msgid "Device selector for new LVM volume group"
 msgstr "Выбор устройств для новой группы томов LVM"
 
-#: src/components/storage/DeviceSelection.jsx:228
+#: src/components/storage/DeviceSelection.jsx:242
 msgid "Prepare more devices by configuring advanced"
 msgstr "Подготовьте больше устройств, настроив расширенные"
 
-#: src/components/storage/DeviceSelection.jsx:229
+#: src/components/storage/DeviceSelection.jsx:243
 msgid "storage techs"
 msgstr "технологии хранения"
 
 #. TRANSLATORS: multipath device type
-#: src/components/storage/DeviceSelectorTable.jsx:57
+#: src/components/storage/DeviceSelectorTable.jsx:61
 msgid "Multipath"
 msgstr "Многопутевое"
 
 #. TRANSLATORS: %s is replaced by the device bus ID
-#: src/components/storage/DeviceSelectorTable.jsx:62
+#: src/components/storage/DeviceSelectorTable.jsx:66
 #, c-format
 msgid "DASD %s"
 msgstr "DASD %s"
 
 #. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
-#: src/components/storage/DeviceSelectorTable.jsx:67
+#: src/components/storage/DeviceSelectorTable.jsx:71
 #, c-format
 msgid "Software %s"
 msgstr "Программное обеспечение %s"
 
-#: src/components/storage/DeviceSelectorTable.jsx:72
+#: src/components/storage/DeviceSelectorTable.jsx:76
 msgid "SD Card"
 msgstr "SD-карта"
 
 #. TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
-#: src/components/storage/DeviceSelectorTable.jsx:77
+#: src/components/storage/DeviceSelectorTable.jsx:81
 #, c-format
 msgid "%s disk"
 msgstr "Диск %s"
 
-#: src/components/storage/DeviceSelectorTable.jsx:78
+#: src/components/storage/DeviceSelectorTable.jsx:82
 msgid "Disk"
 msgstr "Диск"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/DeviceSelectorTable.jsx:98
+#: src/components/storage/DeviceSelectorTable.jsx:102
 #, c-format
 msgid "Members: %s"
 msgstr "Участники: %s"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/DeviceSelectorTable.jsx:107
+#: src/components/storage/DeviceSelectorTable.jsx:111
 #, c-format
 msgid "Devices: %s"
 msgstr "Устройства: %s"
 
 #. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
-#: src/components/storage/DeviceSelectorTable.jsx:116
+#: src/components/storage/DeviceSelectorTable.jsx:120
 #, c-format
 msgid "Wires: %s"
 msgstr "Проводки: %s"
 
 #. TRANSLATORS: disk partition info, %s is replaced by partition table
 #. type (MS-DOS or GPT), %d is the number of the partitions
-#: src/components/storage/DeviceSelectorTable.jsx:152
+#: src/components/storage/DeviceSelectorTable.jsx:155
 #, c-format
 msgid "%s with %d partitions"
 msgstr "%s с %d разделами"
 
 #. TRANSLATORS: status message, no existing content was found on the disk,
 #. i.e. the disk is completely empty
-#: src/components/storage/DeviceSelectorTable.jsx:158
-#: src/components/storage/SpaceActionsTable.jsx:114
+#: src/components/storage/DeviceSelectorTable.jsx:161
+#: src/components/storage/SpaceActionsTable.jsx:175
 msgid "No content found"
 msgstr "Содержимое не найдено"
 
-#: src/components/storage/DeviceSelectorTable.jsx:187
-#: src/components/storage/PartitionsField.jsx:450
-#: src/components/storage/ProposalResultTable.jsx:122
-#: src/components/storage/SpaceActionsTable.jsx:142
-#: src/components/storage/VolumeLocationSelectorTable.jsx:101
+#: src/components/storage/DeviceSelectorTable.jsx:198
+#: src/components/storage/PartitionsField.jsx:487
+#: src/components/storage/ProposalResultTable.jsx:132
+#: src/components/storage/SpaceActionsTable.jsx:201
+#: src/components/storage/VolumeLocationSelectorTable.jsx:108
 msgid "Details"
 msgstr "Подробности"
 
-#: src/components/storage/DeviceSelectorTable.jsx:188
-#: src/components/storage/PartitionsField.jsx:451
-#: src/components/storage/ProposalResultTable.jsx:123
-#: src/components/storage/SpaceActionsTable.jsx:143
-#: src/components/storage/VolumeFields.jsx:474
-#: src/components/storage/VolumeLocationSelectorTable.jsx:103
+#: src/components/storage/DeviceSelectorTable.jsx:199
+#: src/components/storage/PartitionsField.jsx:488
+#: src/components/storage/ProposalResultTable.jsx:133
+#: src/components/storage/SpaceActionsTable.jsx:202
+#: src/components/storage/VolumeFields.jsx:488
+#: src/components/storage/VolumeLocationSelectorTable.jsx:113
 msgid "Size"
 msgstr "Размер"
 
-#: src/components/storage/DevicesTechMenu.jsx:44
+#: src/components/storage/DevicesTechMenu.jsx:38
 msgid "Manage and format"
 msgstr "Управление и форматирование"
 
-#: src/components/storage/DevicesTechMenu.jsx:62
+#: src/components/storage/DevicesTechMenu.jsx:52
 msgid "Activate disks"
 msgstr "Активировать диски"
 
-#: src/components/storage/DevicesTechMenu.jsx:64
+#: src/components/storage/DevicesTechMenu.jsx:53
 msgid "zFCP"
 msgstr "zFCP"
 
-#: src/components/storage/DevicesTechMenu.jsx:80
+#: src/components/storage/DevicesTechMenu.jsx:66
 msgid "Connect to iSCSI targets"
 msgstr "Подключение к объектам iSCSI"
 
-#: src/components/storage/DevicesTechMenu.jsx:82
+#: src/components/storage/DevicesTechMenu.jsx:67
 #: src/components/storage/routes.js:37
 msgid "iSCSI"
 msgstr "iSCSI"
@@ -1321,7 +1284,7 @@ msgstr "iSCSI"
 msgid "Encryption"
 msgstr "Шифрование"
 
-#: src/components/storage/EncryptionField.jsx:39
+#: src/components/storage/EncryptionField.jsx:40
 msgid ""
 "Protection for the information stored at the device, including data, "
 "programs, and system files."
@@ -1329,27 +1292,27 @@ msgstr ""
 "Защита информации, хранящейся на устройстве, включая данные, программы и "
 "системные файлы."
 
-#: src/components/storage/EncryptionField.jsx:42
+#: src/components/storage/EncryptionField.jsx:44
 msgid "disabled"
 msgstr "отключено"
 
-#: src/components/storage/EncryptionField.jsx:43
+#: src/components/storage/EncryptionField.jsx:45
 msgid "enabled"
 msgstr "включено"
 
-#: src/components/storage/EncryptionField.jsx:44
+#: src/components/storage/EncryptionField.jsx:46
 msgid "using TPM unlocking"
 msgstr "используя разблокировку TPM"
 
-#: src/components/storage/EncryptionField.jsx:58
+#: src/components/storage/EncryptionField.jsx:60
 msgid "Enable"
 msgstr "Включить"
 
-#: src/components/storage/EncryptionField.jsx:58
+#: src/components/storage/EncryptionField.jsx:60
 msgid "Modify"
 msgstr "Изменить"
 
-#: src/components/storage/EncryptionSettingsDialog.jsx:37
+#: src/components/storage/EncryptionSettingsDialog.jsx:38
 msgid ""
 "Full Disk Encryption (FDE) allows to protect the information stored at the "
 "device, including data, programs, and system files."
@@ -1358,16 +1321,14 @@ msgstr ""
 "устройстве, включая данные, программы и системные файлы."
 
 #. TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
-#: src/components/storage/EncryptionSettingsDialog.jsx:40
+#: src/components/storage/EncryptionSettingsDialog.jsx:42
 msgid ""
 "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot"
 msgstr ""
 "Используйте Доверенный платформенный модуль (TPM) для автоматического "
 "дешифрования при каждой загрузке"
 
-#. TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
-#. 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
-#: src/components/storage/EncryptionSettingsDialog.jsx:43
+#: src/components/storage/EncryptionSettingsDialog.jsx:46
 msgid ""
 "The password will not be needed to boot and access the data if the TPM can "
 "verify the integrity of the system. TPM sealing requires the new system to "
@@ -1377,12 +1338,12 @@ msgstr ""
 "проверить целостность системы. Запечатывание TPM требует непосредственной "
 "загрузки новой системы при первом запуске."
 
-#: src/components/storage/EncryptionSettingsDialog.jsx:114
+#: src/components/storage/EncryptionSettingsDialog.jsx:129
 msgid "Encrypt the system"
 msgstr "Зашифровать систему"
 
 #: src/components/storage/InstallationDeviceField.jsx:36
-#: src/components/storage/VolumeLocationSelectorTable.jsx:58
+#: src/components/storage/VolumeLocationSelectorTable.jsx:61
 msgid "Installation device"
 msgstr "Устройство для установки"
 
@@ -1401,71 +1362,70 @@ msgstr "Файловые системы созданы как новые раз�
 msgid "File systems created at a new LVM volume group"
 msgstr "Файловые системы созданы в новой группе томов LVM"
 
-#. TRANSLATORS: %s is the disk used for the LVM physical volumes (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/InstallationDeviceField.jsx:59
+#: src/components/storage/InstallationDeviceField.jsx:60
 #, c-format
 msgid "File systems created at a new LVM volume group on %s"
 msgstr "Файловые системы созданы в новой группе томов LVM на %s"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:73
+#: src/components/storage/PartitionsField.jsx:84
 #, c-format
 msgid "at least %s"
 msgstr "не менее %s"
 
 #. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:97
+#: src/components/storage/PartitionsField.jsx:108
 #, c-format
 msgid "Transactional Btrfs root volume (%s)"
 msgstr "Корневой том Btrfs с транзакциями (%s)"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:99
+#: src/components/storage/PartitionsField.jsx:110
 #, c-format
 msgid "Transactional Btrfs root partition (%s)"
 msgstr "Корневой раздел Btrfs с транзакциями (%s)"
 
 #. TRANSLATORS: "/" is in an LVM logical volume. %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:104
+#: src/components/storage/PartitionsField.jsx:115
 #, c-format
 msgid "Btrfs root volume with snapshots (%s)"
 msgstr "Корневой том Btrfs с моментальными снимками (%s)"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/PartitionsField.jsx:106
+#: src/components/storage/PartitionsField.jsx:117
 #, c-format
 msgid "Btrfs root partition with snapshots (%s)"
 msgstr "Корневой раздел Btrfs с моментальными снимками (%s)"
 
 #. TRANSLATORS: This results in something like "Mount /dev/sda3 at /home (25 GiB)" since
 #. %1$s is replaced by the device name, %2$s by the mount point and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:115
+#: src/components/storage/PartitionsField.jsx:126
 #, c-format
 msgid "Mount %1$s at %2$s (%3$s)"
 msgstr "Установить %1$s в %2$s (%3$s)"
 
 #. TRANSLATORS: This results in something like "Swap at /dev/sda3 (2 GiB)" since
 #. %1$s is replaced by the device name, and %2$s by the size
-#: src/components/storage/PartitionsField.jsx:121
+#: src/components/storage/PartitionsField.jsx:132
 #, c-format
 msgid "Swap at %1$s (%2$s)"
 msgstr "Подкачка на %1$s (%2$s)"
 
 #. TRANSLATORS: Swap is in an LVM logical volume. %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:125
+#: src/components/storage/PartitionsField.jsx:136
 #, c-format
 msgid "Swap volume (%s)"
 msgstr "Том для подкачки (%s)"
 
 #. TRANSLATORS: %s replaced by size string, e.g. "8 GiB"
-#: src/components/storage/PartitionsField.jsx:127
+#: src/components/storage/PartitionsField.jsx:138
 #, c-format
 msgid "Swap partition (%s)"
 msgstr "Раздел подкачки (%s)"
 
 #. TRANSLATORS: This results in something like "Btrfs root at /dev/sda3 (20 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the device name, and %3$s by the size
-#: src/components/storage/PartitionsField.jsx:136
+#: src/components/storage/PartitionsField.jsx:147
 #, c-format
 msgid "%1$s root at %2$s (%3$s)"
 msgstr "%1$s корень на %2$s (%3$s)"
@@ -1473,21 +1433,21 @@ msgstr "%1$s корень на %2$s (%3$s)"
 #. TRANSLATORS: "/" is in an LVM logical volume.
 #. Results in something like "Btrfs root volume (at least 20 GiB)" since
 #. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:142
+#: src/components/storage/PartitionsField.jsx:153
 #, c-format
 msgid "%1$s root volume (%2$s)"
 msgstr "Корневой том %1$s (%2$s)"
 
 #. TRANSLATORS: Results in something like "Btrfs root partition (at least 20 GiB)" since
 #. $1$s is replaced by filesystem type and %2$s by size description
-#: src/components/storage/PartitionsField.jsx:145
+#: src/components/storage/PartitionsField.jsx:156
 #, c-format
 msgid "%1$s root partition (%2$s)"
 msgstr "Корневой раздел %1$s (%2$s)"
 
 #. TRANSLATORS: This results in something like "Ext4 /home at /dev/sda3 (20 GiB)" since
 #. %1$s is replaced by filesystem type, %2$s by mount point, %3$s by device name and %4$s by size
-#: src/components/storage/PartitionsField.jsx:151
+#: src/components/storage/PartitionsField.jsx:162
 #, c-format
 msgid "%1$s %2$s at %3$s (%4$s)"
 msgstr "%1$s %2$s на %3$s (%4$s)"
@@ -1495,143 +1455,139 @@ msgstr "%1$s %2$s на %3$s (%4$s)"
 #. TRANSLATORS: The filesystem is in an LVM logical volume.
 #. Results in something like "Ext4 /home volume (at least 10 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:157
+#: src/components/storage/PartitionsField.jsx:168
 #, c-format
 msgid "%1$s %2$s volume (%3$s)"
 msgstr "%1$s том %2$s (%3$s)"
 
 #. TRANSLATORS: This results in something like "Ext4 /home partition (at least 10 GiB)" since
 #. %1$s is replaced by the filesystem type, %2$s by the mount point and %3$s by the size description
-#: src/components/storage/PartitionsField.jsx:160
+#: src/components/storage/PartitionsField.jsx:171
 #, c-format
 msgid "%1$s %2$s partition (%3$s)"
 msgstr "%1$s раздел %2$s (%3$s)"
 
-#: src/components/storage/PartitionsField.jsx:172
+#: src/components/storage/PartitionsField.jsx:182
 msgid "Do not configure partitions for booting"
 msgstr "Не настраивать разделы для загрузки"
 
-#: src/components/storage/PartitionsField.jsx:175
+#: src/components/storage/PartitionsField.jsx:184
 msgid "Boot partitions at installation disk"
 msgstr "Загрузочные разделы на диске для установки"
 
 #. TRANSLATORS: %s is the disk used to configure the boot-related partitions (eg. "/dev/sda, 80 GiB)
-#: src/components/storage/PartitionsField.jsx:178
+#: src/components/storage/PartitionsField.jsx:187
 #, c-format
 msgid "Boot partitions at %s"
 msgstr "Загрузочные разделы на %s"
 
 #. TRANSLATORS: header for a list of items referring to size limits for file systems
-#: src/components/storage/PartitionsField.jsx:200
+#: src/components/storage/PartitionsField.jsx:209
 msgid "These limits are affected by:"
 msgstr "На эти ограничения влияют:"
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
-#: src/components/storage/PartitionsField.jsx:204
+#: src/components/storage/PartitionsField.jsx:213
 msgid "The configuration of snapshots"
 msgstr "Конфигурация моментальных снимков"
 
-#. TRANSLATORS: list item, this affects the computed partition size limits
-#. %s is replaced by a list of the volumes (like "/home, /boot")
-#: src/components/storage/PartitionsField.jsx:208
+#: src/components/storage/PartitionsField.jsx:219
 #, c-format
 msgid "Presence of other volumes (%s)"
 msgstr "Наличие других томов (%s)"
 
 #. TRANSLATORS: list item, describes a factor that affects the computed size of a
 #. file system; eg. adjusting the size of the swap
-#: src/components/storage/PartitionsField.jsx:212
+#: src/components/storage/PartitionsField.jsx:225
 msgid "The amount of RAM in the system"
 msgstr "Объем ОЗУ в системе"
 
-#. TRANSLATORS: device flag, the partition size is automatically computed
-#: src/components/storage/PartitionsField.jsx:263
+#: src/components/storage/PartitionsField.jsx:292
 msgid "auto"
 msgstr "автоматически"
 
 #. TRANSLATORS: %s will be replaced by a file-system type like "Btrfs" or "Ext4"
-#: src/components/storage/PartitionsField.jsx:279
+#: src/components/storage/PartitionsField.jsx:309
 #, c-format
 msgid "Reused %s"
 msgstr "Повторно используется %s"
 
-#: src/components/storage/PartitionsField.jsx:281
+#: src/components/storage/PartitionsField.jsx:310
 msgid "Transactional Btrfs"
 msgstr "Транзакционная Btrfs"
 
-#: src/components/storage/PartitionsField.jsx:283
+#: src/components/storage/PartitionsField.jsx:311
 msgid "Btrfs with snapshots"
 msgstr "Btrfs с моментальными снимками"
 
 #. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:297
+#: src/components/storage/PartitionsField.jsx:325
 #, c-format
 msgid "Partition at %s"
 msgstr "Раздел на %s"
 
 #. TRANSLATORS: %s will be replaced by a disk name (eg. "/dev/sda")
-#: src/components/storage/PartitionsField.jsx:300
+#: src/components/storage/PartitionsField.jsx:328
 #, c-format
 msgid "Separate LVM at %s"
 msgstr "Отдельный LVM на %s"
 
-#: src/components/storage/PartitionsField.jsx:304
+#: src/components/storage/PartitionsField.jsx:331
 msgid "Logical volume at system LVM"
 msgstr "Логический том в системе LVM"
 
-#: src/components/storage/PartitionsField.jsx:306
+#: src/components/storage/PartitionsField.jsx:333
 msgid "Partition at installation disk"
 msgstr "Раздел на диске для установки"
 
-#: src/components/storage/PartitionsField.jsx:321
+#: src/components/storage/PartitionsField.jsx:348
 msgid "Reset location"
 msgstr "Сбросить расположение"
 
-#: src/components/storage/PartitionsField.jsx:322
+#: src/components/storage/PartitionsField.jsx:349
 msgid "Change location"
 msgstr "Изменить расположение"
 
-#: src/components/storage/PartitionsField.jsx:323
-#: src/components/storage/SpaceActionsTable.jsx:78
+#: src/components/storage/PartitionsField.jsx:350
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
 msgid "Delete"
 msgstr "Удалить"
 
-#: src/components/storage/PartitionsField.jsx:449
-#: src/components/storage/VolumeFields.jsx:61
-#: src/components/storage/VolumeFields.jsx:70
+#: src/components/storage/PartitionsField.jsx:486
+#: src/components/storage/VolumeFields.jsx:66
 #: src/components/storage/VolumeFields.jsx:75
+#: src/components/storage/VolumeFields.jsx:80
 msgid "Mount point"
 msgstr "Точка монтирования"
 
 #. TRANSLATORS: where (and how) the file-system is going to be created
-#: src/components/storage/PartitionsField.jsx:453
+#: src/components/storage/PartitionsField.jsx:490
 msgid "Location"
 msgstr "Расположение"
 
-#: src/components/storage/PartitionsField.jsx:495
+#: src/components/storage/PartitionsField.jsx:532
 msgid "Table with mount points"
 msgstr "Таблица с точками монтирования"
 
-#: src/components/storage/PartitionsField.jsx:566
-#: src/components/storage/PartitionsField.jsx:585
-#: src/components/storage/VolumeDialog.jsx:81
+#: src/components/storage/PartitionsField.jsx:604
+#: src/components/storage/PartitionsField.jsx:624
+#: src/components/storage/VolumeDialog.jsx:86
 msgid "Add file system"
 msgstr "Добавить файловую систему"
 
-#: src/components/storage/PartitionsField.jsx:596
+#: src/components/storage/PartitionsField.jsx:636
 msgid "Other"
 msgstr "Другая"
 
-#: src/components/storage/PartitionsField.jsx:731
+#: src/components/storage/PartitionsField.jsx:777
 msgid "Reset to defaults"
 msgstr "Сбросить по умолчанию"
 
-#: src/components/storage/PartitionsField.jsx:801
+#: src/components/storage/PartitionsField.jsx:849
 msgid "Partitions and file systems"
 msgstr "Разделы и файловые системы"
 
-#: src/components/storage/PartitionsField.jsx:802
+#: src/components/storage/PartitionsField.jsx:851
 msgid ""
 "Structure of the new system, including any additional partition needed for "
 "booting"
@@ -1639,12 +1595,11 @@ msgstr ""
 "Структура новой системы, включая все дополнительные разделы, необходимые для "
 "загрузки"
 
-#: src/components/storage/PartitionsField.jsx:808
+#: src/components/storage/PartitionsField.jsx:858
 msgid "Show partitions and file-systems actions"
 msgstr "Показать разделы и действия с файловыми системами"
 
-#. TRANSLATORS: show/hide toggle action, this is a clickable link
-#: src/components/storage/ProposalActionsDialog.jsx:62
+#: src/components/storage/ProposalActionsDialog.jsx:65
 #, c-format
 msgid "Hide %d subvolume action"
 msgid_plural "Hide %d subvolume actions"
@@ -1652,8 +1607,7 @@ msgstr[0] "Скрыть %d действие подтома"
 msgstr[1] "Скрыть %d действия подтома"
 msgstr[2] "Скрыть %d действий подтома"
 
-#. TRANSLATORS: show/hide toggle action, this is a clickable link
-#: src/components/storage/ProposalActionsDialog.jsx:64
+#: src/components/storage/ProposalActionsDialog.jsx:70
 #, c-format
 msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
@@ -1669,32 +1623,24 @@ msgstr "Разрушительные действия запрещены"
 msgid "Destructive actions are allowed"
 msgstr "Разрушительные действия разрешены"
 
-#: src/components/storage/ProposalActionsSummary.jsx:66
-#, c-format
-msgid "There is %d destructive action planned"
-msgid_plural "There are %d destructive actions planned"
-msgstr[0] "Планируется %d разрушительное действие"
-msgstr[1] "Планируется %d разрушительных действия"
-msgstr[2] "Планируется %d разрушительных действий"
-
-#: src/components/storage/ProposalActionsSummary.jsx:79
-#: src/components/storage/ProposalActionsSummary.jsx:126
+#: src/components/storage/ProposalActionsSummary.jsx:82
+#: src/components/storage/ProposalActionsSummary.jsx:132
 msgid "affecting"
 msgstr "влияя на"
 
-#: src/components/storage/ProposalActionsSummary.jsx:107
+#: src/components/storage/ProposalActionsSummary.jsx:112
 msgid "Shrinking partitions is not allowed"
 msgstr "Сокращение разделов запрещено"
 
-#: src/components/storage/ProposalActionsSummary.jsx:111
+#: src/components/storage/ProposalActionsSummary.jsx:116
 msgid "Shrinking partitions is allowed"
 msgstr "Сокращение разделов разрешено"
 
-#: src/components/storage/ProposalActionsSummary.jsx:113
+#: src/components/storage/ProposalActionsSummary.jsx:118
 msgid "Shrinking some partitions is allowed but not needed"
 msgstr "Сокращение некоторых разделов разрешено, но не нужно"
 
-#: src/components/storage/ProposalActionsSummary.jsx:116
+#: src/components/storage/ProposalActionsSummary.jsx:121
 #, c-format
 msgid "%d partition will be shrunk"
 msgid_plural "%d partitions will be shrunk"
@@ -1702,11 +1648,11 @@ msgstr[0] "%d раздел будет сокращён"
 msgstr[1] "%d раздела будут сокращены"
 msgstr[2] "%d разделов будут сокращены"
 
-#: src/components/storage/ProposalActionsSummary.jsx:151
+#: src/components/storage/ProposalActionsSummary.jsx:159
 msgid "Cannot accommodate the required file systems for installation"
 msgstr "Невозможно разместить необходимые файловые системы для установки"
 
-#: src/components/storage/ProposalActionsSummary.jsx:160
+#: src/components/storage/ProposalActionsSummary.jsx:167
 #, c-format
 msgid "Check the planned action"
 msgid_plural "Check the %d planned actions"
@@ -1714,42 +1660,42 @@ msgstr[0] "Проверить %d запланированное действие
 msgstr[1] "Проверить %d запланированных действия"
 msgstr[2] "Проверить %d запланированных действий"
 
-#: src/components/storage/ProposalActionsSummary.jsx:179
+#: src/components/storage/ProposalActionsSummary.jsx:182
 msgid "Waiting for actions information..."
 msgstr "Ожидание информации о действиях..."
 
-#: src/components/storage/ProposalPage.jsx:314
+#: src/components/storage/ProposalPage.jsx:329
 msgid "Planned Actions"
 msgstr "Планируемые действия"
 
-#: src/components/storage/ProposalResultSection.jsx:42
+#: src/components/storage/ProposalResultSection.jsx:43
 msgid "Waiting for information about storage configuration"
 msgstr "Ожидание информации о конфигурации хранилища"
 
-#: src/components/storage/ProposalResultSection.jsx:70
+#: src/components/storage/ProposalResultSection.jsx:73
 msgid "Final layout"
 msgstr "Окончательный вариант"
 
-#: src/components/storage/ProposalResultSection.jsx:71
+#: src/components/storage/ProposalResultSection.jsx:74
 msgid "The systems will be configured as displayed below."
 msgstr "Системы будут настроены, как показано ниже."
 
-#: src/components/storage/ProposalResultSection.jsx:78
+#: src/components/storage/ProposalResultSection.jsx:83
 msgid "Storage proposal not possible"
 msgstr "Не могу предложить организацию хранилища"
 
-#: src/components/storage/ProposalResultTable.jsx:74
+#: src/components/storage/ProposalResultTable.jsx:79
 msgid "New"
 msgstr "Новый"
 
 #. TRANSLATORS: Label to indicate the device size before resizing, where %s is
 #. replaced by the original size (e.g., 3.00 GiB).
-#: src/components/storage/ProposalResultTable.jsx:98
+#: src/components/storage/ProposalResultTable.jsx:105
 #, c-format
 msgid "Before %s"
 msgstr "До %s"
 
-#: src/components/storage/ProposalResultTable.jsx:121
+#: src/components/storage/ProposalResultTable.jsx:131
 msgid "Mount Point"
 msgstr "Точка монтирования"
 
@@ -1757,7 +1703,7 @@ msgstr "Точка монтирования"
 msgid "Transactional root file system"
 msgstr "Транзакционная корневая файловая система"
 
-#: src/components/storage/ProposalTransactionalInfo.jsx:48
+#: src/components/storage/ProposalTransactionalInfo.jsx:49
 #, c-format
 msgid ""
 "%s is an immutable system with atomic updates. It uses a read-only Btrfs "
@@ -1771,7 +1717,7 @@ msgstr ""
 msgid "Use Btrfs snapshots for the root file system"
 msgstr "Используйте моментальные снимки Btrfs для корневой файловой системы"
 
-#: src/components/storage/SnapshotsField.jsx:37
+#: src/components/storage/SnapshotsField.jsx:38
 msgid ""
 "Allows to boot to a previous version of the system after configuration "
 "changes or software upgrades."
@@ -1779,185 +1725,174 @@ msgstr ""
 "Позволяет загрузиться в предыдущую версию системы после изменения "
 "конфигурации или обновления программного обеспечения."
 
-#. TRANSLATORS: %s is replaced by a device name (e.g., /dev/sda)
-#: src/components/storage/SpaceActionsTable.jsx:75
+#: src/components/storage/SpaceActionsTable.jsx:68
 #, c-format
-msgid "Space action selector for %s"
-msgstr "Выбор действий пространства для %s"
+msgid "Up to %s can be recovered by shrinking the device."
+msgstr ""
 
-#: src/components/storage/SpaceActionsTable.jsx:79
-msgid "Allow resize"
-msgstr "Разрешить изменение размера"
+#: src/components/storage/SpaceActionsTable.jsx:77
+msgid "The device cannot be shrunk:"
+msgstr ""
 
-#: src/components/storage/SpaceActionsTable.jsx:80
-msgid "Do not modify"
-msgstr "Не изменять"
+#: src/components/storage/SpaceActionsTable.jsx:98
+#, c-format
+msgid "Show information about %s"
+msgstr ""
 
-#: src/components/storage/SpaceActionsTable.jsx:111
+#: src/components/storage/SpaceActionsTable.jsx:172
 msgid "The content may be deleted"
 msgstr "Содержимое может быть удалено"
 
-#: src/components/storage/SpaceActionsTable.jsx:144
-msgid "Shrinkable"
-msgstr "Можно уменьшить"
-
-#: src/components/storage/SpaceActionsTable.jsx:146
+#: src/components/storage/SpaceActionsTable.jsx:204
 msgid "Action"
 msgstr "Действие"
 
-#: src/components/storage/SpaceActionsTable.jsx:162
+#: src/components/storage/SpaceActionsTable.jsx:215
 msgid "Actions to find space"
 msgstr "Действия по поиску места"
 
-#: src/components/storage/SpacePolicySelection.jsx:170
+#: src/components/storage/SpacePolicySelection.jsx:172
 msgid "Space policy"
 msgstr "Политика пространства"
 
-#: src/components/storage/VolumeDialog.jsx:78
+#: src/components/storage/VolumeDialog.jsx:83
 #, c-format
 msgid "Add %s file system"
 msgstr "Добавить файловую систему %s"
 
-#: src/components/storage/VolumeDialog.jsx:79
+#: src/components/storage/VolumeDialog.jsx:84
 #, c-format
 msgid "Edit %s file system"
 msgstr "Изменить файловую систему %s"
 
-#: src/components/storage/VolumeDialog.jsx:81
+#: src/components/storage/VolumeDialog.jsx:86
 msgid "Edit file system"
 msgstr "Изменить файловую систему"
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:96
+#: src/components/storage/VolumeDialog.jsx:101
 msgid "The type and size of the file system cannot be edited."
 msgstr "Тип и размер файловой системы редактировать нельзя."
 
-#. TRANSLATORS: Description of a warning. The first %s is replaced by a device name (e.g.,
-#. /dev/vda) and the second %s is replaced by a mount path (e.g., /home).
-#: src/components/storage/VolumeDialog.jsx:99
+#: src/components/storage/VolumeDialog.jsx:105
 #, c-format
 msgid "The current file system on %s is selected to be mounted at %s."
 msgstr "Текущая файловая система на %s выбрана для монтирования в %s."
 
 #. TRANSLATORS: Warning when editing a file system.
-#: src/components/storage/VolumeDialog.jsx:105
+#: src/components/storage/VolumeDialog.jsx:113
 msgid "The size of the file system cannot be edited"
 msgstr "Размер файловой системы не может быть изменен"
 
 #. TRANSLATORS: Description of a warning. %s is replaced by a device name (e.g., /dev/vda).
-#: src/components/storage/VolumeDialog.jsx:107
+#: src/components/storage/VolumeDialog.jsx:115
 #, c-format
 msgid "The file system is allocated at the device %s."
 msgstr "Файловая система выделена на устройстве %s."
 
-#: src/components/storage/VolumeDialog.jsx:152
+#: src/components/storage/VolumeDialog.jsx:163
 msgid "A mount point is required"
 msgstr "Требуется точка монтирования"
 
-#: src/components/storage/VolumeDialog.jsx:179
+#: src/components/storage/VolumeDialog.jsx:190
 msgid "The mount point is invalid"
 msgstr "Точка монтирования недопустима"
 
-#: src/components/storage/VolumeDialog.jsx:207
+#: src/components/storage/VolumeDialog.jsx:218
 msgid "A size value is required"
 msgstr "Требуется значение размера"
 
-#: src/components/storage/VolumeDialog.jsx:235
+#: src/components/storage/VolumeDialog.jsx:246
 msgid "Minimum size is required"
 msgstr "Требуется минимальный размер"
 
-#: src/components/storage/VolumeDialog.jsx:267
+#: src/components/storage/VolumeDialog.jsx:278
 msgid "Maximum must be greater than minimum"
 msgstr "Максимум должен быть больше минимума"
 
-#: src/components/storage/VolumeDialog.jsx:309
+#: src/components/storage/VolumeDialog.jsx:320
 #, c-format
 msgid "There is already a file system for %s."
 msgstr "Для %s уже существует файловая система."
 
-#: src/components/storage/VolumeDialog.jsx:311
+#: src/components/storage/VolumeDialog.jsx:322
 msgid "Do you want to edit it?"
 msgstr "Вы хотите изменить её?"
 
-#: src/components/storage/VolumeDialog.jsx:356
+#: src/components/storage/VolumeDialog.jsx:367
 #, c-format
 msgid "There is a predefined file system for %s."
 msgstr "Существует предопределенная файловая система для %s."
 
-#: src/components/storage/VolumeDialog.jsx:358
+#: src/components/storage/VolumeDialog.jsx:369
 msgid "Do you want to add it?"
 msgstr "Вы хотите добавить её?"
 
-#. TRANSLATORS: info about possible file system types.
-#: src/components/storage/VolumeFields.jsx:217
+#: src/components/storage/VolumeFields.jsx:225
 msgid ""
 "The options for the file system type depends on the product and the mount "
 "point."
 msgstr ""
 "Параметры типа файловой системы зависят от продукта и точки монтирования."
 
-#: src/components/storage/VolumeFields.jsx:223
+#: src/components/storage/VolumeFields.jsx:232
 msgid "More info for file system types"
 msgstr "Дополнительная информация о типах файловых систем"
 
 #. TRANSLATORS: label for the file system selector.
-#: src/components/storage/VolumeFields.jsx:234
+#: src/components/storage/VolumeFields.jsx:243
 msgid "File system type"
 msgstr "Тип файловой системы"
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:265
+#: src/components/storage/VolumeFields.jsx:274
 msgid "the configuration of snapshots"
 msgstr "конфигурация моментальных снимков"
 
-#. TRANSLATORS: item which affects the final computed partition size
-#. %s is replaced by a list of mount points like "/home, /boot"
-#: src/components/storage/VolumeFields.jsx:270
+#: src/components/storage/VolumeFields.jsx:281
 #, c-format
 msgid "the presence of the file system for %s"
 msgstr "наличие файловой системы для %s"
 
 #. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeFields.jsx:272
+#: src/components/storage/VolumeFields.jsx:283
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeFields.jsx:276
+#: src/components/storage/VolumeFields.jsx:289
 msgid "the amount of RAM in the system"
 msgstr "объем ОЗУ в системе"
 
-#. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeFields.jsx:279
+#: src/components/storage/VolumeFields.jsx:293
 #, c-format
 msgid "The final size depends on %s."
 msgstr "Итоговый размер зависит от %s."
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeFields.jsx:281
+#: src/components/storage/VolumeFields.jsx:295
 msgid " and "
 msgstr " и "
 
-#. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeFields.jsx:286
+#: src/components/storage/VolumeFields.jsx:302
 msgid "Automatically calculated size according to the selected product."
 msgstr "Автоматический расчет размера в соответствии с выбранным продуктом."
 
-#: src/components/storage/VolumeFields.jsx:305
+#: src/components/storage/VolumeFields.jsx:321
 msgid "Exact size for the file system."
 msgstr "Точный размер файловой системы."
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeFields.jsx:318
+#: src/components/storage/VolumeFields.jsx:330
 msgid "Exact size"
 msgstr "Точный размер"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeFields.jsx:335
+#: src/components/storage/VolumeFields.jsx:347
 msgid "Size unit"
 msgstr "Единица измерения"
 
-#: src/components/storage/VolumeFields.jsx:363
+#: src/components/storage/VolumeFields.jsx:376
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1968,50 +1903,49 @@ msgstr ""
 "то файловая система будет такой большой, на сколько это возможно."
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeFields.jsx:370
+#: src/components/storage/VolumeFields.jsx:384
 msgid "Minimum"
 msgstr "Минимум"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeFields.jsx:381
+#: src/components/storage/VolumeFields.jsx:395
 msgid "Minimum desired size"
 msgstr "Минимальный желаемый размер"
 
-#: src/components/storage/VolumeFields.jsx:392
+#: src/components/storage/VolumeFields.jsx:406
 msgid "Unit for the minimum size"
 msgstr "Единица для минимального размера"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:404
+#: src/components/storage/VolumeFields.jsx:418
 msgid "Maximum"
 msgstr "Максимум"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeFields.jsx:416
+#: src/components/storage/VolumeFields.jsx:430
 msgid "Maximum desired size"
 msgstr "Максимальный желаемый размер"
 
-#: src/components/storage/VolumeFields.jsx:426
+#: src/components/storage/VolumeFields.jsx:440
 msgid "Unit for the maximum size"
 msgstr "Единица для максимального размера"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeFields.jsx:444
+#: src/components/storage/VolumeFields.jsx:458
 msgid "Auto"
 msgstr "Автоматически"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeFields.jsx:446
+#: src/components/storage/VolumeFields.jsx:460
 msgid "Fixed"
 msgstr "Фиксированный"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeFields.jsx:448
+#: src/components/storage/VolumeFields.jsx:462
 msgid "Range"
 msgstr "Диапазон"
 
-#. TRANSLATORS: Description of the dialog for changing the location of a file system.
-#: src/components/storage/VolumeLocationDialog.jsx:40
+#: src/components/storage/VolumeLocationDialog.jsx:41
 msgid ""
 "The file systems are allocated at the installation device by default. "
 "Indicate a custom location to create the file system at a specific device."
@@ -2022,39 +1956,39 @@ msgstr ""
 
 #. TRANSLATORS: Title of the dialog for changing the location of a file system. %s is replaced
 #. by a mount path (e.g., /home).
-#: src/components/storage/VolumeLocationDialog.jsx:135
+#: src/components/storage/VolumeLocationDialog.jsx:137
 #, c-format
 msgid "Location for %s file system"
 msgstr "Расположение файловой системы %s"
 
-#: src/components/storage/VolumeLocationDialog.jsx:145
+#: src/components/storage/VolumeLocationDialog.jsx:147
 msgid "Select in which device to allocate the file system"
 msgstr "Выберите, на каком устройстве разместить файловую систему"
 
-#: src/components/storage/VolumeLocationDialog.jsx:148
+#: src/components/storage/VolumeLocationDialog.jsx:150
 msgid "Select a location"
 msgstr "Выберите расположение"
 
-#: src/components/storage/VolumeLocationDialog.jsx:160
+#: src/components/storage/VolumeLocationDialog.jsx:162
 msgid "Select how to allocate the file system"
 msgstr "Выберите способ выделения файловой системы"
 
-#: src/components/storage/VolumeLocationDialog.jsx:165
+#: src/components/storage/VolumeLocationDialog.jsx:167
 msgid "Create a new partition"
 msgstr "Создать новый раздел"
 
-#: src/components/storage/VolumeLocationDialog.jsx:166
+#: src/components/storage/VolumeLocationDialog.jsx:169
 msgid ""
 "The file system will be allocated as a new partition at the selected   disk."
 msgstr ""
 "Файловая система будет выделена в качестве нового раздела на выбранном   "
 "диске."
 
-#: src/components/storage/VolumeLocationDialog.jsx:175
+#: src/components/storage/VolumeLocationDialog.jsx:179
 msgid "Create a dedicated LVM volume group"
 msgstr "Создать выделенную группу томов LVM"
 
-#: src/components/storage/VolumeLocationDialog.jsx:176
+#: src/components/storage/VolumeLocationDialog.jsx:181
 msgid ""
 "A new volume group will be allocated in the selected disk and the   file "
 "system will be created as a logical volume."
@@ -2062,21 +1996,20 @@ msgstr ""
 "На выбранном диске будет выделена новая группа томов, а   файловая система "
 "будет создана как логический том."
 
-#: src/components/storage/VolumeLocationDialog.jsx:185
+#: src/components/storage/VolumeLocationDialog.jsx:191
 msgid "Format the device"
 msgstr "Отформатировать устройство"
 
-#. TRANSLATORS: %s is replaced by a file system type (e.g., Ext4).
-#: src/components/storage/VolumeLocationDialog.jsx:188
+#: src/components/storage/VolumeLocationDialog.jsx:195
 #, c-format
 msgid "The selected device will be formatted as %s file system."
 msgstr "Выбранное устройство будет отформатировано в файловую систему %s."
 
-#: src/components/storage/VolumeLocationDialog.jsx:198
+#: src/components/storage/VolumeLocationDialog.jsx:206
 msgid "Mount the file system"
 msgstr "Смонтировать файловую систему"
 
-#: src/components/storage/VolumeLocationDialog.jsx:199
+#: src/components/storage/VolumeLocationDialog.jsx:208
 msgid ""
 "The current file system on the selected device will be mounted   without "
 "formatting the device."
@@ -2084,53 +2017,51 @@ msgstr ""
 "Текущая файловая система на выбранном устройстве будет смонтирована   без "
 "форматирования устройства."
 
-#: src/components/storage/VolumeLocationSelectorTable.jsx:102
+#: src/components/storage/VolumeLocationSelectorTable.jsx:110
 msgid "Usage"
 msgstr "Использование"
 
-#: src/components/storage/ZFCPDiskForm.jsx:109
+#: src/components/storage/ZFCPDiskForm.jsx:106
 msgid "The zFCP disk was not activated."
 msgstr "Диск zFCP не был активирован."
 
 #. TRANSLATORS: abbrev. World Wide Port Name
 #: src/components/storage/ZFCPDiskForm.jsx:123
-#: src/components/storage/ZFCPPage.jsx:363
+#: src/components/storage/ZFCPPage.jsx:383
 msgid "WWPN"
 msgstr "WWPN"
 
 #. TRANSLATORS: abbrev. Logical Unit Number
-#: src/components/storage/ZFCPDiskForm.jsx:134
-#: src/components/storage/ZFCPPage.jsx:364
+#: src/components/storage/ZFCPDiskForm.jsx:131
+#: src/components/storage/ZFCPPage.jsx:384
 msgid "LUN"
 msgstr "LUN"
 
-#: src/components/storage/ZFCPPage.jsx:304
+#: src/components/storage/ZFCPPage.jsx:326
 msgid "Auto LUNs Scan"
 msgstr "Автоматическое сканирование LUN"
 
-#: src/components/storage/ZFCPPage.jsx:315
+#: src/components/storage/ZFCPPage.jsx:337
 msgid "Activated"
 msgstr "Активировано"
 
-#: src/components/storage/ZFCPPage.jsx:315
+#: src/components/storage/ZFCPPage.jsx:337
 msgid "Deactivated"
 msgstr "Деактивировано"
 
-#: src/components/storage/ZFCPPage.jsx:418
+#: src/components/storage/ZFCPPage.jsx:437
 msgid "No zFCP controllers found."
 msgstr "Контроллеры zFCP не найдены."
 
-#: src/components/storage/ZFCPPage.jsx:419
+#: src/components/storage/ZFCPPage.jsx:438
 msgid "Please, try to read the zFCP devices again."
 msgstr "Пожалуйста, попробуйте еще раз прочитать устройства zFCP."
 
-#. TRANSLATORS: button label
-#: src/components/storage/ZFCPPage.jsx:421
+#: src/components/storage/ZFCPPage.jsx:441
 msgid "Read zFCP devices"
 msgstr "Прочитать устройства zFCP"
 
-#. TRANSLATORS: the text in the square brackets [] will be displayed in bold
-#: src/components/storage/ZFCPPage.jsx:430
+#: src/components/storage/ZFCPPage.jsx:452
 msgid ""
 "Automatic LUN scan is [enabled]. Activating a controller which is running in "
 "NPIV mode will automatically configures all its LUNs."
@@ -2138,8 +2069,7 @@ msgstr ""
 "Автоматическое сканирование LUN [включено]. Активация контроллера, "
 "работающего в режиме NPIV, автоматически сконфигурирует все его LUN."
 
-#. TRANSLATORS: the text in the square brackets [] will be displayed in bold
-#: src/components/storage/ZFCPPage.jsx:433
+#: src/components/storage/ZFCPPage.jsx:457
 msgid ""
 "Automatic LUN scan is [disabled]. LUNs have to be manually configured after "
 "activating a controller."
@@ -2147,38 +2077,36 @@ msgstr ""
 "Автоматическое сканирование LUN [отключено]. LUN должны быть настроены "
 "вручную после активации контроллера."
 
-#: src/components/storage/ZFCPPage.jsx:490
+#: src/components/storage/ZFCPPage.jsx:519
 msgid "Activate a zFCP disk"
 msgstr "Активировать диск zFCP"
 
-#: src/components/storage/ZFCPPage.jsx:529
+#: src/components/storage/ZFCPPage.jsx:553
 msgid "Please, try to activate a zFCP controller."
 msgstr "Пожалуйста, попробуйте активировать контроллер zFCP."
 
-#: src/components/storage/ZFCPPage.jsx:536
+#: src/components/storage/ZFCPPage.jsx:559
 msgid "Please, try to activate a zFCP disk."
 msgstr "Пожалуйста, попробуйте активировать диск zFCP."
 
-#. TRANSLATORS: button label
-#: src/components/storage/ZFCPPage.jsx:538
+#: src/components/storage/ZFCPPage.jsx:562
 msgid "Activate zFCP disk"
 msgstr "Активировать диск zFCP"
 
-#: src/components/storage/ZFCPPage.jsx:545
+#: src/components/storage/ZFCPPage.jsx:570
 msgid "No zFCP disks found."
 msgstr "Диски zFCP не найдены."
 
-#. TRANSLATORS: button label
-#: src/components/storage/ZFCPPage.jsx:560
+#: src/components/storage/ZFCPPage.jsx:586
 msgid "Activate new disk"
 msgstr "Активировать новый диск"
 
 #. TRANSLATORS: section title
-#: src/components/storage/ZFCPPage.jsx:572
+#: src/components/storage/ZFCPPage.jsx:599
 msgid "Disks"
 msgstr "Диски"
 
-#: src/components/storage/device-utils.jsx:88
+#: src/components/storage/device-utils.jsx:92
 msgid "Unused space"
 msgstr "Неиспользуемое пространство"
 
@@ -2190,70 +2118,70 @@ msgstr "Доступно только при условии аутентифик
 msgid "Authentication by target"
 msgstr "Аутентификация по цели"
 
-#: src/components/storage/iscsi/AuthFields.jsx:80
-#: src/components/storage/iscsi/AuthFields.jsx:85
-#: src/components/storage/iscsi/AuthFields.jsx:87
-#: src/components/storage/iscsi/AuthFields.jsx:112
-#: src/components/storage/iscsi/AuthFields.jsx:117
-#: src/components/storage/iscsi/AuthFields.jsx:119
+#: src/components/storage/iscsi/AuthFields.jsx:78
+#: src/components/storage/iscsi/AuthFields.jsx:82
+#: src/components/storage/iscsi/AuthFields.jsx:84
+#: src/components/storage/iscsi/AuthFields.jsx:104
+#: src/components/storage/iscsi/AuthFields.jsx:108
+#: src/components/storage/iscsi/AuthFields.jsx:110
 msgid "User name"
 msgstr "Имя пользователя"
 
-#: src/components/storage/iscsi/AuthFields.jsx:91
-#: src/components/storage/iscsi/AuthFields.jsx:124
+#: src/components/storage/iscsi/AuthFields.jsx:88
+#: src/components/storage/iscsi/AuthFields.jsx:116
 msgid "Incorrect user name"
 msgstr "Некорректное имя пользователя"
 
-#: src/components/storage/iscsi/AuthFields.jsx:105
-#: src/components/storage/iscsi/AuthFields.jsx:139
+#: src/components/storage/iscsi/AuthFields.jsx:99
+#: src/components/storage/iscsi/AuthFields.jsx:130
 msgid "Incorrect password"
 msgstr "Некорректный пароль"
 
-#: src/components/storage/iscsi/AuthFields.jsx:108
+#: src/components/storage/iscsi/AuthFields.jsx:102
 msgid "Authentication by initiator"
 msgstr "Аутентификация инициатором"
 
-#: src/components/storage/iscsi/AuthFields.jsx:133
+#: src/components/storage/iscsi/AuthFields.jsx:123
 msgid "Target Password"
 msgstr "Пароль цели"
 
 #. TRANSLATORS: popup title
-#: src/components/storage/iscsi/DiscoverForm.jsx:102
+#: src/components/storage/iscsi/DiscoverForm.jsx:94
 msgid "Discover iSCSI Targets"
 msgstr "Знакомство с целевыми устройствами iSCSI"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:112
-#: src/components/storage/iscsi/LoginForm.jsx:73
+#: src/components/storage/iscsi/DiscoverForm.jsx:99
+#: src/components/storage/iscsi/LoginForm.jsx:70
 msgid "Make sure you provide the correct values"
 msgstr "Убедитесь, что вы указали правильные значения"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:118
+#: src/components/storage/iscsi/DiscoverForm.jsx:103
 msgid "IP address"
 msgstr "IP-адрес"
 
 #. TRANSLATORS: network address
-#: src/components/storage/iscsi/DiscoverForm.jsx:125
-#: src/components/storage/iscsi/DiscoverForm.jsx:127
+#: src/components/storage/iscsi/DiscoverForm.jsx:108
+#: src/components/storage/iscsi/DiscoverForm.jsx:110
 msgid "Address"
 msgstr "Адрес"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:132
+#: src/components/storage/iscsi/DiscoverForm.jsx:115
 msgid "Incorrect IP address"
 msgstr "Некорректный IP-адрес"
 
 #. TRANSLATORS: network port number
-#: src/components/storage/iscsi/DiscoverForm.jsx:136
-#: src/components/storage/iscsi/DiscoverForm.jsx:143
-#: src/components/storage/iscsi/DiscoverForm.jsx:145
+#: src/components/storage/iscsi/DiscoverForm.jsx:117
+#: src/components/storage/iscsi/DiscoverForm.jsx:122
+#: src/components/storage/iscsi/DiscoverForm.jsx:124
 msgid "Port"
 msgstr "Порт"
 
-#: src/components/storage/iscsi/DiscoverForm.jsx:150
+#: src/components/storage/iscsi/DiscoverForm.jsx:129
 msgid "Incorrect port"
 msgstr "Некорректный порт"
 
 #. TRANSLATORS: %s is replaced by the iSCSI target node name
-#: src/components/storage/iscsi/EditNodeForm.jsx:50
+#: src/components/storage/iscsi/EditNodeForm.jsx:48
 #, c-format
 msgid "Edit %s"
 msgstr "Изменить %s"
@@ -2271,8 +2199,8 @@ msgstr "Имя инициатора"
 #. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:86
-#: src/components/storage/iscsi/NodesPresenter.jsx:103
-#: src/components/storage/iscsi/NodesPresenter.jsx:124
+#: src/components/storage/iscsi/NodesPresenter.jsx:101
+#: src/components/storage/iscsi/NodesPresenter.jsx:122
 msgid "iBFT"
 msgstr "iBFT"
 
@@ -2287,14 +2215,14 @@ msgid "Initiator"
 msgstr "Инициатор"
 
 #. TRANSLATORS: %s is replaced by the iSCSI target name
-#: src/components/storage/iscsi/LoginForm.jsx:69
+#: src/components/storage/iscsi/LoginForm.jsx:66
 #, c-format
 msgid "Login %s"
 msgstr "Логин %s"
 
 #. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
-#: src/components/storage/iscsi/LoginForm.jsx:76
-#: src/components/storage/iscsi/LoginForm.jsx:79
+#: src/components/storage/iscsi/LoginForm.jsx:74
+#: src/components/storage/iscsi/LoginForm.jsx:77
 msgid "Startup"
 msgstr "Запуск"
 
@@ -2316,27 +2244,26 @@ msgstr "Вход"
 msgid "Logout"
 msgstr "Выход"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:101
-#: src/components/storage/iscsi/NodesPresenter.jsx:122
+#: src/components/storage/iscsi/NodesPresenter.jsx:99
+#: src/components/storage/iscsi/NodesPresenter.jsx:120
 msgid "Portal"
 msgstr "Портал"
 
-#: src/components/storage/iscsi/NodesPresenter.jsx:102
-#: src/components/storage/iscsi/NodesPresenter.jsx:123
+#: src/components/storage/iscsi/NodesPresenter.jsx:100
+#: src/components/storage/iscsi/NodesPresenter.jsx:121
 msgid "Interface"
 msgstr "Интерфейс"
 
-#: src/components/storage/iscsi/TargetsSection.jsx:142
+#: src/components/storage/iscsi/TargetsSection.jsx:138
 msgid "No iSCSI targets found."
 msgstr "Цели iSCSI не найдены."
 
-#: src/components/storage/iscsi/TargetsSection.jsx:143
+#: src/components/storage/iscsi/TargetsSection.jsx:140
 msgid ""
 "Please, perform an iSCSI discovery in order to find available iSCSI targets."
 msgstr "Выполните обнаружение iSCSI, чтобы найти доступные цели iSCSI."
 
-#. TRANSLATORS: button label, starts iSCSI discovery
-#: src/components/storage/iscsi/TargetsSection.jsx:145
+#: src/components/storage/iscsi/TargetsSection.jsx:144
 msgid "Discover iSCSI targets"
 msgstr "Обнаружение целей iSCSI"
 
@@ -2346,7 +2273,7 @@ msgid "Discover"
 msgstr "Обнаружить"
 
 #. TRANSLATORS: iSCSI targets section title
-#: src/components/storage/iscsi/TargetsSection.jsx:170
+#: src/components/storage/iscsi/TargetsSection.jsx:167
 msgid "Targets"
 msgstr "Цели"
 
@@ -2439,7 +2366,7 @@ msgstr "другими способами"
 msgid "No user defined yet."
 msgstr "Пользователь еще не определен."
 
-#: src/components/users/FirstUser.jsx:38
+#: src/components/users/FirstUser.jsx:39
 msgid ""
 "Please, be aware that a user must be defined before installing the system to "
 "be able to log into it."
@@ -2447,68 +2374,68 @@ msgstr ""
 "Обратите внимание, что перед установкой системы необходимо определить "
 "пользователя, чтобы он мог войти в систему."
 
-#: src/components/users/FirstUser.jsx:42
+#: src/components/users/FirstUser.jsx:45
 msgid "Define a user now"
 msgstr "Определить пользователя"
 
-#: src/components/users/FirstUser.jsx:54
-#: src/components/users/FirstUserForm.jsx:210
+#: src/components/users/FirstUser.jsx:58
+#: src/components/users/FirstUserForm.jsx:227
 msgid "Full name"
 msgstr "Полное имя"
 
-#: src/components/users/FirstUser.jsx:55
-#: src/components/users/FirstUserForm.jsx:224
-#: src/components/users/FirstUserForm.jsx:229
-#: src/components/users/FirstUserForm.jsx:232
+#: src/components/users/FirstUser.jsx:59
+#: src/components/users/FirstUserForm.jsx:241
+#: src/components/users/FirstUserForm.jsx:246
+#: src/components/users/FirstUserForm.jsx:249
 msgid "Username"
 msgstr "Имя пользователя"
 
-#: src/components/users/FirstUser.jsx:120
-#: src/components/users/RootAuthMethods.jsx:99
-#: src/components/users/RootAuthMethods.jsx:111
+#: src/components/users/FirstUser.jsx:124
+#: src/components/users/RootAuthMethods.jsx:104
+#: src/components/users/RootAuthMethods.jsx:116
 msgid "Discard"
 msgstr "Отказаться"
 
-#: src/components/users/FirstUserForm.jsx:46
+#: src/components/users/FirstUserForm.jsx:57
 msgid "Username suggestion dropdown"
 msgstr "Выпадающий список с предложением имени пользователя"
 
 #. TRANSLATORS: dropdown username suggestions
-#: src/components/users/FirstUserForm.jsx:61
+#: src/components/users/FirstUserForm.jsx:72
 msgid "Use suggested username"
 msgstr "Используйте предложенное имя пользователя"
 
-#: src/components/users/FirstUserForm.jsx:140
+#: src/components/users/FirstUserForm.jsx:151
 msgid "All fields are required"
 msgstr "Все поля обязательны"
 
-#: src/components/users/FirstUserForm.jsx:147
+#: src/components/users/FirstUserForm.jsx:158
 msgid "Please, try again."
 msgstr "Попробуйте ещё раз."
 
-#: src/components/users/FirstUserForm.jsx:197
+#: src/components/users/FirstUserForm.jsx:211
 msgid "Create user"
 msgstr "Создать пользователя"
 
-#: src/components/users/FirstUserForm.jsx:197
+#: src/components/users/FirstUserForm.jsx:211
 msgid "Edit user"
 msgstr "Изменить пользователя"
 
-#: src/components/users/FirstUserForm.jsx:214
-#: src/components/users/FirstUserForm.jsx:216
+#: src/components/users/FirstUserForm.jsx:231
+#: src/components/users/FirstUserForm.jsx:233
 msgid "User full name"
 msgstr "Полное имя пользователя"
 
-#: src/components/users/FirstUserForm.jsx:254
+#: src/components/users/FirstUserForm.jsx:271
 msgid "Edit password too"
 msgstr "Также изменить пароль"
 
-#: src/components/users/FirstUserForm.jsx:269
+#: src/components/users/FirstUserForm.jsx:287
 msgid "user autologin"
 msgstr "автоматический вход пользователя"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:273
+#: src/components/users/FirstUserForm.jsx:291
 msgid "Auto-login"
 msgstr "Автологин"
 
@@ -2516,7 +2443,7 @@ msgstr "Автологин"
 msgid "No root authentication method defined yet."
 msgstr "Метод корневой аутентификации пока не определен."
 
-#: src/components/users/RootAuthMethods.jsx:38
+#: src/components/users/RootAuthMethods.jsx:39
 msgid ""
 "Please, define at least one authentication method for logging into the "
 "system as root."
@@ -2524,56 +2451,54 @@ msgstr ""
 "Пожалуйста, определите хотя бы один метод аутентификации для входа в систему "
 "с правами root."
 
-#. TRANSLATORS: push button label
-#: src/components/users/RootAuthMethods.jsx:43
+#: src/components/users/RootAuthMethods.jsx:46
 msgid "Set a password"
 msgstr "Установить пароль"
 
-#. TRANSLATORS: push button label
-#: src/components/users/RootAuthMethods.jsx:45
+#: src/components/users/RootAuthMethods.jsx:50
 msgid "Upload a SSH Public Key"
 msgstr "Загрузить публичный ключ SSH"
 
-#: src/components/users/RootAuthMethods.jsx:94
-#: src/components/users/RootAuthMethods.jsx:107
+#: src/components/users/RootAuthMethods.jsx:100
+#: src/components/users/RootAuthMethods.jsx:112
 msgid "Set"
 msgstr "Установить"
 
-#: src/components/users/RootAuthMethods.jsx:129
+#: src/components/users/RootAuthMethods.jsx:132
 msgid "Already set"
 msgstr "Уже установлен"
 
-#: src/components/users/RootAuthMethods.jsx:130
-#: src/components/users/RootAuthMethods.jsx:134
+#: src/components/users/RootAuthMethods.jsx:132
+#: src/components/users/RootAuthMethods.jsx:136
 msgid "Not set"
 msgstr "Не установлен"
 
 #. TRANSLATORS: table header, user authentication method
-#: src/components/users/RootAuthMethods.jsx:155
+#: src/components/users/RootAuthMethods.jsx:157
 msgid "Method"
 msgstr "Метод"
 
-#: src/components/users/RootAuthMethods.jsx:170
+#: src/components/users/RootAuthMethods.jsx:174
 msgid "SSH Key"
 msgstr "Ключ SSH"
 
-#: src/components/users/RootAuthMethods.jsx:187
+#: src/components/users/RootAuthMethods.jsx:193
 msgid "Change the root password"
 msgstr "Изменить пароль root"
 
-#: src/components/users/RootAuthMethods.jsx:187
+#: src/components/users/RootAuthMethods.jsx:193
 msgid "Set a root password"
 msgstr "Установить пароль root"
 
-#: src/components/users/RootAuthMethods.jsx:194
-msgid "Add a SSH Public Key for root"
-msgstr "Добавить публичный ключ SSH для root"
-
-#: src/components/users/RootAuthMethods.jsx:194
+#: src/components/users/RootAuthMethods.jsx:203
 msgid "Edit the SSH Public Key for root"
 msgstr "Изменить публичный ключ SSH для root"
 
-#: src/components/users/RootPasswordPopup.jsx:42
+#: src/components/users/RootAuthMethods.jsx:204
+msgid "Add a SSH Public Key for root"
+msgstr "Добавить публичный ключ SSH для root"
+
+#: src/components/users/RootPasswordPopup.jsx:43
 msgid "Root password"
 msgstr "Пароль root"
 
@@ -2606,6 +2531,38 @@ msgstr "Первый пользователь"
 #: src/components/users/UsersPage.jsx:52
 msgid "Root authentication"
 msgstr "Аутентификация root"
+
+#~ msgid "Reading file..."
+#~ msgstr "Чтение файла..."
+
+#~ msgid "Cannot read the file"
+#~ msgstr "Невозможно прочитать файл"
+
+#~ msgid "Agama Error"
+#~ msgstr "Сбой Agama"
+
+#~ msgid "Loading available products, please wait..."
+#~ msgstr "Загрузка доступных продуктов, пожалуйста, подождите..."
+
+#, c-format
+#~ msgid "There is %d destructive action planned"
+#~ msgid_plural "There are %d destructive actions planned"
+#~ msgstr[0] "Планируется %d разрушительное действие"
+#~ msgstr[1] "Планируется %d разрушительных действия"
+#~ msgstr[2] "Планируется %d разрушительных действий"
+
+#, c-format
+#~ msgid "Space action selector for %s"
+#~ msgstr "Выбор действий пространства для %s"
+
+#~ msgid "Allow resize"
+#~ msgstr "Разрешить изменение размера"
+
+#~ msgid "Do not modify"
+#~ msgstr "Не изменять"
+
+#~ msgid "Shrinkable"
+#~ msgstr "Можно уменьшить"
 
 #~ msgid "Choose a language"
 #~ msgstr "Выберите язык"

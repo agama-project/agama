@@ -131,7 +131,9 @@
 
 .pf-v5-c-switch {
   // We prefer having same label color for checked and not checked switches
-  --pf-v5-c-switch__input--not-checked__label--Color: var(--pf-v5-c-switch__input--checked__label--Color);
+  --pf-v5-c-switch__input--not-checked__label--Color: var(
+    --pf-v5-c-switch__input--checked__label--Color
+  );
 }
 
 // Make the switch focus looks like the rest
@@ -143,9 +145,7 @@
 // Avoid form select toggle icon overlap input Text
 .pf-v5-c-form-control__toggle-icon {
   padding-inline-end: 0;
-  margin-inline-start: calc(
-    var(--pf-v5-c-form-control__toggle-icon--PaddingRight) * 2
-  );
+  margin-inline-start: calc(var(--pf-v5-c-form-control__toggle-icon--PaddingRight) * 2);
 }
 
 // Adjust icons for a menu item
@@ -230,7 +230,8 @@
 
 .pf-v5-c-table tr[aria-level="1"] {
   border-block-end: 0;
-  border-block-start: var(--pf-v5-c-table--border-width--base) solid var(--pf-v5-c-table--BorderColor);
+  border-block-start: var(--pf-v5-c-table--border-width--base) solid
+    var(--pf-v5-c-table--BorderColor);
 }
 
 .pf-v5-c-table tr[aria-level="2"] {
@@ -251,7 +252,6 @@
   }
 }
 
-
 // New-ui overrides
 // ================
 
@@ -260,7 +260,7 @@
   fill: var(--pf-v5-c-nav__link--Color);
 }
 
-.pf-v5-c-page__sidebar-body{
+.pf-v5-c-page__sidebar-body {
   fill: white;
 }
 
@@ -275,8 +275,12 @@
 // that knowst that link "isActive")
 
 .pf-v5-c-tabs__link.pf-m-current {
-  --pf-v5-c-tabs__link--after--BorderColor: var(--pf-v5-c-tabs__item--m-current__link--after--BorderColor);
-  --pf-v5-c-tabs__link--after--BorderWidth: var(--pf-v5-c-tabs__item--m-current__link--after--BorderWidth);
+  --pf-v5-c-tabs__link--after--BorderColor: var(
+    --pf-v5-c-tabs__item--m-current__link--after--BorderColor
+  );
+  --pf-v5-c-tabs__link--after--BorderWidth: var(
+    --pf-v5-c-tabs__item--m-current__link--after--BorderWidth
+  );
 }
 
 // Color for icons in Masthead

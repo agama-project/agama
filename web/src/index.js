@@ -50,5 +50,5 @@ const root = createRoot(container);
 root.render(
   <RootProviders>
     <RouterProvider router={router} />
-  </RootProviders>
+  </RootProviders>,
 );

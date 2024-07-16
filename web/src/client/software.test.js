@@ -103,7 +103,7 @@ describe("ProductClient", () => {
         mockJsonFn.mockResolvedValue({
           key: "",
           email: "",
-          requirement: "Optional"
+          requirement: "Optional",
         });
         const http = new HTTPClient(new URL("http://localhost"));
         const client = new ProductClient(http);
@@ -121,7 +121,7 @@ describe("ProductClient", () => {
         mockJsonFn.mockResolvedValue({
           key: "111222",
           email: "test@test.com",
-          requirement: "Mandatory"
+          requirement: "Mandatory",
         });
         const http = new HTTPClient(new URL("http://localhost"));
         const client = new ProductClient(http);

@@ -26,10 +26,10 @@ import { WithIssues } from "./mixins";
 const SERVICE_NAME = "org.opensuse.Agama.Manager1";
 
 /**
-* @typedef {object} UserResult
-* @property {boolean} result - whether the action succeeded or not
-* @property {string[]} issues - issues found when applying the action
-*/
+ * @typedef {object} UserResult
+ * @property {boolean} result - whether the action succeeded or not
+ * @property {string[]} issues - issues found when applying the action
+ */
 
 /**
  * @typedef {object} User
@@ -41,11 +41,11 @@ const SERVICE_NAME = "org.opensuse.Agama.Manager1";
  */
 
 /**
-* @typedef {object} UserSettings
-* @property {User} [firstUser] - first user
-* @property {boolean} [rootPasswordSet] - whether the root password is set
-* @property {string} [rootSSHKey] - root SSH public key
-*/
+ * @typedef {object} UserSettings
+ * @property {User} [firstUser] - first user
+ * @property {boolean} [rootPasswordSet] - whether the root password is set
+ * @property {string} [rootSSHKey] - root SSH public key
+ */
 
 /**
  * Users client

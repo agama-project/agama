@@ -29,12 +29,13 @@ import {
   Card,
   CardBody,
   Flex,
-  Form, FormGroup,
+  Form,
+  FormGroup,
   PageSection,
   Radio,
-  Stack
+  Stack,
 } from "@patternfly/react-core";
-import a11y from '@patternfly/react-styles/css/utilities/Accessibility/accessibility';
+import a11y from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 
 import { _ } from "~/i18n";
 import { deviceChildren } from "~/components/storage/utils";
@@ -46,8 +47,6 @@ import { compact, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 
 /**
- * @typedef {import ("~/client/storage").ProposalTarget} ProposalTarget
- * @typedef {import ("~/client/storage").ProposalSettings} ProposalSettings
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
  */
 
@@ -55,16 +54,24 @@ const SELECT_DISK_ID = "select-disk";
 const CREATE_LVM_ID = "create-lvm";
 const SELECT_DISK_PANEL_ID = "panel-for-disk-selection";
 const CREATE_LVM_PANEL_ID = "panel-for-lvm-creation";
-const OPTIONS_NAME = "selection-mode";
 
 /**
  * Allows the user to select a target device for installation.
  * @component
  */
 export default function DeviceSelection() {
-  const [state, setState] = useState({});
+  /**
+   * @typedef {object} DeviceSelectionState
+   * @property {boolean} load
+   * @property {string} [target]
+   * @property {StorageDevice} [targetDevice]
+   * @property {StorageDevice[]} [targetPVDevices]
+   * @property {StorageDevice[]} [availableDevices]
+   */
   const navigate = useNavigate();
   const { cancellablePromise } = useCancellablePromise();
+  /** @type ReturnType<typeof useState<DeviceSelectionState>> */
+  const [state, setState] = useState({ load: false });
 
   const isTargetDisk = state.target === "DISK";
   const isTargetNewLvmVg = state.target === "NEW_LVM_VG";
@@ -88,8 +95,8 @@ export default function DeviceSelection() {
         load: true,
         availableDevices,
         target: settings.target,
-        targetDevice: availableDevices.find(d => d.name === settings.targetDevice),
-        targetPVDevices: availableDevices.filter(d => settings.targetPVDevices?.includes(d.name)),
+        targetDevice: availableDevices.find((d) => d.name === settings.targetDevice),
+        targetPVDevices: availableDevices.filter((d) => settings.targetPVDevices?.includes(d.name)),
       });
     };
 
@@ -114,7 +121,7 @@ export default function DeviceSelection() {
     const newSettings = {
       target: state.target,
       targetDevice: isTargetDisk ? state.targetDevice?.name : "",
-      targetPVDevices: isTargetNewLvmVg ? state.targetPVDevices.map(d => d.name) : []
+      targetPVDevices: isTargetNewLvmVg ? state.targetPVDevices.map((d) => d.name) : [],
     };
 
     await client.proposal.calculate({ ...settings, ...newSettings });
@@ -133,15 +140,19 @@ export default function DeviceSelection() {
   // TRANSLATORS: description for using plain partitions for installing the
   // system, the text in the square brackets [] is displayed in bold, use only
   // one pair in the translation
-  const [msgStart1, msgBold1, msgEnd1] = _("The file systems will be allocated \
-by default as [new partitions in the selected device].").split(/[[\]]/);
+  const [msgStart1, msgBold1, msgEnd1] = _(
+    "The file systems will be allocated \
+by default as [new partitions in the selected device].",
+  ).split(/[[\]]/);
   // TRANSLATORS: description for using logical volumes for installing the
   // system, the text in the square brackets [] is displayed in bold, use only
   // one pair in the translation
-  const [msgStart2, msgBold2, msgEnd2] = _("The file systems will be allocated \
+  const [msgStart2, msgBold2, msgEnd2] = _(
+    "The file systems will be allocated \
 by default as [logical volumes of a new LVM Volume Group]. The corresponding \
 physical volumes will be created on demand as new partitions at the selected \
-devices.").split(/[[\]]/);
+devices.",
+  ).split(/[[\]]/);
 
   return (
     <>
@@ -224,7 +235,10 @@ devices.").split(/[[\]]/);
                   </div>
                 </Stack>
 
-                <Flex gap={{ default: "gapXs" }} justifyContent={{ default: "justifyContentCenter" }}>
+                <Flex
+                  gap={{ default: "gapXs" }}
+                  justifyContent={{ default: "justifyContentCenter" }}
+                >
                   {_("Prepare more devices by configuring advanced")}
                   <DevicesTechMenu label={_("storage techs")} />
                 </Flex>

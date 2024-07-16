@@ -32,28 +32,28 @@ export default function AuthFields({ data, onChange, onValidate }) {
   const onReverseUsernameChange = (_, v) => onChange("reverseUsername", v);
   const onReversePasswordChange = (_, v) => onChange("reversePassword", v);
 
-  const isValidText = v => v.length > 0;
+  const isValidText = (v) => v.length > 0;
   const isValidUsername = () => isValidText(data.username);
   const isValidPassword = () => isValidText(data.password);
   const isValidReverseUsername = () => isValidText(data.reverseUsername);
   const isValidReversePassword = () => isValidText(data.reversePassword);
   const isValidAuth = () => isValidUsername() && isValidPassword();
 
-  const showUsernameError = () => isValidPassword() ? !isValidUsername() : false;
-  const showPasswordError = () => isValidUsername() ? !isValidPassword() : false;
+  const showUsernameError = () => (isValidPassword() ? !isValidUsername() : false);
+  const showPasswordError = () => (isValidUsername() ? !isValidPassword() : false);
   const showReverseUsernameError = () => {
-    return (isValidAuth() && isValidReversePassword()) ? !isValidReverseUsername() : false;
+    return isValidAuth() && isValidReversePassword() ? !isValidReverseUsername() : false;
   };
   const showReversePasswordError = () => {
-    return (isValidAuth() && isValidReverseUsername()) ? !isValidReversePassword() : false;
+    return isValidAuth() && isValidReverseUsername() ? !isValidReversePassword() : false;
   };
 
   useEffect(() => {
     onValidate(
       !showUsernameError() &&
-      !showPasswordError() &&
-      !showReverseUsernameError() &&
-      !showReversePasswordError()
+        !showPasswordError() &&
+        !showReverseUsernameError() &&
+        !showReversePasswordError(),
     );
   });
 
@@ -75,10 +75,7 @@ export default function AuthFields({ data, onChange, onValidate }) {
   return (
     <>
       <Fieldset legend={_("Authentication by target")}>
-        <FormGroup
-          fieldId="username"
-          label={_("User name")}
-        >
+        <FormGroup fieldId="username" label={_("User name")}>
           <TextInput
             id="username"
             name="username"
@@ -90,10 +87,7 @@ export default function AuthFields({ data, onChange, onValidate }) {
           />
           <FormValidationError message={showUsernameError() ? _("Incorrect user name") : ""} />
         </FormGroup>
-        <FormGroup
-          fieldId="password"
-          label={_("Password")}
-        >
+        <FormGroup fieldId="password" label={_("Password")}>
           <PasswordInput
             id="password"
             name="password"
@@ -107,10 +101,7 @@ export default function AuthFields({ data, onChange, onValidate }) {
       </Fieldset>
       <Fieldset legend={_("Authentication by initiator")}>
         <ByInitiatorAuthTip />
-        <FormGroup
-          fieldId="reverseUsername"
-          label={_("User name")}
-        >
+        <FormGroup fieldId="reverseUsername" label={_("User name")}>
           <TextInput
             id="reverseUsername"
             name="reverseUsername"
@@ -121,12 +112,11 @@ export default function AuthFields({ data, onChange, onValidate }) {
             onChange={onReverseUsernameChange}
             validated={showReverseUsernameError() ? "error" : "default"}
           />
-          <FormValidationError message={showReverseUsernameError() ? _("Incorrect user name") : ""} />
+          <FormValidationError
+            message={showReverseUsernameError() ? _("Incorrect user name") : ""}
+          />
         </FormGroup>
-        <FormGroup
-          fieldId="reversePassword"
-          label="Password"
-        >
+        <FormGroup fieldId="reversePassword" label="Password">
           <PasswordInput
             id="reversePassword"
             name="reversePassword"
@@ -136,7 +126,9 @@ export default function AuthFields({ data, onChange, onValidate }) {
             onChange={onReversePasswordChange}
             validated={showReversePasswordError() ? "error" : "default"}
           />
-          <FormValidationError message={showReverseUsernameError() ? _("Incorrect password") : ""} />
+          <FormValidationError
+            message={showReverseUsernameError() ? _("Incorrect password") : ""}
+          />
         </FormGroup>
       </Fieldset>
     </>

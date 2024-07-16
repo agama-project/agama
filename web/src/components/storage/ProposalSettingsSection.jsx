@@ -74,18 +74,15 @@ export default function ProposalSettingsSection({
   volumeTemplates,
   isLoading = false,
   changing = undefined,
-  onChange
+  onChange,
 }) {
   /** @param {import("~/components/storage/InstallationDeviceField").TargetConfig} targetConfig */
   const changeTarget = ({ target, targetDevice, targetPVDevices }) => {
-    onChange(
-      CHANGING.TARGET,
-      {
-        target,
-        targetDevice: targetDevice?.name,
-        targetPVDevices: targetPVDevices.map(d => d.name)
-      }
-    );
+    onChange(CHANGING.TARGET, {
+      target,
+      targetDevice: targetDevice?.name,
+      targetPVDevices: targetPVDevices.map((d) => d.name),
+    });
   };
 
   /** @param {import("~/components/storage/EncryptionField").EncryptionConfig} encryptionConfig */
@@ -100,20 +97,17 @@ export default function ProposalSettingsSection({
 
   /** @param {import("~/components/storage/PartitionsField").BootConfig} bootConfig */
   const changeBoot = ({ configureBoot, bootDevice }) => {
-    onChange(
-      CHANGING.BOOT,
-      {
-        configureBoot,
-        bootDevice: bootDevice?.name
-      }
-    );
+    onChange(CHANGING.BOOT, {
+      configureBoot,
+      bootDevice: bootDevice?.name,
+    });
   };
 
   /**
    * @param {string} name
    * @returns {StorageDevice|undefined}
    */
-  const findDevice = (name) => availableDevices.find(a => a.name === name);
+  const findDevice = (name) => availableDevices.find((a) => a.name === name);
 
   /** @type {StorageDevice|undefined} */
   const targetDevice = findDevice(settings.targetDevice);
@@ -156,7 +150,9 @@ export default function ProposalSettingsSection({
           configureBoot={settings.configureBoot}
           bootDevice={bootDevice}
           defaultBootDevice={defaultBootDevice}
-          isLoading={showSkeleton(isLoading, "PartitionsField", changing) || settings.volumes === undefined}
+          isLoading={
+            showSkeleton(isLoading, "PartitionsField", changing) || settings.volumes === undefined
+          }
           onVolumesChange={changeVolumes}
           onBootChange={changeBoot}
         />

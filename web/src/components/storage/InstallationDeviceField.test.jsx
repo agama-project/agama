@@ -31,7 +31,7 @@ jest.mock("@patternfly/react-core", () => {
 
   return {
     ...original,
-    Skeleton: () => <div>PF-Skeleton</div>
+    Skeleton: () => <div>PF-Skeleton</div>,
   };
 });
 
@@ -58,7 +58,7 @@ const sda = {
   name: "/dev/sda",
   size: 1024,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
@@ -81,9 +81,9 @@ const sdb = {
   name: "/dev/sdb",
   size: 2048,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
-  udevPaths: ["pci-0000:00-19"]
+  udevPaths: ["pci-0000:00-19"],
 };
 
 /** @type {InstallationDeviceFieldProps} */
@@ -96,7 +96,7 @@ beforeEach(() => {
     targetPVDevices: [],
     devices: [sda, sdb],
     isLoading: false,
-    onChange: jest.fn()
+    onChange: jest.fn(),
   };
 });
 
@@ -199,7 +199,7 @@ it.skip("allows changing the selected device", async () => {
   expect(props.onChange).toHaveBeenCalledWith({
     target: "DISK",
     targetDevice: sdb,
-    targetPVDevices: []
+    targetPVDevices: [],
   });
 });
 

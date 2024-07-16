@@ -36,7 +36,7 @@ jest.mock("@patternfly/react-core", () => {
 
   return {
     ...original,
-    Skeleton: () => <div>PFSkeleton</div>
+    Skeleton: () => <div>PFSkeleton</div>,
   };
 });
 
@@ -58,7 +58,7 @@ const sda = {
   name: "/dev/sda",
   size: 1024,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
@@ -81,9 +81,9 @@ const sdb = {
   name: "/dev/sdb",
   size: 2048,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
-  udevPaths: ["pci-0000:00-19"]
+  udevPaths: ["pci-0000:00-19"],
 };
 
 /** @type {ProposalSettingsSectionProps} */
@@ -103,13 +103,13 @@ beforeEach(() => {
       spacePolicy: "delete",
       spaceActions: [],
       volumes: [],
-      installationDevices: [sda, sdb]
+      installationDevices: [sda, sdb],
     },
     availableDevices: [],
     volumeDevices: [],
     encryptionMethods: [],
     volumeTemplates: [],
-    onChange: jest.fn()
+    onChange: jest.fn(),
   };
 });
 

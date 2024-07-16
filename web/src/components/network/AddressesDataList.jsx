@@ -28,9 +28,14 @@
 import React from "react";
 import {
   Button,
-  DataList, DataListItem, DataListItemRow, DataListItemCells, DataListCell, DataListAction,
+  DataList,
+  DataListItem,
+  DataListItemRow,
+  DataListItemCells,
+  DataListCell,
+  DataListAction,
   Flex,
-  Stack
+  Stack,
 } from "@patternfly/react-core";
 
 import { FormLabel } from "~/components/core";
@@ -42,9 +47,9 @@ let index = 0;
 export default function AddressesDataList({
   addresses: originalAddresses,
   updateAddresses,
-  allowEmpty = true
+  allowEmpty = true,
 }) {
-  const addresses = originalAddresses.map(addr => {
+  const addresses = originalAddresses.map((addr) => {
     const newAddr = addr;
     if (!newAddr.id) newAddr.id = index++;
     return newAddr;
@@ -56,13 +61,13 @@ export default function AddressesDataList({
   };
 
   const updateAddress = (id, field, value) => {
-    const address = addresses.find(addr => addr.id === id);
+    const address = addresses.find((addr) => addr.id === id);
     address[field] = value;
     updateAddresses(addresses);
   };
 
-  const deleteAddress = id => {
-    const addressIdx = addresses.findIndex(addr => addr.id === id);
+  const deleteAddress = (id) => {
+    const addressIdx = addresses.findIndex((addr) => addr.id === id);
     addresses.splice(addressIdx, 1);
     updateAddresses(addresses);
   };
@@ -73,7 +78,12 @@ export default function AddressesDataList({
 
       return (
         <DataListAction>
-          <Button size="sm" variant="link" className="remove-link" onClick={() => deleteAddress(id)}>
+          <Button
+            size="sm"
+            variant="link"
+            className="remove-link"
+            onClick={() => deleteAddress(id)}
+          >
             {/* TRANSLATORS: button label */}
             {_("Remove")}
           </Button>
@@ -99,7 +109,7 @@ export default function AddressesDataList({
           placeholder={_("Prefix length or netmask")}
           aria-label={_("Prefix length or netmask")}
         />
-      </DataListCell>
+      </DataListCell>,
     ];
 
     return (
@@ -121,7 +131,7 @@ export default function AddressesDataList({
         <FormLabel isRequired={!allowEmpty}>{_("Addresses")}</FormLabel>
       </Flex>
       <DataList isCompact gridBreakpoint="none" title={_("Addresses data list")}>
-        {addresses.map(address => renderAddress(address))}
+        {addresses.map((address) => renderAddress(address))}
       </DataList>
       <Flex>
         <Button size="sm" variant="secondary" onClick={addAddress}>

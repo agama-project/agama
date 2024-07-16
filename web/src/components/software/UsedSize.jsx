@@ -34,9 +34,7 @@ export default function UsedSize({ size }) {
 
   return (
     <EmptyState title={message} icon="info" color="success-color-100">
-      <p>
-        {_("This space includes the base system and the selected software patterns.")}
-      </p>
+      <p>{_("This space includes the base system and the selected software patterns.")}</p>
     </EmptyState>
   );
 }

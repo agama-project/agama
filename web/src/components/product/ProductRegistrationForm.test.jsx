@@ -25,12 +25,12 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProductRegistrationForm } from "~/components/product";
 
-it.skip("renders a field for entering the registration code", async() => {
+it.skip("renders a field for entering the registration code", async () => {
   plainRender(<ProductRegistrationForm />);
   await screen.findByLabelText(/Registration code/);
 });
 
-it.skip("renders a field for entering an email", async() => {
+it.skip("renders a field for entering an email", async () => {
   plainRender(<ProductRegistrationForm />);
   await screen.findByLabelText("Email");
 });
@@ -42,7 +42,9 @@ const ProductRegistrationFormTest = () => {
   return (
     <>
       <ProductRegistrationForm id="testForm" onSubmit={setIsSubmitted} onValidate={setIsValid} />
-      <Button type="submit" form="testForm">Accept</Button>
+      <Button type="submit" form="testForm">
+        Accept
+      </Button>
       {isSubmitted && <p>Form is submitted!</p>}
       {isValid === false && <p>Form is not valid!</p>}
     </>

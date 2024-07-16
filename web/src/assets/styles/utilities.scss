@@ -125,7 +125,11 @@
   background-color: #fff;
   background-repeat: no-repeat;
   background-attachment: local, local, scroll, scroll;
-  background-size: 100% 48px, 100% 48px, 100% 16px, 100% 16px;
+  background-size:
+    100% 48px,
+    100% 48px,
+    100% 16px,
+    100% 16px;
 }
 
 // FIXME: drop as soon as Tip component gets rethought / refactored

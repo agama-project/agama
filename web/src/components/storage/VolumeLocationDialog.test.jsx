@@ -50,7 +50,7 @@ const sda = {
   name: "/dev/sda",
   size: 1024,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
@@ -65,8 +65,8 @@ const sda1 = {
   size: 256,
   filesystem: {
     sid: 169,
-    type: "Swap"
-  }
+    type: "Swap",
+  },
 };
 
 /** @type {StorageDevice} */
@@ -79,15 +79,15 @@ const sda2 = {
   size: 512,
   filesystem: {
     sid: 179,
-    type: "Ext4"
-  }
+    type: "Ext4",
+  },
 };
 
 sda.partitionTable = {
   type: "gpt",
   partitions: [sda1, sda2],
   unpartitionedSize: 0,
-  unusedSlots: []
+  unusedSlots: [],
 };
 
 /** @type {StorageDevice} */
@@ -108,9 +108,9 @@ const sdb = {
   name: "/dev/sdb",
   size: 2048,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
-  udevPaths: ["pci-0000:00-19"]
+  udevPaths: ["pci-0000:00-19"],
 };
 
 /** @type {Volume} */
@@ -131,8 +131,8 @@ const volume = {
     snapshotsAffectSizes: true,
     sizeRelevantVolumes: [],
     adjustByRam: false,
-    productDefined: true
-  }
+    productDefined: true,
+  },
 };
 
 /** @type {VolumeLocationDialogProps} */
@@ -147,7 +147,7 @@ describe("VolumeLocationDialog", () => {
       volumeDevices: [sda, sdb],
       targetDevices: [sda],
       onCancel: jest.fn(),
-      onAccept: jest.fn()
+      onAccept: jest.fn(),
     };
   });
 
@@ -231,9 +231,9 @@ describe("VolumeLocationDialog", () => {
     const accept = screen.getByRole("button", { name: "Confirm" });
     await user.click(accept);
 
-    expect(props.onAccept).toHaveBeenCalledWith(expect.objectContaining(
-      { target: "DEVICE", targetDevice: sdb }
-    ));
+    expect(props.onAccept).toHaveBeenCalledWith(
+      expect.objectContaining({ target: "DEVICE", targetDevice: sdb }),
+    );
   });
 
   it("does not call onAccept on cancel", async () => {

@@ -30,13 +30,13 @@ jest.mock("~/client");
 const isDASDSupportedFn = jest.fn();
 
 const dasd = {
-  isSupported: isDASDSupportedFn
+  isSupported: isDASDSupportedFn,
 };
 
 const isZFCPSupportedFn = jest.fn();
 
 const zfcp = {
-  isSupported: isZFCPSupportedFn
+  isSupported: isZFCPSupportedFn,
 };
 
 beforeEach(() => {
@@ -45,7 +45,7 @@ beforeEach(() => {
 
   createClient.mockImplementation(() => {
     return {
-      storage: { dasd, zfcp }
+      storage: { dasd, zfcp },
     };
   });
 });

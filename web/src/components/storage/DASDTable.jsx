@@ -23,17 +23,24 @@ import React, { useState } from "react";
 import {
   Button,
   Divider,
-  Dropdown, DropdownItem, DropdownList,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
   MenuToggle,
-  TextInputGroup, TextInputGroupMain, TextInputGroupUtilities,
-  Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
-} from '@patternfly/react-core';
-import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+  TextInputGroup,
+  TextInputGroupMain,
+  TextInputGroupUtilities,
+  Toolbar,
+  ToolbarContent,
+  ToolbarGroup,
+  ToolbarItem,
+} from "@patternfly/react-core";
+import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { Icon } from "~/components/layout";
 import { SectionSkeleton } from "~/components/core";
 import { _ } from "~/i18n";
 import { hex } from "~/utils";
-import { sort } from 'fast-sort';
+import { sort } from "fast-sort";
 import { useInstallerClient } from "~/context/installer";
 
 // FIXME: please, note that this file still requiring refinements until reach a
@@ -42,13 +49,12 @@ const columnData = (device, column) => {
   let data = device[column.id];
 
   switch (column.id) {
-    case 'formatted':
-    case 'diag':
-      if (!device.enabled)
-        data = "";
+    case "formatted":
+    case "diag":
+      if (!device.enabled) data = "";
       break;
-    case 'partitionInfo':
-      data = data.split(",").map(d => <div key={d}>{d}</div>);
+    case "partitionInfo":
+      data = data.split(",").map((d) => <div key={d}>{d}</div>);
       break;
   }
 
@@ -69,7 +75,7 @@ const columns = [
   // usually keep untranslated
   { id: "diag", label: _("DIAG") },
   { id: "formatted", label: _("Formatted") },
-  { id: "partitionInfo", label: _("Partition Info") }
+  { id: "partitionInfo", label: _("Partition Info") },
 ];
 
 const Actions = ({ devices, isDisabled }) => {
@@ -84,7 +90,7 @@ const Actions = ({ devices, isDisabled }) => {
   const setDiagOn = () => client.dasd.setDIAG(devices, true);
   const setDiagOff = () => client.dasd.setDIAG(devices, false);
   const format = () => {
-    const offline = devices.filter(d => !d.enabled);
+    const offline = devices.filter((d) => !d.enabled);
 
     if (offline.length > 0) {
       return false;
@@ -94,7 +100,9 @@ const Actions = ({ devices, isDisabled }) => {
   };
 
   const Action = ({ children, ...props }) => (
-    <DropdownItem component="button" {...props}>{children}</DropdownItem>
+    <DropdownItem component="button" {...props}>
+      {children}
+    </DropdownItem>
   );
 
   return (
@@ -109,38 +117,48 @@ const Actions = ({ devices, isDisabled }) => {
       )}
     >
       <DropdownList>
-        { /** TRANSLATORS: drop down menu action, activate the device */}
-        <Action key="activate" onClick={activate}>{_("Activate")}</Action>
-        { /** TRANSLATORS: drop down menu action, deactivate the device */}
-        <Action key="deactivate" onClick={deactivate}>{_("Deactivate")}</Action>
+        {/** TRANSLATORS: drop down menu action, activate the device */}
+        <Action key="activate" onClick={activate}>
+          {_("Activate")}
+        </Action>
+        {/** TRANSLATORS: drop down menu action, deactivate the device */}
+        <Action key="deactivate" onClick={deactivate}>
+          {_("Deactivate")}
+        </Action>
         <Divider key="first-separator" />
-        { /** TRANSLATORS: drop down menu action, enable DIAG access method */}
-        <Action key="set_diag_on" onClick={setDiagOn}>{_("Set DIAG On")}</Action>
-        { /** TRANSLATORS: drop down menu action, disable DIAG access method */}
-        <Action key="set_diag_off" onClick={setDiagOff}>{_("Set DIAG Off")}</Action>
+        {/** TRANSLATORS: drop down menu action, enable DIAG access method */}
+        <Action key="set_diag_on" onClick={setDiagOn}>
+          {_("Set DIAG On")}
+        </Action>
+        {/** TRANSLATORS: drop down menu action, disable DIAG access method */}
+        <Action key="set_diag_off" onClick={setDiagOff}>
+          {_("Set DIAG Off")}
+        </Action>
         <Divider key="second-separator" />
-        { /** TRANSLATORS: drop down menu action, format the disk */}
-        <Action key="format" onClick={format}>{_("Format")}</Action>
+        {/** TRANSLATORS: drop down menu action, format the disk */}
+        <Action key="format" onClick={format}>
+          {_("Format")}
+        </Action>
       </DropdownList>
     </Dropdown>
   );
 };
 
 const filterDevices = (devices, from, to) => {
-  const allChannels = devices.map(d => d.hexId);
+  const allChannels = devices.map((d) => d.hexId);
   const min = hex(from) || Math.min(...allChannels);
   const max = hex(to) || Math.max(...allChannels);
 
-  return devices.filter(d => d.hexId >= min && d.hexId <= max);
+  return devices.filter((d) => d.hexId >= min && d.hexId <= max);
 };
 
 export default function DASDTable({ state, dispatch }) {
   const [sortingColumn, setSortingColumn] = useState(columns[0]);
-  const [sortDirection, setSortDirection] = useState('asc');
+  const [sortDirection, setSortDirection] = useState("asc");
 
-  const sortColumnIndex = () => columns.findIndex(c => c.id === sortingColumn.id);
+  const sortColumnIndex = () => columns.findIndex((c) => c.id === sortingColumn.id);
   const filteredDevices = filterDevices(state.devices, state.minChannel, state.maxChannel);
-  const selectedDevicesIds = state.selectedDevices.map(d => d.id);
+  const selectedDevicesIds = state.selectedDevices.map((d) => d.id);
 
   // Selecting
   const selectAll = (isSelecting = true) => {
@@ -156,7 +174,7 @@ export default function DASDTable({ state, dispatch }) {
   // Sorting
   // See https://github.com/snovakovic/fast-sort
   const sortBy = sortingColumn.sortBy || sortingColumn.id;
-  const sortedDevices = sort(filteredDevices)[sortDirection](d => d[sortBy]);
+  const sortedDevices = sort(filteredDevices)[sortDirection]((d) => d[sortBy]);
 
   // FIXME: this can be improved and even extracted to be used with other tables.
   const getSortParams = (columnIndex) => {
@@ -166,7 +184,7 @@ export default function DASDTable({ state, dispatch }) {
         setSortingColumn(columns[index]);
         setSortDirection(direction);
       },
-      columnIndex
+      columnIndex,
     };
   };
 
@@ -194,15 +212,35 @@ export default function DASDTable({ state, dispatch }) {
       <Table variant="compact">
         <Thead>
           <Tr>
-            <Th select={{ onSelect: (_event, isSelecting) => selectAll(isSelecting), isSelected: filteredDevices.length === state.selectedDevices.length }} />
-            {columns.map((column, index) => <Th key={column.id} sort={getSortParams(index)}>{column.label}</Th>)}
+            <Th
+              select={{
+                onSelect: (_event, isSelecting) => selectAll(isSelecting),
+                isSelected: filteredDevices.length === state.selectedDevices.length,
+              }}
+            />
+            {columns.map((column, index) => (
+              <Th key={column.id} sort={getSortParams(index)}>
+                {column.label}
+              </Th>
+            ))}
           </Tr>
         </Thead>
         <Tbody>
           {sortedDevices.map((device, rowIndex) => (
             <Tr key={device.id}>
-              <Td select={{ rowIndex, onSelect: (_event, isSelecting) => selectDevice(device, isSelecting), isSelected: selectedDevicesIds.includes(device.id), isDisabled: false }} />
-              {columns.map(column => <Td key={column.id} dataLabel={column.label}>{columnData(device, column)}</Td>)}
+              <Td
+                select={{
+                  rowIndex,
+                  onSelect: (_event, isSelecting) => selectDevice(device, isSelecting),
+                  isSelected: selectedDevicesIds.includes(device.id),
+                  isDisabled: false,
+                }}
+              />
+              {columns.map((column) => (
+                <Td key={column.id} dataLabel={column.label}>
+                  {columnData(device, column)}
+                </Td>
+              ))}
             </Tr>
           ))}
         </Tbody>
@@ -224,7 +262,7 @@ export default function DASDTable({ state, dispatch }) {
                   placeholder={_("Filter by min channel")}
                   onChange={onMinChannelFilterChange}
                 />
-                {state.minChannel !== "" &&
+                {state.minChannel !== "" && (
                   <TextInputGroupUtilities>
                     <Button
                       variant="plain"
@@ -233,7 +271,8 @@ export default function DASDTable({ state, dispatch }) {
                     >
                       <Icon name="backspace" size="s" />
                     </Button>
-                  </TextInputGroupUtilities>}
+                  </TextInputGroupUtilities>
+                )}
               </TextInputGroup>
             </ToolbarItem>
             <ToolbarItem>
@@ -245,7 +284,7 @@ export default function DASDTable({ state, dispatch }) {
                   placeholder={_("Filter by max channel")}
                   onChange={onMaxChannelFilterChange}
                 />
-                {state.maxChannel !== "" &&
+                {state.maxChannel !== "" && (
                   <TextInputGroupUtilities>
                     <Button
                       variant="plain"
@@ -254,14 +293,18 @@ export default function DASDTable({ state, dispatch }) {
                     >
                       <Icon name="backspace" size="s" />
                     </Button>
-                  </TextInputGroupUtilities>}
+                  </TextInputGroupUtilities>
+                )}
               </TextInputGroup>
             </ToolbarItem>
 
             <ToolbarItem variant="separator" />
 
             <ToolbarItem>
-              <Actions devices={state.selectedDevices} isDisabled={state.selectedDevices.length === 0} />
+              <Actions
+                devices={state.selectedDevices}
+                isDisabled={state.selectedDevices.length === 0}
+              />
             </ToolbarItem>
           </ToolbarGroup>
         </ToolbarContent>

@@ -27,9 +27,7 @@ import PasswordAndConfirmationInput from "./PasswordAndConfirmationInput";
 describe("when the passwords do not match", () => {
   it("displays a warning", async () => {
     const password = "";
-    const { user } = plainRender(
-      <PasswordAndConfirmationInput value={password} />
-    );
+    const { user } = plainRender(<PasswordAndConfirmationInput value={password} />);
 
     const passwordInput = screen.getByLabelText("Password");
     user.type(passwordInput, "123456");
@@ -38,9 +36,7 @@ describe("when the passwords do not match", () => {
 });
 
 it("uses the given password value for confirmation too", async () => {
-  plainRender(
-    <PasswordAndConfirmationInput value="12345" />
-  );
+  plainRender(<PasswordAndConfirmationInput value="12345" />);
 
   const passwordInput = screen.getByLabelText("Password");
   const confirmationInput = screen.getByLabelText("Password confirmation");
@@ -51,9 +47,7 @@ it("uses the given password value for confirmation too", async () => {
 
 describe("when isDisabled", () => {
   it("disables both, password and confirmation", async () => {
-    plainRender(
-      <PasswordAndConfirmationInput value="12345" isDisabled />
-    );
+    plainRender(<PasswordAndConfirmationInput value="12345" isDisabled />);
 
     const passwordInput = screen.getByLabelText("Password");
     const confirmationInput = screen.getByLabelText("Password confirmation");

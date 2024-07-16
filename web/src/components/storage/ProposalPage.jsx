@@ -49,7 +49,7 @@ const initialState = {
   system: [],
   staging: [],
   actions: [],
-  errors: []
+  errors: [],
 };
 
 const reducer = (state, action) => {
@@ -183,8 +183,8 @@ export default function ProposalPage() {
   }, [client, cancellablePromise]);
 
   const loadDevices = useCallback(async () => {
-    const system = await cancellablePromise(client.system.getDevices()) || [];
-    const staging = await cancellablePromise(client.staging.getDevices()) || [];
+    const system = (await cancellablePromise(client.system.getDevices())) || [];
+    const staging = (await cancellablePromise(client.staging.getDevices())) || [];
     return { system, staging };
   }, [client, cancellablePromise]);
 
@@ -193,9 +193,12 @@ export default function ProposalPage() {
     return issues.map(toValidationError);
   }, [client, cancellablePromise]);
 
-  const calculateProposal = useCallback(async (settings) => {
-    return await cancellablePromise(client.proposal.calculate(settings));
-  }, [client, cancellablePromise]);
+  const calculateProposal = useCallback(
+    async (settings) => {
+      return await cancellablePromise(client.proposal.calculate(settings));
+    },
+    [client, cancellablePromise],
+  );
 
   const load = useCallback(async () => {
     dispatch({ type: "START_LOADING" });
@@ -229,24 +232,38 @@ export default function ProposalPage() {
     dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
 
     if (result !== undefined) dispatch({ type: "STOP_LOADING" });
-  }, [calculateProposal, cancellablePromise, client, loadAvailableDevices, loadVolumeDevices, loadDevices, loadEncryptionMethods, loadErrors, loadProposalResult, loadVolumeTemplates]);
+  }, [
+    calculateProposal,
+    cancellablePromise,
+    client,
+    loadAvailableDevices,
+    loadVolumeDevices,
+    loadDevices,
+    loadEncryptionMethods,
+    loadErrors,
+    loadProposalResult,
+    loadVolumeTemplates,
+  ]);
 
-  const calculate = useCallback(async (settings) => {
-    dispatch({ type: "START_LOADING" });
+  const calculate = useCallback(
+    async (settings) => {
+      dispatch({ type: "START_LOADING" });
 
-    await calculateProposal(settings);
+      await calculateProposal(settings);
 
-    const result = await loadProposalResult();
-    dispatch({ type: "UPDATE_RESULT", payload: { result } });
+      const result = await loadProposalResult();
+      dispatch({ type: "UPDATE_RESULT", payload: { result } });
 
-    const devices = await loadDevices();
-    dispatch({ type: "UPDATE_DEVICES", payload: devices });
+      const devices = await loadDevices();
+      dispatch({ type: "UPDATE_DEVICES", payload: devices });
 
-    const errors = await loadErrors();
-    dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
+      const errors = await loadErrors();
+      dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
 
-    dispatch({ type: "STOP_LOADING" });
-  }, [calculateProposal, loadDevices, loadErrors, loadProposalResult]);
+      dispatch({ type: "STOP_LOADING" });
+    },
+    [calculateProposal, loadDevices, loadErrors, loadProposalResult],
+  );
 
   useEffect(() => {
     load().catch(console.error);
@@ -275,7 +292,7 @@ export default function ProposalPage() {
     calculate(newSettings).catch(console.error);
   };
 
-  const spacePolicy = SPACE_POLICIES.find(p => p.id === state.settings.spacePolicy);
+  const spacePolicy = SPACE_POLICIES.find((p) => p.id === state.settings.spacePolicy);
 
   /**
    * @todo Enable type checking and ensure the components are called with the correct props.
@@ -292,9 +309,7 @@ export default function ProposalPage() {
       <Page.MainContent>
         <Grid hasGutter>
           <GridItem sm={12}>
-            <ProposalTransactionalInfo
-              settings={state.settings}
-            />
+            <ProposalTransactionalInfo settings={state.settings} />
           </GridItem>
           <GridItem sm={12} xl={6}>
             <ProposalSettingsSection

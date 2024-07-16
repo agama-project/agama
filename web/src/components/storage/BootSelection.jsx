@@ -23,12 +23,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Card, CardBody,
-  Form, FormGroup,
-  Radio,
-  Stack
-} from "@patternfly/react-core";
+import { Card, CardBody, Form, FormGroup, Radio, Stack } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { DevicesFormSelect } from "~/components/storage";
 import { Page } from "~/components/core";
@@ -37,7 +32,7 @@ import { deviceLabel } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
-import textStyles from '@patternfly/react-styles/css/utilities/Text/text';
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 // FIXME: improve classNames
 // FIXME: improve and rename to BootSelectionDialog
@@ -54,9 +49,19 @@ const BOOT_DISABLED_ID = "boot-disabled";
  * Allows the user to select the boot configuration.
  */
 export default function BootSelectionDialog() {
+  /**
+   * @typedef {object} BootSelectionState
+   * @property {boolean} load
+   * @property {string} [selectedOption]
+   * @property {boolean} [configureBoot]
+   * @property {StorageDevice} [bootDevice]
+   * @property {StorageDevice} [defaultBootDevice]
+   * @property {StorageDevice[]} [availableDevices]
+   */
   const { cancellablePromise } = useCancellablePromise();
   const { storage: client } = useInstallerClient();
-  const [state, setState] = useState({});
+  /** @type ReturnType<typeof useState<BootSelectionState>> */
+  const [state, setState] = useState({ load: false });
   const navigate = useNavigate();
 
   // FIXME: Repeated code, see DeviceSelection. Use a context/hook or whatever
@@ -86,7 +91,7 @@ export default function BootSelectionDialog() {
         selectedOption = BOOT_MANUAL_ID;
       }
 
-      const findDevice = (name) => availableDevices.find(d => d.name === name);
+      const findDevice = (name) => availableDevices.find((d) => d.name === name);
 
       setState({
         load: true,
@@ -94,7 +99,7 @@ export default function BootSelectionDialog() {
         configureBoot,
         defaultBootDevice: findDevice(defaultBootDevice),
         availableDevices,
-        selectedOption
+        selectedOption,
       });
     };
 
@@ -125,7 +130,7 @@ export default function BootSelectionDialog() {
 
   const description = _(
     "To ensure the new system is able to boot, the installer may need to create or configure some \
-partitions in the appropriate disk."
+partitions in the appropriate disk.",
   );
 
   const automaticText = () => {
@@ -136,7 +141,7 @@ partitions in the appropriate disk."
     return sprintf(
       // TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
       _("Partitions to boot will be allocated at the installation disk (%s)."),
-      deviceLabel(state.defaultBootDevice)
+      deviceLabel(state.defaultBootDevice),
     );
   };
 
@@ -166,7 +171,12 @@ partitions in the appropriate disk."
                   defaultChecked={state.selectedOption === BOOT_AUTO_ID}
                   onChange={updateSelectedOption}
                   label={
-                    <span className={[textStyles.fontSizeLg, state.selectedOption === BOOT_AUTO_ID && textStyles.fontWeightBold].join(" ")}>
+                    <span
+                      className={[
+                        textStyles.fontSizeLg,
+                        state.selectedOption === BOOT_AUTO_ID && textStyles.fontWeightBold,
+                      ].join(" ")}
+                    >
                       {_("Automatic")}
                     </span>
                   }
@@ -179,7 +189,12 @@ partitions in the appropriate disk."
                   defaultChecked={state.selectedOption === BOOT_MANUAL_ID}
                   onChange={updateSelectedOption}
                   label={
-                    <span className={[textStyles.fontSizeLg, state.selectedOption === BOOT_MANUAL_ID && textStyles.fontWeightBold].join(" ")}>
+                    <span
+                      className={[
+                        textStyles.fontSizeLg,
+                        state.selectedOption === BOOT_MANUAL_ID && textStyles.fontWeightBold,
+                      ].join(" ")}
+                    >
                       {_("Select a disk")}
                     </span>
                   }
@@ -206,13 +221,20 @@ partitions in the appropriate disk."
                   defaultChecked={state.selectedOption === BOOT_DISABLED_ID}
                   onChange={updateSelectedOption}
                   label={
-                    <span className={[textStyles.fontSizeLg, state.selectedOption === BOOT_DISABLED_ID && textStyles.fontWeightBold].join(" ")}>
+                    <span
+                      className={[
+                        textStyles.fontSizeLg,
+                        state.selectedOption === BOOT_DISABLED_ID && textStyles.fontWeightBold,
+                      ].join(" ")}
+                    >
                       {_("Do not configure")}
                     </span>
                   }
                   body={
                     <div>
-                      {_("No partitions will be automatically configured for booting. Use with caution.")}
+                      {_(
+                        "No partitions will be automatically configured for booting. Use with caution.",
+                      )}
                     </div>
                   }
                 />

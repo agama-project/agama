@@ -20,9 +20,7 @@
  */
 
 import React, { useState } from "react";
-import {
-  Form, FormGroup, FormSelect, FormSelectOption
-} from "@patternfly/react-core";
+import { Form, FormGroup, FormSelect, FormSelectOption } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
@@ -61,10 +59,7 @@ export default function EditNodeForm({ node, onSubmit: onSubmitProp, onCancel })
         </FormGroup>
       </Form>
       <Popup.Actions>
-        <Popup.Confirm
-          form={id}
-          type="submit"
-        />
+        <Popup.Confirm form={id} type="submit" />
         <Popup.Cancel onClick={onCancel} />
       </Popup.Actions>
     </Popup>

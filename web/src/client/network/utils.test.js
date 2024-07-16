@@ -21,7 +21,14 @@
 
 // @ts-check
 
-import { isValidIp, isValidIpPrefix, intToIPString, stringToIPInt, formatIp, ipPrefixFor } from "./utils";
+import {
+  isValidIp,
+  isValidIpPrefix,
+  intToIPString,
+  stringToIPInt,
+  formatIp,
+  ipPrefixFor,
+} from "./utils";
 
 describe("#isValidIp", () => {
   it("returns true when the IP is valid", () => {

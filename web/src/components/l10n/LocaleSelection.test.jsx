@@ -27,22 +27,22 @@ import { mockNavigateFn, plainRender } from "~/test-utils";
 
 const locales = [
   { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" }
+  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
 ];
 
 const mockConfigMutation = {
-  mutate: jest.fn()
+  mutate: jest.fn(),
 };
 
 jest.mock("~/queries/l10n", () => ({
   ...jest.requireActual("~/queries/l10n"),
   useL10n: () => ({ locales, selectedLocale: locales[0] }),
-  useConfigMutation: () => mockConfigMutation
+  useConfigMutation: () => mockConfigMutation,
 }));
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockNavigateFn
+  useNavigate: () => mockNavigateFn,
 }));
 
 it("allows changing the keyboard", async () => {

@@ -39,7 +39,7 @@ import {
   DescriptionListTerm,
   Grid,
   GridItem,
-  Stack
+  Stack,
 } from "@patternfly/react-core";
 
 /**
@@ -61,11 +61,11 @@ import {
  */
 function buildPatterns(patterns, selection) {
   return patterns
-    .map(pattern => {
+    .map((pattern) => {
       const selectedBy = selection[pattern.name] !== undefined ? selection[pattern.name] : 2;
       return {
         ...pattern,
-        selectedBy
+        selectedBy,
       };
     })
     .sort((a, b) => a.order - b.order);
@@ -79,7 +79,7 @@ function buildPatterns(patterns, selection) {
  * @return {JSX.Element}
  */
 const SelectedPatternsList = ({ patterns }) => {
-  const selected = patterns.filter(p => p.selectedBy !== SelectedBy.NONE);
+  const selected = patterns.filter((p) => p.selectedBy !== SelectedBy.NONE);
 
   if (selected.length === 0) {
     return <>{_("No additional software was selected.")}</>;
@@ -89,7 +89,7 @@ const SelectedPatternsList = ({ patterns }) => {
     <Stack hasGutter>
       <p>{_("The following software patterns are selected for installation:")}</p>
       <DescriptionList>
-        {selected.map(pattern => (
+        {selected.map((pattern) => (
           <DescriptionListGroup key={pattern.name}>
             <DescriptionListTerm>{pattern.summary}</DescriptionListTerm>
             <DescriptionListDescription>{pattern.description}</DescriptionListDescription>
@@ -125,8 +125,8 @@ function SoftwarePage() {
   useEffect(() => {
     if (!patterns) return;
 
-    return client.software.onSelectedPatternsChanged(selection => {
-      client.software.getProposal().then(proposal => setProposal(proposal));
+    return client.software.onSelectedPatternsChanged((selection) => {
+      client.software.getProposal().then((proposal) => setProposal(proposal));
       setPatterns(buildPatterns(patterns, selection));
     });
   }, [client.software, patterns]);
@@ -162,12 +162,12 @@ function SoftwarePage() {
           </GridItem>
           <GridItem sm={12} xl={6}>
             <CardField
-               label={_("Selected patterns")}
-               actions={
-                 <ButtonLink to="patterns/select" isPrimary={patterns.length === 0}>
-                   {_("Change selection")}
-                 </ButtonLink>
-               }
+              label={_("Selected patterns")}
+              actions={
+                <ButtonLink to="patterns/select" isPrimary={patterns.length === 0}>
+                  {_("Change selection")}
+                </ButtonLink>
+              }
             >
               <CardBody>
                 <SelectedPatternsList patterns={patterns} />

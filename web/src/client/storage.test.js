@@ -60,7 +60,7 @@ const sda = {
   start: 0,
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
 };
@@ -77,10 +77,10 @@ const sda1 = {
   start: 123,
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: [],
-  isEFI: true
+  isEFI: true,
 };
 
 /** @type {StorageDevice}  */
@@ -95,10 +95,10 @@ const sda2 = {
   start: 1789,
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: [],
-  isEFI: false
+  isEFI: false,
 };
 
 /** @type {StorageDevice}  */
@@ -121,9 +121,9 @@ const sdb = {
   start: 0,
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
-  udevPaths: ["pci-0000:00-19"]
+  udevPaths: ["pci-0000:00-19"],
 };
 
 /** @type {StorageDevice}  */
@@ -146,9 +146,9 @@ const sdc = {
   start: 0,
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
-  udevPaths: []
+  udevPaths: [],
 };
 
 /** @type {StorageDevice}  */
@@ -171,9 +171,9 @@ const sdd = {
   start: 0,
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
-  udevPaths: []
+  udevPaths: [],
 };
 
 /** @type {StorageDevice}  */
@@ -196,9 +196,9 @@ const sde = {
   start: 0,
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
-  udevPaths: []
+  udevPaths: [],
 };
 
 /** @type {StorageDevice}  */
@@ -216,10 +216,10 @@ const md0 = {
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
   devices: [],
-  systems : ["openSUSE Leap 15.2"],
+  systems: ["openSUSE Leap 15.2"],
   udevIds: [],
   udevPaths: [],
-  filesystem: { sid: 100, type: "ext4", mountPath: "/test", label: "system" }
+  filesystem: { sid: 100, type: "ext4", mountPath: "/test", label: "system" },
 };
 
 /** @type {StorageDevice}  */
@@ -243,9 +243,9 @@ const raid = {
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
   devices: [],
-  systems : [],
+  systems: [],
   udevIds: [],
-  udevPaths: []
+  udevPaths: [],
 };
 
 /** @type {StorageDevice}  */
@@ -268,9 +268,9 @@ const multipath = {
   start: 0,
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
-  udevPaths: []
+  udevPaths: [],
 };
 
 /** @type {StorageDevice}  */
@@ -293,9 +293,9 @@ const dasd = {
   start: 0,
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
-  udevPaths: []
+  udevPaths: [],
 };
 
 /** @type {StorageDevice}  */
@@ -318,9 +318,9 @@ const sdf = {
   start: 0,
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
-  udevPaths: []
+  udevPaths: [],
 };
 
 /** @type {StorageDevice}  */
@@ -335,10 +335,10 @@ const sdf1 = {
   start: 1024,
   encrypted: true,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: [],
-  isEFI: false
+  isEFI: false,
 };
 
 /** @type {StorageDevice}  */
@@ -348,7 +348,7 @@ const lvmVg = {
   type: "lvmVg",
   name: "/dev/vg0",
   description: "LVM",
-  size: 512
+  size: 512,
 };
 
 /** @type {StorageDevice}  */
@@ -363,9 +363,9 @@ const lvmLv1 = {
   start: 0,
   encrypted: false,
   shrinking: { supported: 128 },
-  systems : [],
+  systems: [],
   udevIds: [],
-  udevPaths: []
+  udevPaths: [],
 };
 
 // Define relationship between devices
@@ -374,49 +374,49 @@ sda.partitionTable = {
   type: "gpt",
   partitions: [sda1, sda2],
   unpartitionedSize: 256,
-  unusedSlots: [{ start: 1234, size: 256 }]
+  unusedSlots: [{ start: 1234, size: 256 }],
 };
 
 sda1.component = {
   type: "md_device",
-  deviceNames: ["/dev/md0"]
+  deviceNames: ["/dev/md0"],
 };
 
 sda2.component = {
   type: "md_device",
-  deviceNames: ["/dev/md0"]
+  deviceNames: ["/dev/md0"],
 };
 
 sdb.component = {
   type: "raid_device",
-  deviceNames: ["/dev/mapper/isw_ddgdcbibhd_244"]
+  deviceNames: ["/dev/mapper/isw_ddgdcbibhd_244"],
 };
 
 sdc.component = {
   type: "raid_device",
-  deviceNames: ["/dev/mapper/isw_ddgdcbibhd_244"]
+  deviceNames: ["/dev/mapper/isw_ddgdcbibhd_244"],
 };
 
 sdd.component = {
   type: "multipath_wire",
-  deviceNames: ["/dev/mapper/36005076305ffc73a00000000000013b4"]
+  deviceNames: ["/dev/mapper/36005076305ffc73a00000000000013b4"],
 };
 
 sde.component = {
   type: "multipath_wire",
-  deviceNames: ["/dev/mapper/36005076305ffc73a00000000000013b4"]
+  deviceNames: ["/dev/mapper/36005076305ffc73a00000000000013b4"],
 };
 
 sdf.partitionTable = {
   type: "gpt",
   partitions: [sdf1],
   unpartitionedSize: 1536,
-  unusedSlots: []
+  unusedSlots: [],
 };
 
 sdf1.component = {
   type: "physical_volume",
-  deviceNames: ["/dev/vg0"]
+  deviceNames: ["/dev/vg0"],
 };
 
 md0.devices = [sda1, sda2];
@@ -427,15 +427,15 @@ raid.devices = [
     name: "/dev/sdb",
     description: "",
     isDrive: false,
-    type: ""
+    type: "",
   },
   {
     sid: 0,
     name: "/dev/sdc",
     description: "",
     isDrive: false,
-    type: ""
-  }
+    type: "",
+  },
 ];
 
 multipath.wires = [
@@ -444,22 +444,36 @@ multipath.wires = [
     name: "/dev/sdd",
     description: "",
     isDrive: false,
-    type: ""
+    type: "",
   },
   {
     sid: 0,
     name: "/dev/sde",
     description: "",
     isDrive: false,
-    type: ""
-  }
+    type: "",
+  },
 ];
 
 lvmVg.logicalVolumes = [lvmLv1];
 lvmVg.physicalVolumes = [sdf1];
 
 const systemDevices = {
-  sda, sda1, sda2, sdb, sdc, sdd, sde, md0, raid, multipath, dasd, sdf, sdf1, lvmVg, lvmLv1
+  sda,
+  sda1,
+  sda2,
+  sdb,
+  sdc,
+  sdd,
+  sde,
+  md0,
+  raid,
+  multipath,
+  dasd,
+  sdf,
+  sdf1,
+  lvmVg,
+  lvmLv1,
 };
 
 // Staging devices
@@ -486,9 +500,9 @@ const sdbStaging = {
   start: 0,
   encrypted: false,
   shrinking: { unsupported: ["Resizing is not supported"] },
-  systems : [],
+  systems: [],
   udevIds: [],
-  udevPaths: ["pci-0000:00-19"]
+  udevPaths: ["pci-0000:00-19"],
 };
 
 const stagingDevices = { sdb: sdbStaging };
@@ -507,7 +521,7 @@ const contexts = {
         spacePolicy: "custom",
         spaceActions: [
           { device: "/dev/sda", action: "force_delete" },
-          { device: "/dev/sdb", action: "resize" }
+          { device: "/dev/sdb", action: "resize" },
         ],
         volumes: [
           {
@@ -527,8 +541,8 @@ const contexts = {
               snapshotsConfigurable: true,
               snapshotsAffectSizes: true,
               adjustByRam: false,
-              sizeRelevantVolumes: ["/home"]
-            }
+              sizeRelevantVolumes: ["/home"],
+            },
           },
           {
             mountPath: "/home",
@@ -547,19 +561,19 @@ const contexts = {
               snapshotsConfigurable: false,
               snapshotsAffectSizes: false,
               adjustByRam: false,
-              sizeRelevantVolumes: []
-            }
-          }
-        ]
+              sizeRelevantVolumes: [],
+            },
+          },
+        ],
       },
-      actions: [{ device: 2, text: "Mount /dev/sdb1 as root", subvol: false, delete: false }]
+      actions: [{ device: 2, text: "Mount /dev/sdb1 as root", subvol: false, delete: false }],
     };
   },
   withAvailableDevices: () => [59, 62],
   withIssues: () => [
     { description: "Issue 1", details: "", source: 1, severity: 1 },
     { description: "Issue 2", details: "", source: 1, severity: 0 },
-    { description: "Issue 3", details: "", source: 2, severity: 1 }
+    { description: "Issue 3", details: "", source: 2, severity: 1 },
   ],
   withoutISCSINodes: () => {
     cockpitProxies.iscsiNodes = {};
@@ -600,7 +614,7 @@ const contexts = {
         Formatted: false,
         Id: "0.0.019e",
         PartitionInfo: "",
-        Type: "ECKD"
+        Type: "ECKD",
       },
       "/org/opensuse/Agama/Storage1/dasds/9": {
         path: "/org/opensuse/Agama/Storage1/dasds/9",
@@ -611,8 +625,8 @@ const contexts = {
         Formatted: false,
         Id: "0.0.ffff",
         PartitionInfo: "/dev/dasd_sample_9",
-        Type: "FBA"
-      }
+        Type: "FBA",
+      },
     };
   },
   withoutZFCPControllers: () => {
@@ -624,14 +638,14 @@ const contexts = {
         path: "/org/opensuse/Agama/Storage1/zfcp_controllers/1",
         Active: false,
         LUNScan: false,
-        Channel: "0.0.fa00"
+        Channel: "0.0.fa00",
       },
       "/org/opensuse/Agama/Storage1/zfcp_controllers/2": {
         path: "/org/opensuse/Agama/Storage1/zfcp_controllers/2",
         Active: false,
         LUNScan: false,
-        Channel: "0.0.fc00"
-      }
+        Channel: "0.0.fc00",
+      },
     };
   },
   withoutZFCPDisks: () => {
@@ -644,15 +658,15 @@ const contexts = {
         Name: "/dev/sda",
         Channel: "0.0.fa00",
         WWPN: "0x500507630703d3b3",
-        LUN: "0x0000000000000000"
+        LUN: "0x0000000000000000",
       },
       "/org/opensuse/Agama/Storage1/zfcp_disks/2": {
         path: "/org/opensuse/Agama/Storage1/zfcp_disks/2",
         Name: "/dev/sdb",
         Channel: "0.0.fa00",
         WWPN: "0x500507630703d3b3",
-        LUN: "0x0000000000000001"
-      }
+        LUN: "0x0000000000000001",
+      },
     };
   },
   withSystemDevices: () => [
@@ -660,7 +674,7 @@ const contexts = {
       deviceInfo: {
         sid: 59,
         name: "/dev/sda",
-        description: ""
+        description: "",
       },
       blockDevice: {
         active: true,
@@ -670,7 +684,7 @@ const contexts = {
         shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
-        udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"]
+        udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
       },
       drive: {
         type: "disk",
@@ -682,20 +696,20 @@ const contexts = {
         transport: "usb",
         info: {
           dellBOSS: false,
-          sdCard: true
-        }
+          sdCard: true,
+        },
       },
       partitionTable: {
         type: "gpt",
         partitions: [60, 61],
-        unusedSlots: [{ start: 1234, size: 256 }]
-      }
+        unusedSlots: [{ start: 1234, size: 256 }],
+      },
     },
     {
       deviceInfo: {
         sid: 60,
         name: "/dev/sda1",
-        description: ""
+        description: "",
       },
       partition: { efi: true },
       blockDevice: {
@@ -706,19 +720,19 @@ const contexts = {
         shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
-        udevPaths: []
+        udevPaths: [],
       },
       component: {
         type: "md_device",
         deviceNames: ["/dev/md0"],
-        devices: [66]
-      }
+        devices: [66],
+      },
     },
     {
       deviceInfo: {
         sid: 61,
         name: "/dev/sda2",
-        description: ""
+        description: "",
       },
       partition: { efi: false },
       blockDevice: {
@@ -729,19 +743,19 @@ const contexts = {
         shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
-        udevPaths: []
+        udevPaths: [],
       },
       component: {
         type: "md_device",
         deviceNames: ["/dev/md0"],
-        devices: [66]
-      }
+        devices: [66],
+      },
     },
     {
       deviceInfo: {
         sid: 62,
         name: "/dev/sdb",
-        description: ""
+        description: "",
       },
       blockDevice: {
         active: true,
@@ -751,7 +765,7 @@ const contexts = {
         shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
-        udevPaths: ["pci-0000:00-19"]
+        udevPaths: ["pci-0000:00-19"],
       },
       drive: {
         type: "disk",
@@ -763,20 +777,20 @@ const contexts = {
         transport: "",
         info: {
           dellBOSS: false,
-          sdCard: false
-        }
+          sdCard: false,
+        },
       },
       component: {
         type: "raid_device",
         deviceNames: ["/dev/mapper/isw_ddgdcbibhd_244"],
-        devices: [67]
-      }
+        devices: [67],
+      },
     },
     {
       deviceInfo: {
         sid: 63,
         name: "/dev/sdc",
-        description: ""
+        description: "",
       },
       blockDevice: {
         active: true,
@@ -786,7 +800,7 @@ const contexts = {
         shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
-        udevPaths: []
+        udevPaths: [],
       },
       drive: {
         type: "disk",
@@ -798,20 +812,20 @@ const contexts = {
         transport: "",
         info: {
           dellBOSS: false,
-          sdCard: false
-        }
+          sdCard: false,
+        },
       },
       component: {
         type: "raid_device",
         deviceNames: ["/dev/mapper/isw_ddgdcbibhd_244"],
-        devices: [67]
-      }
+        devices: [67],
+      },
     },
     {
       deviceInfo: {
         sid: 64,
         name: "/dev/sdd",
-        description: ""
+        description: "",
       },
       blockDevice: {
         active: true,
@@ -821,7 +835,7 @@ const contexts = {
         shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
-        udevPaths: []
+        udevPaths: [],
       },
       drive: {
         type: "disk",
@@ -833,20 +847,20 @@ const contexts = {
         transport: "",
         info: {
           dellBOSS: false,
-          sdCard: false
-        }
+          sdCard: false,
+        },
       },
       component: {
         type: "multipath_wire",
         deviceNames: ["/dev/mapper/36005076305ffc73a00000000000013b4"],
-        devices: [68]
-      }
+        devices: [68],
+      },
     },
     {
       deviceInfo: {
         sid: 65,
         name: "/dev/sde",
-        description: ""
+        description: "",
       },
       blockDevice: {
         active: true,
@@ -856,7 +870,7 @@ const contexts = {
         shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
-        udevPaths: []
+        udevPaths: [],
       },
       drive: {
         type: "disk",
@@ -868,20 +882,20 @@ const contexts = {
         transport: "",
         info: {
           dellBOSS: false,
-          sdCard: false
-        }
+          sdCard: false,
+        },
       },
       component: {
         type: "multipath_wire",
         deviceNames: ["/dev/mapper/36005076305ffc73a00000000000013b4"],
-        devices: [68]
-      }
+        devices: [68],
+      },
     },
     {
       deviceInfo: {
         sid: 66,
         name: "/dev/md0",
-        description: "EXT4 RAID"
+        description: "EXT4 RAID",
       },
       blockDevice: {
         active: true,
@@ -891,25 +905,25 @@ const contexts = {
         shrinking: { unsupported: ["Resizing is not supported"] },
         systems: ["openSUSE Leap 15.2"],
         udevIds: [],
-        udevPaths: []
+        udevPaths: [],
       },
       md: {
         level: "raid0",
         uuid: "12345:abcde",
-        devices: [60, 61]
+        devices: [60, 61],
       },
       filesystem: {
         sid: 100,
         type: "ext4",
         mountPath: "/test",
-        label: "system"
-      }
+        label: "system",
+      },
     },
     {
       deviceInfo: {
         sid: 67,
         name: "/dev/mapper/isw_ddgdcbibhd_244",
-        description: ""
+        description: "",
       },
       blockDevice: {
         active: true,
@@ -919,7 +933,7 @@ const contexts = {
         shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
-        udevPaths: []
+        udevPaths: [],
       },
       drive: {
         type: "raid",
@@ -931,18 +945,18 @@ const contexts = {
         transport: "",
         info: {
           dellBOSS: true,
-          sdCard: false
-        }
+          sdCard: false,
+        },
       },
       raid: {
-        devices: ["/dev/sdb", "/dev/sdc"]
-      }
+        devices: ["/dev/sdb", "/dev/sdc"],
+      },
     },
     {
       deviceInfo: {
         sid: 68,
         name: "/dev/mapper/36005076305ffc73a00000000000013b4",
-        description: ""
+        description: "",
       },
       blockDevice: {
         active: true,
@@ -952,7 +966,7 @@ const contexts = {
         shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
-        udevPaths: []
+        udevPaths: [],
       },
       drive: {
         type: "multipath",
@@ -964,18 +978,18 @@ const contexts = {
         transport: "",
         info: {
           dellBOSS: false,
-          sdCard: false
-        }
+          sdCard: false,
+        },
       },
       multipath: {
-        wires: ["/dev/sdd", "/dev/sde"]
-      }
+        wires: ["/dev/sdd", "/dev/sde"],
+      },
     },
     {
       deviceInfo: {
         sid: 69,
         name: "/dev/dasda",
-        description: ""
+        description: "",
       },
       blockDevice: {
         active: true,
@@ -985,7 +999,7 @@ const contexts = {
         shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
-        udevPaths: []
+        udevPaths: [],
       },
       drive: {
         type: "dasd",
@@ -997,15 +1011,15 @@ const contexts = {
         transport: "",
         info: {
           dellBOSS: false,
-          sdCard: false
-        }
-      }
+          sdCard: false,
+        },
+      },
     },
     {
       deviceInfo: {
         sid: 70,
         name: "/dev/sdf",
-        description: ""
+        description: "",
       },
       blockDevice: {
         active: true,
@@ -1015,7 +1029,7 @@ const contexts = {
         shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
-        udevPaths: []
+        udevPaths: [],
       },
       drive: {
         type: "disk",
@@ -1027,20 +1041,20 @@ const contexts = {
         transport: "",
         info: {
           dellBOSS: false,
-          sdCard: false
-        }
+          sdCard: false,
+        },
       },
       partitionTable: {
         type: "gpt",
         partitions: [71],
-        unusedSlots: []
-      }
+        unusedSlots: [],
+      },
     },
     {
       deviceInfo: {
         sid: 71,
         name: "/dev/sdf1",
-        description: "PV of vg0"
+        description: "PV of vg0",
       },
       partition: { efi: false },
       blockDevice: {
@@ -1051,32 +1065,32 @@ const contexts = {
         shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
-        udevPaths: []
+        udevPaths: [],
       },
       component: {
         type: "physical_volume",
         deviceNames: ["/dev/vg0"],
-        devices: [72]
-      }
+        devices: [72],
+      },
     },
     {
       deviceInfo: {
         sid: 72,
         name: "/dev/vg0",
-        description: "LVM"
+        description: "LVM",
       },
       lvmVg: {
         type: "physical_volume",
         size: 512,
         physicalVolumes: [71],
-        logicalVolumes: [73]
-      }
+        logicalVolumes: [73],
+      },
     },
     {
       deviceInfo: {
         sid: 73,
         name: "/dev/vg0/lv1",
-        description: ""
+        description: "",
       },
       blockDevice: {
         active: true,
@@ -1086,11 +1100,11 @@ const contexts = {
         shrinking: { supported: 128 },
         systems: [],
         udevIds: [],
-        udevPaths: []
+        udevPaths: [],
       },
       lvmLv: {
-        volumeGroup: [72]
-      }
+        volumeGroup: [72],
+      },
     },
   ],
   withStagingDevices: () => [
@@ -1098,7 +1112,7 @@ const contexts = {
       deviceInfo: {
         sid: 62,
         name: "/dev/sdb",
-        description: ""
+        description: "",
       },
       drive: {
         type: "disk",
@@ -1110,8 +1124,8 @@ const contexts = {
         transport: "",
         info: {
           dellBOSS: false,
-          sdCard: false
-        }
+          sdCard: false,
+        },
       },
       blockDevice: {
         active: true,
@@ -1121,28 +1135,37 @@ const contexts = {
         shrinking: { unsupported: ["Resizing is not supported"] },
         systems: [],
         udevIds: [],
-        udevPaths: ["pci-0000:00-19"]
-      }
-    }
-  ]
+        udevPaths: ["pci-0000:00-19"],
+      },
+    },
+  ],
 };
 
 const mockProxy = (iface, path) => {
   switch (iface) {
-    case "org.opensuse.Agama.Storage1.ISCSI.Initiator": return cockpitProxies.iscsiInitiator;
-    case "org.opensuse.Agama.Storage1.ISCSI.Node": return cockpitProxies.iscsiNode[path];
-    case "org.opensuse.Agama.Storage1.DASD.Manager": return cockpitProxies.dasdManager;
-    case "org.opensuse.Agama.Storage1.ZFCP.Manager": return cockpitProxies.zfcpManager;
-    case "org.opensuse.Agama.Storage1.ZFCP.Controller": return cockpitProxies.zfcpController[path];
+    case "org.opensuse.Agama.Storage1.ISCSI.Initiator":
+      return cockpitProxies.iscsiInitiator;
+    case "org.opensuse.Agama.Storage1.ISCSI.Node":
+      return cockpitProxies.iscsiNode[path];
+    case "org.opensuse.Agama.Storage1.DASD.Manager":
+      return cockpitProxies.dasdManager;
+    case "org.opensuse.Agama.Storage1.ZFCP.Manager":
+      return cockpitProxies.zfcpManager;
+    case "org.opensuse.Agama.Storage1.ZFCP.Controller":
+      return cockpitProxies.zfcpController[path];
   }
 };
 
 const mockProxies = (iface) => {
   switch (iface) {
-    case "org.opensuse.Agama.Storage1.ISCSI.Node": return cockpitProxies.iscsiNodes;
-    case "org.opensuse.Agama.Storage1.DASD.Device": return cockpitProxies.dasdDevices;
-    case "org.opensuse.Agama.Storage1.ZFCP.Controller": return cockpitProxies.zfcpControllers;
-    case "org.opensuse.Agama.Storage1.ZFCP.Disk": return cockpitProxies.zfcpDisks;
+    case "org.opensuse.Agama.Storage1.ISCSI.Node":
+      return cockpitProxies.iscsiNodes;
+    case "org.opensuse.Agama.Storage1.DASD.Device":
+      return cockpitProxies.dasdDevices;
+    case "org.opensuse.Agama.Storage1.ZFCP.Controller":
+      return cockpitProxies.zfcpControllers;
+    case "org.opensuse.Agama.Storage1.ZFCP.Disk":
+      return cockpitProxies.zfcpDisks;
   }
 };
 
@@ -1189,7 +1212,7 @@ let http;
 
 jest.mock("./http", () => {
   return {
-    HTTPClient: jest.fn().mockImplementation(() => mockHTTPClient)
+    HTTPClient: jest.fn().mockImplementation(() => mockHTTPClient),
   };
 });
 
@@ -1202,7 +1225,7 @@ beforeEach(() => {
       proxy: mockProxy,
       proxies: mockProxies,
       onObjectChanged: mockOnObjectChanged,
-      call: mockCall
+      call: mockCall,
     };
   });
 
@@ -1276,13 +1299,10 @@ describe("#isDeprecated", () => {
 
   describe("when the HTTP call fails", () => {
     beforeEach(() => {
-      mockGetFn.mockImplementation(path => {
-        if (path === "/storage/devices/dirty")
-          return { ok: false, json: undefined };
-        else
-          return { ok: true, json: mockJsonFn };
-      }
-      );
+      mockGetFn.mockImplementation((path) => {
+        if (path === "/storage/devices/dirty") return { ok: false, json: undefined };
+        else return { ok: true, json: mockJsonFn };
+      });
 
       client = new StorageClient(http);
     });
@@ -1305,10 +1325,7 @@ describe.skip("#onDeprecate", () => {
 
   describe("if the system was not deprecated", () => {
     beforeEach(() => {
-      emitSignal(
-        "/org/opensuse/Agama/Storage1",
-        "org.opensuse.Agama.Storage1",
-        {});
+      emitSignal("/org/opensuse/Agama/Storage1", "org.opensuse.Agama.Storage1", {});
     });
 
     it("does not run the handler", async () => {
@@ -1318,10 +1335,9 @@ describe.skip("#onDeprecate", () => {
 
   describe("if the system was deprecated", () => {
     beforeEach(() => {
-      emitSignal(
-        "/org/opensuse/Agama/Storage1",
-        "org.opensuse.Agama.Storage1",
-        { DeprecatedSystem: true });
+      emitSignal("/org/opensuse/Agama/Storage1", "org.opensuse.Agama.Storage1", {
+        DeprecatedSystem: true,
+      });
     });
 
     it("runs the handler", async () => {
@@ -1353,11 +1369,13 @@ describe("#getIssues", () => {
 
     it("returns the list of issues", async () => {
       const issues = await client.getIssues();
-      expect(issues).toEqual(expect.arrayContaining([
-        { description: "Issue 1", details: "", source: "system", severity: "error" },
-        { description: "Issue 2", details: "", source: "system", severity: "warn" },
-        { description: "Issue 3", details: "", source: "config", severity: "error" }
-      ]));
+      expect(issues).toEqual(
+        expect.arrayContaining([
+          { description: "Issue 1", details: "", source: "system", severity: "error" },
+          { description: "Issue 2", details: "", source: "system", severity: "warn" },
+          { description: "Issue 3", details: "", source: "config", severity: "error" },
+        ]),
+      );
     });
   });
 });
@@ -1370,7 +1388,9 @@ describe("#getErrors", () => {
 
   it("returns the issues with error severity", async () => {
     const errors = await client.getErrors();
-    expect(errors.map(e => e.description)).toEqual(expect.arrayContaining(["Issue 1", "Issue 3"]));
+    expect(errors.map((e) => e.description)).toEqual(
+      expect.arrayContaining(["Issue 1", "Issue 3"]),
+    );
   });
 });
 
@@ -1382,10 +1402,14 @@ describe.skip("#onIssuesChange", () => {
     const handler = jest.fn();
     client.onIssuesChange(handler);
 
-    emitSignal(
-      "/org/opensuse/Agama/Storage1",
-      "org.opensuse.Agama1.Issues",
-      { All: { v: [["Issue 1", "", 1, 0], ["Issue 2", "", 2, 1]] } });
+    emitSignal("/org/opensuse/Agama/Storage1", "org.opensuse.Agama1.Issues", {
+      All: {
+        v: [
+          ["Issue 1", "", 1, 0],
+          ["Issue 2", "", 2, 1],
+        ],
+      },
+    });
 
     expect(handler).toHaveBeenCalledWith([
       { description: "Issue 1", details: "", source: "system", severity: "warn" },
@@ -1424,13 +1448,10 @@ describe("#system", () => {
 
     describe("when the HTTP call fails", () => {
       beforeEach(() => {
-        mockGetFn.mockImplementation(path => {
-          if (path === "/storage/devices/system")
-            return { ok: false, json: undefined };
-          else
-            return { ok: true, json: mockJsonFn };
-        }
-        );
+        mockGetFn.mockImplementation((path) => {
+          if (path === "/storage/devices/system") return { ok: false, json: undefined };
+          else return { ok: true, json: mockJsonFn };
+        });
 
         client = new StorageClient(http);
       });
@@ -1473,13 +1494,10 @@ describe("#staging", () => {
 
     describe("when the HTTP call fails", () => {
       beforeEach(() => {
-        mockGetFn.mockImplementation(path => {
-          if (path === "/storage/devices/result")
-            return { ok: false, json: undefined };
-          else
-            return { ok: true, json: mockJsonFn };
-        }
-        );
+        mockGetFn.mockImplementation((path) => {
+          if (path === "/storage/devices/result") return { ok: false, json: undefined };
+          else return { ok: true, json: mockJsonFn };
+        });
 
         client = new StorageClient(http);
       });
@@ -1499,7 +1517,7 @@ describe("#proposal", () => {
     beforeEach(() => {
       response = { ok: true, json: jest.fn().mockResolvedValue(contexts.withAvailableDevices()) };
 
-      mockGetFn.mockImplementation(path => {
+      mockGetFn.mockImplementation((path) => {
         switch (path) {
           case "/storage/devices/system":
             return { ok: true, json: jest.fn().mockResolvedValue(contexts.withSystemDevices()) };
@@ -1543,13 +1561,10 @@ describe("#proposal", () => {
 
     describe("when the HTTP call fails", () => {
       beforeEach(() => {
-        mockGetFn.mockImplementation(path => {
-          if (path === "/storage/product/params")
-            return { ok: false, json: undefined };
-          else
-            return { ok: true, json: mockJsonFn };
-        }
-        );
+        mockGetFn.mockImplementation((path) => {
+          if (path === "/storage/product/params") return { ok: false, json: undefined };
+          else return { ok: true, json: mockJsonFn };
+        });
 
         client = new StorageClient(http);
       });
@@ -1574,13 +1589,10 @@ describe("#proposal", () => {
 
     describe("when the HTTP call fails", () => {
       beforeEach(() => {
-        mockGetFn.mockImplementation(path => {
-          if (path === "/storage/product/params")
-            return { ok: false, json: undefined };
-          else
-            return { ok: true, json: mockJsonFn };
-        }
-        );
+        mockGetFn.mockImplementation((path) => {
+          if (path === "/storage/product/params") return { ok: false, json: undefined };
+          else return { ok: true, json: mockJsonFn };
+        });
 
         client = new StorageClient(http);
       });
@@ -1619,9 +1631,9 @@ describe("#proposal", () => {
                   snapshotsConfigurable: false,
                   snapshotsAffectSizes: false,
                   adjustByRam: false,
-                  sizeRelevantVolumes: []
-                }
-              })
+                  sizeRelevantVolumes: [],
+                },
+              }),
             };
           default:
             return {
@@ -1643,19 +1655,22 @@ describe("#proposal", () => {
                   snapshotsConfigurable: false,
                   snapshotsAffectSizes: false,
                   adjustByRam: false,
-                  sizeRelevantVolumes: []
-                }
-              })
+                  sizeRelevantVolumes: [],
+                },
+              }),
             };
         }
       };
 
-      mockGetFn.mockImplementation(path => {
+      mockGetFn.mockImplementation((path) => {
         switch (path) {
           case "/storage/devices/system":
             return { ok: true, json: jest.fn().mockResolvedValue(contexts.withSystemDevices()) };
           case "/storage/product/params":
-            return { ok: true, json: jest.fn().mockResolvedValue({ mountPoints: ["/", "swap", "/home"] }) };
+            return {
+              ok: true,
+              json: jest.fn().mockResolvedValue({ mountPoints: ["/", "swap", "/home"] }),
+            };
           // GET for /storage/product/volume_for?path=XX
           default:
             return response(path);
@@ -1686,8 +1701,8 @@ describe("#proposal", () => {
           snapshotsAffectSizes: false,
           adjustByRam: false,
           sizeRelevantVolumes: [],
-          productDefined: true
-        }
+          productDefined: true,
+        },
       });
 
       const generic = await client.proposal.defaultVolume("");
@@ -1710,8 +1725,8 @@ describe("#proposal", () => {
           snapshotsAffectSizes: false,
           adjustByRam: false,
           sizeRelevantVolumes: [],
-          productDefined: false
-        }
+          productDefined: false,
+        },
       });
     });
 
@@ -1750,7 +1765,7 @@ describe("#proposal", () => {
         const proposal = contexts.withProposal();
         mockJsonFn.mockResolvedValue(proposal.settings);
 
-        mockGetFn.mockImplementation(path => {
+        mockGetFn.mockImplementation((path) => {
           switch (path) {
             case "/storage/devices/system":
               return { ok: true, json: jest.fn().mockResolvedValue(contexts.withSystemDevices()) };
@@ -1759,7 +1774,10 @@ describe("#proposal", () => {
             case "/storage/proposal/actions":
               return { ok: true, json: jest.fn().mockResolvedValue(proposal.actions) };
             case "/storage/product/params":
-              return { ok: true, json: jest.fn().mockResolvedValue({ mountPoints: ["/", "swap"] }) };
+              return {
+                ok: true,
+                json: jest.fn().mockResolvedValue({ mountPoints: ["/", "swap"] }),
+              };
           }
         });
       });
@@ -1777,7 +1795,7 @@ describe("#proposal", () => {
           spacePolicy: "custom",
           spaceActions: [
             { device: "/dev/sda", action: "force_delete" },
-            { device: "/dev/sdb", action: "resize" }
+            { device: "/dev/sdb", action: "resize" },
           ],
           volumes: [
             {
@@ -1797,8 +1815,8 @@ describe("#proposal", () => {
                 snapshotsConfigurable: true,
                 snapshotsAffectSizes: true,
                 sizeRelevantVolumes: ["/home"],
-                productDefined: true
-              }
+                productDefined: true,
+              },
             },
             {
               mountPath: "/home",
@@ -1817,26 +1835,28 @@ describe("#proposal", () => {
                 snapshotsConfigurable: false,
                 snapshotsAffectSizes: false,
                 sizeRelevantVolumes: [],
-                productDefined: false
-              }
-            }
-          ]
+                productDefined: false,
+              },
+            },
+          ],
         });
 
-        expect(settings.installationDevices.map(d => d.name).sort()).toStrictEqual(
-          ["/dev/sda", "/dev/sdb"].sort()
+        expect(settings.installationDevices.map((d) => d.name).sort()).toStrictEqual(
+          ["/dev/sda", "/dev/sdb"].sort(),
         );
 
         expect(actions).toStrictEqual([
-          { device: 2, text: "Mount /dev/sdb1 as root", subvol: false, delete: false }
+          { device: 2, text: "Mount /dev/sdb1 as root", subvol: false, delete: false },
         ]);
       });
 
       describe("if boot is not configured", () => {
         beforeEach(() => {
-          mockJsonFn.mockResolvedValue(
-            { ...contexts.withProposal().settings, configureBoot: false, bootDevice: "/dev/sdc" }
-          );
+          mockJsonFn.mockResolvedValue({
+            ...contexts.withProposal().settings,
+            configureBoot: false,
+            bootDevice: "/dev/sdc",
+          });
         });
 
         it("does not include the boot device as installation device", async () => {
@@ -1851,7 +1871,7 @@ describe("#proposal", () => {
     let response = { ok: true, json: jest.fn().mockResolvedValue(true) };
 
     beforeEach(() => {
-      mockPutFn.mockImplementation(path => {
+      mockPutFn.mockImplementation((path) => {
         if (path === "/storage/proposal/settings") return response;
 
         return { ok: true };
@@ -1881,13 +1901,13 @@ describe("#proposal", () => {
             minSize: 1024,
             maxSize: 2048,
             autoSize: false,
-            snapshots: true
+            snapshots: true,
           },
           {
             mountPath: "/test2",
-            minSize: 1024
-          }
-        ]
+            minSize: 1024,
+          },
+        ],
       });
 
       expect(mockPutFn).toHaveBeenCalledWith("/storage/proposal/settings", {
@@ -1905,13 +1925,13 @@ describe("#proposal", () => {
             minSize: 1024,
             maxSize: 2048,
             autoSize: false,
-            snapshots: true
+            snapshots: true,
           },
           {
             mountPath: "/test2",
-            minSize: 1024
-          }
-        ]
+            minSize: 1024,
+          },
+        ],
       });
     });
 
@@ -1921,7 +1941,9 @@ describe("#proposal", () => {
         spaceActions: [{ device: "/dev/sda", action: "resize" }],
       });
 
-      expect(mockPutFn).toHaveBeenCalledWith("/storage/proposal/settings", { spacePolicy: "delete" });
+      expect(mockPutFn).toHaveBeenCalledWith("/storage/proposal/settings", {
+        spacePolicy: "delete",
+      });
     });
 
     it("returns false if the call fails", async () => {
@@ -1958,7 +1980,7 @@ describe.skip("#dasd", () => {
     hexId: 414,
     name: "sample_dasd_device",
     partitionInfo: "",
-    type: "ECKD"
+    type: "ECKD",
   };
 
   const probeFn = jest.fn();
@@ -1972,7 +1994,7 @@ describe.skip("#dasd", () => {
       Probe: probeFn,
       SetDiag: setDiagFn,
       Enable: enableFn,
-      Disable: disableFn
+      Disable: disableFn,
     };
     contexts.withDASDDevices();
   });
@@ -2008,7 +2030,7 @@ describe.skip("#dasd", () => {
           hexId: 414,
           name: "dasd_sample_8",
           partitionInfo: "",
-          type: "ECKD"
+          type: "ECKD",
         });
         expect(result).toContainEqual({
           id: "9",
@@ -2020,7 +2042,7 @@ describe.skip("#dasd", () => {
           hexId: 65535,
           name: "dasd_sample_9",
           partitionInfo: "/dev/dasd_sample_9",
-          type: "FBA"
+          type: "FBA",
         });
       });
     });
@@ -2029,16 +2051,10 @@ describe.skip("#dasd", () => {
   describe("#setDIAG", () => {
     it("requests for setting DIAG for given devices", async () => {
       await client.dasd.setDIAG([sampleDasdDevice], true);
-      expect(setDiagFn).toHaveBeenCalledWith(
-        ["/org/opensuse/Agama/Storage1/dasds/8"],
-        true
-      );
+      expect(setDiagFn).toHaveBeenCalledWith(["/org/opensuse/Agama/Storage1/dasds/8"], true);
 
       await client.dasd.setDIAG([sampleDasdDevice], false);
-      expect(setDiagFn).toHaveBeenCalledWith(
-        ["/org/opensuse/Agama/Storage1/dasds/8"],
-        false
-      );
+      expect(setDiagFn).toHaveBeenCalledWith(["/org/opensuse/Agama/Storage1/dasds/8"], false);
     });
   });
 
@@ -2063,25 +2079,23 @@ describe.skip("#zfcp", () => {
   let disksCallbacks;
 
   const mockEventListener = (proxy, callbacks) => {
-    proxy.addEventListener = jest.fn().mockImplementation(
-      (signal, handler) => {
-        if (!callbacks[signal]) callbacks[signal] = [];
-        callbacks[signal].push(handler);
-      }
-    );
+    proxy.addEventListener = jest.fn().mockImplementation((signal, handler) => {
+      if (!callbacks[signal]) callbacks[signal] = [];
+      callbacks[signal].push(handler);
+    });
 
     proxy.removeEventListener = jest.fn();
   };
 
   const emitSignals = (callbacks, signal, proxy) => {
-    callbacks[signal].forEach(handler => handler(null, proxy));
+    callbacks[signal].forEach((handler) => handler(null, proxy));
   };
 
   beforeEach(() => {
     client = new StorageClient();
     cockpitProxies.zfcpManager = {
       Probe: probeFn,
-      AllowLUNScan: true
+      AllowLUNScan: true,
     };
 
     controllersCallbacks = {};
@@ -2171,13 +2185,13 @@ describe.skip("#zfcp", () => {
           id: "1",
           active: false,
           lunScan: false,
-          channel: "0.0.fa00"
+          channel: "0.0.fa00",
         });
         expect(result).toContainEqual({
           id: "2",
           active: false,
           lunScan: false,
-          channel: "0.0.fc00"
+          channel: "0.0.fc00",
         });
       });
     });
@@ -2208,14 +2222,14 @@ describe.skip("#zfcp", () => {
           name: "/dev/sda",
           channel: "0.0.fa00",
           wwpn: "0x500507630703d3b3",
-          lun: "0x0000000000000000"
+          lun: "0x0000000000000000",
         });
         expect(result).toContainEqual({
           id: "2",
           name: "/dev/sdb",
           channel: "0.0.fa00",
           wwpn: "0x500507630703d3b3",
-          lun: "0x0000000000000001"
+          lun: "0x0000000000000001",
         });
       });
     });
@@ -2225,12 +2239,12 @@ describe.skip("#zfcp", () => {
     const wwpns = ["0x500507630703d3b3", "0x500507630708d3b3"];
 
     const controllerProxy = {
-      GetWWPNs: jest.fn().mockReturnValue(wwpns)
+      GetWWPNs: jest.fn().mockReturnValue(wwpns),
     };
 
     beforeEach(() => {
       cockpitProxies.zfcpController = {
-        "/org/opensuse/Agama/Storage1/zfcp_controllers/1": controllerProxy
+        "/org/opensuse/Agama/Storage1/zfcp_controllers/1": controllerProxy,
       };
     });
 
@@ -2253,16 +2267,16 @@ describe.skip("#zfcp", () => {
 
   describe("#getLUNs", () => {
     const luns = {
-      "0x500507630703d3b3": ["0x0000000000000000", "0x0000000000000001", "0x0000000000000002"]
+      "0x500507630703d3b3": ["0x0000000000000000", "0x0000000000000001", "0x0000000000000002"],
     };
 
     const controllerProxy = {
-      GetLUNs: jest.fn().mockImplementation(wwpn => luns[wwpn])
+      GetLUNs: jest.fn().mockImplementation((wwpn) => luns[wwpn]),
     };
 
     beforeEach(() => {
       cockpitProxies.zfcpController = {
-        "/org/opensuse/Agama/Storage1/zfcp_controllers/1": controllerProxy
+        "/org/opensuse/Agama/Storage1/zfcp_controllers/1": controllerProxy,
       };
     });
 
@@ -2287,12 +2301,12 @@ describe.skip("#zfcp", () => {
     const activateFn = jest.fn().mockReturnValue(0);
 
     const controllerProxy = {
-      Activate: activateFn
+      Activate: activateFn,
     };
 
     beforeEach(() => {
       cockpitProxies.zfcpController = {
-        "/org/opensuse/Agama/Storage1/zfcp_controllers/1": controllerProxy
+        "/org/opensuse/Agama/Storage1/zfcp_controllers/1": controllerProxy,
       };
     });
 
@@ -2318,17 +2332,21 @@ describe.skip("#zfcp", () => {
     const activateDiskFn = jest.fn().mockReturnValue(0);
 
     const controllerProxy = {
-      ActivateDisk: activateDiskFn
+      ActivateDisk: activateDiskFn,
     };
 
     beforeEach(() => {
       cockpitProxies.zfcpController = {
-        "/org/opensuse/Agama/Storage1/zfcp_controllers/1": controllerProxy
+        "/org/opensuse/Agama/Storage1/zfcp_controllers/1": controllerProxy,
       };
     });
 
     it("tries to activate the given zFCP disk", async () => {
-      const result = await client.zfcp.activateDisk({ id: "1" }, "0x500507630703d3b3", "0x0000000000000000");
+      const result = await client.zfcp.activateDisk(
+        { id: "1" },
+        "0x500507630703d3b3",
+        "0x0000000000000000",
+      );
       expect(activateDiskFn).toHaveBeenCalledWith("0x500507630703d3b3", "0x0000000000000000");
       expect(result).toEqual(0);
     });
@@ -2339,7 +2357,11 @@ describe.skip("#zfcp", () => {
       });
 
       it("returns undefined", async () => {
-        const result = await client.zfcp.activateDisk({ id: "1" }, "0x500507630703d3b3", "0x0000000000000000");
+        const result = await client.zfcp.activateDisk(
+          { id: "1" },
+          "0x500507630703d3b3",
+          "0x0000000000000000",
+        );
         expect(result).toBeUndefined();
       });
     });
@@ -2349,17 +2371,21 @@ describe.skip("#zfcp", () => {
     const deactivateDiskFn = jest.fn().mockReturnValue(0);
 
     const controllerProxy = {
-      ActivateDisk: deactivateDiskFn
+      ActivateDisk: deactivateDiskFn,
     };
 
     beforeEach(() => {
       cockpitProxies.zfcpController = {
-        "/org/opensuse/Agama/Storage1/zfcp_controllers/1": controllerProxy
+        "/org/opensuse/Agama/Storage1/zfcp_controllers/1": controllerProxy,
       };
     });
 
     it("tries to deactivate the given zFCP disk", async () => {
-      const result = await client.zfcp.activateDisk({ id: "1" }, "0x500507630703d3b3", "0x0000000000000000");
+      const result = await client.zfcp.activateDisk(
+        { id: "1" },
+        "0x500507630703d3b3",
+        "0x0000000000000000",
+      );
       expect(deactivateDiskFn).toHaveBeenCalledWith("0x500507630703d3b3", "0x0000000000000000");
       expect(result).toEqual(0);
     });
@@ -2370,7 +2396,11 @@ describe.skip("#zfcp", () => {
       });
 
       it("returns undefined", async () => {
-        const result = await client.zfcp.deactivateDisk({ id: "1" }, "0x500507630703d3b3", "0x0000000000000000");
+        const result = await client.zfcp.deactivateDisk(
+          { id: "1" },
+          "0x500507630703d3b3",
+          "0x0000000000000000",
+        );
         expect(result).toBeUndefined();
       });
     });
@@ -2385,11 +2415,14 @@ describe.skip("#zfcp", () => {
         path: "/org/opensuse/Agama/Storage1/zfcp_controllers/1",
         Active: true,
         LUNScan: true,
-        Channel: "0.0.fa00"
+        Channel: "0.0.fa00",
       });
 
       expect(handler).toHaveBeenCalledWith({
-        id: "1", active: true, lunScan: true, channel: "0.0.fa00"
+        id: "1",
+        active: true,
+        lunScan: true,
+        channel: "0.0.fa00",
       });
     });
   });
@@ -2404,7 +2437,7 @@ describe.skip("#zfcp", () => {
         Name: "/dev/sda",
         Channel: "0.0.fa00",
         WWPN: "0x500507630703d3b3",
-        LUN: "0x0000000000000000"
+        LUN: "0x0000000000000000",
       });
 
       expect(handler).toHaveBeenCalledWith({
@@ -2412,7 +2445,7 @@ describe.skip("#zfcp", () => {
         name: "/dev/sda",
         channel: "0.0.fa00",
         wwpn: "0x500507630703d3b3",
-        lun: "0x0000000000000000"
+        lun: "0x0000000000000000",
       });
     });
   });
@@ -2427,7 +2460,7 @@ describe.skip("#zfcp", () => {
         Name: "/dev/sda",
         Channel: "0.0.fa00",
         WWPN: "0x500507630703d3b3",
-        LUN: "0x0000000000000000"
+        LUN: "0x0000000000000000",
       });
 
       expect(handler).toHaveBeenCalledWith({
@@ -2435,7 +2468,7 @@ describe.skip("#zfcp", () => {
         name: "/dev/sda",
         channel: "0.0.fa00",
         wwpn: "0x500507630703d3b3",
-        lun: "0x0000000000000000"
+        lun: "0x0000000000000000",
       });
     });
   });
@@ -2450,7 +2483,7 @@ describe.skip("#zfcp", () => {
         Name: "/dev/sda",
         Channel: "0.0.fa00",
         WWPN: "0x500507630703d3b3",
-        LUN: "0x0000000000000000"
+        LUN: "0x0000000000000000",
       });
 
       expect(handler).toHaveBeenCalledWith({
@@ -2458,7 +2491,7 @@ describe.skip("#zfcp", () => {
         name: "/dev/sda",
         channel: "0.0.fa00",
         wwpn: "0x500507630703d3b3",
-        lun: "0x0000000000000000"
+        lun: "0x0000000000000000",
       });
     });
   });
@@ -2573,19 +2606,18 @@ describe("#iscsi", () => {
         reversePassword: "nonsecret",
       };
       await client.iscsi.discover("192.168.100.101", 3260, options);
-      expect(mockPostFn).toHaveBeenCalledWith(
-        "/storage/iscsi/discover",
-        { address: "192.168.100.101", port: 3260, options },
-      );
+      expect(mockPostFn).toHaveBeenCalledWith("/storage/iscsi/discover", {
+        address: "192.168.100.101",
+        port: 3260,
+        options,
+      });
     });
   });
 
   describe("#delete", () => {
     it("deletes the given iSCSI node", async () => {
       await client.iscsi.delete({ id: "1" });
-      expect(mockDeleteFn).toHaveBeenCalledWith(
-        "/storage/iscsi/nodes/1",
-      );
+      expect(mockDeleteFn).toHaveBeenCalledWith("/storage/iscsi/nodes/1");
     });
   });
 
@@ -2602,16 +2634,11 @@ describe("#iscsi", () => {
       const result = await client.iscsi.login({ id: "1" }, auth);
 
       expect(result).toEqual(0);
-      expect(mockPostFn).toHaveBeenCalledWith(
-        "/storage/iscsi/nodes/1/login",
-        auth,
-      );
+      expect(mockPostFn).toHaveBeenCalledWith("/storage/iscsi/nodes/1/login", auth);
     });
 
     it("returns 1 when the startup is invalid", async () => {
-      mockPostFn.mockImplementation(() => (
-        { ok: false, json: mockJsonFn }
-      ));
+      mockPostFn.mockImplementation(() => ({ ok: false, json: mockJsonFn }));
       mockJsonFn.mockResolvedValue("InvalidStartup");
 
       const result = await client.iscsi.login({ id: "1" }, { ...auth, startup: "invalid" });
@@ -2619,9 +2646,7 @@ describe("#iscsi", () => {
     });
 
     it("returns 2 in case of an error different from an invalid startup value", async () => {
-      mockPostFn.mockImplementation(() => (
-        { ok: false, json: mockJsonFn }
-      ));
+      mockPostFn.mockImplementation(() => ({ ok: false, json: mockJsonFn }));
       mockJsonFn.mockResolvedValue("Failed");
 
       const result = await client.iscsi.login({ id: "1" }, { ...auth, startup: "invalid" });

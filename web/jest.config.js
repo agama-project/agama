@@ -3,8 +3,8 @@
  * https://jestjs.io/docs/configuration
  */
 
-const { pathsToModuleNameMapper } = require('ts-jest');
-const { compilerOptions } = require('./tsconfig');
+const { pathsToModuleNameMapper } = require("ts-jest");
+const { compilerOptions } = require("./tsconfig");
 
 module.exports = {
   // All imported modules in your tests should be mocked automatically
@@ -23,18 +23,13 @@ module.exports = {
   collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  collectCoverageFrom: [
-    "src/**/*.{js,jsx}",
-    "!src/lib/*.js"
-  ],
+  collectCoverageFrom: ["src/**/*.{js,jsx}", "!src/lib/*.js"],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: "coverage",
 
   // An array of regexp pattern strings used to skip coverage collection
-  coveragePathIgnorePatterns: [
-    "/node_modules/"
-  ],
+  coveragePathIgnorePatterns: ["/node_modules/"],
 
   // Indicates which provider should be used to instrument code for coverage
   // coverageProvider: "babel",
@@ -66,8 +61,7 @@ module.exports = {
   // globalTeardown: undefined,
 
   // A set of global variables that need to be available in all test environments
-  globals: {
-  },
+  globals: {},
 
   // The maximum amount of workers used to run your tests. Can be specified as % or a number. E.g. maxWorkers: 10% will use 10% of your CPU amount + 1 as the maximum worker number. maxWorkers: 2 will use a maximum of 2 workers.
   // maxWorkers: "50%",
@@ -105,7 +99,7 @@ module.exports = {
   // notifyMode: "failure-change",
 
   // A preset that is used as a base for Jest's configuration
-  // preset: undefined,
+  preset: "ts-jest",
 
   // Run tests from one or more projects
   // projects: undefined,
@@ -141,9 +135,7 @@ module.exports = {
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
   // setupFilesAfterEnv: [],
-  setupFilesAfterEnv: [
-    "<rootDir>/src/setupTests.js"
-  ],
+  setupFilesAfterEnv: ["<rootDir>/src/setupTests.js"],
 
   // The number of seconds after which a test is considered as slow and reported as such in the results.
   // slowTestThreshold: 5,
@@ -190,7 +182,7 @@ module.exports = {
   // transform: undefined,
   transform: {
     "\\.m?jsx?$": "babel-jest",
-    "\\.(css|svg)$": "jest-transform-stub"
+    "\\.(css|svg)$": "jest-transform-stub",
   },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation

@@ -20,11 +20,11 @@
  */
 
 import React from "react";
-import styles from '@patternfly/react-styles/css/components/Form/form';
+import styles from "@patternfly/react-styles/css/components/Form/form";
 
 /**
  * A missing PatternFly FormLabel, see:
-* https://github.com/patternfly/patternfly-react/blob/d68f302609a6abf8da34d1c33b153f604d6b329d/packages/react-core/src/components/Form/FormGroup.tsx#L108-L123
+ * https://github.com/patternfly/patternfly-react/blob/d68f302609a6abf8da34d1c33b153f604d6b329d/packages/react-core/src/components/Form/FormGroup.tsx#L108-L123
  *
  * @param {object} props - component props
  * @param {boolean} [props.isRequired=false] - whether the associated field is mandatory
@@ -34,10 +34,13 @@ import styles from '@patternfly/react-styles/css/components/Form/form';
  */
 export default function FormLabel({ isRequired = false, fieldId, children }) {
   return (
-    <label className={styles.formLabel} { ...(fieldId && { htmlFor: fieldId }) }>
+    <label className={styles.formLabel} {...(fieldId && { htmlFor: fieldId })}>
       <span className={styles.formLabelText}>{children}</span>
       {isRequired && (
-        <span className={styles.formLabelRequired} aria-hidden="true"> *</span>
+        <span className={styles.formLabelRequired} aria-hidden="true">
+          {" "}
+          *
+        </span>
       )}
     </label>
   );

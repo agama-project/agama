@@ -23,10 +23,22 @@ import React, { Suspense } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import {
   Button,
-  Masthead, MastheadContent, MastheadToggle, MastheadMain, MastheadBrand,
-  Nav, NavItem, NavList,
-  Page, PageSidebar, PageSidebarBody, PageToggleButton,
-  Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
+  Masthead,
+  MastheadContent,
+  MastheadToggle,
+  MastheadMain,
+  MastheadBrand,
+  Nav,
+  NavItem,
+  NavList,
+  Page,
+  PageSidebar,
+  PageSidebarBody,
+  PageToggleButton,
+  Toolbar,
+  ToolbarContent,
+  ToolbarGroup,
+  ToolbarItem,
 } from "@patternfly/react-core";
 import { Icon, Loading } from "~/components/layout";
 import { About, InstallerOptions, LogsButton } from "~/components/core";
@@ -90,7 +102,7 @@ const ChangeProductButton = () => {
 
 const Sidebar = () => {
   // TODO: Improve this and/or extract the NavItem to a wrapper component.
-  const links = rootRoutes.map(r => {
+  const links = rootRoutes.map((r) => {
     if (!r.handle || r.handle.hidden) return null;
 
     // eslint-disable-next-line agama-i18n/string-literals
@@ -99,12 +111,14 @@ const Sidebar = () => {
     return (
       <NavItem
         key={r.path}
-        component={
-          ({ className }) =>
-            <NavLink to={r.path} className={({ isActive }) => [className, isActive ? "pf-m-current" : ""].join(" ")}>
-              <Icon size="s" name={r.handle?.icon} /> {name}
-            </NavLink>
-        }
+        component={({ className }) => (
+          <NavLink
+            to={r.path}
+            className={({ isActive }) => [className, isActive ? "pf-m-current" : ""].join(" ")}
+          >
+            <Icon size="s" name={r.handle?.icon} /> {name}
+          </NavLink>
+        )}
       />
     );
   });
@@ -129,11 +143,7 @@ const Sidebar = () => {
  */
 export default function Root() {
   return (
-    <Page
-      isManagedSidebar
-      header={<Header />}
-      sidebar={<Sidebar />}
-    >
+    <Page isManagedSidebar header={<Header />} sidebar={<Sidebar />}>
       <Suspense fallback={<Loading />}>
         <Outlet />
       </Suspense>

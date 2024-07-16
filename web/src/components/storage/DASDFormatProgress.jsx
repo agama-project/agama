@@ -20,7 +20,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Progress, Skeleton, Stack } from '@patternfly/react-core';
+import { Progress, Skeleton, Stack } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
@@ -30,14 +30,14 @@ export default function DASDFormatProgress({ job, devices, isOpen = true }) {
   const [progress, setProgress] = useState(undefined);
 
   useEffect(() => {
-    client.dasd.onFormatProgress(job.path, p => setProgress(p));
+    client.dasd.onFormatProgress(job.path, (p) => setProgress(p));
   }, [client.dasd, job.path]);
 
   const ProgressContent = ({ progress }) => {
     return (
       <Stack hasGutter className="dasd-format-progress">
         {Object.entries(progress).map(([path, [total, step, done]]) => {
-          const device = devices.find(d => d.id === path.split("/").slice(-1)[0]);
+          const device = devices.find((d) => d.id === path.split("/").slice(-1)[0]);
 
           return (
             <Progress
@@ -64,11 +64,7 @@ export default function DASDFormatProgress({ job, devices, isOpen = true }) {
   );
 
   return (
-    <Popup
-      title={_("Formatting DASD devices")}
-      isOpen={isOpen}
-      disableFocusTrap
-    >
+    <Popup title={_("Formatting DASD devices")} isOpen={isOpen} disableFocusTrap>
       {progress ? <ProgressContent progress={progress} /> : <WaitingProgress />}
     </Popup>
   );

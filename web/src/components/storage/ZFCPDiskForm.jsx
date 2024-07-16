@@ -22,10 +22,7 @@
 // cspell:ignore wwpns
 
 import React, { useEffect, useState } from "react";
-import {
-  Alert,
-  Form, FormGroup, FormSelect, FormSelectOption
-} from "@patternfly/react-core";
+import { Alert, Form, FormGroup, FormSelect, FormSelectOption } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { noop } from "~/utils";
 
@@ -61,19 +58,19 @@ export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onLoading
   }, [onLoading, isLoading]);
 
   const getChannels = () => {
-    const channels = [...new Set(luns.map(l => l.channel))];
+    const channels = [...new Set(luns.map((l) => l.channel))];
     return channels.sort();
   };
 
   const getWWPNs = (channel) => {
-    const selection = luns.filter(l => l.channel === channel);
-    const wwpns = [...new Set(selection.map(l => l.wwpn))];
+    const selection = luns.filter((l) => l.channel === channel);
+    const wwpns = [...new Set(selection.map((l) => l.wwpn))];
     return wwpns.sort();
   };
 
   const getLUNs = (channel, wwpn) => {
-    const selection = luns.filter(l => l.channel === channel && l.wwpn === wwpn);
-    return selection.map(l => l.lun).sort();
+    const selection = luns.filter((l) => l.channel === channel && l.wwpn === wwpn);
+    return selection.map((l) => l.lun).sort();
   };
 
   const select = (channel, wwpn, lun) => {
@@ -104,10 +101,11 @@ export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onLoading
 
   return (
     <>
-      {isFailed &&
+      {isFailed && (
         <Alert variant="warning" isInline title={_("Something went wrong")}>
           <p>{_("The zFCP disk was not activated.")}</p>
-        </Alert>}
+        </Alert>
+      )}
       <Form id={id} name="ZFCPDisk" onSubmit={submit}>
         <FormGroup fieldId="channelId" label={_("Channel ID")}>
           <FormSelect
@@ -116,29 +114,25 @@ export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onLoading
             onChange={selectChannel}
             isDisabled={isLoading}
           >
-            {getChannels().map((channel, i) => <FormSelectOption key={i} value={channel} label={channel} />)}
+            {getChannels().map((channel, i) => (
+              <FormSelectOption key={i} value={channel} label={channel} />
+            ))}
           </FormSelect>
         </FormGroup>
         {/* TRANSLATORS: abbrev. World Wide Port Name */}
         <FormGroup fieldId="wwpn" label={_("WWPN")}>
-          <FormSelect
-            id="wwpn"
-            value={formData.wwpn}
-            onChange={selectWWPN}
-            isDisabled={isLoading}
-          >
-            {getWWPNs(formData.channel).map((wwpn, i) => <FormSelectOption key={i} value={wwpn} label={wwpn} />)}
+          <FormSelect id="wwpn" value={formData.wwpn} onChange={selectWWPN} isDisabled={isLoading}>
+            {getWWPNs(formData.channel).map((wwpn, i) => (
+              <FormSelectOption key={i} value={wwpn} label={wwpn} />
+            ))}
           </FormSelect>
         </FormGroup>
         {/* TRANSLATORS: abbrev. Logical Unit Number */}
         <FormGroup fieldId="lun" label={_("LUN")}>
-          <FormSelect
-            id="lun"
-            value={formData.lun}
-            onChange={selectLUN}
-            isDisabled={isLoading}
-          >
-            {getLUNs(formData.channel, formData.wwpn).map((lun, i) => <FormSelectOption key={i} value={lun} label={lun} />)}
+          <FormSelect id="lun" value={formData.lun} onChange={selectLUN} isDisabled={isLoading}>
+            {getLUNs(formData.channel, formData.wwpn).map((lun, i) => (
+              <FormSelectOption key={i} value={lun} label={lun} />
+            ))}
           </FormSelect>
         </FormGroup>
       </Form>

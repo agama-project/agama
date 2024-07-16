@@ -33,7 +33,7 @@ const gnomePattern = {
   category: "Graphical Environments",
   icon: "./pattern-gnome",
   summary: "GNOME Desktop Environment (Wayland)",
-  order: 1120
+  order: 1120,
 };
 
 const kdePattern = {
@@ -41,7 +41,7 @@ const kdePattern = {
   category: "Graphical Environments",
   icon: "./pattern-kde",
   summary: "KDE Applications and Plasma Desktop",
-  order: 1110
+  order: 1110,
 };
 
 beforeEach(() => {
@@ -50,8 +50,8 @@ beforeEach(() => {
       software: {
         onSelectedPatternsChanged: noop,
         getProposal: jest.fn().mockResolvedValue({ size: "500 MiB", patterns: { kde: 1 } }),
-        getPatterns: jest.fn().mockResolvedValue([gnomePattern, kdePattern])
-      }
+        getPatterns: jest.fn().mockResolvedValue([gnomePattern, kdePattern]),
+      },
     };
   });
 });

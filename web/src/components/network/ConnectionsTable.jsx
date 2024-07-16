@@ -21,7 +21,7 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { sprintf } from "sprintf-js";
 
 import { RowActions } from "~/components/core";
@@ -30,6 +30,7 @@ import { formatIp } from "~/client/network/utils";
 import { _ } from "~/i18n";
 
 /**
+ * @typedef {import("~/client/network/model").Device} Device
  * @typedef {import("~/client/network/model").Connection} Connection
  */
 
@@ -40,14 +41,10 @@ import { _ } from "~/i18n";
  *
  * @param {object} props
  * @param {Connection[]} props.connections - Connections to be shown
- * @param {function} props.onEdit - function to be called for editing a connection
- * @param {function} props.onForget - function to be called for forgetting a connection
+ * @param {Device[]} props.devices - Connections to be shown
+ * @param {function} [props.onForget] - function to be called for forgetting a connection
  */
-export default function ConnectionsTable({
-  connections,
-  devices,
-  onForget
-}) {
+export default function ConnectionsTable({ connections, devices, onForget }) {
   const navigate = useNavigate();
   if (connections.length === 0) return null;
 
@@ -71,22 +68,22 @@ export default function ConnectionsTable({
         </Tr>
       </Thead>
       <Tbody>
-        {connections.map(connection => {
+        {connections.map((connection) => {
           const actions = [
             {
               title: _("Edit"),
               role: "link",
               // TRANSLATORS: %s is replaced by a network connection name
               "aria-label": sprintf(_("Edit connection %s"), connection.id),
-              onClick: () => navigate(`connections/${connection.id}/edit`)
+              onClick: () => navigate(`connections/${connection.id}/edit`),
             },
-            typeof onForget === 'function' && {
+            typeof onForget === "function" && {
               title: _("Forget"),
               // TRANSLATORS: %s is replaced by a network connection name
               "aria-label": sprintf(_("Forget connection %s"), connection.id),
               icon: <Icon name="delete" size="s" />,
               onClick: () => onForget(connection),
-              isDanger: true
+              isDanger: true,
             },
           ].filter(Boolean);
 
