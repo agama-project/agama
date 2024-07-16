@@ -1,0 +1,26 @@
+<services>
+  <service name="obs_scm" mode="manual">
+    <param name="versionformat">@PARENT_TAG@+@TAG_OFFSET@</param>
+    <param name="versionrewrite-pattern">v(.*)</param>
+    <param name="url">https://github.com/openSUSE/agama.git</param>
+    <param name="scm">git</param>
+    <param name="revision">master</param>
+    <param name="subdir">puppeteer</param>
+    <param name="without-version">enable</param>
+    <param name="extract">package-lock.json</param>
+    <param name="extract">package/agama-integration-tests.changes</param>
+    <param name="extract">package/agama-integration-tests.spec</param>
+  </service>
+  <service name="node_modules" mode="manual">
+    <param name="cpio">node_modules.obscpio</param>
+    <param name="output">node_modules.spec.inc</param>
+    <param name="source-offset">1000</param>
+  </service>
+  <service mode="buildtime" name="tar">
+    <param name="obsinfo">agama.obsinfo</param>
+    <param name="filename">agama</param>
+  </service>
+  <service mode="buildtime" name="set_version">
+    <param name="basename">agama</param>
+  </service>
+</services>
