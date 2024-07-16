@@ -1,63 +1,71 @@
 {
   "storage": {
-    "guided": {
-      "target": {
-        "disk": "/dev/vdc"
-      },
-      "boot": {
-        "configure": true,
-        "device": "/dev/vda"
-      },
-      "encryption": {
-        "password": "notsecret",
-        "method": "luks2",
-        "pbkdFunction": "argon2i"
-      },
-      "space": {
-        "policy": "custom",
-        "actions": [
-          { "resize": "/dev/vda" },
-          { "forceDelete": "/dev/vdb1" }
-        ]
-      },
-      "volumes": [
-        {
-          "mount": {
-            "path": "/",
-            "options": ["ro"]
-          },
-          "filesystem": {
-            "btrfs": {
-              "snapshots": true
+    "boot": {
+      "configure": true,
+      "device": "/dev/vda"
+    },
+    "drives": [
+      {
+        "search": {
+          "name": "/dev/vda"
+        },
+        "ptableType": "gpt",
+        "partitions": [
+          {
+            "search": { "name": "/dev/vda2" },
+            "format": {
+              "filesystem": {
+                "btrfs": {
+                  "snapshots": true
+                }
+              }
+            },
+            "mount": {
+              "path": "/",
+              "options": ["ro"]
             }
           },
-          "size": [1024, "5 Gib"],
-          "target": "default"
-        },
-        {
-          "mount": {
-            "path": "/home"
+          {
+            "encrypt": {
+              "password": "notsecret",
+              "method": "luks2"
+            },
+            "format": {
+              "filesystem": "xfs"
+            },
+            "mount": {
+              "path": "/home"
+            }
           },
-          "filesystem": "xfs",
-          "size": {
-            "min": "5 GiB",
-            "max": "20 GiB"
-          },
-          "target": {
-            "newVg": "/dev/vda"
+          {
+            "encrypt": {
+              "password": "notsecret",
+              "method": "luks2"
+            },
+            "format": {
+              "filesystem": "swap"
+            },
+            "mount": {
+              "path": "swap"
+            }
           }
+        ]
+      },
+      {
+        "search": {
+          "name": "/dev/vdb"
         },
-        {
-          "mount": {
-            "path": "swap"
-          },
-          "filesystem": "swap",
-          "size": "8 GiB",
-          "target": {
-            "newPartition": "/dev/vda"
-          }
+        "encrypt": {
+          "password": "notsecret",
+          "method": "luks2"
+        },
+        "format": {
+          "filesystem": "ext4"
+        },
+        "mount": {
+          "path": "/var/log"
         }
-      ]
-    }
+      }
+    ]
   }
 }
