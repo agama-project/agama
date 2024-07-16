@@ -21,6 +21,8 @@ pub enum QuestionsCommands {
     },
     /// prints list of questions that is waiting for answer in YAML format
     List,
+    /// Ask question from stdin in YAML format and print answer when it is answered.
+    Ask,
 }
 
 #[derive(Args, Debug)]
@@ -64,6 +66,17 @@ async fn list_questions() -> Result<(), ServiceError> {
     Ok(())
 }
 
+async fn ask_question() -> Result<(), ServiceError> {
+    let client = HTTPClient::new().await?;
+    let question = serde_json::from_reader(std::io::stdin())?;
+
+    let created_question = client.create_question(&question).await?;
+    let answer = client.get_answer(created_question.generic.id).await?;
+    let answer_json = serde_json::to_string_pretty(&answer).map_err(Into::<anyhow::Error>::into)?;
+    println!("{}", answer_json);
+    Ok(())
+}
+
 pub async fn run(subcommand: QuestionsCommands) -> Result<(), ServiceError> {
     let connection = connection().await?;
     let proxy = Questions1Proxy::new(&connection).await?;
@@ -72,5 +85,6 @@ pub async fn run(subcommand: QuestionsCommands) -> Result<(), ServiceError> {
         QuestionsCommands::Mode(value) => set_mode(proxy, value.value).await,
         QuestionsCommands::Answers { path } => set_answers(proxy, path).await,
         QuestionsCommands::List => list_questions().await,
+        QuestionsCommands::Ask => ask_question().await,
     }
 }
