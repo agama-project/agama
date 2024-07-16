@@ -4,7 +4,7 @@ use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{auth::AuthToken, error::ServiceError};
 
-/// Base that all http clients should use.
+/// Base that all HTTP clients should use.
 ///
 /// It provides several features including automatic base URL switching,
 /// websocket events listening or object constructions.

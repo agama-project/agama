@@ -7,7 +7,7 @@ Tue Jul 16 11:56:29 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
    answer
 - agama-lib:
 -- Add BaseHTTPClient that is base for clients that communicate
-   with agama-http-server
+   with agama-web-server
    (gh#openSUSE/agama#1457)
 
 -------------------------------------------------------------------

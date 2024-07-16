@@ -35,9 +35,9 @@ pub enum ServiceError {
     InvalidJson(#[from] serde_json::Error),
     #[error("Could not perform action '{0}'")]
     UnsuccessfulAction(String),
-    #[error("Unknown installation phase: '{0}")]
+    #[error("Unknown installation phase: {0}")]
     UnknownInstallationPhase(u32),
-    #[error("Backend call failed with status '{0}' and text '{1}'")]
+    #[error("Backend call failed with status {0} and text '{1}'")]
     BackendError(u16, String),
 }
 
