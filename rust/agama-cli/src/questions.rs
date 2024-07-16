@@ -74,6 +74,8 @@ async fn ask_question() -> Result<(), ServiceError> {
     let answer = client.get_answer(created_question.generic.id).await?;
     let answer_json = serde_json::to_string_pretty(&answer).map_err(Into::<anyhow::Error>::into)?;
     println!("{}", answer_json);
+
+    client.delete_question(created_question.generic.id).await?;
     Ok(())
 }
 
