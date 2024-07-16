@@ -21,27 +21,36 @@
 
 import React from "react";
 import { Page } from "~/components/core";
-import SoftwarePage from "./SoftwarePage";
-import SoftwarePatternsSelection from "./SoftwarePatternsSelection";
+import UsersPage from "~/components/users/UsersPage";
+import FirstUserForm from "~/components/users/FirstUserForm";
 import { N_ } from "~/i18n";
 
-const routes = {
-  path: "/software",
+const PATHS = {
+  root: "/users",
+  firstUser: {
+    create: "/users/first",
+    edit: "/users/first/edit",
+  },
+};
+const routes = () => ({
+  path: PATHS.root,
   element: <Page />,
   handle: {
-    name: N_("Software"),
-    icon: "apps",
+    name: N_("Users"),
+    icon: "manage_accounts",
   },
   children: [
+    { index: true, element: <UsersPage /> },
     {
-      index: true,
-      element: <SoftwarePage />,
+      path: PATHS.firstUser.create,
+      element: <FirstUserForm />,
     },
     {
-      path: "patterns/select",
-      element: <SoftwarePatternsSelection />,
+      path: PATHS.firstUser.edit,
+      element: <FirstUserForm />,
     },
   ],
-};
+});
 
 export default routes;
+export { PATHS };

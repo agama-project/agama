@@ -21,42 +21,49 @@
 
 import React from "react";
 import { Page } from "~/components/core";
-import { L10nPage, LocaleSelection, KeymapSelection, TimezoneSelection } from "~/components/l10n";
-import { queryClient } from "~/context/app";
-import { configQuery, localesQuery, keymapsQuery, timezonesQuery } from "~/queries/l10n";
+import BootSelection from "~/components/storage/BootSelection";
+import DeviceSelection from "~/components/storage/DeviceSelection";
+import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
+import ISCSIPage from "~/components/storage/ISCSIPage";
+import ProposalPage from "~/components/storage/ProposalPage";
 import { N_ } from "~/i18n";
 
-const L10N_PATH = "/l10n";
-const LOCALE_SELECTION_PATH = "locale/select";
-const KEYMAP_SELECTION_PATH = "keymap/select";
-const TIMEZONE_SELECTION_PATH = "timezone/select";
+const PATHS = {
+  root: "/storage",
+  targetDevice: "/storage/target-device",
+  bootingPartition: "/storage/booting-partition",
+  spacePolicy: "/storage/space-policy",
+  iscsi: "/storage/iscsi",
+};
 
-const routes = {
-  path: L10N_PATH,
+const routes = () => ({
+  path: PATHS.root,
   element: <Page />,
-  handle: {
-    name: N_("Localization"),
-    icon: "globe",
-  },
+  handle: { name: N_("Storage"), icon: "hard_drive" },
   children: [
     {
       index: true,
-      element: <L10nPage />,
+      element: <ProposalPage />,
     },
     {
-      path: LOCALE_SELECTION_PATH,
-      element: <LocaleSelection />,
+      path: PATHS.targetDevice,
+      element: <DeviceSelection />,
     },
     {
-      path: KEYMAP_SELECTION_PATH,
-      element: <KeymapSelection />,
+      path: PATHS.bootingPartition,
+      element: <BootSelection />,
     },
     {
-      path: TIMEZONE_SELECTION_PATH,
-      element: <TimezoneSelection />,
+      path: PATHS.spacePolicy,
+      element: <SpacePolicySelection />,
+    },
+    {
+      path: PATHS.iscsi,
+      element: <ISCSIPage />,
+      handle: { name: N_("iSCSI") },
     },
   ],
-};
+});
 
 export default routes;
-export { L10N_PATH, LOCALE_SELECTION_PATH, KEYMAP_SELECTION_PATH, TIMEZONE_SELECTION_PATH };
+export { PATHS };

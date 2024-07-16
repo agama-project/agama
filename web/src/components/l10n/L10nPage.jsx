@@ -23,11 +23,7 @@ import React from "react";
 import { Gallery, GalleryItem } from "@patternfly/react-core";
 import { useLoaderData } from "react-router-dom";
 import { ButtonLink, CardField, Page } from "~/components/core";
-import {
-  LOCALE_SELECTION_PATH,
-  KEYMAP_SELECTION_PATH,
-  TIMEZONE_SELECTION_PATH,
-} from "~/routes/l10n";
+import { PATHS } from "~/routes/l10n";
 import { _ } from "~/i18n";
 import { useL10n } from "~/queries/l10n";
 
@@ -60,7 +56,7 @@ export default function L10nPage() {
               label={_("Language")}
               value={locale ? `${locale.name} - ${locale.territory}` : _("Not selected yet")}
             >
-              <ButtonLink to={LOCALE_SELECTION_PATH} isPrimary={!locale}>
+              <ButtonLink to={PATHS.localeSelection} isPrimary={!locale}>
                 {locale ? _("Change") : _("Select")}
               </ButtonLink>
             </Section>
@@ -68,7 +64,7 @@ export default function L10nPage() {
 
           <GalleryItem>
             <Section label={_("Keyboard")} value={keymap ? keymap.name : _("Not selected yet")}>
-              <ButtonLink to={KEYMAP_SELECTION_PATH} isPrimary={!keymap}>
+              <ButtonLink to={PATHS.keymapSelection} isPrimary={!keymap}>
                 {keymap ? _("Change") : _("Select")}
               </ButtonLink>
             </Section>

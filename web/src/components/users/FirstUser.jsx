@@ -26,6 +26,7 @@ import { useNavigate } from "react-router-dom";
 import { RowActions, ButtonLink } from "~/components/core";
 import { _ } from "~/i18n";
 import { useFirstUser, useFirstUserChanges, useRemoveFirstUserMutation } from "~/queries/users";
+import { PATHS } from "~/routes/users";
 
 const UserNotDefined = ({ actionCb }) => {
   return (
@@ -40,7 +41,7 @@ const UserNotDefined = ({ actionCb }) => {
           </strong>
         </div>
         <Split hasGutter>
-          <ButtonLink to="first" isPrimary>
+          <ButtonLink to={PATHS.firstUser.create} isPrimary>
             {_("Define a user now")}
           </ButtonLink>
         </Split>
@@ -83,7 +84,7 @@ export default function FirstUser() {
   const actions = [
     {
       title: _("Edit"),
-      onClick: () => navigate("/users/first/edit"),
+      onClick: () => navigate(PATHS.firstUser.edit),
     },
     {
       title: _("Discard"),

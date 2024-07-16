@@ -21,24 +21,42 @@
 
 import React from "react";
 import { Page } from "~/components/core";
-import ProductSelectionPage from "~/components/product/ProductSelectionPage";
-import ProductSelectionProgress from "~/components/product/ProductSelectionProgress";
+import { L10nPage, LocaleSelection, KeymapSelection, TimezoneSelection } from "~/components/l10n";
+import { N_ } from "~/i18n";
 
-const PRODUCTS_PATH = "/products";
+const PATHS = {
+  root: "/l10n",
+  localeSelection: "/l10n/locale/select",
+  keymapSelection: "/l10n/keymap/select",
+  timezoneSelection: "/l10n/timezone/select",
+};
 
-const productsRoutes = {
-  path: PRODUCTS_PATH,
+const routes = () => ({
+  path: PATHS.root,
   element: <Page />,
+  handle: {
+    name: N_("Localization"),
+    icon: "globe",
+  },
   children: [
     {
       index: true,
-      element: <ProductSelectionPage />,
+      element: <L10nPage />,
     },
     {
-      path: "progress",
-      element: <ProductSelectionProgress />,
+      path: PATHS.localeSelection,
+      element: <LocaleSelection />,
+    },
+    {
+      path: PATHS.keymapSelection,
+      element: <KeymapSelection />,
+    },
+    {
+      path: PATHS.timezoneSelection,
+      element: <TimezoneSelection />,
     },
   ],
-};
+});
 
-export default productsRoutes;
+export default routes;
+export { PATHS };

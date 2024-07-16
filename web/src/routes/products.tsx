@@ -20,16 +20,28 @@
  */
 
 import React from "react";
-import OverviewPage from "./OverviewPage";
-import { N_ } from "~/i18n";
+import { Page } from "~/components/core";
+import { ProductSelectionPage, ProductSelectionProgress } from "~/components/product";
 
-const routes = {
-  path: "/overview",
-  element: <OverviewPage />,
-  handle: {
-    name: N_("Overview"),
-    icon: "list_alt",
-  },
+const PATHS = {
+  root: "/products",
+  progress: "/products/progress",
 };
 
+const routes = () => ({
+  path: PATHS.root,
+  element: <Page />,
+  children: [
+    {
+      index: true,
+      element: <ProductSelectionPage />,
+    },
+    {
+      path: PATHS.progress,
+      element: <ProductSelectionProgress />,
+    },
+  ],
+});
+
 export default routes;
+export { PATHS };

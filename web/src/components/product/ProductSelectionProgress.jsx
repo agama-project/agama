@@ -26,6 +26,7 @@ import { useProduct } from "~/queries/software";
 import { ProgressReport } from "~/components/core";
 import { IDLE } from "~/client/status";
 import { useInstallerClient } from "~/context/installer";
+import { PATHS } from "~/router";
 
 /**
  * @component
@@ -42,7 +43,7 @@ function ProductSelectionProgress() {
     return manager.onStatusChange(setStatus);
   }, [manager, setStatus]);
 
-  if (status === IDLE) return <Navigate to="/" replace />;
+  if (status === IDLE) return <Navigate to={PATHS.root} replace />;
 
   return (
     <ProgressReport

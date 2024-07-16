@@ -27,27 +27,36 @@ import MainLayout from "~/MainLayout";
 import SimpleLayout from "./SimpleLayout";
 import { LoginPage } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
-import { _ } from "~/i18n";
-import overviewRoutes from "~/components/overview/routes";
+import { _, N_ } from "~/i18n";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/components/network/routes";
 import productsRoutes from "~/routes/products";
-import storageRoutes from "~/components/storage/routes";
-import softwareRoutes from "~/components/software/routes";
-import usersRoutes from "~/components/users/routes";
+import storageRoutes from "~/routes/storage";
+import softwareRoutes from "~/routes/software";
+import usersRoutes from "~/routes/users";
+
+const PATHS = {
+  root: "/",
+  login: "/login",
+  overview: "/overview",
+};
 
 const rootRoutes = [
-  overviewRoutes,
-  l10nRoutes,
+  {
+    path: "/overview",
+    element: <OverviewPage />,
+    handle: { name: N_("Overview"), icon: "list_alt" },
+  },
+  l10nRoutes(),
   networkRoutes,
-  storageRoutes,
-  softwareRoutes,
-  usersRoutes,
+  storageRoutes(),
+  softwareRoutes(),
+  usersRoutes(),
 ];
 
 const protectedRoutes = [
   {
-    path: "/",
+    path: PATHS.root,
     element: <App />,
     children: [
       {
@@ -62,7 +71,7 @@ const protectedRoutes = [
       },
       {
         element: <SimpleLayout showInstallerOptions />,
-        children: [productsRoutes],
+        children: [productsRoutes()],
       },
     ],
   },
@@ -70,7 +79,7 @@ const protectedRoutes = [
 
 const routes = [
   {
-    path: "/login",
+    path: PATHS.login,
     exact: true,
     element: <SimpleLayout />,
     children: [
@@ -81,7 +90,7 @@ const routes = [
     ],
   },
   {
-    path: "/",
+    path: PATHS.root,
     element: <Protected />,
     children: [...protectedRoutes],
   },
@@ -89,4 +98,4 @@ const routes = [
 
 const router = createHashRouter(routes);
 
-export { router, rootRoutes };
+export { router, rootRoutes, PATHS };
