@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/boot_settings"
+require "agama/storage/configs/boot"
 require "agama/storage/device_settings"
 require "agama/storage/encryption_settings"
 require "agama/storage/proposal_settings_conversions"
@@ -34,9 +34,9 @@ module Agama
       # @return [DeviceSettings::Disk, DeviceSettings::NewLvmVg, DeviceSettings::ReusedLvmVg]
       attr_accessor :device
 
-      # Boot settings.
+      # Boot config.
       #
-      # @return [BootSettings]
+      # @return [Configs::Boot]
       attr_accessor :boot
 
       # Encryption settings.
@@ -56,7 +56,7 @@ module Agama
 
       def initialize
         @device = DeviceSettings::Disk.new
-        @boot = BootSettings.new
+        @boot = Configs::Boot.new
         @encryption = EncryptionSettings.new
         @space = SpaceSettings.new
         @volumes = []
