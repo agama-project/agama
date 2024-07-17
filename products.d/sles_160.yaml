@@ -1,0 +1,135 @@
+id: SLES_16.0
+name: SUSE Linux Enteprise Server 16.0 Alpha
+# ------------------------------------------------------------------------------
+# WARNING: When changing the product description delete the translations located
+# at the at translations/description key below to avoid using obsolete
+# translations!!
+# ------------------------------------------------------------------------------
+description: "SUSE Linux Enterprise Server is the open, reliable, compliant, and future-proof
+  Linux Server choice that ensures the enterprise's business continuity. It is the secure and
+  adaptable OS for long-term supported, innovation-ready infrastructure running business-critical
+  workloads on-premises, in the cloud, and at the edge."
+# Do not manually change any translations! See README.md for more details.
+translations:
+  description:
+software:
+  installation_repositories:
+    - url: http://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0/product/repo/SLES-Packages-16.0-x86_64/
+      archs: x86_64
+    - url: http://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0/product/repo/SLES-Packages-16.0-aarch64/
+      archs: aarch64
+
+  mandatory_patterns:
+    - sles_enhanced_base
+  optional_patterns: null # no optional pattern shared
+  user_patterns: []
+  mandatory_packages:
+    - NetworkManager
+  optional_packages: null
+  base_product: SLES
+
+security:
+  lsm: null
+  available_lsms:
+    apparmor:
+      patterns:
+        - apparmor
+    selinux:
+      patterns:
+        - selinux
+      policy: enforcing
+    none:
+      patterns: null
+
+storage:
+  space_policy: delete
+  volumes:
+    - "/"
+    - "swap"
+  volume_templates:
+    - mount_path: "/"
+      filesystem: btrfs
+      btrfs:
+        snapshots: true
+        read_only: false
+        default_subvolume: "@"
+        subvolumes:
+          - path: home
+          - path: opt
+          - path: root
+          - path: srv
+          - path: usr/local
+          # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
+          - path: var
+            copy_on_write: false
+          # Architecture specific subvolumes
+          - path: boot/grub2/arm64-efi
+            archs: aarch64
+          - path: boot/grub2/arm-efi
+            archs: arm
+          - path: boot/grub2/i386-pc
+            archs: x86_64
+          - path: boot/grub2/powerpc-ieee1275
+            archs: ppc,!board_powernv
+          - path: boot/grub2/s390x-emu
+            archs: s390
+          - path: boot/grub2/x86_64-efi
+            archs: x86_64
+          - path: boot/grub2/riscv64-efi
+            archs: riscv64
+      size:
+        auto: true
+      outline:
+        required: true
+        filesystems:
+          - btrfs
+          - ext2
+          - ext3
+          - ext4
+          - xfs
+        auto_size:
+          base_min: 5 GiB
+          base_max: 15 GiB
+          snapshots_increment: 250%
+          max_fallback_for:
+            - "/home"
+        snapshots_configurable: true
+    - mount_path: "swap"
+      filesystem: swap
+      size:
+        auto: true
+      outline:
+        auto_size:
+          base_min: 1 GiB
+          base_max: 2 GiB
+          adjust_by_ram: true
+        required: false
+        filesystems:
+          - swap
+    - mount_path: "/home"
+      filesystem: xfs
+      size:
+        auto: false
+        min: 10 GiB
+        max: unlimited
+      outline:
+        required: false
+        filesystems:
+          - btrfs
+          - ext2
+          - ext3
+          - ext4
+          - xfs
+    - filesystem: xfs
+      size:
+        auto: false
+        min: 1 GiB
+      outline:
+        required: false
+        filesystems:
+          - btrfs
+          - ext2
+          - ext3
+          - ext4
+          - xfs
+          - vfat
