@@ -585,6 +585,10 @@ impl TryFrom<NetworkConnection> for Connection {
             connection.status = status;
         }
 
+        if let Some(ignore_auto_dns) = conn.ignore_auto_dns {
+            connection.ip_config.ignore_auto_dns = ignore_auto_dns;
+        }
+
         if let Some(wireless_config) = conn.wireless {
             let config = WirelessConfig::try_from(wireless_config)?;
             connection.config = config.into();
@@ -597,6 +601,7 @@ impl TryFrom<NetworkConnection> for Connection {
 
         connection.ip_config.addresses = conn.addresses;
         connection.ip_config.nameservers = conn.nameservers;
+        connection.ip_config.dns_searchlist = conn.dns_searchlist;
         connection.ip_config.gateway4 = conn.gateway4;
         connection.ip_config.gateway6 = conn.gateway6;
         connection.interface = conn.interface;
@@ -616,6 +621,8 @@ impl TryFrom<Connection> for NetworkConnection {
         let method6 = Some(conn.ip_config.method6.to_string());
         let mac_address = (!mac.is_empty()).then_some(mac);
         let nameservers = conn.ip_config.nameservers;
+        let dns_searchlist = conn.ip_config.dns_searchlist;
+        let ignore_auto_dns = Some(conn.ip_config.ignore_auto_dns);
         let addresses = conn.ip_config.addresses;
         let gateway4 = conn.ip_config.gateway4;
         let gateway6 = conn.ip_config.gateway6;
@@ -631,6 +638,8 @@ impl TryFrom<Connection> for NetworkConnection {
             gateway4,
             gateway6,
             nameservers,
+            dns_searchlist,
+            ignore_auto_dns,
             mac_address,
             interface,
             addresses,
