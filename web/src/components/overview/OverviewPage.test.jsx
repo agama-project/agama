@@ -24,15 +24,22 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { createClient } from "~/client";
 import { OverviewPage } from "~/components/overview";
+import { IssuesList } from "~/types/issues";
 
 const startInstallationFn = jest.fn();
 let mockSelectedProduct = { id: "Tumbleweed" };
+const mockIssuesList = new IssuesList([], [], [], []);
 
 jest.mock("~/client");
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
   useProduct: () => ({ selectedProduct: mockSelectedProduct }),
   useProductChanges: () => jest.fn(),
+}));
+
+jest.mock("~/queries/issues", () => ({
+  ...jest.requireActual("~/queries/issues"),
+  useIssuesChanges: () => jest.fn().mockResolvedValue(mockIssuesList),
 }));
 
 jest.mock("~/components/overview/L10nSection", () => () => <div>Localization Section</div>);
@@ -46,7 +53,6 @@ beforeEach(() => {
       manager: {
         startInstallation: startInstallationFn,
       },
-      issues: jest.fn().mockResolvedValue({ isEmpty: true }),
     };
   });
 });
@@ -58,9 +64,9 @@ describe("when a product is selected", () => {
 
   it("renders the overview page content and the Install button", async () => {
     installerRender(<OverviewPage />);
-    screen.getByText("Localization Section");
-    screen.getByText("Storage Section");
-    screen.getByText("Software Section");
+    screen.findByText("Localization Section");
+    screen.findByText("Storage Section");
+    screen.findByText("Software Section");
     screen.findByText("Install Button");
   });
 });
