@@ -108,6 +108,18 @@
                   "type": "string"
                 }
               },
+              "dns_searchlist": {
+                "type": "array",
+                "items": {
+                  "description": "DNS search domains",
+                  "type": "string",
+                  "additionalProperties": false
+                }
+              },
+              "ignore_auto_dns": {
+                "description": "Whether DNS options provided via DHCP are used or not",
+                "type": "boolean"
+              },
               "wireless": {
                 "type": "object",
                 "title": "Wireless configuration",

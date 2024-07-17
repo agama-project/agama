@@ -159,6 +159,18 @@ trait IP {
     fn nameservers(&self) -> zbus::Result<Vec<String>>;
     #[dbus_proxy(property)]
     fn set_nameservers(&self, value: &[&str]) -> zbus::Result<()>;
+
+    /// DNS searchlist property
+    #[dbus_proxy(property)]
+    fn dns_searchlist(&self) -> zbus::Result<Vec<String>>;
+    #[dbus_proxy(property)]
+    fn set_dns_searchlist(&self, value: &[&str]) -> zbus::Result<()>;
+
+    /// Ignore auto DNS property
+    #[dbus_proxy(property)]
+    fn ignore_auto_dns(&self) -> zbus::Result<bool>;
+    #[dbus_proxy(property)]
+    fn set_ignore_auto_dns(&self, value: bool) -> zbus::Result<()>;
 }
 
 #[dbus_proxy(
