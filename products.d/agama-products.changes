@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 17 07:34:01 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a definition for SUSE Linux Enteprise Server
+  (gh#openSUSE/agama#1473).
+- Generate separate packages for openSUSE and SLE-based products.
+
+-------------------------------------------------------------------
 Tue Jul  12 17:29:00 UTC 2024 - Natasha Ament <stacheldrahtje@gmail.com>
 
 - change url for leap_160.yaml due to typo
