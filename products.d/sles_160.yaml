@@ -29,7 +29,7 @@ software:
   base_product: SLES
 
 security:
-  lsm: null
+  lsm: none
   available_lsms:
     apparmor:
       patterns:
