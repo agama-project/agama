@@ -21,21 +21,25 @@
 
 module Agama
   module Storage
-    # Class for configuring the boot settings of the Agama storage proposal.
-    class BootSettings
-      # Whether to configure partitions for booting.
-      #
-      # @return [Boolean]
-      attr_accessor :configure
-      alias_method :configure?, :configure
+    module Configs
+      class Search
+        attr_reader :device
 
-      # Device to use for booting.
-      #
-      # @return [String, nil] nil means use installation device.
-      attr_accessor :device
+        def find(setting, devicegraph, used_sids, parent: nil)
+          devices = candidate_devices(setting, devicegraph, parent)
+          devices.reject! { |d| used_sids.include?(d.sid) }
+          @device = devices.sort_by(&:name).first
+        end
 
-      def initialize
-        @configure = true
+        def candidate_devices(setting, devicegraph, parent)
+          if setting.kind_of?(Drive)
+            devicegraph.blk_devices.select do |dev|
+              dev.is?(:disk_device, :stray_blk_device)
+            end
+          else
+            devicegraph.find_device(parent).partitions
+          end
+        end
       end
     end
   end
