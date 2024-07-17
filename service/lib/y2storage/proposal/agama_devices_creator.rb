@@ -17,13 +17,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2storage/proposal/agama_partitioner"
-require "y2storage/proposal/autoinst_md_creator"
-require "y2storage/proposal/lvm_creator"
-require "y2storage/proposal/btrfs_creator"
-require "y2storage/proposal/nfs_creator"
-require "y2storage/proposal/tmpfs_creator"
-require "y2storage/proposal/autoinst_creator_result"
+require "y2storage/proposal/agama_lvm_helper"
 require "y2storage/exceptions"
 
 module Y2Storage
@@ -121,8 +115,9 @@ module Y2Storage
       def process_existing_partitionables
         partitions = partitions_for_existing(planned_devices)
 
-        lvm_lvs = system_lvm_over_existing? ? system_lvs(planned_devices) : []
-        lvm_helper = LvmHelper.new(lvm_lvs, settings)
+        # lvm_lvs = system_lvm_over_existing? ? system_lvs(planned_devices) : []
+        lvm_lvs = []
+        lvm_helper = AgamaLvmHelper.new(lvm_lvs)
 
         # Check whether there is any chance of getting an unwanted order for the planned partitions
         # within a disk
@@ -154,6 +149,12 @@ module Y2Storage
 
         # Needed or already part of other components?
         # graph.mount_points.each(&:adjust_mount_options)
+      end
+
+      def provide_space(planned_partitions, devicegraph, lvm_helper)
+        result = space_maker.provide_space(devicegraph, planned_partitions, lvm_helper)
+        log.info "Found enough space"
+        result
       end
 
       def partitions_for_existing(planned_devices)

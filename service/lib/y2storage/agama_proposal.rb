@@ -18,11 +18,10 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "y2storage/proposal_settings"
+require "y2storage/proposal"
+require "y2storage/agama_searcher"
 require "y2storage/exceptions"
 require "y2storage/planned"
-require "y2storage/proposal"
-require "y2storage/guided_proposal"
 
 module Y2Storage
   # Class to calculate a storage proposal for autoinstallation using Agama
@@ -79,37 +78,15 @@ module Y2Storage
     #
     # @raise [NoDiskSpaceError] if there is no enough space to perform the installation
     def calculate_proposal
-      search_devices
+      Proposal::AgamaSearcher.new(initial_devicegraph).search(settings, issues_list)
       if issues_list.any?(:error?)
         # This means some IfNotFound is set to "error" and we failed to find a match
         @devices = nil
         return @devices
       end
 
-      @space_maker = create_space_maker
+      @space_maker = Proposal::AgamaSpaceMaker.new(disk_analyzer, settings, config)
       @devices = propose_devicegraph(initial_devicegraph)
-    end
-
-    def search_devices
-      # TODO: If IfNotFound is 'skip' => invalidate somehow the device definition (registering issue?)
-      # TODO: If IfNotFound is 'error' => register error
-      sids = []
-      settings.drives.each do |drive|
-        drive.search_device(devicegraph, sids)
-        sids << drive.sid
-        next unless drive.sid && drive.partitions?
-
-        drive.partitions.each do |part|
-          part.search_device(devicegraph, drive.sid, sids)
-          sids << part.sid
-        end
-      end
-    end
-
-    def create_space_maker
-      # This is a Y2Storage::ProposalSettings. Only relevant parts: strategy and list of actions
-      guided_settings = Agama::Storage::SettingsConversions::ForSpaceMaker(settings).new.convert
-      Proposal::SpaceMaker.new(disk_analyzer, guided_settings)
     end
 
     # Proposes a devicegraph based on given configuration
