@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use clap::Parser;
+use clap::{Args, Parser};
 
 mod auth;
 mod commands;
@@ -46,6 +46,15 @@ use std::{
     time::Duration,
 };
 
+/// Agama's CLI global options
+#[derive(Args)]
+struct GlobalOpts {
+    #[clap(long)]
+    /// uri pointing to agama's remote api. If not provided, default https://localhost/api is
+    /// used
+    pub uri: String,
+}
+
 /// Agama's command-line interface
 ///
 /// This program allows inspecting or changing Agama's configuration, handling installation
@@ -55,6 +64,9 @@ use std::{
 #[derive(Parser)]
 #[command(name = "agama", about, long_about, max_term_width = 100)]
 pub struct Cli {
+    #[clap(flatten)]
+    pub opts: GlobalOpts,
+
     #[command(subcommand)]
     pub command: Commands,
 }

@@ -45,7 +45,7 @@ pub enum AuthCommands {
 /// Main entry point called from agama CLI main loop
 pub async fn run(subcommand: AuthCommands) -> anyhow::Result<()> {
     match subcommand {
-        AuthCommands::Login => login(read_password()?).await,
+        AuthCommands::Login => login(DEFAULT_AUTH_URL.to_string(), read_password()?).await,
         AuthCommands::Logout => logout(),
         AuthCommands::Show => show(),
     }
@@ -108,9 +108,9 @@ async fn get_jwt(url: String, password: String) -> anyhow::Result<String> {
 }
 
 /// Logs into the installation web server and stores JWT for later use.
-async fn login(password: String) -> anyhow::Result<()> {
+async fn login(server: String, password: String) -> anyhow::Result<()> {
     // 1) ask web server for JWT
-    let res = get_jwt(DEFAULT_AUTH_URL.to_string(), password).await?;
+    let res = get_jwt(server, password).await?;
     let token = AuthToken::new(&res);
     Ok(token.write_user_token()?)
 }
