@@ -100,6 +100,32 @@ const SelectedPatternsList = ({ patterns }) => {
   );
 };
 
+const SelectedPatterns = ({ patterns }) => (
+  <CardField
+    label={_("Selected patterns")}
+    actions={
+      <ButtonLink to="patterns/select" isPrimary>
+        {_("Change selection")}
+      </ButtonLink>
+    }
+  >
+    <CardBody>
+      <SelectedPatternsList patterns={patterns} />
+    </CardBody>
+  </CardField>
+);
+
+const NoPatterns = () => (
+  <CardField label={_("Selected patterns")}>
+    <CardBody>
+      <p>
+        {_(
+          "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.",
+        )}
+      </p>
+    </CardBody>
+  </CardField>
+);
 // FIXME: move build patterns to utils
 
 /**
@@ -132,7 +158,7 @@ function SoftwarePage() {
   }, [client.software, patterns]);
 
   useEffect(() => {
-    if (patterns.length !== 0) return;
+    if (!isLoading) return;
 
     const loadPatterns = async () => {
       const patterns = await cancellablePromise(client.software.getPatterns());
@@ -143,7 +169,7 @@ function SoftwarePage() {
     };
 
     loadPatterns();
-  }, [client.software, patterns, cancellablePromise]);
+  }, [client.software, patterns, cancellablePromise, isLoading]);
 
   if (status === BUSY || isLoading) {
     <SectionSkeleton numRows={5} />;
@@ -161,20 +187,8 @@ function SoftwarePage() {
             <IssuesHint issues={issues} />
           </GridItem>
           <GridItem sm={12} xl={6}>
-            <CardField
-              label={_("Selected patterns")}
-              actions={
-                <ButtonLink to="patterns/select" isPrimary={patterns.length === 0}>
-                  {_("Change selection")}
-                </ButtonLink>
-              }
-            >
-              <CardBody>
-                <SelectedPatternsList patterns={patterns} />
-              </CardBody>
-            </CardField>
+            {patterns.length === 0 ? <NoPatterns /> : <SelectedPatterns patterns={patterns} />}
           </GridItem>
-
           <GridItem sm={12} xl={6}>
             <CardField>
               <CardBody>
