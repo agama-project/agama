@@ -32,6 +32,8 @@ import { IDLE } from "~/client/status";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
+import { useIssues } from "~/queries/issues";
+import { IssueSeverity } from "~/types/issues";
 
 /**
  * @typedef {import ("~/components/storage/utils").SpacePolicy} SpacePolicy
@@ -49,7 +51,6 @@ const initialState = {
   system: [],
   staging: [],
   actions: [],
-  errors: [],
 };
 
 const reducer = (state, action) => {
@@ -96,11 +97,6 @@ const reducer = (state, action) => {
     case "UPDATE_DEVICES": {
       const { system, staging } = action.payload;
       return { ...state, system, staging };
-    }
-
-    case "UPDATE_ERRORS": {
-      const { errors } = action.payload;
-      return { ...state, errors };
     }
 
     default: {
@@ -154,6 +150,10 @@ export default function ProposalPage() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const drawerRef = useRef();
 
+  const errors = useIssues("storage")
+    .filter((s) => s.severity === IssueSeverity.Error)
+    .map(toValidationError);
+
   const loadAvailableDevices = useCallback(async () => {
     return await cancellablePromise(client.proposal.getAvailableDevices());
   }, [client, cancellablePromise]);
@@ -186,11 +186,6 @@ export default function ProposalPage() {
     const system = (await cancellablePromise(client.system.getDevices())) || [];
     const staging = (await cancellablePromise(client.staging.getDevices())) || [];
     return { system, staging };
-  }, [client, cancellablePromise]);
-
-  const loadErrors = useCallback(async () => {
-    const issues = await cancellablePromise(client.getErrors());
-    return issues.map(toValidationError);
   }, [client, cancellablePromise]);
 
   const calculateProposal = useCallback(
@@ -228,9 +223,6 @@ export default function ProposalPage() {
     const devices = await loadDevices();
     dispatch({ type: "UPDATE_DEVICES", payload: devices });
 
-    const errors = await loadErrors();
-    dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
-
     if (result !== undefined) dispatch({ type: "STOP_LOADING" });
   }, [
     calculateProposal,
@@ -240,7 +232,6 @@ export default function ProposalPage() {
     loadVolumeDevices,
     loadDevices,
     loadEncryptionMethods,
-    loadErrors,
     loadProposalResult,
     loadVolumeTemplates,
   ]);
@@ -257,12 +248,9 @@ export default function ProposalPage() {
       const devices = await loadDevices();
       dispatch({ type: "UPDATE_DEVICES", payload: devices });
 
-      const errors = await loadErrors();
-      dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
-
       dispatch({ type: "STOP_LOADING" });
     },
-    [calculateProposal, loadDevices, loadErrors, loadProposalResult],
+    [calculateProposal, loadDevices, loadProposalResult],
   );
 
   useEffect(() => {
@@ -334,7 +322,7 @@ export default function ProposalPage() {
                   policy={spacePolicy}
                   system={state.system}
                   staging={state.staging}
-                  errors={state.errors}
+                  errors={errors}
                   actions={state.actions}
                   spaceActions={state.settings.spaceActions}
                   devices={state.settings.installationDevices}

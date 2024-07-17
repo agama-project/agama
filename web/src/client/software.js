@@ -21,10 +21,9 @@
 
 // @ts-check
 
-import { WithIssues, WithProgress, WithStatus } from "./mixins";
+import { WithProgress, WithStatus } from "./mixins";
 
 const SOFTWARE_SERVICE = "org.opensuse.Agama.Software1";
-const PRODUCT_PATH = "/org/opensuse/Agama/Software1/Product";
 
 /**
  * Enum for the reasons to select a pattern
@@ -185,17 +184,13 @@ class SoftwareBaseClient {
 /**
  * Manages software and product configuration.
  */
-class SoftwareClient extends WithIssues(
-  WithProgress(
-    WithStatus(SoftwareBaseClient, "/software/status", SOFTWARE_SERVICE),
-    "/software/progress",
-    SOFTWARE_SERVICE,
-  ),
-  "/software/issues/software",
-  "/org/opensuse/Agama/Software1",
+class SoftwareClient extends WithProgress(
+  WithStatus(SoftwareBaseClient, "/software/status", SOFTWARE_SERVICE),
+  "/software/progress",
+  SOFTWARE_SERVICE,
 ) {}
 
-class ProductBaseClient {
+class ProductClient {
   /**
    * @param {import("./http").HTTPClient} client - HTTP client.
    */
@@ -335,11 +330,5 @@ class ProductBaseClient {
     });
   }
 }
-
-class ProductClient extends WithIssues(
-  ProductBaseClient,
-  "/software/issues/product",
-  PRODUCT_PATH,
-) {}
 
 export { ProductClient, SelectedBy, SoftwareClient };

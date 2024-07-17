@@ -73,57 +73,6 @@ const buildIssue = ({ description, details, source, severity }) => {
 };
 
 /**
- * Extends the given class with methods to get the issues over D-Bus
- *
- * @template {!WithHTTPClient} T
- * @param {T} superclass - superclass to extend
- * @param {string} issues_path - validation resource path (e.g., "/manager/issues").
- * @param {string} service_name - service name (e.g., "org.opensuse.Agama.Manager1").
- */
-const WithIssues = (superclass, issues_path, service_name) =>
-  class extends superclass {
-    /**
-     * Returns the issues
-     *
-     * @return {Promise<Issue[]>}
-     */
-    async getIssues() {
-      const response = await this.client.get(issues_path);
-      if (!response.ok) {
-        console.log("get issues failed with:", response);
-        return [];
-      } else {
-        const issues = await response.json();
-        return issues.map(buildIssue);
-      }
-    }
-
-    /**
-     * Gets all issues with error severity
-     *
-     * @return {Promise<Issue[]>}
-     */
-    async getErrors() {
-      const issues = await this.getIssues();
-      return issues.filter((i) => i.severity === "error");
-    }
-
-    /**
-     * Registers a callback to run when the issues change
-     *
-     * @param {IssuesHandler} handler - callback function
-     * @return {import ("./http").RemoveFn} function to disable the callback
-     */
-    onIssuesChange(handler) {
-      return this.client.onEvent("IssuesChanged", ({ service, issues }) => {
-        if (service === service_name) {
-          handler(issues.map(buildIssue));
-        }
-      });
-    }
-  };
-
-/**
  * Extends the given class with methods to get and track the service status
  *
  * @template {!WithHTTPClient} T
@@ -265,4 +214,4 @@ const createError = (message) => {
   return { message };
 };
 
-export { WithIssues, WithProgress, WithStatus };
+export { WithProgress, WithStatus };

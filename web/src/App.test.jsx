@@ -29,6 +29,7 @@ import { STARTUP, CONFIG, INSTALL } from "~/client/phase";
 import { IDLE, BUSY } from "~/client/status";
 import { useL10nConfigChanges } from "./queries/l10n";
 import { useProductChanges } from "./queries/software";
+import { useIssuesChanges } from "./queries/issues";
 
 jest.mock("~/client");
 
@@ -50,6 +51,11 @@ jest.mock("~/queries/software", () => ({
 jest.mock("~/queries/l10n", () => ({
   ...jest.requireActual("~/queries/l10n"),
   useL10nConfigChanges: () => jest.fn(),
+}));
+
+jest.mock("~/queries/issues", () => ({
+  ...jest.requireActual("~/queries/issues"),
+  useIssuesChanges: () => jest.fn(),
 }));
 
 const mockClientStatus = {

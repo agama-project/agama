@@ -30,6 +30,7 @@ import { useProduct, useProductChanges } from "./queries/software";
 import { CONFIG, INSTALL, STARTUP } from "~/client/phase";
 import { BUSY } from "~/client/status";
 import { useL10nConfigChanges } from "~/queries/l10n";
+import { useIssues, useIssuesChanges } from "./queries/issues";
 
 /**
  * Main application component.
@@ -45,6 +46,7 @@ function App() {
   const { language } = useInstallerL10n();
   useL10nConfigChanges();
   useProductChanges();
+  useIssuesChanges();
 
   const Content = () => {
     if (error) return <ServerError />;

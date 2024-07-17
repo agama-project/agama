@@ -25,10 +25,10 @@ import { _ } from "~/i18n";
 import { CardField, IssuesHint, Page } from "~/components/core";
 import { FirstUser, RootAuthMethods } from "~/components/users";
 import { CardBody, Grid, GridItem } from "@patternfly/react-core";
-import { useIssues } from "~/context/issues";
+import { useIssues } from "~/queries/issues";
 
 export default function UsersPage() {
-  const { users: issues } = useIssues();
+  const issues = useIssues("users");
 
   return (
     <>

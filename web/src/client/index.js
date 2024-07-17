@@ -44,9 +44,6 @@ import { HTTPClient, WSClient } from "./http";
  * @property {UsersClient} users - users client.
  * @property {QuestionsClient} questions - questions client.
  * @property {() => WSClient} ws - Agama WebSocket client.
- * @property {() => Promise<Issues>} issues - issues from all contexts.
- * @property {(handler: IssuesHandler) => (() => void)} onIssuesChange - registers a handler to run
- *  when issues from any context change. It returns a function to deregister the handler.
  * @property {() => boolean} isConnected - determines whether the client is connected
  * @property {() => boolean} isRecoverable - determines whether the client is recoverable after disconnected
  * @property {(handler: () => void) => (() => void)} onConnect - registers a handler to run
@@ -54,25 +51,6 @@ import { HTTPClient, WSClient } from "./http";
  *   when the connection is lost. It returns a function to deregister the
  *   handler.
  */
-
-/**
- * @typedef {import ("~/client/mixins").Issue} Issue
- *
- * @typedef {object} Issues
- * @property {Issue[]} [product] - Issues from product.
- * @property {Issue[]} [storage] - Issues from storage.
- * @property {Issue[]} [software] - Issues from software.
- * @property {Issue[]} [users] - Issues from users.
- * @property {boolean} [isEmpty] - Whether the list is empty
- *
- * @typedef {(issues: Issues) => void} IssuesHandler
- */
-
-const createIssuesList = (product = [], software = [], storage = [], users = []) => {
-  const list = { product, storage, software, users };
-  list.isEmpty = !Object.values(list).some((v) => v.length > 0);
-  return list;
-};
 
 /**
  * Creates the Agama client
@@ -93,41 +71,6 @@ const createClient = (url) => {
   const users = new UsersClient(client);
   const questions = new QuestionsClient(client);
 
-  /**
-   * Gets all issues, grouping them by context.
-   *
-   * TODO: issues are requested by several components (e.g., overview sections, notifications
-   *  provider, issues page, storage page, etc). There should be an issues provider.
-   *
-   * @returns {Promise<Issues>}
-   */
-  const issues = async () => {
-    const productIssues = await product.getIssues();
-    const storageIssues = await storage.getIssues();
-    const softwareIssues = await software.getIssues();
-    const usersIssues = await users.getIssues();
-    return createIssuesList(productIssues, softwareIssues, storageIssues, usersIssues);
-  };
-
-  /**
-   * Registers a callback to be executed when issues change.
-   *
-   * @param {IssuesHandler} handler - Callback function.
-   * @return {() => void} - Function to deregister the callback.
-   */
-  const onIssuesChange = (handler) => {
-    const unsubscribeCallbacks = [];
-
-    unsubscribeCallbacks.push(product.onIssuesChange((i) => handler({ product: i })));
-    unsubscribeCallbacks.push(storage.onIssuesChange((i) => handler({ storage: i })));
-    unsubscribeCallbacks.push(software.onIssuesChange((i) => handler({ software: i })));
-    unsubscribeCallbacks.push(users.onIssuesChange((i) => handler({ users: i })));
-
-    return () => {
-      unsubscribeCallbacks.forEach((cb) => cb());
-    };
-  };
-
   const isConnected = () => client.ws().isConnected() || false;
   const isRecoverable = () => !!client.ws().isRecoverable();
 
@@ -141,8 +84,6 @@ const createClient = (url) => {
     storage,
     users,
     questions,
-    issues,
-    onIssuesChange,
     isConnected,
     isRecoverable,
     onConnect: (handler) => client.ws().onOpen(handler),
@@ -157,4 +98,4 @@ const createDefaultClient = async () => {
   return createClient(httpUrl);
 };
 
-export { createClient, createDefaultClient, phase, createIssuesList };
+export { createClient, createDefaultClient, phase };

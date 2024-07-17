@@ -42,6 +42,8 @@ import L10nSection from "./L10nSection";
 import StorageSection from "./StorageSection";
 import SoftwareSection from "./SoftwareSection";
 import { _ } from "~/i18n";
+import { useAllIssues } from "~/queries/issues";
+import { IssueSeverity } from "~/types/issues";
 
 const SCOPE_HEADERS = {
   users: _("Users"),
@@ -59,11 +61,11 @@ const ReadyForInstallation = () => (
 
 // FIXME: improve
 const IssuesList = ({ issues }) => {
-  const { isEmpty, ...scopes } = issues;
+  const { isEmpty, issues: issuesByScope } = issues;
   const list = [];
-  Object.entries(scopes).forEach(([scope, issues], idx) => {
+  Object.entries(issuesByScope).forEach(([scope, issues], idx) => {
     issues.forEach((issue, subIdx) => {
-      const variant = issue.severity === "error" ? "warning" : "info";
+      const variant = issue.severity === IssueSeverity.Error ? "warning" : "info";
 
       const link = (
         <NotificationDrawerListItem key={`${idx}-${subIdx}`} variant={variant} isHoverable={false}>
@@ -91,12 +93,8 @@ const IssuesList = ({ issues }) => {
 };
 
 export default function OverviewPage() {
-  const [issues, setIssues] = useState([]);
   const client = useInstallerClient();
-
-  useEffect(() => {
-    client.issues().then(setIssues);
-  }, [client]);
+  const issues = useAllIssues();
 
   const resultSectionProps = issues.isEmpty
     ? {}
