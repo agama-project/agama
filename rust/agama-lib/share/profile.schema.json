@@ -761,6 +761,10 @@
               "type": {
                 "title": "Partition type",
                 "enum": ["primary", "logical"]
+              },
+              "size": {
+                "title": "Partition size",
+                "$ref": "#/$defs/sizeValue"
               }
             }
           },

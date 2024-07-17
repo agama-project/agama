@@ -26,6 +26,11 @@
             }
           },
           {
+            "create": {
+              "id": "linux",
+              "type": "primary",
+              "size": "10 GiB"
+            },
             "encrypt": {
               "password": "notsecret",
               "method": "luks2"
@@ -38,6 +43,9 @@
             }
           },
           {
+            "create": {
+              "size": "2 GiB"
+            },
             "encrypt": {
               "password": "notsecret",
               "method": "luks2"
