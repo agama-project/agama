@@ -76,7 +76,7 @@
                 "minimum": 0
               },
               "method4": {
-                "title": "IPv4 configuration method (e.g., 'auto')",
+                "title": "IPv4 configuration method",
                 "type": "string",
                 "enum": [
                   "auto",
@@ -86,7 +86,7 @@
                 ]
               },
               "method6": {
-                "title": "IPv6 configuration method (e.g., 'auto')",
+                "title": "IPv6 configuration method",
                 "type": "string",
                 "enum": [
                   "auto",
@@ -96,12 +96,14 @@
                 ]
               },
               "gateway4": {
-                "title": "Connection gateway address (e.g., '192.168.122.1')",
-                "type": "string"
+                "title": "Connection gateway address",
+                "type": "string",
+                "examples": ["192.168.122.1"]
               },
               "gateway6": {
-                "title": "Connection gateway address (e.g., '::ffff:c0a8:7a01')",
-                "type": "string"
+                "title": "Connection gateway address",
+                "type": "string",
+                "examples": ["::ffff:c0a8:7a01"]
               },
               "addresses": {
                 "type": "array",
@@ -212,16 +214,19 @@
       "additionalProperties": false,
       "properties": {
         "fullName": {
-          "title": "Full name (e.g., 'Jane Doe')",
-          "type": "string"
+          "title": "Full name",
+          "type": "string",
+          "examples": ["Jane Doe"]
         },
         "userName": {
-          "title": "User login name (e.g., 'jane.doe')",
-          "type": "string"
+          "title": "User login name",
+          "type": "string",
+          "examples": ["jane.doe"]
         },
         "password": {
-          "title": "User password (e.g., 'nots3cr3t')",
-          "type": "string"
+          "title": "User password",
+          "type": "string",
+          "examples": ["nots3cr3t"]
         }
       },
       "required": [
@@ -250,8 +255,9 @@
       "type": "object",
       "properties": {
         "language": {
-          "title": "System language ID (e.g., 'en_US')",
-          "type": "string"
+          "title": "System language ID",
+          "type": "string",
+          "examples": ["en_US"]
         },
         "keyboard": {
           "title": "Keyboard layout ID",
@@ -259,7 +265,8 @@
         },
         "timezone": {
           "title": "Time zone identifier such as 'Europe/Berlin'",
-          "type": "string"
+          "type": "string",
+          "examples": ["Europe/Berlin"]
         }
       }
     },
@@ -286,8 +293,9 @@
                   "required": ["disk"],
                   "properties": {
                     "disk": {
-                      "title": "Disk device name (e.g., '/dev/vda')",
-                      "type": "string"
+                      "title": "Disk device name",
+                      "type": "string",
+                      "examples": ["/dev/vda"]
                     }
                   }
                 },
@@ -301,8 +309,9 @@
                       "title": "Devices in which to create the physical volumes",
                       "type": "array",
                       "items": {
-                        "title": "Disk device name (e.g., '/dev/vda')",
-                        "type": "string"
+                        "title": "Disk device name",
+                        "type": "string",
+                        "examples": ["/dev/vda"]
                       }
                     }
                   }
@@ -320,9 +329,10 @@
                   "type": "boolean"
                 },
                 "device": {
-                  "title": "Device to use for booting (e.g., '/dev/vda')",
+                  "title": "Device to use for booting",
                   "description": "The installation device is used by default for booting",
-                  "type": "string"
+                  "type": "string",
+                  "examples": ["/dev/vda"]
                 }
               }
             },
@@ -379,8 +389,9 @@
                           "additionalProperties": false,
                           "properties": {
                             "forceDelete": {
-                              "title": "Device to delete (e.g., '/dev/vda')",
-                              "type": "string"
+                              "title": "Device to delete",
+                              "type": "string",
+                              "examples": ["/dev/vda"]
                             }
                           }
                         },
@@ -392,8 +403,9 @@
                           "additionalProperties": false,
                           "properties": {
                             "resize": {
-                              "title": "Device to allow resizing (e.g., '/dev/vda')",
-                              "type": "string"
+                              "title": "Device to allow resizing",
+                              "type": "string",
+                              "examples": ["/dev/vda"]
                             }
                           }
                         }
@@ -490,7 +502,8 @@
                           "$ref": "#/$defs/sizeValue"
                         },
                         "minItems": 1,
-                        "maxItems": 2
+                        "maxItems": 2,
+                        "examples": [[1024, "2 GiB"]]
                       },
                       {
                         "title": "Size range",
@@ -525,9 +538,10 @@
                         "additionalProperties": false,
                         "properties": {
                           "newPartition": {
-                            "title": "Name of a disk device (e.g., '/dev/vda')",
-                            "type": "string"
-                            }
+                            "title": "Name of a disk device",
+                            "type": "string",
+                            "examples": ["/dev/vda"]
+                          }
                         }
                       },
                       {
@@ -538,8 +552,9 @@
                         "required": ["newVg"],
                         "properties": {
                           "newVg": {
-                            "title": "Name of a disk device (e.g., '/dev/vda')",
-                            "type": "string"
+                            "title": "Name of a disk device",
+                            "type": "string",
+                            "examples": ["/dev/vda"]
                           }
                         }
                       },
@@ -551,8 +566,9 @@
                         "required": ["device"],
                         "properties": {
                           "device": {
-                            "title": "Name of a device (e.g., '/dev/vda1')",
-                            "type": "string"
+                            "title": "Name of a device",
+                            "type": "string",
+                            "examples": ["/dev/vda1"]
                           }
                         }
                       },
@@ -564,8 +580,9 @@
                         "required": ["filesystem"],
                         "properties": {
                           "filesystem": {
-                            "title": "Name of a device containing the file system (e.g., '/dev/vda1')",
-                            "type": "string"
+                            "title": "Name of a device containing the file system",
+                            "type": "string",
+                            "examples": ["/dev/vda1"]
                           }
                         }
                       }
@@ -588,7 +605,8 @@
     "sizeString": {
       "title": "Human readable size (e.g., '2 GiB')",
       "type": "string",
-      "pattern": "^[0-9]+(\\.[0-9]+)?(\\s*([KkMmGgTtPpEeZzYy][iI]?)?[Bb])?$"
+      "pattern": "^[0-9]+(\\.[0-9]+)?(\\s*([KkMmGgTtPpEeZzYy][iI]?)?[Bb])?$",
+      "examples": ["2 GiB", "1.5 TB", "1TIB", "1073741824 b", "1073741824"]
     },
     "sizeInteger": {
       "title": "Size in bytes",
