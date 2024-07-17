@@ -15,7 +15,7 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-Name:           agama-products-opensuse
+Name:           agama-products
 #               This will be set by osc services, that will run after this.
 Version:        0
 Release:        0
