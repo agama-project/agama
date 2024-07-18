@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import {
   CardBody,
@@ -41,12 +39,8 @@ import { _ } from "~/i18n";
 
 /**
  * List of selected patterns.
- * @component
- * @param {object} props
- * @param {Pattern[]} props.patterns - List of patterns, including selected and unselected ones.
- * @return {JSX.Element}
  */
-const SelectedPatternsList = ({ patterns }) => {
+const SelectedPatternsList = ({ patterns }: { patterns: Pattern[] }) => {
   const selected = patterns.filter((p) => p.selectedBy !== SelectedBy.NONE);
 
   if (selected.length === 0) {
@@ -97,8 +91,6 @@ const NoPatterns = () => (
 
 /**
  * Software page component
- * @component
- * @returns {JSX.Element}
  */
 function SoftwarePage() {
   const issues = useIssues("software");

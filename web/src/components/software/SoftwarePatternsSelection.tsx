@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardBody,
@@ -33,35 +33,15 @@ import {
   SearchInput,
   Stack,
 } from "@patternfly/react-core";
-
 import { Section, Page } from "~/components/core";
-import { _ } from "~/i18n";
 import { SelectedBy } from "~/types/software";
 import { useConfigMutation, usePatterns } from "~/queries/software";
-
-/**
- * @typedef {Object} Pattern
- * @property {string} name pattern name (internal ID)
- * @property {string} group pattern group
- * @property {string} summary pattern name (user visible)
- * @property {string} description long description of the pattern
- * @property {string} order display order
- * @property {string} icon icon name (not path or file name!)
- * @property {number} selectedBy who selected the pattern, undefined
- *   means it is not selected to install
- */
-
-/**
- * @typedef {Object.<string, Array<Pattern>} PatternGroups mapping "group name" =>
- * list of patterns
- */
+import { _ } from "~/i18n";
 
 /**
  * Group the patterns with the same group name
- * @param {Array<Pattern>} patterns input
- * @return {PatternGroups}
  */
-function groupPatterns(patterns) {
+function groupPatterns(patterns: Pattern[]): PatternsGroups {
   const groups = {};
 
   patterns.forEach((pattern) => {
@@ -89,10 +69,8 @@ function groupPatterns(patterns) {
 
 /**
  * Sort pattern group names
- * @param {PatternGroups} groups input
- * @returns {Array<string>} sorted pattern group names
  */
-function sortGroups(groups) {
+function sortGroups(groups: PatternsGroups): string[] {
   return Object.keys(groups).sort((g1, g2) => {
     const order1 = groups[g1][0].order;
     const order2 = groups[g2][0].order;
@@ -100,7 +78,7 @@ function sortGroups(groups) {
   });
 }
 
-const filterPatterns = (patterns = [], searchValue = "") => {
+const filterPatterns = (patterns: Pattern[] = [], searchValue = "") => {
   if (searchValue.trim() === "") return patterns;
 
   // case insensitive search
@@ -112,15 +90,17 @@ const filterPatterns = (patterns = [], searchValue = "") => {
   );
 };
 
+const NoMatches = () => <b>{_("None of the patterns match the filter.")}</b>;
+
 /**
  * Pattern selector component
  */
 function SoftwarePatternsSelection() {
   const patterns = usePatterns();
+  const config = useConfigMutation();
   const [searchValue, setSearchValue] = useState("");
-  const softwareConfig = useConfigMutation();
 
-  const onToggle = (name) => {
+  const onToggle = (name: string) => {
     const selected = patterns
       .filter((p) => p.selectedBy === SelectedBy.USER)
       .reduce((all, p) => {
@@ -130,7 +110,7 @@ function SoftwarePatternsSelection() {
     const pattern = patterns.find((p) => p.name === name);
     selected[name] = pattern.selectedBy === SelectedBy.NONE;
 
-    softwareConfig.mutate({ patterns: selected });
+    config.mutate({ patterns: selected });
   };
 
   // FIXME: use loading indicator when busy, we cannot know if it will be
@@ -145,13 +125,13 @@ function SoftwarePatternsSelection() {
   // FIXME: use a switch instead of a checkbox since these patterns are going to
   // be selected/deselected immediately.
   // TODO: extract to a DataListSelector component or so.
-  let selector = sortGroups(groups).map((groupName) => {
+  const selector = sortGroups(groups).map((groupName) => {
     const selectedIds = groups[groupName]
       .filter((p) => p.selectedBy !== SelectedBy.NONE)
       .map((p) => p.name);
     return (
       <Section key={groupName} title={groupName}>
-        <DataList isCompact>
+        <DataList isCompact aria-label={groupName}>
           {groups[groupName].map((option) => (
             <DataListItem key={option.name}>
               <DataListItemRow>
@@ -186,10 +166,6 @@ function SoftwarePatternsSelection() {
     );
   });
 
-  if (selector.length === 0) {
-    selector = <b>{_("None of the patterns match the filter.")}</b>;
-  }
-
   return (
     <>
       <Page.Header>
@@ -209,7 +185,7 @@ function SoftwarePatternsSelection() {
 
       <Page.MainContent>
         <Card isRounded>
-          <CardBody>{selector}</CardBody>
+          <CardBody>{selector.length > 0 ? selector : <NoMatches />}</CardBody>
         </Card>
       </Page.MainContent>
 
