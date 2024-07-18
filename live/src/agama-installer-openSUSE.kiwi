@@ -10,7 +10,6 @@
     </description>
     <profiles>
         <profile name="openSUSE" description="openSUSE multiproduct image" import="true" />
-        <profile name="openSUSE-Playwright" description="openSUSE image with Playwright integration tests" arch="aarch64,x86_64" />
         <profile name="openSUSE-PXE" description="openSUSE OEM image for remote instalaltion" import="true" />
     </profiles>
     <preferences>
@@ -29,7 +28,7 @@
             <bootloader name="grub2" console="serial" timeout="10"/>
         </type>
     </preferences>
-    <preferences arch="aarch64,x86_64" profiles="openSUSE,openSUSE-Playwright">
+    <preferences arch="aarch64,x86_64" profiles="openSUSE">
         <type image="iso" flags="dmsquash" firmware="uefi" mediacheck="true" volid="agama" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" timeout="10"/>
         </type>
@@ -147,6 +146,7 @@
         <package name="agama-web-ui"/>
         <package name="agama-cli"/>
         <package name="agama-auto"/>
+        <package name="agama-integration-tests"/>
         <package name="microos-tools"/>
         <package name="staging-build-key"/>
         <package name="icewm-lite"/>
@@ -160,18 +160,9 @@
         <archive name="root.tar.xz"/>
     </packages>
     <!-- additional packages for the openSUSE flavors -->
-    <packages type="image" profiles="openSUSE,openSUSE-Playwright">
+    <packages type="image" profiles="openSUSE">
       <package name="agama-products-opensuse"/>
       <package name="openSUSE-build-key"/>
-    </packages>
-    <!-- additional packages for the Playwright flavors -->
-    <packages type="image" profiles="openSUSE-Playwright">
-        <package name="playwright"/>
-        <package name="agama-playwright"/>
-        <!-- Playwright does not work with the openSUSE Firefox, -->
-        <!-- install the chromium browser for running the tests -->
-        <!-- unfortunately it is not available for s390x -->
-        <package name="chromium"/>
     </packages>
     <packages type="bootstrap">
         <package name="udev"/>
