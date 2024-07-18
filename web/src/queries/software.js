@@ -33,6 +33,15 @@ const configQuery = () => ({
   queryFn: () => fetch("/api/software/config").then((res) => res.json()),
 });
 
+const selectedProductQuery = () => ({
+  queryKey: ["software/product"],
+  queryFn: async () => {
+    const response = await fetch("/api/software/config");
+    const { product } = await response.json();
+    return product;
+  },
+});
+
 const productsQuery = () => ({
   queryKey: ["software/products"],
   queryFn: () => fetch("/api/software/products").then((res) => res.json()),
@@ -60,6 +69,7 @@ const useConfigMutation = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["software/config"] });
+      queryClient.invalidateQueries({ queryKey: ["software/product"] });
       client.manager.startProbing();
     },
   };
@@ -88,15 +98,22 @@ const useProductChanges = () => {
 };
 
 const useProduct = () => {
-  const [{ data: config }, { data: products }] = useSuspenseQueries({
-    queries: [configQuery(), productsQuery()],
+  const [{ data: selected }, { data: products }] = useSuspenseQueries({
+    queries: [selectedProductQuery(), productsQuery()],
   });
 
-  const selectedProduct = products.find((p) => p.id === config.product);
+  const selectedProduct = products.find((p) => p.id === selected);
   return {
     products,
     selectedProduct,
   };
 };
 
-export { configQuery, productsQuery, useConfigMutation, useProduct, useProductChanges };
+export {
+  configQuery,
+  selectedProductQuery,
+  productsQuery,
+  useConfigMutation,
+  useProduct,
+  useProductChanges,
+};
