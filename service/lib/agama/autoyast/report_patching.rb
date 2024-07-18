@@ -26,7 +26,7 @@
 # TODO: what to do if it runs without agama? Just print question to stderr?
 
 require "yaml"
-require "yast/execute"
+require "yast2/execute"
 
 module Yast2
   class Popup
