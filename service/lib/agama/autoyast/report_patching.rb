@@ -28,11 +28,16 @@
 require "yaml"
 require "yast2/execute"
 
+# :nodoc:
+# rubocop:disable Metrics/ParameterLists
+# rubocop:disable Lint/UnusedMethodArgument
 module Yast2
+  # :nodoc:
   class Popup
     class << self
       # Keep in sync with real Yast2::Popup
-      def show(message, details: "", headline: "", timeout: 0, focus: nil, buttons: :ok, richtext: false, style: :notice)
+      def show(message, details: "", headline: "", timeout: 0, focus: nil,
+        buttons: :ok, richtext: false, style: :notice)
         # at first construct agama question to display.
         # NOTE: timeout is not supported.
         # FIXME: what to do with richtext?
@@ -40,7 +45,8 @@ module Yast2
         text += "\n\n" + details unless details.empty?
         options = generate_options(buttons)
         question = {
-          # TODO: id for newly created question is ignored, but maybe it will be better to not have to specify it at all?
+          # TODO: id for newly created question is ignored, but maybe it will
+          # be better to not have to specify it at all?
           id:             0,
           class:          "autoyast.popup",
           text:           text,
@@ -49,8 +55,9 @@ module Yast2
           data:           {}
         }
         data = { generic: question }.to_yaml
-        answer_yaml = Yast::Execute.locally!("agama", "questions", "ask", stdin: data, stdout: :capture)
-        answer = YAML.load(answer_yaml)
+        answer_yaml = Yast::Execute.locally!("agama", "questions", "ask",
+          stdin: data, stdout: :capture)
+        answer = YAML.safe_load(answer_yaml)
         answer["generic"]["answer"].to_sym
       end
 
@@ -77,6 +84,7 @@ end
 # needed to ask for GPG encrypted autoyast profiles
 # TODO: encrypt agama profile? is it needed?
 module UI
+  # :nodoc:
   class PasswordDialog
     def new(label, confirm: false)
       @label = label
@@ -87,7 +95,8 @@ module UI
       # at first construct agama question to display.
       text = @label
       question = {
-        # TODO: id for newly created question is ignored, but maybe it will be better to not have to specify it at all?
+        # TODO: id for newly created question is ignored, but maybe it will
+        # be better to not have to specify it at all?
         id:             0,
         class:          "autoyast.password",
         text:           text,
@@ -96,11 +105,16 @@ module UI
         data:           {}
       }
       data = { generic: question, with_password: {} }.to_yaml
-      answer_yaml = Yast::Execute.locally!("agama", "questions", "ask", stdin: data, stdout: :capture)
-      answer = YAML.load(answer_yaml)
+      answer_yaml = Yast::Execute.locally!("agama", "questions", "ask", stdin: data,
+stdout: :capture)
+      answer = YAML.safe_load(answer_yaml)
       result = answer["generic"]["answer"].to_sym
       return nil if result == "cancel"
+
       answer["with_password"]["password"]
     end
   end
 end
+
+# rubocop:enable Metrics/ParameterLists
+# rubocop:enable Lint/UnusedMethodArgument
