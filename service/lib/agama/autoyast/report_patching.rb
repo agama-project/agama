@@ -25,7 +25,7 @@
 # independent.
 # TODO: what to do if it runs without agama? Just print question to stderr?
 
-require "yaml"
+require "json"
 require "yast"
 require "yast2/execute"
 require "ui/dialog"
@@ -56,10 +56,10 @@ module Yast2
           default_option: focus || options.first,
           data:           {}
         }
-        data = { generic: question }.to_yaml
-        answer_yaml = Yast::Execute.locally!("agama", "questions", "ask",
+        data = { generic: question }.to_json
+        answer_json = Yast::Execute.locally!("agama", "questions", "ask",
           stdin: data, stdout: :capture)
-        answer = YAML.safe_load(answer_yaml)
+        answer = JSON.parse!(answer_json)
         answer["generic"]["answer"].to_sym
       end
 
@@ -99,17 +99,17 @@ module UI
       question = {
         # TODO: id for newly created question is ignored, but maybe it will
         # be better to not have to specify it at all?
-        id:             0,
-        class:          "autoyast.password",
-        text:           text,
-        options:        ["ok", "cancel"],
-        default_option: "cancel",
-        data:           {}
+        "id"            => 0,
+        "class"         => "autoyast.password",
+        "text"          => text,
+        "options"       => ["ok", "cancel"],
+        "defaultOption" => "cancel",
+        "data"          => {}
       }
-      data = { generic: question, with_password: {} }.to_yaml
-      answer_yaml = Yast::Execute.locally!("agama", "questions", "ask", stdin: data,
+      data = { "generic" => question, "withPassword" => {} }.to_json
+      answer_json = Yast::Execute.locally!("agama", "questions", "ask", stdin: data,
 stdout: :capture)
-      answer = YAML.safe_load(answer_yaml)
+      answer = JSON.parse!(answer_json)
       result = answer["generic"]["answer"].to_sym
       return nil if result == "cancel"
 
