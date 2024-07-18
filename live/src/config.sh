@@ -12,6 +12,13 @@ echo "Configure image: [$kiwi_iname]..."
 # setup baseproduct link
 suseSetupProduct
 
+# enable the corresponding repository
+DISTRO=$(grep "^NAME" /etc/os-release | cut -f2 -d\= | tr -d '"' | tr " " "_")
+REPO="agama-${DISTRO}"
+if zypper lr $REPO; then
+  zypper mr --enable $REPO
+fi
+
 # configure the repositories in the Live system
 # import the OBS key for the systemsmanagement OBS project
 rpm --import /tmp/systemsmanagement_key.gpg
