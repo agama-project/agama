@@ -130,7 +130,15 @@
                   },
                   "security": {
                     "type": "string",
-                    "examples": ["? maybe this is actually an enum"]
+                    "enum": [
+                      "none",
+                      "owe",
+                      "ieee8021x",
+                      "wpa-psk",
+                      "sae",
+                      "wpa-eap",
+                      "wpa-eap-suite-b192"
+                    ]
                   },
                   "ssid": {
                     "type": "string"
@@ -153,7 +161,15 @@
                 "properties": {
                   "mode": {
                     "type": "string",
-                    "examples": ["? maybe this is actually an enum"]
+                    "enum": [
+                      "balance-rr",
+                      "active-backup",
+                      "balance-xor",
+                      "broadcast",
+                      "802.3ad",
+                      "balance-tlb",
+                      "balance-alb"
+                    ]
                   },
                   "options": {
                     "type": "string"
