@@ -54,6 +54,30 @@ module Agama
       def mock_hwinfo(hwinfo)
         allow_any_instance_of(Y2Storage::HWInfoReader).to receive(:for_device).and_return(hwinfo)
       end
+
+      def planned_partition(attrs = {})
+        part = Y2Storage::Planned::Partition.new(nil)
+        add_planned_attributes(part, attrs)
+      end
+
+      def add_planned_attributes(device, attrs)
+        attrs = attrs.dup
+
+        if device.respond_to?(:filesystem_type)
+          type = attrs.delete(:type)
+          device.filesystem_type =
+            if type.is_a?(::String) || type.is_a?(Symbol)
+              Y2Storage::Filesystems::Type.const_get(type.to_s.upcase)
+            else
+              type
+            end
+        end
+
+        attrs.each_pair do |key, value|
+          device.send(:"#{key}=", value)
+        end
+        device
+      end
     end
   end
 end

@@ -62,12 +62,10 @@ module Agama
         Storage::ProposalSettingsConversions::ToJSON.new(self).convert
       end
 
-    private
-
       # Device used for booting.
       #
       # @return [String, nil]
-      def boot_device
+      def explicit_boot_device
         return nil unless boot.configure?
 
         boot.device

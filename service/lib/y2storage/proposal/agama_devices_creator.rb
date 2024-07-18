@@ -71,6 +71,8 @@ module Y2Storage
       # @return [Array<String>] Disks to consider
       attr_reader :disk_names
 
+      attr_reader :space_maker
+
       # @return [Proposal::CreatorResult] Current result containing the devices that have been created
       attr_reader :creator_result
 
@@ -110,6 +112,8 @@ module Y2Storage
         # process_vgs
         # process_btrfs_filesystems
         # process_nfs_filesystems
+
+        creator_result
       end
 
       def process_existing_partitionables
@@ -121,7 +125,7 @@ module Y2Storage
 
         # Check whether there is any chance of getting an unwanted order for the planned partitions
         # within a disk
-        space_result = provide_space(partitions, initial_graph, lvm_helper)
+        space_result = provide_space(partitions, original_graph, lvm_helper)
 
         partition_creator = PartitionCreator.new(space_result[:devicegraph])
         self.creator_result = partition_creator.create_partitions(space_result[:partitions_distribution])
@@ -158,9 +162,9 @@ module Y2Storage
       end
 
       def partitions_for_existing(planned_devices)
-        # TODO:
-        # Exclude reused partitions
         # Maybe in the future this can include partitions on top of existing MDs
+        # TODO: simplistic implementation
+        planned_devices.select { |d| d.is_a?(Planned::Partition) && !d.reuse? }
       end
 
       # Formats and/or mounts the disk like block devices (Xen virtual partitions and full disks)

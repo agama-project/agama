@@ -28,14 +28,26 @@ module Y2Storage
         super(disk_analyzer, guided_settings(settings, config))
       end
 
-			def guided_settings(_settings, _config)
-				# Despite the "current_product" part in the name of the constructor, it only applies
-				# generic default values that are independent of the product (there is no YaST
-				# ProductFeatures mechanism in place).
-				Y2Storage::ProposalSettings.new_for_current_product.tap do |target|
+      def guided_settings(settings, _config)
+        # Despite the "current_product" part in the name of the constructor, it only applies
+        # generic default values that are independent of the product (there is no YaST
+        # ProductFeatures mechanism in place).
+        Y2Storage::ProposalSettings.new_for_current_product.tap do |target|
           target.space_settings.strategy = :bigger_resize
           target.space_settings.actions = []
-				end
+
+          boot_device = settings.explicit_boot_device || implicit_boot_device(settings)
+
+          target.root_device = boot_device
+          target.candidate_devices = [boot_device].compact
+        end
+      end
+
+      private
+
+      def implicit_boot_device(settings)
+        # TODO
+        "/dev/sda"
       end
     end
   end

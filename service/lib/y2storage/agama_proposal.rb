@@ -19,7 +19,10 @@
 
 require "yast"
 require "y2storage/proposal"
-require "y2storage/agama_searcher"
+require "y2storage/proposal/agama_searcher"
+require "y2storage/proposal/agama_space_maker"
+require "y2storage/proposal/agama_devices_planner"
+require "y2storage/proposal/agama_devices_creator"
 require "y2storage/exceptions"
 require "y2storage/planned"
 
@@ -96,9 +99,6 @@ module Y2Storage
     def propose_devicegraph(devicegraph)
       @planned_devices = initial_planned_devices(devicegraph)
 
-      # This is from Guided
-      raise Error if useless_volumes_sets?
-
       clean_devicegraph = clean_graph(devicegraph, @planned_devices)
 
       planner = Proposal::AgamaDevicesPlanner.new(settings)
@@ -128,7 +128,7 @@ module Y2Storage
     # @param devicegraph [Devicegraph]                 Starting point
     # @return [Planned::DevicesCollection] Devices to add
     def initial_planned_devices(devicegraph)
-      planner = Proposal::AgamaDevicesPlanner.new(settings, config)
+      planner = Proposal::AgamaDevicesPlanner.new(settings, config, issues_list)
       planner.initial_planned_devices(devicegraph)
     end
 
@@ -169,20 +169,20 @@ module Y2Storage
       drive_sids = settings.drives.map(&:found_sid)
       devices = drive_sids.map { |n| devicegraph.find_device(n) }.compact
       devices.select { |d| d.partition_table && d.partitions.empty? }
-		end
+    end
 
-		# Planned partitions that will hold the given planned devices
-		#
-		# Extracted to a separate method because it's something that may need some extra logic
+    # Planned partitions that will hold the given planned devices
+    #
+    # Extracted to a separate method because it's something that may need some extra logic
     # in the future. See the equivalent method at DevicegraphGenerator.
-		#
-		# @param planned_devices [Array<Planned::Device>] list of planned devices
-		# @return [Array<Planned::Partition>]
-		def partitions_for(planned_devices)
-      planned_devices.select { |d| device.is_a?(Planned::Partition) }
-		end
+    #
+    # @param planned_devices [Array<Planned::Device>] list of planned devices
+    # @return [Array<Planned::Partition>]
+    def partitions_for(planned_devices)
+      planned_devices.select { |d| d.is_a?(Planned::Partition) }
+    end
 
-		# Configures SpaceMaker#protected_sids according to the given list of planned devices
+    # Configures SpaceMaker#protected_sids according to the given list of planned devices
     #
     # @param devices [Array<Planned::Device]
     def protect_sids(devices)

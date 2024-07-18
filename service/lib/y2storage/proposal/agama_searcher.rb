@@ -67,7 +67,7 @@ module Y2Storage
 
       def issue_missing_drive(drive)
         Agama::Issue.new(
-          _("No device found for a given drive")
+          _("No device found for a given drive"),
           source:   Issue::Source::CONFIG,
           severity: Issue::Severity::ERROR
         )

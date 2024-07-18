@@ -22,7 +22,7 @@ require "y2storage/proposal_settings"
 
 module Y2Storage
   module Proposal
-    class AgamaSpaceMaker < SpaceMaker
+    class AgamaLvmHelper < LvmHelper
       # Initialize.
       def initialize(lvm_lvs)
         super(lvm_lvs, guided_settings)
