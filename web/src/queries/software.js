@@ -27,6 +27,7 @@ import {
   useSuspenseQueries,
 } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
+import { SelectedBy } from "~/client/software";
 
 const configQuery = () => ({
   queryKey: ["software/config"],
@@ -48,6 +49,16 @@ const productsQuery = () => ({
   staleTime: Infinity,
 });
 
+const proposalQuery = () => ({
+  queryKey: ["software/proposal"],
+  queryFn: () => fetch("/api/software/proposal").then((res) => res.json()),
+});
+
+const patternsQuery = () => ({
+  queryKey: ["software/patterns"],
+  queryFn: () => fetch("/api/software/patterns").then((res) => res.json()),
+});
+
 /**
  * Hook that builds a mutation to update the software configuration
  *
@@ -67,10 +78,17 @@ const useConfigMutation = () => {
           "Content-Type": "application/json",
         },
       }),
-    onSuccess: () => {
+    onMutate: async () => {
+      const prevConfig = queryClient.getQueryData(["software/config"]);
+      return { prevConfig };
+    },
+    onSuccess: (_, variables, { prevConfig }) => {
       queryClient.invalidateQueries({ queryKey: ["software/config"] });
-      queryClient.invalidateQueries({ queryKey: ["software/product"] });
-      client.manager.startProbing();
+      queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
+      if (variables.product && variables.product !== prevConfig.product) {
+        queryClient.invalidateQueries({ queryKey: ["software/product"] });
+        client.manager.startProbing();
+      }
     },
   };
   return useMutation(query);
@@ -109,11 +127,41 @@ const useProduct = () => {
   };
 };
 
+const usePatterns = () => {
+  const [{ data: proposal }, { data: patterns }] = useSuspenseQueries({
+    queries: [proposalQuery(), patternsQuery()],
+  });
+
+  // const selection: PatternsSelection = config.patterns;
+  const selection = proposal.patterns;
+
+  return patterns
+    .map((pattern) => {
+      let selectedBy;
+      switch (selection[pattern.name]) {
+        case 0:
+          selectedBy = SelectedBy.USER;
+          break;
+        case 1:
+          selectedBy = SelectedBy.AUTO;
+          break;
+        default:
+          selectedBy = SelectedBy.NONE;
+      }
+      return {
+        ...pattern,
+        selectedBy,
+      };
+    })
+    .sort((a, b) => a.order - b.order);
+};
+
 export {
   configQuery,
-  selectedProductQuery,
   productsQuery,
+  selectedProductQuery,
   useConfigMutation,
+  usePatterns,
   useProduct,
   useProductChanges,
 };

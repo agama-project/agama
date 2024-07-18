@@ -39,6 +39,7 @@ import { _ } from "~/i18n";
 import { SelectedBy } from "~/client/software";
 import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
+import { useConfigMutation, usePatterns } from "~/queries/software";
 
 /**
  * @typedef {Object} Pattern
@@ -48,7 +49,7 @@ import { useCancellablePromise } from "~/utils";
  * @property {string} description long description of the pattern
  * @property {string} order display order
  * @property {string} icon icon name (not path or file name!)
- * @property {number} selected who selected the pattern, undefined
+ * @property {number} selectedBy who selected the pattern, undefined
  *   means it is not selected to install
  */
 
@@ -101,94 +102,44 @@ function sortGroups(groups) {
   });
 }
 
-/**
- * Builds a list of patterns include its selection status
- *
- * @param {import("~/client/software").Pattern[]} patterns - Patterns from the HTTP API
- * @param {Object.<string, number>} selection - Patterns selection
- * @return {Pattern[]} List of patterns including its selection status
- */
-function buildPatterns(patterns, selection) {
-  return patterns
-    .map((pattern) => {
-      const selectedBy = selection[pattern.name] !== undefined ? selection[pattern.name] : 2;
-      return {
-        ...pattern,
-        selectedBy,
-      };
-    })
-    .sort((a, b) => a.order - b.order);
-}
+const filterPatterns = (patterns = [], searchValue = "") => {
+  if (searchValue.trim() === "") return patterns;
+
+  // case insensitive search
+  const searchData = searchValue.toUpperCase();
+  return patterns.filter(
+    (p) =>
+      p.name.toUpperCase().indexOf(searchData) !== -1 ||
+      p.description.toUpperCase().indexOf(searchData) !== -1,
+  );
+};
 
 /**
  * Pattern selector component
  */
 function SoftwarePatternsSelection() {
-  const client = useInstallerClient();
-  const [patterns, setPatterns] = useState([]);
-  const [proposal, setProposal] = useState({ patterns: {}, size: "" });
-  const [isLoading, setIsLoading] = useState(true);
-  const [visiblePatterns, setVisiblePatterns] = useState(patterns);
+  const patterns = usePatterns();
   const [searchValue, setSearchValue] = useState("");
-  const { cancellablePromise } = useCancellablePromise();
+  const softwareConfig = useConfigMutation();
 
-  useEffect(() => {
-    if (patterns.length !== 0) return;
+  const onToggle = (name) => {
+    const selected = patterns
+      .filter((p) => p.selectedBy === SelectedBy.USER)
+      .reduce((all, p) => {
+        all[p.name] = true;
+        return all;
+      }, {});
+    const pattern = patterns.find((p) => p.name === name);
+    selected[name] = pattern.selectedBy === SelectedBy.NONE;
 
-    const loadPatterns = async () => {
-      const patterns = await cancellablePromise(client.software.getPatterns());
-      const proposal = await cancellablePromise(client.software.getProposal());
-      setPatterns(buildPatterns(patterns, proposal.patterns));
-      setProposal(proposal);
-      setIsLoading(false);
-    };
-
-    loadPatterns();
-  }, [client.software, patterns, cancellablePromise]);
-
-  useEffect(() => {
-    if (!patterns) return;
-
-    // filtering - search the required text in the name and pattern description
-    if (searchValue !== "") {
-      // case insensitive search
-      const searchData = searchValue.toUpperCase();
-      const filtered = patterns.filter(
-        (p) =>
-          p.name.toUpperCase().indexOf(searchData) !== -1 ||
-          p.description.toUpperCase().indexOf(searchData) !== -1,
-      );
-      setVisiblePatterns(filtered);
-    } else {
-      setVisiblePatterns(patterns);
-    }
-
-    return client.software.onSelectedPatternsChanged((selection) => {
-      client.software.getProposal().then((proposal) => setProposal(proposal));
-      setPatterns(buildPatterns(patterns, selection));
-    });
-  }, [patterns, searchValue, client.software]);
-
-  const onToggle = useCallback(
-    (name) => {
-      const selected = patterns
-        .filter((p) => p.selectedBy === SelectedBy.USER)
-        .reduce((all, p) => {
-          all[p.name] = true;
-          return all;
-        }, {});
-      const pattern = patterns.find((p) => p.name === name);
-      selected[name] = pattern.selectedBy === SelectedBy.NONE;
-
-      client.software.selectPatterns(selected);
-    },
-    [patterns, client.software],
-  );
+    softwareConfig.mutate({ patterns: selected });
+  };
 
   // FIXME: use loading indicator when busy, we cannot know if it will be
   // quickly or not in advance.
 
   // initial empty screen, the patterns are loaded very quickly, no need for any progress
+  const visiblePatterns = filterPatterns(patterns, searchValue);
   if (visiblePatterns.length === 0 && searchValue === "") return null;
 
   const groups = groupPatterns(visiblePatterns);
