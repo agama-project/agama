@@ -46,8 +46,12 @@ module Y2Storage
       private
 
       def implicit_boot_device(settings)
-        # TODO
-        "/dev/sda"
+        # TODO: preliminary implementation with very simplistic checks
+        root_drive = settings.drives.find do |drive|
+          drive.partitions.any? { |p| p.mount&.path == "/" }
+        end
+
+        root_drive&.found_device.name
       end
     end
   end

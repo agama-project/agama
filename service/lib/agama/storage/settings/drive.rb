@@ -30,6 +30,7 @@ module Agama
         attr_accessor :mount
         attr_accessor :ptable_type
         attr_accessor :partitions
+        attr_accessor :search
 
         # @param mount_path [String]
         def initialize
@@ -38,7 +39,6 @@ module Agama
 
         def search_device(devicegraph, used_sids)
           @search ||= default_search
-
           search.find(self, devicegraph, used_sids)
         end
 
@@ -46,8 +46,12 @@ module Agama
           Search.new
         end
 
-        def found_sid
-          search&.sid
+        def found_device
+          search&.device
+        end
+
+        def partitions?
+          partitions.any?
         end
       end
     end

@@ -27,22 +27,21 @@ module Y2Storage
 
       # Constructor
       #
-      # @param settings [ProposalSettings]
-      # @param config [Agama::Config]
-      def initialize(devicegraph)
+      def initialize
         textdomain "agama"
-
-        @devicegraph = devicegraph
       end
 
-      # Both arguments get modified
-      def search(settings, issues_list)
+      # The last two arguments get modified
+      def search(devicegraph, settings, issues_list)
+        settings.original_graph = devicegraph
+
         # TODO: If IfNotFound is 'error' => register error
         sids = []
         settings.drives.each do |drive|
           drive.search_device(devicegraph, sids)
 
-          if drive.sid.nil?
+          found = drive.found_device
+          if found.nil?
             # TODO: If IfNotFound is 'skip' => 
             #   invalidate somehow the device definition (registering issue?)
             #
@@ -51,12 +50,13 @@ module Y2Storage
             return false
           end
 
-          sids << drive.sid
-          next unless drive.sid && drive.partitions?
+          sids << found.sid
+          next unless drive.partitions?
 
           drive.partitions.each do |part|
-            part.search_device(devicegraph, drive.sid, sids)
-            sids << part.sid
+            part.search_device(devicegraph, found.sid, sids)
+            part_sid = part.found_device&.sid
+            sids << part_sid if part_sid
           end
         end
 

@@ -23,12 +23,12 @@ module Agama
   module Storage
     module Settings
       class Search
-        attr_reader :sid
+        attr_reader :device
 
-        def find(setting, devicegraph, used_sids, parent:)
+        def find(setting, devicegraph, used_sids, parent: nil)
           devices = candidate_devices(setting, devicegraph, parent)
           devices.reject! { |d| used_sids.include?(d.sid) }
-          @sid = devices.sort_by(&:name).first&.sid
+          @device = devices.sort_by(&:name).first
         end
 
         def candidate_devices(setting, devicegraph, parent)

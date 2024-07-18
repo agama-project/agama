@@ -81,7 +81,7 @@ module Y2Storage
     #
     # @raise [NoDiskSpaceError] if there is no enough space to perform the installation
     def calculate_proposal
-      Proposal::AgamaSearcher.new(initial_devicegraph).search(settings, issues_list)
+      Proposal::AgamaSearcher.new.search(initial_devicegraph, settings, issues_list)
       if issues_list.any?(:error?)
         # This means some IfNotFound is set to "error" and we failed to find a match
         @devices = nil
@@ -166,8 +166,7 @@ module Y2Storage
     # @param devicegraph [Y2Storage::Devicegraph]
     # @return [Array<Y2Storage::BlkDevice>]
     def drives_with_empty_partition_table(devicegraph)
-      drive_sids = settings.drives.map(&:found_sid)
-      devices = drive_sids.map { |n| devicegraph.find_device(n) }.compact
+      devices = settings.drives.map(&:found_device).compact
       devices.select { |d| d.partition_table && d.partitions.empty? }
     end
 
@@ -197,14 +196,9 @@ module Y2Storage
       planned_devices = planned_devices.map(&:dup)
 
       devices_creator = Proposal::AgamaDevicesCreator.new(devicegraph, issues_list)
-      names = disk_names(devicegraph)
+      names = settings.drives.map(&:found_device).compact.map(&:name)
       protect_sids(planned_devices)
       result = devices_creator.populated_devicegraph(planned_devices, names, space_maker)
-    end
-
-    def disk_names(devicegraph)
-      disk_sids = settings.drives.map(&:found_sid).compact
-      disk_sids.map {|s| devicegraph.find_device(s) }
     end
   end
 end

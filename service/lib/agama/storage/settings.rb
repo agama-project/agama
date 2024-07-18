@@ -21,31 +21,16 @@
 
 module Agama
   module Storage
+    # Namespace for all the supported settings to configure storage
     module Settings
-      class Partition
-        attr_accessor :id
-        attr_accessor :type
-        attr_accessor :size
-        attr_accessor :resize
-        attr_accessor :delete
-        attr_accessor :encrypt
-        attr_accessor :format
-        attr_accessor :mount
-        attr_accessor :search
-
-        def search_device(devicegraph, parent_sid, used_sids)
-          @search ||= default_search
-          search.find(self, devicegraph, used_sids, parent: parent_sid)
-        end
-
-        def default_search
-          Search.new
-        end
-
-        def found_device
-          search&.device
-        end
-      end
     end
   end
 end
+
+require "agama/storage/settings/drive"
+require "agama/storage/settings/encrypt"
+require "agama/storage/settings/format"
+require "agama/storage/settings/mount"
+require "agama/storage/settings/partition"
+require "agama/storage/settings/search"
+require "agama/storage/settings/size_range"

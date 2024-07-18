@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/boot_settings"
+require "agama/storage/settings"
 
 module Agama
   module Storage
@@ -35,6 +36,7 @@ module Agama
       attr_accessor :md_raids
       attr_accessor :btrfs_raids
       attr_accessor :nfs_mounts
+      attr_accessor :original_graph
 
       def initialize
         @boot = BootSettings.new

@@ -37,7 +37,20 @@ describe Y2Storage::AgamaProposal do
     described_class.new(initial_settings, config, issues_list: issues_list)
   end
   let(:config) { Agama::Config.new }
-  let(:initial_settings) { Agama::Storage::Profile.new }
+  let(:initial_settings) do
+    Agama::Storage::Profile.new.tap do |settings|
+      settings.drives = [drive]
+    end
+  end
+  let(:drive) do
+    Agama::Storage::Settings::Drive.new.tap do |drive|
+      drive.partitions = [
+        Agama::Storage::Settings::Partition.new.tap do |part|
+          part.mount = Agama::Storage::Settings::Mount.new.tap { |m| m.path = "/" }
+        end
+      ]
+    end
+  end
   let(:issues_list) { [] }
   let(:dev_generator) do
     instance_double(
@@ -45,16 +58,13 @@ describe Y2Storage::AgamaProposal do
     )
   end
   let(:planned_devices) do
-    [
-      planned_partition(mount_point: "/", type: :ext4, min: Y2Storage::DiskSize.GiB(8.5)),
-      planned_partition(mount_point: "swap", type: :swap, min: Y2Storage::DiskSize.GiB(1))
-    ]
+    [planned_partition(mount_point: "/", type: :ext4, min: Y2Storage::DiskSize.GiB(8.5))]
   end
 
   describe "#propose" do
     it "does something" do
       proposal.propose
-      expect(proposal.devices.partitions.size).to eq 2
+      expect(proposal.devices.partitions.size).to eq 1
     end
   end
 end
