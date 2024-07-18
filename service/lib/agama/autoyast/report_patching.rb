@@ -26,7 +26,9 @@
 # TODO: what to do if it runs without agama? Just print question to stderr?
 
 require "yaml"
+require "yast"
 require "yast2/execute"
+require "ui/dialog"
 
 # :nodoc:
 # rubocop:disable Metrics/ParameterLists
@@ -85,7 +87,7 @@ end
 # TODO: encrypt agama profile? is it needed?
 module UI
   # :nodoc:
-  class PasswordDialog
+  class PasswordDialog < Dialog
     def new(label, confirm: false)
       @label = label
       # NOTE: implement confirm if needed
