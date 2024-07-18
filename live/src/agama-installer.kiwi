@@ -161,6 +161,7 @@
     <packages type="image" profiles="openSUSE">
         <package name="agama-products-opensuse"/>
         <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
+        <package name="openSUSE-repos-Tumbleweed"/>
         <package name="patterns-openSUSE-base"/>
         <package name="ruby3.3-rubygem-agama-yast"/>
         <package name="ruby3.3-rubygem-byebug"/>
