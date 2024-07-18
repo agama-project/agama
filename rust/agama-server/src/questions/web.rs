@@ -61,6 +61,7 @@ impl<'a> QuestionsClient<'a> {
             .map(|(k, v)| (k.as_str(), v.as_str()))
             .collect();
         let path = if question.with_password.is_some() {
+            tracing::info!("creating question with password");
             self.questions_proxy
                 .new_with_password(
                     &generic.class,
@@ -71,6 +72,7 @@ impl<'a> QuestionsClient<'a> {
                 )
                 .await?
         } else {
+            tracing::info!("creating generic question");
             self.questions_proxy
                 .new_question(
                     &generic.class,
@@ -89,7 +91,8 @@ impl<'a> QuestionsClient<'a> {
             return Err(ServiceError::UnsuccessfulAction(msg));
         }; // TODO: better error if path does not contain id
         res.generic.id = id_cap["id"].parse::<u32>().unwrap();
-        Ok(question)
+        tracing::info!("new question gets id {}", res.generic.id);
+        Ok(res)
     }
 
     pub async fn questions(&self) -> Result<Vec<Question>, ServiceError> {
