@@ -28,6 +28,7 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
+import { SelectedBy } from "~/types/software";
 
 /**
  * Query to retrieve software configuration

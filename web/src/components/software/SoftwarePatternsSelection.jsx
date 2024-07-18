@@ -36,9 +36,7 @@ import {
 
 import { Section, Page } from "~/components/core";
 import { _ } from "~/i18n";
-import { SelectedBy } from "~/client/software";
-import { useInstallerClient } from "~/context/installer";
-import { useCancellablePromise } from "~/utils";
+import { SelectedBy } from "~/types/software";
 import { useConfigMutation, usePatterns } from "~/queries/software";
 
 /**

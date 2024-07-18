@@ -22,7 +22,7 @@
 /**
  * Enum for the reasons to select a pattern
  */
-enum SelectedBy {
+export enum SelectedBy {
   /** Selected by the user */
   USER = 0,
   /** Automatically selected as a dependency of another package */
