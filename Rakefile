@@ -177,15 +177,6 @@ if ENV["YUPDATE_FORCE"] == "1" || File.exist?("/.packages.initrd") || live_iso?
       end
     end
 
-    # update also the tests if they are present in the system
-    if ENV["YUPDATE_SKIP_TESTS"] != "1" && File.exist?("/usr/share/agama-playwright")
-      puts "Installing the integration tests..."
-
-      # we are installing into an empty chroot, make sure the target exists
-      FileUtils.mkdir_p(File.join(destdir, "/usr/share"))
-      FileUtils.cp_r("playwright/.", File.join(destdir, "/usr/share/agama-playwright"))
-    end
-
     if ENV["YUPDATE_SKIP_PRODUCTS"] != "1"
       files = Dir.glob("products.d/*.y{a}ml")
       files.each do |f|
