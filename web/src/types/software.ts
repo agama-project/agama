@@ -31,7 +31,7 @@ export enum SelectedBy {
   NONE = 2,
 }
 
-type Product = {
+export type Product = {
   /** Product ID (e.g., "Leap") */
   id: string;
   /** Product name (e.g., "openSUSE Leap 15.4") */
@@ -40,7 +40,7 @@ type Product = {
   description: string;
 };
 
-type Registration = {
+export type Registration = {
   /** Registration requirement (i.e., "not-required", "optional", "mandatory") */
   requirement: string;
   /** Registration code, if any */
@@ -49,42 +49,42 @@ type Registration = {
   email?: string;
 };
 
-type RegistrationFailure = {
+export type RegistrationFailure = {
   /** @property {Number} id - ID of error */
   id: number;
   /** Failure message */
   message: number;
 };
 
-type ActionResult = {
+export type ActionResult = {
   /** Whether the action was successfully done */
   success: boolean;
   /** Result message */
   message: string;
 };
 
-type PatternsSelection = { [key: string]: SelectedBy };
+export type PatternsSelection = { [key: string]: SelectedBy };
 
 /**
  * PatternGroups mapping "group name" => list of patterns
  */
-type PatternsGroups = { [key: string]: Pattern[] };
+export type PatternsGroups = { [key: string]: Pattern[] };
 
-type SoftwareProposal = {
+export type SoftwareProposal = {
   /** Used space in human-readable form */
   size: string;
   /** Selected patterns and the reason */
   patterns: PatternsSelection;
 };
 
-type SoftwareConfig = {
+export type SoftwareConfig = {
   /** Product to install */
   product?: string;
   /** An object where the keys are the pattern names and the values whether to install them or not */
   patterns: { [key: string]: boolean };
 };
 
-type Pattern = {
+export type Pattern = {
   /** Pattern name (internal ID) */
   name: string;
   /** Pattern category */
