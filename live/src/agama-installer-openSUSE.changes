@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 18 15:25:39 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Include Puppeteer in all ISO images (gh#openSUSE/agama#1477)
+- Drop Playwright ISO flavor (gh#openSUSE/agama#1481)
+
+-------------------------------------------------------------------
 Tue Jul  9 13:26:38 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
 - Added agama-installer-openSUSE PXE images

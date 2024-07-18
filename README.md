@@ -30,9 +30,6 @@ interfaces over it.
 | ------------------------------------------------------ | --------------------------------------------------------------- |
 | ![Installing](./doc/images/screenshots/installing.png) | ![Installation finished](./doc/images/screenshots/finished.png) |
 
-_Note for developers: For updating the screenshots see the
-[integration test documentation](playwright/README.md#updating-the-screenshots)._
-
 </details>
 
 ## Why a New Installer
