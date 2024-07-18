@@ -27,13 +27,35 @@ import {
   useSuspenseQueries,
 } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { SelectedBy } from "~/client/software";
 
+/**
+ * Query to retrieve software configuration
+ */
 const configQuery = () => ({
   queryKey: ["software/config"],
   queryFn: () => fetch("/api/software/config").then((res) => res.json()),
 });
 
+/**
+ * Query to retrieve current software proposal
+ */
+const proposalQuery = () => ({
+  queryKey: ["software/proposal"],
+  queryFn: () => fetch("/api/software/proposal").then((res) => res.json()),
+});
+
+/**
+ * Query to retrieve available products
+ */
+const productsQuery = () => ({
+  queryKey: ["software/products"],
+  queryFn: () => fetch("/api/software/products").then((res) => res.json()),
+  staleTime: Infinity,
+});
+
+/**
+ * Query to retrieve selected product
+ */
 const selectedProductQuery = () => ({
   queryKey: ["software/product"],
   queryFn: async () => {
@@ -43,17 +65,9 @@ const selectedProductQuery = () => ({
   },
 });
 
-const productsQuery = () => ({
-  queryKey: ["software/products"],
-  queryFn: () => fetch("/api/software/products").then((res) => res.json()),
-  staleTime: Infinity,
-});
-
-const proposalQuery = () => ({
-  queryKey: ["software/proposal"],
-  queryFn: () => fetch("/api/software/proposal").then((res) => res.json()),
-});
-
+/**
+ * Query to retrieve available patterns
+ */
 const patternsQuery = () => ({
   queryKey: ["software/patterns"],
   queryFn: () => fetch("/api/software/patterns").then((res) => res.json()),
@@ -69,7 +83,7 @@ const useConfigMutation = () => {
   const client = useInstallerClient();
 
   const query = {
-    mutationFn: (newConfig) =>
+    mutationFn: (newConfig: SoftwareConfig) =>
       fetch("/api/software/config", {
         // FIXME: use "PATCH" instead
         method: "PUT",
@@ -79,13 +93,13 @@ const useConfigMutation = () => {
         },
       }),
     onMutate: async () => {
-      const prevConfig = queryClient.getQueryData(["software/config"]);
+      const prevConfig: SoftwareConfig = queryClient.getQueryData(["software/config"]);
       return { prevConfig };
     },
-    onSuccess: (_, variables, { prevConfig }) => {
+    onSuccess: (_, config: SoftwareConfig, { prevConfig }: { prevConfig: SoftwareConfig }) => {
       queryClient.invalidateQueries({ queryKey: ["software/config"] });
       queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
-      if (variables.product && variables.product !== prevConfig.product) {
+      if (config.product && config.product !== prevConfig.product) {
         queryClient.invalidateQueries({ queryKey: ["software/product"] });
         client.manager.startProbing();
       }
@@ -115,29 +129,34 @@ const useProductChanges = () => {
   }, [client]);
 };
 
-const useProduct = () => {
+/**
+ * Returns available products and selected one, if any
+ */
+const useProduct = (): { products: Product[]; selectedProduct: Product | undefined } => {
   const [{ data: selected }, { data: products }] = useSuspenseQueries({
     queries: [selectedProductQuery(), productsQuery()],
   });
 
-  const selectedProduct = products.find((p) => p.id === selected);
+  const selectedProduct = products.find((p: Product) => p.id === selected);
   return {
     products,
     selectedProduct,
   };
 };
 
-const usePatterns = () => {
+/**
+ * Returns a list of patterns with their selectedBy property properly set based on current proposal.
+ */
+const usePatterns = (): Pattern[] => {
   const [{ data: proposal }, { data: patterns }] = useSuspenseQueries({
     queries: [proposalQuery(), patternsQuery()],
   });
 
-  // const selection: PatternsSelection = config.patterns;
-  const selection = proposal.patterns;
+  const selection: PatternsSelection = proposal.patterns;
 
   return patterns
-    .map((pattern) => {
-      let selectedBy;
+    .map((pattern: Pattern): Pattern => {
+      let selectedBy: SelectedBy;
       switch (selection[pattern.name]) {
         case 0:
           selectedBy = SelectedBy.USER;
@@ -148,12 +167,9 @@ const usePatterns = () => {
         default:
           selectedBy = SelectedBy.NONE;
       }
-      return {
-        ...pattern,
-        selectedBy,
-      };
+      return { ...pattern, selectedBy };
     })
-    .sort((a, b) => a.order - b.order);
+    .sort((a: Pattern, b: Pattern) => a.order - b.order);
 };
 
 export {
