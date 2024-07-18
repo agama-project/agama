@@ -23,6 +23,7 @@ module Agama
   module Storage
     module Settings
       class Partition
+        attr_accessor :search
         attr_accessor :id
         attr_accessor :type
         attr_accessor :size

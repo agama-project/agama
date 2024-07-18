@@ -125,14 +125,14 @@ module Y2Storage
 
     # Calculates list of planned devices
     #
-    # @param devicegraph [Devicegraph]                 Starting point
+    # @param devicegraph [Devicegraph] Starting point
     # @return [Planned::DevicesCollection] Devices to add
     def initial_planned_devices(devicegraph)
       planner = Proposal::AgamaDevicesPlanner.new(settings, config, issues_list)
       planner.initial_planned_devices(devicegraph)
     end
 
-    # Clean a devicegraph 
+    # Clean a devicegraph
     #
     # @return [Y2Storage::Devicegraph]
     def clean_graph(devicegraph, planned_devices)

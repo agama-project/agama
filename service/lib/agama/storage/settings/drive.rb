@@ -25,6 +25,7 @@ module Agama
   module Storage
     module Settings
       class Drive
+        attr_accessor :search
         attr_accessor :encrypt
         attr_accessor :format
         attr_accessor :mount

@@ -1,4 +1,4 @@
-# Copyright (c) [2016-2024] SUSE LLC
+# Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,20 +28,21 @@ module Y2Storage
     class AgamaDevicesPlanner
       include Yast::Logger
 
-      # Settings used to calculate the planned devices
-      # @return [ProposalSettings]
+      # Settings used to calculate the planned devices.
+      #
+      # @return [Agama::Storage::Profile]
       attr_reader :settings
 
-      # Constructor
-      #
-      # @param settings [ProposalSettings]
+      # @param settings [Agama::Storage::Profile]
       # @param config [Agama::Config]
+      # @param issues_list [Array<Agama::Issue>]
+      #
+      # TODO Check which params are mandatory
       def initialize(settings, config, issues_list)
         @settings = settings
         @config = config
         @issues_list = issues_list
       end
-
 
       # List of devices that need to be created to satisfy the settings. Does not include
       # devices needed for booting.
@@ -66,14 +67,14 @@ module Y2Storage
         # This will also include a lot of logic that nowadays lives at
         # Agama::ProposalSettingsConversions and Agama::VolumesConversions
 
-        devices = settings.drives.each_with_object([]) do |drive, memo|
-          planned_devs = planned_for_drive(drive)
-          memo.concat(planned_devs) if planned_devs
-        end
+        planned = settings.drives
+          .flat_map { |d| planned_for_drive(d) }
+          .compact
 
-        collection = Planned::DevicesCollection.new(devices)
-        remove_shadowed_subvols(collection.mountable_devices)
-        collection
+        Planned::DevicesCollection.new(planned).tap do |collection|
+          # TODO
+          remove_shadowed_subvols(collection.mountable_devices)
+        end
       end
 
       # Modifies the given list of planned devices, adding any planned partition needed for booting

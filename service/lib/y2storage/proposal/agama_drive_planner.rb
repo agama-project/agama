@@ -20,30 +20,44 @@
 module Y2Storage
   module Proposal
     class AgamaDrivePlanner < AgamaDevicePlanner
-      def planned_devices(drive)
-        result =
-          if drive.partitions?
-            planned_for_partitioned_drive(drive)
-          else
-            planned_for_full_drive(drive)
-          end
-        Array(result)
+      # @param settings [Agama::Storage::Settings::Drive]
+      # @return [Array<Planned::Device>]
+      def planned_devices(settings)
+        [planned_drive(settings)]
       end
 
       private
 
-      def planned_for_partitioned_drive(drive)
-        # TODO: register error if this contain some kind of specification for full disk like
-        # "format", "mounts", etc.
+      # @param settings [Agama::Storage::Settings::Drive]
+      # @return [Planned::Disk]
+      def planned_drive(settings)
+        return planned_full_drive(settings) unless settings.partitions?
 
-        planned_disk = Y2Storage::Planned::Disk.new
+        planned_partitioned_drive(settings)
+      end
 
-        planned_disk.partitions = drive.partitions.each_with_object([]).each do |partition, memo|
-          planned_partition = plan_partition(disk, drive, section)
-          memo << planned_partition if planned_partition
+      # @param settings [Agama::Storage::Settings::Drive]
+      # @return [Planned::Disk]
+      def planned_full_drive(settings)
+        Planned::Disk.new.tap do |planned|
+          configure_drive(planned, settings)
+          configure_device(planned, settings)
         end
+      end
 
-        planned_disk
+      # @param settings [Agama::Storage::Settings::Drive]
+      # @return [Planned::Disk]
+      def planned_partitioned_drive(settings)
+        Planned::Disk.new.tap do |planned|
+          configure_drive(planned, settings)
+          configure_partitions(planned, settings)
+        end
+      end
+
+      # @param planned [Planned::Disk]
+      # @param settings [Agama::Storage::Settings::Drive]
+      def configure_drive(planned, settings)
+        planned.reuse_name = settings.device.name
       end
     end
   end
