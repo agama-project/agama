@@ -3,6 +3,7 @@ use agama_lib::questions::http_client::HTTPClient;
 use agama_lib::{connection, error::ServiceError};
 use clap::{Args, Subcommand, ValueEnum};
 
+// TODO: use for answers also JSON to be consistent
 #[derive(Subcommand, Debug)]
 pub enum QuestionsCommands {
     /// Set the mode for answering questions.
@@ -19,9 +20,9 @@ pub enum QuestionsCommands {
         /// Path to a file containing the answers in YAML format.
         path: String,
     },
-    /// prints list of questions that is waiting for answer in YAML format
+    /// prints list of questions that is waiting for answer in JSON format
     List,
-    /// Ask question from stdin in YAML format and print answer when it is answered.
+    /// Ask question from stdin in JSON format and print answer when it is answered.
     Ask,
 }
 
