@@ -25,6 +25,7 @@ import {
   useMutation,
   useQueryClient,
   useSuspenseQueries,
+  useSuspenseQuery,
 } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 
@@ -109,27 +110,6 @@ const useConfigMutation = () => {
 };
 
 /**
- * Hook that returns a useEffect to listen for software events
- *
- * When the configuration changes, it invalidates the config query and forces the router to
- * revalidate its data (executing the loaders again).
- */
-const useProductChanges = () => {
-  const client = useInstallerClient();
-
-  React.useEffect(() => {
-    if (!client) return;
-    const queryClient = new QueryClient();
-
-    return client.ws().onEvent((event) => {
-      if (event.type === "ProductChanged") {
-        queryClient.invalidateQueries({ queryKey: ["software/config"] });
-      }
-    });
-  }, [client]);
-};
-
-/**
  * Returns available products and selected one, if any
  */
 const useProduct = (): { products: Product[]; selectedProduct: Product | undefined } => {
@@ -172,6 +152,54 @@ const usePatterns = (): Pattern[] => {
     .sort((a: Pattern, b: Pattern) => a.order - b.order);
 };
 
+/**
+ * Returns current software proposal
+ */
+const useProposal = (): SoftwareProposal => {
+  const { data: proposal } = useSuspenseQuery(proposalQuery());
+  return proposal;
+};
+
+/**
+ * Hook that returns a useEffect to listen for  software proposal events
+ *
+ * When the configuration changes, it invalidates the config query.
+ */
+const useProductChanges = () => {
+  const client = useInstallerClient();
+
+  React.useEffect(() => {
+    if (!client) return;
+    const queryClient = new QueryClient();
+
+    return client.ws().onEvent((event) => {
+      if (event.type === "") {
+        queryClient.invalidateQueries({ queryKey: ["software/config"] });
+      }
+    });
+  }, [client]);
+};
+
+/**
+ * Hook that returns a useEffect to listen for software proposal changes
+ *
+ * When the selected patterns change, it invalidates the proposal query.
+ */
+const useProposalChanges = () => {
+  const client = useInstallerClient();
+
+  React.useEffect(() => {
+    if (!client) return;
+    const queryClient = new QueryClient();
+
+    return client.ws().onEvent((event) => {
+      if (event.type === "SoftwareProposalChanged") {
+        queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
+      }
+    });
+  }, [client]);
+};
+
 export {
   configQuery,
   productsQuery,
@@ -180,4 +208,6 @@ export {
   usePatterns,
   useProduct,
   useProductChanges,
+  useProposal,
+  useProposalChanges,
 };

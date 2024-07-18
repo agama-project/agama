@@ -21,16 +21,7 @@
 
 // @ts-check
 
-import React, { useEffect, useState } from "react";
-
-import { useInstallerClient } from "~/context/installer";
-import { useCancellablePromise } from "~/utils";
-import { useIssues } from "~/queries/issues";
-import { BUSY } from "~/client/status";
-import { _ } from "~/i18n";
-import { ButtonLink, CardField, IssuesHint, Page, SectionSkeleton } from "~/components/core";
-import UsedSize from "./UsedSize";
-import { SelectedBy } from "~/client/software";
+import React from "react";
 import {
   CardBody,
   DescriptionList,
@@ -41,35 +32,12 @@ import {
   GridItem,
   Stack,
 } from "@patternfly/react-core";
-
-/**
- * @typedef {Object} Pattern
- * @property {string} name - pattern name (internal ID)
- * @property {string} category -  pattern category
- * @property {string} summary - pattern name (user visible)
- * @property {string} description -  long description of the pattern
- * @property {number} order - display order (string!)
- * @property {number} selectedBy - who selected the pattern
- */
-
-/**
- * Builds a list of patterns include its selection status
- *
- * @param {import("~/client/software").Pattern[]} patterns - Patterns from the HTTP API
- * @param {Object.<string, number>} selection - Patterns selection
- * @return {Pattern[]} List of patterns including its selection status
- */
-function buildPatterns(patterns, selection) {
-  return patterns
-    .map((pattern) => {
-      const selectedBy = selection[pattern.name] !== undefined ? selection[pattern.name] : 2;
-      return {
-        ...pattern,
-        selectedBy,
-      };
-    })
-    .sort((a, b) => a.order - b.order);
-}
+import { ButtonLink, CardField, IssuesHint, Page, SectionSkeleton } from "~/components/core";
+import UsedSize from "./UsedSize";
+import { SelectedBy } from "~/types/software";
+import { useIssues } from "~/queries/issues";
+import { usePatterns, useProposal, useProposalChanges } from "~/queries/software";
+import { _ } from "~/i18n";
 
 /**
  * List of selected patterns.
@@ -126,7 +94,6 @@ const NoPatterns = () => (
     </CardBody>
   </CardField>
 );
-// FIXME: move build patterns to utils
 
 /**
  * Software page component
@@ -135,45 +102,10 @@ const NoPatterns = () => (
  */
 function SoftwarePage() {
   const issues = useIssues("software");
-  const [status, setStatus] = useState(BUSY);
-  const [patterns, setPatterns] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [proposal, setProposal] = useState({ patterns: {}, size: "" });
-  const client = useInstallerClient();
-  const { cancellablePromise } = useCancellablePromise();
+  const proposal = useProposal();
+  const patterns = usePatterns();
 
-  useEffect(() => {
-    cancellablePromise(client.software.getStatus().then(setStatus));
-
-    return client.software.onStatusChange(setStatus);
-  }, [client, cancellablePromise]);
-
-  useEffect(() => {
-    if (!patterns) return;
-
-    return client.software.onSelectedPatternsChanged((selection) => {
-      client.software.getProposal().then((proposal) => setProposal(proposal));
-      setPatterns(buildPatterns(patterns, selection));
-    });
-  }, [client.software, patterns]);
-
-  useEffect(() => {
-    if (!isLoading) return;
-
-    const loadPatterns = async () => {
-      const patterns = await cancellablePromise(client.software.getPatterns());
-      const proposal = await cancellablePromise(client.software.getProposal());
-      setPatterns(buildPatterns(patterns, proposal.patterns));
-      setProposal(proposal);
-      setIsLoading(false);
-    };
-
-    loadPatterns();
-  }, [client.software, patterns, cancellablePromise, isLoading]);
-
-  if (status === BUSY || isLoading) {
-    <SectionSkeleton numRows={5} />;
-  }
+  useProposalChanges();
 
   return (
     <>

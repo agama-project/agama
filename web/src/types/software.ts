@@ -65,6 +65,11 @@ type ActionResult = {
 
 type PatternsSelection = { [key: string]: SelectedBy };
 
+/**
+ * PatternGroups mapping "group name" => list of patterns
+ */
+type PatternsGroups = { [key: string]: Pattern[] };
+
 type SoftwareProposal = {
   /** Used space in human-readable form */
   size: string;
