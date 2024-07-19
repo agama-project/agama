@@ -273,7 +273,7 @@
         "language": {
           "title": "System language ID",
           "type": "string",
-          "examples": ["en_US"]
+          "examples": ["en_US.UTF-8", "en_US"]
         },
         "keyboard": {
           "title": "Keyboard layout ID",
