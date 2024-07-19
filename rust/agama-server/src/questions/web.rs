@@ -7,6 +7,7 @@
 
 use crate::{error::Error, web::Event};
 use agama_lib::{
+    dbus::{extract_id_from_path, get_property},
     error::ServiceError,
     proxies::{GenericQuestionProxy, QuestionWithPasswordProxy, Questions1Proxy},
     questions::model::{Answer, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
@@ -19,7 +20,6 @@ use axum::{
     routing::{delete, get},
     Json, Router,
 };
-use regex::Regex;
 use std::{collections::HashMap, pin::Pin};
 use tokio_stream::{Stream, StreamExt};
 use zbus::{
@@ -84,13 +84,7 @@ impl<'a> QuestionsClient<'a> {
                 .await?
         };
         let mut res = question.clone();
-        // we are sure that regexp is correct, so use unwrap
-        let id_matcher = Regex::new(r"/(?<id>\d+)$").unwrap();
-        let Some(id_cap) = id_matcher.captures(path.as_str()) else {
-            let msg = format!("Failed to get ID for new question: {}", path.as_str()).to_string();
-            return Err(ServiceError::UnsuccessfulAction(msg));
-        }; // TODO: better error if path does not contain id
-        res.generic.id = id_cap["id"].parse::<u32>().unwrap();
+        res.generic.id = extract_id_from_path(&path)?;
         tracing::info!("new question gets id {}", res.generic.id);
         Ok(res)
     }
@@ -167,24 +161,29 @@ impl<'a> QuestionsClient<'a> {
             ObjectPath::try_from(format!("/org/opensuse/Agama1/Questions/{}", id))
                 .context("Failed to create dbus path")?,
         );
+        let objects = self.objects_proxy.get_managed_objects().await?;
+        let password_interface = OwnedInterfaceName::from(
+            InterfaceName::from_static_str("org.opensuse.Agama1.Questions.WithPassword")
+                .context("Failed to create interface name for question with password")?,
+        );
         let mut result = Answer::default();
-        let dbus_password_res = QuestionWithPasswordProxy::builder(&self.connection)
-            .path(&question_path)?
-            .cache_properties(zbus::CacheProperties::No)
-            .build()
-            .await;
-        if let Ok(dbus_password) = dbus_password_res {
+        let question = objects
+            .get(&question_path)
+            .ok_or(ServiceError::QuestionNotExist(id))?;
+
+        if let Some(password_iface) = question.get(&password_interface) {
             result.with_password = Some(PasswordAnswer {
-                password: dbus_password.password().await?,
+                password: get_property(password_iface, "password")?,
             });
         }
-
-        let dbus_generic = GenericQuestionProxy::builder(&self.connection)
-            .path(&question_path)?
-            .cache_properties(zbus::CacheProperties::No)
-            .build()
-            .await?;
-        let answer = dbus_generic.answer().await?;
+        let generic_interface = OwnedInterfaceName::from(
+            InterfaceName::from_static_str("org.opensuse.Agama1.Questions.Generic")
+                .context("Failed to create interface name for generic question")?,
+        );
+        let generic_iface = question
+            .get(&generic_interface)
+            .context("Question does not have generic interface")?;
+        let answer: String = get_property(generic_iface, "answer")?;
         if answer.is_empty() {
             Ok(None)
         } else {

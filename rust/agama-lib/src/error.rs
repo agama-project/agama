@@ -37,6 +37,8 @@ pub enum ServiceError {
     UnsuccessfulAction(String),
     #[error("Unknown installation phase: {0}")]
     UnknownInstallationPhase(u32),
+    #[error("Question with id {0} does not exist")]
+    QuestionNotExist(u32),
     #[error("Backend call failed with status {0} and text '{1}'")]
     BackendError(u16, String),
     #[error("You are not logged in. Please use: agama auth login")]
