@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
 import { expect } from "chai";
 
 // helper function for converting String to Boolean
