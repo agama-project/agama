@@ -13,7 +13,7 @@ set -x
 set -eu
 
 # https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/agama-testing
-CIMAGE=registry.opensuse.org/systemsmanagement/agama/staging/containers/opensuse/agama-testing:latest
+CIMAGE=registry.opensuse.org/systemsmanagement/agama/devel/containers/opensuse/agama-testing:latest
 # rename this if you test multiple things
 CNAME=agama
 
