@@ -24,7 +24,7 @@ rm /etc/zypp/repos.d/*.disabled
 # import the OBS key for the systemsmanagement OBS project
 rpm --import /tmp/systemsmanagement_key.gpg
 rm /tmp/systemsmanagement_key.gpg
-# import the OBS key for the Devel:YaST:Agama:Head project
+# import the IBS key for the Devel:YaST:Agama:Head project
 rpm --import /tmp/Devel_YaST_Agama_Head_key.gpg
 rm /tmp/Devel_YaST_Agama_Head_key.gpg
 # import the openSUSE keys
