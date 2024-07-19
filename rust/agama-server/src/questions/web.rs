@@ -173,7 +173,7 @@ impl<'a> QuestionsClient<'a> {
 
         if let Some(password_iface) = question.get(&password_interface) {
             result.with_password = Some(PasswordAnswer {
-                password: get_property(password_iface, "password")?,
+                password: get_property(password_iface, "Password")?,
             });
         }
         let generic_interface = OwnedInterfaceName::from(
@@ -183,7 +183,7 @@ impl<'a> QuestionsClient<'a> {
         let generic_iface = question
             .get(&generic_interface)
             .context("Question does not have generic interface")?;
-        let answer: String = get_property(generic_iface, "answer")?;
+        let answer: String = get_property(generic_iface, "Answer")?;
         if answer.is_empty() {
             Ok(None)
         } else {
