@@ -45,7 +45,7 @@ outside.
 
 %build
 rm -f package-lock.json
-PUPPETEER_SKIP_DOWNLOAD=true local-npm-registry %{_sourcedir} install --omit=optional --with=dev --legacy-peer-deps || ( find ~/.npm/_logs -name '*-debug.log' -print0 | xargs -0 cat; false)
+local-npm-registry %{_sourcedir} install --omit=optional --with=dev --legacy-peer-deps || ( find ~/.npm/_logs -name '*-debug.log' -print0 | xargs -0 cat; false)
 
 %install
 install -D -d -m 0755 %{buildroot}%{_datadir}/agama/integration-tests
