@@ -1,7 +1,7 @@
-[agama-openSUSE_Tumbleweed]
+[agama-devel]
 name=Agama-Devel (openSUSE Tumbleweed)
 type=rpm-md
-enabled=0
+enabled=1
 autorefresh=1
 gpgcheck=1
 baseurl=https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/openSUSE_Tumbleweed/

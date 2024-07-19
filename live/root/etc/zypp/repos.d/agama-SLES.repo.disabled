@@ -1,7 +1,7 @@
-[agama-SLES]
-name=Agama (SLES)
+[agama-devel]
+name=Agama Devel (SLES)
 type=rpm-md
-enabled=0
+enabled=1
 autorefresh=1
 gpgcheck=1
 baseurl=http://download.suse.de/ibs/Devel:/YaST:/Agama:/Head/SLES-16.0/

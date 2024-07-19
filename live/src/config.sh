@@ -14,15 +14,19 @@ suseSetupProduct
 
 # enable the corresponding repository
 DISTRO=$(grep "^NAME" /etc/os-release | cut -f2 -d\= | tr -d '"' | tr " " "_")
-REPO="agama-${DISTRO}"
-if zypper lr $REPO; then
-  zypper mr --enable $REPO
+REPO="/etc/zypp/repos.d/agama-${DISTRO}.repo"
+if [ -f "${REPO}.disabled" ]; then
+  mv "${REPO}.disabled" $REPO
 fi
+rm /etc/zypp/repos.d/*.disabled
 
 # configure the repositories in the Live system
 # import the OBS key for the systemsmanagement OBS project
 rpm --import /tmp/systemsmanagement_key.gpg
 rm /tmp/systemsmanagement_key.gpg
+# import the OBS key for the Devel:YaST:Agama:Head project
+rpm --import /tmp/Devel_YaST_Agama_Head_key.gpg
+rm /tmp/Devel_YaST_Agama_Head_key.gpg
 # import the openSUSE keys
 rpm --import /usr/lib/rpm/gnupg/keys/*.asc
 
