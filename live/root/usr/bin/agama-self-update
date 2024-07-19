@@ -8,14 +8,14 @@
 
 # first try a quick and simple solution, refreshing the distributions repository takes a
 # lot of time so try using only the agama-devel for update
-zypper lr | grep "^[1-9]" | cut -f1 -d\| | xargs zypper modifyrepo --disable
+zypper modifyrepo --disable --all
 zypper modifyrepo --enable agama-devel
 zypper refresh
 zypper --non-interactive dup --details --from agama-devel
 STATUS=$?
 
 # enable all repositories back
-zypper lr | egrep "^[1-9]" | cut -f1 -d\| | xargs zypper modifyrepo --enable
+zypper modifyrepo --enable --all
 
 # if it failed try it again with all the repos enabled, maybe there was some
 # dependency problem which hopefully will be OK now
