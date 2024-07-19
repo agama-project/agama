@@ -126,11 +126,11 @@ osc detachbranch home:$OBS_USER:branches:systemsmanagement:Agama:Devel agama-web
 ```
 
 If you want to also build the Live ISO from your modified packaged then you need
-to branch (and detach) also the `agama-installer-openSUSE` package:
+to branch (and detach) also the `agama-installer` package:
 
 ``` shell
-osc branch systemsmanagement:Agama:Devel agama-installer-openSUSE
-osc detachbranch home:$OBS_USER:branches:systemsmanagement:Agama:Devel agama-installer-openSUSE
+osc branch systemsmanagement:Agama:Devel agama-installer
+osc detachbranch home:$OBS_USER:branches:systemsmanagement:Agama:Devel agama-installer
 ```
 
 *Please delete your branched OBS project once you do not need it anymore, it

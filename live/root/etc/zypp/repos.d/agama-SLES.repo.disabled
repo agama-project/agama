@@ -1,0 +1,8 @@
+[agama-devel]
+name=Agama Devel (SLES)
+type=rpm-md
+enabled=1
+autorefresh=1
+gpgcheck=1
+baseurl=http://download.suse.de/ibs/Devel:/YaST:/Agama:/Head/SLES-16.0/
+gpgkey=http://download.suse.de/ibs/Devel:/YaST:/Agama:/Head/SLES-16.0/repodata/repomd.xml.key

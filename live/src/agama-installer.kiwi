@@ -2,7 +2,7 @@
 <!-- OBS-ExclusiveArch: aarch64 ppc64le x86_64 s390x -->
 <!-- OBS-Profiles: @BUILD_FLAVOR@ -->
 
-<image schemaversion="7.5" name="agama-installer-openSUSE">
+<image schemaversion="7.5" name="agama-installer">
     <description type="system">
         <author>YaST Team</author>
         <contact>yast2-maintainers@suse.de</contact>
@@ -10,6 +10,7 @@
     </description>
     <profiles>
         <profile name="openSUSE" description="openSUSE multiproduct image" import="true" />
+        <profile name="SLE" description="SLE-based image" import="true" />
         <profile name="openSUSE-PXE" description="openSUSE OEM image for remote instalaltion" import="true" />
     </profiles>
     <preferences>
@@ -23,17 +24,17 @@
         <bootsplash-theme>bgrt</bootsplash-theme>
         <bootloader-theme>openSUSE</bootloader-theme>
     </preferences>
-    <preferences arch="ppc64le" profiles="openSUSE">
+    <preferences arch="ppc64le" profiles="openSUSE,SLE">
         <type image="iso" flags="dmsquash"  firmware="ofw" mediacheck="true" volid="agama" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" console="serial" timeout="10"/>
         </type>
     </preferences>
-    <preferences arch="aarch64,x86_64" profiles="openSUSE">
+    <preferences arch="aarch64,x86_64" profiles="openSUSE,SLE">
         <type image="iso" flags="dmsquash" firmware="uefi" mediacheck="true" volid="agama" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" timeout="10"/>
         </type>
     </preferences>
-    <preferences arch="s390x" profiles="openSUSE">
+    <preferences arch="s390x" profiles="openSUSE,SLE">
         <type image="iso" flags="dmsquash" mediacheck="true" volid="agama" editbootconfig="fix_bootconfig">
             <bootloader name="custom" />
         </type>
@@ -93,9 +94,7 @@
     <packages type="image">
         <package name="avahi"/>
         <package name="bind-utils"/>
-        <package name="patterns-openSUSE-base"/>
         <package name="systemd"/>
-        <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
         <package name="procps4"/>
         <package name="iputils"/>
         <package name="vim"/>
@@ -133,36 +132,49 @@
         <package name="blog" arch="s390x" />
         <package name="libblogger2" arch="s390x" />
         <package name="xauth"/>
-        <package name="patterns-base-x11"/>
-        <namedCollection name="x11"/>
         <package name="patterns-yast-yast2_basis"/>
         <package name="MozillaFirefox" arch="aarch64,x86_64"/>
         <package name="MozillaFirefox-branding-openSUSE" arch="aarch64,x86_64"/>
         <package name="libpwquality-tools"/>
         <package name="NetworkManager"/>
-        <package name="ruby3.3-rubygem-byebug"/>
-        <package name="ruby3.3-rubygem-agama-yast"/>
         <package name="agama"/>
         <package name="agama-web-ui"/>
         <package name="agama-cli"/>
         <package name="agama-auto"/>
         <package name="agama-integration-tests"/>
         <package name="microos-tools"/>
-        <package name="staging-build-key"/>
         <package name="icewm-lite"/>
         <package name="xinit"/>
+        <package name="xorg-x11-server"/>
+        <package name="xorg-x11-fonts-core"/>
+        <package name="xf86-input-libinput" />
         <package name="psmisc"/>
         <package name="joe"/>
         <package name="checkmedia"/>
         <package name="spice-vdagent"/>
         <package name="libtss2-tcti-device0"/>
         <package name="jq"/>
+        <package name="yast2-schema"/>
         <archive name="root.tar.xz"/>
     </packages>
-    <!-- additional packages for the openSUSE flavors -->
+    <!-- additional packages for the openSUSE distributions -->
     <packages type="image" profiles="openSUSE">
-      <package name="agama-products-opensuse"/>
-      <package name="openSUSE-build-key"/>
+        <package name="agama-products-opensuse"/>
+        <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
+        <package name="openSUSE-repos-Tumbleweed"/>
+        <package name="patterns-openSUSE-base"/>
+        <package name="ruby3.3-rubygem-agama-yast"/>
+        <package name="ruby3.3-rubygem-byebug"/>
+        <package name="staging-build-key"/>
+    </packages>
+    <!-- additional packages for the SLE distributions -->
+    <packages type="image" profiles="SLE">
+        <package name="agama-products-sle"/>
+        <package name="grub2-branding-SLE" arch="aarch64,x86_64"/>
+        <package name="patterns-sles-base"/>
+        <package name="ruby3.2-rubygem-agama-yast"/>
+        <package name="ruby3.2-rubygem-byebug"/>
+        <package name="suse-build-key"/>
     </packages>
     <packages type="bootstrap">
         <package name="udev"/>
@@ -171,7 +183,12 @@
         <package name="cracklib-dict-full"/>
         <package name="ca-certificates"/>
         <package name="ca-certificates-mozilla"/>
+    </packages>
+    <packages type="bootstrap" profiles="openSUSE">
         <package name="openSUSE-release"/>
         <package name="openSUSE-release-ftp"/>
+    </packages>
+    <packages type="bootstrap" profiles="SLE">
+        <package name="SLES-release"/>
     </packages>
 </image>
