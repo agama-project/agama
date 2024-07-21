@@ -8,33 +8,33 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-14 02:32+0000\n"
-"PO-Revision-Date: 2023-12-31 20:39+0000\n"
-"Last-Translator: Ladislav Slezák <lslezak@suse.com>\n"
-"Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-web/cs/"
-">\n"
+"POT-Creation-Date: 2024-07-18 02:24+0000\n"
+"PO-Revision-Date: 2024-07-20 17:47+0000\n"
+"Last-Translator: Aleš Kastner <alkas@volny.cz>\n"
+"Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-web/cs/>"
+"\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #: src/MainLayout.jsx:52
 msgid "Agama"
-msgstr ""
+msgstr "Agama"
 
 #: src/MainLayout.jsx:94
 msgid "Change product"
-msgstr ""
+msgstr "Změnit produkt"
 
 #: src/components/core/About.jsx:49
 msgid "About"
-msgstr ""
+msgstr "O"
 
 #: src/components/core/About.jsx:69
 msgid "About Agama"
-msgstr ""
+msgstr "O Agamě"
 
 #: src/components/core/About.jsx:74
 msgid ""
@@ -43,13 +43,17 @@ msgid ""
 "want to give it a try, we recommend using a virtual machine to prevent any "
 "possible data loss."
 msgstr ""
+"Agama je experimentální instalátor pro (otevřené) systémy SUSE. Je stále ve "
+"fázi vývoje, proto ji prosím nepoužívejte v produkčních prostředích. Pokud "
+"ji chcete vyzkoušet, doporučujeme použít virtuální počítač, abyste předešli "
+"případné ztrátě dat."
 
 #. TRANSLATORS: content of the "About" popup (2/2)
 #. %s is replaced by the project URL
 #: src/components/core/About.jsx:86
 #, c-format
 msgid "For more information, please visit the project's repository at %s."
-msgstr ""
+msgstr "Další informace najdete v úložišti projektu na %s."
 
 #: src/components/core/About.jsx:92 src/components/core/LogsButton.jsx:126
 #: src/components/software/SoftwarePatternsSelection.jsx:268
@@ -58,52 +62,56 @@ msgstr "Zavřít"
 
 #: src/components/core/InstallButton.jsx:32
 msgid "Confirm Installation"
-msgstr ""
+msgstr "Potvrdit instalaci"
 
 #: src/components/core/InstallButton.jsx:36
 msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
 msgstr ""
+"Budete-li pokračovat, připravíme oddíly na pevném disku podle zadaných "
+"instalačních nastavení."
 
 #: src/components/core/InstallButton.jsx:40
 msgid "Please, cancel and check the settings if you are unsure."
-msgstr ""
+msgstr "Nejste-li si jisti, zrušte akci a zkontrolujte nastavení."
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:45
 msgid "Continue"
-msgstr ""
+msgstr "Pokračovat"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:90
 #: src/components/core/Popup.jsx:132
 #: src/components/network/WifiConnectionForm.jsx:134
 msgid "Cancel"
-msgstr ""
+msgstr "Zrušit/Storno"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:84
 msgid "Install"
-msgstr ""
+msgstr "Instalovat"
 
 #: src/components/core/InstallationFinished.jsx:48
 msgid "TPM sealing requires the new system to be booted directly."
-msgstr ""
+msgstr "Zapečetění čipem TPM vyžaduje přímé spuštění nového systému."
 
 #: src/components/core/InstallationFinished.jsx:53
 msgid ""
 "If a local media was used to run this installer, remove it before the next "
 "boot."
 msgstr ""
+"Bylo-li ke spuštění tohoto instalačního programu použito místní médium, před "
+"dalším spuštěním ho odstraňte."
 
 #: src/components/core/InstallationFinished.jsx:57
 msgid "Hide details"
-msgstr ""
+msgstr "Skrýt podrobnosti"
 
 #: src/components/core/InstallationFinished.jsx:57
 msgid "See more details"
-msgstr ""
+msgstr "Ukázat podrobněji"
 
 #: src/components/core/InstallationFinished.jsx:62
 msgid ""
@@ -112,58 +120,62 @@ msgid ""
 "of the new system. For that to work, the machine needs to boot directly to "
 "the new boot loader."
 msgstr ""
+"Poslední krok konfigurace modulu TPM (Trusted Platform Module) pro "
+"automatické otevírání šifrovaných zařízení se provede při prvním spuštění "
+"nového systému. Aby to fungovalo, musí se počítač spustit přímo novým "
+"zavaděčem."
 
 #: src/components/core/InstallationFinished.jsx:107
 msgid "Congratulations!"
-msgstr ""
+msgstr "Blahopřejeme!"
 
 #: src/components/core/InstallationFinished.jsx:116
 msgid "The installation on your machine is complete."
-msgstr ""
+msgstr "Instalace na Váš počítač je dokončena."
 
 #: src/components/core/InstallationFinished.jsx:119
 msgid "At this point you can power off the machine."
-msgstr ""
+msgstr "Nyní můžete počítač vypnout."
 
 #: src/components/core/InstallationFinished.jsx:121
 msgid "At this point you can reboot the machine to log in to the new system."
-msgstr ""
+msgstr "Nyní můžete počítač restartovat a přihlásit se do nového systému."
 
 #: src/components/core/InstallationFinished.jsx:130
 msgid "Finish"
-msgstr ""
+msgstr "Dokončeno"
 
 #: src/components/core/InstallationFinished.jsx:130
 msgid "Reboot"
-msgstr ""
+msgstr "Restart systému"
 
 #: src/components/core/InstallationProgress.jsx:30
 msgid "Installing the system, please wait ..."
-msgstr ""
+msgstr "Instaluji systém, čekejte ..."
 
 #: src/components/core/InstallerOptions.jsx:92
 msgid "Show installer options"
-msgstr ""
+msgstr "Ukázat možnosti instalace"
 
 #: src/components/core/InstallerOptions.jsx:95
 msgid "Installer options"
-msgstr ""
+msgstr "Možnosti instalace"
 
 #: src/components/core/InstallerOptions.jsx:98
 #: src/components/core/InstallerOptions.jsx:102
 #: src/components/core/InstallerOptions.jsx:103
 #: src/components/l10n/L10nPage.jsx:60
 msgid "Language"
-msgstr ""
+msgstr "Jazyk"
 
 #: src/components/core/InstallerOptions.jsx:115
 #: src/components/core/InstallerOptions.jsx:120
 msgid "Keyboard layout"
-msgstr ""
+msgstr "Rozložení kláves"
 
 #: src/components/core/InstallerOptions.jsx:129
 msgid "Cannot be changed in remote installation"
-msgstr ""
+msgstr "U instalace na dálku nelze změnit"
 
 #: src/components/core/InstallerOptions.jsx:142
 #: src/components/network/IpSettingsForm.jsx:228
@@ -176,78 +188,78 @@ msgstr ""
 #: src/components/storage/ZFCPPage.jsx:528
 #: src/components/users/FirstUserForm.jsx:303
 msgid "Accept"
-msgstr ""
+msgstr "Přijmout"
 
 #: src/components/core/IssuesHint.jsx:34
 msgid ""
 "Before starting the installation, you need to address the following problems:"
-msgstr ""
+msgstr "Před zahájením instalace vyřešte tyto problémy:"
 
 #: src/components/core/ListSearch.jsx:48
 msgid "Search"
-msgstr ""
+msgstr "Hledat"
 
 #: src/components/core/LoginPage.jsx:64
 msgid "Could not log in. Please, make sure that the password is correct."
-msgstr ""
+msgstr "Nelze se přhlásit. Zkontrolujte správnost hesla."
 
 #: src/components/core/LoginPage.jsx:66
 msgid "Could not authenticate against the server, please check it."
-msgstr ""
+msgstr "Nezdařilo se ověřit Vás u serveru, zkontrolujte to prosím."
 
 #. TRANSLATORS: Title for a form to provide the password for the root user. %s
 #. will be replaced by "root"
 #: src/components/core/LoginPage.jsx:74
 #, c-format
 msgid "Log in as %s"
-msgstr ""
+msgstr "Přihlásit se jako %s"
 
 #: src/components/core/LoginPage.jsx:80
 msgid "The installer requires [root] user privileges."
-msgstr ""
+msgstr "Instalátor vyžaduje oprávnění uživatele [root]."
 
 #: src/components/core/LoginPage.jsx:95
 msgid "Please, provide its password to log in to the system."
-msgstr ""
+msgstr "Zadejte heslo pro přihlášení do systému."
 
 #: src/components/core/LoginPage.jsx:96
 msgid "Login form"
-msgstr ""
+msgstr "Přihlašovací formulář"
 
 #: src/components/core/LoginPage.jsx:102
 msgid "Password input"
-msgstr ""
+msgstr "Zadejte heslo"
 
 #: src/components/core/LoginPage.jsx:111
 msgid "Log in"
-msgstr ""
+msgstr "Přihlásit se"
 
 #: src/components/core/LoginPage.jsx:121
 msgid "More about this"
-msgstr ""
+msgstr "Více o tom"
 
 #: src/components/core/LogsButton.jsx:101
 msgid "Collecting logs..."
-msgstr ""
+msgstr "Shromažďuji záznamy..."
 
 #: src/components/core/LogsButton.jsx:101
 #: src/components/core/LogsButton.jsx:104
 msgid "Download logs"
-msgstr ""
+msgstr "Stahuji zázbamy"
 
 #: src/components/core/LogsButton.jsx:111
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
-msgstr ""
+msgstr "Prohlížeč stáhne záznamy, jakmile budou připraveny. Čekejte prosím."
 
 #: src/components/core/LogsButton.jsx:121
 msgid "Something went wrong while collecting logs. Please, try again."
-msgstr ""
+msgstr "Stahování záznamů se nezdařilo. Zkuste to znovu."
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:55
 msgid "Passwords do not match"
-msgstr ""
+msgstr "Hesla se neshodují"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:79
 #: src/components/network/WifiConnectionForm.jsx:121
@@ -255,75 +267,74 @@ msgstr ""
 #: src/components/storage/iscsi/AuthFields.jsx:94
 #: src/components/users/RootAuthMethods.jsx:165
 msgid "Password"
-msgstr ""
+msgstr "Heslo"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:90
 msgid "Password confirmation"
-msgstr ""
+msgstr "Potvrzení hesla"
 
 #: src/components/core/PasswordInput.jsx:61
 msgid "Password visibility button"
-msgstr ""
+msgstr "Tlačítko viditelnosti hesla"
 
 #: src/components/core/Popup.jsx:92
 msgid "Confirm"
-msgstr ""
+msgstr "Potvrdit"
 
 #. TRANSLATORS: progress message
 #: src/components/core/Popup.jsx:210
-#, fuzzy
 msgid "Loading data..."
 msgstr "Soubor se načítá…"
 
 #: src/components/core/ProgressReport.jsx:50
 msgid "Finished"
-msgstr ""
+msgstr "Dokončeno"
 
 #: src/components/core/ProgressReport.jsx:59
 msgid "In progress"
-msgstr ""
+msgstr "Probíhá"
 
 #: src/components/core/ProgressReport.jsx:74
 msgid "Pending"
-msgstr ""
+msgstr "Čeká se na"
 
 #: src/components/core/ProgressReport.jsx:138
 msgid "Waiting for progress status..."
-msgstr ""
+msgstr "Čekáme na stav postupu..."
 
 #: src/components/core/RowActions.jsx:64
 #: src/components/storage/PartitionsField.jsx:491
 #: src/components/storage/ProposalActionsSummary.jsx:233
 msgid "Actions"
-msgstr ""
+msgstr "Akce"
 
 #: src/components/core/SectionSkeleton.jsx:27
 msgid "Waiting"
-msgstr ""
+msgstr "Čekám"
 
 #: src/components/core/ServerError.jsx:47
 msgid "Cannot connect to Agama server"
-msgstr ""
+msgstr "Nelze se připojit k serveru Agama"
 
 #: src/components/core/ServerError.jsx:51
 msgid "Please, check whether it is running."
-msgstr ""
+msgstr "Zkontrolujte, zda je spuštěn."
 
 #: src/components/core/ServerError.jsx:56
 msgid "Reload"
-msgstr ""
+msgstr "Znovu načíst"
 
 #: src/components/l10n/KeyboardSelection.jsx:41
 msgid "Filter by description or keymap code"
-msgstr ""
+msgstr "Filtrování podle popisu nebo kódu mapy kláves"
 
 #: src/components/l10n/KeyboardSelection.jsx:71
 msgid "None of the keymaps match the filter."
-msgstr ""
+msgstr "Žádná z map kláves neodpovídá filtru."
 
 #: src/components/l10n/KeyboardSelection.jsx:77
 msgid "Keyboard selection"
-msgstr ""
+msgstr "Výběr klávesnice"
 
 #: src/components/l10n/KeyboardSelection.jsx:90
 #: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
@@ -380,51 +391,51 @@ msgstr ""
 
 #: src/components/l10n/TimezoneSelection.jsx:101
 msgid "None of the time zones match the filter."
-msgstr ""
+msgstr "Žádné z časových pásem neodpovídá filtru."
 
 #: src/components/l10n/TimezoneSelection.jsx:107
 msgid " Timezone selection"
-msgstr ""
+msgstr " Výběr časového pásma"
 
 #: src/components/layout/Loading.jsx:31
 msgid "Loading installation environment, please wait."
-msgstr ""
+msgstr "Načítá se instalační prostředí, vyčkejte prosím."
 
 #. TRANSLATORS: button label
 #: src/components/network/AddressesDataList.jsx:88
 #: src/components/network/DnsDataList.jsx:95
 msgid "Remove"
-msgstr ""
+msgstr "Odstranit"
 
 #. TRANSLATORS: input field name
 #: src/components/network/AddressesDataList.jsx:100
 #: src/components/network/AddressesDataList.jsx:101
 #: src/components/network/IpAddressInput.jsx:33
 msgid "IP Address"
-msgstr ""
+msgstr "IP adresa"
 
 #. TRANSLATORS: input field name
 #: src/components/network/AddressesDataList.jsx:109
 #: src/components/network/AddressesDataList.jsx:110
 msgid "Prefix length or netmask"
-msgstr ""
+msgstr "Délka předpony nebo maska sítě"
 
 #: src/components/network/AddressesDataList.jsx:126
 msgid "Add an address"
-msgstr ""
+msgstr "Přidat adresu"
 
 #. TRANSLATORS: button label
 #: src/components/network/AddressesDataList.jsx:126
 msgid "Add another address"
-msgstr ""
+msgstr "Přidat další adresu"
 
 #: src/components/network/AddressesDataList.jsx:131
 msgid "Addresses"
-msgstr ""
+msgstr "Adresy"
 
 #: src/components/network/AddressesDataList.jsx:133
 msgid "Addresses data list"
-msgstr ""
+msgstr "Seznam údajů o adresách"
 
 #. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
@@ -437,13 +448,13 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:98
 #: src/components/storage/iscsi/NodesPresenter.jsx:119
 msgid "Name"
-msgstr ""
+msgstr "Název"
 
 #. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:66
 #: src/components/network/ConnectionsTable.jsx:93
 msgid "IP addresses"
-msgstr ""
+msgstr "IP adresy"
 
 #: src/components/network/ConnectionsTable.jsx:74
 #: src/components/network/WifiNetworksListPage.jsx:107
@@ -453,7 +464,7 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
 #: src/components/users/FirstUser.jsx:120
 msgid "Edit"
-msgstr ""
+msgstr "Upravit"
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:77
@@ -673,45 +684,45 @@ msgstr ""
 msgid "The system will use %s as its default language."
 msgstr ""
 
-#: src/components/overview/OverviewPage.jsx:47
+#: src/components/overview/OverviewPage.jsx:49
 #: src/components/users/UsersPage.jsx:36 src/components/users/routes.js:32
 msgid "Users"
 msgstr ""
 
-#: src/components/overview/OverviewPage.jsx:48
+#: src/components/overview/OverviewPage.jsx:50
 #: src/components/overview/StorageSection.jsx:111
-#: src/components/storage/ProposalPage.jsx:307
+#: src/components/storage/ProposalPage.jsx:295
 #: src/components/storage/StoragePage.jsx:30
 #: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr ""
 
-#: src/components/overview/OverviewPage.jsx:49
+#: src/components/overview/OverviewPage.jsx:51
 #: src/components/overview/SoftwareSection.jsx:86
-#: src/components/software/SoftwarePage.jsx:155
+#: src/components/software/SoftwarePage.jsx:181
 #: src/components/software/routes.js:32
 msgid "Software"
 msgstr ""
 
-#: src/components/overview/OverviewPage.jsx:54
+#: src/components/overview/OverviewPage.jsx:56
 msgid "Ready for installation"
 msgstr ""
 
-#: src/components/overview/OverviewPage.jsx:104
+#: src/components/overview/OverviewPage.jsx:102
 msgid "Installation"
 msgstr ""
 
-#: src/components/overview/OverviewPage.jsx:105
+#: src/components/overview/OverviewPage.jsx:103
 msgid "Before installing, please check the following problems."
 msgstr ""
 
-#: src/components/overview/OverviewPage.jsx:116
+#: src/components/overview/OverviewPage.jsx:114
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
 msgstr ""
 
-#: src/components/overview/OverviewPage.jsx:125
+#: src/components/overview/OverviewPage.jsx:123
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
@@ -860,12 +871,19 @@ msgstr ""
 msgid "The following software patterns are selected for installation:"
 msgstr ""
 
-#: src/components/software/SoftwarePage.jsx:165
+#: src/components/software/SoftwarePage.jsx:105
+#: src/components/software/SoftwarePage.jsx:119
 msgid "Selected patterns"
 msgstr ""
 
-#: src/components/software/SoftwarePage.jsx:168
+#: src/components/software/SoftwarePage.jsx:108
 msgid "Change selection"
+msgstr ""
+
+#: src/components/software/SoftwarePage.jsx:123
+msgid ""
+"This product does not allow to select software patterns during installation. "
+"However, you can add additional software once the installation is finished."
 msgstr ""
 
 #: src/components/software/SoftwarePatternsSelection.jsx:223
@@ -894,7 +912,9 @@ msgid "Installation will take %s."
 msgstr ""
 
 #: src/components/software/UsedSize.jsx:37
-msgid "This space includes the base system and the selected software patterns."
+msgid ""
+"This space includes the base system and the selected software patterns, if "
+"any."
 msgstr ""
 
 #: src/components/storage/BootConfigField.jsx:43
@@ -1595,7 +1615,7 @@ msgstr[2] ""
 msgid "Waiting for actions information..."
 msgstr ""
 
-#: src/components/storage/ProposalPage.jsx:329
+#: src/components/storage/ProposalPage.jsx:317
 msgid "Planned Actions"
 msgstr ""
 
