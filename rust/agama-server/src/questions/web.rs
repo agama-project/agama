@@ -25,7 +25,7 @@ use tokio_stream::{Stream, StreamExt};
 use zbus::{
     fdo::ObjectManagerProxy,
     names::{InterfaceName, OwnedInterfaceName},
-    zvariant::{ObjectPath, OwnedObjectPath},
+    zvariant::{ObjectPath, OwnedObjectPath, OwnedValue},
 };
 
 // TODO: move to lib or maybe not and just have in lib client for http API?
@@ -34,6 +34,8 @@ struct QuestionsClient<'a> {
     connection: zbus::Connection,
     objects_proxy: ObjectManagerProxy<'a>,
     questions_proxy: Questions1Proxy<'a>,
+    generic_interface: OwnedInterfaceName,
+    with_password_interface: OwnedInterfaceName,
 }
 
 impl<'a> QuestionsClient<'a> {
@@ -48,6 +50,14 @@ impl<'a> QuestionsClient<'a> {
                 .destination("org.opensuse.Agama1")?
                 .build()
                 .await?,
+            generic_interface: InterfaceName::from_str_unchecked(
+                "org.opensuse.Agama1.Questions.Generic",
+            )
+            .into(),
+            with_password_interface: InterfaceName::from_str_unchecked(
+                "org.opensuse.Agama1.Questions.WithPassword",
+            )
+            .into(),
         })
     }
 
@@ -96,50 +106,42 @@ impl<'a> QuestionsClient<'a> {
             .await
             .context("failed to get managed object with Object Manager")?;
         let mut result: Vec<Question> = Vec::with_capacity(objects.len());
-        let password_interface = OwnedInterfaceName::from(
-            InterfaceName::from_static_str("org.opensuse.Agama1.Questions.WithPassword")
-                .context("Failed to create interface name for question with password")?,
-        );
-        for (path, interfaces_hash) in objects.iter() {
-            if interfaces_hash.contains_key(&password_interface) {
-                result.push(self.build_question_with_password(path).await?)
-            } else {
-                result.push(self.build_generic_question(path).await?)
+
+        for (_path, interfaces_hash) in objects.iter() {
+            let generic_properties = interfaces_hash
+                .get(&self.generic_interface)
+                .context("Failed to create interface name for generic question")?;
+            // skip if question is already answered
+            let answer: String = get_property(generic_properties, "Answer")?;
+            if !answer.is_empty() {
+                continue;
             }
+            let mut question = self.build_generic_question(generic_properties)?;
+
+            if interfaces_hash.contains_key(&self.with_password_interface) {
+                question.with_password = Some(QuestionWithPassword {});
+            }
+
+            result.push(question);
         }
         Ok(result)
     }
 
-    async fn build_generic_question(
+    fn build_generic_question(
         &self,
-        path: &OwnedObjectPath,
+        properties: &HashMap<String, OwnedValue>,
     ) -> Result<Question, ServiceError> {
-        let dbus_question = GenericQuestionProxy::builder(&self.connection)
-            .path(path)?
-            .cache_properties(zbus::CacheProperties::No)
-            .build()
-            .await?;
         let result = Question {
             generic: GenericQuestion {
-                id: dbus_question.id().await?,
-                class: dbus_question.class().await?,
-                text: dbus_question.text().await?,
-                options: dbus_question.options().await?,
-                default_option: dbus_question.default_option().await?,
-                data: dbus_question.data().await?,
+                id: get_property(properties, "Id")?,
+                class: get_property(properties, "Class")?,
+                text: get_property(properties, "Text")?,
+                options: get_property(properties, "Options")?,
+                default_option: get_property(properties, "DefaultOption")?,
+                data: get_property(properties, "Data")?,
             },
             with_password: None,
         };
-
-        Ok(result)
-    }
-
-    async fn build_question_with_password(
-        &self,
-        path: &OwnedObjectPath,
-    ) -> Result<Question, ServiceError> {
-        let mut result = self.build_generic_question(path).await?;
-        result.with_password = Some(QuestionWithPassword {});
 
         Ok(result)
     }
