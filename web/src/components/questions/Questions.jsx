@@ -22,8 +22,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
+import { QUESTION_TYPES } from "~/client/questions";
 
-import { GenericQuestion, LuksActivationQuestion } from "~/components/questions";
+import { GenericQuestion, QuestionWithPassword, LuksActivationQuestion } from "~/components/questions";
 
 export default function Questions() {
   const client = useInstallerClient();
@@ -73,6 +74,10 @@ export default function Questions() {
   // Renders the first pending question
   const [currentQuestion] = pendingQuestions;
   let QuestionComponent = GenericQuestion;
+  // show specialized popup for question which need password
+  if (currentQuestion.type === QUESTION_TYPES.withPassword) {
+    QuestionComponent = QuestionWithPassword;
+  }
   // show specialized popup for luks activation question
   // more can follow as it will be needed
   if (currentQuestion.class === "storage.luks_activation") {
