@@ -49,17 +49,17 @@ module Yast2
         question = {
           # TODO: id for newly created question is ignored, but maybe it will
           # be better to not have to specify it at all?
-          id:             0,
-          class:          "autoyast.popup",
-          text:           text,
-          options:        generate_options(buttons),
-          default_option: focus || options.first,
-          data:           {}
+          id:            0,
+          class:         "autoyast.popup",
+          text:          text,
+          options:       generate_options(buttons),
+          defaultOption: focus || options.first,
+          data:          {}
         }
         data = { generic: question }.to_json
-        answer_json = Yast::Execute.locally!("agama", "questions", "ask",
+        answer_yaml = Yast::Execute.locally!("agama", "questions", "ask",
           stdin: data, stdout: :capture)
-        answer = JSON.parse!(answer_json)
+        answer = JSON.parse!(answer_yaml)
         answer["generic"]["answer"].to_sym
       end
 
@@ -106,14 +106,14 @@ module UI
         "defaultOption" => "cancel",
         "data"          => {}
       }
-      data = { "generic" => question, "withPassword" => {} }.to_json
-      answer_json = Yast::Execute.locally!("agama", "questions", "ask", stdin: data,
+      data = { generic: question, withPassword: {} }.to_json
+      answer_yaml = Yast::Execute.locally!("agama", "questions", "ask", stdin: data,
 stdout: :capture)
-      answer = JSON.parse!(answer_json)
+      answer = JSON.parse!(answer_yaml)
       result = answer["generic"]["answer"].to_sym
       return nil if result == "cancel"
 
-      answer["with_password"]["password"]
+      answer["withPassword"]["password"]
     end
   end
 end
