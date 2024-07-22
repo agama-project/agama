@@ -22,7 +22,7 @@
 /**
  * Enum for the reasons to select a pattern
  */
-export enum SelectedBy {
+enum SelectedBy {
   /** Selected by the user */
   USER = 0,
   /** Automatically selected as a dependency of another package */
@@ -31,7 +31,7 @@ export enum SelectedBy {
   NONE = 2,
 }
 
-export type Product = {
+type Product = {
   /** Product ID (e.g., "Leap") */
   id: string;
   /** Product name (e.g., "openSUSE Leap 15.4") */
@@ -40,7 +40,7 @@ export type Product = {
   description: string;
 };
 
-export type Registration = {
+type Registration = {
   /** Registration requirement (i.e., "not-required", "optional", "mandatory") */
   requirement: string;
   /** Registration code, if any */
@@ -49,42 +49,42 @@ export type Registration = {
   email?: string;
 };
 
-export type RegistrationFailure = {
+type RegistrationFailure = {
   /** @property {Number} id - ID of error */
   id: number;
   /** Failure message */
   message: number;
 };
 
-export type ActionResult = {
+type ActionResult = {
   /** Whether the action was successfully done */
   success: boolean;
   /** Result message */
   message: string;
 };
 
-export type PatternsSelection = { [key: string]: SelectedBy };
+type PatternsSelection = { [key: string]: SelectedBy };
 
 /**
  * PatternGroups mapping "group name" => list of patterns
  */
-export type PatternsGroups = { [key: string]: Pattern[] };
+type PatternsGroups = { [key: string]: Pattern[] };
 
-export type SoftwareProposal = {
+type SoftwareProposal = {
   /** Used space in human-readable form */
   size: string;
   /** Selected patterns and the reason */
   patterns: PatternsSelection;
 };
 
-export type SoftwareConfig = {
+type SoftwareConfig = {
   /** Product to install */
   product?: string;
   /** An object where the keys are the pattern names and the values whether to install them or not */
   patterns: { [key: string]: boolean };
 };
 
-export type Pattern = {
+type Pattern = {
   /** Pattern name (internal ID) */
   name: string;
   /** Pattern category */
@@ -99,4 +99,17 @@ export type Pattern = {
   icon: string;
   /** Whether the pattern if selected and by whom */
   selectedBy?: SelectedBy;
+};
+
+export { SelectedBy };
+export type {
+  ActionResult,
+  Pattern,
+  PatternsGroups,
+  PatternsSelection,
+  Product,
+  Registration,
+  RegistrationFailure,
+  SoftwareConfig,
+  SoftwareProposal,
 };
