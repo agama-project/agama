@@ -40,22 +40,6 @@ type Product = {
   description: string;
 };
 
-type Registration = {
-  /** Registration requirement (i.e., "not-required", "optional", "mandatory") */
-  requirement: string;
-  /** Registration code, if any */
-  code?: string;
-  /** Registration email, if any */
-  email?: string;
-};
-
-type RegistrationFailure = {
-  /** @property {Number} id - ID of error */
-  id: number;
-  /** Failure message */
-  message: number;
-};
-
 type ActionResult = {
   /** Whether the action was successfully done */
   success: boolean;
@@ -108,8 +92,6 @@ export type {
   PatternsGroups,
   PatternsSelection,
   Product,
-  Registration,
-  RegistrationFailure,
   SoftwareConfig,
   SoftwareProposal,
 };
