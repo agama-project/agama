@@ -168,17 +168,17 @@ const useProposal = (): SoftwareProposal => {
  */
 const useProductChanges = () => {
   const client = useInstallerClient();
+  const queryClient = useQueryClient();
 
   React.useEffect(() => {
     if (!client) return;
-    const queryClient = new QueryClient();
 
     return client.ws().onEvent((event) => {
       if (event.type === "") {
         queryClient.invalidateQueries({ queryKey: ["software/config"] });
       }
     });
-  }, [client]);
+  }, [client, queryClient]);
 };
 
 /**
@@ -188,17 +188,17 @@ const useProductChanges = () => {
  */
 const useProposalChanges = () => {
   const client = useInstallerClient();
+  const queryClient = useQueryClient();
 
   React.useEffect(() => {
     if (!client) return;
-    const queryClient = new QueryClient();
 
     return client.ws().onEvent((event) => {
       if (event.type === "SoftwareProposalChanged") {
         queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
       }
     });
-  }, [client]);
+  }, [client, queryClient]);
 };
 
 export {
