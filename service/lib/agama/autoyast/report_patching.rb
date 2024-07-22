@@ -111,7 +111,7 @@ module UI
 stdout: :capture)
       answer = JSON.parse!(answer_yaml)
       result = answer["generic"]["answer"].to_sym
-      return nil if result == "cancel"
+      return nil if result == :cancel
 
       answer["withPassword"]["password"]
     end
