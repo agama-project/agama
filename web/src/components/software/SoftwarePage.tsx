@@ -30,17 +30,17 @@ import {
   GridItem,
   Stack,
 } from "@patternfly/react-core";
-import { ButtonLink, CardField, IssuesHint, Page, SectionSkeleton } from "~/components/core";
+import { ButtonLink, CardField, IssuesHint, Page } from "~/components/core";
 import UsedSize from "./UsedSize";
-import { SelectedBy } from "~/types/software";
 import { useIssues } from "~/queries/issues";
 import { usePatterns, useProposal, useProposalChanges } from "~/queries/software";
+import { Pattern, SelectedBy } from "~/types/software";
 import { _ } from "~/i18n";
 
 /**
  * List of selected patterns.
  */
-const SelectedPatternsList = ({ patterns }: { patterns: Pattern[] }) => {
+const SelectedPatternsList = ({ patterns }: { patterns: Pattern[] }): React.ReactNode => {
   const selected = patterns.filter((p) => p.selectedBy !== SelectedBy.NONE);
 
   if (selected.length === 0) {
@@ -62,7 +62,7 @@ const SelectedPatternsList = ({ patterns }: { patterns: Pattern[] }) => {
   );
 };
 
-const SelectedPatterns = ({ patterns }) => (
+const SelectedPatterns = ({ patterns }): React.ReactNode => (
   <CardField
     label={_("Selected patterns")}
     actions={
@@ -77,7 +77,7 @@ const SelectedPatterns = ({ patterns }) => (
   </CardField>
 );
 
-const NoPatterns = () => (
+const NoPatterns = (): React.ReactNode => (
   <CardField label={_("Selected patterns")}>
     <CardBody>
       <p>
@@ -92,7 +92,7 @@ const NoPatterns = () => (
 /**
  * Software page component
  */
-function SoftwarePage() {
+function SoftwarePage(): React.ReactNode {
   const issues = useIssues("software");
   const proposal = useProposal();
   const patterns = usePatterns();

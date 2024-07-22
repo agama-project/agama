@@ -34,8 +34,8 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import { Section, Page } from "~/components/core";
-import { SelectedBy } from "~/types/software";
 import { useConfigMutation, usePatterns } from "~/queries/software";
+import { Pattern, PatternsGroups, SelectedBy } from "~/types/software";
 import { _ } from "~/i18n";
 
 /**
@@ -78,7 +78,7 @@ function sortGroups(groups: PatternsGroups): string[] {
   });
 }
 
-const filterPatterns = (patterns: Pattern[] = [], searchValue = "") => {
+const filterPatterns = (patterns: Pattern[] = [], searchValue = ""): Pattern[] => {
   if (searchValue.trim() === "") return patterns;
 
   // case insensitive search
@@ -90,12 +90,12 @@ const filterPatterns = (patterns: Pattern[] = [], searchValue = "") => {
   );
 };
 
-const NoMatches = () => <b>{_("None of the patterns match the filter.")}</b>;
+const NoMatches = (): React.ReactNode => <b>{_("None of the patterns match the filter.")}</b>;
 
 /**
  * Pattern selector component
  */
-function SoftwarePatternsSelection() {
+function SoftwarePatternsSelection(): React.ReactNode {
   const patterns = usePatterns();
   const config = useConfigMutation();
   const [searchValue, setSearchValue] = useState("");
@@ -125,7 +125,7 @@ function SoftwarePatternsSelection() {
   // FIXME: use a switch instead of a checkbox since these patterns are going to
   // be selected/deselected immediately.
   // TODO: extract to a DataListSelector component or so.
-  const selector = sortGroups(groups).map((groupName) => {
+  const selector: React.ReactNode = sortGroups(groups).map((groupName) => {
     const selectedIds = groups[groupName]
       .filter((p) => p.selectedBy !== SelectedBy.NONE)
       .map((p) => p.name);
