@@ -40,13 +40,6 @@ type Product = {
   description: string;
 };
 
-type ActionResult = {
-  /** Whether the action was successfully done */
-  success: boolean;
-  /** Result message */
-  message: string;
-};
-
 type PatternsSelection = { [key: string]: SelectedBy };
 
 /**
@@ -87,7 +80,6 @@ type Pattern = {
 
 export { SelectedBy };
 export type {
-  ActionResult,
   Pattern,
   PatternsGroups,
   PatternsSelection,
