@@ -23,34 +23,8 @@ import React from "react";
 import { Page } from "~/components/core";
 import NetworkPage from "./NetworkPage";
 import IpSettingsForm from "./IpSettingsForm";
-import { createDefaultClient } from "~/client";
 import WifiSelectorPage from "./WifiSelectorPage";
 import { N_ } from "~/i18n";
-
-// FIXME: just to be discussed, most probably we should reading data directly in
-// the component in order to get it subscribed to changes.
-const client = await createDefaultClient();
-
-const loaders = {
-  all: async () => {
-    const devices = await client.network.devices();
-    const connections = await client.network.connections();
-    const settings = await client.network.settings();
-    return { connections, devices, settings };
-  },
-  connection: async ({ params }) => {
-    const connections = await client.network.connections();
-    return connections.find((c) => c.id === params.id);
-  },
-  wifis: async () => {
-    const connections = await client.network.connections();
-    const devices = await client.network.devices();
-    const accessPoints = await client.network.accessPoints();
-    const networks = await client.network.loadNetworks(devices, connections, accessPoints);
-
-    return { connections, devices, accessPoints, networks };
-  },
-};
 
 const routes = {
   path: "/network",
@@ -60,18 +34,16 @@ const routes = {
     icon: "settings_ethernet",
   },
   children: [
-    { index: true, element: <NetworkPage />, loader: loaders.all },
+    { index: true, element: <NetworkPage /> },
     {
       path: "connections/:id/edit",
-      element: <IpSettingsForm />,
-      loader: loaders.connection,
+      element: <IpSettingsForm />
     },
     {
       path: "wifis",
       element: <WifiSelectorPage />,
-      loader: loaders.wifis,
-    },
-  ],
+    }
+  ]
 };
 
 export default routes;

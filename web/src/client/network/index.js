@@ -26,6 +26,8 @@ import {
   ConnectionTypes,
   createAccessPoint,
   createConnection,
+  DeviceState,
+  NetworkState,
   securityFromFlags,
 } from "./model";
 import { formatIp, ipPrefixFor } from "./utils";
@@ -239,7 +241,26 @@ class NetworkClient {
     return this.client.get(`/network/connections/${connection.id}/disconnect`);
   }
 
-  async loadNetworks(devices, connections, accessPoints) {
+  networkStateFor(state) {
+    switch (state) {
+      case DeviceState.CONFIG:
+      case DeviceState.IPCHECK:
+        // TRANSLATORS: Wifi network status
+        return NetworkState.CONNECTING;
+      case DeviceState.ACTIVATED:
+        // TRANSLATORS: Wifi network status
+        return NetworkState.CONNECTED;
+      case DeviceState.DEACTIVATING:
+      case DeviceState.FAILED:
+      case DeviceState.DISCONNECTED:
+        // TRANSLATORS: Wifi network status
+        return NetworkState.DISCONNECTED;
+      default:
+        return "";
+    }
+  }
+
+  loadNetworks(devices, connections, accessPoints) {
     const knownSsids = [];
 
     return accessPoints

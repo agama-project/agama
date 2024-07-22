@@ -49,6 +49,12 @@ const DeviceState = Object.freeze({
   FAILED: "failed",
 });
 
+const NetworkState = Object.freeze({
+  DISCONNECTED: "disconnected",
+  CONNECTING: "connecting",
+  CONNECTED: "connected"
+});
+
 /**
  * Returns a human readable connection state
  *
@@ -302,6 +308,7 @@ export {
   createConnection,
   createDevice,
   DeviceState,
+  NetworkState,
   securityFromFlags,
   SecurityProtocols,
 };

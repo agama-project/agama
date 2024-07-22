@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActionGroup,
   Alert,
@@ -32,7 +32,11 @@ import {
 } from "@patternfly/react-core";
 import { PasswordInput } from "~/components/core";
 import { useInstallerClient } from "~/context/installer";
+import { useNetwork, useNetworkConfigChanges, useSelectedWifiChange } from "~/queries/network";
 import { _ } from "~/i18n";
+import { NetworkEventTypes } from "~/client/network";
+import { DeviceState } from "~/client/network/model";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 
 /*
  * FIXME: it should be moved to the SecurityProtocols enum that already exists or to a class based
@@ -57,12 +61,16 @@ const securityFrom = (supported) => {
 
 export default function WifiConnectionForm({ network, onCancel, onSubmitCallback }) {
   const { network: client } = useInstallerClient();
+  const queryClient = useQueryClient();
+  const { networks } = useNetwork();
   const [error, setError] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [ssid, setSsid] = useState(network?.ssid || "");
   const [password, setPassword] = useState(network?.password || "");
   const [security, setSecurity] = useState(securityFrom(network?.security || []));
   const hidden = network?.hidden || false;
+
+  useNetworkConfigChanges();
 
   const accept = async (e) => {
     e.preventDefault();
@@ -76,7 +84,8 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
     client
       .addAndConnectTo(ssid, { security, password, hidden })
       .catch(() => setError(true))
-      .finally(() => setIsConnecting(false));
+      .finally(() => setIsConnecting(false) && queryClient.invalidateQueries({ "queryKey": ["network"] }));
+
   };
 
   return (
