@@ -22,6 +22,7 @@ require "y2storage/planned"
 require "y2storage/disk_size"
 require "y2storage/boot_requirements_checker"
 require "y2storage/exceptions"
+require "y2storage/proposal/agama_drive_planner"
 
 module Y2Storage
   module Proposal
@@ -68,12 +69,12 @@ module Y2Storage
         # Agama::ProposalSettingsConversions and Agama::VolumesConversions
 
         planned = settings.drives
-          .flat_map { |d| planned_for_drive(d) }
+          .flat_map { |d| planned_for_drive(d, devicegraph) }
           .compact
 
         Planned::DevicesCollection.new(planned).tap do |collection|
           # TODO
-          remove_shadowed_subvols(collection.mountable_devices)
+          # remove_shadowed_subvols(collection.mountable_devices)
         end
       end
 
@@ -87,8 +88,9 @@ module Y2Storage
       def add_boot_devices(devices, devicegraph)
         return unless settings.boot.configure?
 
-        devices.unshift(*planned_boot_devices(devices, devicegraph))
-        remove_shadowed_subvolumes(devices)
+        devices.prepend(planned_boot_devices(devices, devicegraph))
+        # TODO
+        # remove_shadowed_subvolumes(devices)
       end
 
       protected
@@ -102,8 +104,7 @@ module Y2Storage
 
       # This method is 99% copied from the guided DevicesPlanner
       def planned_boot_devices(planned_devices, devicegraph)
-        # This line is basically guessing
-        boot_disk_name = settings.boot.device || settings.default_boot_device
+        boot_disk_name = settings.boot_device
 
         flat = planned_devices.flat_map do |dev|
           dev.respond_to?(:lvs) ? dev.lvs : dev
@@ -121,7 +122,7 @@ module Y2Storage
 
       # I'm leaving out intentionally support for StrayBlkDevice. As far as I know,
       # the plan for SLE/Leap 16 is to drop XEN support
-      def planned_for_drive(drive)
+      def planned_for_drive(drive, devicegraph)
         planner = AgamaDrivePlanner.new(devicegraph, config, issues_list)
         planner.planned_devices(drive)
       end

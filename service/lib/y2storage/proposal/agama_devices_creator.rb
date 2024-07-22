@@ -141,7 +141,7 @@ module Y2Storage
         planned_devices.each do |planned|
           next unless planned.reuse?
 
-          planned.reuse!(graph)
+          planned.reuse!(devicegraph)
         end
 
         # graph = create_separate_vgs(planned_devices, creator_result).devicegraph

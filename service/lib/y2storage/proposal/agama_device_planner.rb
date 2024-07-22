@@ -88,8 +88,8 @@ module Y2Storage
         planned.mount_point = settings.path
         planned.mount_by = settings.mount_by
         planned.fstab_options = settings.options
-        # Is this needed? Or #options is enough?
-        planned.read_only = settings.read_only?
+        # FIXME: Is this needed? Or #options is enough?
+        # planned.read_only = settings.read_only?
       end
 
       # @param planned [Planned::Partition]
@@ -103,7 +103,7 @@ module Y2Storage
       # @param settings [Agama::Storage::Settings::Drive]
       def configure_partitions(planned, settings)
         planned.partitions = settings.partitions.map do |partition_settings|
-          planned_partition(partition_settings).tap { |p| p.disk = settings.device.name }
+          planned_partition(partition_settings).tap { |p| p.disk = settings.found_device.name }
         end
       end
 
@@ -112,7 +112,9 @@ module Y2Storage
       def planned_partition(settings)
         Planned::Partition.new(nil, nil).tap do |planned|
           planned.partition_id = settings.id
-          planned.primary = settings.primary?
+          # FIXME: do we want to allow to force primary partitions? That was not really
+          # well solved at AutoYaST
+          # planned.primary = settings.primary?
           configure_device(planned, settings)
           configure_size(planned, settings.size)
         end

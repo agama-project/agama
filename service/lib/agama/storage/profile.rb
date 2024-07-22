@@ -64,6 +64,10 @@ module Agama
         Storage::ProposalSettingsConversions::ToJSON.new(self).convert
       end
 
+      def boot_device
+        explicit_boot_device || implicit_boot_device
+      end
+
       # Device used for booting.
       #
       # @return [String, nil]
@@ -71,6 +75,15 @@ module Agama
         return nil unless boot.configure?
 
         boot.device
+      end
+
+      def implicit_boot_device
+        # TODO: preliminary implementation with very simplistic checks
+        root_drive = drives.find do |drive|
+          drive.partitions.any? { |p| p.mount&.path == "/" }
+        end
+
+        root_drive&.found_device.name
       end
     end
   end

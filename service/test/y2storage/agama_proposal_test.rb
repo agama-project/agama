@@ -29,8 +29,6 @@ describe Y2Storage::AgamaProposal do
 
   before do
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
-    allow(Y2Storage::Proposal::AgamaDevicesPlanner).to receive(:new).and_return dev_generator
-    allow(dev_generator).to receive(:add_boot_devices)
   end
 
   subject(:proposal) do
@@ -47,19 +45,15 @@ describe Y2Storage::AgamaProposal do
       drive.partitions = [
         Agama::Storage::Settings::Partition.new.tap do |part|
           part.mount = Agama::Storage::Settings::Mount.new.tap { |m| m.path = "/" }
+          part.size = Agama::Storage::Settings::SizeRange.new.tap do |size|
+            size.min = Y2Storage::DiskSize.GiB(8.5)
+            size.max = Y2Storage::DiskSize.unlimited
+          end
         end
       ]
     end
   end
   let(:issues_list) { [] }
-  let(:dev_generator) do
-    instance_double(
-      "Y2Storage::Proposal::AgamaDevicesPlanner", initial_planned_devices: planned_devices
-    )
-  end
-  let(:planned_devices) do
-    [planned_partition(mount_point: "/", type: :ext4, min: Y2Storage::DiskSize.GiB(8.5))]
-  end
 
   describe "#propose" do
     it "does something" do

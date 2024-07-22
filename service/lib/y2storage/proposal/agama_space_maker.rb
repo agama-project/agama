@@ -36,22 +36,11 @@ module Y2Storage
           target.space_settings.strategy = :bigger_resize
           target.space_settings.actions = []
 
-          boot_device = settings.explicit_boot_device || implicit_boot_device(settings)
+          boot_device = settings.boot_device
 
           target.root_device = boot_device
           target.candidate_devices = [boot_device].compact
         end
-      end
-
-      private
-
-      def implicit_boot_device(settings)
-        # TODO: preliminary implementation with very simplistic checks
-        root_drive = settings.drives.find do |drive|
-          drive.partitions.any? { |p| p.mount&.path == "/" }
-        end
-
-        root_drive&.found_device.name
       end
     end
   end

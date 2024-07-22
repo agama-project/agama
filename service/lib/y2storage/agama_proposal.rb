@@ -101,7 +101,7 @@ module Y2Storage
 
       clean_devicegraph = clean_graph(devicegraph, @planned_devices)
 
-      planner = Proposal::AgamaDevicesPlanner.new(settings)
+      planner = Proposal::AgamaDevicesPlanner.new(settings, config, issues_list)
       planner.add_boot_devices(@planned_devices, clean_devicegraph)
 
       # Almost for sure, this should happen as part of the creation of devices below

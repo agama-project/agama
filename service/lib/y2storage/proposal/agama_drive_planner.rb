@@ -17,6 +17,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "y2storage/proposal/agama_device_planner"
+
 module Y2Storage
   module Proposal
     class AgamaDrivePlanner < AgamaDevicePlanner
@@ -57,7 +59,7 @@ module Y2Storage
       # @param planned [Planned::Disk]
       # @param settings [Agama::Storage::Settings::Drive]
       def configure_drive(planned, settings)
-        planned.reuse_name = settings.device.name
+        planned.assign_reuse(settings.found_device)
       end
     end
   end
