@@ -9,6 +9,7 @@
     "allowJs": true,
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
+    "types": ["node", "jest", "@testing-library/jest-dom"],
     "paths": {
       "~/*": ["src/*"],
       "~/client": ["src/client/index.js"],
