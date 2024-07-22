@@ -5,6 +5,7 @@
     "target": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "esModuleInterop": true,
     "allowJs": true,
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
