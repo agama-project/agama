@@ -33,10 +33,11 @@ import {
   SearchInput,
   Stack,
 } from "@patternfly/react-core";
-import { Section, Page } from "~/components/core";
+import { Page } from "~/components/core";
 import { useConfigMutation, usePatterns } from "~/queries/software";
 import { Pattern, PatternsGroups, SelectedBy } from "~/types/software";
 import { _ } from "~/i18n";
+import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 
 /**
  * Group the patterns with the same group name
@@ -125,44 +126,54 @@ function SoftwarePatternsSelection(): React.ReactNode {
   // FIXME: use a switch instead of a checkbox since these patterns are going to
   // be selected/deselected immediately.
   // TODO: extract to a DataListSelector component or so.
-  const selector: React.ReactNode = sortGroups(groups).map((groupName) => {
+  const selector = sortGroups(groups).map((groupName) => {
     const selectedIds = groups[groupName]
       .filter((p) => p.selectedBy !== SelectedBy.NONE)
       .map((p) => p.name);
     return (
-      <Section key={groupName} title={groupName}>
+      <section key={groupName}>
+        <h3>{groupName}</h3>
         <DataList isCompact aria-label={groupName}>
-          {groups[groupName].map((option) => (
-            <DataListItem key={option.name}>
-              <DataListItemRow>
-                <DataListCheck
-                  onChange={() => onToggle(option.name)}
-                  aria-labelledby="check-action-item1"
-                  name="check-action-check1"
-                  isChecked={selectedIds.includes(option.name)}
-                />
-                <DataListItemCells
-                  dataListCells={[
-                    <DataListCell key="summary">
-                      <Stack hasGutter>
-                        <div>
-                          <b>{option.summary}</b>{" "}
-                          {option.selectedBy === SelectedBy.AUTO && (
-                            <Label color="blue" isCompact>
-                              {_("auto selected")}
-                            </Label>
-                          )}
-                        </div>
-                        <div>{option.description}</div>
-                      </Stack>
-                    </DataListCell>,
-                  ]}
-                />
-              </DataListItemRow>
-            </DataListItem>
-          ))}
+          {groups[groupName].map((option) => {
+            const titleId = `${option.name}-title`;
+            const descId = `${option.name}-desc`;
+            const selected = selectedIds.includes(option.name);
+            const nextActionId = `${option.name}-next-action`;
+
+            return (
+              <DataListItem key={option.name} aria-labelledby={titleId} aria-describedby={descId}>
+                <DataListItemRow>
+                  <DataListCheck
+                    onChange={() => onToggle(option.name)}
+                    aria-labelledby={[nextActionId, titleId].join(" ")}
+                    isChecked={selected}
+                  />
+                  <DataListItemCells
+                    dataListCells={[
+                      <DataListCell key="summary">
+                        <Stack hasGutter>
+                          <div>
+                            <b id={titleId}>{option.summary}</b>{" "}
+                            {option.selectedBy === SelectedBy.AUTO && (
+                              <Label color="blue" isCompact>
+                                {_("auto selected")}
+                              </Label>
+                            )}
+                            <span id={nextActionId} className={a11yStyles.hidden}>
+                              {selected ? _("Unselect") : _("Select")}
+                            </span>
+                          </div>
+                          <div id={descId}>{option.description}</div>
+                        </Stack>
+                      </DataListCell>,
+                    ]}
+                  />
+                </DataListItemRow>
+              </DataListItem>
+            );
+          })}
         </DataList>
-      </Section>
+      </section>
     );
   });
 

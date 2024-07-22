@@ -21,68 +21,50 @@
 
 import React from "react";
 
-import { act, screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { BUSY, IDLE } from "~/client/status";
-import { createClient } from "~/client";
-import test_patterns from "./SoftwarePatternsSelection.test.json";
+import testingPatterns from "./patterns.test.json";
+import testingProposal from "./proposal.test.json";
 import SoftwarePage from "./SoftwarePage";
 
-jest.mock("~/client");
+const onProposalChangesMock = jest.fn();
 
-const getStatusFn = jest.fn();
-const onStatusChangeFn = jest.fn();
-const onSelectedPatternsChangedFn = jest.fn();
-const selectPatternsFn = jest.fn();
-const proposal = {
-  patterns: { yast2_basis: 1 },
-  size: "1.8 GiB",
-};
+jest.mock("~/queries/issues", () => ({
+  useIssues: () => [],
+}));
 
-beforeEach(() => {
-  createClient.mockImplementation(() => {
-    return {
-      software: {
-        getStatus: getStatusFn,
-        onStatusChange: onStatusChangeFn,
-        onSelectedPatternsChanged: onSelectedPatternsChangedFn,
-        getPatterns: jest.fn().mockResolvedValue(test_patterns),
-        getProposal: jest.fn().mockResolvedValue(proposal),
-        selectPatterns: selectPatternsFn,
-      },
-    };
-  });
-});
+jest.mock("~/queries/software", () => ({
+  usePatterns: () => testingPatterns,
+  useProposal: () => testingProposal,
+  useProposalChanges: () => onProposalChangesMock(),
+}));
 
-jest.mock("@patternfly/react-core", () => {
-  const original = jest.requireActual("@patternfly/react-core");
-
-  return {
-    ...original,
-    Skeleton: () => <span>Skeleton Mock</span>,
-  };
-});
-
-describe.skip("SoftwarePage", () => {
-  it("displays a progress when the backend in busy", async () => {
-    getStatusFn.mockResolvedValue(BUSY);
-    await act(async () => installerRender(<SoftwarePage />));
-    screen.getAllByText("Skeleton Mock");
+describe("SoftwarePage", () => {
+  it("renders a list of selected patterns", () => {
+    installerRender(<SoftwarePage />);
+    screen.getAllByText(/GNOME/);
+    screen.getByText("YaST Base Utilities");
+    screen.getByText("YaST Desktop Utilities");
+    screen.getByText("Multimedia");
+    screen.getAllByText(/Office software/);
+    expect(screen.queryByText("KDE")).toBeNull();
+    expect(screen.queryByText("XFCE")).toBeNull();
+    expect(screen.queryByText("YaST Server Utilities")).toBeNull();
   });
 
-  it("clicking in a pattern's checkbox selects the pattern", async () => {
-    getStatusFn.mockResolvedValue(IDLE);
+  it("renders amount of size selected product and patterns will need", () => {
+    installerRender(<SoftwarePage />);
+    screen.getByText("Installation will take 4.6 GiB.");
+  });
 
-    const { user } = installerRender(<SoftwarePage />);
-    const button = await screen.findByRole("button", { name: "Change selection" });
-    await user.click(button);
+  it("renders a button for navigating to patterns selection", () => {
+    installerRender(<SoftwarePage />);
+    screen.getByRole("link", { name: "Change selection" });
+  });
 
-    const basePatterns = await screen.findByRole("region", {
-      name: "Base Technologies",
-    });
-    const row = await within(basePatterns).findByRole("row", { name: /YaST Base/ });
-    const checkbox = await within(row).findByRole("checkbox");
-
-    expect(checkbox).toBeChecked();
+  it.skip("listen proposal sofware proposal changes", () => {
+    installerRender(<SoftwarePage />);
+    // act(() => triggerTheExpectedEvent());
+    // expect(onProposalChangesMock).toHaveBeenCalled();
   });
 });

@@ -20,12 +20,11 @@
  */
 
 import React from "react";
-
 import { EmptyState } from "~/components/core";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
-export default function UsedSize({ size }) {
+export default function UsedSize({ size }: { size?: string }) {
   if (size === undefined || size === "" || size === "0 B") return null;
 
   // TRANSLATORS: %s will be replaced by the estimated installation size,
