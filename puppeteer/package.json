@@ -1,0 +1,8 @@
+{
+  "type": "module",
+  "dependencies": {
+    "chai": "^5.1.1",
+    "mocha": "^10.6.0",
+    "puppeteer-core": "22.13.0"
+  }
+}

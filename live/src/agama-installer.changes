@@ -1,4 +1,19 @@
 -------------------------------------------------------------------
+Fri Jul 19 09:43:06 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a new profile for SLE-based distributions
+  (gh#openSUSE/agama#1475).
+- Rename the package to "agama-installer".
+- Do not include the full "base-x11" pattern but only the needed
+  packages.
+
+-------------------------------------------------------------------
+Thu Jul 18 15:25:39 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Include Puppeteer in all ISO images (gh#openSUSE/agama#1477)
+- Drop Playwright ISO flavor (gh#openSUSE/agama#1481)
+
+-------------------------------------------------------------------
 Tue Jul  9 13:26:38 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
 - Added agama-installer-openSUSE PXE images
@@ -67,7 +82,7 @@ Thu Jun  6 14:30:19 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 -------------------------------------------------------------------
 Wed Jun  5 15:40:43 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
 
-- Fix the cd.ikr content for booting the s390x iso 
+- Fix the cd.ikr content for booting the s390x iso
   (gh#openSUSE/agama#1289).
 
 -------------------------------------------------------------------

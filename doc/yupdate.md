@@ -59,10 +59,6 @@ You can modify the update process with these environment variables:
 - `YUPDATE_SKIP_BACKEND=1` - Skip updating the D-Bus service backend. This is
   similar to the previous option, use it when you do want to keep the D-Bus
   service unchanged.
-- `YUPDATE_SKIP_TESTS=1` - Skip updating the integration tests if they are
-  installed. If the tests are not installed they are not added automatically.
-  If you want to add them first create the `/usr/share/agama-playwright`
-  directory where the tests will be added and then run the `yupdate` command.
 
 ## Notes
 

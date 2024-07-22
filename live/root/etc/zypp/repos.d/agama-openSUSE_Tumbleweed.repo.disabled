@@ -1,5 +1,5 @@
 [agama-devel]
-name=Agama-Devel
+name=Agama-Devel (openSUSE Tumbleweed)
 type=rpm-md
 enabled=1
 autorefresh=1

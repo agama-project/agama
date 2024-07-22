@@ -23,10 +23,7 @@ $SUDO zypper --non-interactive install \
 
 cd web
 
-if [ ! -e node_modules ]; then
-  npm install
-fi
-
+npm install
 npm run build
 
 cd -

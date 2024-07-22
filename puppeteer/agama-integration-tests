@@ -1,0 +1,16 @@
+#! /usr/bin/sh
+
+# exit on error, unset variables are an error
+set -eu
+
+MYDIR=$(realpath "$(dirname "$0")")
+
+if [ -e "$MYDIR/../.git/" ]; then
+  PUPPETEER_SKIP_DOWNLOAD=true npm install --omit=optional
+  npx mocha --bail "$@"
+else
+  # set the default load path
+  export NODE_PATH=/usr/share/agama/integration-tests/node_modules
+  # run the CLI script directly, npm/npx might not be installed
+  /usr/bin/env node /usr/share/agama/integration-tests/node_modules/mocha/bin/mocha.js --bail "$@"
+fi

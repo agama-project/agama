@@ -1,4 +1,4 @@
-name: Submit agama-playwright
+name: Submit agama-integration-tests
 
 on:
   # runs on pushes targeting the default branch
@@ -6,8 +6,8 @@ on:
     branches:
       - master
     paths:
-      # run only when a Playwright source is changed
-      - playwright/**
+      # run only when a source file is changed
+      - puppeteer/**
 
   # allow running manually
   workflow_dispatch:
@@ -18,5 +18,6 @@ jobs:
     # pass all secrets
     secrets: inherit
     with:
-      package_name: agama-playwright
-      service_file: playwright/package/_service
+      install_packages: obs-service-node_modules
+      package_name: agama-integration-tests
+      service_file: puppeteer/package/_service

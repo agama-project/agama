@@ -18,5 +18,5 @@ jobs:
     # pass all secrets
     secrets: inherit
     with:
-      package_name: agama-products-opensuse
+      package_name: agama-products
       service_file: products.d/_service

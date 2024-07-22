@@ -11,7 +11,7 @@ on:
       - v[0-9]*
 
 jobs:
-  # Note: cockpit-agama-playwright is currently not submitted
+  # Note: agama-integration-tests and the Live ISO are currently not submitted
 
   update_rust:
     uses: ./.github/workflows/obs-staging-shared.yml

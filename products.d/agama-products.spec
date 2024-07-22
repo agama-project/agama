@@ -15,18 +15,18 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-Name:           agama-products-opensuse
+Name:           agama-products
 #               This will be set by osc services, that will run after this.
 Version:        0
 Release:        0
-Summary:        Definition of openSUSE products for the Agama installer
+Summary:        Definition of products for the Agama installer
 License:        GPL-2.0-only
 Url:            https://github.com/opensuse/agama
 BuildArch:      noarch
 Source0:        agama.tar
 
 %description
-Products definition for Agama installer. This one is for opensuse products.
+Products definition for Agama installer.
 
 %prep
 %autosetup -a0 -n agama
@@ -37,7 +37,13 @@ Products definition for Agama installer. This one is for opensuse products.
 install -D -d -m 0755 %{buildroot}%{_datadir}/agama/products.d
 install -m 0644 *.yaml %{buildroot}%{_datadir}/agama/products.d
 
-%files
+%package opensuse
+Summary:        Definition of openSUSE products for the Agama installer.
+
+%description opensuse
+Definition of openSUSE products (Tumbleweed, Leap and MicroOS) for the Agama installer.
+
+%files opensuse
 %doc README.md
 %license LICENSE
 %dir %{_datadir}/agama
@@ -45,5 +51,19 @@ install -m 0644 *.yaml %{buildroot}%{_datadir}/agama/products.d
 %{_datadir}/agama/products.d/microos.yaml
 %{_datadir}/agama/products.d/tumbleweed.yaml
 %{_datadir}/agama/products.d/leap_160.yaml
+
+%package sle
+Summary:        Definition of SLE products for the Agama installer.
+
+%description sle
+SLE-based products definition for Agama installer.
+Definition of SLE-based products (e.g., SUSE Linux Enterprise Server) for the Agama installer.
+
+%files sle
+%doc README.md
+%license LICENSE
+%dir %{_datadir}/agama
+%dir %{_datadir}/agama/products.d
+%{_datadir}/agama/products.d/sles_160.yaml
 
 %changelog
