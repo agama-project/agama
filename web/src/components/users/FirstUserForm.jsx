@@ -42,6 +42,7 @@ import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { suggestUsernames } from "~/components/users/utils";
+import { useFirstUser, useFirstUserMutation } from "~/queries/users";
 
 const UsernameSuggestions = ({
   isOpen = false,
@@ -82,6 +83,8 @@ const UsernameSuggestions = ({
 // close to the related input.
 // TODO: extract the suggestions logic.
 export default function FirstUserForm() {
+  const { data: firstUser } = useFirstUser();
+  const setFirstUser = useFirstUserMutation();
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [state, setState] = useState({});
@@ -96,24 +99,14 @@ export default function FirstUserForm() {
   const passwordRef = useRef();
 
   useEffect(() => {
-    cancellablePromise(client.users.getUser()).then((userValues) => {
-      const editing = userValues.userName !== "";
-      setState({
-        load: true,
-        user: userValues,
-        isEditing: editing,
-      });
-      setChangePassword(!editing);
+    const editing = firstUser.userName !== "";
+    setState({
+      load: true,
+      user: firstUser,
+      isEditing: editing,
     });
-  }, [client.users, cancellablePromise]);
-
-  useEffect(() => {
-    return client.users.onUsersChange(({ firstUser }) => {
-      if (firstUser !== undefined) {
-        setState({ ...state, user: firstUser });
-      }
-    });
-  }, [client.users, state]);
+    setChangePassword(!editing);
+  }, [firstUser]);
 
   useEffect(() => {
     if (showSuggestions) {
@@ -152,13 +145,10 @@ export default function FirstUserForm() {
       return;
     }
 
-    const { result, issues = [] } = await client.users.setUser({ ...state.user, ...user });
-    if (!result || issues.length) {
-      // FIXME: improve error handling. See client.
-      setErrors(issues.length ? issues : [_("Please, try again.")]);
-    } else {
-      navigate("..");
-    }
+    setFirstUser
+      .mutateAsync({ ...state.user, ...user })
+      .catch((e) => setErrors(e))
+      .then(() => navigate(".."));
   };
 
   const onSuggestionSelected = (suggestion) => {
