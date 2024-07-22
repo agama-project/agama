@@ -94,8 +94,8 @@ impl<'a> QuestionsClient<'a> {
                 .await?
         };
         let mut res = question.clone();
-        res.generic.id = extract_id_from_path(&path)?;
-        tracing::info!("new question gets id {}", res.generic.id);
+        res.generic.id = Some(extract_id_from_path(&path)?);
+        tracing::info!("new question gets id {:?}", res.generic.id);
         Ok(res)
     }
 
@@ -133,7 +133,7 @@ impl<'a> QuestionsClient<'a> {
     ) -> Result<Question, ServiceError> {
         let result = Question {
             generic: GenericQuestion {
-                id: get_property(properties, "Id")?,
+                id: Some(get_property(properties, "Id")?),
                 class: get_property(properties, "Class")?,
                 text: get_property(properties, "Text")?,
                 options: get_property(properties, "Options")?,

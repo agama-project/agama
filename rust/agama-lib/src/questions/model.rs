@@ -19,7 +19,8 @@ pub struct Question {
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct GenericQuestion {
-    pub id: u32,
+    /// id is optional as newly created questions does not have it assigned
+    pub id: Option<u32>,
     pub class: String,
     pub text: String,
     pub options: Vec<String>,

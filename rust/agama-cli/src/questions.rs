@@ -72,11 +72,14 @@ async fn ask_question() -> Result<(), ServiceError> {
     let question = serde_json::from_reader(std::io::stdin())?;
 
     let created_question = client.create_question(&question).await?;
-    let answer = client.get_answer(created_question.generic.id).await?;
+    let Some(id) = created_question.generic.id else {
+        return Err(ServiceError::QuestionNotExist(0));
+    };
+    let answer = client.get_answer(id).await?;
     let answer_json = serde_json::to_string_pretty(&answer).map_err(Into::<anyhow::Error>::into)?;
     println!("{}", answer_json);
 
-    client.delete_question(created_question.generic.id).await?;
+    client.delete_question(id).await?;
     Ok(())
 }
 

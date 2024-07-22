@@ -47,9 +47,6 @@ module Yast2
         text += "\n\n" + details unless details.empty?
         options = generate_options(buttons)
         question = {
-          # TODO: id for newly created question is ignored, but maybe it will
-          # be better to not have to specify it at all?
-          id:            0,
           class:         "autoyast.popup",
           text:          text,
           options:       generate_options(buttons),
@@ -97,9 +94,6 @@ module UI
       # at first construct agama question to display.
       text = @label
       question = {
-        # TODO: id for newly created question is ignored, but maybe it will
-        # be better to not have to specify it at all?
-        "id"            => 0,
         "class"         => "autoyast.password",
         "text"          => text,
         "options"       => ["ok", "cancel"],
