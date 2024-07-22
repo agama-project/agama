@@ -27,8 +27,14 @@ type FirstUser = {
 };
 
 type RootUser = {
-  password: string | null;
+  password: boolean;
   sshkey: string | null;
 };
 
-export type { FirstUser, RootUser };
+type RootUserChanges = {
+  password: string;
+  passwordEncrypted: boolean;
+  sshkey: string;
+};
+
+export type { FirstUser, RootUserChanges, RootUser };

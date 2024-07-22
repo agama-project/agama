@@ -28,6 +28,7 @@ import { RootPasswordPopup, RootSSHKeyPopup } from "~/components/users";
 import { _ } from "~/i18n";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
+import { useRootUser, useRootUserChanges, useRootUserMutation } from "~/queries/users";
 
 const MethodsNotDefined = ({ setPassword, setSSHKey }) => {
   return (
@@ -54,42 +55,17 @@ const MethodsNotDefined = ({ setPassword, setSSHKey }) => {
   );
 };
 export default function RootAuthMethods() {
-  const { users: client } = useInstallerClient();
-  const { cancellablePromise } = useCancellablePromise();
-  const [sshKey, setSSHKey] = useState("");
-  const [isPasswordDefined, setIsPasswordDefined] = useState(false);
+  const setRootUser = useRootUserMutation();
   const [isSSHKeyFormOpen, setIsSSHKeyFormOpen] = useState(false);
   const [isPasswordFormOpen, setIsPasswordFormOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const isPasswordSet = await cancellablePromise(client.isRootPasswordSet());
-        const sshKey = await cancellablePromise(client.getRootSSHKey());
+  const {
+    data: { password: isPasswordDefined, sshkey: sshKey },
+  } = useRootUser();
 
-        setIsPasswordDefined(isPasswordSet);
-        setSSHKey(sshKey);
-      } catch (error) {
-        // TODO: handle/display errors
-        console.log(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadData();
-  }, [client, cancellablePromise]);
-
-  useEffect(() => {
-    return client.onUsersChange((changes) => {
-      if (changes.rootPasswordSet !== undefined) setIsPasswordDefined(changes.rootPasswordSet);
-      if (changes.rootSSHKey !== undefined) setSSHKey(changes.rootSSHKey);
-    });
-  }, [client]);
+  useRootUserChanges();
 
   const isSSHKeyDefined = sshKey !== "";
-
   const openPasswordForm = () => setIsPasswordFormOpen(true);
   const openSSHKeyForm = () => setIsSSHKeyFormOpen(true);
   const closePasswordForm = () => setIsPasswordFormOpen(false);
@@ -102,7 +78,7 @@ export default function RootAuthMethods() {
     },
     isPasswordDefined && {
       title: _("Discard"),
-      onClick: () => client.removeRootPassword(),
+      onClick: () => setRootUser.mutate({ password: "" }),
       isDanger: true,
     },
   ].filter(Boolean);
@@ -114,19 +90,10 @@ export default function RootAuthMethods() {
     },
     sshKey && {
       title: _("Discard"),
-      onClick: () => client.setRootSSHKey(""),
+      onClick: () => setRootUser.mutate({ sshkey: "" }),
       isDanger: true,
     },
   ].filter(Boolean);
-
-  if (isLoading) {
-    return (
-      <>
-        <Skeleton />
-        <Skeleton />
-      </>
-    );
-  }
 
   const PasswordLabel = () => {
     return isPasswordDefined ? _("Already set") : _("Not set");

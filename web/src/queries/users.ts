@@ -23,7 +23,7 @@ import React from "react";
 import { QueryClient, useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
-import { FirstUser, RootUser } from "~/types/users";
+import { FirstUser, RootUser, RootUserChanges } from "~/types/users";
 
 /**
  * Returns a query for retrieving the first user configuration
@@ -119,26 +119,58 @@ const useRootUser = () => useSuspenseQuery(rootUserQuery());
  * Hook that returns a mutation to change the root user configuration.
  */
 const useRootUserMutation = () => {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   const query = {
-    mutationFn: (root: RootUser) =>
+    mutationFn: (changes: Partial<RootUserChanges>) =>
       fetch("/api/users/root", {
         method: "PATCH",
-        body: JSON.stringify(root),
+        body: JSON.stringify({ ...changes, passwordEncrypted: false }),
         headers: {
           "Content-Type": "application/json",
         },
       }),
-    success: queryClient.invalidateQueries({ queryKey: ["users", "firstUser"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users", "root"] }),
   };
   return useMutation(query);
 };
 
+/**
+ * Listens for first user changes.
+ */
+const useRootUserChanges = () => {
+  const client = useInstallerClient();
+  const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.ws().onEvent((event) => {
+      console.log("event.type", event.type);
+      if (event.type === "RootChanged") {
+        const { password, sshkey } = event;
+        queryClient.setQueryData(["users", "root"], (oldRoot: RootUser) => {
+          const newRoot = { ...oldRoot };
+          if (password !== undefined) {
+            newRoot.password = password;
+          }
+
+          if (sshkey) {
+            newRoot.sshkey = sshkey;
+          }
+
+          return newRoot;
+        });
+      }
+    });
+  });
+};
+
 export {
   useFirstUser,
+  useFirstUserChanges,
   useFirstUserMutation,
   useRemoveFirstUserMutation,
   useRootUser,
+  useRootUserChanges,
   useRootUserMutation,
-  useFirstUserChanges,
 };
