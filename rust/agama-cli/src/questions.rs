@@ -59,8 +59,8 @@ async fn list_questions() -> Result<(), ServiceError> {
     let questions = client.list_questions().await?;
     // FIXME: if performance is bad, we can skip converting json from http to struct and then
     // serialize it, but it won't be pretty string
-    let questions_json =
-        serde_json::to_string_pretty(&questions).map_err(|e| ServiceError::InternalError(e.to_string()))?;
+    let questions_json = serde_json::to_string_pretty(&questions)
+        .map_err(|e| ServiceError::InternalError(e.to_string()))?;
     println!("{}", questions_json);
     Ok(())
 }
@@ -71,10 +71,13 @@ async fn ask_question() -> Result<(), ServiceError> {
 
     let created_question = client.create_question(&question).await?;
     let Some(id) = created_question.generic.id else {
-        return Err(ServiceError::InternalError("Created question does not get id".to_string()));
+        return Err(ServiceError::InternalError(
+            "Created question does not get id".to_string(),
+        ));
     };
     let answer = client.get_answer(id).await?;
-    let answer_json = serde_json::to_string_pretty(&answer).map_err(|e| ServiceError::InternalError(e.to_string()))?;
+    let answer_json = serde_json::to_string_pretty(&answer)
+        .map_err(|e| ServiceError::InternalError(e.to_string()))?;
     println!("{}", answer_json);
 
     client.delete_question(id).await?;
