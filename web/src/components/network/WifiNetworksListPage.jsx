@@ -43,15 +43,17 @@ import {
   Split,
   Stack,
 } from "@patternfly/react-core";
+import { generatePath } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { Icon } from "~/components/layout";
 import { WifiConnectionForm } from "~/components/network";
 import { ButtonLink } from "~/components/core";
 import { DeviceState } from "~/client/network/model";
-import { useInstallerClient } from "~/context/installer";
-import { _ } from "~/i18n";
 import { formatIp } from "~/client/network/utils";
-import { useQueryClient } from "@tanstack/react-query";
+import { useInstallerClient } from "~/context/installer";
 import { useSelectedWifi, useSelectedWifiChange } from "~/queries/network";
+import { PATHS } from "~/routes/network";
+import { _ } from "~/i18n";
 
 const HIDDEN_NETWORK = Object.freeze({ hidden: true });
 
@@ -92,7 +94,7 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
   const { data } = useSelectedWifi();
   const forgetNetwork = async () => {
     await client.network.deleteConnection(network.settings.id);
-    queryClient.invalidateQueries({ queryKey: ["network", "connections"] })
+    queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
   };
 
   if (!network) return;
@@ -109,7 +111,9 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
         <ButtonLink onClick={async () => await client.network.connectTo(network.settings)}>
           {_("Connect")}
         </ButtonLink>
-        <ButtonLink to={`/network/connections/${network.settings.id}/edit`}>{_("Edit")}</ButtonLink>
+        <ButtonLink to={generatePath(PATHS.editConnection, { id: network.settings.id })}>
+          {_("Edit")}
+        </ButtonLink>
         <Button variant="secondary" isDanger onClick={forgetNetwork}>
           {_("Forget")}
         </Button>
@@ -131,7 +135,7 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
             <ButtonLink onClick={async () => await client.network.disconnect(network.settings)}>
               {_("Disconnect")}
             </ButtonLink>
-            <ButtonLink to={`/network/connections/${network.settings.id}/edit`}>
+            <ButtonLink to={generatePath(PATHS.editConnection, { id: network.settings.id })}>
               {_("Edit")}
             </ButtonLink>
             <Button
@@ -187,7 +191,8 @@ const NetworkListName = ({ network }) => {
  */
 function WifiNetworksListPage({ networks = [] }) {
   const { data } = useSelectedWifi();
-  const selected = data.ssid === undefined ? HIDDEN_NETWORK : networks.find(n => n.ssid === data.ssid);
+  const selected =
+    data.ssid === undefined ? HIDDEN_NETWORK : networks.find((n) => n.ssid === data.ssid);
   const changeSelected = useSelectedWifiChange();
 
   const selectHiddneNetwork = () => {
@@ -247,10 +252,7 @@ function WifiNetworksListPage({ networks = [] }) {
                   </DrawerActions>
                 </DrawerHead>
                 <DrawerPanelBody>
-                  <WifiDrawerPanelBody
-                    network={selected}
-                    onCancel={unselectNetwork}
-                  />
+                  <WifiDrawerPanelBody network={selected} onCancel={unselectNetwork} />
                 </DrawerPanelBody>
               </DrawerPanelContent>
             }

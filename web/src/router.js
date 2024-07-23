@@ -29,7 +29,7 @@ import { LoginPage } from "~/components/core";
 import { OverviewPage } from "~/components/overview";
 import { _, N_ } from "~/i18n";
 import l10nRoutes from "~/routes/l10n";
-import networkRoutes from "~/components/network/routes";
+import networkRoutes from "~/routes/network";
 import productsRoutes from "~/routes/products";
 import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
@@ -48,7 +48,7 @@ const rootRoutes = [
     handle: { name: N_("Overview"), icon: "list_alt" },
   },
   l10nRoutes(),
-  networkRoutes,
+  networkRoutes(),
   storageRoutes(),
   softwareRoutes(),
   usersRoutes(),

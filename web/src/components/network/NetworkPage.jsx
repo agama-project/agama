@@ -25,10 +25,11 @@ import React from "react";
 import { CardBody, Grid, GridItem } from "@patternfly/react-core";
 import { ButtonLink, CardField, EmptyState, Page } from "~/components/core";
 import { ConnectionsTable } from "~/components/network";
-import { _ } from "~/i18n";
 import { formatIp } from "~/client/network/utils";
-import { sprintf } from "sprintf-js";
 import { useNetwork, useNetworkConfigChanges } from "~/queries/network";
+import { PATHS } from "~/routes/network";
+import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
 /**
  * Page component holding Network settings
@@ -70,7 +71,7 @@ export default function NetworkPage() {
       <CardField
         label={_("Wi-Fi")}
         actions={
-          <ButtonLink isPrimary={!activeConnection} to="wifis">
+          <ButtonLink isPrimary={!activeConnection} to={PATHS.wifis}>
             {activeConnection ? _("Change") : _("Connect")}
           </ButtonLink>
         }
@@ -101,8 +102,8 @@ export default function NetworkPage() {
     return (
       <CardField label={total > 0 && _("Wired")}>
         <CardBody>
-          {total === 0 && (<EmptyState title={_("No wired connections found")} icon="warning" />)}
-          {total !== 0 && (<ConnectionsTable connections={wiredConnections} devices={devices} />)}
+          {total === 0 && <EmptyState title={_("No wired connections found")} icon="warning" />}
+          {total !== 0 && <ConnectionsTable connections={wiredConnections} devices={devices} />}
         </CardBody>
       </CardField>
     );

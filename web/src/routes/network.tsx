@@ -20,13 +20,17 @@
  */
 
 import React from "react";
-import NetworkPage from "./NetworkPage";
-import IpSettingsForm from "./IpSettingsForm";
-import WifiSelectorPage from "./WifiSelectorPage";
+import { NetworkPage, IpSettingsForm, WifiSelectorPage } from "~/components/network";
 import { N_ } from "~/i18n";
 
-const routes = {
-  path: "/network",
+const PATHS = {
+  root: "/network",
+  editConnection: "/network/connections/:id/edit",
+  wifis: "/network/wifis",
+};
+
+const routes = () => ({
+  path: PATHS.root,
   handle: {
     name: N_("Network"),
     icon: "settings_ethernet",
@@ -34,14 +38,15 @@ const routes = {
   children: [
     { index: true, element: <NetworkPage /> },
     {
-      path: "connections/:id/edit",
-      element: <IpSettingsForm />
+      path: PATHS.editConnection,
+      element: <IpSettingsForm />,
     },
     {
-      path: "wifis",
+      path: PATHS.wifis,
       element: <WifiSelectorPage />,
-    }
-  ]
-};
+    },
+  ],
+});
 
 export default routes;
+export { PATHS };

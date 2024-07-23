@@ -20,13 +20,13 @@
  */
 
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, generatePath } from "react-router-dom";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
-import { sprintf } from "sprintf-js";
-
 import { RowActions } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { formatIp } from "~/client/network/utils";
+import { PATHS } from "~/routes/network";
+import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
 /**
@@ -76,7 +76,7 @@ export default function ConnectionsTable({ connections, devices, onForget }) {
               role: "link",
               // TRANSLATORS: %s is replaced by a network connection name
               "aria-label": sprintf(_("Edit connection %s"), connection.id),
-              onClick: () => navigate(`connections/${connection.id}/edit`),
+              onClick: () => navigate(generatePath(PATHS.editConnection, { id: connection.id })),
             },
             typeof onForget === "function" && {
               title: _("Forget"),
