@@ -28,7 +28,7 @@ type FirstUser = {
 
 type RootUser = {
   password: boolean;
-  sshkey: string | null;
+  sshkey: string;
 };
 
 type RootUserChanges = {
