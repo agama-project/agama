@@ -21,7 +21,6 @@
 
 import React from "react";
 import {
-  QueryClient,
   useMutation,
   useQueryClient,
   useSuspenseQueries,
@@ -101,14 +100,10 @@ const useConfigMutation = () => {
           "Content-Type": "application/json",
         },
       }),
-    onMutate: async () => {
-      const prevConfig: SoftwareConfig = queryClient.getQueryData(["software/config"]);
-      return { prevConfig };
-    },
-    onSuccess: (_, config: SoftwareConfig, { prevConfig }: { prevConfig: SoftwareConfig }) => {
+    onSuccess: (_, config: SoftwareConfig) => {
       queryClient.invalidateQueries({ queryKey: ["software/config"] });
       queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
-      if (config.product && config.product !== prevConfig.product) {
+      if (config.product) {
         queryClient.invalidateQueries({ queryKey: ["software/product"] });
         client.manager.startProbing();
       }
