@@ -27,6 +27,7 @@ import { PasswordAndConfirmationInput, Popup } from "~/components/core";
 
 import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
+import { useRootUser, useRootUserMutation } from "~/queries/users";
 
 /**
  * A dialog holding the form to change the root password
@@ -41,7 +42,7 @@ import { useInstallerClient } from "~/context/installer";
  * @param {function} props.onClose - the function to be called when the dialog is closed
  */
 export default function RootPasswordPopup({ title = _("Root password"), isOpen, onClose }) {
-  const { users: client } = useInstallerClient();
+  const setRootUser = useRootUserMutation();
   const [password, setPassword] = useState("");
   const [isValidPassword, setIsValidPassword] = useState(true);
   const passwordRef = useRef();
@@ -54,7 +55,7 @@ export default function RootPasswordPopup({ title = _("Root password"), isOpen, 
   const accept = async (e) => {
     e.preventDefault();
     // TODO: handle errors
-    if (password !== "") await client.setRootPassword(password);
+    if (password !== "") await setRootUser.mutateAsync({ password });
     close();
   };
 
