@@ -24,7 +24,11 @@ import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
 import { QUESTION_TYPES } from "~/client/questions";
 
-import { GenericQuestion, QuestionWithPassword, LuksActivationQuestion } from "~/components/questions";
+import {
+  GenericQuestion,
+  QuestionWithPassword,
+  LuksActivationQuestion,
+} from "~/components/questions";
 
 export default function Questions() {
   const client = useInstallerClient();

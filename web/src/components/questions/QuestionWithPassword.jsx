@@ -26,7 +26,6 @@ import { PasswordInput, Popup } from "~/components/core";
 import { QuestionActions } from "~/components/questions";
 import { _ } from "~/i18n";
 
-
 export default function QuestionWithPassword({ question, answerCallback }) {
   const [password, setPassword] = useState(question.password || "");
   const defaultAction = question.defaultOption;
