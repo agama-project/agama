@@ -35,9 +35,14 @@ import {
 } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { useConfigMutation, usePatterns } from "~/queries/software";
-import { Pattern, PatternsGroups, SelectedBy } from "~/types/software";
+import { Pattern, SelectedBy } from "~/types/software";
 import { _ } from "~/i18n";
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
+
+/**
+ * PatternGroups mapping "group name" => list of patterns
+ */
+type PatternsGroups = { [key: string]: Pattern[] };
 
 /**
  * Group the patterns with the same group name

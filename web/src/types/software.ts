@@ -42,11 +42,6 @@ type Product = {
 
 type PatternsSelection = { [key: string]: SelectedBy };
 
-/**
- * PatternGroups mapping "group name" => list of patterns
- */
-type PatternsGroups = { [key: string]: Pattern[] };
-
 type SoftwareProposal = {
   /** Used space in human-readable form */
   size: string;
@@ -79,11 +74,4 @@ type Pattern = {
 };
 
 export { SelectedBy };
-export type {
-  Pattern,
-  PatternsGroups,
-  PatternsSelection,
-  Product,
-  SoftwareConfig,
-  SoftwareProposal,
-};
+export type { Pattern, PatternsSelection, Product, SoftwareConfig, SoftwareProposal };
