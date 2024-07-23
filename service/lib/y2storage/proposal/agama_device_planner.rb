@@ -107,9 +107,6 @@ module Y2Storage
       def planned_partition(settings)
         Planned::Partition.new(nil, nil).tap do |planned|
           planned.partition_id = settings.id
-          # FIXME: do we want to allow to force primary partitions? That was not really
-          # well solved at AutoYaST
-          # planned.primary = settings.primary?
           configure_device(planned, settings)
           configure_size(planned, settings.size)
         end
