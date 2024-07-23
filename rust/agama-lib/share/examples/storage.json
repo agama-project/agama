@@ -28,7 +28,6 @@
           {
             "create": {
               "id": "linux",
-              "type": "primary",
               "size": "10 GiB"
             },
             "encrypt": {

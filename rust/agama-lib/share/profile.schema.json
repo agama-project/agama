@@ -758,10 +758,6 @@
                 "title": "Partition ID",
                 "enum": ["linux", "swap", "lvm", "raid", "esp", "prep", "biosBoot"]
               },
-              "type": {
-                "title": "Partition type",
-                "enum": ["primary", "logical"]
-              },
               "size": {
                 "title": "Partition size",
                 "$ref": "#/$defs/sizeValue"
