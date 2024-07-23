@@ -33,6 +33,8 @@ require "json"
 require "fileutils"
 require "pathname"
 
+require "agama/autoyast/report_patching"
+
 # :nodoc:
 module Agama
   module AutoYaST

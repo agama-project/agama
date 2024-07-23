@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul 22 15:26:48 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- AutoYaST convert script: use Agama questions to report errors
+  and ask when encrypted profile is used (gh#openSUSE/agama#1476)
+
+-------------------------------------------------------------------
 Fri Jul 12 11:03:14 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Stop trying to set up Cockpit (gh#openSUSE/agama#1459).

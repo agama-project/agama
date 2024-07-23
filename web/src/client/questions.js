@@ -150,4 +150,4 @@ class QuestionsClient {
   }
 }
 
-export { QuestionsClient };
+export { QUESTION_TYPES, QuestionsClient };

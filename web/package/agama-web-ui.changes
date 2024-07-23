@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul 22 15:28:42 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for generic questions with password
+  (gh#openSUSE/agama#1476)
+
+-------------------------------------------------------------------
 Wed Jul 17 09:52:36 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Handle the case where there are not user selectable patterns

@@ -3,6 +3,7 @@ use agama_lib::questions::http_client::HTTPClient;
 use agama_lib::{connection, error::ServiceError};
 use clap::{Args, Subcommand, ValueEnum};
 
+// TODO: use for answers also JSON to be consistent
 #[derive(Subcommand, Debug)]
 pub enum QuestionsCommands {
     /// Set the mode for answering questions.
@@ -19,9 +20,9 @@ pub enum QuestionsCommands {
         /// Path to a file containing the answers in YAML format.
         path: String,
     },
-    /// prints list of questions that is waiting for answer in YAML format
+    /// Prints the list of questions that are waiting for an answer in JSON format
     List,
-    /// Ask question from stdin in YAML format and print answer when it is answered.
+    /// Reads a question definition in JSON from stdin and prints the response when it is answered.
     Ask,
 }
 
@@ -56,12 +57,10 @@ async fn set_answers(proxy: Questions1Proxy<'_>, path: String) -> Result<(), Ser
 async fn list_questions() -> Result<(), ServiceError> {
     let client = HTTPClient::new().await?;
     let questions = client.list_questions().await?;
-    // FIXME: that conversion to anyhow error is nasty, but we do not expect issue
-    // when questions are already read from json
     // FIXME: if performance is bad, we can skip converting json from http to struct and then
     // serialize it, but it won't be pretty string
-    let questions_json =
-        serde_json::to_string_pretty(&questions).map_err(Into::<anyhow::Error>::into)?;
+    let questions_json = serde_json::to_string_pretty(&questions)
+        .map_err(|e| ServiceError::InternalError(e.to_string()))?;
     println!("{}", questions_json);
     Ok(())
 }
@@ -71,11 +70,17 @@ async fn ask_question() -> Result<(), ServiceError> {
     let question = serde_json::from_reader(std::io::stdin())?;
 
     let created_question = client.create_question(&question).await?;
-    let answer = client.get_answer(created_question.generic.id).await?;
-    let answer_json = serde_json::to_string_pretty(&answer).map_err(Into::<anyhow::Error>::into)?;
+    let Some(id) = created_question.generic.id else {
+        return Err(ServiceError::InternalError(
+            "Created question does not get id".to_string(),
+        ));
+    };
+    let answer = client.get_answer(id).await?;
+    let answer_json = serde_json::to_string_pretty(&answer)
+        .map_err(|e| ServiceError::InternalError(e.to_string()))?;
     println!("{}", answer_json);
 
-    client.delete_question(created_question.generic.id).await?;
+    client.delete_question(id).await?;
     Ok(())
 }
 
