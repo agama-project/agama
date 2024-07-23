@@ -20,8 +20,7 @@
 require "y2storage/storage_manager"
 require "y2storage/planned"
 require "y2storage/disk_size"
-require "y2storage/boot_requirements_checker"
-require "y2storage/exceptions"
+require "y2storage/proposal/planned_processor"
 require "y2storage/proposal/agama_drive_planner"
 
 module Y2Storage
@@ -35,13 +34,9 @@ module Y2Storage
       attr_reader :settings
 
       # @param settings [Agama::Storage::Profile]
-      # @param config [Agama::Config]
       # @param issues_list [Array<Agama::Issue>]
-      #
-      # TODO Check which params are mandatory
-      def initialize(settings, config, issues_list)
+      def initialize(settings, issues_list)
         @settings = settings
-        @config = config
         @issues_list = issues_list
       end
 
@@ -61,21 +56,7 @@ module Y2Storage
       # @param devicegraph [Devicegraph]
       # @return [Array<Planned::Device>]
       def initial_planned_devices(devicegraph)
-        # This will need to share a lot of logic with the DevicesPlanner of the guided proposal,
-        # especially everything related to sizes and Btfs stuff. Maybe extracting the logic to
-        # shared classes, maybe making this a descendant... to be decided during implementation
-        #
-        # This will also include a lot of logic that nowadays lives at
-        # Agama::ProposalSettingsConversions and Agama::VolumesConversions
-
-        planned = settings.drives
-          .flat_map { |d| planned_for_drive(d, devicegraph) }
-          .compact
-
-        Planned::DevicesCollection.new(planned).tap do |collection|
-          # TODO
-          # remove_shadowed_subvols(collection.mountable_devices)
-        end
+        settings.drives.flat_map { |d| planned_for_drive(d, devicegraph) }.compact
       end
 
       # Modifies the given list of planned devices, adding any planned partition needed for booting
@@ -88,42 +69,19 @@ module Y2Storage
       def add_boot_devices(devices, devicegraph)
         return unless settings.boot.configure?
 
-        devices.prepend(planned_boot_devices(devices, devicegraph))
-        # TODO
-        # remove_shadowed_subvolumes(devices)
+        boot = PlannedProcessor.new(devices).boot_devices(:min, devicegraph, settings.boot_device)
+        devices.unshift(*boot)
       end
 
       protected
 
-      # Agama configuration, needed to read the list of volumes of the product
-      # @return [Agama::Config]
-      attr_reader :config
-
       # @return [Array<Agama::Issue>] List to register any found issue
       attr_reader :issues_list
-
-      # This method is 99% copied from the guided DevicesPlanner
-      def planned_boot_devices(planned_devices, devicegraph)
-        boot_disk_name = settings.boot_device
-
-        flat = planned_devices.flat_map do |dev|
-          dev.respond_to?(:lvs) ? dev.lvs : dev
-        end
-        checker = BootRequirementsChecker.new(
-          devicegraph, planned_devices: flat, boot_disk_name: boot_disk_name
-        )
-        checker.needed_partitions(:min)
-      rescue BootRequirementsChecker::Error => e
-        # As documented, {BootRequirementsChecker#needed_partition} raises this
-        # exception if it's impossible to get a bootable system, even adding
-        # more partitions.
-        raise NotBootableError, e.message
-      end
 
       # I'm leaving out intentionally support for StrayBlkDevice. As far as I know,
       # the plan for SLE/Leap 16 is to drop XEN support
       def planned_for_drive(drive, devicegraph)
-        planner = AgamaDrivePlanner.new(devicegraph, config, issues_list)
+        planner = AgamaDrivePlanner.new(devicegraph, issues_list)
         planner.planned_devices(drive)
       end
     end

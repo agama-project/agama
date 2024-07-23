@@ -27,18 +27,13 @@ module Y2Storage
       #   @return [Devicegraph]
       attr_reader :devicegraph
 
-      # @!attribute [r] config
-      #   @return [Agama::Config]
-      attr_reader :config
-
       # @!attribute [r] issues_list
       attr_reader :issues_list
 
       # @param devicegraph [Devicegraph] Devicegraph to be used as starting point.
       # @param issues_list [AutoinstIssues::List] List of issues to register them.
-      def initialize(devicegraph, config, issues_list)
+      def initialize(devicegraph, issues_list)
         @devicegraph = devicegraph
-        @config = config
         @issues_list = issues_list
       end
 

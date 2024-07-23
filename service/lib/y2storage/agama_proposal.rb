@@ -45,27 +45,22 @@ module Y2Storage
     # @return [Agama::Storage::Profile]
     attr_reader :settings
 
-    # @return [Agama::Config]
-    attr_reader :config
-
     # @return [Array<Agama::Issue>] List of found issues
     attr_reader :issues_list
 
     # Constructor
     #
     # @param settings [Agama::Storage::Settings] proposal settings
-    # @param config [Agama::Config]
     # @param devicegraph [Devicegraph] starting point. If nil, then probed devicegraph
     #   will be used
     # @param disk_analyzer [DiskAnalyzer] by default, the method will create a new one
     #   based on the initial devicegraph or will use the one in {StorageManager} if
     #   starting from probed (i.e. 'devicegraph' argument is also missing)
     # @param issues_list [Array<Agama::Issue] Array to register issues found during the process
-    def initialize(initial_settings, config, devicegraph: nil, disk_analyzer: nil, issues_list: nil)
+    def initialize(initial_settings, devicegraph: nil, disk_analyzer: nil, issues_list: nil)
       super(devicegraph: devicegraph, disk_analyzer: disk_analyzer)
       @issues_list = issues_list || []
       @settings = initial_settings
-      @config = config
     end
 
     private
@@ -88,24 +83,22 @@ module Y2Storage
         return @devices
       end
 
-      @space_maker = Proposal::AgamaSpaceMaker.new(disk_analyzer, settings, config)
-      @devices = propose_devicegraph(initial_devicegraph)
+      @space_maker = Proposal::AgamaSpaceMaker.new(disk_analyzer, settings)
+      @devices = propose_devicegraph
     end
 
     # Proposes a devicegraph based on given configuration
     #
     # @param devicegraph [Devicegraph]                 Starting point
     # @return [Devicegraph] Devicegraph containing the planned devices
-    def propose_devicegraph(devicegraph)
-      @planned_devices = initial_planned_devices(devicegraph)
+    def propose_devicegraph
+      devicegraph = initial_devicegraph.dup
 
-      clean_devicegraph = clean_graph(devicegraph, @planned_devices)
-
-      planner = Proposal::AgamaDevicesPlanner.new(settings, config, issues_list)
-      planner.add_boot_devices(@planned_devices, clean_devicegraph)
-
-      # Almost for sure, this should happen as part of the creation of devices below
-      add_partition_tables(devicegraph)
+      planner = Proposal::AgamaDevicesPlanner.new(settings, issues_list)
+      @planned_devices = planner.initial_planned_devices(devicegraph)
+      clean_graph(devicegraph)
+      planner.add_boot_devices(@planned_devices, devicegraph)
+      Proposal::PlannedProcessor.new(@planned_devices).remove_shadowed_subvolumes
 
       result = create_devices(devicegraph, @planned_devices)
       result.devicegraph
@@ -123,30 +116,15 @@ module Y2Storage
       # TODO: if needed, will very likely be moved to AgamaDevicesCreator
     end
 
-    # Calculates list of planned devices
-    #
-    # @param devicegraph [Devicegraph] Starting point
-    # @return [Planned::DevicesCollection] Devices to add
-    def initial_planned_devices(devicegraph)
-      planner = Proposal::AgamaDevicesPlanner.new(settings, config, issues_list)
-      planner.initial_planned_devices(devicegraph)
-    end
-
     # Clean a devicegraph
     #
     # @return [Y2Storage::Devicegraph]
-    def clean_graph(devicegraph, planned_devices)
-      new_devicegraph = devicegraph.dup
-
-      # TODO: remember the list of affected devices so we can restore their partition tables at
-      # the end of the process for those devices that were not used (as soon as libstorage-ng
-      # allows us to copy sub-graphs).
-      remove_empty_partition_tables(new_devicegraph)
-
+    def clean_graph(devicegraph)
+      remove_empty_partition_tables(devicegraph)
       protect_sids(planned_devices)
       # NOTE: take into account (partitions on) pre-existing RAIDs?
       partitions = partitions_for(planned_devices)
-      space_maker.prepare_devicegraph(new_devicegraph, partitions)
+      space_maker.prepare_devicegraph(devicegraph, partitions)
     end
 
  		# Removes partition tables from candidate devices with empty partition table
@@ -191,6 +169,9 @@ module Y2Storage
     # Creates planned devices on a given devicegraph
     #
     def create_devices(devicegraph, planned_devices)
+      # Almost for sure, this should happen as part of the creation of devices below
+      add_partition_tables(devicegraph)
+
       # We are going to alter the volumes in several ways, so let's be a
       # good citizen and do it in our own copy
       planned_devices = planned_devices.map(&:dup)

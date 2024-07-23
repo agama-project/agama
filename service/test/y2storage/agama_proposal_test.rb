@@ -32,9 +32,8 @@ describe Y2Storage::AgamaProposal do
   end
 
   subject(:proposal) do
-    described_class.new(initial_settings, config, issues_list: issues_list)
+    described_class.new(initial_settings, issues_list: issues_list)
   end
-  let(:config) { Agama::Config.new }
   let(:initial_settings) do
     Agama::Storage::Profile.new.tap do |settings|
       settings.drives = [drive]

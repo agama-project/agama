@@ -24,11 +24,11 @@ module Y2Storage
   module Proposal
     class AgamaSpaceMaker < SpaceMaker
       # Initialize.
-      def initialize(disk_analyzer, settings, config)
-        super(disk_analyzer, guided_settings(settings, config))
+      def initialize(disk_analyzer, settings)
+        super(disk_analyzer, guided_settings(settings))
       end
 
-      def guided_settings(settings, _config)
+      def guided_settings(settings)
         # Despite the "current_product" part in the name of the constructor, it only applies
         # generic default values that are independent of the product (there is no YaST
         # ProductFeatures mechanism in place).
