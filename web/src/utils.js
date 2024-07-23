@@ -40,6 +40,16 @@ const isObject = (value) =>
   !(value instanceof Map);
 
 /**
+ * Whether given object is empty or not
+ *
+ * @param {object} value - the value to be checked
+ * @return {boolean} true when given value is an empty object; false otherwise
+ */
+const isObjectEmpty = (value) => {
+  return Object.keys(value).length === 0;
+};
+
+/**
  * Returns an empty function useful to be used as a default callback.
  *
  * @return {function} empty function
@@ -378,6 +388,7 @@ export {
   noop,
   identity,
   isObject,
+  isObjectEmpty,
   partition,
   compact,
   uniq,

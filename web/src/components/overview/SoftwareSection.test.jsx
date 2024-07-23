@@ -20,44 +20,58 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { noop } from "~/utils";
-import { createClient } from "~/client";
+import mockTestingPatterns from "~/components/software/patterns.test.json";
+import testingProposal from "~/components/software/proposal.test.json";
 import SoftwareSection from "~/components/overview/SoftwareSection";
 
-jest.mock("~/client");
+let mockTestingProposal;
+const onProposalChanges = jest.fn();
+const useProposalChangesMock = () => onProposalChanges();
 
-const gnomePattern = {
-  name: "gnome",
-  category: "Graphical Environments",
-  icon: "./pattern-gnome",
-  summary: "GNOME Desktop Environment (Wayland)",
-  order: 1120,
-};
+jest.mock("~/queries/software", () => ({
+  usePatterns: () => mockTestingPatterns,
+  useProposal: () => mockTestingProposal,
+  useProposalChanges: useProposalChangesMock,
+}));
 
-const kdePattern = {
-  name: "kde",
-  category: "Graphical Environments",
-  icon: "./pattern-kde",
-  summary: "KDE Applications and Plasma Desktop",
-  order: 1110,
-};
+describe("SoftwareSection", () => {
+  describe("when the proposal does not have patterns to select", () => {
+    beforeEach(() => {
+      mockTestingProposal = { patterns: {} };
+    });
 
-beforeEach(() => {
-  createClient.mockImplementation(() => {
-    return {
-      software: {
-        onSelectedPatternsChanged: noop,
-        getProposal: jest.fn().mockResolvedValue({ size: "500 MiB", patterns: { kde: 1 } }),
-        getPatterns: jest.fn().mockResolvedValue([gnomePattern, kdePattern]),
-      },
-    };
+    it("renders nothing", () => {
+      const { container } = installerRender(<SoftwareSection />);
+      expect(container).toBeEmptyDOMElement();
+    });
   });
-});
 
-it.only("renders the required space and the selected patterns", async () => {
-  installerRender(<SoftwareSection />);
-  await screen.findByText("500 MiB");
-  await screen.findByText(kdePattern.summary);
+  describe("when the proposal has patterns to select", () => {
+    beforeEach(() => {
+      mockTestingProposal = testingProposal;
+    });
+
+    it("renders the required space and the selected patterns", () => {
+      installerRender(<SoftwareSection />);
+      screen.getByText("4.6 GiB");
+      screen.getAllByText(/GNOME/);
+      screen.getByText("YaST Base Utilities");
+      screen.getByText("YaST Desktop Utilities");
+      screen.getByText("Multimedia");
+      screen.getAllByText(/Office Software/);
+      expect(screen.queryByText("KDE")).toBeNull();
+      expect(screen.queryByText("XFCE")).toBeNull();
+      expect(screen.queryByText("YaST Server Utilities")).toBeNull();
+    });
+
+    // FIXME: look for a better way to test such a behavior
+    it("listens proposal changes", () => {
+      installerRender(<SoftwareSection />);
+      screen.getAllByText(/GNOME/);
+      act(() => useProposalChangesMock());
+      expect(onProposalChanges).toHaveBeenCalled();
+    });
+  });
 });
