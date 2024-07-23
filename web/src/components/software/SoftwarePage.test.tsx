@@ -27,8 +27,6 @@ import testingPatterns from "./patterns.test.json";
 import testingProposal from "./proposal.test.json";
 import SoftwarePage from "./SoftwarePage";
 
-const onProposalChangesMock = jest.fn();
-
 jest.mock("~/queries/issues", () => ({
   useIssues: () => [],
 }));
@@ -36,7 +34,7 @@ jest.mock("~/queries/issues", () => ({
 jest.mock("~/queries/software", () => ({
   usePatterns: () => testingPatterns,
   useProposal: () => testingProposal,
-  useProposalChanges: () => onProposalChangesMock(),
+  useProposalChanges: jest.fn(),
 }));
 
 describe("SoftwarePage", () => {
@@ -60,11 +58,5 @@ describe("SoftwarePage", () => {
   it("renders a button for navigating to patterns selection", () => {
     installerRender(<SoftwarePage />);
     screen.getByRole("link", { name: "Change selection" });
-  });
-
-  it.skip("listen proposal sofware proposal changes", () => {
-    installerRender(<SoftwarePage />);
-    // act(() => triggerTheExpectedEvent());
-    // expect(onProposalChangesMock).toHaveBeenCalled();
   });
 });

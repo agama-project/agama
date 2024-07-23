@@ -84,7 +84,8 @@ const patternsQuery = () => ({
 /**
  * Hook that builds a mutation to update the software configuration
  *
- * It does not require to call `useMutation`.
+ * @note it would trigger a general probing as a side-effect when mutation
+ * includes a product.
  */
 const useConfigMutation = () => {
   const queryClient = useQueryClient();
