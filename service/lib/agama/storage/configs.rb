@@ -22,15 +22,15 @@
 module Agama
   module Storage
     # Namespace for all the supported settings to configure storage
-    module Settings
+    module Configs
     end
   end
 end
 
-require "agama/storage/settings/drive"
-require "agama/storage/settings/encrypt"
-require "agama/storage/settings/format"
-require "agama/storage/settings/mount"
-require "agama/storage/settings/partition"
-require "agama/storage/settings/search"
-require "agama/storage/settings/size_range"
+require "agama/storage/configs/drive"
+require "agama/storage/configs/encrypt"
+require "agama/storage/configs/format"
+require "agama/storage/configs/mount"
+require "agama/storage/configs/partition"
+require "agama/storage/configs/search"
+require "agama/storage/configs/size_range"

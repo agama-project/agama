@@ -19,11 +19,11 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/settings/search"
+require "agama/storage/configs/search"
 
 module Agama
   module Storage
-    module Settings
+    module Configs
       class Drive
         attr_accessor :search
         attr_accessor :encrypt

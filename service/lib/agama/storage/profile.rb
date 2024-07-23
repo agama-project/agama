@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/boot_settings"
-require "agama/storage/settings"
+require "agama/storage/configs"
 
 module Agama
   module Storage

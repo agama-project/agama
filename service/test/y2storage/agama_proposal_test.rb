@@ -40,11 +40,11 @@ describe Y2Storage::AgamaProposal do
     end
   end
   let(:drive) do
-    Agama::Storage::Settings::Drive.new.tap do |drive|
+    Agama::Storage::Configs::Drive.new.tap do |drive|
       drive.partitions = [
-        Agama::Storage::Settings::Partition.new.tap do |part|
-          part.mount = Agama::Storage::Settings::Mount.new.tap { |m| m.path = "/" }
-          part.size = Agama::Storage::Settings::SizeRange.new.tap do |size|
+        Agama::Storage::Configs::Partition.new.tap do |part|
+          part.mount = Agama::Storage::Configs::Mount.new.tap { |m| m.path = "/" }
+          part.size = Agama::Storage::Configs::SizeRange.new.tap do |size|
             size.min = Y2Storage::DiskSize.GiB(8.5)
             size.max = Y2Storage::DiskSize.unlimited
           end

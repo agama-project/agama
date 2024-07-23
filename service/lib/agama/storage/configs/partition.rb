@@ -21,7 +21,7 @@
 
 module Agama
   module Storage
-    module Settings
+    module Configs
       class Partition
         attr_accessor :search
         attr_accessor :id

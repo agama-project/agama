@@ -21,7 +21,7 @@
 
 module Agama
   module Storage
-    module Settings
+    module Configs
       class Mount
         attr_accessor :method
         attr_accessor :key

@@ -21,7 +21,7 @@
 
 module Agama
   module Storage
-    module Settings
+    module Configs
       class Search
         attr_reader :device
 

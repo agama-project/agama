@@ -21,7 +21,7 @@
 
 module Agama
   module Storage
-    module Settings
+    module Configs
       class Format
         attr_accessor :filesystem
         attr_accessor :label
