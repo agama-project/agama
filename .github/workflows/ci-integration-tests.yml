@@ -29,17 +29,20 @@ jobs:
         fetch-tags: true
 
     - name: Created shared YaST log directory
-      run: mkdir -p /tmp/log/YaST2
+      run: mkdir -p /tmp/log/YaST2 /tmp/log/puppeteer
 
     - name: Start container
-      run: podman run --privileged --detach --name agama --ipc=host -e CI -e GITHUB_ACTIONS -v /dev:/dev -v .:/checkout -v /tmp/log/YaST2:/var/log/YaST2 registry.opensuse.org/systemsmanagement/agama/staging/containers/opensuse/agama-testing:latest
+      run: podman run --privileged --detach --name agama --ipc=host -e CI -e GITHUB_ACTIONS -v /dev:/dev -v .:/checkout -v /tmp/log/puppeteer:/var/log/puppeteer -v /tmp/log/YaST2:/var/log/YaST2 registry.opensuse.org/systemsmanagement/agama/devel/containers/opensuse/agama-testing:latest
 
     - name: Environment
       run:  podman exec agama bash -c "env | sort"
 
-    - name: Set a testing Agama configuration
-      # delete all products except TW to skip the product selection at the beginning
-      run:  podman exec agama bash -c "ls /checkout/products.d/*.yaml | grep -v tumbleweed.yaml | xargs rm"
+    - name: Packages
+      run:  podman exec agama bash -c "rpm -qa | sort"
+
+    - name: Set the root password
+      # this allows to login into Agama
+      run:  podman exec agama bash -c "echo linux | passwd --stdin"
 
     - name: Build the frontend
       run:  podman exec agama bash -c "cd /checkout; ./setup-web.sh"
@@ -68,13 +71,16 @@ jobs:
     - name: Run the Agama smoke test
       run:  podman exec agama curl http://localhost
 
-    - name: Check Playwright version
-      run:  podman exec agama playwright --version
+    - name: Run the Puppeteer tests
+      # update the test file and the runner script from git
+      run:  podman exec agama bash -c
+            "cp /checkout/puppeteer/tests/test_root_password.js /usr/share/agama/integration-tests/tests &&
+            cp /checkout/puppeteer/agama-integration-tests /usr/bin/agama-integration-tests"
 
-    - name: Run the Playwright tests
-      # user authentication is not required when cockpit runs a local session
-      # run the tests in the Chromium browser
-      run:  podman exec agama bash -c "cd /checkout/playwright && SKIP_LOGIN=true playwright test --trace on --project chromium"
+    - name: Run the Puppeteer tests
+      # run the test
+      run:  podman exec agama bash -c "cd /var/log/puppeteer &&
+            agama-integration-tests /usr/share/agama/integration-tests/tests/test_root_password.js"
 
     - name: Again show the D-Bus services log
       # run even when any previous step fails
@@ -82,15 +88,14 @@ jobs:
       run:  podman exec agama journalctl
 
     - name: Upload the test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       # run even when any previous step fails
       if: always()
       with:
         name: test-results
         retention-days: 30
         path: |
-          playwright/test-results/**/*
-          /tmp/log/YaST2/y2log
+          /tmp/log
 
     - name: IRC notification
       # see https://github.com/marketplace/actions/irc-message-action

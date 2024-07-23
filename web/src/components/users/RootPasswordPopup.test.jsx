@@ -22,49 +22,45 @@
 import React from "react";
 
 import { screen, waitFor, within } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import { createClient } from "~/client";
-
+import { plainRender } from "~/test-utils";
 import { RootPasswordPopup } from "~/components/users";
 
-jest.mock("~/client");
+const mockRootUserMutation = { mutateAsync: jest.fn() };
+let mockPassword;
+let mockSSHKey;
+
+jest.mock("~/queries/users", () => ({
+  ...jest.requireActual("~/queries/users"),
+  useRootUser: () => ({ data: { password: mockPassword, sshkey: "" } }),
+  useRootUserMutation: () => mockRootUserMutation,
+  useRootUserChanges: () => jest.fn(),
+}));
 
 const onCloseCallback = jest.fn();
-const setRootPasswordFn = jest.fn();
 const password = "nots3cr3t";
-
-beforeEach(() => {
-  createClient.mockImplementation(() => {
-    return {
-      users: {
-        setRootPassword: setRootPasswordFn,
-      },
-    };
-  });
-});
 
 describe("when it is closed", () => {
   it("renders nothing", async () => {
-    const { container } = installerRender(<RootPasswordPopup />);
+    const { container } = plainRender(<RootPasswordPopup />);
     await waitFor(() => expect(container).toBeEmptyDOMElement());
   });
 });
 
 describe("when it is open", () => {
-  it("renders default title when none if given", async () => {
-    installerRender(<RootPasswordPopup isOpen />);
-    const dialog = await screen.findByRole("dialog");
+  it("renders default title when none if given", () => {
+    plainRender(<RootPasswordPopup isOpen />);
+    const dialog = screen.queryByRole("dialog");
     within(dialog).getByText("Root password");
   });
 
-  it("renders the given title", async () => {
-    installerRender(<RootPasswordPopup isOpen title="Change The Root Password" />);
-    const dialog = await screen.findByRole("dialog");
+  it("renders the given title", () => {
+    plainRender(<RootPasswordPopup isOpen title="Change The Root Password" />);
+    const dialog = screen.getByRole("dialog");
     within(dialog).getByText("Change The Root Password");
   });
 
   it("allows changing the password", async () => {
-    const { user } = installerRender(<RootPasswordPopup isOpen onClose={onCloseCallback} />);
+    const { user } = plainRender(<RootPasswordPopup isOpen onClose={onCloseCallback} />);
 
     await screen.findByRole("dialog");
 
@@ -79,17 +75,17 @@ describe("when it is open", () => {
     expect(confirmButton).toBeEnabled();
     await user.click(confirmButton);
 
-    expect(setRootPasswordFn).toHaveBeenCalledWith(password);
+    expect(mockRootUserMutation.mutateAsync).toHaveBeenCalledWith({ password });
     expect(onCloseCallback).toHaveBeenCalled();
   });
 
   it("allows dismissing the dialog without changing the password", async () => {
-    const { user } = installerRender(<RootPasswordPopup isOpen onClose={onCloseCallback} />);
+    const { user } = plainRender(<RootPasswordPopup isOpen onClose={onCloseCallback} />);
     await screen.findByRole("dialog");
     const cancelButton = await screen.findByRole("button", { name: /Cancel/i });
     await user.click(cancelButton);
 
-    expect(setRootPasswordFn).not.toHaveBeenCalled();
+    expect(mockRootUserMutation.mutateAsync).not.toHaveBeenCalled();
     expect(onCloseCallback).toHaveBeenCalled();
   });
 });

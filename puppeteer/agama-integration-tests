@@ -1,16 +1,28 @@
-#! /usr/bin/sh
+#! /usr/bin/bash
+
+# A helper script for running the Puppeteer integration tests.
+#
+# Usage:
+#    agama-integration-tests [mochajs-options] <path-to-test>
 
 # exit on error, unset variables are an error
 set -eu
 
 MYDIR=$(realpath "$(dirname "$0")")
 
+# options passed to mocha.js:
+# --bail: stop at the first failure (otherwise the test would continue and very
+# likely fail at the next steps as well, this prevents from false alarms)
+# --slow: report tests as slow when they take more than 10 seconds, the default
+# is 75ms which is too small for Agama
+MOCHA_OPTIONS=(--bail --slow 10000)
+
 if [ -e "$MYDIR/../.git/" ]; then
-  PUPPETEER_SKIP_DOWNLOAD=true npm install --omit=optional
-  npx mocha --bail "$@"
+  npm install --omit=optional
+  npx mocha "${MOCHA_OPTIONS[@]}" "$@"
 else
   # set the default load path
   export NODE_PATH=/usr/share/agama/integration-tests/node_modules
   # run the CLI script directly, npm/npx might not be installed
-  /usr/bin/env node /usr/share/agama/integration-tests/node_modules/mocha/bin/mocha.js --bail "$@"
+  /usr/bin/env node /usr/share/agama/integration-tests/node_modules/mocha/bin/mocha.js "${MOCHA_OPTIONS[@]}" "$@"
 fi

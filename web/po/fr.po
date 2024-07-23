@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-14 02:32+0000\n"
+"POT-Creation-Date: 2024-07-18 02:24+0000\n"
 "PO-Revision-Date: 2024-05-30 20:46+0000\n"
 "Last-Translator: faila fail <yassadmi@proton.me>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-web/fr/"
@@ -730,48 +730,48 @@ msgstr "Se connecter à un réseau Wi-Fi"
 msgid "The system will use %s as its default language."
 msgstr "Le système utilisera %s comme langue par défaut."
 
-#: src/components/overview/OverviewPage.jsx:47
+#: src/components/overview/OverviewPage.jsx:49
 #: src/components/users/UsersPage.jsx:36 src/components/users/routes.js:32
 msgid "Users"
 msgstr "Utilisateurs"
 
-#: src/components/overview/OverviewPage.jsx:48
+#: src/components/overview/OverviewPage.jsx:50
 #: src/components/overview/StorageSection.jsx:111
-#: src/components/storage/ProposalPage.jsx:307
+#: src/components/storage/ProposalPage.jsx:295
 #: src/components/storage/StoragePage.jsx:30
 #: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr "Stockage"
 
-#: src/components/overview/OverviewPage.jsx:49
+#: src/components/overview/OverviewPage.jsx:51
 #: src/components/overview/SoftwareSection.jsx:86
-#: src/components/software/SoftwarePage.jsx:155
+#: src/components/software/SoftwarePage.jsx:181
 #: src/components/software/routes.js:32
 msgid "Software"
 msgstr "Logiciel"
 
-#: src/components/overview/OverviewPage.jsx:54
+#: src/components/overview/OverviewPage.jsx:56
 #, fuzzy
 msgid "Ready for installation"
 msgstr "Confirmer l'installation"
 
-#: src/components/overview/OverviewPage.jsx:104
+#: src/components/overview/OverviewPage.jsx:102
 #, fuzzy
 msgid "Installation"
 msgstr "Installation"
 
-#: src/components/overview/OverviewPage.jsx:105
+#: src/components/overview/OverviewPage.jsx:103
 msgid "Before installing, please check the following problems."
 msgstr ""
 
-#: src/components/overview/OverviewPage.jsx:116
+#: src/components/overview/OverviewPage.jsx:114
 #, fuzzy
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
 msgstr "réduction des partitions du périphérique d'installation"
 
-#: src/components/overview/OverviewPage.jsx:125
+#: src/components/overview/OverviewPage.jsx:123
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
@@ -946,15 +946,22 @@ msgstr "Aucun logiciel supplémentaire n'a été sélectionné."
 msgid "The following software patterns are selected for installation:"
 msgstr "Les schémas logiciels suivants sont sélectionnés pour l'installation :"
 
-#: src/components/software/SoftwarePage.jsx:165
+#: src/components/software/SoftwarePage.jsx:105
+#: src/components/software/SoftwarePage.jsx:119
 #, fuzzy
 msgid "Selected patterns"
 msgstr "Choisir le fuseau horaire"
 
-#: src/components/software/SoftwarePage.jsx:168
+#: src/components/software/SoftwarePage.jsx:108
 #, fuzzy
 msgid "Change selection"
 msgstr "Changer de fuseau horaire"
+
+#: src/components/software/SoftwarePage.jsx:123
+msgid ""
+"This product does not allow to select software patterns during installation. "
+"However, you can add additional software once the installation is finished."
+msgstr ""
 
 #: src/components/software/SoftwarePatternsSelection.jsx:223
 #, fuzzy
@@ -984,7 +991,9 @@ msgid "Installation will take %s."
 msgstr "L'installation utilisera %s"
 
 #: src/components/software/UsedSize.jsx:37
-msgid "This space includes the base system and the selected software patterns."
+msgid ""
+"This space includes the base system and the selected software patterns, if "
+"any."
 msgstr ""
 
 #: src/components/storage/BootConfigField.jsx:43
@@ -1754,7 +1763,7 @@ msgstr[1] "Actions planifiées"
 msgid "Waiting for actions information..."
 msgstr "En attente d'informations sur le LVM"
 
-#: src/components/storage/ProposalPage.jsx:329
+#: src/components/storage/ProposalPage.jsx:317
 msgid "Planned Actions"
 msgstr "Actions planifiées"
 

@@ -5,13 +5,27 @@ name: SUSE Linux Enteprise Server 16.0 Alpha
 # at the at translations/description key below to avoid using obsolete
 # translations!!
 # ------------------------------------------------------------------------------
-description: "SUSE Linux Enterprise Server is the open, reliable, compliant, and future-proof
-  Linux Server choice that ensures the enterprise's business continuity. It is the secure and
-  adaptable OS for long-term supported, innovation-ready infrastructure running business-critical
-  workloads on-premises, in the cloud, and at the edge."
+description: "SUSE Linux Enterprise Server is the open, reliable, compliant, and
+  future-proof Linux Server choice that ensures the enterprise's business
+  continuity. It is the secure and adaptable OS for long-term supported,
+  innovation-ready infrastructure running business-critical workloads
+  on-premises, in the cloud, and at the edge."
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
+    ca: El SUSE Linux Enterprise Server és l'opció de servidor Linux oberta, fiable,
+      compatible i a prova de futur que garanteix la continuïtat del negoci de
+      l'empresa. És el sistema operatiu segur i adaptable per a una
+      infraestructura amb suport a llarg termini i preparada per a la innovació
+      que executa càrregues de treball crítiques per a l'empresa a les
+      instal·lacions, al núvol, i a l'avantguarda.
+    cs: SUSE Linux Enterprise Server je otevřený, spolehlivý, kompatibilní a
+      perspektivní linuxový server, který zajišťuje kontinuitu činnosti podniku.
+      Je to bezpečný a přizpůsobivý operační systém pro dlouhodobě podporovanou
+      infrastrukturu připravenou na inovace, na které běží kritické podnikové
+      úlohy v lokálním prostředí, v cloudu i na okraji sítě.
+    ja: SUSE Linux Enterprise Server はオープンで信頼性が高く、各種の標準にも準拠し、将来性とビジネスの継続性を支援する Linux
+      サーバです。長期のサポートが提供されていることから安全性と順応性に優れ、オンプレミスからクラウド、エッジ環境に至るまで、様々な場所で重要なビジネス処理をこなすことのできる革新性の高いインフラストラクチャです。
 software:
   installation_repositories:
     - url: http://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0/product/repo/SLES-Packages-16.0-x86_64/

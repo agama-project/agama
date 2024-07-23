@@ -19,31 +19,22 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Page } from "~/components/core";
-import NetworkPage from "./NetworkPage";
-import IpSettingsForm from "./IpSettingsForm";
-import WifiSelectorPage from "./WifiSelectorPage";
-import { N_ } from "~/i18n";
-
-const routes = {
-  path: "/network",
-  element: <Page />,
-  handle: {
-    name: N_("Network"),
-    icon: "settings_ethernet",
-  },
-  children: [
-    { index: true, element: <NetworkPage /> },
-    {
-      path: "connections/:id/edit",
-      element: <IpSettingsForm />
-    },
-    {
-      path: "wifis",
-      element: <WifiSelectorPage />,
-    }
-  ]
+type FirstUser = {
+  fullName: string;
+  userName: string;
+  password: string;
+  autologin: boolean;
 };
 
-export default routes;
+type RootUser = {
+  password: boolean;
+  sshkey: string | null;
+};
+
+type RootUserChanges = {
+  password: string;
+  passwordEncrypted: boolean;
+  sshkey: string;
+};
+
+export type { FirstUser, RootUserChanges, RootUser };

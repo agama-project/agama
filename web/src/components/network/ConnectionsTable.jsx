@@ -64,7 +64,8 @@ export default function ConnectionsTable({ connections, devices, onForget }) {
           <Th width={25}>{_("Name")}</Th>
           {/* TRANSLATORS: table header */}
           <Th>{_("IP addresses")}</Th>
-          <Th />
+          {/* TRANSLATORS: table header aria label */}
+          <Th aria-label={_("Connection actions")} />
         </Tr>
       </Thead>
       <Tbody>

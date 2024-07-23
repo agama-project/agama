@@ -28,6 +28,10 @@ import { WifiConnectionForm } from "~/components/network";
 
 jest.mock("~/client");
 
+jest.mock("~/queries/network", () => ({
+  useNetworkConfigChanges: jest.fn(),
+}));
+
 Element.prototype.scrollIntoView = jest.fn();
 
 const hiddenNetworkMock = {

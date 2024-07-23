@@ -4,6 +4,12 @@ import path from "path";
 import puppeteer from "puppeteer-core";
 import { expect } from "chai";
 
+// This is an example file for running Agama integration tests using Puppeteer.
+//
+// If the test fails it saves the page screenshot and the HTML page dump to
+// ./log/ subdirectory.
+// For more details about customization see the README.md file.
+
 // helper function for converting String to Boolean
 function booleanEnv(name, default_value) {
   const env = process.env[name];

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-14 02:32+0000\n"
+"POT-Creation-Date: 2024-07-18 02:24+0000\n"
 "PO-Revision-Date: 2024-07-11 04:47+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -692,45 +692,45 @@ msgstr "Wi-Fi ネットワークへの接続"
 msgid "The system will use %s as its default language."
 msgstr "システムは %s を既定の言語として使用します。"
 
-#: src/components/overview/OverviewPage.jsx:47
+#: src/components/overview/OverviewPage.jsx:49
 #: src/components/users/UsersPage.jsx:36 src/components/users/routes.js:32
 msgid "Users"
 msgstr "ユーザ"
 
-#: src/components/overview/OverviewPage.jsx:48
+#: src/components/overview/OverviewPage.jsx:50
 #: src/components/overview/StorageSection.jsx:111
-#: src/components/storage/ProposalPage.jsx:307
+#: src/components/storage/ProposalPage.jsx:295
 #: src/components/storage/StoragePage.jsx:30
 #: src/components/storage/routes.js:58
 msgid "Storage"
 msgstr "ストレージ"
 
-#: src/components/overview/OverviewPage.jsx:49
+#: src/components/overview/OverviewPage.jsx:51
 #: src/components/overview/SoftwareSection.jsx:86
-#: src/components/software/SoftwarePage.jsx:155
+#: src/components/software/SoftwarePage.jsx:181
 #: src/components/software/routes.js:32
 msgid "Software"
 msgstr "ソフトウエア"
 
-#: src/components/overview/OverviewPage.jsx:54
+#: src/components/overview/OverviewPage.jsx:56
 msgid "Ready for installation"
 msgstr "インストールの準備完了"
 
-#: src/components/overview/OverviewPage.jsx:104
+#: src/components/overview/OverviewPage.jsx:102
 msgid "Installation"
 msgstr "インストール"
 
-#: src/components/overview/OverviewPage.jsx:105
+#: src/components/overview/OverviewPage.jsx:103
 msgid "Before installing, please check the following problems."
 msgstr "インストールを行う前に、下記の問題点をご確認ください。"
 
-#: src/components/overview/OverviewPage.jsx:116
+#: src/components/overview/OverviewPage.jsx:114
 msgid ""
 "Take your time to check your configuration before starting the installation "
 "process."
 msgstr "インストール処理を開始する前に、設定内容をよくご確認ください。"
 
-#: src/components/overview/OverviewPage.jsx:125
+#: src/components/overview/OverviewPage.jsx:123
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
@@ -899,13 +899,20 @@ msgstr "追加のソフトウエアは何も選択していません。"
 msgid "The following software patterns are selected for installation:"
 msgstr "下記のソフトウエアパターンをインストールするよう選択しています:"
 
-#: src/components/software/SoftwarePage.jsx:165
+#: src/components/software/SoftwarePage.jsx:105
+#: src/components/software/SoftwarePage.jsx:119
 msgid "Selected patterns"
 msgstr "パターンの選択"
 
-#: src/components/software/SoftwarePage.jsx:168
+#: src/components/software/SoftwarePage.jsx:108
 msgid "Change selection"
 msgstr "選択の変更"
+
+#: src/components/software/SoftwarePage.jsx:123
+msgid ""
+"This product does not allow to select software patterns during installation. "
+"However, you can add additional software once the installation is finished."
+msgstr ""
 
 #: src/components/software/SoftwarePatternsSelection.jsx:223
 msgid "auto selected"
@@ -933,7 +940,10 @@ msgid "Installation will take %s."
 msgstr "インストールを行うには %s が必要です。"
 
 #: src/components/software/UsedSize.jsx:37
-msgid "This space includes the base system and the selected software patterns."
+#, fuzzy
+msgid ""
+"This space includes the base system and the selected software patterns, if "
+"any."
 msgstr ""
 "この容量はシステムの基本部分のほか、選択したソフトウエアパターンを含みます。"
 
@@ -1648,7 +1658,7 @@ msgstr[0] "%d 個の処理計画を確認する"
 msgid "Waiting for actions information..."
 msgstr "処理に関する情報を待機しています..."
 
-#: src/components/storage/ProposalPage.jsx:329
+#: src/components/storage/ProposalPage.jsx:317
 msgid "Planned Actions"
 msgstr "処理の計画"
 
