@@ -43,6 +43,9 @@ pub enum ServiceError {
     BackendError(u16, String),
     #[error("You are not logged in. Please use: agama auth login")]
     NotAuthenticated,
+    // Specific error when something does not work as expected, but it is not user fault
+    #[error("Internal error. Please report a bug and attach logs. Details: {0}")]
+    InternalError(String),
 }
 
 #[derive(Error, Debug)]
