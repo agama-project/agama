@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,8 +25,9 @@ import { installerRender } from "~/test-utils";
 import mockTestingPatterns from "~/components/software/patterns.test.json";
 import testingProposal from "~/components/software/proposal.test.json";
 import SoftwareSection from "~/components/overview/SoftwareSection";
+import { SoftwareProposal } from "~/types/software";
 
-let mockTestingProposal;
+let mockTestingProposal: SoftwareProposal;
 const onProposalChanges = jest.fn();
 const useProposalChangesMock = () => onProposalChanges();
 
@@ -39,7 +40,7 @@ jest.mock("~/queries/software", () => ({
 describe("SoftwareSection", () => {
   describe("when the proposal does not have patterns to select", () => {
     beforeEach(() => {
-      mockTestingProposal = { patterns: {} };
+      mockTestingProposal = { patterns: {}, size: "" };
     });
 
     it("renders nothing", () => {

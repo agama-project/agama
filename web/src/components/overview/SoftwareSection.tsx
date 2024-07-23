@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,12 +22,12 @@
 import React from "react";
 import { List, ListItem, Text, TextContent, TextVariants } from "@patternfly/react-core";
 import { Em } from "~/components/core";
-import { usePatterns, useProposal, useProposalChanges } from "~/queries/software";
 import { SelectedBy } from "~/types/software";
-import { _ } from "~/i18n";
+import { usePatterns, useProposal, useProposalChanges } from "~/queries/software";
 import { isObjectEmpty } from "~/utils";
+import { _ } from "~/i18n";
 
-export default function SoftwareSection() {
+export default function SoftwareSection(): React.ReactNode {
   const proposal = useProposal();
   const patterns = usePatterns();
 
