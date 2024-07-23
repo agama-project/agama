@@ -21,7 +21,7 @@
 
 import React from "react";
 
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { RootSSHKeyPopup } from "~/components/users";
 
@@ -30,13 +30,12 @@ let mockSSHKey;
 
 jest.mock("~/queries/users", () => ({
   ...jest.requireActual("~/queries/users"),
-  useRootUser: () => ({ data: { sshkey: mockSSHKey } }),
+  useRootUser: () => ({ sshkey: mockSSHKey }),
   useRootUserMutation: () => mockRootUserMutation,
   useRootUserChanges: () => jest.fn(),
 }));
 
 const onCloseCallback = jest.fn();
-const setRootSSHKeyFn = jest.fn();
 const testKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example";
 
 describe("when it is closed", () => {

@@ -20,12 +20,9 @@
  */
 
 import React from "react";
-import { act, screen, within } from "@testing-library/react";
-import { plainRender, installerRender, createCallbackMock } from "~/test-utils";
-import { noop } from "~/utils";
-
+import { screen, within } from "@testing-library/react";
+import { plainRender } from "~/test-utils";
 import { RootAuthMethods } from "~/components/users";
-import { useRootUser, useRootUserMutation } from "~/queries/users";
 
 const mockRootUserMutation = { mutate: jest.fn(), mutateAsync: jest.fn() };
 let mockPassword;
@@ -33,13 +30,11 @@ let mockSSHKey;
 
 jest.mock("~/queries/users", () => ({
   ...jest.requireActual("~/queries/users"),
-  useRootUser: () => ({ data: { password: mockPassword, sshkey: mockSSHKey } }),
+  useRootUser: () => ({ password: mockPassword, sshkey: mockSSHKey }),
   useRootUserMutation: () => mockRootUserMutation,
   useRootUserChanges: () => jest.fn(),
 }));
 
-const isRootPasswordSetFn = jest.fn();
-const removeRootPasswordFn = jest.fn();
 const testKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example";
 
 beforeEach(() => {
