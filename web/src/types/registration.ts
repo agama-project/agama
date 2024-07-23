@@ -32,7 +32,7 @@ type RegistrationFailure = {
   /** @property {Number} id - ID of error */
   id: number;
   /** Failure message */
-  message: number;
+  message: string;
 };
 
 export type { Registration, RegistrationFailure };

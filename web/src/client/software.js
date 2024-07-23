@@ -48,20 +48,6 @@ const SelectedBy = Object.freeze({
  */
 
 /**
- * @typedef {object} Registration
- * @property {string} requirement - Registration requirement (i.e., "not-required", "optional",
- *  "mandatory").
- * @property {string|null} code - Registration code, if any.
- * @property {string|null} email - Registration email, if any.
- */
-
-/**
- * @typedef {object} RegistrationFailure
- * @property {Number} id - ID of error.
- * @property {string} message - Failure message.
- */
-
-/**
  * @typedef {object} ActionResult
  * @property {boolean} success - Whether the action was successfully done.
  * @property {string} message - Result message.
@@ -113,43 +99,6 @@ class SoftwareBaseClient {
    */
   probe() {
     return this.client.post("/software/probe", {});
-  }
-
-  /**
-   * Returns how much space installation takes on disk
-   *
-   * @return {Promise<SoftwareProposal>}
-   */
-  async getProposal() {
-    const response = await this.client.get("/software/proposal");
-    if (!response.ok) {
-      console.log("Failed to get software proposal: ", response);
-    }
-
-    return response.json();
-  }
-
-  /**
-   * Returns available patterns
-   *
-   * @return {Promise<Pattern[]>}
-   */
-  async getPatterns() {
-    const response = await this.client.get("/software/patterns");
-    if (!response.ok) {
-      console.log("Failed to get software patterns: ", response);
-      return [];
-    }
-    /** @type Array<{ name: string, category: string, summary: string, description: string, order: string, icon: string }> */
-    const patterns = await response.json();
-    return patterns.map((pattern) => ({
-      name: pattern.name,
-      category: pattern.category,
-      summary: pattern.summary,
-      description: pattern.description,
-      order: parseInt(pattern.order),
-      icon: pattern.icon,
-    }));
   }
 
   /**
@@ -251,7 +200,7 @@ class ProductClient {
   /**
    * Returns the registration of the selected product.
    *
-   * @return {Promise<Registration>}
+   * @return {Promise<import('~/types/registration').Registration>}
    */
   async getRegistration() {
     const response = await this.client.get("/software/registration");
@@ -280,7 +229,7 @@ class ProductClient {
   async register(code, email = "") {
     const response = await this.client.post("/software/registration", { key: code, email });
     if (response.status === 422) {
-      /**  @type RegistrationFailure */
+      /**  @type import('~/types/registration').RegistrationFailure */
       const body = await response.json();
       return {
         success: false,
@@ -303,7 +252,7 @@ class ProductClient {
     const response = await this.client.delete("/software/registration");
 
     if (response.status === 422) {
-      /**  @type RegistrationFailure */
+      /**  @type import('~/types/registration').RegistrationFailure */
       const body = await response.json();
       return {
         success: false,
@@ -320,7 +269,7 @@ class ProductClient {
   /**
    * Registers a callback to run when the registration changes.
    *
-   * @param {(registration: Registration) => void} handler - Callback function.
+   * @param {(registration: import('~/types/registration').Registration) => void} handler - Callback function.
    */
   onRegistrationChange(handler) {
     return this.client.ws().onEvent((event) => {
