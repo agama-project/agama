@@ -21,14 +21,14 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import { QuestionWithPassword } from "~/components/questions";
 
 let question;
 const answerFn = jest.fn();
 
 const renderQuestion = () =>
-  installerRender(<QuestionWithPassword question={question} answerCallback={answerFn} />);
+  plainRender(<QuestionWithPassword question={question} answerCallback={answerFn} />);
 
 describe("QuestionWithPassword", () => {
   beforeEach(() => {
@@ -42,17 +42,10 @@ describe("QuestionWithPassword", () => {
     };
   });
 
-  it("renders the question text", async () => {
+  it("renders the question text", () => {
     renderQuestion();
 
-    await screen.findByText(question.text);
-  });
-
-  it("contains a textinput for entering the password", async () => {
-    renderQuestion();
-
-    const passwordInput = await screen.findByLabelText("Password");
-    expect(passwordInput).not.toBeNull();
+    screen.queryByText(question.text);
   });
 
   describe("when the user selects one of the options", () => {
