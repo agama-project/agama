@@ -3,6 +3,7 @@
 mod client;
 mod http_client;
 pub mod proxies;
+pub mod model;
 mod settings;
 mod store;
 

@@ -1,23 +1,12 @@
 use anyhow::anyhow; // WIP
 
-use serde::Deserialize;
 //use reqwest::StatusCode;
 use super::client::FirstUser;
 use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
+use crate::users::model::RootConfig;
 
 pub struct UsersHttpClient {
     client: BaseHTTPClient,
-}
-
-// copying agama_server::users::web::RootConfig
-// but not all derives
-// #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-#[derive(Clone, Debug, Default, Deserialize)]
-pub struct RootConfig {
-    /// returns if password for root is set or not
-    password: bool,
-    /// empty string mean no sshkey is specified
-    sshkey: String,
 }
 
 impl UsersHttpClient {
@@ -91,7 +80,6 @@ impl UsersHttpClient {
         Ok(root_config.sshkey)
     }
 
-    
     /// SetRootSSHKey method
     pub async fn set_root_sshkey(&self, value: &str) -> Result<u32, ServiceError> {
         //Ok(self.users_proxy.set_root_sshkey(value).await?)

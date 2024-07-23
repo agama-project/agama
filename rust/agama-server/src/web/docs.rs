@@ -113,8 +113,8 @@ use utoipa::OpenApi;
         schemas(crate::storage::web::iscsi::InitiatorParams),
         schemas(crate::storage::web::iscsi::LoginParams),
         schemas(crate::storage::web::iscsi::NodeParams),
-        schemas(crate::users::web::RootConfig),
-        schemas(crate::users::web::RootPatchSettings),
+        schemas(agama_lib::users::model::RootConfig),
+        schemas(agama_lib::users::model::RootPatchSettings),
         schemas(super::http::PingResponse)
     )
 )]

@@ -13,7 +13,11 @@ use crate::{
 };
 use agama_lib::{
     error::ServiceError,
-    users::{proxies::Users1Proxy, FirstUser, UsersClient},
+    users::{
+        model::{RootConfig, RootPatchSettings},
+        proxies::Users1Proxy,
+        FirstUser, UsersClient
+    },
 };
 use axum::{
     extract::State,
@@ -23,7 +27,6 @@ use axum::{
     Json, Router,
 };
 //use reqwest;
-use serde::{Deserialize, Serialize};
 use tokio_stream::{Stream, StreamExt};
 
 #[derive(Clone)]
@@ -191,17 +194,6 @@ async fn get_user_config(State(state): State<UsersState<'_>>) -> Result<Json<Fir
     Ok(Json(state.users.first_user().await?))
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct RootPatchSettings {
-    /// empty string here means remove ssh key for root
-    pub sshkey: Option<String>,
-    /// empty string here means remove password for root
-    pub password: Option<String>,
-    /// specify if patched password is provided in encrypted form
-    pub password_encrypted: Option<bool>,
-}
-
 #[utoipa::path(patch, path = "/users/root", responses(
     (status = 200, description = "Root configuration is modified", body = RootPatchSettings),
     (status = 400, description = "The D-Bus service could not perform the action"),
@@ -224,14 +216,6 @@ async fn patch_root(
         }
     }
     Ok(())
-}
-
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct RootConfig {
-    /// returns if password for root is set or not
-    password: bool,
-    /// empty string mean no sshkey is specified
-    sshkey: String,
 }
 
 #[utoipa::path(get, path = "/users/root", responses(
