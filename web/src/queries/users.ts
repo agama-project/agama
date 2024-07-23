@@ -36,7 +36,10 @@ const firstUserQuery = () => ({
 /**
  * Hook that returns the first user.
  */
-const useFirstUser = () => useSuspenseQuery(firstUserQuery());
+const useFirstUser = () => {
+  const { data: firstUser } = useSuspenseQuery(firstUserQuery());
+  return firstUser;
+};
 
 /*
  * Hook that returns a mutation to change the first user.
@@ -113,7 +116,10 @@ const rootUserQuery = () => ({
   queryFn: () => fetch("/api/users/root").then((res) => res.json()),
 });
 
-const useRootUser = () => useSuspenseQuery(rootUserQuery());
+const useRootUser = () => {
+  const { data: rootUser } = useSuspenseQuery(rootUserQuery());
+  return rootUser;
+};
 
 /*
  * Hook that returns a mutation to change the root user configuration.

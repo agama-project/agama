@@ -59,9 +59,7 @@ export default function RootAuthMethods() {
   const [isSSHKeyFormOpen, setIsSSHKeyFormOpen] = useState(false);
   const [isPasswordFormOpen, setIsPasswordFormOpen] = useState(false);
 
-  const {
-    data: { password: isPasswordDefined, sshkey: sshKey },
-  } = useRootUser();
+  const { password: isPasswordDefined, sshkey: sshKey } = useRootUser();
 
   useRootUserChanges();
 

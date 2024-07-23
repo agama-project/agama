@@ -25,12 +25,7 @@ import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { useNavigate } from "react-router-dom";
 import { RowActions, ButtonLink } from "~/components/core";
 import { _ } from "~/i18n";
-import {
-  useFirstUser,
-  useFirstUserChanges,
-  useFirstUserMutation,
-  useRemoveFirstUserMutation,
-} from "~/queries/users";
+import { useFirstUser, useFirstUserChanges, useRemoveFirstUserMutation } from "~/queries/users";
 
 const UserNotDefined = ({ actionCb }) => {
   return (
@@ -78,7 +73,7 @@ const UserData = ({ user, actions }) => {
 };
 
 export default function FirstUser() {
-  const { data: user } = useFirstUser();
+  const user = useFirstUser();
   const removeUser = useRemoveFirstUserMutation();
   const navigate = useNavigate();
 

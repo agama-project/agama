@@ -83,7 +83,7 @@ const UsernameSuggestions = ({
 // close to the related input.
 // TODO: extract the suggestions logic.
 export default function FirstUserForm() {
-  const { data: firstUser } = useFirstUser();
+  const firstUser = useFirstUser();
   const setFirstUser = useFirstUserMutation();
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
