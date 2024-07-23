@@ -33,7 +33,7 @@ let mockSSHKey;
 
 jest.mock("~/queries/users", () => ({
   ...jest.requireActual("~/queries/users"),
-  useRootUser: () => ({ data: { password: mockPassword, sshkey: mockSSHKey } }),
+  useRootUser: () => ({ password: mockPassword, sshkey: mockSSHKey }),
   useRootUserMutation: () => mockRootUserMutation,
   useRootUserChanges: () => jest.fn(),
 }));
