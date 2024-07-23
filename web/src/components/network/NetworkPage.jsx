@@ -21,58 +21,21 @@
 
 // @ts-check
 
-import React, { useCallback, useEffect, useState } from "react";
-import { CardBody, Grid, GridItem, Skeleton, Split, Stack } from "@patternfly/react-core";
-import { useLoaderData } from "react-router-dom";
+import React from "react";
+import { CardBody, Grid, GridItem } from "@patternfly/react-core";
 import { ButtonLink, CardField, EmptyState, Page } from "~/components/core";
 import { ConnectionsTable } from "~/components/network";
-import { NetworkEventTypes } from "~/client/network";
-import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
 import { formatIp } from "~/client/network/utils";
 import { sprintf } from "sprintf-js";
+import { useNetwork, useNetworkConfigChanges } from "~/queries/network";
 
 /**
  * Page component holding Network settings
  * @component
  */
 export default function NetworkPage() {
-  const { network: client } = useInstallerClient();
-  // @ts-ignore
-  const { connections: initialConnections, devices: initialDevices, settings } = useLoaderData();
-  const [connections, setConnections] = useState(initialConnections);
-  const [devices, setDevices] = useState(initialDevices);
-  const [updateState, setUpdateState] = useState(false);
-
-  const fetchState = useCallback(async () => {
-    const devices = await client.devices();
-    const connections = await client.connections();
-    setDevices(devices);
-    setConnections(connections);
-  }, [client]);
-
-  useEffect(() => {
-    if (!updateState) return;
-
-    setUpdateState(false);
-    fetchState();
-  }, [fetchState, updateState]);
-
-  useEffect(() => {
-    return client.onNetworkChange(({ type }) => {
-      if (
-        [
-          NetworkEventTypes.DEVICE_ADDED,
-          NetworkEventTypes.DEVICE_UPDATED,
-          NetworkEventTypes.DEVICE_REMOVED,
-          // @ts-ignore
-        ].includes(type)
-      ) {
-        setUpdateState(true);
-      }
-    });
-  });
-
+  const { connections, devices, settings } = useNetwork();
   const connectionDevice = ({ id }) => devices?.find(({ connection }) => id === connection);
   const connectionAddresses = (connection) => {
     const device = connectionDevice(connection);
@@ -80,8 +43,7 @@ export default function NetworkPage() {
 
     return addresses?.map(formatIp).join(", ");
   };
-
-  const ready = connections !== undefined && devices !== undefined;
+  useNetworkConfigChanges();
 
   const WifiConnections = () => {
     const { wireless_enabled: wifiAvailable } = settings;
@@ -132,22 +94,6 @@ export default function NetworkPage() {
     );
   };
 
-  const SectionSkeleton = () => (
-    <Stack hasGutter>
-      <Skeleton width="45%" />
-      <Split hasGutter>
-        <Skeleton width="30%" height="10px" />
-        <Skeleton width="30%" height="10px" />
-        <Skeleton width="30%" height="10px" />
-      </Split>
-      <Split hasGutter>
-        <Skeleton width="30%" height="10px" />
-        <Skeleton width="30%" height="10px" />
-        <Skeleton width="30%" height="10px" />
-      </Split>
-    </Stack>
-  );
-
   const WiredConnections = () => {
     const wiredConnections = connections.filter((c) => !c.wireless);
     const total = wiredConnections.length;
@@ -155,13 +101,8 @@ export default function NetworkPage() {
     return (
       <CardField label={total > 0 && _("Wired")}>
         <CardBody>
-          {!ready && <SectionSkeleton />}
-          {ready && total === 0 && (
-            <EmptyState title={_("No wired connections found")} icon="warning" />
-          )}
-          {ready && total !== 0 && (
-            <ConnectionsTable connections={wiredConnections} devices={devices} />
-          )}
+          {total === 0 && (<EmptyState title={_("No wired connections found")} icon="warning" />)}
+          {total !== 0 && (<ConnectionsTable connections={wiredConnections} devices={devices} />)}
         </CardBody>
       </CardField>
     );
