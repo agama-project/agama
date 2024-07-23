@@ -28,13 +28,11 @@ import SoftwareSection from "~/components/overview/SoftwareSection";
 import { SoftwareProposal } from "~/types/software";
 
 let mockTestingProposal: SoftwareProposal;
-const onProposalChanges = jest.fn();
-const useProposalChangesMock = () => onProposalChanges();
 
 jest.mock("~/queries/software", () => ({
   usePatterns: () => mockTestingPatterns,
   useProposal: () => mockTestingProposal,
-  useProposalChanges: useProposalChangesMock,
+  useProposalChanges: jest.fn(),
 }));
 
 describe("SoftwareSection", () => {
@@ -65,14 +63,6 @@ describe("SoftwareSection", () => {
       expect(screen.queryByText("KDE")).toBeNull();
       expect(screen.queryByText("XFCE")).toBeNull();
       expect(screen.queryByText("YaST Server Utilities")).toBeNull();
-    });
-
-    // FIXME: look for a better way to test such a behavior
-    it("listens proposal changes", () => {
-      installerRender(<SoftwareSection />);
-      screen.getAllByText(/GNOME/);
-      act(() => useProposalChangesMock());
-      expect(onProposalChanges).toHaveBeenCalled();
     });
   });
 });
