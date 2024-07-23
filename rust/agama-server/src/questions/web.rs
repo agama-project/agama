@@ -71,7 +71,7 @@ impl<'a> QuestionsClient<'a> {
             .map(|(k, v)| (k.as_str(), v.as_str()))
             .collect();
         let path = if question.with_password.is_some() {
-            tracing::info!("creating question with password");
+            tracing::info!("creating a question with password");
             self.questions_proxy
                 .new_with_password(
                     &generic.class,
@@ -82,7 +82,7 @@ impl<'a> QuestionsClient<'a> {
                 )
                 .await?
         } else {
-            tracing::info!("creating generic question");
+            tracing::info!("creating a generic question");
             self.questions_proxy
                 .new_question(
                     &generic.class,

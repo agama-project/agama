@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Mon Jul 22 15:26:48 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
-- Autoyast convert script: Use agama questions to report errors
+- AutoYaST convert script: use Agama questions to report errors
   and ask when encrypted profile is used (gh#openSUSE/agama#1476)
 
 -------------------------------------------------------------------

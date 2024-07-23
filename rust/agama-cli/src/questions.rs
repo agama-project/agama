@@ -20,9 +20,9 @@ pub enum QuestionsCommands {
         /// Path to a file containing the answers in YAML format.
         path: String,
     },
-    /// prints list of questions that is waiting for answer in JSON format
+    /// Prints the list of questions that are waiting for an answer in JSON format
     List,
-    /// Ask question from stdin in JSON format and print answer when it is answered.
+    /// Reads a question definition in JSON from stdin and prints the response when it is answered.
     Ask,
 }
 

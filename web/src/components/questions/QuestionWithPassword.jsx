@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -41,7 +41,6 @@ export default function QuestionWithPassword({ question, answerCallback }) {
     <Popup
       isOpen
       title={_("Password Required")}
-      aria-label={_("Question")}
       titleIconVariant={() => <Icon name="lock" size="s" />}
     >
       <Text>{question.text}</Text>
