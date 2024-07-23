@@ -35,7 +35,6 @@ module Y2Storage
       def search(devicegraph, settings, issues_list)
         settings.original_graph = devicegraph
 
-        # TODO: If IfNotFound is 'error' => register error
         sids = []
         settings.drives.each do |drive|
           drive.search_device(devicegraph, sids)
