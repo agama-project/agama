@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,22 +19,20 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+type Registration = {
+  /** Registration requirement (i.e., "not-required", "optional", "mandatory") */
+  requirement: string;
+  /** Registration code, if any */
+  code?: string;
+  /** Registration email, if any */
+  email?: string;
+};
 
-import { EmptyState } from "~/components/core";
-import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
+type RegistrationFailure = {
+  /** @property {Number} id - ID of error */
+  id: number;
+  /** Failure message */
+  message: string;
+};
 
-export default function UsedSize({ size }) {
-  if (size === undefined || size === "" || size === "0 B") return null;
-
-  // TRANSLATORS: %s will be replaced by the estimated installation size,
-  // example: "728.8 MiB"
-  const message = sprintf(_("Installation will take %s."), size);
-
-  return (
-    <EmptyState title={message} icon="info" color="success-color-100">
-      <p>{_("This space includes the base system and the selected software patterns, if any.")}</p>
-    </EmptyState>
-  );
-}
+export type { Registration, RegistrationFailure };

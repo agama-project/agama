@@ -22,7 +22,6 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-
 import UsedSize from "./UsedSize";
 
 describe("UsedSize", () => {

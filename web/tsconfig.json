@@ -5,9 +5,11 @@
     "target": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "esModuleInterop": true,
     "allowJs": true,
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
+    "types": ["node", "jest", "@testing-library/jest-dom"],
     "paths": {
       "~/*": ["src/*"],
       "~/client": ["src/client/index.js"],

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,40 +19,21 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
-import { _ } from "~/i18n";
-import { useInstallerClient } from "~/context/installer";
+import React from "react";
 import { List, ListItem, Text, TextContent, TextVariants } from "@patternfly/react-core";
 import { Em } from "~/components/core";
+import { SelectedBy } from "~/types/software";
+import { usePatterns, useProposal, useProposalChanges } from "~/queries/software";
+import { isObjectEmpty } from "~/utils";
+import { _ } from "~/i18n";
 
-export default function SoftwareSection() {
-  const [proposal, setProposal] = useState({});
-  const [patterns, setPatterns] = useState([]);
-  const [selectedPatterns, setSelectedPatterns] = useState(undefined);
-  const client = useInstallerClient();
+export default function SoftwareSection(): React.ReactNode {
+  const proposal = useProposal();
+  const patterns = usePatterns();
 
-  useEffect(() => {
-    client.software.getProposal().then(setProposal);
-    client.software.getPatterns().then(setPatterns);
-  }, [client]);
+  useProposalChanges();
 
-  useEffect(() => {
-    return client.software.onSelectedPatternsChanged(() => {
-      client.software.getProposal().then(setProposal);
-    });
-  }, [client, setProposal]);
-
-  useEffect(() => {
-    if (proposal.patterns === undefined) return;
-
-    const ids = Object.keys(proposal.patterns);
-    const selected = patterns.filter((p) => ids.includes(p.name)).sort((a, b) => a.order - b.order);
-    setSelectedPatterns(selected);
-  }, [client, proposal, patterns]);
-
-  if (selectedPatterns === undefined) {
-    return;
-  }
+  if (isObjectEmpty(proposal.patterns)) return;
 
   const TextWithoutList = () => {
     return (
@@ -65,6 +46,8 @@ export default function SoftwareSection() {
   const TextWithList = () => {
     // TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
     const [msg1, msg2] = _("The installation will take %s including:").split("%s");
+    const selectedPatterns = patterns.filter((p) => p.selectedBy !== SelectedBy.NONE);
+
     return (
       <>
         <Text>
@@ -84,7 +67,7 @@ export default function SoftwareSection() {
   return (
     <TextContent>
       <Text component={TextVariants.h3}>{_("Software")}</Text>
-      {selectedPatterns.length ? <TextWithList /> : <TextWithoutList />}
+      {patterns.length ? <TextWithList /> : <TextWithoutList />}
     </TextContent>
   );
 }
