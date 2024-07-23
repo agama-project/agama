@@ -21,7 +21,7 @@
 
 require_relative "../agama/storage/storage_helpers"
 require "agama/config"
-require "agama/storage/profile"
+require "agama/storage/config"
 require "y2storage/agama_proposal"
 
 describe Y2Storage::AgamaProposal do
@@ -35,7 +35,7 @@ describe Y2Storage::AgamaProposal do
     described_class.new(initial_settings, issues_list: issues_list)
   end
   let(:initial_settings) do
-    Agama::Storage::Profile.new.tap do |settings|
+    Agama::Storage::Config.new.tap do |settings|
       settings.drives = [drive]
     end
   end

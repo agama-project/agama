@@ -25,7 +25,7 @@ require "agama/storage/configs"
 module Agama
   module Storage
     # Settings used to calculate an storage proposal.
-    class Profile
+    class Config
       # Boot settings.
       #
       # @return [BootSettings]
