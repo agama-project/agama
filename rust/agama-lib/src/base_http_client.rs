@@ -160,6 +160,43 @@ impl BaseHTTPClient {
             .map_err(|e| e.into())
     }
 
+    /// patch object at given path and report error if response is not success
+    ///
+    /// Arguments:
+    ///
+    /// * `path`: path relative to HTTP API like `/users/first`
+    /// * `object`: Object that can be serialiazed to JSON as body of request.
+    pub async fn patch(&self, path: &str, object: &impl Serialize) -> Result<(), ServiceError> {
+        let response = self.patch_response(path, object).await?;
+        if response.status().is_success() {
+            Ok(())
+        } else {
+            Err(self.build_backend_error(response).await)
+        }
+    }
+
+    /// patch object at given path and returns server response. Reports error only if failed to send
+    /// request, but if server returns e.g. 500, it will be in Ok result.
+    ///
+    /// In general unless specific response handling is needed, simple post should be used.
+    ///
+    /// Arguments:
+    ///
+    /// * `path`: path relative to HTTP API like `/questions`
+    /// * `object`: Object that can be serialiazed to JSON as body of request.
+    pub async fn patch_response(
+        &self,
+        path: &str,
+        object: &impl Serialize,
+    ) -> Result<Response, ServiceError> {
+        self.client
+            .patch(self.url(path))
+            .json(object)
+            .send()
+            .await
+            .map_err(|e| e.into())
+    }
+
     /// delete call on given path and report error if failed
     ///
     /// Arguments:

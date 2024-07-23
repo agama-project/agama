@@ -1,9 +1,7 @@
-use anyhow::anyhow; // WIP
-
 //use reqwest::StatusCode;
 use super::client::FirstUser;
 use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
-use crate::users::model::RootConfig;
+use crate::users::model::{RootConfig, RootPatchSettings};
 
 pub struct UsersHttpClient {
     client: BaseHTTPClient,
@@ -27,26 +25,9 @@ impl UsersHttpClient {
         &self,
         first_user: &FirstUser,
     ) -> Result<(bool, Vec<String>), ServiceError> {
-        /*
-        self.users_proxy
-            .set_first_user(
-                &first_user.full_name,
-                &first_user.user_name,
-                &first_user.password,
-                first_user.autologin,
-                std::collections::HashMap::new(),
-            )
-            .await
-            */
-        //Err(anyhow!("TODO implement UsersHttpClient SETUSER").into())
         self.client.put("/users/first", first_user).await?;
         // TODO: make BaseHTTPClient.put(_response) return the issues
         Ok((true, vec!()))
-    }
-
-    pub async fn remove_first_user(&self) -> Result<bool, ServiceError> {
-        //Ok(self.users_proxy.remove_first_user().await? == 0)
-        Err(anyhow!("TODO implement UsersHttpClient RMUSER").into())
     }
 
     async fn root_config(&self) -> Result<RootConfig, ServiceError> {
@@ -62,16 +43,18 @@ impl UsersHttpClient {
     /// SetRootPassword method
     pub async fn set_root_password(
         &self,
-        _value: &str,
-        _encrypted: bool,
+        value: &str,
+        encrypted: bool,
     ) -> Result<u32, ServiceError> {
-        //Ok(self.users_proxy.set_root_password(value, encrypted).await?)
-        Err(anyhow!("TODO implement UsersHttpClient SETPASS").into())
-    }
-
-    pub async fn remove_root_password(&self) -> Result<u32, ServiceError> {
-        //Ok(self.users_proxy.remove_root_password().await?)
-        Err(anyhow!("TODO implement UsersHttpClient RMPASS").into())
+        let rps = RootPatchSettings {
+            sshkey: None,
+            password: Some(value.to_owned()),
+            password_encrypted: Some(encrypted)
+        };
+        // TODO various errors
+        // current backend always returns 0
+        let _ret = self.client.patch("/users/root", &rps).await?;
+        Ok(0)
     }
 
     /// Returns the SSH key for the root user
@@ -82,7 +65,14 @@ impl UsersHttpClient {
 
     /// SetRootSSHKey method
     pub async fn set_root_sshkey(&self, value: &str) -> Result<u32, ServiceError> {
-        //Ok(self.users_proxy.set_root_sshkey(value).await?)
-        Err(anyhow!("TODO implement UsersHttpClient SETKEY {}", value).into())
+        let rps = RootPatchSettings {
+            sshkey: Some(value.to_owned()),
+            password: None,
+            password_encrypted: None
+        };
+        // TODO various errors
+        // current backend always returns 0
+        let _ret = self.client.patch("/users/root", &rps).await?;
+        Ok(0)
     }
 }
