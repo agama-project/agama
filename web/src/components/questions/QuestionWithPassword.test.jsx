@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -48,8 +48,8 @@ describe("QuestionWithPassword", () => {
     screen.queryByText(question.text);
   });
 
-  describe("when the user selects one of the options", () => {
-    it("calls the callback after setting both, answer and password", async () => {
+  describe("when the user enters the password", () => {
+    it("calls the callback", async () => {
       const { user } = renderQuestion();
 
       const passwordInput = await screen.findByLabelText("Password");
