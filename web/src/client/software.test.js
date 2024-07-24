@@ -74,29 +74,6 @@ const microos = {
 };
 
 describe("ProductClient", () => {
-  describe("#getAll", () => {
-    it("returns the list of available products", async () => {
-      const http = new HTTPClient(new URL("http://localhost"));
-      const client = new ProductClient(http);
-      mockJsonFn.mockResolvedValue([tumbleweed, microos]);
-      const products = await client.getAll();
-      expect(products).toEqual([
-        { id: "Tumbleweed", name: "openSUSE Tumbleweed", description: "Tumbleweed is..." },
-        { id: "MicroOS", name: "openSUSE MicroOS", description: "MicroOS is..." },
-      ]);
-    });
-  });
-
-  describe("#getSelected", () => {
-    it("returns the selected product", async () => {
-      const http = new HTTPClient(new URL("http://localhost"));
-      const client = new ProductClient(http);
-      mockJsonFn.mockResolvedValue({ product: "microos" });
-      const selected = await client.getSelected();
-      expect(selected).toEqual("microos");
-    });
-  });
-
   describe("#getRegistration", () => {
     describe("if the product is not registered yet", () => {
       it("returns the expected registration result", async () => {

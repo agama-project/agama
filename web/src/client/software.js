@@ -96,56 +96,6 @@ class ProductClient {
   }
 
   /**
-   * Returns the list of available products.
-   *
-   * @return {Promise<Array<Product>>}
-   */
-  async getAll() {
-    const response = await this.client.get("/software/products");
-    if (!response.ok) {
-      console.log("Failed to get software products: ", response);
-    }
-    return response.json();
-  }
-
-  /**
-   * Returns the identifier of the selected product.
-   *
-   * @return {Promise<string>} Selected identifier.
-   */
-  async getSelected() {
-    const response = await this.client.get("/software/config");
-    if (!response.ok) {
-      console.log("Failed to get software config: ", response);
-    }
-    const config = await response.json();
-    return config.product;
-  }
-
-  /**
-   * Selects a product for installation.
-   *
-   * @param {string} id - Product ID.
-   */
-  async select(id) {
-    await this.client.put("/software/config", { product: id });
-  }
-
-  /**
-   * Registers a callback to run when the select product changes.
-   *
-   * @param {(id: string) => void} handler - Callback function.
-   * @return {import ("./http").RemoveFn} Function to remove the callback.
-   */
-  onChange(handler) {
-    return this.client.onEvent("ProductChanged", ({ id }) => {
-      if (id) {
-        handler(id);
-      }
-    });
-  }
-
-  /**
    * Returns the registration of the selected product.
    *
    * @return {Promise<import('~/types/registration').Registration>}
