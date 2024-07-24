@@ -25,9 +25,16 @@ impl UsersHttpClient {
         &self,
         first_user: &FirstUser,
     ) -> Result<(bool, Vec<String>), ServiceError> {
-        self.client.put("/users/first", first_user).await?;
-        // TODO: make BaseHTTPClient.put(_response) return the issues
-        Ok((true, vec!()))
+        let result: Result<Vec<String>, ServiceError> = self.client.put("/users/first", first_user).await;
+        if let Err(ServiceError::BackendError(422, ref issues_s)) = result {
+            // way to go:
+            // deserialize json from string
+            // and use (void) put
+            println!("ISSUUUS {}", issues_s);
+        }
+
+        let issues = result?;
+        Ok((issues.is_empty(), issues))
     }
 
     async fn root_config(&self) -> Result<RootConfig, ServiceError> {
