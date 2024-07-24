@@ -151,6 +151,8 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
 }
 
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
+    let client = BaseHTTPClient::new()?;
+
     match cli.command {
         Commands::Config(subcommand) => {
             let manager = build_manager().await?;
@@ -169,7 +171,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         }
         Commands::Questions(subcommand) => run_questions_cmd(subcommand).await?,
         Commands::Logs(subcommand) => run_logs_cmd(subcommand).await?,
-        Commands::Auth(subcommand) => run_auth_cmd(subcommand).await?,
+        Commands::Auth(subcommand) => run_auth_cmd(client, subcommand).await?,
         Commands::Download { url } => Transfer::get(&url, std::io::stdout())?,
     };
 
