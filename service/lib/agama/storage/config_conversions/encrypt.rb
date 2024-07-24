@@ -19,12 +19,13 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/encrypt/from_json"
+
 module Agama
   module Storage
-    module Configs
-      class SizeRange
-        attr_accessor :min
-        attr_accessor :max
+    module ConfigConversions
+      # Conversions for encrypt.
+      module Encrypt
       end
     end
   end

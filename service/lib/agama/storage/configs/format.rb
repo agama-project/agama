@@ -23,6 +23,7 @@ module Agama
   module Storage
     module Configs
       class Format
+        # btrfs options like snapshots, subvols?
         attr_accessor :filesystem
         attr_accessor :label
         attr_accessor :mkfs_options

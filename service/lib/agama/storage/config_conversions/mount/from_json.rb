@@ -19,19 +19,35 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/configs/mount"
+
 module Agama
   module Storage
-    # Namespace for all the supported settings to configure storage
-    module Configs
+    module ConfigConversions
+      module Mount
+        # Mount conversion from JSON hash according to schema.
+        class FromJSON
+          # @param mount_json [Hash]
+          def initialize(mount_json)
+            @mount_json = mount_json
+          end
+
+          # Performs the conversion from Hash according to the JSON schema.
+          #
+          # @return [Configs::Mount]
+          def convert
+            Configs::Mount.new.tap do |config|
+              config.path = mount_json[:path]
+              config.options = mount_json[:options] || []
+            end
+          end
+
+        private
+
+          # @return [Hash]
+          attr_reader :mount_json
+        end
+      end
     end
   end
 end
-
-require "agama/storage/configs/boot"
-require "agama/storage/configs/drive"
-require "agama/storage/configs/encrypt"
-require "agama/storage/configs/format"
-require "agama/storage/configs/mount"
-require "agama/storage/configs/partition"
-require "agama/storage/configs/search"
-require "agama/storage/configs/size"

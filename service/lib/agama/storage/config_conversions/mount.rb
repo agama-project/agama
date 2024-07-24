@@ -19,19 +19,14 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/mount/from_json"
+
 module Agama
   module Storage
-    # Namespace for all the supported settings to configure storage
-    module Configs
+    module ConfigConversions
+      # Conversions for mount.
+      module Mount
+      end
     end
   end
 end
-
-require "agama/storage/configs/boot"
-require "agama/storage/configs/drive"
-require "agama/storage/configs/encrypt"
-require "agama/storage/configs/format"
-require "agama/storage/configs/mount"
-require "agama/storage/configs/partition"
-require "agama/storage/configs/search"
-require "agama/storage/configs/size"
