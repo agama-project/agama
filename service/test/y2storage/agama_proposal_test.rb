@@ -44,7 +44,7 @@ describe Y2Storage::AgamaProposal do
       drive.partitions = [
         Agama::Storage::Configs::Partition.new.tap do |part|
           part.mount = Agama::Storage::Configs::Mount.new.tap { |m| m.path = "/" }
-          part.size = Agama::Storage::Configs::SizeRange.new.tap do |size|
+          part.size = Agama::Storage::Configs::Size.new.tap do |size|
             size.min = Y2Storage::DiskSize.GiB(8.5)
             size.max = Y2Storage::DiskSize.unlimited
           end
@@ -72,7 +72,7 @@ describe Y2Storage::AgamaProposal do
 
       context "if no boot devices should be created" do
         before do
-          initial_settings.boot = Agama::Storage::BootSettings.new.tap { |b| b.configure = false }
+          initial_settings.boot = Agama::Storage::Configs::Boot.new.tap { |b| b.configure = false }
         end
 
         it "proposes to create only the root device" do

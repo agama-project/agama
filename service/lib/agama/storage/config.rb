@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -46,21 +46,14 @@ module Agama
         @nfs_mounts = []
       end
 
-      # Creates a new proposal settings object from JSON hash according to schema.
+      # Creates a config from JSON hash according to schema.
       #
-      # @param settings_json [Hash]
-      # @param config [Config]
+      # @param config_json [Hash]
+      # @param product_config [Agama::Config]
       #
-      # @return [Settings]
-      def self.new_from_json(settings_json, config:)
-        Storage::SettingsConversions::FromJSON.new(settings_json).convert
-      end
-
-      # Generates a JSON hash according to schema.
-      #
-      # @return [Hash]
-      def to_json_settings
-        Storage::ProposalSettingsConversions::ToJSON.new(self).convert
+      # @return [Storage::Config]
+      def self.new_from_json(config_json, product_config:)
+        ConfigConversions::FromJSON.new(config_json, product_config: product_config).convert
       end
 
       def boot_device

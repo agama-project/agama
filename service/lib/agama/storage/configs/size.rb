@@ -21,17 +21,11 @@
 
 module Agama
   module Storage
-    # Namespace for all the supported settings to configure storage
     module Configs
+      class Size
+        attr_accessor :min
+        attr_accessor :max
+      end
     end
   end
 end
-
-require "agama/storage/configs/boot"
-require "agama/storage/configs/drive"
-require "agama/storage/configs/encrypt"
-require "agama/storage/configs/format"
-require "agama/storage/configs/mount"
-require "agama/storage/configs/partition"
-require "agama/storage/configs/search"
-require "agama/storage/configs/size"

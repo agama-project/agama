@@ -26,12 +26,17 @@ module Agama
     module Configs
       class Drive
         attr_accessor :search
+
+        # @return [Encrypt]
         attr_accessor :encrypt
+
+        # @return [Format]
         attr_accessor :format
+
+        # @return [Mount]
         attr_accessor :mount
         attr_accessor :ptable_type
         attr_accessor :partitions
-        attr_accessor :search
 
         # @param mount_path [String]
         def initialize

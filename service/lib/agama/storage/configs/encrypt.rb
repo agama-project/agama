@@ -22,7 +22,7 @@
 module Agama
   module Storage
     module Configs
-      class Mount
+      class Encrypt
         attr_accessor :method
         attr_accessor :key
         attr_accessor :pbkd_function

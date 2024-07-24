@@ -25,14 +25,10 @@ module Agama
       class Partition
         attr_accessor :search
         attr_accessor :id
-        attr_accessor :type
         attr_accessor :size
-        attr_accessor :resize
-        attr_accessor :delete
         attr_accessor :encrypt
         attr_accessor :format
         attr_accessor :mount
-        attr_accessor :search
 
         def search_device(devicegraph, parent_sid, used_sids)
           @search ||= default_search
