@@ -26,21 +26,6 @@ import { WithProgress, WithStatus } from "./mixins";
 const SOFTWARE_SERVICE = "org.opensuse.Agama.Software1";
 
 /**
- * Enum for the reasons to select a pattern
- *
- * @readonly
- * @enum { number }
- */
-const SelectedBy = Object.freeze({
-  /** Selected by the user */
-  USER: 0,
-  /** Automatically selected as a dependency of another package */
-  AUTO: 1,
-  /** No selected */
-  NONE: 2,
-});
-
-/**
  * @typedef {object} Product
  * @property {string} id - Product ID (e.g., "Leap")
  * @property {string} name - Product name (e.g., "openSUSE Leap 15.4")
@@ -280,4 +265,4 @@ class ProductClient {
   }
 }
 
-export { ProductClient, SelectedBy, SoftwareClient };
+export { ProductClient, SoftwareClient };
