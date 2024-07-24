@@ -21,8 +21,8 @@
 use agama_lib::{auth::AuthToken, error::ServiceError};
 use clap::Subcommand;
 
-use agama_lib::base_http_client::BaseHTTPClient;
 use crate::error::CliError;
+use agama_lib::base_http_client::BaseHTTPClient;
 use inquire::Password;
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
 use std::io::{self, IsTerminal};
@@ -34,9 +34,7 @@ struct AuthHTTPClient {
 
 impl AuthHTTPClient {
     pub fn load(client: BaseHTTPClient) -> Result<Self, ServiceError> {
-        Ok( Self {
-            api: client,
-        })
+        Ok(Self { api: client })
     }
 
     /// Necessary http request header for authenticate
