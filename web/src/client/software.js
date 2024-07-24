@@ -76,43 +76,6 @@ class SoftwareBaseClient {
   constructor(client) {
     this.client = client;
   }
-
-  /**
-   * Asks the service to reload the repositories metadata
-   *
-   * @return {Promise<Response>}
-   */
-  probe() {
-    return this.client.post("/software/probe", {});
-  }
-
-  /**
-   * @return {Promise<SoftwareConfig>}
-   */
-  config() {
-    return this.client.get("/software/config");
-  }
-
-  /**
-   * @param {Object.<string, boolean>} patterns - An object where the keys are the pattern names
-   *   and the values whether to install them or not.
-   * @return {Promise<Response>}
-   */
-  selectPatterns(patterns) {
-    return this.client.put("/software/config", { patterns });
-  }
-
-  /**
-   * Registers a callback to run when the select product changes.
-   *
-   * @param {(changes: object) => void} handler - Callback function.
-   * @return {import ("./http").RemoveFn} Function to remove the callback.
-   */
-  onSelectedPatternsChanged(handler) {
-    return this.client.onEvent("SoftwareProposalChanged", ({ patterns }) => {
-      handler(patterns);
-    });
-  }
 }
 
 /**
