@@ -58,16 +58,17 @@ FILES=(
   .coveralls.yml
   CHANGES
   changelog
-  LICENSE.txt
-  LICENSE
-  LICENSE-MIT
-  LICENSE.BSD
-  license
-  LICENCE.txt
-  LICENCE
-  LICENCE-MIT
-  LICENCE.BSD
-  licence
+  # keep the package licenses, it's unclear if we can legally delete them...
+  # LICENSE.txt
+  # LICENSE
+  # LICENSE-MIT
+  # LICENSE.BSD
+  # license
+  # LICENCE.txt
+  # LICENCE
+  # LICENCE-MIT
+  # LICENCE.BSD
+  # licence
   AUTHORS
   CONTRIBUTORS
   .yarn-integrity
