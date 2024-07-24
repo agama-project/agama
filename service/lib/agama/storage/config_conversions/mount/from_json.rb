@@ -19,16 +19,34 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/configs/mount"
+
 module Agama
   module Storage
-    module Configs
-      class Encrypt
-        attr_accessor :method
-        attr_accessor :key
-        attr_accessor :pbkd_function
-        attr_accessor :label
-        attr_accessor :cipher
-        attr_accessor :key_size
+    module ConfigConversions
+      module Mount
+        # Mount conversion from JSON hash according to schema.
+        class FromJSON
+          # @param mount_json [Hash]
+          def initialize(mount_json)
+            @mount_json = mount_json
+          end
+
+          # Performs the conversion from Hash according to the JSON schema.
+          #
+          # @return [Configs::Mount]
+          def convert
+            Configs::Mount.new.tap do |config|
+              config.path = mount_json[:path]
+              config.options = mount_json[:options] || []
+            end
+          end
+
+        private
+
+          # @return [Hash]
+          attr_reader :mount_json
+        end
       end
     end
   end

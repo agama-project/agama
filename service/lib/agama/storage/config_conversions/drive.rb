@@ -19,16 +19,13 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/drive/from_json"
+
 module Agama
   module Storage
-    module Configs
-      class Encrypt
-        attr_accessor :method
-        attr_accessor :key
-        attr_accessor :pbkd_function
-        attr_accessor :label
-        attr_accessor :cipher
-        attr_accessor :key_size
+    module ConfigConversions
+      # Conversions for drive.
+      module Drive
       end
     end
   end

@@ -22,6 +22,7 @@
 module Agama
   module Storage
     # Class for configuring the boot settings of the Agama storage proposal.
+    # @todo Move to Settings::Boot ?
     class BootSettings
       # Whether to configure partitions for booting.
       #
