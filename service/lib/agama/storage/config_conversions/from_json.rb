@@ -21,6 +21,7 @@
 
 require "agama/storage/config"
 require "agama/storage/config_conversions/drive/from_json"
+require "agama/storage/configs/boot"
 
 module Agama
   module Storage
@@ -41,9 +42,12 @@ module Agama
         # @return [Storage::Config]
         def convert
           # @todo Raise error if config_json does not match the JSON schema.
-          # boot_settings = boot_conversion
-          Agama::Storage::Config.new.tap do |config|
-            config.drives = convert_drives
+          Storage::Config.new.tap do |config|
+            boot = convert_boot
+            drives = convert_drives
+
+            config.boot = boot if boot
+            config.drives = drives if drives
           end
         end
 
@@ -55,20 +59,21 @@ module Agama
         # @return [Agama::Config]
         attr_reader :product_config
 
-        # def boot_conversion
-        #   boot_json = config_json[:boot]
-        #   return unless boot_json
+        # @return [Configs::Boot, nil]
+        def convert_boot
+          boot_json = config_json[:boot]
+          return unless boot_json
 
-        #   Agama::Storage::BootSettings.new.tap do |boot_settings|
-        #     boot_settings.configure = boot_json[:configure]
-        #     boot_settings.device = boot_json[:device]
-        #   end
-        # end
+          Configs::Boot.new.tap do |config|
+            config.configure = boot_json[:configure]
+            config.device = boot_json[:device]
+          end
+        end
 
-        # @return [Array<Configs::Drive>]
+        # @return [Array<Configs::Drive>, nil]
         def convert_drives
           drives_json = config_json[:drives]
-          return [] unless drives_json
+          return unless drives_json
 
           drives_json.map { |d| convert_drive(d) }
         end
