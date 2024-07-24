@@ -72,7 +72,7 @@ describe Y2Storage::AgamaProposal do
 
       context "if no boot devices should be created" do
         before do
-          initial_settings.boot = Agama::Storage::BootSettings.new.tap { |b| b.configure = false }
+          initial_settings.boot = Agama::Storage::Configs::Boot.new.tap { |b| b.configure = false }
         end
 
         it "proposes to create only the root device" do
