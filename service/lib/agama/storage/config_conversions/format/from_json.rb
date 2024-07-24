@@ -19,8 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/filesystem/from_json"
 require "agama/storage/configs/format"
-require "y2storage/filesystems/type"
 
 module Agama
   module Storage
@@ -29,22 +29,24 @@ module Agama
         # Format conversion from JSON hash according to schema.
         class FromJSON
           # @param format_json [Hash]
-          # @param default [Configs::Format, nil]
-          def initialize(format_json, default: nil)
+          def initialize(format_json)
             @format_json = format_json
-            @default_config = default || Configs::Format.new
           end
 
-          # @todo Add support for Btrfs options (snapshots, subvols).
-          #
           # Performs the conversion from Hash according to the JSON schema.
           #
+          # @param default [Configs::Format, nil]
           # @return [Configs::Format]
-          def convert
-            default_config.dup.tap do |config|
-              config.filesystem = convert_filesystem
-              config.label = format_json[:label]
-              config.mkfs_options = format_json[:mkfsOptions] || []
+          def convert(default = nil)
+            default_config = default.dup || Configs::Format.new
+
+            default_config.tap do |config|
+              label = format_json[:label]
+              mkfs_options = format_json[:mkfsOptions]
+
+              config.filesystem = convert_filesystem(config.filesystem)
+              config.label = label if label
+              config.mkfs_options = mkfs_options if mkfs_options
             end
           end
 
@@ -53,11 +55,10 @@ module Agama
           # @return [Hash]
           attr_reader :format_json
 
-          # @return [Configs::Format]
-          attr_reader :default_config
-
-          def convert_filesystem
-            Y2Storage::Filesystems::Type.find(format_json[:filesystem].to_sym)
+          # @param default [Configs::Filesystem, nil]
+          # @return [Configs::Filesystem]
+          def convert_filesystem(default = nil)
+            Filesystem::FromJSON.new(format_json[:filesystem]).convert(default)
           end
         end
       end

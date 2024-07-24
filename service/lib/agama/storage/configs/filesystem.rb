@@ -22,11 +22,12 @@
 module Agama
   module Storage
     module Configs
-      class Format
-        # @return [Configs::Filesystem]
-        attr_accessor :filesystem
-        attr_accessor :label
-        attr_accessor :mkfs_options
+      class Filesystem
+        # @return [Y2Storage::Filesystems::Type, nil]
+        attr_accessor :type
+
+        # @return [Configs::Btrfs, nil]
+        attr_accessor :btrfs
       end
     end
   end
