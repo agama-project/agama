@@ -55,9 +55,38 @@ describe Y2Storage::AgamaProposal do
   let(:issues_list) { [] }
 
   describe "#propose" do
-    it "does something" do
-      proposal.propose
-      expect(proposal.devices.partitions.size).to eq 2
+    context "when only the root partition is specified" do
+      context "if no configuration about boot devices is specified" do
+        it "proposes to create the root device and the boot-related partition" do
+          proposal.propose
+          partitions = proposal.devices.partitions
+          expect(partitions.size).to eq 2
+          expect(partitions.first.id).to eq Y2Storage::PartitionId::BIOS_BOOT
+          root_part = partitions.last
+          expect(root_part.size).to be > Y2Storage::DiskSize.GiB(49)
+          # root_fs = root_part.filesystem
+          # expect(root_fs.root?).to eq true
+          # expect(root_fs.type.is?(:btrfs)).to eq true
+        end
+      end
+
+      context "if no boot devices should be created" do
+        before do
+          initial_settings.boot = Agama::Storage::BootSettings.new.tap { |b| b.configure = false }
+        end
+
+        it "proposes to create only the root device" do
+          proposal.propose
+          partitions = proposal.devices.partitions
+          expect(partitions.size).to eq 1
+          root_part = partitions.first
+          expect(root_part.id).to eq Y2Storage::PartitionId::LINUX
+          expect(root_part.size).to be > Y2Storage::DiskSize.GiB(49)
+          # root_fs = root_part.filesystem
+          # expect(root_fs.root?).to eq true
+          # expect(root_fs.type.is?(:btrfs)).to eq true
+        end
+      end
     end
   end
 end
