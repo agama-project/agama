@@ -19,7 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/boot_settings"
 require "agama/storage/configs"
 
 module Agama
@@ -28,7 +27,7 @@ module Agama
     class Config
       # Boot settings.
       #
-      # @return [BootSettings]
+      # @return [Configs::Boot]
       attr_accessor :boot
 
       attr_accessor :drives
@@ -39,7 +38,7 @@ module Agama
       attr_accessor :original_graph
 
       def initialize
-        @boot = BootSettings.new
+        @boot = Configs::Boot.new
         @drives = []
         @volume_groups = []
         @md_raids = []

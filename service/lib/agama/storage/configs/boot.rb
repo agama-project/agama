@@ -21,22 +21,24 @@
 
 module Agama
   module Storage
-    # Class for configuring the boot settings of the Agama storage proposal.
-    # @todo Move to Settings::Boot ?
-    class BootSettings
-      # Whether to configure partitions for booting.
-      #
-      # @return [Boolean]
-      attr_accessor :configure
-      alias_method :configure?, :configure
+    module Configs
+      # Boot configuration.
+      class Boot
+        # Whether to configure partitions for booting.
+        #
+        # @return [Boolean]
+        attr_accessor :configure
+        alias_method :configure?, :configure
 
-      # Device to use for booting.
-      #
-      # @return [String, nil] nil means use installation device.
-      attr_accessor :device
+        # Device to use for booting.
+        #
+        # @return [String, nil] if nil, then the proposal decides the booting device, normally the
+        #   device for allocating root.
+        attr_accessor :device
 
-      def initialize
-        @configure = true
+        def initialize
+          @configure = true
+        end
       end
     end
   end
