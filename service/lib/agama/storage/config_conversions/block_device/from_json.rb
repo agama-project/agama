@@ -23,6 +23,7 @@ require "agama/storage/config_conversions/encrypt/from_json"
 require "agama/storage/config_conversions/format/from_json"
 require "agama/storage/config_conversions/mount/from_json"
 require "agama/storage/configs/encrypt"
+require "agama/storage/configs/filesystem"
 require "agama/storage/configs/format"
 require "agama/storage/configs/mount"
 
@@ -80,12 +81,13 @@ module Agama
             return if format_json == false # "format": false
             return if format_json.nil? && mount_json.nil?
 
-            default = default_format_config(mount_json&.dig(:path))
+            default = default_format_config(mount_json&.dig(:path) || "")
             return default unless format_json
 
             # @todo Check whether the given filesystem can be used for the mount point.
+            # @todo Check whether snapshots can be configured and restore to default if needed.
 
-            Format::FromJSON.new(format_json, default: default).convert
+            Format::FromJSON.new(format_json).convert(default)
           end
 
           # @return [Configs::Mount, nil]
@@ -109,17 +111,28 @@ module Agama
             end
           end
 
-          # @todo Recover values from ProductDefinition instead of VolumeTemplatesBuilder.
-          #
           # Default format config from the product definition.
           #
           # @param mount_path [String]
           # @return [Configs::Format]
           def default_format_config(mount_path)
-            volume = volume_builder.for(mount_path || "")
-
             Configs::Format.new.tap do |config|
-              config.filesystem = volume.fs_type
+              config.filesystem = default_filesystem_config(mount_path)
+            end
+          end
+
+          # @todo Recover values from ProductDefinition instead of VolumeTemplatesBuilder.
+          #
+          # Default filesystem config from the product definition.
+          #
+          # @param mount_path [String]
+          # @return [Configs::Filesystem]
+          def default_filesystem_config(mount_path)
+            volume = volume_builder.for(mount_path)
+
+            Configs::Filesystem.new.tap do |config|
+              config.type = volume.fs_type
+              config.btrfs = volume.btrfs
             end
           end
         end
