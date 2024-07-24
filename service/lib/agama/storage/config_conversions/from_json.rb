@@ -21,6 +21,7 @@
 
 require "agama/storage/config"
 require "agama/storage/config_conversions/drive/from_json"
+require "agama/storage/proposal_settings_reader"
 
 module Agama
   module Storage

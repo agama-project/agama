@@ -83,7 +83,7 @@ module Agama
 
           # @param config [Configs::Partition]
           def convert_block_device(config)
-            converter = BlkDevice::FromJSON.new(partition_json,
+            converter = BlockDevice::FromJSON.new(partition_json,
               settings: settings, volume_builder: volume_builder)
 
             converter.convert(config)

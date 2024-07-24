@@ -22,7 +22,7 @@
 module Agama
   module Storage
     module Configs
-      class SizeRange
+      class Size
         attr_accessor :min
         attr_accessor :max
       end
