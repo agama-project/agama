@@ -36,10 +36,10 @@ describe Y2Storage::AgamaProposal do
   end
   let(:initial_settings) do
     Agama::Storage::Config.new.tap do |settings|
-      settings.drives = [drive]
+      settings.drives = [root_drive]
     end
   end
-  let(:drive) do
+  let(:root_drive) do
     Agama::Storage::Configs::Drive.new.tap do |drive|
       drive.partitions = [
         Agama::Storage::Configs::Partition.new.tap do |part|
@@ -57,7 +57,7 @@ describe Y2Storage::AgamaProposal do
   describe "#propose" do
     it "does something" do
       proposal.propose
-      expect(proposal.devices.partitions.size).to eq 1
+      expect(proposal.devices.partitions.size).to eq 2
     end
   end
 end

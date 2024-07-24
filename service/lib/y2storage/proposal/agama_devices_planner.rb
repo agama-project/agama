@@ -17,11 +17,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2storage/storage_manager"
-require "y2storage/planned"
-require "y2storage/disk_size"
-require "y2storage/proposal/planned_processor"
 require "y2storage/proposal/agama_drive_planner"
+require "y2storage/planned"
 
 module Y2Storage
   module Proposal
@@ -56,21 +53,8 @@ module Y2Storage
       # @param devicegraph [Devicegraph]
       # @return [Array<Planned::Device>]
       def initial_planned_devices(devicegraph)
-        settings.drives.flat_map { |d| planned_for_drive(d, devicegraph) }.compact
-      end
-
-      # Modifies the given list of planned devices, adding any planned partition needed for booting
-      # the new target system
-      #
-      # @param devices [Array<Planned::Device>]
-      # @param target [Symbol] see #planned_devices
-      # @param devicegraph [Devicegraph]
-      # @return [Array<Planned::Device>]
-      def add_boot_devices(devices, devicegraph)
-        return unless settings.boot.configure?
-
-        boot = PlannedProcessor.new(devices).boot_devices(:min, devicegraph, settings.boot_device)
-        devices.unshift(*boot)
+        devs = settings.drives.flat_map { |d| planned_for_drive(d, devicegraph) }.compact
+        Planned::DevicesCollection.new(devs)
       end
 
       protected

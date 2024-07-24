@@ -42,7 +42,7 @@ module Y2Storage
   #   proposal.devices              # => Proposed layout
   #
   class AgamaProposal < Proposal::Base
-    # @return [Agama::Storage::Profile]
+    # @return [Agama::Storage::Config]
     attr_reader :settings
 
     # @return [Array<Agama::Issue>] List of found issues
@@ -94,26 +94,17 @@ module Y2Storage
     def propose_devicegraph
       devicegraph = initial_devicegraph.dup
 
-      planner = Proposal::AgamaDevicesPlanner.new(settings, issues_list)
-      @planned_devices = planner.initial_planned_devices(devicegraph)
+      calculate_initial_planned(devicegraph)
       clean_graph(devicegraph)
-      planner.add_boot_devices(@planned_devices, devicegraph)
-      Proposal::PlannedProcessor.new(@planned_devices).remove_shadowed_subvolumes
+      complete_planned(devicegraph)
 
-      result = create_devices(devicegraph, @planned_devices)
+      result = create_devices(devicegraph)
       result.devicegraph
     end
 
-    # Add partition tables
-    #
-    # This method create/change partitions tables according to information
-    # specified in the profile. Disks containing any partition will be ignored.
-    #
-    # The devicegraph which is passed as first argument will be modified.
-    #
-    # @param devicegraph [Devicegraph]                 Starting point
-    def add_partition_tables(devicegraph)
-      # TODO: if needed, will very likely be moved to AgamaDevicesCreator
+    def calculate_initial_planned(devicegraph)
+      planner = Proposal::AgamaDevicesPlanner.new(settings, issues_list)
+      @planned_devices = planner.initial_planned_devices(devicegraph)
     end
 
     # Clean a devicegraph
@@ -121,13 +112,35 @@ module Y2Storage
     # @return [Y2Storage::Devicegraph]
     def clean_graph(devicegraph)
       remove_empty_partition_tables(devicegraph)
-      protect_sids(planned_devices)
-      # NOTE: take into account (partitions on) pre-existing RAIDs?
-      partitions = partitions_for(planned_devices)
-      space_maker.prepare_devicegraph(devicegraph, partitions)
+      protect_sids
+      space_maker.prepare_devicegraph(devicegraph, partitions_for_clean)
     end
 
- 		# Removes partition tables from candidate devices with empty partition table
+    # Modifies the given list of planned devices, removing shadowed subvolumes and
+    # adding any planned partition needed for booting the new target system
+    #
+    # @param devicegraph [Devicegraph]
+    def complete_planned(devicegraph)
+      if settings.boot.configure?
+        @planned_devices = planned_devices.prepend(boot_partitions(devicegraph))
+      end
+
+      planned_devices.remove_shadowed_subvols
+    end
+
+    def boot_partitions(devicegraph)
+      checker = BootRequirementsChecker.new(
+        devicegraph,
+        planned_devices: planned_devices.mountable_devices,
+        boot_disk_name: settings.boot_device
+      )
+      # NOTE: Should we try with :desired first?
+      checker.needed_partitions(:min)
+    rescue BootRequirementsChecker::Error => e
+      raise NotBootableError, e.message
+    end
+
+    # Removes partition tables from candidate devices with empty partition table
     #
     # @note The devicegraph is modified.
     #
@@ -150,36 +163,44 @@ module Y2Storage
 
     # Planned partitions that will hold the given planned devices
     #
+    # TODO:
     # Extracted to a separate method because it's something that may need some extra logic
     # in the future. See the equivalent method at DevicegraphGenerator.
     #
     # @param planned_devices [Array<Planned::Device>] list of planned devices
     # @return [Array<Planned::Partition>]
-    def partitions_for(planned_devices)
-      planned_devices.select { |d| d.is_a?(Planned::Partition) }
+    def partitions_for_clean
+      # NOTE: take into account (partitions on) pre-existing RAIDs?
+      planned_devices.partitions
     end
 
     # Configures SpaceMaker#protected_sids according to the given list of planned devices
-    #
-    # @param devices [Array<Planned::Device]
-    def protect_sids(devices)
-      space_maker.protected_sids = devices.select(&:reuse?).map(&:reuse_sid)
+    def protect_sids
+      space_maker.protected_sids = planned_devices.all.select(&:reuse?).map(&:reuse_sid)
     end
 
     # Creates planned devices on a given devicegraph
     #
-    def create_devices(devicegraph, planned_devices)
+    def create_devices(devicegraph)
       # Almost for sure, this should happen as part of the creation of devices below
       add_partition_tables(devicegraph)
 
-      # We are going to alter the volumes in several ways, so let's be a
-      # good citizen and do it in our own copy
-      planned_devices = planned_devices.map(&:dup)
-
       devices_creator = Proposal::AgamaDevicesCreator.new(devicegraph, issues_list)
       names = settings.drives.map(&:found_device).compact.map(&:name)
-      protect_sids(planned_devices)
+      protect_sids
       result = devices_creator.populated_devicegraph(planned_devices, names, space_maker)
+    end
+
+    # Add partition tables
+    #
+    # This method create/change partitions tables according to information
+    # specified in the profile. Disks containing any partition will be ignored.
+    #
+    # The devicegraph which is passed as first argument will be modified.
+    #
+    # @param devicegraph [Devicegraph]                 Starting point
+    def add_partition_tables(devicegraph)
+      # TODO: if needed, will very likely be moved to AgamaDevicesCreator
     end
   end
 end

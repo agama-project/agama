@@ -92,6 +92,7 @@ module Y2Storage
       def configure_size(planned, settings)
         planned.min_size = settings.min
         planned.max_size = settings.max
+        planned.weight = 100
       end
 
       # @param planned [Planned::Disk]

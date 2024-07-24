@@ -105,14 +105,6 @@ module Y2Storage
       #   planned devices have been allocated
       def process_devices
         process_existing_partitionables
-        # Process planned disk like devices (Xen virtual partitions and full disks)
-        process_disk_like_devs
-        # TODO:
-        # process_mds
-        # process_vgs
-        # process_btrfs_filesystems
-        # process_nfs_filesystems
-
         creator_result
       end
 
@@ -164,7 +156,7 @@ module Y2Storage
       def partitions_for_existing(planned_devices)
         # Maybe in the future this can include partitions on top of existing MDs
         # TODO: simplistic implementation
-        planned_devices.select { |d| d.is_a?(Planned::Partition) && !d.reuse? }
+        planned_devices.partitions.reject(&:reuse?)
       end
 
       # Formats and/or mounts the disk like block devices (Xen virtual partitions and full disks)
