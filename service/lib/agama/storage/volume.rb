@@ -22,7 +22,7 @@
 require "forwardable"
 require "json"
 require "y2storage/disk_size"
-require "agama/storage/btrfs_settings"
+require "agama/storage/configs/btrfs"
 require "agama/storage/volume_conversions"
 require "agama/storage/volume_location"
 require "agama/storage/volume_outline"
@@ -52,7 +52,7 @@ module Agama
       #
       # Only relevant if #fs_type is Btrfs
       #
-      # @return [BtrfsSettings]
+      # @return [Configs::Btrfs]
       attr_accessor :btrfs
 
       # @return [Array<String>]
@@ -91,7 +91,7 @@ module Agama
         @auto_size = false
         @min_size = Y2Storage::DiskSize.zero
         @max_size = Y2Storage::DiskSize.unlimited
-        @btrfs = BtrfsSettings.new
+        @btrfs = Configs::Btrfs.new
         @outline = VolumeOutline.new
         @location = VolumeLocation.new
       end

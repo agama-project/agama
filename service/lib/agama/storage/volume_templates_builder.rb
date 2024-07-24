@@ -21,9 +21,9 @@
 
 require "pathname"
 require "y2storage"
+require "agama/storage/configs/btrfs"
 require "agama/storage/volume"
 require "agama/storage/volume_outline"
-require "agama/storage/btrfs_settings"
 
 module Agama
   module Storage
@@ -102,7 +102,7 @@ module Agama
       # Temporary method to avoid crashes if there is no default template
       def empty_data
         {
-          btrfs:         BtrfsSettings.new,
+          btrfs:         Configs::Btrfs.new,
           outline:       VolumeOutline.new,
           mount_options: [],
           filesystem:    Y2Storage::Filesystems::Type::EXT4
@@ -130,7 +130,7 @@ module Agama
 
       def btrfs(data)
         btrfs_data = fetch(data, "btrfs", {})
-        BtrfsSettings.new.tap do |btrfs|
+        Configs::Btrfs.new.tap do |btrfs|
           btrfs.snapshots = fetch(btrfs_data, "snapshots", false)
           btrfs.read_only = fetch(btrfs_data, "read_only", false)
           btrfs.default_subvolume = fetch(btrfs_data, "default_subvolume", "")
