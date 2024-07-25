@@ -67,7 +67,7 @@ module Agama
             Y2Storage::PartitionTables::Type.find(value)
           end
 
-          # @return [Array<Settings::Partition>]
+          # @return [Array<Configs::Partition>]
           def convert_partitions
             partitions_json = partitionable_json[:partitions]
             return [] unless partitions_json
@@ -76,7 +76,7 @@ module Agama
           end
 
           # @param partition_json [Hash]
-          # @return [Settings::Partition]
+          # @return [Configs::Partition]
           def convert_partition(partition_json)
             Partition::FromJSON.new(partition_json,
               settings: settings, volume_builder: volume_builder).convert
