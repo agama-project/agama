@@ -28,6 +28,27 @@ module Agama
   module Storage
     module ConfigConversions
       # Config conversion from JSON hash according to schema.
+      #
+      # TODO: The approach for generating a Config from JSON could be improved:
+      #   * All the FromJSON classes receive only a JSON and an optional default config to start
+      #     converting from it.
+      #   * There should be a "config generator" class which knows the ProductDefinition and creates
+      #     config objects calling to the proper FromJSON classes, passing the default config for
+      #     each case (drive, partition, etc).
+      #
+      #   For example:
+      #
+      #   def generate_drive(drive_json)
+      #     default = default_drive(drive_json.dig(:filesystem, :path))
+      #     drive = Drive::FromJson.new(drive_json).convert(default)
+      #     drive.partitions = drive_json[:partitions].map do |partition_json|
+      #       default = default_partition(partition_json.dig(:fileystem, :path))
+      #       Partition::FromJSON.new(partition_json).convert(default)
+      #     end
+      #     drive
+      #   end
+      #
+      #   This improvement could be done at the time of introducing the ProductDefinition class.
       class FromJSON
         # @todo Replace product_config param by a ProductDefinition.
         #
