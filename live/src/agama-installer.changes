@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 25 13:18:38 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Increase the available disk space in the Live system to allow
+  installing additional development or debugging tools
+
+-------------------------------------------------------------------
 Fri Jul 19 09:43:06 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add a new profile for SLE-based distributions
