@@ -13,46 +13,36 @@
         "partitions": [
           {
             "search": { "name": "/dev/vda2" },
-            "format": {
-              "filesystem": {
-                "btrfs": {
-                  "snapshots": true
-                }
-              }
-            },
-            "mount": {
+            "filesystem": {
+              "reuse": false,
+              "type": "btrfs",
+              "btrfsOptions": {
+                "snapshots": true
+              },
               "path": "/",
-              "options": ["ro"]
+              "mountOptions": ["ro"]
             }
           },
           {
-            "create": {
-              "id": "linux",
-              "size": "10 GiB"
-            },
-            "encrypt": {
-              "password": "notsecret",
+            "id": "linux",
+            "size": "10 GiB",
+            "encryption": {
+              "key": "notsecret",
               "method": "luks2"
             },
-            "format": {
-              "filesystem": "xfs"
-            },
-            "mount": {
+            "filesystem": {
+              "type": "xfs",
               "path": "/home"
             }
           },
           {
-            "create": {
-              "size": "2 GiB"
-            },
-            "encrypt": {
-              "password": "notsecret",
+            "size": "2 GiB",
+            "encryption": {
+              "key": "notsecret",
               "method": "luks2"
             },
-            "format": {
-              "filesystem": "swap"
-            },
-            "mount": {
+            "filesystem": {
+              "type": "swap",
               "path": "swap"
             }
           }
@@ -62,14 +52,12 @@
         "search": {
           "name": "/dev/vdb"
         },
-        "encrypt": {
-          "password": "notsecret",
+        "encryption": {
+          "key": "notsecret",
           "method": "luks2"
         },
-        "format": {
-          "filesystem": "ext4"
-        },
-        "mount": {
+        "filesystem": {
+          "type": "ext4",
           "path": "/var/log"
         }
       }
