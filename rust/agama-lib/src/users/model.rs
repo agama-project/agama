@@ -18,4 +18,3 @@ pub struct RootPatchSettings {
     /// specify if patched password is provided in encrypted form
     pub password_encrypted: Option<bool>,
 }
-

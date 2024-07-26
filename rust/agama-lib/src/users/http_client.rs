@@ -1,7 +1,6 @@
-//use reqwest::StatusCode;
 use super::client::FirstUser;
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
 use crate::users::model::{RootConfig, RootPatchSettings};
+use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
 
 pub struct UsersHttpClient {
     client: BaseHTTPClient,
@@ -48,7 +47,7 @@ impl UsersHttpClient {
         let rps = RootPatchSettings {
             sshkey: None,
             password: Some(value.to_owned()),
-            password_encrypted: Some(encrypted)
+            password_encrypted: Some(encrypted),
         };
         // TODO various errors
         // current backend always returns 0
@@ -67,7 +66,7 @@ impl UsersHttpClient {
         let rps = RootPatchSettings {
             sshkey: Some(value.to_owned()),
             password: None,
-            password_encrypted: None
+            password_encrypted: None,
         };
         // TODO various errors
         // current backend always returns 0

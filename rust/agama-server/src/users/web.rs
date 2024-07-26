@@ -16,16 +16,10 @@ use agama_lib::{
     users::{
         model::{RootConfig, RootPatchSettings},
         proxies::Users1Proxy,
-        FirstUser, UsersClient
+        FirstUser, UsersClient,
     },
 };
-use axum::{
-    extract::State,
-    http::StatusCode,
-    response::IntoResponse,
-    routing::get,
-    Json, Router,
-};
+use axum::{extract::State, http::StatusCode, response::IntoResponse, routing::get, Json, Router};
 //use reqwest;
 use tokio_stream::{Stream, StreamExt};
 

@@ -1,6 +1,5 @@
 use super::{FirstUser, FirstUserSettings, RootUserSettings, UserSettings, UsersHttpClient};
 use crate::error::ServiceError;
-use reqwest;
 
 /// Loads and stores the users settings from/to the D-Bus service.
 pub struct UsersStore {
@@ -8,7 +7,7 @@ pub struct UsersStore {
 }
 
 impl UsersStore {
-    pub async fn new(_client: reqwest::Client) -> Result<Self, ServiceError> {
+    pub async fn new() -> Result<Self, ServiceError> {
         Ok(Self {
             users_client: UsersHttpClient::new().await?,
         })

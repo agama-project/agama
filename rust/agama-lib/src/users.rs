@@ -2,8 +2,8 @@
 
 mod client;
 mod http_client;
-pub mod proxies;
 pub mod model;
+pub mod proxies;
 mod settings;
 mod store;
 
