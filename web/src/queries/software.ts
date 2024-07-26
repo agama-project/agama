@@ -119,17 +119,17 @@ const useConfigMutation = () => {
  */
 const useProduct = (
   options?: QueryHookOptions,
-): { products: Product[]; selectedProduct: Product | undefined } => {
+): { products?: Product[]; selectedProduct?: Product } => {
   const func = options?.suspense ? useSuspenseQueries : useQueries;
-  const [{ data: selected }, { data: products }] = func({
+  const [
+    { data: selected, isPending: isSelectedPending },
+    { data: products, isPending: isProductsPending },
+  ] = func({
     queries: [selectedProductQuery(), productsQuery()],
   });
 
-  if (!products) {
-    return {
-      products: [],
-      selectedProduct: undefined,
-    };
+  if (isSelectedPending || isProductsPending) {
+    return {};
   }
 
   const selectedProduct = products.find((p: Product) => p.id === selected);
