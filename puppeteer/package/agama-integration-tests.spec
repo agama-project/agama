@@ -47,6 +47,12 @@ outside.
 rm -f package-lock.json
 local-npm-registry %{_sourcedir} install --omit=optional --with=dev --legacy-peer-deps || ( find ~/.npm/_logs -name '*-debug.log' -print0 | xargs -0 cat; false)
 
+# node_modules cleanup
+%{_builddir}/agama/node-prune.sh
+
+# extra cleanup for the Puppeteer NPM packages
+%{_builddir}/agama/node-puppeteer-prune.sh
+
 %install
 install -D -d -m 0755 %{buildroot}%{_datadir}/agama/integration-tests
 cp -aR node_modules %{buildroot}%{_datadir}/agama/integration-tests

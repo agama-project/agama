@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jul 22 15:27:44 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix `agama questions list` to list only unaswered questions and
+  improve its performance
+  (gh#openSUSE/agama#1476)
+
+-------------------------------------------------------------------
 Wed Jul 17 11:15:33 UTC 2024 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Add dns search domains and ignore-auto-dns to network settings

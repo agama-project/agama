@@ -21,5 +21,6 @@
 
 export { default as QuestionActions } from "./QuestionActions";
 export { default as GenericQuestion } from "./GenericQuestion";
+export { default as QuestionWithPassword } from "./QuestionWithPassword";
 export { default as LuksActivationQuestion } from "./LuksActivationQuestion";
 export { default as Questions } from "./Questions";

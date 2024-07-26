@@ -7,6 +7,7 @@
 
 use crate::{error::Error, web::Event};
 use agama_lib::{
+    dbus::{extract_id_from_path, get_property},
     error::ServiceError,
     proxies::{GenericQuestionProxy, QuestionWithPasswordProxy, Questions1Proxy},
     questions::model::{Answer, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
@@ -19,13 +20,12 @@ use axum::{
     routing::{delete, get},
     Json, Router,
 };
-use regex::Regex;
 use std::{collections::HashMap, pin::Pin};
 use tokio_stream::{Stream, StreamExt};
 use zbus::{
     fdo::ObjectManagerProxy,
     names::{InterfaceName, OwnedInterfaceName},
-    zvariant::{ObjectPath, OwnedObjectPath},
+    zvariant::{ObjectPath, OwnedObjectPath, OwnedValue},
 };
 
 // TODO: move to lib or maybe not and just have in lib client for http API?
@@ -34,6 +34,8 @@ struct QuestionsClient<'a> {
     connection: zbus::Connection,
     objects_proxy: ObjectManagerProxy<'a>,
     questions_proxy: Questions1Proxy<'a>,
+    generic_interface: OwnedInterfaceName,
+    with_password_interface: OwnedInterfaceName,
 }
 
 impl<'a> QuestionsClient<'a> {
@@ -48,6 +50,14 @@ impl<'a> QuestionsClient<'a> {
                 .destination("org.opensuse.Agama1")?
                 .build()
                 .await?,
+            generic_interface: InterfaceName::from_str_unchecked(
+                "org.opensuse.Agama1.Questions.Generic",
+            )
+            .into(),
+            with_password_interface: InterfaceName::from_str_unchecked(
+                "org.opensuse.Agama1.Questions.WithPassword",
+            )
+            .into(),
         })
     }
 
@@ -61,6 +71,7 @@ impl<'a> QuestionsClient<'a> {
             .map(|(k, v)| (k.as_str(), v.as_str()))
             .collect();
         let path = if question.with_password.is_some() {
+            tracing::info!("creating a question with password");
             self.questions_proxy
                 .new_with_password(
                     &generic.class,
@@ -71,6 +82,7 @@ impl<'a> QuestionsClient<'a> {
                 )
                 .await?
         } else {
+            tracing::info!("creating a generic question");
             self.questions_proxy
                 .new_question(
                     &generic.class,
@@ -82,14 +94,9 @@ impl<'a> QuestionsClient<'a> {
                 .await?
         };
         let mut res = question.clone();
-        // we are sure that regexp is correct, so use unwrap
-        let id_matcher = Regex::new(r"/(?<id>\d+)$").unwrap();
-        let Some(id_cap) = id_matcher.captures(path.as_str()) else {
-            let msg = format!("Failed to get ID for new question: {}", path.as_str()).to_string();
-            return Err(ServiceError::UnsuccessfulAction(msg));
-        }; // TODO: better error if path does not contain id
-        res.generic.id = id_cap["id"].parse::<u32>().unwrap();
-        Ok(question)
+        res.generic.id = Some(extract_id_from_path(&path)?);
+        tracing::info!("new question gets id {:?}", res.generic.id);
+        Ok(res)
     }
 
     pub async fn questions(&self) -> Result<Vec<Question>, ServiceError> {
@@ -99,50 +106,42 @@ impl<'a> QuestionsClient<'a> {
             .await
             .context("failed to get managed object with Object Manager")?;
         let mut result: Vec<Question> = Vec::with_capacity(objects.len());
-        let password_interface = OwnedInterfaceName::from(
-            InterfaceName::from_static_str("org.opensuse.Agama1.Questions.WithPassword")
-                .context("Failed to create interface name for question with password")?,
-        );
-        for (path, interfaces_hash) in objects.iter() {
-            if interfaces_hash.contains_key(&password_interface) {
-                result.push(self.build_question_with_password(path).await?)
-            } else {
-                result.push(self.build_generic_question(path).await?)
+
+        for (_path, interfaces_hash) in objects.iter() {
+            let generic_properties = interfaces_hash
+                .get(&self.generic_interface)
+                .context("Failed to create interface name for generic question")?;
+            // skip if question is already answered
+            let answer: String = get_property(generic_properties, "Answer")?;
+            if !answer.is_empty() {
+                continue;
             }
+            let mut question = self.build_generic_question(generic_properties)?;
+
+            if interfaces_hash.contains_key(&self.with_password_interface) {
+                question.with_password = Some(QuestionWithPassword {});
+            }
+
+            result.push(question);
         }
         Ok(result)
     }
 
-    async fn build_generic_question(
+    fn build_generic_question(
         &self,
-        path: &OwnedObjectPath,
+        properties: &HashMap<String, OwnedValue>,
     ) -> Result<Question, ServiceError> {
-        let dbus_question = GenericQuestionProxy::builder(&self.connection)
-            .path(path)?
-            .cache_properties(zbus::CacheProperties::No)
-            .build()
-            .await?;
         let result = Question {
             generic: GenericQuestion {
-                id: dbus_question.id().await?,
-                class: dbus_question.class().await?,
-                text: dbus_question.text().await?,
-                options: dbus_question.options().await?,
-                default_option: dbus_question.default_option().await?,
-                data: dbus_question.data().await?,
+                id: Some(get_property(properties, "Id")?),
+                class: get_property(properties, "Class")?,
+                text: get_property(properties, "Text")?,
+                options: get_property(properties, "Options")?,
+                default_option: get_property(properties, "DefaultOption")?,
+                data: get_property(properties, "Data")?,
             },
             with_password: None,
         };
-
-        Ok(result)
-    }
-
-    async fn build_question_with_password(
-        &self,
-        path: &OwnedObjectPath,
-    ) -> Result<Question, ServiceError> {
-        let mut result = self.build_generic_question(path).await?;
-        result.with_password = Some(QuestionWithPassword {});
 
         Ok(result)
     }
@@ -164,24 +163,29 @@ impl<'a> QuestionsClient<'a> {
             ObjectPath::try_from(format!("/org/opensuse/Agama1/Questions/{}", id))
                 .context("Failed to create dbus path")?,
         );
+        let objects = self.objects_proxy.get_managed_objects().await?;
+        let password_interface = OwnedInterfaceName::from(
+            InterfaceName::from_static_str("org.opensuse.Agama1.Questions.WithPassword")
+                .context("Failed to create interface name for question with password")?,
+        );
         let mut result = Answer::default();
-        let dbus_password_res = QuestionWithPasswordProxy::builder(&self.connection)
-            .path(&question_path)?
-            .cache_properties(zbus::CacheProperties::No)
-            .build()
-            .await;
-        if let Ok(dbus_password) = dbus_password_res {
+        let question = objects
+            .get(&question_path)
+            .ok_or(ServiceError::QuestionNotExist(id))?;
+
+        if let Some(password_iface) = question.get(&password_interface) {
             result.with_password = Some(PasswordAnswer {
-                password: dbus_password.password().await?,
+                password: get_property(password_iface, "Password")?,
             });
         }
-
-        let dbus_generic = GenericQuestionProxy::builder(&self.connection)
-            .path(&question_path)?
-            .cache_properties(zbus::CacheProperties::No)
-            .build()
-            .await?;
-        let answer = dbus_generic.answer().await?;
+        let generic_interface = OwnedInterfaceName::from(
+            InterfaceName::from_static_str("org.opensuse.Agama1.Questions.Generic")
+                .context("Failed to create interface name for generic question")?,
+        );
+        let generic_iface = question
+            .get(&generic_interface)
+            .context("Question does not have generic interface")?;
+        let answer: String = get_property(generic_iface, "Answer")?;
         if answer.is_empty() {
             Ok(None)
         } else {

@@ -19,6 +19,12 @@ MOCHA_OPTIONS=(--bail --slow 10000)
 
 if [ -e "$MYDIR/../.git/" ]; then
   npm install --omit=optional
+
+  # do the same node_modules cleanup as in the RPM package to have the very same
+  # environment and have consistent results
+  "$MYDIR/node-prune.sh"
+  "$MYDIR/node-puppeteer-prune.sh"
+  
   npx mocha "${MOCHA_OPTIONS[@]}" "$@"
 else
   # set the default load path
