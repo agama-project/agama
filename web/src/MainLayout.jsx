@@ -102,7 +102,7 @@ const ChangeProductButton = () => {
 
 const Sidebar = () => {
   // TODO: Improve this and/or extract the NavItem to a wrapper component.
-  const links = rootRoutes.map((r) => {
+  const links = rootRoutes().map((r) => {
     if (!r.handle || r.handle.hidden) return null;
 
     // eslint-disable-next-line agama-i18n/string-literals

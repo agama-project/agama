@@ -41,7 +41,7 @@ const PATHS = {
   overview: "/overview",
 };
 
-const rootRoutes = [
+const rootRoutes = () => [
   {
     path: "/overview",
     element: <OverviewPage />,
@@ -54,7 +54,7 @@ const rootRoutes = [
   usersRoutes(),
 ];
 
-const protectedRoutes = [
+const protectedRoutes = () => [
   {
     path: PATHS.root,
     element: <App />,
@@ -66,7 +66,7 @@ const protectedRoutes = [
             index: true,
             element: <OverviewPage />,
           },
-          ...rootRoutes,
+          ...rootRoutes(),
         ],
       },
       {
@@ -77,25 +77,24 @@ const protectedRoutes = [
   },
 ];
 
-const routes = [
-  {
-    path: PATHS.login,
-    exact: true,
-    element: <SimpleLayout />,
-    children: [
-      {
-        index: true,
-        element: <LoginPage />,
-      },
-    ],
-  },
-  {
-    path: PATHS.root,
-    element: <Protected />,
-    children: [...protectedRoutes],
-  },
-];
-
-const router = createHashRouter(routes);
+const router = () =>
+  createHashRouter([
+    {
+      path: PATHS.login,
+      exact: true,
+      element: <SimpleLayout />,
+      children: [
+        {
+          index: true,
+          element: <LoginPage />,
+        },
+      ],
+    },
+    {
+      path: PATHS.root,
+      element: <Protected />,
+      children: [...protectedRoutes()],
+    },
+  ]);
 
 export { router, rootRoutes, PATHS };

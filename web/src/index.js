@@ -49,6 +49,6 @@ const root = createRoot(container);
 
 root.render(
   <RootProviders>
-    <RouterProvider router={router} />
+    <RouterProvider router={router()} />
   </RootProviders>,
 );
