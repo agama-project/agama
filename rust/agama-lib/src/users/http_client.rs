@@ -19,22 +19,14 @@ impl UsersHttpClient {
         self.client.get("/users/first").await
     }
 
-
     /// Set the configuration for the first user
-    pub async fn set_first_user(
-        &self,
-        first_user: &FirstUser,
-    ) -> Result<(bool, Vec<String>), ServiceError> {
-        let result: Result<Vec<String>, ServiceError> = self.client.put("/users/first", first_user).await;
+    pub async fn set_first_user(&self, first_user: &FirstUser) -> Result<(), ServiceError> {
+        let result = self.client.put_void("/users/first", first_user).await;
         if let Err(ServiceError::BackendError(422, ref issues_s)) = result {
-            // way to go:
-            // deserialize json from string
-            // and use (void) put
-            println!("ISSUUUS {}", issues_s);
+            let issues: Vec<String> = serde_json::from_str(issues_s)?;
+            return Err(ServiceError::WrongUser(issues));
         }
-
-        let issues = result?;
-        Ok((issues.is_empty(), issues))
+        result
     }
 
     async fn root_config(&self) -> Result<RootConfig, ServiceError> {

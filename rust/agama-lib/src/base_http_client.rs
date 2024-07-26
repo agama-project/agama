@@ -149,6 +149,17 @@ impl BaseHTTPClient {
         }
     }
 
+    pub async fn put_void(&self, path: &str, object: &impl Serialize) -> Result<(), ServiceError> {
+        let response = self
+            .request_response(reqwest::Method::PUT, path, object)
+            .await?;
+        if response.status().is_success() {
+            Ok(())
+        } else {
+            Err(self.build_backend_error(response).await)
+        }
+    }
+
     /// FIXME redoc
     /// post object to given path and returns server response. Reports error only if failed to send
     /// request, but if server returns e.g. 500, it will be in Ok result.

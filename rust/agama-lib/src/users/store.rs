@@ -53,10 +53,7 @@ impl UsersStore {
             password: settings.password.clone().unwrap_or_default(),
             ..Default::default()
         };
-        let (success, issues) = self.users_client.set_first_user(&first_user).await?;
-        if !success {
-            return Err(ServiceError::WrongUser(issues));
-        }
+        self.users_client.set_first_user(&first_user).await?;
         Ok(())
     }
 
