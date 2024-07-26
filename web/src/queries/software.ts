@@ -114,10 +114,6 @@ const useConfigMutation = () => {
   return useMutation(query);
 };
 
-type QueryHookOptions = {
-  suspense: boolean;
-};
-
 /**
  * Returns available products and selected one, if any
  */

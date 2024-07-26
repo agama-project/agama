@@ -23,5 +23,5 @@
  * Typical options for our queries hooks.
  */
 type QueryHookOptions = {
-  suspense: boolean;
+  suspense?: boolean;
 };
