@@ -2,11 +2,11 @@ use super::client::FirstUser;
 use crate::users::model::{RootConfig, RootPatchSettings};
 use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
 
-pub struct UsersHttpClient {
+pub struct UsersHTTPClient {
     client: BaseHTTPClient,
 }
 
-impl UsersHttpClient {
+impl UsersHTTPClient {
     pub async fn new() -> Result<Self, ServiceError> {
         Ok(Self {
             client: BaseHTTPClient::new()?,

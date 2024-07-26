@@ -1,15 +1,15 @@
-use super::{FirstUser, FirstUserSettings, RootUserSettings, UserSettings, UsersHttpClient};
+use super::{FirstUser, FirstUserSettings, RootUserSettings, UserSettings, UsersHTTPClient};
 use crate::error::ServiceError;
 
 /// Loads and stores the users settings from/to the D-Bus service.
 pub struct UsersStore {
-    users_client: UsersHttpClient,
+    users_client: UsersHTTPClient,
 }
 
 impl UsersStore {
     pub async fn new() -> Result<Self, ServiceError> {
         Ok(Self {
-            users_client: UsersHttpClient::new().await?,
+            users_client: UsersHTTPClient::new().await?,
         })
     }
 
