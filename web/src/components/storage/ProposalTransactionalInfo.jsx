@@ -38,7 +38,7 @@ import { isTransactionalSystem } from "~/components/storage/utils";
  * @param {ProposalSettings} props.settings - Settings used for calculating a proposal.
  */
 export default function ProposalTransactionalInfo({ settings }) {
-  const { selectedProduct } = useProduct();
+  const { selectedProduct } = useProduct({ suspense: true });
 
   if (!isTransactionalSystem(settings?.volumes)) return;
 

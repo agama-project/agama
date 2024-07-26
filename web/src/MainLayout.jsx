@@ -47,7 +47,7 @@ import { rootRoutes } from "~/router";
 import { useProduct } from "./queries/software";
 
 const Header = () => {
-  const { selectedProduct } = useProduct();
+  const { selectedProduct } = useProduct({ suspense: true });
   // NOTE: Agama is a name, do not translate
   const title = selectedProduct?.name || _("Agama");
 
@@ -84,7 +84,7 @@ const Header = () => {
 
 const ChangeProductButton = () => {
   const navigate = useNavigate();
-  const { products } = useProduct();
+  const { products } = useProduct({ suspense: true });
 
   if (!products.length) return null;
 

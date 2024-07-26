@@ -22,6 +22,7 @@
 import React from "react";
 import {
   useMutation,
+  useQueries,
   useQueryClient,
   useSuspenseQueries,
   useSuspenseQuery,
@@ -113,13 +114,27 @@ const useConfigMutation = () => {
   return useMutation(query);
 };
 
+type QueryHookOptions = {
+  suspense: boolean;
+};
+
 /**
  * Returns available products and selected one, if any
  */
-const useProduct = (): { products: Product[]; selectedProduct: Product | undefined } => {
-  const [{ data: selected }, { data: products }] = useSuspenseQueries({
+const useProduct = (
+  options?: QueryHookOptions,
+): { products: Product[]; selectedProduct: Product | undefined } => {
+  const func = options?.suspense ? useSuspenseQueries : useQueries;
+  const [{ data: selected }, { data: products }] = func({
     queries: [selectedProductQuery(), productsQuery()],
   });
+
+  if (!products) {
+    return {
+      products: [],
+      selectedProduct: undefined,
+    };
+  }
 
   const selectedProduct = products.find((p: Product) => p.id === selected);
   return {

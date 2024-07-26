@@ -33,7 +33,7 @@ const Label = ({ children }) => (
 );
 
 function ProductSelectionPage() {
-  const { products, selectedProduct } = useProduct();
+  const { products, selectedProduct } = useProduct({ suspense: true });
   const setConfig = useConfigMutation();
   const [nextProduct, setNextProduct] = useState(selectedProduct);
   const [isLoading, setIsLoading] = useState(false);
