@@ -54,13 +54,13 @@ impl BaseHTTPClient {
     /// Arguments:
     ///
     /// * `path`: path relative to HTTP API like `/questions`
-    pub async fn get<T: DeserializeOwned + std::fmt::Debug>(&self, path: &str) -> Result<T, ServiceError> {
+    pub async fn get<T>(&self, path: &str) -> Result<T, ServiceError>
+    where
+        T: DeserializeOwned,
+    {
         let response = self.get_response(path).await?;
-        println!("GET response: {:?}", response);
         if response.status().is_success() {
-            let ret = response.json::<T>().await.map_err(|e| e.into());
-            println!("GET value: {:#?}", ret);
-            ret
+            response.json::<T>().await.map_err(|e| e.into())
         } else {
             Err(self.build_backend_error(response).await)
         }
@@ -93,7 +93,9 @@ impl BaseHTTPClient {
     /// * `path`: path relative to HTTP API like `/questions`
     /// * `object`: Object that can be serialiazed to JSON as body of request.
     pub async fn post(&self, path: &str, object: &impl Serialize) -> Result<(), ServiceError> {
-        let response = self.post_response(path, object).await?;
+        let response = self
+            .request_response(reqwest::Method::POST, path, object)
+            .await?;
         if response.status().is_success() {
             Ok(())
         } else {
@@ -115,12 +117,28 @@ impl BaseHTTPClient {
         path: &str,
         object: &impl Serialize,
     ) -> Result<Response, ServiceError> {
-        self.client
-            .post(self.url(path))
-            .json(object)
-            .send()
+        self.request_response(reqwest::Method::POST, path, object)
             .await
-            .map_err(|e| e.into())
+    }
+
+    /// put object to given path, deserializes the response
+    ///
+    /// Arguments:
+    ///
+    /// * `path`: path relative to HTTP API like `/users/first`
+    /// * `object`: Object that can be serialiazed to JSON as body of request.
+    pub async fn put<T>(&self, path: &str, object: &impl Serialize) -> Result<T, ServiceError>
+    where
+        T: DeserializeOwned,
+    {
+        let response = self
+            .request_response(reqwest::Method::PUT, path, object)
+            .await?;
+        if response.status().is_success() {
+            response.json::<T>().await.map_err(|e| e.into())
+        } else {
+            Err(self.build_backend_error(response).await)
+        }
     }
 
     /// put object to given path and report error if response is not success
@@ -129,26 +147,6 @@ impl BaseHTTPClient {
     ///
     /// * `path`: path relative to HTTP API like `/users/first`
     /// * `object`: Object that can be serialiazed to JSON as body of request.
-    pub async fn put<T>(&self, path: &str, object: &impl Serialize) -> Result<T, ServiceError>
-    where
-        T: DeserializeOwned + std::fmt::Debug,
-    {
-        let response = self.request_response(reqwest::Method::PUT, path, object).await?;
-        if response.status().is_success() {
-            if let Some(clen) = response.content_length() {
-                if clen == 0 {
-                    println!("empty body");
-                }
-            }
-
-            let ret = response.json::<T>().await.map_err(|e| e.into());
-            println!("PUT returns: {:#?}", ret);
-            ret
-        } else {
-            Err(self.build_backend_error(response).await)
-        }
-    }
-
     pub async fn put_void(&self, path: &str, object: &impl Serialize) -> Result<(), ServiceError> {
         let response = self
             .request_response(reqwest::Method::PUT, path, object)
@@ -160,14 +158,15 @@ impl BaseHTTPClient {
         }
     }
 
-    /// FIXME redoc
-    /// post object to given path and returns server response. Reports error only if failed to send
+    /// POST/PUT/PATCH an object to a given path and returns server response.
+    /// Reports Err only if failed to send
     /// request, but if server returns e.g. 500, it will be in Ok result.
     ///
     /// In general unless specific response handling is needed, simple post should be used.
     ///
     /// Arguments:
     ///
+    /// * `method`: for example `reqwest::Method::PUT`
     /// * `path`: path relative to HTTP API like `/questions`
     /// * `object`: Object that can be serialiazed to JSON as body of request.
     pub async fn request_response(
@@ -191,36 +190,15 @@ impl BaseHTTPClient {
     /// * `path`: path relative to HTTP API like `/users/first`
     /// * `object`: Object that can be serialiazed to JSON as body of request.
     pub async fn patch(&self, path: &str, object: &impl Serialize) -> Result<(), ServiceError> {
-        let response = self.patch_response(path, object).await?;
+        let response = self
+            .request_response(reqwest::Method::PATCH, path, object)
+            .await?;
         if response.status().is_success() {
             Ok(())
         } else {
             Err(self.build_backend_error(response).await)
         }
     }
-
-    /// patch object at given path and returns server response. Reports error only if failed to send
-    /// request, but if server returns e.g. 500, it will be in Ok result.
-    ///
-    /// In general unless specific response handling is needed, simple post should be used.
-    ///
-    /// Arguments:
-    ///
-    /// * `path`: path relative to HTTP API like `/questions`
-    /// * `object`: Object that can be serialiazed to JSON as body of request.
-    pub async fn patch_response(
-        &self,
-        path: &str,
-        object: &impl Serialize,
-    ) -> Result<Response, ServiceError> {
-        self.client
-            .patch(self.url(path))
-            .json(object)
-            .send()
-            .await
-            .map_err(|e| e.into())
-    }
-
     /// delete call on given path and report error if failed
     ///
     /// Arguments:
