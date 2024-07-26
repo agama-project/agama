@@ -25,6 +25,7 @@ import DeviceSelection from "~/components/storage/DeviceSelection";
 import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
 import ISCSIPage from "~/components/storage/ISCSIPage";
 import ProposalPage from "~/components/storage/ProposalPage";
+import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
 
 const PATHS = {
@@ -35,7 +36,7 @@ const PATHS = {
   iscsi: "/storage/iscsi",
 };
 
-const routes = () => ({
+const routes = (): Route => ({
   path: PATHS.root,
   handle: { name: N_("Storage"), icon: "hard_drive" },
   children: [

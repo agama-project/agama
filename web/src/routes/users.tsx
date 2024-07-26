@@ -22,6 +22,7 @@
 import React from "react";
 import UsersPage from "~/components/users/UsersPage";
 import FirstUserForm from "~/components/users/FirstUserForm";
+import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
 
 const PATHS = {
@@ -31,7 +32,7 @@ const PATHS = {
     edit: "/users/first/edit",
   },
 };
-const routes = () => ({
+const routes = (): Route => ({
   path: PATHS.root,
   handle: {
     name: N_("Users"),

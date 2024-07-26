@@ -21,6 +21,7 @@
 
 import React from "react";
 import { NetworkPage, IpSettingsForm, WifiSelectorPage } from "~/components/network";
+import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
 
 const PATHS = {
@@ -29,7 +30,7 @@ const PATHS = {
   wifis: "/network/wifis",
 };
 
-const routes = () => ({
+const routes = (): Route => ({
   path: PATHS.root,
   handle: {
     name: N_("Network"),

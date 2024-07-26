@@ -19,29 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { ProductSelectionPage, ProductSelectionProgress } from "~/components/product";
-import { Route } from "~/types/routes";
+import { RouteObject } from "react-router-dom";
 
-const PATHS = {
-  root: "/products",
-  changeProduct: "/products",
-  progress: "/products/progress",
+type RouteHandle = {
+  name: string;
+  icon?: string;
 };
 
-const routes = (): Route => ({
-  path: PATHS.root,
-  children: [
-    {
-      index: true,
-      element: <ProductSelectionPage />,
-    },
-    {
-      path: PATHS.progress,
-      element: <ProductSelectionProgress />,
-    },
-  ],
-});
+type Route = RouteObject & { handle?: RouteHandle };
 
-export default routes;
-export { PATHS };
+export type { Route };

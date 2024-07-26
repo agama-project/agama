@@ -21,6 +21,7 @@
 
 import React from "react";
 import { L10nPage, LocaleSelection, KeymapSelection, TimezoneSelection } from "~/components/l10n";
+import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
 
 const PATHS = {
@@ -30,7 +31,7 @@ const PATHS = {
   timezoneSelection: "/l10n/timezone/select",
 };
 
-const routes = () => ({
+const routes = (): Route => ({
   path: PATHS.root,
   handle: {
     name: N_("Localization"),
