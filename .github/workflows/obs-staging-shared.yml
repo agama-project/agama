@@ -95,7 +95,7 @@ jobs:
         # sometimes the "osc service" run does not cleanup properly all
         # downloaded NPM package tarballs and they are accidentally added to the
         # OBS package, so delete any TGZ files present
-        run: rm -f *.tgz
+        run: rm -vf *.tgz
         working-directory: ./${{ vars.OBS_PROJECT }}/${{ inputs.package_name }}
 
       - name: Check status
