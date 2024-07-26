@@ -20,7 +20,6 @@
  */
 
 import React from "react";
-
 import { screen, waitFor, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 
@@ -50,10 +49,11 @@ describe("About", () => {
     screen.getByRole("button", { name: "What is this?" });
   });
 
-  it("allows setting its button variant", () => {
-    plainRender(<About buttonVariant="tertiary" />);
+  it("allows setting button props", () => {
+    plainRender(<About buttonProps={{ variant: "link", isInline: true }} />);
     const button = screen.getByRole("button", { name: "About" });
-    expect(button.classList.contains("pf-m-tertiary")).toBe(true);
+    expect(button.classList.contains("pf-m-link")).toBe(true);
+    expect(button.classList.contains("pf-m-inline")).toBe(true);
   });
 
   it("allows user to read 'About Agama'", async () => {

@@ -19,37 +19,33 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useState } from "react";
-import { Button, Text } from "@patternfly/react-core";
-import { _ } from "~/i18n";
-import { sprintf } from "sprintf-js";
+import { Button, ButtonProps, Text } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { Popup } from "~/components/core";
+import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
-/**
- * @typedef {import("@patternfly/react-core").ButtonProps} ButtonProps
- */
+export type AboutProps = {
+  /** Whether render a "help" icon into the button */
+  showIcon?: boolean;
+  /** The size for the button icon, if any */
+  iconSize?: string;
+  /** The text for the button */
+  buttonText?: string;
+  /** Props for the button, see {@link https://www.patternfly.org/components/button PF/Button} */
+  buttonProps?: ButtonProps;
+} & ButtonProps;
 
 /**
  * Renders a button and a dialog to allow user read about what Agama is
- * @component
- *
- * @param {object} props
- * @param {boolean} [props.showIcon=true] - Whether render a "help" icon into the button.
- * @param {string} [props.iconSize="s"] - The size for the button icon.
- * @param {string} [props.buttonText="About"] - The text for the button.
- * @param {ButtonProps["variant"]} [props.buttonVariant="link"] - The button variant.
- *   See {@link https://www.patternfly.org/components/button#variant-examples PF/Button}.
  */
 export default function About({
   showIcon = true,
   iconSize = "s",
   buttonText = _("About"),
-  buttonVariant = "link",
-  ...props
-}) {
+  buttonProps = { variant: "link" },
+}: AboutProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const open = () => setIsOpen(true);
@@ -58,10 +54,9 @@ export default function About({
   return (
     <>
       <Button
-        variant={buttonVariant}
         icon={showIcon && <Icon name="help" size={iconSize} />}
         onClick={open}
-        {...props}
+        {...buttonProps}
       >
         {buttonText}
       </Button>
