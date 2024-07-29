@@ -22,7 +22,7 @@
 import React, { useState } from "react";
 import { Card, CardBody, Flex, Form, Grid, GridItem, Radio } from "@patternfly/react-core";
 import { Page } from "~/components/core";
-import { Loading, Center } from "~/components/layout";
+import { Center } from "~/components/layout";
 import { useConfigMutation, useProduct } from "~/queries/software";
 import { _ } from "~/i18n";
 import styles from "@patternfly/react-styles/css/utilities/Text/text";
