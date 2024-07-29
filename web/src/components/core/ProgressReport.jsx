@@ -113,11 +113,11 @@ function findDetail(progresses) {
  * Shows progress steps when a product is selected.
  */
 function ProgressReport({ title, firstStep }) {
+  useResetProgress();
   const progress = useProgress("manager", { suspense: true });
   const [steps, setSteps] = useState(progress.steps);
   const softwareProgress = useProgress("software");
   const storageProgress = useProgress("storage");
-  useResetProgress();
   useProgressChanges();
 
   useEffect(() => {
