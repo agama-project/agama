@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   HelperText,
   HelperTextItem,
@@ -40,6 +40,7 @@ import { Page } from "~/components/core";
 import { AddressesDataList, DnsDataList } from "~/components/network";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import { useConnection, useConnectionMutation } from "~/queries/network";
 
 const METHODS = {
   MANUAL: "manual",
@@ -50,7 +51,9 @@ const usingDHCP = (method) => method === METHODS.AUTO;
 
 export default function IpSettingsForm() {
   const client = useInstallerClient();
-  const connection = useLoaderData();
+  const { name } = useParams();
+  const connection = useConnection(name);
+  const setConnection = useConnectionMutation();
   const navigate = useNavigate();
   const [addresses, setAddresses] = useState(connection.addresses);
   const [nameservers, setNameservers] = useState(
@@ -98,7 +101,6 @@ export default function IpSettingsForm() {
     setErrors({});
 
     const nextErrors = {};
-
     if (!usingDHCP(method) && sanitizedAddresses.length === 0) {
       // TRANSLATORS: error message
       nextErrors.method = _("At least one address must be provided for selected mode");
@@ -125,12 +127,7 @@ export default function IpSettingsForm() {
       gateway4: gateway,
       nameservers: sanitizedNameservers.map((s) => s.address),
     };
-
-    client.network
-      .updateConnection(updatedConnection)
-      .then(navigate(-1))
-      // TODO: better error reporting. By now, it sets an error for the whole connection.
-      .catch(({ message }) => setErrors({ object: message }));
+    setConnection.mutateAsync(updatedConnection).catch((error) => setErrors(error)).then(navigate(-1));
   };
 
   const renderError = (field) => {

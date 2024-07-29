@@ -31,10 +31,9 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { PasswordInput } from "~/components/core";
-import { useInstallerClient } from "~/context/installer";
-import { useNetworkConfigChanges } from "~/queries/network";
+import { useAddConnectionMutation, useNetworkConfigChanges } from "~/queries/network";
 import { _ } from "~/i18n";
-import { useQueryClient } from "@tanstack/react-query";
+import { Connection, Wireless } from "~/types/network";
 
 /*
  * FIXME: it should be moved to the SecurityProtocols enum that already exists or to a class based
@@ -58,8 +57,7 @@ const securityFrom = (supported) => {
 };
 
 export default function WifiConnectionForm({ network, onCancel, onSubmitCallback }) {
-  const { network: client } = useInstallerClient();
-  const queryClient = useQueryClient();
+  const addClient = useAddConnectionMutation();
   const [error, setError] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [ssid, setSsid] = useState(network?.ssid || "");
@@ -77,13 +75,9 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
     if (typeof onSubmitCallback === "function") {
       onSubmitCallback({ ssid, password, hidden, security: [security] });
     }
-
-    client
-      .addAndConnectTo(ssid, { security, password, hidden })
-      .catch(() => setError(true))
-      .finally(
-        () => setIsConnecting(false) && queryClient.invalidateQueries({ queryKey: ["network"] }),
-      );
+    const wireless = new Wireless(ssid, { security, password, hidden });
+    const connection = new Connection(ssid, { wireless });
+    addClient.mutate(connection);
   };
 
   return (

@@ -23,8 +23,8 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import NetworkPage from "~/components/network/NetworkPage";
-import { ConnectionTypes } from "~/client/network";
 import { createClient } from "~/client";
+import { ConnectionType } from "~/types/network";
 
 jest.mock("~/client");
 
@@ -58,7 +58,7 @@ const wiFiConnection = {
 const ethernetDevice = {
   name: "eth0",
   connection: "eth0",
-  type: ConnectionTypes.ETHERNET,
+  type: ConnectionType.ETHERNET,
   addresses: [{ address: "192.168.122.20", prefix: 24 }],
   macAddress: "00:11:22:33:44::55",
 };
@@ -66,7 +66,7 @@ const ethernetDevice = {
 const wifiDevice = {
   name: "wlan0",
   connection: "AgamaNetwork",
-  type: ConnectionTypes.WIFI,
+  type: ConnectionType.WIFI,
   addresses: [{ address: "192.168.69.200", prefix: 24 }],
   macAddress: "AA:11:22:33:44::FF",
 };

@@ -23,7 +23,7 @@ import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 
-import { ConnectionTypes } from "~/client/network";
+import { ConnectionType } from "~/types/network";
 import ConnectionsTable from "~/components/network/ConnectionsTable";
 
 jest.mock("~/client");
@@ -31,14 +31,14 @@ jest.mock("~/client");
 const firstConnection = {
   id: "WiFi 1",
   iface: "wlan0",
-  type: ConnectionTypes.WIFI,
+  type: ConnectionType.WIFI,
   addresses: [{ address: "192.168.69.200", prefix: 24 }],
 };
 
 const firstDevice = {
   name: "wlan0",
   connection: "WiFi 1",
-  type: ConnectionTypes.WIFI,
+  type: ConnectionType.WIFI,
   addresses: [{ address: "192.168.69.200", prefix: 24 }],
   macAddress: "AA:11:22:33:44::FF",
 };
@@ -46,14 +46,14 @@ const firstDevice = {
 const secondConnection = {
   id: "WiFi 2",
   iface: "wlan1",
-  type: ConnectionTypes.WIFI,
+  type: ConnectionType.WIFI,
   addresses: [{ address: "192.168.69.201", prefix: 24 }],
 };
 
 const secondDevice = {
   name: "wlan1",
   connection: "WiFi 2",
-  type: ConnectionTypes.WIFI,
+  type: ConnectionType.WIFI,
   addresses: [{ address: "192.168.69.201", prefix: 24 }],
   macAddress: "AA:11:22:33:44::AA",
 };

@@ -19,21 +19,18 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { CardBody, Grid, GridItem } from "@patternfly/react-core";
 import { ButtonLink, CardField, EmptyState, Page } from "~/components/core";
 import { ConnectionsTable } from "~/components/network";
-import { formatIp } from "~/client/network/utils";
+import { _ } from "~/i18n";
+import { formatIp } from "~/utils/network";
+import { sprintf } from "sprintf-js";
 import { useNetwork, useNetworkConfigChanges } from "~/queries/network";
 import { PATHS } from "~/routes/network";
-import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
 
 /**
  * Page component holding Network settings
- * @component
  */
 export default function NetworkPage() {
   const { connections, devices, settings } = useNetwork();

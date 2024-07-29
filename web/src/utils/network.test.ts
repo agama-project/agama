@@ -28,7 +28,7 @@ import {
   stringToIPInt,
   formatIp,
   ipPrefixFor,
-} from "./utils";
+} from "./network";
 
 describe("#isValidIp", () => {
   it("returns true when the IP is valid", () => {

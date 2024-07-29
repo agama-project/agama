@@ -19,13 +19,20 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import ipaddr from "ipaddr.js";
+import { ApFlags, ApSecurityFlags, ConnectionState, IPAddress, SecurityProtocols } from "~/types/network";
 
 /**
- * @typedef {import("./model").IPAddress} IPAddress
+ * Returns a human readable connection state
+ *
+ * @property {number} state
+ * @return {string}
  */
+const connectionHumanState = (state: number): string => {
+  const stateIndex = Object.values(ConnectionState).indexOf(state);
+  const stateKey = Object.keys(ConnectionState)[stateIndex];
+  return stateKey.toLowerCase();
+};
 
 /**
  * Check if an IP is valid
@@ -35,7 +42,7 @@ import ipaddr from "ipaddr.js";
  * @param {string} value - An IP Address
  * @return {boolean} true if given IP is valid; false otherwise.
  */
-const isValidIp = (value) => ipaddr.IPv4.isValidFourPartDecimal(value);
+const isValidIp = (value: string): boolean => ipaddr.IPv4.isValidFourPartDecimal(value);
 
 /**
  * Check if a value is a valid netmask or network prefix
@@ -45,7 +52,7 @@ const isValidIp = (value) => ipaddr.IPv4.isValidFourPartDecimal(value);
  * @param {string} value - An netmask or a network prefix
  * @return {boolean} true if given IP is valid; false otherwise.
  */
-const isValidIpPrefix = (value) => {
+const isValidIpPrefix = (value: string): boolean => {
   if (value.match(/^\d+$/)) {
     return parseInt(value) <= 32;
   } else {
@@ -61,7 +68,7 @@ const isValidIpPrefix = (value) => {
  * @param {string} value - An netmask or a network prefix
  * @return {number} prefix for the given netmask or prefix
  */
-const ipPrefixFor = (value) => {
+const ipPrefixFor = (value: string): number => {
   if (value.match(/^\d+$/)) {
     return parseInt(value);
   } else {
@@ -77,7 +84,7 @@ const ipPrefixFor = (value) => {
  * @param {number} address - An IP Address as network byte-order
  * @return {string|null} the address given as a string
  */
-const intToIPString = (address) => {
+const intToIPString = (address: number): string | null => {
   const ip = ipaddr.parse(address.toString());
   if ("octets" in ip) {
     return ip.octets.reverse().join(".");
@@ -93,7 +100,7 @@ const intToIPString = (address) => {
  * @param {string} text - string representing an IPv4 address
  * @return {number} IP address as network byte-order
  */
-const stringToIPInt = (text) => {
+const stringToIPInt = (text: string): number => {
   if (text === "") return 0;
 
   const parts = text.split(".");
@@ -114,7 +121,7 @@ const stringToIPInt = (text) => {
  * @param {IPAddress} addr
  * @return {string}
  */
-const formatIp = (addr) => {
+const formatIp = (addr: IPAddress): string => {
   if (addr.prefix === undefined) {
     return `${addr.address}`;
   } else {
@@ -122,4 +129,33 @@ const formatIp = (addr) => {
   }
 };
 
-export { isValidIp, isValidIpPrefix, intToIPString, stringToIPInt, formatIp, ipPrefixFor };
+/**
+ * @param {number} flags - AP flags
+ * @param {number} wpa_flags - AP WPA1 flags
+ * @param {number} rsn_flags - AP WPA2 flags
+ * @return {string[]} security protocols supported
+ */
+
+const securityFromFlags = (flags: number, wpa_flags: number, rsn_flags: number): string[] => {
+  const security = [];
+
+  if (flags & ApFlags.PRIVACY && wpa_flags === 0 && rsn_flags === 0) {
+    security.push(SecurityProtocols.WEP);
+  }
+
+  if (wpa_flags > 0) {
+    security.push(SecurityProtocols.WPA);
+  }
+  if (rsn_flags > 0) {
+    security.push(SecurityProtocols.RSN);
+  }
+  if (wpa_flags & ApSecurityFlags.KEY_MGMT_8021_X || rsn_flags & ApSecurityFlags.KEY_MGMT_8021_X) {
+    security.push(SecurityProtocols._8021X);
+  }
+
+  return security;
+};
+
+
+
+export { connectionHumanState, isValidIp, isValidIpPrefix, intToIPString, stringToIPInt, formatIp, ipPrefixFor, securityFromFlags };

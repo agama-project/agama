@@ -22,15 +22,15 @@
 import React from "react";
 import { useQueryClient, useMutation, useSuspenseQuery, useSuspenseQueries } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { DeviceState, createAccessPoint, securityFromFlags } from "~/client/network/model";
-import { ipPrefixFor } from "~/client/network/utils";
+import { createAccessPoint } from "~/client/network/model";
+import { _ } from "~/i18n";
+import { AccessPoint, Connection, Device, DeviceState } from "~/types/network";
+import { formatIp, ipPrefixFor, securityFromFlags } from "~/utils/network";
+
 /**
    * Returns the device settings
-   *
-   * @param {object} device - device settings from the API server
-   * @return {Device}
    */
-const fromApiDevice = (device) => {
+const fromApiDevice = (device: object): Device => {
   const nameservers = (device?.ipConfig?.nameservers || []);
   const { ipConfig = {}, ...dev } = device;
   const routes4 = (ipConfig.routes4 || []).map((route) => {
@@ -59,7 +59,7 @@ const fromApiDevice = (device) => {
   return { ...dev, ...ipConfig, addresses, nameservers, routes4, routes6 };
 };
 
-const fromApiConnection = (connection) => {
+const fromApiConnection = (connection: object): Connection => {
   const nameservers = (connection.nameservers || []);
   const addresses = (connection.addresses || []).map((address) => {
     const [ip, netmask] = address.split("/");
@@ -71,6 +71,51 @@ const fromApiConnection = (connection) => {
   });
 
   return { ...connection, addresses, nameservers };
+};
+
+const toApiConnection = (connection: Connection): object => {
+  const addresses = (connection.addresses || []).map((addr) => formatIp(addr));
+  const { iface, gateway4, gateway6, ...conn } = connection;
+
+  if (gateway4?.trim() !== "") conn.gateway4 = gateway4;
+  if (gateway6?.trim() !== "") conn.gateway6 = gateway6;
+
+  return { ...conn, addresses, interface: iface };
+};
+
+const loadNetworks = (devices: Device[], connections: Connection[], accessPoints: AccessPoint[]) => {
+  const knownSsids = [];
+
+  return accessPoints
+    .sort((a, b) => b.strength - a.strength)
+    .reduce(
+      (networks, ap) => {
+        // Do not include networks without SSID
+        if (!ap.ssid || ap.ssid === "") return networks;
+        // Do not include "duplicates"
+        if (knownSsids.includes(ap.ssid)) return networks;
+
+        const network = {
+          ...ap,
+          settings: connections.find((c) => c.wireless?.ssid === ap.ssid),
+          device: devices.find((c) => c.connection === ap.ssid),
+        };
+
+        // Group networks
+        if (network.device) {
+          networks.connected.push(network);
+        } else if (network.settings) {
+          networks.configured.push(network);
+        } else {
+          networks.others.push(network);
+        }
+
+        knownSsids.push(network.ssid);
+
+        return networks;
+      },
+      { connected: [], configured: [], others: [] },
+    );
 };
 
 /**
@@ -93,6 +138,19 @@ const devicesQuery = () => ({
     const devices = await response.json();
 
     return devices.map(fromApiDevice);
+  },
+  staleTime: Infinity
+});
+
+/**
+ * Returns a query for retrieving the list of known connections
+ */
+const connectionQuery = (name) => ({
+  queryKey: ["network", "connections", name],
+  queryFn: async () => {
+    const response = await fetch(`/api/network/connections/${name}`);
+    const connection = await response.json();
+    return fromApiConnection(connection);
   },
   staleTime: Infinity
 });
@@ -132,20 +190,86 @@ const accessPointsQuery = () => ({
 });
 
 /**
+ * Hook that builds a mutation to add a new network connection
+ *
+ * It does not require to call `useMutation`.
+ */
+const useAddConnectionMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: (newConnection) =>
+      fetch("/api/network/connections", {
+        method: "POST",
+        body: JSON.stringify(toApiConnection(newConnection)),
+        headers: {
+          "Content-Type": "application/json",
+        }
+      }).then((response) => {
+        if (response.ok) {
+          return fetch(`/api/network/system/apply`, { method: "PUT" });
+        } else {
+          throw new Error(_("Please, try again"));
+        }
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["network"] })
+      queryClient.invalidateQueries({ queryKey: ["network"] })
+    }
+  };
+  return useMutation(query);
+};
+/**
  * Hook that builds a mutation to update a network connections
  *
  * It does not require to call `useMutation`.
  */
 const useConnectionMutation = () => {
+  const queryClient = useQueryClient();
   const query = {
     mutationFn: (newConnection) =>
-      fetch(`/api/network/connection/${newConnection.id}`, {
+      fetch(`/api/network/connections/${newConnection.id
+        }`, {
         method: "PUT",
-        body: JSON.stringify(newConnection),
+        body: JSON.stringify(toApiConnection(newConnection)),
         headers: {
           "Content-Type": "application/json",
-        },
-      })
+        }
+      }).then((response) => {
+        if (response.ok) {
+          return fetch(`/api/network/system/apply`, { method: "PUT" });
+        } else {
+          throw new Error(_("Please, try again"));
+        }
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["network", "connections"] })
+      queryClient.invalidateQueries({ queryKey: ["network", "devices"] })
+    }
+  };
+  return useMutation(query);
+};
+
+/**
+ * Hook that builds a mutation to remove a network connection
+ *
+ * It does not require to call `useMutation`.
+ */
+const useRemoveConnectionMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: (name) =>
+      fetch(`/api/network/connections/${name}`, { method: "DELETE" })
+        .then((response) => {
+          if (response.ok) {
+            return fetch(`/api/network/system/apply`, { method: "PUT" });
+          } else {
+            throw new Error(_("Please, try again"));
+          }
+        }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["network", "connections"] })
+      queryClient.invalidateQueries({ queryKey: ["network", "devices"] })
+    }
   };
   return useMutation(query);
 };
@@ -225,6 +349,11 @@ const useNetworkConfigChanges = () => {
   }, [client, queryClient, changeSelected]);
 };
 
+const useConnection = (name) => {
+  const { data } = useSuspenseQuery(connectionQuery(name));
+  return data;
+}
+
 const useNetwork = () => {
   const [
     { data: state },
@@ -239,8 +368,7 @@ const useNetwork = () => {
       accessPointsQuery()
     ]
   });
-  const client = useInstallerClient();
-  const networks = client.network.loadNetworks(devices, connections, accessPoints);
+  const networks = loadNetworks(devices, connections, accessPoints);
 
   return { connections, settings: state, devices, accessPoints, networks };
 };
@@ -249,10 +377,14 @@ const useNetwork = () => {
 export {
   stateQuery,
   devicesQuery,
+  connectionQuery,
   connectionsQuery,
   accessPointsQuery,
   selectedWiFiNetworkQuery,
+  useAddConnectionMutation,
   useConnectionMutation,
+  useRemoveConnectionMutation,
+  useConnection,
   useNetwork,
   useSelectedWifi,
   useSelectedWifiChange,

@@ -48,12 +48,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Icon } from "~/components/layout";
 import { WifiConnectionForm } from "~/components/network";
 import { ButtonLink } from "~/components/core";
-import { DeviceState } from "~/client/network/model";
-import { formatIp } from "~/client/network/utils";
-import { useInstallerClient } from "~/context/installer";
-import { useSelectedWifi, useSelectedWifiChange } from "~/queries/network";
 import { PATHS } from "~/routes/network";
+import { DeviceState } from "~/types/network";
 import { _ } from "~/i18n";
+import { formatIp } from "~/utils/network";
+import { useRemoveConnectionMutation, useSelectedWifi, useSelectedWifiChange } from "~/queries/network";
 
 const HIDDEN_NETWORK = Object.freeze({ hidden: true });
 
@@ -89,12 +88,10 @@ const ConnectionData = ({ network }) => {
 };
 
 const WifiDrawerPanelBody = ({ network, onCancel }) => {
-  const client = useInstallerClient();
-  const queryClient = useQueryClient();
+  const setConnection = useRemoveConnectionMutation();
   const { data } = useSelectedWifi();
   const forgetNetwork = async () => {
-    await client.network.deleteConnection(network.settings.id);
-    queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
+    setConnection.mutate(network.settings.id);
   };
 
   if (!network) return;
@@ -108,7 +105,7 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
   if (network.settings && !network.device) {
     return (
       <Split hasGutter>
-        <ButtonLink onClick={async () => await client.network.connectTo(network.settings)}>
+        <ButtonLink onClick={async () => await network.connectTo(network.settings)}>
           {_("Connect")}
         </ButtonLink>
         <ButtonLink to={generatePath(PATHS.editConnection, { id: network.settings.id })}>
@@ -132,7 +129,7 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
         <Stack>
           <ConnectionData network={network} />
           <Split hasGutter>
-            <ButtonLink onClick={async () => await client.network.disconnect(network.settings)}>
+            <ButtonLink onClick={async () => await network.disconnect(network.settings)}>
               {_("Disconnect")}
             </ButtonLink>
             <ButtonLink to={generatePath(PATHS.editConnection, { id: network.settings.id })}>
@@ -141,7 +138,7 @@ const WifiDrawerPanelBody = ({ network, onCancel }) => {
             <Button
               variant="secondary"
               isDanger
-              onClick={async () => await client.network.deleteConnection(network.settings.id)}
+              onClick={forgetNetwork}
             >
               {_("Forget")}
             </Button>

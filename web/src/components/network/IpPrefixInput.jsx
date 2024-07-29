@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { isValidIpPrefix } from "~/client/network/utils";
+import { isValidIpPrefix } from "~/utils/network";
 import { TextInput, ValidatedOptions } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 
