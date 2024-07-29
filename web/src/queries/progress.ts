@@ -108,7 +108,7 @@ const useResetProgress = () => {
     return () => {
       queryClient.invalidateQueries({ queryKey: ["progress"] });
     };
-  }, []);
+  }, [queryClient]);
 };
 
 export { useProgress, useProgressChanges, useResetProgress, progressQuery };
