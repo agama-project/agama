@@ -19,14 +19,13 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/filesystem_type/from_json"
+
 module Agama
   module Storage
-    module Configs
-      class Format
-        # @return [Configs::Filesystem]
-        attr_accessor :filesystem
-        attr_accessor :label
-        attr_accessor :mkfs_options
+    module ConfigConversions
+      # Conversions for filesystem types
+      module FilesystemType
       end
     end
   end

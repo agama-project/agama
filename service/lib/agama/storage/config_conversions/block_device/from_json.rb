@@ -19,13 +19,12 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/encrypt/from_json"
-require "agama/storage/config_conversions/format/from_json"
-require "agama/storage/config_conversions/mount/from_json"
-require "agama/storage/configs/encrypt"
+require "agama/storage/config_conversions/encryption/from_json"
+require "agama/storage/config_conversions/filesystem/from_json"
+require "agama/storage/config_conversions/filesystem_type/from_json"
+require "agama/storage/configs/encryption"
 require "agama/storage/configs/filesystem"
-require "agama/storage/configs/format"
-require "agama/storage/configs/mount"
+require "agama/storage/configs/filesystem_type"
 
 module Agama
   module Storage
@@ -48,9 +47,8 @@ module Agama
           #
           # @param config [#encrypt=, #format=, #mount=]
           def convert(config)
-            config.encrypt = convert_encrypt
-            config.format = convert_format
-            config.mount = convert_mount
+            config.encryption = convert_encrypt
+            config.filesystem = convert_filesystem
             config
           end
 
@@ -67,44 +65,34 @@ module Agama
 
           # @return [Configs::Encrypt, nil]
           def convert_encrypt
-            encrypt_json = blk_device_json[:encrypt]
+            encrypt_json = blk_device_json[:encryption]
             return unless encrypt_json
 
-            Encrypt::FromJSON.new(encrypt_json, default: default_encrypt_config).convert
+            Encryption::FromJSON.new(encrypt_json, default: default_encrypt_config).convert
           end
 
-          # @return [Configs::Format, nil]
-          def convert_format
-            format_json = blk_device_json[:format]
-            mount_json = blk_device_json[:mount]
+          # @return [Configs::Filesystem, nil]
+          def convert_filesystem
+            filesystem_json = blk_device_json[:filesystem]
 
-            return if format_json == false # "format": false
-            return if format_json.nil? && mount_json.nil?
+            return if filesystem_json == false # "filesystem": false
+            return if filesystem_json.nil?
 
-            default = default_format_config(mount_json&.dig(:path) || "")
-            return default unless format_json
+            default = default_filesystem_config(filesystem_json&.dig(:path) || "")
 
             # @todo Check whether the given filesystem can be used for the mount point.
             # @todo Check whether snapshots can be configured and restore to default if needed.
 
-            Format::FromJSON.new(format_json).convert(default)
-          end
-
-          # @return [Configs::Mount, nil]
-          def convert_mount
-            mount_json = blk_device_json[:mount]
-            return unless mount_json
-
-            Mount::FromJSON.new(mount_json).convert
+            Filesystem::FromJSON.new(filesystem_json).convert(default)
           end
 
           # @todo Recover values from ProductDefinition instead of ProposalSettings.
           #
           # Default encryption config from the product definition.
           #
-          # @return [Configs::Encrypt]
+          # @return [Configs::Encryption]
           def default_encrypt_config
-            Configs::Encrypt.new.tap do |config|
+            Configs::Encryption.new.tap do |config|
               config.key = settings.encryption.password
               config.method = settings.encryption.method
               config.pbkd_function = settings.encryption.pbkd_function
@@ -114,10 +102,10 @@ module Agama
           # Default format config from the product definition.
           #
           # @param mount_path [String]
-          # @return [Configs::Format]
-          def default_format_config(mount_path)
-            Configs::Format.new.tap do |config|
-              config.filesystem = default_filesystem_config(mount_path)
+          # @return [Configs::Filesystem]
+          def default_filesystem_config(mount_path)
+            Configs::Filesystem.new.tap do |config|
+              config.type = default_fstype_config(mount_path)
             end
           end
 
@@ -126,12 +114,12 @@ module Agama
           # Default filesystem config from the product definition.
           #
           # @param mount_path [String]
-          # @return [Configs::Filesystem]
-          def default_filesystem_config(mount_path)
+          # @return [Configs::FilesystemType]
+          def default_fstype_config(mount_path)
             volume = volume_builder.for(mount_path)
 
-            Configs::Filesystem.new.tap do |config|
-              config.type = volume.fs_type
+            Configs::FilesystemType.new.tap do |config|
+              config.fstype = volume.fs_type
               config.btrfs = volume.btrfs
             end
           end

@@ -19,26 +19,26 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/configs/encrypt"
+require "agama/storage/configs/encryption"
 require "y2storage/encryption_method"
 require "y2storage/pbkd_function"
 
 module Agama
   module Storage
     module ConfigConversions
-      module Encrypt
-        # Encrypt conversion from JSON hash according to schema.
+      module Encryption
+        # Encryption conversion from JSON hash according to schema.
         class FromJSON
-          # @param encrypt_json [Hash]
+          # @param encryption_json [Hash]
           # @param default [Configs::Encrypt]
-          def initialize(encrypt_json, default: nil)
-            @encrypt_json = encrypt_json
-            @default_config = default || Configs::Encrypt.new
+          def initialize(encryption_json, default: nil)
+            @encryption_json = encryption_json
+            @default_config = default || Configs::Encryption.new
           end
 
           # Performs the conversion from Hash according to the JSON schema.
           #
-          # @return [Configs::Encrypt]
+          # @return [Configs::Encryption]
           def convert
             default_config.dup.tap do |config|
               key = convert_key
@@ -54,19 +54,19 @@ module Agama
         private
 
           # @return [Hash]
-          attr_reader :encrypt_json
+          attr_reader :encryption_json
 
-          # @return [Configs::Encrypt]
+          # @return [Configs::Encryption]
           attr_reader :default_config
 
           # @return [String, nil]
           def convert_key
-            encrypt_json[:password]
+            encryption_json[:password]
           end
 
           # @return [Y2Storage::EncryptionMethod, nil]
           def convert_method
-            value = encrypt_json[:method]
+            value = encryption_json[:method]
             return unless value
 
             Y2Storage::EncryptionMethod.find(value.to_sym)
@@ -74,7 +74,7 @@ module Agama
 
           # @return [Y2Storage::PbkdFunction, nil]
           def convert_pbkd_function
-            Y2Storage::PbkdFunction.find(encrypt_json[:pbkdFunction])
+            Y2Storage::PbkdFunction.find(encryption_json[:pbkdFunction])
           end
         end
       end

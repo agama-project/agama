@@ -23,11 +23,18 @@ module Agama
   module Storage
     module Configs
       class Filesystem
-        # @return [Y2Storage::Filesystems::Type, nil]
+        attr_accessor :path
+        # @return [Configs::FilesystemType]
         attr_accessor :type
+        attr_accessor :label
+        attr_accessor :mkfs_options
+        attr_accessor :mount_options
+        attr_accessor :mount_by
 
-        # @return [Configs::Btrfs, nil]
-        attr_accessor :btrfs
+        def initialize
+          @mount_options = []
+          @mkfs = []
+        end
       end
     end
   end
