@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-18 02:24+0000\n"
+"POT-Creation-Date: 2024-07-28 02:29+0000\n"
 "PO-Revision-Date: 2023-12-31 20:39+0000\n"
 "Last-Translator: Milachew <milachew@mail.lv>\n"
 "Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -52,7 +52,6 @@ msgid "For more information, please visit the project's repository at %s."
 msgstr ""
 
 #: src/components/core/About.jsx:92 src/components/core/LogsButton.jsx:126
-#: src/components/software/SoftwarePatternsSelection.jsx:268
 msgid "Close"
 msgstr "Закрити"
 
@@ -78,7 +77,7 @@ msgstr ""
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:90
 #: src/components/core/Popup.jsx:132
-#: src/components/network/WifiConnectionForm.jsx:134
+#: src/components/network/WifiConnectionForm.jsx:141
 msgid "Cancel"
 msgstr ""
 
@@ -167,14 +166,13 @@ msgstr ""
 
 #: src/components/core/InstallerOptions.jsx:142
 #: src/components/network/IpSettingsForm.jsx:228
-#: src/components/product/ProductRegistrationPage.jsx:85
 #: src/components/storage/BootSelection.jsx:250
 #: src/components/storage/DeviceSelection.jsx:254
 #: src/components/storage/EncryptionSettingsDialog.jsx:155
 #: src/components/storage/SpacePolicySelection.jsx:200
 #: src/components/storage/VolumeDialog.jsx:794
 #: src/components/storage/ZFCPPage.jsx:528
-#: src/components/users/FirstUserForm.jsx:303
+#: src/components/users/FirstUserForm.jsx:293
 msgid "Accept"
 msgstr ""
 
@@ -249,11 +247,13 @@ msgstr ""
 msgid "Passwords do not match"
 msgstr ""
 
+#. TRANSLATORS: field label
 #: src/components/core/PasswordAndConfirmationInput.jsx:79
-#: src/components/network/WifiConnectionForm.jsx:121
+#: src/components/network/WifiConnectionForm.jsx:128
+#: src/components/questions/QuestionWithPassword.jsx:48
 #: src/components/storage/iscsi/AuthFields.jsx:90
 #: src/components/storage/iscsi/AuthFields.jsx:94
-#: src/components/users/RootAuthMethods.jsx:165
+#: src/components/users/RootAuthMethods.jsx:130
 msgid "Password"
 msgstr ""
 
@@ -346,11 +346,11 @@ msgstr ""
 
 #: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
 #: src/components/l10n/L10nPage.jsx:83
-#: src/components/network/NetworkPage.jsx:112
+#: src/components/network/NetworkPage.jsx:74
 #: src/components/storage/InstallationDeviceField.jsx:108
 #: src/components/storage/ProposalActionsSummary.jsx:238
-#: src/components/users/RootAuthMethods.jsx:100
-#: src/components/users/RootAuthMethods.jsx:112
+#: src/components/users/RootAuthMethods.jsx:74
+#: src/components/users/RootAuthMethods.jsx:86
 msgid "Change"
 msgstr ""
 
@@ -429,7 +429,7 @@ msgstr ""
 #. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:64
-#: src/components/network/ConnectionsTable.jsx:92
+#: src/components/network/ConnectionsTable.jsx:93
 #: src/components/storage/ZFCPPage.jsx:381
 #: src/components/storage/iscsi/InitiatorForm.jsx:52
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:68
@@ -441,41 +441,46 @@ msgstr ""
 
 #. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:66
-#: src/components/network/ConnectionsTable.jsx:93
+#: src/components/network/ConnectionsTable.jsx:94
 msgid "IP addresses"
 msgstr ""
 
-#: src/components/network/ConnectionsTable.jsx:74
-#: src/components/network/WifiNetworksListPage.jsx:107
-#: src/components/network/WifiNetworksListPage.jsx:130
+#. TRANSLATORS: table header aria label
+#: src/components/network/ConnectionsTable.jsx:68
+msgid "Connection actions"
+msgstr ""
+
+#: src/components/network/ConnectionsTable.jsx:75
+#: src/components/network/WifiNetworksListPage.jsx:112
+#: src/components/network/WifiNetworksListPage.jsx:135
 #: src/components/storage/PartitionsField.jsx:347
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:120
+#: src/components/users/FirstUser.jsx:85
 msgid "Edit"
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:77
+#: src/components/network/ConnectionsTable.jsx:78
 #: src/components/network/IpSettingsForm.jsx:151
 #, c-format
 msgid "Edit connection %s"
 msgstr ""
 
-#: src/components/network/ConnectionsTable.jsx:81
-#: src/components/network/WifiNetworksListPage.jsx:109
-#: src/components/network/WifiNetworksListPage.jsx:137
+#: src/components/network/ConnectionsTable.jsx:82
+#: src/components/network/WifiNetworksListPage.jsx:114
+#: src/components/network/WifiNetworksListPage.jsx:142
 msgid "Forget"
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:83
+#: src/components/network/ConnectionsTable.jsx:84
 #, c-format
 msgid "Forget connection %s"
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:98
+#: src/components/network/ConnectionsTable.jsx:99
 #, c-format
 msgid "Actions for connection %s"
 msgstr ""
@@ -536,133 +541,132 @@ msgstr ""
 msgid "Gateway can be defined only in 'Manual' mode"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:93
+#: src/components/network/NetworkPage.jsx:55
 msgid "No Wi-Fi supported"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:95
+#: src/components/network/NetworkPage.jsx:57
 msgid ""
 "The system does not support Wi-Fi connections, probably because of missing "
 "or disabled hardware."
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:109
+#: src/components/network/NetworkPage.jsx:71
 msgid "Wi-Fi"
 msgstr ""
 
 #. TRANSLATORS: button label, connect to a WiFi network
-#: src/components/network/NetworkPage.jsx:112
-#: src/components/network/WifiConnectionForm.jsx:130
-#: src/components/network/WifiNetworksListPage.jsx:105
+#: src/components/network/NetworkPage.jsx:74
+#: src/components/network/WifiConnectionForm.jsx:137
+#: src/components/network/WifiNetworksListPage.jsx:110
 msgid "Connect"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:119
+#: src/components/network/NetworkPage.jsx:81
 #, c-format
 msgid "Conected to %s"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:126
+#: src/components/network/NetworkPage.jsx:88
 msgid "No connected yet"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:127
+#: src/components/network/NetworkPage.jsx:89
 msgid ""
 "The system has not been configured for connecting to a Wi-Fi network yet."
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:156
+#: src/components/network/NetworkPage.jsx:102
 msgid "Wired"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:160
+#: src/components/network/NetworkPage.jsx:104
 msgid "No wired connections found"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:173
-#: src/components/network/routes.js:59
+#: src/components/network/NetworkPage.jsx:114
+#: src/components/network/routes.js:33
 msgid "Network"
 msgstr ""
 
 #. TRANSLATORS: WiFi authentication mode
-#: src/components/network/WifiConnectionForm.jsx:43
+#: src/components/network/WifiConnectionForm.jsx:45
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 msgid "None"
 msgstr ""
 
 #. TRANSLATORS: WiFi authentication mode
-#: src/components/network/WifiConnectionForm.jsx:45
+#: src/components/network/WifiConnectionForm.jsx:47
 msgid "WPA & WPA2 Personal"
 msgstr ""
 
-#: src/components/network/WifiConnectionForm.jsx:85
-#: src/components/product/ProductRegistrationPage.jsx:68
+#: src/components/network/WifiConnectionForm.jsx:92
 #: src/components/storage/ZFCPDiskForm.jsx:105
 #: src/components/storage/iscsi/DiscoverForm.jsx:98
 #: src/components/storage/iscsi/LoginForm.jsx:69
-#: src/components/users/FirstUserForm.jsx:217
+#: src/components/users/FirstUserForm.jsx:207
 msgid "Something went wrong"
 msgstr ""
 
-#: src/components/network/WifiConnectionForm.jsx:86
+#: src/components/network/WifiConnectionForm.jsx:93
 msgid "Please, review provided settings and try again."
 msgstr ""
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.jsx:92
-#: src/components/network/WifiConnectionForm.jsx:96
+#: src/components/network/WifiConnectionForm.jsx:99
+#: src/components/network/WifiConnectionForm.jsx:103
 msgid "SSID"
 msgstr ""
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.jsx:105
-#: src/components/network/WifiConnectionForm.jsx:108
+#: src/components/network/WifiConnectionForm.jsx:112
+#: src/components/network/WifiConnectionForm.jsx:115
 msgid "Security"
 msgstr ""
 
 #. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.jsx:117
+#: src/components/network/WifiConnectionForm.jsx:124
 msgid "WPA Password"
 msgstr ""
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:63
-#: src/components/network/WifiNetworksListPage.jsx:117
+#: src/components/network/WifiNetworksListPage.jsx:64
+#: src/components/network/WifiNetworksListPage.jsx:122
 msgid "Connecting"
 msgstr ""
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:66
-#: src/components/network/WifiNetworksListPage.jsx:121
-#: src/components/network/WifiNetworksListPage.jsx:164
+#: src/components/network/WifiNetworksListPage.jsx:67
+#: src/components/network/WifiNetworksListPage.jsx:126
+#: src/components/network/WifiNetworksListPage.jsx:169
 msgid "Connected"
 msgstr ""
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:71
-#: src/components/network/WifiNetworksListPage.jsx:119
+#: src/components/network/WifiNetworksListPage.jsx:72
+#: src/components/network/WifiNetworksListPage.jsx:124
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr ""
 
-#: src/components/network/WifiNetworksListPage.jsx:127
+#: src/components/network/WifiNetworksListPage.jsx:132
 msgid "Disconnect"
 msgstr ""
 
-#: src/components/network/WifiNetworksListPage.jsx:150
+#: src/components/network/WifiNetworksListPage.jsx:155
 msgid "Connect to a hidden network"
 msgstr ""
 
-#: src/components/network/WifiNetworksListPage.jsx:161
+#: src/components/network/WifiNetworksListPage.jsx:166
 msgid "configured"
 msgstr ""
 
-#: src/components/network/WifiNetworksListPage.jsx:265
+#: src/components/network/WifiNetworksListPage.jsx:268
 msgid "Connect to hidden network"
 msgstr ""
 
-#: src/components/network/WifiSelectorPage.jsx:136
+#: src/components/network/WifiSelectorPage.jsx:40
 msgid "Connect to a Wi-Fi network"
 msgstr ""
 
@@ -687,8 +691,6 @@ msgid "Storage"
 msgstr ""
 
 #: src/components/overview/OverviewPage.jsx:51
-#: src/components/overview/SoftwareSection.jsx:86
-#: src/components/software/SoftwarePage.jsx:181
 #: src/components/software/routes.js:32
 msgid "Software"
 msgstr ""
@@ -715,16 +717,6 @@ msgstr ""
 msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
-msgstr ""
-
-#: src/components/overview/SoftwareSection.jsx:60
-msgid "The installation will take"
-msgstr ""
-
-#. TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
-#: src/components/overview/SoftwareSection.jsx:67
-#, c-format
-msgid "The installation will take %s including:"
 msgstr ""
 
 #: src/components/overview/StorageSection.jsx:53
@@ -816,19 +808,6 @@ msgstr ""
 msgid "Overview"
 msgstr ""
 
-#: src/components/product/ProductRegistrationPage.jsx:66
-#, c-format
-msgid "Register %s"
-msgstr ""
-
-#: src/components/product/ProductRegistrationPage.jsx:73
-msgid "Registration code"
-msgstr ""
-
-#: src/components/product/ProductRegistrationPage.jsx:76
-msgid "Email"
-msgstr ""
-
 #: src/components/product/ProductSelectionProgress.jsx:49
 msgid "Configuring the product, please wait ..."
 msgstr ""
@@ -852,58 +831,8 @@ msgstr ""
 msgid "Encryption Password"
 msgstr ""
 
-#: src/components/software/SoftwarePage.jsx:85
-msgid "No additional software was selected."
-msgstr ""
-
-#: src/components/software/SoftwarePage.jsx:90
-msgid "The following software patterns are selected for installation:"
-msgstr ""
-
-#: src/components/software/SoftwarePage.jsx:105
-#: src/components/software/SoftwarePage.jsx:119
-msgid "Selected patterns"
-msgstr ""
-
-#: src/components/software/SoftwarePage.jsx:108
-msgid "Change selection"
-msgstr ""
-
-#: src/components/software/SoftwarePage.jsx:123
-msgid ""
-"This product does not allow to select software patterns during installation. "
-"However, you can add additional software once the installation is finished."
-msgstr ""
-
-#: src/components/software/SoftwarePatternsSelection.jsx:223
-msgid "auto selected"
-msgstr ""
-
-#: src/components/software/SoftwarePatternsSelection.jsx:241
-msgid "None of the patterns match the filter."
-msgstr ""
-
-#: src/components/software/SoftwarePatternsSelection.jsx:248
-msgid "Software selection"
-msgstr ""
-
-#. TRANSLATORS: search field placeholder text
-#: src/components/software/SoftwarePatternsSelection.jsx:251
-#: src/components/software/SoftwarePatternsSelection.jsx:252
-msgid "Filter by pattern title or description"
-msgstr ""
-
-#. TRANSLATORS: %s will be replaced by the estimated installation size,
-#. example: "728.8 MiB"
-#: src/components/software/UsedSize.jsx:33
-#, c-format
-msgid "Installation will take %s."
-msgstr ""
-
-#: src/components/software/UsedSize.jsx:37
-msgid ""
-"This space includes the base system and the selected software patterns, if "
-"any."
+#: src/components/questions/QuestionWithPassword.jsx:42
+msgid "Password Required"
 msgstr ""
 
 #: src/components/storage/BootConfigField.jsx:43
@@ -1004,7 +933,7 @@ msgstr ""
 #: src/components/storage/ZFCPPage.jsx:325
 #: src/components/storage/iscsi/NodesPresenter.jsx:102
 #: src/components/storage/iscsi/NodesPresenter.jsx:123
-#: src/components/users/RootAuthMethods.jsx:159
+#: src/components/users/RootAuthMethods.jsx:124
 msgid "Status"
 msgstr ""
 
@@ -2276,139 +2205,135 @@ msgstr ""
 msgid "with custom actions"
 msgstr ""
 
-#: src/components/users/FirstUser.jsx:35
+#: src/components/users/FirstUser.jsx:34
 msgid "No user defined yet."
 msgstr ""
 
-#: src/components/users/FirstUser.jsx:39
+#: src/components/users/FirstUser.jsx:38
 msgid ""
 "Please, be aware that a user must be defined before installing the system to "
 "be able to log into it."
 msgstr ""
 
-#: src/components/users/FirstUser.jsx:45
+#: src/components/users/FirstUser.jsx:44
 msgid "Define a user now"
 msgstr ""
 
-#: src/components/users/FirstUser.jsx:58
-#: src/components/users/FirstUserForm.jsx:227
+#: src/components/users/FirstUser.jsx:57
+#: src/components/users/FirstUserForm.jsx:217
 msgid "Full name"
 msgstr ""
 
-#: src/components/users/FirstUser.jsx:59
-#: src/components/users/FirstUserForm.jsx:241
-#: src/components/users/FirstUserForm.jsx:246
-#: src/components/users/FirstUserForm.jsx:249
+#: src/components/users/FirstUser.jsx:58
+#: src/components/users/FirstUserForm.jsx:231
+#: src/components/users/FirstUserForm.jsx:236
+#: src/components/users/FirstUserForm.jsx:239
 msgid "Username"
 msgstr ""
 
-#: src/components/users/FirstUser.jsx:124
-#: src/components/users/RootAuthMethods.jsx:104
-#: src/components/users/RootAuthMethods.jsx:116
+#: src/components/users/FirstUser.jsx:89
+#: src/components/users/RootAuthMethods.jsx:78
+#: src/components/users/RootAuthMethods.jsx:90
 msgid "Discard"
 msgstr ""
 
-#: src/components/users/FirstUserForm.jsx:57
+#: src/components/users/FirstUserForm.jsx:58
 msgid "Username suggestion dropdown"
 msgstr ""
 
 #. TRANSLATORS: dropdown username suggestions
-#: src/components/users/FirstUserForm.jsx:72
+#: src/components/users/FirstUserForm.jsx:73
 msgid "Use suggested username"
 msgstr ""
 
-#: src/components/users/FirstUserForm.jsx:151
+#: src/components/users/FirstUserForm.jsx:144
 msgid "All fields are required"
 msgstr ""
 
-#: src/components/users/FirstUserForm.jsx:158
-msgid "Please, try again."
-msgstr ""
-
-#: src/components/users/FirstUserForm.jsx:211
+#: src/components/users/FirstUserForm.jsx:201
 msgid "Create user"
 msgstr ""
 
-#: src/components/users/FirstUserForm.jsx:211
+#: src/components/users/FirstUserForm.jsx:201
 msgid "Edit user"
 msgstr ""
 
-#: src/components/users/FirstUserForm.jsx:231
-#: src/components/users/FirstUserForm.jsx:233
+#: src/components/users/FirstUserForm.jsx:221
+#: src/components/users/FirstUserForm.jsx:223
 msgid "User full name"
 msgstr ""
 
-#: src/components/users/FirstUserForm.jsx:271
+#: src/components/users/FirstUserForm.jsx:261
 msgid "Edit password too"
 msgstr ""
 
-#: src/components/users/FirstUserForm.jsx:287
+#: src/components/users/FirstUserForm.jsx:277
 msgid "user autologin"
 msgstr ""
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:291
+#: src/components/users/FirstUserForm.jsx:281
 msgid "Auto-login"
 msgstr ""
 
-#: src/components/users/RootAuthMethods.jsx:35
+#: src/components/users/RootAuthMethods.jsx:36
 msgid "No root authentication method defined yet."
 msgstr ""
 
-#: src/components/users/RootAuthMethods.jsx:39
+#: src/components/users/RootAuthMethods.jsx:40
 msgid ""
 "Please, define at least one authentication method for logging into the "
 "system as root."
 msgstr ""
 
-#: src/components/users/RootAuthMethods.jsx:46
+#: src/components/users/RootAuthMethods.jsx:47
 msgid "Set a password"
 msgstr ""
 
-#: src/components/users/RootAuthMethods.jsx:50
+#: src/components/users/RootAuthMethods.jsx:51
 msgid "Upload a SSH Public Key"
 msgstr ""
 
-#: src/components/users/RootAuthMethods.jsx:100
-#: src/components/users/RootAuthMethods.jsx:112
+#: src/components/users/RootAuthMethods.jsx:74
+#: src/components/users/RootAuthMethods.jsx:86
 msgid "Set"
 msgstr ""
 
-#: src/components/users/RootAuthMethods.jsx:132
+#: src/components/users/RootAuthMethods.jsx:97
 msgid "Already set"
 msgstr ""
 
-#: src/components/users/RootAuthMethods.jsx:132
-#: src/components/users/RootAuthMethods.jsx:136
+#: src/components/users/RootAuthMethods.jsx:97
+#: src/components/users/RootAuthMethods.jsx:101
 msgid "Not set"
 msgstr ""
 
 #. TRANSLATORS: table header, user authentication method
-#: src/components/users/RootAuthMethods.jsx:157
+#: src/components/users/RootAuthMethods.jsx:122
 msgid "Method"
 msgstr ""
 
-#: src/components/users/RootAuthMethods.jsx:174
+#: src/components/users/RootAuthMethods.jsx:139
 msgid "SSH Key"
 msgstr ""
 
-#: src/components/users/RootAuthMethods.jsx:193
+#: src/components/users/RootAuthMethods.jsx:158
 msgid "Change the root password"
 msgstr ""
 
-#: src/components/users/RootAuthMethods.jsx:193
+#: src/components/users/RootAuthMethods.jsx:158
 msgid "Set a root password"
 msgstr ""
 
-#: src/components/users/RootAuthMethods.jsx:203
+#: src/components/users/RootAuthMethods.jsx:168
 msgid "Edit the SSH Public Key for root"
 msgstr ""
 
-#: src/components/users/RootAuthMethods.jsx:204
+#: src/components/users/RootAuthMethods.jsx:169
 msgid "Add a SSH Public Key for root"
 msgstr ""
 
-#: src/components/users/RootPasswordPopup.jsx:43
+#: src/components/users/RootPasswordPopup.jsx:44
 msgid "Root password"
 msgstr ""
 
