@@ -32,6 +32,7 @@ import { BUSY } from "~/client/status";
 import { useL10nConfigChanges } from "~/queries/l10n";
 import { useIssuesChanges } from "./queries/issues";
 import { PATHS as PRODUCT_PATHS } from "./routes/products";
+import SimpleLayout from "./SimpleLayout";
 
 /**
  * Main application component.
@@ -56,7 +57,12 @@ function App() {
       return <Installation status={status} />;
     }
 
-    if (!products || !connected) return <Loading />;
+    if (!products || !connected)
+      return (
+        <SimpleLayout showOutlet={false}>
+          <Loading />
+        </SimpleLayout>
+      );
 
     if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
       return <Loading />;
