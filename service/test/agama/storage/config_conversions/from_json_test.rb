@@ -42,12 +42,22 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         "volumes"          => ["/", "swap"],
         "volume_templates" => [
           {
-            "mount_path" => "/",
-            "outline"    => { "required" => true }
+            "mount_path" => "/", "filesystem" => "btrfs", "size" => { "auto" => true },
+            "outline" => {
+              "required" => true, "snapshots_configurable" => true,
+              "auto_size" => {
+                "base_min" => "5 GiB", "base_max" => "10 GiB",
+                "min_fallback_for" => ["/home"], "max_fallback_for" => ["/home"],
+                "snapshots_increment" => "300%"
+              }
+            }
           },
           {
             "mount_path" => "/home",
-            "outline"    => { "required" => false }
+            "outline"    => {
+              "required" => false, "filesystem" => "xfs",
+              "size" => { "auto" => false, "min" => "5 GiB" }
+            }
           },
           {
             "mount_path" => "swap",
@@ -69,10 +79,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           {
             ptableType: "gpt",
             partitions: [
-              {
-                format: { filesystem: "ext4" },
-                mount: { path: "/" }
-              }
+              { filesystem: { path: "/", type: "ext4" } }
             ]
           }
         ]

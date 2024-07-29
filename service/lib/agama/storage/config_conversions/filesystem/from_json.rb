@@ -60,7 +60,7 @@ module Agama
           # @param default [Configs::Filesystem, nil]
           # @return [Configs::FilesystemType]
           def convert_type(default = nil)
-            FilesystemType::FromJSON.new(format_json[:type]).convert(default)
+            FilesystemType::FromJSON.new(filesystem_json[:type]).convert(default)
           end
         end
       end
