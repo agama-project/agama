@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -32,13 +32,14 @@ const originalCreateElement = document.createElement;
 const executor = jest.fn();
 const fetchLogsFn = jest.fn();
 
-beforeEach(() => {
+beforeAll(() => {
+  jest.spyOn(console, "error").mockImplementation();
   window.URL.createObjectURL = jest.fn(() => "fake-blob-url");
   window.URL.revokeObjectURL = jest.fn();
 
   fetchLogsFn.mockImplementation(() => new Promise(executor));
 
-  createClient.mockImplementation(() => {
+  (createClient as jest.Mock).mockImplementation(() => {
     return {
       manager: {
         fetchLogs: fetchLogsFn,
@@ -47,22 +48,22 @@ beforeEach(() => {
   });
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-  window.URL.createObjectURL.mockRestore();
-  window.URL.revokeObjectURL.mockRestore();
+afterAll(() => {
+  jest.restoreAllMocks(); // <-- it restore all spies
+  (window.URL.createObjectURL as jest.Mock).mockRestore();
+  (window.URL.revokeObjectURL as jest.Mock).mockRestore();
 });
 
 describe("LogsButton", () => {
   it("renders a button for downloading logs", () => {
     installerRender(<LogsButton />);
-    screen.getByRole("button", "Download logs");
+    screen.getByRole("button", { name: "Download logs" });
   });
 
   describe("when user clicks on it", () => {
     it("inits download logs process", async () => {
       const { user } = installerRender(<LogsButton />);
-      const button = screen.getByRole("button", "Download logs");
+      const button = screen.getByRole("button", { name: "Download logs" });
       await user.click(button);
       expect(fetchLogsFn).toHaveBeenCalled();
     });
@@ -70,7 +71,7 @@ describe("LogsButton", () => {
     it("changes button text, puts it as disabled, and displays an informative alert", async () => {
       const { user } = installerRender(<LogsButton />);
 
-      const button = screen.getByRole("button", "Download logs");
+      const button = screen.getByRole("button", { name: "Download logs" });
       expect(button).not.toHaveAttribute("disabled");
 
       await user.click(button);
@@ -102,18 +103,20 @@ describe("LogsButton", () => {
         // since its used internally by jsdom. Simply spying it is not enough because we want to
         // mock only the call to the HTMLAnchorElement creation that happens when user clicks on the
         // "Download logs".
-        document._createElement = document.createElement;
+        // @ts-expect-error
+        document.originalCreateElement = originalCreateElement;
 
         const anchorMock = document.createElement("a");
         anchorMock.setAttribute = jest.fn();
         anchorMock.click = jest.fn();
 
         jest.spyOn(document, "createElement").mockImplementation((tag) => {
-          return tag === "a" ? anchorMock : document._createElement(tag);
+          // @ts-expect-error
+          return tag === "a" ? anchorMock : document.originalCreateElement(tag);
         });
 
         // Now, let's simulate the "Download logs" user click
-        const button = screen.getByRole("button", "Download logs");
+        const button = screen.getByRole("button", { name: "Download logs" });
         await user.click(button);
 
         // And test what we're looking for
@@ -140,7 +143,7 @@ describe("LogsButton", () => {
       it("displays a warning alert along with the Download logs button", async () => {
         const { user } = installerRender(<LogsButton />);
 
-        const button = screen.getByRole("button", "Download logs");
+        const button = screen.getByRole("button", { name: "Download logs" });
         expect(button).not.toHaveAttribute("disabled");
 
         await user.click(button);
