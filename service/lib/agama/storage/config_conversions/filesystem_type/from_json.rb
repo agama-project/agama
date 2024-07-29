@@ -20,13 +20,13 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/configs/btrfs"
-require "agama/storage/configs/filesystem"
+require "agama/storage/configs/filesystem_type"
 require "y2storage/filesystems/type"
 
 module Agama
   module Storage
     module ConfigConversions
-      module Filesystem
+      module FilesystemType
         # Filesystem conversion from JSON hash according to schema.
         class FromJSON
           # @param filesystem_json [Hash, String]
@@ -39,12 +39,12 @@ module Agama
           # @param default [Configs::Filesystem, nil]
           # @return [Configs::Filesystem]
           def convert(default = nil)
-            default_config = default.dup || Configs::Filesystem.new
+            default_config = default.dup || Configs::FilesystemType.new
 
             default_config.tap do |config|
               btrfs = convert_btrfs(config.btrfs)
 
-              config.type = convert_type
+              config.fstype = convert_type
               config.btrfs = btrfs if btrfs
             end
           end
