@@ -96,7 +96,7 @@ use utoipa::OpenApi;
         schemas(crate::l10n::Keymap),
         schemas(crate::l10n::LocaleEntry),
         schemas(crate::l10n::TimezoneEntry),
-        schemas(crate::l10n::web::LocaleConfig),
+        schemas(agama_lib::localization::model::LocaleConfig),
         schemas(crate::manager::web::InstallerStatus),
         schemas(crate::network::model::Connection),
         schemas(crate::network::model::Device),
