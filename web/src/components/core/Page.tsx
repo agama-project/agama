@@ -19,12 +19,11 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   Button,
+  ButtonProps,
   Card,
   CardBody,
   CardHeader,
@@ -37,38 +36,15 @@ import { _ } from "~/i18n";
 import tabsStyles from "@patternfly/react-styles/css/components/Tabs/tabs";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
 
-/**
- * @typedef {import("@patternfly/react-core").ButtonProps} ButtonProps
- */
+type PageActionProps = { navigateTo?: string } & ButtonProps;
+type PageCancelActionProps = { text?: string } & PageActionProps;
 
 /**
- * Wrapper component for holding Page actions
+ * A convenient component for rendering a page action
  *
- * Useful and required for placing the components to be used as Page actions, usually a
- * Page.Action or PF/Button
- *
- * @see Page examples.
- *
- * @param {object} props - Component props.
- * @param {React.ReactNode} props.children - Components to be rendered as actions.
+ * Built on top of {@link https://www.patternfly.org/components/button | PF/Button}
  */
-const Actions = ({ children }) => <>{children}</>;
-
-/**
- * A convenient component representing a Page action
- *
- * Built on top of {@link https://www.patternfly.org/components/button PF/Button}
- *
- * @see Page examples.
- *
- * @typedef {object} ActionProps
- * @property {string} [navigateTo]
- *
- * @typedef {ActionProps & ButtonProps} PageActionProps
- *
- * @param {PageActionProps} props
- */
-const Action = ({ navigateTo, children, ...props }) => {
+const Action = ({ navigateTo, children, ...props }: PageActionProps) => {
   const navigate = useNavigate();
 
   const onClickFn = props.onClick;
@@ -78,36 +54,40 @@ const Action = ({ navigateTo, children, ...props }) => {
     if (navigateTo) navigate(navigateTo);
   };
 
-  if (!props.size) props.size = "lg";
-
-  return <Button {...props}>{children}</Button>;
+  const buttonProps = { size: "lg" as const, ...props };
+  return <Button {...buttonProps}>{children}</Button>;
 };
 
 /**
- * Simple action for navigating back
- * @param {ActionProps & { text?: string }} props
+ * Convenient component for a Cancel / Back action
  */
-const CancelAction = ({ text = _("Cancel"), navigateTo }) => {
-  const navigate = useNavigate();
-
+const CancelAction = ({
+  text = _("Cancel"),
+  navigateTo = "..",
+  ...props
+}: PageCancelActionProps) => {
   return (
-    <Action variant="link" onClick={() => navigate(navigateTo || "..")}>
+    <Action variant="link" navigateTo={navigateTo} {...props}>
       {text}
     </Action>
   );
 };
 
-// FIXME: would replace Actions
-const NextActions = ({ children }) => (
-  <PageGroup
+/**
+ * Wrapper component built on top of PF/PageSection for holding the Page actions
+ *
+ * Required for placing content to be used as Page actions, usually a
+ * Page.Action or a  PF/Button
+ */
+const Actions = ({ children }: React.PropsWithChildren) => (
+  <PageSection
     hasShadowTop
     className={flexStyles.flexGrow_0}
     stickyOnBreakpoint={{ default: "bottom" }}
+    variant="light"
   >
-    <PageSection variant="light">
-      <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>{children}</Flex>
-    </PageSection>
-  </PageGroup>
+    <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>{children}</Flex>
+  </PageSection>
 );
 
 const MainContent = ({ children, ...props }) => (
@@ -168,35 +148,19 @@ const CardSection = ({ title, children, ...props }) => {
 };
 
 /**
- * Displays an installation page
- * @component
- *
- * @note Sidebar is mounted as sibling of the page content to make it work
- * as expected (e.g., changing the inert attribute of its siblings according to its visibility).
+ * Wraps children in a PF/PageGroup
  *
  * @example <caption>Simple usage</caption>
- *   <Page icon="manage_accounts" title="Users settings">
+ *   <Page>
  *     <UserSectionContent />
  *   </Page>
- *
- * @param {object} props
- * @param {string} [props.icon] - The icon for the page.
- * @param {string} [props.title="Agama"] - The title for the page. By default it
- *   uses the name of the tool, do not mark it for translation.
- * @param {boolean} [props.mountSidebar=true] - Whether include the core/Sidebar component.
- * @param {React.ReactNode} [props.children] - The page content.
  */
-const Page = () => {
-  return (
-    <PageGroup>
-      <Outlet />
-    </PageGroup>
-  );
+const Page = ({ children }) => {
+  return <PageGroup>{children}</PageGroup>;
 };
 
 Page.CardSection = CardSection;
-Page.Actions = Actions;
-Page.NextActions = NextActions;
+Page.NextActions = Actions;
 Page.Action = Action;
 Page.MainContent = MainContent;
 Page.CancelAction = CancelAction;

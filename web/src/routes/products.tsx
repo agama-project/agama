@@ -20,29 +20,28 @@
  */
 
 import React from "react";
-import { Page } from "~/components/core";
-import UsersPage from "./UsersPage";
-import FirstUserForm from "./FirstUserForm";
-import { N_ } from "~/i18n";
+import { ProductSelectionPage, ProductSelectionProgress } from "~/components/product";
+import { Route } from "~/types/routes";
 
-const routes = {
-  path: "/users",
-  element: <Page />,
-  handle: {
-    name: N_("Users"),
-    icon: "manage_accounts",
-  },
-  children: [
-    { index: true, element: <UsersPage /> },
-    {
-      path: "first",
-      element: <FirstUserForm />,
-    },
-    {
-      path: "first/edit",
-      element: <FirstUserForm />,
-    },
-  ],
+const PATHS = {
+  root: "/products",
+  changeProduct: "/products",
+  progress: "/products/progress",
 };
 
+const routes = (): Route => ({
+  path: PATHS.root,
+  children: [
+    {
+      index: true,
+      element: <ProductSelectionPage />,
+    },
+    {
+      path: PATHS.progress,
+      element: <ProductSelectionProgress />,
+    },
+  ],
+});
+
 export default routes;
+export { PATHS };

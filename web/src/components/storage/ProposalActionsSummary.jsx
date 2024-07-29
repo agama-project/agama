@@ -28,6 +28,7 @@ import DevicesManager from "~/components/storage/DevicesManager";
 import { _, n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { PATHS } from "~/routes/storage";
 
 /**
  * @typedef {import ("~/client/storage").Action} Action
@@ -235,7 +236,7 @@ export default function ProposalActionsSummary({
         isLoading ? (
           <Skeleton fontSize="sm" width="100px" />
         ) : (
-          <ButtonLink to="space-policy">{_("Change")}</ButtonLink>
+          <ButtonLink to={PATHS.spacePolicy}>{_("Change")}</ButtonLink>
         )
       }
       cardProps={{ isFullHeight: false }}

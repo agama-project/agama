@@ -19,26 +19,35 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
-import { Link } from "react-router-dom";
-import buttonStyles from "@patternfly/react-styles/css/components/Button/button";
+import { NetworkPage, IpSettingsForm, WifiSelectorPage } from "~/components/network";
+import { Route } from "~/types/routes";
+import { N_ } from "~/i18n";
 
-// TODO: Evaluate which is better, this approach or just using a
-// PF/Button with onClick callback and "component" prop sets as "a"
+const PATHS = {
+  root: "/network",
+  editConnection: "/network/connections/:id/edit",
+  wifis: "/network/wifis",
+};
 
-export default function ButtonLink({ to, isPrimary = false, children, ...props }) {
-  return (
-    <Link
-      to={to}
-      className={[
-        buttonStyles.button,
-        buttonStyles.modifiers[isPrimary ? "primary" : "secondary"],
-      ].join(" ")}
-      {...props}
-    >
-      {children}
-    </Link>
-  );
-}
+const routes = (): Route => ({
+  path: PATHS.root,
+  handle: {
+    name: N_("Network"),
+    icon: "settings_ethernet",
+  },
+  children: [
+    { index: true, element: <NetworkPage /> },
+    {
+      path: PATHS.editConnection,
+      element: <IpSettingsForm />,
+    },
+    {
+      path: PATHS.wifis,
+      element: <WifiSelectorPage />,
+    },
+  ],
+});
+
+export default routes;
+export { PATHS };

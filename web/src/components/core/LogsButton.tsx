@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,26 +20,22 @@
  */
 
 import React, { useState } from "react";
-import { useInstallerClient } from "~/context/installer";
-import { useCancellablePromise } from "~/utils";
-
-import { Alert, Button } from "@patternfly/react-core";
+import { Alert, Button, ButtonProps } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
+import { useInstallerClient } from "~/context/installer";
+import { useCancellablePromise } from "~/utils";
 
 const FILENAME = "agama-installation-logs.tar.gz";
 
 /**
- * Button for collecting and downloading YaST logs
- * @component
- *
- * @param {object} props
+ * Button for collecting and downloading Agama/YaST logs
  */
-const LogsButton = ({ ...props }) => {
+const LogsButton = (props: ButtonProps) => {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
-  const [isCollecting, setIsCollecting] = useState(false);
   const [error, setError] = useState(null);
+  const [isCollecting, setIsCollecting] = useState(false);
 
   /**
    * Helper function for triggering the download automatically
@@ -49,7 +45,7 @@ const LogsButton = ({ ...props }) => {
    *
    * @param {string} url - the file location to download from
    */
-  const autoDownload = (url) => {
+  const autoDownload = (url: string) => {
     const a = document.createElement("a");
     a.href = url;
     a.download = FILENAME;
@@ -91,7 +87,8 @@ const LogsButton = ({ ...props }) => {
   return (
     <>
       <Button
-        variant="plain"
+        isInline
+        variant="link"
         style={{ color: "white" }}
         onClick={collectAndDownload}
         isLoading={isCollecting}

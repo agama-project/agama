@@ -155,7 +155,7 @@ devices.",
   ).split(/[[\]]/);
 
   return (
-    <>
+    <Page>
       <PageSection variant="light" stickyOnBreakpoint={{ sm: "top" }}>
         <h2>{_("Select installation device")}</h2>
       </PageSection>
@@ -254,6 +254,6 @@ devices.",
           {_("Accept")}
         </Page.Action>
       </Page.NextActions>
-    </>
+    </Page>
   );
 }

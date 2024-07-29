@@ -30,7 +30,9 @@ import { useProduct, useProductChanges } from "./queries/software";
 import { CONFIG, INSTALL, STARTUP } from "~/client/phase";
 import { BUSY } from "~/client/status";
 import { useL10nConfigChanges } from "~/queries/l10n";
-import { useIssues, useIssuesChanges } from "./queries/issues";
+import { useIssuesChanges } from "./queries/issues";
+import { PATHS as PRODUCT_PATHS } from "./routes/products";
+import SimpleLayout from "./SimpleLayout";
 
 /**
  * Main application component.
@@ -55,18 +57,23 @@ function App() {
       return <Installation status={status} />;
     }
 
-    if (!products || !connected) return <Loading />;
+    if (!products || !connected)
+      return (
+        <SimpleLayout showOutlet={false}>
+          <Loading />
+        </SimpleLayout>
+      );
 
     if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
       return <Loading />;
     }
 
-    if (selectedProduct === undefined && location.pathname !== "/products") {
+    if (selectedProduct === undefined && location.pathname !== PRODUCT_PATHS.root) {
       return <Navigate to="/products" />;
     }
 
-    if (phase === CONFIG && status === BUSY && location.pathname !== "/products/progress") {
-      return <Navigate to="/products/progress" />;
+    if (phase === CONFIG && status === BUSY && location.pathname !== PRODUCT_PATHS.progress) {
+      return <Navigate to={PRODUCT_PATHS.progress} />;
     }
 
     return <Outlet />;

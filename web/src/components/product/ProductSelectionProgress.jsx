@@ -23,9 +23,10 @@ import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { _ } from "~/i18n";
 import { useProduct } from "~/queries/software";
-import { ProgressReport } from "~/components/core";
+import { Page, ProgressReport } from "~/components/core";
 import { IDLE } from "~/client/status";
 import { useInstallerClient } from "~/context/installer";
+import { PATHS } from "~/router";
 
 /**
  * @component
@@ -42,13 +43,15 @@ function ProductSelectionProgress() {
     return manager.onStatusChange(setStatus);
   }, [manager, setStatus]);
 
-  if (status === IDLE) return <Navigate to="/" replace />;
+  if (status === IDLE) return <Navigate to={PATHS.root} replace />;
 
   return (
-    <ProgressReport
-      title={_("Configuring the product, please wait ...")}
-      firstStep={selectedProduct.name}
-    />
+    <Page>
+      <ProgressReport
+        title={_("Configuring the product, please wait ...")}
+        firstStep={selectedProduct.name}
+      />
+    </Page>
   );
 }
 

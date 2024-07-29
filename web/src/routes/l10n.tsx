@@ -20,20 +20,19 @@
  */
 
 import React from "react";
-import { Page } from "~/components/core";
 import { L10nPage, LocaleSelection, KeymapSelection, TimezoneSelection } from "~/components/l10n";
-import { queryClient } from "~/context/app";
-import { configQuery, localesQuery, keymapsQuery, timezonesQuery } from "~/queries/l10n";
+import { Route } from "~/types/routes";
 import { N_ } from "~/i18n";
 
-const L10N_PATH = "/l10n";
-const LOCALE_SELECTION_PATH = "locale/select";
-const KEYMAP_SELECTION_PATH = "keymap/select";
-const TIMEZONE_SELECTION_PATH = "timezone/select";
+const PATHS = {
+  root: "/l10n",
+  localeSelection: "/l10n/locale/select",
+  keymapSelection: "/l10n/keymap/select",
+  timezoneSelection: "/l10n/timezone/select",
+};
 
-const routes = {
-  path: L10N_PATH,
-  element: <Page />,
+const routes = (): Route => ({
+  path: PATHS.root,
   handle: {
     name: N_("Localization"),
     icon: "globe",
@@ -44,19 +43,19 @@ const routes = {
       element: <L10nPage />,
     },
     {
-      path: LOCALE_SELECTION_PATH,
+      path: PATHS.localeSelection,
       element: <LocaleSelection />,
     },
     {
-      path: KEYMAP_SELECTION_PATH,
+      path: PATHS.keymapSelection,
       element: <KeymapSelection />,
     },
     {
-      path: TIMEZONE_SELECTION_PATH,
+      path: PATHS.timezoneSelection,
       element: <TimezoneSelection />,
     },
   ],
-};
+});
 
 export default routes;
-export { L10N_PATH, LOCALE_SELECTION_PATH, KEYMAP_SELECTION_PATH, TIMEZONE_SELECTION_PATH };
+export { PATHS };

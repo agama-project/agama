@@ -36,6 +36,7 @@ import { useIssues } from "~/queries/issues";
 import { usePatterns, useProposal, useProposalChanges } from "~/queries/software";
 import { Pattern, SelectedBy } from "~/types/software";
 import { _ } from "~/i18n";
+import { PATHS } from "~/routes/software";
 
 /**
  * List of selected patterns.
@@ -66,7 +67,7 @@ const SelectedPatterns = ({ patterns }): React.ReactNode => (
   <CardField
     label={_("Selected patterns")}
     actions={
-      <ButtonLink to="patterns/select" isPrimary>
+      <ButtonLink to={PATHS.patternsSelection} isPrimary>
         {_("Change selection")}
       </ButtonLink>
     }
@@ -100,7 +101,7 @@ function SoftwarePage(): React.ReactNode {
   useProposalChanges();
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{_("Software")}</h2>
       </Page.Header>
@@ -122,7 +123,7 @@ function SoftwarePage(): React.ReactNode {
           </GridItem>
         </Grid>
       </Page.MainContent>
-    </>
+    </Page>
   );
 }
 

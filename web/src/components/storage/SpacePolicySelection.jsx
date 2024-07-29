@@ -167,7 +167,7 @@ export default function SpacePolicySelection() {
   const xl2Columns = policy.id === "custom" ? 6 : 12;
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{_("Space policy")}</h2>
       </Page.Header>
@@ -200,6 +200,6 @@ export default function SpacePolicySelection() {
           {_("Accept")}
         </Page.Action>
       </Page.NextActions>
-    </>
+    </Page>
   );
 }

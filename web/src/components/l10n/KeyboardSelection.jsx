@@ -72,7 +72,7 @@ export default function KeyboardSelection() {
   }
 
   return (
-    <>
+    <Page>
       <Page.Header>
         <h2>{_("Keyboard selection")}</h2>
         <ListSearch placeholder={searchHelp} elements={keymaps} onChange={setFilteredKeymaps} />
@@ -90,6 +90,6 @@ export default function KeyboardSelection() {
           {_("Select")}
         </Page.Action>
       </Page.NextActions>
-    </>
+    </Page>
   );
 }

@@ -20,6 +20,7 @@
  */
 
 export { default as About } from "./About";
+export { default as ChangeProductLink } from "./ChangeProductLink";
 export { default as Description } from "./Description";
 export { default as Section } from "./Section";
 export { default as FormLabel } from "./FormLabel";

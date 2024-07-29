@@ -44,6 +44,14 @@ button.pf-m-link {
   }
 }
 
+.pf-v5-c-page__sidebar {
+  button.pf-m-link,
+  a.pf-m-link {
+    color: white;
+    text-decoration: underline;
+  }
+}
+
 // Do not reserve space for empty nodes.
 div:empty {
   display: none;

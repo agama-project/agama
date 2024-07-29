@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,24 +20,36 @@
  */
 
 import React from "react";
-import { EmptyState, EmptyStateIcon, EmptyStateHeader, Spinner } from "@patternfly/react-core";
-import { Center, Icon } from "~/components/layout";
-import { _ } from "~/i18n";
+import UsersPage from "~/components/users/UsersPage";
+import FirstUserForm from "~/components/users/FirstUserForm";
+import { Route } from "~/types/routes";
+import { N_ } from "~/i18n";
 
-const LoadingIcon = () => <Spinner size="xl" />;
+const PATHS = {
+  root: "/users",
+  firstUser: {
+    create: "/users/first",
+    edit: "/users/first/edit",
+  },
+};
+const routes = (): Route => ({
+  path: PATHS.root,
+  handle: {
+    name: N_("Users"),
+    icon: "manage_accounts",
+  },
+  children: [
+    { index: true, element: <UsersPage /> },
+    {
+      path: PATHS.firstUser.create,
+      element: <FirstUserForm />,
+    },
+    {
+      path: PATHS.firstUser.edit,
+      element: <FirstUserForm />,
+    },
+  ],
+});
 
-function Loading({ text = _("Loading installation environment, please wait.") }) {
-  return (
-    <Center>
-      <EmptyState variant="xl">
-        <EmptyStateHeader
-          titleText={text}
-          headingLevel="h1"
-          icon={<EmptyStateIcon icon={LoadingIcon} />}
-        />
-      </EmptyState>
-    </Center>
-  );
-}
-
-export default Loading;
+export default routes;
+export { PATHS };

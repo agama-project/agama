@@ -28,6 +28,7 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceLabel } from "~/components/storage/utils";
 import { Icon } from "~/components/layout";
+import { PATHS } from "~/routes/storage";
 
 /**
  * @typedef {import ("~/client/storage").StorageDevice} StorageDevice
@@ -42,7 +43,7 @@ import { Icon } from "~/components/layout";
 const Link = ({ isBold = false }) => {
   const text = _("Change boot options");
 
-  return <RouterLink to="booting-partition">{isBold ? <b>{text}</b> : text}</RouterLink>;
+  return <RouterLink to={PATHS.bootingPartition}>{isBold ? <b>{text}</b> : text}</RouterLink>;
 };
 
 /**

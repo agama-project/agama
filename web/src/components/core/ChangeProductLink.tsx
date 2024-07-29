@@ -20,16 +20,22 @@
  */
 
 import React from "react";
-import OverviewPage from "./OverviewPage";
-import { N_ } from "~/i18n";
+import { Link, LinkProps } from "react-router-dom";
+import { useProduct } from "~/queries/software";
+import { PATHS } from "~/routes/products";
+import { _ } from "~/i18n";
 
-const routes = {
-  path: "/overview",
-  element: <OverviewPage />,
-  handle: {
-    name: N_("Overview"),
-    icon: "list_alt",
-  },
-};
+/**
+ * Link for navigating to the selection product.
+ */
+export default function ChangeProductLink({ children, ...props }: Omit<LinkProps, "to">) {
+  const { products } = useProduct();
 
-export default routes;
+  if (products.length <= 1) return null;
+
+  return (
+    <Link to={PATHS.changeProduct} {...props}>
+      {children || _("Change product")}
+    </Link>
+  );
+}

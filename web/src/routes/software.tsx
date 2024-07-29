@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,9 +19,34 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as Icon } from "./Icon";
-export { default as Center } from "./Center";
-export { default as Loading } from "./Loading";
-export { default as Sidebar } from "./Sidebar";
-export { default as Header } from "./Header";
-export { default as Main } from "./Main";
+import React from "react";
+import SoftwarePage from "~/components/software/SoftwarePage";
+import SoftwarePatternsSelection from "~/components/software/SoftwarePatternsSelection";
+import { Route } from "~/types/routes";
+import { N_ } from "~/i18n";
+
+const PATHS = {
+  root: "/software",
+  patternsSelection: "/software/patterns/select",
+};
+
+const routes = (): Route => ({
+  path: PATHS.root,
+  handle: {
+    name: N_("Software"),
+    icon: "apps",
+  },
+  children: [
+    {
+      index: true,
+      element: <SoftwarePage />,
+    },
+    {
+      path: PATHS.patternsSelection,
+      element: <SoftwarePatternsSelection />,
+    },
+  ],
+});
+
+export default routes;
+export { PATHS };

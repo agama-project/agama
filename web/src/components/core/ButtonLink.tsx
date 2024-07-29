@@ -20,30 +20,22 @@
  */
 
 import React from "react";
-import { Page } from "~/components/core";
-import NetworkPage from "./NetworkPage";
-import IpSettingsForm from "./IpSettingsForm";
-import WifiSelectorPage from "./WifiSelectorPage";
-import { N_ } from "~/i18n";
+import { Link } from "react-router-dom";
+import buttonStyles from "@patternfly/react-styles/css/components/Button/button";
 
-const routes = {
-  path: "/network",
-  element: <Page />,
-  handle: {
-    name: N_("Network"),
-    icon: "settings_ethernet",
-  },
-  children: [
-    { index: true, element: <NetworkPage /> },
-    {
-      path: "connections/:id/edit",
-      element: <IpSettingsForm />
-    },
-    {
-      path: "wifis",
-      element: <WifiSelectorPage />,
-    }
-  ]
-};
+// TODO: Evaluate which is better, this approach or just using a
+// PF/Button with onClick callback and "component" prop sets as "a"
 
-export default routes;
+export default function ButtonLink({ to, isPrimary = false, children, ...props }) {
+  return (
+    <Link
+      to={to}
+      className={[buttonStyles.button, buttonStyles.modifiers[isPrimary ? "primary" : "scondary"]]
+        .join(" ")
+        .trim()}
+      {...props}
+    >
+      {children}
+    </Link>
+  );
+}

@@ -19,29 +19,24 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Page } from "~/components/core";
-import SoftwarePage from "./SoftwarePage";
-import SoftwarePatternsSelection from "./SoftwarePatternsSelection";
-import { N_ } from "~/i18n";
+import React, { Suspense } from "react";
+import { Outlet } from "react-router-dom";
+import { Page } from "@patternfly/react-core";
+import { Header, Loading, Sidebar } from "~/components/layout";
+import { useProduct } from "~/queries/software";
+import { _ } from "~/i18n";
 
-const routes = {
-  path: "/software",
-  element: <Page />,
-  handle: {
-    name: N_("Software"),
-    icon: "apps",
-  },
-  children: [
-    {
-      index: true,
-      element: <SoftwarePage />,
-    },
-    {
-      path: "patterns/select",
-      element: <SoftwarePatternsSelection />,
-    },
-  ],
-};
+/**
+ * Wrapper application component for laying out the content.
+ */
+export default function Main() {
+  useProduct({ suspense: true });
 
-export default routes;
+  return (
+    <Page isManagedSidebar header={<Header />} sidebar={<Sidebar />}>
+      <Suspense fallback={<Loading />}>
+        <Outlet />
+      </Suspense>
+    </Page>
+  );
+}
