@@ -1,7 +1,12 @@
 <constraints>
   <hardware>
+    <jobs>4</jobs>
     <disk>
       <size unit="G">20</size>
     </disk>
+    <physicalmemory>
+      <size unit="G">8</size>
+    </physicalmemory>
   </hardware>
+  <hostlabel exclude="true">SLOW_CPU</hostlabel>
 </constraints>
