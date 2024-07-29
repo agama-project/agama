@@ -27,15 +27,15 @@ module Agama
       class Drive
         attr_accessor :search
 
-        # @return [Encrypt]
-        attr_accessor :encrypt
+        # @return [Encryption]
+        attr_accessor :encryption
 
-        # @return [Format]
-        attr_accessor :format
+        # @return [Filesystem]
+        attr_accessor :filesystem
 
-        # @return [Mount]
-        attr_accessor :mount
         attr_accessor :ptable_type
+
+        # @return [Array<Partition>]
         attr_accessor :partitions
 
         # @param mount_path [String]

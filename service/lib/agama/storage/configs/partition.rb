@@ -26,9 +26,8 @@ module Agama
         attr_accessor :search
         attr_accessor :id
         attr_accessor :size
-        attr_accessor :encrypt
-        attr_accessor :format
-        attr_accessor :mount
+        attr_accessor :encryption
+        attr_accessor :filesystem
 
         def search_device(devicegraph, parent_sid, used_sids)
           @search ||= default_search
