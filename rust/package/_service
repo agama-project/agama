@@ -14,7 +14,7 @@
   <service name="cargo_vendor" mode="manual">
     <param name="srcdir">agama/rust</param>
      <param name="compression">zst</param>
-     <param name="update">true</param>
+     <param name="update">false</param>
   </service>
   <service name="cargo_audit" mode="manual">
     <param name="srcdir">agama/rust</param>
