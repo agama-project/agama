@@ -30,6 +30,14 @@ const servicesMap = {
   "org.opensuse.Agama.Storage1": "storage",
 };
 
+/**
+ * Returns a query for retrieving the progress information for a given service
+ *
+ * At this point, the services that implement the progress API are
+ * "manager", "software" and "storage".
+ *
+ * @param service - Service to retrieve the progress from (e.g., "manager")
+ */
 const progressQuery = (service: string) => {
   return {
     queryKey: ["progress", service],
@@ -40,17 +48,26 @@ const progressQuery = (service: string) => {
   };
 };
 
-type UseProgressOptions = {
-  suspense: boolean;
-};
-
-const useProgress = (service: string, options?: QueryHookOptions): Progress => {
+/**
+ * Hook that returns the progress for a given service
+ *
+ * @param service - Service to retrieve the progress from
+ * @param options - Query options
+ * @returns Progress information or undefined if unknown
+ */
+const useProgress = (service: string, options?: QueryHookOptions): Progress | undefined => {
   const query = progressQuery(service);
   const func = options?.suspense ? useSuspenseQuery : useQuery;
   const { data } = func(query);
   return data;
 };
 
+/**
+ * Hook that registers a useEffect to listen for progress changes
+ *
+ * It listens for all progress changes but updates only existing
+ * progress queries.
+ */
 const useProgressChanges = () => {
   const client = useInstallerClient();
   const queryClient = useQueryClient();
@@ -78,6 +95,12 @@ const useProgressChanges = () => {
   }, [client, queryClient]);
 };
 
+/**
+ * Hook that invalidates all the existing queries.
+ *
+ * It offers a way to clear previously cached progress information. It is expected to
+ * be used before starting to display the progress.
+ */
 const useResetProgress = () => {
   const queryClient = useQueryClient();
 
