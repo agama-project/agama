@@ -184,7 +184,7 @@
         <package name="ca-certificates"/>
         <package name="ca-certificates-mozilla"/>
     </packages>
-    <packages type="bootstrap" profiles="openSUSE">
+    <packages type="bootstrap" profiles="openSUSE,openSUSE-PXE">
         <package name="openSUSE-release"/>
         <package name="openSUSE-release-ftp"/>
     </packages>
