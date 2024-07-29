@@ -231,7 +231,7 @@ impl BaseHTTPClient {
     }
 
     const NO_TEXT: &'static str = "(Failed to extract error text from HTTP response)";
-    /// Builds [`BackendError`] from response.
+    /// Builds [`ServiceError::BackendError`] from response.
     ///
     /// It contains also processing of response body, that is why it has to be async.
     ///

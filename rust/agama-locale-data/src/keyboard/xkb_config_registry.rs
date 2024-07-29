@@ -1,6 +1,6 @@
 //! This module aims to read the information in the X Keyboard Configuration Database.
 //!
-//! https://freedesktop.org/Software/XKeyboardConfig
+//! <https://freedesktop.org/Software/XKeyboardConfig>
 
 use quick_xml::de::from_str;
 use serde::Deserialize;
