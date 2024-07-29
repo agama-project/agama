@@ -21,7 +21,7 @@ pub struct Store<'a> {
     product: ProductStore<'a>,
     software: SoftwareStore<'a>,
     storage: StorageStore<'a>,
-    localization: LocalizationStore<'a>,
+    localization: LocalizationStore,
 }
 
 impl<'a> Store<'a> {
@@ -30,7 +30,7 @@ impl<'a> Store<'a> {
         http_client: reqwest::Client,
     ) -> Result<Store<'a>, ServiceError> {
         Ok(Self {
-            localization: LocalizationStore::new(connection.clone()).await?,
+            localization: LocalizationStore::new().await?,
             users: UsersStore::new().await?,
             network: NetworkStore::new(http_client).await?,
             product: ProductStore::new(connection.clone()).await?,

@@ -1,51 +1,62 @@
 //! Implements the store for the localization settings.
 // TODO: for an overview see crate::store (?)
 
-use super::{LocalizationClient, LocalizationSettings};
+use super::{LocalizationHTTPClient, LocalizationSettings};
 use crate::error::ServiceError;
-use zbus::Connection;
+use crate::localization::model::LocaleConfig;
 
 /// Loads and stores the storage settings from/to the D-Bus service.
-pub struct LocalizationStore<'a> {
-    localization_client: LocalizationClient<'a>,
+pub struct LocalizationStore {
+    localization_client: LocalizationHTTPClient,
 }
 
-impl<'a> LocalizationStore<'a> {
-    pub async fn new(connection: Connection) -> Result<LocalizationStore<'a>, ServiceError> {
+impl LocalizationStore {
+    pub async fn new() -> Result<LocalizationStore, ServiceError> {
         Ok(Self {
-            localization_client: LocalizationClient::new(connection).await?,
+            localization_client: LocalizationHTTPClient::new().await?,
         })
     }
 
-    pub async fn load(&self) -> Result<LocalizationSettings, ServiceError> {
-        // TODO: we should use a single D-Bus call with Properties.GetAll
-        // but LocaleProxy does not have it, only get_property for individual methods
-        // and properties_proxy is private
+    /// Consume *v* and return its first element, or None.
+    /// This is similar to VecDeque::pop_front but it consumes the whole Vec.
+    fn chestburster(mut v: Vec<String>) -> Option<String> {
+        if v.is_empty() {
+            None
+        } else {
+            Some(v.swap_remove(0))
+        }
+    }
 
-        let opt_language = self.localization_client.language().await?;
-        let keyboard = self.localization_client.keyboard().await?;
-        let timezone = self.localization_client.timezone().await?;
+    pub async fn load(&self) -> Result<LocalizationSettings, ServiceError> {
+        let config = self.localization_client.get_config().await?;
+
+        let opt_language = config
+            .locales
+            .map(|vec_s| Self::chestburster(vec_s))
+            .flatten();
+        let opt_keyboard = config.keymap;
+        let opt_timezone = config.timezone;
 
         Ok(LocalizationSettings {
             language: opt_language,
-            keyboard: Some(keyboard),
-            timezone: Some(timezone),
+            keyboard: opt_keyboard,
+            timezone: opt_timezone,
         })
     }
 
     pub async fn store(&self, settings: &LocalizationSettings) -> Result<(), ServiceError> {
-        if let Some(language) = &settings.language {
-            self.localization_client.set_language(language).await?;
-        }
+        // clones are necessary as we have different structs owning their data
+        let opt_language = settings.language.clone();
+        let opt_keymap = settings.keyboard.clone();
+        let opt_timezone = settings.timezone.clone();
 
-        if let Some(keyboard) = &settings.keyboard {
-            self.localization_client.set_keyboard(keyboard).await?;
-        }
-
-        if let Some(timezone) = &settings.timezone {
-            self.localization_client.set_timezone(timezone).await?;
-        }
-
-        Ok(())
+        let config = LocaleConfig {
+            locales: opt_language.map(|s| vec![s]),
+            keymap: opt_keymap,
+            timezone: opt_timezone,
+            ui_locale: None,
+            ui_keymap: None,
+        };
+        self.localization_client.set_config(&config).await
     }
 }
