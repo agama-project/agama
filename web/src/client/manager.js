@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import { WithProgress, WithStatus } from "./mixins";
+import { WithStatus } from "./mixins";
 
 const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
 
@@ -148,10 +148,6 @@ class ManagerBaseClient {
 /**
  * Client to interact with the Agama manager service
  */
-class ManagerClient extends WithProgress(
-  WithStatus(ManagerBaseClient, "/manager/status", MANAGER_SERVICE),
-  "/manager/progress",
-  MANAGER_SERVICE,
-) {}
+class ManagerClient extends WithStatus(ManagerBaseClient, "/manager/status", MANAGER_SERVICE) {}
 
 export { ManagerClient };
