@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import { Link } from "react-router-dom";
 import buttonStyles from "@patternfly/react-styles/css/components/Button/button";
@@ -32,10 +30,9 @@ export default function ButtonLink({ to, isPrimary = false, children, ...props }
   return (
     <Link
       to={to}
-      className={[
-        buttonStyles.button,
-        buttonStyles.modifiers[isPrimary ? "primary" : "secondary"],
-      ].join(" ")}
+      className={[buttonStyles.button, buttonStyles.modifiers[isPrimary ? "primary" : "scondary"]]
+        .join(" ")
+        .trim()}
       {...props}
     >
       {children}
