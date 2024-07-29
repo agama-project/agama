@@ -34,7 +34,7 @@ import { PATHS } from "~/router";
  * Shows progress steps when a product is selected.
  */
 function ProductSelectionProgress() {
-  const { selectedProduct } = useProduct();
+  const { selectedProduct } = useProduct({ suspense: true });
   const { manager } = useInstallerClient();
   const [status, setStatus] = useState();
 

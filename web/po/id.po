@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-18 02:24+0000\n"
+"POT-Creation-Date: 2024-07-28 02:29+0000\n"
 "PO-Revision-Date: 2024-04-09 17:43+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -58,7 +58,6 @@ msgstr ""
 "Untuk informasi lebih lanjut, silakan kunjungi repositori proyek di %s."
 
 #: src/components/core/About.jsx:92 src/components/core/LogsButton.jsx:126
-#: src/components/software/SoftwarePatternsSelection.jsx:268
 msgid "Close"
 msgstr "Tutup"
 
@@ -86,7 +85,7 @@ msgstr "Lanjutkan"
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:49 src/components/core/Page.jsx:90
 #: src/components/core/Popup.jsx:132
-#: src/components/network/WifiConnectionForm.jsx:134
+#: src/components/network/WifiConnectionForm.jsx:141
 msgid "Cancel"
 msgstr "Batal"
 
@@ -189,14 +188,13 @@ msgstr "Tata letak papan ketik tidak dapat diubah dalam instalasi jarak jauh"
 
 #: src/components/core/InstallerOptions.jsx:142
 #: src/components/network/IpSettingsForm.jsx:228
-#: src/components/product/ProductRegistrationPage.jsx:85
 #: src/components/storage/BootSelection.jsx:250
 #: src/components/storage/DeviceSelection.jsx:254
 #: src/components/storage/EncryptionSettingsDialog.jsx:155
 #: src/components/storage/SpacePolicySelection.jsx:200
 #: src/components/storage/VolumeDialog.jsx:794
 #: src/components/storage/ZFCPPage.jsx:528
-#: src/components/users/FirstUserForm.jsx:303
+#: src/components/users/FirstUserForm.jsx:293
 msgid "Accept"
 msgstr "Terima"
 
@@ -274,11 +272,13 @@ msgstr "Terjadi kesalahan saat mengumpulkan log. Silakan coba lagi."
 msgid "Passwords do not match"
 msgstr "Kata sandi tidak cocok"
 
+#. TRANSLATORS: field label
 #: src/components/core/PasswordAndConfirmationInput.jsx:79
-#: src/components/network/WifiConnectionForm.jsx:121
+#: src/components/network/WifiConnectionForm.jsx:128
+#: src/components/questions/QuestionWithPassword.jsx:48
 #: src/components/storage/iscsi/AuthFields.jsx:90
 #: src/components/storage/iscsi/AuthFields.jsx:94
-#: src/components/users/RootAuthMethods.jsx:165
+#: src/components/users/RootAuthMethods.jsx:130
 msgid "Password"
 msgstr "Kata sandi"
 
@@ -379,11 +379,11 @@ msgstr "Belum ada perangkat yang dipilih"
 
 #: src/components/l10n/L10nPage.jsx:64 src/components/l10n/L10nPage.jsx:72
 #: src/components/l10n/L10nPage.jsx:83
-#: src/components/network/NetworkPage.jsx:112
+#: src/components/network/NetworkPage.jsx:74
 #: src/components/storage/InstallationDeviceField.jsx:108
 #: src/components/storage/ProposalActionsSummary.jsx:238
-#: src/components/users/RootAuthMethods.jsx:100
-#: src/components/users/RootAuthMethods.jsx:112
+#: src/components/users/RootAuthMethods.jsx:74
+#: src/components/users/RootAuthMethods.jsx:86
 msgid "Change"
 msgstr "Ubah"
 
@@ -464,7 +464,7 @@ msgstr "Daftar data alamat"
 #. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:64
-#: src/components/network/ConnectionsTable.jsx:92
+#: src/components/network/ConnectionsTable.jsx:93
 #: src/components/storage/ZFCPPage.jsx:381
 #: src/components/storage/iscsi/InitiatorForm.jsx:52
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:68
@@ -476,41 +476,47 @@ msgstr "Nama"
 
 #. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:66
-#: src/components/network/ConnectionsTable.jsx:93
+#: src/components/network/ConnectionsTable.jsx:94
 msgid "IP addresses"
 msgstr "Alamat IP"
 
-#: src/components/network/ConnectionsTable.jsx:74
-#: src/components/network/WifiNetworksListPage.jsx:107
-#: src/components/network/WifiNetworksListPage.jsx:130
+#. TRANSLATORS: table header aria label
+#: src/components/network/ConnectionsTable.jsx:68
+#, fuzzy
+msgid "Connection actions"
+msgstr "Menyambung"
+
+#: src/components/network/ConnectionsTable.jsx:75
+#: src/components/network/WifiNetworksListPage.jsx:112
+#: src/components/network/WifiNetworksListPage.jsx:135
 #: src/components/storage/PartitionsField.jsx:347
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
-#: src/components/users/FirstUser.jsx:120
+#: src/components/users/FirstUser.jsx:85
 msgid "Edit"
 msgstr "Edit"
 
 #. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:77
+#: src/components/network/ConnectionsTable.jsx:78
 #: src/components/network/IpSettingsForm.jsx:151
 #, c-format
 msgid "Edit connection %s"
 msgstr "Edit koneksi %s"
 
-#: src/components/network/ConnectionsTable.jsx:81
-#: src/components/network/WifiNetworksListPage.jsx:109
-#: src/components/network/WifiNetworksListPage.jsx:137
+#: src/components/network/ConnectionsTable.jsx:82
+#: src/components/network/WifiNetworksListPage.jsx:114
+#: src/components/network/WifiNetworksListPage.jsx:142
 msgid "Forget"
 msgstr "Lupakan"
 
 #. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:83
+#: src/components/network/ConnectionsTable.jsx:84
 #, c-format
 msgid "Forget connection %s"
 msgstr "Lupakan koneksi %s"
 
 #. TRANSLATORS: %s is replaced by a network connection name
-#: src/components/network/ConnectionsTable.jsx:98
+#: src/components/network/ConnectionsTable.jsx:99
 #, c-format
 msgid "Actions for connection %s"
 msgstr "Tindakan untuk koneksi %s"
@@ -571,11 +577,11 @@ msgstr "Gateway"
 msgid "Gateway can be defined only in 'Manual' mode"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:93
+#: src/components/network/NetworkPage.jsx:55
 msgid "No Wi-Fi supported"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:95
+#: src/components/network/NetworkPage.jsx:57
 #, fuzzy
 msgid ""
 "The system does not support Wi-Fi connections, probably because of missing "
@@ -584,129 +590,128 @@ msgstr ""
 "Sistem tidak mendukung sambungan WiFi, mungkin karena perangkat keras yang "
 "tidak ada atau dinonaktifkan."
 
-#: src/components/network/NetworkPage.jsx:109
+#: src/components/network/NetworkPage.jsx:71
 msgid "Wi-Fi"
 msgstr ""
 
 #. TRANSLATORS: button label, connect to a WiFi network
-#: src/components/network/NetworkPage.jsx:112
-#: src/components/network/WifiConnectionForm.jsx:130
-#: src/components/network/WifiNetworksListPage.jsx:105
+#: src/components/network/NetworkPage.jsx:74
+#: src/components/network/WifiConnectionForm.jsx:137
+#: src/components/network/WifiNetworksListPage.jsx:110
 msgid "Connect"
 msgstr "Sambungkan"
 
-#: src/components/network/NetworkPage.jsx:119
+#: src/components/network/NetworkPage.jsx:81
 #, fuzzy, c-format
 msgid "Conected to %s"
 msgstr "Tersambung (%s)"
 
-#: src/components/network/NetworkPage.jsx:126
+#: src/components/network/NetworkPage.jsx:88
 #, fuzzy
 msgid "No connected yet"
 msgstr "Belum ada perangkat yang dipilih"
 
-#: src/components/network/NetworkPage.jsx:127
+#: src/components/network/NetworkPage.jsx:89
 #, fuzzy
 msgid ""
 "The system has not been configured for connecting to a Wi-Fi network yet."
 msgstr "Sistem belum dikonfigurasi untuk menyambung ke jaringan WiFi."
 
-#: src/components/network/NetworkPage.jsx:156
+#: src/components/network/NetworkPage.jsx:102
 msgid "Wired"
 msgstr ""
 
-#: src/components/network/NetworkPage.jsx:160
+#: src/components/network/NetworkPage.jsx:104
 #, fuzzy
 msgid "No wired connections found"
 msgstr "Tidak ditemukan koneksi kabel."
 
-#: src/components/network/NetworkPage.jsx:173
-#: src/components/network/routes.js:59
+#: src/components/network/NetworkPage.jsx:114
+#: src/components/network/routes.js:33
 msgid "Network"
 msgstr "Jaringan"
 
 #. TRANSLATORS: WiFi authentication mode
-#: src/components/network/WifiConnectionForm.jsx:43
+#: src/components/network/WifiConnectionForm.jsx:45
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 msgid "None"
 msgstr "Tidak ada"
 
 #. TRANSLATORS: WiFi authentication mode
-#: src/components/network/WifiConnectionForm.jsx:45
+#: src/components/network/WifiConnectionForm.jsx:47
 msgid "WPA & WPA2 Personal"
 msgstr "WPA & WPA2 Pribadi"
 
-#: src/components/network/WifiConnectionForm.jsx:85
-#: src/components/product/ProductRegistrationPage.jsx:68
+#: src/components/network/WifiConnectionForm.jsx:92
 #: src/components/storage/ZFCPDiskForm.jsx:105
 #: src/components/storage/iscsi/DiscoverForm.jsx:98
 #: src/components/storage/iscsi/LoginForm.jsx:69
-#: src/components/users/FirstUserForm.jsx:217
+#: src/components/users/FirstUserForm.jsx:207
 msgid "Something went wrong"
 msgstr "Ada yang tidak beres"
 
-#: src/components/network/WifiConnectionForm.jsx:86
+#: src/components/network/WifiConnectionForm.jsx:93
 msgid "Please, review provided settings and try again."
 msgstr "Harap tinjau pengaturan yang tersedia dan coba lagi."
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.jsx:92
-#: src/components/network/WifiConnectionForm.jsx:96
+#: src/components/network/WifiConnectionForm.jsx:99
+#: src/components/network/WifiConnectionForm.jsx:103
 msgid "SSID"
 msgstr "SSID"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.jsx:105
-#: src/components/network/WifiConnectionForm.jsx:108
+#: src/components/network/WifiConnectionForm.jsx:112
+#: src/components/network/WifiConnectionForm.jsx:115
 msgid "Security"
 msgstr "Keamanan"
 
 #. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.jsx:117
+#: src/components/network/WifiConnectionForm.jsx:124
 msgid "WPA Password"
 msgstr "Kata Sandi WPA"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:63
-#: src/components/network/WifiNetworksListPage.jsx:117
+#: src/components/network/WifiNetworksListPage.jsx:64
+#: src/components/network/WifiNetworksListPage.jsx:122
 msgid "Connecting"
 msgstr "Menyambung"
 
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:66
-#: src/components/network/WifiNetworksListPage.jsx:121
-#: src/components/network/WifiNetworksListPage.jsx:164
+#: src/components/network/WifiNetworksListPage.jsx:67
+#: src/components/network/WifiNetworksListPage.jsx:126
+#: src/components/network/WifiNetworksListPage.jsx:169
 msgid "Connected"
 msgstr "Tersambung"
 
 #. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
-#: src/components/network/WifiNetworksListPage.jsx:71
-#: src/components/network/WifiNetworksListPage.jsx:119
+#: src/components/network/WifiNetworksListPage.jsx:72
+#: src/components/network/WifiNetworksListPage.jsx:124
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
 msgstr "Terputus"
 
-#: src/components/network/WifiNetworksListPage.jsx:127
+#: src/components/network/WifiNetworksListPage.jsx:132
 #, fuzzy
 msgid "Disconnect"
 msgstr "Terputus"
 
-#: src/components/network/WifiNetworksListPage.jsx:150
+#: src/components/network/WifiNetworksListPage.jsx:155
 #, fuzzy
 msgid "Connect to a hidden network"
 msgstr "Sambungkan ke jaringan tersembunyi"
 
-#: src/components/network/WifiNetworksListPage.jsx:161
+#: src/components/network/WifiNetworksListPage.jsx:166
 #, fuzzy
 msgid "configured"
 msgstr "Jangan konfigurasikan"
 
-#: src/components/network/WifiNetworksListPage.jsx:265
+#: src/components/network/WifiNetworksListPage.jsx:268
 msgid "Connect to hidden network"
 msgstr "Sambungkan ke jaringan tersembunyi"
 
-#: src/components/network/WifiSelectorPage.jsx:136
+#: src/components/network/WifiSelectorPage.jsx:40
 msgid "Connect to a Wi-Fi network"
 msgstr "Sambungkan ke jaringan Wi-Fi"
 
@@ -731,8 +736,6 @@ msgid "Storage"
 msgstr "Penyimpanan"
 
 #: src/components/overview/OverviewPage.jsx:51
-#: src/components/overview/SoftwareSection.jsx:86
-#: src/components/software/SoftwarePage.jsx:181
 #: src/components/software/routes.js:32
 msgid "Software"
 msgstr "Perangkat lunak"
@@ -763,17 +766,6 @@ msgid ""
 "These are the most relevant installation settings. Feel free to browse the "
 "sections in the menu for further details."
 msgstr ""
-
-#: src/components/overview/SoftwareSection.jsx:60
-#, fuzzy
-msgid "The installation will take"
-msgstr "Penginstalan akan memakan waktu %s"
-
-#. TRANSLATORS: %s will be replaced with the installation size, example: "5GiB".
-#: src/components/overview/SoftwareSection.jsx:67
-#, fuzzy, c-format
-msgid "The installation will take %s including:"
-msgstr "Penginstalan akan memakan waktu %s"
 
 #: src/components/overview/StorageSection.jsx:53
 #, fuzzy
@@ -880,19 +872,6 @@ msgstr ""
 msgid "Overview"
 msgstr ""
 
-#: src/components/product/ProductRegistrationPage.jsx:66
-#, c-format
-msgid "Register %s"
-msgstr "Daftarkan %s"
-
-#: src/components/product/ProductRegistrationPage.jsx:73
-msgid "Registration code"
-msgstr "Kode pendaftaran"
-
-#: src/components/product/ProductRegistrationPage.jsx:76
-msgid "Email"
-msgstr "Email"
-
 #: src/components/product/ProductSelectionProgress.jsx:49
 #, fuzzy
 msgid "Configuring the product, please wait ..."
@@ -917,63 +896,10 @@ msgstr "Perangkat Terenkripsi"
 msgid "Encryption Password"
 msgstr "Kata Sandi Enkripsi"
 
-#: src/components/software/SoftwarePage.jsx:85
-msgid "No additional software was selected."
-msgstr ""
-
-#: src/components/software/SoftwarePage.jsx:90
-msgid "The following software patterns are selected for installation:"
-msgstr ""
-
-#: src/components/software/SoftwarePage.jsx:105
-#: src/components/software/SoftwarePage.jsx:119
+#: src/components/questions/QuestionWithPassword.jsx:42
 #, fuzzy
-msgid "Selected patterns"
-msgstr "Pilih zona waktu"
-
-#: src/components/software/SoftwarePage.jsx:108
-#, fuzzy
-msgid "Change selection"
-msgstr "Mengubah zona waktu"
-
-#: src/components/software/SoftwarePage.jsx:123
-msgid ""
-"This product does not allow to select software patterns during installation. "
-"However, you can add additional software once the installation is finished."
-msgstr ""
-
-#: src/components/software/SoftwarePatternsSelection.jsx:223
-#, fuzzy
-msgid "auto selected"
-msgstr "tidak dipilih"
-
-#: src/components/software/SoftwarePatternsSelection.jsx:241
-msgid "None of the patterns match the filter."
-msgstr ""
-
-#: src/components/software/SoftwarePatternsSelection.jsx:248
-#, fuzzy
-msgid "Software selection"
-msgstr "Perangkat Lunak %s"
-
-#. TRANSLATORS: search field placeholder text
-#: src/components/software/SoftwarePatternsSelection.jsx:251
-#: src/components/software/SoftwarePatternsSelection.jsx:252
-msgid "Filter by pattern title or description"
-msgstr ""
-
-#. TRANSLATORS: %s will be replaced by the estimated installation size,
-#. example: "728.8 MiB"
-#: src/components/software/UsedSize.jsx:33
-#, fuzzy, c-format
-msgid "Installation will take %s."
-msgstr "Penginstalan akan memakan waktu %s"
-
-#: src/components/software/UsedSize.jsx:37
-msgid ""
-"This space includes the base system and the selected software patterns, if "
-"any."
-msgstr ""
+msgid "Password Required"
+msgstr "Kata sandi"
 
 #: src/components/storage/BootConfigField.jsx:43
 #, fuzzy
@@ -1080,7 +1006,7 @@ msgstr "ID saluran"
 #: src/components/storage/ZFCPPage.jsx:325
 #: src/components/storage/iscsi/NodesPresenter.jsx:102
 #: src/components/storage/iscsi/NodesPresenter.jsx:123
-#: src/components/users/RootAuthMethods.jsx:159
+#: src/components/users/RootAuthMethods.jsx:124
 msgid "Status"
 msgstr "Status"
 
@@ -2436,11 +2362,11 @@ msgstr ""
 msgid "with custom actions"
 msgstr "%s dengan partisi %d"
 
-#: src/components/users/FirstUser.jsx:35
+#: src/components/users/FirstUser.jsx:34
 msgid "No user defined yet."
 msgstr "Belum ada pengguna yang ditetapkan."
 
-#: src/components/users/FirstUser.jsx:39
+#: src/components/users/FirstUser.jsx:38
 msgid ""
 "Please, be aware that a user must be defined before installing the system to "
 "be able to log into it."
@@ -2448,79 +2374,75 @@ msgstr ""
 "Perlu diketahui bahwa pengguna harus ditetapkan sebelum menginstal sistem "
 "agar dapat masuk ke dalamnya."
 
-#: src/components/users/FirstUser.jsx:45
+#: src/components/users/FirstUser.jsx:44
 msgid "Define a user now"
 msgstr "Tentukan pengguna sekarang"
 
-#: src/components/users/FirstUser.jsx:58
-#: src/components/users/FirstUserForm.jsx:227
+#: src/components/users/FirstUser.jsx:57
+#: src/components/users/FirstUserForm.jsx:217
 msgid "Full name"
 msgstr "Nama lengkap"
 
-#: src/components/users/FirstUser.jsx:59
-#: src/components/users/FirstUserForm.jsx:241
-#: src/components/users/FirstUserForm.jsx:246
-#: src/components/users/FirstUserForm.jsx:249
+#: src/components/users/FirstUser.jsx:58
+#: src/components/users/FirstUserForm.jsx:231
+#: src/components/users/FirstUserForm.jsx:236
+#: src/components/users/FirstUserForm.jsx:239
 msgid "Username"
 msgstr "Nama pengguna"
 
-#: src/components/users/FirstUser.jsx:124
-#: src/components/users/RootAuthMethods.jsx:104
-#: src/components/users/RootAuthMethods.jsx:116
+#: src/components/users/FirstUser.jsx:89
+#: src/components/users/RootAuthMethods.jsx:78
+#: src/components/users/RootAuthMethods.jsx:90
 msgid "Discard"
 msgstr "Buang"
 
-#: src/components/users/FirstUserForm.jsx:57
+#: src/components/users/FirstUserForm.jsx:58
 msgid "Username suggestion dropdown"
 msgstr ""
 
 #. TRANSLATORS: dropdown username suggestions
-#: src/components/users/FirstUserForm.jsx:72
+#: src/components/users/FirstUserForm.jsx:73
 msgid "Use suggested username"
 msgstr ""
 
-#: src/components/users/FirstUserForm.jsx:151
+#: src/components/users/FirstUserForm.jsx:144
 #, fuzzy
 msgid "All fields are required"
 msgstr "Diperlukan nilai ukuran"
 
-#: src/components/users/FirstUserForm.jsx:158
-msgid "Please, try again."
-msgstr ""
-
-#: src/components/users/FirstUserForm.jsx:211
+#: src/components/users/FirstUserForm.jsx:201
 #, fuzzy
 msgid "Create user"
 msgstr "Buat akun pengguna"
 
-#: src/components/users/FirstUserForm.jsx:211
+#: src/components/users/FirstUserForm.jsx:201
 #, fuzzy
 msgid "Edit user"
 msgstr "Edit %s"
 
-#: src/components/users/FirstUserForm.jsx:231
-#: src/components/users/FirstUserForm.jsx:233
+#: src/components/users/FirstUserForm.jsx:221
+#: src/components/users/FirstUserForm.jsx:223
 msgid "User full name"
 msgstr "Nama lengkap pengguna"
 
-#: src/components/users/FirstUserForm.jsx:271
+#: src/components/users/FirstUserForm.jsx:261
 msgid "Edit password too"
 msgstr "Edit kata sandi juga"
 
-#: src/components/users/FirstUserForm.jsx:287
+#: src/components/users/FirstUserForm.jsx:277
 msgid "user autologin"
 msgstr "autologin pengguna"
 
 #. TRANSLATORS: check box label
-#: src/components/users/FirstUserForm.jsx:291
+#: src/components/users/FirstUserForm.jsx:281
 msgid "Auto-login"
 msgstr "Masuk otomatis"
 
-#: src/components/users/RootAuthMethods.jsx:35
+#: src/components/users/RootAuthMethods.jsx:36
 msgid "No root authentication method defined yet."
 msgstr "Belum ada metode autentikasi root yang ditetapkan."
 
-#: src/components/users/RootAuthMethods.jsx:39
+#: src/components/users/RootAuthMethods.jsx:40
 msgid ""
 "Please, define at least one authentication method for logging into the "
 "system as root."
@@ -2528,54 +2450,54 @@ msgstr ""
 "Tentukan setidaknya satu metode autentikasi untuk masuk ke sistem sebagai "
 "root."
 
-#: src/components/users/RootAuthMethods.jsx:46
+#: src/components/users/RootAuthMethods.jsx:47
 msgid "Set a password"
 msgstr "Tetapkan kata sandi"
 
-#: src/components/users/RootAuthMethods.jsx:50
+#: src/components/users/RootAuthMethods.jsx:51
 msgid "Upload a SSH Public Key"
 msgstr "Unggah Kunci Publik SSH"
 
-#: src/components/users/RootAuthMethods.jsx:100
-#: src/components/users/RootAuthMethods.jsx:112
+#: src/components/users/RootAuthMethods.jsx:74
+#: src/components/users/RootAuthMethods.jsx:86
 msgid "Set"
 msgstr "Tetapkan"
 
-#: src/components/users/RootAuthMethods.jsx:132
+#: src/components/users/RootAuthMethods.jsx:97
 msgid "Already set"
 msgstr "Sudah ditetapkan"
 
-#: src/components/users/RootAuthMethods.jsx:132
-#: src/components/users/RootAuthMethods.jsx:136
+#: src/components/users/RootAuthMethods.jsx:97
+#: src/components/users/RootAuthMethods.jsx:101
 msgid "Not set"
 msgstr "Belum ditetapkan"
 
 #. TRANSLATORS: table header, user authentication method
-#: src/components/users/RootAuthMethods.jsx:157
+#: src/components/users/RootAuthMethods.jsx:122
 msgid "Method"
 msgstr "Metode"
 
-#: src/components/users/RootAuthMethods.jsx:174
+#: src/components/users/RootAuthMethods.jsx:139
 msgid "SSH Key"
 msgstr "Kunci SSH"
 
-#: src/components/users/RootAuthMethods.jsx:193
+#: src/components/users/RootAuthMethods.jsx:158
 msgid "Change the root password"
 msgstr "Ubah kata sandi root"
 
-#: src/components/users/RootAuthMethods.jsx:193
+#: src/components/users/RootAuthMethods.jsx:158
 msgid "Set a root password"
 msgstr "Atur kata sandi root"
 
-#: src/components/users/RootAuthMethods.jsx:203
+#: src/components/users/RootAuthMethods.jsx:168
 msgid "Edit the SSH Public Key for root"
 msgstr "Edit Kunci Publik SSH untuk root"
 
-#: src/components/users/RootAuthMethods.jsx:204
+#: src/components/users/RootAuthMethods.jsx:169
 msgid "Add a SSH Public Key for root"
 msgstr "Tambahkan Kunci Publik SSH untuk root"
 
-#: src/components/users/RootPasswordPopup.jsx:43
+#: src/components/users/RootPasswordPopup.jsx:44
 msgid "Root password"
 msgstr "Kata sandi root"
 
@@ -2608,6 +2530,44 @@ msgstr ""
 #: src/components/users/UsersPage.jsx:52
 msgid "Root authentication"
 msgstr "Autentikasi root"
+
+#, c-format
+#~ msgid "Register %s"
+#~ msgstr "Daftarkan %s"
+
+#~ msgid "Registration code"
+#~ msgstr "Kode pendaftaran"
+
+#~ msgid "Email"
+#~ msgstr "Email"
+
+#, fuzzy
+#~ msgid "The installation will take"
+#~ msgstr "Penginstalan akan memakan waktu %s"
+
+#, fuzzy, c-format
+#~ msgid "The installation will take %s including:"
+#~ msgstr "Penginstalan akan memakan waktu %s"
+
+#, fuzzy
+#~ msgid "Selected patterns"
+#~ msgstr "Pilih zona waktu"
+
+#, fuzzy
+#~ msgid "Change selection"
+#~ msgstr "Mengubah zona waktu"
+
+#, fuzzy
+#~ msgid "auto selected"
+#~ msgstr "tidak dipilih"
+
+#, fuzzy
+#~ msgid "Software selection"
+#~ msgstr "Perangkat Lunak %s"
+
+#, fuzzy, c-format
+#~ msgid "Installation will take %s."
+#~ msgstr "Penginstalan akan memakan waktu %s"
 
 #~ msgid "Reading file..."
 #~ msgstr "Membaca berkas..."

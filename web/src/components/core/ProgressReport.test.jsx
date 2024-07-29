@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,98 +22,75 @@
 import React from "react";
 
 import { act, screen } from "@testing-library/react";
-import { installerRender, createCallbackMock } from "~/test-utils";
-import { createClient } from "~/client";
+import { plainRender } from "~/test-utils";
 
 import { ProgressReport } from "~/components/core";
 
-jest.mock("~/client");
+let mockProgress;
 
-let callbacks;
-let onManagerProgressChange = jest.fn();
-let onSoftwareProgressChange = jest.fn();
-let onStorageProgressChange = jest.fn();
-
-beforeEach(() => {
-  createClient.mockImplementation(() => {
-    return {
-      manager: {
-        onProgressChange: onManagerProgressChange,
-        getProgress: jest.fn().mockResolvedValue({
-          message: "Partition disks",
-          current: 1,
-          total: 10,
-          steps: ["Partition disks", "Install software"],
-        }),
-      },
-      software: {
-        onProgressChange: onSoftwareProgressChange,
-      },
-      storage: {
-        onProgressChange: onStorageProgressChange,
-      },
-    };
-  });
-});
+jest.mock("~/queries/progress", () => ({
+  ...jest.requireActual("~/queries/progress"),
+  useProgress: (service) => mockProgress[service],
+}));
 
 describe("ProgressReport", () => {
-  describe("when there is progress information available", () => {
+  describe("when there are details of the storage service", () => {
     beforeEach(() => {
-      const [onManagerProgress, managerCallbacks] = createCallbackMock();
-      const [onSoftwareProgress, softwareCallbacks] = createCallbackMock();
-      const [onStorageProgress, storageCallbacks] = createCallbackMock();
-      onManagerProgressChange = onManagerProgress;
-      onSoftwareProgressChange = onSoftwareProgress;
-      onStorageProgressChange = onStorageProgress;
-      callbacks = {
-        manager: managerCallbacks,
-        software: softwareCallbacks,
-        storage: storageCallbacks,
+      mockProgress = {
+        manager: {
+          message: "Partition disks",
+          current: 1,
+          total: 3,
+          steps: ["Partition disks", "Install software", "Install bootloader"],
+        },
+        storage: {
+          message: "Doing some partitioning",
+          current: 1,
+          total: 1,
+          finished: false,
+        },
       };
     });
 
-    it("shows the progress including the details from the storage service", async () => {
-      installerRender(<ProgressReport />);
+    it("shows the progress including the details", () => {
+      plainRender(<ProgressReport />);
 
-      await screen.findByText(/Waiting/i);
-      await screen.findByText(/Partition disks/i);
-      await screen.findByText(/Install software/i);
-
-      const cb = callbacks.storage[callbacks.storage.length - 1];
-      act(() => {
-        cb({
-          message: "Doing some partitioning",
-          current: 1,
-          total: 10,
-          finished: false,
-        });
-      });
+      expect(screen.getByText(/Partition disks/)).toBeInTheDocument();
+      expect(screen.getByText(/Install software/)).toBeInTheDocument();
 
       // NOTE: not finding the whole text because it is now split in two <span> because of PF/Truncate
-      await screen.findByText(/Doing some/);
-      await screen.findByText(/\(1\/10\)/);
+      expect(screen.getByText(/Doing some/)).toBeInTheDocument();
+      expect(screen.getByText(/\(1\/1\)/)).toBeInTheDocument();
+    });
+  });
+
+  describe("when there are details of the software service", () => {
+    beforeEach(() => {
+      mockProgress = {
+        manager: {
+          message: "Installing software",
+          current: 2,
+          total: 3,
+          steps: ["Partition disks", "Install software", "Install bootloader"],
+        },
+        software: {
+          message: "Installing vim",
+          current: 5,
+          total: 200,
+          finished: false,
+        },
+      };
     });
 
-    it("shows the progress including the details from the software service", async () => {
-      installerRender(<ProgressReport />);
+    it("shows the progress including the details", () => {
+      plainRender(<ProgressReport />);
 
-      await screen.findByText(/Waiting/i);
-      await screen.findByText(/Install software/i);
+      expect(screen.getByText(/Partition disks/)).toBeInTheDocument();
+      expect(screen.getByText(/Install software/)).toBeInTheDocument();
 
-      const cb = callbacks.software[callbacks.software.length - 1];
-      act(() => {
-        cb({
-          message: "Installing packages",
-          current: 495,
-          total: 500,
-          finished: false,
-        });
-      });
-
-      // NOTE: not finding the whole "Intalling packages (495/500)" because it
-      // is now split in two <span> because of PF/Truncate
-      await screen.findByText(/Installing/);
-      await screen.findByText(/.*\(495\/500\)/);
+      // NOTE: not finding the whole text because it is now split in two <span> because of PF/Truncate
+      expect(screen.getByText(/Installing vim/)).toBeInTheDocument();
+      expect(screen.getByText(/\(5\/200\)/)).toBeInTheDocument();
     });
   });
 });

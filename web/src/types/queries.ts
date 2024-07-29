@@ -19,24 +19,9 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { Suspense } from "react";
-import { Outlet } from "react-router-dom";
-import { Page } from "@patternfly/react-core";
-import { Header, Loading, Sidebar } from "~/components/layout";
-import { useProduct } from "~/queries/software";
-import { _ } from "~/i18n";
-
 /**
- * Wrapper application component for laying out the content.
+ * Typical options for our queries hooks.
  */
-export default function Main() {
-  useProduct({ suspense: true });
-
-  return (
-    <Page isManagedSidebar header={<Header />} sidebar={<Sidebar />}>
-      <Suspense fallback={<Loading />}>
-        <Outlet />
-      </Suspense>
-    </Page>
-  );
-}
+type QueryHookOptions = {
+  suspense?: boolean;
+};

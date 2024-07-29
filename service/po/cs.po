@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-10 02:23+0000\n"
-"PO-Revision-Date: 2024-07-12 07:47+0000\n"
+"PO-Revision-Date: 2024-07-22 20:47+0000\n"
 "Last-Translator: Aleš Kastner <alkas@volny.cz>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/"
 "agama-service-master/cs/>\n"
@@ -192,7 +192,7 @@ msgstr "Zapisuji konfiguraci boot zavaděče v sysconfig"
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:192
 msgid "Cannot accommodate the required file systems for installation"
-msgstr "Nemohu zajistit systémy souborů pro instalaci"
+msgstr "Nelze umístit požadované souborové systémy pro instalaci"
 
 #. Issue to communicate a generic Y2Storage error.
 #.

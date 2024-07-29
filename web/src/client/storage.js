@@ -23,7 +23,7 @@
 // cspell:ignore ptable
 
 import { compact, hex, uniq } from "~/utils";
-import { WithProgress, WithStatus } from "./mixins";
+import { WithStatus } from "./mixins";
 import { HTTPClient } from "./http";
 
 const SERVICE_NAME = "org.opensuse.Agama.Storage1";
@@ -1652,10 +1652,6 @@ class StorageBaseClient {
 /**
  * Allows interacting with the storage settings
  */
-class StorageClient extends WithProgress(
-  WithStatus(StorageBaseClient, "/storage/status", SERVICE_NAME),
-  "/storage/progress",
-  SERVICE_NAME,
-) {}
+class StorageClient extends WithStatus(StorageBaseClient, "/storage/status", SERVICE_NAME) {}
 
 export { StorageClient, EncryptionMethods };

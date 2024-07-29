@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 26 11:42:05 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow reloading the page during installation
+  (gh#openSUSE/agama#1503).
+
+-------------------------------------------------------------------
 Mon Jul 22 15:28:42 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Add support for generic questions with password

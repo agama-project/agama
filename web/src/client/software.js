@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import { WithProgress, WithStatus } from "./mixins";
+import { WithStatus } from "./mixins";
 
 const SOFTWARE_SERVICE = "org.opensuse.Agama.Software1";
 
@@ -45,11 +45,7 @@ class SoftwareBaseClient {
 /**
  * Manages software and product configuration.
  */
-class SoftwareClient extends WithProgress(
-  WithStatus(SoftwareBaseClient, "/software/status", SOFTWARE_SERVICE),
-  "/software/progress",
-  SOFTWARE_SERVICE,
-) {}
+class SoftwareClient extends WithStatus(SoftwareBaseClient, "/software/status", SOFTWARE_SERVICE) {}
 
 class ProductClient {
   /**
