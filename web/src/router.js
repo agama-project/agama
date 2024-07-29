@@ -23,7 +23,7 @@ import React from "react";
 import { createHashRouter } from "react-router-dom";
 import App from "~/App";
 import Protected from "~/Protected";
-import MainLayout from "~/MainLayout";
+import MainLayout from "~/components/layout/Main";
 import SimpleLayout from "./SimpleLayout";
 import { LoginPage } from "~/components/core";
 import { OverviewPage } from "~/components/overview";

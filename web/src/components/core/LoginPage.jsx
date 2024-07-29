@@ -115,12 +115,7 @@ user privileges.",
               </EmptyState>
               <Flex>
                 <FlexItem align={{ default: "alignRight" }}>
-                  <About
-                    showIcon={false}
-                    iconSize="xs"
-                    buttonText={_("More about this")}
-                    buttonVariant="link"
-                  />
+                  <About showIcon={false} iconSize="xs" buttonText={_("More about this")} />
                 </FlexItem>
               </Flex>
             </Card>

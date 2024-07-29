@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,9 +19,21 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as Icon } from "./Icon";
-export { default as Center } from "./Center";
-export { default as Loading } from "./Loading";
-export { default as Sidebar } from "./Sidebar";
-export { default as Header } from "./Header";
-export { default as Main } from "./Main";
+import React, { Suspense } from "react";
+import { Outlet } from "react-router-dom";
+import { Page } from "@patternfly/react-core";
+import { Header, Loading, Sidebar } from "~/components/layout";
+import { _ } from "~/i18n";
+
+/**
+ * Wrapper application component for laying out the content.
+ */
+export default function Main() {
+  return (
+    <Page isManagedSidebar header={<Header />} sidebar={<Sidebar />}>
+      <Suspense fallback={<Loading />}>
+        <Outlet />
+      </Suspense>
+    </Page>
+  );
+}
