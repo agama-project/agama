@@ -19,16 +19,17 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/filesystem_type/from_json"
-require "agama/storage/configs/filesystem"
+require "agama/storage/configs/btrfs"
+require "agama/storage/configs/filesystem_type"
+require "y2storage/filesystems/type"
 
 module Agama
   module Storage
     module ConfigConversions
-      module Filesystem
+      module FilesystemType
         # Filesystem conversion from JSON hash according to schema.
         class FromJSON
-          # @param filesystem_json [Hash]
+          # @param filesystem_json [Hash, String]
           def initialize(filesystem_json)
             @filesystem_json = filesystem_json
           end
@@ -36,19 +37,15 @@ module Agama
           # Performs the conversion from Hash according to the JSON schema.
           #
           # @param default [Configs::Filesystem, nil]
-          # @return [Configs::Format]
+          # @return [Configs::Filesystem]
           def convert(default = nil)
-            default_config = default.dup || Configs::Filesystem.new
+            default_config = default.dup || Configs::FilesystemType.new
 
             default_config.tap do |config|
-              label = filesystem_json[:label]
-              mkfs_options = filesystem_json[:mkfsOptions]
+              btrfs = convert_btrfs(config.btrfs)
 
-              config.path = filesystem_json[:path]
-              config.mount_options = filesystem_json[:mountOptions] || []
-              config.type = convert_type(config.type)
-              config.label = label if label
-              config.mkfs_options = mkfs_options if mkfs_options
+              config.fstype = convert_type
+              config.btrfs = btrfs if btrfs
             end
           end
 
@@ -57,10 +54,25 @@ module Agama
           # @return [Hash]
           attr_reader :filesystem_json
 
-          # @param default [Configs::Filesystem, nil]
-          # @return [Configs::FilesystemType]
-          def convert_type(default = nil)
-            FilesystemType::FromJSON.new(filesystem_json[:type]).convert(default)
+          # @return [Y2Storage::Filesystems::Type]
+          def convert_type
+            value = filesystem_json.is_a?(String) ? filesystem_json : "btrfs"
+            Y2Storage::Filesystems::Type.find(value.to_sym)
+          end
+
+          # @param default [Configs::Btrfs]
+          # @return [Configs::Btrfs, nil]
+          def convert_btrfs(default = nil)
+            return nil if filesystem_json.is_a?(String)
+
+            btrfs_json = filesystem_json[:btrfs]
+            default_config = default.dup || Configs::Btrfs.new
+
+            default_config.tap do |config|
+              snapshots = btrfs_json[:snapshots]
+
+              config.snapshots = snapshots if snapshots
+            end
           end
         end
       end
