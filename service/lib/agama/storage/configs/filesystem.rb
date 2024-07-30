@@ -35,6 +35,12 @@ module Agama
           @mount_options = []
           @mkfs = []
         end
+
+        def btrfs_snapshots?
+          return false unless type&.fstype&.is?(:btrfs)
+
+          type.btrfs&.snapshots?
+        end
       end
     end
   end
