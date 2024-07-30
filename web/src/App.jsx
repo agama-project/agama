@@ -27,12 +27,12 @@ import { ServerError, Installation } from "~/components/core";
 import { useInstallerL10n } from "./context/installerL10n";
 import { useInstallerClientStatus } from "~/context/installer";
 import { useProduct, useProductChanges } from "./queries/software";
-import { CONFIG, INSTALL, STARTUP } from "~/client/phase";
 import { useL10nConfigChanges } from "~/queries/l10n";
 import { useIssuesChanges } from "./queries/issues";
 import { useInstallerStatus, useInstallerStatusChanges } from "./queries/status";
 import { PATHS as PRODUCT_PATHS } from "./routes/products";
 import SimpleLayout from "./SimpleLayout";
+import { InstallationPhase } from "./types/status";
 
 /**
  * Main application component.
@@ -55,7 +55,7 @@ function App() {
   const Content = () => {
     if (error) return <ServerError />;
 
-    if (phase === INSTALL) {
+    if (phase === InstallationPhase.Install) {
       return <Installation isBusy={isBusy} />;
     }
 
@@ -66,7 +66,7 @@ function App() {
         </SimpleLayout>
       );
 
-    if (phase === STARTUP && isBusy) {
+    if (phase === InstallationPhase.Startup && isBusy) {
       return <Loading />;
     }
 
@@ -74,7 +74,11 @@ function App() {
       return <Navigate to="/products" />;
     }
 
-    if (phase === CONFIG && isBusy && location.pathname !== PRODUCT_PATHS.progress) {
+    if (
+      phase === InstallationPhase.Config &&
+      isBusy &&
+      location.pathname !== PRODUCT_PATHS.progress
+    ) {
       return <Navigate to={PRODUCT_PATHS.progress} />;
     }
 

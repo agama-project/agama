@@ -43,3 +43,4 @@ type InstallerStatus = {
 };
 
 export type { InstallerStatus };
+export { InstallationPhase };

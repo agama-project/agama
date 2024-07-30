@@ -24,7 +24,6 @@
 import { L10nClient } from "./l10n";
 import { ManagerClient } from "./manager";
 import { StorageClient } from "./storage";
-import phase from "./phase";
 import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
 import { HTTPClient, WSClient } from "./http";
@@ -83,4 +82,4 @@ const createDefaultClient = async () => {
   return createClient(httpUrl);
 };
 
-export { createClient, createDefaultClient, phase };
+export { createClient, createDefaultClient };

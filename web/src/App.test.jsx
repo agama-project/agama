@@ -29,6 +29,7 @@ import { STARTUP, CONFIG, INSTALL } from "~/client/phase";
 import { useL10nConfigChanges } from "./queries/l10n";
 import { useProductChanges } from "./queries/software";
 import { useIssuesChanges } from "./queries/issues";
+import { InstallationPhase } from "./types/status";
 
 jest.mock("~/client");
 
@@ -118,7 +119,7 @@ describe("App", () => {
 
   describe("when the service is busy during startup", () => {
     beforeEach(() => {
-      mockClientStatus.phase = STARTUP;
+      mockClientStatus.phase = InstallationPhase.Startup;
       mockClientStatus.isBusy = true;
     });
 
@@ -128,9 +129,9 @@ describe("App", () => {
     });
   });
 
-  describe("on the CONFIG phase", () => {
+  describe("on the configuration phase", () => {
     beforeEach(() => {
-      mockClientStatus.phase = CONFIG;
+      mockClientStatus.phase = InstallationPhase.Config;
     });
 
     describe("if the service is busy", () => {
@@ -157,9 +158,9 @@ describe("App", () => {
     });
   });
 
-  describe("on the INSTALL phase", () => {
+  describe("on the installaiton phase", () => {
     beforeEach(() => {
-      mockClientStatus.phase = INSTALL;
+      mockClientStatus.phase = InstallationPhase.Install;
       mockSelectedProduct = { id: "Fake product" };
     });
 

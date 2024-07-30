@@ -24,8 +24,6 @@ import { act, screen } from "@testing-library/react";
 import { createDefaultClient } from "~/client";
 import { plainRender, createCallbackMock } from "~/test-utils";
 import { InstallerClientProvider, useInstallerClientStatus } from "./installer";
-import { STARTUP } from "~/client/phase";
-import { BUSY } from "~/client/status";
 
 jest.mock("~/client");
 
