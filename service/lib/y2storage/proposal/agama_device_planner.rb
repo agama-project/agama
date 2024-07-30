@@ -50,22 +50,26 @@ module Y2Storage
       # @param settings [#format, #mount]
       def configure_device(planned, settings)
         # TODO configure_encrypt
-        configure_format(planned, settings.format) if settings.format
-        configure_mount(planned, settings.mount) if settings.mount
-      end
-
-      # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [Agama::Storage::Settings::Format]
-      def configure_format(planned, settings)
-        planned.label = settings.label
-        planned.mkfs_options = settings.mkfs_options
         configure_filesystem(planned, settings.filesystem) if settings.filesystem
       end
 
       # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [Agama::Storage::Settings::Filesystem]
+      # @param settings [Agama::Storage::Settings::Format]
       def configure_filesystem(planned, settings)
-        planned.filesystem_type = settings.type
+        planned.mount_point = settings.path
+        planned.mount_by = settings.mount_by
+        planned.fstab_options = settings.mount_options
+        planned.mkfs_options = settings.mkfs_options
+        # FIXME: Is this needed? Or #mount_options is enough?
+        # planned.read_only = settings.read_only?
+        planned.label = settings.label
+        configure_filesystem_type(planned, settings.type) if settings.type
+      end
+
+      # @param planned [Planned::Disk, Planned::Partition]
+      # @param settings [Agama::Storage::Settings::Filesystem]
+      def configure_filesystem_type(planned, settings)
+        planned.filesystem_type = settings.fs_type
         configure_btrfs(planned, settings.btrfs) if settings.btrfs
       end
 
@@ -75,16 +79,6 @@ module Y2Storage
         planned.snapshots = settings.snapshots?
         planned.default_subvolume = settings.default_subvolume
         planned.subvolumes = settings.subvolumes
-      end
-
-      # @param planned [Planned::Disk, Planned::Partition]
-      # @param settings [Agama::Storage::Settings::Mount]
-      def configure_mount(planned, settings)
-        planned.mount_point = settings.path
-        planned.mount_by = settings.mount_by
-        planned.fstab_options = settings.options
-        # FIXME: Is this needed? Or #options is enough?
-        # planned.read_only = settings.read_only?
       end
 
       # @param planned [Planned::Partition]
