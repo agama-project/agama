@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,11 +19,27 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { InstallationProgress, InstallationFinished } from "~/components/core";
-
-function Installation({ isBusy }) {
-  return isBusy ? <InstallationFinished /> : <InstallationProgress />;
+/*
+ * Enum that represents the installation phase
+ */
+enum InstallationPhase {
+  Startup = 0,
+  Config = 1,
+  Install = 2,
 }
 
-export default Installation;
+/*
+ * Status of the installer
+ */
+type InstallerStatus = {
+  /** Whether the installer is busy */
+  isBusy: boolean;
+  /** Installation phase */
+  phase: InstallationPhase;
+  /** Whether the installation can be performed or not */
+  canInstall: boolean;
+  /** Whether the installer is running on Iguana */
+  useIguana: boolean;
+};
+
+export type { InstallerStatus };

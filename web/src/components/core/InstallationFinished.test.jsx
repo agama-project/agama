@@ -25,8 +25,12 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { createClient } from "~/client";
 import { EncryptionMethods } from "~/client/storage";
-
 import InstallationFinished from "./InstallationFinished";
+
+jest.mock("~/queries/status", () => ({
+  ...jest.requireActual("~/queries/status"),
+  useInstallerStatus: () => ({ isBusy: false, useIguana: false, phase: 2, canInstall: false }),
+}));
 
 jest.mock("~/client");
 jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options</div>);
