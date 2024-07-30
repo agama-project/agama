@@ -69,27 +69,59 @@ describe Agama::Storage::ConfigConversions::FromJSON do
   end
 
   describe "#convert" do
-    let(:config_json) do
-      {
-        boot: {
-          configure: true,
-          device: "/dev/sdb"
-        },
-        drives: [
-          {
-            ptableType: "gpt",
-            partitions: [
-              { filesystem: { path: "/", type: "ext4" } }
-            ]
-          }
-        ]
-      }
+    context "with an empty JSON configuration" do
+      let(:config_json) { {} }
+
+      it "generates a storage configuration" do
+        config = subject.convert
+        expect(config).to be_a(Agama::Storage::Config)
+      end
+
+      it "calculates default boot settings" do
+        config = subject.convert
+        expect(config.boot).to be_a(Agama::Storage::Configs::Boot)
+        expect(config.boot.configure).to eq true
+        expect(config.boot.device).to eq nil
+      end
+
+      # FIXME: Is this correct?
+      it "does not include any device in the configuration" do
+        config = subject.convert
+        expect(config.drives).to be_empty
+      end
     end
 
-    it "generates settings with the values provided from JSON" do
-      config = subject.convert
+    context "with some drives and boot configuration at JSON" do
+      let(:config_json) do
+        {
+          boot: {
+            configure: true,
+            device: "/dev/sdb"
+          },
+          drives: [
+            {
+              ptableType: "gpt",
+              partitions: [
+                {
+                  filesystem: { path: "/", type: { btrfs: { snapshots: false } } }
+                }
+              ]
+            }
+          ]
+        }
+      end
 
-      expect(config).to be_a(Agama::Storage::Config)
+      it "generates a storage configuration" do
+        config = subject.convert
+        expect(config).to be_a(Agama::Storage::Config)
+      end
+
+      it "calculates the corresponding boot settings" do
+        config = subject.convert
+        expect(config.boot).to be_a(Agama::Storage::Configs::Boot)
+        expect(config.boot.configure).to eq true
+        expect(config.boot.device).to eq "/dev/sdb"
+      end
     end
   end
 end
