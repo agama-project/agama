@@ -43,7 +43,12 @@ describe Y2Storage::AgamaProposal do
     Agama::Storage::Configs::Drive.new.tap do |drive|
       drive.partitions = [
         Agama::Storage::Configs::Partition.new.tap do |part|
-          part.mount = Agama::Storage::Configs::Mount.new.tap { |m| m.path = "/" }
+          part.filesystem = Agama::Storage::Configs::Filesystem.new.tap do |fs|
+            fs.path = "/"
+            fs.type = Agama::Storage::Configs::FilesystemType.new.tap do |type|
+              type.fs_type = Y2Storage::Filesystems::Type::BTRFS
+            end
+          end
           part.size = Agama::Storage::Configs::Size.new.tap do |size|
             size.min = Y2Storage::DiskSize.GiB(8.5)
             size.max = Y2Storage::DiskSize.unlimited
@@ -64,9 +69,9 @@ describe Y2Storage::AgamaProposal do
           expect(partitions.first.id).to eq Y2Storage::PartitionId::BIOS_BOOT
           root_part = partitions.last
           expect(root_part.size).to be > Y2Storage::DiskSize.GiB(49)
-          # root_fs = root_part.filesystem
-          # expect(root_fs.root?).to eq true
-          # expect(root_fs.type.is?(:btrfs)).to eq true
+          root_fs = root_part.filesystem
+          expect(root_fs.root?).to eq true
+          expect(root_fs.type.is?(:btrfs)).to eq true
         end
       end
 
@@ -82,9 +87,9 @@ describe Y2Storage::AgamaProposal do
           root_part = partitions.first
           expect(root_part.id).to eq Y2Storage::PartitionId::LINUX
           expect(root_part.size).to be > Y2Storage::DiskSize.GiB(49)
-          # root_fs = root_part.filesystem
-          # expect(root_fs.root?).to eq true
-          # expect(root_fs.type.is?(:btrfs)).to eq true
+          root_fs = root_part.filesystem
+          expect(root_fs.root?).to eq true
+          expect(root_fs.type.is?(:btrfs)).to eq true
         end
       end
     end

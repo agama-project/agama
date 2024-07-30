@@ -37,7 +37,7 @@ module Agama
         end
 
         def btrfs_snapshots?
-          return false unless type&.fstype&.is?(:btrfs)
+          return false unless type&.fs_type&.is?(:btrfs)
 
           type.btrfs&.snapshots?
         end
