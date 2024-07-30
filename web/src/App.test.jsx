@@ -25,10 +25,6 @@ import { installerRender } from "~/test-utils";
 
 import App from "./App";
 import { createClient } from "~/client";
-import { STARTUP, CONFIG, INSTALL } from "~/client/phase";
-import { useL10nConfigChanges } from "./queries/l10n";
-import { useProductChanges } from "./queries/software";
-import { useIssuesChanges } from "./queries/issues";
 import { InstallationPhase } from "./types/status";
 
 jest.mock("~/client");
@@ -59,7 +55,7 @@ jest.mock("~/queries/issues", () => ({
 }));
 
 const mockClientStatus = {
-  phase: STARTUP,
+  phase: InstallationPhase.Startup,
   isBusy: true,
 };
 
