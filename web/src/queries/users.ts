@@ -151,7 +151,6 @@ const useRootUserChanges = () => {
     if (!client) return;
 
     return client.ws().onEvent((event) => {
-      console.log("event.type", event.type);
       if (event.type === "RootChanged") {
         const { password, sshkey } = event;
         queryClient.setQueryData(["users", "root"], (oldRoot: RootUser) => {
