@@ -27,7 +27,6 @@ import { Monitor } from "./monitor";
 import { ProductClient, SoftwareClient } from "./software";
 import { StorageClient } from "./storage";
 import phase from "./phase";
-import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
 import { HTTPClient, WSClient } from "./http";
 
@@ -40,7 +39,6 @@ import { HTTPClient, WSClient } from "./http";
  * @property {ProductClient} product - product client.
  * @property {SoftwareClient} software - software client.
  * @property {StorageClient} storage - storage client.
- * @property {QuestionsClient} questions - questions client.
  * @property {() => WSClient} ws - Agama WebSocket client.
  * @property {() => boolean} isConnected - determines whether the client is connected
  * @property {() => boolean} isRecoverable - determines whether the client is recoverable after disconnected
@@ -66,7 +64,6 @@ const createClient = (url) => {
   const network = new NetworkClient(client);
   const software = new SoftwareClient(client);
   const storage = new StorageClient(client);
-  const questions = new QuestionsClient(client);
 
   const isConnected = () => client.ws().isConnected() || false;
   const isRecoverable = () => !!client.ws().isRecoverable();
@@ -79,7 +76,6 @@ const createClient = (url) => {
     network,
     software,
     storage,
-    questions,
     isConnected,
     isRecoverable,
     onConnect: (handler) => client.ws().onOpen(handler),
