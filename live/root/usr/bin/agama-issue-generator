@@ -8,8 +8,9 @@
 #  - Welcome message with Agama version number (--welcome option)
 #  - Agama SSL certificate fingerprints (--ssl option)
 #  - SSH host key fingerprints (--ssh option)
-#  - Agama access URL for all network devices (--network option), this is
-#    triggered via udev rules
+#  - Agama access URL for all network devices (--watch-network option)
+#    NOTE: in this case the script does not finish, it watches the changes in
+#          the NetworkManager configuration and updates the URL if needed
 #  - Agama access URL using the mDNS (Avahi) URL (--watch-avahi option),
 #    NOTE: in this case the script does not finish, it watches the changes in
 #          the Avahi service and updates the URL if needed
@@ -64,11 +65,46 @@ generate_certificate_fingerprints() {
   touch /run/agetty.reload
 }
 
+# message file for the Agama mDNS URL
+AVAHI_MESSAGE=/run/issue.d/70-agama-connect-avahi.message
+# symlink for the issue file, created only when network is available
+AVAHI_ISSUE=/run/issue.d/70-agama-connect-avahi.issue
+# issue file with Agama URLs
+URL_ISSUES="/run/issue.d/70-agama-connect-urls.issue"
+# issue displayed when there is no network connection
+DISCONNECTED_ISSUE="/run/issue.d/70-agama-disconnected.issue"
+
+# helper function, build the Agama URL messages or display a warning when
+# network is not available
+write_url_headers() {
+  # generate a header and footer around the Agama URL issues
+  ISSUE_HEADER=/run/issue.d/69-agama-connect.issue
+  ISSUE_FOOTER=/run/issue.d/71-agama-connect.issue
+
+  if [ -e "$URL_ISSUES" ]; then
+    # if Avahi URL is set then display it as well
+    if [ -e "$AVAHI_MESSAGE" ]; then
+      ln -sf "$AVAHI_MESSAGE" "$AVAHI_ISSUE"
+    fi
+
+    rm -f "$DISCONNECTED_ISSUE"
+
+    # at least one address present, display the header and footer
+    echo "Connect to the Agama installer using these URLs:" > "$ISSUE_HEADER"
+    echo > "$ISSUE_FOOTER"
+  else
+    # no network, delete the header, footer and the Avahi issue symlink
+    rm -f "$ISSUE_HEADER" "$ISSUE_FOOTER" "$AVAHI_ISSUE"
+
+    # display a warning message
+    printf "\\\\e{brown}Network is not available, the Agama installer cannot \
+be used remotely.\\\\e{reset}\n\n" > "$DISCONNECTED_ISSUE"
+  fi
+}
+
 # a helper function which generates the mDNS URL for accessing the Agama server
 # displayed at the console
 generate_avahi_url() {
-  # issue file for the Agama mDNS URL
-  ISSUE=/run/issue.d/70-agama-connect-avahi.issue
   # track the name, update the issue file only if the name is changed
   OLDNAME=""
 
@@ -84,7 +120,8 @@ generate_avahi_url() {
       # mDNS host name found and it is different than the previous one (or the initial value)
       if [ -n "$AVAHINAME" ] && [ "$AVAHINAME" != "$OLDNAME" ]; then
         OLDNAME="$AVAHINAME"
-        echo "    https://$AVAHINAME" > "$ISSUE"
+        echo "    https://$AVAHINAME" > "$AVAHI_MESSAGE"
+        write_url_headers
 
         # reload if not in the initial state
         if [ -e "$CERT_ISSUE" ]; then
@@ -92,56 +129,43 @@ generate_avahi_url() {
         fi
       fi
 
-      # daemon stopped, remove the issue file
+      # daemon stopped, remove the message file
       if echo "$line" | grep -q "avahi-daemon .* exiting"; then
         OLDNAME=""
-        rm -f "$ISSUE"
+        rm -f "$AVAHI_MESSAGE"
+        write_url_headers
         touch /run/agetty.reload
       fi
     done
 }
 
-# a helper function which generates the URLs for accessing the Agama server
-# displayed at the console
-generate_network_url() {
-  # the interface might be a device path, use the base name
-  if [[ "$2" =~ ^/ ]]; then
-      IFACE="${2##*/}"
+# helper function, write the issue with the currently available URLs for
+# accessing Agama from outside
+build_addresses() {
+  ADDRESSES=()
+
+  readarray -t CONNECTIONS < <(busctl -j get-property org.freedesktop.NetworkManager /org/freedesktop/NetworkManager org.freedesktop.NetworkManager ActiveConnections | jq --raw-output ".data[]")
+  for CONNECTION in "${CONNECTIONS[@]}"; do
+    TYPE=$(busctl -j get-property org.freedesktop.NetworkManager "$CONNECTION" org.freedesktop.NetworkManager.Connection.Active Type 2> /dev/null | jq --raw-output ".data")
+
+    # ignore loopbacks, we need external adresses
+    if [ "$TYPE" != "loopback" ]; then
+      IP4CONFIG=$(busctl -j get-property org.freedesktop.NetworkManager "$CONNECTION" org.freedesktop.NetworkManager.Connection.Active Ip4Config 2> /dev/null | jq --raw-output ".data")
+      ADDRESSES+=($(busctl -j get-property org.freedesktop.NetworkManager "$IP4CONFIG" org.freedesktop.NetworkManager.IP4Config AddressData 2> /dev/null | jq --raw-output ".data[].address.data"))
+    fi
+  done
+
+  # remove duplicates
+  readarray -t ADDRESSES < <(printf "%s\n" "${ADDRESSES[@]}" | sort -u)
+
+  if [ -n "${ADDRESSES[*]}" ]; then
+    printf "    https://%s\n" "${ADDRESSES[@]}" > "$URL_ISSUES"
   else
-      IFACE="${2}"
+    # no messages, delete the URLs
+    rm -f "$URL_ISSUES"
   fi
 
-  ACTION="$1"
-  ISSUE="/run/issue.d/70-agama-connect-$IFACE.issue"
-  # generate a header and footer around the Agama URL issues
-  ISSUE_HEADER=/run/issue.d/69-agama-connect.issue
-  ISSUE_FOOTER=/run/issue.d/71-agama-connect.issue
-
-  # only handle interfaces starting with ^[bew]
-  # (bridges, ethernet and wifi devices), same as in the issue-generator
-  [[ "$IFACE" =~ ^[bew] ]] || exit 0
-
-  case "$ACTION" in
-    add)
-      # \4{} is a placeholder supported directly by the agetty issue reader
-      # see "man agetty"
-      echo "    https://\\4{$IFACE} " > "$ISSUE"
-      ;;
-    remove)
-      rm -f "$ISSUE"
-      ;;
-  esac
-
-  # check the number of URL messages
-  ISSUES=$(ls /run/issue.d/70-agama-connect-*.issue 2> /dev/null)
-  if [ -n "$ISSUES" ]; then
-    # at least one message present, display the header and footer
-    echo "Connect to the Agama installer using these URLs:" > "$ISSUE_HEADER"
-    echo > "$ISSUE_FOOTER"
-  else
-    # no messages, delete the header and footer
-    rm -f "$ISSUE_HEADER" "$ISSUE_FOOTER"
-  fi
+  write_url_headers
 
   # reload if not in the initial state
   if [ -e "$CERT_ISSUE" ]; then
@@ -149,7 +173,25 @@ generate_network_url() {
   fi
 }
 
-# wait until the SSL fingreprint issue is create, but at most 10 seconds
+# a helper function which generates the URLs for accessing the Agama server
+# displayed at the console
+generate_network_url() {
+  # build a message with the current URLs
+  build_addresses
+
+  # watch for IP address changes in the NetworkManager service
+  dbus-monitor --system "sender='org.freedesktop.NetworkManager',\
+  interface='org.freedesktop.DBus.Properties',member='PropertiesChanged',\
+  type=signal" 2> /dev/null | while read -r line; do
+    # some IP4 configuration has been changed, rebuild the URLs
+    if echo "$line" | grep -q 'string "org.freedesktop.NetworkManager.IP4Config"'; then
+      build_addresses
+    fi
+  done
+}
+
+# wait until the SSL fingreprint issue is created with a time limit passed as
+# the second argument (in seconds)
 wait_for_ssl_issue() {
   for i in $(seq 1 "$1"); do
     [ -f "$CERT_ISSUE" ] && exit 0
@@ -169,11 +211,11 @@ elif [ "$1" = "--ssl" ]; then
   generate_certificate_fingerprints
 elif [ "$1" = "--wait-for-ssl" ]; then
   wait_for_ssl_issue "$2"
-elif [ "$1" = "--network" ]; then
+elif [ "$1" = "--watch-network" ]; then
   generate_network_url "$2" "$3"
 elif [ "$1" = "--watch-avahi" ]; then
   generate_avahi_url
 else
-  echo "Missing argument"
+  echo "Missing or incorrect argument"
   exit 1
 fi
