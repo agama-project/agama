@@ -65,8 +65,7 @@ module Agama
 
           # @return [Y2Storage::PartitionId, nil]
           def convert_id
-            # @todo Decide whether to use "create" in JSON schema.
-            value = partition_json.dig(:create, :id)
+            value = partition_json.dig(:id)
             return unless value
 
             Y2Storage::PartitionId.find(value)
@@ -74,9 +73,8 @@ module Agama
 
           # @return [Configs::Size]
           def convert_size
-            # @todo Decide whether to use "create" in JSON schema.
-            size_json = partition_json.dig(:create, :size)
-            return default_size_config unless size_json
+            size_json = partition_json.dig(:size)
+            return Configs::Size.new unless size_json
 
             Size::FromJSON.new(size_json).convert
           end
@@ -87,19 +85,6 @@ module Agama
               settings: settings, volume_builder: volume_builder)
 
             converter.convert(config)
-          end
-
-          # @todo Auto size?
-          #
-          # @return [Configs::Size]
-          def default_size_config
-            mount_path = partition_json.dig(:mount, :path)
-            volume = volume_builder.for(mount_path || "")
-
-            Configs::Size.new.tap do |config|
-              config.min = volume.min_size
-              config.max = volume.max_size
-            end
           end
         end
       end

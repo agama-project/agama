@@ -33,7 +33,6 @@ module Agama
             @size_json = size_json
           end
 
-          # @todo Add support for auto.
           # @todo For now only {min: number, max: number} schema is supported. Add support for a
           #   direct value (e.g., 1024, "2 GiB"), and array format ([min, max]).
           #
@@ -41,7 +40,10 @@ module Agama
           #
           # @return [Configs::Size]
           def convert
+            return default_size if size_json.is_a?(String) && size_json.casecmp?("default")
+
             Configs::Size.new.tap do |config|
+              config.default = false
               config.min = convert_min
               config.max = convert_max || Y2Storage::DiskSize.unlimited
             end
@@ -63,6 +65,10 @@ module Agama
             return unless value
 
             Y2Storage::DiskSize.new(value)
+          end
+
+          def default_size
+            Configs::Size.new.tap { |c| c.default = true }
           end
         end
       end

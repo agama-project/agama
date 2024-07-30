@@ -70,6 +70,7 @@ module Agama
 
             config.boot = boot if boot
             config.drives = drives if drives
+            config.calculate_default_sizes(volume_builder)
           end
         end
 

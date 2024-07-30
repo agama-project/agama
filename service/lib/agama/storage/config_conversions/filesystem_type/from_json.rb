@@ -29,7 +29,7 @@ module Agama
       module FilesystemType
         # Filesystem conversion from JSON hash according to schema.
         class FromJSON
-          # @param filesystem_json [Hash, String]
+          # @param filesystem_json [Hash, String, nil]
           def initialize(filesystem_json)
             @filesystem_json = filesystem_json
           end
@@ -43,8 +43,9 @@ module Agama
 
             default_config.tap do |config|
               btrfs = convert_btrfs(config.btrfs)
+              type = convert_type
 
-              config.fstype = convert_type
+              config.fstype = type if type
               config.btrfs = btrfs if btrfs
             end
           end
@@ -63,7 +64,7 @@ module Agama
           # @param default [Configs::Btrfs]
           # @return [Configs::Btrfs, nil]
           def convert_btrfs(default = nil)
-            return nil if filesystem_json.is_a?(String)
+            return nil if filesystem_json.nil? || filesystem_json.is_a?(String)
 
             btrfs_json = filesystem_json[:btrfs]
             default_config = default.dup || Configs::Btrfs.new
