@@ -49,12 +49,12 @@ describe("QuestionWithPassword", () => {
   });
 
   describe("when the user enters the password", () => {
-    it("calls the callback", async () => {
+    it("calls the callback with given password", async () => {
       const { user } = renderQuestion();
 
       const passwordInput = await screen.findByLabelText("Password");
       await user.type(passwordInput, "notSecret");
-      const skipButton = await screen.findByRole("button", { name: /Ok/ });
+      const skipButton = await screen.findByRole("button", { name: "Ok" });
       await user.click(skipButton);
 
       expect(question).toEqual(expect.objectContaining({ password: "notSecret", answer: "ok" }));

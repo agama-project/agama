@@ -19,73 +19,42 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
-import { useInstallerClient } from "~/context/installer";
-import { useCancellablePromise } from "~/utils";
-import { QUESTION_TYPES } from "~/client/questions";
+// @ts-check
 
+import React from "react";
 import {
   GenericQuestion,
   QuestionWithPassword,
   LuksActivationQuestion,
 } from "~/components/questions";
+import { useQuestions, useQuestionsConfig, useQuestionsChanges } from "~/queries/questions";
+import { Question, QuestionType } from "~/types/questions";
 
 export default function Questions() {
-  const client = useInstallerClient();
-  const { cancellablePromise } = useCancellablePromise();
-
-  const [pendingQuestions, setPendingQuestions] = useState([]);
-
-  const addQuestion = useCallback((question) => {
-    setPendingQuestions((pending) => [...pending, question]);
-  }, []);
-
-  const removeQuestion = useCallback(
-    (id) => setPendingQuestions((pending) => pending.filter((q) => q.id !== id)),
-    [],
-  );
-
-  const answerQuestion = useCallback(
-    (question) => {
-      client.questions.answer(question);
-      removeQuestion(question.id);
-    },
-    [client.questions, removeQuestion],
-  );
-
-  useEffect(() => {
-    client.questions.listenQuestions();
-  }, [client.questions, cancellablePromise]);
-
-  useEffect(() => {
-    cancellablePromise(client.questions.getQuestions())
-      .then(setPendingQuestions)
-      .catch((e) => console.error("Something went wrong retrieving pending questions", e));
-  }, [client.questions, cancellablePromise]);
-
-  useEffect(() => {
-    const unsubscribeCallbacks = [];
-    unsubscribeCallbacks.push(client.questions.onQuestionAdded(addQuestion));
-    unsubscribeCallbacks.push(client.questions.onQuestionRemoved(removeQuestion));
-
-    return () => {
-      unsubscribeCallbacks.forEach((cb) => cb());
-    };
-  }, [client.questions, addQuestion, removeQuestion]);
+  useQuestionsChanges();
+  const pendingQuestions = useQuestions();
+  const questionsConfig = useQuestionsConfig();
 
   if (pendingQuestions.length === 0) return null;
 
+  const answerQuestion = (/** @type {Question} */ answeredQuestion) =>
+    questionsConfig.mutate(answeredQuestion);
+
   // Renders the first pending question
   const [currentQuestion] = pendingQuestions;
+
   let QuestionComponent = GenericQuestion;
+
   // show specialized popup for question which need password
-  if (currentQuestion.type === QUESTION_TYPES.withPassword) {
+  if (currentQuestion.type === QuestionType.withPassword) {
     QuestionComponent = QuestionWithPassword;
   }
+
   // show specialized popup for luks activation question
   // more can follow as it will be needed
   if (currentQuestion.class === "storage.luks_activation") {
     QuestionComponent = LuksActivationQuestion;
   }
+
   return <QuestionComponent question={currentQuestion} answerCallback={answerQuestion} />;
 }

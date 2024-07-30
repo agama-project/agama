@@ -20,107 +20,104 @@
  */
 
 import React from "react";
-
-import { act, waitFor, within } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import { createClient } from "~/client";
-
+import { screen } from "@testing-library/react";
+import { installerRender, plainRender } from "~/test-utils";
 import { Questions } from "~/components/questions";
+import { QuestionType } from "~/types/questions";
+import * as GenericQuestionComponent from "~/components/questions/GenericQuestion";
 
-jest.mock("~/client");
-jest.mock("~/components/questions/GenericQuestion", () => () => <div>A Generic question mock</div>);
+let mockQuestions;
+const mockMutation = jest.fn();
+
 jest.mock("~/components/questions/LuksActivationQuestion", () => () => (
   <div>A LUKS activation question mock</div>
 ));
+jest.mock("~/components/questions/QuestionWithPassword", () => () => (
+  <div>A question with password mock</div>
+));
 
-const handlers = {};
-const genericQuestion = { id: 1, type: "generic" };
+jest.mock("~/queries/questions", () => ({
+  ...jest.requireActual("~/queries/software"),
+  useQuestions: () => mockQuestions,
+  useQuestionsChanges: () => jest.fn(),
+  useQuestionsConfig: () => ({ mutate: mockMutation }),
+}));
+
+const genericQuestion = {
+  id: 1,
+  type: QuestionType.generic,
+  text: "Do you write unit tests?",
+  options: ["always", "sometimes", "never"],
+  defaultOption: "sometimes",
+};
+const passwordQuestion = { id: 1, type: QuestionType.withPassword };
 const luksActivationQuestion = { id: 1, class: "storage.luks_activation" };
-let pendingQuestions = [];
-
-beforeEach(() => {
-  createClient.mockImplementation(() => {
-    return {
-      questions: {
-        getQuestions: () => Promise.resolve(pendingQuestions),
-        // Capture the handler for the onQuestionAdded signal for triggering it manually
-        onQuestionAdded: (onAddHandler) => {
-          handlers.onAdd = onAddHandler;
-          return jest.fn;
-        },
-        // Capture the handler for the onQuestionREmoved signal for triggering it manually
-        onQuestionRemoved: (onRemoveHandler) => {
-          handlers.onRemove = onRemoveHandler;
-          return jest.fn;
-        },
-        listenQuestions: jest.fn(),
-      },
-    };
-  });
-});
 
 describe("Questions", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   describe("when there are no pending questions", () => {
     beforeEach(() => {
-      pendingQuestions = [];
+      mockQuestions = [];
     });
 
-    it("renders nothing", async () => {
-      const { container } = installerRender(<Questions />);
-      await waitFor(() => expect(container).toBeEmptyDOMElement());
-    });
-  });
-
-  describe("when a new question is added", () => {
-    it("push it into the pending queue", async () => {
-      const { container } = installerRender(<Questions />);
-      await waitFor(() => expect(container).toBeEmptyDOMElement());
-
-      // Manually triggers the handler given for the onQuestionAdded signal
-      act(() => handlers.onAdd(genericQuestion));
-
-      await within(container).findByText("A Generic question mock");
+    it("renders nothing", () => {
+      const { container } = plainRender(<Questions />);
+      expect(container).toBeEmptyDOMElement();
     });
   });
 
-  describe("when a question is removed", () => {
+  describe("when a question is answered", () => {
     beforeEach(() => {
-      pendingQuestions = [genericQuestion];
+      mockQuestions = [genericQuestion];
     });
 
-    it("removes it from the queue", async () => {
-      const { container } = installerRender(<Questions />);
-      await within(container).findByText("A Generic question mock");
-
-      // Manually triggers the handler given for the onQuestionRemoved signal
-      act(() => handlers.onRemove(genericQuestion.id));
-
-      const content = within(container).queryByText("A Generic question mock");
-      expect(content).toBeNull();
+    it("triggers the useQuestionMutationk", async () => {
+      const { user } = plainRender(<Questions />);
+      const button = screen.getByRole("button", { name: "Always" });
+      await user.click(button);
+      expect(mockMutation).toHaveBeenCalledWith({ ...genericQuestion, answer: "always" });
     });
   });
 
   describe("when there is a generic question pending", () => {
     beforeEach(() => {
-      pendingQuestions = [genericQuestion];
+      mockQuestions = [genericQuestion];
+      // Not using jest.mock at the top like for the other question components
+      // because the original implementation was needed for testing that
+      // mutation is triggered when proceed.
+      jest
+        .spyOn(GenericQuestionComponent, "default")
+        .mockReturnValue(<div>A generic question mock</div>);
     });
 
-    it("renders a GenericQuestion component", async () => {
-      const { container } = installerRender(<Questions />);
+    it("renders a GenericQuestion component", () => {
+      plainRender(<Questions />);
+      screen.getByText("A generic question mock");
+    });
+  });
 
-      await within(container).findByText("A Generic question mock");
+  describe("when there is a generic question pending", () => {
+    beforeEach(() => {
+      mockQuestions = [passwordQuestion];
+    });
+
+    it("renders a QuestionWithPassword component", () => {
+      plainRender(<Questions />);
+      screen.getByText("A question with password mock");
     });
   });
 
   describe("when there is a LUKS activation question pending", () => {
     beforeEach(() => {
-      pendingQuestions = [luksActivationQuestion];
+      mockQuestions = [luksActivationQuestion];
     });
 
-    it("renders a LuksActivationQuestion component", async () => {
-      const { container } = installerRender(<Questions />);
-
-      await within(container).findByText("A LUKS activation question mock");
+    it("renders a LuksActivationQuestion component", () => {
+      installerRender(<Questions />);
+      screen.getByText("A LUKS activation question mock");
     });
   });
 });

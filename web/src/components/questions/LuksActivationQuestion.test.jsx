@@ -21,14 +21,14 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import { LuksActivationQuestion } from "~/components/questions";
 
 let question;
 const answerFn = jest.fn();
 
 const renderQuestion = () =>
-  installerRender(<LuksActivationQuestion question={question} answerCallback={answerFn} />);
+  plainRender(<LuksActivationQuestion question={question} answerCallback={answerFn} />);
 
 describe("LuksActivationQuestion", () => {
   beforeEach(() => {
