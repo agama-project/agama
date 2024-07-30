@@ -23,7 +23,7 @@ import React from "react";
 import { InstallationProgress, InstallationFinished } from "~/components/core";
 
 function Installation({ isBusy }) {
-  return isBusy ? <InstallationFinished /> : <InstallationProgress />;
+  return isBusy ? <InstallationProgress /> : <InstallationFinished />;
 }
 
 export default Installation;
