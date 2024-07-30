@@ -96,11 +96,7 @@ impl BaseHTTPClient {
         let response = self
             .request_response(reqwest::Method::POST, path, object)
             .await?;
-        if response.status().is_success() {
-            Ok(())
-        } else {
-            Err(self.build_backend_error(response).await)
-        }
+        self.unit_or_error(response).await
     }
 
     /// post object to given path and returns server response. Reports error only if failed to send
@@ -151,11 +147,7 @@ impl BaseHTTPClient {
         let response = self
             .request_response(reqwest::Method::PUT, path, object)
             .await?;
-        if response.status().is_success() {
-            Ok(())
-        } else {
-            Err(self.build_backend_error(response).await)
-        }
+        self.unit_or_error(response).await
     }
 
     /// POST/PUT/PATCH an object to a given path and returns server response.
@@ -193,11 +185,7 @@ impl BaseHTTPClient {
         let response = self
             .request_response(reqwest::Method::PATCH, path, object)
             .await?;
-        if response.status().is_success() {
-            Ok(())
-        } else {
-            Err(self.build_backend_error(response).await)
-        }
+        self.unit_or_error(response).await
     }
     /// delete call on given path and report error if failed
     ///
@@ -206,11 +194,7 @@ impl BaseHTTPClient {
     /// * `path`: path relative to HTTP API like `/questions/1`    
     pub async fn delete(&self, path: &str) -> Result<(), ServiceError> {
         let response = self.delete_response(path).await?;
-        if response.status().is_success() {
-            Ok(())
-        } else {
-            Err(self.build_backend_error(response).await)
-        }
+        self.unit_or_error(response).await
     }
 
     /// delete call on given path and returns server response. Reports error only if failed to send
@@ -228,6 +212,15 @@ impl BaseHTTPClient {
             .send()
             .await
             .map_err(|e| e.into())
+    }
+
+    /// Return `Ok(())` or an `Err` with [`ServiceError::BackendError`]
+    async fn unit_or_error(&self, response: Response) -> Result<(), ServiceError> {
+        if response.status().is_success() {
+            Ok(())
+        } else {
+            Err(self.build_backend_error(response).await)
+        }
     }
 
     const NO_TEXT: &'static str = "(Failed to extract error text from HTTP response)";
