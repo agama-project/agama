@@ -23,8 +23,17 @@ module Agama
   module Storage
     module Configs
       class Size
+        attr_accessor :default
         attr_accessor :min
         attr_accessor :max
+
+        def initialize
+          @default = true
+        end
+
+        def default?
+          !!@default
+        end
       end
     end
   end
