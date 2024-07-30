@@ -31,13 +31,11 @@ jest.mock("~/client");
 
 // Helper component to check the client status.
 const ClientStatus = () => {
-  const { connected, phase, status } = useInstallerClientStatus();
+  const { connected } = useInstallerClientStatus();
 
   return (
     <ul>
       <li>{`connected: ${connected}`}</li>
-      <li>{`phase: ${phase}`}</li>
-      <li>{`status: ${status}`}</li>
     </ul>
   );
 };
@@ -48,12 +46,6 @@ describe("installer context", () => {
       return {
         onConnect: jest.fn(),
         onDisconnect: jest.fn(),
-        manager: {
-          getPhase: jest.fn().mockResolvedValue(STARTUP),
-          getStatus: jest.fn().mockResolvedValue(BUSY),
-          onPhaseChange: jest.fn(),
-          onStatusChange: jest.fn(),
-        },
       };
     });
   });
@@ -65,7 +57,5 @@ describe("installer context", () => {
       </InstallerClientProvider>,
     );
     await screen.findByText("connected: false");
-    await screen.findByText("phase: 0");
-    await screen.findByText("status: 1");
   });
 });
