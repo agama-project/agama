@@ -60,3 +60,27 @@ impl LocalizationStore {
         self.localization_client.set_config(&config).await
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use std::error::Error;
+    // without this, "error: async functions cannot be used for tests"
+    use tokio::test;
+
+    #[test]
+    async fn test_getting_l10n() -> Result<(), Box<dyn Error>> {
+        // TODO: setup a service that returns what I expect
+
+        let store = LocalizationStore::new().await?;
+        let settings = store.load().await?;
+
+        let expected = LocalizationSettings {
+            language: Some("fr_FR.UTF-8".to_owned()),
+            keyboard: Some("fr(dvorak)".to_owned()),
+            timezone: Some("Europe/Paris".to_owned()),
+        };
+        assert_eq!(settings, expected);
+        Ok(())
+    }
+}
