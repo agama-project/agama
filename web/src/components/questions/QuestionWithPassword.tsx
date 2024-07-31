@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,54 +20,48 @@
  */
 
 import React, { useState } from "react";
-import { Alert, Form, FormGroup, Text } from "@patternfly/react-core";
+import { Form, FormGroup, Text } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { PasswordInput, Popup } from "~/components/core";
 import { QuestionActions } from "~/components/questions";
+import { AnswerCallback, Question } from "~/types/questions";
 import { _ } from "~/i18n";
 
-const renderAlert = (attempt) => {
-  if (!attempt || attempt === 1) return null;
-
-  return (
-    // TRANSLATORS: error message, user entered a wrong password
-    <Alert variant="warning" isInline isPlain title={_("Given encryption password didn't work")} />
-  );
-};
-
-export default function LuksActivationQuestion({ question, answerCallback }) {
+/**
+ * Component for rendering questions asking for password
+ *
+ * @param question - the question to be answered
+ * @param answerCallback - the callback to be triggered on answer
+ */
+export default function QuestionWithPassword({
+  question,
+  answerCallback,
+}: {
+  question: Question;
+  answerCallback: AnswerCallback;
+}): React.ReactNode {
   const [password, setPassword] = useState(question.password || "");
-  const conditions = { disable: { decrypt: password === "" } };
-  const defaultAction = "decrypt";
+  const defaultAction = question.defaultOption;
 
-  const actionCallback = (option) => {
+  const actionCallback = (option: string) => {
     question.password = password;
     question.answer = option;
     answerCallback(question);
   };
 
-  const triggerDefaultAction = (e) => {
-    e.preventDefault();
-    if (!conditions.disable?.[defaultAction]) {
-      actionCallback(defaultAction);
-    }
-  };
-
   return (
     <Popup
       isOpen
-      title={_("Encrypted Device")}
-      aria-label={_("Question")}
+      title={_("Password Required")}
       titleIconVariant={() => <Icon name="lock" size="s" />}
     >
-      {renderAlert(parseInt(question.data.attempt))}
       <Text>{question.text}</Text>
-      <Form onSubmit={triggerDefaultAction}>
+      <Form>
         {/* TRANSLATORS: field label */}
-        <FormGroup label={_("Encryption Password")} fieldId="luks-password">
+        <FormGroup label={_("Password")} fieldId="password">
           <PasswordInput
             autoFocus
-            id="luks-password"
+            id="password"
             value={password}
             onChange={(_, value) => setPassword(value)}
           />
@@ -79,7 +73,6 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
           actions={question.options}
           defaultAction={defaultAction}
           actionCallback={actionCallback}
-          conditions={conditions}
         />
       </Popup.Actions>
     </Popup>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,10 +23,10 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, plainRender } from "~/test-utils";
 import { Questions } from "~/components/questions";
-import { QuestionType } from "~/types/questions";
+import { Question, QuestionType } from "~/types/questions";
 import * as GenericQuestionComponent from "~/components/questions/GenericQuestion";
 
-let mockQuestions;
+let mockQuestions: Question[];
 const mockMutation = jest.fn();
 
 jest.mock("~/components/questions/LuksActivationQuestion", () => () => (
@@ -43,15 +43,15 @@ jest.mock("~/queries/questions", () => ({
   useQuestionsConfig: () => ({ mutate: mockMutation }),
 }));
 
-const genericQuestion = {
+const genericQuestion: Question = {
   id: 1,
   type: QuestionType.generic,
   text: "Do you write unit tests?",
   options: ["always", "sometimes", "never"],
   defaultOption: "sometimes",
 };
-const passwordQuestion = { id: 1, type: QuestionType.withPassword };
-const luksActivationQuestion = { id: 1, class: "storage.luks_activation" };
+const passwordQuestion: Question = { id: 1, type: QuestionType.withPassword };
+const luksActivationQuestion: Question = { id: 2, class: "storage.luks_activation" };
 
 describe("Questions", () => {
   afterEach(() => {

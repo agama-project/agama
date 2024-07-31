@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,10 +23,23 @@ import React from "react";
 import { Text } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { QuestionActions } from "~/components/questions";
+import { AnswerCallback, Question } from "~/types/questions";
 import { _ } from "~/i18n";
 
-export default function GenericQuestion({ question, answerCallback }) {
-  const actionCallback = (option) => {
+/**
+ * Component for rendering generic questions
+ *
+ * @param question - the question to be answered
+ * @param answerCallback - the callback to be triggered on answer
+ */
+export default function GenericQuestion({
+  question,
+  answerCallback,
+}: {
+  question: Question;
+  answerCallback: AnswerCallback;
+}): React.ReactNode {
+  const actionCallback = (option: string) => {
     question.answer = option;
     answerCallback(question);
   };

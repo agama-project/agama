@@ -23,25 +23,21 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { QuestionWithPassword } from "~/components/questions";
+import { Question } from "~/types/questions";
 
-let question;
 const answerFn = jest.fn();
+const question: Question = {
+  id: 1,
+  class: "question.password",
+  text: "Random question. Will you provide random password?",
+  options: ["ok", "cancel"],
+  defaultOption: "cancel",
+};
 
 const renderQuestion = () =>
   plainRender(<QuestionWithPassword question={question} answerCallback={answerFn} />);
 
 describe("QuestionWithPassword", () => {
-  beforeEach(() => {
-    question = {
-      id: 1,
-      class: "question.password",
-      text: "Random question. Will you provide random password?",
-      options: ["ok", "cancel"],
-      defaultOption: "cancel",
-      data: {},
-    };
-  });
-
   it("renders the question text", () => {
     renderQuestion();
 

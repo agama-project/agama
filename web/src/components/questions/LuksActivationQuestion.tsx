@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,35 +20,68 @@
  */
 
 import React, { useState } from "react";
-import { Alert, Form, FormGroup, Text } from "@patternfly/react-core";
+import { Alert as PFAlert, Form, FormGroup, Text } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { PasswordInput, Popup } from "~/components/core";
 import { QuestionActions } from "~/components/questions";
 import { _ } from "~/i18n";
 
-export default function QuestionWithPassword({ question, answerCallback }) {
-  const [password, setPassword] = useState(question.password || "");
-  const defaultAction = question.defaultOption;
+/**
+ * Internal component for rendering an alert if given password failed
+ */
+const Alert = ({ attempt }: { attempt: string | undefined }): React.ReactNode => {
+  if (!attempt || parseInt(attempt) === 1) return null;
 
-  const actionCallback = (option) => {
+  return (
+    // TRANSLATORS: error message, user entered a wrong password
+    <PFAlert
+      variant="warning"
+      isInline
+      isPlain
+      title={_("Given encryption password didn't work")}
+    />
+  );
+};
+
+/**
+ * Component for rendering questions related to LUKS activation
+ *
+ * @param question - the question to be answered
+ * @param answerCallback - the callback to be triggered on answer
+ */
+export default function LuksActivationQuestion({ question, answerCallback }) {
+  const [password, setPassword] = useState(question.password || "");
+  const conditions = { disable: { decrypt: password === "" } };
+  const defaultAction = "decrypt";
+
+  const actionCallback = (option: string) => {
     question.password = password;
     question.answer = option;
     answerCallback(question);
   };
 
+  const triggerDefaultAction = (e) => {
+    e.preventDefault();
+    if (!conditions.disable?.[defaultAction]) {
+      actionCallback(defaultAction);
+    }
+  };
+
   return (
     <Popup
       isOpen
-      title={_("Password Required")}
+      title={_("Encrypted Device")}
+      aria-label={_("Question")}
       titleIconVariant={() => <Icon name="lock" size="s" />}
     >
+      <Alert attempt={question.data.attempt} />
       <Text>{question.text}</Text>
-      <Form>
+      <Form onSubmit={triggerDefaultAction}>
         {/* TRANSLATORS: field label */}
-        <FormGroup label={_("Password")} fieldId="password">
+        <FormGroup label={_("Encryption Password")} fieldId="luks-password">
           <PasswordInput
             autoFocus
-            id="password"
+            id="luks-password"
             value={password}
             onChange={(_, value) => setPassword(value)}
           />
@@ -60,6 +93,7 @@ export default function QuestionWithPassword({ question, answerCallback }) {
           actions={question.options}
           defaultAction={defaultAction}
           actionCallback={actionCallback}
+          conditions={conditions}
         />
       </Popup.Actions>
     </Popup>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,8 +23,9 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { GenericQuestion } from "~/components/questions";
+import { Question } from "~/types/questions";
 
-const question = {
+const question: Question = {
   id: 1,
   text: "Do you write unit tests?",
   options: ["always", "sometimes", "never"],

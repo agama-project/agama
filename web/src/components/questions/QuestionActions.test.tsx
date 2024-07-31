@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,10 +23,11 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { QuestionActions } from "~/components/questions";
+import { Question } from "~/types/questions";
 
 let defaultOption = "sure";
 
-let question = {
+let question: Question = {
   id: 1,
   text: "Should we use a component for rendering actions?",
   options: ["no", "maybe", "sure"],

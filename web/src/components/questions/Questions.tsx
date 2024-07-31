@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import {
   GenericQuestion,
@@ -28,16 +26,16 @@ import {
   LuksActivationQuestion,
 } from "~/components/questions";
 import { useQuestions, useQuestionsConfig, useQuestionsChanges } from "~/queries/questions";
-import { Question, QuestionType } from "~/types/questions";
+import { AnswerCallback, QuestionType } from "~/types/questions";
 
-export default function Questions() {
+export default function Questions(): React.ReactNode {
   useQuestionsChanges();
   const pendingQuestions = useQuestions();
   const questionsConfig = useQuestionsConfig();
 
   if (pendingQuestions.length === 0) return null;
 
-  const answerQuestion = (/** @type {Question} */ answeredQuestion) =>
+  const answerQuestion: AnswerCallback = (answeredQuestion) =>
     questionsConfig.mutate(answeredQuestion);
 
   // Renders the first pending question
