@@ -1,4 +1,4 @@
-use reqwest::{header, Client, Response};
+use reqwest::{header, Response};
 use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{auth::AuthToken, error::ServiceError};
@@ -21,15 +21,36 @@ use crate::{auth::AuthToken, error::ServiceError};
 ///   }
 /// ```
 pub struct BaseHTTPClient {
-    client: Client,
+    pub client: reqwest::Client,
     pub base_url: String,
 }
 
 const API_URL: &str = "http://localhost/api";
 
+impl Default for BaseHTTPClient {
+    /// A `default` client
+    /// - is NOT authenticated (maybe you want to call `new` instead)
+    /// - uses `localhost`
+    fn default() -> Self {
+        Self {
+            client: reqwest::Client::new(),
+            base_url: API_URL.to_owned(),
+        }
+    }
+}
+
 impl BaseHTTPClient {
-    // if there is need for client without authorization, create new constructor for it
+    /// Uses `localhost`, authenticates with [`AuthToken`].
     pub fn new() -> Result<Self, ServiceError> {
+        Ok(Self {
+            client: Self::authenticated_reqwest_client()?,
+            ..Default::default()
+        })
+    }
+
+    fn authenticated_reqwest_client() -> Result<reqwest::Client, ServiceError> {
+        // TODO: this error is subtly misleading, leading me to believe the SERVER said it,
+        // but in fact it is the CLIENT not finding an auth token
         let token = AuthToken::find().ok_or(ServiceError::NotAuthenticated)?;
 
         let mut headers = header::HeaderMap::new();
@@ -39,12 +60,10 @@ impl BaseHTTPClient {
 
         headers.insert(header::AUTHORIZATION, value);
 
-        let client = Client::builder().default_headers(headers).build()?;
-
-        Ok(Self {
-            client,
-            base_url: API_URL.to_string(), // TODO: add support for remote server
-        })
+        let client = reqwest::Client::builder()
+            .default_headers(headers)
+            .build()?;
+        Ok(client)
     }
 
     /// Simple wrapper around [`Response`] to get object from response.
