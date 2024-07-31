@@ -12,6 +12,10 @@ impl LocalizationHTTPClient {
         })
     }
 
+    pub async fn new_with_base(base: BaseHTTPClient) -> Result<Self, ServiceError> {
+        Ok(Self { client: base })
+    }
+
     pub async fn get_config(&self) -> Result<LocaleConfig, ServiceError> {
         self.client.get("/l10n/config").await
     }

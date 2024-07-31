@@ -47,6 +47,12 @@ impl BaseHTTPClient {
         })
     }
 
+    pub fn new_with_url(url: String) -> Result<Self, ServiceError> {
+        let mut client = Self::new()?;
+        client.base_url = url;
+        Ok(client)
+    }
+
     /// Simple wrapper around [`Response`] to get object from response.
     ///
     /// If a complete [`Response`] is needed, use the [`Self::get_response`] method.

@@ -28,3 +28,6 @@ curl = { version = "0.4.44", features = ["protocol-ftp"] }
 jsonwebtoken = "9.3.0"
 chrono = { version = "0.4.38", default-features = false, features = ["now", "std", "alloc", "clock"] }
 home = "0.5.9"
+
+[dev-dependencies]
+httpmock = "0.7.0"
