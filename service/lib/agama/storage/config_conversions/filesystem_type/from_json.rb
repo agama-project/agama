@@ -72,7 +72,7 @@ module Agama
             default_config.tap do |config|
               snapshots = btrfs_json[:snapshots]
 
-              config.snapshots = snapshots if snapshots
+              config.snapshots = snapshots unless snapshots.nil?
             end
           end
         end

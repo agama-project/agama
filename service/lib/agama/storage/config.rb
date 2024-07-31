@@ -100,17 +100,26 @@ module Agama
       end
 
       def default_size(device, attr, builder)
-        # TODO: what to do if path is nil or empty?
-        path = device.filesystem&.path
-        # TODO: what to do if there is no default volume?
+        path = device.filesystem&.path || ""
         vol = builder.for(path)
+        return fallback_size(attr) unless vol
 
+        # Theoretically, neither Volume#min_size or Volume#max_size can be nil
+        # At most they will be zero or unlimited, respectively
         return vol.send(:"#{attr}_size") unless vol.auto_size?
 
         outline = vol.outline
         size = size_with_fallbacks(device, outline, attr, builder)
         size = size_with_ram(size, outline)
         size_with_snapshots(size, device, outline)
+      end
+
+      # TODO: these are the fallbacks used when constructing volumes, not sure if repeating them
+      # here is right
+      def fallback_size(attr)
+        return Y2Storage::DiskSize.zero if attr == :min
+
+        Y2Storage::DiskSize.unlimited
       end
 
       def size_with_fallbacks(device, outline, attr, builder)
