@@ -94,7 +94,10 @@ mod test {
         });
         let url = server.url("/api");
 
-        let bhc = BaseHTTPClient::new_with_url(url)?;
+        let bhc = BaseHTTPClient {
+            base_url: url,
+            ..Default::default()
+        };
         let client = LocalizationHTTPClient::new_with_base(bhc).await?;
         let store = LocalizationStore::new_with_client(client).await?;
 
