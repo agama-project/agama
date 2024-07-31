@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 31 15:48:00 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Update nokogiri dependency to version 1.16
+  (gh#openSUSE/agama#1518)
+
+-------------------------------------------------------------------
 Mon Jul 22 15:26:48 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - AutoYaST convert script: use Agama questions to report errors
