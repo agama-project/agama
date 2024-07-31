@@ -22,8 +22,8 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { QuestionWithPassword } from "~/components/questions";
 import { Question } from "~/types/questions";
+import QuestionWithPassword from "~/components/questions/QuestionWithPassword";
 
 const answerFn = jest.fn();
 const question: Question = {

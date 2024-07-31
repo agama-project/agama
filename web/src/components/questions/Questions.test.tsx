@@ -22,8 +22,8 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, plainRender } from "~/test-utils";
-import { Questions } from "~/components/questions";
 import { Question, QuestionType } from "~/types/questions";
+import Questions from "~/components/questions/Questions";
 import * as GenericQuestionComponent from "~/components/questions/GenericQuestion";
 
 let mockQuestions: Question[];

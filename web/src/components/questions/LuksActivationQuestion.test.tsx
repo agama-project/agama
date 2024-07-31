@@ -22,8 +22,8 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { LuksActivationQuestion } from "~/components/questions";
 import { AnswerCallback, Question } from "~/types/questions";
+import LuksActivationQuestion from "~/components/questions/LuksActivationQuestion";
 
 let question: Question;
 const questionMock: Question = {

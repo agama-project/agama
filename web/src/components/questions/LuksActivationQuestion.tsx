@@ -23,7 +23,7 @@ import React, { useState } from "react";
 import { Alert as PFAlert, Form, FormGroup, Text } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { PasswordInput, Popup } from "~/components/core";
-import { QuestionActions } from "~/components/questions";
+import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
 
 /**

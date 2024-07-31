@@ -20,11 +20,9 @@
  */
 
 import React from "react";
-import {
-  GenericQuestion,
-  QuestionWithPassword,
-  LuksActivationQuestion,
-} from "~/components/questions";
+import GenericQuestion from "~/components/questions/GenericQuestion";
+import QuestionWithPassword from "~/components/questions/QuestionWithPassword";
+import LuksActivationQuestion from "~/components/questions/LuksActivationQuestion";
 import { useQuestions, useQuestionsConfig, useQuestionsChanges } from "~/queries/questions";
 import { AnswerCallback, QuestionType } from "~/types/questions";
 
