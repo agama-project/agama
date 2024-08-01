@@ -115,10 +115,7 @@ mod test {
         });
         let url = server.url("/api");
 
-        let bhc = BaseHTTPClient {
-            base_url: url,
-            ..Default::default()
-        };
+        let bhc = BaseHTTPClient::new_unauthenticated_with_url(url)?;
         let client = UsersHTTPClient::new_with_base(bhc)?;
         let store = UsersStore::new_with_client(client)?;
 
