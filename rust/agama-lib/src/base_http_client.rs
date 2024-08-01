@@ -21,7 +21,7 @@ use crate::{auth::AuthToken, error::ServiceError};
 ///   }
 /// ```
 pub struct BaseHTTPClient {
-    pub client: reqwest::Client,
+    client: reqwest::Client,
     pub base_url: String,
 }
 
@@ -43,12 +43,19 @@ impl BaseHTTPClient {
     /// Uses `localhost`, authenticates with [`AuthToken`].
     pub fn new() -> Result<Self, ServiceError> {
         Ok(Self {
-            client: Self::authenticated_reqwest_client()?,
+            client: Self::authenticated_client()?,
             ..Default::default()
         })
     }
 
-    fn authenticated_reqwest_client() -> Result<reqwest::Client, ServiceError> {
+    pub fn new_unauthenticated_with_url(url: String) -> Result<Self, ServiceError> {
+        Ok(Self {
+            client: reqwest::Client::new(),
+            base_url: url,
+        })
+    }
+
+    fn authenticated_client() -> Result<reqwest::Client, ServiceError> {
         // TODO: this error is subtly misleading, leading me to believe the SERVER said it,
         // but in fact it is the CLIENT not finding an auth token
         let token = AuthToken::find().ok_or(ServiceError::NotAuthenticated)?;
