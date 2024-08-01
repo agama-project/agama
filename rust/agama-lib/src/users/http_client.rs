@@ -13,6 +13,10 @@ impl UsersHTTPClient {
         })
     }
 
+    pub fn new_with_base(client: BaseHTTPClient) -> Result<Self, ServiceError> {
+        Ok(Self { client })
+    }
+
     /// Returns the settings for first non admin user
     pub async fn first_user(&self) -> Result<FirstUser, ServiceError> {
         self.client.get("/users/first").await

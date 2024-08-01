@@ -10,6 +10,10 @@ impl UsersStore {
     pub async fn new() -> Result<Self, ServiceError> {
         Ok(Self {
             users_client: UsersHTTPClient::new().await?,
+
+    pub fn new_with_client(client: UsersHTTPClient) -> Result<Self, ServiceError> {
+        Ok(Self {
+            users_client: client,
         })
     }
 
@@ -67,6 +71,78 @@ impl UsersStore {
             self.users_client.set_root_sshkey(ssh_public_key).await?;
         }
 
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::base_http_client::BaseHTTPClient;
+    use httpmock::prelude::*;
+    use std::error::Error;
+    use tokio::test; // without this, "error: async functions cannot be used for tests"
+
+    #[test]
+    async fn test_getting_users() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        let user_mock = server.mock(|when, then| {
+            when.method(GET).path("/api/users/first");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"{
+                    "fullName": "Tux",
+                    "userName": "tux",
+                    "password": "fish",
+                    "autologin": true,
+                    "data": {}
+                }"#,
+                );
+        });
+        let root_mock = server.mock(|when, then| {
+            when.method(GET).path("/api/users/root");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body(
+                    r#"{
+                    "sshkey": "keykeykey",
+                    "password": true
+                }"#,
+                );
+        });
+        let url = server.url("/api");
+
+        let bhc = BaseHTTPClient {
+            base_url: url,
+            ..Default::default()
+        };
+        let client = UsersHTTPClient::new_with_base(bhc)?;
+        let store = UsersStore::new_with_client(client)?;
+
+        let settings = store.load().await?;
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        user_mock.assert();
+        root_mock.assert();
+
+        let first_user = FirstUserSettings {
+            full_name: Some("Tux".to_owned()),
+            user_name: Some("tux".to_owned()),
+            password: Some("fish".to_owned()),
+            autologin: Some(true),
+        };
+        let root_user = RootUserSettings {
+            // FIXME this is weird: no matter what HTTP reports, we end up with None
+            password: None,
+            ssh_public_key: Some("keykeykey".to_owned()),
+        };
+        let expected = UserSettings {
+            first_user: Some(first_user),
+            root: Some(root_user),
+        };
+
+        assert_eq!(settings, expected);
         Ok(())
     }
 }
