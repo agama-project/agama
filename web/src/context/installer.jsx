@@ -30,8 +30,6 @@ const InstallerClientContext = React.createContext(null);
 const InstallerClientStatusContext = React.createContext({
   connected: false,
   error: false,
-  phase: undefined,
-  status: undefined,
 });
 
 /**
@@ -80,8 +78,6 @@ function InstallerClientProvider({ children, client = null }) {
   const [value, setValue] = useState(client);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState(false);
-  const [status, setStatus] = useState(undefined);
-  const [phase, setPhase] = useState(undefined);
 
   useEffect(() => {
     const connectClient = async () => {
@@ -105,31 +101,6 @@ function InstallerClientProvider({ children, client = null }) {
   }, [setValue, value]);
 
   useEffect(() => {
-    if (value) {
-      return value.manager.onPhaseChange(setPhase);
-    }
-  }, [value, setPhase]);
-
-  useEffect(() => {
-    if (value) {
-      return value.manager.onStatusChange(setStatus);
-    }
-  }, [value, setStatus]);
-
-  useEffect(() => {
-    const loadPhase = async () => {
-      const initialPhase = await value.manager.getPhase();
-      const initialStatus = await value.manager.getStatus();
-      setPhase(initialPhase);
-      setStatus(initialStatus);
-    };
-
-    if (value) {
-      loadPhase().catch(console.error);
-    }
-  }, [value, setPhase, setStatus]);
-
-  useEffect(() => {
     if (!value) return;
 
     value.onConnect(() => {
@@ -145,7 +116,7 @@ function InstallerClientProvider({ children, client = null }) {
 
   return (
     <InstallerClientContext.Provider value={value}>
-      <InstallerClientStatusContext.Provider value={{ connected, error, phase, status }}>
+      <InstallerClientStatusContext.Provider value={{ connected, error }}>
         {children}
       </InstallerClientStatusContext.Provider>
     </InstallerClientContext.Provider>

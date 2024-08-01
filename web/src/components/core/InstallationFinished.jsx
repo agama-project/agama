@@ -42,6 +42,7 @@ import { EncryptionMethods } from "~/client/storage";
 import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
+import { useInstallerStatus } from "~/queries/status";
 
 const TpmHint = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -74,19 +75,17 @@ const SuccessIcon = () => <Icon name="check_circle" className="icon-xxxl color-s
 
 function InstallationFinished() {
   const client = useInstallerClient();
-  const [usingIguana, setUsingIguana] = useState(false);
+  const { useIguana } = useInstallerStatus({ suspense: true });
   const [usingTpm, setUsingTpm] = useState(false);
   const closingAction = () => client.manager.finishInstallation();
 
   useEffect(() => {
     async function preparePage() {
-      const iguana = await client.manager.useIguana();
       // FIXME: This logic should likely not be placed here, it's too coupled to storage internals.
       // Something to fix when this whole page is refactored in a (hopefully near) future.
       const {
         settings: { encryptionPassword, encryptionMethod },
       } = await client.storage.proposal.getResult();
-      setUsingIguana(iguana);
       setUsingTpm(encryptionPassword?.length > 0 && encryptionMethod === EncryptionMethods.TPM);
     }
 
@@ -115,7 +114,7 @@ function InstallationFinished() {
                       >
                         <Text>{_("The installation on your machine is complete.")}</Text>
                         <Text>
-                          {usingIguana
+                          {useIguana
                             ? _("At this point you can power off the machine.")
                             : _(
                                 "At this point you can reboot the machine to log in to the new system.",
@@ -127,7 +126,7 @@ function InstallationFinished() {
                   </EmptyState>
                   <Flex direction={{ default: "rowReverse" }}>
                     <Button size="lg" variant="primary" onClick={closingAction}>
-                      {usingIguana ? _("Finish") : _("Reboot")}
+                      {useIguana ? _("Finish") : _("Reboot")}
                     </Button>
                   </Flex>
                 </Stack>

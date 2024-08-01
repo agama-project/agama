@@ -49,9 +49,6 @@ pub enum Event {
     InstallationPhaseChanged {
         phase: InstallationPhase,
     },
-    BusyServicesChanged {
-        services: Vec<String>,
-    },
     ServiceStatusChanged {
         service: String,
         status: u32,

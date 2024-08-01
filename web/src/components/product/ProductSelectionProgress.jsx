@@ -27,6 +27,7 @@ import { Page, ProgressReport } from "~/components/core";
 import { IDLE } from "~/client/status";
 import { useInstallerClient } from "~/context/installer";
 import { PATHS } from "~/router";
+import { useInstallerStatus } from "~/queries/status";
 
 /**
  * @component
@@ -35,15 +36,9 @@ import { PATHS } from "~/router";
  */
 function ProductSelectionProgress() {
   const { selectedProduct } = useProduct({ suspense: true });
-  const { manager } = useInstallerClient();
-  const [status, setStatus] = useState();
+  const { isBusy } = useInstallerStatus({ suspense: true });
 
-  useEffect(() => {
-    manager.getStatus().then(setStatus);
-    return manager.onStatusChange(setStatus);
-  }, [manager, setStatus]);
-
-  if (status === IDLE) return <Navigate to={PATHS.root} replace />;
+  if (!isBusy) return <Navigate to={PATHS.root} replace />;
 
   return (
     <Page>

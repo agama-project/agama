@@ -21,10 +21,9 @@
 
 import React from "react";
 import { InstallationProgress, InstallationFinished } from "~/components/core";
-import { IDLE } from "~/client/status";
 
-function Installation({ status }) {
-  return status === IDLE ? <InstallationFinished /> : <InstallationProgress />;
+function Installation({ isBusy }) {
+  return isBusy ? <InstallationProgress /> : <InstallationFinished />;
 }
 
 export default Installation;

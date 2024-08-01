@@ -97,14 +97,6 @@ const Providers = ({ children, withL10n }) => {
     client.manager = {};
   }
 
-  client.manager = {
-    getPhase: noop,
-    getStatus: noop,
-    onPhaseChange: noop,
-    onStatusChange: noop,
-    ...client.manager,
-  };
-
   if (withL10n) {
     return (
       <InstallerClientProvider client={client}>
