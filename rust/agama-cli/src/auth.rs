@@ -48,9 +48,7 @@ impl AuthHTTPClient {
         auth_body.insert("password", password);
 
         let response = self.api.post_response("/auth", &auth_body).await?;
-        let body = response
-            .json::<HashMap<String, String>>()
-            .await?;
+        let body = response.json::<HashMap<String, String>>().await?;
         let value = body.get("token");
 
         if let Some(token) = value {
