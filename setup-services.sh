@@ -68,7 +68,7 @@ $SUDO zypper --non-interactive install \
   dmraid \
   dosfstools \
   e2fsprogs \
-  exfat-utils \
+  exfatprogs \
   f2fs-tools \
   fcoe-utils \
   jfsutils \
