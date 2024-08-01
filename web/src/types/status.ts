@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,12 +19,28 @@
  * find current contact information at www.suse.com.
  */
 
-export const STARTUP = 0;
-export const CONFIG = 1;
-export const INSTALL = 2;
+/*
+ * Enum that represents the installation phase
+ */
+enum InstallationPhase {
+  Startup = 0,
+  Config = 1,
+  Install = 2,
+}
 
-export default {
-  STARTUP,
-  CONFIG,
-  INSTALL,
+/*
+ * Status of the installer
+ */
+type InstallerStatus = {
+  /** Whether the installer is busy */
+  isBusy: boolean;
+  /** Installation phase */
+  phase: InstallationPhase;
+  /** Whether the installation can be performed or not */
+  canInstall: boolean;
+  /** Whether the installer is running on Iguana */
+  useIguana: boolean;
 };
+
+export type { InstallerStatus };
+export { InstallationPhase };

@@ -1,0 +1,11 @@
+[Unit]
+Description=Generate issue file for Agama URLs
+
+After=network-online.target
+
+[Service]
+ExecStart=agama-issue-generator --watch-network
+Type=simple
+
+[Install]
+WantedBy=default.target

@@ -46,13 +46,6 @@ jest.mock("./http", () => {
 
 let client;
 
-const installerStatus = {
-  phase: 1,
-  busy: [],
-  iguana: false,
-  canInstall: true,
-};
-
 beforeEach(() => {
   client = new ManagerClient(new HTTPClient(new URL("http://localhost")));
 });
@@ -61,17 +54,6 @@ describe("#startProbing", () => {
   it("(re)starts the probing process", async () => {
     await client.startProbing();
     expect(mockPostFn).toHaveBeenCalledWith("/manager/probe", {});
-  });
-});
-
-describe("#getPhase", () => {
-  beforeEach(() => {
-    mockJsonFn.mockResolvedValue(installerStatus);
-  });
-
-  it("resolves to the current phase", () => {
-    const phase = client.getPhase();
-    expect(phase).resolves.toEqual(1);
   });
 });
 
@@ -90,30 +72,6 @@ describe("#rebootSystem", () => {
   it("returns whether the system reboot command was called or not", async () => {
     const reboot = await client.finishInstallation();
     expect(mockPostFn).toHaveBeenCalledWith("/manager/finish", {});
-  });
-});
-
-describe("#canInstall", () => {
-  describe("when the system can be installed", () => {
-    beforeEach(() => {
-      mockJsonFn.mockResolvedValue(installerStatus);
-    });
-
-    it("returns true", async () => {
-      const install = await client.canInstall();
-      expect(install).toEqual(true);
-    });
-  });
-
-  describe("when the system cannot be installed", () => {
-    beforeEach(() => {
-      mockJsonFn.mockResolvedValue({ ...installerStatus, canInstall: false });
-    });
-
-    it("returns false", async () => {
-      const install = await client.canInstall();
-      expect(install).toEqual(false);
-    });
   });
 });
 

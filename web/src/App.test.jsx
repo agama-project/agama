@@ -25,11 +25,7 @@ import { installerRender } from "~/test-utils";
 
 import App from "./App";
 import { createClient } from "~/client";
-import { STARTUP, CONFIG, INSTALL } from "~/client/phase";
-import { IDLE, BUSY } from "~/client/status";
-import { useL10nConfigChanges } from "./queries/l10n";
-import { useProductChanges } from "./queries/software";
-import { useIssuesChanges } from "./queries/issues";
+import { InstallationPhase } from "./types/status";
 
 jest.mock("~/client");
 
@@ -59,15 +55,19 @@ jest.mock("~/queries/issues", () => ({
 }));
 
 const mockClientStatus = {
-  connected: true,
-  error: false,
-  phase: STARTUP,
-  status: BUSY,
+  phase: InstallationPhase.Startup,
+  isBusy: true,
 };
+
+jest.mock("~/queries/status", () => ({
+  ...jest.requireActual("~/queries/status"),
+  useInstallerStatus: () => mockClientStatus,
+  useInstallerStatusChanges: () => jest.fn(),
+}));
 
 jest.mock("~/context/installer", () => ({
   ...jest.requireActual("~/context/installer"),
-  useInstallerClientStatus: () => mockClientStatus,
+  useInstallerClientStatus: () => ({ connected: true, error: false }),
 }));
 
 // Mock some components,
@@ -115,8 +115,8 @@ describe("App", () => {
 
   describe("when the service is busy during startup", () => {
     beforeEach(() => {
-      mockClientStatus.phase = STARTUP;
-      mockClientStatus.status = BUSY;
+      mockClientStatus.phase = InstallationPhase.Startup;
+      mockClientStatus.isBusy = true;
     });
 
     it("renders the Loading screen", async () => {
@@ -125,14 +125,14 @@ describe("App", () => {
     });
   });
 
-  describe("on the CONFIG phase", () => {
+  describe("on the configuration phase", () => {
     beforeEach(() => {
-      mockClientStatus.phase = CONFIG;
+      mockClientStatus.phase = InstallationPhase.Config;
     });
 
     describe("if the service is busy", () => {
       beforeEach(() => {
-        mockClientStatus.status = BUSY;
+        mockClientStatus.isBusy = true;
         mockSelectedProduct = { id: "Tumbleweed" };
       });
 
@@ -144,7 +144,7 @@ describe("App", () => {
 
     describe("if the service is not busy", () => {
       beforeEach(() => {
-        mockClientStatus.status = IDLE;
+        mockClientStatus.isBusy = false;
       });
 
       it("renders the application content", async () => {
@@ -154,9 +154,9 @@ describe("App", () => {
     });
   });
 
-  describe("on the INSTALL phase", () => {
+  describe("on the installaiton phase", () => {
     beforeEach(() => {
-      mockClientStatus.phase = INSTALL;
+      mockClientStatus.phase = InstallationPhase.Install;
       mockSelectedProduct = { id: "Fake product" };
     });
 

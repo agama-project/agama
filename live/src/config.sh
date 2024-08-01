@@ -43,6 +43,7 @@ systemctl enable agama-certificate-issue.path
 systemctl enable agama-certificate-wait.service
 systemctl enable agama-welcome-issue.service
 systemctl enable agama-avahi-issue.service
+systemctl enable agama-url-issue.service
 systemctl enable agama-ssh-issue.service
 systemctl enable agama-self-update.service
 systemctl enable live-free-space.service
