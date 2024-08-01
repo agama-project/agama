@@ -86,6 +86,13 @@ mod test {
     use std::error::Error;
     use tokio::test; // without this, "error: async functions cannot be used for tests"
 
+    fn users_store(mock_server_url: String) -> Result<UsersStore, ServiceError> {
+        let mut bhc = BaseHTTPClient::default();
+        bhc.base_url = mock_server_url;
+        let client = UsersHTTPClient::new_with_base(bhc)?;
+        UsersStore::new_with_client(client)
+    }
+
     #[test]
     async fn test_getting_users() -> Result<(), Box<dyn Error>> {
         let server = MockServer::start();
@@ -116,11 +123,7 @@ mod test {
         });
         let url = server.url("/api");
 
-        let mut bhc = BaseHTTPClient::default();
-        bhc.base_url = url;
-        let client = UsersHTTPClient::new_with_base(bhc)?;
-        let store = UsersStore::new_with_client(client)?;
-
+        let store = users_store(url)?;
         let settings = store.load().await?;
 
         // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
@@ -176,10 +179,7 @@ mod test {
         });
         let url = server.url("/api");
 
-        let mut bhc = BaseHTTPClient::default();
-        bhc.base_url = url;
-        let client = UsersHTTPClient::new_with_base(bhc)?;
-        let store = UsersStore::new_with_client(client)?;
+        let store = users_store(url)?;
 
         let first_user = FirstUserSettings {
             full_name: Some("Tux".to_owned()),

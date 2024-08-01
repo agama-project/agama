@@ -78,6 +78,15 @@ mod test {
     use std::error::Error;
     use tokio::test; // without this, "error: async functions cannot be used for tests"
 
+    async fn localization_store(
+        mock_server_url: String,
+    ) -> Result<LocalizationStore, ServiceError> {
+        let mut bhc = BaseHTTPClient::default();
+        bhc.base_url = mock_server_url;
+        let client = LocalizationHTTPClient::new_with_base(bhc).await?;
+        LocalizationStore::new_with_client(client).await
+    }
+
     #[test]
     async fn test_getting_l10n() -> Result<(), Box<dyn Error>> {
         let server = MockServer::start();
@@ -95,11 +104,7 @@ mod test {
         });
         let url = server.url("/api");
 
-        let mut bhc = BaseHTTPClient::default();
-        bhc.base_url = url;
-        let client = LocalizationHTTPClient::new_with_base(bhc).await?;
-        let store = LocalizationStore::new_with_client(client).await?;
-
+        let store = localization_store(url).await?;
         let settings = store.load().await?;
 
         // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
@@ -128,10 +133,7 @@ mod test {
         });
         let url = server.url("/api");
 
-        let mut bhc = BaseHTTPClient::default();
-        bhc.base_url = url;
-        let client = LocalizationHTTPClient::new_with_base(bhc).await?;
-        let store = LocalizationStore::new_with_client(client).await?;
+        let store = localization_store(url).await?;
 
         let settings = LocalizationSettings {
             language: Some("fr_FR.UTF-8".to_owned()),
