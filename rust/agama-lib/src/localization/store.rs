@@ -95,7 +95,8 @@ mod test {
         });
         let url = server.url("/api");
 
-        let bhc = BaseHTTPClient::new_unauthenticated_with_url(url)?;
+        let mut bhc = BaseHTTPClient::default();
+        bhc.base_url = url;
         let client = LocalizationHTTPClient::new_with_base(bhc).await?;
         let store = LocalizationStore::new_with_client(client).await?;
 
@@ -127,7 +128,8 @@ mod test {
         });
         let url = server.url("/api");
 
-        let bhc = BaseHTTPClient::new_unauthenticated_with_url(url)?;
+        let mut bhc = BaseHTTPClient::default();
+        bhc.base_url = url;
         let client = LocalizationHTTPClient::new_with_base(bhc).await?;
         let store = LocalizationStore::new_with_client(client).await?;
 

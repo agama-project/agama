@@ -48,13 +48,6 @@ impl BaseHTTPClient {
         })
     }
 
-    pub fn new_unauthenticated_with_url(url: String) -> Result<Self, ServiceError> {
-        Ok(Self {
-            client: reqwest::Client::new(),
-            base_url: url,
-        })
-    }
-
     fn authenticated_client() -> Result<reqwest::Client, ServiceError> {
         // TODO: this error is subtly misleading, leading me to believe the SERVER said it,
         // but in fact it is the CLIENT not finding an auth token
