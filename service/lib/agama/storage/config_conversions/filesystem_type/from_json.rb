@@ -45,7 +45,7 @@ module Agama
               btrfs = convert_btrfs(config.btrfs)
               type = convert_type
 
-              config.fstype = type if type
+              config.fs_type = type if type
               config.btrfs = btrfs if btrfs
             end
           end
@@ -57,6 +57,8 @@ module Agama
 
           # @return [Y2Storage::Filesystems::Type]
           def convert_type
+            return if filesystem_json.nil?
+
             value = filesystem_json.is_a?(String) ? filesystem_json : "btrfs"
             Y2Storage::Filesystems::Type.find(value.to_sym)
           end
@@ -64,7 +66,7 @@ module Agama
           # @param default [Configs::Btrfs]
           # @return [Configs::Btrfs, nil]
           def convert_btrfs(default = nil)
-            return nil if filesystem_json.nil? || filesystem_json.is_a?(String)
+            return if filesystem_json.nil? || filesystem_json.is_a?(String)
 
             btrfs_json = filesystem_json[:btrfs]
             default_config = default.dup || Configs::Btrfs.new

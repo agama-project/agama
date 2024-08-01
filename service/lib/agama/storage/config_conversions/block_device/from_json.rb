@@ -119,7 +119,7 @@ module Agama
             volume = volume_builder.for(mount_path)
 
             Configs::FilesystemType.new.tap do |config|
-              config.fstype = volume.fs_type
+              config.fs_type = volume.fs_type
               config.btrfs = volume.btrfs
             end
           end

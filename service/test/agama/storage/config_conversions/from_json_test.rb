@@ -58,13 +58,14 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           },
           {
             "mount_path" => "/home", "size" => { "auto" => false, "min" => "5 GiB" },
-            "outline"    => { "required" => false, "filesystem" => "xfs" }
+            "filesystem" => "xfs", "outline" => { "required" => false}
           },
           {
-            "mount_path" => "swap",
-            "outline"    => { "required" => false, "filesystem" => "swap" }
+            "mount_path" => "swap", "filesystem" => "swap",
+            "outline"    => { "required" => false }
           },
-          { "mount_path" => "", "size" => { "min" => "100 MiB" } }
+          { "mount_path" => "", "filesystem" => "ext4",
+            "size" => { "min" => "100 MiB" } }
         ]
       }
     }
@@ -274,7 +275,7 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         it "uses the default type and btrfs attributes for that path" do
           config = subject.convert
           filesystem = config.drives.first.filesystem
-          expect(filesystem.type.fstype).to eq Y2Storage::Filesystems::Type::BTRFS
+          expect(filesystem.type.fs_type).to eq Y2Storage::Filesystems::Type::BTRFS
           expect(filesystem.type.btrfs.snapshots).to eq true
           expect(filesystem.type.btrfs.default_subvolume).to eq "@"
           expect(filesystem.type.btrfs.subvolumes.map(&:path)).to eq ["home", "opt", "root", "srv"]
@@ -291,12 +292,45 @@ describe Agama::Storage::ConfigConversions::FromJSON do
         it "uses the specified btrfs attributes" do
           config = subject.convert
           filesystem = config.drives.first.filesystem
-          expect(filesystem.type.fstype).to eq Y2Storage::Filesystems::Type::BTRFS
+          expect(filesystem.type.fs_type).to eq Y2Storage::Filesystems::Type::BTRFS
           expect(filesystem.type.btrfs.snapshots).to eq false
           # TODO: none of the following attributes are specified at the schema. Intentional?
           # expect(filesystem.type.btrfs.default_subvolume).to eq ""
           # expect(filesystem.type.btrfs.subvolumes.map(&:path)).to eq ["tmp"]
         end
+      end
+    end
+
+    context "configuring partial information for several mount points" do
+      let(:config_json) { { drives: [{ partitions: partitions }] } }
+      let(:partitions) do
+        [
+          { "filesystem": { "path": "/" } },
+          { "filesystem": { "path": "swap" } },
+          { "filesystem": { "path": "/opt" } }
+        ]
+      end
+
+      it "configures the filesystem types according to the product configuration" do
+        config = subject.convert
+        partitions = config.drives.first.partitions
+        expect(partitions).to contain_exactly(
+          an_object_having_attributes(
+            filesystem: have_attributes(
+              path: "/", type: have_attributes(fs_type: Y2Storage::Filesystems::Type::BTRFS)
+            )
+          ),
+          an_object_having_attributes(
+            filesystem: have_attributes(
+              path: "swap", type: have_attributes(fs_type: Y2Storage::Filesystems::Type::SWAP)
+            )
+          ),
+          an_object_having_attributes(
+            filesystem: have_attributes(
+              path: "/opt", type: have_attributes(fs_type: Y2Storage::Filesystems::Type::EXT4)
+            )
+          )
+        )
       end
     end
 
