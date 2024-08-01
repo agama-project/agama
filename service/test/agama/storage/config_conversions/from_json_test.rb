@@ -73,13 +73,6 @@ describe Agama::Storage::ConfigConversions::FromJSON do
   describe "#convert" do
     using Y2Storage::Refinements::SizeCasts
 
-    # TODO:
-    # Encryption
-    # Filesystem type (btrfs, etc)
-    # Filesystem at disk (including default types based on config, etc.)
-    # Filesystem at partition
-    # Partition id
-
     context "with an empty JSON configuration" do
       let(:config_json) { {} }
 
@@ -233,6 +226,41 @@ describe Agama::Storage::ConfigConversions::FromJSON do
       end
     end
 
+    context "using 'default' as size for some partitions and size limit for others" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                {
+                  filesystem: { path: "/", size: "default" }
+                },
+                {
+                  filesystem: { path: "/opt" },
+                  size: { min: "6 GiB", max: "22 GiB" }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "uses the appropriate sizes for each partition" do
+        config = subject.convert
+        partitions = config.drives.first.partitions
+        expect(partitions).to contain_exactly(
+          an_object_having_attributes(
+            filesystem: have_attributes(path: "/"),
+            size: have_attributes(default: true, min: 40.GiB, max: Y2Storage::DiskSize.unlimited)
+          ),
+          an_object_having_attributes(
+            filesystem: have_attributes(path: "/opt"),
+            size: have_attributes(default: false, min: 6.GiB, max: 22.GiB)
+          )
+        )
+      end
+    end
+
     context "specifying a filesystem for a drive" do
       let(:config_json) do
         {
@@ -251,6 +279,101 @@ describe Agama::Storage::ConfigConversions::FromJSON do
           expect(filesystem.type.btrfs.default_subvolume).to eq "@"
           expect(filesystem.type.btrfs.subvolumes.map(&:path)).to eq ["home", "opt", "root", "srv"]
         end
+      end
+
+      context "if the filesystem specification contains some btrfs settings" do
+        let(:filesystem) do
+          { path: "/",
+            type: { btrfs: { snapshots: false, default_subvolume: "", subvolumes: ["tmp"] } }
+          }
+        end
+
+        it "uses the specified btrfs attributes" do
+          config = subject.convert
+          filesystem = config.drives.first.filesystem
+          expect(filesystem.type.fstype).to eq Y2Storage::Filesystems::Type::BTRFS
+          expect(filesystem.type.btrfs.snapshots).to eq false
+          # TODO: none of the following attributes are specified at the schema. Intentional?
+          # expect(filesystem.type.btrfs.default_subvolume).to eq ""
+          # expect(filesystem.type.btrfs.subvolumes.map(&:path)).to eq ["tmp"]
+        end
+      end
+    end
+
+    context "when some partition is configured to be encrypted" do
+      let(:config_json) do
+        {
+          drives: [{ partitions: partitions }]
+        }
+      end
+
+      let(:partitions) do
+        [
+          {
+            "id": "linux", "size": { "min": "10 GiB" },
+            # FIXME: The schema specified "key_size" instead of keySize
+            # FIXME: Not sure if "key" is a good name for the password/passphrase
+            "encryption": { "key": "notsecret", "method": "luks2", "keySize": 256 },
+            "filesystem": { "type": "xfs", "path": "/home" }
+          },
+          {
+            "size": { "min": "2 GiB" },
+            "filesystem": { "type": "swap", "path": "swap" }
+          }
+        ]
+      end
+
+      it "sets the encryption settings for the corresponding partition" do
+        config = subject.convert
+        partitions = config.drives.first.partitions
+        expect(partitions).to contain_exactly(
+          an_object_having_attributes(
+            filesystem: have_attributes(path: "/home"),
+            encryption: have_attributes(
+              key: "notsecret", method: Y2Storage::EncryptionMethod::LUKS2, key_size: 256
+            )
+          ),
+          an_object_having_attributes(
+            filesystem: have_attributes(path: "swap"),
+            encryption: nil
+          )
+        )
+      end
+    end
+
+    context "when the id of some partition is specified" do
+      let(:config_json) do
+        {
+          drives: [{ partitions: partitions }]
+        }
+      end
+
+      let(:partitions) do
+        [
+          {
+            "id": "Esp", "size": { "min": "10 GiB" },
+            "filesystem": { "type": "xfs", "path": "/home" }
+          },
+          {
+            "size": { "min": "2 GiB" },
+            "filesystem": { "type": "swap", "path": "swap" }
+          }
+        ]
+      end
+
+      it "configures the corresponding id" do
+        config = subject.convert
+        partitions = config.drives.first.partitions
+        expect(partitions).to contain_exactly(
+          an_object_having_attributes(
+            filesystem: have_attributes(path: "/home"),
+            id: Y2Storage::PartitionId::ESP
+          ),
+          an_object_having_attributes(
+            filesystem: have_attributes(path: "swap"),
+            id: nil
+          )
+        )
       end
     end
   end

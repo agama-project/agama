@@ -44,10 +44,14 @@ module Agama
               key = convert_key
               method = convert_method
               pbkdf = convert_pbkd_function
+              key_size = convert_key_size
+              cipher = convert_cipher
 
               config.key = key if key
               config.method = method if method
               config.pbkd_function = pbkdf if pbkdf
+              config.key_size = key_size if key_size
+              config.cipher = cipher if cipher
             end
           end
 
@@ -61,7 +65,8 @@ module Agama
 
           # @return [String, nil]
           def convert_key
-            encryption_json[:password]
+            # TODO: this is set as "key" in the schema, but it looks like a bad name
+            encryption_json[:key]
           end
 
           # @return [Y2Storage::EncryptionMethod, nil]
@@ -75,6 +80,17 @@ module Agama
           # @return [Y2Storage::PbkdFunction, nil]
           def convert_pbkd_function
             Y2Storage::PbkdFunction.find(encryption_json[:pbkdFunction])
+          end
+
+          # @return [Integer, nil]
+          def convert_key_size
+            # FIXME: this is using camel_case in the schema definition, looks wrong
+            encryption_json[:keySize]
+          end
+
+          # @return [String, nil]
+          def convert_cipher
+            encryption_json[:cipher]
           end
         end
       end
