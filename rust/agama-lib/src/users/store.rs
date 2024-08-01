@@ -7,9 +7,11 @@ pub struct UsersStore {
 }
 
 impl UsersStore {
-    pub async fn new() -> Result<Self, ServiceError> {
+    pub fn new() -> Result<Self, ServiceError> {
         Ok(Self {
-            users_client: UsersHTTPClient::new().await?,
+            users_client: UsersHTTPClient::new()?,
+        })
+    }
 
     pub fn new_with_client(client: UsersHTTPClient) -> Result<Self, ServiceError> {
         Ok(Self {
