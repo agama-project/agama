@@ -38,10 +38,6 @@ impl AuthHTTPClient {
     }
 
     /// Query web server for JWT
-    ///
-    /// TODO:
-    /// for now it doesn't use BaseHTTPClient's post and similar methods as it needs
-    /// to update query headers
     pub async fn get_jwt(&self, password: String) -> anyhow::Result<String> {
         let mut auth_body = HashMap::new();
 
