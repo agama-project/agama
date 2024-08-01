@@ -60,9 +60,10 @@ impl BaseHTTPClient {
 
         headers.insert(header::AUTHORIZATION, value);
 
-        Ok(reqwest::Client::builder()
+        let client = reqwest::Client::builder()
             .default_headers(headers)
-            .build()?)
+            .build()?;
+        Ok(client)
     }
 
     /// Simple wrapper around [`Response`] to get object from response.
