@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,27 +20,36 @@
  */
 
 import React, { useState } from "react";
-import { Alert, Form, FormGroup, Text } from "@patternfly/react-core";
+import { Alert as PFAlert, Form, FormGroup, Text, Stack } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { PasswordInput, Popup } from "~/components/core";
-import { QuestionActions } from "~/components/questions";
+import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
 
-const renderAlert = (attempt) => {
-  if (!attempt || attempt === 1) return null;
+/**
+ * Internal component for rendering an alert if given password failed
+ */
+const Alert = ({ attempt }: { attempt?: string }): React.ReactNode => {
+  if (!attempt || parseInt(attempt) === 1) return null;
 
   return (
     // TRANSLATORS: error message, user entered a wrong password
-    <Alert variant="warning" isInline isPlain title={_("Given encryption password didn't work")} />
+    <PFAlert variant="warning" isInline isPlain title={_("The encryption password did not work")} />
   );
 };
 
+/**
+ * Component for rendering questions related to LUKS activation
+ *
+ * @param question - the question to be answered
+ * @param answerCallback - the callback to be triggered on answer
+ */
 export default function LuksActivationQuestion({ question, answerCallback }) {
   const [password, setPassword] = useState(question.password || "");
   const conditions = { disable: { decrypt: password === "" } };
   const defaultAction = "decrypt";
 
-  const actionCallback = (option) => {
+  const actionCallback = (option: string) => {
     question.password = password;
     question.answer = option;
     answerCallback(question);
@@ -60,19 +69,21 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       aria-label={_("Question")}
       titleIconVariant={() => <Icon name="lock" size="s" />}
     >
-      {renderAlert(parseInt(question.data.attempt))}
-      <Text>{question.text}</Text>
-      <Form onSubmit={triggerDefaultAction}>
-        {/* TRANSLATORS: field label */}
-        <FormGroup label={_("Encryption Password")} fieldId="luks-password">
-          <PasswordInput
-            autoFocus
-            id="luks-password"
-            value={password}
-            onChange={(_, value) => setPassword(value)}
-          />
-        </FormGroup>
-      </Form>
+      <Stack hasGutter>
+        <Alert attempt={question.data.attempt} />
+        <Text>{question.text}</Text>
+        <Form onSubmit={triggerDefaultAction}>
+          {/* TRANSLATORS: field label */}
+          <FormGroup label={_("Encryption Password")} fieldId="luks-password">
+            <PasswordInput
+              autoFocus
+              id="luks-password"
+              value={password}
+              onChange={(_, value) => setPassword(value)}
+            />
+          </FormGroup>
+        </Form>
+      </Stack>
 
       <Popup.Actions>
         <QuestionActions

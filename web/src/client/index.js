@@ -24,7 +24,6 @@
 import { L10nClient } from "./l10n";
 import { ManagerClient } from "./manager";
 import { StorageClient } from "./storage";
-import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
 import { HTTPClient, WSClient } from "./http";
 
@@ -34,7 +33,6 @@ import { HTTPClient, WSClient } from "./http";
  * @property {ManagerClient} manager - manager client.
  * @property {NetworkClient} network - network client.
  * @property {StorageClient} storage - storage client.
- * @property {QuestionsClient} questions - questions client.
  * @property {() => WSClient} ws - Agama WebSocket client.
  * @property {() => boolean} isConnected - determines whether the client is connected
  * @property {() => boolean} isRecoverable - determines whether the client is recoverable after disconnected
@@ -57,7 +55,6 @@ const createClient = (url) => {
   const manager = new ManagerClient(client);
   const network = new NetworkClient(client);
   const storage = new StorageClient(client);
-  const questions = new QuestionsClient(client);
 
   const isConnected = () => client.ws().isConnected() || false;
   const isRecoverable = () => !!client.ws().isRecoverable();
@@ -67,7 +64,6 @@ const createClient = (url) => {
     manager,
     network,
     storage,
-    questions,
     isConnected,
     isRecoverable,
     onConnect: (handler) => client.ws().onOpen(handler),

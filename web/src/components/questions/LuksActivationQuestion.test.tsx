@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,25 +21,27 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import { LuksActivationQuestion } from "~/components/questions";
+import { plainRender } from "~/test-utils";
+import { AnswerCallback, Question } from "~/types/questions";
+import LuksActivationQuestion from "~/components/questions/LuksActivationQuestion";
 
-let question;
-const answerFn = jest.fn();
+let question: Question;
+const questionMock: Question = {
+  id: 1,
+  class: "storage.luks_activation",
+  text: "A Luks device found. Do you want to open it?",
+  options: ["decrypt", "skip"],
+  defaultOption: "decrypt",
+  data: { attempt: "1" },
+};
+const answerFn: AnswerCallback = jest.fn();
 
 const renderQuestion = () =>
-  installerRender(<LuksActivationQuestion question={question} answerCallback={answerFn} />);
+  plainRender(<LuksActivationQuestion question={question} answerCallback={answerFn} />);
 
 describe("LuksActivationQuestion", () => {
   beforeEach(() => {
-    question = {
-      id: 1,
-      class: "storage.luks_activation",
-      text: "A Luks device found. Do you want to open it?",
-      options: ["decrypt", "skip"],
-      defaultOption: "decrypt",
-      data: { attempt: "1" },
-    };
+    question = { ...questionMock };
   });
 
   it("renders the question text", async () => {
@@ -48,53 +50,28 @@ describe("LuksActivationQuestion", () => {
     await screen.findByText(question.text);
   });
 
-  it("contains a textinput for entering the password", async () => {
-    renderQuestion();
-
-    const passwordInput = await screen.findByLabelText("Encryption Password");
-    expect(passwordInput).not.toBeNull();
-  });
-
   describe("when it is the first attempt", () => {
     it("does not contain a warning", async () => {
       renderQuestion();
 
-      const warning = screen.queryByText(/Given encryption password/);
+      const warning = screen.queryByText("The encryption password did not work");
       expect(warning).toBeNull();
     });
   });
 
   describe("when it is not the first attempt", () => {
     beforeEach(() => {
-      question = {
-        id: 1,
-        class: "storage.luks_activation",
-        text: "A Luks device found. Do you want to open it?",
-        options: ["decrypt", "skip"],
-        defaultOption: "decrypt",
-        data: { attempt: "3" },
-      };
+      question = { ...questionMock, data: { attempt: "2" } };
     });
 
     it("contains a warning", async () => {
       renderQuestion();
 
-      await screen.findByText(/Given encryption password/);
+      await screen.findByText("The encryption password did not work");
     });
   });
 
   describe("when the user selects one of the options", () => {
-    beforeEach(() => {
-      question = {
-        id: 1,
-        class: "storage.luks_activation",
-        text: "A Luks device found. Do you want to open it?",
-        options: ["decrypt", "skip"],
-        defaultOption: "decrypt",
-        data: { attempt: "1" },
-      };
-    });
-
     describe("by clicking on 'Skip'", () => {
       it("calls the callback after setting both, answer and password", async () => {
         const { user } = renderQuestion();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2024] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -27,11 +27,8 @@ import { Popup } from "~/components/core";
  * Returns given text capitalized
  *
  * TODO: make it work with i18n
- *
- * @param {String} text - string to be capitalized
- * @return {String} capitalized text
  */
-const label = (text) => `${text[0].toUpperCase()}${text.slice(1)}`;
+const label = (text: string): string => `${text[0].toUpperCase()}${text.slice(1)}`;
 
 /**
  * A component for building a Question actions, using the defaultAction
@@ -42,13 +39,23 @@ const label = (text) => `${text[0].toUpperCase()}${text.slice(1)}`;
  * React.Fragment (aka <>) here for wrapping the actions instead of directly using the Popup.Actions.
  *
  * @param {object} props - component props
- * @param {Array.<String>} props.actions - the actions to be shown
- * @param {String} [props.defaultAction] - the action to be shown as primary
- * @param {function} props.actionCallback - the function to be called when user clicks on action
- * @param {Object} [props.conditions={}] - an object holding conditions, like when an action is disabled
+ * @param props.actions - the actions show
+ * @param props.defaultAction - the action to show as primary
+ * @param props.actionCallback - the function to call when the user clicks on the action
+ * @param props.conditions={} - an object holding conditions, like when an action is disabled
  */
-export default function QuestionActions({ actions, defaultAction, actionCallback, conditions }) {
-  let [[primaryAction], secondaryActions] = partition(actions, (a) => a === defaultAction);
+export default function QuestionActions({
+  actions,
+  defaultAction,
+  actionCallback,
+  conditions = {},
+}: {
+  actions: string[];
+  defaultAction?: string;
+  actionCallback: (action: string) => void;
+  conditions?: { disable?: { [key: string]: boolean } };
+}): React.ReactNode {
+  let [[primaryAction], secondaryActions] = partition(actions, (a: string) => a === defaultAction);
 
   // Ensure there is always a primary action
   if (!primaryAction) [primaryAction, ...secondaryActions] = secondaryActions;
