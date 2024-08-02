@@ -79,7 +79,7 @@ const useQuestionsConfig = () => {
       }
 
       return fetch(`/api/questions/${question.id}/answer`, {
-        method: "PATCH",
+        method: "PUT",
         body: JSON.stringify(answer),
         headers: {
           "Content-Type": "application/json",
