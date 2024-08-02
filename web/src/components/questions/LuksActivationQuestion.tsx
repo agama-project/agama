@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { Alert as PFAlert, Form, FormGroup, Text } from "@patternfly/react-core";
+import { Alert as PFAlert, Form, FormGroup, Text, Stack } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { PasswordInput, Popup } from "~/components/core";
 import QuestionActions from "~/components/questions/QuestionActions";
@@ -69,19 +69,21 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       aria-label={_("Question")}
       titleIconVariant={() => <Icon name="lock" size="s" />}
     >
-      <Alert attempt={question.data.attempt} />
-      <Text>{question.text}</Text>
-      <Form onSubmit={triggerDefaultAction}>
-        {/* TRANSLATORS: field label */}
-        <FormGroup label={_("Encryption Password")} fieldId="luks-password">
-          <PasswordInput
-            autoFocus
-            id="luks-password"
-            value={password}
-            onChange={(_, value) => setPassword(value)}
-          />
-        </FormGroup>
-      </Form>
+      <Stack hasGutter>
+        <Alert attempt={question.data.attempt} />
+        <Text>{question.text}</Text>
+        <Form onSubmit={triggerDefaultAction}>
+          {/* TRANSLATORS: field label */}
+          <FormGroup label={_("Encryption Password")} fieldId="luks-password">
+            <PasswordInput
+              autoFocus
+              id="luks-password"
+              value={password}
+              onChange={(_, value) => setPassword(value)}
+            />
+          </FormGroup>
+        </Form>
+      </Stack>
 
       <Popup.Actions>
         <QuestionActions
