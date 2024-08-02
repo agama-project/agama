@@ -52,11 +52,8 @@ software:
   base_product: SLES
 
 security:
-  lsm: none
+  lsm: selinux
   available_lsms:
-    apparmor:
-      patterns:
-        - apparmor
     selinux:
       patterns:
         - selinux
