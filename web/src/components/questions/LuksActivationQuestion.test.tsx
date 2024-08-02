@@ -54,7 +54,7 @@ describe("LuksActivationQuestion", () => {
     it("does not contain a warning", async () => {
       renderQuestion();
 
-      const warning = screen.queryByText(/Given encryption password/);
+      const warning = screen.queryByText("The encryption password did not work");
       expect(warning).toBeNull();
     });
   });
@@ -67,7 +67,7 @@ describe("LuksActivationQuestion", () => {
     it("contains a warning", async () => {
       renderQuestion();
 
-      await screen.findByText(/Given encryption password/);
+      await screen.findByText("The encryption password did not work");
     });
   });
 

@@ -29,17 +29,12 @@ import { _ } from "~/i18n";
 /**
  * Internal component for rendering an alert if given password failed
  */
-const Alert = ({ attempt }: { attempt: string | undefined }): React.ReactNode => {
+const Alert = ({ attempt }: { attempt?: string }): React.ReactNode => {
   if (!attempt || parseInt(attempt) === 1) return null;
 
   return (
     // TRANSLATORS: error message, user entered a wrong password
-    <PFAlert
-      variant="warning"
-      isInline
-      isPlain
-      title={_("Given encryption password didn't work")}
-    />
+    <PFAlert variant="warning" isInline isPlain title={_("The encryption password did not work")} />
   );
 };
 

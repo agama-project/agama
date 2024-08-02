@@ -39,9 +39,9 @@ const label = (text: string): string => `${text[0].toUpperCase()}${text.slice(1)
  * React.Fragment (aka <>) here for wrapping the actions instead of directly using the Popup.Actions.
  *
  * @param {object} props - component props
- * @param props.actions - the actions to be shown
- * @param props.defaultAction - the action to be shown as primary
- * @param props.actionCallback - the function to be called when user clicks on action
+ * @param props.actions - the actions show
+ * @param props.defaultAction - the action to show as primary
+ * @param props.actionCallback - the function to call when the user clicks on the action
  * @param props.conditions={} - an object holding conditions, like when an action is disabled
  */
 export default function QuestionActions({

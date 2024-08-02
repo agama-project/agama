@@ -74,7 +74,7 @@ describe("Questions", () => {
       mockQuestions = [genericQuestion];
     });
 
-    it("triggers the useQuestionMutationk", async () => {
+    it("triggers the useQuestionMutation", async () => {
       const { user } = plainRender(<Questions />);
       const button = screen.getByRole("button", { name: "Always" });
       await user.click(button);
