@@ -175,7 +175,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         Commands::Auth(subcommand) => {
             let mut client = BaseHTTPClient::bare()?;
 
-            client.base_url = cli.opts.api;
+            client.base_url = cli.opts.api.strip_suffix("/").unwrap_or(client.base_url.as_str()).to_string();
 
             run_auth_cmd(client, subcommand).await?;
         }
