@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Aug  2 09:12:25 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adjust Linux Security Modules (LSM) configuration for SLES 16
+(gh#openSUSE/agama#1525):
+  - Enable SELinux by default.
+  - Drop AppArmor as it is not available.
+
+-------------------------------------------------------------------
 Fri Aug  2 08:51:59 UTC 2024 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Adjust the SLES 16 repositories (gh#openSUSE/agama#1524):
