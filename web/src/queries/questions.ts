@@ -35,22 +35,16 @@ type APIQuestion = {
  * TODO: improve/simplify it once the backend API is improved.
  */
 function buildQuestion(httpQuestion: APIQuestion) {
-  let question: Question;
+  const question: Question = { ...httpQuestion.generic };
 
   if (httpQuestion.generic) {
-    question = {
-      ...httpQuestion.generic,
-      type: QuestionType.generic,
-      answer: httpQuestion.generic.answer,
-    };
+    question.type = QuestionType.generic;
+    question.answer = httpQuestion.generic.answer;
   }
 
   if (httpQuestion.withPassword) {
-    question = {
-      id: httpQuestion.generic.id,
-      type: QuestionType.withPassword,
-      password: httpQuestion.withPassword.password,
-    };
+    question.type = QuestionType.withPassword;
+    question.password = httpQuestion.withPassword.password;
   }
 
   return question;
