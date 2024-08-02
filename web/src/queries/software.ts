@@ -188,7 +188,7 @@ const useProductChanges = () => {
     if (!client) return;
 
     return client.ws().onEvent((event) => {
-      if (event.type === "") {
+      if (event.type === "ProductChanged") {
         queryClient.invalidateQueries({ queryKey: ["software/config"] });
       }
     });
