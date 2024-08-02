@@ -30,7 +30,7 @@ impl<'a> Store<'a> {
         http_client: reqwest::Client,
     ) -> Result<Store<'a>, ServiceError> {
         Ok(Self {
-            localization: LocalizationStore::new().await?,
+            localization: LocalizationStore::new()?,
             users: UsersStore::new()?,
             network: NetworkStore::new(http_client).await?,
             product: ProductStore::new(connection.clone()).await?,

@@ -6,13 +6,13 @@ pub struct LocalizationHTTPClient {
 }
 
 impl LocalizationHTTPClient {
-    pub async fn new() -> Result<Self, ServiceError> {
+    pub fn new() -> Result<Self, ServiceError> {
         Ok(Self {
             client: BaseHTTPClient::new()?,
         })
     }
 
-    pub async fn new_with_base(base: BaseHTTPClient) -> Result<Self, ServiceError> {
+    pub fn new_with_base(base: BaseHTTPClient) -> Result<Self, ServiceError> {
         Ok(Self { client: base })
     }
 

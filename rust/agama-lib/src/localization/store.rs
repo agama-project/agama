@@ -11,13 +11,13 @@ pub struct LocalizationStore {
 }
 
 impl LocalizationStore {
-    pub async fn new() -> Result<LocalizationStore, ServiceError> {
+    pub fn new() -> Result<LocalizationStore, ServiceError> {
         Ok(Self {
-            localization_client: LocalizationHTTPClient::new().await?,
+            localization_client: LocalizationHTTPClient::new()?,
         })
     }
 
-    pub async fn new_with_client(
+    pub fn new_with_client(
         client: LocalizationHTTPClient,
     ) -> Result<LocalizationStore, ServiceError> {
         Ok(Self {
@@ -83,8 +83,8 @@ mod test {
     ) -> Result<LocalizationStore, ServiceError> {
         let mut bhc = BaseHTTPClient::default();
         bhc.base_url = mock_server_url;
-        let client = LocalizationHTTPClient::new_with_base(bhc).await?;
-        LocalizationStore::new_with_client(client).await
+        let client = LocalizationHTTPClient::new_with_base(bhc)?;
+        LocalizationStore::new_with_client(client)
     }
 
     #[test]
