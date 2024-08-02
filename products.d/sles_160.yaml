@@ -33,10 +33,14 @@ translations:
       affärskritiska arbetsbelastningar på plats, i molnet och vid kanten.
 software:
   installation_repositories:
-    - url: http://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0/product/repo/SLES-Packages-16.0-x86_64/
+    - url: http://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0:/TEST/product/repo/SLES-Packages-16.0-x86_64/
       archs: x86_64
-    - url: http://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0/product/repo/SLES-Packages-16.0-aarch64/
+    - url: http://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0:/TEST/product/repo/SLES-Packages-16.0-aarch64/
       archs: aarch64
+    - url: https://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0:/TEST/product/repo/SLES-Packages-16.0-ppc64le/
+      archs: ppc
+    - url: https://download.suse.de/ibs/SUSE:/SLFO:/Products:/SLES:/16.0:/TEST/product/repo/SLES-Packages-16.0-s390x/
+      archs: s390
 
   mandatory_patterns:
     - sles_enhanced_base
