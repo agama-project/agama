@@ -1,10 +1,31 @@
+/*
+ * Copyright (c) [2024] SUSE LLC
+ *
+ * All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of version 2 of the GNU General Public License as published
+ * by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, contact SUSE LLC.
+ *
+ * To contact SUSE LLC about this file by physical or electronic mail, you may
+ * find current contact information at www.suse.com.
+ */
+
 enum ApFlags {
   NONE = 0x00000000,
   PRIVACY = 0x00000001,
   WPS = 0x00000002,
   WPS_PBC = 0x00000004,
   WPS_PIN = 0x00000008,
-};
+}
 
 enum ApSecurityFlags {
   NONE = 0x00000000,
@@ -18,7 +39,7 @@ enum ApSecurityFlags {
   GROUP_CCMP = 0x00000080,
   KEY_MGMT_PSK = 0x00000100,
   KEY_MGMT_8021_X = 0x00000200,
-};
+}
 
 enum ConnectionType {
   ETHERNET = "ethernet",
@@ -28,7 +49,7 @@ enum ConnectionType {
   BRIDGE = "bridge",
   VLAN = "vlan",
   UNKNOWN = "unknown",
-};
+}
 
 /**
  * Enum for the active connection state values
@@ -43,7 +64,7 @@ enum ConnectionState {
   ACTIVATED = 2,
   DEACTIVATING = 3,
   DEACTIVATED = 4,
-};
+}
 
 enum DeviceState {
   UNKNOWN = "unknown",
@@ -56,7 +77,7 @@ enum DeviceState {
   ACTIVATED = "activated",
   DEACTIVATING = "deactivating",
   FAILED = "failed",
-};
+}
 
 enum DeviceType {
   LOOPBACK = 0,
@@ -64,20 +85,20 @@ enum DeviceType {
   WIRELESS = 2,
   DUMMY = 3,
   BOND = 4,
-};
+}
 
 enum NetworkState {
   DISCONNECTED = "disconnected",
   CONNECTING = "connecting",
-  CONNECTED = "connected"
-};
+  CONNECTED = "connected",
+}
 
 enum SecurityProtocols {
   WEP = "WEP",
   WPA = "WPA1",
   RSN = "WPA2",
   _8021X = "802.1X",
-};
+}
 
 type IPAddress = {
   address: string;
@@ -91,11 +112,11 @@ type Route = {
 };
 
 type AccessPoint = {
-  ssid: string,
-  strength: number,
-  hwAddress: string,
-  security: string[]
-}
+  ssid: string;
+  strength: number;
+  hwAddress: string;
+  security: string[];
+};
 
 type Device = {
   name: string;
@@ -123,9 +144,10 @@ type ConnectionApi = {
   method4: string;
   method6: string;
   wireless?: Wireless;
-}
+};
 
 class Wireless {
+  ssid: string;
   password?: string;
   security?: string;
   hidden?: boolean = false;
@@ -141,13 +163,14 @@ class Wireless {
 
 class Connection {
   id: string;
+  status: string;
   iface: string;
   addresses: IPAddress[] = [];
   nameservers: string[] = [];
-  gateway4: string = "";
-  gateway6: string = "";
-  method4: string = "auto";
-  method6: string = "auto";
+  gateway4?: string = "";
+  gateway6?: string = "";
+  method4?: string = "auto";
+  method6?: string = "auto";
   wireless?: Wireless;
 
   constructor(id: string, iface?: string, options?: Connection) {
@@ -168,13 +191,23 @@ class Connection {
   }
 }
 
-
 type NetworkGeneralState = {
-  connectivity: boolean,
-  hostname: string,
-  networking_enabled: boolean,
-  wireless_enabled: boolean,
-}
+  connectivity: boolean;
+  hostname: string;
+  networking_enabled: boolean;
+  wireless_enabled: boolean;
+};
 
-export { ApFlags, ApSecurityFlags, Connection, ConnectionType, ConnectionState, DeviceState, NetworkState, DeviceType, Wireless, SecurityProtocols };
+export {
+  ApFlags,
+  ApSecurityFlags,
+  Connection,
+  ConnectionType,
+  ConnectionState,
+  DeviceState,
+  NetworkState,
+  DeviceType,
+  Wireless,
+  SecurityProtocols,
+};
 export type { AccessPoint, Device, IPAddress, NetworkGeneralState };
